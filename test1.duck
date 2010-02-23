@@ -1,0 +1,2 @@
+var Int foo=4.__addInt__(4,4);
+print(foo);
