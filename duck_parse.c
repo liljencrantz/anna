@@ -32,6 +32,49 @@ void duck_error(wchar_t *filename, size_t pos, wchar_t *msg)
     
 }
 
+duck_node_dummy_t *duck_node_dummy_create(wchar_t *src, size_t src_pos, struct duck_object *val)
+{
+   duck_node_dummy_t *result = calloc(1,sizeof(duck_node_dummy_t));
+   result->node_type = DUCK_NODE_DUMMY;
+   result->source_position = src_pos;
+   result->source_filename = src;
+  /*
+    FIXME: Create a nice and tidy wrapper
+  */
+   result->payload = val;
+   return result;  
+}
+
+duck_node_member_get_t *duck_node_member_get_create(wchar_t *src, size_t src_pos, struct duck_node *object, size_t mid, struct duck_type *type, int wrap)
+{
+   duck_node_member_get_t *result = calloc(1,sizeof(duck_node_member_get_t));
+   result->node_type = wrap?DUCK_NODE_MEMBER_GET_WRAP:DUCK_NODE_MEMBER_GET;
+   result->source_position = src_pos;
+   result->source_filename = src;
+  /*
+    FIXME: Create a nice and tidy wrapper
+  */
+   result->object=object;
+   result->mid=mid;
+   result->type=type;
+   return result;  
+  
+}
+
+
+duck_node_assign_t *duck_node_assign_create(wchar_t *src, size_t src_pos, duck_sid_t sid, struct duck_node *value)
+{
+   duck_node_assign_t *result = calloc(1,sizeof(duck_node_assign_t));
+   result->node_type = DUCK_NODE_ASSIGN;
+   result->source_position = src_pos;
+   result->source_filename = src;
+  /*
+    FIXME: Create a nice and tidy wrapper
+  */
+   result->value=value;
+   result->sid=sid;
+   return result;  
+}
 
 duck_node_int_literal_t *duck_node_int_literal_create(wchar_t *src, size_t src_pos, int val)
 {
