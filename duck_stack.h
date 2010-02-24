@@ -7,16 +7,14 @@ struct duck_stack_frame;
 
 struct duck_stack_frame
 {
-    struct duck_stack_frame *parent;
-    
-    size_t count;
-    hash_table_t member_string_lookup;
-    struct duck_type **member_type;  
-    struct duck_object *member[];  
+  struct duck_stack_frame *parent;
+  size_t count;
+  hash_table_t member_string_lookup;
+  struct duck_type **member_type;  
+  struct duck_object *member[];  
 };
 
 typedef struct duck_stack_frame duck_stack_frame_t;
-
 
 duck_stack_frame_t *duck_stack_create(size_t sz, duck_stack_frame_t *parent);
 

@@ -77,12 +77,12 @@ duck_type_t *duck_stack_get_type(duck_stack_frame_t *stack, wchar_t *name)
 	size_t *offset = (size_t *)hash_get(&stack->member_string_lookup, name);
 	if(offset) 
 	{
-	    return &stack->member_type[*offset];
+	  return stack->member_type[*offset];
 	}
 	stack = stack->parent;
 	
     }
-    wprintf(L"Critical: Tried to access type of unknown variable: %ls", name);
+    wprintf(L"Critical: Tried to access type of unknown variable: %ls in stack %d\n", name, stack);
     exit(1);
 }
 
