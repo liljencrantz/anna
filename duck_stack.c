@@ -4,11 +4,9 @@
 #include <assert.h>
 #include <string.h>
 
-
 #include "util.h"
 #include "duck_node.h"
 #include "duck_stack.h"
-
 
 duck_stack_frame_t *duck_stack_create(size_t sz, duck_stack_frame_t *parent)
 {
@@ -16,8 +14,8 @@ duck_stack_frame_t *duck_stack_create(size_t sz, duck_stack_frame_t *parent)
    hash_init(&stack->member_string_lookup, &hash_wcs_func, &hash_wcs_cmp);
    stack->member_type = calloc(1, sizeof(duck_type_t *)*sz);
    stack->count = 0;
+   stack->capacity = sz;
    stack->parent = parent;
-   
    return stack;
 }
 
@@ -40,6 +38,7 @@ void duck_stack_declare(duck_stack_frame_t *stack,
 	stack->member[*old_offset] = initial_value;
 	return;
     }
+    assert(stack->count < stack->capacity);
     
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
@@ -72,8 +71,8 @@ void duck_stack_set_str(duck_stack_frame_t *stack, wchar_t *name, duck_object_t 
 
 duck_object_t *duck_stack_get_str(duck_stack_frame_t *stack, wchar_t *name)
 {
-    //wprintf(L"Get %ls: %d\n", name, *duck_stack_addr_get_str(stack, name));    
-    return *duck_stack_addr_get_str(stack, name);
+  //wprintf(L"Get %ls: %d\n", name, *duck_stack_addr_get_str(stack, name));    
+  return *duck_stack_addr_get_str(stack, name);
 }
 
 duck_type_t *duck_stack_get_type(duck_stack_frame_t *stack_orig, wchar_t *name)
@@ -92,11 +91,13 @@ duck_type_t *duck_stack_get_type(duck_stack_frame_t *stack_orig, wchar_t *name)
 	stack = stack->parent;	
     }
     wprintf(L"Critical: Tried to access type of unknown variable: %ls in stack %d\n", name, stack_orig);
-    exit(1);
+    CRASH;
+    
 }
 
 duck_sid_t duck_stack_sid_create(duck_stack_frame_t *stack, wchar_t *name)
 {
+    duck_stack_frame_t *top = stack;
     assert(stack);
     assert(name);
     duck_sid_t sid = {0,0};
@@ -112,8 +113,8 @@ duck_sid_t duck_stack_sid_create(duck_stack_frame_t *stack, wchar_t *name)
 	sid.frame++;
 	stack = stack->parent;	
     }
-    wprintf(L"Critical: Tried to access type of unknown variable: %ls\n", name);
-    exit(1);
+    wprintf(L"Critical: Tried to create sid for unknown variable: %ls\n", name);
+    CRASH;
 }
 
 duck_object_t *duck_stack_get_sid(duck_stack_frame_t *stack, duck_sid_t sid)
@@ -136,6 +137,8 @@ void duck_stack_set_sid(duck_stack_frame_t *stack, duck_sid_t sid, duck_object_t
 
 duck_stack_frame_t *duck_stack_clone(duck_stack_frame_t *template)
 {
+  assert(template);
+  
     size_t sz = sizeof(duck_stack_frame_t) + sizeof(duck_object_t *)*template->count;
     //wprintf(L"Cloning stack with %d items (sz %d)\n", template->count, sz);
     duck_stack_frame_t *stack = malloc(sz);

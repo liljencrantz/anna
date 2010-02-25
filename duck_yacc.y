@@ -14,8 +14,9 @@ int duck_lex();
 void yyerror (char *s) ;
 
 duck_node_t *duck_parse_tree;
-
-
+int was_end_brace=0;
+ int peek_token = -1;
+ 
 #define LOOKUP_CREATE(name) (duck_node_t *)duck_node_lookup_create(duck_current_filename, duck_current_pos, name)
 #define CALL_CREATE(function, argc, argv) duck_node_call_create(duck_current_filename, duck_current_pos, function, argc, argv)
 #define INT_LITERAL_CREATE(val) (duck_node_t *)duck_node_int_literal_create(duck_current_filename, duck_current_pos, val)
@@ -270,8 +271,8 @@ expression6 :
 	| 
 	expression6 block
 	{
-	    $$ = (duck_node_t *)$2;
-	    duck_node_call_set_function($2, $1);
+	  duck_node_t *param[] ={$2};
+	  $$ = CALL_CREATE($1, 1, param);
 	}
 	| 
 	expression6 '[' expression ']'
@@ -671,7 +672,7 @@ simple_expression;
 simple_expression:
 any_identifier
 {
-    $$ = $1;
+  $$ = $1;
 }
 |
 simple_expression '(' argument_list2 ')'
@@ -690,7 +691,31 @@ simple_expression '(' argument_list2 ')'
 
 int yylex ()
 {
+  if(peek_token != -1)
+    {
+      int ret = peek_token;
+      peek_token = -1;
+      return ret;      
+    }
+  
   yylex_val = duck_lex();
+  if(was_end_brace)
+    {
+      was_end_brace = 0;
+      if(yylex_val != '.' &&
+	 yylex_val != SEMICOLON)
+	{
+	  peek_token = yylex_val;
+	  return SEMICOLON;
+	}      
+    }
+  
+
+  if(yylex_val == '}') 
+    {
+      was_end_brace = 1;
+    }
+  
   return yylex_val;
 }
 

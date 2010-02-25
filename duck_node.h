@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+#include "duck.h"
 #include "duck_stack.h"
 
 #define DUCK_NODE_CALL 0
@@ -33,6 +34,7 @@ struct duck_node_lookup
     wchar_t *source_filename;
     size_t source_position;
     wchar_t *name;
+    duck_sid_t sid;
 };
 
 struct duck_node_assign
@@ -139,6 +141,21 @@ duck_node_t *duck_node_null_create(wchar_t *src, size_t src_pos);
 duck_node_assign_t *duck_node_assign_create(wchar_t *src, size_t src_pos, duck_sid_t sid, struct duck_node *value);
 void duck_node_call_add_child(duck_node_call_t *call, duck_node_t *child);
 void duck_node_call_set_function(duck_node_call_t *call, duck_node_t *function);
+
+duck_node_call_t *node_cast_call(duck_node_t *node);
+duck_node_lookup_t *node_cast_lookup(duck_node_t *node);
+duck_node_int_literal_t *node_cast_int_literal(duck_node_t *node);
+duck_node_string_literal_t *node_cast_string_literal(duck_node_t *node);
+
+void duck_node_print(duck_node_t *this);
+duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duck_node_list_t *parent);duck_object_t *duck_node_invoke(duck_node_t *this, duck_stack_frame_t *stack);
+duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *stack);
+
+void duck_node_print(duck_node_t *this);
+
+
+
+
 
 extern wchar_t *duck_current_filename;
 extern size_t duck_current_pos;

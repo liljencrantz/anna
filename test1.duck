@@ -1,3 +1,4 @@
-var foo=3;
-__if__(1,__block__(print(foo+1)),__block__());
+var List foo = List();
 
+foo.__setitem__(1,7);
+print(foo.__getitem__(1));

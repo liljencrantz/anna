@@ -44,22 +44,6 @@ typedef union
 
 
 /**
-   Data structure for an automatically resizing dynamically allocated queue,
-*/
-typedef struct dyn_queue
-{
-	/** Start of the array */
-	void **start;
-	/** End of the array*/
-	void **stop;
-	/** Where to insert elements */
-	void **put_pos;
-	/** Where to remove elements */
-	void **get_pos;
-}
-	dyn_queue_t;
-
-/**
    Internal struct used by hash_table_t.
 */
 typedef struct
@@ -102,25 +86,6 @@ typedef struct hash_table
 	int (*compare_func)( void *key1, void *key2 );
 }
 	hash_table_t;
-
-/**
-   Data structure for an automatically resizing dynamically allocated
-   priority queue. A priority queue allows quick retrieval of the
-   smallest element of a set (This implementation uses O(log n) time).
-   This implementation uses a heap for storing the queue.
-*/
-typedef struct priority_queue
-{
-	/** Array contining the data */
-	void **arr;
-	/** Number of elements*/
-	int count;
-	/** Length of array */
-	int size;
-	/** Comparison function */
-	int (*compare)(void *e1, void *e2);
-}
-priority_queue_t;
 
 /**
    Array list struct.
@@ -209,38 +174,6 @@ int mini( int a, int b );
   priority queue are all impemented using an array and are guaranteed
   to never be less than 50% full. 
 */
-
-/** 
-	Initialize the queue. A queue is a FIFO buffer, i.e. the first
-    element to be inserted into the buffer is the first element to be
-    returned. 
-*/
-void q_init( dyn_queue_t *q );
-
-/**
-   Destroy the queue 
-*/
-void q_destroy( dyn_queue_t *q );
-
-/**
-   Insert element into queue 
-*/
-int q_put( dyn_queue_t *q, void *e );
-
-/**
-   Remove and return next element from queue 
-*/
-void *q_get( dyn_queue_t *q);
-
-/**
-   Return next element from queue without removing it 
-*/
-void *q_peek( dyn_queue_t *q);
-
-/**
-   Returns 1 if the queue is empty, 0 otherwise 
-*/
-int q_empty( dyn_queue_t *q );
 
 /**
    Initialize a hash table. The hash function must never return the value 0.
@@ -363,49 +296,6 @@ int hash_ptr_func( void *data );
 int hash_ptr_cmp( void *a,
                   void *b );
 
-
-
-/** 
-	Initialize the priority queue
-	
-	\param q the queue to initialize
-	\param compare a comparison function that can compare two entries in the queue
-*/
-void pq_init( priority_queue_t *q,
-			  int (*compare)(void *e1, void *e2) );
-/**
-   Add element to the queue
-
-   \param q the queue
-   \param e the new element
- 
-*/
-int pq_put( priority_queue_t *q,
-			void *e );
-/**
-  Removes and returns the last entry in the priority queue
-*/
-void *pq_get( priority_queue_t *q );
-
-/**
-  Returns the last entry in the priority queue witout removing it.
-*/
-void *pq_peek( priority_queue_t *q );
-
-/** 
-	Returns 1 if the priority queue is empty, 0 otherwise.
-*/
-int pq_empty( priority_queue_t *q );
-
-/**
-   Returns the number of elements in the priority queue.
-*/
-int pq_get_count( priority_queue_t *q );
-
-/** 
-	Destroy the priority queue and free memory used by it.
-*/
-void pq_destroy(  priority_queue_t *q );
 
 /**
    Allocate heap memory for creating a new list and initialize
@@ -676,6 +566,7 @@ void sb_truncate( string_buffer_t *, int chars_left );
 */
 ssize_t sb_length( string_buffer_t * );
 
+wchar_t *sb_content(string_buffer_t *);
 
 /*
   Buffer functions
@@ -698,10 +589,5 @@ void b_destroy( buffer_t *b );
    \return 0 on error, non-zero otherwise
 */
 int b_append( buffer_t *b, const void *d, ssize_t len );
-
-/**
-   Get the current time in microseconds since Jan 1, 1970
-*/
-long long get_time();
 
 #endif
