@@ -32,10 +32,10 @@ void duck_error(wchar_t *filename, size_t pos, wchar_t *msg)
     
 }
 
-duck_node_dummy_t *duck_node_dummy_create(wchar_t *src, size_t src_pos, struct duck_object *val)
+duck_node_dummy_t *duck_node_dummy_create(wchar_t *src, size_t src_pos, struct duck_object *val, int is_trampoline)
 {
    duck_node_dummy_t *result = calloc(1,sizeof(duck_node_dummy_t));
-   result->node_type = DUCK_NODE_DUMMY;
+   result->node_type = is_trampoline?DUCK_NODE_TRAMPOLINE:DUCK_NODE_DUMMY;
    result->source_position = src_pos;
    result->source_filename = src;
   /*

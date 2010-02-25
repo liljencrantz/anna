@@ -22,6 +22,10 @@ typedef struct duck_node *(*duck_native_macro_t)( struct duck_node_call *, struc
 
 #define DUCK_FUNCTION_FUNCTION 0
 #define DUCK_FUNCTION_MACRO 1
+/*
+#define DUCK_FUNCTION_CLOSURE 2
+#define DUCK_FUNCTION_STANDALONE 4
+*/
 
 union duck_native
 {

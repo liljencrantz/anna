@@ -13,9 +13,10 @@
 #define DUCK_NODE_FLOAT_LITERAL 5
 #define DUCK_NODE_NULL 6
 #define DUCK_NODE_DUMMY 7
-#define DUCK_NODE_ASSIGN 8
-#define DUCK_NODE_MEMBER_GET 9
-#define DUCK_NODE_MEMBER_GET_WRAP 10
+#define DUCK_NODE_TRAMPOLINE 8
+#define DUCK_NODE_ASSIGN 9
+#define DUCK_NODE_MEMBER_GET 10
+#define DUCK_NODE_MEMBER_GET_WRAP 11
 
 struct duck_node
 {
@@ -101,7 +102,7 @@ struct duck_node_dummy
     struct duck_object *wrapper;
     wchar_t *source_filename;
     size_t source_position;
-  struct duck_object *payload;
+    struct duck_object *payload;
 };
 
 struct duck_node_float_literal
@@ -126,7 +127,7 @@ typedef struct duck_node_char_literal duck_node_char_literal_t;
 
 extern duck_node_t *duck_parse_tree;
 
-duck_node_dummy_t *duck_node_dummy_create(wchar_t *src, size_t src_pos, struct duck_object *val);
+duck_node_dummy_t *duck_node_dummy_create(wchar_t *src, size_t src_pos, struct duck_object *val, int is_trampoline);
 duck_node_member_get_t *duck_node_member_get_create(wchar_t *src, size_t src_pos, struct duck_node *object, size_t mid, struct duck_type *type, int wrap);
 duck_node_int_literal_t *duck_node_int_literal_create(wchar_t *src, size_t src_pos, int val);
 duck_node_float_literal_t *duck_node_float_literal_create(wchar_t *src, size_t src_pos, double val);
