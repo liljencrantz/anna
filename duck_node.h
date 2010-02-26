@@ -140,6 +140,7 @@ duck_node_lookup_t *duck_node_lookup_create(wchar_t *src, size_t src_pos, wchar_
 duck_node_t *duck_node_null_create(wchar_t *src, size_t src_pos);
 duck_node_assign_t *duck_node_assign_create(wchar_t *src, size_t src_pos, duck_sid_t sid, struct duck_node *value);
 void duck_node_call_add_child(duck_node_call_t *call, duck_node_t *child);
+void duck_node_call_prepend_child(duck_node_call_t *call, duck_node_t *child);
 void duck_node_call_set_function(duck_node_call_t *call, duck_node_t *function);
 
 duck_node_call_t *node_cast_call(duck_node_t *node);

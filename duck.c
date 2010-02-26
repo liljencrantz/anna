@@ -21,6 +21,8 @@
   HashMap type
   Range type
   Pair type
+
+  Test null handling a bit better
     
   Simple type checking
   Complex type checking
@@ -72,6 +74,7 @@
   Method calls with proper this handling
   Inner functions with access to outer scope
   Make ; after } optional
+  Constructors with no parameters
   
   Type type
   Call type
@@ -346,17 +349,22 @@ duck_function_t *duck_function_unwrap(duck_object_t *obj)
 duck_object_t *duck_function_wrapped_invoke(duck_object_t *obj, duck_node_call_t *param, duck_stack_frame_t *local)
 {
     duck_function_t **function_ptr = (duck_function_t **)duck_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
-    duck_stack_frame_t **stack_ptr = (duck_stack_frame_t **)duck_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
+	duck_stack_frame_t **stack_ptr = (duck_stack_frame_t **)duck_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_STACK);
 	return duck_function_invoke(*function_ptr, param, local, *stack_ptr);
     }
     else 
     {
+	/*
+	  FIXME: On __call__ pseudo-function gibberish, we create a
+	  duck_function_t copy and set the this pointer. That's slow
+	  and silly, figure out something more efficient.
+	 */
 	duck_object_t **function_wrapper_ptr = duck_static_member_addr_get_mid(obj->type, DUCK_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
-	    return duck_function_wrapped_invoke(*function_wrapper_ptr, param, local);	    
+	    return duck_function_wrapped_invoke(duck_method_wrap(*function_wrapper_ptr,obj), param, local);
 	}
 	
 	wprintf(L"GOSH!!!");
@@ -407,6 +415,7 @@ duck_object_t *duck_construct(duck_object_t **param)
     duck_object_t *type_wrapper = param[0];
     duck_type_t *type = duck_type_unwrap(type_wrapper);
     duck_object_t *result = duck_object_create(type);
+    wprintf(L"Running constructor for object of type %ls\n", type->name);
     
     /*
       FIXME: Constructor goes here!
@@ -650,9 +659,20 @@ static void duck_type_wrapper_create(duck_type_t *result, int creatable)
 {
   result->wrapper = duck_object_create(type_type);
   if(creatable) {      
+      duck_type_t *argv[]=
+	  {
+	      type_type
+	  }
+      ;
+      wchar_t *argn[]=
+	  {
+	      L"type"
+	  }
+      ;
+      
       duck_native_method_create(result, DUCK_MID_CALL_PAYLOAD, L"__call__",
 				0, (duck_native_t)&duck_construct,
-				result, 0, 0, 0);
+				result, 1, argv, argn);
       memcpy(duck_member_addr_get_mid(result->wrapper, DUCK_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(duck_type_t *));
   } 
   

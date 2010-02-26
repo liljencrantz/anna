@@ -257,11 +257,11 @@ static duck_object_t *duck_macro_while(duck_node_call_t *node, duck_stack_frame_
 
 static duck_node_t *duck_macro_member_get(duck_node_call_t *in, duck_function_t *func, duck_node_list_t *parent)
 {
-
+/*
    wprintf(L"member_get on node at %d\n", in);
    duck_node_print((duck_node_t *)in);
    wprintf(L"\n");
-
+*/
    assert(in->child_count == 2);
    duck_prepare_children(in, func, parent);
    

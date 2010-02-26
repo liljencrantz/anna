@@ -31,14 +31,14 @@ void duck_list_set(struct duck_object *this, ssize_t offset, struct duck_object 
 {
     size_t size = duck_list_get_size(this);
     ssize_t pos = calc_offset(offset, size);
-    wprintf(L"Set el %d in list of %d elements\n", pos, size);
+    //wprintf(L"Set el %d in list of %d elements\n", pos, size);
     if(pos < 0)
     {
 	return;
     }
     if(pos >= size)
     {
-	wprintf(L"Set new size\n");
+//	wprintf(L"Set new size\n");
 	duck_list_set_size(this, pos+1);      
     }
     

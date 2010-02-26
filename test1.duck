@@ -1,4 +1,4 @@
-var List foo = List();
+var List foo;
 
 foo.__setitem__(1,7);
 print(foo.__getitem__(1));

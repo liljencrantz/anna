@@ -196,6 +196,31 @@ void duck_node_call_add_child(duck_node_call_t *call, duck_node_t *child)
     call->child[call->child_count++] = child;
 }
 
+void duck_node_call_prepend_child(duck_node_call_t *call, duck_node_t *child)
+{
+    if(call->child_count==0) 
+    {
+	duck_node_call_add_child(call, child);
+	return;
+    }
+    
+    if(call->child_capacity == call->child_count) 
+    {
+	size_t new_capacity = call->child_capacity < 4 ? 8 : call->child_capacity*2;
+	call->child = realloc(call->child, new_capacity*sizeof(duck_node_t *));
+	if(!call->child) 
+	{
+	    wprintf(L"Out of memory\n");
+	    exit(1);
+	}	
+	call->child_capacity = new_capacity;
+    }
+//    wprintf(L"LALALA %d %d\n", call->child_capacity, call->child_count);
+    memmove(&call->child[1], call->child[0], sizeof(duck_node_t *)*call->child_count);
+    call->child[0] = child;
+    call->child_count++;
+}
+
 void duck_node_call_set_function(duck_node_call_t *call, duck_node_t *function)
 {
     call->function = function;
