@@ -135,6 +135,7 @@ duck_node_t *duck_yacc_string_literal_create(wchar_t *filename, size_t pos, char
 %token VAR
 %token RETURN
 %token SEMICOLON
+%token SIGN
 
 %type <call_val> block block2 block3
 %type <call_val> module module1
@@ -344,6 +345,12 @@ expression6 :
 	    $$ = (duck_node_t *)$2;
 	    duck_node_call_set_function($2, LOOKUP_CREATE(L"__list__"));
 	}
+	| 
+	'|' argument_list2 '|' 
+	{	    
+	    $$ = (duck_node_t *)$2;
+	    duck_node_call_set_function($2, LOOKUP_CREATE(L"__abs__"));
+	}
 	|
 	pre_op6 expression7
 	{
@@ -470,7 +477,7 @@ op4:
 	|
 	'%'
 	{
-	    $$ = LOOKUP_CREATE(L"__format__");
+	    $$ = LOOKUP_CREATE(L"__mod__");
 	}
 ;
 
@@ -489,6 +496,11 @@ pre_op6:
 	'-'
 	{
 		$$ = LOOKUP_CREATE(L"__neg__")
+	}
+	|
+	SIGN
+	{
+		$$ = LOOKUP_CREATE(L"__sign__")
 	}
 ;
 

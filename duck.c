@@ -52,15 +52,15 @@
   constructors
   
   Create intersection of two types
-  
+
+  cast function
   import macro
   __macro__ macro
   elif macro
   __type__ function
   each function
-  extends function
+  extends macro
   abides function
-  __set__, __get__, __add__, __sub__, __mul__ and friends: full abides/reverse checking implementation
   __return__ macro
   __returnAssign__ macro
   __templatize__ macro
@@ -105,15 +105,18 @@
   Parse float literals
   
   Implement basic int methods
+  Implement basic float methods
   Implement int comparison methods
   Implement List getter and setter
   
-  __block__ function
-  __assign__ function
-  __declare__ function
-  __function__ function  
+  __not__ function
+  __block__ macro
+  __assign__ macro
+  __declare__ macro
+  __function__ macro
   __if__ function
   __add__, __sub__, __mul__ and friends, simple exact mapping
+  __set__, __get__, __add__, __sub__, __mul__ and friends: full abides/reverse checking implementation
   if macro
   else macro
   __get__ macro
@@ -717,8 +720,7 @@ duck_object_t *duck_i_const_string(duck_node_t *this, duck_stack_frame_t *stack)
 duck_object_t *duck_i_const_int(duck_node_t *this, duck_stack_frame_t *stack)
 {
     duck_node_int_literal_t *this2 = node_cast_int_literal(this);
-    duck_object_t *result = duck_int_create();
-    duck_int_set(result, this2->payload);
+    duck_object_t *result = duck_int_create(this2->payload);
     return result;
 }
 

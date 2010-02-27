@@ -149,14 +149,28 @@ duck_node_int_literal_t *node_cast_int_literal(duck_node_t *node);
 duck_node_string_literal_t *node_cast_string_literal(duck_node_t *node);
 
 void duck_node_print(duck_node_t *this);
-duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duck_node_list_t *parent);duck_object_t *duck_node_invoke(duck_node_t *this, duck_stack_frame_t *stack);
+
+/*
+  This functions all treverse the AST, and taking clever actions on each node
+ */
+
+/**
+   Prepare the specified code for execution. This includes running macros, declaring variables, changing name based lookups into offset lookups, etc.
+ */
+duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duck_node_list_t *parent);
+duck_object_t *duck_node_invoke(duck_node_t *this, duck_stack_frame_t *stack);
+
+/**
+   Check the validity of the code. This should only be run after the
+   AST has been prepared, or any macros will make it cry.
+ */
+void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack);
+/**
+   Returns the return type of the specified AST node
+ */
 duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *stack);
 
 void duck_node_print(duck_node_t *this);
-
-
-
-
 
 extern wchar_t *duck_current_filename;
 extern size_t duck_current_pos;

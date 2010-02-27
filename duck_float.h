@@ -5,7 +5,7 @@
 #include "duck_node.h"
 
 
-duck_object_t *duck_float_create();
+duck_object_t *duck_float_create(double value);
 void duck_float_set(duck_object_t *this, double value);
 double duck_float_get(duck_object_t *this);
 void duck_float_type_create();

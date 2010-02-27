@@ -73,11 +73,9 @@ static duck_object_t *duck_float_i_$name(duck_object_t **param)
     if(param[1]==null_object)
         return null_object;
   
-    duck_object_t *result = duck_float_create();
     double v1 = duck_float_get(param[0]);
     double v2 = duck_float_get(param[1]);
-    duck_float_set(result, v1 $op v2);
-    return result;
+    return duck_float_create(v1 $op v2);
 }
 "
 done
@@ -95,11 +93,9 @@ static duck_object_t *duck_float_i_int_$name(duck_object_t **param)
     if(param[1]==null_object)
         return null_object;
   
-    duck_object_t *result = duck_float_create();
     double v1 = duck_float_get(param[0]);
     int v2 = duck_int_get(param[1]);
-    duck_float_set(result, v1 $op (double)v2);
-    return result;
+    return duck_float_create(v1 $op (double)v2);
 }
 "
 done
@@ -117,11 +113,9 @@ static duck_object_t *duck_float_i_int_$name(duck_object_t **param)
     if(param[1]==null_object)
         return null_object;
   
-    duck_object_t *result = duck_float_create();
     int v1 = duck_int_get(param[1]);
     double v2 = duck_float_get(param[0]);
-    duck_float_set(result, ((double)v1) $op v2);
-    return result;
+    return duck_float_create(((double)v1) $op v2);
 }
 "
 done

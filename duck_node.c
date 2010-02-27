@@ -14,6 +14,14 @@
 #include "duck_string.h"
 #include "duck_char.h"
 
+static void check(duck_node_t *node, int ok, wchar_t *msg)
+{
+    if(!ok)
+    {
+	wprintf(L"%ls", msg);
+    }    
+}
+
 
 duck_node_call_t *node_cast_call(duck_node_t *node) 
 {
@@ -380,6 +388,95 @@ duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *st
 	default:
 	    wprintf(L"SCRAP! Unknown node type when checking return type: %d\n", this->node_type);
 	    exit(1);
+    }
+}
+
+void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
+{
+    switch(this->node_type)
+    {
+	case DUCK_NODE_CALL:
+	{
+	    duck_node_call_t *this2 =(duck_node_call_t *)this;	    
+	    int i;
+	    
+	    duck_node_validate(this2->function, stack);
+	    for(i=0; i<this2->child_count; i++)
+	    {
+		duck_node_validate(this2->child[i], stack);
+	    }
+	    
+	    duck_type_t *func_type = duck_node_get_return_type(this2->function, stack);
+	    /*
+	      Special case constructors...
+
+	      FIXME: Doesn't actually test anything yet... :-/
+	     */
+	    if(func_type == type_type)
+	    {
+		if(this2->function->node_type == DUCK_NODE_LOOKUP)
+		{
+		    duck_node_lookup_t *lookup = (duck_node_lookup_t *)this2->function;
+		    duck_object_t *type_wrapper = duck_stack_get_str(stack, lookup->name);
+		    assert(type_wrapper);
+		    return;
+		}
+		return;
+	    }
+	    
+	    duck_function_type_key_t *function_data = duck_function_unwrap_type(func_type);
+	    check(this, function_data->argc == this2->child_count,
+		  L"Wrong number of paramaters in function call");
+	    
+	    for(i=0; i<this2->child_count; i++)
+	    {
+		duck_type_t *ctype = duck_node_get_return_type(this2->child[i], stack);
+		check(this, duck_abides(ctype, function_data->argv[i]),
+		      L"Wrong type of argument for function");
+	    }
+	    return;
+	}
+	
+	case DUCK_NODE_TRAMPOLINE:
+	case DUCK_NODE_DUMMY:
+	{
+	   duck_node_dummy_t *this2 =(duck_node_dummy_t *)this;	    
+	   return;
+	}
+	
+	case DUCK_NODE_INT_LITERAL:
+	case DUCK_NODE_FLOAT_LITERAL:
+	case DUCK_NODE_CHAR_LITERAL:
+	case DUCK_NODE_NULL:
+	    return;
+
+	    
+
+	case DUCK_NODE_LOOKUP:
+	{
+	    duck_node_lookup_t *this2 =(duck_node_lookup_t *)this;	    
+	    check(this, !!this2->name, L"Invalid lookup node");
+	    check(this, !!duck_stack_get_type(stack, this2->name), L"Unknown variable: %ls"/*, this2->name*/);
+	    return;
+	}
+	case DUCK_NODE_STRING_LITERAL:
+	{
+	    duck_node_string_literal_t *this2 =(duck_node_string_literal_t *)this;	    
+	    check(this, !!this2->payload, L"Invalid string node");
+	    return;
+	}	
+
+
+	case DUCK_NODE_MEMBER_GET:
+	case DUCK_NODE_MEMBER_GET_WRAP:
+	{
+	    duck_node_member_get_t *this2 =(duck_node_member_get_t *)this;
+	    return;
+	}
+		    
+	default:
+	    check(this, 1, L"Unknown node type");
+	    
     }
 }
 

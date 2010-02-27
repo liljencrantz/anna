@@ -48,6 +48,11 @@ static duck_object_t *duck_i_print(duck_object_t **param)
     return null_object;
 }
 
+static duck_object_t *duck_i_not(duck_object_t **param)
+{
+    return(param[0] == null_object)?duck_int_one:null_object;
+}
+
 static duck_object_t *duck_i_if(duck_object_t **param)
 {
     duck_object_t *body_object;
@@ -68,6 +73,9 @@ void duck_function_implementation_init(struct duck_stack_frame *stack)
     static wchar_t *p_argn[]={L"object"};
     duck_native_declare(stack, L"print", DUCK_FUNCTION_FUNCTION, (duck_native_t)&duck_i_print, null_type, 1, &object_type, p_argn);
     
+    duck_native_declare(stack, L"__not__", DUCK_FUNCTION_FUNCTION, (duck_native_t)&duck_i_not, int_type, 1, &object_type, p_argn);
+    
+
     duck_type_t *if_argv[]={object_type, object_type, object_type};
     static wchar_t *if_argn[]={L"condition", L"trueBlock", L"falseBlock"};    
     duck_native_declare(stack, L"__if__", DUCK_FUNCTION_FUNCTION, (duck_native_t)&duck_i_if, object_type, 3, if_argv, if_argn);

@@ -20,17 +20,17 @@ static wchar_t *duck_find_method(duck_type_t *type, wchar_t *prefix,
     int fault_count=0;
     
     duck_type_get_member_names(type, members);    
-    wprintf(L"Searching for %ls[XXX]...\n", prefix);
+    //wprintf(L"Searching for %ls[XXX]...\n", prefix);
     
     for(i=0; i<type->member_count+type->static_member_count; i++)
     {
-	wprintf(L"Check %ls\n", members[i]);
+	//wprintf(L"Check %ls\n", members[i]);
 	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
 	    continue;
-	wprintf(L"%ls matches, name-wise\n", members[i]);
+	//wprintf(L"%ls matches, name-wise\n", members[i]);
 	
 	duck_type_t *mem_type = duck_type_member_type_get(type, members[i]);
-	wprintf(L"Is of type %ls\n", mem_type->name);
+	//wprintf(L"Is of type %ls\n", mem_type->name);
 	duck_function_type_key_t *mem_fun = duck_function_unwrap_type(mem_type);
 	if(mem_fun)
 	{
@@ -46,7 +46,7 @@ static wchar_t *duck_find_method(duck_type_t *type, wchar_t *prefix,
 	}
 	else
 	{
-	    wprintf(L"Not a function\n");
+	    //  wprintf(L"Not a function\n");
 	}
 	
     }
@@ -569,9 +569,6 @@ void duck_macro_init(duck_stack_frame_t *stack)
        {
 	    L"__append__",
 	    L"__join__",
-	    L"__or__",
-	    L"__and__",
-	    L"__append__",
 	    L"__format__",
 	    L"__add__",
 	    L"__sub__",
@@ -583,7 +580,13 @@ void duck_macro_init(duck_stack_frame_t *stack)
 	    L"__eq__",
 	    L"__gte__",
 	    L"__lte__",
-	    L"__neq__"
+	    L"__neq__",
+	    L"__shl__",
+	    L"__shr__",
+	    L"__mod__",
+	    L"__bitand__",
+	    L"__bitor__",
+	    L"__xor__"
 	}
     ;
 

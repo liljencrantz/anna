@@ -17,10 +17,16 @@ duck_lex.c: duck_lex.y duck_yacc.h
 	flex -oduck_lex.c -Pduck_ duck_lex.y 
 
 
-duck_float.o: duck_float_i.c
+duck_float.c: duck_float_i.c
 
 duck_float_i.c: make_duck_float_i.sh
 	./make_duck_float_i.sh >duck_float_i.c
+
+
+duck_int.c: duck_int_i.c
+
+duck_int_i.c: make_duck_int_i.sh
+	./make_duck_int_i.sh >duck_int_i.c
 
 duck_yacc.c duck_yacc.h: duck_yacc.y
 	bison -d duck_yacc.y -o duck_yacc.c -v

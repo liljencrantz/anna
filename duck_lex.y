@@ -33,6 +33,7 @@ or return OR;
 shl return SHL;
 shr return SHR;
 var return VAR;
+sign return SIGN;
 return return RETURN;
 [a-z_][a-zA-Z0-9_]* return IDENTIFIER;
 [A-Z][a-zA-Z0-9_]* return TYPE_IDENTIFIER;
@@ -57,6 +58,7 @@ return return RETURN;
 \^ return '^';
 \.\. return RANGE;
 \. return '.';
+\| return '|';
 '([^\\]|\\.)' return LITERAL_CHAR;
 \"([^\"\\]|\\.)*\" return LITERAL_STRING;
 
