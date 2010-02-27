@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <wchar.h>
+#include <string.h>
 #include "common.h"
 #include "duck_node.h"
 
@@ -42,10 +43,61 @@ wchar_t *duck_yacc_string(char *in)
 
 duck_node_t *duck_yacc_string_literal_create(wchar_t *filename, size_t pos, char *str)
 {
-    /*
-      FIXME!!!
-     */
-    return (duck_node_t *)duck_node_string_literal_create(filename, pos, 4, L"smurf");
+    str++;
+    str[strlen(str)-1]=0;
+    wchar_t *str2 = str2wcs(str);
+    wchar_t *str3 = malloc(sizeof(wchar_t)*(wcslen(str2)));
+    wchar_t *ptr_in;
+    wchar_t *ptr_out = str3;
+    
+    for(ptr_in=str2; 
+	*ptr_in; 
+	ptr_in++)
+    {
+	switch(*ptr_in)
+	{
+	    case L'\\':
+		ptr_in++;
+		switch(*ptr_in)
+		{
+		    case L'n':
+			*ptr_out++ = L'\n';
+			break;
+			
+		    case L'r':
+			*ptr_out++ = L'\r';
+			break;
+			
+		    case L't':
+			*ptr_out++ = L'\t';
+			break;
+			
+		    case L'0':
+			*ptr_out++ = L'\0';
+			break;
+			
+		    case L'\0':
+			wprintf(L"Error in string.");
+			exit(1);
+			break;
+			
+		    default:
+			*ptr_out++ = *ptr_in;
+			break;
+		}
+		break;
+	    
+	    default:
+		*ptr_out++ = *ptr_in;
+		break;
+		
+	}
+	
+    }
+    
+    free(str2);
+    
+    return (duck_node_t *)duck_node_string_literal_create(filename, pos, ptr_out-str3, str3);
 }
 
  
@@ -92,7 +144,7 @@ duck_node_t *duck_yacc_string_literal_create(wchar_t *filename, size_t pos, char
 %type <node_val> opt_declaration_init
 %type <node_val> function_definition 
 %type <node_val> opt_simple_expression 
-%type <node_val> opt_identifier identifier type_identifier any_identifier op op2 op3 op4 op5 pre_op6
+%type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op2 op3 op4 op5 pre_op6
 %type <call_val> argument_list argument_list2 argument_list3 
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
@@ -208,6 +260,12 @@ expression:
 ;
 
 expression1 :
+	expression1 op1 expression2
+	{
+	    duck_node_t *param[] ={$1, $3};   
+	    $$ = (duck_node_t *)CALL_CREATE($2, 2, param);
+	}
+        | 
 	expression2
 ;
 
@@ -278,7 +336,7 @@ expression6 :
 	expression6 '[' expression ']'
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"List"), 2, param);
+	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__get__"), 2, param);
 	}
 	| 
 	'[' argument_list2 ']' /* Alternative list constructor syntax */
@@ -328,7 +386,7 @@ op:
 ;
 
 
-op2:
+op1:
 	AND
 	{
 	    $$ = LOOKUP_CREATE(L"__and__");
@@ -340,7 +398,7 @@ op2:
 	}
 ;
 
-op3:
+op2:
 	'<'
 	{
 		$$ = LOOKUP_CREATE(L"__lt__");
@@ -372,7 +430,7 @@ op3:
 	}
 ;
 
-op4:
+op3:
 	'+'
 	{
 	    $$ = LOOKUP_CREATE(L"__add__");
@@ -399,7 +457,7 @@ op4:
 	}
 ;
 
-op5:
+op4:
 	'*'
 	{
 	    $$ = LOOKUP_CREATE(L"__mul__");
@@ -415,6 +473,12 @@ op5:
 	    $$ = LOOKUP_CREATE(L"__format__");
 	}
 ;
+
+op5: '^'
+{
+    $$ = LOOKUP_CREATE(L"__exp__");
+}
+
 
 pre_op6:
 	'!'

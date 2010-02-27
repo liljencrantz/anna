@@ -33,6 +33,5 @@ wchar_t duck_char_get(duck_object_t *this)
 
 void duck_char_type_create()
 {
-    char_type->member_count = 1;
     duck_member_create(char_type, DUCK_MID_CHAR_PAYLOAD,  L"!charPayload", 0, null_type);
 }

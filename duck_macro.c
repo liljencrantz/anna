@@ -10,6 +10,51 @@
 #include "duck_node.h"
 #include "duck_stack.h"
 
+
+static wchar_t *duck_find_method(duck_type_t *type, wchar_t *prefix, 
+				      size_t argc, duck_type_t *arg2_type)
+{
+    int i;
+    wchar_t **members = calloc(sizeof(wchar_t *), type->member_count+type->static_member_count);
+    wchar_t *match=0;
+    int fault_count=0;
+    
+    duck_type_get_member_names(type, members);    
+    wprintf(L"Searching for %ls[XXX]...\n", prefix);
+    
+    for(i=0; i<type->member_count+type->static_member_count; i++)
+    {
+	wprintf(L"Check %ls\n", members[i]);
+	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
+	    continue;
+	wprintf(L"%ls matches, name-wise\n", members[i]);
+	
+	duck_type_t *mem_type = duck_type_member_type_get(type, members[i]);
+	wprintf(L"Is of type %ls\n", mem_type->name);
+	duck_function_type_key_t *mem_fun = duck_function_unwrap_type(mem_type);
+	if(mem_fun)
+	{
+	    if(mem_fun->argc == argc && duck_abides(arg2_type, mem_fun->argv[1]))
+	    {
+		int my_fault_count = duck_abides_fault_count(mem_fun->argv[1], arg2_type);
+		if(!match || my_fault_count < fault_count)
+		{
+		    match = members[i];
+		    fault_count = my_fault_count;
+		}
+	    }
+	}
+	else
+	{
+	    wprintf(L"Not a function\n");
+	}
+	
+    }
+    return match;
+        
+}
+
+
 static size_t duck_parent_count(struct duck_node_list *parent)
 {
    return parent?1+duck_parent_count(parent->parent):0;
@@ -114,48 +159,128 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *in, duck_funct
 {
    assert(in->child_count == 2);
    duck_prepare_children(in, func, parent);
-    duck_node_lookup_t *name_lookup = node_cast_lookup(in->function);
-    wchar_t *name = wcsdup(name_lookup->name+2);
-    name[wcslen(name)-2] = 0;
-    //wprintf(L"Calling operator_wrapper as %ls\n", name);
-    assert(in->child_count == 2);
+   duck_node_lookup_t *name_lookup = node_cast_lookup(in->function);
+   wchar_t *name_prefix = wcsdup(name_lookup->name);
+   name_prefix[wcslen(name_prefix)-2] = 0;
+   //wprintf(L"Calling operator_wrapper as %ls\n", name);
+   assert(in->child_count == 2);
     
     duck_type_t * t1 = duck_node_get_return_type(in->child[0], func->stack_template);
     duck_type_t * t2 = duck_node_get_return_type(in->child[1], func->stack_template);
     
-//    wprintf(L"Calling with types %ls and %ls\n", t1->name, t2->name);
-
-    string_buffer_t buff;
-    sb_init(&buff);
-    sb_append(&buff, L"__");
-    sb_append(&buff, name);
-    sb_append(&buff, t2->name);
-    sb_append(&buff, L"__");
-
-    wchar_t *method_name = (wchar_t *)buff.buff;
-    int res = !!hash_get(&t1->name_lookup, method_name);
-    //sb_destroy(&buff);
-    if(!res)
+    wchar_t *method_name = duck_find_method(t1, name_prefix, 2, t2);
+    
+    if(method_name)
     {
-	wprintf(L"Error: __%ls__: No support for call with objects of types %ls and %ls\n",
-		name, t1->name, t2->name);
-	duck_stack_print(func->stack_template);
-	exit(1);
+	    
+	duck_node_t *mg_param[2]=
+	    {
+		in->child[0], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+	    }
+	;
+	
+	duck_node_t *c_param[1]=
+	    {
+		in->child[1]
+	    }
+	;
+	
+	return (duck_node_t *)
+	    duck_node_call_create(in->source_filename,
+				  in->source_position,
+				  (duck_node_t *)
+				  duck_node_call_create(in->source_filename,
+							in->source_position,
+							(duck_node_t *)
+							duck_node_lookup_create(in->source_filename,
+										in->source_position,
+										L"__memberGet__"),
+							2,
+							mg_param),
+				  1,
+				  c_param);
     }
-
-    duck_node_t *mg_param[2]=
+    else
+    {
+	string_buffer_t buff;
+	sb_init(&buff);
+	sb_append(&buff, L"__r");
+	sb_append(&buff, &name_prefix[2]);
+	wchar_t *reverse_name_prefix = sb_content(&buff);
+	method_name = duck_find_method(t2, reverse_name_prefix, 2, t1);
+	sb_destroy(&buff);
+	
+	if(!method_name)
 	{
-	    in->child[0], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+	    wprintf(L"Error: %ls__: No support for call with objects of types %ls and %ls\n",
+		    name_prefix, t1->name, t2->name);
+	    exit(1);
 	}
-    ;
 
-    duck_node_t *c_param[1]=
-	{
-	    in->child[1]
-	}
-    ;
+	duck_node_t *mg_param[2]=
+	    {
+		in->child[1], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+	    }
+	;
+	
+	duck_node_t *c_param[1]=
+	    {
+		in->child[0]
+	    }
+	;
+	
+	return (duck_node_t *)
+	    duck_node_call_create(in->source_filename,
+				  in->source_position,
+				  (duck_node_t *)
+				  duck_node_call_create(in->source_filename,
+							in->source_position,
+							(duck_node_t *)
+							duck_node_lookup_create(in->source_filename,
+										in->source_position,
+										L"__memberGet__"),
+							2,
+							mg_param),
+				  1,
+				  c_param);
 
-    return (duck_node_t *)
+	
+    }
+}
+
+
+
+static duck_node_t *duck_macro_get(duck_node_call_t *in, duck_function_t *func, duck_node_list_t *parent)
+{
+  assert(in->child_count == 2);
+  duck_prepare_children(in, func, parent);
+    
+  duck_type_t * t1 = duck_node_get_return_type(in->child[0], func->stack_template);
+  duck_type_t * t2 = duck_node_get_return_type(in->child[1], func->stack_template);
+    
+  wchar_t *method_name = duck_find_method(t1, L"__get", 2, t2);
+
+  if(!method_name)
+  {
+      wprintf(L"Error: __get__: No support for call with objects of types %ls and %ls\n",
+	      t1->name, t2->name);
+      duck_stack_print(func->stack_template);
+      exit(1);
+  }
+  
+  duck_node_t *mg_param[2]=
+    {
+      in->child[0], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+    }
+  ;
+  
+  duck_node_t *c_param[1]=
+    {
+      in->child[1]
+    }
+  ;
+  
+  duck_node_t *result = (duck_node_t *)
 	duck_node_call_create(in->source_filename,
 			      in->source_position,
 			      (duck_node_t *)
@@ -169,7 +294,68 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *in, duck_funct
 						    mg_param),
 			      1,
 			      c_param);
+  /*
+  duck_node_print(result);
+  */
+  return result;
+  
 }
+
+
+
+static duck_node_t *duck_macro_set(duck_node_call_t *in, duck_function_t *func, duck_node_list_t *parent)
+{
+  assert(in->child_count == 3);
+  duck_prepare_children(in, func, parent);
+    
+  duck_type_t * t1 = duck_node_get_return_type(in->child[0], func->stack_template);
+  duck_type_t * t2 = duck_node_get_return_type(in->child[1], func->stack_template);
+
+  wchar_t *method_name = duck_find_method(t1, L"__set", 3, t2);
+
+  if(!method_name)
+    {
+      wprintf(L"Error: __set__: No support for call with objects of types %ls and %ls\n",
+	      t1->name, t2->name);
+      duck_stack_print(func->stack_template);
+      exit(1);
+    }
+  
+  duck_node_t *mg_param[2]=
+    {
+      in->child[0], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+    }
+  ;
+  
+  duck_node_t *c_param[2]=
+    {
+	in->child[1], in->child[2]
+    }
+  ;
+  
+  duck_node_t *result = (duck_node_t *)
+	duck_node_call_create(in->source_filename,
+			      in->source_position,
+			      (duck_node_t *)
+			      duck_node_call_create(in->source_filename,
+						    in->source_position,
+						    (duck_node_t *)
+						    duck_node_lookup_create(in->source_filename,
+									    in->source_position,
+									    L"__memberGet__"),
+						    2,
+						    mg_param),
+			      2,
+			      c_param);
+/*  wprintf(L"GGG\n");
+  duck_node_print(result);
+  wprintf(L"GGG\n");
+*/
+  return result;
+  
+}
+
+
 
 static duck_node_t *duck_macro_declare(struct duck_node_call *node, 
 			    struct duck_function *function,
@@ -227,16 +413,39 @@ static duck_node_t *duck_macro_assign(struct duck_node_call *node,
 {
    assert(node->child_count == 2);
    assert(duck_parent_count(parent)==1);
-   duck_prepare_children(node, function, parent);
 
-   duck_node_lookup_t *name_lookup = node_cast_lookup(node->child[0]);
-   duck_sid_t sid = duck_stack_sid_create(function->stack_template, name_lookup->name);
-   
-   return (duck_node_t *)
-      duck_node_assign_create(node->source_filename, 
-			      node->source_position,
-			      sid,
-			      node->child[1]);
+   switch(node->child[0]->node_type)
+   {
+       case DUCK_NODE_LOOKUP:
+       {
+	   duck_prepare_children(node, function, parent);
+	   duck_node_lookup_t *name_lookup = node_cast_lookup(node->child[0]);
+	   duck_sid_t sid = duck_stack_sid_create(function->stack_template, name_lookup->name);
+	   
+	   return (duck_node_t *)
+	       duck_node_assign_create(node->source_filename, 
+				       node->source_position,
+				       sid,
+				       node->child[1]);
+       }
+       
+       case DUCK_NODE_CALL:
+       {
+	   duck_node_call_t *call = node_cast_call(node->child[0]);
+	   //duck_node_print(call);
+	   
+	   duck_node_lookup_t *name_lookup = node_cast_lookup(call->function);
+	   assert(wcscmp(name_lookup->name, L"__get__")==0);
+	   name_lookup->name=L"__set__";
+	   duck_node_call_add_child(call, node->child[1]);
+	   return call;
+       }
+       
+       default:
+	   wprintf(L"Cricital: BLUPP\n");
+	   CRASH;
+   }
+       
 }
 
 static duck_object_t *duck_macro_while(duck_node_call_t *node, duck_stack_frame_t *stack)
@@ -353,9 +562,12 @@ void duck_macro_init(duck_stack_frame_t *stack)
     duck_macro_add(stack, L"__function__", &duck_macro_function);
     duck_macro_add(stack, L"if", &duck_macro_if);
     duck_macro_add(stack, L"else", &duck_macro_else);
+    duck_macro_add(stack, L"__get__", &duck_macro_get);
+    duck_macro_add(stack, L"__set__", &duck_macro_set);
     
     wchar_t *op_names[] = 
        {
+	    L"__append__",
 	    L"__join__",
 	    L"__or__",
 	    L"__and__",

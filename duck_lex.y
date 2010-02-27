@@ -53,6 +53,8 @@ return return RETURN;
 ;([ \t\n\r]*;)* return SEMICOLON;
 , return ',';
 ! return '!';
+% return '%';
+\^ return '^';
 \.\. return RANGE;
 \. return '.';
 '([^\\]|\\.)' return LITERAL_CHAR;

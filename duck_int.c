@@ -12,6 +12,9 @@
 
 static duck_object_t *duck_int_gt(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
+  
     int v1 = duck_int_get(param[0]);
     int v2 = duck_int_get(param[1]);
     return v1>v2?param[0]:null_object;
@@ -20,6 +23,8 @@ static duck_object_t *duck_int_gt(duck_object_t **param)
 
 static duck_object_t *duck_int_lt(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
     int v1 = duck_int_get(param[0]);
     int v2 = duck_int_get(param[1]);
     return v1<v2?param[0]:null_object;
@@ -27,6 +32,8 @@ static duck_object_t *duck_int_lt(duck_object_t **param)
 
 static duck_object_t *duck_int_eq(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
     int v1 = duck_int_get(param[0]);
     int v2 = duck_int_get(param[1]);
     return v1==v2?param[0]:null_object;
@@ -34,6 +41,8 @@ static duck_object_t *duck_int_eq(duck_object_t **param)
 
 static duck_object_t *duck_int_gte(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
     int v1 = duck_int_get(param[0]);
     int v2 = duck_int_get(param[1]);
     return v1>=v2?param[0]:null_object;
@@ -41,6 +50,8 @@ static duck_object_t *duck_int_gte(duck_object_t **param)
 
 static duck_object_t *duck_int_lte(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
     int v1 = duck_int_get(param[0]);
     int v2 = duck_int_get(param[1]);
     return v1<=v2?param[0]:null_object;
@@ -49,43 +60,53 @@ static duck_object_t *duck_int_lte(duck_object_t **param)
 
 static duck_object_t *duck_int_neq(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
     int v1 = duck_int_get(param[0]);
     int v2 = duck_int_get(param[1]);
     return v1!=v2?param[0]:null_object;
 }
 
-static duck_object_t *duck_int_add(duck_object_t **node)
+static duck_object_t *duck_int_add(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
   duck_object_t *result = duck_int_create();
-  int v1 = duck_int_get(node[0]);
-  int v2 = duck_int_get(node[1]);
+  int v1 = duck_int_get(param[0]);
+  int v2 = duck_int_get(param[1]);
   duck_int_set(result, v1+v2);
   return result;
 }
 
-static duck_object_t *duck_int_sub(duck_object_t **node)
+static duck_object_t *duck_int_sub(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
   duck_object_t *result = duck_int_create();
-  int v1 = duck_int_get(node[0]);
-  int v2 = duck_int_get(node[1]);
+  int v1 = duck_int_get(param[0]);
+  int v2 = duck_int_get(param[1]);
   duck_int_set(result, v1-v2);
   return result;
 }
 
-static duck_object_t *duck_int_mul(duck_object_t **node)
+static duck_object_t *duck_int_mul(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
   duck_object_t *result = duck_int_create();
-  int v1 = duck_int_get(node[0]);
-  int v2 = duck_int_get(node[1]);
+  int v1 = duck_int_get(param[0]);
+  int v2 = duck_int_get(param[1]);
   duck_int_set(result, v1*v2);
   return result;
 }
 
-static duck_object_t *duck_int_div(duck_object_t **node)
+static duck_object_t *duck_int_div(duck_object_t **param)
 {
+  if(param[1]==null_object)
+    return null_object;
   duck_object_t *result = duck_int_create();
-  int v1 = duck_int_get(node[0]);
-  int v2 = duck_int_get(node[1]);
+  int v1 = duck_int_get(param[0]);
+  int v2 = duck_int_get(param[1]);
   duck_int_set(result, v1/v2);
   return result;
 }
@@ -105,6 +126,7 @@ void duck_int_set(duck_object_t *this, int value)
 
 int duck_int_get(duck_object_t *this)
 {
+  
   int result;
   memcpy(&result, duck_member_addr_get_mid(this,DUCK_MID_INT_PAYLOAD), sizeof(int));
   return result;
@@ -114,7 +136,6 @@ void duck_int_type_create(duck_stack_frame_t *stack)
 {
     int_type = duck_type_create(L"Int", 64);
     duck_stack_declare(stack, L"Int", type_type, int_type->wrapper);
-    int_type->member_count = 1;
     duck_member_create(int_type, DUCK_MID_INT_PAYLOAD,  L"!intPayload", 0, null_type);
     
     duck_type_t *argv[]=
@@ -141,4 +162,5 @@ void duck_int_type_create(duck_stack_frame_t *stack)
     duck_native_method_create(int_type, -1, L"__lteInt__", 0, (duck_native_t)&duck_int_lte, int_type, 2, argv, argn);
     duck_native_method_create(int_type, -1, L"__neqInt__", 0, (duck_native_t)&duck_int_neq, int_type, 2, argv, argn);
 
+    assert(hash_get_count(&int_type->name_lookup) == int_type->member_count+int_type->static_member_count);
 }

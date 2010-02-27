@@ -314,14 +314,31 @@ duck_object_t *duck_node_assign_invoke(duck_node_assign_t *this, duck_stack_fram
 
 duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *stack)
 {
-  switch(this->node_type)
+    switch(this->node_type)
     {
 	case DUCK_NODE_CALL:
-	  {
+	{
 	    duck_node_call_t *this2 =(duck_node_call_t *)this;	    
+
 	    duck_type_t *func_type = duck_node_get_return_type(this2->function, stack);
+	    /*
+	      Special case constructors...
+	     */
+	    if(func_type == type_type)
+	    {
+		if(this2->function->node_type == DUCK_NODE_LOOKUP)
+		{
+		    duck_node_lookup_t *lookup = (duck_node_lookup_t *)this2->function;
+		    duck_object_t *type_wrapper = duck_stack_get_str(stack, lookup->name);
+		    assert(type_wrapper);
+		    return duck_type_unwrap(type_wrapper);
+		}
+		wprintf(L"Illigal init\n");
+		CRASH;
+		
+	    }
 	    
-	    duck_function_type_key_t *function_data = (duck_function_type_key_t *)*duck_static_member_addr_get_mid(func_type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+	    duck_function_type_key_t *function_data = duck_function_unwrap_type(func_type);
 	    return function_data->result;
 	}
 	
@@ -352,8 +369,16 @@ duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *st
 	case DUCK_NODE_NULL:
 	    return null_type;
 
+	case DUCK_NODE_MEMBER_GET:
+	case DUCK_NODE_MEMBER_GET_WRAP:
+	{
+	    duck_node_member_get_t *this2 =(duck_node_member_get_t *)this;
+	    return this2->type;
+	}
+	
+	    
 	default:
-	    wprintf(L"SCRAP!\n");
+	    wprintf(L"SCRAP! Unknown node type when checking return type: %d\n", this->node_type);
 	    exit(1);
     }
 }

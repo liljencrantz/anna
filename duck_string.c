@@ -37,8 +37,6 @@ size_t duck_string_get_payload_size(duck_object_t *this)
 
 void duck_string_type_create()
 {
-    string_type->member_count = 2;
-
     duck_member_create(string_type, DUCK_MID_STRING_PAYLOAD,  L"!stringPayload", 0, null_type);
     duck_member_create(string_type, DUCK_MID_STRING_PAYLOAD_SIZE,  L"!stringPayloadSize", 0, null_type);
 }

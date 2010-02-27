@@ -181,7 +181,10 @@ size_t duck_native_method_create(duck_type_t *type,
 
 
 duck_object_t *duck_object_create(duck_type_t *type);
+int duck_abides(duck_type_t *contender, duck_type_t *role_model);
+int duck_abides_fault_count(duck_type_t *contender, duck_type_t *role_model);
 
+duck_function_type_key_t *duck_function_unwrap_type(duck_type_t *type);
 
 
 

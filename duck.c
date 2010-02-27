@@ -16,14 +16,20 @@
 #include "duck_list.h"
 
 /*
-  List type
+  Ideas for apps written in duck:
+  Documentation generator: Introspect all data types and generate documentation on them.
+  Compiler front end.
+*/
+/*
   ComparisonMap type
   HashMap type
   Range type
   Pair type
-
-  Test null handling a bit better
-    
+  Node type
+  Better Function type
+  Better Type type  
+  
+  Code valiadator
   Simple type checking
   Complex type checking
   Type support for lists
@@ -31,7 +37,6 @@
   General purpose currying
   Namespaces
   Method macros
-  Correct string literal parsing
   
   Implement basic string methods
   Implement basic list methods
@@ -44,17 +49,18 @@
   Inner functions with shared return flag, etc.
   Variadic functions
   Garbage collection
+  constructors
   
-  Real check if type abides to other type, instead of lame type ptr comparison
   Create intersection of two types
   
+  import macro
   __macro__ macro
   elif macro
   __type__ function
   each function
   extends function
   abides function
-  __add__, __sub__, __mul__ and friends: full abides/reverse checking implementation
+  __set__, __get__, __add__, __sub__, __mul__ and friends: full abides/reverse checking implementation
   __return__ macro
   __returnAssign__ macro
   __templatize__ macro
@@ -69,6 +75,8 @@
   
   Sugar parser
   
+  Real check if type abides to other type, instead of lame type ptr comparison
+  Correct string literal parsing
   Variable declarations
   Function argument passing
   Method calls with proper this handling
@@ -82,6 +90,7 @@
   String type
   Char type
   Null type  
+  List type
   
   Represent objects 
   Represent types
@@ -97,6 +106,7 @@
   
   Implement basic int methods
   Implement int comparison methods
+  Implement List getter and setter
   
   __block__ function
   __assign__ function
@@ -106,6 +116,8 @@
   __add__, __sub__, __mul__ and friends, simple exact mapping
   if macro
   else macro
+  __get__ macro
+  __set__ macro
 
 */
 
@@ -149,11 +161,30 @@ void duck_native_declare(duck_stack_frame_t *stack,
   duck_stack_declare(stack, name, f->type, f->wrapper);
 }
 
+static void add_member(void *key, void *value, void *aux)
+{
+//    wprintf(L"Got member %ls\n", key);
+    
+    wchar_t ***dest = (wchar_t ***)aux;
+    **dest = key;
+    (*dest)++;
+}
+
+
+void duck_type_get_member_names(duck_type_t *type, wchar_t **dest)
+{
+    hash_foreach2(&type->name_lookup, &add_member, &dest);
+}
+
+
+
 duck_object_t **duck_member_addr_get_str(duck_object_t *obj, wchar_t *name)
 {
     duck_member_t *m = (duck_member_t *)hash_get(&(obj->type->name_lookup), name);
-    //    wprintf(L"Woo, get address of member %ls: %d\n", name, m);
-    
+    /*
+    wprintf(L"Woo, get address of member %ls on object\n", name);
+    wprintf(L"of type %ls\n", obj->type->name);
+    */
     if(!m) 
     {
 	wprintf(L"ERROR!!! Object %d of type %ls does not have a member %ls\n",obj, obj->type->name, name);
@@ -168,14 +199,16 @@ duck_object_t **duck_member_addr_get_str(duck_object_t *obj, wchar_t *name)
 
 duck_object_t **duck_member_addr_get_mid(duck_object_t *obj, size_t mid)
 {
-   /*  wprintf(L"Get mid %d on object\n", mid);
-       wprintf(L"of type %ls\n", obj->type->name);
-   */
+  /*
+  wprintf(L"Get mid %d on object\n", mid);
+  wprintf(L"of type %ls\n", obj->type->name);
+  */
     duck_member_t *m = obj->type->mid_lookup[mid];
     if(!m) 
     {
 	return 0;
     }
+    //wprintf(L"Found! Pos is %d, static is %d\n", m->offset, m->is_static);
     
     //wprintf(L"Lala, get addr of member %ls\n", m->name);    
     if(m->is_static) {
@@ -200,8 +233,7 @@ duck_object_t **duck_static_member_addr_get_mid(duck_type_t *type, size_t mid)
     if(m->is_static) {
 	return &type->static_member[m->offset];
     } else {
-	wprintf(L"Tried to acces non-static element with mid %d of type %ls as a static member\n", mid, type->name);
-	exit(1);
+	return 0;
     }
 }
 
@@ -271,7 +303,7 @@ duck_type_t *duck_type_for_function(duck_type_t *result, size_t argc, duck_type_
 {
     //  static int count=0;
     //if((count++)==10) {CRASH};
-    
+  
     int i;
     static duck_function_type_key_t *key = 0;
     static size_t key_sz = 0;
@@ -301,7 +333,6 @@ duck_type_t *duck_type_for_function(duck_type_t *result, size_t argc, duck_type_
 	hash_put(&duck_type_for_function_lookup, new_key, res);
 	duck_member_create(res, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
 			   1, null_type);
-	
 	duck_member_create(res, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
 			   0, null_type);
 	duck_member_create(res, DUCK_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
@@ -312,12 +343,38 @@ duck_type_t *duck_type_for_function(duck_type_t *result, size_t argc, duck_type_
     }
     else 
     {
-	//wprintf(L"YAY\n");
+      //wprintf(L"YAY\n");
     }
     
     return res;
 }
 
+
+duck_function_type_key_t *duck_function_unwrap_type(duck_type_t *type)
+{
+    assert(type);
+    //wprintf(L"Find function signature for call %ls\n", type->name);
+    
+    duck_function_type_key_t **function_ptr = (duck_function_type_key_t **)duck_static_member_addr_get_mid(type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    if(function_ptr) 
+    {
+	//wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
+	return *function_ptr;
+    }
+    else 
+    {
+	//wprintf(L"Not a direct function, check for __call__ member\n");
+	duck_object_t **function_wrapper_ptr = duck_static_member_addr_get_mid(type, DUCK_MID_CALL_PAYLOAD);
+	if(function_wrapper_ptr)
+	{
+	    //wprintf(L"Found, we're unwrapping it now\n");
+	    return duck_function_unwrap_type((*function_wrapper_ptr)->type);	    
+	}
+	return 0;	
+    }
+//     FIXME: Is there any validity checking we could do here?
+  
+}
 
 duck_function_t *duck_function_unwrap(duck_object_t *obj)
 {
@@ -336,11 +393,7 @@ duck_function_t *duck_function_unwrap(duck_object_t *obj)
 	{
 	    return duck_function_unwrap(*function_wrapper_ptr);	    
 	}
-	
-	wprintf(L"DANG!!!!\n");
-	duck_object_print(obj, 1);
-	
-	CRASH;
+	return 0;	
     }
 //     FIXME: Is there any validity checking we could do here?
   
@@ -348,11 +401,13 @@ duck_function_t *duck_function_unwrap(duck_object_t *obj)
 
 duck_object_t *duck_function_wrapped_invoke(duck_object_t *obj, duck_node_call_t *param, duck_stack_frame_t *local)
 {
+  //wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
+  
     duck_function_t **function_ptr = (duck_function_t **)duck_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
+    duck_stack_frame_t **stack_ptr = (duck_stack_frame_t **)duck_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
-	duck_stack_frame_t **stack_ptr = (duck_stack_frame_t **)duck_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_STACK);
-	return duck_function_invoke(*function_ptr, param, local, *stack_ptr);
+      return duck_function_invoke(*function_ptr, param, local, stack_ptr?*stack_ptr:stack_global);
     }
     else 
     {
@@ -360,16 +415,16 @@ duck_object_t *duck_function_wrapped_invoke(duck_object_t *obj, duck_node_call_t
 	  FIXME: On __call__ pseudo-function gibberish, we create a
 	  duck_function_t copy and set the this pointer. That's slow
 	  and silly, figure out something more efficient.
-	 */
+	*/
 	duck_object_t **function_wrapper_ptr = duck_static_member_addr_get_mid(obj->type, DUCK_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
-	    return duck_function_wrapped_invoke(duck_method_wrap(*function_wrapper_ptr,obj), param, local);
+	    //wprintf(L"Wrapped invoke!\n");
+	    return duck_function_wrapped_invoke(duck_method_wrap(*function_wrapper_ptr,obj), param, stack_ptr?*stack_ptr:stack_global);
 	}
 	
-	wprintf(L"GOSH!!!");
+	wprintf(L"Critical: Tried to call a non-function");
 	CRASH;
-	
     }
 //     FIXME: Is there any validity checking we could do here?
   
@@ -389,14 +444,14 @@ static int duck_is_member_get(duck_node_t *node)
 
 duck_type_t *duck_type_member_type_get(duck_type_t *type, wchar_t *name)
 {
-   duck_member_t *m = (duck_member_t *)hash_get(&type->name_lookup, name);
-   if(!m)
-   {
-       wprintf(L"Unknown member %ls in type %ls\n", name, type->name);
-       exit(1);
-   }
+    assert(name);
+    duck_member_t *m = (duck_member_t *)hash_get(&type->name_lookup, name);
+    if(!m)
+    {
+	return 0;
+    }
    
-   return m->type;
+    return m->type;
 }
 
 
@@ -415,7 +470,8 @@ duck_object_t *duck_construct(duck_object_t **param)
     duck_object_t *type_wrapper = param[0];
     duck_type_t *type = duck_type_unwrap(type_wrapper);
     duck_object_t *result = duck_object_create(type);
-    wprintf(L"Running constructor for object of type %ls\n", type->name);
+    //wprintf(L"Running constructor for object of type %ls\n", type->name);
+    assert(type->name);
     
     /*
       FIXME: Constructor goes here!
@@ -609,10 +665,36 @@ duck_function_t *duck_native_create(wchar_t *name,
     return result;
 }
 
+int duck_abides_fault_count(duck_type_t *contender, duck_type_t *role_model)
+{
+    if(contender == role_model)
+    {
+	return 0;
+    }
+    int i;
+    int res = 0;    
+    //wprintf(L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
+    wchar_t **members = calloc(sizeof(wchar_t *), role_model->member_count+role_model->static_member_count);
+    duck_type_get_member_names(role_model, members);    
+    assert(hash_get_count(&role_model->name_lookup) == role_model->member_count+role_model->static_member_count);
+    
+    for(i=0; i<role_model->member_count+role_model->static_member_count; i++)
+    {
+	assert(members[i]);
+	duck_type_t *contender_subtype = duck_type_member_type_get(contender, members[i]);
+	duck_type_t *role_model_subtype = duck_type_member_type_get(role_model, members[i]);
+	if(!contender_subtype || !duck_abides(contender_subtype, role_model_subtype))
+	{
+	    res++;
+	}	
+    }
+    free(members);
+    return res;
+}
 
 int duck_abides(duck_type_t *contender, duck_type_t *role_model)
 {
-    return contender == role_model;
+    return !duck_abides_fault_count(contender, role_model);
 }
 
 /*
@@ -642,7 +724,7 @@ duck_object_t *duck_i_const_int(duck_node_t *this, duck_stack_frame_t *stack)
 
 duck_object_t *duck_i_null_function(duck_object_t **node_base)
 {
-  wprintf(L"YAY!! RUNNING THE NULL FUNCTION\n");
+  //  wprintf(L"YAY!! RUNNING THE NULL FUNCTION\n");
   return null_object;
 }
 
@@ -709,7 +791,15 @@ size_t duck_member_create(duck_type_t *type,
 			  int is_static,
 			  duck_type_t *member_type)
 {
-   assert(member_type);
+    assert(member_type);
+    if(hash_get(&type->name_lookup, name))
+    {
+	wprintf(L"Redeclaring member %ls of type %ls\n",
+		name, type->name);
+	CRASH;
+	
+    }
+    
     duck_member_t * member = calloc(1,sizeof(duck_member_t) + sizeof(wchar_t) * (wcslen(name)+1));
 
     wcscpy(member->name, name);
@@ -777,7 +867,6 @@ size_t duck_native_method_create(duck_type_t *type,
 
 static void duck_type_type_create_early()
 {
-  type_type->member_count = 1;
   duck_member_create(type_type, DUCK_MID_TYPE_WRAPPER_PAYLOAD, L"!typeWrapperPayload",
 		     0, null_type);
 }
@@ -797,35 +886,42 @@ static void duck_null_type_create_early()
 {
   int i;
   
-  null_type->member_count = 0;
-  
   wchar_t *member_name = L"!null_member";
-  
-  duck_member_t *null_member = malloc(sizeof(duck_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
+  duck_member_t *null_member;  
+  null_member = malloc(sizeof(duck_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
   //wprintf(L"Null member is %d\n", null_member);
 
   null_member->type = null_type;
   null_member->offset=0;
   null_member->is_static=1;
   wcscpy(null_member->name, member_name);
-  
-  null_type->static_member[0] = duck_native_create(L"!nullFunction", 0, 
-						   (duck_native_t)&duck_i_null_function, 
-						   null_type, 0, 0,0)->wrapper;
 
+  /*  
+    duck_native_method_create(list_type, -1, L"__getInt__", 0, (duck_native_t)&duck_list_getitem, object_type, 2, i_argv, i_argn);
+  */
+  duck_type_t *argv[]={null_type};
+  wchar_t *argn[]={L"this"};
+  
+  null_type->static_member[0] = duck_native_create(L"!nullFunction", DUCK_FUNCTION_FUNCTION, 
+						   (duck_native_t)&duck_i_null_function, 
+						   null_type, 1, argv, argn)->wrapper;
+  
+  duck_object_t *null_function;  
+  null_function = null_type->static_member[0];
   hash_init(&null_type->name_lookup, &hash_null_func, &hash_null_cmp);
   hash_put(&null_type->name_lookup, L"!null_member", null_member);
   
   for(i=0; i<64;i++) {
     null_type->mid_lookup[i] = null_member;
   }
+  assert(*duck_static_member_addr_get_mid(null_type, 5) == null_function);    
 }
 
 
 static void duck_object_type_create_early()
 {
-    object_type->member_count = 0;
 }
+
 
 
 static void duck_init()
@@ -847,7 +943,8 @@ static void duck_init()
     duck_mid_put(L"!floatPayload", DUCK_MID_FLOAT_PAYLOAD);
     duck_mid_put(L"!functionStack", DUCK_MID_FUNCTION_WRAPPER_STACK);
     duck_mid_put(L"__call__", DUCK_MID_CALL_PAYLOAD);    
-    
+  
+  
     stack_global = duck_stack_create(4096, 0);
     
     /*
@@ -862,7 +959,6 @@ static void duck_init()
 
     string_type = duck_type_create_raw(L"String", 64);
     char_type = duck_type_create_raw(L"Char", 64);
-    float_type = duck_type_create_raw(L"Float", 64);
     
     duck_type_type_create_early();
     duck_object_type_create_early();
@@ -872,16 +968,13 @@ static void duck_init()
     duck_list_type_create(stack_global);
     duck_char_type_create();
     duck_string_type_create();
-    duck_float_type_create();
-    
-    duck_type_wrapper_create(type_type,1);
-    duck_type_wrapper_create(null_type, 1);
+    duck_float_type_create(stack_global);
+
+    duck_type_wrapper_create(type_type, 1);
+    duck_type_wrapper_create(null_type, 0);
     duck_type_wrapper_create(object_type, 1);
-    duck_type_wrapper_create(int_type, 1);
     duck_type_wrapper_create(string_type, 1);
     duck_type_wrapper_create(char_type, 1);
-    duck_type_wrapper_create(list_type, 1);
-    duck_type_wrapper_create(float_type, 1);
     
     duck_stack_declare(stack_global, L"Object", object_type, object_type->wrapper);
     duck_stack_declare(stack_global, L"Null", null_type, null_type->wrapper);
@@ -890,6 +983,11 @@ static void duck_init()
     duck_stack_declare(stack_global, L"String", type_type, string_type->wrapper);
     duck_stack_declare(stack_global, L"Float", type_type, float_type->wrapper);
     duck_stack_declare(stack_global, L"Type", type_type, type_type->wrapper);
+
+    assert(duck_abides(int_type,object_type)==1);
+    assert(duck_abides(list_type,object_type)==1);
+    assert(duck_abides(object_type,int_type)==0);
+    assert(duck_abides(int_type,int_type)==1);
     
     null_object = duck_object_create(null_type);
     

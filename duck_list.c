@@ -69,8 +69,6 @@ void duck_list_add(struct duck_object *this, struct duck_object *value)
   duck_object_t **ptr = duck_list_get_payload(this);
   duck_list_set_size(this, size+1);
   ptr[size]=value;
-  wprintf(L"Append at element %d\n", size);
-  
 }
 
 size_t duck_list_get_size(duck_object_t *this)
@@ -86,10 +84,8 @@ void duck_list_set_size(duck_object_t *this, size_t sz)
   
   if(sz>old_size)
   {
-    wprintf(L"Increase\n");
       if(sz>capacity)
 	{
-	  wprintf(L"Realloc\n");
 	  duck_list_set_capacity(this, sz);
 	}
       duck_object_t **ptr = duck_list_get_payload(this);
@@ -121,21 +117,30 @@ static duck_object_t **duck_list_get_payload(duck_object_t *this)
     return *(duck_object_t ***)duck_member_addr_get_mid(this,DUCK_MID_LIST_PAYLOAD);
 }
 
-static duck_object_t *duck_list_setitem(duck_object_t **node)
+static duck_object_t *duck_list_set_int(duck_object_t **param)
 {
-    duck_list_set(node[0], duck_int_get(node[1]), node[2]);
-    return node[2];
+  if(param[1]==null_object)
+    return null_object;
+  duck_list_set(param[0], duck_int_get(param[1]), param[2]);
+  return param[2];
 }
 
-static duck_object_t *duck_list_getitem(duck_object_t **node)
+static duck_object_t *duck_list_get_int(duck_object_t **param)
 {
-    return duck_list_get(node[0], duck_int_get(node[1]));
+  if(param[1]==null_object)
+    return null_object;
+    return duck_list_get(param[0], duck_int_get(param[1]));
+}
+
+static duck_object_t *duck_list_append(duck_object_t **param)
+{
+    duck_list_add(param[0], param[1]);
+    return param[1];
 }
 
 void duck_list_type_create(duck_stack_frame_t *stack)
 {
     list_type = duck_type_create(L"List", 64);
-    list_type->member_count = 3;
     duck_stack_declare(stack, L"List", type_type, list_type->wrapper);
     duck_member_create(list_type, DUCK_MID_LIST_PAYLOAD,  L"!listPayload", 0, null_type);
     duck_member_create(list_type, DUCK_MID_LIST_SIZE,  L"!listSize", 0, null_type);
@@ -164,10 +169,10 @@ void duck_list_type_create(duck_stack_frame_t *stack)
     ;
     
 
-    duck_native_method_create(list_type, -1, L"__getitem__", 0, (duck_native_t)&duck_list_getitem, object_type, 2, i_argv, i_argn);
+    duck_native_method_create(list_type, -1, L"__getInt__", 0, (duck_native_t)&duck_list_get_int, object_type, 2, i_argv, i_argn);
 
-    duck_native_method_create(list_type, -1, L"__setitem__", 0, (duck_native_t)&duck_list_setitem, object_type, 3, i_argv, i_argn);
-    //duck_native_method_create(list_type, -1, L"__add__", 0, (duck_native_t)&duck_list_add, object_type, 2, a_argv, a_argn);
+    duck_native_method_create(list_type, -1, L"__setInt__", 0, (duck_native_t)&duck_list_set_int, object_type, 3, i_argv, i_argn);
+    duck_native_method_create(list_type, -1, L"__append__", 0, (duck_native_t)&duck_list_append, object_type, 2, a_argv, a_argn);
     /*
 
     duck_native_method_create(list_type, -1, L"__getslice__", 0, (duck_native_t)&duck_int_add, int_type, 2, argv, argn);

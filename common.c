@@ -63,7 +63,13 @@ wchar_t *str2wcs( const char *in )
 		DIE_MEM();
 	}
 
-	return str2wcs_internal( in, out );
+	if(!str2wcs_internal( in, out ))
+	{
+	    free(out);
+	    return(0);
+	}
+	return out;
+	
 }
 
 wchar_t *str2wcs_internal( const char *in, wchar_t *out )
@@ -90,10 +96,7 @@ wchar_t *str2wcs_internal( const char *in, wchar_t *out )
 				case (size_t)(-2):
 				case (size_t)(-1):
 				{
-					out[out_pos] = ENCODE_DIRECT_BASE + (unsigned char)in[in_pos];
-					in_pos++;
-					memset( &state, 0, sizeof(state) );
-					break;
+				    return 0;
 				}
 				
 				case 0:
