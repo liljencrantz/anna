@@ -12,11 +12,11 @@ int duck_wrap(void) { return (1); }
 
 %%
 
-\/\* BEGIN(COMMENT);
-<COMMENT>\*\/ BEGIN(INITIAL);
-<COMMENT>. 
-<COMMENT>[ \t\n]
-\/\/[^\n]*\n 
+\/\* BEGIN(COMMENT); return IGNORE;
+<COMMENT>\*\/ BEGIN(INITIAL);  return IGNORE;
+<COMMENT>.  return IGNORE;
+<COMMENT>[ \t\n]  return IGNORE;
+\/\/[^\n]*\n  return IGNORE;
 [0-9]+\.[0-9]+ return LITERAL_FLOAT;
 [0-9]+ return LITERAL_INTEGER;
 \( return '(';
@@ -61,8 +61,6 @@ return return RETURN;
 \| return '|';
 '([^\\]|\\.)' return LITERAL_CHAR;
 \"([^\"\\]|\\.)*\" return LITERAL_STRING;
-
-[ \t\n\r]
-
+[ \t\n\r] return IGNORE;
 . return 0;
 

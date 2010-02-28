@@ -75,7 +75,6 @@ void duck_function_implementation_init(struct duck_stack_frame *stack)
     
     duck_native_declare(stack, L"__not__", DUCK_FUNCTION_FUNCTION, (duck_native_t)&duck_i_not, int_type, 1, &object_type, p_argn);
     
-
     duck_type_t *if_argv[]={object_type, object_type, object_type};
     static wchar_t *if_argn[]={L"condition", L"trueBlock", L"falseBlock"};    
     duck_native_declare(stack, L"__if__", DUCK_FUNCTION_FUNCTION, (duck_native_t)&duck_i_if, object_type, 3, if_argv, if_argn);

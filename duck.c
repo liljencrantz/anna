@@ -52,7 +52,7 @@
   constructors
   
   Create intersection of two types
-
+  
   cast function
   import macro
   __macro__ macro
@@ -134,6 +134,8 @@ duck_node_t *duck_node_null=0;
 
 static duck_stack_frame_t *stack_global;
 static size_t mid_pos = DUCK_MID_FIRST_UNRESERVED;
+
+int duck_error_count=0;
 
 static duck_member_t **duck_mid_lookup_create();
 duck_function_t *duck_native_create(wchar_t *name,
@@ -447,6 +449,7 @@ static int duck_is_member_get(duck_node_t *node)
 
 duck_type_t *duck_type_member_type_get(duck_type_t *type, wchar_t *name)
 {
+    assert(type);
     assert(name);
     duck_member_t *m = (duck_member_t *)hash_get(&type->name_lookup, name);
     if(!m)
@@ -572,6 +575,11 @@ void duck_function_prepare(duck_function_t *function)
       list.idx=i;
       function->body->child[i] = duck_node_prepare(function->body->child[i], function, &list);
    }
+   for(i=0; i<function->body->child_count; i++) 
+   {
+       duck_node_validate(function->body->child[i], function->stack_template);
+   }
+   
    /*
    wprintf(L"Function after preparations:\n");
    duck_node_print(function->body);
@@ -676,6 +684,8 @@ int duck_abides_fault_count(duck_type_t *contender, duck_type_t *role_model)
     }
     int i;
     int res = 0;    
+//    wprintf(L"Check type %ls abides against %ls\n", contender->name, role_model->name);
+    
     //wprintf(L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
     wchar_t **members = calloc(sizeof(wchar_t *), role_model->member_count+role_model->static_member_count);
     duck_type_get_member_names(role_model, members);    
@@ -1089,12 +1099,26 @@ duck_object_t *duck_function_invoke(duck_function_t *function,
     }
 }
 
+void duck_error(duck_node_t *node, wchar_t *msg, ...)
+{
+    va_list va;
+    va_start( va, msg );	
+    duck_node_print(node);
+    duck_node_print_code(node);
+    
+    vfwprintf(stderr, msg, va);
+    va_end( va );
+    fwprintf(stderr, L"\n");
+    duck_error_count++;
+}
+
+
 int main()
 {
     wprintf(L"Initializing interpreter.\n");    
     duck_init();
     wprintf(L"Parsing program.\n");    
-    duck_node_t *program = duck_parse(stdin, L"stdin");
+    duck_node_t *program = duck_parse(stdin, L"test1.duck");
     
     if(!program) 
     {
@@ -1111,18 +1135,20 @@ int main()
       The entire program is a __block__ call, which we use to create an anonymous function definition
      */
     duck_node_dummy_t *program_callable = 
-      duck_node_dummy_create(program->source_filename,
-			     program->source_position,
-			     duck_function_create(L"!program",
-						  0,
-						  node_cast_call(program),
-						  null_type, 0, 0, 0, stack_global)->wrapper,
-			     0);
+	duck_node_dummy_create(&program->location,
+			       duck_function_create(L"!program",
+						    0,
+						    node_cast_call(program),
+						    null_type, 0, 0, 0, stack_global)->wrapper,
+			       0);
     /*
       Invoke the anonymous function, the return is a function_type_t->wrapper
     */
     duck_object_t *program_object = duck_node_invoke((duck_node_t *)program_callable, stack_global);
-        
+    if(duck_error_count)
+    {
+	exit(1);
+    }
     /*
       Run the function
      */

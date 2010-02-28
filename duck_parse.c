@@ -25,7 +25,7 @@ wchar_t *duck_current_filename;
 size_t duck_current_pos;
 
 
-
+/*
 void duck_error(wchar_t *filename, size_t pos, wchar_t *msg)
 {
     wprintf(L"Error in %ls, pos %d: %ls\n", filename, pos, msg);
@@ -71,9 +71,8 @@ static wint_t dp_peek(parse_data_t *d)
    return res;
 }
 
-/*
-  Like iswalpha, but only allow a-z, not localized chars
-*/
+//  Like iswalpha, but only allow a-z, not localized chars
+
 static duck_isalpha(wchar_t ch)
 {
     return (ch >= L'a' && ch <= L'z') || (ch >= L'A' && ch <= L'Z');
@@ -132,11 +131,10 @@ static duck_node_t *parse_int_literal(parse_data_t *d)
       return 0;
    }
    
-   /*
-     FIXME: Check for too big numbers!
-   */
+   //FIXME: Check for too big numbers!
+   
 
-   return (duck_node_t *)duck_node_int_literal_create(d->filename, start_pos, res);
+   return (duck_node_t *)duck_node_int_literal_create(0, res);
 }
 
 
@@ -154,7 +152,7 @@ static duck_node_t *parse_lookup(parse_data_t *d)
 	dp_read(d);
 	sb_append_char(&d->buff, ch);
     }
-    return (duck_node_t *)duck_node_lookup_create(d->filename, start_pos, wcsdup((wchar_t *)d->buff.buff));
+    return (duck_node_t *)duck_node_lookup_create(0, wcsdup((wchar_t *)d->buff.buff));
 }
 
 static duck_node_t *parse_string_literal(parse_data_t *d) 
@@ -379,13 +377,19 @@ static duck_node_t *parse(parse_data_t *d)
     return result;
    
 }
-
+*/
 int yyparse ();
+extern YYLTYPE yylloc;
 
 duck_node_t *duck_parse(FILE *file, wchar_t *filename) 
 {
     duck_current_filename = filename;
-    duck_current_pos=0;
+    yylloc.first_line=1;
+    yylloc.last_line=1;
+    yylloc.first_column=0;
+    yylloc.last_column=0;
+    yylloc.filename = filename;
+    
     yyparse();
     return duck_yacc_error?0:duck_parse_tree;
     

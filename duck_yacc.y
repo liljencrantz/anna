@@ -16,23 +16,39 @@ void yyerror (char *s) ;
 
 duck_node_t *duck_parse_tree;
 int was_end_brace=0;
- int peek_token = -1;
- 
-#define LOOKUP_CREATE(name) (duck_node_t *)duck_node_lookup_create(duck_current_filename, duck_current_pos, name)
-#define CALL_CREATE(function, argc, argv) duck_node_call_create(duck_current_filename, duck_current_pos, function, argc, argv)
-#define INT_LITERAL_CREATE(val) (duck_node_t *)duck_node_int_literal_create(duck_current_filename, duck_current_pos, val)
-#define CHAR_LITERAL_CREATE(val) (duck_node_t *)duck_node_char_literal_create(duck_current_filename, duck_current_pos, val)
-#define FLOAT_LITERAL_CREATE(val) (duck_node_t *)duck_node_float_literal_create(duck_current_filename, duck_current_pos, val)
-#define STRING_LITERAL_CREATE(val) duck_yacc_string_literal_create(duck_current_filename, duck_current_pos, val)
-#define NULL_CREATE(val) duck_node_null_create(duck_current_filename, duck_current_pos)
+int peek_token = -1;
+size_t last_length = 0;
+
 
 int yylex();
 
 int yylex_val;
-int duck_yacc_error=0;
- 
+int duck_yacc_error=0; 
 
-wchar_t *duck_yacc_string(char *in)
+# define YYLLOC_DEFAULT(Current, Rhs, N)                                \
+    do                                                                  \
+    {									\
+	(Current).filename = yylloc.filename;				\
+	if (N)								\
+        {                                                               \
+	    (Current).first_line   = YYRHSLOC(Rhs, 1).first_line;	\
+	    (Current).first_column = YYRHSLOC(Rhs, 1).first_column;	\
+	    (Current).last_line    = YYRHSLOC(Rhs, N).last_line;	\
+	    (Current).last_column  = YYRHSLOC(Rhs, N).last_column;	\
+        }                                                               \
+	else								\
+        {                                                               \
+	    (Current).first_line   = (Current).last_line   =		\
+		YYRHSLOC(Rhs, 0).last_line;				\
+	    (Current).first_column = (Current).last_column =		\
+		YYRHSLOC(Rhs, 0).last_column;				\
+        }								\
+    }									\
+    while (0)
+
+
+
+static wchar_t *duck_yacc_string(char *in)
 {
     /*
       FIXME: Add resource tracking and cleanup
@@ -41,7 +57,7 @@ wchar_t *duck_yacc_string(char *in)
     
 }
 
-duck_node_t *duck_yacc_string_literal_create(wchar_t *filename, size_t pos, char *str)
+static duck_node_t *duck_yacc_string_literal_create(duck_location_t *loc, char *str)
 {
     str++;
     str[strlen(str)-1]=0;
@@ -97,7 +113,7 @@ duck_node_t *duck_yacc_string_literal_create(wchar_t *filename, size_t pos, char
     
     free(str2);
     
-    return (duck_node_t *)duck_node_string_literal_create(filename, pos, ptr_out-str3, str3);
+    return (duck_node_t *)duck_node_string_literal_create(loc, ptr_out-str3, str3);
 }
 
  
@@ -136,6 +152,7 @@ duck_node_t *duck_yacc_string_literal_create(wchar_t *filename, size_t pos, char
 %token RETURN
 %token SEMICOLON
 %token SIGN
+%token IGNORE
 
 %type <call_val> block block2 block3
 %type <call_val> module module1
@@ -165,13 +182,13 @@ module1:
 	module expression SEMICOLON
 	{
 	    $$ = $1;
-	    if($2)
-		duck_node_call_add_child($1,$2);
+	    duck_node_call_add_child($1,$2);
+	    duck_node_set_location((duck_node_t *)$$, &@$);
 	}
 	| 
 	expression SEMICOLON
 	{
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"),0,0);
+	    $$ = duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@$,L"__block__"),0,0);
 	    if ($1)
 		duck_node_call_add_child($$,$1);
 	    duck_parse_tree = (duck_node_t *)$$;
@@ -191,7 +208,7 @@ block: '{' block2 '}'
 
 block2 : /* Empty */ 
 	{
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"),0,0);
+	    $$ = duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@$, L"__block__"),0,0);
 	}
 	| 
 	block3 opt_semicolon
@@ -202,11 +219,12 @@ block3 :
 	{
 	    $$ = $1;
 	    duck_node_call_add_child($1,$3);
+	    duck_node_set_location((duck_node_t *)$$, &@$);
 	}
 	| 
 	expression
 	{
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"), 0, 0);
+	    $$ = duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@$, L"__block__"), 0, 0);
 	    duck_node_call_add_child($$,$1);
 	}
 ;
@@ -231,13 +249,13 @@ expression:
 	expression1 '=' expression
 	{
 	    duck_node_t *param[] ={$1, $3};	    
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__assign__"), 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@2, L"__assign__"), 2, param);
 	}
 	|
 	expression op expression1
 	{
 	    duck_node_t *param[] ={$1, $3};	    
-	    $$ = (duck_node_t *)CALL_CREATE($2, 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, $2, 2, param);
 	}
         | expression1
         | function_definition
@@ -246,17 +264,17 @@ expression:
 	| RETURN expression1
 	{
 	    duck_node_t *param[] ={$2};	    
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__return__"), 1, param);	  
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@1, L"__return__"), 1, param);	  
 	}
 	| RETURN
 	{
-	  duck_node_t *param[] ={NULL_CREATE()};	    
-	  $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__return__"), 1, param);	  
+	  duck_node_t *param[] ={duck_node_null_create(&@$)};	    
+	  $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@$, L"__return__"), 1, param);	  
 	}
 	| RETURN '=' expression1
 	{
 	    duck_node_t *param[] ={$3};	    
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__assignReturn__"), 1, param);	  
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@2, L"__assignReturn__"), 1, param);	  
 	}
 ;
 
@@ -264,7 +282,7 @@ expression1 :
 	expression1 op1 expression2
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE($2, 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, $2, 2, param);
 	}
         | 
 	expression2
@@ -277,7 +295,7 @@ expression2 :
 	expression2 op2 expression3
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE($2, 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, $2, 2, param);
 	}
         | 
 	expression3
@@ -287,7 +305,7 @@ expression3 :
 	expression3 op3 expression4
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE($2, 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, $2, 2, param);
 	}
         | 
 	expression4
@@ -297,7 +315,7 @@ expression4 :
 	expression4 op4 expression5
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE($2, 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, $2, 2, param);
 	}
         | 
 	expression5
@@ -307,7 +325,7 @@ expression5 :
 	expression5 op5 expression6
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE($2, 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, $2, 2, param);
 	}
         | 
 	expression6
@@ -317,45 +335,46 @@ expression6 :
 	expression6 '.' expression7
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__memberGet__"), 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@2, L"__memberGet__"), 2, param);
 	}
         |
 	expression6 '(' argument_list2 ')' opt_block
 	{
 	    $$ = (duck_node_t *)$3;
 	    duck_node_call_set_function($3, $1);
+	    duck_node_set_location($$, &@$);
 	    if ($5) 
 		duck_node_call_add_child($3, (duck_node_t *)$5);
 	}
 	| 
 	expression6 block
 	{
-	  duck_node_t *param[] ={$2};
-	  $$ = CALL_CREATE($1, 1, param);
+	    duck_node_t *param[] ={(duck_node_t *)$2};
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, $1, 1, param);
 	}
 	| 
 	expression6 '[' expression ']'
 	{
 	    duck_node_t *param[] ={$1, $3};   
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__get__"), 2, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@2, L"__get__"), 2, param);
 	}
 	| 
 	'[' argument_list2 ']' /* Alternative list constructor syntax */
 	{	    
 	    $$ = (duck_node_t *)$2;
-	    duck_node_call_set_function($2, LOOKUP_CREATE(L"__list__"));
+	    duck_node_call_set_function($2, (duck_node_t *)duck_node_lookup_create(&@$,L"__list__"));
 	}
 	| 
 	'|' argument_list2 '|' 
 	{	    
 	    $$ = (duck_node_t *)$2;
-	    duck_node_call_set_function($2, LOOKUP_CREATE(L"__abs__"));
+	    duck_node_call_set_function($2, (duck_node_t *)duck_node_lookup_create(&@$,L"__abs__"));
 	}
 	|
 	pre_op6 expression7
 	{
 	    duck_node_t *param[] ={$2};   
-	    $$ = (duck_node_t *)CALL_CREATE($1, 1, param);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$,$1, 1, param);
 	}
 	| 
 	expression7
@@ -377,7 +396,7 @@ expression7 :
 	|
 	NULL_SYM
 	{
-	    $$ = NULL_CREATE();
+	    $$ = duck_node_null_create(&@$);
 	}
 	| block 
 	{
@@ -388,7 +407,7 @@ expression7 :
 op:
 	APPEND
 	{
-	    $$ = LOOKUP_CREATE(L"__append__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__append__");
 	}
 ;
 
@@ -396,111 +415,111 @@ op:
 op1:
 	AND
 	{
-	    $$ = LOOKUP_CREATE(L"__and__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__and__");
 	}
 	|
 	OR
 	{
-		$$ = LOOKUP_CREATE(L"__or__");
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__or__");
 	}
 ;
 
 op2:
 	'<'
 	{
-		$$ = LOOKUP_CREATE(L"__lt__");
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__lt__");
 	}
 	|
 	'>'
 	{
-		$$ = LOOKUP_CREATE(L"__gt__");
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__gt__");
 	}
 	|
 	EQUAL
 	{
-		$$ = LOOKUP_CREATE(L"__eq__");
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__eq__");
 	}
 	|
 	NOT_EQUAL
 	{
-		$$ = LOOKUP_CREATE(L"__ne__");
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__ne__");
 	}
 	|
 	LESS_OR_EQUAL
 	{
-		$$ = LOOKUP_CREATE(L"__le__");
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__le__");
 	}
 	|
 	GREATER_OR_EQUAL
 	{
-		$$ = LOOKUP_CREATE(L"__ge__");
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__ge__");
 	}
 ;
 
 op3:
 	'+'
 	{
-	    $$ = LOOKUP_CREATE(L"__add__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__add__");
 	}
 	|
 	'-'
 	{
-	    $$ = LOOKUP_CREATE(L"__sub__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__sub__");
 	}
 	|
 	'~'
 	{
-	    $$ = LOOKUP_CREATE(L"__join__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__join__");
 	}
 	|
 	':'
 	{
-	    $$ = LOOKUP_CREATE(L"Pair");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"Pair");
 	}
 	|
 	RANGE
 	{
-	    $$ = LOOKUP_CREATE(L"Range");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"Range");
 	}
 ;
 
 op4:
 	'*'
 	{
-	    $$ = LOOKUP_CREATE(L"__mul__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__mul__");
 	}
 	|
 	'/'
 	{
-	    $$ = LOOKUP_CREATE(L"__div__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__div__");
 	}
 	|
 	'%'
 	{
-	    $$ = LOOKUP_CREATE(L"__mod__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__mod__");
 	}
 ;
 
 op5: '^'
 {
-    $$ = LOOKUP_CREATE(L"__exp__");
+    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__exp__");
 }
 
 
 pre_op6:
 	'!'
 	{
-	    $$ = LOOKUP_CREATE(L"__not__");
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__not__");
 	}
 	|
 	'-'
 	{
-		$$ = LOOKUP_CREATE(L"__neg__")
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__neg__")
 	}
 	|
 	SIGN
 	{
-		$$ = LOOKUP_CREATE(L"__sign__")
+		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__sign__")
 	}
 ;
 
@@ -516,7 +535,7 @@ identifier
 identifier:
 	IDENTIFIER
 	{
-	    $$ = (duck_node_t *)LOOKUP_CREATE(duck_yacc_string(duck_text));
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_lookup_create(&@$,duck_yacc_string(duck_text));
 	}
 ;
 
@@ -524,7 +543,7 @@ identifier:
 type_identifier :
 	TYPE_IDENTIFIER
 	{
-	    $$ = LOOKUP_CREATE(duck_yacc_string(duck_text));
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,duck_yacc_string(duck_text));
 	}
 ;
 
@@ -539,22 +558,22 @@ any_identifier:
 constant :
 	LITERAL_INTEGER
 	{
-	    $$ = (duck_node_t *)INT_LITERAL_CREATE(atoi(duck_text));
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_int_literal_create(&@$,atoi(duck_text));
 	}
 	| 
 	LITERAL_FLOAT
 	{
-	    $$ = (duck_node_t *)FLOAT_LITERAL_CREATE(atof(duck_text));
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_float_literal_create(&@$,atof(duck_text));
 	}
 	| 
 	LITERAL_CHAR
 	{
-	    $$ = (duck_node_t *)CHAR_LITERAL_CREATE(*duck_text);
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_char_literal_create(&@$,*duck_text);
 	}
 	| 
 	LITERAL_STRING
 	{
-	    $$ = (duck_node_t *)STRING_LITERAL_CREATE(duck_text);
+	    $$ = (duck_node_t *)duck_yacc_string_literal_create(&@$, duck_text);
 	}
 	;
 
@@ -579,7 +598,7 @@ opt_block:
 
 argument_list2:
 	{
-	    $$ = CALL_CREATE(0,0,0);
+	    $$ = duck_node_call_create(&@$,0,0,0);
 	}
 	|
 	argument_list3
@@ -588,7 +607,7 @@ argument_list2:
 argument_list3 :
 	expression 
 	{
-	    $$ = CALL_CREATE(0, 0, 0);
+	    $$ = duck_node_call_create(&@$,0, 0, 0);
 	    duck_node_call_add_child($$, (duck_node_t *)$1);
 	}
 	| 
@@ -596,14 +615,21 @@ argument_list3 :
 	{
 	    $$ = $1;
 	    duck_node_call_add_child($$, (duck_node_t *)$3);
+	    duck_node_set_location((duck_node_t *)$$, &@$);
 	}
 	;
 
 function_definition: 
 	FUNCTION opt_identifier declaration_list attribute_list block
 	{
-	  duck_node_t *param[] ={(duck_node_t *)($2?$2:NULL_CREATE()),NULL_CREATE(), (duck_node_t *)$3, (duck_node_t *)$5, (duck_node_t *)$4};	    
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__function__"), 5, param);
+	    duck_node_t *param[] ={
+		(duck_node_t *)($2?$2:duck_node_null_create(&@$)),
+		duck_node_null_create(&@$), 
+		(duck_node_t *)$3, 
+		(duck_node_t *)$5, 
+		(duck_node_t *)$4
+	    };
+	    $$ = (duck_node_t *)duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@1,L"__function__"), 5, param);
 	  	  
 	}
 ;
@@ -611,7 +637,7 @@ function_definition:
 declaration_list :
 	'(' ')'
 	{
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"),0,0);
+	    $$ = duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__block__"),0,0);
 	}
 	|
 	'(' declaration_list2 ')'
@@ -623,7 +649,7 @@ declaration_list :
 declaration_list2 :
 	declaration
 	{
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"), 0, 0);
+	    $$ = duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__block__"), 0, 0);
 	    duck_node_call_add_child($$,$1);
 	}
 	| 
@@ -647,8 +673,8 @@ variable_declaration:
 	opt_templatized_type identifier opt_declaration_init
 	{
 	    duck_node_t *param[] ={$2, $1, 0};	    
- 	    param[2] = $3?$3:NULL_CREATE();
-	    $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__declare__"), 3, param);    
+ 	    param[2] = $3?$3:duck_node_null_create(&@$);
+	    $$ = (duck_node_t *)duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__declare__"), 3, param);    
 	}
 ;
 
@@ -660,14 +686,14 @@ opt_var : | VAR;
 function_declaration :
 	FUNCTION templatized_type identifier declaration_list
 	{
-	  duck_node_t *param[] ={$3, $2, (duck_node_t *)$4, NULL_CREATE(), NULL_CREATE()};	    
-	  $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__function__"), 5, param);
+	  duck_node_t *param[] ={$3, $2, (duck_node_t *)$4, duck_node_null_create(&@$), duck_node_null_create(&@$)};	    
+	  $$ = (duck_node_t *)duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@1,L"__function__"), 5, param);
 	}
 ;
 
 opt_templatized_type:
 {
-  $$=NULL_CREATE();
+    $$=duck_node_null_create(&@$);
 }
 |
 templatized_type;
@@ -677,7 +703,7 @@ type_identifier
 | type_identifier templatization
 {
   duck_node_t *param[] ={$1, (duck_node_t *)$2};	    
-  $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__templatize__"), 2, param);
+  $$ = (duck_node_t *)duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__templatize__"), 2, param);
 }
 
 templatization:
@@ -691,7 +717,7 @@ templatization2:
 	simple_expression
 	{
 	    duck_node_t *param[] ={$1};	    
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"), 1, param);
+	    $$ = duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__block__"), 1, param);
 	}
 	|
 	templatization2 ',' simple_expression
@@ -705,14 +731,14 @@ type_definition :
 	identifier type_identifier attribute_list block 
 	{
 	  duck_node_t *param[] ={$2, $1, (duck_node_t *)$3, (duck_node_t *)$4};	    
-	  $$ = (duck_node_t *)CALL_CREATE(LOOKUP_CREATE(L"__type__"), 4, param);
+	  $$ = (duck_node_t *)duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__type__"), 4, param);
 	}
 	;
 
 attribute_list :
 	/* Empty */
 	{
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"),0,0);
+	    $$ = duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__block__"),0,0);
 	}
 	| 
 	attribute_list2
@@ -722,7 +748,7 @@ attribute_list2 :
 	attribute_list ',' identifier opt_simple_expression
 	{
 	    $$ = $1;
-	    duck_node_call_t *attr = CALL_CREATE($3, 0, 0);
+	    duck_node_call_t *attr = duck_node_call_create(&@$,$3, 0, 0);
 	    if($4)
 	      duck_node_call_add_child(attr,$4);
 	    duck_node_call_add_child($$,(duck_node_t *)attr);
@@ -730,8 +756,8 @@ attribute_list2 :
 	|
 	identifier opt_simple_expression
 	{
-	    $$ = CALL_CREATE(LOOKUP_CREATE(L"__block__"), 0, 0);
-	    duck_node_call_t *attr = CALL_CREATE($1, 0, 0);
+	    $$ = duck_node_call_create(&@$,(duck_node_t *)duck_node_lookup_create(&@$,L"__block__"), 0, 0);
+	    duck_node_call_t *attr = duck_node_call_create(&@$,$1, 0, 0);
 	    if($2)
 	      duck_node_call_add_child(attr,$2);
 	    duck_node_call_add_child($$,(duck_node_t *)attr);
@@ -767,32 +793,53 @@ simple_expression '(' argument_list2 ')'
 
 int yylex ()
 {
-  if(peek_token != -1)
+    if(peek_token != -1)
     {
-      int ret = peek_token;
-      peek_token = -1;
-      return ret;      
+	int ret = peek_token;
+	peek_token = -1;
+	return ret;      
     }
-  
-  yylex_val = duck_lex();
-  if(was_end_brace)
+
+    while(1)
     {
-      was_end_brace = 0;
-      if(yylex_val != '.' &&
-	 yylex_val != SEMICOLON)
+	char *p;
+	yylex_val = duck_lex();
+	yylloc.first_line= yylloc.last_line;
+	yylloc.first_column = yylloc.last_column;
+	for(p=duck_text; *p; p++)
 	{
-	  peek_token = yylex_val;
-	  return SEMICOLON;
+	    if(*p == '\n')
+	    {
+		yylloc.last_line++;
+		yylloc.last_column = 0;
+	    }
+	    else
+	    {
+		yylloc.last_column++;
+	    }
+	}
+	if(yylex_val != IGNORE)
+	    break;
+    }
+    
+    if(was_end_brace)
+    {
+	was_end_brace = 0;
+	if(yylex_val != '.' &&
+	   yylex_val != SEMICOLON)
+	{
+	    peek_token = yylex_val;
+	    return SEMICOLON;
 	}      
     }
-  
-
-  if(yylex_val == '}') 
+    
+    
+    if(yylex_val == '}') 
     {
-      was_end_brace = 1;
+	was_end_brace = 1;
     }
-  
-  return yylex_val;
+    
+    return yylex_val;
 }
 
 void yyerror (char *s) 

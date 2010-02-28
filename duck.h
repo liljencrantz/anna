@@ -125,6 +125,7 @@ typedef struct
 
 extern duck_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type;
 extern duck_object_t *null_object;
+extern int duck_error_count;
 
 /**
    Declare all global, native functions
@@ -186,7 +187,7 @@ int duck_abides_fault_count(duck_type_t *contender, duck_type_t *role_model);
 
 duck_function_type_key_t *duck_function_unwrap_type(duck_type_t *type);
 
-
+void duck_error(struct duck_node *node, wchar_t *msg, ...);
 
 
 #endif

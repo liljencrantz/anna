@@ -28,9 +28,10 @@
 
 #include "common.h"
 #include "wutil.h"
+/*
 #include "halloc.h"
 #include "halloc_util.h"
-
+*/
 /**
    Minimum length of the internal covnersion buffers
 */
@@ -84,12 +85,12 @@ static struct wdirent my_wdirent;
 /**
    For wgettext: Number of string_buffer_t in the ring of buffers
 */
-#define BUFF_COUNT 4
+//#define BUFF_COUNT 4
 
 /**
    For wgettext: The ring of string_buffer_t
 */
-static string_buffer_t buff[BUFF_COUNT];
+//static string_buffer_t buff[BUFF_COUNT];
 /**
    For wgettext: Current position in the ring
 */
@@ -102,12 +103,12 @@ static char *wcs2str_buff=0;
 /**
    For wgettext: Size of buffer used by translate_wcs2str
 */
-static size_t wcs2str_buff_count=0;
+//static size_t wcs2str_buff_count=0;
 
 /**
    For wgettext: Flag to tell whether the translation library has been initialized
 */
-static int wgettext_is_init = 0;
+//static int wgettext_is_init = 0;
 
 
 
@@ -346,7 +347,7 @@ void wperror(const wchar_t *s)
 	}
 	fwprintf( stderr, L"%s\n", strerror( e ) );
 }
-
+/*
 #ifdef HAVE_REALPATH_NULL
 
 wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
@@ -376,7 +377,8 @@ wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
 }
 
 #else
-
+*/
+ /*
 wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
 {
 	char *tmp = wutil_wcs2str(pathname);
@@ -402,8 +404,8 @@ wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
 }
 
 #endif
-
-
+ */
+/*
 wchar_t *wdirname( wchar_t *path )
 {
 	static string_buffer_t *sb = 0;
@@ -438,12 +440,13 @@ wchar_t *wbasename( const wchar_t *path )
 	sb_printf( sb, L"%s", narrow_res );
 	return (wchar_t *)sb->buff;
 }
-
+*/
 
 
 /**
    For wgettext: Internal shutdown function. Automatically called on shutdown if the library has been initialized.
 */
+/*
 static void wgettext_destroy()
 {
 	int i;
@@ -458,10 +461,11 @@ static void wgettext_destroy()
 
 	free( wcs2str_buff );
 }
-
+*/
 /**
    For wgettext: Internal init function. Automatically called when a translation is first requested.
 */
+/*
 static void wgettext_init()
 {
 	int i;
@@ -478,12 +482,13 @@ static void wgettext_init()
 	bindtextdomain( PACKAGE_NAME, LOCALEDIR );
 	textdomain( PACKAGE_NAME );
 }
-
+*/
 
 /**
    For wgettext: Wide to narrow character conversion. Internal implementation that
    avoids exessive calls to malloc
 */
+ /*
 static char *wgettext_wcs2str( const wchar_t *in )
 {
 	size_t len = MAX_UTF8_BYTES*wcslen(in)+1;
@@ -519,7 +524,8 @@ const wchar_t *wgettext( const wchar_t *in )
 	
 	return wres;
 }
-
+*/
+/*
 wchar_t *wgetenv( const wchar_t *name )
 {
 	char *name_narrow =wutil_wcs2str(name);
@@ -543,7 +549,7 @@ wchar_t *wgetenv( const wchar_t *name )
 	return (wchar_t *)out->buff;
 	
 }
-
+*/
 int wmkdir( const wchar_t *name, int mode )
 {
 	char *name_narrow =wutil_wcs2str(name);

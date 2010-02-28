@@ -64,8 +64,7 @@ static size_t duck_parent_count(struct duck_node_list *parent)
 static duck_node_t *duck_macro_block(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
 {
     //wprintf(L"Create new block with %d elements at %d\n", node->child_count, node);
-    return (duck_node_t *)duck_node_dummy_create(node->source_filename,
-						      node->source_position,
+    return (duck_node_t *)duck_node_dummy_create(&node->location,
 						 duck_function_create(L"!anonymous", 0, node, null_type, 0, 0, 0, func->stack_template)->wrapper,
 	1);
 }
@@ -149,24 +148,45 @@ static duck_node_t *duck_macro_function(duck_node_call_t *node, duck_function_t 
     if(name) {
 	duck_stack_declare(func->stack_template, name, duck_type_for_function(out_type, argc, argv), result);
     }
-    return (duck_node_t *)duck_node_dummy_create(node->source_filename,
-						 node->source_position,
+    return (duck_node_t *)duck_node_dummy_create(&node->location,
 						 result,
 						 1);
 }
 
 static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *in, duck_function_t *func, duck_node_list_t *parent)
 {
-   assert(in->child_count == 2);
+   if(in->child_count != 2)
+   {
+       duck_error((duck_node_t *)in, L"Wrong number of arguments to operator: Got %d, expected 2", in->child_count);	
+       return (duck_node_t *)duck_node_null_create(&in->location);	
+   }
+
    duck_prepare_children(in, func, parent);
    duck_node_lookup_t *name_lookup = node_cast_lookup(in->function);
+   if(wcslen(name_lookup->name) < 5)
+   {
+       duck_error((duck_node_t *)in, L"Invalid operator name: %ls", name_lookup->name);	
+       return (duck_node_t *)duck_node_null_create(&in->location);       
+   }
+   
+
    wchar_t *name_prefix = wcsdup(name_lookup->name);
    name_prefix[wcslen(name_prefix)-2] = 0;
    //wprintf(L"Calling operator_wrapper as %ls\n", name);
-   assert(in->child_count == 2);
-    
+   
     duck_type_t * t1 = duck_node_get_return_type(in->child[0], func->stack_template);
     duck_type_t * t2 = duck_node_get_return_type(in->child[1], func->stack_template);
+    
+    if(!t1) 
+    {
+	duck_error(in->child[0], L"Unknown type");	
+	return (duck_node_t *)duck_node_null_create(&in->location);	
+    }
+    if(!t2) 
+    {
+	duck_error(in->child[1], L"Unknown type");	
+	return (duck_node_t *)duck_node_null_create(&in->location);	
+    }
     
     wchar_t *method_name = duck_find_method(t1, name_prefix, 2, t2);
     
@@ -175,7 +195,7 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *in, duck_funct
 	    
 	duck_node_t *mg_param[2]=
 	    {
-		in->child[0], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+		in->child[0], (duck_node_t *)duck_node_lookup_create(&in->location,method_name)
 	    }
 	;
 	
@@ -186,14 +206,11 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *in, duck_funct
 	;
 	
 	return (duck_node_t *)
-	    duck_node_call_create(in->source_filename,
-				  in->source_position,
+	    duck_node_call_create(&in->location,
 				  (duck_node_t *)
-				  duck_node_call_create(in->source_filename,
-							in->source_position,
+				  duck_node_call_create(&in->location,
 							(duck_node_t *)
-							duck_node_lookup_create(in->source_filename,
-										in->source_position,
+							duck_node_lookup_create(&in->location,
 										L"__memberGet__"),
 							2,
 							mg_param),
@@ -219,7 +236,7 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *in, duck_funct
 
 	duck_node_t *mg_param[2]=
 	    {
-		in->child[1], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+		in->child[1], (duck_node_t *)duck_node_lookup_create(&in->location, method_name)
 	    }
 	;
 	
@@ -230,14 +247,11 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *in, duck_funct
 	;
 	
 	return (duck_node_t *)
-	    duck_node_call_create(in->source_filename,
-				  in->source_position,
+	    duck_node_call_create(&in->location,
 				  (duck_node_t *)
-				  duck_node_call_create(in->source_filename,
-							in->source_position,
+				  duck_node_call_create(&in->location,
 							(duck_node_t *)
-							duck_node_lookup_create(in->source_filename,
-										in->source_position,
+							duck_node_lookup_create(&in->location,
 										L"__memberGet__"),
 							2,
 							mg_param),
@@ -270,7 +284,7 @@ static duck_node_t *duck_macro_get(duck_node_call_t *in, duck_function_t *func, 
   
   duck_node_t *mg_param[2]=
     {
-      in->child[0], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+      in->child[0], (duck_node_t *)duck_node_lookup_create(&in->location, method_name)
     }
   ;
   
@@ -281,14 +295,11 @@ static duck_node_t *duck_macro_get(duck_node_call_t *in, duck_function_t *func, 
   ;
   
   duck_node_t *result = (duck_node_t *)
-	duck_node_call_create(in->source_filename,
-			      in->source_position,
+	duck_node_call_create(&in->location,
 			      (duck_node_t *)
-			      duck_node_call_create(in->source_filename,
-						    in->source_position,
+			      duck_node_call_create(&in->location,
 						    (duck_node_t *)
-						    duck_node_lookup_create(in->source_filename,
-									    in->source_position,
+						    duck_node_lookup_create(&in->location,
 									    L"__memberGet__"),
 						    2,
 						    mg_param),
@@ -323,7 +334,7 @@ static duck_node_t *duck_macro_set(duck_node_call_t *in, duck_function_t *func, 
   
   duck_node_t *mg_param[2]=
     {
-      in->child[0], (duck_node_t *)duck_node_lookup_create(in->source_filename, in->source_position, method_name)
+      in->child[0], (duck_node_t *)duck_node_lookup_create(&in->location, method_name)
     }
   ;
   
@@ -334,14 +345,11 @@ static duck_node_t *duck_macro_set(duck_node_call_t *in, duck_function_t *func, 
   ;
   
   duck_node_t *result = (duck_node_t *)
-	duck_node_call_create(in->source_filename,
-			      in->source_position,
+	duck_node_call_create(&in->location,
 			      (duck_node_t *)
-			      duck_node_call_create(in->source_filename,
-						    in->source_position,
+			      duck_node_call_create(&in->location,
 						    (duck_node_t *)
-						    duck_node_lookup_create(in->source_filename,
-									    in->source_position,
+						    duck_node_lookup_create(&in->location,
 									    L"__memberGet__"),
 						    2,
 						    mg_param),
@@ -398,10 +406,8 @@ static duck_node_t *duck_macro_declare(struct duck_node_call *node,
     ;
     
     return (duck_node_t *)
-       duck_node_call_create(node->source_filename, 
-			     node->source_position,
-			     (duck_node_t *)duck_node_lookup_create(node->source_filename,
-								    node->source_position,
+       duck_node_call_create(&node->location,
+			     (duck_node_t *)duck_node_lookup_create(&node->location,
 								    L"__assign__"),
 			     2,
 			     a_param);
@@ -423,8 +429,7 @@ static duck_node_t *duck_macro_assign(struct duck_node_call *node,
 	   duck_sid_t sid = duck_stack_sid_create(function->stack_template, name_lookup->name);
 	   
 	   return (duck_node_t *)
-	       duck_node_assign_create(node->source_filename, 
-				       node->source_position,
+	       duck_node_assign_create(&node->location,
 				       sid,
 				       node->child[1]);
        }
@@ -438,7 +443,7 @@ static duck_node_t *duck_macro_assign(struct duck_node_call *node,
 	   assert(wcscmp(name_lookup->name, L"__get__")==0);
 	   name_lookup->name=L"__set__";
 	   duck_node_call_add_child(call, node->child[1]);
-	   return call;
+	   return (duck_node_t *)call;
        }
        
        default:
@@ -483,8 +488,7 @@ static duck_node_t *duck_macro_member_get(duck_node_call_t *in, duck_function_t 
    
    int wrap = !!duck_static_member_addr_get_mid(member_type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
    
-   return (duck_node_t *)duck_node_member_get_create(in->source_filename, 
-						     in->source_position,
+   return (duck_node_t *)duck_node_member_get_create(&in->location,
 						     in->child[0], 
 						     mid,
 						     member_type,
@@ -501,16 +505,13 @@ static duck_node_t *duck_macro_if(duck_node_call_t *in, duck_function_t *func, d
    assert(in->child_count == 2);
    
    duck_node_t *argv[] = {
-     in->child[0], in->child[1], duck_node_null_create(in->source_filename, 
-						       in->source_position)
+       in->child[0], in->child[1], duck_node_null_create(&in->location)
    };
    
    return (duck_node_t *)
-     duck_node_call_create(in->source_filename, 
-			   in->source_position,
+     duck_node_call_create(&in->location, 
 			   (duck_node_t *)
-			   duck_node_lookup_create(in->source_filename, 
-						   in->source_position,
+			   duck_node_lookup_create(&in->location, 
 						   L"__if__"),
 			   3,
 			   argv);
@@ -541,8 +542,8 @@ static duck_node_t *duck_macro_else(duck_node_call_t *in, duck_function_t *func,
    prev_call->child[2] = duck_node_prepare(in->child[0], func, parent);
 
    return (duck_node_t *)
-     duck_node_null_create(in->source_filename, 
-			   in->source_position);
+       duck_node_null_create(&in->location);
+   
 }
 
 static void duck_macro_add(duck_stack_frame_t *stack, wchar_t *name, duck_native_macro_t call)
@@ -553,9 +554,9 @@ static void duck_macro_add(duck_stack_frame_t *stack, wchar_t *name, duck_native
 
 void duck_macro_init(duck_stack_frame_t *stack)
 {
-  int i;
-  
-  duck_macro_add(stack, L"__block__", &duck_macro_block);
+    int i;
+    
+    duck_macro_add(stack, L"__block__", &duck_macro_block);
     duck_macro_add(stack, L"__memberGet__", &duck_macro_member_get);
     duck_macro_add(stack, L"__assign__", &duck_macro_assign);
     duck_macro_add(stack, L"__declare__", &duck_macro_declare);

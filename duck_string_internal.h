@@ -11,6 +11,9 @@ struct duck_string
 }
   ;
 
+typedef struct duck_string duck_string_t;
+
+
 void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, size_t length);
 void duck_string_init(duck_string_t *string);
 void duck_string_init_from_string(duck_string_t *string, wchar_t *payload, size_t size);

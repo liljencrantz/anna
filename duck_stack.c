@@ -90,8 +90,7 @@ duck_type_t *duck_stack_get_type(duck_stack_frame_t *stack_orig, wchar_t *name)
 	}
 	stack = stack->parent;	
     }
-    wprintf(L"Critical: Tried to access type of unknown variable: %ls in stack %d\n", name, stack_orig);
-    CRASH;
+    return 0;
     
 }
 

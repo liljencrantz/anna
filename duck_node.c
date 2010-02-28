@@ -8,18 +8,19 @@
 #include <string.h>
 
 #include "util.h"
+#include "wutil.h"
 #include "duck_node.h"
 #include "duck_int.h"
 #include "duck_float.h"
 #include "duck_string.h"
 #include "duck_char.h"
 
-static void check(duck_node_t *node, int ok, wchar_t *msg)
+#define check(node, test, ...) if(!test) duck_error(node, __VA_ARGS__)
+
+void duck_node_set_location(duck_node_t *node, duck_location_t *l)
 {
-    if(!ok)
-    {
-	wprintf(L"%ls", msg);
-    }    
+//    assert(l->filename);
+    memcpy(&node->location, l, sizeof(duck_location_t));
 }
 
 
@@ -47,12 +48,11 @@ duck_node_string_literal_t *node_cast_string_literal(duck_node_t *node)
     return (duck_node_string_literal_t *)node;
 }
 
-duck_node_dummy_t *duck_node_dummy_create(wchar_t *src, size_t src_pos, struct duck_object *val, int is_trampoline)
+duck_node_dummy_t *duck_node_dummy_create(duck_location_t *loc, struct duck_object *val, int is_trampoline)
 {
    duck_node_dummy_t *result = calloc(1,sizeof(duck_node_dummy_t));
    result->node_type = is_trampoline?DUCK_NODE_TRAMPOLINE:DUCK_NODE_DUMMY;
-   result->source_position = src_pos;
-   result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
   */
@@ -60,12 +60,11 @@ duck_node_dummy_t *duck_node_dummy_create(wchar_t *src, size_t src_pos, struct d
    return result;  
 }
 
-duck_node_member_get_t *duck_node_member_get_create(wchar_t *src, size_t src_pos, struct duck_node *object, size_t mid, struct duck_type *type, int wrap)
+duck_node_member_get_t *duck_node_member_get_create(duck_location_t *loc, struct duck_node *object, size_t mid, struct duck_type *type, int wrap)
 {
    duck_node_member_get_t *result = calloc(1,sizeof(duck_node_member_get_t));
    result->node_type = wrap?DUCK_NODE_MEMBER_GET_WRAP:DUCK_NODE_MEMBER_GET;
-   result->source_position = src_pos;
-   result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
   */
@@ -77,12 +76,11 @@ duck_node_member_get_t *duck_node_member_get_create(wchar_t *src, size_t src_pos
 }
 
 
-duck_node_assign_t *duck_node_assign_create(wchar_t *src, size_t src_pos, duck_sid_t sid, struct duck_node *value)
+duck_node_assign_t *duck_node_assign_create(duck_location_t *loc, duck_sid_t sid, struct duck_node *value)
 {
    duck_node_assign_t *result = calloc(1,sizeof(duck_node_assign_t));
    result->node_type = DUCK_NODE_ASSIGN;
-   result->source_position = src_pos;
-   result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
   */
@@ -91,12 +89,11 @@ duck_node_assign_t *duck_node_assign_create(wchar_t *src, size_t src_pos, duck_s
    return result;  
 }
 
-duck_node_int_literal_t *duck_node_int_literal_create(wchar_t *src, size_t src_pos, int val)
+duck_node_int_literal_t *duck_node_int_literal_create(duck_location_t *loc, int val)
 {
    duck_node_int_literal_t *result = calloc(1,sizeof(duck_node_int_literal_t));
    result->node_type = DUCK_NODE_INT_LITERAL;
-   result->source_position = src_pos;
-   result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
   */
@@ -104,12 +101,11 @@ duck_node_int_literal_t *duck_node_int_literal_create(wchar_t *src, size_t src_p
    return result;
 }
 
-duck_node_float_literal_t *duck_node_float_literal_create(wchar_t *src, size_t src_pos, double val)
+duck_node_float_literal_t *duck_node_float_literal_create(duck_location_t *loc, double val)
 {
    duck_node_float_literal_t *result = calloc(1,sizeof(duck_node_float_literal_t));
    result->node_type = DUCK_NODE_FLOAT_LITERAL;
-   result->source_position = src_pos;
-   result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
   */
@@ -117,12 +113,11 @@ duck_node_float_literal_t *duck_node_float_literal_create(wchar_t *src, size_t s
    return result;
 }
 
-duck_node_char_literal_t *duck_node_char_literal_create(wchar_t *src, size_t src_pos, wchar_t val)
+duck_node_char_literal_t *duck_node_char_literal_create(duck_location_t *loc, wchar_t val)
 {
    duck_node_char_literal_t *result = calloc(1,sizeof(duck_node_char_literal_t));
    result->node_type = DUCK_NODE_CHAR_LITERAL;
-   result->source_position = src_pos;
-   result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
   */
@@ -130,12 +125,11 @@ duck_node_char_literal_t *duck_node_char_literal_create(wchar_t *src, size_t src
    return result;
 }
 
-duck_node_string_literal_t *duck_node_string_literal_create(wchar_t *src, size_t src_pos, size_t sz, wchar_t *str)
+duck_node_string_literal_t *duck_node_string_literal_create(duck_location_t *loc, size_t sz, wchar_t *str)
 {
    duck_node_string_literal_t *result = calloc(1,sizeof(duck_node_string_literal_t));
    result->node_type = DUCK_NODE_STRING_LITERAL;
-   result->source_position = src_pos;
-   result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
   */
@@ -144,13 +138,12 @@ duck_node_string_literal_t *duck_node_string_literal_create(wchar_t *src, size_t
    return result;
 }
 
-duck_node_call_t *duck_node_call_create(wchar_t *src, size_t src_pos, duck_node_t *function, size_t argc, duck_node_t **argv)
+duck_node_call_t *duck_node_call_create(duck_location_t *loc, duck_node_t *function, size_t argc, duck_node_t **argv)
 {
     duck_node_call_t *result = calloc(1,sizeof(duck_node_call_t));
     result->child = calloc(1,sizeof(duck_node_t *)*(argc));
     result->node_type = DUCK_NODE_CALL;
-    result->source_position = src_pos;
-    result->source_filename = src;
+    duck_node_set_location((duck_node_t *)result,loc);
     result->function = function;
     result->child_count = argc;
     result->child_capacity = argc;
@@ -161,12 +154,11 @@ duck_node_call_t *duck_node_call_create(wchar_t *src, size_t src_pos, duck_node_
     return result;
 }
 
-duck_node_lookup_t *duck_node_lookup_create(wchar_t *src, size_t src_pos, wchar_t *name)
+duck_node_lookup_t *duck_node_lookup_create(duck_location_t *loc, wchar_t *name)
 {
     duck_node_lookup_t *result = calloc(1,sizeof(duck_node_call_t));
     result->node_type = DUCK_NODE_LOOKUP;
-    result->source_position = src_pos;
-    result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
     result->name = name;
     /*
       FIXME: Create a nice and tidy wrapper
@@ -174,12 +166,11 @@ duck_node_lookup_t *duck_node_lookup_create(wchar_t *src, size_t src_pos, wchar_
     return result;
 }
 
-duck_node_t *duck_node_null_create(wchar_t *src, size_t src_pos)
+duck_node_t *duck_node_null_create(duck_location_t *loc)
 {
     duck_node_t *result = calloc(1,sizeof(duck_node_t));
     result->node_type = DUCK_NODE_NULL;
-    result->source_position = src_pos;
-    result->source_filename = src;
+   duck_node_set_location((duck_node_t *)result,loc);
     /*
       FIXME: Create a nice and tidy wrapper
     */
@@ -426,9 +417,10 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 	    
 	    duck_function_type_key_t *function_data = duck_function_unwrap_type(func_type);
 	    check(this, function_data->argc == this2->child_count,
-		  L"Wrong number of paramaters in function call");
+		  L"Wrong number of paramaters in function call. Should be %d, not %d.", 
+		  function_data->argc, this2->child_count);
 	    
-	    for(i=0; i<this2->child_count; i++)
+	    for(i=0; i<mini(this2->child_count, function_data->argc); i++)
 	    {
 		duck_type_t *ctype = duck_node_get_return_type(this2->child[i], stack);
 		check(this, duck_abides(ctype, function_data->argv[i]),
@@ -454,9 +446,10 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 
 	case DUCK_NODE_LOOKUP:
 	{
+	    	    
 	    duck_node_lookup_t *this2 =(duck_node_lookup_t *)this;	    
 	    check(this, !!this2->name, L"Invalid lookup node");
-	    check(this, !!duck_stack_get_type(stack, this2->name), L"Unknown variable: %ls"/*, this2->name*/);
+	    check(this, !!duck_stack_get_type(stack, this2->name), L"Unknown variable: %ls", this2->name);
 	    return;
 	}
 	case DUCK_NODE_STRING_LITERAL:
@@ -667,6 +660,35 @@ void duck_node_print(duck_node_t *this)
 	    break;
 	}
     }
+}
+
+void duck_node_print_code(duck_node_t *node)
+{
+    int current_line=1;
+    int current_column=0;
+    int print=0;
+    int mark=0;
+    
+    FILE *file = wfopen(node->location.filename, "r");
+    if(!file)
+    {
+	fwprintf(stderr, L"Error: %ls: Not found\n", node->location.filename);
+	return;
+    }    
+    while(1)
+    {
+	wint_t res = fgetwc(file);
+	switch(res)
+	{
+	    case WEOF:
+		return;
+		
+	    case L'\n':
+		break;
+	}
+	
+    }
+    
 }
 
 
