@@ -452,7 +452,7 @@ static duck_node_t *duck_macro_assign(struct duck_node_call *node,
    }
        
 }
-
+/*
 static duck_object_t *duck_macro_while(duck_node_call_t *node, duck_stack_frame_t *stack)
 {
     assert(node->child_count == 2);
@@ -468,7 +468,7 @@ static duck_object_t *duck_macro_while(duck_node_call_t *node, duck_stack_frame_
       }
     return result;
 }
-
+*/
 static duck_node_t *duck_macro_member_get(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
 {
 /*
@@ -569,6 +569,8 @@ static duck_node_t *duck_macro_or(duck_node_call_t *node, duck_function_t *func,
 	return (duck_node_t *)duck_node_null_create(&node->location);	
     }
     
+    duck_prepare_children(node, func, parent);
+
     duck_type_t * t1 = duck_node_get_return_type(node->child[0], func->stack_template);
     duck_type_t * t2 = duck_node_get_return_type(node->child[1], func->stack_template);
     
@@ -590,6 +592,7 @@ static duck_node_t *duck_macro_or(duck_node_call_t *node, duck_function_t *func,
 	    L"condition2"
 	}
     ;
+    
     duck_node_t *param[]=
 	{
 	    node->child[0],
@@ -614,19 +617,20 @@ static duck_node_t *duck_macro_or(duck_node_call_t *node, duck_function_t *func,
 	}
     ;
     
-    return duck_node_call_create(&node->location, 
-				 (duck_node_t *)
-				 duck_node_dummy_create( &node->location,
-							 duck_native_create(L"!orAnonymous",
-									    DUCK_FUNCTION_FUNCTION,
-									    (duck_native_t)duck_function_or,
-									    return_type,
-									    2,
-									    argv,
-									    argn)->wrapper,
-							 0),
-				 2,
-				 param);
+    return (duck_node_t *)
+	duck_node_call_create(&node->location, 
+			      (duck_node_t *)
+			      duck_node_dummy_create( &node->location,
+						      duck_native_create(L"!orAnonymous",
+									 DUCK_FUNCTION_FUNCTION,
+									 (duck_native_t)duck_function_or,
+									 return_type,
+									 2,
+									 argv,
+									 argn)->wrapper,
+						      0),
+			      2,
+			      param);
 }
 
 static duck_object_t *duck_function_and(duck_object_t **param)
@@ -643,6 +647,8 @@ static duck_node_t *duck_macro_and(duck_node_call_t *node, duck_function_t *func
 		   node->child_count);	
 	return (duck_node_t *)duck_node_null_create(&node->location);	
     }
+    
+    duck_prepare_children(node, func, parent);
     
     duck_type_t * t1 = duck_node_get_return_type(node->child[0], func->stack_template);
     duck_type_t * t2 = duck_node_get_return_type(node->child[1], func->stack_template);
@@ -689,11 +695,92 @@ static duck_node_t *duck_macro_and(duck_node_call_t *node, duck_function_t *func
 	}
     ;
     
+    return (duck_node_t *)
+	duck_node_call_create(&node->location, 
+			      (duck_node_t *)
+			      duck_node_dummy_create( &node->location,
+						      duck_native_create(L"!andAnonymous",
+									 DUCK_FUNCTION_FUNCTION,
+									 (duck_native_t)duck_function_and,
+									 t2,
+									 2,
+									 argv,
+									 argn)->wrapper,
+						      0),
+			      2,
+			      param);
+}
+
+static duck_object_t *duck_function_while(duck_object_t **param)
+{
+    duck_object_t *result = null_object;
+    while(duck_function_wrapped_invoke(param[0], 0, 0) != null_object)
+    {
+	result = duck_function_wrapped_invoke(param[1], 0, 0);
+    }
+    return result;
+}
+
+static duck_node_t *duck_macro_while(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+{
+    if(node->child_count != 2)
+    {
+	duck_error((duck_node_t *)node,
+		   L"Wrong number of arguments to or operator : Got %d, expected 2", 
+		   node->child_count);	
+	return (duck_node_t *)duck_node_null_create(&node->location);	
+    }
+
+    duck_prepare_children(node, func, parent);
+
+    duck_type_t *t2 = duck_node_get_return_type(node->child[1], func->stack_template);
+    
+    if(!t2) 
+    {	
+	duck_error(node->child[1], L"Unknown type for second argument to while");	
+	return (duck_node_t *)duck_node_null_create(&node->location);	
+    }
+    
+    duck_node_t *condition = 
+	(duck_node_t *)
+	duck_node_dummy_create(&node->location,
+			       duck_function_create(L"!andConditionBlock", 0, 
+						    duck_node_call_create(&node->location,
+									  (duck_node_t *)
+									  duck_node_lookup_create(&node->location,
+												  L"__block__"),
+									  1,
+									  &node->child[0]), 
+						    t2, 0, 0, 0, 
+						    func->stack_template)->wrapper,
+			       1);
+    
+    wchar_t *argn[]=
+	{
+	    L"condition",
+	    L"body"
+	}
+    ;
+
+    duck_node_t *param[]=
+	{
+	    condition,
+	    node->child[1]
+	}
+    ;
+
+    duck_type_t *argv[]=
+	{
+	    duck_node_get_return_type(param[0], func->stack_template),
+	    t2
+	}
+    ;
+    
     return duck_node_call_create(&node->location, 
 				 duck_node_dummy_create( &node->location,
-							 duck_native_create(L"!andAnonymous",
+							 duck_native_create(L"!whileAnonymous",
 									    DUCK_FUNCTION_FUNCTION,
-									    (duck_native_t)duck_function_and,
+									    (duck_native_t)duck_function_while,
 									    t2,
 									    2,
 									    argv,
@@ -724,6 +811,7 @@ void duck_macro_init(duck_stack_frame_t *stack)
     duck_macro_add(stack, L"__set__", &duck_macro_set);
     duck_macro_add(stack, L"__or__", &duck_macro_or);
     duck_macro_add(stack, L"__and__", &duck_macro_and);
+    duck_macro_add(stack, L"while", &duck_macro_while);
     
     wchar_t *op_names[] = 
        {
