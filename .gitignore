@@ -8,4 +8,5 @@ duck_lex.c
 *.o
 duck
 duck_float_i.c
+duck_char_i.c
 duck_int_i.c

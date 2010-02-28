@@ -15,7 +15,7 @@
 #include "duck_string.h"
 #include "duck_char.h"
 
-#define check(node, test, ...) if(!test) duck_error(node, __VA_ARGS__)
+#define check(node, test, ...) if(!(test)) duck_error(node, __VA_ARGS__)
 
 void duck_node_set_location(duck_node_t *node, duck_location_t *l)
 {
@@ -423,11 +423,12 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 		return;
 	    }
 	    
-	    check(this, function_data->argc == this2->child_count,
+	    int is_method = (this2->function->node_type == DUCK_NODE_MEMBER_GET_WRAP);	    	    
+	    check(this, function_data->argc-is_method == this2->child_count,
 		  L"Wrong number of paramaters in function call. Should be %d, not %d.", 
-		  function_data->argc, this2->child_count);
+		  function_data->argc-is_method, this2->child_count);
 	    
-	    for(i=0; i<mini(this2->child_count, function_data->argc); i++)
+	    for(i=is_method; i<mini(this2->child_count, function_data->argc); i++)
 	    {
 		if(!function_data->argv[i])
 		{
@@ -435,12 +436,16 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 			  L"Unknown function");
 		    break;
 		}
-
-		duck_type_t *ctype = duck_node_get_return_type(this2->child[i], stack);
+		
+		duck_type_t *ctype = duck_node_get_return_type(this2->child[i-is_method], stack);
+		
 		if(ctype)
 		{
+		    duck_node_print(this);
+		    
 		    check(this, duck_abides(ctype, function_data->argv[i]),
-			  L"Wrong type of argument for function");
+			  L"Wrong type of argument %d of %d, %ls does not abide by %ls", i+1, function_data->argc, ctype->name,
+			  function_data->argv[i]->name);
 		}
 		else
 		{
@@ -478,8 +483,7 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 	    duck_node_string_literal_t *this2 =(duck_node_string_literal_t *)this;	    
 	    check(this, !!this2->payload, L"Invalid string node");
 	    return;
-	}	
-
+	}
 
 	case DUCK_NODE_MEMBER_GET:
 	case DUCK_NODE_MEMBER_GET_WRAP:
@@ -490,7 +494,6 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 		    
 	default:
 	    check(this, 1, L"Unknown node type");
-	    
     }
 }
 
@@ -509,8 +512,7 @@ duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duc
 	      this2->sid = duck_stack_sid_create(function->stack_template, this2->name);
 	    */
 	    return this;
-	}
-	
+	}	
 
 	case DUCK_NODE_TRAMPOLINE:
 	case DUCK_NODE_DUMMY:
@@ -522,29 +524,29 @@ duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duc
 	case DUCK_NODE_ASSIGN:
 	case DUCK_NODE_MEMBER_GET:
 	case DUCK_NODE_MEMBER_GET_WRAP:
-	    return this;
-	    
+	    return this;   
 
 	default:
 	    wprintf(L"HULP %d\n", this->node_type);
 	    exit(1);
     }
-   
-
 }
 
-duck_object_t *duck_node_member_get_invoke(duck_node_member_get_t *this, duck_stack_frame_t *stack)
+duck_object_t *duck_node_member_get_invoke(duck_node_member_get_t *this, 
+					   duck_stack_frame_t *stack)
 {
-  return *duck_member_addr_get_mid(duck_node_invoke(this->object, stack), this->mid);
+    return *duck_member_addr_get_mid(duck_node_invoke(this->object, stack), this->mid);
 }
 
-duck_object_t *duck_node_member_get_wrap_invoke(duck_node_member_get_t *this, duck_stack_frame_t *stack)
+duck_object_t *duck_node_member_get_wrap_invoke(duck_node_member_get_t *this, 
+						duck_stack_frame_t *stack)
 {
     duck_object_t *obj = duck_node_invoke(this->object, stack);
     return duck_method_wrap(*duck_member_addr_get_mid(obj, this->mid), obj);
 }
 
-static duck_object_t *duck_trampoline(duck_object_t *orig, duck_stack_frame_t *stack)
+static duck_object_t *duck_trampoline(duck_object_t *orig, 
+				      duck_stack_frame_t *stack)
 {
     duck_object_t *res = duck_object_create(orig->type);
     memcpy(duck_member_addr_get_mid(res,DUCK_MID_FUNCTION_WRAPPER_PAYLOAD),
@@ -556,9 +558,8 @@ static duck_object_t *duck_trampoline(duck_object_t *orig, duck_stack_frame_t *s
     return res;
 }
 
-
-
-duck_object_t *duck_node_invoke(duck_node_t *this, duck_stack_frame_t *stack)
+duck_object_t *duck_node_invoke(duck_node_t *this, 
+				duck_stack_frame_t *stack)
 {
     //wprintf(L"duck_node_invoke with stack %d\n", stack);
 //    wprintf(L"invoke %d\n", this->node_type);    
@@ -651,6 +652,23 @@ void duck_node_print(duck_node_t *this)
 	    break;
 	}
 	
+	case DUCK_NODE_MEMBER_GET:
+	{
+	    duck_node_member_get_t *this2 = (duck_node_member_get_t *)this;
+	    wprintf(L"__memberGet__(");
+	    duck_node_print(this2->object);
+	    wprintf(L", %d)", this2->mid);
+	    break;
+	}
+	case DUCK_NODE_MEMBER_GET_WRAP:
+	{
+	    duck_node_member_get_t *this2 = (duck_node_member_get_t *)this;
+	    wprintf(L"__wrapMethod__(__memberGet__(");
+	    duck_node_print(this2->object);
+	    wprintf(L", %d))", this2->mid);
+	    break;
+	}
+	
 	case DUCK_NODE_NULL:
 	{
 	    wprintf(L"null");
@@ -674,10 +692,12 @@ void duck_node_print(duck_node_t *this)
 	    wprintf(L")" );
 	    break;
 	}
+
+	
 	
 	default:
 	{
-	    wprintf(L"HILF");
+	    wprintf(L"Don't know hos to print node of type %d\n", this->node_type);
 	    break;
 	}
     }

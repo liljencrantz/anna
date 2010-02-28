@@ -472,32 +472,30 @@ static duck_object_t *duck_macro_while(duck_node_call_t *node, duck_stack_frame_
 static duck_node_t *duck_macro_member_get(duck_node_call_t *in, duck_function_t *func, duck_node_list_t *parent)
 {
 /*
-   wprintf(L"member_get on node at %d\n", in);
-   duck_node_print((duck_node_t *)in);
-   wprintf(L"\n");
+  wprintf(L"member_get on node at %d\n", in);
+  duck_node_print((duck_node_t *)in);
+  wprintf(L"\n");
 */
-   if(in->child_count != 2)
-   {
-       duck_error((duck_node_t *)in, L"Wrong number of arguments to __memberGet__: Got %d, expected 2", in->child_count);	
-       return (duck_node_t *)duck_node_null_create(&in->location);	
-   }
-
-   duck_prepare_children(in, func, parent);
-   
-   duck_type_t *object_type = duck_node_get_return_type(in->child[0], func->stack_template);
+    if(in->child_count != 2)
+    {
+	duck_error((duck_node_t *)in, L"Wrong number of arguments to __memberGet__: Got %d, expected 2", in->child_count);	
+	return (duck_node_t *)duck_node_null_create(&in->location);	
+    }
+    
+    duck_prepare_children(in, func, parent);
+    duck_type_t *object_type = duck_node_get_return_type(in->child[0], func->stack_template);
     if(!object_type) 
     {
 	duck_error(in->child[0], L"Tried to access member of object of unknown type");
 	return (duck_node_t *)duck_node_null_create(&in->location);	
     }
-
+    
     duck_node_lookup_t *name_node = node_cast_lookup(in->child[1]);
     size_t mid = duck_mid_get(name_node->name);
-   
+    
     duck_type_t *member_type = duck_type_member_type_get(object_type, name_node->name);
-   
+    
     int wrap = !!duck_static_member_addr_get_mid(member_type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-   
     return (duck_node_t *)duck_node_member_get_create(&in->location,
 						      in->child[0], 
 						      mid,

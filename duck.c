@@ -30,10 +30,8 @@
   Better Type type  
   
   Code valiadator
-  Simple type checking
-  Complex type checking
+  Type checking on function types
   Type support for lists
-  Type checking
   General purpose currying
   Namespaces
   Method macros
@@ -41,8 +39,6 @@
   Implement basic string methods
   Implement basic list methods
   Implement string comparison methods
-  Implement basic char methods
-  Implement char comparison methods
   
   Function default argument values
   Named function arguments
@@ -83,6 +79,7 @@
   Inner functions with access to outer scope
   Make ; after } optional
   Constructors with no parameters
+  Simple type checking
   
   Type type
   Call type
@@ -108,6 +105,8 @@
   Implement basic float methods
   Implement int comparison methods
   Implement List getter and setter
+  Implement basic char methods
+  Implement char comparison methods
   
   __not__ function
   __block__ macro
@@ -970,7 +969,6 @@ static void duck_init()
     null_type = duck_type_create_raw(L"Null", 1);
 
     string_type = duck_type_create_raw(L"String", 64);
-    char_type = duck_type_create_raw(L"Char", 64);
     
     duck_type_type_create_early();
     duck_object_type_create_early();
@@ -978,7 +976,7 @@ static void duck_init()
 
     duck_int_type_create(stack_global);
     duck_list_type_create(stack_global);
-    duck_char_type_create();
+    duck_char_type_create(stack_global);
     duck_string_type_create();
     duck_float_type_create(stack_global);
 
@@ -986,11 +984,9 @@ static void duck_init()
     duck_type_wrapper_create(null_type, 0);
     duck_type_wrapper_create(object_type, 1);
     duck_type_wrapper_create(string_type, 1);
-    duck_type_wrapper_create(char_type, 1);
-    
+        
     duck_stack_declare(stack_global, L"Object", object_type, object_type->wrapper);
     duck_stack_declare(stack_global, L"Null", null_type, null_type->wrapper);
-    duck_stack_declare(stack_global, L"Char", type_type, char_type->wrapper);
     duck_stack_declare(stack_global, L"List", type_type, list_type->wrapper);
     duck_stack_declare(stack_global, L"String", type_type, string_type->wrapper);
     duck_stack_declare(stack_global, L"Float", type_type, float_type->wrapper);

@@ -1,5 +1,3 @@
 
 
-function foo(Int in){in+1}
-
-print(foo(7));
+print('g'+1);

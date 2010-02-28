@@ -568,7 +568,7 @@ constant :
 	| 
 	LITERAL_CHAR
 	{
-	    $$ = (duck_node_t *)(duck_node_t *)duck_node_char_literal_create(&@$,*duck_text);
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_char_literal_create(&@$,duck_text[1]);
 	}
 	| 
 	LITERAL_STRING

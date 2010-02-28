@@ -9,7 +9,7 @@
 #include "duck_node.h"
 #include "duck_char.h"
 
-
+#include "duck_char_i.c"
 
 duck_object_t *duck_char_create(wchar_t value)
 {
@@ -31,7 +31,10 @@ wchar_t duck_char_get(duck_object_t *this)
     return result;
 }
 
-void duck_char_type_create()
+void duck_char_type_create(duck_stack_frame_t *stack)
 {
+    char_type = duck_type_create(L"Char", 64);
+    duck_stack_declare(stack, L"Char", type_type, char_type->wrapper);
     duck_member_create(char_type, DUCK_MID_CHAR_PAYLOAD,  L"!charPayload", 0, null_type);
+    duck_char_type_i_create(stack);
 }

@@ -35,22 +35,7 @@ void duck_int_type_create(duck_stack_frame_t *stack)
 {
     int_type = duck_type_create(L"Int", 64);
     duck_stack_declare(stack, L"Int", type_type, int_type->wrapper);
-    duck_member_create(int_type, DUCK_MID_INT_PAYLOAD,  L"!intPayload", 0, null_type);
-    
-    duck_type_t *argv[]=
-	{
-	    int_type, int_type
-	}
-    ;
-    
-    wchar_t *argn[]=
-	{
-	    L"this", L"param"
-	}
-    ;
-    
+    duck_member_create(int_type, DUCK_MID_INT_PAYLOAD,  L"!intPayload", 0, null_type);    
     duck_int_type_i_create(stack);
-
-    assert(hash_get_count(&int_type->name_lookup) == int_type->member_count+int_type->static_member_count);
     duck_int_one = duck_int_create(1);
 }
