@@ -441,7 +441,7 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 		
 		if(ctype)
 		{
-		    duck_node_print(this);
+		    //duck_node_print(this);
 		    
 		    check(this, duck_abides(ctype, function_data->argv[i]),
 			  L"Wrong type of argument %d of %d, %ls does not abide by %ls", i+1, function_data->argc, ctype->name,

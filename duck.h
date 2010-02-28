@@ -177,6 +177,13 @@ size_t duck_native_method_create(duck_type_t *type,
 				 size_t argc,
 				 duck_type_t **argv,
 				 wchar_t **argn);
+duck_function_t *duck_native_create(wchar_t *name,
+				    int flags,
+				    duck_native_t native, 
+				    duck_type_t *return_type,
+				    size_t argc,
+				    duck_type_t **argv,
+				    wchar_t **argn);
 
 
 
@@ -184,6 +191,8 @@ size_t duck_native_method_create(duck_type_t *type,
 duck_object_t *duck_object_create(duck_type_t *type);
 int duck_abides(duck_type_t *contender, duck_type_t *role_model);
 int duck_abides_fault_count(duck_type_t *contender, duck_type_t *role_model);
+duck_type_t *duck_type_intersect(duck_type_t *t1, duck_type_t *t2);
+
 
 duck_function_type_key_t *duck_function_unwrap_type(duck_type_t *type);
 

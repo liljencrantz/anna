@@ -64,8 +64,6 @@
   __list__ macro
   while macro
   __while__ function
-  __or__ macro
-  __and__ macro
   
   Done: 
   
@@ -120,6 +118,8 @@
   else macro
   __get__ macro
   __set__ macro
+  __or__ macro
+  __and__ macro
 
 */
 
@@ -137,13 +137,6 @@ static size_t mid_pos = DUCK_MID_FIRST_UNRESERVED;
 int duck_error_count=0;
 
 static duck_member_t **duck_mid_lookup_create();
-duck_function_t *duck_native_create(wchar_t *name,
-				    int flags,
-				    duck_native_t native, 
-				    duck_type_t *return_type,
-				    size_t argc,
-				    duck_type_t **argv,
-				    wchar_t **argn);
 
 duck_object_t *duck_function_invoke(duck_function_t *function, duck_node_call_t *param, duck_stack_frame_t *stack, duck_stack_frame_t *outer);
 static duck_type_t *duck_type_create_raw(wchar_t *name, size_t static_member_count);
@@ -673,6 +666,15 @@ duck_function_t *duck_native_create(wchar_t *name,
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
 
     return result;
+}
+
+duck_type_t *duck_type_intersect(duck_type_t *t1, duck_type_t *t2)
+{
+    if(t1 == t2)
+    {
+	return t1;
+    }
+    return object_type;
 }
 
 int duck_abides_fault_count(duck_type_t *contender, duck_type_t *role_model)
