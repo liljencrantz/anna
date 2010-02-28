@@ -416,16 +416,38 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 	    }
 	    
 	    duck_function_type_key_t *function_data = duck_function_unwrap_type(func_type);
+	    if(!function_data)
+	    {
+		duck_error(this, 
+			   L"Unknown function");
+		return;
+	    }
+	    
 	    check(this, function_data->argc == this2->child_count,
 		  L"Wrong number of paramaters in function call. Should be %d, not %d.", 
 		  function_data->argc, this2->child_count);
 	    
 	    for(i=0; i<mini(this2->child_count, function_data->argc); i++)
 	    {
+		if(!function_data->argv[i])
+		{
+		    duck_error(this, 
+			  L"Unknown function");
+		    break;
+		}
+
 		duck_type_t *ctype = duck_node_get_return_type(this2->child[i], stack);
-		check(this, duck_abides(ctype, function_data->argv[i]),
-		      L"Wrong type of argument for function");
+		if(ctype)
+		{
+		    check(this, duck_abides(ctype, function_data->argv[i]),
+			  L"Wrong type of argument for function");
+		}
+		else
+		{
+		    duck_error(this, L"Unknown type for for argument %d", i);
+		}
 	    }
+	    
 	    return;
 	}
 	
@@ -446,7 +468,6 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 
 	case DUCK_NODE_LOOKUP:
 	{
-	    	    
 	    duck_node_lookup_t *this2 =(duck_node_lookup_t *)this;	    
 	    check(this, !!this2->name, L"Invalid lookup node");
 	    check(this, !!duck_stack_get_type(stack, this2->name), L"Unknown variable: %ls", this2->name);
@@ -668,6 +689,10 @@ void duck_node_print_code(duck_node_t *node)
     int current_column=0;
     int print=0;
     int mark=0;
+    int is_after_first;
+    int is_before_last;
+    int is_marking=0;
+    
     
     FILE *file = wfopen(node->location.filename, "r");
     if(!file)
@@ -681,10 +706,43 @@ void duck_node_print_code(duck_node_t *node)
 	switch(res)
 	{
 	    case WEOF:
+		if(is_marking)
+		{
+		    fwprintf(stderr, L"\e[0m");		
+		}
 		return;
 		
 	    case L'\n':
+		current_line++;
+		current_column=-1;
 		break;
+	    default:
+		current_column++;
+		break;
+	}
+	
+	print = (current_line >=node->location.first_line) && (current_line <= node->location.last_line);
+
+	is_after_first  = (current_line >node->location.first_line) || (current_line == node->location.first_line && current_column >= node->location.first_column);
+	is_before_last  = (current_line <node->location.last_line) || (current_line == node->location.last_line && current_column < node->location.last_column);
+	
+	mark = is_after_first && is_before_last;
+	if(mark != is_marking)
+	{
+	    if(mark)
+	    {
+		fwprintf(stderr, L"\e[31m");
+	    }
+	    else 
+	    {
+		fwprintf(stderr, L"\e[0m");		
+	    }
+	    
+	}
+	is_marking = mark;
+	if(print)
+	{
+	    fputwc(res,stderr);
 	}
 	
     }

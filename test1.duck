@@ -1,2 +1,5 @@
-print(1+  aa);
 
+
+function foo(Int in){in+1}
+
+print(foo(7));

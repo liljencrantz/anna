@@ -1103,12 +1103,15 @@ void duck_error(duck_node_t *node, wchar_t *msg, ...)
 {
     va_list va;
     va_start( va, msg );	
-    duck_node_print(node);
+    fwprintf(stderr,L"Error in %ls, on line %d:", 
+	     node->location.filename,
+	     node->location.first_line);
     duck_node_print_code(node);
+    fwprintf(stderr,L"\n");
     
     vfwprintf(stderr, msg, va);
     va_end( va );
-    fwprintf(stderr, L"\n");
+    fwprintf(stderr, L"\n\n");
     duck_error_count++;
 }
 
@@ -1126,11 +1129,11 @@ int main()
        exit(1);
     }
     
-    wprintf(L"Run program:\n");    
+    wprintf(L"Parsed program:\n");    
     duck_node_print(program);
     wprintf(L"\n");
-    wprintf(L"Output:\n");    
     
+    wprintf(L"Validating program.\n");    
     /*
       The entire program is a __block__ call, which we use to create an anonymous function definition
      */
@@ -1147,11 +1150,13 @@ int main()
     duck_object_t *program_object = duck_node_invoke((duck_node_t *)program_callable, stack_global);
     if(duck_error_count)
     {
+	wprintf(L"Found %d error(s), exiting\n", duck_error_count);
 	exit(1);
     }
     /*
       Run the function
      */
+    wprintf(L"Output:\n");    
     duck_function_t *func=duck_function_unwrap(program_object);    
     assert(func);
     duck_function_invoke(func, 0, stack_global, stack_global);
