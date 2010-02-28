@@ -47,4 +47,4 @@ duck_yacc.c duck_yacc.h: duck_yacc.y
 	bison -d duck_yacc.y -o duck_yacc.c -v
 
 clean:
-	rm duck duck_yacc.output *.o duck_lex.c duck_yacc.c duck_yacc.h duck_float_i.c duck_char_i.c *.d
+	rm duck duck_yacc.output *.o duck_lex.c duck_yacc.c duck_yacc.h duck_float_i.c duck_char_i.c duck_int_i.c  *.d

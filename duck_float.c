@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
 
 #include "duck.h"
 #include "duck_node.h"
@@ -31,9 +32,32 @@ double duck_float_get(duck_object_t *this)
     return result;
 }
 
+static duck_object_t *duck_float_exp(duck_object_t **param)
+{
+    if(param[1]==null_object)
+        return null_object;
+  
+    double v1 = duck_float_get(param[0]);
+    double v2 = duck_float_get(param[1]);
+    return duck_float_create(pow(v1, v2));
+}
+
 void duck_float_type_create(duck_stack_frame_t *stack)
 {
+
     float_type = duck_type_create(L"Float", 64);
+    duck_type_t *argv[]=
+	{
+	    float_type, float_type
+	}
+    ;
+    
+    wchar_t *argn[]=
+	{
+	  L"this", L"param"
+	}
+    ;
+
     duck_stack_declare(stack, L"Float", type_type, float_type->wrapper);
 
     /*
@@ -42,5 +66,6 @@ void duck_float_type_create(duck_stack_frame_t *stack)
     duck_member_create(float_type, DUCK_MID_FLOAT_PAYLOAD,  L"!floatPayload", 0, null_type);
     duck_member_create(float_type, -1,  L"!floatPayload2", 0, null_type);
     duck_float_type_i_create(stack);
+    duck_native_method_create(float_type, -1, L"__expFloat__", 0, (duck_native_t)&duck_float_exp, float_type, 2, argv, argn);
     
 }

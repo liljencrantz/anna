@@ -70,6 +70,10 @@ static duck_node_t *duck_yacc_string_literal_create(duck_location_t *loc, char *
 	*ptr_in; 
 	ptr_in++)
     {
+	/*
+	  FIXME: We're not handling hex escape sequences.
+	 */
+
 	switch(*ptr_in)
 	{
 	    case L'\\':
@@ -82,6 +86,10 @@ static duck_node_t *duck_yacc_string_literal_create(duck_location_t *loc, char *
 			
 		    case L'r':
 			*ptr_out++ = L'\r';
+			break;
+			
+		    case L'e':
+			*ptr_out++ = L'\e';
 			break;
 			
 		    case L't':
@@ -568,6 +576,9 @@ constant :
 	| 
 	LITERAL_CHAR
 	{
+	    /*
+	      FIXME: We're not handling escape sequences!
+	     */
 	    $$ = (duck_node_t *)(duck_node_t *)duck_node_char_literal_create(&@$,duck_text[1]);
 	}
 	| 

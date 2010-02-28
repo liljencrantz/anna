@@ -29,7 +29,7 @@
   Better Function type
   Better Type type  
   
-  Code valiadator
+  Code validator
   Type checking on function types
   Type support for lists
   General purpose currying
@@ -62,9 +62,7 @@
   __templatize__ macro
   template macro
   __list__ macro
-  while macro
-  __while__ function
-  
+    
   Done: 
   
   Sugar parser
@@ -120,6 +118,8 @@
   __set__ macro
   __or__ macro
   __and__ macro
+  while macro
+  __while__ function
 
 */
 
@@ -685,6 +685,10 @@ int duck_abides_fault_count(duck_type_t *contender, duck_type_t *role_model)
     }
     int i;
     int res = 0;    
+
+    assert(contender);
+    assert(role_model);
+    
 //    wprintf(L"Check type %ls abides against %ls\n", contender->name, role_model->name);
     
     //wprintf(L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
