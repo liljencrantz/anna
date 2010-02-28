@@ -6,6 +6,7 @@ duck_yacc.c
 duck_yacc.h
 duck_lex.c
 *.o
+*.d
 duck
 duck_float_i.c
 duck_char_i.c

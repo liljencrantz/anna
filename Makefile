@@ -9,6 +9,16 @@ PROGRAMS := duck
 
 all: duck
 
+#########################################################
+#            BEGIN DEPENDENCY TRACKING                  #
+#########################################################
+%.d: %.c
+	echo -n $@ " " >$@; gcc -MM -MG $*.c >> $@
+include $(DUCK_OBJS:.o=.d)
+#########################################################
+#             END DEPENDENCY TRACKING                   #
+#########################################################
+
 duck: $(DUCK_OBJS)
 	gcc $(DUCK_OBJS) -o $@ $(LDFLAGS) 
 
@@ -26,7 +36,7 @@ duck_float_i.c: make_duck_float_i.sh
 duck_int.c: duck_int_i.c
 
 duck_int_i.c: make_duck_int_i.sh
-	./make_duck_int_i.sh >duck_int_i.c
+		./make_duck_int_i.sh >duck_int_i.c
 
 duck_char.c: duck_char_i.c
 
@@ -37,4 +47,4 @@ duck_yacc.c duck_yacc.h: duck_yacc.y
 	bison -d duck_yacc.y -o duck_yacc.c -v
 
 clean:
-	rm duck duck_yacc.output *.o duck_lex.c duck_yacc.c duck_yacc.h duck_float_i.c duck_char_i.c
+	rm duck duck_yacc.output *.o duck_lex.c duck_yacc.c duck_yacc.h duck_float_i.c duck_char_i.c *.d
