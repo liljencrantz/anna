@@ -1,0 +1,11 @@
+This is an interpreter for the Anna language. Anna is a statically
+duck typed language with some C-like qualities, but which supports
+LISP-style macros. In fact, all special purpose constructs like while
+loops, if statements and so on are implemented using macros. Anna
+allows the creation of features like using-blocks, with-blocks and
+exceptions with the block syntax you'd expect from a C-like language.
+
+The Anna interpreter is currently rather incomplete, but supports
+enough of the basic features to serve as a proof of concept. Check
+back soon for an almost working system, or drop me an email if you
+wish to help out.
