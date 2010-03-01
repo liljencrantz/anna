@@ -184,6 +184,12 @@ duck_function_t *duck_native_create(wchar_t *name,
 				    size_t argc,
 				    duck_type_t **argv,
 				    wchar_t **argn);
+size_t duck_method_create(duck_type_t *type,
+			  ssize_t mid,
+			  wchar_t *name,
+			  int flags,
+			  duck_function_t *definition);
+
 
 
 

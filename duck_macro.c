@@ -123,7 +123,12 @@ static duck_type_t *duck_sniff_return_type(duck_node_call_t *body)
   
 }
 
-static duck_node_t *duck_macro_function(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+
+
+static duck_node_t *duck_macro_function_internal(duck_type_t *type, 
+						 duck_node_call_t *node, 
+						 duck_function_t *func, 
+						 duck_node_list_t *parent)
 {
     wchar_t *name=0;
     wchar_t *internal_name=0;
@@ -164,11 +169,20 @@ static duck_node_t *duck_macro_function(duck_node_call_t *node, duck_function_t 
     
     duck_node_call_t *declarations = node_cast_call(node->child[2]);
     int i;
-    if(declarations->child_count > 0)
+    if(declarations->child_count > 0 || type)
     {
 	argc = declarations->child_count;
-	argv = malloc(sizeof(duck_type_t *)*declarations->child_count);
-	argn = malloc(sizeof(wchar_t *)*declarations->child_count);
+	if(type)
+	    argc++;
+	
+	argv = malloc(sizeof(duck_type_t *)*argc);
+	argn = malloc(sizeof(wchar_t *)*argc);
+	
+	if(type)
+	{
+	    argv[0]=type;
+	    argn[0]=L"this";
+	}
 	
 	for(i=0; i<declarations->child_count; i++)
 	{
@@ -177,25 +191,46 @@ static duck_node_t *duck_macro_function(duck_node_call_t *node, duck_function_t 
 	    duck_node_lookup_t *type_name = node_cast_lookup(decl->child[1]);
 	    duck_object_t *type_wrapper = duck_stack_get_str(func->stack_template, type_name->name);
 	    assert(type_wrapper);
-	    argv[i] = duck_type_unwrap(type_wrapper);
-	    argn[i] = name->name;
+	    argv[i+!!type] = duck_type_unwrap(type_wrapper);
+	    argn[i+!!type] = name->name;
 	}
     }
 
-    duck_object_t *result;
-    if(body->node_type == DUCK_NODE_CALL) {
-	result = duck_function_create(internal_name, 0, (duck_node_call_t *)body, null_type, argc, argv, argn, func->stack_template)->wrapper;
+    if(type)
+    {
+	duck_function_t *result = duck_function_create(internal_name, 0, (duck_node_call_t *)body, null_type, argc, argv, argn, func->stack_template);
+
+	assert(name);
+	assert(body->node_type == DUCK_NODE_CALL);
+	duck_method_create(type, -1, name, 0, result);
+	
     }
-    else {
-	result = null_object;
+    else
+    {
+	duck_object_t *result;
+	if(body->node_type == DUCK_NODE_CALL) {
+	    result = duck_function_create(internal_name, 0, (duck_node_call_t *)body, null_type, argc, argv, argn, func->stack_template)->wrapper;
+	}
+	else {
+	    result = null_object;
+	}
+    
+
+	if(name) {
+	    duck_stack_declare(func->stack_template, name, duck_type_for_function(out_type, argc, argv), result);
+	}
+	return (duck_node_t *)duck_node_dummy_create(&node->location,
+						     result,
+						     1);
     }
     
-    if(name) {
-	duck_stack_declare(func->stack_template, name, duck_type_for_function(out_type, argc, argv), result);
-    }
-    return (duck_node_t *)duck_node_dummy_create(&node->location,
-						 result,
-						 1);
+}
+
+static duck_node_t *duck_macro_function(duck_node_call_t *node,
+					duck_function_t *func, 
+					duck_node_list_t *parent)
+{
+    return duck_macro_function_internal(0, node, func, parent);
 }
 
 static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
@@ -797,8 +832,10 @@ static duck_node_t *duck_macro_while(duck_node_call_t *node, duck_function_t *fu
       make sure we're rturning the function result, not the functio
       type itself...
      */
-    return duck_node_call_create(&node->location, 
-				 duck_node_dummy_create( &node->location,
+    return (duck_node_t *)
+	duck_node_call_create(&node->location,
+			      (duck_node_t *)
+			      duck_node_dummy_create( &node->location,
 							 duck_native_create(L"!whileAnonymous",
 									    DUCK_FUNCTION_FUNCTION,
 									    (duck_native_t)duck_function_while,
@@ -806,9 +843,9 @@ static duck_node_t *duck_macro_while(duck_node_call_t *node, duck_function_t *fu
 									    2,
 									    argv,
 									    argn)->wrapper,
-							 0),
-				 2,
-				 param);
+						      0),
+			      2,
+			      param);
 }
 
 static duck_node_t *duck_macro_type(duck_node_call_t *node, 
@@ -822,12 +859,53 @@ static duck_node_t *duck_macro_type(duck_node_call_t *node,
 
     wchar_t *name = ((duck_node_lookup_t *)node->child[0])->name;
     wchar_t *type_name = ((duck_node_lookup_t *)node->child[1])->name;
+    int error_count=0;
     
     duck_type_t *type = duck_type_create(name, 64);
-    duck_stack_declare(&func->stack_template, name, type_type, type->wrapper);
-    duck_node_call_t *body = ();
+    duck_stack_declare(func->stack_template, name, type_type, type->wrapper);
+    duck_node_call_t *body = (duck_node_call_t *)node->child[3];
+
+    int i;
+    for(i=0; i<body->child_count; i++)
+    {
+	duck_node_t *item = body->child[i];
+	
+	if(item->node_type != DUCK_NODE_CALL) 
+	{
+	    duck_error(item,
+		       L"Only function declarations and variable declarations allowed directly inside a class body" );
+	    error_count++;
+	    continue;
+	}
+	
+	duck_node_call_t *call = (duck_node_call_t *)item;
+	if(call->function->node_type != DUCK_NODE_LOOKUP)
+	{
+	    duck_error(call->function,
+		       L"Only function declarations and variable declarations allowed directly inside a class body" ); 
+	    error_count++;
+	    continue;
+	}
+	
+	duck_node_lookup_t *declaration = (duck_node_lookup_t *)call->function;
+	
+	if(wcscmp(declaration->name, L"__function__")==0)
+	{
+	    duck_macro_function_internal(type, call, func, parent);
+	}
+	else
+	{
+	    duck_error(call->function,
+		       L"Only function declarations and variable declarations allowed directly inside a class body" );
+	    error_count++;	    
+	}
+    }
+    if(error_count)
+	return (duck_node_t *)duck_node_null_create(&node->location);	\
     
-    return (duck_node_t *)duck_node_null_create(&node->location);
+    return (duck_node_t *)duck_node_dummy_create(&node->location,
+						 type->wrapper,
+						 0);
 }
 
 static void duck_macro_add(duck_stack_frame_t *stack, 

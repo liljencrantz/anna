@@ -54,7 +54,6 @@
   import macro
   __macro__ macro
   elif macro
-  __type__ function
   each function
   extends macro
   abides function
@@ -67,7 +66,6 @@
   Done: 
   
   Sugar parser
-  
   Real check if type abides to other type, instead of lame type ptr comparison
   Correct string literal parsing
   Variable declarations
@@ -122,6 +120,7 @@
   __and__ macro
   while macro
   __while__ function
+  __type__ function
   
 */
 
@@ -867,22 +866,37 @@ size_t duck_native_method_create(duck_type_t *type,
 				 duck_type_t **argv,
 				 wchar_t **argn)
 {
-  if(!flags) 
+    if(!flags) 
     {
-      assert(result);
-      if(argc) 
+	assert(result);
+	if(argc) 
 	{
-	  assert(argv);
-	  assert(argn);
+	    assert(argv);
+	    assert(argn);
 	}
     }
-  
-  mid = duck_member_create(type, mid, name, 1, duck_type_for_function(result, argc, argv));
-  duck_member_t *m = type->mid_lookup[mid];
-  //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
-  type->static_member[m->offset] = duck_native_create(name, flags, func, result, argc, argv, argn)->wrapper;
-  return (size_t)mid;
+    
+    mid = duck_member_create(type, mid, name, 1, duck_type_for_function(result, argc, argv));
+    duck_member_t *m = type->mid_lookup[mid];
+    //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    type->static_member[m->offset] = duck_native_create(name, flags, func, result, argc, argv, argn)->wrapper;
+    return (size_t)mid;
 }
+
+size_t duck_method_create(duck_type_t *type,
+			  ssize_t mid,
+			  wchar_t *name,
+			  int flags,
+			  duck_function_t *definition)		
+{
+    mid = duck_member_create(type, mid, name, 1, definition->type);
+    duck_member_t *m = type->mid_lookup[mid];
+    //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    type->static_member[m->offset] = definition->wrapper;
+    return (size_t)mid;
+}
+
+
 
 static void duck_type_type_create_early()
 {

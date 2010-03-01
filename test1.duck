@@ -1,8 +1,14 @@
 
 class TestClass 
 {
-        function method(Int arg)
+        function method(Int arg1, Int arg2)
         {
-		print(arg);
+		print(arg2);
+		print(this);
 	}
 };
+
+
+var foo = TestClass();
+
+foo.method(3,2);
