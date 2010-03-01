@@ -19,10 +19,10 @@
 
 void duck_node_set_location(duck_node_t *node, duck_location_t *l)
 {
-//    assert(l->filename);
+    assert(l->filename);
+    
     memcpy(&node->location, l, sizeof(duck_location_t));
 }
-
 
 duck_node_call_t *node_cast_call(duck_node_t *node) 
 {
@@ -730,14 +730,6 @@ void duck_node_print_code(duck_node_t *node)
 		    fwprintf(stderr, L"\e[0m");		
 		}
 		return;
-		
-	    case L'\n':
-		current_line++;
-		current_column=-1;
-		break;
-	    default:
-		current_column++;
-		break;
 	}
 	
 	print = (current_line >=node->location.first_line) && (current_line <= node->location.last_line);
@@ -745,8 +737,20 @@ void duck_node_print_code(duck_node_t *node)
 	is_after_first  = (current_line >node->location.first_line) || (current_line == node->location.first_line && current_column >= node->location.first_column);
 	is_before_last  = (current_line <node->location.last_line) || (current_line == node->location.last_line && current_column < node->location.last_column);
 	
+	if(current_column == 0 && print)
+	{
+	    if(is_marking)
+	    {
+		fwprintf(stderr, L"\e[0m");		
+	    }
+	    is_marking=0;
+	    fwprintf(stderr, L"%*d: ", 6, current_line);
+	    
+	}
+	
+	
 	mark = is_after_first && is_before_last;
-	if(mark != is_marking)
+	if(print && mark != is_marking)
 	{
 	    if(mark)
 	    {
@@ -762,6 +766,17 @@ void duck_node_print_code(duck_node_t *node)
 	if(print)
 	{
 	    fputwc(res,stderr);
+	}
+
+	switch(res)
+	{
+	    case L'\n':
+		current_line++;
+		current_column=0;
+		break;
+	    default:
+		current_column++;
+		break;
 	}
 	
     }

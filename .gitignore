@@ -5,6 +5,7 @@ duck_yacc.output
 duck_yacc.c
 duck_yacc.h
 duck_lex.c
+duck_lex.h
 *.o
 *.d
 duck

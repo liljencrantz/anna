@@ -1,6 +1,8 @@
+
 class TestClass 
 {
-
-      function method(Int arg){print(arg)}
-
+        function method(Int arg)
+        {
+		print(arg);
+	}
 };

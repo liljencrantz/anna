@@ -9,6 +9,7 @@
 
 #include "util.h"
 #include "duck_node.h"
+#include "duck_lex.h"
 
 struct parse_data 
 {
@@ -20,10 +21,6 @@ struct parse_data
 }
    ;
 typedef struct parse_data parse_data_t;
-
-wchar_t *duck_current_filename;
-size_t duck_current_pos;
-
 
 /*
 void duck_error(wchar_t *filename, size_t pos, wchar_t *msg)
@@ -378,20 +375,31 @@ static duck_node_t *parse(parse_data_t *d)
    
 }
 */
-int yyparse ();
-extern YYLTYPE yylloc;
 
-duck_node_t *duck_parse(FILE *file, wchar_t *filename) 
+duck_node_t *duck_parse(wchar_t *filename) 
 {
-    duck_current_filename = filename;
-    yylloc.first_line=1;
-    yylloc.last_line=1;
-    yylloc.first_column=0;
-    yylloc.last_column=0;
-    yylloc.filename = filename;
-    
-    yyparse();
-    return duck_yacc_error?0:duck_parse_tree;
+  yyscan_t scanner;
+
+  FILE *file = wfopen(filename, "r");
+  duck_node_t *parse_tree;
+  
+  duck_lex_lex_init(&scanner);
+  duck_lex_set_in( file, scanner);
+  /*
+  YYLTYPE lloc;
+  
+  lloc.first_line=1;
+  lloc.last_line=1;
+  lloc.first_column=0;
+  lloc.last_column=0;
+  lloc.filename = filename;
+  */
+  //  wprintf(L"Todelo, scanner is %d\n", &scanner);
+  duck_yacc_parse( scanner, filename, &parse_tree );
+  duck_lex_lex_destroy(scanner);
+  fclose(file);
+  
+  return duck_yacc_error_count?0:parse_tree;
     
 /*    
     parse_data_t data;

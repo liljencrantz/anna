@@ -131,7 +131,7 @@ typedef struct duck_node_float_literal duck_node_float_literal_t;
 typedef struct duck_node_string_literal duck_node_string_literal_t;
 typedef struct duck_node_char_literal duck_node_char_literal_t;
 
-extern duck_node_t *duck_parse_tree;
+extern int duck_yacc_error_count;
 
 void duck_node_set_location(duck_node_t *node, duck_location_t *l);
 duck_node_dummy_t *duck_node_dummy_create(duck_location_t *loc, struct duck_object *val, int is_trampoline);
@@ -177,11 +177,8 @@ duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *st
 
 void duck_node_print(duck_node_t *this);
 
-extern wchar_t *duck_current_filename;
-extern size_t duck_current_pos;
-
-duck_node_t *duck_parse(FILE *, wchar_t *);
+duck_node_t *duck_parse(wchar_t *name);
 void duck_node_print_code(duck_node_t *node);
-extern int duck_yacc_error;
 
 #endif
+

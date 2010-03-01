@@ -1,3 +1,9 @@
+%lex-param   {yyscan_t scanner}
+%lex-param   {wchar_t *filename}
+%parse-param   {yyscan_t scanner}
+%parse-param   {wchar_t *filename}
+%parse-param   {duck_node_t **parse_tree_ptr}
+
 %{
 
 #include <stdlib.h>
@@ -5,16 +11,17 @@
 #include <assert.h>
 #include <wchar.h>
 #include <string.h>
+
 #include "common.h"
 #include "duck_node.h"
+#include "duck_lex.h"
+#include "duck_yacc.h"
 
-extern char *duck_text;
+  void duck_yacc_error(YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, duck_node_t **parse_tree_ptr, char *s);
+  int duck_yacc_parse(yyscan_t scanner, wchar_t *filename, duck_node_t **parse_tree_ptr);
+int duck_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename);
+ 
 
-int yylex();
-int duck_lex();
-void yyerror (char *s) ;
-
-duck_node_t *duck_parse_tree;
 int was_end_brace=0;
 int peek_token = -1;
 size_t last_length = 0;
@@ -23,12 +30,12 @@ size_t last_length = 0;
 int yylex();
 
 int yylex_val;
-int duck_yacc_error=0; 
+int duck_yacc_error_count=0; 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
     do                                                                  \
     {									\
-	(Current).filename = yylloc.filename;				\
+      (Current).filename = filename;					\
 	if (N)								\
         {                                                               \
 	    (Current).first_line   = YYRHSLOC(Rhs, 1).first_line;	\
@@ -182,6 +189,8 @@ static duck_node_t *duck_yacc_string_literal_create(duck_location_t *loc, char *
 
 %right '='
 
+%pure-parser
+
 %%
 
 module: module1 
@@ -199,7 +208,7 @@ module1:
 	    $$ = duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@$,L"__block__"),0,0);
 	    if ($1)
 		duck_node_call_add_child($$,$1);
-	    duck_parse_tree = (duck_node_t *)$$;
+	    *parse_tree_ptr = (duck_node_t *)$$;
 	}
 |
 error SEMICOLON
@@ -388,7 +397,6 @@ expression6 :
 	expression7
 ;
 
-
 expression7 :
 	constant
 	| 
@@ -543,7 +551,7 @@ identifier
 identifier:
 	IDENTIFIER
 	{
-	    $$ = (duck_node_t *)(duck_node_t *)duck_node_lookup_create(&@$,duck_yacc_string(duck_text));
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_lookup_create(&@$,duck_yacc_string(duck_lex_get_text(scanner)));
 	}
 ;
 
@@ -551,7 +559,7 @@ identifier:
 type_identifier :
 	TYPE_IDENTIFIER
 	{
-	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,duck_yacc_string(duck_text));
+	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,duck_yacc_string(duck_lex_get_text(scanner)));
 	}
 ;
 
@@ -566,12 +574,12 @@ any_identifier:
 constant :
 	LITERAL_INTEGER
 	{
-	    $$ = (duck_node_t *)(duck_node_t *)duck_node_int_literal_create(&@$,atoi(duck_text));
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_int_literal_create(&@$,atoi(duck_lex_get_text(scanner)));
 	}
 	| 
 	LITERAL_FLOAT
 	{
-	    $$ = (duck_node_t *)(duck_node_t *)duck_node_float_literal_create(&@$,atof(duck_text));
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_float_literal_create(&@$,atof(duck_lex_get_text(scanner)));
 	}
 	| 
 	LITERAL_CHAR
@@ -579,12 +587,12 @@ constant :
 	    /*
 	      FIXME: We're not handling escape sequences!
 	     */
-	    $$ = (duck_node_t *)(duck_node_t *)duck_node_char_literal_create(&@$,duck_text[1]);
+	    $$ = (duck_node_t *)(duck_node_t *)duck_node_char_literal_create(&@$,duck_lex_get_text(scanner)[1]);
 	}
 	| 
 	LITERAL_STRING
 	{
-	    $$ = (duck_node_t *)duck_yacc_string_literal_create(&@$, duck_text);
+	    $$ = (duck_node_t *)duck_yacc_string_literal_create(&@$, duck_lex_get_text(scanner));
 	}
 	;
 
@@ -802,35 +810,46 @@ simple_expression '(' argument_list2 ')'
 
 %%
 
-int yylex ()
+int duck_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
 {
+  static init = 0;
+  if(!init)
+    {
+      init=1;
+	llocp->first_line= llocp->last_line=1;
+	llocp->first_column = llocp->last_column=0;
+    }
+  
     if(peek_token != -1)
     {
 	int ret = peek_token;
 	peek_token = -1;
 	return ret;      
     }
-
+    assert(filename);
+    
     while(1)
     {
 	char *p;
-	yylex_val = duck_lex();
-	yylloc.first_line= yylloc.last_line;
-	yylloc.first_column = yylloc.last_column;
-	for(p=duck_text; *p; p++)
+		
+	yylex_val = duck_lex_lex(scanner);
+	llocp->filename = filename;
+	llocp->first_line= llocp->last_line;
+	llocp->first_column = llocp->last_column;
+	for(p=duck_lex_get_text(scanner); *p; p++)
 	{
 	    if(*p == '\n')
 	    {
-		yylloc.last_line++;
-		yylloc.last_column = 0;
+		llocp->last_line++;
+		llocp->last_column = 0;
 	    }
 	    else
 	    {
-		yylloc.last_column++;
+		llocp->last_column++;
 	    }
 	}
 	if(yylex_val != IGNORE)
-	    break;
+	  break;
     }
     
     if(was_end_brace)
@@ -843,7 +862,7 @@ int yylex ()
 	    return SEMICOLON;
 	}      
     }
-    
+  
     
     if(yylex_val == '}') 
     {
@@ -853,8 +872,8 @@ int yylex ()
     return yylex_val;
 }
 
-void yyerror (char *s) 
+void duck_yacc_error (YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, duck_node_t **parse_tree_ptr, char *s) 
 {
     fwprintf (stderr, L"%s\n", s);
-    duck_yacc_error=1;
+    duck_yacc_error_count++;
 }

@@ -12,19 +12,41 @@
 
 #define CHECK_INPUT_COUNT(name, count) if(node->child_count != count)	\
     {									\
-	duck_error((duck_node_t *)node,					\
-		   L"Wrong number of arguments to %ls: Got %d, expected %d", \
-		   name, node->child_count, count);			\
-	return (duck_node_t *)duck_node_null_create(&node->location);	\
+      duck_error((duck_node_t *)node,					\
+		 L"Wrong number of arguments to %ls: Got %d, expected %d", \
+		 name, node->child_count, count);			\
+      return (duck_node_t *)duck_node_null_create(&node->location);	\
     }
 
 #define CHECK_NODE_TYPE(n, type) if(n->node_type != type)		\
     {									\
-	duck_error((duck_node_t *)node,					\
-		   L"Unexpected argument type");			\
-	return (duck_node_t *)duck_node_null_create(&node->location);	\
+      duck_error((duck_node_t *)node,					\
+		 L"Unexpected argument type, expected a parameter of type %s", #type ); \
+      return (duck_node_t *)duck_node_null_create(&node->location);	\
     }
 
+#define CHECK_NODE_BLOCK(n) if(n->node_type != DUCK_NODE_CALL)		\
+    {									\
+	duck_error((duck_node_t *)node,					\
+		   L"Unexpected argument type. Expected a block definition."); \
+	return (duck_node_t *)duck_node_null_create(&node->location);	\
+    }									\
+  {									\
+    duck_node_call_t *__cnb_tmp = (duck_node_call_t *)n;		\
+    if(__cnb_tmp->function->node_type != DUCK_NODE_LOOKUP)		\
+      {									\
+	duck_error((duck_node_t *)__cnb_tmp->function,			\
+		   L"Unexpected argument type. Expected a block definition."); \
+	return (duck_node_t *)duck_node_null_create(&node->location);	\
+      }									\
+    duck_node_lookup_t *__cnb_tmp2 = (duck_node_lookup_t *)__cnb_tmp->function; \
+    if(wcscmp(__cnb_tmp2->name, L"__block__") != 0)			\
+      {									\
+	duck_error((duck_node_t *)__cnb_tmp->function,			\
+		   L"Unexpected argument type. Expected a block definition."); \
+	return (duck_node_t *)duck_node_null_create(&node->location);	\
+      }									\
+  }									\
 
 static wchar_t *duck_find_method(duck_type_t *type, wchar_t *prefix, 
 				      size_t argc, duck_type_t *arg2_type)
@@ -283,7 +305,9 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *node, duck_fun
 
 
 
-static duck_node_t *duck_macro_get(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+static duck_node_t *duck_macro_get(duck_node_call_t *node, 
+				   duck_function_t *func,
+				   duck_node_list_t *parent)
 {
     CHECK_INPUT_COUNT(L"__get__ operator", 2);
   duck_prepare_children(node, func, parent);
@@ -333,7 +357,9 @@ static duck_node_t *duck_macro_get(duck_node_call_t *node, duck_function_t *func
 
 
 
-static duck_node_t *duck_macro_set(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+static duck_node_t *duck_macro_set(duck_node_call_t *node, 
+				   duck_function_t *func,
+				   duck_node_list_t *parent)
 {
     CHECK_INPUT_COUNT(L"__set__ operator", 3);
   duck_prepare_children(node, func, parent);
@@ -385,8 +411,8 @@ static duck_node_t *duck_macro_set(duck_node_call_t *node, duck_function_t *func
 
 
 static duck_node_t *duck_macro_declare(struct duck_node_call *node, 
-			    struct duck_function *function,
-			    struct duck_node_list *parent)
+				       struct duck_function *function,
+				       struct duck_node_list *parent)
 {
     CHECK_INPUT_COUNT(L"variable declaration", 3);
    assert(duck_parent_count(parent)==1);
@@ -433,8 +459,8 @@ static duck_node_t *duck_macro_declare(struct duck_node_call *node,
 }
 
 static duck_node_t *duck_macro_assign(struct duck_node_call *node, 
-			   struct duck_function *function,
-			   struct duck_node_list *parent)
+				      struct duck_function *function,
+				      struct duck_node_list *parent)
 {
     CHECK_INPUT_COUNT(L"= operator", 2);
    assert(duck_parent_count(parent)==1);
@@ -472,7 +498,9 @@ static duck_node_t *duck_macro_assign(struct duck_node_call *node,
        
 }
 
-static duck_node_t *duck_macro_member_get(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+static duck_node_t *duck_macro_member_get(duck_node_call_t *node, 
+					  duck_function_t *func, 
+					  duck_node_list_t *parent)
 {
 /*
   wprintf(L"member_get on node at %d\n", node);
@@ -503,7 +531,9 @@ static duck_node_t *duck_macro_member_get(duck_node_call_t *node, duck_function_
 						      wrap);
 }
 
-static duck_node_t *duck_macro_if(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+static duck_node_t *duck_macro_if(duck_node_call_t *node,
+				  duck_function_t *func, 
+				  duck_node_list_t *parent)
 {
 /*
    wprintf(L"member_get on node at %d\n", node);
@@ -511,6 +541,7 @@ static duck_node_t *duck_macro_if(duck_node_call_t *node, duck_function_t *func,
    wprintf(L"\n");
 */
     CHECK_INPUT_COUNT(L"if macro", 2);
+    CHECK_NODE_BLOCK(node->child[1]);
    
    duck_node_t *argv[] = {
        node->child[0], node->child[1], duck_node_null_create(&node->location)
@@ -523,10 +554,11 @@ static duck_node_t *duck_macro_if(duck_node_call_t *node, duck_function_t *func,
 						   L"__if__"),
 			   3,
 			   argv);
-      
 }
 
-static duck_node_t *duck_macro_else(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+static duck_node_t *duck_macro_else(duck_node_call_t *node,
+				    duck_function_t *func, 
+				    duck_node_list_t *parent)
 {
 /*
    wprintf(L"member_get on node at %d\n", node);
@@ -534,6 +566,7 @@ static duck_node_t *duck_macro_else(duck_node_call_t *node, duck_function_t *fun
    wprintf(L"\n");
 */
     CHECK_INPUT_COUNT(L"else macro", 1);
+    CHECK_NODE_BLOCK(node->child[0]);
     
     assert(parent->idx>0);
 
@@ -713,6 +746,7 @@ static duck_object_t *duck_function_while(duck_object_t **param)
 static duck_node_t *duck_macro_while(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
 {
     CHECK_INPUT_COUNT(L"while macro", 2);
+    CHECK_NODE_BLOCK(node->child[1]);
 
     duck_prepare_children(node, func, parent);
 
@@ -777,13 +811,28 @@ static duck_node_t *duck_macro_while(duck_node_call_t *node, duck_function_t *fu
 				 param);
 }
 
-static duck_node_t *duck_macro_type(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
+static duck_node_t *duck_macro_type(duck_node_call_t *node, 
+				    duck_function_t *func, 
+				    duck_node_list_t *parent)
 {
-    CHECK_INPUT_COUNT(L"type macro", 12);
+    CHECK_INPUT_COUNT(L"type macro", 4);
+    CHECK_NODE_TYPE(node->child[0], DUCK_NODE_LOOKUP);
+    CHECK_NODE_TYPE(node->child[1], DUCK_NODE_LOOKUP);
+    CHECK_NODE_BLOCK(node->child[3]);
+
+    wchar_t *name = ((duck_node_lookup_t *)node->child[0])->name;
+    wchar_t *type_name = ((duck_node_lookup_t *)node->child[1])->name;
     
+    duck_type_t *type = duck_type_create(name, 64);
+    duck_stack_declare(&func->stack_template, name, type_type, type->wrapper);
+    duck_node_call_t *body = ();
+    
+    return (duck_node_t *)duck_node_null_create(&node->location);
 }
 
-static void duck_macro_add(duck_stack_frame_t *stack, wchar_t *name, duck_native_macro_t call)
+static void duck_macro_add(duck_stack_frame_t *stack, 
+			   wchar_t *name,
+			   duck_native_macro_t call)
 {
     duck_native_declare(stack, name, DUCK_FUNCTION_MACRO, (duck_native_t)call, 0, 0, 0, 0);
 }

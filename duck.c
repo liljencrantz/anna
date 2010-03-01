@@ -37,8 +37,9 @@
   Method macros
   
   Implement basic string methods
-  Implement basic list methods
   Implement string comparison methods
+  Functional functions for lists (each, map, select, max, min)
+  List arithmetic
   
   Function default argument values
   Named function arguments
@@ -103,6 +104,7 @@
   Implement List getter and setter
   Implement basic char methods
   Implement char comparison methods
+  Implement basic list methods
   
   __not__ function
   __block__ macro
@@ -120,7 +122,7 @@
   __and__ macro
   while macro
   __while__ function
-
+  
 */
 
 duck_type_t *type_type=0, *object_type=0, *int_type=0, *string_type=0, *char_type=0, *null_type=0,  *string_type, *char_type, *list_type, *float_type;
@@ -1105,7 +1107,7 @@ void duck_error(duck_node_t *node, wchar_t *msg, ...)
 {
     va_list va;
     va_start( va, msg );	
-    fwprintf(stderr,L"Error in %ls, on line %d:", 
+    fwprintf(stderr,L"Error in %ls, on line %d:\n", 
 	     node->location.filename,
 	     node->location.first_line);
     duck_node_print_code(node);
@@ -1117,13 +1119,19 @@ void duck_error(duck_node_t *node, wchar_t *msg, ...)
     duck_error_count++;
 }
 
-
-int main()
+int main(int argc, char **argv)
 {
+  if(argc != 2)
+    {
+      wprintf(L"Error: Expected exactly one argument, a name of a file to run.\n");
+      exit(1);
+    }
+  wchar_t *filename = str2wcs(argv[1]);
+
     wprintf(L"Initializing interpreter.\n");    
     duck_init();
-    wprintf(L"Parsing program.\n");    
-    duck_node_t *program = duck_parse(stdin, L"test1.duck");
+    wprintf(L"Parsing program %ls.\n", filename);    
+    duck_node_t *program = duck_parse(filename);
     
     if(!program) 
     {

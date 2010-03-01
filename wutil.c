@@ -233,8 +233,7 @@ FILE *wfopen(const wchar_t *path, const char *mode)
 	FILE *res=0;
 	if( tmp )
 	{
-		res = fopen(tmp, mode);
-		
+	  res = fopen(tmp, mode);
 	}
 	return res;	
 }
