@@ -75,6 +75,23 @@ duck_node_member_get_t *duck_node_member_get_create(duck_location_t *loc, struct
   
 }
 
+duck_node_member_set_t *duck_node_member_set_create(duck_location_t *loc, struct duck_node *object, size_t mid, struct duck_node *value, struct duck_type *type)
+{
+   duck_node_member_set_t *result = calloc(1,sizeof(duck_node_member_set_t));
+   result->node_type = DUCK_NODE_MEMBER_SET;
+   duck_node_set_location((duck_node_t *)result,loc);
+  /*
+    FIXME: Create a nice and tidy wrapper
+  */
+   result->object=object;
+   result->value=value;
+   result->mid=mid;
+   result->type=type;
+   return result;  
+    
+}
+
+
 
 duck_node_assign_t *duck_node_assign_create(duck_location_t *loc, duck_sid_t sid, struct duck_node *value)
 {
@@ -523,6 +540,7 @@ duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duc
 	case DUCK_NODE_ASSIGN:
 	case DUCK_NODE_MEMBER_GET:
 	case DUCK_NODE_MEMBER_GET_WRAP:
+	case DUCK_NODE_MEMBER_SET:
 	    return this;   
 
 	default:
@@ -535,6 +553,13 @@ duck_object_t *duck_node_member_get_invoke(duck_node_member_get_t *this,
 					   duck_stack_frame_t *stack)
 {
     return *duck_member_addr_get_mid(duck_node_invoke(this->object, stack), this->mid);
+}
+
+duck_object_t *duck_node_member_set_invoke(duck_node_member_set_t *this, 
+					   duck_stack_frame_t *stack)
+{
+    return (*duck_member_addr_get_mid(duck_node_invoke(this->object, stack), this->mid)) = duck_node_invoke(this->value, stack);
+    //return *duck_member_addr_get_mid(duck_node_invoke(this->object, stack), this->mid);
 }
 
 duck_object_t *duck_node_member_get_wrap_invoke(duck_node_member_get_t *this, 
@@ -602,6 +627,9 @@ duck_object_t *duck_node_invoke(duck_node_t *this,
 
 	case DUCK_NODE_MEMBER_GET:
 	   return duck_node_member_get_invoke((duck_node_member_get_t *)this, stack);
+
+	case DUCK_NODE_MEMBER_SET:
+	   return duck_node_member_set_invoke((duck_node_member_set_t *)this, stack);
 
 	case DUCK_NODE_MEMBER_GET_WRAP:
 	   return duck_node_member_get_wrap_invoke((duck_node_member_get_t *)this, stack);

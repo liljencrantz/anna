@@ -2,15 +2,12 @@
 class TestClass 
 {
 	var Int myMember;
-	function myMethod(Int arg1, Int arg2)
+	function myMethod(Int arg1)
 	{
-		print(arg2);
-		print(this);
+		this.myMember = arg1+1;
 	}
 };
 
 var foo = TestClass();
-foo.myMethod(3,2);
-
-
-
+foo.myMethod(7);
+print(foo.myMember);
