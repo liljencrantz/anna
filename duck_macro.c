@@ -25,28 +25,34 @@
       return (duck_node_t *)duck_node_null_create(&node->location);	\
     }
 
-#define CHECK_NODE_BLOCK(n) if(n->node_type != DUCK_NODE_CALL)		\
-    {									\
-	duck_error((duck_node_t *)node,					\
-		   L"Unexpected argument type. Expected a block definition."); \
-	return (duck_node_t *)duck_node_null_create(&node->location);	\
-    }									\
-  {									\
-    duck_node_call_t *__cnb_tmp = (duck_node_call_t *)n;		\
-    if(__cnb_tmp->function->node_type != DUCK_NODE_LOOKUP)		\
-      {									\
-	duck_error((duck_node_t *)__cnb_tmp->function,			\
-		   L"Unexpected argument type. Expected a block definition."); \
-	return (duck_node_t *)duck_node_null_create(&node->location);	\
-      }									\
-    duck_node_lookup_t *__cnb_tmp2 = (duck_node_lookup_t *)__cnb_tmp->function; \
-    if(wcscmp(__cnb_tmp2->name, L"__block__") != 0)			\
-      {									\
-	duck_error((duck_node_t *)__cnb_tmp->function,			\
-		   L"Unexpected argument type. Expected a block definition."); \
-	return (duck_node_t *)duck_node_null_create(&node->location);	\
-      }									\
-  }									\
+#define CHECK_NODE_BLOCK(n) if(!check_node_block(n)) return (duck_node_t *)duck_node_null_create(&node->location)
+
+static int check_node_block(duck_node_t *n)
+{
+    if(n->node_type != DUCK_NODE_CALL)
+    {
+	duck_error((duck_node_t *)n,
+		   L"Unexpected argument type. Expected a block definition.");
+	return 0;	    
+    }
+    {
+	duck_node_call_t *__cnb_tmp = (duck_node_call_t *)n;
+	if(__cnb_tmp->function->node_type != DUCK_NODE_LOOKUP)
+	{
+	    duck_error((duck_node_t *)__cnb_tmp->function,
+		       L"Unexpected argument type. Expected a block definition.");
+	    return 0;	    
+	}
+	duck_node_lookup_t *__cnb_tmp2 = (duck_node_lookup_t *)__cnb_tmp->function;
+	if(wcscmp(__cnb_tmp2->name, L"__block__") != 0)
+	{
+	    duck_error((duck_node_t *)__cnb_tmp->function,
+		       L"Unexpected argument type. Expected a block definition.");
+	    return 0;	    
+	}
+    }
+    return 1;
+}
 
 static wchar_t *duck_find_method(duck_type_t *type, wchar_t *prefix, 
 				      size_t argc, duck_type_t *arg2_type)

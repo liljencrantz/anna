@@ -1,5 +1,5 @@
 
-CFLAGS := -g -rdynamic
+CFLAGS := -g -rdynamic -O
 
 DUCK_OBJS := duck.o util.o duck_parse.o duck_node.o duck_macro.o duck_function_implementation.o duck_int.o duck_string.o duck_char.o duck_float.o duck_list.o duck_stack.o duck_lex.o duck_yacc.o common.o wutil.o
 
