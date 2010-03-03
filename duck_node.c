@@ -255,31 +255,42 @@ duck_node_t *duck_node_call_prepare(duck_node_call_t *node, duck_function_t *fun
    duck_node_print((duck_node_t *)node);
    wprintf(L"\n");
 */
-   if(node->function->node_type == DUCK_NODE_LOOKUP)
+   if(node->node_type == DUCK_NODE_CALL)
    {
-      duck_node_lookup_t *name=(duck_node_lookup_t *)node->function;      
-      duck_object_t *obj = duck_stack_get_str(function->stack_template, name->name);
-      duck_function_t *func=duck_function_unwrap(obj);
-      if(!func)
-	{
-	  duck_error(node,L"Tried to execute non-function %ls", name->name);
-	  CRASH;
-	  
-	  return null_object;
-	  
-	}
+       
+       if(node->function->node_type == DUCK_NODE_LOOKUP)
+       {       
+	   duck_node_lookup_t *name=(duck_node_lookup_t *)node->function;
+	   duck_object_t *obj = duck_stack_get_str(function->stack_template, name->name);
+	   duck_function_t *func=duck_function_unwrap(obj);
+	   
+	   if(func && func->flags == DUCK_FUNCTION_MACRO)
+	   {
+	       return duck_node_prepare(func->native.macro(node, function, parent), function, parent);
+	   }
+	   
+       }
+       else 
+       {
+	   node->function = duck_node_prepare(node->function, function, parent);
+       }
+       
+       duck_type_t *func_type = duck_node_get_return_type(node->function, function->stack_template);
+       if(func_type == type_type)
+       {
+	   /*
+	     Constructor!
+	   */
+	   node->node_type = DUCK_NODE_CONSTRUCT;
+	   node->function = (duck_node_t *)duck_node_dummy_create(&node->location, 
+								  duck_node_invoke(node->function, function->stack_template),
+								  0);
+	   //wprintf(L"Woo, changing call into constructor!\n");
+	   
+	   return (duck_node_t *)node;
+       }
+   }
       
-    
-      if(func->flags == DUCK_FUNCTION_MACRO)
-      {
-	  return duck_node_prepare(func->native.macro(node, function, parent), function, parent);
-      }
-   }
-   else 
-   {
-      node->function = duck_node_prepare(node->function, function, parent);	 
-   }
-   
    //wprintf(L"Regular function, prepare the kids\n");
    int i;
    for(i=0; i<node->child_count; i++)
@@ -342,14 +353,23 @@ duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *st
 {
     switch(this->node_type)
     {
+	case DUCK_NODE_CONSTRUCT:
+	{
+	    duck_node_call_t *this2 =(duck_node_call_t *)this;	    
+	    return duck_type_unwrap(duck_node_invoke(this2->function, 0));
+	}
+	
 	case DUCK_NODE_CALL:
 	{
 	    duck_node_call_t *this2 =(duck_node_call_t *)this;	    
-
+	    wprintf(L"Get return type of node\n");
+	    duck_node_print(this);
+	    wprintf(L"\n");
+	    
 	    duck_type_t *func_type = duck_node_get_return_type(this2->function, stack);
 	    /*
 	      Special case constructors...
-	     */
+	    */
 	    if(func_type == type_type)
 	    {
 		if(this2->function->node_type == DUCK_NODE_LOOKUP)
@@ -413,6 +433,15 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 {
     switch(this->node_type)
     {
+	case DUCK_NODE_CONSTRUCT:
+	{
+	    /*
+	      FIXME: Do some actual checking!
+	    */
+	    duck_node_call_t *this2 =(duck_node_call_t *)this;	    
+	    break;
+	}
+	
 	case DUCK_NODE_CALL:
 	{
 	    duck_node_call_t *this2 =(duck_node_call_t *)this;	    
@@ -425,23 +454,7 @@ void duck_node_validate(duck_node_t *this, duck_stack_frame_t *stack)
 	    }
 	    
 	    duck_type_t *func_type = duck_node_get_return_type(this2->function, stack);
-	    /*
-	      Special case constructors...
 
-	      FIXME: Doesn't actually test anything yet... :-/
-	     */
-	    if(func_type == type_type)
-	    {
-		if(this2->function->node_type == DUCK_NODE_LOOKUP)
-		{
-		    duck_node_lookup_t *lookup = (duck_node_lookup_t *)this2->function;
-		    duck_object_t *type_wrapper = duck_stack_get_str(stack, lookup->name);
-		    assert(type_wrapper);
-		    return;
-		}
-		return;
-	    }
-	    
 	    duck_function_type_key_t *function_data = duck_function_unwrap_type(func_type);
 	    if(!function_data)
 	    {
@@ -529,6 +542,7 @@ duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duc
     switch(this->node_type)
     {
 	case DUCK_NODE_CALL:
+	case DUCK_NODE_CONSTRUCT:
 	    return duck_node_call_prepare((duck_node_call_t *)this, function, parent);
 	    
 	case DUCK_NODE_LOOKUP:
@@ -602,6 +616,17 @@ duck_object_t *duck_node_invoke(duck_node_t *this,
 	case DUCK_NODE_CALL:
 	    return duck_node_call_invoke((duck_node_call_t *)this, stack);
 
+	case DUCK_NODE_CONSTRUCT:
+	{
+	    duck_node_call_t *call = (duck_node_call_t *)this;
+	    //wprintf(L"Wee, calling construct with %d parameter, %d\n", call->child_count, call->child[0]);
+	    
+
+	    return duck_construct(duck_type_unwrap(duck_node_invoke(call->function, stack)),
+				  call,
+				  stack);
+	}
+    
 	case DUCK_NODE_DUMMY:
 	{
 	   duck_node_dummy_t *node = (duck_node_dummy_t *)this;

@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "util.h"
+#include "wutil.h"
 #include "duck_node.h"
 #include "duck_lex.h"
 

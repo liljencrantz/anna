@@ -626,6 +626,11 @@ static duck_node_t *duck_macro_member_get(duck_node_call_t *node,
     size_t mid = duck_mid_get(name_node->name);
     
     duck_type_t *member_type = duck_type_member_type_get(object_type, name_node->name);
+    if(!member_type)
+    {
+	duck_error(node, L"Unable to calculate type of member %ls of object of type %ls", name_node->name, object_type->name);
+	return (duck_node_t *)duck_node_null_create(&node->location);	\
+    }
     
     int wrap = !!duck_static_member_addr_get_mid(member_type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     return (duck_node_t *)duck_node_member_get_create(&node->location,
@@ -1021,12 +1026,12 @@ static duck_node_t *duck_macro_type(duck_node_call_t *node,
 	argv[i] = constructor->input_type[i];
 	argn[i] = constructor->input_name[i];
     }
-    
+/*    
     duck_native_method_create(type, DUCK_MID_CALL_PAYLOAD, L"__call__",
 			      0, (duck_native_t)&duck_construct,
 			      type, constructor->input_count, argv, argn);
     wprintf(L"Create __call__ for non-native type %ls\n", type->name);
-    
+*/  
     return (duck_node_t *)duck_node_dummy_create(&node->location,
 						 type->wrapper,
 						 0);

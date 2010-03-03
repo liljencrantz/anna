@@ -157,6 +157,11 @@ duck_object_t *duck_function_invoke_values(duck_function_t *function,
 					   duck_object_t *this,
 					   duck_object_t **param,
 					   struct duck_stack_frame *outer);
+duck_object_t *duck_function_invoke(duck_function_t *function, 
+				    duck_object_t *this,
+				    struct duck_node_call *param,
+				    struct duck_stack_frame *stack,
+				    struct duck_stack_frame *outer);
 
 duck_function_t *duck_function_create(wchar_t *name,
 				      int flags,
@@ -167,8 +172,7 @@ duck_function_t *duck_function_create(wchar_t *name,
 				      wchar_t **argn,
 				      struct duck_stack_frame *parent_stack);
 
-duck_object_t *duck_construct(duck_object_t **param);
-
+duck_object_t *duck_construct(duck_type_t *type, struct duck_node **param, struct duck_stack_frame *stack);
 
 duck_object_t **duck_static_member_addr_get_mid(duck_type_t *type, size_t mid);
 duck_object_t **duck_member_addr_get_str(duck_object_t *obj, wchar_t *name);

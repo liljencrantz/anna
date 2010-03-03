@@ -141,11 +141,6 @@ int duck_error_count=0;
 
 static duck_member_t **duck_mid_lookup_create();
 
-duck_object_t *duck_function_invoke(duck_function_t *function, 
-				    duck_object_t *this,
-				    duck_node_call_t *param,
-				    duck_stack_frame_t *stack,
-				    duck_stack_frame_t *outer);
 static duck_type_t *duck_type_create_raw(wchar_t *name, size_t static_member_count);
 static void duck_type_wrapper_create(duck_type_t *result);
 
@@ -357,21 +352,21 @@ duck_type_t *duck_type_for_function(duck_type_t *result, size_t argc, duck_type_
 duck_function_type_key_t *duck_function_unwrap_type(duck_type_t *type)
 {
     assert(type);
-    wprintf(L"Find function signature for call %ls\n", type->name);
+    //wprintf(L"Find function signature for call %ls\n", type->name);
     
     duck_function_type_key_t **function_ptr = (duck_function_type_key_t **)duck_static_member_addr_get_mid(type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     if(function_ptr) 
     {
-      wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
+	//wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
 	return *function_ptr;
     }
     else 
     {
-      wprintf(L"Not a direct function, check for __call__ member\n");
+	//wprintf(L"Not a direct function, check for __call__ member\n");
 	duck_object_t **function_wrapper_ptr = duck_static_member_addr_get_mid(type, DUCK_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
-	  wprintf(L"Found, we're unwrapping it now\n");
+	    //wprintf(L"Found, we're unwrapping it now\n");
 	    return duck_function_unwrap_type((*function_wrapper_ptr)->type);	    
 	}
 	return 0;	
@@ -467,10 +462,8 @@ duck_object_t *duck_call(duck_stack_frame_t *stack, duck_object_t *obj)
 }
 */
 
-duck_object_t *duck_construct(duck_object_t **param)
+duck_object_t *duck_construct(duck_type_t *type, duck_node_t **param, duck_stack_frame_t *stack)
 {
-    duck_object_t *type_wrapper = param[0];
-    duck_type_t *type = duck_type_unwrap(type_wrapper);
     duck_object_t *result = duck_object_create(type);
     //wprintf(L"Creating new object of type %ls\n", type->name);
     assert(type->name);
@@ -479,9 +472,8 @@ duck_object_t *duck_construct(duck_object_t **param)
     if(constructor_ptr)
     {
         duck_function_t *constructor = duck_function_unwrap(*constructor_ptr);
-	wprintf(L"First param is %ls type\n", param[1]->type->name);
-	
-	duck_function_invoke_values(constructor, result, &param[1], 0);
+	//wprintf(L"First param is %ls type\n", param[1]->type->name);
+	duck_function_invoke(constructor, result, param, stack, 0);
     }
     
     /*
@@ -1068,7 +1060,7 @@ duck_object_t *duck_function_invoke_values(duck_function_t *function,
 			argv[i+offset]=param[i];
 		      }
 		}
-		wprintf(L"Invoking function with %d params\n", function->input_count);
+		//wprintf(L"Invoking function with %d params\n", function->input_count);
 		
 		return function->native.function(argv);
 	    }
@@ -1118,48 +1110,51 @@ duck_object_t *duck_function_invoke(duck_function_t *function,
 				    duck_stack_frame_t *stack,
 				    duck_stack_frame_t *outer) 
 {
-  if(!this)
+    if(!this)
     {
-      this=function->this;
+	this=function->this;
     }
-  
+    
     //wprintf(L"duck_function_invoke %ls %d; %d params\n", function->name, function, function->input_count);    
     if(likely(function->input_count < 8))
     {
-      duck_object_t *argv[8];
-      int i;
-      
-      int offset=0;
-      if(this)
+	duck_object_t *argv[8];
+	int i;
+	
+	int offset=0;
+	if(this)
 	{
-	  offset=1;
-	  argv[0]=this;		    
+	    
+	    
+	    offset=1;
+	    argv[0]=this;		    
 	}
-      
-      for(i=0; i<(function->input_count-offset); i++) 
+	
+	for(i=0; i<(function->input_count-offset); i++) 
 	{
-	  argv[i+offset]=duck_node_invoke(param->child[i], stack);
+	    
+	    argv[i+offset]=duck_node_invoke(param->child[i], stack);
 	}      
-      return duck_function_invoke_values(function, 0, argv, outer);
+	return duck_function_invoke_values(function, 0, argv, outer);
     }
     else
     {
-      duck_object_t **argv=malloc(sizeof(duck_object_t *)*function->input_count);
-      int i;
-      
-      int offset=0;
-      if(this)
+	duck_object_t **argv=malloc(sizeof(duck_object_t *)*function->input_count);
+	int i;
+	
+	int offset=0;
+	if(this)
 	{
-	  offset=1;
-	  argv[0]=this;		    
+	    offset=1;
+	    argv[0]=this;		    
 	}
-      for(i=0; i<(function->input_count-offset); i++) 
+	for(i=0; i<(function->input_count-offset); i++) 
 	{
-	  argv[i+offset]=duck_node_invoke(param->child[i], stack);
+	    argv[i+offset]=duck_node_invoke(param->child[i], stack);
 	}
-      duck_object_t *result = duck_function_invoke_values(function, 0, argv, outer);
-      free(argv);
-      return result;
+	duck_object_t *result = duck_function_invoke_values(function, 0, argv, outer);
+	free(argv);
+	return result;
       
     }
   
