@@ -469,8 +469,15 @@ duck_object_t *duck_construct(duck_object_t **param)
     duck_object_t *type_wrapper = param[0];
     duck_type_t *type = duck_type_unwrap(type_wrapper);
     duck_object_t *result = duck_object_create(type);
-    //wprintf(L"Running constructor for object of type %ls\n", type->name);
+    wprintf(L"Creating new object of type %ls\n", type->name);
     assert(type->name);
+    
+    duck_object_t **constructor_ptr = *duck_static_member_addr_get_mid(res, DUCK_MID_INIT);
+    if(constructor_ptr)
+    {
+	wprintf(L"Found constructor\n");
+	
+    }
     
     /*
       FIXME: Constructor goes here!

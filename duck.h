@@ -49,7 +49,8 @@ typedef struct duck_node *(*duck_native_macro_t)( struct duck_node_call *, struc
 #define DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD 13
 #define DUCK_MID_TYPE_WRAPPER_PAYLOAD 14
 #define DUCK_MID_CALL 15
-#define DUCK_MID_FIRST_UNRESERVED 16
+#define DUCK_MID_INIT_PAYLOAD 16
+#define DUCK_MID_FIRST_UNRESERVED 17
 
 union duck_native
 {

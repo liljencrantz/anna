@@ -2,6 +2,12 @@
 class TestClass 
 {
 	var Int myMember;
+	
+	function __init__()
+	{
+		this.myMember = 3;
+	}
+
 	function myMethod(Int arg1)
 	{
 		this.myMember = arg1+1;
@@ -9,5 +15,6 @@ class TestClass
 };
 
 var foo = TestClass();
+print(foo.myMember);
 foo.myMethod(7);
 print(foo.myMember);
