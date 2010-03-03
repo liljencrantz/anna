@@ -15,9 +15,11 @@
 #include "duck_char.h"
 #include "duck_list.h"
 
+#define likely(x) (x)
 /*
   Ideas for apps written in duck:
-  Documentation generator: Introspect all data types and generate documentation on them.
+  Documentation generator: Introspect all data types and generate html documentation on them.
+  live: Debug a running application using command line or web browser.
   Compiler front end.
 */
 /*
@@ -48,7 +50,7 @@
   Garbage collection
   constructors
   
-  Create intersection of two types
+  Proper intersection of two types
   
   cast function
   import macro
@@ -139,9 +141,13 @@ int duck_error_count=0;
 
 static duck_member_t **duck_mid_lookup_create();
 
-duck_object_t *duck_function_invoke(duck_function_t *function, duck_node_call_t *param, duck_stack_frame_t *stack, duck_stack_frame_t *outer);
+duck_object_t *duck_function_invoke(duck_function_t *function, 
+				    duck_object_t *this,
+				    duck_node_call_t *param,
+				    duck_stack_frame_t *stack,
+				    duck_stack_frame_t *outer);
 static duck_type_t *duck_type_create_raw(wchar_t *name, size_t static_member_count);
-static void duck_type_wrapper_create(duck_type_t *result, int creatable);
+static void duck_type_wrapper_create(duck_type_t *result);
 
 duck_object_t *duck_i_function_wrapper_call(duck_node_call_t *node, duck_stack_frame_t *stack);
 void duck_object_print(duck_object_t *obj, int level);
@@ -335,7 +341,7 @@ duck_type_t *duck_type_for_function(duck_type_t *result, size_t argc, duck_type_
 			   0, null_type);
 	duck_member_create(res, DUCK_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
 			   0, null_type);
-	duck_type_wrapper_create(res, 0);
+	duck_type_wrapper_create(res);
 	
 	(*duck_static_member_addr_get_mid(res, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (duck_object_t *)new_key;
     }
@@ -351,21 +357,21 @@ duck_type_t *duck_type_for_function(duck_type_t *result, size_t argc, duck_type_
 duck_function_type_key_t *duck_function_unwrap_type(duck_type_t *type)
 {
     assert(type);
-    //wprintf(L"Find function signature for call %ls\n", type->name);
+    wprintf(L"Find function signature for call %ls\n", type->name);
     
     duck_function_type_key_t **function_ptr = (duck_function_type_key_t **)duck_static_member_addr_get_mid(type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     if(function_ptr) 
     {
-	//wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
+      wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
 	return *function_ptr;
     }
     else 
     {
-	//wprintf(L"Not a direct function, check for __call__ member\n");
+      wprintf(L"Not a direct function, check for __call__ member\n");
 	duck_object_t **function_wrapper_ptr = duck_static_member_addr_get_mid(type, DUCK_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
-	    //wprintf(L"Found, we're unwrapping it now\n");
+	  wprintf(L"Found, we're unwrapping it now\n");
 	    return duck_function_unwrap_type((*function_wrapper_ptr)->type);	    
 	}
 	return 0;	
@@ -397,7 +403,10 @@ duck_function_t *duck_function_unwrap(duck_object_t *obj)
   
 }
 
-duck_object_t *duck_function_wrapped_invoke(duck_object_t *obj, duck_node_call_t *param, duck_stack_frame_t *local)
+duck_object_t *duck_function_wrapped_invoke(duck_object_t *obj, 
+					    duck_object_t *this,
+					    duck_node_call_t *param,
+					    duck_stack_frame_t *local)
 {
   //wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
   
@@ -405,20 +414,14 @@ duck_object_t *duck_function_wrapped_invoke(duck_object_t *obj, duck_node_call_t
     duck_stack_frame_t **stack_ptr = (duck_stack_frame_t **)duck_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
-      return duck_function_invoke(*function_ptr, param, local, stack_ptr?*stack_ptr:stack_global);
+        return duck_function_invoke(*function_ptr, this, param, local, stack_ptr?*stack_ptr:stack_global);
     }
     else 
     {
-	/*
-	  FIXME: On __call__ pseudo-function gibberish, we create a
-	  duck_function_t copy and set the this pointer. That's slow
-	  and silly, figure out something more efficient.
-	*/
 	duck_object_t **function_wrapper_ptr = duck_static_member_addr_get_mid(obj->type, DUCK_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
-	    //wprintf(L"Wrapped invoke!\n");
-	    return duck_function_wrapped_invoke(duck_method_wrap(*function_wrapper_ptr,obj), param, stack_ptr?*stack_ptr:stack_global);
+	  return duck_function_wrapped_invoke(*function_wrapper_ptr,obj, param, stack_ptr?*stack_ptr:stack_global);
 	}
 	
 	wprintf(L"Critical: Tried to call a non-function");
@@ -449,7 +452,7 @@ duck_type_t *duck_type_member_type_get(duck_type_t *type, wchar_t *name)
     {
 	return 0;
     }
-   
+    
     return m->type;
 }
 
@@ -469,14 +472,16 @@ duck_object_t *duck_construct(duck_object_t **param)
     duck_object_t *type_wrapper = param[0];
     duck_type_t *type = duck_type_unwrap(type_wrapper);
     duck_object_t *result = duck_object_create(type);
-    wprintf(L"Creating new object of type %ls\n", type->name);
+    //wprintf(L"Creating new object of type %ls\n", type->name);
     assert(type->name);
     
-    duck_object_t **constructor_ptr = *duck_static_member_addr_get_mid(res, DUCK_MID_INIT);
+    duck_object_t **constructor_ptr = duck_member_addr_get_mid(result, DUCK_MID_INIT_PAYLOAD);
     if(constructor_ptr)
     {
-	wprintf(L"Found constructor\n");
+        duck_function_t *constructor = duck_function_unwrap(*constructor_ptr);
+	wprintf(L"First param is %ls type\n", param[1]->type->name);
 	
+	duck_function_invoke_values(constructor, result, &param[1], 0);
     }
     
     /*
@@ -538,15 +543,15 @@ void duck_prepare_children(duck_node_call_t *in, duck_function_t *func, duck_nod
        in->child[i] = duck_node_prepare(in->child[i], func, parent);
 }
 
-duck_object_t *duck_i_member_call(duck_node_call_t *this, duck_stack_frame_t *stack)
+duck_object_t *duck_i_member_call(duck_node_call_t *param, duck_stack_frame_t *stack)
 {
 /*
-    wprintf(L"member_get on node at %d\n", this);
-    duck_node_print((duck_node_t *)this);
+    wprintf(L"member_get on node at %d\n", param);
+    duck_node_print((duck_node_t *)param);
     wprintf(L"\n");
 */  
-    duck_object_t *obj = duck_node_invoke(this->child[0], stack);
-    duck_node_lookup_t *name_node = node_cast_lookup(this->child[1]);
+    duck_object_t *obj = duck_node_invoke(param->child[0], stack);
+    duck_node_lookup_t *name_node = node_cast_lookup(param->child[1]);
     //   wprintf(L"name node is %d, name is %ls\n", name_node, name_node->name);
     duck_object_t *member = *duck_member_addr_get_str(obj, name_node->name);
     
@@ -554,7 +559,7 @@ duck_object_t *duck_i_member_call(duck_node_call_t *this, duck_stack_frame_t *st
       return member;
     }
     
-    return duck_function_wrapped_invoke(member, this, stack);    
+    return duck_function_wrapped_invoke(member, 0, param, stack);    
 }
 
 void duck_function_prepare(duck_function_t *function)
@@ -682,6 +687,10 @@ duck_type_t *duck_type_intersect(duck_type_t *t1, duck_type_t *t2)
     {
 	return t1;
     }
+    /*
+      FIXME: Do proper intersection!
+     */
+    
     return object_type;
 }
 
@@ -747,12 +756,13 @@ duck_object_t *duck_i_const_int(duck_node_t *this, duck_stack_frame_t *stack)
     return result;
 }
 
+/**
+  This method is the best ever! All method calls on the null object run this
+*/
 duck_object_t *duck_i_null_function(duck_object_t **node_base)
 {
-  //  wprintf(L"YAY!! RUNNING THE NULL FUNCTION\n");
   return null_object;
 }
-
 
 duck_type_t *duck_type_unwrap(duck_object_t *wrapper)
 {
@@ -762,27 +772,10 @@ duck_type_t *duck_type_unwrap(duck_object_t *wrapper)
     return result;
 }
 
-static void duck_type_wrapper_create(duck_type_t *result, int creatable)
+static void duck_type_wrapper_create(duck_type_t *result)
 {
   result->wrapper = duck_object_create(type_type);
-  if(creatable) {      
-      duck_type_t *argv[]=
-	  {
-	      type_type
-	  }
-      ;
-      wchar_t *argn[]=
-	  {
-	      L"type"
-	  }
-      ;
-      
-      duck_native_method_create(result, DUCK_MID_CALL_PAYLOAD, L"__call__",
-				0, (duck_native_t)&duck_construct,
-				result, 1, argv, argn);
-      memcpy(duck_member_addr_get_mid(result->wrapper, DUCK_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(duck_type_t *));
-  } 
-  
+  memcpy(duck_member_addr_get_mid(result->wrapper, DUCK_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(duck_type_t *));  
 }
 
 static duck_type_t *duck_type_create_raw(wchar_t *name, size_t static_member_count)
@@ -799,7 +792,7 @@ static duck_type_t *duck_type_create_raw(wchar_t *name, size_t static_member_cou
 duck_type_t *duck_type_create(wchar_t *name, size_t static_member_count)
 {
     duck_type_t *result = duck_type_create_raw(name, static_member_count);
-    duck_type_wrapper_create(result, 1);
+    duck_type_wrapper_create(result);
     return result;
 }
 			  
@@ -821,8 +814,7 @@ size_t duck_member_create(duck_type_t *type,
     {
 	wprintf(L"Redeclaring member %ls of type %ls\n",
 		name, type->name);
-	CRASH;
-	
+	CRASH;	
     }
     
     duck_member_t * member = calloc(1,sizeof(duck_member_t) + sizeof(wchar_t) * (wcslen(name)+1));
@@ -962,8 +954,6 @@ static void duck_object_type_create_early()
 {
 }
 
-
-
 static void duck_init()
 {
     hash_init(&duck_mid_lookup, &hash_wcs_func, &hash_wcs_cmp);
@@ -983,8 +973,8 @@ static void duck_init()
     duck_mid_put(L"!floatPayload", DUCK_MID_FLOAT_PAYLOAD);
     duck_mid_put(L"!functionStack", DUCK_MID_FUNCTION_WRAPPER_STACK);
     duck_mid_put(L"__call__", DUCK_MID_CALL_PAYLOAD);    
-  
-  
+    duck_mid_put(L"__init__", DUCK_MID_INIT_PAYLOAD);
+
     stack_global = duck_stack_create(4096, 0);
     
     /*
@@ -1009,10 +999,10 @@ static void duck_init()
     duck_string_type_create();
     duck_float_type_create(stack_global);
 
-    duck_type_wrapper_create(type_type, 1);
-    duck_type_wrapper_create(null_type, 0);
-    duck_type_wrapper_create(object_type, 1);
-    duck_type_wrapper_create(string_type, 1);
+    duck_type_wrapper_create(type_type);
+    duck_type_wrapper_create(null_type);
+    duck_type_wrapper_create(object_type);
+    duck_type_wrapper_create(string_type);
         
     duck_stack_declare(stack_global, L"Object", object_type, object_type->wrapper);
     duck_stack_declare(stack_global, L"Null", null_type, null_type->wrapper);
@@ -1048,13 +1038,11 @@ void duck_object_print(duck_object_t *obj, int level)
     hash_foreach2(&obj->type->name_lookup, &duck_print_member, obj);
 }
 
-duck_object_t *duck_function_invoke(duck_function_t *function, 
-				    duck_node_call_t *param, 
-				    duck_stack_frame_t *stack,
-				    duck_stack_frame_t *outer) 
+duck_object_t *duck_function_invoke_values(duck_function_t *function, 
+					   duck_object_t *this,
+					   duck_object_t **param,
+					   duck_stack_frame_t *outer)
 {
-    //wprintf(L"duck_function_invoke %ls %d; %d params\n", function->name, function, function->input_count);    
-    
     switch(function->flags) 
     {
 	default:
@@ -1066,21 +1054,22 @@ duck_object_t *duck_function_invoke(duck_function_t *function,
 	{
 	    if(function->native.function) 
 	    {
-		duck_object_t **argv=malloc(sizeof(duck_object_t *)*function->input_count);
+	        duck_object_t **argv=param;
 		int i;
 		
 		int offset=0;
-		if(function->this)
+		if(this)
 		{
+		    argv=malloc(sizeof(duck_object_t *)*function->input_count);
 		    offset=1;
-		    argv[0]=function->this;		    
+		    argv[0]=this;		    
+		    for(i=0; i<(function->input_count-offset); i++) 
+		      {
+			argv[i+offset]=param[i];
+		      }
 		}
+		wprintf(L"Invoking function with %d params\n", function->input_count);
 		
-		for(i=0; i<(function->input_count-offset); i++) 
-		{
-		    argv[i+offset]=duck_node_invoke(param->child[i], stack);
-		}
-		//wprintf(L"native, %d\n", function->native);    
 		return function->native.function(argv);
 	    }
 	    else 
@@ -1088,30 +1077,28 @@ duck_object_t *duck_function_invoke(duck_function_t *function,
 		duck_object_t *result = null_object;
 		int i;
 		duck_stack_frame_t *my_stack = duck_stack_clone(function->stack_template);//function->input_count+1);
-		my_stack->parent = outer;
-		
+		my_stack->parent = outer?outer:stack_global;
 		/*
 		  FIXME:
 		  Support return statement
 		*/
 		//wprintf(L"Run non-native function %ls with %d params\n", function->name, function->input_count);
 		int offset=0;
-		if(function->this)
+		if(this)
 		{
 		    offset=1;
 		    duck_stack_declare(my_stack, 
 				       function->input_name[0],
 				       function->input_type[0],
-				       function->this);
+				       this);
 		}
 		
 		for(i=0; i<(function->input_count-offset); i++) 
 		{
-		    duck_object_t *value=duck_node_invoke(param->child[i], stack);
 		    duck_stack_declare(my_stack, 
 				       function->input_name[i+offset],
 				       function->input_type[i+offset],
-				       value);
+				       param[i]);
 		}
 		
 		for(i=0; i<function->body->child_count; i++)
@@ -1123,6 +1110,62 @@ duck_object_t *duck_function_invoke(duck_function_t *function,
 	}
     }
 }
+
+
+duck_object_t *duck_function_invoke(duck_function_t *function, 
+				    duck_object_t *this,
+				    duck_node_call_t *param, 
+				    duck_stack_frame_t *stack,
+				    duck_stack_frame_t *outer) 
+{
+  if(!this)
+    {
+      this=function->this;
+    }
+  
+    //wprintf(L"duck_function_invoke %ls %d; %d params\n", function->name, function, function->input_count);    
+    if(likely(function->input_count < 8))
+    {
+      duck_object_t *argv[8];
+      int i;
+      
+      int offset=0;
+      if(this)
+	{
+	  offset=1;
+	  argv[0]=this;		    
+	}
+      
+      for(i=0; i<(function->input_count-offset); i++) 
+	{
+	  argv[i+offset]=duck_node_invoke(param->child[i], stack);
+	}      
+      return duck_function_invoke_values(function, 0, argv, outer);
+    }
+    else
+    {
+      duck_object_t **argv=malloc(sizeof(duck_object_t *)*function->input_count);
+      int i;
+      
+      int offset=0;
+      if(this)
+	{
+	  offset=1;
+	  argv[0]=this;		    
+	}
+      for(i=0; i<(function->input_count-offset); i++) 
+	{
+	  argv[i+offset]=duck_node_invoke(param->child[i], stack);
+	}
+      duck_object_t *result = duck_function_invoke_values(function, 0, argv, outer);
+      free(argv);
+      return result;
+      
+    }
+  
+}
+
+
 
 void duck_error(duck_node_t *node, wchar_t *msg, ...)
 {
@@ -1190,7 +1233,7 @@ int main(int argc, char **argv)
     wprintf(L"Output:\n");    
     duck_function_t *func=duck_function_unwrap(program_object);    
     assert(func);
-    duck_function_invoke(func, 0, stack_global, stack_global);
+    duck_function_invoke(func, 0, 0, stack_global, stack_global);
     
     wprintf(L"\n");
 }

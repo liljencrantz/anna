@@ -149,7 +149,15 @@ duck_type_t *duck_type_for_function(duck_type_t *result, size_t argc, duck_type_
 duck_type_t *duck_type_create(wchar_t *name, size_t static_member_count);
 
 duck_function_t *duck_function_unwrap(duck_object_t *type);
-duck_object_t *duck_function_wrapped_invoke(duck_object_t *function, struct duck_node_call *param, struct duck_stack_frame *local);
+duck_object_t *duck_function_wrapped_invoke(duck_object_t *function,
+					    duck_object_t *this,
+					    struct duck_node_call *param, 
+					    struct duck_stack_frame *local);
+duck_object_t *duck_function_invoke_values(duck_function_t *function, 
+					   duck_object_t *this,
+					   duck_object_t **param,
+					   struct duck_stack_frame *outer);
+
 duck_function_t *duck_function_create(wchar_t *name,
 				      int flags,
 				      struct duck_node_call *body, 
@@ -158,6 +166,8 @@ duck_function_t *duck_function_create(wchar_t *name,
 				      duck_type_t **argv,
 				      wchar_t **argn,
 				      struct duck_stack_frame *parent_stack);
+
+duck_object_t *duck_construct(duck_object_t **param);
 
 
 duck_object_t **duck_static_member_addr_get_mid(duck_type_t *type, size_t mid);

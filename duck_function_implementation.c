@@ -39,7 +39,7 @@ static duck_object_t *duck_i_print(duck_object_t **param)
 	}
 	else 
 	{
-	    wprintf(L"WAAAH\n");
+	  wprintf(L"%ls", value->type->name);
 	}
 	/*
 	  FIXME: Print other things than just ints!
@@ -65,7 +65,7 @@ static duck_object_t *duck_i_if(duck_object_t **param)
 	body_object=param[2];
     }
     
-    return duck_function_wrapped_invoke(body_object, 0, 0);
+    return duck_function_wrapped_invoke(body_object, 0, 0, 0);
 }
 
 void duck_function_implementation_init(struct duck_stack_frame *stack)

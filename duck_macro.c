@@ -726,7 +726,7 @@ static duck_node_t *duck_macro_else(duck_node_call_t *node,
 
 static duck_object_t *duck_function_or(duck_object_t **param)
 {
-    return param[0] == null_object?duck_function_wrapped_invoke(param[1], 0, 0):param[0];
+  return param[0] == null_object?duck_function_wrapped_invoke(param[1], 0, 0, 0):param[0];
 }
 
 static duck_node_t *duck_macro_or(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
@@ -799,7 +799,7 @@ static duck_node_t *duck_macro_or(duck_node_call_t *node, duck_function_t *func,
 
 static duck_object_t *duck_function_and(duck_object_t **param)
 {
-    return (param[0] == null_object)?null_object:duck_function_wrapped_invoke(param[1], 0, 0);
+  return (param[0] == null_object)?null_object:duck_function_wrapped_invoke(param[1], 0, 0, 0);
 }
 
 static duck_node_t *duck_macro_and(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
@@ -872,9 +872,9 @@ static duck_node_t *duck_macro_and(duck_node_call_t *node, duck_function_t *func
 static duck_object_t *duck_function_while(duck_object_t **param)
 {
     duck_object_t *result = null_object;
-    while(duck_function_wrapped_invoke(param[0], 0, 0) != null_object)
+    while(duck_function_wrapped_invoke(param[0], 0, 0, 0) != null_object)
     {
-	result = duck_function_wrapped_invoke(param[1], 0, 0);
+      result = duck_function_wrapped_invoke(param[1], 0, 0, 0);
     }
     return result;
 }
@@ -1007,6 +1007,25 @@ static duck_node_t *duck_macro_type(duck_node_call_t *node,
     }
     if(error_count)
 	return (duck_node_t *)duck_node_null_create(&node->location);	\
+    
+    duck_object_t **constructor_ptr = duck_static_member_addr_get_mid(type, DUCK_MID_INIT_PAYLOAD);
+    duck_function_t *constructor = duck_function_unwrap(*constructor_ptr);
+    
+    duck_type_t **argv= malloc(sizeof(duck_type_t *)*(constructor->input_count));
+    wchar_t **argn= malloc(sizeof(wchar_t *)*(constructor->input_count));
+    argv[0]=type_type;
+    argn[0]=L"this";
+
+    for(i=1; i<constructor->input_count; i++)
+    {
+	argv[i] = constructor->input_type[i];
+	argn[i] = constructor->input_name[i];
+    }
+    
+    duck_native_method_create(type, DUCK_MID_CALL_PAYLOAD, L"__call__",
+			      0, (duck_native_t)&duck_construct,
+			      type, constructor->input_count, argv, argn);
+    wprintf(L"Create __call__ for non-native type %ls\n", type->name);
     
     return (duck_node_t *)duck_node_dummy_create(&node->location,
 						 type->wrapper,

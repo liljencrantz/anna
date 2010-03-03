@@ -3,9 +3,10 @@ class TestClass
 {
 	var Int myMember;
 	
-	function __init__()
+	function __init__(Int in)
 	{
-		this.myMember = 3;
+		print("Running constructor\n");
+		this.myMember = in;
 	}
 
 	function myMethod(Int arg1)
@@ -14,7 +15,9 @@ class TestClass
 	}
 };
 
-var foo = TestClass();
+var foo = TestClass(39);
 print(foo.myMember);
+print("\n");
 foo.myMethod(7);
 print(foo.myMember);
+print("\n");

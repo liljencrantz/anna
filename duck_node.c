@@ -244,6 +244,7 @@ void duck_node_call_set_function(duck_node_call_t *call, duck_node_t *function)
 
 duck_node_t *duck_node_call_prepare(duck_node_call_t *node, duck_function_t *function, duck_node_list_t *parent)
 {
+    
    duck_node_list_t list = 
       {
 	 (duck_node_t *)node, 0, parent
@@ -259,7 +260,16 @@ duck_node_t *duck_node_call_prepare(duck_node_call_t *node, duck_function_t *fun
       duck_node_lookup_t *name=(duck_node_lookup_t *)node->function;      
       duck_object_t *obj = duck_stack_get_str(function->stack_template, name->name);
       duck_function_t *func=duck_function_unwrap(obj);
+      if(!func)
+	{
+	  duck_error(node,L"Tried to execute non-function %ls", name->name);
+	  CRASH;
+	  
+	  return null_object;
+	  
+	}
       
+    
       if(func->flags == DUCK_FUNCTION_MACRO)
       {
 	  return duck_node_prepare(func->native.macro(node, function, parent), function, parent);
@@ -288,7 +298,7 @@ duck_object_t *duck_node_call_invoke(duck_node_call_t *this, duck_stack_frame_t 
 	return obj;
     }
     
-    return duck_function_wrapped_invoke(obj, this, stack);
+    return duck_function_wrapped_invoke(obj, 0, this, stack);
 }
 
 duck_object_t *duck_node_int_literal_invoke(duck_node_int_literal_t *this, duck_stack_frame_t *stack)
