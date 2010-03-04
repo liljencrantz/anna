@@ -111,6 +111,25 @@ var map = ["Monday":0.0,"Tuesday":1.1];
 </p>
 
 <code>
+  /*
+  Override method in subclass
+  */
+  class A
+  {
+      function foo(Int in)
+      {
+          print in;
+      }
+  }
+
+  class b extends A
+  {
+      foo
+      {
+          print in+1;
+      }
+  }
+
 
   /*
   Function with implicit return type
@@ -163,7 +182,7 @@ println("Hello world!");
 The above code is a Mandelbrot set viewer. No, wait, that's the next example. I actually have no idea what the above code does. If you can tell me, please email me at<a href="">XXX</a>.
 
 <code>
-function mandebrot(Complex p0, Int maxStep)
+function mandelbrot(Complex p0, Int maxStep)
 {
     var p = Complex(0,0);
     var step = 0;
