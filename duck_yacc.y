@@ -281,12 +281,12 @@ expression:
 	| RETURN expression1
 	{
 	    duck_node_t *param[] ={$2};	    
-	    $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@1, L"__return__"), 1, param);	  
+	    $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@1, L"return"), 1, param);	  
 	}
 	| RETURN
 	{
 	  duck_node_t *param[] ={duck_node_null_create(&@$)};	    
-	  $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@$, L"__return__"), 1, param);	  
+	  $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@$, L"return"), 1, param);	  
 	}
 	| RETURN '=' expression1
 	{
@@ -349,7 +349,7 @@ expression5 :
 	;
 
 expression6 :
-	expression6 '.' expression7
+	expression6 '.' any_identifier
 	{
 	    duck_node_t *param[] ={$1, $3};   
 	    $$ = (duck_node_t *)duck_node_call_create(&@$, (duck_node_t *)duck_node_lookup_create(&@2, L"__memberGet__"), 2, param);
@@ -382,16 +382,42 @@ expression6 :
 	    duck_node_call_set_function($2, (duck_node_t *)duck_node_lookup_create(&@$,L"__list__"));
 	}
 	| 
-	'|' argument_list2 '|' 
+	'|' expression '|' 
 	{	    
-	    $$ = (duck_node_t *)$2;
-	    duck_node_call_set_function($2, (duck_node_t *)duck_node_lookup_create(&@$,L"__abs__"));
+	  duck_node_t *param[] ={$2, 
+				 (duck_node_t *)duck_node_lookup_create(&@$,L"__abs__")};   
+	  $$ = (duck_node_t *)
+	    duck_node_call_create(&@$, 
+				  duck_node_call_create(&@$, 
+							(duck_node_t *)duck_node_lookup_create(&@2, L"__memberGet__"),
+							2,
+							param),
+				  0,
+				  0);
+	  
+	}
+	|
+	'!' expression7
+	{
+	    duck_node_t *param[] ={$2};   
+	    $$ = (duck_node_t *)duck_node_call_create(&@$,
+						      (duck_node_t *)duck_node_lookup_create(&@$,L"__not__"), 
+						      1,
+						      param);
 	}
 	|
 	pre_op6 expression7
 	{
-	    duck_node_t *param[] ={$2};   
-	    $$ = (duck_node_t *)duck_node_call_create(&@$,$1, 1, param);
+	  duck_node_t *param[] ={$2, 
+				 $1};   
+	  $$ = (duck_node_t *)
+	    duck_node_call_create(&@$, 
+				  duck_node_call_create(&@$, 
+							(duck_node_t *)duck_node_lookup_create(&@2, L"__memberGet__"),
+							2,
+							param),
+				  0,
+				  0);
 	}
 	| 
 	expression7
@@ -521,13 +547,7 @@ op5: '^'
     $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__exp__");
 }
 
-
 pre_op6:
-	'!'
-	{
-	    $$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__not__");
-	}
-	|
 	'-'
 	{
 		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__neg__")
@@ -538,6 +558,7 @@ pre_op6:
 		$$ = (duck_node_t *)duck_node_lookup_create(&@$,L"__sign__")
 	}
 ;
+
 
 opt_identifier:
 identifier
