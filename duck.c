@@ -47,11 +47,12 @@
   Named function arguments
   Inner functions with shared return flag, etc.
   Variadic functions
-  Garbage collection
-  constructors
-  
-  Proper intersection of two types
-  
+  Garbage collection  
+  Proper intersection of types
+  static member lookup and assignment
+  static function calls
+  class member macros
+
   cast function
   import macro
   __macro__ macro
@@ -64,6 +65,7 @@
   __templatize__ macro
   template macro
   __list__ macro
+  __use__ macro
     
   Done: 
   
@@ -77,6 +79,7 @@
   Make ; after } optional
   Constructors with no parameters
   Simple type checking
+  Constructors
   
   Type type
   Call type

@@ -1,15 +1,25 @@
+<h1>Start here</h1>
+<p>
 
+Who is Anna? Who are you? You can't properly explain something like Anna with knowing who you're talking to. Read through the list below, and pick the link that suits you best.
 
-Who is Anna? Who are you?
+</p>
 
 <ul>
   <li>
-    <a href='#sentence'>Anna in a single sentence.</a> Only recomended if you really know you computer languages.
+    <a href='#intro_lisp'>Anna for LISP programmers.</a> Recommended
+    if you are thouroghly familiar with LISP or a LISP like language, like Scheme.
   </li>
   <li>
-    Anna for LISP programmers.
-      
-
+    <a href='#intro_c'>Anna for Java, C, C++, Go and D programmers</h2>.</a> Do you enjoy the pleasures of static typing? Curly braces? Yes? Then this is the link for you.
+  </li>
+  <li>
+    <a href='#intro_script'>Anna for Python and Ruby programmers.</a> 
+  </li>
+  <li>
+    <a href='#intro_short'>Anna in a single sentence.</a> Click here if you already know everything. Why are you even reading this?
+  </li>
+</ul>
 <h2>Anna in a single sentence</h2>
 <p>
 Anna is a statically duck typed computer language that supports LISP
@@ -23,6 +33,14 @@ Note the use of a semicolon to combine two separate sentences into
 something that works around the originally stated limitations and
 manages to be readable. You will see a lot more of that in Anna.
 </p>
+<p>
+To learn more about Anna, check out the following sections:
+</p>
+<ul>
+  <li><a href='#duck_typing'>Duck typing and Anna</a></li>
+  <li><a href='#macros'>Macros redefine our world</a></li>
+  <li><a href='#misc'>An odd number of legs for a horse to have</a></li>
+</ul>
 
 <h2>Anna for LISP programmers</h2>
 
@@ -47,6 +65,113 @@ In order to learn more about Anna, check out the following sections:
 
 <h2>Anna for Python and Ruby programmers</h2>
 <p>
+  Python programmers are probably familiar with the 
+</p>
+
+<h1>Duck typing and Anna</h1>
+<p>
+The concept of duck typing was mainly popularized in the Python community.  
+
+
+</p> 
+
+<h1>Sugar and </h1>
+<p>
+
+</p>
+
+<h1>Minimum impact variable declarations</h1>
+<p>
+  Anna is a statically typed language. That means that before a block of Anna code is executed by the computer, every variable declaration and every object member will have a known type. This does not, however, mean that you as a programmer must tell the interpreter about all of those types. Consider this trivial example:
+</p>
+<code>var Int i = 7;</code>
+<p>
+The above is a variable declaration, the variable <code>i</code> is declared to be of type <code>Int</code>, and is given the initial value of 7. Now, the above is a perfectly valid Anna expression, but it is not the simplest way possible to epress the above. You see, the numeric literal <code>7</code> is of the type Int, which the Anna interpreter can use to guess the type of the variable declaration. Therefore, we can simply omit te variable type, and write the following:
+</p>
+
+<code>var i = 7;</code>
+
+<p>
+  This only saves you for key strokes in the example above, but consider templated types, such as a map with String keys and Double values:
+</p>
+
+<code>
+var Map&lt;String,Double&gt; map = ["Monday":0.0,"Tuesday":1.1;
+var map = ["Monday":0.0,"Tuesday":1.1];
+</code>
+
+<p>
+  Suddnely, we've cut the number of key strokes nearly in half!
+</p>
+
+<p>
+  Variable declarations aren't the only place where the interpreter
+  can figure out the variable type for you, some more examples follow
+  below.
+</p>
+
+<code>
+
+  /*
+  Function with implicit return type
+  */
+  function next(Int in)
+  {
+      return in+1;
+  }
+
+  /*
+  Cast to implicit type
+  */
+  var bar = 0;
+  bar = cast(foo);
+  
+</code>
+<h1>Macros redefine our world</h1>
+<p>
+  Anna, much like LISP, allows you to define functions that accept a
+  tree of nodes representing a program code snippet as an input, and
+  returning another code snippet as its output. This is in stark
+  contrast to regular functions, that accept the
+  evaluated <em>results</em> of a code snippet as its input and
+  output. For example, consider the following snippet:
+</p>
+<code>
+foo = ...;
+</code>
+
+
+<h1>No exceptions</h1>
+<p>
+  
+</p<
+<h1>An odd number of legs for a horse to have</h1>
+<p>
   
 </p>
 
+
+<h1>A simple, annotated example</h1>
+<p>
+  Ok, let's start putting Anna through her paces! This is a small Anna program:
+</p>
+
+<code>
+println("Hello world!");
+</code>
+
+The above code is a Mandelbrot set viewer. No, wait, that's the next example. I actually have no idea what the above code does. If you can tell me, please email me at<a href="">XXX</a>.
+
+<code>
+function mandebrot(Complex p0, Int maxStep)
+{
+    var p = Complex(0,0);
+    var step = 0;
+    while(|p| < 2.0, and step < maxStep) 
+    {
+        p=p^2;
+	step += 1;
+    }
+    return step;
+}
+</code>
