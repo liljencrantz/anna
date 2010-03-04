@@ -39,7 +39,7 @@ static duck_object_t *duck_i_print(duck_object_t **param)
 	}
 	else 
 	{
-	  wprintf(L"%ls", value->type->name);
+	    wprintf(L"%ls", value->type->name);
 	}
 	/*
 	  FIXME: Print other things than just ints!

@@ -20,6 +20,7 @@
 #define DUCK_NODE_MEMBER_GET_WRAP 11
 #define DUCK_NODE_MEMBER_SET 12
 #define DUCK_NODE_CONSTRUCT 13
+#define DUCK_NODE_RETURN 14
 
 struct YYLTYPE
 {
@@ -126,6 +127,15 @@ struct duck_node_dummy
     struct duck_object *payload;
 };
 
+struct duck_node_return
+{
+    int node_type;
+    struct duck_object *wrapper;
+    duck_location_t location;
+    struct duck_node *payload;
+    int steps;  
+};
+
 struct duck_node_float_literal
 {
     int node_type;
@@ -137,6 +147,7 @@ struct duck_node_float_literal
 typedef struct duck_node duck_node_t;
 typedef struct duck_node_call duck_node_call_t;
 typedef struct duck_node_dummy duck_node_dummy_t;
+typedef struct duck_node_return duck_node_return_t;
 typedef struct duck_node_member_get duck_node_member_get_t;
 typedef struct duck_node_member_set duck_node_member_set_t;
 typedef struct duck_node_assign duck_node_assign_t;
@@ -150,6 +161,7 @@ extern int duck_yacc_error_count;
 
 void duck_node_set_location(duck_node_t *node, duck_location_t *l);
 duck_node_dummy_t *duck_node_dummy_create(duck_location_t *loc, struct duck_object *val, int is_trampoline);
+duck_node_return_t *duck_node_return_create(duck_location_t *loc, struct duck_node *val, int steps);
 duck_node_member_get_t *duck_node_member_get_create(duck_location_t *loc, struct duck_node *object, size_t mid, struct duck_type *type, int wrap);
 duck_node_member_set_t *duck_node_member_set_create(duck_location_t *loc, struct duck_node *object, size_t mid, struct duck_node *value, struct duck_type *type);
 duck_node_int_literal_t *duck_node_int_literal_create(duck_location_t *loc, int val);

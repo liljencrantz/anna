@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common.h"
 #include "util.h"
 #include "duck.h"
 #include "duck_node.h"
@@ -45,7 +46,6 @@
   
   Function default argument values
   Named function arguments
-  Inner functions with shared return flag, etc.
   Variadic functions
   Garbage collection  
   Proper intersection of types
@@ -60,13 +60,16 @@
   each function
   extends macro
   abides function
-  __return__ macro
   __returnAssign__ macro
   __templatize__ macro
   template macro
   __list__ macro
-  __use__ macro
-    
+  use macro
+  __memberCall__ macro
+  __staticMemberGet__ macro
+  __staticMember_set__ macro
+  __with__ macro
+
   Done: 
   
   Sugar parser
@@ -80,6 +83,8 @@
   Constructors with no parameters
   Simple type checking
   Constructors
+  Inner functions with shared return flag
+  Do some real testing to find the optimal operator presedence order
   
   Type type
   Call type
@@ -126,6 +131,7 @@
   while macro
   __while__ function
   __type__ function
+  return macro
   
 */
 
@@ -465,7 +471,7 @@ duck_object_t *duck_call(duck_stack_frame_t *stack, duck_object_t *obj)
 }
 */
 
-duck_object_t *duck_construct(duck_type_t *type, duck_node_t **param, duck_stack_frame_t *stack)
+duck_object_t *duck_construct(duck_type_t *type, struct duck_node_call *param, duck_stack_frame_t *stack)
 {
     duck_object_t *result = duck_object_create(type);
     //wprintf(L"Creating new object of type %ls\n", type->name);
@@ -595,7 +601,8 @@ duck_function_t *duck_function_create(wchar_t *name,
 				      size_t argc,
 				      duck_type_t **argv,
 				      wchar_t **argn,
-				      duck_stack_frame_t *parent_stack)
+				      duck_stack_frame_t *parent_stack,
+				      int return_pop_count)
 {
     if(!flags) {
 	assert(return_type);
@@ -612,6 +619,8 @@ duck_function_t *duck_function_create(wchar_t *name,
     result->body = body;
     result->return_type=return_type;
     result->input_count=argc;
+    result->return_pop_count = return_pop_count;
+    
     memcpy(&result->input_type, argv, sizeof(duck_type_t *)*argc);
     result->input_name = argn;
     
@@ -1096,10 +1105,15 @@ duck_object_t *duck_function_invoke_values(duck_function_t *function,
 				       param[i]);
 		}
 		
-		for(i=0; i<function->body->child_count; i++)
+		for(i=0; i<function->body->child_count && !my_stack->stop; i++)
 		{
 		    result = duck_node_invoke(function->body->child[i], my_stack);
 		}
+		/*
+		if(my_stack->stop) 
+		{
+		}
+		*/
 		return result;
 	    }
 	}
@@ -1188,7 +1202,7 @@ int main(int argc, char **argv)
       wprintf(L"Error: Expected exactly one argument, a name of a file to run.\n");
       exit(1);
     }
-  wchar_t *filename = str2wcs(argv[1]);
+    wchar_t *filename = str2wcs(argv[1]);
 
     wprintf(L"Initializing interpreter.\n");    
     duck_init();
@@ -1214,7 +1228,7 @@ int main(int argc, char **argv)
 			       duck_function_create(L"!program",
 						    0,
 						    node_cast_call(program),
-						    null_type, 0, 0, 0, stack_global)->wrapper,
+						    null_type, 0, 0, 0, stack_global, 0)->wrapper,
 			       0);
     /*
       Invoke the anonymous function, the return is a function_type_t->wrapper

@@ -20,8 +20,9 @@ struct duck_stack_frame
     size_t count;
     size_t capacity;
     hash_table_t member_string_lookup;
+    int stop;
     struct duck_type **member_type;  
-    struct duck_object *member[];  
+    struct duck_object *member[];
 };
 
 typedef struct duck_stack_frame duck_stack_frame_t;

@@ -95,9 +95,10 @@ struct duck_function
     size_t input_count;
     wchar_t **input_name;
     int flags;
+    int return_pop_count;
     struct duck_object *this;
     struct duck_stack_frame *stack_template;
-    struct duck_type *input_type[];
+    struct duck_type *input_type[];    
 };
 
 struct duck_node_list
@@ -170,9 +171,10 @@ duck_function_t *duck_function_create(wchar_t *name,
 				      size_t argc,
 				      duck_type_t **argv,
 				      wchar_t **argn,
-				      struct duck_stack_frame *parent_stack);
+				      struct duck_stack_frame *parent_stack,
+				      int return_pop_count);
 
-duck_object_t *duck_construct(duck_type_t *type, struct duck_node **param, struct duck_stack_frame *stack);
+duck_object_t *duck_construct(duck_type_t *type, struct duck_node_call *param, struct duck_stack_frame *stack);
 
 duck_object_t **duck_static_member_addr_get_mid(duck_type_t *type, size_t mid);
 duck_object_t **duck_member_addr_get_str(duck_object_t *obj, wchar_t *name);

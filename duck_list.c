@@ -138,6 +138,16 @@ static duck_object_t *duck_list_append(duck_object_t **param)
     return param[1];
 }
 
+static duck_node_t *duck_list_each(duck_node_call_t *node,
+				   duck_function_t *func, 
+				   duck_node_list_t *parent)
+{
+    wprintf(L"RUNNING List.each!!!\n\n");
+    exit(1);
+    
+}
+
+
 void duck_list_type_create(duck_stack_frame_t *stack)
 {
     list_type = duck_type_create(L"List", 64);
@@ -173,6 +183,7 @@ void duck_list_type_create(duck_stack_frame_t *stack)
 
     duck_native_method_create(list_type, -1, L"__setInt__", 0, (duck_native_t)&duck_list_set_int, object_type, 3, i_argv, i_argn);
     duck_native_method_create(list_type, -1, L"__append__", 0, (duck_native_t)&duck_list_append, object_type, 2, a_argv, a_argn);
+    duck_native_method_create(list_type, -1, L"each", DUCK_FUNCTION_MACRO, (duck_native_t)&duck_list_each, 0, 0, 0, 0);
     /*
 
     duck_native_method_create(list_type, -1, L"__getslice__", 0, (duck_native_t)&duck_int_add, int_type, 2, argv, argn);

@@ -12,7 +12,7 @@
 */
 
 #define DUCK_STRING_DEFAULT_ELEMENT_CAPACITY 12
-#define DUCK_STRING_APPEND_SHORT_LIMIT 16
+#define DUCK_STRING_APPEND_SHORT_LIMIT 32
 
 #define DUCK_STRING_HAIRCUT_RATIO 8
 
@@ -83,7 +83,7 @@ static void duck_string_element_stepford(duck_string_t *dest, int eid, size_t mi
         size_t available = dest->element[eid]->capacity - (dest->element_length[eid]+dest->element_offset[eid]);
 	if(available >= min_available)
 	    return;
-	size_t increment = 3*(min_available - available);
+	size_t increment = 4*(min_available - available);
       
 	dest->element[eid] = realloc(dest->element[eid], sizeof(duck_string_element_t) + sizeof(wchar_t)*(dest->element[eid]->capacity + increment));
 	dest->element[eid]->capacity += increment;
@@ -272,19 +272,6 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
     size_t first_in_element=0;
     //    wprintf(L"Append element to string with %d elements\n", dest->element_count);
     
-    if(src->element_count == 1)
-      {
-	//	wprintf(L"FAST\n");
-	
-	duck_string_ensure_element_capacity(dest, dest->element_count + 1);
-	dest->element[dest->element_count] = src->element[0];
-	dest->element_length[dest->element_count] = length;
-	dest->element_offset[dest->element_count] = src->element_offset[0]+offset;
-	dest->element[dest->element_count]->users++;
-	dest->element_count++;	
-	return;    
-      }
-    
     //wprintf(L"SLOW\n");
     
     if(length < DUCK_STRING_APPEND_SHORT_LIMIT) 
@@ -293,8 +280,7 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
 	{
 	    duck_string_ensure_element_capacity(dest, 1);
 	    dest->element_count=1;	    
-	    dest->element[0] = duck_string_element_create(0,0, length);	    
-	    dest->element_length[0]=0;
+	    dest->element[0] = duck_string_element_create(0,0, 4*DUCK_STRING_APPEND_SHORT_LIMIT);		   dest->element_length[0]=0;
 	    dest->element_offset[0]=0;	    
 	}
 	else
@@ -311,6 +297,20 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
 	dest->element_length[dest->element_count-1] += length;
 	return;
       }
+
+    if(src->element_count == 1)
+      {
+	//	wprintf(L"FAST\n");
+	
+	duck_string_ensure_element_capacity(dest, dest->element_count + 1);
+	dest->element[dest->element_count] = src->element[0];
+	dest->element_length[dest->element_count] = length;
+	dest->element_offset[dest->element_count] = src->element_offset[0]+offset;
+	dest->element[dest->element_count]->users++;
+	dest->element_count++;	
+	return;    
+      }
+    
     
 
 

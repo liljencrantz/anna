@@ -5,19 +5,18 @@ class TestClass
 	
 	function __init__(Int in)
 	{
-		print("Running constructor\n");
 		this.myMember = in;
 	}
 
 	function myMethod(Int arg1)
 	{
-		this.myMember = arg1+1;
+		if(2>1){
+			return 1337;
+		}
+		return -1;
 	}
 };
 
-var foo = TestClass(39);
-print(foo.myMember);
-print("\n");
-foo.myMethod(7);
-print(foo.myMember);
-print("\n");
+var lst = List();
+
+lst.each(foo);

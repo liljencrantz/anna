@@ -83,7 +83,14 @@ static wchar_t *duck_find_method(duck_type_t *type, wchar_t *prefix,
 	    if(mem_fun->argc != 2)
 		continue;
 	    
-	    assert(mem_fun->argv[1]);
+	    if(!mem_fun->argv[1])
+	    {
+		wprintf(L"Internal error. Type %ls has member named %ls with invalid second argument\n",
+			type->name, members[i]);
+		exit(1);
+		
+	    }
+	    
 	    
 	    if(mem_fun->argc == argc && duck_abides(arg2_type, mem_fun->argv[1]))
 	    {
@@ -115,8 +122,10 @@ static size_t duck_parent_count(struct duck_node_list *parent)
 static duck_node_t *duck_macro_block(duck_node_call_t *node, duck_function_t *func, duck_node_list_t *parent)
 {
     //wprintf(L"Create new block with %d elements at %d\n", node->child_count, node);
+    int return_pop_count = 1+func->return_pop_count;
+    
     return (duck_node_t *)duck_node_dummy_create(&node->location,
-						 duck_function_create(L"!anonymous", 0, node, null_type, 0, 0, 0, func->stack_template)->wrapper,
+						 duck_function_create(L"!anonymous", 0, node, null_type, 0, 0, 0, func->stack_template, return_pop_count)->wrapper,
 	1);
 }
 
@@ -204,7 +213,7 @@ static duck_node_t *duck_macro_function_internal(duck_type_t *type,
 
     if(type)
     {
-	duck_function_t *result = duck_function_create(internal_name, 0, (duck_node_call_t *)body, null_type, argc, argv, argn, func->stack_template);
+      duck_function_t *result = duck_function_create(internal_name, 0, (duck_node_call_t *)body, null_type, argc, argv, argn, func->stack_template, 0);
 
 	assert(name);
 	assert(body->node_type == DUCK_NODE_CALL);
@@ -215,7 +224,7 @@ static duck_node_t *duck_macro_function_internal(duck_type_t *type,
     {
 	duck_object_t *result;
 	if(body->node_type == DUCK_NODE_CALL) {
-	    result = duck_function_create(internal_name, 0, (duck_node_call_t *)body, null_type, argc, argv, argn, func->stack_template)->wrapper;
+	  result = duck_function_create(internal_name, 0, (duck_node_call_t *)body, null_type, argc, argv, argn, func->stack_template, 0)->wrapper;
 	}
 	else {
 	    result = null_object;
@@ -683,18 +692,18 @@ static duck_node_t *duck_macro_if(duck_node_call_t *node,
 */
     CHECK_INPUT_COUNT(L"if macro", 2);
     CHECK_NODE_BLOCK(node->child[1]);
-   
-   duck_node_t *argv[] = {
-       node->child[0], node->child[1], duck_node_null_create(&node->location)
-   };
-   
-   return (duck_node_t *)
-     duck_node_call_create(&node->location, 
-			   (duck_node_t *)
-			   duck_node_lookup_create(&node->location, 
-						   L"__if__"),
-			   3,
-			   argv);
+    
+    duck_node_t *argv[] = {
+        node->child[0], node->child[1], duck_node_null_create(&node->location)
+    };
+    
+    return (duck_node_t *)
+        duck_node_call_create(&node->location, 
+			      (duck_node_t *)
+			      duck_node_lookup_create(&node->location, 
+						      L"__if__"),
+			      3,
+			      argv);
 }
 
 static duck_node_t *duck_macro_else(duck_node_call_t *node,
@@ -775,7 +784,7 @@ static duck_node_t *duck_macro_or(duck_node_call_t *node, duck_function_t *func,
 									      1,
 									      &node->child[1]), 
 							t2, 0, 0, 0, 
-							func->stack_template)->wrapper,
+							func->stack_template, func->return_pop_count+1)->wrapper,
 				   1)
 	}
     ;
@@ -846,7 +855,7 @@ static duck_node_t *duck_macro_and(duck_node_call_t *node, duck_function_t *func
 									      1,
 									      &node->child[1]), 
 							t2, 0, 0, 0, 
-							func->stack_template)->wrapper,
+							func->stack_template, func->return_pop_count+1)->wrapper,
 				   1)
 	}
     ;
@@ -910,7 +919,8 @@ static duck_node_t *duck_macro_while(duck_node_call_t *node, duck_function_t *fu
 									  1,
 									  &node->child[0]), 
 						    t2, 0, 0, 0, 
-						    func->stack_template)->wrapper,
+						    func->stack_template,
+						    func->return_pop_count+1)->wrapper,
 			       1);
     
     wchar_t *argn[]=
@@ -1037,6 +1047,14 @@ static duck_node_t *duck_macro_type(duck_node_call_t *node,
 						 0);
 }
 
+static duck_node_t *duck_macro_return(duck_node_call_t *node, 
+				      duck_function_t *func, 
+				      duck_node_list_t *parent)
+{
+    CHECK_INPUT_COUNT(L"return", 1);
+    return (duck_node_t *)duck_node_return_create(&node->location, node->child[0], func->return_pop_count+1);
+}
+
 static void duck_macro_add(duck_stack_frame_t *stack, 
 			   wchar_t *name,
 			   duck_native_macro_t call)
@@ -1063,6 +1081,7 @@ void duck_macro_init(duck_stack_frame_t *stack)
     duck_macro_add(stack, L"__and__", &duck_macro_and);
     duck_macro_add(stack, L"while", &duck_macro_while);
     duck_macro_add(stack, L"__type__", &duck_macro_type);
+    duck_macro_add(stack, L"return", &duck_macro_return);
     
     wchar_t *op_names[] = 
        {
@@ -1086,7 +1105,9 @@ void duck_macro_init(duck_stack_frame_t *stack)
 	    L"__bitand__",
 	    L"__bitor__",
 	    L"__xor__",
-	    L"__exp__"
+	    L"__format__",
+	    L"__cshl__",
+	    L"__cshr__"
 	}
     ;
 

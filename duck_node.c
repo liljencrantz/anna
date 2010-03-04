@@ -60,6 +60,19 @@ duck_node_dummy_t *duck_node_dummy_create(duck_location_t *loc, struct duck_obje
    return result;  
 }
 
+duck_node_return_t *duck_node_return_create(duck_location_t *loc, struct duck_node *val, int steps)
+{
+   duck_node_return_t *result = calloc(1,sizeof(duck_node_return_t));
+   result->node_type = DUCK_NODE_RETURN;
+   duck_node_set_location((duck_node_t *)result,loc);
+  /*
+    FIXME: Create a nice and tidy wrapper
+  */
+   result->payload = val;
+   result->steps=steps;
+   return result;  
+}
+
 duck_node_member_get_t *duck_node_member_get_create(duck_location_t *loc, struct duck_node *object, size_t mid, struct duck_type *type, int wrap)
 {
    duck_node_member_get_t *result = calloc(1,sizeof(duck_node_member_get_t));
@@ -242,6 +255,33 @@ void duck_node_call_set_function(duck_node_call_t *call, duck_node_t *function)
     call->function = function;
 }
 
+duck_function_t *duck_node_macro_get(duck_node_t *node, duck_stack_frame_t *stack)
+{
+    switch(node->node_type)
+    {
+	case DUCK_NODE_LOOKUP:
+	{
+	    duck_node_lookup_t *name=(duck_node_lookup_t *)node;
+	    duck_object_t *obj = duck_stack_get_str(stack, name->name);
+	    duck_function_t *func=duck_function_unwrap(obj);
+	    
+	    if(func && func->flags == DUCK_FUNCTION_MACRO)
+	    {
+		return func;
+	    }
+	    break;
+	}
+	default:
+	{
+	    break;
+	}
+	
+    }
+	return 0;
+	
+    
+}
+
 duck_node_t *duck_node_call_prepare(duck_node_call_t *node, duck_function_t *function, duck_node_list_t *parent)
 {
     
@@ -258,24 +298,15 @@ duck_node_t *duck_node_call_prepare(duck_node_call_t *node, duck_function_t *fun
    if(node->node_type == DUCK_NODE_CALL)
    {
        
-       if(node->function->node_type == DUCK_NODE_LOOKUP)
+       node->function = duck_node_prepare(node->function, function, parent);
+       duck_type_t *func_type = duck_node_get_return_type(node->function, function->stack_template);
+       duck_function_t *macro_definition = duck_node_macro_get(node->function, function->stack_template);
+       
+       if(macro_definition)
        {       
-	   duck_node_lookup_t *name=(duck_node_lookup_t *)node->function;
-	   duck_object_t *obj = duck_stack_get_str(function->stack_template, name->name);
-	   duck_function_t *func=duck_function_unwrap(obj);
-	   
-	   if(func && func->flags == DUCK_FUNCTION_MACRO)
-	   {
-	       return duck_node_prepare(func->native.macro(node, function, parent), function, parent);
-	   }
-	   
-       }
-       else 
-       {
-	   node->function = duck_node_prepare(node->function, function, parent);
+	   return duck_node_prepare(macro_definition->native.macro(node, function, parent), function, parent);
        }
        
-       duck_type_t *func_type = duck_node_get_return_type(node->function, function->stack_template);
        if(func_type == type_type)
        {
 	   /*
@@ -362,10 +393,11 @@ duck_type_t *duck_node_get_return_type(duck_node_t *this, duck_stack_frame_t *st
 	case DUCK_NODE_CALL:
 	{
 	    duck_node_call_t *this2 =(duck_node_call_t *)this;	    
+	    /*
 	    wprintf(L"Get return type of node\n");
 	    duck_node_print(this);
 	    wprintf(L"\n");
-	    
+	    */
 	    duck_type_t *func_type = duck_node_get_return_type(this2->function, stack);
 	    /*
 	      Special case constructors...
@@ -544,7 +576,14 @@ duck_node_t *duck_node_prepare(duck_node_t *this, duck_function_t *function, duc
 	case DUCK_NODE_CALL:
 	case DUCK_NODE_CONSTRUCT:
 	    return duck_node_call_prepare((duck_node_call_t *)this, function, parent);
-	    
+
+	case DUCK_NODE_RETURN:
+	{
+	  duck_node_return_t * result = (duck_node_return_t *)this;
+	  result->payload=duck_node_prepare(result->payload, function, parent);
+	  return result;
+	}
+	
 	case DUCK_NODE_LOOKUP:
 	{
 	    /*
@@ -621,12 +660,27 @@ duck_object_t *duck_node_invoke(duck_node_t *this,
 	    duck_node_call_t *call = (duck_node_call_t *)this;
 	    //wprintf(L"Wee, calling construct with %d parameter, %d\n", call->child_count, call->child[0]);
 	    
-
+	    
 	    return duck_construct(duck_type_unwrap(duck_node_invoke(call->function, stack)),
 				  call,
 				  stack);
 	}
     
+	case DUCK_NODE_RETURN:
+	{
+	    int i;
+	    duck_node_return_t *node = (duck_node_return_t *)this;
+	    duck_object_t *result = duck_node_invoke(node->payload, stack);
+	    stack->stop=1;
+	    for(i=1; i<node->steps;i++)
+	    {
+		stack=stack->parent;
+		stack->stop=1;
+	    }
+	    
+	    return result;
+	}
+	
 	case DUCK_NODE_DUMMY:
 	{
 	   duck_node_dummy_t *node = (duck_node_dummy_t *)this;
@@ -795,7 +849,7 @@ void duck_node_print_code(duck_node_t *node)
 		return;
 	}
 	
-	print = (current_line >=node->location.first_line) && (current_line <= node->location.last_line);
+	print = (current_line >=(node->location.first_line-1)) && (current_line <= node->location.last_line+1);
 
 	is_after_first  = (current_line >node->location.first_line) || (current_line == node->location.first_line && current_column >= node->location.first_column);
 	is_before_last  = (current_line <node->location.last_line) || (current_line == node->location.last_line && current_column < node->location.last_column);

@@ -142,6 +142,7 @@ duck_stack_frame_t *duck_stack_clone(duck_stack_frame_t *template)
     //wprintf(L"Cloning stack with %d items (sz %d)\n", template->count, sz);
     duck_stack_frame_t *stack = malloc(sz);
     memcpy(stack, template, sz);
+    stack->stop=0;
     return stack;  
 }
 
