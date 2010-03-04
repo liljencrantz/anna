@@ -974,6 +974,11 @@ int duck_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *fi
 
 void duck_yacc_error (YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, duck_node_t **parse_tree_ptr, char *s) 
 {
+    fwprintf(stderr,L"Error in %ls, on line %d:\n", 
+	     llocp->filename,
+	     llocp->first_line);
+    duck_node_print_code(duck_node_dummy_create(llocp, 0, 0));
+    
     fwprintf (stderr, L"%s\n", s);
     duck_yacc_error_count++;
 }
