@@ -1100,6 +1100,9 @@ duck_object_t *duck_function_invoke_values(duck_function_t *function,
 		
 		for(i=0; i<(function->input_count-offset); i++) 
 		{
+		    wprintf(L"Declare input variable %ls on stack\n",
+			    function->input_name[i+offset]);
+		    
 		    duck_stack_declare(my_stack, 
 				       function->input_name[i+offset],
 				       function->input_type[i+offset],
@@ -1150,6 +1153,7 @@ duck_object_t *duck_function_invoke(duck_function_t *function,
 	
 	for(i=0; i<(function->input_count-offset); i++) 
 	{
+	    //wprintf(L"eval param %d of %d\n", i, function->input_count);
 	    
 	    argv[i+offset]=duck_node_invoke(param->child[i], stack);
 	}      

@@ -9,6 +9,8 @@
 #include "duck.h"
 #include "duck_node.h"
 #include "duck_stack.h"
+#include "duck_macro.h"
+
 
 #define CHECK_INPUT_COUNT(name, count) if(node->child_count != count)	\
     {									\
@@ -351,6 +353,68 @@ static duck_node_t *duck_macro_operator_wrapper(duck_node_call_t *node, duck_fun
 
 	
     }
+}
+
+duck_node_t *duck_list_each(duck_node_call_t *node,
+			    duck_function_t *func, 
+			    duck_node_list_t *parent)
+{
+    CHECK_INPUT_COUNT(L"each", 2);
+    CHECK_NODE_BLOCK(node->child[1]);
+    CHECK_NODE_TYPE(node->child[0], DUCK_NODE_LOOKUP);
+    CHECK_NODE_TYPE(node->function, DUCK_NODE_MEMBER_GET_WRAP);
+
+    duck_node_lookup_t * name = (duck_node_lookup_t *)node->child[0];
+    duck_node_member_get_t * mg = (duck_node_member_get_t *)node->function;
+    
+    int return_pop_count = 1+func->return_pop_count;
+    
+    duck_type_t *argv[]=
+	{
+	    object_type
+	}
+    ;
+    
+    wchar_t *argn[]=
+	{
+	    name->name
+	}
+    ;
+
+    wprintf(L"Setting up each function, param name is %ls\n", name->name);
+    
+    
+    wchar_t *method_name = L"__eachValue__";
+    duck_type_t *lst_type = duck_node_get_return_type(mg->object, func->stack_template);
+    
+    size_t mid = duck_mid_get(method_name);
+    duck_type_t *member_type = duck_type_member_type_get(lst_type, method_name);
+    if(!member_type)
+    {
+	duck_error(node, L"Unable to calculate type of member %ls of object of type %ls", method_name, lst_type->name);
+	return (duck_node_t *)duck_node_null_create(&node->location);	\
+    }
+    
+    duck_node_t *function = (duck_node_t *)
+	duck_node_dummy_create(&node->location,
+			       duck_function_create(L"!anonymous", 0, node, 
+						    null_type, 1, argv, &name->name, 
+						    func->stack_template, 
+						    return_pop_count)->wrapper,
+			       1);
+    
+    
+    return (duck_node_t *)duck_node_call_create(&node->location,
+						duck_node_member_get_create(&node->location,
+									    mg->object,
+									    mid,
+									    member_type,
+									    1),   
+						1,
+						&function);
+    
+    
+    
 }
 
 

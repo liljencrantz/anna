@@ -11,8 +11,9 @@
 #include "duck_int.h"
 #include "duck_stack.h"
 
-static duck_object_t **duck_list_get_payload(duck_object_t *this);
+#include "duck_macro.h"
 
+static duck_object_t **duck_list_get_payload(duck_object_t *this);
 
 duck_object_t *duck_list_create()
 {
@@ -138,13 +139,28 @@ static duck_object_t *duck_list_append(duck_object_t **param)
     return param[1];
 }
 
-static duck_node_t *duck_list_each(duck_node_call_t *node,
-				   duck_function_t *func, 
-				   duck_node_list_t *parent)
+static duck_object_t *duck_list_each_value(duck_object_t **param)
 {
-    wprintf(L"RUNNING List.each!!!\n\n");
-    exit(1);
-    
+    duck_object_t *body_object;
+    duck_object_t *result=null_object;
+    body_object=param[1];
+        
+    size_t sz = duck_list_get_size(param[0]);
+    duck_object_t **arr = duck_list_get_payload(param[0]);
+    size_t i;
+
+    duck_function_t **function_ptr = (duck_function_t **)duck_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
+    duck_stack_frame_t **stack_ptr = (duck_stack_frame_t **)duck_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_STACK);
+    assert(function_ptr);
+/*
+    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+*/  
+    for(i=0;i<sz;i++)
+    {
+	result = duck_function_invoke_values(*function_ptr, 0, &arr[i], stack_ptr?*stack_ptr:0);
+    }
+    return result;
 }
 
 
@@ -178,14 +194,26 @@ void duck_list_type_create(duck_stack_frame_t *stack)
 	}
     ;
     
+    duck_type_t *e_argv[] = 
+	{
+	    list_type, object_type
+	}
+    ;
+    wchar_t *e_argn[]=
+	{
+	    L"this", L"block"
+	}
+    ;
+    
 
     duck_native_method_create(list_type, -1, L"__getInt__", 0, (duck_native_t)&duck_list_get_int, object_type, 2, i_argv, i_argn);
 
     duck_native_method_create(list_type, -1, L"__setInt__", 0, (duck_native_t)&duck_list_set_int, object_type, 3, i_argv, i_argn);
     duck_native_method_create(list_type, -1, L"__append__", 0, (duck_native_t)&duck_list_append, object_type, 2, a_argv, a_argn);
-    duck_native_method_create(list_type, -1, L"each", DUCK_FUNCTION_MACRO, (duck_native_t)&duck_list_each, 0, 0, 0, 0);
-    /*
 
+    duck_native_method_create(list_type, -1, L"each", DUCK_FUNCTION_MACRO, (duck_native_t)&duck_list_each, 0, 0, 0, 0);
+    duck_native_method_create(list_type, -1, L"__eachValue__", 0, (duck_native_t)&duck_list_each_value, object_type, 2, e_argv, e_argn);
+    /*
     duck_native_method_create(list_type, -1, L"__getslice__", 0, (duck_native_t)&duck_int_add, int_type, 2, argv, argn);
     duck_native_method_create(list_type, -1, L"__setslice__", 0, (duck_native_t)&duck_int_add, int_type, 2, argv, argn);
     duck_native_method_create(list_type, -1, L"__contains__", 0, (duck_native_t)&duck_int_add, int_type, 2, argv, argn);

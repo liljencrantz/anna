@@ -801,9 +801,9 @@ void duck_node_print(duck_node_t *this)
 	case DUCK_NODE_MEMBER_GET_WRAP:
 	{
 	    duck_node_member_get_t *this2 = (duck_node_member_get_t *)this;
-	    wprintf(L"__wrapMethod__(__memberGet__(");
+	    wprintf(L"__memberGetWrap__(");
 	    duck_node_print(this2->object);
-	    wprintf(L", %d))", this2->mid);
+	    wprintf(L", %d)", this2->mid);
 	    break;
 	}
 	

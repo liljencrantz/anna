@@ -18,5 +18,10 @@ class TestClass
 };
 
 var lst = List();
+lst ~= 3;
+lst ~= 2;
+lst ~= 5;
 
-lst.each(foo);
+lst.each(foo){
+	print(foo);
+}
