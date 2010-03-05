@@ -46,10 +46,9 @@ done
 
 init="$init
 "
-
-for i in "add +" "sub -" "mul *" "div /" "shl <<" "shr >>" "mod %" "bitand &" "bitor |" "xor ^"; do
+for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "shl v1 << v2" "shr v1 >> v2" "mod v1 % v2" "bitand v1 & v2" "bitor v1 | v2" "xor v1 ^ v2" "cshl (v1 << v2) | (v1 >> (32-v2))" "cshr (v1 >> v2) | (v1 << (32-v2))"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     duck_native_method_create(int_type, -1, L\"__${name}Int__\", 0, (duck_native_t)&duck_int_i_${name}, int_type, 2, argv, argn);"
@@ -62,7 +61,26 @@ static duck_object_t *duck_int_i_$name(duck_object_t **param)
   
     int v1 = duck_int_get(param[0]);
     int v2 = duck_int_get(param[1]);
-    return duck_int_create(v1 $op v2);
+    return duck_int_create($op);
+}
+"
+done
+
+
+init="$init
+"
+for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)"; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+    
+    init="$init
+    duck_native_method_create(int_type, -1, L\"__${name}__\", 0, (duck_native_t)&duck_int_i_${name}, int_type, 1, argv, argn);"
+
+    echo "
+static duck_object_t *duck_int_i_$name(duck_object_t **param)
+{
+    int v1 = duck_int_get(param[0]);
+    return duck_int_create($op);
 }
 "
 done
