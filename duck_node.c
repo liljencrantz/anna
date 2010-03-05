@@ -271,14 +271,36 @@ duck_function_t *duck_node_macro_get(duck_node_t *node, duck_stack_frame_t *stac
 	    }
 	    break;
 	}
+	
+	case DUCK_NODE_MEMBER_GET_WRAP:
+	case DUCK_NODE_MEMBER_GET:
+	{
+	    duck_node_member_get_t *get = (duck_node_member_get_t *)node;
+	    duck_type_t *obj_type = duck_node_get_return_type(get->object, stack);
+	    duck_object_t **member = duck_static_member_addr_get_mid(obj_type, get->mid);
+	    if(member)
+	    {
+		duck_function_t *func = duck_function_unwrap(*member);
+		if(func && func->flags == DUCK_FUNCTION_MACRO)
+		{
+		    return func;
+		}
+	    }
+	    
+	    /*
+	    duck_node_print(get->object);
+	    wprintf(L"\n");
+	    */
+	    
+	}
+	
 	default:
 	{
 	    break;
 	}
 	
     }
-	return 0;
-	
+    return 0;
     
 }
 

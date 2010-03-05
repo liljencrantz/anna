@@ -177,6 +177,7 @@ duck_function_t *duck_function_create(wchar_t *name,
 duck_object_t *duck_construct(duck_type_t *type, struct duck_node_call *param, struct duck_stack_frame *stack);
 
 duck_object_t **duck_static_member_addr_get_mid(duck_type_t *type, size_t mid);
+//duck_object_t **duck_static_member_addr_get_str(duck_type_t *type, wchar_t *name);
 duck_object_t **duck_member_addr_get_str(duck_object_t *obj, wchar_t *name);
 duck_object_t **duck_member_addr_get_mid(duck_object_t *obj, size_t mid);
 duck_object_t *duck_method_wrap(duck_object_t *method, duck_object_t *owner);

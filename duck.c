@@ -38,7 +38,8 @@
   General purpose currying
   Namespaces
   Method macros
-  
+  Functions that don't return an Int
+ 
   Implement basic string methods
   Implement string comparison methods
   Functional functions for lists (each, map, select, max, min)
