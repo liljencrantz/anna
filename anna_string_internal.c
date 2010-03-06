@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "duck_string_internal.h"
+#include "anna_string_internal.h"
 
 /**
    Wchar_t-using, chunk based string implementation, does most string operations in O(1). Most of the time. :)
@@ -22,10 +22,10 @@
     *__tmp=0;					\
     }
 
-int duck_debug;
+int anna_debug;
 
 
-struct duck_string_element
+struct anna_string_element
 {
     int users;
     size_t capacity;
@@ -33,11 +33,11 @@ struct duck_string_element
 }
   ;
 
-typedef struct duck_string_element duck_string_element_t;
+typedef struct anna_string_element anna_string_element_t;
 
-duck_string_element_t *duck_string_element_create(wchar_t *payload, size_t size, size_t available);
-static void duck_string_print(duck_string_t *dest);
-static duck_string_ensure_element_capacity(duck_string_t *string, size_t count);
+anna_string_element_t *anna_string_element_create(wchar_t *payload, size_t size, size_t available);
+static void anna_string_print(anna_string_t *dest);
+static anna_string_ensure_element_capacity(anna_string_t *string, size_t count);
 
 
 
@@ -55,7 +55,7 @@ int maxi(int a, int b)
    Decrease the number of owners on the specified element. If the
    number of owners is zero, kill it dead.
  */
-static void duck_element_disown(duck_string_element_t *el)
+static void anna_element_disown(anna_string_element_t *el)
 {
     el->users--;
     if(el->users == 0) 
@@ -67,7 +67,7 @@ static void duck_element_disown(duck_string_element_t *el)
 /**
    Increase the number of owners on the specified element.
  */
-static void duck_element_adopt(duck_string_element_t *el)
+static void anna_element_adopt(anna_string_element_t *el)
 {
     el->users++;
 }
@@ -77,7 +77,7 @@ static void duck_element_adopt(duck_string_element_t *el)
   single owner, and that it has at least the specified amount of
   unused capacity. If not, replace it with a copy.
 */
-static void duck_string_element_stepford(duck_string_t *dest, int eid, size_t min_available)
+static void anna_string_element_stepford(anna_string_t *dest, int eid, size_t min_available)
 {
   
     if(dest->element[eid]->users == 1)
@@ -90,21 +90,21 @@ static void duck_string_element_stepford(duck_string_t *dest, int eid, size_t mi
 	size_t new_size = maxi(min_available + dest->element[eid]->capacity,
 			       3*dest->element[eid]->capacity);
 	
-	dest->element[eid] = realloc(dest->element[eid], sizeof(duck_string_element_t) + sizeof(wchar_t)*(new_size));
+	dest->element[eid] = realloc(dest->element[eid], sizeof(anna_string_element_t) + sizeof(wchar_t)*(new_size));
 	dest->element[eid]->capacity = new_size;
     }
     //wprintf(L"Make element my own\n");
     
-    duck_string_element_t *old = dest->element[eid];
+    anna_string_element_t *old = dest->element[eid];
 
-    dest->element[eid] = duck_string_element_create(&dest->element[eid]->payload[dest->element_offset[eid]], dest->element_length[eid], min_available*3);
+    dest->element[eid] = anna_string_element_create(&dest->element[eid]->payload[dest->element_offset[eid]], dest->element_length[eid], min_available*3);
     dest->element_offset[eid] = 0;
-    duck_element_disown(old);
+    anna_element_disown(old);
     
     //wprintf(L"I have my very own %.*ls\n", dest->element_length[eid], dest->element[eid]->payload);
 }
 
-static void duck_string_make_appendable(duck_string_t *dest, size_t min_free)
+static void anna_string_make_appendable(anna_string_t *dest, size_t min_free)
 {
   int make_new = 0;
   size_t eid = dest->element_count-1;
@@ -125,14 +125,14 @@ static void duck_string_make_appendable(duck_string_t *dest, size_t min_free)
 
   if(make_new)
     {
-      duck_string_ensure_element_capacity(dest, dest->element_count+1);
+      anna_string_ensure_element_capacity(dest, dest->element_count+1);
       dest->element_count=1;	    
-      dest->element[0] = duck_string_element_create(0,0, 4*DUCK_STRING_APPEND_SHORT_LIMIT);		     dest->element_length[0]=0;
+      dest->element[0] = anna_string_element_create(0,0, 4*DUCK_STRING_APPEND_SHORT_LIMIT);		     dest->element_length[0]=0;
       dest->element_offset[0]=0;	    
     }
   else
     {
-      duck_string_element_stepford(dest, eid, 4*DUCK_STRING_APPEND_SHORT_LIMIT);
+      anna_string_element_stepford(dest, eid, 4*DUCK_STRING_APPEND_SHORT_LIMIT);
     }  
 }
 
@@ -141,7 +141,7 @@ static void duck_string_make_appendable(duck_string_t *dest, size_t min_free)
    Trim away short string elements in order to tidy up the
    string. Sort of a string defragmentation. 
 */
-static void duck_string_haircut(duck_string_t *hippie)
+static void anna_string_haircut(anna_string_t *hippie)
 {
     
   int i, j, k, m;
@@ -162,14 +162,14 @@ static void duck_string_haircut(duck_string_t *hippie)
 	}
       if(count > 3) 
 	{
-	  size_t old_length = duck_string_get_length(hippie);
+	  size_t old_length = anna_string_get_length(hippie);
 	  
 	  size_t pos = hippie->element_length[i];
-	  duck_string_element_t *el = duck_string_element_create(&hippie->element[i]->payload[hippie->element_offset[i]], hippie->element_length[i], len - hippie->element_length[i]);
+	  anna_string_element_t *el = anna_string_element_create(&hippie->element[i]->payload[hippie->element_offset[i]], hippie->element_length[i], len - hippie->element_length[i]);
 	  for(k=i+1;k<j;k++)
 	    {
 	      memcpy(&el->payload[pos],&hippie->element[k]->payload[hippie->element_offset[k]],sizeof(wchar_t)*hippie->element_length[k]);
-	      duck_element_disown(hippie->element[k]);
+	      anna_element_disown(hippie->element[k]);
 	      pos +=hippie->element_length[k];	      
 	    }
 	  //assert(pos == len);
@@ -177,12 +177,12 @@ static void duck_string_haircut(duck_string_t *hippie)
 	  hippie->element[i] = el;
 	  hippie->element_length[i] = len;
 	  hippie->element_offset[i] = 0;
-	  memmove(&hippie->element[i+1], &hippie->element[j], sizeof(duck_string_element_t *)*(hippie->element_count-j));
+	  memmove(&hippie->element[i+1], &hippie->element[j], sizeof(anna_string_element_t *)*(hippie->element_count-j));
 	  memmove(&hippie->element_length[i+1], &hippie->element_length[j], sizeof(size_t)*(hippie->element_count-j));
 	  memmove(&hippie->element_offset[i+1], &hippie->element_offset[j], sizeof(size_t)*(hippie->element_count-j));
 	  hippie->element_count -= (j-i-1);
 
-	  //assert(old_length == duck_string_get_length(hippie));
+	  //assert(old_length == anna_string_get_length(hippie));
 	  /*
 	  for(m=0; m<hippie->element_count; m++)
 	    {
@@ -205,7 +205,7 @@ static void duck_string_haircut(duck_string_t *hippie)
 }
 
 
-static duck_string_ensure_element_capacity(duck_string_t *string, size_t count)
+static anna_string_ensure_element_capacity(anna_string_t *string, size_t count)
 {
     if(string->element_capacity >= count)
       {
@@ -217,7 +217,7 @@ static duck_string_ensure_element_capacity(duck_string_t *string, size_t count)
       count = maxi(count*2, DUCK_STRING_DEFAULT_ELEMENT_CAPACITY);
       
 	string->element_capacity=count;
-	string->element = malloc((sizeof(duck_string_element_t*)+sizeof(size_t)*2)*count);
+	string->element = malloc((sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
 	string->element_offset = (size_t *)(string->element + count);
 	string->element_length = string->element_offset + count;
     }
@@ -225,7 +225,7 @@ static duck_string_ensure_element_capacity(duck_string_t *string, size_t count)
     {
       
         count = maxi(string->element_capacity*2, count+ DUCK_STRING_DEFAULT_ELEMENT_CAPACITY);
-      if(duck_debug)
+      if(anna_debug)
 	{
 	  //	  wprintf(L"LALA changing size from %d to %d\n", string->element_capacity, count);
 	}
@@ -233,10 +233,10 @@ static duck_string_ensure_element_capacity(duck_string_t *string, size_t count)
 	if(1)
 	  {
 	    
-	duck_string_element_t *new_element = malloc((sizeof(duck_string_element_t*)+sizeof(size_t)*2)*count);
+	anna_string_element_t *new_element = malloc((sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
 	size_t *new_element_offset = ((size_t *)new_element) + count;
 	size_t *new_element_length = new_element_offset + count;
-	memcpy(new_element, string->element, sizeof(duck_string_element_t *)*string->element_count);
+	memcpy(new_element, string->element, sizeof(anna_string_element_t *)*string->element_count);
 	memcpy(new_element_offset, string->element_offset, sizeof(size_t)*string->element_count);
 	memcpy(new_element_length, string->element_length, sizeof(size_t)*string->element_count);
 	free(string->element);
@@ -248,10 +248,10 @@ static duck_string_ensure_element_capacity(duck_string_t *string, size_t count)
 	  {
 	    
 
-	duck_string_element_t *new_element = realloc(string->element,(sizeof(duck_string_element_t*)+sizeof(size_t)*2)*count);
+	anna_string_element_t *new_element = realloc(string->element,(sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
 	size_t *new_element_offset = ((size_t *)new_element) + count;
 	size_t *new_element_length = new_element_offset + count;
-	//memcpy(new_element, string->element, sizeof(duck_string_element_t *)*string->element_count);
+	//memcpy(new_element, string->element, sizeof(anna_string_element_t *)*string->element_count);
 	memmove(new_element_length, (void *)string->element_length-(void *)string->element+(void *)new_element, sizeof(size_t)*string->element_count);
 	memmove(new_element_offset, (void *)string->element_offset-(void *)string->element+(void *)new_element, sizeof(size_t)*string->element_count);
 	string->element = new_element;
@@ -263,48 +263,48 @@ static duck_string_ensure_element_capacity(duck_string_t *string, size_t count)
     }
 }
 
-duck_string_element_t *duck_string_element_create(wchar_t *payload, size_t size, size_t available)
+anna_string_element_t *anna_string_element_create(wchar_t *payload, size_t size, size_t available)
 {
-    duck_string_element_t *res = malloc(sizeof(duck_string_element_t) + sizeof(wchar_t)*(size+available));
+    anna_string_element_t *res = malloc(sizeof(anna_string_element_t) + sizeof(wchar_t)*(size+available));
     res->users=1;
     res->capacity=size+available;
     memcpy(&res->payload[0], payload, sizeof(wchar_t)*size);
     return res;
 }
 
-void duck_string_init(duck_string_t *string)
+void anna_string_init(anna_string_t *string)
 {
-  memset(string, 0, sizeof(duck_string_t));
+  memset(string, 0, sizeof(anna_string_t));
 }
 
-void duck_string_init_from_ptr(duck_string_t *string, wchar_t *payload, size_t size)
+void anna_string_init_from_ptr(anna_string_t *string, wchar_t *payload, size_t size)
 {
-    duck_string_init(string);
+    anna_string_init(string);
     
-    duck_string_ensure_element_capacity(string, DUCK_STRING_DEFAULT_ELEMENT_CAPACITY);
+    anna_string_ensure_element_capacity(string, DUCK_STRING_DEFAULT_ELEMENT_CAPACITY);
     string->element_count=1;
-    string->element[0] = duck_string_element_create(payload, size, 5);
+    string->element[0] = anna_string_element_create(payload, size, 5);
     string->element_offset[0]=0;
     string->element_length[0]=size;
 }
 
-void duck_string_destroy(duck_string_t *string)
+void anna_string_destroy(anna_string_t *string)
 {
     int i;
     for(i=0;i<string->element_count; i++) {
-	duck_element_disown(string->element[i]);
+	anna_element_disown(string->element[i]);
     }
     free(string->element);
 }
 
 
-void duck_string_substring(duck_string_t *dest, duck_string_t *src, size_t offset, size_t length)
+void anna_string_substring(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
 {
-    duck_string_truncate(dest, 0);
-    duck_string_append(dest, src, offset, length);
+    anna_string_truncate(dest, 0);
+    anna_string_append(dest, src, offset, length);
 }
 
-void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, size_t length)
+void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
 {
     int i;
     size_t first_in_element=0;
@@ -314,15 +314,15 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
     
     if(length < DUCK_STRING_APPEND_SHORT_LIMIT) 
     {
-      duck_string_make_appendable(dest, length);
+      anna_string_make_appendable(dest, length);
       
 
 	
-	duck_string_element_t *el = dest->element[dest->element_count-1];
+	anna_string_element_t *el = dest->element[dest->element_count-1];
 	size_t dest_offset = dest->element_offset[dest->element_count-1]+dest->element_length[dest->element_count-1];
 	for(i=0; i<length;i++)
 	{
-	    el->payload[dest_offset+i] = duck_string_get_char(src, i+offset);	    
+	    el->payload[dest_offset+i] = anna_string_get_char(src, i+offset);	    
 	}
 	dest->element_length[dest->element_count-1] += length;
 	return;
@@ -332,7 +332,7 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
       {
 	//	wprintf(L"FAST\n");
 	
-	duck_string_ensure_element_capacity(dest, dest->element_count + 1);
+	anna_string_ensure_element_capacity(dest, dest->element_count + 1);
 	dest->element[dest->element_count] = src->element[0];
 	dest->element_length[dest->element_count] = length;
 	dest->element_offset[dest->element_count] = src->element_offset[0]+offset;
@@ -344,14 +344,14 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
     
 
 
-    duck_string_haircut(src);
-    duck_string_haircut(dest);
+    anna_string_haircut(src);
+    anna_string_haircut(dest);
     
     if(length == 0) 
     {
       return;
     }
-    duck_string_ensure_element_capacity(dest, dest->element_count + src->element_count);
+    anna_string_ensure_element_capacity(dest, dest->element_count + src->element_count);
     size_t dest_base_count = dest->element_count;
     
     for(i=0;i<src->element_count; i++) {
@@ -370,7 +370,7 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
 	    
 	    dest->element_length[dest_base_count] = mini(src->element_length[i]-additional_offset, length);
 	    
-	    duck_element_adopt(src->element[i]);
+	    anna_element_adopt(src->element[i]);
 	    dest->element_count++;
 	    size_t length_done = dest->element_length[dest_base_count];
 	    assert(length_done);
@@ -379,7 +379,7 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
 	    {
 		for(j=1; (i+j)<src->element_count; j++)
 		{
-		    duck_element_adopt(src->element[i+j]);
+		    anna_element_adopt(src->element[i+j]);
 
 		    size_t max_length_done = length_done + src->element_length[i+j];
 
@@ -403,7 +403,7 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
     }
 }
 
-void duck_string_set_char(duck_string_t *dest, size_t offset, wchar_t ch)
+void anna_string_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
 {
     int i;
     size_t first_in_element=0;
@@ -412,7 +412,7 @@ void duck_string_set_char(duck_string_t *dest, size_t offset, wchar_t ch)
     for(i=0;i<dest->element_count; i++) {
 	size_t last_in_element = first_in_element + dest->element_length[i];
 	if(last_in_element >offset){
-	  duck_string_element_stepford(dest, i, 0);
+	  anna_string_element_stepford(dest, i, 0);
 	    
 	    size_t poff = offset + dest->element_offset[i]-first_in_element;
 	    //wprintf(L"poff is %d\n", poff);
@@ -427,7 +427,7 @@ void duck_string_set_char(duck_string_t *dest, size_t offset, wchar_t ch)
     
 }
 
-wchar_t duck_string_get_char(duck_string_t *dest, size_t offset)
+wchar_t anna_string_get_char(anna_string_t *dest, size_t offset)
 {
     int i;
     size_t first_in_element=0;
@@ -442,7 +442,7 @@ wchar_t duck_string_get_char(duck_string_t *dest, size_t offset)
     wprintf(L"Error: Tried to set element %d in string of length %d\n", offset, first_in_element);  
 }
 
-size_t duck_string_get_length(duck_string_t *dest)
+size_t anna_string_get_length(anna_string_t *dest)
 {
     int i;
     size_t result=0;
@@ -452,7 +452,7 @@ size_t duck_string_get_length(duck_string_t *dest)
     return result;
 }
 
-void duck_string_truncate(duck_string_t *dest, size_t length)
+void anna_string_truncate(anna_string_t *dest, size_t length)
 {
     int i;
     size_t first_in_element=0;
@@ -464,7 +464,7 @@ void duck_string_truncate(duck_string_t *dest, size_t length)
 	    int j;
 	    for(j=i+1; j<dest->element_count; j++)
 	    {
-		duck_element_disown(dest->element[j]);
+		anna_element_disown(dest->element[j]);
 	    }
 	    dest->element_count = i+1;
 	    return;
@@ -475,8 +475,8 @@ void duck_string_truncate(duck_string_t *dest, size_t length)
     
 }
 
-void duck_string_replace(duck_string_t *dest, 
-			 duck_string_t *src,
+void anna_string_replace(anna_string_t *dest, 
+			 anna_string_t *src,
 			 size_t dest_offset, 
 			 size_t dest_length,
 			 size_t src_offset, 
@@ -485,22 +485,22 @@ void duck_string_replace(duck_string_t *dest,
   /*
     Create a temporary empty string to add things to
    */
-  duck_string_t tmp;
-  duck_string_init(&tmp);
+  anna_string_t tmp;
+  anna_string_init(&tmp);
   
   /*
     Add all the specified bits to the temporary string
    */
-  duck_string_ensure_element_capacity(&tmp, dest->element_capacity + src->element_count);
-  duck_string_append(&tmp, dest, 0, dest_offset);
-  duck_string_append(&tmp, src, src_offset, src_length);
-  duck_string_append(&tmp, dest, dest_offset+dest_length, duck_string_get_length(dest)-dest_offset-dest_length);
+  anna_string_ensure_element_capacity(&tmp, dest->element_capacity + src->element_count);
+  anna_string_append(&tmp, dest, 0, dest_offset);
+  anna_string_append(&tmp, src, src_offset, src_length);
+  anna_string_append(&tmp, dest, dest_offset+dest_length, anna_string_get_length(dest)-dest_offset-dest_length);
   
   /*
     Replace the destination string with the temporary one
    */
-  duck_string_destroy(dest);
-  memcpy(dest, &tmp, sizeof(duck_string_t));
+  anna_string_destroy(dest);
+  memcpy(dest, &tmp, sizeof(anna_string_t));
 }
 
 /**
@@ -509,7 +509,7 @@ void duck_string_replace(duck_string_t *dest,
 
    For debugging purposes only.
  */
-static void duck_string_print(duck_string_t *dest)
+static void anna_string_print(anna_string_t *dest)
 {
     //wprintf(L"Print string with %d elements\n", dest->element_count);
     
@@ -527,7 +527,7 @@ static void duck_string_print(duck_string_t *dest)
 	}
     }
     wprintf(L"\n");
-    for(i=0;i<duck_string_get_length(dest); i++) {
+    for(i=0;i<anna_string_get_length(dest); i++) {
 	wprintf(L"%d", i%10);
     }
     wprintf(L"\n");

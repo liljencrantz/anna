@@ -1,0 +1,272 @@
+#define _GNU_SOURCE
+#include <stdlib.h>
+#include <stdio.h>
+#include <wchar.h>
+#include <assert.h>
+#include <string.h>
+
+#include "anna.h"
+#include "anna_node.h"
+#include "anna_list.h"
+#include "anna_int.h"
+#include "anna_stack.h"
+
+#include "anna_macro.h"
+
+static anna_object_t **anna_list_get_payload(anna_object_t *this);
+
+anna_object_t *anna_list_create()
+{
+  return anna_object_create(list_type);
+}
+
+ssize_t calc_offset(ssize_t offset, size_t size)
+{
+  if(offset < 0) {
+    return size-offset;
+  }
+  return offset;
+}
+
+void anna_list_set(struct anna_object *this, ssize_t offset, struct anna_object *value)
+{
+    size_t size = anna_list_get_size(this);
+    ssize_t pos = calc_offset(offset, size);
+    //wprintf(L"Set el %d in list of %d elements\n", pos, size);
+    if(pos < 0)
+    {
+	return;
+    }
+    if(pos >= size)
+    {
+//	wprintf(L"Set new size\n");
+	anna_list_set_size(this, pos+1);      
+    }
+    
+    anna_object_t **ptr = anna_list_get_payload(this);
+    ptr[pos] = value;  
+}
+
+anna_object_t *anna_list_get(anna_object_t *this, ssize_t offset)
+{
+  size_t size = anna_list_get_size(this);
+  ssize_t pos = calc_offset(offset, size);
+  if(pos < 0||pos >=size)
+    {
+      return null_object;
+    }
+  anna_object_t **ptr = anna_list_get_payload(this);
+  return ptr[pos];
+}
+
+void anna_list_add(struct anna_object *this, struct anna_object *value)
+{
+  size_t capacity = anna_list_get_capacity(this);
+  size_t size = anna_list_get_size(this);
+  if(capacity == size)
+    {
+      anna_list_set_capacity(this, maxi(8, 2*capacity));
+    }
+  anna_object_t **ptr = anna_list_get_payload(this);
+  anna_list_set_size(this, size+1);
+  ptr[size]=value;
+}
+
+size_t anna_list_get_size(anna_object_t *this)
+{
+  assert(this);
+  return *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_SIZE);
+}
+
+void anna_list_set_size(anna_object_t *this, size_t sz)
+{
+  size_t old_size = anna_list_get_size(this);
+  size_t capacity = anna_list_get_capacity(this);
+  
+  if(sz>old_size)
+  {
+      if(sz>capacity)
+	{
+	  anna_list_set_capacity(this, sz);
+	}
+      anna_object_t **ptr = anna_list_get_payload(this);
+      int i;
+      for(i=old_size; i<sz; i++)
+	{
+	  ptr[i] = null_object;
+	}
+  }
+  *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_SIZE) = sz;
+}
+
+size_t anna_list_get_capacity(anna_object_t *this)
+{
+    return *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_CAPACITY);
+}
+
+void anna_list_set_capacity(anna_object_t *this, size_t sz)
+{
+    anna_object_t **ptr = anna_list_get_payload(this);
+    ptr = realloc(ptr, sizeof(anna_object_t *)*sz);
+    assert(ptr);
+    *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_CAPACITY) = sz;
+    *(anna_object_t ***)anna_member_addr_get_mid(this,DUCK_MID_LIST_PAYLOAD) = ptr;
+}
+
+static anna_object_t **anna_list_get_payload(anna_object_t *this)
+{
+    return *(anna_object_t ***)anna_member_addr_get_mid(this,DUCK_MID_LIST_PAYLOAD);
+}
+
+static anna_object_t *anna_list_set_int(anna_object_t **param)
+{
+  if(param[1]==null_object)
+    return null_object;
+  anna_list_set(param[0], anna_int_get(param[1]), param[2]);
+  return param[2];
+}
+
+static anna_object_t *anna_list_get_int(anna_object_t **param)
+{
+  if(param[1]==null_object)
+    return null_object;
+    return anna_list_get(param[0], anna_int_get(param[1]));
+}
+
+static anna_object_t *anna_list_append(anna_object_t **param)
+{
+    anna_list_add(param[0], param[1]);
+    return param[1];
+}
+
+static anna_object_t *anna_list_each_value(anna_object_t **param)
+{
+    anna_object_t *body_object;
+    anna_object_t *result=null_object;
+    body_object=param[1];
+        
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
+
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_STACK);
+    assert(function_ptr);
+/*
+    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+*/  
+    for(i=0;i<sz;i++)
+    {
+      /*
+      wprintf(L"Run the following code:\n");
+      anna_node_print((*function_ptr)->body);
+      wprintf(L"\n");
+      */
+	result = anna_function_invoke_values(*function_ptr, 0, &arr[i], stack_ptr?*stack_ptr:0);
+    }
+    return result;
+}
+
+
+static anna_object_t *anna_list_each_pair(anna_object_t **param)
+{
+    anna_object_t *body_object;
+    anna_object_t *result=null_object;
+    body_object=param[1];
+        
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
+
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_STACK);
+    assert(function_ptr);
+/*
+    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+*/  
+    anna_object_t *o_param[2];
+    for(i=0;i<sz;i++)
+    {
+      /*
+      wprintf(L"Run the following code:\n");
+      anna_node_print((*function_ptr)->body);
+      wprintf(L"\n");
+      */
+	o_param[0] = anna_int_create(i);
+	o_param[1] = arr[i];
+	result = anna_function_invoke_values(*function_ptr, 0, o_param, stack_ptr?*stack_ptr:0);
+    }
+    return result;
+}
+
+
+void anna_list_type_create(anna_stack_frame_t *stack)
+{
+    list_type = anna_type_create(L"List", 64);
+    anna_stack_declare(stack, L"List", type_type, list_type->wrapper);
+    anna_member_create(list_type, DUCK_MID_LIST_PAYLOAD,  L"!listPayload", 0, null_type);
+    anna_member_create(list_type, DUCK_MID_LIST_SIZE,  L"!listSize", 0, null_type);
+    anna_member_create(list_type, DUCK_MID_LIST_CAPACITY,  L"!listCapacity", 0, null_type);
+    
+    anna_type_t *i_argv[] = 
+	{
+	    list_type, int_type, object_type
+	}
+    ;
+    wchar_t *i_argn[]=
+	{
+	    L"this", L"index", L"value"
+	}
+    ;
+    
+    anna_type_t *a_argv[] = 
+	{
+	    list_type, object_type
+	}
+    ;
+    wchar_t *a_argn[]=
+	{
+	    L"this", L"value"
+	}
+    ;
+
+    /*
+      FIXME: Get proper type for the block of the each method
+     */
+    anna_type_t *e_argv[] = 
+	{
+	    list_type, object_type
+	}
+    ;
+    wchar_t *e_argn[]=
+	{
+	    L"this", L"block"
+	}
+    ;
+    
+
+    anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_get_int, object_type, 2, i_argv, i_argn);
+
+    anna_native_method_create(list_type, -1, L"__setInt__", 0, (anna_native_t)&anna_list_set_int, object_type, 3, i_argv, i_argn);
+    anna_native_method_create(list_type, -1, L"__append__", 0, (anna_native_t)&anna_list_append, object_type, 2, a_argv, a_argn);
+
+    anna_native_method_create(list_type, -1, L"each", DUCK_FUNCTION_MACRO, (anna_native_t)&anna_list_each, 0, 0, 0, 0);
+    anna_native_method_create(list_type, -1, L"__eachValue__", 0, (anna_native_t)&anna_list_each_value, object_type, 2, e_argv, e_argn);
+    anna_native_method_create(list_type, -1, L"__eachPair__", 0, (anna_native_t)&anna_list_each_pair, object_type, 2, e_argv, e_argn);
+    /*
+    anna_native_method_create(list_type, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
+    anna_native_method_create(list_type, -1, L"__setslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
+    anna_native_method_create(list_type, -1, L"__contains__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
+
+      __add__, __each__, __select__
+     */
+
+  /*  
+  anna_object_t *l = anna_list_create();
+  anna_list_set(l, 3, L"TRALALA");
+  anna_list_append(l, L"TJOHO");
+  wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
+  */
+}

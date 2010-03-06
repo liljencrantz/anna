@@ -8,8 +8,8 @@
 #include <string.h>
 
 #include "wutil.h"
-#include "duck_node.h"
-#include "duck_lex.h"
+#include "anna_node.h"
+#include "anna_lex.h"
 
 struct parse_data 
 {
@@ -23,7 +23,7 @@ struct parse_data
 typedef struct parse_data parse_data_t;
 
 /*
-void duck_error(wchar_t *filename, size_t pos, wchar_t *msg)
+void anna_error(wchar_t *filename, size_t pos, wchar_t *msg)
 {
     wprintf(L"Error in %ls, pos %d: %ls\n", filename, pos, msg);
     
@@ -70,28 +70,28 @@ static wint_t dp_peek(parse_data_t *d)
 
 //  Like iswalpha, but only allow a-z, not localized chars
 
-static duck_isalpha(wchar_t ch)
+static anna_isalpha(wchar_t ch)
 {
     return (ch >= L'a' && ch <= L'z') || (ch >= L'A' && ch <= L'Z');
 }
 
-static duck_isspace(wchar_t ch)
+static anna_isspace(wchar_t ch)
 {
     return iswspace(ch);
     
 }
 
-static duck_isdigit(wchar_t ch)
+static anna_isdigit(wchar_t ch)
 {
     return (ch >= L'0' && ch <= L'9');
 }
 
-static duck_isalnum(wchar_t ch)
+static anna_isalnum(wchar_t ch)
 {
-    return duck_isalpha(ch) || duck_isdigit(ch);
+    return anna_isalpha(ch) || anna_isdigit(ch);
 }
 
-static duck_node_t *parse_int_literal(parse_data_t *d) 
+static anna_node_t *parse_int_literal(parse_data_t *d) 
 {
    long long res = 0;
    int minus=0;
@@ -124,35 +124,35 @@ static duck_node_t *parse_int_literal(parse_data_t *d)
    
    if(count == 0 || count > 12) 
    {
-      duck_error(d->filename, start_pos, L"Invalid number");
+      anna_error(d->filename, start_pos, L"Invalid number");
       return 0;
    }
    
    //FIXME: Check for too big numbers!
    
 
-   return (duck_node_t *)duck_node_int_literal_create(0, res);
+   return (anna_node_t *)anna_node_int_literal_create(0, res);
 }
 
 
-static duck_node_t *parse_lookup(parse_data_t *d) 
+static anna_node_t *parse_lookup(parse_data_t *d) 
 {
     int start_pos = d->pos;
     sb_clear(&d->buff);
     while(1)
     {
 	wint_t ch = dp_peek(d);
-	if(!duck_isalnum(ch) && ch!=L'_')
+	if(!anna_isalnum(ch) && ch!=L'_')
 	{
 	    break;
 	}
 	dp_read(d);
 	sb_append_char(&d->buff, ch);
     }
-    return (duck_node_t *)duck_node_lookup_create(0, wcsdup((wchar_t *)d->buff.buff));
+    return (anna_node_t *)anna_node_lookup_create(0, wcsdup((wchar_t *)d->buff.buff));
 }
 
-static duck_node_t *parse_string_literal(parse_data_t *d) 
+static anna_node_t *parse_string_literal(parse_data_t *d) 
 {
     int start_pos = d->pos;
     wchar_t *res;
@@ -189,7 +189,7 @@ static duck_node_t *parse_string_literal(parse_data_t *d)
 		    sb_append_char(&d->buff, L'\r');
 		    break;
 		default:
-		    duck_error(d->filename, start_pos, L"Invalid string literal");
+		    anna_error(d->filename, start_pos, L"Invalid string literal");
 		    return 0;		    
 	    }
 	    
@@ -202,10 +202,10 @@ static duck_node_t *parse_string_literal(parse_data_t *d)
     }
     res = malloc(sizeof(wchar_t) * sb_length(&d->buff));
     memcpy(res, (wchar_t *)d->buff.buff, sizeof(wchar_t) * sb_length(&d->buff));
-    return (duck_node_t *)duck_node_string_literal_create(d->filename, start_pos, sb_length(&d->buff), res);
+    return (anna_node_t *)anna_node_string_literal_create(d->filename, start_pos, sb_length(&d->buff), res);
 }
 
-static duck_node_t *parse_char_literal(parse_data_t *d) 
+static anna_node_t *parse_char_literal(parse_data_t *d) 
 {
     int start_pos = d->pos;
     wchar_t res;
@@ -214,7 +214,7 @@ static duck_node_t *parse_char_literal(parse_data_t *d)
     wint_t ch = dp_read(d);
     if(ch == L'\'')
     {
-	duck_error(d->filename, start_pos, L"Invalid char literal");
+	anna_error(d->filename, start_pos, L"Invalid char literal");
 	return 0;
     }
     else if(ch == L'\\') 
@@ -240,7 +240,7 @@ static duck_node_t *parse_char_literal(parse_data_t *d)
 		res = L'\r';
 		break;
 	    default:
-		duck_error(d->filename, start_pos, L"Invalid char literal");
+		anna_error(d->filename, start_pos, L"Invalid char literal");
 		return 0;		    
 	}
 	    
@@ -252,11 +252,11 @@ static duck_node_t *parse_char_literal(parse_data_t *d)
     ch = dp_read(d);
     if(ch != L'\'') 
     {
-	duck_error(d->filename, start_pos, L"Invalid char literal");
+	anna_error(d->filename, start_pos, L"Invalid char literal");
 	return 0;	
     }
     
-    return (duck_node_t *)duck_node_char_literal_create(d->filename, start_pos, res);
+    return (anna_node_t *)anna_node_char_literal_create(d->filename, start_pos, res);
 }
 
 static void parse_skip_space(parse_data_t *d)
@@ -264,30 +264,30 @@ static void parse_skip_space(parse_data_t *d)
     while(1)
     {
 	wint_t ch = dp_peek(d);
-	if(!duck_isspace(ch))
+	if(!anna_isspace(ch))
 	    return;
 	dp_read(d);
     }
 }
 
 
-static duck_node_t *parse(parse_data_t *d)
+static anna_node_t *parse(parse_data_t *d)
 {
     parse_skip_space(d);
     int start_pos = d->pos;
     wint_t ch = dp_peek(d);
-    duck_node_t *result = 0;
+    anna_node_t *result = 0;
     
     if(ch == WEOF)
     {
 	return 0;
     }
     
-    if((duck_isdigit(ch)) || ch=='-')
+    if((anna_isdigit(ch)) || ch=='-')
     {
 	result = parse_int_literal(d);      
     }
-    else if((duck_isalpha(ch)) || ch=='_')
+    else if((anna_isalpha(ch)) || ch=='_')
     {
 	result = parse_lookup(d);      
     }
@@ -301,7 +301,7 @@ static duck_node_t *parse(parse_data_t *d)
     }
     else 
     {
-	duck_error(d->filename, start_pos, L"Unknown token type");
+	anna_error(d->filename, start_pos, L"Unknown token type");
 	return 0;
     }
     if(!result)
@@ -316,7 +316,7 @@ static duck_node_t *parse(parse_data_t *d)
 	ch = dp_peek(d);
 	if(ch == L'(') 
 	{
-	    duck_node_t *function = result;
+	    anna_node_t *function = result;
 	    array_list_t child;
 	    int i;
 	    
@@ -331,7 +331,7 @@ static duck_node_t *parse(parse_data_t *d)
 		if(ch == WEOF) 
 		{
 		    al_destroy(&child);
-		    duck_error(d->filename, start_pos, L"Unexpected EOF");
+		    anna_error(d->filename, start_pos, L"Unexpected EOF");
 		    return 0;
 		}
 		if(ch == L')') 
@@ -340,7 +340,7 @@ static duck_node_t *parse(parse_data_t *d)
 		    break;
 		}
 //		wprintf(L"Got character %lc\n", ch);
-		duck_node_t *next_child = parse(d);
+		anna_node_t *next_child = parse(d);
 		if(!next_child)
 		{
 		    al_destroy(&child);
@@ -356,12 +356,12 @@ static duck_node_t *parse(parse_data_t *d)
 		}
 		
 	    }
-	    duck_node_t **child_arr = malloc(sizeof(duck_node_t *) * al_get_count(&child));
+	    anna_node_t **child_arr = malloc(sizeof(anna_node_t *) * al_get_count(&child));
 	    for(i=0; i<al_get_count(&child); i++) 
 	    {
-		child_arr[i] = (duck_node_t *)al_get( &child, i );
+		child_arr[i] = (anna_node_t *)al_get( &child, i );
 	    }
-	    result = (duck_node_t *)duck_node_call_create(d->filename, start_pos, function, al_get_count(&child), child_arr);
+	    result = (anna_node_t *)anna_node_call_create(d->filename, start_pos, function, al_get_count(&child), child_arr);
 	    al_destroy(&child);
 	}
 	else 
@@ -376,15 +376,15 @@ static duck_node_t *parse(parse_data_t *d)
 }
 */
 
-duck_node_t *duck_parse(wchar_t *filename) 
+anna_node_t *anna_parse(wchar_t *filename) 
 {
   yyscan_t scanner;
 
   FILE *file = wfopen(filename, "r");
-  duck_node_t *parse_tree;
+  anna_node_t *parse_tree;
   
-  duck_lex_lex_init(&scanner);
-  duck_lex_set_in( file, scanner);
+  anna_lex_lex_init(&scanner);
+  anna_lex_set_in( file, scanner);
   /*
   YYLTYPE lloc;
   
@@ -395,27 +395,27 @@ duck_node_t *duck_parse(wchar_t *filename)
   lloc.filename = filename;
   */
   //  wprintf(L"Todelo, scanner is %d\n", &scanner);
-  duck_yacc_parse( scanner, filename, &parse_tree );
-  duck_lex_lex_destroy(scanner);
+  anna_yacc_parse( scanner, filename, &parse_tree );
+  anna_lex_lex_destroy(scanner);
   fclose(file);
   
-  return duck_yacc_error_count?0:parse_tree;
+  return anna_yacc_error_count?0:parse_tree;
     
 /*    
     parse_data_t data;
     parse_data_init(&data, file, filename);
 
-    duck_node_t *result = parse(&data);
+    anna_node_t *result = parse(&data);
     parse_data_destroy(&data);
     return result;
 */ 
    /*
-   duck_node_t *param[1];
-   param[0] = (duck_node_t *)duck_node_int_literal_create(L"FOO",0,7);
+   anna_node_t *param[1];
+   param[0] = (anna_node_t *)anna_node_int_literal_create(L"FOO",0,7);
    
-   duck_node_t *print_lookup = (duck_node_t *)duck_node_lookup_create(L"FOO",0,L"print");
+   anna_node_t *print_lookup = (anna_node_t *)anna_node_lookup_create(L"FOO",0,L"print");
    
-   duck_node_t *program = (duck_node_t *)duck_node_call_create(L"FOO",0, print_lookup, 1, param);
+   anna_node_t *program = (anna_node_t *)anna_node_call_create(L"FOO",0, print_lookup, 1, param);
    
    return program;
    */

@@ -1,10 +1,10 @@
 
 %{
 
-#include "duck_node.h"
-#include "duck_yacc.h"
+#include "anna_node.h"
+#include "anna_yacc.h"
 
-int duck_lex_wrap(yyscan_t yyscanner) 
+int anna_lex_wrap(yyscan_t yyscanner) 
 {
   return (1); 
 }
@@ -12,7 +12,7 @@ int duck_lex_wrap(yyscan_t yyscanner)
 %}
 
 %option reentrant 
-%option header-file="duck_lex.h"
+%option header-file="anna_lex.h"
 %x COMMENT
 
 %%

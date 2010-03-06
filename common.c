@@ -247,7 +247,7 @@ void debug( int level, const wchar_t *msg, ... )
 		
 	sb_init( &sb );
 
-	sb_printf( &sb, L"duck: " );
+	sb_printf( &sb, L"anna: " );
 
 	va_start( va, msg );	
 	sb_vprintf( &sb, msg, va );

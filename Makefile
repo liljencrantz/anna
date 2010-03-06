@@ -1,13 +1,13 @@
 
 CFLAGS := -g -rdynamic 
 
-DUCK_OBJS := duck.o util.o duck_parse.o duck_node.o duck_macro.o duck_function_implementation.o duck_int.o duck_string.o duck_char.o duck_float.o duck_list.o duck_stack.o duck_lex.o duck_yacc.o common.o wutil.o
+DUCK_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o anna_function_implementation.o anna_int.o anna_string.o anna_char.o anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o wutil.o
 
 LDFLAGS := -lm -rdynamic -ll
 
-PROGRAMS := duck
+PROGRAMS := anna
 
-all: duck
+all: anna
 
 #########################################################
 #            BEGIN DEPENDENCY TRACKING                  #
@@ -19,32 +19,32 @@ include $(DUCK_OBJS:.o=.d)
 #             END DEPENDENCY TRACKING                   #
 #########################################################
 
-duck: $(DUCK_OBJS)
+anna: $(DUCK_OBJS)
 	gcc $(DUCK_OBJS) -o $@ $(LDFLAGS) 
 
 
-duck_lex.c: duck_lex.y duck_yacc.h
-	flex -oduck_lex.c -Pduck_lex_ duck_lex.y 
+anna_lex.c: anna_lex.y anna_yacc.h
+	flex -oanna_lex.c -Panna_lex_ anna_lex.y 
 
 
-duck_float.c: duck_float_i.c
+anna_float.c: anna_float_i.c
 
-duck_float_i.c: make_duck_float_i.sh
-	./make_duck_float_i.sh >duck_float_i.c
+anna_float_i.c: make_anna_float_i.sh
+	./make_anna_float_i.sh >anna_float_i.c
 
 
-duck_int.c: duck_int_i.c
+anna_int.c: anna_int_i.c
 
-duck_int_i.c: make_duck_int_i.sh
-		./make_duck_int_i.sh >duck_int_i.c
+anna_int_i.c: make_anna_int_i.sh
+		./make_anna_int_i.sh >anna_int_i.c
 
-duck_char.c: duck_char_i.c
+anna_char.c: anna_char_i.c
 
-duck_char_i.c: make_duck_char_i.sh
-	./make_duck_char_i.sh >duck_char_i.c
+anna_char_i.c: make_anna_char_i.sh
+	./make_anna_char_i.sh >anna_char_i.c
 
-duck_yacc.c duck_yacc.h: duck_yacc.y
-	bison -d duck_yacc.y -o duck_yacc.c -v -p duck_yacc_
+anna_yacc.c anna_yacc.h: anna_yacc.y
+	bison -d anna_yacc.y -o anna_yacc.c -v -p anna_yacc_
 
 clean:
-	rm duck duck_yacc.output *.o duck_lex.c duck_yacc.c duck_yacc.h duck_float_i.c duck_char_i.c duck_int_i.c  *.d
+	rm anna anna_yacc.output *.o anna_lex.c anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  *.d

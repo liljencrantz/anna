@@ -1,7 +1,7 @@
 #include <sys/time.h>
 
-//#include "duck_string_naive.c"
-#include "duck_string_internal.c"
+//#include "anna_string_naive.c"
+#include "anna_string_internal.c"
 
 long long get_time()
 {
@@ -10,7 +10,7 @@ long long get_time()
 	return 1000000ll*time_struct.tv_sec+time_struct.tv_usec;
 }
 
-duck_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
+anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
 {
   long long start_time = get_time();
   int j=0;
@@ -19,26 +19,26 @@ duck_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
   for(j=0;j<10;j++)
     {
       int i;
-      duck_string_t a, b, c, d, e;
+      anna_string_t a, b, c, d, e;
   
       size_t chars_done=0;
       
-      duck_string_init(&a);
-      duck_string_init(&b);
-      duck_string_init(&c);
-      duck_string_init(&d);
-      duck_string_init(&e);
-      duck_string_init_from_ptr(&e, L"abcdefghijklmnopqrstuvwxyz0123456789ABCD", 40);
+      anna_string_init(&a);
+      anna_string_init(&b);
+      anna_string_init(&c);
+      anna_string_init(&d);
+      anna_string_init(&e);
+      anna_string_init_from_ptr(&e, L"abcdefghijklmnopqrstuvwxyz0123456789ABCD", 40);
       for(i=0; i<= max_len/20; i++)
 	{
-	  duck_string_append(&d, &e, 0, 40);
+	  anna_string_append(&d, &e, 0, 40);
 	}
       
       while(1)
 	{
 	  size_t len = min_len + rand()%(max_len-min_len);
 	  size_t offset = rand()%max_len;
-	  duck_string_t *dest;
+	  anna_string_t *dest;
 	  switch(rand()%3)
 	    {
 	    case 0:
@@ -51,7 +51,7 @@ duck_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
 	      dest = &c;
 	      break;
 	    }
-	  duck_string_append(dest, &d, offset, len);
+	  anna_string_append(dest, &d, offset, len);
 	  chars_done += len;
 	  
 	  if(chars_done > stop) 
@@ -69,7 +69,7 @@ duck_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
 
 int main()
 {
-  duck_string_append_test(1, 16, L"short strings");  
-  duck_string_append_test(400, 800, L"long strings");  
+  anna_string_append_test(1, 16, L"short strings");  
+  anna_string_append_test(400, 800, L"long strings");  
   return 0;
 }
