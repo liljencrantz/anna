@@ -11,7 +11,7 @@
 #include "anna_stack.h"
 #include "anna_macro.h"
 
-
+#define FAIL(n, ...) anna_error((anna_node_t *)n, __VA_ARGS__); return (anna_node_t *)anna_node_null_create(&n->location);
 #define CHECK_INPUT_COUNT(n, name, count) if(n->child_count != count)	\
     {									\
       anna_error((anna_node_t *)n,					\
@@ -77,7 +77,7 @@ static int check_node_block(anna_node_t *n)
     return 1;
 }
 
-static wchar_t *anna_find_method(anna_type_t *type, wchar_t *prefix, 
+static wchar_t *anna_find_method(anna_node_t *context, anna_type_t *type, wchar_t *prefix, 
 				      size_t argc, anna_type_t *arg2_type)
 {
     int i;
@@ -108,10 +108,9 @@ static wchar_t *anna_find_method(anna_type_t *type, wchar_t *prefix,
 	    
 	    if(!mem_fun->argv[1])
 	    {
-		wprintf(L"Internal error. Type %ls has member named %ls with invalid second argument\n",
-			type->name, members[i]);
-		exit(1);
-		
+		anna_error(context,L"Internal error. Type %ls has member named %ls with invalid second argument\n",
+			   type->name, members[i]);
+		return 0;
 	    }
 	    
 	    
@@ -302,7 +301,7 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node, anna_fun
 	return (anna_node_t *)anna_node_null_create(&node->location);	
     }
     
-    wchar_t *method_name = anna_find_method(t1, name_prefix, 2, t2);
+    wchar_t *method_name = anna_find_method((anna_node_t *)node, t1, name_prefix, 2, t2);
     
     if(method_name)
     {
@@ -338,14 +337,13 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node, anna_fun
 	sb_append(&buff, L"__r");
 	sb_append(&buff, &name_prefix[2]);
 	wchar_t *reverse_name_prefix = sb_content(&buff);
-	method_name = anna_find_method(t2, reverse_name_prefix, 2, t1);
+	method_name = anna_find_method((anna_node_t *)node, t2, reverse_name_prefix, 2, t1);
 	sb_destroy(&buff);
 	
 	if(!method_name)
 	{
-	    wprintf(L"Error: %ls__: No support for call with objects of types %ls and %ls\n",
-		    name_prefix, t1->name, t2->name);
-	    exit(1);
+	    FAIL(node, L"%ls__: No support for call with objects of types %ls and %ls\n",
+		 name_prefix, t1->name, t2->name);
 	}
 
 	anna_node_t *mg_param[2]=
@@ -376,69 +374,77 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node, anna_fun
     }
 }
 
-anna_node_t *anna_list_each(anna_node_call_t *node,
-			    anna_function_t *func, 
-			    anna_node_list_t *parent)
+anna_node_t *anna_macro_iter(anna_node_call_t *node,
+			     anna_function_t *func, 
+			     anna_node_list_t *parent)
 {
-    CHECK_INPUT_COUNT(node,L"each", 2);
+    CHECK_INPUT_COUNT(node,L"iteration macro", 2);
     CHECK_NODE_BLOCK(node->child[1]);
     CHECK_NODE_TYPE(node->function, ANNA_NODE_MEMBER_GET_WRAP);
+    
+    anna_node_member_get_t * mg = (anna_node_member_get_t *)node->function;
+    int return_pop_count = 1+func->return_pop_count;
+    anna_type_t *lst_type = anna_node_get_return_type(mg->object, func->stack_template);
+
+    wchar_t * call_name = anna_mid_get_reverse(mg->mid);
     
     switch(node->child[0]->node_type)
     {
 	case ANNA_NODE_LOOKUP:
 	{
-	    anna_node_lookup_t * value_name;
+	    anna_node_lookup_t * value_name = (anna_node_lookup_t *)node->child[0];
 
-	    value_name = (anna_node_lookup_t *)node->child[0];
-
-    anna_node_member_get_t * mg = (anna_node_member_get_t *)node->function;
-    
-    int return_pop_count = 1+func->return_pop_count;
-    
-    anna_type_t *argv[]=
-	{
-	    object_type
-	}
-    ;
-    
-    wchar_t *argn[]=
-	{
-	    value_name->name
-	}
-    ;
-
+	    
+	    anna_type_t *argv[]=
+		{
+		    object_type
+		}
+	    ;
+	    
+	    wchar_t *argn[]=
+		{
+		    value_name->name
+		}
+	    ;
+	    
 //    wprintf(L"Setting up each function, param name is %ls\n", name->name);
-    
-    wchar_t *method_name = L"__eachValue__";
-    anna_type_t *lst_type = anna_node_get_return_type(mg->object, func->stack_template);
-    
-    size_t mid = anna_mid_get(method_name);
-    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
-    if(!member_type)
-    {
-	anna_error((anna_node_t *)node, L"Unable to calculate type of member %ls of object of type %ls", method_name, lst_type->name);
-	return (anna_node_t *)anna_node_null_create(&node->location);	\
-    }
-    
-    anna_node_t *function = (anna_node_t *)
-	anna_node_dummy_create(&node->location,
-			       anna_function_create(L"!anonymous", 0, node->child[1], 
-						    null_type, 1, argv, &value_name->name, 
-						    func->stack_template, 
-						    return_pop_count)->wrapper,
-			       1);
-    
-    
-    return (anna_node_t *)anna_node_call_create(&node->location,
-						anna_node_member_get_create(&node->location,
-									    mg->object,
-									    mid,
-									    member_type,
-									    1),   
-						1,
-						&function);
 
+	    
+	    string_buffer_t sb;
+	    sb_init(&sb);
+	    sb_append(&sb, L"__");
+	    sb_append(&sb, call_name);
+	    sb_append(&sb, L"Value__");
+	    
+	    wchar_t *method_name = sb_content(&sb);
+	    
+	    size_t mid = anna_mid_get(method_name);
+	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
+	    if(!member_type)
+	    {
+		anna_error((anna_node_t *)node, L"Unable to calculate type of member %ls of object of type %ls", method_name, lst_type->name);
+		return (anna_node_t *)anna_node_null_create(&node->location); \
+	    }
+	    sb_destroy(&sb);
+
+	    anna_node_t *function = (anna_node_t *)
+		anna_node_dummy_create(&node->location,
+				       anna_function_create(L"!anonymous", 0, node->child[1], 
+							    null_type, 1, argv, &value_name->name, 
+							    func->stack_template, 
+							    return_pop_count)->wrapper,
+				       1);
+	    
+	    
+	    return (anna_node_t *)anna_node_call_create(&node->location,
+							anna_node_member_get_create(&node->location,
+										    mg->object,
+										    mid,
+										    member_type,
+										    1),   
+							1,
+							&function);
+	    
 	}
 	
 	case ANNA_NODE_CALL:
@@ -448,14 +454,11 @@ anna_node_t *anna_list_each(anna_node_call_t *node,
 
 	    anna_node_call_t * decl = (anna_node_call_t *)node->child[0];
 	    CHECK_NODE_LOOKUP_NAME(decl->function, L"Pair");
-	    CHECK_INPUT_COUNT(decl,L"each", 2);
+	    CHECK_INPUT_COUNT(decl, L"iteration macro", 2);
 	    CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_LOOKUP);
 	    CHECK_NODE_TYPE(decl->child[1], ANNA_NODE_LOOKUP);
 	    key_name = (anna_node_lookup_t *)decl->child[0];
 	    value_name = (anna_node_lookup_t *)decl->child[1];
-	    anna_node_member_get_t * mg = (anna_node_member_get_t *)node->function;
-    
-	    int return_pop_count = 1+func->return_pop_count;
     
 	    anna_type_t *argv[]=
 		{
@@ -471,8 +474,13 @@ anna_node_t *anna_list_each(anna_node_call_t *node,
 
 	    //wprintf(L"Setting up each function, param names are %ls and %ls\n", key_name->name, value_name->name);
 	    
-	    wchar_t *method_name = L"__eachPair__";
-	    anna_type_t *lst_type = anna_node_get_return_type(mg->object, func->stack_template);
+	    string_buffer_t sb;
+	    sb_init(&sb);
+	    sb_append(&sb, L"__");
+	    sb_append(&sb, call_name);
+	    sb_append(&sb, L"Pair__");
+	    
+	    wchar_t *method_name = sb_content(&sb);
 	    
 	    size_t mid = anna_mid_get(method_name);
 	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
@@ -481,6 +489,7 @@ anna_node_t *anna_list_each(anna_node_call_t *node,
 		anna_error((anna_node_t *)node, L"Unable to calculate type of member %ls of object of type %ls", method_name, lst_type->name);
 		return (anna_node_t *)anna_node_null_create(&node->location); \
 	    }
+	    sb_destroy(&sb);
 	    
 	    anna_node_t *function = (anna_node_t *)
 		anna_node_dummy_create(&node->location,
@@ -505,8 +514,6 @@ anna_node_t *anna_list_each(anna_node_call_t *node,
 	    return (anna_node_t *)anna_node_null_create(&node->location);
     }
     
-
-    
 }
 
 
@@ -521,14 +528,12 @@ static anna_node_t *anna_macro_get(anna_node_call_t *node,
   anna_type_t * t1 = anna_node_get_return_type(node->child[0], func->stack_template);
   anna_type_t * t2 = anna_node_get_return_type(node->child[1], func->stack_template);
     
-  wchar_t *method_name = anna_find_method(t1, L"__get", 2, t2);
+  wchar_t *method_name = anna_find_method((anna_node_t *)node, t1, L"__get", 2, t2);
 
   if(!method_name)
   {
-      wprintf(L"Error: __get__: No support for call with objects of types %ls and %ls\n",
+      FAIL(node, L"Error: __get__: No support for call with objects of types %ls and %ls\n",
 	      t1->name, t2->name);
-      anna_stack_print(func->stack_template);
-      exit(1);
   }
   
   anna_node_t *mg_param[2]=
@@ -568,34 +573,32 @@ static anna_node_t *anna_macro_set(anna_node_call_t *node,
 				   anna_node_list_t *parent)
 {
     CHECK_INPUT_COUNT(node,L"__set__ operator", 3);
-  anna_prepare_children(node, func, parent);
+    anna_prepare_children(node, func, parent);
     
-  anna_type_t * t1 = anna_node_get_return_type(node->child[0], func->stack_template);
-  anna_type_t * t2 = anna_node_get_return_type(node->child[1], func->stack_template);
-
-  wchar_t *method_name = anna_find_method(t1, L"__set", 3, t2);
-
-  if(!method_name)
+    anna_type_t * t1 = anna_node_get_return_type(node->child[0], func->stack_template);
+    anna_type_t * t2 = anna_node_get_return_type(node->child[1], func->stack_template);
+    
+    wchar_t *method_name = anna_find_method((anna_node_t *)node, t1, L"__set", 3, t2);
+    
+    if(!method_name)
     {
-      wprintf(L"Error: __set__: No support for call with objects of types %ls and %ls\n",
+	FAIL(node, L"__set__: No support for call with objects of types %ls and %ls\n",
 	      t1->name, t2->name);
-      anna_stack_print(func->stack_template);
-      exit(1);
     }
-  
-  anna_node_t *mg_param[2]=
-    {
-      node->child[0], (anna_node_t *)anna_node_lookup_create(&node->location, method_name)
-    }
-  ;
-  
-  anna_node_t *c_param[2]=
-    {
-	node->child[1], node->child[2]
-    }
-  ;
-  
-  anna_node_t *result = (anna_node_t *)
+	    
+    anna_node_t *mg_param[2]=
+	{
+	    node->child[0], (anna_node_t *)anna_node_lookup_create(&node->location, method_name)
+	}
+    ;
+    
+    anna_node_t *c_param[2]=
+	{
+	    node->child[1], node->child[2]
+	}
+    ;
+    
+    anna_node_t *result = (anna_node_t *)
 	anna_node_call_create(&node->location,
 			      (anna_node_t *)
 			      anna_node_call_create(&node->location,
@@ -643,8 +646,8 @@ static anna_node_t *anna_macro_declare(struct anna_node_call *node,
 	   break;
 
        default:
-	  wprintf(L"Dang, wrong type thing\n");
-	  exit(1);
+	   FAIL(node->child[1], L"Wrong type on second argument to declare - expected an identifier or a null node");
+
     }
     assert(type);
     anna_stack_declare(function->stack_template, name_lookup->name, type, null_object);
@@ -692,8 +695,7 @@ static anna_node_t *anna_macro_member(anna_type_t *type,
 	    break;
 
 	default:
-	    wprintf(L"Dang, wrong type thing\n");
-	    exit(1);
+	    FAIL(node->child[1], L"Wrong type on second argument to declare - expected an identifier or a null node");
     }
     
     assert(var_type);

@@ -70,6 +70,7 @@
   __staticMemberGet__ macro
   __staticMember_set__ macro
   __with__ macro
+  map, select, first, last macros
 
   Done: 
   
@@ -141,6 +142,7 @@ anna_object_t *null_object=0;
 
 static hash_table_t anna_type_for_function_lookup;
 static hash_table_t anna_mid_lookup;
+static array_list_t anna_mid_lookup_reverse;
 
 anna_node_t *anna_node_null=0;
 
@@ -258,6 +260,7 @@ void anna_mid_put(wchar_t *name, size_t mid)
    offset_ptr = malloc(sizeof(size_t));
    *offset_ptr = mid;
    hash_put(&anna_mid_lookup, name, offset_ptr);   
+   al_set(&anna_mid_lookup_reverse, mid, wcsdup(name));
 }
 
 size_t anna_mid_get(wchar_t *name)
@@ -270,6 +273,11 @@ size_t anna_mid_get(wchar_t *name)
       return gg;
    }
    return *offset_ptr;
+}
+
+wchar_t *anna_mid_get_reverse(size_t mid)
+{
+    return (wchar_t *)al_get(&anna_mid_lookup_reverse, mid);
 }
 
 int hash_function_type_func(void *a)
@@ -971,6 +979,7 @@ static void anna_object_type_create_early()
 
 static void anna_init()
 {
+    al_init(&anna_mid_lookup_reverse);
     hash_init(&anna_mid_lookup, &hash_wcs_func, &hash_wcs_cmp);
     hash_init(&anna_type_for_function_lookup, &hash_function_type_func, &hash_function_type_comp);
     

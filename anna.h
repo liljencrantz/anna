@@ -210,6 +210,7 @@ size_t anna_method_create(anna_type_t *type,
 
 
 
+wchar_t *anna_mid_name(size_t mid);
 
 
 anna_object_t *anna_object_create(anna_type_t *type);

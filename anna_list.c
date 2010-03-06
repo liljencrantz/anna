@@ -202,6 +202,72 @@ static anna_object_t *anna_list_each_pair(anna_object_t **param)
 }
 
 
+static anna_object_t *anna_list_map_value(anna_object_t **param)
+{
+    anna_object_t *body_object;
+    anna_object_t *result=anna_list_create();
+    
+    body_object=param[1];
+        
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
+    anna_list_set_size(result, sz);
+
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    assert(function_ptr);
+/*
+    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+*/  
+    for(i=0;i<sz;i++)
+    {
+      /*
+      wprintf(L"Run the following code:\n");
+      anna_node_print((*function_ptr)->body);
+      wprintf(L"\n");
+      */
+	anna_list_set(result, i, anna_function_invoke_values(*function_ptr, 0, &arr[i], stack_ptr?*stack_ptr:0));
+    }
+    return result;
+}
+
+
+static anna_object_t *anna_list_map_pair(anna_object_t **param)
+{
+    anna_object_t *body_object;
+    anna_object_t *result=anna_list_create();
+    body_object=param[1];
+        
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
+    anna_list_set_size(result, sz);
+
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    assert(function_ptr);
+/*
+    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+*/  
+    anna_object_t *o_param[2];
+    for(i=0;i<sz;i++)
+    {
+      /*
+      wprintf(L"Run the following code:\n");
+      anna_node_print((*function_ptr)->body);
+      wprintf(L"\n");
+      */
+	o_param[0] = anna_int_create(i);
+	o_param[1] = arr[i];
+	anna_list_set(result, i, anna_function_invoke_values(*function_ptr, 0, o_param, stack_ptr?*stack_ptr:0));
+    }
+    return result;
+}
+
+
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
     list_type = anna_type_create(L"List", 64);
@@ -246,15 +312,19 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	}
     ;
     
-
     anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_get_int, object_type, 2, i_argv, i_argn);
 
     anna_native_method_create(list_type, -1, L"__setInt__", 0, (anna_native_t)&anna_list_set_int, object_type, 3, i_argv, i_argn);
     anna_native_method_create(list_type, -1, L"__append__", 0, (anna_native_t)&anna_list_append, object_type, 2, a_argv, a_argn);
 
-    anna_native_method_create(list_type, -1, L"each", ANNA_FUNCTION_MACRO, (anna_native_t)&anna_list_each, 0, 0, 0, 0);
+    anna_native_method_create(list_type, -1, L"each", ANNA_FUNCTION_MACRO, (anna_native_t)&anna_macro_iter, 0, 0, 0, 0);
     anna_native_method_create(list_type, -1, L"__eachValue__", 0, (anna_native_t)&anna_list_each_value, object_type, 2, e_argv, e_argn);
     anna_native_method_create(list_type, -1, L"__eachPair__", 0, (anna_native_t)&anna_list_each_pair, object_type, 2, e_argv, e_argn);
+
+    anna_native_method_create(list_type, -1, L"map", ANNA_FUNCTION_MACRO, (anna_native_t)&anna_macro_iter, 0, 0, 0, 0);
+    anna_native_method_create(list_type, -1, L"__mapValue__", 0, (anna_native_t)&anna_list_map_value, list_type, 2, e_argv, e_argn);
+    anna_native_method_create(list_type, -1, L"__mapPair__", 0, (anna_native_t)&anna_list_map_pair, list_type, 2, e_argv, e_argn);
+
     /*
     anna_native_method_create(list_type, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
     anna_native_method_create(list_type, -1, L"__setslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);

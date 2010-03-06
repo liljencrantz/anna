@@ -22,9 +22,10 @@ lst ~= 3;
 lst ~= 2;
 lst ~= 5;
 
-lst.each(key:value){
-	print(key);
-	print(": ");
-	print(value);
-	print("\n");
+lst = lst.map(key:value){
+	return key+1;
 }
+
+print("AAA\n");
+print(lst[0]);
+print("BBB\n");
