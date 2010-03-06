@@ -22,7 +22,9 @@ lst ~= 3;
 lst ~= 2;
 lst ~= 5;
 
-lst.each(foo){
-	print(foo);
-	print("...\n");
+lst.each(key:value){
+	print(key);
+	print(": ");
+	print(value);
+	print("\n");
 }

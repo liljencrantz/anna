@@ -613,6 +613,15 @@ duck_function_t *duck_function_create(wchar_t *name,
 	}
     }
     
+    int i;
+    
+    for(i=0;i<argc; i++)
+    {
+	assert(argv[i]);
+	assert(argn[i]);
+    }
+    
+    
     duck_function_t *result = calloc(1,sizeof(duck_function_t) + argc*sizeof(duck_type_t *));
     result->native.function=0;
     result->flags=flags;
@@ -623,7 +632,8 @@ duck_function_t *duck_function_create(wchar_t *name,
     result->return_pop_count = return_pop_count;
     
     memcpy(&result->input_type, argv, sizeof(duck_type_t *)*argc);
-    result->input_name = argn;
+    result->input_name = malloc(argc*sizeof(wchar_t *));;
+    memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
     
     duck_type_t *function_type = duck_type_for_function(return_type, argc, argv);
     result->type = function_type;    
@@ -632,7 +642,7 @@ duck_function_t *duck_function_create(wchar_t *name,
     memcpy(duck_member_addr_get_mid(result->wrapper,DUCK_MID_FUNCTION_WRAPPER_STACK), &stack_global, sizeof(duck_stack_frame_t *));
     //wprintf(L"Function object is %d, wrapper is %d\n", result, result->wrapper);
     result->stack_template = duck_stack_create(64, parent_stack);
-    int i;
+
     for(i=0; i<argc;i++)
     {
 	duck_stack_declare(result->stack_template, argn[i], argv[i], null_object);	
@@ -1100,9 +1110,9 @@ duck_object_t *duck_function_invoke_values(duck_function_t *function,
 		
 		for(i=0; i<(function->input_count-offset); i++) 
 		{
-		  /*		    wprintf(L"Declare input variable %ls on stack\n",
-			    function->input_name[i+offset]);
-		  */
+/*		    wprintf(L"Declare input variable %d with name %ls on stack\n",
+			    i, function->input_name[i+offset]);
+*/		  
 		    duck_stack_declare(my_stack, 
 				       function->input_name[i+offset],
 				       function->input_type[i+offset],

@@ -24,6 +24,9 @@ void duck_stack_declare(duck_stack_frame_t *stack,
 			duck_type_t *type, 
 			duck_object_t *initial_value)
 {
+    if(!name)
+	CRASH;
+    
     assert(initial_value);
     assert(name);
     assert(type);
