@@ -13,8 +13,8 @@
 
 #define DUCK_STRING_DEFAULT_ELEMENT_CAPACITY 12
 #define DUCK_STRING_APPEND_SHORT_LIMIT 32
-
 #define DUCK_STRING_HAIRCUT_RATIO 8
+#define DUCK_STRING_LARGE 2048
 
 #define CRASH					\
     {						\
@@ -37,6 +37,8 @@ typedef struct duck_string_element duck_string_element_t;
 
 duck_string_element_t *duck_string_element_create(wchar_t *payload, size_t size, size_t available);
 static void duck_string_print(duck_string_t *dest);
+static duck_string_ensure_element_capacity(duck_string_t *string, size_t count);
+
 
 
 int mini(int a, int b)
@@ -80,13 +82,16 @@ static void duck_string_element_stepford(duck_string_t *dest, int eid, size_t mi
   
     if(dest->element[eid]->users == 1)
     {
+      
         size_t available = dest->element[eid]->capacity - (dest->element_length[eid]+dest->element_offset[eid]);
 	if(available >= min_available)
 	    return;
-	size_t increment = 4*(min_available - available);
-      
-	dest->element[eid] = realloc(dest->element[eid], sizeof(duck_string_element_t) + sizeof(wchar_t)*(dest->element[eid]->capacity + increment));
-	dest->element[eid]->capacity += increment;
+
+	size_t new_size = maxi(min_available + dest->element[eid]->capacity,
+			       3*dest->element[eid]->capacity);
+	
+	dest->element[eid] = realloc(dest->element[eid], sizeof(duck_string_element_t) + sizeof(wchar_t)*(new_size));
+	dest->element[eid]->capacity = new_size;
     }
     //wprintf(L"Make element my own\n");
     
@@ -98,6 +103,39 @@ static void duck_string_element_stepford(duck_string_t *dest, int eid, size_t mi
     
     //wprintf(L"I have my very own %.*ls\n", dest->element_length[eid], dest->element[eid]->payload);
 }
+
+static void duck_string_make_appendable(duck_string_t *dest, size_t min_free)
+{
+  int make_new = 0;
+  size_t eid = dest->element_count-1;
+  
+  if(dest->element_count == 0) 
+    {
+      make_new=1;
+    }
+  else 
+    {
+      size_t free = dest->element[eid]->capacity - dest->element_offset[eid] - dest->element_length[eid];
+      if(free >= min_free && dest->element[eid]->users == 1)
+	return;
+      if(dest->element[eid]->users > 1 || dest->element[eid]->capacity > DUCK_STRING_LARGE)
+	make_new=1;
+      
+    }
+
+  if(make_new)
+    {
+      duck_string_ensure_element_capacity(dest, dest->element_count+1);
+      dest->element_count=1;	    
+      dest->element[0] = duck_string_element_create(0,0, 4*DUCK_STRING_APPEND_SHORT_LIMIT);		     dest->element_length[0]=0;
+      dest->element_offset[0]=0;	    
+    }
+  else
+    {
+      duck_string_element_stepford(dest, eid, 4*DUCK_STRING_APPEND_SHORT_LIMIT);
+    }  
+}
+
 
 /**
    Trim away short string elements in order to tidy up the
@@ -180,7 +218,7 @@ static duck_string_ensure_element_capacity(duck_string_t *string, size_t count)
       
 	string->element_capacity=count;
 	string->element = malloc((sizeof(duck_string_element_t*)+sizeof(size_t)*2)*count);
-	string->element_offset = string->element + count;
+	string->element_offset = (size_t *)(string->element + count);
 	string->element_length = string->element_offset + count;
     }
     else 
@@ -276,17 +314,9 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
     
     if(length < DUCK_STRING_APPEND_SHORT_LIMIT) 
     {
-	if(dest->element_count == 0)
-	{
-	    duck_string_ensure_element_capacity(dest, 1);
-	    dest->element_count=1;	    
-	    dest->element[0] = duck_string_element_create(0,0, 4*DUCK_STRING_APPEND_SHORT_LIMIT);		   dest->element_length[0]=0;
-	    dest->element_offset[0]=0;	    
-	}
-	else
-	{
-	    duck_string_element_stepford(dest, dest->element_count-1, length);
-	}
+      duck_string_make_appendable(dest, length);
+      
+
 	
 	duck_string_element_t *el = dest->element[dest->element_count-1];
 	size_t dest_offset = dest->element_offset[dest->element_count-1]+dest->element_length[dest->element_count-1];
@@ -297,7 +327,7 @@ void duck_string_append(duck_string_t *dest, duck_string_t *src, size_t offset, 
 	dest->element_length[dest->element_count-1] += length;
 	return;
       }
-
+    
     if(src->element_count == 1)
       {
 	//	wprintf(L"FAST\n");

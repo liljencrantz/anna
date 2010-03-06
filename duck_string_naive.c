@@ -32,8 +32,7 @@ void duck_string_ensure_capacity(duck_string_t *string, size_t size)
     if(string->capacity < size)
     {
       string->capacity=maxi(string->capacity*2,size);
-      string->str = realloc(string->str, sizeof(wchar_t)*string->capacity);
-      
+      string->str = realloc(string->str, sizeof(wchar_t)*string->capacity);      
     }
 }
 
