@@ -1228,9 +1228,9 @@ int main(int argc, char **argv)
     }
     wchar_t *filename = str2wcs(argv[1]);
 
-    wprintf(L"Initializing interpreter.\n");    
+    wprintf(L"Initializing interpreter...\n");    
     anna_init();
-    wprintf(L"Parsing program %ls.\n", filename);    
+    wprintf(L"Parsing file %ls...\n", filename);    
     anna_node_t *program = anna_parse(filename);
     
     if(!program) 
@@ -1243,7 +1243,7 @@ int main(int argc, char **argv)
     anna_node_print(program);
     wprintf(L"\n");
     
-    wprintf(L"Validating program.\n");    
+    wprintf(L"Validating program...\n");    
     /*
       The entire program is a __block__ call, which we use to create an anonymous function definition
      */
@@ -1266,7 +1266,11 @@ int main(int argc, char **argv)
     /*
       Run the function
      */
+    wprintf(L"Validated program:\n");    
+    anna_node_print(program);
+    wprintf(L"\n");
     wprintf(L"Output:\n");    
+
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_invoke(func, 0, 0, stack_global, stack_global);

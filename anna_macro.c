@@ -31,6 +31,33 @@
 
 #define CHECK_NODE_LOOKUP_NAME(n, name) if(!check_node_lookup_name(n, name)) return (anna_node_t *)anna_node_null_create(&node->location)
 
+#define CHECK_TYPE(n) if(!extract_type(n, func->stack_template)) return (anna_node_t *)anna_node_null_create(&n->location)
+#define EXTRACT_TYPE(n) extract_type(n, func->stack_template)
+
+static anna_type_t *extract_type(anna_node_t *node, anna_stack_frame_t *stack)
+{
+    if(node->node_type != ANNA_NODE_LOOKUP)
+    {
+	anna_error(node, L"Expected type identifier");
+	return 0;
+    }
+    anna_node_lookup_t *id = (anna_node_lookup_t *)node;
+    anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+    if(!wrapper)
+    {
+	anna_error(node, L"Unknown type: %ls", id->name);
+	return 0;	
+    }
+    anna_type_t *type = anna_type_unwrap(wrapper);
+    if(!type)
+    {
+	anna_error(node, L"Identifier is not a type: %ls", id->name);
+    }
+    return type;
+    
+}
+
+
 static int check_node_lookup_name(anna_node_t *node, wchar_t *name)
 {
     if(node->node_type != ANNA_NODE_LOOKUP)
@@ -112,7 +139,6 @@ static wchar_t *anna_find_method(anna_node_t *context, anna_type_t *type, wchar_
 			   type->name, members[i]);
 		return 0;
 	    }
-	    
 	    
 	    if(mem_fun->argc == argc && anna_abides(arg2_type, mem_fun->argv[1]))
 	    {
@@ -1213,6 +1239,22 @@ static anna_node_t *anna_macro_return(anna_node_call_t *node,
     return (anna_node_t *)anna_node_return_create(&node->location, node->child[0], func->return_pop_count+1);
 }
 
+static anna_node_t *anna_macro_templatize(anna_node_call_t *node, 
+					  anna_function_t *func, 
+					  anna_node_list_t *parent)
+{
+    CHECK_INPUT_COUNT(node, L"template instantiation", 2);
+    CHECK_TYPE(node->child[0]);
+    
+    anna_type_t *base_type = EXTRACT_TYPE(node->child[0]);
+
+    wprintf(L"LALALA %ls\n", base_type->name);
+    return base_type;
+    
+    
+    return (anna_node_t *)anna_node_null_create(&node->location);
+}
+
 static void anna_macro_add(anna_stack_frame_t *stack, 
 			   wchar_t *name,
 			   anna_native_macro_t call)
@@ -1240,6 +1282,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"while", &anna_macro_while);
     anna_macro_add(stack, L"__type__", &anna_macro_type);
     anna_macro_add(stack, L"return", &anna_macro_return);
+    anna_macro_add(stack, L"__templatize__", &anna_macro_templatize);
     
     wchar_t *op_names[] = 
        {

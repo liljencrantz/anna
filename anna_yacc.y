@@ -456,10 +456,12 @@ expression9 :
 expression10:
 	constant
 	| 
-	any_identifier 
+	identifier 
 	{
 	    $$ = $1;	    
 	}
+	|
+	templatized_type
 	| 
 	'(' expression ')'
 	{
@@ -474,6 +476,7 @@ expression10:
 	{
 	    $$ = (anna_node_t *)$1; 
 	}
+
 ;
 
 op:

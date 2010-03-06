@@ -20,7 +20,6 @@ struct anna_function;
 struct anna_node_list;
 struct anna_node_call;
 
-
 typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struct anna_function *, struct anna_node_list *);
 
@@ -72,10 +71,10 @@ struct anna_type
 
 struct anna_member
 {
-  struct anna_type *type;
-  size_t offset;
-  int is_static;
-  wchar_t name[];
+    struct anna_type *type;
+    size_t offset;
+    int is_static;
+    wchar_t name[];
 };
 
 struct anna_object
@@ -133,6 +132,7 @@ extern int anna_error_count;
    Declare all global, native functions
  */
 void anna_function_implementation_init(struct anna_stack_frame *stack);
+
 /**
    Declare all native macros
  */
@@ -142,22 +142,28 @@ void anna_macro_init(struct anna_stack_frame *stack);
   Returns the type of the specified member in the specified type
  */
 anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
+
 /**
   Return the anna_type_t contained in the specified anna_type_t.wrapper
  */
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
+
 anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv);
+
 anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count);
 
 anna_function_t *anna_function_unwrap(anna_object_t *type);
+
 anna_object_t *anna_function_wrapped_invoke(anna_object_t *function,
 					    anna_object_t *this,
 					    struct anna_node_call *param, 
 					    struct anna_stack_frame *local);
+
 anna_object_t *anna_function_invoke_values(anna_function_t *function, 
 					   anna_object_t *this,
 					   anna_object_t **param,
 					   struct anna_stack_frame *outer);
+
 anna_object_t *anna_function_invoke(anna_function_t *function, 
 				    anna_object_t *this,
 				    struct anna_node_call *param,
@@ -177,15 +183,21 @@ anna_function_t *anna_function_create(wchar_t *name,
 anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, struct anna_stack_frame *stack);
 
 anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid);
+
 //anna_object_t **anna_static_member_addr_get_str(anna_type_t *type, wchar_t *name);
+
 anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name);
+
 anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid);
+
 anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner);
+
 size_t anna_member_create(anna_type_t *type,
 			  ssize_t mid,
 			  wchar_t *name,
 			  int is_static,
 			  anna_type_t *member_type);
+
 size_t anna_native_method_create(anna_type_t *type,
 				 ssize_t mid,
 				 wchar_t *name,
@@ -195,6 +207,7 @@ size_t anna_native_method_create(anna_type_t *type,
 				 size_t argc,
 				 anna_type_t **argv,
 				 wchar_t **argn);
+
 anna_function_t *anna_native_create(wchar_t *name,
 				    int flags,
 				    anna_native_t native, 
@@ -202,26 +215,25 @@ anna_function_t *anna_native_create(wchar_t *name,
 				    size_t argc,
 				    anna_type_t **argv,
 				    wchar_t **argn);
+
 size_t anna_method_create(anna_type_t *type,
 			  ssize_t mid,
 			  wchar_t *name,
 			  int flags,
 			  anna_function_t *definition);
 
-
-
-wchar_t *anna_mid_name(size_t mid);
-
+wchar_t *anna_mid_get_reverse(size_t mid);
 
 anna_object_t *anna_object_create(anna_type_t *type);
-int anna_abides(anna_type_t *contender, anna_type_t *role_model);
-int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model);
-anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2);
 
+int anna_abides(anna_type_t *contender, anna_type_t *role_model);
+
+int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model);
+
+anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2);
 
 anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type);
 
 void anna_error(struct anna_node *node, wchar_t *msg, ...);
-
 
 #endif

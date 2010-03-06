@@ -772,7 +772,23 @@ void anna_node_print(anna_node_t *this)
 	case ANNA_NODE_STRING_LITERAL:
 	{
 	    anna_node_string_literal_t *this2 = (anna_node_string_literal_t *)this;
-	    wprintf(L"\"%.*ls\"", this2->payload_size, this2->payload);
+	    int i;
+	    
+	    wprintf(L"\"");
+	    for(i=0;i<this2->payload_size;i++)
+	    {
+		wchar_t c = this2->payload[i];
+		if(c<32) 
+		{
+		    wprintf(L"\\x%.2x", c);		    
+		}
+		else
+		{
+		    wprintf(L"%lc", c);
+		}
+	    }
+	    wprintf(L"\"");
+	    
 	    break;
 	}
 	
@@ -790,6 +806,28 @@ void anna_node_print(anna_node_t *this)
 	    break;
 	}
 	
+	case ANNA_NODE_ASSIGN:
+	{
+	    anna_node_assign_t *this2 = (anna_node_assign_t *)this;
+	    wprintf(L"__assign__(");
+
+	    wprintf(L"%d:%d", this2->sid.frame, this2->sid.offset);
+	    wprintf(L"; ");
+	    anna_node_print(this2->value);
+	    wprintf(L")");
+	    
+	    break;
+	}
+	
+	case ANNA_NODE_TRAMPOLINE:
+	case ANNA_NODE_DUMMY:
+	{
+	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
+	    wprintf(L"<Const:%ls>", this2->payload->type->name);
+	    break;
+	}
+	
+
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
@@ -813,6 +851,7 @@ void anna_node_print(anna_node_t *this)
 	    break;
 	}
 	
+	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
@@ -916,10 +955,7 @@ void anna_node_print_code(anna_node_t *node)
 	    default:
 		current_column++;
 		break;
-	}
-	
-    }
-    
+	}	
+    }    
 }
-
 
