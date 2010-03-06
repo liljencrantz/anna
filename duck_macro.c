@@ -397,7 +397,7 @@ duck_node_t *duck_list_each(duck_node_call_t *node,
     
     duck_node_t *function = (duck_node_t *)
 	duck_node_dummy_create(&node->location,
-			       duck_function_create(L"!anonymous", 0, node, 
+			       duck_function_create(L"!anonymous", 0, node->child[1], 
 						    null_type, 1, argv, &name->name, 
 						    func->stack_template, 
 						    return_pop_count)->wrapper,

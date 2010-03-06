@@ -24,4 +24,5 @@ lst ~= 5;
 
 lst.each(foo){
 	print(foo);
+	print("...\n");
 }

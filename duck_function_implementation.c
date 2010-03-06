@@ -14,8 +14,6 @@
 
 static duck_object_t *duck_i_print(duck_object_t **param)
 {
-    wprintf(L"PRINT FUNC\n");
-    
     int i;
     //    for(i=0; i<node->child_count; i++) {
     duck_object_t *value = param[0];

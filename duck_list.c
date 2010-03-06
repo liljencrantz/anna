@@ -158,6 +158,11 @@ static duck_object_t *duck_list_each_value(duck_object_t **param)
 */  
     for(i=0;i<sz;i++)
     {
+      /*
+      wprintf(L"Run the following code:\n");
+      duck_node_print((*function_ptr)->body);
+      wprintf(L"\n");
+      */
 	result = duck_function_invoke_values(*function_ptr, 0, &arr[i], stack_ptr?*stack_ptr:0);
     }
     return result;
