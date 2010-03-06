@@ -1,5 +1,5 @@
-#ifndef DUCK_FLOAT_H
-#define DUCK_FLOAT_H
+#ifndef ANNA_FLOAT_H
+#define ANNA_FLOAT_H
 
 #include "anna.h"
 #include "anna_node.h"

@@ -1,5 +1,5 @@
-#ifndef DUCK_INT_H
-#define DUCK_INT_H
+#ifndef ANNA_INT_H
+#define ANNA_INT_H
 
 #include "anna.h"
 #include "anna_node.h"

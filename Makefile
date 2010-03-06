@@ -1,7 +1,7 @@
 
 CFLAGS := -g -rdynamic 
 
-DUCK_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o anna_function_implementation.o anna_int.o anna_string.o anna_char.o anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o wutil.o
+ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o anna_function_implementation.o anna_int.o anna_string.o anna_char.o anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o wutil.o
 
 LDFLAGS := -lm -rdynamic -ll
 
@@ -14,13 +14,13 @@ all: anna
 #########################################################
 %.d: %.c
 	@echo -n $@ " " >$@; gcc -MM -MG $*.c >> $@ || rm $@ 
-include $(DUCK_OBJS:.o=.d)
+include $(ANNA_OBJS:.o=.d)
 #########################################################
 #             END DEPENDENCY TRACKING                   #
 #########################################################
 
-anna: $(DUCK_OBJS)
-	gcc $(DUCK_OBJS) -o $@ $(LDFLAGS) 
+anna: $(ANNA_OBJS)
+	gcc $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 
 anna_lex.c: anna_lex.y anna_yacc.h

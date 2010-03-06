@@ -145,7 +145,7 @@ static hash_table_t anna_mid_lookup;
 anna_node_t *anna_node_null=0;
 
 static anna_stack_frame_t *stack_global;
-static size_t mid_pos = DUCK_MID_FIRST_UNRESERVED;
+static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 
 int anna_error_count=0;
 
@@ -340,15 +340,15 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	memcpy(new_key, key, new_key_sz);	
 	res = anna_type_create_raw(L"!FunctionType", 64);	
 	hash_put(&anna_type_for_function_lookup, new_key, res);
-	anna_member_create(res, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
+	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
 			   1, null_type);
-	anna_member_create(res, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
+	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
 			   0, null_type);
-	anna_member_create(res, DUCK_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
+	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
 			   0, null_type);
 	anna_type_wrapper_create(res);
 	
-	(*anna_static_member_addr_get_mid(res, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)new_key;
+	(*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)new_key;
     }
     else 
     {
@@ -364,7 +364,7 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
     assert(type);
     //wprintf(L"Find function signature for call %ls\n", type->name);
     
-    anna_function_type_key_t **function_ptr = (anna_function_type_key_t **)anna_static_member_addr_get_mid(type, DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    anna_function_type_key_t **function_ptr = (anna_function_type_key_t **)anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     if(function_ptr) 
     {
 	//wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
@@ -373,7 +373,7 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
     else 
     {
 	//wprintf(L"Not a direct function, check for __call__ member\n");
-	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(type, DUCK_MID_CALL_PAYLOAD);
+	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(type, ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
 	    //wprintf(L"Found, we're unwrapping it now\n");
@@ -389,7 +389,7 @@ anna_function_t *anna_function_unwrap(anna_object_t *obj)
 {
     assert(obj);
     
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     if(function_ptr) 
     {
 //	    wprintf(L"Got __call__ member\n");
@@ -397,7 +397,7 @@ anna_function_t *anna_function_unwrap(anna_object_t *obj)
     }
     else 
     {
-	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, DUCK_MID_CALL_PAYLOAD);
+	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
 	    return anna_function_unwrap(*function_wrapper_ptr);	    
@@ -415,15 +415,15 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 {
   //wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
   
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, DUCK_MID_FUNCTION_WRAPPER_STACK);
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
         return anna_function_invoke(*function_ptr, this, param, local, stack_ptr?*stack_ptr:stack_global);
     }
     else 
     {
-	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, DUCK_MID_CALL_PAYLOAD);
+	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
 	  return anna_function_wrapped_invoke(*function_wrapper_ptr,obj, param, stack_ptr?*stack_ptr:stack_global);
@@ -440,7 +440,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 
 static int anna_is_member_get(anna_node_t *node)
 {
-    if(node->node_type != DUCK_NODE_LOOKUP)
+    if(node->node_type != ANNA_NODE_LOOKUP)
 	return 0;
     anna_node_lookup_t *node2 = (anna_node_lookup_t *)node;
     return wcscmp(node2->name, L"__memberGet__")==0;
@@ -466,8 +466,8 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
 /*
 anna_object_t *anna_call(anna_stack_frame_t *stack, anna_object_t *obj)
 {
-    anna_object *call = *anna_get_member_addr_int(obj, DUCK_MID_CALL);
-    anna_node *node = (anna_node *)*anna_get_member_addr_int(obj, DUCK_MID_NODE);
+    anna_object *call = *anna_get_member_addr_int(obj, ANNA_MID_CALL);
+    anna_node *node = (anna_node *)*anna_get_member_addr_int(obj, ANNA_MID_NODE);
     return node->invoke(node, stack);
 }
 */
@@ -478,7 +478,7 @@ anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, a
     //wprintf(L"Creating new object of type %ls\n", type->name);
     assert(type->name);
     
-    anna_object_t **constructor_ptr = anna_member_addr_get_mid(result, DUCK_MID_INIT_PAYLOAD);
+    anna_object_t **constructor_ptr = anna_member_addr_get_mid(result, ANNA_MID_INIT_PAYLOAD);
     if(constructor_ptr)
     {
         anna_function_t *constructor = anna_function_unwrap(*constructor_ptr);
@@ -530,10 +530,10 @@ anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
     memcpy(function_copy, function_original, func_size);
     function_copy->this = owner;
     function_copy->wrapper = anna_object_create(function_copy->type);
-    memcpy(anna_member_addr_get_mid(function_copy->wrapper,DUCK_MID_FUNCTION_WRAPPER_PAYLOAD), 
+    memcpy(anna_member_addr_get_mid(function_copy->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
 	   &function_copy, sizeof(anna_function_t *));
-    memcpy(anna_member_addr_get_mid(function_copy->wrapper,DUCK_MID_FUNCTION_WRAPPER_STACK),
-	   anna_member_addr_get_mid(function_original->wrapper,DUCK_MID_FUNCTION_WRAPPER_STACK),
+    memcpy(anna_member_addr_get_mid(function_copy->wrapper,ANNA_MID_FUNCTION_WRAPPER_STACK),
+	   anna_member_addr_get_mid(function_original->wrapper,ANNA_MID_FUNCTION_WRAPPER_STACK),
 	   sizeof(anna_stack_frame_t *));
     return function_copy->wrapper;
 }
@@ -638,8 +638,8 @@ anna_function_t *anna_function_create(wchar_t *name,
     anna_type_t *function_type = anna_type_for_function(return_type, argc, argv);
     result->type = function_type;    
     result->wrapper = anna_object_create(function_type);
-    memcpy(anna_member_addr_get_mid(result->wrapper,DUCK_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
-    memcpy(anna_member_addr_get_mid(result->wrapper,DUCK_MID_FUNCTION_WRAPPER_STACK), &stack_global, sizeof(anna_stack_frame_t *));
+    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
+    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_STACK), &stack_global, sizeof(anna_stack_frame_t *));
     //wprintf(L"Function object is %d, wrapper is %d\n", result, result->wrapper);
     result->stack_template = anna_stack_create(64, parent_stack);
 
@@ -682,7 +682,7 @@ anna_function_t *anna_native_create(wchar_t *name,
     result->type = function_type;
     result->wrapper = anna_object_create(function_type);
     
-    anna_object_t **member_ptr = anna_member_addr_get_mid(result->wrapper,DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_object_t **member_ptr = anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     if(!member_ptr) {
 	wprintf(L"Error: function_wrapper_type for function %ls does not have a payload!!!\n",
 		name);
@@ -690,7 +690,7 @@ anna_function_t *anna_native_create(wchar_t *name,
 	CRASH;	
     }
     
-    memcpy(anna_member_addr_get_mid(result->wrapper,DUCK_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
+    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
 
     return result;
@@ -783,14 +783,14 @@ anna_type_t *anna_type_unwrap(anna_object_t *wrapper)
 {
     anna_type_t *result;
     
-    memcpy(&result, anna_member_addr_get_mid(wrapper, DUCK_MID_TYPE_WRAPPER_PAYLOAD), sizeof(anna_type_t *));
+    memcpy(&result, anna_member_addr_get_mid(wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), sizeof(anna_type_t *));
     return result;
 }
 
 static void anna_type_wrapper_create(anna_type_t *result)
 {
   result->wrapper = anna_object_create(type_type);
-  memcpy(anna_member_addr_get_mid(result->wrapper, DUCK_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
+  memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
 }
 
 static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count)
@@ -914,7 +914,7 @@ size_t anna_method_create(anna_type_t *type,
 
 static void anna_type_type_create_early()
 {
-  anna_member_create(type_type, DUCK_MID_TYPE_WRAPPER_PAYLOAD, L"!typeWrapperPayload",
+  anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, L"!typeWrapperPayload",
 		     0, null_type);
 }
 
@@ -949,7 +949,7 @@ static void anna_null_type_create_early()
   anna_type_t *argv[]={null_type};
   wchar_t *argn[]={L"this"};
   
-  null_type->static_member[0] = anna_native_create(L"!nullFunction", DUCK_FUNCTION_FUNCTION, 
+  null_type->static_member[0] = anna_native_create(L"!nullFunction", ANNA_FUNCTION_FUNCTION, 
 						   (anna_native_t)&anna_i_null_function, 
 						   null_type, 1, argv, argn)->wrapper;
   
@@ -974,21 +974,21 @@ static void anna_init()
     hash_init(&anna_mid_lookup, &hash_wcs_func, &hash_wcs_cmp);
     hash_init(&anna_type_for_function_lookup, &hash_function_type_func, &hash_function_type_comp);
     
-    anna_mid_put(L"!typeWrapperPayload", DUCK_MID_TYPE_WRAPPER_PAYLOAD);
-    anna_mid_put(L"!callPayload", DUCK_MID_CALL_PAYLOAD);
-    anna_mid_put(L"!stringPayload", DUCK_MID_STRING_PAYLOAD);
-    anna_mid_put(L"!stringPayloadSize", DUCK_MID_STRING_PAYLOAD_SIZE);
-    anna_mid_put(L"!charPayload", DUCK_MID_CHAR_PAYLOAD);
-    anna_mid_put(L"!intPayload", DUCK_MID_INT_PAYLOAD);
-    anna_mid_put(L"!listPayload", DUCK_MID_LIST_PAYLOAD);
-    anna_mid_put(L"!listSize", DUCK_MID_LIST_SIZE);
-    anna_mid_put(L"!listCapacity", DUCK_MID_LIST_CAPACITY);
-    anna_mid_put(L"!functionTypePayload", DUCK_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-    anna_mid_put(L"!functionPayload", DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_mid_put(L"!floatPayload", DUCK_MID_FLOAT_PAYLOAD);
-    anna_mid_put(L"!functionStack", DUCK_MID_FUNCTION_WRAPPER_STACK);
-    anna_mid_put(L"__call__", DUCK_MID_CALL_PAYLOAD);    
-    anna_mid_put(L"__init__", DUCK_MID_INIT_PAYLOAD);
+    anna_mid_put(L"!typeWrapperPayload", ANNA_MID_TYPE_WRAPPER_PAYLOAD);
+    anna_mid_put(L"!callPayload", ANNA_MID_CALL_PAYLOAD);
+    anna_mid_put(L"!stringPayload", ANNA_MID_STRING_PAYLOAD);
+    anna_mid_put(L"!stringPayloadSize", ANNA_MID_STRING_PAYLOAD_SIZE);
+    anna_mid_put(L"!charPayload", ANNA_MID_CHAR_PAYLOAD);
+    anna_mid_put(L"!intPayload", ANNA_MID_INT_PAYLOAD);
+    anna_mid_put(L"!listPayload", ANNA_MID_LIST_PAYLOAD);
+    anna_mid_put(L"!listSize", ANNA_MID_LIST_SIZE);
+    anna_mid_put(L"!listCapacity", ANNA_MID_LIST_CAPACITY);
+    anna_mid_put(L"!functionTypePayload", ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    anna_mid_put(L"!functionPayload", ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_mid_put(L"!floatPayload", ANNA_MID_FLOAT_PAYLOAD);
+    anna_mid_put(L"!functionStack", ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_mid_put(L"__call__", ANNA_MID_CALL_PAYLOAD);    
+    anna_mid_put(L"__init__", ANNA_MID_INIT_PAYLOAD);
 
     stack_global = anna_stack_create(4096, 0);
     
@@ -1065,7 +1065,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    wprintf(L"FATAL: Macro %ls at invoke!!!!\n", function->name);
 	    exit(1);
 	}
-	case DUCK_FUNCTION_FUNCTION:
+	case ANNA_FUNCTION_FUNCTION:
 	{
 	    if(function->native.function) 
 	    {

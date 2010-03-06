@@ -11,10 +11,10 @@
    Wchar_t-using, chunk based string implementation, does most string operations in O(1). Most of the time. :)
 */
 
-#define DUCK_STRING_DEFAULT_ELEMENT_CAPACITY 12
-#define DUCK_STRING_APPEND_SHORT_LIMIT 32
-#define DUCK_STRING_HAIRCUT_RATIO 8
-#define DUCK_STRING_LARGE 2048
+#define ANNA_STRING_DEFAULT_ELEMENT_CAPACITY 12
+#define ANNA_STRING_APPEND_SHORT_LIMIT 32
+#define ANNA_STRING_HAIRCUT_RATIO 8
+#define ANNA_STRING_LARGE 2048
 
 #define CRASH					\
     {						\
@@ -118,7 +118,7 @@ static void anna_string_make_appendable(anna_string_t *dest, size_t min_free)
       size_t free = dest->element[eid]->capacity - dest->element_offset[eid] - dest->element_length[eid];
       if(free >= min_free && dest->element[eid]->users == 1)
 	return;
-      if(dest->element[eid]->users > 1 || dest->element[eid]->capacity > DUCK_STRING_LARGE)
+      if(dest->element[eid]->users > 1 || dest->element[eid]->capacity > ANNA_STRING_LARGE)
 	make_new=1;
       
     }
@@ -127,12 +127,12 @@ static void anna_string_make_appendable(anna_string_t *dest, size_t min_free)
     {
       anna_string_ensure_element_capacity(dest, dest->element_count+1);
       dest->element_count=1;	    
-      dest->element[0] = anna_string_element_create(0,0, 4*DUCK_STRING_APPEND_SHORT_LIMIT);		     dest->element_length[0]=0;
+      dest->element[0] = anna_string_element_create(0,0, 4*ANNA_STRING_APPEND_SHORT_LIMIT);		     dest->element_length[0]=0;
       dest->element_offset[0]=0;	    
     }
   else
     {
-      anna_string_element_stepford(dest, eid, 4*DUCK_STRING_APPEND_SHORT_LIMIT);
+      anna_string_element_stepford(dest, eid, 4*ANNA_STRING_APPEND_SHORT_LIMIT);
     }  
 }
 
@@ -149,13 +149,13 @@ static void anna_string_haircut(anna_string_t *hippie)
   {
       size_t len = hippie->element_length[i];
       size_t count = 1;
-      if(len / (count * DUCK_STRING_HAIRCUT_RATIO) != 0) 
+      if(len / (count * ANNA_STRING_HAIRCUT_RATIO) != 0) 
 	{
 	  continue;
 	}
       for(j=i+1; j<hippie->element_count; j++)
 	{
-	  if((len+ hippie->element_length[j]) / ((count+1) * DUCK_STRING_HAIRCUT_RATIO) != 0) 
+	  if((len+ hippie->element_length[j]) / ((count+1) * ANNA_STRING_HAIRCUT_RATIO) != 0) 
 	    break;
 	  len += hippie->element_length[j];
 	  count++;	
@@ -214,7 +214,7 @@ static anna_string_ensure_element_capacity(anna_string_t *string, size_t count)
 
     if(string->element_capacity==0)
     {
-      count = maxi(count*2, DUCK_STRING_DEFAULT_ELEMENT_CAPACITY);
+      count = maxi(count*2, ANNA_STRING_DEFAULT_ELEMENT_CAPACITY);
       
 	string->element_capacity=count;
 	string->element = malloc((sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
@@ -224,7 +224,7 @@ static anna_string_ensure_element_capacity(anna_string_t *string, size_t count)
     else 
     {
       
-        count = maxi(string->element_capacity*2, count+ DUCK_STRING_DEFAULT_ELEMENT_CAPACITY);
+        count = maxi(string->element_capacity*2, count+ ANNA_STRING_DEFAULT_ELEMENT_CAPACITY);
       if(anna_debug)
 	{
 	  //	  wprintf(L"LALA changing size from %d to %d\n", string->element_capacity, count);
@@ -281,7 +281,7 @@ void anna_string_init_from_ptr(anna_string_t *string, wchar_t *payload, size_t s
 {
     anna_string_init(string);
     
-    anna_string_ensure_element_capacity(string, DUCK_STRING_DEFAULT_ELEMENT_CAPACITY);
+    anna_string_ensure_element_capacity(string, ANNA_STRING_DEFAULT_ELEMENT_CAPACITY);
     string->element_count=1;
     string->element[0] = anna_string_element_create(payload, size, 5);
     string->element_offset[0]=0;
@@ -312,7 +312,7 @@ void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, 
     
     //wprintf(L"SLOW\n");
     
-    if(length < DUCK_STRING_APPEND_SHORT_LIMIT) 
+    if(length < ANNA_STRING_APPEND_SHORT_LIMIT) 
     {
       anna_string_make_appendable(dest, length);
       

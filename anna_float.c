@@ -22,13 +22,13 @@ anna_object_t *anna_float_create(double value)
 
 void anna_float_set(anna_object_t *this, double value)
 {
-    memcpy(anna_member_addr_get_mid(this,DUCK_MID_FLOAT_PAYLOAD), &value, sizeof(double));
+    memcpy(anna_member_addr_get_mid(this,ANNA_MID_FLOAT_PAYLOAD), &value, sizeof(double));
 }
 
 double anna_float_get(anna_object_t *this)
 {
     double result;
-    memcpy(&result, anna_member_addr_get_mid(this,DUCK_MID_FLOAT_PAYLOAD), sizeof(double));
+    memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_FLOAT_PAYLOAD), sizeof(double));
     return result;
 }
 
@@ -63,7 +63,7 @@ void anna_float_type_create(anna_stack_frame_t *stack)
     /*
       FIXME, UGLY, BLERGH: Count and add payload twice, because it is twice the size of ptr on 32-bit. *ugh*
     */
-    anna_member_create(float_type, DUCK_MID_FLOAT_PAYLOAD,  L"!floatPayload", 0, null_type);
+    anna_member_create(float_type, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload", 0, null_type);
     anna_member_create(float_type, -1,  L"!floatPayload2", 0, null_type);
     anna_float_type_i_create(stack);
     anna_native_method_create(float_type, -1, L"__expFloat__", 0, (anna_native_t)&anna_float_exp, float_type, 2, argv, argn);

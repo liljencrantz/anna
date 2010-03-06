@@ -1,5 +1,5 @@
-#ifndef DUCK_STACK_H
-#define DUCK_STACK_H
+#ifndef ANNA_STACK_H
+#define ANNA_STACK_H
 
 #include "util.h"
 #include "anna.h"

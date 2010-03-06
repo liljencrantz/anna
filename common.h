@@ -2,11 +2,11 @@
 	Prototypes for various functions, mostly string utilities, that are used by most parts of fish.
 */
 
-#ifndef DUCK_COMMON_H
+#ifndef ANNA_COMMON_H
 /**
    Header guard
 */
-#define DUCK_COMMON_H
+#define ANNA_COMMON_H
 
 #include <stdlib.h>
 #include <stdio.h>

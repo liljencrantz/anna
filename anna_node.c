@@ -26,32 +26,32 @@ void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 
 anna_node_call_t *node_cast_call(anna_node_t *node) 
 {
-    assert(node->node_type==DUCK_NODE_CALL);
+    assert(node->node_type==ANNA_NODE_CALL);
     return (anna_node_call_t *)node;
 }
 
 anna_node_lookup_t *node_cast_lookup(anna_node_t *node) 
 {
-    assert(node->node_type==DUCK_NODE_LOOKUP);
+    assert(node->node_type==ANNA_NODE_LOOKUP);
     return (anna_node_lookup_t *)node;
 }
 
 anna_node_int_literal_t *node_cast_int_literal(anna_node_t *node) 
 {
-    assert(node->node_type==DUCK_NODE_INT_LITERAL);
+    assert(node->node_type==ANNA_NODE_INT_LITERAL);
     return (anna_node_int_literal_t *)node;
 }
 
 anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node) 
 {
-    assert(node->node_type==DUCK_NODE_STRING_LITERAL);
+    assert(node->node_type==ANNA_NODE_STRING_LITERAL);
     return (anna_node_string_literal_t *)node;
 }
 
 anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, struct anna_object *val, int is_trampoline)
 {
    anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
-   result->node_type = is_trampoline?DUCK_NODE_TRAMPOLINE:DUCK_NODE_DUMMY;
+   result->node_type = is_trampoline?ANNA_NODE_TRAMPOLINE:ANNA_NODE_DUMMY;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -63,7 +63,7 @@ anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, struct anna_obje
 anna_node_return_t *anna_node_return_create(anna_location_t *loc, struct anna_node *val, int steps)
 {
    anna_node_return_t *result = calloc(1,sizeof(anna_node_return_t));
-   result->node_type = DUCK_NODE_RETURN;
+   result->node_type = ANNA_NODE_RETURN;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -76,7 +76,7 @@ anna_node_return_t *anna_node_return_create(anna_location_t *loc, struct anna_no
 anna_node_member_get_t *anna_node_member_get_create(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_type *type, int wrap)
 {
    anna_node_member_get_t *result = calloc(1,sizeof(anna_node_member_get_t));
-   result->node_type = wrap?DUCK_NODE_MEMBER_GET_WRAP:DUCK_NODE_MEMBER_GET;
+   result->node_type = wrap?ANNA_NODE_MEMBER_GET_WRAP:ANNA_NODE_MEMBER_GET;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -91,7 +91,7 @@ anna_node_member_get_t *anna_node_member_get_create(anna_location_t *loc, struct
 anna_node_member_set_t *anna_node_member_set_create(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_node *value, struct anna_type *type)
 {
    anna_node_member_set_t *result = calloc(1,sizeof(anna_node_member_set_t));
-   result->node_type = DUCK_NODE_MEMBER_SET;
+   result->node_type = ANNA_NODE_MEMBER_SET;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -109,7 +109,7 @@ anna_node_member_set_t *anna_node_member_set_create(anna_location_t *loc, struct
 anna_node_assign_t *anna_node_assign_create(anna_location_t *loc, anna_sid_t sid, struct anna_node *value)
 {
    anna_node_assign_t *result = calloc(1,sizeof(anna_node_assign_t));
-   result->node_type = DUCK_NODE_ASSIGN;
+   result->node_type = ANNA_NODE_ASSIGN;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -122,7 +122,7 @@ anna_node_assign_t *anna_node_assign_create(anna_location_t *loc, anna_sid_t sid
 anna_node_int_literal_t *anna_node_int_literal_create(anna_location_t *loc, int val)
 {
    anna_node_int_literal_t *result = calloc(1,sizeof(anna_node_int_literal_t));
-   result->node_type = DUCK_NODE_INT_LITERAL;
+   result->node_type = ANNA_NODE_INT_LITERAL;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -134,7 +134,7 @@ anna_node_int_literal_t *anna_node_int_literal_create(anna_location_t *loc, int 
 anna_node_float_literal_t *anna_node_float_literal_create(anna_location_t *loc, double val)
 {
    anna_node_float_literal_t *result = calloc(1,sizeof(anna_node_float_literal_t));
-   result->node_type = DUCK_NODE_FLOAT_LITERAL;
+   result->node_type = ANNA_NODE_FLOAT_LITERAL;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -146,7 +146,7 @@ anna_node_float_literal_t *anna_node_float_literal_create(anna_location_t *loc, 
 anna_node_char_literal_t *anna_node_char_literal_create(anna_location_t *loc, wchar_t val)
 {
    anna_node_char_literal_t *result = calloc(1,sizeof(anna_node_char_literal_t));
-   result->node_type = DUCK_NODE_CHAR_LITERAL;
+   result->node_type = ANNA_NODE_CHAR_LITERAL;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -158,7 +158,7 @@ anna_node_char_literal_t *anna_node_char_literal_create(anna_location_t *loc, wc
 anna_node_string_literal_t *anna_node_string_literal_create(anna_location_t *loc, size_t sz, wchar_t *str)
 {
    anna_node_string_literal_t *result = calloc(1,sizeof(anna_node_string_literal_t));
-   result->node_type = DUCK_NODE_STRING_LITERAL;
+   result->node_type = ANNA_NODE_STRING_LITERAL;
    anna_node_set_location((anna_node_t *)result,loc);
   /*
     FIXME: Create a nice and tidy wrapper
@@ -172,7 +172,7 @@ anna_node_call_t *anna_node_call_create(anna_location_t *loc, anna_node_t *funct
 {
     anna_node_call_t *result = calloc(1,sizeof(anna_node_call_t));
     result->child = calloc(1,sizeof(anna_node_t *)*(argc));
-    result->node_type = DUCK_NODE_CALL;
+    result->node_type = ANNA_NODE_CALL;
     anna_node_set_location((anna_node_t *)result,loc);
     result->function = function;
     result->child_count = argc;
@@ -187,7 +187,7 @@ anna_node_call_t *anna_node_call_create(anna_location_t *loc, anna_node_t *funct
 anna_node_lookup_t *anna_node_lookup_create(anna_location_t *loc, wchar_t *name)
 {
     anna_node_lookup_t *result = calloc(1,sizeof(anna_node_call_t));
-    result->node_type = DUCK_NODE_LOOKUP;
+    result->node_type = ANNA_NODE_LOOKUP;
    anna_node_set_location((anna_node_t *)result,loc);
     result->name = name;
     /*
@@ -199,7 +199,7 @@ anna_node_lookup_t *anna_node_lookup_create(anna_location_t *loc, wchar_t *name)
 anna_node_t *anna_node_null_create(anna_location_t *loc)
 {
     anna_node_t *result = calloc(1,sizeof(anna_node_t));
-    result->node_type = DUCK_NODE_NULL;
+    result->node_type = ANNA_NODE_NULL;
    anna_node_set_location((anna_node_t *)result,loc);
     /*
       FIXME: Create a nice and tidy wrapper
@@ -259,21 +259,21 @@ anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stac
 {
     switch(node->node_type)
     {
-	case DUCK_NODE_LOOKUP:
+	case ANNA_NODE_LOOKUP:
 	{
 	    anna_node_lookup_t *name=(anna_node_lookup_t *)node;
 	    anna_object_t *obj = anna_stack_get_str(stack, name->name);
 	    anna_function_t *func=anna_function_unwrap(obj);
 	    
-	    if(func && func->flags == DUCK_FUNCTION_MACRO)
+	    if(func && func->flags == ANNA_FUNCTION_MACRO)
 	    {
 		return func;
 	    }
 	    break;
 	}
 	
-	case DUCK_NODE_MEMBER_GET_WRAP:
-	case DUCK_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_get_t *get = (anna_node_member_get_t *)node;
 	    anna_type_t *obj_type = anna_node_get_return_type(get->object, stack);
@@ -281,7 +281,7 @@ anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stac
 	    if(member)
 	    {
 		anna_function_t *func = anna_function_unwrap(*member);
-		if(func && func->flags == DUCK_FUNCTION_MACRO)
+		if(func && func->flags == ANNA_FUNCTION_MACRO)
 		{
 		    return func;
 		}
@@ -317,7 +317,7 @@ anna_node_t *anna_node_call_prepare(anna_node_call_t *node, anna_function_t *fun
    anna_node_print((anna_node_t *)node);
    wprintf(L"\n");
 */
-   if(node->node_type == DUCK_NODE_CALL)
+   if(node->node_type == ANNA_NODE_CALL)
    {
        
        node->function = anna_node_prepare(node->function, function, parent);
@@ -334,7 +334,7 @@ anna_node_t *anna_node_call_prepare(anna_node_call_t *node, anna_function_t *fun
 	   /*
 	     Constructor!
 	   */
-	   node->node_type = DUCK_NODE_CONSTRUCT;
+	   node->node_type = ANNA_NODE_CONSTRUCT;
 	   node->function = (anna_node_t *)anna_node_dummy_create(&node->location, 
 								  anna_node_invoke(node->function, function->stack_template),
 								  0);
@@ -406,13 +406,13 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 {
     switch(this->node_type)
     {
-	case DUCK_NODE_CONSTRUCT:
+	case ANNA_NODE_CONSTRUCT:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;	    
 	    return anna_type_unwrap(anna_node_invoke(this2->function, 0));
 	}
 	
-	case DUCK_NODE_CALL:
+	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;	    
 	    /*
@@ -426,7 +426,7 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	    */
 	    if(func_type == type_type)
 	    {
-		if(this2->function->node_type == DUCK_NODE_LOOKUP)
+		if(this2->function->node_type == ANNA_NODE_LOOKUP)
 		{
 		    anna_node_lookup_t *lookup = (anna_node_lookup_t *)this2->function;
 		    anna_object_t *type_wrapper = anna_stack_get_str(stack, lookup->name);
@@ -442,35 +442,35 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	    return function_data->result;
 	}
 	
-	case DUCK_NODE_TRAMPOLINE:
-	case DUCK_NODE_DUMMY:
+	case ANNA_NODE_TRAMPOLINE:
+	case ANNA_NODE_DUMMY:
 	{
 	   anna_node_dummy_t *this2 =(anna_node_dummy_t *)this;	    
 	   return this2->payload->type;   
 	}
 	
-	case DUCK_NODE_INT_LITERAL:
+	case ANNA_NODE_INT_LITERAL:
 	    return int_type;
 
-	case DUCK_NODE_FLOAT_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
 	    return float_type;
 
-	case DUCK_NODE_LOOKUP:
+	case ANNA_NODE_LOOKUP:
 	{
 	    anna_node_lookup_t *this2 =(anna_node_lookup_t *)this;	    
 	    return anna_stack_get_type(stack, this2->name);
 	}
-	case DUCK_NODE_STRING_LITERAL:
+	case ANNA_NODE_STRING_LITERAL:
 	    return string_type;
 
-	case DUCK_NODE_CHAR_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
 	    return char_type;
 
-	case DUCK_NODE_NULL:
+	case ANNA_NODE_NULL:
 	    return null_type;
 
-	case DUCK_NODE_MEMBER_GET:
-	case DUCK_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_node_member_get_t *this2 =(anna_node_member_get_t *)this;
 	    return this2->type;
@@ -487,7 +487,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 {
     switch(this->node_type)
     {
-	case DUCK_NODE_CONSTRUCT:
+	case ANNA_NODE_CONSTRUCT:
 	{
 	    /*
 	      FIXME: Do some actual checking!
@@ -496,7 +496,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    break;
 	}
 	
-	case DUCK_NODE_CALL:
+	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;	    
 	    int i;
@@ -517,7 +517,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		return;
 	    }
 	    
-	    int is_method = (this2->function->node_type == DUCK_NODE_MEMBER_GET_WRAP);	    	    
+	    int is_method = (this2->function->node_type == ANNA_NODE_MEMBER_GET_WRAP);	    	    
 	    check(this, function_data->argc-is_method == this2->child_count,
 		  L"Wrong number of paramaters in function call. Should be %d, not %d.", 
 		  function_data->argc-is_method, this2->child_count);
@@ -549,37 +549,37 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    return;
 	}
 	
-	case DUCK_NODE_TRAMPOLINE:
-	case DUCK_NODE_DUMMY:
+	case ANNA_NODE_TRAMPOLINE:
+	case ANNA_NODE_DUMMY:
 	{
 	   anna_node_dummy_t *this2 =(anna_node_dummy_t *)this;	    
 	   return;
 	}
 	
-	case DUCK_NODE_INT_LITERAL:
-	case DUCK_NODE_FLOAT_LITERAL:
-	case DUCK_NODE_CHAR_LITERAL:
-	case DUCK_NODE_NULL:
+	case ANNA_NODE_INT_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
+	case ANNA_NODE_NULL:
 	    return;
 
 	    
 
-	case DUCK_NODE_LOOKUP:
+	case ANNA_NODE_LOOKUP:
 	{
 	    anna_node_lookup_t *this2 =(anna_node_lookup_t *)this;	    
 	    check(this, !!this2->name, L"Invalid lookup node");
 	    check(this, !!anna_stack_get_type(stack, this2->name), L"Unknown variable: %ls", this2->name);
 	    return;
 	}
-	case DUCK_NODE_STRING_LITERAL:
+	case ANNA_NODE_STRING_LITERAL:
 	{
 	    anna_node_string_literal_t *this2 =(anna_node_string_literal_t *)this;	    
 	    check(this, !!this2->payload, L"Invalid string node");
 	    return;
 	}
 
-	case DUCK_NODE_MEMBER_GET:
-	case DUCK_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_node_member_get_t *this2 =(anna_node_member_get_t *)this;
 	    return;
@@ -595,18 +595,18 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
    
     switch(this->node_type)
     {
-	case DUCK_NODE_CALL:
-	case DUCK_NODE_CONSTRUCT:
+	case ANNA_NODE_CALL:
+	case ANNA_NODE_CONSTRUCT:
 	    return anna_node_call_prepare((anna_node_call_t *)this, function, parent);
 
-	case DUCK_NODE_RETURN:
+	case ANNA_NODE_RETURN:
 	{
 	  anna_node_return_t * result = (anna_node_return_t *)this;
 	  result->payload=anna_node_prepare(result->payload, function, parent);
 	  return result;
 	}
 	
-	case DUCK_NODE_LOOKUP:
+	case ANNA_NODE_LOOKUP:
 	{
 	    /*
 	      anna_node_lookup_t *this2 =(anna_node_lookup_t *)this;
@@ -615,17 +615,17 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	    return this;
 	}	
 
-	case DUCK_NODE_TRAMPOLINE:
-	case DUCK_NODE_DUMMY:
-	case DUCK_NODE_INT_LITERAL:
-	case DUCK_NODE_FLOAT_LITERAL:
-	case DUCK_NODE_STRING_LITERAL:
-	case DUCK_NODE_CHAR_LITERAL:
-	case DUCK_NODE_NULL:
-	case DUCK_NODE_ASSIGN:
-	case DUCK_NODE_MEMBER_GET:
-	case DUCK_NODE_MEMBER_GET_WRAP:
-	case DUCK_NODE_MEMBER_SET:
+	case ANNA_NODE_TRAMPOLINE:
+	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_INT_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
+	case ANNA_NODE_STRING_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
+	case ANNA_NODE_NULL:
+	case ANNA_NODE_ASSIGN:
+	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_SET:
 	    return this;   
 
 	default:
@@ -658,10 +658,10 @@ static anna_object_t *anna_trampoline(anna_object_t *orig,
 				      anna_stack_frame_t *stack)
 {
     anna_object_t *res = anna_object_create(orig->type);
-    memcpy(anna_member_addr_get_mid(res,DUCK_MID_FUNCTION_WRAPPER_PAYLOAD),
-	   anna_member_addr_get_mid(orig,DUCK_MID_FUNCTION_WRAPPER_PAYLOAD),
+    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
+	   anna_member_addr_get_mid(orig,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
 	   sizeof(anna_function_t *));    
-    memcpy(anna_member_addr_get_mid(res,DUCK_MID_FUNCTION_WRAPPER_STACK),
+    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_STACK),
 	   &stack,
 	   sizeof(anna_stack_frame_t *));
     return res;
@@ -674,10 +674,10 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 //    wprintf(L"invoke %d\n", this->node_type);    
     switch(this->node_type)
     {
-	case DUCK_NODE_CALL:
+	case ANNA_NODE_CALL:
 	    return anna_node_call_invoke((anna_node_call_t *)this, stack);
 
-	case DUCK_NODE_CONSTRUCT:
+	case ANNA_NODE_CONSTRUCT:
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
 	    //wprintf(L"Wee, calling construct with %d parameter, %d\n", call->child_count, call->child[0]);
@@ -688,7 +688,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 				  stack);
 	}
     
-	case DUCK_NODE_RETURN:
+	case ANNA_NODE_RETURN:
 	{
 	    int i;
 	    anna_node_return_t *node = (anna_node_return_t *)this;
@@ -703,46 +703,46 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	    return result;
 	}
 	
-	case DUCK_NODE_DUMMY:
+	case ANNA_NODE_DUMMY:
 	{
 	   anna_node_dummy_t *node = (anna_node_dummy_t *)this;
 	   return node->payload;
 	}
 	
-	case DUCK_NODE_TRAMPOLINE:
+	case ANNA_NODE_TRAMPOLINE:
 	{
 	    anna_node_dummy_t *node = (anna_node_dummy_t *)this;
 	    return anna_trampoline(node->payload, stack);
 	}
 	
-	case DUCK_NODE_INT_LITERAL:
+	case ANNA_NODE_INT_LITERAL:
 	    return anna_node_int_literal_invoke((anna_node_int_literal_t *)this, stack);
 
-	case DUCK_NODE_FLOAT_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
 	   return anna_node_float_literal_invoke((anna_node_float_literal_t *)this, stack);
 
-	case DUCK_NODE_LOOKUP:
+	case ANNA_NODE_LOOKUP:
 	    return anna_node_lookup_invoke((anna_node_lookup_t *)this, stack);	    
 
-	case DUCK_NODE_STRING_LITERAL:
+	case ANNA_NODE_STRING_LITERAL:
 	   return anna_node_string_literal_invoke((anna_node_string_literal_t *)this, stack);
 
-	case DUCK_NODE_CHAR_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
 	   return anna_node_char_literal_invoke((anna_node_char_literal_t *)this, stack);
 
-	case DUCK_NODE_NULL:
+	case ANNA_NODE_NULL:
 	    return null_object;
 
-	case DUCK_NODE_ASSIGN:
+	case ANNA_NODE_ASSIGN:
 	   return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
 
-	case DUCK_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET:
 	   return anna_node_member_get_invoke((anna_node_member_get_t *)this, stack);
 
-	case DUCK_NODE_MEMBER_SET:
+	case ANNA_NODE_MEMBER_SET:
 	   return anna_node_member_set_invoke((anna_node_member_set_t *)this, stack);
 
-	case DUCK_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_GET_WRAP:
 	   return anna_node_member_get_wrap_invoke((anna_node_member_get_t *)this, stack);
 
 	default:
@@ -755,42 +755,42 @@ void anna_node_print(anna_node_t *this)
 {
     switch(this->node_type)
     {
-	case DUCK_NODE_INT_LITERAL:
+	case ANNA_NODE_INT_LITERAL:
 	{
 	    anna_node_int_literal_t *this2 = (anna_node_int_literal_t *)this;
 	    wprintf(L"%d", this2->payload);
 	    break;
 	}
 	
-	case DUCK_NODE_FLOAT_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
 	{
 	    anna_node_float_literal_t *this2 = (anna_node_float_literal_t *)this;
 	    wprintf(L"%f", this2->payload);
 	    break;
 	}
 	
-	case DUCK_NODE_STRING_LITERAL:
+	case ANNA_NODE_STRING_LITERAL:
 	{
 	    anna_node_string_literal_t *this2 = (anna_node_string_literal_t *)this;
 	    wprintf(L"\"%.*ls\"", this2->payload_size, this2->payload);
 	    break;
 	}
 	
-	case DUCK_NODE_CHAR_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
 	{
 	    anna_node_char_literal_t *this2 = (anna_node_char_literal_t *)this;
 	    wprintf(L"'%lc'", this2->payload);
 	    break;
 	}
 	
-	case DUCK_NODE_LOOKUP:
+	case ANNA_NODE_LOOKUP:
 	{
 	    anna_node_lookup_t *this2 = (anna_node_lookup_t *)this;
 	    wprintf(L"%ls", this2->name);
 	    break;
 	}
 	
-	case DUCK_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
 	    wprintf(L"__memberGet__(");
@@ -798,7 +798,7 @@ void anna_node_print(anna_node_t *this)
 	    wprintf(L", %d)", this2->mid);
 	    break;
 	}
-	case DUCK_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
 	    wprintf(L"__memberGetWrap__(");
@@ -807,13 +807,13 @@ void anna_node_print(anna_node_t *this)
 	    break;
 	}
 	
-	case DUCK_NODE_NULL:
+	case ANNA_NODE_NULL:
 	{
 	    wprintf(L"null");
 	    break;
 	}
 	
-	case DUCK_NODE_CALL:
+	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;

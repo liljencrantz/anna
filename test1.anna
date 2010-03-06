@@ -1,0 +1,30 @@
+
+class TestClass 
+{
+	var Int myMember;
+	
+	function __init__(Int in)
+	{
+		this.myMember = in;
+	}
+
+	function myMethod(Int arg1)
+	{
+		if(2>1){
+			return 1337;
+		}
+		return -1;
+	}
+};
+
+var lst = List();
+lst ~= 3;
+lst ~= 2;
+lst ~= 5;
+
+lst.each(key:value){
+	print(key);
+	print(": ");
+	print(value);
+	print("\n");
+}

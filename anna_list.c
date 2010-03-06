@@ -75,7 +75,7 @@ void anna_list_add(struct anna_object *this, struct anna_object *value)
 size_t anna_list_get_size(anna_object_t *this)
 {
   assert(this);
-  return *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_SIZE);
+  return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE);
 }
 
 void anna_list_set_size(anna_object_t *this, size_t sz)
@@ -96,12 +96,12 @@ void anna_list_set_size(anna_object_t *this, size_t sz)
 	  ptr[i] = null_object;
 	}
   }
-  *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_SIZE) = sz;
+  *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE) = sz;
 }
 
 size_t anna_list_get_capacity(anna_object_t *this)
 {
-    return *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_CAPACITY);
+    return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_CAPACITY);
 }
 
 void anna_list_set_capacity(anna_object_t *this, size_t sz)
@@ -109,13 +109,13 @@ void anna_list_set_capacity(anna_object_t *this, size_t sz)
     anna_object_t **ptr = anna_list_get_payload(this);
     ptr = realloc(ptr, sizeof(anna_object_t *)*sz);
     assert(ptr);
-    *(size_t *)anna_member_addr_get_mid(this,DUCK_MID_LIST_CAPACITY) = sz;
-    *(anna_object_t ***)anna_member_addr_get_mid(this,DUCK_MID_LIST_PAYLOAD) = ptr;
+    *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_CAPACITY) = sz;
+    *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD) = ptr;
 }
 
 static anna_object_t **anna_list_get_payload(anna_object_t *this)
 {
-    return *(anna_object_t ***)anna_member_addr_get_mid(this,DUCK_MID_LIST_PAYLOAD);
+    return *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD);
 }
 
 static anna_object_t *anna_list_set_int(anna_object_t **param)
@@ -149,8 +149,8 @@ static anna_object_t *anna_list_each_value(anna_object_t **param)
     anna_object_t **arr = anna_list_get_payload(param[0]);
     size_t i;
 
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_STACK);
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
     assert(function_ptr);
 /*
     wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -179,8 +179,8 @@ static anna_object_t *anna_list_each_pair(anna_object_t **param)
     anna_object_t **arr = anna_list_get_payload(param[0]);
     size_t i;
 
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, DUCK_MID_FUNCTION_WRAPPER_STACK);
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
     assert(function_ptr);
 /*
     wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -206,9 +206,9 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 {
     list_type = anna_type_create(L"List", 64);
     anna_stack_declare(stack, L"List", type_type, list_type->wrapper);
-    anna_member_create(list_type, DUCK_MID_LIST_PAYLOAD,  L"!listPayload", 0, null_type);
-    anna_member_create(list_type, DUCK_MID_LIST_SIZE,  L"!listSize", 0, null_type);
-    anna_member_create(list_type, DUCK_MID_LIST_CAPACITY,  L"!listCapacity", 0, null_type);
+    anna_member_create(list_type, ANNA_MID_LIST_PAYLOAD,  L"!listPayload", 0, null_type);
+    anna_member_create(list_type, ANNA_MID_LIST_SIZE,  L"!listSize", 0, null_type);
+    anna_member_create(list_type, ANNA_MID_LIST_CAPACITY,  L"!listCapacity", 0, null_type);
     
     anna_type_t *i_argv[] = 
 	{
@@ -252,7 +252,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_native_method_create(list_type, -1, L"__setInt__", 0, (anna_native_t)&anna_list_set_int, object_type, 3, i_argv, i_argn);
     anna_native_method_create(list_type, -1, L"__append__", 0, (anna_native_t)&anna_list_append, object_type, 2, a_argv, a_argn);
 
-    anna_native_method_create(list_type, -1, L"each", DUCK_FUNCTION_MACRO, (anna_native_t)&anna_list_each, 0, 0, 0, 0);
+    anna_native_method_create(list_type, -1, L"each", ANNA_FUNCTION_MACRO, (anna_native_t)&anna_list_each, 0, 0, 0, 0);
     anna_native_method_create(list_type, -1, L"__eachValue__", 0, (anna_native_t)&anna_list_each_value, object_type, 2, e_argv, e_argn);
     anna_native_method_create(list_type, -1, L"__eachPair__", 0, (anna_native_t)&anna_list_each_pair, object_type, 2, e_argv, e_argn);
     /*

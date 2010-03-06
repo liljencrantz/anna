@@ -1,6 +1,6 @@
 
-#ifndef DUCK_LIST_H
-#define DUCK_LIST_H
+#ifndef ANNA_LIST_H
+#define ANNA_LIST_H
 
 #include "anna.h"
 #include "anna_node.h"
