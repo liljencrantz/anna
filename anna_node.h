@@ -207,6 +207,8 @@ void anna_node_print(anna_node_t *this);
 
 anna_node_t *anna_parse(wchar_t *name);
 void anna_node_print_code(anna_node_t *node);
+anna_node_t *anna_clone_shallow(anna_node_t *);
+
 
 #endif
 

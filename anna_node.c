@@ -317,9 +317,9 @@ anna_node_t *anna_node_call_prepare(anna_node_call_t *node, anna_function_t *fun
    anna_node_print((anna_node_t *)node);
    wprintf(L"\n");
 */
+   
    if(node->node_type == ANNA_NODE_CALL)
-   {
-       
+   {       
        node->function = anna_node_prepare(node->function, function, parent);
        anna_type_t *func_type = anna_node_get_return_type(node->function, function->stack_template);
        anna_function_t *macro_definition = anna_node_macro_get(node->function, function->stack_template);
@@ -964,3 +964,91 @@ void anna_node_print_code(anna_node_t *node)
     }    
 }
 
+static size_t anna_node_size(anna_node_t *n)
+{
+    switch(n->node_type)
+    {
+	case ANNA_NODE_CALL:
+	case ANNA_NODE_CONSTRUCT:
+	    return sizeof(anna_node_call_t);
+	    
+	case ANNA_NODE_LOOKUP:
+	    return sizeof(anna_node_lookup_t);
+
+	case ANNA_NODE_INT_LITERAL:
+	    return sizeof(anna_node_int_literal_t);
+	case ANNA_NODE_STRING_LITERAL:
+	    return sizeof(anna_node_string_literal_t);
+	case ANNA_NODE_CHAR_LITERAL:
+	    return sizeof(anna_node_char_literal_t);
+	case ANNA_NODE_FLOAT_LITERAL:
+	    return sizeof(anna_node_float_literal_t);
+	case ANNA_NODE_NULL:
+	    return sizeof(anna_node_t);
+	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_TRAMPOLINE:
+	    return sizeof(anna_node_dummy_t);
+	case ANNA_NODE_ASSIGN:
+	    return sizeof(anna_node_assign_t);
+	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET_WRAP:
+	    return sizeof(anna_node_member_get_t);
+	case ANNA_NODE_MEMBER_SET:
+	    return sizeof(anna_node_member_set_t);
+	case ANNA_NODE_RETURN:
+	    return sizeof(anna_node_return_t);
+	default:
+	    anna_error(n, L"Unknown node type while determining size\n");
+	    exit(1);
+    }
+    
+}
+
+anna_node_t *anna_clone_shallow(anna_node_t *n)
+{
+    size_t sz = anna_node_size(n);
+    anna_node_t *r = malloc(sz);
+    memcpy(r,n,sz);
+    return r;
+}
+
+anna_node_t *anna_clone_deep(anna_node_t *n)
+{
+    anna_node_t *r = anna_clone_shallow(n);
+    switch(r->node_type)
+    {
+	case ANNA_NODE_CALL:
+	case ANNA_NODE_CONSTRUCT:
+	{
+	    int i;
+	    anna_node_call_t *r2=(anna_node_call_t *)r;
+	    r2->function = anna_clone_deep(r2->function);
+	    for(i=0;i<r2->child_count; i++)
+	    {
+		r2->child[i] = anna_clone_deep(r2->child[i]);
+	    }
+	}
+	
+	case ANNA_NODE_LOOKUP:
+	case ANNA_NODE_INT_LITERAL:
+	case ANNA_NODE_STRING_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
+	case ANNA_NODE_NULL:
+	    break;
+	    
+
+	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_TRAMPOLINE:
+	case ANNA_NODE_ASSIGN:
+	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_SET:
+	case ANNA_NODE_RETURN:
+	default:
+	    anna_error(n, L"Unsupported node type for deep copy!\n");
+	    exit(1);
+	
+    }
+    return r;
+}

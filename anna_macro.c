@@ -701,19 +701,19 @@ static anna_node_t *anna_macro_declare(struct anna_node_call *node,
 	    break;
 	}
 	
-       case ANNA_NODE_NULL:	
-	   if(node->child[2]->node_type == ANNA_NODE_NULL)
-	   {
-	       FAIL(node, L"Unspecified variable type");
-	   }
-	   
-	   type = anna_node_get_return_type(node->child[2], function->stack_template);
-	   if(!type)
-	   {
-	       FAIL(node->child[2], L"Could not determine return type");
-	   }
-	   
-	   break;
+	case ANNA_NODE_NULL:	
+	    if(node->child[2]->node_type == ANNA_NODE_NULL)
+	    {
+		FAIL(node, L"Unspecified variable type");
+	    }
+	    
+	    type = anna_node_get_return_type(node->child[2], function->stack_template);
+	    if(!type)
+	    {
+		FAIL(node->child[2], L"Could not determine return type");
+	    }
+	    
+	    break;
 
 	default:
 	    FAIL(node->child[1], L"Wrong type on second argument to declare - expected an identifier or a null node");

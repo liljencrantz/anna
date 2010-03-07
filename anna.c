@@ -24,6 +24,11 @@
   Compiler front end.
 */
 /*
+  Templating plan:
+  
+  anna_macro_type should keep a copy of the original ast for every type created
+  all native types should have an ast of their original definition
+
   ComparisonMap type
   HashMap type
   Range type

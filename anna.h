@@ -65,6 +65,7 @@ struct anna_type
     hash_table_t name_lookup;
     wchar_t *name;
     struct anna_member **mid_lookup;
+    struct anna_node *definition;
     struct anna_object *wrapper;
     struct anna_object *static_member[];
 };
