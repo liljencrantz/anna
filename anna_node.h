@@ -176,38 +176,85 @@ void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function);
 
+/**
+   If the specified node is a call, return it properly casted. Otherwise, exit the program with an error message.
+ */
 anna_node_call_t *node_cast_call(anna_node_t *node);
-anna_node_identifier_t *node_cast_identifier(anna_node_t *node);
-anna_node_int_literal_t *node_cast_int_literal(anna_node_t *node);
-anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node);
-
-void anna_node_print(anna_node_t *this);
-
-/*
-  This functions all treverse the AST, and taking clever actions on each node
-*/
 
 /**
-   Prepare the specified code for execution. This includes running macros, declaring variables, changing name based identifiers into offset identifiers, etc.
+   If the specified node is an identifier, return it properly casted. Otherwise, exit the program with an error message.
  */
-anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, anna_node_list_t *parent);
-anna_object_t *anna_node_invoke(anna_node_t *this, anna_stack_frame_t *stack);
+anna_node_identifier_t *node_cast_identifier(anna_node_t *node);
+
+/**
+   If the specified node is an int literal, return it properly casted. Otherwise, exit the program with an error message.
+ */
+anna_node_int_literal_t *node_cast_int_literal(anna_node_t *node);
+
+/**
+   If the specified node is a string literal, return it properly casted. Otherwise, exit the program with an error message.
+ */
+anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node);
+
+/**
+   Prepare the specified code for execution. This includes running
+   macros, declaring variables, changing name based identifiers into
+   offset identifiers, etc.
+ */
+anna_node_t *anna_node_prepare(anna_node_t *this, 
+			       anna_function_t *function, 
+			       anna_node_list_t *parent);
+
+/**
+   Invoke the specified AST tree. It must have first been prepared.
+ */
+anna_object_t *anna_node_invoke(anna_node_t *this, 
+				anna_stack_frame_t *stack);
 
 /**
    Check the validity of the code. This should only be run after the
    AST has been prepared, or any macros will make it cry.
  */
 void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack);
+
 /**
    Returns the return type of the specified AST node
  */
 anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *stack);
 
+/**
+   Prints a simple graphical representation of the specified AST
+   tree. For an unprepared AST tree, the output should be readily
+   rereadable by the parser, and can hence be used as a serialization
+   format. This is not the case for a prepared AST tree.
+ */
 void anna_node_print(anna_node_t *this);
 
+/**
+  Parse the specified file and return an unprepared AST tree that
+  represents the file content.
+ */
 anna_node_t *anna_parse(wchar_t *name);
+
+/**
+  Print the source code that lead to the creation of the specified AST
+  node. This usually involves opening the source code file.
+
+  Does a bit of fancy markup with line numbers and color coding of the
+  exact source part of the node.
+ */
 void anna_node_print_code(anna_node_t *node);
+
+/**
+   Create an identical copy of the specified AST node.
+ */
 anna_node_t *anna_clone_shallow(anna_node_t *);
+
+/**
+   Create an identical copy of the specified AST subtree.
+ */
+anna_node_t *anna_clone_deep(anna_node_t *n);
+
 
 
 #endif
