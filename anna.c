@@ -55,7 +55,7 @@
   Variadic functions
   Garbage collection  
   Proper intersection of types
-  static member lookup and assignment
+  static member identifier and assignment
   static function calls
   class member macros
 
@@ -107,7 +107,7 @@
   Represent the stack
   
   Parse int literals
-  Parse lookups
+  Parse identifiers
   Parse calls
   Parse string literals
   Parse chars literals
@@ -145,9 +145,9 @@
 anna_type_t *type_type=0, *object_type=0, *int_type=0, *string_type=0, *char_type=0, *null_type=0,  *string_type, *char_type, *list_type, *float_type;
 anna_object_t *null_object=0;
 
-static hash_table_t anna_type_for_function_lookup;
-static hash_table_t anna_mid_lookup;
-static array_list_t anna_mid_lookup_reverse;
+static hash_table_t anna_type_for_function_identifier;
+static hash_table_t anna_mid_identifier;
+static array_list_t anna_mid_identifier_reverse;
 
 anna_node_t *anna_node_null=0;
 
@@ -156,7 +156,7 @@ static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 
 int anna_error_count=0;
 
-static anna_member_t **anna_mid_lookup_create();
+static anna_member_t **anna_mid_identifier_create();
 
 static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count);
 static void anna_type_wrapper_create(anna_type_t *result);
@@ -189,14 +189,14 @@ static void add_member(void *key, void *value, void *aux)
 
 void anna_type_get_member_names(anna_type_t *type, wchar_t **dest)
 {
-    hash_foreach2(&type->name_lookup, &add_member, &dest);
+    hash_foreach2(&type->name_identifier, &add_member, &dest);
 }
 
 
 
 anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name)
 {
-    anna_member_t *m = (anna_member_t *)hash_get(&(obj->type->name_lookup), name);
+    anna_member_t *m = (anna_member_t *)hash_get(&(obj->type->name_identifier), name);
     /*
     wprintf(L"Woo, get address of member %ls on object\n", name);
     wprintf(L"of type %ls\n", obj->type->name);
@@ -219,7 +219,7 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid)
   wprintf(L"Get mid %d on object\n", mid);
   wprintf(L"of type %ls\n", obj->type->name);
   */
-    anna_member_t *m = obj->type->mid_lookup[mid];
+    anna_member_t *m = obj->type->mid_identifier[mid];
     if(!m) 
     {
 	return 0;
@@ -239,7 +239,7 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid)
   /*  wprintf(L"Get mid %d on object\n", mid);
   wprintf(L"of type %ls\n", obj->type->name);
   */
-    anna_member_t *m = type->mid_lookup[mid];
+    anna_member_t *m = type->mid_identifier[mid];
     if(!m) 
     {
 	return 0;
@@ -255,7 +255,7 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid)
 
 void anna_mid_put(wchar_t *name, size_t mid)
 {
-   size_t *offset_ptr = hash_get(&anna_mid_lookup, name);
+   size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
    if(offset_ptr)
    {
       wprintf(L"Tried to reassign mid!\n");
@@ -264,13 +264,13 @@ void anna_mid_put(wchar_t *name, size_t mid)
    
    offset_ptr = malloc(sizeof(size_t));
    *offset_ptr = mid;
-   hash_put(&anna_mid_lookup, name, offset_ptr);   
-   al_set(&anna_mid_lookup_reverse, mid, wcsdup(name));
+   hash_put(&anna_mid_identifier, name, offset_ptr);   
+   al_set(&anna_mid_identifier_reverse, mid, wcsdup(name));
 }
 
 size_t anna_mid_get(wchar_t *name)
 {
-   size_t *offset_ptr = hash_get(&anna_mid_lookup, name);
+   size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
    if(!offset_ptr)
    {      
       size_t gg = mid_pos++;
@@ -282,7 +282,7 @@ size_t anna_mid_get(wchar_t *name)
 
 wchar_t *anna_mid_get_reverse(size_t mid)
 {
-    return (wchar_t *)al_get(&anna_mid_lookup_reverse, mid);
+    return (wchar_t *)al_get(&anna_mid_identifier_reverse, mid);
 }
 
 int hash_function_type_func(void *a)
@@ -346,13 +346,13 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	key->argv[i]=argv[i];
     }
     
-    anna_type_t *res = hash_get(&anna_type_for_function_lookup, key);
+    anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
     if(!res)
     {
 	anna_function_type_key_t *new_key = malloc(new_key_sz);
 	memcpy(new_key, key, new_key_sz);	
 	res = anna_type_create_raw(L"!FunctionType", 64);	
-	hash_put(&anna_type_for_function_lookup, new_key, res);
+	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
 			   1, null_type);
 	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
@@ -453,9 +453,9 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 
 static int anna_is_member_get(anna_node_t *node)
 {
-    if(node->node_type != ANNA_NODE_LOOKUP)
+    if(node->node_type != ANNA_NODE_IDENTIFIER)
 	return 0;
-    anna_node_lookup_t *node2 = (anna_node_lookup_t *)node;
+    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;
     return wcscmp(node2->name, L"__memberGet__")==0;
     
 }
@@ -465,7 +465,7 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
 {
     assert(type);
     assert(name);
-    anna_member_t *m = (anna_member_t *)hash_get(&type->name_lookup, name);
+    anna_member_t *m = (anna_member_t *)hash_get(&type->name_identifier, name);
     if(!m)
     {
 	return 0;
@@ -508,7 +508,7 @@ anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, a
 
 
 /*
-anna_object_t *anna_i_get(anna_node_lookup_t *this, anna_stack_frame_t *stack)
+anna_object_t *anna_i_get(anna_node_identifier_t *this, anna_stack_frame_t *stack)
 {
   wchar_t *name = this->child[0]->name;
   return anna_stack_get(stack, name);
@@ -566,7 +566,7 @@ anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *s
     wprintf(L"\n");
 */  
     anna_object_t *obj = anna_node_invoke(param->child[0], stack);
-    anna_node_lookup_t *name_node = node_cast_lookup(param->child[1]);
+    anna_node_identifier_t *name_node = node_cast_identifier(param->child[1]);
     //   wprintf(L"name node is %d, name is %ls\n", name_node, name_node->name);
     anna_object_t *member = *anna_member_addr_get_str(obj, name_node->name);
     
@@ -739,7 +739,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     //wprintf(L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
     wchar_t **members = calloc(sizeof(wchar_t *), role_model->member_count+role_model->static_member_count);
     anna_type_get_member_names(role_model, members);    
-    assert(hash_get_count(&role_model->name_lookup) == role_model->member_count+role_model->static_member_count);
+    assert(hash_get_count(&role_model->name_identifier) == role_model->member_count+role_model->static_member_count);
     
     for(i=0; i<role_model->member_count+role_model->static_member_count; i++)
     {
@@ -811,8 +811,8 @@ static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_cou
     anna_type_t *result = calloc(1,sizeof(anna_type_t)+sizeof(anna_object_t *)*static_member_count);
     result->static_member_count = 0;
     result->member_count = 0;
-    hash_init(&result->name_lookup, &hash_wcs_func, &hash_wcs_cmp);
-    result->mid_lookup = anna_mid_lookup_create();
+    hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
+    result->mid_identifier = anna_mid_identifier_create();
     result->name = name;
     return result;  
 }
@@ -838,7 +838,7 @@ size_t anna_member_create(anna_type_t *type,
 			  anna_type_t *member_type)
 {
     assert(member_type);
-    if(hash_get(&type->name_lookup, name))
+    if(hash_get(&type->name_identifier, name))
     {
 	wprintf(L"Redeclaring member %ls of type %ls\n",
 		name, type->name);
@@ -871,12 +871,12 @@ size_t anna_member_create(anna_type_t *type,
     }
 //  wprintf(L"Add member with mid %d\n", mid);
     
-    type->mid_lookup[mid] = member;
-    hash_put(&type->name_lookup, name, member);
+    type->mid_identifier[mid] = member;
+    hash_put(&type->name_identifier, name, member);
     return mid;
 }
 
-static anna_member_t **anna_mid_lookup_create()
+static anna_member_t **anna_mid_identifier_create()
 {
     /*
       FIXME: Track, reallocate when we run out of space, etc.
@@ -905,7 +905,7 @@ size_t anna_native_method_create(anna_type_t *type,
     }
     
     mid = anna_member_create(type, mid, name, 1, anna_type_for_function(result, argc, argv));
-    anna_member_t *m = type->mid_lookup[mid];
+    anna_member_t *m = type->mid_identifier[mid];
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     type->static_member[m->offset] = anna_native_create(name, flags, func, result, argc, argv, argn)->wrapper;
     return (size_t)mid;
@@ -918,7 +918,7 @@ size_t anna_method_create(anna_type_t *type,
 			  anna_function_t *definition)		
 {
     mid = anna_member_create(type, mid, name, 1, definition->type);
-    anna_member_t *m = type->mid_lookup[mid];
+    anna_member_t *m = type->mid_identifier[mid];
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     type->static_member[m->offset] = definition->wrapper;
     return (size_t)mid;
@@ -969,11 +969,11 @@ static void anna_null_type_create_early()
   
   anna_object_t *null_function;  
   null_function = null_type->static_member[0];
-  hash_init(&null_type->name_lookup, &hash_null_func, &hash_null_cmp);
-  hash_put(&null_type->name_lookup, L"!null_member", null_member);
+  hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
+  hash_put(&null_type->name_identifier, L"!null_member", null_member);
   
   for(i=0; i<64;i++) {
-    null_type->mid_lookup[i] = null_member;
+    null_type->mid_identifier[i] = null_member;
   }
   assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
 }
@@ -985,9 +985,9 @@ static void anna_object_type_create_early()
 
 static void anna_init()
 {
-    al_init(&anna_mid_lookup_reverse);
-    hash_init(&anna_mid_lookup, &hash_wcs_func, &hash_wcs_cmp);
-    hash_init(&anna_type_for_function_lookup, &hash_function_type_func, &hash_function_type_comp);
+    al_init(&anna_mid_identifier_reverse);
+    hash_init(&anna_mid_identifier, &hash_wcs_func, &hash_wcs_cmp);
+    hash_init(&anna_type_for_function_identifier, &hash_function_type_func, &hash_function_type_comp);
     
     anna_mid_put(L"!typeWrapperPayload", ANNA_MID_TYPE_WRAPPER_PAYLOAD);
     anna_mid_put(L"!callPayload", ANNA_MID_CALL_PAYLOAD);
@@ -1065,7 +1065,7 @@ void anna_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 void anna_object_print(anna_object_t *obj, int level)
 {
     wprintf(L"%ls:\n", obj->type->name);
-    hash_foreach2(&obj->type->name_lookup, &anna_print_member, obj);
+    hash_foreach2(&obj->type->name_identifier, &anna_print_member, obj);
 }
 
 anna_object_t *anna_function_invoke_values(anna_function_t *function, 

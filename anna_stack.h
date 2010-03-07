@@ -19,7 +19,7 @@ struct anna_stack_frame
     struct anna_stack_frame *parent;
     size_t count;
     size_t capacity;
-    hash_table_t member_string_lookup;
+    hash_table_t member_string_identifier;
     int stop;
     struct anna_type **member_type;  
     struct anna_object *member[];

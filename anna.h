@@ -62,9 +62,9 @@ struct anna_type
 {
     size_t member_count;
     size_t static_member_count;
-    hash_table_t name_lookup;
+    hash_table_t name_identifier;
     wchar_t *name;
-    struct anna_member **mid_lookup;
+    struct anna_member **mid_identifier;
     struct anna_node *definition;
     struct anna_object *wrapper;
     struct anna_object *static_member[];

@@ -30,10 +30,10 @@ anna_node_call_t *node_cast_call(anna_node_t *node)
     return (anna_node_call_t *)node;
 }
 
-anna_node_lookup_t *node_cast_lookup(anna_node_t *node) 
+anna_node_identifier_t *node_cast_identifier(anna_node_t *node) 
 {
-    assert(node->node_type==ANNA_NODE_LOOKUP);
-    return (anna_node_lookup_t *)node;
+    assert(node->node_type==ANNA_NODE_IDENTIFIER);
+    return (anna_node_identifier_t *)node;
 }
 
 anna_node_int_literal_t *node_cast_int_literal(anna_node_t *node) 
@@ -184,10 +184,10 @@ anna_node_call_t *anna_node_call_create(anna_location_t *loc, anna_node_t *funct
     return result;
 }
 
-anna_node_lookup_t *anna_node_lookup_create(anna_location_t *loc, wchar_t *name)
+anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, wchar_t *name)
 {
-    anna_node_lookup_t *result = calloc(1,sizeof(anna_node_call_t));
-    result->node_type = ANNA_NODE_LOOKUP;
+    anna_node_identifier_t *result = calloc(1,sizeof(anna_node_call_t));
+    result->node_type = ANNA_NODE_IDENTIFIER;
    anna_node_set_location((anna_node_t *)result,loc);
     result->name = name;
     /*
@@ -259,9 +259,9 @@ anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stac
 {
     switch(node->node_type)
     {
-	case ANNA_NODE_LOOKUP:
+	case ANNA_NODE_IDENTIFIER:
 	{
-	    anna_node_lookup_t *name=(anna_node_lookup_t *)node;
+	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
 	    anna_object_t *obj = anna_stack_get_str(stack, name->name);
 	    anna_function_t *func=anna_function_unwrap(obj);
 	    
@@ -385,7 +385,7 @@ anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *this, ann
   return anna_char_create(this->payload);
 }
 
-anna_object_t *anna_node_lookup_invoke(anna_node_lookup_t *this, anna_stack_frame_t *stack)
+anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_stack_frame_t *stack)
 {
 /*    wprintf(L"Lookup on string \"%ls\", sid is %d,%d\n", this->name, this->sid.frame, this->sid.offset);
     assert(anna_stack_get_sid(stack, this->sid) == anna_stack_get_str(stack, this->name));
@@ -426,10 +426,10 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	    */
 	    if(func_type == type_type)
 	    {
-		if(this2->function->node_type == ANNA_NODE_LOOKUP)
+		if(this2->function->node_type == ANNA_NODE_IDENTIFIER)
 		{
-		    anna_node_lookup_t *lookup = (anna_node_lookup_t *)this2->function;
-		    anna_object_t *type_wrapper = anna_stack_get_str(stack, lookup->name);
+		    anna_node_identifier_t *identifier = (anna_node_identifier_t *)this2->function;
+		    anna_object_t *type_wrapper = anna_stack_get_str(stack, identifier->name);
 		    assert(type_wrapper);
 		    return anna_type_unwrap(type_wrapper);
 		}
@@ -460,9 +460,9 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_FLOAT_LITERAL:
 	    return float_type;
 
-	case ANNA_NODE_LOOKUP:
+	case ANNA_NODE_IDENTIFIER:
 	{
-	    anna_node_lookup_t *this2 =(anna_node_lookup_t *)this;	    
+	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
 	    return anna_stack_get_type(stack, this2->name);
 	}
 	case ANNA_NODE_STRING_LITERAL:
@@ -569,10 +569,10 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 
 	    
 
-	case ANNA_NODE_LOOKUP:
+	case ANNA_NODE_IDENTIFIER:
 	{
-	    anna_node_lookup_t *this2 =(anna_node_lookup_t *)this;	    
-	    check(this, !!this2->name, L"Invalid lookup node");
+	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
+	    check(this, !!this2->name, L"Invalid identifier node");
 	    check(this, !!anna_stack_get_type(stack, this2->name), L"Unknown variable: %ls", this2->name);
 	    return;
 	}
@@ -608,13 +608,13 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	{
 	  anna_node_return_t * result = (anna_node_return_t *)this;
 	  result->payload=anna_node_prepare(result->payload, function, parent);
-	  return result;
+	  return (anna_node_t *)result;
 	}
 	
-	case ANNA_NODE_LOOKUP:
+	case ANNA_NODE_IDENTIFIER:
 	{
 	    /*
-	      anna_node_lookup_t *this2 =(anna_node_lookup_t *)this;
+	      anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
 	      this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
 	    */
 	    return this;
@@ -726,8 +726,8 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	case ANNA_NODE_FLOAT_LITERAL:
 	   return anna_node_float_literal_invoke((anna_node_float_literal_t *)this, stack);
 
-	case ANNA_NODE_LOOKUP:
-	    return anna_node_lookup_invoke((anna_node_lookup_t *)this, stack);	    
+	case ANNA_NODE_IDENTIFIER:
+	    return anna_node_identifier_invoke((anna_node_identifier_t *)this, stack);	    
 
 	case ANNA_NODE_STRING_LITERAL:
 	   return anna_node_string_literal_invoke((anna_node_string_literal_t *)this, stack);
@@ -804,9 +804,9 @@ void anna_node_print(anna_node_t *this)
 	    break;
 	}
 	
-	case ANNA_NODE_LOOKUP:
+	case ANNA_NODE_IDENTIFIER:
 	{
-	    anna_node_lookup_t *this2 = (anna_node_lookup_t *)this;
+	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
 	    wprintf(L"%ls", this2->name);
 	    break;
 	}
@@ -972,8 +972,8 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_CONSTRUCT:
 	    return sizeof(anna_node_call_t);
 	    
-	case ANNA_NODE_LOOKUP:
-	    return sizeof(anna_node_lookup_t);
+	case ANNA_NODE_IDENTIFIER:
+	    return sizeof(anna_node_identifier_t);
 
 	case ANNA_NODE_INT_LITERAL:
 	    return sizeof(anna_node_int_literal_t);
@@ -1029,7 +1029,7 @@ anna_node_t *anna_clone_deep(anna_node_t *n)
 	    }
 	}
 	
-	case ANNA_NODE_LOOKUP:
+	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:

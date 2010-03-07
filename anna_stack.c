@@ -11,7 +11,7 @@
 anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent)
 {
    anna_stack_frame_t *stack = calloc(1,sizeof(anna_stack_frame_t) + sizeof(anna_object_t *)*sz);
-   hash_init(&stack->member_string_lookup, &hash_wcs_func, &hash_wcs_cmp);
+   hash_init(&stack->member_string_identifier, &hash_wcs_func, &hash_wcs_cmp);
    stack->member_type = calloc(1, sizeof(anna_type_t *)*sz);
    stack->count = 0;
    stack->capacity = sz;
@@ -34,7 +34,7 @@ void anna_stack_declare(anna_stack_frame_t *stack,
     
     //wprintf(L"Declare %ls to %d\n", name, initial_value);
     
-    size_t *old_offset = hash_get(&stack->member_string_lookup, name);
+    size_t *old_offset = hash_get(&stack->member_string_identifier, name);
     if(old_offset)
     {
 	assert(stack->member_type[*old_offset] == type);
@@ -45,7 +45,7 @@ void anna_stack_declare(anna_stack_frame_t *stack,
     
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
-    hash_put(&stack->member_string_lookup, name, offset);
+    hash_put(&stack->member_string_identifier, name, offset);
     stack->member_type[*offset] = type;
     stack->member[*offset] = initial_value;
 }
@@ -55,7 +55,7 @@ anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name
     assert(name);
     while(stack)
     {
-	size_t *offset = (size_t *)hash_get(&stack->member_string_lookup, name);
+	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
 	if(offset) 
 	{
 	    return &stack->member[*offset];
@@ -86,7 +86,7 @@ anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack_orig, wchar_t *name)
     
     while(stack)
     {
-	size_t *offset = (size_t *)hash_get(&stack->member_string_lookup, name);
+	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
 	if(offset) 
 	{
 	  return stack->member_type[*offset];
@@ -106,7 +106,7 @@ anna_sid_t anna_stack_sid_create(anna_stack_frame_t *stack, wchar_t *name)
     
     while(stack)
     {
-	size_t *offset = (size_t *)hash_get(&stack->member_string_lookup, name);
+	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
 	if(offset) 
 	{
 	  sid.offset = *offset;
@@ -163,6 +163,6 @@ void anna_stack_print(anna_stack_frame_t *stack)
 {
     if(!stack)
 	return;
-    hash_foreach2(&stack->member_string_lookup, &anna_print_stack_member, stack);
+    hash_foreach2(&stack->member_string_identifier, &anna_print_stack_member, stack);
     anna_stack_print(stack->parent);
 }

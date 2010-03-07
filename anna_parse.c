@@ -135,7 +135,7 @@ static anna_node_t *parse_int_literal(parse_data_t *d)
 }
 
 
-static anna_node_t *parse_lookup(parse_data_t *d) 
+static anna_node_t *parse_identifier(parse_data_t *d) 
 {
     int start_pos = d->pos;
     sb_clear(&d->buff);
@@ -149,7 +149,7 @@ static anna_node_t *parse_lookup(parse_data_t *d)
 	dp_read(d);
 	sb_append_char(&d->buff, ch);
     }
-    return (anna_node_t *)anna_node_lookup_create(0, wcsdup((wchar_t *)d->buff.buff));
+    return (anna_node_t *)anna_node_identifier_create(0, wcsdup((wchar_t *)d->buff.buff));
 }
 
 static anna_node_t *parse_string_literal(parse_data_t *d) 
@@ -289,7 +289,7 @@ static anna_node_t *parse(parse_data_t *d)
     }
     else if((anna_isalpha(ch)) || ch=='_')
     {
-	result = parse_lookup(d);      
+	result = parse_identifier(d);      
     }
     else if(ch == L'"')
     {
@@ -413,9 +413,9 @@ anna_node_t *anna_parse(wchar_t *filename)
    anna_node_t *param[1];
    param[0] = (anna_node_t *)anna_node_int_literal_create(L"FOO",0,7);
    
-   anna_node_t *print_lookup = (anna_node_t *)anna_node_lookup_create(L"FOO",0,L"print");
+   anna_node_t *print_identifier = (anna_node_t *)anna_node_identifier_create(L"FOO",0,L"print");
    
-   anna_node_t *program = (anna_node_t *)anna_node_call_create(L"FOO",0, print_lookup, 1, param);
+   anna_node_t *program = (anna_node_t *)anna_node_call_create(L"FOO",0, print_identifier, 1, param);
    
    return program;
    */

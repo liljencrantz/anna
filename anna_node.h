@@ -7,7 +7,7 @@
 #include "anna_stack.h"
 
 #define ANNA_NODE_CALL 0
-#define ANNA_NODE_LOOKUP 1
+#define ANNA_NODE_IDENTIFIER 1
 #define ANNA_NODE_INT_LITERAL 2
 #define ANNA_NODE_STRING_LITERAL 3
 #define ANNA_NODE_CHAR_LITERAL 4
@@ -43,7 +43,7 @@ struct anna_node
     anna_location_t location;
 };
 
-struct anna_node_lookup
+struct anna_node_identifier
 {
     int node_type;
     struct anna_object *wrapper;
@@ -151,7 +151,7 @@ typedef struct anna_node_return anna_node_return_t;
 typedef struct anna_node_member_get anna_node_member_get_t;
 typedef struct anna_node_member_set anna_node_member_set_t;
 typedef struct anna_node_assign anna_node_assign_t;
-typedef struct anna_node_lookup anna_node_lookup_t;
+typedef struct anna_node_identifier anna_node_identifier_t;
 typedef struct anna_node_int_literal anna_node_int_literal_t;
 typedef struct anna_node_float_literal anna_node_float_literal_t;
 typedef struct anna_node_string_literal anna_node_string_literal_t;
@@ -169,7 +169,7 @@ anna_node_float_literal_t *anna_node_float_literal_create(anna_location_t *loc, 
 anna_node_char_literal_t *anna_node_char_literal_create(anna_location_t *loc, wchar_t val);
 anna_node_string_literal_t *anna_node_string_literal_create(anna_location_t *loc, size_t sz, wchar_t *str);
 anna_node_call_t *anna_node_call_create(anna_location_t *loc, anna_node_t *function, size_t argc, anna_node_t **argv);
-anna_node_lookup_t *anna_node_lookup_create(anna_location_t *loc, wchar_t *name);
+anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, wchar_t *name);
 anna_node_t *anna_node_null_create(anna_location_t *loc);
 anna_node_assign_t *anna_node_assign_create(anna_location_t *loc, anna_sid_t sid, struct anna_node *value);
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
@@ -177,7 +177,7 @@ void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function);
 
 anna_node_call_t *node_cast_call(anna_node_t *node);
-anna_node_lookup_t *node_cast_lookup(anna_node_t *node);
+anna_node_identifier_t *node_cast_identifier(anna_node_t *node);
 anna_node_int_literal_t *node_cast_int_literal(anna_node_t *node);
 anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node);
 
@@ -188,7 +188,7 @@ void anna_node_print(anna_node_t *this);
 */
 
 /**
-   Prepare the specified code for execution. This includes running macros, declaring variables, changing name based lookups into offset lookups, etc.
+   Prepare the specified code for execution. This includes running macros, declaring variables, changing name based identifiers into offset identifiers, etc.
  */
 anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, anna_node_list_t *parent);
 anna_object_t *anna_node_invoke(anna_node_t *this, anna_stack_frame_t *stack);
