@@ -547,7 +547,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		}
 		else
 		{
-		    anna_error(this, L"Unknown type for for argument %d", i);
+		    anna_error(this2->child[i-is_method], L"Unknown type for for argument %d of function call", i+1);
 		}
 	    }
 	    

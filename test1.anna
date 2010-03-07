@@ -1,3 +1,7 @@
+var bubbel;
+print(bubbel);
+
+/*
 var lst = List<Int>();
 lst ~= 3;
 lst ~= 2;
@@ -8,3 +12,4 @@ lst = lst.map(key:value){
 }
 
 print(lst[0]);
+*/
