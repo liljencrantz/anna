@@ -219,7 +219,13 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
     anna_node_t *out_type_wrapper = node->child[1];
     if(out_type_wrapper->node_type == ANNA_NODE_NULL) 
     {
-	assert(body->node_type == ANNA_NODE_CALL);
+	
+	if(body->node_type != ANNA_NODE_CALL)
+	{
+	    anna_error(body, L"Function declarations must have a return type");
+	    return (anna_node_t *)anna_node_null_create(&node->location);	    
+	}
+	
 	out_type = anna_sniff_return_type((anna_node_call_t *)body);
     }
     else
@@ -227,7 +233,12 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	anna_node_lookup_t *type_lookup;
 	type_lookup = node_cast_lookup(out_type_wrapper);
 	anna_object_t *type_wrapper = anna_stack_get_str(func->stack_template, type_lookup->name);
-	assert(type_wrapper);
+
+	if(!type_wrapper)
+	{
+	    anna_error(type_lookup, L"Unknown type: %ls", type_lookup->name);
+	    return (anna_node_t *)anna_node_null_create(&node->location);	    
+	}
 	out_type = anna_type_unwrap(type_wrapper);
     }
     
@@ -258,7 +269,11 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	    anna_node_lookup_t *name = node_cast_lookup(decl->child[0]);
 	    anna_node_lookup_t *type_name = node_cast_lookup(decl->child[1]);
 	    anna_object_t *type_wrapper = anna_stack_get_str(func->stack_template, type_name->name);
-	    assert(type_wrapper);
+	    if(!type_wrapper)
+	    {
+		anna_error(type_name, L"Unknown type: %ls", type_name->name);
+		return (anna_node_t *)anna_node_null_create(&node->location);	    
+	    }
 	    argv[i+!!type] = anna_type_unwrap(type_wrapper);
 	    argn[i+!!type] = name->name;
 	}
@@ -268,8 +283,14 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
     {
 	anna_function_t *result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, null_type, argc, argv, argn, func->stack_template, 0);
 	
-	assert(name);
-	assert(body->node_type == ANNA_NODE_CALL);
+	if(!name)
+	{
+	    anna_error(node, L"Method definitions must have a name");
+	    return (anna_node_t *)anna_node_null_create(&node->location);	    
+	}
+
+	CHECK_NODE_BODY(body);
+	
 	anna_method_create(type, -1, name, 0, result);	
     }
     else
