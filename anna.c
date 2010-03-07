@@ -26,8 +26,17 @@
 /*
   Templating plan:
   
-  anna_macro_type should keep a copy of the original ast for every type created
-  all native types should have an ast of their original definition
+  anna_macro_type must keep a copy of the original ast for every type created
+  All native types must have an ast of their original definition
+  __templatize__ will use the original AST to create new, templatized copies of the type.
+
+  Code layout plan:
+
+  - Move object and type code to individual .[ch] files.
+  - Split up anna_macro.c into multiple files, one of operators, one for 
+	function/block/type handling, one for functional construct support, 
+	etc..
+  - All node types should have a head var which is an anna_node_t, to reduce the amount of casting needed.
 
   ComparisonMap type
   HashMap type
@@ -36,14 +45,17 @@
   Node type
   Better Function type
   Better Type type  
+  Stack type
   
+  Split type namespace from type object
+  Properties
   Code validator
   Type checking on function types
   Type support for lists
   General purpose currying
   Namespaces
-  Method macros
-  Functions that don't return an Int
+  Subfunction/block tracking in function
+  Functions that don't return an Int (depends on block tracking)
  
   Implement basic string methods
   Implement string comparison methods
@@ -57,19 +69,17 @@
   Proper intersection of types
   static member identifier and assignment
   static function calls
-  class member macros
 
-  cast function
+  cast function (depends on type namespace/type object splittingx)
   import macro
   __macro__ macro
   elif macro
-  each function
   extends macro
-  abides function
+  is function
   __returnAssign__ macro
   __templatize__ macro
   template macro
-  __list__ macro
+  __list__ macro (depends on variadic functions and templates)
   use macro
   __memberCall__ macro
   __staticMemberGet__ macro
@@ -92,6 +102,7 @@
   Constructors
   Inner functions with shared return flag
   Do some real testing to find the optimal operator presedence order
+  class member macros
   
   Type type
   Call type
@@ -139,8 +150,15 @@
   __while__ function
   __type__ function
   return macro
+  each macro and related functions
   
 */
+/*
+  Cool macro feature. Create a complex AST by wrapping the equivalent
+  code in a call to the AST function.
+
+  var n = AST(1+x);  
+ */
 
 anna_type_t *type_type=0, *object_type=0, *int_type=0, *string_type=0, *char_type=0, *null_type=0,  *string_type, *char_type, *list_type, *float_type;
 anna_object_t *null_object=0;
@@ -158,7 +176,7 @@ int anna_error_count=0;
 
 static anna_member_t **anna_mid_identifier_create();
 
-static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count);
+static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count, int fake_location);
 static void anna_type_wrapper_create(anna_type_t *result);
 
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
@@ -351,7 +369,7 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
     {
 	anna_function_type_key_t *new_key = malloc(new_key_sz);
 	memcpy(new_key, key, new_key_sz);	
-	res = anna_type_create_raw(L"!FunctionType", 64);	
+	res = anna_type_create_raw(L"!FunctionType", 64, 1);	
 	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
 			   1, null_type);
@@ -360,7 +378,11 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
 			   0, null_type);
 	anna_type_wrapper_create(res);
-	
+	/*
+	  FIXME: Add children to the definition tree!
+	 */
+
+
 	(*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)new_key;
     }
     else 
@@ -806,7 +828,7 @@ static void anna_type_wrapper_create(anna_type_t *result)
   memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
 }
 
-static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count)
+static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count, int fake_definition)
 {
     anna_type_t *result = calloc(1,sizeof(anna_type_t)+sizeof(anna_object_t *)*static_member_count);
     result->static_member_count = 0;
@@ -814,12 +836,28 @@ static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_cou
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = anna_mid_identifier_create();
     result->name = name;
+    anna_location_t loc=
+	{
+	    0,0,0,0,L"<internal>"
+	}
+    ;
+    
+    if(fake_definition)
+    {
+	result->definition = 
+	    anna_node_call_create(
+		&loc,
+		anna_node_identifier_create(&loc, L"__type__"),
+		0,
+		0);
+    }
+    
     return result;  
 }
 
-anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count)
+anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fake_definition)
 {
-    anna_type_t *result = anna_type_create_raw(name, static_member_count);
+    anna_type_t *result = anna_type_create_raw(name, static_member_count, fake_definition);
     anna_type_wrapper_create(result);
     return result;
 }
@@ -1013,11 +1051,11 @@ static void anna_init()
       the various calls...
     */
     
-    type_type = anna_type_create_raw(L"Type", 64);
-    object_type = anna_type_create_raw(L"Object", 64);
-    null_type = anna_type_create_raw(L"Null", 1);
+    type_type = anna_type_create_raw(L"Type", 64, 1);
+    object_type = anna_type_create_raw(L"Object", 64, 1);
+    null_type = anna_type_create_raw(L"Null", 1, 1);
 
-    string_type = anna_type_create_raw(L"String", 64);
+    string_type = anna_type_create_raw(L"String", 64, 1);
     
     anna_type_type_create_early();
     anna_object_type_create_early();

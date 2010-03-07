@@ -33,7 +33,7 @@ wchar_t anna_char_get(anna_object_t *this)
 
 void anna_char_type_create(anna_stack_frame_t *stack)
 {
-    char_type = anna_type_create(L"Char", 64);
+    char_type = anna_type_create(L"Char", 64, 1);
     anna_stack_declare(stack, L"Char", type_type, char_type->wrapper);
     anna_member_create(char_type, ANNA_MID_CHAR_PAYLOAD,  L"!charPayload", 0, null_type);
     anna_char_type_i_create(stack);

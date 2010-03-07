@@ -2,14 +2,13 @@ var bubbel;
 print(bubbel);
 
 /*
-var lst = List<Int>();
+var lst = [0];
+
 lst ~= 3;
 lst ~= 2;
 lst ~= 5;
 
-lst = lst.map(key:value){
-	value+1;
-}
+lst = lst.map(value){value+1}.filter(value){value>3}
 
 print(lst[0]);
 */

@@ -151,7 +151,7 @@ anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
 
 anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv);
 
-anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count);
+anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fake_definition);
 
 anna_function_t *anna_function_unwrap(anna_object_t *type);
 

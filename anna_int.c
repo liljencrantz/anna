@@ -33,7 +33,7 @@ int anna_int_get(anna_object_t *this)
 
 void anna_int_type_create(anna_stack_frame_t *stack)
 {
-    int_type = anna_type_create(L"Int", 64);
+    int_type = anna_type_create(L"Int", 64, 1);
     anna_stack_declare(stack, L"Int", type_type, int_type->wrapper);
     anna_member_create(int_type, ANNA_MID_INT_PAYLOAD,  L"!intPayload", 0, null_type);    
 

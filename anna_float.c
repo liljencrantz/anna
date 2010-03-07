@@ -45,7 +45,7 @@ static anna_object_t *anna_float_exp(anna_object_t **param)
 void anna_float_type_create(anna_stack_frame_t *stack)
 {
 
-    float_type = anna_type_create(L"Float", 64);
+    float_type = anna_type_create(L"Float", 64, 1);
     anna_type_t *argv[]=
 	{
 	    float_type, float_type

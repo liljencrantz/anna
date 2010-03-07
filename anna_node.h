@@ -248,12 +248,12 @@ void anna_node_print_code(anna_node_t *node);
 /**
    Create an identical copy of the specified AST node.
  */
-anna_node_t *anna_clone_shallow(anna_node_t *);
+anna_node_t *anna_node_clone_shallow(anna_node_t *);
 
 /**
    Create an identical copy of the specified AST subtree.
  */
-anna_node_t *anna_clone_deep(anna_node_t *n);
+anna_node_t *anna_node_clone_deep(anna_node_t *n);
 
 
 

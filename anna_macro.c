@@ -115,10 +115,10 @@ static int check_node_block(anna_node_t *n)
 		       L"Unexpected argument type. Expected a block definition.");
 	    return 0;	    
 	}
-	anna_node_identifier_t *id = (anna_node_identifier_t *)__cnb_tmp->function;
+	anna_node_identifier_t *id = (anna_node_identifier_t *)call->function;
 	if(wcscmp(id->name, L"__block__") != 0)
 	{
-	    anna_error((anna_node_t *)__cnb_tmp->function,
+	    anna_error((anna_node_t *)call->function,
 		       L"Unexpected argument type. Expected a block definition.");
 	    return 0;	    
 	}
@@ -240,6 +240,7 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
     
     anna_type_t *out_type=0;
     anna_node_t *out_type_wrapper = node->child[1];
+    
     if(out_type_wrapper->node_type == ANNA_NODE_NULL) 
     {
 	
@@ -275,7 +276,9 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
     {
 	argc = declarations->child_count;
 	if(type)
+	{
 	    argc++;
+	}
 	
 	argv = malloc(sizeof(anna_type_t *)*argc);
 	argn = malloc(sizeof(wchar_t *)*argc);
@@ -980,7 +983,7 @@ static anna_node_t *anna_macro_else(anna_node_call_t *node,
     CHECK_NODE_BLOCK(node->child[0]);
     if(parent->idx == 0)
     {
-	anna_error(node, L"else with no matching if call");
+	anna_error((anna_node_t *)node, L"else with no matching if call");
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
     }
 
@@ -1293,7 +1296,9 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     wchar_t *type_name = ((anna_node_identifier_t *)node->child[1])->name;
     int error_count=0;
     
-    anna_type_t *type = anna_type_create(name, 64);
+    anna_type_t *type = anna_type_create(name, 64, 0);
+    type->definition = anna_node_clone_deep(node);
+    
     anna_stack_declare(function->stack_template, name, type_type, type->wrapper);
     anna_node_call_t *body = (anna_node_call_t *)node->child[3];
 

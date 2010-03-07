@@ -1004,7 +1004,7 @@ static size_t anna_node_size(anna_node_t *n)
     
 }
 
-anna_node_t *anna_clone_shallow(anna_node_t *n)
+anna_node_t *anna_node_clone_shallow(anna_node_t *n)
 {
     size_t sz = anna_node_size(n);
     anna_node_t *r = malloc(sz);
@@ -1012,34 +1012,50 @@ anna_node_t *anna_clone_shallow(anna_node_t *n)
     return r;
 }
 
-anna_node_t *anna_clone_deep(anna_node_t *n)
+anna_node_t *anna_node_clone_deep(anna_node_t *n)
 {
-    anna_node_t *r = anna_clone_shallow(n);
-    switch(r->node_type)
+    switch(n->node_type)
     {
+	/*
+	  Clone a call node. This invlolves a shallow clone of the
+	  node as well as calling the deep clone of every child and
+	  the function node.
+	 */
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_CONSTRUCT:
 	{
+	    anna_node_t *r = anna_node_clone_shallow(n);
 	    int i;
 	    anna_node_call_t *r2=(anna_node_call_t *)r;
-	    r2->function = anna_clone_deep(r2->function);
+	    r2->function = anna_node_clone_deep(r2->function);
 	    for(i=0;i<r2->child_count; i++)
 	    {
-		r2->child[i] = anna_clone_deep(r2->child[i]);
+		r2->child[i] = anna_node_clone_deep(r2->child[i]);
 	    }
+	    return r;
+	    
 	}
 	
+	/*
+	  These nodes are not mutable and they have no child nodes, so
+	  we can return them as is.
+	 */
 	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
-	    break;
-	    
-
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_TRAMPOLINE:
+	    return n;
+
+	    /*
+	      These nodes are not yet handled, but that should be
+	      perfectly ok for now, since they are only ever created
+	      by the prepare system, and cloning a prepared AST is
+	      never supported or possible.
+	     */
 	case ANNA_NODE_ASSIGN:
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_GET_WRAP:
@@ -1050,5 +1066,4 @@ anna_node_t *anna_clone_deep(anna_node_t *n)
 	    exit(1);
 	
     }
-    return r;
 }
