@@ -844,12 +844,7 @@ static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_cou
     
     if(fake_definition)
     {
-	result->definition = 
-	    anna_node_call_create(
-		&loc,
-		anna_node_identifier_create(&loc, L"__type__"),
-		0,
-		0);
+	
     }
     
     return result;  
@@ -913,6 +908,48 @@ size_t anna_member_create(anna_type_t *type,
     hash_put(&type->name_identifier, name, member);
     return mid;
 }
+
+void anna_member_add_node(anna_node_call_t *definition,
+			  ssize_t mid,
+			  wchar_t *name,
+			  int is_static,
+			  anna_type_t *member_type)
+{
+    anna_node_call_add_child(
+	definition,
+	(anna_node_t *)anna_node_member_declare_create(
+	    &definition->location,
+	    mid,
+	    name,
+	    is_static,
+	    member_type));
+}
+
+
+void anna_native_method_add_node(anna_node_call_t *definition,
+				 ssize_t mid,
+				 wchar_t *name,
+				 int flags,
+				 anna_native_t func,
+				 anna_type_t *result,
+				 size_t argc,
+				 anna_type_t **argv,
+				 wchar_t **argn)
+{
+    anna_node_call_add_child(
+	definition,
+	(anna_node_t *)anna_node_native_method_declare_create(
+	    &definition->location,
+	    mid,
+	    name,
+	    flags,
+	    func,
+	    result,
+	    argc,
+	    argv,
+	    argn));
+}
+
 
 static anna_member_t **anna_mid_identifier_create()
 {
@@ -1244,7 +1281,6 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
     }
   
 }
-
 
 
 void anna_error(anna_node_t *node, wchar_t *msg, ...)

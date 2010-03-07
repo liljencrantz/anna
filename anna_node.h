@@ -21,6 +21,8 @@
 #define ANNA_NODE_MEMBER_SET 12
 #define ANNA_NODE_CONSTRUCT 13
 #define ANNA_NODE_RETURN 14
+#define ANNA_NODE_NATIVE_METHOD_DECLARE 15
+#define ANNA_NODE_MEMBER_DECLARE 16
 
 struct YYLTYPE
 {
@@ -144,6 +146,34 @@ struct anna_node_float_literal
     double payload;
 };
 
+struct anna_node_member_declare
+{
+    int node_type;
+    struct anna_object *wrapper;
+    anna_location_t location;
+    size_t mid;
+    wchar_t *name;
+    int is_static;
+    anna_type_t *type;
+};
+
+struct anna_node_native_method_declare
+{
+    int node_type;
+    struct anna_object *wrapper;
+    anna_location_t location;
+    size_t mid;
+    wchar_t *name;
+    int flags;
+    anna_native_t native;
+    anna_type_t *return_type;
+    size_t argc;
+    anna_type_t **argv;
+    wchar_t **argn;
+};
+
+
+
 typedef struct anna_node anna_node_t;
 typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_dummy anna_node_dummy_t;
@@ -156,22 +186,65 @@ typedef struct anna_node_int_literal anna_node_int_literal_t;
 typedef struct anna_node_float_literal anna_node_float_literal_t;
 typedef struct anna_node_string_literal anna_node_string_literal_t;
 typedef struct anna_node_char_literal anna_node_char_literal_t;
+typedef struct anna_node_member_declare anna_node_member_declare_t;
+typedef struct anna_node_native_method_declare anna_node_native_method_declare_t;
+
 
 extern int anna_yacc_error_count;
 
-void anna_node_set_location(anna_node_t *node, anna_location_t *l);
-anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, struct anna_object *val, int is_trampoline);
-anna_node_return_t *anna_node_return_create(anna_location_t *loc, struct anna_node *val, int steps);
-anna_node_member_get_t *anna_node_member_get_create(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_type *type, int wrap);
-anna_node_member_set_t *anna_node_member_set_create(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_node *value, struct anna_type *type);
+void anna_node_set_location(anna_node_t *node, 
+			    anna_location_t *l);
+anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, 
+					  struct anna_object *val, 
+					  int is_trampoline);
+anna_node_return_t *anna_node_return_create(anna_location_t *loc,
+					    struct anna_node *val, 
+					    int steps);
+anna_node_member_get_t *anna_node_member_get_create(anna_location_t *loc, 
+						    struct anna_node *object, 
+						    size_t mid, 
+						    struct anna_type *type, 
+						    int wrap);
+anna_node_member_set_t *anna_node_member_set_create(anna_location_t *loc, 
+						    struct anna_node *object, 
+						    size_t mid, 
+						    struct anna_node *value, 
+						    struct anna_type *type);
 anna_node_int_literal_t *anna_node_int_literal_create(anna_location_t *loc, int val);
 anna_node_float_literal_t *anna_node_float_literal_create(anna_location_t *loc, double val);
 anna_node_char_literal_t *anna_node_char_literal_create(anna_location_t *loc, wchar_t val);
-anna_node_string_literal_t *anna_node_string_literal_create(anna_location_t *loc, size_t sz, wchar_t *str);
-anna_node_call_t *anna_node_call_create(anna_location_t *loc, anna_node_t *function, size_t argc, anna_node_t **argv);
-anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, wchar_t *name);
+anna_node_string_literal_t *anna_node_string_literal_create(anna_location_t *loc, 
+							    size_t sz, 
+							    wchar_t *str);
+anna_node_call_t *anna_node_call_create(anna_location_t *loc, 
+					anna_node_t *function, 
+					size_t argc, 
+					anna_node_t **argv);
+anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, 
+						    wchar_t *name);
 anna_node_t *anna_node_null_create(anna_location_t *loc);
-anna_node_assign_t *anna_node_assign_create(anna_location_t *loc, anna_sid_t sid, struct anna_node *value);
+anna_node_assign_t *anna_node_assign_create(anna_location_t *loc, 
+					    anna_sid_t sid, 
+					    struct anna_node *value);
+
+anna_node_native_method_declare_t *anna_node_native_method_declare_create(
+    anna_location_t *loc,
+    ssize_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn);
+
+anna_node_member_declare_t *anna_node_member_declare_create(
+    anna_location_t *loc,
+    ssize_t mid,
+    wchar_t *name,
+    int is_static,
+    anna_type_t *member_type);
+
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function);

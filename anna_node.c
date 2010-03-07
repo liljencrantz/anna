@@ -188,7 +188,7 @@ anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, wchar_
 {
     anna_node_identifier_t *result = calloc(1,sizeof(anna_node_call_t));
     result->node_type = ANNA_NODE_IDENTIFIER;
-   anna_node_set_location((anna_node_t *)result,loc);
+    anna_node_set_location((anna_node_t *)result,loc);
     result->name = name;
     /*
       FIXME: Create a nice and tidy wrapper
@@ -200,12 +200,60 @@ anna_node_t *anna_node_null_create(anna_location_t *loc)
 {
     anna_node_t *result = calloc(1,sizeof(anna_node_t));
     result->node_type = ANNA_NODE_NULL;
-   anna_node_set_location((anna_node_t *)result,loc);
+    anna_node_set_location((anna_node_t *)result,loc);
     /*
       FIXME: Create a nice and tidy wrapper
     */
     return result;
 }
+
+anna_node_native_method_declare_t *anna_node_native_method_declare_create(
+    anna_location_t *loc,
+    ssize_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn)
+{
+    anna_node_native_method_declare_t *r = malloc(sizeof(anna_node_native_method_declare_t));
+    r->node_type = ANNA_NODE_NATIVE_METHOD_DECLARE;
+    anna_node_set_location((anna_node_t *)r,loc);
+    r->mid=mid;
+    r->name=name;
+    r->flags=flags;
+    r->native=func;
+    r->return_type=result;
+    r->argc=argc;
+    r->argv=argv;
+    r->argn=argn;
+    return r;
+}
+
+
+anna_node_member_declare_t *anna_node_member_declare_create(
+    anna_location_t *loc,
+    ssize_t mid,
+    wchar_t *name,
+    int is_static,
+    anna_type_t *member_type)
+{
+    anna_node_member_declare_t *r = malloc(sizeof(anna_node_member_declare_t));
+    r->node_type = ANNA_NODE_MEMBER_DECLARE;
+    anna_node_set_location((anna_node_t *)r,loc);
+    r->mid=mid;
+    r->name=name;
+    r->is_static=is_static;
+    r->type=member_type;
+    return r;
+    
+
+}
+
+
+
 
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
 {
@@ -874,12 +922,22 @@ void anna_node_print(anna_node_t *this)
 	    wprintf(L")" );
 	    break;
 	}
-
 	
+	case ANNA_NODE_MEMBER_DECLARE:
+	{
+	    anna_node_member_declare_t *this2 = (anna_node_member_declare_t *)this;	    
+	    wprintf(L"__memberDeclare__(%ls, %ls)", this2->name, this2->type->name);
+	}
+	
+	case ANNA_NODE_NATIVE_METHOD_DECLARE:
+	{
+	    anna_node_native_method_declare_t *this2 = (anna_node_native_method_declare_t *)this;
+	    wprintf(L"__nativeMethodDeclare__(%ls, ...)", this2->name);
+	}
 	
 	default:
 	{
-	    wprintf(L"Don't know hos to print node of type %d\n", this->node_type);
+	    wprintf(L"<Don't know hos to print node of type %d>", this->node_type);
 	    break;
 	}
     }
@@ -997,6 +1055,10 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_member_set_t);
 	case ANNA_NODE_RETURN:
 	    return sizeof(anna_node_return_t);
+	case ANNA_NODE_MEMBER_DECLARE:
+	    return sizeof(anna_node_member_declare_t);
+	case ANNA_NODE_NATIVE_METHOD_DECLARE:
+	    return sizeof(anna_node_native_method_declare_t);
 	default:
 	    anna_error(n, L"Unknown node type while determining size\n");
 	    exit(1);
@@ -1035,6 +1097,12 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	    return r;
 	    
 	}
+
+	case ANNA_NODE_MEMBER_DECLARE:
+	case ANNA_NODE_NATIVE_METHOD_DECLARE:
+	{
+	    return anna_node_clone_shallow(n);
+	}
 	
 	/*
 	  These nodes are not mutable and they have no child nodes, so
@@ -1062,7 +1130,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_MEMBER_SET:
 	case ANNA_NODE_RETURN:
 	default:
-	    anna_error(n, L"Unsupported node type for deep copy!\n");
+	    anna_error(n, L"Unsupported node type %d for deep copy!\n", n->node_type);
 	    exit(1);
 	
     }

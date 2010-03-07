@@ -1,5 +1,7 @@
-var bubbel;
-print(bubbel);
+var foo = List();
+foo ~= 3;
+
+print(lst[0]);
 
 /*
 var lst = [0];
