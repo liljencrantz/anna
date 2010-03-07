@@ -852,7 +852,8 @@ size_t anna_member_create(anna_type_t *type,
       if(mid != anna_mid_get(name))
 	{
 	  wprintf(L"Error, multiple mids for name %ls: %d and %d\n", name, mid, anna_mid_get(name));
-	  exit(1);
+	  CRASH;
+	  
 	}
     }
     
@@ -1072,7 +1073,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	default:
 	{
 	    wprintf(L"FATAL: Macro %ls at invoke!!!!\n", function->name);
-	    exit(1);
+	    CRASH;
 	}
 	case ANNA_FUNCTION_FUNCTION:
 	{
@@ -1244,9 +1245,10 @@ int main(int argc, char **argv)
     wprintf(L"\n");
     
     wprintf(L"Validating program...\n");    
+    
     /*
       The entire program is a __block__ call, which we use to create an anonymous function definition
-     */
+    */
     anna_node_dummy_t *program_callable = 
 	anna_node_dummy_create(&program->location,
 			       anna_function_create(L"!program",

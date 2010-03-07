@@ -435,10 +435,15 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 		}
 		wprintf(L"Illigal init\n");
 		CRASH;
-		
 	    }
 	    
 	    anna_function_type_key_t *function_data = anna_function_unwrap_type(func_type);
+	    if(!function_data)
+	    {
+		anna_error(this, L"Could not determine return type of function call");
+		return 0;
+	    }
+	    
 	    return function_data->result;
 	}
 	

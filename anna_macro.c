@@ -208,7 +208,12 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
     
     anna_node_t *body = node->child[3];
     
-    assert(body->node_type == ANNA_NODE_NULL ||body->node_type == ANNA_NODE_CALL);
+    if(body->node_type != ANNA_NODE_NULL && body->node_type != ANNA_NODE_CALL)
+    {
+	anna_error(body, L"Invalid function body");
+	return (anna_node_t *)anna_node_null_create(&node->location);	
+    }
+    
     
     anna_type_t *out_type=0;
     anna_node_t *out_type_wrapper = node->child[1];
@@ -261,12 +266,11 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
 
     if(type)
     {
-      anna_function_t *result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, null_type, argc, argv, argn, func->stack_template, 0);
-
+	anna_function_t *result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, null_type, argc, argv, argn, func->stack_template, 0);
+	
 	assert(name);
 	assert(body->node_type == ANNA_NODE_CALL);
-	anna_method_create(type, -1, name, 0, result);
-	
+	anna_method_create(type, -1, name, 0, result);	
     }
     else
     {
@@ -277,8 +281,7 @@ static anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	else {
 	    result = null_object;
 	}
-    
-
+	
 	if(name) {
 	    anna_stack_declare(func->stack_template, name, anna_type_for_function(out_type, argc, argv), result);
 	}
@@ -789,8 +792,8 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
        }
        
        default:
-	   wprintf(L"Cricital: BLUPP\n");
-	   CRASH;
+	   duck_error(node->child[0], L"Tried to assign to something that is not a variable");
+	   return (anna_node_t *)anna_node_null_create(&node->location); \
    }
        
 }
@@ -901,24 +904,43 @@ static anna_node_t *anna_macro_else(anna_node_call_t *node,
 */
     CHECK_INPUT_COUNT(node,L"else macro", 1);
     CHECK_NODE_BLOCK(node->child[0]);
+    if(parent->idx == 0)
+    {
+	anna_error(node, L"else with no matching if call");
+	return (anna_node_t *)anna_node_null_create(&node->location);	\
+    }
+
+    anna_node_call_t *parent_call = node_cast_call(parent->node);
+    anna_node_t *prev = parent_call->child[parent->idx-1];
+    /*
+      anna_node_print(prev);   
+      wprintf(L"\n");
+    */
+    anna_node_call_t *prev_call = node_cast_call(prev);
+    anna_node_lookup_t *prev_call_name = node_cast_lookup(prev_call->function);
     
-    assert(parent->idx>0);
-
-   anna_node_call_t *parent_call = node_cast_call(parent->node);
-   anna_node_t *prev = parent_call->child[parent->idx-1];
-   /*
-   anna_node_print(prev);   
-   wprintf(L"\n");
-   */
-   anna_node_call_t *prev_call = node_cast_call(prev);
-   anna_node_lookup_t *prev_call_name = node_cast_lookup(prev_call->function);
-   assert(wcscmp(prev_call_name->name, L"__if__")==0);
-   assert(prev_call->child_count == 3);
-   assert(prev_call->child[2]->node_type == ANNA_NODE_NULL);
-   prev_call->child[2] = anna_node_prepare(node->child[0], func, parent);
-
-   return (anna_node_t *)
-       anna_node_null_create(&node->location);
+    if(wcscmp(prev_call_name->name, L"__if__")!=0)
+    {
+	anna_error(node, L"else with no matching if call");
+	return (anna_node_t *)anna_node_null_create(&node->location);	\
+    }
+    
+    if(prev_call->child_count != 3)
+    {
+	anna_error(prev_call, L"Bad if call");
+	return (anna_node_t *)anna_node_null_create(&node->location);	
+    }
+    
+    if(prev_call->child[2]->node_type != ANNA_NODE_NULL)
+    {
+	anna_error(prev_call, L"Previous if statement already has an else clause");
+	return (anna_node_t *)anna_node_null_create(&node->location);	
+    }
+    
+    prev_call->child[2] = anna_node_prepare(node->child[0], func, parent);
+    
+    return (anna_node_t *)
+	anna_node_null_create(&node->location);
    
 }
 
@@ -1249,7 +1271,8 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     anna_type_t *base_type = EXTRACT_TYPE(node->child[0]);
 
     wprintf(L"LALALA %ls\n", base_type->name);
-    return base_type;
+    
+    return base_type->wrapper;
     
     
     return (anna_node_t *)anna_node_null_create(&node->location);
