@@ -175,6 +175,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token XOR
 %token BITNOT
 %token MODULO
+%token IS
 
 %type <call_val> block block2 block3
 %type <call_val> module module1
@@ -451,8 +452,19 @@ expression9 :
 	    anna_node_call_set_function($2, (anna_node_t *)anna_node_identifier_create(&@$,L"__list__"));
 	}
 	|
+	expression9 IS expression10
+	{
+	    anna_node_t *param[] ={$1, $3};   
+	    $$ = (anna_node_t *)anna_node_call_create(
+		&@$, 
+		anna_node_identifier_create(&@2,L"__is__"), 
+		2, 
+		param);	  
+	}
+	|
 	expression10;
 ;
+
 expression10:
 	constant
 	| 

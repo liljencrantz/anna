@@ -163,7 +163,7 @@ static wchar_t *anna_find_method(anna_node_t *context,
 	anna_function_type_key_t *mem_fun = anna_function_unwrap_type(mem_type);
 	if(mem_fun)
 	{
-	    if(mem_fun->argc != 2)
+	    if(mem_fun->argc != argc)
 		continue;
 	    
 	    if(!mem_fun->argv[1])
@@ -274,9 +274,19 @@ static anna_node_t *anna_type_member(anna_type_t *type,
 }
 
 
+anna_type_t *anna_macro_type_from_identifier(anna_node_t *n, anna_stack_frame_t *stack)
+{
+  if(n->node_type != ANNA_NODE_IDENTIFIER)
+    return 0;
+  anna_node_identifier_t *id = (anna_node_identifier_t *)n;
+  anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+  return anna_type_unwrap(wrapper);
+}
+
+
 int anna_macro_type_setup(anna_type_t *type, 
-		    anna_function_t *function, 
-		    anna_node_list_t *parent)
+			  anna_function_t *function, 
+			  anna_node_list_t *parent)
 {
     
     anna_node_call_t *node = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
@@ -294,7 +304,42 @@ int anna_macro_type_setup(anna_type_t *type,
     {
 	anna_node_t *item = body->child[i];
 	
-	if(item->node_type != ANNA_NODE_CALL) 
+	if(item->node_type == ANNA_NODE_MEMBER_DECLARE)
+	  {
+	    anna_node_member_declare_t *decl = (anna_node_member_declare_t *)item;	    
+	    anna_member_create(type,
+			       decl->mid,
+			       decl->name,
+			       decl->is_static,
+			       anna_macro_type_from_identifier(decl->type,
+							       function->stack_template));
+	    
+	    continue;
+	  }
+	else if(item->node_type == ANNA_NODE_NATIVE_METHOD_DECLARE)
+	  {
+	    anna_node_native_method_declare_t *decl = (anna_node_native_method_declare_t *)item;
+	    int i;
+	    anna_type_t ** argv = malloc(sizeof(anna_type_t *)*decl->argc);
+	    for(i=0; i<decl->argc;i++)
+	      {
+		argv[i] = anna_macro_type_from_identifier(decl->argv[i], 
+							  function->stack_template);
+	      }	    
+	    anna_native_method_create(type,
+				      decl->mid,
+				      decl->name,
+				      decl->flags,
+				      decl->native,
+				      decl->return_type?anna_macro_type_from_identifier(decl->return_type, 
+											function->stack_template):0,
+				      decl->argc,
+				      argv,
+				      decl->argn);
+	    free(argv);
+	    continue;
+	  }
+	else if(item->node_type != ANNA_NODE_CALL) 
 	{
 	    anna_error(item,
 		       L"Only function declarations and variable declarations allowed directly inside a class body" );

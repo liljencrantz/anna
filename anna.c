@@ -26,9 +26,13 @@
 /*
   Templating plan:
   
-  anna_macro_type must keep a copy of the original ast for every type created
-  All native types must have an ast of their original definition
+  anna_macro_type must keep a copy of the original ast for every type created (done)
+  All native types must have an ast of their original definition (done)
+  AST nodes for creating native types need to use name lookups when refering to types 
+  Use plain AST nodes instead of special, magical nodes for representing native types in AST
+  Implement a function that searches and replaces identifier nodes
   __templatize__ will use the original AST to create new, templatized copies of the type.
+  Move node prepare calls to their own pass
 
   Code layout plan:
 
@@ -838,7 +842,7 @@ static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_cou
     result->name = name;
     anna_location_t loc=
 	{
-	    0,0,0,0,L"<internal>"
+	    0,0,0,0,0
 	}
     ;
     
@@ -1091,12 +1095,19 @@ static void anna_init()
     type_type = anna_type_create_raw(L"Type", 64, 1);
     object_type = anna_type_create_raw(L"Object", 64, 1);
     null_type = anna_type_create_raw(L"Null", 1, 1);
-
-    string_type = anna_type_create_raw(L"String", 64, 1);
     
     anna_type_type_create_early();
-    anna_object_type_create_early();
     anna_null_type_create_early();
+    anna_object_type_create_early();
+
+    anna_type_wrapper_create(null_type);
+    anna_type_wrapper_create(object_type);
+    anna_type_wrapper_create(type_type);
+
+    anna_stack_declare(stack_global, L"Object", object_type, object_type->wrapper);
+    anna_stack_declare(stack_global, L"Null", null_type, null_type->wrapper);
+    
+    string_type = anna_type_create_raw(L"String", 64, 1);
 
     anna_int_type_create(stack_global);
     anna_list_type_create(stack_global);
@@ -1104,13 +1115,8 @@ static void anna_init()
     anna_string_type_create();
     anna_float_type_create(stack_global);
 
-    anna_type_wrapper_create(type_type);
-    anna_type_wrapper_create(null_type);
-    anna_type_wrapper_create(object_type);
     anna_type_wrapper_create(string_type);
         
-    anna_stack_declare(stack_global, L"Object", object_type, object_type->wrapper);
-    anna_stack_declare(stack_global, L"Null", null_type, null_type->wrapper);
     anna_stack_declare(stack_global, L"List", type_type, list_type->wrapper);
     anna_stack_declare(stack_global, L"String", type_type, string_type->wrapper);
     anna_stack_declare(stack_global, L"Float", type_type, float_type->wrapper);
@@ -1288,7 +1294,7 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
     va_list va;
     va_start( va, msg );	
     fwprintf(stderr,L"Error in %ls, on line %d:\n", 
-	     node->location.filename,
+	     node->location.filename?node->location.filename:L"<internal>",
 	     node->location.first_line);
     anna_node_print_code(node);
     fwprintf(stderr,L"\n");
@@ -1310,6 +1316,12 @@ int main(int argc, char **argv)
 
     wprintf(L"Initializing interpreter...\n");    
     anna_init();
+
+    if(anna_error_count)
+    {
+	wprintf(L"Found %d error(s) during initialization, exiting\n", anna_error_count);
+	exit(1);
+    }
     wprintf(L"Parsing file %ls...\n", filename);    
     anna_node_t *program = anna_parse(filename);
     
@@ -1341,7 +1353,7 @@ int main(int argc, char **argv)
     anna_object_t *program_object = anna_node_invoke((anna_node_t *)program_callable, stack_global);
     if(anna_error_count)
     {
-	wprintf(L"Found %d error(s), exiting\n", anna_error_count);
+	wprintf(L"Found %d error(s) during program validation, exiting\n", anna_error_count);
 	exit(1);
     }
     /*

@@ -154,7 +154,7 @@ struct anna_node_member_declare
     size_t mid;
     wchar_t *name;
     int is_static;
-    anna_type_t *type;
+    struct anna_node *type;
 };
 
 struct anna_node_native_method_declare
@@ -166,9 +166,9 @@ struct anna_node_native_method_declare
     wchar_t *name;
     int flags;
     anna_native_t native;
-    anna_type_t *return_type;
+    struct anna_node *return_type;
     size_t argc;
-    anna_type_t **argv;
+    struct anna_node **argv;
     wchar_t **argn;
 };
 
@@ -233,9 +233,9 @@ anna_node_native_method_declare_t *anna_node_native_method_declare_create(
     wchar_t *name,
     int flags,
     anna_native_t func,
-    anna_type_t *result,
+    anna_node_t *result,
     size_t argc,
-    anna_type_t **argv,
+    anna_node_t **argv,
     wchar_t **argn);
 
 anna_node_member_declare_t *anna_node_member_declare_create(
@@ -243,7 +243,7 @@ anna_node_member_declare_t *anna_node_member_declare_create(
     ssize_t mid,
     wchar_t *name,
     int is_static,
-    anna_type_t *member_type);
+    anna_node_t *member_type);
 
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);

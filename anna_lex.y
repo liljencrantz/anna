@@ -47,6 +47,7 @@ xor return XOR;
 bitnot return BITNOT;
 mod return MODULO;
 return return RETURN;
+is return IS;
 [a-z_][a-zA-Z0-9_]* return IDENTIFIER;
 [A-Z][a-zA-Z0-9_]* return TYPE_IDENTIFIER;
 ~ return '~';

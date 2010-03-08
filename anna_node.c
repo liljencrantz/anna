@@ -19,7 +19,7 @@
 
 void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 {
-    assert(l->filename);
+  //    assert(l->filename);
     
     memcpy(&node->location, l, sizeof(anna_location_t));
 }
@@ -213,9 +213,9 @@ anna_node_native_method_declare_t *anna_node_native_method_declare_create(
     wchar_t *name,
     int flags,
     anna_native_t func,
-    anna_type_t *result,
+    anna_node_t *result,
     size_t argc,
-    anna_type_t **argv,
+    anna_node_t **argv,
     wchar_t **argn)
 {
     anna_node_native_method_declare_t *r = malloc(sizeof(anna_node_native_method_declare_t));
@@ -238,7 +238,7 @@ anna_node_member_declare_t *anna_node_member_declare_create(
     ssize_t mid,
     wchar_t *name,
     int is_static,
-    anna_type_t *member_type)
+    anna_node_t *member_type)
 {
     anna_node_member_declare_t *r = malloc(sizeof(anna_node_member_declare_t));
     r->node_type = ANNA_NODE_MEMBER_DECLARE;
@@ -248,8 +248,6 @@ anna_node_member_declare_t *anna_node_member_declare_create(
     r->is_static=is_static;
     r->type=member_type;
     return r;
-    
-
 }
 
 
@@ -926,18 +924,23 @@ void anna_node_print(anna_node_t *this)
 	case ANNA_NODE_MEMBER_DECLARE:
 	{
 	    anna_node_member_declare_t *this2 = (anna_node_member_declare_t *)this;	    
-	    wprintf(L"__memberDeclare__(%ls, %ls)", this2->name, this2->type->name);
+	    wprintf(L"__memberDeclare__(%ls, ", this2->name);
+	    anna_node_print(this2->type);
+	    wprintf(L")");
+
+	    break;
 	}
 	
 	case ANNA_NODE_NATIVE_METHOD_DECLARE:
 	{
 	    anna_node_native_method_declare_t *this2 = (anna_node_native_method_declare_t *)this;
 	    wprintf(L"__nativeMethodDeclare__(%ls, ...)", this2->name);
+	    break;
 	}
 	
 	default:
 	{
-	    wprintf(L"<Don't know hos to print node of type %d>", this->node_type);
+	    wprintf(L"<Don't know how to print node of type %d>", this->node_type);
 	    break;
 	}
     }
@@ -952,6 +955,9 @@ void anna_node_print_code(anna_node_t *node)
     int is_after_first;
     int is_before_last;
     int is_marking=0;
+    
+    if(!node->location.filename)
+      return;
     
     
     FILE *file = wfopen(node->location.filename, "r");
@@ -1135,3 +1141,17 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	
     }
 }
+
+anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to)
+{
+    switch(tree->node_type)
+    {
+    case ANNA_NODE_IDENTIFIER:
+      {
+	
+      }
+      
+    }
+    
+}
+
