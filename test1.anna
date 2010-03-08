@@ -1,8 +1,18 @@
-var foo = List();
+class Foo template (X:Int)
+{
+
+	function foo(X in)
+	{
+		return in+1;
+	}
+
+}
+
+/*var foo = List();
 foo ~= 3;
 foo[0]=2;
 print(foo[0]);
-
+*/
 /*
 var lst = [0];
 

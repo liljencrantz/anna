@@ -56,7 +56,7 @@ void anna_stack_declare(anna_stack_frame_t *stack,
 
 anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name)
 {
-  anna_stack_frame_t *orig = stack;
+    //anna_stack_frame_t *orig = stack;
   
     assert(name);
     while(stack)
@@ -69,7 +69,7 @@ anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name
 	stack = stack->parent;
     }
     wprintf(L"Critical: Tried to access unknown variable: %ls\nStack content:\n", name);
-    anna_stack_print(orig);
+    //anna_stack_print(orig);
     CRASH;
 }
 

@@ -295,10 +295,10 @@ anna_node_call_t *anna_node_member_declare_create(
     anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,mid));
     anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,is_static));
 
-
+/*
     anna_node_print(r);
     wprintf(L"\n\n");
-
+*/
     return r;
 }
 

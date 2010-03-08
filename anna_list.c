@@ -322,7 +322,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	    L"class"));
     
     anna_node_call_add_child(
-	full_definition,
+	full_definition,	
 	(anna_node_t *)anna_node_call_create(
 	    &loc,
 	    (anna_node_t *)anna_node_identifier_create(&loc, L"__block__"),
@@ -393,8 +393,8 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_native_method_add_node(definition, -1, L"__mapPair__", 0, (anna_native_t)&anna_list_map_pair, anna_node_identifier_create(&loc, L"List") , 2, e_argv, e_argn);    
     
     //anna_node_print(list_type->definition);
-    anna_stack_print(func->stack_template);
-
+    //anna_stack_print(func->stack_template);
+    
     anna_macro_type_setup(list_type, func, 0);
         
     /*
