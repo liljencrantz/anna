@@ -21,8 +21,6 @@
 #define ANNA_NODE_MEMBER_SET 12
 #define ANNA_NODE_CONSTRUCT 13
 #define ANNA_NODE_RETURN 14
-#define ANNA_NODE_NATIVE_METHOD_DECLARE 15
-#define ANNA_NODE_MEMBER_DECLARE 16
 
 struct YYLTYPE
 {
@@ -145,7 +143,7 @@ struct anna_node_float_literal
     anna_location_t location;
     double payload;
 };
-
+/*
 struct anna_node_member_declare
 {
     int node_type;
@@ -156,22 +154,7 @@ struct anna_node_member_declare
     int is_static;
     struct anna_node *type;
 };
-
-struct anna_node_native_method_declare
-{
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    size_t mid;
-    wchar_t *name;
-    int flags;
-    anna_native_t native;
-    struct anna_node *return_type;
-    size_t argc;
-    struct anna_node **argv;
-    wchar_t **argn;
-};
-
+*/
 
 
 typedef struct anna_node anna_node_t;
@@ -186,8 +169,6 @@ typedef struct anna_node_int_literal anna_node_int_literal_t;
 typedef struct anna_node_float_literal anna_node_float_literal_t;
 typedef struct anna_node_string_literal anna_node_string_literal_t;
 typedef struct anna_node_char_literal anna_node_char_literal_t;
-typedef struct anna_node_member_declare anna_node_member_declare_t;
-typedef struct anna_node_native_method_declare anna_node_native_method_declare_t;
 
 
 extern int anna_yacc_error_count;
@@ -227,7 +208,7 @@ anna_node_assign_t *anna_node_assign_create(anna_location_t *loc,
 					    anna_sid_t sid, 
 					    struct anna_node *value);
 
-anna_node_native_method_declare_t *anna_node_native_method_declare_create(
+anna_node_call_t *anna_node_native_method_declare_create(
     anna_location_t *loc,
     ssize_t mid,
     wchar_t *name,
@@ -238,7 +219,7 @@ anna_node_native_method_declare_t *anna_node_native_method_declare_create(
     anna_node_t **argv,
     wchar_t **argn);
 
-anna_node_member_declare_t *anna_node_member_declare_create(
+anna_node_call_t *anna_node_member_declare_create(
     anna_location_t *loc,
     ssize_t mid,
     wchar_t *name,

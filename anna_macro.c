@@ -304,42 +304,7 @@ int anna_macro_type_setup(anna_type_t *type,
     {
 	anna_node_t *item = body->child[i];
 	
-	if(item->node_type == ANNA_NODE_MEMBER_DECLARE)
-	  {
-	    anna_node_member_declare_t *decl = (anna_node_member_declare_t *)item;	    
-	    anna_member_create(type,
-			       decl->mid,
-			       decl->name,
-			       decl->is_static,
-			       anna_macro_type_from_identifier(decl->type,
-							       function->stack_template));
-	    
-	    continue;
-	  }
-	else if(item->node_type == ANNA_NODE_NATIVE_METHOD_DECLARE)
-	  {
-	    anna_node_native_method_declare_t *decl = (anna_node_native_method_declare_t *)item;
-	    int i;
-	    anna_type_t ** argv = malloc(sizeof(anna_type_t *)*decl->argc);
-	    for(i=0; i<decl->argc;i++)
-	      {
-		argv[i] = anna_macro_type_from_identifier(decl->argv[i], 
-							  function->stack_template);
-	      }	    
-	    anna_native_method_create(type,
-				      decl->mid,
-				      decl->name,
-				      decl->flags,
-				      decl->native,
-				      decl->return_type?anna_macro_type_from_identifier(decl->return_type, 
-											function->stack_template):0,
-				      decl->argc,
-				      argv,
-				      decl->argn);
-	    free(argv);
-	    continue;
-	  }
-	else if(item->node_type != ANNA_NODE_CALL) 
+	if(item->node_type != ANNA_NODE_CALL) 
 	{
 	    anna_error(item,
 		       L"Only function declarations and variable declarations allowed directly inside a class body" );
@@ -367,7 +332,85 @@ int anna_macro_type_setup(anna_type_t *type,
 	{
 	    anna_type_member(type, call, function, parent);
 	}
-	else
+	else if(wcscmp(declaration->name, L"__functionNative__")==0)
+	{
+	    int i;
+	    int argc;
+	    wchar_t **argn;
+	    anna_type_t **argv;
+	    
+	    anna_node_identifier_t *name = 
+		(anna_node_identifier_t *)call->child[0];
+
+	    anna_type_t *return_type = call->child[1]->node_type == ANNA_NODE_NULL?0:
+		anna_macro_type_from_identifier(
+		    call->child[1], 	
+		    function->stack_template);
+
+	    anna_node_call_t *param_list = 
+		(anna_node_call_t *)call->child[2];
+
+	    argc = param_list->child_count;
+	    argv = malloc(sizeof(anna_type_t *)*argc);
+	    argn = malloc(sizeof(wchar_t *)*argc); 
+	    for(i=0; i<argc; i++)
+	    {
+		anna_node_call_t *param =
+		    (anna_node_call_t *)param_list->child[i];
+		anna_node_identifier_t *param_name = 
+		    (anna_node_identifier_t *)param->child[0];
+		argv[i] = anna_macro_type_from_identifier(
+		    param->child[1],
+		    function->stack_template);
+		argn[i] = param_name->name;
+	    }
+	    
+	    anna_node_int_literal_t *mid = 
+		(anna_node_int_literal_t *)call->child[3];
+
+	    anna_node_int_literal_t *flags = 
+		(anna_node_int_literal_t *)call->child[4];
+
+	    anna_node_dummy_t *func = 
+		(anna_node_dummy_t *)call->child[5];
+
+	    anna_native_method_create(type,
+				      (size_t)mid->payload,
+				      name->name,
+				      flags->payload,
+				      (anna_native_t)(anna_native_function_t)func->payload,
+				      return_type,
+				      argc,
+				      argv,
+				      argn);
+	    free(argv);
+	}
+	else if(wcscmp(declaration->name, L"__declareNative__")==0)
+	{
+
+	    anna_node_identifier_t *name = 
+		(anna_node_identifier_t *)call->child[0];
+
+	    anna_type_t *return_type = 
+		anna_macro_type_from_identifier(
+		    call->child[1], 	
+		    function->stack_template);
+
+	    anna_node_int_literal_t *mid = 
+		(anna_node_int_literal_t *)call->child[2];
+
+	    anna_node_int_literal_t *is_static = 
+		(anna_node_int_literal_t *)call->child[3];
+
+	    
+	    anna_member_create(type,
+			       mid->payload,
+			       name->name,
+			       is_static->payload,
+			       return_type);
+	    
+	}
+    	else
 	{
 	    anna_error(call->function,
 		       L"Only function declarations and variable declarations allowed directly inside a class body" );

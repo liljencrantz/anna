@@ -28,9 +28,9 @@
   
   anna_macro_type must keep a copy of the original ast for every type created (done)
   All native types must have an ast of their original definition (done)
-  AST nodes for creating native types need to use name lookups when refering to types 
-  Use plain AST nodes instead of special, magical nodes for representing native types in AST
-  Implement a function that searches and replaces identifier nodes
+  AST nodes for creating native types need to use name lookups when refering to types  (done)
+  Use plain AST nodes instead of special, magical nodes for representing native types in AST (done)
+  Implement a function that searches and replaces identifier nodes (done)
   __templatize__ will use the original AST to create new, templatized copies of the type.
   Move node prepare calls to their own pass
 

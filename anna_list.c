@@ -354,8 +354,8 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     anna_node_t *a_argv[] = 
 	{
-	  anna_node_identifier_create(&loc, L"List"),
-	  anna_node_identifier_create(&loc, L"Object")
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"List"),
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"Object")
 	}
     ;
     wchar_t *a_argn[]=
@@ -367,9 +367,10 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     /*
       FIXME: Get proper type for the block of the each method
      */
-    anna_type_t *e_argv[] = 
+    anna_node_t *e_argv[] = 
 	{
-	    list_type, object_type
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"List"),
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"Object")
 	}
     ;
     wchar_t *e_argn[]=

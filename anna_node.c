@@ -207,7 +207,7 @@ anna_node_t *anna_node_null_create(anna_location_t *loc)
     return result;
 }
 
-anna_node_native_method_declare_t *anna_node_native_method_declare_create(
+anna_node_call_t *anna_node_native_method_declare_create(
     anna_location_t *loc,
     ssize_t mid,
     wchar_t *name,
@@ -218,35 +218,87 @@ anna_node_native_method_declare_t *anna_node_native_method_declare_create(
     anna_node_t **argv,
     wchar_t **argn)
 {
-    anna_node_native_method_declare_t *r = malloc(sizeof(anna_node_native_method_declare_t));
-    r->node_type = ANNA_NODE_NATIVE_METHOD_DECLARE;
-    anna_node_set_location((anna_node_t *)r,loc);
-    r->mid=mid;
-    r->name=name;
-    r->flags=flags;
-    r->native=func;
-    r->return_type=result;
-    r->argc=argc;
-    r->argv=argv;
-    r->argn=argn;
+
+    anna_node_call_t *r =
+	anna_node_call_create(
+	    loc,
+	    (anna_node_t *)anna_node_identifier_create(
+		loc,
+		L"__functionNative__"),	    
+	    0,
+	    0);
+
+    anna_node_call_t *param_list = 
+	anna_node_call_create(
+	    loc,
+	    (anna_node_t *)anna_node_identifier_create(
+		loc,
+		L"__block__"),
+	    0,
+	    0);
+
+    int i;
+    for(i=0;i<argc;i++)
+    {
+	anna_node_call_t *param =
+	    anna_node_call_create(
+		loc,
+		(anna_node_t *)anna_node_identifier_create(
+		    loc,
+		    L"__block__"),
+		
+		0,
+		0);
+	anna_node_call_add_child(param, (anna_node_t *)anna_node_identifier_create(loc,argn[i]));
+	anna_node_call_add_child(param, (anna_node_t *)argv[i]);
+	anna_node_call_add_child(param_list, (anna_node_t *)param);
+    }
+
+
+    anna_node_call_add_child(r, (anna_node_t *)anna_node_identifier_create(loc,name));
+    anna_node_call_add_child(r, result?result:anna_node_null_create(loc));
+    anna_node_call_add_child(r, (anna_node_t *)param_list);
+    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,mid));
+    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,flags));
+    anna_node_call_add_child(
+	r, 
+	(anna_node_t *)anna_node_dummy_create(
+	    loc,
+	    (anna_object_t *)func.function, 0));
+/*
+    anna_node_print(r);
+    wprintf(L"\n\n");
+*/  
     return r;
 }
 
 
-anna_node_member_declare_t *anna_node_member_declare_create(
+anna_node_call_t *anna_node_member_declare_create(
     anna_location_t *loc,
     ssize_t mid,
     wchar_t *name,
     int is_static,
     anna_node_t *member_type)
 {
-    anna_node_member_declare_t *r = malloc(sizeof(anna_node_member_declare_t));
-    r->node_type = ANNA_NODE_MEMBER_DECLARE;
-    anna_node_set_location((anna_node_t *)r,loc);
-    r->mid=mid;
-    r->name=name;
-    r->is_static=is_static;
-    r->type=member_type;
+    anna_node_call_t *r =
+	anna_node_call_create(
+	    loc,
+	    (anna_node_t *)anna_node_identifier_create(
+		loc,
+		L"__declareNative__"),	    
+	    0,
+	    0);
+
+
+    anna_node_call_add_child(r, (anna_node_t *)anna_node_identifier_create(loc,name));
+    anna_node_call_add_child(r, member_type);
+    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,mid));
+    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,is_static));
+
+
+    anna_node_print(r);
+    wprintf(L"\n\n");
+
     return r;
 }
 
@@ -460,7 +512,7 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	
 	case ANNA_NODE_CALL:
 	{
-	    anna_node_call_t *this2 =(anna_node_call_t *)this;	    
+	    anna_node_call_t *this2 =(anna_node_call_t *)this;
 	    /*
 	    wprintf(L"Get return type of node\n");
 	    anna_node_print(this);
@@ -874,7 +926,7 @@ void anna_node_print(anna_node_t *this)
 	case ANNA_NODE_DUMMY:
 	{
 	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
-	    wprintf(L"<Const:%ls>", this2->payload->type->name);
+	    wprintf(L"<Dummy>");
 	    break;
 	}
 	
@@ -918,23 +970,6 @@ void anna_node_print(anna_node_t *this)
 		anna_node_print(this2->child[i]);
 	    }
 	    wprintf(L")" );
-	    break;
-	}
-	
-	case ANNA_NODE_MEMBER_DECLARE:
-	{
-	    anna_node_member_declare_t *this2 = (anna_node_member_declare_t *)this;	    
-	    wprintf(L"__memberDeclare__(%ls, ", this2->name);
-	    anna_node_print(this2->type);
-	    wprintf(L")");
-
-	    break;
-	}
-	
-	case ANNA_NODE_NATIVE_METHOD_DECLARE:
-	{
-	    anna_node_native_method_declare_t *this2 = (anna_node_native_method_declare_t *)this;
-	    wprintf(L"__nativeMethodDeclare__(%ls, ...)", this2->name);
 	    break;
 	}
 	
@@ -1061,10 +1096,6 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_member_set_t);
 	case ANNA_NODE_RETURN:
 	    return sizeof(anna_node_return_t);
-	case ANNA_NODE_MEMBER_DECLARE:
-	    return sizeof(anna_node_member_declare_t);
-	case ANNA_NODE_NATIVE_METHOD_DECLARE:
-	    return sizeof(anna_node_native_method_declare_t);
 	default:
 	    anna_error(n, L"Unknown node type while determining size\n");
 	    exit(1);
@@ -1104,11 +1135,6 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	    
 	}
 
-	case ANNA_NODE_MEMBER_DECLARE:
-	case ANNA_NODE_NATIVE_METHOD_DECLARE:
-	{
-	    return anna_node_clone_shallow(n);
-	}
 	
 	/*
 	  These nodes are not mutable and they have no child nodes, so
@@ -1135,6 +1161,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	case ANNA_NODE_MEMBER_SET:
 	case ANNA_NODE_RETURN:
+
 	default:
 	    anna_error(n, L"Unsupported node type %d for deep copy!\n", n->node_type);
 	    exit(1);
@@ -1146,11 +1173,43 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 {
     switch(tree->node_type)
     {
-    case ANNA_NODE_IDENTIFIER:
-      {
+	case ANNA_NODE_IDENTIFIER:
+	{
+	    anna_node_identifier_t *tree2 = (anna_node_identifier_t *)tree;
+	    return (wcscmp(tree2->name,from->name)==0)?
+		anna_node_clone_deep(to):tree;
+	}
+
+	case ANNA_NODE_STRING_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
+	case ANNA_NODE_INT_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
+	case ANNA_NODE_NULL:
+	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_TRAMPOLINE:
+	{
+	    return tree;
+	}
+
+	case ANNA_NODE_CALL:
+	case ANNA_NODE_CONSTRUCT:
+	{
+	    int i;
+	    anna_node_call_t *this2 =(anna_node_call_t *)anna_node_clone_shallow(tree);	    
+	    this2->function = anna_node_replace(this2->function,
+						from, to);
+	    for(i=0;i<this2->child_count;i++)
+	    {
+		this2->child[i] = anna_node_replace(this2->child[i],
+						    from, to);
+	    }
+	    return (anna_node_t *)this2;	    
+	}
 	
-      }
-      
+	default:
+	    wprintf(L"OOPS! Unknown node type when replacing: %d\n", tree->node_type);
+	    exit(1);
+	
     }
     
 }
