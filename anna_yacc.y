@@ -939,6 +939,11 @@ int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *fi
     {
 	int ret = peek_token;
 	peek_token = -1;
+	if(ret == '}') 
+	{
+	    was_end_brace = 1;
+	}
+
 	return ret;      
     }
     assert(filename);
@@ -964,15 +969,18 @@ int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *fi
 	    }
 	}
 	if(yylex_val != IGNORE)
-	  break;
+	    break;
     }
     
     if(was_end_brace)
     {
 	was_end_brace = 0;
+	wprintf(L"Got an end brace\n");
+	
 	if(yylex_val != '.' &&
 	   yylex_val != SEMICOLON)
 	{
+	    wprintf(L"Insert fake semicolon..\n");
 	    peek_token = yylex_val;
 	    return SEMICOLON;
 	}      
