@@ -959,7 +959,7 @@ void anna_node_print(anna_node_t *this)
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;
-	    wprintf(L"/*%d*/", this2);
+//	    wprintf(L"/*%d*/", this2);
 	    anna_node_print(this2->function);
 	    wprintf(L"(");
 	    for(i=0; i<this2->child_count; i++)

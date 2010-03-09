@@ -21,7 +21,7 @@ var lst = List<Int>();
 lst ~= 3;
 lst ~= 2;
 lst ~= 5;
-/*
-lst = lst.map(value){value+1}
-*/
+
+lst = lst.map(value){value}
+
 print(lst[0]+1);
