@@ -936,15 +936,15 @@ void anna_node_print(anna_node_t *this)
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
 	    wprintf(L"__memberGet__(");
 	    anna_node_print(this2->object);
-	    wprintf(L", %d)", this2->mid);
+	    wprintf(L", %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
 	}
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
-	    wprintf(L"__memberGetWrap__(");
+	    wprintf(L"__memberGet__(");
 	    anna_node_print(this2->object);
-	    wprintf(L", %d)", this2->mid);
+	    wprintf(L", %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
 	}
 	
@@ -959,6 +959,7 @@ void anna_node_print(anna_node_t *this)
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;
+	    wprintf(L"/*%d*/", this2);
 	    anna_node_print(this2->function);
 	    wprintf(L"(");
 	    for(i=0; i<this2->child_count; i++)
@@ -1126,20 +1127,22 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	    anna_node_t *r = anna_node_clone_shallow(n);
 	    int i;
 	    anna_node_call_t *r2=(anna_node_call_t *)r;
+	    anna_node_call_t *n2=(anna_node_call_t *)n;
+	    r2->child = malloc(sizeof(anna_node_t *)*r2->child_capacity);
+	    memcpy(r2->child, n2->child, sizeof(anna_node_t *)*r2->child_count);
 	    r2->function = anna_node_clone_deep(r2->function);
+
 	    for(i=0;i<r2->child_count; i++)
 	    {
 		r2->child[i] = anna_node_clone_deep(r2->child[i]);
 	    }
 	    return r;
-	    
 	}
-
 	
 	/*
 	  These nodes are not mutable and they have no child nodes, so
 	  we can return them as is.
-	 */
+	*/
 	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
@@ -1149,7 +1152,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_TRAMPOLINE:
 	    return n;
-
+	    
 	    /*
 	      These nodes are not yet handled, but that should be
 	      perfectly ok for now, since they are only ever created
@@ -1161,7 +1164,6 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	case ANNA_NODE_MEMBER_SET:
 	case ANNA_NODE_RETURN:
-
 	default:
 	    anna_error(n, L"Unsupported node type %d for deep copy!\n", n->node_type);
 	    exit(1);

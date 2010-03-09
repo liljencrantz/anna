@@ -1,3 +1,4 @@
+/*
 class Foo template (X:Int)
 {
 
@@ -7,20 +8,20 @@ class Foo template (X:Int)
 	}
 
 }
-
-/*var foo = List();
+*/
+/*
+var foo = List();
 foo ~= 3;
 foo[0]=2;
 print(foo[0]);
 */
-/*
-var lst = [0];
+
+var lst = List<Int>();
 
 lst ~= 3;
 lst ~= 2;
 lst ~= 5;
-
-lst = lst.map(value){value+1}.filter(value){value>3}
-
-print(lst[0]);
+/*
+lst = lst.map(value){value+1}
 */
+print(lst[0]+1);

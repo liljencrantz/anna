@@ -432,9 +432,9 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     anna_native_method_add_node(definition, -1, L"map", ANNA_FUNCTION_MACRO, (anna_native_t)&anna_macro_iter, 0, 0, 0, 0);
     anna_native_method_add_node(definition, -1, L"__mapValue__", 0, (anna_native_t)&anna_list_map_value, anna_node_identifier_create(&loc, L"List") , 2, e_argv, e_argn);
-    anna_native_method_add_node(definition, -1, L"__mapPair__", 0, (anna_native_t)&anna_list_map_pair, anna_node_identifier_create(&loc, L"List") , 2, e_argv, e_argn);    
-    
-    anna_node_print(list_type->definition);
+    anna_native_method_add_node(definition, -1, L"__mapPair__", 0, (anna_native_t)&anna_list_map_pair, anna_node_identifier_create(&loc, L"List") , 2, e_argv, e_argn);
+
+    //anna_node_print(list_type->definition);
     //anna_stack_print(func->stack_template);
     
     anna_macro_type_setup(list_type, func, 0);

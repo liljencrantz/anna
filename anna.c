@@ -31,7 +31,9 @@
   AST nodes for creating native types need to use name lookups when refering to types  (done)
   Use plain AST nodes instead of special, magical nodes for representing native types in AST (done)
   Implement a function that searches and replaces identifier nodes (done)
-  __templatize__ will use the original AST to create new, templatized copies of the type.
+  __templateAttribute__ will do search and replace
+  __templatize__ will clone the AST, modify the arguments to __tempalteAttribute__, and let __templateAttribute__ do the replacing.
+  __templatize__ needs to have a cache ot already templatized types
   Move node prepare calls to their own pass
 
   Code layout plan:
@@ -51,6 +53,7 @@
   Better Type type  
   Stack type
   
+  Identifier invokation should use sid instead of name lookup
   Split type namespace from type object
   Properties
   Code validator
@@ -80,14 +83,14 @@
   elif macro
   extends macro
   is function
+  as function
   __returnAssign__ macro
   __templatize__ macro
-  template macro
   __list__ macro (depends on variadic functions and templates)
   use macro
   __memberCall__ macro
   __staticMemberGet__ macro
-  __staticMember_set__ macro
+  __staticMemberSet__ macro
   __with__ macro
   map, select, first, last macros
 
@@ -155,6 +158,7 @@
   __type__ function
   return macro
   each macro and related functions
+  template macro
   
 */
 /*
@@ -1109,6 +1113,8 @@ static void anna_init()
     
     string_type = anna_type_create_raw(L"String", 64, 1);
 
+    anna_macro_init(stack_global);
+
     anna_int_type_create(stack_global);
     anna_list_type_create(stack_global);
     anna_char_type_create(stack_global);
@@ -1122,6 +1128,8 @@ static void anna_init()
     anna_stack_declare(stack_global, L"Float", type_type, float_type->wrapper);
     anna_stack_declare(stack_global, L"Type", type_type, type_type->wrapper);
 
+    anna_function_implementation_init(stack_global);
+
     assert(anna_abides(int_type,object_type)==1);
     assert(anna_abides(list_type,object_type)==1);
     assert(anna_abides(object_type,int_type)==0);
@@ -1129,9 +1137,6 @@ static void anna_init()
     
     null_object = anna_object_create(null_type);
     
-    anna_function_implementation_init(stack_global);
-    anna_macro_init(stack_global);
-
 }
 
 void anna_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
