@@ -199,11 +199,12 @@ size_t anna_member_create(anna_type_t *type,
 			  int is_static,
 			  anna_type_t *member_type);
 
-void anna_member_add_node(struct anna_node_call *type,
-			    ssize_t mid,
-			    wchar_t *name,
-			    int is_static,
-			    anna_type_t *member_type);
+void anna_member_add_node(
+    struct anna_node_call *type,
+    ssize_t mid,
+    wchar_t *name,
+    int is_static,
+    struct anna_node *member_type);
 
 size_t anna_native_method_create(anna_type_t *type,
 			       ssize_t mid,
@@ -215,15 +216,16 @@ size_t anna_native_method_create(anna_type_t *type,
 			       anna_type_t **argv,
 			       wchar_t **argn);
 
-void anna_native_method_add_node(struct anna_node_call *type,
-				 ssize_t mid,
-				 wchar_t *name,
-				 int flags,
-				 anna_native_t func,
-				 anna_type_t *result,
-				 size_t argc,
-				 anna_type_t **argv,
-				 wchar_t **argn);
+void anna_native_method_add_node(
+    struct anna_node_call *type,
+    ssize_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    struct anna_node *result,
+    size_t argc,
+    struct anna_node **argv,
+    wchar_t **argn);
 
 anna_function_t *anna_native_create(wchar_t *name,
 				    int flags,
@@ -256,6 +258,8 @@ void anna_error(struct anna_node *node, wchar_t *msg, ...);
 int anna_type_setup(anna_type_t *type, 
 		    anna_function_t *function, 
 		    anna_node_list_t *parent);
+
+anna_object_t *anna_i_null_function(anna_object_t **node_base);
 
 
 #endif

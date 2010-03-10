@@ -31,10 +31,11 @@
   AST nodes for creating native types need to use name lookups when refering to types  (done)
   Use plain AST nodes instead of special, magical nodes for representing native types in AST (done)
   Implement a function that searches and replaces identifier nodes (done)
-  __templateAttribute__ will do search and replace
-  __templatize__ will clone the AST, modify the arguments to __tempalteAttribute__, and let __templateAttribute__ do the replacing.
-  __templatize__ needs to have a cache ot already templatized types
+  __templateAttribute__ will do search and replaceg (done)
+  __templatize__ will clone the AST, modify the arguments to __tempalteAttribute__, and let __templateAttribute__ do the replacing. (done)
+  __templatize__ needs to have a cache ot already templatized types (done)
   Move node prepare calls to their own pass
+  Each attribute macro is only called once
 
   Code layout plan:
 
@@ -58,7 +59,6 @@
   Properties
   Code validator
   Type checking on function types
-  Type support for lists
   General purpose currying
   Namespaces
   Subfunction/block tracking in function
@@ -110,6 +110,7 @@
   Inner functions with shared return flag
   Do some real testing to find the optimal operator presedence order
   class member macros
+  Type support for lists
   
   Type type
   Call type
@@ -921,7 +922,7 @@ void anna_member_add_node(anna_node_call_t *definition,
 			  ssize_t mid,
 			  wchar_t *name,
 			  int is_static,
-			  anna_type_t *member_type)
+			  anna_node_t *member_type)
 {
     anna_node_call_add_child(
 	definition,
@@ -939,9 +940,9 @@ void anna_native_method_add_node(anna_node_call_t *definition,
 				 wchar_t *name,
 				 int flags,
 				 anna_native_t func,
-				 anna_type_t *result,
+				 anna_node_t *result,
 				 size_t argc,
-				 anna_type_t **argv,
+				 anna_node_t **argv,
 				 wchar_t **argn)
 {
     anna_node_call_add_child(

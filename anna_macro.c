@@ -97,6 +97,42 @@
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
     }    
 
+static hash_table_t templatize_lookup;
+
+typedef struct
+{
+   anna_type_t *base;
+   size_t argc;
+   anna_node_t **argv;
+}
+   templatize_key_t;
+
+static int templatize_key_compare(void *k1, void *k2)
+{
+   templatize_key_t *key1 =(templatize_key_t *)k1;
+   templatize_key_t *key2 =(templatize_key_t *)k2;
+   if(key1->base != key2->base)
+      return 0;
+   if(key1->argc != key2->argc)
+      return 0;
+   int i;
+   for(i=0; i<key1->argc; i++)
+   {
+      if(anna_node_compare(key1->argv[i], key2->argv[i]) == 0)
+	 return 0;
+   }
+   return 1;
+}
+
+static int templatize_key_hash(void *k1)
+{
+   templatize_key_t *key1 =(templatize_key_t *)k1;
+   int result;
+   
+   result = (int)key1->argc + (int)key1->base;
+   int i;
+   return result;
+}
 
 anna_node_t *anna_macro_function_internal(anna_type_t *type, 
 					anna_node_call_t *node, 
@@ -313,14 +349,30 @@ static anna_node_t *anna_type_member(anna_type_t *type,
     */
 }
 
+/**
+   Given an AST node, this will return a type object that the specified node represents.
 
-anna_type_t *anna_macro_type_from_identifier(anna_node_t *n, anna_stack_frame_t *stack)
+   E.g. an identifier node with the payload "Object" will return the object type.
+ */
+static anna_type_t *anna_macro_type_from_identifier(anna_node_t *node, anna_function_t *function, anna_node_list_t *parent)
 {
-  if(n->node_type != ANNA_NODE_IDENTIFIER)
-    return 0;
-  anna_node_identifier_t *id = (anna_node_identifier_t *)n;
-  anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
-  return anna_type_unwrap(wrapper);
+   node = anna_node_prepare(node, function, parent);
+   
+   if(node->node_type == ANNA_NODE_DUMMY) {
+      anna_node_dummy_t *dummy = (anna_node_dummy_t *)node;
+      //anna_object_print(dummy->payload);
+      return dummy->payload->type;
+//      return anna_type_unwrap(dummy->payload);      
+   }
+   if(node->node_type != ANNA_NODE_IDENTIFIER) 
+   {
+      anna_error(node,L"Could not determine type of node");
+      return 0;
+   }
+   
+   anna_node_identifier_t *id = (anna_node_identifier_t *)node;
+   anna_object_t *wrapper = anna_stack_get_str(function->stack_template, id->name);
+   return anna_type_unwrap(wrapper);
 }
 
 
@@ -367,14 +419,15 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	
 	anna_node_call_t *attribute_call_node =
 	  anna_node_call_create(&attribute->location,
-				anna_node_identifier_create(&attribute->location,
+				(anna_node_t *)anna_node_identifier_create(&attribute->location,
 							    name),
 				1,
-				&node);	
+				(anna_node_t **)&node);	
 	anna_function_t *macro_definition = anna_node_macro_get(attribute_call_node->function, 
 								function->stack_template);
-	
-	node = macro_definition->native.macro(attribute_call_node, function, parent);
+	CHECK(macro_definition, id, L"No such attribute macro found: %ls", name);
+	node = (anna_node_call_t *)macro_definition->native.macro(attribute_call_node, function, parent);
+	CHECK(node->node_type == ANNA_NODE_CALL, id, L"Attribute call did not return a valid type definition");
 	sb_destroy(&sb);	
     }
 
@@ -429,7 +482,8 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	    anna_type_t *return_type = call->child[1]->node_type == ANNA_NODE_NULL?0:
 		anna_macro_type_from_identifier(
 		    call->child[1], 	
-		    function->stack_template);
+		    function,
+		    parent);
 
 	    anna_node_call_t *param_list = 
 		(anna_node_call_t *)call->child[2];
@@ -445,7 +499,8 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 		    (anna_node_identifier_t *)param->child[0];
 		argv[i] = anna_macro_type_from_identifier(
 		    param->child[1],
-		    function->stack_template);
+		    function,
+		    parent);
 		argn[i] = param_name->name;
 	    }
 	    
@@ -478,7 +533,8 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	    anna_type_t *return_type = 
 		anna_macro_type_from_identifier(
 		    call->child[1], 	
-		    function->stack_template);
+		    function,
+		    parent);
 
 	    anna_node_int_literal_t *mid = 
 		(anna_node_int_literal_t *)call->child[2];
@@ -562,7 +618,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     if(body->node_type != ANNA_NODE_NULL && body->node_type != ANNA_NODE_CALL)
     {
         FAIL(body, L"Invalid function body");
-    }    
+    }
     
     anna_type_t *out_type=0;
     anna_node_t *out_type_wrapper = node->child[1];
@@ -646,10 +702,12 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     {
 	anna_object_t *result;
 	if(body->node_type == ANNA_NODE_CALL) {
-	  result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, null_type, argc, argv, argn, function->stack_template, 0)->wrapper;
+	    result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0)->wrapper;
 	}
 	else {
-	    result = null_object;
+	   //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
+	  
+	    result = anna_native_create(internal_name, 0, (anna_native_t)anna_i_null_function, out_type, argc, argv, argn)->wrapper;
 	}
 	
 	if(name) {
@@ -657,7 +715,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	}
 	return (anna_node_t *)anna_node_dummy_create(&node->location,
 						     result,
-						     1);
+						     body->node_type == ANNA_NODE_CALL);
     }
     
 }
@@ -768,6 +826,22 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
     }
 }
 
+anna_function_type_key_t *anna_function_key_get(anna_type_t *type,
+						wchar_t *name)
+{
+   anna_type_t *member_type = anna_type_member_type_get(type, name);
+   if(!member_type)
+   {
+      return 0;
+   }
+
+   anna_object_t **key_ptr=anna_static_member_addr_get_mid(
+      member_type, 
+      ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+   return key_ptr?(anna_function_type_key_t *)(*key_ptr):0;
+}
+
+
 anna_node_t *anna_macro_iter(anna_node_call_t *node,
 			     anna_function_t *function, 
 			     anna_node_list_t *parent)
@@ -787,11 +861,10 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t * value_name = (anna_node_identifier_t *)node->child[0];
-
 	    
 	    anna_type_t *argv[]=
 		{
-		    object_type
+		   object_type
 		}
 	    ;
 	    
@@ -802,7 +875,6 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    ;
 	    
 //    wprintf(L"Setting up each function, param name is %ls\n", name->name);
-
 	    
 	    string_buffer_t sb;
 	    sb_init(&sb);
@@ -811,21 +883,25 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    sb_append(&sb, L"Value__");
 	    
 	    wchar_t *method_name = sb_content(&sb);
+
+
 	    
 	    size_t mid = anna_mid_get(method_name);
 	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
-
-	    anna_object_t **key_ptr=anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-	    CHECK(key_ptr, node, L"Not a function: %ls", method_name);
-	    anna_function_type_key_t *function_key = (anna_function_type_key_t *)(*key_ptr);
-	    
-	    wprintf(L"AAA %ls\n", function_key->argv[0]->name);
-	    wprintf(L"BBB %ls\n", function_key->argv[1]->name);
-	    
+	    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
+	    CHECK(function_key, node, L"Not a function: %ls", method_name);
+	    anna_object_t **sub_key_ptr=anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+	    CHECK(sub_key_ptr, node, L"Not a function: %ls", function_key->argv[1]->name);
+	    anna_function_type_key_t *sub_function_key = (anna_function_type_key_t *)(*sub_key_ptr);
+	    CHECK(sub_function_key->argc == 1, node, L"Function %ls has wrong number of parameters: Got %d, expected %d", method_name, sub_function_key->argc, 1);
+	    argv[0] = sub_function_key->argv[0];
 	    
 	    if(!member_type)
 	    {
-		FAIL(node, L"Unable to calculate type of member %ls of object of type %ls", method_name, lst_type->name);
+		FAIL(
+		    node, 
+		    L"Unable to calculate type of member %ls of object of type %ls", 
+		    method_name, lst_type->name);
 	    }
 	    sb_destroy(&sb);
 
@@ -893,6 +969,18 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    
 	    size_t mid = anna_mid_get(method_name);
 	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
+
+	    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
+	    CHECK(function_key, node, L"Not a function: %ls", method_name);
+	    anna_object_t **sub_key_ptr=anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+	    CHECK(sub_key_ptr, node, L"Not a function: %ls", function_key->argv[1]->name);
+	    anna_function_type_key_t *sub_function_key = (anna_function_type_key_t *)(*sub_key_ptr);
+	    CHECK(sub_function_key->argc == 2, node, L"Function %ls has wrong number of parameters: Got %d, expected %d", method_name, sub_function_key->argc, 2);
+	    argv[0] = sub_function_key->argv[0];
+	    argv[1] = sub_function_key->argv[1];
+
+
+
 	    if(!member_type)
 	    {
 		FAIL(
@@ -1529,12 +1617,38 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     CHECK_TYPE(node->child[0]);
     CHECK_NODE_BLOCK(node->child[1]);
     int i;
-    
+
     anna_type_t *base_type = EXTRACT_TYPE(node->child[0]);
-    anna_node_call_t *definition = anna_node_clone_deep(base_type->definition);
-    
     anna_node_call_t *param = 
       (anna_node_call_t *)node->child[1];
+
+    templatize_key_t key;
+    key.base = base_type;
+    key.argc = param->child_count;
+
+    key.argv = param->child;    
+    anna_type_t *result = (anna_type_t *)hash_get(&templatize_lookup, &key);
+    if(result)
+    {
+       return (anna_node_t *)anna_node_identifier_create(&node->location,
+					  result->name);    
+    }
+    
+    anna_type_t *type = anna_type_create(L"!temporaryTypeName", 64, 0);
+    templatize_key_t *new_key = malloc(sizeof(templatize_key_t));
+    memcpy(new_key, &key,sizeof(templatize_key_t));
+    new_key->argv = malloc(sizeof(anna_node_t *)*new_key->argc);
+    memcpy(new_key->argv,param->child,  sizeof(anna_node_t *)*new_key->argc);
+    hash_put(&templatize_lookup, new_key, type);
+    
+    string_buffer_t sb_name;
+    sb_init(&sb_name);
+        
+    anna_node_call_t *definition = 
+	(anna_node_call_t *)anna_node_clone_deep((anna_node_t *)base_type->definition);
+    sb_append(&sb_name, base_type->name);
+    sb_append(&sb_name, L"<");
+    
     int param_done=0;
     
 //    wprintf(L"We will templatize the %ls type\n", base_type->name);
@@ -1562,31 +1676,37 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 	CHECK_NODE_TYPE(attribute->child[0], ANNA_NODE_CALL);
 	
 	anna_node_call_t *pair = 
-	  (anna_node_call_t *)attribute->child[0];
+	    (anna_node_call_t *)attribute->child[0];
 	
 	CHECK_NODE_IDENTIFIER_NAME(pair->function, L"Pair");
 	CHECK_CHILD_COUNT(pair, L"template instantiation", 2);
 	CHECK_NODE_TYPE(pair->child[0], ANNA_NODE_IDENTIFIER);
 
 	pair->child[1] = param->child[param_done++];
+	sb_printf(&sb_name, L"%d", pair->child[1]);
     }
+    sb_append(&sb_name, L">");
+    
 /*
     wprintf(L"Result\n");
     anna_node_print(definition);
     wprintf(L"\n");    
 */  
-    anna_type_t *type = anna_type_create("!AAA", 64, 0);
+    wchar_t *name = sb_content(&sb_name); 
+    type->name = name;
+   
     type->definition = definition;
+    anna_stack_declare(function->stack_template, name, type_type, type->wrapper);
     anna_node_t *type_result = anna_macro_type_setup(type, function, parent);
-
     if(type_result->node_type == ANNA_NODE_NULL){
-	return type_result;
+       return type_result;
     }
-
-    anna_stack_declare(function->stack_template, L"!AAA", type_type, type->wrapper);
-
-    return anna_node_identifier_create(&node->location,
-				       L"!AAA");    
+    
+    
+    return (anna_node_t *)
+	anna_node_identifier_create(
+	    &node->location,
+	    name);    
 }
 
 static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node, 
@@ -1628,17 +1748,19 @@ static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node,
 	CHECK_CHILD_COUNT(pair, L"template instantiation", 2);
 	CHECK_NODE_TYPE(pair->child[0], ANNA_NODE_IDENTIFIER);
 		
-	body = anna_node_replace(body,
-				 pair->child[0],
-				 pair->child[1]);
+	body = (anna_node_call_t *)
+	    anna_node_replace(
+		(anna_node_t *)body,
+		(anna_node_identifier_t *)pair->child[0],
+		(anna_node_t *)pair->child[1]);
     }
-    type_node->child[3] = body;
+    type_node->child[3] = (anna_node_t *)body;
 /*
     wprintf(L"Result\n");
     anna_node_print(node);
     wprintf(L"\n");    
 */
-    return type_node;
+    return (anna_node_t *)type_node;
 }
 
 static void anna_macro_add(anna_stack_frame_t *stack, 
@@ -1652,6 +1774,9 @@ static void anna_macro_add(anna_stack_frame_t *stack,
 void anna_macro_init(anna_stack_frame_t *stack)
 {
     int i;
+    hash_init(&templatize_lookup,
+	      &templatize_key_hash,
+	      &templatize_key_compare);
     
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);

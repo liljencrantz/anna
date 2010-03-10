@@ -457,7 +457,7 @@ expression9 :
 	    anna_node_t *param[] ={$1, $3};   
 	    $$ = (anna_node_t *)anna_node_call_create(
 		&@$, 
-		anna_node_identifier_create(&@2,L"__is__"), 
+		(anna_node_t *)anna_node_identifier_create(&@2,L"__is__"), 
 		2, 
 		param);	  
 	}
@@ -1000,7 +1000,7 @@ void anna_yacc_error (YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_
     fwprintf(stderr,L"Error in %ls, on line %d:\n", 
 	     llocp->filename,
 	     llocp->first_line);
-    anna_node_print_code(anna_node_dummy_create(llocp, 0, 0));
+    anna_node_print_code((anna_node_t *)anna_node_dummy_create(llocp, 0, 0));
     
     fwprintf (stderr, L"%s\n", s);
     anna_yacc_error_count++;

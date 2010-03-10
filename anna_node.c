@@ -304,6 +304,90 @@ anna_node_call_t *anna_node_member_declare_create(
 
 
 
+anna_node_t *anna_node_function_declaration_create(
+   anna_location_t *loc,
+   anna_node_t *result,
+   size_t argc,
+   anna_node_t **argv,
+   wchar_t **argn)
+{
+   anna_node_t *a_argv[argc];
+   int i;
+
+   
+   for(i=0; i<argc;i++)
+   {
+      anna_node_t *d_argv[] = 
+	 {
+	    (anna_node_t *)anna_node_identifier_create(loc, argn[i]),
+	    argv[i]
+	 }
+      ;
+      
+      a_argv[i] = (anna_node_t *)anna_node_call_create(
+	 loc,
+	 (anna_node_t *)anna_node_identifier_create(loc, L"__declare__"),
+	 2,
+	 d_argv);
+   }
+   
+   anna_node_call_t *argv_node =
+      anna_node_call_create(
+	 loc,
+	 (anna_node_t *)anna_node_identifier_create(loc, L"__block__"),
+	 argc,
+	 a_argv);
+      
+   anna_node_t *f_argv[] = 
+      {
+	 anna_node_null_create(loc),
+	 result,
+	 (anna_node_t *)argv_node,
+	 (anna_node_t *)anna_node_null_create(loc),
+	 (anna_node_t *)anna_node_null_create(loc)
+      }
+   ;
+   
+   return (anna_node_t *)anna_node_call_create(
+      loc,
+      (anna_node_t *)anna_node_identifier_create(loc, L"__function__"),
+      5,
+      f_argv);
+   
+}
+
+anna_node_t *anna_node_templated_type_create(
+    anna_location_t *loc,
+    anna_node_t *type,
+    size_t argc,
+    anna_node_t **argv)
+{
+   
+   anna_node_call_t *argv_node =
+      anna_node_call_create(
+	 loc,
+	 (anna_node_t *)anna_node_identifier_create(loc, L"__block__"),
+	 argc,
+	 argv);
+
+   anna_node_t *t_argv[] = 
+      {
+	 type,
+	 (anna_node_t *)argv_node
+      }
+   ;
+   
+   return (anna_node_t *)anna_node_call_create(
+      loc,
+      (anna_node_t *)anna_node_identifier_create(loc, L"__templatize__"),
+      2,
+      t_argv);
+   
+}
+
+
+
+
 
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
 {
@@ -1214,5 +1298,29 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	
     }
     
+}
+
+int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
+{
+   if(node1->node_type != node2->node_type)
+   {
+      return 0;
+   }
+   
+    switch(node1->node_type)
+    {
+	case ANNA_NODE_IDENTIFIER:
+	{
+	   anna_node_identifier_t *id1 = (anna_node_identifier_t *)node1;
+	   anna_node_identifier_t *id2 = (anna_node_identifier_t *)node2;
+	   return wcscmp(id1->name, id2->name) == 0;
+	}
+	
+	default:
+	    wprintf(L"OOPS! Unknown node type when comparing: %d\n", node1->node_type);
+	    exit(1);
+	
+    }
+
 }
 

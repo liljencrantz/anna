@@ -143,18 +143,6 @@ struct anna_node_float_literal
     anna_location_t location;
     double payload;
 };
-/*
-struct anna_node_member_declare
-{
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    size_t mid;
-    wchar_t *name;
-    int is_static;
-    struct anna_node *type;
-};
-*/
 
 
 typedef struct anna_node anna_node_t;
@@ -225,6 +213,20 @@ anna_node_call_t *anna_node_member_declare_create(
     wchar_t *name,
     int is_static,
     anna_node_t *member_type);
+
+
+anna_node_t *anna_node_function_declaration_create(
+    anna_location_t *loc,
+    anna_node_t *result,
+    size_t argc,
+    anna_node_t **argv,
+    wchar_t **argn);
+
+anna_node_t *anna_node_templated_type_create(
+    anna_location_t *loc,
+    anna_node_t *type,
+    size_t argc,
+    anna_node_t **argv);
 
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
@@ -309,7 +311,14 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *);
  */
 anna_node_t *anna_node_clone_deep(anna_node_t *n);
 
+/**
+   Returns 0 if the two trees differ, 1 otherwise
+ */
+int anna_node_compare(anna_node_t *node1, anna_node_t *node2);
 
+anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stack);
+
+anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to);
 
 #endif
 

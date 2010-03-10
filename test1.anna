@@ -22,6 +22,5 @@ lst ~= 3;
 lst ~= 2;
 lst ~= 5;
 
-lst = lst.map(value){value}
+lst.map(key:value){value*2}.each(val){print(val-1)}
 
-print(lst[0]+1);
