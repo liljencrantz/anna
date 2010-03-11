@@ -1,107 +1,195 @@
-<h1>Start here</h1>
+
+<h1>Introducing Anna</h1>
+<div class='subheading'>Start here</div>
 <p>
 
-Who is Anna? Who are you? You can't properly explain something like Anna with knowing who you're talking to. Read through the list below, and pick the link that suits you best.
+Who is Anna? Who are you? You can't properly explain something like
+Anna with knowing who you're talking to. Read through the list below,
+and pick the link that suits you best.
 
 </p>
 
 <ul>
+
+  <li>
+    <a href='#intro_short'>Anna in a single sentence.</a> Click here
+    if you already know everything there is to know about other
+    programming languages.
+  </li>
+  
   <li>
     <a href='#intro_lisp'>Anna for LISP programmers.</a> Recommended
-    if you are thouroghly familiar with LISP or a LISP like language, like Scheme.
+    if you are thouroghly familiar with LISP or a LISP like language,
+    like Scheme.
   </li>
+
   <li>
-    <a href='#intro_c'>Anna for Java, C, C++, Go and D programmers</h2>.</a> Do you enjoy the pleasures of static typing? Curly braces? Yes? Then this is the link for you.
+    <a href='#intro_c'>Anna for Java, C, C++, Go and D
+    programmers</a>.</a> Do you enjoy the pleasures of static typing?
+    Curly braces? Yes? Then this is the link for you.
   </li>
+
   <li>
-    <a href='#intro_script'>Anna for Python and Ruby programmers.</a> 
+    <a href='#intro_script'>Anna for Python and Ruby programmers.</a>
+    Do you feel most at home when writing code in a modern,
+    dynamically typed scripting language?
   </li>
+
   <li>
-    <a href='#intro_short'>Anna in a single sentence.</a> Click here if you already know everything. Why are you even reading this?
-  </li>
+    <a href='#intro_long'>Gentle Anna.</a> If you're a programmer, but
+    unsure which of the above categories your language of choice falls
+    into, or if you are not entirely familiar with programming
+    computers, but curious about what makes Anna different, then this
+    is the link for you.
+  </li>  
+
 </ul>
+
 <h2>Anna in a single sentence</h2>
+<div class='subheading'>Wherein the author demonstrates his his mastery of commatation</div>
 <p>
-Anna is a statically duck typed computer language that supports LISP
-style macros, functions and types as first class citizens, inner
-functions and continuations; it has a C-style syntax and it's aim is
-to combine the expressiveness and power of LISP and Ruby with the type
-safety and control of Java.
+  Anna is a statically duck typed computer language that supports LISP
+  style macros, functions and types as first class citizens, inner
+  functions and continuations; it has a C-style syntax and it's aim is
+  to combine the expressiveness and power of LISP and Ruby with the
+  type safety and control of Java.
 </p>
 <p>
-Note the use of a semicolon to combine two separate sentences into
-something that works around the originally stated limitations and
-manages to be readable. You will see a lot more of that in Anna.
+  Note the use of a semicolon to combine two separate sentences into
+  something that works around the originally stated limitations and
+  still manages to be perfectly readable. That is the essence of Anna.
 </p>
 <p>
-To learn more about Anna, check out the following sections:
+  To learn more about Anna, check out the following sections:
 </p>
 <ul>
   <li><a href='#duck_typing'>Duck typing and Anna</a></li>
   <li><a href='#macros'>Macros redefine our world</a></li>
   <li><a href='#misc'>An odd number of legs for a horse to have</a></li>
+  <li><a href='#continuations'>Enough interruptions, let's continuate!</a></li>
 </ul>
+
+<h2>Gentle Anna</h2>
+<div class='subheading'>Wherein strategic use of mood lighting makes
+our lady seem less intimadating.</div>
+<p>
+  
+</p>
 
 <h2>Anna for LISP programmers</h2>
+<div class='subheading'>Wherein it is explained that old is the new
+new.</div>
 
 <p>
-  Anna is a statically typed LISP-like language with a front end that
-  allows you to write code with a C-like syntax. The Anna type system
-  supports duck typing, meaning that if the type of variable B
-  contains all members of the type A, with compatible type signatures,
-  then B can be freely cast into a variable of type A.
+  Anna is a statically typed (somewhat) LISP-like language with a
+  front end that (optionally) allows you to write your code with a
+  C-like structure, e.g. using infix operators, and braces. The Anna
+  type system supports duck typing, meaning that if the type of
+  variable B contains all members of the type A, with compatible type
+  signatures, then B can be freely cast into a variable of type A. It
+  supports LISP style macros, continuations and inner functions with
+  nested scopes.
 </p>
 <p>
-In order to learn more about Anna, check out the following sections:
+  In order to learn more about Anna, check out the following sections:
 </p>
 <ul>
-  <li>Sugar and </li>
+  <li>Sugar and spice - How the front end sugar works and what Anna looks like without makeup.</li>
+  <li></li>
 </ul>
+
 <h2>Anna for Java, C, C++, Go and D programmers</h2>
+<div class='subheading'>Wherein a prisoner is offered a golden cage.</div>
 
 <p>
   Anna is a C-like language that allows you 
 </p>
 
 <h2>Anna for Python and Ruby programmers</h2>
+<div class='subheading'>Wherein...</div>
+
 <p>
   Python programmers are probably familiar with the 
 </p>
 
 <h1>Duck typing and Anna</h1>
 <p>
-The concept of duck typing was mainly popularized in the Python community.  
-
-
+  Most languages, including Python and Java, have operations that let
+  you check if an object explicitly states that it implements some
+  interface. You have, for example, the <code>Comparable</code>
+  interface in Java, which defines a set of methods that allow you to
+  compare one object to another. The realization that it doesn't, or
+  at least shouldn't, matter if an object explicitly states that it
+  implements a specific interface, so long as it actually does
+  implement it, has struck a great number of people over the ages. In
+  python, it has become popular to avoid the <code>is</code> operator
+  to perform type checking, and instead simply check if the relevant
+  fields and methods are present in an object. This idea is called
+  duck typing, and while the idea and its usage predates Python, the
+  concept of duck typing has mainly been popularized by the Python
+  community.
 </p> 
-
-<h1>Sugar and </h1>
 <p>
-
+  Anna takes the concept of duck typing and runs with it. It is not
+  possible in Anna to check if an object inherits from a specific
+  type. There is simply no inheritance information available. You can
+  _only_ check if an object <code>A</code> is compatible with a
+  type <code>B</code> using duck typing. It is also trivial to perform
+  operations on types in order to type templates dynamically. For
+  example, say you want to test if the object <code>someObject</code>
+  has all the members present in both the <code>String</code>
+  and <code>Int</code> types. That is easily done using this code:
 </p>
 
+<code>
+if(someObject is String.intersect(Int)) 
+{
+    ...
+}
+</code>
+<p>
+Anna makes it similarly easy to filter out a subset of members from a
+type, create the union of two types, etc.
+</p>
 <h1>Minimum impact variable declarations</h1>
 <p>
-  Anna is a statically typed language. That means that before a block of Anna code is executed by the computer, every variable declaration and every object member will have a known type. This does not, however, mean that you as a programmer must tell the interpreter about all of those types. Consider this trivial example:
+  Anna is a statically typed language. That means that before a block
+  of Anna code is executed by the computer, every variable declaration
+  and every object member will have a known type associated with
+  it. This does not, however, mean that you as a programmer must tell
+  the interpreter about all of those types. Anna goes out of her way
+  to find situations where there is no ambiguity as to the type of a
+  variable, and to relieve you of the burden of explicit typing in
+  such situations. Consider this trivial example:
 </p>
 <code>var Int i = 7;</code>
 <p>
-The above is a variable declaration, the variable <code>i</code> is declared to be of type <code>Int</code>, and is given the initial value of 7. Now, the above is a perfectly valid Anna expression, but it is not the simplest way possible to epress the above. You see, the numeric literal <code>7</code> is of the type Int, which the Anna interpreter can use to guess the type of the variable declaration. Therefore, we can simply omit te variable type, and write the following:
+  The above is an Anna style variable declaration, the
+  variable <code>i</code> is declared to be of type <code>Int</code>,
+  and is given the initial value of 7. Now, the above is a perfectly
+  valid Anna expression, but it is not the simplest way possible to
+  epress the above. You see, the numeric literal <code>7</code> is
+  known by the interpreter to be of the type Int. The interpreter can
+  use this information to guess the type of the variable
+  declaration. Therefore, we can simply omit the variable type, and
+  write the following:
 </p>
 
 <code>var i = 7;</code>
 
 <p>
-  This only saves you for key strokes in the example above, but consider templated types, such as a map with String keys and Double values:
+  This only saves you four key strokes in the example above, but
+  consider for example templated types, such as a map with String keys
+  and Double values:
 </p>
 
 <code>
-var Map&lt;String,Double&gt; map = ["Monday":0.0,"Tuesday":1.1;
-var map = ["Monday":0.0,"Tuesday":1.1];
+var Map&lt;String,Double&gt; map = ["Mon":0.0,"Tue":1.1;
+var map = ["Mon":0.0,"Tue":1.1];
 </code>
 
 <p>
-  Suddnely, we've cut the number of key strokes nearly in half!
+  Suddenly, we've cut the number of key strokes nearly in half!
 </p>
 
 <p>
@@ -112,8 +200,17 @@ var map = ["Monday":0.0,"Tuesday":1.1];
 
 <code>
   /*
-  Override method in subclass
-  */
+   * Function with return type implied by the type of value it is returning
+   */
+  function next(Int in)
+  {
+      return in+1;
+  }
+
+  /*
+   * When overriding a method in a subclass, the entire method signature is 
+   * implicit from its name
+   */
   class A
   {
       function foo(Int in)
@@ -132,17 +229,11 @@ var map = ["Monday":0.0,"Tuesday":1.1];
 
 
   /*
-  Function with implicit return type
-  */
-  function next(Int in)
-  {
-      return in+1;
-  }
-
-  /*
-  Cast to implicit type
-  */
-  var bar = 0;
+   * The result of the cast is assigned to a variable of type Int, 
+   * so we can assume we're casting to Int
+   */
+  var Object foo = someFunction();
+  var Int bar;
   bar = cast(foo);
   
 </code>
@@ -163,34 +254,125 @@ foo = ...;
 <h1>No exceptions</h1>
 <p>
   
-</p<
+</p>
 <h1>An odd number of legs for a horse to have</h1>
 <p>
-  
+  This section gives an overview of the various Anna features that,
+  while important, did not warrant an entire section of their own.
 </p>
-
-
+<h2>What is null? Baby don't hurt me!</h2>
+<p>
+  The null object in Anna, which can be accessed through
+  the <code>null</code> keyword, is a very odd object. It abides to
+  every interface, and calling any method on it will without exception
+  return a null object. In other words, it is perfectly legal to
+  call <code>null *2</code>, and the result will be null.
+</p>
+<h2>Truth is lie</h2>
+<p>
+  There is no separate Boolean type in Anna. There is exactly one
+  object that takes on the responsibility of representing the false
+  state, and that is the null object. Any other object, including the
+  empty list, the number zero and the text string "null" all count as
+  true in the eyes of e.g. if statements and any other statement that
+  expects a yes/no answer.
+</p>
+<h2>I'll be your operator, baby</h2>
+<p>
+  Anna has a small number of special operators that...
+</p>
 <h1>A simple, annotated example</h1>
 <p>
-  Ok, let's start putting Anna through her paces! This is a small Anna program:
+  Ok, let's start putting Anna through her paces! Fire up the
+  interactive Anna console by typing <code>anna</code> in your
+  terminal and pressing enter. This is a minimal Anna program that you
+  can then cut and paste into the interpreter:
 </p>
 
 <code>
 println("Hello world!");
 </code>
-
-The above code is a Mandelbrot set viewer. No, wait, that's the next example. I actually have no idea what the above code does. If you can tell me, please email me at<a href="">XXX</a>.
-
+<p>
+The above code is a Mandelbrot set viewer. No, wait, that's the next
+example. I actually have no idea what the above code does. If you can
+tell me, please email me at<a href="">XXX</a>.
+</p>
 <code>
 function mandelbrot(Complex p0, Int maxStep)
 {
-    var p = Complex(0,0);
-    var step = 0;
-    while(|p| < 2.0, and step < maxStep) 
+    var p = p0;
+    var step = 1;
+    while(p.abs() < 2.0, and step <= maxStep) 
     {
-        p=p^2;
+        p = p^2 + p0;
 	step += 1;
     }
     return step;
 }
+(-1.0:0.1..1.0).each(x){(-1.0:0.1..1.0).each(y){print(if(mandelbrot(Complex(x,y),32)==32){'#'}else{' '}}}}
 </code>
+
+<h1>Microformats</h1>
+
+The Anna parser is written to be as accepting as possible of weird
+elements, and instead offloads as much of the code validation as
+possible to macros. This allows you to write microformat macros. These
+are macros that take an AST subtree and transform then into another
+subtree in order to allow you to define your own compact data formats.
+For example, JSON is a valid subset of Anna, and there is a JSON
+microformat macro to transform an AST containing JSON into the Anna
+equivalent, meaning you can insert JSON data verbatim into the code,
+and make sure the JSON macro parses it to correct Anna code:
+
+<code>
+Map m = JSON({data:[1,2,3,7], unit:"seconds", caption:null});
+</code>
+
+Another very practical use of this feature is date handling. There are
+macros that make sure anything you send to the Date constructor, or
+anything you add or remove from a date, is parsed using the standard
+ISO date format:
+
+<code>
+// Create a new date from a specified date 
+var then = Date(2009-1-1, 12:30);
+
+// Move ahead x years and one hour 
+date += x-0-0, 1:00;
+</code>
+
+<h1>Sugar and spice - How the front end sugar works and what Anna looks like without makeup</h1>
+<p>
+  The real syntax for Anna is painfully simple. There Anna AST
+  contains only three types of nodes:
+</p>
+<ol>
+  <li>
+    Constant literals, such as <code>3</code>, <code>1.0</code>
+    or <code>"foo"</code>.
+  </li>
+  <li>
+    Identifiers, such as <code>foo</code> or <code>String</code>. 
+  </li>
+  <li>
+    Function calls, such as <code>X(Y)</code>, where <code>X</code>
+    and <code>Y</code> are two arbitrary other AST nodes. In the above
+    example, the AST node <code>X</code> is invoked
+    with <code>Y</code> as its only parameter.
+  </li>
+</ol>
+<p>
+  That's it. Those are the only things needed to write Anna
+  programs. For somebody coming from a C background, that might seem
+  anemic for a programming language. Where are the code blocks?  Where
+  are the if/while/whenever statements? Function definitions?
+  Meanwhile, anybody with a LISP background will start twiddling their
+  beards in boredom. They already <em>know</em>.
+</p>
+<p>
+  The sugar front en of Anna is a simple language front end that
+  generates...
+</p>
+
+
+
