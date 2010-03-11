@@ -98,6 +98,7 @@ struct anna_function
     int return_pop_count;
     struct anna_object *this;
     struct anna_stack_frame *stack_template;
+    array_list_t child_function;
     struct anna_type *input_type[];    
 };
 

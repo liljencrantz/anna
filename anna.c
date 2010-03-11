@@ -618,17 +618,13 @@ anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *s
 
 void anna_function_prepare(anna_function_t *function)
 {
-    /*
-      FIXME:
-      - Validation
-      - Replace memberGet + call with memberCall
-    */
    int i;
    anna_node_list_t list = 
       {
 	 (anna_node_t *)function->body, 0, 0
       }
    ;
+
    for(i=0; i<function->body->child_count; i++) 
    {
       list.idx=i;
@@ -638,7 +634,12 @@ void anna_function_prepare(anna_function_t *function)
    {
        anna_node_validate(function->body->child[i], function->stack_template);
    }
-   
+/*   for(i=0; i<al_get_count(&function->child_function); i++) 
+   {
+       al_set(&function->child_function, i,
+	      anna_node_prepare(al_get(&function->child_function, i), function, &list));
+   }
+*/ 
    /*
    wprintf(L"Function after preparations:\n");
    anna_node_print(function->body);
@@ -701,7 +702,7 @@ anna_function_t *anna_function_create(wchar_t *name,
     }
     
     anna_function_prepare(result);
-    
+
     return result;
 }
 

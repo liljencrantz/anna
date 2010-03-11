@@ -281,9 +281,12 @@ static anna_node_t *anna_macro_block(anna_node_call_t *node, anna_function_t *fu
     //wprintf(L"Create new block with %d elements at %d\n", node->child_count, node);
     int return_pop_count = 1+function->return_pop_count;
     
-    return (anna_node_t *)anna_node_dummy_create(&node->location,
-						 anna_function_create(L"!anonymous", 0, node, null_type, 0, 0, 0, function->stack_template, return_pop_count)->wrapper,
-						 1);
+    anna_function_t *result = anna_function_create(L"!anonymous", 0, node, null_type, 0, 0, 0, function->stack_template, return_pop_count);
+    al_push(&function->child_function, result);
+    return (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	result->wrapper,
+	1);
 }
 
 static anna_type_t *anna_sniff_return_type(anna_node_call_t *body)
@@ -700,6 +703,8 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     {
 	anna_function_t *result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, null_type, argc, argv, argn, function->stack_template, 0);
 	
+	al_push(&function->child_function, result);
+
 	if(!name)
 	{
 	    FAIL(node, L"Method definitions must have a name");
@@ -714,6 +719,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	anna_object_t *result;
 	if(body->node_type == ANNA_NODE_CALL) {
 	    result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0)->wrapper;
+	    al_push(&function->child_function, result);
 	}
 	else {
 	    //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
@@ -915,20 +921,24 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		    method_name, lst_type->name);
 	    }
 	    sb_destroy(&sb);
+	    
+	    anna_function_t *sub_func = anna_function_create(
+		L"!anonymous", 
+		0,
+		(anna_node_call_t *)node->child[1], 
+		null_type, 
+		1,
+		argv, 
+		&value_name->name, 
+		function->stack_template, 
+		return_pop_count);
+
+	    al_push(&function->child_function, sub_func);
 
 	    anna_node_t *iter_function = (anna_node_t *)
 		anna_node_dummy_create(
 		    &node->location,
-		    anna_function_create(
-			L"!anonymous", 
-			0,
-			(anna_node_call_t *)node->child[1], 
-			null_type, 
-			1,
-			argv, 
-			&value_name->name, 
-			function->stack_template, 
-			return_pop_count)->wrapper,
+		    sub_func->wrapper,
 		    1);
 	    	    
 	    return (anna_node_t *)anna_node_call_create(
@@ -1001,15 +1011,20 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    }
 	    sb_destroy(&sb);
 	    
+	    anna_function_t *sub_func =
+		anna_function_create(
+		    L"!anonymous", 0, 
+		    (anna_node_call_t *)node->child[1], 
+		    null_type, 2, argv, argn,
+		    function->stack_template, 
+		    return_pop_count);
+	    
+	    al_push(&function->child_function, sub_func);
+
 	    anna_node_t *iter_function = (anna_node_t *)
 		anna_node_dummy_create(
 		    &node->location,
-		    anna_function_create(
-			L"!anonymous", 0, 
-			(anna_node_call_t *)node->child[1], 
-			null_type, 2, argv, argn,
-			function->stack_template, 
-			return_pop_count)->wrapper,
+		    sub_func->wrapper,
 		    1);	    
 	    
 	    return (anna_node_t *)anna_node_call_create(
@@ -1186,13 +1201,18 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 {
     CHECK_CHILD_COUNT(node,L"assignment operator", 2);
     CHECK_PARENT_IS_ROOT;
+
     switch(node->child[0]->node_type)
     {
+
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_prepare_children(node, function, parent);
-	    anna_node_identifier_t *name_identifier = node_cast_identifier(node->child[0]);
-	    anna_sid_t sid = anna_stack_sid_create(function->stack_template, name_identifier->name);
+	    anna_node_identifier_t *name_identifier = 
+		node_cast_identifier(node->child[0]);
+	    anna_sid_t sid = anna_stack_sid_create(
+		function->stack_template, 
+		name_identifier->name);
 	   
 	    return (anna_node_t *)
 		anna_node_assign_create(&node->location,
@@ -1202,26 +1222,35 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
        
 	case ANNA_NODE_CALL:
 	{
+
 	    anna_node_call_t *call = node_cast_call(node->child[0]);
 	    anna_node_identifier_t *name_identifier = node_cast_identifier(call->function);
+	    
 	    if(wcscmp(name_identifier->name, L"__get__")==0)
 	    {
-		call->function = anna_node_identifier_create(&name_identifier->location, L"__set__");
-		anna_node_call_add_child(call, node->child[1]);
+		// foo[bar] = baz
+		call->function = anna_node_identifier_create(
+		    &name_identifier->location,
+		    L"__set__");
+		anna_node_call_add_child(
+		    call, 
+		    node->child[1]);
 		return (anna_node_t *)call;
 	    }
 	    else if(wcscmp(name_identifier->name, L"__memberGet__")==0)
 	    {
-		call->function = anna_node_identifier_create(&name_identifier->location, L"__memberSet__");
-		anna_node_call_add_child(call, node->child[1]);
+		// foo.bar = baz
+		call->function = anna_node_identifier_create(
+		    &name_identifier->location, 
+		    L"__memberSet__");
+		anna_node_call_add_child(
+		    call, 
+		    node->child[1]);
 		return (anna_node_t *)call;
 	    }
 	}
-       
-	default:
-	    FAIL(node->child[0], L"Tried to assign to something that is not a variable");
     }
-       
+    FAIL(node->child[0], L"Tried to assign to something that is not a variable");
 }
 
 static anna_node_t *anna_macro_member_get(anna_node_call_t *node, 
