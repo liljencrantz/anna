@@ -22,6 +22,7 @@
   Documentation generator: Introspect all data types and generate html documentation on them.
   live: Debug a running application using command line or web browser.
   Compiler front end.
+  
 */
 /*
   Templating plan:
@@ -35,7 +36,7 @@
   __templatize__ will clone the AST, modify the arguments to __tempalteAttribute__, and let __templateAttribute__ do the replacing. (done)
   __templatize__ needs to have a cache ot already templatized types (done)
   Move node prepare calls to their own pass
-  Each attribute macro should only be called once
+  Update attribute call syntax to make it easy to use the same attribute for both types and functions
 
   Code layout plan:
 
@@ -53,7 +54,15 @@
   Better Function type
   Better Type type  
   Stack type
-  
+  Byte type
+  Buffer type
+  Complex type
+
+  Make abides check properly check method signatures
+  Make abides check handle dependency cycles
+  Cache abides checks. Do all checks at type creation time and stow away the results somewhere?
+  Move the rest of the native types to use the AST node creation style from List
+  Object constructor needs to set all members to null
   Identifier invokation should use sid instead of name lookup
   Split type namespace from type object
   Properties
@@ -66,14 +75,13 @@
   
   Implement basic string methods
   Implement string comparison methods
-  Functional functions for lists (each, map, select, max, min)
   List arithmetic
   
   Function default argument values
   Named function arguments
   Variadic functions
   Garbage collection  
-  Proper intersection of types
+  Proper intersection/union of types
   static member identifier and assignment
   static function calls
 
@@ -85,14 +93,12 @@
   is function
   as function
   __returnAssign__ macro
-  __templatize__ macro
   __list__ macro (depends on variadic functions and templates)
   use macro
   __memberCall__ macro
   __staticMemberGet__ macro
   __staticMemberSet__ macro
   __with__ macro
-  map, select, first, last macros
 
   Done: 
   
@@ -158,8 +164,9 @@
   __while__ function
   __type__ function
   return macro
-  each macro and related functions
   template macro
+  __templatize__ macro
+  each, map, filter, first
   
 */
 /*
@@ -1062,7 +1069,6 @@ static void anna_null_type_create_early()
   assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
 }
 
-
 static void anna_object_type_create_early()
 {
 }
@@ -1293,7 +1299,6 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
     }
   
 }
-
 
 void anna_error(anna_node_t *node, wchar_t *msg, ...)
 {

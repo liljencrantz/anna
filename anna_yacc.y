@@ -548,7 +548,7 @@ op3:
 	|
 	NOT_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__ne__");
+		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__neq__");
 	}
 	|
 	LESS_OR_EQUAL
@@ -978,7 +978,8 @@ int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *fi
 	wprintf(L"Got an end brace\n");
 	
 	if(yylex_val != '.' &&
-	   yylex_val != SEMICOLON)
+	   yylex_val != SEMICOLON &&
+	   yylex_val != ')')
 	{
 	    wprintf(L"Insert fake semicolon..\n");
 	    peek_token = yylex_val;

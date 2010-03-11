@@ -31,6 +31,10 @@ void anna_stack_declare(anna_stack_frame_t *stack,
       {
 	CRASH;
       }
+
+    if(wcscmp(name, L"a") == 0)
+      CRASH;
+    
     
     assert(name);
     assert(type);

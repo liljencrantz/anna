@@ -22,15 +22,33 @@ lst ~= 3;
 lst ~= 5;
 lst ~= 1;
 
-lst.filter(i){i>2}.each(i){print(i)}
+print((lst.first(i){i!=3})~"foo");
 
-class Map template(Key:Object), template(Value:Object)
+/*
+lst.filter(i){i>2}.each(i){print(i)}
+*/
+/*
+class BinaryMapNode template(Key:Int), template(Value:Object)
 {
-	var Key a;
-	var Value b;
+	var Key key;
+	var Value value;
 }
 
-var foo = Map<Int, String>();
+class BinaryMap template(Key:Int), template(Value:Object)
+{
+	var BinaryMapNode<Key,Value> root;
 
-foo.a = 3;
-print(foo.a);
+	function __setItem__(Key key, Value value)
+	{
+		this.root = BinaryMapNode<Key,Value>();
+		this.root.key=key;
+		this.root.value=value;	
+	}	
+}
+
+var foo = BinaryMap<Int, String>();
+
+foo.root=null;
+
+print(foo.root);
+*/

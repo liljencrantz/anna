@@ -1295,17 +1295,16 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	default:
 	    wprintf(L"OOPS! Unknown node type when replacing: %d\n", tree->node_type);
 	    exit(1);
-	
     }
     
 }
 
 int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 {
-   if(node1->node_type != node2->node_type)
-   {
-      return 0;
-   }
+    if(node1->node_type != node2->node_type)
+    {
+        return 0;
+    }
    
     switch(node1->node_type)
     {
@@ -1314,6 +1313,53 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	   anna_node_identifier_t *id1 = (anna_node_identifier_t *)node1;
 	   anna_node_identifier_t *id2 = (anna_node_identifier_t *)node2;
 	   return wcscmp(id1->name, id2->name) == 0;
+	}
+	
+	case ANNA_NODE_CALL:
+	{
+	   anna_node_call_t *n1 = (anna_node_call_t *)node1;
+	   anna_node_call_t *n2 = (anna_node_call_t *)node2;
+	   if(n1->child_count != n2->child_count)
+	     return 0;
+	   if(!anna_node_compare(n1->function, n2->function))
+	     return 0;
+	   int i;
+	   for(i=0; i<n1->child_count;i++)
+	   {
+	      if(!anna_node_compare(n1->child[i], n2->child[i]))
+		 return 0;
+	   }
+	   return 1;
+	}
+	
+	case ANNA_NODE_INT_LITERAL:
+	{
+	   anna_node_int_literal_t *n1 = (anna_node_int_literal_t *)node1;
+	   anna_node_int_literal_t *n2 = (anna_node_int_literal_t *)node2;
+	   return n1->payload == n2->payload;
+	}
+	
+	case ANNA_NODE_CHAR_LITERAL:
+	{
+	   anna_node_char_literal_t *n1 = (anna_node_char_literal_t *)node1;
+	   anna_node_char_literal_t *n2 = (anna_node_char_literal_t *)node2;
+	   return n1->payload == n2->payload;
+	}
+	
+	case ANNA_NODE_FLOAT_LITERAL:
+	{
+	   anna_node_float_literal_t *n1 = (anna_node_float_literal_t *)node1;
+	   anna_node_float_literal_t *n2 = (anna_node_float_literal_t *)node2;
+	   return n1->payload == n2->payload;
+	}
+	
+	case ANNA_NODE_STRING_LITERAL:
+	{
+	   anna_node_string_literal_t *n1 = (anna_node_string_literal_t *)node1;
+	   anna_node_string_literal_t *n2 = (anna_node_string_literal_t *)node2;
+	   if(n1->payload_size != n2->payload_size)
+	      return 0;
+	   return wcscmp(n1->payload, n2->payload) == 0;	   
 	}
 	
 	default:

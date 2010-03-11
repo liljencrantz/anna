@@ -56,7 +56,7 @@
     if((n)->node_type != type)						\
     {									\
 	anna_error(							\
-	    (anna_node_t *)node,					\
+	    (anna_node_t *)n,					\
 	    L"Unexpected argument type, expected a parameter of type %s", \
 	    #type );							\
 	return (anna_node_t *)anna_node_null_create(&(n)->location);	\
@@ -330,7 +330,7 @@ static anna_node_t *anna_type_member(anna_type_t *type,
 
     anna_member_create(type, -1, name_identifier->name, 0, var_type);
     
-    anna_stack_declare(function->stack_template, name_identifier->name, type, null_object);
+    //anna_stack_declare(function->stack_template, name_identifier->name, type, null_object);
     
     /*
     anna_node_t *a_param[2]=
@@ -437,7 +437,7 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 								function->stack_template);
 	CHECK(macro_definition, id, L"No such attribute macro found: %ls", name);
 	node = (anna_node_call_t *)macro_definition->native.macro(attribute_call_node, function, parent);
-	CHECK(node->node_type == ANNA_NODE_CALL, id, L"Attribute call did not return a valid type definition");
+	CHECK(node->node_type == ANNA_NODE_CALL, attribute_list, L"Attribute call %ls did not return a valid type definition", id->name);
 	sb_destroy(&sb);	
     }
     hash_destroy(&attribute_done);
