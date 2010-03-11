@@ -27,7 +27,7 @@ print((lst.first(i){i!=3})~"foo");
 /*
 lst.filter(i){i>2}.each(i){print(i)}
 */
-
+/*
 class BinaryMapNode template(Key:Int), template(Value:Object)
 {
 	var Key key;
@@ -52,3 +52,21 @@ foo[3]="hej";
 
 print(foo.root.value);
 
+*/
+
+function foo(Int in){
+	if(in >4){
+		return 32;
+	}
+	else {
+		return "hej";
+	}	 
+	return in+1;
+}
+
+function bar(){"ggg"}
+
+print(bar());
+
+print(foo(31));
+print("Hej");

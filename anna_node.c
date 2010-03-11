@@ -626,6 +626,7 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 		return 0;
 	    }
 	    
+	    assert(function_data->result);
 	    return function_data->result;
 	}
 	
@@ -661,6 +662,12 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	{
 	    anna_node_member_get_t *this2 =(anna_node_member_get_t *)this;
 	    return this2->type;
+	}
+
+	case ANNA_NODE_RETURN:
+	{
+	    anna_node_return_t *this2 =(anna_node_return_t *)this;
+	    return anna_node_get_return_type(this2->payload, stack);
 	}
 	
 	    

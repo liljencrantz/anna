@@ -647,6 +647,7 @@ void anna_function_prepare(anna_function_t *function)
    */
 }
 
+static void anna_sniff_return_type(anna_function_t *f);
 
 anna_function_t *anna_function_create(wchar_t *name,
 				      int flags,
@@ -659,7 +660,7 @@ anna_function_t *anna_function_create(wchar_t *name,
 				      int return_pop_count)
 {
     if(!flags) {
-	assert(return_type);
+	//assert(return_type);
 	if(argc) {
 	    assert(argv);
 	    assert(argn);
@@ -687,24 +688,91 @@ anna_function_t *anna_function_create(wchar_t *name,
     memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
     result->input_name = malloc(argc*sizeof(wchar_t *));;
     memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
-    
-    anna_type_t *function_type = anna_type_for_function(return_type, argc, argv);
-    result->type = function_type;    
-    result->wrapper = anna_object_create(function_type);
-    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
-    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_STACK), &stack_global, sizeof(anna_stack_frame_t *));
-    //wprintf(L"Function object is %d, wrapper is %d\n", result, result->wrapper);
-    result->stack_template = anna_stack_create(64, parent_stack);
 
+    result->stack_template = anna_stack_create(64, parent_stack);
     for(i=0; i<argc;i++)
     {
 	anna_stack_declare(result->stack_template, argn[i], argv[i], null_object);	
+    }    
+
+    anna_function_prepare(result);
+
+    if(!return_type)
+	anna_sniff_return_type(result);
+    
+    if(!flags) {
+	assert(result->return_type);
     }
     
-    anna_function_prepare(result);
+    anna_function_setup_type(result);
+    
+    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
+    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_STACK), &stack_global, sizeof(anna_stack_frame_t *));
+    //wprintf(L"Function object is %d, wrapper is %d\n", result, result->wrapper);
 
     return result;
 }
+
+void anna_function_setup_type(anna_function_t *f)
+{
+    anna_type_t *function_type = anna_type_for_function(f->return_type, f->input_count, f->input_type);
+    f->wrapper = anna_object_create(function_type);
+    f->type = function_type;    
+}
+
+static void sniff(array_list_t *lst, anna_function_t *f, int level)
+{
+    if(f->return_pop_count == level)
+    {
+	int i;
+	for(i=0;i<f->body->child_count;i++)
+	{
+	    if(f->body->child[i]->node_type == ANNA_NODE_RETURN)
+	    {
+		anna_node_return_t *r = (anna_node_return_t *)f->body->child[i];
+		al_push(lst, anna_node_get_return_type(r->payload, f->stack_template));
+	    }	    
+	}
+	for(i=0;i<al_get_count(&f->child_function);i++)
+	{
+	    sniff(lst, al_get(&f->child_function, i), level+1);
+	}
+    }
+}
+
+
+static void anna_sniff_return_type(anna_function_t *f)
+{
+    array_list_t types;
+    al_init(&types);
+    sniff(&types, f, 0);
+    int i;
+    
+    if(al_get_count(&types) >0)
+    {
+	//wprintf(L"Got the following %d return types for function %ls, create intersection:\n", al_get_count(&types), f->name);
+	anna_type_t *res = al_get(&types, 0);
+	for(i=1;i<al_get_count(&types); i++)
+	{
+	    anna_type_t *t = al_get(&types, i);
+	    res = anna_type_intersect(res,t);
+	}
+	f->return_type = res;
+	anna_node_call_add_child(f->body, anna_node_null_create(&f->body->location));
+    }
+    else
+    {
+	if(f->body->child_count)
+	    f->return_type = anna_node_get_return_type(f->body->child[f->body->child_count-1], f->stack_template);
+	else
+	    f->return_type = null_type;
+	//wprintf(L"Implicit return type is %ls\n", f->return_type->name);
+    }
+
+}
+
+
+
 
 anna_function_t *anna_native_create(wchar_t *name,
 				    int flags,

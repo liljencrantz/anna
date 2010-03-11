@@ -281,20 +281,12 @@ static anna_node_t *anna_macro_block(anna_node_call_t *node, anna_function_t *fu
     //wprintf(L"Create new block with %d elements at %d\n", node->child_count, node);
     int return_pop_count = 1+function->return_pop_count;
     
-    anna_function_t *result = anna_function_create(L"!anonymous", 0, node, null_type, 0, 0, 0, function->stack_template, return_pop_count);
+    anna_function_t *result = anna_function_create(L"!anonymous", 0, node, 0, 0, 0, 0, function->stack_template, return_pop_count);
     al_push(&function->child_function, result);
     return (anna_node_t *)anna_node_dummy_create(
 	&node->location,
 	result->wrapper,
 	1);
-}
-
-static anna_type_t *anna_sniff_return_type(anna_node_call_t *body)
-{
-    /*
-      FIXME: Actually do some sniffing...
-    */
-    return int_type;  
 }
 
 
@@ -616,6 +608,12 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 {
     wchar_t *name=0;
     wchar_t *internal_name=0;
+
+    /*
+      Set this to true if we need to snigg out the real function
+      return type after we're done creating the function.
+     */
+
     CHECK_CHILD_COUNT(node,L"function definition", 5);
     
     if (node->child[0]->node_type == ANNA_NODE_IDENTIFIER) {
@@ -638,14 +636,11 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     anna_node_t *out_type_wrapper = node->child[1];
     
     if(out_type_wrapper->node_type == ANNA_NODE_NULL) 
-    {
-	
+    {	
 	if(body->node_type != ANNA_NODE_CALL)
 	{
 	    FAIL(body, L"Function declarations must have a return type");
 	}
-	
-	out_type = anna_sniff_return_type((anna_node_call_t *)body);
     }
     else
     {
@@ -701,7 +696,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 
     if(type)
     {
-	anna_function_t *result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, null_type, argc, argv, argn, function->stack_template, 0);
+	anna_function_t *result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
 	
 	al_push(&function->child_function, result);
 
@@ -716,22 +711,22 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     }
     else
     {
-	anna_object_t *result;
+	anna_function_t *result;
 	if(body->node_type == ANNA_NODE_CALL) {
-	    result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0)->wrapper;
-	    al_push(&function->child_function, result);
+	    result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
+	    al_push(&function->child_function, result->wrapper);
 	}
 	else {
 	    //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
 	  
-	    result = anna_native_create(internal_name, 0, (anna_native_t)anna_i_null_function, out_type, argc, argv, argn)->wrapper;
+	    result = anna_native_create(internal_name, 0, (anna_native_t)anna_i_null_function, out_type, argc, argv, argn);
 	}
 	
 	if(name) {
-	    anna_stack_declare(function->stack_template, name, anna_type_for_function(out_type, argc, argv), result);
+	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type), result->wrapper);
 	}
 	return (anna_node_t *)anna_node_dummy_create(&node->location,
-						     result,
+						     result->wrapper,
 						     body->node_type == ANNA_NODE_CALL);
     }
     
@@ -926,7 +921,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		L"!anonymous", 
 		0,
 		(anna_node_call_t *)node->child[1], 
-		null_type, 
+		0, 
 		1,
 		argv, 
 		&value_name->name, 
@@ -1015,7 +1010,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		anna_function_create(
 		    L"!anonymous", 0, 
 		    (anna_node_call_t *)node->child[1], 
-		    null_type, 2, argv, argn,
+		    0, 2, argv, argn,
 		    function->stack_template, 
 		    return_pop_count);
 	    

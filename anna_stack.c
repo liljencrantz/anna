@@ -96,7 +96,13 @@ anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name)
 
 anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack_orig, wchar_t *name)
 {
-    assert(stack_orig);
+    if(!stack_orig)
+    {
+	wprintf(L"Critical: Null stack!\n");
+	CRASH;
+	
+    }
+    
     assert(name);
     anna_stack_frame_t *stack = stack_orig;
     

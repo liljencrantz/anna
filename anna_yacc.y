@@ -975,13 +975,13 @@ int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *fi
     if(was_end_brace)
     {
 	was_end_brace = 0;
-	wprintf(L"Got an end brace\n");
+	//wprintf(L"Got an end brace\n");
 	
 	if(yylex_val != '.' &&
 	   yylex_val != SEMICOLON &&
 	   yylex_val != ')')
 	{
-	    wprintf(L"Insert fake semicolon..\n");
+	    //wprintf(L"Insert fake semicolon..\n");
 	    peek_token = yylex_val;
 	    return SEMICOLON;
 	}      
