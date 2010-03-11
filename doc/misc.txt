@@ -1,0 +1,55 @@
+Generic operator symbol:
+
+var foo = (bar |xor baz) |shl 2;
+var foo = (bar :xor baz) :shl 2;
+var foo = (bar @xor baz) @shl 2;
+var foo = (bar $xor baz) $shl 2;
+
+Which one is best? Dunno... ':' looks right, but it's not an option, it's too useful for all the Pair stuff. Maybe the pipe?
+
+Date handling:
+
+// Assign the current date and time to a date object 
+var date = Date.now
+
+// Assign midnight, current date to a date object
+var date = Date.today
+
+// Move ahead one year 
+date += 1-0-0;
+
+// Move ahead one second 
+date += 0:0:1;
+
+// Move ahead x years and one hour 
+date += x-0-0, 1:00;
+
+// Create a new date from a specified date 
+var then = Date(2009-1-1, 12:30);
+
+// Create a new date from timestamp in x
+
+var then = Date.fromTimestamp(x);
+
+
+// Date formating
+
+print("%Y-%d-%m" % date)
+
+
+// Print with default formating (ISO)
+
+print(date)
+
+// Parse date string
+
+var date = Date.fromString(str, "%m/%d/%Y");
+
+// Parse date string with default formating (ISO)
+
+var date = Date.fromString(str);
+
+//Dates have the following fields
+
+year, month, day, weekday, hour, minute, second, nanosecond, timestamp
+All of these are integers except timestamp, which is a Float. (timestamp is a unix style timestamp)
