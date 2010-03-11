@@ -19,8 +19,18 @@ print(foo[0]);
 var lst = List<Int>();
 
 lst ~= 3;
-lst ~= 2;
 lst ~= 5;
+lst ~= 1;
 
-lst.map(key:value){value*2}.each(val){print(val-1)}
+lst.filter(i){i>2}.each(i){print(i)}
 
+class Map template(Key:Object), template(Value:Object)
+{
+	var Key a;
+	var Value b;
+}
+
+var foo = Map<Int, String>();
+
+foo.a = 3;
+print(foo.a);

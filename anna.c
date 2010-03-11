@@ -35,7 +35,7 @@
   __templatize__ will clone the AST, modify the arguments to __tempalteAttribute__, and let __templateAttribute__ do the replacing. (done)
   __templatize__ needs to have a cache ot already templatized types (done)
   Move node prepare calls to their own pass
-  Each attribute macro is only called once
+  Each attribute macro should only be called once
 
   Code layout plan:
 
@@ -44,7 +44,7 @@
 	function/block/type handling, one for functional construct support, 
 	etc..
   - All node types should have a head var which is an anna_node_t, to reduce the amount of casting needed.
-
+  
   ComparisonMap type
   HashMap type
   Range type
@@ -63,7 +63,7 @@
   Namespaces
   Subfunction/block tracking in function
   Functions that don't return an Int (depends on block tracking)
- 
+  
   Implement basic string methods
   Implement string comparison methods
   Functional functions for lists (each, map, select, max, min)

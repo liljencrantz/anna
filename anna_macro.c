@@ -397,6 +397,10 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
     CHECK_NODE_BLOCK(node->child[3]);
     CHECK_NODE_BLOCK(node->child[2]);
     
+    hash_table_t attribute_done;
+    
+    hash_init(&attribute_done, &hash_wcs_func, &hash_wcs_cmp);
+    
     anna_node_call_t *attribute_list = 
         (anna_node_call_t *)node->child[2];
     int i;
@@ -410,6 +414,12 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 
 	anna_node_identifier_t *id = 
 	    (anna_node_identifier_t *)attribute->function;
+	if(hash_get(&attribute_done, id->name))
+	{
+	    continue;
+	}
+	hash_put(&attribute_done, id->name, id);
+	
 	string_buffer_t sb;
 	sb_init(&sb);
 	sb_append(&sb, L"__");
@@ -430,7 +440,8 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	CHECK(node->node_type == ANNA_NODE_CALL, id, L"Attribute call did not return a valid type definition");
 	sb_destroy(&sb);	
     }
-
+    hash_destroy(&attribute_done);
+    
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
     wchar_t *type_name = ((anna_node_identifier_t *)node->child[1])->name;
     int error_count=0;

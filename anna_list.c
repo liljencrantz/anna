@@ -268,6 +268,80 @@ static anna_object_t *anna_list_map_pair(anna_object_t **param)
 }
 
 
+static anna_object_t *anna_list_filter_value(anna_object_t **param)
+{
+    anna_object_t *body_object;
+    anna_object_t *result=anna_list_create();
+    
+    body_object=param[1];
+        
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
+    int pos=0;
+    anna_list_set_capacity(result, sz);
+    
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    assert(function_ptr);
+
+/*
+    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+*/  
+    for(i=0;i<sz;i++)
+    {
+      /*
+      wprintf(L"Run the following code:\n");
+      anna_node_print((*function_ptr)->body);
+      wprintf(L"\n");
+      */
+	if(anna_function_invoke_values(*function_ptr, 0, &arr[i], stack_ptr?*stack_ptr:0) != null_object)
+	    anna_list_set(result, pos++, arr[i]);
+    }
+    anna_list_set_capacity(result, pos);
+    return result;
+}
+
+
+static anna_object_t *anna_list_filter_pair(anna_object_t **param)
+{
+    anna_object_t *body_object;
+    anna_object_t *result=anna_list_create();
+    body_object=param[1];
+        
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
+    int pos=0;
+    
+    anna_list_set_capacity(result, sz);
+    
+    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    assert(function_ptr);
+/*
+    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+*/  
+    anna_object_t *o_param[2];
+    for(i=0;i<sz;i++)
+    {
+      /*
+      wprintf(L"Run the following code:\n");
+      anna_node_print((*function_ptr)->body);
+      wprintf(L"\n");
+      */
+	o_param[0] = anna_int_create(i);
+	o_param[1] = arr[i];
+	if(anna_function_invoke_values(*function_ptr, 0, o_param, stack_ptr?*stack_ptr:0) != null_object)
+	    anna_list_set(result, pos++, arr[i]);
+    }
+    anna_list_set_size(result, pos);
+    return result;
+}
+
+
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
     list_type = anna_type_create(L"List", 64, 0);
@@ -368,7 +442,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_node_call_add_child(
 	full_definition,	
 	(anna_node_t *)attribute_list);
-    
     
     anna_node_call_add_child(
 	full_definition,
@@ -511,7 +584,11 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	definition, -1, L"map", ANNA_FUNCTION_MACRO, 
 	(anna_native_t)&anna_macro_iter, 
 	0, 0, 0, 0);
-
+    /*
+      FIXME: This is the wrong return type for map - we need to check
+      the return type of the function argument and do a cast, or
+      something...
+     */
     anna_native_method_add_node(
        definition, -1, L"__mapValue__",
        0, (anna_native_t)&anna_list_map_value,
@@ -519,10 +596,27 @@ void anna_list_type_create(anna_stack_frame_t *stack)
        2, e_argv_value, e_argn);
 
     anna_native_method_add_node(
-       definition, -1, L"__mapPair__", 
-       0, (anna_native_t)&anna_list_map_pair, 
-       anna_node_clone_deep(my_list_type), 
-       2, e_argv_pair, e_argn);
+	definition, -1, L"__mapPair__", 
+	0, (anna_native_t)&anna_list_map_pair, 
+	anna_node_clone_deep(my_list_type), 
+	2, e_argv_pair, e_argn);
+    
+    anna_native_method_add_node(
+	definition, -1, L"filter", ANNA_FUNCTION_MACRO, 
+	(anna_native_t)&anna_macro_iter, 
+	0, 0, 0, 0);
+
+    anna_native_method_add_node(
+	definition, -1, L"__filterValue__",
+	0, (anna_native_t)&anna_list_filter_value,
+	anna_node_clone_deep(my_list_type) ,
+	2, e_argv_value, e_argn);
+
+    anna_native_method_add_node(
+	definition, -1, L"__filterPair__", 
+	0, (anna_native_t)&anna_list_filter_pair, 
+	anna_node_clone_deep(my_list_type), 
+	2, e_argv_pair, e_argn);
     
     //anna_node_print(e_argv[1]);
     //anna_stack_print(func->stack_template);

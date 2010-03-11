@@ -41,7 +41,12 @@ void anna_stack_declare(anna_stack_frame_t *stack,
     size_t *old_offset = hash_get(&stack->member_string_identifier, name);
     if(old_offset)
     {
-	assert(stack->member_type[*old_offset] == type);
+	if(stack->member_type[*old_offset] != type)
+	{
+	    wprintf(L"Critical: Tried to redeclare variable %ls, was of type %ls, now of type %ls\n", name, stack->member_type[*old_offset]->name, type->name);
+	    exit(1);
+	    
+	}
 	stack->member[*old_offset] = initial_value;
 	return;
     }
