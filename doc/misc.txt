@@ -1,11 +1,24 @@
 Generic operator symbol:
 
-var foo = (bar |xor baz) |shl 2;
-var foo = (bar :xor baz) :shl 2;
-var foo = (bar @xor baz) @shl 2;
-var foo = (bar $xor baz) $shl 2;
+foo = (bar |xor baz) |shl 2;
 
-Which one is best? Dunno... ':' looks right, but it's not an option, it's too useful for all the Pair stuff. Maybe the pipe?
+foo = (bar @xor baz) @shl 2;
+
+foo = (bar &xor baz) &shl 2;
+
+foo = (bar &xor baz) &shl 2;
+
+foo = (bar #xor baz) #shl 2;
+
+foo = (bar ?xor baz) ?shl 2;
+
+foo = (bar ^xor baz) ^shl 2;
+
+foo = (bar ~xor baz) ~shl 2;
+
+Which one is best? Dunno... ':' looks right, but it's not an option,
+it's too useful for all the Pair stuff. $ sends the wrong
+message. Maybe the pipe?
 
 Date handling:
 

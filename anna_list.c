@@ -619,11 +619,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	2, a_argv, a_argn);
     
     anna_native_method_add_node(
-	definition, -1, L"each", ANNA_FUNCTION_MACRO, 
-	(anna_native_t)&anna_macro_iter, 
-	0, 0, 0, 0);
-
-    anna_native_method_add_node(
 	definition, -1, L"__eachValue__", 0, 
 	(anna_native_t)&anna_list_each_value, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T"),
@@ -635,10 +630,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T"), 
 	2, e_argv_pair, e_argn);
     
-    anna_native_method_add_node(
-	definition, -1, L"map", ANNA_FUNCTION_MACRO, 
-	(anna_native_t)&anna_macro_iter, 
-	0, 0, 0, 0);
     /*
       FIXME: This is the wrong return type for map - we need to check
       the return type of the function argument and do a cast, or
@@ -657,11 +648,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	2, e_argv_pair, e_argn);
     
     anna_native_method_add_node(
-	definition, -1, L"filter", ANNA_FUNCTION_MACRO, 
-	(anna_native_t)&anna_macro_iter, 
-	0, 0, 0, 0);
-
-    anna_native_method_add_node(
 	definition, -1, L"__filterValue__",
 	0, (anna_native_t)&anna_list_filter_value,
 	anna_node_clone_deep(my_list_type) ,
@@ -673,11 +659,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	anna_node_clone_deep(my_list_type), 
 	2, e_argv_pair, e_argn);
     
-    anna_native_method_add_node(
-	definition, -1, L"first", ANNA_FUNCTION_MACRO, 
-	(anna_native_t)&anna_macro_iter, 
-	0, 0, 0, 0);
-
     anna_native_method_add_node(
 	definition, -1, L"__firstValue__",
 	0, (anna_native_t)&anna_list_first_value,

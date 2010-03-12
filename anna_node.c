@@ -458,16 +458,19 @@ anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stac
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_get_t *get = (anna_node_member_get_t *)node;
-	    anna_type_t *obj_type = anna_node_get_return_type(get->object, stack);
-	    anna_object_t **member = anna_static_member_addr_get_mid(obj_type, get->mid);
-	    if(member)
+	    wchar_t *name = anna_mid_get_reverse(get->mid);
+	    anna_object_t **obj = anna_stack_addr_get_str(stack, name);
+	    if(obj)
 	    {
-		anna_function_t *func = anna_function_unwrap(*member);
-		if(func && func->flags == ANNA_FUNCTION_MACRO)
-		{
-		    return func;
-		}
+	       anna_function_t *func=anna_function_unwrap(*obj);
+	    
+	       if(func && func->flags == ANNA_FUNCTION_MACRO)
+	       {
+		  return func;
+	       }
 	    }
+	    
+	    break;
 	    
 	    /*
 	    anna_node_print(get->object);

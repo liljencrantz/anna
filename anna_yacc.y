@@ -185,7 +185,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %type <node_val> opt_declaration_init
 %type <node_val> function_definition 
 %type <node_val> opt_simple_expression 
-%type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op2 op3 op4 op5 op6 op7 pre_op8
+%type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op3 op4 op5 op6 op7 pre_op8
 %type <call_val> argument_list argument_list2 argument_list3 
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
@@ -317,12 +317,6 @@ expression1 :
 opt_semicolon: | SEMICOLON;
 
 expression2 :
-	expression2 op2 expression3
-	{
-	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_call_create(&@$, $2, 2, param);
-	}
-        | 
 	expression3
 	;
 
@@ -339,8 +333,8 @@ expression3 :
 expression4 :
 	expression4 op4 expression5
 	{
-	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_call_create(&@$, $2, 2, param);
+	  anna_node_t *param[] ={$2, $1, $3};   
+	  $$ = (anna_node_t *)anna_node_call_create(&@$, anna_node_identifier_create(&@$, L"__genericOperator__"), 3, param);
 	}
         | 
 	expression5
@@ -511,25 +505,6 @@ op1:
 	}
 ;
 
-op2:
-	BITAND
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__bitand__");
-	}
-	|
-	BITOR
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__bitor__");
-	}
-	|
-	XOR
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__xor__");
-	}
-	;
-
-
-
 op3:
 	'<'
 	{
@@ -564,30 +539,28 @@ op3:
 
 
 op4: 
-	SHL 
+	'@' identifier
 	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__shl__");
+	    $$ = $2
+	}
+;
+
+
+op5:
+	':'
+	{
+	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"Pair");
 	}
 	|
-	SHR
+	RANGE
 	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__shr__");
-	}
-	|
-	CSHL 
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__cshl__");
-	}
-	|
-	CSHR
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__cshr__");
+	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"Range");
 	}
 ;
 
 
 
-op5:
+op6:
 	'+'
 	{
 	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__add__");
@@ -602,19 +575,9 @@ op5:
 	{
 	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__join__");
 	}
-	|
-	':'
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"Pair");
-	}
-	|
-	RANGE
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"Range");
-	}
 ;
 
-op6:
+op7:
 	'*'
 	{
 	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__mul__");
@@ -629,27 +592,12 @@ op6:
 	{
 	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__format__");
 	}
-	|
-	MODULO
-	{
-	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__mod__");
-	}
 ;
-
-op7: '^'
-{
-    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__exp__");
-}
 
 pre_op8:
 	'-'
 	{
 		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__neg__")
-	}
-	|
-	SIGN
-	{
-		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__sign__")
 	}
 ;
 

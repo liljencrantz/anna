@@ -22,7 +22,7 @@
   Documentation generator: Introspect all data types and generate html documentation on them.
   live: Debug a running application using command line or web browser.
   Compiler front end.
-  
+  Asynchronous continuation based app/web server
 */
 /*
   Templating plan:
@@ -58,6 +58,7 @@
   Buffer type
   Complex type
 
+  Move uncommon operators to become generic operators (bit ops, sign, abs, etc.)
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks at type creation time and stow away the results somewhere?
@@ -139,13 +140,13 @@
   Parse chars literals
   Parse float literals
   
-  Implement basic int methods
-  Implement basic float methods
-  Implement int comparison methods
+  Implement basic Int methods
+  Implement basic Float methods
+  Implement Int comparison methods
   Implement List getter and setter
-  Implement basic char methods
-  Implement char comparison methods
-  Implement basic list methods
+  Implement basic Char methods
+  Implement Char comparison methods
+  Implement basic List methods
   
   __not__ function
   __block__ macro

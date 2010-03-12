@@ -743,25 +743,43 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 						anna_function_t *function, 
 						anna_node_list_t *parent)
 {
-    CHECK_CHILD_COUNT(node,L"operator", 2);
-    
+   wprintf(L"\nASDDAS %d\n", node->child_count);
+   anna_node_print(node);
+   
+   
+   CHECK(node->child_count >=2,node, L"Too few arguments");
+   CHECK(node->child_count <=3,node, L"Too many arguments");
     anna_prepare_children(node, function, parent);
-    anna_node_identifier_t *name_identifier = node_cast_identifier(node->function);
-    if(wcslen(name_identifier->name) < 5)
+    int arg_offset = 0;
+    anna_type_t * t1;
+    anna_type_t * t2;
+    wchar_t *name_prefix;
+    if(node->child_count == 2)
     {
-        FAIL(node, L"Invalid operator name: %ls", name_identifier->name);	
+       anna_node_identifier_t *name_identifier = node_cast_identifier(node->function);
+       if(wcslen(name_identifier->name) < 5)
+       {
+	  FAIL(node, L"Invalid operator name: %ls", name_identifier->name);	
+       }
+       name_prefix = wcsdup(name_identifier->name);
+       name_prefix[wcslen(name_prefix)-2] = 0;
+       //wprintf(L"Calling operator_wrapper as %ls\n", name);       
     }
-   
-
-    wchar_t *name_prefix = wcsdup(name_identifier->name);
-    name_prefix[wcslen(name_prefix)-2] = 0;
-    //wprintf(L"Calling operator_wrapper as %ls\n", name);
-   
-    anna_type_t * t1 = anna_node_get_return_type(node->child[0], function->stack_template);
-    anna_type_t * t2 = anna_node_get_return_type(node->child[1], function->stack_template);
+    else 
+    {
+       anna_node_identifier_t *name_identifier = node_cast_identifier(node->child[0]);
+       string_buffer_t sb;
+       sb_init(&sb);
+       sb_append(&sb, L"__");
+       sb_append(&sb, name_identifier->name);
+       name_prefix = sb_content(&sb);
+       arg_offset = 1;
+    }
     
-    CHECK(t1,node->child[0], L"Unknown type for first argument to operator %ls", name_identifier->name);
-    CHECK(t2,node->child[1], L"Unknown type for second argument to operator %ls", name_identifier->name);	
+    t1 = anna_node_get_return_type(node->child[arg_offset], function->stack_template);
+    t2 = anna_node_get_return_type(node->child[arg_offset+1], function->stack_template);
+    CHECK(t1,node->child[arg_offset], L"Unknown type for first argument to operator %ls__", name_prefix);
+    CHECK(t2,node->child[arg_offset+1], L"Unknown type for second argument to operator %ls__", name_prefix);	
     wchar_t *method_name = anna_find_method((anna_node_t *)node, t1, name_prefix, 2, t2);
     
     if(method_name)
@@ -769,13 +787,13 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 	    
 	anna_node_t *mg_param[2]=
 	    {
-		node->child[0], (anna_node_t *)anna_node_identifier_create(&node->location,method_name)
+		node->child[arg_offset], (anna_node_t *)anna_node_identifier_create(&node->location,method_name)
 	    }
 	;
 	
 	anna_node_t *c_param[1]=
 	    {
-		node->child[1]
+		node->child[arg_offset+1]
 	    }
 	;
 	
@@ -811,13 +829,13 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 
 	anna_node_t *mg_param[2]=
 	    {
-		node->child[1], (anna_node_t *)anna_node_identifier_create(&node->location, method_name)
+		node->child[arg_offset+1], (anna_node_t *)anna_node_identifier_create(&node->location, method_name)
 	    }
 	;
 	
 	anna_node_t *c_param[1]=
 	    {
-		node->child[0]
+		node->child[arg_offset]
 	    }
 	;
 	
@@ -1827,6 +1845,11 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"return", &anna_macro_return);
     anna_macro_add(stack, L"__templatize__", &anna_macro_templatize);
     anna_macro_add(stack, L"__templateAttribute__", &anna_macro_template_attribute);
+    anna_macro_add(stack, L"__genericOperator__", &anna_macro_operator_wrapper);
+    anna_macro_add(stack, L"each", &anna_macro_iter);
+    anna_macro_add(stack, L"map", &anna_macro_iter);
+    anna_macro_add(stack, L"filter", &anna_macro_iter);
+    anna_macro_add(stack, L"first", &anna_macro_iter);
     
     wchar_t *op_names[] = 
 	{

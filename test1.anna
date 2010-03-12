@@ -1,3 +1,14 @@
+var foo = List<Int>();
+
+foo ~= 3;
+foo ~= 3;
+foo ~= 3;
+foo ~= 3;
+
+foo.each(i){print(i)}
+
+print(1 @bitand 3);
+print(4 @xor 2);
 /*
 class Foo template (X:Int)
 {
