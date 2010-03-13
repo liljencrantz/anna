@@ -35,7 +35,7 @@ wchar_t anna_char_get(anna_object_t *this)
 void anna_char_type_create(anna_stack_frame_t *stack)
 {
     char_type = anna_type_native_create(L"Char", stack);
-    anna_node_call_t *definition = anna_type_definition_get(float_type);
+    anna_node_call_t *definition = anna_type_definition_get(char_type);
     
     anna_member_add_node(
 	definition, ANNA_MID_CHAR_PAYLOAD,  L"!charPayload", 

@@ -34,7 +34,7 @@ int anna_int_get(anna_object_t *this)
 void anna_int_type_create(anna_stack_frame_t *stack)
 {
     int_type = anna_type_native_create(L"Int", stack);
-    anna_node_call_t *definition = anna_type_definition_get(float_type);
+    anna_node_call_t *definition = anna_type_definition_get(int_type);
     
     anna_member_add_node(
 	definition, ANNA_MID_INT_PAYLOAD,  L"!intPayload", 
