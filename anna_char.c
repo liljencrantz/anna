@@ -8,6 +8,7 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_char.h"
+#include "anna_type.h"
 
 #include "anna_char_i.c"
 
@@ -33,8 +34,13 @@ wchar_t anna_char_get(anna_object_t *this)
 
 void anna_char_type_create(anna_stack_frame_t *stack)
 {
-    char_type = anna_type_create(L"Char", 64, 1);
-    anna_stack_declare(stack, L"Char", type_type, char_type->wrapper);
-    anna_member_create(char_type, ANNA_MID_CHAR_PAYLOAD,  L"!charPayload", 0, null_type);
-    anna_char_type_i_create(stack);
+    char_type = anna_type_native_create(L"Char", stack);
+    anna_node_call_t *definition = anna_type_definition_get(float_type);
+    
+    anna_member_add_node(
+	definition, ANNA_MID_CHAR_PAYLOAD,  L"!charPayload", 
+	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+    
+    anna_char_type_i_create(definition, stack);
+    anna_type_native_setup(char_type, stack);
 }

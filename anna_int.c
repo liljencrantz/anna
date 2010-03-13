@@ -26,10 +26,9 @@ void anna_int_set(anna_object_t *this, int value)
 
 int anna_int_get(anna_object_t *this)
 {
-  
-  int result;
-  memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_INT_PAYLOAD), sizeof(int));
-  return result;
+    int result;
+    memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_INT_PAYLOAD), sizeof(int));
+    return result;
 }
 
 void anna_int_type_create(anna_stack_frame_t *stack)
