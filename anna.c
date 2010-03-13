@@ -1190,22 +1190,13 @@ static void anna_init()
     anna_stack_declare(stack_global, L"Object", object_type, object_type->wrapper);
     anna_stack_declare(stack_global, L"Null", null_type, null_type->wrapper);
     
-    string_type = anna_type_create_raw(L"String", 64, 1);
-
     anna_macro_init(stack_global);
 
     anna_int_type_create(stack_global);
     anna_list_type_create(stack_global);
     anna_char_type_create(stack_global);
-    anna_string_type_create();
+    anna_string_type_create(stack_global);
     anna_float_type_create(stack_global);
-
-    anna_type_wrapper_create(string_type);
-        
-    anna_stack_declare(stack_global, L"List", type_type, list_type->wrapper);
-    anna_stack_declare(stack_global, L"String", type_type, string_type->wrapper);
-    anna_stack_declare(stack_global, L"Float", type_type, float_type->wrapper);
-    anna_stack_declare(stack_global, L"Type", type_type, type_type->wrapper);
 
     anna_function_implementation_init(stack_global);
 
