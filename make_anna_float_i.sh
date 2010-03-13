@@ -66,9 +66,9 @@ done
 init="$init
 "
 
-for i in "add +" "sub -" "mul *" "div /"; do
+for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "exp pow(v1, v2)"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     anna_native_method_add_node(
@@ -85,14 +85,14 @@ static anna_object_t *anna_float_i_$name(anna_object_t **param)
   
     double v1 = anna_float_get(param[0]);
     double v2 = anna_float_get(param[1]);
-    return anna_float_create(v1 $op v2);
+    return anna_float_create($op);
 }
 "
 done
 
-for i in "add +" "sub -" "mul *" "div /"; do
+for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "exp pow(v1, v2)"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     anna_native_method_add_node(
@@ -108,15 +108,15 @@ static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
         return null_object;
   
     double v1 = anna_float_get(param[0]);
-    int v2 = anna_int_get(param[1]);
-    return anna_float_create(v1 $op (double)v2);
+    double v2 = (double)anna_int_get(param[1]);
+    return anna_float_create($op);
 }
 "
 done
 
-for i in "radd +" "rsub -" "rmul *" "rdiv /"; do
+for i in "radd v1 + v2" "rsub v1 - v2" "rmul v1 * v2" "rdiv v1 / v2" "rexp pow(v1, v2)"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     anna_native_method_add_node(
@@ -131,9 +131,9 @@ static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
     if(param[1]==null_object)
         return null_object;
   
-    int v1 = anna_int_get(param[1]);
+    double v1 = (double)anna_int_get(param[1]);
     double v2 = anna_float_get(param[0]);
-    return anna_float_create(((double)v1) $op v2);
+    return anna_float_create($op);
 }
 "
 done

@@ -33,16 +33,6 @@ double anna_float_get(anna_object_t *this)
     return result;
 }
 
-static anna_object_t *anna_float_exp(anna_object_t **param)
-{
-    if(param[1]==null_object)
-        return null_object;
-  
-    double v1 = anna_float_get(param[0]);
-    double v2 = anna_float_get(param[1]);
-    return anna_float_create(pow(v1, v2));
-}
-
 void anna_float_type_create(anna_stack_frame_t *stack)
 {
     float_type = anna_type_native_create(L"Float", stack);
@@ -61,6 +51,4 @@ void anna_float_type_create(anna_stack_frame_t *stack)
     anna_float_type_i_create(definition, stack);
     anna_type_native_setup(float_type, stack);
         
-//    anna_native_method_create(float_type, -1, L"__expFloat__", 0, (anna_native_t)&anna_float_exp, float_type, 2, argv, argn);
-    
 }
