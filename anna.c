@@ -42,8 +42,8 @@
 
   - Move object and type code to individual .[ch] files.
   - Split up anna_macro.c into multiple files, one of operators, one for 
-	function/block/type handling, one for functional construct support, 
-	etc..
+  function/block/type handling, one for functional construct support, 
+  etc..
   - All node types should have a head var which is an anna_node_t, to reduce the amount of casting needed.
   
   ComparisonMap type
@@ -177,7 +177,7 @@
   code in a call to the AST function.
 
   var n = AST(1+x);  
- */
+*/
 
 anna_type_t *type_type=0, *object_type=0, *int_type=0, *string_type=0, *char_type=0, *null_type=0,  *string_type, *char_type, *list_type, *float_type;
 anna_object_t *null_object=0;
@@ -200,6 +200,9 @@ static void anna_type_wrapper_create(anna_type_t *result);
 
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
 void anna_object_print(anna_object_t *obj, int level);
+static void anna_sniff_return_type(anna_function_t *f);
+void anna_function_setup_type(anna_function_t *f);
+
 
 void anna_native_declare(anna_stack_frame_t *stack,
 			 wchar_t *name,
@@ -210,8 +213,8 @@ void anna_native_declare(anna_stack_frame_t *stack,
 			 anna_type_t **argv,
 			 wchar_t **argn)
 {
-  anna_function_t *f = anna_native_create(name, flags, func, result, argc, argv, argn);
-  anna_stack_declare(stack, name, f->type, f->wrapper);
+    anna_function_t *f = anna_native_create(name, flags, func, result, argc, argv, argn);
+    anna_stack_declare(stack, name, f->type, f->wrapper);
 }
 
 static void add_member(void *key, void *value, void *aux)
@@ -235,8 +238,8 @@ anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name)
 {
     anna_member_t *m = (anna_member_t *)hash_get(&(obj->type->name_identifier), name);
     /*
-    wprintf(L"Woo, get address of member %ls on object\n", name);
-    wprintf(L"of type %ls\n", obj->type->name);
+      wprintf(L"Woo, get address of member %ls on object\n", name);
+      wprintf(L"of type %ls\n", obj->type->name);
     */
     if(!m) 
     {
@@ -252,10 +255,10 @@ anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name)
 
 anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid)
 {
-  /*
-  wprintf(L"Get mid %d on object\n", mid);
-  wprintf(L"of type %ls\n", obj->type->name);
-  */
+    /*
+      wprintf(L"Get mid %d on object\n", mid);
+      wprintf(L"of type %ls\n", obj->type->name);
+    */
     anna_member_t *m = obj->type->mid_identifier[mid];
     if(!m) 
     {
@@ -273,9 +276,9 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid)
 
 anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid)
 {
-  /*  wprintf(L"Get mid %d on object\n", mid);
-  wprintf(L"of type %ls\n", obj->type->name);
-  */
+    /*  wprintf(L"Get mid %d on object\n", mid);
+	wprintf(L"of type %ls\n", obj->type->name);
+    */
     anna_member_t *m = type->mid_identifier[mid];
     if(!m) 
     {
@@ -292,29 +295,29 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid)
 
 void anna_mid_put(wchar_t *name, size_t mid)
 {
-   size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
-   if(offset_ptr)
-   {
-      wprintf(L"Tried to reassign mid!\n");
-      exit(1);
-   }
+    size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
+    if(offset_ptr)
+    {
+	wprintf(L"Tried to reassign mid!\n");
+	exit(1);
+    }
    
-   offset_ptr = malloc(sizeof(size_t));
-   *offset_ptr = mid;
-   hash_put(&anna_mid_identifier, name, offset_ptr);   
-   al_set(&anna_mid_identifier_reverse, mid, wcsdup(name));
+    offset_ptr = malloc(sizeof(size_t));
+    *offset_ptr = mid;
+    hash_put(&anna_mid_identifier, name, offset_ptr);   
+    al_set(&anna_mid_identifier_reverse, mid, wcsdup(name));
 }
 
 size_t anna_mid_get(wchar_t *name)
 {
-   size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
-   if(!offset_ptr)
-   {      
-      size_t gg = mid_pos++;
-      anna_mid_put(name, gg);
-      return gg;
-   }
-   return *offset_ptr;
+    size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
+    if(!offset_ptr)
+    {      
+	size_t gg = mid_pos++;
+	anna_mid_put(name, gg);
+	return gg;
+    }
+    return *offset_ptr;
 }
 
 wchar_t *anna_mid_get_reverse(size_t mid)
@@ -399,14 +402,14 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	anna_type_wrapper_create(res);
 	/*
 	  FIXME: Add children to the definition tree!
-	 */
+	*/
 
 
 	(*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)new_key;
     }
     else 
     {
-      //wprintf(L"YAY\n");
+	//wprintf(L"YAY\n");
     }
     
     return res;
@@ -467,7 +470,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 					    anna_node_call_t *param,
 					    anna_stack_frame_t *local)
 {
-  //wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
+    //wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
   
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
@@ -480,7 +483,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
-	  return anna_function_wrapped_invoke(*function_wrapper_ptr,obj, param, stack_ptr?*stack_ptr:stack_global);
+	    return anna_function_wrapped_invoke(*function_wrapper_ptr,obj, param, stack_ptr?*stack_ptr:stack_global);
 	}
 	
 	wprintf(L"Critical: Tried to call a non-function");
@@ -518,12 +521,12 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
 
 
 /*
-anna_object_t *anna_call(anna_stack_frame_t *stack, anna_object_t *obj)
-{
-    anna_object *call = *anna_get_member_addr_int(obj, ANNA_MID_CALL);
-    anna_node *node = (anna_node *)*anna_get_member_addr_int(obj, ANNA_MID_NODE);
-    return node->invoke(node, stack);
-}
+  anna_object_t *anna_call(anna_stack_frame_t *stack, anna_object_t *obj)
+  {
+  anna_object *call = *anna_get_member_addr_int(obj, ANNA_MID_CALL);
+  anna_node *node = (anna_node *)*anna_get_member_addr_int(obj, ANNA_MID_NODE);
+  return node->invoke(node, stack);
+  }
 */
 
 anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, anna_stack_frame_t *stack)
@@ -549,31 +552,31 @@ anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, a
 
 
 /*
-anna_object_t *anna_i_get(anna_node_identifier_t *this, anna_stack_frame_t *stack)
-{
+  anna_object_t *anna_i_get(anna_node_identifier_t *this, anna_stack_frame_t *stack)
+  {
   wchar_t *name = this->child[0]->name;
   return anna_stack_get(stack, name);
-}
+  }
 
-anna_object_t *anna_i_set(anna_node_t *this, anna_stack_frame_t *stack)
-{
+  anna_object_t *anna_i_set(anna_node_t *this, anna_stack_frame_t *stack)
+  {
   wchar_t *name = this->child[0]->name;
   anna_object_t *value = this->children[1]->invoke(this->children[1], stack);
   anna_stack_set(stack, name, value);
   return value;
-}
+  }
 */
 
 /*
-anna_object_t *anna_i_create_function(anna_node_call_t *this, anna_stack_frame_t *stack)
-{
-    wchar_t *name = this->child[0]->name;
-    anna_object_t *value = this->children[1]->invoke(this->children[1], stack);
-    anna_stack_set(stack, name, value);
+  anna_object_t *anna_i_create_function(anna_node_call_t *this, anna_stack_frame_t *stack)
+  {
+  wchar_t *name = this->child[0]->name;
+  anna_object_t *value = this->children[1]->invoke(this->children[1], stack);
+  anna_stack_set(stack, name, value);
   
-    //  FIXME: Not done yet...
-    return value;
-}
+  //  FIXME: Not done yet...
+  return value;
+  }
 */
 
 anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
@@ -594,17 +597,17 @@ anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
 
 void anna_prepare_children(anna_node_call_t *in, anna_function_t *func, anna_node_list_t *parent)
 {
-   int i;
-   for(i=0; i< in->child_count; i++)
-       in->child[i] = anna_node_prepare(in->child[i], func, parent);
+    int i;
+    for(i=0; i< in->child_count; i++)
+	in->child[i] = anna_node_prepare(in->child[i], func, parent);
 }
 
 anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *stack)
 {
 /*
-    wprintf(L"member_get on node at %d\n", param);
-    anna_node_print((anna_node_t *)param);
-    wprintf(L"\n");
+  wprintf(L"member_get on node at %d\n", param);
+  anna_node_print((anna_node_t *)param);
+  wprintf(L"\n");
 */  
     anna_object_t *obj = anna_node_invoke(param->child[0], stack);
     anna_node_identifier_t *name_node = node_cast_identifier(param->child[1]);
@@ -612,7 +615,7 @@ anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *s
     anna_object_t *member = *anna_member_addr_get_str(obj, name_node->name);
     
     if(member == null_object){
-      return member;
+	return member;
     }
     
     return anna_function_wrapped_invoke(member, 0, param, stack);    
@@ -620,36 +623,35 @@ anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *s
 
 void anna_function_prepare(anna_function_t *function)
 {
-   int i;
-   anna_node_list_t list = 
-      {
-	 (anna_node_t *)function->body, 0, 0
-      }
-   ;
+    int i;
+    anna_node_list_t list = 
+	{
+	    (anna_node_t *)function->body, 0, 0
+	}
+    ;
 
-   for(i=0; i<function->body->child_count; i++) 
-   {
-      list.idx=i;
-      function->body->child[i] = anna_node_prepare(function->body->child[i], function, &list);
-   }
-   for(i=0; i<function->body->child_count; i++) 
-   {
-       anna_node_validate(function->body->child[i], function->stack_template);
-   }
+    for(i=0; i<function->body->child_count; i++) 
+    {
+	list.idx=i;
+	function->body->child[i] = anna_node_prepare(function->body->child[i], function, &list);
+    }
+    for(i=0; i<function->body->child_count; i++) 
+    {
+	anna_node_validate(function->body->child[i], function->stack_template);
+    }
 /*   for(i=0; i<al_get_count(&function->child_function); i++) 
-   {
-       al_set(&function->child_function, i,
-	      anna_node_prepare(al_get(&function->child_function, i), function, &list));
-   }
+     {
+     al_set(&function->child_function, i,
+     anna_node_prepare(al_get(&function->child_function, i), function, &list));
+     }
 */ 
-   /*
-   wprintf(L"Function after preparations:\n");
-   anna_node_print(function->body);
-   wprintf(L"\n");
-   */
+    /*
+      wprintf(L"Function after preparations:\n");
+      anna_node_print(function->body);
+      wprintf(L"\n");
+    */
 }
 
-static void anna_sniff_return_type(anna_function_t *f);
 
 anna_function_t *anna_function_create(wchar_t *name,
 				      int flags,
@@ -827,7 +829,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
     }
     /*
       FIXME: Do proper intersection!
-     */
+    */
     
     return object_type;
 }
@@ -871,22 +873,22 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
 }
 
 /*
-anna_object_t *anna_i_member_call(anna_node_t *this, anna_stack_frame_t *stack)
-{
+  anna_object_t *anna_i_member_call(anna_node_t *this, anna_stack_frame_t *stack)
+  {
   anna_object_t *obj = anna_i_get(this, stack);
   wchar_t *name = this->child[1]->name;
   anna_object_t *method = *anna_member_addr_get_str(obj, name);
   
-}
+  }
 */
 
- /*
-anna_object_t *anna_i_const_string(anna_node_t *this, anna_stack_frame_t *stack)
-{
-    anna_node_string_literal_t *this2 = node_cast_string_literal(this);
-    return anna_create_string(this2->payload_size, this2->payload);
-}
- */
+/*
+  anna_object_t *anna_i_const_string(anna_node_t *this, anna_stack_frame_t *stack)
+  {
+  anna_node_string_literal_t *this2 = node_cast_string_literal(this);
+  return anna_create_string(this2->payload_size, this2->payload);
+  }
+*/
 anna_object_t *anna_i_const_int(anna_node_t *this, anna_stack_frame_t *stack)
 {
     anna_node_int_literal_t *this2 = node_cast_int_literal(this);
@@ -895,11 +897,11 @@ anna_object_t *anna_i_const_int(anna_node_t *this, anna_stack_frame_t *stack)
 }
 
 /**
-  This method is the best ever! All method calls on the null object run this
+   This method is the best ever! All method calls on the null object run this
 */
 anna_object_t *anna_i_null_function(anna_object_t **node_base)
 {
-  return null_object;
+    return null_object;
 }
 
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper)
@@ -912,8 +914,8 @@ anna_type_t *anna_type_unwrap(anna_object_t *wrapper)
 
 static void anna_type_wrapper_create(anna_type_t *result)
 {
-  result->wrapper = anna_object_create(type_type);
-  memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
+    result->wrapper = anna_object_create(type_type);
+    memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
 }
 
 static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count, int fake_definition)
@@ -946,10 +948,10 @@ anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fak
 }
 			  
 anna_object_t *anna_object_create(anna_type_t *type) {
-   anna_object_t *result = calloc(1,sizeof(anna_object_t)+sizeof(anna_object_t *)*type->member_count);
-   result->type = type;
+    anna_object_t *result = calloc(1,sizeof(anna_object_t)+sizeof(anna_object_t *)*type->member_count);
+    result->type = type;
   
-   return result;
+    return result;
 }
 
 size_t anna_member_create(anna_type_t *type,
@@ -975,10 +977,10 @@ size_t anna_member_create(anna_type_t *type,
     }
     else 
     {
-      if(mid != anna_mid_get(name))
+	if(mid != anna_mid_get(name))
 	{
-	  wprintf(L"Error, multiple mids for name %ls: %d and %d\n", name, mid, anna_mid_get(name));
-	  CRASH;
+	    wprintf(L"Error, multiple mids for name %ls: %d and %d\n", name, mid, anna_mid_get(name));
+	    CRASH;
 	  
 	}
     }
@@ -1091,54 +1093,54 @@ size_t anna_method_create(anna_type_t *type,
 
 static void anna_type_type_create_early()
 {
-  anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, L"!typeWrapperPayload",
-		     0, null_type);
+    anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, L"!typeWrapperPayload",
+		       0, null_type);
 }
 
 int hash_null_func( void *data )
 {
-  return 0;
+    return 0;
 }
 
 int hash_null_cmp( void *a, 
 		   void *b )
 {
-  return 1;
+    return 1;
 }
 
 static void anna_null_type_create_early()
 {
-  int i;
+    int i;
   
-  wchar_t *member_name = L"!null_member";
-  anna_member_t *null_member;  
-  null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
-  //wprintf(L"Null member is %d\n", null_member);
+    wchar_t *member_name = L"!null_member";
+    anna_member_t *null_member;  
+    null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
+    //wprintf(L"Null member is %d\n", null_member);
 
-  null_member->type = null_type;
-  null_member->offset=0;
-  null_member->is_static=1;
-  wcscpy(null_member->name, member_name);
+    null_member->type = null_type;
+    null_member->offset=0;
+    null_member->is_static=1;
+    wcscpy(null_member->name, member_name);
 
-  /*  
-    anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_getitem, object_type, 2, i_argv, i_argn);
-  */
-  anna_type_t *argv[]={null_type};
-  wchar_t *argn[]={L"this"};
+    /*  
+	anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_getitem, object_type, 2, i_argv, i_argn);
+    */
+    anna_type_t *argv[]={null_type};
+    wchar_t *argn[]={L"this"};
   
-  null_type->static_member[0] = anna_native_create(L"!nullFunction", ANNA_FUNCTION_FUNCTION, 
-						   (anna_native_t)&anna_i_null_function, 
-						   null_type, 1, argv, argn)->wrapper;
+    null_type->static_member[0] = anna_native_create(L"!nullFunction", ANNA_FUNCTION_FUNCTION, 
+						     (anna_native_t)&anna_i_null_function, 
+						     null_type, 1, argv, argn)->wrapper;
   
-  anna_object_t *null_function;  
-  null_function = null_type->static_member[0];
-  hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
-  hash_put(&null_type->name_identifier, L"!null_member", null_member);
+    anna_object_t *null_function;  
+    null_function = null_type->static_member[0];
+    hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
+    hash_put(&null_type->name_identifier, L"!null_member", null_member);
   
-  for(i=0; i<64;i++) {
-    null_type->mid_identifier[i] = null_member;
-  }
-  assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
+    for(i=0; i<64;i++) {
+	null_type->mid_identifier[i] = null_member;
+    }
+    assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
 }
 
 static void anna_object_type_create_early()
@@ -1250,9 +1252,9 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		    offset=1;
 		    argv[0]=this;		    
 		    for(i=0; i<(function->input_count-offset); i++) 
-		      {
+		    {
 			argv[i+offset]=param[i];
-		      }
+		    }
 		}
 		//wprintf(L"Invoking function with %d params\n", function->input_count);
 		
@@ -1282,7 +1284,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		for(i=0; i<(function->input_count-offset); i++) 
 		{
 /*		    wprintf(L"Declare input variable %d with name %ls on stack\n",
-			    i, function->input_name[i+offset]);
+		    i, function->input_name[i+offset]);
 */		  
 		    anna_stack_declare(my_stack, 
 				       function->input_name[i+offset],
@@ -1295,9 +1297,9 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		    result = anna_node_invoke(function->body->child[i], my_stack);
 		}
 		/*
-		if(my_stack->stop) 
-		{
-		}
+		  if(my_stack->stop) 
+		  {
+		  }
 		*/
 		return result;
 	    }
@@ -1381,10 +1383,10 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
 
 int main(int argc, char **argv)
 {
-  if(argc != 2)
+    if(argc != 2)
     {
-      wprintf(L"Error: Expected exactly one argument, a name of a file to run.\n");
-      exit(1);
+	wprintf(L"Error: Expected exactly one argument, a name of a file to run.\n");
+	exit(1);
     }
     wchar_t *filename = str2wcs(argv[1]);
 
@@ -1401,8 +1403,8 @@ int main(int argc, char **argv)
     
     if(!program) 
     {
-       wprintf(L"Program failed to parse correctly; exiting.\n");
-       exit(1);
+	wprintf(L"Program failed to parse correctly; exiting.\n");
+	exit(1);
     }
     
     wprintf(L"Parsed program:\n");    
@@ -1432,7 +1434,7 @@ int main(int argc, char **argv)
     }
     /*
       Run the function
-     */
+    */
     wprintf(L"Validated program:\n");    
     anna_node_print(program);
     wprintf(L"\n");

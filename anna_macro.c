@@ -876,10 +876,11 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 			     anna_function_t *function, 
 			     anna_node_list_t *parent)
 {
+/*
     wprintf(L"LALALA\n");
-    anna_node_print(node);
+    anna_node_print((anna_node_t *)node);
     wprintf(L"\n");
-    
+*/    
     CHECK_CHILD_COUNT(node,L"iteration macro", 2);
     CHECK_NODE_BLOCK(node->child[1]);
     CHECK_NODE_TYPE(node->function, ANNA_NODE_CALL);
@@ -1250,9 +1251,10 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 	    if(wcscmp(name_identifier->name, L"__get__")==0)
 	    {
 		// foo[bar] = baz
-		call->function = anna_node_identifier_create(
-		    &name_identifier->location,
-		    L"__set__");
+		call->function = (anna_node_t *)
+		    anna_node_identifier_create(
+			&name_identifier->location,
+			L"__set__");
 		anna_node_call_add_child(
 		    call, 
 		    node->child[1]);
@@ -1261,9 +1263,10 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 	    else if(wcscmp(name_identifier->name, L"__memberGet__")==0)
 	    {
 		// foo.bar = baz
-		call->function = anna_node_identifier_create(
-		    &name_identifier->location, 
-		    L"__memberSet__");
+		call->function = (anna_node_t *)
+		    anna_node_identifier_create(
+			&name_identifier->location, 
+			L"__memberSet__");
 		anna_node_call_add_child(
 		    call, 
 		    node->child[1]);
@@ -1300,7 +1303,7 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     if(!member_type)
     {
 	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
-	anna_node_print(node);
+	anna_node_print((anna_node_t *)node);
 	wprintf(L"\n");
 	
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
