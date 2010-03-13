@@ -407,11 +407,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     ;
 
     anna_function_t *func;
-    /*
-    func.name = L"!anonymous";
-    memcpy(&(func.stack_template), stack, sizeof(anna_stack_frame_t));
-    anna_stack_print(stack);
-    */
+
     func = anna_native_create(L"!anonymous",
 			      ANNA_FUNCTION_MACRO,
 			      (anna_native_t)anna_list_map_pair,
@@ -613,7 +609,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	i_argn);
 
     anna_native_method_add_node(
-	definition, -1, L"__append__", 0, 
+	definition, -1, L"__appendValue__", 0, 
 	(anna_native_t)&anna_list_append, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T") , 
 	2, a_argv, a_argn);

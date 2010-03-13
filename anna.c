@@ -58,7 +58,6 @@
   Buffer type
   Complex type
 
-  Move uncommon operators to become generic operators (bit ops, sign, abs, etc.)
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks at type creation time and stow away the results somewhere?
@@ -119,6 +118,8 @@
   Do some real testing to find the optimal operator presedence order
   class member macros
   Type support for lists
+  Move uncommon operators to become generic operators (bit ops, sign, abs, etc.)
+  Removed macro methods, all macros are global
   
   Type type
   Call type

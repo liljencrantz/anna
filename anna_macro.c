@@ -428,7 +428,7 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 									     name),
 				  1,
 				  (anna_node_t **)&node);	
-	anna_function_t *macro_definition = anna_node_macro_get(attribute_call_node->function, 
+	anna_function_t *macro_definition = anna_node_macro_get(attribute_call_node, 
 								function->stack_template);
 	CHECK(macro_definition, id, L"No such attribute macro found: %ls", name);
 	node = (anna_node_call_t *)macro_definition->native.macro(attribute_call_node, function, parent);
@@ -743,12 +743,12 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 						anna_function_t *function, 
 						anna_node_list_t *parent)
 {
-   wprintf(L"\nASDDAS %d\n", node->child_count);
-   anna_node_print(node);
+    //wprintf(L"\noperator wrapper called with %d children\n", node->child_count);
    
+    //anna_node_print(node);
    
-   CHECK(node->child_count >=2,node, L"Too few arguments");
-   CHECK(node->child_count <=3,node, L"Too many arguments");
+    CHECK(node->child_count >=2,node, L"Too few arguments");
+    CHECK(node->child_count <=3,node, L"Too many arguments");
     anna_prepare_children(node, function, parent);
     int arg_offset = 0;
     anna_type_t * t1;
@@ -876,15 +876,24 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 			     anna_function_t *function, 
 			     anna_node_list_t *parent)
 {
+    wprintf(L"LALALA\n");
+    anna_node_print(node);
+    wprintf(L"\n");
+    
     CHECK_CHILD_COUNT(node,L"iteration macro", 2);
     CHECK_NODE_BLOCK(node->child[1]);
-    CHECK_NODE_TYPE(node->function, ANNA_NODE_MEMBER_GET_WRAP);
-    
-    anna_node_member_get_t * mg = (anna_node_member_get_t *)node->function;
-    int return_pop_count = 1+function->return_pop_count;
-    anna_type_t *lst_type = anna_node_get_return_type(mg->object, function->stack_template);
+    CHECK_NODE_TYPE(node->function, ANNA_NODE_CALL);
 
-    wchar_t * call_name = anna_mid_get_reverse(mg->mid);
+    anna_node_call_t * mg = (anna_node_call_t *)node->function;
+    CHECK_CHILD_COUNT(mg, L"iteration macro", 2);
+    CHECK_NODE_TYPE(mg->child[1], ANNA_NODE_IDENTIFIER);
+
+    anna_node_identifier_t * call_name_id = (anna_node_identifier_t *)mg->child[1];
+    
+    int return_pop_count = 1+function->return_pop_count;
+    anna_type_t *lst_type = anna_node_get_return_type(mg->child[0], function->stack_template);
+
+    wchar_t * call_name = call_name_id->name;
     
     switch(node->child[0]->node_type)
     {
@@ -904,7 +913,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		}
 	    ;
 	    
-//    wprintf(L"Setting up each function, param name is %ls\n", name->name);
+	    wprintf(L"Setting up iteration function, param name is %ls\n", value_name->name);
 	    
 	    string_buffer_t sb;
 	    sb_init(&sb);
@@ -913,12 +922,11 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    sb_append(&sb, L"Value__");
 	    
 	    wchar_t *method_name = sb_content(&sb);
-
-
 	    
 	    size_t mid = anna_mid_get(method_name);
 	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
 	    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
+	    
 	    CHECK(function_key, node, L"Not a function: %ls", method_name);
 	    anna_object_t **sub_key_ptr=anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
 	    CHECK(sub_key_ptr, node, L"Not a function: %ls", function_key->argv[1]->name);
@@ -958,7 +966,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		&node->location,
 		(anna_node_t *)anna_node_member_get_create(
 		    &node->location,
-		    mg->object,
+		    mg->child[0],
 		    mid,
 		    member_type,
 		    1),   
@@ -1045,7 +1053,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		(anna_node_t *)
 		anna_node_member_get_create(
 		    &node->location,
-		    mg->object,
+		    mg->child[0],
 		    mid,
 		    member_type,
 		    1),   
@@ -1279,19 +1287,25 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
     
     anna_prepare_children(node, function, parent);
+
     anna_type_t *object_type = anna_node_get_return_type(node->child[0], function->stack_template);
     CHECK(object_type, node->child[0], L"Tried to access member in object of unknown type");
-        
+    
     anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
+
     size_t mid = anna_mid_get(name_node->name);
     
     anna_type_t *member_type = anna_type_member_type_get(object_type, name_node->name);
+
     if(!member_type)
     {
-	anna_error((anna_node_t *)node, L"Unable to calculate type of member %ls of object of type %ls", name_node->name, object_type->name);
+	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
+	anna_node_print(node);
+	wprintf(L"\n");
+	
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
     }
-    
+  
     int wrap = !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     return (anna_node_t *)anna_node_member_get_create(&node->location,
 						      node->child[0], 
@@ -1867,15 +1881,6 @@ void anna_macro_init(anna_stack_frame_t *stack)
 	    L"__gte__",
 	    L"__lte__",
 	    L"__neq__",
-	    L"__shl__",
-	    L"__shr__",
-	    L"__mod__",
-	    L"__bitand__",
-	    L"__bitor__",
-	    L"__xor__",
-	    L"__format__",
-	    L"__cshl__",
-	    L"__cshr__"
 	}
     ;
 

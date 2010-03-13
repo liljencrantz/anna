@@ -437,15 +437,22 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
     call->function = function;
 }
 
-anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stack)
+anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t *stack)
 {
-    switch(node->node_type)
+/*
+    wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
+    anna_node_print(node);
+    wprintf(L"\n");
+*/
+    switch(node->function->node_type)
     {
 	case ANNA_NODE_IDENTIFIER:
 	{
-	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
+	    anna_node_identifier_t *name=(anna_node_identifier_t *)node->function;
+
 	    anna_object_t *obj = anna_stack_get_str(stack, name->name);
 	    anna_function_t *func=anna_function_unwrap(obj);
+//	    wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
 	    
 	    if(func && func->flags == ANNA_FUNCTION_MACRO)
 	    {
@@ -453,12 +460,53 @@ anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stac
 	    }
 	    break;
 	}
+
+
+	case ANNA_NODE_CALL:
+	{
+	    anna_node_call_t *call=(anna_node_call_t *)node->function;
+	    if(call->function->node_type != ANNA_NODE_IDENTIFIER)
+	    {
+		break;
+	    }
+	    anna_node_identifier_t *name=(anna_node_identifier_t *)call->function;	    
+	    
+	    if(wcscmp(name->name, L"__memberGet__") == 0)
+	    {
+//		wprintf(L"It's a member lookup\n");
+
+		if(call->child_count == 2 && 
+		   call->child[1]->node_type == ANNA_NODE_IDENTIFIER)
+		{
+		    anna_node_identifier_t *member_name=
+			(anna_node_identifier_t *)call->child[1];
+//		    wprintf(L"Looking up member %ls\n", member_name->name);
+		    anna_object_t **obj = anna_stack_addr_get_str(stack, member_name->name);
+		    if(obj)
+		    {
+			anna_function_t *func=anna_function_unwrap(*obj);
+		    
+			if(func && func->flags == ANNA_FUNCTION_MACRO)
+			{
+			    //wprintf(L"Found macro!\n");
+			    
+			    return func;
+			}
+		    }
+		    
+		}	
+	    }
+	}
 	
+/*	
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	case ANNA_NODE_MEMBER_GET:
 	{
+	    wprintf(L"Looking for macro in member get node\n");
+	    
 	    anna_node_member_get_t *get = (anna_node_member_get_t *)node;
 	    wchar_t *name = anna_mid_get_reverse(get->mid);
+	    wprintf(L"Got a name! %ls\n", name);
 	    anna_object_t **obj = anna_stack_addr_get_str(stack, name);
 	    if(obj)
 	    {
@@ -471,17 +519,14 @@ anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stac
 	    }
 	    
 	    break;
-	    
-	    /*
-	    anna_node_print(get->object);
-	    wprintf(L"\n");
-	    */
-	    
 	}
-	
+*/	
 	default:
 	{
-	    break;
+/*	    wprintf(L"Function is not an identifier, not a macro:\n");
+	    anna_node_print(node->function);
+	    wprintf(L"\n");
+*/
 	}
 	
     }
@@ -489,31 +534,33 @@ anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_frame_t *stac
     
 }
 
-anna_node_t *anna_node_call_prepare(anna_node_call_t *node, anna_function_t *function, anna_node_list_t *parent)
+anna_node_t *anna_node_call_prepare(
+    anna_node_call_t *node, 
+    anna_function_t *function,
+    anna_node_list_t *parent)
 {
     
-   anna_node_list_t list = 
-      {
-	 (anna_node_t *)node, 0, parent
-      }
-   ;
+    anna_node_list_t list = 
+	{
+	    (anna_node_t *)node, 0, parent
+	}
+    ;
 /*
    wprintf(L"Prepare call node:\n");
    anna_node_print((anna_node_t *)node);
    wprintf(L"\n");
-*/
-   
+*/ 
    if(node->node_type == ANNA_NODE_CALL)
    {       
-       node->function = anna_node_prepare(node->function, function, parent);
-       anna_type_t *func_type = anna_node_get_return_type(node->function, function->stack_template);
-       anna_function_t *macro_definition = anna_node_macro_get(node->function, function->stack_template);
+       anna_function_t *macro_definition = anna_node_macro_get(node, function->stack_template);
        
        if(macro_definition)
        {       
 	   return anna_node_prepare(macro_definition->native.macro(node, function, parent), function, parent);
        }
        
+       node->function = anna_node_prepare(node->function, function, parent);
+       anna_type_t *func_type = anna_node_get_return_type(node->function, function->stack_template);       
        if(func_type == type_type)
        {
 	   /*
@@ -629,7 +676,15 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 		return 0;
 	    }
 	    
-	    assert(function_data->result);
+	    if(!function_data->result)
+	    {
+		wprintf(L"Critical: Failed to determine return type of node\n");
+		anna_node_print(this);
+		wprintf(L"\n");
+		CRASH;
+		
+	    }
+	    
 	    return function_data->result;
 	}
 	

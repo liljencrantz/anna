@@ -64,7 +64,7 @@ foo[3]="hej";
 print(foo.root.value);
 
 */
-
+/*
 function foo(Int in){
 	if(in >4){
 		return 32;
@@ -81,3 +81,4 @@ print(bar());
 
 print(foo(31));
 print("Hej");
+*/
