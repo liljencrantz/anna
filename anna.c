@@ -217,22 +217,6 @@ void anna_native_declare(anna_stack_frame_t *stack,
     anna_stack_declare(stack, name, f->type, f->wrapper);
 }
 
-static void add_member(void *key, void *value, void *aux)
-{
-//    wprintf(L"Got member %ls\n", key);
-    
-    wchar_t ***dest = (wchar_t ***)aux;
-    **dest = key;
-    (*dest)++;
-}
-
-
-void anna_type_get_member_names(anna_type_t *type, wchar_t **dest)
-{
-    hash_foreach2(&type->name_identifier, &add_member, &dest);
-}
-
-
 
 anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name)
 {
@@ -495,21 +479,8 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 	wprintf(L"Critical: Tried to call a non-function");
 	CRASH;
     }
-//     FIXME: Is there any validity checking we could do here?
-  
+    return 0;
 }
-
-
-
-static int anna_is_member_get(anna_node_t *node)
-{
-    if(node->node_type != ANNA_NODE_IDENTIFIER)
-	return 0;
-    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;
-    return wcscmp(node2->name, L"__memberGet__")==0;
-    
-}
-
 
 anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
 {
@@ -932,16 +903,6 @@ static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_cou
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = anna_mid_identifier_create();
     result->name = name;
-    anna_location_t loc=
-	{
-	    0,0,0,0,0
-	}
-    ;
-    
-    if(fake_definition)
-    {
-	
-    }
     
     return result;  
 }
@@ -1221,8 +1182,8 @@ void anna_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {
     wchar_t *key = (wchar_t *)key_ptr;
     anna_member_t *member = (anna_member_t *)val_ptr;
-    anna_object_t *obj = (anna_object_t *)aux_ptr;
-    anna_object_t *value = member->is_static?obj->type->static_member[member->offset]:obj->member[member->offset];    
+    //anna_object_t *obj = (anna_object_t *)aux_ptr;
+    //anna_object_t *value = member->is_static?obj->type->static_member[member->offset]:obj->member[member->offset];    
     wprintf(L"  %ls: %ls\n", key, member->type?member->type->name:L"?");
 }
 

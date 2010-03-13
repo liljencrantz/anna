@@ -1172,7 +1172,7 @@ ssize_t sb_length( string_buffer_t *b )
 
 wchar_t *sb_content(string_buffer_t *b )
 {
-  CHECK( b, );
+  CHECK( b, 0 );
   return (wchar_t *)b->buff;
 }
 

@@ -1,5 +1,11 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <wchar.h>
+#include <assert.h>
+#include <string.h>
 
 #include "anna_type.h"
+#include "anna_macro.h"
 
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type)
 {
@@ -76,4 +82,21 @@ void anna_type_native_setup(anna_type_t *type, anna_stack_frame_t *stack)
     func->stack_template=stack;
     anna_macro_type_setup(type, func, 0);
 }
+
+
+static void add_member(void *key, void *value, void *aux)
+{
+//    wprintf(L"Got member %ls\n", key);
+    
+    wchar_t ***dest = (wchar_t ***)aux;
+    **dest = key;
+    (*dest)++;
+}
+
+
+void anna_type_get_member_names(anna_type_t *type, wchar_t **dest)
+{
+    hash_foreach2(&type->name_identifier, &add_member, &dest);
+}
+
 

@@ -50,7 +50,7 @@ class Range
 		var i=this.from;
 		while(i<this.to)
 		{
-			f(i, i+from);
+			f(i, i+this.from);
 			i = i+1;
 		}
 		return null;

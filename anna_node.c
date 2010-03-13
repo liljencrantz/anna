@@ -459,8 +459,9 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 	    anna_object_t **obj = anna_stack_addr_get_str(stack, name->name);
 	    if(obj)
 	    {
+		
 		anna_function_t *func=anna_function_unwrap(*obj);
-//	    wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
+		//wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
 		
 		if(func && func->flags == ANNA_FUNCTION_MACRO)
 		{
@@ -781,6 +782,14 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	      FIXME: Do some actual checking!
 	    */
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;	    
+	    int i;
+	    
+	    anna_node_validate(this2->function, stack);
+	    for(i=0; i<this2->child_count; i++)
+	    {
+		anna_node_validate(this2->child[i], stack);
+	    }
+
 	    break;
 	}
 	

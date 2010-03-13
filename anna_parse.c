@@ -10,6 +10,7 @@
 #include "wutil.h"
 #include "anna_node.h"
 #include "anna_lex.h"
+#include "anna_yacc.h"
 
 struct parse_data 
 {
@@ -21,6 +22,8 @@ struct parse_data
 }
    ;
 typedef struct parse_data parse_data_t;
+
+int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
 
 /*
 void anna_error(wchar_t *filename, size_t pos, wchar_t *msg)

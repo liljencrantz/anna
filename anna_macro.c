@@ -10,6 +10,7 @@
 #include "anna_node.h"
 #include "anna_stack.h"
 #include "anna_macro.h"
+#include "anna_type.h"
 
 
 /**
@@ -130,7 +131,6 @@ static int templatize_key_hash(void *k1)
     int result;
    
     result = (int)key1->argc + (int)key1->base;
-    int i;
     return result;
 }
 
@@ -724,6 +724,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	}
 	
 	if(name) {
+	    wprintf(L"Declaring %ls as a function\n", name);
 	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type), result->wrapper);
 	}
 	return (anna_node_t *)anna_node_dummy_create(&node->location,

@@ -262,5 +262,6 @@ int anna_type_setup(anna_type_t *type,
 
 anna_object_t *anna_i_null_function(anna_object_t **node_base);
 
+void anna_prepare_children(struct anna_node_call *in, anna_function_t *func, anna_node_list_t *parent);
 
 #endif
