@@ -35,8 +35,18 @@ size_t anna_string_get_payload_size(anna_object_t *this)
 }
 
 
-void anna_string_type_create()
+void anna_string_type_create(anna_stack_frame_t *stack)
 {
-    anna_member_create(string_type, ANNA_MID_STRING_PAYLOAD,  L"!stringPayload", 0, null_type);
-    anna_member_create(string_type, ANNA_MID_STRING_PAYLOAD_SIZE,  L"!stringPayloadSize", 0, null_type);
+    string_type = anna_type_native_create(L"String", stack);
+    anna_node_call_t *definition = anna_type_definition_get(string_type);
+    
+    anna_member_add_node(
+	definition, ANNA_MID_STRING_PAYLOAD,  L"!stringPayload", 
+	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+    
+    anna_member_add_node(
+	definition, ANNA_MID_STRING_PAYLOAD_SIZE,  L"!stringPayloadSize", 
+	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+    
+    anna_type_native_setup(string_type, stack);
 }
