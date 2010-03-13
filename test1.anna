@@ -33,6 +33,31 @@ class Complex
 
 }
 
+class Range
+{
+
+	var Int from;
+	var Int to;
+
+	function __init__(Int from, Int to)
+	{
+		this.from = from;
+		this.to=to;
+	}
+
+	function __eachValue__(function Null f (Int key, Int value))
+	{
+		var i=this.from;
+		while(i<this.to)
+		{
+			f(i, i+from);
+			i = i+1;
+		}
+		return null;
+	}
+
+}
+
 
 var val = Complex(1.0, 1.0);
 var val2 = Complex(2.0, 3.0);
