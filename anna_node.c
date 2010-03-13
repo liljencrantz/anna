@@ -581,8 +581,14 @@ anna_node_t *anna_node_call_prepare(
 	   return (anna_node_t *)node;
        }
    }
-      
-   //wprintf(L"Regular function, prepare the kids\n");
+   else 
+   {
+       wprintf(L"LALALA, preparing constructor\n");
+       anna_node_print(node);
+       wprintf(L"\n");
+       
+   }
+   
    int i;
    for(i=0; i<node->child_count; i++)
    {
@@ -725,6 +731,12 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_node_member_get_t *this2 =(anna_node_member_get_t *)this;
+	    return this2->type;
+	}
+
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    anna_node_member_set_t *this2 =(anna_node_member_set_t *)this;
 	    return this2->type;
 	}
 
@@ -895,6 +907,17 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
 					   anna_stack_frame_t *stack)
 {
+/*
+    assert(this->object);
+    assert(anna_node_invoke(this->object, stack));
+    if(!anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid))
+    {
+	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
+		   anna_node_invoke(this->object, stack)->type->name,
+		   anna_mid_get_reverse(this->mid));
+	
+    }
+*/  
     return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
 }
 

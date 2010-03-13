@@ -1,15 +1,36 @@
 
-var foo = List<Int>();
+class Complex
+{
+	var Float real;
+	var Float img;
 
-foo ~= 3;
-foo ~= 3;
-foo ~= 3;
-foo ~= 3;
+	function __init__(Float r, Float i)
+	{
+		this.real = r;
+		this.img = i;
+	}
 
-foo.each(i){print(i)}
+	function __addComplex__(Complex other)
+	{
+		return Complex(this.real + other.real, this.img + other.img);
+	}
 
-print(1 @bitand 3);
-print(4 @xor 2);
+
+	function __mulComplex__(Complex other)
+	{
+		return Complex(this.real * other.real -this.img*other.img, this.real * other.img + this.img*other.real);
+	}
+
+
+}
+
+
+var val = Complex(1.0, 1.0);
+var val2 = Complex(2.0, 3.0);
+
+val = val * val2;
+print(val.img);
+
 /*
 class Foo template (X:Int)
 {

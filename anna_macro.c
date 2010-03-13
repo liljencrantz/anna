@@ -683,13 +683,14 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	    anna_node_call_t *decl = node_cast_call(declarations->child[i]);
 	    anna_node_identifier_t *name = node_cast_identifier(decl->child[0]);
 	    anna_node_identifier_t *type_name = node_cast_identifier(decl->child[1]);
-	    anna_object_t *type_wrapper = anna_stack_get_str(function->stack_template, type_name->name);
+	    
+	    anna_object_t **type_wrapper = anna_stack_addr_get_str(function->stack_template, type_name->name);
 	    if(!type_wrapper)
 	    {
 		anna_error((anna_node_t *)type_name, L"Unknown type: %ls", type_name->name);
 		return (anna_node_t *)anna_node_null_create(&node->location);	    
 	    }
-	    argv[i+!!type] = anna_type_unwrap(type_wrapper);
+	    argv[i+!!type] = anna_type_unwrap(*type_wrapper);
 	    argn[i+!!type] = name->name;
 	}
     }
@@ -1303,8 +1304,6 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     if(!member_type)
     {
 	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
-	anna_node_print((anna_node_t *)node);
-	wprintf(L"\n");
 	
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
     }
@@ -1654,13 +1653,13 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     anna_type_t *type = anna_type_create(name, 64, 0);
 
     type->definition = node;
+    anna_stack_declare(function->stack_template, name, type_type, type->wrapper);
     anna_node_t *type_result = anna_macro_type_setup(type, function, parent);
     
     if(type_result->node_type == ANNA_NODE_NULL){
 	return type_result;
     }
 
-    anna_stack_declare(function->stack_template, name, type_type, type->wrapper);
     return (anna_node_t *)anna_node_dummy_create(&node->location,
 						 type->wrapper,
 						 0);
@@ -1673,7 +1672,7 @@ static anna_node_t *anna_macro_return(anna_node_call_t *node,
 				      anna_node_list_t *parent)
 {
     CHECK_CHILD_COUNT(node,L"return", 1);
-    return (anna_node_t *)anna_node_return_create(&node->location, node->child[0], function->return_pop_count+1);
+    return (anna_node_t *)anna_node_return_create(&node->location, anna_node_prepare(node->child[0], function, parent), function->return_pop_count+1);
 }
 
 static anna_node_t *anna_macro_templatize(anna_node_call_t *node, 
