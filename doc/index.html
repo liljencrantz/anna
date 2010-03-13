@@ -279,8 +279,43 @@ foo = ...;
 </p>
 <h2>I'll be your operator, baby</h2>
 <p>
-  Anna has a small number of special operators that...
+  Anna has a small number of special operators that allow you to
+  implement some of the most common language operations with a
+  slightly terser syntax that most people find easier to parse. These
+  operators include comparison, assigment, basic aritmetic, string
+  formating, list slicing and a few more. The complete table of
+  operators and their precedence is listed in the table below. Most of
+  these operators are overloadable. The exceptions are the '!' not
+  operator, the '.' member access operator and a few more. The rest
+  can be overloaded by defining methods with special names. For
+  example, when the '+' operator is used...
 </p>
+
+<h2>No reservations? No problem!</h2>
+<p>
+  The Suger layer has a small number of such words, including
+  'function', 'var' and 'return'. But the basic Anna language does not
+  have any reserved words. But because macros can never be redefined,
+  macros more or less take the place of reserved words. It may seem
+  scary that modules you import can add reserved words to the language
+  - what if a module you rely on suddenly adds a macro named 'pie'?
+  Suddenly, you'll have to edit all your source code to remove any
+  variables and functions named pie. And given how delicious pie is,
+  that is bound to take forever! 
+</p>
+<p>
+  Clearly, allowing a module to add key words without your say so is a
+  terrible idea. Anna avoids this disaster in them making by simply
+  making the import of macros an explicit act. Macro names are not
+  imported automatically when you import a module. If the module
+  'it.is.delicious' contains a macro named 'pie', it will not be
+  imported by the statement 'import it.is.delicious'. You need to
+  write 'import it.is.delicious.pie'. That way, every single
+  non-builtin macro that you import is explicitly listed at the top of
+  every source code file.
+</p>
+
+
 <h1>A simple, annotated example</h1>
 <p>
   Ok, let's start putting Anna through her paces! Fire up the
