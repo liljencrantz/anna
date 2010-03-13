@@ -37,23 +37,17 @@ void anna_int_type_create(anna_stack_frame_t *stack)
     int_type = anna_type_create(L"Int", 64, 0);
     anna_stack_declare(stack, L"Int", type_type, int_type->wrapper);
 
-    anna_location_t loc=
-	{
-	    0,0,0,0,0
-	}
-    ;
-    
     anna_node_call_t *definition = 
 	anna_node_call_create(
-	    &loc,
-	    (anna_node_t *)anna_node_identifier_create(&loc, L"__block__"),
+	    0,
+	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
 	    0,
 	    0);
     
     anna_node_call_t *full_definition = 
 	anna_node_call_create(
-	    &loc,
-	    (anna_node_t *)anna_node_identifier_create(&loc, L"__type__"),
+	    0,
+	    (anna_node_t *)anna_node_identifier_create(0, L"__type__"),
 	    0,
 	    0);
     int_type->definition = full_definition;
@@ -61,19 +55,19 @@ void anna_int_type_create(anna_stack_frame_t *stack)
     anna_node_call_add_child(
 	full_definition,
 	(anna_node_t *)anna_node_identifier_create(
-	    &loc,
-	    L"List"));
+	    0,
+	    L"Int"));
     
     anna_node_call_add_child(
 	full_definition,
 	(anna_node_t *)anna_node_identifier_create(
-	    &loc,
+	    0,
 	    L"class"));
     
     anna_node_call_t *attribute_list = 
 	anna_node_call_create(
-	    &loc,
-	    (anna_node_t *)anna_node_identifier_create(&loc, L"__block__"),
+	    0,
+	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
 	    0,
 	    0);	
 
@@ -87,7 +81,7 @@ void anna_int_type_create(anna_stack_frame_t *stack)
     
     anna_member_add_node(
 	definition, ANNA_MID_INT_PAYLOAD,  L"!intPayload", 
-	0, (anna_node_t *)anna_node_identifier_create(&loc, L"Null") );
+	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
 
     anna_int_type_i_create(definition, stack);
 
@@ -104,6 +98,4 @@ void anna_int_type_create(anna_stack_frame_t *stack)
     anna_macro_type_setup(int_type, func, 0);
 
     anna_int_one = anna_int_create(1);
-
-
 }

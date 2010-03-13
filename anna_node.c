@@ -19,9 +19,15 @@
 
 void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 {
-  //    assert(l->filename);
+    if(l)    
+    {
+	memcpy(&node->location, l, sizeof(anna_location_t));
+    }
+    else
+    {
+	memset(&node->location, 0, sizeof(anna_location_t));	
+    }
     
-    memcpy(&node->location, l, sizeof(anna_location_t));
 }
 
 anna_node_call_t *node_cast_call(anna_node_t *node) 

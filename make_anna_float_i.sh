@@ -9,9 +9,10 @@ echo "
 "
 
 init="
-    anna_type_t *argv[]=
+    anna_node_t *argv[]=
 	{
-	    float_type, float_type
+	    (anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	    (anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
 	}
     ;
     
@@ -21,9 +22,10 @@ init="
 	}
     ;
 
-    anna_type_t *i_argv[]=
+    anna_node_t *i_argv[]=
 	{
-	    float_type, int_type
+	    (anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	    (anna_node_t *)anna_node_identifier_create(0, L\"Int\"), 
 	}
     ;
     
@@ -41,7 +43,11 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_create(float_type, -1, L\"__${name}Float__\", 0, (anna_native_t)&anna_float_i_${name}, float_type, 2, argv, argn);"
+    anna_native_method_add_node(
+	definition, -1, L\"__${name}Float__\", 0, 
+	(anna_native_t)&anna_float_i_${name}, 
+	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	2, argv, argn);"
 
     echo "
 static anna_object_t *anna_float_i_$name(anna_object_t **param)
@@ -65,7 +71,11 @@ for i in "add +" "sub -" "mul *" "div /"; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_create(float_type, -1, L\"__${name}Float__\", 0, (anna_native_t)&anna_float_i_${name}, float_type, 2, argv, argn);"
+    anna_native_method_add_node(
+	definition, -1, L\"__${name}Float__\", 0,
+	(anna_native_t)&anna_float_i_${name}, 
+	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	2, argv, argn);"
 
     echo "
 static anna_object_t *anna_float_i_$name(anna_object_t **param)
@@ -85,7 +95,11 @@ for i in "add +" "sub -" "mul *" "div /"; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_create(float_type, -1, L\"__${name}Int__\", 0, (anna_native_t)&anna_float_i_int_${name}, float_type, 2, i_argv, i_argn);"
+    anna_native_method_add_node(
+	definition, -1, L\"__${name}Int__\", 0, 
+	(anna_native_t)&anna_float_i_int_${name}, 
+	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	2, i_argv, i_argn);"
 
     echo "
 static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
@@ -105,7 +119,11 @@ for i in "radd +" "rsub -" "rmul *" "rdiv /"; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_create(float_type, -1, L\"__${name}Int__\", 0, (anna_native_t)&anna_float_i_int_${name}, float_type, 2, i_argv, i_argn);"
+    anna_native_method_add_node(
+	definition, -1, L\"__${name}Int__\", 0, 
+	(anna_native_t)&anna_float_i_int_${name}, 
+	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	2, i_argv, i_argn);"
 
     echo "
 static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
@@ -121,7 +139,7 @@ static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
 done
 
 echo "
-static void anna_float_type_i_create(anna_stack_frame_t *stack)
+static void anna_float_type_i_create(anna_node_call_t *definition, anna_stack_frame_t *stack)
 {
 $init
 }"
