@@ -140,7 +140,7 @@ done
 
 init="$init
 "
-for i in "abs fabs(v1)" "neg -v1" "sqrt sqrt(v1)" "sign v1==0?0:(v1>0?1.0:-1.0)"; do
+for i in "abs fabs(v1)" "neg -v1" "sqrt sqrt(v1)" "sign (v1==0.0?0.0:(v1>0?1.0:-1.0))"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
     
@@ -155,7 +155,7 @@ for i in "abs fabs(v1)" "neg -v1" "sqrt sqrt(v1)" "sign v1==0?0:(v1>0?1.0:-1.0)"
 static anna_object_t *anna_float_i_$name(anna_object_t **param)
 {
     double v1 = anna_float_get(param[0]);
-    return anna_int_create($op);
+    return anna_float_create($op);
 }
 "
 done

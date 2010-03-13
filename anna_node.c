@@ -585,6 +585,7 @@ anna_node_t *anna_node_call_prepare(
 	   return (anna_node_t *)node;
        }
    }
+/*
    else 
    {
        wprintf(L"LALALA, preparing constructor\n");
@@ -592,7 +593,7 @@ anna_node_t *anna_node_call_prepare(
        wprintf(L"\n");
        
    }
-   
+*/ 
    int i;
    for(i=0; i<node->child_count; i++)
    {
@@ -755,6 +756,12 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	{
 	    anna_node_return_t *this2 =(anna_node_return_t *)this;
 	    return anna_node_get_return_type(this2->payload, stack);
+	}	
+	    
+	case ANNA_NODE_ASSIGN:
+	{
+	    anna_node_assign_t *this2 =(anna_node_assign_t *)this;
+	    return anna_node_get_return_type(this2->value, stack);
 	}
 	
 	    

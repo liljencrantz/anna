@@ -744,11 +744,12 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 						anna_function_t *function, 
 						anna_node_list_t *parent)
 {
+/*
     wprintf(L"\noperator wrapper called with %d children\n", node->child_count);
    
     anna_node_print(node);
     wprintf(L"\n");
-   
+*/ 
     CHECK(node->child_count >=2,node, L"Too few arguments");
     CHECK(node->child_count <=3,node, L"Too many arguments");
     anna_prepare_children(node, function, parent);

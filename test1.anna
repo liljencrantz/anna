@@ -26,7 +26,7 @@ class Complex
 		return (this.real*this.real + this.img+this.img).__sqrt__();
 	}
 
-	function __expInt(Int i)
+	function __expInt__(Int i)
 	{
 		return this * this;
 	}
@@ -41,7 +41,7 @@ function mandelbrot(Complex p0, Int maxStep)
 {
     var p = p0;
     var step = 1;
-    while(p.abs() < 2.0 and step <= maxStep) 
+    while(p.abs() < 2.0 and step < maxStep) 
     {
         p = (p @exp 2) + p0;
 	step = step + 1;
@@ -49,9 +49,7 @@ function mandelbrot(Complex p0, Int maxStep)
     return step;
 }
 
-
-val = val * val2;
-print(val.img);
+print(mandelbrot(Complex(0.37,0.3),32));
 
 /*
 class Foo template (X:Int)
