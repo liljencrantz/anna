@@ -67,7 +67,7 @@ struct anna_type
     struct anna_member **mid_identifier;
     struct anna_node_call *definition;
     struct anna_object *wrapper;
-    struct anna_object *static_member[];
+    struct anna_object **static_member[];
 };
 
 struct anna_member
