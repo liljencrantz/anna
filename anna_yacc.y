@@ -528,12 +528,12 @@ op3:
 	|
 	LESS_OR_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__le__");
+		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__lte__");
 	}
 	|
 	GREATER_OR_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__ge__");
+		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__gte__");
 	}
 ;
 

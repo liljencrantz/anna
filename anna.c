@@ -418,7 +418,13 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 
 anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
 {
-    assert(type);
+    if(!type)
+    {
+	wprintf(L"Critical: Tried to get function from non-existing type\n");
+	CRASH;
+	
+    }
+    
     //wprintf(L"Find function signature for call %ls\n", type->name);
     
     anna_function_type_key_t **function_ptr = (anna_function_type_key_t **)anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);

@@ -138,6 +138,30 @@ static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
 "
 done
 
+init="$init
+"
+for i in "abs fabs(v1)" "neg -v1" "sqrt sqrt(v1)" "sign v1==0?0:(v1>0?1.0:-1.0)"; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+    
+    init="$init
+    anna_native_method_add_node(
+	definition, -1, L\"__${name}__\", 0, 
+	(anna_native_t)&anna_float_i_${name}, 
+	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	1, argv, argn);"
+
+    echo "
+static anna_object_t *anna_float_i_$name(anna_object_t **param)
+{
+    double v1 = anna_float_get(param[0]);
+    return anna_int_create($op);
+}
+"
+done
+
+
+
 echo "
 static void anna_float_type_i_create(anna_node_call_t *definition, anna_stack_frame_t *stack)
 {

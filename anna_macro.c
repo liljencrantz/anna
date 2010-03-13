@@ -744,9 +744,10 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 						anna_function_t *function, 
 						anna_node_list_t *parent)
 {
-    //wprintf(L"\noperator wrapper called with %d children\n", node->child_count);
+    wprintf(L"\noperator wrapper called with %d children\n", node->child_count);
    
-    //anna_node_print(node);
+    anna_node_print(node);
+    wprintf(L"\n");
    
     CHECK(node->child_count >=2,node, L"Too few arguments");
     CHECK(node->child_count <=3,node, L"Too many arguments");
@@ -776,7 +777,11 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
        name_prefix = sb_content(&sb);
        arg_offset = 1;
     }
-    
+/*
+    wprintf(L"LALALA\n");    
+    anna_node_print(node->child[0]);
+    wprintf(L"\n");
+*/  
     t1 = anna_node_get_return_type(node->child[arg_offset], function->stack_template);
     t2 = anna_node_get_return_type(node->child[arg_offset+1], function->stack_template);
     CHECK(t1,node->child[arg_offset], L"Unknown type for first argument to operator %ls__", name_prefix);

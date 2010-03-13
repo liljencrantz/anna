@@ -21,12 +21,34 @@ class Complex
 		return Complex(this.real * other.real -this.img*other.img, this.real * other.img + this.img*other.real);
 	}
 
+	function abs()
+	{
+		return (this.real*this.real + this.img+this.img).__sqrt__();
+	}
+
+	function __expInt(Int i)
+	{
+		return this * this;
+	}
 
 }
 
 
 var val = Complex(1.0, 1.0);
 var val2 = Complex(2.0, 3.0);
+
+function mandelbrot(Complex p0, Int maxStep)
+{
+    var p = p0;
+    var step = 1;
+    while(p.abs() < 2.0 and step <= maxStep) 
+    {
+        p = (p @exp 2) + p0;
+	step = step + 1;
+    }
+    return step;
+}
+
 
 val = val * val2;
 print(val.img);

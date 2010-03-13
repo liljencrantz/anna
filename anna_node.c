@@ -456,14 +456,18 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 	{
 	    anna_node_identifier_t *name=(anna_node_identifier_t *)node->function;
 
-	    anna_object_t *obj = anna_stack_get_str(stack, name->name);
-	    anna_function_t *func=anna_function_unwrap(obj);
-//	    wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
-	    
-	    if(func && func->flags == ANNA_FUNCTION_MACRO)
+	    anna_object_t **obj = anna_stack_addr_get_str(stack, name->name);
+	    if(obj)
 	    {
-		return func;
+		anna_function_t *func=anna_function_unwrap(*obj);
+//	    wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
+		
+		if(func && func->flags == ANNA_FUNCTION_MACRO)
+		{
+		    return func;
+		}
 	    }
+	    
 	    break;
 	}
 
@@ -659,11 +663,11 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
-	    /*
+/*	    
 	    wprintf(L"Get return type of node\n");
 	    anna_node_print(this);
 	    wprintf(L"\n");
-	    */
+*/	    
 	    anna_type_t *func_type = anna_node_get_return_type(this2->function, stack);
 	    /*
 	      Special case constructors...
@@ -678,6 +682,13 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 		    return anna_type_unwrap(type_wrapper);
 		}
 		wprintf(L"Illigal init\n");
+		CRASH;
+	    }
+	    else if(!func_type)
+	    {
+		wprintf(L"Tried to get return type of call node\n");
+		anna_node_print(this);
+		wprintf(L",\nbut function was of unknown type\n");
 		CRASH;
 	    }
 	    
