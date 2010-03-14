@@ -1911,6 +1911,8 @@ void anna_macro_init(anna_stack_frame_t *stack)
     
     wchar_t *op_names[] = 
 	{
+	    L"__increase__",
+	    L"__decrease__",
 	    L"__append__",
 	    L"__join__",
 	    L"__format__",

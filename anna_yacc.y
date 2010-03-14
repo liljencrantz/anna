@@ -189,7 +189,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %type <node_val> opt_declaration_init
 %type <node_val> function_definition 
 %type <node_val> opt_simple_expression 
-%type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op3 op4 op5 op6 op7 pre_op8
+%type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op3 op4 op5 op6 op7 pre_op8 post_op8
 %type <call_val> argument_list argument_list2 argument_list3 
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
@@ -384,6 +384,25 @@ expression8 :
 						      param);
 	}
 	|
+	'@' identifier expression9
+	{
+	    
+	    anna_node_t *param[] ={$3, 
+				   $2};   
+	    $$ = (anna_node_t *)
+		anna_node_call_create(
+		    &@$, 
+		    (anna_node_t *)anna_node_call_create(
+			&@$, 
+			(anna_node_t *)anna_node_identifier_create(
+			    &@2, 
+			    L"__memberGet__"),
+			2,
+			param),
+		    0,
+		    0);
+	}
+	|
 	pre_op8 expression9
 	{
 	  anna_node_t *param[] ={$2, 
@@ -398,10 +417,10 @@ expression8 :
 				  0);
 	}
 	| 
-	'|' expression '|' 
-	{	    
-	  anna_node_t *param[] ={$2, 
-				 (anna_node_t *)anna_node_identifier_create(&@$,L"__abs__")};   
+	expression9 post_op8
+	{
+	  anna_node_t *param[] ={$1, 
+				 $2};   
 	  $$ = (anna_node_t *)
 	    anna_node_call_create(&@$, 
 				  (anna_node_t *)anna_node_call_create(&@$, 
@@ -410,7 +429,6 @@ expression8 :
 							param),
 				  0,
 				  0);
-	  
 	}
 	| 
 	expression9
@@ -613,7 +631,9 @@ pre_op8:
 	{
 		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__neg__")
 	}
-	|
+;
+
+post_op8:
 	NEXT
 	{
 		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__next__")
