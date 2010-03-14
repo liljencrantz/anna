@@ -12,12 +12,49 @@ class Complex
 
 	function __addComplex__(Complex other)
 	{
-		return Complex(this.real + other.real, this.img + other.img);
+		return Complex(
+			this.real + other.real, 
+			this.img + other.img);
+	}
+
+	function __addFloat__(Float other)
+	{
+		return Complex(this.real + other, this.img);
+	}
+
+	function __subComplex__(Complex other)
+	{
+		return Complex(this.real - other.real, this.img - other.img);
+	}
+
+	function __subFloat__(Float other)
+	{
+		return Complex(this.real - other, this.img);
 	}
 
 	function __mulComplex__(Complex other)
 	{
-		return Complex(this.real * other.real -this.img*other.img, this.real * other.img + this.img*other.real);
+		return Complex(
+			this.real * other.real -this.img*other.img, 
+			this.real * other.img + this.img*other.real);
+	}
+
+	function __mulFloat__(Float other)
+	{
+		return Complex(this.real * other, this.img*other);
+	}
+
+	function __divComplex__(Complex other)
+	{
+		Float divisor = other.real*other.real + other.img*other.img;
+		return Complex(
+			(this.real * other.real  + this.img*other.img)/divisor, 
+			(this.img * other.real - this.real*other.img)/divisor);
+	}
+
+	function __divFloat__(Float other)
+	{
+		return Complex(this.real / other, this.img / other);
 	}
 
 	function abs()
@@ -76,7 +113,7 @@ while(y<=2.0)
 	}
 	y = y+0.1;
 	print("\n");
-}		
+}
 
 /*
 class Foo template (X:Int)

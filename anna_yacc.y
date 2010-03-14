@@ -151,6 +151,10 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token IDENTIFIER
 %token TYPE_IDENTIFIER
 %token APPEND
+%token INCREASE
+%token DECREASE
+%token NEXT
+%token PREV
 %token RANGE
 %token FUNCTION
 %token MACRO
@@ -490,6 +494,16 @@ op:
 	{
 	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__append__");
 	}
+	|
+	INCREASE
+	{
+	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__increase__");
+	}
+	|
+	DECREASE
+	{
+	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__decrease__");
+	}
 ;
 
 
@@ -598,6 +612,16 @@ pre_op8:
 	'-'
 	{
 		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__neg__")
+	}
+	|
+	NEXT
+	{
+		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__next__")
+	}
+	|
+	PREV
+	{
+		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__prev__")
 	}
 ;
 
