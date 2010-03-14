@@ -35,7 +35,6 @@
   __templateAttribute__ will do search and replaceg (done)
   __templatize__ will clone the AST, modify the arguments to __tempalteAttribute__, and let __templateAttribute__ do the replacing. (done)
   __templatize__ needs to have a cache ot already templatized types (done)
-  Move node prepare calls to their own pass
   Update attribute call syntax to make it easy to use the same attribute for both types and functions
 
   Code layout plan:
@@ -57,22 +56,21 @@
   Byte type
   Buffer type
   Complex type
+  Regexp type
 
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks at type creation time and stow away the results somewhere?
-  Move the rest of the native types to use the AST node creation style from List
   Object constructor needs to set all members to null
-  Identifier invokation should use sid instead of name lookup
+  Identifier invocation should use sid instead of name lookup
   Split type namespace from type object
   Properties
-  Code validator
+  Better code validator
   Type checking on function types
   General purpose currying
   Namespaces
-  Subfunction/block tracking in function
-  Functions that don't return an Int (depends on block tracking)
   Make comments nest
+  Non-recursive invoke
   
   Implement basic string methods
   Implement string comparison methods
@@ -85,7 +83,7 @@
   Proper intersection/union of types
   static member identifier and assignment
   static function calls
-
+  
   cast function (depends on type namespace/type object splittingx)
   import macro
   __macro__ macro
@@ -120,6 +118,9 @@
   Type support for lists
   Move uncommon operators to become generic operators (bit ops, sign, abs, etc.)
   Removed macro methods, all macros are global
+  Move all native types to use the AST node creation style from List
+  Subfunction/block tracking in function
+  Functions that don't return an Int (depends on block tracking)
   
   Type type
   Call type
@@ -312,11 +313,12 @@ wchar_t *anna_mid_get_reverse(size_t mid)
 int hash_function_type_func(void *a)
 {
     anna_function_type_key_t *key = (anna_function_type_key_t *)a;
-    int res = (int)key->result;
+    int res = (int)key->result + key->is_variadic;
     int i;
     for(i=0;i<key->argc; i++)
     {
 	res = (res<<19) ^ (int)key->argv[i] ^ (res>>13);
+	res += wcslen(key->argn[i]);
     }
     return res;
 }
@@ -334,10 +336,14 @@ int hash_function_type_comp(void *a, void *b)
 	return 0;
     if(key1->argc != key2->argc)
 	return 0;
+    if(key1->is_variadic != key2->is_variadic)
+	return 0;
 
     for(i=0;i<key1->argc; i++)
     {
 	if(key1->argv[i] != key2->argv[i])
+	    return 0;
+	if(wcscmp(key1->argn[i], key2->argn[i]) != 0)
 	    return 0;
     }
     //wprintf(L"Same!\n");
@@ -345,11 +351,11 @@ int hash_function_type_comp(void *a, void *b)
     return 1;
 }
 
-anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv)
+anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv, wchar_t **argn, int is_variadic)
 {
     //  static int count=0;
     //if((count++)==10) {CRASH};
-  
+    
     int i;
     static anna_function_type_key_t *key = 0;
     static size_t key_sz = 0;
@@ -360,14 +366,18 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
     
     if(new_key_sz>key_sz)
     {
+	int was_null = (key==0);
 	key = realloc(key, new_key_sz);
 	key_sz = new_key_sz;
+	key->argn = was_null?malloc(sizeof(wchar_t *)*argc):realloc(key->argn, sizeof(wchar_t *)*argc);
     }
+    key->is_variadic = is_variadic;
     key->result=result;
     key->argc = argc;
     for(i=0; i<argc;i++)
     {
 	key->argv[i]=argv[i];
+	key->argn[i]=argn[i];
     }
     
     anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
@@ -375,6 +385,12 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
     {
 	anna_function_type_key_t *new_key = malloc(new_key_sz);
 	memcpy(new_key, key, new_key_sz);	
+	new_key->argn = malloc(sizeof(wchar_t *)*argc);
+	for(i=0; i<argc;i++)
+	{
+	    new_key->argn[i]=wcsdup(argn[i]);
+	}
+	
 	res = anna_type_create_raw(L"!FunctionType", 64, 1);	
 	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
@@ -387,13 +403,7 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	/*
 	  FIXME: Add children to the definition tree!
 	*/
-
-
 	(*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)new_key;
-    }
-    else 
-    {
-	//wprintf(L"YAY\n");
     }
     
     return res;
@@ -698,7 +708,7 @@ anna_function_t *anna_function_create(wchar_t *name,
 
 void anna_function_setup_type(anna_function_t *f)
 {
-    anna_type_t *function_type = anna_type_for_function(f->return_type, f->input_count, f->input_type);
+    anna_type_t *function_type = anna_type_for_function(f->return_type, f->input_count, f->input_type, f->input_name, ANNA_IS_VARIADIC(f));
     f->wrapper = anna_object_create(function_type);
     f->type = function_type;    
 }
@@ -763,7 +773,7 @@ anna_function_t *anna_native_create(wchar_t *name,
 				    anna_type_t *return_type,
 				    size_t argc,
 				    anna_type_t **argv,
-				    wchar_t **argn)				
+				    wchar_t **argn)
 {
     if(!flags) {
 	assert(return_type);
@@ -781,7 +791,7 @@ anna_function_t *anna_native_create(wchar_t *name,
     result->input_count=argc;
     memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
     result->input_name = argn;
-    anna_type_t *function_type = anna_type_for_function(return_type, argc, argv);
+    anna_type_t *function_type = anna_type_for_function(return_type, argc, argv, argn, flags & ANNA_FUNCTION_VARIADIC);
     result->type = function_type;
     result->wrapper = anna_object_create(function_type);
     
@@ -1037,7 +1047,7 @@ size_t anna_native_method_create(anna_type_t *type,
 	}
     }
     
-    mid = anna_member_create(type, mid, name, 1, anna_type_for_function(result, argc, argv));
+    mid = anna_member_create(type, mid, name, 1, anna_type_for_function(result, argc, argv, argn, flags & ANNA_FUNCTION_VARIADIC));
     anna_member_t *m = type->mid_identifier[mid];
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     type->static_member[m->offset] = anna_native_create(name, flags, func, result, argc, argv, argn)->wrapper;
@@ -1096,7 +1106,7 @@ static void anna_null_type_create_early()
     anna_type_t *argv[]={null_type};
     wchar_t *argn[]={L"this"};
   
-    null_type->static_member[0] = anna_native_create(L"!nullFunction", ANNA_FUNCTION_FUNCTION, 
+    null_type->static_member[0] = anna_native_create(L"!nullFunction", 0, 
 						     (anna_native_t)&anna_i_null_function, 
 						     null_type, 1, argv, argn)->wrapper;
   
@@ -1199,15 +1209,13 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 					   anna_object_t **param,
 					   anna_stack_frame_t *outer)
 {
-    switch(function->flags) 
+    if(function->flags & ANNA_FUNCTION_MACRO) 
     {
-	default:
-	{
-	    wprintf(L"FATAL: Macro %ls at invoke!!!!\n", function->name);
-	    CRASH;
-	}
-	case ANNA_FUNCTION_FUNCTION:
-	{
+	wprintf(L"FATAL: Macro %ls at invoke!!!!\n", function->name);
+	CRASH;
+    }
+    else
+    {
 	    if(function->native.function) 
 	    {
 	        anna_object_t **argv=param;
@@ -1272,7 +1280,6 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		*/
 		return result;
 	    }
-	}
     }
 }
 

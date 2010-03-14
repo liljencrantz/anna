@@ -14,7 +14,6 @@
 
 static anna_object_t *anna_i_print(anna_object_t **param)
 {
-    int i;
     //    for(i=0; i<node->child_count; i++) {
     anna_object_t *value = param[0];
 	if(value->type == int_type) {
@@ -71,12 +70,12 @@ static anna_object_t *anna_i_if(anna_object_t **param)
 void anna_function_implementation_init(struct anna_stack_frame *stack)
 {
     static wchar_t *p_argn[]={L"object"};
-    anna_native_declare(stack, L"print", ANNA_FUNCTION_FUNCTION, (anna_native_t)&anna_i_print, null_type, 1, &object_type, p_argn);
+    anna_native_declare(stack, L"print", 0, (anna_native_t)&anna_i_print, null_type, 1, &object_type, p_argn);
     
-    anna_native_declare(stack, L"__not__", ANNA_FUNCTION_FUNCTION, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn);
+    anna_native_declare(stack, L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn);
     
     anna_type_t *if_argv[]={object_type, object_type, object_type};
     static wchar_t *if_argn[]={L"condition", L"trueBlock", L"falseBlock"};    
-    anna_native_declare(stack, L"__if__", ANNA_FUNCTION_FUNCTION, (anna_native_t)&anna_i_if, object_type, 3, if_argv, if_argn);
+    anna_native_declare(stack, L"__if__", 0, (anna_native_t)&anna_i_if, object_type, 3, if_argv, if_argn);
     
 }

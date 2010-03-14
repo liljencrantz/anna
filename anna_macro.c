@@ -325,6 +325,7 @@ static anna_node_t *anna_type_member(anna_type_t *type,
     assert(var_type);
 
     anna_member_create(type, -1, name_identifier->name, 0, var_type);
+    return anna_node_null_create(0);
     
     //anna_stack_declare(function->stack_template, name_identifier->name, type, null_object);
     
@@ -610,7 +611,8 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 {
     wchar_t *name=0;
     wchar_t *internal_name=0;
-
+    int is_variadic=0;
+    
     /*
       Set this to true if we need to snigg out the real function
       return type after we're done creating the function.
@@ -689,11 +691,12 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	    //declarations->child[i] = anna_node_prepare(declarations->child[i], function, parent);
 	    CHECK_NODE_TYPE(declarations->child[i], ANNA_NODE_CALL);
 	    anna_node_call_t *decl = node_cast_call(declarations->child[i]);
-
+	    
 	    CHECK_NODE_TYPE(decl->function, ANNA_NODE_IDENTIFIER);
 	    anna_node_identifier_t *fun = node_cast_identifier(decl->function);
 	    if(wcscmp(fun->name, L"__declare__") == 0)
 	    {
+		//CHECK_CHILD_COUNT(decl, L"variable declaration", 3);
 		CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
 		anna_node_identifier_t *name = node_cast_identifier(decl->child[0]);
 		anna_node_t *node = anna_node_prepare(decl->child[1], function, parent);
@@ -708,6 +711,26 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 		}
 		argv[i+!!type] = anna_type_unwrap(*type_wrapper);
 		argn[i+!!type] = name->name;		
+
+		if(decl->child_count ==3 && decl->child[2]->node_type == ANNA_NODE_IDENTIFIER) 
+		{
+		    anna_node_identifier_t *def = node_cast_identifier(decl->child[2]);
+		    if(wcscmp(def->name,L"__variadic__") == 0)
+		    {
+			is_variadic = 1;
+			if(i != (declarations->child_count-1))
+			{
+			    FAIL(def, L"Only the last argument to a function can be variadic");
+			}
+/*			else 
+			{
+			    wprintf(L"Variadic function\n");
+			    
+			}
+*/			
+		    }
+		}
+		
 	    }
 	    else if(wcscmp(fun->name, L"__function__") == 0)
 	    {
@@ -760,7 +783,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	if(name && declare) {
 	    CHECK(name, node, L"Could not declare function, no function name given");
 	    //wprintf(L"Declaring %ls as a function\n", name);
-	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type), result->wrapper);
+	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type, result->input_name, is_variadic), result->wrapper);
 	}
 	return (anna_node_t *)anna_node_dummy_create(&node->location,
 						     result->wrapper,
@@ -1509,7 +1532,7 @@ static anna_node_t *anna_macro_or(anna_node_call_t *node, anna_function_t *funct
 		&node->location,
 		anna_native_create(
 		    L"!orAnonymous",
-		    ANNA_FUNCTION_FUNCTION,
+		    0,
 		    (anna_native_t)anna_function_or,
 		    return_type,
 		    2,
@@ -1588,7 +1611,7 @@ static anna_node_t *anna_macro_and(anna_node_call_t *node,
 		&node->location,
 		anna_native_create(
 		    L"!andAnonymous",
-		    ANNA_FUNCTION_FUNCTION,
+		    0,
 		    (anna_native_t)anna_function_and,
 		    t2,
 		    2,
@@ -1671,7 +1694,7 @@ static anna_node_t *anna_macro_while(anna_node_call_t *node,
 		&node->location,
 		anna_native_create(
 		    L"!whileAnonymous",
-		    ANNA_FUNCTION_FUNCTION,
+		    0,
 		    (anna_native_t)anna_function_while,
 		    t2,
 		    2,

@@ -65,6 +65,7 @@ in return IN;
 % return '%';
 \^ return '^';
 \.\. return RANGE;
+\.\.\. return ELLIPSIS;
 \. return '.';
 \| return '|';
 '([^\\]|\\.)' return LITERAL_CHAR;

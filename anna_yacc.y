@@ -193,6 +193,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token MODULO
 %token IS
 %token IN
+%token ELLIPSIS
 
 %type <call_val> block block2 block3
 %type <call_val> module module1
@@ -285,6 +286,12 @@ opt_declaration_init :
 	{
 	    $$ = 0;
 	}
+|
+ELLIPSIS
+{
+    $$ = anna_node_identifier_create(&@$, L"__variadic__");
+}
+
 ;
 
 expression:

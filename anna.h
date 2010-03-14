@@ -23,8 +23,9 @@ struct anna_node_call;
 typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struct anna_function *, struct anna_node_list *);
 
-#define ANNA_FUNCTION_FUNCTION 0
 #define ANNA_FUNCTION_MACRO 1
+#define ANNA_FUNCTION_VARIADIC 2
+
 /*
 #define ANNA_FUNCTION_CLOSURE 2
 #define ANNA_FUNCTION_STANDALONE 4
@@ -102,6 +103,9 @@ struct anna_function
     struct anna_type *input_type[];    
 };
 
+#define ANNA_IS_MACRO(f) (!!((f)->flags & ANNA_FUNCTION_MACRO))
+#define ANNA_IS_VARIADIC(f) (!!((f)->flags & ANNA_FUNCTION_VARIADIC))
+
 struct anna_node_list
 {
     struct anna_node *node;
@@ -122,6 +126,8 @@ typedef struct
 {
     anna_type_t *result; 
     size_t argc;
+    int is_variadic;
+    wchar_t **argn;
     anna_type_t *argv[];
 } anna_function_type_key_t;
    
@@ -150,7 +156,7 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
  */
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
 
-anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv);
+anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv, wchar_t **argn, int is_variadic);
 
 anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fake_definition);
 
@@ -263,5 +269,14 @@ int anna_type_setup(anna_type_t *type,
 anna_object_t *anna_i_null_function(anna_object_t **node_base);
 
 void anna_prepare_children(struct anna_node_call *in, anna_function_t *func, anna_node_list_t *parent);
+void anna_native_declare(struct anna_stack_frame *stack,
+			 wchar_t *name,
+			 int flags,
+			 anna_native_t func,
+			 anna_type_t *result,
+			 size_t argc, 
+			 anna_type_t **argv,
+			 wchar_t **argn);
+
 
 #endif
