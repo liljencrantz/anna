@@ -87,7 +87,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
     for(ptr_in=str2; 
 	*ptr_in; 
 	ptr_in++)
-    {    sb_append(&sb,);
+    {
 
 	/*
 	  FIXME: We're not handling hex escape sequences.

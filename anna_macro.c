@@ -801,7 +801,6 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 	  FAIL(node, L"Invalid operator name: %ls", name_identifier->name);	
        }
        name_prefix = wcsdup(name_identifier->name);
-       name_prefix[wcslen(name_prefix)-2] = 0;
        //wprintf(L"Calling operator_wrapper as %ls\n", name);       
     }
     else 
@@ -811,6 +810,7 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
        sb_init(&sb);
        sb_append(&sb, L"__");
        sb_append(&sb, name_identifier->name);
+       sb_append(&sb, L"__");
        name_prefix = sb_content(&sb);
        arg_offset = 1;
     }
@@ -866,7 +866,7 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 	
 	if(!method_name)
 	{
-	    FAIL(node, L"%ls__: No support for call with objects of types %ls and %ls\n",
+	    FAIL(node, L"%ls: No support for call with objects of types %ls and %ls\n",
 		 name_prefix, t1->name, t2->name);
 	}
 

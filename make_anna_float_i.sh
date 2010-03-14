@@ -43,7 +43,7 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     
     init="$init
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Float__\", 0, 
+	definition, -1, L\"__${name}__Float__\", 0, 
 	(anna_native_t)&anna_float_i_${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
 	2, argv, argn);"
@@ -71,17 +71,17 @@ for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "exp pow(v1, v2
     
     init="$init
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Float__\", 0,
+	definition, -1, L\"__${name}__Float__\", 0,
 	(anna_native_t)&anna_float_i_${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
 	2, argv, argn);
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Int__\", 0, 
+	definition, -1, L\"__${name}__Int__\", 0, 
 	(anna_native_t)&anna_float_i_int_${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
 	2, i_argv, i_argn);
     anna_native_method_add_node(
-	definition, -1, L\"__r${name}Int__\", 0, 
+	definition, -1, L\"__r${name}__Int__\", 0, 
 	(anna_native_t)&anna_float_i_int_r${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
 	2, i_argv, i_argn);
@@ -126,12 +126,12 @@ for i in "increase v1+v2" "decrease v1-v2"; do
     
     init="$init
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Float__\", 0, 
+	definition, -1, L\"__${name}__Float__\", 0, 
 	(anna_native_t)&anna_float_i_${name}_float, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
 	2, argv, argn);
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Int__\", 0, 
+	definition, -1, L\"__${name}__Int__\", 0, 
 	(anna_native_t)&anna_float_i_${name}_int, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
 	2, i_argv, i_argn);"
@@ -163,7 +163,7 @@ done
 
 init="$init
 "
-for i in "abs fabs(v1)" "neg -v1" "sqrt sqrt(v1)" "sign (v1==0.0?0.0:(v1>0?1.0:-1.0))"; do
+for i in "abs fabs(v)" "neg -v" "sqrt sqrt(v)" "tan tan(v)" "atan atan(v)" "sin sin(v)" "cos cos(v)" "ln log(v)" "sign (v==0.0?0.0:(v>0?1.0:-1.0))"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
     
@@ -177,7 +177,7 @@ for i in "abs fabs(v1)" "neg -v1" "sqrt sqrt(v1)" "sign (v1==0.0?0.0:(v1>0?1.0:-
     echo "
 static anna_object_t *anna_float_i_$name(anna_object_t **param)
 {
-    double v1 = anna_float_get(param[0]);
+    double v = anna_float_get(param[0]);
     return anna_float_create($op);
 }
 "

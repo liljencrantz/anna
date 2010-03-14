@@ -31,7 +31,7 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     
     init="$init
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Int__\", 0, 
+	definition, -1, L\"__${name}__Int__\", 0, 
 	(anna_native_t)&anna_int_i_${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Int\"), 
 	2, argv, argn);"
@@ -58,7 +58,7 @@ for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "shl v1 << v2" 
     
     init="$init
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Int__\", 0, 
+	definition, -1, L\"__${name}__Int__\", 0, 
 	(anna_native_t)&anna_int_i_${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Int\"), 
 	2, argv, argn);"
@@ -85,7 +85,7 @@ for i in "increase v1+v2" "decrease v1-v2"; do
     
     init="$init
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Int__\", 0, 
+	definition, -1, L\"__${name}__Int__\", 0, 
 	(anna_native_t)&anna_int_i_${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Int\"), 
 	2, argv, argn);"

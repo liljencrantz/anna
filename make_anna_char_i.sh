@@ -38,7 +38,7 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     
     init="$init
     anna_native_method_add_node(
-	definition, -1, L\"__${name}Char__\", 0, (anna_native_t)&anna_char_i_${name}, 
+	definition, -1, L\"__${name}__Char__\", 0, (anna_native_t)&anna_char_i_${name}, 
 	(anna_node_t *)anna_node_identifier_create(0, L\"Char\"), 2, c_argv, argn);"
 
     echo "
@@ -63,7 +63,7 @@ for i in "add +" "sub -"; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_add_node(definition, -1, L\"__${name}Int__\", 0, (anna_native_t)&anna_char_i_${name}, (anna_node_t *)anna_node_identifier_create(0, L\"Char\"), 2, i_argv, argn);"
+    anna_native_method_add_node(definition, -1, L\"__${name}__Int__\", 0, (anna_native_t)&anna_char_i_${name}, (anna_node_t *)anna_node_identifier_create(0, L\"Char\"), 2, i_argv, argn);"
 
     echo "
 static anna_object_t *anna_char_i_$name(anna_object_t **param)

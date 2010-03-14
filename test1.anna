@@ -9,41 +9,41 @@ class Complex
 		this.img = i;
 	}
 
-	function __addComplex__(Complex other)
+	function __add__Complex__(Complex other)
 	{
 		return Complex(
 			this.real + other.real, 
 			this.img + other.img);
 	}
 
-	function __addFloat__(Float other)
+	function __add__Float__(Float other)
 	{
 		return Complex(this.real + other, this.img);
 	}
 
-	function __subComplex__(Complex other)
+	function __sub__Complex__(Complex other)
 	{
 		return Complex(this.real - other.real, this.img - other.img);
 	}
 
-	function __subFloat__(Float other)
+	function __sub__Float__(Float other)
 	{
 		return Complex(this.real - other, this.img);
 	}
 
-	function __mulComplex__(Complex other)
+	function __mul__Complex__(Complex other)
 	{
 		return Complex(
 			this.real * other.real -this.img*other.img, 
 			this.real * other.img + this.img*other.real);
 	}
 
-	function __mulFloat__(Float other)
+	function __mul__Float__(Float other)
 	{
 		return Complex(this.real * other, this.img*other);
 	}
 
-	function __divComplex__(Complex other)
+	function __div__Complex__(Complex other)
 	{
 		var divisor = other.real*other.real + other.img*other.img;
 		return Complex(
@@ -51,7 +51,7 @@ class Complex
 			(this.img * other.real - this.real*other.img)/divisor);
 	}
 
-	function __divFloat__(Float other)
+	function __div__Float__(Float other)
 	{
 		return Complex(this.real / other, this.img / other);
 	}
@@ -92,11 +92,10 @@ class Range
 function mandelbrot(Complex p0, Int maxStep)
 {
     var p = p0;
-    var step = 1;
-    while(@abs p < 2.0 and step < maxStep) 
+    var step = 0;
+    while(@abs p < 2.0 and step++ < maxStep) 
     {
         p = p*p + p0;
-	step++;
     }
     return step;
 }
@@ -107,7 +106,7 @@ while(y<=2.0)
 	var x=-2.0;
 	while(x<=2.0)
 	{
-		if(mandelbrot(Complex(x,y),64)>=64){print("##")}else{print("  ")};
+		if(mandelbrot(Complex(x,y),64)==64){print("##")}else{print("  ")};
 		x += 0.1;
 	}
 	y += 0.1;

@@ -10,6 +10,7 @@
 #include "anna_node.h"
 #include "anna_float.h"
 #include "anna_type.h"
+#include "anna_int.h"
 
 #include "anna_float_i.c"
 
