@@ -36,6 +36,11 @@ and pick the link that suits you best.
   </li>
 
   <li>
+    <a href='#intro_nemerle'>Anna for Nemerle programmers.</a>
+    Do you feel Ged was unfairly given too much time in the books of Earth sea?
+  </li>
+
+  <li>
     <a href='#intro_long'>Gentle Anna.</a> If you're a programmer, but
     unsure which of the above categories your language of choice falls
     into, or if you are not entirely familiar with programming
@@ -112,6 +117,22 @@ new.</div>
   Python programmers are probably familiar with the 
 </p>
 
+<h2>Anna for Nemerle programmers</h2>
+<div class='subheading'>Wherein...</div>
+
+<p>
+  Nemerle and Anna are similar languages. Both aim to create a
+  language that looks C-like on the surface, but let you fundamentally
+  redesign the language through macros. Some of the major differences
+  between Anna and Nemerle:
+</p>
+<ul>
+  <li>Duck typing</li>
+  <li>Ruby-like block syntax allows you greater language flexibility</li>
+  <li>Null handling</li>
+  <li>Nemerle is a .Net language, meaning it has a vast array of .Net libraries available</li>
+</ul>
+
 <h1>Duck typing and Anna</h1>
 <p>
   Most languages, including Python and Java, have operations that let
@@ -148,9 +169,31 @@ if(someObject is String.intersect(Int))
 }
 </code>
 <p>
-Anna makes it similarly easy to filter out a subset of members from a
-type, create the union of two types, etc.
+  Anna makes it similarly easy to filter out a subset of members from
+  a type, create the union of two types, etc.
 </p>
+<h2>Dynamic type creation</h2>
+<p>
+  In order for duck typing to be viable in a statically typed
+  language, it must be easy to create new types on the spot. A very
+  simple example of thhis is the <code>or</code> macro. Take the
+  following snippet of Anna code:
+  
+</p>
+<code>
+  var Foo foo=getFoo();
+  var Bar bar=getBar();
+  var baz = foo or bar;
+</code>
+<p>
+  The or operator in Anna will return the first value (foo) if it is
+  true, otherwise, bar will be returned. This means that the return
+  type of <code>foo or bar</code> is the intersection of the types of
+  the respective arguments, in this case, the intersection of the
+  types <code>Foo</code> and <code>Bar</code>.
+</p>
+
+
 <h1>Minimum impact variable declarations</h1>
 <p>
   Anna is a statically typed language. That means that before a block
