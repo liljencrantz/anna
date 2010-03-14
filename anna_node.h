@@ -36,11 +36,31 @@ typedef struct YYLTYPE YYLTYPE;
 #define yyltype YYLTYPE
 #define YYLTYPE YYLTYPE
 
+#define ANNA_CHECK_NODE_PREPARED_ENABLED 
+
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+#define ANNA_PREPARED(n) n->prepared=1
+#define ANNA_CHECK_NODE_PREPARED(n)  if(!n->prepared)			\
+    {									\
+	anna_error(n,L"Critical: Tried to invoke unprepared AST node");	\
+	anna_node_print(n);						\
+	wprintf(L"\n");							\
+	CRASH;								\
+    }
+
+#else
+#define ANNA_PREPARED(n) 
+#define ANNA_CHECK_NODE_PREPARED(n) 
+#endif
+
 struct anna_node
 {
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
 };
 
 struct anna_node_identifier
@@ -48,6 +68,9 @@ struct anna_node_identifier
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     wchar_t *name;
     anna_sid_t sid;
 };
@@ -57,6 +80,9 @@ struct anna_node_assign
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     anna_sid_t sid;
     struct anna_node *value;
 };
@@ -66,6 +92,9 @@ struct anna_node_member_get
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     struct anna_node *object;
     size_t mid;
     struct anna_type *type;
@@ -76,6 +105,9 @@ struct anna_node_member_set
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     struct anna_node *object;
     struct anna_node *value;
     size_t mid;
@@ -88,6 +120,9 @@ struct anna_node_call
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     struct anna_node *function;
     size_t child_count;
     size_t child_capacity;
@@ -99,6 +134,9 @@ struct anna_node_string_literal
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     size_t payload_size;
     wchar_t *payload;
 };
@@ -108,6 +146,9 @@ struct anna_node_char_literal
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     wchar_t payload;
 };
 
@@ -116,6 +157,9 @@ struct anna_node_int_literal
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     int payload;
 };
 
@@ -124,6 +168,9 @@ struct anna_node_dummy
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     struct anna_object *payload;
 };
 
@@ -132,6 +179,9 @@ struct anna_node_return
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     struct anna_node *payload;
     int steps;  
 };
@@ -141,6 +191,9 @@ struct anna_node_float_literal
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
     double payload;
 };
 

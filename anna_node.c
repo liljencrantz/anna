@@ -587,20 +587,17 @@ anna_node_t *anna_node_call_prepare(
 	   node->function = (anna_node_t *)anna_node_dummy_create(&node->location, 
 								  anna_node_invoke(node->function, function->stack_template),
 								  0);
+	   node->function = anna_node_prepare(node->function, function, &list);
 	   //wprintf(L"Woo, changing call into constructor!\n");
 	   
 	   return (anna_node_t *)node;
        }
    }
-/*
    else 
    {
-       wprintf(L"LALALA, preparing constructor\n");
-       anna_node_print(node);
-       wprintf(L"\n");
-       
+      node->function = anna_node_prepare(node->function, function, &list);
    }
-*/ 
+
    int i;
    for(i=0; i<node->child_count; i++)
    {
@@ -900,6 +897,8 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	    this, 0, parent
 	}
     ;
+
+    ANNA_PREPARED(this);    
    
     switch(this->node_type)
     {
@@ -1011,6 +1010,8 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 {
     //wprintf(L"anna_node_invoke with stack %d\n", stack);
     //wprintf(L"invoke %d\n", this->node_type);    
+    ANNA_CHECK_NODE_PREPARED(this);
+    
     switch(this->node_type)
     {
 	case ANNA_NODE_CALL:

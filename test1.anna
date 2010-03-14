@@ -1,97 +1,8 @@
 
-class Complex
-{
-    var Float real;
-    var Float img;
-    
-    function __init__(Float r, Float i)
-    {
-	this.real = r;
-	this.img = i;
-    }
-    
-    function __add__Complex__(Complex other)
-    {
-	return Complex(
-	    this.real + other.real, 
-	    this.img + other.img);
-    }
-    
-    function __add__Float__(Float other)
-    {
-	return Complex(this.real + other, this.img);
-    }
-    
-    function __sub__Complex__(Complex other)
-    {
-	return Complex(this.real - other.real, this.img - other.img);
-    }
 
-    function __sub__Float__(Float other)
-    {
-	return Complex(this.real - other, this.img);
-    }
-    
-    function __mul__Complex__(Complex other)
-    {
-	return Complex(
-	    this.real * other.real -this.img*other.img, 
-	    this.real * other.img + this.img*other.real);
-    }
-    
-    function __mul__Float__(Float other)
-    {
-	return Complex(this.real * other, this.img*other);
-    }
-    
-    function __div__Complex__(Complex other)
-    {
-	var divisor = other.real*other.real + other.img*other.img;
-	return Complex(
-	    (this.real * other.real  + this.img*other.img)/divisor, 
-	    (this.img * other.real - this.real*other.img)/divisor);
-    }
-    
-    function __div__Float__(Float other)
-    {
-	return Complex(this.real / other, this.img / other);
-    }
-    
-    function __abs__()
-    {
-	return @sqrt (this.real*this.real + this.img*this.img);
-    }
-    
-}
+//(3..7).each(a:b){print(b)}
 
-class Range
-{
-
-    var Int from;
-    var Int to;
-    
-    function __init__(Int from, Int to)
-    {
-	this.from = from;
-	this.to=to;
-    }
-    
-    function __eachPair__(function Null f (Int key, Int value))
-    {
-	var i=this.from;
-	while(i<this.to)
-	{
-	    f(i, i+this.from);
-	    i = i+1;
-	}
-	return null;
-    }
-    
-}
-
-(3..7).each(a:b){print(b)}
-
-
+/*
 function mandelbrot(Complex p0, Int maxStep)
 {
     var p = p0;
@@ -102,7 +13,8 @@ function mandelbrot(Complex p0, Int maxStep)
     }
     return step;
 }
-
+*/
+/*
 var y=-2.0;
 while(y<=2.0)
 {
@@ -115,18 +27,24 @@ while(y<=2.0)
     y += 0.1;
     print("\n");
 }
+*/
 
-/*
 class Foo template (X:Int)
 {
 
-	function foo(X in)
+	function foo(X i)
 	{
-		return in+1;
+		return i+1;
 	}
 
 }
-*/
+
+var foo = Foo<Float>();
+
+print(foo.foo(2.0));
+
+
+
 /*
 var foo = List();
 foo ~= 3;

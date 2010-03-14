@@ -1725,15 +1725,15 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     CHECK_TYPE(node->child[0]);
     CHECK_NODE_BLOCK(node->child[1]);
     int i;
-
+    
     anna_type_t *base_type = EXTRACT_TYPE(node->child[0]);
     anna_node_call_t *param = 
 	(anna_node_call_t *)node->child[1];
-
+    
     templatize_key_t key;
     key.base = base_type;
     key.argc = param->child_count;
-
+    
     key.argv = param->child;    
     anna_type_t *result = (anna_type_t *)hash_get(&templatize_lookup, &key);
     if(result)
@@ -1809,7 +1809,6 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     if(type_result->node_type == ANNA_NODE_NULL){
 	return type_result;
     }
-    
     
     return (anna_node_t *)
 	anna_node_identifier_create(

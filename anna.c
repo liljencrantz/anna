@@ -1392,6 +1392,7 @@ int main(int argc, char **argv)
 						    node_cast_call(program),
 						    null_type, 0, 0, 0, stack_global, 0)->wrapper,
 			       0);
+    ANNA_PREPARED(program_callable);
     /*
       Invoke the anonymous function, the return is a function_type_t->wrapper
     */

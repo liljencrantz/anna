@@ -1,0 +1,24 @@
+class Range
+{
+
+    var Int from;
+    var Int to;
+    
+    function __init__(Int from, Int to)
+    {
+	this.from = from;
+	this.to=to;
+    }
+    
+    function __eachPair__(function Null f (Int key, Int value))
+    {
+	var i=this.from;
+	while(i<this.to)
+	{
+	    f(i, i+this.from);
+	    i = i+1;
+	}
+	return null;
+    }
+    
+}
