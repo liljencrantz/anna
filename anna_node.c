@@ -32,7 +32,13 @@ void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 
 anna_node_call_t *node_cast_call(anna_node_t *node) 
 {
-    assert(node->node_type==ANNA_NODE_CALL);
+    
+    if(node->node_type!=ANNA_NODE_CALL)
+    {
+	anna_error(node, L"Expected a call node");
+	CRASH;
+    }
+    
     return (anna_node_call_t *)node;
 }
 

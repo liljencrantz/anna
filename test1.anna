@@ -15,7 +15,6 @@ class Complex
 		return Complex(this.real + other.real, this.img + other.img);
 	}
 
-
 	function __mulComplex__(Complex other)
 	{
 		return Complex(this.real * other.real -this.img*other.img, this.real * other.img + this.img*other.real);
@@ -23,16 +22,11 @@ class Complex
 
 	function abs()
 	{
-		return (this.real*this.real + this.img+this.img).__sqrt__();
-	}
-
-	function __expInt__(Int i)
-	{
-		return this * this;
+		return (this.real*this.real + this.img*this.img).__sqrt__();
 	}
 
 }
-
+/*
 class Range
 {
 
@@ -57,10 +51,7 @@ class Range
 	}
 
 }
-
-
-var val = Complex(1.0, 1.0);
-var val2 = Complex(2.0, 3.0);
+*/
 
 function mandelbrot(Complex p0, Int maxStep)
 {
@@ -68,13 +59,24 @@ function mandelbrot(Complex p0, Int maxStep)
     var step = 1;
     while(p.abs() < 2.0 and step < maxStep) 
     {
-        p = (p @exp 2) + p0;
+        p = p*p + p0;
 	step = step + 1;
     }
     return step;
 }
 
-print(mandelbrot(Complex(0.37,0.3),32));
+var y=-2.0;
+while(y<=2.0)
+{
+	var x=-2.0;
+	while(x<=2.0)
+	{
+		if(mandelbrot(Complex(x,y),64)==64){print("##")}else{print("  ")};
+		x = x+0.1;
+	}
+	y = y+0.1;
+	print("\n");
+}		
 
 /*
 class Foo template (X:Int)

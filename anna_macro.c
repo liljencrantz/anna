@@ -137,7 +137,8 @@ static int templatize_key_hash(void *k1)
 anna_node_t *anna_macro_function_internal(anna_type_t *type, 
 					  anna_node_call_t *node, 
 					  anna_function_t *function, 
-					  anna_node_list_t *parent);
+					  anna_node_list_t *parent,
+					  int declare);
 
 
 
@@ -469,7 +470,7 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	
 	if(wcscmp(declaration->name, L"__function__")==0)
 	{
-	    anna_macro_function_internal(type, call, function, parent);
+	    anna_macro_function_internal(type, call, function, parent, 0);
 	}
 	else if(wcscmp(declaration->name, L"__declare__")==0)
 	{
@@ -604,7 +605,8 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 anna_node_t *anna_macro_function_internal(anna_type_t *type, 
 					  anna_node_call_t *node, 
 					  anna_function_t *function, 
-					  anna_node_list_t *parent)
+					  anna_node_list_t *parent,
+					  int declare)
 {
     wchar_t *name=0;
     wchar_t *internal_name=0;
@@ -613,7 +615,10 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
       Set this to true if we need to snigg out the real function
       return type after we're done creating the function.
      */
-
+/*    wprintf(L"\n\nggg\n");
+    anna_node_print(node);
+    wprintf(L"\n");
+*/
     CHECK_CHILD_COUNT(node,L"function definition", 5);
     
     if (node->child[0]->node_type == ANNA_NODE_IDENTIFIER) {
@@ -659,6 +664,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     anna_type_t **argv=0;
     wchar_t **argn=0;
     
+    CHECK_NODE_TYPE(node->child[2], ANNA_NODE_CALL);
     anna_node_call_t *declarations = node_cast_call(node->child[2]);
     int i;
     if(declarations->child_count > 0 || type)
@@ -680,18 +686,46 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	
 	for(i=0; i<declarations->child_count; i++)
 	{
+	    //declarations->child[i] = anna_node_prepare(declarations->child[i], function, parent);
+	    CHECK_NODE_TYPE(declarations->child[i], ANNA_NODE_CALL);
 	    anna_node_call_t *decl = node_cast_call(declarations->child[i]);
-	    anna_node_identifier_t *name = node_cast_identifier(decl->child[0]);
-	    anna_node_identifier_t *type_name = node_cast_identifier(decl->child[1]);
-	    
-	    anna_object_t **type_wrapper = anna_stack_addr_get_str(function->stack_template, type_name->name);
-	    if(!type_wrapper)
+
+	    CHECK_NODE_TYPE(decl->function, ANNA_NODE_IDENTIFIER);
+	    anna_node_identifier_t *fun = node_cast_identifier(decl->function);
+	    if(wcscmp(fun->name, L"__declare__") == 0)
 	    {
-		anna_error((anna_node_t *)type_name, L"Unknown type: %ls", type_name->name);
-		return (anna_node_t *)anna_node_null_create(&node->location);	    
+		CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
+		anna_node_identifier_t *name = node_cast_identifier(decl->child[0]);
+		anna_node_t *node = anna_node_prepare(decl->child[1], function, parent);
+		
+		anna_node_identifier_t *type_name = node_cast_identifier(decl->child[1]);
+		
+		anna_object_t **type_wrapper = anna_stack_addr_get_str(function->stack_template, type_name->name);
+		if(!type_wrapper)
+		{
+		    anna_error((anna_node_t *)type_name, L"Unknown type: %ls", type_name->name);
+		    return (anna_node_t *)anna_node_null_create(&node->location);	    
+		}
+		argv[i+!!type] = anna_type_unwrap(*type_wrapper);
+		argn[i+!!type] = name->name;		
 	    }
-	    argv[i+!!type] = anna_type_unwrap(*type_wrapper);
-	    argn[i+!!type] = name->name;
+	    else if(wcscmp(fun->name, L"__function__") == 0)
+	    {
+		anna_node_t *fun_wrap = anna_macro_function_internal(
+		    0, decl, function, 
+		    parent, 0);
+		CHECK_NODE_TYPE(fun_wrap, ANNA_NODE_DUMMY);
+		anna_node_dummy_t *fun_dummy = (anna_node_dummy_t *)fun_wrap;
+		anna_function_t *fun = anna_function_unwrap(fun_dummy->payload);
+		CHECK(fun, decl, L"Could not parse function declaration");		
+		argv[i+!!type] = fun->wrapper->type;
+		argn[i+!!type] = fun->name;		
+	    }
+	    else 
+	    {
+		FAIL(decl, L"Unknown declaration type");
+	    }
+	    
 	}
     }
 
@@ -723,7 +757,8 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	    result = anna_native_create(internal_name, 0, (anna_native_t)anna_i_null_function, out_type, argc, argv, argn);
 	}
 	
-	if(name) {
+	if(name && declare) {
+	    CHECK(name, node, L"Could not declare function, no function name given");
 	    wprintf(L"Declaring %ls as a function\n", name);
 	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type), result->wrapper);
 	}
@@ -738,7 +773,7 @@ static anna_node_t *anna_macro_function(anna_node_call_t *node,
 					anna_function_t *function, 
 					anna_node_list_t *parent)
 {
-    return anna_macro_function_internal(0, node, function, parent);
+    return anna_macro_function_internal(0, node, function, parent, 1);
 }
 
 static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node, 
