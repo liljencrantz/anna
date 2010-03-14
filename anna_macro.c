@@ -711,7 +711,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 		}
 		argv[i+!!type] = anna_type_unwrap(*type_wrapper);
 		argn[i+!!type] = name->name;		
-
+		
 		if(decl->child_count ==3 && decl->child[2]->node_type == ANNA_NODE_IDENTIFIER) 
 		{
 		    anna_node_identifier_t *def = node_cast_identifier(decl->child[2]);
@@ -722,12 +722,11 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 			{
 			    FAIL(def, L"Only the last argument to a function can be variadic");
 			}
-/*			else 
+/*			else
 			{
 			    wprintf(L"Variadic function\n");
-			    
 			}
-*/			
+*/
 		    }
 		}
 		
@@ -754,7 +753,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 
     if(type)
     {
-	anna_function_t *result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
+	anna_function_t *result = anna_function_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
 	
 	al_push(&function->child_function, result);
 
@@ -771,13 +770,13 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     {
 	anna_function_t *result;
 	if(body->node_type == ANNA_NODE_CALL) {
-	    result = anna_function_create(internal_name, 0, (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
+	    result = anna_function_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
 	    al_push(&function->child_function, result->wrapper);
 	}
 	else {
 	    //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
 	  
-	    result = anna_native_create(internal_name, 0, (anna_native_t)anna_i_null_function, out_type, argc, argv, argn);
+	    result = anna_native_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_native_t)anna_i_null_function, out_type, argc, argv, argn);
 	}
 	
 	if(name && declare) {
@@ -954,12 +953,12 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
     anna_node_call_t * mg = (anna_node_call_t *)node->function;
     CHECK_CHILD_COUNT(mg, L"iteration macro", 2);
     CHECK_NODE_TYPE(mg->child[1], ANNA_NODE_IDENTIFIER);
-
+    
     anna_node_identifier_t * call_name_id = (anna_node_identifier_t *)mg->child[1];
     
     int return_pop_count = 1+function->return_pop_count;
     anna_type_t *lst_type = anna_node_get_return_type(mg->child[0], function->stack_template);
-
+    
     wchar_t * call_name = call_name_id->name;
     
     switch(node->child[0]->node_type)
@@ -992,6 +991,8 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    
 	    size_t mid = anna_mid_get(method_name);
 	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
+	    CHECK(member_type, node, L"No method named %ls in type %ls\n", method_name, lst_type->name);
+
 	    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
 	    
 	    CHECK(function_key, node, L"Not a function: %ls", method_name);
@@ -1078,6 +1079,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    
 	    size_t mid = anna_mid_get(method_name);
 	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
+	    CHECK(member_type, node, L"No method named %ls in type %ls\n", method_name, lst_type->name);
 
 	    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
 	    CHECK(function_key, node, L"Not a function: %ls", method_name);

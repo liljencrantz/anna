@@ -44,7 +44,7 @@ void anna_stack_declare(anna_stack_frame_t *stack,
 	if(stack->member_type[*old_offset] != type)
 	{
 	    wprintf(L"Critical: Tried to redeclare variable %ls, was of type %ls, now of type %ls\n", name, stack->member_type[*old_offset]->name, type->name);
-	    exit(1);
+	    CRASH;
 	    
 	}
 	stack->member[*old_offset] = initial_value;

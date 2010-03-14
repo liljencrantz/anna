@@ -683,11 +683,20 @@ anna_function_t *anna_function_create(wchar_t *name,
     memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
 
     result->stack_template = anna_stack_create(64, parent_stack);
-    for(i=0; i<argc;i++)
+    int is_variadic = ANNA_IS_VARIADIC(result);
+    for(i=0; i<argc-is_variadic;i++)
     {
 	anna_stack_declare(result->stack_template, argn[i], argv[i], null_object);	
     }    
-
+    if(is_variadic)
+    {
+	/*
+	  FIXME:
+	  Templatize to right list subtype
+	 */
+	anna_stack_declare(result->stack_template, argn[argc-1], list_type, null_object);
+    }
+    
     anna_function_prepare(result);
 
     if(!return_type)
@@ -1263,9 +1272,8 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		    wprintf(L"Declare input variable %d with name %ls on stack\n",
 		    i, function->input_name[i+offset]);
 */
-		    anna_stack_declare(my_stack, 
+		    anna_stack_set_str(my_stack, 
 				       function->input_name[i+offset],
-				       function->input_type[i+offset],
 				       param[i]);
 		}
 		
@@ -1303,19 +1311,28 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 	
 	int offset=0;
 	if(this)
-	{
-	    
-	    
+	{	    
 	    offset=1;
 	    argv[0]=this;		    
 	}
+	int is_variadic = ANNA_IS_VARIADIC(function);
+	//wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
 	
-	for(i=0; i<(function->input_count-offset); i++) 
+	for(i=0; i<(function->input_count-offset-is_variadic); i++)
 	{
-	    //wprintf(L"eval param %d of %d\n", i, function->input_count);
-	    
+	    //wprintf(L"eval param %d of %d\n", i, function->input_count - is_variadic - offset);
 	    argv[i+offset]=anna_node_invoke(param->child[i], stack);
-	}      
+	}   
+	if(is_variadic)
+	{
+	    anna_object_t *lst = anna_list_create();
+	    anna_list_set_capacity(lst, param->child_count - function->input_count+1-offset);
+	    for(; i<param->child_count;i++)
+	    {
+		anna_list_add(lst, anna_node_invoke(param->child[i], stack));
+	    }
+	    argv[function->input_count-offset-1] = lst;	    
+	}
 	return anna_function_invoke_values(function, 0, argv, outer);
     }
     else

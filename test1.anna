@@ -1,11 +1,13 @@
 
-
 function foo(Int a...)
 {
-    print("Hello");
+    a.each(key:value)
+    {
+	print(value,"\n");
+    }
 }
 
-foo();
+foo(1,2,3,7);
 
 //(3..7).each(a:b){print(b)}
 

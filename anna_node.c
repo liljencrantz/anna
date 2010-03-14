@@ -818,10 +818,20 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		return;
 	    }
 	    
-	    int is_method = (this2->function->node_type == ANNA_NODE_MEMBER_GET_WRAP);	    	    
-	    check(this, function_data->argc-is_method == this2->child_count,
-		  L"Wrong number of paramaters in function call. Should be %d, not %d.", 
-		  function_data->argc-is_method, this2->child_count);
+	    int is_method = (this2->function->node_type == ANNA_NODE_MEMBER_GET_WRAP);
+	    if(function_data->is_variadic)
+	    {
+		wprintf(L"Checking number of arguments to variadic function\n");
+		check(this, (function_data->argc-is_method-1) <= this2->child_count,
+		      L"Wrong number of arguments to function call. Should be %d, not %d.", 
+		      function_data->argc-is_method, this2->child_count);		
+	    }
+	    else
+	    {
+		check(this, function_data->argc-is_method == this2->child_count,
+		      L"Wrong number of arguments to function call. Should be %d, not %d.", 
+		      function_data->argc-is_method, this2->child_count);
+	    }
 	    
 	    for(i=is_method; i<mini(this2->child_count, function_data->argc); i++)
 	    {
