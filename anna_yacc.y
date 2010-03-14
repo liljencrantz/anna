@@ -53,6 +53,17 @@ int anna_yacc_error_count=0;
     }									\
     while (0)
 
+static wchar_t *enclose(wchar_t *in)
+{
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_append(&sb,L"__");
+    sb_append(&sb,in);
+    sb_append(&sb,L"__");
+    return sb_content(&sb);
+}
+
+
 
 
 static wchar_t *anna_yacc_string(char *in)
@@ -76,7 +87,8 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
     for(ptr_in=str2; 
 	*ptr_in; 
 	ptr_in++)
-    {
+    {    sb_append(&sb,);
+
 	/*
 	  FIXME: We're not handling hex escape sequences.
 	 */
@@ -386,9 +398,9 @@ expression8 :
 	|
 	'@' identifier expression9
 	{
-	    
+	    anna_node_identifier_t *id = (anna_node_identifier_t *)$2;
 	    anna_node_t *param[] ={$3, 
-				   $2};   
+				   anna_node_identifier_create(&id->location,enclose(id->name))};   
 	    $$ = (anna_node_t *)
 		anna_node_call_create(
 		    &@$, 
