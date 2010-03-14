@@ -1,4 +1,40 @@
 
+class Range template (T:Int)
+{
+
+    var T from;
+    var T to;
+    var T step;
+    
+    function __init__(T from, T to, T step)
+    {
+	this.from = from;
+	this.to=to;
+	this.step=step;
+    }
+    
+    function __eachPair__(function Null f (Int key, T value))
+    {
+	var i=this.from;
+	var idx = 0;
+	
+	while(i<this.to)
+	{
+	    f(idx, i);
+	    i = i+this.step;
+	    idx++;
+	}
+	return null;
+    }
+    
+}
+
+var r = Range<Float>(-2.0,2.0,0.1);
+r.each(idx:value)
+{
+    print(value);
+}
+
 
 //(3..7).each(a:b){print(b)}
 
@@ -28,20 +64,6 @@ while(y<=2.0)
     print("\n");
 }
 */
-
-class Foo template (X:Int)
-{
-
-	function foo(X i)
-	{
-		return i+1;
-	}
-
-}
-
-var foo = Foo<Float>();
-
-print(foo.foo(2.0));
 
 
 

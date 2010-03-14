@@ -1,22 +1,27 @@
-class Range
+class Range template (T:Int)
 {
 
-    var Int from;
-    var Int to;
+    var T from;
+    var T to;
+    var T step;
     
-    function __init__(Int from, Int to)
+    function __init__(T from, T to, T step)
     {
 	this.from = from;
 	this.to=to;
+	this.step=step;
     }
     
-    function __eachPair__(function Null f (Int key, Int value))
+    function __eachPair__(function Null f (Int key, T value))
     {
 	var i=this.from;
+	var idx = 0;
+	
 	while(i<this.to)
 	{
-	    f(i, i+this.from);
-	    i = i+1;
+	    f(idx, i);
+	    i = i+this.step;
+	    idx++;
 	}
 	return null;
     }

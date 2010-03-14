@@ -434,12 +434,11 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
 
 anna_function_t *anna_function_unwrap(anna_object_t *obj)
 {
-    assert(obj);
-    
+    assert(obj);    
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     if(function_ptr) 
     {
-//	    wprintf(L"Got __call__ member\n");
+	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
 	return *function_ptr;
     }
     else 
@@ -447,6 +446,7 @@ anna_function_t *anna_function_unwrap(anna_object_t *obj)
 	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
+	    //wprintf(L"Got object with __call__ member\n");
 	    return anna_function_unwrap(*function_wrapper_ptr);	    
 	}
 	return 0;	

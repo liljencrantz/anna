@@ -497,12 +497,13 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 		{
 		    anna_node_identifier_t *member_name=
 			(anna_node_identifier_t *)call->child[1];
-//		    wprintf(L"Looking up member %ls\n", member_name->name);
+		    //wprintf(L"Looking up member %ls\n", member_name->name);
 		    anna_object_t **obj = anna_stack_addr_get_str(stack, member_name->name);
-		    if(obj)
+		    
+		    if(obj && (*obj)->type != null_type)
 		    {
 			anna_function_t *func=anna_function_unwrap(*obj);
-		    
+			
 			if(func && func->flags == ANNA_FUNCTION_MACRO)
 			{
 			    //wprintf(L"Found macro!\n");
@@ -1163,7 +1164,7 @@ void anna_node_print(anna_node_t *this)
 	case ANNA_NODE_DUMMY:
 	{
 	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
-	    wprintf(L"<Dummy:%ls>", this2->payload->type->name);
+	    wprintf(L"<Dummy>");
 	    break;
 	}
 	
