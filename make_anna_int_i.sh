@@ -79,7 +79,7 @@ done
 
 init="$init
 "
-for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)"; do
+for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)" ; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
     
@@ -98,6 +98,31 @@ static anna_object_t *anna_int_i_$name(anna_object_t **param)
 }
 "
 done
+
+init="$init
+"
+for i in "next v1+1" "prev v1-1" ; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+    
+    init="$init
+    anna_native_method_add_node(
+	definition, -1, L\"__${name}__\", 0, 
+	(anna_native_t)&anna_int_i_${name}, 
+	(anna_node_t *)anna_node_identifier_create(0, L\"Int\"), 
+	1, argv, argn);"
+
+    echo "
+static anna_object_t *anna_int_i_$name(anna_object_t **param)
+{
+    int v1 = anna_int_get(param[0]);
+    anna_int_set(param[0], $op);
+    return param[0];
+}
+"
+done
+
+
 
 echo "
 static void anna_int_type_i_create(anna_node_call_t *definition, anna_stack_frame_t *stack)
