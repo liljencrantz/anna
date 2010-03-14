@@ -192,6 +192,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token BITNOT
 %token MODULO
 %token IS
+%token IN
 
 %type <call_val> block block2 block3
 %type <call_val> module module1
@@ -579,6 +580,11 @@ op3:
 	{
 		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__gte__");
 	}
+	|
+	IN
+	{
+		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__in__");
+	}
 ;
 
 
@@ -739,7 +745,7 @@ argument_list2:
 	    $$ = anna_node_call_create(&@$,0,0,0);
 	}
 	|
-	argument_list3
+	argument_list3 opt_semicolon
 ;
 
 argument_list3 :
@@ -749,7 +755,7 @@ argument_list3 :
 	    anna_node_call_add_child($$, (anna_node_t *)$1);
 	}
 	| 
-	argument_list3 ',' expression
+	argument_list3 SEMICOLON expression
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($$, (anna_node_t *)$3);
@@ -791,7 +797,7 @@ declaration_list2 :
 	    anna_node_call_add_child($$,$1);
 	}
 	| 
-	declaration_list2 ',' declaration
+	declaration_list2 SEMICOLON declaration
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
@@ -858,7 +864,7 @@ templatization2:
 	    $$ = anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@$,L"__block__"), 1, param);
 	}
 	|
-	templatization2 ',' simple_expression
+	templatization2 SEMICOLON simple_expression
 	{
 	  anna_node_call_add_child($1,$3);
 	  $$ = $1;
@@ -883,7 +889,7 @@ attribute_list :
 ;
 
 attribute_list2 :
-	attribute_list ',' identifier opt_simple_expression
+	attribute_list SEMICOLON identifier opt_simple_expression
 	{
 	    $$ = $1;
 	    anna_node_call_t *attr = anna_node_call_create(&@$,$3, 0, 0);

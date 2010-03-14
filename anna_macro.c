@@ -759,7 +759,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	
 	if(name && declare) {
 	    CHECK(name, node, L"Could not declare function, no function name given");
-	    wprintf(L"Declaring %ls as a function\n", name);
+	    //wprintf(L"Declaring %ls as a function\n", name);
 	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type), result->wrapper);
 	}
 	return (anna_node_t *)anna_node_dummy_create(&node->location,

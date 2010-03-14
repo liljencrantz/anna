@@ -90,7 +90,7 @@
   import macro
   __macro__ macro
   elif macro
-  extends macro
+  __extendsAttribute__ macro
   is function
   as function
   __returnAssign__ macro
@@ -167,10 +167,10 @@
   __while__ function
   __type__ function
   return macro
-  template macro
+  __templateAttribute__ macro
   __templatize__ macro
   each, map, filter, first
-  
+
 */
 /*
   Cool macro feature. Create a complex AST by wrapping the equivalent
