@@ -476,7 +476,9 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 	    return anna_function_wrapped_invoke(*function_wrapper_ptr,obj, param, stack_ptr?*stack_ptr:stack_global);
 	}
 	
-	wprintf(L"Critical: Tried to call a non-function");
+	wprintf(L"Critical: Tried to call a non-function\n");
+	anna_object_print(obj, 0);
+	
 	CRASH;
     }
     return 0;
@@ -770,7 +772,6 @@ anna_function_t *anna_native_create(wchar_t *name,
 	    assert(argn);
 	}
     }
-    //wprintf(L"anna_native_create\n");
   
     anna_function_t *result = calloc(1, sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
     result->flags=flags;
@@ -1250,9 +1251,10 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		
 		for(i=0; i<(function->input_count-offset); i++) 
 		{
-/*		    wprintf(L"Declare input variable %d with name %ls on stack\n",
+/*
+		    wprintf(L"Declare input variable %d with name %ls on stack\n",
 		    i, function->input_name[i+offset]);
-*/		  
+*/
 		    anna_stack_declare(my_stack, 
 				       function->input_name[i+offset],
 				       function->input_type[i+offset],

@@ -463,7 +463,7 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 	    anna_node_identifier_t *name=(anna_node_identifier_t *)node->function;
 
 	    anna_object_t **obj = anna_stack_addr_get_str(stack, name->name);
-	    if(obj)
+	    if(obj && *obj != null_object)
 	    {
 		
 		anna_function_t *func=anna_function_unwrap(*obj);
@@ -895,6 +895,11 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 
 anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, anna_node_list_t *parent)
 {
+    anna_node_list_t list = 
+	{
+	    this, 0, parent
+	}
+    ;
    
     switch(this->node_type)
     {
@@ -905,7 +910,7 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	case ANNA_NODE_RETURN:
 	{
 	  anna_node_return_t * result = (anna_node_return_t *)this;
-	  result->payload=anna_node_prepare(result->payload, function, parent);
+	  result->payload=anna_node_prepare(result->payload, function, &list);
 	  return (anna_node_t *)result;
 	}
 	
@@ -918,6 +923,30 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	    return this;
 	}	
 
+	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_GET_WRAP:
+	{
+	    anna_node_member_get_t * result = (anna_node_member_get_t *)this;	    
+	    result->object = anna_node_prepare(result->object, function, &list);
+	    return this;
+	}
+	
+	case ANNA_NODE_ASSIGN:
+	{
+	    anna_node_assign_t * result = (anna_node_assign_t *)this;	    
+	    result->value = anna_node_prepare(result->value, function, &list);
+	    return this;
+	}
+
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    anna_node_member_set_t * result = (anna_node_member_set_t *)this;	    
+	    result->value = anna_node_prepare(result->value, function, &list);
+	    result->object = anna_node_prepare(result->object, function, &list);
+	    return this;
+	}
+
+
 	case ANNA_NODE_TRAMPOLINE:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_INT_LITERAL:
@@ -925,10 +954,6 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
 	case ANNA_NODE_NULL:
-	case ANNA_NODE_ASSIGN:
-	case ANNA_NODE_MEMBER_GET:
-	case ANNA_NODE_MEMBER_GET_WRAP:
-	case ANNA_NODE_MEMBER_SET:
 	    return this;   
 
 	default:
@@ -985,7 +1010,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 				anna_stack_frame_t *stack)
 {
     //wprintf(L"anna_node_invoke with stack %d\n", stack);
-//    wprintf(L"invoke %d\n", this->node_type);    
+    //wprintf(L"invoke %d\n", this->node_type);    
     switch(this->node_type)
     {
 	case ANNA_NODE_CALL:
@@ -1137,7 +1162,7 @@ void anna_node_print(anna_node_t *this)
 	case ANNA_NODE_DUMMY:
 	{
 	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
-	    wprintf(L"<Dummy>");
+	    wprintf(L"<Dummy:%ls>", this2->payload->type->name);
 	    break;
 	}
 	

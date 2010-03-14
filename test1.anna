@@ -1,3 +1,4 @@
+
 class Complex
 {
 	var Float real;
@@ -62,7 +63,7 @@ class Complex
 	}
 
 }
-/*
+
 class Range
 {
 
@@ -75,7 +76,7 @@ class Range
 		this.to=to;
 	}
 
-	function __eachValue__(function Null f (Int key, Int value))
+	function __eachPair__(function Null f (Int key, Int value))
 	{
 		var i=this.from;
 		while(i<this.to)
@@ -87,8 +88,9 @@ class Range
 	}
 
 }
-*/
+(3..7).each(a:b){print(b)}
 
+/*
 function mandelbrot(Complex p0, Int maxStep)
 {
     var p = p0;
@@ -112,7 +114,7 @@ while(y<=2.0)
 	y += 0.1;
 	print("\n");
 }
-
+*/
 /*
 class Foo template (X:Int)
 {

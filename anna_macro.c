@@ -719,7 +719,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 		anna_function_t *fun = anna_function_unwrap(fun_dummy->payload);
 		CHECK(fun, decl, L"Could not parse function declaration");		
 		argv[i+!!type] = fun->wrapper->type;
-		argn[i+!!type] = fun->name;		
+		argn[i+!!type] = fun->name;
 	    }
 	    else 
 	    {
