@@ -682,7 +682,7 @@ anna_function_t *anna_function_create(wchar_t *name,
 	/*
 	  FIXME:
 	  Templatize to right list subtype
-	 */
+	*/
 	anna_stack_declare(result->stack_template, argn[argc-1], list_type, null_object);
     }
     
@@ -1214,69 +1214,69 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
     }
     else
     {
-	    if(function->native.function) 
+	if(function->native.function) 
+	{
+	    anna_object_t **argv=param;
+	    int i;
+		
+	    int offset=0;
+	    if(this)
 	    {
-	        anna_object_t **argv=param;
-		int i;
-		
-		int offset=0;
-		if(this)
-		{
-		    argv=malloc(sizeof(anna_object_t *)*function->input_count);
-		    offset=1;
-		    argv[0]=this;		    
-		    for(i=0; i<(function->input_count-offset); i++) 
-		    {
-			argv[i+offset]=param[i];
-		    }
-		}
-		//wprintf(L"Invoking function with %d params\n", function->input_count);
-		
-		return function->native.function(argv);
-	    }
-	    else 
-	    {
-		anna_object_t *result = null_object;
-		int i;
-		anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
-		my_stack->parent = outer?outer:stack_global;
-		/*
-		  FIXME:
-		  Support return statement
-		*/
-		//wprintf(L"Run non-native function %ls with %d params\n", function->name, function->input_count);
-		int offset=0;
-		if(this)
-		{
-		    offset=1;
-		    anna_stack_declare(my_stack, 
-				       function->input_name[0],
-				       function->input_type[0],
-				       this);
-		}
-		
+		argv=malloc(sizeof(anna_object_t *)*function->input_count);
+		offset=1;
+		argv[0]=this;		    
 		for(i=0; i<(function->input_count-offset); i++) 
 		{
-/*
-		    wprintf(L"Declare input variable %d with name %ls on stack\n",
-		    i, function->input_name[i+offset]);
-*/
-		    anna_stack_set_str(my_stack, 
-				       function->input_name[i+offset],
-				       param[i]);
+		    argv[i+offset]=param[i];
 		}
-		
-		for(i=0; i<function->body->child_count && !my_stack->stop; i++)
-		{
-		    result = anna_node_invoke(function->body->child[i], my_stack);
-		}
-		/*
-		  if(my_stack->stop) 
-		  {
-		  }
-		*/
-		return result;
 	    }
+	    //wprintf(L"Invoking function with %d params\n", function->input_count);
+		
+	    return function->native.function(argv);
+	}
+	else 
+	{
+	    anna_object_t *result = null_object;
+	    int i;
+	    anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
+	    my_stack->parent = outer?outer:stack_global;
+	    /*
+	      FIXME:
+	      Support return statement
+	    */
+	    //wprintf(L"Run non-native function %ls with %d params\n", function->name, function->input_count);
+	    int offset=0;
+	    if(this)
+	    {
+		offset=1;
+		anna_stack_declare(my_stack, 
+				   function->input_name[0],
+				   function->input_type[0],
+				   this);
+	    }
+		
+	    for(i=0; i<(function->input_count-offset); i++) 
+	    {
+/*
+  wprintf(L"Declare input variable %d with name %ls on stack\n",
+  i, function->input_name[i+offset]);
+*/
+		anna_stack_set_str(my_stack, 
+				   function->input_name[i+offset],
+				   param[i]);
+	    }
+		
+	    for(i=0; i<function->body->child_count && !my_stack->stop; i++)
+	    {
+		result = anna_node_invoke(function->body->child[i], my_stack);
+	    }
+	    /*
+	      if(my_stack->stop) 
+	      {
+	      }
+	    */
+	    return result;
+	}
     }
 }
 
