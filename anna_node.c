@@ -821,13 +821,14 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    int is_method = (this2->function->node_type == ANNA_NODE_MEMBER_GET_WRAP);
 	    if(function_data->is_variadic)
 	    {
-		wprintf(L"Checking number of arguments to variadic function\n");
+		//wprintf(L"Checking number of arguments to variadic function\n");
 		check(this, (function_data->argc-is_method-1) <= this2->child_count,
 		      L"Wrong number of arguments to function call. Should be %d, not %d.", 
 		      function_data->argc-is_method, this2->child_count);		
 	    }
 	    else
 	    {
+		//wprintf(L"Checking number of arguments to non-variadic function\n");
 		check(this, function_data->argc-is_method == this2->child_count,
 		      L"Wrong number of arguments to function call. Should be %d, not %d.", 
 		      function_data->argc-is_method, this2->child_count);
@@ -1021,6 +1022,12 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 {
     //wprintf(L"anna_node_invoke with stack %d\n", stack);
     //wprintf(L"invoke %d\n", this->node_type);    
+    if(!this)
+    {
+	wprintf(L"Critical: Invoke null node\n");
+	CRASH;
+    }
+    
     ANNA_CHECK_NODE_PREPARED(this);
     
     switch(this->node_type)

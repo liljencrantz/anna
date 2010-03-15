@@ -25,18 +25,6 @@
   Asynchronous continuation based app/web server
 */
 /*
-  Templating plan:
-  
-  anna_macro_type must keep a copy of the original ast for every type created (done)
-  All native types must have an ast of their original definition (done)
-  AST nodes for creating native types need to use name lookups when refering to types  (done)
-  Use plain AST nodes instead of special, magical nodes for representing native types in AST (done)
-  Implement a function that searches and replaces identifier nodes (done)
-  __templateAttribute__ will do search and replaceg (done)
-  __templatize__ will clone the AST, modify the arguments to __tempalteAttribute__, and let __templateAttribute__ do the replacing. (done)
-  __templatize__ needs to have a cache ot already templatized types (done)
-  Update attribute call syntax to make it easy to use the same attribute for both types and functions
-
   Code layout plan:
 
   - Move object and type code to individual .[ch] files.
@@ -78,7 +66,6 @@
   
   Function default argument values
   Named function arguments
-  Variadic functions
   Garbage collection  
   Proper intersection/union of types
   static member identifier and assignment
@@ -92,7 +79,7 @@
   is function
   as function
   __returnAssign__ macro
-  __list__ macro (depends on variadic functions and templates)
+  __list__ macro (depends on variadic functions)
   use macro
   __memberCall__ macro
   __staticMemberGet__ macro
@@ -121,6 +108,8 @@
   Move all native types to use the AST node creation style from List
   Subfunction/block tracking in function
   Functions that don't return an Int (depends on block tracking)
+  Variadic functions
+  Fully functional templates
   
   Type type
   Call type
@@ -1320,7 +1309,7 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 	
 	for(i=0; i<(function->input_count-offset-is_variadic); i++)
 	{
-	    //wprintf(L"eval param %d of %d\n", i, function->input_count - is_variadic - offset);
+	    //wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
 	    argv[i+offset]=anna_node_invoke(param->child[i], stack);
 	}   
 	if(is_variadic)
