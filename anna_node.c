@@ -641,12 +641,20 @@ anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *this, ann
 
 anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_stack_frame_t *stack)
 {
-/*    wprintf(L"Lookup on string \"%ls\", sid is %d,%d\n", this->name, this->sid.frame, this->sid.offset);
-      assert(anna_stack_get_sid(stack, this->sid) == anna_stack_get_str(stack, this->name));
-    
-      return anna_stack_get_sid(stack, this->sid);*/
-
     return anna_stack_get_str(stack, this->name);
+    //    wprintf(L"Lookup on string \"%ls\", sid is %d,%d\n", this->name, this->sid.frame, this->sid.offset);
+#ifdef ANNA_CHECK_SID_ENABLED
+    anna_sid_t real_sid = anna_stack_sid_create(stack, this->name);
+    if(memcmp(&this->sid, &real_sid, sizeof(anna_sid_t))!=0)
+    {
+        anna_error(this, L"Critical: Cached sid (%d, %d) different from invoke time sid (%d, %d) for node %ls",
+		   this->sid.frame, this->sid.offset, real_sid.frame, real_sid.offset, this->name);
+	anna_stack_print_trace(stack);	
+
+	CRASH;
+    }
+#endif  
+    return anna_stack_get_sid(stack, this->sid);
 }
 
 anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_frame_t *stack)
@@ -881,6 +889,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
 	    check(this, !!this2->name, L"Invalid identifier node");
 	    check(this, !!anna_stack_get_type(stack, this2->name), L"Unknown variable: %ls", this2->name);
+	    check(this, (this2->sid.offset != -1) && (this2->sid.frame != -1), L"Bad variable lookup: %ls", this2->name);
 	    return;
 	}
 	case ANNA_NODE_STRING_LITERAL:
@@ -927,10 +936,10 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	
 	case ANNA_NODE_IDENTIFIER:
 	{
-	    /*
-	      anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
-	      this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
-	    */
+	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
+	    this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
+	    if(wcscmp(this2->name,L"print")==0)
+		anna_stack_print_trace(function->stack_template);
 	    return this;
 	}	
 
@@ -1109,12 +1118,20 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
     }    
 }
 
-void anna_node_print(anna_node_t *this)
+static void anna_indent(int indentation)
+{
+    int indent;
+    for(indent=0; indent<indentation; indent++)
+        wprintf(L"    ");
+}
+
+void anna_node_print_internal(anna_node_t *this, int indentation)
 {
     switch(this->node_type)
     {
 	case ANNA_NODE_INT_LITERAL:
 	{
+	    anna_indent(indentation);
 	    anna_node_int_literal_t *this2 = (anna_node_int_literal_t *)this;
 	    wprintf(L"%d", this2->payload);
 	    break;
@@ -1122,6 +1139,7 @@ void anna_node_print(anna_node_t *this)
 	
 	case ANNA_NODE_FLOAT_LITERAL:
 	{
+	    anna_indent(indentation);
 	    anna_node_float_literal_t *this2 = (anna_node_float_literal_t *)this;
 	    wprintf(L"%f", this2->payload);
 	    break;
@@ -1129,6 +1147,7 @@ void anna_node_print(anna_node_t *this)
 	
 	case ANNA_NODE_STRING_LITERAL:
 	{
+	    anna_indent(indentation);
 	    anna_node_string_literal_t *this2 = (anna_node_string_literal_t *)this;
 	    int i;
 	    
@@ -1152,6 +1171,7 @@ void anna_node_print(anna_node_t *this)
 	
 	case ANNA_NODE_CHAR_LITERAL:
 	{
+	    anna_indent(indentation);
 	    anna_node_char_literal_t *this2 = (anna_node_char_literal_t *)this;
 	    wprintf(L"'%lc'", this2->payload);
 	    break;
@@ -1159,6 +1179,7 @@ void anna_node_print(anna_node_t *this)
 	
 	case ANNA_NODE_IDENTIFIER:
 	{
+	    anna_indent(indentation);
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
 	    wprintf(L"%ls", this2->name);
 	    break;
@@ -1166,12 +1187,13 @@ void anna_node_print(anna_node_t *this)
 	
 	case ANNA_NODE_ASSIGN:
 	{
+	    anna_indent(indentation);
 	    anna_node_assign_t *this2 = (anna_node_assign_t *)this;
 	    wprintf(L"__assign__(");
 
 	    wprintf(L"%d:%d", this2->sid.frame, this2->sid.offset);
 	    wprintf(L"; ");
-	    anna_node_print(this2->value);
+	    anna_node_print_internal(this2->value, indentation+1);
 	    wprintf(L")");
 	    
 	    break;
@@ -1180,6 +1202,7 @@ void anna_node_print(anna_node_t *this)
 	case ANNA_NODE_TRAMPOLINE:
 	case ANNA_NODE_DUMMY:
 	{
+	    anna_indent(indentation);
 	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
 	    wprintf(L"<Dummy>");
 	    break;
@@ -1188,23 +1211,26 @@ void anna_node_print(anna_node_t *this)
 
 	case ANNA_NODE_MEMBER_GET:
 	{
+	    anna_indent(indentation);
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
-	    wprintf(L"__memberGet__(");
-	    anna_node_print(this2->object);
-	    wprintf(L", %ls)", anna_mid_get_reverse(this2->mid));
+	    wprintf(L"__memberGet__(\n");
+	    anna_node_print_internal(this2->object, indentation+1);
+	    wprintf(L"; %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
 	}
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
+	    anna_indent(indentation);
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
-	    wprintf(L"__memberGet__(");
-	    anna_node_print(this2->object);
+	    wprintf(L"__memberGet__(\n");
+	    anna_node_print_internal(this2->object, indentation+1);
 	    wprintf(L", %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
 	}
 	
 	case ANNA_NODE_NULL:
 	{
+	    anna_indent(indentation);
 	    wprintf(L"null");
 	    break;
 	}
@@ -1215,17 +1241,30 @@ void anna_node_print(anna_node_t *this)
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;
 //	    wprintf(L"/*%d*/", this2);
-	    anna_node_print(this2->function);
-	    wprintf(L"(");
-	    for(i=0; i<this2->child_count; i++)
+	    anna_node_print_internal(this2->function, indentation);
+	    /*	    wprintf(L"\n");
+		    anna_indent(indentation);*/
+	    if(this2->child_count == 0)
 	    {
-		if(i!=0) 
-		{
-		    wprintf(L"; ");
-		}
-		anna_node_print(this2->child[i]);
+		wprintf(L"()" );		
 	    }
-	    wprintf(L")" );
+	    else 
+	      {
+		wprintf(L"(\n");
+		
+		for(i=0; i<this2->child_count; i++)
+		  {
+		    if(i!=0) 
+		      {
+			wprintf(L";\n");
+		      }
+		    anna_node_print_internal(this2->child[i], indentation+1);
+		  }
+		/*	    wprintf(L"\n" );
+			    anna_indent(indentation);*/
+		wprintf(L")" );
+	      }
+	    
 	    break;
 	}
 	
@@ -1235,6 +1274,14 @@ void anna_node_print(anna_node_t *this)
 	    break;
 	}
     }
+
+}
+
+
+void anna_node_print(anna_node_t *this)
+{
+  anna_node_print_internal(this, 0);
+  wprintf(L"\n");
 }
 
 void anna_node_print_code(anna_node_t *node)

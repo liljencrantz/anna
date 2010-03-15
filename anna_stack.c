@@ -135,8 +135,13 @@ anna_sid_t anna_stack_sid_create(anna_stack_frame_t *stack, wchar_t *name)
 	sid.frame++;
 	stack = stack->parent;	
     }
-    wprintf(L"Critical: Tried to create sid for unknown variable: %ls\n", name);
-    CRASH;
+    sid.frame=-1;
+    sid.offset=-1;
+    return sid;
+    /*
+      wprintf(L"Critical: Tried to create sid for unknown variable: %ls\n", name);
+      CRASH;
+    */
 }
 
 anna_object_t *anna_stack_get_sid(anna_stack_frame_t *stack, anna_sid_t sid)
@@ -185,4 +190,22 @@ void anna_stack_print(anna_stack_frame_t *stack)
 	return;
     hash_foreach2(&stack->member_string_identifier, &anna_print_stack_member, stack);
     anna_stack_print(stack->parent);
+}
+
+int anna_stack_depth(anna_stack_frame_t *stack)
+{
+    return stack?anna_stack_depth(stack->parent)+1:0;
+}
+
+void anna_stack_print_trace(anna_stack_frame_t *stack)
+{
+#ifdef ANNA_CHECK_STACK_ENABLED
+	wprintf(L"Stack trace:\n");
+	while(stack)
+	{
+	    wprintf(L"Stack frame belonging to function %ls\n", stack->function?stack->function->name:L"null");
+	    stack = stack->parent;
+	}
+	
+#endif
 }

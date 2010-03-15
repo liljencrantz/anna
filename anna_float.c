@@ -14,7 +14,6 @@
 
 #include "anna_float_i.c"
 
-
 anna_object_t *anna_float_create(double value)
 {
     anna_object_t *obj= anna_object_create(float_type);
@@ -39,16 +38,26 @@ void anna_float_type_create(anna_stack_frame_t *stack)
     float_type = anna_type_native_create(L"Float", stack);
     anna_node_call_t *definition = anna_type_definition_get(float_type);
 
-    /*
-      FIXME, UGLY, BLERGH: Count and add payload twice, because it is twice the size of ptr on 32-bit. *ugh*
-    */
     anna_member_add_node(
 	definition, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload",
 	0, (anna_node_t *)anna_node_identifier_create(0, L"Null"));
-    anna_member_add_node(
-	definition, -1,  L"!floatPayload2", 0, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Null"));
+    /*
+      If we can't fit a double into a void * on this platform, add a
+      second dummy payload. This assumes that sizeof(double) is never
+      more than twice the size of sizeof(void *).
 
+      This code also assumes that consecutively registered members
+      will be stored next to each other, which is currently true, but
+      we will need to keep this in mind when trying to optimize member
+      layout in the future.
+    */
+    if(sizeof(double) > sizeof(void *)) 
+    {
+	anna_member_add_node(
+	    definition, -1,  L"!floatPayload2", 0, 
+	    (anna_node_t *)anna_node_identifier_create(0, L"Null"));
+    }
+    
     anna_float_type_i_create(definition, stack);
     anna_type_native_setup(float_type, stack);
         

@@ -36,23 +36,6 @@ typedef struct YYLTYPE YYLTYPE;
 #define yyltype YYLTYPE
 #define YYLTYPE YYLTYPE
 
-#define ANNA_CHECK_NODE_PREPARED_ENABLED 
-
-#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
-#define ANNA_PREPARED(n) n->prepared=1
-#define ANNA_CHECK_NODE_PREPARED(n)  if(!n->prepared)			\
-    {									\
-	anna_error(n,L"Critical: Tried to invoke unprepared AST node");	\
-	anna_node_print(n);						\
-	wprintf(L"\n");							\
-	CRASH;								\
-    }
-
-#else
-#define ANNA_PREPARED(n) 
-#define ANNA_CHECK_NODE_PREPARED(n) 
-#endif
-
 struct anna_node
 {
     int node_type;

@@ -48,7 +48,7 @@
 
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
-  Cache abides checks. Do all checks at type creation time and stow away the results somewhere?
+  Cache abides checks. Do all checks possible at type creation time and store the results
   Object constructor needs to set all members to null
   Identifier invocation should use sid instead of name lookup
   Split type namespace from type object
@@ -77,6 +77,7 @@
   elif macro
   __extendsAttribute__ macro
   is function
+  in method
   as function
   __returnAssign__ macro
   __list__ macro (depends on variadic functions)
@@ -84,7 +85,7 @@
   __memberCall__ macro
   __staticMemberGet__ macro
   __staticMemberSet__ macro
-  __with__ macro
+  with macro
 
   Done: 
   
@@ -672,6 +673,11 @@ anna_function_t *anna_function_create(wchar_t *name,
     memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
 
     result->stack_template = anna_stack_create(64, parent_stack);
+
+#ifdef ANNA_CHECK_STACK_ENABLED
+    result->stack_template->function = result;
+#endif
+
     int is_variadic = ANNA_IS_VARIADIC(result);
     for(i=0; i<argc-is_variadic;i++)
     {
@@ -1146,7 +1152,6 @@ static void anna_init()
     anna_mid_put(L"__init__", ANNA_MID_INIT_PAYLOAD);
 
     stack_global = anna_stack_create(4096, 0);
-    
     /*
       Create lowest level stuff. Bits of magic, be careful with
       ordering here. A lot of intricate dependencies going on between
@@ -1240,10 +1245,10 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    int i;
 	    anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
 	    my_stack->parent = outer?outer:stack_global;
-	    /*
-	      FIXME:
-	      Support return statement
-	    */
+
+	    wprintf(L"Create new stack %d with frame depth %d while calling function %ls\n", my_stack, anna_stack_depth(my_stack), function->name);
+	    
+	    
 	    //wprintf(L"Run non-native function %ls with %d params\n", function->name, function->input_count);
 	    int offset=0;
 	    if(this)
@@ -1265,7 +1270,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 				   function->input_name[i+offset],
 				   param[i]);
 	    }
-		
+	    
 	    for(i=0; i<function->body->child_count && !my_stack->stop; i++)
 	    {
 		result = anna_node_invoke(function->body->child[i], my_stack);
@@ -1422,7 +1427,7 @@ int main(int argc, char **argv)
     anna_node_print(program);
     wprintf(L"\n");
     wprintf(L"Output:\n");    
-
+    
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_invoke(func, 0, 0, stack_global, stack_global);

@@ -9,6 +9,38 @@
     *__tmp=0;					\
     }
 
+/*
+  Additinal run time consistency checks. These come at a significant
+  performance penalty, but are very helpful when tracking down bugs.
+*/
+
+/**
+   If set, when invoking an AST node, first make sure it's been prepared
+ */
+#define ANNA_CHECK_NODE_PREPARED_ENABLED 
+/**
+   If set, always check that sid:s are currect when invoking
+   identifier nodes. This means do a full name lookup on them.
+ */
+#define ANNA_CHECK_SID_ENABLED
+
+#define ANNA_CHECK_STACK_ENABLED
+
+
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+#define ANNA_PREPARED(n) ((n)->prepared=1)
+#define ANNA_CHECK_NODE_PREPARED(n)  if(!(n)->prepared)			\
+    {									\
+	anna_error(n,L"Critical: Tried to invoke unprepared AST node");	\
+	anna_node_print(n);						\
+	wprintf(L"\n");							\
+	CRASH;								\
+    }
+#else
+#define ANNA_PREPARED(n) 
+#define ANNA_CHECK_NODE_PREPARED(n) 
+#endif
+
 
 struct anna_type;
 struct anna_object;

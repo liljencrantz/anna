@@ -1,3 +1,4 @@
+/*
 class Range template (T:Int)
 {
 
@@ -27,29 +28,33 @@ class Range template (T:Int)
     }
     
 }
+*/
 /*
 (1..10).each(key:value)
 {
     print(value, "\n");
 }
 */
+ /*
 var r = Range<Float>(1.0, 12.0, 1.5);
 
 r.each(key:value)
 {
     print(value,"\n");
 }
+ */
 
+var abc = 12;
 
 function foo(Int a...)
 {
     a.each(key:value)
     {
-	print(value,"\n");
+	print(abc);
     }
 }
 
-foo(1,2,3,7);
+foo(1,2);
 
 //(3..7).each(a:b){print(b)}
 

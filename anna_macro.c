@@ -776,7 +776,6 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	}
 	else {
 	    //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
-	  
 	    result = anna_native_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_native_t)anna_i_null_function, out_type, argc, argv, argn);
 	}
 	
