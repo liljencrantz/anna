@@ -410,7 +410,7 @@ void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
 	if(!call->child) 
 	{
 	    wprintf(L"Out of memory\n");
-	    exit(1);
+	    CRASH;
 	}	
 	call->child_capacity = new_capacity;
     }
@@ -434,7 +434,7 @@ void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child)
 	if(!call->child) 
 	{
 	    wprintf(L"Out of memory\n");
-	    exit(1);
+	    CRASH;
 	}	
 	call->child_capacity = new_capacity;
     }
@@ -772,7 +772,7 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	    
 	default:
 	    wprintf(L"SCRAP! Unknown node type when checking return type: %d\n", this->node_type);
-	    exit(1);
+	    CRASH;
     }
 }
 
@@ -969,7 +969,7 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 
 	default:
 	    wprintf(L"HULP %d\n", this->node_type);
-	    exit(1);
+	    CRASH;
     }
 }
 
@@ -1105,7 +1105,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 
 	default:
 	    wprintf(L"HOLP\n");
-	    exit(1);
+	    CRASH;
     }    
 }
 
@@ -1354,7 +1354,7 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_return_t);
 	default:
 	    anna_error(n, L"Unknown node type while determining size\n");
-	    exit(1);
+	    CRASH;
     }
     
 }
@@ -1421,7 +1421,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_RETURN:
 	default:
 	    anna_error(n, L"Unsupported node type %d for deep copy!\n", n->node_type);
-	    exit(1);
+	    CRASH;
 	
     }
 }
@@ -1465,7 +1465,7 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	
 	default:
 	    wprintf(L"OOPS! Unknown node type when replacing: %d\n", tree->node_type);
-	    exit(1);
+	    CRASH;
     }
     
 }
@@ -1535,7 +1535,7 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	
 	default:
 	    wprintf(L"OOPS! Unknown node type when comparing: %d\n", node1->node_type);
-	    exit(1);
+	    CRASH;
 	
     }
 
