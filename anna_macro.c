@@ -1641,9 +1641,9 @@ static anna_node_t *anna_macro_while(anna_node_call_t *node,
 {
     CHECK_CHILD_COUNT(node,L"while macro", 2);
     CHECK_NODE_BLOCK(node->child[1]);
-
+    
     anna_node_prepare_children(node, function, parent);
-
+    
     anna_type_t *t2 = anna_node_get_return_type(node->child[1], function->stack_template);    
     CHECK(t2,node->child[1], L"Unknown type for second argument to while");	
     
@@ -1671,14 +1671,14 @@ static anna_node_t *anna_macro_while(anna_node_call_t *node,
 	    L"body"
 	}
     ;
-
+    
     anna_node_t *param[]=
 	{
 	    condition,
 	    node->child[1]
 	}
     ;
-
+    
     anna_type_t *argv[]=
 	{
 	    anna_node_get_return_type(param[0], function->stack_template),

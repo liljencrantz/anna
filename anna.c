@@ -45,12 +45,11 @@
   Buffer type
   Complex type
   Regexp type
-
+  
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks possible at type creation time and store the results
   Object constructor needs to set all members to null
-  Identifier invocation should use sid instead of name lookup
   Split type namespace from type object
   Properties
   Better code validator
@@ -86,7 +85,7 @@
   __staticMemberGet__ macro
   __staticMemberSet__ macro
   with macro
-
+  
   Done: 
   
   Sugar parser
@@ -111,7 +110,8 @@
   Functions that don't return an Int (depends on block tracking)
   Variadic functions
   Fully functional templates
-  
+  Identifier invocation should use sid instead of name lookup
+
   Type type
   Call type
   Int type
@@ -1239,7 +1239,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
 	    my_stack->parent = outer?outer:stack_global;
 
-	    wprintf(L"Create new stack %d with frame depth %d while calling function %ls\n", my_stack, anna_stack_depth(my_stack), function->name);
+	    //wprintf(L"Create new stack %d with frame depth %d while calling function %ls\n", my_stack, anna_stack_depth(my_stack), function->name);
 	    
 	    
 	    //wprintf(L"Run non-native function %ls with %d params\n", function->name, function->input_count);
@@ -1295,19 +1295,21 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
     {
 	anna_object_t *argv[8];
 	int i;
+//	wprintf(L"Argv: %d\n", argv);
 	
 	int offset=0;
 	if(this)
 	{	    
 	    offset=1;
 	    argv[0]=this;		    
+//	    wprintf(L"We have a this parameter: %d\n", this);
 	}
 	int is_variadic = ANNA_IS_VARIADIC(function);
 	//wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
 	
 	for(i=0; i<(function->input_count-offset-is_variadic); i++)
 	{
-	    //wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
+//	    wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
 	    argv[i+offset]=anna_node_invoke(param->child[i], stack);
 	}   
 	if(is_variadic)
@@ -1316,9 +1318,12 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 	    anna_list_set_capacity(lst, param->child_count - function->input_count+1-offset);
 	    for(; i<param->child_count;i++)
 	    {
+		//	wprintf(L"eval variadic param %d of %d \n", i, param->child_count);
 		anna_list_add(lst, anna_node_invoke(param->child[i], stack));
 	    }
-	    argv[function->input_count-offset-1] = lst;	    
+	    //wprintf(L"Set variadic var at offset %d to %d\n", function->input_count-1, lst);
+	
+	    argv[function->input_count-1] = lst;	    
 	}
 	return anna_function_invoke_values(function, 0, argv, outer);
     }

@@ -50,11 +50,11 @@ function foo(Int a...)
 {
     a.each(key:value)
     {
-	print(abc);
+	print(key, " ", value, "\n");
     }
 }
 
-foo(1,2);
+foo(1,2, 7, 9, 3);
 
 //(3..7).each(a:b){print(b)}
 

@@ -12,7 +12,7 @@
 #include "anna_int.h"
 #include "anna_char.h"
 
-static anna_object_t *anna_i_print(anna_object_t **param)
+anna_object_t *anna_i_print(anna_object_t **param)
 {
     int i;
     for(i=0; i<anna_list_get_size(param[0]); i++) {

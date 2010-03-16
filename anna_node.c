@@ -464,7 +464,9 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
 int anna_node_identifier_is_function(anna_node_identifier_t *id, anna_stack_frame_t *stack)
 {
     anna_type_t *type = anna_stack_get_type(stack, id->name);
-    CHECK(type, id, L"Unknown identifier: %ls", id->name);
+    if(!type)
+	return 0;
+    //CHECK(type, id, L"Unknown identifier: %ls", id->name);
     return !!anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
 }
 
@@ -1293,13 +1295,13 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 		wprintf(L"(\n");
 		
 		for(i=0; i<this2->child_count; i++)
-		  {
+		{
 		    if(i!=0) 
-		      {
+		    {
 			wprintf(L";\n");
-		      }
+		    }
 		    anna_node_print_internal(this2->child[i], indentation+1);
-		  }
+		}
 		/*	    wprintf(L"\n" );
 			    anna_indent(indentation);*/
 		wprintf(L")" );

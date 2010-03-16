@@ -393,6 +393,17 @@ static anna_object_t *anna_list_first_pair(anna_object_t **param)
     return null_object;
 }
 
+static anna_object_t *anna_list_init(anna_object_t **param)
+{
+    size_t sz = anna_list_get_size(param[1]);
+    anna_object_t **src = anna_list_get_payload(param[1]);
+    anna_list_set_size(param[0], sz);
+    anna_object_t **dest = anna_list_get_payload(param[0]);
+    memcpy(dest, src, sizeof(anna_object_t *)*sz);
+    
+    return param[0];
+}
+
 
 
 void anna_list_type_create(anna_stack_frame_t *stack)
@@ -589,7 +600,16 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_native_method_add_node(
 	definition,
 	-1,
-	L"__getInt__",
+	L"__init__",
+	ANNA_FUNCTION_VARIADIC, 
+	(anna_native_t)&anna_list_init, 
+	(anna_node_t *)anna_node_identifier_create(&loc, L"Null") , 
+	2, a_argv, a_argn);
+    
+    anna_native_method_add_node(
+	definition,
+	-1,
+	L"__get__Int__",
 	0, 
 	(anna_native_t)&anna_list_get_int, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T") , 
@@ -600,7 +620,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_native_method_add_node(
 	definition, 
 	-1,
-	L"__setInt__", 
+	L"__set__Int__", 
 	0, 
 	(anna_native_t)&anna_list_set_int, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T"), 
