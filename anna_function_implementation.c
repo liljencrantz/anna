@@ -18,24 +18,29 @@ anna_object_t *anna_i_print(anna_object_t **param)
     for(i=0; i<anna_list_get_size(param[0]); i++) {
 	
 	anna_object_t *value = anna_list_get(param[0], i);
-	if(value->type == int_type) {
+	if(value->type == int_type) 
+	{
 	    int val = anna_int_get(value);
 	    wprintf(L"%d", val);
 	}
-	else if(value->type == float_type) {
+	else if(value->type == float_type) 
+	{
 	    double val = anna_float_get(value);
 	    wprintf(L"%f", val);
 	}
-	else if(value->type == string_type) {
+	else if(value->type == string_type) 
+	{
 	    wchar_t *payload = anna_string_get_payload(value);
 	    size_t payload_size = anna_string_get_payload_size(value);
 	    wprintf(L"%.*ls", payload_size, payload);
 	}
-	else if(value->type == char_type) {
+	else if(value->type == char_type) 
+	{
 	    wchar_t payload = anna_char_get(value);
 	    wprintf(L"%lc", payload);
 	}
-	else if(value == null_object) {
+	else if(value == null_object) 
+	{
 	    wprintf(L"null");
 	}
 	else 
@@ -43,7 +48,7 @@ anna_object_t *anna_i_print(anna_object_t **param)
 	    wprintf(L"%ls", value->type->name);
 	}
 	/*
-	  FIXME: Print other things than just ints!
+	  FIXME: Print using a toString method
 	*/
     }
     return null_object;

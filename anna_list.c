@@ -139,38 +139,7 @@ static anna_object_t *anna_list_append(anna_object_t **param)
     return param[1];
 }
 
-static anna_object_t *anna_list_each_value(anna_object_t **param)
-{
-    anna_object_t *body_object;
-    anna_object_t *result=null_object;
-    body_object=param[1];
-        
-    size_t sz = anna_list_get_size(param[0]);
-    anna_object_t **arr = anna_list_get_payload(param[0]);
-    size_t i;
-
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
-/*
-    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
-*/  
-    for(i=0;i<sz;i++)
-    {
-      /*
-      wprintf(L"Run the following code:\n");
-      anna_node_print((*function_ptr)->body);
-      wprintf(L"\n");
-      */
-	result = anna_function_invoke_values(*function_ptr, 0, &arr[i], stack);
-    }
-    return result;
-}
-
-
-static anna_object_t *anna_list_each_pair(anna_object_t **param)
+static anna_object_t *anna_list_each(anna_object_t **param)
 {
     anna_object_t *body_object;
     anna_object_t *result=null_object;
@@ -203,41 +172,7 @@ static anna_object_t *anna_list_each_pair(anna_object_t **param)
     return result;
 }
 
-
-static anna_object_t *anna_list_map_value(anna_object_t **param)
-{
-    anna_object_t *body_object;
-    anna_object_t *result=anna_list_create();
-    
-    body_object=param[1];
-        
-    size_t sz = anna_list_get_size(param[0]);
-    anna_object_t **arr = anna_list_get_payload(param[0]);
-    size_t i;
-    anna_list_set_size(result, sz);
-
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
-/*
-    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
-*/  
-    for(i=0;i<sz;i++)
-    {
-      /*
-      wprintf(L"Run the following code:\n");
-      anna_node_print((*function_ptr)->body);
-      wprintf(L"\n");
-      */
-	anna_list_set(result, i, anna_function_invoke_values(*function_ptr, 0, &arr[i], stack));
-    }
-    return result;
-}
-
-
-static anna_object_t *anna_list_map_pair(anna_object_t **param)
+static anna_object_t *anna_list_map(anna_object_t **param)
 {
     anna_object_t *body_object;
     anna_object_t *result=anna_list_create();
@@ -271,45 +206,7 @@ static anna_object_t *anna_list_map_pair(anna_object_t **param)
     return result;
 }
 
-
-static anna_object_t *anna_list_filter_value(anna_object_t **param)
-{
-    anna_object_t *body_object;
-    anna_object_t *result=anna_list_create();
-    
-    body_object=param[1];
-        
-    size_t sz = anna_list_get_size(param[0]);
-    anna_object_t **arr = anna_list_get_payload(param[0]);
-    size_t i;
-    int pos=0;
-    anna_list_set_capacity(result, sz);
-    
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
-
-/*
-    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
-*/  
-    for(i=0;i<sz;i++)
-    {
-      /*
-      wprintf(L"Run the following code:\n");
-      anna_node_print((*function_ptr)->body);
-      wprintf(L"\n");
-      */
-	if(anna_function_invoke_values(*function_ptr, 0, &arr[i], stack) != null_object)
-	    anna_list_set(result, pos++, arr[i]);
-    }
-    anna_list_set_capacity(result, pos);
-    return result;
-}
-
-
-static anna_object_t *anna_list_filter_pair(anna_object_t **param)
+static anna_object_t *anna_list_filter(anna_object_t **param)
 {
     anna_object_t *body_object;
     anna_object_t *result=anna_list_create();
@@ -347,31 +244,7 @@ static anna_object_t *anna_list_filter_pair(anna_object_t **param)
     return result;
 }
 
-static anna_object_t *anna_list_first_value(anna_object_t **param)
-{
-    anna_object_t *body_object=param[1];
-    
-    size_t sz = anna_list_get_size(param[0]);
-    anna_object_t **arr = anna_list_get_payload(param[0]);
-    size_t i;
-
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
-    for(i=0;i<sz;i++)
-    {
-       if(anna_function_invoke_values(*function_ptr, 0, &arr[i], stack) != null_object)
-       {
-	  return arr[i];
-       }
-       
-    }
-    return null_object;
-}
-
-
-static anna_object_t *anna_list_first_pair(anna_object_t **param)
+static anna_object_t *anna_list_first(anna_object_t **param)
 {
     anna_object_t *body_object=param[1];
     size_t sz = anna_list_get_size(param[0]);
@@ -421,7 +294,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 
     func = anna_native_create(L"!anonymous",
 			      ANNA_FUNCTION_MACRO,
-			      (anna_native_t)anna_list_map_pair,
+			      (anna_native_t)anna_list_map,
 			      0,
 			      0,
 			      0, 
@@ -629,20 +502,14 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	i_argn);
 
     anna_native_method_add_node(
-	definition, -1, L"__appendValue__", 0, 
+	definition, -1, L"__append__Value__", 0, 
 	(anna_native_t)&anna_list_append, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T") , 
 	2, a_argv, a_argn);
     
     anna_native_method_add_node(
-	definition, -1, L"__eachValue__", 0, 
-	(anna_native_t)&anna_list_each_value, 
-	(anna_node_t *)anna_node_identifier_create(&loc, L"T"),
-	2, e_argv_value, e_argn);
-    
-    anna_native_method_add_node(
-	definition, -1, L"__eachPair__", 0, 
-	(anna_native_t)&anna_list_each_pair, 
+	definition, -1, L"__each__", 0, 
+	(anna_native_t)&anna_list_each, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T"), 
 	2, e_argv_pair, e_argn);
     
@@ -652,38 +519,20 @@ void anna_list_type_create(anna_stack_frame_t *stack)
       something...
      */
     anna_native_method_add_node(
-       definition, -1, L"__mapValue__",
-       0, (anna_native_t)&anna_list_map_value,
-       anna_node_clone_deep(my_list_type) ,
-       2, e_argv_value, e_argn);
-
-    anna_native_method_add_node(
-	definition, -1, L"__mapPair__", 
-	0, (anna_native_t)&anna_list_map_pair, 
+	definition, -1, L"__map__", 
+	0, (anna_native_t)&anna_list_map, 
 	anna_node_clone_deep(my_list_type), 
 	2, e_argv_pair, e_argn);
     
     anna_native_method_add_node(
-	definition, -1, L"__filterValue__",
-	0, (anna_native_t)&anna_list_filter_value,
-	anna_node_clone_deep(my_list_type) ,
-	2, e_argv_value, e_argn);
-
-    anna_native_method_add_node(
-	definition, -1, L"__filterPair__", 
-	0, (anna_native_t)&anna_list_filter_pair, 
+	definition, -1, L"__filter__", 
+	0, (anna_native_t)&anna_list_filter, 
 	anna_node_clone_deep(my_list_type), 
 	2, e_argv_pair, e_argn);
-    
-    anna_native_method_add_node(
-	definition, -1, L"__firstValue__",
-	0, (anna_native_t)&anna_list_first_value,
-	(anna_node_t *)anna_node_identifier_create(&loc, L"T"),
-	2, e_argv_value, e_argn);
 
     anna_native_method_add_node(
-	definition, -1, L"__firstPair__", 
-	0, (anna_native_t)&anna_list_first_pair, 
+	definition, -1, L"__first__", 
+	0, (anna_native_t)&anna_list_first, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T"),
 	2, e_argv_pair, e_argn);
     

@@ -961,85 +961,41 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
     
     wchar_t * call_name = call_name_id->name;
     
+    anna_type_t *argv[]=
+	{
+	    0, 0
+	}
+    ;
+    wchar_t **argn;
+	    
+
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_append(&sb, L"__");
+    sb_append(&sb, call_name);
+    sb_append(&sb, L"__");
+    
+    wchar_t *method_name = sb_content(&sb);
+    
+    size_t mid = anna_mid_get(method_name);
+
+    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
+    CHECK(member_type, node, L"No method named %ls in type %ls\n", method_name, lst_type->name);
+
     switch(node->child[0]->node_type)
     {
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t * value_name = (anna_node_identifier_t *)node->child[0];
 	    
-	    anna_type_t *argv[]=
+	    wchar_t *argn_c[]=
 		{
-		    object_type
+		    L"!key", value_name->name
 		}
 	    ;
+	    argn = argn_c;
+	    break;
 	    
-	    wchar_t *argn[]=
-		{
-		    value_name->name
-		}
-	    ;
-	    
-	    wprintf(L"Setting up iteration function, param name is %ls\n", value_name->name);
-	    
-	    string_buffer_t sb;
-	    sb_init(&sb);
-	    sb_append(&sb, L"__");
-	    sb_append(&sb, call_name);
-	    sb_append(&sb, L"Value__");
-	    
-	    wchar_t *method_name = sb_content(&sb);
-	    
-	    size_t mid = anna_mid_get(method_name);
-	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
-	    CHECK(member_type, node, L"No method named %ls in type %ls\n", method_name, lst_type->name);
-
-	    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
-	    
-	    CHECK(function_key, node, L"Not a function: %ls", method_name);
-	    anna_object_t **sub_key_ptr=anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-	    CHECK(sub_key_ptr, node, L"Not a function: %ls", function_key->argv[1]->name);
-	    anna_function_type_key_t *sub_function_key = (anna_function_type_key_t *)(*sub_key_ptr);
-	    CHECK(sub_function_key->argc == 1, node, L"Function %ls has wrong number of parameters: Got %d, expected %d", method_name, sub_function_key->argc, 1);
-	    argv[0] = sub_function_key->argv[0];
-	    
-	    if(!member_type)
-	    {
-		FAIL(
-		    node, 
-		    L"Unable to calculate type of member %ls of object of type %ls", 
-		    method_name, lst_type->name);
-	    }
-	    sb_destroy(&sb);
-	    
-	    anna_function_t *sub_func = anna_function_create(
-		L"!anonymous", 
-		0,
-		(anna_node_call_t *)node->child[1], 
-		0, 
-		1,
-		argv, 
-		&value_name->name, 
-		function->stack_template, 
-		return_pop_count);
-
-	    al_push(&function->child_function, sub_func);
-
-	    anna_node_t *iter_function = (anna_node_t *)
-		anna_node_dummy_create(
-		    &node->location,
-		    sub_func->wrapper,
-		    1);
-	    	    
-	    return (anna_node_t *)anna_node_call_create(
-		&node->location,
-		(anna_node_t *)anna_node_member_get_create(
-		    &node->location,
-		    mg->child[0],
-		    mid,
-		    member_type,
-		    1),   
-		1,
-		&iter_function);
 	}
 	
 	case ANNA_NODE_CALL:
@@ -1052,82 +1008,17 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    CHECK_CHILD_COUNT(decl, L"iteration macro", 2);
 	    CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
 	    CHECK_NODE_TYPE(decl->child[1], ANNA_NODE_IDENTIFIER);
+	    
 	    key_name = (anna_node_identifier_t *)decl->child[0];
 	    value_name = (anna_node_identifier_t *)decl->child[1];
-    
-	    anna_type_t *argv[]=
-		{
-		    int_type, object_type
-		}
-	    ;
 	    
-	    wchar_t *argn[]=
+	    wchar_t *argn_c[]=
 		{
 		    key_name->name, value_name->name
 		}
 	    ;
-
-	    //wprintf(L"Setting up each function, param names are %ls and %ls\n", key_name->name, value_name->name);
-	    
-	    string_buffer_t sb;
-	    sb_init(&sb);
-	    sb_append(&sb, L"__");
-	    sb_append(&sb, call_name);
-	    sb_append(&sb, L"Pair__");
-	    
-	    wchar_t *method_name = sb_content(&sb);
-	    
-	    size_t mid = anna_mid_get(method_name);
-	    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
-	    CHECK(member_type, node, L"No method named %ls in type %ls\n", method_name, lst_type->name);
-
-	    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
-	    CHECK(function_key, node, L"Not a function: %ls", method_name);
-	    anna_object_t **sub_key_ptr=anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-	    CHECK(sub_key_ptr, node, L"Not a function: %ls", function_key->argv[1]->name);
-	    anna_function_type_key_t *sub_function_key = (anna_function_type_key_t *)(*sub_key_ptr);
-	    CHECK(sub_function_key->argc == 2, node, L"Function %ls has wrong number of parameters: Got %d, expected %d", method_name, sub_function_key->argc, 2);
-	    argv[0] = sub_function_key->argv[0];
-	    argv[1] = sub_function_key->argv[1];
-
-
-
-	    if(!member_type)
-	    {
-		FAIL(
-		    node, 
-		    L"Unable to calculate type of member %ls of object of type %ls", 
-		    method_name, lst_type->name);
-	    }
-	    sb_destroy(&sb);
-	    
-	    anna_function_t *sub_func =
-		anna_function_create(
-		    L"!anonymous", 0, 
-		    (anna_node_call_t *)node->child[1], 
-		    0, 2, argv, argn,
-		    function->stack_template, 
-		    return_pop_count);
-	    
-	    al_push(&function->child_function, sub_func);
-
-	    anna_node_t *iter_function = (anna_node_t *)
-		anna_node_dummy_create(
-		    &node->location,
-		    sub_func->wrapper,
-		    1);	    
-	    
-	    return (anna_node_t *)anna_node_call_create(
-		&node->location,
-		(anna_node_t *)
-		anna_node_member_get_create(
-		    &node->location,
-		    mg->child[0],
-		    mid,
-		    member_type,
-		    1),   
-		1,
-		&iter_function);
+	    argn = argn_c;
+	    break;
 	    
 	}	
 	default:
@@ -1135,6 +1026,54 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		node->child[0], 
 		L"Expected a value parameter name or a key:value parameter name pair");
     }
+
+    anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
+    CHECK(function_key, node, L"Not a function: %ls", method_name);
+    anna_object_t **sub_key_ptr=anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    CHECK(sub_key_ptr, node, L"Not a function: %ls", function_key->argv[1]->name);
+    anna_function_type_key_t *sub_function_key = (anna_function_type_key_t *)(*sub_key_ptr);
+    CHECK(sub_function_key->argc == 2, node, L"Function %ls has wrong number of parameters: Got %d, expected %d", method_name, sub_function_key->argc, 2);
+    argv[0] = sub_function_key->argv[0];
+    argv[1] = sub_function_key->argv[1];
+    
+    if(!member_type)
+    {
+	FAIL(
+	    node, 
+	    L"Unable to calculate type of member %ls of object of type %ls", 
+	    method_name, lst_type->name);
+    }
+    sb_destroy(&sb);
+	    
+
+    anna_function_t *sub_func =
+	anna_function_create(
+	    L"!anonymous", 0, 
+	    (anna_node_call_t *)node->child[1], 
+	    0, 2, argv, argn,
+	    function->stack_template, 
+	    return_pop_count);
+    
+    al_push(&function->child_function, sub_func);
+    
+    anna_node_t *iter_function = (anna_node_t *)
+	anna_node_dummy_create(
+	    &node->location,
+	    sub_func->wrapper,
+	    1);	    
+    
+    return (anna_node_t *)anna_node_call_create(
+	&node->location,
+	(anna_node_t *)
+	anna_node_member_get_create(
+	    &node->location,
+	    mg->child[0],
+	    mid,
+	    member_type,
+	    1),   
+	1,
+	&iter_function);
+    
     
 }
 

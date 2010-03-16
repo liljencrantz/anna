@@ -1421,8 +1421,10 @@ int main(int argc, char **argv)
     /*
       Run the function
     */
+/*
     wprintf(L"Validated program:\n");    
     anna_node_print(program);
+*/
     wprintf(L"\n");
     wprintf(L"Output:\n");    
     
