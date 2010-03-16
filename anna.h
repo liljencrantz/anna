@@ -22,7 +22,7 @@
    If set, always check that sid:s are currect when invoking
    identifier nodes. This means do a full name lookup on them.
  */
-#define ANNA_CHECK_SID_ENABLED
+//#define ANNA_CHECK_SID_ENABLED
 
 #define ANNA_CHECK_STACK_ENABLED
 
@@ -300,7 +300,6 @@ int anna_type_setup(anna_type_t *type,
 
 anna_object_t *anna_i_null_function(anna_object_t **node_base);
 
-void anna_prepare_children(struct anna_node_call *in, anna_function_t *func, anna_node_list_t *parent);
 void anna_native_declare(struct anna_stack_frame *stack,
 			 wchar_t *name,
 			 int flags,

@@ -574,13 +574,6 @@ anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
     return function_copy->wrapper;
 }
 
-void anna_prepare_children(anna_node_call_t *in, anna_function_t *func, anna_node_list_t *parent)
-{
-    int i;
-    for(i=0; i< in->child_count; i++)
-	in->child[i] = anna_node_prepare(in->child[i], func, parent);
-}
-
 anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *stack)
 {
 /*
