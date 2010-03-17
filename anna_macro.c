@@ -943,14 +943,17 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 {
 /*
     wprintf(L"LALALA\n");
-    anna_node_print((anna_node_t *)node);
+    anna_node_print((anna_node_t *)node->function);
     wprintf(L"\n");
-*/    
+*/
     CHECK_CHILD_COUNT(node,L"iteration macro", 2);
+    
     CHECK_NODE_BLOCK(node->child[1]);
     CHECK_NODE_TYPE(node->function, ANNA_NODE_CALL);
 
     anna_node_call_t * mg = (anna_node_call_t *)node->function;
+    mg->child[0] = anna_node_prepare(mg->child[0], function, parent);
+
     CHECK_CHILD_COUNT(mg, L"iteration macro", 2);
     CHECK_NODE_TYPE(mg->child[1], ANNA_NODE_IDENTIFIER);
     
@@ -1061,7 +1064,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	    &node->location,
 	    sub_func->wrapper,
 	    1);	    
-    
+
     return (anna_node_t *)anna_node_call_create(
 	&node->location,
 	(anna_node_t *)
@@ -1311,6 +1314,7 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     if(!member_type)
     {
 	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
+	CRASH;
 	
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
     }
@@ -1682,6 +1686,13 @@ static anna_node_t *anna_macro_return(anna_node_call_t *node,
     return (anna_node_t *)anna_node_return_create(&node->location, anna_node_prepare(node->child[0], function, parent), function->return_pop_count+1);
 }
 
+static anna_node_t *anna_macro_list(anna_node_call_t *node, 
+				      anna_function_t *function, 
+				      anna_node_list_t *parent)
+{
+    return (anna_node_t *)anna_node_call_create(&node->location, anna_node_identifier_create(&node->function->location, L"List"), node->child_count, node->child);
+}
+
 static anna_node_t *anna_macro_templatize(anna_node_call_t *node, 
 					  anna_function_t *function, 
 					  anna_node_list_t *parent)
@@ -1856,6 +1867,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"map", &anna_macro_iter);
     anna_macro_add(stack, L"filter", &anna_macro_iter);
     anna_macro_add(stack, L"first", &anna_macro_iter);
+    anna_macro_add(stack, L"__list__", &anna_macro_list);
     
     wchar_t *op_names[] = 
 	{

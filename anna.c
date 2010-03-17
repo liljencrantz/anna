@@ -79,7 +79,7 @@
   in method
   as function
   __returnAssign__ macro
-  __list__ macro (depends on variadic functions)
+  __list__ macro 
   use macro
   __memberCall__ macro
   __staticMemberGet__ macro

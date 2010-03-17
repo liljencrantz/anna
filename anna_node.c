@@ -44,7 +44,12 @@ anna_node_call_t *node_cast_call(anna_node_t *node)
 
 anna_node_identifier_t *node_cast_identifier(anna_node_t *node) 
 {
-    assert(node->node_type==ANNA_NODE_IDENTIFIER);
+    if(node->node_type!=ANNA_NODE_IDENTIFIER &&
+       node->node_type!=ANNA_NODE_IDENTIFIER_TRAMPOLINE)
+    {
+	anna_error(node, L"Expected an identifier node, got node of type %d", node->node_type);
+	CRASH;
+    }
     return (anna_node_identifier_t *)node;
 }
 
