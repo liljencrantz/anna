@@ -230,10 +230,10 @@ anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name)
 
 anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid)
 {
-    /*
-      wprintf(L"Get mid %d on object\n", mid);
-      wprintf(L"of type %ls\n", obj->type->name);
-    */
+  /*
+    wprintf(L"Get mid %d on object\n", mid);
+    wprintf(L"of type %ls\n", obj->type->name);
+  */
     anna_member_t *m = obj->type->mid_identifier[mid];
     if(!m) 
     {
@@ -1421,10 +1421,10 @@ int main(int argc, char **argv)
     /*
       Run the function
     */
-/*
+
     wprintf(L"Validated program:\n");    
     anna_node_print(program);
-*/
+
     wprintf(L"\n");
     wprintf(L"Output:\n");    
     

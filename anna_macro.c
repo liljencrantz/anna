@@ -652,6 +652,8 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     }
     else
     {
+        anna_node_prepare_child(node, 1, function, parent);
+	out_type_wrapper = node->child[1];
 	anna_node_identifier_t *type_identifier;
 	type_identifier = node_cast_identifier(out_type_wrapper);
 	anna_object_t *type_wrapper = anna_stack_get_str(function->stack_template, type_identifier->name);
@@ -699,6 +701,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	    {
 		//CHECK_CHILD_COUNT(decl, L"variable declaration", 3);
 		CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
+		anna_node_prepare_child(decl, 1, function, parent);
 		anna_node_identifier_t *name = node_cast_identifier(decl->child[0]);
 		anna_node_t *node = anna_node_prepare(decl->child[1], function, parent);
 		

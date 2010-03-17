@@ -771,14 +771,14 @@ argument_list3 :
 	;
 
 function_definition: 
-	FUNCTION opt_identifier declaration_list attribute_list block
+	FUNCTION opt_templatized_type opt_identifier declaration_list attribute_list block
 	{
 	    anna_node_t *param[] ={
+		(anna_node_t *)($3?$3:anna_node_null_create(&@$)),
 		(anna_node_t *)($2?$2:anna_node_null_create(&@$)),
-		anna_node_null_create(&@$), 
-		(anna_node_t *)$3, 
+		(anna_node_t *)$4, 
 		(anna_node_t *)$5, 
-		(anna_node_t *)$4
+		(anna_node_t *)$6
 	    };
 	    $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@1,L"__function__"), 5, param);
 	  	  
@@ -817,7 +817,7 @@ declaration_expression:
 	  $$=$2;
 	}
 	|
-	function_declaration
+	function_definition
 	;
 
 variable_declaration:
@@ -829,7 +829,7 @@ variable_declaration:
 	}
 ;
 
-declaration : opt_var variable_declaration {$$=$2;} | function_declaration;
+declaration : opt_var variable_declaration {$$=$2;} | function_definition;
 
 opt_var : | VAR;
 

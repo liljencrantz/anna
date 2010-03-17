@@ -44,22 +44,6 @@ r.each(key:value)
 }
 */
 
-var abc = 12;
-
-var a = [1,2,3,5,6,9];
-
-function foo(Int a...)
-{
-    a.each(key:value)
-    {
-	print(key, " ", value, "\n");
-    }
-}
-
-foo(1, 2, 7, 9, 3);
-
-//(3..7).each(a:b){print(b)}
-
 /*
 function mandelbrot(Complex p0, Int maxStep)
 {
@@ -131,17 +115,14 @@ class BinaryMap template(Key:Int), template(Value:Object)
 
 	function __init__()
 	{
+	    print("__init__\n");
 	    this.root=null;
 	}
 	
 
-	function __setItem__(Key key, Value value)
+	function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)
 	{
-	    this.root = this.insert(this.root, key, value);
-	}	
-
-	function insert(BinaryMapNode<Key,Value> node,Key key, Value value)
-	{
+	    print("insert\n");
 	    if(node)
 	    {
 		if(node.key>key)
@@ -169,14 +150,19 @@ class BinaryMap template(Key:Int), template(Value:Object)
 	    return node;	    
 	}
 	
-}
+	function __setItem__(Key key, Value value)
+	{
+	    print("__setItem__\n");
+	    this.root = this.insert(this.root, key, value);
+	}	
 
+}
+print("Before declare\n");
 var foo = BinaryMap<Int, String>();
 
 foo[3]="hej";
 
 print(foo.root.value);
-
 
 /*
 function foo(Int in){
