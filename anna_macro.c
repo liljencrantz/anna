@@ -602,7 +602,15 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 }
 
 
+/**
+   Macro to define a function. Expects 5 parameters:
 
+   name of function (may be null)
+   return type of function
+   block of input declarations
+   block of attributes
+   body definition
+*/
 
 anna_node_t *anna_macro_function_internal(anna_type_t *type, 
 					  anna_node_call_t *node, 
@@ -618,10 +626,11 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
       Set this to true if we need to snigg out the real function
       return type after we're done creating the function.
      */
-/*    wprintf(L"\n\nggg\n");
+    /*
+    wprintf(L"\n\nCreate function from node:\n");
     anna_node_print(node);
     wprintf(L"\n");
-*/
+    */
     CHECK_CHILD_COUNT(node,L"function definition", 5);
     
     if (node->child[0]->node_type == ANNA_NODE_IDENTIFIER) {
@@ -633,7 +642,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	internal_name = L"!anonymous";
     }
     
-    anna_node_t *body = node->child[3];
+    anna_node_t *body = node->child[4];
     
     if(body->node_type != ANNA_NODE_NULL && body->node_type != ANNA_NODE_CALL)
     {

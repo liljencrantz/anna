@@ -111,6 +111,7 @@
   Variadic functions
   Fully functional templates
   Identifier invocation should use sid instead of name lookup
+  Separate function preparation pass
 
   Type type
   Call type
@@ -460,12 +461,13 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 					    anna_node_call_t *param,
 					    anna_stack_frame_t *local)
 {
-    //wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
+  //    wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
   
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
+      //    wprintf(L"Yay, got function %ls\n", (*function_ptr)->name);
         return anna_function_invoke(*function_ptr, this, param, local, stack_ptr?*stack_ptr:stack_global);
     }
     else 
@@ -611,12 +613,20 @@ void anna_function_prepare(anna_function_t *function)
     {
 	anna_node_validate(function->body->child[i], function->stack_template);
     }
-/*   for(i=0; i<al_get_count(&function->child_function); i++) 
-     {
-     al_set(&function->child_function, i,
-     anna_node_prepare(al_get(&function->child_function, i), function, &list));
-     }
-*/ 
+    for(i=0; i<al_get_count(&function->child_function); i++) 
+    {
+       //al_set(&function->child_function, i,
+	    //     anna_node_prepare(al_get(&function->child_function, i), function, &list));
+	anna_function_prepare(al_get(&function->child_function, i));
+    }
+
+    if(!function->return_type)
+	anna_sniff_return_type(function);
+    
+    if(!function->flags) {
+	assert(function->return_type);
+    }
+ 
     /*
       wprintf(L"Function after preparations:\n");
       anna_node_print(function->body);
@@ -685,20 +695,17 @@ anna_function_t *anna_function_create(wchar_t *name,
 	anna_stack_declare(result->stack_template, argn[argc-1], list_type, null_object);
     }
     
-    anna_function_prepare(result);
+    //anna_function_prepare(result);
 
-    if(!return_type)
-	anna_sniff_return_type(result);
-    
-    if(!flags) {
-	assert(result->return_type);
-    }
-    
     anna_function_setup_type(result);
     
     memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
     memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_STACK), &stack_global, sizeof(anna_stack_frame_t *));
     //wprintf(L"Function object is %d, wrapper is %d\n", result, result->wrapper);
+    /*
+    wprintf(L"Created a new non-native function with definition:");
+    anna_node_print(result->body);
+    */
 
     return result;
 }
@@ -1238,11 +1245,11 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    int i;
 	    anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
 	    my_stack->parent = outer?outer:stack_global;
-
-	    //wprintf(L"Create new stack %d with frame depth %d while calling function %ls\n", my_stack, anna_stack_depth(my_stack), function->name);
-	    
-	    
-	    //wprintf(L"Run non-native function %ls with %d params\n", function->name, function->input_count);
+	    /*
+	    wprintf(L"Create new stack %d with frame depth %d while calling function %ls\n", my_stack, anna_stack_depth(my_stack), function->name);
+	    wprintf(L"Run non-native function %ls with %d params and definition:\n", function->name, function->input_count);
+	    anna_node_print(function->body);
+	    */
 	    int offset=0;
 	    if(this)
 	    {
@@ -1266,7 +1273,13 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    
 	    for(i=0; i<function->body->child_count && !my_stack->stop; i++)
 	    {
-		result = anna_node_invoke(function->body->child[i], my_stack);
+	      /*
+	      wprintf(L"Run node %d of function %ls\n",
+		      i, function->name);
+	      
+	      anna_node_print(function->body->child[i]);
+	      */
+	      result = anna_node_invoke(function->body->child[i], my_stack);
 	    }
 	    /*
 	      if(my_stack->stop) 
@@ -1290,64 +1303,55 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 	this=function->this;
     }
     
+    anna_object_t **argv;
     //wprintf(L"anna_function_invoke %ls %d; %d params\n", function->name, function, function->input_count);    
     if(likely(function->input_count < 8))
     {
-	anna_object_t *argv[8];
-	int i;
-//	wprintf(L"Argv: %d\n", argv);
-	
-	int offset=0;
-	if(this)
-	{	    
-	    offset=1;
-	    argv[0]=this;		    
-//	    wprintf(L"We have a this parameter: %d\n", this);
-	}
-	int is_variadic = ANNA_IS_VARIADIC(function);
-	//wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
-	
-	for(i=0; i<(function->input_count-offset-is_variadic); i++)
-	{
-//	    wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
-	    argv[i+offset]=anna_node_invoke(param->child[i], stack);
-	}   
-	if(is_variadic)
-	{
-	    anna_object_t *lst = anna_list_create();
-	    anna_list_set_capacity(lst, param->child_count - function->input_count+1-offset);
-	    for(; i<param->child_count;i++)
-	    {
-		//	wprintf(L"eval variadic param %d of %d \n", i, param->child_count);
-		anna_list_add(lst, anna_node_invoke(param->child[i], stack));
-	    }
-	    //wprintf(L"Set variadic var at offset %d to %d\n", function->input_count-1, lst);
-	
-	    argv[function->input_count-1] = lst;	    
-	}
-	return anna_function_invoke_values(function, 0, argv, outer);
+	anna_object_t *argv_c[8];
+	argv=argv_c;
     }
     else
     {
-	anna_object_t **argv=malloc(sizeof(anna_object_t *)*function->input_count);
-	int i;
-	
-	int offset=0;
-	if(this)
-	{
-	    offset=1;
-	    argv[0]=this;		    
-	}
-	for(i=0; i<(function->input_count-offset); i++) 
-	{
-	    argv[i+offset]=anna_node_invoke(param->child[i], stack);
-	}
-	anna_object_t *result = anna_function_invoke_values(function, 0, argv, outer);
-	free(argv);
-	return result;
-      
+      argv=malloc(sizeof(anna_object_t *)*function->input_count);
     }
-  
+    
+    int i;
+    //	wprintf(L"Argv: %d\n", argv);
+    
+    int offset=0;
+    if(this)
+    {	    
+	offset=1;
+	argv[0]=this;		    
+	//	    wprintf(L"We have a this parameter: %d\n", this);
+    }
+    int is_variadic = ANNA_IS_VARIADIC(function);
+    //wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
+    
+    for(i=0; i<(function->input_count-offset-is_variadic); i++)
+    {
+	//	    wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
+	argv[i+offset]=anna_node_invoke(param->child[i], stack);
+    }   
+    if(is_variadic)
+    {
+	anna_object_t *lst = anna_list_create();
+	anna_list_set_capacity(lst, param->child_count - function->input_count+1-offset);
+	for(; i<param->child_count;i++)
+	{
+	    //	wprintf(L"eval variadic param %d of %d \n", i, param->child_count);
+	    anna_list_add(lst, anna_node_invoke(param->child[i], stack));
+	}
+	//wprintf(L"Set variadic var at offset %d to %d\n", function->input_count-1, lst);
+	
+	argv[function->input_count-1] = lst;	    
+    }
+    if(!likely(function->input_count < 8))
+    {
+	free(argv);
+    }
+    return anna_function_invoke_values(function, 0, argv, outer);
+    
 }
 
 void anna_error(anna_node_t *node, wchar_t *msg, ...)
@@ -1422,14 +1426,16 @@ int main(int argc, char **argv)
       Run the function
     */
 
-    wprintf(L"Validated program:\n");    
-    anna_node_print(program);
-
     wprintf(L"\n");
     wprintf(L"Output:\n");    
     
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
+    anna_function_prepare(func);
+
+    wprintf(L"Validated program:\n");    
+    anna_node_print(func->body);
+    
     anna_function_invoke(func, 0, 0, stack_global, stack_global);
     
     wprintf(L"\n");

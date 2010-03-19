@@ -98,7 +98,6 @@ struct anna_node_member_set
     struct anna_type *type;
 };
 
-
 struct anna_node_call
 {
     int node_type;

@@ -639,6 +639,7 @@ anna_object_t *anna_node_call_invoke(anna_node_call_t *this, anna_stack_frame_t 
     //wprintf(L"anna_node_call_invoke with stack %d\n", stack);
     anna_object_t *obj = anna_node_invoke(this->function, stack);
     if(obj == null_object){
+        //wprintf(L"Invoked null object!\n");      
 	return obj;
     }
     
@@ -1022,10 +1023,76 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
 					   anna_stack_frame_t *stack)
 {
+  /*
   wprintf(L"Run member get node:\n");
-  
   anna_node_print(this);
+  */
+  assert(this->object);
+  anna_object_t *obj = anna_node_invoke(this->object, stack);
+  if(!obj)
+    {
+      anna_error(this->object, L"Critical: Node evaluated to null pointer:");
+      anna_node_print(this->object);
+      CRASH;
+    }
+  anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
+  
+  if(!res)
+    {
+      anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
+		 obj->type->name,
+		 anna_mid_get_reverse(this->mid));
+    }
+  return *res;
+  
+  //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
+}
 
+anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this, 
+					   anna_stack_frame_t *stack)
+{
+  /*
+  wprintf(L"Run member set node:\n");
+  anna_node_print(this);
+  */
+  assert(this->object);
+  anna_object_t *obj = anna_node_invoke(this->object, stack);
+  if(!obj)
+    {
+      anna_error(this->object, L"Critical: Node evaluated to null pointer:");
+      anna_node_print(this->object);
+      CRASH;
+    }
+
+  assert(this->value);
+  anna_object_t *val = anna_node_invoke(this->value, stack);
+  if(!val)
+    {
+      anna_error(this->value, L"Critical: Node evaluated to null pointer:");
+      anna_node_print(this->value);
+      CRASH;
+    }
+  anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
+  
+  if(!res)
+    {
+      anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
+		 obj->type->name,
+		 anna_mid_get_reverse(this->mid));
+    }
+
+  *res = val;
+  return val;
+    //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
+}
+
+anna_object_t *anna_node_member_get_wrap_invoke(anna_node_member_get_t *this, 
+						anna_stack_frame_t *stack)
+{
+  /*
+  wprintf(L"Run wrapped member get node:\n");  
+  anna_node_print(this);
+  */
   assert(this->object);
   anna_object_t *obj = anna_node_invoke(this->object, stack);
   if(!obj)
@@ -1042,23 +1109,15 @@ anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this,
 		 obj->type->name,
 		 anna_mid_get_reverse(this->mid));
     }
-  return res;
+  anna_object_t *wrapped = anna_method_wrap(*anna_member_addr_get_mid(obj, this->mid), obj);
+  if(!wrapped)
+    {
+      anna_error(this->object, L"Critical: Failed to wrap object:");
+      anna_node_print(this->object);
+      CRASH;
+    }
   
-  //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
-}
-
-anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this, 
-					   anna_stack_frame_t *stack)
-{
-    return (*anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid)) = anna_node_invoke(this->value, stack);
-    //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
-}
-
-anna_object_t *anna_node_member_get_wrap_invoke(anna_node_member_get_t *this, 
-						anna_stack_frame_t *stack)
-{
-    anna_object_t *obj = anna_node_invoke(this->object, stack);
-    return anna_method_wrap(*anna_member_addr_get_mid(obj, this->mid), obj);
+  return wrapped;
 }
 
 static anna_object_t *anna_trampoline(anna_object_t *orig, 
@@ -1175,253 +1234,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
     }    
 }
 
-static void anna_indent(int indentation)
-{
-    int indent;
-    for(indent=0; indent<indentation; indent++)
-        wprintf(L"    ");
-}
 
-void anna_node_print_internal(anna_node_t *this, int indentation)
-{
-    switch(this->node_type)
-    {
-	case ANNA_NODE_INT_LITERAL:
-	{
-	    anna_indent(indentation);
-	    anna_node_int_literal_t *this2 = (anna_node_int_literal_t *)this;
-	    wprintf(L"%d", this2->payload);
-	    break;
-	}
-	
-	case ANNA_NODE_FLOAT_LITERAL:
-	{
-	    anna_indent(indentation);
-	    anna_node_float_literal_t *this2 = (anna_node_float_literal_t *)this;
-	    wprintf(L"%f", this2->payload);
-	    break;
-	}
-	
-	case ANNA_NODE_STRING_LITERAL:
-	{
-	    anna_indent(indentation);
-	    anna_node_string_literal_t *this2 = (anna_node_string_literal_t *)this;
-	    int i;
-	    
-	    wprintf(L"\"");
-	    for(i=0;i<this2->payload_size;i++)
-	    {
-		wchar_t c = this2->payload[i];
-		if(c<32) 
-		{
-		    wprintf(L"\\x%.2x", c);		    
-		}
-		else
-		{
-		    wprintf(L"%lc", c);
-		}
-	    }
-	    wprintf(L"\"");
-	    
-	    break;
-	}
-	
-	case ANNA_NODE_CHAR_LITERAL:
-	{
-	    anna_indent(indentation);
-	    anna_node_char_literal_t *this2 = (anna_node_char_literal_t *)this;
-	    wprintf(L"'%lc'", this2->payload);
-	    break;
-	}
-	
-	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
-	{
-	    anna_indent(indentation);
-	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
-	    wprintf(L"%ls", this2->name);
-	    break;
-	}
-	
-	case ANNA_NODE_ASSIGN:
-	{
-	    anna_indent(indentation);
-	    anna_node_assign_t *this2 = (anna_node_assign_t *)this;
-	    wprintf(L"__assign__(");
-
-	    wprintf(L"%d:%d", this2->sid.frame, this2->sid.offset);
-	    wprintf(L";\n");
-	    anna_node_print_internal(this2->value, indentation+1);
-	    wprintf(L")");
-	    
-	    break;
-	}
-	
-	case ANNA_NODE_TRAMPOLINE:
-	case ANNA_NODE_DUMMY:
-	{
-	    anna_indent(indentation);
-	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
-	    wprintf(L"<Dummy>");
-	    break;
-	}
-	
-
-	case ANNA_NODE_MEMBER_GET:
-	{
-	    anna_indent(indentation);
-	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
-	    wprintf(L"__memberGet__(\n");
-	    anna_node_print_internal(this2->object, indentation+1);
-	    wprintf(L"; %ls)", anna_mid_get_reverse(this2->mid));
-	    break;
-	}
-	case ANNA_NODE_MEMBER_GET_WRAP:
-	{
-	    anna_indent(indentation);
-	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
-	    wprintf(L"__memberGet__(\n");
-	    anna_node_print_internal(this2->object, indentation+1);
-	    wprintf(L", %ls)", anna_mid_get_reverse(this2->mid));
-	    break;
-	}
-	
-	case ANNA_NODE_NULL:
-	{
-	    anna_indent(indentation);
-	    wprintf(L"null");
-	    break;
-	}
-	
-	case ANNA_NODE_CONSTRUCT:
-	case ANNA_NODE_CALL:
-	{
-	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
-	    int i;
-//	    wprintf(L"/*%d*/", this2);
-	    anna_node_print_internal(this2->function, indentation);
-	    /*	    wprintf(L"\n");
-		    anna_indent(indentation);*/
-	    if(this2->child_count == 0)
-	    {
-		wprintf(L"()" );		
-	    }
-	    else 
-	    {
-		wprintf(L"(\n");
-		
-		for(i=0; i<this2->child_count; i++)
-		{
-		    if(i!=0) 
-		    {
-			wprintf(L";\n");
-		    }
-		    anna_node_print_internal(this2->child[i], indentation+1);
-		}
-		/*	    wprintf(L"\n" );
-			    anna_indent(indentation);*/
-		wprintf(L")" );
-	    }
-	    break;
-	}
-	
-	default:
-	{
-	    wprintf(L"<Don't know how to print node of type %d>", this->node_type);
-	    break;
-	}
-    }
-
-}
-
-
-void anna_node_print(anna_node_t *this)
-{
-  anna_node_print_internal(this, 0);
-  wprintf(L"\n");
-}
-
-void anna_node_print_code(anna_node_t *node)
-{
-    int current_line=1;
-    int current_column=0;
-    int print=0;
-    int mark=0;
-    int is_after_first;
-    int is_before_last;
-    int is_marking=0;
-    
-    if(!node->location.filename)
-	return;
-    
-    
-    FILE *file = wfopen(node->location.filename, "r");
-    if(!file)
-    {
-	fwprintf(stderr, L"Error: %ls: Not found\n", node->location.filename);
-	return;
-    }    
-    while(1)
-    {
-	wint_t res = fgetwc(file);
-	switch(res)
-	{
-	    case WEOF:
-		if(is_marking)
-		{
-		    fwprintf(stderr, L"\e[0m");		
-		}
-		return;
-	}
-	
-	print = (current_line >=(node->location.first_line-1)) && (current_line <= node->location.last_line+1);
-
-	is_after_first  = (current_line >node->location.first_line) || (current_line == node->location.first_line && current_column >= node->location.first_column);
-	is_before_last  = (current_line <node->location.last_line) || (current_line == node->location.last_line && current_column < node->location.last_column);
-	
-	if(current_column == 0 && print)
-	{
-	    if(is_marking)
-	    {
-		fwprintf(stderr, L"\e[0m");		
-	    }
-	    is_marking=0;
-	    fwprintf(stderr, L"%*d: ", 6, current_line);
-	    
-	}
-	
-	
-	mark = is_after_first && is_before_last;
-	if(print && mark != is_marking)
-	{
-	    if(mark)
-	    {
-		fwprintf(stderr, L"\e[31m");
-	    }
-	    else 
-	    {
-		fwprintf(stderr, L"\e[0m");		
-	    }
-	    
-	}
-	is_marking = mark;
-	if(print)
-	{
-	    fputwc(res,stderr);
-	}
-
-	switch(res)
-	{
-	    case L'\n':
-		current_line++;
-		current_column=0;
-		break;
-	    default:
-		current_column++;
-		break;
-	}	
-    }    
-}
 
 static size_t anna_node_size(anna_node_t *n)
 {

@@ -1,5 +1,5 @@
 /*
-class Range template (T:Int)
+Class Range template (T:Int)
 {
 
     var T from;
@@ -94,75 +94,102 @@ lst.filter(i){i>2}.each(i){print(i)}
 
 class BinaryMapNode template(Key:Int), template(Value:Object)
 {
-	var Key key;
-	var Value value;
-	var BinaryMapNode<Key, Value> left;
-	var BinaryMapNode<Key, Value> right;	
-
-	function __init__(Key key, Value value)
-	{
-	    this.key=key;
-	    this.value=value;
-	    this.left=null;
-	    this.right=null;
-	}
-	
+    var Key key;
+    var Value value;
+    var BinaryMapNode<Key, Value> left;
+    var BinaryMapNode<Key, Value> right;	
+    
+    function BinaryMapNode<Key,Value> __init__(Key key, Value value)
+    {
+	this.key=key;
+	this.value=value;
+	this.left=null;
+	this.right=null;
+    }
+    
 }
 
 class BinaryMap template(Key:Int), template(Value:Object)
 {
-	var BinaryMapNode<Key,Value> root;
-
-	function __init__()
+    var BinaryMapNode<Key,Value> root;
+    
+    function BinaryMap<Key,Value> __init__()
+    {
+	this.root=null;
+    }
+    
+    function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)
+    {
+	if(node)
 	{
-	    print("__init__\n");
-	    this.root=null;
-	}
-	
-
-	function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)
-	{
-	    print("insert\n");
-	    if(node)
+	    if(node.key>key)
 	    {
-		if(node.key>key)
-		{
-		    node.left=this.insert(node.left, key,value);
-		}
-		else
-		{
-		    if(node.key<key)
-		    {
-			node.right = this.insert(node.right, key,value);
-		    }
-		    else 
-		    {
-			node.key=key;
-			node.value=value;
-		    }
-		}
-		
+		node.left=this.insert(node.left, key,value);
 	    }
 	    else
 	    {
-		node = BinaryMapNode<Key,Value>(key, value);		
+		if(node.key<key)
+		{
+		    node.right = this.insert(node.right, key,value);
+		}
+		else 
+		{
+		    node.key=key;
+		    node.value=value;
+		}
 	    }
-	    return node;	    
 	}
-	
-	function __setItem__(Key key, Value value)
+	else
 	{
-	    print("__setItem__\n");
-	    this.root = this.insert(this.root, key, value);
-	}	
-
+	    node = BinaryMapNode<Key,Value>(key, value);		
+	}
+	return node;	    
+    }
+    
+    function Value find(BinaryMapNode<Key,Value> node, Key key)
+    {
+	if(node)
+	{
+	    if(node.key == key)
+	    {
+		return node.value;
+	    }
+	    if(key < node.key) 
+	    {
+		return this.find(node.left, key);
+	    }
+	    else
+	    {
+		return this.find(node.right, key);
+	    }
+	}
+	return null;
+    }
+    
+    function Value __setItem__(Key key, Value value)
+    {
+	this.root = this.insert(this.root, key, value);
+	return value;
+    }
+    
+    function Value __getItem__(Key key)
+    {
+	return this.find(this.root, key);
+    }
+    
+    function String toString()
+    {
+	return "Map!";
+    }
+    
 }
-print("Before declare\n");
+
 var foo = BinaryMap<Int, String>();
-
-foo[3]="hej";
-
-print(foo.root.value);
+foo[3]="aaa";
+foo[2]="bbb";
+foo[3]="ddd";
+foo[5]="ccc";
+print(foo[2]);
 
 /*
 function foo(Int in){

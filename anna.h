@@ -3,29 +3,45 @@
 
 #include "util.h"
 
+/*
+  Various run time consistency checks. Some of them come at a significant
+  performance penalty, but they're helpful when tracking down bugs.
+*/
+
+/**
+   If enabled, when invoking an AST node, first make sure it's been
+   prepared. Not _very_ expensive.
+ */
+#define ANNA_CHECK_NODE_PREPARED_ENABLED 
+/**
+   If enabled, always check that sid:s are currect when invoking
+   identifier nodes. This means do a full name lookup on them, which
+   is significantly slower..
+*/
+#define ANNA_CHECK_SID_ENABLED
+
+/**
+   If enabled, save additional stack trace information. Not very
+   expensive.
+*/
+#define ANNA_CHECK_STACK_ENABLED
+
+/**
+   If enabled, critical bugs will perform a null pointer dereference
+   and crash. That enables a nice valgrind stack trace. Using gdb is
+   too much work. :-)
+*/
+#define ANNA_CRASH_ON_CRITICAL_ENABLED
+
+#ifdef ANNA_CRASH_ON_CRITICAL_ENABLED
 #define CRASH					\
     {						\
     int *__tmp=0;				\
     *__tmp=0;					\
     }
-
-/*
-  Additinal run time consistency checks. These come at a significant
-  performance penalty, but are very helpful when tracking down bugs.
-*/
-
-/**
-   If set, when invoking an AST node, first make sure it's been prepared
- */
-#define ANNA_CHECK_NODE_PREPARED_ENABLED 
-/**
-   If set, always check that sid:s are currect when invoking
-   identifier nodes. This means do a full name lookup on them.
- */
-//#define ANNA_CHECK_SID_ENABLED
-
-#define ANNA_CHECK_STACK_ENABLED
-
+#else
+define CRASH exit(1)
+#endif
 
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
 #define ANNA_PREPARED(n) ((n)->prepared=1)
@@ -40,7 +56,6 @@
 #define ANNA_PREPARED(n) 
 #define ANNA_CHECK_NODE_PREPARED(n) 
 #endif
-
 
 struct anna_type;
 struct anna_object;
