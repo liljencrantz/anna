@@ -4,7 +4,8 @@ CFLAGS := -rdynamic -Wall -std=c99 -D_ISO99_SOURCE=1  $(PROF_FLAGS)
 
 ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o anna_function_implementation.o anna_int.o anna_string.o anna_char.o anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o wutil.o anna_type.o anna_node_print.o
 
-ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o anna_string_internal_test.o
+ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o anna_string_internal_test.o util.o common.o
+ANNA_STRING_PERF_OBJS := anna_string_internal.o anna_string_perf.o util.o common.o
 
 LDFLAGS := -lm -rdynamic -ll $(PROF_FLAGS)
 
@@ -27,6 +28,9 @@ anna: $(ANNA_OBJS)
 
 anna_string_internal_test: $(ANNA_STRING_INTERNAL_TEST_OBJS)
 	gcc $(ANNA_STRING_INTERNAL_TEST_OBJS) -o $@ $(LDFLAGS) 
+
+anna_string_perf: $(ANNA_STRING_PERF_OBJS)
+	gcc $(ANNA_STRING_PERF_OBJS) -o $@ $(LDFLAGS) 
 
 
 anna_lex.c: anna_lex.y anna_yacc.h
@@ -53,4 +57,4 @@ anna_yacc.c anna_yacc.h: anna_yacc.y
 	bison -d anna_yacc.y -o anna_yacc.c -v -p anna_yacc_
 
 clean:
-	rm -f anna anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  *.d
+	rm -f anna anna_string_internal_test anna_string_perf gmon.out anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  *.d

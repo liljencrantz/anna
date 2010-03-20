@@ -7,6 +7,8 @@
 
 #include "anna_checks.h"
 #include "anna_string_internal.h"
+#include "util.h"
+#include "common.h"
 
 #ifdef ANNA_STRING_CHUNKED_ENABLED
 
@@ -32,16 +34,6 @@ typedef struct anna_string_element anna_string_element_t;
 
 anna_string_element_t *anna_string_element_create(wchar_t *payload, size_t size, size_t available);
 static anna_string_ensure_element_capacity(anna_string_t *string, size_t count);
-
-int mini(int a, int b)
-{
-    return (a>b)?b:a;
-}
-
-int maxi(int a, int b)
-{
-    return (a<b)?b:a;
-}
 
 static void anna_string_cache_clear(anna_string_t *s)
 {
