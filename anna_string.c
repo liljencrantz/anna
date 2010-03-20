@@ -8,35 +8,70 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_string.h"
+#include "anna_int.h"
+#include "anna_char.h"
+#include "anna_string_internal.h"
 
+
+static anna_string_t *as_unwrap(anna_object_t *obj)
+{
+    return (anna_string_t *)anna_member_addr_get_mid(obj,ANNA_MID_STRING_PAYLOAD);
+}
+
+void anna_string_print(anna_object_t *obj)
+{
+    anna_string_t *str = as_unwrap(obj);
+    anna_string_print_regular(str);
+}
 
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
     anna_object_t *obj= anna_object_create(string_type);
-    memcpy(anna_member_addr_get_mid(obj,ANNA_MID_STRING_PAYLOAD_SIZE), &sz, sizeof(size_t));
-    wchar_t *res = malloc(sizeof(wchar_t) * sz);
-    memcpy(res, data, sizeof(wchar_t) * sz);
-    memcpy(anna_member_addr_get_mid(obj,ANNA_MID_STRING_PAYLOAD), &res, sizeof(wchar_t *));
+    /*
+    wprintf(L"LALALA %d, %d, %d\n", obj, as_unwrap(obj), string_type);
+    exit(1);
+    */
+    anna_string_init_from_ptr(as_unwrap(obj),  data, sz);
     return obj;
 }
 
-wchar_t *anna_string_get_payload(anna_object_t *this)
+size_t anna_string_get_count(anna_object_t *this)
 {
-    wchar_t *result;
-    memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_STRING_PAYLOAD), sizeof(wchar_t *));
-    return result;
+    return anna_string_get_length(as_unwrap(this));
 }
 
-size_t anna_string_get_payload_size(anna_object_t *this)
+static anna_object_t *anna_string_set_int(anna_object_t **param)
 {
-    size_t result;
-    memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_STRING_PAYLOAD_SIZE), sizeof(size_t));
-    return result;
+    if(param[1]==null_object)
+	return null_object;
+    wchar_t ch = anna_char_get(param[2]);
+    anna_string_set_char(as_unwrap(param[0]), anna_int_get(param[1]), ch);
+    return param[2];
+}
+
+static anna_object_t *anna_string_get_int(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    return anna_char_create(anna_string_get_char(as_unwrap(param[0]), anna_int_get(param[1])));
 }
 
 
 void anna_string_type_create(anna_stack_frame_t *stack)
 {
+    anna_node_t *i_argv[] = 
+	{
+	  (anna_node_t *)anna_node_identifier_create(0, L"String"),
+	  (anna_node_t *)anna_node_identifier_create(0, L"Int"),
+	  (anna_node_t *)anna_node_identifier_create(0, L"Char")
+	}
+    ;
+    wchar_t *i_argn[]=
+	{
+	    L"this", L"index", L"value"
+	}
+    ;
+
     string_type = anna_type_native_create(L"String", stack);
     anna_node_call_t *definition = anna_type_definition_get(string_type);
     
@@ -44,9 +79,45 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	definition, ANNA_MID_STRING_PAYLOAD,  L"!stringPayload", 
 	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
     
-    anna_member_add_node(
-	definition, ANNA_MID_STRING_PAYLOAD_SIZE,  L"!stringPayloadSize", 
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+    int i;
+    string_buffer_t sb;
+    sb_init(&sb);
+    for(i=1; i<(((sizeof(anna_string_t)+1)/sizeof(anna_object_t *))+1);i++)
+    {
+	sb_clear(&sb);
+	sb_printf(&sb, L"!stringPayload%d", i);
+	
+	anna_member_add_node(
+	    definition, -1,  sb_content(&sb), 
+	    0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );	
+	//wprintf(L"LALALALALA %d\n", i);
+    }
     
+    sb_destroy(&sb);
+    
+    anna_native_method_add_node(
+	definition,
+	-1,
+	L"__get__Int__",
+	0, 
+	(anna_native_t)&anna_string_get_int, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Char") , 
+	2, 
+	i_argv, 
+	i_argn);
+    
+    anna_native_method_add_node(
+	definition, 
+	-1,
+	L"__set__Int__", 
+	0, 
+	(anna_native_t)&anna_string_set_int, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Char"), 
+	3,
+	i_argv, 
+	i_argn);
+
+
+
     anna_type_native_setup(string_type, stack);
 }

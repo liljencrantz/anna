@@ -1,3 +1,7 @@
+var str = "hej baberiba!\n";
+str[0]='H';
+print(str);
+
 /*
 Class Range template (T:Int)
 {

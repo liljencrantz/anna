@@ -124,16 +124,16 @@ static anna_object_t **anna_list_get_payload(anna_object_t *this)
 
 static anna_object_t *anna_list_set_int(anna_object_t **param)
 {
-  if(param[1]==null_object)
-    return null_object;
-  anna_list_set(param[0], anna_int_get(param[1]), param[2]);
-  return param[2];
+    if(param[1]==null_object)
+	return null_object;
+    anna_list_set(param[0], anna_int_get(param[1]), param[2]);
+    return param[2];
 }
 
 static anna_object_t *anna_list_get_int(anna_object_t **param)
 {
-  if(param[1]==null_object)
-    return null_object;
+    if(param[1]==null_object)
+	return null_object;
     return anna_list_get(param[0], anna_int_get(param[1]));
 }
 
@@ -386,9 +386,15 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     list_type->definition = full_definition;
 
-    anna_member_add_node(definition, ANNA_MID_LIST_PAYLOAD,  L"!listPayload", 0, (anna_node_t *)anna_node_identifier_create(&loc, L"Null") );
-    anna_member_add_node(definition, ANNA_MID_LIST_SIZE,  L"!listSize", 0, (anna_node_t *)anna_node_identifier_create(&loc, L"Null") );
-    anna_member_add_node(definition, ANNA_MID_LIST_CAPACITY,  L"!listCapacity", 0, (anna_node_t *)anna_node_identifier_create(&loc, L"Null") );
+    anna_member_add_node(
+	definition, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
+	0, (anna_node_t *)anna_node_identifier_create(&loc, L"Null") );
+    anna_member_add_node(
+	definition, ANNA_MID_LIST_SIZE,  L"!listSize", 
+	0, (anna_node_t *)anna_node_identifier_create(&loc, L"Null") );
+    anna_member_add_node(
+	definition, ANNA_MID_LIST_CAPACITY,  L"!listCapacity",
+	0, (anna_node_t *)anna_node_identifier_create(&loc, L"Null") );
     
     anna_node_t *i_argv[] = 
 	{

@@ -11,6 +11,7 @@
 #include "anna_string.h"
 #include "anna_int.h"
 #include "anna_char.h"
+#include "anna_list.h"
 
 anna_object_t *anna_i_print(anna_object_t **param)
 {
@@ -30,9 +31,7 @@ anna_object_t *anna_i_print(anna_object_t **param)
 	}
 	else if(value->type == string_type) 
 	{
-	    wchar_t *payload = anna_string_get_payload(value);
-	    size_t payload_size = anna_string_get_payload_size(value);
-	    wprintf(L"%.*ls", payload_size, payload);
+	    anna_string_print(value);
 	}
 	else if(value->type == char_type) 
 	{

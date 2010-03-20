@@ -667,7 +667,7 @@ void anna_string_replace(anna_string_t *dest,
     //dest->length = dest->length + src_length-dest_length;
 }
 
-void anna_string_print(anna_string_t *dest)
+void anna_string_print_debug(anna_string_t *dest)
 {
     //wprintf(L"Print string with %d elements\n", dest->element_count);
     
@@ -689,6 +689,14 @@ void anna_string_print(anna_string_t *dest)
 	wprintf(L"%d", i%10);
     }
     wprintf(L"\n");
+}
+
+void anna_string_print_regular(anna_string_t *dest)
+{
+    int i;
+    for(i=0;i<dest->element_count; i++) {
+	wprintf(L"%.*ls", dest->element_length[i], &(dest->element[i]->payload[dest->element_offset[i]]));
+    }
 }
 
 #endif

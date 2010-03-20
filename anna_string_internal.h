@@ -16,13 +16,38 @@ typedef struct
 
 struct anna_string
 {
+    /**
+      The number of string_element objects used in theis string
+     */
     size_t element_count;
+    /**
+       The number of string_element slots allocated for usin in this string
+     */
     size_t element_capacity;
+    /**
+       Array of string_element objects
+     */
     struct anna_string_element **element;
+    /**
+       The offset of the specified string element at which this string
+       starts using the specified string element.
+     */
     size_t *element_offset;
+    /**
+       The number of characters of data used in this string element
+     */
     size_t *element_length;
+    /**
+       Total string length
+     */
     size_t length;
+    /**
+       The index of the position that was last accessed
+     */
     size_t cache_pos;
+    /**
+       Element index and offset of the position that was last accessed
+     */
     anna_string_location_t cache_value;
 }
   ;
@@ -92,6 +117,6 @@ void anna_string_truncate(anna_string_t *dest, size_t length);
 
    For debugging purposes only.
  */
-void anna_string_print(anna_string_t *dest);
+void anna_string_print_regular(anna_string_t *dest);
 
 #endif

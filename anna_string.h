@@ -7,7 +7,7 @@
 
 anna_object_t *anna_string_create();
 void anna_string_type_create(anna_stack_frame_t *stack);
-wchar_t *anna_string_get_payload(anna_object_t *this);
-size_t anna_string_get_payload_size(anna_object_t *this);
+void anna_string_print(anna_object_t *obj);
+
 
 #endif

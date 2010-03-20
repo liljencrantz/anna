@@ -206,7 +206,7 @@ anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, wchar_
     anna_node_identifier_t *result = calloc(1,sizeof(anna_node_call_t));
     result->node_type = ANNA_NODE_IDENTIFIER;
     anna_node_set_location((anna_node_t *)result,loc);
-    result->name = name;
+    result->name = wcsdup(name);
     /*
       FIXME: Create a nice and tidy wrapper
     */
