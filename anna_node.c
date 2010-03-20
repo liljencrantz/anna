@@ -674,7 +674,7 @@ anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_st
     anna_sid_t real_sid = anna_stack_sid_create(stack, this->name);
     if(memcmp(&this->sid, &real_sid, sizeof(anna_sid_t))!=0)
     {
-        anna_error(this, L"Critical: Cached sid (%d, %d) different from invoke time sid (%d, %d) for node %ls",
+        anna_error((anna_node_t *)this, L"Critical: Cached sid (%d, %d) different from invoke time sid (%d, %d) for node %ls",
 		   this->sid.frame, this->sid.offset, real_sid.frame, real_sid.offset, this->name);
 	anna_stack_print_trace(stack);	
 
@@ -899,7 +899,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	case ANNA_NODE_TRAMPOLINE:
 	case ANNA_NODE_DUMMY:
 	{
-	    anna_node_dummy_t *this2 =(anna_node_dummy_t *)this;	    
+	    //anna_node_dummy_t *this2 =(anna_node_dummy_t *)this;	    
 	    return;
 	}
 	
@@ -929,7 +929,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
-	    anna_node_member_get_t *this2 =(anna_node_member_get_t *)this;
+	    //anna_node_member_get_t *this2 =(anna_node_member_get_t *)this;
 	    return;
 	}
 		    
@@ -1030,19 +1030,19 @@ anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this,
   assert(this->object);
   anna_object_t *obj = anna_node_invoke(this->object, stack);
   if(!obj)
-    {
+  {
       anna_error(this->object, L"Critical: Node evaluated to null pointer:");
       anna_node_print(this->object);
       CRASH;
-    }
+  }
   anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
   
   if(!res)
-    {
+  {
       anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
 		 obj->type->name,
 		 anna_mid_get_reverse(this->mid));
-    }
+  }
   return *res;
   
   //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
@@ -1089,35 +1089,34 @@ anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
 anna_object_t *anna_node_member_get_wrap_invoke(anna_node_member_get_t *this, 
 						anna_stack_frame_t *stack)
 {
-  /*
-  wprintf(L"Run wrapped member get node:\n");  
-  anna_node_print(this);
-  */
-  assert(this->object);
-  anna_object_t *obj = anna_node_invoke(this->object, stack);
-  if(!obj)
+    /*
+      wprintf(L"Run wrapped member get node:\n");  
+      anna_node_print(this);
+    */
+    assert(this->object);
+    anna_object_t *obj = anna_node_invoke(this->object, stack);
+    if(!obj)
     {
-      anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-      anna_node_print(this->object);
-      CRASH;
+	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
+	anna_node_print(this->object);
+	CRASH;
     }
-  anna_object_t *res = anna_member_addr_get_mid(obj, this->mid);
-  
-  if(!res)
+    anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
+    
+    if(!res)
     {
-      anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
-		 obj->type->name,
-		 anna_mid_get_reverse(this->mid));
+	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
+		   obj->type->name,
+		   anna_mid_get_reverse(this->mid));
     }
-  anna_object_t *wrapped = anna_method_wrap(*anna_member_addr_get_mid(obj, this->mid), obj);
-  if(!wrapped)
+    anna_object_t *wrapped = anna_method_wrap(*res, obj);
+    if(!wrapped)
     {
-      anna_error(this->object, L"Critical: Failed to wrap object:");
-      anna_node_print(this->object);
-      CRASH;
-    }
-  
-  return wrapped;
+	anna_error(this->object, L"Critical: Failed to wrap object:");
+	anna_node_print(this->object);
+	CRASH;
+    }    
+    return wrapped;
 }
 
 static anna_object_t *anna_trampoline(anna_object_t *orig, 

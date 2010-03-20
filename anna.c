@@ -15,6 +15,7 @@
 #include "anna_string.h"
 #include "anna_char.h"
 #include "anna_list.h"
+#include "anna_type.h"
 
 #define likely(x) (x)
 /*
@@ -35,7 +36,6 @@
   
   ComparisonMap type
   HashMap type
-  Range type
   Pair type
   Node type
   Better Function type
@@ -43,7 +43,6 @@
   Stack type
   Byte type
   Buffer type
-  Complex type
   Regexp type
   
   Make abides check properly check method signatures
@@ -120,6 +119,8 @@
   Char type
   Null type  
   List type
+  Range type
+  Complex type
   
   Represent objects 
   Represent types
@@ -462,12 +463,14 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 					    anna_stack_frame_t *local)
 {
   //    wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
-  
+    if(obj == null_object)
+	return null_object;
+    
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
-      //    wprintf(L"Yay, got function %ls\n", (*function_ptr)->name);
+	//    wprintf(L"Yay, got function %ls\n", (*function_ptr)->name);
         return anna_function_invoke(*function_ptr, this, param, local, stack_ptr?*stack_ptr:stack_global);
     }
     else 
@@ -670,6 +673,7 @@ anna_function_t *anna_function_create(wchar_t *name,
     result->return_type=return_type;
     result->input_count=argc;
     result->return_pop_count = return_pop_count;
+    result->this=0;
     
     memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
     result->input_name = malloc(argc*sizeof(wchar_t *));;
@@ -1298,6 +1302,13 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 				    anna_stack_frame_t *stack,
 				    anna_stack_frame_t *outer) 
 {
+/*
+    wprintf(L"Executing function %ls\n", function->name);
+    if(function->body)
+    {
+	anna_node_print(function->body);
+    }
+*/  
     if(!this)
     {
 	this=function->this;
@@ -1312,7 +1323,7 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
     }
     else
     {
-      argv=malloc(sizeof(anna_object_t *)*function->input_count);
+	argv=malloc(sizeof(anna_object_t *)*function->input_count);
     }
     
     int i;
@@ -1434,7 +1445,7 @@ int main(int argc, char **argv)
     anna_function_prepare(func);
 
     wprintf(L"Validated program:\n");    
-    anna_node_print(func->body);
+    anna_node_print((anna_node_t *)func->body);
     
     anna_function_invoke(func, 0, 0, stack_global, stack_global);
     

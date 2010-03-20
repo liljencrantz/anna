@@ -12,7 +12,7 @@ class Range template (T:Int)
 	this.step=step;
     }
     
-    function __eachPair__(function Null f (Int key, T value))
+    function __each__(function Null f (Int key, T value))
     {
 	var i=this.from;
 	var idx = 0;

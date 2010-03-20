@@ -207,7 +207,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %type <call_val> argument_list argument_list2 argument_list3 
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
-%type <node_val> declaration declaration_expression variable_declaration function_declaration
+%type <node_val> declaration declaration_expression variable_declaration
 %type <call_val> attribute_list attribute_list2
 %type <call_val> opt_block
 %type <call_val> templatization templatization2
@@ -289,7 +289,7 @@ opt_declaration_init :
 |
 ELLIPSIS
 {
-    $$ = anna_node_identifier_create(&@$, L"__variadic__");
+    $$ = (anna_node_t *)anna_node_identifier_create(&@$, L"__variadic__");
 }
 
 ;
@@ -358,7 +358,13 @@ expression4 :
 	expression4 op4 expression5
 	{
 	  anna_node_t *param[] ={$2, $1, $3};   
-	  $$ = (anna_node_t *)anna_node_call_create(&@$, anna_node_identifier_create(&@$, L"__genericOperator__"), 3, param);
+	  $$ = (anna_node_t *)anna_node_call_create(
+	      &@$, 
+	      (anna_node_t *)anna_node_identifier_create(
+		  &@$,
+		  L"__genericOperator__"),
+	      3,
+	      param);
 	}
         | 
 	expression5
@@ -771,14 +777,14 @@ argument_list3 :
 	;
 
 function_definition: 
-	FUNCTION opt_templatized_type opt_identifier declaration_list attribute_list block
+	FUNCTION opt_templatized_type opt_identifier declaration_list attribute_list opt_block
 	{
 	    anna_node_t *param[] ={
 		(anna_node_t *)($3?$3:anna_node_null_create(&@$)),
 		(anna_node_t *)($2?$2:anna_node_null_create(&@$)),
 		(anna_node_t *)$4, 
 		(anna_node_t *)$5, 
-		(anna_node_t *)$6
+		(anna_node_t *)($6?$6:anna_node_null_create(&@$))
 	    };
 	    $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@1,L"__function__"), 5, param);
 	  	  
@@ -832,15 +838,6 @@ variable_declaration:
 declaration : opt_var variable_declaration {$$=$2;} | function_definition;
 
 opt_var : | VAR;
-
-
-function_declaration :
-	FUNCTION templatized_type identifier declaration_list
-	{
-	  anna_node_t *param[] ={$3, $2, (anna_node_t *)$4, anna_node_null_create(&@$), anna_node_null_create(&@$)};	    
-	  $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@1,L"__function__"), 5, param);
-	}
-;
 
 opt_templatized_type:
 {
@@ -944,14 +941,14 @@ simple_expression '(' argument_list2 ')'
 
 int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
 {
-  static init = 0;
-  if(!init)
+    static int init = 0;
+    if(!init)
     {
-      init=1;
+	init=1;
 	llocp->first_line= llocp->last_line=1;
 	llocp->first_column = llocp->last_column=0;
     }
-  
+    
     if(peek_token != -1)
     {
 	int ret = peek_token;

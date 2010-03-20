@@ -38,6 +38,7 @@
     {						\
     int *__tmp=0;				\
     *__tmp=0;					\
+    exit(1);					\
     }
 #else
 define CRASH exit(1)
@@ -295,6 +296,7 @@ size_t anna_method_create(anna_type_t *type,
 			  int flags,
 			  anna_function_t *definition);
 
+size_t anna_mid_get(wchar_t *name);
 wchar_t *anna_mid_get_reverse(size_t mid);
 
 anna_object_t *anna_object_create(anna_type_t *type);

@@ -440,8 +440,6 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	sb_destroy(&sb);	
     }
     
-    wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
-    wchar_t *type_name = ((anna_node_identifier_t *)node->child[1])->name;
     int error_count=0;
     
     anna_node_call_t *body = (anna_node_call_t *)node->child[3];
@@ -778,6 +776,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	CHECK_NODE_BLOCK(body);
 	
 	anna_method_create(type, -1, name, 0, result);	
+	return 0;
     }
     else
     {
@@ -1702,7 +1701,13 @@ static anna_node_t *anna_macro_list(anna_node_call_t *node,
 				      anna_function_t *function, 
 				      anna_node_list_t *parent)
 {
-    return (anna_node_t *)anna_node_call_create(&node->location, anna_node_identifier_create(&node->function->location, L"List"), node->child_count, node->child);
+    return (anna_node_t *)anna_node_call_create(
+	&node->location,
+	(anna_node_t *)anna_node_identifier_create(
+	    &node->function->location,
+	    L"List"), 
+	node->child_count,
+	node->child);
 }
 
 static anna_node_t *anna_macro_templatize(anna_node_call_t *node, 
@@ -1808,7 +1813,6 @@ static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node,
 						  anna_function_t *function, 
 						  anna_node_list_t *parent)
 {
-    int i;
     CHECK_CHILD_COUNT(node, L"template instantiation", 2);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_CALL);
 
@@ -1820,10 +1824,10 @@ static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node,
     CHECK_CHILD_COUNT(attribute, L"template instantiation", 1);	
     CHECK_NODE_IDENTIFIER_NAME(attribute->function, L"template");
     CHECK_NODE_TYPE(attribute->child[0], ANNA_NODE_CALL);
-
+    /*
     anna_node_identifier_t *id = 
 	(anna_node_identifier_t *)attribute->function;
-    
+    */
     anna_node_call_t *pair = 
 	(anna_node_call_t *)attribute->child[0];
     

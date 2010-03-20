@@ -119,6 +119,7 @@ class BinaryMap template(Key:Int), template(Value:Object)
     }
     
     function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)
+	private
     {
 	if(node)
 	{
@@ -147,6 +148,7 @@ class BinaryMap template(Key:Int), template(Value:Object)
     }
     
     function Value find(BinaryMapNode<Key,Value> node, Key key)
+	private
     {
 	if(node)
 	{
@@ -181,6 +183,22 @@ class BinaryMap template(Key:Int), template(Value:Object)
     {
 	return "Map!";
     }
+
+    function Null __each__(function Null f (Key key, Value value))
+    {
+	this.eachNode(this.root, f);
+    }
+    
+    function Null eachNode(BinaryMapNode<Key,Value> node, function Null f (Key key, Value value))
+	private
+    {
+	if(node)
+	{
+	    this.eachNode(node.left, f);
+	    f(node.key, node.value);
+	    this.eachNode(node.right, f);
+	}
+    }
     
 }
 
@@ -189,7 +207,11 @@ foo[3]="aaa";
 foo[2]="bbb";
 foo[3]="ddd";
 foo[5]="ccc";
-print(foo[2]);
+foo.each(k:v)
+{
+    print(k,": ", v, "\n");
+}
+
 
 /*
 function foo(Int in){
