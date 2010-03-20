@@ -1,7 +1,7 @@
 #include <sys/time.h>
 
-//#include "anna_string_naive.c"
-#include "anna_string_internal.c"
+#include "anna_string_naive.c"
+//#include "anna_string_internal.c"
 
 long long get_time()
 {
@@ -63,13 +63,14 @@ anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
   
   long long stop_time = get_time();
   
-  wprintf(L"Copied %ls @ %f chars/s\n",
-	  msg, 1000000.0*((double)stop*10)/(stop_time-start_time));
+  wprintf(L"Appended %ls @ %f million chars/s\n",
+	  msg, 1.0*((double)stop*10)/(stop_time-start_time));
 }
 
 int main()
 {
-  anna_string_append_test(1, 16, L"short strings");  
-  anna_string_append_test(400, 800, L"long strings");  
-  return 0;
+    anna_string_append_test(1, 16, L"short strings (1-16 chars)");  
+    anna_string_append_test(1, 800, L"mixed strings (1-800 chars)");  
+    anna_string_append_test(400, 800, L"long strings (400-800 chars)");  
+    return 0;
 }

@@ -5,27 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-int anna_debug=0;
-
-int mini(int a, int b)
-{
-    return (a>b)?b:a;
-}
-
-int maxi(int a, int b)
-{
-    return (a<b)?b:a;
-}
-
-
-struct anna_string
-{
-  size_t count;
-  size_t capacity;
-  wchar_t *str;
-}
-  ;
-typedef struct anna_string anna_string_t;
+#include "anna_string_internal.h"
 
 void anna_string_ensure_capacity(anna_string_t *string, size_t size)
 {

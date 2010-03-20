@@ -1,17 +1,46 @@
+#ifndef ANNA_STRING_INTERNAL_H
+#define ANNA_STRING_INTERNAL_H
+
+#include "anna_checks.h"
+
+#ifdef ANNA_STRING_CHUNKED_ENABLED
 
 struct anna_string_element;
 
+typedef struct 
+{
+    size_t element;
+    size_t offset;
+}
+    anna_string_location_t;
+
 struct anna_string
 {
-  size_t element_count;
-  size_t element_capacity;
-  struct anna_string_element **element;
-  size_t *element_offset;
-  size_t *element_length;
+    size_t element_count;
+    size_t element_capacity;
+    struct anna_string_element **element;
+    size_t *element_offset;
+    size_t *element_length;
+    size_t length;
+    size_t cache_pos;
+    anna_string_location_t cache_value;
 }
   ;
 
 typedef struct anna_string anna_string_t;
+
+#else
+
+struct anna_string
+{
+  size_t count;
+  size_t capacity;
+  wchar_t *str;
+}
+  ;
+typedef struct anna_string anna_string_t;
+
+#endif
 
 
 /**
@@ -57,9 +86,12 @@ size_t anna_string_get_length(anna_string_t *dest);
 
 void anna_string_truncate(anna_string_t *dest, size_t length);
 
+/**
+   Print the specified string, together with a load of debug and
+   status information about it, on stdout.
 
+   For debugging purposes only.
+ */
+void anna_string_print(anna_string_t *dest);
 
-
-
-
-
+#endif

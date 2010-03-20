@@ -1,6 +1,12 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <wchar.h>
+#include <assert.h>
+#include <string.h>
+#include <time.h>
 
-//#include "anna_string_naive.c"
-#include "anna_string_internal.c"
+#include "anna_string_internal.h"
+#include "anna.h"
 
 anna_string_random_test(anna_string_t *a,
 			anna_string_t *b,
@@ -35,6 +41,13 @@ anna_string_random_test(anna_string_t *a,
 		
 		anna_string_substring(b, a, offset, length);
 		int i;
+		if(anna_string_get_length(b) != length)
+		{
+		    wprintf(L"Substring error. Wrong length. Expected %d, got %d\n",
+			    length, anna_string_get_length(b));
+		    anna_string_print(b);
+		    CRASH;
+		}
 		for(i=0; i<length; i++)
 		{
 		    if(anna_string_get_char(b, i) != anna_string_get_char(a, i+offset))
@@ -45,7 +58,7 @@ anna_string_random_test(anna_string_t *a,
 				i, anna_string_get_char(b, i));
 			anna_string_print(a);
 			anna_string_print(b);
-			exit(1);			
+			CRASH;
 		    }	    
 		}
 		break;	    
@@ -171,15 +184,12 @@ anna_string_random_test(anna_string_t *a,
 	    anna_string_destroy(f);
 	    anna_string_init_from_ptr(f, L"valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf ", 400);
 	    int i;
-	    anna_debug=1;
 	    
 	    for(i=0; i<240; i++)
 	      {
 		anna_string_append(a, f, 0, rand()%400);
 		anna_string_append(b, f, 0, rand()%400);
 	      }
-
-	    anna_debug=0;
 	    
 	  }
 	  
@@ -219,5 +229,6 @@ int main()
       anna_string_destroy(&e);
       anna_string_destroy(&f);
     }
+
   return 0;
 }
