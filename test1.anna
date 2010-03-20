@@ -103,8 +103,6 @@ class BinaryMapNode template(Key:Int), template(Value:Object)
     {
 	this.key=key;
 	this.value=value;
-	this.left=null;
-	this.right=null;
     }
     
 }
@@ -115,7 +113,6 @@ class BinaryMap template(Key:Int), template(Value:Object)
     
     function BinaryMap<Key,Value> __init__()
     {
-	this.root=null;
     }
     
     function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)

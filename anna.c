@@ -48,7 +48,6 @@
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks possible at type creation time and store the results
-  Object constructor needs to set all members to null
   Split type namespace from type object
   Properties
   Better code validator
@@ -111,6 +110,7 @@
   Fully functional templates
   Identifier invocation should use sid instead of name lookup
   Separate function preparation pass
+  Object constructor sets all members to null
 
   Type type
   Call type
@@ -936,6 +936,12 @@ anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fak
 anna_object_t *anna_object_create(anna_type_t *type) {
     anna_object_t *result = calloc(1,sizeof(anna_object_t)+sizeof(anna_object_t *)*type->member_count);
     result->type = type;
+    int i;
+    for(i=0; i<type->member_count; i++)
+    {
+	result->member[i]=null_object;
+    }
+    
   
     return result;
 }

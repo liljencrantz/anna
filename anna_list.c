@@ -17,15 +17,19 @@ static anna_object_t **anna_list_get_payload(anna_object_t *this);
 
 anna_object_t *anna_list_create()
 {
-  return anna_object_create(list_type);
+    anna_object_t *obj= anna_object_create(list_type);
+    *anna_member_addr_get_mid(obj,ANNA_MID_LIST_PAYLOAD)=0;
+    *(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_CAPACITY) = 0;    
+    *(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SIZE) = 0;
+    return obj;
 }
 
 ssize_t calc_offset(ssize_t offset, size_t size)
 {
-  if(offset < 0) {
-    return size-offset;
-  }
-  return offset;
+    if(offset < 0) {
+	return size-offset;
+    }
+    return offset;
 }
 
 void anna_list_set(struct anna_object *this, ssize_t offset, struct anna_object *value)
