@@ -844,11 +844,10 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 //    wprintf(L"Check type %ls abides against %ls\n", contender->name, role_model->name);
     
     //wprintf(L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
-    wchar_t **members = calloc(sizeof(wchar_t *), role_model->member_count+role_model->static_member_count);
+    wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(role_model));
     anna_type_get_member_names(role_model, members);    
-    assert(hash_get_count(&role_model->name_identifier) == role_model->member_count+role_model->static_member_count);
     
-    for(i=0; i<role_model->member_count+role_model->static_member_count; i++)
+    for(i=0; i<anna_type_member_count(role_model); i++)
     {
 	assert(members[i]);
 	anna_type_t *contender_subtype = anna_type_member_type_get(contender, members[i]);

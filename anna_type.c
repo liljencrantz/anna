@@ -86,8 +86,7 @@ void anna_type_native_setup(anna_type_t *type, anna_stack_frame_t *stack)
 
 static void add_member(void *key, void *value, void *aux)
 {
-//    wprintf(L"Got member %ls\n", key);
-    
+    //wprintf(L"Got member %ls\n", key);
     wchar_t ***dest = (wchar_t ***)aux;
     **dest = key;
     (*dest)++;
@@ -104,9 +103,9 @@ void anna_type_print(anna_type_t *type)
 {
     int i;
     wprintf(L"Type %ls:\n", type->name);
-    wchar_t **members = calloc(sizeof(wchar_t *), type->member_count+type->static_member_count);
+    wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
     anna_type_get_member_names(type, members);    
-    for(i=0; i<type->member_count+type->static_member_count; i++)
+    for(i=0; i< anna_type_member_count(type); i++)
     {
 	assert(members[i]);
 	anna_member_t *member = anna_type_member_info_get(type, members[i]);
@@ -142,4 +141,9 @@ void anna_type_print(anna_type_t *type)
 anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name)
 {
     return (anna_member_t *)hash_get(&(type->name_identifier), name);
+}
+
+size_t anna_type_member_count(anna_type_t *type)
+{
+    return type->member_count + type->static_member_count+type->property_count;
 }

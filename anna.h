@@ -83,6 +83,7 @@ union anna_native
 struct anna_type
 {
     size_t member_count;
+    size_t property_count;
     size_t static_member_count;
     hash_table_t name_identifier;
     wchar_t *name;

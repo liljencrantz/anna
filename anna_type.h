@@ -19,4 +19,6 @@ void anna_type_print(anna_type_t *type);
 
 anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name);
 
+size_t anna_type_member_count(anna_type_t *type);
+
 #endif

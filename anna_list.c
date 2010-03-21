@@ -1,4 +1,5 @@
 #define _GNU_SOURCE
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -53,33 +54,33 @@ void anna_list_set(struct anna_object *this, ssize_t offset, struct anna_object 
 
 anna_object_t *anna_list_get(anna_object_t *this, ssize_t offset)
 {
-  size_t size = anna_list_get_size(this);
-  ssize_t pos = calc_offset(offset, size);
-  if(pos < 0||pos >=size)
+    size_t size = anna_list_get_size(this);
+    ssize_t pos = calc_offset(offset, size);
+    if(pos < 0||pos >=size)
     {
-      return null_object;
+	return null_object;
     }
-  anna_object_t **ptr = anna_list_get_payload(this);
-  return ptr[pos];
+    anna_object_t **ptr = anna_list_get_payload(this);
+    return ptr[pos];
 }
 
 void anna_list_add(struct anna_object *this, struct anna_object *value)
 {
-  size_t capacity = anna_list_get_capacity(this);
-  size_t size = anna_list_get_size(this);
-  if(capacity == size)
-  {
-      anna_list_set_capacity(this, maxi(8, 2*capacity));
-  }
-  anna_object_t **ptr = anna_list_get_payload(this);
-  anna_list_set_size(this, size+1);
-  ptr[size]=value;
+    size_t capacity = anna_list_get_capacity(this);
+    size_t size = anna_list_get_size(this);
+    if(capacity == size)
+    {
+	anna_list_set_capacity(this, maxi(8, 2*capacity));
+    }
+    anna_object_t **ptr = anna_list_get_payload(this);
+    anna_list_set_size(this, size+1);
+    ptr[size]=value;
 }
 
 size_t anna_list_get_size(anna_object_t *this)
 {
-  assert(this);
-  return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE);
+    assert(this);
+    return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE);
 }
 
 void anna_list_set_size(anna_object_t *this, size_t sz)
@@ -166,17 +167,17 @@ static anna_object_t *anna_list_each(anna_object_t **param)
     anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
-    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+  wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+  wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
 */  
     anna_object_t *o_param[2];
     for(i=0;i<sz;i++)
     {
-      /*
-      wprintf(L"Run the following code:\n");
-      anna_node_print((*function_ptr)->body);
-      wprintf(L"\n");
-      */
+	/*
+	  wprintf(L"Run the following code:\n");
+	  anna_node_print((*function_ptr)->body);
+	  wprintf(L"\n");
+	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
 	result = anna_function_invoke_values(*function_ptr, 0, o_param, stack);
@@ -200,17 +201,17 @@ static anna_object_t *anna_list_map(anna_object_t **param)
     anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
-    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+  wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+  wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
 */  
     anna_object_t *o_param[2];
     for(i=0;i<sz;i++)
     {
-      /*
-      wprintf(L"Run the following code:\n");
-      anna_node_print((*function_ptr)->body);
-      wprintf(L"\n");
-      */
+	/*
+	  wprintf(L"Run the following code:\n");
+	  anna_node_print((*function_ptr)->body);
+	  wprintf(L"\n");
+	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
 	anna_list_set(result, i, anna_function_invoke_values(*function_ptr, 0, o_param, stack));
@@ -236,17 +237,17 @@ static anna_object_t *anna_list_filter(anna_object_t **param)
     anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
-    wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-    wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
+  wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
+  wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
 */  
     anna_object_t *o_param[2];
     for(i=0;i<sz;i++)
     {
-      /*
-      wprintf(L"Run the following code:\n");
-      anna_node_print((*function_ptr)->body);
-      wprintf(L"\n");
-      */
+	/*
+	  wprintf(L"Run the following code:\n");
+	  anna_node_print((*function_ptr)->body);
+	  wprintf(L"\n");
+	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
 	if(anna_function_invoke_values(*function_ptr, 0, o_param, stack) != null_object)
@@ -273,7 +274,7 @@ static anna_object_t *anna_list_first(anna_object_t **param)
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
 	if(anna_function_invoke_values(*function_ptr, 0, o_param, stack) != null_object)
-	   return arr[i];
+	    return arr[i];
     }
     return null_object;
 }
@@ -346,7 +347,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     /*
       Attibute list
-     */
+    */
     anna_node_call_t *attribute_list = 
 	anna_node_call_create(
 	    &loc,
@@ -411,11 +412,12 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     anna_node_t *i_argv[] = 
 	{
-	  (anna_node_t *)anna_node_identifier_create(&loc, L"List"),
-	  (anna_node_t *)anna_node_identifier_create(&loc, L"Int"),
-	  (anna_node_t *)anna_node_identifier_create(&loc, L"T")
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"List"),
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"Int"),
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"T")
 	}
     ;
+
     wchar_t *i_argn[]=
 	{
 	    L"this", L"index", L"value"
@@ -435,22 +437,22 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     ;
 
     anna_node_t *e_method_value_argv[] = 
-       {
-	  (anna_node_t *)anna_node_identifier_create(&loc, L"T")
-       }
+	{
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"T")
+	}
     ;
 
     wchar_t *e_method_value_argn[] = 
-       {
-	  L"value"
-       }
+	{
+	    L"value"
+	}
     ;
 
     anna_node_t *e_method_pair_argv[] = 
-       {
-	  (anna_node_t *)anna_node_identifier_create(&loc, L"Int"),
-	  (anna_node_t *)anna_node_identifier_create(&loc, L"T")
-       }
+	{
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"Int"),
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"T")
+	}
     ;
 
     wchar_t *e_method_pair_argn[] = 
@@ -480,16 +482,16 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     ;
     
     anna_node_t *list_template_param[] = 
-       {
-	  (anna_node_t *)anna_node_identifier_create(&loc, L"T")
-       }
+	{
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"T")
+	}
     ;
     
     anna_node_t *my_list_type = anna_node_templated_type_create(
-       &loc, 
-       (anna_node_t *)anna_node_identifier_create(&loc, L"List"),
-       1,
-       list_template_param);
+	&loc, 
+	(anna_node_t *)anna_node_identifier_create(&loc, L"List"),
+	1,
+	list_template_param);
 
 
     
@@ -501,7 +503,17 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_list_init, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"Null") , 
 	2, a_argv, a_argn);
-    
+
+    anna_node_call_add_child(
+	definition,
+	(anna_node_t *)anna_node_property_create(
+	    0,
+	    -1,
+	    L"count",
+	    (anna_node_t *)anna_node_identifier_create(&loc, L"Int") , 
+	    L"getCount",
+	    0));
+	
     anna_native_method_add_node(
 	definition,
 	-1,
@@ -546,7 +558,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
       FIXME: This is the wrong return type for map - we need to check
       the return type of the function argument and do a cast, or
       something...
-     */
+    */
     anna_native_method_add_node(
 	definition, -1, L"__map__", 
 	0, (anna_native_t)&anna_list_map, 
@@ -571,18 +583,18 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_macro_type_setup(list_type, func, 0);
         
     /*
-    anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
-    anna_native_method_add_node(definition, -1, L"__setslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
-    anna_native_method_add_node(definition, -1, L"__contains__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
+      anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
+      anna_native_method_add_node(definition, -1, L"__setslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
+      anna_native_method_add_node(definition, -1, L"__contains__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
 
       __add__, __sub__, __mul__ and friends.
       __select__, __first__, __last__
-     */
+    */
 
-  /*  
-  anna_object_t *l = anna_list_create();
-  anna_list_set(l, 3, L"TRALALA");
-  anna_list_append(l, L"TJOHO");
-  wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
-  */
+    /*  
+	anna_object_t *l = anna_list_create();
+	anna_list_set(l, 3, L"TRALALA");
+	anna_list_append(l, L"TJOHO");
+	wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
+    */
 }

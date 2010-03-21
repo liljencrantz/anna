@@ -219,17 +219,17 @@ static wchar_t *anna_find_method(anna_node_t *context,
 				 anna_type_t *arg2_type)
 {
     int i;
-    wchar_t **members = calloc(sizeof(wchar_t *), type->member_count+type->static_member_count);
+    wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
     wchar_t *match=0;
     int fault_count=0;
     
     assert(arg2_type);
     
-
+    
     anna_type_get_member_names(type, members);    
     //wprintf(L"Searching for %ls[XXX]... in %ls\n", prefix, type->name);
     
-    for(i=0; i<type->member_count+type->static_member_count; i++)
+    for(i=0; i<anna_type_member_count(type); i++)
     {
 	//wprintf(L"Check %ls\n", members[i]);
 	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
@@ -377,17 +377,13 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 				   anna_function_t *function, 
 				   anna_node_list_t *parent)
 {
-    /*  
-	wprintf(L"Base type before copy\n");
-	anna_node_print(type->definition);
-	wprintf(L"\n");
-    */
+
+//    wprintf(L"Type setup...\n");
+//	anna_node_print(type->definition);
+//	wprintf(L"\n");
+
     anna_node_call_t *node = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
 
-/*    wprintf(L"Base type after copy\n");
-      anna_node_print(type->definition);
-      wprintf(L"\n");
-*/  
     CHECK_CHILD_COUNT(node,L"type macro", 4);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
@@ -397,6 +393,9 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
     anna_node_call_t *attribute_list = 
         (anna_node_call_t *)node->child[2];
     int i;
+
+    array_list_t property_list;
+    al_init(&property_list);
     
     for(i=0; i<attribute_list->child_count;i++)
     {
@@ -557,6 +556,10 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 			       return_type);
 	    
 	}
+	else if(wcscmp(declaration->name, L"__property__")==0)
+	{
+	    al_push(&property_list, item);
+	}
     	else
 	{
 	    anna_error(call->function,
@@ -564,6 +567,54 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	    error_count++;	    
 	}
     }
+    for(i=0; i<al_get_count(&property_list); i++)
+    {
+	anna_node_call_t *prop = al_get(&property_list, i);
+	CHECK_CHILD_COUNT(prop,L"property", 5);
+	anna_node_prepare_children(prop, function, parent);
+	CHECK_NODE_TYPE(prop->child[0], ANNA_NODE_IDENTIFIER);
+	CHECK_NODE_TYPE(prop->child[1], ANNA_NODE_IDENTIFIER);
+	CHECK_NODE_TYPE(prop->child[2], ANNA_NODE_INT_LITERAL);
+
+	anna_node_identifier_t *name = 
+	    (anna_node_identifier_t *)prop->child[0];
+	
+	anna_type_t *p_type = 
+	    anna_macro_type_from_identifier(
+		prop->child[1], 	
+		function,
+		parent);
+	
+	anna_node_int_literal_t *mid = 
+	    (anna_node_int_literal_t *)prop->child[2];
+
+	//wprintf(L"Wee, declare %ls\n", name->name);
+	
+	anna_member_create(type,
+			   mid->payload,
+			   name->name,
+			   0,
+			   p_type);
+	type->member_count--;
+	type->property_count++;
+	anna_member_t *memb = anna_type_member_info_get(type, name->name);
+	memb->is_property = 1;
+	if(prop->child[3]->node_type != ANNA_NODE_NULL)
+	{
+	    CHECK_NODE_TYPE(prop->child[3], ANNA_NODE_IDENTIFIER);
+	    anna_node_identifier_t *g_name = 
+		(anna_node_identifier_t *)prop->child[3];
+	    
+	    anna_member_t *g_memb = anna_type_member_info_get(type, g_name->name);
+	    CHECK(g_memb, prop->child[3], L"Unknown method: %ls", g_name->name);
+	    memb->getter_offset = g_memb->offset;
+	    wprintf(L"Setting getter of %ls to %d\n", name->name, g_memb->offset);
+	    /*
+	      Fixme: Check that getter has correct signature
+	    */
+	}
+    }
+    
     if(error_count)
 	return (anna_node_t *)anna_node_null_create(&node->location);
     
