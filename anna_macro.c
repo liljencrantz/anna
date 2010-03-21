@@ -608,7 +608,19 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	    anna_member_t *g_memb = anna_type_member_info_get(type, g_name->name);
 	    CHECK(g_memb, prop->child[3], L"Unknown method: %ls", g_name->name);
 	    memb->getter_offset = g_memb->offset;
-	    wprintf(L"Setting getter of %ls to %d\n", name->name, g_memb->offset);
+	    /*
+	      Fixme: Check that getter has correct signature
+	    */
+	}
+	if(prop->child[4]->node_type != ANNA_NODE_NULL)
+	{
+	    CHECK_NODE_TYPE(prop->child[4], ANNA_NODE_IDENTIFIER);
+	    anna_node_identifier_t *s_name = 
+		(anna_node_identifier_t *)prop->child[4];
+	    
+	    anna_member_t *s_memb = anna_type_member_info_get(type, s_name->name);
+	    CHECK(s_memb, prop->child[4], L"Unknown method: %ls", s_name->name);
+	    memb->setter_offset = s_memb->offset;
 	    /*
 	      Fixme: Check that getter has correct signature
 	    */

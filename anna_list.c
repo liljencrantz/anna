@@ -146,6 +146,15 @@ static anna_object_t *anna_list_get_count(anna_object_t **param)
     return anna_int_create(anna_list_get_size(param[0]));
 }
 
+static anna_object_t *anna_list_set_count(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    int sz = anna_int_get(param[1]);
+    anna_list_set_size(param[0], sz);
+    return param[1];
+}
+
 static anna_object_t *anna_list_append(anna_object_t **param)
 {
     anna_list_add(param[0], param[1]);
@@ -512,7 +521,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	    L"count",
 	    (anna_node_t *)anna_node_identifier_create(&loc, L"Int") , 
 	    L"getCount",
-	    0));
+	    L"setCount"));
 	
     anna_native_method_add_node(
 	definition,
@@ -553,6 +562,12 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_list_get_count, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"Int"), 
 	1, e_argv_pair, e_argn);
+    
+    anna_native_method_add_node(
+	definition, -1, L"setCount", 0, 
+	(anna_native_t)&anna_list_set_count, 
+	(anna_node_t *)anna_node_identifier_create(&loc, L"Int"), 
+	2, i_argv, i_argn);
     
     /*
       FIXME: This is the wrong return type for map - we need to check

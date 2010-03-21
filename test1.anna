@@ -68,9 +68,8 @@ var foo = List();
 foo ~= 3;
 foo[0]=2;
 foo[12]=9;
-
-print( foo[7], foo.count );
-
+foo.count = 36;
+print(foo[19],foo[12],foo.count);
 
 /*
 var lst = List<Int>();

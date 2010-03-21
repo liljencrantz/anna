@@ -1085,7 +1085,7 @@ anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this,
 	anna_object_t *method = obj->type->static_member[m->getter_offset];
 	return anna_function_wrapped_invoke(method, obj, 0, stack);
     }
-
+    
     anna_object_t *res;
     
     if(m->is_static) {
@@ -1114,26 +1114,41 @@ anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
 	anna_node_print(this->object);
 	CRASH;
     }
+
+    anna_member_t *m = obj->type->mid_identifier[this->mid];
     
-    assert(this->value);
-    anna_object_t *val = anna_node_invoke(this->value, stack);
-    if(!val)
-    {
-	anna_error(this->value, L"Critical: Node evaluated to null pointer:");
-	anna_node_print(this->value);
-	CRASH;
-    }
-    anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
-    
-    if(!res)
+    if(!m)
     {
 	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
 		   obj->type->name,
 		   anna_mid_get_reverse(this->mid));
     }
+    if(m->is_property)
+    {
+	anna_object_t *method = obj->type->static_member[m->setter_offset];
+	anna_node_call_t *call = anna_node_call_create(0, 0, 1, &this->value);
+	return anna_function_wrapped_invoke(method, obj, call, stack);
+    }
+    else 
+    {
+	anna_object_t *val = anna_node_invoke(this->value, stack);
+	if(!val)
+	{
+	    anna_error(this->value, L"Critical: Node evaluated to null pointer:");
+	    anna_node_print(this->value);
+	    CRASH;
+	}
 
-    *res = val;
-    return val;
+	anna_object_t *res;
+	
+	if(m->is_static) {
+	    obj->type->static_member[m->offset]=val;
+	} else {
+	    obj->member[m->offset]=val;
+	}
+	return val;
+    }
+
     //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
 }
 
