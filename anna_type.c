@@ -100,3 +100,28 @@ void anna_type_get_member_names(anna_type_t *type, wchar_t **dest)
 }
 
 
+void anna_type_print(anna_type_t *type)
+{
+    int i;
+    wprintf(L"Type %ls:\n", type->name);
+    wchar_t **members = calloc(sizeof(wchar_t *), type->member_count+type->static_member_count);
+    anna_type_get_member_names(type, members);    
+    for(i=0; i<type->member_count+type->static_member_count; i++)
+    {
+	assert(members[i]);
+	anna_member_t *member = anna_type_member_info_get(type, members[i]);
+	assert(member);
+	wprintf(L"\t%ls: type: %ls, static: %ls, property: %ls\n",
+		members[i], member->type->name, 
+		member->is_static?L"true":L"false",
+		member->is_property?L"true":L"false");
+	
+    }
+
+    free(members);
+}
+
+anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name)
+{
+    return (anna_member_t *)hash_get(&(type->name_identifier), name);
+}

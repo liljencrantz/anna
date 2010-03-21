@@ -1023,66 +1023,66 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
 					   anna_stack_frame_t *stack)
 {
-  /*
-  wprintf(L"Run member get node:\n");
-  anna_node_print(this);
-  */
-  assert(this->object);
-  anna_object_t *obj = anna_node_invoke(this->object, stack);
-  if(!obj)
-  {
-      anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-      anna_node_print(this->object);
-      CRASH;
-  }
-  anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
+    /*
+      wprintf(L"Run member get node:\n");
+      anna_node_print(this);
+    */
+    assert(this->object);
+    anna_object_t *obj = anna_node_invoke(this->object, stack);
+    if(!obj)
+    {
+	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
+	anna_node_print(this->object);
+	CRASH;
+    }
+    anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
+    
+    if(!res)
+    {
+	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
+		   obj->type->name,
+		   anna_mid_get_reverse(this->mid));
+    }
+    return *res;
   
-  if(!res)
-  {
-      anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
-		 obj->type->name,
-		 anna_mid_get_reverse(this->mid));
-  }
-  return *res;
-  
-  //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
+    //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
 }
 
 anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this, 
 					   anna_stack_frame_t *stack)
 {
-  /*
-  wprintf(L"Run member set node:\n");
-  anna_node_print(this);
-  */
-  assert(this->object);
-  anna_object_t *obj = anna_node_invoke(this->object, stack);
-  if(!obj)
+    /*
+      wprintf(L"Run member set node:\n");
+      anna_node_print(this);
+    */
+    assert(this->object);
+    anna_object_t *obj = anna_node_invoke(this->object, stack);
+    if(!obj)
     {
-      anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-      anna_node_print(this->object);
-      CRASH;
+	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
+	anna_node_print(this->object);
+	CRASH;
+    }
+    
+    assert(this->value);
+    anna_object_t *val = anna_node_invoke(this->value, stack);
+    if(!val)
+    {
+	anna_error(this->value, L"Critical: Node evaluated to null pointer:");
+	anna_node_print(this->value);
+	CRASH;
+    }
+    anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
+    
+    if(!res)
+    {
+	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
+		   obj->type->name,
+		   anna_mid_get_reverse(this->mid));
     }
 
-  assert(this->value);
-  anna_object_t *val = anna_node_invoke(this->value, stack);
-  if(!val)
-    {
-      anna_error(this->value, L"Critical: Node evaluated to null pointer:");
-      anna_node_print(this->value);
-      CRASH;
-    }
-  anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
-  
-  if(!res)
-    {
-      anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
-		 obj->type->name,
-		 anna_mid_get_reverse(this->mid));
-    }
-
-  *res = val;
-  return val;
+    *res = val;
+    return val;
     //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
 }
 

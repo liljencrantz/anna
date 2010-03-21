@@ -13,6 +13,10 @@ anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack);
 
 void anna_type_get_member_names(anna_type_t *type, wchar_t **dest);
 
-
 void anna_type_native_setup(anna_type_t *, anna_stack_frame_t *);
+
+void anna_type_print(anna_type_t *type);
+
+anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name);
+
 #endif

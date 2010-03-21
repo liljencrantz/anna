@@ -3,6 +3,24 @@ str[0]='H';
 print(str);
 
 /*
+class Foo
+{
+    property Int count getter: getCount;
+    function getCount() private
+    {
+        return 3;
+    };
+
+OR
+
+    function count() property
+    {
+        return 3;
+    };
+
+}
+*/
+/*
 Class Range template (T:Int)
 {
 
@@ -74,9 +92,6 @@ while(y<=2.0)
     print("\n");
 }
 */
-
-
-
 /*
 var foo = List();
 foo ~= 3;
@@ -212,7 +227,6 @@ foo.each(k:v)
 {
     print(k,": ", v, "\n");
 }
-
 
 /*
 function foo(Int in){

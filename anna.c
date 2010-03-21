@@ -56,17 +56,16 @@
   Namespaces
   Make comments nest
   Non-recursive invoke
-  
-  Implement basic string methods
-  Implement string comparison methods
-  List arithmetic
-  
   Function default argument values
   Named function arguments
   Garbage collection  
   Proper intersection/union of types
   static member identifier and assignment
   static function calls
+  
+  Implement basic string methods
+  Implement string comparison methods
+  List arithmetic
   
   cast function (depends on type namespace/type object splittingx)
   import macro
@@ -111,7 +110,7 @@
   Identifier invocation should use sid instead of name lookup
   Separate function preparation pass
   Object constructor sets all members to null
-
+  
   Type type
   Call type
   Int type
@@ -1415,12 +1414,12 @@ int main(int argc, char **argv)
     
     wprintf(L"Parsed program:\n");    
     anna_node_print(program);
-    wprintf(L"\n");
-    
+        
     wprintf(L"Validating program...\n");    
     
     /*
-      The entire program is a __block__ call, which we use to create an anonymous function definition
+      The entire program is a __block__ call, which we use to create
+      an anonymous function definition
     */
     anna_node_dummy_t *program_callable = 
 	anna_node_dummy_create(&program->location,
@@ -1431,7 +1430,8 @@ int main(int argc, char **argv)
 			       0);
     ANNA_PREPARED(program_callable);
     /*
-      Invoke the anonymous function, the return is a function_type_t->wrapper
+      Invoke the anonymous function, the return is a
+      function_type_t->wrapper
     */
     anna_object_t *program_object = anna_node_invoke((anna_node_t *)program_callable, stack_global);
     if(anna_error_count)
@@ -1443,16 +1443,15 @@ int main(int argc, char **argv)
       Run the function
     */
 
-    wprintf(L"\n");
     wprintf(L"Output:\n");    
     
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_prepare(func);
-
+/*
     wprintf(L"Validated program:\n");    
     anna_node_print((anna_node_t *)func->body);
-    
+*/  
     anna_function_invoke(func, 0, 0, stack_global, stack_global);
     
     wprintf(L"\n");

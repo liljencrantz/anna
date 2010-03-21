@@ -97,6 +97,9 @@ struct anna_member
     struct anna_type *type;
     size_t offset;
     int is_static;
+    int is_property;
+    size_t member_set_offset;
+    size_t member_get_offset;    
     wchar_t name[];
 };
 
