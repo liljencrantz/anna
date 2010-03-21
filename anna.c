@@ -49,7 +49,6 @@
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks possible at type creation time and store the results
   Split type namespace from type object
-  Properties
   Better code validator
   Type checking on function types
   General purpose currying
@@ -62,6 +61,7 @@
   Proper intersection/union of types
   static member identifier and assignment
   static function calls
+  String padding with null chars on «anti-truncate».
   
   Implement basic string methods
   Implement string comparison methods
@@ -110,6 +110,7 @@
   Identifier invocation should use sid instead of name lookup
   Separate function preparation pass
   Object constructor sets all members to null
+  Properties
   
   Type type
   Call type
@@ -162,6 +163,8 @@
   __templateAttribute__ macro
   __templatize__ macro
   each, map, filter, first
+  List.count
+  String.count
 
 */
 /*

@@ -1,3 +1,7 @@
+var str = "hejsan studsan";
+print(str.count);
+str.count=3;
+print(str);
 
 
 /*

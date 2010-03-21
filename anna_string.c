@@ -28,10 +28,7 @@ void anna_string_print(anna_object_t *obj)
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
     anna_object_t *obj= anna_object_create(string_type);
-    /*
-    wprintf(L"LALALA %d, %d, %d\n", obj, as_unwrap(obj), string_type);
-    exit(1);
-    */
+
     asi_init_from_ptr(as_unwrap(obj),  data, sz);
     return obj;
 }
@@ -61,6 +58,20 @@ static anna_object_t *anna_string_init(anna_object_t **param)
 {
     asi_init(as_unwrap(param[0]));
     return param[0];
+}
+
+static anna_object_t *anna_string_i_get_count(anna_object_t **param)
+{
+    return anna_int_create(asi_get_length(as_unwrap(param[0])));
+}
+
+static anna_object_t *anna_string_i_set_count(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    int sz = anna_int_get(param[1]);
+    asi_truncate(as_unwrap(param[0]), sz);
+    return param[1];
 }
 
 
@@ -133,6 +144,28 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	i_argv, 
 	i_argn);
     
+    anna_native_method_add_node(
+	definition, -1, L"getCount", 0, 
+	(anna_native_t)&anna_string_i_get_count, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Int"), 
+	1, i_argv, i_argn);
+    
+    anna_native_method_add_node(
+	definition, -1, L"setCount", 0, 
+	(anna_native_t)&anna_string_i_set_count, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Int"), 
+	2, i_argv, i_argn);
+
+    anna_node_call_add_child(
+	definition,
+	(anna_node_t *)anna_node_property_create(
+	    0,
+	    -1,
+	    L"count",
+	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
+	    L"getCount",
+	    L"setCount"));
+	
     anna_type_native_setup(string_type, stack);
     anna_type_print(string_type);
 }
