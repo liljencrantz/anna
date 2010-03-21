@@ -31,8 +31,26 @@ int anna_int_get(anna_object_t *this)
     return result;
 }
 
+static anna_object_t *anna_int_init(anna_object_t **param)
+{
+    anna_int_set(param[0], 0);
+    return param[0];
+}
+
 void anna_int_type_create(anna_stack_frame_t *stack)
 {
+    anna_node_t *i_argv[] = 
+	{
+	  (anna_node_t *)anna_node_identifier_create(0, L"Int")
+	}
+    ;
+    wchar_t *i_argn[]=
+	{
+	    L"this"
+	}
+    ;
+
+
     int_type = anna_type_native_create(L"Int", stack);
     anna_node_call_t *definition = anna_type_definition_get(int_type);
     
@@ -40,6 +58,15 @@ void anna_int_type_create(anna_stack_frame_t *stack)
 	definition, ANNA_MID_INT_PAYLOAD,  L"!intPayload", 
 	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
     
+    anna_native_method_add_node(
+	definition,
+	-1,
+	L"__init__",
+	ANNA_FUNCTION_VARIADIC, 
+	(anna_native_t)&anna_int_init, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Null") , 
+	1, i_argv, i_argn);    
+
     anna_int_type_i_create(definition, stack);
     anna_type_native_setup(int_type, stack);
     

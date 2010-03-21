@@ -1063,6 +1063,7 @@ size_t anna_native_method_create(anna_type_t *type,
     mid = anna_member_create(type, mid, name, 1, anna_type_for_function(result, argc, argv, argn, flags & ANNA_FUNCTION_VARIADIC));
     anna_member_t *m = type->mid_identifier[mid];
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    m->is_method=1;
     type->static_member[m->offset] = anna_native_create(name, flags, func, result, argc, argv, argn)->wrapper;
     return (size_t)mid;
 }
@@ -1075,6 +1076,8 @@ size_t anna_method_create(anna_type_t *type,
 {
     mid = anna_member_create(type, mid, name, 1, definition->type);
     anna_member_t *m = type->mid_identifier[mid];
+    m->is_method=1;
+    
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     type->static_member[m->offset] = definition->wrapper;
     return (size_t)mid;
@@ -1346,13 +1349,25 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
     
     for(i=0; i<(function->input_count-offset-is_variadic); i++)
     {
-	//	    wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
+	//wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
 	argv[i+offset]=anna_node_invoke(param->child[i], stack);
     }   
     if(is_variadic)
     {
 	anna_object_t *lst = anna_list_create();
-	anna_list_set_capacity(lst, param->child_count - function->input_count+1-offset);
+	int variadic_count = param->child_count - i;
+	if(variadic_count < 0)
+	{
+	    anna_error(
+		param,
+		L"Critical: Tried to call function %ls with %d arguments, need at least %d\n",
+		function->name,
+		param->child_count,
+		function->input_count-1+offset);
+	    CRASH;	    
+	}
+		
+	anna_list_set_capacity(lst, variadic_count);
 	for(; i<param->child_count;i++)
 	{
 	    //	wprintf(L"eval variadic param %d of %d \n", i, param->child_count);

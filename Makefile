@@ -11,7 +11,7 @@ LDFLAGS := -lm -rdynamic -ll $(PROF_FLAGS)
 
 PROGRAMS := anna
 
-all: anna
+all: anna anna_string_internal_test anna_string_perf
 
 #########################################################
 #            BEGIN DEPENDENCY TRACKING                  #

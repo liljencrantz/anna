@@ -111,10 +111,28 @@ void anna_type_print(anna_type_t *type)
 	assert(members[i]);
 	anna_member_t *member = anna_type_member_info_get(type, members[i]);
 	assert(member);
-	wprintf(L"\t%ls: type: %ls, static: %ls, property: %ls\n",
-		members[i], member->type->name, 
-		member->is_static?L"true":L"false",
-		member->is_property?L"true":L"false");
+	if(member->is_property)
+	{
+	    wprintf(L"\tproperty %ls %ls setter: %d, getter: %d\n",
+		    member->type->name, members[i], 
+		    member->setter_offset,
+		    member->getter_offset);
+	}
+	else if(member->is_method)
+	{
+	    wprintf(L"\tfunction %ls: type: %ls, static: %ls, property: %ls, offset: %d\n",
+		    members[i], member->type->name, 
+		    member->is_static?L"true":L"false",
+		    member->is_property?L"true":L"false",
+		    member->offset);
+	}
+	else
+	{
+	    wprintf(L"\tvar %ls %ls, static: %ls, offset: %d\n",
+		    member->type->name, members[i], 
+		    member->is_static?L"true":L"false",
+		    member->offset);
+	}
 	
     }
 

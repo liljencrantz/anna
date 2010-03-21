@@ -98,8 +98,9 @@ struct anna_member
     size_t offset;
     int is_static;
     int is_property;
-    size_t member_set_offset;
-    size_t member_get_offset;    
+    int is_method;
+    size_t setter_offset;
+    size_t getter_offset;    
     wchar_t name[];
 };
 

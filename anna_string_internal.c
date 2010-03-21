@@ -13,7 +13,8 @@
 #ifdef ANNA_STRING_CHUNKED_ENABLED
 
 /**
-   Wchar_t-using, chunk based string implementation, does most string operations in O(1), most of the time. :)
+   Wchar_t-using, chunk based string implementation, does most string
+   operations in O(1), most of the time.x:) 
 */
 
 #define ANNA_STRING_DEFAULT_ELEMENT_CAPACITY 12
@@ -32,10 +33,10 @@ struct anna_string_element
 
 typedef struct anna_string_element anna_string_element_t;
 
-anna_string_element_t *anna_string_element_create(wchar_t *payload, size_t size, size_t available);
-static anna_string_ensure_element_capacity(anna_string_t *string, size_t count);
+anna_string_element_t *asi_element_create(wchar_t *payload, size_t size, size_t available);
+static void asi_ensure_element_capacity(anna_string_t *string, size_t count);
 
-static void anna_string_cache_clear(anna_string_t *s)
+static void asi_cache_clear(anna_string_t *s)
 {
     s->cache_pos=0;
     s->cache_value.element=0;
@@ -43,7 +44,7 @@ static void anna_string_cache_clear(anna_string_t *s)
 }
 
 #ifdef ANNA_STRING_VALIDATE_ENABLE
-static void anna_string_validate(anna_string_t *s)
+static void asi_validate(anna_string_t *s)
 {
 
     int i;
@@ -63,7 +64,7 @@ static void anna_string_validate(anna_string_t *s)
 
 }
 #else
-#define anna_string_validate(str)
+#define asi_validate(str)
 #endif
 
 
@@ -93,7 +94,7 @@ static void anna_element_adopt(anna_string_element_t *el)
   single owner, and that it has at least the specified amount of
   unused capacity. If not, replace it with a copy.
 */
-static void anna_string_element_stepford(anna_string_t *dest, int eid, size_t min_available)
+static void asi_element_stepford(anna_string_t *dest, int eid, size_t min_available)
 {
     
     if(dest->element[eid]->users == 1)
@@ -113,14 +114,14 @@ static void anna_string_element_stepford(anna_string_t *dest, int eid, size_t mi
     
     anna_string_element_t *old = dest->element[eid];
 
-    dest->element[eid] = anna_string_element_create(&dest->element[eid]->payload[dest->element_offset[eid]], dest->element_length[eid], min_available*3);
+    dest->element[eid] = asi_element_create(&dest->element[eid]->payload[dest->element_offset[eid]], dest->element_length[eid], min_available*3);
     dest->element_offset[eid] = 0;
     anna_element_disown(old);
     
     //wprintf(L"I have my very own %.*ls\n", dest->element_length[eid], dest->element[eid]->payload);
 }
 
-anna_string_location_t anna_string_get_location(anna_string_t *dest, size_t offset)
+anna_string_location_t asi_get_location(anna_string_t *dest, size_t offset)
 {
     int i;
     size_t first_in_element=0;
@@ -138,11 +139,11 @@ anna_string_location_t anna_string_get_location(anna_string_t *dest, size_t offs
 	}
 	first_in_element = last_in_element;
     } 
-    wprintf(L"Error: Tried to set element %d in string of length %d\n", offset, first_in_element);  
+    wprintf(L"Error: Tried to find element %d in string of length %d\n", offset, first_in_element);  
 }
 
 
-static void anna_string_make_appendable(anna_string_t *dest, size_t min_free)
+static void asi_make_appendable(anna_string_t *dest, size_t min_free)
 {
     int make_new = 0;
     size_t eid = dest->element_count-1;
@@ -162,9 +163,9 @@ static void anna_string_make_appendable(anna_string_t *dest, size_t min_free)
     
     if(make_new)
     {
-	anna_string_ensure_element_capacity(dest, dest->element_count+1);
+	asi_ensure_element_capacity(dest, dest->element_count+1);
 	dest->element[dest->element_count] = 
-	    anna_string_element_create(
+	    asi_element_create(
 		0,
 		0,
 		4*ANNA_STRING_APPEND_SHORT_LIMIT);
@@ -174,7 +175,7 @@ static void anna_string_make_appendable(anna_string_t *dest, size_t min_free)
     }
     else
     {
-	anna_string_element_stepford(dest, eid, 4*ANNA_STRING_APPEND_SHORT_LIMIT);
+	asi_element_stepford(dest, eid, 4*ANNA_STRING_APPEND_SHORT_LIMIT);
     }  
 }
 
@@ -183,7 +184,7 @@ static void anna_string_make_appendable(anna_string_t *dest, size_t min_free)
    Trim away short string elements in order to tidy up the
    string. Sort of a string defragmentation. 
 */
-static void anna_string_haircut(anna_string_t *hippie)
+static void asi_haircut(anna_string_t *hippie)
 {
 //    return;
     
@@ -195,9 +196,9 @@ static void anna_string_haircut(anna_string_t *hippie)
     wprintf(L"%d chars in %d elements. Haircut time!\n", 
 	    hippie->length, hippie->element_count);
 */  
-    anna_string_cache_clear(hippie);
+    asi_cache_clear(hippie);
 
-    int i, j, k, m;
+    int i, j, k;
     for(i=0; i<hippie->element_count; i++)
     {
 	size_t len = hippie->element_length[i];
@@ -229,11 +230,11 @@ static void anna_string_haircut(anna_string_t *hippie)
 	    count++;
 	}
 	
-	size_t old_length = anna_string_get_length(hippie);
+	//size_t old_length = asi_get_length(hippie);
 	
 	size_t pos = hippie->element_length[start_pos];
 	
-	anna_string_element_t *el = anna_string_element_create(
+	anna_string_element_t *el = asi_element_create(
 	    &hippie->element[start_pos]->payload[hippie->element_offset[start_pos]], 
 	    hippie->element_length[start_pos], 
 	    len - hippie->element_length[start_pos]);
@@ -257,7 +258,7 @@ static void anna_string_haircut(anna_string_t *hippie)
 	memmove(&hippie->element_offset[start_pos+1], &hippie->element_offset[stop_pos], sizeof(size_t)*(hippie->element_count-stop_pos));
 	hippie->element_count -= (stop_pos-start_pos-1);
 	
-	//assert(old_length == anna_string_get_length(hippie));
+	//assert(old_length == asi_get_length(hippie));
 	/*
 	  for(m=0; m<hippie->element_count; m++)
 	  {
@@ -279,14 +280,14 @@ static void anna_string_haircut(anna_string_t *hippie)
 /*
     if(!(hippie->length/(hippie->element_count-1)) > ANNA_STRING_HAIRCUT_RATIO)
     {
-	anna_string_printf(hippie);
+	asi_printf(hippie);
 	exit(1);
     }
 */  
 }
 
 
-static anna_string_ensure_element_capacity(anna_string_t *string, size_t count)
+static void asi_ensure_element_capacity(anna_string_t *string, size_t count)
 {
     if(string->element_capacity >= count)
     {
@@ -310,7 +311,7 @@ static anna_string_ensure_element_capacity(anna_string_t *string, size_t count)
 	if(1)
 	{
 	    
-	    anna_string_element_t *new_element = malloc((sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
+	    anna_string_element_t **new_element = malloc((sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
 	    size_t *new_element_offset = ((size_t *)new_element) + count;
 	    size_t *new_element_length = new_element_offset + count;
 	    memcpy(new_element, string->element, sizeof(anna_string_element_t *)*string->element_count);
@@ -340,7 +341,7 @@ static anna_string_ensure_element_capacity(anna_string_t *string, size_t count)
     }
 }
 
-anna_string_element_t *anna_string_element_create(wchar_t *payload, size_t size, size_t available)
+anna_string_element_t *asi_element_create(wchar_t *payload, size_t size, size_t available)
 {
     //assert(available<999999);
 
@@ -351,24 +352,24 @@ anna_string_element_t *anna_string_element_create(wchar_t *payload, size_t size,
     return res;
 }
 
-void anna_string_init(anna_string_t *string)
+void asi_init(anna_string_t *string)
 {
     memset(string, 0, sizeof(anna_string_t));
 }
 
-void anna_string_init_from_ptr(anna_string_t *string, wchar_t *payload, size_t size)
+void asi_init_from_ptr(anna_string_t *string, wchar_t *payload, size_t size)
 {
-    anna_string_init(string);
+    asi_init(string);
     
-    anna_string_ensure_element_capacity(string, ANNA_STRING_DEFAULT_ELEMENT_CAPACITY);
+    asi_ensure_element_capacity(string, ANNA_STRING_DEFAULT_ELEMENT_CAPACITY);
     string->element_count=1;
-    string->element[0] = anna_string_element_create(payload, size, 5);
+    string->element[0] = asi_element_create(payload, size, 5);
     string->element_offset[0]=0;
     string->element_length[0]=size;
     string->length = size;
 }
 
-void anna_string_destroy(anna_string_t *string)
+void asi_destroy(anna_string_t *string)
 {
     int i;
     for(i=0;i<string->element_count; i++) {
@@ -378,18 +379,18 @@ void anna_string_destroy(anna_string_t *string)
 }
 
 
-void anna_string_substring(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
+void asi_substring(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
 {
-    anna_string_truncate(dest, 0);
-    anna_string_append(dest, src, offset, length);
+    asi_truncate(dest, 0);
+    asi_append(dest, src, offset, length);
 }
 
-void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
+void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
 {
     int i;
     size_t first_in_element=0;
     //    wprintf(L"Append element to string with %d elements\n", dest->element_count);
-    anna_string_cache_clear(dest);
+    asi_cache_clear(dest);
     
     //wprintf(L"SLOW\n");
     
@@ -400,12 +401,12 @@ void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, 
 
     if(length < ANNA_STRING_APPEND_TINY_LIMIT || (src->element_count>1 && length<ANNA_STRING_APPEND_SHORT_LIMIT)) 
     {
-	anna_string_make_appendable(dest, length);
+	asi_make_appendable(dest, length);
 	
 	anna_string_element_t *el = dest->element[dest->element_count-1];
 	size_t dest_offset = dest->element_offset[dest->element_count-1]+dest->element_length[dest->element_count-1];
 
-	anna_string_location_t loc = anna_string_get_location(src, offset);
+	anna_string_location_t loc = asi_get_location(src, offset);
 	size_t done=0;
 	
 	do
@@ -424,7 +425,7 @@ void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, 
 	
 	dest->element_length[dest->element_count-1] += length;
 	dest->length += length;
-	anna_string_validate(dest);
+	asi_validate(dest);
 	return;
     }
     
@@ -432,23 +433,23 @@ void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, 
     {
 	//	wprintf(L"FAST\n");
 	
-	anna_string_ensure_element_capacity(dest, dest->element_count + 1);
+	asi_ensure_element_capacity(dest, dest->element_count + 1);
 	dest->element[dest->element_count] = src->element[0];
 	dest->element_length[dest->element_count] = length;
 	dest->element_offset[dest->element_count] = src->element_offset[0]+offset;
 	dest->element[dest->element_count]->users++;
 	dest->element_count++;	
 	dest->length += length;
-	anna_string_validate(dest);
+	asi_validate(dest);
 	return;    
     }
     
     //wprintf(L"SLOW!!!");
     
-    anna_string_haircut(src);
-    anna_string_haircut(dest);
+    asi_haircut(src);
+    asi_haircut(dest);
     
-    anna_string_ensure_element_capacity(dest, dest->element_count + src->element_count);
+    asi_ensure_element_capacity(dest, dest->element_count + src->element_count);
     size_t dest_base_count = dest->element_count;
     
     for(i=0;i<src->element_count; i++) {
@@ -488,7 +489,7 @@ void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, 
 		    {
 			dest->element_length[dest_base_count+j] = length-length_done;
 			dest->length += length;
-			anna_string_validate(dest);
+			asi_validate(dest);
 			return;
 		    }
 		    dest->element_length[dest_base_count+j] = src->element_length[i+j];
@@ -501,10 +502,10 @@ void anna_string_append(anna_string_t *dest, anna_string_t *src, size_t offset, 
 	
     }
     dest->length += length;
-    anna_string_validate(dest);
+    asi_validate(dest);
 }
 
-void anna_string_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
+void asi_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
 {
     int i;
     size_t first_in_element=0;
@@ -518,19 +519,19 @@ void anna_string_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
 	}
 	dest->cache_pos++;
 	
-	anna_string_element_stepford(dest, dest->cache_value.element, 0);
+	asi_element_stepford(dest, dest->cache_value.element, 0);
 	dest->element[dest->cache_value.element]->payload[
 	    dest->cache_value.offset+dest->element_offset[dest->cache_value.element]
 	    ]=ch;
 	return;
 	
     }
-    anna_string_haircut(dest);
+    asi_haircut(dest);
     
     for(i=0;i<dest->element_count; i++) {
 	size_t last_in_element = first_in_element + dest->element_length[i];
 	if(last_in_element >offset){
-	    anna_string_element_stepford(dest, i, 0);
+	    asi_element_stepford(dest, i, 0);
 	    size_t poff = offset + dest->element_offset[i]-first_in_element;
 	    //wprintf(L"poff is %d\n", poff);
 	    /*
@@ -539,7 +540,7 @@ void anna_string_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
 		if(dest->cache_value.element!=i)
 		{
 		    wprintf(L"Error in string:\n");
-		    anna_string_print(dest);
+		    asi_print(dest);
 		    wprintf(L"Tried to access char %d, got cached pos %d %d, but real pos is %d %d\n",
 			    offset, dest->cache_value.element, dest->cache_value.offset,
 			    i, offset -first_in_element );
@@ -562,7 +563,7 @@ void anna_string_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
     }
 }
 
-wchar_t anna_string_get_char(anna_string_t *dest, size_t offset)
+wchar_t asi_get_char(anna_string_t *dest, size_t offset)
 {
     int i;
     size_t first_in_element=0;
@@ -580,7 +581,7 @@ wchar_t anna_string_get_char(anna_string_t *dest, size_t offset)
 	    dest->cache_value.offset+dest->element_offset[dest->cache_value.element]
 	    ];
     }
-    anna_string_haircut(dest);
+    asi_haircut(dest);
         
     for(i=0;i<dest->element_count; i++) {
 	size_t last_in_element = first_in_element + dest->element_length[i];
@@ -595,7 +596,7 @@ wchar_t anna_string_get_char(anna_string_t *dest, size_t offset)
     wprintf(L"Error: Tried to get element %d in string of length %d\n", offset, first_in_element);  
 }
 
-size_t anna_string_get_length(anna_string_t *dest)
+size_t asi_get_length(anna_string_t *dest)
 {
 /*
     int i;
@@ -608,11 +609,11 @@ size_t anna_string_get_length(anna_string_t *dest)
     return dest->length;
 }
 
-void anna_string_truncate(anna_string_t *dest, size_t length)
+void asi_truncate(anna_string_t *dest, size_t length)
 {
     int i;
     size_t first_in_element=0;
-    anna_string_cache_clear(dest);
+    asi_cache_clear(dest);
     
     for(i=0;i<dest->element_count; i++) {
 	size_t last_in_element = first_in_element + dest->element_length[i];
@@ -629,7 +630,7 @@ void anna_string_truncate(anna_string_t *dest, size_t length)
 	    
 	    dest->element_count = start;
 	    dest->length = length;
-	    anna_string_validate(dest);
+	    asi_validate(dest);
 	    return;
 	    
 	}
@@ -638,7 +639,7 @@ void anna_string_truncate(anna_string_t *dest, size_t length)
     dest->length = length;
 }
 
-void anna_string_replace(anna_string_t *dest, 
+void asi_replace(anna_string_t *dest, 
 			 anna_string_t *src,
 			 size_t dest_offset, 
 			 size_t dest_length,
@@ -649,25 +650,25 @@ void anna_string_replace(anna_string_t *dest,
       Create a temporary empty string to add things to
     */
     anna_string_t tmp;
-    anna_string_init(&tmp);
+    asi_init(&tmp);
     
     /*
       Add all the specified bits to the temporary string
     */
-    anna_string_ensure_element_capacity(&tmp, dest->element_capacity + src->element_count);
-    anna_string_append(&tmp, dest, 0, dest_offset);
-    anna_string_append(&tmp, src, src_offset, src_length);
-    anna_string_append(&tmp, dest, dest_offset+dest_length, anna_string_get_length(dest)-dest_offset-dest_length);
+    asi_ensure_element_capacity(&tmp, dest->element_capacity + src->element_count);
+    asi_append(&tmp, dest, 0, dest_offset);
+    asi_append(&tmp, src, src_offset, src_length);
+    asi_append(&tmp, dest, dest_offset+dest_length, asi_get_length(dest)-dest_offset-dest_length);
     
     /*
       Replace the destination string with the temporary one
     */
-    anna_string_destroy(dest);
+    asi_destroy(dest);
     memcpy(dest, &tmp, sizeof(anna_string_t));
     //dest->length = dest->length + src_length-dest_length;
 }
 
-void anna_string_print_debug(anna_string_t *dest)
+void asi_print_debug(anna_string_t *dest)
 {
     //wprintf(L"Print string with %d elements\n", dest->element_count);
     
@@ -685,13 +686,13 @@ void anna_string_print_debug(anna_string_t *dest)
 	}
     }
     wprintf(L"\n");
-    for(i=0;i<anna_string_get_length(dest); i++) {
+    for(i=0;i<asi_get_length(dest); i++) {
 	wprintf(L"%d", i%10);
     }
     wprintf(L"\n");
 }
 
-void anna_string_print_regular(anna_string_t *dest)
+void asi_print_regular(anna_string_t *dest)
 {
     int i;
     for(i=0;i<dest->element_count; i++) {

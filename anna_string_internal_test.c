@@ -21,43 +21,43 @@ anna_string_random_test(anna_string_t *a,
     for(cnt=0; cnt<count; cnt++)
     {
 	
-	anna_string_truncate(a, mini(4096, anna_string_get_length(a)));
-	anna_string_truncate(b, mini(4096, anna_string_get_length(b)));
-	anna_string_truncate(c, mini(4096, anna_string_get_length(c)));
-	anna_string_truncate(d, mini(4096, anna_string_get_length(d)));
-	anna_string_truncate(e, mini(4096, anna_string_get_length(e)));
-	anna_string_truncate(f, mini(4096, anna_string_get_length(f)));
-	//anna_string_print(a);
+	asi_truncate(a, mini(4096, asi_get_length(a)));
+	asi_truncate(b, mini(4096, asi_get_length(b)));
+	asi_truncate(c, mini(4096, asi_get_length(c)));
+	asi_truncate(d, mini(4096, asi_get_length(d)));
+	asi_truncate(e, mini(4096, asi_get_length(e)));
+	asi_truncate(f, mini(4096, asi_get_length(f)));
+	//asi_print_debug(a);
 	
 	switch(rand() % 5)
 	{
 	    case 0:
 	    {	
-	        anna_string_destroy(f);
-		anna_string_init_from_ptr(f, L"valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg", 45);
-		anna_string_append(a, f, 0, 45);
-		size_t offset = rand()%(anna_string_get_length(f)+1);
-		size_t length = rand()%(anna_string_get_length(f)-offset+1);
+	        asi_destroy(f);
+		asi_init_from_ptr(f, L"valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg", 45);
+		asi_append(a, f, 0, 45);
+		size_t offset = rand()%(asi_get_length(f)+1);
+		size_t length = rand()%(asi_get_length(f)-offset+1);
 		
-		anna_string_substring(b, a, offset, length);
+		asi_substring(b, a, offset, length);
 		int i;
-		if(anna_string_get_length(b) != length)
+		if(asi_get_length(b) != length)
 		{
 		    wprintf(L"Substring error. Wrong length. Expected %d, got %d\n",
-			    length, anna_string_get_length(b));
-		    anna_string_print(b);
+			    length, asi_get_length(b));
+		    asi_print_debug(b);
 		    CRASH;
 		}
 		for(i=0; i<length; i++)
 		{
-		    if(anna_string_get_char(b, i) != anna_string_get_char(a, i+offset))
+		    if(asi_get_char(b, i) != asi_get_char(a, i+offset))
 		    {
 			wprintf(L"Substring error. Length = %d, offset = %d, a[%d] = %lc, b[%d] = %lc\n", 
 				length, offset,
-				i+offset, anna_string_get_char(a, i+offset),
-				i, anna_string_get_char(b, i));
-			anna_string_print(a);
-			anna_string_print(b);
+				i+offset, asi_get_char(a, i+offset),
+				i, asi_get_char(b, i));
+			asi_print_debug(a);
+			asi_print_debug(b);
 			CRASH;
 		    }	    
 		}
@@ -70,24 +70,24 @@ anna_string_random_test(anna_string_t *a,
 		int i;
 		for(i=0; i<4; i++)
 		{
-		    anna_string_append(a, c, 0, rand() % (anna_string_get_length(c)+1));
-		    anna_string_append(a, e, 0, rand() % (anna_string_get_length(e)+1));
+		    asi_append(a, c, 0, rand() % (asi_get_length(c)+1));
+		    asi_append(a, e, 0, rand() % (asi_get_length(e)+1));
 		}
 		
 		wchar_t *data = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		int len = wcslen(data);
 		
-		size_t offset = rand()%(anna_string_get_length(a)+1);
-		size_t length = rand()%(anna_string_get_length(a)-offset+1);
+		size_t offset = rand()%(asi_get_length(a)+1);
+		size_t length = rand()%(asi_get_length(a)-offset+1);
 		
 		for(i=0; i < length;i++)
 		{
-		    anna_string_set_char(a, i+offset, data[i%len]);
+		    asi_set_char(a, i+offset, data[i%len]);
 		}
 		
 		for(i=0; i < length;i++)
 		{
-		    if( anna_string_get_char(a, i+offset) != data[i%len])
+		    if( asi_get_char(a, i+offset) != data[i%len])
 		    {
 			wprintf(L"ERROR2!!!\n");		    
 			exit(1);
@@ -100,10 +100,10 @@ anna_string_random_test(anna_string_t *a,
 	    {
 		int i;
 	    
-		size_t length = rand()%(anna_string_get_length(a)+1);
-		anna_string_substring(b, a, 0, anna_string_get_length(a));
-		anna_string_truncate(a, length);
-		if(length != anna_string_get_length(a))
+		size_t length = rand()%(asi_get_length(a)+1);
+		asi_substring(b, a, 0, asi_get_length(a));
+		asi_truncate(a, length);
+		if(length != asi_get_length(a))
 		{
 		    wprintf(L"Wrong length after truncation!\n");
 		    exit(1);
@@ -111,7 +111,7 @@ anna_string_random_test(anna_string_t *a,
 		
 		for(i=0; i<length; i++)
 		{
-		    if(anna_string_get_char(b, i) != anna_string_get_char(a, i))
+		    if(asi_get_char(b, i) != asi_get_char(a, i))
 		    {
 			wprintf(L"Truncation error.\n");
 			exit(1);		    	
@@ -123,55 +123,55 @@ anna_string_random_test(anna_string_t *a,
 	  {
 	    int i;
 	    
-	    size_t src_offset = rand()%(anna_string_get_length(c)+1);
-	    size_t src_length = rand()%(anna_string_get_length(c)-src_offset+1);
+	    size_t src_offset = rand()%(asi_get_length(c)+1);
+	    size_t src_length = rand()%(asi_get_length(c)-src_offset+1);
 	    
-	    size_t dest_offset = rand()%(anna_string_get_length(a)+1);
-	    size_t dest_length = rand()%(anna_string_get_length(a)-dest_offset+1);
+	    size_t dest_offset = rand()%(asi_get_length(a)+1);
+	    size_t dest_length = rand()%(asi_get_length(a)-dest_offset+1);
 	    
-	    anna_string_substring(b, a, 0, anna_string_get_length(a));
-	    anna_string_replace(a, c, dest_offset, dest_length, src_offset, src_length);
-	    if(anna_string_get_length(a) != anna_string_get_length(b)-dest_length+src_length)
+	    asi_substring(b, a, 0, asi_get_length(a));
+	    asi_replace(a, c, dest_offset, dest_length, src_offset, src_length);
+	    if(asi_get_length(a) != asi_get_length(b)-dest_length+src_length)
 	      {
 		wprintf(L"String replacement error. Tried to replace %d .. %d of string(%d)\n",
-			dest_offset, dest_offset+dest_length, anna_string_get_length(b));
-		anna_string_print(b);
+			dest_offset, dest_offset+dest_length, asi_get_length(b));
+		asi_print_debug(b);
 		wprintf(L"with %d .. %d of string(%d)\n",
-			src_offset, src_offset+src_length, anna_string_get_length(c));
-		anna_string_print(c);
+			src_offset, src_offset+src_length, asi_get_length(c));
+		asi_print_debug(c);
 		wprintf(L"got string:\n", i);
-		anna_string_print(a);
-		wprintf(L"Got string length %d, but expected %d.\n",anna_string_get_length(a),
-			anna_string_get_length(b)-dest_length+src_length);
+		asi_print_debug(a);
+		wprintf(L"Got string length %d, but expected %d.\n",asi_get_length(a),
+			asi_get_length(b)-dest_length+src_length);
 		exit(1);		
 	      }
 
 	    
-	    for(i=0; i<anna_string_get_length(a); i++) {
-	      wchar_t c1 = anna_string_get_char(a, i);
+	    for(i=0; i<asi_get_length(a); i++) {
+	      wchar_t c1 = asi_get_char(a, i);
 	      wchar_t c2;
 	      if(i < dest_offset)
 		{
-		  c2 = anna_string_get_char(b, i);
+		  c2 = asi_get_char(b, i);
 		}
 	      else if (i < dest_offset + src_length) 
 		{
-		  c2 = anna_string_get_char(c, i-dest_offset+src_offset);
+		  c2 = asi_get_char(c, i-dest_offset+src_offset);
 		}
 	      else
 		{
-		  c2 = anna_string_get_char(b, i+dest_length-src_length);		  
+		  c2 = asi_get_char(b, i+dest_length-src_length);		  
 		}
 	      if(c1 != c2)
 		{
 		  wprintf(L"String replacement error. Tried to replace %d .. %d of string(%d)\n",
-			  dest_offset, dest_offset+dest_length, anna_string_get_length(b));
-		  anna_string_print(b);
+			  dest_offset, dest_offset+dest_length, asi_get_length(b));
+		  asi_print_debug(b);
 		  wprintf(L"with %d .. %d of string(%d)\n",
-			  src_offset, src_offset+src_length, anna_string_get_length(c));
-		  anna_string_print(c);
+			  src_offset, src_offset+src_length, asi_get_length(c));
+		  asi_print_debug(c);
 		  wprintf(L"but got error at char %d of resulting string:\n", i);
-		  anna_string_print(a);
+		  asi_print_debug(a);
 		  wprintf(L"Got %lc, but expected %lc.\n", c1, c2);
 		  exit(1); 
 		}
@@ -181,14 +181,14 @@ anna_string_random_test(anna_string_t *a,
 	  }
 	case 4:
 	  {
-	    anna_string_destroy(f);
-	    anna_string_init_from_ptr(f, L"valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf ", 400);
+	    asi_destroy(f);
+	    asi_init_from_ptr(f, L"valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg fasdf sdf ", 400);
 	    int i;
 	    
 	    for(i=0; i<240; i++)
 	      {
-		anna_string_append(a, f, 0, rand()%400);
-		anna_string_append(b, f, 0, rand()%400);
+		asi_append(a, f, 0, rand()%400);
+		asi_append(b, f, 0, rand()%400);
 	      }
 	    
 	  }
@@ -213,21 +213,21 @@ int main()
     {
       
       anna_string_t a, b, c, d, e, f;
-      anna_string_init(&a);
-      anna_string_init(&e);
-      anna_string_init(&f);
-      anna_string_init_from_ptr(&b, L"TR ALALA klsdf jkasfg askjfgak sjdfhg askjfh agskjdfh askjdfh asgkjdf g", 7);
-      anna_string_init_from_ptr(&c, L"TRA LAL Afas dkla sdj", 3);
-      anna_string_init_from_ptr(&d, L"ABC gggg ggafl skjdhf klasjdh", 9);
+      asi_init(&a);
+      asi_init(&e);
+      asi_init(&f);
+      asi_init_from_ptr(&b, L"TR ALALA klsdf jkasfg askjfgak sjdfhg askjfh agskjdfh askjdfh asgkjdf g", 7);
+      asi_init_from_ptr(&c, L"TRA LAL Afas dkla sdj", 3);
+      asi_init_from_ptr(&d, L"ABC gggg ggafl skjdhf klasjdh", 9);
       
       anna_string_random_test(&a, &b, &c, &d, &e, &f, 1000);
       
-      anna_string_destroy(&a);
-      anna_string_destroy(&b);
-      anna_string_destroy(&c);
-      anna_string_destroy(&d);
-      anna_string_destroy(&e);
-      anna_string_destroy(&f);
+      asi_destroy(&a);
+      asi_destroy(&b);
+      asi_destroy(&c);
+      asi_destroy(&d);
+      asi_destroy(&e);
+      asi_destroy(&f);
     }
 
   return 0;

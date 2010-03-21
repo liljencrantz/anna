@@ -18,9 +18,9 @@ static anna_object_t **anna_list_get_payload(anna_object_t *this);
 anna_object_t *anna_list_create()
 {
     anna_object_t *obj= anna_object_create(list_type);
-    *anna_member_addr_get_mid(obj,ANNA_MID_LIST_PAYLOAD)=0;
-    *(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_CAPACITY) = 0;    
-    *(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SIZE) = 0;
+    (*anna_member_addr_get_mid(obj,ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SIZE)) = 0;
     return obj;
 }
 
@@ -68,9 +68,9 @@ void anna_list_add(struct anna_object *this, struct anna_object *value)
   size_t capacity = anna_list_get_capacity(this);
   size_t size = anna_list_get_size(this);
   if(capacity == size)
-    {
+  {
       anna_list_set_capacity(this, maxi(8, 2*capacity));
-    }
+  }
   anna_object_t **ptr = anna_list_get_payload(this);
   anna_list_set_size(this, size+1);
   ptr[size]=value;
@@ -84,23 +84,23 @@ size_t anna_list_get_size(anna_object_t *this)
 
 void anna_list_set_size(anna_object_t *this, size_t sz)
 {
-  size_t old_size = anna_list_get_size(this);
-  size_t capacity = anna_list_get_capacity(this);
-  
-  if(sz>old_size)
-  {
-      if(sz>capacity)
+    size_t old_size = anna_list_get_size(this);
+    size_t capacity = anna_list_get_capacity(this);
+    
+    if(sz>old_size)
+    {
+	if(sz>capacity)
 	{
-	  anna_list_set_capacity(this, sz);
+	    anna_list_set_capacity(this, sz);
 	}
-      anna_object_t **ptr = anna_list_get_payload(this);
-      int i;
-      for(i=old_size; i<sz; i++)
+	anna_object_t **ptr = anna_list_get_payload(this);
+	int i;
+	for(i=old_size; i<sz; i++)
 	{
-	  ptr[i] = null_object;
+	    ptr[i] = null_object;
 	}
-  }
-  *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE) = sz;
+    }
+    *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE) = sz;
 }
 
 size_t anna_list_get_capacity(anna_object_t *this)
@@ -112,8 +112,11 @@ void anna_list_set_capacity(anna_object_t *this, size_t sz)
 {
     anna_object_t **ptr = anna_list_get_payload(this);
     ptr = realloc(ptr, sizeof(anna_object_t *)*sz);
-    assert(ptr);
-    *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_CAPACITY) = sz;
+    if(!ptr)
+    {
+	CRASH;
+    }    
+    (*(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_CAPACITY)) = sz;
     *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD) = ptr;
 }
 
@@ -135,6 +138,11 @@ static anna_object_t *anna_list_get_int(anna_object_t **param)
     if(param[1]==null_object)
 	return null_object;
     return anna_list_get(param[0], anna_int_get(param[1]));
+}
+
+static anna_object_t *anna_list_get_count(anna_object_t **param)
+{
+    return anna_int_create(anna_list_get_size(param[0]));
 }
 
 static anna_object_t *anna_list_append(anna_object_t **param)
@@ -272,8 +280,13 @@ static anna_object_t *anna_list_first(anna_object_t **param)
 
 static anna_object_t *anna_list_init(anna_object_t **param)
 {
+    (*anna_member_addr_get_mid(param[0],ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE)) = 0;
+
     size_t sz = anna_list_get_size(param[1]);
     anna_object_t **src = anna_list_get_payload(param[1]);
+
     anna_list_set_size(param[0], sz);
     anna_object_t **dest = anna_list_get_payload(param[0]);
     memcpy(dest, src, sizeof(anna_object_t *)*sz);
@@ -522,6 +535,12 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_list_each, 
 	(anna_node_t *)anna_node_identifier_create(&loc, L"T"), 
 	2, e_argv_pair, e_argn);
+    
+    anna_native_method_add_node(
+	definition, -1, L"getCount", 0, 
+	(anna_native_t)&anna_list_get_count, 
+	(anna_node_t *)anna_node_identifier_create(&loc, L"Int"), 
+	1, e_argv_pair, e_argn);
     
     /*
       FIXME: This is the wrong return type for map - we need to check

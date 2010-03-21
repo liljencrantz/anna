@@ -29,15 +29,15 @@ anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
 	
 	size_t chars_done=0;
 	
-	anna_string_init(&a);
-	anna_string_init(&b);
-	anna_string_init(&c);
-	anna_string_init(&d);
-	anna_string_init(&e);
-	anna_string_init_from_ptr(&e, L"abcdefghijklmnopqrstuvwxyz0123456789ABCD", 40);
+	asi_init(&a);
+	asi_init(&b);
+	asi_init(&c);
+	asi_init(&d);
+	asi_init(&e);
+	asi_init_from_ptr(&e, L"abcdefghijklmnopqrstuvwxyz0123456789ABCD", 40);
 	for(i=0; i<= max_len/20; i++)
 	{
-	    anna_string_append(&d, &e, 0, 40);
+	    asi_append(&d, &e, 0, 40);
 	}
       
 	while(1)
@@ -57,7 +57,7 @@ anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
 		    dest = &c;
 		    break;
 	    }
-	    anna_string_append(dest, &d, offset, len);
+	    asi_append(dest, &d, offset, len);
 	    chars_done += len;
 	  
 	    if(chars_done > stop) 

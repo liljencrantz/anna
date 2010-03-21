@@ -1,0 +1,118 @@
+
+class BinaryMapNode template(Key:Int), template(Value:Object)
+{
+    var Key key;
+    var Value value;
+    var BinaryMapNode<Key, Value> left;
+    var BinaryMapNode<Key, Value> right;	
+    
+    function BinaryMapNode<Key,Value> __init__(Key key, Value value)
+    {
+	this.key=key;
+	this.value=value;
+    }
+    
+}
+
+class BinaryMap template(Key:Int), template(Value:Object)
+{
+    var BinaryMapNode<Key,Value> root;
+    
+    function BinaryMap<Key,Value> __init__()
+    {
+    }
+    
+    function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)
+	private
+    {
+	if(node)
+	{
+	    if(node.key>key)
+	    {
+		node.left=this.insert(node.left, key,value);
+	    }
+	    else
+	    {
+		if(node.key<key)
+		{
+		    node.right = this.insert(node.right, key,value);
+		}
+		else 
+		{
+		    node.key=key;
+		    node.value=value;
+		}
+	    }
+	}
+	else
+	{
+	    node = BinaryMapNode<Key,Value>(key, value);		
+	}
+	return node;	    
+    }
+    
+    function Value find(BinaryMapNode<Key,Value> node, Key key)
+	private
+    {
+	if(node)
+	{
+	    if(node.key == key)
+	    {
+		return node.value;
+	    }
+	    if(key < node.key) 
+	    {
+		return this.find(node.left, key);
+	    }
+	    else
+	    {
+		return this.find(node.right, key);
+	    }
+	}
+	return null;
+    }
+    
+    function Value __setItem__(Key key, Value value)
+    {
+	this.root = this.insert(this.root, key, value);
+	return value;
+    }
+    
+    function Value __getItem__(Key key)
+    {
+	return this.find(this.root, key);
+    }
+    
+    function String toString()
+    {
+	return "Map!";
+    }
+
+    function Null __each__(function Null f (Key key, Value value))
+    {
+	this.eachNode(this.root, f);
+    }
+    
+    function Null eachNode(BinaryMapNode<Key,Value> node, function Null f (Key key, Value value))
+	private
+    {
+	if(node)
+	{
+	    this.eachNode(node.left, f);
+	    f(node.key, node.value);
+	    this.eachNode(node.right, f);
+	}
+    }
+    
+}
+/*
+var foo = BinaryMap<Int, String>();
+foo[3]="aaa";
+foo[2]="bbb";
+foo[3]="ddd";
+foo[5]="ccc";
+foo.each(k:v)
+{
+    print(k,": ", v, "\n");
+}
+*/

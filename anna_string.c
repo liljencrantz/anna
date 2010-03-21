@@ -10,6 +10,7 @@
 #include "anna_string.h"
 #include "anna_int.h"
 #include "anna_char.h"
+#include "anna_type.h"
 #include "anna_string_internal.h"
 
 
@@ -21,7 +22,7 @@ static anna_string_t *as_unwrap(anna_object_t *obj)
 void anna_string_print(anna_object_t *obj)
 {
     anna_string_t *str = as_unwrap(obj);
-    anna_string_print_regular(str);
+    asi_print_regular(str);
 }
 
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
@@ -31,13 +32,13 @@ anna_object_t *anna_string_create(size_t sz, wchar_t *data)
     wprintf(L"LALALA %d, %d, %d\n", obj, as_unwrap(obj), string_type);
     exit(1);
     */
-    anna_string_init_from_ptr(as_unwrap(obj),  data, sz);
+    asi_init_from_ptr(as_unwrap(obj),  data, sz);
     return obj;
 }
 
 size_t anna_string_get_count(anna_object_t *this)
 {
-    return anna_string_get_length(as_unwrap(this));
+    return asi_get_length(as_unwrap(this));
 }
 
 static anna_object_t *anna_string_set_int(anna_object_t **param)
@@ -45,7 +46,7 @@ static anna_object_t *anna_string_set_int(anna_object_t **param)
     if(param[1]==null_object)
 	return null_object;
     wchar_t ch = anna_char_get(param[2]);
-    anna_string_set_char(as_unwrap(param[0]), anna_int_get(param[1]), ch);
+    asi_set_char(as_unwrap(param[0]), anna_int_get(param[1]), ch);
     return param[2];
 }
 
@@ -53,7 +54,13 @@ static anna_object_t *anna_string_get_int(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
-    return anna_char_create(anna_string_get_char(as_unwrap(param[0]), anna_int_get(param[1])));
+    return anna_char_create(asi_get_char(as_unwrap(param[0]), anna_int_get(param[1])));
+}
+
+static anna_object_t *anna_string_init(anna_object_t **param)
+{
+    asi_init(as_unwrap(param[0]));
+    return param[0];
 }
 
 
@@ -95,6 +102,15 @@ void anna_string_type_create(anna_stack_frame_t *stack)
     
     sb_destroy(&sb);
     
+    anna_native_method_add_node(
+	definition,
+	-1,
+	L"__init__",
+	ANNA_FUNCTION_VARIADIC, 
+	(anna_native_t)&anna_string_init, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Null") , 
+	1, i_argv, i_argn);    
+
     anna_native_method_add_node(
 	definition,
 	-1,

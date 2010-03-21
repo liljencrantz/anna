@@ -63,3 +63,29 @@ class Complex
     }
     
 }
+/*
+function mandelbrot(Complex p0, Int maxStep)
+{
+    var p = p0;
+    var step = 0;
+    while(@abs p < 2.0 and step++ < maxStep) 
+    {
+        p = p*p + p0;
+    }
+    return step;
+}
+*/
+/*
+var y=-2.0;
+while(y<=2.0)
+{
+    var x=-2.0;
+    while(x<=2.0)
+    {
+	if(mandelbrot(Complex(x,y),64)==64){print("#")}else{print(" ")};
+	x += 0.05;
+    }
+    y += 0.1;
+    print("\n");
+}
+*/
