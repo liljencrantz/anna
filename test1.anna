@@ -1,13 +1,6 @@
-var str = "hejsan studsan";
-print(str.count);
-str.count=3;
-print(str);
-
-str.each(ch)
-{
-    print(ch,"\n");
-}
-
+var ch = 'a';
+ch.ordinal=99;
+print(ch,"\n");
 
 /*
 class Foo

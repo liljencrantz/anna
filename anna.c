@@ -62,6 +62,9 @@
   static member identifier and assignment
   static function calls
   String padding with null chars on «anti-truncate».
+  make ++, += and friends transform into an assignment, so they work with properties.
+  add sugar for property definitions
+  
   
   Implement basic string methods
   Implement string comparison methods
