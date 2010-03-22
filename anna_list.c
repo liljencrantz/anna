@@ -439,42 +439,24 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	}
     ;
 
-    anna_node_t *e_method_value_argv[] = 
-	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"T")
-	}
-    ;
-
-    wchar_t *e_method_value_argn[] = 
-	{
-	    L"value"
-	}
-    ;
-
-    anna_node_t *e_method_pair_argv[] = 
+    anna_node_t *e_method_argv[] = 
 	{
 	    (anna_node_t *)anna_node_identifier_create(0, L"Int"),
 	    (anna_node_t *)anna_node_identifier_create(0, L"T")
 	}
     ;
 
-    wchar_t *e_method_pair_argn[] = 
+    wchar_t *e_method_argn[] = 
 	{
 	    L"index",
 	    L"value"
 	}
     ;
 
-    anna_node_t *e_argv_value[] = 
+    anna_node_t *e_argv[] = 
 	{
 	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
-	    anna_node_function_declaration_create(0, (anna_node_t *)anna_node_identifier_create(0, L"Object"), 1, e_method_value_argv, e_method_value_argn)
-	}
-    ;
-    anna_node_t *e_argv_pair[] = 
-	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
-	    anna_node_function_declaration_create(0, (anna_node_t *)anna_node_identifier_create(0, L"Object"), 2, e_method_pair_argv, e_method_pair_argn)
+	    anna_node_function_declaration_create(0, (anna_node_t *)anna_node_identifier_create(0, L"Object"), 2, e_method_argv, e_method_argn)
 	}
     ;
 
@@ -539,13 +521,13 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	definition, -1, L"__each__", 0, 
 	(anna_native_t)&anna_list_each, 
 	(anna_node_t *)anna_node_identifier_create(0, L"T"), 
-	2, e_argv_pair, e_argn);
+	2, e_argv, e_argn);
     
     anna_native_method_add_node(
 	definition, -1, L"getCount", 0, 
 	(anna_native_t)&anna_list_get_count, 
 	(anna_node_t *)anna_node_identifier_create(0, L"Int"), 
-	1, e_argv_pair, e_argn);
+	1, e_argv, e_argn);
     
     anna_native_method_add_node(
 	definition, -1, L"setCount", 0, 
@@ -572,19 +554,19 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	definition, -1, L"__map__", 
 	0, (anna_native_t)&anna_list_map, 
 	anna_node_clone_deep(my_list_type), 
-	2, e_argv_pair, e_argn);
+	2, e_argv, e_argn);
     
     anna_native_method_add_node(
 	definition, -1, L"__filter__", 
 	0, (anna_native_t)&anna_list_filter, 
 	anna_node_clone_deep(my_list_type), 
-	2, e_argv_pair, e_argn);
+	2, e_argv, e_argn);
 
     anna_native_method_add_node(
 	definition, -1, L"__first__", 
 	0, (anna_native_t)&anna_list_first, 
 	(anna_node_t *)anna_node_identifier_create(0, L"T"),
-	2, e_argv_pair, e_argn);
+	2, e_argv, e_argn);
     
     //anna_node_print(e_argv[1]);
     //anna_stack_print(func->stack_template);

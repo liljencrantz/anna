@@ -3,6 +3,11 @@ print(str.count);
 str.count=3;
 print(str);
 
+str.each(ch)
+{
+    print(ch,"\n");
+}
+
 
 /*
 class Foo
