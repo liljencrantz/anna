@@ -12,6 +12,7 @@
    prepared. Not _very_ expensive.
  */
 #define ANNA_CHECK_NODE_PREPARED_ENABLED 
+
 /**
    If enabled, always check that sid:s are currect when invoking
    identifier nodes. This means do a full name lookup on them, which
@@ -35,13 +36,14 @@
 /**
    If enabled, anna will use the chunked string implementation, which
    is significantly faster for complex string operations on large
-   strings, but a head ache to debug.
+   strings, but slightly slower on simple operations and a head ache
+   to debug because of its increased complxity.
  */
 #define ANNA_STRING_CHUNKED_ENABLED
 
 /**
    If enabled, anna will validate the internal concistency of string
-   ojects after string operations.
+   ojects after complex string operations.
  */
 #define ANNA_STRING_VALIDATE_ENABLED
 
