@@ -9,6 +9,8 @@
 #include "anna_string_internal.h"
 #include "anna.h"
 
+#define LAPS 16
+
 long long get_time()
 {
     struct timeval time_struct;
@@ -22,7 +24,7 @@ anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
     int j=0;
     size_t stop = 5000000;
     
-    for(j=0;j<10;j++)
+    for(j=0;j<LAPS;j++)
     {
 	int i;
 	anna_string_t a, b, c, d, e;
@@ -70,7 +72,7 @@ anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
     long long stop_time = get_time();
   
     wprintf(L"Appended %ls @ %f million chars/s\n",
-	    msg, 1.0*((double)stop*10)/(stop_time-start_time));
+	    msg, 1.0*((double)stop*LAPS)/(stop_time-start_time));
 }
 
 int main()

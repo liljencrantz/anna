@@ -38,9 +38,7 @@ static void asi_ensure_element_capacity(anna_string_t *string, size_t count);
 
 static void asi_cache_clear(anna_string_t *s)
 {
-    s->cache_pos=0;
-    s->cache_value.element=0;
-    s->cache_value.offset=0;    
+    memset(&s->cache_pos, 0, sizeof(size_t)*3);
 }
 
 #ifdef ANNA_STRING_VALIDATE_ENABLE
@@ -50,18 +48,20 @@ static void asi_validate(anna_string_t *s)
     int i;
     size_t result=0;
     for(i=0;i<s->element_count; i++) {
-	if(s->element_length[i]==0)
+	if(s->element_length[i]==0 && i != s->element_count-1)
 	{
-	    wprintf(L"OWIE!\n");
-	    
+	    wprintf(L"Invalid string. Chunk lenght is zero!\n");
 	    CRASH;
-	    
 	}
 	
 	result += s->element_length[i];
     }
-    assert(result ==  s->length);
-
+    if(result !=  s->length)
+    {
+	wprintf(L"Invalid string. Bad string length!\n");
+	CRASH;	
+x    }
+    
 }
 #else
 #define asi_validate(str)
@@ -139,7 +139,7 @@ anna_string_location_t asi_get_location(anna_string_t *dest, size_t offset)
 	}
 	first_in_element = last_in_element;
     } 
-    wprintf(L"Error: Tried to find element %d in string of length %d\n", offset, first_in_element);  
+    wprintf(L"Error: Tried to find element %d in string of length %d\n", offset, first_in_element);
 }
 
 
@@ -405,7 +405,7 @@ void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t l
 	
 	anna_string_element_t *el = dest->element[dest->element_count-1];
 	size_t dest_offset = dest->element_offset[dest->element_count-1]+dest->element_length[dest->element_count-1];
-
+	
 	anna_string_location_t loc = asi_get_location(src, offset);
 	size_t done=0;
 	
@@ -598,14 +598,6 @@ wchar_t asi_get_char(anna_string_t *dest, size_t offset)
 
 size_t asi_get_length(anna_string_t *dest)
 {
-/*
-    int i;
-    size_t result=0;
-    for(i=0;i<dest->element_count; i++) {
-	result += dest->element_length[i];
-    }
-    return result;
-*/  
     return dest->length;
 }
 

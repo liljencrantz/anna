@@ -5,7 +5,10 @@
 #include <string.h>
 #include <time.h>
 
+#include "anna_checks.h"
 #include "anna_string_internal.h"
+
+#ifndef ANNA_STRING_CHUNKED_ENABLED
 
 void asi_ensure_capacity(anna_string_t *string, size_t size)
 {
@@ -88,3 +91,5 @@ void asi_print(anna_string_t *string)
 {
   wprintf(L"%.*ls\n", string->count, string->str);
 }
+
+#endif
