@@ -95,7 +95,6 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 	definition,
 	(anna_node_t *)anna_node_property_create(
 	    0,
-	    -1,
 	    L"ordinal",
 	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
 	    L"getOrdinal",
@@ -111,7 +110,6 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 	definition,
 	(anna_node_t *)anna_node_property_create(
 	    0,
-	    -1,
 	    L"upper",
 	    (anna_node_t *)anna_node_identifier_create(0, L"Char") , 
 	    L"getUpper",
@@ -127,7 +125,6 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 	definition,
 	(anna_node_t *)anna_node_property_create(
 	    0,
-	    -1,
 	    L"lower",
 	    (anna_node_t *)anna_node_identifier_create(0, L"Char") , 
 	    L"getLower",

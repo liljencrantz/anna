@@ -253,7 +253,6 @@ anna_node_call_t *anna_node_member_declare_create(
 
 anna_node_call_t *anna_node_property_create(
     anna_location_t *loc,
-    ssize_t mid,
     wchar_t *name,
     anna_node_t *member_type,
     wchar_t *getter,

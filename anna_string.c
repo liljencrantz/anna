@@ -13,8 +13,7 @@
 #include "anna_type.h"
 #include "anna_string_internal.h"
 
-
-static anna_string_t *as_unwrap(anna_object_t *obj)
+static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
     return (anna_string_t *)anna_member_addr_get_mid(obj,ANNA_MID_STRING_PAYLOAD);
 }
@@ -78,7 +77,16 @@ static anna_object_t *anna_string_i_join(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
-    return param[0];
+
+    anna_string_t *str1 = as_unwrap(param[0]);
+    anna_string_t *str2 = as_unwrap(param[1]);
+    anna_object_t *obj= anna_object_create(string_type);
+
+    asi_init(as_unwrap(obj));
+    asi_append(as_unwrap(obj), str1, 0, asi_get_length(str1));
+    asi_append(as_unwrap(obj), str2, 0, asi_get_length(str2));
+    
+    return obj;
 }
 
 static anna_object_t *anna_string_i_each(anna_object_t **param)
@@ -124,6 +132,13 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	    (anna_node_t *)anna_node_identifier_create(0, L"Char")
 	}
     ;
+
+    wchar_t *i_argn[] =
+	{
+	    L"this", L"index", L"value"
+	}
+    ;
+
     wchar_t *join_argn[] =
 	{
 	    L"this", L"other"
@@ -136,12 +151,7 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	    (anna_node_t *)anna_node_identifier_create(0, L"String"),
 	}
     ;
-    wchar_t *i_argn[] =
-	{
-	    L"this", L"index", L"value"
-	}
-    ;
-    
+
     anna_node_t *e_method_argv[] = 
 	{
 	    (anna_node_t *)anna_node_identifier_create(0, L"Int"),
@@ -255,12 +265,11 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	definition,
 	(anna_node_t *)anna_node_property_create(
 	    0,
-	    -1,
 	    L"count",
 	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
 	    L"getCount",
 	    L"setCount"));
 	
     anna_type_native_setup(string_type, stack);
-    anna_type_print(string_type);
+    //anna_type_print(string_type);
 }

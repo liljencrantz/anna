@@ -539,7 +539,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	definition,
 	(anna_node_t *)anna_node_property_create(
 	    0,
-	    -1,
 	    L"count",
 	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
 	    L"getCount",

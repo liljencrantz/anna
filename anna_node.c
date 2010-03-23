@@ -331,9 +331,27 @@ anna_node_call_t *anna_node_member_declare_create(
     return r;
 }
 
+anna_node_t *anna_node_pair_create(
+    anna_location_t *loc,
+    anna_node_t *first,
+    anna_node_t *second)
+{
+    anna_node_call_t *r =
+	anna_node_call_create(
+	    loc,
+	    (anna_node_t *)anna_node_identifier_create(
+	        loc,
+		L"Pair"),	    
+	    0,
+	    0);
+   
+    anna_node_call_add_child(r, first);
+    anna_node_call_add_child(r, second);
+    return (anna_node_t *)r;
+}
+
 anna_node_call_t *anna_node_property_create(
     anna_location_t *loc,
-    ssize_t mid,
     wchar_t *name,
     anna_node_t *member_type,
     wchar_t *getter,
@@ -348,19 +366,45 @@ anna_node_call_t *anna_node_property_create(
 	    0,
 	    0);
 
+    anna_node_call_t *att =
+	anna_node_call_create(
+	    loc,
+	    (anna_node_t *)anna_node_identifier_create(
+		loc,
+		L"__block__"),	    
+	    0,
+	    0);
+
     anna_node_call_add_child(r, (anna_node_t *)anna_node_identifier_create(loc,name));
     anna_node_call_add_child(r, member_type);
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,mid));
+    
+    if(getter)
+    {
+       anna_node_t *getter_param[]={anna_node_identifier_create(loc,getter)};
+       anna_node_call_add_child(
+	  att, 
+	  (anna_node_t *)anna_node_call_create(
+	     loc,
+	     anna_node_identifier_create(loc,L"getter"),
+	     1,
+	     getter_param));
+    }
+    if(setter)
+    {
+       anna_node_t *setter_param[]={anna_node_identifier_create(loc,setter)};
+       anna_node_call_add_child(
+	 att, 
+	 (anna_node_t *)anna_node_call_create(
+	    loc,
+	    anna_node_identifier_create(loc,L"setter"),
+	    1,
+	    setter_param));
+    }
+    
     anna_node_call_add_child(
 	r, 
-	getter?
-	(anna_node_t *)anna_node_identifier_create(loc,getter):
-	(anna_node_t *)anna_node_null_create(loc));
-    anna_node_call_add_child(
-	r, 
-	setter?
-	(anna_node_t *)anna_node_identifier_create(loc,setter):
-	(anna_node_t *)anna_node_null_create(loc));
+	att);
+    
 
 /*
   anna_node_print(r);

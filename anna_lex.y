@@ -1,13 +1,58 @@
 
 %{
 
+#include "anna.h"
 #include "anna_node.h"
 #include "anna_yacc.h"
+#include "util.h"
 
 int anna_lex_wrap(yyscan_t yyscanner) 
 {
   return (1); 
 }
+
+static hash_table_t *anna_lex_nest=0;
+
+static void anna_lex_nest_init()
+{
+   if(anna_lex_nest != 0)
+   {
+      return;
+   }
+   anna_lex_nest = malloc(sizeof(hash_table_t));
+   hash_init(anna_lex_nest, hash_ptr_func, hash_ptr_cmp);
+}
+ 
+static void anna_lex_push_state(yyscan_t yyscanner)
+{
+   anna_lex_nest_init();
+   int current = (int)hash_get(anna_lex_nest, yyscanner);
+   current++;
+   hash_put(anna_lex_nest, yyscanner, (void *)current);
+}
+ 
+static int anna_lex_pop_state(yyscan_t yyscanner)
+{
+   anna_lex_nest_init();
+   int current = (int)hash_get(anna_lex_nest, yyscanner);
+   current--;
+   if(current)
+   {
+      hash_put(anna_lex_nest, yyscanner, (void *)current);
+   }
+   else 
+   {
+      hash_remove(anna_lex_nest, yyscanner, 0, 0);
+   }
+   return current;
+}
+
+static void anna_lex_unbalanced_comment()
+{
+   wprintf(L"Error: Unbalanced comment at end of file.\n");
+   anna_error_count++;
+}
+
 
 %}
 
@@ -17,8 +62,10 @@ int anna_lex_wrap(yyscan_t yyscanner)
 
 %%
 
-\/\* BEGIN(COMMENT); return IGNORE;
-<COMMENT>\*\/ BEGIN(INITIAL);  return IGNORE;
+<COMMENT><<EOF>> anna_lex_unbalanced_comment();return 0;
+\/\* BEGIN(COMMENT); anna_lex_push_state(yyscanner); return IGNORE;
+<COMMENT>\/\* anna_lex_push_state(yyscanner); return IGNORE;
+<COMMENT>\*\/ if(anna_lex_pop_state(yyscanner)==0){BEGIN(INITIAL);}; return IGNORE;
 <COMMENT>.  return IGNORE;
 <COMMENT>[ \t\n]  return IGNORE;
 \/\/[^\n]*\n  return IGNORE;
@@ -36,6 +83,7 @@ null return NULL_SYM;
 and return AND;
 or return OR;
 var return VAR;
+property return PROPERTY;
 @ return '@';
 return return RETURN;
 is return IS;
@@ -60,7 +108,8 @@ in return IN;
 > return '>';
 = return '=';
 : return ':';
-[;,]([ \t\n\r]*[;,])* return SEMICOLON;
+[;]([ \t\n\r]*[;])* return SEMICOLON;
+, return ',';
 ! return '!';
 % return '%';
 \^ return '^';

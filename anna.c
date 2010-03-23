@@ -53,7 +53,6 @@
   Type checking on function types
   General purpose currying
   Namespaces
-  Make comments nest
   Non-recursive invoke
   Function default argument values
   Named function arguments
@@ -62,8 +61,10 @@
   static member identifier and assignment
   static function calls
   String padding with null chars on «anti-truncate».
-  add sugar for property definitions
-  
+  Add toString and a few more basic methods to Object
+  Inheritance
+  Make sure everybody inherits from Object
+  Defer type setup, and perform dependency checking in order to get ordering right
   
   Implement basic string methods
   Implement string comparison methods
@@ -114,6 +115,8 @@
   Object constructor sets all members to null
   Properties
   make ++, += and friends transform into an assignment, so they work with properties.
+  Make comments nest
+  Sugar for property definitions
   
   Type type
   Call type
@@ -1350,11 +1353,11 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 	//wprintf(L"We have a this parameter: %d\n", this);
     }
     int is_variadic = ANNA_IS_VARIADIC(function);
-    //wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
+    wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
     
     for(i=0; i<(function->input_count-offset-is_variadic); i++)
     {
-	//wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
+        wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
 	argv[i+offset]=anna_node_invoke(param->child[i], stack);
     }
     if(is_variadic)
@@ -1426,7 +1429,7 @@ int main(int argc, char **argv)
     wprintf(L"Parsing file %ls...\n", filename);    
     anna_node_t *program = anna_parse(filename);
     
-    if(!program) 
+    if(!program || anna_error_count) 
     {
 	wprintf(L"Program failed to parse correctly; exiting.\n");
 	exit(1);
@@ -1468,6 +1471,11 @@ int main(int argc, char **argv)
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_prepare(func);
+    if(anna_error_count)
+    {
+	wprintf(L"Found %d error(s) during program validation, exiting\n", anna_error_count);
+	exit(1);
+    }
 
     wprintf(L"Validated program:\n");    
     anna_node_print((anna_node_t *)func->body);

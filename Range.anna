@@ -25,5 +25,13 @@ class Range template (T:Int)
 	}
 	return null;
     }
-    
+
+    function Int getCount() private
+    {
+	return (this.to-this.from)/this.step;
+    }
+
+    property Int count 
+	getter getCount;
 }
+

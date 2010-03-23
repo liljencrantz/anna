@@ -581,11 +581,12 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
     for(i=0; i<al_get_count(&property_list); i++)
     {
 	anna_node_call_t *prop = al_get(&property_list, i);
-	CHECK_CHILD_COUNT(prop,L"property", 5);
-	anna_node_prepare_children(prop, function, parent);
+	CHECK_CHILD_COUNT(prop,L"property", 3);
+	anna_node_prepare_child(prop, 0, function, parent);
+	anna_node_prepare_child(prop, 1, function, parent);
 	CHECK_NODE_TYPE(prop->child[0], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_TYPE(prop->child[1], ANNA_NODE_IDENTIFIER);
-	CHECK_NODE_TYPE(prop->child[2], ANNA_NODE_INT_LITERAL);
+	CHECK_NODE_TYPE(prop->child[2], ANNA_NODE_CALL);
 
 	anna_node_identifier_t *name = 
 	    (anna_node_identifier_t *)prop->child[0];
@@ -596,13 +597,10 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 		function,
 		parent);
 	
-	anna_node_int_literal_t *mid = 
-	    (anna_node_int_literal_t *)prop->child[2];
-
 	//wprintf(L"Wee, declare %ls\n", name->name);
 	
 	anna_member_create(type,
-			   mid->payload,
+			   -1,
 			   name->name,
 			   0,
 			   p_type);
@@ -610,31 +608,46 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	type->property_count++;
 	anna_member_t *memb = anna_type_member_info_get(type, name->name);
 	memb->is_property = 1;
-	if(prop->child[3]->node_type != ANNA_NODE_NULL)
+
+	anna_node_call_t *attribute_list = (anna_node_call_t *)prop->child[2];
+	int j;
+	CHECK_NODE_IDENTIFIER_NAME(attribute_list->function, L"__block__");
+	
+	for(j=0; j<attribute_list->child_count; j++)
 	{
-	    CHECK_NODE_TYPE(prop->child[3], ANNA_NODE_IDENTIFIER);
-	    anna_node_identifier_t *g_name = 
-		(anna_node_identifier_t *)prop->child[3];
+//	   anna_node_print(attribute_list->child[j]);
+	   CHECK_NODE_TYPE(attribute_list->child[j], ANNA_NODE_CALL);
+	   anna_node_call_t *attribute = (anna_node_call_t *)attribute_list->child[j];
+	   CHECK_CHILD_COUNT(attribute, L"setter or getter", 1);
+	   CHECK_NODE_TYPE(attribute->function, ANNA_NODE_IDENTIFIER);
+	   CHECK_NODE_TYPE(attribute->child[0], ANNA_NODE_IDENTIFIER);
+	   
+	    anna_node_identifier_t *a_type = 
+		(anna_node_identifier_t *)attribute->function;
 	    
-	    anna_member_t *g_memb = anna_type_member_info_get(type, g_name->name);
-	    CHECK(g_memb, prop->child[3], L"Unknown method: %ls", g_name->name);
-	    memb->getter_offset = g_memb->offset;
-	    /*
-	      Fixme: Check that getter has correct signature
-	    */
-	}
-	if(prop->child[4]->node_type != ANNA_NODE_NULL)
-	{
-	    CHECK_NODE_TYPE(prop->child[4], ANNA_NODE_IDENTIFIER);
-	    anna_node_identifier_t *s_name = 
-		(anna_node_identifier_t *)prop->child[4];
+	    anna_node_identifier_t *m_name = 
+		(anna_node_identifier_t *)attribute->child[0];
 	    
-	    anna_member_t *s_memb = anna_type_member_info_get(type, s_name->name);
-	    CHECK(s_memb, prop->child[4], L"Unknown method: %ls", s_name->name);
-	    memb->setter_offset = s_memb->offset;
+	    anna_member_t *method = anna_type_member_info_get(type, m_name->name);
+	    CHECK(method, m_name, L"Unknown method \"%ls\" in class \"%ls\"", m_name->name, type->name);
+
 	    /*
-	      Fixme: Check that getter has correct signature
+	      Fixme: Check that [gs]etter has correct signature
 	    */
+
+	    if(wcscmp(L"getter", a_type->name) == 0)
+	    {
+	       memb->getter_offset = method->offset;
+	    }
+	    else if(wcscmp(L"setter", a_type->name) == 0)
+	    {
+	       memb->setter_offset = method->offset;
+	    }
+	    else
+	    {
+	       FAIL(a_type, L"Unknown attribute");
+	    }
+	
 	}
     }
     
@@ -1390,7 +1403,7 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 				      struct anna_node_list *parent)
 {
     CHECK_CHILD_COUNT(node,L"assignment operator", 2);
-    CHECK_PARENT_IS_ROOT;
+    //CHECK_PARENT_IS_ROOT;
     
     switch(node->child[0]->node_type)
     {

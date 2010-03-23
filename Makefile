@@ -12,6 +12,7 @@ LDFLAGS := -lm -rdynamic -ll $(PROF_FLAGS)
 PROGRAMS := anna
 
 all: anna anna_string_internal_test anna_string_perf
+.PHONY: all
 
 #########################################################
 #            BEGIN DEPENDENCY TRACKING                  #
@@ -32,16 +33,13 @@ anna_string_internal_test: $(ANNA_STRING_INTERNAL_TEST_OBJS)
 anna_string_perf: $(ANNA_STRING_PERF_OBJS)
 	gcc $(ANNA_STRING_PERF_OBJS) -o $@ $(LDFLAGS) 
 
-
 anna_lex.c: anna_lex.y anna_yacc.h
-	flex -oanna_lex.c -Panna_lex_ anna_lex.y 
-
+	flex -Cfae -oanna_lex.c -Panna_lex_ anna_lex.y 
 
 anna_float.c: anna_float_i.c
 
 anna_float_i.c: make_anna_float_i.sh
 	./make_anna_float_i.sh >anna_float_i.c
-
 
 anna_int.c: anna_int_i.c
 
@@ -58,3 +56,4 @@ anna_yacc.c anna_yacc.h: anna_yacc.y
 
 clean:
 	rm -f anna anna_string_internal_test anna_string_perf gmon.out anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  *.d
+.PHONY: clean

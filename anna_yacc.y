@@ -194,11 +194,12 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token IS
 %token IN
 %token ELLIPSIS
+%token PROPERTY
 
 %type <call_val> block block2 block3
 %type <call_val> module module1
 %type <node_val> expression expression1 expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10
-%type <node_val> simple_expression
+%type <node_val> simple_expression property_expression
 %type <node_val> constant
 %type <node_val> opt_declaration_init
 %type <node_val> function_definition 
@@ -210,7 +211,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %type <node_val> declaration declaration_expression variable_declaration
 %type <call_val> attribute_list attribute_list2
 %type <call_val> opt_block
-%type <call_val> templatization templatization2
+%type <call_val> templatization templatization2 opt_templatization
 %type <node_val> opt_templatized_type  templatized_type 
 
 %right '='
@@ -295,20 +296,14 @@ ELLIPSIS
 ;
 
 expression:
-	expression1 '=' expression
-	{
-	    anna_node_t *param[] ={$1, $3};	    
-	    $$ = (anna_node_t *)anna_node_call_create(&@$, (anna_node_t *)anna_node_identifier_create(&@2, L"__assign__"), 2, param);
-	}
-	|
-	expression op expression1
+	expression1 op expression
 	{
 	    anna_node_t *param[] ={$1, $3};	    
 	    $$ = (anna_node_t *)anna_node_call_create(&@$, $2, 2, param);
 	}
         | expression1
-        | function_definition
 	| declaration_expression 
+	| property_expression
 	| type_definition
 	| RETURN expression1
 	{
@@ -320,11 +315,11 @@ expression:
 	  anna_node_t *param[] ={anna_node_null_create(&@$)};	    
 	  $$ = (anna_node_t *)anna_node_call_create(&@$, (anna_node_t *)anna_node_identifier_create(&@$, L"return"), 1, param);	  
 	}
-	| RETURN '=' expression1
+/*	| RETURN '=' expression1
 	{
 	    anna_node_t *param[] ={$3};	    
 	    $$ = (anna_node_t *)anna_node_call_create(&@$, (anna_node_t *)anna_node_identifier_create(&@2, L"__assignReturn__"), 1, param);	  
-	}
+	    }*/
 ;
 
 expression1 :
@@ -473,7 +468,7 @@ expression9 :
 		anna_node_call_add_child($3, (anna_node_t *)$5);
 	}
 	| 
-	expression9 block
+	expression10 block
 	{
 	    anna_node_t *param[] ={(anna_node_t *)$2};
 	    $$ = (anna_node_t *)anna_node_call_create(&@$, $1, 1, param);
@@ -482,7 +477,11 @@ expression9 :
 	expression9 '[' expression ']'
 	{
 	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@2, L"__get__"), 2, param);
+	    $$ = (anna_node_t *)anna_node_call_create(
+	       &@$,
+	       (anna_node_t *)anna_node_identifier_create(&@2, L"__get__"),
+	       2,
+	       param);
 	}
 	| 
 	'[' argument_list2 ']' /* Alternative list constructor syntax */
@@ -531,6 +530,11 @@ expression10:
 ;
 
 op:
+	'='
+	{
+	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__assign__");
+	}
+	|
 	APPEND
 	{
 	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__append__");
@@ -673,6 +677,26 @@ post_op8:
 	}
 ;
 
+property_expression: PROPERTY type_identifier identifier attribute_list
+{
+   anna_node_t *param[]=
+      {
+	 $3,
+	 $2,
+	 $4
+      }
+   ;
+   
+   $$=(anna_node_t *)anna_node_call_create(
+      &@$,
+      (anna_node_t *)anna_node_identifier_create(
+	 &@$,
+	 L"__property__"),
+      3, 
+      param);
+   
+};
+
 
 opt_identifier:
 identifier
@@ -686,7 +710,7 @@ identifier
 identifier:
 	IDENTIFIER
 	{
-	    $$ = (anna_node_t *)(anna_node_t *)anna_node_identifier_create(&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+	    $$ = (anna_node_t *)anna_node_identifier_create(&@$,anna_yacc_string(anna_lex_get_text(scanner)));
 	}
 ;
 
@@ -765,7 +789,7 @@ argument_list3 :
 	    anna_node_call_add_child($$, (anna_node_t *)$1);
 	}
 	| 
-	argument_list3 SEMICOLON expression
+	argument_list3 ',' expression
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($$, (anna_node_t *)$3);
@@ -807,7 +831,7 @@ declaration_list2 :
 	    anna_node_call_add_child($$,$1);
 	}
 	| 
-	declaration_list2 SEMICOLON declaration
+	declaration_list2 ',' declaration
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
@@ -844,12 +868,26 @@ opt_templatized_type:
 templatized_type;
 
 templatized_type:
-type_identifier 
-| type_identifier templatization
+type_identifier opt_templatization
 {
-  anna_node_t *param[] ={$1, (anna_node_t *)$2};	    
-  $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@$,L"__templatize__"), 2, param);
+   if(!$2)
+   {
+      $$=$1;
+   }
+   else 
+   {
+      anna_node_t *param[] ={$1, (anna_node_t *)$2};	    
+      $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@$,L"__templatize__"), 2, param);
+   }
 }
+;
+
+opt_templatization:
+{
+   $$=0;
+}
+|
+templatization;
 
 templatization:
 '<' templatization2 '>'
@@ -865,7 +903,7 @@ templatization2:
 	    $$ = anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@$,L"__block__"), 1, param);
 	}
 	|
-	templatization2 SEMICOLON simple_expression
+	templatization2 ',' simple_expression
 	{
 	  anna_node_call_add_child($1,$3);
 	  $$ = $1;
@@ -890,7 +928,7 @@ attribute_list :
 ;
 
 attribute_list2 :
-	attribute_list SEMICOLON identifier opt_simple_expression
+	attribute_list2 ',' identifier opt_simple_expression
 	{
 	    $$ = $1;
 	    anna_node_call_t *attr = anna_node_call_create(&@$,$3, 0, 0);
@@ -997,7 +1035,6 @@ int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *fi
 	    return SEMICOLON;
 	}      
     }
-  
     
     if(yylex_val == '}') 
     {

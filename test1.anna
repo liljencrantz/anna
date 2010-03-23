@@ -1,22 +1,22 @@
 
-/*
 class Foo
 {
-    property Int count getter: getCount;
-    function getCount() private
+    property Int count getter getCount, setter setCount;
+    var Int tralala;
+    
+    function Int getCount() private
     {
-        return 3;
+        return this.tralala;
     };
 
-OR
-
-    function count() property
+    function setCount(Int val) private
     {
-        return 3;
+      this.tralala=val;
+        return val;
     };
 
 }
-*/
+
 /*
 Class Range template (T:Int)
 {
@@ -62,8 +62,6 @@ r.each(key:value)
     print(value,"\n");
 }
 */
-
-
 /*
 var lst = List<Int>();
 
