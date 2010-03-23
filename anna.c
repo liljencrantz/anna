@@ -44,7 +44,8 @@
   Byte type
   Buffer type
   Regexp type
-  
+  File type
+
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks possible at type creation time and store the results

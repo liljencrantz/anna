@@ -17,6 +17,22 @@ class Foo
 
 }
 
+class Bar
+	extends Foo
+{
+    
+    function ggg()
+    {
+	return 7;
+    }
+    
+}
+
+var bbb = Bar();
+bbb.tralala=7;
+
+print(bbb.count);
+
 /*
 Class Range template (T:Int)
 {
