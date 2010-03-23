@@ -62,7 +62,6 @@
   static member identifier and assignment
   static function calls
   String padding with null chars on «anti-truncate».
-  make ++, += and friends transform into an assignment, so they work with properties.
   add sugar for property definitions
   
   
@@ -114,6 +113,7 @@
   Separate function preparation pass
   Object constructor sets all members to null
   Properties
+  make ++, += and friends transform into an assignment, so they work with properties.
   
   Type type
   Call type
@@ -1468,10 +1468,10 @@ int main(int argc, char **argv)
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_prepare(func);
-/*
+
     wprintf(L"Validated program:\n");    
     anna_node_print((anna_node_t *)func->body);
-*/  
+
     anna_function_invoke(func, 0, 0, stack_global, stack_global);
     
     wprintf(L"\n");

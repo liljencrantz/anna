@@ -1,6 +1,3 @@
-var ch = 'a';
-ch.ordinal=99;
-print(ch,"\n");
 
 /*
 class Foo
@@ -66,12 +63,6 @@ r.each(key:value)
 }
 */
 
-var foo = List();
-foo ~= 3;
-foo[0]=2;
-foo[12]=9;
-foo.count = 36;
-print(foo[19],foo[12],foo.count);
 
 /*
 var lst = List<Int>();

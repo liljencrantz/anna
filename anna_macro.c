@@ -108,6 +108,17 @@ typedef struct
 }
     templatize_key_t;
 
+const static wchar_t *anna_assign_operator_names[][2] = 
+{
+    {L"__increase__",L"__add__"},
+    {L"__decrease__",L"__sub__"},
+    {L"__append__",L"__join__"},
+    {L"__next__",L"__getNext__"},
+    {L"__prev__",L"__getPrev__"},
+}
+    ;
+
+
 static int templatize_key_compare(void *k1, void *k2)
 {
     templatize_key_t *key1 =(templatize_key_t *)k1;
@@ -995,6 +1006,78 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
     }
 }
 
+
+
+static anna_node_t *anna_macro_assign_operator(
+    anna_node_call_t *node, 
+    anna_function_t *function, 
+    anna_node_list_t *parent)
+{
+    //anna_node_prepare_children(node, function, parent);
+    wchar_t *new_identifier=0;
+    int i;
+    anna_node_identifier_t *name_identifier = node_cast_identifier(node->function);
+    
+    for(i =0; i<sizeof(anna_assign_operator_names)/sizeof(wchar_t[2]); i++)
+    {
+	if(wcscmp(anna_assign_operator_names[i][0], name_identifier->name)==0)
+	{
+	    new_identifier = anna_assign_operator_names[i][1];
+	    break;
+	}
+    }
+    anna_node_t *target = node->child[0];
+    
+    
+    CHECK(new_identifier, node->function, L"Unknown assignment operator");
+    if(node->child_count == 1)
+    {
+	anna_node_t *node_param[]=
+	    {
+		node->child[0],
+		(anna_node_t *)anna_node_identifier_create(
+		    &node->function->location, 
+		    new_identifier)
+	    }
+	;
+	
+	node = 
+	    anna_node_call_create(
+		&node->location, 
+		anna_node_call_create(
+		    &node->location, 
+		    anna_node_identifier_create(
+			&node->location, 
+			L"__memberGet__"),
+		    2,
+		    node_param),
+		0,
+		0);
+    }
+    else
+    {
+	node->function = anna_node_identifier_create(
+	    &node->function->location, 
+	    new_identifier);
+    }
+    anna_node_t *param[]=
+	{
+	    anna_node_clone_deep(target),
+	    (anna_node_t *)node
+	}
+    ;
+    
+    anna_node_t *result = (anna_node_t *)anna_node_call_create(
+	&node->location,
+	anna_node_identifier_create(
+	    &node->location,
+	    L"__assign__"),
+	2,
+	param);
+    
+    return result;
+}
+
 anna_function_type_key_t *anna_function_key_get(anna_type_t *type,
 						wchar_t *name)
 {
@@ -1308,7 +1391,7 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 {
     CHECK_CHILD_COUNT(node,L"assignment operator", 2);
     CHECK_PARENT_IS_ROOT;
-
+    
     switch(node->child[0]->node_type)
     {
 
@@ -1950,9 +2033,6 @@ void anna_macro_init(anna_stack_frame_t *stack)
     
     wchar_t *op_names[] = 
 	{
-	    L"__increase__",
-	    L"__decrease__",
-	    L"__append__",
 	    L"__join__",
 	    L"__format__",
 	    L"__add__",
@@ -1969,10 +2049,18 @@ void anna_macro_init(anna_stack_frame_t *stack)
 	}
     ;
 
+    
+
     for(i =0; i<sizeof(op_names)/sizeof(wchar_t *); i++)
     {
 	anna_macro_add(stack, op_names[i], &anna_macro_operator_wrapper);
     }
+
+    for(i =0; i<sizeof(anna_assign_operator_names)/sizeof(wchar_t[2]); i++)
+    {
+	anna_macro_add(stack, anna_assign_operator_names[i][0], &anna_macro_assign_operator);
+    }
+
 
     /*
       anna_macro_add(stack, L"while", &anna_macro_while);

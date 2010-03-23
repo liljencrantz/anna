@@ -445,16 +445,13 @@ expression8 :
 	| 
 	expression9 post_op8
 	{
-	  anna_node_t *param[] ={$1, 
-				 $2};   
+	  anna_node_t *param[] ={$1};   
 	  $$ = (anna_node_t *)
-	    anna_node_call_create(&@$, 
-				  (anna_node_t *)anna_node_call_create(&@$, 
-							(anna_node_t *)anna_node_identifier_create(&@2, L"__memberGet__"),
-							2,
-							param),
-				  0,
-				  0);
+	      anna_node_call_create(
+		  &@$, 
+		  (anna_node_t *)$2,
+		  1,
+		  param);
 	}
 	| 
 	expression9
