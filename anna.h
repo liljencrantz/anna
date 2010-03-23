@@ -71,7 +71,8 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_MID_TYPE_WRAPPER_PAYLOAD 14
 #define ANNA_MID_CALL 15
 #define ANNA_MID_INIT_PAYLOAD 16
-#define ANNA_MID_FIRST_UNRESERVED 17
+#define ANNA_MID_NODE_PAYLOAD 17
+#define ANNA_MID_FIRST_UNRESERVED 18
 
 union anna_native
 {

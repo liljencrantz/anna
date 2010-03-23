@@ -147,3 +147,8 @@ size_t anna_type_member_count(anna_type_t *type)
 {
     return type->member_count + type->static_member_count+type->property_count;
 }
+
+void anna_type_native_parent(anna_type_t *type, wchar_t *name)
+{
+    
+}

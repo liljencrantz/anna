@@ -16,6 +16,7 @@
 #include "anna_char.h"
 #include "anna_list.h"
 #include "anna_type.h"
+#include "anna_node.h"
 
 #define likely(x) (x)
 /*
@@ -1171,6 +1172,7 @@ static void anna_init()
     anna_mid_put(L"!functionStack", ANNA_MID_FUNCTION_WRAPPER_STACK);
     anna_mid_put(L"__call__", ANNA_MID_CALL_PAYLOAD);    
     anna_mid_put(L"__init__", ANNA_MID_INIT_PAYLOAD);
+    anna_mid_put(L"!nodePayload", ANNA_MID_NODE_PAYLOAD);
 
     stack_global = anna_stack_create(4096, 0);
     /*
@@ -1201,6 +1203,7 @@ static void anna_init()
     anna_char_type_create(stack_global);
     anna_string_type_create(stack_global);
     anna_float_type_create(stack_global);
+    anna_node_wrapper_types_create(stack_global);
 
     anna_function_implementation_init(stack_global);
 
@@ -1354,11 +1357,11 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 	//wprintf(L"We have a this parameter: %d\n", this);
     }
     int is_variadic = ANNA_IS_VARIADIC(function);
-    wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
+    //wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
     
     for(i=0; i<(function->input_count-offset-is_variadic); i++)
     {
-        wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
+        //wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
 	argv[i+offset]=anna_node_invoke(param->child[i], stack);
     }
     if(is_variadic)
@@ -1467,8 +1470,6 @@ int main(int argc, char **argv)
       Run the function
     */
 
-    wprintf(L"Output:\n");    
-    
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_prepare(func);
@@ -1481,6 +1482,8 @@ int main(int argc, char **argv)
     wprintf(L"Validated program:\n");    
     anna_node_print((anna_node_t *)func->body);
 
+    wprintf(L"Output:\n");    
+    
     anna_function_invoke(func, 0, 0, stack_global, stack_global);
     
     wprintf(L"\n");

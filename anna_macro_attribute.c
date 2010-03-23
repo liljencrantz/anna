@@ -77,8 +77,6 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
 	anna_node_call_add_child(body->child[3], anna_node_clone_deep(definition->child[i]));
     }
     
-    anna_node_print(body);
-    
     return body;
     
 }
