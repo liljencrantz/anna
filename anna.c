@@ -418,7 +418,6 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
     {
 	wprintf(L"Critical: Tried to get function from non-existing type\n");
 	CRASH;
-	
     }
     
     //wprintf(L"Find function signature for call %ls\n", type->name);
@@ -658,24 +657,23 @@ anna_function_t *anna_function_create(wchar_t *name,
 				      anna_stack_frame_t *parent_stack,
 				      int return_pop_count)
 {
-    if(!flags) {
+    int i;
+
+    if(!(flags & ANNA_FUNCTION_MACRO)) {
 	//assert(return_type);
 	if(argc) {
 	    assert(argv);
 	    assert(argn);
 	}
+	for(i=0;i<argc; i++)
+	{
+	    assert(argv[i]);
+	    assert(argn[i]);
+	}
     }
-    
-    int i;
-    
-    for(i=0;i<argc; i++)
-    {
-	assert(argv[i]);
-	assert(argn[i]);
-    }
-    
     
     anna_function_t *result = calloc(1,sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
+
     result->native.function=0;
     result->flags=flags;
     result->name = name;
@@ -685,7 +683,6 @@ anna_function_t *anna_function_create(wchar_t *name,
     result->return_pop_count = return_pop_count;
     result->this=0;
     
-    memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
     result->input_name = malloc(argc*sizeof(wchar_t *));;
     memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
 
@@ -695,18 +692,26 @@ anna_function_t *anna_function_create(wchar_t *name,
     result->stack_template->function = result;
 #endif
 
-    int is_variadic = ANNA_IS_VARIADIC(result);
-    for(i=0; i<argc-is_variadic;i++)
+    if(!(flags & ANNA_FUNCTION_MACRO)) 
     {
-	anna_stack_declare(result->stack_template, argn[i], argv[i], null_object);	
-    }    
-    if(is_variadic)
+	int is_variadic = ANNA_IS_VARIADIC(result);
+	memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
+	for(i=0; i<argc-is_variadic;i++)
+	{
+	    anna_stack_declare(result->stack_template, argn[i], argv[i], null_object);	
+	}    
+	if(is_variadic)
+	{
+	    /*
+	      FIXME:
+	      Templatize to right list subtype
+	    */
+	    anna_stack_declare(result->stack_template, argn[argc-1], list_type, null_object);
+	}
+    }
+    else
     {
-	/*
-	  FIXME:
-	  Templatize to right list subtype
-	*/
-	anna_stack_declare(result->stack_template, argn[argc-1], list_type, null_object);
+	
     }
     
     //anna_function_prepare(result);
@@ -1469,7 +1474,7 @@ int main(int argc, char **argv)
     /*
       Run the function
     */
-
+    
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_prepare(func);

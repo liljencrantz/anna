@@ -810,6 +810,30 @@ function_definition:
 	    $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@1,L"__function__"), 5, param);
 	  	  
 	}
+	|
+	MACRO identifier '(' identifier ',' identifier ',' identifier ')' block
+	{
+	    anna_node_t *arg_param[] ={
+		(anna_node_t *)$4, 
+		(anna_node_t *)$6, 
+		(anna_node_t *)$8, 
+	    };
+	    anna_node_t *arg = (anna_node_t *)anna_node_call_create(
+		&@$,
+		(anna_node_t *)anna_node_identifier_create(&@1,L"__block__"), 
+		3, 
+		arg_param);	    
+	    anna_node_t *param[] ={
+		(anna_node_t *)$2,
+		arg,
+		(anna_node_t *)$10,
+	    };
+	    $$ = (anna_node_t *)anna_node_call_create(
+		&@$,
+		(anna_node_t *)anna_node_identifier_create(&@1,L"__macro__"), 
+		3, 
+		param);	    
+	}
 ;
 
 declaration_list :

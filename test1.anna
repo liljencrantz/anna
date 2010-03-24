@@ -1,4 +1,4 @@
-
+/*
 class Foo
 {
     property Int count getter getCount, setter setCount;
@@ -32,6 +32,14 @@ var bbb = Bar();
 bbb.tralala=7;
 
 print(bbb.count);
+*/
+
+macro noop(node, foo, bar)
+{
+    return node;
+}
+
+print(noop(3));
 
 /*
 Class Range template (T:Int)

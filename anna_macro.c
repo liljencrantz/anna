@@ -896,6 +896,56 @@ static anna_node_t *anna_macro_function(anna_node_call_t *node,
     return anna_macro_function_internal(0, node, function, parent, 1);
 }
 
+static anna_node_t *anna_macro_macro(anna_node_call_t *node,
+					anna_function_t *function, 
+					anna_node_list_t *parent)
+{
+    CHECK_CHILD_COUNT(node,L"macro definition", 3);
+    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
+    CHECK_NODE_BLOCK(node->child[1]);
+    CHECK_NODE_BLOCK(node->child[2]);
+    anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
+    anna_node_call_t *declarations = node_cast_call(node->child[1]);
+    wchar_t **argn=calloc(sizeof(wchar_t *), 3);
+    int i;
+    CHECK_CHILD_COUNT(declarations,L"macro definition", 3);
+
+    for(i=0; i<3; i++)
+    {
+	CHECK_NODE_TYPE(declarations->child[i], ANNA_NODE_IDENTIFIER);
+	anna_node_identifier_t *arg = (anna_node_identifier_t *)declarations->child[i];
+	argn[i] = wcsdup(arg->name);
+    }
+
+    anna_function_t *result;
+    result = anna_function_create(
+	name_identifier->name,
+	ANNA_FUNCTION_MACRO,
+	(anna_node_call_t *)node->child[2], 
+	0,
+	3, 
+	0,
+	argn, 
+	function->stack_template, 
+	0);
+
+    anna_stack_declare(
+	function->stack_template,
+	name_identifier->name, 
+	anna_type_for_function(
+	    result->return_type, 
+	    result->input_count, 
+	    result->input_type,
+	    result->input_name,
+	    0), 
+	result->wrapper);
+    
+    return (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	result->wrapper,
+	0);
+}
+
 
 anna_function_type_key_t *anna_function_key_get(anna_type_t *type,
 						wchar_t *name)
@@ -1282,6 +1332,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__declare__", &anna_macro_declare);
     anna_macro_add(stack, L"__function__", &anna_macro_function);
+    anna_macro_add(stack, L"__macro__", &anna_macro_macro);
     anna_macro_add(stack, L"if", &anna_macro_if);
     anna_macro_add(stack, L"else", &anna_macro_else);
     anna_macro_add(stack, L"__get__", &anna_macro_get);

@@ -10,6 +10,7 @@
 #include "util.h"
 #include "wutil.h"
 #include "anna_node.h"
+#include "anna_node_wrapper.h"
 #include "anna_int.h"
 #include "anna_float.h"
 #include "anna_string.h"
@@ -70,9 +71,6 @@ anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, struct anna_obje
     anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
     result->node_type = is_trampoline?ANNA_NODE_TRAMPOLINE:ANNA_NODE_DUMMY;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->payload = val;
     return result;  
 }
@@ -82,9 +80,6 @@ anna_node_return_t *anna_node_return_create(anna_location_t *loc, struct anna_no
     anna_node_return_t *result = calloc(1,sizeof(anna_node_return_t));
     result->node_type = ANNA_NODE_RETURN;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->payload = val;
     result->steps=steps;
     return result;  
@@ -95,9 +90,6 @@ anna_node_member_get_t *anna_node_member_get_create(anna_location_t *loc, struct
     anna_node_member_get_t *result = calloc(1,sizeof(anna_node_member_get_t));
     result->node_type = wrap?ANNA_NODE_MEMBER_GET_WRAP:ANNA_NODE_MEMBER_GET;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->object=object;
     result->mid=mid;
     result->type=type;
@@ -110,9 +102,6 @@ anna_node_member_set_t *anna_node_member_set_create(anna_location_t *loc, struct
     anna_node_member_set_t *result = calloc(1,sizeof(anna_node_member_set_t));
     result->node_type = ANNA_NODE_MEMBER_SET;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->object=object;
     result->value=value;
     result->mid=mid;
@@ -128,9 +117,6 @@ anna_node_assign_t *anna_node_assign_create(anna_location_t *loc, anna_sid_t sid
     anna_node_assign_t *result = calloc(1,sizeof(anna_node_assign_t));
     result->node_type = ANNA_NODE_ASSIGN;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->value=value;
     result->sid=sid;
     return result;  
@@ -141,9 +127,6 @@ anna_node_int_literal_t *anna_node_int_literal_create(anna_location_t *loc, int 
     anna_node_int_literal_t *result = calloc(1,sizeof(anna_node_int_literal_t));
     result->node_type = ANNA_NODE_INT_LITERAL;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->payload = val;
     return result;
 }
@@ -153,9 +136,6 @@ anna_node_float_literal_t *anna_node_float_literal_create(anna_location_t *loc, 
     anna_node_float_literal_t *result = calloc(1,sizeof(anna_node_float_literal_t));
     result->node_type = ANNA_NODE_FLOAT_LITERAL;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->payload = val;
     return result;
 }
@@ -165,9 +145,6 @@ anna_node_char_literal_t *anna_node_char_literal_create(anna_location_t *loc, wc
     anna_node_char_literal_t *result = calloc(1,sizeof(anna_node_char_literal_t));
     result->node_type = ANNA_NODE_CHAR_LITERAL;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->payload = val;
     return result;
 }
@@ -177,9 +154,6 @@ anna_node_string_literal_t *anna_node_string_literal_create(anna_location_t *loc
     anna_node_string_literal_t *result = calloc(1,sizeof(anna_node_string_literal_t));
     result->node_type = ANNA_NODE_STRING_LITERAL;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     result->payload = str;
     result->payload_size = sz;
     return result;
@@ -195,9 +169,6 @@ anna_node_call_t *anna_node_call_create(anna_location_t *loc, anna_node_t *funct
     result->child_count = argc;
     result->child_capacity = argc;
     memcpy(result->child, argv, sizeof(anna_node_t *)*(argc));
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     return result;
 }
 
@@ -207,9 +178,6 @@ anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, wchar_
     result->node_type = ANNA_NODE_IDENTIFIER;
     anna_node_set_location((anna_node_t *)result,loc);
     result->name = wcsdup(name);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     return result;
 }
 
@@ -219,9 +187,6 @@ anna_node_identifier_t *anna_node_identifier_trampoline_create(anna_location_t *
     result->node_type = ANNA_NODE_IDENTIFIER_TRAMPOLINE;
     anna_node_set_location((anna_node_t *)result,loc);
     result->name = name;
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     return result;
 }
 
@@ -230,9 +195,6 @@ anna_node_t *anna_node_null_create(anna_location_t *loc)
     anna_node_t *result = calloc(1,sizeof(anna_node_t));
     result->node_type = ANNA_NODE_NULL;
     anna_node_set_location((anna_node_t *)result,loc);
-    /*
-      FIXME: Create a nice and tidy wrapper
-    */
     return result;
 }
 
