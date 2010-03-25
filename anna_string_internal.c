@@ -692,4 +692,17 @@ void asi_print_regular(anna_string_t *dest)
     }
 }
 
+wchar_t *asi_cstring(anna_string_t *str)
+{
+    wchar_t *res = malloc(sizeof(wchar_t)*(1+asi_get_length(str)));
+    int i;
+    res[asi_get_length(str)] = 0;
+    for(i=0; i<asi_get_length(str); i++)
+    {
+	res[i] = asi_get_char(str, i);
+    }
+    
+    return res;
+}
+
 #endif

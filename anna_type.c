@@ -150,5 +150,24 @@ size_t anna_type_member_count(anna_type_t *type)
 
 void anna_type_native_parent(anna_type_t *type, wchar_t *name)
 {
-    
+    anna_node_t *param[]=
+	{
+	    anna_node_identifier_create(
+		0,
+		name)
+	}
+    ;
+		       
+
+    anna_node_call_t *attribute_list = 
+        (anna_node_call_t *)type->definition->child[2];
+    anna_node_call_add_child(
+	attribute_list, 
+	anna_node_call_create(
+	    0,
+	    anna_node_identifier_create(
+		0,
+		L"extends"),
+	    1,
+	    param));
 }

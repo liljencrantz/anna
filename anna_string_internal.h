@@ -107,9 +107,9 @@ void asi_replace(anna_string_t *dest, anna_string_t *src, size_t dest_offset, si
 /**
    Return the length of the string
  */
-size_t asi_get_length(anna_string_t *dest);
+size_t asi_get_length(anna_string_t *str);
 
-void asi_truncate(anna_string_t *dest, size_t length);
+void asi_truncate(anna_string_t *str, size_t length);
 
 /**
    Print the specified string, together with a load of debug and
@@ -117,11 +117,13 @@ void asi_truncate(anna_string_t *dest, size_t length);
 
    For debugging purposes only.
  */
-void asi_print_debug(anna_string_t *dest);
+void asi_print_debug(anna_string_t *str);
 
 /**
    Print the specified string.
  */
-void asi_print_regular(anna_string_t *dest);
+void asi_print_regular(anna_string_t *str);
+
+wchar_t *asi_cstring(anna_string_t *str);
 
 #endif

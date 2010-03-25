@@ -27,7 +27,8 @@ void anna_string_print(anna_object_t *obj)
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
     anna_object_t *obj= anna_object_create(string_type);
-
+    wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    
     asi_init_from_ptr(as_unwrap(obj),  data, sz);
     return obj;
 }
@@ -36,6 +37,14 @@ size_t anna_string_get_count(anna_object_t *this)
 {
     return asi_get_length(as_unwrap(this));
 }
+
+wchar_t *anna_string_payload(anna_object_t *obj)
+{
+    wprintf(L"Get payload from string at %d\n", obj);
+    anna_string_t *str = as_unwrap(obj);
+    return asi_cstring(str);
+}
+
 
 static anna_object_t *anna_string_i_set_int(anna_object_t **param)
 {

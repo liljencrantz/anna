@@ -37,16 +37,16 @@ print(bbb.count);
 macro noop(node, foo, bar)
 {
     print("Yay, running a macro!!!\n");
-    return node;
+    return Identifier("foo");
 }
 
 function ggg()
 {
+    var foo = 7;
     print(noop(3));
 }
 
 ggg();
-
 
 /*
 Class Range template (T:Int)
