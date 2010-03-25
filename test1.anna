@@ -40,7 +40,13 @@ macro noop(node, foo, bar)
     return node;
 }
 
-print(noop(3));
+function ggg()
+{
+    print(noop(3));
+}
+
+ggg();
+
 
 /*
 Class Range template (T:Int)

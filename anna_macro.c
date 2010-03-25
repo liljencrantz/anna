@@ -870,7 +870,12 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	anna_function_t *result;
 	if(body->node_type == ANNA_NODE_CALL) {
 	    result = anna_function_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
-	    al_push(&function->child_function, result->wrapper);
+	    al_push(&function->child_function, result);
+	    
+	    wprintf(L"Create subfunction %d in function %ls: %ls\n", 
+		    al_get_count(&function->child_function),
+		    function->name, result->name);
+
 	}
 	else {
 	    //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
@@ -928,7 +933,9 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
 	argn, 
 	function->stack_template, 
 	0);
-
+    
+    al_push(&function->child_function, result);
+    
     anna_stack_declare(
 	function->stack_template,
 	name_identifier->name, 

@@ -626,11 +626,14 @@ void anna_function_prepare(anna_function_t *function)
     {
 	anna_node_validate(function->body->child[i], function->stack_template);
     }
+
     for(i=0; i<al_get_count(&function->child_function); i++) 
     {
-       //al_set(&function->child_function, i,
-	    //     anna_node_prepare(al_get(&function->child_function, i), function, &list));
-	anna_function_prepare(al_get(&function->child_function, i));
+	anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
+	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
+		i, al_get_count(&function->child_function),
+		function->name, func->name);
+	anna_function_prepare(func);
     }
 
     if(!function->return_type)
@@ -674,10 +677,10 @@ anna_function_t *anna_function_create(wchar_t *name,
     }
     
     anna_function_t *result = calloc(1,sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
-
+    
     result->native.function=0;
     result->flags=flags;
-    result->name = name;
+    result->name = wcsdup(name);
     result->body = body;
     result->return_type=return_type;
     result->input_count=argc;
@@ -1344,13 +1347,9 @@ struct anna_node *anna_macro_invoke(
 			   anna_node_wrap(node));
 	for(i=0; i<macro->body->child_count && !my_stack->stop; i++)
 	{
-	    /*
-	      wprintf(L"Run node %d of function %ls\n",
-	      i, function->name);
-	      
-	      anna_node_print(function->body->child[i]);
-	    */
-	    result = anna_node_invoke(function->body->child[i], my_stack);
+	    anna_node_print(macro->body->child[i]);
+	    
+	    result = anna_node_invoke(macro->body->child[i], my_stack);
 	}
 	return anna_node_unwrap(result);
 	
@@ -1517,6 +1516,7 @@ int main(int argc, char **argv)
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_function_prepare(func);
+
     if(anna_error_count)
     {
 	wprintf(L"Found %d error(s) during program validation, exiting\n", anna_error_count);
