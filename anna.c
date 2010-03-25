@@ -75,7 +75,6 @@
   
   cast function (depends on type namespace/type object splittingx)
   import macro
-  __macro__ macro
   elif macro
   __extendsAttribute__ macro
   is function
@@ -89,6 +88,7 @@
   __staticMemberSet__ macro
   with macro
   
+
   Done: 
   
   Sugar parser
@@ -174,6 +174,7 @@
   each, map, filter, first
   List.count
   String.count
+  __macro__ macro
 
 */
 /*
