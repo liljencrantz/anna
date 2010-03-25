@@ -40,14 +40,14 @@ macro noop(node, foo, bar)
     return IntLiteral(node, 12);
 }
 
-function ggg()
+function main()
 {
     var foo = 7;
     print(noop(3));
     print(Int);
 }
 
-ggg();
+main();
 
 /*
 Class Range template (T:Int)

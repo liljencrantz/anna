@@ -87,7 +87,7 @@
   __staticMemberGet__ macro
   __staticMemberSet__ macro
   with macro
-  
+  AST macro
 
   Done: 
   
@@ -1357,7 +1357,6 @@ struct anna_node *anna_macro_invoke(
     }
     
 }
-
 
 
 anna_object_t *anna_function_invoke(anna_function_t *function, 
