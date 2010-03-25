@@ -17,6 +17,7 @@
 #include "anna_list.h"
 #include "anna_type.h"
 #include "anna_node.h"
+#include "anna_node_wrapper.h"
 
 #define likely(x) (x)
 /*
@@ -711,6 +712,7 @@ anna_function_t *anna_function_create(wchar_t *name,
     }
     else
     {
+	anna_stack_declare(result->stack_template, argn[0], node_wrapper_type, null_object);	
 	
     }
     
@@ -1319,6 +1321,43 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	}
     }
 }
+
+struct anna_node *anna_macro_invoke(
+    anna_function_t *macro, 
+    struct anna_node *node,
+    anna_function_t *function,
+    anna_node_list_t *parent)
+{
+    if(macro->native.macro)
+    {
+	return macro->native.macro(
+	    node, function, parent);
+    }
+    else
+    {
+	int i;
+	anna_stack_frame_t *my_stack = anna_stack_clone(macro->stack_template);
+	anna_object_t *result = null_object;
+
+	anna_stack_set_str(my_stack,
+			   macro->input_name[0],
+			   anna_node_wrap(node));
+	for(i=0; i<macro->body->child_count && !my_stack->stop; i++)
+	{
+	    /*
+	      wprintf(L"Run node %d of function %ls\n",
+	      i, function->name);
+	      
+	      anna_node_print(function->body->child[i]);
+	    */
+	    result = anna_node_invoke(function->body->child[i], my_stack);
+	}
+	return anna_node_unwrap(result);
+	
+    }
+    
+}
+
 
 
 anna_object_t *anna_function_invoke(anna_function_t *function, 

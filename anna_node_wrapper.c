@@ -9,7 +9,7 @@
 #include "anna_node.h"
 #include "anna_type.h"
 
-static anna_type_t *node_wrapper_type, *node_identifier_wrapper_type;
+anna_type_t *node_wrapper_type, *node_identifier_wrapper_type;
 
 
 anna_object_t *anna_node_wrap(anna_node_t *node)

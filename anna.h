@@ -205,6 +205,12 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 				    struct anna_stack_frame *stack,
 				    struct anna_stack_frame *outer);
 
+struct anna_node *anna_macro_invoke(
+    anna_function_t *macro, 
+    struct anna_node *node,
+    anna_function_t *function,
+    anna_node_list_t *parent);
+
 anna_function_t *anna_function_create(wchar_t *name,
 				      int flags,
 				      struct anna_node_call *body, 

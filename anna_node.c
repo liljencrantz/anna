@@ -264,6 +264,7 @@ anna_node_call_t *anna_node_native_method_declare_create(
 }
 
 
+
 anna_node_call_t *anna_node_member_declare_create(
     anna_location_t *loc,
     ssize_t mid,
@@ -633,18 +634,21 @@ anna_node_t *anna_node_call_prepare(
 	    (anna_node_t *)node, 0, parent
 	}
     ;
-/*
-  wprintf(L"Prepare call node:\n");
-  anna_node_print((anna_node_t *)node);
-  wprintf(L"\n");
-*/ 
+
+    wprintf(L"Prepare call node:\n");
+    anna_node_print((anna_node_t *)node);
+
     if(node->node_type == ANNA_NODE_CALL)
     {       
 	anna_function_t *macro_definition = anna_node_macro_get(node, function->stack_template);
        
 	if(macro_definition)
 	{       
-	    return anna_node_prepare(macro_definition->native.macro(node, function, parent), function, parent);
+	    wprintf(L"Macro\n");
+	    anna_node_t *macro_output;
+	    macro_output = anna_macro_invoke(
+		macro_definition, node, function, parent);
+	    return anna_node_prepare(macro_output, function, parent);
 	}
        
 	node->function = anna_node_prepare(node->function, function, parent);
@@ -991,11 +995,15 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
     ;
 
     ANNA_PREPARED(this);    
-   
+    wprintf(L"Prepare node:\n");
+    
+    anna_node_print(this);
+    
     switch(this->node_type)
     {
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_CONSTRUCT:
+	    wprintf(L"It's a call\n");
 	    return anna_node_call_prepare((anna_node_call_t *)this, function, parent);
 
 	case ANNA_NODE_RETURN:
