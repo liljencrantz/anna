@@ -36,7 +36,7 @@ print(bbb.count);
 
 macro noop(node, foo, bar)
 {
-    print("Yay, running a macro!!!\n");
+    print("Yay, running a macro!!!\n", node as Node, "\n");
     return IntLiteral(node, 12);
 }
 

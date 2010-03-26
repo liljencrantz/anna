@@ -191,7 +191,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token XOR
 %token BITNOT
 %token MODULO
-%token IS
+%token AS
 %token IN
 %token ELLIPSIS
 %token PROPERTY
@@ -490,12 +490,12 @@ expression9 :
 	    anna_node_call_set_function($2, (anna_node_t *)anna_node_identifier_create(&@$,L"__list__"));
 	}
 	|
-	expression9 IS expression10
+	expression9 AS expression10
 	{
 	    anna_node_t *param[] ={$1, $3};   
 	    $$ = (anna_node_t *)anna_node_call_create(
 		&@$, 
-		(anna_node_t *)anna_node_identifier_create(&@2,L"__is__"), 
+		(anna_node_t *)anna_node_identifier_create(&@2,L"__as__"), 
 		2, 
 		param);	  
 	}

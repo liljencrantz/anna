@@ -1360,8 +1360,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"first", &anna_macro_iter);
     anna_macro_add(stack, L"__list__", &anna_macro_list);
     anna_macro_add(stack, L"cast", &anna_macro_cast);
-    anna_macro_add(stack, L"is", &anna_macro_is);
-    anna_macro_add(stack, L"as", &anna_macro_as);
+    anna_macro_add(stack, L"__as__", &anna_macro_as);
     
     wchar_t *op_names[] = 
 	{
