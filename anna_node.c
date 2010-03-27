@@ -376,7 +376,37 @@ anna_node_call_t *anna_node_property_create(
     return r;
 }
 
+anna_node_t *anna_node_simple_template_create(
+    anna_location_t *loc,
+    wchar_t *name,
+    wchar_t *param)
+{
 
+    anna_node_t *b_param[] =
+	{
+	    anna_node_identifier_create(loc, param),
+	}
+    ;
+
+    anna_node_t *t_param[] =
+	{
+	    anna_node_identifier_create(loc, name),
+	    (anna_node_t *)anna_node_call_create(
+		loc,
+		anna_node_identifier_create(loc, L"__block__"),
+		1,
+		b_param),
+	}
+    ;
+    
+    return (anna_node_t *)anna_node_call_create(
+	loc,
+	anna_node_identifier_create(loc, L"__templatize__"),
+	2,
+	t_param);
+    
+}
+	
 
 anna_node_t *anna_node_function_declaration_create(
     anna_location_t *loc,

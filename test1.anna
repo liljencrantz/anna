@@ -36,15 +36,26 @@ print(bbb.count);
 
 macro noop(node, foo, bar)
 {
-    print("Yay, running a macro!!!\n", node.count, "\n");
-    return IntLiteral(node, 12);
+    if(node.count > 0)
+    {
+	return node[0];
+    }
+    else
+    {
+	return IntLiteral(node, 5);
+    }
+}
+
+macro weeo(node, foo, bar)
+{
+    var wee = AST(print(ggg,"\n"));
+    wee.replace(AST(ggg), AST(foo));
 }
 
 function main()
 {
     var foo = 7;
-    print(noop(3,4,5));
-    print(Int);
+    weeo();
 }
 
 main();

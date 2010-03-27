@@ -623,17 +623,22 @@ void anna_function_prepare(anna_function_t *function)
 	list.idx=i;
 	function->body->child[i] = anna_node_prepare(function->body->child[i], function, &list);
     }
+    /*
+    wprintf(L"Body of function %ls after preparation:\n", function->name);
+    anna_node_print(function->body);
+    */
     for(i=0; i<function->body->child_count; i++) 
     {
 	anna_node_validate(function->body->child[i], function->stack_template);
     }
-
+    
     for(i=0; i<al_get_count(&function->child_function); i++) 
     {
 	anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
-	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
+/*	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
+*/
 	anna_function_prepare(func);
     }
 
@@ -1347,16 +1352,11 @@ struct anna_node *anna_macro_invoke(
 			   anna_node_wrap(node));
 	for(i=0; i<macro->body->child_count && !my_stack->stop; i++)
 	{
-	    anna_node_print(macro->body->child[i]);
-	    
 	    result = anna_node_invoke(macro->body->child[i], my_stack);
 	}
 	return anna_node_unwrap(result);
-	
     }
-    
 }
-
 
 anna_object_t *anna_function_invoke(anna_function_t *function, 
 				    anna_object_t *this,

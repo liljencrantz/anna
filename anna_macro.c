@@ -871,11 +871,11 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	if(body->node_type == ANNA_NODE_CALL) {
 	    result = anna_function_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
 	    al_push(&function->child_function, result);
-	    
+/*	    
 	    wprintf(L"Create subfunction %d in function %ls: %ls\n", 
 		    al_get_count(&function->child_function),
 		    function->name, result->name);
-
+*/
 	}
 	else {
 	    //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
@@ -1201,6 +1201,17 @@ static anna_node_t *anna_macro_return(anna_node_call_t *node,
     return (anna_node_t *)anna_node_return_create(&node->location, anna_node_prepare(node->child[0], function, parent), function->return_pop_count+1);
 }
 
+static anna_node_t *anna_macro_ast(anna_node_call_t *node, 
+				      anna_function_t *function, 
+				      anna_node_list_t *parent)
+{
+    CHECK_CHILD_COUNT(node,L"return", 1);
+    return (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	anna_node_wrap(node->child[0]),
+	0);
+}
+
 static anna_node_t *anna_macro_list(anna_node_call_t *node, 
 				      anna_function_t *function, 
 				      anna_node_list_t *parent)
@@ -1361,6 +1372,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"__list__", &anna_macro_list);
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"__as__", &anna_macro_as);
+    anna_macro_add(stack, L"AST", &anna_macro_ast);
     
     wchar_t *op_names[] = 
 	{
