@@ -53,7 +53,14 @@ anna_node_t *anna_node_unwrap(anna_object_t *this)
 
 static anna_object_t *anna_node_wrapper_i_replace(anna_object_t **param)
 {
-    return param[0];
+    wprintf(L"REPLACE\n");
+    
+    anna_node_t *tree = anna_node_unwrap(param[0]);
+    anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(param[1]);
+    anna_node_t *new = anna_node_unwrap(param[2]);
+    anna_node_t *res = anna_node_replace(anna_node_clone_deep(tree), old, new);
+    anna_node_print(res);
+    return anna_node_wrap(res);
 }
 
 

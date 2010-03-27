@@ -16,7 +16,8 @@
 #include "anna_string.h"
 #include "anna_char.h"
 
-#define CHECK(test, node, ...) if(!(test)) anna_error(node, __VA_ARGS__)
+#define CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
+
 
 void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 {
@@ -893,6 +894,7 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 
 void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 {
+    
     switch(this->node_type)
     {
 	case ANNA_NODE_CONSTRUCT:
@@ -996,6 +998,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
 	    CHECK(!!this2->name, this, L"Invalid identifier node");
 	    CHECK(!!anna_stack_get_type(stack, this2->name), this, L"Unknown variable: %ls", this2->name);
+	    
 	    CHECK((this2->sid.offset != -1) && (this2->sid.frame != -1), this, L"Bad variable lookup: %ls", this2->name);
 	    return;
 	}
@@ -1393,6 +1396,7 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     size_t sz = anna_node_size(n);
     anna_node_t *r = malloc(sz);
     memcpy(r,n,sz);
+    r->wrapper=0;
     return r;
 }
 

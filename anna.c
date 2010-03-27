@@ -623,10 +623,10 @@ void anna_function_prepare(anna_function_t *function)
 	list.idx=i;
 	function->body->child[i] = anna_node_prepare(function->body->child[i], function, &list);
     }
-    /*
+
     wprintf(L"Body of function %ls after preparation:\n", function->name);
     anna_node_print(function->body);
-    */
+
     for(i=0; i<function->body->child_count; i++) 
     {
 	anna_node_validate(function->body->child[i], function->stack_template);
