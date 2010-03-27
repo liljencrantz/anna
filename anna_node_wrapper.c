@@ -53,14 +53,28 @@ anna_node_t *anna_node_unwrap(anna_object_t *this)
 
 static anna_object_t *anna_node_wrapper_i_replace(anna_object_t **param)
 {
-    wprintf(L"REPLACE\n");
-    
     anna_node_t *tree = anna_node_unwrap(param[0]);
     anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(param[1]);
     anna_node_t *new = anna_node_unwrap(param[2]);
     anna_node_t *res = anna_node_replace(anna_node_clone_deep(tree), old, new);
-    anna_node_print(res);
     return anna_node_wrap(res);
+}
+
+static anna_object_t *anna_node_wrapper_i_error(anna_object_t **param)
+{
+    anna_node_t *this = anna_node_unwrap(param[0]);
+    wchar_t *msg;
+    if(param[1] == null_object)
+    {
+	msg = L"Unknown error";
+	
+    }
+    else
+    {
+	msg = anna_string_payload(param[1]);
+    }
+    anna_error(this, L"%ls", msg);
+    return null_object;
 }
 
 
@@ -80,6 +94,18 @@ void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
 	}
     ;
     
+    anna_node_t *error_argv[] = 
+	{
+	    (anna_node_t *)anna_node_identifier_create(0, L"Node"),
+	    (anna_node_t *)anna_node_identifier_create(0, L"String"),
+	}
+    ;
+    wchar_t *error_argn[] =
+	{
+	    L"this", L"message"
+	}
+    ;
+    
     node_wrapper_type = anna_type_native_create(L"Node", stack);
 
     anna_node_call_t *definition = anna_type_definition_get(node_wrapper_type);
@@ -93,6 +119,12 @@ void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_node_wrapper_i_replace, 
 	(anna_node_t *)anna_node_identifier_create(0, L"Node"), 
 	3, replace_argv, replace_argn);
+ 
+    anna_native_method_add_node(
+	definition, -1, L"error", 0, 
+	(anna_native_t)&anna_node_wrapper_i_error, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Null"), 
+	2, error_argv, error_argn);
     
 }
 

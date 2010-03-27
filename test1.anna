@@ -36,23 +36,20 @@ print(bbb.count);
 
 macro noop(node, foo, bar)
 {
-    if(node.count == 0)
+    if(node.count == 1)
     {
 	return node[0];
     }
     else
     {
-	error(node, "Expected exactly one argument to macro noop");
+	return node.error("Expected exactly one argument to macro noop");
     }
 }
 
 macro weeo(node, foo, bar)
 {
-    print("weeo\n");
     var wee = AST(print(ggg,"\n"));
-    print("tjoho\n");
     var res = wee.replace(AST(ggg), AST(foo));
-    print("gugg\n");
     return res;
 }
 
@@ -60,6 +57,8 @@ function main()
 {
     var foo = 7;
     weeo();
+    noop();
+    
 }
 
 main();

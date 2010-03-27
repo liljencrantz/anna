@@ -28,18 +28,14 @@
   Asynchronous continuation based app/web server
 */
 /*
-  Code layout plan:
+  Code refactoring plan:
 
   - Move object and type code to individual .[ch] files.
-  - Split up anna_macro.c into multiple files, one of operators, one for 
-  function/block/type handling, one for functional construct support, 
-  etc..
   - All node types should have a head var which is an anna_node_t, to reduce the amount of casting needed.
   
   ComparisonMap type
   HashMap type
   Pair type
-  Node type
   Better Function type
   Better Type type  
   Stack type
@@ -47,7 +43,7 @@
   Buffer type
   Regexp type
   File type
-
+  
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks possible at type creation time and store the results
@@ -77,9 +73,7 @@
   import macro
   elif macro
   __extendsAttribute__ macro
-  is function
   in method
-  as function
   __returnAssign__ macro
   __list__ macro 
   use macro
@@ -87,7 +81,6 @@
   __staticMemberGet__ macro
   __staticMemberSet__ macro
   with macro
-  AST macro
 
   Done: 
   
@@ -120,6 +113,8 @@
   make ++, += and friends transform into an assignment, so they work with properties.
   Make comments nest
   Sugar for property definitions
+  Simple non-native macros working
+  Split up anna_macro.c into multiple files
   
   Type type
   Call type
@@ -130,7 +125,12 @@
   List type
   Range type
   Complex type
+  Node type
+  Identifier type
+  IntLiterak type
+  Call type
   
+
   Represent objects 
   Represent types
   Represent member data
@@ -175,6 +175,8 @@
   List.count
   String.count
   __macro__ macro
+  as macro
+  AST macro
 
 */
 /*
@@ -623,10 +625,10 @@ void anna_function_prepare(anna_function_t *function)
 	list.idx=i;
 	function->body->child[i] = anna_node_prepare(function->body->child[i], function, &list);
     }
-
+/*
     wprintf(L"Body of function %ls after preparation:\n", function->name);
     anna_node_print(function->body);
-
+*/
     for(i=0; i<function->body->child_count; i++) 
     {
 	anna_node_validate(function->body->child[i], function->stack_template);
@@ -1353,6 +1355,10 @@ struct anna_node *anna_macro_invoke(
 	for(i=0; i<macro->body->child_count && !my_stack->stop; i++)
 	{
 	    result = anna_node_invoke(macro->body->child[i], my_stack);
+	}
+	if(result == null_object)
+	{
+	    return anna_node_null_create(&node->location);
 	}
 	return anna_node_unwrap(result);
     }
