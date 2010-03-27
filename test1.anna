@@ -36,14 +36,14 @@ print(bbb.count);
 
 macro noop(node, foo, bar)
 {
-    print("Yay, running a macro!!!\n", node as Node, "\n");
+    print("Yay, running a macro!!!\n", node.count, "\n");
     return IntLiteral(node, 12);
 }
 
 function main()
 {
     var foo = 7;
-    print(noop(3));
+    print(noop(3,4,5));
     print(Int);
 }
 

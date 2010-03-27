@@ -716,8 +716,7 @@ anna_function_t *anna_function_create(wchar_t *name,
     }
     else
     {
-	anna_stack_declare(result->stack_template, argn[0], node_wrapper_type, null_object);	
-	
+	anna_stack_declare(result->stack_template, argn[0], node_call_wrapper_type, null_object);
     }
     
     //anna_function_prepare(result);
