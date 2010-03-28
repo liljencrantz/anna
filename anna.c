@@ -1132,7 +1132,7 @@ static void anna_init()
 
     object_type = anna_type_create(L"Object", 64, 1);
     null_type = anna_type_create(L"Null", 1, 1);
-    anna_type_type_create(stack_global);
+    anna_type_type_create_early(stack_global);
     
     anna_null_type_create_early();
     anna_object_type_create_early();
@@ -1148,6 +1148,9 @@ static void anna_init()
     anna_string_type_create(stack_global);
     anna_float_type_create(stack_global);
     anna_node_wrapper_types_create(stack_global);
+
+    anna_type_type_create_late(stack_global);
+
 
     anna_function_implementation_init(stack_global);
 

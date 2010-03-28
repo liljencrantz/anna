@@ -246,15 +246,16 @@ void anna_member_add_node(
     int is_static,
     struct anna_node *member_type);
 
-size_t anna_native_method_create(anna_type_t *type,
-			       ssize_t mid,
-			       wchar_t *name,
-			       int flags,
-			       anna_native_t func,
-			       anna_type_t *result,
-			       size_t argc,
-			       anna_type_t **argv,
-			       wchar_t **argn);
+size_t anna_native_method_create(
+    anna_type_t *type,
+    ssize_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn);
 
 void anna_native_method_add_node(
     struct anna_node_call *type,

@@ -79,12 +79,10 @@ anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 	    wprintf(L"Tried to declare a type before the type type\n");
 	    CRASH;
 	}
-	
     }
     
     anna_stack_declare(stack, name, type_type, anna_type_wrap(type));
     anna_type_definition_make(type);
-    
     
     return type;
     

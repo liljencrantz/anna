@@ -58,7 +58,6 @@ function main()
     var foo = 7;
     weeo();
     print(noop(9));
-    
 }
 
 main();
