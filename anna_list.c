@@ -308,55 +308,14 @@ static anna_object_t *anna_list_init(anna_object_t **param)
 
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
-    list_type = anna_type_create(L"List", 64, 0);
-    anna_stack_declare(stack, L"List", type_type, list_type->wrapper);
-
-    anna_function_t *func;
-
-    func = anna_native_create(L"!anonymous",
-			      ANNA_FUNCTION_MACRO,
-			      (anna_native_t)anna_list_map,
-			      0,
-			      0,
-			      0, 
-			      0);
-    func->stack_template=stack;
-				
-    anna_node_call_t *definition = 
-	anna_node_call_create(
-	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
-	    0,
-	    0);
-    
-    anna_node_call_t *full_definition = 
-	anna_node_call_create(
-	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__type__"),
-	    0,
-	    0);
-
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)anna_node_identifier_create(
-	    0,
-	    L"List"));
-    
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)anna_node_identifier_create(
-	    0,
-	    L"class"));
-    
+    list_type = anna_type_native_create(L"List", stack);
+    anna_node_call_t *definition =
+	anna_type_definition_get(list_type);
     /*
       Attibute list
     */
     anna_node_call_t *attribute_list = 
-	anna_node_call_create(
-	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
-	    0,
-	    0);	
+	anna_type_attribute_list_get(list_type);
     
     anna_node_call_t *template = 
 	anna_node_call_create(
@@ -392,17 +351,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	attribute_list,
 	(anna_node_t *)template);
     
-
-    anna_node_call_add_child(
-	full_definition,	
-	(anna_node_t *)attribute_list);
-    
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)definition);
-    
-    list_type->definition = full_definition;
-
     anna_member_add_node(
 	definition, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
 	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
@@ -570,7 +518,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     //anna_node_print(e_argv[1]);
     //anna_stack_print(func->stack_template);
     
-    anna_macro_type_setup(list_type, func, 0);
+    anna_type_native_setup(list_type, stack);
         
     /*
       anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);

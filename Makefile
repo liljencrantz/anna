@@ -2,7 +2,7 @@ PROF_FLAGS := -g -pg
 
 CFLAGS := -rdynamic -Wall -std=c99 -D_ISO99_SOURCE=1  $(PROF_FLAGS)
 
-ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o anna_function_implementation.o anna_int.o anna_string.o anna_char.o anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o wutil.o anna_type.o anna_node_print.o anna_string_internal.o anna_string_naive.o anna_node_wrapper.o
+ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o anna_function_implementation.o anna_int.o anna_string.o anna_char.o anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o wutil.o anna_type.o anna_node_print.o anna_string_internal.o anna_string_naive.o anna_node_wrapper.o anna_type_type.o anna_function.o 
 
 ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o anna_string_internal_test.o util.o common.o anna_string_naive.o
 ANNA_STRING_PERF_OBJS := anna_string_internal.o anna_string_perf.o util.o common.o anna_string_naive.o

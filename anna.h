@@ -31,6 +31,8 @@ define CRASH exit(1)
 #define ANNA_CHECK_NODE_PREPARED(n) 
 #endif
 
+#define likely(x) (x)
+
 struct anna_type;
 struct anna_object;
 struct anna_member;
@@ -187,8 +189,6 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 
 anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fake_definition);
 
-anna_function_t *anna_function_unwrap(anna_object_t *type);
-
 anna_object_t *anna_function_wrapped_invoke(anna_object_t *function,
 					    anna_object_t *this,
 					    struct anna_node_call *param, 
@@ -291,8 +291,6 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model);
 int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model);
 
 anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2);
-
-anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type);
 
 void anna_error(struct anna_node *node, wchar_t *msg, ...);
 

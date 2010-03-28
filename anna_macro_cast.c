@@ -54,14 +54,15 @@ static anna_node_t *anna_macro_as(
 	    &node->location,
 	    (anna_node_t *)anna_node_dummy_create( 
 		&node->location,
-		anna_native_create(
-		    L"!asAnonymous",
-		    0,
-		    (anna_native_t)anna_function_as,
-		    type,
-		    2,
-		    as_argv,
-		    as_argn)->wrapper,
+		anna_function_wrap(
+		    anna_native_create(
+			L"!asAnonymous",
+			0,
+			(anna_native_t)anna_function_as,
+			type,
+			2,
+			as_argv,
+			as_argn)),
 		0),
 	    2,
 	    param);

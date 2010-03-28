@@ -11,6 +11,7 @@
 #include "anna_stack.h"
 #include "anna_macro.h"
 #include "anna_type.h"
+#include "anna_function.h"
 
 
 /**
@@ -297,7 +298,7 @@ static anna_node_t *anna_macro_block(anna_node_call_t *node, anna_function_t *fu
     al_push(&function->child_function, result);
     return (anna_node_t *)anna_node_dummy_create(
 	&node->location,
-	result->wrapper,
+	anna_function_wrap(result),
 	1);
 }
 
@@ -679,7 +680,7 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
   wprintf(L"\n");
 */  
     return (anna_node_t *)anna_node_dummy_create(&node->location,
-						 type->wrapper,
+						 anna_type_wrap(type),
 						 0);
 /*    
       wprintf(L"Create __call__ for non-native type %ls\n", type->name);
@@ -838,7 +839,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 		anna_node_dummy_t *fun_dummy = (anna_node_dummy_t *)fun_wrap;
 		anna_function_t *fun = anna_function_unwrap(fun_dummy->payload);
 		CHECK(fun, decl, L"Could not parse function declaration");		
-		argv[i+!!type] = fun->wrapper->type;
+		argv[i+!!type] = anna_function_wrap(fun)->type;
 		argn[i+!!type] = fun->name;
 	    }
 	    else 
@@ -885,10 +886,10 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	if(name && declare) {
 	    CHECK(name, node, L"Could not declare function, no function name given");
 	    //wprintf(L"Declaring %ls as a function\n", name);
-	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type, result->input_name, is_variadic), result->wrapper);
+	    anna_stack_declare(function->stack_template, name, anna_type_for_function(result->return_type, result->input_count, result->input_type, result->input_name, is_variadic), anna_function_wrap(result));
 	}
 	return (anna_node_t *)anna_node_dummy_create(&node->location,
-						     result->wrapper,
+						     anna_function_wrap(result),
 						     body->node_type == ANNA_NODE_CALL);
     }
     
@@ -945,11 +946,11 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
 	    result->input_type,
 	    result->input_name,
 	    0), 
-	result->wrapper);
+	anna_function_wrap(result));
     
     return (anna_node_t *)anna_node_dummy_create(
 	&node->location,
-	result->wrapper,
+	anna_function_wrap(result),
 	0);
 }
 
@@ -1095,7 +1096,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
     anna_node_t *iter_function = (anna_node_t *)
 	anna_node_dummy_create(
 	    &node->location,
-	    sub_func->wrapper,
+	    anna_function_wrap(sub_func),
 	    1);	    
 
     return (anna_node_t *)anna_node_call_create(
@@ -1179,7 +1180,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     anna_type_t *type = anna_type_create(name, 64, 0);
 
     type->definition = node;
-    anna_stack_declare(function->stack_template, name, type_type, type->wrapper);
+    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
     anna_node_t *type_result = anna_macro_type_setup(type, function, parent);
     
     if(type_result->node_type == ANNA_NODE_NULL){
@@ -1187,7 +1188,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     }
 
     return (anna_node_t *)anna_node_dummy_create(&node->location,
-						 type->wrapper,
+						 anna_type_wrap(type),
 						 0);
 
 }
@@ -1312,7 +1313,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     type->name = name;
    
     type->definition = definition;
-    anna_stack_declare(function->stack_template, name, type_type, type->wrapper);
+    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
     anna_node_t *type_result = anna_macro_type_setup(type, function, parent);
     if(type_result->node_type == ANNA_NODE_NULL){
 	return type_result;

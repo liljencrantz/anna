@@ -336,19 +336,26 @@ static anna_object_t *anna_node_call_wrapper_i_join_list(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
-    size_t count = anna_list_get_size(param[1]);
+    size_t count = 
+	anna_list_get_size(param[1]);
     
-    anna_node_call_t *src = (anna_node_call_t *)anna_node_unwrap(param[0]);
-    anna_node_call_t *dst = anna_node_call_create(
-	&src->location,
-	src->function,
-	src->child_count,
-	src->child);
+    anna_node_call_t *src = 
+	(anna_node_call_t *)anna_node_unwrap(
+	    param[0]);
+    anna_node_call_t *dst = 
+	anna_node_call_create(
+	    &src->location,
+	    src->function,
+	    src->child_count,
+	    src->child);
     int i;
     for(i=0;i<count; i++)
     {
-	anna_object_t *n = anna_list_get(param[1], i);
-	anna_node_call_add_child(dst,anna_node_unwrap(n));
+	anna_object_t *n = 
+	    anna_list_get(param[1], i);
+	anna_node_call_add_child(
+	    dst,
+	    anna_node_unwrap(n));
     }
     return anna_node_wrap(dst);
 }
