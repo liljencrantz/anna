@@ -77,6 +77,13 @@ static anna_object_t *anna_node_wrapper_i_error(anna_object_t **param)
     return null_object;
 }
 
+static anna_object_t *anna_node_wrapper_i_print(anna_object_t **param)
+{
+    anna_node_t *this = anna_node_unwrap(param[0]);
+    anna_node_print(this);
+    return null_object;
+}
+
 
 void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
 {
@@ -125,6 +132,12 @@ void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_node_wrapper_i_error, 
 	(anna_node_t *)anna_node_identifier_create(0, L"Null"), 
 	2, error_argv, error_argn);
+    
+    anna_native_method_add_node(
+	definition, -1, L"print", 0, 
+	(anna_native_t)&anna_node_wrapper_i_print, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Null"), 
+	1, error_argv, error_argn);
     
 }
 

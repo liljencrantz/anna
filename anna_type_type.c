@@ -72,7 +72,6 @@ size_t anna_native_method_add_create(
 	argn);
 }
 
-
 void anna_type_type_create_early(anna_stack_frame_t *stack)
 {
 
@@ -85,10 +84,7 @@ void anna_type_type_create_early(anna_stack_frame_t *stack)
 	L"!typeWrapperPayload",
 	0,
 	null_type);
-
-
 }
-
 
 static anna_object_t *anna_type_i_get_name(anna_object_t **param)
 {
@@ -116,8 +112,7 @@ void anna_type_type_create_late(anna_stack_frame_t *stack)
 	L"getName",
 	0, (anna_native_t)&anna_type_i_get_name, 
 	string_type,
-	1, argv, argn );
+	1, argv, argn );    
     
     
-
 }

@@ -49,8 +49,7 @@ macro noop(node, foo, bar)
 macro weeo(node, foo, bar)
 {
     var wee = AST(print(ggg,"\n"));
-    var res = wee.replace(AST(ggg), AST(foo));
-    return res;
+    return wee.replace(AST(ggg), AST(foo));
 }
 
 function main()
@@ -59,6 +58,55 @@ function main()
     weeo();
     print(noop(9));
 }
+
+macro __enumAttribute__(node, foo, bar)
+{
+    print("LALALA\n\n");
+    
+    def = node[1];
+    def.print();
+    
+    return def;
+}
+
+
+class Blubb enum
+{
+    foo; bar; baz;    
+}
+/*
+
+=>
+
+class Blubb 
+{
+    var Int value readonly;
+
+    function __init__(Int value)
+    {
+	if(value in [foo, bar, baz))
+	{
+	    this.value=value;
+	}
+    }
+
+    var Int foo readonly = 0;
+    ...
+
+    function String name() property
+    {
+	switch(this.value)
+	{
+	    case this.foo:
+		return "foo";
+	    case bar:
+		...;
+	}	
+    }
+
+}
+*/
+    
 
 main();
 

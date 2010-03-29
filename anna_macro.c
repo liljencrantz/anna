@@ -390,8 +390,8 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 				   anna_node_list_t *parent)
 {
 
-//    wprintf(L"Type setup...\n");
-//	anna_node_print(type->definition);
+    //wprintf(L"Type setup...\n");
+    //anna_node_print(type->definition);
 //	wprintf(L"\n");
 
     anna_node_call_t *node = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
@@ -443,10 +443,18 @@ anna_node_t *anna_macro_type_setup(anna_type_t *type,
 	    attribute_call_node, 
 	    function->stack_template);
 	CHECK(macro_definition, id, L"No such attribute macro found: %ls", name);
-	node = (anna_node_call_t *)macro_definition->native.macro(
+	
+	node = anna_macro_invoke(
+	    macro_definition,
+	    attribute_call_node,
+	    function,
+	    parent);
+	/*
+(anna_node_call_t *)macro_definition->native.macro(
 	    attribute_call_node, 
 	    function,
 	    parent);
+	*/
 	CHECK(node->node_type == ANNA_NODE_CALL, attribute_list, L"Attribute call %ls did not return a valid type definition", id->name);
 	sb_destroy(&sb);	
     }
@@ -1182,7 +1190,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     type->definition = node;
     anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
     anna_node_t *type_result = anna_macro_type_setup(type, function, parent);
-    
+
     if(type_result->node_type == ANNA_NODE_NULL){
 	return type_result;
     }
