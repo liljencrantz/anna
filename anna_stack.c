@@ -36,7 +36,7 @@ void anna_stack_declare(anna_stack_frame_t *stack,
     assert(type);
     assert(stack);
     
-    //wprintf(L"Declare %ls to %d\n", name, initial_value);
+    //wprintf(L"Declare %ls to be of type %ls\n", name, type->name);
     
     size_t *old_offset = hash_get(&stack->member_string_identifier, name);
     if(old_offset)

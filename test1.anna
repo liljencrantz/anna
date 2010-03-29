@@ -61,10 +61,14 @@ function main()
 
 macro __enumAttribute__(node, foo, bar)
 {
-    print("LALALA\n\n");
+    var def = node[1] as Call;
+    var body = def[3] as Call;
     
-    def = node[1];
-    def.print();
+    if(!body)
+    {
+	node.error("Missing body");
+	return null;
+    }
     
     return def;
 }

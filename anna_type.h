@@ -27,4 +27,6 @@ anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
 
 anna_object_t *anna_type_wrap(anna_type_t *result);
 
+int anna_type_prepared(anna_type_t *result);
+
 #endif

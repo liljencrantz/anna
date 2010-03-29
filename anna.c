@@ -17,6 +17,8 @@
 #include "anna_list.h"
 #include "anna_type.h"
 #include "anna_node.h"
+#include "anna_function.h"
+#include "anna_prepare.h"
 #include "anna_node_wrapper.h"
 
 /*
@@ -208,7 +210,6 @@ static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_cou
 
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
 void anna_object_print(anna_object_t *obj, int level);
-static void anna_sniff_return_type(anna_function_t *f);
 void anna_function_setup_type(anna_function_t *f);
 
 
@@ -562,54 +563,6 @@ anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *s
     return anna_function_wrapped_invoke(member, 0, param, stack);    
 }
 
-void anna_function_prepare(anna_function_t *function)
-{
-    int i;
-    anna_node_list_t list = 
-	{
-	    (anna_node_t *)function->body, 0, 0
-	}
-    ;
-
-    for(i=0; i<function->body->child_count; i++) 
-    {
-	list.idx=i;
-	function->body->child[i] = anna_node_prepare(function->body->child[i], function, &list);
-    }
-/*
-    wprintf(L"Body of function %ls after preparation:\n", function->name);
-    anna_node_print(function->body);
-*/
-    for(i=0; i<function->body->child_count; i++) 
-    {
-	anna_node_validate(function->body->child[i], function->stack_template);
-    }
-    
-    for(i=0; i<al_get_count(&function->child_function); i++) 
-    {
-	anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
-/*	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
-		i, al_get_count(&function->child_function),
-		function->name, func->name);
-*/
-	anna_function_prepare(func);
-    }
-
-    if(!function->return_type)
-	anna_sniff_return_type(function);
-    
-    if(!function->flags) {
-	assert(function->return_type);
-    }
- 
-    /*
-      wprintf(L"Function after preparations:\n");
-      anna_node_print(function->body);
-      wprintf(L"\n");
-    */
-}
-
-
 anna_function_t *anna_function_create(wchar_t *name,
 				      int flags,
 				      anna_node_call_t *body, 
@@ -698,59 +651,6 @@ void anna_function_setup_type(anna_function_t *f)
     f->wrapper = anna_object_create(function_type);
     f->type = function_type;    
 }
-
-static void sniff(array_list_t *lst, anna_function_t *f, int level)
-{
-    if(f->return_pop_count == level)
-    {
-	int i;
-	for(i=0;i<f->body->child_count;i++)
-	{
-	    if(f->body->child[i]->node_type == ANNA_NODE_RETURN)
-	    {
-		anna_node_return_t *r = (anna_node_return_t *)f->body->child[i];
-		al_push(lst, anna_node_get_return_type(r->payload, f->stack_template));
-	    }	    
-	}
-	for(i=0;i<al_get_count(&f->child_function);i++)
-	{
-	    sniff(lst, al_get(&f->child_function, i), level+1);
-	}
-    }
-}
-
-
-static void anna_sniff_return_type(anna_function_t *f)
-{
-    array_list_t types;
-    al_init(&types);
-    sniff(&types, f, 0);
-    int i;
-    
-    if(al_get_count(&types) >0)
-    {
-	//wprintf(L"Got the following %d return types for function %ls, create intersection:\n", al_get_count(&types), f->name);
-	anna_type_t *res = al_get(&types, 0);
-	for(i=1;i<al_get_count(&types); i++)
-	{
-	    anna_type_t *t = al_get(&types, i);
-	    res = anna_type_intersect(res,t);
-	}
-	f->return_type = res;
-	anna_node_call_add_child(f->body, anna_node_null_create(&f->body->location));
-    }
-    else
-    {
-	if(f->body->child_count)
-	    f->return_type = anna_node_get_return_type(f->body->child[f->body->child_count-1], f->stack_template);
-	else
-	    f->return_type = null_type;
-	//wprintf(L"Implicit return type is %ls\n", f->return_type->name);
-    }
-
-}
-
-
 
 
 anna_function_t *anna_native_create(wchar_t *name,
@@ -1453,7 +1353,7 @@ int main(int argc, char **argv)
     
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
-    anna_function_prepare(func);
+    anna_prepare_function(func);
 
     if(anna_error_count)
     {
@@ -1463,7 +1363,7 @@ int main(int argc, char **argv)
 
     wprintf(L"Validated program:\n");    
     anna_node_print((anna_node_t *)func->body);
-
+    
     wprintf(L"Output:\n");    
     
     anna_function_invoke(func, 0, 0, stack_global, stack_global);

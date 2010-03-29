@@ -48,6 +48,9 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 
 #define ANNA_FUNCTION_MACRO 1
 #define ANNA_FUNCTION_VARIADIC 2
+#define ANNA_FUNCTION_PREPARED 4
+
+#define ANNA_TYPE_PREPARED 1
 
 /*
 #define ANNA_FUNCTION_CLOSURE 2
@@ -90,6 +93,7 @@ struct anna_type
     size_t static_member_count;
     hash_table_t name_identifier;
     wchar_t *name;
+    int flags;
     struct anna_member **mid_identifier;
     struct anna_node_call *definition;
     struct anna_object *wrapper;
@@ -129,6 +133,7 @@ struct anna_function
     struct anna_object *this;
     struct anna_stack_frame *stack_template;
     array_list_t child_function;
+    array_list_t child_type;
     struct anna_type *input_type[];    
 };
 

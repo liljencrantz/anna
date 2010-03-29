@@ -6,6 +6,7 @@
 
 #include "anna_type.h"
 #include "anna_macro.h"
+#include "anna_prepare.h"
 
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type)
 {
@@ -91,7 +92,7 @@ anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 void anna_type_native_setup(anna_type_t *type, anna_stack_frame_t *stack)
 {
     anna_function_t *func;
-
+    
     func = anna_native_create(L"!anonymous",
 			      ANNA_FUNCTION_MACRO,
 			      (anna_native_t)(anna_native_function_t)0,
@@ -100,7 +101,7 @@ void anna_type_native_setup(anna_type_t *type, anna_stack_frame_t *stack)
 			      0, 
 			      0);
     func->stack_template=stack;
-    anna_macro_type_setup(type, func, 0);
+    anna_prepare_type(type, func, 0);
 }
 
 
@@ -205,5 +206,10 @@ anna_object_t *anna_type_wrap(anna_type_t *result)
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper)
 {
     return *(anna_type_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD);
+}
+
+int anna_type_prepared(anna_type_t *t)
+{
+    return !!(t->flags & ANNA_TYPE_PREPARED);
 }
 

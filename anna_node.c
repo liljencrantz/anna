@@ -571,7 +571,7 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 		anna_function_t *func=anna_function_unwrap(*obj);
 		//wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
 		
-		if(func && func->flags == ANNA_FUNCTION_MACRO)
+		if(func && (func->flags & ANNA_FUNCTION_MACRO))
 		{
 		    return func;
 		}
@@ -672,7 +672,7 @@ anna_node_t *anna_node_call_prepare(
     if(node->node_type == ANNA_NODE_CALL)
     {       
 	anna_function_t *macro_definition = anna_node_macro_get(node, function->stack_template);
-       
+	
 	if(macro_definition)
 	{       
 	    //wprintf(L"Macro\n");
@@ -683,7 +683,10 @@ anna_node_t *anna_node_call_prepare(
 		macro_definition, node, function, parent);
 	    return anna_node_prepare(macro_output, function, parent);
 	}
-       
+	else {
+	    //wprintf(L"Plain function\n");
+	}
+	
 	node->function = anna_node_prepare(node->function, function, parent);
 	anna_type_t *func_type = anna_node_get_return_type(node->function, function->stack_template);       
 	if(func_type == type_type)
@@ -774,6 +777,9 @@ anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_fram
 
 anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *stack)
 {
+    //wprintf(L"Get return type of node\n");
+    //anna_node_print(this);
+    
     switch(this->node_type)
     {
 	case ANNA_NODE_CONSTRUCT:
@@ -785,11 +791,6 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
-/*	    
-	    wprintf(L"Get return type of node\n");
-	    anna_node_print(this);
-	    wprintf(L"\n");
-*/
 	    anna_type_t *func_type = anna_node_get_return_type(this2->function, stack);
 	    /*
 	      Special case constructors...

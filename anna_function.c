@@ -69,4 +69,9 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
   
 }
 
+int anna_function_prepared(anna_function_t *t)
+{
+    return !!(t->flags & ANNA_FUNCTION_PREPARED);
+}
+
 
