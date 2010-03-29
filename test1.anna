@@ -48,7 +48,14 @@ macro noop(node, foo, bar)
 */
 macro weeo(node, foo, bar)
 {
+    node.each(ch)
+    {
+	print("lalala");
+	ch.print();
+    }
+    
     return Call(node, Identifier(node,"print"), IntLiteral(node, 777));
+
 /*    
     var wee = AST(print(ggg,"\n"));
     return wee.replace(AST(ggg), AST(foo));
@@ -58,7 +65,7 @@ macro weeo(node, foo, bar)
 function main()
 {
 //    var foo = 7;
-    weeo();
+    weeo(aa,7);
 //    print(noop(9));
 }
 
