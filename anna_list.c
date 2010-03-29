@@ -14,7 +14,6 @@
 
 #include "anna_macro.h"
 
-static anna_object_t **anna_list_get_payload(anna_object_t *this);
 
 anna_object_t *anna_list_create()
 {
@@ -121,7 +120,7 @@ void anna_list_set_capacity(anna_object_t *this, size_t sz)
     *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD) = ptr;
 }
 
-static anna_object_t **anna_list_get_payload(anna_object_t *this)
+anna_object_t **anna_list_get_payload(anna_object_t *this)
 {
     return *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD);
 }

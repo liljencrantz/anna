@@ -665,6 +665,8 @@ anna_node_t *anna_node_call_prepare(
 	    (anna_node_t *)node, 0, parent
 	}
     ;
+
+    int i;
 /*
     wprintf(L"Prepare call node:\n");
     anna_node_print((anna_node_t *)node);
@@ -699,7 +701,12 @@ anna_node_t *anna_node_call_prepare(
 								   anna_node_invoke(node->function, function->stack_template),
 								   0);
 	    node->function = anna_node_prepare(node->function, function, &list);
-	    //wprintf(L"Woo, changing call into constructor!\n");
+	    
+	    for(i=0; i<node->child_count; i++)
+	    {
+		list.idx = i;
+		node->child[i] = anna_node_prepare(node->child[i], function, &list);	 
+	    }
 	   
 	    return (anna_node_t *)node;
 	}
@@ -709,7 +716,6 @@ anna_node_t *anna_node_call_prepare(
 	node->function = anna_node_prepare(node->function, function, &list);
     }
 
-    int i;
     for(i=0; i<node->child_count; i++)
     {
 	list.idx = i;

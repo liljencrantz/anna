@@ -19,7 +19,7 @@ void anna_list_set_size(anna_object_t *this, size_t sz);
 size_t anna_list_get_capacity(anna_object_t *this);
 void anna_list_set_capacity(anna_object_t *this, size_t sz);
 
-//anna_object_t **anna_list_get_payload(anna_object_t *this);
+anna_object_t **anna_list_get_payload(anna_object_t *this);
 
 void anna_list_type_create(struct anna_stack_frame *);
 

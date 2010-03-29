@@ -273,27 +273,6 @@ void anna_node_int_literal_wrapper_type_create(anna_stack_frame_t *stack)
     
 }
 
-static anna_object_t *anna_node_call_wrapper_i_init(anna_object_t **param)
-{
-    assert(param[0] != null_object);
-    assert(param[1] != null_object);
-    assert(param[2] != null_object);
-
-    wprintf(L"Creating new call nodes is not yet implemented\n");
-    CRASH;
-    
-    anna_node_t *source = anna_node_unwrap(param[1]);
-
-    *(anna_node_t **)anna_member_addr_get_mid(
-	param[0],
-	ANNA_MID_NODE_PAYLOAD)=
-	anna_node_call_create(
-	    &source->location,
-	    0, 0,0);
-    
-    return param[0];
-}
-
 static anna_object_t *anna_node_call_wrapper_i_get_count(anna_object_t **param)
 {
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
@@ -373,18 +352,61 @@ static anna_object_t *anna_node_call_wrapper_i_join_list(anna_object_t **param)
     return anna_node_wrap(dst);
 }
 
+static anna_object_t *anna_node_call_wrapper_i_init(anna_object_t **param)
+{
+    size_t sz = anna_list_get_size(param[3]);
+    anna_object_t **src = anna_list_get_payload(param[3]);
+    
+    anna_node_t *source = anna_node_unwrap(param[1]);
+    anna_node_t *function = anna_node_unwrap(param[2]);
+    
+    anna_node_call_t *dest = 
+	anna_node_call_create(
+	    &source->location,
+	    function,
+	    0,
+	    0);
+    int i;
+    for(i=0; i<sz; i++)
+    {
+	anna_node_call_add_child(dest, anna_node_unwrap(src[i]));
+    }
+    dest->child_count = sz;
+    
+    *(anna_node_t **)anna_member_addr_get_mid(param[0],ANNA_MID_NODE_PAYLOAD)=
+	dest;
+	
+    return param[0];
+}
+
+
 void anna_node_call_wrapper_type_create(anna_stack_frame_t *stack)
 {
+    anna_node_t *list_template_param[] = 
+	{
+	    (anna_node_t *)anna_node_identifier_create(0, L"Node")
+	}
+    ;
+    
+    anna_node_t *node_list_type = anna_node_templated_type_create(
+	0, 
+	(anna_node_t *)anna_node_identifier_create(0, L"List"),
+	1,
+	list_template_param);
+
+
     anna_node_t *argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"Identifier"),
+	    (anna_node_t *)anna_node_identifier_create(0, L"Call"),
 	    (anna_node_t *)anna_node_identifier_create(0, L"Node"),
+	    (anna_node_t *)anna_node_identifier_create(0, L"Node"),
+	    node_list_type
 	}
     ;
     
     wchar_t *argn[] =
 	{
-	    L"this", L"source"
+	    L"this", L"source", L"func", L"param"
 	}
     ;
     
@@ -430,7 +452,7 @@ void anna_node_call_wrapper_type_create(anna_stack_frame_t *stack)
 	ANNA_FUNCTION_VARIADIC,
 	(anna_native_t)&anna_node_call_wrapper_i_init, 
 	(anna_node_t *)anna_node_identifier_create(0, L"Null") , 
-	2, argv, argn);
+	4, argv, argn);
     
     anna_native_method_add_node(
 	definition, -1, L"getCount", 0, 

@@ -33,7 +33,7 @@ bbb.tralala=7;
 
 print(bbb.count);
 */
-
+/*
 macro noop(node, foo, bar)
 {
     if(node.count == 1)
@@ -45,18 +45,21 @@ macro noop(node, foo, bar)
 	return node.error("Expected exactly one argument to macro noop");
     }
 }
-
+*/
 macro weeo(node, foo, bar)
 {
+    return Call(node, Identifier(node,"print"), IntLiteral(node, 777));
+/*    
     var wee = AST(print(ggg,"\n"));
     return wee.replace(AST(ggg), AST(foo));
+*/
 }
 
 function main()
 {
-    var foo = 7;
+//    var foo = 7;
     weeo();
-    print(noop(9));
+//    print(noop(9));
 }
 
 macro __enumAttribute__(node, foo, bar)
@@ -78,6 +81,15 @@ class Blubb enum
 {
     foo; bar; baz;    
 }
+
+/*
+
+enum Foo
+{
+...
+}
+
+ */
 /*
 
 =>
