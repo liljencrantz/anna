@@ -157,7 +157,8 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
 */	
-	anna_prepare_function_internal(func, &current);
+	if(func->flags & ANNA_FUNCTION_MACRO)
+	    anna_prepare_function_internal(func, &current);
     }
     
     for(i=0; i<al_get_count(&function->child_type); i++) 
@@ -171,6 +172,18 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 			  function,
 			  &list,
 			  &current);
+    }
+    
+    for(i=0; i<al_get_count(&function->child_function); i++) 
+    {
+	anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
+/*
+	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
+		i, al_get_count(&function->child_function),
+		function->name, func->name);
+*/	
+	if(!(func->flags & ANNA_FUNCTION_MACRO))
+	    anna_prepare_function_internal(func, &current);
     }
     
     if(!function->return_type)
@@ -287,6 +300,9 @@ static anna_node_t *anna_prepare_type_internal(
     prepare_prev_t *dep)
 {
 
+    if(anna_type_prepared(type))
+	return;
+    
     wprintf(L"Prepare type %ls\n", type->name);
     //anna_node_print(type->definition);
 //	wprintf(L"\n");

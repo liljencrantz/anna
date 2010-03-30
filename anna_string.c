@@ -45,6 +45,13 @@ wchar_t *anna_string_payload(anna_object_t *obj)
     return asi_cstring(str);
 }
 
+wchar_t *anna_string_count(anna_object_t *obj)
+{
+//    wprintf(L"Get payload from string at %d\n", obj);
+    anna_string_t *str = as_unwrap(obj);
+    return asi_get_length(str);
+}
+
 
 static anna_object_t *anna_string_i_set_int(anna_object_t **param)
 {
