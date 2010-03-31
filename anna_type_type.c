@@ -75,7 +75,7 @@ size_t anna_native_method_add_create(
 void anna_type_type_create_early(anna_stack_frame_t *stack)
 {
 
-    type_type = anna_type_create(L"Type", 64, 1);
+    type_type = anna_type_create(L"Type");
     anna_type_definition_make(type_type);
 
     anna_member_add_create(
@@ -99,7 +99,7 @@ void anna_type_type_create_late(anna_stack_frame_t *stack)
 	    type_type
 	}
     ;
-
+    
     wchar_t *argn[]=
 	{
 	    L"this"

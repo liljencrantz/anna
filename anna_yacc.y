@@ -345,6 +345,29 @@ expression3 :
 	    anna_node_t *param[] ={$1, $3};   
 	    $$ = (anna_node_t *)anna_node_call_create(&@$, $2, 2, param);
 	}
+	|
+	expression3 IN expression2
+	{
+	    anna_node_t *param[] ={
+		$3, 
+		anna_node_identifier_create(&@$,L"__in__")
+	    };
+	    anna_node_t *param2[] ={
+		$1, 
+	    };
+	    $$ = (anna_node_t *)
+		anna_node_call_create(
+		    &@$, 
+		    (anna_node_t *)anna_node_call_create(
+			&@$, 
+			(anna_node_t *)anna_node_identifier_create(
+			    &@$,
+			    L"__memberGet__"),
+			2,
+			param),
+		    1,
+		    param2);
+	}
         | 
 	expression4
 	;
@@ -593,11 +616,6 @@ op3:
 	GREATER_OR_EQUAL
 	{
 		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__gte__");
-	}
-	|
-	IN
-	{
-		$$ = (anna_node_t *)anna_node_identifier_create(&@$,L"__in__");
 	}
 ;
 

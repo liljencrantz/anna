@@ -77,7 +77,8 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_MID_CALL 15
 #define ANNA_MID_INIT_PAYLOAD 16
 #define ANNA_MID_NODE_PAYLOAD 17
-#define ANNA_MID_FIRST_UNRESERVED 18
+#define ANNA_MID_EQ 18
+#define ANNA_MID_FIRST_UNRESERVED 19
 
 union anna_native
 {
@@ -91,13 +92,14 @@ struct anna_type
     size_t member_count;
     size_t property_count;
     size_t static_member_count;
+    size_t static_member_capacity;
     hash_table_t name_identifier;
     wchar_t *name;
     int flags;
     struct anna_member **mid_identifier;
     struct anna_node_call *definition;
     struct anna_object *wrapper;
-    struct anna_object *static_member[];
+    struct anna_object **static_member;
 };
 
 struct anna_member
@@ -176,11 +178,6 @@ extern int anna_error_count;
 void anna_function_implementation_init(struct anna_stack_frame *stack);
 
 /**
-   Declare all native macros
- */
-void anna_macro_init(struct anna_stack_frame *stack);
-
-/**
   Returns the type of the specified member in the specified type
  */
 anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
@@ -191,8 +188,6 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
 
 anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv, wchar_t **argn, int is_variadic);
-
-anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fake_definition);
 
 anna_object_t *anna_function_wrapped_invoke(anna_object_t *function,
 					    anna_object_t *this,
@@ -314,6 +309,8 @@ void anna_native_declare(struct anna_stack_frame *stack,
 			 size_t argc, 
 			 anna_type_t **argv,
 			 wchar_t **argn);
+
+void anna_object_print(anna_object_t *obj);
 
 
 #endif

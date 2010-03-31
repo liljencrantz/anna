@@ -302,7 +302,40 @@ static anna_object_t *anna_list_init(anna_object_t **param)
     
     return param[0];
 }
+/*
+static anna_object_t *anna_list_in(anna_object_t **param)
+{
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
 
+    anna_object_t *needle = param[1];
+    if(needle == null_object)
+    {
+	return null_object;
+    }
+    anna_object_print(needle);
+    
+    anna_object_t *eq_obj = *anna_member_addr_get_mid(needle, ANNA_MID_EQ);
+    anna_function_t *eq_func = anna_function_unwrap(eq_obj);
+    
+    for(i=0;i<sz;i++)
+    {
+	anna_object_t *result = 
+	    anna_function_invoke(
+		eq_func,
+		needle,
+		param,
+		0,
+		0);
+	if(result != null_object)
+	{
+	    return anna_int_create(i);
+	}
+    }
+    return null_object;
+}
+*/
 
 
 void anna_list_type_create(anna_stack_frame_t *stack)
@@ -403,7 +436,14 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_node_t *e_argv[] = 
 	{
 	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
-	    anna_node_function_declaration_create(0, (anna_node_t *)anna_node_identifier_create(0, L"Object"), 2, e_method_argv, e_method_argn)
+	    anna_node_function_declaration_create(
+		0,
+		(anna_node_t *)anna_node_identifier_create(
+		    0,
+		    L"Object"),
+		2,
+		e_method_argv, 
+		e_method_argn)
 	}
     ;
 
@@ -425,8 +465,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	1,
 	list_template_param);
 
-
-    
     anna_native_method_add_node(
 	definition,
 	-1,
@@ -475,7 +513,13 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_list_get_count, 
 	(anna_node_t *)anna_node_identifier_create(0, L"Int"), 
 	1, e_argv, e_argn);
-    
+    /*
+    anna_native_method_add_node(
+	definition, -1, L"__in__", 0, 
+	(anna_native_t)&anna_list_in, 
+	(anna_node_t *)anna_node_identifier_create(0, L"Int"), 
+	2, a_argv, a_argn);
+    */
     anna_native_method_add_node(
 	definition, -1, L"setCount", 0, 
 	(anna_native_t)&anna_list_set_count, 
@@ -490,7 +534,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
 	    L"getCount",
 	    L"setCount"));
-	
+    
     /*
       FIXME: This is the wrong return type for map - we need to check
       the return type of the function argument and do a cast, or

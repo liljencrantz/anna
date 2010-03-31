@@ -640,7 +640,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     CHECK_NODE_BLOCK(node->child[3]);
 
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
-    anna_type_t *type = anna_type_create(name, 64, 0);
+    anna_type_t *type = anna_type_create(name);
 
     type->definition = node;
     anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
@@ -711,7 +711,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 							  result->name);    
     }
     
-    anna_type_t *type = anna_type_create(L"!temporaryTypeName", 64, 0);
+    anna_type_t *type = anna_type_create(L"!temporaryTypeName");
     templatize_key_t *new_key = malloc(sizeof(templatize_key_t));
     memcpy(new_key, &key,sizeof(templatize_key_t));
     new_key->argv = malloc(sizeof(anna_node_t *)*new_key->argc);

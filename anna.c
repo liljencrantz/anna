@@ -16,19 +16,34 @@
 #include "anna_char.h"
 #include "anna_list.h"
 #include "anna_type.h"
+#include "anna_type_type.h"
 #include "anna_node.h"
 #include "anna_function.h"
 #include "anna_prepare.h"
 #include "anna_node_wrapper.h"
 
 /*
-  Ideas for apps written in anna:
+  Plans for apps written in anna:
   Documentation generator: Introspect all data types and generate html documentation on them.
   live: Debug a running application using command line or web browser.
   Compiler front end.
   Asynchronous continuation based app/web server
 */
 /*
+
+Type members:
+  member
+  name
+  intersect
+  abides
+  definition
+  filter
+
+Object members:
+  asString
+  type
+  
+  
   Code refactoring plan:
 
   - Move object and type code to individual .[ch] files.
@@ -204,12 +219,8 @@ static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 
 int anna_error_count=0;
 
-static anna_member_t **anna_mid_identifier_create();
-
-static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count, int fake_location);
 
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
-void anna_object_print(anna_object_t *obj, int level);
 void anna_function_setup_type(anna_function_t *f);
 
 
@@ -399,7 +410,7 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	    new_key->argn[i]=wcsdup(argn[i]);
 	}
 	
-	res = anna_type_create_raw(L"!FunctionType", 64, 1);	
+	res = anna_type_create(L"!FunctionType");	
 	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
 			   1, null_type);
@@ -442,7 +453,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 	}
 	
 	wprintf(L"Critical: Tried to call a non-function\n");
-	anna_object_print(obj, 0);
+	anna_object_print(obj);
 	
 	CRASH;
     }
@@ -777,23 +788,6 @@ anna_object_t *anna_i_null_function(anna_object_t **node_base)
     return null_object;
 }
 
-static anna_type_t *anna_type_create_raw(wchar_t *name, size_t static_member_count, int fake_definition)
-{
-    anna_type_t *result = calloc(1,sizeof(anna_type_t)+sizeof(anna_object_t *)*static_member_count);
-    result->static_member_count = 0;
-    result->member_count = 0;
-    hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
-    result->mid_identifier = anna_mid_identifier_create();
-    result->name = name;
-    return result;  
-}
-
-anna_type_t *anna_type_create(wchar_t *name, size_t static_member_count, int fake_definition)
-{
-    anna_type_t *result = anna_type_create_raw(name, static_member_count, fake_definition);
-    return result;
-}
-			  
 anna_object_t *anna_object_create(anna_type_t *type) {
     anna_object_t *result = calloc(1,sizeof(anna_object_t)+sizeof(anna_object_t *)*type->member_count);
     result->type = type;
@@ -841,7 +835,7 @@ size_t anna_member_create(anna_type_t *type,
     member->type = member_type;
     member->is_static = is_static;
     if(is_static) {
-	member->offset = type->static_member_count++;
+	member->offset = anna_type_static_member_allocate(type);
     } else {
 	member->offset = type->member_count++;
     }
@@ -894,13 +888,6 @@ void anna_native_method_add_node(anna_node_call_t *definition,
 }
 
 
-static anna_member_t **anna_mid_identifier_create()
-{
-    /*
-      FIXME: Track, reallocate when we run out of space, etc.
-    */
-    return calloc(1,4096);
-}
 
 size_t anna_native_method_create(anna_type_t *type,
 				 ssize_t mid,
@@ -922,7 +909,17 @@ size_t anna_native_method_create(anna_type_t *type,
 	}
     }
     
-    mid = anna_member_create(type, mid, name, 1, anna_type_for_function(result, argc, argv, argn, flags & ANNA_FUNCTION_VARIADIC));
+    mid = anna_member_create(
+	type,
+	mid, 
+	name,
+	1,
+	anna_type_for_function(
+	    result, 
+	    argc, 
+	    argv,
+	    argn,
+	    flags & ANNA_FUNCTION_VARIADIC));
     anna_member_t *m = type->mid_identifier[mid];
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     m->is_method=1;
@@ -977,7 +974,7 @@ static void anna_null_type_create_early()
     */
     anna_type_t *argv[]={null_type};
     wchar_t *argn[]={L"this"};
-  
+    anna_type_static_member_allocate(null_type);
     null_type->static_member[0] = 
 	anna_function_wrap(
 	    anna_native_create(L"!nullFunction", 0, 
@@ -1021,7 +1018,8 @@ static void anna_init()
     anna_mid_put(L"__call__", ANNA_MID_CALL_PAYLOAD);    
     anna_mid_put(L"__init__", ANNA_MID_INIT_PAYLOAD);
     anna_mid_put(L"!nodePayload", ANNA_MID_NODE_PAYLOAD);
-
+    anna_mid_put(L"__eq__", ANNA_MID_EQ);
+    
     stack_global = anna_stack_create(4096, 0);
     /*
       Create lowest level stuff. Bits of magic, be careful with
@@ -1030,8 +1028,8 @@ static void anna_init()
     */
     
 
-    object_type = anna_type_create(L"Object", 64, 1);
-    null_type = anna_type_create(L"Null", 1, 1);
+    object_type = anna_type_create(L"Object");
+    null_type = anna_type_create(L"Null");
     anna_type_type_create_early(stack_global);
     
     anna_null_type_create_early();
@@ -1072,7 +1070,7 @@ void anna_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
     wprintf(L"  %ls: %ls\n", key, member->type?member->type->name:L"?");
 }
 
-void anna_object_print(anna_object_t *obj, int level)
+void anna_object_print(anna_object_t *obj)
 {
     wprintf(L"%ls:\n", obj->type->name);
     hash_foreach2(&obj->type->name_identifier, &anna_print_member, obj);

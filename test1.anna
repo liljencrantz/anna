@@ -106,7 +106,7 @@ macro __enumAttribute__(node, foo, bar)
 	    return null;
 	}
 	var getter = "!" ~ id.name ~ "Getter";
-	var fun = AST(function placeholder1(){return placeholder2;});
+	var fun = AST(function placeholder1() static {return placeholder2;});
 	var prop = AST(property Int placeholder1 getter placeholder2);
 	var cmp = AST(if(this.value == placeholder1){return placeholder2});
 	fun = fun.replace(AST(placeholder1),Identifier(node, getter))
@@ -140,6 +140,8 @@ class Blubb enum
 
 function main2()
 {
+//    print( 12 in [1,6,7,12,39]);
+
     var bbb = Blubb(1);
     print(bbb.baz, "\n", bbb.toString(), "\n");
 }

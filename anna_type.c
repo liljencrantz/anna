@@ -8,6 +8,25 @@
 #include "anna_macro.h"
 #include "anna_prepare.h"
 
+static anna_member_t **anna_mid_identifier_create()
+{
+    /*
+      FIXME: Track, reallocate when we run out of space, etc.
+    */
+    return calloc(1,4096);
+}
+
+anna_type_t *anna_type_create(wchar_t *name)
+{
+    anna_type_t *result = calloc(1,sizeof(anna_type_t));
+    result->static_member_count = 0;
+    result->member_count = 0;
+    hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
+    result->mid_identifier = anna_mid_identifier_create();
+    result->name = name;
+    return result;  
+}
+			  
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type)
 {
     return (anna_node_call_t *)type->definition->child[2];
@@ -68,7 +87,7 @@ void anna_type_definition_make(anna_type_t *type)
 
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 {    
-    anna_type_t *type = anna_type_create(name, 64, 0);
+    anna_type_t *type = anna_type_create(name);
     if(type_type == 0)
     {
 	if(wcscmp(name, L"Type") == 0)
@@ -213,3 +232,18 @@ int anna_type_prepared(anna_type_t *t)
     return !!(t->flags & ANNA_TYPE_PREPARED);
 }
 
+size_t anna_type_static_member_allocate(anna_type_t *type)
+{
+    if(type->static_member_count >= type->static_member_capacity)
+    {
+	size_t new_sz = maxi(8, 2*type->static_member_capacity);
+	type->static_member = realloc(type->static_member, new_sz*sizeof(anna_object_t *));
+	if(!type->static_member)
+	{
+	    wprintf(L"Out of memory");
+	    CRASH;
+	}
+	type->static_member_capacity = new_sz;
+    }
+    return type->static_member_count++;    
+}
