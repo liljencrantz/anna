@@ -9,7 +9,7 @@
 #include "anna_macro.h"
 #include "anna_prepare.h"
 
-static array_list_t  anna_type_list = 
+array_list_t  anna_type_list = 
 {
     0, 0, 0
 };
@@ -96,6 +96,7 @@ void anna_type_definition_make(anna_type_t *type)
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 {    
     anna_type_t *type = anna_type_create(name, stack);
+/*
     if(type_type == 0)
     {
 	if(wcscmp(name, L"Type") == 0)
@@ -108,17 +109,14 @@ anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 	    CRASH;
 	}
     }
-    
-    anna_stack_declare(stack, name, type_type, anna_type_wrap(type));
+*/  
     anna_type_definition_make(type);
-    
     return type;
-    
 }
 
 void anna_type_native_setup(anna_type_t *type, anna_stack_frame_t *stack)
 {
-    anna_prepare_type_interface(type);
+    //anna_prepare_type_interface(type);
 }
 
 

@@ -222,14 +222,11 @@ static anna_type_t *anna_prepare_type_from_identifier(
 	anna_error(node,L"Could not determine type of node of type %d", node->node_type);
 	return 0;
     }
-   
+    
     anna_node_identifier_t *id = (anna_node_identifier_t *)node;
     anna_object_t *wrapper = anna_stack_get_str(function->stack_template, id->name);
     return anna_type_unwrap(wrapper);
 }
-
-
-
 
 static anna_node_t *anna_type_member(anna_type_t *type,
 				     struct anna_node_call *node, 
@@ -313,7 +310,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 
     function->stack_template=type->stack;
     
-    //wprintf(L"Prepare type %ls... %d\n", type->name, function);
+    wprintf(L"Prepare type %ls\n", type->name);
     //anna_node_print(type->definition);
 //	wprintf(L"\n");
 
@@ -616,8 +613,6 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	&function->child_type,
 	sizeof(array_list_t));
     
-    anna_prepare_type_implementation(type);
-    
 /*
   wprintf(L"Base type after transformations\n");
   anna_node_print(type->definition);
@@ -644,3 +639,68 @@ anna_node_t *anna_prepare_type_implementation(anna_type_t *type)
     
 }
 
+void anna_prepare()
+{
+    int i;
+    
+    for(i=0; i<al_get_count(&anna_function_list); i++)
+    {
+	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
+	
+	wprintf(L"Prepare function %d of %d: %ls\n", 
+		i, al_get_count(&anna_function_list),
+		func->name);
+	
+	if((func->flags & ANNA_FUNCTION_MACRO) && (func->body))
+	    anna_prepare_function(func);
+	
+    }
+
+    anna_member_create(
+	type_type,
+	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
+	L"!typeWrapperPayload",
+	0,
+	null_type);
+        
+    for(i=0; i<al_get_count(&anna_type_list); i++)
+    {
+	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
+	wprintf(L"Register type %ls\n", type->name);
+	
+	anna_stack_declare(type->stack,
+			   type->name,
+			   type_type,
+			   anna_type_wrap(type));
+    }
+    
+    for(i=0; i<al_get_count(&anna_type_list); i++)
+    {
+	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
+	anna_prepare_type_interface(type);
+/*	anna_stack_set_str(type->stack,
+			   type->name,
+			   anna_type_wrap(type));
+*/
+    }
+    
+    
+    for(i=0; i<al_get_count(&anna_function_list); i++)
+    {
+	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
+/*
+	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
+		i, al_get_count(&function->child_function),
+		function->name, func->name);
+*/	
+	if((!(func->flags & ANNA_FUNCTION_MACRO)) && (func->body))
+	    anna_prepare_function(func);
+    }
+    
+    for(i=0; i<al_get_count(&anna_type_list); i++)
+    {
+	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
+	anna_prepare_type_implementation(type);
+    }
+    
+}

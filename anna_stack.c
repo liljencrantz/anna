@@ -26,12 +26,12 @@ void anna_stack_declare(anna_stack_frame_t *stack,
 {
     if(!name)
 	CRASH;
-    
+    /*
     if(!initial_value)
     {
 	CRASH;
     }
-    
+    */
     assert(name);
     assert(type);
     assert(stack);

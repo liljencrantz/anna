@@ -19,4 +19,6 @@ anna_node_t *anna_prepare_type_interface(anna_type_t *type);
  */
 anna_node_t *anna_prepare_type_implementation(anna_type_t *type);
 
+void anna_prepare();
+
 #endif

@@ -215,15 +215,6 @@ struct anna_node *anna_macro_invoke(
     anna_function_t *function,
     anna_node_list_t *parent);
 
-anna_function_t *anna_function_create(wchar_t *name,
-				      int flags,
-				      struct anna_node_call *body, 
-				      anna_type_t *return_type,
-				      size_t argc,
-				      anna_type_t **argv,
-				      wchar_t **argn,
-				      struct anna_stack_frame *parent_stack,
-				      int return_pop_count);
 
 anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, struct anna_stack_frame *stack);
 
@@ -271,14 +262,6 @@ void anna_native_method_add_node(
     size_t argc,
     struct anna_node **argv,
     wchar_t **argn);
-
-anna_function_t *anna_native_create(wchar_t *name,
-				    int flags,
-				    anna_native_t native, 
-				    anna_type_t *return_type,
-				    size_t argc,
-				    anna_type_t **argv,
-				    wchar_t **argn);
 
 size_t anna_method_create(anna_type_t *type,
 			  ssize_t mid,
