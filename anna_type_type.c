@@ -137,7 +137,7 @@ void anna_type_type_create(anna_stack_frame_t *stack)
     anna_native_method_add_node(
 	definition,
 	-1,
-	L"getName",
+	L"!getName",
 	0, 
 	(anna_native_t)&anna_type_i_get_name, 
 	(anna_node_t *)anna_node_identifier_create(
@@ -146,6 +146,14 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 	1,
 	argv,
 	argn );    
+    
+    anna_node_call_add_child(
+	definition,
+	(anna_node_t *)anna_node_property_create(
+	    0,
+	    L"name",
+	    (anna_node_t *)anna_node_identifier_create(0, L"String") , 
+	    L"!getName", 0));
     
     anna_native_method_add_node(
 	definition,

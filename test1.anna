@@ -146,8 +146,10 @@ function main2()
     var bbb = Blubb(1);
     print(bbb.baz, "\n", bbb.toString(), "\n");
 
-    print(Int.member.count);
-    
+    Int.member.each(idx:member)
+    {
+	print(member.name, "\n");
+    }
 }
 
 main2();

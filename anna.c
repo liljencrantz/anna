@@ -908,7 +908,7 @@ static void anna_init()
         
     anna_macro_init(stack_global);
 
-    anna_member_type_create(stack_global);
+    anna_member_types_create(stack_global);
     anna_int_type_create(stack_global);
     anna_list_type_create(stack_global);
     anna_char_type_create(stack_global);
