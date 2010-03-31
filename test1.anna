@@ -146,7 +146,7 @@ function main2()
     var bbb = Blubb(1);
     print(bbb.baz, "\n", bbb.toString(), "\n");
 
-    print(Int.getMember());
+    print(Int.member.count);
     
 }
 

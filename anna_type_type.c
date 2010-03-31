@@ -150,7 +150,7 @@ void anna_type_type_create(anna_stack_frame_t *stack)
     anna_native_method_add_node(
 	definition,
 	-1,
-	L"getMember",
+	L"!getMember",
 	0,
 	(anna_native_t)&anna_type_i_get_member, 
 	anna_node_simple_templated_type_create(
@@ -161,4 +161,17 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 	argv,
 	argn );    
     
+    anna_node_call_add_child(
+	definition,
+	(anna_node_t *)anna_node_property_create(
+	    0,
+	    L"member",
+	    anna_node_simple_templated_type_create(
+		0, 
+		L"List",
+		L"Member"),
+	    L"!getMember",
+	    0));
+    
+
 }
