@@ -9,6 +9,6 @@ anna_object_t *anna_string_create();
 void anna_string_type_create(anna_stack_frame_t *stack);
 void anna_string_print(anna_object_t *obj);
 wchar_t *anna_string_payload(anna_object_t *obj);
-wchar_t *anna_string_count(anna_object_t *obj);
+size_t anna_string_count(anna_object_t *obj);
 
 #endif

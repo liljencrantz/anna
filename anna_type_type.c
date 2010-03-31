@@ -8,6 +8,7 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_type.h"
+#include "anna_string.h"
 
 static void anna_member_add_create(
     anna_type_t *type,
@@ -31,7 +32,7 @@ static void anna_member_add_create(
 	(anna_node_t *)anna_node_identifier_create(0, member_type->name));
 }
 
-size_t anna_native_method_add_create(
+static void anna_native_method_add_create(
     anna_type_t *type,
     ssize_t mid,
     wchar_t *name,
@@ -75,7 +76,7 @@ size_t anna_native_method_add_create(
 void anna_type_type_create_early(anna_stack_frame_t *stack)
 {
 
-    type_type = anna_type_create(L"Type");
+    type_type = anna_type_create(L"Type", stack );
     anna_type_definition_make(type_type);
 
     anna_member_add_create(

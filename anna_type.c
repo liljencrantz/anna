@@ -4,9 +4,15 @@
 #include <assert.h>
 #include <string.h>
 
+#include "util.h"
 #include "anna_type.h"
 #include "anna_macro.h"
 #include "anna_prepare.h"
+
+static array_list_t  anna_type_list = 
+{
+    0, 0, 0
+};
 
 static anna_member_t **anna_mid_identifier_create()
 {
@@ -16,7 +22,7 @@ static anna_member_t **anna_mid_identifier_create()
     return calloc(1,4096);
 }
 
-anna_type_t *anna_type_create(wchar_t *name)
+anna_type_t *anna_type_create(wchar_t *name, anna_stack_frame_t *stack)
 {
     anna_type_t *result = calloc(1,sizeof(anna_type_t));
     result->static_member_count = 0;
@@ -24,6 +30,8 @@ anna_type_t *anna_type_create(wchar_t *name)
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = anna_mid_identifier_create();
     result->name = name;
+    result->stack = stack;
+    al_push(&anna_type_list, result);
     return result;  
 }
 			  
@@ -87,7 +95,7 @@ void anna_type_definition_make(anna_type_t *type)
 
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 {    
-    anna_type_t *type = anna_type_create(name);
+    anna_type_t *type = anna_type_create(name, stack);
     if(type_type == 0)
     {
 	if(wcscmp(name, L"Type") == 0)
@@ -110,17 +118,7 @@ anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 
 void anna_type_native_setup(anna_type_t *type, anna_stack_frame_t *stack)
 {
-    anna_function_t *func;
-    
-    func = anna_native_create(L"!anonymous",
-			      ANNA_FUNCTION_MACRO,
-			      (anna_native_t)(anna_native_function_t)0,
-			      0,
-			      0,
-			      0, 
-			      0);
-    func->stack_template=stack;
-    anna_prepare_type(type, func, 0);
+    anna_prepare_type_interface(type);
 }
 
 

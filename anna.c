@@ -21,6 +21,7 @@
 #include "anna_function.h"
 #include "anna_prepare.h"
 #include "anna_node_wrapper.h"
+#include "anna_macro.h"
 
 /*
   Plans for apps written in anna:
@@ -46,7 +47,7 @@ Object members:
   
   Code refactoring plan:
 
-  - Move object and type code to individual .[ch] files.
+  - Move object code to individual .[ch] files.
   - All node types should have a head var which is an anna_node_t, to reduce the amount of casting needed.
   
   ComparisonMap type
@@ -90,6 +91,7 @@ Object members:
   
   cast function (depends on type namespace/type object splittingx)
   import macro
+
   elif macro
   __extendsAttribute__ macro
   in method
@@ -410,7 +412,7 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	    new_key->argn[i]=wcsdup(argn[i]);
 	}
 	
-	res = anna_type_create(L"!FunctionType");	
+	res = anna_type_create(L"!FunctionType", stack_global);	
 	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
 			   1, null_type);
@@ -1028,8 +1030,8 @@ static void anna_init()
     */
     
 
-    object_type = anna_type_create(L"Object");
-    null_type = anna_type_create(L"Null");
+    object_type = anna_type_create(L"Object" ,stack_global);
+    null_type = anna_type_create(L"Null", stack_global);
     anna_type_type_create_early(stack_global);
     
     anna_null_type_create_early();

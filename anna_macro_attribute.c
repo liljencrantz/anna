@@ -47,7 +47,9 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
     
     anna_node_call_t *attribute =
         (anna_node_call_t *)node->child[0];
-    anna_node_call_t *body = node->child[1];
+    anna_node_call_t *body = 
+	(anna_node_call_t *)
+	node->child[1];
     
     //anna_node_print(attribute);
 
@@ -69,7 +71,7 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
 	FAIL(parent_id, L"Unknown parent type: %ls", parent_id->name);
     }
     
-    anna_node_call_t *definition = type->definition->child[3];
+    anna_node_call_t *definition = (anna_node_call_t *)type->definition->child[3];
     
     int i;
     for(i=0; i<definition->child_count; i++)

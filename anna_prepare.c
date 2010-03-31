@@ -14,6 +14,8 @@
 #include "anna_node.h"
 #include "anna_node_check.h"
 #include "anna_prepare.h"
+#include "anna_macro.h"
+#include "anna_function.h"
 
 struct prepare_prev
 {
@@ -28,10 +30,9 @@ typedef struct prepare_prev prepare_prev_t;
 static void anna_prepare_function_internal(
     anna_function_t *function, 
     prepare_prev_t *prev);
-static anna_node_t *anna_prepare_type_internal(
+
+static anna_node_t *anna_prepare_type_interface_internal(
     anna_type_t *type, 
-    anna_function_t *function, 
-    anna_node_list_t *parent,
     prepare_prev_t *dep);
 
 static void anna_sniff_return_type(anna_function_t *f);
@@ -47,7 +48,7 @@ static void sniff(array_list_t *lst, anna_function_t *f, int level)
 	    {
 		anna_node_return_t *r = (anna_node_return_t *)f->body->child[i];
 		al_push(lst, anna_node_get_return_type(r->payload, f->stack_template));
-	    }	    
+	    }
 	}
 	for(i=0;i<al_get_count(&f->child_function);i++)
 	{
@@ -101,7 +102,7 @@ static int anna_function_check_dependencies(anna_function_t *function, prepare_p
     if(node->function == function)
     {
 	anna_error(
-	    function->body, 
+	    (anna_node_t *)function->body, 
 	    L"Circular dependency for function %ls", function->name);
 	return 1;
     }
@@ -168,10 +169,8 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
 */
-	anna_prepare_type_internal(type, 
-			  function,
-			  &list,
-			  &current);
+	anna_prepare_type_interface_internal(type, 
+					     &current);
     }
     
     for(i=0; i<al_get_count(&function->child_function); i++) 
@@ -205,7 +204,10 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 
    E.g. an identifier node with the payload "Object" will return the object type.
 */
-static anna_type_t *anna_prepare_type_from_identifier(anna_node_t *node, anna_function_t *function, anna_node_list_t *parent)
+static anna_type_t *anna_prepare_type_from_identifier(
+    anna_node_t *node,
+    anna_function_t *function, 
+    anna_node_list_t *parent)
 {
     node = anna_node_prepare(node, function, parent);
    
@@ -284,26 +286,34 @@ static anna_node_t *anna_type_member(anna_type_t *type,
     */
 }
 
-anna_node_t *anna_prepare_type(
-    anna_type_t *type, 
-    anna_function_t *function, 
-    anna_node_list_t *parent)
+anna_node_t *anna_prepare_type_interface(
+    anna_type_t *type)
 {
-    return anna_prepare_type_internal(type, function, parent, 0);
+    return anna_prepare_type_interface_internal(type, 0);
 }
 
-
-static anna_node_t *anna_prepare_type_internal(
+static anna_node_t *anna_prepare_type_interface_internal(
     anna_type_t *type, 
-    anna_function_t *function, 
-    anna_node_list_t *parent,
     prepare_prev_t *dep)
 {
-
-    if(anna_type_prepared(type))
-	return;
     
-    wprintf(L"Prepare type %ls\n", type->name);
+    if(anna_type_prepared(type))
+	return 0;
+    
+    anna_function_t *function;
+    
+    function = anna_native_create(
+	L"!typePrepareFunction",
+	ANNA_FUNCTION_MACRO,
+	(anna_native_t)(anna_native_function_t)0,
+	0,
+	0,
+	0, 
+	0);
+
+    function->stack_template=type->stack;
+    
+    //wprintf(L"Prepare type %ls... %d\n", type->name, function);
     //anna_node_print(type->definition);
 //	wprintf(L"\n");
 
@@ -361,7 +371,7 @@ static anna_node_t *anna_prepare_type_internal(
 	    macro_definition,
 	    attribute_call_node,
 	    function,
-	    parent);
+	    0);
 	/*
 (anna_node_call_t *)macro_definition->native.macro(
 	    attribute_call_node, 
@@ -402,11 +412,11 @@ static anna_node_t *anna_prepare_type_internal(
 	
 	if(wcscmp(declaration->name, L"__function__")==0)
 	{
-	    anna_macro_function_internal(type, call, function, parent, 0);
+	    anna_macro_function_internal(type, call, function, 0, 0);
 	}
 	else if(wcscmp(declaration->name, L"__declare__")==0)
 	{
-	    anna_type_member(type, call, function, parent);
+	    anna_type_member(type, call, function, 0);
 	}
 	else if(wcscmp(declaration->name, L"__functionNative__")==0)
 	{
@@ -422,7 +432,7 @@ static anna_node_t *anna_prepare_type_internal(
 		anna_prepare_type_from_identifier(
 		    call->child[1], 	
 		    function,
-		    parent);
+		    0);
 
 	    anna_node_call_t *param_list = 
 		(anna_node_call_t *)call->child[2];
@@ -439,7 +449,7 @@ static anna_node_t *anna_prepare_type_internal(
 		argv[i] = anna_prepare_type_from_identifier(
 		    param->child[1],
 		    function,
-		    parent);
+		    0);
 		argn[i] = param_name->name;
 	    }
 	    
@@ -473,7 +483,7 @@ static anna_node_t *anna_prepare_type_internal(
 		anna_prepare_type_from_identifier(
 		    call->child[1], 	
 		    function,
-		    parent);
+		    0);
 
 	    anna_node_int_literal_t *mid = 
 		(anna_node_int_literal_t *)call->child[2];
@@ -504,8 +514,8 @@ static anna_node_t *anna_prepare_type_internal(
     {
 	anna_node_call_t *prop = al_get(&property_list, i);
 	CHECK_CHILD_COUNT(prop,L"property", 3);
-	anna_node_prepare_child(prop, 0, function, parent);
-	anna_node_prepare_child(prop, 1, function, parent);
+	anna_node_prepare_child(prop, 0, function, 0);
+	anna_node_prepare_child(prop, 1, function, 0);
 	CHECK_NODE_TYPE(prop->child[0], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_TYPE(prop->child[1], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_TYPE(prop->child[2], ANNA_NODE_CALL);
@@ -517,7 +527,7 @@ static anna_node_t *anna_prepare_type_internal(
 	    anna_prepare_type_from_identifier(
 		prop->child[1], 	
 		function,
-		parent);
+		0);
 	
 	//wprintf(L"Wee, declare %ls\n", name->name);
 	
@@ -595,6 +605,19 @@ static anna_node_t *anna_prepare_type_internal(
 	    argn[i] = constructor->input_name[i];
 	}
     }
+    
+    memcpy(
+	&type->child_function, 
+	&function->child_function,
+	sizeof(array_list_t));
+    
+    memcpy(
+	&type->child_type, 
+	&function->child_type,
+	sizeof(array_list_t));
+    
+    anna_prepare_type_implementation(type);
+    
 /*
   wprintf(L"Base type after transformations\n");
   anna_node_print(type->definition);
@@ -608,4 +631,16 @@ static anna_node_t *anna_prepare_type_internal(
 */  
 }
 
+anna_node_t *anna_prepare_type_implementation(anna_type_t *type)
+{
+    int i;
+    for(i=0; i<al_get_count(&type->child_function); i++)
+    {
+	anna_function_t *fun = 
+	    (anna_function_t *)al_get(
+		&type->child_function, i);
+	anna_prepare_function(fun);
+    }
+    
+}
 

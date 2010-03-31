@@ -50,7 +50,6 @@ macro weeo(node, foo, bar)
 {
     node.each(ch)
     {
-	print("lalala");
 	ch.print();
     }
     
@@ -65,7 +64,7 @@ macro weeo(node, foo, bar)
 function main()
 {
 //    var foo = 7;
-    weeo(aa,7);
+//    weeo(aa,7);
 //    print(noop(9));
 }
 
@@ -119,10 +118,10 @@ macro __enumAttribute__(node, foo, bar)
 	newBody ~= [prop];
 	nameBody ~= [cmp]
     }
+
     newBody ~= [init];
     
-
-    var nameFun = AST(function toString(){3});
+    var nameFun = AST(function toString(){});
     nameFun.print();
     nameFun[4] = nameBody;
     newBody ~= [nameFun];
@@ -141,7 +140,6 @@ class Blubb enum
 function main2()
 {
 //    print( 12 in [1,6,7,12,39]);
-
     var bbb = Blubb(1);
     print(bbb.baz, "\n", bbb.toString(), "\n");
 }

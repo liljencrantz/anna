@@ -344,8 +344,8 @@ anna_node_call_t *anna_node_property_create(
     
     if(getter)
     {
-       anna_node_t *getter_param[]={anna_node_identifier_create(loc,getter)};
-       anna_node_call_add_child(
+	anna_node_t *getter_param[]={(anna_node_t *)anna_node_identifier_create(loc,getter)};
+	anna_node_call_add_child(
 	  att, 
 	  (anna_node_t *)anna_node_call_create(
 	     loc,
@@ -355,7 +355,7 @@ anna_node_call_t *anna_node_property_create(
     }
     if(setter)
     {
-       anna_node_t *setter_param[]={anna_node_identifier_create(loc,setter)};
+       anna_node_t *setter_param[]={(anna_node_t *)anna_node_identifier_create(loc,setter)};
        anna_node_call_add_child(
 	 att, 
 	 (anna_node_t *)anna_node_call_create(

@@ -32,6 +32,7 @@ define CRASH exit(1)
 #endif
 
 #define likely(x) (x)
+#define lnlikely(x) (x)
 
 struct anna_type;
 struct anna_object;
@@ -96,10 +97,13 @@ struct anna_type
     hash_table_t name_identifier;
     wchar_t *name;
     int flags;
+    struct anna_stack_frame *stack;
     struct anna_member **mid_identifier;
     struct anna_node_call *definition;
     struct anna_object *wrapper;
     struct anna_object **static_member;
+    array_list_t child_function;
+    array_list_t child_type;
 };
 
 struct anna_member

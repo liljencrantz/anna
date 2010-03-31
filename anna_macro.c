@@ -316,10 +316,20 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 
     if(type)
     {
-	anna_function_t *result = anna_function_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_node_call_t *)body, out_type, argc, argv, argn, function->stack_template, 0);
-	
+	anna_function_t *result =
+	    anna_function_create(
+		internal_name, 
+		(is_variadic?ANNA_FUNCTION_VARIADIC:0), 
+		(anna_node_call_t *)body, 
+		out_type, 
+		argc,
+		argv, 
+		argn,
+		function->stack_template,
+		0);
 	al_push(&function->child_function, result);
-
+	assert(al_get_count(&function->child_function));
+	
 	if(!name)
 	{
 	    FAIL(node, L"Method definitions must have a name");
@@ -640,7 +650,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     CHECK_NODE_BLOCK(node->child[3]);
 
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
-    anna_type_t *type = anna_type_create(name);
+    anna_type_t *type = anna_type_create(name, function->stack_template);
 
     type->definition = node;
     anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
@@ -711,7 +721,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 							  result->name);    
     }
     
-    anna_type_t *type = anna_type_create(L"!temporaryTypeName");
+    anna_type_t *type = anna_type_create(L"!temporaryTypeName", function->stack_template);
     templatize_key_t *new_key = malloc(sizeof(templatize_key_t));
     memcpy(new_key, &key,sizeof(templatize_key_t));
     new_key->argv = malloc(sizeof(anna_node_t *)*new_key->argc);

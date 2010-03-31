@@ -5,7 +5,7 @@
 #include "anna_node.h"
 #include "anna_stack.h"
 
-anna_type_t *anna_type_create(wchar_t *name);
+anna_type_t *anna_type_create(wchar_t *name, anna_stack_frame_t *stack);
 
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type);
 
@@ -30,5 +30,10 @@ anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
 anna_object_t *anna_type_wrap(anna_type_t *result);
 
 int anna_type_prepared(anna_type_t *result);
+
+void anna_type_definition_make(anna_type_t *type);
+
+size_t anna_type_static_member_allocate(anna_type_t *type);
+
 
 #endif
