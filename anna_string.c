@@ -286,6 +286,4 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	    L"getCount",
 	    L"setCount"));
 	
-    anna_type_native_setup(string_type, stack);
-    //anna_type_print(string_type);
 }

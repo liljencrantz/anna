@@ -491,6 +491,24 @@ anna_node_t *anna_node_templated_type_create(
 }
 
 
+anna_node_t *anna_node_simple_templated_type_create(
+    anna_location_t *loc,
+    wchar_t *type_name,
+    wchar_t *param_name)
+{
+    anna_node_t *param[]=
+	{
+	    (anna_node_t *)anna_node_identifier_create(loc, param_name),
+	}
+    ;
+    
+    return anna_node_templated_type_create(
+	loc,
+	(anna_node_t *)anna_node_identifier_create(loc, type_name),
+	1,
+	param);
+}
+
 
 
 

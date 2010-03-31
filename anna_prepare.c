@@ -297,6 +297,8 @@ static anna_node_t *anna_prepare_type_interface_internal(
     if(anna_type_prepared(type))
 	return 0;
     
+    type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
+
     anna_function_t *function;
     
     function = anna_native_create(
@@ -310,7 +312,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 
     function->stack_template=type->stack;
     
-    wprintf(L"Prepare type %ls\n", type->name);
+    //wprintf(L"Prepare type %ls\n", type->name);
     //anna_node_print(type->definition);
 //	wprintf(L"\n");
 
@@ -389,8 +391,9 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	
 	if(item->node_type != ANNA_NODE_CALL) 
 	{
-	    anna_error(item,
-		       L"Only function declarations and variable declarations allowed directly inside a class body" );
+	    anna_error(
+		item,
+		L"Only function declarations and variable declarations allowed directly inside a class body" );
 	    error_count++;
 	    continue;
 	}
@@ -398,8 +401,9 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	anna_node_call_t *call = (anna_node_call_t *)item;
 	if(call->function->node_type != ANNA_NODE_IDENTIFIER)
 	{
-	    anna_error(call->function,
-		       L"Only function declarations and variable declarations allowed directly inside a class body" ); 
+	    anna_error(
+		call->function,
+		L"Only function declarations and variable declarations allowed directly inside a class body" ); 
 	    error_count++;
 	    continue;
 	}
@@ -459,15 +463,16 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	    anna_node_dummy_t *func = 
 		(anna_node_dummy_t *)call->child[5];
 
-	    anna_native_method_create(type,
-				      (size_t)mid->payload,
-				      name->name,
-				      flags->payload,
-				      (anna_native_t)(anna_native_function_t)func->payload,
-				      return_type,
-				      argc,
-				      argv,
-				      argn);
+	    anna_native_method_create(
+		type,
+		(size_t)mid->payload,
+		name->name,
+		flags->payload,
+		(anna_native_t)(anna_native_function_t)func->payload,
+		return_type,
+		argc,
+		argv,
+		argn);
 	    free(argv);
 	}
 	else if(wcscmp(declaration->name, L"__declareNative__")==0)
@@ -489,12 +494,12 @@ static anna_node_t *anna_prepare_type_interface_internal(
 		(anna_node_int_literal_t *)call->child[3];
 
 	    
-	    anna_member_create(type,
-			       mid->payload,
-			       name->name,
-			       is_static->payload,
-			       return_type);
-	    
+	    anna_member_create(
+		type,
+		mid->payload,
+		name->name,
+		is_static->payload,
+		return_type);
 	}
 	else if(wcscmp(declaration->name, L"__property__")==0)
 	{
@@ -629,6 +634,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 anna_node_t *anna_prepare_type_implementation(anna_type_t *type)
 {
     int i;
+    type->flags |= ANNA_TYPE_PREPARED_IMPLEMENTATION;
     for(i=0; i<al_get_count(&type->child_function); i++)
     {
 	anna_function_t *fun = 
@@ -639,45 +645,55 @@ anna_node_t *anna_prepare_type_implementation(anna_type_t *type)
     
 }
 
-void anna_prepare()
+void anna_prepare_internal()
 {
     int i;
+    int again=0;
     
     for(i=0; i<al_get_count(&anna_function_list); i++)
     {
 	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
-	
+/*	
 	wprintf(L"Prepare function %d of %d: %ls\n", 
 		i, al_get_count(&anna_function_list),
 		func->name);
-	
-	if((func->flags & ANNA_FUNCTION_MACRO) && (func->body))
+*/	
+	if((func->flags & ANNA_FUNCTION_MACRO) 
+	   && (func->body)
+	   && !(func->flags &ANNA_FUNCTION_PREPARED))
+	{
+	    again=1;
 	    anna_prepare_function(func);
+	}
 	
     }
 
-    anna_member_create(
-	type_type,
-	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
-	L"!typeWrapperPayload",
-	0,
-	null_type);
-        
     for(i=0; i<al_get_count(&anna_type_list); i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
-	wprintf(L"Register type %ls\n", type->name);
-	
-	anna_stack_declare(type->stack,
-			   type->name,
-			   type_type,
-			   anna_type_wrap(type));
+
+	if(!(type->flags & ANNA_TYPE_REGISTERED))
+	{
+	    type->flags |= ANNA_TYPE_REGISTERED;
+	    //wprintf(L"Register type %ls\n", type->name);
+	    anna_stack_declare(type->stack,
+			       type->name,
+			       type_type,
+			       anna_type_wrap(type));
+	}
     }
+    
     
     for(i=0; i<al_get_count(&anna_type_list); i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
-	anna_prepare_type_interface(type);
+	
+	if(!(type->flags & ANNA_TYPE_PREPARED_INTERFACE))
+	{
+	    anna_prepare_type_interface(type);
+	    again=1;
+
+	}
 /*	anna_stack_set_str(type->stack,
 			   type->name,
 			   anna_type_wrap(type));
@@ -693,14 +709,37 @@ void anna_prepare()
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
 */	
-	if((!(func->flags & ANNA_FUNCTION_MACRO)) && (func->body))
+	if((!(func->flags & ANNA_FUNCTION_MACRO)) 
+	   && (func->body)
+	   && !(func->flags &ANNA_FUNCTION_PREPARED))
+	{
+	    again=1;
 	    anna_prepare_function(func);
+	}
     }
     
     for(i=0; i<al_get_count(&anna_type_list); i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
-	anna_prepare_type_implementation(type);
+	if(!(type->flags & ANNA_TYPE_PREPARED_IMPLEMENTATION))
+	{
+	    again=1;
+	    anna_prepare_type_implementation(type);
+	}
     }
     
+    if(again)
+	anna_prepare_internal();
+    
+}
+
+void anna_prepare()
+{
+    anna_member_create(
+	type_type,
+	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
+	L"!typeWrapperPayload",
+	0,
+	null_type);
+    anna_prepare_internal();
 }

@@ -1,3 +1,4 @@
+
 /*
 class Foo
 {
@@ -134,7 +135,9 @@ macro __enumAttribute__(node, foo, bar)
 
 class Blubb enum
 {
-    foo; bar; baz;    
+    foo;
+    bar;
+    baz;
 }
 
 function main2()
@@ -142,51 +145,12 @@ function main2()
 //    print( 12 in [1,6,7,12,39]);
     var bbb = Blubb(1);
     print(bbb.baz, "\n", bbb.toString(), "\n");
+
+    print(Int.getMember());
+    
 }
 
 main2();
-
-/*
-
-enum Foo
-{
-...
-}
-
- */
-/*
-
-=>
-
-class Blubb 
-{
-    var Int value readonly;
-
-    function __init__(Int value)
-    {
-	if(value in [foo, bar, baz))
-	{
-	    this.value=value;
-	}
-    }
-
-    var Int foo readonly = 0;
-    ...
-
-    function String name() property
-    {
-	switch(this.value)
-	{
-	    case this.foo:
-		return "foo";
-	    case bar:
-		...;
-	}	
-    }
-
-}
-*/
-    
 
 //main();
 

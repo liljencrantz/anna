@@ -271,6 +271,11 @@ anna_node_t *anna_node_templated_type_create(
     size_t argc,
     anna_node_t **argv);
 
+anna_node_t *anna_node_simple_templated_type_create(
+    anna_location_t *loc,
+    wchar_t *type_name,
+    wchar_t *param_name);
+
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function);

@@ -69,6 +69,4 @@ void anna_int_type_create(anna_stack_frame_t *stack)
 	1, i_argv, i_argn);    
 
     anna_int_type_i_create(definition, stack);
-    anna_type_native_setup(int_type, stack);
-    
 }

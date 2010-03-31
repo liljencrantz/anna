@@ -51,7 +51,9 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_FUNCTION_VARIADIC 2
 #define ANNA_FUNCTION_PREPARED 4
 
-#define ANNA_TYPE_PREPARED 1
+#define ANNA_TYPE_REGISTERED 1
+#define ANNA_TYPE_PREPARED_INTERFACE 2
+#define ANNA_TYPE_PREPARED_IMPLEMENTATION 4
 
 /*
 #define ANNA_FUNCTION_CLOSURE 2
@@ -78,7 +80,7 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_MID_CALL 15
 #define ANNA_MID_INIT_PAYLOAD 16
 #define ANNA_MID_NODE_PAYLOAD 17
-#define ANNA_MID_EQ 18
+#define ANNA_MID_MEMBER_PAYLOAD 18
 #define ANNA_MID_FIRST_UNRESERVED 19
 
 union anna_native
@@ -115,6 +117,7 @@ struct anna_member
     int is_method;
     size_t setter_offset;
     size_t getter_offset;    
+    struct anna_object *wrapper;
     wchar_t name[];
 };
 
@@ -172,7 +175,7 @@ typedef struct
 } anna_function_type_key_t;
    
 
-extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type;
+extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type;
 extern anna_object_t *null_object;
 extern int anna_error_count;
 

@@ -341,6 +341,13 @@ static anna_object_t *anna_list_in(anna_object_t **param)
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
     list_type = anna_type_native_create(L"List", stack);
+    
+    anna_node_t *my_list_type = 
+	anna_node_simple_templated_type_create(
+	    0, 
+	    L"List",
+	    L"T");
+    
     anna_node_call_t *definition =
 	anna_type_definition_get(list_type);
     /*
@@ -395,7 +402,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     anna_node_t *i_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
+	    anna_node_clone_deep(my_list_type), 
 	    (anna_node_t *)anna_node_identifier_create(0, L"Int"),
 	    (anna_node_t *)anna_node_identifier_create(0, L"T")
 	}
@@ -409,7 +416,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     anna_node_t *a_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
+	    anna_node_clone_deep(my_list_type), 
 	    (anna_node_t *)anna_node_identifier_create(0, L"T")
 	}
     ;
@@ -435,7 +442,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 
     anna_node_t *e_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
+	    anna_node_clone_deep(my_list_type), 
 	    anna_node_function_declaration_create(
 		0,
 		(anna_node_t *)anna_node_identifier_create(
@@ -453,18 +460,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	}
     ;
     
-    anna_node_t *list_template_param[] = 
-	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"T")
-	}
-    ;
-    
-    anna_node_t *my_list_type = anna_node_templated_type_create(
-	0, 
-	(anna_node_t *)anna_node_identifier_create(0, L"List"),
-	1,
-	list_template_param);
-
     anna_native_method_add_node(
 	definition,
 	-1,
@@ -560,8 +555,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     //anna_node_print(e_argv[1]);
     //anna_stack_print(func->stack_template);
-    
-    anna_type_native_setup(list_type, stack);
         
     /*
       anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);

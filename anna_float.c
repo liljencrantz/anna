@@ -59,6 +59,4 @@ void anna_float_type_create(anna_stack_frame_t *stack)
     }
     
     anna_float_type_i_create(definition, stack);
-    anna_type_native_setup(float_type, stack);
-        
 }

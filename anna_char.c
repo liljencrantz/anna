@@ -131,5 +131,4 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 	    0));
 
     anna_char_type_i_create(definition, stack);
-    anna_type_native_setup(char_type, stack);
 }

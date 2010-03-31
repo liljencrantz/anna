@@ -22,6 +22,7 @@
 #include "anna_prepare.h"
 #include "anna_node_wrapper.h"
 #include "anna_macro.h"
+#include "anna_member.h"
 
 /*
   Plans for apps written in anna:
@@ -44,11 +45,11 @@ Object members:
   asString
   type
   
-  
   Code refactoring plan:
-
+  
   - Move object code to individual .[ch] files.
-  - All node types should have a head var which is an anna_node_t, to reduce the amount of casting needed.
+  - All node types should have a head var which is an anna_node_t, to
+    reduce the amount of casting needed.
   
   ComparisonMap type
   HashMap type
@@ -207,7 +208,7 @@ Object members:
   var n = AST(1+x);  
 */
 
-anna_type_t *type_type=0, *object_type=0, *int_type=0, *string_type=0, *char_type=0, *null_type=0,  *string_type, *char_type, *list_type, *float_type;
+anna_type_t *type_type=0, *object_type=0, *int_type=0, *string_type=0, *char_type=0, *null_type=0,  *string_type, *char_type, *list_type, *float_type, *member_type;
 anna_object_t *null_object=0;
 
 static hash_table_t anna_type_for_function_identifier;
@@ -889,7 +890,7 @@ static void anna_init()
     anna_mid_put(L"__call__", ANNA_MID_CALL_PAYLOAD);    
     anna_mid_put(L"__init__", ANNA_MID_INIT_PAYLOAD);
     anna_mid_put(L"!nodePayload", ANNA_MID_NODE_PAYLOAD);
-    anna_mid_put(L"__eq__", ANNA_MID_EQ);
+    anna_mid_put(L"!memberPayload", ANNA_MID_MEMBER_PAYLOAD);
     
     stack_global = anna_stack_create(4096, 0);
     /*
@@ -898,7 +899,6 @@ static void anna_init()
       the various calls...
     */
     
-
     anna_type_type_create(stack_global);
     object_type = anna_type_native_create(L"Object" ,stack_global);
     null_type = anna_type_native_create(L"Null", stack_global);
@@ -908,6 +908,7 @@ static void anna_init()
         
     anna_macro_init(stack_global);
 
+    anna_member_type_create(stack_global);
     anna_int_type_create(stack_global);
     anna_list_type_create(stack_global);
     anna_char_type_create(stack_global);

@@ -114,12 +114,6 @@ anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
     return type;
 }
 
-void anna_type_native_setup(anna_type_t *type, anna_stack_frame_t *stack)
-{
-    //anna_prepare_type_interface(type);
-}
-
-
 static void add_member(void *key, void *value, void *aux)
 {
     //wprintf(L"Got member %ls\n", key);
@@ -128,12 +122,10 @@ static void add_member(void *key, void *value, void *aux)
     (*dest)++;
 }
 
-
 void anna_type_get_member_names(anna_type_t *type, wchar_t **dest)
 {
     hash_foreach2(&type->name_identifier, &add_member, &dest);
 }
-
 
 void anna_type_print(anna_type_t *type)
 {
@@ -168,7 +160,6 @@ void anna_type_print(anna_type_t *type)
 		    member->is_static?L"true":L"false",
 		    member->offset);
 	}
-	
     }
 
     free(members);
@@ -225,7 +216,7 @@ anna_type_t *anna_type_unwrap(anna_object_t *wrapper)
 
 int anna_type_prepared(anna_type_t *t)
 {
-    return !!(t->flags & ANNA_TYPE_PREPARED);
+    return !!(t->flags & ANNA_TYPE_PREPARED_INTERFACE);
 }
 
 size_t anna_type_static_member_allocate(anna_type_t *type)

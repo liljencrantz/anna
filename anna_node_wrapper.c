@@ -155,9 +155,4 @@ void anna_node_wrapper_types_create(anna_stack_frame_t *stack)
     anna_node_string_literal_wrapper_type_create(stack);
     anna_node_call_wrapper_type_create(stack);
     
-    anna_type_native_setup(node_wrapper_type, stack);
-    anna_type_native_setup(node_identifier_wrapper_type, stack);
-    anna_type_native_setup(node_int_literal_wrapper_type, stack);
-    anna_type_native_setup(node_string_literal_wrapper_type, stack);
-    anna_type_native_setup(node_call_wrapper_type, stack);
 }
