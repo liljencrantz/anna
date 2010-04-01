@@ -891,6 +891,7 @@ static void anna_init()
     anna_mid_put(L"__init__", ANNA_MID_INIT_PAYLOAD);
     anna_mid_put(L"!nodePayload", ANNA_MID_NODE_PAYLOAD);
     anna_mid_put(L"!memberPayload", ANNA_MID_MEMBER_PAYLOAD);
+    anna_mid_put(L"!memberTypePayload", ANNA_MID_MEMBER_TYPE_PAYLOAD);
     
     stack_global = anna_stack_create(4096, 0);
     /*

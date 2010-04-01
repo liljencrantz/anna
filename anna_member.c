@@ -14,26 +14,28 @@
 
 static anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 
-anna_object_t *anna_member_wrap(anna_member_t *result)
+anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 {
     if(likely(result->wrapper))
 	return result->wrapper;
-    anna_type_t * type;
+
+    anna_type_t * m_type;
     if(result->is_method)
     {
-	type = member_method_type;
+	m_type = member_method_type;
     }
     else if(result->is_property)
     {
-	type = member_property_type;
+	m_type = member_property_type;
     }
     else
     {
-	type=member_variable_type;
+	m_type=member_variable_type;
     }
     
-    result->wrapper = anna_object_create(type);
-    memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_MEMBER_PAYLOAD), &result, sizeof(anna_type_t *));  
+    result->wrapper = anna_object_create(m_type);
+    memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_MEMBER_PAYLOAD), &result, sizeof(anna_member_t *));  
+    memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD), &type, sizeof(anna_type_t *));  
     return result->wrapper;
 }
 
@@ -80,6 +82,15 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	definition, 
 	ANNA_MID_MEMBER_PAYLOAD, 
 	L"!memberPayload", 
+	0,
+	(anna_node_t *)anna_node_identifier_create(
+	    0,
+	    L"Null"));
+    
+    anna_member_add_node(
+	definition, 
+	ANNA_MID_MEMBER_TYPE_PAYLOAD, 
+	L"!memberTypePayload", 
 	0,
 	(anna_node_t *)anna_node_identifier_create(
 	    0,

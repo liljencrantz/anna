@@ -95,6 +95,7 @@ static anna_object_t *anna_type_i_get_member(anna_object_t **param)
 	anna_list_add(
 	    lst,
 	    anna_member_wrap(
+		type,
 		anna_type_member_info_get(
 		    type,
 		    member_name[i])));	
