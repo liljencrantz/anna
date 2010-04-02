@@ -4,8 +4,6 @@
 #include "util.h"
 #include "anna_checks.h"
 
-
-
 #ifdef ANNA_CRASH_ON_CRITICAL_ENABLED
 #define CRASH					\
     {						\
@@ -32,7 +30,7 @@ define CRASH exit(1)
 #endif
 
 #define likely(x) (x)
-#define lnlikely(x) (x)
+#define unlikely(x) (x)
 
 struct anna_type;
 struct anna_object;
@@ -72,17 +70,17 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_MID_LIST_SIZE 6
 #define ANNA_MID_LIST_CAPACITY 7
 #define ANNA_MID_FLOAT_PAYLOAD 8
-#define ANNA_MID_FUNCTION_WRAPPER_PAYLOAD 10
-#define ANNA_MID_FUNCTION_WRAPPER_STACK 11
-#define ANNA_MID_FUNCTION_WRAPPER_THIS 12
-#define ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD 13
-#define ANNA_MID_TYPE_WRAPPER_PAYLOAD 14
-#define ANNA_MID_CALL 15
-#define ANNA_MID_INIT_PAYLOAD 16
-#define ANNA_MID_NODE_PAYLOAD 17
-#define ANNA_MID_MEMBER_PAYLOAD 18
-#define ANNA_MID_MEMBER_TYPE_PAYLOAD 19
-#define ANNA_MID_FIRST_UNRESERVED 20
+#define ANNA_MID_FUNCTION_WRAPPER_PAYLOAD 9
+#define ANNA_MID_FUNCTION_WRAPPER_STACK 10
+#define ANNA_MID_FUNCTION_WRAPPER_THIS 11
+#define ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD 12
+#define ANNA_MID_TYPE_WRAPPER_PAYLOAD 13
+#define ANNA_MID_CALL 14
+#define ANNA_MID_INIT_PAYLOAD 15
+#define ANNA_MID_NODE_PAYLOAD 16
+#define ANNA_MID_MEMBER_PAYLOAD 17
+#define ANNA_MID_MEMBER_TYPE_PAYLOAD 18
+#define ANNA_MID_FIRST_UNRESERVED 19
 
 union anna_native
 {
@@ -179,6 +177,7 @@ typedef struct
 extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type;
 extern anna_object_t *null_object;
 extern int anna_error_count;
+extern struct anna_stack_frame *stack_global;
 
 /**
    Declare all global, native functions
@@ -218,6 +217,8 @@ struct anna_node *anna_macro_invoke(
     struct anna_node *node,
     anna_function_t *function,
     anna_node_list_t *parent);
+
+void anna_function_type_key_print(anna_function_type_key_t *k);
 
 
 anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, struct anna_stack_frame *stack);

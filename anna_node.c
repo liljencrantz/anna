@@ -1094,6 +1094,17 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	    return (anna_node_t *)this2;
 	}	
 
+	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
+	{
+	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
+	    this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
+/*
+	    if(wcscmp(this2->name,L"print")==0)
+		anna_stack_print_trace(function->stack_template);
+*/
+	    return (anna_node_t *)this2;
+	}	
+
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{

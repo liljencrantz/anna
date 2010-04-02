@@ -29,7 +29,7 @@ anna_type_t *anna_type_create(wchar_t *name, anna_stack_frame_t *stack)
     result->member_count = 0;
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = anna_mid_identifier_create();
-    result->name = name;
+    result->name = wcsdup(name);
     result->stack = stack;
     al_push(&anna_type_list, result);
     return result;  

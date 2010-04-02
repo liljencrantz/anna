@@ -23,6 +23,7 @@
 #include "anna_node_wrapper.h"
 #include "anna_macro.h"
 #include "anna_member.h"
+#include "anna_function_type.h"
 
 /*
   Plans for apps written in anna:
@@ -217,7 +218,7 @@ static array_list_t anna_mid_identifier_reverse;
 
 anna_node_t *anna_node_null=0;
 
-static anna_stack_frame_t *stack_global;
+anna_stack_frame_t *stack_global;
 static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 
 int anna_error_count=0;
@@ -372,7 +373,13 @@ int hash_function_type_comp(void *a, void *b)
     return 1;
 }
 
-anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_t **argv, wchar_t **argn, int is_variadic)
+
+anna_type_t *anna_type_for_function(
+    anna_type_t *result, 
+    size_t argc, 
+    anna_type_t **argv, 
+    wchar_t **argn, 
+    int is_variadic)
 {
     //  static int count=0;
     //if((count++)==10) {CRASH};
@@ -411,19 +418,8 @@ anna_type_t *anna_type_for_function(anna_type_t *result, size_t argc, anna_type_
 	{
 	    new_key->argn[i]=wcsdup(argn[i]);
 	}
-	
-	res = anna_type_native_create(L"!FunctionType", stack_global);	
+	res = anna_function_type_create(new_key);
 	hash_put(&anna_type_for_function_identifier, new_key, res);
-	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, L"!functionTypePayload",
-			   1, null_type);
-	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
-			   0, null_type);
-	anna_member_create(res, ANNA_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
-			   0, null_type);
-	/*
-	  FIXME: Add children to the definition tree!
-	*/
-	(*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)new_key;
     }
     
     return res;
@@ -486,7 +482,10 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
   }
 */
 
-anna_object_t *anna_construct(anna_type_t *type, struct anna_node_call *param, anna_stack_frame_t *stack)
+anna_object_t *anna_construct(
+    anna_type_t *type,
+    struct anna_node_call *param,
+    anna_stack_frame_t *stack)
 {
     anna_object_t *result = anna_object_create(type);
     //wprintf(L"Creating new object of type %ls\n", type->name);
@@ -660,7 +659,10 @@ anna_object_t *anna_i_null_function(anna_object_t **node_base)
 }
 
 anna_object_t *anna_object_create(anna_type_t *type) {
-    anna_object_t *result = calloc(1,sizeof(anna_object_t)+sizeof(anna_object_t *)*type->member_count);
+    anna_object_t *result = 
+	calloc(
+	    1,
+	    sizeof(anna_object_t)+sizeof(anna_object_t *)*type->member_count);
     result->type = type;
     int i;
     for(i=0; i<type->member_count; i++)
@@ -682,7 +684,11 @@ size_t anna_member_create(anna_type_t *type,
     {
 	if(type == type_type && wcscmp(name, L"!typeWrapperPayload")==0)
 	    return;
-	
+	if(mid == ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD ||
+	   mid == ANNA_MID_FUNCTION_WRAPPER_PAYLOAD ||
+	   mid == ANNA_MID_FUNCTION_WRAPPER_STACK)
+	    return;
+
 	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
 		name, type->name);
 	CRASH;	
@@ -847,6 +853,7 @@ static void anna_null_type_create_early()
     anna_type_t *argv[]={null_type};
     wchar_t *argn[]={L"this"};
     anna_type_static_member_allocate(null_type);
+
     null_type->static_member[0] = 
 	anna_function_wrap(
 	    anna_native_create(L"!nullFunction", 0, 

@@ -650,32 +650,36 @@ void anna_prepare_internal()
     int i;
     int again=0;
     
-    for(i=0; i<al_get_count(&anna_function_list); i++)
+    int function_count = al_get_count(&anna_function_list); 
+    int type_count = al_get_count(&anna_type_list); 
+
+    for(i=0; i<function_count; i++)
     {
 	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
-/*	
-	wprintf(L"Prepare function %d of %d: %ls\n", 
-		i, al_get_count(&anna_function_list),
-		func->name);
-*/	
+
 	if((func->flags & ANNA_FUNCTION_MACRO) 
 	   && (func->body)
 	   && !(func->flags &ANNA_FUNCTION_PREPARED))
 	{
+/*
+	    wprintf(L"Prepare function %d of %d: %ls\n", 
+		    i, al_get_count(&anna_function_list),
+		    func->name);
+*/
 	    again=1;
 	    anna_prepare_function(func);
 	}
 	
     }
 
-    for(i=0; i<al_get_count(&anna_type_list); i++)
+    for(i=0; i<type_count; i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
 
 	if(!(type->flags & ANNA_TYPE_REGISTERED))
 	{
 	    type->flags |= ANNA_TYPE_REGISTERED;
-	    //wprintf(L"Register type %ls\n", type->name);
+//	    wprintf(L"Register type %ls\n", type->name);
 	    anna_stack_declare(type->stack,
 			       type->name,
 			       type_type,
@@ -683,13 +687,13 @@ void anna_prepare_internal()
 	}
     }
     
-    
-    for(i=0; i<al_get_count(&anna_type_list); i++)
+    for(i=0; i<type_count; i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
 	
 	if(!(type->flags & ANNA_TYPE_PREPARED_INTERFACE))
 	{
+//	    wprintf(L"Prepare interface for type %ls\n", type->name);
 	    anna_prepare_type_interface(type);
 	    again=1;
 
@@ -701,7 +705,7 @@ void anna_prepare_internal()
     }
     
     
-    for(i=0; i<al_get_count(&anna_function_list); i++)
+    for(i=0; i<function_count; i++)
     {
 	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
 /*
@@ -718,7 +722,7 @@ void anna_prepare_internal()
 	}
     }
     
-    for(i=0; i<al_get_count(&anna_type_list); i++)
+    for(i=0; i<type_count; i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
 	if(!(type->flags & ANNA_TYPE_PREPARED_IMPLEMENTATION))
@@ -728,6 +732,7 @@ void anna_prepare_internal()
 	}
     }
     
+
     if(again)
 	anna_prepare_internal();
     
@@ -735,6 +740,8 @@ void anna_prepare_internal()
 
 void anna_prepare()
 {
+    int i;
+    
     anna_member_create(
 	type_type,
 	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
@@ -742,4 +749,5 @@ void anna_prepare()
 	0,
 	null_type);
     anna_prepare_internal();
+
 }

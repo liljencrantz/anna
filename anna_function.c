@@ -15,9 +15,42 @@ array_list_t anna_function_list = {0,0,0};
 
 void anna_function_setup_type(anna_function_t *f)
 {
-    anna_type_t *function_type = anna_type_for_function(f->return_type, f->input_count, f->input_type, f->input_name, ANNA_IS_VARIADIC(f));
-    f->wrapper = anna_object_create(function_type);
+    anna_type_t *function_type = 
+	anna_type_for_function(
+	    f->return_type,
+	    f->input_count,
+	    f->input_type,
+	    f->input_name,
+	    ANNA_IS_VARIADIC(f));
     f->type = function_type;    
+
+    f->wrapper = anna_object_create(f->type);
+    
+    memcpy(
+	anna_member_addr_get_mid(
+	    f->wrapper,
+	    ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
+	&f,
+	sizeof(anna_function_t *));
+    
+    if(f->stack_template && f->stack_template->parent)
+    {
+	memcpy(
+	    anna_member_addr_get_mid(
+		f->wrapper,
+		ANNA_MID_FUNCTION_WRAPPER_STACK),
+	    &f->stack_template->parent,
+	    sizeof(anna_stack_frame_t *));
+    }
+    else
+    {
+	memset(
+	    anna_member_addr_get_mid(
+		f->wrapper,
+		ANNA_MID_FUNCTION_WRAPPER_STACK),
+	    0,
+	    sizeof(anna_stack_frame_t *));
+    }
 }
 
 anna_object_t *anna_function_wrap(anna_function_t *result)
@@ -27,8 +60,18 @@ anna_object_t *anna_function_wrap(anna_function_t *result)
 
 anna_function_t *anna_function_unwrap(anna_object_t *obj)
 {
-    assert(obj);    
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
+#ifdef ANNA_WRAPPER_CHECK_ENABLED
+    if(!obj)
+    {
+	wprintf(
+	    L"Critical: Tried to unwrap null pointer as a function\n");
+	CRASH;
+    }
+#endif
+    anna_function_t **function_ptr = 
+	(anna_function_t **)anna_member_addr_get_mid(
+	    obj,
+	    ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     if(function_ptr) 
     {
 	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
@@ -36,11 +79,15 @@ anna_function_t *anna_function_unwrap(anna_object_t *obj)
     }
     else 
     {
-	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, ANNA_MID_CALL_PAYLOAD);
+	anna_object_t **function_wrapper_ptr =
+	    anna_static_member_addr_get_mid(
+		obj->type, 
+		ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
 	    //wprintf(L"Got object with __call__ member\n");
-	    return anna_function_unwrap(*function_wrapper_ptr);	    
+	    return anna_function_unwrap(
+		*function_wrapper_ptr);	    
 	}
 	return 0;	
     }
@@ -58,7 +105,10 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
     
     //wprintf(L"Find function signature for call %ls\n", type->name);
     
-    anna_function_type_key_t **function_ptr = (anna_function_type_key_t **)anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    anna_function_type_key_t **function_ptr = 
+	(anna_function_type_key_t **)anna_static_member_addr_get_mid(
+	    type,
+	    ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     if(function_ptr) 
     {
 	//wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
@@ -67,7 +117,10 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
     else 
     {
 	//wprintf(L"Not a direct function, check for __call__ member\n");
-	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(type, ANNA_MID_CALL_PAYLOAD);
+	anna_object_t **function_wrapper_ptr = 
+	    anna_static_member_addr_get_mid(
+		type,
+		ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
 	    //wprintf(L"Found, we're unwrapping it now\n");
@@ -84,15 +137,16 @@ int anna_function_prepared(anna_function_t *t)
     return !!(t->flags & ANNA_FUNCTION_PREPARED);
 }
 
-anna_function_t *anna_function_create(wchar_t *name,
-				      int flags,
-				      anna_node_call_t *body, 
-				      anna_type_t *return_type,
-				      size_t argc,
-				      anna_type_t **argv,
-				      wchar_t **argn,
-				      anna_stack_frame_t *parent_stack,
-				      int return_pop_count)
+anna_function_t *anna_function_create(
+    wchar_t *name,
+    int flags,
+    anna_node_call_t *body, 
+    anna_type_t *return_type,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn,
+    anna_stack_frame_t *parent_stack,
+    int return_pop_count)
 {
     int i;
 
@@ -109,7 +163,8 @@ anna_function_t *anna_function_create(wchar_t *name,
 	}
     }
     
-    anna_function_t *result = calloc(1,sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
+    anna_function_t *result = calloc(
+	1,sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
     
     result->native.function=0;
     result->flags=flags;
@@ -136,7 +191,11 @@ anna_function_t *anna_function_create(wchar_t *name,
 	memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
 	for(i=0; i<argc-is_variadic;i++)
 	{
-	    anna_stack_declare(result->stack_template, argn[i], argv[i], null_object);	
+	    anna_stack_declare(
+		result->stack_template,
+		argn[i], 
+		argv[i], 
+		null_object);	
 	}    
 	if(is_variadic)
 	{
@@ -144,30 +203,26 @@ anna_function_t *anna_function_create(wchar_t *name,
 	      FIXME:
 	      Templatize to right list subtype
 	    */
-	    anna_stack_declare(result->stack_template, argn[argc-1], list_type, null_object);
+	    anna_stack_declare(
+		result->stack_template, 
+		argn[argc-1], 
+		list_type, 
+		null_object);
 	}
     }
     else
     {
-	anna_stack_declare(result->stack_template, argn[0], node_call_wrapper_type, null_object);
+	anna_stack_declare(
+	    result->stack_template, 
+	    argn[0], 
+	    node_call_wrapper_type,
+	    null_object);
     }
     
     //anna_function_prepare(result);
 
     anna_function_setup_type(result);
     
-    memcpy(
-	anna_member_addr_get_mid(
-	    result->wrapper,
-	    ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
-	&result,
-	sizeof(anna_function_t *));
-    memcpy(
-	anna_member_addr_get_mid(
-	    result->wrapper,
-	    ANNA_MID_FUNCTION_WRAPPER_STACK),
-	&parent_stack,
-	sizeof(anna_stack_frame_t *));
     //wprintf(L"Function object is %d, wrapper is %d\n", result, result->wrapper);
     /*
     wprintf(L"Created a new non-native function with definition:");
@@ -193,29 +248,24 @@ anna_function_t *anna_native_create(wchar_t *name,
 	}
     }
   
-    anna_function_t *result = calloc(1, sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
+    anna_function_t *result =
+	calloc(
+	    1,
+	    sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
     result->flags=flags;
     result->native = native;
     result->name = name;
     result->return_type=return_type;
     result->input_count=argc;
-    memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
+    memcpy(
+	&result->input_type,
+	argv, 
+	sizeof(anna_type_t *)*argc);
     result->input_name = argn;
     al_push(&anna_function_list, result);
     
-    anna_type_t *function_type = anna_type_for_function(return_type, argc, argv, argn, flags & ANNA_FUNCTION_VARIADIC);
-    result->type = function_type;
-    result->wrapper = anna_object_create(function_type);
-    
-    anna_object_t **member_ptr = anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    if(!member_ptr) {
-	wprintf(L"Error: function_wrapper_type for function %ls does not have a payload!!!\n",
-		name);
-	//anna_object_print(result->wrapper, 3);
-	CRASH;	
-    }
-    
-    memcpy(anna_member_addr_get_mid(result->wrapper,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), &result, sizeof(anna_function_t *));
+    anna_function_setup_type(result);
+        
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
 
     return result;
