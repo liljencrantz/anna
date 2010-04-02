@@ -182,6 +182,7 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
     CHECK_CHILD_COUNT(node,L"function definition", 5);
     
     if (node->child[0]->node_type == ANNA_NODE_IDENTIFIER) {
+	
 	anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
 	internal_name = name = name_identifier->name;
     }

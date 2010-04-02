@@ -22,6 +22,12 @@ static anna_object_t *anna_function_type_i_get_name(anna_object_t **param)
     return anna_string_create(wcslen(f->name), f->name);
 }
 
+static anna_object_t *anna_function_type_i_get_output(anna_object_t **param)
+{
+    anna_function_t *f = anna_function_unwrap(param[0]);
+    return anna_type_wrap(f->return_type);
+}
+
 
 void anna_function_type_key_print(anna_function_type_key_t *k)
 {
@@ -80,13 +86,13 @@ void anna_function_type_base_create()
 	    L"name",
 	    (anna_node_t *)anna_node_identifier_create(0, L"String") , 
 	    L"!getName", 0));
-/*    
+
     anna_native_method_add_node(
 	definition,
 	-1,
-	L"!getResult",
+	L"!getOutput",
 	0, 
-	(anna_native_t)&anna_function_type_i_get_result, 
+	(anna_native_t)&anna_function_type_i_get_output, 
 	(anna_node_t *)anna_node_identifier_create(
 	    0,
 	    L"Type"),
@@ -98,10 +104,10 @@ void anna_function_type_base_create()
 	definition,
 	(anna_node_t *)anna_node_property_create(
 	    0,
-	    L"result",
+	    L"output",
 	    (anna_node_t *)anna_node_identifier_create(0, L"Type"),
-	    L"!getResult", 0));
-*/  
+	    L"!getOutput", 0));
+
     
 }
 

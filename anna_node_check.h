@@ -51,8 +51,8 @@
     {									\
 	anna_error(							\
 	    (anna_node_t *)n,						\
-	    L"Unexpected argument type, expected a parameter of type %s", \
-	    #type );							\
+	    L"Unexpected argument type, expected a parameter of type %s on line %d of %s", \
+	    #type, __LINE__, __FILE__);					\
 	return (anna_node_t *)anna_node_null_create(&(n)->location);	\
     }
 

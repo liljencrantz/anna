@@ -129,6 +129,7 @@ macro __enumAttribute__(node, foo, bar)
     
     def[3] = newBody;
 //    nameBody.print();
+    def.print();
     
     return def;
 }
@@ -139,19 +140,26 @@ class Blubb enum
     bar;
     baz;
 }
+    ;
+
+function foo()
+{
+    return 3;
+}
+
 
 function main2()
 {
 //    print( 12 in [1,6,7,12,39]);
-    var bbb = Blubb(1);
-    print(bbb.baz, "\n", bbb.toString(), "\n");
+//    var bbb = Blubb(1);
+//    print(bbb.baz, "\n", bbb.toString(), "\n");
 
 /*    Int.member.each(idx:member)
     {
 //	print(member.name, "\n");
     }
 */
-    print(main2.name, "\n");
+    print(foo.output.name, "\n");
     
 }
 

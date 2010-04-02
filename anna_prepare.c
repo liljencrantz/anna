@@ -516,12 +516,13 @@ static anna_node_t *anna_prepare_type_interface_internal(
     {
 	anna_node_call_t *prop = al_get(&property_list, i);
 	CHECK_CHILD_COUNT(prop,L"property", 3);
-	anna_node_prepare_child(prop, 0, function, 0);
+	//anna_node_prepare_child(prop, 0, function, 0);
 	anna_node_prepare_child(prop, 1, function, 0);
+	
 	CHECK_NODE_TYPE(prop->child[0], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_TYPE(prop->child[1], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_TYPE(prop->child[2], ANNA_NODE_CALL);
-
+	
 	anna_node_identifier_t *name = 
 	    (anna_node_identifier_t *)prop->child[0];
 	
@@ -542,7 +543,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	type->property_count++;
 	anna_member_t *memb = anna_type_member_info_get(type, name->name);
 	memb->is_property = 1;
-
+	
 	anna_node_call_t *attribute_list = (anna_node_call_t *)prop->child[2];
 	int j;
 	CHECK_NODE_IDENTIFIER_NAME(attribute_list->function, L"__block__");
@@ -702,7 +703,9 @@ void anna_prepare_internal()
 			   type->name,
 			   anna_type_wrap(type));
 */
+	
     }
+    //anna_stack_print(stack_global);
     
     
     for(i=0; i<function_count; i++)
