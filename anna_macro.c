@@ -491,6 +491,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
     size_t mid = anna_mid_get(method_name);
 
     anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
+    
     CHECK(member_type, node, L"No method named %ls in type %ls\n", method_name, lst_type->name);
 
     switch(node->child[0]->node_type)

@@ -140,9 +140,9 @@ class Blubb enum
     bar;
     baz;
 }
-    ;
 
-function foo()
+
+    function foo(Int i, Float j)
 {
     return 3;
 }
@@ -154,13 +154,12 @@ function main2()
 //    var bbb = Blubb(1);
 //    print(bbb.baz, "\n", bbb.toString(), "\n");
 
-/*    Int.member.each(idx:member)
+    Int.member.each(idx:member)
     {
-//	print(member.name, "\n");
+	print(member.name, "\n");
     }
-*/
-    print(foo.output.name, "\n");
-    
+
+    print(foo.inputName[1], "\n");
 }
 
 main2();

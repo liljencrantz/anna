@@ -1300,17 +1300,22 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
     switch(this->node_type)
     {
 	case ANNA_NODE_CALL:
-	    return anna_node_call_invoke((anna_node_call_t *)this, stack);
+	    return anna_node_call_invoke(
+		(anna_node_call_t *)this, 
+		stack);
 
 	case ANNA_NODE_CONSTRUCT:
 	{
-	    anna_node_call_t *call = (anna_node_call_t *)this;
+	    anna_node_call_t *call = 
+		(anna_node_call_t *)this;
 	    //wprintf(L"Wee, calling construct with %d parameter, %d\n", call->child_count, call->child[0]);
-	    
-	    
-	    return anna_construct(anna_type_unwrap(anna_node_invoke(call->function, stack)),
-				  call,
-				  stack);
+	    return anna_construct(
+		anna_type_unwrap(
+		    anna_node_invoke(
+			call->function,
+			stack)),
+		call,
+		stack);
 	}
     
 	case ANNA_NODE_RETURN:

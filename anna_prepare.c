@@ -132,8 +132,8 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
     if(anna_function_check_dependencies(function, dep))
 	return;
 
-    //wprintf(L"Prepare function %ls\n", function->name);
-
+    wprintf(L"WOOWEE Prepare function %ls\n", function->name);
+        
     function->flags |= ANNA_FUNCTION_PREPARED;
         
     for(i=0; i<function->body->child_count; i++) 
@@ -158,8 +158,8 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
 */	
-	if(func->flags & ANNA_FUNCTION_MACRO)
-	    anna_prepare_function_internal(func, &current);
+//	if(func->flags & ANNA_FUNCTION_MACRO)
+//	    anna_prepare_function_internal(func, &current);
     }
     
     for(i=0; i<al_get_count(&function->child_type); i++) 
@@ -169,8 +169,8 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
 */
-	anna_prepare_type_interface_internal(type, 
-					     &current);
+//	anna_prepare_type_interface_internal(type, 
+//					     &current);
     }
     
     for(i=0; i<al_get_count(&function->child_function); i++) 
@@ -181,8 +181,8 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
 */	
-	if(!(func->flags & ANNA_FUNCTION_MACRO))
-	    anna_prepare_function_internal(func, &current);
+//	if(!(func->flags & ANNA_FUNCTION_MACRO))
+//	    anna_prepare_function_internal(func, &current);
     }
     
     if(!function->return_type)
@@ -646,6 +646,18 @@ anna_node_t *anna_prepare_type_implementation(anna_type_t *type)
     
 }
 
+void anna_prepare_function_recursive(anna_function_t *block)
+{
+    anna_prepare_function(block);
+    int i;
+    
+    for(i=0; i<al_get_count(&block->child_function); i++) 
+    {
+	anna_function_t *func = (anna_function_t *)al_get(&block->child_function, i);
+	anna_prepare_function_recursive(func);
+    }
+}
+
 void anna_prepare_internal()
 {
     int i;
@@ -654,33 +666,34 @@ void anna_prepare_internal()
     int function_count = al_get_count(&anna_function_list); 
     int type_count = al_get_count(&anna_type_list); 
 
+    /*
+      Prepare all macros and their subblocks. 
+     */
     for(i=0; i<function_count; i++)
     {
 	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
-
+	
 	if((func->flags & ANNA_FUNCTION_MACRO) 
 	   && (func->body)
 	   && !(func->flags &ANNA_FUNCTION_PREPARED))
-	{
-/*
-	    wprintf(L"Prepare function %d of %d: %ls\n", 
-		    i, al_get_count(&anna_function_list),
-		    func->name);
-*/
+	{	    
+	    wprintf(L"Prepare macro %ls\n", func->name);
 	    again=1;
-	    anna_prepare_function(func);
+	    anna_prepare_function_recursive(func);
 	}
-	
     }
-
+    
+    /*
+      Register all known types
+     */
     for(i=0; i<type_count; i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
-
+	
 	if(!(type->flags & ANNA_TYPE_REGISTERED))
 	{
 	    type->flags |= ANNA_TYPE_REGISTERED;
-//	    wprintf(L"Register type %ls\n", type->name);
+	    wprintf(L"Register type %ls\n", type->name);
 	    anna_stack_declare(type->stack,
 			       type->name,
 			       type_type,
@@ -688,13 +701,16 @@ void anna_prepare_internal()
 	}
     }
     
+    /*
+      Prepare interfaces of all known types
+     */
     for(i=0; i<type_count; i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
 	
 	if(!(type->flags & ANNA_TYPE_PREPARED_INTERFACE))
 	{
-//	    wprintf(L"Prepare interface for type %ls\n", type->name);
+	    wprintf(L"Prepare interface for type %ls\n", type->name);
 	    anna_prepare_type_interface(type);
 	    again=1;
 
@@ -708,6 +724,9 @@ void anna_prepare_internal()
     //anna_stack_print(stack_global);
     
     
+    /*
+      Prepare all non-macro functions and their subblocks
+     */
     for(i=0; i<function_count; i++)
     {
 	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
@@ -725,6 +744,9 @@ void anna_prepare_internal()
 	}
     }
     
+    /*
+      Prepare implementations of all known types
+     */
     for(i=0; i<type_count; i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
@@ -735,10 +757,9 @@ void anna_prepare_internal()
 	}
     }
     
-
     if(again)
 	anna_prepare_internal();
-    
+        
 }
 
 void anna_prepare()
