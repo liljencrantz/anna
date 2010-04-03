@@ -37,7 +37,9 @@ static anna_node_t *anna_prepare_type_interface_internal(
 
 static void anna_sniff_return_type(anna_function_t *f);
 
-static void sniff(array_list_t *lst, anna_function_t *f, int level)
+static void sniff(
+    array_list_t *lst, 
+    anna_function_t *f, int level)
 {
     if(f->return_pop_count == level)
     {
@@ -93,7 +95,9 @@ void anna_prepare_function(anna_function_t *function)
     anna_prepare_function_internal(function, 0);
 }
 
-static int anna_function_check_dependencies(anna_function_t *function, prepare_prev_t *node)
+static int anna_function_check_dependencies(
+    anna_function_t *function,
+    prepare_prev_t *node)
 {
     if(!node)
     {
@@ -110,7 +114,9 @@ static int anna_function_check_dependencies(anna_function_t *function, prepare_p
     
 }
 
-static void anna_prepare_function_internal(anna_function_t *function, prepare_prev_t *dep)
+static void anna_prepare_function_internal(
+    anna_function_t *function,
+    prepare_prev_t *dep)
 {
     int i;
     anna_node_list_t list = 
@@ -118,6 +124,7 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 	    (anna_node_t *)function->body, 0, 0
 	}
     ;
+/*
     prepare_prev_t current =
 	{
 	    dep,
@@ -125,14 +132,14 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
 	    0
 	}
     ;
-
+*/
     if(anna_function_prepared(function))
 	return;
     
     if(anna_function_check_dependencies(function, dep))
 	return;
 
-    wprintf(L"WOOWEE Prepare function %ls\n", function->name);
+    //twprintf(L"WOOWEE Prepare function %ls\n", function->name);
         
     function->flags |= ANNA_FUNCTION_PREPARED;
         
@@ -152,7 +159,7 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
     
     for(i=0; i<al_get_count(&function->child_function); i++) 
     {
-	anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
+	//anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
 /*
 	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
 		i, al_get_count(&function->child_function),
@@ -164,7 +171,7 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
     
     for(i=0; i<al_get_count(&function->child_type); i++) 
     {
-	anna_type_t *type = (anna_type_t *)al_get(&function->child_type, i);
+	//anna_type_t *type = (anna_type_t *)al_get(&function->child_type, i);
 /*	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
 		i, al_get_count(&function->child_function),
 		function->name, func->name);
@@ -175,7 +182,7 @@ static void anna_prepare_function_internal(anna_function_t *function, prepare_pr
     
     for(i=0; i<al_get_count(&function->child_function); i++) 
     {
-	anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
+	//anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
 /*
 	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
 		i, al_get_count(&function->child_function),
@@ -217,7 +224,9 @@ static anna_type_t *anna_prepare_type_from_identifier(
 	return dummy->payload->type;
 //      return anna_type_unwrap(dummy->payload);      
     }
-    if(node->node_type != ANNA_NODE_IDENTIFIER && node->node_type != ANNA_NODE_IDENTIFIER_TRAMPOLINE) 
+    if(
+	node->node_type != ANNA_NODE_IDENTIFIER &&
+	node->node_type != ANNA_NODE_IDENTIFIER_TRAMPOLINE) 
     {
 	anna_error(node,L"Could not determine type of node of type %d", node->node_type);
 	return 0;
@@ -366,11 +375,13 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	    function->stack_template);
 	CHECK(macro_definition, id, L"No such attribute macro found: %ls", name);
 	
-	node = anna_macro_invoke(
+	anna_node_t *tmp = anna_macro_invoke(
 	    macro_definition,
 	    attribute_call_node,
 	    function,
 	    0);
+	CHECK_NODE_TYPE(tmp, ANNA_NODE_CALL);
+	node = (anna_node_call_t *)tmp;
 	/*
 (anna_node_call_t *)macro_definition->native.macro(
 	    attribute_call_node, 
@@ -676,8 +687,8 @@ void anna_prepare_internal()
 	if((func->flags & ANNA_FUNCTION_MACRO) 
 	   && (func->body)
 	   && !(func->flags &ANNA_FUNCTION_PREPARED))
-	{	    
-	    wprintf(L"Prepare macro %ls\n", func->name);
+	{
+	    //wprintf(L"Prepare macro %ls\n", func->name);
 	    again=1;
 	    anna_prepare_function_recursive(func);
 	}
@@ -693,7 +704,7 @@ void anna_prepare_internal()
 	if(!(type->flags & ANNA_TYPE_REGISTERED))
 	{
 	    type->flags |= ANNA_TYPE_REGISTERED;
-	    wprintf(L"Register type %ls\n", type->name);
+	    //wprintf(L"Register type %ls\n", type->name);
 	    anna_stack_declare(type->stack,
 			       type->name,
 			       type_type,
@@ -710,7 +721,7 @@ void anna_prepare_internal()
 	
 	if(!(type->flags & ANNA_TYPE_PREPARED_INTERFACE))
 	{
-	    wprintf(L"Prepare interface for type %ls\n", type->name);
+	    //wprintf(L"Prepare interface for type %ls\n", type->name);
 	    anna_prepare_type_interface(type);
 	    again=1;
 

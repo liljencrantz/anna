@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -179,7 +180,7 @@ void anna_type_native_parent(anna_type_t *type, wchar_t *name)
 {
     anna_node_t *param[]=
 	{
-	    anna_node_identifier_create(
+	    (anna_node_t *)anna_node_identifier_create(
 		0,
 		name)
 	}
@@ -190,9 +191,9 @@ void anna_type_native_parent(anna_type_t *type, wchar_t *name)
         (anna_node_call_t *)type->definition->child[2];
     anna_node_call_add_child(
 	attribute_list, 
-	anna_node_call_create(
+	(anna_node_t *)anna_node_call_create(
 	    0,
-	    anna_node_identifier_create(
+	    (anna_node_t *)anna_node_identifier_create(
 		0,
 		L"extends"),
 	    1,

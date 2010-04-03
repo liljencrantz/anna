@@ -4,11 +4,13 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <wctype.h>
 
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_char.h"
 #include "anna_type.h"
+#include "anna_int.h"
 
 #include "anna_char_i.c"
 
@@ -48,12 +50,12 @@ static anna_object_t *anna_char_i_set_ordinal(anna_object_t **param)
 
 static anna_object_t *anna_char_i_get_upper(anna_object_t **param)
 {
-  return anna_char_create(towupper(anna_char_get(param[0])));
+    return anna_char_create(towupper(anna_char_get(param[0])));
 }
 
 static anna_object_t *anna_char_i_get_lower(anna_object_t **param)
 {
-  return anna_char_create(towlower(anna_char_get(param[0])));
+    return anna_char_create(towlower(anna_char_get(param[0])));
 }
 
 
@@ -102,7 +104,7 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 
     anna_native_method_add_node(
 	definition, -1, L"getUpper", 0, 
-	(anna_native_t)&anna_char_i_get_ordinal, 
+	(anna_native_t)&anna_char_i_get_upper, 
 	(anna_node_t *)anna_node_identifier_create(0, L"Char"), 
 	1, o_argv, o_argn);
     
@@ -117,7 +119,7 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 
     anna_native_method_add_node(
 	definition, -1, L"getLower", 0, 
-	(anna_native_t)&anna_char_i_get_ordinal, 
+	(anna_native_t)&anna_char_i_get_lower, 
 	(anna_node_t *)anna_node_identifier_create(0, L"Char"), 
 	1, o_argv, o_argn);
     

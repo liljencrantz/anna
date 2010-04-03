@@ -11,6 +11,7 @@
 #include "anna_list.h"
 #include "anna_int.h"
 #include "anna_stack.h"
+#include "anna_type.h"
 
 #include "anna_macro.h"
 

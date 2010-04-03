@@ -56,6 +56,8 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
     anna_node_prepare_children(attribute, function, parent);
     CHECK_CHILD_COUNT(attribute, L"template instantiation", 1);
     CHECK_NODE_TYPE(attribute->child[0], ANNA_NODE_IDENTIFIER);
+    CHECK_NODE_TYPE(body->child[3], ANNA_NODE_CALL);
+
     anna_node_identifier_t *parent_id = 
 	(anna_node_identifier_t *)attribute->child[0];
     
@@ -76,9 +78,11 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
     int i;
     for(i=0; i<definition->child_count; i++)
     {
-	anna_node_call_add_child(body->child[3], anna_node_clone_deep(definition->child[i]));
+	anna_node_call_add_child(
+	    (anna_node_call_t *)body->child[3],
+	    anna_node_clone_deep(definition->child[i]));
     }
     
-    return body;
+    return (anna_node_t *)body;
     
 }

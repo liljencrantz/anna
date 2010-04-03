@@ -25,7 +25,7 @@ typedef struct
 }
     templatize_key_t;
 
-const static wchar_t *anna_assign_operator_names[][2] = 
+static wchar_t *anna_assign_operator_names[][2] = 
 {
     {L"__increase__",L"__add__"},
     {L"__decrease__",L"__sub__"},

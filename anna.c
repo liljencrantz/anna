@@ -93,7 +93,7 @@ Object members:
   
   cast function (depends on type namespace/type object splittingx)
   import macro
-
+  
   elif macro
   __extendsAttribute__ macro
   in method
@@ -683,11 +683,11 @@ size_t anna_member_create(anna_type_t *type,
     if(hash_get(&type->name_identifier, name))
     {
 	if(type == type_type && wcscmp(name, L"!typeWrapperPayload")==0)
-	    return;
+	    return mid;
 	if(mid == ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD ||
 	   mid == ANNA_MID_FUNCTION_WRAPPER_PAYLOAD ||
 	   mid == ANNA_MID_FUNCTION_WRAPPER_STACK)
-	    return;
+	    return mid;
 
 	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
 		name, type->name);
@@ -1035,7 +1035,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 
 struct anna_node *anna_macro_invoke(
     anna_function_t *macro, 
-    struct anna_node *node,
+    anna_node_call_t *node,
     anna_function_t *function,
     anna_node_list_t *parent)
 {
@@ -1052,7 +1052,7 @@ struct anna_node *anna_macro_invoke(
 
 	anna_stack_set_str(my_stack,
 			   macro->input_name[0],
-			   anna_node_wrap(node));
+			   anna_node_wrap((anna_node_t *)node));
 	for(i=0; i<macro->body->child_count && !my_stack->stop; i++)
 	{
 	    result = anna_node_invoke(macro->body->child[i], my_stack);
@@ -1121,7 +1121,7 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 	if(variadic_count < 0)
 	{
 	    anna_error(
-		param,
+		(anna_node_t *)param,
 		L"Critical: Tried to call function %ls with %d arguments, need at least %d\n",
 		function->name,
 		param->child_count,

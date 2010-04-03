@@ -15,6 +15,7 @@
 #include "anna_float.h"
 #include "anna_string.h"
 #include "anna_char.h"
+#include "anna_function.h"
 
 #define CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
 
@@ -349,7 +350,7 @@ anna_node_call_t *anna_node_property_create(
 	  att, 
 	  (anna_node_t *)anna_node_call_create(
 	     loc,
-	     anna_node_identifier_create(loc,L"getter"),
+	     (anna_node_t *)anna_node_identifier_create(loc,L"getter"),
 	     1,
 	     getter_param));
     }
@@ -360,14 +361,14 @@ anna_node_call_t *anna_node_property_create(
 	 att, 
 	 (anna_node_t *)anna_node_call_create(
 	    loc,
-	    anna_node_identifier_create(loc,L"setter"),
+	    (anna_node_t *)anna_node_identifier_create(loc,L"setter"),
 	    1,
 	    setter_param));
     }
     
     anna_node_call_add_child(
 	r, 
-	att);
+	(anna_node_t *)att);
     
 
 /*
@@ -385,16 +386,16 @@ anna_node_t *anna_node_simple_template_create(
 
     anna_node_t *b_param[] =
 	{
-	    anna_node_identifier_create(loc, param),
+	    (anna_node_t *)anna_node_identifier_create(loc, param),
 	}
     ;
 
     anna_node_t *t_param[] =
 	{
-	    anna_node_identifier_create(loc, name),
+	    (anna_node_t *)anna_node_identifier_create(loc, name),
 	    (anna_node_t *)anna_node_call_create(
 		loc,
-		anna_node_identifier_create(loc, L"__block__"),
+		(anna_node_t *)anna_node_identifier_create(loc, L"__block__"),
 		1,
 		b_param),
 	}
@@ -402,7 +403,7 @@ anna_node_t *anna_node_simple_template_create(
     
     return (anna_node_t *)anna_node_call_create(
 	loc,
-	anna_node_identifier_create(loc, L"__templatize__"),
+	(anna_node_t *)anna_node_identifier_create(loc, L"__templatize__"),
 	2,
 	t_param);
     
@@ -1225,8 +1226,6 @@ anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
 	    CRASH;
 	}
 
-	anna_object_t *res;
-	
 	if(m->is_static) {
 	    obj->type->static_member[m->offset]=val;
 	} else {

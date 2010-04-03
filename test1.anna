@@ -123,13 +123,11 @@ macro __enumAttribute__(node, foo, bar)
     newBody ~= [init];
     
     var nameFun = AST(function toString(){});
-    nameFun.print();
     nameFun[4] = nameBody;
     newBody ~= [nameFun];
     
     def[3] = newBody;
-//    nameBody.print();
-    def.print();
+    //nameBody.print();
     
     return def;
 }
@@ -153,21 +151,22 @@ function main2()
 //    print( 12 in [1,6,7,12,39]);
 //    var bbb = Blubb(1);
 //    print(bbb.baz, "\n", bbb.toString(), "\n");
-
+    
     Int.member.each(idx:member)
     {
-	print(member.name, "\n");
+//	print(member.name, "\n");
     }
-
-    print(foo.inputName[1], "\n");
+    
+    //  print(foo.inputName[1], "\n");
+    //print("tjo fadderittan lambo"[Range(0,3,1)]);
+    
 }
 
 main2();
 
 //main();
 
-/*
-Class Range template (T:Int)
+class Range template (T:Int)
 {
 
     var T from;
@@ -196,7 +195,7 @@ Class Range template (T:Int)
     }
     
 }
-*/
+
 /*
 (1..10).each(key:value)
 {

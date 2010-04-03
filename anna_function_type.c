@@ -10,6 +10,9 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_function_type.h"
+#include "anna_function.h"
+#include "anna_string.h"
+#include "anna_list.h"
 #include "anna_type.h"
 
 static int base_created = 0;

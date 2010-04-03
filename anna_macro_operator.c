@@ -159,9 +159,9 @@ static anna_node_t *anna_macro_assign_operator(
 	node = 
 	    anna_node_call_create(
 		&node->location, 
-		anna_node_call_create(
+		(anna_node_t *)anna_node_call_create(
 		    &node->location, 
-		    anna_node_identifier_create(
+		    (anna_node_t *)anna_node_identifier_create(
 			&node->location, 
 			L"__memberGet__"),
 		    2,
@@ -171,7 +171,7 @@ static anna_node_t *anna_macro_assign_operator(
     }
     else
     {
-	node->function = anna_node_identifier_create(
+	node->function = (anna_node_t *)anna_node_identifier_create(
 	    &node->function->location, 
 	    new_identifier);
     }
@@ -184,7 +184,7 @@ static anna_node_t *anna_macro_assign_operator(
     
     anna_node_t *result = (anna_node_t *)anna_node_call_create(
 	&node->location,
-	anna_node_identifier_create(
+	(anna_node_t *)anna_node_identifier_create(
 	    &node->location,
 	    L"__assign__"),
 	2,
