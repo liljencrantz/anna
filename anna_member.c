@@ -11,6 +11,7 @@
 #include "anna_int.h"
 #include "anna_char.h"
 #include "anna_type.h"
+#include "anna_string.h"
 
 static anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 

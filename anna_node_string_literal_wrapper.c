@@ -12,7 +12,8 @@ static anna_object_t *anna_node_string_literal_wrapper_i_init(anna_object_t **pa
     assert(param[2] != null_object);
     anna_node_t *source = anna_node_unwrap(param[1]);
     *(anna_node_t **)anna_member_addr_get_mid(
-	param[0],ANNA_MID_NODE_PAYLOAD)=anna_node_string_literal_create(
+	param[0],ANNA_MID_NODE_PAYLOAD)=
+	(anna_node_t *)anna_node_string_literal_create(
 	    &source->location,
 	    anna_string_count(param[2]),
 	    anna_string_payload(param[2]));

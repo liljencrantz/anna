@@ -14,7 +14,7 @@ static anna_object_t *anna_node_int_literal_wrapper_i_init(anna_object_t **param
     *(anna_node_t **)anna_member_addr_get_mid(
 	param[0],
 	ANNA_MID_NODE_PAYLOAD)=
-	anna_node_int_literal_create(
+	(anna_node_t *)anna_node_int_literal_create(
 	    &source->location,
 	    anna_int_get(param[2]));
     return param[0];

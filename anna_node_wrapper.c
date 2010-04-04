@@ -9,6 +9,8 @@
 #include "anna_node.h"
 #include "anna_type.h"
 #include "anna_string.h"
+#include "anna_list.h"
+#include "anna_int.h"
 
 static anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_int_literal_wrapper_type, *node_string_literal_wrapper_type;
 

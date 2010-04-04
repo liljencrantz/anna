@@ -643,7 +643,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 */  
 }
 
-anna_node_t *anna_prepare_type_implementation(anna_type_t *type)
+void anna_prepare_type_implementation(anna_type_t *type)
 {
     int i;
     type->flags |= ANNA_TYPE_PREPARED_IMPLEMENTATION;
@@ -775,8 +775,6 @@ void anna_prepare_internal()
 
 void anna_prepare()
 {
-    int i;
-    
     anna_member_create(
 	type_type,
 	ANNA_MID_TYPE_WRAPPER_PAYLOAD,

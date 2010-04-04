@@ -80,8 +80,8 @@ wchar_t *str2wcs_internal( const char *in, wchar_t *out )
 	mbstate_t state;
 	size_t len;
 
-	CHECK( in, 0 );
-	CHECK( out, 0 );
+	VERIFY( in, 0 );
+	VERIFY( out, 0 );
 		
 	len = strlen(in);
 
@@ -139,8 +139,8 @@ char *wcs2str_internal( const wchar_t *in, char *out )
 	int out_pos = 0;
 	mbstate_t state;
 
-	CHECK( in, 0 );
-	CHECK( out, 0 );
+	VERIFY( in, 0 );
+	VERIFY( out, 0 );
 	
 	memset( &state, 0, sizeof(state) );
 	
@@ -243,7 +243,7 @@ void debug( int level, const wchar_t *msg, ... )
 	if( level > debug_level )
 		return;
 
-	CHECK( msg, );
+	VERIFY( msg, );
 		
 	sb_init( &sb );
 

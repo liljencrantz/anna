@@ -393,7 +393,7 @@ expression3 :
 	{
 	    anna_node_t *param[] ={
 		$3, 
-		anna_node_identifier_create(
+		(anna_node_t *)anna_node_identifier_create(
 		    &@$,
 		    L"__in__")
 	    };
@@ -476,8 +476,10 @@ expression8 :
 	'@' identifier expression9
 	{
 	    anna_node_identifier_t *id = (anna_node_identifier_t *)$2;
-	    anna_node_t *param[] ={$3, 
-				   anna_node_identifier_create(&id->location,enclose(id->name))};   
+	    anna_node_t *param[] ={
+		$3, 
+		(anna_node_t *)anna_node_identifier_create(&id->location,enclose(id->name))
+	    };
 	    $$ = (anna_node_t *)
 		anna_node_call_create(
 		    &@$, 
@@ -746,7 +748,7 @@ property_expression: PROPERTY type_identifier identifier attribute_list
       {
 	 $3,
 	 $2,
-	 $4
+	 (anna_node_t *)$4
       }
    ;
    
@@ -868,10 +870,9 @@ function_definition:
 		(anna_node_t *)($2?$2:anna_node_null_create(&@$)),
 		(anna_node_t *)$4, 
 		(anna_node_t *)$5, 
-		(anna_node_t *)($6?$6:anna_node_null_create(&@$))
+		($6?(anna_node_t *)$6:(anna_node_t *)anna_node_null_create(&@$))
 	    };
 	    $$ = (anna_node_t *)anna_node_call_create(&@$,(anna_node_t *)anna_node_identifier_create(&@1,L"__function__"), 5, param);
-	  	  
 	}
 	|
 	MACRO identifier '(' identifier ',' identifier ',' identifier ')' block

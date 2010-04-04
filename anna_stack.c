@@ -119,7 +119,7 @@ anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack_orig, wchar_t *name)
 
 anna_sid_t anna_stack_sid_create(anna_stack_frame_t *stack, wchar_t *name)
 {
-    anna_stack_frame_t *top = stack;
+//    anna_stack_frame_t *top = stack;
     assert(stack);
     assert(name);
     anna_sid_t sid = {0,0};
@@ -180,7 +180,7 @@ void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
     size_t *offset=(size_t *)val_ptr;
     anna_stack_frame_t *stack = (anna_stack_frame_t *)aux_ptr;
     anna_type_t *type = stack->member_type[*offset];
-    anna_object_t *value = stack->member[*offset];
+    //anna_object_t *value = stack->member[*offset];
     wprintf(L"%ls %ls = %ls\n", type->name, name, L"...");
 }
 

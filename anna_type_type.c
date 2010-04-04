@@ -9,6 +9,8 @@
 #include "anna_node.h"
 #include "anna_type.h"
 #include "anna_string.h"
+#include "anna_list.h"
+#include "anna_member.h"
 /*
 static void anna_member_add_create(
     anna_type_t *type,

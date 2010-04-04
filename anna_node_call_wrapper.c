@@ -76,7 +76,7 @@ static anna_object_t *anna_node_call_wrapper_i_join_list(anna_object_t **param)
 	    dst,
 	    anna_node_unwrap(n));
     }
-    return anna_node_wrap(dst);
+    return anna_node_wrap((anna_node_t *)dst);
 }
 
 static anna_object_t *anna_node_call_wrapper_i_init(anna_object_t **param)
@@ -101,7 +101,7 @@ static anna_object_t *anna_node_call_wrapper_i_init(anna_object_t **param)
     dest->child_count = sz;
     
     *(anna_node_t **)anna_member_addr_get_mid(param[0],ANNA_MID_NODE_PAYLOAD)=
-	dest;
+	(anna_node_t *)dest;
 	
     return param[0];
 }

@@ -11,14 +11,14 @@
 
 #define LAPS 16
 
-long long get_time()
+static long long get_time()
 {
     struct timeval time_struct;
     gettimeofday( &time_struct, 0 );
     return 1000000ll*time_struct.tv_sec+time_struct.tv_usec;
 }
 
-anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
+static void anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg)
 {
     long long start_time = get_time();
     int j=0;

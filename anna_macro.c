@@ -62,14 +62,6 @@ static int templatize_key_hash(void *k1)
     return result;
 }
 
-anna_node_t *anna_macro_function_internal(anna_type_t *type, 
-					  anna_node_call_t *node, 
-					  anna_function_t *function, 
-					  anna_node_list_t *parent,
-					  int declare);
-
-
-
 
 static wchar_t *anna_find_method(anna_node_t *context, 
 				 anna_type_t *type, 

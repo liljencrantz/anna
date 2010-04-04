@@ -3,17 +3,7 @@
 
 #include "util.h"
 #include "anna_checks.h"
-
-#ifdef ANNA_CRASH_ON_CRITICAL_ENABLED
-#define CRASH					\
-    {						\
-    int *__tmp=0;				\
-    *__tmp=0;					\
-    exit(1);					\
-    }
-#else
-define CRASH exit(1)
-#endif
+#include "anna_crash.h"
 
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
 #define ANNA_PREPARED(n) ((n)->prepared=1)

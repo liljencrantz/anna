@@ -371,5 +371,11 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 void anna_node_prepare_children(struct anna_node_call *in, anna_function_t *func, anna_node_list_t *parent);
 void anna_node_prepare_child(struct anna_node_call *in, int idx, anna_function_t *func, anna_node_list_t *parent);
 
+anna_node_t *anna_node_simple_template_create(
+    anna_location_t *loc,
+    wchar_t *name,
+    wchar_t *param);
+
+
 #endif
 
