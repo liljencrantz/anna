@@ -128,12 +128,41 @@ static size_t anna_parent_count(struct anna_node_list *parent)
     return parent?1+anna_parent_count(parent->parent):0;
 }
 
-static anna_node_t *anna_macro_block(anna_node_call_t *node, anna_function_t *function, anna_node_list_t *parent)
+static anna_node_t *anna_macro_block(
+    anna_node_call_t *node,
+    anna_function_t *function,
+    anna_node_list_t *parent)
 {
     //wprintf(L"Create new block with %d elements at %d\n", node->child_count, node);
     int return_pop_count = 1+function->return_pop_count;
     
     anna_function_t *result = anna_function_create(L"!anonymous", 0, node, 0, 0, 0, 0, function->stack_template, return_pop_count);
+    al_push(&function->child_function, result);
+    return (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	anna_function_wrap(result),
+	1);
+}
+
+static anna_node_t *anna_macro_module(
+    anna_node_call_t *node,
+    anna_function_t *function,
+    anna_node_list_t *parent)
+{
+    //wprintf(L"Create new block with %d elements at %d\n", node->child_count, node);
+    int return_pop_count = 1+function->return_pop_count;
+    
+    anna_function_t *result = anna_function_create(
+	L"!anonymous", 
+	ANNA_FUNCTION_MODULE,
+	node,
+	0,
+	0,
+	0,
+	0,
+	function->stack_template, 
+	return_pop_count);
+
     al_push(&function->child_function, result);
     return (anna_node_t *)anna_node_dummy_create(
 	&node->location,
@@ -816,6 +845,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
 	      &templatize_key_compare);
     
     anna_macro_add(stack, L"__block__", &anna_macro_block);
+    anna_macro_add(stack, L"__module__", &anna_macro_module);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
     anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);

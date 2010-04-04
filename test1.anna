@@ -140,7 +140,7 @@ class Blubb enum
 }
 
 
-    function foo(Int i, Float j)
+function foo(Int i, Float j)
 {
     return 3;
 }
@@ -152,12 +152,12 @@ function main2()
 //    var bbb = Blubb(1);
 //    print(bbb.baz, "\n", bbb.toString(), "\n");
     
-    Int.member.each(idx:member)
+    List.member.each(idx:member)
     {
-//	print(member.name, "\n");
+	print(member.name, "\n");
     }
     
-    //  print(foo.inputName[1], "\n");
+    print(foo.inputName[1], "\n");
     //print("tjo fadderittan lambo"[Range(0,3,1)]);
     
 }
