@@ -79,7 +79,7 @@ macro __enumAttribute__(node, foo, bar)
 	node.error("Missing body");
 	return null;
     }
-
+    
     var newBody = AST(
 	{
 	    var Int value;

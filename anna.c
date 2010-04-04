@@ -1171,7 +1171,13 @@ int main(int argc, char **argv)
 	exit(1);
     }
     wchar_t *filename = str2wcs(argv[1]);
-
+    wchar_t *module_name = str2wcs(argv[1]);
+    wchar_t *module_end = wcschr(module_name, L'.');
+    if(module_end)
+    {
+	*module_end = 0;
+    }
+    
     wprintf(L"Initializing interpreter...\n");    
     anna_init();
 
@@ -1201,10 +1207,16 @@ int main(int argc, char **argv)
 	anna_node_dummy_create(
 	    &program->location,
 	    anna_function_wrap(
-		anna_function_create(L"!program",
-				     0,
-				     node_cast_call(program),
-				     null_type, 0, 0, 0, stack_global, 0)),
+		anna_function_create(
+		    module_name,
+		    ANNA_FUNCTION_MODULE,
+		    node_cast_call(program),
+		    null_type, 
+		    0,
+		    0,
+		    0,
+		    stack_global, 
+		    0)),
 	    0);
     ANNA_PREPARED(program_callable);
     /*
@@ -1224,6 +1236,7 @@ int main(int argc, char **argv)
     anna_function_t *func=anna_function_unwrap(program_object);    
     assert(func);
     anna_prepare();
+    
     anna_int_one = anna_int_create(1);
     null_object = anna_object_create(null_type);
 

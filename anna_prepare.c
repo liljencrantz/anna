@@ -693,7 +693,7 @@ void anna_prepare_internal()
 	    anna_prepare_function_recursive(func);
 	}
     }
-    
+
     /*
       Register all known types
      */
@@ -769,9 +769,13 @@ void anna_prepare_internal()
     }
     
     if(again)
+    {
+	wprintf(L"Again\n");
+	
 	anna_prepare_internal();
-        
+    }
 }
+
 
 void anna_prepare()
 {

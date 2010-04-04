@@ -165,7 +165,7 @@ anna_function_t *anna_function_create(
     
     anna_function_t *result = calloc(
 	1,sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
-    
+//    if(flags & 
     result->native.function=0;
     result->flags=flags;
     result->name = wcsdup(name);
