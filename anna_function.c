@@ -134,7 +134,7 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
 
 int anna_function_prepared(anna_function_t *t)
 {
-    return !!(t->flags & ANNA_FUNCTION_PREPARED);
+    return !!(t->flags & ANNA_FUNCTION_PREPARED_IMPLEMENTATION);
 }
 
 anna_function_t *anna_function_create(
@@ -164,10 +164,12 @@ anna_function_t *anna_function_create(
     }
     
     anna_function_t *result = calloc(
-	1,sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
+	1,sizeof(anna_function_t));
+    result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
 //    if(flags & 
     result->native.function=0;
     result->flags=flags;
+    result->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     result->name = wcsdup(name);
     result->body = body;
     result->return_type=return_type;
@@ -188,7 +190,7 @@ anna_function_t *anna_function_create(
     if(!(flags & ANNA_FUNCTION_MACRO)) 
     {
 	int is_variadic = ANNA_IS_VARIADIC(result);
-	memcpy(&result->input_type, argv, sizeof(anna_type_t *)*argc);
+	memcpy(result->input_type, argv, sizeof(anna_type_t *)*argc);
 	for(i=0; i<argc-is_variadic;i++)
 	{
 	    anna_stack_declare(
@@ -232,6 +234,25 @@ anna_function_t *anna_function_create(
     return result;
 }
 
+anna_function_t *anna_function_create_from_definition(
+    anna_node_call_t *definition,
+    anna_stack_frame_t *scope)
+{
+    anna_function_t *result = calloc(
+	1,
+	sizeof(anna_function_t));
+    result->definition = definition;
+    result->stack_template = anna_stack_create(64, scope);
+    result->return_pop_count = 1;
+    al_push(&anna_function_list, result);
+    
+#ifdef ANNA_CHECK_STACK_ENABLED
+    result->stack_template->function = result;
+#endif
+
+    return result;
+}
+
 anna_function_t *anna_native_create(wchar_t *name,
 				    int flags,
 				    anna_native_t native, 
@@ -248,17 +269,18 @@ anna_function_t *anna_native_create(wchar_t *name,
 	}
     }
   
-    anna_function_t *result =
-	calloc(
-	    1,
-	    sizeof(anna_function_t) + argc*sizeof(anna_type_t *));
+    anna_function_t *result = calloc(
+	1,sizeof(anna_function_t));
+    result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
+
     result->flags=flags;
+    result->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     result->native = native;
     result->name = name;
     result->return_type=return_type;
     result->input_count=argc;
     memcpy(
-	&result->input_type,
+	result->input_type,
 	argv, 
 	sizeof(anna_type_t *)*argc);
     result->input_name = argn;

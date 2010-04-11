@@ -33,4 +33,9 @@ anna_function_t *anna_function_create(wchar_t *name,
 				      struct anna_stack_frame *parent_stack,
 				      int return_pop_count);
 
+anna_function_t *anna_function_create_from_definition(
+    struct anna_node_call *definition,
+    anna_stack_frame_t *scope);
+
+
 #endif

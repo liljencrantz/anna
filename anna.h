@@ -35,10 +35,12 @@ struct anna_node_call;
 typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struct anna_function *, struct anna_node_list *);
 
-#define ANNA_FUNCTION_MACRO 1
-#define ANNA_FUNCTION_VARIADIC 2
-#define ANNA_FUNCTION_PREPARED 4
-#define ANNA_FUNCTION_MODULE 8
+#define ANNA_FUNCTION_REGISTERED 1
+#define ANNA_FUNCTION_PREPARED_INTERFACE 2
+#define ANNA_FUNCTION_PREPARED_IMPLEMENTATION 4
+#define ANNA_FUNCTION_VARIADIC 8
+#define ANNA_FUNCTION_MODULE 16
+#define ANNA_FUNCTION_MACRO 32
 
 #define ANNA_TYPE_REGISTERED 1
 #define ANNA_TYPE_PREPARED_INTERFACE 2
@@ -120,8 +122,17 @@ struct anna_object
 struct anna_function
 {
     wchar_t *name;
-    struct anna_type *type;
     struct anna_node_call *body;  
+    /**
+       If this function is in fact a method belonging to a class, this
+       is a pointer to the type in question. Otherwise, it's a null
+       pointer.
+     */
+    struct anna_type *type;
+    /**
+       The AST that defines this function.
+     */
+    struct anna_node_call *definition;  
     union anna_native native;
     struct anna_type *return_type;
     struct anna_object *wrapper;
@@ -133,7 +144,7 @@ struct anna_function
     struct anna_stack_frame *stack_template;
     array_list_t child_function;
     array_list_t child_type;
-    struct anna_type *input_type[];    
+    struct anna_type **input_type;    
 };
 
 #define ANNA_IS_MACRO(f) (!!((f)->flags & ANNA_FUNCTION_MACRO))

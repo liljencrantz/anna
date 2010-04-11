@@ -538,8 +538,9 @@ anna_object_t *anna_construct(
 anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
 {
     anna_function_t *function_original = anna_function_unwrap(method);
-    size_t func_size = sizeof(anna_function_t) + function_original->input_count*sizeof(anna_type_t *);
+    size_t func_size = sizeof(anna_function_t);
     anna_function_t *function_copy = malloc(func_size);
+
     memcpy(function_copy, function_original, func_size);
     function_copy->this = owner;
     function_copy->wrapper = anna_object_create(function_copy->type);

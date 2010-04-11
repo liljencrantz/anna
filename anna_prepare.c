@@ -90,6 +90,225 @@ static void anna_sniff_return_type(anna_function_t *f)
 
 }
 
+
+
+static anna_node_t *anna_prepare_function_interface(
+    anna_function_t *function)
+{
+    int is_variadic=0;
+    wchar_t *name=0;
+    int is_anonymous=1;
+    anna_node_call_t *node = function->definition;
+    anna_type_t *type = function->type;
+    
+    wprintf(L"\n\nCreate function interface from node:\n");
+    anna_node_print((anna_node_t *)node);
+
+    CHECK_CHILD_COUNT(node,L"function definition", 5);
+    
+    if (node->child[0]->node_type == ANNA_NODE_IDENTIFIER) 
+    {
+	anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
+	name = name_identifier->name;
+	is_anonymous=0;
+    }
+    else {
+	CHECK_NODE_TYPE(node->child[0], ANNA_NODE_NULL);
+	name = L"!anonymous";
+    }
+    
+    anna_node_t *body = node->child[4];
+
+    anna_node_list_t list = 
+	{
+	    (anna_node_t *)body, 0, 0
+	}
+    ;
+    
+    
+    if(body->node_type != ANNA_NODE_NULL && 
+       body->node_type != ANNA_NODE_CALL &&
+	body->node_type != ANNA_NODE_DUMMY)
+    {
+        FAIL(body, L"Invalid function body");
+    }
+    
+    anna_type_t *out_type=0;
+    anna_node_t *out_type_wrapper = node->child[1];
+    
+    if(out_type_wrapper->node_type == ANNA_NODE_NULL) 
+    {	
+	CHECK(body->node_type == ANNA_NODE_CALL, body, L"Function declarations must have a return type");
+    }
+    else
+    {
+        anna_node_prepare_child(node, 1, function, &list);
+	out_type_wrapper = node->child[1];
+	anna_node_identifier_t *type_identifier;
+	type_identifier = node_cast_identifier(out_type_wrapper);
+	anna_object_t *type_wrapper = anna_stack_get_str(
+	    function->stack_template, 
+	    type_identifier->name);
+
+	if(!type_wrapper)
+	{
+	    FAIL(type_identifier, L"Unknown type: %ls", type_identifier->name);
+	}
+	out_type = anna_type_unwrap(type_wrapper);
+    }
+    
+    size_t argc=0;
+    anna_type_t **argv=0;
+    wchar_t **argn=0;
+    
+    CHECK_NODE_TYPE(node->child[2], ANNA_NODE_CALL);
+    anna_node_call_t *declarations = node_cast_call(node->child[2]);
+    int i;
+    if(declarations->child_count > 0 || type)
+    {
+	argc = declarations->child_count;
+	if(type)
+	{
+	    argc++;
+	}
+	
+	argv = malloc(sizeof(anna_type_t *)*argc);
+	argn = malloc(sizeof(wchar_t *)*argc);
+	
+	if(type)
+	{
+	    argv[0]=type;
+	    argn[0]=L"this";
+	}
+	
+	for(i=0; i<declarations->child_count; i++)
+	{
+	    //declarations->child[i] = anna_node_prepare(declarations->child[i], function, parent);
+	    CHECK_NODE_TYPE(declarations->child[i], ANNA_NODE_CALL);
+	    anna_node_call_t *decl = node_cast_call(declarations->child[i]);
+	    
+	    CHECK_NODE_TYPE(decl->function, ANNA_NODE_IDENTIFIER);
+	    anna_node_identifier_t *fun = node_cast_identifier(decl->function);
+	    if(wcscmp(fun->name, L"__declare__") == 0)
+	    {
+		//CHECK_CHILD_COUNT(decl, L"variable declaration", 3);
+		CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
+		anna_node_prepare_child(
+		    decl,
+		    1,
+		    function,
+		    &list);
+		anna_node_identifier_t *name = 
+		    node_cast_identifier(
+			decl->child[0]);
+		
+		anna_node_identifier_t *type_name =
+		    node_cast_identifier(decl->child[1]);
+		
+		anna_object_t **type_wrapper =
+		    anna_stack_addr_get_str(function->stack_template, type_name->name);
+		CHECK(
+		    type_wrapper, 
+		    (anna_node_t *)type_name,
+		    L"Unknown type: %ls",
+		    type_name->name);
+
+		argv[i+!!type] = 
+		    anna_type_unwrap(*type_wrapper);
+		argn[i+!!type] = name->name;		
+		
+		if(decl->child_count ==3 &&
+		   decl->child[2]->node_type == ANNA_NODE_IDENTIFIER) 
+		{
+		    anna_node_identifier_t *def =
+			node_cast_identifier(decl->child[2]);
+		    if(wcscmp(def->name,L"__variadic__") == 0)
+		    {
+			is_variadic = 1;
+			if(i != (declarations->child_count-1))
+			{
+			    FAIL(def, L"Only the last argument to a function can be variadic");
+			}
+/*			else
+			{
+			    wprintf(L"Variadic function\n");
+			}
+*/
+		    }
+		}
+	    }
+	    else if(wcscmp(fun->name, L"__function__") == 0)
+	    {
+		anna_node_t *fun_node = 
+		    anna_node_prepare((anna_node_t *)decl, function, &list);
+		CHECK_NODE_TYPE(fun_node, ANNA_NODE_DUMMY);
+		anna_node_dummy_t *fun_dummy = (anna_node_dummy_t *)fun_node;
+		anna_function_t *fun = anna_function_unwrap(
+		    fun_dummy->payload);
+                CHECK(fun, decl, L"Could not parse function declaration");              
+                argv[i+!!type] = anna_function_wrap(fun)->type;
+                argn[i+!!type] = fun->name;
+
+/*
+                anna_node_t *fun_wrap = anna_prepare_function_interface(
+                    0, decl, function, 
+                    parent, 0);
+
+                CHECK_NODE_TYPE(fun_wrap, ANNA_NODE_DUMMY);
+                anna_node_dummy_t *fun_dummy = (anna_node_dummy_t *)fun_wrap;
+                anna_function_t *fun = anna_function_unwrap(fun_dummy->payload);
+                CHECK(fun, decl, L"Could not parse function declaration");              
+                argv[i+!!type] = anna_function_wrap(fun)->type;
+                argn[i+!!type] = fun->name;
+
+*/
+	    }
+	    else 
+	    {
+		FAIL(decl, L"Unknown declaration type");
+	    }
+	    
+	}
+    }
+
+    if(body->node_type == ANNA_NODE_CALL) {
+	function->body = (anna_node_call_t *)body;
+    }
+    else if(body->node_type == ANNA_NODE_DUMMY)
+    {
+	anna_node_dummy_t *body_dummy = (anna_node_dummy_t *)body;
+	function->native = (anna_native_t)(anna_native_function_t)body_dummy->payload;	
+    }
+    else
+    {
+	function->native = (anna_native_t)anna_i_null_function;	
+    }
+    
+    function->flags |= (is_variadic?ANNA_FUNCTION_VARIADIC:0);
+    function->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
+    function->name = wcsdup(name);
+    function->return_type = out_type;
+    function->input_count = argc;
+    function->input_name = argn;
+    function->input_type = argv;
+    
+    if(!is_anonymous)
+    {
+	anna_stack_declare(
+	    function->stack_template->parent, 
+	    name, 
+	    anna_type_for_function(
+		function->return_type,
+		function->input_count,
+		function->input_type,
+		function->input_name,
+		is_variadic),
+	    anna_function_wrap(function));
+    }
+    return (anna_node_t *)anna_node_dummy_create(&node->location, anna_function_wrap(function),0);
+}
+
+
 void anna_prepare_function(anna_function_t *function)
 {
     anna_prepare_function_internal(function, 0);
@@ -141,7 +360,7 @@ static void anna_prepare_function_internal(
 
     //twprintf(L"WOOWEE Prepare function %ls\n", function->name);
         
-    function->flags |= ANNA_FUNCTION_PREPARED;
+    function->flags |= ANNA_FUNCTION_PREPARED_IMPLEMENTATION;
         
     for(i=0; i<function->body->child_count; i++) 
     {
@@ -229,6 +448,7 @@ static anna_type_t *anna_prepare_type_from_identifier(
 	node->node_type != ANNA_NODE_IDENTIFIER_TRAMPOLINE) 
     {
 	anna_error(node,L"Could not determine type of node of type %d", node->node_type);
+	anna_node_print(node);
 	return 0;
     }
     
@@ -686,7 +906,7 @@ void anna_prepare_internal()
 	
 	if((func->flags & ANNA_FUNCTION_MACRO) 
 	   && (func->body)
-	   && !(func->flags &ANNA_FUNCTION_PREPARED))
+	   && !(func->flags &ANNA_FUNCTION_PREPARED_IMPLEMENTATION))
 	{
 	    //wprintf(L"Prepare macro %ls\n", func->name);
 	    again=1;
@@ -711,6 +931,8 @@ void anna_prepare_internal()
 			       anna_type_wrap(type));
 	}
     }
+    
+    
     
     /*
       Prepare interfaces of all known types
@@ -748,7 +970,24 @@ void anna_prepare_internal()
 */	
 	if((!(func->flags & ANNA_FUNCTION_MACRO)) 
 	   && (func->body)
-	   && !(func->flags &ANNA_FUNCTION_PREPARED))
+	   && !(func->flags &ANNA_FUNCTION_PREPARED_INTERFACE))
+	{
+	    again=1;
+	    anna_prepare_function_interface(func);
+	}
+    }
+    
+    for(i=0; i<function_count; i++)
+    {
+	anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
+/*
+	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
+		i, al_get_count(&function->child_function),
+		function->name, func->name);
+*/	
+	if((!(func->flags & ANNA_FUNCTION_MACRO)) 
+	   && (func->body)
+	   && !(func->flags &ANNA_FUNCTION_PREPARED_IMPLEMENTATION))
 	{
 	    again=1;
 	    anna_prepare_function(func);

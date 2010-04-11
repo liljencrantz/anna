@@ -378,7 +378,21 @@ static anna_node_t *anna_macro_function(anna_node_call_t *node,
 					anna_function_t *function, 
 					anna_node_list_t *parent)
 {
-    return anna_macro_function_internal(0, node, function, parent, 1);
+    //return anna_macro_function_internal(0, node, function, parent, 1);
+    anna_function_t *result;
+    result = anna_function_create_from_definition(
+	node,
+	function->stack_template);
+    
+    al_push(&function->child_function, result);
+    
+    return (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	anna_function_wrap(result),
+	1);
+    /*
+      FIXME: Last param, should it be 0 for feclarations???
+    */
 }
 
 static anna_node_t *anna_macro_macro(anna_node_call_t *node,
