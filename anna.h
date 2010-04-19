@@ -41,6 +41,7 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_FUNCTION_VARIADIC 8
 #define ANNA_FUNCTION_MODULE 16
 #define ANNA_FUNCTION_MACRO 32
+#define ANNA_FUNCTION_ANONYMOUS 64
 
 #define ANNA_TYPE_REGISTERED 1
 #define ANNA_TYPE_PREPARED_INTERFACE 2

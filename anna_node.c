@@ -73,7 +73,22 @@ anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, struct anna_obje
     anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
     result->node_type = is_trampoline?ANNA_NODE_TRAMPOLINE:ANNA_NODE_DUMMY;
     anna_node_set_location((anna_node_t *)result,loc);
+    if(!(val && val->type && val->type->name && wcslen(val->type->name)!=0))
+    {
+	wprintf(L"Critical: Invalid dummy node\n");
+	CRASH;
+    }
+    
     result->payload = val;
+    return result;  
+}
+
+anna_node_dummy_t *anna_node_blob_create(anna_location_t *loc, void *val)
+{
+    anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
+    result->node_type = ANNA_NODE_BLOB;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->payload = (anna_object_t *)val;
     return result;  
 }
 
@@ -255,9 +270,9 @@ anna_node_call_t *anna_node_native_method_declare_create(
     anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,flags));
     anna_node_call_add_child(
 	r, 
-	(anna_node_t *)anna_node_dummy_create(
+	(anna_node_t *)anna_node_blob_create(
 	    loc,
-	    (anna_object_t *)func.function, 0));
+	    (anna_object_t *)func.function));
 /*
   anna_node_print(r);
   wprintf(L"\n\n");
@@ -510,6 +525,17 @@ anna_node_t *anna_node_simple_templated_type_create(
 	param);
 }
 
+anna_node_call_t *anna_node_block_create(
+    anna_location_t *loc)
+{
+    return anna_node_call_create(
+	loc,
+	anna_node_identifier_create(
+	    loc,
+	    L"__block__"),
+	0,
+	0);
+}
 
 
 
@@ -716,9 +742,10 @@ anna_node_t *anna_node_call_prepare(
 	      Constructor!
 	    */
 	    node->node_type = ANNA_NODE_CONSTRUCT;
-	    node->function = (anna_node_t *)anna_node_dummy_create(&node->location, 
-								   anna_node_invoke(node->function, function->stack_template),
-								   0);
+	    node->function = (anna_node_t *)anna_node_dummy_create(
+		&node->location, 
+		anna_node_invoke(node->function, function->stack_template),
+		0);
 	    node->function = anna_node_prepare(node->function, function, &list);
 	    
 	    for(i=0; i<node->child_count; i++)
@@ -1005,6 +1032,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	}
 	
 	case ANNA_NODE_TRAMPOLINE:
+	case ANNA_NODE_BLOB:
 	case ANNA_NODE_DUMMY:
 	{
 	    //anna_node_dummy_t *this2 =(anna_node_dummy_t *)this;	    
@@ -1132,6 +1160,7 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 
 	case ANNA_NODE_TRAMPOLINE:
 	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_BLOB:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
@@ -1274,6 +1303,23 @@ static anna_object_t *anna_trampoline(anna_object_t *orig,
 				      anna_stack_frame_t *stack)
 {
     anna_object_t *res = anna_object_create(orig->type);
+    
+    if(!anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD))
+    {
+/*	anna_member_t *m = obj->type->mid_identifier[mid];
+	if(!m) 
+	{
+	    return 0;
+	}
+*/
+	wprintf(L"LALA\n");
+	anna_object_print(res);
+	anna_function_print(orig->member[0]);
+	
+	CRASH;
+	
+    }
+    
     memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
 	   anna_member_addr_get_mid(orig,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
 	   sizeof(anna_function_t *));    
@@ -1333,6 +1379,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	}
 	
 	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_BLOB:
 	{
 	    anna_node_dummy_t *node = (anna_node_dummy_t *)this;
 	    return node->payload;
@@ -1341,6 +1388,12 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	case ANNA_NODE_TRAMPOLINE:
 	{
 	    anna_node_dummy_t *node = (anna_node_dummy_t *)this;
+	    if(wcscmp(node->payload->type->name, L"!FakeFunctionType") == 0)
+	    {
+		anna_error(this, L"AAAAA");
+		CRASH;
+	    }
+	    
 	    return anna_trampoline(node->payload, stack);
 	}
 	
@@ -1412,6 +1465,7 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_float_literal_t);
 	case ANNA_NODE_NULL:
 	    return sizeof(anna_node_t);
+	case ANNA_NODE_BLOB:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_TRAMPOLINE:
 	    return sizeof(anna_node_dummy_t);
@@ -1477,6 +1531,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_CHAR_LITERAL:
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
+	case ANNA_NODE_BLOB:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_TRAMPOLINE:
 	    return n;
@@ -1516,6 +1571,7 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_BLOB:
 	case ANNA_NODE_TRAMPOLINE:
 	{
 	    return tree;

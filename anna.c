@@ -236,8 +236,7 @@ void anna_native_declare(anna_stack_frame_t *stack,
 			 anna_type_t **argv,
 			 wchar_t **argn)
 {
-    anna_function_t *f = anna_native_create(name, flags, func, result, argc, argv, argn);
-    anna_stack_declare(stack, name, f->type, anna_function_wrap(f));
+    anna_native_create(name, flags, func, result, argc, argv, argn, stack_global);
 }
 
 
@@ -262,10 +261,10 @@ anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name)
 
 anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid)
 {
-  /*
-    wprintf(L"Get mid %d on object\n", mid);
-    wprintf(L"of type %ls\n", obj->type->name);
-  */
+    /*
+      wprintf(L"Get mid %d on object\n", mid);
+      wprintf(L"of type %ls\n", obj->type->name);
+    */
     anna_member_t *m = obj->type->mid_identifier[mid];
     if(!m) 
     {
@@ -742,15 +741,16 @@ void anna_member_add_node(anna_node_call_t *definition,
 }
 
 
-void anna_native_method_add_node(anna_node_call_t *definition,
-				 ssize_t mid,
-				 wchar_t *name,
-				 int flags,
-				 anna_native_t func,
-				 anna_node_t *result,
-				 size_t argc,
-				 anna_node_t **argv,
-				 wchar_t **argn)
+void anna_native_method_add_node(
+    anna_node_call_t *definition,
+    ssize_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_node_t *result,
+    size_t argc,
+    anna_node_t **argv,
+    wchar_t **argn)
 {
     anna_node_call_add_child(
 	definition,
@@ -768,15 +768,16 @@ void anna_native_method_add_node(anna_node_call_t *definition,
 
 
 
-size_t anna_native_method_create(anna_type_t *type,
-				 ssize_t mid,
-				 wchar_t *name,
-				 int flags,
-				 anna_native_t func,
-				 anna_type_t *result,
-				 size_t argc,
-				 anna_type_t **argv,
-				 wchar_t **argn)
+size_t anna_native_method_create(
+    anna_type_t *type,
+    ssize_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn)
 {
     if(!flags) 
     {
@@ -802,7 +803,12 @@ size_t anna_native_method_create(anna_type_t *type,
     anna_member_t *m = type->mid_identifier[mid];
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     m->is_method=1;
-    type->static_member[m->offset] = anna_function_wrap(anna_native_create(name, flags, func, result, argc, argv, argn));
+    type->static_member[m->offset] = 
+	anna_function_wrap(
+	    anna_native_create(
+		name, flags, func, result, 
+		argc, argv, argn,
+		0));
     return (size_t)mid;
 }
 
@@ -857,9 +863,11 @@ static void anna_null_type_create_early()
 
     null_type->static_member[0] = 
 	anna_function_wrap(
-	    anna_native_create(L"!nullFunction", 0, 
-			       (anna_native_t)&anna_i_null_function, 
-			       null_type, 1, argv, argn));
+	    anna_native_create(
+		L"!nullFunction", 0, 
+		(anna_native_t)&anna_i_null_function, 
+		null_type, 1, argv, argn,
+		0));
   
     anna_object_t *null_function;  
     null_function = null_type->static_member[0];
@@ -924,7 +932,7 @@ static void anna_init()
     anna_string_type_create(stack_global);
     anna_float_type_create(stack_global);
     anna_node_wrapper_types_create(stack_global);
-
+    
     anna_function_implementation_init(stack_global);
 /*
     assert(anna_abides(int_type,object_type)==1);
@@ -1204,6 +1212,7 @@ int main(int argc, char **argv)
       The entire program is a __block__ call, which we use to create
       an anonymous function definition
     */
+/*
     anna_node_dummy_t *program_callable = 
 	anna_node_dummy_create(
 	    &program->location,
@@ -1219,40 +1228,79 @@ int main(int argc, char **argv)
 		    stack_global, 
 		    0)),
 	    0);
-    ANNA_PREPARED(program_callable);
+*/
+//    ANNA_PREPARED(program_callable);
     /*
       Invoke the anonymous function, the return is a
       function_type_t->wrapper
     */
-    anna_object_t *program_object = anna_node_invoke((anna_node_t *)program_callable, stack_global);
-    if(anna_error_count)
+//    anna_object_t *program_object = anna_node_invoke((anna_node_t *)program_callable, stack_global);
+/*    if(anna_error_count)
     {
 	wprintf(L"Found %d error(s) during program validation, exiting\n", anna_error_count);
 	exit(1);
     }
+*/
     /*
       Run the function
     */
     
-    anna_function_t *func=anna_function_unwrap(program_object);    
-    assert(func);
+    //  anna_function_t *func=anna_function_unwrap(program_object);    
+    //assert(func);
+
+    anna_function_t *fake_function = anna_function_create(
+	L"!fakeFunction",
+	0,
+	node_cast_call(program),
+	null_type, 
+	0,
+	0,
+	0,
+	stack_global, 
+	0);
+    
+
+    anna_node_dummy_t *program_dummy = (anna_node_dummy_t *)
+	anna_node_prepare(
+	    program,
+	    fake_function,
+	    0);
+    assert(program_dummy->node_type == ANNA_NODE_TRAMPOLINE);
+    anna_node_print(program_dummy);
+    anna_function_t *module = anna_function_unwrap(
+	program_dummy->payload);
+    
+    assert(module);
+    
     anna_prepare();
     
     anna_int_one = anna_int_create(1);
     null_object = anna_object_create(null_type);
-
+    
     if(anna_error_count)
     {
 	wprintf(L"Found %d error(s) during program validation, exiting\n", anna_error_count);
 	exit(1);
     }
+    
+//    wprintf(L"Validated program:\n");    
+    anna_object_t **main_wrapper_ptr = anna_stack_addr_get_str(module->stack_template, L"main");
+    if(!main_wrapper_ptr)
+    {
+	wprintf(L"No main method defined in module %ls\n", module_name);
+	exit(1);	
+    }
+    anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);
+    if(!main_func)
+    {
+	wprintf(L"Main is not a method in module %ls\n", module_name);
+	exit(1);	
+    }
+    
 
-    wprintf(L"Validated program:\n");    
-    anna_node_print((anna_node_t *)func->body);
-    
     wprintf(L"Output:\n");    
-    
-    anna_function_invoke(func, 0, 0, stack_global, stack_global);
+        
+    anna_function_invoke(main_func, 0, 0, stack_global, stack_global);
     
     wprintf(L"\n");
 }

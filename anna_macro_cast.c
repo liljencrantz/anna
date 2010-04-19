@@ -62,7 +62,8 @@ static anna_node_t *anna_macro_as(
 			type,
 			2,
 			as_argv,
-			as_argn)),
+			as_argn,
+			0)),
 		0),
 	    2,
 	    param);

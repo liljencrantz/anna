@@ -137,17 +137,32 @@ static anna_node_t *anna_macro_block(
     int return_pop_count = 1+function->return_pop_count;
     
     anna_function_t *result = 
-	anna_function_create(
-	    L"!module", 
-	    0,
-	    node, 
-	    0,
-	    0,
-	    0,
-	    0,
-	    function->stack_template, 
+	anna_function_create_from_block(
+	    node,
+	    function->stack_template,
 	    return_pop_count);
     al_push(&function->child_function, result);
+    return (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	anna_function_wrap(result),
+	1);
+}
+
+static anna_node_t *anna_macro_module(
+    anna_node_call_t *node,
+    anna_function_t *function,
+    anna_node_list_t *parent)
+{
+    wprintf(L"Create new module with %d elements at %d\n", node->child_count, node);
+    int return_pop_count = 1+function->return_pop_count;
+
+    
+    anna_function_t *result = 
+	anna_function_create_from_block(
+	    node,
+	    function->stack_template,
+	    return_pop_count);
+    //al_push(&function->child_function, result);
     return (anna_node_t *)anna_node_dummy_create(
 	&node->location,
 	anna_function_wrap(result),
@@ -358,8 +373,8 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 */
 	}
 	else {
-	    //wprintf(L"Creating emptry function as return for function declaration with no body for %ls\n", internal_name);
-	    result = anna_native_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_native_t)anna_i_null_function, out_type, argc, argv, argn);
+	    //wprintf(L"Creating empty function as return for function declaration with no body for %ls\n", internal_name);
+	    result = anna_native_create(internal_name, (is_variadic?ANNA_FUNCTION_VARIADIC:0), (anna_native_t)anna_i_null_function, out_type, argc, argv, argn, function->stack_template);
 	}
 	
 	if(name && declare) {
@@ -386,13 +401,17 @@ static anna_node_t *anna_macro_function(anna_node_call_t *node,
     
     al_push(&function->child_function, result);
     
-    return (anna_node_t *)anna_node_dummy_create(
+    anna_node_t *res = (anna_node_t *)anna_node_dummy_create(
 	&node->location,
 	anna_function_wrap(result),
 	1);
     /*
       FIXME: Last param, should it be 0 for feclarations???
     */
+    
+    //wprintf(L"LALALA %d %d\n", res, anna_function_wrap(result));
+    return res;
+
 }
 
 static anna_node_t *anna_macro_macro(anna_node_call_t *node,
@@ -825,7 +844,15 @@ static void anna_macro_add(anna_stack_frame_t *stack,
 			   wchar_t *name,
 			   anna_native_macro_t call)
 {
-    anna_native_declare(stack, name, ANNA_FUNCTION_MACRO, (anna_native_t)call, 0, 0, 0, 0);
+    anna_native_create(
+	name,
+	ANNA_FUNCTION_MACRO,
+	(anna_native_t)call,
+	0,
+	0,
+	0,
+	0,
+	stack);
 }
 
 #include "anna_macro_attribute.c"
@@ -840,7 +867,8 @@ void anna_macro_init(anna_stack_frame_t *stack)
     hash_init(&templatize_lookup,
 	      &templatize_key_hash,
 	      &templatize_key_compare);
-
+    
+    anna_macro_add(stack, L"__module__", &anna_macro_module);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
     anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
@@ -869,7 +897,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"__as__", &anna_macro_as);
     anna_macro_add(stack, L"AST", &anna_macro_ast);
-    
+
     wchar_t *op_names[] = 
 	{
 	    L"__join__",

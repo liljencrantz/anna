@@ -229,12 +229,9 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
     anna_type_native_parent(res, L"!FunctionTypeBase");
     sb_destroy(&sb);
 
-    anna_member_create(
-	res,
-	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, 
-	L"!functionTypePayload",
-	1,
-	null_type);
+    /*
+      Non-static member variables
+     */
     anna_member_create(
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
@@ -244,6 +241,16 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
 	0,
+	null_type);
+
+    /*
+      Static member variables
+     */
+    anna_member_create(
+	res,
+	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, 
+	L"!functionTypePayload",
+	1,
 	null_type);
     
     anna_node_call_t *definition = 

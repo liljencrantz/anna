@@ -1137,7 +1137,7 @@ void anna_yacc_error (YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_
     fwprintf(stderr,L"Error in %ls, on line %d:\n", 
 	     llocp->filename,
 	     llocp->first_line);
-    anna_node_print_code((anna_node_t *)anna_node_dummy_create(llocp, 0, 0));
+    anna_node_print_code((anna_node_t *)anna_node_blob_create(llocp, 0));
     
     fwprintf (stderr, L"%s\n", s);
     anna_yacc_error_count++;

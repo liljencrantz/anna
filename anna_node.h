@@ -22,6 +22,7 @@
 #define ANNA_NODE_MEMBER_SET 12
 #define ANNA_NODE_CONSTRUCT 13
 #define ANNA_NODE_RETURN 14
+#define ANNA_NODE_BLOB 16
 
 struct YYLTYPE
 {
@@ -199,9 +200,15 @@ extern int anna_yacc_error_count;
 
 void anna_node_set_location(anna_node_t *node, 
 			    anna_location_t *l);
-anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, 
-					  struct anna_object *val, 
-					  int is_trampoline);
+anna_node_dummy_t *anna_node_dummy_create(
+    anna_location_t *loc, 
+    struct anna_object *val, 
+    int is_trampoline);
+
+anna_node_dummy_t *anna_node_blob_create(
+    anna_location_t *loc, 
+    void *val);
+
 anna_node_return_t *anna_node_return_create(anna_location_t *loc,
 					    struct anna_node *val, 
 					    int steps);
@@ -276,6 +283,9 @@ anna_node_t *anna_node_simple_templated_type_create(
     wchar_t *type_name,
     wchar_t *param_name);
 
+anna_node_call_t *anna_node_block_create(
+    anna_location_t *loc);
+
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function);
@@ -343,7 +353,7 @@ anna_node_t *anna_parse(wchar_t *name);
 /**
   Print the source code that lead to the creation of the specified AST
   node. This usually involves opening the source code file.
-
+o
   Does a bit of fancy markup with line numbers and color coding of the
   exact source part of the node.
  */

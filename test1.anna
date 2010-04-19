@@ -202,7 +202,7 @@ function main3()
 {
     print("Hej baberiba\n");
 }
-main3();
+//main3();
 
 
 /*
