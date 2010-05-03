@@ -198,12 +198,6 @@ class Range template (T:Int)
 }
 */
 
-function main3()
-{
-    print("Hej baberiba\n");
-}
-//main3();
-
 
 /*
 (1..10).each(key:value)
@@ -250,3 +244,4 @@ print(bar());
 print(foo(31));
 print("Hej");
 */
+

@@ -362,7 +362,7 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
     
     anna_node_prepare_children(node, function, parent);
-
+    
     anna_type_t *object_type = anna_node_get_return_type(node->child[0], function->stack_template);
     CHECK(
 	object_type,
@@ -374,10 +374,12 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     size_t mid = anna_mid_get(name_node->name);
     
     anna_type_t *member_type = anna_type_member_type_get(object_type, name_node->name);
-
+    
     if(!member_type)
     {
 	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
+//	anna_stack_print(function->stack_template);
+	
 	CRASH;
 	
 	return (anna_node_t *)anna_node_null_create(&node->location);	\

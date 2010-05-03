@@ -37,13 +37,23 @@ static anna_node_t *anna_prepare_type_interface_internal(
 
 static void anna_sniff_return_type(anna_function_t *f);
 
+/**
+   Sniff out all the return statements of the specified function and put them into the list.
+
+*/
 static void sniff(
     array_list_t *lst, 
-    anna_function_t *f, int level)
+    anna_function_t *f, 
+    int level)
 {
+    anna_prepare_function_interface(f);
+    
+    //wprintf(L"Sniff return type for %ls\n", f->name);
+    
     if(f->return_pop_count == level)
     {
 	int i;
+	
 	for(i=0;i<f->body->child_count;i++)
 	{
 	    if(f->body->child[i]->node_type == ANNA_NODE_RETURN)
@@ -59,7 +69,14 @@ static void sniff(
     }
 }
 
+/**
+  Try to figure out the return type of the specified function. 
 
+  If there are return calls in the function itself or it's subblocks,
+  the return type is determined by sniffing the types of those return
+  statements. Otherwise, the return type is the type of the last
+  expressin in the body, or null if the body is empty.
+ */
 static void anna_sniff_return_type(anna_function_t *f)
 {
     array_list_t types;
@@ -67,6 +84,8 @@ static void anna_sniff_return_type(anna_function_t *f)
     sniff(&types, f, 0);
     int i;
     
+    anna_prepare_function_interface(f);
+
     if(al_get_count(&types) >0)
     {
 	//wprintf(L"Got the following %d return types for function %ls, create intersection:\n", al_get_count(&types), f->name);
@@ -92,7 +111,7 @@ static void anna_sniff_return_type(anna_function_t *f)
 
 
 
-static anna_node_t *anna_prepare_function_interface(
+static anna_node_t *anna_prepare_function_interface_internal(
     anna_function_t *function)
 {
     int is_variadic=0;
@@ -140,27 +159,6 @@ static anna_node_t *anna_prepare_function_interface(
     
     anna_type_t *out_type=0;
     anna_node_t *out_type_wrapper = node->child[1];
-    
-    if(out_type_wrapper->node_type == ANNA_NODE_NULL) 
-    {	
-	CHECK(body->node_type == ANNA_NODE_CALL, body, L"Function declarations must have a return type");
-    }
-    else
-    {
-        anna_node_prepare_child(node, 1, function, &list);
-	out_type_wrapper = node->child[1];
-	anna_node_identifier_t *type_identifier;
-	type_identifier = node_cast_identifier(out_type_wrapper);
-	anna_object_t *type_wrapper = anna_stack_get_str(
-	    function->stack_template, 
-	    type_identifier->name);
-
-	if(!type_wrapper)
-	{
-	    FAIL(type_identifier, L"Unknown type: %ls", type_identifier->name);
-	}
-	out_type = anna_type_unwrap(type_wrapper);
-    }
     
     size_t argc=0;
     anna_type_t **argv=0;
@@ -292,10 +290,36 @@ static anna_node_t *anna_prepare_function_interface(
     function->flags |= (is_variadic?ANNA_FUNCTION_VARIADIC:0);
     function->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     function->name = wcsdup(name);
-    function->return_type = out_type;
     function->input_count = argc;
     function->input_name = argn;
     function->input_type = argv;
+
+    if(out_type_wrapper->node_type == ANNA_NODE_NULL) 
+    {	
+	CHECK(body->node_type == ANNA_NODE_CALL, body, L"Function declarations must have a return type");
+	anna_sniff_return_type(function);
+	out_type = function->return_type;
+    }
+    else
+    {
+        anna_node_prepare_child(node, 1, function, &list);
+	out_type_wrapper = node->child[1];
+	anna_node_identifier_t *type_identifier;
+	type_identifier = node_cast_identifier(out_type_wrapper);
+	anna_object_t *type_wrapper = anna_stack_get_str(
+	    function->stack_template, 
+	    type_identifier->name);
+
+	if(!type_wrapper)
+	{
+	    FAIL(type_identifier, L"Unknown type: %ls", type_identifier->name);
+	}
+	out_type = anna_type_unwrap(type_wrapper);
+    }
+    function->return_type = out_type;
+    
+
+
 
     anna_function_setup_type(function, function->stack_template->parent);
 
@@ -316,6 +340,69 @@ static anna_node_t *anna_prepare_function_interface(
 */
     return (anna_node_t *)anna_node_dummy_create(&node->location, anna_function_wrap(function),0);
 }
+
+void anna_prepare_function_interface(
+    anna_function_t *function)
+{
+    anna_prepare_function_interface_internal(function);
+    
+
+}
+;
+
+anna_node_t *anna_prepare_macro(anna_function_t *function)
+{
+    /*
+    anna_node_call_t *node = function->definition;
+
+    anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
+    anna_node_call_t *declarations = node_cast_call(node->child[1]);
+    wchar_t **argn=calloc(sizeof(wchar_t *), 3);
+    int i;
+    CHECK_CHILD_COUNT(declarations,L"macro definition", 3);
+
+    for(i=0; i<3; i++)
+    {
+	CHECK_NODE_TYPE(declarations->child[i], ANNA_NODE_IDENTIFIER);
+	anna_node_identifier_t *arg = (anna_node_identifier_t *)declarations->child[i];
+	argn[i] = wcsdup(arg->name);
+    }
+
+    function->name = wcsdup(name_identifier->name);
+    function->body = node->child[2];
+    function->input_count=3;
+    function->input_name = argn;
+
+    result = anna_function_create(
+	
+	ANNA_FUNCTION_MACRO,
+	(anna_node_call_t *)node->child[2], 
+	0,
+	3, 
+	0,
+	argn, 
+	function->stack_template, 
+	0);
+    al_push(&function->child_function, result);
+    
+    anna_stack_declare(
+	function->stack_template,
+	name_identifier->name, 
+	anna_type_for_function(
+	    result->return_type, 
+	    result->input_count, 
+	    result->input_type,
+	    result->input_name,
+	    0), 
+	anna_function_wrap(result));
+    
+    return (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	anna_function_wrap(result),
+	0);    
+    */
+}
+
 
 
 void anna_prepare_function(anna_function_t *function)
@@ -456,6 +543,24 @@ static anna_type_t *anna_prepare_type_from_identifier(
        node->node_type == ANNA_NODE_TRAMPOLINE ) {
 	anna_node_dummy_t *dummy = (anna_node_dummy_t *)node;
 	//anna_object_print(dummy->payload);
+	if(anna_type_is_fake(dummy->payload->type))
+	{
+	    anna_function_t *f = anna_function_unwrap(dummy->payload);
+	    if(f)
+	    {
+		anna_prepare_function_interface(anna_function_unwrap(dummy->payload));
+	    }
+
+
+	    if(anna_type_is_fake(dummy->payload->type))
+	    {
+		wprintf(
+		    L"Critical: Preparation resulted in fake function type\n");
+		CRASH;
+	    }
+	    
+	}
+
 	return dummy->payload->type;
 //      return anna_type_unwrap(dummy->payload);      
     }
@@ -530,7 +635,7 @@ static anna_node_t *anna_type_member(anna_type_t *type,
     */
 }
 
-anna_node_t *anna_prepare_type_interface(
+void anna_prepare_type_interface(
     anna_type_t *type)
 {
     return anna_prepare_type_interface_internal(type, 0);
@@ -552,7 +657,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	L"!typePrepareFunction",
 	ANNA_FUNCTION_MACRO,
 	(anna_native_t)(anna_native_function_t)0,
-	0,
+	null_type,
 	0,
 	0, 
 	0,
@@ -709,6 +814,13 @@ static anna_node_t *anna_prepare_type_interface_internal(
 		    param->child[1],
 		    function,
 		    0);
+		if(anna_type_is_fake(argv[i]))
+		{
+		    wprintf(
+			L"Critical: Preparation resulted in fake function type\n");
+		    CRASH;
+		}
+
 		argn[i] = param_name->name;
 	    }
 	    
@@ -908,7 +1020,15 @@ void anna_prepare_type_implementation(anna_type_t *type)
 
 void anna_prepare_function_recursive(anna_function_t *block)
 {
-    anna_prepare_function(block);
+/*    if(block->flags & ANNA_FUNCTION_MACRO)
+    {
+	anna_prepare_macro(block);
+    }
+    else*/
+    {
+	anna_prepare_function(block);
+    }
+    
     int i;
     
     for(i=0; i<al_get_count(&block->child_function); i++) 
@@ -922,6 +1042,7 @@ void anna_prepare_internal()
 {
     int i=0, j=0, k=0, m=0, n=0, p=0;
     int again;
+    
     do
     {
 	again=0;
@@ -940,9 +1061,10 @@ void anna_prepare_internal()
 	       && (func->body)
 	       && !(func->flags &ANNA_FUNCTION_PREPARED_IMPLEMENTATION))
 	    {
-		//wprintf(L"Prepare macro %ls\n", func->name);
+		wprintf(L"Prepare macro %ls\n", func->name);
 		again=1;
 		anna_prepare_function_recursive(func);
+		wprintf(L"Done\n");
 	    }
 	}
 	
@@ -1044,6 +1166,7 @@ void anna_prepare_internal()
 
 void anna_prepare()
 {
+    wprintf(L"Prepare all types and functions\n");
     anna_member_create(
 	type_type,
 	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
@@ -1051,5 +1174,6 @@ void anna_prepare()
 	0,
 	null_type);
     anna_prepare_internal();
+    wprintf(L"Preparations complete\n");
 
 }

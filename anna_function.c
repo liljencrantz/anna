@@ -40,6 +40,14 @@ static void anna_function_wrapper_create(anna_function_t *f)
 
 void anna_function_setup_type(anna_function_t *f, anna_stack_frame_t *location)
 {
+    if(!f->return_type)
+    {
+	wprintf(L"Critical: Function %ls lacks return type at setup time\n", f->name);
+	CRASH;
+	
+    }
+    
+
     anna_type_t *function_type = 
 	anna_type_for_function(
 	    f->return_type,
@@ -50,7 +58,7 @@ void anna_function_setup_type(anna_function_t *f, anna_stack_frame_t *location)
     /*
       FIXME: The function->type field can probably be safely
       removed. Just use function->wrapper->type.
-     */
+    */
     f->type = function_type;    
     f->wrapper->type = f->type;
     
@@ -214,9 +222,16 @@ anna_function_t *anna_function_create(
     result->this=0;
     al_push(&anna_function_list, result);
     
-    result->input_name = malloc(argc*sizeof(wchar_t *));;
-    memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
-    
+    if(!(flags & ANNA_FUNCTION_MACRO)) {
+	result->input_name = malloc(argc*sizeof(wchar_t *));;
+	memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
+    }
+    else
+    {
+	result->input_name = malloc(3*sizeof(wchar_t *));;
+	memcpy(result->input_name, argn, sizeof(wchar_t *)*3);	
+    }
+        
     result->stack_template = anna_stack_create(64, parent_stack);
 
 #ifdef ANNA_CHECK_STACK_ENABLED
@@ -258,7 +273,7 @@ anna_function_t *anna_function_create(
     }
     
     //anna_function_prepare(result);
-
+    
     anna_function_wrapper_create(result);
     anna_function_setup_type(result, parent_stack);
     
@@ -267,7 +282,7 @@ anna_function_t *anna_function_create(
     wprintf(L"Created a new non-native function with definition:");
     anna_node_print(result->body);
     */
-
+    
     return result;
 }
 

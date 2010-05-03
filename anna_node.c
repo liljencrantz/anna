@@ -599,14 +599,14 @@ int anna_node_identifier_is_function(anna_node_identifier_t *id, anna_stack_fram
 anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t *stack)
 {
 /*
-  wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
-  anna_node_print(node);
-  wprintf(L"\n");
+    wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
+    anna_node_print(node);
 */
     switch(node->function->node_type)
     {
 	case ANNA_NODE_IDENTIFIER:
 	{
+//	    wprintf(L"It's an identifier\n");
 	    anna_node_identifier_t *name=(anna_node_identifier_t *)node->function;
 
 	    anna_object_t **obj = anna_stack_addr_get_str(stack, name->name);
@@ -628,6 +628,7 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 
 	case ANNA_NODE_CALL:
 	{
+//	    wprintf(L"It's a call\n");
 	    anna_node_call_t *call=(anna_node_call_t *)node->function;
 	    if(call->function->node_type != ANNA_NODE_IDENTIFIER)
 	    {
@@ -644,14 +645,16 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 		{
 		    anna_node_identifier_t *member_name=
 			(anna_node_identifier_t *)call->child[1];
-		    //wprintf(L"Looking up member %ls\n", member_name->name);
+//		    wprintf(L"Looking up member %ls\n", member_name->name);
 		    anna_object_t **obj = anna_stack_addr_get_str(stack, member_name->name);
 		    
 		    if(obj && (*obj)->type != null_type)
 		    {
 			anna_function_t *func=anna_function_unwrap(*obj);
 			
-			if(func && func->flags == ANNA_FUNCTION_MACRO)
+			//wprintf(L"Found variable! %ls\n", func->name);
+
+			if(func && (func->flags & ANNA_FUNCTION_MACRO))
 			{
 			    //wprintf(L"Found macro!\n");
 			    

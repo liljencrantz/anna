@@ -13,6 +13,7 @@
 #include "anna_macro.h"
 #include "anna_type.h"
 #include "anna_function.h"
+#include "anna_prepare.h"
 #include "anna_node_check.h"
 
 static hash_table_t templatize_lookup;
@@ -153,7 +154,7 @@ static anna_node_t *anna_macro_module(
     anna_function_t *function,
     anna_node_list_t *parent)
 {
-    wprintf(L"Create new module with %d elements at %d\n", node->child_count, node);
+//    wprintf(L"Create new module with %d elements at %d\n", node->child_count, node);
     int return_pop_count = 1+function->return_pop_count;
 
     
@@ -418,10 +419,29 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
 					anna_function_t *function, 
 					anna_node_list_t *parent)
 {
+
     CHECK_CHILD_COUNT(node,L"macro definition", 3);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_BLOCK(node->child[1]);
     CHECK_NODE_BLOCK(node->child[2]);
+/*
+    anna_function_t *result;
+    result = anna_function_create_from_definition(
+	node,
+	function->stack_template);
+    result->flags |= ANNA_FUNCTION_MACRO;
+    al_push(&function->child_function, result);
+    
+    anna_node_t *res = (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	anna_function_wrap(result),
+	1);
+      //FIXME: Last param, should it be 0 for feclarations???
+    
+    //wprintf(L"LALALA %d %d\n", res, anna_function_wrap(result));
+    return res;
+*/
+
     anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
     anna_node_call_t *declarations = node_cast_call(node->child[1]);
     wchar_t **argn=calloc(sizeof(wchar_t *), 3);
@@ -435,13 +455,15 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
 	argn[i] = wcsdup(arg->name);
     }
 
+    //anna_stack_print(function->stack_template);
+    
     anna_function_t *result;
     result = anna_function_create(
 	name_identifier->name,
 	ANNA_FUNCTION_MACRO,
 	(anna_node_call_t *)node->child[2], 
-	0,
-	3, 
+	node_call_wrapper_type,
+	0, 
 	0,
 	argn, 
 	function->stack_template, 
@@ -463,6 +485,7 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
 	&node->location,
 	anna_function_wrap(result),
 	0);
+
 }
 
 
@@ -470,11 +493,13 @@ anna_function_type_key_t *anna_function_key_get(anna_type_t *type,
 						wchar_t *name)
 {
     anna_type_t *member_type = anna_type_member_type_get(type, name);
+    anna_prepare_type_interface(member_type);
+    
     if(!member_type)
     {
 	return 0;
     }
-
+    
     anna_object_t **key_ptr=anna_static_member_addr_get_mid(
 	member_type, 
 	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
@@ -575,10 +600,11 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 		node->child[0], 
 		L"Expected a value parameter name or a key:value parameter name pair");
     }
-
+    
     anna_function_type_key_t *function_key = anna_function_key_get(lst_type, method_name);
     CHECK(function_key, node, L"Not a function: %ls", method_name);
-    anna_object_t **sub_key_ptr=anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    
+    anna_object_t **sub_key_ptr = anna_static_member_addr_get_mid(function_key->argv[1], ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     CHECK(sub_key_ptr, node, L"Not a function: %ls", function_key->argv[1]->name);
     anna_function_type_key_t *sub_function_key = (anna_function_type_key_t *)(*sub_key_ptr);
     CHECK(sub_function_key->argc == 2, node, L"Function %ls has wrong number of parameters: Got %d, expected %d", method_name, sub_function_key->argc, 2);
@@ -599,7 +625,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
 	anna_function_create(
 	    L"!anonymous", 0, 
 	    (anna_node_call_t *)node->child[1], 
-	    0, 2, argv, argn,
+	    object_type, 2, argv, argn,
 	    function->stack_template, 
 	    return_pop_count);
     
@@ -844,11 +870,13 @@ static void anna_macro_add(anna_stack_frame_t *stack,
 			   wchar_t *name,
 			   anna_native_macro_t call)
 {
+    
+    
     anna_native_create(
 	name,
 	ANNA_FUNCTION_MACRO,
 	(anna_native_t)call,
-	0,
+	node_call_wrapper_type,
 	0,
 	0,
 	0,

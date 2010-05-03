@@ -1,0 +1,77 @@
+
+macro __enumAttribute__(node, foo, bar)
+{
+    var def = node[1] as Call;
+    var body = def[3] as Call;
+    
+    if(!body)
+    {
+	node.error("Missing body");
+	return null;
+    }
+    
+    var newBody = AST(
+	{
+	    var Int value;
+	}
+	);
+
+    var nameBody = AST(
+	{
+	    if( !this.value)
+	    {
+		return "null";
+	    }
+	}
+	);
+
+    var init = AST(function __init__(Int value){this.value = value;});
+    
+    body.each(idx:el)
+    {
+	var id = el as Identifier;
+	if(!id)
+	{
+	    node.error("Unexpected thingie");
+	    return null;
+	}
+	var getter = "!" ~ id.name ~ "Getter";
+	var fun = AST(function placeholder1() static {return placeholder2;});
+	var prop = AST(property Int placeholder1 getter placeholder2);
+	var cmp = AST(if(this.value == placeholder1){return placeholder2});
+	fun = fun.replace(AST(placeholder1),Identifier(node, getter))
+	    .replace(AST(placeholder2),IntLiteral(node, idx));
+	prop = prop.replace(AST(placeholder1),Identifier(node, id.name))
+	    .replace(AST(placeholder2), Identifier(node, getter));
+	cmp = cmp.replace(AST(placeholder1),IntLiteral(node, idx))
+	    .replace(AST(placeholder2), StringLiteral(node, id.name));
+	newBody ~= [fun];
+	newBody ~= [prop];
+	nameBody ~= [cmp]
+    }
+
+    newBody ~= [init];
+    
+    var nameFun = AST(function toString(){});
+    nameFun[4] = nameBody;
+    newBody ~= [nameFun];
+    
+    def[3] = newBody;
+    def.print();
+    
+    return def;
+}
+
+class Blubb enum
+{
+    foo;
+    bar;
+    baz;
+}
+
+function main()  
+{
+    var ggg = Blubb(2);
+    print(ggg.toString());
+    
+}

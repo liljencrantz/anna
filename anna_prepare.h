@@ -20,5 +20,7 @@
 //void anna_prepare_type_implementation(anna_type_t *type);
 
 void anna_prepare();
+void anna_prepare_type_interface(anna_type_t *type);
+void anna_prepare_function_interface(anna_function_t *function);
 
 #endif

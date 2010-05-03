@@ -235,3 +235,10 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
     }
     return type->static_member_count++;    
 }
+
+int anna_type_is_fake(anna_type_t *t)
+{
+    return !wcscmp(t->name, L"!FakeFunctionType");
+    
+
+}

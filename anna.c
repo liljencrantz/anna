@@ -387,6 +387,16 @@ anna_type_t *anna_type_for_function(
     static anna_function_type_key_t *key = 0;
     static size_t key_sz = 0;
     size_t new_key_sz = sizeof(anna_function_type_key_t) + sizeof(anna_type_t *)*argc;
+
+    if(!result)
+    {
+	    wprintf(
+		L"Critical: Function lacks return type!\n");
+	    CRASH;
+
+
+    }
+    
     
     if(argc)
 	assert(argv);
@@ -398,11 +408,20 @@ anna_type_t *anna_type_for_function(
 	key_sz = new_key_sz;
 	key->argn = was_null?malloc(sizeof(wchar_t *)*argc):realloc(key->argn, sizeof(wchar_t *)*argc);
     }
+    
     key->is_variadic = is_variadic;
     key->result=result;
     key->argc = argc;
+    
     for(i=0; i<argc;i++)
     {
+	if(argv[i] && wcscmp(argv[i]->name, L"!FakeFunctionType")==0)
+	{
+	    wprintf(
+		L"Critical: Tried to get a function key for function with uninitialized argument types\n");
+	    CRASH;
+	}
+	
 	key->argv[i]=argv[i];
 	key->argn[i]=argn[i];
     }
@@ -923,8 +942,6 @@ static void anna_init()
     anna_null_type_create_early();
     anna_object_type_create_early();
         
-    anna_macro_init(stack_global);
-
     anna_member_types_create(stack_global);
     anna_int_type_create(stack_global);
     anna_list_type_create(stack_global);
@@ -934,6 +951,9 @@ static void anna_init()
     anna_node_wrapper_types_create(stack_global);
     
     anna_function_implementation_init(stack_global);
+
+    anna_macro_init(stack_global);
+
 /*
     assert(anna_abides(int_type,object_type)==1);
     assert(anna_abides(list_type,object_type)==1);
@@ -1058,7 +1078,7 @@ struct anna_node *anna_macro_invoke(
 	int i;
 	anna_stack_frame_t *my_stack = anna_stack_clone(macro->stack_template);
 	anna_object_t *result = null_object;
-
+	
 	anna_stack_set_str(my_stack,
 			   macro->input_name[0],
 			   anna_node_wrap((anna_node_t *)node));
@@ -1296,10 +1316,8 @@ int main(int argc, char **argv)
 	wprintf(L"Main is not a method in module %ls\n", module_name);
 	exit(1);	
     }
-    
 
-    wprintf(L"Output:\n");    
-        
+    wprintf(L"Output:\n");        
     anna_function_invoke(main_func, 0, 0, stack_global, stack_global);
     
     wprintf(L"\n");
