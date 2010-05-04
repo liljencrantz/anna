@@ -125,11 +125,19 @@ struct anna_function
     wchar_t *name;
     struct anna_node_call *body;  
     /**
+       The type of this function
+     */
+    struct anna_type *type;
+    /**
        If this function is in fact a method belonging to a class, this
        is a pointer to the type in question. Otherwise, it's a null
        pointer.
      */
-    struct anna_type *type;
+    struct anna_type *member_of;
+    /**
+       The mid this method has in the type it is a member of
+     */
+    size_t mid;    
     /**
        The AST that defines this function.
      */
@@ -188,11 +196,6 @@ extern struct anna_stack_frame *stack_global;
 void anna_function_implementation_init(struct anna_stack_frame *stack);
 
 /**
-  Returns the type of the specified member in the specified type
- */
-anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
-
-/**
   Return the anna_type_t contained in the specified anna_type_t.wrapper
  */
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
@@ -235,6 +238,12 @@ anna_object_t **anna_member_addr_get_str(anna_object_t *obj, wchar_t *name);
 anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid);
 
 anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner);
+
+void anna_member_redeclare(
+    anna_type_t *type,
+    ssize_t mid,
+    anna_type_t *member_type);
+
 
 size_t anna_member_create(anna_type_t *type,
 			  ssize_t mid,

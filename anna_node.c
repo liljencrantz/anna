@@ -832,9 +832,10 @@ anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_fram
 
 anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *stack)
 {
-    //wprintf(L"Get return type of node\n");
-    //anna_node_print(this);
-    
+/*
+    wprintf(L"Get return type of node\n");
+    anna_node_print(this);
+*/  
     switch(this->node_type)
     {
 	case ANNA_NODE_CONSTRUCT:
@@ -905,6 +906,16 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	{
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
+	    if(!anna_stack_get_type(stack, this2->name))
+	    {
+		
+		anna_error(this, L"CRAP");
+		anna_stack_print(stack);
+		
+		CRASH;
+		
+	    }
+	    
 	    return anna_stack_get_type(stack, this2->name);
 	}
 	case ANNA_NODE_STRING_LITERAL:
@@ -982,12 +993,15 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    }
 	    
 	    anna_type_t *func_type = anna_node_get_return_type(this2->function, stack);
-
+	    
 	    anna_function_type_key_t *function_data = anna_function_unwrap_type(func_type);
 	    if(!function_data)
 	    {
-		anna_error(this, 
-			   L"Unknown function");
+		anna_error(
+		    this, 
+		    L"Unknown function");
+		anna_type_print(func_type);
+		
 		return;
 	    }
 	    
@@ -1011,8 +1025,9 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    {
 		if(!function_data->argv[i])
 		{
-		    anna_error(this, 
-			       L"Unknown function");
+		    anna_error(
+			this, 
+			L"Unknown function param");
 		    break;
 		}
 		

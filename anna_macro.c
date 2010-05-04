@@ -180,12 +180,33 @@ static anna_node_t *anna_macro_module(
    body definition
 */
 
-anna_node_t *anna_macro_function_internal(anna_type_t *type, 
-					  anna_node_call_t *node, 
-					  anna_function_t *function, 
-					  anna_node_list_t *parent,
-					  int declare)
+anna_node_t *anna_macro_method(anna_type_t *type, 
+				anna_node_call_t *node, 
+				anna_function_t *function, 
+				anna_node_list_t *parent,
+				int declare)
 {
+    anna_function_t *result;
+    result = anna_function_create_from_definition(
+	node,
+	function->stack_template);
+    result->type = type;
+    result->flags |= ANNA_MID_FUNCTION_WRAPPER_STACK;
+    
+//    al_push(&function->child_function, result);
+    
+    anna_node_t *res = (anna_node_t *)anna_node_dummy_create(
+	&node->location,
+	anna_function_wrap(result),
+	1);
+    /*
+      FIXME: Last param, should it be 0 for feclarations???
+    */
+    
+    //wprintf(L"LALALA %d %d\n", res, anna_function_wrap(result));
+    return res;
+    
+
     wchar_t *name=0;
     wchar_t *internal_name=0;
     int is_variadic=0;
@@ -317,7 +338,11 @@ anna_node_t *anna_macro_function_internal(anna_type_t *type,
 	    }
 	    else if(wcscmp(fun->name, L"__function__") == 0)
 	    {
-		anna_node_t *fun_wrap = anna_macro_function_internal(
+//		AAAAAAaa
+/*
+  This is a input variable of a function type
+ */
+		anna_node_t *fun_wrap = anna_macro_method(
 		    0, decl, function, 
 		    parent, 0);
 		CHECK_NODE_TYPE(fun_wrap, ANNA_NODE_DUMMY);

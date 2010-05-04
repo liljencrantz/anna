@@ -476,19 +476,6 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
     return 0;
 }
 
-anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
-{
-    assert(type);
-    assert(name);
-    anna_member_t *m = (anna_member_t *)hash_get(&type->name_identifier, name);
-    if(!m)
-    {
-	return 0;
-    }
-    
-    return m->type;
-}
-
 
 
 /*
@@ -692,13 +679,28 @@ anna_object_t *anna_object_create(anna_type_t *type) {
     return result;
 }
 
+void anna_member_redeclare(
+    anna_type_t *type,
+    ssize_t mid,
+    anna_type_t *member_type)
+{
+    type->mid_identifier[mid]->type = member_type;
+}
+
+
 size_t anna_member_create(anna_type_t *type,
 			  ssize_t mid,
 			  wchar_t *name,
 			  int is_static,
 			  anna_type_t *member_type)
 {
-    assert(member_type);
+/*
+    if(!member_type)
+    {
+	wprintf(L"Critical: Create a member with unspecified type\n");
+	CRASH;
+    }
+*/  
     if(hash_get(&type->name_identifier, name))
     {
 	if(type == type_type && wcscmp(name, L"!typeWrapperPayload")==0)
@@ -707,7 +709,7 @@ size_t anna_member_create(anna_type_t *type,
 	   mid == ANNA_MID_FUNCTION_WRAPPER_PAYLOAD ||
 	   mid == ANNA_MID_FUNCTION_WRAPPER_STACK)
 	    return mid;
-
+	
 	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
 		name, type->name);
 	CRASH;	

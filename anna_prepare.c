@@ -16,6 +16,7 @@
 #include "anna_prepare.h"
 #include "anna_macro.h"
 #include "anna_function.h"
+#include "anna_node_wrapper.h"
 
 struct prepare_prev
 {
@@ -115,31 +116,22 @@ static anna_node_t *anna_prepare_function_interface_internal(
     anna_function_t *function)
 {
     int is_variadic=0;
-    wchar_t *name=0;
     anna_node_call_t *node = function->definition;
-    anna_type_t *type = function->type;
+    anna_type_t *type = function->member_of;
     
     if(function->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
-	return;
+	return 0;
     
     if(node && node->child[0]->node_type != ANNA_NODE_NULL)
     {
+/*
 	wprintf(L"\n\nCreate function interface from node:\n");
 	anna_node_print((anna_node_t *)node);
+*/
     }
 
     CHECK_CHILD_COUNT(node,L"function definition", 5);
     
-    if (node->child[0]->node_type == ANNA_NODE_IDENTIFIER) 
-    {
-	anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
-	name = name_identifier->name;
-    }
-    else {
-	CHECK_NODE_TYPE(node->child[0], ANNA_NODE_NULL);
-	name = L"!anonymousFunc";
-	function->flags |= ANNA_FUNCTION_ANONYMOUS;
-    }
     
     anna_node_t *body = node->child[4];
 
@@ -182,6 +174,13 @@ static anna_node_t *anna_prepare_function_interface_internal(
 	{
 	    argv[0]=type;
 	    argn[0]=L"this";
+	    wprintf(L"Function %ls is method, add 'this' variable\n", function->name);
+	    
+	}
+	else
+	{
+	    
+//	    wprintf(L"Function %ls is not a method, do not add 'this' variable\n", function->name);
 	}
 	
 	for(i=0; i<declarations->child_count; i++)
@@ -251,7 +250,7 @@ static anna_node_t *anna_prepare_function_interface_internal(
                 CHECK(fun, decl, L"Could not parse function declaration");              
                 argv[i+!!type] = anna_function_wrap(fun)->type;
                 argn[i+!!type] = fun->name;
-
+		
 /*
                 anna_node_t *fun_wrap = anna_prepare_function_interface(
                     0, decl, function, 
@@ -289,11 +288,10 @@ static anna_node_t *anna_prepare_function_interface_internal(
     
     function->flags |= (is_variadic?ANNA_FUNCTION_VARIADIC:0);
     function->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
-    function->name = wcsdup(name);
     function->input_count = argc;
     function->input_name = argn;
     function->input_type = argv;
-
+    
     if(out_type_wrapper->node_type == ANNA_NODE_NULL) 
     {	
 	CHECK(body->node_type == ANNA_NODE_CALL, body, L"Function declarations must have a return type");
@@ -457,15 +455,52 @@ static void anna_prepare_function_internal(
     if(anna_function_check_dependencies(function, dep))
 	return;
     
-//    wprintf(L"WOOWEE Prepare function implementation %ls\n", function->name);
+
+    if(!(function->flags & ANNA_FUNCTION_MACRO)) 
+    {
+	int is_variadic = ANNA_IS_VARIADIC(function);
+	for(i=0; i<function->input_count-is_variadic;i++)
+	{
+	    anna_stack_declare(
+		function->stack_template,
+		function->input_name[i], 
+		function->input_type[i], 
+		null_object);	
+	}    
+	if(is_variadic)
+	{
+	    /*
+	      FIXME:
+	      Templatize to right list subtype
+	    */
+	    anna_stack_declare(
+		function->stack_template, 
+		function->input_name[function->input_count-1], 
+		list_type, 
+		null_object);
+	}
+    }
+    else
+    {
+	anna_stack_declare(
+	    function->stack_template, 
+	    function->input_name[0], 
+	    node_call_wrapper_type,
+	    null_object);
+    }
     
+
+
     function->flags |= ANNA_FUNCTION_PREPARED_IMPLEMENTATION;
     if(function->body)
     {
 	for(i=0; i<function->body->child_count; i++) 
 	{
 	    list.idx=i;
-	    function->body->child[i] = anna_node_prepare(function->body->child[i], function, &list);
+	    function->body->child[i] = anna_node_prepare(
+		function->body->child[i],
+		function, 
+		&list);
 	}
     
     /*
@@ -768,7 +803,26 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	
 	if(wcscmp(declaration->name, L"__function__")==0)
 	{
+/*
 	    anna_macro_function_internal(type, call, function, 0, 0);
+*/
+
+	    anna_function_t *result;
+	    result = anna_function_create_from_definition(
+		call,
+		function->stack_template);
+	    result->member_of = type;
+	    	    
+	    wprintf(L"Creating method %ls\n", result->name);
+	    
+//	    result->flags |= ANNA_MID_FUNCTION_WRAPPER_STACK;
+	    result->mid = anna_method_create(type, -1, result->name, 0, result);	
+	    
+/*
+  This is a method declaration
+ */
+	    
+
 	}
 	else if(wcscmp(declaration->name, L"__declare__")==0)
 	{
@@ -966,9 +1020,11 @@ static anna_node_t *anna_prepare_type_interface_internal(
     {
 	anna_function_t *constructor = 
 	    anna_function_unwrap(*constructor_ptr);
-    
+	anna_prepare_function_interface(constructor);
+	
 	anna_type_t **argv= malloc(sizeof(anna_type_t *)*(constructor->input_count));
 	wchar_t **argn= malloc(sizeof(wchar_t *)*(constructor->input_count));
+		
 	argv[0]=type_type;
 	argn[0]=L"this";
 	

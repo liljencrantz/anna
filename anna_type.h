@@ -37,5 +37,10 @@ size_t anna_type_static_member_allocate(anna_type_t *type);
 
 int anna_type_is_fake(anna_type_t *t);
 
+/**
+  Returns the type of the specified member in the specified type
+ */
+anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
+
 
 #endif

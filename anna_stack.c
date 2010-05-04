@@ -189,6 +189,8 @@ void anna_stack_print(anna_stack_frame_t *stack)
     if(!stack)
 	return;
     hash_foreach2(&stack->member_string_identifier, &anna_print_stack_member, stack);
+    wprintf(L"---\n");
+    
     anna_stack_print(stack->parent);
 }
 

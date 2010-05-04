@@ -61,7 +61,16 @@ void anna_function_setup_type(anna_function_t *f, anna_stack_frame_t *location)
     */
     f->type = function_type;    
     f->wrapper->type = f->type;
-    
+
+    if(f->member_of)
+    {
+
+	anna_member_redeclare(
+	    f->member_of,
+	    f->mid,
+	    f->type);
+    }
+        
     memcpy(
 	anna_member_addr_get_mid(
 	    f->wrapper,
@@ -88,12 +97,19 @@ void anna_function_setup_type(anna_function_t *f, anna_stack_frame_t *location)
 	    sizeof(anna_stack_frame_t *));
     }
 
-    if(!(f->flags & ANNA_FUNCTION_ANONYMOUS) && location)
+    if(f->member_of)
     {
-	//wprintf(L"WOOWEEWOO, declare %ls\n", f->name);
-	anna_stack_declare(location, f->name, f->type, anna_function_wrap(f));
+	
     }
-
+    else
+    {
+	if(!(f->flags & ANNA_FUNCTION_ANONYMOUS) && location)
+	{
+	    //wprintf(L"WOOWEEWOO, declare %ls\n", f->name);
+	    anna_stack_declare(location, f->name, f->type, anna_function_wrap(f));
+	}
+    }
+    
 }
 
 anna_object_t *anna_function_wrap(anna_function_t *result)
@@ -233,7 +249,7 @@ anna_function_t *anna_function_create(
     }
         
     result->stack_template = anna_stack_create(64, parent_stack);
-
+    
 #ifdef ANNA_CHECK_STACK_ENABLED
     result->stack_template->function = result;
 #endif
@@ -290,6 +306,7 @@ anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition,
     anna_stack_frame_t *scope)
 {
+
     anna_function_t *result = calloc(
 	1,
 	sizeof(anna_function_t));
@@ -297,6 +314,29 @@ anna_function_t *anna_function_create_from_definition(
     result->stack_template = anna_stack_create(64, scope);
     result->return_pop_count = 1;
     al_push(&anna_function_list, result);
+
+    wchar_t *name=0;
+    if (definition->child[0]->node_type == ANNA_NODE_IDENTIFIER) 
+    {	
+	anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)definition->child[0];
+	name = name_identifier->name;
+/*
+	wprintf(L"Creating function '%ls' from ast\n", name);
+	anna_node_print(definition);
+*/	
+    }
+    else {
+	if(definition->child[0]->node_type != ANNA_NODE_NULL)
+	{
+	    anna_error((anna_node_t *)definition, L"Invalid function name");
+	    return 0;
+	}
+	name = L"!anonymousFunc";
+	result->flags |= ANNA_FUNCTION_ANONYMOUS;
+    }
+    result->name = wcsdup(name);
+
+
 /*
     wprintf(L"LALALAGGG\n");
     anna_node_print(definition);
