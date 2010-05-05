@@ -57,7 +57,7 @@ macro __enumAttribute__(node, foo, bar)
     newBody ~= [nameFun];
     
     def[3] = newBody;
-    def.print();
+    //def.print();
     
     return def;
 }

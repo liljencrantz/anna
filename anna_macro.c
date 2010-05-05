@@ -432,7 +432,7 @@ static anna_node_t *anna_macro_function(anna_node_call_t *node,
 	anna_function_wrap(result),
 	1);
     /*
-      FIXME: Last param, should it be 0 for feclarations???
+      FIXME: Last param, should it be 0 for declarations???
     */
     
     //wprintf(L"LALALA %d %d\n", res, anna_function_wrap(result));
@@ -577,8 +577,9 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
     
     size_t mid = anna_mid_get(method_name);
 
-    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
+    anna_prepare_type_interface(lst_type);
     
+    anna_type_t *member_type = anna_type_member_type_get(lst_type, method_name);
     CHECK(member_type, node, L"No method named %ls in type %ls\n", method_name, lst_type->name);
 
     switch(node->child[0]->node_type)

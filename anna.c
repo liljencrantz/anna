@@ -45,6 +45,8 @@ Type members:
 Object members:
   asString
   type
+
+  
   
   Code refactoring plan:
   
@@ -1269,9 +1271,9 @@ int main(int argc, char **argv)
     
     //  anna_function_t *func=anna_function_unwrap(program_object);    
     //assert(func);
-
+    
     anna_function_t *fake_function = anna_function_create(
-	L"!fakeFunction",
+	L"!moduleFunction",
 	0,
 	node_cast_call(program),
 	null_type, 
@@ -1281,18 +1283,22 @@ int main(int argc, char **argv)
 	stack_global, 
 	0);
     
-
+    
     anna_node_dummy_t *program_dummy = (anna_node_dummy_t *)
 	anna_node_prepare(
 	    program,
 	    fake_function,
 	    0);
+    
     assert(program_dummy->node_type == ANNA_NODE_TRAMPOLINE);
-    anna_node_print(program_dummy);
     anna_function_t *module = anna_function_unwrap(
-	program_dummy->payload);
+	program_dummy->payload);    
     
     assert(module);
+    
+    anna_object_t *module_object = anna_stack_wrap(module->stack_template);    
+    
+//    anna_stack_declare(stack_global, module_name, module_object->type, module_object);
     
     anna_prepare();
     
@@ -1318,7 +1324,7 @@ int main(int argc, char **argv)
 	wprintf(L"Main is not a method in module %ls\n", module_name);
 	exit(1);	
     }
-
+    
     wprintf(L"Output:\n");        
     anna_function_invoke(main_func, 0, 0, stack_global, stack_global);
     

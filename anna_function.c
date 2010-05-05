@@ -10,7 +10,6 @@
 #include "anna_type.h"
 #include "anna_macro.h"
 #include "anna_node_wrapper.h"
-#include "anna_node_wrapper.h"
 
 array_list_t anna_function_list = {0,0,0};
 
@@ -47,7 +46,7 @@ void anna_function_setup_type(anna_function_t *f, anna_stack_frame_t *location)
 	
     }
     
-
+    
     anna_type_t *function_type = 
 	anna_type_for_function(
 	    f->return_type,

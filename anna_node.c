@@ -893,6 +893,16 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_DUMMY:
 	{
 	    anna_node_dummy_t *this2 =(anna_node_dummy_t *)this;	    
+
+	    if(anna_type_is_fake(this2->payload->type))
+	    {
+		anna_function_t *fun = anna_function_unwrap(this2->payload);
+		assert(fun);
+		anna_prepare_function_interface(fun);
+		assert(!anna_type_is_fake(this2->payload->type));
+	    }
+
+	    
 	    return this2->payload->type;   
 	}
 	
@@ -906,15 +916,6 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	{
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
-	    if(!anna_stack_get_type(stack, this2->name))
-	    {
-		
-		anna_error(this, L"CRAP");
-		anna_stack_print(stack);
-		
-		CRASH;
-		
-	    }
 	    
 	    return anna_stack_get_type(stack, this2->name);
 	}

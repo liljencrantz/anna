@@ -55,4 +55,9 @@
  */
 #define ANNA_WRAPPER_CHECK_ENABLED
 
+/**
+   If enabled, anna will validate that any stack access operations performed are valid
+ */
+#define ANNA_CHECK_STACK_ACCESS
+
 #endif

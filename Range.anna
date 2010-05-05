@@ -5,11 +5,11 @@ class Range template (T:Int)
     var T to;
     var T step;
     
-    function __init__(T from, T to, T step)
+    function __init__(T from, T to)
     {
 	this.from = from;
 	this.to=to;
-	this.step=step;
+	this.step=1;
     }
     
     function __each__(function Null f (Int key, T value))
@@ -35,3 +35,12 @@ class Range template (T:Int)
 	getter getCount;
 }
 
+function main()
+{
+    var r = 1..10;
+    r.each(i)
+    {
+	print(i);
+    }
+    
+}

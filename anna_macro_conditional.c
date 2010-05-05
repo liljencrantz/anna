@@ -238,7 +238,7 @@ static anna_node_t *anna_macro_while(anna_node_call_t *node,
     
     anna_type_t *t2 = anna_node_get_return_type(node->child[1], function->stack_template);    
     CHECK(t2,node->child[1], L"Unknown type for second argument to while");	
-    
+
     anna_node_t *condition = 
 	(anna_node_t *)
 	anna_node_dummy_create(

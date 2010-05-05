@@ -88,8 +88,21 @@ void anna_stack_set_str(anna_stack_frame_t *stack, wchar_t *name, anna_object_t 
 
 anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name)
 {
-    //wprintf(L"Get %ls\n", name);    
+#ifdef ANNA_CHECK_STACK_ACCESS
+    anna_object_t **res =anna_stack_addr_get_str(stack, name);
+    if(unlikely(!res))
+    {
+	wprintf(
+	    L"Critical: Tried to access non-existing variable %ls\n",
+	    name);
+	CRASH;
+    }
+    
+    return *res;
+
+#else
     return *anna_stack_addr_get_str(stack, name);
+#endif
 }
 
 anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack_orig, wchar_t *name)
@@ -211,3 +224,15 @@ void anna_stack_print_trace(anna_stack_frame_t *stack)
 	
 #endif
 }
+
+anna_object_t *anna_stack_wrap(anna_stack_frame_t *stack)
+{
+    return null_object;
+}
+
+anna_stack_frame_t *anna_stack_unwrap(anna_object_t *stack)
+{
+    return 0;
+    
+}
+

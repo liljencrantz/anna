@@ -24,11 +24,15 @@ struct anna_stack_frame
 #ifdef ANNA_CHECK_STACK_ENABLED
     anna_function_t *function;
 #endif
+    struct anna_object *wrapper;
     struct anna_type **member_type;  
     struct anna_object *member[];
 };
 
 typedef struct anna_stack_frame anna_stack_frame_t;
+
+anna_object_t *anna_stack_wrap(anna_stack_frame_t *stack);
+anna_stack_frame_t *anna_stack_unwrap(anna_object_t *stack);
 
 anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent);
 

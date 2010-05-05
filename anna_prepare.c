@@ -85,8 +85,8 @@ static void anna_sniff_return_type(anna_function_t *f)
     sniff(&types, f, 0);
     int i;
     
-    anna_prepare_function_interface(f);
-
+    anna_prepare_function(f);
+        
     if(al_get_count(&types) >0)
     {
 	//wprintf(L"Got the following %d return types for function %ls, create intersection:\n", al_get_count(&types), f->name);
@@ -174,7 +174,7 @@ static anna_node_t *anna_prepare_function_interface_internal(
 	{
 	    argv[0]=type;
 	    argn[0]=L"this";
-	    wprintf(L"Function %ls is method, add 'this' variable\n", function->name);
+//	    wprintf(L"Function %ls is method, add 'this' variable\n", function->name);
 	    
 	}
 	else
@@ -243,11 +243,15 @@ static anna_node_t *anna_prepare_function_interface_internal(
 	    {
 		anna_node_t *fun_node = 
 		    anna_node_prepare((anna_node_t *)decl, function, &list);
-		CHECK_NODE_TYPE(fun_node, ANNA_NODE_DUMMY);
+		//anna_node_print(fun_node);
+		
+		CHECK_NODE_TYPE(fun_node, ANNA_NODE_TRAMPOLINE);
 		anna_node_dummy_t *fun_dummy = (anna_node_dummy_t *)fun_node;
 		anna_function_t *fun = anna_function_unwrap(
 		    fun_dummy->payload);
                 CHECK(fun, decl, L"Could not parse function declaration");              
+		anna_prepare_function_interface(fun);
+		
                 argv[i+!!type] = anna_function_wrap(fun)->type;
                 argn[i+!!type] = fun->name;
 		
@@ -297,6 +301,19 @@ static anna_node_t *anna_prepare_function_interface_internal(
 	CHECK(body->node_type == ANNA_NODE_CALL, body, L"Function declarations must have a return type");
 	anna_sniff_return_type(function);
 	out_type = function->return_type;
+	if(!out_type)
+	{
+	    wprintf(
+		L"Critical: Failed to sniff return type of function %ls\n",
+		function->name);
+	    if(function->definition)
+	    {
+		anna_node_print(function->definition);
+	    }
+	    CRASH;
+	    
+	}
+	
     }
     else
     {
@@ -316,9 +333,6 @@ static anna_node_t *anna_prepare_function_interface_internal(
     }
     function->return_type = out_type;
     
-
-
-
     anna_function_setup_type(function, function->stack_template->parent);
 
 /*    
@@ -813,7 +827,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 		function->stack_template);
 	    result->member_of = type;
 	    	    
-	    wprintf(L"Creating method %ls\n", result->name);
+	    //wprintf(L"Creating method %ls\n", result->name);
 	    
 //	    result->flags |= ANNA_MID_FUNCTION_WRAPPER_STACK;
 	    result->mid = anna_method_create(type, -1, result->name, 0, result);	
@@ -1117,10 +1131,10 @@ void anna_prepare_internal()
 	       && (func->body)
 	       && !(func->flags &ANNA_FUNCTION_PREPARED_IMPLEMENTATION))
 	    {
-		wprintf(L"Prepare macro %ls\n", func->name);
+		//wprintf(L"Prepare macro %ls\n", func->name);
 		again=1;
 		anna_prepare_function_recursive(func);
-		wprintf(L"Done\n");
+		
 	    }
 	}
 	
