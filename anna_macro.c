@@ -64,11 +64,12 @@ static int templatize_key_hash(void *k1)
 }
 
 
-static wchar_t *anna_find_method(anna_node_t *context, 
-				 anna_type_t *type, 
-				 wchar_t *prefix, 
-				 size_t argc,
-				 anna_type_t *arg2_type)
+static wchar_t *anna_find_method(
+    anna_node_t *context, 
+    anna_type_t *type, 
+    wchar_t *prefix, 
+    size_t argc,
+    anna_type_t *arg2_type)
 {
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
@@ -79,17 +80,17 @@ static wchar_t *anna_find_method(anna_node_t *context,
     
     
     anna_type_get_member_names(type, members);    
-    //wprintf(L"Searching for %ls[XXX]... in %ls\n", prefix, type->name);
+    wprintf(L"Searching for %ls[XXX]... in %ls\n", prefix, type->name);
     
     for(i=0; i<anna_type_member_count(type); i++)
     {
 	//wprintf(L"Check %ls\n", members[i]);
 	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
 	    continue;
-	//wprintf(L"%ls matches, name-wise\n", members[i]);
+	wprintf(L"%ls matches, name-wise\n", members[i]);
 	
 	anna_type_t *mem_type = anna_type_member_type_get(type, members[i]);
-	//wprintf(L"Is of type %ls\n", mem_type->name);
+	wprintf(L"Is of type %ls\n", mem_type->name);
 	anna_function_type_key_t *mem_fun = anna_function_unwrap_type(mem_type);
 	if(mem_fun)
 	{
@@ -103,6 +104,8 @@ static wchar_t *anna_find_method(anna_node_t *context,
 		return 0;
 	    }
 	    
+	    wprintf(L"Check %ls against %ls\n",arg2_type->name, mem_fun->argv[1]->name);
+	    
 	    if(mem_fun->argc == argc && anna_abides(arg2_type, mem_fun->argv[1]))
 	    {
 		int my_fault_count = anna_abides_fault_count(mem_fun->argv[1], arg2_type);
@@ -115,7 +118,7 @@ static wchar_t *anna_find_method(anna_node_t *context,
 	}
 	else
 	{
-	    //  wprintf(L"Not a function\n");
+	    wprintf(L"Not a function\n");
 	}
 	
     }

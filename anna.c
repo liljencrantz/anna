@@ -141,6 +141,7 @@ Object members:
   Sugar for property definitions
   Simple non-native macros working
   Split up anna_macro.c into multiple files
+  namespaces
   
   Type type
   Call type
@@ -957,6 +958,9 @@ static void anna_init()
     anna_mid_put(L"!memberTypePayload", ANNA_MID_MEMBER_TYPE_PAYLOAD);
     anna_mid_put(L"!stackPayload", ANNA_MID_STACK_PAYLOAD);
     anna_mid_put(L"!stackTypePayload", ANNA_MID_STACK_TYPE_PAYLOAD);
+    anna_mid_put(L"from", ANNA_MID_FROM);
+    anna_mid_put(L"to", ANNA_MID_TO);
+    anna_mid_put(L"step", ANNA_MID_STEP);
     
     stack_global = anna_stack_create(4096, 0);
     /*

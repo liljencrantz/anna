@@ -650,20 +650,37 @@ static anna_type_t *anna_prepare_type_from_identifier(
 	return dummy->payload->type;
 //      return anna_type_unwrap(dummy->payload);      
     }
-    if(
-	node->node_type != ANNA_NODE_IDENTIFIER &&
-	node->node_type != ANNA_NODE_IDENTIFIER_TRAMPOLINE) 
+    else if(
+	node->node_type == ANNA_NODE_IDENTIFIER ||
+	node->node_type == ANNA_NODE_IDENTIFIER_TRAMPOLINE) 
     {
-	anna_error(node,L"Could not determine type of node of type %d", node->node_type);
-	anna_node_print(node);
-	CRASH;
-	
-	return 0;
+	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
+	anna_object_t *wrapper = anna_stack_get_str(function->stack_template, id->name);
+	//wprintf(L"LALA\n");
+	//anna_object_print(wrapper);
+	return anna_type_unwrap(wrapper);
+    }
+    else if(node->node_type == ANNA_NODE_MEMBER_GET) 
+    {
+	anna_node_member_get_t *mg= (anna_node_member_get_t *)node;
+	/*
+	  FIXME: Add support for namespaces within namespaces!
+
+	  FIXME: Check that type is actually a namespace and not some random object...
+	*/
+	if(mg->object->node_type == ANNA_NODE_IDENTIFIER)
+	{
+	    anna_node_identifier_t *id = (anna_node_identifier_t *)mg->object;
+	    anna_object_t *wrapper = anna_stack_get_str(function->stack_template, id->name);
+	    anna_stack_frame_t *stack = anna_stack_unwrap(wrapper);    
+	    return anna_type_unwrap(anna_stack_get_str(stack, anna_mid_get_reverse(mg->mid)));
+	}
     }
     
-    anna_node_identifier_t *id = (anna_node_identifier_t *)node;
-    anna_object_t *wrapper = anna_stack_get_str(function->stack_template, id->name);
-    return anna_type_unwrap(wrapper);
+    anna_error(node,L"Could not determine type of node of type %d", node->node_type);
+    anna_node_print(node);
+    CRASH;
+    return 0;
 }
 
 static anna_node_t *anna_type_member(anna_type_t *type,

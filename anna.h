@@ -76,7 +76,10 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_MID_MEMBER_TYPE_PAYLOAD 18
 #define ANNA_MID_STACK_PAYLOAD 19
 #define ANNA_MID_STACK_TYPE_PAYLOAD 20
-#define ANNA_MID_FIRST_UNRESERVED 21
+#define ANNA_MID_FROM 21
+#define ANNA_MID_TO 22
+#define ANNA_MID_STEP 23
+#define ANNA_MID_FIRST_UNRESERVED 24
 
 union anna_native
 {

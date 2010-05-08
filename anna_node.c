@@ -987,7 +987,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    {
 		anna_node_validate(this2->child[i], stack);
 	    }
-
+	    
 	    break;
 	}
 	

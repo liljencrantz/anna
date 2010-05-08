@@ -379,7 +379,9 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     
     if(!member_type)
     {
+	
 	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
+	anna_type_print(object_type);
 //	anna_stack_print(function->stack_template);
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
     }
