@@ -1,3 +1,4 @@
+/*
 class Range template (T:Int)
 {
 
@@ -34,13 +35,28 @@ class Range template (T:Int)
     property Int count 
 	getter getCount;
 }
-
-function main()
+*/
+function Int foo()
 {
+    return 7;
+}
+
+var bar = 69;
+
+function Int main()
+{
+    /*  
     var r = 1..10;
     r.each(i)
     {
-	print(i);
+//	print(i);
     }
+    */
+    bar=18;
     
+    print(range.foo);
+    
+    //print("AAA: ", bar, "\n");
+    
+//    print("BBB: ", range.bar, "\n");
 }

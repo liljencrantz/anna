@@ -110,7 +110,7 @@ void anna_function_type_base_create()
 	    stack_global);	
     anna_node_call_t *definition = 
 	anna_type_definition_get(res);
-    
+
     anna_native_method_add_node(
 	definition,
 	-1,
@@ -123,7 +123,7 @@ void anna_function_type_base_create()
 	1,
 	argv,
 	argn );    
-    
+
     anna_node_call_add_child(
 	definition,
 	(anna_node_t *)anna_node_property_create(
@@ -212,7 +212,6 @@ void anna_function_type_base_create()
     
 }
 
-
 anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 {
 
@@ -221,17 +220,18 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"%ls%d", L"!FunctionType", num++);
-/*    
-    wprintf(L"Creating function type %ls\n", sb_content(&sb));
-    anna_function_type_key_print(key);
-*/  
+    
+    //wprintf(L"Creating function type %ls\n", sb_content(&sb));
+    //anna_function_type_key_print(key);
+
     anna_type_t *res = anna_type_native_create(sb_content(&sb), stack_global);	
     anna_type_native_parent(res, L"!FunctionTypeBase");
-    sb_destroy(&sb);
 
+    sb_destroy(&sb);
+    
     /*
       Non-static member variables
-     */
+    */
     anna_member_create(
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
@@ -242,10 +242,10 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 	ANNA_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
 	0,
 	null_type);
-
+    
     /*
       Static member variables
-     */
+    */
     anna_member_create(
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, 

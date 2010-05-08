@@ -3,7 +3,7 @@
 # Copyright 2010 Axel Liljencrantz
 #
 
-PROF_FLAGS := -g -pg
+PROF_FLAGS := -g 
 
 CFLAGS := -rdynamic -Wall -std=c99 -D_ISO99_SOURCE=1 -D_XOPEN_SOURCE=500  $(PROF_FLAGS)
 

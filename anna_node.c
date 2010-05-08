@@ -807,8 +807,8 @@ anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *this, ann
 
 anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_stack_frame_t *stack)
 {
-    return anna_stack_get_str(stack, this->name);
-    //    wprintf(L"Lookup on string \"%ls\", sid is %d,%d\n", this->name, this->sid.frame, this->sid.offset);
+//    return anna_stack_get_str(stack, this->name);
+    //wprintf(L"Lookup on identifier \"%ls\", sid is %d,%d\n", this->name, this->sid.frame, this->sid.offset);
 #ifdef ANNA_CHECK_SID_ENABLED
     anna_sid_t real_sid = anna_stack_sid_create(stack, this->name);
     if(memcmp(&this->sid, &real_sid, sizeof(anna_sid_t))!=0)
@@ -816,11 +816,20 @@ anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_st
         anna_error((anna_node_t *)this, L"Critical: Cached sid (%d, %d) different from invoke time sid (%d, %d) for node %ls",
 		   this->sid.frame, this->sid.offset, real_sid.frame, real_sid.offset, this->name);
 	anna_stack_print_trace(stack);	
-
+	
 	CRASH;
     }
-#endif  
+    anna_object_t *res = anna_stack_get_sid(stack, this->sid);
+    if(!res)
+    {
+        anna_error((anna_node_t *)this, L"Critical: Identifier «%ls» had invalid value on stack!\n",this->name);
+	anna_stack_print(stack);	
+	CRASH;
+    }
+    return res;
+#else
     return anna_stack_get_sid(stack, this->sid);
+#endif  
 }
 
 anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_frame_t *stack)
@@ -1011,15 +1020,15 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    {
 		//wprintf(L"Checking number of arguments to variadic function\n");
 		CHECK((function_data->argc-is_method-1) <= this2->child_count, this,
-		      L"Wrong number of arguments to function call. Should be %d, not %d.", 
+		      L"Wrong number of arguments to variadic function call. Should be %d, not %d.", 
 		      function_data->argc-is_method, this2->child_count);		
 	    }
 	    else
 	    {
 		//wprintf(L"Checking number of arguments to non-variadic function\n");
 		CHECK(function_data->argc-is_method == this2->child_count, this,
-		      L"Wrong number of arguments to function call. Should be %d, not %d.", 
-		      function_data->argc-is_method, this2->child_count);
+		      L"Wrong number of arguments to function call of type %ls. Should be %d, not %d.", 
+		      func_type->name, function_data->argc-is_method, this2->child_count);
 	    }
 	    
 	    for(i=is_method; i<mini(this2->child_count, function_data->argc); i++)
@@ -1126,7 +1135,8 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	{
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
 	    if(anna_node_identifier_is_function(
-		   this2, function->stack_template))
+		   this2,
+		   function->stack_template))
 	    {
 		this2 = anna_node_identifier_trampoline_create(
 		    &this2->location, 
@@ -1137,8 +1147,12 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	    
 /*
 	    if(wcscmp(this2->name,L"print")==0)
+	    {
 		anna_stack_print_trace(function->stack_template);
-*/
+		//CRASH;
+		
+	    }
+*/	    
 	    return (anna_node_t *)this2;
 	}	
 
@@ -1289,8 +1303,8 @@ anna_object_t *anna_node_member_get_wrap_invoke(anna_node_member_get_t *this,
 						anna_stack_frame_t *stack)
 {
     /*
-      wprintf(L"Run wrapped member get node:\n");  
-      anna_node_print(this);
+    wprintf(L"Run wrapped member get node:\n");  
+    anna_node_print(this);
     */
     assert(this->object);
     anna_object_t *obj = anna_node_invoke(this->object, stack);
@@ -1300,15 +1314,39 @@ anna_object_t *anna_node_member_get_wrap_invoke(anna_node_member_get_t *this,
 	anna_node_print(this->object);
 	CRASH;
     }
-    anna_object_t **res = anna_member_addr_get_mid(obj, this->mid);
+    //anna_object_print(obj);
     
-    if(!res)
+    anna_member_t *m = obj->type->mid_identifier[this->mid];
+    if(!m)
     {
 	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
 		   obj->type->name,
 		   anna_mid_get_reverse(this->mid));
     }
-    anna_object_t *wrapped = anna_method_wrap(*res, obj);
+
+    anna_object_t *res;
+    if(m->is_property)
+    {
+	anna_object_t *method = obj->type->static_member[m->getter_offset];
+	res =  anna_function_wrapped_invoke(method, obj, 0, stack);
+    }
+    else 
+    {
+	if(m->is_static) {
+	    res = obj->type->static_member[m->offset];
+	} else {
+	    res = (obj->member[m->offset]);
+	}
+    }
+        
+    if(!res)
+    {
+	anna_error(
+	    this->object, L"Critical: Object %ls does not have a member %ls",
+	    obj->type->name,
+	    anna_mid_get_reverse(this->mid));
+    }
+    anna_object_t *wrapped = anna_method_wrap(res, obj);
     if(!wrapped)
     {
 	anna_error(this->object, L"Critical: Failed to wrap object:");

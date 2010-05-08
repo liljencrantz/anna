@@ -118,7 +118,14 @@ static anna_node_t *anna_prepare_function_interface_internal(
     int is_variadic=0;
     anna_node_call_t *node = function->definition;
     anna_type_t *type = function->member_of;
+    int is_module = !!(function->flags & ANNA_FUNCTION_MODULE);
     
+    if(is_module)
+    {
+//	wprintf(L"Holy crap, «%ls» function is a module\n", function->name);
+    }
+    
+
     if(function->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
 	return 0;
     
@@ -129,8 +136,9 @@ static anna_node_t *anna_prepare_function_interface_internal(
 	anna_node_print((anna_node_t *)node);
 */
     }
-
+    
     CHECK_CHILD_COUNT(node,L"function definition", 5);
+    //wprintf(L"Preparing interface of function %ls\n", function->name);
     
     
     anna_node_t *body = node->child[4];
@@ -335,6 +343,34 @@ static anna_node_t *anna_prepare_function_interface_internal(
     
     anna_function_setup_type(function, function->stack_template->parent);
 
+    if(is_module)
+    {
+	for(i=0; i<al_get_count(&function->child_function); i++) 
+	{
+	    anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
+/*
+  wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
+  i, al_get_count(&function->child_function),
+  function->name, func->name);
+*/	
+	    anna_prepare_function_interface(func);
+	    
+	//anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
+/*
+	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
+		i, al_get_count(&function->child_function),
+		function->name, func->name);
+*/	
+//	if(func->flags & ANNA_FUNCTION_MACRO)
+//	    anna_prepare_function_internal(func, &current);
+	}
+    
+	
+    }
+    
+
+
+
 /*    
     if(!is_anonymous)
     {
@@ -469,7 +505,8 @@ static void anna_prepare_function_internal(
     if(anna_function_check_dependencies(function, dep))
 	return;
     
-
+    //wprintf(L"Preparing body of function %ls\n", function->name);
+    
     if(!(function->flags & ANNA_FUNCTION_MACRO)) 
     {
 	int is_variadic = ANNA_IS_VARIADIC(function);
@@ -521,10 +558,10 @@ static void anna_prepare_function_internal(
     wprintf(L"Body of function %ls after preparation:\n", function->name);
     anna_node_print(function->body);
     */
-    for(i=0; i<function->body->child_count; i++) 
-    {
-	anna_node_validate(function->body->child[i], function->stack_template);
-    }
+	for(i=0; i<function->body->child_count; i++) 
+	{
+	    anna_node_validate(function->body->child[i], function->stack_template);
+	}
     }
     
     for(i=0; i<al_get_count(&function->child_function); i++) 
@@ -1026,7 +1063,12 @@ static anna_node_t *anna_prepare_type_interface_internal(
     
     if(error_count)
 	return (anna_node_t *)anna_node_null_create(&node->location);
-    
+
+    if(type->mid_identifier[ANNA_MID_STACK_PAYLOAD] && type != null_type)
+    {
+	anna_stack_prepare(type);
+    }
+        
     anna_object_t **constructor_ptr = 
 	anna_static_member_addr_get_mid(type, ANNA_MID_INIT_PAYLOAD);
     
@@ -1123,7 +1165,7 @@ void anna_prepare_internal()
 	/*
 	  Prepare all macros and their subblocks. 
 	*/
-	for(i; i<function_count; i++)
+	for(; i<function_count; i++)
 	{
 	    anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, i);
 	    
@@ -1141,7 +1183,8 @@ void anna_prepare_internal()
 	/*
 	  Register all known types
 	*/
-	for(j; j<type_count; j++)
+
+	for(; j<type_count; j++)
 	{
 	    anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, j);
 	    
@@ -1160,7 +1203,7 @@ void anna_prepare_internal()
 	/*
 	  Prepare interfaces of all known types
 	*/
-	for(k; k<type_count; k++)
+	for(; k<type_count; k++)
 	{
 	    anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, k);
 	    if(!(type->flags & ANNA_TYPE_PREPARED_INTERFACE))
@@ -1181,7 +1224,7 @@ void anna_prepare_internal()
     /*
       Prepare all non-macro functions and their subblocks
      */
-	for(m; m<function_count; m++)
+	for(; m<function_count; m++)
 	{
 	    anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, m);
 /*
@@ -1197,7 +1240,7 @@ void anna_prepare_internal()
 	    }
 	}
 	
-	for(n; n<function_count; n++)
+	for(; n<function_count; n++)
 	{
 	    anna_function_t *func = (anna_function_t *)al_get(&anna_function_list, n);
 
@@ -1219,7 +1262,7 @@ void anna_prepare_internal()
     /*
       Prepare implementations of all known types
      */
-	for(p; p<type_count; p++)
+	for(; p<type_count; p++)
 	{
 	    anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, p);
 	    if(!(type->flags & ANNA_TYPE_PREPARED_IMPLEMENTATION))

@@ -1,7 +1,6 @@
 #ifndef ANNA_CHECKS_H
 #define ANNA_CHECKS_H
 
-
 /*
   Various run time consistency checks. Some of them come at a significant
   performance penalty, but they're helpful when tracking down bugs.

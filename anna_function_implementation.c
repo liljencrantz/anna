@@ -16,9 +16,11 @@
 anna_object_t *anna_i_print(anna_object_t **param)
 {
     int i;
+        
     for(i=0; i<anna_list_get_size(param[0]); i++) {
 	
 	anna_object_t *value = anna_list_get(param[0], i);
+	
 	if(value->type == int_type) 
 	{
 	    int val = anna_int_get(value);

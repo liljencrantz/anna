@@ -34,5 +34,7 @@ void anna_prepare_type_interface(anna_type_t *type);
    Prepare the external interface of the specified function
  */
 void anna_prepare_function_interface(anna_function_t *function);
+void anna_prepare_function(anna_function_t *function);
+
 
 #endif

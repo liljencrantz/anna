@@ -14,6 +14,8 @@ struct anna_sid
 
 typedef struct anna_sid anna_sid_t;
 
+#define ANNA_STACK_FROZEN 1
+
 struct anna_stack_frame
 {
     struct anna_stack_frame *parent;
@@ -21,8 +23,9 @@ struct anna_stack_frame
     size_t capacity;
     hash_table_t member_string_identifier;
     int stop;
-#ifdef ANNA_CHECK_STACK_ENABLED
     anna_function_t *function;
+#ifdef ANNA_CHECK_STACK_ENABLED
+    int flags;
 #endif
     struct anna_object *wrapper;
     struct anna_type **member_type;  

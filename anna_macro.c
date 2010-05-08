@@ -157,12 +157,16 @@ static anna_node_t *anna_macro_module(
 //    wprintf(L"Create new module with %d elements at %d\n", node->child_count, node);
     int return_pop_count = 1+function->return_pop_count;
 
-    
     anna_function_t *result = 
 	anna_function_create_from_block(
 	    node,
 	    function->stack_template,
 	    return_pop_count);
+    result->return_type = object_type;
+    result->flags |= ANNA_FUNCTION_MODULE;
+    assert(object_type);
+    result->name = L"!moduleMacroFunction";
+    
     //al_push(&function->child_function, result);
     return (anna_node_t *)anna_node_dummy_create(
 	&node->location,
@@ -742,9 +746,11 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
 
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
     anna_type_t *type = anna_type_create(name, function->stack_template);
-
+    
     type->definition = node;
     anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
+    wprintf(L"Registered type %ls\n", name);
+    
     al_push(
 	&function->child_type,
 	type);
@@ -951,10 +957,9 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"__as__", &anna_macro_as);
     anna_macro_add(stack, L"AST", &anna_macro_ast);
-
+    
     wchar_t *op_names[] = 
 	{
-	    L"__join__",
 	    L"__format__",
 	    L"__add__",
 	    L"__sub__",

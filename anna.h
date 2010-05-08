@@ -74,7 +74,9 @@ typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struc
 #define ANNA_MID_NODE_PAYLOAD 16
 #define ANNA_MID_MEMBER_PAYLOAD 17
 #define ANNA_MID_MEMBER_TYPE_PAYLOAD 18
-#define ANNA_MID_FIRST_UNRESERVED 19
+#define ANNA_MID_STACK_PAYLOAD 19
+#define ANNA_MID_STACK_TYPE_PAYLOAD 20
+#define ANNA_MID_FIRST_UNRESERVED 21
 
 union anna_native
 {
@@ -290,6 +292,7 @@ size_t anna_mid_get(wchar_t *name);
 wchar_t *anna_mid_get_reverse(size_t mid);
 
 anna_object_t *anna_object_create(anna_type_t *type);
+anna_object_t *anna_object_create_raw(size_t sz);
 
 int anna_abides(anna_type_t *contender, anna_type_t *role_model);
 

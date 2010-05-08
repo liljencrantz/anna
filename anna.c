@@ -68,6 +68,8 @@ Object members:
   FloatLiteral type
   NullLiteral type
   
+  Module variable inits
+  Differentiate methods from function members
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
   Cache abides checks. Do all checks possible at type creation time and store the results
@@ -382,23 +384,20 @@ anna_type_t *anna_type_for_function(
     wchar_t **argn, 
     int is_variadic)
 {
-    //  static int count=0;
+    //static int count=0;
     //if((count++)==10) {CRASH};
     
     int i;
     static anna_function_type_key_t *key = 0;
     static size_t key_sz = 0;
     size_t new_key_sz = sizeof(anna_function_type_key_t) + sizeof(anna_type_t *)*argc;
-
+    
     if(!result)
     {
-	    wprintf(
-		L"Critical: Function lacks return type!\n");
-	    CRASH;
-
-
+	wprintf(
+	    L"Critical: Function lacks return type!\n");
+	CRASH;
     }
-    
     
     if(argc)
 	assert(argv);
@@ -427,7 +426,14 @@ anna_type_t *anna_type_for_function(
 	key->argv[i]=argv[i];
 	key->argn[i]=argn[i];
     }
-    
+/*
+    wprintf(L"Weee %ls <-", result->name);
+    for(i=0;i<argc; i++)
+    {
+	wprintf(L" %ls", argv[i]->name);	
+    }
+    wprintf(L"\n");
+*/
     anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
     if(!res)
     {
@@ -441,6 +447,9 @@ anna_type_t *anna_type_for_function(
 	res = anna_function_type_create(new_key);
 	hash_put(&anna_type_for_function_identifier, new_key, res);
     }
+
+    anna_function_type_key_t *ggg = anna_function_unwrap_type(res);
+    assert(ggg->argc == argc);
     
     return res;
 }
@@ -681,6 +690,21 @@ anna_object_t *anna_object_create(anna_type_t *type) {
     return result;
 }
 
+anna_object_t *anna_object_create_raw(size_t sz)
+{
+    anna_object_t *result = 
+	calloc(
+	    1,
+	    sizeof(anna_object_t)+sizeof(anna_object_t *)*sz);
+    int i;
+    for(i=0; i<sz; i++)
+    {
+	result->member[i]=null_object;
+    }
+    
+    return result;
+}
+
 void anna_member_redeclare(
     anna_type_t *type,
     ssize_t mid,
@@ -709,7 +733,8 @@ size_t anna_member_create(anna_type_t *type,
 	    return mid;
 	if(mid == ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD ||
 	   mid == ANNA_MID_FUNCTION_WRAPPER_PAYLOAD ||
-	   mid == ANNA_MID_FUNCTION_WRAPPER_STACK)
+	   mid == ANNA_MID_FUNCTION_WRAPPER_STACK ||
+	   mid == ANNA_MID_STACK_TYPE_PAYLOAD)
 	    return mid;
 	
 	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
@@ -931,6 +956,8 @@ static void anna_init()
     anna_mid_put(L"!nodePayload", ANNA_MID_NODE_PAYLOAD);
     anna_mid_put(L"!memberPayload", ANNA_MID_MEMBER_PAYLOAD);
     anna_mid_put(L"!memberTypePayload", ANNA_MID_MEMBER_TYPE_PAYLOAD);
+    anna_mid_put(L"!stackPayload", ANNA_MID_STACK_PAYLOAD);
+    anna_mid_put(L"!stackTypePayload", ANNA_MID_STACK_TYPE_PAYLOAD);
     
     stack_global = anna_stack_create(4096, 0);
     /*
@@ -1048,13 +1075,15 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    
 	    for(i=0; i<function->body->child_count && !my_stack->stop; i++)
 	    {
-	      /*
-	      wprintf(L"Run node %d of function %ls\n",
-		      i, function->name);
+		/*
+		wprintf(L"Run node %d of function %ls\n",
+			i, function->name);
 	      
-	      anna_node_print(function->body->child[i]);
-	      */
-	      result = anna_node_invoke(function->body->child[i], my_stack);
+		anna_node_print(function->body->child[i]);
+		*/
+		result = anna_node_invoke(function->body->child[i], my_stack);
+		//wprintf(L"Result is %d\n", result);
+	      
 	    }
 	    /*
 	      if(my_stack->stop) 
@@ -1271,7 +1300,7 @@ int main(int argc, char **argv)
     
     //  anna_function_t *func=anna_function_unwrap(program_object);    
     //assert(func);
-    
+        
     anna_function_t *fake_function = anna_function_create(
 	L"!moduleFunction",
 	0,
@@ -1293,12 +1322,13 @@ int main(int argc, char **argv)
     assert(program_dummy->node_type == ANNA_NODE_TRAMPOLINE);
     anna_function_t *module = anna_function_unwrap(
 	program_dummy->payload);    
+    module->name = module_name;
+    
     
     assert(module);
     
-    anna_object_t *module_object = anna_stack_wrap(module->stack_template);    
-    
-//    anna_stack_declare(stack_global, module_name, module_object->type, module_object);
+    anna_object_t *module_object = anna_stack_wrap(module->stack_template);
+    anna_stack_declare(stack_global, module_name, module_object->type, module_object);
     
     anna_prepare();
     
@@ -1326,7 +1356,8 @@ int main(int argc, char **argv)
     }
     
     wprintf(L"Output:\n");        
-    anna_function_invoke(main_func, 0, 0, stack_global, stack_global);
+//    anna_function_invoke(main_func, 0, 0, stack_global, stack_global);
+    anna_function_invoke(main_func, 0, 0, stack_global, module->stack_template);
     
     wprintf(L"\n");
 }
