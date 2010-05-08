@@ -54,7 +54,7 @@ function Int main()
     */
     bar=18;
     
-    print(range.foo);
+    print(range.foo()+1);
     
     //print("AAA: ", bar, "\n");
     

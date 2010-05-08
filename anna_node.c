@@ -1299,12 +1299,13 @@ anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
     //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
 }
 
-anna_object_t *anna_node_member_get_wrap_invoke(anna_node_member_get_t *this, 
-						anna_stack_frame_t *stack)
+anna_object_t *anna_node_member_get_wrap_invoke(
+    anna_node_member_get_t *this, 
+    anna_stack_frame_t *stack)
 {
     /*
-    wprintf(L"Run wrapped member get node:\n");  
-    anna_node_print(this);
+      wprintf(L"Run wrapped member get node:\n");  
+      anna_node_print(this);
     */
     assert(this->object);
     anna_object_t *obj = anna_node_invoke(this->object, stack);

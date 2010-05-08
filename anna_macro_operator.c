@@ -1,3 +1,4 @@
+
 static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node, 
 						anna_function_t *function, 
 						anna_node_list_t *parent)
@@ -380,13 +381,12 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     {
 	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
 //	anna_stack_print(function->stack_template);
-	
-	CRASH;
-	
 	return (anna_node_t *)anna_node_null_create(&node->location);	\
     }
-  
-    int wrap = !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    
+    int wrap = anna_type_member_is_method(object_type, name_node->name);
+    
+    
     return (anna_node_t *)anna_node_member_get_create(&node->location,
 						      node->child[0], 
 						      mid,

@@ -273,3 +273,13 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
     return m->type;
 }
 
+int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
+{
+    anna_member_t *memb = anna_type_member_info_get(type, name);
+    return memb->is_method;
+    
+/*anna_type_t *member_type = anna_type_member_type_get(type, name);
+  return !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
+}
+
+
