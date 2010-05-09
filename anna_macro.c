@@ -656,13 +656,24 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 	    name);    
 }
 
+static anna_node_t *anna_macro_import(
+    anna_node_call_t *node, 
+    anna_function_t *function, 
+    anna_node_list_t *parent)
+{
+    int i;
+    for(i=0; i<node->child_count; i++)
+    {
+	return (anna_node_t *)anna_node_import_create(
+	    &node->location, 
+	    node->child[i]);
+    }
+}
 
 static void anna_macro_add(anna_stack_frame_t *stack, 
 			   wchar_t *name,
 			   anna_native_macro_t call)
 {
-    
-    
     anna_native_create(
 	name,
 	ANNA_FUNCTION_MACRO,
@@ -678,7 +689,6 @@ static void anna_macro_add(anna_stack_frame_t *stack,
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
 #include "anna_macro_cast.c"
-
 
 void anna_macro_init(anna_stack_frame_t *stack)
 {
@@ -716,6 +726,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"__as__", &anna_macro_as);
     anna_macro_add(stack, L"AST", &anna_macro_ast);
+    anna_macro_add(stack, L"import", &anna_macro_import);
     
     wchar_t *op_names[] = 
 	{

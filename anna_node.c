@@ -104,7 +104,23 @@ anna_node_return_t *anna_node_return_create(anna_location_t *loc, struct anna_no
     return result;  
 }
 
-anna_node_member_get_t *anna_node_member_get_create(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_type *type, int wrap)
+anna_node_import_t *anna_node_import_create(
+    anna_location_t *loc,
+    struct anna_node *val)
+{
+    anna_node_import_t *result = calloc(1,sizeof(anna_node_import_t));
+    result->node_type = ANNA_NODE_IMPORT;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->payload = val;
+    return result;  
+}
+
+anna_node_member_get_t *anna_node_member_get_create(
+    anna_location_t *loc,
+    struct anna_node *object,
+    size_t mid, 
+    struct anna_type *type, 
+    int wrap)
 {
     anna_node_member_get_t *result = calloc(1,sizeof(anna_node_member_get_t));
     result->node_type = wrap?ANNA_NODE_MEMBER_GET_WRAP:ANNA_NODE_MEMBER_GET;
@@ -1105,7 +1121,32 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
     }
 }
 
-anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, anna_node_list_t *parent)
+typedef struct
+{
+    anna_stack_frame_t *src;
+    anna_stack_frame_t *dst;
+}
+anna_node_import_data;
+
+static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
+{
+    wchar_t *name = (wchar_t *)key_ptr;
+    size_t *offset=(size_t *)val_ptr;
+    anna_node_import_data *data = (anna_node_import_data *)aux_ptr;
+    anna_object_t *item = anna_stack_get_str(
+	data->src,
+	name);
+    anna_stack_declare(
+	data->dst,
+	name,
+	item->type,
+	item);
+}
+
+anna_node_t *anna_node_prepare(
+    anna_node_t *this, 
+    anna_function_t *function, 
+    anna_node_list_t *parent)
 {
     anna_node_list_t list = 
 	{
@@ -1202,6 +1243,69 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	}
 
 
+	case ANNA_NODE_IMPORT:
+	{
+	    anna_node_import_t * result = (anna_node_import_t *)this;	    
+	    int import_ok = 0;
+	    
+	    if(result->payload->node_type == ANNA_NODE_CALL)
+	    {
+		anna_node_call_t *call = (anna_node_call_t *)result->payload;
+		if(check_node_identifier_name(call->function, L"__memberGet__"))
+		{
+		    if(call->child_count == 2)
+		    {
+			if((call->child[0]->node_type == ANNA_NODE_IDENTIFIER) &&
+			   (call->child[1]->node_type == ANNA_NODE_IDENTIFIER))
+			{
+			    anna_node_identifier_t *module_id = 
+				(anna_node_identifier_t *)call->child[0];
+			    anna_node_identifier_t *field = 
+				(anna_node_identifier_t *)call->child[1];
+			    anna_function_t *module = anna_module_load(module_id->name);
+			    anna_prepare_function_interface(module);
+			    anna_object_t *item = anna_stack_get_str(module->stack_template,
+								     field->name);
+			    if(item)
+			    {
+				anna_stack_declare(
+				    function->stack_template,
+				    field->name,
+				    item->type,
+				    item);
+				import_ok = 1;
+			    }			    
+			}			
+		    }		    
+		}		
+	    }
+	    else if(result->payload->node_type == ANNA_NODE_IDENTIFIER)
+	    {
+		anna_node_identifier_t *module_id = 
+		    (anna_node_identifier_t *)result->payload;
+		anna_function_t *module = anna_module_load(module_id->name);
+		anna_node_import_data data = 
+		    {
+			module->stack_template,
+			function->stack_template
+		    };
+
+		hash_foreach2(
+		    &module->stack_template->member_string_identifier, 
+		    &anna_node_import_item, &data);
+		import_ok = 1;		
+	    }
+
+	    
+	    if(!import_ok)
+	    {
+		anna_error(this, L"Invalid import");
+	    }
+	    
+	    return anna_node_null_create(0);
+	}
+
+
 	case ANNA_NODE_TRAMPOLINE:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_BLOB:
@@ -1213,7 +1317,7 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	    return this;   
 
 	default:
-	    wprintf(L"HULP %d\n", this->node_type);
+	    wprintf(L"Unknown node of type %d during node preparation\n", this->node_type);
 	    CRASH;
     }
 }
@@ -1646,6 +1750,23 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_TRAMPOLINE:
 	{
 	    return tree;
+	}
+
+
+	case ANNA_NODE_IMPORT:
+	{
+	    anna_node_import_t *this2 =(anna_node_import_t *)anna_node_clone_shallow(tree);	    
+	    this2->payload = anna_node_replace(this2->payload,
+					       from, to);
+	    return (anna_node_t *)this2;	    
+	}
+
+	case ANNA_NODE_RETURN:
+	{
+	    anna_node_return_t *this2 =(anna_node_return_t *)anna_node_clone_shallow(tree);
+	    this2->payload = anna_node_replace(this2->payload,
+					       from, to);
+	    return (anna_node_t *)this2;
 	}
 
 	case ANNA_NODE_CALL:

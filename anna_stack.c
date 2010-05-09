@@ -289,7 +289,7 @@ anna_stack_frame_t *anna_stack_unwrap(anna_object_t *wrapper)
 }
 
 
-void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr)
+static void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {
     wchar_t *name = (wchar_t *)key_ptr;
     size_t *offset=(size_t *)val_ptr;

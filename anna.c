@@ -95,7 +95,6 @@ Object members:
   List arithmetic
   
   cast function (depends on type namespace/type object splittingx)
-  import macro
   
   elif macro
   __extendsAttribute__ macro
@@ -206,6 +205,7 @@ Object members:
   __macro__ macro
   as macro
   AST macro
+  import macro
 
 */
 /*

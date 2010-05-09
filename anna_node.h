@@ -23,6 +23,7 @@
 #define ANNA_NODE_CONSTRUCT 13
 #define ANNA_NODE_RETURN 14
 #define ANNA_NODE_BLOB 16
+#define ANNA_NODE_IMPORT 17
 
 struct YYLTYPE
 {
@@ -181,6 +182,17 @@ struct anna_node_float_literal
     double payload;
 };
 
+struct anna_node_import
+{
+    int node_type;
+    struct anna_object *wrapper;
+    anna_location_t location;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
+    struct anna_node *payload;
+};
+
 
 typedef struct anna_node anna_node_t;
 typedef struct anna_node_call anna_node_call_t;
@@ -194,7 +206,7 @@ typedef struct anna_node_int_literal anna_node_int_literal_t;
 typedef struct anna_node_float_literal anna_node_float_literal_t;
 typedef struct anna_node_string_literal anna_node_string_literal_t;
 typedef struct anna_node_char_literal anna_node_char_literal_t;
-
+typedef struct anna_node_import anna_node_import_t;
 
 extern int anna_yacc_error_count;
 
@@ -212,6 +224,9 @@ anna_node_dummy_t *anna_node_blob_create(
 anna_node_return_t *anna_node_return_create(anna_location_t *loc,
 					    struct anna_node *val, 
 					    int steps);
+anna_node_import_t *anna_node_import_create(
+    anna_location_t *loc,
+    struct anna_node *val);
 anna_node_member_get_t *anna_node_member_get_create(anna_location_t *loc, 
 						    struct anna_node *object, 
 						    size_t mid, 

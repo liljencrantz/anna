@@ -8,26 +8,28 @@
 #include "common.h"
 #include "util.h"
 #include "anna.h"
+#include "anna_module.h"
 #include "anna_node.h"
-#include "anna_stack.h"
-#include "anna_int.h"
-#include "anna_float.h"
-#include "anna_string.h"
-#include "anna_char.h"
-#include "anna_list.h"
-#include "anna_type.h"
-#include "anna_type_type.h"
-#include "anna_node.h"
+#include "anna_util.h"
 #include "anna_function.h"
 #include "anna_prepare.h"
-#include "anna_node_wrapper.h"
-#include "anna_macro.h"
-#include "anna_util.h"
-#include "anna_member.h"
-#include "anna_function_type.h"
+
+static hash_table_t *anna_module_imported=0;
 
 anna_function_t *anna_module_load(wchar_t *module_name)
 {
+    if(anna_module_imported == 0)
+    {
+	anna_module_imported = malloc(sizeof(hash_table_t));
+	hash_init(anna_module_imported, &hash_wcs_func, &hash_wcs_cmp);
+    }
+    anna_function_t *module = (anna_function_t *)hash_get(
+	anna_module_imported,
+	module_name);
+
+    if(module)
+	return module;
+    
     string_buffer_t sb;
     sb_init(&sb);
     sb_append(&sb, module_name);
@@ -66,7 +68,7 @@ anna_function_t *anna_module_load(wchar_t *module_name)
 	    0);
     
     assert(program_dummy->node_type == ANNA_NODE_TRAMPOLINE);
-    anna_function_t *module = anna_function_unwrap(
+    module = anna_function_unwrap(
 	program_dummy->payload);    
     module->name = module_name;
     
@@ -84,7 +86,7 @@ anna_function_t *anna_module_load(wchar_t *module_name)
     }
     
     //sb_destroy(&sb);
-    
+    hash_put(anna_module_imported, module_name, module);
     return module;
     
 }
