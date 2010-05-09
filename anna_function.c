@@ -10,6 +10,7 @@
 #include "anna_type.h"
 #include "anna_macro.h"
 #include "anna_node_wrapper.h"
+#include "anna_util.h"
 
 array_list_t anna_function_list = {0,0,0};
 
@@ -317,6 +318,7 @@ anna_function_t *anna_function_create_from_definition(
     {	
 	anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)definition->child[0];
 	name = name_identifier->name;
+    result->name = wcsdup(name);
 /*
 	wprintf(L"Creating function '%ls' from ast\n", name);
 	anna_node_print(definition);
@@ -328,10 +330,9 @@ anna_function_t *anna_function_create_from_definition(
 	    anna_error((anna_node_t *)definition, L"Invalid function name");
 	    return 0;
 	}
-	name = L"!anonymousFunc";
+	result->name = anna_util_identifier_generate(L"anonymousFunction", &(definition->location));
 	result->flags |= ANNA_FUNCTION_ANONYMOUS;
     }
-    result->name = wcsdup(name);
 
 
 /*

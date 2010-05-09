@@ -316,7 +316,7 @@ static anna_node_t *anna_prepare_function_interface_internal(
 		function->name);
 	    if(function->definition)
 	    {
-		anna_node_print(function->definition);
+		anna_node_print((anna_node_t *)function->definition);
 	    }
 	    CRASH;
 	    
@@ -397,60 +397,6 @@ void anna_prepare_function_interface(
 
 }
 ;
-
-anna_node_t *anna_prepare_macro(anna_function_t *function)
-{
-    /*
-    anna_node_call_t *node = function->definition;
-
-    anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
-    anna_node_call_t *declarations = node_cast_call(node->child[1]);
-    wchar_t **argn=calloc(sizeof(wchar_t *), 3);
-    int i;
-    CHECK_CHILD_COUNT(declarations,L"macro definition", 3);
-
-    for(i=0; i<3; i++)
-    {
-	CHECK_NODE_TYPE(declarations->child[i], ANNA_NODE_IDENTIFIER);
-	anna_node_identifier_t *arg = (anna_node_identifier_t *)declarations->child[i];
-	argn[i] = wcsdup(arg->name);
-    }
-
-    function->name = wcsdup(name_identifier->name);
-    function->body = node->child[2];
-    function->input_count=3;
-    function->input_name = argn;
-
-    result = anna_function_create(
-	
-	ANNA_FUNCTION_MACRO,
-	(anna_node_call_t *)node->child[2], 
-	0,
-	3, 
-	0,
-	argn, 
-	function->stack_template, 
-	0);
-    al_push(&function->child_function, result);
-    
-    anna_stack_declare(
-	function->stack_template,
-	name_identifier->name, 
-	anna_type_for_function(
-	    result->return_type, 
-	    result->input_count, 
-	    result->input_type,
-	    result->input_name,
-	    0), 
-	anna_function_wrap(result));
-    
-    return (anna_node_t *)anna_node_dummy_create(
-	&node->location,
-	anna_function_wrap(result),
-	0);    
-    */
-}
-
 
 
 void anna_prepare_function(anna_function_t *function)
@@ -741,7 +687,7 @@ static anna_node_t *anna_type_member(anna_type_t *type,
 void anna_prepare_type_interface(
     anna_type_t *type)
 {
-    return anna_prepare_type_interface_internal(type, 0);
+    anna_prepare_type_interface_internal(type, 0);
 }
 
 static anna_node_t *anna_prepare_type_interface_internal(
@@ -1149,14 +1095,7 @@ void anna_prepare_type_implementation(anna_type_t *type)
 
 void anna_prepare_function_recursive(anna_function_t *block)
 {
-/*    if(block->flags & ANNA_FUNCTION_MACRO)
-    {
-	anna_prepare_macro(block);
-    }
-    else*/
-    {
-	anna_prepare_function(block);
-    }
+    anna_prepare_function(block);
     
     int i;
     

@@ -32,6 +32,8 @@ int yylex();
 int yylex_val;
 int anna_yacc_error_count=0; 
 
+int anna_yacc_do_init = 0;
+
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
     do                                                                  \
     {									\
@@ -1062,12 +1064,18 @@ simple_expression '(' argument_list2 ')'
 
 %%
 
+void anna_yacc_init()
+{
+    anna_yacc_do_init = 1;    
+}
+
+
 int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
 {
-    static int init = 0;
-    if(!init)
+    
+    if(anna_yacc_do_init)
     {
-	init=1;
+	anna_yacc_do_init = 0;
 	llocp->first_line= llocp->last_line=1;
 	llocp->first_column = llocp->last_column=0;
     }

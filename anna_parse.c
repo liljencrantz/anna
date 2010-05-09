@@ -24,6 +24,7 @@ struct parse_data
 typedef struct parse_data parse_data_t;
 
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
+void anna_yacc_init();
 
 /*
 void anna_error(wchar_t *filename, size_t pos, wchar_t *msg)
@@ -385,8 +386,10 @@ anna_node_t *anna_parse(wchar_t *filename)
 
   FILE *file = wfopen(filename, "r");
   anna_node_t *parse_tree;
-  
+
+  anna_yacc_init();
   anna_lex_lex_init(&scanner);
+
   anna_lex_set_in( file, scanner);
   /*
   YYLTYPE lloc;

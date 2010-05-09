@@ -16,6 +16,8 @@
 #include "anna_string.h"
 #include "anna_char.h"
 #include "anna_function.h"
+#include "anna_prepare.h"
+#include "anna_type.h"
 
 #define CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
 
@@ -530,7 +532,7 @@ anna_node_call_t *anna_node_block_create(
 {
     return anna_node_call_create(
 	loc,
-	anna_node_identifier_create(
+	(anna_node_t *)anna_node_identifier_create(
 	    loc,
 	    L"__block__"),
 	0,
@@ -1134,6 +1136,7 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
+	    /*
 	    if(anna_node_identifier_is_function(
 		   this2,
 		   function->stack_template))
@@ -1143,8 +1146,16 @@ anna_node_t *anna_node_prepare(anna_node_t *this, anna_function_t *function, ann
 		    this2->name);
 		ANNA_PREPARED(this2);    
 	    }
+	    */
 	    this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
-	    
+/*
+	    if(wcscmp(this2->name, L"print")==0)
+	    {
+		wprintf(L"Preparing print node with stack trace:\n");
+		
+		anna_stack_print_trace(function->stack_template);
+	    }
+*/	    
 /*
 	    if(wcscmp(this2->name,L"print")==0)
 	    {
@@ -1370,14 +1381,16 @@ static anna_object_t *anna_trampoline(anna_object_t *orig,
 	    return 0;
 	}
 */
-	wprintf(L"LALA\n");
+	wprintf(L"Critical: Bad trampoline input\n");
 	anna_object_print(res);
-	anna_function_print(orig->member[0]);
+	//anna_function_print(orig->member[0]);
 	
 	CRASH;
-	
     }
-    
+/*
+    wprintf(L"Creating a trampoline for function %ls with shiny new stack:\n", anna_function_unwrap(orig)->name);
+    anna_stack_print_trace(stack);
+*/  
     memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
 	   anna_member_addr_get_mid(orig,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
 	   sizeof(anna_function_t *));    
@@ -1465,7 +1478,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	    return anna_node_identifier_invoke((anna_node_identifier_t *)this, stack);	    
 
 	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
-	{
+	{	    
 	    return anna_trampoline(
 		anna_node_identifier_invoke(
 		    (anna_node_identifier_t *)this, 

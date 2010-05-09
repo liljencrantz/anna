@@ -21,13 +21,13 @@ typedef struct
 
 anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent)
 {
-   anna_stack_frame_t *stack = calloc(1,sizeof(anna_stack_frame_t) + sizeof(anna_object_t *)*sz);
-   hash_init(&stack->member_string_identifier, &hash_wcs_func, &hash_wcs_cmp);
-   stack->member_type = calloc(1, sizeof(anna_type_t *)*sz);
-   stack->count = 0;
-   stack->capacity = sz;
-   stack->parent = parent;
-   return stack;
+    anna_stack_frame_t *stack = calloc(1,sizeof(anna_stack_frame_t) + sizeof(anna_object_t *)*sz);
+    hash_init(&stack->member_string_identifier, &hash_wcs_func, &hash_wcs_cmp);
+    stack->member_type = calloc(1, sizeof(anna_type_t *)*sz);
+    stack->count = 0;
+    stack->capacity = sz;
+    stack->parent = parent;
+    return stack;
 }
 
 void anna_stack_declare(anna_stack_frame_t *stack, 
@@ -232,10 +232,12 @@ int anna_stack_depth(anna_stack_frame_t *stack)
 
 void anna_stack_print_trace(anna_stack_frame_t *stack)
 {
-	wprintf(L"Stack trace:\n");
+    wprintf(L"Stack trace:\n");
 	while(stack)
 	{
-	    wprintf(L"Stack frame belonging to function %ls\n", stack->function?stack->function->name:L"null");
+	    wprintf(
+		L"Stack frame belonging to function %ls\n",
+		stack->function?stack->function->name:L"<null>");
 	    stack = stack->parent;
 	}
 }
@@ -285,6 +287,7 @@ anna_stack_frame_t *anna_stack_unwrap(anna_object_t *wrapper)
 {
     return *(anna_stack_frame_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_STACK_PAYLOAD);
 }
+
 
 void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {

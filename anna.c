@@ -22,7 +22,9 @@
 #include "anna_prepare.h"
 #include "anna_node_wrapper.h"
 #include "anna_macro.h"
+#include "anna_util.h"
 #include "anna_member.h"
+#include "anna_module.h"
 #include "anna_function_type.h"
 
 /*
@@ -86,9 +88,7 @@ Object members:
   static function calls
   String padding with null chars on «anti-truncate».
   Add toString and a few more basic methods to Object
-  Inheritance
   Make sure everybody inherits from Object
-  Defer all type setup, and perform dependency checking in order to get ordering right
   
   Implement basic string methods
   Implement string comparison methods
@@ -142,6 +142,8 @@ Object members:
   Simple non-native macros working
   Split up anna_macro.c into multiple files
   namespaces
+  Defer all type setup, and perform dependency checking in order to get ordering right
+  Module loader
   
   Type type
   Call type
@@ -460,7 +462,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 					    anna_node_call_t *param,
 					    anna_stack_frame_t *local)
 {
-  //    wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
+    //wprintf(L"Wrapped invoke of function %ls\n", obj->type->name);
     if(obj == null_object)
 	return null_object;
     
@@ -468,7 +470,11 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
     anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
-	//    wprintf(L"Yay, got function %ls\n", (*function_ptr)->name);
+	if(stack_ptr)
+	{
+//	    wprintf(L"Invoking wrapped function %ls with parent stack\n", (*function_ptr)->name);
+//	    anna_stack_print_trace(stack_ptr);
+	}	
         return anna_function_invoke(*function_ptr, this, param, local, stack_ptr?*stack_ptr:stack_global);
     }
     else 
@@ -1133,7 +1139,7 @@ struct anna_node *anna_macro_invoke(
 anna_object_t *anna_function_invoke(anna_function_t *function, 
 				    anna_object_t *this,
 				    anna_node_call_t *param, 
-				    anna_stack_frame_t *stack,
+				    anna_stack_frame_t *param_invoke_stack,
 				    anna_stack_frame_t *outer) 
 {
 /*
@@ -1175,8 +1181,8 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
     
     for(i=0; i<(function->input_count-offset-is_variadic); i++)
     {
-//        wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
-	argv[i+offset]=anna_node_invoke(param->child[i], stack);
+//wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
+	argv[i+offset]=anna_node_invoke(param->child[i], param_invoke_stack);
     }
 
     if(is_variadic)
@@ -1193,12 +1199,12 @@ anna_object_t *anna_function_invoke(anna_function_t *function,
 		function->input_count-1+offset);
 	    CRASH;	    
 	}
-		
+	
 	anna_list_set_capacity(lst, variadic_count);
 	for(; i<param->child_count;i++)
 	{
 	    //  wprintf(L"eval variadic param %d of %d \n", i, param->child_count);
-	    anna_list_add(lst, anna_node_invoke(param->child[i], stack));
+	    anna_list_add(lst, anna_node_invoke(param->child[i], param_invoke_stack));
 	}
 	//wprintf(L"Set variadic var at offset %d to %d\n", function->input_count-1, lst);
 	
@@ -1228,20 +1234,16 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
     anna_error_count++;
 }
 
+
 int main(int argc, char **argv)
 {
     if(argc != 2)
     {
-	wprintf(L"Error: Expected exactly one argument, a name of a file to run.\n");
+	wprintf(L"Error: Expected at least one argument, a name of a file to run.\n");
 	exit(1);
     }
-    wchar_t *filename = str2wcs(argv[1]);
+
     wchar_t *module_name = str2wcs(argv[1]);
-    wchar_t *module_end = wcschr(module_name, L'.');
-    if(module_end)
-    {
-	*module_end = 0;
-    }
     
     wprintf(L"Initializing interpreter...\n");    
     anna_init();
@@ -1251,99 +1253,14 @@ int main(int argc, char **argv)
 	wprintf(L"Found %d error(s) during initialization, exiting\n", anna_error_count);
 	exit(1);
     }
-    wprintf(L"Parsing file %ls...\n", filename);    
-    anna_node_t *program = anna_parse(filename);
-    
-    if(!program || anna_error_count) 
-    {
-	wprintf(L"Program failed to parse correctly; exiting.\n");
-	exit(1);
-    }
-    
-    wprintf(L"Parsed program:\n");    
-    anna_node_print(program);
-    wprintf(L"Validating program...\n");    
-    
-    /*
-      The entire program is a __block__ call, which we use to create
-      an anonymous function definition
-    */
-/*
-    anna_node_dummy_t *program_callable = 
-	anna_node_dummy_create(
-	    &program->location,
-	    anna_function_wrap(
-		anna_function_create(
-		    module_name,
-		    ANNA_FUNCTION_MODULE,
-		    node_cast_call(program),
-		    null_type, 
-		    0,
-		    0,
-		    0,
-		    stack_global, 
-		    0)),
-	    0);
-*/
-//    ANNA_PREPARED(program_callable);
-    /*
-      Invoke the anonymous function, the return is a
-      function_type_t->wrapper
-    */
-//    anna_object_t *program_object = anna_node_invoke((anna_node_t *)program_callable, stack_global);
-/*    if(anna_error_count)
-    {
-	wprintf(L"Found %d error(s) during program validation, exiting\n", anna_error_count);
-	exit(1);
-    }
-*/
-    /*
-      Run the function
-    */
-    
-    //  anna_function_t *func=anna_function_unwrap(program_object);    
-    //assert(func);
-        
-    anna_function_t *fake_function = anna_function_create(
-	L"!moduleFunction",
-	0,
-	node_cast_call(program),
-	null_type, 
-	0,
-	0,
-	0,
-	stack_global, 
-	0);
-    
-    
-    anna_node_dummy_t *program_dummy = (anna_node_dummy_t *)
-	anna_node_prepare(
-	    program,
-	    fake_function,
-	    0);
-    
-    assert(program_dummy->node_type == ANNA_NODE_TRAMPOLINE);
-    anna_function_t *module = anna_function_unwrap(
-	program_dummy->payload);    
-    module->name = module_name;
-    
-    
-    assert(module);
-    
-    anna_object_t *module_object = anna_stack_wrap(module->stack_template);
-    anna_stack_declare(stack_global, module_name, module_object->type, module_object);
-    
-    anna_prepare();
+
+    anna_module_load(L"lang");
     
     anna_int_one = anna_int_create(1);
     null_object = anna_object_create(null_type);
-    
-    if(anna_error_count)
-    {
-	wprintf(L"Found %d error(s) during program validation, exiting\n", anna_error_count);
-	exit(1);
-    }
-    
+
+    anna_function_t *module = anna_module_load(module_name);
+
 //    wprintf(L"Validated program:\n");    
     anna_object_t **main_wrapper_ptr = anna_stack_addr_get_str(module->stack_template, L"main");
     if(!main_wrapper_ptr)
@@ -1351,12 +1268,17 @@ int main(int argc, char **argv)
 	wprintf(L"No main method defined in module %ls\n", module_name);
 	exit(1);	
     }
+
+
     anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);
     if(!main_func)
     {
 	wprintf(L"Main is not a method in module %ls\n", module_name);
 	exit(1);	
     }
+
+    anna_function_invoke(module, 0, 0, stack_global, stack_global);
+    
     
     wprintf(L"Output:\n");        
 //    anna_function_invoke(main_func, 0, 0, stack_global, stack_global);

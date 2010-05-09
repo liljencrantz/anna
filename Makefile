@@ -13,7 +13,7 @@ anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o	\
 wutil.o anna_type.o anna_node_print.o anna_string_internal.o		\
 anna_string_naive.o anna_node_wrapper.o anna_type_type.o		\
 anna_function.o anna_node_check.o anna_prepare.o anna_member.o		\
-anna_function_type.o
+anna_function_type.o anna_util.o anna_module.o
 
 ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
 anna_string_internal_test.o util.o common.o anna_string_naive.o

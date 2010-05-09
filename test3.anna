@@ -1,4 +1,12 @@
-function main()
+
+function Int main()
 {
-    print("Hej baberiba\n", 1+1);
+    var foo = lang.Range(4,7);
+    foo.each(i)
+    {
+	print(i);
+    }
+    
+    print("tjoho och tralala\n"[foo]);
+
 }

@@ -46,5 +46,7 @@ anna_function_t *anna_function_create_from_block(
 
 void anna_function_print(anna_function_t *function);
 
+void anna_function_setup_type(anna_function_t *f, anna_stack_frame_t *location);
+
 
 #endif

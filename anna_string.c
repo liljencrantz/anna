@@ -73,7 +73,7 @@ static anna_object_t *anna_string_i_get_range(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
-
+    
     anna_object_t *range = param[1];
     int from = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_FROM));
     int to = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_TO));
@@ -87,6 +87,29 @@ static anna_object_t *anna_string_i_get_range(anna_object_t **param)
     
     return res;
     
+}
+
+static anna_object_t *anna_string_i_set_range(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+
+    if(param[2]==null_object)
+	return null_object;
+
+    anna_object_t *range = param[1];
+    int from = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_FROM));
+    int to = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_TO));
+    int step = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_STEP));
+    
+    assert(step=1);
+    
+    asi_replace(as_unwrap(param[0]), 
+		as_unwrap(param[2]), 
+		from, to-from,
+		0, asi_get_length(as_unwrap(param[2])));
+    
+    return param[0];
 }
 
 static anna_object_t *anna_string_i_init(anna_object_t **param)
@@ -177,12 +200,12 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 
     anna_node_t *range_param[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"range"),	    
+	    (anna_node_t *)anna_node_identifier_create(0, L"lang"),	    
 	    (anna_node_t *)anna_node_identifier_create(0, L"Range"),	    
 	};
     
     
-    anna_node_t *range = anna_node_call_create(
+    anna_node_t *range = (anna_node_t *)anna_node_call_create(
 	0,
 	(anna_node_t *)anna_node_identifier_create(0, L"__memberGet__"),
 	2,
@@ -292,6 +315,17 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_string_i_get_range, 
 	(anna_node_t *)anna_node_identifier_create(0, L"String") , 
 	2,
+	range_argv, 
+	range_argn);
+    
+    anna_native_method_add_node(
+	definition,
+	-1,
+	L"__set__Range__",
+	0, 
+	(anna_native_t)&anna_string_i_set_range, 
+	(anna_node_t *)anna_node_identifier_create(0, L"String") , 
+	3,
 	range_argv, 
 	range_argn);
     
