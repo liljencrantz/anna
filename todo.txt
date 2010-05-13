@@ -1,0 +1,177 @@
+
+  Plans for apps written in anna:
+  Documentation generator: Introspect all data types and generate html documentation on them.
+  live: Debug a running application using command line or web browser.
+  Compiler front end.
+  Asynchronous continuation based app/web server
+
+Type members:
+  member
+  name
+  intersect
+  abides
+  definition
+  filter
+
+Object members:
+  asString
+  type
+  
+  Code refactoring plan:
+  
+  - Move object code to individual .[ch] files.
+  - All node types should have a head var which is an anna_node_t, to
+    reduce the amount of casting needed.
+  
+  ComparisonMap type
+  HashMap type
+  Pair type
+  Better Function type
+  Better Type type  
+  Stack type
+  Byte type
+  Buffer type
+  Regexp type
+  File type
+  StringLiteral type
+  FloatLiteral type
+  NullLiteral type
+  
+  Module variable inits
+  Make abides check properly check method signatures
+  Make abides check handle dependency cycles
+  Cache abides checks. Do all checks possible at type creation time and store the results
+  Split type namespace from type object
+  Better code validator
+  Type checking on function types
+  General purpose currying
+  Namespaces
+  Non-recursive invoke
+  Function default argument values
+  Named function arguments
+  Garbage collection  
+  Proper intersection/union of types
+  static member identifier and assignment
+  static function calls
+  String padding with null chars on «anti-truncate».
+  Add toString and a few more basic methods to Object
+  Make sure everybody inherits from Object
+  
+  Implement basic string methods
+  Implement string comparison methods
+  List arithmetic
+  
+  cast function (depends on type namespace/type object splittingx)
+  
+  elif macro
+  __extendsAttribute__ macro
+  in method
+  __returnAssign__ macro
+  __list__ macro 
+  use macro
+  __memberCall__ macro
+  __staticMemberGet__ macro
+  __staticMemberSet__ macro
+  with macro
+
+  Done: 
+  
+  Sugar parser
+  Real check if type abides to other type, instead of lame type ptr comparison
+  Correct string literal parsing
+  Variable declarations
+  Function argument passing
+  Method calls with proper this handling
+  Inner functions with access to outer scope
+  Make ; after } optional
+  Constructors with no parameters
+  Simple type checking
+  Constructors
+  Inner functions with shared return flag
+  Do some real testing to find the optimal operator presedence order
+  class member macros
+  Type support for lists
+  Move uncommon operators to become generic operators (bit ops, sign, abs, etc.)
+  Removed macro methods, all macros are global
+  Move all native types to use the AST node creation style from List
+  Subfunction/block tracking in function
+  Functions that don't return an Int (depends on block tracking)
+  Variadic functions
+  Fully functional templates
+  Identifier invocation should use sid instead of name lookup
+  Separate function preparation pass
+  Object constructor sets all members to null
+  Properties
+  make ++, += and friends transform into an assignment, so they work with properties.
+  Make comments nest
+  Sugar for property definitions
+  Simple non-native macros working
+  Split up anna_macro.c into multiple files
+  namespaces
+  Defer all type setup, and perform dependency checking in order to get ordering right
+  Module loader
+  
+  Type type
+  Call type
+  Int type
+  String type
+  Char type
+  Null type  
+  List type
+  Range type
+  Complex type
+  Node type
+  Identifier type
+  IntLiteral type
+  Call type
+  
+
+  Represent objects 
+  Represent types
+  Represent member data
+  Represent the stack
+  
+  Parse int literals
+  Parse identifiers
+  Parse calls
+  Parse string literals
+  Parse chars literals
+  Parse float literals
+  
+  Implement basic Int methods
+  Implement basic Float methods
+  Implement Int comparison methods
+  Implement List getter and setter
+  Implement basic Char methods
+  Implement Char comparison methods
+  Implement basic List methods
+  
+  __not__ function
+  __block__ macro
+  __assign__ macro
+  __declare__ macro
+  __function__ macro
+  __if__ function
+  __add__, __sub__, __mul__ and friends, simple exact mapping
+  __set__, __get__, __add__, __sub__, __mul__ and friends: full abides/reverse checking implementation
+  if macro
+  else macro
+  __get__ macro
+  __set__ macro
+  __or__ macro
+  __and__ macro
+  while macro
+  __while__ function
+  __type__ function
+  return macro
+  __templateAttribute__ macro
+  __templatize__ macro
+  each, map, filter, first
+  List.count
+  String.count
+  __macro__ macro
+  as macro
+  AST macro
+  import macro
+
+
