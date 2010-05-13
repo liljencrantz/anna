@@ -102,3 +102,109 @@ class Range template (T:Int)
 }
 
 
+class BinaryMapNode template(Key:Int), template(Value:Object)
+{
+    var Key key;
+    var Value value;
+    var BinaryMapNode<Key, Value> left;
+    var BinaryMapNode<Key, Value> right;	
+    
+    function Object __init__(Key key, Value value)
+    {
+	this.key=key;
+	this.value=value;
+    }
+    
+}
+
+class BinaryMap template(Key:Int), template(Value:Object)
+{
+    var BinaryMapNode<Key,Value> root;
+    
+    function BinaryMap<Key,Value> __init__()
+    {
+    }
+    
+    function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)
+	private
+    {
+	if(node)
+	{
+	    if(node.key>key)
+	    {
+		node.left=this.insert(node.left, key,value);
+	    }
+	    else
+	    {
+		if(node.key<key)
+		{
+		    node.right = this.insert(node.right, key,value);
+		}
+		else 
+		{
+		    node.key=key;
+		    node.value=value;
+		}
+	    }
+	}
+	else
+	{
+	    node = BinaryMapNode<Key,Value>(key, value);		
+	}
+	return node;	    
+    }
+    
+    function Value find(BinaryMapNode<Key,Value> node, Key key)
+	private
+    {
+	if(node)
+	{
+	    if(node.key == key)
+	    {
+		return node.value;
+	    }
+	    if(key < node.key) 
+	    {
+		return this.find(node.left, key);
+	    }
+	    else
+	    {
+		return this.find(node.right, key);
+	    }
+	}
+	return null;
+    }
+    
+    function Value __set__Key__(Key key, Value value)
+    {
+	this.root = this.insert(this.root, key, value);
+	return value;
+    }
+    
+    function Value __get__Key__(Key key)
+    {
+	return this.find(this.root, key);
+    }
+    
+    function toString()
+    {
+	return "Map";
+    }
+
+    function Object __each__(function Null f (Key key, Value value))
+    {
+	this.eachNode(this.root, f);
+    }
+    
+    function Object eachNode(BinaryMapNode<Key,Value> node, function Null f (Key key, Value value))
+	private
+    {
+	if(node)
+	{
+	    this.eachNode(node.left, f);
+	    f(node.key, node.value);
+	    this.eachNode(node.right, f);
+	}
+    }
+}
+

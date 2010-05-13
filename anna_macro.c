@@ -73,6 +73,7 @@ static wchar_t *anna_find_method(
     anna_type_t *arg2_type)
 {
     int i;
+    anna_prepare_type_interface(type);
     wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
     wchar_t *match=0;
     int fault_count=0;
@@ -539,9 +540,10 @@ static anna_node_t *anna_macro_ast(anna_node_call_t *node,
 	0);
 }
 
-static anna_node_t *anna_macro_list(anna_node_call_t *node, 
-				      anna_function_t *function, 
-				      anna_node_list_t *parent)
+static anna_node_t *anna_macro_collection(
+    anna_node_call_t *node, 
+    anna_function_t *function, 
+    anna_node_list_t *parent)
 {
     return (anna_node_t *)anna_node_call_create(
 	&node->location,
@@ -579,6 +581,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     
     anna_type_t *type = anna_type_create(L"!temporaryTypeName", function->stack_template);
     templatize_key_t *new_key = malloc(sizeof(templatize_key_t));
+       
     memcpy(new_key, &key,sizeof(templatize_key_t));
     new_key->argv = malloc(sizeof(anna_node_t *)*new_key->argc);
     memcpy(new_key->argv,param->child,  sizeof(anna_node_t *)*new_key->argc);
@@ -722,7 +725,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"map", &anna_macro_iter);
     anna_macro_add(stack, L"filter", &anna_macro_iter);
     anna_macro_add(stack, L"first", &anna_macro_iter);
-    anna_macro_add(stack, L"__list__", &anna_macro_list);
+    anna_macro_add(stack, L"__collection__", &anna_macro_collection);
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"__as__", &anna_macro_as);
     anna_macro_add(stack, L"AST", &anna_macro_ast);

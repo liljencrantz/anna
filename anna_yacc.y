@@ -559,7 +559,7 @@ expression9 :
 	'[' argument_list2 ']' /* Alternative list constructor syntax */
 	{	    
 	    $$ = (anna_node_t *)$2;
-	    anna_node_call_set_function($2, (anna_node_t *)anna_node_identifier_create(&@$,L"__list__"));
+	    anna_node_call_set_function($2, (anna_node_t *)anna_node_identifier_create(&@$,L"__collection__"));
 	}
 	|
 	expression9 AS expression10

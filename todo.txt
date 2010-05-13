@@ -4,6 +4,7 @@
   live: Debug a running application using command line or web browser.
   Compiler front end.
   Asynchronous continuation based app/web server
+  Simple car game using my terrain rendering engine
 
 Type members:
   member
@@ -23,7 +24,6 @@ Object members:
   - All node types should have a head var which is an anna_node_t, to
     reduce the amount of casting needed.
   
-  ComparisonMap type
   HashMap type
   Pair type
   Better Function type
@@ -37,6 +37,7 @@ Object members:
   FloatLiteral type
   NullLiteral type
   
+  attribute lists for types, functions and stack entries
   Module variable inits
   Make abides check properly check method signatures
   Make abides check handle dependency cycles
