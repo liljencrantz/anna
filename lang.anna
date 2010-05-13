@@ -1,4 +1,69 @@
 
+class Complex
+{
+    var Float real;
+    var Float img;
+    
+    function Object __init__(Float r, Float i)
+    {
+	this.real = r;
+	this.img = i;
+    }
+    
+    function Complex __add__Complex__(Complex other)
+    {
+	return Complex(
+	    this.real + other.real, 
+	    this.img + other.img);
+    }
+    
+    function Float __add__Float__(Float other)
+    {
+	return Complex(this.real + other, this.img);
+    }
+    
+    function Complex __sub__Complex__(Complex other)
+    {
+	return Complex(this.real - other.real, this.img - other.img);
+    }
+
+    function Complex __sub__Float__(Float other)
+    {
+	return Complex(this.real - other, this.img);
+    }
+    
+    function Complex __mul__Complex__(Complex other)
+    {
+	return Complex(
+	    this.real * other.real -this.img*other.img, 
+	    this.real * other.img + this.img*other.real);
+    }
+    
+    function Complex __mul__Float__(Float other)
+    {
+	return Complex(this.real * other, this.img*other);
+    }
+    
+    function Complex __div__Complex__(Complex other)
+    {
+	var divisor = other.real*other.real + other.img*other.img;
+	return Complex(
+	    (this.real * other.real  + this.img*other.img)/divisor, 
+	    (this.img * other.real - this.real*other.img)/divisor);
+    }
+    
+    function Complex __div__Float__(Float other)
+    {
+	return Complex(this.real / other, this.img / other);
+    }
+    
+    function Float __abs__()
+    {
+	return @sqrt (this.real*this.real + this.img*this.img);
+    }
+    
+}
+
 class Range template (T:Int)
 {
 
@@ -6,14 +71,14 @@ class Range template (T:Int)
     var T to;
     var T step;
     
-    function __init__(T from, T to)
+    function Object __init__(T from, T to)
     {
 	this.from = from;
 	this.to=to;
 	this.step=1;
     }
     
-    function __each__(function Null f (Int key, T value))
+    function Object __each__(function Null f (Int key, T value))
     {
 	var i=this.from;
 	var idx = 0;

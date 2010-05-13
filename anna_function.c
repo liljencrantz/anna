@@ -330,7 +330,7 @@ anna_function_t *anna_function_create_from_definition(
 	    anna_error((anna_node_t *)definition, L"Invalid function name");
 	    return 0;
 	}
-	result->name = anna_util_identifier_generate(L"anonymousFunction", &(definition->location));
+	result->name = anna_util_identifier_generate(L"block", &(definition->location));
 	result->flags |= ANNA_FUNCTION_ANONYMOUS;
     }
 
@@ -358,6 +358,7 @@ anna_function_t *anna_function_create_from_block(
 	{
 	    (anna_node_t *)anna_node_null_create(&body->location),
 	    (anna_node_t *)anna_node_null_create(&body->location),
+//	    (anna_node_t *)anna_node_identifier_create(&body->location, L"Object"),
 	    (anna_node_t *)anna_node_block_create(&body->location),
 	    (anna_node_t *)anna_node_block_create(&body->location),
 	    (anna_node_t *)body

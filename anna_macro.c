@@ -166,7 +166,7 @@ static anna_node_t *anna_macro_module(
 	    node,
 	    function->stack_template,
 	    return_pop_count);
-    result->return_type = object_type;
+//    result->definition->child[1] = anna_node_identifier_create(0, L"Object");
     result->flags |= ANNA_FUNCTION_MODULE;
     assert(object_type);
     result->name = L"!moduleMacroFunction";

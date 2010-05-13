@@ -37,12 +37,15 @@ void anna_stack_declare(anna_stack_frame_t *stack,
 {
     if(!name)
 	CRASH;
-    /*
+
     if(!initial_value)
     {
+	wprintf(L"Critical: No initial value provided in declaration of %ls\n",
+		name);
+	
 	CRASH;
     }
-    */
+
     assert(name);
     assert(type);
     assert(stack);
@@ -96,6 +99,16 @@ anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name
     wprintf(L"Critical: Tried to access unknown variable: %ls\nStack content:\n", name);
     //anna_stack_print(orig);
     CRASH;
+}
+
+anna_object_t *anna_stack_frame_get_str(anna_stack_frame_t *stack, wchar_t *name)
+{
+    size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
+    if(offset) 
+    {
+	return stack->member[*offset];
+    }
+    return 0;
 }
 
 void anna_stack_set_str(anna_stack_frame_t *stack, wchar_t *name, anna_object_t *value)

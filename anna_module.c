@@ -45,10 +45,9 @@ anna_function_t *anna_module_load(wchar_t *module_name)
 	exit(1);
     }
     
-    wprintf(L"Parsed module:\n");    
+    wprintf(L"Parsed module AST:\n");    
     anna_node_print(program);
-    wprintf(L"Validating module...\n");    
-    
+        
     anna_function_t *fake_function = anna_function_create(
 	anna_util_identifier_generate(L"moduleFunction", &(program->location)),
 	0,
@@ -69,7 +68,7 @@ anna_function_t *anna_module_load(wchar_t *module_name)
     
     assert(program_dummy->node_type == ANNA_NODE_TRAMPOLINE);
     module = anna_function_unwrap(
-	program_dummy->payload);    
+	program_dummy->payload);
     module->name = module_name;
     
     assert(module);

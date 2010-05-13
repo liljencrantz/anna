@@ -1254,10 +1254,11 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
+    null_object = anna_object_create_raw(0);
     anna_module_load(L"lang");
-    
+    null_object->type = null_type;
+        
     anna_int_one = anna_int_create(1);
-    null_object = anna_object_create(null_type);
 
     anna_function_t *module = anna_module_load(module_name);
 

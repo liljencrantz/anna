@@ -2,6 +2,7 @@
 #define ANNA_PREPARE_H
 
 #include "anna.h"
+#include "anna_node.h"
 
 /**
   Run macros, optimize and validate AST of specified function
@@ -32,9 +33,9 @@ void anna_prepare();
 void anna_prepare_type_interface(anna_type_t *type);
 /**
    Prepare the external interface of the specified function
- */
+*/
 void anna_prepare_function_interface(anna_function_t *function);
 void anna_prepare_function(anna_function_t *function);
-
+void anna_prepare_stack_functions(anna_stack_frame_t *stack, wchar_t *name, anna_node_t *context);
 
 #endif

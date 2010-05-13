@@ -50,6 +50,8 @@ void anna_stack_set_str(anna_stack_frame_t *stack, wchar_t *name, struct anna_ob
 
 anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name);
 
+anna_object_t *anna_stack_frame_get_str(anna_stack_frame_t *stack, wchar_t *name);
+
 anna_object_t *anna_stack_get_sid(anna_stack_frame_t *stack, anna_sid_t sid);
 
 void anna_stack_set_sid(anna_stack_frame_t *stack, anna_sid_t sid, anna_object_t *value);

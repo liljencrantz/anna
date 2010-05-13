@@ -36,12 +36,13 @@ typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *, struct anna_function *, struct anna_node_list *);
 
 #define ANNA_FUNCTION_REGISTERED 1
-#define ANNA_FUNCTION_PREPARED_INTERFACE 2
-#define ANNA_FUNCTION_PREPARED_IMPLEMENTATION 4
-#define ANNA_FUNCTION_VARIADIC 8
-#define ANNA_FUNCTION_MODULE 16
-#define ANNA_FUNCTION_MACRO 32
-#define ANNA_FUNCTION_ANONYMOUS 64
+#define ANNA_FUNCTION_PREPARED_COMMON 2
+#define ANNA_FUNCTION_PREPARED_INTERFACE 4
+#define ANNA_FUNCTION_PREPARED_IMPLEMENTATION 8
+#define ANNA_FUNCTION_VARIADIC 16
+#define ANNA_FUNCTION_MODULE 32
+#define ANNA_FUNCTION_MACRO 64
+#define ANNA_FUNCTION_ANONYMOUS 128
 
 #define ANNA_TYPE_REGISTERED 1
 #define ANNA_TYPE_PREPARED_INTERFACE 2

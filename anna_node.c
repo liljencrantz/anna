@@ -883,11 +883,13 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 		if(this2->function->node_type == ANNA_NODE_IDENTIFIER)
 		{
 		    anna_node_identifier_t *identifier = (anna_node_identifier_t *)this2->function;
+		    if(!anna_stack_frame_get_str(stack, identifier->name))
+			anna_prepare_stack_functions(stack->parent, identifier->name, this);
 		    anna_object_t *type_wrapper = anna_stack_get_str(stack, identifier->name);
 		    assert(type_wrapper);
 		    return anna_type_unwrap(type_wrapper);
 		}
-		wprintf(L"Illigal init\n");
+		wprintf(L"Illegal init\n");
 		CRASH;
 	    }
 	    else if(!func_type)
@@ -943,6 +945,19 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	{
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
+	    if(wcscmp(this2->name, L"this") == 0)
+	    {
+		//anna_stack_print(stack);
+	    }
+	    
+	    if(!anna_stack_frame_get_str(stack, this2->name))
+		anna_prepare_stack_functions(stack->parent, this2->name, this);
+	    if(!anna_stack_get_type(stack, this2->name))
+	    {
+		wprintf(L"Oopsie while looking for %ls\n", this2->name);
+		anna_stack_print_trace(stack);
+		CRASH;
+	    }
 	    
 	    return anna_stack_get_type(stack, this2->name);
 	}
@@ -1065,8 +1080,16 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		{
 		    //anna_node_print(this);
 		    CHECK(anna_abides(ctype, function_data->argv[i]), this,
-			  L"Wrong type of argument %d of %d, %ls does not abide by %ls", i+1, function_data->argc, ctype->name,
+			  L"Wrong type of argument %d of %d (%ls) in funtion call, %ls does not abide by %ls", 
+			  i+1, function_data->argc, function_data->argn[i],
+			  ctype->name,
 			  function_data->argv[i]->name);
+		    if(!anna_abides(ctype, function_data->argv[i]))
+		    {
+			anna_type_print(ctype);
+			anna_type_print(function_data->argv[i]);
+		    }
+		    
 		}
 		else
 		{
@@ -1289,7 +1312,7 @@ anna_node_t *anna_node_prepare(
 			module->stack_template,
 			function->stack_template
 		    };
-
+		
 		hash_foreach2(
 		    &module->stack_template->member_string_identifier, 
 		    &anna_node_import_item, &data);
