@@ -594,9 +594,8 @@ wchar_t asi_get_char(anna_string_t *dest, size_t offset)
 	    return dest->element[i]->payload[offset + dest->element_offset[i]-first_in_element];
 	}
 	first_in_element = last_in_element;
-    } 
-    wprintf(L"Error: Tried to get element %d in string of length %d\n", offset, first_in_element);
-    CRASH;
+    }
+    return 0;
 }
 
 size_t asi_get_length(anna_string_t *dest)

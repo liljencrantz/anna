@@ -945,13 +945,14 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	{
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
-	    if(wcscmp(this2->name, L"this") == 0)
+	    if(wcscmp(this2->name, L"p0") == 0)
 	    {
+		wprintf(L"Lookup for %ls in stack:\n", this2->name);
 		//anna_stack_print(stack);
 	    }
 	    
 	    if(!anna_stack_frame_get_str(stack, this2->name))
-		anna_prepare_stack_functions(stack->parent, this2->name, this);
+		anna_prepare_stack_functions(stack, this2->name, this);
 	    if(!anna_stack_get_type(stack, this2->name))
 	    {
 		wprintf(L"Oopsie while looking for %ls\n", this2->name);

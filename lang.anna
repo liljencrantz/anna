@@ -10,14 +10,14 @@ class Complex
 	this.img = i;
     }
     
-    function Complex __add__Complex__(Complex other)
+    function __add__Complex__(Complex other)
     {
 	return Complex(
 	    this.real + other.real, 
 	    this.img + other.img);
     }
     
-    function Float __add__Float__(Float other)
+    function __add__Float__(Float other)
     {
 	return Complex(this.real + other, this.img);
     }
@@ -27,24 +27,24 @@ class Complex
 	return Complex(this.real - other.real, this.img - other.img);
     }
 
-    function Complex __sub__Float__(Float other)
+    function __sub__Float__(Float other)
     {
 	return Complex(this.real - other, this.img);
     }
     
-    function Complex __mul__Complex__(Complex other)
+    function __mul__Complex__(Complex other)
     {
 	return Complex(
 	    this.real * other.real -this.img*other.img, 
 	    this.real * other.img + this.img*other.real);
     }
     
-    function Complex __mul__Float__(Float other)
+    function __mul__Float__(Float other)
     {
 	return Complex(this.real * other, this.img*other);
     }
     
-    function Complex __div__Complex__(Complex other)
+    function __div__Complex__(Complex other)
     {
 	var divisor = other.real*other.real + other.img*other.img;
 	return Complex(
@@ -52,12 +52,12 @@ class Complex
 	    (this.img * other.real - this.real*other.img)/divisor);
     }
     
-    function Complex __div__Float__(Float other)
+    function __div__Float__(Float other)
     {
 	return Complex(this.real / other, this.img / other);
     }
     
-    function Float __abs__()
+    function __abs__()
     {
 	return @sqrt (this.real*this.real + this.img*this.img);
     }
@@ -78,7 +78,7 @@ class Range template (T:Int)
 	this.step=1;
     }
     
-    function Object __each__(function Null f (Int key, T value))
+    function __each__(function Null f (Int key, T value))
     {
 	var i=this.from;
 	var idx = 0;
@@ -92,7 +92,7 @@ class Range template (T:Int)
 	return null;
     }
     
-    function Int getCount() private
+    function getCount() private
     {
 	return (this.to-this.from)/this.step;
     }

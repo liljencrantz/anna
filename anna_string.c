@@ -104,10 +104,13 @@ static anna_object_t *anna_string_i_set_range(anna_object_t **param)
     
     assert(step=1);
     
-    asi_replace(as_unwrap(param[0]), 
-		as_unwrap(param[2]), 
-		from, to-from,
-		0, asi_get_length(as_unwrap(param[2])));
+    asi_replace(
+	as_unwrap(param[0]), 
+	as_unwrap(param[2]), 
+	from,
+	to-from,
+	0,
+	asi_get_length(as_unwrap(param[2])));
     
     return param[0];
 }

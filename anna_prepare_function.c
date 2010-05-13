@@ -7,12 +7,15 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 	return 0;
     
     anna_type_t *type = function->member_of;
-
+    
     anna_node_call_t *node = function->definition;
     if(!node){
 	return 0;
     }
-    //wprintf(L"Init of %ls\n", function->name);	
+
+    int verbose = (wcscmp(function->name, L"mandelbrottt") == 0);
+    if(verbose)
+	wprintf(L"Start common init of function of %ls %d\n", function->name, verbose);	
     
     anna_node_t *body = node->child[4];
     if(body->node_type != ANNA_NODE_NULL && 
@@ -56,6 +59,11 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 	    argc++;
 	}
 	
+	if(verbose)
+	    wprintf(
+		L"Adding input arguments to function\n");
+	
+		
 	argv = malloc(sizeof(anna_type_t *)*argc);
 	argn = malloc(sizeof(wchar_t *)*argc);
 	
@@ -108,6 +116,11 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 		    anna_type_unwrap(*type_wrapper);
 		argn[i+!!type] = name->name;		
 		
+		if(verbose)
+		    wprintf(
+			L"Adding %ls\n", name->name);
+	
+
 		if(decl->child_count ==3 &&
 		   decl->child[2]->node_type == ANNA_NODE_IDENTIFIER) 
 		{
@@ -171,8 +184,42 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
     function->input_name = argn;
     function->input_type = argv;
 
+    if(!(function->flags & ANNA_FUNCTION_MACRO)) 
+    {
+	int is_variadic = ANNA_IS_VARIADIC(function);
+	for(i=0; i<function->input_count-is_variadic;i++)
+	{
+	    anna_stack_declare(
+		function->stack_template,
+		function->input_name[i], 
+		function->input_type[i], 
+		null_object);	
+	}
+	if(is_variadic)
+	{
+	      //FIXME:
+	      //Templatize to right list subtype
+	    anna_stack_declare(
+		function->stack_template, 
+		function->input_name[function->input_count-1], 
+		list_type, 
+		null_object);
+	}
+    }
+    else
+    {
+	anna_stack_declare(
+	    function->stack_template, 
+	    function->input_name[0], 
+	    node_call_wrapper_type,
+	    null_object);
+    }
+
     function->flags |= ANNA_FUNCTION_PREPARED_COMMON;
     
+    if(verbose)
+	wprintf(L"Finish common init of function of %ls\n", function->name);	
+
     return 0;
 }
 
@@ -301,39 +348,6 @@ static anna_node_t *anna_prepare_function_interface_internal(
 */
 
 
-    if(!(function->flags & ANNA_FUNCTION_MACRO)) 
-    {
-	int is_variadic = ANNA_IS_VARIADIC(function);
-	for(i=0; i<function->input_count-is_variadic;i++)
-	{
-	    anna_stack_declare(
-		function->stack_template,
-		function->input_name[i], 
-		function->input_type[i], 
-		null_object);	
-	}
-	if(is_variadic)
-	{
-	      //FIXME:
-	      //Templatize to right list subtype
-	    anna_stack_declare(
-		function->stack_template, 
-		function->input_name[function->input_count-1], 
-		list_type, 
-		null_object);
-	}
-    }
-    else
-    {
-	anna_stack_declare(
-	    function->stack_template, 
-	    function->input_name[0], 
-	    node_call_wrapper_type,
-	    null_object);
-    }
-    
-
-
 
     function->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     return (anna_node_t *)anna_node_dummy_create(&node->location, anna_function_wrap(function),0);
@@ -373,13 +387,6 @@ void anna_prepare_function(anna_function_t *function)
     
 }
 
-static int anna_function_check_dependencies(
-    anna_function_t *function)
-{
-    return 0;
-    
-}
-
 static void anna_prepare_function_internal(
     anna_function_t *function)
 {
@@ -395,9 +402,6 @@ static void anna_prepare_function_internal(
     if(anna_function_prepared(function))
 	return;
     
-    if(anna_function_check_dependencies(function))
-	return;
-
     if(anna_prepare_function_common(function))
 	return;
     

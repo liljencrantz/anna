@@ -1,6 +1,6 @@
 import(lang);
 
-function Int mandelbrot(Complex p0, Int maxStep)
+function mandelbrot(Complex p0, Int maxStep)
 {
     var p = p0;
     var step = 0;

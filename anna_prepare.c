@@ -399,7 +399,7 @@ void anna_prepare()
 
 void anna_prepare_stack_functions(anna_stack_frame_t *stack, wchar_t *name, anna_node_t *context)
 {
-    wprintf(L"Searching stack for %ls\n", name);
+    //wprintf(L"Searching stack for %ls\n", name);
     
     if(!stack)
     {
@@ -419,9 +419,14 @@ void anna_prepare_stack_functions(anna_stack_frame_t *stack, wchar_t *name, anna
 	;
 	if(anna_prepare_index(&it) == -1)
 	{
+//	    wprintf(L"Prepare function %ls\n", stack->function->name);
 	    anna_prepare_function(stack->function);
 	    if(anna_stack_frame_get_str(stack, name))
 		return;
+	}
+	else
+	{
+//	    wprintf(L"Ignore function %ls, already being prepared\n", stack->function->name);
 	}
 	
     }

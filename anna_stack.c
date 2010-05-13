@@ -232,8 +232,11 @@ void anna_stack_print(anna_stack_frame_t *stack)
 {
     if(!stack)
 	return;
+
+    wprintf(
+	L"Stack frame belonging to function %ls:\n",
+	stack->function?stack->function->name:L"<null>");
     hash_foreach2(&stack->member_string_identifier, &anna_print_stack_member, stack);
-    wprintf(L"---\n");
     
     anna_stack_print(stack->parent);
 }
