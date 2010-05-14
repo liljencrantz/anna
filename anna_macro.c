@@ -16,6 +16,7 @@
 #include "anna_function.h"
 #include "anna_prepare.h"
 #include "anna_node_check.h"
+#include "anna_node_create.h"
 
 static hash_table_t templatize_lookup;
 

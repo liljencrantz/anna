@@ -10,6 +10,7 @@
 #include "util.h"
 #include "wutil.h"
 #include "anna_node.h"
+#include "anna_node_check.h"
 #include "anna_node_wrapper.h"
 #include "anna_int.h"
 #include "anna_float.h"
@@ -18,9 +19,34 @@
 #include "anna_function.h"
 #include "anna_prepare.h"
 #include "anna_type.h"
+#include "anna_module.h"
+#include "anna_node_create.h"
 
-#define CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
+#define NODE_CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
 
+typedef struct
+{
+    anna_stack_frame_t *src;
+    anna_stack_frame_t *dst;
+}
+anna_node_import_data;
+
+static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
+{
+    wchar_t *name = (wchar_t *)key_ptr;
+//    size_t *offset=(size_t *)val_ptr;
+    anna_node_import_data *data = (anna_node_import_data *)aux_ptr;
+    anna_object_t *item = anna_stack_get_str(
+	data->src,
+	name);
+    anna_stack_declare(
+	data->dst,
+	name,
+	item->type,
+	item);
+}
+
+#include "anna_node_prepare.c"
 
 void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 {
@@ -69,492 +95,6 @@ anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node)
     assert(node->node_type==ANNA_NODE_STRING_LITERAL);
     return (anna_node_string_literal_t *)node;
 }
-
-anna_node_dummy_t *anna_node_dummy_create(anna_location_t *loc, struct anna_object *val, int is_trampoline)
-{
-    anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
-    result->node_type = is_trampoline?ANNA_NODE_TRAMPOLINE:ANNA_NODE_DUMMY;
-    anna_node_set_location((anna_node_t *)result,loc);
-    if(!(val && val->type && val->type->name && wcslen(val->type->name)!=0))
-    {
-	wprintf(L"Critical: Invalid dummy node\n");
-	CRASH;
-    }
-    
-    result->payload = val;
-    return result;  
-}
-
-anna_node_dummy_t *anna_node_blob_create(anna_location_t *loc, void *val)
-{
-    anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
-    result->node_type = ANNA_NODE_BLOB;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = (anna_object_t *)val;
-    return result;  
-}
-
-anna_node_return_t *anna_node_return_create(anna_location_t *loc, struct anna_node *val, int steps)
-{
-    anna_node_return_t *result = calloc(1,sizeof(anna_node_return_t));
-    result->node_type = ANNA_NODE_RETURN;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
-    result->steps=steps;
-    return result;  
-}
-
-anna_node_import_t *anna_node_import_create(
-    anna_location_t *loc,
-    struct anna_node *val)
-{
-    anna_node_import_t *result = calloc(1,sizeof(anna_node_import_t));
-    result->node_type = ANNA_NODE_IMPORT;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
-    return result;  
-}
-
-anna_node_member_get_t *anna_node_member_get_create(
-    anna_location_t *loc,
-    struct anna_node *object,
-    size_t mid, 
-    struct anna_type *type, 
-    int wrap)
-{
-    anna_node_member_get_t *result = calloc(1,sizeof(anna_node_member_get_t));
-    result->node_type = wrap?ANNA_NODE_MEMBER_GET_WRAP:ANNA_NODE_MEMBER_GET;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->object=object;
-    result->mid=mid;
-    result->type=type;
-    return result;  
-  
-}
-
-anna_node_member_set_t *anna_node_member_set_create(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_node *value, struct anna_type *type)
-{
-    anna_node_member_set_t *result = calloc(1,sizeof(anna_node_member_set_t));
-    result->node_type = ANNA_NODE_MEMBER_SET;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->object=object;
-    result->value=value;
-    result->mid=mid;
-    result->type=type;
-    return result;  
-    
-}
-
-
-
-anna_node_assign_t *anna_node_assign_create(anna_location_t *loc, anna_sid_t sid, struct anna_node *value)
-{
-    anna_node_assign_t *result = calloc(1,sizeof(anna_node_assign_t));
-    result->node_type = ANNA_NODE_ASSIGN;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->value=value;
-    result->sid=sid;
-    return result;  
-}
-
-anna_node_int_literal_t *anna_node_int_literal_create(anna_location_t *loc, int val)
-{
-    anna_node_int_literal_t *result = calloc(1,sizeof(anna_node_int_literal_t));
-    result->node_type = ANNA_NODE_INT_LITERAL;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
-    return result;
-}
-
-anna_node_float_literal_t *anna_node_float_literal_create(anna_location_t *loc, double val)
-{
-    anna_node_float_literal_t *result = calloc(1,sizeof(anna_node_float_literal_t));
-    result->node_type = ANNA_NODE_FLOAT_LITERAL;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
-    return result;
-}
-
-anna_node_char_literal_t *anna_node_char_literal_create(anna_location_t *loc, wchar_t val)
-{
-    anna_node_char_literal_t *result = calloc(1,sizeof(anna_node_char_literal_t));
-    result->node_type = ANNA_NODE_CHAR_LITERAL;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
-    return result;
-}
-
-anna_node_string_literal_t *anna_node_string_literal_create(anna_location_t *loc, size_t sz, wchar_t *str)
-{
-    anna_node_string_literal_t *result = calloc(1,sizeof(anna_node_string_literal_t));
-    result->node_type = ANNA_NODE_STRING_LITERAL;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = str;
-    result->payload_size = sz;
-    return result;
-}
-
-anna_node_call_t *anna_node_call_create(anna_location_t *loc, anna_node_t *function, size_t argc, anna_node_t **argv)
-{
-    anna_node_call_t *result = calloc(1,sizeof(anna_node_call_t));
-    result->child = calloc(1,sizeof(anna_node_t *)*(argc));
-    result->node_type = ANNA_NODE_CALL;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->function = function;
-    result->child_count = argc;
-    result->child_capacity = argc;
-    memcpy(result->child, argv, sizeof(anna_node_t *)*(argc));
-    return result;
-}
-
-anna_node_identifier_t *anna_node_identifier_create(anna_location_t *loc, wchar_t *name)
-{
-    anna_node_identifier_t *result = calloc(1,sizeof(anna_node_call_t));
-    result->node_type = ANNA_NODE_IDENTIFIER;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->name = wcsdup(name);
-    return result;
-}
-
-anna_node_identifier_t *anna_node_identifier_trampoline_create(anna_location_t *loc, wchar_t *name)
-{
-    anna_node_identifier_t *result = calloc(1,sizeof(anna_node_call_t));
-    result->node_type = ANNA_NODE_IDENTIFIER_TRAMPOLINE;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->name = name;
-    return result;
-}
-
-anna_node_t *anna_node_null_create(anna_location_t *loc)
-{
-    anna_node_t *result = calloc(1,sizeof(anna_node_t));
-    result->node_type = ANNA_NODE_NULL;
-    anna_node_set_location((anna_node_t *)result,loc);
-    return result;
-}
-
-anna_node_call_t *anna_node_native_method_declare_create(
-    anna_location_t *loc,
-    ssize_t mid,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    anna_node_t *result,
-    size_t argc,
-    anna_node_t **argv,
-    wchar_t **argn)
-{
-
-    anna_node_call_t *r =
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(
-		loc,
-		L"__functionNative__"),	    
-	    0,
-	    0);
-
-    anna_node_call_t *param_list = 
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(
-		loc,
-		L"__block__"),
-	    0,
-	    0);
-
-    int i;
-    for(i=0;i<argc;i++)
-    {
-	anna_node_call_t *param =
-	    anna_node_call_create(
-		loc,
-		(anna_node_t *)anna_node_identifier_create(
-		    loc,
-		    L"__block__"),
-		
-		0,
-		0);
-	anna_node_call_add_child(param, (anna_node_t *)anna_node_identifier_create(loc,argn[i]));
-	anna_node_call_add_child(param, (anna_node_t *)argv[i]);
-	anna_node_call_add_child(param_list, (anna_node_t *)param);
-    }
-
-
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_identifier_create(loc,name));
-    anna_node_call_add_child(r, result?result:anna_node_null_create(loc));
-    anna_node_call_add_child(r, (anna_node_t *)param_list);
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,mid));
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,flags));
-    anna_node_call_add_child(
-	r, 
-	(anna_node_t *)anna_node_blob_create(
-	    loc,
-	    (anna_object_t *)func.function));
-/*
-  anna_node_print(r);
-  wprintf(L"\n\n");
-*/  
-    return r;
-}
-
-
-
-anna_node_call_t *anna_node_member_declare_create(
-    anna_location_t *loc,
-    ssize_t mid,
-    wchar_t *name,
-    int is_static,
-    anna_node_t *member_type)
-{
-    anna_node_call_t *r =
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(
-		loc,
-		L"__declareNative__"),	    
-	    0,
-	    0);
-
-
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_identifier_create(loc,name));
-    anna_node_call_add_child(r, member_type);
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,mid));
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_int_literal_create(loc,is_static));
-
-/*
-  anna_node_print(r);
-  wprintf(L"\n\n");
-*/
-    return r;
-}
-
-anna_node_t *anna_node_pair_create(
-    anna_location_t *loc,
-    anna_node_t *first,
-    anna_node_t *second)
-{
-    anna_node_call_t *r =
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(
-	        loc,
-		L"Pair"),	    
-	    0,
-	    0);
-   
-    anna_node_call_add_child(r, first);
-    anna_node_call_add_child(r, second);
-    return (anna_node_t *)r;
-}
-
-anna_node_call_t *anna_node_property_create(
-    anna_location_t *loc,
-    wchar_t *name,
-    anna_node_t *member_type,
-    wchar_t *getter,
-    wchar_t *setter)
-{
-    anna_node_call_t *r =
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(
-		loc,
-		L"__property__"),	    
-	    0,
-	    0);
-
-    anna_node_call_t *att =
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(
-		loc,
-		L"__block__"),	    
-	    0,
-	    0);
-
-    anna_node_call_add_child(r, (anna_node_t *)anna_node_identifier_create(loc,name));
-    anna_node_call_add_child(r, member_type);
-    
-    if(getter)
-    {
-	anna_node_t *getter_param[]={(anna_node_t *)anna_node_identifier_create(loc,getter)};
-	anna_node_call_add_child(
-	  att, 
-	  (anna_node_t *)anna_node_call_create(
-	     loc,
-	     (anna_node_t *)anna_node_identifier_create(loc,L"getter"),
-	     1,
-	     getter_param));
-    }
-    if(setter)
-    {
-       anna_node_t *setter_param[]={(anna_node_t *)anna_node_identifier_create(loc,setter)};
-       anna_node_call_add_child(
-	 att, 
-	 (anna_node_t *)anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(loc,L"setter"),
-	    1,
-	    setter_param));
-    }
-    
-    anna_node_call_add_child(
-	r, 
-	(anna_node_t *)att);
-    
-
-/*
-  anna_node_print(r);
-  wprintf(L"\n\n");
-*/
-    return r;
-}
-
-anna_node_t *anna_node_simple_template_create(
-    anna_location_t *loc,
-    wchar_t *name,
-    wchar_t *param)
-{
-
-    anna_node_t *b_param[] =
-	{
-	    (anna_node_t *)anna_node_identifier_create(loc, param),
-	}
-    ;
-
-    anna_node_t *t_param[] =
-	{
-	    (anna_node_t *)anna_node_identifier_create(loc, name),
-	    (anna_node_t *)anna_node_call_create(
-		loc,
-		(anna_node_t *)anna_node_identifier_create(loc, L"__block__"),
-		1,
-		b_param),
-	}
-    ;
-    
-    return (anna_node_t *)anna_node_call_create(
-	loc,
-	(anna_node_t *)anna_node_identifier_create(loc, L"__templatize__"),
-	2,
-	t_param);
-    
-}
-	
-
-anna_node_t *anna_node_function_declaration_create(
-    anna_location_t *loc,
-    anna_node_t *result,
-    size_t argc,
-    anna_node_t **argv,
-    wchar_t **argn)
-{
-    anna_node_t *a_argv[argc];
-    int i;
-
-   
-    for(i=0; i<argc;i++)
-    {
-	anna_node_t *d_argv[] = 
-	    {
-		(anna_node_t *)anna_node_identifier_create(loc, argn[i]),
-		argv[i]
-	    }
-	;
-      
-	a_argv[i] = (anna_node_t *)anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(loc, L"__declare__"),
-	    2,
-	    d_argv);
-    }
-   
-    anna_node_call_t *argv_node =
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(loc, L"__block__"),
-	    argc,
-	    a_argv);
-      
-    anna_node_t *f_argv[] = 
-	{
-	    anna_node_null_create(loc),
-	    result,
-	    (anna_node_t *)argv_node,
-	    (anna_node_t *)anna_node_null_create(loc),
-	    (anna_node_t *)anna_node_null_create(loc)
-	}
-    ;
-   
-    return (anna_node_t *)anna_node_call_create(
-	loc,
-	(anna_node_t *)anna_node_identifier_create(loc, L"__function__"),
-	5,
-	f_argv);
-   
-}
-
-anna_node_t *anna_node_templated_type_create(
-    anna_location_t *loc,
-    anna_node_t *type,
-    size_t argc,
-    anna_node_t **argv)
-{
-   
-    anna_node_call_t *argv_node =
-	anna_node_call_create(
-	    loc,
-	    (anna_node_t *)anna_node_identifier_create(loc, L"__block__"),
-	    argc,
-	    argv);
-
-    anna_node_t *t_argv[] = 
-	{
-	    type,
-	    (anna_node_t *)argv_node
-	}
-    ;
-   
-    return (anna_node_t *)anna_node_call_create(
-	loc,
-	(anna_node_t *)anna_node_identifier_create(loc, L"__templatize__"),
-	2,
-	t_argv);
-   
-}
-
-
-anna_node_t *anna_node_simple_templated_type_create(
-    anna_location_t *loc,
-    wchar_t *type_name,
-    wchar_t *param_name)
-{
-    anna_node_t *param[]=
-	{
-	    (anna_node_t *)anna_node_identifier_create(loc, param_name),
-	}
-    ;
-    
-    return anna_node_templated_type_create(
-	loc,
-	(anna_node_t *)anna_node_identifier_create(loc, type_name),
-	1,
-	param);
-}
-
-anna_node_call_t *anna_node_block_create(
-    anna_location_t *loc)
-{
-    return anna_node_call_create(
-	loc,
-	(anna_node_t *)anna_node_identifier_create(
-	    loc,
-	    L"__block__"),
-	0,
-	0);
-}
-
 
 
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
@@ -720,76 +260,6 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
     
 }
 
-anna_node_t *anna_node_call_prepare(
-    anna_node_call_t *node, 
-    anna_function_t *function,
-    anna_node_list_t *parent)
-{
-    
-    anna_node_list_t list = 
-	{
-	    (anna_node_t *)node, 0, parent
-	}
-    ;
-
-    int i;
-/*
-    wprintf(L"Prepare call node:\n");
-    anna_node_print((anna_node_t *)node);
-*/
-    if(node->node_type == ANNA_NODE_CALL)
-    {       
-	anna_function_t *macro_definition = anna_node_macro_get(node, function->stack_template);
-	
-	if(macro_definition)
-	{       
-	    //wprintf(L"Macro\n");
-	    anna_node_t *macro_output;
-	    //ANNA_PREPARED(node->function);
-	    
-	    macro_output = anna_macro_invoke(
-		macro_definition, node, function, parent);
-	    return anna_node_prepare(macro_output, function, parent);
-	}
-	else {
-	    //wprintf(L"Plain function\n");
-	}
-	
-	node->function = anna_node_prepare(node->function, function, parent);
-	anna_type_t *func_type = anna_node_get_return_type(node->function, function->stack_template);       
-	if(func_type == type_type)
-	{
-	    /*
-	      Constructor!
-	    */
-	    node->node_type = ANNA_NODE_CONSTRUCT;
-	    node->function = (anna_node_t *)anna_node_dummy_create(
-		&node->location, 
-		anna_node_invoke(node->function, function->stack_template),
-		0);
-	    node->function = anna_node_prepare(node->function, function, &list);
-	    
-	    for(i=0; i<node->child_count; i++)
-	    {
-		list.idx = i;
-		node->child[i] = anna_node_prepare(node->child[i], function, &list);	 
-	    }
-	   
-	    return (anna_node_t *)node;
-	}
-    }
-    else 
-    {
-	node->function = anna_node_prepare(node->function, function, &list);
-    }
-
-    for(i=0; i<node->child_count; i++)
-    {
-	list.idx = i;
-	node->child[i] = anna_node_prepare(node->child[i], function, &list);	 
-    }
-    return (anna_node_t *)node;
-}
 
 anna_object_t *anna_node_call_invoke(anna_node_call_t *this, anna_stack_frame_t *stack)
 {
@@ -1053,14 +523,14 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    if(function_data->is_variadic)
 	    {
 		//wprintf(L"Checking number of arguments to variadic function\n");
-		CHECK((function_data->argc-is_method-1) <= this2->child_count, this,
+		NODE_CHECK((function_data->argc-is_method-1) <= this2->child_count, this,
 		      L"Wrong number of arguments to variadic function call. Should be %d, not %d.", 
 		      function_data->argc-is_method, this2->child_count);		
 	    }
 	    else
 	    {
 		//wprintf(L"Checking number of arguments to non-variadic function\n");
-		CHECK(function_data->argc-is_method == this2->child_count, this,
+		NODE_CHECK(function_data->argc-is_method == this2->child_count, this,
 		      L"Wrong number of arguments to function call of type %ls. Should be %d, not %d.", 
 		      func_type->name, function_data->argc-is_method, this2->child_count);
 	    }
@@ -1080,7 +550,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		if(ctype)
 		{
 		    //anna_node_print(this);
-		    CHECK(anna_abides(ctype, function_data->argv[i]), this,
+		    NODE_CHECK(anna_abides(ctype, function_data->argv[i]), this,
 			  L"Wrong type of argument %d of %d (%ls) in funtion call, %ls does not abide by %ls", 
 			  i+1, function_data->argc, function_data->argn[i],
 			  ctype->name,
@@ -1120,16 +590,16 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;	    
-	    CHECK(!!this2->name, this, L"Invalid identifier node");
-	    CHECK(!!anna_stack_get_type(stack, this2->name), this, L"Unknown variable: %ls", this2->name);
+	    NODE_CHECK(!!this2->name, this, L"Invalid identifier node");
+	    NODE_CHECK(!!anna_stack_get_type(stack, this2->name), this, L"Unknown variable: %ls", this2->name);
 	    
-	    CHECK((this2->sid.offset != -1) && (this2->sid.frame != -1), this, L"Bad variable lookup: %ls", this2->name);
+	    NODE_CHECK((this2->sid.offset != -1) && (this2->sid.frame != -1), this, L"Bad variable lookup: %ls", this2->name);
 	    return;
 	}
 	case ANNA_NODE_STRING_LITERAL:
 	{
 	    anna_node_string_literal_t *this2 =(anna_node_string_literal_t *)this;	    
-	    CHECK(!!this2->payload, this, L"Invalid string node");
+	    NODE_CHECK(!!this2->payload, this, L"Invalid string node");
 	    return;
 	}
 
@@ -1141,210 +611,11 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	}
 		    
 	default:
-	    CHECK( 1, this, L"Unknown node type");
+	    NODE_CHECK( 1, this, L"Unknown node type");
     }
 }
 
-typedef struct
-{
-    anna_stack_frame_t *src;
-    anna_stack_frame_t *dst;
-}
-anna_node_import_data;
 
-static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
-{
-    wchar_t *name = (wchar_t *)key_ptr;
-    size_t *offset=(size_t *)val_ptr;
-    anna_node_import_data *data = (anna_node_import_data *)aux_ptr;
-    anna_object_t *item = anna_stack_get_str(
-	data->src,
-	name);
-    anna_stack_declare(
-	data->dst,
-	name,
-	item->type,
-	item);
-}
-
-anna_node_t *anna_node_prepare(
-    anna_node_t *this, 
-    anna_function_t *function, 
-    anna_node_list_t *parent)
-{
-    anna_node_list_t list = 
-	{
-	    this, 0, parent
-	}
-    ;
-
-    ANNA_PREPARED(this);    
-/*
-    wprintf(L"Prepare node:\n");
-    
-    anna_node_print(this);
-*/  
-    switch(this->node_type)
-    {
-	case ANNA_NODE_CALL:
-	case ANNA_NODE_CONSTRUCT:
-	    //wprintf(L"It's a call\n");
-	    return anna_node_call_prepare((anna_node_call_t *)this, function, parent);
-
-	case ANNA_NODE_RETURN:
-	{
-	    anna_node_return_t * result = (anna_node_return_t *)this;
-	    result->payload=anna_node_prepare(result->payload, function, &list);
-	    return (anna_node_t *)result;
-	}
-	
-	case ANNA_NODE_IDENTIFIER:
-	{
-	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
-	    /*
-	    if(anna_node_identifier_is_function(
-		   this2,
-		   function->stack_template))
-	    {
-		this2 = anna_node_identifier_trampoline_create(
-		    &this2->location, 
-		    this2->name);
-		ANNA_PREPARED(this2);    
-	    }
-	    */
-	    this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
-/*
-	    if(wcscmp(this2->name, L"print")==0)
-	    {
-		wprintf(L"Preparing print node with stack trace:\n");
-		
-		anna_stack_print_trace(function->stack_template);
-	    }
-*/	    
-/*
-	    if(wcscmp(this2->name,L"print")==0)
-	    {
-		anna_stack_print_trace(function->stack_template);
-		//CRASH;
-		
-	    }
-*/	    
-	    return (anna_node_t *)this2;
-	}	
-
-	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
-	{
-	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
-	    this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
-/*
-	    if(wcscmp(this2->name,L"print")==0)
-		anna_stack_print_trace(function->stack_template);
-*/
-	    return (anna_node_t *)this2;
-	}	
-
-	case ANNA_NODE_MEMBER_GET:
-	case ANNA_NODE_MEMBER_GET_WRAP:
-	{
-	    anna_node_member_get_t * result = (anna_node_member_get_t *)this;	    
-	    result->object = anna_node_prepare(result->object, function, &list);
-	    return this;
-	}
-	
-	case ANNA_NODE_ASSIGN:
-	{
-	    anna_node_assign_t * result = (anna_node_assign_t *)this;	    
-	    result->value = anna_node_prepare(result->value, function, &list);
-	    return this;
-	}
-
-	case ANNA_NODE_MEMBER_SET:
-	{
-	    anna_node_member_set_t * result = (anna_node_member_set_t *)this;	    
-	    result->value = anna_node_prepare(result->value, function, &list);
-	    result->object = anna_node_prepare(result->object, function, &list);
-	    return this;
-	}
-
-
-	case ANNA_NODE_IMPORT:
-	{
-	    anna_node_import_t * result = (anna_node_import_t *)this;	    
-	    int import_ok = 0;
-	    
-	    if(result->payload->node_type == ANNA_NODE_CALL)
-	    {
-		anna_node_call_t *call = (anna_node_call_t *)result->payload;
-		if(check_node_identifier_name(call->function, L"__memberGet__"))
-		{
-		    if(call->child_count == 2)
-		    {
-			if((call->child[0]->node_type == ANNA_NODE_IDENTIFIER) &&
-			   (call->child[1]->node_type == ANNA_NODE_IDENTIFIER))
-			{
-			    anna_node_identifier_t *module_id = 
-				(anna_node_identifier_t *)call->child[0];
-			    anna_node_identifier_t *field = 
-				(anna_node_identifier_t *)call->child[1];
-			    anna_function_t *module = anna_module_load(module_id->name);
-			    anna_prepare_function_interface(module);
-			    anna_object_t *item = anna_stack_get_str(module->stack_template,
-								     field->name);
-			    if(item)
-			    {
-				anna_stack_declare(
-				    function->stack_template,
-				    field->name,
-				    item->type,
-				    item);
-				import_ok = 1;
-			    }			    
-			}			
-		    }		    
-		}		
-	    }
-	    else if(result->payload->node_type == ANNA_NODE_IDENTIFIER)
-	    {
-		anna_node_identifier_t *module_id = 
-		    (anna_node_identifier_t *)result->payload;
-		anna_function_t *module = anna_module_load(module_id->name);
-		anna_node_import_data data = 
-		    {
-			module->stack_template,
-			function->stack_template
-		    };
-		
-		hash_foreach2(
-		    &module->stack_template->member_string_identifier, 
-		    &anna_node_import_item, &data);
-		import_ok = 1;		
-	    }
-
-	    
-	    if(!import_ok)
-	    {
-		anna_error(this, L"Invalid import");
-	    }
-	    
-	    return anna_node_null_create(0);
-	}
-
-
-	case ANNA_NODE_TRAMPOLINE:
-	case ANNA_NODE_DUMMY:
-	case ANNA_NODE_BLOB:
-	case ANNA_NODE_INT_LITERAL:
-	case ANNA_NODE_FLOAT_LITERAL:
-	case ANNA_NODE_STRING_LITERAL:
-	case ANNA_NODE_CHAR_LITERAL:
-	case ANNA_NODE_NULL:
-	    return this;   
-
-	default:
-	    wprintf(L"Unknown node of type %d during node preparation\n", this->node_type);
-	    CRASH;
-    }
-}
 
 anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
 					   anna_stack_frame_t *stack)
@@ -1884,17 +1155,5 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	
     }
 
-}
-
-void anna_node_prepare_children(anna_node_call_t *in, anna_function_t *func, anna_node_list_t *parent)
-{
-    int i;
-    for(i=0; i< in->child_count; i++)
-	in->child[i] = anna_node_prepare(in->child[i], func, parent);
-}
-
-void anna_node_prepare_child(anna_node_call_t *in, int idx, anna_function_t *func, anna_node_list_t *parent)
-{
-    in->child[idx] = anna_node_prepare(in->child[idx], func, parent);
 }
 

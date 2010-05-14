@@ -2,7 +2,9 @@ import(lang);
 
 function Int main()
 {
-    print([1,2,3]);
+    var lst = [1,2,3];
+    print(lst[0]+2);
+    
     
     var foo = BinaryMap<Int, String>();
     foo[3]="aaa";

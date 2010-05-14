@@ -11,6 +11,7 @@
 #include "anna_string.h"
 #include "anna_list.h"
 #include "anna_member.h"
+#include "anna_node_create.h"
 /*
 static void anna_member_add_create(
     anna_type_t *type,
