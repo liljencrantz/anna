@@ -13,13 +13,13 @@ static anna_node_t *anna_macro_if(anna_node_call_t *node,
     CHECK_NODE_BLOCK(node->child[1]);
     
     anna_node_t *argv[] = {
-        node->child[0], node->child[1], anna_node_null_create(&node->location)
+        node->child[0], node->child[1], anna_node_create_null(&node->location)
     };
     
     return (anna_node_t *)
-        anna_node_call_create(&node->location, 
+        anna_node_create_call(&node->location, 
 			      (anna_node_t *)
-			      anna_node_identifier_create(&node->location, 
+			      anna_node_create_identifier(&node->location, 
 							  L"__if__"),
 			      3,
 			      argv);
@@ -54,7 +54,7 @@ static anna_node_t *anna_macro_else(anna_node_call_t *node,
     prev_call->child[2] = anna_node_prepare(node->child[0], function, parent);
     
     return (anna_node_t *)
-	anna_node_null_create(&node->location);
+	anna_node_create_null(&node->location);
    
 }
 
@@ -90,17 +90,17 @@ static anna_node_t *anna_macro_or(anna_node_call_t *node, anna_function_t *funct
 	{
 	    cond1,
 	    (anna_node_t *)
-	    anna_node_dummy_create(
+	    anna_node_create_dummy(
 		&node->location,
 		anna_function_wrap(
 		    anna_function_create(
 			anna_util_identifier_generate(
 			    L"!orConditionBlock", 
 			    &(node->location)), 0, 
-		    anna_node_call_create(
+		    anna_node_create_call(
 			&node->location,
 			(anna_node_t *)
-			anna_node_identifier_create(
+			anna_node_create_identifier(
 			    &node->location,
 			    L"__block__"),
 			1,
@@ -121,10 +121,10 @@ static anna_node_t *anna_macro_or(anna_node_call_t *node, anna_function_t *funct
     ;
     
     return (anna_node_t *)
-	anna_node_call_create(
+	anna_node_create_call(
 	    &node->location, 
 	    (anna_node_t *)
-	    anna_node_dummy_create( 
+	    anna_node_create_dummy( 
 		&node->location,
 		anna_function_wrap(
 		    anna_native_create(
@@ -179,17 +179,17 @@ static anna_node_t *anna_macro_and(anna_node_call_t *node,
 	{
 	    cond1,
 	    (anna_node_t *)
-	    anna_node_dummy_create(
+	    anna_node_create_dummy(
 		&node->location,
 		anna_function_wrap(
 		    anna_function_create(
 			anna_util_identifier_generate(
 			    L"andConditionBlock", 
 			    &(node->location)), 0, 
-			anna_node_call_create(
+			anna_node_create_call(
 			    &node->location,
 			    (anna_node_t *)
-			    anna_node_identifier_create(
+			    anna_node_create_identifier(
 				&node->location,
 				L"__block__"),
 			    1,
@@ -213,9 +213,9 @@ static anna_node_t *anna_macro_and(anna_node_call_t *node,
     ;
     
     return (anna_node_t *)
-	anna_node_call_create(
+	anna_node_create_call(
 	    &node->location, 
-	    (anna_node_t *)anna_node_dummy_create( 
+	    (anna_node_t *)anna_node_create_dummy( 
 		&node->location,
 		anna_function_wrap(
 		    anna_native_create(
@@ -260,16 +260,16 @@ static anna_node_t *anna_macro_while(anna_node_call_t *node,
 
     anna_node_t *condition = 
 	(anna_node_t *)
-	anna_node_dummy_create(
+	anna_node_create_dummy(
 	    &node->location,
 	    anna_function_wrap(
 		anna_function_create(
 		    anna_util_identifier_generate(
 			L"whileConditionBlock",
 			&(node->location)), 0, 
-		    anna_node_call_create(
+		    anna_node_create_call(
 			&node->location,
-			(anna_node_t *)anna_node_identifier_create(
+			(anna_node_t *)anna_node_create_identifier(
 			    &node->location,
 			    L"__block__"),
 			1,
@@ -307,9 +307,9 @@ static anna_node_t *anna_macro_while(anna_node_call_t *node,
       type itself...
     */
     return (anna_node_t *)
-	anna_node_call_create(
+	anna_node_create_call(
 	    &node->location,
-	    (anna_node_t *)anna_node_dummy_create( 
+	    (anna_node_t *)anna_node_create_dummy( 
 		&node->location,
 		anna_function_wrap(
 		    anna_native_create(

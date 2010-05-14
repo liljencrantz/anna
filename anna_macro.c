@@ -149,7 +149,7 @@ static anna_node_t *anna_macro_block(
 	    function->stack_template,
 	    return_pop_count);
     al_push(&function->child_function, result);
-    return (anna_node_t *)anna_node_dummy_create(
+    return (anna_node_t *)anna_node_create_dummy(
 	&node->location,
 	anna_function_wrap(result),
 	1);
@@ -168,13 +168,13 @@ static anna_node_t *anna_macro_module(
 	    node,
 	    function->stack_template,
 	    return_pop_count);
-//    result->definition->child[1] = anna_node_identifier_create(0, L"Object");
+//    result->definition->child[1] = anna_node_create_identifier(0, L"Object");
     result->flags |= ANNA_FUNCTION_MODULE;
     assert(object_type);
     result->name = L"!moduleMacroFunction";
     
     //al_push(&function->child_function, result);
-    return (anna_node_t *)anna_node_dummy_create(
+    return (anna_node_t *)anna_node_create_dummy(
 	&node->location,
 	anna_function_wrap(result),
 	1);
@@ -192,7 +192,7 @@ static anna_node_t *anna_macro_function(anna_node_call_t *node,
     
     al_push(&function->child_function, result);
     
-    anna_node_t *res = (anna_node_t *)anna_node_dummy_create(
+    anna_node_t *res = (anna_node_t *)anna_node_create_dummy(
 	&node->location,
 	anna_function_wrap(result),
 	1);
@@ -222,7 +222,7 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
     result->flags |= ANNA_FUNCTION_MACRO;
     al_push(&function->child_function, result);
     
-    anna_node_t *res = (anna_node_t *)anna_node_dummy_create(
+    anna_node_t *res = (anna_node_t *)anna_node_create_dummy(
 	&node->location,
 	anna_function_wrap(result),
 	1);
@@ -271,7 +271,7 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
 	    0), 
 	anna_function_wrap(result));
     
-    return (anna_node_t *)anna_node_dummy_create(
+    return (anna_node_t *)anna_node_create_dummy(
 	&node->location,
 	anna_function_wrap(result),
 	0);
@@ -423,15 +423,15 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
     al_push(&function->child_function, sub_func);
     
     anna_node_t *iter_function = (anna_node_t *)
-	anna_node_dummy_create(
+	anna_node_create_dummy(
 	    &node->location,
 	    anna_function_wrap(sub_func),
 	    1);	    
 
-    return (anna_node_t *)anna_node_call_create(
+    return (anna_node_t *)anna_node_create_call(
 	&node->location,
 	(anna_node_t *)
-	anna_node_member_get_create(
+	anna_node_create_member_get(
 	    &node->location,
 	    mg->child[0],
 	    mid,
@@ -488,8 +488,8 @@ static anna_node_t *anna_macro_declare(struct anna_node_call *node,
     ;
     
     return (anna_node_t *)
-	anna_node_call_create(&node->location,
-			      (anna_node_t *)anna_node_identifier_create(&node->location,
+	anna_node_create_call(&node->location,
+			      (anna_node_t *)anna_node_create_identifier(&node->location,
 									 L"__assign__"),
 			      2,
 			      a_param);
@@ -516,7 +516,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
 	&function->child_type,
 	type);
     
-    return (anna_node_t *)anna_node_dummy_create(&node->location,
+    return (anna_node_t *)anna_node_create_dummy(&node->location,
 						 anna_type_wrap(type),
 						 0);
 }
@@ -527,7 +527,7 @@ static anna_node_t *anna_macro_return(anna_node_call_t *node,
 				      anna_node_list_t *parent)
 {
     CHECK_CHILD_COUNT(node,L"return", 1);
-    return (anna_node_t *)anna_node_return_create(&node->location, anna_node_prepare(node->child[0], function, parent), function->return_pop_count+1);
+    return (anna_node_t *)anna_node_create_return(&node->location, anna_node_prepare(node->child[0], function, parent), function->return_pop_count+1);
 }
 
 static anna_node_t *anna_macro_ast(anna_node_call_t *node, 
@@ -535,7 +535,7 @@ static anna_node_t *anna_macro_ast(anna_node_call_t *node,
 				      anna_node_list_t *parent)
 {
     CHECK_CHILD_COUNT(node,L"return", 1);
-    return (anna_node_t *)anna_node_dummy_create(
+    return (anna_node_t *)anna_node_create_dummy(
 	&node->location,
 	anna_node_wrap(node->child[0]),
 	0);
@@ -546,9 +546,9 @@ static anna_node_t *anna_macro_collection(
     anna_function_t *function, 
     anna_node_list_t *parent)
 {
-    return (anna_node_t *)anna_node_call_create(
+    return (anna_node_t *)anna_node_create_call(
 	&node->location,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    &node->function->location,
 	    L"List"), 
 	node->child_count,
@@ -576,7 +576,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     anna_type_t *result = (anna_type_t *)hash_get(&templatize_lookup, &key);
     if(result)
     {
-	return (anna_node_t *)anna_node_identifier_create(&node->location,
+	return (anna_node_t *)anna_node_create_identifier(&node->location,
 							  result->name);    
     }
     
@@ -655,7 +655,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 	type);
 
     return (anna_node_t *)
-	anna_node_identifier_create(
+	anna_node_create_identifier(
 	    &node->location,
 	    name);    
 }
@@ -665,13 +665,10 @@ static anna_node_t *anna_macro_import(
     anna_function_t *function, 
     anna_node_list_t *parent)
 {
-    int i;
-    for(i=0; i<node->child_count; i++)
-    {
-	return (anna_node_t *)anna_node_import_create(
-	    &node->location, 
-	    node->child[i]);
-    }
+    return (anna_node_t *)anna_node_create_import(
+	&node->location, 
+	node->child[0]);
+    
 }
 
 static void anna_macro_add(anna_stack_frame_t *stack, 

@@ -5,9 +5,9 @@ static anna_node_t *anna_macro_cast(
     anna_function_t *function, 
     anna_node_list_t *parent)
 {
-    return (anna_node_t *)anna_node_call_create(
+    return (anna_node_t *)anna_node_create_call(
 	&node->location,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    &node->function->location,
 	    L"List"), 
 	node->child_count,
@@ -50,9 +50,9 @@ static anna_node_t *anna_macro_as(
     
     
     return (anna_node_t *)
-	anna_node_call_create(
+	anna_node_create_call(
 	    &node->location,
-	    (anna_node_t *)anna_node_dummy_create( 
+	    (anna_node_t *)anna_node_create_dummy( 
 		&node->location,
 		anna_function_wrap(
 		    anna_native_create(

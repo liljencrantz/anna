@@ -95,7 +95,7 @@ void anna_function_type_base_create()
     
     anna_node_t *argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"!FunctionTypeBase")
+	    (anna_node_t *)anna_node_create_identifier(0, L"!FunctionTypeBase")
 	}
     ;
     
@@ -118,7 +118,7 @@ void anna_function_type_base_create()
 	L"!getName",
 	0, 
 	(anna_native_t)&anna_function_type_i_get_name, 
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"String"),
 	1,
@@ -127,10 +127,10 @@ void anna_function_type_base_create()
 
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"name",
-	    (anna_node_t *)anna_node_identifier_create(0, L"String") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
 	    L"!getName", 0));
 
     anna_native_method_add_node(
@@ -139,7 +139,7 @@ void anna_function_type_base_create()
 	L"!getOutputType",
 	0, 
 	(anna_native_t)&anna_function_type_i_get_output, 
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Type"),
 	1,
@@ -148,10 +148,10 @@ void anna_function_type_base_create()
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"outputType",
-	    (anna_node_t *)anna_node_identifier_create(0, L"Type"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Type"),
 	    L"!getOutputType", 0));
 
 
@@ -161,7 +161,7 @@ void anna_function_type_base_create()
 	L"!getInputType",
 	0,
 	(anna_native_t)&anna_function_type_i_get_input_type, 
-	anna_node_simple_templated_type_create(
+	anna_node_create_simple_templated_type(
 	    0, 
 	    L"List",
 	    L"Type"),
@@ -171,10 +171,10 @@ void anna_function_type_base_create()
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"inputType",
-	    anna_node_simple_templated_type_create(
+	    anna_node_create_simple_templated_type(
 		0, 
 		L"List",
 		L"Type"),
@@ -188,7 +188,7 @@ void anna_function_type_base_create()
 	L"!getInputName",
 	0,
 	(anna_native_t)&anna_function_type_i_get_input_name, 
-	anna_node_simple_templated_type_create(
+	anna_node_create_simple_templated_type(
 	    0, 
 	    L"List",
 	    L"String"),
@@ -198,10 +198,10 @@ void anna_function_type_base_create()
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"inputName",
-	    anna_node_simple_templated_type_create(
+	    anna_node_create_simple_templated_type(
 		0, 
 		L"List",
 		L"String"),
@@ -262,7 +262,7 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, 
 	L"!functionTypePayload",
 	1,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Null"));
     
@@ -271,7 +271,7 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 	ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, 
 	L"!functionPayload",
 	0,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Null"));
     
@@ -280,7 +280,7 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 	ANNA_MID_FUNCTION_WRAPPER_STACK, 
 	L"!functionStack",
 	0,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Null"));
     

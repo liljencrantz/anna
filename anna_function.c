@@ -357,17 +357,17 @@ anna_function_t *anna_function_create_from_block(
     
     anna_node_t *param[] = 
 	{
-	    (anna_node_t *)anna_node_null_create(&body->location),
-	    (anna_node_t *)anna_node_null_create(&body->location),
-//	    (anna_node_t *)anna_node_identifier_create(&body->location, L"Object"),
-	    (anna_node_t *)anna_node_block_create(&body->location),
-	    (anna_node_t *)anna_node_block_create(&body->location),
+	    (anna_node_t *)anna_node_create_null(&body->location),
+	    (anna_node_t *)anna_node_create_null(&body->location),
+//	    (anna_node_t *)anna_node_create_identifier(&body->location, L"Object"),
+	    (anna_node_t *)anna_node_create_block(&body->location),
+	    (anna_node_t *)anna_node_create_block(&body->location),
 	    (anna_node_t *)body
 	}
     ;
-    anna_node_call_t *definition = anna_node_call_create(
+    anna_node_call_t *definition = anna_node_create_call(
 	&body->location,
-	(anna_node_t *)anna_node_identifier_create(&body->location, L"__function__"),
+	(anna_node_t *)anna_node_create_identifier(&body->location, L"__function__"),
 	5,
 	param);
     anna_function_t *result = anna_function_create_from_definition(

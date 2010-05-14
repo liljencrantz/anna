@@ -685,7 +685,7 @@ anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
     if(m->is_property)
     {
 	anna_object_t *method = obj->type->static_member[m->setter_offset];
-	anna_node_call_t *call = anna_node_call_create(0, 0, 1, &this->value);
+	anna_node_call_t *call = anna_node_create_call(0, 0, 1, &this->value);
 	return anna_function_wrapped_invoke(method, obj, call, stack);
     }
     else 

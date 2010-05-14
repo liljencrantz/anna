@@ -42,7 +42,7 @@ void anna_int_type_create(anna_stack_frame_t *stack)
 {
     anna_node_t *i_argv[] = 
 	{
-	  (anna_node_t *)anna_node_identifier_create(0, L"Int")
+	  (anna_node_t *)anna_node_create_identifier(0, L"Int")
 	}
     ;
     wchar_t *i_argn[]=
@@ -58,7 +58,7 @@ void anna_int_type_create(anna_stack_frame_t *stack)
     
     anna_member_add_node(
 	definition, ANNA_MID_INT_PAYLOAD,  L"!intPayload", 
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
     
     anna_native_method_add_node(
 	definition,
@@ -66,7 +66,7 @@ void anna_int_type_create(anna_stack_frame_t *stack)
 	L"__init__",
 	ANNA_FUNCTION_VARIADIC, 
 	(anna_native_t)&anna_int_init, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Null") , 
+	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
 	1, i_argv, i_argn);    
 
     anna_int_type_i_create(definition, stack);

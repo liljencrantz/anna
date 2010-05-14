@@ -33,7 +33,7 @@ static anna_node_t *anna_type_member(anna_type_t *type,
     assert(var_type);
 
     anna_member_create(type, -1, name_identifier->name, 0, var_type);
-    return anna_node_null_create(0);
+    return anna_node_create_null(0);
     
     //anna_stack_declare(function->stack_template, name_identifier->name, type, null_object);
     
@@ -46,8 +46,8 @@ static anna_node_t *anna_type_member(anna_type_t *type,
       ;
     
       return (anna_node_t *)
-      anna_node_call_create(&node->location,
-      (anna_node_t *)anna_node_identifier_create(&node->location,
+      anna_node_create_call(&node->location,
+      (anna_node_t *)anna_node_create_identifier(&node->location,
       L"__assign__"),
       2,
       a_param);
@@ -130,8 +130,8 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	wchar_t *name = sb_content(&sb);
 	
 	anna_node_call_t *attribute_call_node =
-	    anna_node_call_create(&attribute->location,
-				  (anna_node_t *)anna_node_identifier_create(&attribute->location,
+	    anna_node_create_call(&attribute->location,
+				  (anna_node_t *)anna_node_create_identifier(&attribute->location,
 									     name),
 				  0,
 				  0);
@@ -404,7 +404,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
     }
     
     if(error_count)
-	return (anna_node_t *)anna_node_null_create(&node->location);
+	return (anna_node_t *)anna_node_create_null(&node->location);
 
     if(type->mid_identifier[ANNA_MID_STACK_PAYLOAD] && type != null_type)
     {
@@ -448,7 +448,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
   anna_node_print(type->definition);
   wprintf(L"\n");
 */  
-    return (anna_node_t *)anna_node_dummy_create(&node->location,
+    return (anna_node_t *)anna_node_create_dummy(&node->location,
 						 anna_type_wrap(type),
 						 0);
 /*    

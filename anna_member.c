@@ -75,7 +75,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 {
     anna_node_t *argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"Member"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Member"),
 	}
     ;
 
@@ -97,7 +97,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	ANNA_MID_MEMBER_PAYLOAD, 
 	L"!memberPayload", 
 	0,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Null"));
     
@@ -106,7 +106,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	ANNA_MID_MEMBER_TYPE_PAYLOAD, 
 	L"!memberTypePayload", 
 	0,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Null"));
     
@@ -116,7 +116,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	L"!getName",
 	0, 
 	(anna_native_t)&anna_member_i_get_name, 
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"String"),
 	1,
@@ -125,10 +125,10 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"name",
-	    (anna_node_t *)anna_node_identifier_create(0, L"String") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
 	    L"!getName", 0));
     
     anna_native_method_add_node(
@@ -137,7 +137,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	L"!getStatic",
 	0, 
 	(anna_native_t)&anna_member_i_get_static, 
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Int"),
 	1,
@@ -146,10 +146,10 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"isStatic",
-	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
 	    L"!getStatic", 0));
     
     anna_native_method_add_node(
@@ -158,7 +158,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	L"!getMethod",
 	0, 
 	(anna_native_t)&anna_member_i_get_method, 
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Int"),
 	1,
@@ -167,10 +167,10 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"isMethod",
-	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
 	    L"!getMethod", 0));
     
     anna_native_method_add_node(
@@ -179,7 +179,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	L"!getProperty",
 	0, 
 	(anna_native_t)&anna_member_i_get_property, 
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Int"),
 	1,
@@ -188,10 +188,10 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"isProperty",
-	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
 	    L"!getProperty", 0));
     
 }

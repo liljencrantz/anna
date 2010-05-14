@@ -43,7 +43,7 @@ anna_node_t *anna_node_call_prepare(
 	      Constructor!
 	    */
 	    node->node_type = ANNA_NODE_CONSTRUCT;
-	    node->function = (anna_node_t *)anna_node_dummy_create(
+	    node->function = (anna_node_t *)anna_node_create_dummy(
 		&node->location, 
 		anna_node_invoke(node->function, function->stack_template),
 		0);
@@ -111,7 +111,7 @@ anna_node_t *anna_node_prepare(
 		   this2,
 		   function->stack_template))
 	    {
-		this2 = anna_node_identifier_trampoline_create(
+		this2 = anna_node_create_identifier_trampoline(
 		    &this2->location, 
 		    this2->name);
 		ANNA_PREPARED(this2);    
@@ -231,7 +231,7 @@ anna_node_t *anna_node_prepare(
 		anna_error(this, L"Invalid import");
 	    }
 	    
-	    return anna_node_null_create(0);
+	    return anna_node_create_null(0);
 	}
 
 

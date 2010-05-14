@@ -168,7 +168,7 @@ static void anna_sniff_return_type(anna_function_t *f)
 	    res = anna_type_intersect(res,t);
 	}
 	f->return_type = res;
-	anna_node_call_add_child(f->body, anna_node_null_create(&f->body->location));
+	anna_node_call_add_child(f->body, anna_node_create_null(&f->body->location));
     }
     else
     {

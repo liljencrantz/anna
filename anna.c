@@ -50,7 +50,6 @@ anna_node_t *anna_node_null=0;
 anna_stack_frame_t *stack_global;
 static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 
-int anna_error_count=0;
 
 
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
@@ -163,7 +162,7 @@ wchar_t *anna_mid_get_reverse(size_t mid)
     return (wchar_t *)al_get(&anna_mid_identifier_reverse, mid);
 }
 
-int hash_function_type_func(void *a)
+static int hash_function_type_func(void *a)
 {
     anna_function_type_key_t *key = (anna_function_type_key_t *)a;
     int res = (int)key->result + key->is_variadic;
@@ -176,7 +175,7 @@ int hash_function_type_func(void *a)
     return res;
 }
 
-int hash_function_type_comp(void *a, void *b)
+static int hash_function_type_comp(void *a, void *b)
 {
     int i;
     
@@ -405,25 +404,6 @@ anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
     return anna_function_wrap(function_copy);
 }
 
-anna_object_t *anna_i_member_call(anna_node_call_t *param, anna_stack_frame_t *stack)
-{
-/*
-  wprintf(L"member_get on node at %d\n", param);
-  anna_node_print((anna_node_t *)param);
-  wprintf(L"\n");
-*/  
-    anna_object_t *obj = anna_node_invoke(param->child[0], stack);
-    anna_node_identifier_t *name_node = node_cast_identifier(param->child[1]);
-    //   wprintf(L"name node is %d, name is %ls\n", name_node, name_node->name);
-    anna_object_t *member = *anna_member_addr_get_str(obj, name_node->name);
-    
-    if(member == null_object){
-	return member;
-    }
-    
-    return anna_function_wrapped_invoke(member, 0, param, stack);    
-}
-
 
 anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 {
@@ -475,29 +455,6 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
     return !anna_abides_fault_count(contender, role_model);
 }
 
-/*
-  anna_object_t *anna_i_member_call(anna_node_t *this, anna_stack_frame_t *stack)
-  {
-  anna_object_t *obj = anna_i_get(this, stack);
-  wchar_t *name = this->child[1]->name;
-  anna_object_t *method = *anna_member_addr_get_str(obj, name);
-  
-  }
-*/
-
-/*
-  anna_object_t *anna_i_const_string(anna_node_t *this, anna_stack_frame_t *stack)
-  {
-  anna_node_string_literal_t *this2 = node_cast_string_literal(this);
-  return anna_create_string(this2->payload_size, this2->payload);
-  }
-*/
-anna_object_t *anna_i_const_int(anna_node_t *this, anna_stack_frame_t *stack)
-{
-    anna_node_int_literal_t *this2 = node_cast_int_literal(this);
-    anna_object_t *result = anna_int_create(this2->payload);
-    return result;
-}
 
 /**
    This method is the best ever! All method calls on the null object run this
@@ -507,35 +464,6 @@ anna_object_t *anna_i_null_function(anna_object_t **node_base)
     return null_object;
 }
 
-anna_object_t *anna_object_create(anna_type_t *type) {
-    anna_object_t *result = 
-	calloc(
-	    1,
-	    sizeof(anna_object_t)+sizeof(anna_object_t *)*type->member_count);
-    result->type = type;
-    int i;
-    for(i=0; i<type->member_count; i++)
-    {
-	result->member[i]=null_object;
-    }
-      
-    return result;
-}
-
-anna_object_t *anna_object_create_raw(size_t sz)
-{
-    anna_object_t *result = 
-	calloc(
-	    1,
-	    sizeof(anna_object_t)+sizeof(anna_object_t *)*sz);
-    int i;
-    for(i=0; i<sz; i++)
-    {
-	result->member[i]=null_object;
-    }
-    
-    return result;
-}
 
 void anna_member_redeclare(
     anna_type_t *type,
@@ -612,7 +540,7 @@ void anna_member_add_node(anna_node_call_t *definition,
 {
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_member_declare_create(
+	(anna_node_t *)anna_node_create_member_declare(
 	    &definition->location,
 	    mid,
 	    name,
@@ -634,7 +562,7 @@ void anna_native_method_add_node(
 {
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_native_method_declare_create(
+	(anna_node_t *)anna_node_create_native_method_declare(
 	    &definition->location,
 	    mid,
 	    name,
@@ -707,20 +635,18 @@ size_t anna_method_create(anna_type_t *type,
     return (size_t)mid;
 }
 
-
-
-int hash_null_func( void *data )
+static int hash_null_func( void *data )
 {
     return 0;
 }
 
-int hash_null_cmp( void *a, 
+static int hash_null_cmp( void *a, 
 		   void *b )
 {
     return 1;
 }
 
-static void anna_null_type_create_early()
+static void anna_null_type_create()
 {
     int i;
   
@@ -758,10 +684,6 @@ static void anna_null_type_create_early()
 	null_type->mid_identifier[i] = null_member;
     }
     assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
-}
-
-static void anna_object_type_create_early()
-{
 }
 
 static void anna_init()
@@ -805,8 +727,7 @@ static void anna_init()
     object_type = anna_type_native_create(L"Object" ,stack_global);
     null_type = anna_type_native_create(L"Null", stack_global);
     
-    anna_null_type_create_early();
-    anna_object_type_create_early();
+    anna_null_type_create();
         
     anna_member_types_create(stack_global);
     anna_int_type_create(stack_global);
@@ -814,7 +735,7 @@ static void anna_init()
     anna_char_type_create(stack_global);
     anna_string_type_create(stack_global);
     anna_float_type_create(stack_global);
-    anna_node_wrapper_types_create(stack_global);
+    anna_node_create_wrapper_types(stack_global);
     
     anna_function_implementation_init(stack_global);
 
@@ -827,237 +748,6 @@ static void anna_init()
     assert(anna_abides(int_type,int_type)==1);
 */  
     
-}
-
-void anna_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
-{
-    wchar_t *key = (wchar_t *)key_ptr;
-    anna_member_t *member = (anna_member_t *)val_ptr;
-    //anna_object_t *obj = (anna_object_t *)aux_ptr;
-    //anna_object_t *value = member->is_static?obj->type->static_member[member->offset]:obj->member[member->offset];    
-    wprintf(L"  %ls: %ls\n", key, member->type?member->type->name:L"?");
-}
-
-void anna_object_print(anna_object_t *obj)
-{
-    wprintf(L"%ls:\n", obj->type->name);
-    hash_foreach2(&obj->type->name_identifier, &anna_print_member, obj);
-}
-
-anna_object_t *anna_function_invoke_values(anna_function_t *function, 
-					   anna_object_t *this,
-					   anna_object_t **param,
-					   anna_stack_frame_t *outer)
-{
-    if(function->flags & ANNA_FUNCTION_MACRO) 
-    {
-	wprintf(L"FATAL: Macro %ls at invoke!!!!\n", function->name);
-	CRASH;
-    }
-    else
-    {
-	if(function->native.function) 
-	{
-	    anna_object_t **argv=param;
-	    int i;
-		
-	    int offset=0;
-	    if(this)
-	    {
-		argv=malloc(sizeof(anna_object_t *)*function->input_count);
-		offset=1;
-		argv[0]=this;		    
-		for(i=0; i<(function->input_count-offset); i++) 
-		{
-		    argv[i+offset]=param[i];
-		}
-	    }
-	    //wprintf(L"Invoking function with %d params\n", function->input_count);
-	    
-	    return function->native.function(argv);
-	}
-	else 
-	{
-	    anna_object_t *result = null_object;
-	    int i;
-	    anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
-	    my_stack->parent = outer?outer:stack_global;
-	    /*
-	    wprintf(L"Create new stack %d with frame depth %d while calling function %ls\n", my_stack, anna_stack_depth(my_stack), function->name);
-	    wprintf(L"Run non-native function %ls with %d params and definition:\n", function->name, function->input_count);
-	    anna_node_print(function->body);
-	    */
-	    int offset=0;
-	    if(this)
-	    {
-		offset=1;
-		anna_stack_declare(my_stack, 
-				   function->input_name[0],
-				   function->input_type[0],
-				   this);
-	    }
-		
-	    for(i=0; i<(function->input_count-offset); i++) 
-	    {
-/*
-  wprintf(L"Declare input variable %d with name %ls on stack\n",
-  i, function->input_name[i+offset]);
-*/
-		anna_stack_set_str(my_stack, 
-				   function->input_name[i+offset],
-				   param[i]);
-	    }
-	    
-	    for(i=0; i<function->body->child_count && !my_stack->stop; i++)
-	    {
-		/*
-		wprintf(L"Run node %d of function %ls\n",
-			i, function->name);
-	      
-		anna_node_print(function->body->child[i]);
-		*/
-		result = anna_node_invoke(function->body->child[i], my_stack);
-		//wprintf(L"Result is %d\n", result);
-	      
-	    }
-	    /*
-	      if(my_stack->stop) 
-	      {
-	      }
-	    */
-	    return result;
-	}
-    }
-}
-
-struct anna_node *anna_macro_invoke(
-    anna_function_t *macro, 
-    anna_node_call_t *node,
-    anna_function_t *function,
-    anna_node_list_t *parent)
-{
-    if(macro->native.macro)
-    {
-	return macro->native.macro(
-	    node, function, parent);
-    }
-    else
-    {
-	int i;
-	anna_stack_frame_t *my_stack = anna_stack_clone(macro->stack_template);
-	anna_object_t *result = null_object;
-	
-	anna_stack_set_str(my_stack,
-			   macro->input_name[0],
-			   anna_node_wrap((anna_node_t *)node));
-	for(i=0; i<macro->body->child_count && !my_stack->stop; i++)
-	{
-	    result = anna_node_invoke(macro->body->child[i], my_stack);
-	}
-	if(result == null_object)
-	{
-	    return anna_node_null_create(&node->location);
-	}
-	return anna_node_unwrap(result);
-    }
-}
-
-anna_object_t *anna_function_invoke(anna_function_t *function, 
-				    anna_object_t *this,
-				    anna_node_call_t *param, 
-				    anna_stack_frame_t *param_invoke_stack,
-				    anna_stack_frame_t *outer) 
-{
-/*
-    wprintf(L"Executing function %ls\n", function->name);
-    if(function->body)
-    {
-	anna_node_print(function->body);
-    }
-*/  
-    if(!this)
-    {
-	this=function->this;
-    }
-    
-    anna_object_t **argv;
-    //wprintf(L"anna_function_invoke %ls %d; %d params\n", function->name, function, function->input_count);    
-    if(likely(function->input_count < 8))
-    {
-	anna_object_t *argv_c[8];
-	argv=argv_c;
-    }
-    else
-    {
-	argv=malloc(sizeof(anna_object_t *)*function->input_count);
-    }
-    
-    int i;
-    //wprintf(L"Argv: %d\n", argv);
-    
-    int offset=0;
-    if(this)
-    {	    
-	offset=1;
-	argv[0]=this;		    
-	//wprintf(L"We have a this parameter: %d\n", this);
-    }
-    int is_variadic = ANNA_IS_VARIADIC(function);
-    //  wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
-    
-    for(i=0; i<(function->input_count-offset-is_variadic); i++)
-    {
-//wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
-	argv[i+offset]=anna_node_invoke(param->child[i], param_invoke_stack);
-    }
-
-    if(is_variadic)
-    {
-	anna_object_t *lst = anna_list_create();
-	int variadic_count = param->child_count - i;
-	if(variadic_count < 0)
-	{
-	    anna_error(
-		(anna_node_t *)param,
-		L"Critical: Tried to call function %ls with %d arguments, need at least %d\n",
-		function->name,
-		param->child_count,
-		function->input_count-1+offset);
-	    CRASH;	    
-	}
-	
-	anna_list_set_capacity(lst, variadic_count);
-	for(; i<param->child_count;i++)
-	{
-	    //  wprintf(L"eval variadic param %d of %d \n", i, param->child_count);
-	    anna_list_add(lst, anna_node_invoke(param->child[i], param_invoke_stack));
-	}
-	//wprintf(L"Set variadic var at offset %d to %d\n", function->input_count-1, lst);
-	
-	argv[function->input_count-1] = lst;	    
-    }
-    if(!likely(function->input_count < 8))
-    {
-	free(argv);
-    }
-    return anna_function_invoke_values(function, 0, argv, outer);
-    
-}
-
-void anna_error(anna_node_t *node, wchar_t *msg, ...)
-{
-    va_list va;
-    va_start( va, msg );	
-    fwprintf(stderr,L"Error in %ls, on line %d:\n", 
-	     node->location.filename?node->location.filename:L"<internal>",
-	     node->location.first_line);
-    anna_node_print_code(node);
-    fwprintf(stderr,L"\n");
-    
-    vfwprintf(stderr, msg, va);
-    va_end( va );
-    fwprintf(stderr, L"\n\n");
-    anna_error_count++;
 }
 
 
@@ -1095,7 +785,6 @@ int main(int argc, char **argv)
 	wprintf(L"No main method defined in module %ls\n", module_name);
 	exit(1);	
     }
-
 
     anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);
     if(!main_func)

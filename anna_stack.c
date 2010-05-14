@@ -266,10 +266,10 @@ anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 	anna_type_definition_get(res);
     anna_member_add_node(
 	definition, ANNA_MID_STACK_PAYLOAD,  L"!stackPayload", 
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
     anna_member_add_node(
 	definition, ANNA_MID_STACK_TYPE_PAYLOAD,  L"!stackTypePayload", 
-	1, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+	1, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
     anna_member_create(
 	res,
 	ANNA_MID_STACK_TYPE_PAYLOAD,
@@ -314,15 +314,15 @@ static void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr
     
 //    wprintf(L"Adding member %ls to namespace %ls\n", name, data->type->name);
     
-    anna_node_call_t *body = anna_node_block_create(0);
+    anna_node_call_t *body = anna_node_create_block(0);
 /*
     anna_node_t *param[] =
 	{
-	    (anna_node_t *)anna_node_identifier_create(
+	    (anna_node_t *)anna_node_create_identifier(
 		0,
 		L"this"),
 	    
-	    (anna_node_t *)anna_node_identifier_create(
+	    (anna_node_t *)anna_node_create_identifier(
 		0,
 		name),
 	    
@@ -332,9 +332,9 @@ static void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr
 /*
     anna_node_call_add_child(
 	body,
-	anna_node_call_create(
+	anna_node_create_call(
 	    0,
-	    anna_node_identifier_create(
+	    anna_node_create_identifier(
 		0,
 		L"memberGet"),
 	    2,
@@ -342,7 +342,7 @@ static void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr
 */
     anna_node_call_add_child(
 	body,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    name));
     

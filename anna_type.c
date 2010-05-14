@@ -51,35 +51,35 @@ anna_node_call_t *anna_type_definition_get(anna_type_t *type)
 void anna_type_definition_make(anna_type_t *type)
 {
     anna_node_call_t *definition = 
-	anna_node_call_create(
+	anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"__block__"),
 	    0,
 	    0);
     
     anna_node_call_t *full_definition = 
-	anna_node_call_create(
+	anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__type__"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"__type__"),
 	    0,
 	    0);
 
     anna_node_call_add_child(
 	full_definition,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    type->name));
     
     anna_node_call_add_child(
 	full_definition,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"class"));
     
     anna_node_call_t *attribute_list = 
-	anna_node_call_create(
+	anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"__block__"),
 	    0,
 	    0);	
 
@@ -182,7 +182,7 @@ void anna_type_native_parent(anna_type_t *type, wchar_t *name)
 {
     anna_node_t *param[]=
 	{
-	    (anna_node_t *)anna_node_identifier_create(
+	    (anna_node_t *)anna_node_create_identifier(
 		0,
 		name)
 	}
@@ -193,9 +193,9 @@ void anna_type_native_parent(anna_type_t *type, wchar_t *name)
         (anna_node_call_t *)type->definition->child[2];
     anna_node_call_add_child(
 	attribute_list, 
-	(anna_node_t *)anna_node_call_create(
+	(anna_node_t *)anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_identifier_create(
+	    (anna_node_t *)anna_node_create_identifier(
 		0,
 		L"extends"),
 	    1,

@@ -11,19 +11,19 @@ static anna_object_t *anna_node_identifier_wrapper_i_init(anna_object_t **param)
     assert(param[2] != null_object);
     anna_node_t *source = anna_node_unwrap(param[1]);
     *(anna_node_identifier_t **)anna_member_addr_get_mid(param[0],ANNA_MID_NODE_PAYLOAD)=
-	anna_node_identifier_create(
+	anna_node_create_identifier(
 	    &source->location,
 	    wcsdup(anna_string_payload(param[2])));
     return param[0];
 }
 
-void anna_node_identifier_wrapper_type_create(anna_stack_frame_t *stack)
+void anna_node_create_identifier_wrapper_type(anna_stack_frame_t *stack)
 {
     anna_node_t *argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"Identifier"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"Node"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"String"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Identifier"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Node"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
 	}
     ;
     
@@ -44,22 +44,22 @@ void anna_node_identifier_wrapper_type_create(anna_stack_frame_t *stack)
 	L"__init__",
 	0,
 	(anna_native_t)&anna_node_identifier_wrapper_i_init, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Null") , 
+	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
 	3, argv, argn);
 
 
     anna_native_method_add_node(
 	definition, -1, L"getName", 0, 
 	(anna_native_t)&anna_node_identifier_wrapper_i_get_name, 
-	(anna_node_t *)anna_node_identifier_create(0, L"String"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"String"), 
 	1, argv, argn);
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"name",
-	    (anna_node_t *)anna_node_identifier_create(0, L"String") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
 	    L"getName", 0));
     
 }

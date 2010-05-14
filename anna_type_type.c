@@ -32,7 +32,7 @@ static void anna_member_add_create(
 	mid,
 	name,
 	is_static,
-	(anna_node_t *)anna_node_identifier_create(0, member_type->name));
+	(anna_node_t *)anna_node_create_identifier(0, member_type->name));
 }
 
 static void anna_native_method_add_create(
@@ -61,7 +61,7 @@ static void anna_native_method_add_create(
     int i;
     for(i=0;i<argc;i++)
     {
-	n_argv[i] = (anna_node_t *)anna_node_identifier_create(0, argv[i]->name);
+	n_argv[i] = (anna_node_t *)anna_node_create_identifier(0, argv[i]->name);
     }
     
     anna_native_method_add_node(
@@ -70,7 +70,7 @@ static void anna_native_method_add_create(
 	name,
 	flags,
 	func,
-	(anna_node_t *)anna_node_identifier_create(0, result->name),
+	(anna_node_t *)anna_node_create_identifier(0, result->name),
 	argc,
 	n_argv,
 	argn);
@@ -112,7 +112,7 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 
     anna_node_t *argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"Type")
+	    (anna_node_t *)anna_node_create_identifier(0, L"Type")
 	}
     ;
     
@@ -134,7 +134,7 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
 	L"!typeWrapperPayload",
 	0,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Null"));
         
@@ -144,7 +144,7 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 	L"!getName",
 	0, 
 	(anna_native_t)&anna_type_i_get_name, 
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"String"),
 	1,
@@ -153,10 +153,10 @@ void anna_type_type_create(anna_stack_frame_t *stack)
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"name",
-	    (anna_node_t *)anna_node_identifier_create(0, L"String") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
 	    L"!getName", 0));
     
     anna_native_method_add_node(
@@ -165,7 +165,7 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 	L"!getMember",
 	0,
 	(anna_native_t)&anna_type_i_get_member, 
-	anna_node_simple_templated_type_create(
+	anna_node_create_simple_templated_type(
 	    0, 
 	    L"List",
 	    L"Member"),
@@ -175,10 +175,10 @@ void anna_type_type_create(anna_stack_frame_t *stack)
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"member",
-	    anna_node_simple_templated_type_create(
+	    anna_node_create_simple_templated_type(
 		0, 
 		L"List",
 		L"Member"),

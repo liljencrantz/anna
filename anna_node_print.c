@@ -137,7 +137,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	case ANNA_NODE_BLOB:
 	{
 	    anna_indent(indentation);
-	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
+	    //anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
 	    wprintf(L"<Blob>");
 	    break;
 	}

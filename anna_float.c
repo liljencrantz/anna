@@ -8,6 +8,7 @@
 
 #include "anna.h"
 #include "anna_node.h"
+#include "anna_node_create.h"
 #include "anna_float.h"
 #include "anna_type.h"
 #include "anna_int.h"
@@ -40,7 +41,7 @@ void anna_float_type_create(anna_stack_frame_t *stack)
 
     anna_member_add_node(
 	definition, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload",
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null"));
+	0, (anna_node_t *)anna_node_create_identifier(0, L"Null"));
     /*
       If we can't fit a double into a void * on this platform, add a
       second dummy payload. This assumes that sizeof(double) is never
@@ -55,7 +56,7 @@ void anna_float_type_create(anna_stack_frame_t *stack)
     {
 	anna_member_add_node(
 	    definition, -1,  L"!floatPayload2", 0, 
-	    (anna_node_t *)anna_node_identifier_create(0, L"Null"));
+	    (anna_node_t *)anna_node_create_identifier(0, L"Null"));
     }
     
     anna_float_type_i_create(definition, stack);

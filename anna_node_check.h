@@ -16,7 +16,7 @@
 #define CHECK(cond, n, ...)if(!(cond))					\
     {									\
         anna_error((anna_node_t *)n, __VA_ARGS__);			\
-        return (anna_node_t *)anna_node_null_create(&((n)->location));	\
+        return (anna_node_t *)anna_node_create_null(&((n)->location));	\
     }  
 
 /**
@@ -27,7 +27,7 @@
 */
 #define FAIL(n, ...)							\
     anna_error((anna_node_t *)n, __VA_ARGS__);				\
-    return (anna_node_t *)anna_node_null_create(&((n)->location));
+    return (anna_node_t *)anna_node_create_null(&((n)->location));
 
 /**
    Check that the specified call node has the specified number of
@@ -40,7 +40,7 @@
 	    (anna_node_t *)(n),						\
 	    L"Wrong number of arguments to %ls: Got %d, expected %d",	\
 	    name, n->child_count, count);				\
-	return (anna_node_t *)anna_node_null_create(&node->location);	\
+	return (anna_node_t *)anna_node_create_null(&node->location);	\
     }
 
 /**
@@ -53,7 +53,7 @@
 	    (anna_node_t *)n,						\
 	    L"Unexpected argument type, expected a parameter of type %s on line %d of %s", \
 	    #type, __LINE__, __FILE__);					\
-	return (anna_node_t *)anna_node_null_create(&(n)->location);	\
+	return (anna_node_t *)anna_node_create_null(&(n)->location);	\
     }
 
 /**
@@ -61,19 +61,19 @@
 */
 #define CHECK_NODE_BLOCK(n)						\
     if(!check_node_block(n))						\
-        return (anna_node_t *)anna_node_null_create(&(n)->location)
+        return (anna_node_t *)anna_node_create_null(&(n)->location)
 /**
    Check that the specified node is an identifier with the specicified
    value.
 */
 #define CHECK_NODE_IDENTIFIER_NAME(n, name)				\
     if(!check_node_identifier_name(n, name))				\
-	return (anna_node_t *)anna_node_null_create(&node->location)
+	return (anna_node_t *)anna_node_create_null(&node->location)
 /**
    Check that specified node has a known return type.
 */
 #define CHECK_TYPE(n) if(!extract_type(n, function->stack_template))	\
-	return (anna_node_t *)anna_node_null_create(&n->location)
+	return (anna_node_t *)anna_node_create_null(&n->location)
 
 /**
    Return the return type of the specified node.
@@ -88,7 +88,7 @@
     {									\
 	anna_error((anna_node_t *)node,					\
 		   L"Illegal expression position");			\
-	return (anna_node_t *)anna_node_null_create(&node->location);	\
+	return (anna_node_t *)anna_node_create_null(&node->location);	\
     }    
 
 anna_type_t *extract_type(

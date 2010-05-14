@@ -135,7 +135,7 @@ static anna_node_t *parse_int_literal(parse_data_t *d)
    //FIXME: Check for too big numbers!
    
 
-   return (anna_node_t *)anna_node_int_literal_create(0, res);
+   return (anna_node_t *)anna_node_create_int_literal(0, res);
 }
 
 
@@ -153,7 +153,7 @@ static anna_node_t *parse_identifier(parse_data_t *d)
 	dp_read(d);
 	sb_append_char(&d->buff, ch);
     }
-    return (anna_node_t *)anna_node_identifier_create(0, wcsdup((wchar_t *)d->buff.buff));
+    return (anna_node_t *)anna_node_create_identifier(0, wcsdup((wchar_t *)d->buff.buff));
 }
 
 static anna_node_t *parse_string_literal(parse_data_t *d) 
@@ -206,7 +206,7 @@ static anna_node_t *parse_string_literal(parse_data_t *d)
     }
     res = malloc(sizeof(wchar_t) * sb_length(&d->buff));
     memcpy(res, (wchar_t *)d->buff.buff, sizeof(wchar_t) * sb_length(&d->buff));
-    return (anna_node_t *)anna_node_string_literal_create(d->filename, start_pos, sb_length(&d->buff), res);
+    return (anna_node_t *)anna_node_create_string_literal(d->filename, start_pos, sb_length(&d->buff), res);
 }
 
 static anna_node_t *parse_char_literal(parse_data_t *d) 
@@ -260,7 +260,7 @@ static anna_node_t *parse_char_literal(parse_data_t *d)
 	return 0;	
     }
     
-    return (anna_node_t *)anna_node_char_literal_create(d->filename, start_pos, res);
+    return (anna_node_t *)anna_node_create_char_literal(d->filename, start_pos, res);
 }
 
 static void parse_skip_space(parse_data_t *d)
@@ -365,7 +365,7 @@ static anna_node_t *parse(parse_data_t *d)
 	    {
 		child_arr[i] = (anna_node_t *)al_get( &child, i );
 	    }
-	    result = (anna_node_t *)anna_node_call_create(d->filename, start_pos, function, al_get_count(&child), child_arr);
+	    result = (anna_node_t *)anna_node_create_call(d->filename, start_pos, function, al_get_count(&child), child_arr);
 	    al_destroy(&child);
 	}
 	else 
@@ -417,11 +417,11 @@ anna_node_t *anna_parse(wchar_t *filename)
 */ 
    /*
    anna_node_t *param[1];
-   param[0] = (anna_node_t *)anna_node_int_literal_create(L"FOO",0,7);
+   param[0] = (anna_node_t *)anna_node_create_int_literal(L"FOO",0,7);
    
-   anna_node_t *print_identifier = (anna_node_t *)anna_node_identifier_create(L"FOO",0,L"print");
+   anna_node_t *print_identifier = (anna_node_t *)anna_node_create_identifier(L"FOO",0,L"print");
    
-   anna_node_t *program = (anna_node_t *)anna_node_call_create(L"FOO",0, print_identifier, 1, param);
+   anna_node_t *program = (anna_node_t *)anna_node_create_call(L"FOO",0, print_identifier, 1, param);
    
    return program;
    */

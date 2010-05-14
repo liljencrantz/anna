@@ -89,14 +89,14 @@ static anna_object_t *anna_node_wrapper_i_print(anna_object_t **param)
 }
 
 
-void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
+void anna_node_create_wrapper_type(anna_stack_frame_t *stack)
 {
 
     anna_node_t *replace_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"Node"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"Identifier"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"Node"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Node"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Identifier"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Node"),
 	}
     ;
     wchar_t *replace_argn[] =
@@ -107,8 +107,8 @@ void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
     
     anna_node_t *error_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"Node"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"String"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Node"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
 	}
     ;
     wchar_t *error_argn[] =
@@ -123,24 +123,24 @@ void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
     
     anna_member_add_node(
 	definition, ANNA_MID_NODE_PAYLOAD,  L"!nodePayload", 
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
     
     anna_native_method_add_node(
 	definition, -1, L"replace", 0, 
 	(anna_native_t)&anna_node_wrapper_i_replace, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Node"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"Node"), 
 	3, replace_argv, replace_argn);
  
     anna_native_method_add_node(
 	definition, -1, L"error", 0, 
 	(anna_native_t)&anna_node_wrapper_i_error, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Null"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"Null"), 
 	2, error_argv, error_argn);
     
     anna_native_method_add_node(
 	definition, -1, L"print", 0, 
 	(anna_native_t)&anna_node_wrapper_i_print, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Null"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"Null"), 
 	1, error_argv, error_argn);
     
 }
@@ -150,12 +150,12 @@ void anna_node_wrapper_type_create(anna_stack_frame_t *stack)
 #include "anna_node_string_literal_wrapper.c"
 #include "anna_node_call_wrapper.c"
 
-void anna_node_wrapper_types_create(anna_stack_frame_t *stack)
+void anna_node_create_wrapper_types(anna_stack_frame_t *stack)
 {
-    anna_node_wrapper_type_create(stack);
-    anna_node_identifier_wrapper_type_create(stack);
-    anna_node_int_literal_wrapper_type_create(stack);
-    anna_node_string_literal_wrapper_type_create(stack);
-    anna_node_call_wrapper_type_create(stack);
+    anna_node_create_wrapper_type(stack);
+    anna_node_create_identifier_wrapper_type(stack);
+    anna_node_create_int_literal_wrapper_type(stack);
+    anna_node_create_string_literal_wrapper_type(stack);
+    anna_node_create_call_wrapper_type(stack);
     
 }

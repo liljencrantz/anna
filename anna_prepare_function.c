@@ -350,7 +350,7 @@ static anna_node_t *anna_prepare_function_interface_internal(
 
 
     function->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
-    return (anna_node_t *)anna_node_dummy_create(&node->location, anna_function_wrap(function),0);
+    return (anna_node_t *)anna_node_create_dummy(&node->location, anna_function_wrap(function),0);
 }
 
 void anna_prepare_function_interface(

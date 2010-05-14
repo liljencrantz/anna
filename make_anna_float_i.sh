@@ -11,8 +11,8 @@ echo "
 init="
     anna_node_t *argv[]=
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
-	    (anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	    (anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+	    (anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	}
     ;
     
@@ -24,8 +24,8 @@ init="
 
     anna_node_t *i_argv[]=
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
-	    (anna_node_t *)anna_node_identifier_create(0, L\"Int\"), 
+	    (anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+	    (anna_node_t *)anna_node_create_identifier(0, L\"Int\"), 
 	}
     ;
     
@@ -45,7 +45,7 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     anna_native_method_add_node(
 	definition, -1, L\"__${name}__Float__\", 0, 
 	(anna_native_t)&anna_float_i_${name}, 
-	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	2, argv, argn);"
 
     echo "
@@ -73,17 +73,17 @@ for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "exp pow(v1, v2
     anna_native_method_add_node(
 	definition, -1, L\"__${name}__Float__\", 0,
 	(anna_native_t)&anna_float_i_${name}, 
-	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	2, argv, argn);
     anna_native_method_add_node(
 	definition, -1, L\"__${name}__Int__\", 0, 
 	(anna_native_t)&anna_float_i_int_${name}, 
-	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	2, i_argv, i_argn);
     anna_native_method_add_node(
 	definition, -1, L\"__r${name}__Int__\", 0, 
 	(anna_native_t)&anna_float_i_int_r${name}, 
-	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	2, i_argv, i_argn);
 "
 
@@ -128,12 +128,12 @@ for i in "increase v1+v2" "decrease v1-v2"; do
     anna_native_method_add_node(
 	definition, -1, L\"__${name}__Float__\", 0, 
 	(anna_native_t)&anna_float_i_${name}_float, 
-	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	2, argv, argn);
     anna_native_method_add_node(
 	definition, -1, L\"__${name}__Int__\", 0, 
 	(anna_native_t)&anna_float_i_${name}_int, 
-	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	2, i_argv, i_argn);"
 
     echo "
@@ -171,7 +171,7 @@ for i in "abs fabs(v)" "neg -v" "sqrt sqrt(v)" "tan tan(v)" "atan atan(v)" "sin 
     anna_native_method_add_node(
 	definition, -1, L\"__${name}__\", 0, 
 	(anna_native_t)&anna_float_i_${name}, 
-	(anna_node_t *)anna_node_identifier_create(0, L\"Float\"), 
+	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
 	1, argv, argn);"
 
     echo "
