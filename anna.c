@@ -9,24 +9,20 @@
 #include "util.h"
 #include "anna.h"
 #include "anna_node.h"
-#include "anna_node_create.h"
-#include "anna_stack.h"
+#include "anna_function.h"
+#include "anna_module.h"
 #include "anna_int.h"
 #include "anna_float.h"
 #include "anna_string.h"
 #include "anna_char.h"
 #include "anna_list.h"
-#include "anna_type.h"
-#include "anna_type_type.h"
-#include "anna_node.h"
-#include "anna_function.h"
-#include "anna_prepare.h"
-#include "anna_node_wrapper.h"
-#include "anna_macro.h"
-#include "anna_util.h"
-#include "anna_member.h"
-#include "anna_module.h"
 #include "anna_function_type.h"
+#include "anna_type.h"
+#include "anna_node_create.h"
+#include "anna_type_type.h"
+#include "anna_macro.h"
+#include "anna_member.h"
+#include "anna_node_wrapper.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -50,24 +46,7 @@ anna_node_t *anna_node_null=0;
 anna_stack_frame_t *stack_global;
 static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 
-
-
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
-
-
-void anna_native_declare(
-    anna_stack_frame_t *stack,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    anna_type_t *result,
-    size_t argc, 
-    anna_type_t **argv,
-    wchar_t **argn)
-{
-    anna_native_create(name, flags, func, result, argc, argv, argn, stack_global);
-}
-
 
 anna_object_t **anna_member_addr_get_str(
     anna_object_t *obj,
@@ -304,10 +283,16 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
     }
     else 
     {
-	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(obj->type, ANNA_MID_CALL_PAYLOAD);
+	anna_object_t **function_wrapper_ptr = anna_static_member_addr_get_mid(
+	    obj->type, 
+	    ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
-	    return anna_function_wrapped_invoke(*function_wrapper_ptr,obj, param, stack_ptr?*stack_ptr:stack_global);
+	    return anna_function_wrapped_invoke(
+		*function_wrapper_ptr,
+		obj,
+		param,
+		stack_ptr?*stack_ptr:stack_global);
 	}
 	
 	wprintf(L"Critical: Tried to call a non-function\n");
@@ -318,17 +303,6 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
     return 0;
 }
 
-
-
-/*
-  anna_object_t *anna_call(anna_stack_frame_t *stack, anna_object_t *obj)
-  {
-  anna_object *call = *anna_get_member_addr_int(obj, ANNA_MID_CALL);
-  anna_node *node = (anna_node *)*anna_get_member_addr_int(obj, ANNA_MID_NODE);
-  return node->invoke(node, stack);
-  }
-*/
-
 anna_object_t *anna_construct(
     anna_type_t *type,
     struct anna_node_call *param,
@@ -338,49 +312,23 @@ anna_object_t *anna_construct(
     //wprintf(L"Creating new object of type %ls\n", type->name);
     assert(type->name);
     
-    anna_object_t **constructor_ptr = anna_member_addr_get_mid(result, ANNA_MID_INIT_PAYLOAD);
+    anna_object_t **constructor_ptr = anna_member_addr_get_mid(
+	result,
+	ANNA_MID_INIT_PAYLOAD);
     if(constructor_ptr)
     {
         anna_function_t *constructor = anna_function_unwrap(*constructor_ptr);
 	//wprintf(L"First param is %ls type\n", param[1]->type->name);
-	anna_function_invoke(constructor, result, param, stack, 0);
+	anna_function_invoke(
+	    constructor, 
+	    result,
+	    param,
+	    stack,
+	    0);
     }
-    
-    /*
-      FIXME: Constructor goes here!
-    */
     
     return result;
 }
-
-
-/*
-  anna_object_t *anna_i_get(anna_node_identifier_t *this, anna_stack_frame_t *stack)
-  {
-  wchar_t *name = this->child[0]->name;
-  return anna_stack_get(stack, name);
-  }
-
-  anna_object_t *anna_i_set(anna_node_t *this, anna_stack_frame_t *stack)
-  {
-  wchar_t *name = this->child[0]->name;
-  anna_object_t *value = this->children[1]->invoke(this->children[1], stack);
-  anna_stack_set(stack, name, value);
-  return value;
-  }
-*/
-
-/*
-  anna_object_t *anna_i_create_function(anna_node_call_t *this, anna_stack_frame_t *stack)
-  {
-  wchar_t *name = this->child[0]->name;
-  anna_object_t *value = this->children[1]->invoke(this->children[1], stack);
-  anna_stack_set(stack, name, value);
-  
-  //  FIXME: Not done yet...
-  return value;
-  }
-*/
 
 anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
 {
@@ -574,8 +522,6 @@ void anna_native_method_add_node(
 	    argn));
 }
 
-
-
 size_t anna_native_method_create(
     anna_type_t *type,
     ssize_t mid,
@@ -689,8 +635,14 @@ static void anna_null_type_create()
 static void anna_init()
 {
     al_init(&anna_mid_identifier_reverse);
-    hash_init(&anna_mid_identifier, &hash_wcs_func, &hash_wcs_cmp);
-    hash_init(&anna_type_for_function_identifier, &hash_function_type_func, &hash_function_type_comp);
+    hash_init(
+	&anna_mid_identifier,
+	&hash_wcs_func, 
+	&hash_wcs_cmp);
+    hash_init(
+	&anna_type_for_function_identifier,
+	&hash_function_type_func,
+	&hash_function_type_comp);
     
     anna_mid_put(L"!typeWrapperPayload", ANNA_MID_TYPE_WRAPPER_PAYLOAD);
     anna_mid_put(L"!callPayload", ANNA_MID_CALL_PAYLOAD);
@@ -738,7 +690,6 @@ static void anna_init()
     anna_node_create_wrapper_types(stack_global);
     
     anna_function_implementation_init(stack_global);
-
     anna_macro_init(stack_global);
 
 /*
@@ -785,16 +736,15 @@ int main(int argc, char **argv)
 	wprintf(L"No main method defined in module %ls\n", module_name);
 	exit(1);	
     }
-
+    
     anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);
     if(!main_func)
     {
 	wprintf(L"Main is not a method in module %ls\n", module_name);
 	exit(1);	
     }
-
-    anna_function_invoke(module, 0, 0, stack_global, stack_global);
     
+    anna_function_invoke(module, 0, 0, stack_global, stack_global);    
     
     wprintf(L"Output:\n");        
 //    anna_function_invoke(main_func, 0, 0, stack_global, stack_global);

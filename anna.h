@@ -295,9 +295,6 @@ size_t anna_method_create(anna_type_t *type,
 size_t anna_mid_get(wchar_t *name);
 wchar_t *anna_mid_get_reverse(size_t mid);
 
-anna_object_t *anna_object_create(anna_type_t *type);
-anna_object_t *anna_object_create_raw(size_t sz);
-
 int anna_abides(anna_type_t *contender, anna_type_t *role_model);
 
 int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model);
@@ -312,14 +309,8 @@ int anna_type_setup(anna_type_t *type,
 
 anna_object_t *anna_i_null_function(anna_object_t **node_base);
 
-void anna_native_declare(struct anna_stack_frame *stack,
-			 wchar_t *name,
-			 int flags,
-			 anna_native_t func,
-			 anna_type_t *result,
-			 size_t argc, 
-			 anna_type_t **argv,
-			 wchar_t **argn);
+anna_object_t *anna_object_create(anna_type_t *type);
+anna_object_t *anna_object_create_raw(size_t sz);
 
 void anna_object_print(anna_object_t *obj);
 
