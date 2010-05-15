@@ -1,3 +1,34 @@
+typedef struct
+{
+    anna_stack_frame_t *src;
+    anna_stack_frame_t *dst;
+}
+anna_node_import_data;
+
+static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
+{
+    wchar_t *name = (wchar_t *)key_ptr;
+    size_t *offset=(size_t *)val_ptr;
+    anna_node_import_data *data = (anna_node_import_data *)aux_ptr;
+    
+    if(data->src->member_flags[*offset])
+    {
+//	wprintf(L"Import: Skipping private member %ls\n", name);
+	return;
+    }
+    //wprintf(L"Import: Importing public member %ls\n", name);
+    
+    anna_object_t *item = anna_stack_get_str(
+	data->src,
+	name);
+    anna_stack_declare(
+	data->dst,
+	name,
+	item->type,
+	item,
+	ANNA_STACK_PRIVATE);
+}
+
 
 
 anna_node_t *anna_node_call_prepare(
@@ -201,7 +232,8 @@ anna_node_t *anna_node_prepare(
 				    function->stack_template,
 				    field->name,
 				    item->type,
-				    item);
+				    item,
+				    0);
 				import_ok = 1;
 			    }			    
 			}			
@@ -212,16 +244,22 @@ anna_node_t *anna_node_prepare(
 	    {
 		anna_node_identifier_t *module_id = 
 		    (anna_node_identifier_t *)result->payload;
+		//wprintf(L"Load module %ls for import\n", module_id->name);
 		anna_function_t *module = anna_module_load(module_id->name);
+		anna_prepare_function_interface(module);
+		//anna_stack_print(module->stack_template);
+		//anna_node_print(module->body);
 		anna_node_import_data data = 
 		    {
 			module->stack_template,
 			function->stack_template
 		    };
 		
+		//wprintf(L"Importing all members of module %ls\n", module_id->name);
 		hash_foreach2(
 		    &module->stack_template->member_string_identifier, 
 		    &anna_node_import_item, &data);
+		//wprintf(L"Finished import of module %ls\n", module_id->name);
 		import_ok = 1;		
 	    }
 

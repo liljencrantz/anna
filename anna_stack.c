@@ -25,6 +25,7 @@ anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent)
     anna_stack_frame_t *stack = calloc(1,sizeof(anna_stack_frame_t) + sizeof(anna_object_t *)*sz);
     hash_init(&stack->member_string_identifier, &hash_wcs_func, &hash_wcs_cmp);
     stack->member_type = calloc(1, sizeof(anna_type_t *)*sz);
+    stack->member_flags = calloc(1, sizeof(int)*sz);
     stack->count = 0;
     stack->capacity = sz;
     stack->parent = parent;
@@ -34,7 +35,8 @@ anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent)
 void anna_stack_declare(anna_stack_frame_t *stack, 
 			wchar_t *name,
 			anna_type_t *type, 
-			anna_object_t *initial_value)
+			anna_object_t *initial_value,
+			int flags)
 {
     if(!name)
 	CRASH;
@@ -57,7 +59,11 @@ void anna_stack_declare(anna_stack_frame_t *stack,
     {
 	if(stack->member_type[*old_offset] != type)
 	{
-	    wprintf(L"Critical: Tried to redeclare variable %ls, was of type %ls, now of type %ls\n", name, stack->member_type[*old_offset]->name, type->name);
+	    wprintf(
+		L"Critical: Tried to redeclare variable %ls, was of type %ls, now of type %ls\n",
+		name, 
+		stack->member_type[*old_offset]->name,
+		type->name);
 	    CRASH;
 	    
 	}
@@ -77,6 +83,7 @@ void anna_stack_declare(anna_stack_frame_t *stack,
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
     hash_put(&stack->member_string_identifier, name, offset);
+    stack->member_flags[*offset] = flags;
     stack->member_type[*offset] = type;
     stack->member[*offset] = initial_value;
 }
@@ -261,7 +268,11 @@ void anna_stack_print_trace(anna_stack_frame_t *stack)
 
 anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 {
-    anna_type_t *res = anna_type_native_create(L"!StackType", stack_global);
+    anna_type_t *res = anna_type_native_create(
+	anna_util_identifier_generate(
+	    L"StackType",
+	    stack->function?&(stack->function->definition->location):0),
+	stack_global);
     anna_node_call_t *definition = 
 	anna_type_definition_get(res);
     anna_member_add_node(

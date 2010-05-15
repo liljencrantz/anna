@@ -168,7 +168,7 @@ static anna_node_t *anna_macro_module(
 	    node,
 	    function->stack_template,
 	    return_pop_count);
-//    result->definition->child[1] = anna_node_create_identifier(0, L"Object");
+    result->definition->child[1] = anna_node_create_identifier(0, L"Object");
     result->flags |= ANNA_FUNCTION_MODULE;
     assert(object_type);
     result->name = L"!moduleMacroFunction";
@@ -269,7 +269,8 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node,
 	    result->input_type,
 	    result->input_name,
 	    0), 
-	anna_function_wrap(result));
+	anna_function_wrap(result),
+	0);
     
     return (anna_node_t *)anna_node_create_dummy(
 	&node->location,
@@ -478,7 +479,7 @@ static anna_node_t *anna_macro_declare(struct anna_node_call *node,
 	    FAIL(node->child[1], L"Wrong type on second argument to declare - expected an identifier or a null node");
 
     }
-    anna_stack_declare(function->stack_template, name_identifier->name, type, null_object);
+    anna_stack_declare(function->stack_template, name_identifier->name, type, null_object, 0);
 
     anna_node_t *a_param[2]=
 	{
@@ -509,7 +510,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
     anna_type_t *type = anna_type_create(name, function->stack_template);
     
     type->definition = node;
-    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
+    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type), 0);
     //wprintf(L"Registered type %ls\n", name);
     
     al_push(
@@ -643,7 +644,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     type->name = name;
    
     type->definition = definition;
-    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type));
+    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type), 0);
 /*
     anna_node_t *type_result = anna_macro_type_setup(type, function, parent);
     if(type_result->node_type == ANNA_NODE_NULL){

@@ -12,6 +12,7 @@
 #include "anna_int.h"
 #include "anna_char.h"
 #include "anna_list.h"
+#include "anna_function.h"
 
 anna_object_t *anna_i_print(anna_object_t **param)
 {

@@ -723,12 +723,16 @@ int main(int argc, char **argv)
 
     null_object = anna_object_create_raw(0);
     anna_module_load(L"lang");
+    anna_prepare();
+    
     null_object->type = null_type;
         
     anna_int_one = anna_int_create(1);
 
     anna_function_t *module = anna_module_load(module_name);
 
+    anna_prepare();
+    
 //    wprintf(L"Validated program:\n");    
     anna_object_t **main_wrapper_ptr = anna_stack_addr_get_str(module->stack_template, L"main");
     if(!main_wrapper_ptr)

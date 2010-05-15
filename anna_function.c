@@ -107,7 +107,7 @@ void anna_function_setup_type(anna_function_t *f, anna_stack_frame_t *location)
 	if(!(f->flags & ANNA_FUNCTION_ANONYMOUS) && location && (!f->member_of))
 	{
 	    //wprintf(L"WOOWEEWOO, declare %ls\n", f->name);
-	    anna_stack_declare(location, f->name, f->type, anna_function_wrap(f));
+	    anna_stack_declare(location, f->name, f->type, anna_function_wrap(f), 0);
 	}
     }
     
@@ -263,7 +263,8 @@ anna_function_t *anna_function_create(
 		result->stack_template,
 		argn[i], 
 		argv[i], 
-		null_object);	
+		null_object,
+		0);	
 	}    
 	if(is_variadic)
 	{
@@ -275,7 +276,8 @@ anna_function_t *anna_function_create(
 		result->stack_template, 
 		argn[argc-1], 
 		list_type, 
-		null_object);
+		null_object,
+		0);
 	}
     }
     else
@@ -284,7 +286,8 @@ anna_function_t *anna_function_create(
 	    result->stack_template, 
 	    argn[0], 
 	    node_call_wrapper_type,
-	    null_object);
+	    null_object,
+	    0);
     }
     
     //anna_function_prepare(result);

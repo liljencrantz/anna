@@ -151,6 +151,9 @@ static void sniff(
  */
 static void anna_sniff_return_type(anna_function_t *f)
 {
+    //wprintf(L"Sniff return type of function %ls\n", f->name);
+    
+
     array_list_t types;
     al_init(&types);
     sniff(&types, f, 0);
@@ -303,7 +306,8 @@ void anna_prepare_internal()
 		anna_stack_declare(type->stack,
 				   type->name,
 				   type_type,
-				   anna_type_wrap(type));
+				   anna_type_wrap(type),
+				   0);
 	    }
 	}
 	

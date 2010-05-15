@@ -24,28 +24,6 @@
 
 #define NODE_CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
 
-typedef struct
-{
-    anna_stack_frame_t *src;
-    anna_stack_frame_t *dst;
-}
-anna_node_import_data;
-
-static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
-{
-    wchar_t *name = (wchar_t *)key_ptr;
-//    size_t *offset=(size_t *)val_ptr;
-    anna_node_import_data *data = (anna_node_import_data *)aux_ptr;
-    anna_object_t *item = anna_stack_get_str(
-	data->src,
-	name);
-    anna_stack_declare(
-	data->dst,
-	name,
-	item->type,
-	item);
-}
-
 #include "anna_node_prepare.c"
 
 void anna_node_set_location(anna_node_t *node, anna_location_t *l)
@@ -117,6 +95,8 @@ void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
 
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child)
 {
+    assert(call->node_type == ANNA_NODE_CALL);
+    
     if(call->child_count==0) 
     {
 	anna_node_call_add_child(call, child);
@@ -134,8 +114,8 @@ void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child)
 	}	
 	call->child_capacity = new_capacity;
     }
-//    wprintf(L"LALALA %d %d\n", call->child_capacity, call->child_count);
-    memmove(&call->child[1], call->child[0], sizeof(anna_node_t *)*call->child_count);
+    memmove(&call->child[1], &call->child[0], sizeof(anna_node_t *)*call->child_count);
+    
     call->child[0] = child;
     call->child_count++;
 }

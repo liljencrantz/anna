@@ -44,10 +44,28 @@ anna_function_t *anna_module_load(wchar_t *module_name)
 	wprintf(L"Module failed to parse correctly; exiting.\n");
 	exit(1);
     }
-    
+
+    if(wcscmp(module_name, L"lang") != 0)
+    {
+	anna_node_call_t *imp = anna_node_create_call(
+	    0,
+	    anna_node_create_identifier(0, L"import"),
+	    0,
+	    0);
+	anna_node_call_add_child(
+	    imp,
+	    anna_node_create_identifier(0, L"lang"));
+
+	anna_node_call_t *definition = (anna_node_call_t *)program;
+	anna_node_call_prepend_child(
+	    definition,
+	    (anna_node_t *)imp);
+	
+    }
+
     wprintf(L"Parsed module AST:\n");    
     anna_node_print(program);
-        
+    
     anna_function_t *fake_function = anna_function_create(
 	anna_util_identifier_generate(L"moduleFunction", &(program->location)),
 	0,
@@ -74,9 +92,11 @@ anna_function_t *anna_module_load(wchar_t *module_name)
     assert(module);
     
     anna_object_t *module_object = anna_stack_wrap(module->stack_template);
-    anna_stack_declare(stack_global, module_name, module_object->type, module_object);
+    anna_stack_declare(stack_global, module_name, module_object->type, module_object, 0);
     
-    anna_prepare();
+    hash_put(anna_module_imported, module_name, module);
+    
+//    anna_prepare_function_interface(module);
     
     if(anna_error_count)
     {
@@ -85,7 +105,6 @@ anna_function_t *anna_module_load(wchar_t *module_name)
     }
     
     //sb_destroy(&sb);
-    hash_put(anna_module_imported, module_name, module);
     return module;
     
 }

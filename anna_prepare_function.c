@@ -193,7 +193,8 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 		function->stack_template,
 		function->input_name[i], 
 		function->input_type[i], 
-		null_object);	
+		null_object,
+		0);	
 	}
 	if(is_variadic)
 	{
@@ -203,7 +204,8 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 		function->stack_template, 
 		function->input_name[function->input_count-1], 
 		list_type, 
-		null_object);
+		null_object,
+		0);
 	}
     }
     else
@@ -212,7 +214,8 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 	    function->stack_template, 
 	    function->input_name[0], 
 	    node_call_wrapper_type,
-	    null_object);
+	    null_object,
+	    0);
     }
 
     function->flags |= ANNA_FUNCTION_PREPARED_COMMON;
@@ -233,10 +236,9 @@ static anna_node_t *anna_prepare_function_interface_internal(
     
     if(is_module)
     {
-//	wprintf(L"Holy crap, «%ls» function is a module\n", function->name);
+	//wprintf(L"Holy crap, «%ls» function is a module\n", function->name);
     }
     
-
     if(function->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
 	return 0;
     
@@ -305,17 +307,19 @@ static anna_node_t *anna_prepare_function_interface_internal(
     
     if(is_module)
     {
+	anna_prepare_function(function);
+	
 	for(i=0; i<al_get_count(&function->child_function); i++) 
 	{
 	    anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
-/*
-  wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
-  i, al_get_count(&function->child_function),
-  function->name, func->name);
-*/	
+	    /*
+	    wprintf(L"Prepare function %d of %d in module %ls: %ls\n", 
+		    i, al_get_count(&function->child_function),
+		    function->name, func->name);
+	    */
 	    anna_prepare_function_interface(func);
 	    
-	//anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
+	    //anna_function_t *func = (anna_function_t *)al_get(&function->child_function, i);
 /*
 	wprintf(L"Prepare subfunction %d of %d in function %ls: %ls\n", 
 		i, al_get_count(&function->child_function),
@@ -328,26 +332,6 @@ static anna_node_t *anna_prepare_function_interface_internal(
 	
     }
     
-
-
-
-/*    
-    if(!is_anonymous)
-    {
-	anna_stack_declare(
-	    function->stack_template->parent, 
-	    name, 
-	    anna_type_for_function(
-		function->return_type,
-		function->input_count,
-		function->input_type,
-		function->input_name,
-		is_variadic),
-	    anna_function_wrap(function));
-    }
-*/
-
-
 
     function->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     return (anna_node_t *)anna_node_create_dummy(&node->location, anna_function_wrap(function),0);
@@ -407,7 +391,7 @@ static void anna_prepare_function_internal(
     
     //wprintf(L"Preparing body of function %ls\n", function->name);
     
-
+    
     if(function->body)
     {
 	for(i=0; i<function->body->child_count; i++) 
@@ -418,7 +402,7 @@ static void anna_prepare_function_internal(
 		function, 
 		&list);
 	}
-    
+	
 	for(i=0; i<function->body->child_count; i++) 
 	{
 	    anna_node_validate(function->body->child[i], function->stack_template);

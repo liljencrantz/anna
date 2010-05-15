@@ -63,7 +63,8 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		anna_stack_declare(my_stack, 
 				   function->input_name[0],
 				   function->input_type[0],
-				   this);
+				   this,
+				   0);
 	    }
 		
 	    for(i=0; i<(function->input_count-offset); i++) 

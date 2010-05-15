@@ -1,4 +1,3 @@
-import(lang);
 
 function mandelbrot(Complex p0, Int maxStep)
 {
