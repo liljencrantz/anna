@@ -574,3 +574,25 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
     */
 }
+
+
+
+anna_type_t *anna_list_replace(anna_type_t *base, wchar_t *from, wchar_t *to)
+{
+    anna_type_t *res = anna_type_copy(base);
+    res->definition->child[3] = 
+	anna_node_replace(
+	    res->definition->child[3],
+	    anna_node_create_identifier(0, from),
+	    anna_node_create_identifier(0, to));
+    return res;
+}
+
+anna_type_t *anna_list_type_get(anna_type_t *subtype)
+{
+    return anna_list_replace(list_type, L"T", subtype->name);
+}
+
+
+
+

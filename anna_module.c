@@ -10,6 +10,7 @@
 #include "anna.h"
 #include "anna_module.h"
 #include "anna_node.h"
+#include "anna_node_create.h"
 #include "anna_util.h"
 #include "anna_function.h"
 #include "anna_prepare.h"
@@ -49,12 +50,12 @@ anna_function_t *anna_module_load(wchar_t *module_name)
     {
 	anna_node_call_t *imp = anna_node_create_call(
 	    0,
-	    anna_node_create_identifier(0, L"import"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"import"),
 	    0,
 	    0);
 	anna_node_call_add_child(
 	    imp,
-	    anna_node_create_identifier(0, L"lang"));
+	    (anna_node_t *)anna_node_create_identifier(0, L"lang"));
 
 	anna_node_call_t *definition = (anna_node_call_t *)program;
 	anna_node_call_prepend_child(

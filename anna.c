@@ -38,13 +38,10 @@ anna_type_t *type_type=0,
 anna_object_t *null_object=0;
 
 static hash_table_t anna_type_for_function_identifier;
-static hash_table_t anna_mid_identifier;
-static array_list_t anna_mid_identifier_reverse;
 
 anna_node_t *anna_node_null=0;
 
 anna_stack_frame_t *stack_global;
-static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
 
@@ -109,48 +106,18 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid)
     }
 }
 
-void anna_mid_put(wchar_t *name, size_t mid)
-{
-    size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
-    if(offset_ptr)
-    {
-	wprintf(L"Tried to reassign mid!\n");
-	exit(1);
-    }
-   
-    offset_ptr = malloc(sizeof(size_t));
-    *offset_ptr = mid;
-    hash_put(&anna_mid_identifier, name, offset_ptr);   
-    al_set(&anna_mid_identifier_reverse, mid, wcsdup(name));
-}
-
-size_t anna_mid_get(wchar_t *name)
-{
-    size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
-    if(!offset_ptr)
-    {      
-	size_t gg = mid_pos++;
-	anna_mid_put(name, gg);
-	return gg;
-    }
-    return *offset_ptr;
-}
-
-wchar_t *anna_mid_get_reverse(size_t mid)
-{
-    return (wchar_t *)al_get(&anna_mid_identifier_reverse, mid);
-}
-
 static int hash_function_type_func(void *a)
 {
     anna_function_type_key_t *key = (anna_function_type_key_t *)a;
     int res = (int)key->result + key->is_variadic;
     int i;
+    
     for(i=0;i<key->argc; i++)
     {
 	res = (res<<19) ^ (int)key->argv[i] ^ (res>>13);
 	res += wcslen(key->argn[i]);
     }
+    
     return res;
 }
 
@@ -324,7 +291,7 @@ anna_object_t *anna_construct(
 	    result,
 	    param,
 	    stack,
-	    0);
+	    type->stack);
     }
     
     return result;
@@ -401,15 +368,6 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 int anna_abides(anna_type_t *contender, anna_type_t *role_model)
 {
     return !anna_abides_fault_count(contender, role_model);
-}
-
-
-/**
-   This method is the best ever! All method calls on the null object run this
-*/
-anna_object_t *anna_i_null_function(anna_object_t **node_base)
-{
-    return null_object;
 }
 
 
@@ -581,6 +539,15 @@ size_t anna_method_create(anna_type_t *type,
     return (size_t)mid;
 }
 
+/**
+   This method is the best ever! All method calls on the null object run this
+*/
+anna_object_t *anna_i_null_function(anna_object_t **node_base)
+{
+    return null_object;
+}
+
+
 static int hash_null_func( void *data )
 {
     return 0;
@@ -634,39 +601,12 @@ static void anna_null_type_create()
 
 static void anna_init()
 {
-    al_init(&anna_mid_identifier_reverse);
-    hash_init(
-	&anna_mid_identifier,
-	&hash_wcs_func, 
-	&hash_wcs_cmp);
     hash_init(
 	&anna_type_for_function_identifier,
 	&hash_function_type_func,
 	&hash_function_type_comp);
+    anna_mid_init();
     
-    anna_mid_put(L"!typeWrapperPayload", ANNA_MID_TYPE_WRAPPER_PAYLOAD);
-    anna_mid_put(L"!callPayload", ANNA_MID_CALL_PAYLOAD);
-    anna_mid_put(L"!stringPayload", ANNA_MID_STRING_PAYLOAD);
-    anna_mid_put(L"!stringPayloadSize", ANNA_MID_STRING_PAYLOAD_SIZE);
-    anna_mid_put(L"!charPayload", ANNA_MID_CHAR_PAYLOAD);
-    anna_mid_put(L"!intPayload", ANNA_MID_INT_PAYLOAD);
-    anna_mid_put(L"!listPayload", ANNA_MID_LIST_PAYLOAD);
-    anna_mid_put(L"!listSize", ANNA_MID_LIST_SIZE);
-    anna_mid_put(L"!listCapacity", ANNA_MID_LIST_CAPACITY);
-    anna_mid_put(L"!functionTypePayload", ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-    anna_mid_put(L"!functionPayload", ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_mid_put(L"!floatPayload", ANNA_MID_FLOAT_PAYLOAD);
-    anna_mid_put(L"!functionStack", ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_mid_put(L"__call__", ANNA_MID_CALL_PAYLOAD);    
-    anna_mid_put(L"__init__", ANNA_MID_INIT_PAYLOAD);
-    anna_mid_put(L"!nodePayload", ANNA_MID_NODE_PAYLOAD);
-    anna_mid_put(L"!memberPayload", ANNA_MID_MEMBER_PAYLOAD);
-    anna_mid_put(L"!memberTypePayload", ANNA_MID_MEMBER_TYPE_PAYLOAD);
-    anna_mid_put(L"!stackPayload", ANNA_MID_STACK_PAYLOAD);
-    anna_mid_put(L"!stackTypePayload", ANNA_MID_STACK_TYPE_PAYLOAD);
-    anna_mid_put(L"from", ANNA_MID_FROM);
-    anna_mid_put(L"to", ANNA_MID_TO);
-    anna_mid_put(L"step", ANNA_MID_STEP);
     
     stack_global = anna_stack_create(4096, 0);
     /*
@@ -709,28 +649,26 @@ int main(int argc, char **argv)
 	wprintf(L"Error: Expected at least one argument, a name of a file to run.\n");
 	exit(1);
     }
-
+    
     wchar_t *module_name = str2wcs(argv[1]);
     
     wprintf(L"Initializing interpreter...\n");    
     anna_init();
-
+    
     if(anna_error_count)
     {
 	wprintf(L"Found %d error(s) during initialization, exiting\n", anna_error_count);
 	exit(1);
     }
-
+    
     null_object = anna_object_create_raw(0);
     anna_module_load(L"lang");
     anna_prepare();
     
     null_object->type = null_type;
-        
     anna_int_one = anna_int_create(1);
 
     anna_function_t *module = anna_module_load(module_name);
-
     anna_prepare();
     
 //    wprintf(L"Validated program:\n");    
@@ -751,7 +689,6 @@ int main(int argc, char **argv)
     anna_function_invoke(module, 0, 0, stack_global, stack_global);    
     
     wprintf(L"Output:\n");        
-//    anna_function_invoke(main_func, 0, 0, stack_global, stack_global);
     anna_function_invoke(main_func, 0, 0, stack_global, module->stack_template);
     
     wprintf(L"\n");

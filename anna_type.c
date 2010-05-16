@@ -283,4 +283,24 @@ int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
   return !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
 }
 
+anna_type_t *anna_type_copy(anna_type_t *orig)
+{
+    anna_type_t *res = anna_type_native_create(
+	anna_util_identifier_generate(orig->name, 0),
+	orig->stack);
+    int i;
+    
+    anna_node_call_t *orig_body = (anna_node_call_t *)orig->definition->child[3];
+
+    for(i=0; i<orig_body->child_count; i++)
+    {
+	anna_node_call_add_child(
+	    (anna_node_call_t *)res->definition->child[3],
+	    anna_node_clone_deep(orig_body->child[i]));
+    }
+    
+    return res;
+
+}
+
 

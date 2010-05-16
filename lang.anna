@@ -102,6 +102,19 @@ class Range template (T:Int)
 }
 
 
+class Pair template(First:Object), template(Second:Object)
+{
+    var First first;
+    var Second second;
+    
+    function Object __init__(First f, Second s)
+    {
+	this.first = f;
+	this.second=s;
+    }
+
+}
+
 class BinaryMapNode template(Key:Int), template(Value:Object)
 {
     var Key key;
@@ -121,8 +134,13 @@ class BinaryMap template(Key:Int), template(Value:Object)
 {
     var BinaryMapNode<Key,Value> root;
     
-    function BinaryMap<Key,Value> __init__()
+    function BinaryMap<Key,Value> __init__(Pair<Key,Value> init...)
     {
+	init.each(it)
+	{
+	    this[it.first] = it.second;
+	}
+	
     }
     
     function BinaryMapNode<Key,Value> insert(BinaryMapNode<Key,Value> node,Key key, Value value)

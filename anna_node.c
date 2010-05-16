@@ -281,8 +281,14 @@ anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_st
     anna_sid_t real_sid = anna_stack_sid_create(stack, this->name);
     if(memcmp(&this->sid, &real_sid, sizeof(anna_sid_t))!=0)
     {
-        anna_error((anna_node_t *)this, L"Critical: Cached sid (%d, %d) different from invoke time sid (%d, %d) for node %ls",
-		   this->sid.frame, this->sid.offset, real_sid.frame, real_sid.offset, this->name);
+        anna_error(
+	    (anna_node_t *)this,
+	    L"Critical: Cached sid (%d, %d) different from invoke time sid (%d, %d) for node %ls",
+	    this->sid.frame,
+	    this->sid.offset,
+	    real_sid.frame,
+	    real_sid.offset,
+	    this->name);
 	anna_stack_print_trace(stack);	
 	
 	CRASH;
@@ -941,6 +947,7 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     anna_node_t *r = malloc(sz);
     memcpy(r,n,sz);
     r->wrapper=0;
+    ANNA_UNPREPARED(r);
     return r;
 }
 
@@ -975,7 +982,6 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	  These nodes are not mutable and they have no child nodes, so
 	  we can return them as is.
 	*/
-	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
@@ -984,7 +990,8 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_BLOB:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_TRAMPOLINE:
-	    return n;
+	case ANNA_NODE_IDENTIFIER:
+	    return anna_node_clone_shallow(n);
 	    
 	    /*
 	      These nodes are not yet handled, but that should be

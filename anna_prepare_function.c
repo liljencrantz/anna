@@ -198,12 +198,11 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 	}
 	if(is_variadic)
 	{
-	      //FIXME:
-	      //Templatize to right list subtype
+	    //FIXME: Templatize to right list subtype
 	    anna_stack_declare(
 		function->stack_template, 
 		function->input_name[function->input_count-1], 
-		list_type, 
+		anna_list_type_get(function->input_type[function->input_count-1]), 
 		null_object,
 		0);
 	}

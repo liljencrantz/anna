@@ -7,6 +7,7 @@
 
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
 #define ANNA_PREPARED(n) ((n)->prepared=1)
+#define ANNA_UNPREPARED(n) ((n)->prepared=0)
 #define ANNA_CHECK_NODE_PREPARED(n)  if(!(n)->prepared)			\
     {									\
 	anna_error(n,L"Critical: Tried to invoke unprepared AST node");	\
@@ -16,6 +17,7 @@
     }
 #else
 #define ANNA_PREPARED(n) 
+#define ANNA_UNPREPARED(n) 
 #define ANNA_CHECK_NODE_PREPARED(n) 
 #endif
 
@@ -292,8 +294,6 @@ size_t anna_method_create(anna_type_t *type,
 			  int flags,
 			  anna_function_t *definition);
 
-size_t anna_mid_get(wchar_t *name);
-wchar_t *anna_mid_get_reverse(size_t mid);
 
 int anna_abides(anna_type_t *contender, anna_type_t *role_model);
 
@@ -314,5 +314,9 @@ anna_object_t *anna_object_create_raw(size_t sz);
 
 void anna_object_print(anna_object_t *obj);
 
+void anna_mid_init();
+size_t anna_mid_get(wchar_t *name);
+wchar_t *anna_mid_get_reverse(size_t mid);
+void anna_mid_put(wchar_t *name, size_t mid);
 
 #endif

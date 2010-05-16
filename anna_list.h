@@ -22,5 +22,6 @@ void anna_list_set_capacity(anna_object_t *this, size_t sz);
 anna_object_t **anna_list_get_payload(anna_object_t *this);
 
 void anna_list_type_create(struct anna_stack_frame *);
+anna_type_t *anna_list_type_get(anna_type_t *subtype);
 
 #endif

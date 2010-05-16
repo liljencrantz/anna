@@ -1,3 +1,5 @@
+
+
 typedef struct
 {
     anna_stack_frame_t *src;
@@ -5,11 +7,15 @@ typedef struct
 }
 anna_node_import_data;
 
-static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
+static void anna_node_import_item(
+    void *key_ptr,
+    void *val_ptr,
+    void *aux_ptr)
 {
     wchar_t *name = (wchar_t *)key_ptr;
     size_t *offset=(size_t *)val_ptr;
-    anna_node_import_data *data = (anna_node_import_data *)aux_ptr;
+    anna_node_import_data *data = 
+	(anna_node_import_data *)aux_ptr;
     
     if(data->src->member_flags[*offset])
     {
@@ -18,9 +24,10 @@ static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
     }
     //wprintf(L"Import: Importing public member %ls\n", name);
     
-    anna_object_t *item = anna_stack_get_str(
-	data->src,
-	name);
+    anna_object_t *item =
+	anna_stack_get_str(
+	    data->src,
+	    name);
     anna_stack_declare(
 	data->dst,
 	name,
@@ -31,7 +38,20 @@ static void anna_node_import_item(void *key_ptr,void *val_ptr, void *aux_ptr)
 
 
 
-anna_node_t *anna_node_call_prepare(
+static anna_object_t *anna_node_constructor_template(
+    anna_object_t *type_object,
+    anna_node_call_t *node, 
+    anna_function_t *function,
+    anna_node_list_t *parent)
+{
+//    wprintf(L"Check function call for template\n");
+//    anna_node_print(node);
+    return type_object;    
+}
+
+
+
+static anna_node_t *anna_node_call_prepare(
     anna_node_call_t *node, 
     anna_function_t *function,
     anna_node_list_t *parent)
@@ -50,7 +70,10 @@ anna_node_t *anna_node_call_prepare(
 */
     if(node->node_type == ANNA_NODE_CALL)
     {       
-	anna_function_t *macro_definition = anna_node_macro_get(node, function->stack_template);
+	anna_function_t *macro_definition =
+	    anna_node_macro_get(
+		node,
+		function->stack_template);
 	
 	if(macro_definition)
 	{       
@@ -58,32 +81,57 @@ anna_node_t *anna_node_call_prepare(
 	    anna_node_t *macro_output;
 	    //ANNA_PREPARED(node->function);
 	    
-	    macro_output = anna_macro_invoke(
-		macro_definition, node, function, parent);
-	    return anna_node_prepare(macro_output, function, parent);
-	}
-	else {
-	    //wprintf(L"Plain function\n");
+	    macro_output =
+		anna_macro_invoke(
+		    macro_definition,
+		    node,
+		    function,
+		    parent);
+	    return anna_node_prepare(
+		macro_output, 
+		function, 
+		parent);
 	}
 	
-	node->function = anna_node_prepare(node->function, function, parent);
-	anna_type_t *func_type = anna_node_get_return_type(node->function, function->stack_template);       
+	node->function =
+	    anna_node_prepare(
+		node->function,
+		function,
+		parent);
+	anna_type_t *func_type = 
+	    anna_node_get_return_type(
+		node->function,
+		function->stack_template);       
 	if(func_type == type_type)
 	{
 	    /*
 	      Constructor!
 	    */
-	    node->node_type = ANNA_NODE_CONSTRUCT;
-	    node->function = (anna_node_t *)anna_node_create_dummy(
-		&node->location, 
-		anna_node_invoke(node->function, function->stack_template),
-		0);
-	    node->function = anna_node_prepare(node->function, function, &list);
+	    node->node_type = 
+		ANNA_NODE_CONSTRUCT;
+	    node->function = 
+		(anna_node_t *)anna_node_create_dummy(
+		    &node->location, 
+		    anna_node_constructor_template(
+			anna_node_invoke(
+			    node->function, 
+			    function->stack_template),
+			node,
+			function,
+			parent),
+		    0);
+	    node->function = anna_node_prepare(
+		node->function,
+		function,
+		&list);
 	    
 	    for(i=0; i<node->child_count; i++)
 	    {
 		list.idx = i;
-		node->child[i] = anna_node_prepare(node->child[i], function, &list);	 
+		node->child[i] = anna_node_prepare(
+		    node->child[i], 
+		    function,
+		    &list);	 
 	    }
 	   
 	    return (anna_node_t *)node;
@@ -91,13 +139,19 @@ anna_node_t *anna_node_call_prepare(
     }
     else 
     {
-	node->function = anna_node_prepare(node->function, function, &list);
+	node->function = anna_node_prepare(
+	    node->function,
+	    function,
+	    &list);
     }
 
     for(i=0; i<node->child_count; i++)
     {
 	list.idx = i;
-	node->child[i] = anna_node_prepare(node->child[i], function, &list);	 
+	node->child[i] = anna_node_prepare(
+	    node->child[i],
+	    function,
+	    &list);	 
     }
     return (anna_node_t *)node;
 }
@@ -125,18 +179,26 @@ anna_node_t *anna_node_prepare(
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_CONSTRUCT:
 	    //wprintf(L"It's a call\n");
-	    return anna_node_call_prepare((anna_node_call_t *)this, function, parent);
+	    return anna_node_call_prepare(
+		(anna_node_call_t *)this,
+		function,
+		parent);
 
 	case ANNA_NODE_RETURN:
 	{
-	    anna_node_return_t * result = (anna_node_return_t *)this;
-	    result->payload=anna_node_prepare(result->payload, function, &list);
+	    anna_node_return_t * result = 
+		(anna_node_return_t *)this;
+	    result->payload=anna_node_prepare(
+		result->payload,
+		function,
+		&list);
 	    return (anna_node_t *)result;
 	}
 	
 	case ANNA_NODE_IDENTIFIER:
 	{
-	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
+	    anna_node_identifier_t *this2 =
+		(anna_node_identifier_t *)this;
 	    /*
 	    if(anna_node_identifier_is_function(
 		   this2,
@@ -148,7 +210,11 @@ anna_node_t *anna_node_prepare(
 		ANNA_PREPARED(this2);    
 	    }
 	    */
-	    this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
+
+	    
+	    this2->sid = anna_stack_sid_create(
+		function->stack_template, 
+		this2->name);
 /*
 	    if(wcscmp(this2->name, L"print")==0)
 	    {
@@ -170,8 +236,12 @@ anna_node_t *anna_node_prepare(
 
 	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	{
-	    anna_node_identifier_t *this2 =(anna_node_identifier_t *)this;
-	    this2->sid = anna_stack_sid_create(function->stack_template, this2->name);
+	    anna_node_identifier_t *this2 =
+		(anna_node_identifier_t *)this;
+	    this2->sid = 
+		anna_stack_sid_create(
+		    function->stack_template, 
+		    this2->name);
 /*
 	    if(wcscmp(this2->name,L"print")==0)
 		anna_stack_print_trace(function->stack_template);
@@ -182,35 +252,56 @@ anna_node_t *anna_node_prepare(
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
-	    anna_node_member_get_t * result = (anna_node_member_get_t *)this;	    
-	    result->object = anna_node_prepare(result->object, function, &list);
+	    anna_node_member_get_t * result = 
+		(anna_node_member_get_t *)this;	    
+	    result->object =
+		anna_node_prepare(
+		    result->object,
+		    function,
+		    &list);
 	    return this;
 	}
 	
 	case ANNA_NODE_ASSIGN:
 	{
-	    anna_node_assign_t * result = (anna_node_assign_t *)this;	    
-	    result->value = anna_node_prepare(result->value, function, &list);
+	    anna_node_assign_t * result =
+		(anna_node_assign_t *)this;	    
+	    result->value =
+		anna_node_prepare(
+		    result->value,
+		    function,
+		    &list);
 	    return this;
 	}
 
 	case ANNA_NODE_MEMBER_SET:
 	{
-	    anna_node_member_set_t * result = (anna_node_member_set_t *)this;	    
-	    result->value = anna_node_prepare(result->value, function, &list);
-	    result->object = anna_node_prepare(result->object, function, &list);
+	    anna_node_member_set_t * result =
+		(anna_node_member_set_t *)this;	    
+	    result->value = 
+		anna_node_prepare(
+		    result->value,
+		    function,
+		    &list);
+	    result->object = 
+		anna_node_prepare(
+		    result->object,
+		    function,
+		    &list);
 	    return this;
 	}
 
 
 	case ANNA_NODE_IMPORT:
 	{
-	    anna_node_import_t * result = (anna_node_import_t *)this;	    
+	    anna_node_import_t * result =
+		(anna_node_import_t *)this;	    
 	    int import_ok = 0;
 	    
 	    if(result->payload->node_type == ANNA_NODE_CALL)
 	    {
-		anna_node_call_t *call = (anna_node_call_t *)result->payload;
+		anna_node_call_t *call =
+		    (anna_node_call_t *)result->payload;
 		if(check_node_identifier_name(call->function, L"__memberGet__"))
 		{
 		    if(call->child_count == 2)
@@ -222,10 +313,12 @@ anna_node_t *anna_node_prepare(
 				(anna_node_identifier_t *)call->child[0];
 			    anna_node_identifier_t *field = 
 				(anna_node_identifier_t *)call->child[1];
-			    anna_function_t *module = anna_module_load(module_id->name);
+			    anna_function_t *module = 
+				anna_module_load(module_id->name);
 			    anna_prepare_function_interface(module);
-			    anna_object_t *item = anna_stack_get_str(module->stack_template,
-								     field->name);
+			    anna_object_t *item = anna_stack_get_str(
+				module->stack_template,
+				field->name);
 			    if(item)
 			    {
 				anna_stack_declare(
@@ -266,7 +359,9 @@ anna_node_t *anna_node_prepare(
 	    
 	    if(!import_ok)
 	    {
-		anna_error(this, L"Invalid import");
+		anna_error(
+		    this,
+		    L"Invalid import");
 	    }
 	    
 	    return anna_node_create_null(0);
@@ -289,15 +384,26 @@ anna_node_t *anna_node_prepare(
     }
 }
 
-void anna_node_prepare_children(anna_node_call_t *in, anna_function_t *func, anna_node_list_t *parent)
+void anna_node_prepare_children(
+    anna_node_call_t *in, 
+    anna_function_t *func, 
+    anna_node_list_t *parent)
 {
     int i;
     for(i=0; i< in->child_count; i++)
-	in->child[i] = anna_node_prepare(in->child[i], func, parent);
+    {
+	in->child[i] = 
+	    anna_node_prepare(in->child[i], func, parent);
+    }
 }
 
-void anna_node_prepare_child(anna_node_call_t *in, int idx, anna_function_t *func, anna_node_list_t *parent)
+void anna_node_prepare_child(
+    anna_node_call_t *in,
+    int idx,
+    anna_function_t *func, 
+    anna_node_list_t *parent)
 {
-    in->child[idx] = anna_node_prepare(in->child[idx], func, parent);
+    in->child[idx] =
+	anna_node_prepare(in->child[idx], func, parent);
 }
 

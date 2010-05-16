@@ -2,11 +2,8 @@ import(lang);
 
 function Int main()
 {
-    var lst = [1,2,3];
-    print(lst[0]+2);
     
-    
-    var foo = BinaryMap<Int, String>();
+    var foo = BinaryMap<Int, String>(7:"tjoho", 21:"Cardgame");
     foo[3]="aaa";
     foo[2]="bbb";
     foo[3]="ddd";

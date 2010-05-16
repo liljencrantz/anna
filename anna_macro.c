@@ -508,7 +508,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node,
 
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
     anna_type_t *type = anna_type_create(name, function->stack_template);
-    
+
     type->definition = node;
     anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type), 0);
     //wprintf(L"Registered type %ls\n", name);
@@ -581,7 +581,8 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 							  result->name);    
     }
     
-    anna_type_t *type = anna_type_create(L"!temporaryTypeName", function->stack_template);
+    anna_type_t *type = anna_type_create(L"!temporaryTypeName", base_type->stack);
+
     templatize_key_t *new_key = malloc(sizeof(templatize_key_t));
        
     memcpy(new_key, &key,sizeof(templatize_key_t));
@@ -629,9 +630,9 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 	CHECK_NODE_IDENTIFIER_NAME(pair->function, L"Pair");
 	CHECK_CHILD_COUNT(pair, L"template instantiation", 2);
 	CHECK_NODE_TYPE(pair->child[0], ANNA_NODE_IDENTIFIER);
-
+	
 	pair->child[1] = param->child[param_done++];
-	sb_printf(&sb_name, L"%d", pair->child[1]);
+	sb_printf(&sb_name, L"%ls%d", i==0?L"":L",", pair->child[1]);
     }
     sb_append(&sb_name, L">");
     
@@ -644,7 +645,10 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     type->name = name;
    
     type->definition = definition;
-    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type), 0);
+    anna_stack_declare(stack_global, name, type_type, anna_type_wrap(type), 0);
+//    wprintf(L"Declare templatized type %ls in stack\n", type->name);
+    //anna_stack_print_trace(stack_global);
+    
 /*
     anna_node_t *type_result = anna_macro_type_setup(type, function, parent);
     if(type_result->node_type == ANNA_NODE_NULL){

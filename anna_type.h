@@ -44,5 +44,7 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
 
 int anna_type_member_is_method(anna_type_t *type, wchar_t *name);
 
+anna_type_t *anna_type_copy(anna_type_t *orig);
+
 
 #endif

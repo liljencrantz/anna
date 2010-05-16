@@ -132,11 +132,12 @@ struct anna_node *anna_macro_invoke(
     }
 }
 
-anna_object_t *anna_function_invoke(anna_function_t *function, 
-				    anna_object_t *this,
-				    anna_node_call_t *param, 
-				    anna_stack_frame_t *param_invoke_stack,
-				    anna_stack_frame_t *outer) 
+anna_object_t *anna_function_invoke(
+    anna_function_t *function, 
+    anna_object_t *this,
+    anna_node_call_t *param, 
+    anna_stack_frame_t *param_invoke_stack,
+    anna_stack_frame_t *outer) 
 {
 /*
     wprintf(L"Executing function %ls\n", function->name);
