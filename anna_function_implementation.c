@@ -12,13 +12,16 @@
 #include "anna_int.h"
 #include "anna_char.h"
 #include "anna_list.h"
+#include "anna_function.h"
 
 anna_object_t *anna_i_print(anna_object_t **param)
 {
     int i;
+        
     for(i=0; i<anna_list_get_size(param[0]); i++) {
 	
 	anna_object_t *value = anna_list_get(param[0], i);
+	
 	if(value->type == int_type) 
 	{
 	    int val = anna_int_get(value);
@@ -76,12 +79,11 @@ static anna_object_t *anna_i_if(anna_object_t **param)
 void anna_function_implementation_init(struct anna_stack_frame *stack)
 {
     static wchar_t *p_argn[]={L"object"};
-    anna_native_declare(stack, L"print", ANNA_FUNCTION_VARIADIC, (anna_native_t)&anna_i_print, null_type, 1, &object_type, p_argn);
-    
-    anna_native_declare(stack, L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn);
+    anna_native_create(L"print", ANNA_FUNCTION_VARIADIC, (anna_native_t)&anna_i_print, null_type, 1, &object_type, p_argn, stack);
+    anna_native_create(L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn, stack);
     
     anna_type_t *if_argv[]={object_type, object_type, object_type};
     static wchar_t *if_argn[]={L"condition", L"trueBlock", L"falseBlock"};    
-    anna_native_declare(stack, L"__if__", 0, (anna_native_t)&anna_i_if, object_type, 3, if_argv, if_argn);
+    anna_native_create( L"__if__", 0, (anna_native_t)&anna_i_if, object_type, 3, if_argv, if_argn, stack);
     
 }

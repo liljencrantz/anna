@@ -9,6 +9,7 @@
 #include "anna_string_internal.h"
 #include "util.h"
 #include "common.h"
+#include "anna_crash.h"
 
 #ifdef ANNA_STRING_CHUNKED_ENABLED
 
@@ -140,6 +141,7 @@ anna_string_location_t asi_get_location(anna_string_t *dest, size_t offset)
 	first_in_element = last_in_element;
     } 
     wprintf(L"Error: Tried to find element %d in string of length %d\n", offset, first_in_element);
+    CRASH;
 }
 
 
@@ -326,7 +328,7 @@ static void asi_ensure_element_capacity(anna_string_t *string, size_t count)
 	{
 	    
 	    
-	    anna_string_element_t *new_element = realloc(string->element,(sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
+	    anna_string_element_t **new_element = realloc(string->element,(sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
 	    size_t *new_element_offset = ((size_t *)new_element) + count;
 	    size_t *new_element_length = new_element_offset + count;
 	    //memcpy(new_element, string->element, sizeof(anna_string_element_t *)*string->element_count);
@@ -592,8 +594,8 @@ wchar_t asi_get_char(anna_string_t *dest, size_t offset)
 	    return dest->element[i]->payload[offset + dest->element_offset[i]-first_in_element];
 	}
 	first_in_element = last_in_element;
-    } 
-    wprintf(L"Error: Tried to get element %d in string of length %d\n", offset, first_in_element);  
+    }
+    return 0;
 }
 
 size_t asi_get_length(anna_string_t *dest)

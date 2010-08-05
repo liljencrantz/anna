@@ -1,3 +1,4 @@
+
 static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node, 
 						anna_function_t *function, 
 						anna_node_list_t *parent)
@@ -52,7 +53,7 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 	    
 	anna_node_t *mg_param[2]=
 	    {
-		node->child[arg_offset], (anna_node_t *)anna_node_identifier_create(&node->location,method_name)
+		node->child[arg_offset], (anna_node_t *)anna_node_create_identifier(&node->location,method_name)
 	    }
 	;
 	
@@ -63,12 +64,12 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 	;
 	
 	return (anna_node_t *)
-	    anna_node_call_create(
+	    anna_node_create_call(
 		&node->location,
-		(anna_node_t *)anna_node_call_create(
+		(anna_node_t *)anna_node_create_call(
 		    &node->location,
 		    (anna_node_t *)
-		    anna_node_identifier_create(
+		    anna_node_create_identifier(
 			&node->location,
 			L"__memberGet__"),
 		    2,
@@ -94,7 +95,7 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 
 	anna_node_t *mg_param[2]=
 	    {
-		node->child[arg_offset+1], (anna_node_t *)anna_node_identifier_create(&node->location, method_name)
+		node->child[arg_offset+1], (anna_node_t *)anna_node_create_identifier(&node->location, method_name)
 	    }
 	;
 	
@@ -105,13 +106,13 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 	;
 	
 	return (anna_node_t *)
-	    anna_node_call_create(
+	    anna_node_create_call(
 		&node->location,
 		(anna_node_t *)
-		anna_node_call_create(
+		anna_node_create_call(
 		    &node->location,
 		    (anna_node_t *)
-		    anna_node_identifier_create(
+		    anna_node_create_identifier(
 			&node->location,
 			L"__memberGet__"),
 		    2,
@@ -150,18 +151,18 @@ static anna_node_t *anna_macro_assign_operator(
 	anna_node_t *node_param[]=
 	    {
 		node->child[0],
-		(anna_node_t *)anna_node_identifier_create(
+		(anna_node_t *)anna_node_create_identifier(
 		    &node->function->location, 
 		    new_identifier)
 	    }
 	;
 	
 	node = 
-	    anna_node_call_create(
+	    anna_node_create_call(
 		&node->location, 
-		anna_node_call_create(
+		(anna_node_t *)anna_node_create_call(
 		    &node->location, 
-		    anna_node_identifier_create(
+		    (anna_node_t *)anna_node_create_identifier(
 			&node->location, 
 			L"__memberGet__"),
 		    2,
@@ -171,7 +172,7 @@ static anna_node_t *anna_macro_assign_operator(
     }
     else
     {
-	node->function = anna_node_identifier_create(
+	node->function = (anna_node_t *)anna_node_create_identifier(
 	    &node->function->location, 
 	    new_identifier);
     }
@@ -182,9 +183,9 @@ static anna_node_t *anna_macro_assign_operator(
 	}
     ;
     
-    anna_node_t *result = (anna_node_t *)anna_node_call_create(
+    anna_node_t *result = (anna_node_t *)anna_node_create_call(
 	&node->location,
-	anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    &node->location,
 	    L"__assign__"),
 	2,
@@ -213,7 +214,7 @@ static anna_node_t *anna_macro_get(anna_node_call_t *node,
     
     anna_node_t *mg_param[2]=
 	{
-	    node->child[0], (anna_node_t *)anna_node_identifier_create(&node->location, method_name)
+	    node->child[0], (anna_node_t *)anna_node_create_identifier(&node->location, method_name)
 	}
     ;
   
@@ -224,11 +225,11 @@ static anna_node_t *anna_macro_get(anna_node_call_t *node,
     ;
   
     anna_node_t *result = (anna_node_t *)
-	anna_node_call_create(&node->location,
+	anna_node_create_call(&node->location,
 			      (anna_node_t *)
-			      anna_node_call_create(&node->location,
+			      anna_node_create_call(&node->location,
 						    (anna_node_t *)
-						    anna_node_identifier_create(&node->location,
+						    anna_node_create_identifier(&node->location,
 										L"__memberGet__"),
 						    2,
 						    mg_param),
@@ -260,7 +261,7 @@ static anna_node_t *anna_macro_set(anna_node_call_t *node,
     	    
     anna_node_t *mg_param[2]=
 	{
-	    node->child[0], (anna_node_t *)anna_node_identifier_create(&node->location, method_name)
+	    node->child[0], (anna_node_t *)anna_node_create_identifier(&node->location, method_name)
 	}
     ;
     
@@ -271,11 +272,11 @@ static anna_node_t *anna_macro_set(anna_node_call_t *node,
     ;
     
     anna_node_t *result = (anna_node_t *)
-	anna_node_call_create(&node->location,
+	anna_node_create_call(&node->location,
 			      (anna_node_t *)
-			      anna_node_call_create(&node->location,
+			      anna_node_create_call(&node->location,
 						    (anna_node_t *)
-						    anna_node_identifier_create(&node->location,
+						    anna_node_create_identifier(&node->location,
 										L"__memberGet__"),
 						    2,
 						    mg_param),
@@ -309,7 +310,7 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 		name_identifier->name);
 	   
 	    return (anna_node_t *)
-		anna_node_assign_create(&node->location,
+		anna_node_create_assign(&node->location,
 					sid,
 					node->child[1]);
 	}
@@ -324,7 +325,7 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 	    {
 		// foo[bar] = baz
 		call->function = (anna_node_t *)
-		    anna_node_identifier_create(
+		    anna_node_create_identifier(
 			&name_identifier->location,
 			L"__set__");
 		anna_node_call_add_child(
@@ -336,7 +337,7 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node,
 	    {
 		// foo.bar = baz
 		call->function = (anna_node_t *)
-		    anna_node_identifier_create(
+		    anna_node_create_identifier(
 			&name_identifier->location, 
 			L"__memberSet__");
 		anna_node_call_add_child(
@@ -362,26 +363,33 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node,
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
     
     anna_node_prepare_children(node, function, parent);
-
+    
     anna_type_t *object_type = anna_node_get_return_type(node->child[0], function->stack_template);
-    CHECK(object_type, node->child[0], L"Tried to access member in object of unknown type");
+
+    CHECK(
+	object_type,
+	node->child[0], 
+	L"Tried to access member in object of unknown type");
     
     anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
 
     size_t mid = anna_mid_get(name_node->name);
     
     anna_type_t *member_type = anna_type_member_type_get(object_type, name_node->name);
-
+    
     if(!member_type)
     {
-	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
-	CRASH;
 	
-	return (anna_node_t *)anna_node_null_create(&node->location);	\
+	anna_error((anna_node_t *)node, L"Unable to calculate type of member \"%ls\" in object of type \"%ls\"", name_node->name, object_type->name);
+	anna_type_print(object_type);
+//	anna_stack_print(function->stack_template);
+	return (anna_node_t *)anna_node_create_null(&node->location);	\
     }
-  
-    int wrap = !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-    return (anna_node_t *)anna_node_member_get_create(&node->location,
+    
+    int wrap = anna_type_member_is_method(object_type, name_node->name);
+    
+    
+    return (anna_node_t *)anna_node_create_member_get(&node->location,
 						      node->child[0], 
 						      mid,
 						      member_type,
@@ -402,7 +410,14 @@ static anna_node_t *anna_macro_member_set(anna_node_call_t *node,
     
     anna_node_prepare_children(node, function, parent);
 
-    anna_type_t *object_type = anna_node_get_return_type(node->child[0], function->stack_template);
+    anna_type_t *object_type = anna_node_get_return_type(
+	node->child[0], 
+	function->stack_template);
+    if(!object_type){
+	wprintf(L"LALALA\n");
+	CRASH;
+	
+    }
     CHECK(object_type, node->child[0], L"Tried to assign member in object of unknown type");
         
     anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
@@ -410,7 +425,7 @@ static anna_node_t *anna_macro_member_set(anna_node_call_t *node,
     
     anna_type_t *member_type = anna_type_member_type_get(object_type, name_node->name);
     
-    return (anna_node_t *)anna_node_member_set_create(&node->location,
+    return (anna_node_t *)anna_node_create_member_set(&node->location,
 						      node->child[0], 
 						      mid,
 						      node->child[2],

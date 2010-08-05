@@ -8,13 +8,14 @@
 #include "anna_string_internal.h"
 #include "anna.h"
 
-anna_string_random_test(anna_string_t *a,
-			anna_string_t *b,
-			anna_string_t *c,
-			anna_string_t *d,
-			anna_string_t *e,
-			anna_string_t *f,
-			int count)
+static void anna_string_random_test(
+    anna_string_t *a,
+    anna_string_t *b,
+    anna_string_t *c,
+    anna_string_t *d,
+    anna_string_t *e,
+    anna_string_t *f,
+    int count)
 {
     int cnt;
     

@@ -76,7 +76,7 @@ extern wchar_t *program_name;
    failiure, the current function is ended at once. The second
    parameter is the return value of the current function on failiure.
 */
-#define CHECK( arg, retval )											\
+#define VERIFY( arg, retval )											\
 	if( !(arg) )														\
 	{																	\
 		debug( 0,														\

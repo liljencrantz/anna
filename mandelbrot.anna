@@ -1,0 +1,27 @@
+
+function mandelbrot(Complex p0, Int maxStep)
+{
+    var p = p0;
+    var step = 0;
+    while(@abs p < 2.0 and step++ < maxStep) 
+    {
+        p = p*p + p0;
+    }
+    return step;
+}
+
+function Int main()
+{
+    var y=-1.3;
+    while(y<=0.9)
+    {
+	var x=-2.0;
+	while(x<=1.3)
+	{
+	    print(" .::!!!ooooOOOOO################ "[mandelbrot(Complex(x,y),32)]);
+	    x += 0.025;
+	}
+	y += 0.05;
+	print("\n");
+    }
+}

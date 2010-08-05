@@ -1,3 +1,4 @@
+
 /*
 class Foo
 {
@@ -33,24 +34,140 @@ bbb.tralala=7;
 
 print(bbb.count);
 */
-
+/*
 macro noop(node, foo, bar)
 {
-    print("Yay, running a macro!!!\n");
-    return IntLiteral(node, 12);
+    if(node.count == 1)
+    {
+	return node[0];
+    }
+    else
+    {
+	return node.error("Expected exactly one argument to macro noop");
+    }
+}
+*/
+ /*
+macro weeo(node, foo, bar)
+{
+    node.each(ch)
+    {
+	ch.print();
+    }
+    
+    return Call(node, Identifier(node,"print"), IntLiteral(node, 777));
+
+/*    
+    var wee = AST(print(ggg,"\n"));
+    return wee.replace(AST(ggg), AST(foo));
+*/
 }
 
 function main()
 {
-    var foo = 7;
-    print(noop(3));
-    print(Int);
+//    var foo = 7;
+//    weeo(aa,7);
+//    print(noop(9));
 }
 
-main();
+macro __enumAttribute__(node, foo, bar)
+{
+    var def = node[1] as Call;
+    var body = def[3] as Call;
+    
+    if(!body)
+    {
+	node.error("Missing body");
+	return null;
+    }
+    
+    var newBody = AST(
+	{
+	    var Int value;
+	}
+	);
 
-/*
-Class Range template (T:Int)
+    var nameBody = AST(
+	{
+	    if( !this.value)
+	    {
+		return "null";
+	    }
+	}
+	);
+
+    var init = AST(function __init__(Int value){this.value = value;});
+    
+    body.each(idx:el)
+    {
+	var id = el as Identifier;
+	if(!id)
+	{
+	    node.error("Unexpected thingie");
+	    return null;
+	}
+	var getter = "!" ~ id.name ~ "Getter";
+	var fun = AST(function placeholder1() static {return placeholder2;});
+	var prop = AST(property Int placeholder1 getter placeholder2);
+	var cmp = AST(if(this.value == placeholder1){return placeholder2});
+	fun = fun.replace(AST(placeholder1),Identifier(node, getter))
+	    .replace(AST(placeholder2),IntLiteral(node, idx));
+	prop = prop.replace(AST(placeholder1),Identifier(node, id.name))
+	    .replace(AST(placeholder2), Identifier(node, getter));
+	cmp = cmp.replace(AST(placeholder1),IntLiteral(node, idx))
+	    .replace(AST(placeholder2), StringLiteral(node, id.name));
+	newBody ~= [fun];
+	newBody ~= [prop];
+	nameBody ~= [cmp]
+    }
+
+    newBody ~= [init];
+    
+    var nameFun = AST(function toString(){});
+    nameFun[4] = nameBody;
+    newBody ~= [nameFun];
+    
+    def[3] = newBody;
+    //nameBody.print();
+    
+    return def;
+}
+
+class Blubb enum
+{
+    foo;
+    bar;
+    baz;
+}
+
+
+function foo(Int i, Float j)
+{
+    return 3;
+}
+
+
+function main2()
+{
+//    print( 12 in [1,6,7,12,39]);
+//    var bbb = Blubb(1);
+//    print(bbb.baz, "\n", bbb.toString(), "\n");
+    
+    List.member.each(idx:member)
+    {
+	print(member.name, "\n");
+    }
+    
+    print(foo.inputName[1], "\n");
+    //print("tjo fadderittan lambo"[Range(0,3,1)]);
+    
+}
+
+main2();
+
+//main();
+
+class Range template (T:Int)
 {
 
     var T from;
@@ -80,6 +197,8 @@ Class Range template (T:Int)
     
 }
 */
+
+
 /*
 (1..10).each(key:value)
 {
@@ -125,3 +244,4 @@ print(bar());
 print(foo(31));
 print("Hej");
 */
+

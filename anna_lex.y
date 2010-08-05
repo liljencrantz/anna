@@ -86,7 +86,7 @@ var return VAR;
 property return PROPERTY;
 @ return '@';
 return return RETURN;
-is return IS;
+as return AS;
 in return IN;
 [a-z_][a-zA-Z0-9_]* return IDENTIFIER;
 [A-Z][a-zA-Z0-9_]* return TYPE_IDENTIFIER;

@@ -1,0 +1,15 @@
+import(lang);
+
+function Int main()
+{
+    
+    var foo = BinaryMap<Int, String>(7:"tjoho", 21:"Cardgame");
+    foo[3]="aaa";
+    foo[2]="bbb";
+    foo[3]="ddd";
+    foo[5]="ccc";
+    foo.each(k:v)
+    {
+	print(k,": ", v, "\n");
+    }
+}

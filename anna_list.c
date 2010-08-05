@@ -8,13 +8,14 @@
 
 #include "anna.h"
 #include "anna_node.h"
+#include "anna_node_create.h"
 #include "anna_list.h"
 #include "anna_int.h"
 #include "anna_stack.h"
+#include "anna_type.h"
 
 #include "anna_macro.h"
 
-static anna_object_t **anna_list_get_payload(anna_object_t *this);
 
 anna_object_t *anna_list_create()
 {
@@ -121,7 +122,7 @@ void anna_list_set_capacity(anna_object_t *this, size_t sz)
     *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD) = ptr;
 }
 
-static anna_object_t **anna_list_get_payload(anna_object_t *this)
+anna_object_t **anna_list_get_payload(anna_object_t *this)
 {
     return *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD);
 }
@@ -303,84 +304,83 @@ static anna_object_t *anna_list_init(anna_object_t **param)
     
     return param[0];
 }
+/*
+static anna_object_t *anna_list_in(anna_object_t **param)
+{
+    size_t sz = anna_list_get_size(param[0]);
+    anna_object_t **arr = anna_list_get_payload(param[0]);
+    size_t i;
 
+    anna_object_t *needle = param[1];
+    if(needle == null_object)
+    {
+	return null_object;
+    }
+    anna_object_print(needle);
+    
+    anna_object_t *eq_obj = *anna_member_addr_get_mid(needle, ANNA_MID_EQ);
+    anna_function_t *eq_func = anna_function_unwrap(eq_obj);
+    
+    for(i=0;i<sz;i++)
+    {
+	anna_object_t *result = 
+	    anna_function_invoke(
+		eq_func,
+		needle,
+		param,
+		0,
+		0);
+	if(result != null_object)
+	{
+	    return anna_int_create(i);
+	}
+    }
+    return null_object;
+}
+*/
 
 
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
-    list_type = anna_type_create(L"List", 64, 0);
-    anna_stack_declare(stack, L"List", type_type, list_type->wrapper);
-
-    anna_function_t *func;
-
-    func = anna_native_create(L"!anonymous",
-			      ANNA_FUNCTION_MACRO,
-			      (anna_native_t)anna_list_map,
-			      0,
-			      0,
-			      0, 
-			      0);
-    func->stack_template=stack;
-				
-    anna_node_call_t *definition = 
-	anna_node_call_create(
-	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
-	    0,
-	    0);
+    list_type = anna_type_native_create(L"List", stack);
     
-    anna_node_call_t *full_definition = 
-	anna_node_call_create(
-	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__type__"),
-	    0,
-	    0);
-
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)anna_node_identifier_create(
-	    0,
-	    L"List"));
+    anna_node_t *my_list_type = 
+	anna_node_create_simple_templated_type(
+	    0, 
+	    L"List",
+	    L"T");
     
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)anna_node_identifier_create(
-	    0,
-	    L"class"));
-    
+    anna_node_call_t *definition =
+	anna_type_definition_get(list_type);
     /*
       Attibute list
     */
     anna_node_call_t *attribute_list = 
-	anna_node_call_create(
-	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"__block__"),
-	    0,
-	    0);	
+	anna_type_attribute_list_get(list_type);
     
     anna_node_call_t *template = 
-	anna_node_call_create(
+	anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"template"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"template"),
 	    0,
 	    0);	
     
     anna_node_call_t *pair = 
-	anna_node_call_create(
+	anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_identifier_create(0, L"Pair"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"Pair"),
 	    0,
 	    0);	
     
     anna_node_call_add_child(
 	pair,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"T"));
     
     anna_node_call_add_child(
 	pair,
-	(anna_node_t *)anna_node_identifier_create(
+	(anna_node_t *)anna_node_create_identifier(
 	    0,
 	    L"Object"));
     
@@ -392,32 +392,21 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	attribute_list,
 	(anna_node_t *)template);
     
-
-    anna_node_call_add_child(
-	full_definition,	
-	(anna_node_t *)attribute_list);
-    
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)definition);
-    
-    list_type->definition = full_definition;
-
     anna_member_add_node(
 	definition, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
     anna_member_add_node(
 	definition, ANNA_MID_LIST_SIZE,  L"!listSize", 
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
     anna_member_add_node(
 	definition, ANNA_MID_LIST_CAPACITY,  L"!listCapacity",
-	0, (anna_node_t *)anna_node_identifier_create(0, L"Null") );
+	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
     
     anna_node_t *i_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"Int"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"T")
+	    anna_node_clone_deep(my_list_type), 
+	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"T")
 	}
     ;
 
@@ -429,8 +418,8 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     anna_node_t *a_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"T")
+	    anna_node_clone_deep(my_list_type), 
+	    (anna_node_t *)anna_node_create_identifier(0, L"T")
 	}
     ;
     wchar_t *a_argn[]=
@@ -441,8 +430,8 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 
     anna_node_t *e_method_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"Int"),
-	    (anna_node_t *)anna_node_identifier_create(0, L"T")
+	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"T")
 	}
     ;
 
@@ -455,8 +444,15 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 
     anna_node_t *e_argv[] = 
 	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"List"),
-	    anna_node_function_declaration_create(0, (anna_node_t *)anna_node_identifier_create(0, L"Object"), 2, e_method_argv, e_method_argn)
+	    anna_node_clone_deep(my_list_type), 
+	    anna_node_create_function_declaration(
+		0,
+		(anna_node_t *)anna_node_create_identifier(
+		    0,
+		    L"Object"),
+		2,
+		e_method_argv, 
+		e_method_argn)
 	}
     ;
 
@@ -466,27 +462,13 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	}
     ;
     
-    anna_node_t *list_template_param[] = 
-	{
-	    (anna_node_t *)anna_node_identifier_create(0, L"T")
-	}
-    ;
-    
-    anna_node_t *my_list_type = anna_node_templated_type_create(
-	0, 
-	(anna_node_t *)anna_node_identifier_create(0, L"List"),
-	1,
-	list_template_param);
-
-
-    
     anna_native_method_add_node(
 	definition,
 	-1,
 	L"__init__",
 	ANNA_FUNCTION_VARIADIC, 
 	(anna_native_t)&anna_list_init, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Null") , 
+	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
 	2, a_argv, a_argn);
 
     anna_native_method_add_node(
@@ -495,7 +477,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	L"__get__Int__",
 	0, 
 	(anna_native_t)&anna_list_get_int, 
-	(anna_node_t *)anna_node_identifier_create(0, L"T") , 
+	(anna_node_t *)anna_node_create_identifier(0, L"T") , 
 	2, 
 	i_argv, 
 	i_argn);
@@ -506,7 +488,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	L"__set__Int__", 
 	0, 
 	(anna_native_t)&anna_list_set_int, 
-	(anna_node_t *)anna_node_identifier_create(0, L"T"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"T"), 
 	3,
 	i_argv, 
 	i_argn);
@@ -514,36 +496,42 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_native_method_add_node(
 	definition, -1, L"__append__Value__", 0, 
 	(anna_native_t)&anna_list_append, 
-	(anna_node_t *)anna_node_identifier_create(0, L"T") , 
+	(anna_node_t *)anna_node_create_identifier(0, L"T") , 
 	2, a_argv, a_argn);
     
     anna_native_method_add_node(
 	definition, -1, L"__each__", 0, 
 	(anna_native_t)&anna_list_each, 
-	(anna_node_t *)anna_node_identifier_create(0, L"T"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"T"), 
 	2, e_argv, e_argn);
     
     anna_native_method_add_node(
 	definition, -1, L"getCount", 0, 
 	(anna_native_t)&anna_list_get_count, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Int"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
 	1, e_argv, e_argn);
-    
+    /*
+    anna_native_method_add_node(
+	definition, -1, L"__in__", 0, 
+	(anna_native_t)&anna_list_in, 
+	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
+	2, a_argv, a_argn);
+    */
     anna_native_method_add_node(
 	definition, -1, L"setCount", 0, 
 	(anna_native_t)&anna_list_set_count, 
-	(anna_node_t *)anna_node_identifier_create(0, L"Int"), 
+	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
 	2, i_argv, i_argn);
     
     anna_node_call_add_child(
 	definition,
-	(anna_node_t *)anna_node_property_create(
+	(anna_node_t *)anna_node_create_property(
 	    0,
 	    L"count",
-	    (anna_node_t *)anna_node_identifier_create(0, L"Int") , 
+	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
 	    L"getCount",
 	    L"setCount"));
-	
+    
     /*
       FIXME: This is the wrong return type for map - we need to check
       the return type of the function argument and do a cast, or
@@ -564,13 +552,11 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_native_method_add_node(
 	definition, -1, L"__first__", 
 	0, (anna_native_t)&anna_list_first, 
-	(anna_node_t *)anna_node_identifier_create(0, L"T"),
+	(anna_node_t *)anna_node_create_identifier(0, L"T"),
 	2, e_argv, e_argn);
     
     //anna_node_print(e_argv[1]);
     //anna_stack_print(func->stack_template);
-    
-    anna_macro_type_setup(list_type, func, 0);
         
     /*
       anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
@@ -588,3 +574,25 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
     */
 }
+
+
+
+anna_type_t *anna_list_replace(anna_type_t *base, wchar_t *from, wchar_t *to)
+{
+    anna_type_t *res = anna_type_copy(base);
+    res->definition->child[3] = 
+	anna_node_replace(
+	    res->definition->child[3],
+	    anna_node_create_identifier(0, from),
+	    anna_node_create_identifier(0, to));
+    return res;
+}
+
+anna_type_t *anna_list_type_get(anna_type_t *subtype)
+{
+    return anna_list_replace(list_type, L"T", subtype->name);
+}
+
+
+
+

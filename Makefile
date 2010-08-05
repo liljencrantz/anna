@@ -1,11 +1,26 @@
-PROF_FLAGS := -g -pg
+# Makefile for Anna
+#
+# Copyright 2010 Axel Liljencrantz
+#
 
-CFLAGS := -rdynamic -Wall -std=c99 -D_ISO99_SOURCE=1  $(PROF_FLAGS)
+PROF_FLAGS := -g 
 
-ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o anna_function_implementation.o anna_int.o anna_string.o anna_char.o anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o wutil.o anna_type.o anna_node_print.o anna_string_internal.o anna_string_naive.o anna_node_wrapper.o
+CFLAGS := -rdynamic -Wall -std=c99 -D_ISO99_SOURCE=1 -D_XOPEN_SOURCE=500  $(PROF_FLAGS)
 
-ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o anna_string_internal_test.o util.o common.o anna_string_naive.o
-ANNA_STRING_PERF_OBJS := anna_string_internal.o anna_string_perf.o util.o common.o anna_string_naive.o
+ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
+anna_function_implementation.o anna_int.o anna_string.o anna_char.o	\
+anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o	\
+wutil.o anna_type.o anna_node_print.o anna_string_internal.o		\
+anna_string_naive.o anna_node_wrapper.o anna_type_type.o		\
+anna_function.o anna_node_check.o anna_prepare.o anna_member.o		\
+anna_function_type.o anna_util.o anna_module.o anna_node_create.o	\
+anna_object.o anna_invoke.o anna_error.o anna_mid.o
+
+ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
+anna_string_internal_test.o util.o common.o anna_string_naive.o
+
+ANNA_STRING_PERF_OBJS := anna_string_internal.o anna_string_perf.o	\
+util.o common.o anna_string_naive.o
 
 LDFLAGS := -lm -rdynamic -ll $(PROF_FLAGS)
 

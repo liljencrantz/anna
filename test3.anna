@@ -1,0 +1,13 @@
+import(lang);
+
+function Int main()
+{
+    var foo = 4..7;
+    foo.each(i)
+    {
+	print(i);
+    }
+    
+    print("tjoho och tralala\n"[foo]);
+    
+}

@@ -1,7 +1,6 @@
 #ifndef ANNA_CHECKS_H
 #define ANNA_CHECKS_H
 
-
 /*
   Various run time consistency checks. Some of them come at a significant
   performance penalty, but they're helpful when tracking down bugs.
@@ -27,8 +26,9 @@
 #define ANNA_CHECK_STACK_ENABLED
 
 /**
-   If enabled, critical bugs will perform a null pointer dereference
-   and crash. That enables a nice valgrind stack trace. Using gdb is
+   If enabled, critical bugs (e.g. ones that cause Anna to exit at
+   once) will perform a null pointer dereference and crash, enabling a
+   nice valgrind stack trace. Use this option if using gdb seems like
    too much work. :-)
 */
 #define ANNA_CRASH_ON_CRITICAL_ENABLED
@@ -46,5 +46,17 @@
    ojects after complex string operations.
  */
 #define ANNA_STRING_VALIDATE_ENABLED
+
+/**
+   If enabled, anna will do various checks when wrapping/unwrapping
+   functions, types, etc. which will e.g. cause her to crash slightly
+   more gracefully if a wrapper is accessed before it can be created.
+ */
+#define ANNA_WRAPPER_CHECK_ENABLED
+
+/**
+   If enabled, anna will validate that any stack access operations performed are valid
+ */
+#define ANNA_CHECK_STACK_ACCESS
 
 #endif

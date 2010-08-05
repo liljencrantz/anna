@@ -14,6 +14,10 @@ struct anna_sid
 
 typedef struct anna_sid anna_sid_t;
 
+#define ANNA_STACK_FROZEN 1
+
+#define ANNA_STACK_PRIVATE 1
+
 struct anna_stack_frame
 {
     struct anna_stack_frame *parent;
@@ -21,27 +25,37 @@ struct anna_stack_frame
     size_t capacity;
     hash_table_t member_string_identifier;
     int stop;
-#ifdef ANNA_CHECK_STACK_ENABLED
     anna_function_t *function;
+#ifdef ANNA_CHECK_STACK_ENABLED
+    int flags;
 #endif
+    struct anna_object *wrapper;
     struct anna_type **member_type;  
+    int *member_flags;
     struct anna_object *member[];
 };
 
 typedef struct anna_stack_frame anna_stack_frame_t;
 
+anna_object_t *anna_stack_wrap(anna_stack_frame_t *stack);
+anna_stack_frame_t *anna_stack_unwrap(anna_object_t *stack);
+
 anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent);
 
-void anna_stack_declare(anna_stack_frame_t *stack,
-			wchar_t *name,
-			anna_type_t *type,
-			anna_object_t *initial_value);
+void anna_stack_declare(
+    anna_stack_frame_t *stack,
+    wchar_t *name,
+    anna_type_t *type,
+    anna_object_t *initial_value,
+    int flags);
 
 anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name);
 
 void anna_stack_set_str(anna_stack_frame_t *stack, wchar_t *name, struct anna_object *value);
 
 anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name);
+
+anna_object_t *anna_stack_frame_get_str(anna_stack_frame_t *stack, wchar_t *name);
 
 anna_object_t *anna_stack_get_sid(anna_stack_frame_t *stack, anna_sid_t sid);
 
@@ -58,5 +72,7 @@ void anna_stack_print(anna_stack_frame_t *stack);
 int anna_stack_depth(anna_stack_frame_t *stack);
 
 void anna_stack_print_trace(anna_stack_frame_t *stack);
+
+void anna_stack_prepare(anna_type_t *type);
 
 #endif

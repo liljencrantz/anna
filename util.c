@@ -790,7 +790,7 @@ func_ptr_t al_get_func( array_list_t *l, int pos )
 
 void al_truncate( array_list_t *l, int new_sz )
 {
-	CHECK( l, );
+	VERIFY( l, );
 	l->pos = new_sz;
 }
 
@@ -875,14 +875,14 @@ func_ptr_t al_peek_func( array_list_t *l )
 
 int al_empty( array_list_t *l )
 {
-	CHECK( l, 1 );
+	VERIFY( l, 1 );
 	return l->pos == 0;
 }
 
 int al_get_count( array_list_t *l )
 
 {
-	CHECK( l, 0 );
+	VERIFY( l, 0 );
 	return l->pos;
 }
 
@@ -890,8 +890,8 @@ void al_foreach( array_list_t *l, void (*func)( void * ))
 {
 	int i;
 
-	CHECK( l, );
-	CHECK( func, );
+	VERIFY( l, );
+	VERIFY( func, );
 
 	for( i=0; i<l->pos; i++ )
 		func( l->arr[i].ptr_val );
@@ -901,8 +901,8 @@ void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
 {
 	int i;
 
-	CHECK( l, );
-	CHECK( func, );
+	VERIFY( l, );
+	VERIFY( func, );
 	
 	for( i=0; i<l->pos; i++ )
 		func( l->arr[i].ptr_val, aux );
@@ -910,8 +910,8 @@ void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
 
 int wcsfilecmp( const wchar_t *a, const wchar_t *b )
 {
-	CHECK( a, 0 );
-	CHECK( b, 0 );
+	VERIFY( a, 0 );
+	VERIFY( b, 0 );
 	
 	if( *a==0 )
 	{
@@ -984,7 +984,7 @@ void sb_init( string_buffer_t * b)
 {
 	wchar_t c=0;
 
-	CHECK( b, );
+	VERIFY( b, );
 
 	if( !b )
 	{
@@ -1014,8 +1014,8 @@ void sb_append_substring( string_buffer_t *b, const wchar_t *s, size_t l )
 {
 	wchar_t tmp=0;
 
-	CHECK( b, );
-	CHECK( s, );
+	VERIFY( b, );
+	VERIFY( s, );
 
 	b_append( b, s, sizeof(wchar_t)*l );
 	b_append( b, &tmp, sizeof(wchar_t) );
@@ -1027,7 +1027,7 @@ void sb_append_char( string_buffer_t *b, wchar_t c )
 {
 	wchar_t tmp=0;
 
-	CHECK( b, );
+	VERIFY( b, );
 
 	b_append( b, &c, sizeof(wchar_t) );
 	b_append( b, &tmp, sizeof(wchar_t) );
@@ -1039,7 +1039,7 @@ void sb_append_internal( string_buffer_t *b, ... )
 	va_list va;
 	wchar_t *arg;
 
-	CHECK( b, );
+	VERIFY( b, );
 	
 	va_start( va, b );
 	while( (arg=va_arg(va, wchar_t *) )!= 0 )
@@ -1055,8 +1055,8 @@ int sb_printf( string_buffer_t *buffer, const wchar_t *format, ... )
 	va_list va;
 	int res;
 	
-	CHECK( buffer, -1 );
-	CHECK( format, -1 );
+	VERIFY( buffer, -1 );
+	VERIFY( format, -1 );
 	
 	va_start( va, format );
 	res = sb_vprintf( buffer, format, va );	
@@ -1069,8 +1069,8 @@ int sb_vprintf( string_buffer_t *buffer, const wchar_t *format, va_list va_orig 
 {
 	int res;
 	
-	CHECK( buffer, -1 );
-	CHECK( format, -1 );
+	VERIFY( buffer, -1 );
+	VERIFY( format, -1 );
 
 	if( !buffer->length )
 	{
@@ -1141,7 +1141,7 @@ int sb_vprintf( string_buffer_t *buffer, const wchar_t *format, va_list va_orig 
 
 void sb_destroy( string_buffer_t * b )
 {
-	CHECK( b, );
+	VERIFY( b, );
 	
 	free( b->buff );
 }
@@ -1156,7 +1156,7 @@ void sb_truncate( string_buffer_t *b, int chars_left )
 {
 	wchar_t *arr;
 	
-	CHECK( b, );
+	VERIFY( b, );
 
 	b->used = (chars_left)*sizeof( wchar_t);
 	arr = (wchar_t *)b->buff;
@@ -1165,14 +1165,14 @@ void sb_truncate( string_buffer_t *b, int chars_left )
 
 ssize_t sb_length( string_buffer_t *b )
 {
-	CHECK( b, -1 );
+	VERIFY( b, -1 );
 	return (b->used)/sizeof( wchar_t);
 	
 }
 
 wchar_t *sb_content(string_buffer_t *b )
 {
-  CHECK( b, 0 );
+  VERIFY( b, 0 );
   return (wchar_t *)b->buff;
 }
 
@@ -1180,7 +1180,7 @@ wchar_t *sb_content(string_buffer_t *b )
 
 void b_init( buffer_t *b)
 {
-	CHECK( b, );
+	VERIFY( b, );
 	memset( b,0,sizeof(buffer_t));
 }
 
@@ -1188,7 +1188,7 @@ void b_init( buffer_t *b)
 
 void b_destroy( buffer_t *b )
 {
-	CHECK( b, );
+	VERIFY( b, );
 	free( b->buff );
 }
 
@@ -1198,7 +1198,7 @@ int b_append( buffer_t *b, const void *d, ssize_t len )
 	if( len<=0 )
 		return 0;
 
-	CHECK( b, -1 );	
+	VERIFY( b, -1 );	
 
 	if( !b )
 	{
