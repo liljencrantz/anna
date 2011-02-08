@@ -69,7 +69,7 @@ size_t anna_mid_get(wchar_t *name)
     if(!offset_ptr)
     {      
 	size_t gg = mid_pos++;
-	anna_mid_put(name, gg);
+	anna_mid_put(wcsdup(name), gg);
 	return gg;
     }
     return *offset_ptr;

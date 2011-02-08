@@ -1,5 +1,5 @@
 
-
+#if 0
 static anna_node_t *anna_macro_cast(
     anna_node_call_t *node, 
     anna_function_t *function, 
@@ -28,7 +28,7 @@ static anna_node_t *anna_macro_as(
     anna_function_t *function, 
     anna_node_list_t *parent)
 {
-    anna_node_prepare_children(node, function, parent);
+    anna_node_macro_expand_children(node);
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
 
     anna_type_t *as_argv[]={object_type, type_type};
@@ -68,3 +68,4 @@ static anna_node_t *anna_macro_as(
 	    2,
 	    param);
 }
+#endif

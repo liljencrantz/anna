@@ -188,6 +188,24 @@ static anna_object_t *anna_string_i_each(anna_object_t **param)
 
 void anna_string_type_create(anna_stack_frame_t *stack)
 {
+    anna_member_create(
+	string_type, ANNA_MID_STRING_PAYLOAD,  L"!stringPayload", 
+	0, null_type);
+    int i;
+    string_buffer_t sb;
+    sb_init(&sb);
+    for(i=1; i<(((sizeof(anna_string_t)+1)/sizeof(anna_object_t *))+1);i++)
+    {
+	sb_clear(&sb);
+	sb_printf(&sb, L"!stringPayload%d", i+1);
+	anna_member_create(
+	    string_type, anna_mid_get(sb_content(&sb)),  sb_content(&sb), 
+	    0, null_type);
+    }
+    
+    sb_destroy(&sb);
+
+#if 0
     anna_node_t *i_argv[] = 
 	{
 	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
@@ -381,5 +399,5 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
 	    L"getCount",
 	    L"setCount"));
-	
+#endif	
 }

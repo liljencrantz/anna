@@ -14,14 +14,8 @@
 #include "anna_list.h"
 #include "anna_function.h"
 
-anna_object_t *anna_i_print(anna_object_t **param)
-{
-    int i;
-        
-    for(i=0; i<anna_list_get_size(param[0]); i++) {
-	
-	anna_object_t *value = anna_list_get(param[0], i);
-	
+void anna_object_print_val(anna_object_t *value)
+{    
 	if(value->type == int_type) 
 	{
 	    int val = anna_int_get(value);
@@ -49,11 +43,22 @@ anna_object_t *anna_i_print(anna_object_t **param)
 	{
 	    wprintf(L"%ls", value->type->name);
 	}
+}
+
+
+anna_object_t *anna_i_print(anna_object_t **param)
+{
+    int i;
+        
+    for(i=0; i<anna_list_get_size(param[0]); i++) {
+	
+	anna_object_t *value = anna_list_get(param[0], i);
+	anna_object_print_val(value);
 	/*
 	  FIXME: Print using a toString method
 	*/
     }
-    return null_object;
+    return param[0];
 }
 
 static anna_object_t *anna_i_not(anna_object_t **param)
@@ -73,17 +78,26 @@ static anna_object_t *anna_i_if(anna_object_t **param)
 	body_object=param[2];
     }
     
-    return anna_function_wrapped_invoke(body_object, 0, 0, 0);
+    return anna_function_wrapped_invoke(body_object, 0, 0, 0, 0);
 }
 
 void anna_function_implementation_init(struct anna_stack_frame *stack)
 {
+
     static wchar_t *p_argn[]={L"object"};
-    anna_native_create(L"print", ANNA_FUNCTION_VARIADIC, (anna_native_t)&anna_i_print, null_type, 1, &object_type, p_argn, stack);
-    anna_native_create(L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn, stack);
+    anna_function_t *f = anna_native_create(L"print", ANNA_FUNCTION_VARIADIC, (anna_native_t)&anna_i_print, null_type, 1, &object_type, p_argn, stack);
+    anna_function_setup_interface(f, stack);
+    anna_stack_declare(
+	stack,
+	L"print",
+	f->wrapper->type,
+	f->wrapper,
+	0);
     
+//    anna_native_create(L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn, stack);
+/*    
     anna_type_t *if_argv[]={object_type, object_type, object_type};
     static wchar_t *if_argn[]={L"condition", L"trueBlock", L"falseBlock"};    
     anna_native_create( L"__if__", 0, (anna_native_t)&anna_i_if, object_type, 3, if_argv, if_argn, stack);
-    
+*/  
 }

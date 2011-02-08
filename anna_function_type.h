@@ -5,5 +5,6 @@
 #include "anna_node.h"
 
 anna_type_t *anna_function_type_create(anna_function_type_key_t *key);
+anna_function_type_key_t *anna_function_type_extract(anna_type_t *type);
 
 #endif

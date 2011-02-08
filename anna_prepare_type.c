@@ -4,9 +4,11 @@ static anna_node_t *anna_type_member(anna_type_t *type,
 				     struct anna_function *function,
 				     struct anna_node_list *parent)
 {
+    assert(0);
+/*    
     CHECK_CHILD_COUNT(node,L"variable declaration", 3);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
-    anna_node_prepare_children(node, function, parent);
+    anna_node_macro_expand_children(node);
     anna_node_identifier_t *name_identifier = node_cast_identifier(node->child[0]);
     anna_type_t *var_type;
     switch(node->child[1]->node_type) 
@@ -36,22 +38,7 @@ static anna_node_t *anna_type_member(anna_type_t *type,
     return anna_node_create_null(0);
     
     //anna_stack_declare(function->stack_template, name_identifier->name, type, null_object);
-    
-    /*
-      anna_node_t *a_param[2]=
-      {
-      node->child[0],
-      node->child[2]
-      }
-      ;
-    
-      return (anna_node_t *)
-      anna_node_create_call(&node->location,
-      (anna_node_t *)anna_node_create_identifier(&node->location,
-      L"__assign__"),
-      2,
-      a_param);
-    */
+    */  
 }
 
 void anna_prepare_type_interface(
@@ -73,6 +60,9 @@ void anna_prepare_type_interface(
 static anna_node_t *anna_prepare_type_interface_internal(
     anna_type_t *type)
 {
+    return 0;
+    
+#if 0
     
     if(anna_type_prepared(type))
 	return 0;
@@ -90,13 +80,13 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	0, 
 	0,
 	0);
-
+    
     function->stack_template=type->stack;
     
 //    wprintf(L"Prepare type %ls\n", type->name);
     //anna_node_print(type->definition);
 //	wprintf(L"\n");
-
+    
     anna_node_call_t *node = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
 
     CHECK_CHILD_COUNT(node,L"type macro", 4);
@@ -149,9 +139,9 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	
 	anna_node_t *tmp = anna_macro_invoke(
 	    macro_definition,
-	    attribute_call_node,
-	    function,
-	    0);
+	    attribute_call_node);
+	
+
 	CHECK_NODE_TYPE(tmp, ANNA_NODE_CALL);
 	node = (anna_node_call_t *)tmp;
 	/*
@@ -236,7 +226,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 //	    anna_stack_print(function->stack_template);
 	    
 	    
-	    anna_node_prepare_child(call, 1, function, 0);
+	    anna_node_macro_expand_child(call, 1);
 	    
 	    anna_type_t *return_type = call->child[1]->node_type == ANNA_NODE_NULL?0:
 		anna_prepare_type_from_identifier(
@@ -334,7 +324,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 	anna_node_call_t *prop = al_get(&property_list, i);
 	CHECK_CHILD_COUNT(prop,L"property", 3);
 	//anna_node_prepare_child(prop, 0, function, 0);
-	anna_node_prepare_child(prop, 1, function, 0);
+	anna_node_macro_expand_child(prop, 1);
 	
 	CHECK_NODE_TYPE(prop->child[0], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_TYPE(prop->child[1], ANNA_NODE_IDENTIFIER);
@@ -454,6 +444,7 @@ static anna_node_t *anna_prepare_type_interface_internal(
 /*    
       wprintf(L"Create __call__ for non-native type %ls\n", type->name);
 */  
+#endif
 }
 
 void anna_prepare_type_implementation(anna_type_t *type)

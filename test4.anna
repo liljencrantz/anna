@@ -1,0 +1,8 @@
+
+macro snopp(node){
+    ast("snopp");
+}
+
+def main(){    
+    print(snopp());
+}

@@ -20,6 +20,7 @@
 #include "anna_node_create.h"
 #include "anna_list.h"
 
+
 struct prepare_item
 {
     anna_function_t *function;
@@ -119,6 +120,7 @@ static void sniff(
     anna_function_t *f, 
     int level)
 {
+/*
     if(level != 0)
 	anna_prepare_function_interface(f);
     //wprintf(L"Sniff return type for %ls\n", f->name);
@@ -140,6 +142,7 @@ static void sniff(
 	    sniff(lst, al_get(&f->child_function, i), level+1);
 	}
     }
+*/
 }
 
 /**
@@ -197,7 +200,9 @@ static anna_type_t *anna_prepare_type_from_identifier(
     anna_function_t *function, 
     anna_node_list_t *parent)
 {
-    node = anna_node_prepare(node, function, parent);
+    return 0;
+#if 0
+    node = anna_node_macro_expand(node);
    
     if(node->node_type == ANNA_NODE_DUMMY ||
        node->node_type == ANNA_NODE_TRAMPOLINE ) {
@@ -255,6 +260,7 @@ static anna_type_t *anna_prepare_type_from_identifier(
     anna_node_print(node);
     CRASH;
     return 0;
+#endif
 }
 
 

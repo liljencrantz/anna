@@ -77,7 +77,7 @@ static void anna_lex_unbalanced_comment()
 \] return ']';
 \{ return '{';
 \} return '}';
-function return FUNCTION;
+def return DEF;
 macro return MACRO;
 null return NULL_SYM;
 and return AND;
@@ -88,6 +88,8 @@ property return PROPERTY;
 return return RETURN;
 as return AS;
 in return IN;
+if return IF;
+else return ELSE;
 [a-z_][a-zA-Z0-9_]* return IDENTIFIER;
 [A-Z][a-zA-Z0-9_]* return TYPE_IDENTIFIER;
 ~ return '~';

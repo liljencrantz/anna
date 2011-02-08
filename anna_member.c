@@ -208,3 +208,129 @@ void anna_member_types_create(anna_stack_frame_t *stack)
     anna_member_variable_type_create(stack);
     
 }
+
+size_t anna_member_create(
+    anna_type_t *type,
+    size_t mid,
+    wchar_t *name,
+    int is_static,
+    anna_type_t *member_type)
+{
+    if(!member_type)
+    {
+	wprintf(L"Critical: Create a member with unspecified type\n");
+	CRASH;
+    }
+//    wprintf(L"Create member %ls in type %ls\n", name, type->name);
+    
+    if(hash_get(&type->name_identifier, name))
+    {
+	if(type == type_type && wcscmp(name, L"!typeWrapperPayload")==0)
+	    return mid;
+	if(mid == ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD ||
+	   mid == ANNA_MID_FUNCTION_WRAPPER_PAYLOAD ||
+	   mid == ANNA_MID_FUNCTION_WRAPPER_STACK ||
+	   mid == ANNA_MID_STACK_TYPE_PAYLOAD)
+	    return mid;
+	
+	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
+		name, type->name);
+	CRASH;	
+    }
+    
+    anna_member_t * member = calloc(1,sizeof(anna_member_t) + sizeof(wchar_t) * (wcslen(name)+1));
+    
+    wcscpy(member->name, name);
+    
+    if (mid == (ssize_t)-1) {
+	mid = anna_mid_get(name);
+    }
+    else 
+    {
+	if(mid != anna_mid_get(name))
+	{
+	    wprintf(L"Error, multiple mids for name %ls: %d and %d\n", name, mid, anna_mid_get(name));
+	    CRASH;
+	}
+    }
+    
+    member->type = member_type;
+    member->is_static = is_static;
+    if(is_static) {
+	member->offset = anna_type_static_member_allocate(type);
+    } else {
+	member->offset = type->member_count++;
+    }
+//  wprintf(L"Add member with mid %d\n", mid);
+    
+    type->mid_identifier[mid] = member;
+    hash_put(&type->name_identifier, member->name, member);
+    return mid;
+}
+
+anna_member_t *anna_member_get(anna_type_t *type, size_t mid)
+{
+    return type->mid_identifier[mid];
+}
+
+anna_member_t *anna_member_method_search(anna_type_t *type, size_t mid, size_t argc, anna_type_t **argv)
+{
+    int i;
+    wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
+    wchar_t *prefix = anna_mid_get_reverse(mid);
+    anna_type_get_member_names(type, members);    
+    wchar_t *match=0;
+    int fault_count=0;
+
+    for(i=0; i<anna_type_member_count(type); i++)
+    {
+//	wprintf(L"Check %ls\n", members[i]);
+	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
+	    continue;
+//	wprintf(L"%ls matches, name-wise\n", members[i]);
+	
+	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
+	anna_type_t *mem_type = member->type;
+//	wprintf(L"Is of type %ls\n", mem_type->name);
+	anna_function_type_key_t *mem_fun = anna_function_unwrap_type(mem_type);
+	if(mem_fun)
+	{
+//	    wprintf(L"YAY, it's a function (%d arguments)\n", mem_fun->argc);
+
+	    if(mem_fun->argc != argc+1)
+		continue;
+	    
+//	    wprintf(L"YAY, right number of arguments\n");
+
+	    if(!mem_fun->argv[1])
+	    {
+		anna_error(0, L"Internal error. Type %ls has member named %ls with invalid second argument\n",
+			   type->name, members[i]);
+		return 0;
+	    }
+	    
+//	    wprintf(L"Check %ls against %ls\n",argv[0]->name, mem_fun->argv[1]->name);
+	    
+	    if(anna_abides(argv[0], mem_fun->argv[1]))
+	    {
+		int my_fault_count = anna_abides_fault_count(mem_fun->argv[1], argv[0]);
+		if(!match || my_fault_count < fault_count)
+		{
+		    match = members[i];
+		    fault_count = my_fault_count;
+//		    wprintf(L"YAY, it's a MATCH!!!\n");
+
+		}
+	    }
+	}
+	else
+	{
+	    wprintf(L"Not a function\n");
+	}
+	
+    }
+
+    return match ? anna_member_get(type, anna_mid_get(match)):0;
+    
+}
+
