@@ -27,6 +27,11 @@ anna_function_t *anna_native_create(wchar_t *name,
 anna_function_t *anna_function_create_from_definition(
     struct anna_node_call *definition);
 
+anna_function_t *anna_macro_create(
+    wchar_t *name,
+    struct anna_node_call *body,
+    wchar_t *arg_name);
+
 anna_function_t *anna_function_create_from_block(
     struct anna_node_call *definition);
 

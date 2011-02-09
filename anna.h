@@ -37,13 +37,11 @@ struct anna_node_call;
 typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *);
 
-#define ANNA_FUNCTION_REGISTERED 1
-#define ANNA_FUNCTION_PREPARED_COMMON 2
-#define ANNA_FUNCTION_PREPARED_INTERFACE 4
-#define ANNA_FUNCTION_PREPARED_IMPLEMENTATION 8
-#define ANNA_FUNCTION_VARIADIC 16
-#define ANNA_FUNCTION_MODULE 32
-#define ANNA_FUNCTION_MACRO 64
+#define ANNA_FUNCTION_VARIADIC 1
+#define ANNA_FUNCTION_MACRO 2
+#define ANNA_FUNCTION_PREPARED_INTERFACE 4 
+#define ANNA_FUNCTION_PREPARED_BODY 8
+
 /**
    This function is anonymously declared, and should not be registered
    in any scope.

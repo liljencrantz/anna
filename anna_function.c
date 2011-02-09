@@ -14,8 +14,6 @@
 #include "anna_node_check.h"
 #include "anna_util.h"
 
-array_list_t anna_function_list = {0,0,0};
-
 static anna_node_t *anna_function_setup_arguments(
     anna_function_t *f,
     anna_stack_frame_t *parent_stack)
@@ -123,28 +121,6 @@ static anna_node_t *anna_function_setup_arguments(
 		    }
 		}
 	    }
-	    else if(wcscmp(fun->name, L"__function__") == 0)
-	    {
-		anna_node_t *fun_node = 
-		    anna_node_macro_expand((anna_node_t *)decl);
-		//anna_node_print(fun_node);
-		
-		CHECK_NODE_TYPE(fun_node, ANNA_NODE_TRAMPOLINE);
-		anna_node_dummy_t *fun_dummy = (anna_node_dummy_t *)fun_node;
-		anna_function_t *fun = anna_function_unwrap(
-		    fun_dummy->payload);
-                CHECK(fun, decl, L"Could not parse function declaration");              
-		anna_prepare_function_interface(fun);
-		
-                argv[i+!!type] = anna_function_wrap(fun)->type;
-                argn[i+!!type] = fun->name;
-		
-
-	    }
-	    else 
-	    {
-		FAIL(decl, L"Unknown declaration type");
-	    }
 */
 	    
     }
@@ -156,6 +132,12 @@ void anna_function_setup_interface(
     anna_function_t *f,
     anna_stack_frame_t *parent_stack)
 {
+    if(f->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
+    {
+	return;
+    }    
+    f->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
+
 //    wprintf(L"Set up interface for function/macro %ls\n", f->name);
     
     if(f->body)
@@ -272,6 +254,12 @@ void anna_function_setup_body(
     anna_function_t *f,
     anna_stack_frame_t *parent_stack)
 {
+    if(f->flags & ANNA_FUNCTION_PREPARED_BODY)
+    {
+	return;
+    }    
+    f->flags |= ANNA_FUNCTION_PREPARED_BODY;
+    
     if(f->body)
     {
 	int i;
@@ -279,7 +267,6 @@ void anna_function_setup_body(
 	    anna_node_each(f->body->child[i], &anna_node_calculate_type, f->stack_template);
 	anna_node_each(f->body, &anna_node_prepare_body,f->stack_template);
     }
-    
 }
 
 anna_object_t *anna_function_wrap(anna_function_t *result)
@@ -321,8 +308,6 @@ anna_function_t *anna_function_unwrap(anna_object_t *obj)
 	}
 	return 0;	
     }
-//     FIXME: Is there any validity checking we could do here?
-  
 }
 
 anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
@@ -364,7 +349,7 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
 
 int anna_function_prepared(anna_function_t *t)
 {
-    return !!(t->flags & ANNA_FUNCTION_PREPARED_IMPLEMENTATION);
+    return !!(t->flags & ANNA_FUNCTION_PREPARED_BODY);
 }
 /*
 anna_function_t *anna_function_create(
@@ -471,7 +456,7 @@ anna_function_t *anna_function_create_from_definition(
 	sizeof(anna_function_t));
     result->definition = definition;
     //result->stack_template = anna_stack_create(64, 0);
-    al_push(&anna_function_list, result);
+    //al_push(&anna_function_list, result);
 
     wchar_t *name=0;
     if (definition->child[0]->node_type == ANNA_NODE_IDENTIFIER) 
@@ -497,6 +482,31 @@ anna_function_t *anna_function_create_from_definition(
     
     return result;
 }
+
+anna_function_t *anna_macro_create(
+    wchar_t *name,
+    struct anna_node_call *definition,
+    wchar_t *arg_name)
+{
+    anna_function_t *result = calloc(
+	1,
+	sizeof(anna_function_t));
+    result->definition = definition;
+    result->body = (anna_node_call_t *)definition->child[2];
+    result->name = wcsdup(name);
+    wchar_t **argn=calloc(sizeof(wchar_t *), 1);
+    anna_type_t **argv=calloc(sizeof(anna_type_t *), 1);
+    argv[0] = node_wrapper_type;
+    argn[0] = wcsdup(arg_name);
+    result->return_type = node_wrapper_type;
+    result->flags = ANNA_FUNCTION_MACRO;
+    result->input_count=1;
+    result->input_name = argn;
+    result->input_type = argv;
+    return result;
+    
+}
+
 
 anna_function_t *anna_function_create_from_block(
     struct anna_node_call *body)
@@ -555,7 +565,7 @@ anna_function_t *anna_native_create(
 	argv, 
 	sizeof(anna_type_t *)*argc);
     result->input_name = argn;
-    al_push(&anna_function_list, result);
+//    al_push(&anna_function_list, result);
     
 //    anna_function_wrapper_create(result);
     anna_function_setup_interface(result, location);

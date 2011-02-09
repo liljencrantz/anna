@@ -38,7 +38,6 @@ static wchar_t *anna_assign_operator_names[][2] =
 }
     ;
 
-
 static int templatize_key_compare(void *k1, void *k2)
 {
     templatize_key_t *key1 =(templatize_key_t *)k1;
@@ -65,75 +64,6 @@ static int templatize_key_hash(void *k1)
     return result;
 }
 
-
-static wchar_t *anna_find_method(
-    anna_node_t *context, 
-    anna_type_t *type, 
-    wchar_t *prefix, 
-    size_t argc,
-    anna_type_t *arg2_type)
-{
-    int i;
-    anna_prepare_type_interface(type);
-    wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
-    wchar_t *match=0;
-    int fault_count=0;
-    
-    assert(arg2_type);
-    
-    
-    anna_type_get_member_names(type, members);    
-    //wprintf(L"Searching for %ls[XXX]... in %ls\n", prefix, type->name);
-    
-    for(i=0; i<anna_type_member_count(type); i++)
-    {
-	//wprintf(L"Check %ls\n", members[i]);
-	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
-	    continue;
-	//wprintf(L"%ls matches, name-wise\n", members[i]);
-	
-	anna_type_t *mem_type = anna_type_member_type_get(type, members[i]);
-	//wprintf(L"Is of type %ls\n", mem_type->name);
-	anna_function_type_key_t *mem_fun = anna_function_unwrap_type(mem_type);
-	if(mem_fun)
-	{
-	    if(mem_fun->argc != argc)
-		continue;
-	    
-	    if(!mem_fun->argv[1])
-	    {
-		anna_error(context,L"Internal error. Type %ls has member named %ls with invalid second argument\n",
-			   type->name, members[i]);
-		return 0;
-	    }
-	    
-	    //wprintf(L"Check %ls against %ls\n",arg2_type->name, mem_fun->argv[1]->name);
-	    
-	    if(mem_fun->argc == argc && anna_abides(arg2_type, mem_fun->argv[1]))
-	    {
-		int my_fault_count = anna_abides_fault_count(mem_fun->argv[1], arg2_type);
-		if(!match || my_fault_count < fault_count)
-		{
-		    match = members[i];
-		    fault_count = my_fault_count;
-		}
-	    }
-	}
-	else
-	{
-	    //wprintf(L"Not a function\n");
-	}
-	
-    }
-    return match;
-        
-}
-
-
-static size_t anna_parent_count(struct anna_node_list *parent)
-{
-    return parent?1+anna_parent_count(parent->parent):0;
-}
 /*
 static anna_node_t *anna_macro_module(
     anna_node_call_t *node,
@@ -187,30 +117,17 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 
     anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
     anna_node_call_t *declarations = node_cast_call(node->child[1]);
-    wchar_t **argn=calloc(sizeof(wchar_t *), 1);
-    anna_type_t **argv=calloc(sizeof(anna_type_t *), 1);
-    argv[0] = node_wrapper_type;
     CHECK_CHILD_COUNT(declarations,L"macro definition", 1);
-
     CHECK_NODE_TYPE(declarations->child[0], ANNA_NODE_IDENTIFIER);
     anna_node_identifier_t *arg = (anna_node_identifier_t *)declarations->child[0];
-    argn[0] = wcsdup(arg->name);
     
     //anna_stack_print(function->stack_template);
     
     anna_function_t *result;
-    result = anna_function_create_from_definition(node);
-    /*
-
+    result = anna_macro_create(
 	name_identifier->name,
-	ANNA_FUNCTION_MACRO,
-	(anna_node_call_t *)node->child[2], 
-	node_wrapper_type,
-	1,
-	argv,
-	argn,
-	stack_global);
-    */
+	node,
+	arg->name);
     return (anna_node_t *)
 	anna_node_create_declare(
 	    &node->location,
