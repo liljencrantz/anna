@@ -329,7 +329,7 @@ typedef struct
 {
     anna_type_t *result; 
     size_t argc;
-    int is_variadic;
+    int flags;
     wchar_t **argn;
     anna_type_t *argv[];
 } anna_function_type_key_t;

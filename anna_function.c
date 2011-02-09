@@ -137,15 +137,18 @@ void anna_function_setup_interface(
 	return;
     }    
     f->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
-
+    
 //    wprintf(L"Set up interface for function/macro %ls\n", f->name);
     
     if(f->body)
     {
-	anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
-
+	size_t declaration_count = 1;
+	if(!(f->flags & ANNA_FUNCTION_MACRO)){
+	    anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
+	    declaration_count = declarations->child_count;
+	}
 	f->stack_template = anna_node_register_declarations(
-	    f->body, declarations->child_count);
+	    f->body, declaration_count);
 	f->stack_template->parent = parent_stack;
 /*    
 	wprintf(
@@ -203,51 +206,42 @@ void anna_function_setup_interface(
 	}
     }
     
-    anna_type_t *ft = 
-	anna_type_for_function(
-	    f->return_type,
-	    f->input_count,
-	    f->input_type,
-	    f->input_name,
-	    ANNA_IS_VARIADIC(f));
-    
-    f->wrapper = anna_object_create(ft);    
-//    f->wrapper->member[0] = (anna_object_t *)f;
-/*
-    if(f->member_of)
-    {
-	anna_member_redeclare(
-	    f->member_of,
-	    f->mid,
-	    f->wrapper->type);
-    }
-*/      
-    memcpy(
-	anna_member_addr_get_mid(
-	    f->wrapper,
-	    ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
-	&f,
-	sizeof(anna_function_t *));
-
-    if(f->stack_template && f->stack_template->parent)
-    {
+    if(!f->wrapper){
+	anna_type_t *ft = 
+	    anna_type_for_function(
+		f->return_type,
+		f->input_count,
+		f->input_type,
+		f->input_name,
+		f->flags);
+	
+	f->wrapper = anna_object_create(ft);    
 	memcpy(
 	    anna_member_addr_get_mid(
 		f->wrapper,
-		ANNA_MID_FUNCTION_WRAPPER_STACK),
-	    &f->stack_template->parent,
-	    sizeof(anna_stack_frame_t *));
+		ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
+	    &f,
+	    sizeof(anna_function_t *));
+	
+	if(f->stack_template)
+	{
+	    memcpy(
+		anna_member_addr_get_mid(
+		    f->wrapper,
+		    ANNA_MID_FUNCTION_WRAPPER_STACK),
+		&f->stack_template->parent,
+		sizeof(anna_stack_frame_t *));
+	}
+	else
+	{
+	    memset(
+		anna_member_addr_get_mid(
+		    f->wrapper,
+		    ANNA_MID_FUNCTION_WRAPPER_STACK),
+		0,
+		sizeof(anna_stack_frame_t *));
+	}
     }
-    else
-    {
-	memset(
-	    anna_member_addr_get_mid(
-		f->wrapper,
-		ANNA_MID_FUNCTION_WRAPPER_STACK),
-	    0,
-	    sizeof(anna_stack_frame_t *));
-    }
-
 }
 
 void anna_function_setup_body(
@@ -347,107 +341,6 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
   
 }
 
-int anna_function_prepared(anna_function_t *t)
-{
-    return !!(t->flags & ANNA_FUNCTION_PREPARED_BODY);
-}
-/*
-anna_function_t *anna_function_create(
-    wchar_t *name,
-    int flags,
-    anna_node_call_t *body, 
-    anna_type_t *return_type,
-    size_t argc,
-    anna_type_t **argv,
-    wchar_t **argn,
-    anna_stack_frame_t *parent_stack)
-{
-    int i;
-    
-    if(!(flags & ANNA_FUNCTION_MACRO)) {
-	//assert(return_type);
-	if(argc) {
-	    assert(argv);
-	    assert(argn);
-	}
-	for(i=0;i<argc; i++)
-	{
-	    assert(argv[i]);
-	    assert(argn[i]);
-	}
-    }
-    
-    anna_function_t *result = calloc(
-	1,sizeof(anna_function_t));
-    result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
-//    if(flags & 
-    result->native.function=0;
-    result->flags=flags;
-    result->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
-    result->name = wcsdup(name);
-    result->body = body;
-    result->return_type=return_type;
-    result->input_count=argc;
-    result->this=0;
-    al_push(&anna_function_list, result);
-    
-    if(!(flags & ANNA_FUNCTION_MACRO)) {
-	result->input_name = malloc(argc*sizeof(wchar_t *));;
-	memcpy(result->input_name, argn, sizeof(wchar_t *)*argc);
-    }
-    else
-    {
-	result->input_name = malloc(3*sizeof(wchar_t *));;
-	memcpy(result->input_name, argn, sizeof(wchar_t *)*3);	
-    }
-        
-    result->stack_template = anna_stack_create(64, parent_stack);
-    
-    result->stack_template->function = result;
-
-    if(!(flags & ANNA_FUNCTION_MACRO)) 
-    {
-	int is_variadic = ANNA_IS_VARIADIC(result);
-	memcpy(result->input_type, argv, sizeof(anna_type_t *)*argc);
-	for(i=0; i<argc-is_variadic;i++)
-	{
-	    anna_stack_declare(
-		result->stack_template,
-		argn[i], 
-		argv[i], 
-		null_object,
-		0);	
-	}    
-	if(is_variadic)
-	{
-	    anna_stack_declare(
-		result->stack_template, 
-		argn[argc-1], 
-		list_type, 
-		null_object,
-		0);
-	}
-    }
-    else
-    {
-	anna_stack_declare(
-	    result->stack_template, 
-	    argn[0], 
-	    node_call_wrapper_type,
-	    null_object,
-	    0);
-    }
-    
-    //anna_function_prepare(result);
-    
-//    anna_function_wrapper_create(result);
-    anna_function_setup_type(result, parent_stack);
-    
-    //wprintf(L"Function object is %d, wrapper is %d\n", result, result->wrapper);
-    
-    return result;
-}
-*/
 anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition)
 {
@@ -478,7 +371,6 @@ anna_function_t *anna_function_create_from_definition(
     wprintf(L"LALALAGGG\n");
     anna_node_print(definition);
 */  
-//    anna_function_wrapper_create(result);
     
     return result;
 }
@@ -542,7 +434,7 @@ anna_function_t *anna_native_create(
     wchar_t **argn,
     anna_stack_frame_t *location)
 {
-    if(!flags) {
+    if(!(flags & ANNA_FUNCTION_MACRO)) {
 	assert(return_type);
 	if(argc) {
 	    assert(argv);
@@ -555,7 +447,6 @@ anna_function_t *anna_native_create(
     result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
 
     result->flags=flags;
-    result->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     result->native = native;
     result->name = name;
     result->return_type=return_type;
@@ -565,11 +456,7 @@ anna_function_t *anna_native_create(
 	argv, 
 	sizeof(anna_type_t *)*argc);
     result->input_name = argn;
-//    al_push(&anna_function_list, result);
-    
-//    anna_function_wrapper_create(result);
-    anna_function_setup_interface(result, location);
-        
+    anna_function_setup_interface(result, location);        
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
 
     return result;

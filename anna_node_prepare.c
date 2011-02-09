@@ -302,8 +302,14 @@ static void anna_node_calculate_type_internal(
 		return;
 	    }
 	    anna_function_type_key_t *funt = anna_function_type_extract(fun_type);
-	    call->return_type = funt->result;
-	    
+	    if(funt->flags & ANNA_FUNCTION_MACRO)
+	    {
+		anna_error(this, L"Unexpanded macro call");
+	    }
+	    else
+	    {
+		call->return_type = funt->result;
+	    }
 	    break;
 	}
 

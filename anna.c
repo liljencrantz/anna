@@ -109,13 +109,13 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid)
 static int hash_function_type_func(void *a)
 {
     anna_function_type_key_t *key = (anna_function_type_key_t *)a;
-    int res = (int)key->result + key->is_variadic;
+    int res = (int)key->result ^ key->flags;
     int i;
     
     for(i=0;i<key->argc; i++)
     {
 	res = (res<<19) ^ (int)key->argv[i] ^ (res>>13);
-	res += wcslen(key->argn[i]);
+	res ^= wcslen(key->argn[i]);
     }
     
     return res;
@@ -134,7 +134,7 @@ static int hash_function_type_comp(void *a, void *b)
 	return 0;
     if(key1->argc != key2->argc)
 	return 0;
-    if(key1->is_variadic != key2->is_variadic)
+    if(key1->flags != key2->flags)
 	return 0;
 
     for(i=0;i<key1->argc; i++)
@@ -155,11 +155,11 @@ anna_type_t *anna_type_for_function(
     size_t argc, 
     anna_type_t **argv, 
     wchar_t **argn, 
-    int is_variadic)
+    int flags)
 {
     //static int count=0;
     //if((count++)==10) {CRASH};
-    
+    flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO);
     int i;
     static anna_function_type_key_t *key = 0;
     static size_t key_sz = 0;
@@ -183,7 +183,7 @@ anna_type_t *anna_type_for_function(
 	key->argn = was_null?malloc(sizeof(wchar_t *)*argc):realloc(key->argn, sizeof(wchar_t *)*argc);
     }
     
-    key->is_variadic = is_variadic;
+    key->flags = flags;
     key->result=result;
     key->argc = argc;
     
@@ -461,7 +461,7 @@ size_t anna_native_method_create(
 	    argc, 
 	    argv,
 	    argn,
-	    flags & ANNA_FUNCTION_VARIADIC));
+	    flags));
     anna_member_t *m = type->mid_identifier[mid];
     //wprintf(L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     m->is_method=1;
