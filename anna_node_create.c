@@ -26,7 +26,7 @@
 anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_object *val, int is_trampoline)
 {
     anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
-    result->node_type = is_trampoline?ANNA_NODE_TRAMPOLINE:ANNA_NODE_DUMMY;
+    result->node_type = is_trampoline?ANNA_NODE_CLOSURE:ANNA_NODE_DUMMY;
     anna_node_set_location((anna_node_t *)result,loc);
     if(!(val && val->type && val->type->name && wcslen(val->type->name)!=0))
     {
@@ -34,6 +34,18 @@ anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_obje
 	CRASH;
     }
     
+    result->payload = val;
+    return result;  
+}
+
+anna_node_closure_t *anna_node_create_closure(
+    anna_location_t *loc, 
+    anna_function_t *val)
+{
+    anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
+    assert(val);
+    result->node_type = ANNA_NODE_CLOSURE;
+    anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;
     return result;  
 }
@@ -71,21 +83,18 @@ anna_node_import_t *anna_node_create_import(
 anna_node_member_get_t *anna_node_create_member_get(
     anna_location_t *loc,
     struct anna_node *object,
-    size_t mid, 
-    struct anna_type *type, 
-    int wrap)
+    size_t mid)
 {
     anna_node_member_get_t *result = calloc(1,sizeof(anna_node_member_get_t));
-    result->node_type = wrap?ANNA_NODE_MEMBER_GET_WRAP:ANNA_NODE_MEMBER_GET;
+    result->node_type = ANNA_NODE_MEMBER_GET;
     anna_node_set_location((anna_node_t *)result,loc);
     result->object=object;
     result->mid=mid;
-    result->type=type;
     return result;  
   
 }
 
-anna_node_member_set_t *anna_node_create_member_set(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_node *value, struct anna_type *type)
+anna_node_member_set_t *anna_node_create_member_set(anna_location_t *loc, struct anna_node *object, size_t mid, struct anna_node *value)
 {
     anna_node_member_set_t *result = calloc(1,sizeof(anna_node_member_set_t));
     result->node_type = ANNA_NODE_MEMBER_SET;
@@ -93,33 +102,82 @@ anna_node_member_set_t *anna_node_create_member_set(anna_location_t *loc, struct
     result->object=object;
     result->value=value;
     result->mid=mid;
-    result->type=type;
     return result;  
     
 }
 
 
 
-anna_node_assign_t *anna_node_create_assign(anna_location_t *loc, anna_sid_t sid, struct anna_node *value)
+anna_node_assign_t *anna_node_create_assign(
+    anna_location_t *loc, 
+    wchar_t *name, 
+    struct anna_node *value)
 {
     anna_node_assign_t *result = calloc(1,sizeof(anna_node_assign_t));
     result->node_type = ANNA_NODE_ASSIGN;
     anna_node_set_location((anna_node_t *)result,loc);
     result->value=value;
-    result->sid=sid;
+    result->name = wcsdup(name);
     return result;  
 }
 
-anna_node_int_literal_t *anna_node_create_int_literal(anna_location_t *loc, int val)
+anna_node_assign_t *anna_node_create_declare(
+    anna_location_t *loc, 
+    wchar_t *name,
+    struct anna_node *type,
+    struct anna_node *value)
 {
-    anna_node_int_literal_t *result = calloc(1,sizeof(anna_node_int_literal_t));
+    anna_node_declare_t *result = calloc(1,sizeof(anna_node_declare_t));
+    result->node_type = ANNA_NODE_DECLARE;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->value=value;
+    result->type=type;
+    result->name = wcsdup(name);
+    return result;
+}
+
+anna_node_cond_t *anna_node_create_cond(
+    anna_location_t *loc, 
+    int type,
+    anna_node_t *arg1,
+    anna_node_t *arg2)
+{
+    anna_node_cond_t *result = calloc(1,sizeof(anna_node_cond_t));
+    result->node_type = type;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->arg1=arg1;
+    result->arg2=arg2;
+    return result;
+}
+
+anna_node_cond_t *anna_node_create_if(
+    anna_location_t *loc, 
+    struct anna_node *cond,
+    anna_node_call_t *block1,
+    anna_node_call_t *block2)
+{
+    anna_node_if_t *result = calloc(1,sizeof(anna_node_if_t));
+    result->node_type = ANNA_NODE_IF;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->cond=cond;
+    result->block1=block1;
+    result->block2=block2;
+    return result;
+}
+
+anna_node_int_literal_t *anna_node_create_int_literal(
+    anna_location_t *loc, int val)
+{
+    anna_node_int_literal_t *result = 
+	calloc(1,sizeof(anna_node_int_literal_t));
     result->node_type = ANNA_NODE_INT_LITERAL;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;
     return result;
 }
 
-anna_node_float_literal_t *anna_node_create_float_literal(anna_location_t *loc, double val)
+anna_node_float_literal_t *anna_node_create_float_literal(
+    anna_location_t *loc, double val)
 {
     anna_node_float_literal_t *result = calloc(1,sizeof(anna_node_float_literal_t));
     result->node_type = ANNA_NODE_FLOAT_LITERAL;
@@ -128,7 +186,8 @@ anna_node_float_literal_t *anna_node_create_float_literal(anna_location_t *loc, 
     return result;
 }
 
-anna_node_char_literal_t *anna_node_create_char_literal(anna_location_t *loc, wchar_t val)
+anna_node_char_literal_t *anna_node_create_char_literal(
+    anna_location_t *loc, wchar_t val)
 {
     anna_node_char_literal_t *result = calloc(1,sizeof(anna_node_char_literal_t));
     result->node_type = ANNA_NODE_CHAR_LITERAL;
@@ -137,7 +196,8 @@ anna_node_char_literal_t *anna_node_create_char_literal(anna_location_t *loc, wc
     return result;
 }
 
-anna_node_string_literal_t *anna_node_create_string_literal(anna_location_t *loc, size_t sz, wchar_t *str)
+anna_node_string_literal_t *anna_node_create_string_literal(
+    anna_location_t *loc, size_t sz, wchar_t *str)
 {
     anna_node_string_literal_t *result = calloc(1,sizeof(anna_node_string_literal_t));
     result->node_type = ANNA_NODE_STRING_LITERAL;
@@ -147,7 +207,8 @@ anna_node_string_literal_t *anna_node_create_string_literal(anna_location_t *loc
     return result;
 }
 
-anna_node_call_t *anna_node_create_call(anna_location_t *loc, anna_node_t *function, size_t argc, anna_node_t **argv)
+anna_node_call_t *anna_node_create_call(
+    anna_location_t *loc, anna_node_t *function, size_t argc, anna_node_t **argv)
 {
     anna_node_call_t *result = calloc(1,sizeof(anna_node_call_t));
     result->child = calloc(1,sizeof(anna_node_t *)*(argc));
@@ -159,6 +220,26 @@ anna_node_call_t *anna_node_create_call(anna_location_t *loc, anna_node_t *funct
     memcpy(result->child, argv, sizeof(anna_node_t *)*(argc));
     return result;
 }
+
+anna_node_member_call_t *anna_node_create_member_call(
+    anna_location_t *loc, 
+    anna_node_t *object,
+    size_t mid,
+    size_t argc, 
+    anna_node_t **argv)
+{
+    anna_node_member_call_t *result = calloc(1,sizeof(anna_node_member_call_t));
+    result->child = calloc(1,sizeof(anna_node_t *)*(argc));
+    result->node_type = ANNA_NODE_MEMBER_CALL;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->object = object;
+    result->mid = mid;
+    result->child_count = argc;
+    result->child_capacity = argc;
+    memcpy(result->child, argv, sizeof(anna_node_t *)*(argc));
+    return result;    
+}
+
 
 anna_node_identifier_t *anna_node_create_identifier(anna_location_t *loc, wchar_t *name)
 {

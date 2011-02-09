@@ -1,6 +1,6 @@
 
 
-
+/*
 static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node, 
 						  anna_function_t *function, 
 						  anna_node_list_t *parent)
@@ -16,10 +16,7 @@ static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node,
     CHECK_CHILD_COUNT(attribute, L"template instantiation", 1);	
     CHECK_NODE_IDENTIFIER_NAME(attribute->function, L"template");
     CHECK_NODE_TYPE(attribute->child[0], ANNA_NODE_CALL);
-    /*
-    anna_node_identifier_t *id = 
-	(anna_node_identifier_t *)attribute->function;
-    */
+  
     anna_node_call_t *pair = 
 	(anna_node_call_t *)attribute->child[0];
     
@@ -31,11 +28,7 @@ static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node,
 	body,
 	(anna_node_identifier_t *)pair->child[0],
 	(anna_node_t *)pair->child[1]);    
-/*
-  wprintf(L"Result\n");
-  anna_node_print(node);
-  wprintf(L"\n");    
-*/
+
 }
 
 static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node, 
@@ -53,7 +46,7 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
     
     //anna_node_print(attribute);
 
-    anna_node_prepare_children(attribute, function, parent);
+    anna_node_macro_expand_children(attribute);
     CHECK_CHILD_COUNT(attribute, L"template instantiation", 1);
     CHECK_NODE_TYPE(attribute->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_TYPE(body->child[3], ANNA_NODE_CALL);
@@ -86,3 +79,4 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
     return (anna_node_t *)body;
     
 }
+*/

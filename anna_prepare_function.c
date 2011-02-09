@@ -2,6 +2,7 @@
 
 static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 {
+/*
     int is_variadic=0;
     if(function->flags & ANNA_FUNCTION_PREPARED_COMMON)
 	return 0;
@@ -92,11 +93,11 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 	    {
 		//CHECK_CHILD_COUNT(decl, L"variable declaration", 3);
 		CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
-		anna_node_prepare_child(
+		anna_node_macro_expand_child(
 		    decl,
-		    1,
-		    function,
-		    &list);
+		    1);
+		
+
 		anna_node_identifier_t *name = 
 		    node_cast_identifier(
 			decl->child[0]);
@@ -133,18 +134,13 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 			{
 			    FAIL(def, L"Only the last argument to a function can be variadic");
 			}
-/*			else
-			{
-			    wprintf(L"Variadic function\n");
-			}
-*/
 		    }
 		}
 	    }
 	    else if(wcscmp(fun->name, L"__function__") == 0)
 	    {
 		anna_node_t *fun_node = 
-		    anna_node_prepare((anna_node_t *)decl, function, &list);
+		    anna_node_macro_expand((anna_node_t *)decl);
 		//anna_node_print(fun_node);
 		
 		CHECK_NODE_TYPE(fun_node, ANNA_NODE_TRAMPOLINE);
@@ -157,19 +153,7 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
                 argv[i+!!type] = anna_function_wrap(fun)->type;
                 argn[i+!!type] = fun->name;
 		
-/*
-                anna_node_t *fun_wrap = anna_prepare_function_interface(
-                    0, decl, function, 
-                    parent, 0);
 
-                CHECK_NODE_TYPE(fun_wrap, ANNA_NODE_DUMMY);
-                anna_node_dummy_t *fun_dummy = (anna_node_dummy_t *)fun_wrap;
-                anna_function_t *fun = anna_function_unwrap(fun_dummy->payload);
-                CHECK(fun, decl, L"Could not parse function declaration");              
-                argv[i+!!type] = anna_function_wrap(fun)->type;
-                argn[i+!!type] = fun->name;
-
-*/
 	    }
 	    else 
 	    {
@@ -221,7 +205,7 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
     
     if(verbose)
 	wprintf(L"Finish common init of function of %ls\n", function->name);	
-
+*/
     return 0;
 }
 
@@ -229,6 +213,9 @@ static anna_node_t *anna_prepare_function_common(anna_function_t *function)
 static anna_node_t *anna_prepare_function_interface_internal(
     anna_function_t *function)
 {
+    return 0;
+    
+#if 0
     anna_node_call_t *node = function->definition;
     int is_module = !!(function->flags & ANNA_FUNCTION_MODULE);
     int i;
@@ -286,7 +273,7 @@ static anna_node_t *anna_prepare_function_interface_internal(
     }
     else
     {
-        anna_node_prepare_child(node, 1, function, &list);
+        anna_node_macro_expand_child(node, 1);
 	out_type_wrapper = node->child[1];
 	anna_node_identifier_t *type_identifier;
 	type_identifier = node_cast_identifier(out_type_wrapper);
@@ -334,6 +321,7 @@ static anna_node_t *anna_prepare_function_interface_internal(
 
     function->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     return (anna_node_t *)anna_node_create_dummy(&node->location, anna_function_wrap(function),0);
+#endif
 }
 
 void anna_prepare_function_interface(
@@ -357,22 +345,13 @@ void anna_prepare_function_interface(
 
 void anna_prepare_function(anna_function_t *function)
 {
-    prepare_item_t it = 
-	{
-	    function, 0, L"Body preparation"
-	}
-    ;
-    if(anna_prepare_check(&it))
-	return;
-    
     anna_prepare_function_internal(function);
-    anna_prepare_pop();
-    
 }
 
 static void anna_prepare_function_internal(
     anna_function_t *function)
 {
+#if 0
     int i;
     anna_node_list_t list = 
 	{
@@ -396,10 +375,9 @@ static void anna_prepare_function_internal(
 	for(i=0; i<function->body->child_count; i++) 
 	{
 	    list.idx=i;
-	    function->body->child[i] = anna_node_prepare(
-		function->body->child[i],
-		function, 
-		&list);
+	    function->body->child[i] = anna_node_macro_expand(
+		function->body->child[i]);
+	    
 	}
 	
 	for(i=0; i<function->body->child_count; i++) 
@@ -409,6 +387,7 @@ static void anna_prepare_function_internal(
     }
 
     function->flags |= ANNA_FUNCTION_PREPARED_IMPLEMENTATION;
+#endif
 }
 
 static void anna_prepare_function_recursive(anna_function_t *block)

@@ -11,6 +11,10 @@ anna_node_dummy_t *anna_node_create_dummy(
     struct anna_object *val, 
     int is_trampoline);
 
+anna_node_dummy_t *anna_node_create_closure(
+    anna_location_t *loc,
+    anna_function_t *val);
+
 anna_node_dummy_t *anna_node_create_blob(
     anna_location_t *loc, 
     void *val);
@@ -27,9 +31,7 @@ anna_node_import_t *anna_node_create_import(
 anna_node_member_get_t *anna_node_create_member_get(
     anna_location_t *loc, 
     struct anna_node *object, 
-    size_t mid, 
-    struct anna_type *type, 
-    int wrap);
+    size_t mid);
 
 anna_node_member_set_t *anna_node_create_member_set(
     anna_location_t *loc, 
@@ -60,13 +62,41 @@ anna_node_call_t *anna_node_create_call(
     anna_node_t *function, 
     size_t argc, 
     anna_node_t **argv);
+
+anna_node_member_call_t *anna_node_create_member_call(
+    anna_location_t *loc, 
+    anna_node_t *object,
+    size_t mid,
+    size_t argc, 
+    anna_node_t **argv);
+
 anna_node_identifier_t *anna_node_create_identifier(
     anna_location_t *loc, 
     wchar_t *name);
+
+anna_node_cond_t *anna_node_create_cond(
+    anna_location_t *loc, 
+    int type,
+    anna_node_t *arg1,
+    anna_node_t *arg2);
+
+anna_node_cond_t *anna_node_create_if(
+    anna_location_t *loc, 
+    anna_node_t *cond,
+    anna_node_call_t *block1,
+    anna_node_call_t *block2);
+
 anna_node_t *anna_node_create_null(anna_location_t *loc);
+
 anna_node_assign_t *anna_node_create_assign(
     anna_location_t *loc, 
-    anna_sid_t sid, 
+    wchar_t *name,
+    struct anna_node *value);
+
+anna_node_assign_t *anna_node_create_declare(
+    anna_location_t *loc, 
+    wchar_t *name,
+    struct anna_node *type,
     struct anna_node *value);
 
 anna_node_call_t *anna_node_create_native_method_declare(

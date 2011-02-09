@@ -342,8 +342,17 @@ static anna_object_t *anna_list_in(anna_object_t **param)
 
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
-    list_type = anna_type_native_create(L"List", stack);
-    
+
+    anna_member_create(
+	list_type, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
+	0, null_type);
+    anna_member_create(
+	list_type, ANNA_MID_LIST_SIZE,  L"!listSize", 
+	0, null_type);
+    anna_member_create(
+	list_type, ANNA_MID_LIST_CAPACITY,  L"!listCapacity",
+	0, null_type);
+/*
     anna_node_t *my_list_type = 
 	anna_node_create_simple_templated_type(
 	    0, 
@@ -352,9 +361,11 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     
     anna_node_call_t *definition =
 	anna_type_definition_get(list_type);
-    /*
+*/
+  /*
       Attibute list
     */
+/*
     anna_node_call_t *attribute_list = 
 	anna_type_attribute_list_get(list_type);
     
@@ -363,8 +374,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	    0,
 	    (anna_node_t *)anna_node_create_identifier(0, L"template"),
 	    0,
-	    0);	
-    
+	    0);	f    
     anna_node_call_t *pair = 
 	anna_node_create_call(
 	    0,
@@ -391,7 +401,8 @@ void anna_list_type_create(anna_stack_frame_t *stack)
     anna_node_call_add_child(
 	attribute_list,
 	(anna_node_t *)template);
-    
+*/  
+#if 0
     anna_member_add_node(
 	definition, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
 	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
@@ -573,6 +584,7 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	anna_list_append(l, L"TJOHO");
 	wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
     */
+#endif
 }
 
 

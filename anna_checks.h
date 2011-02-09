@@ -10,7 +10,7 @@
    If enabled, when invoking an AST node, first make sure it's been
    prepared. Not _very_ expensive.
  */
-#define ANNA_CHECK_NODE_PREPARED_ENABLED 
+//#define ANNA_CHECK_NODE_PREPARED_ENABLED 
 
 /**
    If enabled, always check that sid:s are currect when invoking

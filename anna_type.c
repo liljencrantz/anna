@@ -247,9 +247,9 @@ int anna_type_is_fake(anna_type_t *t)
 
 anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
 {
+
     assert(type);
     assert(name);
-    anna_prepare_type_interface(type);
     
     anna_member_t *m = (anna_member_t *)hash_get(&type->name_identifier, name);
     if(!m)
@@ -257,19 +257,7 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
 	return 0;
     }
     
-    if(!m->type)
-    {	
-	if(m->is_method && m->is_static)
-	{
-	    anna_object_t *fun_wrapper = type->static_member[m->offset];
-	    anna_function_t *fun = anna_function_unwrap(fun_wrapper);
-	    assert(fun);
-	    anna_prepare_function_interface(fun);
-	    assert(m->type);
-	    
-	}
-
-    }
+    assert(m->type);
     
     return m->type;
 }

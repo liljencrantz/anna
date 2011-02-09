@@ -14,6 +14,8 @@
 #include <wchar.h>
 #include <stdarg.h>
 #include <unistd.h>
+
+#define AL_STATIC {0,0,0}
     
 /**
    Typedef for a generic function pointer
