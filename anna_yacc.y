@@ -648,12 +648,28 @@ expression9 :
 	| 
 	expression9 '[' expression ']'
 	{
-	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_create_call(
-	       &@$,
-	       (anna_node_t *)anna_node_create_identifier(&@2, L"__get__"),
-	       2,
-	       param);
+	    anna_node_t *param[] ={
+		$1, 
+		(anna_node_t *)anna_node_create_identifier(
+			    &@$,
+			    L"__get__"),
+	    };
+	    anna_node_t *param2[] ={
+		$3, 
+	    };
+	    $$ = (anna_node_t *)
+		anna_node_create_call(
+		    &@$, 
+		    (anna_node_t *)anna_node_create_call(
+			&@$, 
+			(anna_node_t *)anna_node_create_identifier(
+			    &@$,
+			    L"__memberGet__"),
+			2,
+			param),
+		    1,
+		    param2);
+
 	}
 	| 
 	'[' argument_list2 ']' /* Alternative list constructor syntax */

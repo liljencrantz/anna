@@ -205,12 +205,13 @@ void anna_string_type_create(anna_stack_frame_t *stack)
     
     sb_destroy(&sb);
 
-#if 0
-    anna_node_t *i_argv[] = 
+
+
+    anna_type_t *i_argv[] = 
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"Char")
+	    string_type,
+	    int_type,
+	    char_type
 	}
     ;
 
@@ -219,6 +220,21 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	    L"this", L"index", L"value"
 	}
     ;
+
+    anna_native_method_create(
+	string_type,
+	-1,
+	L"__get__Int__",
+	0, 
+	&anna_string_i_get_int, 
+	char_type,
+	2, 
+	i_argv, 
+	i_argn);
+
+
+
+#if 0
 
     anna_node_t *range_param[] = 
 	{
@@ -317,17 +333,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_string_i_init, 
 	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
 	1, i_argv, i_argn);    
-
-    anna_native_method_add_node(
-	definition,
-	-1,
-	L"__get__Int__",
-	0, 
-	(anna_native_t)&anna_string_i_get_int, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Char") , 
-	2, 
-	i_argv, 
-	i_argn);
 
     anna_native_method_add_node(
 	definition,

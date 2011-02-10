@@ -28,7 +28,6 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     }
 }
 
-
 anna_type_t *anna_type_create(wchar_t *name, anna_stack_frame_t *stack)
 {
     anna_type_t *result = calloc(1,sizeof(anna_type_t));

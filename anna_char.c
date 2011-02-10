@@ -76,8 +76,6 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 	}
     ;
 
-    char_type = anna_type_native_create(L"Char", stack);
-    
     anna_member_create(
 	char_type, 
 	ANNA_MID_CHAR_PAYLOAD,  

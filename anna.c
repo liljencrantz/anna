@@ -544,6 +544,7 @@ static void anna_init()
 	    stack_global );
 
     float_type = anna_type_native_create(L"Float", stack_global);
+    char_type = anna_type_native_create(L"Char", stack_global);
 
     anna_type_type_create(stack_global);    
     anna_null_type_create();    
