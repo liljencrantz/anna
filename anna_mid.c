@@ -84,7 +84,7 @@ size_t anna_mid_get(wchar_t *name)
 	if( mid_pos >= anna_type_mid_max)
 	{
 	    anna_type_mid_max += 128;
-	    anna_type_reallocade_mid_lookup(anna_type_mid_max);
+	    anna_type_reallocade_mid_lookup(anna_type_mid_max-128,anna_type_mid_max);
 	}
 	anna_mid_put(wcsdup(name), gg);
 	return gg;
