@@ -543,6 +543,8 @@ static void anna_init()
 	    L"String", 
 	    stack_global );
 
+    float_type = anna_type_native_create(L"Float", stack_global);
+
     anna_type_type_create(stack_global);    
     anna_null_type_create();    
     anna_int_type_create(stack_global);
@@ -559,10 +561,10 @@ static void anna_init()
 
 
     anna_char_type_create(stack_global);
+    anna_float_type_create(stack_global);
 
 /*
     anna_member_types_create(stack_global);
-    anna_float_type_create(stack_global);
 */  
     
     anna_function_implementation_init(stack_global);

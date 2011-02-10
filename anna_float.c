@@ -36,13 +36,10 @@ double anna_float_get(anna_object_t *this)
 
 void anna_float_type_create(anna_stack_frame_t *stack)
 {
-#if 0
-    float_type = anna_type_native_create(L"Float", stack);
-    anna_node_call_t *definition = anna_type_definition_get(float_type);
 
-    anna_member_add_node(
-	definition, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload",
-	0, (anna_node_t *)anna_node_create_identifier(0, L"Null"));
+    anna_member_create(
+	float_type, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload",
+	0, null_type);
     /*
       If we can't fit a double into a void * on this platform, add a
       second dummy payload. This assumes that sizeof(double) is never
@@ -55,11 +52,11 @@ void anna_float_type_create(anna_stack_frame_t *stack)
     */
     if(sizeof(double) > sizeof(void *)) 
     {
-	anna_member_add_node(
-	    definition, -1,  L"!floatPayload2", 0, 
-	    (anna_node_t *)anna_node_create_identifier(0, L"Null"));
+	anna_member_create(
+	    float_type, -1,  L"!floatPayload2", 0, 
+	    null_type);
     }
     
-    anna_float_type_i_create(definition, stack);
-#endif
+    anna_float_type_i_create(stack);
+
 }

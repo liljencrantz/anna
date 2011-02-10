@@ -9,10 +9,10 @@ echo "
 "
 
 init="
-    anna_node_t *argv[]=
+    anna_type_t *argv[]=
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+	    float_type,
+	    float_type
 	}
     ;
     
@@ -22,10 +22,10 @@ init="
 	}
     ;
 
-    anna_node_t *i_argv[]=
+    anna_type_t *i_argv[]=
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Int\"), 
+	    float_type,
+	    int_type
 	}
     ;
     
@@ -42,10 +42,10 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_add_node(
-	definition, -1, L\"__${name}__Float__\", 0, 
-	(anna_native_t)&anna_float_i_${name}, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+    anna_native_method_create(
+	float_type, -1, L\"__${name}__Float__\", 0, 
+	&anna_float_i_${name}, 
+	float_type,
 	2, argv, argn);"
 
     echo "
@@ -70,20 +70,20 @@ for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "exp pow(v1, v2
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_add_node(
-	definition, -1, L\"__${name}__Float__\", 0,
-	(anna_native_t)&anna_float_i_${name}, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+    anna_native_method_create(
+	float_type, -1, L\"__${name}__Float__\", 0,
+	&anna_float_i_${name}, 
+	float_type,
 	2, argv, argn);
-    anna_native_method_add_node(
-	definition, -1, L\"__${name}__Int__\", 0, 
-	(anna_native_t)&anna_float_i_int_${name}, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+    anna_native_method_create(
+        float_type, -1, L\"__${name}__Int__\", 0, 
+	&anna_float_i_int_${name}, 
+	float_type,
 	2, i_argv, i_argn);
-    anna_native_method_add_node(
-	definition, -1, L\"__r${name}__Int__\", 0, 
-	(anna_native_t)&anna_float_i_int_r${name}, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+    anna_native_method_create(
+	float_type, -1, L\"__r${name}__Int__\", 0, 
+	&anna_float_i_int_r${name}, 
+	float_type,
 	2, i_argv, i_argn);
 "
 
@@ -125,15 +125,15 @@ for i in "increase v1+v2" "decrease v1-v2"; do
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_add_node(
-	definition, -1, L\"__${name}__Float__\", 0, 
-	(anna_native_t)&anna_float_i_${name}_float, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+    anna_native_method_create(
+	float_type, -1, L\"__${name}__Float__\", 0, 
+	&anna_float_i_${name}_float, 
+	float_type,
 	2, argv, argn);
-    anna_native_method_add_node(
-	definition, -1, L\"__${name}__Int__\", 0, 
-	(anna_native_t)&anna_float_i_${name}_int, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+    anna_native_method_create(
+	float_type, -1, L\"__${name}__Int__\", 0, 
+	&anna_float_i_${name}_int, 
+	float_type,
 	2, i_argv, i_argn);"
 
     echo "
@@ -168,10 +168,10 @@ for i in "abs fabs(v)" "neg -v" "sqrt sqrt(v)" "tan tan(v)" "atan atan(v)" "sin 
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_add_node(
-	definition, -1, L\"__${name}__\", 0, 
-	(anna_native_t)&anna_float_i_${name}, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Float\"), 
+    anna_native_method_create(
+	float_type, -1, L\"__${name}__\", 0, 
+	&anna_float_i_${name}, 
+	float_type,
 	1, argv, argn);"
 
     echo "
@@ -184,10 +184,8 @@ static anna_object_t *anna_float_i_$name(anna_object_t **param)
 done
 
 echo "
-static void anna_float_type_i_create(anna_node_call_t *definition, anna_stack_frame_t *stack)
+static void anna_float_type_i_create(anna_stack_frame_t *stack)
 {
-/*
 $init
-*/
 }"
 
