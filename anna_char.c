@@ -108,5 +108,5 @@ void anna_char_type_create(anna_stack_frame_t *stack)
 	&anna_char_i_get_lower, 
 	0);
 
-//    anna_char_type_i_create(char_type, stack);
+    anna_char_type_i_create(stack);
 }

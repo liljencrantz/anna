@@ -9,17 +9,17 @@ echo "
 "
 
 init="
-    anna_node_t *c_argv[]=
+    anna_type_t *c_argv[]=
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Char\"), 
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Char\"), 
+	    char_type,
+            char_type
 	}
     ;
     
-    anna_node_t *i_argv[]=
+    anna_type_t *i_argv[]=
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Char\"), 
-	    (anna_node_t *)anna_node_create_identifier(0, L\"Int\"), 
+	    int_type,
+            int_type
 	}
     ;
     
@@ -29,7 +29,6 @@ init="
 	}
     ;
 
-
 "
 
 for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
@@ -37,9 +36,9 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_add_node(
-	definition, -1, L\"__${name}__Char__\", 0, (anna_native_t)&anna_char_i_${name}, 
-	(anna_node_t *)anna_node_create_identifier(0, L\"Char\"), 2, c_argv, argn);"
+    anna_native_method_create(
+	char_type, -1, L\"__${name}__Char__\", 0, &anna_char_i_${name}, 
+	char_type, 2, c_argv, argn);"
 
     echo "
 static anna_object_t *anna_char_i_$name(anna_object_t **param)
@@ -63,7 +62,7 @@ for i in "add +" "sub -"; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_add_node(definition, -1, L\"__${name}__Int__\", 0, (anna_native_t)&anna_char_i_${name}, (anna_node_t *)anna_node_create_identifier(0, L\"Char\"), 2, i_argv, argn);"
+    anna_native_method_create(char_type, -1, L\"__${name}__Int__\", 0, &anna_char_i_${name}, char_type, 2, i_argv, argn);"
 
     echo "
 static anna_object_t *anna_char_i_$name(anna_object_t **param)
@@ -79,10 +78,8 @@ static anna_object_t *anna_char_i_$name(anna_object_t **param)
 done
 
 echo "
-static void anna_char_type_i_create(anna_node_call_t *definition, anna_stack_frame_t *stack)
+static void anna_char_type_i_create(anna_stack_frame_t *stack)
 {
-/*
 $init
-*/
 }"
 
