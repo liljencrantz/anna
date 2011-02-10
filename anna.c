@@ -388,54 +388,12 @@ void anna_member_redeclare(
 }
 
 
-void anna_member_add_node(anna_node_call_t *definition,
-			  ssize_t mid,
-			  wchar_t *name,
-			  int is_static,
-			  anna_node_t *member_type)
-{
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_member_declare(
-	    &definition->location,
-	    mid,
-	    name,
-	    is_static,
-	    member_type));
-}
-
-
-void anna_native_method_add_node(
-    anna_node_call_t *definition,
-    ssize_t mid,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    anna_node_t *result,
-    size_t argc,
-    anna_node_t **argv,
-    wchar_t **argn)
-{
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_native_method_declare(
-	    &definition->location,
-	    mid,
-	    name,
-	    flags,
-	    func,
-	    result,
-	    argc,
-	    argv,
-	    argn));
-}
-
 size_t anna_native_method_create(
     anna_type_t *type,
     ssize_t mid,
     wchar_t *name,
     int flags,
-    anna_native_t func,
+    anna_native_function_t func,
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
@@ -468,7 +426,7 @@ size_t anna_native_method_create(
     type->static_member[m->offset] = 
 	anna_function_wrap(
 	    anna_native_create(
-		name, flags, func, result, 
+		name, flags, (anna_native_t)func, result, 
 		argc, argv, argn,
 		0));
     return (size_t)mid;
@@ -600,10 +558,10 @@ static void anna_init()
     anna_stack_declare(stack_global, L"String", string_type, anna_type_wrap(string_type), 0); 
 
 
+    anna_char_type_create(stack_global);
 
 /*
     anna_member_types_create(stack_global);
-    anna_char_type_create(stack_global);
     anna_float_type_create(stack_global);
 */  
     

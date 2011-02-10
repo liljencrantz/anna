@@ -81,6 +81,8 @@ done
 echo "
 static void anna_char_type_i_create(anna_node_call_t *definition, anna_stack_frame_t *stack)
 {
+/*
 $init
+*/
 }"
 

@@ -89,111 +89,52 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	anna_type_native_create(
 	    L"Member",
 	    stack);
-    anna_node_call_t *definition = 
-	anna_type_definition_get(member_type);
     
-    anna_member_add_node(
-	definition, 
+    anna_member_create(
+	member_type, 
 	ANNA_MID_MEMBER_PAYLOAD, 
 	L"!memberPayload", 
 	0,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Null"));
+	null_type);
     
-    anna_member_add_node(
-	definition, 
+    anna_member_create(
+	member_type, 
 	ANNA_MID_MEMBER_TYPE_PAYLOAD, 
 	L"!memberTypePayload", 
 	0,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Null"));
+	null_type);
     
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	member_type,
 	-1,
-	L"!getName",
-	0, 
-	(anna_native_t)&anna_member_i_get_name, 
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"String"),
-	1,
-	argv,
-	argn );    
+	L"name",
+	string_type,
+	&anna_member_i_get_name, 
+	0);
     
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"name",
-	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
-	    L"!getName", 0));
-    
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	member_type,
 	-1,
-	L"!getStatic",
-	0, 
-	(anna_native_t)&anna_member_i_get_static, 
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Int"),
-	1,
-	argv,
-	argn );    
+	L"isStatic",
+	int_type,
+	&anna_member_i_get_static,
+	0);
     
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"isStatic",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
-	    L"!getStatic", 0));
-    
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	member_type,
 	-1,
-	L"!getMethod",
-	0, 
-	(anna_native_t)&anna_member_i_get_method, 
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Int"),
-	1,
-	argv,
-	argn );    
+	L"isMethod",
+	int_type,
+	&anna_member_i_get_method,
+	0);
     
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"isMethod",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
-	    L"!getMethod", 0));
-    
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	member_type,
 	-1,
-	L"!getProperty",
-	0, 
-	(anna_native_t)&anna_member_i_get_property, 
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Int"),
-	1,
-	argv,
-	argn );    
-    
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"isProperty",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
-	    L"!getProperty", 0));
-    
+	L"isProperty",
+	int_type,
+	&anna_member_i_get_property,
+	0);
 }
 
 #include "anna_member_method.c"
@@ -221,7 +162,7 @@ size_t anna_member_create(
 	wprintf(L"Critical: Create a member with unspecified type\n");
 	CRASH;
     }
-//    wprintf(L"Create member %ls in type %ls\n", name, type->name);
+    //wprintf(L"Create member %ls in type %ls at mid %d\n", name, type->name, mid);
     
     if(hash_get(&type->name_identifier, name))
     {
@@ -333,4 +274,86 @@ anna_member_t *anna_member_method_search(anna_type_t *type, size_t mid, size_t a
     return match ? anna_member_get(type, anna_mid_get(match)):0;
     
 }
+
+size_t anna_native_property_create(
+    anna_type_t *type,
+    size_t mid,
+    wchar_t *name,
+    anna_type_t *property_type,
+    anna_native_function_t getter,
+    anna_native_function_t setter)
+{
+    wchar_t *argn[] = 
+	{
+	    L"this", L"value"
+	}
+    ;
+    anna_type_t *argv[] = 
+	{
+	    type,
+	    property_type
+	}
+    ;
+
+    size_t getter_mid = -1;
+    size_t setter_mid = -1;
+    ssize_t getter_offset=-1;
+    ssize_t setter_offset=-1;
+    string_buffer_t sb;
+    sb_init(&sb);
+    
+
+    if(getter)
+    {
+	sb_printf(&sb, L"!%lsGetter", name);
+	
+	getter_mid = anna_native_method_create(
+	    type,
+	    -1,
+	    sb_content(&sb),
+	    0,
+	    getter,
+	    property_type,
+	    1,
+	    argv,
+	    argn
+	    );
+	anna_member_t *gm = anna_member_get(type, getter_mid);
+	getter_offset = gm->offset;
+    }
+    
+    if(setter)
+    {
+	sb_clear(&sb);
+	sb_printf(&sb, L"!%lsSetter", name);
+	setter_mid = anna_native_method_create(
+	    type,
+	    -1,
+	    sb_content(&sb),
+	    0,
+	    setter,
+	    property_type,
+	    2,
+	    argv,
+	    argn
+	    );
+	anna_member_t *sm = anna_member_get(type, setter_mid);
+	setter_offset = sm->offset;
+    }
+    sb_destroy(&sb);
+    
+    mid = anna_member_create(
+	type,
+	mid,
+	name,
+	1,
+	property_type);
+    anna_member_t *memb = anna_member_get(type, mid);
+    
+    memb->is_property=1;
+    memb->getter_offset = getter_offset;
+    memb->setter_offset = setter_offset;
+    return mid;
+}
+
 

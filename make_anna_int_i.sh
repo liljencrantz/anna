@@ -31,7 +31,7 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     init="$init
     anna_native_method_create(
 	int_type, -1, L\"__${name}__Int__\", 0, 
-	(anna_native_t)&anna_int_i_${name}, 
+	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn);
 "
@@ -59,7 +59,7 @@ for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "shl v1 << v2" 
     init="$init
     anna_native_method_create(
 	int_type, -1, L\"__${name}__Int__\", 0, 
-	(anna_native_t)&anna_int_i_${name}, 
+	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn);
 "
@@ -86,7 +86,7 @@ for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)" ; do
     init="$init
     anna_native_method_create(
 	int_type, -1, L\"__${name}__\", 0, 
-	(anna_native_t)&anna_int_i_${name}, 
+	&anna_int_i_${name}, 
 	int_type,
 	1, argv, argn);
 "
@@ -109,7 +109,7 @@ for i in "getNext v+1" "getPrev v-1" ; do
     init="$init
     anna_native_method_create(
 	int_type, -1, L\"__${name}__\", 0, 
-	(anna_native_t)&anna_int_i_${name}, 
+	&anna_int_i_${name}, 
 	int_type,
 	1, argv, argn);
 "

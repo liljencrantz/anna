@@ -143,6 +143,7 @@ static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
 
 void anna_node_create_call_wrapper_type(anna_stack_frame_t *stack)
 {
+/*
     anna_node_t *list_template_param[] = 
 	{
 	    (anna_node_t *)anna_node_create_identifier(0, L"Node")
@@ -227,12 +228,10 @@ void anna_node_create_call_wrapper_type(anna_stack_frame_t *stack)
 	    L"this", L"block"
 	}
     ;
-    
+*/    
     node_call_wrapper_type = anna_type_native_create(L"Call", stack);
-    anna_type_native_parent(node_call_wrapper_type, L"Node");
-    
-    anna_node_call_t *definition = anna_type_definition_get(node_call_wrapper_type);
-    
+    anna_type_copy(node_call_wrapper_type, node_wrapper_type);
+    /*  
     anna_native_method_add_node(
 	definition,
 	-1,
@@ -318,5 +317,5 @@ void anna_node_create_call_wrapper_type(anna_stack_frame_t *stack)
 	    L"getFunction",
 	    L"setFunction"));
     
-
+    */
 }

@@ -12,6 +12,17 @@
 static hash_table_t anna_mid_identifier;
 static array_list_t anna_mid_identifier_reverse;
 static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
+static size_t anna_type_mid_max = ANNA_MID_FIRST_UNRESERVED+1;
+
+size_t anna_mid_max_get()
+{
+    return anna_type_mid_max;
+}
+
+anna_member_t **anna_mid_identifier_create()
+{
+    return calloc(1,anna_type_mid_max*sizeof(anna_member_t *) );
+}
 
 void anna_mid_init()
 {
@@ -60,7 +71,7 @@ void anna_mid_put(wchar_t *name, size_t mid)
     offset_ptr = malloc(sizeof(size_t));
     *offset_ptr = mid;
     hash_put(&anna_mid_identifier, name, offset_ptr);   
-    al_set(&anna_mid_identifier_reverse, mid, wcsdup(name));
+    al_set(&anna_mid_identifier_reverse, mid, name);
 }
 
 size_t anna_mid_get(wchar_t *name)
@@ -68,7 +79,13 @@ size_t anna_mid_get(wchar_t *name)
     size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
     if(!offset_ptr)
     {      
+
 	size_t gg = mid_pos++;
+	if( mid_pos >= anna_type_mid_max)
+	{
+	    anna_type_mid_max += 128;
+	    anna_type_reallocade_mid_lookup(anna_type_mid_max);
+	}
 	anna_mid_put(wcsdup(name), gg);
 	return gg;
     }

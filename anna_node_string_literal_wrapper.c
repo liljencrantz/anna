@@ -22,11 +22,13 @@ static anna_object_t *anna_node_string_literal_wrapper_i_init(anna_object_t **pa
 
 void anna_node_create_string_literal_wrapper_type(anna_stack_frame_t *stack)
 {
-    anna_node_t *argv[] = 
+    node_string_literal_wrapper_type = anna_type_native_create(L"StringLiteral", stack);
+    anna_type_copy(node_string_literal_wrapper_type, node_wrapper_type);
+    anna_type_t *argv[] = 
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"StringLiteral"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"Node"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
+	    node_string_literal_wrapper_type,
+	    node_wrapper_type,
+	    string_type
 	}
     ;
     
@@ -35,35 +37,21 @@ void anna_node_create_string_literal_wrapper_type(anna_stack_frame_t *stack)
 	    L"this", L"source", L"name"
 	}
     ;
-
-    node_string_literal_wrapper_type = anna_type_native_create(L"StringLiteral", stack);
-    anna_type_native_parent(node_string_literal_wrapper_type, L"Node");
     
-    anna_node_call_t *definition = anna_type_definition_get(node_string_literal_wrapper_type);
-    
-    anna_native_method_add_node(
-	definition,
+    anna_native_method_create(
+	node_string_literal_wrapper_type,
 	-1,
 	L"__init__",
 	0,
-	(anna_native_t)&anna_node_string_literal_wrapper_i_init, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
+	&anna_node_string_literal_wrapper_i_init, 
+	null_type,
 	3, argv, argn);
 
-
-    anna_native_method_add_node(
-	definition, -1, L"getPayload", 0, 
-	(anna_native_t)&anna_node_string_literal_wrapper_i_get_name, 
-	(anna_node_t *)anna_node_create_identifier(0, L"String"), 
-	1, argv, argn);
-    
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"payload",
-	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
-	    L"getPayload", 0));
+    anna_native_property_create(
+	node_string_literal_wrapper_type, -1, L"payload",
+	string_type,
+	&anna_node_string_literal_wrapper_i_get_name,
+	0);
     
 }
 

@@ -367,14 +367,9 @@ anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 	    L"StackType",
 	    stack->function?&(stack->function->definition->location):0),
 	stack_global);
-    anna_node_call_t *definition = 
-	anna_type_definition_get(res);
-    anna_member_add_node(
-	definition, ANNA_MID_STACK_PAYLOAD,  L"!stackPayload", 
-	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
-    anna_member_add_node(
-	definition, ANNA_MID_STACK_TYPE_PAYLOAD,  L"!stackTypePayload", 
-	1, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
+    anna_member_create(
+	res, ANNA_MID_STACK_PAYLOAD,  L"!stackPayload", 
+	0, null_type);
     anna_member_create(
 	res,
 	ANNA_MID_STACK_TYPE_PAYLOAD,
@@ -383,8 +378,7 @@ anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 	null_type);
     
     (*anna_static_member_addr_get_mid(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_object_t *)stack;
-        
-    //anna_prepare_type_implementation(res);
+    
     return res;
 }
 

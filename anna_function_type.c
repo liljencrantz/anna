@@ -93,9 +93,14 @@ void anna_function_type_base_create()
     
     base_created = 1;
     
-    anna_node_t *argv[] = 
+    anna_type_t *res =
+	anna_type_native_create(
+	    L"!FunctionTypeBase",
+	    stack_global);	
+
+    anna_type_t *argv[] = 
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"!FunctionTypeBase")
+	    res
 	}
     ;
     
@@ -105,70 +110,33 @@ void anna_function_type_base_create()
 	}
     ;
     
-    anna_type_t *res =
-	anna_type_native_create(
-	    L"!FunctionTypeBase",
-	    stack_global);	
-    anna_node_call_t *definition = 
-	anna_type_definition_get(res);
-
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	res,
 	-1,
-	L"!getName",
-	0, 
-	(anna_native_t)&anna_function_type_i_get_name, 
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"String"),
-	1,
-	argv,
-	argn );    
-
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"name",
-	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
-	    L"!getName", 0));
-
-    anna_native_method_add_node(
-	definition,
-	-1,
-	L"!getOutputType",
-	0, 
-	(anna_native_t)&anna_function_type_i_get_output, 
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Type"),
-	1,
-	argv,
-	argn );
+	L"name",
+	string_type,
+	&anna_function_type_i_get_name,
+	0);
     
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"outputType",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Type"),
-	    L"!getOutputType", 0));
-
-
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	res,
+	-1,
+	L"outputType",
+	type_type,
+	&anna_function_type_i_get_output,
+	0);
+/*
+    anna_native_method_create(
+	res,
 	-1,
 	L"!getInputType",
 	0,
-	(anna_native_t)&anna_function_type_i_get_input_type, 
-	anna_node_create_simple_templated_type(
-	    0, 
-	    L"List",
-	    L"Type"),
+	&anna_function_type_i_get_input_type, 
+	anna_list_type_get(type_type),
 	1,
 	argv,
-	argn );    
-    
+	argn );
+	
     anna_node_call_add_child(
 	definition,
 	(anna_node_t *)anna_node_create_property(
@@ -208,7 +176,7 @@ void anna_function_type_base_create()
 	    L"!getInputName",
 	    0));
     
-
+*/
 
     
 }
@@ -254,36 +222,19 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 	1,
 	null_type);
     
-    anna_node_call_t *definition = 
-	anna_type_definition_get(res);
-    
-    anna_member_add_node(
-	definition, 
-	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, 
-	L"!functionTypePayload",
-	1,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Null"));
-    
-    anna_member_add_node(
-	definition, 
+    anna_member_create(
+	res, 
 	ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, 
 	L"!functionPayload",
 	0,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Null"));
+	null_type);
     
-    anna_member_add_node(
-	definition, 
+    anna_member_create(
+	res, 
 	ANNA_MID_FUNCTION_WRAPPER_STACK, 
 	L"!functionStack",
 	0,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Null"));
-    
+	null_type);    
     (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)key;
     return res;
     

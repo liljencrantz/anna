@@ -19,4 +19,12 @@ size_t anna_member_create(
     int is_static,
     anna_type_t *member_type);
 
+size_t anna_native_property_create(
+    anna_type_t *type,
+    size_t mid,
+    wchar_t *name,
+    anna_type_t *property_type,
+    anna_native_function_t getter,
+    anna_native_function_t setter);
+
 #endif

@@ -1,8 +1,8 @@
-
+/*
 macro snopp(node){
     ast("snopp");
 }
-
+*/
 def main(){    
-    print(snopp());
+    print("hej hopp", 7, 9, 'c');
 }

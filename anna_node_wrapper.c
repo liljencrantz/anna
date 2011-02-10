@@ -125,19 +125,19 @@ void anna_node_create_wrapper_type(anna_stack_frame_t *stack)
     
     anna_native_method_create(
 	node_wrapper_type, -1, L"replace", 0, 
-	(anna_native_t)&anna_node_wrapper_i_replace, 
+	&anna_node_wrapper_i_replace, 
 	node_wrapper_type,
 	3, replace_argv, replace_argn);
  
     anna_native_method_create(
 	node_wrapper_type, -1, L"error", 0, 
-	(anna_native_t)&anna_node_wrapper_i_error, 
+	&anna_node_wrapper_i_error, 
 	node_wrapper_type,
 	2, error_argv, error_argn);
     
     anna_native_method_create(
 	node_wrapper_type, -1, L"print", 0, 
-	(anna_native_t)&anna_node_wrapper_i_print, 
+	&anna_node_wrapper_i_print, 
 	node_wrapper_type,
 	1, error_argv, error_argn);    
 }

@@ -17,13 +17,16 @@ array_list_t  anna_type_list =
     0, 0, 0
 };
 
-static anna_member_t **anna_mid_identifier_create()
+void anna_type_reallocade_mid_lookup(size_t sz)
 {
-    /*
-      FIXME: Track, reallocate when we run out of space, etc.
-    */
-    return calloc(1,4096);
+    int i;
+    for(i=0;i<al_get_count(&anna_type_list); i++)
+    {
+	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
+	type->mid_identifier = realloc(type->mid_identifier, sz*sizeof(anna_member_t *));
+    }
 }
+
 
 anna_type_t *anna_type_create(wchar_t *name, anna_stack_frame_t *stack)
 {
@@ -271,24 +274,24 @@ int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
   return !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
 }
 
-anna_type_t *anna_type_copy(anna_type_t *orig)
+void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
-    anna_type_t *res = anna_type_native_create(
-	anna_util_identifier_generate(orig->name, 0),
-	orig->stack);
     int i;
-    
-    anna_node_call_t *orig_body = (anna_node_call_t *)orig->definition->child[3];
-
-    for(i=0; i<orig_body->child_count; i++)
+    for(i=0; i<anna_mid_max_get(); i++)
     {
-	anna_node_call_add_child(
-	    (anna_node_call_t *)res->definition->child[3],
-	    anna_node_clone_deep(orig_body->child[i]));
+	anna_member_t *memb = orig->mid_identifier[i];
+	if(!memb)
+	    continue;
+	
+	anna_member_t *copy = anna_member_get(
+	    res,
+	    anna_member_create(
+		res,
+		anna_mid_get(memb->name), memb->name, memb->is_static, memb->type));
+	copy->is_method = memb->is_method;
+	copy->setter_offset = memb->setter_offset;
+	copy->getter_offset = memb->getter_offset;	
     }
-    
-    return res;
-
 }
 
 

@@ -17,6 +17,7 @@
 
 anna_object_t *anna_char_create(wchar_t value)
 {
+    
     anna_object_t *obj= anna_object_create(char_type);
     anna_char_set(obj, value);
     return obj;
@@ -63,10 +64,10 @@ static anna_object_t *anna_char_i_get_lower(anna_object_t **param)
 
 void anna_char_type_create(anna_stack_frame_t *stack)
 {
-    anna_node_t *o_argv[] = 
+    anna_type_t *o_argv[] = 
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"Char"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
+	    char_type,
+	    int_type
 	}
     ;
     wchar_t *o_argn[] =
@@ -76,62 +77,36 @@ void anna_char_type_create(anna_stack_frame_t *stack)
     ;
 
     char_type = anna_type_native_create(L"Char", stack);
-    anna_node_call_t *definition = anna_type_definition_get(char_type);
     
-    anna_member_add_node(
-	definition, ANNA_MID_CHAR_PAYLOAD,  L"!charPayload", 
+    anna_member_create(
+	char_type, 
+	ANNA_MID_CHAR_PAYLOAD,  
+	L"!charPayload", 
 	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
-    
-    anna_native_method_add_node(
-	definition, -1, L"getOrdinal", 0, 
-	(anna_native_t)&anna_char_i_get_ordinal, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
-	1, o_argv, o_argn);
-    
-    anna_native_method_add_node(
-	definition, -1, L"setOrdinal", 0, 
-	(anna_native_t)&anna_char_i_set_ordinal, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
-	2, o_argv, o_argn);
-    
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"ordinal",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
-	    L"getOrdinal",
-	    L"setOrdinal"));
 
-    anna_native_method_add_node(
-	definition, -1, L"getUpper", 0, 
-	(anna_native_t)&anna_char_i_get_upper, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Char"), 
-	1, o_argv, o_argn);
+    anna_native_property_create(
+	char_type,
+	-1,
+	L"ordinal",
+	int_type,
+	&anna_char_i_get_ordinal, 
+	&anna_char_i_set_ordinal);
     
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"upper",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Char") , 
-	    L"getUpper",
-	    0));
+    anna_native_property_create(
+	char_type,
+	-1,
+	L"upper",
+	char_type,
+	&anna_char_i_get_upper, 
+	0);
 
-    anna_native_method_add_node(
-	definition, -1, L"getLower", 0, 
-	(anna_native_t)&anna_char_i_get_lower, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Char"), 
-	1, o_argv, o_argn);
-    
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"lower",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Char") , 
-	    L"getLower",
-	    0));
+    anna_native_property_create(
+	char_type,
+	-1,
+	L"lower",
+	char_type,
+	&anna_char_i_get_lower, 
+	0);
 
-    anna_char_type_i_create(definition, stack);
+//    anna_char_type_i_create(char_type, stack);
 }

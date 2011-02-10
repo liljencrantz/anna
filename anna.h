@@ -145,7 +145,7 @@ struct anna_type
     struct anna_stack_frame *stack;
     /**
        An array containing all member structs. The offset is a mid.
-     */
+    */
     struct anna_member **mid_identifier;
     /**
        The AST that defines this type.
@@ -203,22 +203,26 @@ struct anna_member
        Only used if the member is a property. Gives the offset of the
        setter method. Note that all non-static variables are
        implicitly properties.
+
+       -1 if member is a property but unused;
      */
-    size_t setter_offset;
+    ssize_t setter_offset;
     /**
        Only used if the member is a property. Gives the offset of the
        getter method. Note that all non-static variables are
        implicitly properties.
+
+       -1 if member is a property but unused;
     */
-    size_t getter_offset;    
+    ssize_t getter_offset;    
     /**
        Points to the anna_object that can be used to introspect this
        member from within the anna code. 
-     */
+    */
     struct anna_object *wrapper;
     /**
        The name of this member.
-     */
+    */
     wchar_t name[];
 };
 
@@ -437,7 +441,7 @@ size_t anna_native_method_create(
     ssize_t mid,
     wchar_t *name,
     int flags,
-    anna_native_t func,
+    anna_native_function_t func,
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
@@ -497,5 +501,7 @@ void anna_mid_init();
 size_t anna_mid_get(wchar_t *name);
 wchar_t *anna_mid_get_reverse(size_t mid);
 void anna_mid_put(wchar_t *name, size_t mid);
+size_t anna_mid_max_get();
+
 
 #endif

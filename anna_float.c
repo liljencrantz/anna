@@ -36,6 +36,7 @@ double anna_float_get(anna_object_t *this)
 
 void anna_float_type_create(anna_stack_frame_t *stack)
 {
+#if 0
     float_type = anna_type_native_create(L"Float", stack);
     anna_node_call_t *definition = anna_type_definition_get(float_type);
 
@@ -60,4 +61,5 @@ void anna_float_type_create(anna_stack_frame_t *stack)
     }
     
     anna_float_type_i_create(definition, stack);
+#endif
 }
