@@ -217,7 +217,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node,
     
     wchar_t *method_name = sb_content(&sb);
     
-    size_t mid = anna_mid_get(method_name);
+    mid_t mid = anna_mid_get(method_name);
 
     anna_prepare_type_interface(lst_type);
     

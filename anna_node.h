@@ -134,7 +134,7 @@ struct anna_node_member_get
     int prepared;
 #endif    
     struct anna_node *object;
-    size_t mid;
+    mid_t mid;
 };
 
 struct anna_node_member_set
@@ -148,7 +148,7 @@ struct anna_node_member_set
 #endif    
     struct anna_node *object;
     struct anna_node *value;
-    size_t mid;
+    mid_t mid;
 };
 
 struct anna_node_call
@@ -176,7 +176,7 @@ struct anna_node_member_call
     int prepared;
 #endif
     struct anna_node *object;
-    size_t mid;
+    mid_t mid;
     size_t child_count;
     size_t child_capacity;
     struct anna_node **child;

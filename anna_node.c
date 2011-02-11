@@ -21,6 +21,7 @@
 #include "anna_type.h"
 #include "anna_module.h"
 #include "anna_node_create.h"
+#include "anna_member.h"
 
 #define NODE_CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
 

@@ -152,7 +152,7 @@ void anna_member_types_create(anna_stack_frame_t *stack)
 
 size_t anna_member_create(
     anna_type_t *type,
-    size_t mid,
+    mid_t mid,
     wchar_t *name,
     int is_static,
     anna_type_t *member_type)
@@ -182,15 +182,16 @@ size_t anna_member_create(
     anna_member_t * member = calloc(1,sizeof(anna_member_t) + sizeof(wchar_t) * (wcslen(name)+1));
     
     wcscpy(member->name, name);
-    
-    if (mid == (ssize_t)-1) {
+    if (mid == -1) {
 	mid = anna_mid_get(name);
     }
     else 
     {
 	if(mid != anna_mid_get(name))
 	{
-	    wprintf(L"Error, multiple mids for name %ls: %d and %d\n", name, mid, anna_mid_get(name));
+	    wprintf(
+		L"Critical: Multiple mids for name %ls: %d and %d\n", 
+		name, mid, anna_mid_get(name));
 	    CRASH;
 	}
     }
@@ -209,12 +210,12 @@ size_t anna_member_create(
     return mid;
 }
 
-anna_member_t *anna_member_get(anna_type_t *type, size_t mid)
+anna_member_t *anna_member_get(anna_type_t *type, mid_t mid)
 {
     return type->mid_identifier[mid];
 }
 
-anna_member_t *anna_member_method_search(anna_type_t *type, size_t mid, size_t argc, anna_type_t **argv)
+anna_member_t *anna_member_method_search(anna_type_t *type, mid_t mid, size_t argc, anna_type_t **argv)
 {
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
@@ -277,7 +278,7 @@ anna_member_t *anna_member_method_search(anna_type_t *type, size_t mid, size_t a
 
 size_t anna_native_property_create(
     anna_type_t *type,
-    size_t mid,
+    mid_t mid,
     wchar_t *name,
     anna_type_t *property_type,
     anna_native_function_t getter,

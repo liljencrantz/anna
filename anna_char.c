@@ -12,6 +12,7 @@
 #include "anna_char.h"
 #include "anna_type.h"
 #include "anna_int.h"
+#include "anna_member.h"
 
 #include "anna_char_i.c"
 

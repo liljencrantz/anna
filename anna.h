@@ -36,6 +36,7 @@ struct anna_node_call;
 
 typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *);
+typedef ssize_t mid_t;
 
 #define ANNA_FUNCTION_VARIADIC 1
 #define ANNA_FUNCTION_MACRO 2
@@ -264,7 +265,7 @@ struct anna_function
     /**
        The mid this method has in the type it is a member of
      */
-    size_t mid;
+    mid_t mid;
     /**
        The full AST that originally defined this function. 
     */
@@ -410,7 +411,7 @@ anna_object_t *anna_construct(
     struct anna_stack_frame *stack);
 
 anna_object_t **anna_static_member_addr_get_mid(
-    anna_type_t *type, size_t mid);
+    anna_type_t *type, mid_t mid);
 
 //anna_object_t **anna_static_member_addr_get_str(anna_type_t *type, wchar_t *name);
 
@@ -418,7 +419,7 @@ anna_object_t **anna_member_addr_get_str(
     anna_object_t *obj, wchar_t *name);
 
 anna_object_t **anna_member_addr_get_mid(
-    anna_object_t *obj, size_t mid);
+    anna_object_t *obj, mid_t mid);
 
 anna_object_t *anna_method_wrap(
     anna_object_t *method, 
@@ -426,19 +427,19 @@ anna_object_t *anna_method_wrap(
 
 void anna_member_redeclare(
     anna_type_t *type,
-    ssize_t mid,
+    mid_t mid,
     anna_type_t *member_type);
 
 void anna_member_add_node(
     struct anna_node_call *type,
-    ssize_t mid,
+    mid_t mid,
     wchar_t *name,
     int is_static,
     struct anna_node *member_type);
 
 size_t anna_native_method_create(
     anna_type_t *type,
-    ssize_t mid,
+    mid_t mid,
     wchar_t *name,
     int flags,
     anna_native_function_t func,
@@ -449,7 +450,7 @@ size_t anna_native_method_create(
 
 void anna_native_method_add_node(
     struct anna_node_call *type,
-    ssize_t mid,
+    mid_t mid,
     wchar_t *name,
     int flags,
     anna_native_t func,
@@ -460,7 +461,7 @@ void anna_native_method_add_node(
 
 size_t anna_method_create(
     anna_type_t *type,
-    ssize_t mid,
+    mid_t mid,
     wchar_t *name,
     int flags,
     anna_function_t *definition);
@@ -499,8 +500,8 @@ void anna_mid_init();
    Returns the mid (i.e. the offset in the type vtable) of the specified name. If there is no mid yet, create one.
  */
 size_t anna_mid_get(wchar_t *name);
-wchar_t *anna_mid_get_reverse(size_t mid);
-void anna_mid_put(wchar_t *name, size_t mid);
+wchar_t *anna_mid_get_reverse(mid_t mid);
+void anna_mid_put(wchar_t *name, mid_t mid);
 size_t anna_mid_max_get();
 
 

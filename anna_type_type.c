@@ -15,7 +15,7 @@
 /*
 static void anna_member_add_create(
     anna_type_t *type,
-    ssize_t mid,
+    mid_t mid,
     wchar_t *name,
     int is_static,
     anna_type_t *member_type)
@@ -37,7 +37,7 @@ static void anna_member_add_create(
 
 static void anna_native_method_add_create(
     anna_type_t *type,
-    ssize_t mid,
+    mid_t mid,
     wchar_t *name,
     int flags,
     anna_native_t func,

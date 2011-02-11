@@ -13,6 +13,7 @@
 #include "anna_char.h"
 #include "anna_type.h"
 #include "anna_string_internal.h"
+#include "anna_member.h"
 
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
@@ -258,6 +259,13 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	join_argn);
     
 
+    anna_native_property_create(
+	string_type,
+	-1,
+	L"count",
+	int_type,
+	&anna_string_i_get_count, 
+	&anna_string_i_set_count);
 
 #if 0
 
@@ -385,25 +393,5 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	(anna_node_t *)anna_node_create_identifier(0, L"Char"), 
 	2, e_argv, e_argn);
   
-    anna_native_method_add_node(
-	definition, -1, L"getCount", 0, 
-	(anna_native_t)&anna_string_i_get_count, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
-	1, i_argv, i_argn);
-    
-    anna_native_method_add_node(
-	definition, -1, L"setCount", 0, 
-	(anna_native_t)&anna_string_i_set_count, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
-	2, i_argv, i_argn);
-
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"count",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
-	    L"getCount",
-	    L"setCount"));
 #endif	
 }

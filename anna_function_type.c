@@ -15,6 +15,7 @@
 #include "anna_string.h"
 #include "anna_list.h"
 #include "anna_type.h"
+#include "anna_member.h"
 
 static int base_created = 0;
 

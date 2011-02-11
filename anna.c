@@ -66,7 +66,7 @@ anna_object_t **anna_member_addr_get_str(
     }
 }
 
-anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid)
+anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
 {
     /*
       wprintf(L"Get mid %d on object\n", mid);
@@ -87,7 +87,7 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, size_t mid)
     }
 }
 
-anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, size_t mid)
+anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
 {
     /*  wprintf(L"Get mid %d on object\n", mid);
 	wprintf(L"of type %ls\n", obj->type->name);
@@ -381,7 +381,7 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
 
 void anna_member_redeclare(
     anna_type_t *type,
-    ssize_t mid,
+    mid_t mid,
     anna_type_t *member_type)
 {
     type->mid_identifier[mid]->type = member_type;
@@ -390,7 +390,7 @@ void anna_member_redeclare(
 
 size_t anna_native_method_create(
     anna_type_t *type,
-    ssize_t mid,
+    mid_t mid,
     wchar_t *name,
     int flags,
     anna_native_function_t func,
@@ -433,7 +433,7 @@ size_t anna_native_method_create(
 }
 
 size_t anna_method_create(anna_type_t *type,
-			  ssize_t mid,
+			  mid_t mid,
 			  wchar_t *name,
 			  int flags,
 			  anna_function_t *definition)		

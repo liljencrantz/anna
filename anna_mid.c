@@ -11,7 +11,7 @@
 
 static hash_table_t anna_mid_identifier;
 static array_list_t anna_mid_identifier_reverse;
-static size_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
+static mid_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 static size_t anna_type_mid_max = 256;
 
 size_t anna_mid_max_get()
@@ -59,7 +59,7 @@ void anna_mid_init()
 
 
 
-void anna_mid_put(wchar_t *name, size_t mid)
+void anna_mid_put(wchar_t *name, mid_t mid)
 {
     size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
     if(offset_ptr)
@@ -92,7 +92,7 @@ size_t anna_mid_get(wchar_t *name)
     return *offset_ptr;
 }
 
-wchar_t *anna_mid_get_reverse(size_t mid)
+wchar_t *anna_mid_get_reverse(mid_t mid)
 {
     return (wchar_t *)al_get(&anna_mid_identifier_reverse, mid);
 }
