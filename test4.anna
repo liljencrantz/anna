@@ -5,6 +5,6 @@ macro snopp(node){
 */
 def main(){    
     var ggg = "some fancy text";
-//    ggg.count=4;
-    print(ggg.count);
+    ggg.count=4;
+    print(ggg);
 }

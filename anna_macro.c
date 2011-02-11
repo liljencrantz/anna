@@ -569,6 +569,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"__def__", &anna_macro_def);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
+    anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
     anna_macro_add(stack, L"__declare__", &anna_macro_declare);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
     anna_macro_add(stack, L"__and__", &anna_macro_and);
@@ -579,7 +580,6 @@ void anna_macro_init(anna_stack_frame_t *stack)
 
 /*    
     anna_macro_add(stack, L"__module__", &anna_macro_module);
-    anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
     anna_macro_add(stack, L"__function__", &anna_macro_function);
     anna_macro_add(stack, L"else", &anna_macro_else);
     anna_macro_add(stack, L"__get__", &anna_macro_get);

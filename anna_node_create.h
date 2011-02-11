@@ -37,8 +37,7 @@ anna_node_member_set_t *anna_node_create_member_set(
     anna_location_t *loc, 
     struct anna_node *object, 
     mid_t mid, 
-    struct anna_node *value, 
-    struct anna_type *type);
+    struct anna_node *value);
 
 anna_node_int_literal_t *anna_node_create_int_literal(
     anna_location_t *loc, 

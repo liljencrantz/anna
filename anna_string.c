@@ -323,27 +323,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	}
     ;
     
-    string_type = anna_type_native_create(L"String", stack);
-    anna_node_call_t *definition = anna_type_definition_get(string_type);
-    
-    anna_member_add_node(
-	definition, ANNA_MID_STRING_PAYLOAD,  L"!stringPayload", 
-	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
-    
-    int i;
-    string_buffer_t sb;
-    sb_init(&sb);
-    for(i=1; i<(((sizeof(anna_string_t)+1)/sizeof(anna_object_t *))+1);i++)
-    {
-	sb_clear(&sb);
-	sb_printf(&sb, L"!stringPayload%d", i);
-	
-	anna_member_add_node(
-	    definition, -1,  sb_content(&sb), 
-	    0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );	
-    }
-    
-    sb_destroy(&sb);
     
     anna_native_method_add_node(
 	definition,
@@ -353,7 +332,7 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	(anna_native_t)&anna_string_i_init, 
 	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
 	1, i_argv, i_argn);    
-
+    
     anna_native_method_add_node(
 	definition,
 	-1,

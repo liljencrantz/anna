@@ -1,5 +1,5 @@
 
-#define ANNA_NODE_TYPE_IN_TRANSIT 1
+#define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
 typedef struct
 {
@@ -93,8 +93,8 @@ anna_node_t *anna_node_macro_expand(
 
 	    if(this2->function->node_type == ANNA_NODE_MEMBER_GET)
 	    {
-		anna_node_member_get_t *mg = this2->function;
-		anna_node_t *result = anna_node_create_member_call(
+		anna_node_member_get_t *mg = (anna_node_member_get_t *)this2->function;
+		anna_node_t *result = (anna_node_t *)anna_node_create_member_call(
 		    &this2->location,
 		    mg->object,
 		    mg->mid,
@@ -136,7 +136,15 @@ anna_node_t *anna_node_macro_expand(
 	{
 	    anna_node_member_get_t *g = (anna_node_member_get_t *)this;
 	    g->object = anna_node_macro_expand(g->object, stack);
-	    return g;
+	    return this;
+	}
+
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    anna_node_member_set_t *g = (anna_node_member_set_t *)this;
+	    g->object = anna_node_macro_expand(g->object, stack);
+	    g->value = anna_node_macro_expand(g->value, stack);
+	    return this;
 	}
 
 	case ANNA_NODE_DECLARE:
@@ -144,14 +152,14 @@ anna_node_t *anna_node_macro_expand(
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
 	    d->type = anna_node_macro_expand(d->type, stack);
 	    d->value = anna_node_macro_expand(d->value, stack);
-	    return d;
+	    return this;
 	}	
 	
 	case ANNA_NODE_ASSIGN:
 	{
 	    anna_node_assign_t *d = (anna_node_assign_t *)this;
 	    d->value = anna_node_macro_expand(d->value, stack);
-	    return d;
+	    return this;
 	}	
 	
 	case ANNA_NODE_AND:
@@ -160,16 +168,16 @@ anna_node_t *anna_node_macro_expand(
 	    anna_node_cond_t *c = (anna_node_cond_t *)this;
 	    c->arg1 = anna_node_macro_expand(c->arg1, stack);
 	    c->arg2 = anna_node_macro_expand(c->arg2, stack);
-	    return c;
+	    return this;
 	}	
 	
 	case ANNA_NODE_IF:
 	{
 	    anna_node_if_t *c = (anna_node_if_t *)this;
 	    c->cond = anna_node_macro_expand(c->cond, stack);
-	    c->block1 = anna_node_macro_expand(c->block1, stack);
-	    c->block2 = anna_node_macro_expand(c->block2, stack);
-	    return c;
+	    c->block1 = (anna_node_call_t *)anna_node_macro_expand((anna_node_t *)c->block1, stack);
+	    c->block2 = (anna_node_call_t *)anna_node_macro_expand((anna_node_t *)c->block2, stack);
+	    return this;
 	}	
 	
 	default:
@@ -210,7 +218,6 @@ anna_stack_frame_t *anna_node_register_declarations(
     anna_node_find(this, ANNA_NODE_DECLARE, &decls);
     size_t sz = al_get_count(&decls);
     anna_stack_frame_t *stack = anna_stack_create(sz+extra, 0);    
-    anna_node_call_t * this2 = node_cast_call(this);    
     int i;
 /*
     wprintf(L"WOO WEE WOO %d declarations in ast\n", sz);
@@ -346,9 +353,11 @@ static void anna_node_calculate_type_internal(
 	    
 	    if(!member)
 	    {
-		anna_error(n, L"No member named %ls in type %ls\n", 
-			   anna_mid_get_reverse(n->mid),
-			   type->name);
+		anna_error(
+		    this, 
+		    L"No member named %ls in type %ls\n", 
+		    anna_mid_get_reverse(n->mid),
+		    type->name);
 		break;
 	    }
 
@@ -403,9 +412,11 @@ static void anna_node_calculate_type_internal(
 	    anna_member_t *member = anna_member_get(type, c->mid);
 	    if(!member)
 	    {
-		anna_error(c, L"No member named %ls in type %ls\n", 
-			   anna_mid_get_reverse(c->mid),
-			   type->name);
+		anna_error(
+		    this, 
+		    L"No member named %ls in type %ls\n", 
+		    anna_mid_get_reverse(c->mid),
+		    type->name);
 		break;
 		
 	    }
@@ -416,6 +427,14 @@ static void anna_node_calculate_type_internal(
 	    }
 	    c->return_type = member->type;
 	    break;
+	}
+
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    anna_node_member_set_t *g = (anna_node_member_set_t *)this;
+	    anna_node_calculate_type(g->value, stack);
+	    g->return_type = g->value->return_type;
+	    return g;
 	}
 
 	case ANNA_NODE_DECLARE:

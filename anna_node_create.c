@@ -94,7 +94,8 @@ anna_node_member_get_t *anna_node_create_member_get(
   
 }
 
-anna_node_member_set_t *anna_node_create_member_set(anna_location_t *loc, struct anna_node *object, mid_t mid, struct anna_node *value)
+anna_node_member_set_t *anna_node_create_member_set(
+    anna_location_t *loc, struct anna_node *object, mid_t mid, struct anna_node *value)
 {
     anna_node_member_set_t *result = calloc(1,sizeof(anna_node_member_set_t));
     result->node_type = ANNA_NODE_MEMBER_SET;
@@ -102,8 +103,7 @@ anna_node_member_set_t *anna_node_create_member_set(anna_location_t *loc, struct
     result->object=object;
     result->value=value;
     result->mid=mid;
-    return result;  
-    
+    return result;    
 }
 
 

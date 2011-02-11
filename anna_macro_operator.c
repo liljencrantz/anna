@@ -370,7 +370,6 @@ static anna_node_t *anna_macro_member_set(anna_node_call_t *node,
 					  anna_function_t *function, 
 					  anna_node_list_t *parent)
 {
-#if 0
 /*
   wprintf(L"member_get on node at %d\n", node);
   anna_node_print((anna_node_t *)node);
@@ -379,28 +378,12 @@ static anna_node_t *anna_macro_member_set(anna_node_call_t *node,
     CHECK_CHILD_COUNT(node,L"member assignment", 3);
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
     
-    anna_node_macro_expand_children(node);
-
-    anna_type_t *object_type = anna_node_get_return_type(
-	node->child[0], 
-	function->stack_template);
-    if(!object_type){
-	wprintf(L"LALALA\n");
-	CRASH;
-	
-    }
-    CHECK(object_type, node->child[0], L"Tried to assign member in object of unknown type");
-        
     anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
     mid_t mid = anna_mid_get(name_node->name);
-    
-    anna_type_t *member_type = anna_type_member_type_get(object_type, name_node->name);
-    
+
     return (anna_node_t *)anna_node_create_member_set(&node->location,
 						      node->child[0], 
 						      mid,
-						      node->child[2],
-						      member_type);
-#endif
+						      node->child[2]);
 }
 
