@@ -233,6 +233,31 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	i_argn);
 
 
+    wchar_t *join_argn[] =
+	{
+	    L"this", L"other"
+	}
+    ;
+    
+    anna_type_t *join_argv[] = 
+	{
+	    string_type,
+	    string_type
+	}
+    ;
+
+    anna_native_method_create(
+	string_type, 
+	-1,
+	L"__join__String__", 
+	0, 
+	&anna_string_i_join, 
+	string_type,
+	2,
+	join_argv, 
+	join_argn);
+    
+
 
 #if 0
 
@@ -260,19 +285,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
     wchar_t *range_argn[] =
 	{
 	    L"this", L"range", L"value"
-	}
-    ;
-
-    wchar_t *join_argn[] =
-	{
-	    L"this", L"other"
-	}
-    ;
-    
-    anna_node_t *join_argv[] = 
-	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
 	}
     ;
 
@@ -366,17 +378,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	3,
 	i_argv, 
 	i_argn);
-    
-    anna_native_method_add_node(
-	definition, 
-	-1,
-	L"__join__String__", 
-	0, 
-	(anna_native_t)&anna_string_i_join, 
-	(anna_node_t *)anna_node_create_identifier(0, L"String"), 
-	2,
-	join_argv, 
-	join_argn);
     
     anna_native_method_add_node(
 	definition, -1, L"__each__", 0, 

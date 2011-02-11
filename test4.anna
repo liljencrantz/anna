@@ -4,5 +4,5 @@ macro snopp(node){
 }
 */
 def main(){    
-    print("\n"[0].ordinal);
+    print("foo" ~ "bar");
 }
