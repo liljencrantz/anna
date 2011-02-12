@@ -14,6 +14,21 @@
 #include "anna_node_check.h"
 #include "anna_util.h"
 
+void anna_function_argument_hint(
+    anna_function_t *f,
+    int argument,
+    anna_type_t *type)
+{
+    anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
+    anna_node_call_t *declaration = node_cast_call(declarations->child[argument]);
+    if(declaration->child[1]->node_type == ANNA_NODE_NULL)
+    {
+	declaration->child[1] = 
+	    anna_node_create_dummy(0, anna_type_wrap(type), 0);
+    }
+    
+}
+
 static anna_node_t *anna_function_setup_arguments(
     anna_function_t *f,
     anna_stack_frame_t *parent_stack)
@@ -80,6 +95,12 @@ static anna_node_t *anna_function_setup_arguments(
 		anna_function_t *derp = cl->payload;
 		anna_function_setup_interface(derp, parent_stack);
 		argv[i] = derp->wrapper->type;
+	    }
+	    else if(type_node->node_type == ANNA_NODE_DUMMY)
+	    {
+		anna_node_dummy_t *cl = (anna_node_dummy_t *)type_node;
+		anna_type_t *derp = anna_type_unwrap(cl->payload);
+		argv[i] = derp;
 	    }
 	    else
 	    {

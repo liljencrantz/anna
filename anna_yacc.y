@@ -879,7 +879,7 @@ opt_identifier:
 identifier
 |
 {
-    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"!anonymous");
+    $$ = (anna_node_t *)anna_node_create_null(&@$);
 }
 ;
 
@@ -1010,7 +1010,9 @@ function_definition:
 	DEF opt_templatized_type opt_identifier declaration_list attribute_list opt_block
 	{
 	    anna_node_t *param[] ={
-		$3,
+		$3->node_type == ANNA_NODE_IDENTIFIER?$3:anna_node_create_identifier(
+		    &@$,
+		    L"!anonymous"),
 		(anna_node_t *)($2?$2:anna_node_create_null(&@$)),
 		(anna_node_t *)$4, 
 		(anna_node_t *)$5, 
@@ -1019,7 +1021,7 @@ function_definition:
 	    anna_node_t *param2[] ={$3, anna_node_create_null(&@$), 0};
 	    
 	    param2[2] = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@1,L"__def__"), 5, param);
-	    if($3)
+	    if($3->node_type != ANNA_NODE_NULL)
 	    {
 		$$ = (anna_node_t *)anna_node_create_call(
 		    &@$,

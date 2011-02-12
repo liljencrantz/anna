@@ -153,6 +153,18 @@ static anna_object_t *anna_string_i_join(anna_object_t **param)
     return obj;
 }
 
+static anna_object_t *anna_string_i_append(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    
+    anna_string_t *str1 = as_unwrap(param[0]);
+    anna_string_t *str2 = as_unwrap(param[1]);
+    
+    asi_append(str1, str2, 0, asi_get_length(str2));    
+    return param[0];
+}
+
 static anna_object_t *anna_string_i_each(anna_object_t **param)
 {
     anna_object_t *body_object;
@@ -160,7 +172,7 @@ static anna_object_t *anna_string_i_each(anna_object_t **param)
     anna_string_t *str = as_unwrap(param[0]);
     
     body_object=param[1];
-
+    
     size_t sz = asi_get_length(str);
     size_t i;
     
@@ -203,11 +215,9 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	    string_type, anna_mid_get(sb_content(&sb)),  sb_content(&sb), 
 	    0, null_type);
     }
-    
+
     sb_destroy(&sb);
-
-
-
+    
     anna_type_t *i_argv[] = 
 	{
 	    string_type,
@@ -215,13 +225,13 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	    char_type
 	}
     ;
-
+    
     wchar_t *i_argn[] =
 	{
 	    L"this", L"index", L"value"
 	}
     ;
-
+    
     anna_native_method_create(
 	string_type,
 	-1,
@@ -258,6 +268,17 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	join_argv, 
 	join_argn);
     
+    anna_native_method_create(
+	string_type, 
+	-1,
+	L"__append__String__", 
+	0, 
+	&anna_string_i_append, 
+	string_type,
+	2,
+	join_argv, 
+	join_argn);
+    
 
     anna_native_property_create(
 	string_type,
@@ -266,6 +287,35 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	int_type,
 	&anna_string_i_get_count, 
 	&anna_string_i_set_count);
+
+    anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
+    each_key->result = string_type;
+    each_key->argc = 2;
+    each_key->flags = 0;
+    each_key->argn = malloc(sizeof(wchar_t *)*2);
+    each_key->argn[0] = L"key";
+    each_key->argn[1] = L"value";
+    each_key->argv[0] = int_type;
+    each_key->argv[1] = char_type;
+
+    anna_node_t *e_argv[] = 
+	{
+	    string_type,
+	    anna_function_type_create(each_key)
+	}
+    ;
+    
+    wchar_t *e_argn[]=
+	{
+	    L"this", L"block"
+	}
+    ;    
+    
+    anna_native_method_create(
+	string_type, -1, L"__each__", 0, 
+	&anna_string_i_each, 
+	string_type,
+	2, e_argv, e_argn);
 
 #if 0
 
@@ -310,20 +360,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	}
     ;
 
-    anna_node_t *e_argv[] = 
-	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
-	    anna_node_create_function_declaration(0, (anna_node_t *)anna_node_create_identifier(0, L"Object"), 2, e_method_argv, e_method_argn)
-	}
-    ;
-
-    wchar_t *e_argn[]=
-	{
-	    L"this", L"block"
-	}
-    ;
-    
-    
     anna_native_method_add_node(
 	definition,
 	-1,
@@ -366,11 +402,5 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	i_argv, 
 	i_argn);
     
-    anna_native_method_add_node(
-	definition, -1, L"__each__", 0, 
-	(anna_native_t)&anna_string_i_each, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Char"), 
-	2, e_argv, e_argn);
-  
 #endif	
 }

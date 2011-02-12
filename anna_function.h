@@ -39,6 +39,10 @@ void anna_function_print(anna_function_t *function);
 
 void anna_function_setup_interface(anna_function_t *f, anna_stack_frame_t *location);
 void anna_function_setup_body(anna_function_t *f, anna_stack_frame_t *location);
+void anna_function_argument_hint(
+    anna_function_t *f,
+    int argument,
+    anna_type_t *type);
 
 
 #endif

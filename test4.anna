@@ -3,8 +3,9 @@ macro snopp(node){
     ast("snopp");
 }
 */
-def main(){    
+def main(){
     var ggg = "some fancy text";
-    ggg.count=4;
-    print(ggg);
+    ggg.count=5;
+    ggg ~= "bar\n";
+    ggg.__each__(def (idx, c){print(idx, ": ", c, "\n");});
 }

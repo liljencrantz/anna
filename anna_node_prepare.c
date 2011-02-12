@@ -206,6 +206,36 @@ int anna_node_is_call_to(anna_node_t *this, wchar_t *name){
 
 
 
+void anna_node_calculate_type_param(
+    size_t argc,
+    anna_node_t **argv,
+    int is_method,
+    anna_function_type_key_t *funt)
+{
+    int i, j;
+    for(i=0; i<argc; i++)
+    {
+	if(argv[i]->node_type == ANNA_NODE_CLOSURE)
+	{
+	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
+	    anna_function_t *closure = c->payload;
+	    wprintf(L"Closure as param %d. function type says argument is of type %ls\n", i, funt->argv[i+!!is_method]->name);
+	    anna_function_type_key_t *template = anna_function_type_extract(funt->argv[i+!!is_method]);
+	    assert(template);
+	    wprintf(L"Closure template takes %d params\n", template->argc);
+	    for(j=0; j<template->argc; j++)
+	    {
+		wprintf(L"Argument %d should be of type %ls\n", j, template->argv[j]->name);
+		anna_function_argument_hint(
+		    closure,
+		    j,
+		    template->argv[j]);
+	    }
+	}
+	
+    }
+}
+
 anna_stack_frame_t *anna_node_register_declarations(
     anna_node_t *this,
     size_t extra)
@@ -363,6 +393,9 @@ static void anna_node_calculate_type_internal(
 
 	    anna_function_type_key_t *funt = anna_function_type_extract(member->type);
 	    n->return_type = funt->result;
+
+	    anna_node_calculate_type_param(n->child_count, n->child, 1, funt);
+	    
 	    break;
 	}
 	

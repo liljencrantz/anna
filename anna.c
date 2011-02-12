@@ -559,6 +559,8 @@ static void anna_init()
 
     anna_stack_declare(stack_global, L"List", list_type, anna_type_wrap(list_type), 0); 
     anna_stack_declare(stack_global, L"String", string_type, anna_type_wrap(string_type), 0); 
+    anna_stack_declare(stack_global, L"Float", float_type, anna_type_wrap(float_type), 0); 
+    anna_stack_declare(stack_global, L"Char", char_type, anna_type_wrap(char_type), 0); 
 
 
     anna_char_type_create(stack_global);
