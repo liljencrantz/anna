@@ -7,5 +7,6 @@ def main(){
     var ggg = "some fancy text";
     ggg.count=5;
     ggg ~= "bar\n";
-    ggg.__each__(def (idx, c){print(idx, ": ", c, "\n");});
+//    ggg[0] = 'C';
+    ggg.each(idx,c){print(idx, ": ", c, "\n")}
 }

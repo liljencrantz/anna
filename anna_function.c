@@ -429,8 +429,8 @@ anna_function_t *anna_function_create_from_block(
 	{
 	    (anna_node_t *)anna_node_create_null(&body->location), //Name
 	    (anna_node_t *)anna_node_create_null(&body->location), //Return type
-	    (anna_node_t *)anna_node_create_block(&body->location),//Declaration list
-	    (anna_node_t *)anna_node_create_block(&body->location),//Attribute list
+	    (anna_node_t *)anna_node_create_block(&body->location, 0, 0),//Declaration list
+	    (anna_node_t *)anna_node_create_block(&body->location, 0, 0),//Attribute list
 	    (anna_node_t *)body
 	}
     ;

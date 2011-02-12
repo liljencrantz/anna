@@ -413,7 +413,7 @@ static void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr
     
 //    wprintf(L"Adding member %ls to namespace %ls\n", name, data->type->name);
     
-    anna_node_call_t *body = anna_node_create_block(0);
+    anna_node_call_t *body = anna_node_create_block(0, 0, 0);
 /*
     anna_node_t *param[] =
 	{

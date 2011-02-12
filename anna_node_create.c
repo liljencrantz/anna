@@ -578,15 +578,17 @@ anna_node_t *anna_node_create_simple_templated_type(
 }
 
 anna_node_call_t *anna_node_create_block(
-    anna_location_t *loc)
+    anna_location_t *loc,
+    size_t argc, 
+    anna_node_t **argv)
 {
     return anna_node_create_call(
 	loc,
 	(anna_node_t *)anna_node_create_identifier(
 	    loc,
 	    L"__block__"),
-	0,
-	0);
+	argc,
+	argv);
 }
 
 

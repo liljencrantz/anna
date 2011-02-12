@@ -143,7 +143,10 @@ anna_node_t *anna_node_create_simple_templated_type(
     wchar_t *param_name);
 
 anna_node_call_t *anna_node_create_block(
-    anna_location_t *loc);
+    anna_location_t *loc,
+    size_t argc, 
+    anna_node_t **argv);
+
 
 
 #endif
