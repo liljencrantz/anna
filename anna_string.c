@@ -297,7 +297,7 @@ void anna_string_type_create(anna_stack_frame_t *stack)
     each_key->argn[1] = L"value";
     each_key->argv[0] = int_type;
     each_key->argv[1] = char_type;
-
+    
     anna_node_t *e_argv[] = 
 	{
 	    string_type,
@@ -316,6 +316,17 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	&anna_string_i_each, 
 	string_type,
 	2, e_argv, e_argn);
+
+    anna_native_method_create(
+	string_type,
+	-1,
+	L"__set__Int__", 
+	0, 
+	&anna_string_i_set_int, 
+	char_type,
+	3,
+	i_argv, 
+	i_argn);
 
 #if 0
 
@@ -390,17 +401,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	3,
 	range_argv, 
 	range_argn);
-    
-    anna_native_method_add_node(
-	definition, 
-	-1,
-	L"__set__Int__", 
-	0, 
-	(anna_native_t)&anna_string_i_set_int, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Char"), 
-	3,
-	i_argv, 
-	i_argn);
     
 #endif	
 }
