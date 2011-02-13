@@ -16,7 +16,6 @@
 
 #include "anna_macro.h"
 
-
 anna_object_t *anna_list_create()
 {
     anna_object_t *obj= anna_object_create(list_type);
@@ -165,7 +164,7 @@ static anna_object_t *anna_list_append(anna_object_t **param)
 static anna_object_t *anna_list_each(anna_object_t **param)
 {
     anna_object_t *body_object;
-    anna_object_t *result=null_object;
+    anna_object_t *result=param[0];
     body_object=param[1];
         
     size_t sz = anna_list_get_size(param[0]);
@@ -340,18 +339,136 @@ static anna_object_t *anna_list_in(anna_object_t **param)
 */
 
 
-void anna_list_type_create(anna_stack_frame_t *stack)
+void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type, anna_type_t *spec)
 {
 
     anna_member_create(
-	list_type, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
+	type, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
 	0, null_type);
     anna_member_create(
-	list_type, ANNA_MID_LIST_SIZE,  L"!listSize", 
+	type, ANNA_MID_LIST_SIZE,  L"!listSize", 
 	0, null_type);
     anna_member_create(
-	list_type, ANNA_MID_LIST_CAPACITY,  L"!listCapacity",
+	type, ANNA_MID_LIST_CAPACITY,  L"!listCapacity",
 	0, null_type);
+
+
+    anna_type_t *a_argv[] = 
+	{
+	    type,
+	    spec
+	}
+    ;
+
+    wchar_t *a_argn[]=
+	{
+	    L"this", L"value"
+	}
+    ;
+
+
+    anna_native_method_create(
+	type,
+	-1,
+	L"__init__",
+	ANNA_FUNCTION_VARIADIC, 
+	&anna_list_init, 
+	type,
+	2, a_argv, a_argn);
+    
+    anna_type_t *i_argv[] = 
+	{
+	    type,
+	    int_type,
+	    spec
+	}
+    ;
+
+    wchar_t *i_argn[]=
+	{
+	    L"this", L"index", L"value"
+	}
+    ;
+    anna_native_method_create(
+	type,
+	-1,
+	L"__get__Int__",
+	0, 
+	&anna_list_get_int, 
+	spec,
+	2, 
+	i_argv, 
+	i_argn);
+    
+    anna_native_method_create(
+	type, 
+	-1,
+	L"__set__Int__", 
+	0, 
+	&anna_list_set_int, 
+	spec,
+	3,
+	i_argv, 
+	i_argn);
+    
+
+    anna_native_property_create(
+	type,
+	-1,
+	L"count",
+	int_type,
+	&anna_list_get_count, 
+	&anna_list_set_count);
+
+    anna_native_method_create(
+	type, -1, L"__append__Value__", 0, 
+	&anna_list_append, 
+	spec,
+	2, a_argv, a_argn);
+    
+
+    anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
+    each_key->result = object_type;
+    each_key->argc = 2;
+    each_key->flags = 0;
+    each_key->argn = malloc(sizeof(wchar_t *)*2);
+    each_key->argn[0] = L"key";
+    each_key->argn[1] = L"value";
+    each_key->argv[0] = int_type;
+    each_key->argv[1] = spec;
+    
+    anna_node_t *e_argv[] = 
+	{
+	    type,
+	    anna_function_type_create(each_key)
+	}
+    ;
+    
+    wchar_t *e_argn[]=
+	{
+	    L"this", L"block"
+	}
+    ;    
+    
+    anna_native_method_create(
+	type, -1, L"__each__", 0, 
+	&anna_list_each, 
+	type,
+	2, e_argv, e_argn);
+    
+    anna_native_method_create(
+	type, -1, L"__filter__", 
+	0, &anna_list_filter, 
+	type,
+	2, e_argv, e_argn);
+
+    anna_native_method_create(
+	type, -1, L"__first__", 
+	0, &anna_list_first, 
+	spec,
+	2, e_argv, e_argn);  
+
+
 /*
     anna_node_t *my_list_type = 
 	anna_node_create_simple_templated_type(
@@ -403,42 +520,8 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	(anna_node_t *)template);
 */  
 #if 0
-    anna_member_add_node(
-	definition, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
-	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
-    anna_member_add_node(
-	definition, ANNA_MID_LIST_SIZE,  L"!listSize", 
-	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
-    anna_member_add_node(
-	definition, ANNA_MID_LIST_CAPACITY,  L"!listCapacity",
-	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
-    
-    anna_node_t *i_argv[] = 
-	{
-	    anna_node_clone_deep(my_list_type), 
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"T")
-	}
-    ;
 
-    wchar_t *i_argn[]=
-	{
-	    L"this", L"index", L"value"
-	}
-    ;
     
-    anna_node_t *a_argv[] = 
-	{
-	    anna_node_clone_deep(my_list_type), 
-	    (anna_node_t *)anna_node_create_identifier(0, L"T")
-	}
-    ;
-    wchar_t *a_argn[]=
-	{
-	    L"this", L"value"
-	}
-    ;
-
     anna_node_t *e_method_argv[] = 
 	{
 	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
@@ -473,54 +556,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	}
     ;
     
-    anna_native_method_add_node(
-	definition,
-	-1,
-	L"__init__",
-	ANNA_FUNCTION_VARIADIC, 
-	(anna_native_t)&anna_list_init, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
-	2, a_argv, a_argn);
-
-    anna_native_method_add_node(
-	definition,
-	-1,
-	L"__get__Int__",
-	0, 
-	(anna_native_t)&anna_list_get_int, 
-	(anna_node_t *)anna_node_create_identifier(0, L"T") , 
-	2, 
-	i_argv, 
-	i_argn);
-    
-    anna_native_method_add_node(
-	definition, 
-	-1,
-	L"__set__Int__", 
-	0, 
-	(anna_native_t)&anna_list_set_int, 
-	(anna_node_t *)anna_node_create_identifier(0, L"T"), 
-	3,
-	i_argv, 
-	i_argn);
-
-    anna_native_method_add_node(
-	definition, -1, L"__append__Value__", 0, 
-	(anna_native_t)&anna_list_append, 
-	(anna_node_t *)anna_node_create_identifier(0, L"T") , 
-	2, a_argv, a_argn);
-    
-    anna_native_method_add_node(
-	definition, -1, L"__each__", 0, 
-	(anna_native_t)&anna_list_each, 
-	(anna_node_t *)anna_node_create_identifier(0, L"T"), 
-	2, e_argv, e_argn);
-    
-    anna_native_method_add_node(
-	definition, -1, L"getCount", 0, 
-	(anna_native_t)&anna_list_get_count, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
-	1, e_argv, e_argn);
     /*
     anna_native_method_add_node(
 	definition, -1, L"__in__", 0, 
@@ -528,20 +563,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
 	2, a_argv, a_argn);
     */
-    anna_native_method_add_node(
-	definition, -1, L"setCount", 0, 
-	(anna_native_t)&anna_list_set_count, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
-	2, i_argv, i_argn);
-    
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"count",
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int") , 
-	    L"getCount",
-	    L"setCount"));
     
     /*
       FIXME: This is the wrong return type for map - we need to check
@@ -552,18 +573,6 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 	definition, -1, L"__map__", 
 	0, (anna_native_t)&anna_list_map, 
 	anna_node_clone_deep(my_list_type), 
-	2, e_argv, e_argn);
-    
-    anna_native_method_add_node(
-	definition, -1, L"__filter__", 
-	0, (anna_native_t)&anna_list_filter, 
-	anna_node_clone_deep(my_list_type), 
-	2, e_argv, e_argn);
-
-    anna_native_method_add_node(
-	definition, -1, L"__first__", 
-	0, (anna_native_t)&anna_list_first, 
-	(anna_node_t *)anna_node_create_identifier(0, L"T"),
 	2, e_argv, e_argn);
     
     //anna_node_print(e_argv[1]);
@@ -587,23 +596,14 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 #endif
 }
 
-
-
-anna_type_t *anna_list_replace(anna_type_t *base, wchar_t *from, wchar_t *to)
+void anna_list_type_create(anna_stack_frame_t *stack)
 {
-    anna_type_t *res = anna_type_native_create(anna_util_identifier_generate(base->name, 0), base->stack);
-    anna_type_copy(res, base);
-    res->definition->child[3] = 
-	anna_node_replace(
-	    res->definition->child[3],
-	    anna_node_create_identifier(0, from),
-	    anna_node_create_identifier(0, to));
-    return res;
+    anna_list_type_create_internal(stack, list_type, object_type);
 }
 
 anna_type_t *anna_list_type_get(anna_type_t *subtype)
 {
-    return anna_list_replace(list_type, L"T", subtype->name);
+    return 0;//anna_list_replace(list_type, L"T", subtype->name);
 }
 
 

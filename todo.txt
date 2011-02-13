@@ -1,3 +1,13 @@
+Make specialization work for lists
+Implement the __collection__ macro
+Create a Range type
+Use Range type for a bunch of List/String methods
+Make imports work
+Make macros work
+Make user defined types work
+Make specialization work for user defined types
+
+Figure out how to handle the map function. We can't make a prototype function, we actually want the type hinting to go in the other direction; the return value of the map function should determine the return type of the function. 
 
   Plans for apps written in anna:
   Documentation generator: Introspect all data types and generate html documentation on them.

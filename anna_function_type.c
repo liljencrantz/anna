@@ -243,6 +243,6 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 
 anna_function_type_key_t *anna_function_type_extract(anna_type_t *type)
 {
-    return *anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-    
+    anna_function_type_key_t **res = (anna_function_type_key_t **)anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    return res?*res:0;
 }

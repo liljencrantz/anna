@@ -215,8 +215,12 @@ anna_member_t *anna_member_get(anna_type_t *type, mid_t mid)
     return type->mid_identifier[mid];
 }
 
-anna_member_t *anna_member_method_search(anna_type_t *type, mid_t mid, size_t argc, anna_type_t **argv)
+anna_member_t *anna_member_method_search(
+    anna_type_t *type,
+    mid_t mid, 
+    size_t argc, anna_type_t **argv)
 {
+//    wprintf(L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
     wchar_t *prefix = anna_mid_get_reverse(mid);
@@ -238,30 +242,35 @@ anna_member_t *anna_member_method_search(anna_type_t *type, mid_t mid, size_t ar
 	if(mem_fun)
 	{
 //	    wprintf(L"YAY, it's a function (%d arguments)\n", mem_fun->argc);
-
-	    if(mem_fun->argc != argc+1)
-		continue;
+	    int j;
 	    
-//	    wprintf(L"YAY, right number of arguments\n");
-
-	    if(!mem_fun->argv[1])
-	    {
-		anna_error(0, L"Internal error. Type %ls has member named %ls with invalid second argument\n",
-			   type->name, members[i]);
-		return 0;
-	    }
+	    if(mem_fun->argc != argc+1)
+		continue;	    
+	    //wprintf(L"YAY, right number of arguments (%d)\n", argc);
 	    
 //	    wprintf(L"Check %ls against %ls\n",argv[0]->name, mem_fun->argv[1]->name);
+	    int my_fault_count = 0;
+	    int ok = 1;
 	    
-	    if(anna_abides(argv[0], mem_fun->argv[1]))
+	    for(j=0; j<argc; j++)
 	    {
-		int my_fault_count = anna_abides_fault_count(mem_fun->argv[1], argv[0]);
+		if(anna_abides(argv[j], mem_fun->argv[j+1]))
+		{
+		    my_fault_count += 
+			anna_abides_fault_count(mem_fun->argv[j+1], argv[j]);
+		}
+		else
+		{
+		    ok=0;
+		}
+		
+	    }
+	    
+	    if(ok){
 		if(!match || my_fault_count < fault_count)
 		{
 		    match = members[i];
 		    fault_count = my_fault_count;
-//		    wprintf(L"YAY, it's a MATCH!!!\n");
-
 		}
 	    }
 	}
@@ -271,7 +280,12 @@ anna_member_t *anna_member_method_search(anna_type_t *type, mid_t mid, size_t ar
 	}
 	
     }
-
+/*
+    if(match)
+    {
+	wprintf(L"Match: %ls\n", match);
+    }
+*/  
     return match ? anna_member_get(type, anna_mid_get(match)):0;
     
 }

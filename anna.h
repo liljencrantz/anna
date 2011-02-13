@@ -138,19 +138,20 @@ struct anna_type
      */
     int flags;
     /**
-       A stack frame. 
-
-       FIXME: What is it for? I don't currently know. Namespacing,
+       The stack frame inside of which this type lives.
+       
+       FIXME: What is it good for? I don't currently know. Namespacing,
        maybe?
-     */
+    */
     struct anna_stack_frame *stack;
     /**
        An array containing all member structs. The offset is a mid.
     */
     struct anna_member **mid_identifier;
     /**
-       The AST that defines this type.
-     */
+       The AST that defines this type. Native types do not have a
+       definition.
+    */
     struct anna_node_call *definition;
     /**
        The object that wraps this type. Used for
@@ -162,13 +163,9 @@ struct anna_type
      */
     struct anna_object **static_member;
     /**
-       An array list of all child functions of this function.
-     */
-    array_list_t child_function;
-    /**
-       Fixme: What is this?
-     */
-    array_list_t child_type;
+       A hash of all template specializations of this type.
+    */
+    hash_table_t specializations;
 };
 
 struct anna_member

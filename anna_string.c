@@ -168,7 +168,7 @@ static anna_object_t *anna_string_i_append(anna_object_t **param)
 static anna_object_t *anna_string_i_each(anna_object_t **param)
 {
     anna_object_t *body_object;
-    anna_object_t *result=null_object;
+    anna_object_t *result=param[0];
     anna_string_t *str = as_unwrap(param[0]);
     
     body_object=param[1];
@@ -232,6 +232,28 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	}
     ;
     
+    anna_type_t *o_argv[] = 
+	{
+	    string_type,
+	    object_type
+	}
+    ;
+    
+    wchar_t *o_argn[] =
+	{
+	    L"this", L"value"
+	}
+    ;
+    
+    anna_native_method_create(
+	string_type,
+	-1,
+	L"__init__",
+	0,//	ANNA_FUNCTION_VARIADIC, 
+	&anna_string_i_init, 
+	object_type,
+	1, o_argv, o_argn);    
+    
     anna_native_method_create(
 	string_type,
 	-1,
@@ -289,7 +311,7 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	&anna_string_i_set_count);
 
     anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
-    each_key->result = string_type;
+    each_key->result = object_type;
     each_key->argc = 2;
     each_key->flags = 0;
     each_key->argn = malloc(sizeof(wchar_t *)*2);
@@ -371,15 +393,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	}
     ;
 
-    anna_native_method_add_node(
-	definition,
-	-1,
-	L"__init__",
-	ANNA_FUNCTION_VARIADIC, 
-	(anna_native_t)&anna_string_i_init, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
-	1, i_argv, i_argn);    
-    
     anna_native_method_add_node(
 	definition,
 	-1,

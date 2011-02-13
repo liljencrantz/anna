@@ -350,7 +350,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     int i;
     int res = 0;    
 
-    assert(contender);
+    if(!contender){CRASH;}
     assert(role_model);
     
 //    wprintf(L"Check type %ls abides against %ls\n", contender->name, role_model->name);
@@ -525,27 +525,27 @@ static void anna_init()
     type_type = 
 	anna_type_native_create(
 	    L"Type", 
-	    stack_global );
+	    stack_global);
     object_type = anna_type_native_create(L"Object" ,stack_global);
     null_type = anna_type_native_create(L"Null", stack_global);
     int_type = 
 	anna_type_native_create(
 	    L"Int", 
-	    stack_global );
+	    stack_global);
 
     list_type = 
 	anna_type_native_create(
 	    L"List", 
-	    stack_global );
+	    stack_global);
 
     string_type = 
 	anna_type_native_create(
 	    L"String", 
-	    stack_global );
-
+	    stack_global);
+    
     float_type = anna_type_native_create(L"Float", stack_global);
     char_type = anna_type_native_create(L"Char", stack_global);
-
+    
     anna_type_type_create(stack_global);    
     anna_null_type_create();    
     anna_int_type_create(stack_global);
@@ -557,10 +557,10 @@ static void anna_init()
     anna_stack_declare(stack_global, L"Int", type_type, anna_type_wrap(int_type), 0);       anna_stack_declare(stack_global, L"Object", type_type, anna_type_wrap(object_type), 0); 
     anna_stack_declare(stack_global, L"Null", type_type, anna_type_wrap(null_type), 0); 
 
-    anna_stack_declare(stack_global, L"List", list_type, anna_type_wrap(list_type), 0); 
-    anna_stack_declare(stack_global, L"String", string_type, anna_type_wrap(string_type), 0); 
-    anna_stack_declare(stack_global, L"Float", float_type, anna_type_wrap(float_type), 0); 
-    anna_stack_declare(stack_global, L"Char", char_type, anna_type_wrap(char_type), 0); 
+    anna_stack_declare(stack_global, L"List", type_type, anna_type_wrap(list_type), 0); 
+    anna_stack_declare(stack_global, L"String", type_type, anna_type_wrap(string_type), 0); 
+    anna_stack_declare(stack_global, L"Float", type_type, anna_type_wrap(float_type), 0); 
+    anna_stack_declare(stack_global, L"Char", type_type, anna_type_wrap(char_type), 0); 
 
 
     anna_char_type_create(stack_global);
