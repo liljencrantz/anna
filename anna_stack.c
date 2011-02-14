@@ -1,8 +1,8 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
+#include <stdlib.h>     
+#include <stdio.h>     
+#include <GL/glew.h>	// Header File For The OpenGL32 Library
 #include <string.h>
+#include <assert.h>
 
 #include "util.h"
 #include "anna_node.h"
@@ -13,13 +13,16 @@
 #include "anna_prepare.h"
 #include "anna_util.h"
 
+#ifndef offsetof
+#define offsetof(T,F) ((unsigned int)((char *)&((T *)0L)->F - (char *)0L))
+#endif
+
 typedef struct
 {
     anna_stack_frame_t *stack;
     anna_type_t *type;
 }
     anna_stack_prepare_data;
-
 
 anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent)
 {
@@ -31,6 +34,7 @@ anna_stack_frame_t *anna_stack_create(size_t sz, anna_stack_frame_t *parent)
     stack->count = 0;
     stack->capacity = sz;
     stack->parent = parent;
+    al_init(&stack->import);
     return stack;
 }
 
@@ -132,9 +136,13 @@ void anna_stack_declare2(anna_stack_frame_t *stack,
     stack->member[*offset] = null_object;
 }
 
-anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name)
+static inline void **anna_stack_addr(anna_stack_frame_t *stack, wchar_t *name, off_t arr_offset, int is_ptr)
 {
-    //anna_stack_frame_t *orig = stack;
+    if(!stack)
+    {
+	wprintf(L"Critical: Null stack!\n");
+	CRASH;	
+    }    
   
     assert(name);
     while(stack)
@@ -142,7 +150,8 @@ anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name
 	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
 	if(offset) 
 	{
-	    return &stack->member[*offset];
+	    void ** foo = is_ptr?(*((void **)((void *)stack + arr_offset))):((void *)stack + arr_offset);
+	    return &foo[*offset];
 	}
 	stack = stack->parent;
     }
@@ -151,6 +160,11 @@ anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name
     wprintf(L"Critical: Tried to access unknown variable: %ls\nStack content:\n", name);
     //anna_stack_print(orig);
     CRASH;
+}
+
+anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name)
+{
+    return anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member), 0);
 }
 
 anna_object_t *anna_stack_frame_get_str(anna_stack_frame_t *stack, wchar_t *name)
@@ -181,85 +195,30 @@ anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name)
 	anna_stack_print(stack);
 	CRASH;
     }
-    
     return *res;
-
 #else
     return *anna_stack_addr_get_str(stack, name);
 #endif
 }
 
-anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack_orig, wchar_t *name)
+anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack, wchar_t *name)
 {
-    if(!stack_orig)
-    {
-	wprintf(L"Critical: Null stack!\n");
-	CRASH;	
-    }
-    
-    assert(name);
-    anna_stack_frame_t *stack = stack_orig;
-    
-    while(stack)
-    {
-	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
-	if(offset) 
-	{
-	    return stack->member_type[*offset];
-	}
-	stack = stack->parent;	
-    }
-    return 0;
-    
+    anna_type_t **res = (anna_type_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_type), 1);
+    return res?*res:0;
 }
 
-void anna_stack_set_type(anna_stack_frame_t *stack_orig, wchar_t *name, anna_type_t *type){
-    if(!stack_orig)
-    {
-	wprintf(L"Critical: Null stack!\n");
-	CRASH;	
-    }
-    
-    assert(name);
-    anna_stack_frame_t *stack = stack_orig;
-    
-    while(stack)
-    {
-	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
-	if(offset) 
-	{
-	    stack->member_type[*offset] = type;
-	    return;
-	}
-	stack = stack->parent;	
-    }
-    return;
+void anna_stack_set_type(anna_stack_frame_t *stack, wchar_t *name, anna_type_t *type){
+    anna_type_t **res = (anna_type_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_type), 1);
+    if(res)
+	*res = type;
 }
 
 anna_node_declare_t *anna_stack_get_declaration(
-    anna_stack_frame_t *stack_orig, wchar_t *name)
+    anna_stack_frame_t *stack, wchar_t *name)
 {
-    if(!stack_orig)
-    {
-	wprintf(L"Critical: Null stack!\n");
-	CRASH;	
-    }
-    
-    assert(name);
-    anna_stack_frame_t *stack = stack_orig;
-    
-    while(stack)
-    {
-	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
-	if(offset) 
-	{
-	    return stack->member_declare_node[*offset];
-	}
-	stack = stack->parent;	
-    }
-    return 0;
+    anna_node_declare_t **res = (anna_node_declare_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_declare_node), 1);
+    return res?*res:0;
 }
-
 
 anna_sid_t anna_stack_sid_create(anna_stack_frame_t *stack, wchar_t *name)
 {
@@ -351,13 +310,13 @@ int anna_stack_depth(anna_stack_frame_t *stack)
 void anna_stack_print_trace(anna_stack_frame_t *stack)
 {
     wprintf(L"Stack trace:\n");
-	while(stack)
-	{
-	    wprintf(
-		L"Stack frame belonging to function %ls\n",
-		stack->function?stack->function->name:L"<null>");
-	    stack = stack->parent;
-	}
+    while(stack)
+    {
+	wprintf(
+	    L"Stack frame belonging to function %ls\n",
+	    stack->function?stack->function->name:L"<null>");
+	stack = stack->parent;
+    }
 }
 
 anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
@@ -376,9 +335,14 @@ anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 	L"!stackTypePayload",
 	1,
 	null_type);
-    
     (*anna_static_member_addr_get_mid(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_object_t *)stack;
-    
+/*
+    int i;
+    for(i=0; i<stack->count; i++)
+    {
+	
+    }
+*/
     return res;
 }
 
@@ -404,118 +368,3 @@ anna_stack_frame_t *anna_stack_unwrap(anna_object_t *wrapper)
     return *(anna_stack_frame_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_STACK_PAYLOAD);
 }
 
-#if 0
-static void anna_stack_prepare_member(void *key_ptr,void *val_ptr, void *aux_ptr)
-{
-    wchar_t *name = (wchar_t *)key_ptr;
-    size_t *offset=(size_t *)val_ptr;
-    anna_stack_prepare_data *data = (anna_stack_prepare_data *)aux_ptr;
-    
-//    wprintf(L"Adding member %ls to namespace %ls\n", name, data->type->name);
-    
-    anna_node_call_t *body = anna_node_create_block(0, 0, 0);
-/*
-    anna_node_t *param[] =
-	{
-	    (anna_node_t *)anna_node_create_identifier(
-		0,
-		L"this"),
-	    
-	    (anna_node_t *)anna_node_create_identifier(
-		0,
-		name),
-	    
-	}
-    ;
-*/		       
-/*
-    anna_node_call_add_child(
-	body,
-	anna_node_create_call(
-	    0,
-	    anna_node_create_identifier(
-		0,
-		L"memberGet"),
-	    2,
-	    param));
-*/
-    anna_node_call_add_child(
-	body,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    name));
-    
-    wchar_t *argn[] = 
-	{
-	    L"this"
-	}
-    ;
-
-    anna_type_t *argv[] = 
-	{
-	    data->type
-	}
-    ;
-    string_buffer_t getter_sb;
-    sb_init(&getter_sb);
-    sb_append(&getter_sb, L"!");
-    sb_append(&getter_sb, name);
-    sb_append(&getter_sb, L"Getter");
-    wchar_t *getter_name = sb_content(&getter_sb);
-        
-    anna_function_t *result;
-    result = anna_function_create(
-	getter_name,
-	ANNA_FUNCTION_ANONYMOUS,
-	body,
-	data->stack->member_type[*offset],
-	1,
-	argv,
-	argn,
-	data->stack);
-    result->member_of = data->type;
-    result->mid = anna_method_create(data->type, -1, result->name, 0, result);	
-    
-    anna_member_create(data->type,
-		       -1,
-		       name,
-		       0,
-		       data->stack->member_type[*offset]);
-    data->type->member_count--;
-    data->type->property_count++;
-    anna_member_t *memb = anna_type_member_info_get(data->type, name);
-    memb->is_property = 1;
-    
-    anna_member_t *method = anna_type_member_info_get(data->type, getter_name);
-    memb->getter_offset = method->offset;
-    
-    assert(result->input_count == 1);
-    
-    anna_function_type_key_t *ggg = anna_function_unwrap_type(result->wrapper->type);
-    assert(ggg->argc == 1);
-        
-    sb_destroy(&getter_sb);
-}
-
-void anna_stack_prepare(anna_type_t *type)
-{
-	    
-    //wprintf(L"We have a stack wrapper type %ls!\n", type->name);
-    anna_stack_frame_t *stack = 
-	(anna_stack_frame_t *)*anna_static_member_addr_get_mid(type, ANNA_MID_STACK_TYPE_PAYLOAD);
-    assert(stack);
-    assert(stack->function);
-    
-    //wprintf(L"Find out what we should put in namespace...\n");
-    anna_prepare_function(stack->function);
-    
-    //wprintf(L"Function is prepared\n");
-    anna_stack_prepare_data data = 
-	{
-	    stack,type
-	};
-    hash_foreach2(&stack->member_string_identifier, &anna_stack_prepare_member, &data);
-    //wprintf(L"DONELIDONE\n");
-    
-}
-#endif

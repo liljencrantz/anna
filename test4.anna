@@ -1,9 +1,7 @@
-/*
-macro snopp(node){
-    ast("snopp");
-}
-*/
+import(io);
+
 
 def main(){
-    List(1,2,3).filter(idx, val){idx != 1}.each(idx, val){print(val)}
+    List(1,2,3).filter(idx, val){idx != 1}.each(idx, val){print(idx, val)}
+//      say("hej");
 }

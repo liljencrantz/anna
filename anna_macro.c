@@ -196,7 +196,6 @@ static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
 
 anna_node_t *anna_macro_iter(anna_node_call_t *node)			    
 {
-    anna_node_print(node);
     anna_node_t *n[]={0,0};
     anna_node_t *body;
     if(node->child_count < 2)
@@ -262,7 +261,6 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
 	sb_content(&sb));
     sb_destroy(&sb);
     
-    anna_node_print(node);
     return node;
     
 }
@@ -494,7 +492,7 @@ static void anna_macro_add(
 	stack);
     
     anna_function_setup_interface(f, stack);
-    anna_function_setup_body(f, stack);
+    anna_function_setup_body(f);
     anna_stack_declare(
 	stack,
 	name,

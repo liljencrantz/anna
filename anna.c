@@ -608,15 +608,16 @@ int main(int argc, char **argv)
     
     //  anna_module_load(L"lang");
     
-    anna_stack_frame_t *module = anna_module_load(module_name);
+    anna_stack_frame_t *module = anna_stack_unwrap(anna_module_load(module_name));
     
-//    wprintf(L"Validated program:\n");    
     anna_object_t **main_wrapper_ptr = anna_stack_addr_get_str(module, L"main");
     if(!main_wrapper_ptr)
     {
 	wprintf(L"No main method defined in module %ls\n", module_name);
 	exit(1);	
     }
+
+    wprintf(L"Program fully loaded and ready to be executed\n");    
 
     anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     

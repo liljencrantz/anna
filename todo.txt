@@ -7,7 +7,55 @@ Make macros work
 Make user defined types work
 Make specialization work for user defined types
 
-Figure out how to handle the map function. We can't make a prototype function, we actually want the type hinting to go in the other direction; the return value of the map function should determine the return type of the function. 
+Figure out how to handle the map function. We can't make a prototype
+function, we actually want the type hinting to go in the other
+direction; the return value of the map function should determine the
+return type of the function. I guess we want some kind of magical
+syntax for annotating a method that will make the return type depend
+on the input type.
+
+Every module is represented by an object with properties representing
+the members. Imutable members, like types, are read-only properties.
+
+There are two types of imports, macro imports and regular imports.
+
+They both use the import keyword:
+
+These are equivalent:
+
+import(io);
+def foo(){File();}
+
+def foo(){io.File();}
+
+Macros:
+
+Macros must be defined in a file with the manna suffix. A package can
+contain both an anna file and a manna file. The manna macros of a
+package are implicitly available in the context of a package.
+
+A module is loaded like this:
+
+1. First the AST is parsed.
+
+2. Then the import list is parsed. All import nodes are replaced with a null node.
+
+3. Fully load all manna files for imported packages
+
+4. Macro expansion is performed. Any macros defined in the manna files loaded in the previous step is also used.
+
+5. Register declarations in the current module
+
+6. Load all anna files for imported packages. This  performs steps 1-5 above for all modules to be imported.
+
+7. Calculate return types for all modules currently being loaded.
+
+8. Assign initial values, etc. for all modules currently being loaded.
+
+
+
+
+
 
   Plans for apps written in anna:
   Documentation generator: Introspect all data types and generate html documentation on them.

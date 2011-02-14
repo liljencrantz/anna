@@ -1,0 +1,3 @@
+def say(String o){
+    print(o);
+}

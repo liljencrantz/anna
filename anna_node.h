@@ -437,14 +437,19 @@ void anna_node_each(anna_node_t *tree, anna_node_function_t fun, void *aux);
 void anna_node_find(anna_node_t *tree, int node_type, array_list_t *al);
 
 void anna_node_prepare_body(
-    anna_node_t *this,
-    anna_stack_frame_t *stack);
+    anna_node_t *this);
+
 
 anna_node_t *anna_node_create_simple_template(
     anna_location_t *loc,
     wchar_t *name,
     wchar_t *param);
 
+/**
+   Check if the node is a call node with an identifier with the
+   specified name as its function.
+ */
+int anna_node_is_call_to(anna_node_t *this, wchar_t *name);
 
 #endif
 

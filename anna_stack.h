@@ -24,7 +24,7 @@ typedef struct anna_sid anna_sid_t;
    invocation. The same struct is used both for a «real» invocation
    time stack frame and for a stack frame template that is part of a
    funciton definition.
- */
+*/
 struct anna_stack_frame
 {
     struct anna_stack_frame *parent;
@@ -34,12 +34,21 @@ struct anna_stack_frame
     int stop;
     anna_function_t *function;
 #ifdef ANNA_CHECK_STACK_ENABLED
+    /**
+       Store flags for this stack. Currently, the only available flag
+       is ANNA_STACK_FROZEN. If set, no more variables can be added to
+       this stack frame.
+     */
     int flags;
 #endif
+    /**
+       An object representing this stack frame
+    */
     struct anna_object *wrapper;
     struct anna_type **member_type;  
     struct anna_node_declare **member_declare_node;  
     int *member_flags;
+    array_list_t import;
     struct anna_object *member[];
 };
 

@@ -346,7 +346,7 @@ static void anna_node_calculate_type_internal(
 	    
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){
 		anna_error(this, L"Unknown identifier: %ls", id->name);
-		anna_stack_print(stack);
+//		anna_stack_print(stack);
 	    }
 	    else
 	    {
@@ -631,15 +631,14 @@ static void anna_node_calculate_type_internal(
 }
 
 void anna_node_prepare_body(
-    anna_node_t *this,
-    anna_stack_frame_t *stack)
+    anna_node_t *this)
 {
     switch(this->node_type)
     {
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)this;    
-	    anna_function_setup_body(c->payload, stack);
+	    anna_function_setup_body(c->payload);
 	    break;
 	}
     }

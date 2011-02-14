@@ -33,6 +33,7 @@ static anna_node_t *anna_function_setup_arguments(
     anna_function_t *f,
     anna_stack_frame_t *parent_stack)
 {
+    wprintf(L"Setup function %ls\n", f->name);
     CHECK_NODE_TYPE(f->definition->child[2], ANNA_NODE_CALL);
     anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
     int i;
@@ -75,7 +76,7 @@ static anna_node_t *anna_function_setup_arguments(
 	    
 		anna_node_identifier_t *type_name =
 		    node_cast_identifier(type_node);
-	    
+		
 		anna_object_t **type_wrapper =
 		    anna_stack_addr_get_str(parent_stack, type_name->name);
 
@@ -119,7 +120,7 @@ static anna_node_t *anna_function_setup_arguments(
 		null_object,
 		0);
 	    
-	    wprintf(L"Adding %ls\n", name->name);
+//	    wprintf(L"Adding %ls\n", name->name);
 	}
 	else
 	{
@@ -266,8 +267,7 @@ void anna_function_setup_interface(
 }
 
 void anna_function_setup_body(
-    anna_function_t *f,
-    anna_stack_frame_t *parent_stack)
+    anna_function_t *f)
 {
     if(f->flags & ANNA_FUNCTION_PREPARED_BODY)
     {
