@@ -176,7 +176,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	al_set(&import, i, anna_stack_unwrap(mod));
     }
     al_push(&import, module_stack);
-//    memcpy(&module_stack->import, &import, sizeof(array_list_t));
+    memcpy(&module_stack->import, &import, sizeof(array_list_t));
     
 //    if(recursion_level == 1)
 //    {
