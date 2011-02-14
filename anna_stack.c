@@ -159,8 +159,6 @@ static inline void **anna_stack_addr(anna_stack_frame_t *stack, wchar_t *name, o
 	    int i;
 	    for(i=0; i<al_get_count(&stack->import); i++)
 	    {
-
-		
 		anna_stack_frame_t *import = al_get(&stack->import, i);
 		//wprintf(L"Found import to check when searching for %ls: %d\n", name, import);
 		void **import_res = anna_stack_addr(import, name, arr_offset, is_ptr, 0);

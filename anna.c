@@ -456,57 +456,6 @@ anna_object_t *anna_i_null_function(anna_object_t **node_base)
 }
 
 
-static int hash_null_func( void *data )
-{
-    return 0;
-}
-
-static int hash_null_cmp( void *a, 
-		   void *b )
-{
-    return 1;
-}
-
-static void anna_null_type_create()
-{
-    int i;
-  
-    wchar_t *member_name = L"!null_member";
-    anna_member_t *null_member;  
-    null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
-    //wprintf(L"Null member is %d\n", null_member);
-
-    null_member->type = null_type;
-    null_member->offset=0;
-    null_member->is_static=1;
-    wcscpy(null_member->name, member_name);
-
-    /*  
-	anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_getitem, object_type, 2, i_argv, i_argn);
-    */
-    anna_type_t *argv[]={null_type};
-    wchar_t *argn[]={L"this"};
-    anna_type_static_member_allocate(null_type);
-
-    null_type->static_member[0] = 
-	anna_function_wrap(
-	    anna_native_create(
-		L"!nullFunction", 0, 
-		(anna_native_t)&anna_i_null_function, 
-		null_type, 1, argv, argn,
-		0));
-  
-    anna_object_t *null_function;  
-    null_function = null_type->static_member[0];
-    hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
-    hash_put(&null_type->name_identifier, L"!null_member", null_member);
-  
-    for(i=0; i<64;i++) {
-	null_type->mid_identifier[i] = null_member;
-    }
-    assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
-}
-
 static void anna_init()
 {
     hash_init(
@@ -516,63 +465,11 @@ static void anna_init()
     anna_mid_init();
         
     stack_global = anna_stack_create(4096, 0);
-    /*
-      Create lowest level stuff. Bits of magic, be careful with
-      ordering here. A lot of intricate dependencies going on between
-      the various calls...
-    */
-    
-    type_type = 
-	anna_type_native_create(
-	    L"Type", 
-	    stack_global);
-    object_type = anna_type_native_create(L"Object" ,stack_global);
-    null_type = anna_type_native_create(L"Null", stack_global);
-    int_type = 
-	anna_type_native_create(
-	    L"Int", 
-	    stack_global);
-
-    list_type = 
-	anna_type_native_create(
-	    L"List", 
-	    stack_global);
-
-    string_type = 
-	anna_type_native_create(
-	    L"String", 
-	    stack_global);
-    
-    float_type = anna_type_native_create(L"Float", stack_global);
-    char_type = anna_type_native_create(L"Char", stack_global);
-    
-    anna_type_type_create(stack_global);    
-    anna_null_type_create();    
-    anna_int_type_create(stack_global);
-    anna_list_type_create(stack_global);
-    anna_string_type_create(stack_global);
-    anna_node_create_wrapper_types(stack_global);
-    
-    anna_stack_declare(stack_global, L"Type", type_type, anna_type_wrap(type_type), 0); 
-    anna_stack_declare(stack_global, L"Int", type_type, anna_type_wrap(int_type), 0);       anna_stack_declare(stack_global, L"Object", type_type, anna_type_wrap(object_type), 0); 
-    anna_stack_declare(stack_global, L"Null", type_type, anna_type_wrap(null_type), 0); 
-
-    anna_stack_declare(stack_global, L"List", type_type, anna_type_wrap(list_type), 0); 
-    anna_stack_declare(stack_global, L"String", type_type, anna_type_wrap(string_type), 0); 
-    anna_stack_declare(stack_global, L"Float", type_type, anna_type_wrap(float_type), 0); 
-    anna_stack_declare(stack_global, L"Char", type_type, anna_type_wrap(char_type), 0); 
-
-
-    anna_char_type_create(stack_global);
-    anna_float_type_create(stack_global);
 
 /*
     anna_member_types_create(stack_global);
 */  
     
-    anna_function_implementation_init(stack_global);
-    anna_macro_init(stack_global);
-
 /*
     assert(anna_abides(int_type,object_type)==1);
     assert(anna_abides(list_type,object_type)==1);
@@ -581,7 +478,6 @@ static void anna_init()
 */  
     
 }
-
 
 int main(int argc, char **argv)
 {
@@ -595,6 +491,7 @@ int main(int argc, char **argv)
     
     wprintf(L"Initializing interpreter...\n");    
     anna_init();
+    anna_module_load(L"lang");
     
     if(anna_error_count)
     {
@@ -605,8 +502,6 @@ int main(int argc, char **argv)
     null_object = anna_object_create_raw(0);    
     null_object->type = null_type;
     anna_int_one = anna_int_create(1);
-    
-    //  anna_module_load(L"lang");
     
     anna_stack_frame_t *module = anna_stack_unwrap(anna_module_load(module_name));
     

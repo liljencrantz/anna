@@ -16,6 +16,21 @@
 #include "anna_prepare.h"
 #include "anna_stack.h"
 
+#include "anna_int.h"
+#include "anna_float.h"
+#include "anna_string.h"
+#include "anna_char.h"
+#include "anna_list.h"
+#include "anna_function_type.h"
+#include "anna_type_type.h"
+#include "anna_type.h"
+#include "anna_macro.h"
+#include "anna_member.h"
+#include "anna_node_wrapper.h"
+
+
+
+
 static hash_table_t *anna_module_imported=0;
 static array_list_t anna_module_unprepared = {0,0,0};
 
@@ -72,6 +87,121 @@ static void anna_module_prepare_body(
     anna_node_prepare_body(this);
 }
 
+static int hash_null_func( void *data )
+{
+    return 0;
+}
+
+static int hash_null_cmp( void *a, 
+		   void *b )
+{
+    return 1;
+}
+
+
+static void anna_null_type_create()
+{
+    int i;
+  
+    wchar_t *member_name = L"!null_member";
+    anna_member_t *null_member;  
+    null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
+    //wprintf(L"Null member is %d\n", null_member);
+
+    null_member->type = null_type;
+    null_member->offset=0;
+    null_member->is_static=1;
+    wcscpy(null_member->name, member_name);
+
+    /*  
+	anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_getitem, object_type, 2, i_argv, i_argn);
+    */
+    anna_type_t *argv[]={null_type};
+    wchar_t *argn[]={L"this"};
+    anna_type_static_member_allocate(null_type);
+
+    null_type->static_member[0] = 
+	anna_function_wrap(
+	    anna_native_create(
+		L"!nullFunction", 0, 
+		(anna_native_t)&anna_i_null_function, 
+		null_type, 1, argv, argn,
+		0));
+  
+    anna_object_t *null_function;  
+    null_function = null_type->static_member[0];
+    hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
+    hash_put(&null_type->name_identifier, L"!null_member", null_member);
+  
+    for(i=0; i<64;i++) {
+	null_type->mid_identifier[i] = null_member;
+    }
+    assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
+}
+
+static void anna_module_load_lang()
+{
+
+    anna_stack_frame_t *stack_lang = anna_stack_create(4096, stack_global);
+    
+    /*
+      Create lowest level stuff. Bits of magic, be careful with
+      ordering here. A lot of intricate dependencies going on between
+      the various calls...
+    */
+    
+    type_type = 
+	anna_type_native_create(
+	    L"Type", 
+	    stack_lang);
+    object_type = anna_type_native_create(L"Object" ,stack_lang);
+    null_type = anna_type_native_create(L"Null", stack_lang);
+    int_type = 
+	anna_type_native_create(
+	    L"Int", 
+	    stack_lang);
+
+    list_type = 
+	anna_type_native_create(
+	    L"List", 
+	    stack_lang);
+
+    string_type = 
+	anna_type_native_create(
+	    L"String", 
+	    stack_lang);
+    
+    float_type = anna_type_native_create(L"Float", stack_lang);
+    char_type = anna_type_native_create(L"Char", stack_lang);
+    
+    anna_type_type_create(stack_lang);    
+    anna_null_type_create();    
+    anna_int_type_create(stack_lang);
+    anna_list_type_create(stack_lang);
+    anna_string_type_create(stack_lang);
+    anna_node_create_wrapper_types(stack_lang);
+    
+    anna_stack_declare(stack_lang, L"Type", type_type, anna_type_wrap(type_type), 0); 
+    anna_stack_declare(stack_lang, L"Int", type_type, anna_type_wrap(int_type), 0);       anna_stack_declare(stack_lang, L"Object", type_type, anna_type_wrap(object_type), 0); 
+    anna_stack_declare(stack_lang, L"Null", type_type, anna_type_wrap(null_type), 0); 
+
+    anna_stack_declare(stack_lang, L"List", type_type, anna_type_wrap(list_type), 0); 
+    anna_stack_declare(stack_lang, L"String", type_type, anna_type_wrap(string_type), 0); 
+    anna_stack_declare(stack_lang, L"Float", type_type, anna_type_wrap(float_type), 0); 
+    anna_stack_declare(stack_lang, L"Char", type_type, anna_type_wrap(char_type), 0);
+
+    anna_char_type_create(stack_lang);
+    anna_float_type_create(stack_lang);
+
+    anna_function_implementation_init(stack_lang);
+    anna_macro_init(stack_global);    
+
+    hash_put(
+	anna_module_imported,
+	L"lang",
+	stack_lang);
+}
+
 
 anna_object_t *anna_module_load(wchar_t *module_name)
 {
@@ -89,8 +219,17 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	module_name);
     
     if(module)
-	return module;
+	return anna_stack_wrap(module);
 
+    anna_stack_frame_t *module_stack;
+
+    if(wcscmp(module_name, L"lang") == 0)
+    {
+	anna_module_load_lang();
+	return anna_module_load(L"lang");
+	
+    }
+	
     recursion_level++;
         
     string_buffer_t sb;
@@ -112,14 +251,11 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 //    anna_node_print(program);    
 
     /*
-      Unless we're loading the lang module, implicitly add an import
+      Implicitly add an import
       of the lang module to the top of the ast.
-     */
-    if(wcscmp(module_name, L"lang") != 0)
-    {
-//	al_push(&import, L"lang");
-    }
-
+    */
+    al_push(&import, L"lang");
+    
     anna_module_find_imports(program, &import);    
 
     /*
@@ -135,11 +271,10 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	exit(1);
     }
     wprintf(L"Macros expanded in module %ls\n", module_name);    
-    
-    
+        
     //  anna_node_print(node);
         
-    anna_stack_frame_t *module_stack = anna_node_register_declarations(node, 0);
+    module_stack = anna_node_register_declarations(node, 0);
     module_stack->parent = stack_global;
     if(anna_error_count)
     {

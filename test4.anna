@@ -1,6 +1,5 @@
 import(io);
 
-
 def main(){
     List(11,2,353).filter(idx, val){idx != 1}.each(val){say(val)}
     say("hej");
