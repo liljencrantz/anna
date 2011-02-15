@@ -61,6 +61,7 @@ anna_node_t *anna_node_macro_expand(
     switch( this->node_type )
     {
 	case ANNA_NODE_CALL:
+	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
 	    
@@ -293,6 +294,27 @@ anna_stack_frame_t *anna_node_register_declarations(
     return stack;
 }
 
+static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_frame_t *stack)
+{
+    if(node->node_type == ANNA_NODE_IDENTIFIER)
+    {
+	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
+	anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+	if(wrapper != 0)
+	{
+	    return anna_type_unwrap(wrapper);
+	}
+    }
+    else if(node->node_type == ANNA_NODE_DUMMY)
+    {
+	anna_node_dummy_t *d = (anna_node_dummy_t *)node;	
+	return anna_type_unwrap(d->payload);
+    }
+    
+    return 0;
+}
+
+
 static void anna_node_calculate_type_internal(
     anna_node_t *this,
     anna_stack_frame_t *stack)
@@ -355,7 +377,36 @@ static void anna_node_calculate_type_internal(
 	    
 	    break;
 	}
-	
+
+	case ANNA_NODE_SPECIALIZE:
+	{
+	    anna_node_call_t *call = (anna_node_call_t *)this;
+	    anna_node_calculate_type(call->function, stack);
+	    anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
+	    if(!type)
+	    {
+		anna_error(this, L"Invalid template type");
+		break;
+	    }
+	    if(type == list_type && call->child_count==1)
+	    {
+		anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
+		if(spec)
+		{
+		    anna_type_t *res = anna_list_type_get(spec);
+		    
+		    /* FIXME: We remake this node into a new one of a different type- Very, very fugly. Do something prettier, please? */
+		    anna_node_dummy_t *new_res = (anna_node_dummy_t *)this;
+		    new_res->node_type = ANNA_NODE_DUMMY;
+		    new_res->payload = anna_type_wrap(res);
+		    new_res->return_type = type_type;
+		    break;
+		}
+	    }
+	    anna_error(this, L"Unimplementedtemplate specialization. Come back tomorrow.");
+	    break;
+	}
+		
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
@@ -364,25 +415,20 @@ static void anna_node_calculate_type_internal(
 
 	    if(fun_type == type_type)
 	    {
-		if(call->function->node_type == ANNA_NODE_IDENTIFIER)
+		wprintf(L"Hmmm, node is of type type...");
+		anna_node_print(call->function);
+		
+		anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
+		if(type)
 		{
-		    anna_node_identifier_t *id = (anna_node_identifier_t *)call->function;
-		    anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
-		    if(wrapper != 0)
-		    {
-			anna_type_t *type = anna_type_unwrap(wrapper);
-			if(type)
-			{
-			    this->node_type = ANNA_NODE_CONSTRUCT;
-			    call->function = (anna_node_t *)anna_node_create_dummy(
-				&call->function->location,
-				wrapper,
-				0);		
-			    call->return_type = type;
-			    break;
-			}
-		    }
-		}
+		    this->node_type = ANNA_NODE_CONSTRUCT;
+		    call->function = (anna_node_t *)anna_node_create_dummy(
+			&call->function->location,
+			anna_type_wrap(type),
+			0);		
+		    call->return_type = type;
+		    break;
+		}		    
 	    }
 
 	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
@@ -395,6 +441,7 @@ static void anna_node_calculate_type_internal(
 	    {
 		anna_error(this, L"Value is not callable");
 		anna_type_print(fun_type);		
+		CRASH;
 		break;
 	    }
 	    

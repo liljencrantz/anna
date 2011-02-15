@@ -1,7 +1,6 @@
 import(io);
 
 def main(){
-    print(3 in List(1,2,3));
-    List(11,2,353).filter(idx, val){idx != 1}.map(val){val}.each(val){say(val)}
+    List<Int>(11,2,353).filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
     say("hej");
 }

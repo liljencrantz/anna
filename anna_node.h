@@ -29,7 +29,7 @@
 #define ANNA_NODE_AND 20
 #define ANNA_NODE_MEMBER_CALL 21
 #define ANNA_NODE_IF 22
-#define ANNA_NODE_TEMPLATIZE 23
+#define ANNA_NODE_SPECIALIZE 23
 
 struct YYLTYPE
 {
@@ -280,7 +280,7 @@ struct anna_node_import
 #endif    
     struct anna_node *payload;
 };
-
+/*
 struct anna_node_specialize
 {
     int node_type;
@@ -289,12 +289,12 @@ struct anna_node_specialize
     anna_type_t *return_type;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
-#endif    
+#endif
     struct anna_node_identifier *type;
     size_t specilization_count;
     struct anna_node **specialization;
 };
-
+*/
 typedef struct anna_node anna_node_t;
 typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_dummy anna_node_dummy_t;

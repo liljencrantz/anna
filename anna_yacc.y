@@ -1114,7 +1114,7 @@ type_identifier opt_templatization
    else 
    {
       anna_node_t *param[] ={$1, (anna_node_t *)$2};	    
-      $$ = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__templatize__"), 2, param);
+      $$ = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__specialize__"), 2, param);
    }
 }
 ;

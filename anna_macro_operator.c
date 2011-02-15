@@ -226,9 +226,7 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node)
 						      mid);
 }
 
-static anna_node_t *anna_macro_member_set(anna_node_call_t *node, 
-					  anna_function_t *function, 
-					  anna_node_list_t *parent)
+static anna_node_t *anna_macro_member_set(anna_node_call_t *node)
 {
 /*
   wprintf(L"member_get on node at %d\n", node);

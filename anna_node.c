@@ -965,8 +965,8 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
     fun(this, aux);
     switch(this->node_type)
     {
-
 	case ANNA_NODE_CALL:
+	case ANNA_NODE_SPECIALIZE:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    anna_node_each(n->function, fun, aux);
@@ -1040,17 +1040,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	    break;
 	}	
 
-/*	
-	case ANNA_NODE_RETURN:
-	{
-	    break;   
-	}
-	
-	case ANNA_NODE_IMPORT:
-	{
-	    break;   
-	}
-*/	
 	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	case ANNA_NODE_INT_LITERAL:
@@ -1069,8 +1058,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	default:
 	    wprintf(L"OOPS! Unknown node type when iterating over AST: %d\n", this->node_type);
 	    CRASH;
-    }
-    
+    }    
     
 }
 

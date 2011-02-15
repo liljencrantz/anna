@@ -501,6 +501,17 @@ static void anna_macro_add(
 	0);
 }
 
+static anna_node_t *anna_macro_specialize(anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"type specialization", 2);
+    CHECK_NODE_BLOCK(node->child[1]);
+    anna_node_call_t *res = (anna_node_call_t *)node->child[1];
+    res->function = node->child[0];
+    res->node_type = ANNA_NODE_SPECIALIZE;
+    res->location = node->location;   
+    return node->child[1];
+}
+
 #include "anna_macro_attribute.c"
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
@@ -528,6 +539,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"map", &anna_macro_iter);
     anna_macro_add(stack, L"filter", &anna_macro_iter);
     anna_macro_add(stack, L"first", &anna_macro_iter);
+    anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     
 /*    
     anna_macro_add(stack, L"__module__", &anna_macro_module);
