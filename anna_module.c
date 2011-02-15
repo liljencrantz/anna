@@ -175,9 +175,9 @@ static void anna_module_load_lang()
     char_type = anna_type_native_create(L"Char", stack_lang);
     
     anna_type_type_create(stack_lang);    
+    anna_list_type_create(stack_lang);
     anna_null_type_create();    
     anna_int_type_create(stack_lang);
-    anna_list_type_create(stack_lang);
     anna_string_type_create(stack_lang);
     anna_node_create_wrapper_types(stack_lang);
     

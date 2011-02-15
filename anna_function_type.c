@@ -35,7 +35,7 @@ static anna_object_t *anna_function_type_i_get_output(anna_object_t **param)
 static anna_object_t *anna_function_type_i_get_input_type(anna_object_t **param)
 {
 
-    anna_object_t *lst = anna_list_create();
+    anna_object_t *lst = anna_list_create(type_type);
     int i;
     anna_function_t *f = anna_function_unwrap(param[0]);
 
@@ -53,7 +53,7 @@ static anna_object_t *anna_function_type_i_get_input_type(anna_object_t **param)
 static anna_object_t *anna_function_type_i_get_input_name(anna_object_t **param)
 {
 
-    anna_object_t *lst = anna_list_create();
+    anna_object_t *lst = anna_list_create(string_type);
     int i;
     anna_function_t *f = anna_function_unwrap(param[0]);
 
@@ -99,18 +99,6 @@ void anna_function_type_base_create()
 	    L"!FunctionTypeBase",
 	    stack_global);	
 
-    anna_type_t *argv[] = 
-	{
-	    res
-	}
-    ;
-    
-    wchar_t *argn[]=
-	{
-	    L"this"
-	}
-    ;
-    
     anna_native_property_create(
 	res,
 	-1,
@@ -126,60 +114,22 @@ void anna_function_type_base_create()
 	type_type,
 	&anna_function_type_i_get_output,
 	0);
-/*
-    anna_native_method_create(
+
+    anna_native_property_create(
 	res,
 	-1,
-	L"!getInputType",
-	0,
-	&anna_function_type_i_get_input_type, 
+	L"inputType",
 	anna_list_type_get(type_type),
-	1,
-	argv,
-	argn );
-	
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"inputType",
-	    anna_node_create_simple_templated_type(
-		0, 
-		L"List",
-		L"Type"),
-	    L"!getInputType",
-	    0));
-    
+	&anna_function_type_i_get_input_type,
+	0);
 
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	res,
 	-1,
-	L"!getInputName",
-	0,
-	(anna_native_t)&anna_function_type_i_get_input_name, 
-	anna_node_create_simple_templated_type(
-	    0, 
-	    L"List",
-	    L"String"),
-	1,
-	argv,
-	argn );    
-    
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"inputName",
-	    anna_node_create_simple_templated_type(
-		0, 
-		L"List",
-		L"String"),
-	    L"!getInputName",
-	    0));
-    
-*/
-
-    
+	L"inputName",
+	anna_list_type_get(string_type),
+	&anna_function_type_i_get_input_name,
+	0);
 }
 
 anna_type_t *anna_function_type_create(anna_function_type_key_t *key)

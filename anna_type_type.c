@@ -85,7 +85,7 @@ static anna_object_t *anna_type_i_get_name(anna_object_t **param)
 
 static anna_object_t *anna_type_i_get_member(anna_object_t **param)
 {
-    anna_object_t *lst = anna_list_create();
+    anna_object_t *lst = anna_list_create(member_type);
     int i;
     anna_type_t *type = anna_type_unwrap(param[0]);
     //wprintf(L"Get members of type %ls\n", type->name);

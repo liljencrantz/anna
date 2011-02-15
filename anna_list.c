@@ -18,14 +18,23 @@
 
 #include "anna_macro.h"
 
-anna_object_t *anna_list_create()
+static hash_table_t anna_list_specialization;
+
+
+anna_object_t *anna_list_create(anna_type_t *spec)
 {
-    anna_object_t *obj= anna_object_create(list_type);
+    anna_object_t *obj= anna_object_create(anna_list_type_get(spec));
     (*anna_member_addr_get_mid(obj,ANNA_MID_LIST_PAYLOAD))=0;
     (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
     (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SIZE)) = 0;
     return obj;
 }
+
+anna_type_t *anna_list_get_specialization(anna_object_t *obj)
+{
+    return *((anna_type_t **)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SPECIALIZATION));    
+}
+
 
 ssize_t calc_offset(ssize_t offset, size_t size)
 {
@@ -199,7 +208,7 @@ static anna_object_t *anna_list_each(anna_object_t **param)
 static anna_object_t *anna_list_map(anna_object_t **param)
 {
     anna_object_t *body_object;
-    anna_object_t *result=anna_list_create();
+    anna_object_t *result=anna_list_create(object_type);
     body_object=param[1];
         
     size_t sz = anna_list_get_size(param[0]);
@@ -233,7 +242,7 @@ static anna_object_t *anna_list_map(anna_object_t **param)
 static anna_object_t *anna_list_filter(anna_object_t **param)
 {
     anna_object_t *body_object;
-    anna_object_t *result=anna_list_create();
+    anna_object_t *result=anna_list_create(anna_list_get_specialization(param[0]));
     body_object=param[1];
         
     size_t sz = anna_list_get_size(param[0]);
@@ -353,15 +362,18 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
     anna_member_create(
 	type, ANNA_MID_LIST_CAPACITY,  L"!listCapacity",
 	0, null_type);
-
-
+    anna_member_create(
+	type, ANNA_MID_LIST_SPECIALIZATION,  L"!listSpecialization",
+	1, null_type);
+    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
+    
     anna_type_t *a_argv[] = 
 	{
 	    type,
 	    spec
 	}
     ;
-
+    
     wchar_t *a_argn[]=
 	{
 	    L"this", L"value"
@@ -600,12 +612,22 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
+    hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);
     anna_list_type_create_internal(stack, list_type, object_type);
 }
 
 anna_type_t *anna_list_type_get(anna_type_t *subtype)
 {
-    return 0;//anna_list_replace(list_type, L"T", subtype->name);
+    anna_type_t *spec = hash_get(&anna_list_specialization, subtype);
+    if(!spec)
+    {
+	wprintf(L"Create list type with spec type %ls\n", subtype->name);	
+	spec = anna_type_native_create(L"List<XXX>", stack_global);
+	anna_list_type_create_internal(stack_global, spec, subtype);
+	hash_put(&anna_list_specialization, subtype, spec);
+    }
+    
+    return spec;
 }
 
 

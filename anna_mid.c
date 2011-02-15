@@ -42,6 +42,7 @@ void anna_mid_init()
     anna_mid_put(L"!listPayload", ANNA_MID_LIST_PAYLOAD);
     anna_mid_put(L"!listSize", ANNA_MID_LIST_SIZE);
     anna_mid_put(L"!listCapacity", ANNA_MID_LIST_CAPACITY);
+    anna_mid_put(L"!listSpecialization", ANNA_MID_LIST_SPECIALIZATION);
     anna_mid_put(L"!functionTypePayload", ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     anna_mid_put(L"!functionPayload", ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
     anna_mid_put(L"!floatPayload", ANNA_MID_FLOAT_PAYLOAD);

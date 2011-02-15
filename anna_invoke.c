@@ -191,7 +191,11 @@ anna_object_t *anna_function_invoke(
 
     if(is_variadic)
     {
-	anna_object_t *lst = anna_list_create();
+	/*
+	  FIXME: We sometimes have to specialie this list. Check the
+	  actual input type on the last argument!
+	 */
+	anna_object_t *lst = anna_list_create(object_type);
 	int variadic_count = param_count - i;
 	if(variadic_count < 0)
 	{

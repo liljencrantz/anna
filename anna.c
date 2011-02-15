@@ -401,7 +401,11 @@ size_t anna_native_method_create(
 {
     if(!flags) 
     {
-	assert(result);
+	if(!result)
+	{
+	    CRASH;
+	}
+	
 	if(argc) 
 	{
 	    assert(argv);

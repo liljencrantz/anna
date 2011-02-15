@@ -7,7 +7,7 @@
 
 struct anna_stack_frame;
 
-anna_object_t *anna_list_create();
+anna_object_t *anna_list_create(anna_type_t *spec);
 
 void anna_list_set(struct anna_object *this, ssize_t offset, struct anna_object *value);
 anna_object_t *anna_list_get(anna_object_t *this, ssize_t offset);
