@@ -322,8 +322,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     
 //    if(recursion_level == 1)
 //    {
-	array_list_t al = AL_STATIC;
-	anna_node_call_t *ggg = node;
+	anna_node_call_t *ggg = node_cast_call(node);
 	
 	for(i=0; i<ggg->child_count; i++)
 	{
@@ -337,7 +336,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    }
 	}
 
-	anna_node_each(ggg, &anna_module_prepare_body, module_stack);	
+	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);	
 
 	wprintf(L"Return types set up for module %ls\n", module_name);	
 /*

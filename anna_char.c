@@ -65,23 +65,11 @@ static anna_object_t *anna_char_i_get_lower(anna_object_t **param)
 
 void anna_char_type_create(anna_stack_frame_t *stack)
 {
-    anna_type_t *o_argv[] = 
-	{
-	    char_type,
-	    int_type
-	}
-    ;
-    wchar_t *o_argn[] =
-	{
-	    L"this", L"ordinal"
-	}
-    ;
-
     anna_member_create(
 	char_type, 
 	ANNA_MID_CHAR_PAYLOAD,  
 	L"!charPayload", 
-	0, (anna_node_t *)anna_node_create_identifier(0, L"Null") );
+	0, null_type);
 
     anna_native_property_create(
 	char_type,

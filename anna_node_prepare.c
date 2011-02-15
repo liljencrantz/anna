@@ -7,7 +7,7 @@ typedef struct
     anna_stack_frame_t *dst;
 }
 anna_node_import_data;
-
+/*
 static void anna_node_import_item(
     void *key_ptr,
     void *val_ptr,
@@ -36,9 +36,9 @@ static void anna_node_import_item(
 	item,
 	ANNA_STACK_PRIVATE);
 }
+*/
 
-
-
+ /*
 static anna_object_t *anna_node_constructor_template(
     anna_object_t *type_object,
     anna_node_call_t *node, 
@@ -49,7 +49,7 @@ static anna_object_t *anna_node_constructor_template(
 //    anna_node_print(node);
     return type_object;    
 }
-
+ */
 anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
     anna_stack_frame_t *stack)
@@ -373,10 +373,8 @@ static void anna_node_calculate_type_internal(
 			anna_type_t *type = anna_type_unwrap(wrapper);
 			if(type)
 			{
-			    wprintf(L"WEE CONSTRUCTOR:\n");
-//			    anna_node_print(call->function);
 			    this->node_type = ANNA_NODE_CONSTRUCT;
-			    call->function = anna_node_create_dummy(
+			    call->function = (anna_node_t *)anna_node_create_dummy(
 				&call->function->location,
 				wrapper,
 				0);		
@@ -539,7 +537,7 @@ static void anna_node_calculate_type_internal(
 	    anna_node_member_set_t *g = (anna_node_member_set_t *)this;
 	    anna_node_calculate_type(g->value, stack);
 	    g->return_type = g->value->return_type;
-	    return g;
+	    break;
 	}
 
 	case ANNA_NODE_DECLARE:
@@ -555,7 +553,7 @@ static void anna_node_calculate_type_internal(
 	    {
 		if(d->value->node_type == ANNA_NODE_NULL)
 		{
-		    anna_error(d, L"No type specified for variable declaration");
+		    anna_error(this, L"No type specified for variable declaration");
 		}
 		anna_node_calculate_type(d->value, stack);
 		d->return_type = d->value->return_type;
@@ -598,8 +596,8 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_if_t *d = (anna_node_if_t *)this;
 
-	    anna_node_calculate_type(d->block1, stack);
-	    anna_node_calculate_type(d->block2, stack);
+	    anna_node_calculate_type((anna_node_t *)d->block1, stack);
+	    anna_node_calculate_type((anna_node_t *)d->block2, stack);
 	    if((d->block1->return_type == ANNA_NODE_TYPE_IN_TRANSIT) ||
 	       (d->block2->return_type == ANNA_NODE_TYPE_IN_TRANSIT))
 	    {

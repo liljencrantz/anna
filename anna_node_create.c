@@ -42,7 +42,7 @@ anna_node_closure_t *anna_node_create_closure(
     anna_location_t *loc, 
     anna_function_t *val)
 {
-    anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
+    anna_node_closure_t *result = calloc(1,sizeof(anna_node_closure_t));
     assert(val);
     result->node_type = ANNA_NODE_CLOSURE;
     anna_node_set_location((anna_node_t *)result,loc);
@@ -121,7 +121,7 @@ anna_node_assign_t *anna_node_create_assign(
     return result;  
 }
 
-anna_node_assign_t *anna_node_create_declare(
+anna_node_declare_t *anna_node_create_declare(
     anna_location_t *loc, 
     wchar_t *name,
     struct anna_node *type,
@@ -150,7 +150,7 @@ anna_node_cond_t *anna_node_create_cond(
     return result;
 }
 
-anna_node_cond_t *anna_node_create_if(
+anna_node_if_t *anna_node_create_if(
     anna_location_t *loc, 
     struct anna_node *cond,
     anna_node_call_t *block1,

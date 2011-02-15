@@ -701,7 +701,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	{
 	    anna_node_if_t *n = (anna_node_if_t *)this;
 	    anna_object_t *o1 = anna_node_invoke(n->cond, stack);
-	    anna_object_t *fun = anna_node_invoke( (o1!= null_object)?n->block1:n->block2, stack);
+	    anna_object_t *fun = anna_node_invoke((anna_node_t *)((o1!= null_object)?n->block1:n->block2), stack);
 //	    wprintf(L"if: Evaluated condition, result was %ls\n", o1 != null_object?L"true":L"False");
 	    
 	    return anna_function_wrapped_invoke(fun, 0, 0, 0, stack);
@@ -1035,11 +1035,10 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	{
 	    anna_node_if_t *c = (anna_node_if_t *)this;
 	    anna_node_each(c->cond, fun, aux);
-	    anna_node_each(c->block1, fun, aux);
-	    anna_node_each(c->block2, fun, aux);
-	    return c;
+	    anna_node_each((anna_node_t *)c->block1, fun, aux);
+	    anna_node_each((anna_node_t *)c->block2, fun, aux);
+	    break;
 	}	
-	
 
 /*	
 	case ANNA_NODE_RETURN:
@@ -1079,7 +1078,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 typedef struct
 {
     int node_type;
-    array_list_t *al
+    array_list_t *al;
 }
     anna_node_find_each_t;
 

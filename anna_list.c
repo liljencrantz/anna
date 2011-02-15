@@ -13,6 +13,8 @@
 #include "anna_int.h"
 #include "anna_stack.h"
 #include "anna_type.h"
+#include "anna_member.h"
+#include "anna_function_type.h"
 
 #include "anna_macro.h"
 
@@ -437,7 +439,7 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
     each_key->argv[0] = int_type;
     each_key->argv[1] = spec;
     
-    anna_node_t *e_argv[] = 
+    anna_type_t *e_argv[] = 
 	{
 	    type,
 	    anna_function_type_create(each_key)
