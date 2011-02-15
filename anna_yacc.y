@@ -460,13 +460,13 @@ expression3 :
 	expression3 IN expression2
 	{
 	    anna_node_t *param[] ={
-		$1, 
+		$3, 
 		(anna_node_t *)anna_node_create_identifier(
 		    &@$,
 		    L"__in__")
 	    };
 	    anna_node_t *param2[] ={
-		$3, 
+		$1, 
 	    };
 	    $$ = (anna_node_t *)
 		anna_node_create_call(

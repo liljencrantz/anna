@@ -314,7 +314,7 @@ static anna_object_t *anna_list_init(anna_object_t **param)
     
     return param[0];
 }
-/*
+
 static anna_object_t *anna_list_in(anna_object_t **param)
 {
     size_t sz = anna_list_get_size(param[0]);
@@ -326,28 +326,34 @@ static anna_object_t *anna_list_in(anna_object_t **param)
     {
 	return null_object;
     }
-    anna_object_print(needle);
+    //anna_object_print(needle);
     
-    anna_object_t *eq_obj = *anna_member_addr_get_mid(needle, ANNA_MID_EQ);
-    anna_function_t *eq_func = anna_function_unwrap(eq_obj);
-    
-    for(i=0;i<sz;i++)
-    {
-	anna_object_t *result = 
-	    anna_function_invoke(
-		eq_func,
-		needle,
-		param,
-		0,
-		0);
-	if(result != null_object)
+    anna_object_t **eq_obj_ptr = anna_member_addr_get_mid(needle, ANNA_MID_EQ);
+    anna_node_t *eq_param[]=
 	{
-	    return anna_int_create(i);
+	    anna_node_create_dummy(0, param[1], 0)
+	}
+    ;
+    if(eq_obj_ptr)
+    {
+	for(i=0;i<sz;i++)
+	{
+	    anna_object_t *result = 
+		anna_function_wrapped_invoke(
+		    *eq_obj_ptr,
+		    needle,
+		    1,
+		    eq_param,
+		    0);
+	    if(result != null_object)
+	    {
+		return anna_int_create(i);
+	    }
 	}
     }
     return null_object;
 }
-*/
+
 
 
 void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type, anna_type_t *spec)
@@ -423,9 +429,8 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 	spec,
 	3,
 	i_argv, 
-	i_argn);
+	i_argn);    
     
-
     anna_native_property_create(
 	type,
 	-1,
@@ -440,7 +445,6 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 	spec,
 	2, a_argv, a_argn);
     
-
     anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
     each_key->result = object_type;
     each_key->argc = 2;
@@ -482,115 +486,22 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 	spec,
 	2, e_argv, e_argn);  
 
-
-/*
-    anna_node_t *my_list_type = 
-	anna_node_create_simple_templated_type(
-	    0, 
-	    L"List",
-	    L"T");
-    
-    anna_node_call_t *definition =
-	anna_type_definition_get(list_type);
-*/
-  /*
-      Attibute list
-    */
-/*
-    anna_node_call_t *attribute_list = 
-	anna_type_attribute_list_get(list_type);
-    
-    anna_node_call_t *template = 
-	anna_node_create_call(
-	    0,
-	    (anna_node_t *)anna_node_create_identifier(0, L"template"),
-	    0,
-	    0);	f    
-    anna_node_call_t *pair = 
-	anna_node_create_call(
-	    0,
-	    (anna_node_t *)anna_node_create_identifier(0, L"Pair"),
-	    0,
-	    0);	
-    
-    anna_node_call_add_child(
-	pair,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"T"));
-    
-    anna_node_call_add_child(
-	pair,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Object"));
-    
-    anna_node_call_add_child(
-	template,
-	(anna_node_t *)pair);
-    
-    anna_node_call_add_child(
-	attribute_list,
-	(anna_node_t *)template);
-*/  
-#if 0
-
-    
-    anna_node_t *e_method_argv[] = 
-	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"T")
-	}
-    ;
-
-    wchar_t *e_method_argn[] = 
-	{
-	    L"index",
-	    L"value"
-	}
-    ;
-
-    anna_node_t *e_argv[] = 
-	{
-	    anna_node_clone_deep(my_list_type), 
-	    anna_node_create_function_declaration(
-		0,
-		(anna_node_t *)anna_node_create_identifier(
-		    0,
-		    L"Object"),
-		2,
-		e_method_argv, 
-		e_method_argn)
-	}
-    ;
-
-    wchar_t *e_argn[]=
-	{
-	    L"this", L"block"
-	}
-    ;
-    
     /*
-    anna_native_method_add_node(
-	definition, -1, L"__in__", 0, 
-	(anna_native_t)&anna_list_in, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Int"), 
-	2, a_argv, a_argn);
+      FIXME: It would be nice if map returned something other than
+      List<Object>. I guess map needs to be a template function or
+      something.
     */
-    
-    /*
-      FIXME: This is the wrong return type for map - we need to check
-      the return type of the function argument and do a cast, or
-      something...
-    */
-    anna_native_method_add_node(
-	definition, -1, L"__map__", 
-	0, (anna_native_t)&anna_list_map, 
-	anna_node_clone_deep(my_list_type), 
+    anna_native_method_create(
+	type, -1, L"__map__", 
+	0, &anna_list_map, 
+	list_type,
 	2, e_argv, e_argn);
     
-    //anna_node_print(e_argv[1]);
-    //anna_stack_print(func->stack_template);
+    anna_native_method_create(
+	type, -1, L"__in__", 0, 
+	&anna_list_in, 
+	spec,
+	2, a_argv, a_argn);
         
     /*
       anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
@@ -607,7 +518,6 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 	anna_list_append(l, L"TJOHO");
 	wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
     */
-#endif
 }
 
 void anna_list_type_create(anna_stack_frame_t *stack)

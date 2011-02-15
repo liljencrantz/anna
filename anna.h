@@ -91,7 +91,8 @@ typedef ssize_t mid_t;
 #define ANNA_MID_TO 22
 #define ANNA_MID_STEP 23
 #define ANNA_MID_FLOAT_PAYLOAD 24
-#define ANNA_MID_FIRST_UNRESERVED 25
+#define ANNA_MID_EQ 25
+#define ANNA_MID_FIRST_UNRESERVED 26
 
 union anna_native
 {
