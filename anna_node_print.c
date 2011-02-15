@@ -145,7 +145,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	    if(this2->payload)
 	    {
 		wprintf(L"*closure(\n");
-		anna_node_print_internal(this2->payload->body, indentation+1);
+		anna_node_print_internal((anna_node_t *)this2->payload->body, indentation+1);
 		wprintf(L")");
 	    }
 	    else
@@ -308,9 +308,9 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	    wprintf(L"*if(\n");
 	    anna_node_print_internal(this2->cond, indentation+1);
 	    wprintf(L",\n");
-	    anna_node_print_internal(this2->block1, indentation+1);
+	    anna_node_print_internal((anna_node_t *)this2->block1, indentation+1);
 	    wprintf(L",\n");
-	    anna_node_print_internal(this2->block2, indentation+1);
+	    anna_node_print_internal((anna_node_t *)this2->block2, indentation+1);
 	    wprintf(L")");
 		
 	    break;

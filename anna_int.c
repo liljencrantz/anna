@@ -40,9 +40,9 @@ static anna_object_t *anna_int_init(anna_object_t **param)
 
 void anna_int_type_create(anna_stack_frame_t *stack)
 {
-    anna_node_t *i_argv[] = 
+    anna_type_t *i_argv[] = 
 	{
-	  (anna_node_t *)anna_node_create_identifier(0, L"Int")
+	    int_type
 	}
     ;
     wchar_t *i_argn[]=
@@ -57,16 +57,16 @@ void anna_int_type_create(anna_stack_frame_t *stack)
 	L"!intPayload", 
 	0,
 	null_type);
-/*    
-    anna_native_method_add_node(
-	definition,
+
+    anna_native_method_create(
+	int_type,
 	-1,
 	L"__init__",
-	ANNA_FUNCTION_VARIADIC, 
-	(anna_native_t)&anna_int_init, 
-	(anna_node_t *)anna_node_create_identifier(0, L"Null") , 
+	0,
+	&anna_int_init, 
+	object_type,
 	1, i_argv, i_argn);    
-*/
+
     
     anna_int_type_i_create(stack);
 }

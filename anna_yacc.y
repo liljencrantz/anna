@@ -207,7 +207,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %type <node_val> function_declaration 
 %type <node_val> opt_simple_expression 
 %type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op3 op4 op5 op6 op7 pre_op8 post_op8
-%type <call_val> argument_list argument_list2 argument_list3 
+%type <call_val> argument_list argument_list2 
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
 %type <node_val> declaration_list_item declaration_expression variable_declaration
@@ -631,7 +631,7 @@ expression9 :
 	    $$ = (anna_node_t *)anna_node_create_call(&@$, (anna_node_t *)anna_node_create_identifier(&@2, L"__memberGet__"), 2, param);
 	}
         |
-	expression9 '(' argument_list2 ')' opt_block
+	expression9 '(' argument_list ')' opt_block
 	{
 	    $$ = (anna_node_t *)$3;
 	    anna_node_call_set_function($3, $1);
@@ -672,7 +672,7 @@ expression9 :
 
 	}
 	| 
-	'[' argument_list2 ']' /* Alternative list constructor syntax */
+	'[' argument_list ']' /* Alternative list constructor syntax */
 	{	    
 	    $$ = (anna_node_t *)$2;
 	    anna_node_call_set_function($2, (anna_node_t *)anna_node_create_identifier(&@$,L"__collection__"));
@@ -933,15 +933,6 @@ constant :
 	;
 
 
-argument_list :
-	'(' argument_list2 ')' opt_block
-	{
-	    $$ = $2;
-	    if ($4) 
-		anna_node_call_add_child($$, (anna_node_t *)$4);
-	}
-	;
-
 opt_block:
 	/* Empty */
 	{
@@ -951,22 +942,22 @@ opt_block:
 	block 
 	;
 
-argument_list2:
+argument_list:
 	{
 	    $$ = anna_node_create_call(&@$,0,0,0);
 	}
 	|
-	argument_list3 opt_semicolon
+	argument_list2 opt_semicolon
 ;
 
-argument_list3 :
+argument_list2 :
 	expression 
 	{
 	    $$ = anna_node_create_call(&@$,0, 0, 0);
 	    anna_node_call_add_child($$, (anna_node_t *)$1);
 	}
 	| 
-	argument_list3 ',' expression
+	argument_list2 ',' expression
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($$, (anna_node_t *)$3);
@@ -1206,7 +1197,7 @@ any_identifier
   $$ = $1;
 }
 |
-simple_expression '(' argument_list2 ')'
+simple_expression '(' argument_list ')'
 {
   $$ = (anna_node_t *)$3;
   anna_node_call_set_function($3, $1);

@@ -200,12 +200,12 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
     anna_node_t *body;
     if(node->child_count < 2)
     {
-	anna_error(node,
+	anna_error((anna_node_t *)node,
 		   L"Invalid arguments for iteration");
     }
     if(node->child_count > 3)
     {
-	anna_error(node,
+	anna_error((anna_node_t *)node,
 		   L"Invalid arguments for iteration");
     }
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
@@ -229,7 +229,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
     anna_node_call_t *declaration_list = anna_node_create_block(&body->location, 2, n);
     
     anna_node_t *param[] ={
-	anna_node_create_identifier(
+	(anna_node_t *)anna_node_create_identifier(
 	    &body->location,
 	    L"!anonymous"),
 	(anna_node_t *)anna_node_create_null(&body->location),
@@ -256,12 +256,12 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
     sb_append(&sb, L"__");
     
 
-    fun->child[1] = anna_node_create_identifier(
+    fun->child[1] = (anna_node_t *)anna_node_create_identifier(
 	&fun->child[1]->location,
 	sb_content(&sb));
     sb_destroy(&sb);
     
-    return node;
+    return (anna_node_t *)node;
     
 }
 /*

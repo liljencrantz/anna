@@ -108,7 +108,7 @@ void anna_node_create_wrapper_type(anna_stack_frame_t *stack)
 	}
     ;
     
-    anna_node_t *error_argv[] = 
+    anna_type_t *error_argv[] = 
 	{
 	    node_wrapper_type,
 	    string_type
