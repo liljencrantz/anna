@@ -194,12 +194,20 @@ static void anna_module_load_lang()
     anna_float_type_create(stack_lang);
 
     anna_function_implementation_init(stack_lang);
-    anna_macro_init(stack_global);    
+    anna_macro_init(stack_global);
 
     hash_put(
 	anna_module_imported,
 	L"lang",
 	stack_lang);
+    anna_stack_declare(
+	stack_global,
+	L"lang",
+	anna_stack_wrap(stack_lang)->type,
+	anna_stack_wrap(stack_lang),
+	0
+	);
+    
 }
 
 
@@ -291,7 +299,6 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	anna_module_imported,
 	module_name,
 	module_stack);
-    
     anna_object_t *module_object = anna_stack_wrap(module_stack);
     anna_stack_declare(stack_global, module_name, module_object->type, module_object, 0);
     

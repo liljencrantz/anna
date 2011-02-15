@@ -1,0 +1,5 @@
+
+class List @template(X)
+{
+    def List<Y> map(def Y fun(X)) @template(Y);
+}
