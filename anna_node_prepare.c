@@ -247,13 +247,13 @@ void anna_node_calculate_type_param(
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
 	    anna_function_t *closure = c->payload;
-	    wprintf(L"Closure as param %d. function type says argument is of type %ls\n", i, funt->argv[i+!!is_method]->name);
+//	    wprintf(L"Closure as param %d. function type says argument is of type %ls\n", i, funt->argv[i+!!is_method]->name);
 	    anna_function_type_key_t *template = anna_function_type_extract(funt->argv[i+!!is_method]);
 	    assert(template);
-	    wprintf(L"Closure template takes %d params\n", template->argc);
+//	    wprintf(L"Closure template takes %d params\n", template->argc);
 	    for(j=0; j<template->argc; j++)
 	    {
-		wprintf(L"Argument %d should be of type %ls\n", j, template->argv[j]->name);
+//		wprintf(L"Argument %d should be of type %ls\n", j, template->argv[j]->name);
 		anna_function_argument_hint(
 		    closure,
 		    j,
@@ -423,8 +423,8 @@ static void anna_node_calculate_type_internal(
 
 	    if(fun_type == type_type)
 	    {
-		wprintf(L"Hmmm, node is of type type...");
-		anna_node_print(call->function);
+//		wprintf(L"Hmmm, node is of type type...");
+//		anna_node_print(call->function);
 		
 		anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
 		if(type)

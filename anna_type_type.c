@@ -88,13 +88,11 @@ static anna_object_t *anna_type_i_get_member(anna_object_t **param)
     anna_object_t *lst = anna_list_create(member_type);
     int i;
     anna_type_t *type = anna_type_unwrap(param[0]);
-    //wprintf(L"Get members of type %ls\n", type->name);
+
     wchar_t **member_name = malloc(sizeof(wchar_t *)*anna_type_member_count(type));
     anna_type_get_member_names(type, member_name);
     for(i=0;i<anna_type_member_count(type); i++)
     {
-//	wprintf(L"LALALA %ls\n", member_name[i]);
-	
 	anna_list_add(
 	    lst,
 	    anna_member_wrap(
@@ -117,77 +115,25 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 	0,
 	null_type
 	);
+}
 
-/*
-    anna_node_t *argv[] = 
-	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"Type")
-	}
-    ;
-    
-    wchar_t *argn[]=
-	{
-	    L"this"
-	}
-    ;
 
-    anna_node_call_t *definition =
-	anna_type_definition_get(type_type);
-
-    anna_member_add_node(
-	definition,
-	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
-	L"!typeWrapperPayload",
-	0,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"Null"));
-    
-    anna_native_method_add_node(
-	definition,
+void anna_type_type_create2(anna_stack_frame_t *stack)
+{
+    anna_native_property_create(
+	type_type,
 	-1,
-	L"!getName",
-	0, 
-	(anna_native_t)&anna_type_i_get_name, 
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"String"),
-	1,
-	argv,
-	argn );    
+	L"name",
+	string_type,
+	&anna_type_i_get_name, 
+	0);
     
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"name",
-	    (anna_node_t *)anna_node_create_identifier(0, L"String") , 
-	    L"!getName", 0));
-    
-    anna_native_method_add_node(
-	definition,
+    anna_native_property_create(
+	type_type,
 	-1,
-	L"!getMember",
-	0,
-	(anna_native_t)&anna_type_i_get_member, 
-	anna_node_create_simple_templated_type(
-	    0, 
-	    L"List",
-	    L"Member"),
-	1,
-	argv,
-	argn );    
-    
-    anna_node_call_add_child(
-	definition,
-	(anna_node_t *)anna_node_create_property(
-	    0,
-	    L"member",
-	    anna_node_create_simple_templated_type(
-		0, 
-		L"List",
-		L"Member"),
-	    L"!getMember",
-	    0));
-*/  
+	L"member",
+	anna_list_type_get(member_type),
+	&anna_type_i_get_member, 
+	0);
+
 }

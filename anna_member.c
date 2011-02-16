@@ -71,7 +71,7 @@ static anna_object_t *anna_member_i_get_property(anna_object_t **param)
     return m->is_property?anna_int_one:null_object;
 }
 
-static void anna_member_type_create(anna_stack_frame_t *stack)
+static void anna_member_type_create()
 {
     anna_node_t *argv[] = 
 	{
@@ -84,11 +84,6 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 	    L"this"
 	}
     ;
-    
-    member_type = 
-	anna_type_native_create(
-	    L"Member",
-	    stack);
     
     anna_member_create(
 	member_type, 
@@ -143,7 +138,7 @@ static void anna_member_type_create(anna_stack_frame_t *stack)
 
 void anna_member_types_create(anna_stack_frame_t *stack)
 {
-    anna_member_type_create(stack);
+    anna_member_type_create();
     anna_member_method_type_create(stack);
     anna_member_property_type_create(stack);
     anna_member_variable_type_create(stack);

@@ -330,7 +330,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
 					   anna_stack_frame_t *stack)
 {
-    wprintf(L"ACCESSING MEMBER %ls\n", anna_mid_get_reverse(this->mid));
+    //wprintf(L"ACCESSING MEMBER %ls\n", anna_mid_get_reverse(this->mid));
     /*
       wprintf(L"Run member get node:\n");
       anna_node_print(this);
@@ -353,15 +353,8 @@ anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this,
 
     if(m->is_property)
     {
-	wprintf(L"MEMBER IS PROPERTY\n");
 	anna_object_t *method = obj->type->static_member[m->getter_offset];
-	assert(method);
-	wprintf(L"WEE, call method:\n");
-	anna_object_print(method);
-//	CRASH;
-	
-	return anna_function_wrapped_invoke(method, obj, 0, 0, stack);
-	
+	return anna_function_wrapped_invoke(method, obj, 0, 0, stack);	
     }
     
     anna_object_t *res;

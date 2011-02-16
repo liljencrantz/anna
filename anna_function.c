@@ -26,14 +26,13 @@ void anna_function_argument_hint(
 	declaration->child[1] = 
 	    anna_node_create_dummy(0, anna_type_wrap(type), 0);
     }
-    
 }
 
 static anna_node_t *anna_function_setup_arguments(
     anna_function_t *f,
     anna_stack_frame_t *parent_stack)
 {
-    wprintf(L"Setup function %ls\n", f->name);
+//    wprintf(L"Setup function %ls\n", f->name);
     CHECK_NODE_TYPE(f->definition->child[2], ANNA_NODE_CALL);
     anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
     int i;

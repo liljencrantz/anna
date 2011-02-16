@@ -173,13 +173,20 @@ static void anna_module_load_lang()
     
     float_type = anna_type_native_create(L"Float", stack_lang);
     char_type = anna_type_native_create(L"Char", stack_lang);
+    member_type = 
+	anna_type_native_create(
+	    L"Member",
+	    stack_lang);
+    
     
     anna_type_type_create(stack_lang);    
     anna_list_type_create(stack_lang);
+    anna_type_type_create2(stack_lang);    
     anna_null_type_create();    
     anna_int_type_create(stack_lang);
     anna_string_type_create(stack_lang);
     anna_node_create_wrapper_types(stack_lang);
+    anna_member_types_create(stack_lang);
     
     anna_stack_declare(stack_lang, L"Type", type_type, anna_type_wrap(type_type), 0); 
     anna_stack_declare(stack_lang, L"Int", type_type, anna_type_wrap(int_type), 0);       anna_stack_declare(stack_lang, L"Object", type_type, anna_type_wrap(object_type), 0); 

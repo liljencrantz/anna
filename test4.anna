@@ -1,7 +1,11 @@
 import(io);
 
+def guck(Int blipp){
+    3.1;
+}
+
 def main(){
-    say(main.outputType);
-//    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
+    print("Type ", guck.outputType.name, " has ", guck.outputType.member.count, " members\n");
+    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
 }
 
