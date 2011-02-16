@@ -140,6 +140,7 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_TYPE_LOOKUP:
 	{
 	    return this;
 	}
@@ -309,6 +310,13 @@ static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_fram
     {
 	anna_node_dummy_t *d = (anna_node_dummy_t *)node;	
 	return anna_type_unwrap(d->payload);
+    }
+    else if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
+    {
+	anna_node_type_lookup_t *d = (anna_node_type_lookup_t *)node;	
+	anna_node_calculate_type(d->payload, stack);
+	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    return d->payload->return_type;
     }
     
     return 0;

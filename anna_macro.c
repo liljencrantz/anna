@@ -512,6 +512,33 @@ static anna_node_t *anna_macro_specialize(anna_node_call_t *node)
     return node->child[1];
 }
 
+static anna_node_t *anna_macro_collection(anna_node_call_t *node)
+{
+    if(node->child_count == 0)
+    {
+	anna_error((anna_node_t *)node,
+		   L"At least one argument required");
+	return (anna_node_t *)anna_node_create_null(&node->location);
+    }
+
+    anna_node_t *param[] = 
+	{
+	    anna_node_create_type_lookup(
+		&node->function->location,
+		node->child[0])
+	}
+    ;
+
+    node->function = anna_node_create_specialize(
+	&node->function->location,
+	(anna_node_t *)anna_node_create_dummy(
+	    &node->function->location,
+	    anna_type_wrap(list_type), 0),
+	1,
+	param);
+    return (anna_node_t *)node;
+}
+
 #include "anna_macro_attribute.c"
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
@@ -540,27 +567,19 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"filter", &anna_macro_iter);
     anna_macro_add(stack, L"first", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
+    anna_macro_add(stack, L"__collection__", &anna_macro_collection);
     
 /*    
-    anna_macro_add(stack, L"__module__", &anna_macro_module);
-    anna_macro_add(stack, L"__function__", &anna_macro_function);
-    anna_macro_add(stack, L"else", &anna_macro_else);
-    anna_macro_add(stack, L"__get__", &anna_macro_get);
-    anna_macro_add(stack, L"__set__", &anna_macro_set);
-    anna_macro_add(stack, L"__or__", &anna_macro_or);
-    anna_macro_add(stack, L"__and__", &anna_macro_and);
     anna_macro_add(stack, L"while", &anna_macro_while);
     anna_macro_add(stack, L"__type__", &anna_macro_type);
     anna_macro_add(stack, L"return", &anna_macro_return);
-    anna_macro_add(stack, L"__templatize__", &anna_macro_templatize);
     anna_macro_add(stack, L"__templateAttribute__", &anna_macro_template_attribute);
     anna_macro_add(stack, L"__extendsAttribute__", &anna_macro_extends_attribute);
     anna_macro_add(stack, L"__genericOperator__", &anna_macro_operator_wrapper);
-    anna_macro_add(stack, L"__collection__", &anna_macro_collection);
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"__as__", &anna_macro_as);
     anna_macro_add(stack, L"import", &anna_macro_import);
-*/  
+*/
 /*
     for(i =0; i<sizeof(anna_assign_operator_names)/sizeof(wchar_t[2]); i++)
     {
@@ -570,9 +589,4 @@ void anna_macro_init(anna_stack_frame_t *stack)
 	    &anna_macro_assign_operator);
     }
 */
-
-    /*
-      anna_macro_add(stack, L"while", &anna_macro_while);
-    */
-
 }

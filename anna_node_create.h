@@ -62,6 +62,12 @@ anna_node_call_t *anna_node_create_call(
     size_t argc, 
     anna_node_t **argv);
 
+anna_node_call_t *anna_node_create_specialize(
+    anna_location_t *loc, 
+    anna_node_t *function, 
+    size_t argc, 
+    anna_node_t **argv);
+
 anna_node_member_call_t *anna_node_create_member_call(
     anna_location_t *loc, 
     anna_node_t *object,
@@ -115,6 +121,10 @@ anna_node_call_t *anna_node_create_member_declare(
     wchar_t *name,
     int is_static,
     anna_node_t *member_type);
+
+anna_node_type_lookup_t *anna_node_create_type_lookup(
+    anna_location_t *loc,
+    anna_node_t *payload);
 
 
 anna_node_call_t *anna_node_create_property(

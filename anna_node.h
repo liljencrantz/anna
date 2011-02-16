@@ -30,6 +30,7 @@
 #define ANNA_NODE_MEMBER_CALL 21
 #define ANNA_NODE_IF 22
 #define ANNA_NODE_SPECIALIZE 23
+#define ANNA_NODE_TYPE_LOOKUP 24
 
 struct YYLTYPE
 {
@@ -280,6 +281,18 @@ struct anna_node_import
 #endif    
     struct anna_node *payload;
 };
+
+struct anna_node_type_lookup
+{
+    int node_type;
+    struct anna_object *wrapper;
+    anna_location_t location;
+    anna_type_t *return_type;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
+    struct anna_node *payload;
+};
 /*
 struct anna_node_specialize
 {
@@ -313,6 +326,7 @@ typedef struct anna_node_declare anna_node_declare_t;
 typedef struct anna_node_cond anna_node_cond_t;
 typedef struct anna_node_member_call anna_node_member_call_t;
 typedef struct anna_node_if anna_node_if_t;
+typedef struct anna_node_type_lookup anna_node_type_lookup_t;
 
 extern int anna_yacc_error_count;
 

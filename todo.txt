@@ -1,8 +1,6 @@
 Make lang macro imports work for 
 Make user defined module macro imports work for 
 Make stack wrappers have all the relevant members
-Make specialization work for lists
-Implement the __collection__ macro
 Create a Range type
 Use Range type for a bunch of List/String methods
 Make user defined types work
