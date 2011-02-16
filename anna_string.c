@@ -321,10 +321,13 @@ void anna_string_type_create(anna_stack_frame_t *stack)
     each_key->argv[0] = int_type;
     each_key->argv[1] = char_type;
     
+    anna_type_t *fun_type = anna_type_native_create(L"!StringIterFunction", stack);
+    anna_function_type_create(each_key, fun_type);
+
     anna_type_t *e_argv[] = 
 	{
 	    string_type,
-	    anna_function_type_create(each_key)
+	    fun_type
 	}
     ;
     

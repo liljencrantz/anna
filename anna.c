@@ -217,8 +217,14 @@ anna_type_t *anna_type_for_function(
 	{
 	    new_key->argn[i]=wcsdup(argn[i]);
 	}
-	res = anna_function_type_create(new_key);
+	static int num = 0;
+	string_buffer_t sb;
+	sb_init(&sb);
+	sb_printf(&sb, L"%ls%d", L"!FunctionType", num++);
+	res = anna_type_native_create(sb_content(&sb), stack_global);
+	sb_destroy(&sb);
 	hash_put(&anna_type_for_function_identifier, new_key, res);
+	anna_function_type_create(new_key, res);
     }
 
     anna_function_type_key_t *ggg = anna_function_unwrap_type(res);

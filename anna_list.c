@@ -329,20 +329,20 @@ static anna_object_t *anna_list_in(anna_object_t **param)
     //anna_object_print(needle);
     
     anna_object_t **eq_obj_ptr = anna_member_addr_get_mid(needle, ANNA_MID_EQ);
-    anna_node_t *eq_param[]=
-	{
-	    anna_node_create_dummy(0, param[1], 0)
-	}
-    ;
     if(eq_obj_ptr)
     {
 	for(i=0;i<sz;i++)
 	{
+	    anna_node_t *eq_param[]=
+		{
+		    (anna_node_t *)anna_node_create_dummy(0, arr[i], 0)
+		}
+	    ;
 	    anna_object_t *result = 
 		anna_function_wrapped_invoke(
 		    *eq_obj_ptr,
 		    needle,
-		    1,
+		    2,
 		    eq_param,
 		    0);
 	    if(result != null_object)
@@ -455,10 +455,13 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
     each_key->argv[0] = int_type;
     each_key->argv[1] = spec;
     
+    anna_type_t *fun_type = anna_type_native_create(L"!ListIterFunction", stack);
+    anna_function_type_create(each_key, fun_type);
+
     anna_type_t *e_argv[] = 
 	{
 	    type,
-	    anna_function_type_create(each_key)
+	    fun_type
 	}
     ;
     
@@ -524,6 +527,8 @@ void anna_list_type_create(anna_stack_frame_t *stack)
 {
     hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);
     anna_list_type_create_internal(stack, list_type, object_type);
+    hash_put(&anna_list_specialization, list_type, object_type);
+    CRASH;
 }
 
 anna_type_t *anna_list_type_get(anna_type_t *subtype)

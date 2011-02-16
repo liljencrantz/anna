@@ -18,8 +18,8 @@
 #include "anna_node_check.h"
 #include "anna_node_create.h"
 
-static hash_table_t templatize_lookup;
-
+//static hash_table_t templatize_lookup;
+/*
 typedef struct
 {
     anna_type_t *base;
@@ -27,7 +27,8 @@ typedef struct
     anna_node_t **argv;
 }
     templatize_key_t;
-
+*/
+/*
 static wchar_t *anna_assign_operator_names[][2] = 
 {
     {L"__increase__",L"__add__"},
@@ -37,7 +38,8 @@ static wchar_t *anna_assign_operator_names[][2] =
     {L"__prev__",L"__getPrev__"},
 }
     ;
-
+*/
+/*
 static int templatize_key_compare(void *k1, void *k2)
 {
     templatize_key_t *key1 =(templatize_key_t *)k1;
@@ -63,7 +65,7 @@ static int templatize_key_hash(void *k1)
     result = (int)key1->argc + (int)key1->base;
     return result;
 }
-
+*/
 /*
 static anna_node_t *anna_macro_module(
     anna_node_call_t *node,
@@ -523,13 +525,13 @@ static anna_node_t *anna_macro_collection(anna_node_call_t *node)
 
     anna_node_t *param[] = 
 	{
-	    anna_node_create_type_lookup(
+	    (anna_node_t *)anna_node_create_type_lookup(
 		&node->function->location,
 		node->child[0])
 	}
     ;
 
-    node->function = anna_node_create_specialize(
+    node->function = (anna_node_t *)anna_node_create_specialize(
 	&node->function->location,
 	(anna_node_t *)anna_node_create_dummy(
 	    &node->function->location,
@@ -546,11 +548,11 @@ static anna_node_t *anna_macro_collection(anna_node_call_t *node)
 
 void anna_macro_init(anna_stack_frame_t *stack)
 {
-    int i;
+/*
     hash_init(&templatize_lookup,
 	      &templatize_key_hash,
 	      &templatize_key_compare);
-
+*/
     anna_macro_add(stack, L"__def__", &anna_macro_def);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);

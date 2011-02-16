@@ -32,7 +32,7 @@
 
 
 static hash_table_t *anna_module_imported=0;
-static array_list_t anna_module_unprepared = {0,0,0};
+//static array_list_t anna_module_unprepared = {0,0,0};
 
 /*
 static array_list_t anna_function_unprepared = {0,0,0};

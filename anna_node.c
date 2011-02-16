@@ -23,6 +23,7 @@
 #include "anna_node_create.h"
 #include "anna_member.h"
 #include "anna_function_type.h"
+#include "anna_list.h"
 
 #define NODE_CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
 
@@ -350,6 +351,7 @@ anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this,
     }
     if(m->is_property)
     {
+	wprintf(L"ACCESSING SOME PROPERTY\n");CRASH;
 	anna_object_t *method = obj->type->static_member[m->getter_offset];
 	return anna_function_wrapped_invoke(method, obj, 0, 0, stack);
     }

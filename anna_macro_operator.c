@@ -1,10 +1,10 @@
+#if 0
 
 static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node, 
 						anna_function_t *function, 
 						anna_node_list_t *parent)
 {
     return 0;
-#if 0
 /*
     wprintf(L"\noperator wrapper called with %d children\n", node->child_count);
    
@@ -122,8 +122,8 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 		1,
 		c_param);
     }
-#endif
 }
+#endif
 
 static anna_node_t *anna_macro_assign(struct anna_node_call *node)
 {

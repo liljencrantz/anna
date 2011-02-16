@@ -11,6 +11,8 @@
 #include "anna_macro.h"
 #include "anna_prepare.h"
 #include "anna_function.h"
+#include "anna_member.h"
+#include "anna.h"
 
 array_list_t  anna_type_list = 
 {

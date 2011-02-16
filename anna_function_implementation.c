@@ -41,7 +41,10 @@ void anna_object_print_val(anna_object_t *value)
 	}
 	else 
 	{
-	    wprintf(L"%ls", value->type->name);
+	    /*
+	      FIXME: Print using a toString method
+	    */
+	    wprintf(L"Object of type %ls", value->type->name);
 	}
 }
 
@@ -54,9 +57,6 @@ anna_object_t *anna_i_print(anna_object_t **param)
 	
 	anna_object_t *value = anna_list_get(param[0], i);
 	anna_object_print_val(value);
-	/*
-	  FIXME: Print using a toString method
-	*/
     }
     return param[0];
 }
@@ -66,24 +66,8 @@ static anna_object_t *anna_i_not(anna_object_t **param)
     return(param[0] == null_object)?anna_int_one:null_object;
 }
 
-static anna_object_t *anna_i_if(anna_object_t **param)
-{
-    anna_object_t *body_object;
-    if(param[0]!=null_object)
-    {
-	body_object=param[1];
-    }
-    else
-    {
-	body_object=param[2];
-    }
-    
-    return anna_function_wrapped_invoke(body_object, 0, 0, 0, 0);
-}
-
 void anna_function_implementation_init(struct anna_stack_frame *stack)
 {
-
     static wchar_t *p_argn[]={L"object"};
     anna_function_t *f = anna_native_create(
 	L"print", 
@@ -97,11 +81,11 @@ void anna_function_implementation_init(struct anna_stack_frame *stack)
 	f->wrapper->type,
 	f->wrapper,
 	0);
-    
-//    anna_native_create(L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn, stack);
-/*    
-    anna_type_t *if_argv[]={object_type, object_type, object_type};
-    static wchar_t *if_argn[]={L"condition", L"trueBlock", L"falseBlock"};    
-    anna_native_create( L"__if__", 0, (anna_native_t)&anna_i_if, object_type, 3, if_argv, if_argn, stack);
-*/  
+    anna_function_t *not = anna_native_create(L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn, stack);
+    anna_stack_declare(
+	stack,
+	L"__not__",
+	not->wrapper->type,
+	not->wrapper,
+	0);
 }

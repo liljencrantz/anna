@@ -178,7 +178,7 @@ static inline void **anna_stack_addr(anna_stack_frame_t *stack, wchar_t *name, o
 
 anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name)
 {
-    return anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member), 0, 1);
+    return (anna_object_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member), 0, 1);
 }
 
 anna_object_t *anna_stack_frame_get_str(anna_stack_frame_t *stack, wchar_t *name)

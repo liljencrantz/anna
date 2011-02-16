@@ -1,6 +1,7 @@
 import(io);
 
 def main(){
-    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
+    say(main.outputType);
+//    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
 }
 

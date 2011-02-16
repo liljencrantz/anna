@@ -17,8 +17,7 @@
 #include "anna_type.h"
 #include "anna_member.h"
 
-static int base_created = 0;
-
+static anna_type_t *function_type_base = 0;
 
 static anna_object_t *anna_function_type_i_get_name(anna_object_t **param)
 {
@@ -28,6 +27,7 @@ static anna_object_t *anna_function_type_i_get_name(anna_object_t **param)
 
 static anna_object_t *anna_function_type_i_get_output(anna_object_t **param)
 {
+    CRASH;
     anna_function_t *f = anna_function_unwrap(param[0]);
     return anna_type_wrap(f->return_type);
 }
@@ -89,15 +89,12 @@ void anna_function_type_key_print(anna_function_type_key_t *k)
 
 void anna_function_type_base_create()
 {
-    if(base_created)
+
+    if(function_type_base)
 	return;
-    
-    base_created = 1;
-    
-    anna_type_t *res =
-	anna_type_native_create(
-	    L"!FunctionTypeBase",
-	    stack_global);	
+
+    function_type_base = anna_type_native_create(L"!FunctionBase", stack_global);
+    anna_type_t *res = function_type_base;
 
     anna_native_property_create(
 	res,
@@ -132,23 +129,15 @@ void anna_function_type_base_create()
 	0);
 }
 
-anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
+void anna_function_type_create(
+    anna_function_type_key_t *key, 
+    anna_type_t *res)
 {
-
-    anna_function_type_base_create();
-    static int num = 0;
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_printf(&sb, L"%ls%d", L"!FunctionType", num++);
-    
-    //wprintf(L"Creating function type %ls\n", sb_content(&sb));
     //anna_function_type_key_print(key);
 
-    anna_type_t *res = anna_type_native_create(sb_content(&sb), stack_global);	
-    anna_type_native_parent(res, L"!FunctionTypeBase");
+    anna_function_type_base_create();
+    anna_type_copy(res, function_type_base);
 
-    sb_destroy(&sb);
-    
     /*
       Non-static member variables
     */
@@ -187,8 +176,8 @@ anna_type_t *anna_function_type_create(anna_function_type_key_t *key)
 	0,
 	null_type);    
     (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)key;
+
     return res;
-    
 }
 
 anna_function_type_key_t *anna_function_type_extract(anna_type_t *type)
