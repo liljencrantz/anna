@@ -276,7 +276,7 @@ int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
   return !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
 }
 
-void anna_type_copy(anna_type_t *res, anna_type_t *orig)
+mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 {
     int i;
     for(i=0; i<anna_mid_max_get(); i++)
@@ -285,15 +285,70 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	if(!memb)
 	    continue;
 	
-	anna_member_t *copy = anna_member_get(
-	    res,
-	    anna_member_create(
-		res,
-		anna_mid_get(memb->name), memb->name, memb->is_static, memb->type));
-	copy->is_method = memb->is_method;
-	copy->setter_offset = memb->setter_offset;
-	copy->getter_offset = memb->getter_offset;	
+	if(memb->offset == off)
+	    return i;
+       
     }
+    CRASH;
+}
+
+void anna_type_copy(anna_type_t *res, anna_type_t *orig)
+{
+    int i;
+    for(i=0; i<anna_mid_max_get(); i++)
+    {
+       anna_member_t *memb = orig->mid_identifier[i];
+       if(!memb)
+           continue;
+       
+       anna_member_t *copy = anna_member_get(
+           res,
+           anna_member_create(
+               res,
+               anna_mid_get(memb->name), memb->name, memb->is_static, memb->type));
+       copy->is_method = memb->is_method;
+       copy->is_property = memb->is_property;
+       copy->getter_offset = -1;
+       copy->setter_offset = -1;       
+    }
+
+    for(i=0; i<anna_mid_max_get(); i++)
+    {
+       anna_member_t *memb = orig->mid_identifier[i];
+       if(!memb)
+           continue;
+
+       anna_member_t *copy = anna_member_get(
+           res,
+	   anna_mid_get(memb->name));
+       
+       res->static_member[copy->offset]=orig->static_member[memb->offset];
+    }
+    
+    for(i=0; i<anna_mid_max_get(); i++)
+    {
+       anna_member_t *memb = orig->mid_identifier[i];
+       if(!memb)
+           continue;
+       if(!memb->is_property)
+	   continue;
+
+       anna_member_t *copy = anna_member_get(
+           res,
+	   anna_mid_get(memb->name));
+       
+       if(memb->getter_offset != -1)
+       {
+	   mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset);
+	   copy->getter_offset = anna_member_get(res, getter)->offset;
+       }
+       if(memb->setter_offset != -1)
+       {
+	   mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset);
+	   copy->setter_offset = anna_member_get(res, setter)->offset;	   
+       }       
+    }
+
 }
 
 

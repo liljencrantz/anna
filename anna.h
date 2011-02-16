@@ -502,6 +502,8 @@ size_t anna_mid_get(wchar_t *name);
 wchar_t *anna_mid_get_reverse(mid_t mid);
 void anna_mid_put(wchar_t *name, mid_t mid);
 size_t anna_mid_max_get();
+anna_member_t **anna_mid_identifier_create();
+
 
 
 #endif

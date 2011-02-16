@@ -27,7 +27,6 @@ static anna_object_t *anna_function_type_i_get_name(anna_object_t **param)
 
 static anna_object_t *anna_function_type_i_get_output(anna_object_t **param)
 {
-    CRASH;
     anna_function_t *f = anna_function_unwrap(param[0]);
     return anna_type_wrap(f->return_type);
 }

@@ -526,9 +526,8 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 void anna_list_type_create(anna_stack_frame_t *stack)
 {
     hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);
+    hash_put(&anna_list_specialization, object_type, list_type);
     anna_list_type_create_internal(stack, list_type, object_type);
-    hash_put(&anna_list_specialization, list_type, object_type);
-    CRASH;
 }
 
 anna_type_t *anna_list_type_get(anna_type_t *subtype)
@@ -536,10 +535,9 @@ anna_type_t *anna_list_type_get(anna_type_t *subtype)
     anna_type_t *spec = hash_get(&anna_list_specialization, subtype);
     if(!spec)
     {
-	wprintf(L"Create list type with spec type %ls\n", subtype->name);	
 	spec = anna_type_native_create(L"List<XXX>", stack_global);
-	anna_list_type_create_internal(stack_global, spec, subtype);
 	hash_put(&anna_list_specialization, subtype, spec);
+	anna_list_type_create_internal(stack_global, spec, subtype);
     }
     
     return spec;
