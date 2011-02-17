@@ -707,4 +707,9 @@ wchar_t *asi_cstring(anna_string_t *str)
     return res;
 }
 
+int asi_compare(anna_string_t *a, anna_string_t *b){
+    int i;
+    CRASH;    
+}
+
 #endif

@@ -126,4 +126,9 @@ void asi_print_regular(anna_string_t *str);
 
 wchar_t *asi_cstring(anna_string_t *str);
 
+/**
+   Compare the two specified strings
+ */
+int asi_compare(anna_string_t *a, anna_string_t *b);
+
 #endif

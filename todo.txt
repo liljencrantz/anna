@@ -1,10 +1,14 @@
-Make lang macro imports work for 
-Make user defined module macro imports work for 
+Make lang macro imports work 
+Make user defined module macro imports work 
 Make stack wrappers have all the relevant members
 Create a Range type
 Use Range type for a bunch of List/String methods
 Make user defined types work
 Make specialization work for user defined types
+String comparison functions
+Type annotations
+Annotate functions with aliases
+Always check aliases when resolving method calls during compile time
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

@@ -13,6 +13,7 @@
 #include "anna_char.h"
 #include "anna_type.h"
 #include "anna_string.h"
+#include "anna_function.h"
 
 static anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 
@@ -73,6 +74,7 @@ static anna_object_t *anna_member_i_get_property(anna_object_t **param)
 
 static void anna_member_type_create()
 {
+/*
     anna_node_t *argv[] = 
 	{
 	    (anna_node_t *)anna_node_create_identifier(0, L"Member"),
@@ -84,7 +86,7 @@ static void anna_member_type_create()
 	    L"this"
 	}
     ;
-    
+*/  
     anna_member_create(
 	member_type, 
 	ANNA_MID_MEMBER_PAYLOAD, 

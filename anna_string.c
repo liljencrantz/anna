@@ -311,18 +311,8 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	&anna_string_i_get_count, 
 	&anna_string_i_set_count);
 
-    anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
-    each_key->result = object_type;
-    each_key->argc = 2;
-    each_key->flags = 0;
-    each_key->argn = malloc(sizeof(wchar_t *)*2);
-    each_key->argn[0] = L"key";
-    each_key->argn[1] = L"value";
-    each_key->argv[0] = int_type;
-    each_key->argv[1] = char_type;
-    
-    anna_type_t *fun_type = anna_type_native_create(L"!StringIterFunction", stack);
-    anna_function_type_create(each_key, fun_type);
+    anna_type_t *fun_type = anna_function_type_each_create(
+	L"!StringIterFunction", char_type);
 
     anna_type_t *e_argv[] = 
 	{

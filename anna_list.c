@@ -445,18 +445,8 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 	spec,
 	2, a_argv, a_argn);
     
-    anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
-    each_key->result = object_type;
-    each_key->argc = 2;
-    each_key->flags = 0;
-    each_key->argn = malloc(sizeof(wchar_t *)*2);
-    each_key->argn[0] = L"key";
-    each_key->argn[1] = L"value";
-    each_key->argv[0] = int_type;
-    each_key->argv[1] = spec;
-    
-    anna_type_t *fun_type = anna_type_native_create(L"!ListIterFunction", stack);
-    anna_function_type_create(each_key, fun_type);
+    anna_type_t *fun_type = anna_function_type_each_create(
+	L"!ListIterFunction", spec);
 
     anna_type_t *e_argv[] = 
 	{

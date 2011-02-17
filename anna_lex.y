@@ -121,6 +121,7 @@ else return ELSE;
 \| return '|';
 '([^\\]|\\.)' return LITERAL_CHAR;
 \"([^\"\\]|\\.)*\" return LITERAL_STRING;
-[ \t\n\r] return IGNORE;
+[ \t] return IGNORE;
+[\n\r] return LINE_BREAK;
 . return 0;
 

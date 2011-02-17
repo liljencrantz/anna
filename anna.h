@@ -158,7 +158,7 @@ struct anna_type
     /**
        The object that wraps this type. Used for
        reflection/introspection purposes.
-     */
+    */
     struct anna_object *wrapper;
     /**
        An array containing all static members.
@@ -395,15 +395,13 @@ anna_object_t *anna_function_invoke(
 /**
    \param macro the macro to invoke
    \param node the ast node to transform
-   \param function the context of this ast node
- */
+*/
 struct anna_node *anna_macro_invoke(
     anna_function_t *macro,
     struct anna_node_call *node);
 
 void anna_function_type_key_print(
     anna_function_type_key_t *k);
-
 
 anna_object_t *anna_construct(
     anna_type_t *type, struct anna_node_call *param,
@@ -496,7 +494,8 @@ void anna_object_print(
 
 void anna_mid_init();
 /**
-   Returns the mid (i.e. the offset in the type vtable) of the specified name. If there is no mid yet, create one.
+   Returns the mid (i.e. the offset in the type vtable) of the
+   specified name. If there is no mid yet, create one.
  */
 size_t anna_mid_get(wchar_t *name);
 wchar_t *anna_mid_get_reverse(mid_t mid);

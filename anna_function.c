@@ -24,7 +24,7 @@ void anna_function_argument_hint(
     if(declaration->child[1]->node_type == ANNA_NODE_NULL)
     {
 	declaration->child[1] = 
-	    anna_node_create_dummy(0, anna_type_wrap(type), 0);
+	    (anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(type), 0);
     }
 }
 
@@ -145,9 +145,8 @@ static anna_node_t *anna_function_setup_arguments(
 */
 	    
     }
-
+    return 0;
 }
-
 
 void anna_function_setup_interface(
     anna_function_t *f,
@@ -169,7 +168,7 @@ void anna_function_setup_interface(
 	    declaration_count = declarations->child_count;
 	}
 	f->stack_template = anna_node_register_declarations(
-	    f->body, declaration_count);
+	    (anna_node_t *)f->body, declaration_count);
 	f->stack_template->parent = parent_stack;
 /*    
 	wprintf(
@@ -278,8 +277,8 @@ void anna_function_setup_body(
     {
 	int i;
 	for(i=0; i<f->body->child_count; i++)
-	    anna_node_each(f->body->child[i], &anna_node_calculate_type, f->stack_template);
-	anna_node_each(f->body, &anna_node_prepare_body,f->stack_template);
+	    anna_node_each((anna_node_t *)f->body->child[i], (anna_node_function_t)&anna_node_calculate_type, f->stack_template);
+	anna_node_each((anna_node_t *)f->body, (anna_node_function_t)&anna_node_prepare_body,f->stack_template);
     }
 }
 
@@ -385,7 +384,7 @@ anna_function_t *anna_function_create_from_definition(
     else {
 	result->name = wcsdup(L"<anonymous>");
     }
-    result->body = result->definition->child[4];
+    result->body = node_cast_call(result->definition->child[4]);
     
 /*
     wprintf(L"LALALAGGG\n");

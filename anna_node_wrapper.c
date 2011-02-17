@@ -13,6 +13,7 @@
 #include "anna_list.h"
 #include "anna_int.h"
 #include "anna_member.h"
+#include "anna_function_type.h"
 
 anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_int_literal_wrapper_type, *node_string_literal_wrapper_type;
 

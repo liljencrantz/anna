@@ -20,7 +20,7 @@
 #include "anna_node_create.h"
 #include "anna_list.h"
 
-
+#if 0
 struct prepare_item
 {
     anna_function_t *function;
@@ -163,3 +163,4 @@ void anna_prepare_stack_functions(anna_stack_frame_t *stack, wchar_t *name, anna
 {
 }
 
+#endif

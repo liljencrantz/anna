@@ -27,7 +27,6 @@ int was_end_brace=0;
 int peek_token = -1;
 size_t last_length = 0;
 
-
 int yylex();
 
 int yylex_val;
@@ -65,9 +64,6 @@ static wchar_t *enclose(wchar_t *in)
     sb_append(&sb,L"__");
     return sb_content(&sb);
 }
-
-
-
 
 static wchar_t *anna_yacc_string(char *in)
 {
@@ -185,6 +181,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token SEMICOLON
 %token SIGN
 %token IGNORE
+%token LINE_BREAK
 %token BITAND
 %token BITOR
 %token XOR
@@ -198,7 +195,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 %token ELSE
 
 %type <call_val> block block2 block3 opt_else
-%type <call_val> module module1
+%type <call_val> module
 %type <node_val> expression expression1 expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10
 %type <node_val> simple_expression property_expression
 %type <node_val> constant
@@ -222,9 +219,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 
 %%
 
-module: module1 
-
-module1:
+module:
 	module expression SEMICOLON
 	{
 	    $$ = $1;
@@ -349,7 +344,7 @@ expression:
         |
 	IF '(' expression ')' block opt_else
         {
-	    anna_node_t *param[] ={$3, $5, $6};	    
+	    anna_node_t *param[] ={$3, (anna_node_t *)$5, (anna_node_t *)$6};	    
 	    $$ = (anna_node_t *)anna_node_create_call(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@$,L"__if__"),
@@ -569,10 +564,11 @@ expression8 :
 	'!' expression9
 	{
 	    anna_node_t *param[] ={$2};   
-	    $$ = (anna_node_t *)anna_node_create_call(&@$,
-						      (anna_node_t *)anna_node_create_identifier(&@$,L"__not__"), 
-						      1,
-						      param);
+	    $$ = (anna_node_t *)anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(&@$,L"__not__"), 
+		1,
+		param);
 	}
 	|
 	'@' identifier expression9
@@ -580,7 +576,8 @@ expression8 :
 	    anna_node_identifier_t *id = (anna_node_identifier_t *)$2;
 	    anna_node_t *param[] ={
 		$3, 
-		(anna_node_t *)anna_node_create_identifier(&id->location,enclose(id->name))
+		(anna_node_t *)anna_node_create_identifier(
+		    &id->location,enclose(id->name))
 	    };
 	    $$ = (anna_node_t *)
 		anna_node_create_call(
@@ -601,13 +598,15 @@ expression8 :
 	  anna_node_t *param[] ={$2, 
 				 $1};   
 	  $$ = (anna_node_t *)
-	    anna_node_create_call(&@$, 
-				  (anna_node_t *)anna_node_create_call(&@$, 
-							(anna_node_t *)anna_node_create_identifier(&@2, L"__memberGet__"),
-							2,
-							param),
-				  0,
-				  0);
+	    anna_node_create_call(
+		&@$, 
+		(anna_node_t *)anna_node_create_call(
+		    &@$, 
+		    (anna_node_t *)anna_node_create_identifier(&@2, L"__memberGet__"),
+		    2,
+		    param),
+		0,
+		0);
 	}
 	| 
 	expression9 post_op8
@@ -628,7 +627,13 @@ expression9 :
 	expression9 '.' any_identifier
 	{
 	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_create_call(&@$, (anna_node_t *)anna_node_create_identifier(&@2, L"__memberGet__"), 2, param);
+	    $$ = (anna_node_t *)anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@2,
+		    L"__memberGet__"), 
+		2,
+		param);
 	}
         |
 	expression9 '(' argument_list ')' opt_block
@@ -675,7 +680,11 @@ expression9 :
 	'[' argument_list ']' /* Alternative list constructor syntax */
 	{	    
 	    $$ = (anna_node_t *)$2;
-	    anna_node_call_set_function($2, (anna_node_t *)anna_node_create_identifier(&@$,L"__collection__"));
+	    anna_node_call_set_function(
+		$2,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"__collection__"));
 	}
 	|
 	expression9 AS expression10
@@ -720,17 +729,20 @@ expression10:
 op:
 	APPEND
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__append__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__append__");
 	}
 	|
 	INCREASE
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__increase__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__increase__");
 	}
 	|
 	DECREASE
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__decrease__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__decrease__");
 	}
 ;
 
@@ -738,44 +750,52 @@ op:
 op1:
 	AND
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__and__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__and__");
 	}
 	|
 	OR
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__or__");
+		$$ = (anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__or__");
 	}
 ;
 
 op3:
 	'<'
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__lt__");
+		$$ = (anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__lt__");
 	}
 	|
 	'>'
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__gt__");
+		$$ = (anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__gt__");
 	}
 	|
 	EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__eq__");
+		$$ = (anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__eq__");
 	}
 	|
 	NOT_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__neq__");
+		$$ = (anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__neq__");
 	}
 	|
 	LESS_OR_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__lte__");
+		$$ = (anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__lte__");
 	}
 	|
 	GREATER_OR_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__gte__");
+		$$ = (anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__gte__");
 	}
 ;
 
@@ -791,12 +811,14 @@ op4:
 op5:
 	':'
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"Pair");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"Pair");
 	}
 	|
 	RANGE
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"Range");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"Range");
 	}
 ;
 
@@ -910,12 +932,16 @@ any_identifier:
 constant :
 	LITERAL_INTEGER
 	{
-	    $$ = (anna_node_t *)(anna_node_t *)anna_node_create_int_literal(&@$,atoi(anna_lex_get_text(scanner)));
+	    $$ = (anna_node_t *)anna_node_create_int_literal(
+		&@$,
+		atoi(anna_lex_get_text(scanner)));
 	}
 	| 
 	LITERAL_FLOAT
 	{
-	    $$ = (anna_node_t *)(anna_node_t *)anna_node_create_float_literal(&@$,atof(anna_lex_get_text(scanner)));
+	    $$ = (anna_node_t *)anna_node_create_float_literal(
+		&@$,
+		atof(anna_lex_get_text(scanner)));
 	}
 	| 
 	LITERAL_CHAR
@@ -923,7 +949,8 @@ constant :
 	    /*
 	      FIXME: We're not handling escape sequences!
 	     */
-	    $$ = (anna_node_t *)(anna_node_t *)anna_node_create_char_literal(&@$,anna_lex_get_text(scanner)[1]);
+	    $$ = (anna_node_t *)anna_node_create_char_literal(
+		&@$,anna_lex_get_text(scanner)[1]);
 	}
 	| 
 	LITERAL_STRING
@@ -972,11 +999,11 @@ function_declaration:
 		$3,
 		(anna_node_t *)($2?$2:anna_node_create_null(&@$)),
 		(anna_node_t *)$4, 
-		anna_node_create_call(
+		(anna_node_t *)anna_node_create_call(
 		    &@$,
 		    (anna_node_t *)anna_node_create_identifier(&@1,L"__block__"),
 		    0,0),		    
-		anna_node_create_call(
+		(anna_node_t *)anna_node_create_call(
 		    &@$,
 		    (anna_node_t *)anna_node_create_identifier(&@1,L"__block__"),
 		    0,0)		    
@@ -993,7 +1020,7 @@ function_declaration:
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@1,L"__declare__"),
 		3,
-		&param2);
+		param2);
 	}
 ;
 
@@ -1001,13 +1028,13 @@ function_definition:
 	DEF opt_templatized_type opt_identifier declaration_list attribute_list opt_block
 	{
 	    anna_node_t *param[] ={
-		$3->node_type == ANNA_NODE_IDENTIFIER?$3:anna_node_create_identifier(
+		($3->node_type == ANNA_NODE_IDENTIFIER)?(anna_node_t *)$3:(anna_node_t *)anna_node_create_identifier(
 		    &@$,
 		    L"!anonymous"),
-		(anna_node_t *)($2?$2:anna_node_create_null(&@$)),
+		$2?(anna_node_t *)$2:(anna_node_t *)anna_node_create_null(&@$),
 		(anna_node_t *)$4, 
 		(anna_node_t *)$5, 
-		($6?(anna_node_t *)$6:(anna_node_t *)anna_node_create_null(&@$))
+		$6?(anna_node_t *)$6:(anna_node_t *)anna_node_create_null(&@$)
 	    };
 	    anna_node_t *param2[] ={$3, anna_node_create_null(&@$), 0};
 	    
@@ -1018,7 +1045,7 @@ function_definition:
 		    &@$,
 		    (anna_node_t *)anna_node_create_identifier(&@1,L"__declare__"),
 		    3,
-		    &param2);
+		    param2);
 	    }
 	    else
 	    {
@@ -1052,7 +1079,13 @@ function_definition:
 declaration_list :
 	'(' ')'
 	{
-	    $$ = anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__block__"),0,0);
+	    $$ = anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"__block__"),
+		0,
+		0);
 	}
 	|
 	'(' declaration_list2 ')'
@@ -1064,7 +1097,12 @@ declaration_list :
 declaration_list2 :
 	declaration_list_item
 	{
-	    $$ = anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__block__"), 0, 0);
+	    $$ = anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"__block__"),
+		0, 0);
 	    anna_node_call_add_child($$,$1);
 	}
 	| 
@@ -1080,7 +1118,11 @@ declaration_expression:
 	{
 	    anna_node_t *param[] ={$3, $2, 0};	    
  	    param[2] = $4?$4:anna_node_create_null(&@$);
-	    $$ = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__declare__"), 3, param);
+	    $$ = (anna_node_t *)anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,L"__declare__"),
+		3, param);
 	}
 	|
 	function_definition
@@ -1091,7 +1133,12 @@ variable_declaration:
 	{
 	    anna_node_t *param[] ={$2, $1, 0};	    
  	    param[2] = $3?$3:anna_node_create_null(&@$);
-	    $$ = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__declare__"), 3, param);    
+	    $$ = (anna_node_t *)anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"__declare__"),
+		3, param);    
 	}
 ;
 
@@ -1114,7 +1161,11 @@ type_identifier opt_templatization
    else 
    {
       anna_node_t *param[] ={$1, (anna_node_t *)$2};	    
-      $$ = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__specialize__"), 2, param);
+      $$ = (anna_node_t *)anna_node_create_call(
+	  &@$,(anna_node_t *)anna_node_create_identifier(
+	      &@$,
+	      L"__specialize__"), 
+	  2, param);
    }
 }
 ;
@@ -1137,7 +1188,13 @@ templatization2:
 	simple_expression
 	{
 	    anna_node_t *param[] ={$1};	    
-	    $$ = anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__block__"), 1, param);
+	    $$ = anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"__block__"),
+		1,
+		param);
 	}
 	|
 	templatization2 ',' simple_expression
@@ -1150,8 +1207,15 @@ templatization2:
 type_definition :
 	identifier type_identifier attribute_list block 
 	{
-	  anna_node_t *param[] ={$2, $1, (anna_node_t *)$3, (anna_node_t *)$4};	    
-	  $$ = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__type__"), 4, param);
+	  anna_node_t *param[] ={
+	      $2, $1, (anna_node_t *)$3, 
+	      (anna_node_t *)$4
+	  };	    
+	  $$ = (anna_node_t *)anna_node_create_call(
+	      &@$,
+	      (anna_node_t *)anna_node_create_identifier(
+		  &@$,L"__type__"), 
+	      4, param);
 	}
 	;
 
@@ -1216,29 +1280,21 @@ void anna_yacc_init()
     anna_yacc_do_init = 1;    
 }
 
+/**
+   Internal helper function for anna_yacc_lex, never ever call directly.
 
-int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
+   Reads the input stream from the lexer, keep track of line and column
+   number, and ignore any tokens of type IGNORE.
+ */
+int anna_yacc_lex_inner (
+    YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
 {
-    
     if(anna_yacc_do_init)
     {
 	anna_yacc_do_init = 0;
 	llocp->first_line= llocp->last_line=1;
 	llocp->first_column = llocp->last_column=0;
     }
-    
-    if(peek_token != -1)
-    {
-	int ret = peek_token;
-	peek_token = -1;
-	if(ret == '}') 
-	{
-	    was_end_brace = 1;
-	}
-
-	return ret;      
-    }
-    assert(filename);
     
     while(1)
     {
@@ -1264,31 +1320,57 @@ int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *fi
 	    break;
     }
     
-    if(was_end_brace)
-    {
-	was_end_brace = 0;
-	//wprintf(L"Got an end brace\n");
-	
-	if(yylex_val != '.' &&
-	   yylex_val != ELSE &&
-	   yylex_val != SEMICOLON &&
-	   yylex_val != ')')
+    return yylex_val;
+}
+
+/**
+   Returns the next token for the parser. Ignores IGNORE and
+   LINE_BREAK tokens. Adds implicit semicolons after brace/LINE_BREAK
+   combos. Keeps track of file location.
+ */
+int anna_yacc_lex (
+    YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
+{
+    
+    int val = anna_yacc_lex_inner(lvalp, llocp, scanner, filename);
+
+    /*
+      Line breaks directly following an end brace are implicitly
+      interpreted as a semicolon.
+
+      Otherwise we'd need a semi-colon after any block call, e.g.
+
+      if(foo){bar};
+
+      Which, while logical and consistent, is rather non-C and avoided
+      to avoid surprises.
+
+      After any other token than an end brace, line breaks are a noop.
+     */
+    if(val == LINE_BREAK){
+	if(was_end_brace)
 	{
-	    //wprintf(L"Insert fake semicolon..\n");
-	    peek_token = yylex_val;
+	    was_end_brace = 0;
 	    return SEMICOLON;
-	}      
+	}
+	else
+	{
+	    return anna_yacc_lex(lvalp, llocp, scanner, filename);
+	}
     }
     
-    if(yylex_val == '}') 
+    if(val == '}') 
     {
 	was_end_brace = 1;
     }
     
-    return yylex_val;
+    return val;
+    
 }
 
-void anna_yacc_error (YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr, char *s) 
+void anna_yacc_error (
+    YYLTYPE *llocp, yyscan_t scanner, 
+    wchar_t *filename, anna_node_t **parse_tree_ptr, char *s) 
 {
     fwprintf(stderr,L"Error in %ls, on line %d:\n", 
 	     llocp->filename,

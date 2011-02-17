@@ -176,11 +176,29 @@ void anna_function_type_create(
 	null_type);    
     (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)key;
 
-    return res;
+    return;
 }
 
 anna_function_type_key_t *anna_function_type_extract(anna_type_t *type)
 {
     anna_function_type_key_t **res = (anna_function_type_key_t **)anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     return res?*res:0;
+}
+
+anna_type_t *anna_function_type_each_create(
+    wchar_t *name, 
+    anna_type_t *argument_type)
+{
+    anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
+    each_key->result = object_type;
+    each_key->argc = 2;
+    each_key->flags = 0;
+    each_key->argn = malloc(sizeof(wchar_t *)*2);
+    each_key->argn[0] = L"key";
+    each_key->argn[1] = L"value";
+    each_key->argv[0] = int_type;
+    each_key->argv[1] = argument_type;    
+    anna_type_t *fun_type = anna_type_native_create(name, stack_global);
+    anna_function_type_create(each_key, fun_type);
+    return fun_type;
 }
