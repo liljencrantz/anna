@@ -5,7 +5,7 @@ def guck(Int blipp){
 }
 
 def main(){
-    print("Type ", guck.outputType.name, " has ", guck.outputType.member.count, " members\n");
+    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"}else{"not static"},"D")};
     [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
 }
 

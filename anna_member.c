@@ -20,7 +20,7 @@ anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 {
     if(likely(result->wrapper))
 	return result->wrapper;
-
+    
     anna_type_t * m_type;
     if(result->is_method)
     {
