@@ -122,6 +122,9 @@ struct anna_node *anna_macro_invoke(
 	int i;
 	anna_stack_frame_t *my_stack = anna_stack_clone(macro->stack_template);
 	anna_object_t *result = null_object;
+
+	wprintf(L"Invoke fancy user defined macro %ls\n", macro->name);
+	//wprintf(L"Macro has stack size %d\n", macro->stack_template->count);
 	
 	anna_stack_set_str(my_stack,
 			   macro->input_name[0],

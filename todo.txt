@@ -1,5 +1,3 @@
-Make lang macro imports work 
-Make user defined module macro imports work 
 Make stack wrappers have all the relevant members
 Create a Range type
 Use Range type for a bunch of List/String methods

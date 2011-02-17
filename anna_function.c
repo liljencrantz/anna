@@ -170,7 +170,12 @@ void anna_function_setup_interface(
 	f->stack_template = anna_node_register_declarations(
 	    (anna_node_t *)f->body, declaration_count);
 	f->stack_template->parent = parent_stack;
-/*    
+
+	if(f->flags & ANNA_FUNCTION_MACRO){
+	    anna_stack_declare(f->stack_template, f->input_name[0], f->input_type[0], null_object, 0);
+	    
+	}
+/*
 	wprintf(
 	    L"Function's internal declarations registered (%d)\n",
 	    f->stack_template->count);
