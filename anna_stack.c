@@ -136,7 +136,10 @@ void anna_stack_declare2(anna_stack_frame_t *stack,
     stack->member[*offset] = null_object;
 }
 
-static inline void **anna_stack_addr(anna_stack_frame_t *stack, wchar_t *name, off_t arr_offset, int is_ptr, int check_imports)
+static inline void **anna_stack_addr(
+    anna_stack_frame_t *stack,
+    wchar_t *name, off_t arr_offset,
+    int is_ptr, int check_imports_and_parents)
 {
     if(!stack)
     {
@@ -153,9 +156,8 @@ static inline void **anna_stack_addr(anna_stack_frame_t *stack, wchar_t *name, o
 	    void ** foo = is_ptr?(*((void **)((void *)stack + arr_offset))):((void *)stack + arr_offset);
 	    return &foo[*offset];
 	}
-	if(check_imports)
+	if(check_imports_and_parents)
 	{
-	    
 	    int i;
 	    for(i=0; i<al_get_count(&stack->import); i++)
 	    {
@@ -165,6 +167,10 @@ static inline void **anna_stack_addr(anna_stack_frame_t *stack, wchar_t *name, o
 		if(import_res)
 		    return import_res;
 	    }
+	}
+	else 
+	{   
+	    return 0;
 	}
 	
 	stack = stack->parent;
@@ -282,7 +288,6 @@ void anna_stack_set_sid(anna_stack_frame_t *stack, anna_sid_t sid, anna_object_t
 anna_stack_frame_t *anna_stack_clone(anna_stack_frame_t *template)
 {
     assert(template);
-  
     size_t sz = sizeof(anna_stack_frame_t) + sizeof(anna_object_t *)*template->count;
     //wprintf(L"Cloning stack with %d items (sz %d)\n", template->count, sz);
     anna_stack_frame_t *stack = malloc(sz);
@@ -291,7 +296,7 @@ anna_stack_frame_t *anna_stack_clone(anna_stack_frame_t *template)
     return stack;  
 }
 
-void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
+static void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {
     wchar_t *name = (wchar_t *)key_ptr;
     size_t *offset=(size_t *)val_ptr;
@@ -333,6 +338,48 @@ void anna_stack_print_trace(anna_stack_frame_t *stack)
     }
 }
 
+static void anna_stack_save_name(void *key_ptr,void *val_ptr, void *aux_ptr)
+{
+    array_list_t *al = (array_list_t *)aux_ptr;
+    wchar_t *name = (wchar_t *)key_ptr;
+    al_push(al, name);
+}
+
+static anna_object_t *anna_stack_snopp(anna_object_t **param)
+{
+    wprintf(L"SNOPP %d\n", param[0]);    
+    return null_object;
+}
+
+void anna_stack_create_property(anna_type_t *res, anna_stack_frame_t *stack, wchar_t *name)
+{
+    size_t *offset = hash_get(&stack->member_string_identifier, name);
+    anna_type_t *type = stack->member_type[*offset];
+
+    if(!type)
+    {
+	wprintf(L"Dang it. Stack variable %ls totally doesn't have a type!\n", name);
+	
+	CRASH;
+    }
+    
+
+    wchar_t *argn[] = 
+	{
+	    L"this"
+	}
+    ;
+    anna_type_t *argv[] = 
+	{
+	    res
+	}
+    ;
+    
+    anna_native_method_create(
+	res, -1, name, 0, &anna_stack_snopp, type, 1, argv, argn);
+    
+}
+
 anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 {
     anna_type_t *res = anna_type_native_create(
@@ -350,13 +397,25 @@ anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 	1,
 	null_type);
     (*anna_static_member_addr_get_mid(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_object_t *)stack;
-/*
+
     int i;
-    for(i=0; i<stack->count; i++)
+    array_list_t names = AL_STATIC;
+    hash_foreach2(&stack->member_string_identifier, &anna_stack_save_name, &names);
+    assert(al_get_count(&names) == stack->count);
+    for(i=0; i<al_get_count(&names); i++)
     {
+	wchar_t *name = (wchar_t *)al_get(&names, i);
+	wprintf(L"I should like totally register %ls\n", name);
+	anna_stack_create_property(
+	    res,
+	    stack,
+	    name);
+	
 	
     }
-*/
+    al_destroy(&names);
+
+    anna_type_print(res);
     return res;
 }
 

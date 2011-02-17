@@ -298,7 +298,7 @@ struct anna_function
     int flags;
     /**
        If this function is a bound method, this field contains a curried this pointer.
-     */
+    */
     struct anna_object *this;
     /**
        The template stack frame of this function

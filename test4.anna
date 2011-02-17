@@ -1,9 +1,12 @@
-importMacro(fluff);
 import(io);
+importMacro(fluff);
 
 //def guck(Int blipp){3.1}
 
 def main(){
+    print(io.say());
+    print(io.whisper());
+
     say(tjo());
 
 //    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}

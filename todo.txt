@@ -5,7 +5,7 @@ Make user defined types work
 Make specialization work for user defined types
 String comparison functions
 Type annotations
-Annotate functions with aliases
+Annotate method overloads with aliases
 Always check aliases when resolving method calls during compile time
 
 Figure out how to handle the map function. We can't make a prototype
