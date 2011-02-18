@@ -369,3 +369,64 @@ size_t anna_native_property_create(
 }
 
 
+mid_t anna_const_property_create(
+    anna_type_t *type, mid_t mid, wchar_t *name, anna_object_t *value)
+{
+    wchar_t *argn[] = 
+	{
+	    L"this"
+	}
+    ;
+    anna_type_t *argv[] = 
+	{
+	    type
+	}
+    ;
+    
+    size_t getter_mid = -1;
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"!%lsGetter", name);
+    
+    getter_mid = anna_native_method_create(
+	type,
+	-1,
+	sb_content(&sb),
+	0,
+	0,
+	value->type,
+	1,
+	argv,
+	argn
+	);
+    sb_destroy(&sb);
+    
+    anna_node_t *body_param[] = {
+	(anna_node_t *)anna_node_create_dummy(0, value, 0)
+    };
+    
+    anna_node_call_t *body = anna_node_create_block(
+	0,
+	1,
+	body_param);
+    anna_function_t *fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, getter_mid));
+    fun->body = body;
+    anna_function_setup_body(fun);
+
+    anna_member_t *gm = anna_member_get(type, getter_mid);
+    size_t getter_offset = gm->offset;
+    
+    mid = anna_member_create(
+	type,
+	mid,
+	name,
+	1,
+	value->type);
+    anna_member_t *memb = anna_member_get(type, mid);
+    
+    memb->is_property=1;
+    memb->getter_offset = getter_offset;
+    memb->setter_offset = -1;
+    return mid;
+
+}

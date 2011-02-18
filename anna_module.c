@@ -365,7 +365,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 		exit(1);
 	    }
 	}
-
+	
 	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);	
 	
 	wprintf(L"Return types set up for module %ls\n", module_name);	

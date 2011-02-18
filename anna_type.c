@@ -351,4 +351,3 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 
 }
 
-

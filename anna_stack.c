@@ -355,29 +355,15 @@ void anna_stack_create_property(anna_type_t *res, anna_stack_frame_t *stack, wch
 {
     size_t *offset = hash_get(&stack->member_string_identifier, name);
     anna_type_t *type = stack->member_type[*offset];
-
+    anna_object_t *value = stack->member[*offset];
     if(!type)
     {
 	wprintf(L"Dang it. Stack variable %ls totally doesn't have a type!\n", name);
 	
 	CRASH;
     }
-    
 
-    wchar_t *argn[] = 
-	{
-	    L"this"
-	}
-    ;
-    anna_type_t *argv[] = 
-	{
-	    res
-	}
-    ;
-    
-    anna_native_method_create(
-	res, -1, name, 0, &anna_stack_snopp, type, 1, argv, argn);
-    
+    anna_const_property_create(res, -1, name, value);
 }
 
 anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)

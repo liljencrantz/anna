@@ -140,25 +140,6 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 		result
 		)
 	    );
-/*
-    
-    anna_stack_declare(
-	function->stack_template,
-	name_identifier->name, 
-	anna_type_for_function(
-	    result->return_type, 
-	    result->input_count, 
-	    result->input_type,
-	    result->input_name,
-	    0), 
-	anna_function_wrap(result),
-	0);
-
-    return (anna_node_t *)anna_node_create_dummy(
-	&node->location,
-	anna_function_wrap(result),
-	0);
-*/  
 }
 
 #if 0
