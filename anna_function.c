@@ -482,7 +482,7 @@ anna_function_t *anna_native_create(
     result->input_name = argn;
     anna_function_setup_interface(result, location);        
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
-
+    
     return result;
 }
 

@@ -228,6 +228,7 @@ anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack, wchar_t *name)
 }
 
 void anna_stack_set_type(anna_stack_frame_t *stack, wchar_t *name, anna_type_t *type){
+    wprintf(L"Set type of stacm member %ls to %ls\n", name, type->name);
     anna_type_t **res = (anna_type_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_type), 1, 1);
     if(res)
 	*res = type;
@@ -359,10 +360,8 @@ void anna_stack_create_property(anna_type_t *res, anna_stack_frame_t *stack, wch
     if(!type)
     {
 	wprintf(L"Dang it. Stack variable %ls totally doesn't have a type!\n", name);
-	
 	CRASH;
-    }
-    
+    }    
 
     wchar_t *argn[] = 
 	{
@@ -397,7 +396,13 @@ anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 	1,
 	null_type);
     (*anna_static_member_addr_get_mid(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_object_t *)stack;
+    return res;
+}
 
+void anna_stack_populate_wrapper(anna_stack_frame_t *stack)
+{
+    anna_stack_print(stack);
+    anna_type_t *res = anna_stack_wrap(stack)->type;
     int i;
     array_list_t names = AL_STATIC;
     hash_foreach2(&stack->member_string_identifier, &anna_stack_save_name, &names);
@@ -405,18 +410,16 @@ anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
     for(i=0; i<al_get_count(&names); i++)
     {
 	wchar_t *name = (wchar_t *)al_get(&names, i);
-	wprintf(L"I should like totally register %ls\n", name);
+	
 	anna_stack_create_property(
 	    res,
 	    stack,
 	    name);
 	
-	
     }
     al_destroy(&names);
 
     anna_type_print(res);
-    return res;
 }
 
 anna_object_t *anna_stack_wrap(anna_stack_frame_t *stack)

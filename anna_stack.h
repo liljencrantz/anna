@@ -97,6 +97,8 @@ int anna_stack_depth(anna_stack_frame_t *stack);
 
 void anna_stack_print_trace(anna_stack_frame_t *stack);
 
+void anna_stack_populate_wrapper(anna_stack_frame_t *stack);
+
 void anna_stack_prepare(anna_type_t *type);
 
 #endif
