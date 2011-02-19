@@ -576,7 +576,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 //	    wprintf(L"\n");
 //	    anna_node_print(this);
 	    
-	    return anna_function_wrapped_invoke(res, obj, this2->child_count, this2->child, stack);
+	    return anna_function_wrapped_invoke(res, m->is_method?obj:0, this2->child_count, this2->child, stack);
 	}
 	
 	case ANNA_NODE_CONSTRUCT:

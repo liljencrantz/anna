@@ -331,6 +331,8 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	anna_module_imported,
 	module_name,
 	module_stack);
+    anna_object_t *module_object = anna_stack_wrap(module_stack);
+    anna_stack_declare(stack_global, module_name, module_object->type, module_object, 0);
     
 /*
     al_push(&anna_module_unprepared, module_stack);
@@ -370,9 +372,6 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	
 	wprintf(L"Return types set up for module %ls\n", module_name);	
 	
-	anna_object_t *module_object = anna_stack_wrap(module_stack);
-	anna_stack_declare(stack_global, module_name, module_object->type, module_object, 0);
-
 /*
 	anna_node_find(node, ANNA_NODE_CLOSURE, &al);	
 	for(i=0; i<al_get_count(&al); i++)
@@ -395,6 +394,8 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    }
 	}
 	
+	anna_stack_populate_wrapper(module_stack);
+
 //	wprintf(L"Declarations assigned\n");
 //	anna_node_print(program);
 	//  }

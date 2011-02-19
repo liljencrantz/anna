@@ -24,8 +24,6 @@ void anna_object_print(anna_object_t *obj)
     hash_foreach2(&obj->type->name_identifier, &anna_object_print_member, obj);
 }
 
-
-
 anna_object_t *anna_object_create(anna_type_t *type) {
     assert(type);
     anna_object_t *result = 

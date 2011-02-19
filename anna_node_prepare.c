@@ -594,7 +594,7 @@ static void anna_node_calculate_type_internal(
 	    g->return_type = g->value->return_type;
 	    break;
 	}
-
+	
 	case ANNA_NODE_DECLARE:
 	{
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
@@ -616,6 +616,10 @@ static void anna_node_calculate_type_internal(
 	    else
 	    {
 		anna_error(d->type, L"Invalid type for declaration");
+	    }
+	    if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		anna_stack_set_type(stack, d->name, d->return_type);
 	    }
 	    
 	    break;

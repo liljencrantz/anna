@@ -50,6 +50,8 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	}
 	else 
 	{
+	    //wprintf(L"Invoke function %ls\n", function->name);
+	    
 	    anna_object_t *result = null_object;
 	    int i;
 	    anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
@@ -67,6 +69,8 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    int offset=0;
 	    if(this)
 	    {
+		//wprintf(L"We have a this function!\n");
+		
 		offset=1;
 		anna_stack_declare(my_stack, 
 				   function->input_name[0],
@@ -78,9 +82,9 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    for(i=0; i<(function->input_count-offset); i++) 
 	    {
 
-//		wprintf(L"Declare input variable %d with name %ls on stack\n",
-//			i, function->input_name[i+offset]);
-
+		//wprintf(L"Declare input variable %d with name %ls on stack\n",
+		//	i, function->input_name[i+offset]);
+		
 		anna_stack_set_str(my_stack, 
 				   function->input_name[i+offset],
 				   param[i]);

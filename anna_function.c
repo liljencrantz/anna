@@ -458,6 +458,8 @@ anna_function_t *anna_native_create(
     wchar_t **argn,
     anna_stack_frame_t *location)
 {
+    int i;
+    
     if(!(flags & ANNA_FUNCTION_MACRO)) {
 	assert(return_type);
 	if(argc) {
@@ -469,20 +471,26 @@ anna_function_t *anna_native_create(
     anna_function_t *result = calloc(
 	1,sizeof(anna_function_t));
     result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
+    result->input_name = calloc(1, sizeof(wchar_t *)*argc);
 
     result->flags=flags;
     result->native = native;
-    result->name = name;
+    result->name = wcsdup(name);
     result->return_type=return_type;
     result->input_count=argc;
     memcpy(
 	result->input_type,
 	argv, 
 	sizeof(anna_type_t *)*argc);
-    result->input_name = argn;
+    for(i=0;i<argc; i++)
+    {
+	result->input_name[i] = wcsdup(argn[i]);
+	
+    }
+    
     anna_function_setup_interface(result, location);        
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
-
+    
     return result;
 }
 
