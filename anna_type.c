@@ -30,16 +30,13 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     }
 }
 
-anna_type_t *anna_type_create(wchar_t *name, anna_stack_frame_t *stack)
+anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 {
     anna_type_t *result = calloc(1,sizeof(anna_type_t));
-    result->static_member_count = 0;
-    result->member_count = 0;
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = anna_mid_identifier_create();
     result->name = wcsdup(name);
-    result->stack = stack;
-    al_push(&anna_type_list, result);
+    result->definition = definition;
     return result;  
 }
 			  
@@ -58,14 +55,14 @@ void anna_type_definition_make(anna_type_t *type)
     anna_node_call_t *definition = 
 	anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_create_identifier(0, L"__block__"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"type"),
 	    0,
 	    0);
     
     anna_node_call_t *full_definition = 
 	anna_node_create_call(
 	    0,
-	    (anna_node_t *)anna_node_create_identifier(0, L"__type__"),
+	    (anna_node_t *)anna_node_create_identifier(0, L"__type"),
 	    0,
 	    0);
 
@@ -103,7 +100,8 @@ void anna_type_definition_make(anna_type_t *type)
 
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 {    
-    anna_type_t *type = anna_type_create(name, stack);
+    anna_type_t *type = anna_type_create(name, 0);
+    type->stack = stack;
 /*
     if(type_type == 0)
     {
@@ -118,7 +116,7 @@ anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
 	}
     }
 */  
-    anna_type_definition_make(type);
+//    anna_type_definition_make(type);
     return type;
 }
 

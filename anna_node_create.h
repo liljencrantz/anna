@@ -11,9 +11,13 @@ anna_node_dummy_t *anna_node_create_dummy(
     struct anna_object *val, 
     int is_trampoline);
 
-anna_node_dummy_t *anna_node_create_closure(
+anna_node_closure_t *anna_node_create_closure(
     anna_location_t *loc,
     anna_function_t *val);
+
+anna_node_type_t *anna_node_create_type(
+    anna_location_t *loc,
+    anna_type_t *val);
 
 anna_node_dummy_t *anna_node_create_blob(
     anna_location_t *loc, 
@@ -21,8 +25,7 @@ anna_node_dummy_t *anna_node_create_blob(
 
 anna_node_return_t *anna_node_create_return(
     anna_location_t *loc,
-    struct anna_node *val, 
-    int steps);
+    struct anna_node *val);
 
 anna_node_import_t *anna_node_create_import(
     anna_location_t *loc,

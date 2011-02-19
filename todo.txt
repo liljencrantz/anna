@@ -1,4 +1,7 @@
-Make stack wrappers have all the relevant members
+Validate number of arguments
+Validate types in assignments.
+Validate types in arguments for calls.
+User defined variadic functions
 Create a Range type
 Use Range type for a bunch of List/String methods
 Make user defined types work

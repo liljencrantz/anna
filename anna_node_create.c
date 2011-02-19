@@ -50,6 +50,18 @@ anna_node_closure_t *anna_node_create_closure(
     return result;  
 }
 
+anna_node_type_t *anna_node_create_type(
+    anna_location_t *loc, 
+    anna_type_t *val)
+{
+    anna_node_type_t *result = calloc(1,sizeof(anna_node_type_t));
+    assert(val);
+    result->node_type = ANNA_NODE_TYPE;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->payload = val;
+    return result;  
+}
+
 anna_node_dummy_t *anna_node_create_blob(anna_location_t *loc, void *val)
 {
     anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
@@ -59,13 +71,12 @@ anna_node_dummy_t *anna_node_create_blob(anna_location_t *loc, void *val)
     return result;  
 }
 
-anna_node_return_t *anna_node_create_return(anna_location_t *loc, struct anna_node *val, int steps)
+anna_node_return_t *anna_node_create_return(anna_location_t *loc, struct anna_node *val)
 {
     anna_node_return_t *result = calloc(1,sizeof(anna_node_return_t));
     result->node_type = ANNA_NODE_RETURN;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;
-    result->steps=steps;
     return result;  
 }
 

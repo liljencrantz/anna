@@ -350,6 +350,7 @@ void anna_stack_create_property(anna_type_t *res, anna_stack_frame_t *stack, wch
     size_t *offset = hash_get(&stack->member_string_identifier, name);
     anna_type_t *type = stack->member_type[*offset];
     anna_object_t *value = stack->member[*offset];
+
     if(!type)
     {
 	wprintf(L"Dang it. Stack variable %ls totally doesn't have a type!\n", name);

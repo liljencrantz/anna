@@ -595,16 +595,9 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
     
 	case ANNA_NODE_RETURN:
 	{
-	    int i;
 	    anna_node_return_t *node = (anna_node_return_t *)this;
 	    anna_object_t *result = anna_node_invoke(node->payload, stack);
 	    stack->stop=1;
-	    for(i=1; i<node->steps;i++)
-	    {
-		stack=stack->parent;
-		stack->stop=1;
-	    }
-	    
 	    return result;
 	}
 	

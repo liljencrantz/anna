@@ -247,56 +247,31 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
     return (anna_node_t *)node;
     
 }
-/*
-static anna_node_t *anna_macro_type(anna_node_call_t *node, 
-				    anna_function_t *function, 
-				    anna_node_list_t *parent)
+
+static anna_node_t *anna_macro_type(anna_node_call_t *node)
 {
-    CHECK_CHILD_COUNT(node,L"type macro", 4);
+    CHECK_CHILD_COUNT(node,L"type macro", 3);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
-    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
-    CHECK_NODE_BLOCK(node->child[3]);
-
+    CHECK_NODE_BLOCK(node->child[1]);
+    CHECK_NODE_BLOCK(node->child[2]);
+    
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
-    anna_type_t *type = anna_type_create(name, function->stack_template);
-
-    type->definition = node;
-    anna_stack_declare(function->stack_template, name, type_type, anna_type_wrap(type), 0);
-    //wprintf(L"Registered type %ls\n", name);
+    anna_type_t *type = anna_type_create(name, node);
     
-    al_push(
-	&function->child_type,
+    return (anna_node_t *)anna_node_create_type(
+	&node->location,
 	type);
-    
-    return (anna_node_t *)anna_node_create_dummy(&node->location,
-						 anna_type_wrap(type),
-						 0);
 }
 
 
 static anna_node_t *anna_macro_return(
-    anna_node_call_t *node, 
-    anna_function_t *function, 
-    anna_node_list_t *parent)
+    anna_node_call_t *node)
 {
     CHECK_CHILD_COUNT(node,L"return", 1);
-    return (anna_node_t *)anna_node_create_return(&node->location, anna_node_macro_expand(node->child[0]), function->return_pop_count+1);
+    return (anna_node_t *)anna_node_create_return(&node->location, node->child[0]);
 }
 
-static anna_node_t *anna_macro_collection(
-    anna_node_call_t *node, 
-    anna_function_t *function, 
-    anna_node_list_t *parent)
-{
-    return (anna_node_t *)anna_node_create_call(
-	&node->location,
-	(anna_node_t *)anna_node_create_identifier(
-	    &node->function->location,
-	    L"List"), 
-	node->child_count,
-	node->child);
-}
-
+#if 0
 static anna_node_t *anna_macro_templatize(anna_node_call_t *node, 
 					  anna_function_t *function, 
 					  anna_node_list_t *parent)
@@ -390,18 +365,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
 	    &node->location,
 	    name);    
 }
-
-static anna_node_t *anna_macro_import(
-    anna_node_call_t *node, 
-    anna_function_t *function, 
-    anna_node_list_t *parent)
-{
-    return (anna_node_t *)anna_node_create_import(
-	&node->location, 
-	node->child[0]);
-    
-}
-*/
+#endif
 
 static anna_node_t *anna_macro_ast(anna_node_call_t *node)
 {
@@ -551,10 +515,10 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"first", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"__collection__", &anna_macro_collection);
+    anna_macro_add(stack, L"__type__", &anna_macro_type);
     
 /*    
     anna_macro_add(stack, L"while", &anna_macro_while);
-    anna_macro_add(stack, L"__type__", &anna_macro_type);
     anna_macro_add(stack, L"return", &anna_macro_return);
     anna_macro_add(stack, L"__templateAttribute__", &anna_macro_template_attribute);
     anna_macro_add(stack, L"__extendsAttribute__", &anna_macro_extends_attribute);

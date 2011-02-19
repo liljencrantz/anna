@@ -1206,14 +1206,22 @@ type_definition :
 	identifier type_identifier attribute_list block 
 	{
 	  anna_node_t *param[] ={
-	      $2, $1, (anna_node_t *)$3, 
+	      $2?$2:anna_node_create_null(&@$),
+	      (anna_node_t *)$3, 
 	      (anna_node_t *)$4
-	  };	    
+	  };
+	  
+	  anna_node_t *type  = (anna_node_t *)anna_node_create_call(
+	      &@$,
+	      $1,
+	      3, param);
+	  
+	  anna_node_t *param2[] ={$3, anna_node_create_null(&@$), type};
 	  $$ = (anna_node_t *)anna_node_create_call(
 	      &@$,
-	      (anna_node_t *)anna_node_create_identifier(
-		  &@$,L"__type__"), 
-	      4, param);
+	      (anna_node_t *)anna_node_create_identifier(&@1,L"__declare__"),
+	      3,
+	      param2);
 	}
 	;
 

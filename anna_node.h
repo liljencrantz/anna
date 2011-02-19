@@ -31,6 +31,7 @@
 #define ANNA_NODE_IF 22
 #define ANNA_NODE_SPECIALIZE 23
 #define ANNA_NODE_TYPE_LOOKUP 24
+#define ANNA_NODE_TYPE 25
 
 struct YYLTYPE
 {
@@ -245,6 +246,18 @@ struct anna_node_closure
     struct anna_function *payload;
 };
 
+struct anna_node_type
+{
+    int node_type;
+    struct anna_object *wrapper;
+    anna_location_t location;
+    anna_type_t *return_type;
+#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
+    int prepared;
+#endif    
+    struct anna_type *payload;
+};
+
 struct anna_node_return
 {
     int node_type;
@@ -255,7 +268,6 @@ struct anna_node_return
     int prepared;
 #endif    
     struct anna_node *payload;
-    int steps;  
 };
 
 struct anna_node_float_literal
@@ -312,6 +324,7 @@ typedef struct anna_node anna_node_t;
 typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_dummy anna_node_dummy_t;
 typedef struct anna_node_closure anna_node_closure_t;
+typedef struct anna_node_type anna_node_type_t;
 typedef struct anna_node_return anna_node_return_t;
 typedef struct anna_node_member_get anna_node_member_get_t;
 typedef struct anna_node_member_set anna_node_member_set_t;
