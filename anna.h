@@ -150,11 +150,25 @@ struct anna_type
        An array containing all member structs. The offset is a mid.
     */
     struct anna_member **mid_identifier;
+
     /**
-       The AST that defines this type. Native types do not have a
+       The full AST that originally defined this type, before
+       templating, macro expansion, etc. This is the whole AST,
+       including atributes, type name, etc.
+
+       Native types do not have a
        definition.
     */
     struct anna_node_call *definition;
+    /**
+       The AST that defines the members of this type. This is the
+       parsed, macro expanded version of the AST, and only includes
+       the actual body block.
+
+       Native types do not have a
+       body.
+    */
+    struct anna_node_call *body;
     /**
        The object that wraps this type. Used for
        reflection/introspection purposes.

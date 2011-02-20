@@ -41,9 +41,18 @@ int anna_type_is_fake(anna_type_t *t);
   Returns the type of the specified member in the specified type
  */
 anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name);
-
+/**
+   Returns true if the member with the specified name is a method
+ */
 int anna_type_member_is_method(anna_type_t *type, wchar_t *name);
+/**
+   Reallocate the mid table to the specified new size
+ */
 void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz);
 
+/**
+   
+ */
+void anna_type_setup_interface(anna_type_t *type, anna_stack_frame_t *parent);
 
 #endif

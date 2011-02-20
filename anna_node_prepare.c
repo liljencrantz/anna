@@ -1,55 +1,7 @@
 
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
-typedef struct
-{
-    anna_stack_frame_t *src;
-    anna_stack_frame_t *dst;
-}
-anna_node_import_data;
-/*
-static void anna_node_import_item(
-    void *key_ptr,
-    void *val_ptr,
-    void *aux_ptr)
-{
-    wchar_t *name = (wchar_t *)key_ptr;
-    size_t *offset=(size_t *)val_ptr;
-    anna_node_import_data *data = 
-	(anna_node_import_data *)aux_ptr;
-    
-    if(data->src->member_flags[*offset])
-    {
-//	wprintf(L"Import: Skipping private member %ls\n", name);
-	return;
-    }
-    //wprintf(L"Import: Importing public member %ls\n", name);
-    
-    anna_object_t *item =
-	anna_stack_get_str(
-	    data->src,
-	    name);
-    anna_stack_declare(
-	data->dst,
-	name,
-	item->type,
-	item,
-	ANNA_STACK_PRIVATE);
-}
-*/
 
- /*
-static anna_object_t *anna_node_constructor_template(
-    anna_object_t *type_object,
-    anna_node_call_t *node, 
-    anna_function_t *function,
-    anna_node_list_t *parent)
-{
-//    wprintf(L"Check function call for template\n");
-//    anna_node_print(node);
-    return type_object;    
-}
- */
 anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
     anna_stack_frame_t *stack)
@@ -155,6 +107,22 @@ anna_node_t *anna_node_macro_expand(
 		int i;
 		for(i=0;i<f->body->child_count; i++)
 		    f->body->child[i] = anna_node_macro_expand(f->body->child[i], stack);
+	    }
+	    return this;
+	}
+
+	case ANNA_NODE_TYPE:
+	{
+	    anna_node_type_t *c = (anna_node_type_t *)this;
+	    anna_type_t *f = c->payload;
+	    
+	    if(f->definition)
+	    {
+		anna_node_call_t *body = f->body;
+		
+		int i;
+		for(i=0;i<body->child_count; i++)
+		    body->child[i] = anna_node_macro_expand(body->child[i], stack);
 	    }
 	    return this;
 	}
@@ -543,6 +511,19 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 	
+	case ANNA_NODE_TYPE:
+	{
+	    anna_node_type_t *c = (anna_node_type_t *)this;
+	    anna_type_t *f = c->payload;
+	    
+	    if(f->definition)
+	    {
+		anna_type_setup_interface(f, stack);
+		c->return_type = type_type;
+	    }
+	    return this;
+	}
+
 	case ANNA_NODE_ASSIGN:
 	{
 	    anna_node_assign_t *c = (anna_node_assign_t *)this;

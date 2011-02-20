@@ -13,6 +13,7 @@
 #include "anna_function.h"
 #include "anna_member.h"
 #include "anna.h"
+#include "anna_node_check.h"
 
 array_list_t  anna_type_list = 
 {
@@ -37,6 +38,10 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->mid_identifier = anna_mid_identifier_create();
     result->name = wcsdup(name);
     result->definition = definition;
+    if(definition)
+    {
+	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
+    }
     return result;  
 }
 			  
@@ -349,3 +354,31 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 
 }
 
+anna_node_t *anna_type_setup_interface_internal(anna_type_t *type, anna_stack_frame_t *parent)
+{
+
+    if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
+	return;
+    
+    type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
+
+    if(type->definition)
+    {
+    
+	CHECK_NODE_TYPE(type->definition->child[0], ANNA_NODE_IDENTIFIER);
+	CHECK_NODE_BLOCK(type->definition->child[1]);
+	CHECK_NODE_BLOCK(type->definition->child[2]);
+	
+	anna_node_call_t *attribute_list = 
+	    (anna_node_call_t *)type->definition->child[2];
+
+	anna_node_call_t *node = type->body;
+    }
+
+    return 0;
+}
+
+void anna_type_setup_interface(anna_type_t *type, anna_stack_frame_t *parent)
+{
+    anna_type_setup_interface_internal(type, parent);
+}

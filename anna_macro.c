@@ -515,7 +515,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"first", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"__collection__", &anna_macro_collection);
-    anna_macro_add(stack, L"__type__", &anna_macro_type);
+    anna_macro_add(stack, L"type", &anna_macro_type);
     
 /*    
     anna_macro_add(stack, L"while", &anna_macro_while);

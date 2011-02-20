@@ -1048,6 +1048,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_TYPE:
 	{
 	    break;   
 	}
