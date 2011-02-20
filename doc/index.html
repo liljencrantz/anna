@@ -56,11 +56,11 @@
     <h2>Anna in a single sentence</h2>
     <div class='subheading'>Wherein the author demonstrates his his mastery of commatation</div>
     <p>
-      Anna is a statically duck typed computer language that supports LISP
-      style macros, functions and types as first class citizens, inner
-      functions and continuations; it has a C-style syntax and it's aim is
-      to combine the expressiveness and power of LISP and Ruby with the
-      type safety and control of Java.
+      Anna is a statically duck typed computer language that supports
+      LISP style macros, functions and types as first class citizens,
+      closures and continuations; it has a C-style syntax and it's aim
+      is to combine the expressiveness and power of LISP and Ruby with
+      the type safety and control of Java.
     </p>
     <p>
       Note the use of a semicolon to combine two separate sentences into
@@ -82,10 +82,9 @@
       our lady seem less intimadating.</div>
     <p>
       Anna is a computer programming language. That is, it is a
-      language written by humans, that a computer can interpret as a
-      set of instructions to perform; a program. There are many
-      programming languages, all with their own strengths and
-      weaknesses.
+      language designed to be written and read by humans, and executed
+      by computers. There are many programming languages, all with
+      their own strengths and weaknesses.
     </p>
     <ul>
       <li>
@@ -96,6 +95,10 @@
 	level languages are usually slower, and they almost always
 	require much more memory, but they are also usually much
 	easier for the programmer to write. Anna is a high level
+	language. It is designed in a way that should make it possible
+	to make Anna programs significantly faster than most high
+	level languages, most programs written in Anna are unlikely to
+	match the speed of a well written progrm in a low level
 	language.
       </li>
       <li>
@@ -108,12 +111,12 @@
 	avoid some types of bugs because it can figure out that some
 	operations won't work on the specific type of data you're
 	operating on, and will warn you in advance that your code is
-	broken, but dynamically typed languages are easier to write
-	in. Statically typed languages are usually also slightly
-	faster than dynamically typed languages. Anna tries to find a
-	middle ground between these two by being statically typed, but
-	making the computer figure out the actual type for you when
-	possible.
+	broken, but dynamically typed languages require less verbosity
+	from the programmer. Statically typed languages are usually
+	also slightly faster than dynamically typed languages. Anna
+	tries to find a middle ground between these two by being
+	statically typed, but making the computer figure out the
+	actual type for you when possible.
       </li>
       <li>
 	Pretty much all computer languages allow you to extend the
@@ -175,13 +178,12 @@
     
     <p>
       Anna is a statically typed (somewhat) LISP-like language with a
-      front end that (optionally) allows you to write your code with a
+      front end that allows you to write your code with a
       C-like structure, e.g. using infix operators, and braces. The Anna
       type system supports duck typing, meaning that if the type of
       variable B contains all members of the type A, with compatible type
       signatures, then B can be freely cast into a variable of type A. It
-      supports LISP style macros, continuations and inner functions with
-      nested scopes.
+      supports LISP style macros, continuations and closures.
     </p>
     <p>
       In order to learn more about Anna, check out the following sections:
@@ -196,10 +198,10 @@
     <p>
       Anna is a C-like language with garbage collection and a powerful
       object system. At first glance, Anna feels very familiar to Java
-      and C# programmers, but coders of C, C++ and other C-like
+      and C# programmers, and coders of C, C++ and other C-like
       languages should pick up the changes relatively quickly as
-      well. Anna has some nifty features to reduce the number of
-      keypresses you need, including:
+      well. But once you look underneath the hood, Anna has some nifty
+      features to reduce the number of keypresses you need, including:
     </p>
     <ul>
       <li>
@@ -232,7 +234,7 @@
       of the language. Use/with statements, exceptions and loop
       constructs can all be created or altered in order to extend the
       language in any way you choose. Even better, such extensions are
-      written in the language itself, so no more arcane template
+      written in the language itself, no arcane template
       metaprogramming is needed.
     </p>
     <p>
@@ -288,7 +290,7 @@ macro replaceObjectWithInt(ast)
       answer is that it walks the entire AST and replaces all
       identifiers that have the value <code>Object</code> with a new
       identifier with the value <code>Int</code>. Instant
-      templating. Of course, the Anna standard library
+      templating! Of course, the Anna standard library
       already <em>has</em> a very nice templating system, which is (of
       course) implemented using macros, so there is no need to write
       your own, but the possibility to make that type of additions to
@@ -297,12 +299,12 @@ macro replaceObjectWithInt(ast)
     <p>
       The most common reason for using macros is to construct
       sublanguages, also called domain specific languages. The Anna
-      front end is pretty lose about what input it will accept -
+      front end is pretty loose about what input it will accept -
       pretty much anything that can be reasonably parsed into an AST
       is allowed. That opens up the possibility to create macros that
-      parse things using a completely different syntax. For there is a
-      macro that allows you to create date objects using the standard
-      ISO data format:
+      parse things using a completely different syntax. For example,
+      there is a macro that allows you to create date objects using
+      the standard ISO data format:
     </p>
 <code>
 var birthday = Date(1978-05-20, 12:34:00);
@@ -336,10 +338,10 @@ var birthday = Date(1978-05-20, 12:34:00);
     
     <p>
       In daily use, Python and Ruby are probably the languages that
-      most resemble Anna.  Anna is C-like and duck typed, which means
-      the code may not look alike, and you have to do slightly more
-      typing in Anna sometimes, but the way you go about writing your
-      programs is very similar.
+      most resemble Anna.  Anna code looks a bit like C, which means
+      the code may not look like Python or Ruby, and you have to do
+      slightly more typing in Anna sometimes, but the way you go about
+      writing your programs is very similar.
     </p>
     <p>
       Unlike Python, Anna does not have statements, only
@@ -351,7 +353,10 @@ var birthday = Date(1978-05-20, 12:34:00);
 FIXME! Add an anonymous function example here
     </code>
     <p>
-      Much like in Ruby, there is a very simple shortcut for throwing in a block of code as an additional parameter in Anna. If you simply append a code block afer a function call, Anna will interpret it as afunction parameter:
+      Much like in Ruby, there is a very simple shortcut for throwing
+      in a block of code as an additional parameter in Anna. If you
+      simply append a code block afer a function call, Anna will
+      interpret it as a function parameter:
     </p>
     <code>
 FIXME! Add code block example here
@@ -368,7 +373,7 @@ FIXME! Functional programming example here
     </p>
     <h3>Static typing!!!</h3>
     <p>
-      So. Enough doging, lets address what is likely to be the major
+      So. Enough dodging, lets address what is likely to be the major
       cause of concern for Ruby- and Python lovers. Static typing. In
       Anna, you will sometimes have to do slightly more typing. It's
       true. Anna does its best to figure out types for you, and when
@@ -384,10 +389,10 @@ FIXME! Functional programming example here
       <li>
       <li>
 	When defining a function for the first time, you will have to
-	supply the type of each input parameter as well as the return
-	type. When overriding a method in a subclass, you don't have
-	to supply any type information at all. You don't even have to
-	give the input parameter names.
+	supply the type of each input parameter and sometimes alse the
+	return type. When overriding a method in a subclass, you don't
+	have to supply any type information at all. You don't even
+	have to give the input parameter names.
       </li>
       <li>
 	When performing a cast (I know, I know), if you are assigning
@@ -397,17 +402,18 @@ FIXME! Functional programming example here
     </ul>
     <p>
       The upshoot of this is that you have to do significantly less
-      input and output type checking, regaining you some of those lost
-      key strokes. You also get much better ahead of time code
-      checking - some silly mistakes can be caught earlier in the
-      development process in Anna.
+      type checking when validating your input rguments (and you do
+      validate your input arguments, don't you?), regaining you some
+      of those lost key strokes. You also get much better ahead of
+      time code checking - some silly mistakes can be caught earlier
+      in the development process in Anna.
     </p>
     <p>
       Static typing does catch some bugs at compile time that aren't
       tiggered until you happen to run a specific function with a
       specific combination of parameters in dynamic languages. That is
       a fact. Static typing also involves more typing. Another
-      fact. It is hoped that the «smart» dynamic typing of Anna is the
+      fact. It is hoped that the «smart» static typing of Anna is the
       optimal tradeoff - you get most of the safety and a more
       tolerable amount of typing than in other statically typed
       languages.
@@ -436,19 +442,20 @@ FIXME! Functional programming example here
     </ul>
     <h1>Duck typing and Anna</h1>
     <p>
-      Most languages, including Python and Java, have operations that let
-      you check if an object explicitly states that it implements some
-      interface. You have, for example, the <code>Comparable</code>
-      interface in Java, which defines a set of methods that allow you to
-      compare one object to another. The realization that it doesn't, or
-      at least shouldn't, matter if an object explicitly states that it
-      implements a specific interface, so long as it actually does
-      implement it, has struck a great number of people over the ages. In
-      python, it has become popular to avoid the <code>is</code> operator
-      to perform type checking, and instead simply check if the relevant
+      Most languages, including Python and Java, have operations that
+      let you check if an object explicitly states that it implements
+      some interface. You have, for example,
+      the <code>Comparable</code> interface in Java, which defines a
+      set of methods that allow you to compare one object to
+      another. The realization that it doesn't, or at least shouldn't,
+      matter if an object explicitly states that it implements a
+      specific interface, so long as it actually does implement it,
+      has struck a great number of people over the ages. In python, it
+      has become popular to avoid the <code>is</code> operator to
+      perform type checking, and instead simply check if the relevant
       fields and methods are present in an object. This idea is called
-      duck typing, and while the idea and its usage predates Python, the
-      concept of duck typing has mainly been popularized by the Python
+      duck typing, and while the idea and its usage predates Python,
+      the concept of duck typing has been popularized by the Python
       community.
     </p> 
     <p>
@@ -478,7 +485,7 @@ if(someObject is String.intersect(Int))
     <p>
       In order for duck typing to be viable in a statically typed
       language, it must be easy to create new types on the spot. A very
-      simple example of thhis is the <code>or</code> macro. Take the
+      simple example of this is the <code>or</code> macro. Take the
       following snippet of Anna code:
     </p>
     <code>
@@ -546,7 +553,7 @@ var map = ["Mon":0.0,"Tue":1.1];
   /*
    * Function with return type implied by the type of value it is returning
    */
-  function next(Int in)
+  def next(Int in)
   {
       return in+1;
   }
@@ -557,7 +564,7 @@ var map = ["Mon":0.0,"Tue":1.1];
    */
   class A
   {
-      function foo(Int in)
+      def foo(Int in)
       {
           print in;
       }
@@ -619,7 +626,7 @@ collect
 handle(err){
     case IOError{
 	/* If we encounter an IO error, ignore the rest of the error 
-	 * list, but continuerunning the program */
+	 * list, but continue running the program */
 	print("There was an IO problem. Details:\n", err.message);
 	break; 
     }
