@@ -38,6 +38,8 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->mid_identifier = anna_mid_identifier_create();
     result->name = wcsdup(name);
     result->definition = definition;
+    wprintf(L"Create new type named %ls at %d\n", name, result);
+    
     if(definition)
     {
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));

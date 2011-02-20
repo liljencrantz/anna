@@ -265,10 +265,15 @@ anna_stack_frame_t *anna_node_register_declarations(
 
 static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_frame_t *stack)
 {
+    wprintf(L"Figure out type from:\n");
+    
+    anna_node_print(node);
+    
     if(node->node_type == ANNA_NODE_IDENTIFIER)
     {
 	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
 	anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+	
 	if(wrapper != 0)
 	{
 	    return anna_type_unwrap(wrapper);
@@ -401,10 +406,10 @@ static void anna_node_calculate_type_internal(
 		    call->function = (anna_node_t *)anna_node_create_dummy(
 			&call->function->location,
 			anna_type_wrap(type),
-			0);		
+			0);
 		    call->return_type = type;
 		    break;
-		}		    
+		}
 	    }
 
 	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)

@@ -11,10 +11,8 @@ type Foo {
 }
 
 def main(){
-    io.say("AAAAAAAAAAAAAAAAAAAAAAAAA");
-    say(io.say);
-    say(say);
-    say(tjo());
+    var g = Foo();
+    print(g);
 
     guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}
 //    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}

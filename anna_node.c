@@ -623,6 +623,13 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	    return anna_trampoline(node->payload, stack);
 	}
 	
+	case ANNA_NODE_TYPE:
+	{
+	    anna_node_type_t *c = (anna_node_type_t *)this;
+	    anna_type_t *f = c->payload;
+	    return anna_type_wrap(f);
+	}
+
 	case ANNA_NODE_INT_LITERAL:
 	    return anna_node_int_literal_invoke((anna_node_int_literal_t *)this, stack);
 

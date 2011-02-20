@@ -28,6 +28,10 @@ anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_obje
     anna_node_dummy_t *result = calloc(1,sizeof(anna_node_dummy_t));
     result->node_type = is_trampoline?ANNA_NODE_CLOSURE:ANNA_NODE_DUMMY;
     anna_node_set_location((anna_node_t *)result,loc);
+    wprintf(L"val %d\n", val);
+    wprintf(L"val type %d\n", val->type);
+    wprintf(L"val type name %ls\n", val->type->name);
+    
     if(!(val && val->type && val->type->name && wcslen(val->type->name)!=0))
     {
 	wprintf(L"Critical: Invalid dummy node\n");
