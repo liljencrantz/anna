@@ -152,10 +152,11 @@ anna_node_declare_t *anna_node_create_declare(
     anna_location_t *loc, 
     wchar_t *name,
     struct anna_node *type,
-    struct anna_node *value)
+    struct anna_node *value,
+    int is_const)
 {
     anna_node_declare_t *result = calloc(1,sizeof(anna_node_declare_t));
-    result->node_type = ANNA_NODE_DECLARE;
+    result->node_type = is_const?ANNA_NODE_CONST:ANNA_NODE_DECLARE;
     anna_node_set_location((anna_node_t *)result,loc);
     result->value=value;
     result->type=type;

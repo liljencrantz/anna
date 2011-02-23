@@ -227,6 +227,12 @@ anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack, wchar_t *name)
     return res?*res:0;
 }
 
+int anna_stack_get_flag(anna_stack_frame_t *stack, wchar_t *name)
+{
+    int *res = (int *)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_flags), 1, 1);
+    return res?*res:0;
+}
+
 void anna_stack_set_type(anna_stack_frame_t *stack, wchar_t *name, anna_type_t *type){
     anna_type_t **res = (anna_type_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_type), 1, 1);
     if(res)

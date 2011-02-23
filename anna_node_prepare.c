@@ -144,6 +144,7 @@ anna_node_t *anna_node_macro_expand(
 	}
 
 	case ANNA_NODE_DECLARE:
+	case ANNA_NODE_CONST:
 	{
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
 	    d->type = anna_node_macro_expand(d->type, stack);
@@ -242,6 +243,7 @@ anna_stack_frame_t *anna_node_register_declarations(
 	}
     ;
     anna_node_find(this, ANNA_NODE_DECLARE, &decls);
+    anna_node_find(this, ANNA_NODE_CONST, &decls);
     size_t sz = al_get_count(&decls);
     anna_stack_frame_t *stack = anna_stack_create(sz+extra, 0);    
     int i;
@@ -582,6 +584,7 @@ static void anna_node_calculate_type_internal(
 	}
 	
 	case ANNA_NODE_DECLARE:
+	case ANNA_NODE_CONST:
 	{
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
 	    if(d->type->node_type == ANNA_NODE_IDENTIFIER)

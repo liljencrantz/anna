@@ -138,7 +138,8 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 	    (anna_node_t *)anna_node_create_closure(
 		&node->location,
 		result
-		)
+		),
+	    1
 	    );
 }
 
@@ -406,7 +407,7 @@ static anna_node_t *anna_macro_block(
 	fun);    
 }
 
-static anna_node_t *anna_macro_declare(struct anna_node_call *node)
+static anna_node_t *anna_macro_var(struct anna_node_call *node)
 {
     CHECK_CHILD_COUNT(node,L"variable declaration", 3);
     
@@ -420,7 +421,28 @@ static anna_node_t *anna_macro_declare(struct anna_node_call *node)
 	    &node->location,
 	    name->name,
 	    node->child[1],
-	    node->child[2]
+	    node->child[2],
+	    0
+	    );
+}
+
+
+static anna_node_t *anna_macro_const(struct anna_node_call *node)
+{
+    CHECK_CHILD_COUNT(node,L"variable declaration", 3);
+    
+    anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
+    
+    wprintf(L"Declare a stack constant %ls with initial value\n", name->name);
+    anna_node_print(node->child[2]);
+    
+    return (anna_node_t *)
+	anna_node_create_declare(
+	    &node->location,
+	    name->name,
+	    node->child[1],
+	    node->child[2],
+	    1
 	    );
 }
 
@@ -505,7 +527,8 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
     anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
-    anna_macro_add(stack, L"__declare__", &anna_macro_declare);
+    anna_macro_add(stack, L"__var__", &anna_macro_var);
+    anna_macro_add(stack, L"__const__", &anna_macro_const);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
     anna_macro_add(stack, L"__and__", &anna_macro_and);
     anna_macro_add(stack, L"__if__", &anna_macro_if);

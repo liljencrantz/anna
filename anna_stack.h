@@ -19,6 +19,11 @@ typedef struct anna_sid anna_sid_t;
 
 #define ANNA_STACK_PRIVATE 1
 
+#define ANNA_STACK_READONLY 1
+
+#define anna_stack_get_ro(stack, name) !!(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
+
+
 /**
    A stack frame. Stack frames for function definitions are copied on
    invocation. The same struct is used both for a «real» invocation
@@ -100,5 +105,8 @@ void anna_stack_print_trace(anna_stack_frame_t *stack);
 void anna_stack_populate_wrapper(anna_stack_frame_t *stack);
 
 void anna_stack_prepare(anna_type_t *type);
+
+int anna_stack_get_flag(anna_stack_frame_t *stack, wchar_t *name);
+
 
 #endif

@@ -660,6 +660,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	case ANNA_NODE_ASSIGN:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
 
+	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
 	    
@@ -1011,6 +1012,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	}
 
 	case ANNA_NODE_DECLARE:
+	case ANNA_NODE_CONST:
 	{
 	    anna_node_declare_t *n = (anna_node_declare_t *)this;
 	    anna_node_each(n->type, fun, aux);

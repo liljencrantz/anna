@@ -105,7 +105,8 @@ anna_node_declare_t *anna_node_create_declare(
     anna_location_t *loc, 
     wchar_t *name,
     struct anna_node *type,
-    struct anna_node *value);
+    struct anna_node *value,
+    int is_const);
 
 anna_node_call_t *anna_node_create_native_method_declare(
     anna_location_t *loc,

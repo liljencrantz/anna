@@ -55,7 +55,7 @@ static anna_node_t *anna_function_setup_arguments(
 	
 	CHECK_NODE_TYPE(decl->function, ANNA_NODE_IDENTIFIER);
 	anna_node_identifier_t *fun = node_cast_identifier(decl->function);
-	if(wcscmp(fun->name, L"__declare__") == 0)
+	if(wcscmp(fun->name, L"__var__") == 0 || wcscmp(fun->name, L"__const__") == 0)
 	{
 	    //CHECK_CHILD_COUNT(decl, L"variable declaration", 3);
 	    CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
@@ -71,7 +71,6 @@ static anna_node_t *anna_function_setup_arguments(
 	    
 	    if(type_node->node_type == ANNA_NODE_IDENTIFIER)
 	    {
-		
 	    
 		anna_node_identifier_t *type_name =
 		    node_cast_identifier(type_node);
@@ -123,6 +122,7 @@ static anna_node_t *anna_function_setup_arguments(
 	}
 	else
 	{
+	    wprintf(L"Expected declaration: %ls\n", fun->name);
 	    CRASH;
 	}
 	
