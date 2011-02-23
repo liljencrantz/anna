@@ -71,7 +71,6 @@ static anna_node_t *anna_function_setup_arguments(
 	    
 	    if(type_node->node_type == ANNA_NODE_IDENTIFIER)
 	    {
-	    
 		anna_node_identifier_t *type_name =
 		    node_cast_identifier(type_node);
 		

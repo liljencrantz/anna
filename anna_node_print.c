@@ -178,7 +178,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_declare_t *this2 = (anna_node_declare_t *)this;
-	    wprintf(L"*__declare__(\n");
+	    wprintf(L"*__var__(\n");
 	    anna_indent(indentation+1);
 	    wprintf(L"%ls;\n", this2->name);
 	    anna_node_print_internal(this2->type, indentation+1);

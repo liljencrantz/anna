@@ -12,9 +12,9 @@ type Foo {
 
 def main(){
     var g = Foo();
-    print(g);
+    print(g,"\n");
 
-    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}
+//    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}
 //    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
 }
 

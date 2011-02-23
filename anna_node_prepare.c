@@ -254,13 +254,46 @@ anna_stack_frame_t *anna_node_register_declarations(
     for(i=0; i<sz; i++)
     {
 	anna_node_declare_t *decl = al_get(&decls, i);
+	if(decl->node_type == ANNA_NODE_DECLARE)
+	{
+	    anna_stack_declare2(
+		stack,
+		decl);
+	}
+	else
+	{
+	    anna_object_t *value = null_object;
+	    switch(decl->value->node_type)
+	    {
 	
-	anna_stack_declare2(
-	    stack,
-	    decl);
+		case ANNA_NODE_TYPE:
+		{
+		    anna_node_type_t *t = (anna_node_type_t *)decl->value;
+		    value = anna_type_wrap(t->payload);
+		    break;
+		}
+		defult:
+		{
+		    anna_error(
+			decl->value,
+			L"Constants must have static value\n");
+		    break;
+		}
+	    }
+	    
+	    anna_stack_declare(
+		stack,
+		decl->name,
+		value->type,
+		value,
+		0);
+	    
+	}
+	
 	anna_sid_t sid = anna_stack_sid_create(stack, decl->name);
 	decl->sid = sid;
     }
+
     //stack_freeze(stack);
     return stack;
 }

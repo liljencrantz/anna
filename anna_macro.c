@@ -173,7 +173,7 @@ static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
 
     return (anna_node_t *)anna_node_create_call(
 	&id->location,
-	(anna_node_t *)anna_node_create_identifier(&id->location,L"__declare__"),
+	(anna_node_t *)anna_node_create_identifier(&id->location,L"__var__"),
 	3,
 	param);    
 }
