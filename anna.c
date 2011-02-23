@@ -27,14 +27,13 @@
 anna_type_t *type_type=0, 
     *object_type=0,
     *int_type=0, 
-    *string_type=0,
-    *char_type=0, 
     *null_type=0,
-    *string_type, 
-    *char_type,
-    *list_type,
-    *float_type,
-    *member_type;
+    *string_type=0, 
+    *char_type=0,
+    *list_type=0,
+    *float_type=0,
+    *member_type=0,
+    *range_type=0;
 anna_object_t *null_object=0;
 
 static hash_table_t anna_type_for_function_identifier;

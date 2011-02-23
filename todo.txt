@@ -4,7 +4,10 @@ Validate types in arguments for calls.
 User defined variadic functions
 Create a Range type
 Use Range type for a bunch of List/String methods
-Make user defined types work
+User defined methods
+User defined members
+User defined properties
+Inheritance
 Make specialization work for user defined types
 String comparison functions
 Type annotations

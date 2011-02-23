@@ -352,7 +352,7 @@ typedef struct
     anna_type_t *argv[];
 } anna_function_type_key_t;
 
-extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type;
+extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type, *range_type;
 extern anna_object_t *null_object;
 extern int anna_error_count;
 extern struct anna_stack_frame *stack_global;

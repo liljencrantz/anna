@@ -187,6 +187,11 @@ static void anna_module_load_lang()
 	    L"Member",
 	    stack_lang);
     
+    range_type = 
+	anna_type_native_create(
+	    L"Range",
+	    stack_lang);
+    
     
     anna_type_type_create(stack_lang);    
     anna_list_type_create(stack_lang);
@@ -196,18 +201,20 @@ static void anna_module_load_lang()
     anna_string_type_create(stack_lang);
     anna_node_create_wrapper_types(stack_lang);
     anna_member_types_create(stack_lang);
-    
+    anna_char_type_create(stack_lang);
+    anna_float_type_create(stack_lang);
+    anna_range_type_create(stack_lang);
+
     anna_stack_declare(stack_lang, L"Type", type_type, anna_type_wrap(type_type), 0); 
-    anna_stack_declare(stack_lang, L"Int", type_type, anna_type_wrap(int_type), 0);       anna_stack_declare(stack_lang, L"Object", type_type, anna_type_wrap(object_type), 0); 
+    anna_stack_declare(stack_lang, L"Int", type_type, anna_type_wrap(int_type), 0);     
+    anna_stack_declare(stack_lang, L"Object", type_type, anna_type_wrap(object_type), 0); 
     anna_stack_declare(stack_lang, L"Null", type_type, anna_type_wrap(null_type), 0); 
 
     anna_stack_declare(stack_lang, L"List", type_type, anna_type_wrap(list_type), 0); 
     anna_stack_declare(stack_lang, L"String", type_type, anna_type_wrap(string_type), 0); 
     anna_stack_declare(stack_lang, L"Float", type_type, anna_type_wrap(float_type), 0); 
     anna_stack_declare(stack_lang, L"Char", type_type, anna_type_wrap(char_type), 0);
-
-    anna_char_type_create(stack_lang);
-    anna_float_type_create(stack_lang);
+    anna_stack_declare(stack_lang, L"Range", type_type, anna_type_wrap(range_type), 0);
 
     anna_function_implementation_init(stack_lang);
     anna_macro_init(stack_global);
