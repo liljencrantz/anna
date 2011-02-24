@@ -491,6 +491,14 @@ expression4 :
 	      param);
 	}
         | 
+	expression4 RANGE expression5
+	{
+	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__range__");
+	    anna_node_t *param[] ={$1, $3};   
+	    $$ = (anna_node_t *)anna_node_create_call(&@$, op, 2, param);
+	}
+	|
 	expression5
 	;
 
@@ -811,12 +819,6 @@ op5:
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"Pair");
-	}
-	|
-	RANGE
-	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"Range");
 	}
 ;
 
