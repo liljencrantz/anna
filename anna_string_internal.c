@@ -507,6 +507,26 @@ void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t l
     asi_validate(dest);
 }
 
+void asi_append_cstring(anna_string_t *dest, wchar_t *str, size_t length)
+{
+    asi_cache_clear(dest);
+    if(length == 0) 
+    {
+      return;
+    }
+    
+    asi_make_appendable(dest, length);
+    anna_string_element_t *el = dest->element[dest->element_count-1];
+    size_t dest_offset = dest->element_offset[dest->element_count-1]+dest->element_length[dest->element_count-1];
+    memcpy(
+	&el->payload[dest_offset], 
+	str,
+	sizeof(wchar_t) * length);
+    dest->element_length[dest->element_count-1] += length;
+    dest->length += length;
+    asi_validate(dest);
+}
+
 void asi_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
 {
     int i;

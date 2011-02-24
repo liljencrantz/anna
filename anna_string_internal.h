@@ -131,4 +131,6 @@ wchar_t *asi_cstring(anna_string_t *str);
  */
 int asi_compare(anna_string_t *a, anna_string_t *b);
 
+void asi_append_cstring(anna_string_t *a, wchar_t *str, size_t len);
+
 #endif

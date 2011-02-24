@@ -78,11 +78,11 @@ static anna_object_t *anna_string_i_get_range(anna_object_t **param)
 	return null_object;
     
     anna_object_t *range = param[1];
-    int from = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_FROM));
-    int to = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_TO));
-    int step = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_STEP));
+    int from = anna_range_get_from(param[1]);
+    int to = anna_range_get_to(param[1]);
+    int step = anna_range_get_step(param[1]);
     
-    assert(step=1);
+    assert(step==1);
     
     anna_object_t *res= anna_object_create(string_type);
     asi_init(as_unwrap(res));
@@ -101,9 +101,9 @@ static anna_object_t *anna_string_i_set_range(anna_object_t **param)
 	return null_object;
 
     anna_object_t *range = param[1];
-    int from = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_FROM));
-    int to = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_TO));
-    int step = anna_int_get(*anna_member_addr_get_mid(range, ANNA_MID_STEP));
+    int from = anna_range_get_from(param[1]);
+    int to = anna_range_get_to(param[1]);
+    int step = anna_range_get_step(param[1]);
     
     assert(step=1);
     
@@ -163,6 +163,18 @@ static anna_object_t *anna_string_i_append(anna_object_t **param)
     anna_string_t *str2 = as_unwrap(param[1]);
     
     asi_append(str1, str2, 0, asi_get_length(str2));    
+    return param[0];
+}
+
+static anna_object_t *anna_string_i_append_char(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    
+    anna_string_t *str1 = as_unwrap(param[0]);
+    wchar_t ch = anna_char_get(param[1]);
+    
+    asi_append_cstring(str1, &ch, 1);
     return param[0];
 }
 
@@ -302,6 +314,30 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	join_argv, 
 	join_argn);
     
+    wchar_t *ac_argn[] =
+	{
+	    L"this", L"other"
+	}
+    ;
+    
+    anna_type_t *ac_argv[] = 
+	{
+	    string_type,
+	    char_type
+	}
+    ;
+
+    anna_native_method_create(
+	string_type, 
+	-1,
+	L"__append__Char__", 
+	0, 
+	&anna_string_i_append_char, 
+	string_type,
+	2,
+	ac_argv, 
+	ac_argn);
+    
 
     anna_native_property_create(
 	string_type,
@@ -344,26 +380,11 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	i_argv, 
 	i_argn);
 
-#if 0
-
-    anna_node_t *range_param[] = 
+    anna_type_t *range_argv[] = 
 	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"lang"),	    
-	    (anna_node_t *)anna_node_create_identifier(0, L"Range"),	    
-	};
-    
-    
-    anna_node_t *range = (anna_node_t *)anna_node_create_call(
-	0,
-	(anna_node_t *)anna_node_create_identifier(0, L"__memberGet__"),
-	2,
-	range_param);
-    
-    anna_node_t *range_argv[] = 
-	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
-	    (anna_node_t *)range,
-	    (anna_node_t *)anna_node_create_identifier(0, L"String"),
+	    string_type,
+	    range_type,
+	    string_type
 	}
     ;
 
@@ -373,41 +394,27 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	}
     ;
 
-    anna_node_t *e_method_argv[] = 
-	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"Int"),
-	    (anna_node_t *)anna_node_create_identifier(0, L"Char")
-	}
-    ;
-
-    wchar_t *e_method_argn[] = 
-	{
-	    L"index",
-	    L"value"
-	}
-    ;
-
-    anna_native_method_add_node(
-	definition,
+    anna_native_method_create(
+	string_type,
 	-1,
 	L"__get__Range__",
 	0, 
-	(anna_native_t)&anna_string_i_get_range, 
-	(anna_node_t *)anna_node_create_identifier(0, L"String") , 
+	&anna_string_i_get_range, 
+	string_type,
 	2,
 	range_argv, 
 	range_argn);
     
-    anna_native_method_add_node(
-	definition,
+    anna_native_method_create(
+	string_type,
 	-1,
 	L"__set__Range__",
 	0, 
-	(anna_native_t)&anna_string_i_set_range, 
-	(anna_node_t *)anna_node_create_identifier(0, L"String") , 
+	&anna_string_i_set_range, 
+	string_type,
 	3,
 	range_argv, 
 	range_argn);
     
-#endif	
+
 }
