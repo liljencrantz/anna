@@ -1,0 +1,6 @@
+
+def main(){
+    var a = "aaabbbccc";
+    a[3..6] = "ddd";
+    print(a,"\n");
+}

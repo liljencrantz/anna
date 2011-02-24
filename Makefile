@@ -73,6 +73,10 @@ anna_string_i.c: make_anna_string_i.sh
 anna_yacc.c anna_yacc.h: anna_yacc.y
 	bison -d anna_yacc.y -o anna_yacc.c -v -p anna_yacc_
 
+tests: anna
+	./anna_tests.sh
+.PHONY: tests
+
 clean:
 	rm -f anna anna_string_internal_test anna_string_perf gmon.out anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  *.d
 .PHONY: clean
