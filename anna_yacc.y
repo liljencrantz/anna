@@ -1041,7 +1041,7 @@ function_definition:
 	    {
 		$$ = (anna_node_t *)anna_node_create_call(
 		    &@$,
-		    (anna_node_t *)anna_node_create_identifier(&@1,L"__const__"),
+		    (anna_node_t *)anna_node_create_identifier(&@1,L"__var__"),
 		    3,
 		    param2);
 	    }

@@ -147,6 +147,49 @@ static anna_node_t *anna_function_setup_arguments(
     return 0;
 }
 
+void anna_function_setup_wrapper(
+    anna_function_t *f)
+{
+    
+    if(!f->wrapper){
+	anna_type_t *ft = 
+	    anna_type_for_function(
+		f->return_type,
+		f->input_count,
+		f->input_type,
+		f->input_name,
+		f->flags);
+	
+	f->wrapper = anna_object_create(ft);    
+	memcpy(
+	    anna_member_addr_get_mid(
+		f->wrapper,
+		ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
+	    &f,
+	    sizeof(anna_function_t *));
+	
+	if(f->stack_template)
+	{
+	    memcpy(
+		anna_member_addr_get_mid(
+		    f->wrapper,
+		    ANNA_MID_FUNCTION_WRAPPER_STACK),
+		&f->stack_template->parent,
+		sizeof(anna_stack_frame_t *));
+	}
+	else
+	{
+	    memset(
+		anna_member_addr_get_mid(
+		    f->wrapper,
+		    ANNA_MID_FUNCTION_WRAPPER_STACK),
+		0,
+		sizeof(anna_stack_frame_t *));
+	}
+    }
+}
+    
+
 void anna_function_setup_interface(
     anna_function_t *f,
     anna_stack_frame_t *parent_stack)
@@ -230,42 +273,8 @@ void anna_function_setup_interface(
 	}
     }
     
-    if(!f->wrapper){
-	anna_type_t *ft = 
-	    anna_type_for_function(
-		f->return_type,
-		f->input_count,
-		f->input_type,
-		f->input_name,
-		f->flags);
-	
-	f->wrapper = anna_object_create(ft);    
-	memcpy(
-	    anna_member_addr_get_mid(
-		f->wrapper,
-		ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
-	    &f,
-	    sizeof(anna_function_t *));
-	
-	if(f->stack_template)
-	{
-	    memcpy(
-		anna_member_addr_get_mid(
-		    f->wrapper,
-		    ANNA_MID_FUNCTION_WRAPPER_STACK),
-		&f->stack_template->parent,
-		sizeof(anna_stack_frame_t *));
-	}
-	else
-	{
-	    memset(
-		anna_member_addr_get_mid(
-		    f->wrapper,
-		    ANNA_MID_FUNCTION_WRAPPER_STACK),
-		0,
-		sizeof(anna_stack_frame_t *));
-	}
-    }
+    anna_function_setup_wrapper(f);
+    
 }
 
 void anna_function_setup_body(
@@ -288,6 +297,14 @@ void anna_function_setup_body(
 
 anna_object_t *anna_function_wrap(anna_function_t *result)
 {
+#ifdef ANNA_WRAPPER_CHECK_ENABLED
+    if(!result->wrapper)
+    {
+	wprintf(
+	    L"Critical: Tried to wrap a function with no wrapper\n");
+	CRASH;
+    }
+#endif
     return result->wrapper;
 }
 
@@ -418,8 +435,8 @@ anna_function_t *anna_macro_create(
     result->input_count=1;
     result->input_name = argn;
     result->input_type = argv;
+    anna_function_setup_wrapper(result);
     return result;
-    
 }
 
 

@@ -268,21 +268,18 @@ anna_stack_frame_t *anna_node_register_declarations(
 	
 		case ANNA_NODE_TYPE:
 		{
-		    wprintf(L"AAA\n");		    
 		    anna_node_type_t *t = (anna_node_type_t *)decl->value;
 		    value = anna_type_wrap(t->payload);
 		    break;
 		}
 		case ANNA_NODE_CLOSURE:
 		{
-		    wprintf(L"BBB\n");
 		    anna_node_closure_t *t = (anna_node_closure_t *)decl->value;
 		    value = anna_function_wrap(t->payload);
 		    break;
 		}
 		case ANNA_NODE_DUMMY:
 		{
-		    wprintf(L"CCC\n");
 		    anna_node_dummy_t *t = (anna_node_dummy_t *)decl->value;
 		    value = t->payload;
 		    break;
