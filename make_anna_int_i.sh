@@ -12,7 +12,7 @@ init="
 
     anna_type_t *argv[]=
 	{
-	    string_type, string_type
+	    int_type, int_type
 	}
     ;
     
