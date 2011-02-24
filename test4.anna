@@ -11,9 +11,13 @@ type Foo {
 }
 
 def main(){
-    var g = Foo();
-    print(g,"\n");
-
+//    var g = Foo();
+//    print(g,"\n");
+    // (16..0:-3).each(i){print(i,"\n")}
+    var aaa = "foo fadderittan";
+    aaa[0..3]="blahonga";
+    aaa ~= 'g';
+    print(aaa,"\n");
 //    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}
 //    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
 }

@@ -58,6 +58,9 @@ void anna_mid_init()
     anna_mid_put(L"to", ANNA_MID_TO);
     anna_mid_put(L"step", ANNA_MID_STEP);
     anna_mid_put(L"__eq__", ANNA_MID_EQ);
+    anna_mid_put(L"!rangeFrom", ANNA_MID_RANGE_FROM);
+    anna_mid_put(L"!rangeTo", ANNA_MID_RANGE_TO);
+    anna_mid_put(L"!rangeStep", ANNA_MID_RANGE_STEP);
 }
 
 

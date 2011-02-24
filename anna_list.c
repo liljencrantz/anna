@@ -175,7 +175,6 @@ static anna_object_t *anna_list_append(anna_object_t **param)
 static anna_object_t *anna_list_each(anna_object_t **param)
 {
     anna_object_t *body_object;
-    anna_object_t *result=param[0];
     body_object=param[1];
         
     size_t sz = anna_list_get_size(param[0]);
@@ -200,9 +199,9 @@ static anna_object_t *anna_list_each(anna_object_t **param)
 	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
-	result = anna_function_invoke_values(*function_ptr, 0, o_param, stack);
+	anna_function_invoke_values(*function_ptr, 0, o_param, stack);
     }
-    return result;
+    return param[0];
 }
 
 static anna_object_t *anna_list_map(anna_object_t **param)

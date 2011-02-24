@@ -12,6 +12,7 @@
 #include "anna_function.h"
 #include "anna_prepare.h"
 #include "anna_util.h"
+#include "anna_member.h"
 
 #ifndef offsetof
 #define offsetof(T,F) ((unsigned int)((char *)&((T *)0L)->F - (char *)0L))
