@@ -15,6 +15,7 @@
 #include "anna_type.h"
 #include "anna_member.h"
 #include "anna_function_type.h"
+#include "anna_range.h"
 
 #include "anna_macro.h"
 
@@ -353,6 +354,62 @@ static anna_object_t *anna_list_in(anna_object_t **param)
     return null_object;
 }
 
+static anna_object_t *anna_list_i_get_range(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    
+    int from = anna_range_get_from(param[1]);
+    int step = anna_range_get_step(param[1]);
+    int count = anna_range_get_count(param[1]);
+    int i;
+    
+    anna_object_t *res = anna_list_create(anna_list_get_specialization(param[0]));
+    anna_list_set_capacity(res, count);
+    for(i=0;i<count;i++)
+    {
+	anna_list_set(
+	    res, i, 
+	    anna_list_get(
+		param[0],
+		from + step*i));
+	
+    }
+    
+    
+    return res;
+    
+}
+
+static anna_object_t *anna_list_i_set_range(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+
+    if(param[2]==null_object)
+	return null_object;
+
+    int from = anna_range_get_from(param[1]);
+    int step = anna_range_get_step(param[1]);
+    int count = anna_range_get_count(param[1]);
+    int i;
+
+    int count2 = anna_list_get_size(param[2]);
+    if(count != count2)
+	return null_object;
+    
+    for(i=0;i<count;i++)
+    {
+	anna_list_set(
+	    param[0], from + step*i, 
+	    anna_list_get(
+		param[2],
+		i));
+    }
+
+    return param[0];
+}
+
 
 
 void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type, anna_type_t *spec)
@@ -495,6 +552,42 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 	spec,
 	2, a_argv, a_argn);
         
+    anna_type_t *range_argv[] = 
+	{
+	    type,
+	    range_type,
+	    type
+	}
+    ;
+
+    wchar_t *range_argn[] =
+	{
+	    L"this", L"range", L"value"
+	}
+    ;
+
+    anna_native_method_create(
+	type,
+	-1,
+	L"__get__Range__",
+	0, 
+	&anna_list_i_get_range, 
+	type,
+	2,
+	range_argv, 
+	range_argn);
+    
+    anna_native_method_create(
+	type,
+	-1,
+	L"__set__Range__",
+	0, 
+	&anna_list_i_set_range, 
+	type,
+	3,
+	range_argv, 
+	range_argn);
+
     /*
       anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
       anna_native_method_add_node(definition, -1, L"__setslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);

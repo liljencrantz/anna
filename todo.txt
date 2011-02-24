@@ -2,17 +2,18 @@ Validate number of arguments
 Validate types in assignments.
 Validate types in arguments for calls.
 User defined variadic functions
-Create a Range type
-Use Range type for a bunch of List/String methods
+Use Range type for a bunch of List methods
 User defined methods
 User defined members
 User defined properties
 Inheritance
 Make specialization work for user defined types
-String comparison functions
 Type annotations
 Annotate method overloads with aliases
 Always check aliases when resolving method calls during compile time
+while loop
+true type intersections
+
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

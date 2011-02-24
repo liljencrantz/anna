@@ -14,9 +14,11 @@ def main(){
 //    var g = Foo();
 //    print(g,"\n");
     // (16..0:-3).each(i){print(i,"\n")}
-    var aaa = "foo fadderittan";
-    aaa[0..3]="blahonga";
-    aaa ~= 'g';
+    var foo = [1,2,75,6,7];
+
+    foo[14..18]=[6,6,6,6];
+    foo.each(i){print(i,"\n")}
+
 //    print(aaa,"\n");
       print("aaaa" <= "aaa", "aaa" <= "bbb");
 //    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}

@@ -111,13 +111,17 @@ static int anna_sign(int v){
     return 0;
 }
 
-static anna_object_t *anna_range_get_count(anna_object_t **param)
+size_t anna_range_get_count(anna_object_t *obj)
 {
-    int from = anna_range_get_from(param[0]);
-    int to = anna_range_get_to(param[0]);
-    int step = anna_range_get_step(param[0]);
-    int res = 1+(to-from-anna_sign(step))/step;
-    return anna_int_create(res);
+    size_t from = anna_range_get_from(obj);
+    size_t to = anna_range_get_to(obj);
+    size_t step = anna_range_get_step(obj);
+    return 1+(to-from-anna_sign(step))/step;
+}
+
+static anna_object_t *anna_range_get_count_i(anna_object_t **param)
+{
+    return anna_int_create(anna_range_get_count(*param));
 }
 
 static anna_object_t *anna_range_each(anna_object_t **param)
@@ -221,7 +225,7 @@ void anna_range_type_create(struct anna_stack_frame *stack)
 	-1,
 	L"count",
 	int_type,
-	&anna_range_get_count, 
+	&anna_range_get_count_i, 
 	0);
 
     anna_native_property_create(
