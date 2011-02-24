@@ -58,12 +58,17 @@ anna_float_i.c: make_anna_float_i.sh
 anna_int.c: anna_int_i.c
 
 anna_int_i.c: make_anna_int_i.sh
-		./make_anna_int_i.sh >anna_int_i.c
+	./make_anna_int_i.sh >anna_int_i.c
 
 anna_char.c: anna_char_i.c
 
 anna_char_i.c: make_anna_char_i.sh
 	./make_anna_char_i.sh >anna_char_i.c
+
+anna_string.c: anna_string_i.c
+
+anna_string_i.c: make_anna_string_i.sh
+	./make_anna_string_i.sh >anna_string_i.c
 
 anna_yacc.c anna_yacc.h: anna_yacc.y
 	bison -d anna_yacc.y -o anna_yacc.c -v -p anna_yacc_

@@ -15,11 +15,14 @@
 #include "anna_string_internal.h"
 #include "anna_member.h"
 #include "anna_function_type.h"
+#include "anna_range.h"
 
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
     return (anna_string_t *)anna_member_addr_get_mid(obj,ANNA_MID_STRING_PAYLOAD);
 }
+
+#include "anna_string_i.c"
 
 void anna_string_print(anna_object_t *obj)
 {
@@ -77,7 +80,6 @@ static anna_object_t *anna_string_i_get_range(anna_object_t **param)
     if(param[1]==null_object)
 	return null_object;
     
-    anna_object_t *range = param[1];
     int from = anna_range_get_from(param[1]);
     int to = anna_range_get_to(param[1]);
     int step = anna_range_get_step(param[1]);
@@ -100,7 +102,6 @@ static anna_object_t *anna_string_i_set_range(anna_object_t **param)
     if(param[2]==null_object)
 	return null_object;
 
-    anna_object_t *range = param[1];
     int from = anna_range_get_from(param[1]);
     int to = anna_range_get_to(param[1]);
     int step = anna_range_get_step(param[1]);
@@ -313,7 +314,8 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	2,
 	join_argv, 
 	join_argn);
-    
+
+
     wchar_t *ac_argn[] =
 	{
 	    L"this", L"other"
@@ -416,5 +418,6 @@ void anna_string_type_create(anna_stack_frame_t *stack)
 	range_argv, 
 	range_argn);
     
-
+    anna_string_type_i_create(stack);
+    
 }

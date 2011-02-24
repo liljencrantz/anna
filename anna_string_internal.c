@@ -15,7 +15,7 @@
 
 /**
    Wchar_t-using, chunk based string implementation, does most string
-   operations in O(1), most of the time.x:) 
+   operations in O(1), most of the time. :) 
 */
 
 #define ANNA_STRING_DEFAULT_ELEMENT_CAPACITY 12
@@ -728,8 +728,17 @@ wchar_t *asi_cstring(anna_string_t *str)
 }
 
 int asi_compare(anna_string_t *a, anna_string_t *b){
-    int i;
-    CRASH;    
+    size_t i;
+    size_t count = mini(asi_get_length(a), asi_get_length(b));
+    for(i=0; i<count; i++)
+    {
+	int diff = asi_get_char(a,i) - asi_get_char(b,i);
+	if(diff != 0)
+	{
+	    return diff;
+	}	
+    }
+    return asi_get_length(a) - asi_get_length(b);
 }
 
 #endif
