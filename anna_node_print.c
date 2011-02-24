@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common.h"
 #include "util.h"
 #include "wutil.h"
 #include "anna_node.h"
@@ -16,7 +17,7 @@ static void anna_indent(int indentation)
     int indent;
     for(indent=0; indent<indentation; indent++)
     {
-	wprintf(L"    ");
+	fwprintf(stderr,L"    ");
     }
 }
 
@@ -63,7 +64,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_int_literal_t *this2 = (anna_node_int_literal_t *)this;
-	    wprintf(L"%d", this2->payload);
+	    fwprintf(stderr,L"%d", this2->payload);
 	    break;
 	}
 	
@@ -71,7 +72,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_float_literal_t *this2 = (anna_node_float_literal_t *)this;
-	    wprintf(L"%f", this2->payload);
+	    fwprintf(stderr,L"%f", this2->payload);
 	    break;
 	}
 	
@@ -81,20 +82,20 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	    anna_node_string_literal_t *this2 = (anna_node_string_literal_t *)this;
 	    int i;
 	    
-	    wprintf(L"\"");
+	    fwprintf(stderr,L"\"");
 	    for(i=0;i<this2->payload_size;i++)
 	    {
 		wchar_t c = this2->payload[i];
 		if(c<32) 
 		{
-		    wprintf(L"\\x%.2x", c);		    
+		    fwprintf(stderr,L"\\x%.2x", c);		    
 		}
 		else
 		{
-		    wprintf(L"%lc", c);
+		    fwprintf(stderr,L"%lc", c);
 		}
 	    }
-	    wprintf(L"\"");
+	    fwprintf(stderr,L"\"");
 	    
 	    break;
 	}
@@ -103,7 +104,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_char_literal_t *this2 = (anna_node_char_literal_t *)this;
-	    wprintf(L"'%lc'", this2->payload);
+	    fwprintf(stderr,L"'%lc'", this2->payload);
 	    break;
 	}
 	
@@ -112,7 +113,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
-	    wprintf(L"%ls", this2->name);
+	    fwprintf(stderr,L"%ls", this2->name);
 	    break;
 	}
 	
@@ -120,12 +121,12 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_assign_t *this2 = (anna_node_assign_t *)this;
-	    wprintf(L"__assign__(");
+	    fwprintf(stderr,L"__assign__(");
 
-	    wprintf(L"%d:%d", this2->sid.frame, this2->sid.offset);
-	    wprintf(L";\n");
+	    fwprintf(stderr,L"%d:%d", this2->sid.frame, this2->sid.offset);
+	    fwprintf(stderr,L";\n");
 	    anna_node_print_internal(this2->value, indentation+1);
-	    wprintf(L")");
+	    fwprintf(stderr,L")");
 	    
 	    break;
 	}
@@ -134,7 +135,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
-	    wprintf(L"<Dummy>: %ls", this2->payload->type->name);
+	    fwprintf(stderr,L"<Dummy>: %ls", this2->payload->type->name);
 	    break;
 	}
 	
@@ -144,13 +145,13 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	    anna_node_closure_t *this2 = (anna_node_closure_t *)this;
 	    if(this2->payload)
 	    {
-		wprintf(L"*closure(\n");
+		fwprintf(stderr,L"*closure(\n");
 		anna_node_print_internal((anna_node_t *)this2->payload->body, indentation+1);
-		wprintf(L")");
+		fwprintf(stderr,L")");
 	    }
 	    else
 	    {
-		wprintf(L"<Closure>: <ERROR>");		
+		fwprintf(stderr,L"<Closure>: <ERROR>");		
 	    }
 	    break;
 	}
@@ -159,7 +160,7 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    //anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
-	    wprintf(L"<Blob>");
+	    fwprintf(stderr,L"<Blob>");
 	    break;
 	}
 	
@@ -168,9 +169,9 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
-	    wprintf(L"__memberGet__(\n");
+	    fwprintf(stderr,L"__memberGet__(\n");
 	    anna_node_print_internal(this2->object, indentation+1);
-	    wprintf(L"; %ls)", anna_mid_get_reverse(this2->mid));
+	    fwprintf(stderr,L"; %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
 	}
 
@@ -178,13 +179,13 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_declare_t *this2 = (anna_node_declare_t *)this;
-	    wprintf(L"*__var__(\n");
+	    fwprintf(stderr,L"*__var__(\n");
 	    anna_indent(indentation+1);
-	    wprintf(L"%ls;\n", this2->name);
+	    fwprintf(stderr,L"%ls;\n", this2->name);
 	    anna_node_print_internal(this2->type, indentation+1);
-	    wprintf(L";\n");
+	    fwprintf(stderr,L";\n");
 	    anna_node_print_internal(this2->value, indentation+1);
-	    wprintf(L")");
+	    fwprintf(stderr,L")");
 	    break;
 	}
 
@@ -192,13 +193,13 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_member_set_t *this2 = (anna_node_member_set_t *)this;
-	    wprintf(L"__memberSet__(\n");
+	    fwprintf(stderr,L"__memberSet__(\n");
 	    anna_node_print_internal(this2->object, indentation+1);
-	    wprintf(L";\n");
+	    fwprintf(stderr,L";\n");
 	    anna_indent(indentation+1);
-	    wprintf(L"%ls;\n", anna_mid_get_reverse(this2->mid));
+	    fwprintf(stderr,L"%ls;\n", anna_mid_get_reverse(this2->mid));
 	    anna_node_print_internal(this2->value, indentation+1);
-	    wprintf(L")");
+	    fwprintf(stderr,L")");
 
 	    break;
 	}
@@ -207,16 +208,16 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_indent(indentation);
 	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
-	    wprintf(L"__memberGet__(\n");
+	    fwprintf(stderr,L"__memberGet__(\n");
 	    anna_node_print_internal(this2->object, indentation+1);
-	    wprintf(L", %ls)", anna_mid_get_reverse(this2->mid));
+	    fwprintf(stderr,L", %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
 	}
 	
 	case ANNA_NODE_NULL:
 	{
 	    anna_indent(indentation);
-	    wprintf(L"null");
+	    fwprintf(stderr,L"null");
 	    break;
 	}
 	
@@ -225,46 +226,46 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;
-//	    wprintf(L"/*%d*/", this2);
+//	    fwprintf(stderr,L"/*%d*/", this2);
 	    anna_node_print_internal(this2->function, indentation);
-	    /*	    wprintf(L"\n");
+	    /*	    fwprintf(stderr,L"\n");
 		    anna_indent(indentation);*/
 	    if(this2->child_count == 0)
 	    {
-		wprintf(L"()" );		
+		fwprintf(stderr,L"()" );		
 	    }
 	    else if(is_simple(this2, 5))
 	      {
-		wprintf(L"(");
+		fwprintf(stderr,L"(");
 		
 		for(i=0; i<this2->child_count; i++)
 		{
 		    if(i!=0) 
 		    {
-			wprintf(L";");
+			fwprintf(stderr,L";");
 		    }
 		    anna_node_print_internal(this2->child[i], 0);
 		}
-		/*	    wprintf(L"\n" );
+		/*	    fwprintf(stderr,L"\n" );
 			    anna_indent(indentation);*/
-		wprintf(L")" );
+		fwprintf(stderr,L")" );
 		
 	      }
 	    else 
 	    {
-		wprintf(L"(\n");
+		fwprintf(stderr,L"(\n");
 		
 		for(i=0; i<this2->child_count; i++)
 		{
 		    if(i!=0) 
 		    {
-			wprintf(L";\n");
+			fwprintf(stderr,L";\n");
 		    }
 		    anna_node_print_internal(this2->child[i], indentation+1);
 		}
-		/*	    wprintf(L"\n" );
+		/*	    fwprintf(stderr,L"\n" );
 			    anna_indent(indentation);*/
-		wprintf(L")" );
+		fwprintf(stderr,L")" );
 	    }
 	    break;
 	}
@@ -274,29 +275,29 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	    anna_node_member_call_t *this2 = (anna_node_member_call_t *)this;	    
 	    int i;
 	    anna_indent(indentation);
-	    wprintf(L"*__memberGet__(\n");
+	    fwprintf(stderr,L"*__memberGet__(\n");
 	    anna_node_print_internal(this2->object, indentation+1);
-	    wprintf(L",\n");
+	    fwprintf(stderr,L",\n");
 	    anna_indent(indentation+1);
-	    wprintf(L"\"%ls\")", anna_mid_get_reverse(this2->mid));
+	    fwprintf(stderr,L"\"%ls\")", anna_mid_get_reverse(this2->mid));
 		
 	    if(this2->child_count == 0)
 	    {
-		wprintf(L"()" );		
+		fwprintf(stderr,L"()" );		
 	    }
 	    else
 	    {
-		wprintf(L"(\n");
+		fwprintf(stderr,L"(\n");
 		
 		for(i=0; i<this2->child_count; i++)
 		{
 		    if(i!=0) 
 		    {
-			wprintf(L";\n");
+			fwprintf(stderr,L";\n");
 		    }
 		    anna_node_print_internal(this2->child[i], indentation+1);
 		}
-		wprintf(L")" );
+		fwprintf(stderr,L")" );
 	    }
 	    break;
 	}
@@ -305,20 +306,20 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	{
 	    anna_node_if_t *this2 = (anna_node_if_t *)this;	    
 	    anna_indent(indentation);
-	    wprintf(L"*if(\n");
+	    fwprintf(stderr,L"*if(\n");
 	    anna_node_print_internal(this2->cond, indentation+1);
-	    wprintf(L",\n");
+	    fwprintf(stderr,L",\n");
 	    anna_node_print_internal((anna_node_t *)this2->block1, indentation+1);
-	    wprintf(L",\n");
+	    fwprintf(stderr,L",\n");
 	    anna_node_print_internal((anna_node_t *)this2->block2, indentation+1);
-	    wprintf(L")");
+	    fwprintf(stderr,L")");
 		
 	    break;
 	}
 	
 	default:
 	{
-	    wprintf(L"<Don't know how to print node of type %d>", this->node_type);
+	    fwprintf(stderr,L"<Don't know how to print node of type %d>", this->node_type);
 	    break;
 	}
     }
@@ -328,8 +329,11 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 
 void anna_node_print(anna_node_t *this)
 {
+    if(debug_level < 2)
+	return;
+    
   anna_node_print_internal(this, 0);
-  wprintf(L"\n");
+  fwprintf(stderr,L"\n");
 }
 
 void anna_node_print_code(anna_node_t *node)

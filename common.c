@@ -240,7 +240,7 @@ void debug( int level, const wchar_t *msg, ... )
 
 	int errno_old = errno;
 	
-	if( level > debug_level )
+	if( level < debug_level )
 		return;
 
 	VERIFY( msg, );

@@ -442,9 +442,10 @@ static anna_object_t *anna_list_i_set_range(anna_object_t **param)
     return param[0];
 }
 
-
-
-void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type, anna_type_t *spec)
+static void anna_list_type_create_internal(
+    anna_stack_frame_t *stack,
+    anna_type_t *type, 
+    anna_type_t *spec)
 {
 
     anna_member_create(
@@ -621,10 +622,6 @@ void anna_list_type_create_internal(anna_stack_frame_t *stack, anna_type_t *type
 	range_argn);
 
     /*
-      anna_native_method_add_node(definition, -1, L"__getslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
-      anna_native_method_add_node(definition, -1, L"__setslice__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
-      anna_native_method_add_node(definition, -1, L"__contains__", 0, (anna_native_t)&anna_int_add, int_type, 2, argv, argn);
-
       __add__, __sub__, __mul__ and friends.
       __select__, __first__, __last__
     */
@@ -653,7 +650,7 @@ anna_type_t *anna_list_type_get(anna_type_t *subtype)
 	hash_put(&anna_list_specialization, subtype, spec);
 	anna_list_type_create_internal(stack_global, spec, subtype);
     }
-    
+
     return spec;
 }
 
