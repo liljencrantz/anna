@@ -50,22 +50,14 @@ anna_string_perf: $(ANNA_STRING_PERF_OBJS)
 anna_lex.c: anna_lex.y anna_yacc.h
 	flex -Cfae -oanna_lex.c -Panna_lex_ anna_lex.y 
 
-anna_float.c: anna_float_i.c
-
 anna_float_i.c: make_anna_float_i.sh
 	./make_anna_float_i.sh >anna_float_i.c
-
-anna_int.c: anna_int_i.c
 
 anna_int_i.c: make_anna_int_i.sh
 	./make_anna_int_i.sh >anna_int_i.c
 
-anna_char.c: anna_char_i.c
-
 anna_char_i.c: make_anna_char_i.sh
 	./make_anna_char_i.sh >anna_char_i.c
-
-anna_string.c: anna_string_i.c
 
 anna_string_i.c: make_anna_string_i.sh
 	./make_anna_string_i.sh >anna_string_i.c
@@ -73,10 +65,13 @@ anna_string_i.c: make_anna_string_i.sh
 anna_yacc.c anna_yacc.h: anna_yacc.y
 	bison -d anna_yacc.y -o anna_yacc.c -v -p anna_yacc_
 
-tests: anna
+check: test
+.PHONY: check
+
+test: anna
 	./anna_tests.sh
-.PHONY: tests
+.PHONY: test
 
 clean:
-	rm -f anna anna_string_internal_test anna_string_perf gmon.out anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  *.d
+	rm -f anna anna_string_internal_test anna_string_perf gmon.out anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  anna_string_i.c *.d
 .PHONY: clean

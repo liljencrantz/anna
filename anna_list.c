@@ -622,16 +622,12 @@ static void anna_list_type_create_internal(
 	range_argn);
 
     /*
+      Todo:
+
       __add__, __sub__, __mul__ and friends.
       __select__, __first__, __last__
     */
 
-    /*  
-	anna_object_t *l = anna_list_create();
-	anna_list_set(l, 3, L"TRALALA");
-	anna_list_append(l, L"TJOHO");
-	wprintf(L"%ls %ls\n", anna_list_get(l,3), anna_list_get(l,4));
-    */
 }
 
 void anna_list_type_create(anna_stack_frame_t *stack)

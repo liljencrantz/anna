@@ -47,12 +47,12 @@ typedef ssize_t mid_t;
    This function is anonymously declared, and should not be registered
    in any scope.
  */
-#define ANNA_FUNCTION_ANONYMOUS 128
+#define ANNA_FUNCTION_ANONYMOUS 16
 /**
    This function is a closure, and needs to have a pointer
    set up to the function invocation that encloses it.
 */
-#define ANNA_FUNCTION_CLOSURE 256
+#define ANNA_FUNCTION_CLOSURE 32
 
 #define ANNA_TYPE_REGISTERED 1
 #define ANNA_TYPE_PREPARED_INTERFACE 2
@@ -302,16 +302,9 @@ struct anna_function
     */
     struct anna_object *wrapper;
     /**
-       The number of input arguments to this function.
-     */
-    size_t input_count;
-    /**
-       The name of each input argument
-     */
-    wchar_t **input_name;
-    /**
-       A bitfield containing various additional info on this type.
-     */
+       A bitmask containing various additional info on this type. For
+       possible values, see the ANNA_TYPE_* constants.
+    */
     int flags;
     /**
        If this function is a bound method, this field contains a curried this pointer.
@@ -321,9 +314,17 @@ struct anna_function
        The template stack frame of this function
     */
     struct anna_stack_frame *stack_template;
-//    struct anna_stack_frame *closure_parent_stack_template;
-    array_list_t child_function;
-    array_list_t child_type;
+    /**
+       The number of input arguments to this function.
+     */
+    size_t input_count;
+    /**
+       The name of each input argument
+     */
+    wchar_t **input_name;
+    /**
+       The type of each input argument
+     */
     struct anna_type **input_type;    
 };
 

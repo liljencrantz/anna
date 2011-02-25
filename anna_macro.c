@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "util.h"
+#include "common.h"
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_wrapper.h"
@@ -264,6 +265,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node)
 	type);
 }
 
+#if 0
 
 static anna_node_t *anna_macro_return(
     anna_node_call_t *node)
@@ -272,7 +274,6 @@ static anna_node_t *anna_macro_return(
     return (anna_node_t *)anna_node_create_return(&node->location, node->child[0]);
 }
 
-#if 0
 static anna_node_t *anna_macro_templatize(anna_node_call_t *node, 
 					  anna_function_t *function, 
 					  anna_node_list_t *parent)
@@ -530,7 +531,7 @@ static anna_node_t *anna_macro_range(anna_node_call_t *node)
     {
 	anna_node_call_add_child(
 	    node,
-	    anna_node_create_int_literal(0,1));
+	    (anna_node_t *)anna_node_create_int_literal(0,1));
     }
 
     return (anna_node_t *)node;
