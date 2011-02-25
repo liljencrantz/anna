@@ -1,11 +1,10 @@
+User defined methods
+User defined members
+User defined properties
 Validate number of arguments
 Validate types in assignments.
 Validate types in arguments for calls.
 User defined variadic functions
-Use Range type for a bunch of List methods
-User defined methods
-User defined members
-User defined properties
 Inheritance
 Make specialization work for user defined types
 Type annotations
@@ -14,6 +13,10 @@ Always check aliases when resolving method calls during compile time
 while loop
 true type intersections
 Full range support for strings
+Bytecode format
+Bytecode generator
+Bytecode interpreter
+Continuations
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

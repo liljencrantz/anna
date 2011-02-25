@@ -74,19 +74,7 @@ static anna_object_t *anna_member_i_get_property(anna_object_t **param)
 
 static void anna_member_type_create()
 {
-/*
-    anna_node_t *argv[] = 
-	{
-	    (anna_node_t *)anna_node_create_identifier(0, L"Member"),
-	}
-    ;
 
-    wchar_t *argn[] =
-	{
-	    L"this"
-	}
-    ;
-*/  
     anna_member_create(
 	member_type, 
 	ANNA_MID_MEMBER_PAYLOAD, 
@@ -143,8 +131,7 @@ void anna_member_types_create(anna_stack_frame_t *stack)
     anna_member_type_create();
     anna_member_method_type_create(stack);
     anna_member_property_type_create(stack);
-    anna_member_variable_type_create(stack);
-    
+    anna_member_variable_type_create(stack);    
 }
 
 size_t anna_member_create(
