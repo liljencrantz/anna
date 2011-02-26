@@ -139,12 +139,13 @@ static void asi_ensure_length(anna_string_t *dest, size_t len)
 	if(asi_null_element == 0)
 	{
 	    asi_null_element = malloc(sizeof(anna_string_element_t)+ANNA_STRING_NULL_ELEMENT_LENGTH*sizeof(wchar_t));
-	    asi_null_element->users=2;
+	    asi_null_element->users=1;
 	    asi_null_element->capacity=ANNA_STRING_NULL_ELEMENT_LENGTH;
 	    memset(&asi_null_element->payload, 0, ANNA_STRING_NULL_ELEMENT_LENGTH*sizeof(wchar_t));
 	}
 	size_t padding = len - asi_get_length(dest);
 	asi_ensure_element_capacity(dest, 1+(padding/ANNA_STRING_NULL_ELEMENT_LENGTH));
+	asi_null_element->users++;
 	while(1)
 	{
 	    dest->element[dest->element_count] = asi_null_element;
@@ -575,6 +576,7 @@ void asi_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
 {
     int i;
     size_t first_in_element=0;
+
     asi_ensure_length(dest, offset+1);
 
     if(offset == dest->cache_pos+1)

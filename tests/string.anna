@@ -1,8 +1,14 @@
 
 def main(){
+
     /* Test replacing substring with other string of same length */
     var a = "aaabbbccc";
     a[3..6] = "ddd";
+    print(a,"\n");
+
+    /* Test replacing substring with other string of different length */
+    a = "aaabbbccc";
+    a[3..6] = "dddEEE";
     print(a,"\n");
 
     /* Test replacing substring past end of original string */
@@ -20,14 +26,14 @@ def main(){
     a[1..7:2] = "qqq";
     print(a,"\n");
 
-    /* Try replacing non-consecutive characters with wrong length of replacement. This should ba a no-op */
+    /* Try replacing non-consecutive characters with wrong length of replacement. This should be a no-op. */
     a = "aaabbbccc";
     a[1..7:2] = "qqqaaa";
     print(a,"\n");
 
-    /* Try replacing non-consecutive characters with wrong length of replacement. This should ba a no-op */
+    /* Test replacing non-consecutive characters past end of original string. */
     a = "aaabbbccc";
     a[1..15:10] = "qq";
-    print(a,"\n");
+    a.each(idx, val){print(idx, ": ", val.ordinal, "\n")}
 
 }
