@@ -13,9 +13,10 @@
 
 #ifdef ANNA_STRING_CHUNKED_ENABLED
 
-/**
+/*
    Wchar_t-using, chunk based string implementation, does most string
-   operations in O(1), most of the time. :) 
+   operations in O(1) when using common string access patterns, though
+   pretty much all operations have a theoretical worst case of O(N).
 */
 
 #define ANNA_STRING_DEFAULT_ELEMENT_CAPACITY 12
@@ -23,6 +24,8 @@
 #define ANNA_STRING_APPEND_SHORT_LIMIT 40
 #define ANNA_STRING_HAIRCUT_RATIO 100
 #define ANNA_STRING_LARGE 2048
+
+#define ANNA_STRING_NULL_ELEMENT_LENGTH 1024
 
 struct anna_string_element
 {
@@ -33,6 +36,9 @@ struct anna_string_element
     ;
 
 typedef struct anna_string_element anna_string_element_t;
+
+
+static anna_string_element_t *asi_null_element = 0;
 
 anna_string_element_t *asi_element_create(wchar_t *payload, size_t size, size_t available);
 static void asi_ensure_element_capacity(anna_string_t *string, size_t count);
@@ -120,6 +126,44 @@ static void asi_element_stepford(anna_string_t *dest, int eid, size_t min_availa
     anna_element_disown(old);
     
     //wprintf(L"I have my very own %.*ls\n", dest->element_length[eid], dest->element[eid]->payload);
+}
+
+/**
+   Make sure the string is at least of specified length. Oterwise, pad
+   it with null characters
+ */
+static void asi_ensure_length(anna_string_t *dest, size_t len)
+{
+    if(asi_get_length(dest) < len)
+    {
+	if(asi_null_element == 0)
+	{
+	    asi_null_element = malloc(sizeof(anna_string_element_t)+ANNA_STRING_NULL_ELEMENT_LENGTH*sizeof(wchar_t));
+	    asi_null_element->users=2;
+	    asi_null_element->capacity=ANNA_STRING_NULL_ELEMENT_LENGTH;
+	    memset(&asi_null_element->payload, 0, ANNA_STRING_NULL_ELEMENT_LENGTH*sizeof(wchar_t));
+	}
+	size_t padding = len - asi_get_length(dest);
+	asi_ensure_element_capacity(dest, 1+(padding/ANNA_STRING_NULL_ELEMENT_LENGTH));
+	while(1)
+	{
+	    dest->element[dest->element_count] = asi_null_element;
+	    dest->element_offset[dest->element_count] = 0;
+	    dest->element_count++;
+	    if(padding > ANNA_STRING_NULL_ELEMENT_LENGTH)
+	    {
+		dest->element_length[dest->element_count-1] = ANNA_STRING_NULL_ELEMENT_LENGTH;
+		padding -= ANNA_STRING_NULL_ELEMENT_LENGTH;
+	    }
+	    else
+	    {
+		dest->element_length[dest->element_count-1] = padding;
+		break;
+	    }
+	    
+	}
+	dest->length = len;
+    }
 }
 
 anna_string_location_t asi_get_location(anna_string_t *dest, size_t offset)
@@ -531,6 +575,8 @@ void asi_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
 {
     int i;
     size_t first_in_element=0;
+    asi_ensure_length(dest, offset+1);
+
     if(offset == dest->cache_pos+1)
     {
 	dest->cache_value.offset++;
@@ -665,7 +711,8 @@ void asi_replace(anna_string_t *dest,
     */
     anna_string_t tmp;
     asi_init(&tmp);
-    
+    asi_ensure_length(dest, dest_offset+dest_length);
+
     /*
       Add all the specified bits to the temporary string
     */

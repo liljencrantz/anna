@@ -105,16 +105,39 @@ static anna_object_t *anna_string_i_set_range(anna_object_t **param)
     int from = anna_range_get_from(param[1]);
     int to = anna_range_get_to(param[1]);
     int step = anna_range_get_step(param[1]);
+    int count = anna_range_get_count(param[1]);
     
-    assert(step=1);
+    anna_string_t *str1 = as_unwrap(param[0]);
+    anna_string_t *str2 = as_unwrap(param[2]);
+    int i;
     
-    asi_replace(
-	as_unwrap(param[0]), 
-	as_unwrap(param[2]), 
-	from,
-	to-from,
-	0,
-	asi_get_length(as_unwrap(param[2])));
+    if(step==1)
+    {
+	asi_replace(
+	    str1,
+	    str2,
+	    from,
+	    to-from,
+	    0,
+	    asi_get_length(as_unwrap(param[2])));
+    }
+    else
+    {
+	if(count == asi_get_length(str2))
+	{
+	    for(i=0; i<count;i++)
+	    {
+		asi_set_char(
+		    str1,
+		    from + step*i,
+		    asi_get_char(
+			str2,
+			i));
+	    }
+	    
+	}
+	
+    }
     
     return param[0];
 }
