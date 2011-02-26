@@ -390,6 +390,7 @@ static anna_object_t *anna_list_i_set_range(anna_object_t **param)
     
     int from = anna_range_get_from(param[1]);
     int step = anna_range_get_step(param[1]);
+    int to = anna_range_get_to(param[1]);
     int count = anna_range_get_count(param[1]);
     int i;
     
@@ -408,15 +409,33 @@ static anna_object_t *anna_list_i_set_range(anna_object_t **param)
 	 * take the whole array and go on */
 	count = mini(count, old_size - from);	
 	int new_size = old_size - count + count2;
-
-	/* Ensure sufficient cpacity */
-	anna_list_set_capacity(param[0], new_size);
+	anna_object_t **arr;
+	if(to > new_size)
+	{
+	    anna_list_set_capacity(param[0], to);
+	    for(i=old_size; i<new_size; i++)
+	    {
+		anna_list_set(
+		    param[0], i, null_object);		
+	    }
+	    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE) = new_size;
+	    arr = anna_list_get_payload(param[0]);
+	}
+	else
+	{
+	    if(new_size > anna_list_get_capacity(param[0]))
+	    {
+		anna_list_set_capacity(param[0], new_size);
+	    }
+	    
+	    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE) = new_size;
+	    arr = anna_list_get_payload(param[0]);
+	    memmove(&arr[from+count2], &arr[from+count], sizeof(anna_object_t *)*abs(old_size - from - count ));
+	}
+	
 	/* Set new size - don't call anna_list_set_size, since that might truncate the list if we're shrinking */
-	*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE) = new_size;
-	anna_object_t **arr = anna_list_get_payload(param[0]);
 
 	/* Move the old data */
-	memmove(&arr[from+count2], &arr[from+count], sizeof(anna_object_t *)*abs(old_size - from - count ));
 
 	/* Copy in the new data */
 	for(i=0;i<count2;i++)

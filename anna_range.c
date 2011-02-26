@@ -13,34 +13,34 @@
 #include "anna_member.h"
 #include "anna_function_type.h"
 
-int anna_range_get_from(anna_object_t *obj)
+ssize_t anna_range_get_from(anna_object_t *obj)
 {
-    return *(int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_FROM);    
+    return *(ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_FROM);    
 }
 
-int anna_range_get_to(anna_object_t *obj)
+ssize_t anna_range_get_to(anna_object_t *obj)
 {
-    return *(int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_TO);
+    return *(ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_TO);
 }
 
-int anna_range_get_step(anna_object_t *obj)
+ssize_t anna_range_get_step(anna_object_t *obj)
 {
-    return *(int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP);    
+    return *(ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP);    
 }
 
-void anna_range_set_from(anna_object_t *obj, int v)
+void anna_range_set_from(anna_object_t *obj, ssize_t v)
 {
-    *((int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_FROM)) = v;
+    *((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_FROM)) = v;
 }
 
-void anna_range_set_to(anna_object_t *obj, int v)
+void anna_range_set_to(anna_object_t *obj, ssize_t v)
 {
-    *((int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_TO)) = v;
+    *((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_TO)) = v;
 }
 
-void anna_range_set_step(anna_object_t *obj, int v)
+void anna_range_set_step(anna_object_t *obj, ssize_t v)
 {
-    *((int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP)) = v;
+    *((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP)) = v;
 }
 
 static anna_object_t *anna_range_get_from_i(anna_object_t **obj)
@@ -86,14 +86,14 @@ static anna_object_t *anna_range_init(anna_object_t **obj)
 
 static anna_object_t *anna_range_get_int(anna_object_t **param)
 {
-    int from = anna_range_get_from(param[0]);
-    int to = anna_range_get_to(param[0]);
-    int step = anna_range_get_step(param[0]);
-    int idx = anna_int_get(param[1]);
+    ssize_t from = anna_range_get_from(param[0]);
+    ssize_t to = anna_range_get_to(param[0]);
+    ssize_t step = anna_range_get_step(param[0]);
+    ssize_t idx = anna_int_get(param[1]);
     if(idx < 0){
 	return null_object;
     }
-    int res = from + step*idx;
+    ssize_t res = from + step*idx;
     if(step>0 && res >= to){
 	return null_object;
     }
@@ -103,7 +103,7 @@ static anna_object_t *anna_range_get_int(anna_object_t **param)
     return anna_int_create(res);
 }
 
-static int anna_sign(int v){
+static ssize_t anna_sign(ssize_t v){
     if(v>0)
 	return 1;
     if(v<0)
@@ -111,12 +111,12 @@ static int anna_sign(int v){
     return 0;
 }
 
-size_t anna_range_get_count(anna_object_t *obj)
+ssize_t anna_range_get_count(anna_object_t *obj)
 {
-    size_t from = anna_range_get_from(obj);
-    size_t to = anna_range_get_to(obj);
-    size_t step = anna_range_get_step(obj);
-    return 1+(to-from-anna_sign(step))/step;
+    ssize_t from = anna_range_get_from(obj);
+    ssize_t to = anna_range_get_to(obj);
+    ssize_t step = anna_range_get_step(obj);
+    return (1+(to-from-anna_sign(step))/step);
 }
 
 static anna_object_t *anna_range_get_count_i(anna_object_t **param)
@@ -128,10 +128,10 @@ static anna_object_t *anna_range_each(anna_object_t **param)
 {
     anna_object_t *body_object=param[1];
         
-    int from = anna_range_get_from(param[0]);
-    int to = anna_range_get_to(param[0]);
-    int step = anna_range_get_step(param[0]);
-    int count = 1+(to-from-anna_sign(step))/step;
+    ssize_t from = anna_range_get_from(param[0]);
+    ssize_t to = anna_range_get_to(param[0]);
+    ssize_t step = anna_range_get_step(param[0]);
+    ssize_t count = 1+(to-from-anna_sign(step))/step;
 
     size_t i;
 
