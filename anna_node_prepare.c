@@ -580,7 +580,7 @@ static void anna_node_calculate_type_internal(
 		anna_type_setup_interface(f, stack);
 		c->return_type = type_type;
 	    }
-	    return this;
+	    break;
 	}
 
 	case ANNA_NODE_ASSIGN:

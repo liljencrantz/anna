@@ -540,7 +540,7 @@ static anna_node_t *anna_macro_update(anna_node_call_t *node)
 	    (anna_node_t *)
 	    anna_node_create_call(
 		&node->location,
-		anna_node_create_call(
+		(anna_node_t *)anna_node_create_call(
 		    &node->location,
 		    (anna_node_t *)anna_node_create_identifier(&node->location,L"__memberGet__"),
 		    2,
@@ -586,7 +586,7 @@ static anna_node_t *anna_macro_update(anna_node_call_t *node)
 	    (anna_node_t *)
 	    anna_node_create_call(
 		&node->location,
-		anna_node_create_call(
+		(anna_node_t *)anna_node_create_call(
 		    &node->location,
 		    (anna_node_t *)anna_node_create_identifier(&node->location,L"__memberGet__"),
 		    2,
@@ -602,7 +602,7 @@ static anna_node_t *anna_macro_update(anna_node_call_t *node)
 		param);
 	return res;
     }
-    anna_error(node, L"Invalid number of arguments");
+    anna_error((anna_node_t *)node, L"Invalid number of arguments");
     return anna_node_create_null(&node->location);
 }
 

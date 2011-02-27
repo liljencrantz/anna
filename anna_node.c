@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "util.h"
+#include "common.h"
 #include "wutil.h"
 #include "anna_node.h"
 #include "anna_node_check.h"

@@ -152,7 +152,7 @@ static anna_object_t *anna_range_each(anna_object_t **param)
     ssize_t step = anna_range_get_step(param[0]);
     ssize_t count = 1+(to-from-anna_sign(step))/step;
 
-    if((to>from) != step>0)
+    if((to>from) != (step>0))
 	return param[0];
 
     size_t i;
