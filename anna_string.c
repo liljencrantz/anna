@@ -350,7 +350,7 @@ void anna_string_type_create(anna_stack_frame_t *stack)
     anna_native_method_create(
 	string_type, 
 	-1,
-	L"__append__String__", 
+	L"__appendAssign__String__", 
 	0, 
 	&anna_string_i_append, 
 	string_type,
@@ -375,7 +375,7 @@ void anna_string_type_create(anna_stack_frame_t *stack)
     anna_native_method_create(
 	string_type, 
 	-1,
-	L"__append__Char__", 
+	L"__appendAssign__Char__", 
 	0, 
 	&anna_string_i_append_char, 
 	string_type,

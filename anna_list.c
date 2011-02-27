@@ -548,7 +548,7 @@ static void anna_list_type_create_internal(
 	&anna_list_set_count);
 
     anna_native_method_create(
-	type, -1, L"__append__Value__", 0, 
+	type, -1, L"__appendAssign__Value__", 0, 
 	&anna_list_append, 
 	spec,
 	2, a_argv, a_argn);

@@ -659,7 +659,7 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 
 	case ANNA_NODE_ASSIGN:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
-
+	    
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);

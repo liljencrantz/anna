@@ -54,7 +54,13 @@ anna_node_t *anna_node_macro_expand(
 		    anna_function_t *fun2 = anna_function_unwrap(*stack_object_ptr);
 		    if( fun2 && (fun2->flags & ANNA_FUNCTION_MACRO))
 		    {
+						
 			anna_node_t *res = anna_macro_invoke(fun2, this2);
+			if(!res)
+			{
+			    anna_error(this, L"Macro expansion resulted in null value");
+			    return this;
+			}
 			res = anna_node_macro_expand(res, stack);
 			
 			return res;

@@ -14,20 +14,29 @@ def main(){
 //    var g = Foo();
 //    print(g,"\n");
     // (16..0:-3).each(i){print(i,"\n")}
+    var foo="aaa";
+    foo ~= "bbb";
+    print(foo,"\n");
+
+    var bar = 7;
+    bar += 2;
+
+    print(bar, "\n");
+/*
     var foo = [1,2,75,6,7, 76, 6, 7];
 
     var i=0;
 
     while(i<10){
       print(i,"\n");
-      i = i+1;
+      i++;
     }
-
+    
     foo[1..5:2]=[8,8];
     foo.each(i){print(i,"\n")}
-    
+  */  
 //    print(aaa,"\n");
-//      print("aaaa" <= "aaa", "aaa" <= "bbb");
+//    print("aaaa" <= "aaa", "aaa" <= "bbb");
 //    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}
 //    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
 }

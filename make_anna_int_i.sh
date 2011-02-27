@@ -52,7 +52,7 @@ done
 
 init="$init
 "
-for i in "add v1 + v2" "sub v1 - v2" "mul v1 * v2" "div v1 / v2" "shl v1 << v2" "shr v1 >> v2" "mod v1 % v2" "bitand v1 & v2" "bitor v1 | v2" "xor v1 ^ v2" "cshl (v1 << v2) | (v1 >> (32-v2))" "cshr (v1 >> v2) | (v1 << (32-v2))"; do
+for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1 - v2" "mul v1 * v2" "div v1 / v2" "shl v1 << v2" "shr v1 >> v2" "mod v1 % v2" "bitand v1 & v2" "bitor v1 | v2" "xor v1 ^ v2" "cshl (v1 << v2) | (v1 >> (32-v2))" "cshr (v1 >> v2) | (v1 << (32-v2))"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
     
@@ -102,7 +102,7 @@ done
 
 init="$init
 "
-for i in "getNext v+1" "getPrev v-1" ; do
+for i in "nextAssign v+1" "prevAssign v-1" ; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
     

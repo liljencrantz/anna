@@ -342,6 +342,13 @@ expression:
 	|
 	expression1 op expression
 	{
+	    anna_node_t *param[] ={$1, $3};	    
+	    $$ = (anna_node_t *)anna_node_create_call(
+		&@$,
+		$2,
+		2,
+		param);
+/*
 	    anna_node_t *param[] ={
 		$1, 
 		$2
@@ -361,6 +368,7 @@ expression:
 			param),
 		    1,
 		    param2);
+*/
 	}
         | expression1
 	| declaration_expression 
