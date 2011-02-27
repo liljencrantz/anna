@@ -159,6 +159,7 @@ anna_node_t *anna_node_macro_expand(
 	    return this;
 	}	
 	
+	case ANNA_NODE_WHILE:
 	case ANNA_NODE_AND:
 	case ANNA_NODE_OR:
 	{
@@ -681,8 +682,16 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_cond_t *d = (anna_node_cond_t *)this;
 	    anna_node_calculate_type(d->arg2, stack);
-	    d->return_type = d->arg2->return_type;	    
-	    break;   
+	    d->return_type = d->arg2->return_type;
+	    break;
+	}
+	
+	case ANNA_NODE_WHILE:
+	{
+	    anna_node_cond_t *d = (anna_node_cond_t *)this;
+	    anna_node_calculate_type(d->arg2, stack);
+	    d->return_type = d->arg2->return_type;
+	    break;
 	}
 	
 	case ANNA_NODE_IF:
@@ -696,10 +705,19 @@ static void anna_node_calculate_type_internal(
 	    {
 		break;
 	    }
+	    if(
+		(d->block1->node_type != ANNA_NODE_CLOSURE) || 
+		(d->block1->node_type != ANNA_NODE_CLOSURE))
+	    {
+		anna_error(this, L"Parameters to if expression must be closures");
+		break;
+	    }
+	    anna_node_closure_t *b1 = (anna_node_closure_t *)d->block1;
+	    anna_node_closure_t *b2 = (anna_node_closure_t *)d->block2;
 	    
 	    d->return_type = anna_type_intersect(
-		d->block1->return_type,
-		d->block2->return_type);
+		b1->payload->return_type,
+		b2->payload->return_type);
 	    
 	    break;
 	}	

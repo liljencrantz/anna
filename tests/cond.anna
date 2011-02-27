@@ -1,0 +1,6 @@
+
+def main(){
+    print((1 or 2) + 1,"\n");
+    var foo = if(null) { 1 } else { 2 }
+    print(foo +1, "\n");
+}

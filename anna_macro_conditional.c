@@ -36,6 +36,17 @@ static anna_node_t *anna_macro_if(anna_node_call_t *node)
 	    (anna_node_call_t *)node->child[1],
 	    (anna_node_call_t *)node->child[2]);
 }
+
+static anna_node_t *anna_macro_while(anna_node_call_t *node)
+{
+    return (anna_node_t *)
+	anna_node_create_cond(
+	    &node->location, 
+	    ANNA_NODE_WHILE,
+	    node->child[0],
+	    node->child[1]);
+}
+
 /*
 static anna_node_t *anna_macro_else(anna_node_call_t *node,
 				    anna_function_t *function, 
@@ -148,96 +159,4 @@ static anna_node_t *anna_macro_or(anna_node_call_t *node, anna_function_t *funct
 	    param);
 }
 
-static anna_object_t *anna_function_while(anna_object_t **param)
-{
-    anna_object_t *result = null_object;
-    while(anna_function_wrapped_invoke(param[0], 0, 0, 0) != null_object)
-    {
-	result = anna_function_wrapped_invoke(param[1], 0, 0, 0);
-    }
-    return result;
-}
-
-static anna_node_t *anna_macro_while(anna_node_call_t *node, 
-				     anna_function_t *function,
-				     anna_node_list_t *parent)
-{
-    CHECK_CHILD_COUNT(node,L"while macro", 2);
-    CHECK_NODE_BLOCK(node->child[1]);
-    
-    anna_node_macro_expand_child(node, 1);
-    
-    anna_type_t *t2 = anna_node_get_return_type(node->child[1], function->stack_template);    
-    
-    CHECK(t2,node->child[1], L"Unknown type for second argument to while");	
-
-    anna_node_t *condition = 
-	(anna_node_t *)
-	anna_node_create_dummy(
-	    &node->location,
-	    anna_function_wrap(
-		anna_function_create(
-		    anna_util_identifier_generate(
-			L"whileConditionBlock",
-			&(node->location)), 0, 
-		    anna_node_create_call(
-			&node->location,
-			(anna_node_t *)anna_node_create_identifier(
-			    &node->location,
-			    L"__block__"),
-			1,
-			&node->child[0]), 
-		    t2, 0, 0, 0, 
-		    function->stack_template,
-		    function->return_pop_count+1)),
-	    1);
-    
-    condition = anna_node_macro_expand(condition);
-
-    wchar_t *argn[]=
-	{
-	    L"condition",
-	    L"body"
-	}
-    ;
-    
-    anna_node_t *param[]=
-	{
-	    condition,
-	    node->child[1]
-	}
-    ;
-    
-    anna_type_t *argv[]=
-	{
-	    anna_node_get_return_type(param[0], function->stack_template),
-	    t2
-	}
-    ;
-
-//      FIXME: I think the return values are all wrong here, need to
-//      make sure we're rturning the function result, not the function
-//      type itself...
-
-    return (anna_node_t *)
-	anna_node_create_call(
-	    &node->location,
-	    (anna_node_t *)anna_node_create_dummy( 
-		&node->location,
-		anna_function_wrap(
-		    anna_native_create(
-			anna_util_identifier_generate(
-			    L"whileAnonymous",
-			    &(node->location)),
-			0,
-			(anna_native_t)anna_function_while,
-			t2,
-			2,
-			argv,
-			argn,
-			0)),
-		0),
-	    2,
-	    param);
-}
 */

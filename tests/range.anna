@@ -5,4 +5,7 @@ def main(){
     print((0..9:3).count, "\n"); // 3
     print((10..0:-3).count, "\n"); // 4
     print((9..0:-3).count, "\n"); // 3
+    print((9..0).count, "\n"); // 9
+    print((9..0:3).count, "\n"); // null
+    (9..0:3).each(val){print(val)} // Nothing
 }

@@ -531,7 +531,7 @@ static anna_node_t *anna_macro_range(anna_node_call_t *node)
     {
 	anna_node_call_add_child(
 	    node,
-	    (anna_node_t *)anna_node_create_int_literal(0,1));
+	    (anna_node_t *)anna_node_create_null(0));
     }
 
     return (anna_node_t *)node;
@@ -558,6 +558,7 @@ void anna_macro_init(anna_stack_frame_t *stack)
     anna_macro_add(stack, L"__or__", &anna_macro_or);
     anna_macro_add(stack, L"__and__", &anna_macro_and);
     anna_macro_add(stack, L"__if__", &anna_macro_if);
+    anna_macro_add(stack, L"while", &anna_macro_while);
     anna_macro_add(stack, L"ast", &anna_macro_ast);
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);

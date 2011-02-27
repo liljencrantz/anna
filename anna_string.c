@@ -58,13 +58,29 @@ size_t anna_string_count(anna_object_t *obj)
     return asi_get_length(str);
 }
 
+ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
+{
+    if(idx < 0)
+    {
+	return (ssize_t)anna_string_count(str) + idx;
+    }
+    return idx;
+}
+
 
 static anna_object_t *anna_string_i_set_int(anna_object_t **param)
 {
     if(param[1]==null_object)
+	return param[2];
+    if(param[2]==null_object)
 	return null_object;
     wchar_t ch = anna_char_get(param[2]);
-    asi_set_char(as_unwrap(param[0]), anna_int_get(param[1]), ch);
+    ssize_t idx = anna_string_idx_wrap(param[0], anna_int_get(param[1]));
+    if(idx < 0)
+    {
+	return param[2];
+    }
+    asi_set_char(as_unwrap(param[0]), idx, ch);
     return param[2];
 }
 
@@ -72,7 +88,13 @@ static anna_object_t *anna_string_i_get_int(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
-    return anna_char_create(asi_get_char(as_unwrap(param[0]), anna_int_get(param[1])));
+    ssize_t idx = anna_string_idx_wrap(param[0], anna_int_get(param[1]));
+    if(idx < 0 || idx >= anna_string_count(param[0]))
+    {
+	return null_object;
+    }
+    
+    return anna_char_create(asi_get_char(as_unwrap(param[0]), idx));
 }
 
 static anna_object_t *anna_string_i_get_range(anna_object_t **param)
@@ -80,9 +102,9 @@ static anna_object_t *anna_string_i_get_range(anna_object_t **param)
     if(param[1]==null_object)
 	return null_object;
     
-    int from = anna_range_get_from(param[1]);
-    int to = anna_range_get_to(param[1]);
-    int step = anna_range_get_step(param[1]);
+    ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
+    ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
+    ssize_t step = anna_range_get_step(param[1]);
     
     assert(step==1);
     
@@ -102,14 +124,14 @@ static anna_object_t *anna_string_i_set_range(anna_object_t **param)
     if(param[2]==null_object)
 	return null_object;
 
-    int from = anna_range_get_from(param[1]);
-    int to = anna_range_get_to(param[1]);
-    int step = anna_range_get_step(param[1]);
-    int count = anna_range_get_count(param[1]);
+    ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
+    ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
+    ssize_t step = anna_range_get_step(param[1]);
+    ssize_t count = (1+(to-from-anna_sign(step))/step);
     
     anna_string_t *str1 = as_unwrap(param[0]);
     anna_string_t *str2 = as_unwrap(param[2]);
-    int i;
+    ssize_t i;
     
     if(step==1)
     {
@@ -133,10 +155,8 @@ static anna_object_t *anna_string_i_set_range(anna_object_t **param)
 		    asi_get_char(
 			str2,
 			i));
-	    }
-	    
-	}
-	
+	    }   
+	}	
     }
     
     return param[0];

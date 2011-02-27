@@ -40,7 +40,8 @@ void anna_range_set_to(anna_object_t *obj, ssize_t v)
 
 void anna_range_set_step(anna_object_t *obj, ssize_t v)
 {
-    *((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP)) = v;
+    if(v != 0)
+	*((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP)) = v;
 }
 
 static anna_object_t *anna_range_get_from_i(anna_object_t **obj)
@@ -78,9 +79,19 @@ static anna_object_t *anna_range_set_step_i(anna_object_t **obj)
 
 static anna_object_t *anna_range_init(anna_object_t **obj)
 {
-    anna_range_set_from(obj[0], anna_int_get(obj[1]));
-    anna_range_set_to(obj[0], anna_int_get(obj[2]));
-    anna_range_set_step(obj[0], anna_int_get(obj[3]));
+    ssize_t from = anna_int_get(obj[1]);
+    anna_range_set_from(obj[0], from);
+    ssize_t to = anna_int_get(obj[2]);    
+    anna_range_set_to(obj[0], to);
+    if(obj[3] == null_object)
+    {
+	anna_range_set_step(obj[0], (to>from)?1:-1);
+    }
+    else
+    {
+	ssize_t step = anna_int_get(obj[3]);
+	anna_range_set_step(obj[0], step != 0 ? step:1);
+    }
     return obj[0];
 }
 
@@ -103,12 +114,20 @@ static anna_object_t *anna_range_get_int(anna_object_t **param)
     return anna_int_create(res);
 }
 
-static ssize_t anna_sign(ssize_t v){
+ssize_t anna_sign(ssize_t v){
     if(v>0)
 	return 1;
     if(v<0)
 	return -1;
     return 0;
+}
+
+int anna_range_is_valid(anna_object_t *obj)
+{
+    ssize_t from = anna_range_get_from(obj);
+    ssize_t to = anna_range_get_to(obj);
+    ssize_t step = anna_range_get_step(obj);
+    return (to>from)==(step>0);
 }
 
 ssize_t anna_range_get_count(anna_object_t *obj)
@@ -121,7 +140,7 @@ ssize_t anna_range_get_count(anna_object_t *obj)
 
 static anna_object_t *anna_range_get_count_i(anna_object_t **param)
 {
-    return anna_int_create(anna_range_get_count(*param));
+    return anna_range_is_valid(*param)?anna_int_create(anna_range_get_count(*param)):null_object;
 }
 
 static anna_object_t *anna_range_each(anna_object_t **param)
@@ -132,6 +151,9 @@ static anna_object_t *anna_range_each(anna_object_t **param)
     ssize_t to = anna_range_get_to(param[0]);
     ssize_t step = anna_range_get_step(param[0]);
     ssize_t count = 1+(to-from-anna_sign(step))/step;
+
+    if((to>from) != step>0)
+	return param[0];
 
     size_t i;
 
@@ -169,9 +191,8 @@ void anna_range_type_create(struct anna_stack_frame *stack)
 	0, null_type);
     anna_member_create(
 	range_type, ANNA_MID_RANGE_STEP,  L"!rangeStep", 
-	0, null_type);
+	0, null_type);    
     
-
     anna_type_t *c_argv[] = 
 	{
 	    range_type,

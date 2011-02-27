@@ -339,16 +339,6 @@ expression:
 		2,
 		param);
 	}
-        |
-	IF '(' expression ')' block opt_else
-        {
-	    anna_node_t *param[] ={$3, (anna_node_t *)$5, (anna_node_t *)$6};	    
-	    $$ = (anna_node_t *)anna_node_create_call(
-		&@$,
-		(anna_node_t *)anna_node_create_identifier(&@$,L"__if__"),
-		3,
-		param);
-        }
 	|
 	expression1 op expression
 	{
@@ -729,7 +719,16 @@ expression10:
 	{
 	    $$ = (anna_node_t *)$1; 
 	}
-
+        |
+	IF '(' expression ')' block opt_else
+        {
+	    anna_node_t *param[] ={$3, (anna_node_t *)$5, (anna_node_t *)$6};	    
+	    $$ = (anna_node_t *)anna_node_create_call(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(&@$,L"__if__"),
+		3,
+		param);
+        }
 ;
 
 op:
@@ -1370,13 +1369,8 @@ int anna_yacc_lex (
 	}
     }
     
-    if(val == '}') 
-    {
-	was_end_brace = 1;
-    }
-    
+    was_end_brace = (val == '}');
     return val;
-    
 }
 
 void anna_yacc_error (

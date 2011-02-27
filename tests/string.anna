@@ -2,38 +2,58 @@
 def main(){
 
     /* Test replacing substring with other string of same length */
+    print("Test 1\n");
     var a = "aaabbbccc";
     a[3..6] = "ddd";
     print(a,"\n");
 
     /* Test replacing substring with other string of different length */
+    print("Test 2\n");
     a = "aaabbbccc";
     a[3..6] = "dddEEE";
     print(a,"\n");
 
     /* Test replacing substring past end of original string */
+    print("Test 3\n");
     a = "aaabbbccc";
     a[7..15] = "eeeee";
     print(a,"\n");
 
     /* Test replacing substring completely past original string */
+    print("Test 4\n");
     a = "a";
     a[7..15] = "eeeee";
     a.each(idx, val){print(idx, ": ", val.ordinal, "\n")}
 
     /* Test replacing non-consecutive characters */
+    print("Test 5\n");
     a = "aaabbbccc";
     a[1..7:2] = "qqq";
     print(a,"\n");
 
     /* Try replacing non-consecutive characters with wrong length of replacement. This should be a no-op. */
+    print("Test 6\n");
     a = "aaabbbccc";
     a[1..7:2] = "qqqaaa";
     print(a,"\n");
 
     /* Test replacing non-consecutive characters past end of original string. */
+    print("Test 7\n");
     a = "aaabbbccc";
     a[1..15:10] = "qq";
     a.each(idx, val){print(idx, ": ", val.ordinal, "\n")}
 
+    /* Test replacing by index from end */
+    print("Test 8\n");
+    a="abc";
+    a[-1] = 'C';
+    print(a);
+    print("\n");    
+
+    /* Test replacing ranges by index from end */
+    print("Test 9\n");
+    a="abc";
+    a[-2..-1] = "BC";
+    print(a);
+    print("\n");
 }

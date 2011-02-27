@@ -701,6 +701,19 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	    }
 	}
 
+	case ANNA_NODE_WHILE:
+	{
+	    anna_node_cond_t *n = (anna_node_cond_t *)this;
+	    anna_object_t *res = null_object;
+	    anna_object_t *fun = anna_node_invoke((anna_node_t *)n->arg2, stack);
+	    while(anna_node_invoke(n->arg1, stack) != null_object)
+	    {
+		wprintf(L"Tralala\n");
+		res = anna_function_wrapped_invoke(fun, 0, 0, 0, stack);
+	    }
+	    return res;
+	}
+
 	case ANNA_NODE_IF:
 	{
 	    anna_node_if_t *n = (anna_node_if_t *)this;
@@ -1028,6 +1041,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	    break;   
 	}
 
+	case ANNA_NODE_WHILE:
 	case ANNA_NODE_OR:
 	case ANNA_NODE_AND:
 	{

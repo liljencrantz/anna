@@ -1,6 +1,10 @@
+Test 1
 aaadddccc
+Test 2
 aaadddEEEccc
+Test 3
 aaabbbceeeee
+Test 4
 0: 97
 1: 0
 2: 0
@@ -13,8 +17,11 @@ aaabbbceeeee
 9: 101
 10: 101
 11: 101
+Test 5
 aqaqbqccc
+Test 6
 aaabbbccc
+Test 7
 0: 97
 1: 113
 2: 97
@@ -27,3 +34,7 @@ aaabbbccc
 9: 0
 10: 0
 11: 113
+Test 8
+abC
+Test 9
+aBCc
