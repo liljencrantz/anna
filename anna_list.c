@@ -169,8 +169,26 @@ static anna_object_t *anna_list_set_count(anna_object_t **param)
 
 static anna_object_t *anna_list_append(anna_object_t **param)
 {
-    anna_list_add(param[0], param[1]);
-    return param[1];
+    size_t i;
+
+    size_t capacity = anna_list_get_capacity(param[0]);
+    size_t size = anna_list_get_size(param[0]);
+    size_t size2 = anna_list_get_size(param[1]);
+    size_t new_size = size+size2;
+    
+    if(capacity <= (new_size))
+    {
+	anna_list_set_capacity(param[0], maxi(8, new_size*2));
+    }
+    anna_object_t **ptr = anna_list_get_payload(param[0]);
+    anna_object_t **ptr2 = anna_list_get_payload(param[1]);
+    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE) = new_size;
+    for(i=0; i<size2; i++)
+    {
+	ptr[size+i]=ptr2[i];
+    }
+    
+    return param[0];
 }
 
 static anna_object_t *anna_list_each(anna_object_t **param)
@@ -494,6 +512,19 @@ static void anna_list_type_create_internal(
 	}
     ;
 
+    anna_type_t *l_argv[] = 
+	{
+	    type,
+	    type
+	}
+    ;
+    
+    wchar_t *l_argn[]=
+	{
+	    L"this", L"value"
+	}
+    ;
+
 
     anna_native_method_create(
 	type,
@@ -551,7 +582,7 @@ static void anna_list_type_create_internal(
 	type, -1, L"__appendAssign__Value__", 0, 
 	&anna_list_append, 
 	spec,
-	2, a_argv, a_argn);
+	2, l_argv, l_argn);
     
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!ListIterFunction", spec);

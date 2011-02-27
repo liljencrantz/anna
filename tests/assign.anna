@@ -1,0 +1,35 @@
+
+def main(){
+    print("Int\n");
+    var i = 3;
+    i++;
+    print(i, "\n");
+    print(i--, "\n");
+    i+= 3;
+    print(i, "\n");
+    i-= 1;
+    print(i, "\n");
+
+    print("Float\n");
+    var f = 0.0;
+    f += 5;
+    print(f, "\n");
+
+    print("Char\n");
+    var c = 'a';
+    c += 3;
+    print(c, "\n");
+
+    print("List\n");
+    var l = [1];
+    print(l.count, l[0], l[1], "\n");
+    l ~= [5];
+    print(l.count, l[0], l[1], "\n");
+
+    print("String\n");
+    var s = "aaa";
+    s ~= "bbb";
+    s ~= 'c';
+    print(s, "\n");
+
+}

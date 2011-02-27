@@ -57,7 +57,7 @@ done
 init="$init
 "
 
-for i in "add +" "sub -"; do
+for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2 -d ' ')
     
@@ -76,6 +76,31 @@ static anna_object_t *anna_char_i_$name(anna_object_t **param)
 }
 "
 done
+
+init="$init
+"
+for i in "nextAssign v+1" "prevAssign v-1" ; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+    
+    init="$init
+    anna_native_method_create(
+	char_type, -1, L\"__${name}__\", 0, 
+	&anna_char_i_${name}, 
+	char_type,
+	1, i_argv, argn);
+"
+
+    echo "
+static anna_object_t *anna_char_i_$name(anna_object_t **param)
+{
+    wchar_t v = anna_char_get(param[0]);
+    return anna_char_create($op);
+}
+"
+done
+
+
 
 echo "
 static void anna_char_type_i_create(anna_stack_frame_t *stack)
