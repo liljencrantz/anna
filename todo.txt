@@ -10,7 +10,6 @@ Make specialization work for user defined types
 Type annotations
 Annotate method overloads with aliases
 Always check aliases when resolving method calls during compile time
-while loop
 true type intersections
 Bytecode format
 Bytecode generator
@@ -24,6 +23,8 @@ Tests for floating point math
 HTML documentation extractor
 Complex type
 Figure out how to hande ranges thet implicity go to the end of an enclosing list, e.g. hangle a syntax like foo[1..]
+String format function
+Cast operator
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

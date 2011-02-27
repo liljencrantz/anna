@@ -758,8 +758,8 @@ void asi_print_debug(anna_string_t *dest)
 void asi_print_regular(anna_string_t *dest)
 {
     int i;
-    for(i=0;i<dest->element_count; i++) {
-	wprintf(L"%.*ls", dest->element_length[i], &(dest->element[i]->payload[dest->element_offset[i]]));
+    for(i=0;i<asi_get_length(dest); i++) {
+	putwchar(asi_get_char(dest, i));
     }
 }
 

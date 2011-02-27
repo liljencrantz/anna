@@ -67,7 +67,6 @@ ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
     return idx;
 }
 
-
 static anna_object_t *anna_string_i_set_int(anna_object_t **param)
 {
     if(param[1]==null_object)
