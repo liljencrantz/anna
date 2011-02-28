@@ -311,7 +311,7 @@ int hash_ptr_cmp( void *a,
    Allocate heap memory for creating a new list and initialize
    it. Equivalent to calling malloc and al_init.
 */
-array_list_t *al_new();
+array_list_t *al_new(void);
 
 /** 
 	Initialize the list. 
@@ -515,7 +515,7 @@ void sb_init( string_buffer_t * );
 /**
    Allocate memory for storing a stringbuffer and init it
 */
-string_buffer_t *sb_new();
+string_buffer_t *sb_new(void);
 
 /**
    Append a part of a string to the buffer.

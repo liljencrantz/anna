@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common.h"
 #include "util.h"
 #include "anna_type.h"
 #include "anna_node_create.h"
@@ -355,7 +356,27 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 
 }
 
-anna_node_t *anna_type_setup_interface_internal(anna_type_t *type, anna_stack_frame_t *parent)
+void anna_type_prepare_member_internal(
+    anna_type_t *type,
+    anna_node_declare_t *decl,
+    anna_stack_frame_t *stack)
+{
+    anna_node_calculate_type(
+	decl,
+	stack);
+    anna_member_create(
+	type,
+	-1,
+	decl->name,
+	0,
+	decl->return_type
+	);
+    
+}
+
+anna_node_t *anna_type_setup_interface_internal(
+    anna_type_t *type, 
+    anna_stack_frame_t *parent)
 {
 
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
@@ -372,14 +393,60 @@ anna_node_t *anna_type_setup_interface_internal(anna_type_t *type, anna_stack_fr
 	
 	anna_node_call_t *attribute_list = 
 	    (anna_node_call_t *)type->definition->child[2];
-
+	
 	anna_node_call_t *node = type->body;
-	
-	
-    }
+	size_t i;
 
+	for(i=0; i<node->child_count; i++)
+	{
+	    anna_node_t *decl = node->child[i];
+	    if((decl->node_type != ANNA_NODE_DECLARE) && 
+	       (decl->node_type != ANNA_NODE_CONST))
+	    {
+		anna_error(decl, L"Only declarations are allowed directly inside class definitions\n");
+		continue;
+	    }
+	    anna_type_prepare_member_internal(
+		type,
+		(anna_node_declare_t *)node->child[i],
+		parent);
+	}
+    }
     return 0;
 }
+
+void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_frame_t *stack) 
+{
+    if(!type)
+    {
+	return;
+    }
+    
+    anna_node_call_t *node = type->body;
+    size_t i;
+    wchar_t *name = anna_mid_get_reverse(mid);
+    
+    for(i=0; i<node->child_count; i++)
+    {
+	anna_node_t *decl = node->child[i];
+	if((decl->node_type != ANNA_NODE_DECLARE) && 
+	   (decl->node_type != ANNA_NODE_CONST))
+	{
+	    continue;
+	}
+	anna_node_declare_t *decl2 = (anna_node_declare_t *)node->child[i];
+	if( wcscmp(decl2->name, name) == 0)
+	{
+	    anna_type_prepare_member_internal(
+		type,
+		decl2,
+		stack);
+	}
+	
+    }
+    
+}
+
 
 void anna_type_setup_interface(anna_type_t *type, anna_stack_frame_t *parent)
 {

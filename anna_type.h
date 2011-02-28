@@ -55,4 +55,6 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz);
  */
 void anna_type_setup_interface(anna_type_t *type, anna_stack_frame_t *parent);
 
+void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_frame_t *stack);
+
 #endif

@@ -502,6 +502,7 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 
+	    anna_type_prepare_member(type, n->mid, stack);
 	    anna_member_t *member = anna_member_get(type, n->mid);
 	    
 	    if(!member)
@@ -607,6 +608,7 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 	    
+	    anna_type_prepare_member(type, c->mid, stack);
 	    anna_member_t *member = anna_member_get(type, c->mid);
 	    if(!member)
 	    {

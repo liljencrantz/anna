@@ -144,7 +144,7 @@ extern wchar_t *program_name;
 /**
   Print a stack trace to stderr
 */
-void show_stackframe();
+void show_stackframe(void);
 
 /**
    Returns a newly allocated wide character string equivalent of the
