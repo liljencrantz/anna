@@ -29,7 +29,7 @@ int debug_level=1;
 /**
    String buffer used by the wsetlocale function
 */
-static string_buffer_t *setlocale_buff=0;
+//static string_buffer_t *setlocale_buff=0;
 
 void show_stackframe() 
 {

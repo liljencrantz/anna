@@ -1,15 +1,15 @@
 /** \file util.h
 	Generic utilities library.
 
-	All containers in this library except strinb_buffer_t are written
+	All containers in this library except string_buffer_t are written
 	so that they don't allocate any memory until the first element is
 	inserted into them. That way it is known to be very cheap to
-	initialize various containers at startup, supporting the fish
+	initialize various containers at startup, supporting the anna
 	notion of doing as much lazy initalization as possible.
 */
 
-#ifndef FISH_UTIL_H
-#define FISH_UTIL_H
+#ifndef UTIL_H
+#define UTIL_H
 
 #include <wchar.h>
 #include <stdarg.h>
@@ -170,6 +170,14 @@ int maxi( int a, int b );
    Returns the smaller of two ints
  */
 int mini( int a, int b );
+
+static inline ssize_t sign(ssize_t v){
+    if(v>0)
+	return 1;
+    if(v<0)
+	return -1;
+    return 0;
+}
 
 /*
   All the datastuctures below autoresize. The queue, stack and
@@ -591,5 +599,7 @@ void b_destroy( buffer_t *b );
    \return 0 on error, non-zero otherwise
 */
 int b_append( buffer_t *b, const void *d, ssize_t len );
+
+
 
 #endif

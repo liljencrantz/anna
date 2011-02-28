@@ -57,8 +57,7 @@ anna_node_call_t *node_cast_call(anna_node_t *node)
 
 anna_node_identifier_t *node_cast_identifier(anna_node_t *node) 
 {
-    if(node->node_type!=ANNA_NODE_IDENTIFIER &&
-       node->node_type!=ANNA_NODE_IDENTIFIER_TRAMPOLINE)
+    if(node->node_type!=ANNA_NODE_IDENTIFIER)
     {
 	anna_error(node, L"Expected an identifier node, got node of type %d", node->node_type);
 	CRASH;
@@ -481,7 +480,7 @@ anna_object_t *anna_node_member_get_wrap_invoke(
 }
 
 static anna_object_t *anna_trampoline(
-    anna_function_t *fun, 
+    anna_function_t *fun,
     anna_stack_frame_t *stack)
 {
     anna_object_t *orig = fun->wrapper;
@@ -640,15 +639,6 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	case ANNA_NODE_IDENTIFIER:
 	    return anna_node_identifier_invoke((anna_node_identifier_t *)this, stack);	    
 
-	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
-	{
-	    return anna_trampoline(
-		anna_function_unwrap(anna_node_identifier_invoke(
-		    (anna_node_identifier_t *)this, 
-		    stack)), 
-		stack);
-	}
-	
 	case ANNA_NODE_STRING_LITERAL:
 	    return anna_node_string_literal_invoke((anna_node_string_literal_t *)this, stack);
 
@@ -1061,7 +1051,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	}	
 
 	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:

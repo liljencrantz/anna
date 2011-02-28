@@ -94,12 +94,12 @@ static struct wdirent my_wdirent;
 /**
    For wgettext: Current position in the ring
 */
-static int curr_buff=0;
+//static int curr_buff=0;
 
 /**
    For wgettext: Buffer used by translate_wcs2str
 */
-static char *wcs2str_buff=0;
+//static char *wcs2str_buff=0;
 /**
    For wgettext: Size of buffer used by translate_wcs2str
 */

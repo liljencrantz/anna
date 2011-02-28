@@ -9,6 +9,7 @@
 #include "util.h"
 #include "anna.h"
 #include "anna_type.h"
+#include "anna_member.h"
 
 static hash_table_t anna_mid_identifier;
 static array_list_t anna_mid_identifier_reverse;

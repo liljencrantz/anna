@@ -83,7 +83,7 @@ void (*util_set_oom_handler( void (*h)(void *) ))(void *)
 	return old;
 }
 
-void util_die_on_oom( void *p )
+void util_die_on_oom( void *unused(p) )
 {
 }
 
@@ -107,7 +107,7 @@ void hash_init2( hash_table_t *h,
 				 int (*compare_func)(void *key1, void *key2),
 				 size_t capacity)
 {
-	int i;
+	size_t i;
 	size_t sz = 32;
 	while( sz < (capacity*4/3) )
 		sz*=2;
@@ -374,7 +374,7 @@ int hash_contains( hash_table_t *h,
 /**
    Push hash value into array_list_t
 */
-static void hash_put_data( void *key,
+static void hash_put_data( void *unused(key),
 						   void *data,
 						   void *al )
 {
@@ -392,7 +392,7 @@ void hash_get_data( hash_table_t *h,
 /**
    Push hash key into array_list_t
 */
-static void hash_put_key( void *key, void *data, void *al )
+static void hash_put_key( void *key, void *unused(data), void *al )
 {
 	al_push( (array_list_t *)al, key );
 }

@@ -1,6 +1,7 @@
 User defined methods
 User defined members
 User defined properties
+Generic operators
 Validate number of arguments
 Validate types in assignments.
 Validate types in arguments for calls.
@@ -10,7 +11,7 @@ Make specialization work for user defined types
 Type annotations
 Annotate method overloads with aliases
 Always check aliases when resolving method calls during compile time
-true type intersections
+True type intersections
 Bytecode format
 Bytecode generator
 Bytecode interpreter
@@ -22,9 +23,10 @@ Tests for integer math
 Tests for floating point math
 HTML documentation extractor
 Complex type
-Figure out how to hande ranges thet implicity go to the end of an enclosing list, e.g. hangle a syntax like foo[1..]
+Figure out how to hande ranges that implicity go to the end of an enclosing list, e.g. hangle a syntax like foo[1..]. Might also be useful for iteration, e.g. (1..).each(idx){...}
 String format function
 Cast operator
+Escaping and error detection in char literals
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

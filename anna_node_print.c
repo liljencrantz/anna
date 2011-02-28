@@ -109,7 +109,6 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	}
 	
 	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_IDENTIFIER_TRAMPOLINE:
 	{
 	    anna_indent(indentation);
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
@@ -364,7 +363,7 @@ void anna_node_print_code(anna_node_t *node)
 	    case WEOF:
 		if(is_marking)
 		{
-		    fwprintf(stderr, L"\e[0m");		
+		    fwprintf(stderr, L"\x1b[0m");		
 		}
 		return;
 	}
@@ -378,7 +377,7 @@ void anna_node_print_code(anna_node_t *node)
 	{
 	    if(is_marking)
 	    {
-		fwprintf(stderr, L"\e[0m");		
+		fwprintf(stderr, L"\x1b[0m");		
 	    }
 	    is_marking=0;
 	    fwprintf(stderr, L"%*d: ", 6, current_line);
@@ -391,11 +390,11 @@ void anna_node_print_code(anna_node_t *node)
 	{
 	    if(mark)
 	    {
-		fwprintf(stderr, L"\e[31m");
+		fwprintf(stderr, L"\x1b[31m");
 	    }
 	    else 
 	    {
-		fwprintf(stderr, L"\e[0m");		
+		fwprintf(stderr, L"\x1b[0m");		
 	    }
 	    
 	}

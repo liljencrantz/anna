@@ -1304,7 +1304,7 @@ void anna_yacc_init()
    Reads the input stream from the lexer, keep track of line and column
    number, and ignore any tokens of type IGNORE.
  */
-int anna_yacc_lex_inner (
+static int anna_yacc_lex_inner (
     YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
 {
     if(anna_yacc_do_init)

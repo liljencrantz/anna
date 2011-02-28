@@ -31,7 +31,6 @@ def main(){
       print(i,"\n");
       i++;
     }
-    
     foo[1..5:2]=[8,8];
     foo.each(i){print(i,"\n")}
   */  

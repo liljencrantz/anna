@@ -371,14 +371,12 @@ static void asi_ensure_element_capacity(anna_string_t *string, size_t count)
 	}
 	else 
 	{
-	    
-	    
 	    anna_string_element_t **new_element = realloc(string->element,(sizeof(anna_string_element_t*)+sizeof(size_t)*2)*count);
 	    size_t *new_element_offset = ((size_t *)new_element) + count;
 	    size_t *new_element_length = new_element_offset + count;
 	    //memcpy(new_element, string->element, sizeof(anna_string_element_t *)*string->element_count);
-	    memmove(new_element_length, (void *)string->element_length-(void *)string->element+(void *)new_element, sizeof(size_t)*string->element_count);
-	    memmove(new_element_offset, (void *)string->element_offset-(void *)string->element+(void *)new_element, sizeof(size_t)*string->element_count);
+	    memmove(new_element_length, (char *)string->element_length-(char *)string->element+(char *)new_element, sizeof(size_t)*string->element_count);
+	    memmove(new_element_offset, (char *)string->element_offset-(char *)string->element+(char *)new_element, sizeof(size_t)*string->element_count);
 	    string->element = new_element;
 	    string->element_offset = new_element_offset;
 	    string->element_length = new_element_length;

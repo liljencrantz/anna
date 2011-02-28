@@ -9,20 +9,11 @@
 #include "util.h"
 #include "anna_function.h"
 #include "anna.h"
-#include "anna_node.h"
 #include "anna_module.h"
 #include "anna_int.h"
-#include "anna_float.h"
-#include "anna_string.h"
-#include "anna_char.h"
-#include "anna_list.h"
 #include "anna_function_type.h"
 #include "anna_type.h"
-#include "anna_node_create.h"
-#include "anna_type_type.h"
-#include "anna_macro.h"
 #include "anna_member.h"
-#include "anna_node_wrapper.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -108,12 +99,12 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
 static int hash_function_type_func(void *a)
 {
     anna_function_type_key_t *key = (anna_function_type_key_t *)a;
-    int res = (int)key->result ^ key->flags;
-    int i;
+    int res = (int)(long)key->result ^ key->flags;
+    size_t i;
     
     for(i=0;i<key->argc; i++)
     {
-	res = (res<<19) ^ (int)key->argv[i] ^ (res>>13);
+	res = (res<<19) ^ (int)(long)key->argv[i] ^ (res>>13);
 	res ^= wcslen(key->argn[i]);
     }
     
@@ -122,7 +113,7 @@ static int hash_function_type_func(void *a)
 
 static int hash_function_type_comp(void *a, void *b)
 {
-    int i;
+    size_t i;
     
     anna_function_type_key_t *key1 = (anna_function_type_key_t *)a;
     anna_function_type_key_t *key2 = (anna_function_type_key_t *)b;
@@ -159,7 +150,7 @@ anna_type_t *anna_type_for_function(
     //static int count=0;
     //if((count++)==10) {CRASH};
     flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO);
-    int i;
+    size_t i;
     static anna_function_type_key_t *key = 0;
     static size_t key_sz = 0;
     size_t new_key_sz = sizeof(anna_function_type_key_t) + sizeof(anna_type_t *)*argc;
@@ -352,7 +343,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     {
 	return 0;
     }
-    int i;
+    size_t i;
     int res = 0;    
 
     if(!contender){CRASH;}
@@ -432,10 +423,12 @@ size_t anna_native_method_create(
     anna_member_t *m = type->mid_identifier[mid];
     //debug(0,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     m->is_method=1;
+    anna_native_t func_u;
+    func_u.function=func;
     type->static_member[m->offset] = 
 	anna_function_wrap(
 	    anna_native_create(
-		name, flags, (anna_native_t)func, result, 
+		name, flags, func_u, result, 
 		argc, argv, argn,
 		0));
     return (size_t)mid;
@@ -444,7 +437,7 @@ size_t anna_native_method_create(
 size_t anna_method_create(anna_type_t *type,
 			  mid_t mid,
 			  wchar_t *name,
-			  int flags,
+			  int unused(flags),
 			  anna_function_t *definition)		
 {
     mid = anna_member_create(type, mid, name, 1, definition->wrapper->type);
@@ -459,7 +452,7 @@ size_t anna_method_create(anna_type_t *type,
 /**
    This method is the best ever! All method calls on the null object run this
 */
-anna_object_t *anna_i_null_function(anna_object_t **node_base)
+anna_object_t *anna_i_null_function(anna_object_t **unused(node_base))
 {
     return null_object;
 }

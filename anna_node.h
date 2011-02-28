@@ -6,14 +6,17 @@
 #include "anna.h"
 #include "anna_stack.h"
 
+/* These are the node types visible to macros */
 #define ANNA_NODE_CALL 0
 #define ANNA_NODE_IDENTIFIER 1
-#define ANNA_NODE_IDENTIFIER_TRAMPOLINE 15
 #define ANNA_NODE_INT_LITERAL 2
 #define ANNA_NODE_STRING_LITERAL 3
 #define ANNA_NODE_CHAR_LITERAL 4
 #define ANNA_NODE_FLOAT_LITERAL 5
 #define ANNA_NODE_NULL 6
+
+/* These are internal AST node types that are created by one of the
+ * later AST transformation passes. */
 #define ANNA_NODE_DUMMY 7
 #define ANNA_NODE_CLOSURE 8
 #define ANNA_NODE_ASSIGN 9
@@ -21,9 +24,6 @@
 #define ANNA_NODE_MEMBER_GET_WRAP 11
 #define ANNA_NODE_MEMBER_SET 12
 #define ANNA_NODE_CONSTRUCT 13
-#define ANNA_NODE_RETURN 14
-#define ANNA_NODE_BLOB 16
-#define ANNA_NODE_IMPORT 17
 #define ANNA_NODE_DECLARE 18
 #define ANNA_NODE_CONST 19
 #define ANNA_NODE_OR 20
@@ -34,6 +34,12 @@
 #define ANNA_NODE_SPECIALIZE 25
 #define ANNA_NODE_TYPE_LOOKUP 26
 #define ANNA_NODE_TYPE 27
+
+/* These AST node types probably are't needed and should be removed */
+#define ANNA_NODE_RETURN 14
+#define ANNA_NODE_BLOB 16
+#define ANNA_NODE_IMPORT 17
+
 
 struct YYLTYPE
 {
@@ -477,8 +483,10 @@ anna_node_t *anna_node_create_simple_template(
 /**
    Check if the node is a call node with an identifier with the
    specified name as its function.
- */
+*/
 int anna_node_is_call_to(anna_node_t *this, wchar_t *name);
+
+void anna_yacc_init();
 
 #endif
 

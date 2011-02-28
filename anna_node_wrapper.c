@@ -8,6 +8,7 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
+#include "anna_node_wrapper.h"
 #include "anna_type.h"
 #include "anna_string.h"
 #include "anna_list.h"
@@ -91,7 +92,7 @@ static anna_object_t *anna_node_wrapper_i_print(anna_object_t **param)
 }
 
 
-void anna_node_create_wrapper_type(anna_stack_frame_t *stack)
+static void anna_node_create_wrapper_type(anna_stack_frame_t *stack)
 {
     node_wrapper_type = anna_type_native_create(L"Node", stack_global);
 

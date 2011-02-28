@@ -114,14 +114,6 @@ static anna_object_t *anna_range_get_int(anna_object_t **param)
     return anna_int_create(res);
 }
 
-ssize_t anna_sign(ssize_t v){
-    if(v>0)
-	return 1;
-    if(v<0)
-	return -1;
-    return 0;
-}
-
 int anna_range_is_valid(anna_object_t *obj)
 {
     ssize_t from = anna_range_get_from(obj);
@@ -135,7 +127,7 @@ ssize_t anna_range_get_count(anna_object_t *obj)
     ssize_t from = anna_range_get_from(obj);
     ssize_t to = anna_range_get_to(obj);
     ssize_t step = anna_range_get_step(obj);
-    return (1+(to-from-anna_sign(step))/step);
+    return (1+(to-from-sign(step))/step);
 }
 
 static anna_object_t *anna_range_get_count_i(anna_object_t **param)
@@ -150,7 +142,7 @@ static anna_object_t *anna_range_each(anna_object_t **param)
     ssize_t from = anna_range_get_from(param[0]);
     ssize_t to = anna_range_get_to(param[0]);
     ssize_t step = anna_range_get_step(param[0]);
-    ssize_t count = 1+(to-from-anna_sign(step))/step;
+    ssize_t count = 1+(to-from-sign(step))/step;
 
     if((to>from) != (step>0))
 	return param[0];

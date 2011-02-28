@@ -10,12 +10,10 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_wrapper.h"
-#include "anna_stack.h"
 #include "anna_macro.h"
 #include "anna_type.h"
 #include "anna_util.h"
 #include "anna_function.h"
-#include "anna_prepare.h"
 #include "anna_node_check.h"
 #include "anna_node_create.h"
 
@@ -28,17 +26,6 @@ typedef struct
     anna_node_t **argv;
 }
     templatize_key_t;
-*/
-/*
-static wchar_t *anna_assign_operator_names[][2] = 
-{
-    {L"__increase__",L"__add__"},
-    {L"__decrease__",L"__sub__"},
-    {L"__append__",L"__join__"},
-    {L"__next__",L"__getNext__"},
-    {L"__prev__",L"__getPrev__"},
-}
-    ;
 */
 /*
 static int templatize_key_compare(void *k1, void *k2)
@@ -67,32 +54,7 @@ static int templatize_key_hash(void *k1)
     return result;
 }
 */
-/*
-static anna_node_t *anna_macro_module(
-    anna_node_call_t *node,
-    anna_function_t *function,
-    anna_node_list_t *parent)
-{
-//    debug(0,L"Create new module with %d elements at %d\n", node->child_count, node);
-    int return_pop_count = 1+function->return_pop_count;
 
-    anna_function_t *result = 
-	anna_function_create_from_block(
-	    node,
-	    function->stack_template,
-	    return_pop_count);
-    result->definition->child[1] = anna_node_create_identifier(0, L"Object");
-    result->flags |= ANNA_FUNCTION_MODULE;
-    assert(object_type);
-    result->name = L"!moduleMacroFunction";
-    
-    //al_push(&function->child_function, result);
-    return (anna_node_t *)anna_node_create_dummy(
-	&node->location,
-	anna_function_wrap(result),
-	1);
-}
-*/
 static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 {
 

@@ -374,7 +374,7 @@ anna_node_t *anna_type_setup_interface_internal(anna_type_t *type, anna_stack_fr
 	    (anna_node_call_t *)type->definition->child[2];
 
 	anna_node_call_t *node = type->body;
-
+	
 	
     }
 

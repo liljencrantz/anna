@@ -86,7 +86,7 @@ void anna_function_type_key_print(anna_function_type_key_t *k)
     wprintf(L")\n");
 }
 
-void anna_function_type_base_create()
+static void anna_function_type_base_create()
 {
 
     if(function_type_base)

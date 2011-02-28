@@ -10,6 +10,7 @@
 #include "util.h"
 #include "wutil.h"
 #include "anna_node.h"
+#include "anna_node_create.h"
 //#include "anna_node_check.h"
 //#include "anna_node_wrapper.h"
 //#include "anna_int.h"
@@ -282,15 +283,6 @@ anna_node_identifier_t *anna_node_create_identifier(anna_location_t *loc, wchar_
     return result;
 }
 
-anna_node_identifier_t *anna_node_create_identifier_trampoline(anna_location_t *loc, wchar_t *name)
-{
-    anna_node_identifier_t *result = calloc(1,sizeof(anna_node_call_t));
-    result->node_type = ANNA_NODE_IDENTIFIER_TRAMPOLINE;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->name = name;
-    return result;
-}
-
 anna_node_t *anna_node_create_null(anna_location_t *loc)
 {
     anna_node_t *result = calloc(1,sizeof(anna_node_t));
@@ -394,7 +386,7 @@ anna_node_call_t *anna_node_create_member_declare(
 */
     return r;
 }
-
+/*
 anna_node_t *anna_node_create_pair(
     anna_location_t *loc,
     anna_node_t *first,
@@ -413,7 +405,7 @@ anna_node_t *anna_node_create_pair(
     anna_node_call_add_child(r, second);
     return (anna_node_t *)r;
 }
-
+*/
 anna_node_call_t *anna_node_create_property(
     anna_location_t *loc,
     wchar_t *name,
