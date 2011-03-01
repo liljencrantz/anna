@@ -212,16 +212,17 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
     
 }
 
+
 static anna_node_t *anna_macro_type(anna_node_call_t *node)
 {
     CHECK_CHILD_COUNT(node,L"type macro", 3);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_BLOCK(node->child[1]);
-    CHECK_NODE_BLOCK(node->child[2]);
+    CHECK_NODE_BLOCK(node->child[2]);    
     
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
     anna_type_t *type = anna_type_create(name, node);
-    
+
     return (anna_node_t *)anna_node_create_type(
 	&node->location,
 	type);

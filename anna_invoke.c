@@ -188,11 +188,10 @@ anna_object_t *anna_function_invoke(
 //	wprintf(L"We have a this parameter: %d\n", this);
     }
     int is_variadic = ANNA_IS_VARIADIC(function);
-    //  wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);
-    
+    //  wprintf(L"Function %ls has variadic flag set to %d\n", function->name, function->flags);    
     for(i=0; i<(function->input_count-offset-is_variadic); i++)
     {
-//	wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
+	wprintf(L"eval param %d of %d \n", i, function->input_count - is_variadic - offset);
 	argv[i+offset]=anna_node_invoke(param[i], param_invoke_stack);
     }
 

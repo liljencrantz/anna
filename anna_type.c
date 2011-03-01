@@ -32,6 +32,56 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     }
 }
 
+static void anna_type_add_implicit_this(
+    anna_type_t *type)
+{
+    size_t i;
+    anna_node_call_t *body= type->body;
+    
+    for(i=0; i<body->child_count; i++)
+    {
+	if(anna_node_is_call_to(body->child[i], L"__var__"))
+	{
+	    anna_node_call_t *decl =(anna_node_call_t *)body->child[i];
+	    if(decl->child_count >= 3)
+	    {
+		if(anna_node_is_call_to(decl->child[2], L"__def__"))
+		{
+		    anna_node_call_t *def =(anna_node_call_t *)decl->child[2];
+		    if(def->child_count >= 5)
+		    {
+			if(anna_node_is_call_to(def->child[2], L"__block__"))
+			{
+			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
+			    anna_node_t *param[] ={
+				anna_node_create_identifier(0, L"this"), 
+				anna_node_create_dummy(0, anna_type_wrap(type), 0), 
+				anna_node_create_null(0)
+			    };	    
+			    anna_node_call_t *this_decl = anna_node_create_call(
+				0,
+				(anna_node_t *)anna_node_create_identifier(
+				    0,
+				    L"__var__"),
+				3, param);
+			    
+			    anna_node_call_prepend_child(
+				def_decl,
+				this_decl);
+			    
+			    anna_node_print(decl);
+			    
+			}
+		    }	    
+		}
+	    }   
+	}
+    }
+    
+}
+
+
+
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 {
     anna_type_t *result = calloc(1,sizeof(anna_type_t));
@@ -43,6 +93,7 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     if(definition)
     {
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
+	anna_type_add_implicit_this(result);
     }
     return result;  
 }
@@ -368,17 +419,38 @@ static void anna_type_prepare_member_internal(
 	return;
     }
     
+    int is_static = 0;
+    int is_method = 0;
+//    wprintf(L"Register %ls\n", decl->name);
+    
+    if(decl->value->node_type == ANNA_NODE_CLOSURE)
+    {
+	is_static = 1;
+	is_method = 1;
+    }
+    
     anna_node_calculate_type(
 	decl,
 	stack);
-    anna_member_create(
+    
+    mid_t mid = anna_member_create(
 	type,
 	-1,
 	decl->name,
-	0,
+	is_static,
 	decl->return_type
 	);
     
+    anna_member_t *member = anna_member_get(
+	type, mid);
+    
+    if(is_method)
+    {
+	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
+	member->is_method = 1;	
+	*anna_static_member_addr_get_mid(type, mid) = anna_function_wrap(clo->payload);
+	anna_function_setup_interface(clo->payload, stack);
+    }
 }
 
 anna_node_t *anna_type_setup_interface_internal(

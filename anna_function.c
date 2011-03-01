@@ -46,7 +46,9 @@ static anna_node_t *anna_function_setup_arguments(
     
     anna_type_t **argv = f->input_type = malloc(sizeof(anna_type_t *)*argc);
     wchar_t **argn = f->input_name = malloc(sizeof(wchar_t *)*argc);
-        
+    
+//    wprintf(L"%d arguments!\n", argc);
+    
     for(i=0; i<argc; i++)
     {
 	//declarations->child[i] = anna_node_prepare(declarations->child[i], function, parent);

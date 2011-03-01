@@ -238,11 +238,11 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
     anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
-	if(stack_ptr)
-	{
-//	    debug(0,L"Invoking wrapped function %ls with parent stack\n", (*function_ptr)->name);
+//	if(stack_ptr)
+//	{
+//	    debug(88,L"Invoking wrapped function %ls with parent stack\n", (*function_ptr)->name);
 //	    anna_stack_print(*stack_ptr);
-	}
+//	}
         return anna_function_invoke(*function_ptr, this, param_count, param, local, *stack_ptr);
     }
     else 

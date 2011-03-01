@@ -571,11 +571,13 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	    if(res == null_object){
 		return null_object;
 	    }
-//	    wprintf(L"MEMBER CALL on object: ");
-//	    anna_object_print_val(obj);
-//	    wprintf(L"\n");
-//	    anna_node_print(this);
-	    
+/*
+	    wprintf(L"MEMBER CALL on object:\n");
+	    anna_object_print(obj);
+	    wprintf(L"Member:\n");
+	    anna_object_print(res);
+	    wprintf(L"\nNode:\n");
+*/
 	    return anna_function_wrapped_invoke(res, m->is_method?obj:0, this2->child_count, this2->child, stack);
 	}
 	
