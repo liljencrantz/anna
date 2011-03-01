@@ -42,8 +42,7 @@ static anna_node_t *anna_function_setup_arguments(
     
 //    wprintf(
 //	L"Adding input arguments to function\n");
-    
-    
+        
     anna_type_t **argv = f->input_type = malloc(sizeof(anna_type_t *)*argc);
     wchar_t **argn = f->input_name = malloc(sizeof(wchar_t *)*argc);
     
@@ -110,8 +109,6 @@ static anna_node_t *anna_function_setup_arguments(
 		CRASH;
 	    }
 	    
-	    
-	    
 	    anna_stack_declare(
 		f->stack_template, 
 		argn[i],
@@ -144,7 +141,7 @@ static anna_node_t *anna_function_setup_arguments(
 		}
 	    }
 */
-	    
+	
     }
     return 0;
 }

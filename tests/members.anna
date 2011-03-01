@@ -1,0 +1,17 @@
+
+type MyType {
+    def meth()
+    {
+	print("Foo.poo()\n");	
+    }
+    var Int mem;
+}
+
+def main(){
+    var g = MyType();
+    g.meth();
+    print(g.mem, "\n");
+    g.mem=5;
+    print(g.mem, "\n");
+}
+
