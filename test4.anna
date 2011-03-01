@@ -14,8 +14,9 @@ type Foo {
 def main(){
     var g = Foo();
     print(g,"\n");
+    print(g.plopp,"\n");
     g.plopp = 4;
-    print(g.plopp);
+    print(g.plopp,"\n");
     // (16..0:-3).each(i){print(i,"\n")}
     var foo="aaa";
     foo ~= "bbb";

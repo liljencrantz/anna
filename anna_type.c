@@ -356,11 +356,18 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 
 }
 
-void anna_type_prepare_member_internal(
+static void anna_type_prepare_member_internal(
     anna_type_t *type,
     anna_node_declare_t *decl,
     anna_stack_frame_t *stack)
 {
+    if(hash_contains(
+	   &type->name_identifier,
+	   decl->name))
+    {
+	return;
+    }
+    
     anna_node_calculate_type(
 	decl,
 	stack);
@@ -417,7 +424,7 @@ anna_node_t *anna_type_setup_interface_internal(
 
 void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_frame_t *stack) 
 {
-    if(!type)
+    if(!type->definition)
     {
 	return;
     }
