@@ -8,7 +8,7 @@ anna_node_t *anna_node_macro_expand(
 {
 /*
     debug(0,L"EXPAND\n");
-    anna_node_print(this);
+    anna_node_print(0, this);
 */  
     switch( this->node_type )
     {
@@ -256,7 +256,7 @@ anna_stack_frame_t *anna_node_register_declarations(
     int i;
 /*
     debug(0,L"WOO WEE WOO %d declarations in ast\n", sz);
-    anna_node_print(this);
+    anna_node_print(0, this);
 */  
     for(i=0; i<sz; i++)
     {
@@ -321,7 +321,7 @@ static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_fram
 {
     debug(0,L"Figure out type from:\n");
     
-    anna_node_print(node);
+    anna_node_print(0, node);
     
     if(node->node_type == ANNA_NODE_IDENTIFIER)
     {
@@ -354,6 +354,7 @@ static void anna_node_calculate_type_internal(
     anna_node_t *this,
     anna_stack_frame_t *stack)
 {
+    
     switch(this->node_type)
     {
 	
@@ -451,7 +452,7 @@ static void anna_node_calculate_type_internal(
 	    if(fun_type == type_type)
 	    {
 //		debug(0,L"Hmmm, node is of type type...");
-//		anna_node_print(call->function);
+//		anna_node_print(0, call->function);
 		
 		anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
 		if(type)
@@ -565,7 +566,7 @@ static void anna_node_calculate_type_internal(
 		c->return_type = c->payload->wrapper->type;
 	    }
 //	    debug(0,L"AAA3 %ls\n", c->payload->name);
-//	    anna_function_setup_body(c->payload, stack);
+	    anna_function_setup_body(c->payload);
 //	    debug(0,L"AAA4 %ls\n", c->payload->name);
 	    
 	    break;
@@ -766,10 +767,12 @@ void anna_node_calculate_type(
     anna_node_t *this,
     anna_stack_frame_t *stack)
 {
+    debug(0, L"Calculate type of node:\n");
+    anna_node_print(0, this);
     if(this->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
     {
 	anna_error(this, L"Circular type checking dependency");
-	anna_node_print(this);
+	anna_node_print(0, this);
     }
     else if(this->return_type == 0)
     {

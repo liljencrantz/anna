@@ -8,7 +8,7 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 /*
     wprintf(L"\noperator wrapper called with %d children\n", node->child_count);
    
-    anna_node_print(node);
+    anna_node_print(0, node);
     wprintf(L"\n");
 */ 
     CHECK(node->child_count >=2,node, L"Too few arguments");
@@ -41,7 +41,7 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
     }
 /*
     wprintf(L"LALALA\n");    
-    anna_node_print(node->child[0]);
+    anna_node_print(0, node->child[0]);
     wprintf(L"\n");
 */  
     t1 = anna_node_get_return_type(node->child[arg_offset], function->stack_template);
@@ -146,7 +146,7 @@ static anna_node_t *anna_macro_assign(struct anna_node_call *node)
 	{
 
 	    anna_node_call_t *call = node_cast_call(node->child[0]);
-	    anna_node_print(call->function);
+	    anna_node_print(0, call->function);
 
 	    if(call->function->node_type == ANNA_NODE_IDENTIFIER)
 	    {
@@ -212,7 +212,7 @@ static anna_node_t *anna_macro_member_get(anna_node_call_t *node)
 {
 /*
   wprintf(L"member_get on node at %d\n", node);
-  anna_node_print((anna_node_t *)node);
+  anna_node_print(0, (anna_node_t *)node);
   wprintf(L"\n");
 */
     CHECK_CHILD_COUNT(node,L". operator", 2);
@@ -230,7 +230,7 @@ static anna_node_t *anna_macro_member_set(anna_node_call_t *node)
 {
 /*
   wprintf(L"member_get on node at %d\n", node);
-  anna_node_print((anna_node_t *)node);
+  anna_node_print(0, (anna_node_t *)node);
   wprintf(L"\n");
 */
     CHECK_CHILD_COUNT(node,L"member assignment", 3);

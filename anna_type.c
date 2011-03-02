@@ -69,7 +69,7 @@ static void anna_type_add_implicit_this(
 				def_decl,
 				this_decl);
 			    
-			    anna_node_print(decl);
+			    anna_node_print(0, decl);
 			    
 			}
 		    }	    
@@ -450,6 +450,7 @@ static void anna_type_prepare_member_internal(
 	member->is_method = 1;	
 	*anna_static_member_addr_get_mid(type, mid) = anna_function_wrap(clo->payload);
 	anna_function_setup_interface(clo->payload, stack);
+	anna_function_setup_body(clo->payload);
     }
 }
 

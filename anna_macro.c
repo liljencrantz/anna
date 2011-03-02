@@ -378,7 +378,7 @@ static anna_node_t *anna_macro_var(struct anna_node_call *node)
     anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
     
     debug(0,L"Declare a stack varaible %ls with initial value\n", name->name);
-    anna_node_print(node->child[2]);
+    anna_node_print(0, node->child[2]);
     
     return (anna_node_t *)
 	anna_node_create_declare(
@@ -398,7 +398,7 @@ static anna_node_t *anna_macro_const(struct anna_node_call *node)
     anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
     
     debug(0,L"Declare a stack constant %ls with initial value\n", name->name);
-    anna_node_print(node->child[2]);
+    anna_node_print(0, node->child[2]);
     
     return (anna_node_t *)
 	anna_node_create_declare(

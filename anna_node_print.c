@@ -188,6 +188,20 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 	    break;
 	}
 
+	case ANNA_NODE_CONST:
+	{
+	    anna_indent(indentation);
+	    anna_node_declare_t *this2 = (anna_node_declare_t *)this;
+	    fwprintf(stderr,L"*__const__(\n");
+	    anna_indent(indentation+1);
+	    fwprintf(stderr,L"%ls;\n", this2->name);
+	    anna_node_print_internal(this2->type, indentation+1);
+	    fwprintf(stderr,L";\n");
+	    anna_node_print_internal(this2->value, indentation+1);
+	    fwprintf(stderr,L")");
+	    break;
+	}
+
 	case ANNA_NODE_MEMBER_SET:
 	{
 	    anna_indent(indentation);
@@ -326,13 +340,13 @@ void anna_node_print_internal(anna_node_t *this, int indentation)
 }
 
 
-void anna_node_print(anna_node_t *this)
+void anna_node_print(int level, anna_node_t *this)
 {
-    if(debug_level < 2)
+    if( level < debug_level )
 	return;
-    
-  anna_node_print_internal(this, 0);
-  fwprintf(stderr,L"\n");
+
+    anna_node_print_internal(this, 0);
+    fwprintf(stderr,L"\n");
 }
 
 void anna_node_print_code(anna_node_t *node)

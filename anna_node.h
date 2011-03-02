@@ -429,7 +429,7 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
    rereadable by the parser, and can hence be used as a serialization
    format. This is not the case for a prepared AST tree.
  */
-void anna_node_print(anna_node_t *this);
+void anna_node_print(int level, anna_node_t *this);
 
 /**
   Parse the specified file and return an unprepared AST tree that

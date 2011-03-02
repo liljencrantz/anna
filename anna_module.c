@@ -251,6 +251,8 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     if(module)
 	return anna_stack_wrap(module);
 
+    debug(0,L"Load module %ls...\n", module_name);    
+
     anna_stack_frame_t *module_stack;
 
     if(wcscmp(module_name, L"lang") == 0)
@@ -277,7 +279,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     }
 
     debug(0,L"Parsed AST for module %ls:\n", module_name);    
-//    anna_node_print(program);    
+//    anna_node_print(0, program);    
 
     /*
       Implicitly add an import
@@ -317,14 +319,15 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     }
     debug(0,L"Macros expanded in module %ls\n", module_name);    
         
-    //  anna_node_print(node);
-        
+    anna_node_print(0, node);
+    
     module_stack = anna_node_register_declarations(node, 0);
     module_stack->parent = stack_global;
     if(anna_error_count)
     {
-	debug(4,
-	    L"Found %d error(s) during loading of module %ls\n", 
+	debug(
+	    4,
+	    L"Critical: Found %d error(s) during loading of module %ls\n", 
 	    anna_error_count, module_name);
 	exit(1);
     }
@@ -366,14 +369,15 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    anna_node_each(ggg->child[i], &anna_module_calculate_type, module_stack);
 	    if(anna_error_count)
 	    {
-		debug(4,
+		debug(
+		    4,
 		    L"Found %d error(s) during module loading\n",
 		    anna_error_count);
 		exit(1);
 	    }
 	}
 	
-	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);	
+//	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);
 	
 	debug(0,L"Return types set up for module %ls\n", module_name);	
 	
@@ -402,7 +406,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	anna_stack_populate_wrapper(module_stack);
 
 //	debug(0,L"Declarations assigned\n");
-//	anna_node_print(program);
+//	anna_node_print(0, program);
 	//  }
     
     recursion_level--;

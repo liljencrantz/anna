@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common.h"
 #include "anna_function.h"
 #include "anna_type.h"
 #include "anna_macro.h"
@@ -104,8 +105,8 @@ static anna_node_t *anna_function_setup_arguments(
 	    else
 	    {
 		anna_error(decl->child[1],  L"Could not determine argument type");
-		anna_node_print(decl->child[1]);
-		anna_node_print(type_node);
+		anna_node_print(0, decl->child[1]);
+		anna_node_print(0, type_node);
 		CRASH;
 	    }
 	    
@@ -220,7 +221,7 @@ void anna_function_setup_interface(
 	wprintf(
 	    L"Function's internal declarations registered (%d)\n",
 	    f->stack_template->count);
-	anna_node_print(f->body);
+	anna_node_print(0, f->body);
 */	
 #ifdef ANNA_CHECK_STACK_ENABLED
 	f->stack_template->function = f;
@@ -274,7 +275,11 @@ void anna_function_setup_interface(
     
     anna_function_setup_wrapper(f);
     if(f->body)
-	anna_node_each(f->body, &anna_node_calculate_type, f->stack_template);
+    {
+	int i;
+	for(i=0;i<f->body->child_count; i++)
+	    anna_node_each(f->body->child[i], &anna_node_calculate_type, f->stack_template);
+    }
 
 }
 
@@ -290,6 +295,8 @@ void anna_function_setup_body(
     if(f->body)
     {
 	int i;
+	debug(0, L"Setup return type of all AST nodes in function %ls\n", f->name);
+	
 	for(i=0; i<f->body->child_count; i++)
 	    anna_node_each((anna_node_t *)f->body->child[i], (anna_node_function_t)&anna_node_calculate_type, f->stack_template);
 	anna_node_each((anna_node_t *)f->body, (anna_node_function_t)&anna_node_prepare_body,f->stack_template);
@@ -400,7 +407,7 @@ anna_function_t *anna_function_create_from_definition(
 	result->name = wcsdup(name);
 /*
 	wprintf(L"Creating function '%ls' from ast\n", name);
-	anna_node_print(definition);
+	anna_node_print(0, definition);
 */	
     }
     else {
@@ -410,7 +417,7 @@ anna_function_t *anna_function_create_from_definition(
     
 /*
     wprintf(L"LALALAGGG\n");
-    anna_node_print(definition);
+    anna_node_print(0, definition);
 */  
     
     return result;

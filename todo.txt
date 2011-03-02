@@ -1,5 +1,3 @@
-User defined methods
-User defined members
 User defined properties
 Generic operators
 Validate number of arguments
@@ -22,7 +20,7 @@ Tests for nested macro members
 Tests for integer math
 Tests for floating point math
 HTML documentation extractor
-Complex type
+Built in Complex type
 Figure out how to hande ranges that implicity go to the end of an enclosing list, e.g. hangle a syntax like foo[1..]. Might also be useful for iteration, e.g. (1..).each(idx){...}
 String format function
 Cast operator

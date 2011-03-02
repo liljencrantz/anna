@@ -14,6 +14,7 @@ int anna_error_count=0;
 
 void anna_error(anna_node_t *node, wchar_t *msg, ...)
 {
+    
     va_list va;
     va_start( va, msg );	
     fwprintf(stderr,L"Error in %ls, on line %d:\n", 
@@ -26,5 +27,6 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
     va_end( va );
     fwprintf(stderr, L"\n\n");
     anna_error_count++;
+    CRASH;
 }
 

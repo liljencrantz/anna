@@ -141,7 +141,7 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 {
 /*
     wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
-    anna_node_print(node);
+    anna_node_print(0, node);
 */
     switch(node->function->node_type)
     {
@@ -233,7 +233,7 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
 	default:
 	{
 /*	    wprintf(L"Function is not an identifier, not a macro:\n");
-	    anna_node_print(node->function);
+	    anna_node_print(0, node->function);
 	    wprintf(L"\n");
 */
 	}
@@ -333,14 +333,14 @@ static anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this,
     //wprintf(L"ACCESSING MEMBER %ls\n", anna_mid_get_reverse(this->mid));
     /*
       wprintf(L"Run member get node:\n");
-      anna_node_print(this);
+      anna_node_print(0, this);
     */
     assert(this->object);
     anna_object_t *obj = anna_node_invoke(this->object, stack);
     if(!obj)
     {
 	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-	anna_node_print(this->object);
+	anna_node_print(0, this->object);
 	CRASH;
     }
     anna_member_t *m = obj->type->mid_identifier[this->mid];
@@ -375,14 +375,14 @@ static anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
 {
     /*
       wprintf(L"Run member set node:\n");
-      anna_node_print(this);
+      anna_node_print(0, this);
     */
     assert(this->object);
     anna_object_t *obj = anna_node_invoke(this->object, stack);
     if(!obj)
     {
 	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-	anna_node_print(this->object);
+	anna_node_print(0, this->object);
 	CRASH;
     }
 
@@ -406,7 +406,7 @@ static anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
 	if(!val)
 	{
 	    anna_error(this->value, L"Critical: Node evaluated to null pointer:");
-	    anna_node_print(this->value);
+	    anna_node_print(0, this->value);
 	    CRASH;
 	}
 
@@ -427,14 +427,14 @@ static anna_object_t *anna_node_member_get_wrap_invoke(
 {
     /*
       wprintf(L"Run wrapped member get node:\n");  
-      anna_node_print(this);
+      anna_node_print(0, this);
     */
     assert(this->object);
     anna_object_t *obj = anna_node_invoke(this->object, stack);
     if(!obj)
     {
 	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-	anna_node_print(this->object);
+	anna_node_print(0, this->object);
 	CRASH;
     }
     //anna_object_print(obj);
@@ -473,7 +473,7 @@ static anna_object_t *anna_node_member_get_wrap_invoke(
     if(!wrapped)
     {
 	anna_error(this->object, L"Critical: Failed to wrap object:");
-	anna_node_print(this->object);
+	anna_node_print(0, this->object);
 	CRASH;
     }    
     return wrapped;
@@ -703,7 +703,6 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	    anna_object_t *fun = anna_node_invoke((anna_node_t *)n->arg2, stack);
 	    while(anna_node_invoke(n->arg1, stack) != null_object)
 	    {
-		wprintf(L"Tralala\n");
 		res = anna_function_wrapped_invoke(fun, 0, 0, 0, stack);
 	    }
 	    return res;
@@ -979,6 +978,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
     {
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_SPECIALIZE:
+	case ANNA_NODE_CONSTRUCT:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    anna_node_each(n->function, fun, aux);
@@ -1062,7 +1062,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
-	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
 	case ANNA_NODE_TYPE:

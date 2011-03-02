@@ -87,7 +87,7 @@ static anna_object_t *anna_node_wrapper_i_error(anna_object_t **param)
 static anna_object_t *anna_node_wrapper_i_print(anna_object_t **param)
 {
     anna_node_t *this = anna_node_unwrap(param[0]);
-    anna_node_print(this);
+    anna_node_print(0, this);
     return param[0];
 }
 
