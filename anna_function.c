@@ -273,7 +273,9 @@ void anna_function_setup_interface(
     }
     
     anna_function_setup_wrapper(f);
-    
+    if(f->body)
+	anna_node_each(f->body, &anna_node_calculate_type, f->stack_template);
+
 }
 
 void anna_function_setup_body(

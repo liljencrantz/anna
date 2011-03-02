@@ -3,48 +3,75 @@ importMacro(fluff);
 
 def guck(Int blipp){3.1}
 
-type Foo {
-    def poo()
+type Complex
+{
+    var Float real;
+    var Float img;
+    
+    def Object __init__(Float r, Float i)
     {
-	print("Foo.poo()\n");	
+	this.real = r;
+	this.img = i;
     }
-//    var Int plopp;
+    
+    def __add__Complex__(Complex other)
+    {
+    	Complex(
+	    this.real + other.real, 
+	    this.img + other.img);
+    }
+    
+    def __add__Float__(Float other)
+    {
+	Complex(this.real + other, this.img);
+    }
+    
+    def Complex __sub__Complex__(Complex other)
+    {
+	Complex(this.real - other.real, this.img - other.img);
+    }
+
+    def __sub__Float__(Float other)
+    {
+	Complex(this.real - other, this.img);
+    }
+    
+    def __mul__Complex__(Complex other)
+    {
+	Complex(
+	    this.real * other.real -this.img*other.img, 
+	    this.real * other.img + this.img*other.real);
+    }
+    
+    def __mul__Float__(Float other)
+    {
+	Complex(this.real * other, this.img*other);
+    }
+    
+    def __div__Complex__(Complex other)
+    {
+	var divisor = other.real*other.real + other.img*other.img;
+	Complex(
+	    (this.real * other.real  + this.img*other.img)/divisor, 
+	    (this.img * other.real - this.real*other.img)/divisor);
+    }
+    
+    def __div__Float__(Float other)
+    {
+	 Complex(this.real / other, this.img / other);
+    }
+    
+    def __abs__()
+    {
+	@sqrt (this.real*this.real + this.img*this.img);
+    }
+    
 }
 
+
 def main(){
-    var g = Foo();
-    print(g.poo, "\n");
-    g.poo();
-/*
-    print(g,"\n");
-    print(g.plopp,"\n");
-    g.plopp = 4;
-    print(g.plopp,"\n");
-    // (16..0:-3).each(i){print(i,"\n")}
-    var foo="aaa";
-    foo ~= "bbb";
-    print(foo,"\n");
-
-    var bar = 7;
-    bar += 2;
-
-    print(bar, "\n");
-*/
-/*
-    var foo = [1,2,75,6,7, 76, 6, 7];
-
-    var i=0;
-
-    while(i<10){
-      print(i,"\n");
-      i++;
-    }
-    foo[1..5:2]=[8,8];
-    foo.each(i){print(i,"\n")}
-  */  
-//    print(aaa,"\n");
-//    print("aaaa" <= "aaa", "aaa" <= "bbb");
-//    guck.outputType.member.each(mem){print("Member ", mem.name, " is ", if(mem.isStatic){"static"} else {"not static"},"\n")}
-//    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){say(val)}
+    var g = Complex(1.0, 3.0);
+    var gg = Complex(2.0, 1.0);
+    print((g*gg).real, " ", (g*gg).img, "\n");
 }
 

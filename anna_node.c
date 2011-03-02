@@ -544,6 +544,8 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 		anna_error(this2->object, L"Critical: Object %ls does not have a member %ls",
 			   obj->type->name,
 			   anna_mid_get_reverse(this2->mid));
+		anna_type_print(obj->type);
+		
 	    }
 	    anna_object_t *res;
 	    if(m->is_property)

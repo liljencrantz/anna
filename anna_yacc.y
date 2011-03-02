@@ -1136,7 +1136,7 @@ declaration_expression:
 	;
 
 variable_declaration:
-	opt_templatized_type identifier opt_declaration_init
+	templatized_type identifier opt_declaration_init
 	{
 	    anna_node_t *param[] ={$2, $1, 0};	    
  	    param[2] = $3?$3:anna_node_create_null(&@$);

@@ -204,7 +204,7 @@ anna_member_t *anna_member_method_search(
     mid_t mid, 
     size_t argc, anna_type_t **argv)
 {
-//    wprintf(L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
+    wprintf(L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
     wchar_t *prefix = anna_mid_get_reverse(mid);
@@ -214,25 +214,25 @@ anna_member_t *anna_member_method_search(
 
     for(i=0; i<anna_type_member_count(type); i++)
     {
-//	wprintf(L"Check %ls\n", members[i]);
+	wprintf(L"Check %ls\n", members[i]);
 	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
 	    continue;
-//	wprintf(L"%ls matches, name-wise\n", members[i]);
+	wprintf(L"%ls matches, name-wise\n", members[i]);
 	
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
 	anna_type_t *mem_type = member->type;
-//	wprintf(L"Is of type %ls\n", mem_type->name);
+	wprintf(L"Is of type %ls\n", mem_type->name);
 	anna_function_type_key_t *mem_fun = anna_function_unwrap_type(mem_type);
 	if(mem_fun)
 	{
-//	    wprintf(L"YAY, it's a function (%d arguments)\n", mem_fun->argc);
+	    wprintf(L"YAY, it's a function (%d arguments)\n", mem_fun->argc);
 	    int j;
 	    
 	    if(mem_fun->argc != argc+1)
 		continue;	    
 	    //wprintf(L"YAY, right number of arguments (%d)\n", argc);
 	    
-//	    wprintf(L"Check %ls against %ls\n",argv[0]->name, mem_fun->argv[1]->name);
+	    wprintf(L"Check %ls against %ls\n",argv[0]->name, mem_fun->argv[1]->name);
 	    int my_fault_count = 0;
 	    int ok = 1;
 	    
@@ -246,11 +246,15 @@ anna_member_t *anna_member_method_search(
 		else
 		{
 		    ok=0;
+		    wprintf(L"Argument %d, %ls does not match %ls!\n", j, 
+			    argv[j]->name, mem_fun->argv[j+1]->name);
 		}
 		
 	    }
 	    
 	    if(ok){
+		wprintf(L"Match!\n");
+		
 		if(!match || my_fault_count < fault_count)
 		{
 		    match = members[i];
@@ -264,12 +268,12 @@ anna_member_t *anna_member_method_search(
 	}
 	
     }
-/*
+
     if(match)
     {
 	wprintf(L"Match: %ls\n", match);
     }
-*/  
+
     return match ? anna_member_get(type, anna_mid_get(match)):0;
     
 }
