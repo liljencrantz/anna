@@ -95,7 +95,8 @@ typedef ssize_t mid_t;
 #define ANNA_MID_RANGE_FROM 26
 #define ANNA_MID_RANGE_TO 27
 #define ANNA_MID_RANGE_STEP 28
-#define ANNA_MID_FIRST_UNRESERVED 29
+#define ANNA_MID_RANGE_OPEN 29
+#define ANNA_MID_FIRST_UNRESERVED 30
 
 union anna_native
 {

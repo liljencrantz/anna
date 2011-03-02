@@ -194,7 +194,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 
 %type <call_val> block block2 block3 opt_else
 %type <call_val> module
-%type <node_val> expression expression1 expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10
+%type <node_val> expression expression1 expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 opt_expression5
 %type <node_val> simple_expression property_expression
 %type <node_val> constant
 %type <node_val> opt_declaration_init opt_declaration_expression_init
@@ -489,16 +489,22 @@ expression4 :
 	      param);
 	}
         | 
-	expression4 RANGE expression5
+	expression4 RANGE opt_expression5
 	{
 	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__range__");
-	    anna_node_t *param[] ={$1, $3};   
+	    anna_node_t *param[] ={
+		$1,
+		$3?$3:anna_node_create_null(&@$)
+	    };   
 	    $$ = (anna_node_t *)anna_node_create_call(&@$, op, 2, param);
 	}
 	|
 	expression5
 	;
+
+opt_expression5: {$$=0;}| expression5;
+
 
 expression5 :
 	expression5 op5 expression6

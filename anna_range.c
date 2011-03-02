@@ -28,6 +28,11 @@ ssize_t anna_range_get_step(anna_object_t *obj)
     return *(ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP);    
 }
 
+int anna_range_get_open(anna_object_t *obj)
+{
+    return *(int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_OPEN);    
+}
+
 void anna_range_set_from(anna_object_t *obj, ssize_t v)
 {
     *((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_FROM)) = v;
@@ -44,6 +49,11 @@ void anna_range_set_step(anna_object_t *obj, ssize_t v)
 	*((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP)) = v;
 }
 
+void anna_range_set_open(anna_object_t *obj, int v)
+{
+    *((int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_OPEN)) = v;
+}
+
 static anna_object_t *anna_range_get_from_i(anna_object_t **obj)
 {
     return anna_int_create(anna_range_get_from(*obj));
@@ -57,6 +67,11 @@ static anna_object_t *anna_range_get_to_i(anna_object_t **obj)
 static anna_object_t *anna_range_get_step_i(anna_object_t **obj)
 {
     return anna_int_create(anna_range_get_step(*obj));
+}
+
+static anna_object_t *anna_range_get_open_i(anna_object_t **obj)
+{
+    return anna_int_create(anna_range_get_open(*obj));
 }
 
 static anna_object_t *anna_range_set_from_i(anna_object_t **obj)
@@ -77,15 +92,24 @@ static anna_object_t *anna_range_set_step_i(anna_object_t **obj)
     return obj[1];
 }
 
+static anna_object_t *anna_range_set_open_i(anna_object_t **obj)
+{
+    anna_range_set_open(*obj, obj[1] != null_object);
+    return obj[1];
+}
+
 static anna_object_t *anna_range_init(anna_object_t **obj)
 {
-    ssize_t from = anna_int_get(obj[1]);
+    ssize_t from = (obj[1] == null_object)?0:anna_int_get(obj[1]);
     anna_range_set_from(obj[0], from);
-    ssize_t to = anna_int_get(obj[2]);    
+    ssize_t to = (obj[2] == null_object)?0:anna_int_get(obj[2]);
     anna_range_set_to(obj[0], to);
+    int open = (obj[2]==null_object);
+    anna_range_set_open(obj[0], open);
+
     if(obj[3] == null_object)
     {
-	anna_range_set_step(obj[0], (to>from)?1:-1);
+	anna_range_set_step(obj[0], ((to>from)|| open)?1:-1);
     }
     else
     {
@@ -132,6 +156,8 @@ ssize_t anna_range_get_count(anna_object_t *obj)
 
 static anna_object_t *anna_range_get_count_i(anna_object_t **param)
 {
+    if(anna_range_get_open(param[0]))
+	return null_object;
     return anna_range_is_valid(*param)?anna_int_create(anna_range_get_count(*param)):null_object;
 }
 
@@ -143,8 +169,9 @@ static anna_object_t *anna_range_each(anna_object_t **param)
     ssize_t to = anna_range_get_to(param[0]);
     ssize_t step = anna_range_get_step(param[0]);
     ssize_t count = 1+(to-from-sign(step))/step;
-
-    if((to>from) != (step>0))
+    int open = anna_range_get_open(param[0]);
+    
+    if(((to>from) != (step>0)) && !open)
 	return param[0];
 
     size_t i;
@@ -158,7 +185,7 @@ static anna_object_t *anna_range_each(anna_object_t **param)
   wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
 */  
     anna_object_t *o_param[2];
-    for(i=0;i<count;i++)
+    for(i=0;(i<count) && (!open);i++)
     {
 	/*
 	  wprintf(L"Run the following code:\n");
@@ -183,6 +210,9 @@ void anna_range_type_create(struct anna_stack_frame *stack)
 	0, null_type);
     anna_member_create(
 	range_type, ANNA_MID_RANGE_STEP,  L"!rangeStep", 
+	0, null_type);
+    anna_member_create(
+	range_type, ANNA_MID_RANGE_OPEN,  L"!rangeOpen", 
 	0, null_type);    
     
     anna_type_t *c_argv[] = 
@@ -264,6 +294,14 @@ void anna_range_type_create(struct anna_stack_frame *stack)
 	int_type,
 	&anna_range_get_step_i, 
 	&anna_range_set_step_i);
+
+    anna_native_property_create(
+	range_type,
+	-1,
+	L"isOpen",
+	int_type,
+	&anna_range_get_open_i, 
+	&anna_range_set_open_i);
 
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!RangeIterFunction", int_type);

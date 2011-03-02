@@ -104,6 +104,11 @@ static anna_object_t *anna_string_i_get_range(anna_object_t **param)
     ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
     ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
     ssize_t step = anna_range_get_step(param[1]);
+
+    if(anna_range_get_open(param[1]))
+    {
+	to = anna_string_get_count(param[0]);	
+    }    
     
     assert(step==1);
     
@@ -125,6 +130,11 @@ static anna_object_t *anna_string_i_set_range(anna_object_t **param)
 
     ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
     ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
+    if(anna_range_get_open(param[1]))
+    {
+	to = anna_string_get_count(param[0]);	
+    }    
+    
     ssize_t step = anna_range_get_step(param[1]);
     ssize_t count = (1+(to-from-sign(step))/step);
     

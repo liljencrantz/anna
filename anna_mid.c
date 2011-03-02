@@ -62,6 +62,7 @@ void anna_mid_init()
     anna_mid_put(L"!rangeFrom", ANNA_MID_RANGE_FROM);
     anna_mid_put(L"!rangeTo", ANNA_MID_RANGE_TO);
     anna_mid_put(L"!rangeStep", ANNA_MID_RANGE_STEP);
+    anna_mid_put(L"!rangeOpen", ANNA_MID_RANGE_OPEN);
 }
 
 
