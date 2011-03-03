@@ -7,7 +7,7 @@ anna_node_t *anna_node_macro_expand(
     anna_stack_frame_t *stack)
 {
 /*
-    debug(0,L"EXPAND\n");
+    debug(D_SPAM,L"EXPAND\n");
     anna_node_print(0, this);
 */  
     switch( this->node_type )
@@ -210,7 +210,7 @@ int anna_node_is_call_to(anna_node_t *this, wchar_t *name){
 
 
 
-void anna_node_calculate_type_param(
+static void anna_node_calculate_type_param(
     size_t argc,
     anna_node_t **argv,
     int is_method,
@@ -223,13 +223,13 @@ void anna_node_calculate_type_param(
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
 	    anna_function_t *closure = c->payload;
-//	    debug(0,L"Closure as param %d. function type says argument is of type %ls\n", i, funt->argv[i+!!is_method]->name);
+//	    debug(D_SPAM,L"Closure as param %d. function type says argument is of type %ls\n", i, funt->argv[i+!!is_method]->name);
 	    anna_function_type_key_t *template = anna_function_type_extract(funt->argv[i+!!is_method]);
 	    assert(template);
-//	    debug(0,L"Closure template takes %d params\n", template->argc);
+//	    debug(D_SPAM,L"Closure template takes %d params\n", template->argc);
 	    for(j=0; j<template->argc; j++)
 	    {
-//		debug(0,L"Argument %d should be of type %ls\n", j, template->argv[j]->name);
+//		debug(D_SPAM,L"Argument %d should be of type %ls\n", j, template->argv[j]->name);
 		anna_function_argument_hint(
 		    closure,
 		    j,
@@ -255,7 +255,7 @@ anna_stack_frame_t *anna_node_register_declarations(
     anna_stack_frame_t *stack = anna_stack_create(sz+extra, 0);    
     int i;
 /*
-    debug(0,L"WOO WEE WOO %d declarations in ast\n", sz);
+    debug(D_SPAM,L"WOO WEE WOO %d declarations in ast\n", sz);
     anna_node_print(0, this);
 */  
     for(i=0; i<sz; i++)
@@ -319,7 +319,7 @@ anna_stack_frame_t *anna_node_register_declarations(
 
 static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_frame_t *stack)
 {
-    debug(0,L"Figure out type from:\n");
+    debug(D_SPAM,L"Figure out type from:\n");
     
     anna_node_print(0, node);
     
@@ -451,7 +451,7 @@ static void anna_node_calculate_type_internal(
 
 	    if(fun_type == type_type)
 	    {
-//		debug(0,L"Hmmm, node is of type type...");
+//		debug(D_SPAM,L"Hmmm, node is of type type...");
 //		anna_node_print(0, call->function);
 		
 		anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
@@ -557,17 +557,17 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)this;
-//	    debug(0,L"AAA1 %ls\n", c->payload->name);
+//	    debug(D_SPAM,L"AAA1 %ls\n", c->payload->name);
 	    
 	    anna_function_setup_interface(c->payload, stack);
-//	    debug(0,L"AAA2 %ls\n", c->payload->name);
+//	    debug(D_SPAM,L"AAA2 %ls\n", c->payload->name);
 	    if(c->payload->wrapper)
 	    {
 		c->return_type = c->payload->wrapper->type;
 	    }
-//	    debug(0,L"AAA3 %ls\n", c->payload->name);
+//	    debug(D_SPAM,L"AAA3 %ls\n", c->payload->name);
 	    anna_function_setup_body(c->payload);
-//	    debug(0,L"AAA4 %ls\n", c->payload->name);
+//	    debug(D_SPAM,L"AAA4 %ls\n", c->payload->name);
 	    
 	    break;
 	}
@@ -767,7 +767,7 @@ void anna_node_calculate_type(
     anna_node_t *this,
     anna_stack_frame_t *stack)
 {
-    debug(0, L"Calculate type of node:\n");
+    debug(D_SPAM, L"Calculate type of node:\n");
     anna_node_print(0, this);
     if(this->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
     {

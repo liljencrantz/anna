@@ -14,7 +14,7 @@
 #include "anna_list.h"
 #include "anna_function.h"
 
-void anna_object_print_val(anna_object_t *value)
+static void anna_object_print_val(anna_object_t *value)
 {    
 	if(value->type == int_type) 
 	{
@@ -49,7 +49,7 @@ void anna_object_print_val(anna_object_t *value)
 }
 
 
-anna_object_t *anna_i_print(anna_object_t **param)
+static anna_object_t *anna_i_print(anna_object_t **param)
 {
     int i;
         

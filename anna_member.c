@@ -205,7 +205,7 @@ anna_member_t *anna_member_method_search(
     mid_t mid, 
     size_t argc, anna_type_t **argv)
 {
-    debug(0, L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
+    debug(D_SPAM, L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
     wchar_t *prefix = anna_mid_get_reverse(mid);
@@ -215,25 +215,25 @@ anna_member_t *anna_member_method_search(
 
     for(i=0; i<anna_type_member_count(type); i++)
     {
-	debug(0, L"Check %ls\n", members[i]);
+	debug(D_SPAM, L"Check %ls\n", members[i]);
 	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
 	    continue;
-	debug(0, L"%ls matches, name-wise\n", members[i]);
+	debug(D_SPAM, L"%ls matches, name-wise\n", members[i]);
 	
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
 	anna_type_t *mem_type = member->type;
-	debug(0, L"Is of type %ls\n", mem_type->name);
+	debug(D_SPAM, L"Is of type %ls\n", mem_type->name);
 	anna_function_type_key_t *mem_fun = anna_function_unwrap_type(mem_type);
 	if(mem_fun)
 	{
-	    debug(0, L"YAY, it's a function (%d arguments)\n", mem_fun->argc);
+	    debug(D_SPAM, L"YAY, it's a function (%d arguments)\n", mem_fun->argc);
 	    int j;
 	    
 	    if(mem_fun->argc != argc+1)
 		continue;	    
-	    //debug(0, L"YAY, right number of arguments (%d)\n", argc);
+	    //debug(D_SPAM, L"YAY, right number of arguments (%d)\n", argc);
 	    
-	    debug(0, L"Check %ls against %ls\n",argv[0]->name, mem_fun->argv[1]->name);
+	    debug(D_SPAM, L"Check %ls against %ls\n",argv[0]->name, mem_fun->argv[1]->name);
 	    int my_fault_count = 0;
 	    int ok = 1;
 	    
@@ -247,14 +247,14 @@ anna_member_t *anna_member_method_search(
 		else
 		{
 		    ok=0;
-		    debug(0, L"Argument %d, %ls does not match %ls!\n", j, 
+		    debug(D_SPAM, L"Argument %d, %ls does not match %ls!\n", j, 
 			    argv[j]->name, mem_fun->argv[j+1]->name);
 		}
 		
 	    }
 	    
 	    if(ok){
-		debug(0, L"Match!\n");
+		debug(D_SPAM, L"Match!\n");
 		
 		if(!match || my_fault_count < fault_count)
 		{
@@ -265,14 +265,14 @@ anna_member_t *anna_member_method_search(
 	}
 	else
 	{
-	    debug(0, L"Not a function\n");
+	    debug(D_SPAM, L"Not a function\n");
 	}
 	
     }
 
     if(match)
     {
-	debug(0, L"Match: %ls\n", match);
+	debug(D_SPAM, L"Match: %ls\n", match);
     }
     
     return match ? anna_member_get(type, anna_mid_get(match)):0;

@@ -76,7 +76,7 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 	1);
       //FIXME: Last param, should it be 0 for feclarations???
     
-    //debug(0,L"LALALA %d %d\n", res, anna_function_wrap(result));
+    //debug(D_SPAM,L"LALALA %d %d\n", res, anna_function_wrap(result));
     return res;
 */
 
@@ -281,7 +281,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
     
     int param_done=0;
     
-//    debug(0,L"We will templatize the %ls type\n", base_type->name);
+//    debug(D_SPAM,L"We will templatize the %ls type\n", base_type->name);
     anna_node_call_t *attribute_list = 
         (anna_node_call_t *)definition->child[2];
     
@@ -318,7 +318,7 @@ static anna_node_t *anna_macro_templatize(anna_node_call_t *node,
    
     type->definition = definition;
     anna_stack_declare(stack_global, name, type_type, anna_type_wrap(type), 0);
-//    debug(0,L"Declare templatized type %ls in stack\n", type->name);
+//    debug(D_SPAM,L"Declare templatized type %ls in stack\n", type->name);
     //anna_stack_print_trace(stack_global);
     
     al_push(
@@ -360,7 +360,7 @@ static anna_node_t *anna_macro_def(
 static anna_node_t *anna_macro_block(
     anna_node_call_t *node)
 {
-    //debug(0,L"Create new block with %d elements at %d\n", node->child_count, node);
+    //debug(D_SPAM,L"Create new block with %d elements at %d\n", node->child_count, node);
      
     anna_function_t *fun = 
 	anna_function_create_from_block(
@@ -377,7 +377,7 @@ static anna_node_t *anna_macro_var(struct anna_node_call *node)
     
     anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
     
-    debug(0,L"Declare a stack varaible %ls with initial value\n", name->name);
+    debug(D_SPAM,L"Declare a stack varaible %ls with initial value\n", name->name);
     anna_node_print(0, node->child[2]);
     
     return (anna_node_t *)
@@ -397,7 +397,7 @@ static anna_node_t *anna_macro_const(struct anna_node_call *node)
     
     anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
     
-    debug(0,L"Declare a stack constant %ls with initial value\n", name->name);
+    debug(D_SPAM,L"Declare a stack constant %ls with initial value\n", name->name);
     anna_node_print(0, node->child[2]);
     
     return (anna_node_t *)

@@ -24,7 +24,7 @@ parts of fish.
 #include "wutil.h"
 #include "common.h"
 
-int debug_level=1;
+int debug_level=3;
 
 /**
    String buffer used by the wsetlocale function

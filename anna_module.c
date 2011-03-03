@@ -87,13 +87,13 @@ static void anna_module_find_import_macros(anna_node_t *module, array_list_t *im
 {
     anna_module_find_imports_internal(module, L"importMacro", import);
 }
-
+/*
 static void anna_module_prepare_body(
     anna_node_t *this, void *unused)
 {
     anna_node_prepare_body(this);
 }
-
+*/
 static int hash_null_func( void *data )
 {
     return 0;
@@ -113,7 +113,7 @@ static void anna_null_type_create()
     wchar_t *member_name = L"!null_member";
     anna_member_t *null_member;  
     null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
-    //debug(0,L"Null member is %d\n", null_member);
+    //debug(D_SPAM,L"Null member is %d\n", null_member);
 
     null_member->type = null_type;
     null_member->offset=0;
@@ -251,7 +251,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     if(module)
 	return anna_stack_wrap(module);
 
-    debug(0,L"Load module %ls...\n", module_name);    
+    debug(D_SPAM,L"Load module %ls...\n", module_name);    
 
     anna_stack_frame_t *module_stack;
 
@@ -269,16 +269,16 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     sb_append(&sb, L".anna");
     wchar_t *filename = sb_content(&sb);
     
-    debug(0,L"Parsing file %ls...\n", filename);    
+    debug(D_SPAM,L"Parsing file %ls...\n", filename);    
     anna_node_t *program = anna_parse(filename);
     
     if(!program || anna_error_count) 
     {
-	debug(4,L"Module %ls failed to parse correctly; exiting.\n", module_name);
+	debug(D_CRITICAL,L"Module %ls failed to parse correctly; exiting.\n", module_name);
 	exit(1);
     }
 
-    debug(0,L"Parsed AST for module %ls:\n", module_name);    
+    debug(D_SPAM,L"Parsed AST for module %ls:\n", module_name);    
 //    anna_node_print(0, program);    
 
     /*
@@ -314,10 +314,10 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    stack_macro);
     if(anna_error_count)
     {
-	debug(4,L"Found %d error(s) during module loading\n", anna_error_count);
+	debug(D_CRITICAL,L"Found %d error(s) during module loading\n", anna_error_count);
 	exit(1);
     }
-    debug(0,L"Macros expanded in module %ls\n", module_name);    
+    debug(D_SPAM,L"Macros expanded in module %ls\n", module_name);    
         
     anna_node_print(0, node);
     
@@ -331,7 +331,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    anna_error_count, module_name);
 	exit(1);
     }
-    debug(0,
+    debug(D_SPAM,
 	L"Declarations registered in module %ls\n", 
 	module_name);
     
@@ -379,7 +379,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	
 //	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);
 	
-	debug(0,L"Return types set up for module %ls\n", module_name);	
+	debug(D_SPAM,L"Return types set up for module %ls\n", module_name);	
 	
 /*
 	anna_node_find(node, ANNA_NODE_CLOSURE, &al);	
@@ -388,7 +388,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    anna_function_t *f = ((anna_node_closure_t *)al_get(&al, i))->payload;
 	    anna_function_setup_type(f, module_stack);
 	}
-	debug(0,L"%d function types set up\n", al_get_count(&al));	
+	debug(D_SPAM,L"%d function types set up\n", al_get_count(&al));	
 */
 	
 	for(i=0; i<ggg->child_count; i++)
@@ -396,7 +396,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    anna_node_invoke(ggg->child[i], module_stack);
 	    if(anna_error_count)
 	    {
-		debug(4,
+		debug(D_CRITICAL,
 		    L"Found %d error(s) during module loading\n",
 		    anna_error_count);
 		exit(1);
@@ -405,7 +405,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	
 	anna_stack_populate_wrapper(module_stack);
 
-//	debug(0,L"Declarations assigned\n");
+//	debug(D_SPAM,L"Declarations assigned\n");
 //	anna_node_print(0, program);
 	//  }
     

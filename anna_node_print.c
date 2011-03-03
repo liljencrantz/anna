@@ -56,7 +56,7 @@ static int is_simple(anna_node_call_t *call, int max_items)
 }
 
 
-void anna_node_print_internal(anna_node_t *this, int indentation)
+static void anna_node_print_internal(anna_node_t *this, int indentation)
 {
     switch(this->node_type)
     {

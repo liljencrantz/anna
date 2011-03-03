@@ -167,7 +167,7 @@ static void asi_ensure_length(anna_string_t *dest, size_t len)
     }
 }
 
-anna_string_location_t asi_get_location(anna_string_t *dest, size_t offset)
+static anna_string_location_t asi_get_location(anna_string_t *dest, size_t offset)
 {
     int i;
     size_t first_in_element=0;
@@ -336,13 +336,16 @@ static void asi_haircut(anna_string_t *hippie)
 
 static void asi_ensure_element_capacity(anna_string_t *string, size_t count)
 {
+//    wprintf(L"AAA\n");
     if(string->element_capacity >= count)
     {
+//	wprintf(L"BBB string of len %d needed %d elements, has %d\n", asi_get_length(string), count, string->element_capacity);
 	return;
     }
 
     if(string->element_capacity==0)
     {
+//	wprintf(L"CCC\n");
       count = maxi(count*2, ANNA_STRING_DEFAULT_ELEMENT_CAPACITY);
       
 	string->element_capacity=count;
@@ -444,6 +447,8 @@ void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t l
       return;
     }
 
+//    wprintf(L"Append from %d to %d in string of length %d to string of previous length %d\n", offset, offset+length, asi_get_length(src), asi_get_length(dest));
+
     if(length < ANNA_STRING_APPEND_TINY_LIMIT || (src->element_count>1 && length<ANNA_STRING_APPEND_SHORT_LIMIT)) 
     {
 	asi_make_appendable(dest, length);
@@ -497,7 +502,8 @@ void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t l
     asi_ensure_element_capacity(dest, dest->element_count + src->element_count);
     size_t dest_base_count = dest->element_count;
     
-    for(i=0;i<src->element_count; i++) {
+    for(i=0;i<src->element_count; i++) 
+    {
 	size_t last_in_element = first_in_element + src->element_length[i];
 	if(last_in_element >offset)
         {
@@ -712,11 +718,12 @@ void asi_replace(anna_string_t *dest,
     anna_string_t tmp;
     asi_init(&tmp);
     asi_ensure_length(dest, dest_offset+dest_length);
+//    wprintf(L"Replacement arguments have %d and %d elements, respectively",dest->element_count, src->element_count);
 
     /*
       Add all the specified bits to the temporary string
     */
-    asi_ensure_element_capacity(&tmp, dest->element_capacity + src->element_count);
+    asi_ensure_element_capacity(&tmp, dest->element_count + src->element_count);
     asi_append(&tmp, dest, 0, dest_offset);
     asi_append(&tmp, src, src_offset, src_length);
     asi_append(&tmp, dest, dest_offset+dest_length, asi_get_length(dest)-dest_offset-dest_length);

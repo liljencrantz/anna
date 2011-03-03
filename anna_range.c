@@ -138,7 +138,7 @@ static anna_object_t *anna_range_get_int(anna_object_t **param)
     return anna_int_create(res);
 }
 
-int anna_range_is_valid(anna_object_t *obj)
+static int anna_range_is_valid(anna_object_t *obj)
 {
     ssize_t from = anna_range_get_from(obj);
     ssize_t to = anna_range_get_to(obj);

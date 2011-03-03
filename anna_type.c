@@ -54,10 +54,10 @@ static void anna_type_add_implicit_this(
 			{
 			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
 			    anna_node_t *param[] ={
-				anna_node_create_identifier(0, L"this"), 
-				anna_node_create_dummy(0, anna_type_wrap(type), 0), 
-				anna_node_create_null(0)
-			    };	    
+				(anna_node_t *)anna_node_create_identifier(0, L"this"), 
+				(anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(type), 0), 
+				(anna_node_t *)anna_node_create_null(0)
+			    };	
 			    anna_node_call_t *this_decl = anna_node_create_call(
 				0,
 				(anna_node_t *)anna_node_create_identifier(
@@ -67,9 +67,9 @@ static void anna_type_add_implicit_this(
 			    
 			    anna_node_call_prepend_child(
 				def_decl,
-				this_decl);
+				(anna_node_t *)this_decl);
 			    
-			    anna_node_print(0, decl);
+			    anna_node_print(0, (anna_node_t *)decl);
 			    
 			}
 		    }	    
@@ -239,30 +239,6 @@ size_t anna_type_member_count(anna_type_t *type)
     return type->member_count + type->static_member_count+type->property_count;
 }
 
-void anna_type_native_parent(anna_type_t *type, wchar_t *name)
-{
-    anna_node_t *param[]=
-	{
-	    (anna_node_t *)anna_node_create_identifier(
-		0,
-		name)
-	}
-    ;
-		       
-
-    anna_node_call_t *attribute_list = 
-        (anna_node_call_t *)type->definition->child[2];
-    anna_node_call_add_child(
-	attribute_list, 
-	(anna_node_t *)anna_node_create_call(
-	    0,
-	    (anna_node_t *)anna_node_create_identifier(
-		0,
-		L"extends"),
-	    1,
-	    param));
-}
-
 anna_object_t *anna_type_wrap(anna_type_t *result)
 {
     if(likely(result->wrapper))
@@ -332,7 +308,7 @@ int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
   return !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
 }
 
-mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
+static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 {
     int i;
     for(i=0; i<anna_mid_max_get(); i++)
@@ -430,7 +406,7 @@ static void anna_type_prepare_member_internal(
     }
     
     anna_node_calculate_type(
-	decl,
+	(anna_node_t *)decl,
 	stack);
     
     mid_t mid = anna_member_create(
@@ -454,7 +430,7 @@ static void anna_type_prepare_member_internal(
     }
 }
 
-anna_node_t *anna_type_setup_interface_internal(
+static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type, 
     anna_stack_frame_t *parent)
 {

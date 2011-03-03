@@ -51,18 +51,11 @@ wchar_t *anna_string_payload(anna_object_t *obj)
     return asi_cstring(str);
 }
 
-size_t anna_string_count(anna_object_t *obj)
-{
-//    wprintf(L"Get payload from string at %d\n", obj);
-    anna_string_t *str = as_unwrap(obj);
-    return asi_get_length(str);
-}
-
-ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
+static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
 {
     if(idx < 0)
     {
-	return (ssize_t)anna_string_count(str) + idx;
+	return (ssize_t)anna_string_get_count(str) + idx;
     }
     return idx;
 }
@@ -88,7 +81,7 @@ static anna_object_t *anna_string_i_get_int(anna_object_t **param)
     if(param[1]==null_object)
 	return null_object;
     ssize_t idx = anna_string_idx_wrap(param[0], anna_int_get(param[1]));
-    if(idx < 0 || idx >= anna_string_count(param[0]))
+    if(idx < 0 || idx >= anna_string_get_count(param[0]))
     {
 	return null_object;
     }

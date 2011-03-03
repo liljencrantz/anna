@@ -9,7 +9,7 @@
 /**
    If enabled, when invoking an AST node, first make sure it's been
    prepared. Not _very_ expensive.
- */
+*/
 //#define ANNA_CHECK_NODE_PREPARED_ENABLED 
 
 /**
@@ -37,13 +37,13 @@
    If enabled, anna will use the chunked string implementation, which
    is significantly faster for complex string operations on large
    strings, but slightly slower on simple operations and a head ache
-   to debug because of its increased complxity.
- */
+   to debug because of its increased complexity.
+*/
 #define ANNA_STRING_CHUNKED_ENABLED
 
 /**
    If enabled, anna will validate the internal concistency of string
-   ojects after complex string operations.
+   objects after complex string operations. 
 */
 #define ANNA_STRING_VALIDATE_ENABLED
 
@@ -51,12 +51,13 @@
    If enabled, anna will do various checks when wrapping/unwrapping
    functions, types, etc. which will e.g. cause her to crash slightly
    more gracefully if a wrapper is accessed before it can be created.
- */
+*/
 #define ANNA_WRAPPER_CHECK_ENABLED
 
 /**
-   If enabled, anna will validate that any stack access operations performed are valid
- */
+   If enabled, anna will validate that any stack access operations
+   performed are valid
+*/
 #define ANNA_CHECK_STACK_ACCESS
 
 #endif

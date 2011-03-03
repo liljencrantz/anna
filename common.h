@@ -68,8 +68,32 @@
 #endif
 
 /**
-   The verbosity level of fish. If a call to debug has a severity
-   level higher than \c debug_level, it will not be printed.
+   Information that is likely to be of little use except in debugging
+ */
+#define D_SPAM 0
+/**
+   Info is potentially relevant information about the status of the app
+ */
+#define D_INFO 1
+/**
+   A warning is issued after a recoverable error is encountered.
+ */
+#define D_WARNING 2
+/**
+   Errors are conditions that will lead to application failiure. The
+   program will keep running in order to try and shut down gracefully
+   and to give as much additional information as possible.
+ */
+#define D_ERROR 3
+/**
+   Critical errors are errors that lead to the application exiting at once. 
+ */
+#define D_CRITICAL 4
+
+
+/**
+   The verbosity level. If a call to debug has a severity
+   level higher than or equal to \c debug_level, it will be printed.
 */
 extern int debug_level;
 

@@ -147,7 +147,7 @@ static anna_node_t *anna_function_setup_arguments(
     return 0;
 }
 
-void anna_function_setup_wrapper(
+static void anna_function_setup_wrapper(
     anna_function_t *f)
 {
     
@@ -278,7 +278,7 @@ void anna_function_setup_interface(
     {
 	int i;
 	for(i=0;i<f->body->child_count; i++)
-	    anna_node_each(f->body->child[i], &anna_node_calculate_type, f->stack_template);
+	    anna_node_each(f->body->child[i], (anna_node_function_t)&anna_node_calculate_type, f->stack_template);
     }
 
 }
@@ -295,7 +295,7 @@ void anna_function_setup_body(
     if(f->body)
     {
 	int i;
-	debug(0, L"Setup return type of all AST nodes in function %ls\n", f->name);
+	debug(D_SPAM, L"Setup return type of all AST nodes in function %ls\n", f->name);
 	
 	for(i=0; i<f->body->child_count; i++)
 	    anna_node_each((anna_node_t *)f->body->child[i], (anna_node_function_t)&anna_node_calculate_type, f->stack_template);

@@ -41,12 +41,12 @@ anna_object_t **anna_member_addr_get_str(
 {
     anna_member_t *m = (anna_member_t *)hash_get(&(obj->type->name_identifier), name);
     /*
-      debug(0,L"Woo, get address of member %ls on object\n", name);
-      debug(0,L"of type %ls\n", obj->type->name);
+      debug(D_SPAM,L"Woo, get address of member %ls on object\n", name);
+      debug(D_SPAM,L"of type %ls\n", obj->type->name);
     */
     if(!m) 
     {
-	debug(0,L"ERROR!!! Object %d of type %ls does not have a member %ls\n",obj, obj->type->name, name);
+	debug(D_SPAM,L"ERROR!!! Object %d of type %ls does not have a member %ls\n",obj, obj->type->name, name);
 	exit(1);	
     }
     if(m->is_static) {
@@ -59,17 +59,17 @@ anna_object_t **anna_member_addr_get_str(
 anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
 {
     /*
-      debug(0,L"Get mid %d on object\n", mid);
-      debug(0,L"of type %ls\n", obj->type->name);
+      debug(D_SPAM,L"Get mid %d on object\n", mid);
+      debug(D_SPAM,L"of type %ls\n", obj->type->name);
     */
     anna_member_t *m = obj->type->mid_identifier[mid];
     if(!m) 
     {
 	return 0;
     }
-    //debug(0,L"Found! Pos is %d, static is %d\n", m->offset, m->is_static);
+    //debug(D_SPAM,L"Found! Pos is %d, static is %d\n", m->offset, m->is_static);
     
-    //debug(0,L"Lala, get addr of member %ls\n", m->name);    
+    //debug(D_SPAM,L"Lala, get addr of member %ls\n", m->name);    
     if(m->is_static) {
 	return &obj->type->static_member[m->offset];
     } else {
@@ -79,8 +79,8 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
 
 anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
 {
-    /*  debug(0,L"Get mid %d on object\n", mid);
-	debug(0,L"of type %ls\n", obj->type->name);
+    /*  debug(D_SPAM,L"Get mid %d on object\n", mid);
+	debug(D_SPAM,L"of type %ls\n", obj->type->name);
     */
     anna_member_t *m = type->mid_identifier[mid];
     if(!m) 
@@ -88,7 +88,7 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
 	return 0;
     }
     
-    //debug(0,L"Lala, get addr of member %ls\n", m->name);    
+    //debug(D_SPAM,L"Lala, get addr of member %ls\n", m->name);    
     if(m->is_static) {
 	return &type->static_member[m->offset];
     } else {
@@ -118,7 +118,7 @@ static int hash_function_type_comp(void *a, void *b)
     anna_function_type_key_t *key1 = (anna_function_type_key_t *)a;
     anna_function_type_key_t *key2 = (anna_function_type_key_t *)b;
 
-    //debug(0,L"Compare type for function %ls %d and %ls %d\n", key1->result->name, hash_function_type_func(key1), key2->result->name, hash_function_type_func(key2));
+    //debug(D_SPAM,L"Compare type for function %ls %d and %ls %d\n", key1->result->name, hash_function_type_func(key1), key2->result->name, hash_function_type_func(key2));
 
     if(key1->result != key2->result)
 	return 0;
@@ -134,7 +134,7 @@ static int hash_function_type_comp(void *a, void *b)
 	if(wcscmp(key1->argn[i], key2->argn[i]) != 0)
 	    return 0;
     }
-    //debug(0,L"Same!\n");
+    //debug(D_SPAM,L"Same!\n");
     
     return 1;
 }
@@ -157,7 +157,7 @@ anna_type_t *anna_type_for_function(
     
     if(!result)
     {
-	debug(4,
+	debug(D_CRITICAL,
 	    L"Critical: Function lacks return type!\n");
 	CRASH;
     }
@@ -181,7 +181,7 @@ anna_type_t *anna_type_for_function(
     {
 	if(argv[i] && wcscmp(argv[i]->name, L"!FakeFunctionType")==0)
 	{
-	    debug(4,
+	    debug(D_CRITICAL,
 		L"Critical: Tried to get a function key for function with uninitialized argument types\n");
 	    CRASH;
 	}
@@ -190,12 +190,12 @@ anna_type_t *anna_type_for_function(
 	key->argn[i]=argn[i];
     }
 /*
-    debug(0,L"Weee %ls <-", result->name);
+    debug(D_SPAM,L"Weee %ls <-", result->name);
     for(i=0;i<argc; i++)
     {
-	debug(0,L" %ls", argv[i]->name);	
+	debug(D_SPAM,L" %ls", argv[i]->name);	
     }
-    debug(0,L"\n");
+    debug(D_SPAM,L"\n");
 */
     anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
     if(!res)
@@ -230,7 +230,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 					    anna_node_t **param,
 					    anna_stack_frame_t *local)
 {
-//    debug(0,L"Wrapped invoke of function %ls\n", obj->type->name);
+//    debug(D_SPAM,L"Wrapped invoke of function %ls\n", obj->type->name);
     if(obj == null_object)
 	return null_object;
     
@@ -240,7 +240,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
     {
 //	if(stack_ptr)
 //	{
-//	    debug(88,L"Invoking wrapped function %ls with parent stack\n", (*function_ptr)->name);
+//	    debug(D_CRITICAL,L"Invoking wrapped function %ls with parent stack\n", (*function_ptr)->name);
 //	    anna_stack_print(*stack_ptr);
 //	}
         return anna_function_invoke(*function_ptr, this, param_count, param, local, *stack_ptr);
@@ -260,7 +260,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 		stack_ptr?*stack_ptr:stack_global);
 	}
 	
-	debug(4,L"Critical: Tried to call a non-function\n");
+	debug(D_CRITICAL,L"Critical: Tried to call a non-function\n");
 	anna_object_print(obj);
 	
 	CRASH;
@@ -274,7 +274,7 @@ anna_object_t *anna_construct(
     anna_stack_frame_t *stack)
 {
     anna_object_t *result = anna_object_create(type);
-    //debug(0,L"Creating new object of type %ls\n", type->name);
+    //debug(D_SPAM,L"Creating new object of type %ls\n", type->name);
     assert(type->name);
     
     anna_object_t **constructor_ptr = anna_member_addr_get_mid(
@@ -349,9 +349,9 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     if(!contender){CRASH;}
     assert(role_model);
     
-//    debug(0,L"Check type %ls abides against %ls\n", contender->name, role_model->name);
+//    debug(D_SPAM,L"Check type %ls abides against %ls\n", contender->name, role_model->name);
     
-    //debug(0,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
+    //debug(D_SPAM,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
     wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(role_model));
     anna_type_get_member_names(role_model, members);    
     
@@ -421,7 +421,7 @@ size_t anna_native_method_create(
 	    argn,
 	    flags));
     anna_member_t *m = type->mid_identifier[mid];
-    //debug(0,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     m->is_method=1;
     anna_native_t func_u;
     func_u.function=func;
@@ -444,7 +444,7 @@ size_t anna_method_create(anna_type_t *type,
     anna_member_t *m = type->mid_identifier[mid];
     m->is_method=1;
     
-    //debug(0,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     type->static_member[m->offset] = anna_function_wrap(definition);
     return (size_t)mid;
 }
@@ -485,19 +485,19 @@ int main(int argc, char **argv)
 {
     if(argc != 2)
     {
-	debug(4,L"Error: Expected at least one argument, a name of a file to run.\n");
+	debug(D_CRITICAL,L"Error: Expected at least one argument, a name of a file to run.\n");
 	exit(1);
     }
     
     wchar_t *module_name = str2wcs(argv[1]);
     
-    debug(0,L"Initializing interpreter...\n");    
+    debug(D_SPAM,L"Initializing interpreter...\n");    
     anna_init();
     anna_module_load(L"lang");
     
     if(anna_error_count)
     {
-	debug(4,L"Found %d error(s) during initialization, exiting\n", anna_error_count);
+	debug(D_CRITICAL,L"Found %d error(s) during initialization, exiting\n", anna_error_count);
 	exit(1);
     }
     
@@ -510,11 +510,11 @@ int main(int argc, char **argv)
     anna_object_t **main_wrapper_ptr = anna_stack_addr_get_str(module, L"main");
     if(!main_wrapper_ptr)
     {
-	debug(4,L"No main method defined in module %ls\n", module_name);
+	debug(D_CRITICAL,L"No main method defined in module %ls\n", module_name);
 	exit(1);	
     }
 
-    debug(0,L"Program fully loaded and ready to be executed\n");    
+    debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
 
     anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     
@@ -522,12 +522,12 @@ int main(int argc, char **argv)
     anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);
     if(!main_func)
     {
-	debug(0,L"\"main\" member of module \"%ls\" is not a function\n", module_name);
+	debug(D_SPAM,L"\"main\" member of module \"%ls\" is not a function\n", module_name);
 	exit(1);	
     }
     
-    debug(0,L"Output:\n");        
+    debug(D_SPAM,L"Output:\n");        
     anna_function_invoke(main_func, 0, 0, module);
-    debug(0,L"\n");
+    debug(D_SPAM,L"\n");
 */
 }

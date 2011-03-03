@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "util.h"
+#include "common.h"
 #include "anna_node.h"
 #include "anna_stack.h"
 #include "anna_node_create.h"
@@ -154,7 +155,7 @@ static inline void **anna_stack_addr(
 	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
 	if(offset) 
 	{
-	    void ** foo = is_ptr?(*((void **)((void *)stack + arr_offset))):((void *)stack + arr_offset);
+	    void ** foo = is_ptr?(*((void **)((char *)stack + arr_offset))):((char *)stack + arr_offset);
 	    return &foo[*offset];
 	}
 	if(check_imports_and_parents)
@@ -352,7 +353,7 @@ static void anna_stack_save_name(void *key_ptr,void *val_ptr, void *aux_ptr)
 }
 
 
-void anna_stack_create_property(anna_type_t *res, anna_stack_frame_t *stack, wchar_t *name)
+static void anna_stack_create_property(anna_type_t *res, anna_stack_frame_t *stack, wchar_t *name)
 {
     size_t *offset = hash_get(&stack->member_string_identifier, name);
     anna_type_t *type = stack->member_type[*offset];
@@ -360,14 +361,14 @@ void anna_stack_create_property(anna_type_t *res, anna_stack_frame_t *stack, wch
 
     if(!type)
     {
-	wprintf(L"Dang it. Stack variable %ls totally doesn't have a type!\n", name);
+	debug(D_CRITICAL, L"Dang it. Stack variable %ls totally doesn't have a type!\n", name);
 	CRASH;
     }
     
     anna_const_property_create(res, -1, name, value);
 }
 
-anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
+static anna_type_t *anna_stack_type_create(anna_stack_frame_t *stack)
 {
     anna_type_t *res = anna_type_native_create(
 	anna_util_identifier_generate(

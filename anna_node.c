@@ -11,22 +11,16 @@
 #include "common.h"
 #include "wutil.h"
 #include "anna_node.h"
-#include "anna_node_check.h"
-#include "anna_node_wrapper.h"
 #include "anna_int.h"
 #include "anna_float.h"
 #include "anna_string.h"
 #include "anna_char.h"
 #include "anna_function.h"
-#include "anna_prepare.h"
 #include "anna_type.h"
-#include "anna_module.h"
 #include "anna_node_create.h"
 #include "anna_member.h"
 #include "anna_function_type.h"
 #include "anna_list.h"
-
-#define NODE_CHECK(test, node, ...) if(!(test)) {anna_error(node, __VA_ARGS__);}
 
 #include "anna_node_prepare.c"
 
@@ -40,7 +34,6 @@ void anna_node_set_location(anna_node_t *node, anna_location_t *l)
     {
 	memset(&node->location, 0, sizeof(anna_location_t));	
     }
-    
 }
 
 anna_node_call_t *node_cast_call(anna_node_t *node) 
@@ -1075,7 +1068,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
     }    
     
 }
-
 
 typedef struct
 {
