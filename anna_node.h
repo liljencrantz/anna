@@ -414,9 +414,10 @@ anna_object_t *anna_node_invoke(
 
 /**
    Check the validity of the code. This should only be run after the
-   AST has been prepared, or any macros will make it cry.
+   AST has been prepared.
 */
 void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack);
+
 
 /**
    Returns the return type of the specified AST node

@@ -27,6 +27,6 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
     va_end( va );
     fwprintf(stderr, L"\n\n");
     anna_error_count++;
-    CRASH;
+//    CRASH;
 }
 

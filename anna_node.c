@@ -314,12 +314,6 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *st
 }
 
 
-void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
-{
-}
-
-
-
 static anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
 					   anna_stack_frame_t *stack)
 {

@@ -1,6 +1,7 @@
 
+def hej(Int i){i+1}
+
 def main()
 {
-    var foo = "aaabbbccc";
-    print(foo[3..], "\n");
+    print(hej());
 }

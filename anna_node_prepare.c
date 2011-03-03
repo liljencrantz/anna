@@ -781,5 +781,69 @@ void anna_node_calculate_type(
     }
 }
 
-
-
+void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
+{
+    switch(this->node_type)
+    {
+	case ANNA_NODE_CALL:
+	{
+	    anna_node_call_t *this2 =(anna_node_call_t *)this;
+	    anna_type_t *ft = this2->function->return_type;
+	    if(!ft)
+	    {
+		anna_error(this, L"Invalid return type");
+		break;
+	    }
+	    
+	    anna_function_type_key_t *ftk = anna_function_type_extract(ft);
+	    if(!ftk)
+	    {
+		anna_error(this, L"Tried to call a non-function");
+		break;
+	    }
+	    if(ftk->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		if( this2->child_count < ftk->argc-1)
+		{
+		    anna_error(
+			this,
+			L"Too few parameters to function call. Expected at least %d, got %d\n", 
+			ftk->argc-1, this2->child_count);
+		    break;
+		}
+		
+	    }
+	    else
+	    {
+		if(ftk->argc != this2->child_count)
+		{
+		    anna_error(
+			this,
+			L"Wrong number of parameters to function call. Expected %d, got %d\n", 
+			ftk->argc, this2->child_count);
+		    break;
+		}
+		
+	    }
+	    
+	    
+	    break;	    
+	}
+	case ANNA_NODE_CLOSURE:
+	{
+	    anna_node_closure_t *c = (anna_node_closure_t *)this;
+	    anna_function_t *f = c->payload;
+	    if(f->body)
+	    {
+		int i;
+		for(i=0;i<f->body->child_count; i++)
+		    anna_node_each(f->body->child[i], &anna_node_validate, f->stack_template);
+	    }
+	    
+	    break;
+	    
+	}
+	
+    }
+    
+}

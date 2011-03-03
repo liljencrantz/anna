@@ -376,6 +376,12 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 		exit(1);
 	    }
 	}
+
+	for(i=0; i<ggg->child_count; i++)
+	{
+	    anna_node_each(ggg->child[i], &anna_node_validate, module_stack);
+	}
+	
 	
 //	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);
 	

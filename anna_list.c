@@ -31,13 +31,15 @@ anna_object_t *anna_list_create(anna_type_t *spec)
     return obj;
 }
 
-anna_type_t *anna_list_get_specialization(anna_object_t *obj)
+static anna_type_t *anna_list_get_specialization(anna_object_t *obj)
 {
-    return *((anna_type_t **)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SPECIALIZATION));    
+    return *((anna_type_t **)
+	     anna_member_addr_get_mid(
+		 obj,
+		 ANNA_MID_LIST_SPECIALIZATION));    
 }
 
-
-ssize_t calc_offset(ssize_t offset, size_t size)
+static ssize_t calc_offset(ssize_t offset, size_t size)
 {
     if(offset < 0) {
 	return size-offset;
