@@ -823,10 +823,22 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 			ftk->argc, this2->child_count);
 		    break;
 		}
+	    }
+	    int i;
+	    for(i=0; i<this2->child_count; i++)
+	    {
+		anna_type_t *param = this2->child[i]->return_type;
+		anna_type_t *templ = ftk->argv[mini(i, ftk->argc-1)];
+		if(!anna_abides(param, templ))
+		{
+		    anna_error(
+			this,
+			L"Invalid type of parameter %d in function call. Expected type %ls, got type %ls", i+1, templ->name, param->name);
+		    		    		    
+		}
 		
 	    }
-	    
-	    
+	    	    
 	    break;	    
 	}
 	case ANNA_NODE_CLOSURE:

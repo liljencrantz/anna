@@ -3,5 +3,5 @@ def hej(Int i){i+1}
 
 def main()
 {
-    print(hej());
+    print(hej(1+1));
 }
