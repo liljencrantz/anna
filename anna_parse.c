@@ -11,7 +11,7 @@
 #include "anna_node.h"
 #include "anna_lex.h"
 #include "anna_yacc.h"
-
+/*
 struct parse_data 
 {
     FILE *file;
@@ -22,7 +22,7 @@ struct parse_data
 }
    ;
 typedef struct parse_data parse_data_t;
-
+*/
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
 void anna_yacc_init();
 

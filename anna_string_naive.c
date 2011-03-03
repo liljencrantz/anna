@@ -5,7 +5,10 @@
 #include <string.h>
 #include <time.h>
 
+#include "util.h"
+#include "common.h"
 #include "anna_checks.h"
+#include "anna_crash.h"
 #include "anna_string_internal.h"
 
 #ifndef ANNA_STRING_CHUNKED_ENABLED
@@ -91,5 +94,35 @@ void asi_print(anna_string_t *string)
 {
   wprintf(L"%.*ls\n", string->count, string->str);
 }
+
+void asi_print_regular(anna_string_t *str)
+{
+    CRASH;
+}
+
+void asi_print_debug(anna_string_t *str)
+{
+    CRASH;
+}
+
+wchar_t *asi_cstring(anna_string_t *str)
+{
+    CRASH;
+}
+
+/**
+   Compare the two specified strings
+ */
+int asi_compare(anna_string_t *a, anna_string_t *b)
+{
+    CRASH;
+}
+
+void asi_append_cstring(anna_string_t *a, wchar_t *str, size_t len)
+{
+    CRASH;
+}
+
+
 
 #endif

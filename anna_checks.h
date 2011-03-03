@@ -44,7 +44,7 @@
 /**
    If enabled, anna will validate the internal concistency of string
    ojects after complex string operations.
- */
+*/
 #define ANNA_STRING_VALIDATE_ENABLED
 
 /**

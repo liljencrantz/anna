@@ -1,5 +1,4 @@
 User defined properties
-Generic operators
 Validate number of arguments
 Validate types in assignments.
 Validate types in arguments for calls.
@@ -21,7 +20,6 @@ Tests for integer math
 Tests for floating point math
 HTML documentation extractor
 Built in Complex type
-Figure out how to hande ranges that implicity go to the end of an enclosing list, e.g. hangle a syntax like foo[1..]. Might also be useful for iteration, e.g. (1..).each(idx){...}
 String format function
 Cast operator
 Escaping and error detection in char literals
