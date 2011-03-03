@@ -841,6 +841,24 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 	    	    
 	    break;	    
 	}
+
+	case ANNA_NODE_ASSIGN:
+	{
+	    anna_node_assign_t *d = (anna_node_assign_t *)this;
+	    anna_type_t *param = d->value->return_type;
+	    anna_type_t *templ = anna_stack_get_type(stack, d->name);
+	    if(!anna_abides(param, templ))
+	    {
+		anna_error(
+		    this,
+		    L"Invalid type in assignment. Expected type %ls, got type %ls", 
+		    templ->name, param->name);
+		
+	    }
+		    	    
+	    break;	    
+	}
+
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)this;
