@@ -853,9 +853,8 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		    this,
 		    L"Invalid type in assignment. Expected type %ls, got type %ls", 
 		    templ->name, param->name);
-		
 	    }
-		    	    
+	    
 	    break;	    
 	}
 

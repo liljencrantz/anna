@@ -1,10 +1,8 @@
+Predefined status codes on different parse errors in order to make syntax error unit tests easy.
 User defined properties
-Validate number of arguments
-Validate types in assignments.
-Validate types in arguments for calls.
 User defined variadic functions
+User defined templates with full specialization support
 Inheritance
-Make specialization work for user defined types
 Type annotations
 Annotate method overloads with aliases
 Always check aliases when resolving method calls during compile time
@@ -20,9 +18,12 @@ Tests for integer math
 Tests for floating point math
 HTML documentation extractor
 Built in Complex type
+Hash functions
+Hashtable implementation
 String format function
 Cast operator
 Escaping and error detection in char literals
+
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other
@@ -36,7 +37,7 @@ the members. Imutable members, like types, are read-only properties.
 
 There are two types of imports, macro imports and regular imports.
 
-They both use the import keyword:
+They use different keywords, import and expand.
 
 These are equivalent:
 
@@ -45,21 +46,15 @@ def foo(){File();}
 
 def foo(){io.File();}
 
-Macros:
-
-Macros must be defined in a file with the manna suffix. A package can
-contain both an anna file and a manna file. The manna macros of a
-package are implicitly available in the context of a package.
-
 A module is loaded like this:
 
 1. First the AST is parsed.
 
 2. Then the import list is parsed. All import nodes are replaced with a null node.
 
-3. Fully load all manna files for imported packages
+3. Fully load all modules used in the macro expansion pass.
 
-4. Macro expansion is performed. Any macros defined in the manna files loaded in the previous step is also used.
+4. Macro expansion is performed. Any macros defined in the expand-included modules are used.
 
 5. Register declarations in the current module
 
@@ -68,9 +63,6 @@ A module is loaded like this:
 7. Calculate return types for all modules currently being loaded.
 
 8. Assign initial values, etc. for all modules currently being loaded.
-
-
-
 
 
 
@@ -149,105 +141,4 @@ Object members:
   __staticMemberGet__ macro
   __staticMemberSet__ macro
   with macro
-
-  Done: 
-  
-  Sugar parser
-  Real check if type abides to other type, instead of lame type ptr comparison
-  Correct string literal parsing
-  Variable declarations
-  Function argument passing
-  Method calls with proper this handling
-  Inner functions with access to outer scope
-  Make ; after } optional
-  Constructors with no parameters
-  Simple type checking
-  Constructors
-  Inner functions with shared return flag
-  Do some real testing to find the optimal operator presedence order
-  class member macros
-  Type support for lists
-  Move uncommon operators to become generic operators (bit ops, sign, abs, etc.)
-  Removed macro methods, all macros are global
-  Move all native types to use the AST node creation style from List
-  Subfunction/block tracking in function
-  Functions that don't return an Int (depends on block tracking)
-  Variadic functions
-  Fully functional templates
-  Identifier invocation should use sid instead of name lookup
-  Separate function preparation pass
-  Object constructor sets all members to null
-  Properties
-  make ++, += and friends transform into an assignment, so they work with properties.
-  Make comments nest
-  Sugar for property definitions
-  Simple non-native macros working
-  Split up anna_macro.c into multiple files
-  namespaces
-  Defer all type setup, and perform dependency checking in order to get ordering right
-  Module loader
-  
-  Type type
-  Call type
-  Int type
-  String type
-  Char type
-  Null type  
-  List type
-  Range type
-  Complex type
-  Node type
-  Identifier type
-  IntLiteral type
-  Call type
-  
-
-  Represent objects 
-  Represent types
-  Represent member data
-  Represent the stack
-  
-  Parse int literals
-  Parse identifiers
-  Parse calls
-  Parse string literals
-  Parse chars literals
-  Parse float literals
-  
-  Implement basic Int methods
-  Implement basic Float methods
-  Implement Int comparison methods
-  Implement List getter and setter
-  Implement basic Char methods
-  Implement Char comparison methods
-  Implement basic List methods
-  
-  __not__ function
-  __block__ macro
-  __assign__ macro
-  __declare__ macro
-  __function__ macro
-  __if__ function
-  __add__, __sub__, __mul__ and friends, simple exact mapping
-  __set__, __get__, __add__, __sub__, __mul__ and friends: full abides/reverse checking implementation
-  if macro
-  else macro
-  __get__ macro
-  __set__ macro
-  __or__ macro
-  __and__ macro
-  while macro
-  __while__ function
-  __type__ function
-  return macro
-  __templateAttribute__ macro
-  __templatize__ macro
-  each, map, filter, first
-  List.count
-  String.count
-  __macro__ macro
-  as macro
-  AST macro
-  import macro
-
 
