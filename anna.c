@@ -14,6 +14,7 @@
 #include "anna_function_type.h"
 #include "anna_type.h"
 #include "anna_member.h"
+#include "anna_status.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -25,6 +26,7 @@ anna_type_t *type_type=0,
     *float_type=0,
     *member_type=0,
     *range_type=0;
+
 anna_object_t *null_object=0;
 
 static hash_table_t anna_type_for_function_identifier;
@@ -47,7 +49,7 @@ anna_object_t **anna_member_addr_get_str(
     if(!m) 
     {
 	debug(D_SPAM,L"ERROR!!! Object %d of type %ls does not have a member %ls\n",obj, obj->type->name, name);
-	exit(1);	
+	exit(ANNA_STATUS_RUNTIME_ERROR);	
     }
     if(m->is_static) {
 	return &obj->type->static_member[m->offset];
@@ -486,7 +488,7 @@ int main(int argc, char **argv)
     if(argc != 2)
     {
 	debug(D_CRITICAL,L"Error: Expected at least one argument, a name of a file to run.\n");
-	exit(1);
+	exit(ANNA_STATUS_ARGUMENT_ERROR);
     }
     
     wchar_t *module_name = str2wcs(argv[1]);
@@ -513,9 +515,9 @@ int main(int argc, char **argv)
 	debug(D_CRITICAL,L"No main method defined in module %ls\n", module_name);
 	exit(1);	
     }
-
+    
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
-
+    
     anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     
 /*    
@@ -530,4 +532,5 @@ int main(int argc, char **argv)
     anna_function_invoke(main_func, 0, 0, module);
     debug(D_SPAM,L"\n");
 */
+    return 0;
 }

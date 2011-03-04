@@ -28,6 +28,7 @@
 #include "anna_member.h"
 #include "anna_node_wrapper.h"
 #include "anna_range.h"
+#include "anna_status.h"
 
 static hash_table_t *anna_module_imported=0;
 //static array_list_t anna_module_unprepared = {0,0,0};
@@ -275,7 +276,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     if(!program || anna_error_count) 
     {
 	debug(D_CRITICAL,L"Module %ls failed to parse correctly; exiting.\n", module_name);
-	exit(1);
+	exit(ANNA_STATUS_PARSE_ERROR);
     }
 
     debug(D_SPAM,L"Parsed AST for module %ls:\n", module_name);    
@@ -314,8 +315,8 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    stack_macro);
     if(anna_error_count)
     {
-	debug(D_CRITICAL,L"Found %d error(s) during module loading\n", anna_error_count);
-	exit(1);
+	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);
+	exit(ANNA_STATUS_MACRO_ERROR);
     }
     debug(D_SPAM,L"Macros expanded in module %ls\n", module_name);    
         
@@ -329,7 +330,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    4,
 	    L"Critical: Found %d error(s) during loading of module %ls\n", 
 	    anna_error_count, module_name);
-	exit(1);
+	exit(ANNA_STATUS_INTERFACE_ERROR);
     }
     debug(D_SPAM,
 	L"Declarations registered in module %ls\n", 
@@ -373,13 +374,22 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 		    4,
 		    L"Found %d error(s) during module loading\n",
 		    anna_error_count);
-		exit(1);
+		exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
 	    }
 	}
 
 	for(i=0; i<ggg->child_count; i++)
 	{
 	    anna_node_each(ggg->child[i], &anna_node_validate, module_stack);
+	}
+	if(anna_error_count)
+	{
+	    debug(
+		D_CRITICAL,
+		L"Found %d error(s) during module loading\n",
+		anna_error_count);
+	    exit(
+		ANNA_STATUS_VALIDATION_ERROR);
 	}
 	
 	
@@ -402,10 +412,12 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    anna_node_invoke(ggg->child[i], module_stack);
 	    if(anna_error_count)
 	    {
-		debug(D_CRITICAL,
+		debug(
+		    D_CRITICAL,
 		    L"Found %d error(s) during module loading\n",
 		    anna_error_count);
-		exit(1);
+		exit(
+		    ANNA_STATUS_MODULE_SETUP_ERROR);
 	    }
 	}
 	

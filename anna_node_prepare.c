@@ -831,10 +831,10 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		anna_type_t *templ = ftk->argv[mini(i, ftk->argc-1)];
 		if(!anna_abides(param, templ))
 		{
+		    
 		    anna_error(
 			this,
 			L"Invalid type of parameter %d in function call. Expected type %ls, got type %ls", i+1, templ->name, param->name);
-		    		    		    
 		}
 		
 	    }
@@ -853,6 +853,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
 		    this,
 		    L"Invalid type in assignment. Expected type %ls, got type %ls", 
 		    templ->name, param->name);
+//		    anna_node_print(D_ERROR,this);
 	    }
 	    
 	    break;	    

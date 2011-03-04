@@ -1,0 +1,4 @@
+def main() {
+    var foo = 3;
+    foo = "";
+}

@@ -1,0 +1,4 @@
+def fun(Int p){p}
+def main() {
+    fun("")
+}

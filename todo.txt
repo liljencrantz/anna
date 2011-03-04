@@ -23,6 +23,7 @@ Hashtable implementation
 String format function
 Cast operator
 Escaping and error detection in char literals
+Garbage collector
 
 
 Figure out how to handle the map function. We can't make a prototype
