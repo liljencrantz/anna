@@ -57,6 +57,7 @@ typedef struct YYLTYPE YYLTYPE;
 
 struct anna_node
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -68,6 +69,7 @@ struct anna_node
 
 struct anna_node_identifier
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -81,6 +83,7 @@ struct anna_node_identifier
 
 struct anna_node_cond
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -94,6 +97,7 @@ struct anna_node_cond
 
 struct anna_node_if
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -108,6 +112,7 @@ struct anna_node_if
 
 struct anna_node_assign
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -122,6 +127,7 @@ struct anna_node_assign
 
 struct anna_node_declare
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -137,6 +143,7 @@ struct anna_node_declare
 
 struct anna_node_member_get
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -150,6 +157,7 @@ struct anna_node_member_get
 
 struct anna_node_member_set
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -164,6 +172,7 @@ struct anna_node_member_set
 
 struct anna_node_call
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -179,6 +188,7 @@ struct anna_node_call
 
 struct anna_node_member_call
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -195,6 +205,7 @@ struct anna_node_member_call
 
 struct anna_node_string_literal
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -208,6 +219,7 @@ struct anna_node_string_literal
 
 struct anna_node_char_literal
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -220,6 +232,7 @@ struct anna_node_char_literal
 
 struct anna_node_int_literal
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -232,6 +245,7 @@ struct anna_node_int_literal
 
 struct anna_node_dummy
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -244,6 +258,7 @@ struct anna_node_dummy
 
 struct anna_node_closure
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -256,6 +271,7 @@ struct anna_node_closure
 
 struct anna_node_type
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -268,6 +284,7 @@ struct anna_node_type
 
 struct anna_node_return
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -280,6 +297,7 @@ struct anna_node_return
 
 struct anna_node_float_literal
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -292,6 +310,7 @@ struct anna_node_float_literal
 
 struct anna_node_import
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -304,6 +323,7 @@ struct anna_node_import
 
 struct anna_node_type_lookup
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;
@@ -316,6 +336,7 @@ struct anna_node_type_lookup
 /*
 struct anna_node_specialize
 {
+    int flags;
     int node_type;
     struct anna_object *wrapper;
     anna_location_t location;

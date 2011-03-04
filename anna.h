@@ -38,25 +38,34 @@ typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *);
 typedef ssize_t mid_t;
 
-#define ANNA_FUNCTION_VARIADIC 1
-#define ANNA_FUNCTION_MACRO 2
-#define ANNA_FUNCTION_PREPARED_INTERFACE 4 
-#define ANNA_FUNCTION_PREPARED_BODY 8
+#define ANNA_TYPE 0
+#define ANNA_OBJECT 1
+#define ANNA_STACK_FRAME 2
+#define ANNA_NODE 3
+#define ANNA_STACK 4
+#define ANNA_ALLOC_MASK 7
+#define ANNA_USED 8
+
+
+#define ANNA_FUNCTION_VARIADIC 16
+#define ANNA_FUNCTION_MACRO 32
+#define ANNA_FUNCTION_PREPARED_INTERFACE 64
+#define ANNA_FUNCTION_PREPARED_BODY 128
 
 /**
    This function is anonymously declared, and should not be registered
    in any scope.
  */
-#define ANNA_FUNCTION_ANONYMOUS 16
+#define ANNA_FUNCTION_ANONYMOUS 256
 /**
    This function is a closure, and needs to have a pointer
    set up to the function invocation that encloses it.
 */
-#define ANNA_FUNCTION_CLOSURE 32
+#define ANNA_FUNCTION_CLOSURE 512
 
-#define ANNA_TYPE_REGISTERED 1
-#define ANNA_TYPE_PREPARED_INTERFACE 2
-#define ANNA_TYPE_PREPARED_IMPLEMENTATION 4
+#define ANNA_TYPE_REGISTERED 16
+#define ANNA_TYPE_PREPARED_INTERFACE 32
+#define ANNA_TYPE_PREPARED_IMPLEMENTATION 64
 
 /*
 #define ANNA_FUNCTION_CLOSURE 2
@@ -110,6 +119,10 @@ union anna_native
 struct anna_type
 {
     /**
+       A bitfield containing various additional info on this type.
+     */
+    int flags;
+    /**
        The number of non-static members in an object of this type.
      */
     size_t member_count;
@@ -139,10 +152,6 @@ struct anna_type
        introspection ability for humans.
      */
     wchar_t *name;
-    /**
-       A bitfield containing various additional info on this type.
-     */
-    int flags;
     /**
        The stack frame inside of which this type lives.
        
@@ -249,6 +258,7 @@ struct anna_member
  */
 struct anna_object
 {
+    int flags;
     /**
        The type of this object
      */
@@ -262,6 +272,11 @@ struct anna_object
 
 struct anna_function
 {
+    /**
+       A bitmask containing various additional info on this type. For
+       possible values, see the ANNA_TYPE_* constants.
+    */
+    int flags;
     /**
        A name for this function. A function does not inherently have
        one specific name, it can be renamed and copied just like any
@@ -302,11 +317,6 @@ struct anna_function
        member from within the anna code.
     */
     struct anna_object *wrapper;
-    /**
-       A bitmask containing various additional info on this type. For
-       possible values, see the ANNA_TYPE_* constants.
-    */
-    int flags;
     /**
        If this function is a bound method, this field contains a curried this pointer.
     */

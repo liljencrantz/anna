@@ -1,4 +1,3 @@
-Predefined status codes on different parse errors in order to make syntax error unit tests easy.
 User defined properties
 User defined variadic functions
 User defined templates with full specialization support
