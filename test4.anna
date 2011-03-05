@@ -1,5 +1,5 @@
 
 def main()
 {
-   3;
+    print("Hej hopp", 3, 4.4, "\n");
 }

@@ -223,6 +223,24 @@ anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name)
 #endif
 }
 
+anna_object_t *anna_stack_get_const(anna_stack_frame_t *stack, wchar_t *name)
+{
+#ifdef ANNA_CHECK_STACK_ACCESS
+    anna_object_t **res =anna_stack_addr_get_str(stack, name);
+    if(unlikely(!res))
+    {
+	wprintf(
+	    L"Critical: Tried to access non-existing variable %ls\n",
+	    name);
+	anna_stack_print(stack);
+	CRASH;
+    }
+    return *res;
+#else
+    return *anna_stack_addr_get_str(stack, name);
+#endif
+}
+
 anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack, wchar_t *name)
 {
     anna_type_t **res = (anna_type_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_type), 1, 1);

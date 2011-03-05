@@ -31,6 +31,15 @@ anna_object_t *anna_list_create(anna_type_t *spec)
     return obj;
 }
 
+anna_object_t *anna_list_create2(anna_type_t *list_type)
+{
+    anna_object_t *obj= anna_object_create(list_type);
+    (*anna_member_addr_get_mid(obj,ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SIZE)) = 0;
+    return obj;
+}
+
 static anna_type_t *anna_list_get_specialization(anna_object_t *obj)
 {
     return *((anna_type_t **)
@@ -82,13 +91,7 @@ void anna_list_add(struct anna_object *this, struct anna_object *value)
 {
     size_t capacity = anna_list_get_capacity(this);
     size_t size = anna_list_get_size(this);
-    if(capacity == size)
-    {
-	anna_list_set_capacity(this, maxi(8, 2*capacity));
-    }
-    anna_object_t **ptr = anna_list_get_payload(this);
-    anna_list_set_size(this, size+1);
-    ptr[size]=value;
+    anna_list_set(this, size, value);
 }
 
 size_t anna_list_get_size(anna_object_t *this)

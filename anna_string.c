@@ -39,6 +39,19 @@ anna_object_t *anna_string_create(size_t sz, wchar_t *data)
     return obj;
 }
 
+anna_object_t *anna_string_copy(anna_object_t *orig)
+{
+    anna_object_t *obj= anna_object_create(string_type);
+    //  wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    
+    asi_init(as_unwrap(obj));
+    anna_string_t *o = as_unwrap(orig);
+    asi_append(as_unwrap(obj), o, 0, asi_get_length(o));
+    return obj;
+}
+
+
+
 size_t anna_string_get_count(anna_object_t *this)
 {
     return asi_get_length(as_unwrap(this));

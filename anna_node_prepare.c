@@ -272,7 +272,6 @@ anna_stack_frame_t *anna_node_register_declarations(
 	    anna_object_t *value = null_object;
 	    switch(decl->value->node_type)
 	    {
-	
 		case ANNA_NODE_TYPE:
 		{
 		    anna_node_type_t *t = (anna_node_type_t *)decl->value;
