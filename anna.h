@@ -42,30 +42,19 @@ typedef ssize_t mid_t;
 #define ANNA_OBJECT 1
 #define ANNA_STACK_FRAME 2
 #define ANNA_NODE 3
-#define ANNA_STACK 4
+#define ANNA_VMSTACK 4
 #define ANNA_ALLOC_MASK 7
 #define ANNA_USED 8
+#define ANNA_MOVE 16
 
+#define ANNA_FUNCTION_VARIADIC 32
+#define ANNA_FUNCTION_MACRO 64
+#define ANNA_FUNCTION_PREPARED_INTERFACE 128
+#define ANNA_FUNCTION_PREPARED_BODY 256
 
-#define ANNA_FUNCTION_VARIADIC 16
-#define ANNA_FUNCTION_MACRO 32
-#define ANNA_FUNCTION_PREPARED_INTERFACE 64
-#define ANNA_FUNCTION_PREPARED_BODY 128
-
-/**
-   This function is anonymously declared, and should not be registered
-   in any scope.
- */
-#define ANNA_FUNCTION_ANONYMOUS 256
-/**
-   This function is a closure, and needs to have a pointer
-   set up to the function invocation that encloses it.
-*/
-#define ANNA_FUNCTION_CLOSURE 512
-
-#define ANNA_TYPE_REGISTERED 16
-#define ANNA_TYPE_PREPARED_INTERFACE 32
-#define ANNA_TYPE_PREPARED_IMPLEMENTATION 64
+#define ANNA_TYPE_REGISTERED 32
+#define ANNA_TYPE_PREPARED_INTERFACE 64
+#define ANNA_TYPE_PREPARED_IMPLEMENTATION 128
 
 /*
 #define ANNA_FUNCTION_CLOSURE 2
@@ -337,6 +326,12 @@ struct anna_function
        The type of each input argument
      */
     struct anna_type **input_type;    
+    /**
+       Bytecode 
+     */
+    char *code;
+    size_t frame_size;
+    size_t variable_count;
 };
 
 #define ANNA_IS_MACRO(f) (!!((f)->flags & ANNA_FUNCTION_MACRO))

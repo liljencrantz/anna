@@ -15,6 +15,7 @@
 #include "anna_type.h"
 #include "anna_member.h"
 #include "anna_status.h"
+#include "anna_vm.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -517,8 +518,12 @@ int main(int argc, char **argv)
     }
     
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
-    
-    anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
+
+    anna_function_t *fun = anna_function_unwrap(*main_wrapper_ptr);
+    anna_vm_compile(fun);
+    anna_vm_run(fun);
+      
+//    anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     
 /*    
     anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);

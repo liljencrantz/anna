@@ -1,6 +1,5 @@
 
 def main()
 {
-    var foo = 3;
-    
+   3;
 }
