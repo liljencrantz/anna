@@ -18,6 +18,7 @@
 #include "anna_stack.h"
 #include "anna_function_type.h"
 #include "anna_member.h"
+#include "anna_type.h"
 
 #define ANNA_OP_RETURN 0 
 #define ANNA_OP_CONSTANT 1
@@ -38,6 +39,7 @@
 #define ANNA_OP_MEMBER_GET_THIS 16
 #define ANNA_OP_JMP 17
 #define ANNA_OP_TRAMPOLENE 18
+#define ANNA_OP_CONSTRUCT 19
 
 typedef struct 
 {
@@ -196,7 +198,7 @@ void anna_vm_run(anna_function_t *entry)
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		if(!fun)
 		{
-		    wprintf(L"Stack contents:\n");
+		    wprintf(L"Error: Tried to call something that is not a function. Stack contents:\n");
 		    anna_vmstack_print(*stack);
 		    CRASH;
 		}
@@ -220,6 +222,25 @@ void anna_vm_run(anna_function_t *entry)
 		    anna_frame_push(stack, fun);
 		}
 		
+		break;
+	    }
+	    
+	    case ANNA_OP_CONSTRUCT:
+	    {
+		anna_op_null_t *op = (anna_op_null_t *)(*stack)->code;
+		anna_object_t *wrapped = anna_pop(stack);
+
+		anna_type_t *tp = anna_type_unwrap(wrapped);
+		
+		anna_object_t *result = anna_object_create(tp);
+		
+		anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+		    tp,
+		    ANNA_MID_INIT_PAYLOAD);
+		anna_push(stack, *constructor_ptr);
+		anna_push(stack, result);
+		
+		(*stack)->code += sizeof(*op);
 		break;
 	    }
 	    
@@ -457,6 +478,13 @@ void anna_bc_print(char *code)
 		break;
 	    }
 	    
+	    case ANNA_OP_CONSTRUCT:
+	    {
+		wprintf(L"Construct object\n\n");
+		code += sizeof(anna_op_null_t);
+		break;
+	    }
+	    
 	    case ANNA_OP_RETURN:
 	    {
 		wprintf(L"Return\n\n");
@@ -576,6 +604,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
     switch(node->node_type)
     {
 
+	case ANNA_NODE_TYPE:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_INT_LITERAL:
@@ -649,6 +678,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    break;
 	}
 	
+	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
@@ -656,15 +686,36 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    size_t res = 
 		anna_vm_size(fun, node2->function) + sizeof(anna_op_call_t);
 
-	    anna_function_type_key_t *template = anna_function_type_extract(
-		node2->function->return_type);
+	    anna_function_type_key_t *template;
+	    int ra;
+	    if(node->node_type==ANNA_NODE_CALL)
+	    {
+		template = anna_function_type_extract(
+		    node2->function->return_type);
+		ra = template->argc;
+	    }
+	    else
+	    {
+		anna_node_type_t *tn = (anna_node_type_t *)node2->function;
+//		anna_type_print(tn->payload);
+		
+		anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+		    tn->payload,
+		    ANNA_MID_INIT_PAYLOAD);
+		assert(constructor_ptr);
+		template = anna_function_type_extract(
+		    (*constructor_ptr)->type);
+		res += sizeof(anna_op_null_t);
+		ra = template->argc-1;
+	    }
 	    
 	    int i;	    
-	    int ra = template->argc;
 	    if(template->flags & ANNA_FUNCTION_VARIADIC)
 	    {
 		ra--;
 	    }
+
+
 	    for(i=0; i<ra; i++)
 	    {
 		res += anna_vm_size(fun, node2->child[i]);
@@ -736,15 +787,15 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
     }
 }
 
-static void anna_vm_call(char **ptr, int argc)
+static void anna_vm_call(char **ptr, int op, int argc)
 {
-    anna_op_call_t op = 
+    anna_op_call_t cop = 
 	{
-	    ANNA_OP_CALL,
+	    op,
 	    argc
 	}
     ;
-    memcpy(*ptr, &op, sizeof(anna_op_call_t));
+    memcpy(*ptr, &cop, sizeof(anna_op_call_t));
     *ptr += sizeof(anna_op_call_t);	    
 }
 
@@ -865,6 +916,13 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    break;
 	}
 
+	case ANNA_NODE_TYPE:
+	{
+	    anna_node_type_t *node2 = (anna_node_type_t *)node;
+	    anna_vm_const(ptr,anna_type_wrap(node2->payload));
+	    break;
+	}
+
 	case ANNA_NODE_STRING_LITERAL:
 	{
 	    anna_node_string_literal_t *node2 = (anna_node_string_literal_t *)node;
@@ -892,14 +950,14 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		anna_vm_size(fun, (anna_node_t *)node2->block1) + 
 		sizeof(anna_op_call_t));
 	    anna_vm_compile_i(fun, (anna_node_t *)node2->block1, ptr);
-	    anna_vm_call(ptr, 0);
+	    anna_vm_call(ptr, ANNA_OP_CALL, 0);
 	    anna_vm_jmp(
 		ptr, ANNA_OP_JMP,
 		sizeof(anna_op_jmp_t) + 
 		anna_vm_size(fun, (anna_node_t *)node2->block2) +
 		sizeof(anna_op_call_t));
 	    anna_vm_compile_i(fun, (anna_node_t *)node2->block2, ptr);
-	    anna_vm_call(ptr, 0);
+	    anna_vm_call(ptr, ANNA_OP_CALL, 0);
 
 	    break;
 	}
@@ -938,7 +996,6 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;
-	    int distance = 0;
 	    
 	    if(anna_stack_get_ro(fun->stack_template, node2->name))
 	    {
@@ -972,17 +1029,38 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    break;
 	}
 	
+	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    anna_vm_compile_i(fun, node2->function, ptr);
 	    
-	    anna_function_type_key_t *template = anna_function_type_extract(
-		node2->function->return_type);
+	    anna_function_type_key_t *template;
+	    int ra;
+	    if(node->node_type==ANNA_NODE_CALL)
+	    {
+		template = anna_function_type_extract(
+		    node2->function->return_type);
+		ra = template->argc;
+	    }
+	    else
+	    {
+		anna_node_type_t *tn = (anna_node_type_t *)node2->function;
+//		anna_type_print(tn->payload);
+		
+		anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+		    tn->payload,
+		    ANNA_MID_INIT_PAYLOAD);
+		assert(constructor_ptr);
+		template = anna_function_type_extract(
+		    (*constructor_ptr)->type);
+		anna_vm_null(ptr, ANNA_OP_CONSTRUCT);
+		ra = template->argc-1;
+	    }
 	    
 	    int i;
 	    
-	    int ra = template->argc;
+	    
 	    if(template->flags & ANNA_FUNCTION_VARIADIC)
 	    {
 		ra--;
@@ -1007,7 +1085,10 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    }
 	    
 	    //wprintf(L"Woo argc %d\n", template->argc);
-	    anna_vm_call(ptr, template->argc);
+	    anna_vm_call(
+		ptr,
+		ANNA_OP_CALL,
+		template->argc);
 	    
 	    break;
 	}
@@ -1072,7 +1153,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		}
 	    }
 	    
-	    anna_vm_call(ptr, template->argc);
+	    anna_vm_call(ptr, ANNA_OP_CALL, template->argc);
 	    break;
 	}	
 	
@@ -1107,6 +1188,6 @@ void anna_vm_compile(
     {
 	anna_vm_compile_i(fun, fun->body->child[i], &code_ptr);
     }
-//    anna_bc_print(fun->code);
+    anna_bc_print(fun->code);
 }
 

@@ -457,10 +457,9 @@ static void anna_node_calculate_type_internal(
 		if(type)
 		{
 		    this->node_type = ANNA_NODE_CONSTRUCT;
-		    call->function = (anna_node_t *)anna_node_create_dummy(
+		    call->function = (anna_node_t *)anna_node_create_type(
 			&call->function->location,
-			anna_type_wrap(type),
-			0);
+			type);
 		    call->return_type = type;
 		    break;
 		}
@@ -575,11 +574,11 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_type_t *c = (anna_node_type_t *)this;
 	    anna_type_t *f = c->payload;
+	    c->return_type = type_type;
 	    
 	    if(f->definition)
 	    {
 		anna_type_setup_interface(f, stack);
-		c->return_type = type_type;
 	    }
 	    break;
 	}
