@@ -1,4 +1,4 @@
 def main()
 {
-    if(1){print("Ja\n")}else{print("Nej\n")}
+    if(null){print("JaJAJAjaja\n\n\n\n\n")}else{print("NejNejNEJNEJ!!!\n\n\n\n")}
 }

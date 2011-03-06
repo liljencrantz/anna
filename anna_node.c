@@ -466,7 +466,7 @@ static anna_object_t *anna_node_member_get_wrap_invoke(
     return wrapped;
 }
 
-static anna_object_t *anna_trampoline(
+anna_object_t *anna_trampoline(
     anna_function_t *fun,
     anna_stack_template_t *stack)
 {
@@ -490,14 +490,14 @@ static anna_object_t *anna_trampoline(
 
 //    wprintf(L"Creating a trampoline for function %ls with shiny new stack:\n", anna_function_unwrap(orig)->name);
 //    anna_stack_print(stack);
-
+    
     memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
 	   anna_member_addr_get_mid(orig,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
 	   sizeof(anna_function_t *));    
     memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_STACK),
 	   &stack,
 	   sizeof(anna_stack_template_t *));
-
+    
     return res;
 }
 

@@ -36,6 +36,7 @@
 #define ANNA_OP_DUP 15
 #define ANNA_OP_MEMBER_GET_THIS 16
 #define ANNA_OP_JMP 17
+#define ANNA_OP_TRAMPOLENE 18
 
 typedef struct 
 {
@@ -194,6 +195,11 @@ void anna_vm_run(anna_function_t *entry)
 		}
 		else
 		{
+
+		    wprintf(
+			L"Call function named %ls\n", 
+			fun->name);
+		    
 		    (*stack)->code += sizeof(*op);
 		    anna_frame_push(stack, fun);
 		}
@@ -337,6 +343,7 @@ void anna_vm_run(anna_function_t *entry)
 	    case ANNA_OP_DUP:
 	    {
 		anna_push(stack, anna_peek(stack, 0));
+		(*stack)->code += sizeof(anna_op_null_t);
 		break;
 	    }
 
@@ -358,6 +365,14 @@ void anna_vm_run(anna_function_t *entry)
 	    {
 		anna_op_jmp_t *op = (anna_op_jmp_t *)(*stack)->code;
 		(*stack)->code += anna_pop(stack) == null_object ? op->offset:sizeof(*op);
+		break;
+	    }
+	    
+	    case ANNA_OP_TRAMPOLENE:
+	    {
+		anna_object_t *base = anna_pop(stack);
+		anna_push(stack, anna_trampoline(anna_function_unwrap(base), stack));
+		(*stack)->code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
@@ -408,7 +423,7 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_call_t *op = (anna_op_call_t *)code;
 		size_t param = op->param;
-		wprintf(L"Invoke function with %d parameter(s)\n\n", param);
+		wprintf(L"Call function with %d parameter(s)\n\n", param);
 		code += sizeof(*op);
 		break;
 	    }
@@ -511,6 +526,13 @@ void anna_bc_print(char *code)
 		break;
 	    }
 	    
+	    case ANNA_OP_TRAMPOLENE:
+	    {
+		wprintf(L"Create trampolene\n\n");
+		code += sizeof(anna_op_null_t);
+		break;
+	    }
+	    
 	    default:
 	    {
 		wprintf(L"Unknown opcode %d\n", instruction);
@@ -533,6 +555,11 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	case ANNA_NODE_CHAR_LITERAL:
 	{
 	    return sizeof(anna_op_const_t);
+	}
+
+	case ANNA_NODE_CLOSURE:
+	{
+	    return sizeof(anna_op_const_t) + sizeof(anna_op_null_t);
 	}
 
 	case ANNA_NODE_DECLARE:
@@ -692,6 +719,30 @@ static void anna_vm_call(char **ptr, int argc)
     *ptr += sizeof(anna_op_call_t);	    
 }
 
+static void anna_vm_const(char **ptr, anna_object_t *val)
+{
+    anna_op_const_t op = 
+	{
+	    ANNA_OP_CONSTANT,
+	    val
+	}
+    ;
+    memcpy(*ptr, &op, sizeof(anna_op_const_t));
+    *ptr += sizeof(anna_op_const_t);	    
+}
+
+static void anna_vm_member(char **ptr, int op, mid_t val)
+{
+    anna_op_member_t mop = 
+	{
+	    op,
+	    val
+	}
+    ;
+    memcpy(*ptr, &mop, sizeof(anna_op_const_t));
+    *ptr += sizeof(anna_op_member_t);	    
+}
+
 static void anna_vm_jmp(char **ptr, int op, ssize_t offset)
 {
     anna_op_jmp_t jop = 
@@ -719,7 +770,6 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 {
     switch(node->node_type)
     {
-
 	case ANNA_NODE_NULL:
 	{
 	    anna_op_const_t op = 
@@ -836,8 +886,8 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 
 	    anna_vm_compile_i(fun, node2->cond, ptr);
 	    anna_vm_jmp(
-		ptr, ANNA_OP_COND_JMP, 
-		sizeof(anna_op_jmp_t) +
+		ptr, ANNA_OP_NCOND_JMP, 
+		2*sizeof(anna_op_jmp_t) +
 		anna_vm_size(fun, (anna_node_t *)node2->block1) + 
 		sizeof(anna_op_call_t));
 	    anna_vm_compile_i(fun, (anna_node_t *)node2->block1, ptr);
@@ -872,32 +922,13 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
 
 	    anna_vm_compile_i(fun, node2->arg1, ptr);
-
-	    anna_op_null_t dop = 
-		{
-		    ANNA_OP_DUP,
-		}
-	    ;
-	    memcpy(*ptr, &dop, sizeof(anna_op_null_t));
-	    *ptr += sizeof(anna_op_null_t);
-
-	    anna_op_jmp_t jop = 
-		{
-		    ANNA_OP_NCOND_JMP,
-		    sizeof(anna_op_jmp_t) + sizeof(anna_op_null_t) + anna_vm_size(fun, node2->arg2)
-		}
-	    ;
-	    memcpy(*ptr, &jop, sizeof(anna_op_jmp_t));
-	    *ptr += sizeof(anna_op_jmp_t);
-
-	    anna_op_null_t pop = 
-		{
-		    ANNA_OP_POP,
-		}
-	    ;
-	    memcpy(*ptr, &pop, sizeof(anna_op_null_t));
-	    *ptr += sizeof(anna_op_null_t);
 	    
+	    anna_vm_null(ptr, ANNA_OP_DUP);
+	    anna_vm_jmp(
+		ptr,ANNA_OP_NCOND_JMP,
+		sizeof(anna_op_jmp_t) + sizeof(anna_op_null_t) + 
+		anna_vm_size(fun, node2->arg2));
+	    anna_vm_null( ptr, ANNA_OP_POP);
 	    anna_vm_compile_i(fun, node2->arg2, ptr);
 	    
 	    break;
@@ -911,41 +942,16 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    if(anna_stack_get_ro(fun->stack_template, node2->name))
 	    {
 		anna_object_t *val = anna_stack_get_str(fun->stack_template, node2->name);
-		anna_op_const_t op = 
-		    {
-			ANNA_OP_CONSTANT,
-			val
-		    }
-		;
-		memcpy(*ptr, &op, sizeof(anna_op_const_t));
-		*ptr += sizeof(anna_op_const_t);	    
-		
+		anna_vm_const(ptr, val);
 		break;
 	    }
+
 	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
 	    if(import)
 	    {
 		
-		anna_op_const_t cop = 
-		    {
-			ANNA_OP_CONSTANT,
-			anna_stack_wrap(import)
-		    }
-		;
-		memcpy(*ptr, &cop, sizeof(anna_op_const_t));
-		*ptr += sizeof(anna_op_const_t);	    
-		
-		anna_op_member_t mop = 
-		    {
-			ANNA_OP_MEMBER_GET,
-			anna_mid_get(node2->name)
-		    }
-		;
-		memcpy(*ptr, &mop, sizeof(anna_op_const_t));
-		*ptr += sizeof(anna_op_member_t);	    
-		
-		return sizeof(anna_op_const_t)+ sizeof(anna_op_member_t);
-		
+		anna_vm_const(ptr, anna_stack_wrap(import));
+		anna_vm_member(ptr, ANNA_OP_MEMBER_GET, anna_mid_get(node2->name));
 		break;
 	    }
 
@@ -1027,7 +1033,19 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    ;
 	    memcpy(*ptr, &mop, sizeof(anna_op_member_t));
 	    *ptr += sizeof(anna_op_member_t);	    
-	    	    
+	    
+	    break;
+	}
+	
+	case ANNA_NODE_CLOSURE:
+	{
+	    anna_node_closure_t *node2 = (anna_node_closure_t *)node;
+	    anna_vm_const(
+		ptr,
+		anna_function_wrap(node2->payload));
+	    anna_vm_null(
+		ptr,
+		ANNA_OP_TRAMPOLENE);
 	    break;
 	}
 	
@@ -1036,15 +1054,8 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	{
 	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr);
-	    
-	    anna_op_member_t mop = 
-		{
-		    ANNA_OP_MEMBER_GET_THIS,
-		    node2->mid
-		}
-	    ;
-	    memcpy(*ptr, &mop, sizeof(anna_op_member_t));
-	    *ptr += sizeof(anna_op_member_t);	    
+
+	    anna_vm_member(ptr, ANNA_OP_MEMBER_GET_THIS, node2->mid);
 	    
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
