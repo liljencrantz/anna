@@ -451,6 +451,13 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    return sizeof(anna_op_const_t);
 	}
 
+	case ANNA_NODE_DECLARE:
+	{
+	    anna_node_declare_t *node2 = (anna_node_declare_t *)node;
+	    return sizeof(anna_op_var_t) + 
+		anna_vm_size(fun, node2->value);;
+	}
+
 	case ANNA_NODE_OR:
 	{
 	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
@@ -473,11 +480,18 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	{
 	    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;
 	    int distance = 0;
-	    anna_object_t *val = anna_stack_get_const(fun->stack_template, node2->name);
-	    if(val)
+
+	    if(anna_stack_get_ro(fun->stack_template, node2->name))
 	    {
 		return sizeof(anna_op_const_t);
 	    }
+	    
+	    anna_stack_frame_t *import = anna_stack_get_import(fun->stack_template, node2->name);
+	    if(import)
+	    {
+		return sizeof(anna_op_const_t)+ sizeof(anna_op_member_t);
+	    }
+
 	    CRASH;
 	    break;
 	}
@@ -539,6 +553,25 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    ;
 	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
 	    *ptr += sizeof(anna_op_const_t);
+	    break;
+	}
+
+	case ANNA_NODE_DECLARE:
+	{
+	    anna_node_declare_t *node2 = (anna_node_declare_t *)node;
+
+	    anna_vm_compile_i(fun, node2->value, ptr);
+	    
+	    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, node2->name);
+	    anna_op_var_t op = 
+		{
+		    ANNA_OP_SET_VAR,
+		    0, 
+		    sid.offset
+		}
+	    ;
+	    memcpy(*ptr, &op, sizeof(anna_op_var_t));
+	    *ptr += sizeof(anna_op_var_t);
 	    break;
 	}
 
@@ -665,9 +698,10 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	{
 	    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;
 	    int distance = 0;
-	    anna_object_t *val = anna_stack_get_const(fun->stack_template, node2->name);
-	    if(val)
+	    
+	    if(anna_stack_get_ro(fun->stack_template, node2->name))
 	    {
+		anna_object_t *val = anna_stack_get_str(fun->stack_template, node2->name);
 		anna_op_const_t op = 
 		    {
 			ANNA_OP_CONSTANT,
@@ -679,6 +713,34 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		
 		break;
 	    }
+	    anna_stack_frame_t *import = anna_stack_get_import(fun->stack_template, node2->name);
+	    if(import)
+	    {
+
+		anna_op_const_t cop = 
+		    {
+			ANNA_OP_CONSTANT,
+			anna_stack_wrap(import)
+		    }
+		;
+		memcpy(*ptr, &cop, sizeof(anna_op_const_t));
+		*ptr += sizeof(anna_op_const_t);	    
+
+		anna_op_member_t mop = 
+		    {
+			ANNA_OP_GET_MEMBER,
+			0
+		    }
+		;
+		memcpy(*ptr, &mop, sizeof(anna_op_const_t));
+		*ptr += sizeof(anna_op_member_t);	    
+
+		return sizeof(anna_op_const_t)+ sizeof(anna_op_member_t);
+
+		break;
+	    }
+
+
 	    CRASH;
 	    break;
 	}
@@ -725,7 +787,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		    *ptr += sizeof(anna_op_null_t);
 		}
 	    }
-
+	    
 	    //wprintf(L"Woo argc %d\n", template->argc);
 	    
 	    anna_op_call_t op = 
@@ -760,7 +822,7 @@ void anna_vm_compile(
     {
 	sz += anna_vm_size(fun, fun->body->child[i]);
     }
-
+    
     fun->code = calloc(sz, 1);
     char *code_ptr = fun->code;
     for(i=0; i<fun->body->child_count; i++)

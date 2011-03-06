@@ -1,5 +1,6 @@
 
 def main()
 {
-    print(1 and 3 , 'g', "\n");
+    var i = 5;
+    print(4);
 }

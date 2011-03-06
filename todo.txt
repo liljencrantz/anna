@@ -6,9 +6,6 @@ Type annotations
 Annotate method overloads with aliases
 Always check aliases when resolving method calls during compile time
 True type intersections
-Bytecode format
-Bytecode generator
-Bytecode interpreter
 Continuations
 milter/fap
 Tests for namespaces

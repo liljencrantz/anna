@@ -138,10 +138,10 @@ void anna_stack_declare2(anna_stack_frame_t *stack,
     stack->member[*offset] = null_object;
 }
 
-static inline void **anna_stack_addr(
+static inline anna_stack_frame_t *anna_stack_frame_search(
     anna_stack_frame_t *stack,
-    wchar_t *name, off_t arr_offset,
-    int is_ptr, int check_imports_and_parents)
+    wchar_t *name,
+    int import_only)
 {
     if(!stack)
     {
@@ -155,38 +155,30 @@ static inline void **anna_stack_addr(
 	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
 	if(offset) 
 	{
-	    void ** foo = is_ptr?(*((void **)((char *)stack + arr_offset))):((char *)stack + arr_offset);
-	    return &foo[*offset];
+	    return import_only?0:stack;
 	}
-	if(check_imports_and_parents)
+
+	int i;
+	for(i=0; i<al_get_count(&stack->import); i++)
 	{
-	    int i;
-	    for(i=0; i<al_get_count(&stack->import); i++)
+	    anna_stack_frame_t *import = al_get(&stack->import, i);
+	    size_t *offset = (size_t *)hash_get(&import->member_string_identifier, name);
+	    if(offset) 
 	    {
-		anna_stack_frame_t *import = al_get(&stack->import, i);
-		//wprintf(L"Found import to check when searching for %ls: %d\n", name, import);
-		void **import_res = anna_stack_addr(import, name, arr_offset, is_ptr, 0);
-		if(import_res)
-		    return import_res;
+		return import;
 	    }
 	}
-	else 
-	{   
-	    return 0;
-	}
-	
 	stack = stack->parent;
     }
     return 0;
-    
-    wprintf(L"Critical: Tried to access unknown variable: %ls\nStack content:\n", name);
-    //anna_stack_print(orig);
-    CRASH;
 }
 
 anna_object_t **anna_stack_addr_get_str(anna_stack_frame_t *stack, wchar_t *name)
 {
-    return (anna_object_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member), 0, 1);
+    anna_stack_frame_t *f = anna_stack_frame_search(stack, name, 0);
+    if(!f)
+	return 0;
+    return &f->member[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
 anna_object_t *anna_stack_frame_get_str(anna_stack_frame_t *stack, wchar_t *name)
@@ -202,7 +194,8 @@ anna_object_t *anna_stack_frame_get_str(anna_stack_frame_t *stack, wchar_t *name
 void anna_stack_set_str(anna_stack_frame_t *stack, wchar_t *name, anna_object_t *value)
 {
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
-    (*anna_stack_addr_get_str(stack, name)) = value;
+    anna_stack_frame_t *f = anna_stack_frame_search(stack, name, 0);
+    f->member[*(size_t *)hash_get(&f->member_string_identifier, name)] = value;
 }
 
 anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name)
@@ -223,48 +216,39 @@ anna_object_t *anna_stack_get_str(anna_stack_frame_t *stack, wchar_t *name)
 #endif
 }
 
-anna_object_t *anna_stack_get_const(anna_stack_frame_t *stack, wchar_t *name)
-{
-#ifdef ANNA_CHECK_STACK_ACCESS
-    anna_object_t **res =anna_stack_addr_get_str(stack, name);
-    if(unlikely(!res))
-    {
-	wprintf(
-	    L"Critical: Tried to access non-existing variable %ls\n",
-	    name);
-	anna_stack_print(stack);
-	CRASH;
-    }
-    return *res;
-#else
-    return *anna_stack_addr_get_str(stack, name);
-#endif
-}
-
 anna_type_t *anna_stack_get_type(anna_stack_frame_t *stack, wchar_t *name)
 {
-    anna_type_t **res = (anna_type_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_type), 1, 1);
-    return res?*res:0;
+    anna_stack_frame_t *f = anna_stack_frame_search(stack, name, 0);
+    if(!f)
+	return 0;
+    return f->member_type[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
 int anna_stack_get_flag(anna_stack_frame_t *stack, wchar_t *name)
 {
-    int *res = (int *)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_flags), 1, 1);
-    return res?*res:0;
+    anna_stack_frame_t *f = anna_stack_frame_search(stack, name, 0);
+    return &f->member_flags[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
 void anna_stack_set_type(anna_stack_frame_t *stack, wchar_t *name, anna_type_t *type){
-    anna_type_t **res = (anna_type_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_type), 1, 1);
-    if(res)
-	*res = type;
+    anna_stack_frame_t *f = anna_stack_frame_search(stack, name, 0);
+    f->member_type[*(size_t *)hash_get(&f->member_string_identifier, name)] = type;
 }
 
 anna_node_declare_t *anna_stack_get_declaration(
     anna_stack_frame_t *stack, wchar_t *name)
 {
-    anna_node_declare_t **res = (anna_node_declare_t **)anna_stack_addr(stack, name, offsetof(anna_stack_frame_t,member_declare_node), 1, 1);
-    return res?*res:0;
+    anna_stack_frame_t *f = anna_stack_frame_search(stack, name, 0);
+    if(!f)
+	return 0;
+    return &f->member_declare_node[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
+
+anna_stack_frame_t *anna_stack_get_import(anna_stack_frame_t *stack, wchar_t *name)
+{
+    return anna_stack_frame_search(stack, name, 1);
+}
+
 
 anna_sid_t anna_stack_sid_create(anna_stack_frame_t *stack, wchar_t *name)
 {

@@ -110,5 +110,6 @@ void anna_stack_prepare(anna_type_t *type);
 
 int anna_stack_get_flag(anna_stack_frame_t *stack, wchar_t *name);
 
+anna_stack_frame_t *anna_stack_get_import(anna_stack_frame_t *stack, wchar_t *name);
 
 #endif

@@ -40,7 +40,6 @@
 #define ANNA_NODE_BLOB 16
 #define ANNA_NODE_IMPORT 17
 
-
 struct YYLTYPE
 {
     int first_line;
