@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common.h"
 #include "anna.h"
 #include "anna_vm.h"
 #include "anna_function.h"
@@ -118,6 +119,15 @@ static anna_object_t *anna_peek(anna_vmstack_t **stack, size_t off)
 {
     return *((*stack)->top-1-off);
 }
+static void anna_vmstack_print(anna_vmstack_t *stack)
+{
+    anna_object_t **p = &stack->base[0];
+    while(p!=stack->top)
+    {
+	wprintf(L"%ls\n", (*p)->type->name);
+	p++;
+    }
+}
 
 static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
 {
@@ -132,7 +142,7 @@ static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
     res->parent=0;							\
     res->function = fun;						\
     res->code = fun->code;						\
-    (*stack)->top -= fun->input_count;					\
+    (*stack)->top -= (fun->input_count+1);				\
     memcpy(&res->base[0], (*stack)->top, sizeof(anna_object_t *)*fun->input_count); \
     res->top = &res->base[fun->variable_count];				\
     *(++stack) = res;							\
@@ -184,6 +194,12 @@ void anna_vm_run(anna_function_t *entry)
 		anna_object_t *wrapped = anna_peek(stack, param);
 		
 		anna_function_t *fun = anna_function_unwrap(wrapped);
+		if(!fun)
+		{
+		    wprintf(L"Stack contents:\n");
+		    anna_vmstack_print(*stack);
+		    CRASH;
+		}
 		
 		if(fun->native.function)
 		{
@@ -195,11 +211,11 @@ void anna_vm_run(anna_function_t *entry)
 		}
 		else
 		{
-
+/*
 		    wprintf(
 			L"Call function named %ls\n", 
 			fun->name);
-		    
+*/		    
 		    (*stack)->code += sizeof(*op);
 		    anna_frame_push(stack, fun);
 		}
@@ -249,6 +265,19 @@ void anna_vm_run(anna_function_t *entry)
 		anna_object_t *obj = anna_pop(stack);
 
 		anna_member_t *m = obj->type->mid_identifier[op->mid];
+
+
+		if(!m)
+		{
+		    debug(
+			D_CRITICAL,
+			L"Object of type %ls does not have a member of type %ls\n",
+			obj->type->name,
+			anna_mid_get_reverse(op->mid));
+		    
+		    CRASH;
+		}
+		
 		if(m->is_property)
 		{
 		    anna_object_t *method = obj->type->static_member[m->getter_offset];
@@ -610,7 +639,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    }
 	    
 	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
-	    if(import)
+	    if(import->is_namespace)
 	    {
 		return sizeof(anna_op_const_t)+ sizeof(anna_op_member_t);
 	    }
@@ -947,7 +976,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    }
 
 	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
-	    if(import)
+	    if(import->is_namespace)
 	    {
 		
 		anna_vm_const(ptr, anna_stack_wrap(import));
@@ -1125,11 +1154,11 @@ void anna_vm_compile(
 {
     if(fun->code)
 	return;
-    wprintf(L"Compile really awesome function named %ls\n", fun->name);
+//    wprintf(L"Compile really awesome function named %ls\n", fun->name);
     
     int i;
     fun->variable_count = fun->stack_template->count;
-    fun->frame_size = 128;
+    fun->frame_size = 512;
     
     size_t sz = 1;
     for(i=0; i<fun->body->child_count; i++)
@@ -1143,6 +1172,6 @@ void anna_vm_compile(
     {
 	anna_vm_compile_i(fun, fun->body->child[i], &code_ptr);
     }
-    anna_bc_print(fun->code);
+//    anna_bc_print(fun->code);
 }
 

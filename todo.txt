@@ -2,7 +2,6 @@ Pop unused function returns
 Validate that all functions end with an empty stack frame
 Implement vm handling of properties
 Implement member setting
-Implement node type: If 
 Implement node type: While
 Implement autowrapping of methods
 Implement node type: Assignment
