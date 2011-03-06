@@ -753,6 +753,25 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    return res;
 	}
 
+	case ANNA_NODE_ASSIGN:
+	{
+	    
+	    anna_node_assign_t *node2 = (anna_node_assign_t *)node;
+	    size_t res = anna_vm_size(fun, node2->value);
+	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
+	    if(import->is_namespace)
+	    {
+		return res + 
+		    sizeof(anna_op_const_t) +
+		    sizeof(anna_op_member_t);
+		break;
+	    }
+	    return res + 
+		sizeof(anna_op_var_t);
+
+	    break;
+	}
+	
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
@@ -864,6 +883,19 @@ static void anna_vm_jmp(char **ptr, int op, ssize_t offset)
     ;
     memcpy(*ptr, &jop, sizeof(anna_op_jmp_t));
     *ptr += sizeof(anna_op_jmp_t);
+}
+
+static void anna_vm_var(char **ptr, int op, size_t frame, size_t offset)
+{
+    anna_op_var_t vop = 
+	{
+	    op,
+	    frame,
+	    offset
+	}
+    ;
+    memcpy(*ptr, &vop, sizeof(anna_op_var_t));
+    *ptr += sizeof(anna_op_var_t);	    
 }
 
 static void anna_vm_null(char **ptr, int op)
@@ -1035,15 +1067,11 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    anna_sid_t sid = anna_stack_sid_create(
 		fun->stack_template, node2->name);
 	    
-	    anna_op_var_t vop = 
-		{
-		    ANNA_OP_VAR_GET,
-		    sid.frame,
-		    sid.offset
-		}
-	    ;
-	    memcpy(*ptr, &vop, sizeof(anna_op_var_t));
-	    *ptr += sizeof(anna_op_var_t);	    
+	    anna_vm_var(
+		ptr,
+		ANNA_OP_VAR_GET,
+		sid.frame,
+		sid.offset);	    
 	    
 	    break;
 	}
@@ -1112,6 +1140,30 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    break;
 	}
 
+	case ANNA_NODE_ASSIGN:
+	{
+	    anna_node_assign_t *node2 = (anna_node_assign_t *)node;
+	    anna_vm_compile_i(fun, node2->value, ptr);
+	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
+	    if(import->is_namespace)
+	    {
+		anna_vm_const(ptr, anna_stack_wrap(import));
+		anna_vm_member(ptr, ANNA_OP_MEMBER_SET, anna_mid_get(node2->name));
+		break;
+	    }
+
+	    anna_sid_t sid = anna_stack_sid_create(
+		fun->stack_template, node2->name);
+	    
+	    anna_vm_var(
+		ptr,
+		ANNA_OP_VAR_SET,
+		sid.frame,
+		sid.offset);	    
+	    
+	    break;
+	}
+	
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
