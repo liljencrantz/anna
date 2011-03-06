@@ -689,6 +689,20 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    break;
 	}
 
+	case ANNA_NODE_DUMMY:
+	{
+	    anna_node_dummy_t *node2 = (anna_node_dummy_t *)node;
+	    anna_op_const_t op = 
+		{
+		    ANNA_OP_CONSTANT,
+		    node2->payload
+		}
+	    ;
+	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
+	    *ptr += sizeof(anna_op_const_t);
+	    break;
+	}
+
 	case ANNA_NODE_INT_LITERAL:
 	{
 	    anna_node_int_literal_t *node2 = (anna_node_int_literal_t *)node;
