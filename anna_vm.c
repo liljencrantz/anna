@@ -29,8 +29,9 @@
 #define ANNA_OP_LIST 9
 #define ANNA_OP_FOLD 10
 #define ANNA_OP_COND_JMP 11
-#define ANNA_OP_POP 12
-#define ANNA_OP_NOT 13
+#define ANNA_OP_NCOND_JMP 12
+#define ANNA_OP_POP 13
+#define ANNA_OP_NOT 14
 
 typedef struct 
 {
@@ -279,10 +280,24 @@ void anna_vm_run(anna_function_t *entry)
 		break;
 	    }
 
+	    case ANNA_OP_NOT:
+	    {
+		*((*stack)->top-1) = (*((*stack)->top-1)==null_object)?anna_int_one:null_object;
+		(*stack)->code += sizeof(anna_op_null_t);
+		break;
+	    }
+
 	    case ANNA_OP_COND_JMP:
 	    {
 		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)(*stack)->code;
 		(*stack)->code += anna_peek(stack, 0) != null_object ? op->offset:sizeof(*op);
+		break;
+	    }
+	    
+	    case ANNA_OP_NCOND_JMP:
+	    {
+		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)(*stack)->code;
+		(*stack)->code += anna_peek(stack, 0) == null_object ? op->offset:sizeof(*op);
 		break;
 	    }
 	    
@@ -389,10 +404,26 @@ void anna_bc_print(char *code)
 		break;
 	    }
 	    
+	    case ANNA_OP_NOT:
+	    {
+		wprintf(L"Invert stack top element\n");
+		code += sizeof(anna_op_null_t);
+		break;
+	    }
+	    
 	    case ANNA_OP_COND_JMP:
 	    {
 		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)code;
 		wprintf(L"Conditionally jump %d bytes\n", op->offset);
+		code += sizeof(*op);
+		break;
+	    }
+	    
+	    
+	    case ANNA_OP_NCOND_JMP:
+	    {
+		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)code;
+		wprintf(L"Conditionally not jump %d bytes\n", op->offset);
 		code += sizeof(*op);
 		break;
 	    }
@@ -411,27 +442,25 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
     switch(node->node_type)
     {
 
-	case ANNA_NODE_INT_LITERAL:
-	{
-	    return sizeof(anna_op_const_t);
-	}
-
 	case ANNA_NODE_NULL:
-	{
-	    return sizeof(anna_op_const_t);
-	}
-
+	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_FLOAT_LITERAL:
-	{
-	    return sizeof(anna_op_const_t);
-	}
-
 	case ANNA_NODE_STRING_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
 	{
 	    return sizeof(anna_op_const_t);
 	}
 
 	case ANNA_NODE_OR:
+	{
+	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
+	    return anna_vm_size(fun, node2->arg1) +
+		sizeof(anna_op_cond_jmp_t) +
+		sizeof(anna_op_null_t) +
+		anna_vm_size(fun, node2->arg2);
+	}
+
+	case ANNA_NODE_AND:
 	{
 	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
 	    return anna_vm_size(fun, node2->arg1) +
@@ -529,6 +558,22 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    break;
 	}
 
+	case ANNA_NODE_CHAR_LITERAL:
+	{
+	    anna_node_char_literal_t *node2 = (anna_node_char_literal_t *)node;
+	    anna_op_const_t op = 
+		{
+		    ANNA_OP_CONSTANT,
+		    anna_char_create(node2->payload)
+		}
+	    ;
+	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
+//	    wprintf(L"Write instruction to %d\n", *ptr);
+	    *ptr += sizeof(anna_op_const_t);
+//	    wprintf(L"next instruction is at %d\n", *ptr);
+	    break;
+	}
+
 	case ANNA_NODE_FLOAT_LITERAL:
 	{
 	    anna_node_float_literal_t *node2 = (anna_node_float_literal_t *)node;
@@ -585,6 +630,34 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 
 	    anna_vm_compile_i(fun, node2->arg2, ptr);
 
+	    break;
+	}
+
+	case ANNA_NODE_AND:
+	{
+	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
+
+	    anna_vm_compile_i(fun, node2->arg1, ptr);
+
+	    anna_op_cond_jmp_t jop = 
+		{
+		    ANNA_OP_NCOND_JMP,
+		    sizeof(anna_op_cond_jmp_t) + sizeof(anna_op_null_t) + anna_vm_size(fun, node2->arg2)
+		}
+	    ;
+	    memcpy(*ptr, &jop, sizeof(anna_op_cond_jmp_t));
+	    *ptr += sizeof(anna_op_cond_jmp_t);
+
+	    anna_op_null_t pop = 
+		{
+		    ANNA_OP_POP,
+		}
+	    ;
+	    memcpy(*ptr, &pop, sizeof(anna_op_null_t));
+	    *ptr += sizeof(anna_op_null_t);
+	    
+	    anna_vm_compile_i(fun, node2->arg2, ptr);
+	    
 	    break;
 	}
 
