@@ -1,9 +1,4 @@
-
-def foo(){
-    print("hej\n");
-}
-
 def main()
 {
-    foo();
+    if(1){print("Ja\n")}else{print("Nej\n")}
 }

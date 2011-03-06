@@ -1,15 +1,18 @@
 Pop unused function returns
+Validate that all functions end with an empty stack frame
 Implement vm handling of properties
-Implement member setters
-Implement if and while
-Implement autowrapping of members
-Implement node type: Dummy
-oImplement node type: Assign
+Implement member setting
+Implement node type: If 
+Implement node type: While
+Implement autowrapping of methods
+Implement node type: Assignment
 Implement node type: Constructor
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations
 Implement node type: Type
 Implement node type: Type lookup
+Garbage collector
+Investigate leaking non-GC:ed memory
 User defined properties
 User defined variadic functions
 User defined templates with full specialization support
@@ -31,7 +34,7 @@ Hashtable implementation
 String format function
 Cast operator
 Escaping and error detection in char literals
-Garbage collector
+Inlining of if/while bodies into main method
 
 
 Figure out how to handle the map function. We can't make a prototype
