@@ -554,7 +554,7 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		return sizeof(anna_op_const_t);
 	    }
 	    
-	    anna_stack_template_t *import = anna_stack_get_import(fun->stack_template, node2->name);
+	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
 	    if(import)
 	    {
 		return sizeof(anna_op_const_t)+ sizeof(anna_op_member_t);
@@ -827,7 +827,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		
 		break;
 	    }
-	    anna_stack_template_t *import = anna_stack_get_import(fun->stack_template, node2->name);
+	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
 	    if(import)
 	    {
 		

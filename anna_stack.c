@@ -138,10 +138,9 @@ void anna_stack_declare2(anna_stack_template_t *stack,
     stack->member[*offset] = null_object;
 }
 
-static inline anna_stack_template_t *anna_stack_template_search(
+anna_stack_template_t *anna_stack_template_search(
     anna_stack_template_t *stack,
-    wchar_t *name,
-    int import_only)
+    wchar_t *name)
 {
     if(!stack)
     {
@@ -155,7 +154,7 @@ static inline anna_stack_template_t *anna_stack_template_search(
 	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
 	if(offset) 
 	{
-	    return import_only?0:stack;
+	    return stack;
 	}
 
 	int i;
@@ -175,7 +174,7 @@ static inline anna_stack_template_t *anna_stack_template_search(
 
 anna_object_t **anna_stack_addr_get_str(anna_stack_template_t *stack, wchar_t *name)
 {
-    anna_stack_template_t *f = anna_stack_template_search(stack, name, 0);
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
     return &f->member[*(size_t *)hash_get(&f->member_string_identifier, name)];
@@ -194,7 +193,7 @@ anna_object_t *anna_stack_template_get_str(anna_stack_template_t *stack, wchar_t
 void anna_stack_set_str(anna_stack_template_t *stack, wchar_t *name, anna_object_t *value)
 {
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
-    anna_stack_template_t *f = anna_stack_template_search(stack, name, 0);
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
     f->member[*(size_t *)hash_get(&f->member_string_identifier, name)] = value;
 }
 
@@ -218,7 +217,7 @@ anna_object_t *anna_stack_get_str(anna_stack_template_t *stack, wchar_t *name)
 
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
 {
-    anna_stack_template_t *f = anna_stack_template_search(stack, name, 0);
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
     return f->member_type[*(size_t *)hash_get(&f->member_string_identifier, name)];
@@ -226,29 +225,23 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
 
 int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)
 {
-    anna_stack_template_t *f = anna_stack_template_search(stack, name, 0);
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
     return &f->member_flags[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
 void anna_stack_set_type(anna_stack_template_t *stack, wchar_t *name, anna_type_t *type){
-    anna_stack_template_t *f = anna_stack_template_search(stack, name, 0);
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
     f->member_type[*(size_t *)hash_get(&f->member_string_identifier, name)] = type;
 }
 
 anna_node_declare_t *anna_stack_get_declaration(
     anna_stack_template_t *stack, wchar_t *name)
 {
-    anna_stack_template_t *f = anna_stack_template_search(stack, name, 0);
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
     return &f->member_declare_node[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
-
-anna_stack_template_t *anna_stack_get_import(anna_stack_template_t *stack, wchar_t *name)
-{
-    return anna_stack_template_search(stack, name, 1);
-}
-
 
 anna_sid_t anna_stack_sid_create(anna_stack_template_t *stack, wchar_t *name)
 {

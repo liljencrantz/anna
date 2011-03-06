@@ -152,6 +152,7 @@ static void anna_module_load_lang()
 {
 
     anna_stack_template_t *stack_lang = anna_stack_create(4096, stack_global);
+    stack_lang->is_namespace = 1;
     
     /*
       Create lowest level stuff. Bits of magic, be careful with
@@ -338,6 +339,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     anna_node_print(0, node);
     
     module_stack = anna_node_register_declarations(node, 0);
+    module_stack->is_namespace = 1;
     module_stack->parent = stack_global;
     if(anna_error_count)
     {

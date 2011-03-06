@@ -56,6 +56,7 @@ struct anna_stack_template
     struct anna_node_declare **member_declare_node;  
     int *member_flags;
     array_list_t import;
+    int is_namespace;
     struct anna_object *member[];
 };
 
@@ -112,6 +113,8 @@ void anna_stack_prepare(anna_type_t *type);
 
 int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name);
 
-anna_stack_template_t *anna_stack_get_import(anna_stack_template_t *stack, wchar_t *name);
+anna_stack_template_t *anna_stack_template_search(
+    anna_stack_template_t *stack,
+    wchar_t *name);
 
 #endif

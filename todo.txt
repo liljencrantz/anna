@@ -4,7 +4,7 @@ Implement member setters
 Implement if and while
 Implement autowrapping of members
 Implement node type: Dummy
-Implement node type: Assign
+oImplement node type: Assign
 Implement node type: Constructor
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations
