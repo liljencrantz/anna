@@ -772,6 +772,18 @@ static void anna_vm_member(char **ptr, int op, mid_t val)
     *ptr += sizeof(anna_op_member_t);	    
 }
 
+static void anna_vm_type(char **ptr, int op, anna_type_t *val)
+{
+    anna_op_type_t lop = 
+	{
+	    op,
+	    val
+	}
+    ;
+    memcpy(*ptr, &lop, sizeof(anna_op_type_t));
+    *ptr += sizeof(anna_op_type_t);	    
+}
+
 static void anna_vm_jmp(char **ptr, int op, ssize_t offset)
 {
     anna_op_jmp_t jop = 
@@ -801,14 +813,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
     {
 	case ANNA_NODE_NULL:
 	{
-	    anna_op_const_t op = 
-		{
-		    ANNA_OP_CONSTANT,
-		    null_object
-		}
-	    ;
-	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
-	    *ptr += sizeof(anna_op_const_t);
+	    anna_vm_const(ptr, null_object);
 	    break;
 	}
 
@@ -816,9 +821,10 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	{
 	    anna_node_declare_t *node2 = (anna_node_declare_t *)node;
 
-	    anna_vm_compile_i(fun, node2->value, ptr);
-	    
+	    anna_vm_compile_i(fun, node2->value, ptr);	    
 	    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, node2->name);
+
+
 	    anna_op_var_t op = 
 		{
 		    ANNA_OP_VAR_SET,
@@ -834,62 +840,28 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	case ANNA_NODE_DUMMY:
 	{
 	    anna_node_dummy_t *node2 = (anna_node_dummy_t *)node;
-	    anna_op_const_t op = 
-		{
-		    ANNA_OP_CONSTANT,
-		    node2->payload
-		}
-	    ;
-	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
-	    *ptr += sizeof(anna_op_const_t);
+	    anna_vm_const(ptr,node2->payload);
 	    break;
 	}
 
 	case ANNA_NODE_INT_LITERAL:
 	{
 	    anna_node_int_literal_t *node2 = (anna_node_int_literal_t *)node;
-	    anna_op_const_t op = 
-		{
-		    ANNA_OP_CONSTANT,
-		    anna_int_create(node2->payload)
-		}
-	    ;
-	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
-//	    wprintf(L"Write instruction to %d\n", *ptr);
-	    *ptr += sizeof(anna_op_const_t);
-//	    wprintf(L"next instruction is at %d\n", *ptr);
+	    anna_vm_const(ptr,anna_int_create(node2->payload));
 	    break;
 	}
 
 	case ANNA_NODE_CHAR_LITERAL:
 	{
 	    anna_node_char_literal_t *node2 = (anna_node_char_literal_t *)node;
-	    anna_op_const_t op = 
-		{
-		    ANNA_OP_CONSTANT,
-		    anna_char_create(node2->payload)
-		}
-	    ;
-	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
-//	    wprintf(L"Write instruction to %d\n", *ptr);
-	    *ptr += sizeof(anna_op_const_t);
-//	    wprintf(L"next instruction is at %d\n", *ptr);
+	    anna_vm_const(ptr,anna_char_create(node2->payload));
 	    break;
 	}
 
 	case ANNA_NODE_FLOAT_LITERAL:
 	{
 	    anna_node_float_literal_t *node2 = (anna_node_float_literal_t *)node;
-	    anna_op_const_t op = 
-		{
-		    ANNA_OP_CONSTANT,
-		    anna_float_create(node2->payload)
-		}
-	    ;
-	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
-//	    wprintf(L"Write instruction to %d\n", *ptr);
-	    *ptr += sizeof(anna_op_const_t);
-//	    wprintf(L"next instruction is at %d\n", *ptr);
+	    anna_vm_const(ptr,anna_float_create(node2->payload));
 	    break;
 	}
 
@@ -1021,25 +993,16 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    }
 	    if(template->flags & ANNA_FUNCTION_VARIADIC)
 	    {
-		anna_op_type_t lop = 
-		    {
-			ANNA_OP_LIST,
-			anna_list_type_get(template->argv[template->argc-1])
-		    }
-		;
-		memcpy(*ptr, &lop, sizeof(anna_op_type_t));
-		*ptr += sizeof(anna_op_type_t);	    
-		
+		anna_vm_type(
+		    ptr,
+		    ANNA_OP_LIST,
+		    anna_list_type_get(template->argv[template->argc-1]));
 		for(; i<node2->child_count; i++)
 		{
 		    anna_vm_compile_i(fun, node2->child[i], ptr);		
-		    anna_op_null_t fop = 
-			{
-			    ANNA_OP_FOLD,
-			}
-		    ;
-		    memcpy(*ptr, &fop, sizeof(anna_op_null_t));
-		    *ptr += sizeof(anna_op_null_t);
+		    anna_vm_null(
+			ptr,
+			ANNA_OP_FOLD);
 		}
 	    }
 	    
@@ -1053,16 +1016,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	{
 	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr);
-
-	    anna_op_member_t mop = 
-		{
-		    ANNA_OP_MEMBER_GET,
-		    node2->mid
-		}
-	    ;
-	    memcpy(*ptr, &mop, sizeof(anna_op_member_t));
-	    *ptr += sizeof(anna_op_member_t);	    
-	    
+	    anna_vm_member(ptr, ANNA_OP_MEMBER_GET, node2->mid);
 	    break;
 	}
 	
@@ -1105,39 +1059,20 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    }
 	    if(template->flags & ANNA_FUNCTION_VARIADIC)
 	    {
-		anna_op_type_t lop = 
-		    {
-			ANNA_OP_LIST,
-			anna_list_type_get(template->argv[template->argc-1])
-		    }
-		;
-		memcpy(*ptr, &lop, sizeof(anna_op_type_t));
-		*ptr += sizeof(anna_op_type_t);	    
+		anna_vm_type(
+		    ptr,
+		    ANNA_OP_LIST,
+		    anna_list_type_get(template->argv[template->argc-1]));
+		
 		
 		for(; i<node2->child_count; i++)
 		{
 		    anna_vm_compile_i(fun, node2->child[i], ptr);		
-		    anna_op_null_t fop = 
-			{
-			    ANNA_OP_FOLD,
-			}
-		    ;
-		    memcpy(*ptr, &fop, sizeof(anna_op_null_t));
-		    *ptr += sizeof(anna_op_null_t);
+		    anna_vm_null(ptr, ANNA_OP_FOLD);
 		}
 	    }
 	    
-	    //wprintf(L"Woo argc %d\n", template->argc);
-	    
-	    anna_op_call_t op = 
-		{
-		    ANNA_OP_CALL,
-		    template->argc
-		}
-	    ;
-	    memcpy(*ptr, &op, sizeof(anna_op_call_t));
-	    *ptr += sizeof(anna_op_call_t);	    
-	    
+	    anna_vm_call(ptr, template->argc);
 	    break;
 	}	
 	
