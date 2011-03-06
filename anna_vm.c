@@ -17,9 +17,9 @@
 #include "anna_stack.h"
 #include "anna_function_type.h"
 
-#define ANNA_OP_CONSTANT 0
-#define ANNA_OP_CALL 1
-#define ANNA_OP_RETURN 2 
+#define ANNA_OP_RETURN 0 
+#define ANNA_OP_CONSTANT 1
+#define ANNA_OP_CALL 2
 #define ANNA_OP_STOP 3 
 #define ANNA_OP_GET_VAR 4
 #define ANNA_OP_SET_VAR 5
@@ -28,6 +28,9 @@
 #define ANNA_OP_STRING 8
 #define ANNA_OP_LIST 9
 #define ANNA_OP_FOLD 10
+#define ANNA_OP_COND_JMP 11
+#define ANNA_OP_POP 12
+#define ANNA_OP_NOT 13
 
 typedef struct 
 {
@@ -71,6 +74,13 @@ typedef struct
     short param;
 }
     anna_op_call_t;
+
+typedef struct
+{
+    char instruction;
+    ssize_t offset;
+}
+    anna_op_cond_jmp_t;
 
 struct anna_vmstack
 {
@@ -128,13 +138,15 @@ void anna_vm_run(anna_function_t *entry)
 {
     anna_vmstack_t **stack_mem = malloc(sizeof(anna_vmstack_t *)*1024);
     anna_vmstack_t **stack = stack_mem;
-    *stack = anna_vmstack_alloc(stack_global->count*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    *stack = anna_vmstack_alloc((stack_global->count+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
     memcpy(
 	&((*stack)->base[0]),
 	&(stack_global->member[0]),
 	sizeof(anna_object_t *)*stack_global->count);
+    (*stack)->top = &(*stack)->base[stack_global->count];
     (*stack)->code = malloc(1);
     *(*stack)->code = ANNA_OP_STOP;
+    
     anna_frame_push(stack, entry);
     
     while(1)
@@ -150,7 +162,7 @@ void anna_vm_run(anna_function_t *entry)
 		(*stack)->code += sizeof(*op);
 		break;
 	    }
-
+	    
 	    case ANNA_OP_STRING:
 	    {
 		anna_op_const_t *op = (anna_op_const_t *)(*stack)->code;
@@ -249,13 +261,28 @@ void anna_vm_run(anna_function_t *entry)
 	    case ANNA_OP_FOLD:
 	    {
 		anna_object_t *val = anna_pop(stack);
-/*		wprintf(
+/*
+		wprintf(
 		    L"Fold value of type %ls to list %d\n", 
 		    val->type->name, 
 		    anna_peek(stack, 0));		
 */
 		anna_list_add(anna_peek(stack, 0), val);
 		(*stack)->code += sizeof(anna_op_null_t);
+		break;
+	    }
+	    
+	    case ANNA_OP_POP:
+	    {
+		anna_pop(stack);
+		(*stack)->code += sizeof(anna_op_null_t);
+		break;
+	    }
+
+	    case ANNA_OP_COND_JMP:
+	    {
+		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)(*stack)->code;
+		(*stack)->code += anna_peek(stack, 0) != null_object ? op->offset:sizeof(*op);
 		break;
 	    }
 	    
@@ -267,6 +294,7 @@ void anna_vm_run(anna_function_t *entry)
 	}
     }
 }
+
 
 void anna_bc_print(char *code)
 {
@@ -354,6 +382,21 @@ void anna_bc_print(char *code)
 		break;
 	    }
 
+	    case ANNA_OP_POP:
+	    {
+		wprintf(L"Pop stack\n");
+		code += sizeof(anna_op_null_t);
+		break;
+	    }
+	    
+	    case ANNA_OP_COND_JMP:
+	    {
+		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)code;
+		wprintf(L"Conditionally jump %d bytes\n", op->offset);
+		code += sizeof(*op);
+		break;
+	    }
+	    
 	    default:
 	    {
 		wprintf(L"Unknown opcode %d\n", instruction);
@@ -363,10 +406,112 @@ void anna_bc_print(char *code)
     }
 }
 
+size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
+{
+    switch(node->node_type)
+    {
+
+	case ANNA_NODE_INT_LITERAL:
+	{
+	    return sizeof(anna_op_const_t);
+	}
+
+	case ANNA_NODE_NULL:
+	{
+	    return sizeof(anna_op_const_t);
+	}
+
+	case ANNA_NODE_FLOAT_LITERAL:
+	{
+	    return sizeof(anna_op_const_t);
+	}
+
+	case ANNA_NODE_STRING_LITERAL:
+	{
+	    return sizeof(anna_op_const_t);
+	}
+
+	case ANNA_NODE_OR:
+	{
+	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
+	    return anna_vm_size(fun, node2->arg1) +
+		sizeof(anna_op_cond_jmp_t) +
+		sizeof(anna_op_null_t) +
+		anna_vm_size(fun, node2->arg2);
+	}
+
+	case ANNA_NODE_IDENTIFIER:
+	{
+	    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;
+	    int distance = 0;
+	    anna_object_t *val = anna_stack_get_const(fun->stack_template, node2->name);
+	    if(val)
+	    {
+		return sizeof(anna_op_const_t);
+	    }
+	    CRASH;
+	    break;
+	}
+	
+	case ANNA_NODE_CALL:
+	{
+	    anna_node_call_t *node2 = (anna_node_call_t *)node;
+
+	    size_t res = 
+		anna_vm_size(fun, node2->function) + sizeof(anna_op_call_t);;
+
+	    anna_function_type_key_t *template = anna_function_type_extract(
+		node2->function->return_type);
+	    
+	    int i;	    
+	    int ra = template->argc;
+	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		ra--;
+	    }
+	    for(i=0; i<ra; i++)
+	    {
+		res += anna_vm_size(fun, node2->child[i]);
+	    }
+	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		res += sizeof(anna_op_type_t);
+		
+		for(; i<node2->child_count; i++)
+		{
+		    res += anna_vm_size(fun, node2->child[i]);
+		    res += sizeof(anna_op_null_t);
+		}
+	    }
+
+	    return res;
+	}
+	
+	default:
+	{
+	    wprintf(L"Unknown AST node %d\n", node->node_type);
+	    CRASH;
+	}
+    }
+}
+
 static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **ptr)
 {
     switch(node->node_type)
     {
+
+	case ANNA_NODE_NULL:
+	{
+	    anna_op_const_t op = 
+		{
+		    ANNA_OP_CONSTANT,
+		    null_object
+		}
+	    ;
+	    memcpy(*ptr, &op, sizeof(anna_op_const_t));
+	    *ptr += sizeof(anna_op_const_t);
+	    break;
+	}
 
 	case ANNA_NODE_INT_LITERAL:
 	{
@@ -413,6 +558,33 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 //	    wprintf(L"Write instruction to %d\n", *ptr);
 	    *ptr += sizeof(anna_op_const_t);
 //	    wprintf(L"next instruction is at %d\n", *ptr);
+	    break;
+	}
+
+	case ANNA_NODE_OR:
+	{
+	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
+
+	    anna_vm_compile_i(fun, node2->arg1, ptr);
+	    anna_op_cond_jmp_t jop = 
+		{
+		    ANNA_OP_COND_JMP,
+		    sizeof(anna_op_cond_jmp_t) + sizeof(anna_op_null_t) + anna_vm_size(fun, node2->arg2)
+		}
+	    ;
+	    memcpy(*ptr, &jop, sizeof(anna_op_cond_jmp_t));
+	    *ptr += sizeof(anna_op_cond_jmp_t);
+
+	    anna_op_null_t pop = 
+		{
+		    ANNA_OP_POP,
+		}
+	    ;
+	    memcpy(*ptr, &pop, sizeof(anna_op_null_t));
+	    *ptr += sizeof(anna_op_null_t);
+
+	    anna_vm_compile_i(fun, node2->arg2, ptr);
+
 	    break;
 	}
 
@@ -509,13 +681,19 @@ void anna_vm_compile(
     int i;
     fun->variable_count = fun->stack_template->count;
     fun->frame_size = 128;
-    fun->code = malloc(4096);
+    
+    size_t sz = 1;
+    for(i=0; i<fun->body->child_count; i++)
+    {
+	sz += anna_vm_size(fun, fun->body->child[i]);
+    }
+
+    fun->code = calloc(sz, 1);
     char *code_ptr = fun->code;
     for(i=0; i<fun->body->child_count; i++)
     {
 	anna_vm_compile_i(fun, fun->body->child[i], &code_ptr);
     }
-    *code_ptr = ANNA_OP_RETURN;
     anna_bc_print(fun->code);
 }
 

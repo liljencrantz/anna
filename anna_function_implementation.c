@@ -53,22 +53,12 @@ static void anna_object_print_val(anna_object_t *value)
 static anna_object_t *anna_i_print(anna_object_t **param)
 {
     int i;
-        
-    wprintf(L"Print %d arguments from list %d\n", anna_list_get_size(param[0]),
-	param[0]);
+    
     for(i=0; i<anna_list_get_size(param[0]); i++){	
 	anna_object_t *value = anna_list_get(param[0], i);
 	anna_object_print_val(value);
     }
     return param[0];
-}
-
-static anna_object_t *anna_i_blupp(anna_object_t **param)
-{
-    wprintf(L"BLUPP\n");
-    anna_object_print_val(*param);
-    wprintf(L"\nBLIPP\n");
-    return null_object;
 }
 
 static anna_object_t *anna_i_not(anna_object_t **param)
@@ -92,19 +82,6 @@ void anna_function_implementation_init(struct anna_stack_frame *stack)
 	f->wrapper,
 	0);
     
-    anna_function_t *b = anna_native_create(
-	L"blupp", 
-	0, 
-	(anna_native_t)&anna_i_blupp, 
-	null_type, 1,  &object_type, p_argn, stack);
-    anna_stack_declare(
-	stack,
-	L"blupp",
-	b->wrapper->type,
-	b->wrapper,
-	0);
-    
-        
     anna_function_t *not = anna_native_create(L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn, stack);
     anna_stack_declare(
 	stack,
