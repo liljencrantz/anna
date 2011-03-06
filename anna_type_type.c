@@ -106,7 +106,7 @@ static anna_object_t *anna_type_i_get_member(anna_object_t **param)
     return lst;
 }
 
-void anna_type_type_create(anna_stack_frame_t *stack)
+void anna_type_type_create(anna_stack_template_t *stack)
 {
 
     anna_member_create(
@@ -119,7 +119,7 @@ void anna_type_type_create(anna_stack_frame_t *stack)
 }
 
 
-void anna_type_type_create2(anna_stack_frame_t *stack)
+void anna_type_type_create2(anna_stack_template_t *stack)
 {
     anna_native_property_create(
 	type_type,

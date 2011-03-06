@@ -33,7 +33,7 @@ double anna_float_get(anna_object_t *this)
     return result;
 }
 
-void anna_float_type_create(anna_stack_frame_t *stack)
+void anna_float_type_create(anna_stack_template_t *stack)
 {
 
     anna_member_create(

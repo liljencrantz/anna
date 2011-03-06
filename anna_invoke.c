@@ -16,7 +16,7 @@
 anna_object_t *anna_function_invoke_values(anna_function_t *function, 
 					   anna_object_t *this,
 					   anna_object_t **param,
-					   anna_stack_frame_t *outer)
+					   anna_stack_template_t *outer)
 {
     assert(function);    
     assert(param);    
@@ -54,7 +54,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 	    
 	    anna_object_t *result = null_object;
 	    int i;
-	    anna_stack_frame_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
+	    anna_stack_template_t *my_stack = anna_stack_clone(function->stack_template);//function->input_count+1);
 //	    if( function->flags & ANNA_FUNCTION_CLOSURE)
 //	    {
 //		assert(outer);
@@ -124,7 +124,7 @@ struct anna_node *anna_macro_invoke(
     else
     {
 	int i;
-	anna_stack_frame_t *my_stack = anna_stack_clone(macro->stack_template);
+	anna_stack_template_t *my_stack = anna_stack_clone(macro->stack_template);
 	anna_object_t *result = null_object;
 
 	wprintf(L"Invoke fancy user defined macro %ls\n", macro->name);
@@ -150,8 +150,8 @@ anna_object_t *anna_function_invoke(
     anna_object_t *this,
     size_t param_count,
     anna_node_t **param, 
-    anna_stack_frame_t *param_invoke_stack,
-    anna_stack_frame_t *function_parent_stack)
+    anna_stack_template_t *param_invoke_stack,
+    anna_stack_template_t *function_parent_stack)
 {
 /*
     wprintf(L"Executing function %ls\n", function->name);

@@ -121,7 +121,7 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
     call->function = function;
 }
 /*
-static int anna_node_identifier_is_function(anna_node_identifier_t *id, anna_stack_frame_t *stack)
+static int anna_node_identifier_is_function(anna_node_identifier_t *id, anna_stack_template_t *stack)
 {
     anna_type_t *type = anna_stack_get_type(stack, id->name);
     if(!type)
@@ -130,7 +130,7 @@ static int anna_node_identifier_is_function(anna_node_identifier_t *id, anna_sta
     return !!anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
 }
 */
-anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t *stack)
+anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_template_t *stack)
 {
 /*
     wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
@@ -236,7 +236,7 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t 
     
 }
 
-static anna_object_t *anna_node_call_invoke(anna_node_call_t *this, anna_stack_frame_t *stack)
+static anna_object_t *anna_node_call_invoke(anna_node_call_t *this, anna_stack_template_t *stack)
 {
     //wprintf(L"anna_node_call_invoke with stack %d\n", stack);
     anna_object_t *obj = anna_node_invoke(this->function, stack);
@@ -248,27 +248,27 @@ static anna_object_t *anna_node_call_invoke(anna_node_call_t *this, anna_stack_f
     return anna_function_wrapped_invoke(obj, 0, this->child_count, this->child, stack);
 }
 
-static anna_object_t *anna_node_int_literal_invoke(anna_node_int_literal_t *this, anna_stack_frame_t *stack)
+static anna_object_t *anna_node_int_literal_invoke(anna_node_int_literal_t *this, anna_stack_template_t *stack)
 {
     return anna_int_create(this->payload);
 }
 
-static anna_object_t *anna_node_float_literal_invoke(anna_node_float_literal_t *this, anna_stack_frame_t *stack)
+static anna_object_t *anna_node_float_literal_invoke(anna_node_float_literal_t *this, anna_stack_template_t *stack)
 {
     return anna_float_create(this->payload);
 }
 
-static anna_object_t *anna_node_string_literal_invoke(anna_node_string_literal_t *this, anna_stack_frame_t *stack)
+static anna_object_t *anna_node_string_literal_invoke(anna_node_string_literal_t *this, anna_stack_template_t *stack)
 {
     return anna_string_create(this->payload_size, this->payload);
 }
 
-static anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *this, anna_stack_frame_t *stack)
+static anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *this, anna_stack_template_t *stack)
 {
     return anna_char_create(this->payload);
 }
 
-static anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_stack_frame_t *stack)
+static anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_stack_template_t *stack)
 {
     return anna_stack_get_str(stack, this->name);
     //wprintf(L"Lookup on identifier \"%ls\", sid is %d,%d\n", this->name, this->sid.frame, this->sid.offset);
@@ -301,21 +301,21 @@ static anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, 
 #endif  
 }
 
-static anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_frame_t *stack)
+static anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
 {
     anna_object_t *result = anna_node_invoke(this->value, stack);
     anna_stack_set_str(stack, this->name, result);
     return result;
 }
 
-anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *stack)
+anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t *stack)
 {
     return 0;
 }
 
 
 static anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
-					   anna_stack_frame_t *stack)
+					   anna_stack_template_t *stack)
 {
     //wprintf(L"ACCESSING MEMBER %ls\n", anna_mid_get_reverse(this->mid));
     /*
@@ -358,7 +358,7 @@ static anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this,
 }
 
 static anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this, 
-					   anna_stack_frame_t *stack)
+					   anna_stack_template_t *stack)
 {
     /*
       wprintf(L"Run member set node:\n");
@@ -410,7 +410,7 @@ static anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this,
 
 static anna_object_t *anna_node_member_get_wrap_invoke(
     anna_node_member_get_t *this, 
-    anna_stack_frame_t *stack)
+    anna_stack_template_t *stack)
 {
     /*
       wprintf(L"Run wrapped member get node:\n");  
@@ -468,7 +468,7 @@ static anna_object_t *anna_node_member_get_wrap_invoke(
 
 static anna_object_t *anna_trampoline(
     anna_function_t *fun,
-    anna_stack_frame_t *stack)
+    anna_stack_template_t *stack)
 {
     anna_object_t *orig = fun->wrapper;
     anna_object_t *res = anna_object_create(orig->type);
@@ -496,13 +496,13 @@ static anna_object_t *anna_trampoline(
 	   sizeof(anna_function_t *));    
     memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_STACK),
 	   &stack,
-	   sizeof(anna_stack_frame_t *));
+	   sizeof(anna_stack_template_t *));
 
     return res;
 }
 
 anna_object_t *anna_node_invoke(anna_node_t *this, 
-				anna_stack_frame_t *stack)
+				anna_stack_template_t *stack)
 {
     //wprintf(L"anna_node_invoke with stack %d\n", stack);
     //wprintf(L"invoke %d\n", this->node_type);    

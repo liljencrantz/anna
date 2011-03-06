@@ -127,7 +127,7 @@ static void anna_member_type_create()
 #include "anna_member_property.c"
 #include "anna_member_variable.c"
 
-void anna_member_types_create(anna_stack_frame_t *stack)
+void anna_member_types_create(anna_stack_template_t *stack)
 {
     anna_member_type_create();
     anna_member_method_type_create(stack);
@@ -135,7 +135,7 @@ void anna_member_types_create(anna_stack_frame_t *stack)
     anna_member_variable_type_create(stack);    
 }
 
-size_t anna_member_create(
+mid_t anna_member_create(
     anna_type_t *type,
     mid_t mid,
     wchar_t *name,
@@ -360,7 +360,7 @@ size_t anna_native_property_create(
     return mid;
 }
 
-
+/*
 mid_t anna_const_property_create(
     anna_type_t *type, mid_t mid, wchar_t *name, anna_object_t *value)
 {
@@ -425,3 +425,4 @@ mid_t anna_const_property_create(
     return mid;
 
 }
+*/

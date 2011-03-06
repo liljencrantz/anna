@@ -10,7 +10,7 @@
 #include "anna_node.h"
 #include "anna_node_check.h"
 
-anna_type_t *extract_type(anna_node_t *node, anna_stack_frame_t *stack)
+anna_type_t *extract_type(anna_node_t *node, anna_stack_template_t *stack)
 {
     if(node->node_type != ANNA_NODE_IDENTIFIER)
     {

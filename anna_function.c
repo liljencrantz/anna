@@ -31,7 +31,7 @@ void anna_function_argument_hint(
 
 static anna_node_t *anna_function_setup_arguments(
     anna_function_t *f,
-    anna_stack_frame_t *parent_stack)
+    anna_stack_template_t *parent_stack)
 {
 //    wprintf(L"Setup function %ls\n", f->name);
     CHECK_NODE_TYPE(f->definition->child[2], ANNA_NODE_CALL);
@@ -175,7 +175,7 @@ static void anna_function_setup_wrapper(
 		    f->wrapper,
 		    ANNA_MID_FUNCTION_WRAPPER_STACK),
 		&f->stack_template->parent,
-		sizeof(anna_stack_frame_t *));
+		sizeof(anna_stack_template_t *));
 	}
 	else
 	{
@@ -184,7 +184,7 @@ static void anna_function_setup_wrapper(
 		    f->wrapper,
 		    ANNA_MID_FUNCTION_WRAPPER_STACK),
 		0,
-		sizeof(anna_stack_frame_t *));
+		sizeof(anna_stack_template_t *));
 	}
     }
 }
@@ -192,7 +192,7 @@ static void anna_function_setup_wrapper(
 
 void anna_function_setup_interface(
     anna_function_t *f,
-    anna_stack_frame_t *parent_stack)
+    anna_stack_template_t *parent_stack)
 {
     if(f->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
     {
@@ -480,7 +480,7 @@ anna_function_t *anna_native_create(
     size_t argc,
     anna_type_t **argv,
     wchar_t **argn,
-    anna_stack_frame_t *location)
+    anna_stack_template_t *location)
 {
     int i;
     

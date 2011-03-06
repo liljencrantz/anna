@@ -16,15 +16,16 @@
 #include "anna_char.h"
 #include "anna_stack.h"
 #include "anna_function_type.h"
+#include "anna_member.h"
 
 #define ANNA_OP_RETURN 0 
 #define ANNA_OP_CONSTANT 1
 #define ANNA_OP_CALL 2
 #define ANNA_OP_STOP 3 
-#define ANNA_OP_GET_VAR 4
-#define ANNA_OP_SET_VAR 5
-#define ANNA_OP_GET_MEMBER 6
-#define ANNA_OP_SET_MEMBER 7
+#define ANNA_OP_VAR_GET 4
+#define ANNA_OP_VAR_SET 5
+#define ANNA_OP_MEMBER_GET 6
+#define ANNA_OP_MEMBER_SET 7
 #define ANNA_OP_STRING 8
 #define ANNA_OP_LIST 9
 #define ANNA_OP_FOLD 10
@@ -32,6 +33,8 @@
 #define ANNA_OP_NCOND_JMP 12
 #define ANNA_OP_POP 13
 #define ANNA_OP_NOT 14
+#define ANNA_OP_DUP 15
+#define ANNA_OP_MEMBER_GET_THIS 16
 
 typedef struct 
 {
@@ -65,7 +68,7 @@ typedef struct
 typedef struct
 {
     char instruction;
-    short offset;
+    unsigned short mid;
 }
     anna_op_member_t;
 
@@ -209,7 +212,7 @@ void anna_vm_run(anna_function_t *entry)
 		return;
 	    }
 	    
-	    case ANNA_OP_GET_VAR:
+	    case ANNA_OP_VAR_GET:
 	    {
 		anna_op_var_t *op = (anna_op_var_t *)(*stack)->code;
 		int i;
@@ -221,7 +224,7 @@ void anna_vm_run(anna_function_t *entry)
 		break;
 	    }
 	    
-	    case ANNA_OP_SET_VAR:
+	    case ANNA_OP_VAR_SET:
 	    {
 		anna_op_var_t *op = (anna_op_var_t *)(*stack)->code;
 		int i;
@@ -233,20 +236,63 @@ void anna_vm_run(anna_function_t *entry)
 		break;
 	    }
 	    
-	    case ANNA_OP_GET_MEMBER:
+	    case ANNA_OP_MEMBER_GET:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)(*stack)->code;
-		anna_object_t *obj = anna_peek(stack, 0);
-		anna_push(stack, obj->member[op->offset]);
+		anna_object_t *obj = anna_pop(stack);
+
+		anna_member_t *m = obj->type->mid_identifier[op->mid];
+		if(m->is_property)
+		{
+		    anna_object_t *method = obj->type->static_member[m->getter_offset];
+		    wprintf(L"PROPERTIES NOT YET IMPLEMENTED!!!\n");
+		    CRASH;
+		}
+		anna_object_t *res;
+		
+		if(m->is_static) {
+		    res = obj->type->static_member[m->offset];
+		} else {
+		    res = (obj->member[m->offset]);
+		}
+		anna_push(stack, res);
+
 		(*stack)->code += sizeof(*op);
 		break;
 	    }
 	    
-	    case ANNA_OP_SET_MEMBER:
+	    case ANNA_OP_MEMBER_GET_THIS:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)(*stack)->code;
-		anna_object_t *obj = anna_peek(stack, 1);
-		obj->member[op->offset] = anna_pop(stack);
+		anna_object_t *obj = anna_pop(stack);
+
+		anna_member_t *m = obj->type->mid_identifier[op->mid];
+		if(m->is_property)
+		{
+		    anna_object_t *method = obj->type->static_member[m->getter_offset];
+		    wprintf(L"PROPERTIES NOT YET IMPLEMENTED!!!\n");
+		    CRASH;
+		}
+		anna_object_t *res;
+		
+		if(m->is_static) {
+		    res = obj->type->static_member[m->offset];
+		} else {
+		    res = (obj->member[m->offset]);
+		}
+		anna_push(stack, res);
+		anna_push(stack, obj);
+
+		(*stack)->code += sizeof(*op);
+		break;
+	    }
+	    
+	    case ANNA_OP_MEMBER_SET:
+	    {
+		anna_op_member_t *op = (anna_op_member_t *)(*stack)->code;
+		anna_object_t *value = anna_pop(stack);
+		anna_object_t *obj = anna_pop(stack);
+		*anna_member_addr_get_mid(obj, op->mid) = value;
 		(*stack)->code += sizeof(*op);
 		break;
 	    }
@@ -284,6 +330,12 @@ void anna_vm_run(anna_function_t *entry)
 	    {
 		*((*stack)->top-1) = (*((*stack)->top-1)==null_object)?anna_int_one:null_object;
 		(*stack)->code += sizeof(anna_op_null_t);
+		break;
+	    }
+
+	    case ANNA_OP_DUP:
+	    {
+		anna_push(stack, anna_peek(stack, 0));
 		break;
 	    }
 
@@ -325,21 +377,21 @@ void anna_bc_print(char *code)
 	    case ANNA_OP_CONSTANT:
 	    {
 		anna_op_const_t *op = (anna_op_const_t*)code;
-		wprintf(L"Push constant of type %ls\n", op->value->type->name);
+		wprintf(L"Push constant of type %ls\n\n", op->value->type->name);
 		code += sizeof(*op);
 		break;
 	    }
 	    
 	    case ANNA_OP_LIST:
 	    {
-		wprintf(L"List creation\n");
+		wprintf(L"List creation\n\n");
 		code += sizeof(anna_op_type_t);
 		break;
 	    }
 	    
 	    case ANNA_OP_FOLD:
 	    {
-		wprintf(L"List fold\n");
+		wprintf(L"List fold\n\n");
 		code += sizeof(anna_op_null_t);
 		break;
 	    }
@@ -348,65 +400,80 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_call_t *op = (anna_op_call_t *)code;
 		size_t param = op->param;
-		wprintf(L"Invoke function with %d parameter(s)\n", param);
+		wprintf(L"Invoke function with %d parameter(s)\n\n", param);
 		code += sizeof(*op);
 		break;
 	    }
 	    
 	    case ANNA_OP_RETURN:
 	    {
-		wprintf(L"Return\n");
+		wprintf(L"Return\n\n");
 		return;
 	    }
 	    
 	    case ANNA_OP_STOP:
 	    {
-		wprintf(L"Stop\n");
+		wprintf(L"Stop\n\n");
 		return;
 	    }
 	    
-	    case ANNA_OP_GET_VAR:
+	    case ANNA_OP_VAR_GET:
 	    {
 		anna_op_var_t *op = (anna_op_var_t *)code;
-		wprintf(L"Get var %d : %d\n", op->frame_count, op->offset);
+		wprintf(L"Get var %d : %d\n\n", op->frame_count, op->offset);
 		code += sizeof(*op);
 		break;
 	    }
 	    
-	    case ANNA_OP_SET_VAR:
+	    case ANNA_OP_VAR_SET:
 	    {
 		anna_op_var_t *op = (anna_op_var_t *)code;
-		wprintf(L"Set var %d : %d\n", op->frame_count, op->offset);
+		wprintf(L"Set var %d : %d\n\n", op->frame_count, op->offset);
 		code += sizeof(*op);
 		break;
 	    }
 	    
-	    case ANNA_OP_GET_MEMBER:
+	    case ANNA_OP_MEMBER_GET:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Get member %d\n", op->offset);
+		wprintf(L"Get member %d\n\n", op->mid);
 		code += sizeof(*op);
 		break;
 	    }
 	    
-	    case ANNA_OP_SET_MEMBER:
+	    case ANNA_OP_MEMBER_GET_THIS:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Set member %d\n", op->offset);
+		wprintf(L"Get member %d and push object as implicit this param\n\n", op->mid);
+		code += sizeof(*op);
+		break;
+	    }
+	    
+	    case ANNA_OP_MEMBER_SET:
+	    {
+		anna_op_member_t *op = (anna_op_member_t *)code;
+		wprintf(L"Set member %d\n\n", op->mid);
 		code += sizeof(*op);
 		break;
 	    }
 
 	    case ANNA_OP_POP:
 	    {
-		wprintf(L"Pop stack\n");
+		wprintf(L"Pop stack\n\n");
 		code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
 	    case ANNA_OP_NOT:
 	    {
-		wprintf(L"Invert stack top element\n");
+		wprintf(L"Invert stack top element\n\n");
+		code += sizeof(anna_op_null_t);
+		break;
+	    }
+	    
+	    case ANNA_OP_DUP:
+	    {
+		wprintf(L"Duplicate stack top element\n\n");
 		code += sizeof(anna_op_null_t);
 		break;
 	    }
@@ -414,7 +481,7 @@ void anna_bc_print(char *code)
 	    case ANNA_OP_COND_JMP:
 	    {
 		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)code;
-		wprintf(L"Conditionally jump %d bytes\n", op->offset);
+		wprintf(L"Conditionally jump %d bytes\n\n", op->offset);
 		code += sizeof(*op);
 		break;
 	    }
@@ -423,7 +490,7 @@ void anna_bc_print(char *code)
 	    case ANNA_OP_NCOND_JMP:
 	    {
 		anna_op_cond_jmp_t *op = (anna_op_cond_jmp_t *)code;
-		wprintf(L"Conditionally not jump %d bytes\n", op->offset);
+		wprintf(L"Conditionally not jump %d bytes\n\n", op->offset);
 		code += sizeof(*op);
 		break;
 	    }
@@ -486,13 +553,14 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		return sizeof(anna_op_const_t);
 	    }
 	    
-	    anna_stack_frame_t *import = anna_stack_get_import(fun->stack_template, node2->name);
+	    anna_stack_template_t *import = anna_stack_get_import(fun->stack_template, node2->name);
 	    if(import)
 	    {
 		return sizeof(anna_op_const_t)+ sizeof(anna_op_member_t);
 	    }
 
-	    CRASH;
+	    return sizeof(anna_op_var_t);
+	    
 	    break;
 	}
 	
@@ -501,7 +569,7 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 
 	    size_t res = 
-		anna_vm_size(fun, node2->function) + sizeof(anna_op_call_t);;
+		anna_vm_size(fun, node2->function) + sizeof(anna_op_call_t);
 
 	    anna_function_type_key_t *template = anna_function_type_extract(
 		node2->function->return_type);
@@ -529,6 +597,51 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 
 	    return res;
 	}
+
+	case ANNA_NODE_MEMBER_GET:
+	{
+	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    return anna_vm_size(fun, node2->object) + sizeof(anna_op_member_t);
+	}
+	
+	
+	case ANNA_NODE_MEMBER_CALL:
+	{
+	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    size_t res = 
+		anna_vm_size(fun, node2->object) + 
+		sizeof(anna_op_call_t) + sizeof(anna_op_member_t);
+	    
+	    anna_type_t *obj_type = node2->object->return_type;
+	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
+	    
+	    anna_function_type_key_t *template = anna_function_type_extract(
+		mem->type);
+	    
+	    int i;
+	    
+	    int ra = template->argc-1;
+	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		ra--;
+	    }
+	    for(i=0; i<ra; i++)
+	    {
+		res += anna_vm_size(fun, node2->child[i]);
+	    }
+	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		res += sizeof(anna_op_type_t);
+		
+		for(; i<node2->child_count; i++)
+		{
+		    res += anna_vm_size(fun, node2->child[i]);
+		    res += sizeof(anna_op_null_t);
+		}
+	    }
+	    
+	    return res;
+	}	
 	
 	default:
 	{
@@ -565,7 +678,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, node2->name);
 	    anna_op_var_t op = 
 		{
-		    ANNA_OP_SET_VAR,
+		    ANNA_OP_VAR_SET,
 		    0, 
 		    sid.offset
 		}
@@ -713,10 +826,10 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		
 		break;
 	    }
-	    anna_stack_frame_t *import = anna_stack_get_import(fun->stack_template, node2->name);
+	    anna_stack_template_t *import = anna_stack_get_import(fun->stack_template, node2->name);
 	    if(import)
 	    {
-
+		
 		anna_op_const_t cop = 
 		    {
 			ANNA_OP_CONSTANT,
@@ -725,23 +838,34 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		;
 		memcpy(*ptr, &cop, sizeof(anna_op_const_t));
 		*ptr += sizeof(anna_op_const_t);	    
-
+		
 		anna_op_member_t mop = 
 		    {
-			ANNA_OP_GET_MEMBER,
-			0
+			ANNA_OP_MEMBER_GET,
+			anna_mid_get(node2->name)
 		    }
 		;
 		memcpy(*ptr, &mop, sizeof(anna_op_const_t));
 		*ptr += sizeof(anna_op_member_t);	    
-
+		
 		return sizeof(anna_op_const_t)+ sizeof(anna_op_member_t);
-
+		
 		break;
 	    }
 
-
-	    CRASH;
+	    anna_sid_t sid = anna_stack_sid_create(
+		fun->stack_template, node2->name);
+	    
+	    anna_op_var_t vop = 
+		{
+		    ANNA_OP_VAR_GET,
+		    sid.frame,
+		    sid.offset
+		}
+	    ;
+	    memcpy(*ptr, &vop, sizeof(anna_op_var_t));
+	    *ptr += sizeof(anna_op_var_t);	    
+	    
 	    break;
 	}
 	
@@ -801,6 +925,93 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    
 	    break;
 	}
+
+	case ANNA_NODE_MEMBER_GET:
+	{
+	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    anna_vm_compile_i(fun, node2->object, ptr);
+
+	    anna_op_member_t mop = 
+		{
+		    ANNA_OP_MEMBER_GET,
+		    node2->mid
+		}
+	    ;
+	    memcpy(*ptr, &mop, sizeof(anna_op_member_t));
+	    *ptr += sizeof(anna_op_member_t);	    
+	    	    
+	    break;
+	}
+	
+	
+	case ANNA_NODE_MEMBER_CALL:
+	{
+	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    anna_vm_compile_i(fun, node2->object, ptr);
+	    
+	    anna_op_member_t mop = 
+		{
+		    ANNA_OP_MEMBER_GET_THIS,
+		    node2->mid
+		}
+	    ;
+	    memcpy(*ptr, &mop, sizeof(anna_op_member_t));
+	    *ptr += sizeof(anna_op_member_t);	    
+	    
+	    anna_type_t *obj_type = node2->object->return_type;
+	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
+	    
+	    anna_function_type_key_t *template = anna_function_type_extract(
+		mem->type);
+	    
+	    int i;
+	    
+	    int ra = template->argc-1;
+	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		ra--;
+	    }
+	    for(i=0; i<ra; i++)
+	    {
+		anna_vm_compile_i(fun, node2->child[i], ptr);		
+	    }
+	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		anna_op_type_t lop = 
+		    {
+			ANNA_OP_LIST,
+			anna_list_type_get(template->argv[template->argc-1])
+		    }
+		;
+		memcpy(*ptr, &lop, sizeof(anna_op_type_t));
+		*ptr += sizeof(anna_op_type_t);	    
+		
+		for(; i<node2->child_count; i++)
+		{
+		    anna_vm_compile_i(fun, node2->child[i], ptr);		
+		    anna_op_null_t fop = 
+			{
+			    ANNA_OP_FOLD,
+			}
+		    ;
+		    memcpy(*ptr, &fop, sizeof(anna_op_null_t));
+		    *ptr += sizeof(anna_op_null_t);
+		}
+	    }
+	    
+	    //wprintf(L"Woo argc %d\n", template->argc);
+	    
+	    anna_op_call_t op = 
+		{
+		    ANNA_OP_CALL,
+		    template->argc
+		}
+	    ;
+	    memcpy(*ptr, &op, sizeof(anna_op_call_t));
+	    *ptr += sizeof(anna_op_call_t);	    
+	    
+	    break;
+	}	
 	
 	default:
 	{

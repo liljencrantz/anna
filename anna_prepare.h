@@ -36,6 +36,6 @@ void anna_prepare_type_interface(anna_type_t *type);
 */
 void anna_prepare_function_interface(anna_function_t *function);
 void anna_prepare_function(anna_function_t *function);
-void anna_prepare_stack_functions(anna_stack_frame_t *stack, wchar_t *name, anna_node_t *context);
+void anna_prepare_stack_functions(anna_stack_template_t *stack, wchar_t *name, anna_node_t *context);
 
 #endif

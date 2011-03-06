@@ -63,7 +63,7 @@ static anna_object_t *anna_char_i_get_lower(anna_object_t **param)
 
 
 
-void anna_char_type_create(anna_stack_frame_t *stack)
+void anna_char_type_create(anna_stack_template_t *stack)
 {
     anna_member_create(
 	char_type, 

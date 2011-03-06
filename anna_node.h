@@ -403,12 +403,12 @@ anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node);
  */
 anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
-    anna_stack_frame_t *stack);
+    anna_stack_template_t *stack);
 
 /**
    Node preparation phase 3: Register all variables
  */
-anna_stack_frame_t *anna_node_register_declarations(
+anna_stack_template_t *anna_node_register_declarations(
     anna_node_t *this,
     size_t extra);
 
@@ -417,7 +417,7 @@ anna_stack_frame_t *anna_node_register_declarations(
  */
 void anna_node_calculate_type(
     anna_node_t *this,
-    anna_stack_frame_t *stack);
+    anna_stack_template_t *stack);
 
 /**
    Node preparation phase 5: Simplify, optimize
@@ -430,19 +430,19 @@ anna_node_t *anna_node_simplify(
  */
 anna_object_t *anna_node_invoke(
     anna_node_t *this, 
-    anna_stack_frame_t *stack);
+    anna_stack_template_t *stack);
 
 /**
    Check the validity of the code. This should only be run after the
    AST has been prepared.
 */
-void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack);
+void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack);
 
 
 /**
    Returns the return type of the specified AST node
  */
-anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_frame_t *stack);
+anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t *stack);
 
 /**
    Prints a simple graphical representation of the specified AST
@@ -482,7 +482,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n);
  */
 int anna_node_compare(anna_node_t *node1, anna_node_t *node2);
 
-anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_frame_t *stack);
+anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_template_t *stack);
 
 anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to);
 

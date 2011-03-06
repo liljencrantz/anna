@@ -177,8 +177,8 @@ static anna_object_t *anna_range_each(anna_object_t **param)
     size_t i;
 
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -200,7 +200,7 @@ static anna_object_t *anna_range_each(anna_object_t **param)
 }
 
 
-void anna_range_type_create(struct anna_stack_frame *stack)
+void anna_range_type_create(struct anna_stack_template *stack)
 {
     anna_member_create(
 	range_type, ANNA_MID_RANGE_FROM,  L"!rangeFrom", 

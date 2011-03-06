@@ -206,8 +206,8 @@ static anna_object_t *anna_list_each(anna_object_t **param)
     size_t i;
 
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -240,8 +240,8 @@ static anna_object_t *anna_list_map(anna_object_t **param)
     anna_list_set_size(result, sz);
 
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -276,8 +276,8 @@ static anna_object_t *anna_list_filter(anna_object_t **param)
     anna_list_set_capacity(result, sz);
     
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -307,8 +307,8 @@ static anna_object_t *anna_list_first(anna_object_t **param)
     anna_object_t **arr = anna_list_get_payload(param[0]);
     size_t i;
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
     anna_object_t *o_param[2];    
     assert(function_ptr);
     
@@ -485,7 +485,7 @@ static anna_object_t *anna_list_i_set_range(anna_object_t **param)
 }
 
 static void anna_list_type_create_internal(
-    anna_stack_frame_t *stack,
+    anna_stack_template_t *stack,
     anna_type_t *type, 
     anna_type_t *spec)
 {
@@ -685,7 +685,7 @@ static void anna_list_type_create_internal(
 
 }
 
-void anna_list_type_create(anna_stack_frame_t *stack)
+void anna_list_type_create(anna_stack_template_t *stack)
 {
     hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);
     hash_put(&anna_list_specialization, object_type, list_type);

@@ -34,9 +34,9 @@ static hash_table_t anna_type_for_function_identifier;
 
 anna_node_t *anna_node_null=0;
 
-anna_stack_frame_t *stack_global;
+anna_stack_template_t *stack_global;
 
-anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_frame_t *stack);
+anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_template_t *stack);
 
 anna_object_t **anna_member_addr_get_str(
     anna_object_t *obj,
@@ -231,14 +231,14 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 					    anna_object_t *this,
 					    size_t param_count,
 					    anna_node_t **param,
-					    anna_stack_frame_t *local)
+					    anna_stack_template_t *local)
 {
 //    debug(D_SPAM,L"Wrapped invoke of function %ls\n", obj->type->name);
     if(obj == null_object)
 	return null_object;
     
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(obj, ANNA_MID_FUNCTION_WRAPPER_STACK);
     if(function_ptr) 
     {
 //	if(stack_ptr)
@@ -274,7 +274,7 @@ anna_object_t *anna_function_wrapped_invoke(anna_object_t *obj,
 anna_object_t *anna_construct(
     anna_type_t *type,
     struct anna_node_call *param,
-    anna_stack_frame_t *stack)
+    anna_stack_template_t *stack)
 {
     anna_object_t *result = anna_object_create(type);
     //debug(D_SPAM,L"Creating new object of type %ls\n", type->name);
@@ -322,7 +322,7 @@ anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
 	anna_member_addr_get_mid(
 	    anna_function_wrap(function_original),
 	    ANNA_MID_FUNCTION_WRAPPER_STACK),
-	sizeof(anna_stack_frame_t *));
+	sizeof(anna_stack_template_t *));
     return anna_function_wrap(function_copy);
 }
 
@@ -508,7 +508,7 @@ int main(int argc, char **argv)
     null_object->type = null_type;
     anna_int_one = anna_int_create(1);
     
-    anna_stack_frame_t *module = anna_stack_unwrap(anna_module_load(module_name));
+    anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     
     anna_object_t **main_wrapper_ptr = anna_stack_addr_get_str(module, L"main");
     if(!main_wrapper_ptr)

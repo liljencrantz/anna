@@ -92,7 +92,7 @@ static anna_object_t *anna_node_wrapper_i_print(anna_object_t **param)
 }
 
 
-static void anna_node_create_wrapper_type(anna_stack_frame_t *stack)
+static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 {
     node_wrapper_type = anna_type_native_create(L"Node", stack_global);
 
@@ -150,7 +150,7 @@ static void anna_node_create_wrapper_type(anna_stack_frame_t *stack)
 #include "anna_node_string_literal_wrapper.c"
 #include "anna_node_call_wrapper.c"
 
-void anna_node_create_wrapper_types(anna_stack_frame_t *stack)
+void anna_node_create_wrapper_types(anna_stack_template_t *stack)
 {
     anna_node_create_wrapper_type(stack);
     anna_node_create_identifier_wrapper_type(stack);

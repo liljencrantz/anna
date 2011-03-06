@@ -44,7 +44,7 @@ void anna_function_prepare_enque()
 
 static void anna_module_calculate_type(anna_node_t *n, void *aux)
 {
-    anna_node_calculate_type(n, (anna_stack_frame_t *)aux);
+    anna_node_calculate_type(n, (anna_stack_template_t *)aux);
 }
 
 static void anna_module_find_imports_internal(anna_node_t *module, wchar_t *name, array_list_t *import)
@@ -150,7 +150,7 @@ static void anna_null_type_create()
 static void anna_module_load_lang()
 {
 
-    anna_stack_frame_t *stack_lang = anna_stack_create(4096, stack_global);
+    anna_stack_template_t *stack_lang = anna_stack_create(4096, stack_global);
     
     /*
       Create lowest level stuff. Bits of magic, be careful with
@@ -229,6 +229,8 @@ static void anna_module_load_lang()
 	anna_stack_wrap(stack_lang),
 	0
 	);
+
+    anna_stack_populate_wrapper(stack_lang);
     
 }
 
@@ -245,7 +247,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	anna_module_imported = malloc(sizeof(hash_table_t));
 	hash_init(anna_module_imported, &hash_wcs_func, &hash_wcs_cmp);
     }
-    anna_stack_frame_t *module = (anna_stack_frame_t *)hash_get(
+    anna_stack_template_t *module = (anna_stack_template_t *)hash_get(
 	anna_module_imported,
 	module_name);
     
@@ -254,7 +256,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 
     debug(D_SPAM,L"Load module %ls...\n", module_name);    
 
-    anna_stack_frame_t *module_stack;
+    anna_stack_template_t *module_stack;
 
     if(wcscmp(module_name, L"lang") == 0)
     {
@@ -303,7 +305,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	al_set(&mimport, i, anna_stack_unwrap(mod));
     }
 
-    anna_stack_frame_t *stack_macro = anna_stack_clone(stack_global);
+    anna_stack_template_t *stack_macro = anna_stack_clone(stack_global);
     memcpy(&stack_macro->import, &mimport, sizeof(array_list_t));
 
     /*

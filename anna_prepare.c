@@ -159,7 +159,7 @@ void anna_prepare()
 {
 }
 
-void anna_prepare_stack_functions(anna_stack_frame_t *stack, wchar_t *name, anna_node_t *context)
+void anna_prepare_stack_functions(anna_stack_template_t *stack, wchar_t *name, anna_node_t *context)
 {
 }
 

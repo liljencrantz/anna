@@ -22,7 +22,7 @@ anna_function_t *anna_native_create(wchar_t *name,
 				    size_t argc,
 				    anna_type_t **argv,
 				    wchar_t **argn,
-				    struct anna_stack_frame *parent_stack);
+				    struct anna_stack_template *parent_stack);
 
 anna_function_t *anna_function_create_from_definition(
     struct anna_node_call *definition);
@@ -37,7 +37,7 @@ anna_function_t *anna_function_create_from_block(
 
 void anna_function_print(anna_function_t *function);
 
-void anna_function_setup_interface(anna_function_t *f, anna_stack_frame_t *location);
+void anna_function_setup_interface(anna_function_t *f, anna_stack_template_t *location);
 void anna_function_setup_body(anna_function_t *f);
 void anna_function_argument_hint(
     anna_function_t *f,

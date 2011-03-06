@@ -412,7 +412,7 @@ static anna_node_t *anna_macro_const(struct anna_node_call *node)
 
 
 static void anna_macro_add(
-    anna_stack_frame_t *stack, 
+    anna_stack_template_t *stack, 
     wchar_t *name,
     anna_native_macro_t call)
 {
@@ -600,7 +600,7 @@ static anna_node_t *anna_macro_range(anna_node_call_t *node)
 #include "anna_macro_operator.c"
 #include "anna_macro_cast.c"
 
-void anna_macro_init(anna_stack_frame_t *stack)
+void anna_macro_init(anna_stack_template_t *stack)
 {
 /*
     hash_init(&templatize_lookup,

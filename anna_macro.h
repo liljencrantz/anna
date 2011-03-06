@@ -4,7 +4,7 @@
 /**
    Declare all native macros
  */
-void anna_macro_init(struct anna_stack_frame *stack);
+void anna_macro_init(struct anna_stack_template *stack);
 
 anna_node_t *anna_macro_iter(anna_node_call_t *node);
 

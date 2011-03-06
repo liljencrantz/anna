@@ -4,7 +4,7 @@
 
 anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
-    anna_stack_frame_t *stack)
+    anna_stack_template_t *stack)
 {
 /*
     debug(D_SPAM,L"EXPAND\n");
@@ -240,7 +240,7 @@ static void anna_node_calculate_type_param(
     }
 }
 
-anna_stack_frame_t *anna_node_register_declarations(
+anna_stack_template_t *anna_node_register_declarations(
     anna_node_t *this,
     size_t extra)
 {
@@ -252,7 +252,7 @@ anna_stack_frame_t *anna_node_register_declarations(
     anna_node_find(this, ANNA_NODE_DECLARE, &decls);
     anna_node_find(this, ANNA_NODE_CONST, &decls);
     size_t sz = al_get_count(&decls);
-    anna_stack_frame_t *stack = anna_stack_create(sz+extra, 0);    
+    anna_stack_template_t *stack = anna_stack_create(sz+extra, 0);    
     int i;
 /*
     debug(D_SPAM,L"WOO WEE WOO %d declarations in ast\n", sz);
@@ -316,7 +316,7 @@ anna_stack_frame_t *anna_node_register_declarations(
     return stack;
 }
 
-static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_frame_t *stack)
+static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
 {
     debug(D_SPAM,L"Figure out type from:\n");
     
@@ -351,7 +351,7 @@ static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_fram
 
 static void anna_node_calculate_type_internal(
     anna_node_t *this,
-    anna_stack_frame_t *stack)
+    anna_stack_template_t *stack)
 {
     
     switch(this->node_type)
@@ -764,7 +764,7 @@ void anna_node_prepare_body(
 
 void anna_node_calculate_type(
     anna_node_t *this,
-    anna_stack_frame_t *stack)
+    anna_stack_template_t *stack)
 {
     debug(D_SPAM, L"Calculate type of node:\n");
     anna_node_print(0, this);
@@ -780,7 +780,7 @@ void anna_node_calculate_type(
     }
 }
 
-void anna_node_validate(anna_node_t *this, anna_stack_frame_t *stack)
+void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 {
     switch(this->node_type)
     {

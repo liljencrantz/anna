@@ -28,7 +28,7 @@ struct anna_type;
 struct anna_object;
 struct anna_member;
 struct anna_node_call;
-struct anna_stack_frame;
+struct anna_stack_template;
 struct anna_node_call;
 struct anna_function;
 struct anna_node_list;
@@ -147,7 +147,7 @@ struct anna_type
        FIXME: What is it good for? I don't currently know. Namespacing,
        maybe?
     */
-    struct anna_stack_frame *stack;
+    struct anna_stack_template *stack;
     /**
        An array containing all member structs. The offset is a mid.
     */
@@ -313,7 +313,7 @@ struct anna_function
     /**
        The template stack frame of this function
     */
-    struct anna_stack_frame *stack_template;
+    struct anna_stack_template *stack_template;
     /**
        The number of input arguments to this function.
      */
@@ -365,13 +365,13 @@ typedef struct
 extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type, *range_type;
 extern anna_object_t *null_object;
 extern int anna_error_count;
-extern struct anna_stack_frame *stack_global;
+extern struct anna_stack_template *stack_global;
 
 /**
    Declare all global, native functions
  */
 void anna_function_implementation_init(
-    struct anna_stack_frame *stack);
+    struct anna_stack_template *stack);
 
 /**
   Return the anna_type_t contained in the specified anna_type_t.wrapper
@@ -389,13 +389,13 @@ anna_object_t *anna_function_wrapped_invoke(
     anna_object_t *this,
     size_t param_count,
     struct anna_node **param, 
-    struct anna_stack_frame *local);
+    struct anna_stack_template *local);
 
 anna_object_t *anna_function_invoke_values(
     anna_function_t *function, 
     anna_object_t *this,
     anna_object_t **param,
-    struct anna_stack_frame *outer);
+    struct anna_stack_template *outer);
 
 /**
    \param function the function to invoke
@@ -409,8 +409,8 @@ anna_object_t *anna_function_invoke(
     anna_object_t *this,
     size_t param_count,
     struct anna_node **param,
-    struct anna_stack_frame *param_invoke_stack,
-    struct anna_stack_frame *function_parent_stack);
+    struct anna_stack_template *param_invoke_stack,
+    struct anna_stack_template *function_parent_stack);
 
 
 
@@ -429,7 +429,7 @@ void anna_function_type_key_print(
 
 anna_object_t *anna_construct(
     anna_type_t *type, struct anna_node_call *param,
-    struct anna_stack_frame *stack);
+    struct anna_stack_template *stack);
 
 anna_object_t **anna_static_member_addr_get_mid(
     anna_type_t *type, mid_t mid);

@@ -156,7 +156,7 @@ void anna_type_definition_make(anna_type_t *type)
 }
 
 
-anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack)
+anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack)
 {    
     anna_type_t *type = anna_type_create(name, 0);
     type->stack = stack;
@@ -386,7 +386,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 static void anna_type_prepare_member_internal(
     anna_type_t *type,
     anna_node_declare_t *decl,
-    anna_stack_frame_t *stack)
+    anna_stack_template_t *stack)
 {
     if(hash_contains(
 	   &type->name_identifier,
@@ -432,7 +432,7 @@ static void anna_type_prepare_member_internal(
 
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type, 
-    anna_stack_frame_t *parent)
+    anna_stack_template_t *parent)
 {
 
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
@@ -471,7 +471,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     return 0;
 }
 
-void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_frame_t *stack) 
+void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_t *stack) 
 {
     if(!type->definition)
     {
@@ -504,7 +504,7 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_frame_t *
 }
 
 
-void anna_type_setup_interface(anna_type_t *type, anna_stack_frame_t *parent)
+void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 {
     anna_type_setup_interface_internal(type, parent);
 }

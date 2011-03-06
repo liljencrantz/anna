@@ -66,7 +66,7 @@ static anna_object_t *anna_i_not(anna_object_t **param)
     return(param[0] == null_object)?anna_int_one:null_object;
 }
 
-void anna_function_implementation_init(struct anna_stack_frame *stack)
+void anna_function_implementation_init(struct anna_stack_template *stack)
 {
     static wchar_t *p_argn[]={L"object"};
     anna_function_t *f = anna_native_create(

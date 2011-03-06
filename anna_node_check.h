@@ -93,7 +93,7 @@
 
 anna_type_t *extract_type(
     anna_node_t *node,
-    anna_stack_frame_t *stack);
+    anna_stack_template_t *stack);
 int check_node_identifier_name(anna_node_t *node,
 			       wchar_t *name);
 

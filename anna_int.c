@@ -39,7 +39,7 @@ static anna_object_t *anna_int_init(anna_object_t **param)
     return param[0];
 }
 
-void anna_int_type_create(anna_stack_frame_t *stack)
+void anna_int_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *i_argv[] = 
 	{

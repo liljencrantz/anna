@@ -15,7 +15,12 @@ static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
     anna_member_t *member = (anna_member_t *)val_ptr;
     //anna_object_t *obj = (anna_object_t *)aux_ptr;
     //anna_object_t *value = member->is_static?obj->type->static_member[member->offset]:obj->member[member->offset];    
-    wprintf(L"  %ls: %ls\n", key, member->type?member->type->name:L"?");
+    wprintf(
+	L"  mid %d, name %ls: Type, %ls. %ls.\n", 
+	anna_mid_get(key),
+	key, 
+	member->type?member->type->name:L"?",
+	member->is_static?L"Static":L"Not static");
 }
 
 void anna_object_print(anna_object_t *obj)

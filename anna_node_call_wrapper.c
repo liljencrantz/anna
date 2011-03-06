@@ -118,8 +118,8 @@ static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
     body_object=param[1];
 
     anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_frame_t **stack_ptr = (anna_stack_frame_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_frame_t *stack = stack_ptr?*stack_ptr:0;
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
+    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
     assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -140,7 +140,7 @@ static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
     return param[0];
 }
 
-static void anna_node_create_call_wrapper_type(anna_stack_frame_t *stack)
+static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 {
 
     node_call_wrapper_type = anna_type_native_create(L"Call", stack);

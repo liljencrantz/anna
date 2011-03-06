@@ -5,7 +5,7 @@
 #include "anna.h"
 #include "anna_node.h"
 
-struct anna_stack_frame;
+struct anna_stack_template;
 
 anna_object_t *anna_range_create(ssize_t from, ssize_t step, ssize_t to);
 
@@ -19,7 +19,7 @@ void anna_range_set_step(anna_object_t *obj, ssize_t v);
 
 ssize_t anna_range_get_count(anna_object_t *obj);
 
-void anna_range_type_create(struct anna_stack_frame *);
+void anna_range_type_create(struct anna_stack_template *);
 int anna_range_get_open(anna_object_t *obj);
 void anna_range_set_open(anna_object_t *obj, int v);
 

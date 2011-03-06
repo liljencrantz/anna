@@ -13,7 +13,7 @@ anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type);
 
 anna_node_call_t *anna_type_definition_get(anna_type_t *type);
 
-anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_frame_t *stack);
+anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack);
 
 void anna_type_copy(anna_type_t *dst, anna_type_t *src);
 
@@ -53,8 +53,8 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz);
 /**
    
  */
-void anna_type_setup_interface(anna_type_t *type, anna_stack_frame_t *parent);
+void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent);
 
-void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_frame_t *stack);
+void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_t *stack);
 
 #endif
