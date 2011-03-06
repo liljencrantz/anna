@@ -301,20 +301,39 @@ void anna_vm_run(anna_function_t *entry)
 		
 		if(m->is_property)
 		{
+		    
 		    anna_object_t *method = obj->type->static_member[m->getter_offset];
-		    wprintf(L"PROPERTIES NOT YET IMPLEMENTED!!!\n");
-		    CRASH;
-		}
-		anna_object_t *res;
-		
-		if(m->is_static) {
-		    res = obj->type->static_member[m->offset];
-		} else {
-		    res = (obj->member[m->offset]);
-		}
-		anna_push(stack, res);
+		    anna_function_t *fun = anna_function_unwrap(method);
 
-		(*stack)->code += sizeof(*op);
+		    if(fun->native.function)
+		    {
+			anna_vmstack_print(*stack);
+			anna_object_t *res = fun->native.function(
+			    &obj);
+			anna_push(stack, res);
+			(*stack)->code += sizeof(*op);		    
+		    }
+		    else
+		    {
+			anna_push(stack, method);
+			anna_push(stack, obj);
+			(*stack)->code += sizeof(*op);
+			anna_frame_push(stack, fun);
+		    }
+		}
+		else
+		{
+		    anna_object_t *res;
+		    
+		    if(m->is_static) {
+			res = obj->type->static_member[m->offset];
+		    } else {
+			res = (obj->member[m->offset]);
+		    }
+		    anna_push(stack, res);
+		    
+		    (*stack)->code += sizeof(*op);
+		}
 		break;
 	    }
 	    
