@@ -1,3 +1,15 @@
+Pop unused function returns
+Implement vm handling of properties
+Implement member setters
+Implement if and while
+Implement autowrapping of members
+Implement node type: Dummy
+Implement node type: Assign
+Implement node type: Constructor
+Implement node type: Const (Is this needed?)
+Implement node type: Type specializations
+Implement node type: Type
+Implement node type: Type lookup
 User defined properties
 User defined variadic functions
 User defined templates with full specialization support

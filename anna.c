@@ -520,7 +520,6 @@ int main(int argc, char **argv)
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
 
     anna_function_t *fun = anna_function_unwrap(*main_wrapper_ptr);
-    anna_vm_compile(fun);
     anna_vm_run(fun);
       
 //    anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);

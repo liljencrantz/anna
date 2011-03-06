@@ -509,6 +509,7 @@ size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
     switch(node->node_type)
     {
 
+	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_FLOAT_LITERAL:
@@ -1024,6 +1025,10 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 void anna_vm_compile(
     anna_function_t *fun)
 {
+    if(fun->code)
+	return;
+    wprintf(L"Compile really awesome function named %ls\n", fun->name);
+    
     int i;
     fun->variable_count = fun->stack_template->count;
     fun->frame_size = 128;

@@ -1,5 +1,8 @@
 
+def foo(){
+}
+
 def main()
 {
-    print(4>2);
+    foo();
 }
