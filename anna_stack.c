@@ -321,6 +321,8 @@ static void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 
 void anna_stack_print(anna_stack_template_t *stack)
 {
+    //CRASH;
+    
     if(!stack)
 	return;
 

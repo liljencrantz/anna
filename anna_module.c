@@ -241,17 +241,18 @@ static void anna_module_compile(anna_node_t *this, void *aux)
     if(this->node_type == ANNA_NODE_CLOSURE)
     {
 	anna_node_closure_t *this2 = (anna_node_closure_t *)this;	
-	if(this2->payload->body)
+	if(this2->payload->body && !this2->payload->code)
 	{
-	    anna_node_each(this2->payload->body, &anna_module_compile, 0);
 	    anna_vm_compile(this2->payload);
+	    anna_node_each(this2->payload->body, &anna_module_compile, 0);
 	}
     }
     if(this->node_type == ANNA_NODE_TYPE)
     {
 	anna_node_type_t *this2 = (anna_node_type_t *)this;	
-	if(this2->payload->body)
+	if(this2->payload->body && !(this2->payload->flags & ANNA_TYPE_COMPILED))
 	{
+	    this2->payload->flags |= ANNA_TYPE_COMPILED;
 	    anna_node_each(this2->payload->body, &anna_module_compile, 0);
 	}
     }
@@ -259,7 +260,7 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 
 anna_object_t *anna_module_load(wchar_t *module_name)
 {
-    debug_level=0;
+//    debug_level=0;
     static int recursion_level=0;
     int i;
     array_list_t import = AL_STATIC;
@@ -450,7 +451,11 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	
 	anna_stack_populate_wrapper(module_stack);
 
+	debug(D_SPAM,L"Module stack object set up for %ls\n", module_name);	
+
 	anna_node_each(ggg, &anna_module_compile, 0);
+
+	debug(D_SPAM,L"Module %ls is compiled\n", module_name);	
 
 //	debug(D_SPAM,L"Declarations assigned\n");
 //	anna_node_print(0, program);

@@ -1299,7 +1299,7 @@ void anna_vm_compile(
 {
     if(fun->code)
 	return;
-//    wprintf(L"Compile really awesome function named %ls\n", fun->name);
+    wprintf(L"Compile really awesome function named %ls\n", fun->name);
     
     int i;
     fun->variable_count = fun->stack_template->count;
@@ -1317,6 +1317,6 @@ void anna_vm_compile(
     {
 	anna_vm_compile_i(fun, fun->body->child[i], &code_ptr);
     }
-//    anna_bc_print(fun->code);
+    anna_bc_print(fun->code);
 }
 

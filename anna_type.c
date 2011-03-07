@@ -445,7 +445,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	return 0;
     
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
-    
+
     type->stack->parent = parent;
     
     if(type->definition)
@@ -515,7 +515,7 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
     size_t i;
     wchar_t *name = anna_mid_get_reverse(mid);
 
-    type->stack->parent = stack;
+//    type->stack->parent = stack;
     
     for(i=0; i<node->child_count; i++)
     {
