@@ -1,4 +1,4 @@
 def main()
 {
-    if(null){print("JaJAJAjaja\n\n\n\n\n")}else{print("NejNejNEJNEJ!!!\n\n\n\n")}
+(0..10:2).each(i){print(i)}
 }

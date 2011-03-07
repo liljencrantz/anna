@@ -12,6 +12,7 @@
 #include "anna_int.h"
 #include "anna_member.h"
 #include "anna_function_type.h"
+#include "anna_vm.h"
 
 ssize_t anna_range_get_from(anna_object_t *obj)
 {
@@ -176,14 +177,6 @@ static anna_object_t *anna_range_each(anna_object_t **param)
 
     size_t i;
 
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
-/*
-  wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-  wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
-*/  
     anna_object_t *o_param[2];
     for(i=0;(i<count) && (!open);i++)
     {
@@ -194,7 +187,7 @@ static anna_object_t *anna_range_each(anna_object_t **param)
 	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = anna_int_create(from + step*i);
-	anna_function_invoke_values(*function_ptr, 0, o_param, stack);
+	anna_vm_run(body_object, 2, o_param);
     }
     return param[0];
 }
