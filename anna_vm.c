@@ -105,6 +105,13 @@ typedef struct anna_vmstack anna_vmstack_t;
 
 static void anna_push(anna_vmstack_t **stack, anna_object_t *val)
 {
+    if(!val)
+    {
+	debug(
+	    D_CRITICAL,L"Pushed null ptr\n");
+	CRASH;	
+    }
+    
     anna_object_t ** top =((*stack)->top);
     *(top)= val;
     (*stack)->top++;
@@ -154,20 +161,20 @@ static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
     return res;
 }
 
-
-#define anna_frame_push(stack, fun) {					\
-    anna_vmstack_t *res = anna_vmstack_alloc(fun->frame_size);		\
-    res->parent=0;							\
-    res->function = fun;						\
-    res->code = fun->code;						\
-    (*stack)->top -= (fun->input_count+1);				\
-    memcpy(&res->base[0], (*stack)->top+1,				\
-	   sizeof(anna_object_t *)*fun->input_count);			\
-    res->top = &res->base[fun->variable_count];				\
-    *(++stack) = res;							\
-}
-
-#define anna_frame_pop(stack) {anna_object_t *val = anna_peek(stack, 0);--stack;anna_push(stack, val);}
+#define anna_frame_push(stack, wfun) {					\
+	anna_vmstack_t *parent = *(anna_vmstack_t **)anna_member_addr_get_mid(wfun, ANNA_MID_FUNCTION_WRAPPER_STACK); \
+	anna_function_t *fun = anna_function_unwrap(wfun);		\
+	anna_vmstack_t *res = anna_vmstack_alloc(fun->frame_size);	\
+	res->parent=parent;							\
+	res->function = fun;						\
+	res->code = fun->code;						\
+	(*stack)->top -= (fun->input_count+1);				\
+	memcpy(&res->base[0], (*stack)->top+1,				\
+	       sizeof(anna_object_t *)*fun->input_count);		\
+	res->top = &res->base[fun->variable_count];			\
+	*(++stack) = res;						\
+	wprintf(L"Push frame\n");					\
+    }
 
 static anna_vmstack_t **stack_mem;
 static anna_vmstack_t **stack;
@@ -197,7 +204,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_push(stack, argv[i]);
     }
-    anna_frame_push(stack, anna_function_unwrap(entry));
+    anna_frame_push(stack, entry);
     
     while(1)
     {
@@ -251,7 +258,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 			fun->name);
 */		    
 		    (*stack)->code += sizeof(*op);
-		    anna_frame_push(stack, fun);
+		    anna_frame_push(stack, wrapped);
 		}
 		
 		break;
@@ -281,11 +288,13 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_object_t *val = anna_peek(stack, 0);
 		--stack;
 		anna_push(stack, val);
+		wprintf(L"Pop frame\n");
 		break;
 	    }
 	    
 	    case ANNA_OP_STOP:
 	    {
+		wprintf(L"Pop last frame\n");
 		anna_object_t *val = anna_peek(stack, 0);
 		--stack;
 		return val;
@@ -298,6 +307,15 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_vmstack_t *s = *stack;
 		for(i=0; i<op->frame_count; i++)
 		    s = s->parent;
+		if(!s->base[op->offset])
+		{
+		    wprintf(
+			L"Var get op on unassigned var: %d %d\n",
+			op->frame_count, op->offset);
+		    
+		    CRASH;
+		}
+		
 		anna_push(stack, s->base[op->offset]);
 		(*stack)->code += sizeof(*op);
 		break;
@@ -375,6 +393,12 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)(*stack)->code;
 		anna_object_t *obj = anna_pop(stack);
+		if(!obj){
+		    debug(
+			D_CRITICAL,L"Popped null ptr for member get op %ls\n",
+			anna_mid_get_reverse(op->mid));
+		    CRASH;
+		}
 
 		anna_member_t *m = obj->type->mid_identifier[op->mid];
 		if(!m){
@@ -480,7 +504,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    case ANNA_OP_TRAMPOLENE:
 	    {
 		anna_object_t *base = anna_pop(stack);
-		anna_push(stack, anna_trampoline(anna_function_unwrap(base), stack));
+		anna_push(stack, anna_trampoline(anna_function_unwrap(base), *stack));
 		(*stack)->code += sizeof(anna_op_null_t);
 		break;
 	    }
@@ -716,6 +740,16 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		sizeof(anna_op_jmp_t) +
 		2*sizeof(anna_op_null_t) +
 		anna_vm_size(fun, node2->arg2);
+	}
+
+	case ANNA_NODE_WHILE:
+	{
+	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
+	    
+	    size_t sz1 = anna_vm_size(fun, node2->arg1);
+	    size_t sz2 = anna_vm_size(fun, node2->arg2);
+
+	    return sz1 + sz2 + sizeof(anna_op_jmp_t)*2 + sizeof(anna_op_call_t) + sizeof(anna_op_const_t) + sizeof(anna_op_null_t);
 	}
 
 	case ANNA_NODE_IDENTIFIER:
@@ -970,8 +1004,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 
 	    anna_vm_compile_i(fun, node2->value, ptr);	    
 	    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, node2->name);
-
-
+	    
 	    anna_op_var_t op = 
 		{
 		    ANNA_OP_VAR_SET,
@@ -1055,6 +1088,32 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    anna_vm_compile_i(fun, (anna_node_t *)node2->block2, ptr);
 	    anna_vm_call(ptr, ANNA_OP_CALL, 0);
 
+	    break;
+	}
+
+	case ANNA_NODE_WHILE:
+	{
+	    anna_node_cond_t *node2 = (anna_node_cond_t *)node;
+	    
+	    size_t sz1 = anna_vm_size(fun, node2->arg1);
+	    size_t sz2 = anna_vm_size(fun, node2->arg2);
+	    
+	    
+	    anna_vm_const(ptr, null_object); // +1
+	    anna_vm_compile_i(fun, node2->arg1, ptr); // +1
+	    anna_vm_jmp(
+		ptr, ANNA_OP_NCOND_JMP, 
+		2*sizeof(anna_op_jmp_t) +
+		sz2 +sizeof(anna_op_null_t) +
+		sizeof(anna_op_call_t));  // -1
+	    anna_vm_null(ptr, ANNA_OP_POP); // -1
+	    anna_vm_compile_i(fun, node2->arg2, ptr); // +1
+	    anna_vm_call(ptr, ANNA_OP_CALL, 0); // 0
+	    anna_vm_jmp(
+		ptr, ANNA_OP_JMP,
+		-( sizeof(anna_op_jmp_t) +sizeof(anna_op_null_t) +
+		   sz1 + sz2 +
+		   sizeof(anna_op_call_t))); // 0
 	    break;
 	}
 

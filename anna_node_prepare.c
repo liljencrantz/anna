@@ -661,10 +661,7 @@ static void anna_node_calculate_type_internal(
 	    }
 	    if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
-		wprintf(L"LALALA\n");
-		anna_stack_print(stack);
 		anna_stack_set_type(stack, d->name, d->return_type);
-		wprintf(L"LALALAgasgasd\n");
 	    }
 	    break;
 	}
