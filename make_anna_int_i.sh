@@ -125,7 +125,7 @@ done
 
 
 echo "
-static void anna_int_type_i_create(anna_stack_frame_t *stack)
+static void anna_int_type_i_create(anna_stack_template_t *stack)
 {
 $init
 }

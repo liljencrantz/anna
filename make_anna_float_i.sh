@@ -142,7 +142,7 @@ static anna_object_t *anna_float_i_$name(anna_object_t **param)
 done
 
 echo "
-static void anna_float_type_i_create(anna_stack_frame_t *stack)
+static void anna_float_type_i_create(anna_stack_template_t *stack)
 {
 $init
 }"
