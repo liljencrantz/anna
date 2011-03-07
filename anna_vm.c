@@ -44,7 +44,7 @@
 typedef struct 
 {
     char instruction;
-    short _padding;
+    int __padding;
 }
     anna_op_null_t;
 
@@ -73,14 +73,14 @@ typedef struct
 typedef struct
 {
     char instruction;
-    unsigned short mid;
+    int mid;
 }
     anna_op_member_t;
 
 typedef struct
 {
     char instruction;
-    short param;
+    int param;
 }
     anna_op_call_t;
 
@@ -126,15 +126,21 @@ static void anna_vmstack_print(anna_vmstack_t *stack)
     anna_object_t **p = &stack->base[0];
     while(p!=stack->top)
     {
-	anna_function_t *fun = anna_function_unwrap((*p));
-	if(fun)
-	{
-	    wprintf(L"Function: %ls\n", fun->name);
+	if(!*p){
+	    wprintf(L"Error: Null slot\n");
 	    
 	}
 	else
 	{
-	    wprintf(L"%ls\n", (*p)->type->name);
+	    anna_function_t *fun = anna_function_unwrap((*p));
+	    if(fun)
+	    {
+		wprintf(L"Function: %ls\n", fun->name);
+	    }
+	    else
+	    {
+		wprintf(L"%ls\n", (*p)->type->name);
+	    }
 	}
 	
 	p++;
@@ -176,7 +182,7 @@ void anna_vm_init()
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
     stack++;
-        
+    
     *stack = anna_vmstack_alloc((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
     (*stack)->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
@@ -263,9 +269,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
 		    tp,
 		    ANNA_MID_INIT_PAYLOAD);
+		assert(constructor_ptr);
 		anna_push(stack, *constructor_ptr);
 		anna_push(stack, result);
-		
 		(*stack)->code += sizeof(*op);
 		break;
 	    }
@@ -371,6 +377,12 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_object_t *obj = anna_pop(stack);
 
 		anna_member_t *m = obj->type->mid_identifier[op->mid];
+		if(!m){
+		    debug(
+			D_CRITICAL,L"Object %ls does not have a member named %ls\n",
+			obj->type->name, anna_mid_get_reverse(op->mid));
+		    CRASH;
+		}
 		if(m->is_property)
 		{
 		    anna_object_t *method = obj->type->static_member[m->getter_offset];
@@ -486,10 +498,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 void anna_bc_print(char *code)
 {
     wprintf(L"Code:\n");
-    
+    char *base = code;
     while(1)
     {
-//	wprintf(L"Read instruction at %d\n", code);
+	wprintf(L"%d: ", code-base);
 	char instruction = *code;
 	switch(instruction)
 	{
@@ -802,11 +814,16 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	
 	case ANNA_NODE_MEMBER_GET:
 	{
-	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    anna_node_member_get_t *node2 = (anna_node_member_get_t *)node;
 	    return anna_vm_size(fun, node2->object) + sizeof(anna_op_member_t);
 	}
 	
-	
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    anna_node_member_set_t *node2 = (anna_node_member_set_t *)node;
+	    return anna_vm_size(fun, node2->object) + anna_vm_size(fun, node2->value) + sizeof(anna_op_member_t);
+	}
+		
 	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
@@ -1164,7 +1181,11 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		ptr,
 		ANNA_OP_CALL,
 		template->argc);
-	    
+
+	    if(node->node_type==ANNA_NODE_CONSTRUCT)
+	    {
+		//anna_vm_null(ptr, ANNA_OP_POP);
+	    }
 	    break;
 	}
 
@@ -1194,9 +1215,18 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	
 	case ANNA_NODE_MEMBER_GET:
 	{
-	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    anna_node_member_get_t *node2 = (anna_node_member_get_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr);
 	    anna_vm_member(ptr, ANNA_OP_MEMBER_GET, node2->mid);
+	    break;
+	}
+	
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    anna_node_member_set_t *node2 = (anna_node_member_set_t *)node;
+	    anna_vm_compile_i(fun, node2->object, ptr);
+	    anna_vm_compile_i(fun, node2->value, ptr);
+	    anna_vm_member(ptr, ANNA_OP_MEMBER_SET, node2->mid);
 	    break;
 	}
 	
