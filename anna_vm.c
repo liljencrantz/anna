@@ -304,7 +304,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_vmstack_t *s = *stack;
 		for(i=0; i<op->frame_count; i++)
 		    s = s->parent;
-		s->base[op->offset] = anna_pop(stack);
+		s->base[op->offset] = anna_peek(stack, 0);
 		(*stack)->code += sizeof(*op);
 		break;
 	    }
