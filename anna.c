@@ -507,6 +507,7 @@ int main(int argc, char **argv)
     null_object = anna_object_create_raw(0);    
     null_object->type = null_type;
     anna_int_one = anna_int_create(1);
+    anna_vm_init();
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     
@@ -519,8 +520,7 @@ int main(int argc, char **argv)
     
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
 
-    anna_function_t *fun = anna_function_unwrap(*main_wrapper_ptr);
-    anna_vm_run(fun);
+    anna_vm_run(*main_wrapper_ptr, 0, 0);
       
 //    anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     

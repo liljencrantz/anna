@@ -144,28 +144,43 @@ static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
     res->parent=0;							\
     res->function = fun;						\
     res->code = fun->code;						\
-    (*stack)->top -= (fun->input_count+1);				\
-    memcpy(&res->base[0], (*stack)->top, sizeof(anna_object_t *)*fun->input_count); \
+    (*stack)->top -= (fun->input_count);				\
+    memcpy(&res->base[0], (*stack)->top,				\
+	   sizeof(anna_object_t *)*fun->input_count);			\
     res->top = &res->base[fun->variable_count];				\
     *(++stack) = res;							\
 }
 
 #define anna_frame_pop(stack) {anna_object_t *val = anna_peek(stack, 0);--stack;anna_push(stack, val);}
 
-void anna_vm_run(anna_function_t *entry)
+static anna_vmstack_t **stack_mem;
+static anna_vmstack_t **stack;
+
+void anna_vm_init()
 {
-    anna_vmstack_t **stack_mem = malloc(sizeof(anna_vmstack_t *)*1024);
-    anna_vmstack_t **stack = stack_mem;
-    *stack = anna_vmstack_alloc((stack_global->count+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
-    memcpy(
-	&((*stack)->base[0]),
-	&(stack_global->member[0]),
-	sizeof(anna_object_t *)*stack_global->count);
-    (*stack)->top = &(*stack)->base[stack_global->count];
+    stack_mem = malloc(sizeof(anna_vmstack_t *)*1024);
+    stack = stack_mem-1;
+}
+
+
+anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
+{
+    stack++;
+        
+    *stack = anna_vmstack_alloc((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    (*stack)->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    
+    (*stack)->top = &(*stack)->base[0];
     (*stack)->code = malloc(1);
     *(*stack)->code = ANNA_OP_STOP;
     
-    anna_frame_push(stack, entry);
+    int i;
+    
+    for(i=0; i<argc; i++)
+    {
+	anna_push(stack, argv[i]);
+    }
+    anna_frame_push(stack, anna_function_unwrap(entry));
     
     while(1)
     {
@@ -246,14 +261,17 @@ void anna_vm_run(anna_function_t *entry)
 	    
 	    case ANNA_OP_RETURN:
 	    {
-		anna_frame_pop(stack);		
+		anna_object_t *val = anna_peek(stack, 0);
+		--stack;
+		anna_push(stack, val);
 		break;
 	    }
 	    
 	    case ANNA_OP_STOP:
 	    {
-		free(stack_mem);
-		return;
+		anna_object_t *val = anna_peek(stack, 0);
+		--stack;
+		return val;
 	    }
 	    
 	    case ANNA_OP_VAR_GET:
@@ -307,7 +325,6 @@ void anna_vm_run(anna_function_t *entry)
 
 		    if(fun->native.function)
 		    {
-			anna_vmstack_print(*stack);
 			anna_object_t *res = fun->native.function(
 			    &obj);
 			anna_push(stack, res);
@@ -1259,6 +1276,6 @@ void anna_vm_compile(
     {
 	anna_vm_compile_i(fun, fun->body->child[i], &code_ptr);
     }
-    anna_bc_print(fun->code);
+//    anna_bc_print(fun->code);
 }
 

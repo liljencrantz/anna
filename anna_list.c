@@ -16,6 +16,7 @@
 #include "anna_member.h"
 #include "anna_function_type.h"
 #include "anna_range.h"
+#include "anna_vm.h"
 
 #include "anna_macro.h"
 
@@ -198,17 +199,12 @@ static anna_object_t *anna_list_append(anna_object_t **param)
 
 static anna_object_t *anna_list_each(anna_object_t **param)
 {
-    anna_object_t *body_object;
-    body_object=param[1];
-        
+    anna_object_t *body_object=param[1];
+    
     size_t sz = anna_list_get_size(param[0]);
     anna_object_t **arr = anna_list_get_payload(param[0]);
     size_t i;
 
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
   wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
@@ -223,7 +219,7 @@ static anna_object_t *anna_list_each(anna_object_t **param)
 	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
-	anna_function_invoke_values(*function_ptr, 0, o_param, stack);
+	anna_vm_run(body_object, 2, o_param);
     }
     return param[0];
 }

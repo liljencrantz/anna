@@ -6,6 +6,7 @@ void anna_vm_compile(
 
 void anna_bc_print(char *code);
 
-void anna_vm_run(anna_function_t *entry);
+void anna_vm_init();
+anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv);
 
 #endif
