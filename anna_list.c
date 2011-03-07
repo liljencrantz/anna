@@ -235,10 +235,6 @@ static anna_object_t *anna_list_map(anna_object_t **param)
     size_t i;
     anna_list_set_size(result, sz);
 
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
   wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
@@ -253,7 +249,8 @@ static anna_object_t *anna_list_map(anna_object_t **param)
 	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
-	anna_list_set(result, i, anna_function_invoke_values(*function_ptr, 0, o_param, stack));
+	anna_object_t *obj = anna_vm_run(body_object, 2, o_param);
+	anna_list_set(result, i, obj);
     }
     return result;
 }
@@ -271,10 +268,6 @@ static anna_object_t *anna_list_filter(anna_object_t **param)
     
     anna_list_set_capacity(result, sz);
     
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
   wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
@@ -289,7 +282,8 @@ static anna_object_t *anna_list_filter(anna_object_t **param)
 	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
-	if(anna_function_invoke_values(*function_ptr, 0, o_param, stack) != null_object)
+	anna_object_t *ret = anna_vm_run(body_object, 2, o_param);
+	if(ret != null_object)
 	    anna_list_set(result, pos++, arr[i]);
     }
     anna_list_set_size(result, pos);
@@ -302,17 +296,14 @@ static anna_object_t *anna_list_first(anna_object_t **param)
     size_t sz = anna_list_get_size(param[0]);
     anna_object_t **arr = anna_list_get_payload(param[0]);
     size_t i;
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
     anna_object_t *o_param[2];    
-    assert(function_ptr);
     
     for(i=0;i<sz;i++)
     {
 	o_param[0] = anna_int_create(i);
 	o_param[1] = arr[i];
-	if(anna_function_invoke_values(*function_ptr, 0, o_param, stack) != null_object)
+	anna_object_t *ret = anna_vm_run(body_object, 2, o_param);
+	if(ret != null_object)
 	    return arr[i];
     }
     return null_object;
@@ -352,18 +343,15 @@ static anna_object_t *anna_list_in(anna_object_t **param)
     {
 	for(i=0;i<sz;i++)
 	{
-	    anna_node_t *eq_param[]=
+	    anna_object_t *o_param[]=
 		{
-		    (anna_node_t *)anna_node_create_dummy(0, arr[i], 0)
+		    needle,
+		    arr[i]
 		}
 	    ;
 	    anna_object_t *result = 
-		anna_function_wrapped_invoke(
-		    *eq_obj_ptr,
-		    needle,
-		    2,
-		    eq_param,
-		    0);
+		anna_vm_run(*eq_obj_ptr, 2, o_param);
+	    
 	    if(result != null_object)
 	    {
 		return anna_int_create(i);
