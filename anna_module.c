@@ -247,10 +247,19 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 	    anna_vm_compile(this2->payload);
 	}
     }
+    if(this->node_type == ANNA_NODE_TYPE)
+    {
+	anna_node_type_t *this2 = (anna_node_type_t *)this;	
+	if(this2->payload->body)
+	{
+	    anna_node_each(this2->payload->body, &anna_module_compile, 0);
+	}
+    }
 }
 
 anna_object_t *anna_module_load(wchar_t *module_name)
 {
+    debug_level=0;
     static int recursion_level=0;
     int i;
     array_list_t import = AL_STATIC;
@@ -394,6 +403,8 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 		exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
 	    }
 	}
+	
+	debug(D_SPAM,L"Return types set up for module %ls\n", module_name);	
 
 	for(i=0; i<ggg->child_count; i++)
 	{
@@ -411,7 +422,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 
 //	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);
 	
-	debug(D_SPAM,L"Return types set up for module %ls\n", module_name);	
+	debug(D_SPAM,L"AST validated for module %ls\n", module_name);	
 	
 /*
 	anna_node_find(node, ANNA_NODE_CLOSURE, &al);	

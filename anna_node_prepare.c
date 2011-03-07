@@ -661,7 +661,9 @@ static void anna_node_calculate_type_internal(
 	    }
 	    if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
+		wprintf(L"LALALA\n");
 		anna_stack_set_type(stack, d->name, d->return_type);
+		wprintf(L"LALALAgasgasd\n");
 	    }
 	    
 	    break;
@@ -777,6 +779,7 @@ void anna_node_calculate_type(
 	this->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
 	anna_node_calculate_type_internal( this, stack );
     }
+    debug(D_SPAM, L"Done\n");
 }
 
 void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)

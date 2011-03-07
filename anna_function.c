@@ -300,6 +300,9 @@ void anna_function_setup_body(
 	for(i=0; i<f->body->child_count; i++)
 	    anna_node_each((anna_node_t *)f->body->child[i], (anna_node_function_t)&anna_node_calculate_type, f->stack_template);
 	anna_node_each((anna_node_t *)f->body, (anna_node_function_t)&anna_node_prepare_body,f->stack_template);
+	debug(D_SPAM, L"Finished setting up return type of all AST nodes in function %ls\n", f->name);
+//	if(wcscmp(f->name, L"__add__Complex__") == 0){CRASH;}
+
     }
 }
 

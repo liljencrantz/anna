@@ -496,6 +496,7 @@ int main(int argc, char **argv)
     
     debug(D_SPAM,L"Initializing interpreter...\n");    
     anna_init();
+    null_object = anna_object_create_raw(0);    
     anna_module_load(L"lang");
     
     if(anna_error_count)
@@ -504,7 +505,6 @@ int main(int argc, char **argv)
 	exit(1);
     }
     
-    null_object = anna_object_create_raw(0);    
     null_object->type = null_type;
     anna_int_one = anna_int_create(1);
     anna_vm_init();

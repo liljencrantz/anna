@@ -89,7 +89,8 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->mid_identifier = anna_mid_identifier_create();
     result->name = wcsdup(name);
     result->definition = definition;
-    
+
+    result->stack = anna_stack_create(256, 0);
     if(definition)
     {
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
@@ -159,7 +160,7 @@ void anna_type_definition_make(anna_type_t *type)
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack)
 {    
     anna_type_t *type = anna_type_create(name, 0);
-    type->stack = stack;
+    type->stack->parent = stack;
 /*
     if(type_type == 0)
     {
@@ -327,6 +328,7 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
+//    wprintf(L"Copy type %ls into type %ls\n", orig->name, res->name);
     for(i=0; i<anna_mid_max_get(); i++)
     {
        anna_member_t *memb = orig->mid_identifier[i];
@@ -430,6 +432,10 @@ static void anna_type_prepare_member_internal(
     }
 }
 
+static anna_object_t *anna_type_noop(anna_object_t **param){
+    return param[0];
+}
+
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type, 
     anna_stack_template_t *parent)
@@ -439,10 +445,12 @@ static anna_node_t *anna_type_setup_interface_internal(
 	return 0;
     
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
-
+    
+    type->stack->parent = parent;
+    
     if(type->definition)
     {
-    
+	
 	CHECK_NODE_TYPE(type->definition->child[0], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_BLOCK(type->definition->child[1]);
 	CHECK_NODE_BLOCK(type->definition->child[2]);
@@ -465,7 +473,32 @@ static anna_node_t *anna_type_setup_interface_internal(
 	    anna_type_prepare_member_internal(
 		type,
 		(anna_node_declare_t *)node->child[i],
-		parent);
+		type->stack);
+	}
+	if(!anna_member_get(type, anna_mid_get(L"__init__"))){
+
+	    wchar_t *argn[] = 
+		{
+		    L"this"
+		}
+	    ;
+	    anna_type_t *argv[] = 
+		{
+		    type,
+		}
+	    ;
+
+	    anna_native_method_create(
+		type,
+		-1,
+		L"__init__",
+		0,
+		&anna_type_noop,
+		object_type,
+		1, argv, argn);
+	    anna_object_t **cp = anna_static_member_addr_get_mid(
+		type,
+		ANNA_MID_INIT_PAYLOAD);
 	}
     }
     return 0;
@@ -481,6 +514,8 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
     anna_node_call_t *node = type->body;
     size_t i;
     wchar_t *name = anna_mid_get_reverse(mid);
+
+    type->stack->parent = stack;
     
     for(i=0; i<node->child_count; i++)
     {
@@ -496,13 +531,10 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
 	    anna_type_prepare_member_internal(
 		type,
 		decl2,
-		stack);
+		type->stack);
 	}
-	
-    }
-    
+    }    
 }
-
 
 void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 {

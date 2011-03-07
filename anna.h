@@ -142,10 +142,7 @@ struct anna_type
      */
     wchar_t *name;
     /**
-       The stack frame inside of which this type lives.
-       
-       FIXME: What is it good for? I don't currently know. Namespacing,
-       maybe?
+       A stack template view of this type
     */
     struct anna_stack_template *stack;
     /**
@@ -166,7 +163,7 @@ struct anna_type
        The AST that defines the members of this type. This is the
        parsed, macro expanded version of the AST, and only includes
        the actual body block.
-
+       
        Native types do not have a
        body.
     */

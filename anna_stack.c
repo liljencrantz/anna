@@ -1,8 +1,10 @@
+#define _GNU_SOURCE
 #include <stdlib.h>     
 #include <stdio.h>     
 #include <GL/glew.h>	// Header File For The OpenGL32 Library
 #include <string.h>
 #include <assert.h>
+#include <wchar.h>
 
 #include "util.h"
 #include "common.h"
@@ -88,7 +90,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
     
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
-    hash_put(&stack->member_string_identifier, name, offset);
+    hash_put(&stack->member_string_identifier, wcsdup(name), offset);
     stack->member_flags[*offset] = flags;
     stack->member_type[*offset] = type;
     stack->member_declare_node[*offset] = 0;
@@ -131,7 +133,7 @@ void anna_stack_declare2(anna_stack_template_t *stack,
     
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
-    hash_put(&stack->member_string_identifier, declare_node->name, offset);
+    hash_put(&stack->member_string_identifier, wcsdup(declare_node->name), offset);
     stack->member_flags[*offset] = 0;
     stack->member_type[*offset] = 0;
     stack->member_declare_node[*offset] = declare_node;
@@ -231,6 +233,14 @@ int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)
 
 void anna_stack_set_type(anna_stack_template_t *stack, wchar_t *name, anna_type_t *type){
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
+    if(!f){
+	return;
+	debug(
+	    D_CRITICAL, 
+	    L"Tried to set unknown variable %ls to type %ls\n", name, type->name);
+	anna_stack_print(stack);
+	CRASH;
+    }
     f->member_type[*(size_t *)hash_get(&f->member_string_identifier, name)] = type;
 }
 

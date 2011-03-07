@@ -188,10 +188,19 @@ mid_t anna_member_create(
     } else {
 	member->offset = type->member_count++;
     }
-//  wprintf(L"Add member with mid %d\n", mid);
+    
     
     type->mid_identifier[mid] = member;
     hash_put(&type->name_identifier, member->name, member);
+
+//    wprintf(L"Create member named %ls to type %ls\n", name, type->name);
+
+    anna_stack_declare(
+	type->stack,
+	name,
+	member_type,
+	null_object,
+	0);
     return mid;
 }
 
@@ -320,8 +329,7 @@ size_t anna_native_property_create(
 	    property_type,
 	    1,
 	    argv,
-	    argn
-	    );
+	    argn);
 	anna_member_t *gm = anna_member_get(type, getter_mid);
 	getter_offset = gm->offset;
     }
