@@ -240,7 +240,7 @@ anna_node_declare_t *anna_stack_get_declaration(
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
-    return &f->member_declare_node[*(size_t *)hash_get(&f->member_string_identifier, name)];
+    return f->member_declare_node[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
 anna_sid_t anna_stack_sid_create(anna_stack_template_t *stack, wchar_t *name)
