@@ -126,7 +126,17 @@ static void anna_vmstack_print(anna_vmstack_t *stack)
     anna_object_t **p = &stack->base[0];
     while(p!=stack->top)
     {
-	wprintf(L"%ls\n", (*p)->type->name);
+	anna_function_t *fun = anna_function_unwrap((*p));
+	if(fun)
+	{
+	    wprintf(L"Function: %ls\n", fun->name);
+	    
+	}
+	else
+	{
+	    wprintf(L"%ls\n", (*p)->type->name);
+	}
+	
 	p++;
     }
 }
@@ -144,8 +154,8 @@ static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
     res->parent=0;							\
     res->function = fun;						\
     res->code = fun->code;						\
-    (*stack)->top -= (fun->input_count);				\
-    memcpy(&res->base[0], (*stack)->top,				\
+    (*stack)->top -= (fun->input_count+1);				\
+    memcpy(&res->base[0], (*stack)->top+1,				\
 	   sizeof(anna_object_t *)*fun->input_count);			\
     res->top = &res->base[fun->variable_count];				\
     *(++stack) = res;							\
@@ -176,6 +186,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
     int i;
     
+    anna_push(stack, entry);
     for(i=0; i<argc; i++)
     {
 	anna_push(stack, argv[i]);
@@ -213,7 +224,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		if(!fun)
 		{
-		    wprintf(L"Error: Tried to call something that is not a function. Stack contents:\n");
+		    wprintf(L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
 		    anna_vmstack_print(*stack);
 		    CRASH;
 		}
