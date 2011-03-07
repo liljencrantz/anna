@@ -117,14 +117,6 @@ static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
     anna_object_t *body_object;
     body_object=param[1];
 
-    anna_function_t **function_ptr = (anna_function_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_member_addr_get_mid(body_object, ANNA_MID_FUNCTION_WRAPPER_STACK);
-    anna_stack_template_t *stack = stack_ptr?*stack_ptr:0;
-    assert(function_ptr);
-/*
-  wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-  wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
-*/  
     anna_object_t *o_param[2];
     for(i=0;i<node->child_count;i++)
     {
@@ -135,7 +127,7 @@ static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
 	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = anna_node_wrap(node->child[i]);
-	anna_function_invoke_values(*function_ptr, 0, o_param, stack);
+	anna_vm_run(body_object, 2, o_param);
     }
     return param[0];
 }
