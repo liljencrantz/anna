@@ -184,6 +184,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 		    chr = *str3;
 		    break;
 	    }
+	    break;
 	    
 	default:
 	    chr = *str3;
@@ -1033,8 +1034,7 @@ constant :
 	    /*
 	      FIXME: We're not handling escape sequences!
 	     */
-	    $$ = (anna_node_t *)anna_node_create_char_literal(
-		&@$,anna_lex_get_text(scanner)[1]);
+	    $$ = anna_yacc_char_literal_create(&@$, anna_lex_get_text(scanner));
 	}
 	| 
 	LITERAL_STRING
