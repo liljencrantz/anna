@@ -240,7 +240,9 @@ static void anna_node_calculate_type_param(
     }
 }
 
-anna_stack_template_t *anna_node_register_declarations(
+
+anna_node_register_declarations(
+    anna_stack_template_t *stack,
     anna_node_t *this,
     size_t extra)
 {
@@ -252,7 +254,6 @@ anna_stack_template_t *anna_node_register_declarations(
     anna_node_find(this, ANNA_NODE_DECLARE, &decls);
     anna_node_find(this, ANNA_NODE_CONST, &decls);
     size_t sz = al_get_count(&decls);
-    anna_stack_template_t *stack = anna_stack_create(sz+extra, 0);    
     int i;
 /*
     debug(D_SPAM,L"WOO WEE WOO %d declarations in ast\n", sz);

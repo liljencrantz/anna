@@ -165,7 +165,7 @@ static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
 	anna_vmstack_t *parent = *(anna_vmstack_t **)anna_member_addr_get_mid(wfun, ANNA_MID_FUNCTION_WRAPPER_STACK); \
 	anna_function_t *fun = anna_function_unwrap(wfun);		\
 	anna_vmstack_t *res = anna_vmstack_alloc(fun->frame_size);	\
-	res->parent=parent;							\
+	res->parent=parent;						\
 	res->function = fun;						\
 	res->code = fun->code;						\
 	(*stack)->top -= (fun->input_count+1);				\
@@ -173,7 +173,6 @@ static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
 	       sizeof(anna_object_t *)*fun->input_count);		\
 	res->top = &res->base[fun->variable_count];			\
 	*(++stack) = res;						\
-	wprintf(L"Push frame\n");					\
     }
 
 static anna_vmstack_t **stack_mem;
@@ -288,13 +287,13 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_object_t *val = anna_peek(stack, 0);
 		--stack;
 		anna_push(stack, val);
-		wprintf(L"Pop frame\n");
+//		wprintf(L"Pop frame\n");
 		break;
 	    }
 	    
 	    case ANNA_OP_STOP:
 	    {
-		wprintf(L"Pop last frame\n");
+//		wprintf(L"Pop last frame\n");
 		anna_object_t *val = anna_peek(stack, 0);
 		--stack;
 		return val;
@@ -1170,7 +1169,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 
 	    anna_sid_t sid = anna_stack_sid_create(
 		fun->stack_template, node2->name);
-	    
+
 	    anna_vm_var(
 		ptr,
 		ANNA_OP_VAR_GET,
@@ -1358,7 +1357,7 @@ void anna_vm_compile(
 {
     if(fun->code)
 	return;
-    wprintf(L"Compile really awesome function named %ls\n", fun->name);
+//    wprintf(L"Compile really awesome function named %ls\n", fun->name);
     
     int i;
     fun->variable_count = fun->stack_template->count;
@@ -1376,6 +1375,6 @@ void anna_vm_compile(
     {
 	anna_vm_compile_i(fun, fun->body->child[i], &code_ptr);
     }
-    anna_bc_print(fun->code);
+//    anna_bc_print(fun->code);
 }
 

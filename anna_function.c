@@ -399,7 +399,6 @@ anna_function_t *anna_function_create_from_definition(
 	1,
 	sizeof(anna_function_t));
     result->definition = definition;
-    //result->stack_template = anna_stack_create(64, 0);
     //al_push(&anna_function_list, result);
 
     wchar_t *name=0;

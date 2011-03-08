@@ -57,7 +57,7 @@ struct anna_stack_template
     int *member_flags;
     array_list_t import;
     int is_namespace;
-    struct anna_object *member[];
+    struct anna_object **member;
 };
 
 typedef struct anna_stack_template anna_stack_template_t;
@@ -65,7 +65,7 @@ typedef struct anna_stack_template anna_stack_template_t;
 anna_object_t *anna_stack_wrap(anna_stack_template_t *stack);
 anna_stack_template_t *anna_stack_unwrap(anna_object_t *stack);
 
-anna_stack_template_t *anna_stack_create(size_t sz, anna_stack_template_t *parent);
+anna_stack_template_t *anna_stack_create(anna_stack_template_t *parent);
 
 void anna_stack_declare(
     anna_stack_template_t *stack,

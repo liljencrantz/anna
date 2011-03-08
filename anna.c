@@ -469,7 +469,7 @@ static void anna_init()
 	&hash_function_type_comp);
     anna_mid_init();
         
-    stack_global = anna_stack_create(4096, 0);
+    stack_global = anna_stack_create(0);
 
 /*
     anna_member_types_create(stack_global);

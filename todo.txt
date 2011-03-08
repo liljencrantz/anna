@@ -1,15 +1,13 @@
-Make it possible for native functions to call back into bytecode functions
 Pop unused function returns
 Validate that all functions end with an empty stack frame
 Implement vm handling of property setters
 Implement member setting
-Implement node type: While
 Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations
-Implement node type: Type lookup
 Garbage collector
 Investigate leaking non-GC:ed memory
+Invertigate if we can completely drop the stack_template struct and just use types for that purpose
 User defined properties
 User defined variadic functions
 User defined templates with full specialization support
@@ -54,25 +52,6 @@ import(io);
 def foo(){File();}
 
 def foo(){io.File();}
-
-A module is loaded like this:
-
-1. First the AST is parsed.
-
-2. Then the import list is parsed. All import nodes are replaced with a null node.
-
-3. Fully load all modules used in the macro expansion pass.
-
-4. Macro expansion is performed. Any macros defined in the expand-included modules are used.
-
-5. Register declarations in the current module
-
-6. Load all anna files for imported packages. This  performs steps 1-5 above for all modules to be imported.
-
-7. Calculate return types for all modules currently being loaded.
-
-8. Assign initial values, etc. for all modules currently being loaded.
-
 
 
   Plans for apps written in anna:

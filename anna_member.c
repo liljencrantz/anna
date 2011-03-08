@@ -411,7 +411,7 @@ mid_t anna_const_property_create(
 	body_param);
     anna_function_t *fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, getter_mid));
     fun->body = body;
-    fun->stack_template = anna_stack_create(1,0);
+    fun->stack_template = anna_stack_create(0);
     anna_stack_declare(fun->stack_template, L"this", type, null_object, 0);
     
     anna_function_setup_body(fun);

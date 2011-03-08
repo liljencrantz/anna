@@ -28,15 +28,23 @@ typedef struct
 }
     anna_stack_prepare_data;
 
-anna_stack_template_t *anna_stack_create(size_t sz, anna_stack_template_t *parent)
+void anna_stack_ensure_capacity(anna_stack_template_t *stack, size_t new_sz)
 {
-    anna_stack_template_t *stack = calloc(1,sizeof(anna_stack_template_t) + sizeof(anna_object_t *)*sz);
+    if(stack->capacity < new_sz){
+	size_t sz = maxi(8, maxi(new_sz, stack->capacity*2));
+	stack->member = realloc(stack->member, sizeof(anna_object_t *)*sz);
+	stack->member_type = realloc(stack->member_type, sizeof(anna_type_t *)*sz);
+	stack->member_declare_node = realloc(stack->member_declare_node, sizeof(anna_node_t *)*sz);
+	stack->member_flags = realloc(stack->member_flags, sizeof(int)*sz);
+    }
+}
+
+anna_stack_template_t *anna_stack_create(anna_stack_template_t *parent)
+{
+    anna_stack_template_t *stack = calloc(1,sizeof(anna_stack_template_t));
     hash_init(&stack->member_string_identifier, &hash_wcs_func, &hash_wcs_cmp);
-    stack->member_type = calloc(1, sizeof(anna_type_t *)*sz);
-    stack->member_declare_node = calloc(1, sizeof(anna_node_t *)*sz);
-    stack->member_flags = calloc(1, sizeof(int)*sz);
     stack->count = 0;
-    stack->capacity = sz;
+    stack->capacity = 0;
     stack->parent = parent;
     al_init(&stack->import);
     return stack;
@@ -86,7 +94,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
 	CRASH;	
     }
 #endif
-    assert(stack->count < stack->capacity);
+    anna_stack_ensure_capacity(stack, stack->count+1);
     
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
@@ -129,7 +137,7 @@ void anna_stack_declare2(anna_stack_template_t *stack,
 	CRASH;	
     }
 #endif
-    assert(stack->count < stack->capacity);
+    anna_stack_ensure_capacity(stack, stack->count+1);
     
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
@@ -301,11 +309,12 @@ void anna_stack_set_sid(anna_stack_template_t *stack, anna_sid_t sid, anna_objec
 anna_stack_template_t *anna_stack_clone(anna_stack_template_t *template)
 {
     assert(template);
-    size_t sz = sizeof(anna_stack_template_t) + sizeof(anna_object_t *)*template->count;
+    size_t sz = sizeof(anna_stack_template_t);
     //wprintf(L"Cloning stack with %d items (sz %d)\n", template->count, sz);
     anna_stack_template_t *stack = malloc(sz);
     memcpy(stack, template, sz);
     stack->stop=0;
+
     return stack;  
 }
 

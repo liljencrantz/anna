@@ -151,7 +151,7 @@ static void anna_null_type_create()
 static void anna_module_load_lang()
 {
 
-    anna_stack_template_t *stack_lang = anna_stack_create(4096, stack_global);
+    anna_stack_template_t *stack_lang = anna_stack_create(stack_global);
     stack_lang->is_namespace = 1;
     
     /*
@@ -317,7 +317,6 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     anna_module_find_import_macros(program, &mimport);    
     anna_module_find_imports(program, &import);    
     
-
     for(i=0; i<al_get_count(&mimport); i++ )
     {
 	wchar_t *str = al_get(&mimport, i);
@@ -345,7 +344,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	exit(ANNA_STATUS_MACRO_ERROR);
     }
     debug(D_SPAM,L"Macros expanded in module %ls\n", module_name);    
-        
+    
     anna_node_print(0, node);
     
     module_stack = anna_node_register_declarations(node, 0);

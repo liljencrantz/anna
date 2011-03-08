@@ -90,7 +90,7 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->name = wcsdup(name);
     result->definition = definition;
 
-    result->stack = anna_stack_create(256, 0);
+    result->stack = anna_stack_create(0);
     if(definition)
     {
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));

@@ -408,7 +408,9 @@ anna_node_t *anna_node_macro_expand(
 /**
    Node preparation phase 3: Register all variables
  */
-anna_stack_template_t *anna_node_register_declarations(
+
+void anna_node_register_declarations(
+    anna_stack_template_t *stack,
     anna_node_t *this,
     size_t extra);
 
