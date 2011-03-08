@@ -141,6 +141,66 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 }
 
  
+static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *str)
+{
+    str++;
+    str[strlen(str)-1]=0;
+    wchar_t *str2 = str2wcs(str);
+    wchar_t *str3 = str2;
+    wchar_t chr;
+
+    switch(*str3)
+    {
+	case L'\\':
+	    str3++;
+	    switch(*str3)
+	    {
+		case L'n':
+		    chr= L'\n';
+		    break;
+		    
+		case L'r':
+		    chr = L'\r';
+		    break;
+		    
+		case L'e':
+		    chr = L'\e';
+		    break;
+		    
+		case L't':
+		    chr = L'\t';
+		    break;
+			
+		case L'0':
+		    chr = L'\0';
+		    break;
+			
+		case L'\0':
+		    wprintf(L"Error in string.");
+		    exit(1);
+		    break;
+			
+		default:
+		    chr = *str3;
+		    break;
+	    }
+	    
+	default:
+	    chr = *str3;
+	    break;
+    }
+
+    if(*(str3+1)){
+	anna_error(
+	    (anna_node_t *)anna_node_create_blob(loc, 0),
+	    L"Invalid character literal");
+    }
+    free(str2);
+    
+    return (anna_node_t *)anna_node_create_char_literal(loc, chr);
+}
+
+ 
 %}
 
 %error-verbose
@@ -489,14 +549,25 @@ expression4 :
 	      param);
 	}
         | 
-	expression4 RANGE opt_expression5
+	expression4 RANGE expression5
 	{
 	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__range__");
 	    anna_node_t *param[] ={
 		$1,
-		$3?$3:anna_node_create_null(&@$)
+		$3
 	    };   
+	    $$ = (anna_node_t *)anna_node_create_call(&@$, op, 2, param);
+	}
+	|
+	expression4 ELLIPSIS
+	{
+	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__range__");
+	    anna_node_t *param[] ={
+		$1,
+		anna_node_create_null(&@$)
+	    };
 	    $$ = (anna_node_t *)anna_node_create_call(&@$, op, 2, param);
 	}
 	|
