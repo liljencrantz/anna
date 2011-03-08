@@ -15,11 +15,11 @@ struct anna_sid
 
 typedef struct anna_sid anna_sid_t;
 
-#define ANNA_STACK_FROZEN 1
+#define ANNA_STACK_FROZEN 512
 
-#define ANNA_STACK_PRIVATE 1
+#define ANNA_STACK_PRIVATE 512
 
-#define ANNA_STACK_READONLY 1
+#define ANNA_STACK_READONLY 512
 
 #define anna_stack_get_ro(stack, name) !!(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
 
@@ -34,20 +34,18 @@ typedef struct anna_sid anna_sid_t;
 */
 struct anna_stack_template
 {
-    struct anna_stack_template *parent;
-    size_t count;
-    size_t capacity;
-    hash_table_t member_string_identifier;
-    int stop;
-    anna_function_t *function;
-#ifdef ANNA_CHECK_STACK_ENABLED
     /**
        Store flags for this stack. Currently, the only available flag
        is ANNA_STACK_FROZEN. If set, no more variables can be added to
        this stack frame.
      */
     int flags;
-#endif
+    struct anna_stack_template *parent;
+    size_t count;
+    size_t capacity;
+    hash_table_t member_string_identifier;
+    int stop;
+    anna_function_t *function;
     /**
        An object representing this stack frame
     */

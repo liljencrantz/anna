@@ -42,6 +42,19 @@
 #define ANNA_OP_TRAMPOLENE 18
 #define ANNA_OP_CONSTRUCT 19
 
+static anna_vmstack_t **stack_mem;
+static anna_vmstack_t **stack;
+
+size_t anna_vm_stack_frame_count()
+{
+    return stack - stack_mem;
+}
+
+anna_vmstack_t *anna_vm_stack_get(size_t idx)
+{
+    return stack_mem[idx];
+}
+
 typedef struct 
 {
     char instruction;
@@ -117,6 +130,7 @@ static anna_object_t *anna_peek(anna_vmstack_t **stack, size_t off)
 {
     return *((*stack)->top-1-off);
 }
+
 static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_object_t **p = &stack->base[0];
@@ -157,9 +171,6 @@ static void anna_vmstack_print(anna_vmstack_t *stack)
 	res->top = &res->base[fun->variable_count];			\
 	*(++stack) = res;						\
     }
-
-static anna_vmstack_t **stack_mem;
-static anna_vmstack_t **stack;
 
 void anna_vm_init()
 {
@@ -352,7 +363,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 			anna_push(stack, method);
 			anna_push(stack, obj);
 			(*stack)->code += sizeof(*op);
-			anna_frame_push(stack, fun);
+			anna_frame_push(stack, method);
 		    }
 		}
 		else

@@ -14,6 +14,7 @@
 #include "anna_function.h"
 #include "anna_member.h"
 #include "anna.h"
+#include "anna_alloc.h"
 #include "anna_node_check.h"
 
 array_list_t  anna_type_list = 
@@ -96,7 +97,7 @@ static void anna_type_mangle_methods(
 
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 {
-    anna_type_t *result = calloc(1,sizeof(anna_type_t));
+    anna_type_t *result = anna_alloc_type();
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = anna_mid_identifier_create();
     result->name = wcsdup(name);

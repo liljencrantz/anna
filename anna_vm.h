@@ -6,7 +6,10 @@ void anna_vm_compile(
 
 void anna_bc_print(char *code);
 
-void anna_vm_init();
+void anna_vm_init(void);
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv);
+size_t anna_vm_stack_frame_count();
+anna_vmstack_t *anna_vm_stack_get(size_t idx);
+
 
 #endif

@@ -14,6 +14,7 @@
 #include "anna_node_create.h"
 #include "anna_node_check.h"
 #include "anna_util.h"
+#include "anna_alloc.h"
 
 void anna_function_argument_hint(
     anna_function_t *f,
@@ -397,9 +398,8 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
 anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition)
 {
-    anna_function_t *result = calloc(
-	1,
-	sizeof(anna_function_t));
+    anna_function_t *result = anna_alloc_function();
+    
     result->definition = definition;
     //al_push(&anna_function_list, result);
 
@@ -432,9 +432,8 @@ anna_function_t *anna_macro_create(
     struct anna_node_call *definition,
     wchar_t *arg_name)
 {
-    anna_function_t *result = calloc(
-	1,
-	sizeof(anna_function_t));
+    anna_function_t *result = anna_alloc_function();
+    
     result->definition = definition;
     result->body = (anna_node_call_t *)definition->child[2];
     result->name = wcsdup(name);
@@ -496,8 +495,8 @@ anna_function_t *anna_native_create(
 	}
     }
   
-    anna_function_t *result = calloc(
-	1,sizeof(anna_function_t));
+    anna_function_t *result = anna_alloc_function();
+    
     result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
     result->input_name = calloc(1, sizeof(wchar_t *)*argc);
 

@@ -1,9 +1,11 @@
 #ifndef ANNA_ALLOC_H
 #define ANNA_ALLOC_H
 
+#include "util.h"
 #include "anna.h"
+#include "anna_node.h"
 
-array_list_t anna_alloc;
+extern array_list_t anna_alloc;
 
 static inline anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 {
@@ -44,6 +46,17 @@ static inline anna_node_t *anna_alloc_node(size_t sz)
     al_push(&anna_alloc, res);
     return res;
 }
+
+static inline anna_stack_template_t *anna_alloc_stack_template()
+{
+    anna_stack_template_t *res = calloc(1, sizeof(anna_stack_template_t));
+    res->flags = ANNA_NODE;
+    al_push(&anna_alloc, res);
+    return res;
+}
+
+//void anna_gc_mark_object(anna_object_t *obj);
+
 
 void anna_gc();
 

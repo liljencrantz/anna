@@ -16,6 +16,7 @@
 #include "anna_prepare.h"
 #include "anna_util.h"
 #include "anna_member.h"
+#include "anna_alloc.h"
 
 #ifndef offsetof
 #define offsetof(T,F) ((unsigned int)((char *)&((T *)0L)->F - (char *)0L))
@@ -41,7 +42,7 @@ void anna_stack_ensure_capacity(anna_stack_template_t *stack, size_t new_sz)
 
 anna_stack_template_t *anna_stack_create(anna_stack_template_t *parent)
 {
-    anna_stack_template_t *stack = calloc(1,sizeof(anna_stack_template_t));
+    anna_stack_template_t *stack = anna_alloc_stack_template();
     hash_init(&stack->member_string_identifier, &hash_wcs_func, &hash_wcs_cmp);
     stack->count = 0;
     stack->capacity = 0;
@@ -236,7 +237,7 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
 int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)
 {
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
-    return &f->member_flags[*(size_t *)hash_get(&f->member_string_identifier, name)];
+    return f->member_flags[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
 void anna_stack_set_type(anna_stack_template_t *stack, wchar_t *name, anna_type_t *type){

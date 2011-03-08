@@ -8,6 +8,7 @@
 #include "common.h"
 #include "util.h"
 #include "anna.h"
+#include "anna_alloc.h"
 
 static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {
@@ -40,8 +41,7 @@ anna_object_t *anna_object_create(anna_type_t *type) {
 anna_object_t *anna_object_create_raw(size_t sz)
 {
     anna_object_t *result = 
-	calloc(
-	    1,
+	anna_alloc_object(
 	    sizeof(anna_object_t)+sizeof(anna_object_t *)*sz);
     int i;
     for(i=0; i<sz; i++)
