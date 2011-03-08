@@ -508,6 +508,11 @@ anna_node_t *anna_node_create_simple_template(
 */
 int anna_node_is_call_to(anna_node_t *this, wchar_t *name);
 
+/**
+   Check if the node is an identifier with the specified name.
+*/
+int anna_node_is_named(anna_node_t *this, wchar_t *name);
+
 void anna_yacc_init(void);
 
 anna_object_t *anna_trampoline(

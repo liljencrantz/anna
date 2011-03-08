@@ -1,6 +1,9 @@
 def bar(Int i){
     var j=i;
-    print(j)
+    while(j < 10 and j > 0 ){
+    	print(j);
+    	j++
+    }
 }
 
 def main()

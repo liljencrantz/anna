@@ -131,6 +131,7 @@ static anna_object_t *anna_peek(anna_vmstack_t **stack, size_t off)
 static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_object_t **p = &stack->base[0];
+    wprintf(L"Stack content:\n");
     while(p!=stack->top)
     {
 	if(!*p){
@@ -404,6 +405,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		    debug(
 			D_CRITICAL,L"Object %ls does not have a member named %ls\n",
 			obj->type->name, anna_mid_get_reverse(op->mid));
+		    anna_vmstack_print(*stack);
+		    
 		    CRASH;
 		}
 		if(m->is_property)

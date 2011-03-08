@@ -1,3 +1,4 @@
+__init__ must return the constructed object!
 Pop unused function returns
 Validate that all functions end with an empty stack frame
 Implement vm handling of property setters

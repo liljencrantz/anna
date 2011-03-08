@@ -199,11 +199,16 @@ int anna_node_is_call_to(anna_node_t *this, wchar_t *name){
     if( this->node_type == ANNA_NODE_CALL)
     {
 	anna_node_call_t *this2 = (anna_node_call_t *)this;
-	if( this2->function->node_type == ANNA_NODE_IDENTIFIER) 
-	{
-	    anna_node_identifier_t *fun = (anna_node_identifier_t *)this2->function;
-	    return wcscmp(fun->name, name)==0;
-	}	
+	return anna_node_is_named(this2->function, name);
+    }
+    return 0;
+}
+
+int anna_node_is_named(anna_node_t *this, wchar_t *name){
+    if( this->node_type == ANNA_NODE_IDENTIFIER)
+    {
+	anna_node_identifier_t *fun = (anna_node_identifier_t *)this;
+	return wcscmp(fun->name, name)==0;
     }
     return 0;
 }

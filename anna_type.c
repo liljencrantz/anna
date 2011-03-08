@@ -32,7 +32,7 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     }
 }
 
-static void anna_type_add_implicit_this(
+static void anna_type_mangle_methods(
     anna_type_t *type)
 {
     size_t i;
@@ -50,6 +50,18 @@ static void anna_type_add_implicit_this(
 		    anna_node_call_t *def =(anna_node_call_t *)decl->child[2];
 		    if(def->child_count >= 5)
 		    {
+			if(anna_node_is_named(def->child[0], L"__init__"))
+			{
+			    if(anna_node_is_call_to(def->child[4], L"__block__"))
+			    {
+				anna_node_call_t *body =(anna_node_call_t *)def->child[4];
+				anna_node_call_add_child(
+				    body, anna_node_create_identifier(0, L"this"));
+				
+			    }
+			    
+			}
+			
 			if(anna_node_is_call_to(def->child[2], L"__block__"))
 			{
 			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
@@ -94,7 +106,7 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     if(definition)
     {
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
-	anna_type_add_implicit_this(result);
+	anna_type_mangle_methods(result);
     }
     return result;  
 }
