@@ -411,8 +411,7 @@ anna_node_t *anna_node_macro_expand(
 
 void anna_node_register_declarations(
     anna_stack_template_t *stack,
-    anna_node_t *this,
-    size_t extra);
+    anna_node_t *this);
 
 /**
    Node preparation phase 4: Calculate all variable types

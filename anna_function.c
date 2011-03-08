@@ -209,9 +209,11 @@ void anna_function_setup_interface(
 	    anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
 	    declaration_count = declarations->child_count;
 	}
-	f->stack_template = anna_node_register_declarations(
-	    (anna_node_t *)f->body, declaration_count);
-	f->stack_template->parent = parent_stack;
+	
+	f->stack_template = anna_stack_create(parent_stack);
+	anna_node_register_declarations(
+	    f->stack_template, 
+	    (anna_node_t *)f->body);
 
 	if(f->flags & ANNA_FUNCTION_MACRO){
 	    anna_stack_declare(f->stack_template, f->input_name[0], f->input_type[0], null_object, 0);

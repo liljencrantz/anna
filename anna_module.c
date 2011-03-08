@@ -346,10 +346,9 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     debug(D_SPAM,L"Macros expanded in module %ls\n", module_name);    
     
     anna_node_print(0, node);
-    
-    module_stack = anna_node_register_declarations(node, 0);
+    module_stack= anna_stack_create(stack_global);
+    anna_node_register_declarations(module_stack, node);
     module_stack->is_namespace = 1;
-    module_stack->parent = stack_global;
     if(anna_error_count)
     {
 	debug(

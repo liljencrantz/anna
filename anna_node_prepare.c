@@ -243,8 +243,7 @@ static void anna_node_calculate_type_param(
 
 anna_node_register_declarations(
     anna_stack_template_t *stack,
-    anna_node_t *this,
-    size_t extra)
+    anna_node_t *this)
 {
     array_list_t decls = 
 	{

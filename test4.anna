@@ -1,5 +1,9 @@
+def bar(Int i){
+    var j=i;
+    print(j)
+}
 
 def main()
 {
-    print('A',"\n");
+    bar(1);
 }
