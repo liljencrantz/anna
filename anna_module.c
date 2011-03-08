@@ -435,7 +435,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	
 	for(i=0; i<ggg->child_count; i++)
 	{
-	    anna_node_invoke(ggg->child[i], module_stack);
+	    anna_node_static_invoke(ggg->child[i], module_stack);
 	    if(anna_error_count)
 	    {
 		debug(

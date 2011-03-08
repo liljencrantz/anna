@@ -13,6 +13,32 @@
 #include "anna_node_create.h"
 #include "anna_list.h"
 
+
+
+
+
+struct anna_node *anna_macro_invoke(
+    anna_function_t *macro, 
+    anna_node_call_t *node)
+{
+    if(macro->native.macro)
+    {
+	return macro->native.macro(
+	    node);
+    }
+    else
+    {
+	CRASH;
+	
+    }
+}
+
+
+
+
+
+
+#if 0
 anna_object_t *anna_function_invoke_values(anna_function_t *function, 
 					   anna_object_t *this,
 					   anna_object_t **param,
@@ -112,38 +138,6 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
     }
 }
 
-struct anna_node *anna_macro_invoke(
-    anna_function_t *macro, 
-    anna_node_call_t *node)
-{
-    if(macro->native.macro)
-    {
-	return macro->native.macro(
-	    node);
-    }
-    else
-    {
-	int i;
-	anna_stack_template_t *my_stack = anna_stack_clone(macro->stack_template);
-	anna_object_t *result = null_object;
-
-	wprintf(L"Invoke fancy user defined macro %ls\n", macro->name);
-	//wprintf(L"Macro has stack size %d\n", macro->stack_template->count);
-	
-	anna_stack_set_str(my_stack,
-			   macro->input_name[0],
-			   anna_node_wrap((anna_node_t *)node));
-	for(i=0; i<macro->body->child_count && !my_stack->stop; i++)
-	{
-	    result = anna_node_invoke(macro->body->child[i], my_stack);
-	}
-	if(result == null_object)
-	{
-	    return anna_node_create_null(&node->location);
-	}
-	return anna_node_unwrap(result);
-    }
-}
 
 anna_object_t *anna_function_invoke(
     anna_function_t *function, 
@@ -231,3 +225,4 @@ anna_object_t *anna_function_invoke(
     return anna_function_invoke_values(function, 0, argv, function_parent_stack);    
 }
 
+#endif

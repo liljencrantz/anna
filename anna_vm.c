@@ -19,6 +19,7 @@
 #include "anna_function_type.h"
 #include "anna_member.h"
 #include "anna_type.h"
+#include "anna_alloc.h"
 
 #define ANNA_OP_RETURN 0 
 #define ANNA_OP_CONSTANT 1
@@ -91,18 +92,6 @@ typedef struct
 }
     anna_op_jmp_t;
 
-struct anna_vmstack
-{
-    int flags;
-    struct anna_vmstack *parent;    
-    anna_function_t *function;
-    char *code;    
-    anna_object_t **top;
-    anna_object_t *base[];
-};
-
-typedef struct anna_vmstack anna_vmstack_t;
-
 static void anna_push(anna_vmstack_t **stack, anna_object_t *val)
 {
     if(!val)
@@ -155,17 +144,10 @@ static void anna_vmstack_print(anna_vmstack_t *stack)
     }
 }
 
-static anna_vmstack_t *anna_vmstack_alloc(size_t sz)
-{
-    anna_vmstack_t *res = calloc(1, sz);
-    res->flags = ANNA_VMSTACK;
-    return res;
-}
-
 #define anna_frame_push(stack, wfun) {					\
 	anna_vmstack_t *parent = *(anna_vmstack_t **)anna_member_addr_get_mid(wfun, ANNA_MID_FUNCTION_WRAPPER_STACK); \
 	anna_function_t *fun = anna_function_unwrap(wfun);		\
-	anna_vmstack_t *res = anna_vmstack_alloc(fun->frame_size);	\
+	anna_vmstack_t *res = anna_alloc_vmstack(fun->frame_size);	\
 	res->parent=parent;						\
 	res->function = fun;						\
 	res->code = fun->code;						\
@@ -190,7 +172,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
     stack++;
     
-    *stack = anna_vmstack_alloc((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    *stack = anna_alloc_vmstack((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
     (*stack)->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     (*stack)->top = &(*stack)->base[0];

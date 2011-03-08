@@ -427,13 +427,6 @@ anna_node_t *anna_node_simplify(
     anna_node_t *this);
 
 /**
-   Invoke the specified AST tree. It must have first been prepared.
- */
-anna_object_t *anna_node_invoke(
-    anna_node_t *this, 
-    anna_stack_template_t *stack);
-
-/**
    Check the validity of the code. This should only be run after the
    AST has been prepared.
 */
@@ -517,6 +510,10 @@ void anna_yacc_init(void);
 
 anna_object_t *anna_trampoline(
     anna_function_t *fun,
+    anna_stack_template_t *stack);
+
+anna_object_t *anna_node_static_invoke(
+    anna_node_t *this, 
     anna_stack_template_t *stack);
 
 

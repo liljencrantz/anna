@@ -342,6 +342,18 @@ struct anna_node_list
     struct anna_node_list *parent;
 };
 
+struct anna_vmstack
+{
+    int flags;
+    struct anna_vmstack *parent;    
+    struct anna_function *function;
+    char *code;    
+    struct anna_object **top;
+    struct anna_object *base[];
+};
+
+typedef struct anna_vmstack anna_vmstack_t;
+
 
 typedef struct anna_type anna_type_t;
 typedef struct anna_member anna_member_t;

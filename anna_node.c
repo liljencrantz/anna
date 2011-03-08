@@ -236,18 +236,6 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_template
     
 }
 
-static anna_object_t *anna_node_call_invoke(anna_node_call_t *this, anna_stack_template_t *stack)
-{
-    //wprintf(L"anna_node_call_invoke with stack %d\n", stack);
-    anna_object_t *obj = anna_node_invoke(this->function, stack);
-    if(obj == null_object){
-        //wprintf(L"Invoked null object!\n");      
-	return obj;
-    }
-    
-    return anna_function_wrapped_invoke(obj, 0, this->child_count, this->child, stack);
-}
-
 static anna_object_t *anna_node_int_literal_invoke(anna_node_int_literal_t *this, anna_stack_template_t *stack)
 {
     return anna_int_create(this->payload);
@@ -268,42 +256,9 @@ static anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *th
     return anna_char_create(this->payload);
 }
 
-static anna_object_t *anna_node_identifier_invoke(anna_node_identifier_t *this, anna_stack_template_t *stack)
-{
-    return anna_stack_get_str(stack, this->name);
-    //wprintf(L"Lookup on identifier \"%ls\", sid is %d,%d\n", this->name, this->sid.frame, this->sid.offset);
-#ifdef ANNA_CHECK_SID_ENABLED
-    anna_sid_t real_sid = anna_stack_sid_create(stack, this->name);
-    if(memcmp(&this->sid, &real_sid, sizeof(anna_sid_t))!=0)
-    {
-        anna_error(
-	    (anna_node_t *)this,
-	    L"Critical: Cached sid (%d, %d) different from invoke time sid (%d, %d) for node %ls",
-	    this->sid.frame,
-	    this->sid.offset,
-	    real_sid.frame,
-	    real_sid.offset,
-	    this->name);
-	anna_stack_print_trace(stack);	
-	
-	CRASH;
-    }
-    anna_object_t *res = anna_stack_get_sid(stack, this->sid);
-    if(!res)
-    {
-        anna_error((anna_node_t *)this, L"Critical: Identifier «%ls» had invalid value on stack!\n",this->name);
-	anna_stack_print(stack);	
-	CRASH;
-    }
-    return res;
-#else
-    return anna_stack_get_sid(stack, this->sid);
-#endif  
-}
-
 static anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
 {
-    anna_object_t *result = anna_node_invoke(this->value, stack);
+    anna_object_t *result = anna_node_static_invoke(this->value, stack);
     anna_stack_set_str(stack, this->name, result);
     return result;
 }
@@ -311,159 +266,6 @@ static anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_sta
 anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t *stack)
 {
     return 0;
-}
-
-
-static anna_object_t *anna_node_member_get_invoke(anna_node_member_get_t *this, 
-					   anna_stack_template_t *stack)
-{
-    //wprintf(L"ACCESSING MEMBER %ls\n", anna_mid_get_reverse(this->mid));
-    /*
-      wprintf(L"Run member get node:\n");
-      anna_node_print(0, this);
-    */
-    assert(this->object);
-    anna_object_t *obj = anna_node_invoke(this->object, stack);
-    if(!obj)
-    {
-	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-	anna_node_print(0, this->object);
-	CRASH;
-    }
-    anna_member_t *m = obj->type->mid_identifier[this->mid];
-    if(!m)
-    {
-	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
-		   obj->type->name,
-		   anna_mid_get_reverse(this->mid));
-    }
-
-    if(m->is_property)
-    {
-	anna_object_t *method = obj->type->static_member[m->getter_offset];
-	return anna_function_wrapped_invoke(method, obj, 0, 0, stack);	
-    }
-    
-    anna_object_t *res;
-    
-    if(m->is_static) {
-	res = obj->type->static_member[m->offset];
-    } else {
-	res = (obj->member[m->offset]);
-    }
-    
-    return res;
-  
-    //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
-}
-
-static anna_object_t *anna_node_member_set_invoke(anna_node_member_set_t *this, 
-					   anna_stack_template_t *stack)
-{
-    /*
-      wprintf(L"Run member set node:\n");
-      anna_node_print(0, this);
-    */
-    assert(this->object);
-    anna_object_t *obj = anna_node_invoke(this->object, stack);
-    if(!obj)
-    {
-	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-	anna_node_print(0, this->object);
-	CRASH;
-    }
-
-    anna_member_t *m = obj->type->mid_identifier[this->mid];
-    
-    if(!m)
-    {
-	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
-		   obj->type->name,
-		   anna_mid_get_reverse(this->mid));
-    }
-    if(m->is_property)
-    {
-	anna_object_t *method = obj->type->static_member[m->setter_offset];
-	anna_node_call_t *call = anna_node_create_call(0, 0, 1, &this->value);
-	return anna_function_wrapped_invoke(method, obj, call->child_count, call->child, stack);
-    }
-    else 
-    {
-	anna_object_t *val = anna_node_invoke(this->value, stack);
-	if(!val)
-	{
-	    anna_error(this->value, L"Critical: Node evaluated to null pointer:");
-	    anna_node_print(0, this->value);
-	    CRASH;
-	}
-
-	if(m->is_static) {
-	    obj->type->static_member[m->offset]=val;
-	} else {
-	    obj->member[m->offset]=val;
-	}
-	return val;
-    }
-
-    //return *anna_member_addr_get_mid(anna_node_invoke(this->object, stack), this->mid);
-}
-
-static anna_object_t *anna_node_member_get_wrap_invoke(
-    anna_node_member_get_t *this, 
-    anna_stack_template_t *stack)
-{
-    /*
-      wprintf(L"Run wrapped member get node:\n");  
-      anna_node_print(0, this);
-    */
-    assert(this->object);
-    anna_object_t *obj = anna_node_invoke(this->object, stack);
-    if(!obj)
-    {
-	anna_error(this->object, L"Critical: Node evaluated to null pointer:");
-	anna_node_print(0, this->object);
-	CRASH;
-    }
-    //anna_object_print(obj);
-    
-    anna_member_t *m = obj->type->mid_identifier[this->mid];
-    if(!m)
-    {
-	anna_error(this->object, L"Critical: Object %ls does not have a member %ls",
-		   obj->type->name,
-		   anna_mid_get_reverse(this->mid));
-    }
-
-    anna_object_t *res;
-    if(m->is_property)
-    {
-	anna_object_t *method = obj->type->static_member[m->getter_offset];
-	res =  anna_function_wrapped_invoke(method, obj, 0, 0, stack);
-    }
-    else 
-    {
-	if(m->is_static) {
-	    res = obj->type->static_member[m->offset];
-	} else {
-	    res = (obj->member[m->offset]);
-	}
-    }
-        
-    if(!res)
-    {
-	anna_error(
-	    this->object, L"Critical: Object %ls does not have a member %ls",
-	    obj->type->name,
-	    anna_mid_get_reverse(this->mid));
-    }
-    anna_object_t *wrapped = anna_method_wrap(res, obj);
-    if(!wrapped)
-    {
-	anna_error(this->object, L"Critical: Failed to wrap object:");
-	anna_node_print(0, this->object);
-	CRASH;
-    }    
-    return wrapped;
 }
 
 anna_object_t *anna_trampoline(
@@ -501,8 +303,9 @@ anna_object_t *anna_trampoline(
     return res;
 }
 
-anna_object_t *anna_node_invoke(anna_node_t *this, 
-				anna_stack_template_t *stack)
+anna_object_t *anna_node_static_invoke(
+    anna_node_t *this, 
+    anna_stack_template_t *stack)
 {
     //wprintf(L"anna_node_invoke with stack %d\n", stack);
     //wprintf(L"invoke %d\n", this->node_type);    
@@ -511,87 +314,10 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	wprintf(L"Critical: Invoke null node\n");
 	CRASH;
     }
-    
-    ANNA_CHECK_NODE_PREPARED(this);
+
     
     switch(this->node_type)
     {
-	case ANNA_NODE_CALL:
-	    return anna_node_call_invoke(
-		(anna_node_call_t *)this, 
-		stack);
-
-	case ANNA_NODE_MEMBER_CALL:
-	{
-	    anna_node_member_call_t *this2 = (anna_node_member_call_t *)this;
-	    anna_object_t *obj = anna_node_invoke(this2->object, stack);
-	    anna_member_t *m = obj->type->mid_identifier[this2->mid];
-	    if(!m)
-	    {
-		anna_error(this2->object, L"Critical: Object %ls does not have a member %ls",
-			   obj->type->name,
-			   anna_mid_get_reverse(this2->mid));
-		anna_type_print(obj->type);
-		
-	    }
-	    anna_object_t *res;
-	    if(m->is_property)
-	    {
-		anna_object_t *method = obj->type->static_member[m->getter_offset];
-		res =  anna_function_wrapped_invoke(method, obj, 0, 0, stack);
-	    }
-	    else 
-	    {
-		if(m->is_static) {
-		    res = obj->type->static_member[m->offset];
-		} else {
-		    res = (obj->member[m->offset]);
-		}
-	    }
-	    
-	    if(!res)
-	    {
-		anna_error(
-		    this2->object, L"Critical: Object %ls does not have a member %ls",
-		    obj->type->name,
-		    anna_mid_get_reverse(this2->mid));
-	    }
-	    
-	    if(res == null_object){
-		return null_object;
-	    }
-/*
-	    wprintf(L"MEMBER CALL on object:\n");
-	    anna_object_print(obj);
-	    wprintf(L"Member:\n");
-	    anna_object_print(res);
-	    wprintf(L"\nNode:\n");
-*/
-	    return anna_function_wrapped_invoke(res, m->is_method?obj:0, this2->child_count, this2->child, stack);
-	}
-	
-	case ANNA_NODE_CONSTRUCT:
-	{
-	    anna_node_call_t *call = 
-		(anna_node_call_t *)this;
-	    //wprintf(L"Wee, calling construct with %d parameter, %d\n", call->child_count, call->child[0]);
-	    return anna_construct(
-		anna_type_unwrap(
-		    anna_node_invoke(
-			call->function,
-			stack)),
-		call,
-		stack);
-	}
-    
-	case ANNA_NODE_RETURN:
-	{
-	    anna_node_return_t *node = (anna_node_return_t *)this;
-	    anna_object_t *result = anna_node_invoke(node->payload, stack);
-	    stack->stop=1;
-	    return result;
-	}
-	
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_BLOB:
 	{
@@ -603,14 +329,6 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	{
 	    anna_node_closure_t *node = (anna_node_closure_t *)this;
 	    
-	    if(wcscmp(node->payload->wrapper->type->name, L"!FakeFunctionType") == 0)
-	    {
-		anna_error(
-		    this, 
-		    L"Closure content not a proper function: %ls",
-		    node->payload->wrapper->type->name);
-		CRASH;
-	    }
 	    return anna_trampoline(node->payload, stack);
 	}
 	
@@ -626,9 +344,6 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 
 	case ANNA_NODE_FLOAT_LITERAL:
 	    return anna_node_float_literal_invoke((anna_node_float_literal_t *)this, stack);
-
-	case ANNA_NODE_IDENTIFIER:
-	    return anna_node_identifier_invoke((anna_node_identifier_t *)this, stack);	    
 
 	case ANNA_NODE_STRING_LITERAL:
 	    return anna_node_string_literal_invoke((anna_node_string_literal_t *)this, stack);
@@ -646,68 +361,10 @@ anna_object_t *anna_node_invoke(anna_node_t *this,
 	case ANNA_NODE_DECLARE:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
 	    
-	case ANNA_NODE_MEMBER_GET:
-	    return anna_node_member_get_invoke((anna_node_member_get_t *)this, stack);
-
-	case ANNA_NODE_MEMBER_SET:
-	    return anna_node_member_set_invoke((anna_node_member_set_t *)this, stack);
-
-	case ANNA_NODE_MEMBER_GET_WRAP:
-	    return anna_node_member_get_wrap_invoke((anna_node_member_get_t *)this, stack);
-
-	case ANNA_NODE_OR:
-	{
-	    anna_node_cond_t *n = (anna_node_cond_t *)this;
-	    anna_object_t *o1 = anna_node_invoke(n->arg1, stack);
-	    if(o1 == null_object)
-	    {
-		return anna_node_invoke(n->arg2, stack);
-	    }
-	    else 
-	    {
-		return o1;
-	    }
-	}
-
-	case ANNA_NODE_AND:
-	{
-	    anna_node_cond_t *n = (anna_node_cond_t *)this;
-	    anna_object_t *o1 = anna_node_invoke(n->arg1, stack);
-	    if(o1 == null_object)
-	    {
-		return null_object;
-	    }
-	    else 
-	    {
-		return anna_node_invoke(n->arg2, stack);
-	    }
-	}
-
-	case ANNA_NODE_WHILE:
-	{
-	    anna_node_cond_t *n = (anna_node_cond_t *)this;
-	    anna_object_t *res = null_object;
-	    anna_object_t *fun = anna_node_invoke((anna_node_t *)n->arg2, stack);
-	    while(anna_node_invoke(n->arg1, stack) != null_object)
-	    {
-		res = anna_function_wrapped_invoke(fun, 0, 0, 0, stack);
-	    }
-	    return res;
-	}
-
-	case ANNA_NODE_IF:
-	{
-	    anna_node_if_t *n = (anna_node_if_t *)this;
-	    anna_object_t *o1 = anna_node_invoke(n->cond, stack);
-	    anna_object_t *fun = anna_node_invoke((anna_node_t *)((o1!= null_object)?n->block1:n->block2), stack);
-//	    wprintf(L"if: Evaluated condition, result was %ls\n", o1 != null_object?L"true":L"False");
-	    
-	    return anna_function_wrapped_invoke(fun, 0, 0, 0, stack);
-	}
-	
 	default:
-	    wprintf(L"HOLP! Unknown node type %d found during invoke!\n", this->node_type);
-	    CRASH;
+	    anna_error(
+		this,L"Illegal node type %d found during static invoke!\n", this->node_type);
+	    return null_object;
     }    
 }
 
