@@ -211,6 +211,7 @@ void anna_function_setup_interface(
 	}
 	
 	f->stack_template = anna_stack_create(parent_stack);
+	anna_function_setup_arguments(f, parent_stack);
 	anna_node_register_declarations(
 	    f->stack_template, 
 	    (anna_node_t *)f->body);
@@ -232,7 +233,6 @@ void anna_function_setup_interface(
     
     if(!f->return_type)
     {
-	anna_function_setup_arguments(f, parent_stack);
 	
 	anna_node_t *return_type_node = f->definition->child[1];
 	if(return_type_node->node_type == ANNA_NODE_IDENTIFIER)
