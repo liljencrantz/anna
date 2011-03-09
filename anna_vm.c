@@ -760,12 +760,18 @@ size_t anna_bc_stack_size(char *code)
 	    case ANNA_OP_STRING:
 	    case ANNA_OP_CONSTANT:
 	    case ANNA_OP_LIST:
+	    case ANNA_OP_CONSTRUCT:
+	    case ANNA_OP_VAR_GET:
+	    case ANNA_OP_MEMBER_GET_THIS:
+	    case ANNA_OP_DUP:
 	    {
 		pos++;
 		break;
 	    }
 	    
 	    case ANNA_OP_FOLD:
+	    case ANNA_OP_MEMBER_SET:
+	    case ANNA_OP_POP:
 	    {
 		pos--;
 		break;
@@ -779,67 +785,15 @@ size_t anna_bc_stack_size(char *code)
 		break;
 	    }
 	    
-	    case ANNA_OP_CONSTRUCT:
-	    {
-		pos += 1;
-		break;
-	    }
-	    
 	    case ANNA_OP_RETURN:
-	    {
-		return max;
-	    }
-	    
 	    case ANNA_OP_STOP:
 	    {
 		return max;
 	    }
 	    
-	    case ANNA_OP_VAR_GET:
-	    {
-		pos += 1;
-		break;
-	    }
-	    
 	    case ANNA_OP_VAR_SET:
-	    {
-		break;
-	    }
-	    
 	    case ANNA_OP_MEMBER_GET:
-	    {
-		break;
-	    }
-	    
-	    case ANNA_OP_MEMBER_GET_THIS:
-	    {
-		pos += 1;
-		break;
-	    }
-	    
-	    case ANNA_OP_MEMBER_SET:
-	    {
-		pos -= 1;
-		break;
-	    }
-
-	    case ANNA_OP_POP:
-	    {
-		pos -= 1;
-		break;
-	    }
-	    
 	    case ANNA_OP_NOT:
-	    {
-		break;
-	    }
-	    
-	    case ANNA_OP_DUP:
-	    {
-		pos += 1;
-		break;
-	    }
-	    
 	    case ANNA_OP_JMP:
 	    case ANNA_OP_COND_JMP:
 	    case ANNA_OP_NCOND_JMP:
