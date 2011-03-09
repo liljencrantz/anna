@@ -161,6 +161,22 @@ static anna_object_t *anna_peek(anna_vmstack_t **stack, size_t off)
     return *((*stack)->top-1-off);
 }
 
+static inline anna_object_t *anna_vm_trampoline(
+    anna_function_t *fun,
+    anna_vmstack_t *stack)
+{
+    anna_object_t *orig = fun->wrapper;
+    anna_object_t *res = anna_object_create(orig->type);
+    
+    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
+	   anna_member_addr_get_mid(orig,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
+	   sizeof(anna_function_t *));    
+    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_STACK),
+	   &stack,
+	   sizeof(anna_vmstack_t *));
+    return res;
+}
+
 static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_object_t **p = &stack->base[0];
@@ -523,7 +539,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    case ANNA_OP_TRAMPOLENE:
 	    {
 		anna_object_t *base = anna_pop(stack);
-		anna_push(stack, anna_trampoline(anna_function_unwrap(base), *stack));
+		anna_push(stack, anna_vm_trampoline(anna_function_unwrap(base), *stack));
 		(*stack)->code += sizeof(anna_op_null_t);
 		break;
 	    }

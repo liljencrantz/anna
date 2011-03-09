@@ -211,35 +211,9 @@ anna_object_t *anna_trampoline(
     anna_function_t *fun,
     anna_stack_template_t *stack)
 {
-    anna_object_t *orig = fun->wrapper;
-    anna_object_t *res = anna_object_create(orig->type);
+    assert(stack->is_namespace);
+    return fun->wrapper;
     
-    if(!anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD))
-    {
-/*	anna_member_t *m = obj->type->mid_identifier[mid];
-	if(!m) 
-	{
-	    return 0;
-	}
-*/
-	wprintf(L"Critical: Bad trampoline input\n");
-	anna_object_print(res);
-	//anna_function_print(orig->member[0]);
-	
-	CRASH;
-    }
-
-//    wprintf(L"Creating a trampoline for function %ls with shiny new stack:\n", anna_function_unwrap(orig)->name);
-//    anna_stack_print(stack);
-    
-    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
-	   anna_member_addr_get_mid(orig,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
-	   sizeof(anna_function_t *));    
-    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_STACK),
-	   &stack,
-	   sizeof(anna_stack_template_t *));
-    
-    return res;
 }
 
 anna_object_t *anna_node_static_invoke(
