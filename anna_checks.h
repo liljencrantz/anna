@@ -7,17 +7,10 @@
 */
 
 /**
-   If enabled, when invoking an AST node, first make sure it's been
-   prepared. Not _very_ expensive.
-*/
-//#define ANNA_CHECK_NODE_PREPARED_ENABLED 
-
-/**
-   If enabled, always check that sid:s are currect when invoking
-   identifier nodes. This means do a full name lookup on them, which
-   is significantly slower..
-*/
-#define ANNA_CHECK_SID_ENABLED
+   If enabled, perform a bunch of validity checks in the VM while
+   executing bytecode. Pretty expensive.
+ */
+//#define ANNA_CHECK_VM
 
 /**
    If enabled, save additional stack trace information. Not very

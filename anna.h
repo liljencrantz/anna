@@ -22,9 +22,12 @@
 #endif
 
 #if __GNUC__ >= 3
+/* Tell the compiler which outcome in an if block is the likelier, so
+ * that the code can be laid out in an optimal manner */
 # define likely(x) __builtin_expect((x),1)
+/* Tell the compiler which outcome in an if block is the likelier, so
+ * that the code can be laid out in an optimal manner */
 # define unlikely(x) __builtin_expect((x),0)
-# define inline		inline __attribute__ ((always_inline))
 /* No side effects */
 # define __pure		__attribute__ ((pure))
 /* Like __pure, but stricteer. Not even read-only checking of globals or pointers */
@@ -44,7 +47,6 @@
 /* Ignore alignment of struct */
 # define __packed	__attribute__ ((packed))
 #else
-# define inline		/* no inline */
 # define __pure		/* no pure */
 # define __const	/* no const */
 # define __noreturn	/* no noreturn */

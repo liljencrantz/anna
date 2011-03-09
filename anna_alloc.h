@@ -9,7 +9,7 @@ extern array_list_t anna_alloc;
 
 static inline anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 {
-    anna_vmstack_t *res = calloc(1, sz);
+    anna_vmstack_t *res = malloc(sz);
     res->flags = ANNA_VMSTACK;
     al_push(&anna_alloc, res);
     return res;
@@ -17,7 +17,7 @@ static inline anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 
 static inline anna_object_t *anna_alloc_object(size_t sz)
 {
-    anna_object_t *res = calloc(1, sz);
+    anna_object_t *res = malloc(sz);
     res->flags = ANNA_OBJECT;
     al_push(&anna_alloc, res);
     return res;
