@@ -473,12 +473,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    case ANNA_OP_FOLD:
 	    {
 		anna_object_t *val = anna_pop(stack);
-/*
-		wprintf(
-		    L"Fold value of type %ls to list %d\n", 
-		    val->type->name, 
-		    anna_peek(stack, 0));		
-*/
 		anna_list_add(anna_peek(stack, 0), val);
 		(*stack)->code += sizeof(anna_op_null_t);
 		break;
@@ -621,21 +615,18 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_const_t *op = (anna_op_const_t*)code;
 		wprintf(L"Push constant of type %ls\n\n", op->value->type->name);
-		code += sizeof(*op);
 		break;
 	    }
 	    
 	    case ANNA_OP_LIST:
 	    {
 		wprintf(L"List creation\n\n");
-		code += sizeof(anna_op_type_t);
 		break;
 	    }
 	    
 	    case ANNA_OP_FOLD:
 	    {
 		wprintf(L"List fold\n\n");
-		code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
@@ -644,14 +635,12 @@ void anna_bc_print(char *code)
 		anna_op_call_t *op = (anna_op_call_t *)code;
 		size_t param = op->param;
 		wprintf(L"Call function with %d parameter(s)\n\n", param);
-		code += sizeof(*op);
 		break;
 	    }
 	    
 	    case ANNA_OP_CONSTRUCT:
 	    {
 		wprintf(L"Construct object\n\n");
-		code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
@@ -671,7 +660,6 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_var_t *op = (anna_op_var_t *)code;
 		wprintf(L"Get var %d : %d\n\n", op->frame_count, op->offset);
-		code += sizeof(*op);
 		break;
 	    }
 	    
@@ -679,7 +667,6 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_var_t *op = (anna_op_var_t *)code;
 		wprintf(L"Set var %d : %d\n\n", op->frame_count, op->offset);
-		code += sizeof(*op);
 		break;
 	    }
 	    
@@ -687,7 +674,6 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
 		wprintf(L"Get member %d\n\n", op->mid);
-		code += sizeof(*op);
 		break;
 	    }
 	    
@@ -695,7 +681,6 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
 		wprintf(L"Get member %d and push object as implicit this param\n\n", op->mid);
-		code += sizeof(*op);
 		break;
 	    }
 	    
@@ -703,28 +688,24 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
 		wprintf(L"Set member %d\n\n", op->mid);
-		code += sizeof(*op);
 		break;
 	    }
 
 	    case ANNA_OP_POP:
 	    {
 		wprintf(L"Pop stack\n\n");
-		code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
 	    case ANNA_OP_NOT:
 	    {
 		wprintf(L"Invert stack top element\n\n");
-		code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
 	    case ANNA_OP_DUP:
 	    {
 		wprintf(L"Duplicate stack top element\n\n");
-		code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
@@ -732,7 +713,6 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_off_t *op = (anna_op_off_t *)code;
 		wprintf(L"Jump %d bytes\n\n", op->offset);
-		code += sizeof(*op);
 		break;
 	    }
 	    
@@ -740,7 +720,6 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_off_t *op = (anna_op_off_t *)code;
 		wprintf(L"Conditionally jump %d bytes\n\n", op->offset);
-		code += sizeof(*op);
 		break;
 	    }
 	    
@@ -749,14 +728,12 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_off_t *op = (anna_op_off_t *)code;
 		wprintf(L"Conditionally not jump %d bytes\n\n", op->offset);
-		code += sizeof(*op);
 		break;
 	    }
 	    
 	    case ANNA_OP_TRAMPOLENE:
 	    {
 		wprintf(L"Create trampolene\n\n");
-		code += sizeof(anna_op_null_t);
 		break;
 	    }
 	    
@@ -766,6 +743,7 @@ void anna_bc_print(char *code)
 		CRASH;
 	    }
 	}
+	code += anna_bc_op_size(*code);
     }
 }
 
