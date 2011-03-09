@@ -9,6 +9,7 @@
 #include "anna.h"
 #include "anna_alloc.h"
 #include "anna_vm.h"
+#include "anna_function.h"
 
 array_list_t anna_alloc = AL_STATIC;
 
@@ -17,21 +18,66 @@ static void anna_alloc_unmark(void *obj)
     *((int *)obj) &= (~ANNA_USED);
 }
 
+int anna_object_member_is_blob(anna_object_t *obj, size_t off)
+{
+    return 0;
+}
+
+int anna_type_member_is_blob(anna_type_t *obj, size_t off)
+{
+    return 0;
+}
+
+static void anna_alloc_mark_object(anna_object_t *obj);
+static void anna_alloc_mark_type(anna_type_t *type);
+static void anna_alloc_mark(void *obj);
+
+static void anna_alloc_mark_function(anna_function_t *type)
+{
+}
+
+static void anna_alloc_mark_type(anna_type_t *type)
+{
+    if( type->flags & ANNA_USED)
+	return;
+    type->flags |= ANNA_USED;
+    size_t i;
+
+    for(i=0; i<type->static_member_count; i++)
+    {
+	if(!anna_type_member_is_blob(type, i)){
+	    anna_alloc_mark_object(type->static_member[i]);
+	}
+
+    }
+    
+    
+}
+
 static void anna_alloc_mark_object(anna_object_t *obj)
 {
+    if( obj->flags & ANNA_USED)
+	return;
+    obj->flags |= ANNA_USED;
     size_t i;
     anna_type_t *t = obj->type;
     for(i=0; i<t->member_count; i++)
     {
-	
+	if(!anna_object_member_is_blob(obj, i)){
+	    anna_alloc_mark_object(obj->member[i]);
+	}
+	anna_alloc_mark_type(obj->type);
     }
+    anna_function_t *f = anna_function_unwrap(obj);
+    if(f){
+	anna_alloc_mark_function(f);
+    }
+    
     
 }
 
-
 static void anna_alloc_mark(void *obj)
 {
-    *((int *)obj) |= ANNA_USED;
     switch(*((int *)obj) & ANNA_ALLOC_MASK)
     {
 	case ANNA_OBJECT:
@@ -39,14 +85,16 @@ static void anna_alloc_mark(void *obj)
 	    anna_alloc_mark_object((anna_object_t *)obj);
 	    break;
 	}
+	case ANNA_TYPE:
+	{
+	    anna_alloc_mark_type((anna_type_t *)obj);
+	    break;
+	}
 	
 	
     }
     
 }
-
-
-
 
 void anna_gc()
 {
@@ -65,11 +113,17 @@ void anna_gc()
 	{
 	    anna_alloc_mark_object(*obj);
 	}
-	
     }
-    
 
-
+    for(i=0; i<al_get_count(&anna_alloc); i++)
+    {
+	void *el = al_get(&anna_alloc, i);
+	if(!(*((int *)el) & ANNA_USED))
+	{
+	    free(el);
+	}
+    }    
+        
 }
 
 
