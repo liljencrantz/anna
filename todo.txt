@@ -1,6 +1,12 @@
-__init__ must return the constructed object!
+Document all vm ops w.r.t. manipulating the stack, etc.
+Fix while loop so it returns the output of the last call
+Make test cases for all AST node types to make sure they all push exactly one element to the stack
+Make the fold take a parameter
 Pop unused function returns
 Validate that all functions end with an empty stack frame
+Calculate actual needed stack size and only allocate that amount
+anna_trampoline in static invoke will insert a stack template, not a vmstack, which will crash if ever used
+Avoid creating trampolines when possible
 Implement vm handling of property setters
 Implement member setting
 Implement autowrapping of methods

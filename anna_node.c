@@ -136,12 +136,12 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_template
     wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
     anna_node_print(0, node);
 */
-    switch(node->function->node_type)
+    switch(node->node_type)
     {
 	case ANNA_NODE_IDENTIFIER:
 	{
 //	    wprintf(L"It's an identifier\n");
-	    anna_node_identifier_t *name=(anna_node_identifier_t *)node->function;
+	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
 
 	    anna_object_t **obj = anna_stack_addr_get_str(stack, name->name);
 	    if(obj && *obj != null_object)
@@ -159,76 +159,15 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_template
 	    break;
 	}
 
-
 	case ANNA_NODE_CALL:
 	{
-//	    wprintf(L"It's a call\n");
-	    anna_node_call_t *call=(anna_node_call_t *)node->function;
-	    if(call->function->node_type != ANNA_NODE_IDENTIFIER)
+	    anna_node_call_t *call=(anna_node_call_t *)node;
+	    if(anna_node_is_named(call->function, L"__memberGet__") && call->child_count == 2)
 	    {
-		break;
-	    }
-	    anna_node_identifier_t *name=(anna_node_identifier_t *)call->function;	    
-	    
-	    if(wcscmp(name->name, L"__memberGet__") == 0)
-	    {
-//		wprintf(L"It's a member lookup\n");
-
-		if(call->child_count == 2 && 
-		   call->child[1]->node_type == ANNA_NODE_IDENTIFIER)
-		{
-		    anna_node_identifier_t *member_name=
-			(anna_node_identifier_t *)call->child[1];
-//		    wprintf(L"Looking up member %ls\n", member_name->name);
-		    anna_object_t **obj = anna_stack_addr_get_str(stack, member_name->name);
-		    
-		    if(obj && (*obj)->type != null_type)
-		    {
-			anna_function_t *func=anna_function_unwrap(*obj);
-			
-			//wprintf(L"Found variable! %ls\n", func->name);
-
-			if(func && (func->flags & ANNA_FUNCTION_MACRO))
-			{
-			    //wprintf(L"Found macro!\n");
-			    
-			    return func;
-			}
-		    }
-		    
-		}	
-	    }
-	}
-	
-/*	
-	case ANNA_NODE_MEMBER_GET_WRAP:
-	case ANNA_NODE_MEMBER_GET:
-	{
-	wprintf(L"Looking for macro in member get node\n");
-	    
-	anna_node_member_get_t *get = (anna_node_member_get_t *)node;
-	wchar_t *name = anna_mid_get_reverse(get->mid);
-	wprintf(L"Got a name! %ls\n", name);
-	anna_object_t **obj = anna_stack_addr_get_str(stack, name);
-	if(obj)
-	{
-	anna_function_t *func=anna_function_unwrap(*obj);
-	    
-	if(func && func->flags == ANNA_FUNCTION_MACRO)
-	{
-	return func;
-	}
-	}
-	    
-	break;
-	}
-*/	
-	default:
-	{
-/*	    wprintf(L"Function is not an identifier, not a macro:\n");
-	    anna_node_print(0, node->function);
-	    wprintf(L"\n");
-*/
+		return anna_node_macro_get(
+		    call->child[1], stack);
+	    }	
+	    break;
 	}
 	
     }
@@ -314,7 +253,6 @@ anna_object_t *anna_node_static_invoke(
 	wprintf(L"Critical: Invoke null node\n");
 	CRASH;
     }
-
     
     switch(this->node_type)
     {
@@ -327,8 +265,7 @@ anna_object_t *anna_node_static_invoke(
 	
 	case ANNA_NODE_CLOSURE:
 	{
-	    anna_node_closure_t *node = (anna_node_closure_t *)this;
-	    
+	    anna_node_closure_t *node = (anna_node_closure_t *)this;	    
 	    return anna_trampoline(node->payload, stack);
 	}
 	

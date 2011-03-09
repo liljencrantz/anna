@@ -19,25 +19,13 @@ anna_node_t *anna_node_macro_expand(
 	    
 	    if(this2->function->node_type == ANNA_NODE_CALL)
 	    {
-		anna_node_call_t *c = (anna_node_call_t *)this2->function;
-		if(c->function->node_type == ANNA_NODE_IDENTIFIER && c->child_count==2)
+
+		anna_function_t *fun = anna_node_macro_get(this2->function, stack);
+		if(fun)
 		{
-		    anna_node_identifier_t *mgfun = (anna_node_identifier_t *)c->function;
-		    if(wcscmp(mgfun->name, L"__memberGet__")==0 && c->child[1]->node_type == ANNA_NODE_IDENTIFIER)
-		    {
-			anna_node_identifier_t *fun = (anna_node_identifier_t *)c->child[1];
-			anna_object_t **stack_object_ptr = anna_stack_addr_get_str(stack, fun->name);
-			if(stack_object_ptr)
-			{
-			    anna_function_t *fun = anna_function_unwrap(*stack_object_ptr);
-			    if( fun && (fun->flags & ANNA_FUNCTION_MACRO))
-			    {	
-				anna_node_t *res = anna_macro_invoke(fun, this2);
-				res = anna_node_macro_expand(res, stack);
-				return res;
-			    }
-			}
-		    }
+		    anna_node_t *res = anna_macro_invoke(fun, this2);
+		    res = anna_node_macro_expand(res, stack);
+		    return res;
 		}
 	    }
 	    
