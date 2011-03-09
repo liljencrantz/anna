@@ -21,9 +21,42 @@
 #define ANNA_CHECK_NODE_PREPARED(n) 
 #endif
 
-#define likely(x) (x)
-#define unlikely(x) (x)
-
+#if __GNUC__ >= 3
+# define likely(x) __builtin_expect((x),1)
+# define unlikely(x) __builtin_expect((x),0)
+# define inline		inline __attribute__ ((always_inline))
+/* No side effects */
+# define __pure		__attribute__ ((pure))
+/* Like __pure, but stricteer. Not even read-only checking of globals or pointers */
+# define __const	__attribute__ ((const))
+/* Function never returns */
+# define __noreturn	__attribute__ ((noreturn))
+/* Return value can not be aliased */
+# define __malloc	__attribute__ ((malloc))
+/* Warn if return value is not used */
+# define __must_check	__attribute__ ((warn_unused_result))
+/* Warn if function is used */
+# define __deprecated	__attribute__ ((deprecated))
+/* Don't watn if static function never called, still compile */
+# define __used		__attribute__ ((used))
+/* Don't warn if specified function parameter is never used */
+# define __unused	__attribute__ ((unused))
+/* Ignore alignment of struct */
+# define __packed	__attribute__ ((packed))
+#else
+# define inline		/* no inline */
+# define __pure		/* no pure */
+# define __const	/* no const */
+# define __noreturn	/* no noreturn */
+# define __malloc	/* no malloc */
+# define __must_check	/* no warn_unused_result */
+# define __deprecated	/* no deprecated */
+# define __used		/* no used */
+# define __unused	/* no unused */
+# define __packed	/* no packed */
+# define likely(x)	(x)
+# define unlikely(x)	(x)
+#endif
 struct anna_type;
 struct anna_object;
 struct anna_member;
