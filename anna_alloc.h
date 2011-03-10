@@ -76,4 +76,8 @@ static inline anna_stack_template_t *anna_alloc_stack_template()
 //void anna_gc_mark_object(anna_object_t *obj);
 void anna_alloc_mark_object(anna_object_t *obj);
 
+void anna_alloc_gc_block(void);
+void anna_alloc_gc_unblock(void);
+
+
 #endif

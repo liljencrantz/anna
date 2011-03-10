@@ -442,7 +442,7 @@ anna_function_t *anna_macro_create(
     argv[0] = node_wrapper_type;
     argn[0] = wcsdup(arg_name);
     result->return_type = node_wrapper_type;
-    result->flags = ANNA_FUNCTION_MACRO;
+    result->flags |= ANNA_FUNCTION_MACRO;
     result->input_count=1;
     result->input_name = argn;
     result->input_type = argv;
@@ -500,7 +500,7 @@ anna_function_t *anna_native_create(
     result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
     result->input_name = calloc(1, sizeof(wchar_t *)*argc);
 
-    result->flags=flags;
+    result->flags |= flags;
     result->native = native;
     result->name = wcsdup(name);
     result->return_type=return_type;

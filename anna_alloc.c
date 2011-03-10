@@ -13,6 +13,8 @@
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_count=0;
+int anna_alloc_gc_block_counter;
+
 
 static void anna_alloc_unmark(void *obj)
 {
@@ -364,8 +366,104 @@ static void anna_alloc_mark(void *obj)
     }
 }
 */
+
+static void anna_alloc_free(void *obj)
+{
+    switch(*((int *)obj) & ANNA_ALLOC_MASK)
+    {
+	case ANNA_OBJECT:
+	{
+	    anna_object_t *o = (anna_object_t *)obj;
+	    break;
+	}
+	case ANNA_TYPE:
+	{
+	    anna_type_t *o = (anna_type_t *)obj;
+	    free(o->member_blob);
+	    if(o->static_member_count)
+	    {
+		free(o->static_member_blob);
+		free(o->static_member);
+	    }
+	    
+	    hash_destroy(&o->name_identifier);
+	    free(o->name);
+	    free(o->mid_identifier);
+	    
+	    break;
+	}
+	case ANNA_VMSTACK:
+	{
+	    anna_vmstack_t *o = (anna_vmstack_t *)obj;
+	    break;
+	}
+	case ANNA_FUNCTION:
+	{	    
+	    anna_function_t *o = (anna_function_t *)obj;
+	    free(o->name);
+	    free(o->code);
+	    break;
+	}
+	case ANNA_NODE:
+	{
+	    anna_node_t *o = (anna_node_t *)obj;
+	    switch(o->node_type)
+	    {
+		case ANNA_NODE_IDENTIFIER:
+		{
+		    anna_node_identifier_t *n = (anna_node_identifier_t *)o;
+		    free(n->name);
+		    break;
+		}
+		case ANNA_NODE_CALL:
+		case ANNA_NODE_CONSTRUCT:
+		{
+		    anna_node_call_t *n = (anna_node_call_t *)o;
+		    free(n->child);
+		    break;
+		}
+		case ANNA_NODE_MEMBER_CALL:
+		{
+		    anna_node_member_call_t *n = (anna_node_member_call_t *)o;
+		    free(n->child);
+		    break;
+		}
+	    }
+	    break;
+	}
+	case ANNA_STACK_TEMPLATE:
+	{
+	    anna_stack_template_t *o = (anna_stack_template_t *)obj;
+	    free(o->member_type);
+	    free(o->member_declare_node);
+	    free(o->member);
+	    al_destroy(&o->import);
+	    hash_destroy(&o->member_string_identifier);
+	    break;
+	}
+	default:
+	{
+	    break;
+	}
+    }
+    free(obj);
+}
+
+void anna_alloc_gc_block()
+{
+    anna_alloc_gc_block_counter++;
+}
+
+void anna_alloc_gc_unblock()
+{
+    anna_alloc_gc_block_counter--;
+}
+
 void anna_gc()
 {
+    if(anna_alloc_gc_block_counter)
+	return;
+    
     size_t i;
     
     for(i=0; i<al_get_count(&anna_alloc); i++)
@@ -384,7 +482,7 @@ void anna_gc()
 	void *el = al_get(&anna_alloc, i);
 	if(!(*((int *)el) & ANNA_USED))
 	{	    
-	    free(el);
+	    anna_alloc_free(el);
 	    al_set(&anna_alloc, i, al_get(&anna_alloc, al_get_count(&anna_alloc)-1));
 	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
 	}
