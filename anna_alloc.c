@@ -476,6 +476,7 @@ void anna_gc()
 	anna_vmstack_t *stack = anna_vm_stack_get(i);
 	anna_alloc_mark_vmstack(stack);	
     }
+    anna_alloc_mark_stack_template(stack_global);
 
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
