@@ -22,7 +22,6 @@ static anna_object_t *anna_node_int_literal_wrapper_i_init(anna_object_t **param
 
 static void anna_node_create_int_literal_wrapper_type(anna_stack_template_t *stack)
 {
-    node_int_literal_wrapper_type = anna_type_native_create(L"IntLiteral", stack);
     anna_type_copy(node_int_literal_wrapper_type, node_wrapper_type);
 
     anna_type_t *argv[] = 

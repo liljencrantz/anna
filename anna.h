@@ -315,12 +315,6 @@ struct anna_function
      */
     struct anna_node_call *body;  
     /**
-       If this function is in fact a method belonging to a class, this
-       is a pointer to the type in question. Otherwise, it's a null
-       pointer.
-    */
-    struct anna_type *member_of;
-    /**
        The mid this method has in the type it is a member of
      */
     mid_t mid;
@@ -494,11 +488,6 @@ anna_object_t **anna_member_addr_get_mid(
 anna_object_t *anna_method_wrap(
     anna_object_t *method, 
     anna_object_t *owner);
-
-void anna_member_redeclare(
-    anna_type_t *type,
-    mid_t mid,
-    anna_type_t *member_type);
 
 void anna_member_add_node(
     struct anna_node_call *type,

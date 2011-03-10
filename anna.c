@@ -308,15 +308,6 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
 }
 
 
-void anna_member_redeclare(
-    anna_type_t *type,
-    mid_t mid,
-    anna_type_t *member_type)
-{
-    type->mid_identifier[mid]->type = member_type;
-}
-
-
 size_t anna_native_method_create(
     anna_type_t *type,
     mid_t mid,
@@ -398,7 +389,7 @@ static void anna_init()
 	&hash_function_type_func,
 	&hash_function_type_comp);
     anna_mid_init();
-        
+    
     stack_global = anna_stack_create(0);
 
 /*

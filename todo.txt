@@ -1,5 +1,6 @@
 Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
 
+Do properties get member slots assigned to them?
 Perform escape analysis on stack frames and automatically discard ones that can be safely discarded.
 Document all vm ops w.r.t. manipulating the stack, etc.
 Fix while loop so it returns the output of the last call

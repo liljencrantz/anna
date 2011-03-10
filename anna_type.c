@@ -283,6 +283,11 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
 	type->static_member_blob = realloc(
 	    type->static_member_blob, 
 	    new_sz * sizeof(int));
+	int i;
+	for(i=type->static_member_count; i < new_sz; i++)
+	{
+	    type->static_member_blob[i] = 69;
+	}
 
 	if(!type->static_member)
 	{
@@ -361,9 +366,15 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        copy->is_method = memb->is_method;
        copy->is_property = memb->is_property;
        copy->getter_offset = -1;
-       copy->setter_offset = -1;       
+       copy->setter_offset = -1;
+       if(memb->is_static)
+       {
+	   assert(res->static_member);
+	   assert(orig->static_member);       
+	   res->static_member[copy->offset] = orig->static_member[memb->offset];
+       }
     }
-
+    
     for(i=0; i<anna_mid_max_get(); i++)
     {
        anna_member_t *memb = orig->mid_identifier[i];

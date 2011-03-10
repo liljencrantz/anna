@@ -169,7 +169,7 @@ static void anna_function_setup_wrapper(
 	    &f,
 	    sizeof(anna_function_t *));
 	
-	if(f->stack_template)
+/*	if(f->stack_template)
 	{
 	    memcpy(
 		anna_member_addr_get_mid(
@@ -178,7 +178,7 @@ static void anna_function_setup_wrapper(
 		&f->stack_template->parent,
 		sizeof(anna_stack_template_t *));
 	}
-	else
+	else*/
 	{
 	    memset(
 		anna_member_addr_get_mid(

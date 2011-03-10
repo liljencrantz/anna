@@ -135,7 +135,6 @@ static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
 static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 {
 
-    node_call_wrapper_type = anna_type_native_create(L"Call", stack);
     anna_type_copy(node_call_wrapper_type, node_wrapper_type);
 
     anna_type_t *argv[] = 

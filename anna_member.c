@@ -186,6 +186,7 @@ mid_t anna_member_create(
     if(is_static) {
 	member->offset = anna_type_static_member_allocate(type);
 	type->static_member_blob[type->static_member_count-1] = (member_type == null_type);
+	type->static_member[type->static_member_count-1] = null_object;
     } else {
 	type->member_blob = realloc(
 	    type->member_blob, 
@@ -194,7 +195,6 @@ mid_t anna_member_create(
 	
 	member->offset = type->member_count++;
     }
-    
     
     type->mid_identifier[mid] = member;
     hash_put(&type->name_identifier, member->name, member);
