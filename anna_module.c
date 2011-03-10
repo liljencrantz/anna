@@ -30,6 +30,7 @@
 #include "anna_range.h"
 #include "anna_status.h"
 #include "anna_vm.h"
+#include "anna_alloc.h"
 
 static hash_table_t *anna_module_imported=0;
 //static array_list_t anna_module_unprepared = {0,0,0};
@@ -258,7 +259,7 @@ static void anna_module_compile(anna_node_t *this, void *aux)
     }
 }
 
-anna_object_t *anna_module_load(wchar_t *module_name)
+static anna_object_t *anna_module_load_i(wchar_t *module_name)
 {
 //    debug_level=0;
     static int recursion_level=0;
@@ -287,7 +288,6 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	anna_module_load_lang();
 	return anna_module_load(L"lang");	
     }
-	
     recursion_level++;
         
     string_buffer_t sb;
@@ -463,3 +463,10 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     return anna_stack_wrap(module_stack);
 }
 
+anna_object_t *anna_module_load(wchar_t *module_name)
+{
+    anna_alloc_gc_block();
+    anna_object_t *res = anna_module_load_i(module_name);
+    anna_alloc_gc_unblock();
+    return res;
+}
