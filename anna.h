@@ -75,7 +75,7 @@ typedef ssize_t mid_t;
 
 #define ANNA_TYPE 0
 #define ANNA_OBJECT 1
-#define ANNA_STACK_FRAME 2
+#define ANNA_STACK_TEMPLATE 2
 #define ANNA_NODE 3
 #define ANNA_VMSTACK 4
 #define ANNA_FUNCTION 5
@@ -146,37 +146,40 @@ struct anna_type
 {
     /**
        A bitfield containing various additional info on this type.
-     */
+    */
     int flags;
+    
+    int *member_blob;
+    int *static_member_blob;
     /**
        The number of non-static members in an object of this type.
-     */
+    */
     size_t member_count;
     /**
        The number of properties in this type.
-     */
+    */
     size_t property_count;
     /**
        The number of static member variables in an object of this
        type.
-     */
+    */
     size_t static_member_count;
     /**
        The number of static members variables that can be allocated in
        the type without reallocating the static member array first.
-     */
+    */
     size_t static_member_capacity;
     /**
        A mapping from a variable name to a anna_member struct
        containing information on a specific member.
-     */
+    */
     hash_table_t name_identifier;
     /**
        A name for this type. A type does not inherently have one
        specific name, it can be renamed and copied just like any other
        variable. This name is here in order to provide better
        introspection ability for humans.
-     */
+    */
     wchar_t *name;
     /**
        A stack template view of this type
@@ -186,12 +189,12 @@ struct anna_type
        An array containing all member structs. The offset is a mid.
     */
     struct anna_member **mid_identifier;
-
+    
     /**
        The full AST that originally defined this type, before
        templating, macro expansion, etc. This is the whole AST,
        including atributes, type name, etc.
-
+       
        Native types do not have a
        definition.
     */

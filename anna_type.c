@@ -265,7 +265,8 @@ anna_object_t *anna_type_wrap(anna_type_t *result)
 
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper)
 {
-    return *(anna_type_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD);
+    anna_type_t **tmp = (anna_type_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD);
+    return tmp?*tmp:0;
 }
 
 int anna_type_prepared(anna_type_t *t)
@@ -279,6 +280,10 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
     {
 	size_t new_sz = maxi(8, 2*type->static_member_capacity);
 	type->static_member = realloc(type->static_member, new_sz*sizeof(anna_object_t *));
+	type->static_member_blob = realloc(
+	    type->static_member_blob, 
+	    new_sz * sizeof(int));
+
 	if(!type->static_member)
 	{
 	    wprintf(L"Out of memory");

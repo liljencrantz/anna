@@ -185,7 +185,13 @@ mid_t anna_member_create(
     member->is_static = is_static;
     if(is_static) {
 	member->offset = anna_type_static_member_allocate(type);
+	type->static_member_blob[type->static_member_count-1] = (member_type == null_type);
     } else {
+	type->member_blob = realloc(
+	    type->member_blob, 
+	    sizeof(int)*(type->member_count+1));
+	type->member_blob[type->member_count] = (member_type == null_type);
+	
 	member->offset = type->member_count++;
     }
     
