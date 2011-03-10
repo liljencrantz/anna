@@ -7,14 +7,10 @@ Fix while loop so it returns the output of the last call
 Make test cases for all AST node types to make sure they all push exactly one element to the stack
 Make the fold take a parameter
 Validate that all functions end with an empty stack frame
-anna_trampoline in static invoke will insert a stack template, not a vmstack, which will crash if ever used
 Avoid creating trampolines when possible
-Implement vm handling of property setters
-Implement member setting
 Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations
-Garbage collector
 Investigate leaking non-GC:ed memory
 Invertigate if we can completely drop the stack_template struct and just use types for that purpose
 User defined properties

@@ -1,0 +1,9 @@
+def main()
+{
+    var foo = [1,2,3];
+    print(foo.count, "\n");
+    foo.count = 5;
+    print(foo.count, "\n");
+    print(foo[4],"\n",foo[5], "\n");
+
+}

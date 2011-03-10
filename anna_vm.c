@@ -474,8 +474,57 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_op_member_t *op = (anna_op_member_t *)(*stack)->code;
 		anna_object_t *obj = anna_pop(stack);
 		anna_object_t *value = anna_peek(stack, 0);
-		*anna_member_addr_get_mid(obj, op->mid) = value;
-		(*stack)->code += sizeof(*op);
+		
+		anna_member_t *m = obj->type->mid_identifier[op->mid];
+
+		#if ANNA_CHECK_VM
+		if(!m)
+		{
+		    debug(
+			D_CRITICAL,
+			L"Object of type %ls does not have a member of type %ls\n",
+			obj->type->name,
+			anna_mid_get_reverse(op->mid));    
+		    CRASH;
+		}
+		#endif 
+
+		if(m->is_property)
+		{
+		    anna_object_t *method = obj->type->static_member[m->setter_offset];
+		    anna_function_t *fun = anna_function_unwrap(method);
+		    
+		    if(fun->native.function)
+		    {
+			anna_push(stack, obj);
+			anna_push(stack, value);
+			anna_object_t *res = fun->native.function(
+			    (*stack)->top-2);
+			anna_pop(stack);
+			anna_pop(stack);			
+			(*stack)->code += sizeof(*op);		    
+		    }
+		    else
+		    {
+			anna_pop(stack);
+			anna_push(stack, method);
+			anna_push(stack, obj);
+			anna_push(stack, value);
+			(*stack)->code += sizeof(*op);
+			anna_frame_push(stack, method);
+		    }
+		}
+		else
+		{
+		    anna_object_t *res;		    
+		    if(m->is_static) {
+			obj->type->static_member[m->offset] = value;
+		    } else {
+			obj->member[m->offset] = value;
+		    }
+		    
+		    (*stack)->code += sizeof(*op);
+		}
 		break;
 	    }
 
