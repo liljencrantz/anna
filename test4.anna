@@ -8,5 +8,5 @@ def bar(Int i){
 
 def main()
 {
-    bar(1);
+    print(", ".join(["a","b","c"]));
 }

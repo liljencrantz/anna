@@ -28,7 +28,6 @@ Tests for nested macro members
 Tests for integer math
 Tests for floating point math
 HTML documentation extractor
-Built in Complex type
 Hash functions
 Hashtable implementation
 String format function

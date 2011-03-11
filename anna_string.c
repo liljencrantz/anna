@@ -17,6 +17,7 @@
 #include "anna_function_type.h"
 #include "anna_range.h"
 #include "anna_vm.h"
+#include "anna_list.h"
 
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
@@ -214,6 +215,32 @@ static anna_object_t *anna_string_i_join(anna_object_t **param)
     return obj;
 }
 
+static anna_object_t *anna_string_i_ljoin(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    size_t i;
+    
+    anna_string_t *glue = as_unwrap(param[0]);
+    anna_object_t *obj= anna_object_create(string_type);
+    anna_string_t *res= as_unwrap(obj);
+
+    asi_init(res);
+    size_t count = anna_list_get_size(param[1]);
+    anna_object_t **arr = anna_list_get_payload(param[1]);
+    if(count > 0)
+    {
+	asi_append(res, as_unwrap(arr[0]), 0, asi_get_length(as_unwrap(arr[0])));
+	for(i=1; i<count; i++)
+	{
+	    asi_append(res, glue, 0, asi_get_length(glue));
+	    asi_append(res, as_unwrap(arr[i]), 0, asi_get_length(as_unwrap(arr[i])));
+	}
+    }
+    
+    return obj;
+}
+
 static anna_object_t *anna_string_i_append(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -369,6 +396,30 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	2,
 	join_argv, 
 	join_argn);
+    
+    wchar_t *ljoin_argn[] =
+	{
+	    L"this", L"list"
+	}
+    ;
+    
+    anna_type_t *ljoin_argv[] = 
+	{
+	    string_type,
+	    anna_list_type_get(string_type)
+	}
+    ;
+
+    anna_native_method_create(
+	string_type, 
+	-1,
+	L"join", 
+	0, 
+	&anna_string_i_ljoin, 
+	string_type,
+	2,
+	ljoin_argv, 
+	ljoin_argn);
     
     anna_native_method_create(
 	string_type, 

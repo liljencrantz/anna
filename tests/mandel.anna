@@ -20,7 +20,7 @@ def main()
 	{
 	    print(" .::!!!ooooOOOOO################ "[mandelbrot(Complex(x,y),32)]);
 	    x += 0.05;
-	}
+	};
 	y += 0.1;
 	print("\n");
     }
