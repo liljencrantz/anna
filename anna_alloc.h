@@ -9,6 +9,8 @@ extern array_list_t anna_alloc;
 extern int anna_alloc_count;
 
 void anna_gc(void);
+void anna_gc_destroy(void);
+
 
 #define GC_FREQ 8192
 

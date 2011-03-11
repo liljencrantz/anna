@@ -21,6 +21,7 @@
 #include "anna_member.h"
 #include "anna_function_type.h"
 #include "anna_list.h"
+#include "anna_alloc.h"
 
 #include "anna_node_prepare.c"
 
@@ -326,7 +327,9 @@ static size_t anna_node_size(anna_node_t *n)
 anna_node_t *anna_node_clone_shallow(anna_node_t *n)
 {
     size_t sz = anna_node_size(n);
-    anna_node_t *r = malloc(sz);
+    anna_alloc_gc_block();
+    anna_node_t *r = anna_alloc_node(sz);
+    anna_alloc_gc_unblock();
     memcpy(r,n,sz);
     r->wrapper=0;
     ANNA_UNPREPARED(r);
@@ -335,6 +338,7 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
 
 anna_node_t *anna_node_clone_deep(anna_node_t *n)
 {
+    
     switch(n->node_type)
     {
 	/*
@@ -360,6 +364,12 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	    return r;
 	}
 	
+	case ANNA_NODE_IDENTIFIER:
+	{
+	    anna_node_identifier_t *id = (anna_node_identifier_t *)anna_node_clone_shallow(n);
+	    id->name = wcsdup(id->name);
+	    return id;
+	}
 	/*
 	  These nodes are not mutable and they have no child nodes, so
 	  we can return them as is.
@@ -372,7 +382,6 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_BLOB:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
-	case ANNA_NODE_IDENTIFIER:
 	    return anna_node_clone_shallow(n);
 	    
 	    /*

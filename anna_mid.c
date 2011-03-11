@@ -16,6 +16,22 @@ static array_list_t anna_mid_identifier_reverse;
 static mid_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 static size_t anna_type_mid_max = 256;
 
+void anna_mid_free(void *key, void *val)
+{
+    free(key);
+    free(val);
+}
+
+
+void anna_mid_destroy(void)
+{
+    al_destroy(&anna_mid_identifier_reverse);
+
+    hash_foreach(&anna_mid_identifier, anna_mid_free);
+    hash_destroy(&anna_mid_identifier);
+}
+
+
 size_t anna_mid_max_get()
 {
     return anna_type_mid_max;
@@ -63,6 +79,7 @@ void anna_mid_init()
     anna_mid_put(L"!rangeTo", ANNA_MID_RANGE_TO);
     anna_mid_put(L"!rangeStep", ANNA_MID_RANGE_STEP);
     anna_mid_put(L"!rangeOpen", ANNA_MID_RANGE_OPEN);
+    anna_mid_put(L"__del__", ANNA_MID_DEL);
 }
 
 
@@ -75,10 +92,10 @@ void anna_mid_put(wchar_t *name, mid_t mid)
 	wprintf(L"Tried to reassign mid!\n");
 	exit(1);
     }
-   
+    
     offset_ptr = malloc(sizeof(size_t));
     *offset_ptr = mid;
-    hash_put(&anna_mid_identifier, name, offset_ptr);   
+    hash_put(&anna_mid_identifier, wcsdup(name), offset_ptr);   
     al_set(&anna_mid_identifier_reverse, mid, name);
 }
 
@@ -94,7 +111,7 @@ size_t anna_mid_get(wchar_t *name)
 	    anna_type_mid_max += 128;
 	    anna_type_reallocade_mid_lookup(anna_type_mid_max-128,anna_type_mid_max);
 	}
-	anna_mid_put(wcsdup(name), gg);
+	anna_mid_put(name, gg);
 	return gg;
     }
     return *offset_ptr;

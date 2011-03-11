@@ -10,11 +10,12 @@
 #include "anna_alloc.h"
 #include "anna_vm.h"
 #include "anna_function.h"
+#include "anna_member.h"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_count=0;
 int anna_alloc_gc_block_counter;
-
+int anna_alloc_run_finalizers=1;
 
 static void anna_alloc_unmark(void *obj)
 {
@@ -286,11 +287,11 @@ void anna_alloc_mark_object(anna_object_t *obj)
     if( obj->flags & ANNA_USED)
 	return;
     obj->flags |= ANNA_USED;
-
+    
     if(obj == null_object)
 	return;
     
-
+    
     size_t i;
     anna_type_t *t = obj->type;
     for(i=0; i<t->member_count; i++)
@@ -367,18 +368,49 @@ static void anna_alloc_mark(void *obj)
 }
 */
 
+static void free_key(void *key, void *value)
+{
+    free(key);
+    free(value);
+}
+
 static void anna_alloc_free(void *obj)
 {
+    
     switch(*((int *)obj) & ANNA_ALLOC_MASK)
     {
 	case ANNA_OBJECT:
 	{
-	    anna_object_t *o = (anna_object_t *)obj;
+	    if(obj == null_object)
+		break;
+	    if(anna_alloc_run_finalizers)
+	    {
+		anna_object_t *o = (anna_object_t *)obj;
+		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
+		if(del_mem && del_mem->is_method)
+		{
+		    anna_vm_run(o->type->static_member[del_mem->offset], 1, &o);
+		}
+	    }
+	    
 	    break;
 	}
 	case ANNA_TYPE:
 	{
+	    int i;
 	    anna_type_t *o = (anna_type_t *)obj;
+	    if(obj != null_type)
+	    {
+		for(i=0; i<anna_mid_max_get(); i++)
+		{
+		    anna_member_t *memb = o->mid_identifier[i];
+		    if(!memb)
+			continue;
+		    free(memb);
+		}
+	    }
+	    
+
 	    free(o->member_blob);
 	    if(o->static_member_count)
 	    {
@@ -398,10 +430,19 @@ static void anna_alloc_free(void *obj)
 	    break;
 	}
 	case ANNA_FUNCTION:
-	{	    
+	{
+	    int i;
 	    anna_function_t *o = (anna_function_t *)obj;
 	    free(o->name);
 	    free(o->code);
+	    free(o->input_type);
+	    for(i=0; i<o->input_count; i++)
+	    {
+		free(o->input_name[i]);
+	    }
+	    
+	    free(o->input_name);
+	    
 	    break;
 	}
 	case ANNA_NODE:
@@ -415,6 +456,26 @@ static void anna_alloc_free(void *obj)
 		    free(n->name);
 		    break;
 		}
+		case ANNA_NODE_ASSIGN:
+		{
+		    anna_node_assign_t *n = (anna_node_assign_t *)o;
+		    free(n->name);
+		    break;
+		}
+		case ANNA_NODE_STRING_LITERAL:
+		{
+		    anna_node_string_literal_t *n = (anna_node_string_literal_t *)o;
+		    free(n->payload);
+		    break;
+		}
+		case ANNA_NODE_CONST:
+		case ANNA_NODE_DECLARE:
+		{
+		    anna_node_declare_t *n = (anna_node_declare_t *)o;
+		    free(n->name);
+		    break;
+		}
+
 		case ANNA_NODE_CALL:
 		case ANNA_NODE_CONSTRUCT:
 		{
@@ -429,6 +490,7 @@ static void anna_alloc_free(void *obj)
 		    break;
 		}
 	    }
+    
 	    break;
 	}
 	case ANNA_STACK_TEMPLATE:
@@ -437,7 +499,9 @@ static void anna_alloc_free(void *obj)
 	    free(o->member_type);
 	    free(o->member_declare_node);
 	    free(o->member);
+	    free(o->member_flags);
 	    al_destroy(&o->import);
+	    hash_foreach(&o->member_string_identifier, free_key);
 	    hash_destroy(&o->member_string_identifier);
 	    break;
 	}
@@ -464,6 +528,7 @@ void anna_gc()
     if(anna_alloc_gc_block_counter)
 	return;
     
+    anna_alloc_gc_block();
     size_t i;
     
     for(i=0; i<al_get_count(&anna_alloc); i++)
@@ -476,18 +541,39 @@ void anna_gc()
 	anna_vmstack_t *stack = anna_vm_stack_get(i);
 	anna_alloc_mark_vmstack(stack);	
     }
-    anna_alloc_mark_stack_template(stack_global);
-
+//    anna_alloc_mark_stack_template(stack_global);
+    
+    for(i=0; i<al_get_count(&anna_alloc); i++)
+    {
+	void *el = al_get(&anna_alloc, i);
+	int flags = *((int *)el);
+	if(!(flags & ANNA_USED) && ((flags & ANNA_ALLOC_MASK) == ANNA_OBJECT))
+	{
+	    anna_alloc_free(el);
+	    al_set(&anna_alloc, i, al_get(&anna_alloc, al_get_count(&anna_alloc)-1));
+	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
+	    i--;
+	}
+    }
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
 	void *el = al_get(&anna_alloc, i);
 	if(!(*((int *)el) & ANNA_USED))
-	{	    
+	{
 	    anna_alloc_free(el);
 	    al_set(&anna_alloc, i, al_get(&anna_alloc, al_get_count(&anna_alloc)-1));
 	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
+	    i--;
 	}
-    }        
+    }
+    anna_alloc_gc_unblock();
 }
 
-
+#ifdef ANNA_FULL_GC_ON_SHUTDOWN
+void anna_gc_destroy(void)
+{
+    anna_alloc_run_finalizers=0;
+    anna_gc();
+    al_destroy(&anna_alloc);
+}
+#endif

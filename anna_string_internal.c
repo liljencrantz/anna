@@ -680,6 +680,18 @@ void asi_truncate(anna_string_t *dest, size_t length)
     int i;
     size_t first_in_element=0;
     asi_cache_clear(dest);
+
+    if(length == 0)
+    {
+	for(i=0;i<dest->element_count; i++) {
+	    anna_element_disown(dest->element[i]);
+	}
+	free(dest->element);
+	dest->element_capacity=0;
+	dest->element_count=0;
+	dest->length = length;
+    }
+
     
     for(i=0;i<dest->element_count; i++) {
 	size_t last_in_element = first_in_element + dest->element_length[i];

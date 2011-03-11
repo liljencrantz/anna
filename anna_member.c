@@ -289,6 +289,7 @@ anna_member_t *anna_member_method_search(
     {
 	debug(D_SPAM, L"Match: %ls\n", match);
     }
+    free(members);
     
     return match ? anna_member_get(type, anna_mid_get(match)):0;
     

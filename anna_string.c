@@ -264,6 +264,12 @@ static anna_object_t *anna_string_i_each(anna_object_t **param)
     return param[0];
 }
 
+static anna_object_t *anna_string_del(anna_object_t **param)
+{
+    asi_truncate(as_unwrap(param[0]), 0);
+    return null_object;
+}
+
 void anna_string_type_create(anna_stack_template_t *stack)
 {
     anna_member_create(
@@ -316,6 +322,15 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	L"__init__",
 	0,//	ANNA_FUNCTION_VARIADIC, 
 	&anna_string_i_init, 
+	string_type,
+	1, o_argv, o_argn);    
+    
+    anna_native_method_create(
+	string_type,
+	ANNA_MID_DEL,
+	L"__del__",
+	0,
+	&anna_string_del, 
 	object_type,
 	1, o_argv, o_argn);    
     

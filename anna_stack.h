@@ -20,9 +20,9 @@ typedef struct anna_sid anna_sid_t;
 #define ANNA_STACK_PRIVATE 512
 
 #define ANNA_STACK_READONLY 512
+#define ANNA_STACK_CLONE 1024
 
 #define anna_stack_get_ro(stack, name) !!(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
-
 
 /**
    A stack frame template. Used during compilation to represent the

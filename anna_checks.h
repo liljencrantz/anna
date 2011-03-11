@@ -13,6 +13,13 @@
 //#define ANNA_CHECK_VM
 
 /**
+   If enabled, try to free all unused memory on shutdown. This will
+   slow down shutdown and is only useful when debugging memory leaks
+   in the interpreter and should otherwise be disabled.
+ */
+//#define ANNA_FULL_GC_ON_SHUTDOWN
+
+/**
    If enabled, save additional stack trace information. Not very
    expensive.
 */

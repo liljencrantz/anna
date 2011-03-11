@@ -16,6 +16,7 @@
 #include "anna_member.h"
 #include "anna_status.h"
 #include "anna_vm.h"
+#include "anna_alloc.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -405,6 +406,22 @@ static void anna_init()
     
 }
 
+void fun_key_free(void *keyp, void *val)
+{
+    anna_function_type_key_t *key = (anna_function_type_key_t *)keyp;
+    int i;
+    for(i=0; i<key->argc; i++)
+    {
+	free(key->argn[i]);
+    }
+    
+    free(key->argn);
+    free(key);
+    
+    
+}
+
+
 int main(int argc, char **argv)
 {
     if(argc != 2)
@@ -442,7 +459,14 @@ int main(int argc, char **argv)
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
 
     anna_vm_run(*main_wrapper_ptr, 0, 0);
-      
+#ifdef ANNA_FULL_GC_ON_SHUTDOWN
+    anna_gc_destroy();
+    anna_vm_destroy();
+    anna_mid_destroy();
+    hash_foreach(&anna_type_for_function_identifier, fun_key_free);
+    hash_destroy(&anna_type_for_function_identifier);
+#endif
+    
 //    anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     
 /*    
@@ -457,5 +481,6 @@ int main(int argc, char **argv)
     anna_function_invoke(main_func, 0, 0, module);
     debug(D_SPAM,L"\n");
 */
+
     return 0;
 }

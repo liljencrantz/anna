@@ -10,8 +10,7 @@ Validate that all functions end with an empty stack frame
 Avoid creating trampolines when possible
 Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
-Implement node type: Type specializations
-Investigate leaking non-GC:ed memory
+Implement node type: Type specializations (Is this needed?)
 Invertigate if we can completely drop the stack_template struct and just use types for that purpose
 User defined properties
 User defined variadic functions

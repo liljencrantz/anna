@@ -15,6 +15,7 @@
 #include "anna_node_check.h"
 #include "anna_util.h"
 #include "anna_alloc.h"
+#include "anna_vm.h"
 
 void anna_function_argument_hint(
     anna_function_t *f,
@@ -67,7 +68,7 @@ static anna_node_t *anna_function_setup_arguments(
 		node_cast_identifier(
 		    decl->child[0]);
 
-	    argn[i] = name->name;		
+	    argn[i] = wcsdup(name->name);		
 
 	    anna_node_t *type_node = anna_node_macro_expand(decl->child[1], parent_stack);
 	    anna_node_t *val_node = anna_node_macro_expand(decl->child[2], parent_stack);
@@ -511,12 +512,12 @@ anna_function_t *anna_native_create(
 	sizeof(anna_type_t *)*argc);
     for(i=0;i<argc; i++)
     {
-	result->input_name[i] = wcsdup(argn[i]);
-	
+	result->input_name[i] = wcsdup(argn[i]);	
     }
     
     anna_function_setup_interface(result, location);        
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
+    anna_vm_compile(result);
     
     return result;
 }

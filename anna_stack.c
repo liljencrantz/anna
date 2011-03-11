@@ -37,6 +37,7 @@ void anna_stack_ensure_capacity(anna_stack_template_t *stack, size_t new_sz)
 	stack->member_type = realloc(stack->member_type, sizeof(anna_type_t *)*sz);
 	stack->member_declare_node = realloc(stack->member_declare_node, sizeof(anna_node_t *)*sz);
 	stack->member_flags = realloc(stack->member_flags, sizeof(int)*sz);
+	stack->capacity = sz;
     }
 }
 
@@ -310,13 +311,30 @@ void anna_stack_set_sid(anna_stack_template_t *stack, anna_sid_t sid, anna_objec
 anna_stack_template_t *anna_stack_clone(anna_stack_template_t *template)
 {
     assert(template);
-    size_t sz = sizeof(anna_stack_template_t);
+    
     //wprintf(L"Cloning stack with %d items (sz %d)\n", template->count, sz);
-    anna_stack_template_t *stack = malloc(sz);
-    memcpy(stack, template, sz);
-    stack->stop=0;
-
-    return stack;  
+    anna_stack_template_t *stack = anna_alloc_stack_template(sizeof(anna_stack_template_t));
+    memcpy(stack, template, sizeof(anna_stack_template_t));
+    size_t sz = template->capacity;
+    
+    stack->member = malloc(sizeof(anna_object_t *)*sz);
+    stack->member_type = malloc(sizeof(anna_type_t *)*sz);
+    stack->member_declare_node = malloc(sizeof(anna_node_t *)*sz);
+    stack->member_flags = malloc(sizeof(int)*sz);
+    
+    memcpy(stack->member, template->member, sizeof(anna_object_t *)*sz);
+    memcpy(stack->member_type, template->member_type, sizeof(anna_type_t *)*sz);
+    memcpy(stack->member_declare_node, template->member_declare_node, sizeof(anna_node_t *)*sz);
+    memcpy(stack->member_flags, template->member_flags, sizeof(int)*sz);
+    
+    al_init(&stack->import);
+    int i;
+    for(i=0;i<al_get_count(&template->import);i++)
+    {
+	al_push(&stack->import, al_get(&template->import, i));
+    }
+        
+    return stack; 
 }
 
 static void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)

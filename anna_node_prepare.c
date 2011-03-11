@@ -304,7 +304,8 @@ anna_node_register_declarations(
 	anna_sid_t sid = anna_stack_sid_create(stack, decl->name);
 	decl->sid = sid;
     }
-
+    al_destroy(&decls);
+    
     //stack_freeze(stack);
     return stack;
 }
@@ -523,6 +524,7 @@ static void anna_node_calculate_type_internal(
 			n->mid = anna_mid_get(member->name);
 		    }
 		}
+		free(types);
 		
 	    }
 	    

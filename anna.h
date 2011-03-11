@@ -131,7 +131,8 @@ typedef ssize_t mid_t;
 #define ANNA_MID_RANGE_TO 27
 #define ANNA_MID_RANGE_STEP 28
 #define ANNA_MID_RANGE_OPEN 29
-#define ANNA_MID_FIRST_UNRESERVED 30
+#define ANNA_MID_DEL 30
+#define ANNA_MID_FIRST_UNRESERVED 31
 
 union anna_native
 {
@@ -555,6 +556,8 @@ void anna_object_print(
     anna_object_t *obj);
 
 void anna_mid_init(void);
+void anna_mid_destroy(void);
+
 /**
    Returns the mid (i.e. the offset in the type vtable) of the
    specified name. If there is no mid yet, create one.

@@ -32,6 +32,9 @@ int anna_yacc_error_count=0;
 
 int anna_yacc_do_init = 0;
 
+static string_buffer_t anna_yacc_str_buff;
+
+
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
     do                                                                  \
     {									\
@@ -65,10 +68,9 @@ static wchar_t *enclose(wchar_t *in)
 
 static wchar_t *anna_yacc_string(char *in)
 {
-    /*
-      FIXME: Add resource tracking and cleanup
-     */   
-    return str2wcs(in);
+    sb_clear(&anna_yacc_str_buff);
+    sb_printf(&anna_yacc_str_buff, L"%s", in);
+    return sb_content(&anna_yacc_str_buff);
     
 }
 
@@ -998,7 +1000,6 @@ identifier:
 	}
 ;
 
-
 type_identifier :
 	TYPE_IDENTIFIER
 	{
@@ -1373,6 +1374,7 @@ simple_expression '(' argument_list ')'
 void anna_yacc_init()
 {
     anna_yacc_do_init = 1;    
+    sb_init(&anna_yacc_str_buff);
 }
 
 /**

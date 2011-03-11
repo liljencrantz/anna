@@ -142,7 +142,7 @@ static void anna_null_type_create()
     null_function = null_type->static_member[0];
     hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
     hash_put(&null_type->name_identifier, L"!null_member", null_member);
-  
+    
     for(i=0; i<64;i++) {
 	null_type->mid_identifier[i] = null_member;
     }
@@ -298,6 +298,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     
     debug(D_SPAM,L"Parsing file %ls...\n", filename);    
     anna_node_t *program = anna_parse(filename);
+    sb_destroy(&sb);
     
     if(!program || anna_error_count) 
     {
@@ -328,16 +329,19 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	al_set(&mimport, i, anna_stack_unwrap(mod));
     }
 
-    anna_stack_template_t *stack_macro = anna_stack_clone(stack_global);
-    memcpy(&stack_macro->import, &mimport, sizeof(array_list_t));
-
+    anna_stack_template_t tmp;
+    
+    memcpy(&tmp, &stack_global->import, sizeof(array_list_t));
+    memcpy(&stack_global->import, &mimport, sizeof(array_list_t));
     /*
       Prepare the module. 
     */
     anna_node_t *node = (anna_node_t *)
 	anna_node_macro_expand(
 	    program,
-	    stack_macro);
+	    stack_global);
+    memcpy(&stack_global->import, &tmp, sizeof(array_list_t));
+
     if(anna_error_count)
     {
 	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);

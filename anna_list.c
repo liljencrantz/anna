@@ -325,6 +325,14 @@ static anna_object_t *anna_list_init(anna_object_t **param)
     return param[0];
 }
 
+static anna_object_t *anna_list_del(anna_object_t **param)
+{
+    free((*anna_member_addr_get_mid(param[0],ANNA_MID_LIST_PAYLOAD)));
+    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE)) = 0;
+    return param[0];
+}
+
 static anna_object_t *anna_list_in(anna_object_t **param)
 {
     size_t sz = anna_list_get_size(param[0]);
@@ -514,7 +522,6 @@ static void anna_list_type_create_internal(
 	}
     ;
 
-
     anna_native_method_create(
 	type,
 	-1,
@@ -524,6 +531,15 @@ static void anna_list_type_create_internal(
 	type,
 	2, a_argv, a_argn);
     
+    anna_native_method_create(
+	type,
+	ANNA_MID_DEL,
+	L"__del__",
+	0,
+	&anna_list_del, 
+	object_type,
+	1, a_argv, a_argn);    
+
     anna_type_t *i_argv[] = 
 	{
 	    type,

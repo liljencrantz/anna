@@ -224,9 +224,21 @@ void anna_vm_init()
     stack = stack_mem-1;
 }
 
+#ifdef ANNA_FULL_GC_ON_SHUTDOWN
+void anna_vm_destroy(void)
+{
+    free(stack_mem);
+}
+#endif
 
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
+    anna_function_t *fun = anna_function_unwrap(entry);
+    if(fun->native.function)
+    {
+	return fun->native.function(argv);
+    }    
+    
     stack++;
     
     *stack = anna_alloc_vmstack((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
@@ -332,6 +344,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    {
 //		wprintf(L"Pop last frame\n");
 		anna_object_t *val = anna_peek(stack, 0);
+		free((*stack)->code);
 		--stack;
 		return val;
 	    }
@@ -550,7 +563,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		(*stack)->code += sizeof(anna_op_null_t);
 		break;
 	    }
-
+	    
 	    case ANNA_OP_NOT:
 	    {
 		*((*stack)->top-1) = (*((*stack)->top-1)==null_object)?anna_int_one:null_object;
@@ -1602,8 +1615,13 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 void anna_vm_compile(
     anna_function_t *fun)
 {
-    if(fun->code)
+    if(!fun->body)
+    {
+	fun->variable_count = fun->input_count;
+	fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count);
 	return;
+    }
+    
 //    wprintf(L"Compile really awesome function named %ls\n", fun->name);
     
     int i;
