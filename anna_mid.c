@@ -80,6 +80,7 @@ void anna_mid_init()
     anna_mid_put(L"!rangeStep", ANNA_MID_RANGE_STEP);
     anna_mid_put(L"!rangeOpen", ANNA_MID_RANGE_OPEN);
     anna_mid_put(L"__del__", ANNA_MID_DEL);
+    anna_mid_put(L"!complexPayload", ANNA_MID_COMPLEX_PAYLOAD);
 }
 
 

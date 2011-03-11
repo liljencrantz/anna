@@ -1,12 +1,13 @@
 Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
 
-Do properties get member slots assigned to them?
+Do properties get member slots assigned to them? Yes. Fix plz.
 Perform escape analysis on stack frames and automatically discard ones that can be safely discarded.
 Document all vm ops w.r.t. manipulating the stack, etc.
 Fix while loop so it returns the output of the last call
 Make test cases for all AST node types to make sure they all push exactly one element to the stack
-Make the fold take a parameter
+Make a verion of the fold op that takes a parameter
 Validate that all functions end with an empty stack frame
+Implement tail recursion
 Avoid creating trampolines when possible
 Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
@@ -32,9 +33,9 @@ Hash functions
 Hashtable implementation
 String format function
 Cast operator
-Escaping and error detection in char literals
 Inlining of if/while bodies into main method
-
+File type
+Make all types inherit from Object
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

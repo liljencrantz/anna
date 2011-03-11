@@ -43,7 +43,6 @@ static anna_object_t *anna_int_i_$name(anna_object_t **param)
         return null_object;
     int v1 = anna_int_get(param[0]);
     int v2 = anna_int_get(param[1]);
-//    wprintf(L\"Compare if %d $op %d.\n\", v1, v2);
     return v1 $op v2?param[0]:null_object;
 }
 "

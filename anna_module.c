@@ -18,6 +18,7 @@
 
 #include "anna_int.h"
 #include "anna_float.h"
+#include "anna_complex.h"
 #include "anna_string.h"
 #include "anna_char.h"
 #include "anna_list.h"
@@ -183,6 +184,7 @@ static void anna_module_load_lang()
 	    stack_lang);
     
     float_type = anna_type_native_create(L"Float", stack_lang);
+    complex_type = anna_type_native_create(L"Complex", stack_lang);
     char_type = anna_type_native_create(L"Char", stack_lang);
     member_type = 
 	anna_type_native_create(
@@ -206,6 +208,7 @@ static void anna_module_load_lang()
     anna_char_type_create(stack_lang);
     anna_float_type_create(stack_lang);
     anna_range_type_create(stack_lang);
+    anna_complex_type_create(stack_lang);
 
     anna_stack_declare(stack_lang, L"Type", type_type, anna_type_wrap(type_type), 0); 
     anna_stack_declare(stack_lang, L"Int", type_type, anna_type_wrap(int_type), 0);     
@@ -215,6 +218,7 @@ static void anna_module_load_lang()
     anna_stack_declare(stack_lang, L"List", type_type, anna_type_wrap(list_type), 0); 
     anna_stack_declare(stack_lang, L"String", type_type, anna_type_wrap(string_type), 0); 
     anna_stack_declare(stack_lang, L"Float", type_type, anna_type_wrap(float_type), 0); 
+    anna_stack_declare(stack_lang, L"Complex", type_type, anna_type_wrap(complex_type), 0); 
     anna_stack_declare(stack_lang, L"Char", type_type, anna_type_wrap(char_type), 0);
     anna_stack_declare(stack_lang, L"Range", type_type, anna_type_wrap(range_type), 0);
 

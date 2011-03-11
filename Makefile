@@ -14,7 +14,7 @@ anna_string_naive.o anna_node_wrapper.o anna_type_type.o		\
 anna_function.o anna_node_check.o anna_prepare.o anna_member.o		\
 anna_function_type.o anna_util.o anna_module.o anna_node_create.o	\
 anna_object.o anna_invoke.o anna_error.o anna_mid.o anna_range.o	\
-anna_vm.o anna_alloc.o
+anna_vm.o anna_alloc.o anna_complex.o
 
 ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
 anna_string_internal_test.o util.o common.o anna_string_naive.o
@@ -62,6 +62,9 @@ anna_char_i.c: make_anna_char_i.sh
 
 anna_string_i.c: make_anna_string_i.sh
 	./make_anna_string_i.sh >anna_string_i.c
+
+anna_complex_i.c: make_anna_complex_i.sh
+	./make_anna_complex_i.sh >anna_complex_i.c
 
 anna_yacc.c anna_yacc.h: anna_yacc.y
 	bison -d anna_yacc.y -o anna_yacc.c -v -p anna_yacc_

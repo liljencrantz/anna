@@ -18,10 +18,6 @@
 #include "anna_member.h"
 #include "anna_alloc.h"
 
-#ifndef offsetof
-#define offsetof(T,F) ((unsigned int)((char *)&((T *)0L)->F - (char *)0L))
-#endif
-
 typedef struct
 {
     anna_stack_template_t *stack;
@@ -290,53 +286,6 @@ anna_sid_t anna_stack_sid_create(anna_stack_template_t *stack, wchar_t *name)
     */
 }
 
-anna_object_t *anna_stack_get_sid(anna_stack_template_t *stack, anna_sid_t sid)
-{
-  int i;
-  for(i=0; i<sid.frame; i++) {
-    stack=stack->parent;
-  }
-  return stack->member[sid.offset];
-}
-
-void anna_stack_set_sid(anna_stack_template_t *stack, anna_sid_t sid, anna_object_t *value)
-{
-  int i;
-  for(i=0; i<sid.frame; i++) {
-    stack=stack->parent;
-  }
-  stack->member[sid.offset] = value;
-}
-
-anna_stack_template_t *anna_stack_clone(anna_stack_template_t *template)
-{
-    assert(template);
-    
-    //wprintf(L"Cloning stack with %d items (sz %d)\n", template->count, sz);
-    anna_stack_template_t *stack = anna_alloc_stack_template(sizeof(anna_stack_template_t));
-    memcpy(stack, template, sizeof(anna_stack_template_t));
-    size_t sz = template->capacity;
-    
-    stack->member = malloc(sizeof(anna_object_t *)*sz);
-    stack->member_type = malloc(sizeof(anna_type_t *)*sz);
-    stack->member_declare_node = malloc(sizeof(anna_node_t *)*sz);
-    stack->member_flags = malloc(sizeof(int)*sz);
-    
-    memcpy(stack->member, template->member, sizeof(anna_object_t *)*sz);
-    memcpy(stack->member_type, template->member_type, sizeof(anna_type_t *)*sz);
-    memcpy(stack->member_declare_node, template->member_declare_node, sizeof(anna_node_t *)*sz);
-    memcpy(stack->member_flags, template->member_flags, sizeof(int)*sz);
-    
-    al_init(&stack->import);
-    int i;
-    for(i=0;i<al_get_count(&template->import);i++)
-    {
-	al_push(&stack->import, al_get(&template->import, i));
-    }
-        
-    return stack; 
-}
-
 static void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {
     wchar_t *name = (wchar_t *)key_ptr;
@@ -463,8 +412,7 @@ stack->flags |= ANNA_STACK_FROZEN;
 #endif
 */
 	anna_type_t *t = anna_stack_type_create(stack);
-	stack->wrapper = anna_object_create_raw(1);
-	stack->wrapper->type=t;
+	stack->wrapper = anna_object_create(t);
 	stack->wrapper->member[0] = (anna_object_t *)stack;
     }
     return stack->wrapper;

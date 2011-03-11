@@ -27,7 +27,8 @@ anna_type_t *type_type=0,
     *list_type=0,
     *float_type=0,
     *member_type=0,
-    *range_type=0;
+    *range_type=0,
+    *complex_type=0;
 
 anna_object_t *null_object=0;
 
@@ -466,6 +467,7 @@ int main(int argc, char **argv)
     hash_foreach(&anna_type_for_function_identifier, fun_key_free);
     hash_destroy(&anna_type_for_function_identifier);
 #endif
+//    wprintf(L"Done. Allocated %d objects\n", anna_alloc_count);
     
 //    anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     

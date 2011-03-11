@@ -7,7 +7,7 @@
 
 extern array_list_t anna_alloc;
 extern int anna_alloc_count;
-
+extern int anna_alloc_obj_count;
 void anna_gc(void);
 void anna_gc_destroy(void);
 
@@ -16,6 +16,7 @@ void anna_gc_destroy(void);
 
 static inline anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 {
+    anna_alloc_count++;
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
     anna_vmstack_t *res = malloc(sz);

@@ -86,18 +86,12 @@ anna_object_t *anna_stack_template_get_str(anna_stack_template_t *stack, wchar_t
 
 anna_object_t *anna_stack_get_const(anna_stack_template_t *stack, wchar_t *name);
 
-anna_object_t *anna_stack_get_sid(anna_stack_template_t *stack, anna_sid_t sid);
-
-void anna_stack_set_sid(anna_stack_template_t *stack, anna_sid_t sid, anna_object_t *value);
-
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name);
 void anna_stack_set_type(anna_stack_template_t *stack, wchar_t *name, anna_type_t *type);
 struct anna_node_declare *anna_stack_get_declaration(
     anna_stack_template_t *stack, wchar_t *name);
 
 anna_sid_t anna_stack_sid_create(anna_stack_template_t *stack, wchar_t *name);
-
-anna_stack_template_t *anna_stack_clone(anna_stack_template_t *template);
 
 void anna_stack_print(anna_stack_template_t *stack);
 
