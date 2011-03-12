@@ -139,7 +139,7 @@ mid_t anna_member_create(
     anna_type_t *type,
     mid_t mid,
     wchar_t *name,
-    int is_static,
+    int storage,
     anna_type_t *member_type)
 {
     if(!member_type)
@@ -182,18 +182,25 @@ mid_t anna_member_create(
     }
     
     member->type = member_type;
-    member->is_static = is_static;
-    if(is_static) {
-	member->offset = anna_type_static_member_allocate(type);
-	type->static_member_blob[type->static_member_count-1] = (member_type == null_type);
-	type->static_member[type->static_member_count-1] = null_object;
-    } else {
-	type->member_blob = realloc(
-	    type->member_blob, 
-	    sizeof(int)*(type->member_count+1));
-	type->member_blob[type->member_count] = (member_type == null_type);
-	
-	member->offset = type->member_count++;
+    member->is_static = !!(storage & ANNA_MEMBER_STATIC);
+    if(storage & ANNA_MEMBER_VIRTUAL)
+    {
+	member->offset = -1;
+    }
+    else
+    {
+	if(storage & ANNA_MEMBER_STATIC) {
+	    member->offset = anna_type_static_member_allocate(type);
+	    type->static_member_blob[type->static_member_count-1] = (member_type == null_type);
+	    type->static_member[type->static_member_count-1] = null_object;
+	} else {
+	    type->member_blob = realloc(
+		type->member_blob, 
+		sizeof(int)*(type->member_count+1));
+	    type->member_blob[type->member_count] = (member_type == null_type);
+	    
+	    member->offset = type->member_count++;
+	}
     }
     
     type->mid_identifier[mid] = member;
@@ -365,7 +372,7 @@ size_t anna_native_property_create(
 	type,
 	mid,
 	name,
-	1,
+	ANNA_MEMBER_VIRTUAL,
 	property_type);
     anna_member_t *memb = anna_member_get(type, mid);
     

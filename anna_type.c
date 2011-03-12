@@ -357,12 +357,14 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        anna_member_t *memb = orig->mid_identifier[i];
        if(!memb)
            continue;
+       int storage = (memb->is_static?ANNA_MEMBER_STATIC:0)|((memb->offset==-1)?ANNA_MEMBER_VIRTUAL:0);
        
        anna_member_t *copy = anna_member_get(
            res,
            anna_member_create(
                res,
-               anna_mid_get(memb->name), memb->name, memb->is_static, memb->type));
+               anna_mid_get(memb->name), memb->name, 
+	       storage, memb->type));
        copy->is_method = memb->is_method;
        copy->is_property = memb->is_property;
        copy->getter_offset = -1;
@@ -384,8 +386,8 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        anna_member_t *copy = anna_member_get(
            res,
 	   anna_mid_get(memb->name));
-       
-       res->static_member[copy->offset]=orig->static_member[memb->offset];
+       if(memb->offset != -1)
+	   res->static_member[copy->offset]=orig->static_member[memb->offset];
     }
     
     for(i=0; i<anna_mid_max_get(); i++)

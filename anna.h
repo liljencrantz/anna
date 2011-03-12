@@ -236,7 +236,7 @@ struct anna_member
        The offset into either the object->member ot the
        type->static_member array that this member is located at.
      */
-    size_t offset;
+    ssize_t offset;
     /**
        If true, this member is static, i.e. shared between all objects
        of this type. If so, it is stored in the type object's

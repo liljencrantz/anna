@@ -4,6 +4,9 @@
 #include "anna.h"
 #include "anna_node.h"
 
+#define ANNA_MEMBER_STATIC 1
+#define ANNA_MEMBER_VIRTUAL 2
+
 anna_member_t *anna_member_unwrap(anna_object_t *obj);
 
 anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *member);
@@ -16,7 +19,7 @@ mid_t anna_member_create(
     anna_type_t *type,
     mid_t mid,
     wchar_t *name,
-    int is_static,
+    int storage,
     anna_type_t *member_type);
 
 size_t anna_native_property_create(
