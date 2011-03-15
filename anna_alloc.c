@@ -50,6 +50,7 @@ static void anna_alloc_mark_function(anna_function_t *o)
 	anna_alloc_mark_node((anna_node_t *)o->body);
     if(o->definition)
 	anna_alloc_mark_node((anna_node_t *)o->definition);
+    anna_alloc_mark_node(o->attribute);
     anna_alloc_mark_type(o->return_type);
     anna_alloc_mark_object(o->wrapper);
     if(o->this)

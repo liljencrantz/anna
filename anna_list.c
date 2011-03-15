@@ -15,6 +15,7 @@
 #include "anna_type.h"
 #include "anna_member.h"
 #include "anna_function_type.h"
+#include "anna_function.h"
 #include "anna_range.h"
 #include "anna_vm.h"
 
@@ -481,6 +482,8 @@ static void anna_list_type_create_internal(
     anna_type_t *type, 
     anna_type_t *spec)
 {
+    mid_t mmid;
+    anna_function_t *fun;
 
     anna_member_create(
 	type, ANNA_MID_LIST_PAYLOAD,  L"!listPayload",
@@ -553,7 +556,8 @@ static void anna_list_type_create_internal(
 	    L"this", L"index", L"value"
 	}
     ;
-    anna_native_method_create(
+
+    mmid = anna_native_method_create(
 	type,
 	-1,
 	L"__get__Int__",
@@ -563,8 +567,10 @@ static void anna_list_type_create_internal(
 	2, 
 	i_argv, 
 	i_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
+    anna_function_alias_add(fun, L"__get__");
     
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	type, 
 	-1,
 	L"__set__Int__", 
@@ -574,6 +580,8 @@ static void anna_list_type_create_internal(
 	3,
 	i_argv, 
 	i_argn);    
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
+    anna_function_alias_add(fun, L"__set__");
     
     anna_native_property_create(
 	type,
@@ -654,7 +662,7 @@ static void anna_list_type_create_internal(
 	}
     ;
 
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	type,
 	-1,
 	L"__get__Range__",
@@ -664,8 +672,10 @@ static void anna_list_type_create_internal(
 	2,
 	range_argv, 
 	range_argn);
-    
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
+    anna_function_alias_add(fun, L"__get__");
+
+    mmid = anna_native_method_create(
 	type,
 	-1,
 	L"__set__Range__",
@@ -675,6 +685,8 @@ static void anna_list_type_create_internal(
 	3,
 	range_argv, 
 	range_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
+    anna_function_alias_add(fun, L"__set__");
 
     /*
       Todo:

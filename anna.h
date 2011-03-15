@@ -64,10 +64,8 @@ struct anna_object;
 struct anna_member;
 struct anna_node_call;
 struct anna_stack_template;
-struct anna_node_call;
 struct anna_function;
 struct anna_node_list;
-struct anna_node_call;
 
 typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *);
@@ -325,6 +323,10 @@ struct anna_function
     */
     struct anna_node_call *definition;
     /**
+       The attribute list for this function
+     */
+    struct anna_node_call *attribute;
+    /**
        If this is a native function, this union will contain the
        function pointer used for invocation. Otherwise, this will be a
        null function pointer.
@@ -491,13 +493,6 @@ anna_object_t *anna_method_wrap(
     anna_object_t *method, 
     anna_object_t *owner);
 
-void anna_member_add_node(
-    struct anna_node_call *type,
-    mid_t mid,
-    wchar_t *name,
-    int is_static,
-    struct anna_node *member_type);
-
 size_t anna_native_method_create(
     anna_type_t *type,
     mid_t mid,
@@ -507,17 +502,6 @@ size_t anna_native_method_create(
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
-    wchar_t **argn);
-
-void anna_native_method_add_node(
-    struct anna_node_call *type,
-    mid_t mid,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    struct anna_node *result,
-    size_t argc,
-    struct anna_node **argv,
     wchar_t **argn);
 
 size_t anna_method_create(

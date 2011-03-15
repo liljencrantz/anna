@@ -35,6 +35,8 @@ init="
 	}
     ;
 
+    mid_t mmid;
+    anna_function_t *fun;
 "
 
 for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
@@ -43,7 +45,7 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     
     init="$init
     anna_native_method_create(
-	float_type, -1, L\"__${name}__Float__\", 0, 
+	float_type, -1, L\"__${name}__\", 0, 
 	&anna_float_i_${name}, 
 	float_type,
 	2, argv, argn);"
@@ -70,21 +72,30 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	float_type, -1, L\"__${name}__Float__\", 0,
 	&anna_float_i_${name}, 
 	float_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(float_type, mmid));
+    anna_function_alias_add(fun, L\"__${name}__\");
+
+    mmid = anna_native_method_create(
         float_type, -1, L\"__${name}__Int__\", 0, 
 	&anna_float_i_int_${name}, 
 	float_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(float_type, mmid));
+    anna_function_alias_add(fun, L\"__${name}__\");
+
+    mmid = anna_native_method_create(
 	float_type, -1, L\"__r${name}__Int__\", 0, 
 	&anna_float_i_int_r${name}, 
 	float_type,
 	2, i_argv, i_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(float_type, mmid));
+    anna_function_alias_add(fun, L\"__${name}__\");
+
 "
 
     echo "

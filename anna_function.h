@@ -46,4 +46,6 @@ void anna_function_argument_hint(
 
 int anna_function_has_alias(anna_function_t *fun, wchar_t *name);
 
+void anna_function_alias_add(anna_function_t *fun, wchar_t *name);
+
 #endif

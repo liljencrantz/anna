@@ -229,7 +229,7 @@ anna_member_t *anna_member_method_search(
 {
     debug(D_SPAM, L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
     int i;
-    wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
+    wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&type->name_identifier));
     wchar_t *prefix = anna_mid_get_reverse(mid);
     anna_type_get_member_names(type, members);    
     wchar_t *match=0;

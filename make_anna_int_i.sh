@@ -21,7 +21,8 @@ init="
 	  L\"this\", L\"value\"
 	}
     ;
-
+    mid_t mmid;
+    anna_function_t *fun;
 "
 
 for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
@@ -29,11 +30,13 @@ for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	int_type, -1, L\"__${name}__Int__\", 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(int_type, mmid));
+    anna_function_alias_add(fun, L\"__${name}__\");
 "
 
     echo "
@@ -56,11 +59,14 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	int_type, -1, L\"__${name}__Int__\", 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(int_type, mmid));
+    anna_function_alias_add(fun, L\"__${name}__\");
+
 "
 
     echo "

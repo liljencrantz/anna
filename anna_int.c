@@ -11,6 +11,7 @@
 #include "anna_int.h"
 #include "anna_type.h"
 #include "anna_member.h"
+#include "anna_function.h"
 
 #include "anna_int_i.c"
 

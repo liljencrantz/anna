@@ -399,21 +399,27 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
 
 anna_node_call_t *anna_function_attribute(anna_function_t *fun)
 {
-    if(!fun->definition)
-    {
-	return 0;
-    }
-    return (anna_node_call_t *)fun->definition->child[3];
+    return fun->attribute;    
 }
 
 int anna_function_has_alias(anna_function_t *fun, wchar_t *name)
 {
     return anna_attribute_has_alias(
 	anna_function_attribute(fun),
-	name);
-    
+	name);    
 }
 
+void anna_function_alias_add(anna_function_t *fun, wchar_t *name)
+{
+    anna_node_call_t *param[] = {anna_node_create_identifier(0, name)};
+    anna_node_call_t *attr = anna_node_create_call(
+	0,
+	anna_node_create_identifier(0, L"alias"),
+	1,
+	param
+	);
+    anna_node_call_add_child(fun->attribute, attr);
+}
 
 anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition)
@@ -421,6 +427,7 @@ anna_function_t *anna_function_create_from_definition(
     anna_function_t *result = anna_alloc_function();
     
     result->definition = definition;
+    result->attribute = (anna_node_call_t *)definition->child[3];
     //al_push(&anna_function_list, result);
 
     wchar_t *name=0;
@@ -446,12 +453,19 @@ anna_function_t *anna_function_create_from_definition(
     return result;
 }
 
+static void anna_function_attribute_empty(anna_function_t *fun)
+{
+    fun->attribute = anna_node_create_block(0, 0, 0);
+}
+
+
 anna_function_t *anna_macro_create(
     wchar_t *name,
     struct anna_node_call *definition,
     wchar_t *arg_name)
 {
     anna_function_t *result = anna_alloc_function();
+    anna_function_attribute_empty(result);
     
     result->definition = definition;
     result->body = (anna_node_call_t *)definition->child[2];
@@ -515,7 +529,7 @@ anna_function_t *anna_native_create(
     }
   
     anna_function_t *result = anna_alloc_function();
-    
+    anna_function_attribute_empty(result);    
     result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
     result->input_name = calloc(1, sizeof(wchar_t *)*argc);
 
