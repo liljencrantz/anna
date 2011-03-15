@@ -1,11 +1,15 @@
 # Makefile for Anna
 #
-# Copyright 2010 Axel Liljencrantz
+# Copyright 2011 Axel Liljencrantz
 #
 
 PROF_FLAGS := -g 
 
-CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration -Wmissing-braces -Wmissing-prototypes -pedantic -std=c99 -D_ISO99_SOURCE=1 -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) 
+CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration	\
+-Wmissing-braces -Wmissing-prototypes -pedantic -std=c99	\
+-D_ISO99_SOURCE=1 -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L	\
+$(PROF_FLAGS)
+
 ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
 anna_function_implementation.o anna_int.o anna_string.o anna_char.o	\
 anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o	\
@@ -14,7 +18,7 @@ anna_string_naive.o anna_node_wrapper.o anna_type_type.o		\
 anna_function.o anna_node_check.o anna_prepare.o anna_member.o		\
 anna_function_type.o anna_util.o anna_module.o anna_node_create.o	\
 anna_object.o anna_invoke.o anna_error.o anna_mid.o anna_range.o	\
-anna_vm.o anna_alloc.o anna_complex.o
+anna_vm.o anna_alloc.o anna_complex.o anna_attribute.o
 
 ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
 anna_string_internal_test.o util.o common.o anna_string_naive.o
@@ -24,9 +28,9 @@ util.o common.o anna_string_naive.o
 
 LDFLAGS := -lm -rdynamic -ll $(PROF_FLAGS)
 
-PROGRAMS := anna
+PROGRAMS := anna anna_string_internal_test anna_string_perf
 
-all: anna anna_string_internal_test anna_string_perf
+all: $(PROGRAMS)
 .PHONY: all
 
 #########################################################

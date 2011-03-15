@@ -1,12 +1,5 @@
-def bar(Int i){
-    var j=i;
-    while(j < 10 and j > 0 ){
-    	print(j);
-    	j++
-    }
-}
 
 def main()
 {
-    print(", ".join(["a","b","c"]));
+    print(1+1);
 }

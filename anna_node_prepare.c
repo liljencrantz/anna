@@ -525,7 +525,6 @@ static void anna_node_calculate_type_internal(
 		    }
 		}
 		free(types);
-		
 	    }
 	    
 	    if(!member)

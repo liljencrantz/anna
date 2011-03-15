@@ -243,34 +243,35 @@ anna_member_t *anna_member_method_search(
 	debug(D_SPAM, L"%ls matches, name-wise\n", members[i]);
 	
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
-	anna_type_t *mem_type = member->type;
-	debug(D_SPAM, L"Is of type %ls\n", mem_type->name);
-	anna_function_type_key_t *mem_fun = anna_function_unwrap_type(mem_type);
-	if(mem_fun)
+	if(member->is_static && member->offset>=0)
 	{
-	    debug(D_SPAM, L"YAY, it's a function (%d arguments)\n", mem_fun->argc);
+	    
+	    anna_object_t *mem_val = type->static_member[member->offset];
+	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
+	    if(mem_fun && anna_function_has_alias(mem_fun, prefix))
+	    {
 	    int j;
 	    
-	    if(mem_fun->argc != argc+1)
+	    if(mem_fun->input_count != argc+1)
 		continue;	    
 	    //debug(D_SPAM, L"YAY, right number of arguments (%d)\n", argc);
 	    
-	    debug(D_SPAM, L"Check %ls against %ls\n",argv[0]->name, mem_fun->argv[1]->name);
+	    debug(D_SPAM, L"Check %ls against %ls\n",argv[0]->name, mem_fun->input_type[1]->name);
 	    int my_fault_count = 0;
 	    int ok = 1;
 	    
 	    for(j=0; j<argc; j++)
 	    {
-		if(anna_abides(argv[j], mem_fun->argv[j+1]))
+		if(anna_abides(argv[j], mem_fun->input_type[j+1]))
 		{
 		    my_fault_count += 
-			anna_abides_fault_count(mem_fun->argv[j+1], argv[j]);
+			anna_abides_fault_count(mem_fun->input_type[j+1], argv[j]);
 		}
 		else
 		{
 		    ok=0;
 		    debug(D_SPAM, L"Argument %d, %ls does not match %ls!\n", j, 
-			    argv[j]->name, mem_fun->argv[j+1]->name);
+			    argv[j]->name, mem_fun->input_type[j+1]->name);
 		}
 		
 	    }
@@ -283,6 +284,7 @@ anna_member_t *anna_member_method_search(
 		    match = members[i];
 		    fault_count = my_fault_count;
 		}
+	    }
 	    }
 	}
 	else

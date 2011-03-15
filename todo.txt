@@ -1,7 +1,9 @@
 Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
 
-Do properties get member slots assigned to them? Yes. Fix plz.
-Perform escape analysis on stack frames and automatically discard ones that can be safely discarded.
+Default function argumet values. These also need to be part of the function interface and contained in function keys.
+Named arguments for function calls.
+Map construction syntax.
+Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
 Document all vm ops w.r.t. manipulating the stack, etc.
 Fix while loop so it returns the output of the last call
 Make test cases for all AST node types to make sure they all push exactly one element to the stack
@@ -42,6 +44,12 @@ direction; the return value of the function supplied to map should determine the
 return type of the function. I guess we want some kind of magical
 syntax for annotating a method that will make the return type depend
 on the input type? Or can we simply use a clever macro?
+
+Map construction syntax
+var map = ["foo"=>3, "bar"=>7]
+
+Named argument syntax
+Circle(radius=>3, position=>[2,4,3]);
 
 Every module is represented by an object with properties representing
 the members. Imutable members, like types, are read-only properties.

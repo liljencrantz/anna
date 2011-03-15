@@ -16,6 +16,7 @@
 #include "anna_util.h"
 #include "anna_alloc.h"
 #include "anna_vm.h"
+#include "anna_attribute.h"
 
 void anna_function_argument_hint(
     anna_function_t *f,
@@ -396,6 +397,24 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
   
 }
 
+anna_node_call_t *anna_function_attribute(anna_function_t *fun)
+{
+    if(!fun->definition)
+    {
+	return 0;
+    }
+    return (anna_node_call_t *)fun->definition->child[3];
+}
+
+int anna_function_has_alias(anna_function_t *fun, wchar_t *name)
+{
+    return anna_attribute_has_alias(
+	anna_function_attribute(fun),
+	name);
+    
+}
+
+
 anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition)
 {
@@ -424,7 +443,6 @@ anna_function_t *anna_function_create_from_definition(
     wprintf(L"LALALAGGG\n");
     anna_node_print(0, definition);
 */  
-    
     return result;
 }
 
