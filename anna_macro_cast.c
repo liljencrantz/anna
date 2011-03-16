@@ -1,18 +1,15 @@
+static anna_node_t *anna_macro_cast(
+    anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"cast", 2);
+    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
+    node->function = anna_node_create_null(&node->location);
+    
+    node->node_type = ANNA_NODE_CAST;
+    return node;
+}
 
 #if 0
-static anna_node_t *anna_macro_cast(
-    anna_node_call_t *node, 
-    anna_function_t *function, 
-    anna_node_list_t *parent)
-{
-    return (anna_node_t *)anna_node_create_call(
-	&node->location,
-	(anna_node_t *)anna_node_create_identifier(
-	    &node->function->location,
-	    L"List"), 
-	node->child_count,
-	node->child);
-}
 
 
 static anna_object_t *anna_function_as(anna_object_t **param)

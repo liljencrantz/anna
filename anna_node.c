@@ -540,9 +540,11 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
     fun(this, aux);
     switch(this->node_type)
     {
+
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_SPECIALIZE:
 	case ANNA_NODE_CONSTRUCT:
+	case ANNA_NODE_CAST:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    anna_node_each(n->function, fun, aux);

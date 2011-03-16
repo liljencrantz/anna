@@ -71,6 +71,7 @@
 #define ANNA_OP_JMP 17
 #define ANNA_OP_TRAMPOLENE 18
 #define ANNA_OP_CONSTRUCT 19
+#define ANNA_OP_CAST 20
 
 static anna_vmstack_t **stack_mem;
 static anna_vmstack_t **stack;
@@ -276,6 +277,19 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    {
 		anna_op_const_t *op = (anna_op_const_t *)(*stack)->code;
 		anna_push(stack, anna_string_copy(op->value));
+		(*stack)->code += sizeof(*op);
+		break;
+	    }
+	    
+	    case ANNA_OP_CAST:
+	    {
+		anna_op_type_t *op = (anna_op_type_t *)(*stack)->code;
+		if(!anna_abides(anna_peek(stack,0)->type, op->value))
+		{
+		    anna_pop(stack);
+		    anna_push(stack, null_object);
+		}
+		
 		(*stack)->code += sizeof(*op);
 		break;
 	    }
@@ -627,6 +641,7 @@ size_t anna_bc_op_size(char instruction)
 	}
 	    
 	case ANNA_OP_LIST:
+	case ANNA_OP_CAST:
 	{
 	    return sizeof(anna_op_type_t);
 	}
@@ -700,6 +715,12 @@ void anna_bc_print(char *code)
 	    case ANNA_OP_LIST:
 	    {
 		wprintf(L"List creation\n\n");
+		break;
+	    }
+	    
+	    case ANNA_OP_CAST:
+	    {
+		wprintf(L"Type cast\n\n");
 		break;
 	    }
 	    
@@ -818,7 +839,7 @@ void anna_bc_print(char *code)
 	    
 	    default:
 	    {
-		wprintf(L"Unknown opcode %d\n", instruction);
+		wprintf(L"Unknown opcode %d during print\n", instruction);
 		CRASH;
 	    }
 	}
@@ -841,6 +862,14 @@ void anna_vm_mark_code(anna_function_t *f)
 		anna_alloc_mark_object(op->value);
 		break;
 	    }
+
+	    case ANNA_OP_LIST:
+	    case ANNA_OP_CAST:
+	    {
+		anna_op_type_t *op = (anna_op_type_t*)code;
+		anna_alloc_mark_object(op->value);
+		break;
+	    }
 	    
 	    case ANNA_OP_RETURN:
 	    case ANNA_OP_STOP:
@@ -848,7 +877,6 @@ void anna_vm_mark_code(anna_function_t *f)
 		return;
 	    }
 	    
-	    case ANNA_OP_LIST:
 	    case ANNA_OP_FOLD:
 	    case ANNA_OP_CALL:
 	    case ANNA_OP_CONSTRUCT:
@@ -870,7 +898,7 @@ void anna_vm_mark_code(anna_function_t *f)
 	    
 	    default:
 	    {
-		wprintf(L"Unknown opcode %d\n", instruction);
+		wprintf(L"Unknown opcode %d during GC\n", instruction);
 		CRASH;
 	    }
 	}
@@ -929,13 +957,14 @@ size_t anna_bc_stack_size(char *code)
 	    case ANNA_OP_COND_JMP:
 	    case ANNA_OP_NCOND_JMP:
 	    case ANNA_OP_TRAMPOLENE:
+	    case ANNA_OP_CAST:
 	    {
 		break;
 	    }
 	    
 	    default:
 	    {
-		wprintf(L"Unknown opcode %d\n", instruction);
+		wprintf(L"Unknown opcode %d during size calculation\n", instruction);
 		CRASH;
 	    }
 	}
@@ -1031,6 +1060,13 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    return sizeof(anna_op_var_t);
 	    
 	    break;
+	}
+	
+	case ANNA_NODE_CAST:
+	{
+	    anna_node_call_t *node2 = (anna_node_call_t *)node;
+	    
+	    return anna_vm_size(fun, node2->child[0]) + sizeof(anna_op_type_t);
 	}
 	
 	case ANNA_NODE_CONSTRUCT:
@@ -1432,6 +1468,14 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		sid.frame,
 		sid.offset);	    
 	    
+	    break;
+	}
+	
+	case ANNA_NODE_CAST:
+	{
+	    anna_node_call_t *node2 = (anna_node_call_t *)node;
+	    anna_vm_compile_i(fun, node2->child[0], ptr, 0);
+	    anna_vm_type(ptr, ANNA_OP_CAST, node2->return_type);
 	    break;
 	}
 	

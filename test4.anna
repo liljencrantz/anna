@@ -1,5 +1,8 @@
 
 def main()
 {
-    print(1+1);
+    var Object o;
+    o=7;
+    print(cast(o, Int)+1);
+    print(cast(o, Float));
 }

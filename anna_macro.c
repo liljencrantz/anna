@@ -637,6 +637,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__increase__", &anna_macro_update);
     anna_macro_add(stack, L"__decrease__", &anna_macro_update);
     anna_macro_add(stack, L"__append__", &anna_macro_update);
+    anna_macro_add(stack, L"cast", &anna_macro_cast);
     
 /*    
     anna_macro_add(stack, L"return", &anna_macro_return);

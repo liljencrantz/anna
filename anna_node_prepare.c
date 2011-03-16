@@ -13,6 +13,7 @@ anna_node_t *anna_node_macro_expand(
     switch( this->node_type )
     {
 	case ANNA_NODE_CALL:
+	case ANNA_NODE_CAST:
 	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
@@ -481,6 +482,32 @@ static void anna_node_calculate_type_internal(
 	    }
 	    
 	    call->return_type = funt->result;
+	    break;
+	}
+	
+
+
+	case ANNA_NODE_CAST:
+	{
+	    anna_node_call_t *call = (anna_node_call_t *)this;
+	    anna_node_calculate_type(call->child[1], stack);
+	    anna_type_t *fun_type = call->child[1]->return_type;
+
+	    if(fun_type == type_type)
+	    {
+		anna_type_t *type = anna_node_resolve_to_type(call->child[1], stack);
+		if(type)
+		{
+		    call->return_type = type;
+		    break;
+		}
+	    }
+
+	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		break;
+	    }
+
 	    break;
 	}
 	

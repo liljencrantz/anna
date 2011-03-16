@@ -34,6 +34,7 @@
 #define ANNA_NODE_SPECIALIZE 25
 #define ANNA_NODE_TYPE_LOOKUP 26
 #define ANNA_NODE_TYPE 27
+#define ANNA_NODE_CAST 28
 
 /* These AST node types probably are't needed and should be removed */
 #define ANNA_NODE_RETURN 14
