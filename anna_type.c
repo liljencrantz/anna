@@ -29,7 +29,18 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
 	type->mid_identifier = realloc(type->mid_identifier, sz*sizeof(anna_member_t *));
-	memset(&type->mid_identifier[old_sz], 0, (sz-old_sz)*sizeof(anna_member_t *));
+	if(type == null_type)
+	{
+	    int j;
+	    for(j=old_sz; j<sz; j++)
+	    {
+		type->mid_identifier[i] = type->mid_identifier[0];
+	    }
+	}
+	else
+	{
+	    memset(&type->mid_identifier[old_sz], 0, (sz-old_sz)*sizeof(anna_member_t *));
+	}
     }
 }
 

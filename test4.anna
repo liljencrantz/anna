@@ -4,5 +4,5 @@ def main()
     var Object o;
     o=7;
     print(cast(o, Int)+1);
-    print(cast(o, Float));
+    print(cast(o, Float)+1);
 }

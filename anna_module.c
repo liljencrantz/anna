@@ -123,14 +123,14 @@ static void anna_null_type_create()
     null_member->offset=0;
     null_member->is_static=1;
     wcscpy(null_member->name, member_name);
-
+    
     /*  
 	anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_getitem, object_type, 2, i_argv, i_argn);
     */
     anna_type_t *argv[]={null_type};
     wchar_t *argn[]={L"this"};
     anna_type_static_member_allocate(null_type);
-
+    
     null_type->static_member[0] = 
 	anna_function_wrap(
 	    anna_native_create(
@@ -144,7 +144,7 @@ static void anna_null_type_create()
     hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
     hash_put(&null_type->name_identifier, L"!null_member", null_member);
     
-    for(i=0; i<64;i++) {
+    for(i=0; i<anna_mid_get_count();i++) {
 	null_type->mid_identifier[i] = null_member;
     }
     assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    

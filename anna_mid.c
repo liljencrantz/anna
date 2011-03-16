@@ -100,6 +100,12 @@ void anna_mid_put(wchar_t *name, mid_t mid)
     al_set(&anna_mid_identifier_reverse, mid, name);
 }
 
+size_t anna_mid_get_count()
+{
+    return anna_type_mid_max;
+}
+
+
 size_t anna_mid_get(wchar_t *name)
 {
     size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
