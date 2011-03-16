@@ -29,7 +29,6 @@ HTML documentation extractor
 Hash functions
 Hashtable implementation
 String format function
-Cast operator
 Inlining of if/while bodies into main method
 File type
 Make all types inherit from Object

@@ -1,0 +1,4 @@
+
+def main(){
+    print(3, if(null){"a"}else{"b"},if(null){"X"},if(1){"a"});
+}
