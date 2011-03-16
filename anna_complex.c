@@ -13,6 +13,7 @@
 #include "anna_int.h"
 #include "anna_float.h"
 #include "anna_member.h"
+#include "anna_function.h"
 
 #include "anna_complex_i.c"
 

@@ -12,6 +12,7 @@
 #include "anna_int.h"
 #include "anna_member.h"
 #include "anna_function_type.h"
+#include "anna_function.h"
 #include "anna_vm.h"
 
 ssize_t anna_range_get_from(anna_object_t *obj)
@@ -195,6 +196,9 @@ static anna_object_t *anna_range_each(anna_object_t **param)
 
 void anna_range_type_create(struct anna_stack_template *stack)
 {
+    mid_t mmid;
+    anna_function_t *fun;
+
     anna_member_create(
 	range_type, ANNA_MID_RANGE_FROM,  L"!rangeFrom", 
 	0, null_type);
@@ -245,7 +249,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	}
     ;
 
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	range_type,
 	-1,
 	L"__get__Int__",
@@ -255,6 +259,8 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	2, 
 	i_argv, 
 	i_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(range_type, mmid));
+    anna_function_alias_add(fun, L"__get__");
     
     anna_native_property_create(
 	range_type,

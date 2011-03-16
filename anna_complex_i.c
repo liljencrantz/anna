@@ -289,6 +289,9 @@ static anna_object_t *anna_complex_i_abs(anna_object_t **param)
 static void anna_complex_type_i_create(anna_stack_template_t *stack)
 {
 
+    mid_t mmid;
+    anna_function_t *fun;
+
     anna_type_t *argv[]=
 	{
 	    complex_type,
@@ -329,128 +332,206 @@ static void anna_complex_type_i_create(anna_stack_template_t *stack)
     ;
 
 
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__eq__Complex__", 0, 
 	&anna_complex_i_eq, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__eq__");
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__neq__Complex__", 0, 
 	&anna_complex_i_neq, 
 	complex_type,
 	2, argv, argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__neq__");
 
-    anna_native_method_create(
+
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__add__Complex__", 0,
 	&anna_complex_i_add, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__add__");
+
+    mmid = anna_native_method_create(
         complex_type, -1, L"__add__Int__", 0, 
 	&anna_complex_i_int_add, 
 	complex_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__add__");
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__add__Float__", 0, 
 	&anna_complex_i_floatadd, 
 	complex_type,
 	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__add__");
 
-    anna_native_method_create(
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__increaseAssign__Complex__", 0,
 	&anna_complex_i_increaseAssign, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__increaseAssign__");
+
+    mmid = anna_native_method_create(
         complex_type, -1, L"__increaseAssign__Int__", 0, 
 	&anna_complex_i_int_increaseAssign, 
 	complex_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__increaseAssign__");
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__increaseAssign__Float__", 0, 
 	&anna_complex_i_floatincreaseAssign, 
 	complex_type,
 	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__increaseAssign__");
 
-    anna_native_method_create(
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__sub__Complex__", 0,
 	&anna_complex_i_sub, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__sub__");
+
+    mmid = anna_native_method_create(
         complex_type, -1, L"__sub__Int__", 0, 
 	&anna_complex_i_int_sub, 
 	complex_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__sub__");
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__sub__Float__", 0, 
 	&anna_complex_i_floatsub, 
 	complex_type,
 	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__sub__");
 
-    anna_native_method_create(
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__decreaseAssign__Complex__", 0,
 	&anna_complex_i_decreaseAssign, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__decreaseAssign__");
+
+    mmid = anna_native_method_create(
         complex_type, -1, L"__decreaseAssign__Int__", 0, 
 	&anna_complex_i_int_decreaseAssign, 
 	complex_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__decreaseAssign__");
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__decreaseAssign__Float__", 0, 
 	&anna_complex_i_floatdecreaseAssign, 
 	complex_type,
 	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__decreaseAssign__");
 
-    anna_native_method_create(
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__mul__Complex__", 0,
 	&anna_complex_i_mul, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__mul__");
+
+    mmid = anna_native_method_create(
         complex_type, -1, L"__mul__Int__", 0, 
 	&anna_complex_i_int_mul, 
 	complex_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__mul__");
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__mul__Float__", 0, 
 	&anna_complex_i_floatmul, 
 	complex_type,
 	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__mul__");
 
-    anna_native_method_create(
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__div__Complex__", 0,
 	&anna_complex_i_div, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__div__");
+
+    mmid = anna_native_method_create(
         complex_type, -1, L"__div__Int__", 0, 
 	&anna_complex_i_int_div, 
 	complex_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__div__");
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__div__Float__", 0, 
 	&anna_complex_i_floatdiv, 
 	complex_type,
 	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__div__");
 
-    anna_native_method_create(
+
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__exp__Complex__", 0,
 	&anna_complex_i_exp, 
 	complex_type,
 	2, argv, argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__exp__");
+
+    mmid = anna_native_method_create(
         complex_type, -1, L"__exp__Int__", 0, 
 	&anna_complex_i_int_exp, 
 	complex_type,
 	2, i_argv, i_argn);
-    anna_native_method_create(
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__exp__");
+
+    mmid = anna_native_method_create(
 	complex_type, -1, L"__exp__Float__", 0, 
 	&anna_complex_i_floatexp, 
 	complex_type,
 	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_add(fun, L"__exp__");
+
 
 
     anna_native_method_create(
