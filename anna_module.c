@@ -197,6 +197,7 @@ static void anna_module_load_lang()
 	    stack_lang);
     
     
+//    anna_object_type_create();    
     anna_type_type_create(stack_lang);    
     anna_list_type_create(stack_lang);
     anna_type_type_create2(stack_lang);    

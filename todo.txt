@@ -1,19 +1,10 @@
-Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
-
+LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
 Named arguments for function calls.
 Map construction syntax.
-Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
-Document all vm ops w.r.t. manipulating the stack, etc.
-Make test cases for all AST node types to make sure they all push exactly one element to the stack
-Make a verion of the fold op that takes a parameter
-Validate that all functions end with an empty stack frame
-Implement tail recursion
-Avoid creating trampolines when possible
 Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations (Is this needed?)
-Invertigate if we can completely drop the stack_template struct and just use types for that purpose
 User defined properties
 User defined variadic functions
 User defined templates with full specialization support
@@ -21,24 +12,42 @@ Inheritance
 True type intersections
 Continuations
 milter/fap
-Tests for namespaces
-Tests for nested macro members
-Tests for integer math
-Tests for floating point math
+Make all types inherit from Object
+
+STDLIB FEATURES:
 HTML documentation extractor
 Hash functions
 Hashtable implementation
 String format function
-Inlining of if/while bodies into main method
 File type
-Make all types inherit from Object
+
+IDEAS:
+Invertigate if we can completely drop the stack_template struct and just use types for that purpose
+
+RELIABILITY:
+Validate that all functions end with an empty stack frame
+Tests for namespaces
+Tests for nested macro members
+Tests for integer math
+Tests for floating point math
+
+DOCUMENTATION:
+Document all vm ops w.r.t. manipulating the stack, etc.
+
+PERFORMANCE:
+Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
+Implement tail recursion
+Avoid creating trampolines when possible
+Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
+Inlining of if/while bodies into main method
+Make a verion of the fold op that takes a parameter
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other
 direction; the return value of the function supplied to map should determine the
 return type of the function. I guess we want some kind of magical
 syntax for annotating a method that will make the return type depend
-on the input type? Or can we simply use a clever macro?
+on the input type? Or can we simply use a clever macro? A template?
 
 Map construction syntax
 var map = ["foo"=>3, "bar"=>7]
