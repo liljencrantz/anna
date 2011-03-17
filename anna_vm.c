@@ -1670,19 +1670,38 @@ void anna_vm_compile(
     
     int i;
     fun->variable_count = fun->stack_template->count;
+
+    int is_empty = fun->body->child_count == 0;
     
-    size_t sz = 1;
-    for(i=0; i<fun->body->child_count; i++)
+    size_t sz;
+    if(is_empty)
     {
-	sz += anna_vm_size(fun, fun->body->child[i]) + sizeof(anna_op_null_t);
+	sz = anna_bc_op_size(ANNA_OP_CONSTANT) + anna_bc_op_size(ANNA_OP_RETURN);
+	
+    }
+    else
+    {
+	sz=1;
+	for(i=0; i<fun->body->child_count; i++)
+	{
+	    sz += anna_vm_size(fun, fun->body->child[i]) + sizeof(anna_op_null_t);
+	}
     }
     
     fun->code = calloc(sz, 1);
     char *code_ptr = fun->code;
-    for(i=0; i<fun->body->child_count; i++)
+    if(is_empty)
     {
-	anna_vm_compile_i(fun, fun->body->child[i], &code_ptr, i != (fun->body->child_count-1));
+	anna_vm_const(&code_ptr, null_object);
     }
+    else
+    {
+	for(i=0; i<fun->body->child_count; i++)
+	{
+	    anna_vm_compile_i(fun, fun->body->child[i], &code_ptr, i != (fun->body->child_count-1));
+	}
+    }
+    
     fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code));
 //    anna_bc_print(fun->code);
 }

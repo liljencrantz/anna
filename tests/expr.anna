@@ -1,4 +1,5 @@
 
 def main(){
-    print(3, if(null){"a"}else{"b"},if(null){"X"},if(1){"a"});
+    var i=0;
+    print(3, if(null){"a"}else{"b"},if(null){"X"},if(1){"a"},while(i<5){i++;-i},while(i<5){'A'});
 }
