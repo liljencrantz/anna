@@ -16,6 +16,7 @@
 #include "anna_util.h"
 #include "anna_alloc.h"
 #include "anna_vm.h"
+#include "anna_intern.h"
 #include "anna_attribute.h"
 
 void anna_function_argument_hint(
@@ -69,7 +70,7 @@ static anna_node_t *anna_function_setup_arguments(
 		node_cast_identifier(
 		    decl->child[0]);
 
-	    argn[i] = wcsdup(name->name);		
+	    argn[i] = anna_intern(name->name);		
 
 	    anna_node_t *type_node = anna_node_macro_expand(decl->child[1], parent_stack);
 	    anna_node_t *val_node = anna_node_macro_expand(decl->child[2], parent_stack);
@@ -435,14 +436,14 @@ anna_function_t *anna_function_create_from_definition(
     {	
 	anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)definition->child[0];
 	name = name_identifier->name;
-	result->name = wcsdup(name);
+	result->name = anna_intern(name);
 /*
 	wprintf(L"Creating function '%ls' from ast\n", name);
 	anna_node_print(0, definition);
 */	
     }
     else {
-	result->name = wcsdup(L"<anonymous>");
+	result->name = L"<anonymous>";
     }
     result->body = node_cast_call(result->definition->child[4]);
     
@@ -469,11 +470,11 @@ anna_function_t *anna_macro_create(
     
     result->definition = definition;
     result->body = (anna_node_call_t *)definition->child[2];
-    result->name = wcsdup(name);
+    result->name = anna_intern(name);
     wchar_t **argn=calloc(sizeof(wchar_t *), 1);
     anna_type_t **argv=calloc(sizeof(anna_type_t *), 1);
     argv[0] = node_wrapper_type;
-    argn[0] = wcsdup(arg_name);
+    argn[0] = anna_intern(arg_name);
     result->return_type = node_wrapper_type;
     result->flags |= ANNA_FUNCTION_MACRO;
     result->input_count=1;
@@ -535,7 +536,7 @@ anna_function_t *anna_native_create(
 
     result->flags |= flags;
     result->native = native;
-    result->name = wcsdup(name);
+    result->name = anna_intern(name);
     result->return_type=return_type;
     result->input_count=argc;
     memcpy(
@@ -544,7 +545,7 @@ anna_function_t *anna_native_create(
 	sizeof(anna_type_t *)*argc);
     for(i=0;i<argc; i++)
     {
-	result->input_name[i] = wcsdup(argn[i]);	
+	result->input_name[i] = anna_intern(argn[i]);	
     }
     
     anna_function_setup_interface(result, location);        

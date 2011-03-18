@@ -12,6 +12,7 @@
 #include "anna_node.h"
 #include "anna_node_create.h"
 #include "anna_alloc.h"
+#include "anna_intern.h"
 //#include "anna_node_check.h"
 //#include "anna_node_wrapper.h"
 //#include "anna_int.h"
@@ -131,8 +132,6 @@ anna_node_member_set_t *anna_node_create_member_set(
     return result;    
 }
 
-
-
 anna_node_assign_t *anna_node_create_assign(
     anna_location_t *loc, 
     wchar_t *name, 
@@ -142,7 +141,7 @@ anna_node_assign_t *anna_node_create_assign(
     result->node_type = ANNA_NODE_ASSIGN;
     anna_node_set_location((anna_node_t *)result,loc);
     result->value=value;
-    result->name = wcsdup(name);
+    result->name = anna_intern(name);
     return result;  
 }
 
@@ -158,7 +157,7 @@ anna_node_declare_t *anna_node_create_declare(
     anna_node_set_location((anna_node_t *)result,loc);
     result->value=value;
     result->type=type;
-    result->name = wcsdup(name);
+    result->name = anna_intern(name);
     return result;
 }
 
@@ -280,7 +279,7 @@ anna_node_identifier_t *anna_node_create_identifier(anna_location_t *loc, wchar_
     anna_node_identifier_t *result = anna_alloc_node(sizeof(anna_node_call_t));
     result->node_type = ANNA_NODE_IDENTIFIER;
     anna_node_set_location((anna_node_t *)result,loc);
-    result->name = wcsdup(name);
+    result->name = anna_intern(name);
     return result;
 }
 

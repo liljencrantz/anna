@@ -16,6 +16,7 @@
 #include "anna.h"
 #include "anna_alloc.h"
 #include "anna_node_check.h"
+#include "anna_intern.h"
 
 array_list_t  anna_type_list = 
 {
@@ -111,7 +112,7 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     anna_type_t *result = anna_alloc_type();
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = anna_mid_identifier_create();
-    result->name = wcsdup(name);
+    result->name = anna_intern(name);
     result->definition = definition;
 
     result->stack = anna_stack_create(0);

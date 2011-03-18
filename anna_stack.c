@@ -17,6 +17,7 @@
 #include "anna_util.h"
 #include "anna_member.h"
 #include "anna_alloc.h"
+#include "anna_intern.h"
 
 typedef struct
 {
@@ -96,7 +97,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
     
     size_t *offset = calloc(1,sizeof(size_t));
     *offset = stack->count++;
-    hash_put(&stack->member_string_identifier, wcsdup(name), offset);
+    hash_put(&stack->member_string_identifier, anna_intern(name), offset);
     stack->member_flags[*offset] = flags;
     stack->member_type[*offset] = type;
     stack->member_declare_node[*offset] = 0;

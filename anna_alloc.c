@@ -375,6 +375,11 @@ static void free_key(void *key, void *value)
     free(value);
 }
 
+static void free_val(void *key, void *value)
+{
+    free(value);
+}
+
 static void anna_alloc_free(void *obj)
 {
     
@@ -410,7 +415,6 @@ static void anna_alloc_free(void *obj)
 		    free(memb);
 		}
 	    }
-	    
 
 	    free(o->member_blob);
 	    if(o->static_member_count)
@@ -420,7 +424,6 @@ static void anna_alloc_free(void *obj)
 	    }
 	    
 	    hash_destroy(&o->name_identifier);
-	    free(o->name);
 	    free(o->mid_identifier);
 	    
 	    break;
@@ -434,14 +437,8 @@ static void anna_alloc_free(void *obj)
 	{
 	    int i;
 	    anna_function_t *o = (anna_function_t *)obj;
-	    free(o->name);
 	    free(o->code);
 	    free(o->input_type);
-	    for(i=0; i<o->input_count; i++)
-	    {
-		free(o->input_name[i]);
-	    }
-	    
 	    free(o->input_name);
 	    
 	    break;
@@ -454,26 +451,22 @@ static void anna_alloc_free(void *obj)
 		case ANNA_NODE_IDENTIFIER:
 		{
 		    anna_node_identifier_t *n = (anna_node_identifier_t *)o;
-		    free(n->name);
 		    break;
 		}
 		case ANNA_NODE_ASSIGN:
 		{
 		    anna_node_assign_t *n = (anna_node_assign_t *)o;
-		    free(n->name);
 		    break;
 		}
 		case ANNA_NODE_STRING_LITERAL:
 		{
 		    anna_node_string_literal_t *n = (anna_node_string_literal_t *)o;
-		    free(n->payload);
 		    break;
 		}
 		case ANNA_NODE_CONST:
 		case ANNA_NODE_DECLARE:
 		{
 		    anna_node_declare_t *n = (anna_node_declare_t *)o;
-		    free(n->name);
 		    break;
 		}
 
@@ -502,7 +495,7 @@ static void anna_alloc_free(void *obj)
 	    free(o->member);
 	    free(o->member_flags);
 	    al_destroy(&o->import);
-	    hash_foreach(&o->member_string_identifier, free_key);
+	    hash_foreach(&o->member_string_identifier, free_val);
 	    hash_destroy(&o->member_string_identifier);
 	    break;
 	}
