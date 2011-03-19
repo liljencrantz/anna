@@ -293,6 +293,11 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     for(i=0; i<anna_type_member_count(role_model); i++)
     {
 	assert(members[i]);
+	if(wcscmp(members[i], L"__init__") == 0)
+	    continue;
+	if(wcscmp(members[i], L"__del__") == 0)
+	    continue;
+	
 	anna_type_t *contender_subtype = anna_type_member_type_get(contender, members[i]);
 	anna_type_t *role_model_subtype = anna_type_member_type_get(role_model, members[i]);
 	if(!contender_subtype || !anna_abides(contender_subtype, role_model_subtype))

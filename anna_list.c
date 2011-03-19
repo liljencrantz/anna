@@ -697,15 +697,27 @@ static void anna_list_type_create_internal(
 
 }
 
+static inline void anna_list_internal_init()
+{
+    static init = 0;
+    if(likely(init))
+	return;
+    init=1;
+    hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);
+}
+
 void anna_list_type_create(anna_stack_template_t *stack)
 {
-    hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);
+    anna_list_internal_init();
+    
     hash_put(&anna_list_specialization, object_type, list_type);
     anna_list_type_create_internal(stack, list_type, object_type);
 }
 
 anna_type_t *anna_list_type_get(anna_type_t *subtype)
 {
+    anna_list_internal_init();
+    
     anna_type_t *spec = hash_get(&anna_list_specialization, subtype);
     if(!spec)
     {

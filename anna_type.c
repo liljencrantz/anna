@@ -364,11 +364,25 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
 //    wprintf(L"Copy type %ls into type %ls\n", orig->name, res->name);
-    for(i=0; i<anna_mid_max_get(); i++)
+
+    /*
+      First copy all members that have a previously unused mid, making
+      note of which members already existed
+     */
+    int steps = anna_mid_max_get();
+    int *copied = calloc(sizeof(int), steps);
+    
+    for(i=0; i<steps; i++)
     {
        anna_member_t *memb = orig->mid_identifier[i];
        if(!memb)
            continue;
+       
+       if(res->mid_identifier[i])
+	  continue;
+       
+       copied[i] = 1;
+       
        int storage = (memb->is_static?ANNA_MEMBER_STATIC:0)|((memb->offset==-1)?ANNA_MEMBER_VIRTUAL:0);
        
        anna_member_t *copy = anna_member_get(
@@ -389,12 +403,15 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        }
     }
     
-    for(i=0; i<anna_mid_max_get(); i++)
+    /*
+      Then, for every copied static member with storage, copy over the initial value
+     */
+    for(i=0; i<steps; i++)
     {
+	if(!copied[i])
+	    continue;
+	
        anna_member_t *memb = orig->mid_identifier[i];
-       if(!memb)
-           continue;
-
        anna_member_t *copy = anna_member_get(
            res,
 	   anna_mid_get(memb->name));
@@ -402,11 +419,16 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	   res->static_member[copy->offset]=orig->static_member[memb->offset];
     }
     
-    for(i=0; i<anna_mid_max_get(); i++)
+    /*
+      Then, for every copied property, find the offset of the getter and setter
+     */
+    for(i=0; i<steps; i++)
     {
+	if(!copied[i])
+	    continue;
+
        anna_member_t *memb = orig->mid_identifier[i];
-       if(!memb)
-           continue;
+
        if(!memb->is_property)
 	   continue;
 
@@ -423,7 +445,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        {
 	   mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset);
 	   copy->setter_offset = anna_member_get(res, setter)->offset;	   
-       }       
+       }
     }
 
 }

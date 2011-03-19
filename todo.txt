@@ -1,3 +1,7 @@
+Bugs:
+
+Some types don't inherit from object type or inherit from it before it's been properly set up. (Including a few function types)
+
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
 Named arguments for function calls.
@@ -30,6 +34,7 @@ Tests for namespaces
 Tests for nested macro members
 Tests for integer math
 Tests for floating point math
+Test return types of complex expression types, e.g. if(){}+1.
 
 DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.

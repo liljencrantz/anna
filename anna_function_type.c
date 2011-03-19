@@ -86,6 +86,7 @@ void anna_function_type_key_print(anna_function_type_key_t *k)
     wprintf(L")\n");
 }
 
+
 static void anna_function_type_base_create()
 {
 
@@ -94,7 +95,7 @@ static void anna_function_type_base_create()
 
     function_type_base = anna_type_native_create(L"!FunctionBase", stack_global);
     anna_type_t *res = function_type_base;
-
+    
     anna_native_property_create(
 	res,
 	-1,
@@ -126,6 +127,7 @@ static void anna_function_type_base_create()
 	anna_list_type_get(string_type),
 	&anna_function_type_i_get_input_name,
 	0);
+    anna_type_copy(res, object_type);
 }
 
 void anna_function_type_create(

@@ -469,8 +469,6 @@ static void anna_node_calculate_type_internal(
 	    if(!funt)
 	    {
 		anna_error(this, L"Value is not callable");
-		anna_type_print(fun_type);		
-		CRASH;
 		break;
 	    }
 	    
@@ -717,7 +715,26 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_cond_t *d = (anna_node_cond_t *)this;
 	    anna_node_calculate_type(d->arg2, stack);
-	    d->return_type = d->arg2->return_type;
+	    anna_type_t *fun_type =  d->arg2->return_type;
+	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		break;
+	    }
+	    anna_function_type_key_t *funt = anna_function_type_extract(fun_type);
+	    if(!funt)
+	    {
+		anna_error(this, L"Value is not callable");
+		break;
+	    }
+	    if(funt->flags & ANNA_FUNCTION_MACRO)
+	    {
+		anna_error(this, L"Unexpanded macro call");
+		break;
+		
+	    }
+	    
+	    d->return_type = funt->result;
+
 	    break;
 	}
 	

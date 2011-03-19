@@ -24,6 +24,7 @@
 #include "anna_list.h"
 #include "anna_function_type.h"
 #include "anna_type_type.h"
+#include "anna_object_type.h"
 #include "anna_type.h"
 #include "anna_macro.h"
 #include "anna_member.h"
@@ -32,6 +33,7 @@
 #include "anna_status.h"
 #include "anna_vm.h"
 #include "anna_alloc.h"
+#include "anna_intern.h"
 
 static hash_table_t *anna_module_imported=0;
 //static array_list_t anna_module_unprepared = {0,0,0};
@@ -197,7 +199,7 @@ static void anna_module_load_lang()
 	    stack_lang);
     
     
-//    anna_object_type_create();    
+    anna_object_type_create();    
     anna_type_type_create(stack_lang);    
     anna_list_type_create(stack_lang);
     anna_type_type_create2(stack_lang);    
@@ -211,17 +213,21 @@ static void anna_module_load_lang()
     anna_range_type_create(stack_lang);
     anna_complex_type_create(stack_lang);
 
-    anna_stack_declare(stack_lang, L"Type", type_type, anna_type_wrap(type_type), 0); 
-    anna_stack_declare(stack_lang, L"Int", type_type, anna_type_wrap(int_type), 0);     
-    anna_stack_declare(stack_lang, L"Object", type_type, anna_type_wrap(object_type), 0); 
-    anna_stack_declare(stack_lang, L"Null", type_type, anna_type_wrap(null_type), 0); 
-
-    anna_stack_declare(stack_lang, L"List", type_type, anna_type_wrap(list_type), 0); 
-    anna_stack_declare(stack_lang, L"String", type_type, anna_type_wrap(string_type), 0); 
-    anna_stack_declare(stack_lang, L"Float", type_type, anna_type_wrap(float_type), 0); 
-    anna_stack_declare(stack_lang, L"Complex", type_type, anna_type_wrap(complex_type), 0); 
-    anna_stack_declare(stack_lang, L"Char", type_type, anna_type_wrap(char_type), 0);
-    anna_stack_declare(stack_lang, L"Range", type_type, anna_type_wrap(range_type), 0);
+    int i;
+    anna_type_t *types[] = 
+	{
+	    type_type, int_type, object_type, null_type, list_type, string_type, float_type, complex_type, char_type, range_type
+	}
+    ;
+    for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
+    {
+	if((types[i] != object_type) && (types[i] != null_type))
+	{
+	    anna_type_copy(types[i], object_type);
+	}
+	
+	anna_stack_declare(stack_lang, types[i]->name, type_type, anna_type_wrap(types[i]), 0); 
+    }
 
     anna_function_implementation_init(stack_lang);
     anna_macro_init(stack_global);
@@ -302,8 +308,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     wchar_t *filename = sb_content(&sb);
     
     debug(D_SPAM,L"Parsing file %ls...\n", filename);    
-    anna_node_t *program = anna_parse(filename);
-    sb_destroy(&sb);
+    anna_node_t *program = anna_parse(anna_intern_or_free(filename));
     
     if(!program || anna_error_count) 
     {
