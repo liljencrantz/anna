@@ -1,0 +1,91 @@
+
+def main(){
+    print("Int\n");
+    print(1>0,"\n");
+    print(1>=0,"\n");
+    print(1<0,"\n");
+    print(1<=0,"\n");
+    print(1==0,"\n");
+    print(1!=0,"\n");
+
+    print(1>1,"\n");
+    print(1>=1,"\n");
+    print(1<1,"\n");
+    print(1<=1,"\n");
+    print(1==1,"\n");
+    print(1!=1,"\n");
+
+    print(1>2,"\n");
+    print(1>=2,"\n");
+    print(1<2,"\n");
+    print(1<=2,"\n");
+    print(1==2,"\n");
+    print(1!=2,"\n");
+
+    print("Float\n");
+    print(1.0>0.0,"\n");
+    print(1.0>=0.0,"\n");
+    print(1.0<0.0,"\n");
+    print(1.0<=0.0,"\n");
+    print(1.0==0.0,"\n");
+    print(1.0!=0.0,"\n");
+
+    print(1.0>1.0,"\n");
+    print(1.0>=1.0,"\n");
+    print(1.0<1.0,"\n");
+    print(1.0<=1.0,"\n");
+    print(1.0==1.0,"\n");
+    print(1.0!=1.0,"\n");
+
+    print(1.0>2.0,"\n");
+    print(1.0>=2.0,"\n");
+    print(1.0<2.0,"\n");
+    print(1.0<=2.0,"\n");
+    print(1.0==2.0,"\n");
+    print(1.0!=2.0,"\n");
+
+    print("Char\n");
+    print('b'>'a',"\n");
+    print('b'>='a',"\n");
+    print('b'<'a',"\n");
+    print('b'<='a',"\n");
+    print('b'=='a',"\n");
+    print('b'!='a',"\n");
+
+    print('b'>'b',"\n");
+    print('b'>='b',"\n");
+    print('b'<'b',"\n");
+    print('b'<='b',"\n");
+    print('b'=='b',"\n");
+    print('b'!='b',"\n");
+
+    print('b'>'c',"\n");
+    print('b'>='c',"\n");
+    print('b'<'c',"\n");
+    print('b'<='c',"\n");
+    print('b'=='c',"\n");
+    print('b'!='c',"\n");
+
+    print("String\n");
+    print("b">"a","\n");
+    print("b">="a","\n");
+    print("b"<"a","\n");
+    print("b"<="a","\n");
+    print("b"=="a","\n");
+    print("b"!="a","\n");
+
+    print("b">"b","\n");
+    print("b">="b","\n");
+    print("b"<"b","\n");
+    print("b"<="b","\n");
+    print("b"=="b","\n");
+    print("b"!="b","\n");
+
+    print("b">"c","\n");
+    print("b">="c","\n");
+    print("b"<"c","\n");
+    print("b"<="c","\n");
+    print("b"=="c","\n");
+    print("b"!="c","\n");
+
+}
