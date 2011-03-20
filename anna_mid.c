@@ -81,6 +81,8 @@ void anna_mid_init()
     anna_mid_put(L"!rangeOpen", ANNA_MID_RANGE_OPEN);
     anna_mid_put(L"__del__", ANNA_MID_DEL);
     anna_mid_put(L"!complexPayload", ANNA_MID_COMPLEX_PAYLOAD);
+    anna_mid_put(L"hashCode", ANNA_MID_HASH_CODE);
+    anna_mid_put(L"__cmp__", ANNA_MID_CMP);
 }
 
 

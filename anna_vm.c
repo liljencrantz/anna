@@ -314,6 +314,13 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		{
 		    anna_object_t *res = fun->native.function(
 			((*stack)->top-param));
+		    if(!res)
+		    {
+			anna_function_print(fun);
+			CRASH;
+		    }
+		    
+		    
 		    (*stack)->top -= (param+1);
 		    anna_push(stack, res);
 		    (*stack)->code += sizeof(*op);		    

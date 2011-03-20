@@ -39,34 +39,6 @@ init="
     anna_function_t *fun;
 "
 
-for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
-    
-    init="$init
-    mmid = anna_native_method_create(
-	float_type, -1, L\"__${name}__Float__\", 0, 
-	&anna_float_i_${name}, 
-	float_type,
-	2, argv, argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(float_type, mmid));
-    anna_function_alias_add(fun, L\"__${name}__\");
-
-"
-    echo "
-static anna_object_t *anna_float_i_$name(anna_object_t **param)
-{
-    if(param[1]==null_object)
-        return null_object;
-  
-    double v1 = anna_float_get(param[0]);
-    double v2 = anna_float_get(param[1]);
-    return v1 $op v2?param[0]:null_object;
-}
-"
-
-done
-
 init="$init
 "
 

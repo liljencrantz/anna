@@ -34,8 +34,38 @@ double anna_float_get(anna_object_t *this)
     return result;
 }
 
+static anna_object_t *anna_float_cmp(anna_object_t **param)
+{
+    if(unlikely(param[1]->type != float_type))
+    {
+	return null_object;
+    }    
+    double v1 = anna_float_get(param[0]);
+    double v2 = anna_float_get(param[1]);
+    if(v1 > v2)
+    {
+	return anna_int_one;
+    }
+    else if(v1 < v2)
+    {
+	return anna_int_minus_one;
+    }
+    return anna_int_zero;
+    
+}
+
 void anna_float_type_create(anna_stack_template_t *stack)
 {
+    anna_type_t *argv[] = 
+	{
+	    float_type, object_type
+	}
+    ;
+    wchar_t *argn[]=
+	{
+	    L"this", L"other"
+	}
+    ;
 
     anna_member_create(
 	float_type, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload",
@@ -57,6 +87,15 @@ void anna_float_type_create(anna_stack_template_t *stack)
 	    null_type);
     }
     
+    anna_native_method_create(
+	float_type,
+	-1,
+	L"__cmp__",
+	0,
+	&anna_float_cmp, 
+	int_type,
+	2, argv, argn);    
+    
     anna_float_type_i_create(stack);
-
+    
 }

@@ -25,35 +25,6 @@ init="
     anna_function_t *fun;
 "
 
-for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
-    
-    init="$init
-    mmid = anna_native_method_create(
-	int_type, -1, L\"__${name}__Int__\", 0, 
-	&anna_int_i_${name}, 
-	int_type,
-	2, argv, argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(int_type, mmid));
-    anna_function_alias_add(fun, L\"__${name}__\");
-"
-
-    echo "
-static anna_object_t *anna_int_i_$name(anna_object_t **param)
-{
-    if(param[1]==null_object)
-        return null_object;
-    int v1 = anna_int_get(param[0]);
-    int v2 = anna_int_get(param[1]);
-    return v1 $op v2?param[0]:null_object;
-}
-"
-
-done
-
-init="$init
-"
 for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1 - v2" "mul v1 * v2" "div v1 / v2" "shl v1 << v2" "shr v1 >> v2" "mod v1 % v2" "bitand v1 & v2" "bitor v1 | v2" "xor v1 ^ v2" "cshl (v1 << v2) | (v1 >> (32-v2))" "cshr (v1 >> v2) | (v1 << (32-v2))"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')

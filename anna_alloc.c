@@ -11,6 +11,7 @@
 #include "anna_vm.h"
 #include "anna_function.h"
 #include "anna_member.h"
+#include "anna_int.h"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_count=0;
@@ -535,6 +536,9 @@ void anna_gc()
 	anna_vmstack_t *stack = anna_vm_stack_get(i);
 	anna_alloc_mark_vmstack(stack);	
     }
+    anna_alloc_mark_object(anna_int_one);	
+    anna_alloc_mark_object(anna_int_minus_one);	
+    anna_alloc_mark_object(anna_int_zero);	
 //    anna_alloc_mark_stack_template(stack_global);
     
     for(i=0; i<al_get_count(&anna_alloc); i++)

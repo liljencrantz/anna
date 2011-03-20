@@ -62,10 +62,30 @@ static anna_object_t *anna_char_i_get_lower(anna_object_t **param)
     return anna_char_create(towlower(anna_char_get(param[0])));
 }
 
+static anna_object_t *anna_char_cmp(anna_object_t **param)
+{
+    if(unlikely(param[1]->type != char_type))
+    {
+	return null_object;
+    }    
+    anna_object_t *res =  anna_int_create(anna_char_get(param[0]) - anna_char_get(param[1]));
+    return res;
+}
 
 
 void anna_char_type_create(anna_stack_template_t *stack)
 {
+    anna_type_t *argv[] = 
+	{
+	    int_type, object_type
+	}
+    ;
+    wchar_t *argn[]=
+	{
+	    L"this", L"other"
+	}
+    ;
+
     anna_member_create(
 	char_type, 
 	ANNA_MID_CHAR_PAYLOAD,  
@@ -95,6 +115,16 @@ void anna_char_type_create(anna_stack_template_t *stack)
 	char_type,
 	&anna_char_i_get_lower, 
 	0);
+
+    anna_native_method_create(
+	char_type,
+	-1,
+	L"__cmp__",
+	0,
+	&anna_char_cmp, 
+	int_type,
+	2, argv, argn);    
+    
 
     anna_char_type_i_create(stack);
 }

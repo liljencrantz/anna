@@ -71,6 +71,9 @@ anna_string_i.c: make_anna_string_i.sh
 anna_complex_i.c: make_anna_complex_i.sh
 	./make_anna_complex_i.sh >anna_complex_i.c
 
+anna_object_i.c: make_anna_object_i.sh
+	./make_anna_object_i.sh >anna_object_i.c
+
 anna_yacc.c anna_yacc.h: anna_yacc.y
 	bison -d anna_yacc.y -o anna_yacc.c -v -p anna_yacc_
 

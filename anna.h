@@ -131,7 +131,9 @@ typedef ssize_t mid_t;
 #define ANNA_MID_RANGE_OPEN 29
 #define ANNA_MID_DEL 30
 #define ANNA_MID_COMPLEX_PAYLOAD 31
-#define ANNA_MID_FIRST_UNRESERVED 32
+#define ANNA_MID_HASH_CODE 32
+#define ANNA_MID_CMP 33
+#define ANNA_MID_FIRST_UNRESERVED 33
 
 union anna_native
 {

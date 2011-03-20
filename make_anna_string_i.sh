@@ -23,32 +23,6 @@ init="
 
 "
 
-for i in "gt >" "lt <" "eq ==" "gte >=" "lte <=" "neq !="; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
-    
-    init="$init
-    anna_native_method_create(
-	string_type, -1, L\"__${name}__String__\", 0, 
-	&anna_string_i_${name}, 
-	string_type,
-	2, argv, argn);
-"
-
-    echo "
-static anna_object_t *anna_string_i_$name(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-
-    anna_string_t *str1 = as_unwrap(param[0]);
-    anna_string_t *str2 = as_unwrap(param[1]);
-    return (asi_compare(str1,str2) $op 0)?anna_int_one: null_object;    
-}
-"
-
-done
-
 init="$init
 "
 

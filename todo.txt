@@ -1,6 +1,7 @@
 Bugs:
 
 Some types don't inherit from object type or inherit from it before it's been properly set up. (Including a few function types)
+List and has types are still included in their specialization list even if GC:ed.
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.

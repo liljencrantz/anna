@@ -10,15 +10,24 @@
 #include "anna.h"
 #include "anna_object_type.h"
 #include "anna_function.h"
+#include "anna_int.h"
+#include "anna_vm.h"
+
+#include "anna_object_i.c"
 
 static anna_object_t *anna_object_init(anna_object_t **param)
 {
     return param[0];    
 }
 
-static anna_object_t *anna_object_eq(anna_object_t **param)
+static anna_object_t *anna_object_cmp(anna_object_t **param)
 {
-    return wcscmp(param[0]->type->name, param[1]->type->name)==0;
+    return anna_int_create(wcscmp(param[0]->type->name, param[1]->type->name));
+}
+
+static anna_object_t *anna_object_hash(anna_object_t **param)
+{
+    return anna_int_create(hash_wcs_func(param[0]->type->name));
 }
 
 void anna_object_type_create()
@@ -38,7 +47,7 @@ void anna_object_type_create()
     
     mid_t mmid;
     anna_function_t *fun;
-
+    
     anna_native_method_create(
 	object_type,
 	-1,
@@ -47,14 +56,22 @@ void anna_object_type_create()
 	&anna_object_init, 
 	object_type, 1, argv, argn);
     
-    mmid = anna_native_method_create(
+    anna_native_method_create(
 	object_type,
-	-1,
-	L"__eq__Object__",
+	ANNA_MID_HASH_CODE,
+	L"hashCode",
 	0,
-	&anna_object_eq, 
+	&anna_object_hash, 
+	int_type, 1, argv, argn);
+    
+    anna_native_method_create(
+	object_type,
+	ANNA_MID_CMP,
+	L"__cmp__",
+	0,
+	&anna_object_cmp, 
 	object_type, 2, argv, argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(object_type, mmid));
-    anna_function_alias_add(fun, L"__eq__");
+    
+    anna_object_type_i_create();
     
 }

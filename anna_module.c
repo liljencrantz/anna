@@ -228,6 +228,11 @@ static void anna_module_load_lang()
 	
 	anna_stack_declare(stack_lang, types[i]->name, type_type, anna_type_wrap(types[i]), 0); 
     }
+/*
+    anna_type_print(object_type);
+    anna_type_print(float_type);
+    CRASH;
+*/  
 
     anna_function_implementation_init(stack_lang);
     anna_macro_init(stack_global);

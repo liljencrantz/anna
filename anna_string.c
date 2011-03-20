@@ -298,6 +298,29 @@ static anna_object_t *anna_string_del(anna_object_t **param)
     return null_object;
 }
 
+static anna_object_t *anna_string_cmp(anna_object_t **param)
+{
+    if(unlikely(param[1]->type != string_type))
+    {
+	return null_object;
+    }    
+
+    anna_string_t *str1 = as_unwrap(param[0]);
+    anna_string_t *str2 = as_unwrap(param[1]);
+    int res = asi_compare(str1,str2);
+    
+    if(res>0)
+    {
+	return anna_int_one;
+    }
+    else if(res<0)
+    {
+	return anna_int_minus_one;
+    }
+    return anna_int_zero;    
+}
+
+
 void anna_string_type_create(anna_stack_template_t *stack)
 {
     mid_t mmid;
@@ -334,6 +357,19 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	}
     ;
     
+    anna_type_t *c_argv[] = 
+	{
+	    string_type,
+	    object_type
+	}
+    ;
+    
+    wchar_t *c_argn[] =
+	{
+	    L"this", L"other"
+	}
+    ;
+    
     anna_type_t *o_argv[] = 
 	{
 	    string_type,
@@ -364,6 +400,15 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	&anna_string_del, 
 	object_type,
 	1, o_argv, o_argn);    
+    
+    anna_native_method_create(
+	string_type,
+	-1,
+	L"__cmp__",
+	0,//	ANNA_FUNCTION_VARIADIC, 
+	&anna_string_cmp, 
+	int_type,
+	2, c_argv, c_argn);    
     
     mmid = anna_native_method_create(
 	string_type,
@@ -552,6 +597,8 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	range_argn);
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
     anna_function_alias_add(fun, L"__set__");
+
+    
 
     anna_string_type_i_create(stack);
     

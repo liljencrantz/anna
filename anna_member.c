@@ -153,15 +153,16 @@ mid_t anna_member_create(
     {
 	if(type == type_type && wcscmp(name, L"!typeWrapperPayload")==0)
 	    return mid;
-	if(mid == ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD ||
-	   mid == ANNA_MID_FUNCTION_WRAPPER_PAYLOAD ||
-	   mid == ANNA_MID_FUNCTION_WRAPPER_STACK ||
-	   mid == ANNA_MID_STACK_TYPE_PAYLOAD)
+	if(
+	    mid == ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD ||
+	    mid == ANNA_MID_FUNCTION_WRAPPER_PAYLOAD ||
+	    mid == ANNA_MID_FUNCTION_WRAPPER_STACK ||
+	    mid == ANNA_MID_STACK_TYPE_PAYLOAD)
 	    return mid;
 	
 	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
 		name, type->name);
-	CRASH;	
+	CRASH;
     }
     
     anna_member_t * member = calloc(1,sizeof(anna_member_t) + sizeof(wchar_t) * (wcslen(name)+1));
