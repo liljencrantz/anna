@@ -83,6 +83,9 @@ void anna_mid_init()
     anna_mid_put(L"!complexPayload", ANNA_MID_COMPLEX_PAYLOAD);
     anna_mid_put(L"hashCode", ANNA_MID_HASH_CODE);
     anna_mid_put(L"__cmp__", ANNA_MID_CMP);
+    anna_mid_put(L"!hashPayload", ANNA_MID_HASH_PAYLOAD);
+    anna_mid_put(L"!hashSpecialization1", ANNA_MID_HASH_SPECIALIZATION1);
+    anna_mid_put(L"!hashSpecialization2", ANNA_MID_HASH_SPECIALIZATION2);
 }
 
 

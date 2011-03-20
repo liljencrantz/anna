@@ -22,84 +22,60 @@
 #include "anna_macro.h"
 
 static hash_table_t anna_hash_specialization;
-struct 
+typedef struct 
 {
-    anna_type_t type1;
-    anna_type_t type2;
+    anna_type_t *type1;
+    anna_type_t *type2;
 }
     tt_t;
 
 
-anna_object_t *anna_hash_create(anna_type_t *spec)
+static inline hash_table_t *h_unwrap(anna_object_t *obj)
 {
-    anna_object_t *obj= anna_object_create(anna_hash_type_get(spec));
-    (*anna_member_addr_get_mid(obj,ANNA_MID_HASH_PAYLOAD))=0;
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_HASH_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_HASH_SIZE)) = 0;
+    return (hash_table_t *)anna_member_addr_get_mid(obj,ANNA_MID_HASH_PAYLOAD);
+}
+
+static int anna_hash_func(void *data)
+{
+
+}
+
+
+static int anna_hash_cmp(void *data1, void *data2)
+{
+
+}
+
+anna_object_t *anna_hash_create(anna_type_t *spec1, anna_type_t *spec2)
+{
+    anna_object_t *obj= anna_object_create(anna_hash_type_get(spec1, spec2));
+    hash_init(h_unwrap(obj), anna_hash_func, anna_hash_cmp);
     return obj;
 }
 
 anna_object_t *anna_hash_create2(anna_type_t *hash_type)
 {
     anna_object_t *obj= anna_object_create(hash_type);
-    (*anna_member_addr_get_mid(obj,ANNA_MID_HASH_PAYLOAD))=0;
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_HASH_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_HASH_SIZE)) = 0;
+    hash_init(h_unwrap(obj), anna_hash_func, anna_hash_cmp);
     return obj;
 }
 
-static anna_type_t *anna_hash_get_specialization(anna_object_t *obj)
+#if 0
+
+static anna_type_t *anna_hash_get_key_specialization(anna_object_t *obj)
 {
     return *((anna_type_t **)
 	     anna_member_addr_get_mid(
 		 obj,
-		 ANNA_MID_HASH_SPECIALIZATION));    
+		 ANNA_MID_HASH_SPECIALIZATION1));    
 }
 
-static ssize_t calc_offset(ssize_t offset, size_t size)
+static anna_type_t *anna_hash_get_value_specialization(anna_object_t *obj)
 {
-    if(offset < 0) {
-	return size-offset;
-    }
-    return offset;
-}
-
-void anna_hash_set(struct anna_object *this, ssize_t offset, struct anna_object *value)
-{
-    size_t size = anna_hash_get_size(this);
-    ssize_t pos = calc_offset(offset, size);
-    //wprintf(L"Set el %d in hash of %d elements\n", pos, size);
-    if(pos < 0)
-    {
-	return;
-    }
-    if(pos >= size)
-    {
-//	wprintf(L"Set new size\n");
-	anna_hash_set_size(this, pos+1);      
-    }
-    
-    anna_object_t **ptr = anna_hash_get_payload(this);
-    ptr[pos] = value;  
-}
-
-anna_object_t *anna_hash_get(anna_object_t *this, ssize_t offset)
-{
-    size_t size = anna_hash_get_size(this);
-    ssize_t pos = calc_offset(offset, size);
-    if(pos < 0||pos >=size)
-    {
-	return null_object;
-    }
-    anna_object_t **ptr = anna_hash_get_payload(this);
-    return ptr[pos];
-}
-
-void anna_hash_add(struct anna_object *this, struct anna_object *value)
-{
-    size_t capacity = anna_hash_get_capacity(this);
-    size_t size = anna_hash_get_size(this);
-    anna_hash_set(this, size, value);
+    return *((anna_type_t **)
+	     anna_member_addr_get_mid(
+		 obj,
+		 ANNA_MID_HASH_SPECIALIZATION2));    
 }
 
 size_t anna_hash_get_size(anna_object_t *this)
@@ -483,6 +459,8 @@ static anna_object_t *anna_hash_i_set_range(anna_object_t **param)
     return param[0];
 }
 
+#endif
+
 static void anna_hash_type_create_internal(
     anna_stack_template_t *stack,
     anna_type_t *type, 
@@ -496,21 +474,31 @@ static void anna_hash_type_create_internal(
 	type, ANNA_MID_HASH_PAYLOAD,  L"!hashPayload",
 	0, null_type);
 
+    int i;
+    string_buffer_t sb;
+    sb_init(&sb);
+    for(i=1; i<(((sizeof(hash_table_t)+1)/sizeof(anna_object_t *))+1);i++)
+    {
+	sb_clear(&sb);
+	sb_printf(&sb, L"!hashPayload%d", i+1);
+	anna_member_create(
+	    type, anna_mid_get(sb_content(&sb)), sb_content(&sb), 
+	    0, null_type);
+    }
+    sb_destroy(&sb);
+
     anna_member_create(
 	type, ANNA_MID_HASH_SPECIALIZATION1,  L"!hashSpecialization1",
 	1, null_type);
 
     anna_member_create(
-	type, ANNA_MID_HASH_SPECIALIZATION1,  L"!hashSpecialization2",
+	type, ANNA_MID_HASH_SPECIALIZATION2,  L"!hashSpecialization2",
 	1, null_type);
 
-    anna_member_create(
-	type, ANNA_MID_HASH_EQ_MID,  L"!eqMid",
-	1, null_type);
+    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION1)) = spec1;
+    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION2)) = spec2;
     
-    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION)1) = spec1;
-    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION)2) = spec2;
-    
+#if 0
     anna_type_t *a_argv[] = 
 	{
 	    type,
@@ -706,17 +694,18 @@ static void anna_hash_type_create_internal(
       __add__, __sub__, __mul__ and friends.
       __select__, __first__, __last__
     */
+#endif
 
 }
 
-static hash_tt_func(void *data)
+static int hash_tt_func(void *data)
 {
     tt_t *tt = (tt_t *)data;
-    return tt->type1 + tt->type2;
+    return (int)(long)tt->type1 + (int)(long)tt->type2;
 }
 
 
-static hash_tt_cmp(void *data1, void *data2)
+static int hash_tt_cmp(void *data1, void *data2)
 {
     tt_t *tt1 = (tt_t *)data1;
     tt_t *tt2 = (tt_t *)data2;
@@ -732,7 +721,7 @@ static inline void anna_hash_internal_init()
     hash_init(&anna_hash_specialization, hash_tt_func, hash_tt_cmp);
 }
 
-tt_t *make_tt(anna_type_t *type1, anna_type_t *type2)
+static tt_t *make_tt(anna_type_t *type1, anna_type_t *type2)
 {
     tt_t *tt = calloc(2, sizeof(anna_type_t));
     tt->type1 = type1;

@@ -19,7 +19,7 @@ anna_function.o anna_node_check.o anna_prepare.o anna_member.o		\
 anna_function_type.o anna_util.o anna_module.o anna_node_create.o	\
 anna_object.o anna_invoke.o anna_error.o anna_mid.o anna_range.o	\
 anna_vm.o anna_alloc.o anna_complex.o anna_attribute.o anna_intern.o	\
-anna_object_type.o
+anna_object_type.o anna_hash.o
 
 ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
 anna_string_internal_test.o util.o common.o anna_string_naive.o
