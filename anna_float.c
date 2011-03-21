@@ -12,6 +12,7 @@
 #include "anna_int.h"
 #include "anna_member.h"
 #include "anna_function.h"
+#include "anna_string.h"
 
 #include "anna_float_i.c"
 
@@ -52,6 +53,13 @@ static anna_object_t *anna_float_cmp(anna_object_t **param)
     }
     return anna_int_zero;
     
+}
+
+static anna_object_t *anna_float_to_string(anna_object_t **param)
+{
+    string_buffer_t sb = SB_STATIC;
+    sb_printf(&sb, L"%f", anna_float_get(param[0]));
+    return anna_string_create(sb_length(&sb), sb_content(&sb));
 }
 
 void anna_float_type_create(anna_stack_template_t *stack)
@@ -95,6 +103,14 @@ void anna_float_type_create(anna_stack_template_t *stack)
 	&anna_float_cmp, 
 	int_type,
 	2, argv, argn);    
+    
+    anna_native_method_create(
+	float_type,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_float_to_string, 
+	string_type, 1, argv, argn);
     
     anna_float_type_i_create(stack);
     

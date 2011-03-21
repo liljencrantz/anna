@@ -14,38 +14,28 @@
 #include "anna_list.h"
 #include "anna_function.h"
 #include "anna_function_type.h"
+#include "anna_vm.h"
+#include "anna_member.h"
 
 static void anna_object_print_val(anna_object_t *value)
 {    
-	if(value->type == int_type) 
-	{
-	    int val = anna_int_get(value);
-	    wprintf(L"%d", val);
-	}
-	else if(value->type == float_type) 
-	{
-	    double val = anna_float_get(value);
-	    wprintf(L"%f", val);
-	}
-	else if(value->type == string_type) 
-	{
-	    anna_string_print(value);
-	}
-	else if(value->type == char_type) 
-	{
-	    wchar_t payload = anna_char_get(value);
-	    wprintf(L"%lc", payload);
-	}
-	else if(value == null_object) 
+    	if(value == null_object) 
 	{
 	    wprintf(L"null");
 	}
 	else 
 	{
-	    /*
-	      FIXME: Print using a toString method
-	    */
-	    wprintf(L"Object of type %ls", value->type->name);
+	    anna_object_t *o = value;
+	    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	    anna_object_t *str = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
+	    if(str->type == string_type)
+	    {
+		anna_string_print(str);
+	    }
+	    else
+	    {
+		wprintf(L"<invalid toString method>");
+	    }
 	}
 }
 

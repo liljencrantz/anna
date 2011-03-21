@@ -298,6 +298,11 @@ static anna_object_t *anna_string_del(anna_object_t **param)
     return null_object;
 }
 
+static anna_object_t *anna_string_to_string(anna_object_t **param)
+{
+    return param[0];
+}
+
 static anna_object_t *anna_string_cmp(anna_object_t **param)
 {
     if(unlikely(param[1]->type != string_type))
@@ -599,6 +604,13 @@ void anna_string_type_create(anna_stack_template_t *stack)
     anna_function_alias_add(fun, L"__set__");
 
     
+    anna_native_method_create(
+	string_type,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_string_to_string, 
+	string_type, 1, i_argv, i_argn);    
 
     anna_string_type_i_create(stack);
     
