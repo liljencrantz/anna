@@ -1,5 +1,8 @@
 
 def main()
 {
-    print(7.0 == 8.0, 7.0==7.0, 1.0 > 2.0);
+    var h = HashMap();
+    h["foo"] = 11;
+    h["bar"] = 47;
+    print(h["bar"], h["foo"],h[null]);
 }

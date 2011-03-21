@@ -38,13 +38,9 @@ for i in "eq ==" "gt >" "lt <" "gte >=" "lte <=" "neq !="; do
     echo "
 static anna_object_t *anna_object_i_$name(anna_object_t **param)
 {
-    anna_object_t *o_param[2];
     anna_object_t *fun_object = *anna_static_member_addr_get_mid(param[0]->type, ANNA_MID_CMP);
-    assert(fun_object);
-    assert(anna_function_unwrap(fun_object));
     
     anna_object_t *res = anna_vm_run(fun_object, 2, param);
-    assert(res);
     
     if(unlikely(res->type != int_type))
     {

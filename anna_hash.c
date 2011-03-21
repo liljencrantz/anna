@@ -37,13 +37,22 @@ static inline hash_table_t *h_unwrap(anna_object_t *obj)
 
 static int anna_hash_func(void *data)
 {
-
+    anna_object_t *param[] = {data};
+    anna_object_t *fun_object = *anna_static_member_addr_get_mid(param[0]->type, ANNA_MID_HASH_CODE);
+    anna_object_t *res = anna_vm_run(fun_object, 1, param);
+    if(unlikely(res->type != int_type)){
+	return 0;
+    }
+    return anna_int_get(res);
 }
-
 
 static int anna_hash_cmp(void *data1, void *data2)
 {
-
+    anna_object_t *param[] = {data1,data2};
+    anna_object_t *fun_object = *anna_static_member_addr_get_mid(param[0]->type, ANNA_MID_EQ);
+    anna_object_t *res = anna_vm_run(fun_object, 2, param);
+    
+    return res != null_object;
 }
 
 anna_object_t *anna_hash_create(anna_type_t *spec1, anna_type_t *spec2)
@@ -58,6 +67,43 @@ anna_object_t *anna_hash_create2(anna_type_t *hash_type)
     anna_object_t *obj= anna_object_create(hash_type);
     hash_init(h_unwrap(obj), anna_hash_func, anna_hash_cmp);
     return obj;
+}
+
+static anna_object_t *anna_hash_init(anna_object_t **param)
+{
+    hash_init(h_unwrap(param[0]), anna_hash_func, anna_hash_cmp);
+/*
+    size_t sz = anna_hash_get_size(param[1]);
+    anna_object_t **src = anna_hash_get_payload(param[1]);
+
+    anna_hash_set_size(param[0], sz);
+    anna_object_t **dest = anna_hash_get_payload(param[0]);
+    memcpy(dest, src, sizeof(anna_object_t *)*sz);
+*/  
+    return param[0];
+}
+
+
+static anna_object_t *anna_hash_set(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object; 
+/*
+    anna_type_print(param[0]->type);
+    anna_object_print(param[0]);
+    anna_object_print(param[1]);
+    anna_object_print(param[2]);
+*/
+    hash_put(h_unwrap(param[0]), param[1], param[2]);
+    return param[2];
+}
+
+static anna_object_t *anna_hash_get(anna_object_t **param)
+{
+    if(param[1]==null_object)
+	return null_object;
+    anna_object_t *res = hash_get(h_unwrap(param[0]), param[1]);
+    return res ? res : null_object;
 }
 
 #if 0
@@ -125,21 +171,6 @@ void anna_hash_set_capacity(anna_object_t *this, size_t sz)
 anna_object_t **anna_hash_get_payload(anna_object_t *this)
 {
     return *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_HASH_PAYLOAD);
-}
-
-static anna_object_t *anna_hash_set_int(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    anna_hash_set(param[0], anna_int_get(param[1]), param[2]);
-    return param[2];
-}
-
-static anna_object_t *anna_hash_get_int(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    return anna_hash_get(param[0], anna_int_get(param[1]));
 }
 
 static anna_object_t *anna_hash_get_count(anna_object_t **param)
@@ -290,22 +321,6 @@ static anna_object_t *anna_hash_first(anna_object_t **param)
 	    return arr[i];
     }
     return null_object;
-}
-
-static anna_object_t *anna_hash_init(anna_object_t **param)
-{
-    (*anna_member_addr_get_mid(param[0],ANNA_MID_HASH_PAYLOAD))=0;
-    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_SIZE)) = 0;
-
-    size_t sz = anna_hash_get_size(param[1]);
-    anna_object_t **src = anna_hash_get_payload(param[1]);
-
-    anna_hash_set_size(param[0], sz);
-    anna_object_t **dest = anna_hash_get_payload(param[0]);
-    memcpy(dest, src, sizeof(anna_object_t *)*sz);
-    
-    return param[0];
 }
 
 static anna_object_t *anna_hash_del(anna_object_t **param)
@@ -498,28 +513,50 @@ static void anna_hash_type_create_internal(
     (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION1)) = spec1;
     (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION2)) = spec2;
     
-#if 0
-    anna_type_t *a_argv[] = 
+    anna_type_t *kv_argv[] = 
 	{
 	    type,
-	    spec
+	    spec1,
+	    spec2
 	}
     ;
     
-    wchar_t *a_argn[]=
+    wchar_t *kv_argn[]=
 	{
-	    L"this", L"value"
+	    L"this", L"key", L"value"
 	}
     ;
 
-    anna_type_t *l_argv[] = 
+    anna_native_method_create(
+	type, 
+	-1,
+	L"__set__", 
+	0, 
+	&anna_hash_set, 
+	spec2,
+	3,
+	kv_argv, 
+	kv_argn);    
+    
+    anna_native_method_create(
+	type, 
+	-1,
+	L"__get__", 
+	0, 
+	&anna_hash_get, 
+	spec2,
+	2,
+	kv_argv, 
+	kv_argn);    
+
+    anna_type_t *i_argv[] = 
 	{
 	    type,
 	    type
 	}
     ;
     
-    wchar_t *l_argn[]=
+    wchar_t *i_argn[]=
 	{
 	    L"this", L"value"
 	}
@@ -532,8 +569,10 @@ static void anna_hash_type_create_internal(
 	ANNA_FUNCTION_VARIADIC, 
 	&anna_hash_init, 
 	type,
-	2, a_argv, a_argn);
+	2, i_argv, i_argn);
     
+#if 0
+
     anna_native_method_create(
 	type,
 	ANNA_MID_DEL,
@@ -569,19 +608,6 @@ static void anna_hash_type_create_internal(
 	i_argn);
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
     anna_function_alias_add(fun, L"__get__");
-    
-    mmid = anna_native_method_create(
-	type, 
-	-1,
-	L"__set__Int__", 
-	0, 
-	&anna_hash_set_int, 
-	spec,
-	3,
-	i_argv, 
-	i_argn);    
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
-    anna_function_alias_add(fun, L"__set__");
     
     anna_native_property_create(
 	type,
@@ -648,52 +674,6 @@ static void anna_hash_type_create_internal(
 	spec,
 	2, a_argv, a_argn);
         
-    anna_type_t *range_argv[] = 
-	{
-	    type,
-	    range_type,
-	    type
-	}
-    ;
-
-    wchar_t *range_argn[] =
-	{
-	    L"this", L"range", L"value"
-	}
-    ;
-
-    mmid = anna_native_method_create(
-	type,
-	-1,
-	L"__get__Range__",
-	0, 
-	&anna_hash_i_get_range, 
-	type,
-	2,
-	range_argv, 
-	range_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
-    anna_function_alias_add(fun, L"__get__");
-
-    mmid = anna_native_method_create(
-	type,
-	-1,
-	L"__set__Range__",
-	0, 
-	&anna_hash_i_set_range, 
-	type,
-	3,
-	range_argv, 
-	range_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
-    anna_function_alias_add(fun, L"__set__");
-
-    /*
-      Todo:
-
-      __add__, __sub__, __mul__ and friends.
-      __select__, __first__, __last__
-    */
 #endif
 
 }
