@@ -126,7 +126,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	
 	case ANNA_NODE_SPECIALIZE:
 	{
-	    anna_error(this, L"Unimplementedtemplate specialization. Come back tomorrow.");
+	    anna_error(this, L"Unimplemented node type during gc. Come back tomorrow.");
 	    CRASH;
 	    break;
 	}

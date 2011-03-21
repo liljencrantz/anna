@@ -1,8 +1,8 @@
 
 def main()
 {
-    var h = HashMap();
+    var h = HashMap<String, Int>();
     h["foo"] = 11;
     h["bar"] = 47;
-    h.each(key, value){print(key, "=>", value, "\n")}
+    h.each(key, value){print(key~"A", "=>", value+1, "\n")}
 }

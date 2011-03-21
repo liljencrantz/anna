@@ -183,7 +183,6 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	node_call_wrapper_type,
 	2, e_argv, e_argn);
 
-
     anna_native_property_create(
 	node_call_wrapper_type,
 	-1,

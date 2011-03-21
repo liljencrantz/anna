@@ -148,6 +148,12 @@ static anna_object_t *anna_hash_each(anna_object_t **param)
     return param[0];
 }
 
+static anna_object_t *anna_hash_del(anna_object_t **param)
+{
+    hash_destroy(h_unwrap(param[0]));
+    return param[0];
+}
+
 #if 0
 
 static anna_object_t *anna_hash_append(anna_object_t **param)
@@ -257,14 +263,6 @@ static anna_object_t *anna_hash_first(anna_object_t **param)
 	    return arr[i];
     }
     return null_object;
-}
-
-static anna_object_t *anna_hash_del(anna_object_t **param)
-{
-    free((*anna_member_addr_get_mid(param[0],ANNA_MID_HASH_PAYLOAD)));
-    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_SIZE)) = 0;
-    return param[0];
 }
 
 static anna_object_t *anna_hash_in(anna_object_t **param)
@@ -537,8 +535,6 @@ static void anna_hash_type_create_internal(
 	type,
 	2, e_argv, e_argn);
 
-#if 0
-
     anna_native_method_create(
 	type,
 	ANNA_MID_DEL,
@@ -546,7 +542,9 @@ static void anna_hash_type_create_internal(
 	0,
 	&anna_hash_del, 
 	object_type,
-	1, a_argv, a_argn);    
+	1, e_argv, e_argn);
+
+#if 0
 
     anna_type_t *i_argv[] = 
 	{
@@ -562,19 +560,6 @@ static void anna_hash_type_create_internal(
 	}
     ;
 
-    mmid = anna_native_method_create(
-	type,
-	-1,
-	L"__get__Int__",
-	0, 
-	&anna_hash_get_int, 
-	spec,
-	2, 
-	i_argv, 
-	i_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
-    anna_function_alias_add(fun, L"__get__");
-    
     anna_native_method_create(
 	type, -1, L"__appendAssign__", 0, 
 	&anna_hash_append, 
@@ -596,12 +581,6 @@ static void anna_hash_type_create_internal(
 	    L"this", L"block"
 	}
     ;    
-    
-    anna_native_method_create(
-	type, -1, L"__each__", 0, 
-	&anna_hash_each, 
-	type,
-	2, e_argv, e_argn);
     
     anna_native_method_create(
 	type, -1, L"__filter__", 
