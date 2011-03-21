@@ -14,6 +14,7 @@
 #include "anna_int.h"
 #include "anna_member.h"
 #include "anna_function.h"
+#include "anna_string.h"
 
 #include "anna_char_i.c"
 
@@ -72,6 +73,11 @@ static anna_object_t *anna_char_cmp(anna_object_t **param)
     return res;
 }
 
+static anna_object_t *anna_char_to_string(anna_object_t **param)
+{
+    wchar_t ch = anna_char_get(param[0]);
+    return anna_string_create(1, &ch);
+}
 
 void anna_char_type_create(anna_stack_template_t *stack)
 {
@@ -124,6 +130,14 @@ void anna_char_type_create(anna_stack_template_t *stack)
 	&anna_char_cmp, 
 	int_type,
 	2, argv, argn);    
+    
+    anna_native_method_create(
+	char_type,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_char_to_string, 
+	string_type, 1, argv, argn);
     
 
     anna_char_type_i_create(stack);

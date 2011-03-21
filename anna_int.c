@@ -67,6 +67,7 @@ static anna_object_t *anna_int_to_string(anna_object_t **param)
     return anna_string_create(sb_length(&sb), sb_content(&sb));
 }
 
+
 void anna_int_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *i_argv[] = 
