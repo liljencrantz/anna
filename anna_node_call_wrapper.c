@@ -162,7 +162,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	4, argv, argn);
 
     anna_type_t *fun_type = anna_function_type_each_create(
-	L"!StringIterFunction", node_wrapper_type);
+	L"!StringIterFunction", int_type, node_wrapper_type);
 
     anna_type_t *e_argv[] = 
 	{

@@ -524,7 +524,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	&anna_string_i_set_count);
 
     anna_type_t *fun_type = anna_function_type_each_create(
-	L"!StringIterFunction", char_type);
+	L"!StringIterFunction", int_type, char_type);
 
     anna_type_t *e_argv[] = 
 	{

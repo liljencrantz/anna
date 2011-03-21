@@ -598,7 +598,7 @@ static void anna_list_type_create_internal(
 	2, l_argv, l_argn);
     
     anna_type_t *fun_type = anna_function_type_each_create(
-	L"!ListIterFunction", spec);
+	L"!ListIterFunction", int_type, spec);
 
     anna_type_t *e_argv[] = 
 	{

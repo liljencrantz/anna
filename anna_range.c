@@ -303,7 +303,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	&anna_range_set_open_i);
 
     anna_type_t *fun_type = anna_function_type_each_create(
-	L"!RangeIterFunction", int_type);
+	L"!RangeIterFunction", int_type, int_type);
 
     anna_type_t *e_argv[] = 
 	{

@@ -189,7 +189,8 @@ anna_function_type_key_t *anna_function_type_extract(anna_type_t *type)
 
 anna_type_t *anna_function_type_each_create(
     wchar_t *name, 
-    anna_type_t *argument_type)
+    anna_type_t *key_type,
+    anna_type_t *value_type)
 {
     anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
     each_key->result = object_type;
@@ -198,8 +199,9 @@ anna_type_t *anna_function_type_each_create(
     each_key->argn = malloc(sizeof(wchar_t *)*2);
     each_key->argn[0] = L"key";
     each_key->argn[1] = L"value";
-    each_key->argv[0] = int_type;
-    each_key->argv[1] = argument_type;    
+
+    each_key->argv[0] = key_type;
+    each_key->argv[1] = value_type;    
     anna_type_t *fun_type = anna_type_native_create(name, stack_global);
     anna_function_type_create(each_key, fun_type);
     return fun_type;

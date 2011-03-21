@@ -128,35 +128,27 @@ static anna_type_t *anna_hash_get_value_specialization(anna_object_t *obj)
 		 ANNA_MID_HASH_SPECIALIZATION2));    
 }
 
-#if 0
+static void anna_hash_each_fun(void *keyp, void *valp, void *funp)
+{
+    anna_object_t *o_param[]=
+	{
+	    keyp, valp
+	}
+    ;   
+    anna_vm_run(funp, 2, o_param);
+}
 
 
 static anna_object_t *anna_hash_each(anna_object_t **param)
 {
     anna_object_t *body_object=param[1];
     
-    size_t sz = anna_hash_get_size(param[0]);
-    anna_object_t **arr = anna_hash_get_payload(param[0]);
-    size_t i;
+    hash_foreach2(h_unwrap(param[0]), anna_hash_each_fun, body_object);
 
-/*
-  wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-  wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
-*/  
-    anna_object_t *o_param[2];
-    for(i=0;i<sz;i++)
-    {
-	/*
-	  wprintf(L"Run the following code:\n");
-	  anna_node_print((*function_ptr)->body);
-	  wprintf(L"\n");
-	*/
-	o_param[0] = anna_int_create(i);
-	o_param[1] = arr[i];
-	anna_vm_run(body_object, 2, o_param);
-    }
     return param[0];
 }
+
+#if 0
 
 static anna_object_t *anna_hash_append(anna_object_t **param)
 {
@@ -523,6 +515,27 @@ static void anna_hash_type_create_internal(
 	&anna_hash_get_count, 
 	0);
 
+    anna_type_t *fun_type = anna_function_type_each_create(
+	L"!MapIterFunction", spec1, spec2);
+
+    anna_type_t *e_argv[] = 
+	{
+	    type,
+	    fun_type
+	}
+    ;
+    
+    wchar_t *e_argn[]=
+	{
+	    L"this", L"block"
+	}
+    ;    
+    
+    anna_native_method_create(
+	type, -1, L"__each__", 0, 
+	&anna_hash_each, 
+	type,
+	2, e_argv, e_argn);
 
 #if 0
 
