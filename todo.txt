@@ -25,6 +25,7 @@ The rest of the hashtable functions (filter, contains, properties for keys and v
 Set type
 String format function
 File type
+toString methods for Range, Function, Node, etc
 
 IDEAS:
 Invertigate if we can completely drop the stack_template struct and just use types for that purpose
@@ -35,6 +36,8 @@ Tests for namespaces
 Tests for nested macro members
 Tests for integer math
 Tests for floating point math
+Tests for HashMap
+Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
 
 DOCUMENTATION:
