@@ -1,7 +1,7 @@
 Bugs:
 
 Some types don't inherit from object type or inherit from it before it's been properly set up. (Including a few function types)
-List and has types are still included in their specialization list even if GC:ed.
+List and hash types are still included in their specialization list even if GC:ed.
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
@@ -21,8 +21,8 @@ Make all types inherit from Object
 
 STDLIB FEATURES:
 HTML documentation extractor
-Hash functions
-Hashtable implementation
+The rest of the hashtable functions (filter, contains, properties for keys and values, etc)
+Set type
 String format function
 File type
 

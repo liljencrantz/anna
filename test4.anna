@@ -4,5 +4,5 @@ def main()
     var h = HashMap<String, Int>();
     h["foo"] = 11;
     h["bar"] = 47;
-    h.each(key, value){print(key~"A", "=>", value+1, "\n")}
+    h.each(key, value){print(key~"A", "=>", value.toString(), "\n")}
 }

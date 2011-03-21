@@ -86,6 +86,7 @@ void anna_mid_init()
     anna_mid_put(L"!hashPayload", ANNA_MID_HASH_PAYLOAD);
     anna_mid_put(L"!hashSpecialization1", ANNA_MID_HASH_SPECIALIZATION1);
     anna_mid_put(L"!hashSpecialization2", ANNA_MID_HASH_SPECIALIZATION2);
+    anna_mid_put(L"toString", ANNA_MID_TO_STRING);
 }
 
 
