@@ -14,6 +14,7 @@
 #include "anna_float.h"
 #include "anna_member.h"
 #include "anna_function.h"
+#include "anna_string.h"
 
 #include "anna_complex_i.c"
 
@@ -44,7 +45,13 @@ static anna_object_t *anna_complex_init(anna_object_t **param)
     return param[0];
 }
 
-
+static anna_object_t *anna_complex_to_string(anna_object_t **param)
+{
+    complex double val = anna_complex_get(param[0]);
+    string_buffer_t sb = SB_STATIC;
+    sb_printf(&sb, L"%f + i%f", creal(val), cimag(val));
+    return anna_string_create(sb_length(&sb), sb_content(&sb));
+}
 
 void anna_complex_type_create(anna_stack_template_t *stack)
 {
@@ -98,6 +105,13 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	complex_type,
 	3, argv, argn);
     
+    anna_native_method_create(
+	complex_type,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_complex_to_string, 
+	string_type, 1, argv, argn);    
 
     anna_complex_type_i_create(stack);
 }
