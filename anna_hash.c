@@ -106,7 +106,11 @@ static anna_object_t *anna_hash_get(anna_object_t **param)
     return res ? res : null_object;
 }
 
-#if 0
+static anna_object_t *anna_hash_get_count(anna_object_t **param)
+{
+    return anna_int_create(hash_get_count(h_unwrap(param[0])));
+}
+
 
 static anna_type_t *anna_hash_get_key_specialization(anna_object_t *obj)
 {
@@ -124,92 +128,8 @@ static anna_type_t *anna_hash_get_value_specialization(anna_object_t *obj)
 		 ANNA_MID_HASH_SPECIALIZATION2));    
 }
 
-size_t anna_hash_get_size(anna_object_t *this)
-{
-    assert(this);
-    return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_HASH_SIZE);
-}
+#if 0
 
-void anna_hash_set_size(anna_object_t *this, size_t sz)
-{
-    size_t old_size = anna_hash_get_size(this);
-    size_t capacity = anna_hash_get_capacity(this);
-    
-    if(sz>old_size)
-    {
-	if(sz>capacity)
-	{
-	    anna_hash_set_capacity(this, sz);
-	}
-	anna_object_t **ptr = anna_hash_get_payload(this);
-	int i;
-	for(i=old_size; i<sz; i++)
-	{
-	    ptr[i] = null_object;
-	}
-    }
-    *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_HASH_SIZE) = sz;
-}
-
-size_t anna_hash_get_capacity(anna_object_t *this)
-{
-    return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_HASH_CAPACITY);
-}
-
-void anna_hash_set_capacity(anna_object_t *this, size_t sz)
-{
-    anna_object_t **ptr = anna_hash_get_payload(this);
-    ptr = realloc(ptr, sizeof(anna_object_t *)*sz);
-    if(!ptr)
-    {
-	CRASH;
-    }    
-    (*(size_t *)anna_member_addr_get_mid(this,ANNA_MID_HASH_CAPACITY)) = sz;
-    *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_HASH_PAYLOAD) = ptr;
-}
-
-anna_object_t **anna_hash_get_payload(anna_object_t *this)
-{
-    return *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_HASH_PAYLOAD);
-}
-
-static anna_object_t *anna_hash_get_count(anna_object_t **param)
-{
-    return anna_int_create(anna_hash_get_size(param[0]));
-}
-
-static anna_object_t *anna_hash_set_count(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    int sz = anna_int_get(param[1]);
-    anna_hash_set_size(param[0], sz);
-    return param[1];
-}
-
-static anna_object_t *anna_hash_append(anna_object_t **param)
-{
-    size_t i;
-
-    size_t capacity = anna_hash_get_capacity(param[0]);
-    size_t size = anna_hash_get_size(param[0]);
-    size_t size2 = anna_hash_get_size(param[1]);
-    size_t new_size = size+size2;
-    
-    if(capacity <= (new_size))
-    {
-	anna_hash_set_capacity(param[0], maxi(8, new_size*2));
-    }
-    anna_object_t **ptr = anna_hash_get_payload(param[0]);
-    anna_object_t **ptr2 = anna_hash_get_payload(param[1]);
-    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_SIZE) = new_size;
-    for(i=0; i<size2; i++)
-    {
-	ptr[size+i]=ptr2[i];
-    }
-    
-    return param[0];
-}
 
 static anna_object_t *anna_hash_each(anna_object_t **param)
 {
@@ -235,6 +155,30 @@ static anna_object_t *anna_hash_each(anna_object_t **param)
 	o_param[1] = arr[i];
 	anna_vm_run(body_object, 2, o_param);
     }
+    return param[0];
+}
+
+static anna_object_t *anna_hash_append(anna_object_t **param)
+{
+    size_t i;
+
+    size_t capacity = anna_hash_get_capacity(param[0]);
+    size_t size = anna_hash_get_size(param[0]);
+    size_t size2 = anna_hash_get_size(param[1]);
+    size_t new_size = size+size2;
+    
+    if(capacity <= (new_size))
+    {
+	anna_hash_set_capacity(param[0], maxi(8, new_size*2));
+    }
+    anna_object_t **ptr = anna_hash_get_payload(param[0]);
+    anna_object_t **ptr2 = anna_hash_get_payload(param[1]);
+    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_SIZE) = new_size;
+    for(i=0; i<size2; i++)
+    {
+	ptr[size+i]=ptr2[i];
+    }
+    
     return param[0];
 }
 
@@ -571,6 +515,15 @@ static void anna_hash_type_create_internal(
 	type,
 	2, i_argv, i_argn);
     
+    anna_native_property_create(
+	type,
+	-1,
+	L"count",
+	int_type,
+	&anna_hash_get_count, 
+	0);
+
+
 #if 0
 
     anna_native_method_create(
@@ -609,14 +562,6 @@ static void anna_hash_type_create_internal(
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
     anna_function_alias_add(fun, L"__get__");
     
-    anna_native_property_create(
-	type,
-	-1,
-	L"count",
-	int_type,
-	&anna_hash_get_count, 
-	&anna_hash_set_count);
-
     anna_native_method_create(
 	type, -1, L"__appendAssign__", 0, 
 	&anna_hash_append, 

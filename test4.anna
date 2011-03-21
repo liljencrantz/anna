@@ -4,5 +4,5 @@ def main()
     var h = HashMap();
     h["foo"] = 11;
     h["bar"] = 47;
-    print(h["bar"], h["foo"],h[null]);
+    print(h["bar"], h["foo"],h[null], h.count);
 }
