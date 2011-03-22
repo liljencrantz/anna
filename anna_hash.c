@@ -18,17 +18,11 @@
 #include "anna_function.h"
 #include "anna_range.h"
 #include "anna_vm.h"
+#include "anna_tt.h"
 
 #include "anna_macro.h"
 
 static hash_table_t anna_hash_specialization;
-typedef struct 
-{
-    anna_type_t *type1;
-    anna_type_t *type2;
-}
-    tt_t;
-
 
 static inline hash_table_t *h_unwrap(anna_object_t *obj)
 {
@@ -416,9 +410,6 @@ static void anna_hash_type_create_internal(
     anna_type_t *spec1,
     anna_type_t *spec2)
 {
-    mid_t mmid;
-    anna_function_t *fun;
-
     anna_member_create(
 	type, ANNA_MID_HASH_PAYLOAD,  L"!hashPayload",
 	0, null_type);
@@ -615,48 +606,26 @@ static void anna_hash_type_create_internal(
 
 }
 
-static int hash_tt_func(void *data)
-{
-    tt_t *tt = (tt_t *)data;
-    return (int)(long)tt->type1 + (int)(long)tt->type2;
-}
-
-
-static int hash_tt_cmp(void *data1, void *data2)
-{
-    tt_t *tt1 = (tt_t *)data1;
-    tt_t *tt2 = (tt_t *)data2;
-    return (tt1->type1 == tt2->type1) && (tt1->type2 == tt2->type2);    
-}
-
 static inline void anna_hash_internal_init()
 {
-    static init = 0;
+    static int init = 0;
     if(likely(init))
 	return;
     init=1;
     hash_init(&anna_hash_specialization, hash_tt_func, hash_tt_cmp);
 }
 
-static tt_t *make_tt(anna_type_t *type1, anna_type_t *type2)
-{
-    tt_t *tt = calloc(2, sizeof(anna_type_t));
-    tt->type1 = type1;
-    tt->type2 = type2;
-    return tt;
-}
-
 void anna_hash_type_create(anna_stack_template_t *stack)
 {
     anna_hash_internal_init();
-    hash_put(&anna_hash_specialization, make_tt(object_type, object_type), hash_type);
+    hash_put(&anna_hash_specialization, anna_tt_make(object_type, object_type), hash_type);
     anna_hash_type_create_internal(stack, hash_type, object_type, object_type);
 }
 
 anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 {
     anna_hash_internal_init();
-    tt_t tt = 
+    anna_tt_t tt = 
 	{
 	    subtype1, subtype2
 	}
@@ -669,7 +638,7 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 	sb_printf(&sb, L"HashMap<%ls,%ls>", subtype1->name, subtype2->name);
 	spec = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);
-	hash_put(&anna_hash_specialization, make_tt(subtype1, subtype2), spec);
+	hash_put(&anna_hash_specialization, anna_tt_make(subtype1, subtype2), spec);
 	anna_hash_type_create_internal(stack_global, spec, subtype1, subtype2);
     }
     return spec;

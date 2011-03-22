@@ -16,7 +16,13 @@
 #include "anna_member.h"
 #include "anna_status.h"
 #include "anna_vm.h"
+#include "anna_tt.h"
 #include "anna_alloc.h"
+
+#define ABIDES_IN_TRANSIT -1
+
+static hash_table_t anna_abides_cache;
+
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -279,13 +285,33 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     {
 	return 0;
     }
+
+    anna_tt_t tt = 
+	{
+	    contender, role_model
+	}
+    ;
+    
+    long count = (long)hash_get(&anna_abides_cache, &tt);
+    if(count == ABIDES_IN_TRANSIT)
+    {
+	return 0;
+    }
+    else if(count != 0)
+    {
+	return count - 1;
+    }
+
+    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), ABIDES_IN_TRANSIT);
+
+    
     size_t i;
     int res = 0;    
 
-    if(!contender){CRASH;}
+    assert(contender);
     assert(role_model);
     
-//    debug(D_SPAM,L"Check type %ls abides against %ls\n", contender->name, role_model->name);
+    debug(D_SPAM,L"Check if type %ls abides against %ls\n", contender->name, role_model->name);
     
     //debug(D_SPAM,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&role_model->name_identifier));
@@ -303,10 +329,14 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	anna_type_t *role_model_subtype = anna_type_member_type_get(role_model, members[i]);
 	if(!contender_subtype || !anna_abides(contender_subtype, role_model_subtype))
 	{
+//	    anna_type_print(contender);
 	    res++;
 	}	
     }
     free(members);
+
+    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), res+1);
+
     return res;
 }
 
@@ -399,6 +429,8 @@ static void anna_init()
     anna_mid_init();
     
     stack_global = anna_stack_create(0);
+
+    hash_init(&anna_abides_cache, hash_tt_func, hash_tt_cmp);
 
 /*
     anna_member_types_create(stack_global);

@@ -247,7 +247,7 @@ void anna_type_print(anna_type_t *type)
 {
     int i;
     wprintf(L"Type %ls:\n", type->name);
-    wchar_t **members = calloc(sizeof(wchar_t *), anna_type_member_count(type));
+    wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&type->name_identifier));
     anna_type_get_member_names(type, members);    
     for(i=0; i< anna_type_member_count(type); i++)
     {

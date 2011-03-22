@@ -670,17 +670,17 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_CONST:
 	{
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
-	    debug(D_ERROR, L"Calculating type of declaration %ls\n", d->name);
+//	    debug(D_ERROR, L"Calculating type of declaration %ls\n", d->name);
 	    if(d->type->node_type == ANNA_NODE_IDENTIFIER)
 	    {
-		debug(D_ERROR, L"Declaration %ls has identifier as type\n", d->name);
+//		debug(D_ERROR, L"Declaration %ls has identifier as type\n", d->name);
 		anna_node_identifier_t *t = node_cast_identifier(d->type);
 		anna_object_t *t2 = anna_stack_get_str(stack, t->name);	    
 		d->return_type = anna_type_unwrap(t2);
 	    }
 	    else if(d->type->node_type == ANNA_NODE_NULL)
 	    {
-		debug(D_ERROR, L"Declaration %ls has implicit type\n", d->name);
+//		debug(D_ERROR, L"Declaration %ls has implicit type\n", d->name);
 		if(d->value->node_type == ANNA_NODE_NULL)
 		{
 		    anna_error(this, L"No type specified for variable declaration\n");
@@ -696,7 +696,7 @@ static void anna_node_calculate_type_internal(
 	    {
 		anna_stack_set_type(stack, d->name, d->return_type);
 	    }
-	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);
+//	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);
 	    break;
 	}
 	

@@ -18,6 +18,8 @@
 #include "anna_member.h"
 
 static anna_type_t *function_type_base = 0;
+static int base_constructed = 0;
+static array_list_t types=AL_STATIC;
 
 static anna_object_t *anna_function_type_i_get_name(anna_object_t **param)
 {
@@ -106,14 +108,14 @@ static void anna_function_type_base_create()
 
     if(function_type_base)
 	return;
-
+    
     function_type_base = anna_type_native_create(L"!FunctionBase", stack_global);
     anna_type_t *res = function_type_base;
     
     anna_type_t *argv[] = 
 	{
 	    /* FIXME: Wrong type here. Abides check fails otherwise. Why? */
-	    object_type//res
+	    res
 	}
     ;
     wchar_t *argn[]=
@@ -121,7 +123,7 @@ static void anna_function_type_base_create()
 	    L"this"
 	}
     ;
-
+    
     anna_native_method_create(
 	res,
 	ANNA_MID_TO_STRING,
@@ -163,6 +165,15 @@ static void anna_function_type_base_create()
 	0);
 
     anna_type_copy_object(res);
+
+    int i;
+    for(i=0; i<al_get_count(&types); i++)
+    {
+	anna_type_t *child = al_get(&types, i);
+	anna_type_copy(child, function_type_base);
+    }
+    al_destroy(&types);
+    base_constructed = 1;
 }
 
 void anna_function_type_create(
@@ -170,11 +181,15 @@ void anna_function_type_create(
     anna_type_t *res)
 {
     //anna_function_type_key_print(key);
-
+    
     anna_function_type_base_create();
-    anna_type_copy(res, function_type_base);
+    if(base_constructed)
+	anna_type_copy(res, function_type_base);
+    else
+	al_push(&types, res);
+    
     anna_type_copy_object(res);
-
+    
     /*
       Non-static member variables
     */
