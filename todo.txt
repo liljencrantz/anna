@@ -44,6 +44,7 @@ Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
 Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
+Bytecode optimization: Different getters for static and non-static members to up performance a bit. Also consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion
 Avoid creating trampolines when possible
 Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
