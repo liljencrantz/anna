@@ -1,7 +1,5 @@
-Known bugs:
-
+KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed.
-Need wrong this paramater type for toString method, or abides check will fail. Need to investigate...
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
