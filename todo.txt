@@ -18,6 +18,7 @@ True type intersections
 Continuations
 milter/fap
 Make all types inherit from Object
+Int should just be an interface,with two backing implementations
 
 STDLIB FEATURES:
 HTML documentation extractor
