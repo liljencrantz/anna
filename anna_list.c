@@ -729,6 +729,7 @@ anna_type_t *anna_list_type_get(anna_type_t *subtype)
 	anna_list_type_create_internal(stack_global, spec, subtype);
     }
 
+    anna_type_copy_object(spec);
     return spec;
 }
 

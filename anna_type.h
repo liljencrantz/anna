@@ -57,4 +57,6 @@ void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 
 void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_t *stack);
 
+void anna_type_object_is_created();
+void anna_type_copy_object(anna_type_t *type);
 #endif

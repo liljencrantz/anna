@@ -21,7 +21,7 @@ anna_node_t *anna_node_macro_expand(
 	    if(this2->function->node_type == ANNA_NODE_CALL)
 	    {
 
-		anna_function_t *fun = anna_node_macro_get(this2->function, stack);
+		anna_function_t *fun = anna_node_macro_get((anna_node_call_t *)this2->function, stack);
 		if(fun)
 		{
 		    anna_node_t *res = anna_macro_invoke(fun, this2);
@@ -235,7 +235,7 @@ static void anna_node_calculate_type_param(
 }
 
 
-anna_node_register_declarations(
+void anna_node_register_declarations(
     anna_stack_template_t *stack,
     anna_node_t *this)
 {
@@ -308,7 +308,7 @@ anna_node_register_declarations(
     al_destroy(&decls);
     
     //stack_freeze(stack);
-    return stack;
+
 }
 
 static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
@@ -590,17 +590,12 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)this;
-//	    debug(D_SPAM,L"AAA1 %ls\n", c->payload->name);
 	    
 	    anna_function_setup_interface(c->payload, stack);
-//	    debug(D_SPAM,L"AAA2 %ls\n", c->payload->name);
 	    if(c->payload->wrapper)
 	    {
 		c->return_type = c->payload->wrapper->type;
 	    }
-//	    debug(D_SPAM,L"AAA3 %ls\n", c->payload->name);
-	    anna_function_setup_body(c->payload);
-//	    debug(D_SPAM,L"AAA4 %ls\n", c->payload->name);
 	    
 	    break;
 	}
@@ -675,17 +670,20 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_CONST:
 	{
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
+	    debug(D_ERROR, L"Calculating type of declaration %ls\n", d->name);
 	    if(d->type->node_type == ANNA_NODE_IDENTIFIER)
 	    {
+		debug(D_ERROR, L"Declaration %ls has identifier as type\n", d->name);
 		anna_node_identifier_t *t = node_cast_identifier(d->type);
 		anna_object_t *t2 = anna_stack_get_str(stack, t->name);	    
 		d->return_type = anna_type_unwrap(t2);
 	    }
 	    else if(d->type->node_type == ANNA_NODE_NULL)
 	    {
+		debug(D_ERROR, L"Declaration %ls has implicit type\n", d->name);
 		if(d->value->node_type == ANNA_NODE_NULL)
 		{
-		    anna_error(this, L"No type specified for variable declaration");
+		    anna_error(this, L"No type specified for variable declaration\n");
 		}
 		anna_node_calculate_type(d->value, stack);
 		d->return_type = d->value->return_type;
@@ -698,6 +696,7 @@ static void anna_node_calculate_type_internal(
 	    {
 		anna_stack_set_type(stack, d->name, d->return_type);
 	    }
+	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);
 	    break;
 	}
 	
@@ -919,13 +918,25 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    {
 		int i;
 		for(i=0;i<f->body->child_count; i++)
+		{
 		    anna_node_each(f->body->child[i], &anna_node_validate, f->stack_template);
+		}
 	    }
-	    
 	    break;
-	    
+	}	
+    }    
+}
+
+void anna_node_calculate_type_children(anna_node_call_t *node, anna_stack_template_t *stack)
+{
+    int i;
+    for(i=0; i<node->child_count; i++)
+    {
+	anna_node_each(node->child[i], &anna_node_calculate_type, stack);
+	if(anna_error_count)
+	{
+	    return;
 	}
-	
     }
-    
+    anna_node_each((anna_node_t *)node, (anna_node_function_t)&anna_node_prepare_body,stack);
 }

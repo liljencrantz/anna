@@ -254,42 +254,36 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     al_push(&import, module_stack);
     memcpy(&module_stack->import, &import, sizeof(array_list_t));
     
-//    if(recursion_level == 1)
-//    {
-	anna_node_call_t *ggg = node_cast_call(node);
-	
-	for(i=0; i<ggg->child_count; i++)
-	{
-	    anna_node_each(ggg->child[i], &anna_module_calculate_type, module_stack);
-	    if(anna_error_count)
-	    {
-		debug(
-		    4,
-		    L"Found %d error(s) during module loading\n",
-		    anna_error_count);
-		exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
-	    }
-	}
-	
-	debug(D_SPAM,L"Return types set up for module %ls\n", module_name);	
-
-	for(i=0; i<ggg->child_count; i++)
-	{
-	    anna_node_each(ggg->child[i], &anna_node_validate, module_stack);
-	}
-	if(anna_error_count)
-	{
-	    debug(
-		D_CRITICAL,
-		L"Found %d error(s) during module loading\n",
+    anna_node_call_t *ggg = node_cast_call(node);
+    
+    anna_node_calculate_type_children(ggg, module_stack);
+    if(anna_error_count)
+    {
+	debug(
+	    4,
+	    L"Found %d error(s) during module loading\n",
+	    anna_error_count);
+	exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
+    }
+    debug(D_SPAM,L"Return types set up for module %ls\n", module_name);	
+    
+    for(i=0; i<ggg->child_count; i++)
+    {
+	anna_node_each(ggg->child[i], &anna_node_validate, module_stack);
+    }
+    if(anna_error_count)
+    {
+	debug(
+	    D_CRITICAL,
+	    L"Found %d error(s) during module loading\n",
 		anna_error_count);
-	    exit(
-		ANNA_STATUS_VALIDATION_ERROR);
-	}
-
+	exit(
+	    ANNA_STATUS_VALIDATION_ERROR);
+    }
+    
 //	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);
-	
-	debug(D_SPAM,L"AST validated for module %ls\n", module_name);	
+    
+    debug(D_SPAM,L"AST validated for module %ls\n", module_name);	
 	
 /*
 	anna_node_find(node, ANNA_NODE_CLOSURE, &al);	
@@ -301,31 +295,27 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	debug(D_SPAM,L"%d function types set up\n", al_get_count(&al));	
 */
 	
-	for(i=0; i<ggg->child_count; i++)
+    for(i=0; i<ggg->child_count; i++)
+    {
+	anna_node_static_invoke(ggg->child[i], module_stack);
+	if(anna_error_count)
 	{
-	    anna_node_static_invoke(ggg->child[i], module_stack);
-	    if(anna_error_count)
-	    {
-		debug(
-		    D_CRITICAL,
-		    L"Found %d error(s) during module loading\n",
-		    anna_error_count);
-		exit(
-		    ANNA_STATUS_MODULE_SETUP_ERROR);
-	    }
+	    debug(
+		D_CRITICAL,
+		L"Found %d error(s) during module loading\n",
+		anna_error_count);
+	    exit(
+		ANNA_STATUS_MODULE_SETUP_ERROR);
 	}
-	
-	anna_stack_populate_wrapper(module_stack);
-
-	debug(D_SPAM,L"Module stack object set up for %ls\n", module_name);	
-
-	anna_node_each(ggg, &anna_module_compile, 0);
-
-	debug(D_SPAM,L"Module %ls is compiled\n", module_name);	
-
-//	debug(D_SPAM,L"Declarations assigned\n");
-//	anna_node_print(0, program);
-	//  }
+    }
+    
+    anna_stack_populate_wrapper(module_stack);
+    
+    debug(D_SPAM,L"Module stack object set up for %ls\n", module_name);	
+    
+    anna_node_each(ggg, &anna_module_compile, 0);
+    
+    debug(D_SPAM,L"Module %ls is compiled\n", module_name);	
     
     recursion_level--;
     return anna_stack_wrap(module_stack);

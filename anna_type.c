@@ -22,6 +22,33 @@ array_list_t  anna_type_list =
     0, 0, 0
 };
 
+static int anna_type_object_created = 0;
+static array_list_t anna_type_uninherited = AL_STATIC;
+
+void anna_type_copy_object(anna_type_t *type)
+{
+    if(anna_type_object_created)
+    {
+	anna_type_copy(type, object_type);
+    }
+    else 
+    {
+	al_push(&anna_type_uninherited, type);
+    }
+}
+
+void anna_type_object_is_created()
+{
+    anna_type_object_created = 1;
+    int i;
+    for(i=0; i<al_get_count(&anna_type_uninherited); i++)
+    {
+	anna_type_t *t = al_get(&anna_type_uninherited, i);
+	anna_type_copy(t, object_type);
+    }
+    al_destroy(&anna_type_uninherited);
+}
+
 void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
 {
     int i;
@@ -362,6 +389,11 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
+
+    if(orig == object_type && !anna_type_object_created)
+    {
+	anna_type_copy_object(res);
+    }
 //    wprintf(L"Copy type %ls into type %ls\n", orig->name, res->name);
 
     /*

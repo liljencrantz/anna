@@ -143,6 +143,7 @@ anna_stack_template_t *anna_lang_load()
     
     
     anna_object_type_create();    
+
     anna_type_type_create(stack_lang);    
     anna_list_type_create(stack_lang);
     anna_type_type_create2(stack_lang);    
@@ -156,7 +157,7 @@ anna_stack_template_t *anna_lang_load()
     anna_range_type_create(stack_lang);
     anna_complex_type_create(stack_lang);
     anna_hash_type_create(stack_lang);
-
+    
     int i;
     anna_type_t *types[] = 
 	{
@@ -167,9 +168,8 @@ anna_stack_template_t *anna_lang_load()
     {
 	if((types[i] != object_type) && (types[i] != null_type))
 	{
-	    anna_type_copy(types[i], object_type);
+	    anna_type_copy_object(types[i]);
 	}
-	
 	anna_stack_declare(stack_lang, types[i]->name, type_type, anna_type_wrap(types[i]), 0); 
     }
 /*

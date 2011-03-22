@@ -1,7 +1,7 @@
-Bugs:
+Known bugs:
 
-Some types don't inherit from object type or inherit from it before it's been properly set up. (Including a few function types)
 List and hash types are still included in their specialization list even if GC:ed.
+Need wrong this paramater type for toString method, or abides check will fail. Need to investigate...
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
@@ -26,7 +26,7 @@ The rest of the hashtable functions (filter, contains, properties for keys and v
 Set type
 String format function
 File type
-toString methods for Range, Function, Node, etc
+toString methods for Hash, List, Range, Function, Node, etc
 
 IDEAS:
 Invertigate if we can completely drop the stack_template struct and just use types for that purpose

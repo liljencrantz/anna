@@ -13,6 +13,7 @@
 #include "anna_int.h"
 #include "anna_vm.h"
 #include "anna_string.h"
+#include "anna_type.h"
 
 #include "anna_object_i.c"
 
@@ -90,4 +91,5 @@ void anna_object_type_create()
     
     anna_object_type_i_create();
     
+    anna_type_object_is_created();
 }

@@ -1,0 +1,9 @@
+
+def bar(){3}
+
+def Int main()
+{
+    if(bar.toString()){
+        print("ok")
+    }
+}

@@ -234,6 +234,7 @@ void anna_function_setup_interface(
 	f->stack_template->function = f;
 #endif
     }
+
     
     if(!f->return_type)
     {
@@ -280,12 +281,6 @@ void anna_function_setup_interface(
     }
     
     anna_function_setup_wrapper(f);
-    if(f->body)
-    {
-	int i;
-	for(i=0;i<f->body->child_count; i++)
-	    anna_node_each(f->body->child[i], (anna_node_function_t)&anna_node_calculate_type, f->stack_template);
-    }
 
 }
 
@@ -301,12 +296,9 @@ void anna_function_setup_body(
     if(f->body)
     {
 	int i;
-	debug(D_SPAM, L"Setup return type of all AST nodes in function %ls\n", f->name);
 	
-	for(i=0; i<f->body->child_count; i++)
-	    anna_node_each((anna_node_t *)f->body->child[i], (anna_node_function_t)&anna_node_calculate_type, f->stack_template);
-	anna_node_each((anna_node_t *)f->body, (anna_node_function_t)&anna_node_prepare_body,f->stack_template);
-	debug(D_SPAM, L"Finished setting up return type of all AST nodes in function %ls\n", f->name);
+	anna_node_calculate_type_children( f->body, f->stack_template);
+
 //	if(wcscmp(f->name, L"__add__Complex__") == 0){CRASH;}
 
     }

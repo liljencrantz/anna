@@ -86,6 +86,20 @@ void anna_function_type_key_print(anna_function_type_key_t *k)
     wprintf(L")\n");
 }
 
+static anna_object_t *anna_function_type_to_string(anna_object_t **param)
+{
+    string_buffer_t sb = SB_STATIC;
+    anna_function_t *fun = anna_function_unwrap(param[0]);
+    sb_printf(&sb, L"def %ls %ls (", fun->return_type->name, fun->name);
+    int i;
+    for(i=0; i<fun->input_count; i++)
+    {
+	sb_printf(&sb, L"%ls%ls %ls", i>0?L", ":L"", fun->input_type[i]->name, fun->input_name[i]);
+    }
+    sb_printf(&sb, L")");
+    return anna_string_create(sb_length(&sb), sb_content(&sb));
+}
+
 
 static void anna_function_type_base_create()
 {
@@ -96,6 +110,26 @@ static void anna_function_type_base_create()
     function_type_base = anna_type_native_create(L"!FunctionBase", stack_global);
     anna_type_t *res = function_type_base;
     
+    anna_type_t *argv[] = 
+	{
+	    /* FIXME: Wrong type here. Abides check fails otherwise. Why? */
+	    object_type//res
+	}
+    ;
+    wchar_t *argn[]=
+	{
+	    L"this"
+	}
+    ;
+
+    anna_native_method_create(
+	res,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_function_type_to_string, 
+	string_type, 1, argv, argn);
+
     anna_native_property_create(
 	res,
 	-1,
@@ -127,7 +161,8 @@ static void anna_function_type_base_create()
 	anna_list_type_get(string_type),
 	&anna_function_type_i_get_input_name,
 	0);
-    anna_type_copy(res, object_type);
+
+    anna_type_copy_object(res);
 }
 
 void anna_function_type_create(
@@ -138,6 +173,7 @@ void anna_function_type_create(
 
     anna_function_type_base_create();
     anna_type_copy(res, function_type_base);
+    anna_type_copy_object(res);
 
     /*
       Non-static member variables

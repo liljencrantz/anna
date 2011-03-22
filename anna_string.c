@@ -206,14 +206,23 @@ static anna_object_t *anna_string_i_join(anna_object_t **param)
 	return null_object;
 
     anna_string_t *str1 = as_unwrap(param[0]);
-    anna_string_t *str2 = as_unwrap(param[1]);
-    anna_object_t *obj= anna_object_create(string_type);
 
-    asi_init(as_unwrap(obj));
-    asi_append(as_unwrap(obj), str1, 0, asi_get_length(str1));
-    asi_append(as_unwrap(obj), str2, 0, asi_get_length(str2));
-    
-    return obj;
+    anna_object_t *o = param[1];
+    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+    anna_object_t *str = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
+
+    if(str->type == string_type)
+    {
+	anna_string_t *str2 = as_unwrap(str);
+	anna_object_t *obj= anna_object_create(string_type);
+
+	asi_init(as_unwrap(obj));
+	asi_append(as_unwrap(obj), str1, 0, asi_get_length(str1));
+	asi_append(as_unwrap(obj), str2, 0, asi_get_length(str2));
+	return obj;
+    }
+
+    return null_object;
 }
 
 static anna_object_t *anna_string_i_ljoin(anna_object_t **param)
@@ -231,11 +240,31 @@ static anna_object_t *anna_string_i_ljoin(anna_object_t **param)
     anna_object_t **arr = anna_list_get_payload(param[1]);
     if(count > 0)
     {
-	asi_append(res, as_unwrap(arr[0]), 0, asi_get_length(as_unwrap(arr[0])));
+	anna_object_t *o = arr[0];
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *str_obj = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
+	
+	if(!str_obj->type == string_type)
+	{
+	    return null_object;
+	}
+	anna_string_t *str2 = as_unwrap(str_obj);
+
+	asi_append(res, str2, 0, asi_get_length(str2));
 	for(i=1; i<count; i++)
 	{
 	    asi_append(res, glue, 0, asi_get_length(glue));
-	    asi_append(res, as_unwrap(arr[i]), 0, asi_get_length(as_unwrap(arr[i])));
+
+	    anna_object_t *o = arr[i];
+	    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	    anna_object_t *str_obj = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
+	    
+	    if(!str_obj->type == string_type)
+	    {
+		return null_object;
+	    }
+	    anna_string_t *str2 = as_unwrap(str_obj);
+	    asi_append(res, str2, 0, asi_get_length(str2));
 	}
     }
     
@@ -248,21 +277,16 @@ static anna_object_t *anna_string_i_append(anna_object_t **param)
 	return null_object;
     
     anna_string_t *str1 = as_unwrap(param[0]);
-    anna_string_t *str2 = as_unwrap(param[1]);
-    
-    asi_append(str1, str2, 0, asi_get_length(str2));    
-    return param[0];
-}
 
-static anna_object_t *anna_string_i_append_char(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    
-    anna_string_t *str1 = as_unwrap(param[0]);
-    wchar_t ch = anna_char_get(param[1]);
-    
-    asi_append_cstring(str1, &ch, 1);
+    anna_object_t *o = param[1];
+    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+    anna_object_t *str = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
+    if(str->type == string_type)
+    {
+	anna_string_t *str2 = as_unwrap(str);
+	asi_append(str1, str2, 0, asi_get_length(str2));    
+    }
+
     return param[0];
 }
 
@@ -438,22 +462,20 @@ void anna_string_type_create(anna_stack_template_t *stack)
     anna_type_t *join_argv[] = 
 	{
 	    string_type,
-	    string_type
+	    object_type
 	}
     ;
 
     mmid = anna_native_method_create(
 	string_type, 
 	-1,
-	L"__join__String__", 
+	L"__join__", 
 	0, 
 	&anna_string_i_join, 
 	string_type,
 	2,
 	join_argv, 
 	join_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
-    anna_function_alias_add(fun, L"__join__");
     
     wchar_t *ljoin_argn[] =
 	{
@@ -464,7 +486,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
     anna_type_t *ljoin_argv[] = 
 	{
 	    string_type,
-	    anna_list_type_get(string_type)
+	    list_type
 	}
     ;
 
@@ -482,16 +504,13 @@ void anna_string_type_create(anna_stack_template_t *stack)
     mmid = anna_native_method_create(
 	string_type, 
 	-1,
-	L"__appendAssign__String__", 
+	L"__appendAssign__", 
 	0, 
 	&anna_string_i_append, 
 	string_type,
 	2,
 	join_argv, 
 	join_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
-    anna_function_alias_add(fun, L"__appendAssign__");
-
 
     wchar_t *ac_argn[] =
 	{
@@ -505,20 +524,6 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	    char_type
 	}
     ;
-
-    mmid = anna_native_method_create(
-	string_type, 
-	-1,
-	L"__appendAssign__Char__", 
-	0, 
-	&anna_string_i_append_char, 
-	string_type,
-	2,
-	ac_argv, 
-	ac_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
-    anna_function_alias_add(fun, L"__appendAssign__");
-    
 
     anna_native_property_create(
 	string_type,

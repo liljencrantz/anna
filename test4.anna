@@ -1,8 +1,12 @@
 
-def main()
+def bar(Int aaa){3}
+
+def Int main()
 {
     var h = HashMap<String, Int>();
     h["foo"] = 11;
     h["bar"] = 47;
     h.each(key, value){print(key~"A", "=>", value, "\n")}
+    print(bar);
+    1;
 }
