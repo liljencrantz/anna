@@ -859,6 +859,73 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 {
     switch(this->node_type)
     {
+	case ANNA_NODE_CONSTRUCT:
+	{
+	    anna_node_call_t *this2 =(anna_node_call_t *)this;
+	    anna_type_t *ft = this2->function->return_type;
+	    if(!ft)
+	    {
+		anna_error(this, L"Invalid return type");
+		break;
+	    }
+	    
+	    anna_function_type_key_t *ftk;
+	    anna_node_type_t *tn = (anna_node_type_t *)this2->function;
+//		anna_type_print(tn->payload);
+	    
+	    anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+		tn->payload,
+		ANNA_MID_INIT_PAYLOAD);
+	    assert(constructor_ptr);
+	    ftk = anna_function_type_extract(
+		(*constructor_ptr)->type);
+			    
+	    if(!ftk)
+	    {
+		anna_error(this, L"Tried to call a non-function");
+		break;
+	    }
+	    if(ftk->flags & ANNA_FUNCTION_VARIADIC)
+	    {
+		if( this2->child_count < ftk->argc-2)
+		{
+		    anna_error(
+			this,
+			L"Too few parameters to function call. Expected at least %d, got %d\n", 
+			ftk->argc-1, this2->child_count);
+		    break;
+		}
+		
+	    }
+	    else
+	    {
+		if(ftk->argc != this2->child_count+1)
+		{
+		    anna_error(
+			this,
+			L"Wrong number of parameters to function call. Expected %d, got %d\n", 
+			ftk->argc, this2->child_count);
+		    break;
+		}
+	    }
+	    int i;
+	    for(i=0; i<this2->child_count; i++)
+	    {
+		anna_type_t *param = this2->child[i]->return_type;
+		anna_type_t *templ = ftk->argv[mini(i+1, ftk->argc-1)];
+		if(!anna_abides(param, templ))
+		{
+		    
+		    anna_error(
+			this,
+			L"Invalid type of parameter %d in function call. Expected type %ls, got type %ls", i+1, templ->name, param->name);
+		}
+		
+	    }
+	    	    
+	    break;	    
+	}
+
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
@@ -869,7 +936,9 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		break;
 	    }
 	    
-	    anna_function_type_key_t *ftk = anna_function_type_extract(ft);
+	    anna_function_type_key_t *ftk;
+	    ftk = anna_function_type_extract(ft);
+	    
 	    if(!ftk)
 	    {
 		anna_error(this, L"Tried to call a non-function");
