@@ -64,12 +64,12 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     anna_function_alias_add(fun, L\"__${name}__\");
 
     mmid = anna_native_method_create(
-	float_type, -1, L\"__r${name}__Int__\", 0, 
-	&anna_float_i_int_r${name}, 
+	float_type, -1, L\"__${name}__IntReverse__\", 0, 
+	&anna_float_i_int_reverse_${name}, 
 	float_type,
 	2, i_argv, i_argn);
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(float_type, mmid));
-    anna_function_alias_add(fun, L\"__${name}__\");
+    anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
 "
 
@@ -92,7 +92,7 @@ static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
     double v2 = (double)anna_int_get(param[1]);
     return anna_float_create($op);
 }
-static anna_object_t *anna_float_i_int_r$name(anna_object_t **param)
+static anna_object_t *anna_float_i_int_reverse_$name(anna_object_t **param)
 {
     if(param[1]==null_object)
         return null_object;

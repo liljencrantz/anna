@@ -226,7 +226,8 @@ anna_member_t *anna_member_get(anna_type_t *type, mid_t mid)
 anna_member_t *anna_member_method_search(
     anna_type_t *type,
     mid_t mid, 
-    size_t argc, anna_type_t **argv)
+    size_t argc, anna_type_t **argv,
+    int is_reverse)
 {
     debug(D_SPAM, L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
     int i;
@@ -239,17 +240,21 @@ anna_member_t *anna_member_method_search(
     for(i=0; i<anna_type_member_count(type); i++)
     {
 	debug(D_SPAM, L"Check %ls\n", members[i]);
-	if(wcsncmp(prefix, members[i], wcslen(prefix)) != 0)
-	    continue;
-	debug(D_SPAM, L"%ls matches, name-wise\n", members[i]);
-	
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
 	if(member->is_static && member->offset>=0)
 	{
 	    
 	    anna_object_t *mem_val = type->static_member[member->offset];
 	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
-	    if(mem_fun && anna_function_has_alias(mem_fun, prefix))
+	    if(!mem_fun)
+	    {
+		continue;
+	    }
+	    
+	    int has_alias = is_reverse ? anna_function_has_alias_reverse(mem_fun, prefix):anna_function_has_alias(mem_fun, prefix);
+	
+
+	    if(has_alias)
 	    {
 	    int j;
 	    

@@ -402,12 +402,31 @@ int anna_function_has_alias(anna_function_t *fun, wchar_t *name)
 	name);    
 }
 
+int anna_function_has_alias_reverse(anna_function_t *fun, wchar_t *name)
+{
+    return anna_attribute_has_alias_reverse(
+	anna_function_attribute(fun),
+	name);
+}
+
 void anna_function_alias_add(anna_function_t *fun, wchar_t *name)
 {
     anna_node_call_t *param[] = {anna_node_create_identifier(0, name)};
     anna_node_call_t *attr = anna_node_create_call(
 	0,
 	anna_node_create_identifier(0, L"alias"),
+	1,
+	param
+	);
+    anna_node_call_add_child(fun->attribute, attr);
+}
+
+void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name)
+{
+    anna_node_call_t *param[] = {anna_node_create_identifier(0, name)};
+    anna_node_call_t *attr = anna_node_create_call(
+	0,
+	anna_node_create_identifier(0, L"aliasReverse"),
 	1,
 	param
 	);

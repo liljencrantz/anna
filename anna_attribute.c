@@ -11,7 +11,8 @@
 #include "anna_attribute.h"
 #include "anna_node.h"
 
-int anna_attribute_has_alias(anna_node_call_t *attribute, wchar_t *name)
+static int anna_attribute_has_alias_internal(
+    anna_node_call_t *attribute, wchar_t *attr_name, wchar_t *name)
 {
     if(!attribute)
 	return 0;
@@ -19,7 +20,7 @@ int anna_attribute_has_alias(anna_node_call_t *attribute, wchar_t *name)
     
     for(i=0; i<attribute->child_count; i++)
     {
-	if(anna_node_is_call_to(attribute->child[i], L"alias"))
+	if(anna_node_is_call_to(attribute->child[i], attr_name))
 	{
 	    anna_node_call_t *attr = node_cast_call(attribute->child[i]);
 	    assert(attr->child_count == 1);
@@ -27,6 +28,16 @@ int anna_attribute_has_alias(anna_node_call_t *attribute, wchar_t *name)
 	}
     }
     return 0;    
+}
+
+int anna_attribute_has_alias_reverse(anna_node_call_t *attribute, wchar_t *name)
+{
+    return anna_attribute_has_alias_internal(attribute, L"aliasReverse", name);
+}
+
+int anna_attribute_has_alias(anna_node_call_t *attribute, wchar_t *name)
+{
+    return anna_attribute_has_alias_internal(attribute, L"alias", name);
 }
 
 wchar_t *anna_attribute_identifier(anna_node_call_t *attribute, wchar_t *name)

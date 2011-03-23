@@ -109,11 +109,27 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 
     mmid = anna_native_method_create(
 	complex_type, -1, L\"__${name}__Float__\", 0, 
-	&anna_complex_i_float${name}, 
+	&anna_complex_i_float_${name}, 
 	complex_type,
 	2, f_argv, f_argn);
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
     anna_function_alias_add(fun, L\"__${name}__\");
+
+    mmid = anna_native_method_create(
+        complex_type, -1, L\"__${name}__IntReverse__\", 0, 
+	&anna_complex_i_int_reverse_${name}, 
+	complex_type,
+	2, i_argv, i_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_reverse_add(fun, L\"__${name}__\");
+
+    mmid = anna_native_method_create(
+	complex_type, -1, L\"__${name}__FloatReverse__\", 0, 
+	&anna_complex_i_float_reverse_${name}, 
+	complex_type,
+	2, f_argv, f_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(complex_type, mmid));
+    anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
 "
 
@@ -139,7 +155,7 @@ static anna_object_t *anna_complex_i_int_$name(anna_object_t **param)
     return anna_complex_create($op);
 }
 
-static anna_object_t *anna_complex_i_float$name(anna_object_t **param)
+static anna_object_t *anna_complex_i_float_$name(anna_object_t **param)
 {
     if(param[1]==null_object)
         return null_object;
@@ -148,6 +164,27 @@ static anna_object_t *anna_complex_i_float$name(anna_object_t **param)
     complex double v2 = (complex double)anna_float_get(param[1]);
     return anna_complex_create($op);
 }
+
+static anna_object_t *anna_complex_i_int_reverse_$name(anna_object_t **param)
+{
+    if(param[1]==null_object)
+        return null_object;
+  
+    complex double v2 = anna_complex_get(param[0]);
+    complex double v1 = (complex double)anna_int_get(param[1]);
+    return anna_complex_create($op);
+}
+
+static anna_object_t *anna_complex_i_float_reverse_$name(anna_object_t **param)
+{
+    if(param[1]==null_object)
+        return null_object;
+  
+    complex double v2 = anna_complex_get(param[0]);
+    complex double v1 = (complex double)anna_float_get(param[1]);
+    return anna_complex_create($op);
+}
+
 "
 done
 

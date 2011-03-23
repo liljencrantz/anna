@@ -1,5 +1,6 @@
 KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed.
+Types aren't validated in constructor call params
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.

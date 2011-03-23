@@ -45,7 +45,9 @@ void anna_function_argument_hint(
     anna_type_t *type);
 
 int anna_function_has_alias(anna_function_t *fun, wchar_t *name);
+int anna_function_has_alias_reverse(anna_function_t *fun, wchar_t *name);
 
 void anna_function_alias_add(anna_function_t *fun, wchar_t *name);
+void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name);
 
 #endif
