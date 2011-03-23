@@ -390,15 +390,17 @@ static void anna_alloc_free(void *obj)
 	{
 	    if(obj == null_object)
 		break;
+	    anna_object_t *o = (anna_object_t *)obj;
 	    if(anna_alloc_run_finalizers)
 	    {
-		anna_object_t *o = (anna_object_t *)obj;
 		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
 		if(del_mem && del_mem->is_method)
 		{
 		    anna_vm_run(o->type->static_member[del_mem->offset], 1, &o);
 		}
 	    }
+	    anna_slab_free(obj, sizeof(anna_object_t)+sizeof(anna_object_t *)* (o->type->member_count));
+	    return;
 	    
 	    break;
 	}
@@ -432,6 +434,8 @@ static void anna_alloc_free(void *obj)
 	case ANNA_VMSTACK:
 	{
 	    anna_vmstack_t *o = (anna_vmstack_t *)obj;
+	    anna_slab_free(o, o->function->frame_size);
+	    return;
 	    break;
 	}
 	case ANNA_FUNCTION:

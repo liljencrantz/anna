@@ -25,23 +25,25 @@ anna_object_t *anna_complex_create(complex double value)
     return obj;
 }
 
-void anna_complex_set(anna_object_t *this, complex double value)
+inline void anna_complex_set(anna_object_t *this, complex double value)
 {
-    memcpy(anna_member_addr_get_mid(this,ANNA_MID_COMPLEX_PAYLOAD), &value, sizeof(complex double));
+    size_t off = this->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
+    memcpy(&this->member[off], &value, sizeof(complex double));
 }
 
-complex double anna_complex_get(anna_object_t *this)
+inline complex double anna_complex_get(anna_object_t *this)
 {
     complex double result;
-    memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_COMPLEX_PAYLOAD), sizeof(complex double));
+    size_t off = this->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
+    memcpy(&result, &this->member[off], sizeof(complex double));
     return result;
 }
 
 static anna_object_t *anna_complex_init(anna_object_t **param)
 {
-    complex double result = anna_float_get(param[1]) + I * anna_float_get(param[2]);						
-    memcpy(anna_member_addr_get_mid(param[0],ANNA_MID_COMPLEX_PAYLOAD), &result, sizeof(complex double));
-
+    complex double result = anna_float_get(param[1]) + I * anna_float_get(param[2]);
+    size_t off = param[0]->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
+    memcpy(&param[0]->member[off], &result, sizeof(complex double));
     return param[0];
 }
 

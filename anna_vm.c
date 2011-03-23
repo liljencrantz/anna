@@ -54,6 +54,7 @@
    specified by the op instead.
  */
 #define ANNA_OP_MEMBER_GET 6
+#define ANNA_OP_STATIC_MEMBER_GET 21
 /**
    Pops a value and an object from the stack and pushes the object member
    specified by the op instead.
@@ -138,13 +139,14 @@ typedef struct
 
 static void anna_push(anna_vmstack_t **stack, anna_object_t *val)
 {
+/*
     if(!val)
     {
 	debug(
 	    D_CRITICAL,L"Pushed null ptr\n");
 	CRASH;	
     }
-    
+*/  
     anna_object_t ** top =((*stack)->top);
     *(top)= val;
     (*stack)->top++;
@@ -168,11 +170,13 @@ static inline anna_object_t *anna_vm_trampoline(
 {
     anna_object_t *orig = fun->wrapper;
     anna_object_t *res = anna_object_create(orig->type);
+    size_t payload_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD]->offset;
+    size_t stack_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
     
-    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
-	   anna_member_addr_get_mid(orig,ANNA_MID_FUNCTION_WRAPPER_PAYLOAD),
+    memcpy(&res->member[payload_offset],
+	   &orig->member[payload_offset],
 	   sizeof(anna_function_t *));    
-    memcpy(anna_member_addr_get_mid(res,ANNA_MID_FUNCTION_WRAPPER_STACK),
+    memcpy(&res->member[stack_offset],
 	   &stack,
 	   sizeof(anna_vmstack_t *));
     return res;
@@ -206,7 +210,8 @@ static void anna_vmstack_print(anna_vmstack_t *stack)
 }
 
 #define anna_frame_push(stack, wfun) {					\
-	anna_vmstack_t *parent = *(anna_vmstack_t **)anna_member_addr_get_mid(wfun, ANNA_MID_FUNCTION_WRAPPER_STACK); \
+        size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset; \
+	anna_vmstack_t *parent = *(anna_vmstack_t **)&wfun->member[stack_offset];\
 	anna_function_t *fun = anna_function_unwrap(wfun);		\
 	anna_vmstack_t *res = anna_alloc_vmstack(fun->frame_size);	\
 	res->parent=parent;						\
@@ -447,14 +452,59 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		else
 		{
 		    anna_object_t *res;
-		    
-		    if(m->is_static) {
-			res = obj->type->static_member[m->offset];
-		    } else {
-			res = (obj->member[m->offset]);
-		    }
+		    res = obj->member[m->offset];		    
 		    anna_push(stack, res);
 		    
+		    (*stack)->code += sizeof(*op);
+		}
+		break;
+	    }
+	    
+	    case ANNA_OP_STATIC_MEMBER_GET:
+	    {
+		anna_op_member_t *op = (anna_op_member_t *)(*stack)->code;
+		anna_object_t *obj = anna_pop(stack);
+
+		anna_member_t *m = obj->type->mid_identifier[op->mid];
+
+		#if ANNA_CHECK_VM
+		if(!m)
+		{
+		    debug(
+			D_CRITICAL,
+			L"Object of type %ls does not have a member of type %ls\n",
+			obj->type->name,
+			anna_mid_get_reverse(op->mid));    
+		    CRASH;
+		}
+		#endif 
+
+		if(m->is_property)
+		{
+		    
+		    anna_object_t *method = obj->type->static_member[m->getter_offset];
+		    anna_function_t *fun = anna_function_unwrap(method);
+
+		    if(fun->native.function)
+		    {
+			anna_object_t *res = fun->native.function(
+			    &obj);
+			anna_push(stack, res);
+			(*stack)->code += sizeof(*op);		    
+		    }
+		    else
+		    {
+			anna_push(stack, method);
+			anna_push(stack, obj);
+			(*stack)->code += sizeof(*op);
+			anna_frame_push(stack, method);
+		    }
+		}
+		else
+		{
+		    anna_object_t *res;
+		    res = obj->type->static_member[m->offset];
+		    anna_push(stack, res);
 		    (*stack)->code += sizeof(*op);
 		}
 		break;
@@ -677,6 +727,7 @@ size_t anna_bc_op_size(char instruction)
 	}
 	    
 	case ANNA_OP_MEMBER_GET:
+	case ANNA_OP_STATIC_MEMBER_GET:
 	case ANNA_OP_MEMBER_GET_THIS:
 	case ANNA_OP_MEMBER_SET:
 	{
@@ -778,6 +829,7 @@ void anna_bc_print(char *code)
 	    }
 	    
 	    case ANNA_OP_MEMBER_GET:
+	    case ANNA_OP_STATIC_MEMBER_GET:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
 		wprintf(L"Get member %d\n\n", op->mid);
@@ -889,6 +941,7 @@ void anna_vm_mark_code(anna_function_t *f)
 	    case ANNA_OP_CONSTRUCT:
 	    case ANNA_OP_VAR_GET:
 	    case ANNA_OP_VAR_SET:
+	    case ANNA_OP_STATIC_MEMBER_GET:
 	    case ANNA_OP_MEMBER_GET:
 	    case ANNA_OP_MEMBER_GET_THIS:
 	    case ANNA_OP_MEMBER_SET:
@@ -959,6 +1012,7 @@ size_t anna_bc_stack_size(char *code)
 	    
 	    case ANNA_OP_VAR_SET:
 	    case ANNA_OP_MEMBER_GET:
+	    case ANNA_OP_STATIC_MEMBER_GET:
 	    case ANNA_OP_NOT:
 	    case ANNA_OP_JMP:
 	    case ANNA_OP_COND_JMP:
@@ -1462,7 +1516,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    {
 		
 		anna_vm_const(ptr, anna_stack_wrap(import));
-		anna_vm_member(ptr, ANNA_OP_MEMBER_GET, anna_mid_get(node2->name));
+		anna_vm_member(ptr, ANNA_OP_STATIC_MEMBER_GET, anna_mid_get(node2->name));
 		break;
 	    }
 
@@ -1582,7 +1636,9 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	{
 	    anna_node_member_get_t *node2 = (anna_node_member_get_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
-	    anna_vm_member(ptr, ANNA_OP_MEMBER_GET, node2->mid);
+	    anna_type_t *type = node2->object->return_type;
+	    anna_member_t *m = type->mid_identifier[node2->mid];
+	    anna_vm_member(ptr, m->is_static?ANNA_OP_STATIC_MEMBER_GET:ANNA_OP_MEMBER_GET, node2->mid);
 	    break;
 	}
 	

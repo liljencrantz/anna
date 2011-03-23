@@ -3,6 +3,7 @@ List and hash types are still included in their specialization list even if GC:e
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
+Reverse aliases
 Named arguments for function calls.
 Map construction syntax.
 Implement autowrapping of methods
@@ -44,12 +45,13 @@ Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
 Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
-Bytecode optimization: Different getters for static and non-static members to up performance a bit. Also consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
+Consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion
 Avoid creating trampolines when possible
 Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
 Inlining of if/while bodies into main method
 Make a verion of the fold op that takes a parameter
+Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

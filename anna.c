@@ -18,6 +18,7 @@
 #include "anna_vm.h"
 #include "anna_tt.h"
 #include "anna_alloc.h"
+#include "anna_slab.h"
 
 #define ABIDES_IN_TRANSIT -1
 
@@ -75,7 +76,9 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
       debug(D_SPAM,L"of type %ls\n", obj->type->name);
     */
     anna_member_t *m = obj->type->mid_identifier[mid];
-    if(!m) 
+    
+    
+    if(unlikely(!m)) 
     {
 	return 0;
     }
@@ -95,7 +98,7 @@ anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
 	debug(D_SPAM,L"of type %ls\n", obj->type->name);
     */
     anna_member_t *m = type->mid_identifier[mid];
-    if(!m) 
+    if(unlikely(!m)) 
     {
 	return 0;
     }
@@ -427,6 +430,7 @@ static void anna_init()
 	&hash_function_type_func,
 	&hash_function_type_comp);
     anna_mid_init();
+    anna_slab_init();
     
     stack_global = anna_stack_create(0);
 

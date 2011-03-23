@@ -27,6 +27,7 @@ static anna_object_t *anna_complex_i_neq(anna_object_t **param)
 }
 
 
+
 static anna_object_t *anna_complex_i_add(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -36,6 +37,7 @@ static anna_object_t *anna_complex_i_add(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create(v1 + v2);
 }
+
 static anna_object_t *anna_complex_i_int_add(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -45,6 +47,7 @@ static anna_object_t *anna_complex_i_int_add(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create(v1 + v2);
 }
+
 static anna_object_t *anna_complex_i_floatadd(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -56,6 +59,7 @@ static anna_object_t *anna_complex_i_floatadd(anna_object_t **param)
 }
 
 
+
 static anna_object_t *anna_complex_i_increaseAssign(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -65,6 +69,7 @@ static anna_object_t *anna_complex_i_increaseAssign(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create(v1 + v2);
 }
+
 static anna_object_t *anna_complex_i_int_increaseAssign(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -74,6 +79,7 @@ static anna_object_t *anna_complex_i_int_increaseAssign(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create(v1 + v2);
 }
+
 static anna_object_t *anna_complex_i_floatincreaseAssign(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -85,6 +91,7 @@ static anna_object_t *anna_complex_i_floatincreaseAssign(anna_object_t **param)
 }
 
 
+
 static anna_object_t *anna_complex_i_sub(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -94,6 +101,7 @@ static anna_object_t *anna_complex_i_sub(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create(v1 - v2);
 }
+
 static anna_object_t *anna_complex_i_int_sub(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -103,6 +111,7 @@ static anna_object_t *anna_complex_i_int_sub(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create(v1 - v2);
 }
+
 static anna_object_t *anna_complex_i_floatsub(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -114,6 +123,7 @@ static anna_object_t *anna_complex_i_floatsub(anna_object_t **param)
 }
 
 
+
 static anna_object_t *anna_complex_i_decreaseAssign(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -123,6 +133,7 @@ static anna_object_t *anna_complex_i_decreaseAssign(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create(v1 - v2);
 }
+
 static anna_object_t *anna_complex_i_int_decreaseAssign(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -132,6 +143,7 @@ static anna_object_t *anna_complex_i_int_decreaseAssign(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create(v1 - v2);
 }
+
 static anna_object_t *anna_complex_i_floatdecreaseAssign(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -143,6 +155,7 @@ static anna_object_t *anna_complex_i_floatdecreaseAssign(anna_object_t **param)
 }
 
 
+
 static anna_object_t *anna_complex_i_mul(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -152,6 +165,7 @@ static anna_object_t *anna_complex_i_mul(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create(v1 * v2);
 }
+
 static anna_object_t *anna_complex_i_int_mul(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -161,6 +175,7 @@ static anna_object_t *anna_complex_i_int_mul(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create(v1 * v2);
 }
+
 static anna_object_t *anna_complex_i_floatmul(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -172,6 +187,7 @@ static anna_object_t *anna_complex_i_floatmul(anna_object_t **param)
 }
 
 
+
 static anna_object_t *anna_complex_i_div(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -181,6 +197,7 @@ static anna_object_t *anna_complex_i_div(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create(v1 / v2);
 }
+
 static anna_object_t *anna_complex_i_int_div(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -190,6 +207,7 @@ static anna_object_t *anna_complex_i_int_div(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create(v1 / v2);
 }
+
 static anna_object_t *anna_complex_i_floatdiv(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -201,6 +219,7 @@ static anna_object_t *anna_complex_i_floatdiv(anna_object_t **param)
 }
 
 
+
 static anna_object_t *anna_complex_i_exp(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -210,6 +229,7 @@ static anna_object_t *anna_complex_i_exp(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create(cpow(v1, v2));
 }
+
 static anna_object_t *anna_complex_i_int_exp(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -219,6 +239,7 @@ static anna_object_t *anna_complex_i_int_exp(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create(cpow(v1, v2));
 }
+
 static anna_object_t *anna_complex_i_floatexp(anna_object_t **param)
 {
     if(param[1]==null_object)

@@ -4,6 +4,7 @@
 #include "util.h"
 #include "anna.h"
 #include "anna_node.h"
+#include "anna_slab.h"
 
 extern array_list_t anna_alloc;
 extern int anna_alloc_count;
@@ -12,31 +13,33 @@ void anna_gc(void);
 void anna_gc_destroy(void);
 
 
-#define GC_FREQ 8192
+#define GC_FREQ 16000
 
-static inline anna_vmstack_t *anna_alloc_vmstack(size_t sz)
+static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 {
     anna_alloc_count++;
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
-    anna_vmstack_t *res = malloc(sz);
+    anna_object_t *res = anna_slab_alloc(sz);
+//    anna_vmstack_t *res = malloc(sz);
     res->flags = ANNA_VMSTACK;
     al_push(&anna_alloc, res);
     
     return res;
 }
 
-static inline anna_object_t *anna_alloc_object(size_t sz)
+static inline __malloc anna_object_t *anna_alloc_object(size_t sz)
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
-    anna_object_t *res = malloc(sz);
+//    anna_object_t *res = malloc(sz);
+    anna_object_t *res = anna_slab_alloc(sz);
     res->flags = ANNA_OBJECT;
     al_push(&anna_alloc, res);
     return res;
 }
 
-static inline anna_type_t *anna_alloc_type()
+static inline __malloc anna_type_t *anna_alloc_type()
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
@@ -46,7 +49,7 @@ static inline anna_type_t *anna_alloc_type()
     return res;
 }
 
-static inline anna_function_t *anna_alloc_function()
+static inline __malloc anna_function_t *anna_alloc_function()
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
@@ -56,7 +59,7 @@ static inline anna_function_t *anna_alloc_function()
     return res;
 }
 
-static inline anna_node_t *anna_alloc_node(size_t sz)
+static inline __malloc anna_node_t *anna_alloc_node(size_t sz)
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
@@ -66,7 +69,7 @@ static inline anna_node_t *anna_alloc_node(size_t sz)
     return res;
 }
 
-static inline anna_stack_template_t *anna_alloc_stack_template()
+static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();

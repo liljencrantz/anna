@@ -206,9 +206,9 @@ mid_t anna_member_create(
     
     type->mid_identifier[mid] = member;
     hash_put(&type->name_identifier, member->name, member);
-
+    
 //    wprintf(L"Create member named %ls to type %ls\n", name, type->name);
-
+    
     anna_stack_declare(
 	type->stack,
 	name,

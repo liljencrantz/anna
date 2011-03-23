@@ -118,6 +118,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 "
 
     echo "
+
 static anna_object_t *anna_complex_i_$name(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -127,6 +128,7 @@ static anna_object_t *anna_complex_i_$name(anna_object_t **param)
     complex double v2 = anna_complex_get(param[1]);
     return anna_complex_create($op);
 }
+
 static anna_object_t *anna_complex_i_int_$name(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -136,6 +138,7 @@ static anna_object_t *anna_complex_i_int_$name(anna_object_t **param)
     complex double v2 = (complex double)anna_int_get(param[1]);
     return anna_complex_create($op);
 }
+
 static anna_object_t *anna_complex_i_float$name(anna_object_t **param)
 {
     if(param[1]==null_object)
