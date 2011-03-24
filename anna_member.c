@@ -229,7 +229,7 @@ anna_member_t *anna_member_method_search(
     size_t argc, anna_type_t **argv,
     int is_reverse)
 {
-    debug(D_SPAM, L"\nSEARCH for match to %ls\n", anna_mid_get_reverse(mid));
+    debug(D_SPAM, L"\nSEARCH for match to %ls in type %ls\n", anna_mid_get_reverse(mid), type->name);
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&type->name_identifier));
     wchar_t *prefix = anna_mid_get_reverse(mid);
@@ -241,8 +241,9 @@ anna_member_t *anna_member_method_search(
     {
 	debug(D_SPAM, L"Check %ls\n", members[i]);
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
-	if(member->is_static && member->offset>=0)
+	if(member->is_static && member->offset>=0 && member->type != null_type)
 	{
+	    
 	    
 	    anna_object_t *mem_val = type->static_member[member->offset];
 	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);

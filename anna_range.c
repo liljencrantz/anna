@@ -217,13 +217,14 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	    range_type,
 	    int_type,
 	    int_type,
-	    int_type
+	    int_type,
+	    object_type
 	}
     ;
     
     wchar_t *c_argn[]=
 	{
-	    L"this", L"from", L"to", L"step"
+	    L"this", L"from", L"to", L"step", L"isOpen"
 	}
     ;
 
@@ -233,7 +234,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	L"__init__", 0,
 	&anna_range_init, 
 	range_type,
-	4, c_argv, c_argn);
+	5, c_argv, c_argn);
 
 
     anna_type_t *i_argv[] = 

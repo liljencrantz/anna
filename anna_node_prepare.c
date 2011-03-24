@@ -891,8 +891,8 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		{
 		    anna_error(
 			this,
-			L"Too few parameters to function call. Expected at least %d, got %d\n", 
-			ftk->argc-1, this2->child_count);
+			L"Too few parameters to constructor call. Expected at least %d, got %d\n", 
+			ftk->argc-2, this2->child_count);
 		    break;
 		}
 		
@@ -903,8 +903,9 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		{
 		    anna_error(
 			this,
-			L"Wrong number of parameters to function call. Expected %d, got %d\n", 
-			ftk->argc, this2->child_count);
+			L"Wrong number of parameters to constructor call. Expected %d, got %d\n", 
+			ftk->argc-1, this2->child_count);
+		    anna_node_print(D_ERROR, this2);
 		    break;
 		}
 	    }

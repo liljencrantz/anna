@@ -76,7 +76,7 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
       debug(D_SPAM,L"of type %ls\n", obj->type->name);
     */
     anna_member_t *m = obj->type->mid_identifier[mid];
-    
+    //wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
     
     if(unlikely(!m)) 
     {

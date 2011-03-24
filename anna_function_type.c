@@ -114,7 +114,6 @@ static void anna_function_type_base_create()
     
     anna_type_t *argv[] = 
 	{
-	    /* FIXME: Wrong type here. Abides check fails otherwise. Why? */
 	    res
 	}
     ;

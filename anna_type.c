@@ -52,6 +52,7 @@ void anna_type_object_is_created()
 void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
 {
     int i;
+    
     for(i=0;i<al_get_count(&anna_type_list); i++)
     {
 	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
@@ -147,6 +148,7 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
 	anna_type_mangle_methods(result);
     }
+    al_push(&anna_type_list, result);
     return result;  
 }
 			  
