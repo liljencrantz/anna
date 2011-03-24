@@ -87,11 +87,17 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
-	case ANNA_NODE_TYPE_LOOKUP:
 	{
 	    return this;
 	}
 	
+	case ANNA_NODE_TYPE_LOOKUP:
+	{
+	    anna_node_type_lookup_t *c = (anna_node_type_lookup_t *)this;
+	    c->payload = anna_node_macro_expand(c->payload, stack);
+	    break;
+	}
+
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)this;
@@ -157,6 +163,7 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_WHILE:
 	case ANNA_NODE_AND:
 	case ANNA_NODE_OR:
+	case ANNA_NODE_MAPPING:
 	{
 	    anna_node_cond_t *c = (anna_node_cond_t *)this;
 	    c->arg1 = anna_node_macro_expand(c->arg1, stack);
@@ -490,9 +497,10 @@ static void anna_node_calculate_type_internal(
 	    
 	    if(funt->flags & ANNA_FUNCTION_MACRO)
 	    {
-		anna_error(this, L"Unexpanded macro call");
-		break;
+		anna_error(this, L"Found unexpanded macro call while calculating function return type");
+		CRASH;
 		
+		break;
 	    }
 	    
 	    call->return_type = funt->result;
@@ -742,6 +750,7 @@ static void anna_node_calculate_type_internal(
 	}
 
 	case ANNA_NODE_AND:
+	case ANNA_NODE_MAPPING:
 	{
 	    anna_node_cond_t *d = (anna_node_cond_t *)this;
 	    anna_node_calculate_type(d->arg2, stack);
@@ -768,7 +777,6 @@ static void anna_node_calculate_type_internal(
 	    {
 		anna_error(this, L"Unexpanded macro call");
 		break;
-		
 	    }
 	    
 	    d->return_type = funt->result;

@@ -254,6 +254,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token PROPERTY
 %token IF
 %token ELSE
+%token TO
 
 %type <call_val> block block2 block3 opt_else
 %type <call_val> module
@@ -282,10 +283,13 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 
 module:
 	module expression SEMICOLON
-	{
+	{	    
 	    $$ = $1;
-	    anna_node_call_add_child($1,$2);
-	    anna_node_set_location((anna_node_t *)$$, &@$);
+	    if($1 && $2)
+	    {
+		anna_node_call_add_child($1,$2);
+		anna_node_set_location((anna_node_t *)$$, &@$);
+	    }
 	}
 	| 
 	expression SEMICOLON
@@ -305,7 +309,9 @@ module:
 |
 error SEMICOLON
 {
-  yyerrok;  
+  yyerrok;
+  $$ = 0;
+  
 }
 ;
 
@@ -836,6 +842,12 @@ op:
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__decrease__");
+	}
+	|
+	TO
+	{
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__mapping__");
 	}
 ;
 

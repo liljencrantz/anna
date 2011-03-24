@@ -145,6 +145,19 @@ anna_node_assign_t *anna_node_create_assign(
     return result;  
 }
 
+anna_node_cond_t *anna_node_create_mapping(
+    anna_location_t *loc, 
+    struct anna_node *from,
+    struct anna_node *to)
+{
+    anna_node_cond_t *result = anna_alloc_node(sizeof(anna_node_cond_t));
+    result->node_type = ANNA_NODE_MAPPING;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->arg1=from;
+    result->arg2=to;
+    return result;  
+}
+
 anna_node_declare_t *anna_node_create_declare(
     anna_location_t *loc, 
     wchar_t *name,

@@ -457,22 +457,52 @@ static anna_node_t *anna_macro_collection(anna_node_call_t *node)
 	return (anna_node_t *)anna_node_create_null(&node->location);
     }
 
-    anna_node_t *param[] = 
-	{
+    if(anna_node_is_call_to(node->child[0], L"__mapping__"))
+    {
+	anna_node_call_t *pp = (anna_node_call_t *)node->child[0];
+	CHECK_CHILD_COUNT(pp, L"Map", 2);
+	
+	anna_node_t *param[] = 
+	    {
+		(anna_node_t *)anna_node_create_type_lookup(
+		    &node->function->location,
+		    pp->child[0]),
+		(anna_node_t *)anna_node_create_type_lookup(
+		    &node->function->location,
+		    pp->child[1])
+	    }
+	;
+	
+	node->function = (anna_node_t *)anna_node_create_specialize(
+	    &node->function->location,
+	    (anna_node_t *)anna_node_create_dummy(
+		&node->function->location,
+		anna_type_wrap(hash_type), 0),
+	    2,
+	    param);
+	return (anna_node_t *)node;
+    }
+    else
+    {
+	
+	anna_node_t *param[] = 
+	    {
 	    (anna_node_t *)anna_node_create_type_lookup(
 		&node->function->location,
 		node->child[0])
-	}
-    ;
-
-    node->function = (anna_node_t *)anna_node_create_specialize(
-	&node->function->location,
-	(anna_node_t *)anna_node_create_dummy(
+	    }
+	;
+	
+	node->function = (anna_node_t *)anna_node_create_specialize(
 	    &node->function->location,
-	    anna_type_wrap(list_type), 0),
-	1,
-	param);
-    return (anna_node_t *)node;
+	    (anna_node_t *)anna_node_create_dummy(
+		&node->function->location,
+		anna_type_wrap(list_type), 0),
+	    1,
+	    param);
+	return (anna_node_t *)node;
+    }
+    
 }
 
 static anna_node_t *anna_macro_update(anna_node_call_t *node)
@@ -597,6 +627,16 @@ static anna_node_t *anna_macro_range(anna_node_call_t *node)
     return (anna_node_t *)node;
 }
 
+static anna_node_t *anna_macro_mapping(anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"mapping", 2);
+    return (anna_node_t *)anna_node_create_mapping(
+	&node->location,
+	node->child[0],
+	node->child[1]
+	);
+}
+
 
 #include "anna_macro_attribute.c"
 #include "anna_macro_conditional.c"
@@ -637,6 +677,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__increase__", &anna_macro_update);
     anna_macro_add(stack, L"__decrease__", &anna_macro_update);
     anna_macro_add(stack, L"__append__", &anna_macro_update);
+    anna_macro_add(stack, L"__mapping__", &anna_macro_mapping);
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     
 /*    

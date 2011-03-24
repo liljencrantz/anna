@@ -106,6 +106,7 @@ else return ELSE;
 != return NOT_EQUAL;
 \<= return LESS_OR_EQUAL;
 >= return GREATER_OR_EQUAL;
+=> return TO;
 \< return '<';
 > return '>';
 = return '=';

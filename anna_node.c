@@ -606,6 +606,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_WHILE:
 	case ANNA_NODE_OR:
 	case ANNA_NODE_AND:
+	case ANNA_NODE_MAPPING:
 	{
 	    anna_node_cond_t *n = (anna_node_cond_t *)this;
 	    anna_node_each(n->arg1, fun, aux);

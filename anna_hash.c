@@ -477,7 +477,7 @@ static void anna_hash_type_create_internal(
     anna_type_t *i_argv[] = 
 	{
 	    type,
-	    type
+	    object_type
 	}
     ;
     

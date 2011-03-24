@@ -59,7 +59,7 @@ static inline __malloc anna_function_t *anna_alloc_function()
     return res;
 }
 
-static inline __malloc anna_node_t *anna_alloc_node(size_t sz)
+static inline __malloc void *anna_alloc_node(size_t sz)
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
