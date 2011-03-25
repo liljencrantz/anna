@@ -4,7 +4,7 @@ for i in tests/*.anna; do
     echo "Run test $i"
     ./anna tests/$(basename $i .anna) >anna_tests.out 2>/dev/null
     status=$?
-    out_correct=tests/$(basename $i .anna).out
+    out_correct=tests/$(basename $i .anna).output
     status_correct=tests/$(basename $i .anna).status
     if test -f $out_correct; then
 	if diff anna_tests.out $out_correct; then
