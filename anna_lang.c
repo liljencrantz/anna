@@ -20,6 +20,7 @@
 #include "anna_list.h"
 #include "anna_range.h"
 #include "anna_hash.h"
+#include "anna_pair.h"
 
 #include "anna_function_type.h"
 #include "anna_type_type.h"
@@ -141,6 +142,11 @@ anna_stack_template_t *anna_lang_load()
 	    L"HashMap",
 	    stack_lang);
     
+    pair_type = 
+	anna_type_native_create(
+	    L"Pair",
+	    stack_lang);
+    
     
     anna_object_type_create();    
 
@@ -156,12 +162,13 @@ anna_stack_template_t *anna_lang_load()
     anna_float_type_create(stack_lang);
     anna_range_type_create(stack_lang);
     anna_complex_type_create(stack_lang);
+    anna_pair_type_create();
     anna_hash_type_create(stack_lang);
     
     int i;
     anna_type_t *types[] = 
 	{
-	    type_type, int_type, object_type, null_type, list_type, string_type, float_type, complex_type, char_type, range_type, hash_type
+	    type_type, int_type, object_type, null_type, list_type, string_type, float_type, complex_type, char_type, range_type, hash_type, pair_type
 	}
     ;
     for(i=0; i<(sizeof(types)/sizeof(*types)); i++)

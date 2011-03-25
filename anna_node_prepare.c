@@ -456,6 +456,22 @@ static void anna_node_calculate_type_internal(
 		    break;
 		}
 	    }
+	    else if(type == pair_type && call->child_count==2)
+	    {
+		anna_type_t *spec1 = anna_node_resolve_to_type(call->child[0], stack);
+		anna_type_t *spec2 = anna_node_resolve_to_type(call->child[1], stack);
+		if(spec1 && spec2)
+		{
+		    anna_type_t *res = anna_pair_type_get(spec1, spec2);
+		    
+		    /* FIXME: We remake this node into a new one of a different type- Very, very fugly. Do something prettier, please? */
+		    anna_node_dummy_t *new_res = (anna_node_dummy_t *)this;
+		    new_res->node_type = ANNA_NODE_DUMMY;
+		    new_res->payload = anna_type_wrap(res);
+		    new_res->return_type = type_type;
+		    break;
+		}
+	    }
 	    anna_error(this, L"Unimplementedtemplate specialization. Come back tomorrow.");
 	    break;
 	}

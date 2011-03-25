@@ -87,6 +87,10 @@ void anna_mid_init()
     anna_mid_put(L"!hashSpecialization1", ANNA_MID_HASH_SPECIALIZATION1);
     anna_mid_put(L"!hashSpecialization2", ANNA_MID_HASH_SPECIALIZATION2);
     anna_mid_put(L"toString", ANNA_MID_TO_STRING);
+    anna_mid_put(L"!pairSpecialization1", ANNA_MID_PAIR_SPECIALIZATION1);
+    anna_mid_put(L"!pairSpecialization2", ANNA_MID_PAIR_SPECIALIZATION2);
+    anna_mid_put(L"!pairFirst", ANNA_MID_PAIR_FIRST);
+    anna_mid_put(L"!pairSecond", ANNA_MID_PAIR_SECOND);
 }
 
 

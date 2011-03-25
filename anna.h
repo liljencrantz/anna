@@ -137,7 +137,11 @@ typedef ssize_t mid_t;
 #define ANNA_MID_HASH_SPECIALIZATION1 35
 #define ANNA_MID_HASH_SPECIALIZATION2 36
 #define ANNA_MID_TO_STRING 37
-#define ANNA_MID_FIRST_UNRESERVED 38
+#define ANNA_MID_PAIR_SPECIALIZATION1 38
+#define ANNA_MID_PAIR_SPECIALIZATION2 39
+#define ANNA_MID_PAIR_FIRST 40
+#define ANNA_MID_PAIR_SECOND 41
+#define ANNA_MID_FIRST_UNRESERVED 42
 
 union anna_native
 {
@@ -415,7 +419,7 @@ typedef struct
     anna_type_t *argv[];
 } anna_function_type_key_t;
 
-extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type, *range_type, *complex_type, *hash_type;
+extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type;
 extern anna_object_t *null_object;
 extern int anna_error_count;
 extern struct anna_stack_template *stack_global;

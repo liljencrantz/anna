@@ -459,17 +459,17 @@ static anna_node_t *anna_macro_collection(anna_node_call_t *node)
 
     if(anna_node_is_call_to(node->child[0], L"__mapping__"))
     {
-	anna_node_call_t *pp = (anna_node_call_t *)node->child[0];
-	CHECK_CHILD_COUNT(pp, L"Map", 2);
+	anna_node_call_t *p0 = (anna_node_call_t *)node->child[0];
+	CHECK_CHILD_COUNT(p0, L"Map", 2);
 	
 	anna_node_t *param[] = 
 	    {
 		(anna_node_t *)anna_node_create_type_lookup(
 		    &node->function->location,
-		    pp->child[0]),
+		    p0->child[0]),
 		(anna_node_t *)anna_node_create_type_lookup(
 		    &node->function->location,
-		    pp->child[1])
+		    p0->child[1])
 	    }
 	;
 	
@@ -480,6 +480,39 @@ static anna_node_t *anna_macro_collection(anna_node_call_t *node)
 		anna_type_wrap(hash_type), 0),
 	    2,
 	    param);
+
+	int i;
+	for(i=0; i<node->child_count; i++)
+	{
+	    if(!anna_node_is_call_to(node->child[i], L"__mapping__"))
+	    {
+		anna_error(node->child[i], L"Not a key value pair");
+		return (anna_node_t *)anna_node_create_null(&node->location);
+	    }
+	    anna_node_call_t *pp = (anna_node_call_t *)node->child[i];
+	    CHECK_CHILD_COUNT(pp, L"Map", 2);
+	    
+	    anna_node_t *pp_param[] = 
+		{
+		    (anna_node_t *)anna_node_create_type_lookup(
+			&pp->function->location,
+			p0->child[0]),
+		    (anna_node_t *)anna_node_create_type_lookup(
+			&pp->function->location,
+			p0->child[1])
+		}
+	    ;
+	
+	    pp->function = (anna_node_t *)anna_node_create_specialize(
+		&pp->function->location,
+		(anna_node_t *)anna_node_create_dummy(
+		    &pp->function->location,
+		    anna_type_wrap(pair_type), 0),
+		2,
+		pp_param);
+	    
+	}
+	
 	return (anna_node_t *)node;
     }
     else
@@ -487,9 +520,9 @@ static anna_node_t *anna_macro_collection(anna_node_call_t *node)
 	
 	anna_node_t *param[] = 
 	    {
-	    (anna_node_t *)anna_node_create_type_lookup(
-		&node->function->location,
-		node->child[0])
+		(anna_node_t *)anna_node_create_type_lookup(
+		    &node->function->location,
+		    node->child[0])
 	    }
 	;
 	

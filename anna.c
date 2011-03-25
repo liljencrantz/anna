@@ -36,7 +36,8 @@ anna_type_t *type_type=0,
     *member_type=0,
     *range_type=0,
     *complex_type=0,
-    *hash_type=0;
+    *hash_type=0,
+    *pair_type=0;
 
 anna_object_t *null_object=0;
 

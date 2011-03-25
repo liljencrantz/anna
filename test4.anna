@@ -1,5 +1,6 @@
 
 def Int main()
 {
-    print(2 / Complex(3.0,0.0))
+    var pp = 4:"hej";
+    print(pp.first, pp.second, "\n");
 }

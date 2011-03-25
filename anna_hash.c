@@ -19,6 +19,8 @@
 #include "anna_range.h"
 #include "anna_vm.h"
 #include "anna_tt.h"
+#include "anna_pair.h"
+#include "anna_list.h"
 
 #include "anna_macro.h"
 
@@ -65,15 +67,18 @@ anna_object_t *anna_hash_create2(anna_type_t *hash_type)
 
 static anna_object_t *anna_hash_init(anna_object_t **param)
 {
-    hash_init(h_unwrap(param[0]), anna_hash_func, anna_hash_cmp);
-/*
-    size_t sz = anna_hash_get_size(param[1]);
-    anna_object_t **src = anna_hash_get_payload(param[1]);
-
-    anna_hash_set_size(param[0], sz);
-    anna_object_t **dest = anna_hash_get_payload(param[0]);
-    memcpy(dest, src, sizeof(anna_object_t *)*sz);
-*/  
+    hash_table_t *hash = h_unwrap(param[0]);
+    hash_init(hash, anna_hash_func, anna_hash_cmp);
+    size_t i;
+    size_t sz = anna_list_get_size(param[1]);
+    
+    for(i=0; i<sz; i++)
+    {
+	anna_object_t *pair = anna_list_get(param[1], i);
+	hash_put(hash, anna_pair_get_first(pair), anna_pair_get_second(pair));
+	
+    }
+    
     return param[0];
 }
 
@@ -477,7 +482,7 @@ static void anna_hash_type_create_internal(
     anna_type_t *i_argv[] = 
 	{
 	    type,
-	    object_type
+	    anna_pair_type_get(spec1, spec2)
 	}
     ;
     

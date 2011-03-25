@@ -23,6 +23,7 @@
 #include "anna_list.h"
 #include "anna_hash.h"
 #include "anna_alloc.h"
+#include "anna_pair.h"
 
 #include "anna_node_prepare.c"
 
