@@ -5,7 +5,6 @@ LANGUAGE FEATURES:
 Generic operators
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
 Named arguments for function calls.
-Map construction syntax.
 Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations (Is this needed?)
@@ -25,7 +24,7 @@ The rest of the hashtable functions (filter, contains, properties for keys and v
 Set type
 String format function
 File type
-toString methods for Hash, List, Range, Function, Node, etc
+toString methods for Hash, List, Range, Function, Node, Pair, etc
 A backtrace function
 
 IDEAS:
@@ -37,7 +36,7 @@ Tests for namespaces
 Tests for nested macro members
 Tests for complex math
 Tests for floating point math
-Tests for HashMap
+Tests for Pair (Specialization currently known to be broken)
 Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
 
@@ -45,14 +44,15 @@ DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
-Performance target: It should be possible to do the mandelbrot calculation in 0.05 seconds.
+Performance target: It should be possible to do the mandelbrot calculation test in 0.05 seconds on my x301.
 Consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion
 Avoid creating trampolines when possible
-Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.Add profiling information to the VM
+Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
+Add profiling information to the VM
 
 Inlining of if/while bodies into main method
-Make a verion of the fold op that takes a parameter
+Make a verion of the fold op that takes a count parameter
 Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
 
 Figure out how to handle the map function. We can't make a prototype

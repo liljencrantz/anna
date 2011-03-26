@@ -306,24 +306,32 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_object_t *wrapped = anna_peek(stack, param);
 		
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		#if ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 		if(!fun)
 		{
 		    wprintf(L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
 		    anna_vmstack_print(*stack);
 		    CRASH;
 		}
-		#endif
+#endif
 
 		if(fun->native.function)
 		{
 		    anna_object_t *res = fun->native.function(
 			((*stack)->top-param));
+#ifdef ANNA_CHECK_NATIVE
 		    if(!res)
 		    {
 			anna_function_print(fun);
 			CRASH;
 		    }
+		    if(!(anna_abides(res->type, fun->return_type)))
+		    {
+			wprintf(L"Error: Function %ls returned an object of type %ls, which does not abide by it's stated return type, %ls\n", fun->name, res->type->name, fun->return_type->name);
+			anna_vmstack_print(*stack);
+			CRASH;
+		    }
+#endif
 		    
 		    
 		    (*stack)->top -= (param+1);

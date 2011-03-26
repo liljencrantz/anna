@@ -91,7 +91,6 @@ anna_object_t *anna_list_get(anna_object_t *this, ssize_t offset)
 
 void anna_list_add(struct anna_object *this, struct anna_object *value)
 {
-    size_t capacity = anna_list_get_capacity(this);
     size_t size = anna_list_get_size(this);
     anna_list_set(this, size, value);
 }
@@ -645,7 +644,7 @@ static void anna_list_type_create_internal(
     anna_native_method_create(
 	type, -1, L"__in__", 0, 
 	&anna_list_in, 
-	spec,
+	int_type,
 	2, a_argv, a_argn);
         
     anna_type_t *range_argv[] = 
@@ -699,7 +698,7 @@ static void anna_list_type_create_internal(
 
 static inline void anna_list_internal_init()
 {
-    static init = 0;
+    static int init = 0;
     if(likely(init))
 	return;
     init=1;

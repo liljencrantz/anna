@@ -63,7 +63,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	L"print", 
 	ANNA_FUNCTION_VARIADIC, 
 	(anna_native_t)&anna_i_print, 
-	null_type, 1, &object_type, 
+	list_type, 1, &object_type, 
 	p_argn, stack);
     anna_stack_declare(
 	stack,

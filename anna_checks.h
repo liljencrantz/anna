@@ -9,7 +9,7 @@
 /**
    If enabled, perform a bunch of validity checks in the VM while
    executing bytecode. Pretty expensive.
- */
+*/
 //#define ANNA_CHECK_VM
 
 /**
@@ -24,6 +24,11 @@
    expensive.
 */
 #define ANNA_CHECK_STACK_ENABLED
+
+/**
+  Check the return type of every native function call to make sure it abides by it's stated interface.
+ */
+#define ANNA_CHECK_NATIVE
 
 /**
    If enabled, critical bugs (e.g. ones that cause Anna to exit at

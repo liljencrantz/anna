@@ -70,15 +70,21 @@ static anna_object_t *anna_hash_init(anna_object_t **param)
     hash_table_t *hash = h_unwrap(param[0]);
     hash_init(hash, anna_hash_func, anna_hash_cmp);
     size_t i;
-    size_t sz = anna_list_get_size(param[1]);
-    
-    for(i=0; i<sz; i++)
+    if(likely(param[1] != null_object))
     {
-	anna_object_t *pair = anna_list_get(param[1], i);
-	hash_put(hash, anna_pair_get_first(pair), anna_pair_get_second(pair));
-	
-    }
+	size_t sz = anna_list_get_size(param[1]);
     
+	for(i=0; i<sz; i++)
+	{
+	    anna_object_t *pair = anna_list_get(param[1], i);
+	    if(likely(pair != null_object))
+	    {
+		anna_object_t *key = anna_pair_get_first(pair);
+		if(likely(key != null_object))
+		    hash_put(hash, anna_pair_get_first(pair), anna_pair_get_second(pair));
+	    }
+	}	
+    }
     return param[0];
 }
 
@@ -110,7 +116,7 @@ static anna_object_t *anna_hash_get_count(anna_object_t **param)
     return anna_int_create(hash_get_count(h_unwrap(param[0])));
 }
 
-
+/*
 static anna_type_t *anna_hash_get_key_specialization(anna_object_t *obj)
 {
     return *((anna_type_t **)
@@ -126,7 +132,7 @@ static anna_type_t *anna_hash_get_value_specialization(anna_object_t *obj)
 		 obj,
 		 ANNA_MID_HASH_SPECIALIZATION2));    
 }
-
+*/
 static void anna_hash_each_fun(void *keyp, void *valp, void *funp)
 {
     anna_object_t *o_param[]=
@@ -263,151 +269,16 @@ static anna_object_t *anna_hash_first(anna_object_t **param)
     }
     return null_object;
 }
+#endif
 
 static anna_object_t *anna_hash_in(anna_object_t **param)
 {
-    size_t sz = anna_hash_get_size(param[0]);
-    anna_object_t **arr = anna_hash_get_payload(param[0]);
-    size_t i;
-
-    anna_object_t *needle = param[1];
-    if(needle == null_object)
-    {
-	return null_object;
-    }
-    //anna_object_print(needle);
-    
-    anna_object_t **eq_obj_ptr = anna_member_addr_get_mid(needle, ANNA_MID_EQ);
-    if(eq_obj_ptr)
-    {
-	for(i=0;i<sz;i++)
-	{
-	    anna_object_t *o_param[]=
-		{
-		    needle,
-		    arr[i]
-		}
-	    ;
-	    anna_object_t *result = 
-		anna_vm_run(*eq_obj_ptr, 2, o_param);
-	    
-	    if(result != null_object)
-	    {
-		return anna_int_create(i);
-	    }
-	}
-    }
-    return null_object;
-}
-
-static anna_object_t *anna_hash_i_get_range(anna_object_t **param)
-{
     if(param[1]==null_object)
 	return null_object;
-    
-    int from = anna_range_get_from(param[1]);
-    int step = anna_range_get_step(param[1]);
-    int count = anna_range_get_count(param[1]);
-    int i;
-    
-    anna_object_t *res = anna_hash_create(anna_hash_get_specialization(param[0]));
-    anna_hash_set_capacity(res, count);
-    for(i=0;i<count;i++)
-    {
-	anna_hash_set(
-	    res, i, 
-	    anna_hash_get(
-		param[0],
-		from + step*i));
-	
-    }    
-
-    return res;
-    
+    anna_object_t *res = hash_get(h_unwrap(param[0]), param[1]);
+    return res ? anna_int_one : null_object;
 }
 
-static anna_object_t *anna_hash_i_set_range(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    
-    if(param[2]==null_object)
-	return null_object;
-    
-    int from = anna_range_get_from(param[1]);
-    int step = anna_range_get_step(param[1]);
-    int to = anna_range_get_to(param[1]);
-    int count = anna_range_get_count(param[1]);
-    int i;
-    
-    int count2 = anna_hash_get_size(param[2]);
-
-    if(count != count2)
-    {
-	if(step != 1)
-	{
-	    return null_object;
-	}
-
-	int old_size = anna_hash_get_size(param[0]);
-
-	/* If we're assigning past the end of the array, just silently
-	 * take the whole array and go on */
-	count = mini(count, old_size - from);	
-	int new_size = old_size - count + count2;
-	anna_object_t **arr;
-	if(to > new_size)
-	{
-	    anna_hash_set_capacity(param[0], to);
-	    for(i=old_size; i<new_size; i++)
-	    {
-		anna_hash_set(
-		    param[0], i, null_object);		
-	    }
-	    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_SIZE) = new_size;
-	    arr = anna_hash_get_payload(param[0]);
-	}
-	else
-	{
-	    if(new_size > anna_hash_get_capacity(param[0]))
-	    {
-		anna_hash_set_capacity(param[0], new_size);
-	    }
-	    
-	    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_SIZE) = new_size;
-	    arr = anna_hash_get_payload(param[0]);
-	    memmove(&arr[from+count2], &arr[from+count], sizeof(anna_object_t *)*abs(old_size - from - count ));
-	}
-	
-	/* Set new size - don't call anna_hash_set_size, since that might truncate the hash if we're shrinking */
-
-	/* Move the old data */
-
-	/* Copy in the new data */
-	for(i=0;i<count2;i++)
-	{
-	    arr[from+i] = 
-		anna_hash_get(
-		    param[2],
-		    i);
-	}
-    }
-    else
-    {
-	for(i=0;i<count;i++)
-	{
-	    anna_hash_set(
-		param[0], from + step*i, 
-		anna_hash_get(
-		    param[2],
-		    i));
-	}
-    }
-
-    return param[0];
-}
-
-#endif
 
 static void anna_hash_type_create_internal(
     anna_stack_template_t *stack,
@@ -540,6 +411,14 @@ static void anna_hash_type_create_internal(
 	object_type,
 	1, e_argv, e_argn);
 
+
+    anna_native_method_create(
+	type, -1, L"__in__", 0, 
+	&anna_hash_in, 
+	int_type,
+	2, kv_argv, kv_argn);
+        
+
 #if 0
 
     anna_type_t *i_argv[] = 
@@ -601,12 +480,6 @@ static void anna_hash_type_create_internal(
 	hash_type,
 	2, e_argv, e_argn);
     
-    anna_native_method_create(
-	type, -1, L"__in__", 0, 
-	&anna_hash_in, 
-	spec,
-	2, a_argv, a_argn);
-        
 #endif
 
 }
