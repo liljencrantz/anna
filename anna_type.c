@@ -16,6 +16,7 @@
 #include "anna_alloc.h"
 #include "anna_node_check.h"
 #include "anna_intern.h"
+#include "anna_attribute.h"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
@@ -141,6 +142,8 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->stack = anna_stack_create(0);
     if(definition)
     {
+	//anna_node_print(D_CRITICAL, definition->child[2]);
+	
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
 	anna_type_mangle_methods(result);
     }
@@ -507,6 +510,11 @@ static void anna_type_prepare_member_internal(
     
     if(!is_method)
     {
+	anna_node_t *prop = anna_attribute_node(decl->attribute, L"property");
+	if(prop)
+	{
+	    
+	}
 	
     }
     

@@ -357,6 +357,12 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	    anna_node_call_t *n2=(anna_node_call_t *)n;
 	    r2->child = malloc(sizeof(anna_node_t *)*r2->child_capacity);
 	    memcpy(r2->child, n2->child, sizeof(anna_node_t *)*r2->child_count);
+	    if(!r2->function)
+	    {
+		anna_error(n, L"Call node has invalid function");
+		CRASH;
+	    }
+	    
 	    r2->function = anna_node_clone_deep(r2->function);
 
 	    for(i=0;i<r2->child_count; i++)

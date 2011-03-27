@@ -1089,7 +1089,7 @@ opt_block:
 
 argument_list:
 	{
-	    $$ = anna_node_create_call(&@$,0,0,0);
+	    $$ = anna_node_create_block(&@$,0,0);
 	}
 	|
 	argument_list2 opt_semicolon
@@ -1098,7 +1098,7 @@ argument_list:
 argument_list2 :
 	expression 
 	{
-	    $$ = anna_node_create_call(&@$,0, 0, 0);
+	    $$ = anna_node_create_block(&@$, 0, 0);
 	    anna_node_call_add_child($$, (anna_node_t *)$1);
 	}
 	| 
@@ -1353,7 +1353,7 @@ type_definition :
 attribute_list :
 	/* Empty */
 	{
-	    $$ = anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__block__"),0,0);
+	    $$ = anna_node_create_block(&@$,0,0);
 	}
 	| 
 	attribute_list2
@@ -1371,7 +1371,7 @@ attribute_list2 :
 	|
 	identifier opt_simple_expression
 	{
-	    $$ = anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@$,L"__block__"), 0, 0);
+	    $$ = anna_node_create_block(&@$, 0, 0);
 	    anna_node_call_t *attr = anna_node_create_call(&@$,$1, 0, 0);
 	    if($2)
 	      anna_node_call_add_child(attr,$2);
