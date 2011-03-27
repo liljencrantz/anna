@@ -322,6 +322,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #ifdef ANNA_CHECK_NATIVE
 		    if(!res)
 		    {
+			wprintf(L"Error: Function %ls returned a null pointer\n", fun->name);
 			anna_function_print(fun);
 			CRASH;
 		    }

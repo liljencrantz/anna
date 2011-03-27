@@ -251,7 +251,6 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token AS
 %token IN
 %token ELLIPSIS
-%token PROPERTY
 %token IF
 %token ELSE
 %token TO
@@ -259,7 +258,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <call_val> block block2 block3 opt_else
 %type <call_val> module
 %type <node_val> expression expression1 expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 opt_expression5
-%type <node_val> simple_expression property_expression
+%type <node_val> simple_expression 
 %type <node_val> constant
 %type <node_val> opt_declaration_init opt_declaration_expression_init
 %type <node_val> function_definition 
@@ -441,7 +440,6 @@ expression:
 	}
         | expression1
 	| declaration_expression 
-	| property_expression
 	| type_definition
 	| RETURN expression1
 	{
@@ -976,7 +974,7 @@ post_op8:
 	}
 ;
 
-property_expression: PROPERTY type_identifier identifier attribute_list
+/*property_expression: PROPERTY type_identifier identifier attribute_list
 {
    anna_node_t *param[]=
       {
@@ -995,7 +993,7 @@ property_expression: PROPERTY type_identifier identifier attribute_list
       param);
    
 };
-
+*/
 opt_identifier:
 identifier
 |
@@ -1106,7 +1104,7 @@ function_declaration:
 		    0,0)		    
 	    };
 	    
-	    anna_node_t *param2[] ={$3, anna_node_create_null(&@$), 0};
+	    anna_node_t *param2[] ={$3, anna_node_create_null(&@$), 0, anna_node_create_block(&@$, 0, 0)};
 	    
 	    param2[2] = (anna_node_t *)anna_node_create_call(
 		&@$,
@@ -1116,7 +1114,7 @@ function_declaration:
 	    $$ = (anna_node_t *)anna_node_create_call(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@1,L"__var__"),
-		3,
+		4,
 		param2);
 	}
 ;
@@ -1133,7 +1131,7 @@ function_definition:
 		(anna_node_t *)$5, 
 		$6?(anna_node_t *)$6:(anna_node_t *)anna_node_create_null(&@$)
 	    };
-	    anna_node_t *param2[] ={$3, anna_node_create_null(&@$), 0};
+	    anna_node_t *param2[] ={$3, anna_node_create_null(&@$), 0, anna_node_create_block(&@$, 0, 0)};
 	    
 	    param2[2] = (anna_node_t *)anna_node_create_call(&@$,(anna_node_t *)anna_node_create_identifier(&@1,L"__def__"), 5, param);
 	    if($3->node_type != ANNA_NODE_NULL)
@@ -1141,7 +1139,7 @@ function_definition:
 		$$ = (anna_node_t *)anna_node_create_call(
 		    &@$,
 		    (anna_node_t *)anna_node_create_identifier(&@1,L"__var__"),
-		    3,
+		    4,
 		    param2);
 	    }
 	    else
@@ -1211,31 +1209,31 @@ declaration_list2 :
 	;
 
 declaration_expression: 
-	VAR opt_templatized_type identifier opt_declaration_expression_init
+	VAR opt_templatized_type identifier attribute_list opt_declaration_expression_init
 	{
-	    anna_node_t *param[] ={$3, $2, 0};	    
- 	    param[2] = $4?$4:anna_node_create_null(&@$);
+	    anna_node_t *param[] ={$3, $2, 0, $4};	    
+ 	    param[2] = $5?$5:anna_node_create_null(&@$);
 	    $$ = (anna_node_t *)anna_node_create_call(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(
 		    &@$,L"__var__"),
-		3, param);
+		4, param);
 	}
 	|
 	function_definition
 	;
 
 variable_declaration:
-	templatized_type identifier opt_declaration_init
+	templatized_type identifier attribute_list opt_declaration_init
 	{
-	    anna_node_t *param[] ={$2, $1, 0};	    
- 	    param[2] = $3?$3:anna_node_create_null(&@$);
+	    anna_node_t *param[] ={$2, $1, 0, $3};	    
+ 	    param[2] = $4?$4:anna_node_create_null(&@$);
 	    $$ = (anna_node_t *)anna_node_create_call(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(
 		    &@$,
 		    L"__var__"),
-		3, param);    
+		4, param);    
 	}
 ;
 
@@ -1308,6 +1306,7 @@ type_definition :
 	      (anna_node_t *)$2,
 	      (anna_node_t *)$3, 
 	      (anna_node_t *)$4
+	      
 	  };
 	  
 	  anna_node_t *type  = (anna_node_t *)anna_node_create_call(
@@ -1318,11 +1317,12 @@ type_definition :
 	  anna_node_t *param2[] ={
 	      (anna_node_t *)$2, 
 	      (anna_node_t *)anna_node_create_null(&@$),
-	      (anna_node_t *)type};
+	      (anna_node_t *)type,
+	      anna_node_clone_deep($3)};
 	  $$ = (anna_node_t *)anna_node_create_call(
 	      &@$,
 	      (anna_node_t *)anna_node_create_identifier(&@1,L"__const__"),
-	      3,
+	      4,
 	      param2);
 	}
 	;
@@ -1375,7 +1375,7 @@ simple_expression '(' argument_list ')'
   anna_node_call_set_function($3, $1);
 }
 |
-'(' expression ')'
+'(' argument_list ')'
 {
   $$ = $2;
 }

@@ -12,7 +12,6 @@ extern int anna_alloc_obj_count;
 void anna_gc(void);
 void anna_gc_destroy(void);
 
-
 #define GC_FREQ 16000
 
 static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
@@ -20,7 +19,7 @@ static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
     anna_alloc_count++;
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
-    anna_object_t *res = anna_slab_alloc(sz);
+    anna_vmstack_t *res = anna_slab_alloc(sz);
 //    anna_vmstack_t *res = malloc(sz);
     res->flags = ANNA_VMSTACK;
     al_push(&anna_alloc, res);
@@ -43,7 +42,8 @@ static inline __malloc anna_type_t *anna_alloc_type()
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
-    anna_type_t *res = calloc(1, sizeof(anna_type_t));
+    anna_type_t *res = anna_slab_alloc(sizeof(anna_type_t));
+    memset(res, 0, sizeof(anna_type_t));
     res->flags = ANNA_TYPE;
     al_push(&anna_alloc, res);
     return res;
@@ -53,7 +53,8 @@ static inline __malloc anna_function_t *anna_alloc_function()
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
-    anna_function_t *res = calloc(1, sizeof(anna_function_t));
+    anna_function_t *res = anna_slab_alloc(sizeof(anna_function_t));
+    memset(res, 0, sizeof(anna_function_t));
     res->flags = ANNA_FUNCTION;
     al_push(&anna_alloc, res);
     return res;
@@ -73,7 +74,8 @@ static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
 {
     if(++anna_alloc_count%GC_FREQ == 0)
 	anna_gc();
-    anna_stack_template_t *res = calloc(1, sizeof(anna_stack_template_t));
+    anna_stack_template_t *res = anna_slab_alloc(sizeof(anna_stack_template_t));
+    memset(res, 0, sizeof(anna_stack_template_t));
     res->flags = ANNA_STACK_TEMPLATE;
     al_push(&anna_alloc, res);
     return res;

@@ -60,7 +60,7 @@ static anna_object_t *anna_pair_set_second_i(anna_object_t **param)
     anna_pair_set_second(param[0], param[1]);
     return param[1];
 }
-
+/*
 static anna_type_t *anna_pair_get_specialization1(anna_object_t *obj)
 {
     return *((anna_type_t **)
@@ -76,7 +76,7 @@ static anna_type_t *anna_pair_get_specialization2(anna_object_t *obj)
 		 obj,
 		 ANNA_MID_PAIR_SPECIALIZATION2));    
 }
-
+*/
 static void anna_pair_type_create_internal(
     anna_type_t *type, 
     anna_type_t *spec1,

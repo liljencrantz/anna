@@ -102,8 +102,8 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 		&node->location,
 		result
 		),
-	    1
-	    );
+	    1,
+	    anna_node_create_block(&node->location, 0, 0));
 }
 
 #if 0
@@ -373,11 +373,12 @@ static anna_node_t *anna_macro_block(
 
 static anna_node_t *anna_macro_var(struct anna_node_call *node)
 {
-    CHECK_CHILD_COUNT(node,L"variable declaration", 3);
+    CHECK_CHILD_COUNT(node,L"variable declaration", 4);
+    CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
     
     anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
     
-    debug(D_SPAM,L"Declare a stack varaible %ls with initial value\n", name->name);
+    debug(D_SPAM,L"Declare a stack variable %ls with initial value\n", name->name);
     anna_node_print(0, node->child[2]);
     
     return (anna_node_t *)
@@ -386,30 +387,9 @@ static anna_node_t *anna_macro_var(struct anna_node_call *node)
 	    name->name,
 	    node->child[1],
 	    node->child[2],
-	    0
-	    );
+	    (anna_node_call_t *)node->child[3],
+	    anna_node_is_named(node->function, L"__const__"));
 }
-
-
-static anna_node_t *anna_macro_const(struct anna_node_call *node)
-{
-    CHECK_CHILD_COUNT(node,L"variable declaration", 3);
-    
-    anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
-    
-    debug(D_SPAM,L"Declare a stack constant %ls with initial value\n", name->name);
-    anna_node_print(0, node->child[2]);
-    
-    return (anna_node_t *)
-	anna_node_create_declare(
-	    &node->location,
-	    name->name,
-	    node->child[1],
-	    node->child[2],
-	    1
-	    );
-}
-
 
 static void anna_macro_add(
     anna_stack_template_t *stack, 
@@ -688,7 +668,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
     anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
     anna_macro_add(stack, L"__var__", &anna_macro_var);
-    anna_macro_add(stack, L"__const__", &anna_macro_const);
+    anna_macro_add(stack, L"__const__", &anna_macro_var);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
     anna_macro_add(stack, L"__and__", &anna_macro_and);
     anna_macro_add(stack, L"__if__", &anna_macro_if);

@@ -3,6 +3,6 @@
 
 #include "anna.h"
 
-void anna_object_type_create();
+void anna_object_type_create(void);
 
 #endif

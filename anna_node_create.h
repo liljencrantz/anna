@@ -106,25 +106,8 @@ anna_node_declare_t *anna_node_create_declare(
     wchar_t *name,
     struct anna_node *type,
     struct anna_node *value,
+    struct anna_node_call *attr,
     int is_const);
-
-anna_node_call_t *anna_node_create_native_method_declare(
-    anna_location_t *loc,
-    mid_t mid,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    anna_node_t *result,
-    size_t argc,
-    anna_node_t **argv,
-    wchar_t **argn);
-
-anna_node_call_t *anna_node_create_member_declare(
-    anna_location_t *loc,
-    mid_t mid,
-    wchar_t *name,
-    int is_static,
-    anna_node_t *member_type);
 
 anna_node_type_lookup_t *anna_node_create_type_lookup(
     anna_location_t *loc,
@@ -134,32 +117,6 @@ anna_node_cond_t *anna_node_create_mapping(
     anna_location_t *loc,
     anna_node_t *from,
     anna_node_t *to);
-
-
-anna_node_call_t *anna_node_create_property(
-    anna_location_t *loc,
-    wchar_t *name,
-    anna_node_t *member_type,
-    wchar_t *getter,
-    wchar_t *setter);
-
-anna_node_t *anna_node_create_function_declaration(
-    anna_location_t *loc,
-    anna_node_t *result,
-    size_t argc,
-    anna_node_t **argv,
-    wchar_t **argn);
-
-anna_node_t *anna_node_create_templated_type(
-    anna_location_t *loc,
-    anna_node_t *type,
-    size_t argc,
-    anna_node_t **argv);
-
-anna_node_t *anna_node_create_simple_templated_type(
-    anna_location_t *loc,
-    wchar_t *type_name,
-    wchar_t *param_name);
 
 anna_node_call_t *anna_node_create_block(
     anna_location_t *loc,

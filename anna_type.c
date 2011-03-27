@@ -509,6 +509,12 @@ static void anna_type_prepare_member_internal(
 	(anna_node_t *)decl,
 	stack);
     
+    if(!is_method)
+    {
+	
+    }
+    
+    
     mid_t mid = anna_member_create(
 	type,
 	-1,
@@ -592,7 +598,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 		L"__init__",
 		0,
 		&anna_type_noop,
-		object_type,
+		type,
 		1, argv, argn);
 	    anna_object_t **cp = anna_static_member_addr_get_mid(
 		type,

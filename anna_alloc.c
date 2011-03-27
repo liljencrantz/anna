@@ -400,8 +400,6 @@ static void anna_alloc_free(void *obj)
 		}
 	    }
 	    anna_slab_free(obj, sizeof(anna_object_t)+sizeof(anna_object_t *)* (o->type->member_count));
-	    return;
-	    
 	    break;
 	}
 	case ANNA_TYPE:
@@ -429,13 +427,13 @@ static void anna_alloc_free(void *obj)
 	    hash_destroy(&o->name_identifier);
 	    free(o->mid_identifier);
 	    
+	    anna_slab_free(obj, sizeof(anna_type_t));
 	    break;
 	}
 	case ANNA_VMSTACK:
 	{
 	    anna_vmstack_t *o = (anna_vmstack_t *)obj;
 	    anna_slab_free(o, o->function->frame_size);
-	    return;
 	    break;
 	}
 	case ANNA_FUNCTION:
@@ -446,6 +444,7 @@ static void anna_alloc_free(void *obj)
 	    free(o->input_type);
 	    free(o->input_name);
 	    
+	    anna_slab_free(obj, sizeof(anna_function_t));
 	    break;
 	}
 	case ANNA_NODE:
@@ -489,7 +488,7 @@ static void anna_alloc_free(void *obj)
 		    break;
 		}
 	    }
-    
+	    free(obj);
 	    break;
 	}
 	case ANNA_STACK_TEMPLATE:
@@ -502,6 +501,7 @@ static void anna_alloc_free(void *obj)
 	    al_destroy(&o->import);
 	    hash_foreach(&o->member_string_identifier, free_val);
 	    hash_destroy(&o->member_string_identifier);
+	    anna_slab_free(obj, sizeof(anna_stack_template_t));
 	    break;
 	}
 	default:
@@ -509,7 +509,6 @@ static void anna_alloc_free(void *obj)
 	    break;
 	}
     }
-    free(obj);
 }
 
 void anna_alloc_gc_block()

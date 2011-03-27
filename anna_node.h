@@ -140,6 +140,7 @@ struct anna_node_declare
     anna_sid_t sid;
     struct anna_node *value;    
     struct anna_node *type;
+    struct anna_node_call *attribute;
 };
 
 struct anna_node_member_get
