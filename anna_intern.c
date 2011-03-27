@@ -26,122 +26,120 @@ static hash_table_t *intern_table=0;
 */
 static hash_table_t *intern_static_table=0;
 
-const wchar_t *anna_intern( const wchar_t *in )
+wchar_t *anna_intern( wchar_t *in )
 {
-	const wchar_t *res=0;
-
-//	debug( 0, L"intern %ls", in );
-
-	if( !in )
-		return 0;
-
+    wchar_t *res=0;
+    
+    if( !in )
+	return 0;
+    
+    if( !intern_table )
+    {
+	intern_table = malloc( sizeof( hash_table_t ) );
 	if( !intern_table )
 	{
-		intern_table = malloc( sizeof( hash_table_t ) );
-		if( !intern_table )
-		{
-		    CRASH;
-		}
-		hash_init( intern_table, &hash_wcs_func, &hash_wcs_cmp );
+	    CRASH;
 	}
-
-	if( intern_static_table )
-	{
-		res = hash_get( intern_static_table, in );
-	}
-
+	hash_init( intern_table, &hash_wcs_func, &hash_wcs_cmp );
+    }
+    
+    if( intern_static_table )
+    {
+	res = hash_get( intern_static_table, in );
+    }
+    
+    if( !res )
+    {
+	res = hash_get( intern_table, in );
+	
 	if( !res )
 	{
-		res = hash_get( intern_table, in );
-
-		if( !res )
-		{
-			res = wcsdup( in );
-			if( !res )
-			{
-			    CRASH;
-			}
-
-			hash_put( intern_table, res, res );
-		}
+	    res = wcsdup( in );
+	    if( !res )
+	    {
+		CRASH;
+	    }
+	    
+	    hash_put( intern_table, res, res );
 	}
-
-	return res;
+    }
+    
+    return res;
 }
 
-const wchar_t *anna_intern_or_free( const wchar_t *in )
+wchar_t *anna_intern_or_free( wchar_t *in )
 {
-	const wchar_t *res=0;
-
+    wchar_t *res=0;
+    
 //	debug( 0, L"intern %ls", in );
-
-	if( !in )
-		return 0;
-
+    
+    if( !in )
+	return 0;
+    
+    if( !intern_table )
+    {
+	intern_table = malloc( sizeof( hash_table_t ) );
 	if( !intern_table )
 	{
-		intern_table = malloc( sizeof( hash_table_t ) );
-		if( !intern_table )
-		{
-		    CRASH;
-		}
-		hash_init( intern_table, &hash_wcs_func, &hash_wcs_cmp );
+	    CRASH;
 	}
-
-	if( intern_static_table )
-	{
-		res = hash_get( intern_static_table, in );
-	}
-
+	hash_init( intern_table, &hash_wcs_func, &hash_wcs_cmp );
+    }
+    
+    if( intern_static_table )
+    {
+	res = hash_get( intern_static_table, in );
+    }
+    
+    if( !res )
+    {
+	res = hash_get( intern_table, in );
+	
 	if( !res )
 	{
-		res = hash_get( intern_table, in );
-
-		if( !res )
-		{
-			res = in;
-			if( !res )
-			{
-			    CRASH;
-			}
-
-			hash_put( intern_table, res, res );
-		}
-		else
-		{
-		    free(in);
-		}
+	    res = in;
+	    if( !res )
+	    {
+		CRASH;
+	    }
+	    
+	    hash_put( intern_table, res, res );
 	}
-
-	return res;
+	else
+	{
+	    free(in);
+	}
+    }
+    
+    return res;
 }
 
-const wchar_t *anna_intern_static( const wchar_t *in )
+wchar_t *anna_intern_static( wchar_t *in )
 {
-	const wchar_t *res=0;
-
-	if( !in )
-		return 0;
-
+    wchar_t *res=0;
+    
+    if( !in )
+	return 0;
+    
+    if( !intern_static_table )
+    {
+	intern_static_table = malloc( sizeof( hash_table_t ) );
 	if( !intern_static_table )
 	{
-		intern_static_table = malloc( sizeof( hash_table_t ) );
-		if( !intern_static_table )
-		{
-		    CRASH;
-		}
-		hash_init( intern_static_table, &hash_wcs_func, &hash_wcs_cmp );
+	    CRASH;
 	}
-
-	res = hash_get( intern_static_table, in );
-
-	if( !res )
-	{
-		res = in;
-		hash_put( intern_static_table, res, res );
-	}
-
-	return res;
+	hash_init( intern_static_table, &hash_wcs_func, &hash_wcs_cmp );
+    }
+    
+    res = hash_get( intern_static_table, in );
+    
+    if( !res )
+    {
+	res = in;
+	hash_put( intern_static_table, res, res );
+    }
+    
+    return res;
 }
 
 /**
@@ -149,25 +147,23 @@ const wchar_t *anna_intern_static( const wchar_t *in )
 */
 static void clear_value( void *key, void *data )
 {
-	debug( 3,  L"interned string: '%ls'", data );
-	free( (void *)data );
+    free( (void *)data );
 }
 
 void anna_intern_free_all()
 {
-	if( intern_table )
-	{
-		hash_foreach( intern_table, &clear_value );
-		hash_destroy( intern_table );
-		free( intern_table );
-		intern_table=0;
-	}
-
-	if( intern_static_table )
-	{
-		hash_destroy( intern_static_table );
-		free( intern_static_table );
-		intern_static_table=0;
-	}
-
+    if( intern_table )
+    {
+	hash_foreach( intern_table, &clear_value );
+	hash_destroy( intern_table );
+	free( intern_table );
+	intern_table=0;
+    }
+    
+    if( intern_static_table )
+    {
+	hash_destroy( intern_static_table );
+	free( intern_static_table );
+	intern_static_table=0;
+    }
 }
