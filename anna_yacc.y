@@ -546,6 +546,28 @@ expression3 :
 expression4 :
 	expression4 op4 expression5
 	{
+	    anna_node_t *enc = anna_node_create_identifier(&$2->location, enclose(((anna_node_identifier_t *)$2)->name));
+	    
+	    anna_node_t *param[] ={
+		$1, 
+		enc
+	    };
+	    anna_node_t *param2[] ={
+		$3, 
+	    };
+	    $$ = (anna_node_t *)
+		anna_node_create_call(
+		    &@$, 
+		    (anna_node_t *)anna_node_create_call(
+			&@$, 
+			(anna_node_t *)anna_node_create_identifier(
+			    &@$,
+			    L"__memberGet__"),
+			2,
+			param),
+		    1,
+		    param2);
+/*
 	  anna_node_t *param[] ={$2, $1, $3};   
 	  $$ = (anna_node_t *)anna_node_create_call(
 	      &@$, 
@@ -554,6 +576,7 @@ expression4 :
 		  L"__genericOperator__"),
 	      3,
 	      param);
+*/
 	}
         | 
 	expression4 RANGE expression5
