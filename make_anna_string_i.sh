@@ -8,22 +8,6 @@ echo "
 "
 
 init="
-
-    anna_type_t *argv[]=
-	{
-	    string_type, string_type
-	}
-    ;
-    
-    wchar_t *argn[]=
-	{
-	  L\"this\", L\"value\"
-	}
-    ;
-
-"
-
-init="$init
 "
 
 echo "
