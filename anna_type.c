@@ -17,11 +17,7 @@
 #include "anna_node_check.h"
 #include "anna_intern.h"
 
-array_list_t  anna_type_list = 
-{
-    0, 0, 0
-};
-
+static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
 

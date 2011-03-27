@@ -8,7 +8,7 @@ PROF_FLAGS := -g
 CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration	\
 -Wmissing-braces -Wmissing-prototypes -pedantic -std=c99	\
 -D_ISO99_SOURCE=1 -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L	\
-$(PROF_FLAGS) 
+$(PROF_FLAGS)
 
 ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
 anna_function_implementation.o anna_int.o anna_string.o anna_char.o	\

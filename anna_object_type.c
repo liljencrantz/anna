@@ -53,10 +53,10 @@ void anna_object_type_create()
 	    L"this", L"other"
 	}
     ;
-    
+/*    
     mid_t mmid;
     anna_function_t *fun;
-    
+*/  
     anna_native_method_create(
 	object_type,
 	-1,

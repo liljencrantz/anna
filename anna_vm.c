@@ -137,7 +137,7 @@ typedef struct
 }
     anna_op_off_t;
 
-static void anna_push(anna_vmstack_t **stack, anna_object_t *val)
+static inline void anna_push(anna_vmstack_t **stack, anna_object_t *val)
 {
 /*
     if(!val)
@@ -152,14 +152,14 @@ static void anna_push(anna_vmstack_t **stack, anna_object_t *val)
     (*stack)->top++;
 }
 
-static anna_object_t *anna_pop(anna_vmstack_t **stack)
+static inline anna_object_t *anna_pop(anna_vmstack_t **stack)
 {
     (*stack)->top--;
     anna_object_t *top = *((*stack)->top);
     return top;
 }
 
-static anna_object_t *anna_peek(anna_vmstack_t **stack, size_t off)
+__pure static inline anna_object_t *anna_peek(anna_vmstack_t **stack, size_t off)
 {
     return *((*stack)->top-1-off);
 }

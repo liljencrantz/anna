@@ -468,6 +468,7 @@ void fun_key_free(void *keyp, void *val)
 
 int main(int argc, char **argv)
 {
+    
     if(argc != 2)
     {
 	debug(D_CRITICAL,L"Error: Expected at least one argument, a name of a file to run.\n");

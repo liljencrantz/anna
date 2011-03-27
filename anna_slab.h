@@ -3,7 +3,7 @@
 
 #include "anna.h"
 
-#define SLAB_MAX 4096
+#define SLAB_MAX 128
 
 struct slab
 {
@@ -45,6 +45,5 @@ static inline void anna_slab_free(void *ptr, size_t sz)
     s->next = slab_list[sz];
     slab_list[sz] = s;
 }
-
 
 #endif

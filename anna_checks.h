@@ -28,7 +28,7 @@
 /**
   Check the return type of every native function call to make sure it abides by it's stated interface.
  */
-#define ANNA_CHECK_NATIVE
+//#define ANNA_CHECK_NATIVE
 
 /**
    If enabled, critical bugs (e.g. ones that cause Anna to exit at
@@ -50,19 +50,19 @@
    If enabled, anna will validate the internal concistency of string
    objects after complex string operations. 
 */
-#define ANNA_STRING_VALIDATE_ENABLED
+//#define ANNA_STRING_VALIDATE_ENABLED
 
 /**
    If enabled, anna will do various checks when wrapping/unwrapping
    functions, types, etc. which will e.g. cause her to crash slightly
    more gracefully if a wrapper is accessed before it can be created.
 */
-#define ANNA_WRAPPER_CHECK_ENABLED
+//#define ANNA_WRAPPER_CHECK_ENABLED
 
 /**
    If enabled, anna will validate that any stack access operations
    performed are valid
 */
-#define ANNA_CHECK_STACK_ACCESS
+//#define ANNA_CHECK_STACK_ACCESS
 
 #endif

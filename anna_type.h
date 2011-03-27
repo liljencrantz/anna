@@ -5,8 +5,6 @@
 #include "anna_node.h"
 #include "anna_stack.h"
 
-extern array_list_t  anna_type_list;
-
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition);
 
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type);
