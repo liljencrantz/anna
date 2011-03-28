@@ -1,5 +1,6 @@
 KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed.
+vmstacks used for native=>interpreted calls leak
 
 LANGUAGE FEATURES:
 Generic operators

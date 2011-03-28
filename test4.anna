@@ -1,6 +1,5 @@
 
 def Int main()
 {
-    var pp = 4:"hej";
-    print(pp.first, pp.second, "\n");
+["aaa","bbb","ccc"].each(val){print("Wheee ", val, "\n")};
 }

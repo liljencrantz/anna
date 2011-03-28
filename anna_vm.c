@@ -114,6 +114,7 @@
    If the top value of the stack abides to the type specified in the op, do nothing. Otherwise, replace the current top stack value with the null object.
  */
 #define ANNA_OP_CAST 20
+#define ANNA_OP_CALLBACK 22
 
 static anna_vmstack_t *stack = 0;
 
@@ -171,6 +172,16 @@ typedef struct
     ssize_t offset;
 }
     anna_op_off_t;
+
+typedef struct
+{
+    char instruction;
+    anna_vm_callback_t callback;
+    void *aux1;
+    void *aux2;
+    void *aux3;
+}
+    anna_op_callback_t;
 
 static inline void anna_push(anna_vmstack_t *stack, anna_object_t *val)
 {
@@ -271,6 +282,54 @@ void anna_vm_destroy(void)
 }
 #endif
 
+void anna_vm_call_once(
+    anna_vm_callback_t callback, void *aux1, void *aux2, void *aux3, 
+    anna_object_t *entry, int argc, anna_object_t **argv)
+{
+    anna_function_t *fun = anna_function_unwrap(entry);
+    if(fun->native.function)
+    {
+	anna_object_t *res = callback(aux1, aux2, aux3, fun->native.function(argv));
+
+	anna_vmstack_t *new_stack = anna_alloc_vmstack(sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+	new_stack->caller = stack;
+	stack = new_stack;
+	stack->parent = 0;    
+	stack->function = 0;
+	stack->top = &stack->base[0];
+	stack->code = malloc(1);
+	*(stack->code) = ANNA_OP_RETURN;
+	anna_push(stack, res);
+	return;
+    }    
+
+    anna_vmstack_t *new_stack = anna_alloc_vmstack((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    new_stack->caller = stack;
+    stack = new_stack;
+    stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    
+    stack->function = 0;
+    stack->top = &stack->base[0];
+    stack->code = malloc(sizeof(anna_op_callback_t));
+    anna_op_callback_t *code = (anna_op_callback_t *)stack->code;
+    code->instruction = ANNA_OP_CALLBACK;
+    code->callback = callback;
+    code->aux1 = aux1;
+    code->aux2 = aux2;
+    code->aux3 = aux3;
+
+    anna_push(stack, entry);
+    int i;    
+    for(i=0; i<argc; i++)
+    {
+	anna_push(stack, argv[i]);
+    }
+    stack = anna_frame_push(stack, entry);
+    assert(*(stack->code));
+    
+}
+
+
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
     anna_function_t *fun = anna_function_unwrap(entry);
@@ -300,6 +359,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
     while(1)
     {
+//	wprintf(L"Instruction %d\n", *stack->code);
+	
 	char instruction = *stack->code;
 //	wprintf(L"STACK SIZE %d\n", (*stack)->top - &(*stack)->base[0]);
 	switch(instruction)
@@ -351,8 +412,26 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 		if(fun->native.function)
 		{
+		    wprintf(L"Native call\n");
+			stack->code += sizeof(*op);		    
+		    anna_vmstack_t *ss = stack;
+
 		    anna_object_t *res = fun->native.function(
 			(stack->top-param));
+		    //wprintf(L"Returned %d\n", res);
+		    ss->top -= (param+1);
+		    
+		    if(res)
+		    {
+			anna_push(stack, res);
+		    }
+		    else
+		    {
+			wprintf(L"Weird, no retutrn. I guess it's a callback thingie\n");
+			
+		    }
+		    
+/*
 #ifdef ANNA_CHECK_NATIVE
 		    if(!res)
 		    {
@@ -367,11 +446,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 			CRASH;
 		    }
 #endif
-		    
-		    
-		    stack->top -= (param+1);
-		    anna_push(stack, res);
-		    stack->code += sizeof(*op);		    
+*/    
 		}
 		else
 		{
@@ -406,6 +481,16 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		stack = stack->caller;
 		anna_push(stack, val);
 //		wprintf(L"Pop frame\n");
+		break;
+	    }
+	    
+	    case ANNA_OP_CALLBACK:
+	    {
+		anna_op_callback_t *cb = (anna_op_callback_t *)stack->code;
+		anna_object_t *val = cb->callback(cb->aux1, cb->aux2, cb->aux3, anna_pop(stack));
+		stack = stack->caller;
+		anna_push(stack, val);
+		
 		break;
 	    }
 	    
@@ -965,12 +1050,20 @@ void anna_vm_mark_code(anna_function_t *f)
 		anna_alloc_mark_object(op->value);
 		break;
 	    }
-
+	    
 	    case ANNA_OP_LIST:
 	    case ANNA_OP_CAST:
 	    {
 		anna_op_type_t *op = (anna_op_type_t*)code;
 		anna_alloc_mark_type(op->value);
+		break;
+	    }
+
+	    case ANNA_OP_CALLBACK:
+	    {
+		anna_op_callback_t *op = (anna_op_callback_t*)code;
+		anna_alloc_mark_type(op->aux1);
+		anna_alloc_mark_type(op->aux2);
 		break;
 	    }
 	    

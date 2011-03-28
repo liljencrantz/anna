@@ -427,6 +427,9 @@ static void anna_alloc_free(void *obj)
 	case ANNA_VMSTACK:
 	{
 	    anna_vmstack_t *o = (anna_vmstack_t *)obj;
+	    if(!o->function)
+		return;
+	    
 	    anna_slab_free(o, o->function->frame_size);
 	    break;
 	}

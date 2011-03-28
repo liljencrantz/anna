@@ -197,30 +197,44 @@ static anna_object_t *anna_list_append(anna_object_t **param)
     return param[0];
 }
 
+static anna_object_t *anna_list_each_callback(void *aux1, void *aux2, void *aux3, anna_object_t *res)
+{
+    anna_object_t *obj = aux1;
+    anna_object_t *body_object = aux2;
+    size_t i = aux3;
+    size_t sz = anna_list_get_size(obj);
+    if( i < sz )
+    {
+	anna_object_t **arr = anna_list_get_payload(obj);
+	anna_object_t *o_param[2];
+	o_param[0] = anna_int_create(i);
+	o_param[1] = arr[i];
+	anna_vm_call_once(
+	    anna_list_each_callback, aux1, aux2, i+1, body_object, 2, o_param);
+	return 0;
+    }
+    return obj;
+}
+
+
 static anna_object_t *anna_list_each(anna_object_t **param)
 {
-    anna_object_t *body_object=param[1];
-    
     size_t sz = anna_list_get_size(param[0]);
-    anna_object_t **arr = anna_list_get_payload(param[0]);
-    size_t i;
-
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
   wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
 */  
-    anna_object_t *o_param[2];
-    for(i=0;i<sz;i++)
+    if(sz > 0)
     {
-	/*
-	  wprintf(L"Run the following code:\n");
-	  anna_node_print((*function_ptr)->body);
-	  wprintf(L"\n");
-	*/
-	o_param[0] = anna_int_create(i);
-	o_param[1] = arr[i];
-	anna_vm_run(body_object, 2, o_param);
+	
+	anna_object_t **arr = anna_list_get_payload(param[0]);
+	anna_object_t *o_param[2];
+	o_param[0] = anna_int_zero;
+	o_param[1] = arr[0];
+	anna_vm_call_once(anna_list_each_callback, param[0], param[1], 1, param[1], 2, o_param);
+	return 0;
     }
+    
     return param[0];
 }
 
