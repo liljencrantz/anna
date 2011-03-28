@@ -929,7 +929,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 			this,
 			L"Wrong number of parameters to constructor call. Expected %d, got %d\n", 
 			ftk->argc-1, this2->child_count);
-		    anna_node_print(D_ERROR, this2);
+		    anna_node_print(D_ERROR, this);
 		    break;
 		}
 	    }
@@ -1036,7 +1036,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		int i;
 		for(i=0;i<f->body->child_count; i++)
 		{
-		    anna_node_each(f->body->child[i], &anna_node_validate, f->stack_template);
+		    anna_node_each(f->body->child[i], (anna_node_function_t)&anna_node_validate, f->stack_template);
 		}
 	    }
 	    break;
@@ -1049,7 +1049,7 @@ void anna_node_calculate_type_children(anna_node_call_t *node, anna_stack_templa
     int i;
     for(i=0; i<node->child_count; i++)
     {
-	anna_node_each(node->child[i], &anna_node_calculate_type, stack);
+	anna_node_each(node->child[i], (anna_node_function_t)&anna_node_calculate_type, stack);
 	if(anna_error_count)
 	{
 	    return;

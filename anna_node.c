@@ -133,7 +133,7 @@ static int anna_node_identifier_is_function(anna_node_identifier_t *id, anna_sta
     return !!anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
 }
 */
-anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_template_t *stack)
+anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_template_t *stack)
 {
 /*
     wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
@@ -165,7 +165,7 @@ anna_function_t *anna_node_macro_get(anna_node_call_t *node, anna_stack_template
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *call=(anna_node_call_t *)node;
-	    if(anna_node_is_named(call->function, L"__memberGet__") && call->child_count == 2)
+	    if(anna_node_is_named(call->function, L"__memberGet__") && (call->child_count == 2))
 	    {
 		return anna_node_macro_get(
 		    call->child[1], stack);

@@ -20,7 +20,7 @@ static anna_type_t *member_method_type, *member_property_type, *member_variable_
 
 anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 {
-    if(likely(result->wrapper))
+    if(likely((long)result->wrapper))
 	return result->wrapper;
     
     anna_type_t * m_type;

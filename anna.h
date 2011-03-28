@@ -205,8 +205,7 @@ struct anna_type
        templating, macro expansion, etc. This is the whole AST,
        including atributes, type name, etc.
        
-       Native types do not have a
-       definition.
+       Native types do not have a definition.
     */
     struct anna_node_call *definition;
     /**
@@ -214,8 +213,7 @@ struct anna_type
        parsed, macro expanded version of the AST, and only includes
        the actual body block.
        
-       Native types do not have a
-       body.
+       Native types do not have a body.
     */
     struct anna_node_call *body;
     /**
@@ -372,7 +370,7 @@ struct anna_function
      */
     struct anna_type **input_type;    
     /**
-       Bytecode 
+       Bytecode
      */
     char *code;
     size_t frame_size;
@@ -393,6 +391,7 @@ struct anna_vmstack
 {
     int flags;
     struct anna_vmstack *parent;    
+    struct anna_vmstack *caller;    
     struct anna_function *function;
     char *code;    
     struct anna_object **top;
@@ -562,7 +561,7 @@ wchar_t *anna_mid_get_reverse(mid_t mid);
 void anna_mid_put(wchar_t *name, mid_t mid);
 size_t anna_mid_max_get(void);
 anna_member_t **anna_mid_identifier_create(void);
-size_t anna_mid_get_count();
+size_t anna_mid_get_count(void);
 
 
 

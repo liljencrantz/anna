@@ -93,7 +93,7 @@ static void anna_type_mangle_methods(
 			    {
 				anna_node_call_t *body =(anna_node_call_t *)def->child[4];
 				anna_node_call_add_child(
-				    body, anna_node_create_identifier(0, L"this"));
+				    body, (anna_node_t *)anna_node_create_identifier(0, L"this"));
 				
 			    }
 			    
@@ -190,9 +190,8 @@ void anna_type_definition_make(anna_type_t *type)
 	    L"class"));
     
     anna_node_call_t *attribute_list = 
-	anna_node_create_call(
+	anna_node_create_block(
 	    0,
-	    (anna_node_t *)anna_node_create_identifier(0, L"__block__"),
 	    0,
 	    0);	
 
@@ -294,7 +293,7 @@ size_t anna_type_member_count(anna_type_t *type)
 
 anna_object_t *anna_type_wrap(anna_type_t *result)
 {
-    if(likely(result->wrapper))
+    if(likely((long)result->wrapper))
 	return result->wrapper;
 
     result->wrapper = anna_object_create(type_type);
@@ -604,9 +603,11 @@ static anna_node_t *anna_type_setup_interface_internal(
 		&anna_type_noop,
 		type,
 		1, argv, argn);
+/*
 	    anna_object_t **cp = anna_static_member_addr_get_mid(
 		type,
 		ANNA_MID_INIT_PAYLOAD);
+*/
 	}
     }
     return 0;

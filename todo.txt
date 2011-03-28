@@ -45,15 +45,19 @@ Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
 Performance target: It should be possible to do the mandelbrot calculation test in 0.05 seconds on my x301.
+variable lookup instruction version for looking up in current frame
+variable lookup instruction version for looking up in parent frame
+Free AST nodes after compilation
+Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)
 Consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion
 Avoid creating trampolines when possible
-Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
+Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.Jump labels
 Add profiling information to the VM
-
 Inlining of if/while bodies into main method
 Make a verion of the fold op that takes a count parameter
 Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
+
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other

@@ -295,12 +295,7 @@ void anna_function_setup_body(
     
     if(f->body)
     {
-	int i;
-	
 	anna_node_calculate_type_children( f->body, f->stack_template);
-
-//	if(wcscmp(f->name, L"__add__Complex__") == 0){CRASH;}
-
     }
 }
 
@@ -390,7 +385,7 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
   
 }
 
-anna_node_call_t *anna_function_attribute(anna_function_t *fun)
+static anna_node_call_t *anna_function_attribute(anna_function_t *fun)
 {
     return fun->attribute;    
 }
@@ -411,26 +406,26 @@ int anna_function_has_alias_reverse(anna_function_t *fun, wchar_t *name)
 
 void anna_function_alias_add(anna_function_t *fun, wchar_t *name)
 {
-    anna_node_call_t *param[] = {anna_node_create_identifier(0, name)};
+    anna_node_t *param[] = {(anna_node_t *)anna_node_create_identifier(0, name)};
     anna_node_call_t *attr = anna_node_create_call(
 	0,
-	anna_node_create_identifier(0, L"alias"),
+	(anna_node_t *)anna_node_create_identifier(0, L"alias"),
 	1,
 	param
 	);
-    anna_node_call_add_child(fun->attribute, attr);
+    anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
 }
 
 void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name)
 {
-    anna_node_call_t *param[] = {anna_node_create_identifier(0, name)};
+    anna_node_t *param[] = {(anna_node_t *)anna_node_create_identifier(0, name)};
     anna_node_call_t *attr = anna_node_create_call(
 	0,
-	anna_node_create_identifier(0, L"aliasReverse"),
+	(anna_node_t *)anna_node_create_identifier(0, L"aliasReverse"),
 	1,
 	param
 	);
-    anna_node_call_add_child(fun->attribute, attr);
+    anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
 }
 
 anna_function_t *anna_function_create_from_definition(

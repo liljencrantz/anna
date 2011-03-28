@@ -9,16 +9,9 @@ echo "
 "
 
 init="
-    anna_type_t *c_argv[]=
-	{
-	    char_type,
-            char_type
-	}
-    ;
-    
     anna_type_t *i_argv[]=
 	{
-	    int_type,
+	    char_type,
             int_type
 	}
     ;

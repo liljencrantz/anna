@@ -244,7 +244,7 @@ static anna_object_t *anna_string_i_ljoin(anna_object_t **param)
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *str_obj = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
 	
-	if(!str_obj->type == string_type)
+	if(str_obj->type != string_type)
 	{
 	    return null_object;
 	}
@@ -259,7 +259,7 @@ static anna_object_t *anna_string_i_ljoin(anna_object_t **param)
 	    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	    anna_object_t *str_obj = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
 	    
-	    if(!str_obj->type == string_type)
+	    if(str_obj->type != string_type)
 	    {
 		return null_object;
 	    }
@@ -293,7 +293,6 @@ static anna_object_t *anna_string_i_append(anna_object_t **param)
 static anna_object_t *anna_string_i_each(anna_object_t **param)
 {
     anna_object_t *body_object;
-    anna_object_t *result=param[0];
     anna_string_t *str = as_unwrap(param[0]);
     
     body_object=param[1];
@@ -511,7 +510,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	2,
 	join_argv, 
 	join_argn);
-
+/*
     wchar_t *ac_argn[] =
 	{
 	    L"this", L"other"
@@ -524,7 +523,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	    char_type
 	}
     ;
-
+*/
     anna_native_property_create(
 	string_type,
 	-1,

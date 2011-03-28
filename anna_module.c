@@ -40,11 +40,6 @@ void anna_function_prepare_enque()
 }
 */
 
-static void anna_module_calculate_type(anna_node_t *n, void *aux)
-{
-    anna_node_calculate_type(n, (anna_stack_template_t *)aux);
-}
-
 static void anna_module_find_imports_internal(anna_node_t *module, wchar_t *name, array_list_t *import)
 {
     int i;
@@ -95,8 +90,8 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 	anna_node_closure_t *this2 = (anna_node_closure_t *)this;	
 	if(this2->payload->body && !this2->payload->code)
 	{
+	    anna_node_each((anna_node_t *)this2->payload->body, &anna_module_compile, 0);
 	    anna_vm_compile(this2->payload);
-	    anna_node_each(this2->payload->body, &anna_module_compile, 0);
 	}
     }
     if(this->node_type == ANNA_NODE_TYPE)
@@ -105,7 +100,7 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 	if(this2->payload->body && !(this2->payload->flags & ANNA_TYPE_COMPILED))
 	{
 	    this2->payload->flags |= ANNA_TYPE_COMPILED;
-	    anna_node_each(this2->payload->body, &anna_module_compile, 0);
+	    anna_node_each((anna_node_t *)this2->payload->body, &anna_module_compile, 0);
 	}
     }
 }
@@ -269,7 +264,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     
     for(i=0; i<ggg->child_count; i++)
     {
-	anna_node_each(ggg->child[i], &anna_node_validate, module_stack);
+	anna_node_each(ggg->child[i], (anna_node_function_t)&anna_node_validate, module_stack);
     }
     if(anna_error_count)
     {
@@ -313,7 +308,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     
     debug(D_SPAM,L"Module stack object set up for %ls\n", module_name);	
     
-    anna_node_each(ggg, &anna_module_compile, 0);
+    anna_node_each((anna_node_t *)ggg, &anna_module_compile, 0);
     
     debug(D_SPAM,L"Module %ls is compiled\n", module_name);	
     

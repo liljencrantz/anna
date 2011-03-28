@@ -39,6 +39,6 @@ wchar_t *anna_intern_static( wchar_t *in );
 /**
    Free all interned strings. Only call this at shutdown.
 */
-void anna_intern_free_all();
+void anna_intern_free_all(void);
 
 #endif

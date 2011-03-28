@@ -16,7 +16,7 @@ static array_list_t anna_mid_identifier_reverse;
 static mid_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 static size_t anna_type_mid_max = 256;
 
-void anna_mid_free(void *key, void *val)
+static void anna_mid_free(void *key, void *val)
 {
     free(key);
     free(val);
