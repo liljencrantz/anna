@@ -34,8 +34,8 @@ __pure static inline int anna_type_member_is_blob(anna_type_t *type, size_t off)
     return type->static_member_blob[off];
 }
 
-static void anna_alloc_mark_type(anna_type_t *type);
-static void anna_alloc_mark(void *obj);
+void anna_alloc_mark_type(anna_type_t *type);
+//static void anna_alloc_mark(void *obj);
 static void anna_alloc_mark_stack_template(anna_stack_template_t *o);
 static void anna_alloc_mark_node(anna_node_t *o);
 
@@ -51,7 +51,7 @@ static void anna_alloc_mark_function(anna_function_t *o)
 	anna_alloc_mark_node((anna_node_t *)o->body);
     if(o->definition)
 	anna_alloc_mark_node((anna_node_t *)o->definition);
-    anna_alloc_mark_node(o->attribute);
+    anna_alloc_mark_node((anna_node_t *)o->attribute);
     anna_alloc_mark_type(o->return_type);
     anna_alloc_mark_object(o->wrapper);
     if(o->this)
@@ -247,7 +247,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
     }
 }
 
-static void anna_alloc_mark_type(anna_type_t *type)
+void anna_alloc_mark_type(anna_type_t *type)
 {
     if( type->flags & ANNA_USED)
 	return;
@@ -370,12 +370,6 @@ static void anna_alloc_mark(void *obj)
 }
 */
 
-static void free_key(void *key, void *value)
-{
-    free(key);
-    free(value);
-}
-
 static void free_val(void *key, void *value)
 {
     free(value);
@@ -438,7 +432,6 @@ static void anna_alloc_free(void *obj)
 	}
 	case ANNA_FUNCTION:
 	{
-	    int i;
 	    anna_function_t *o = (anna_function_t *)obj;
 	    free(o->code);
 	    free(o->input_type);
@@ -454,23 +447,23 @@ static void anna_alloc_free(void *obj)
 	    {
 		case ANNA_NODE_IDENTIFIER:
 		{
-		    anna_node_identifier_t *n = (anna_node_identifier_t *)o;
+//		    anna_node_identifier_t *n = (anna_node_identifier_t *)o;
 		    break;
 		}
 		case ANNA_NODE_ASSIGN:
 		{
-		    anna_node_assign_t *n = (anna_node_assign_t *)o;
+//		    anna_node_assign_t *n = (anna_node_assign_t *)o;
 		    break;
 		}
 		case ANNA_NODE_STRING_LITERAL:
 		{
-		    anna_node_string_literal_t *n = (anna_node_string_literal_t *)o;
+//		    anna_node_string_literal_t *n = (anna_node_string_literal_t *)o;
 		    break;
 		}
 		case ANNA_NODE_CONST:
 		case ANNA_NODE_DECLARE:
 		{
-		    anna_node_declare_t *n = (anna_node_declare_t *)o;
+//		    anna_node_declare_t *n = (anna_node_declare_t *)o;
 		    break;
 		}
 
@@ -534,10 +527,12 @@ void anna_gc()
 	anna_alloc_unmark(al_get(&anna_alloc, i));
     }    
     
-    for(i=0; i<anna_vm_stack_frame_count(); i++)
+    anna_vmstack_t *stack = anna_vm_stack_get();
+
+    while(stack)
     {
-	anna_vmstack_t *stack = anna_vm_stack_get(i);
 	anna_alloc_mark_vmstack(stack);	
+	stack = stack->caller;
     }
     anna_alloc_mark_object(anna_int_one);	
     anna_alloc_mark_object(anna_int_minus_one);	
