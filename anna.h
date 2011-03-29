@@ -66,8 +66,9 @@ struct anna_node_call;
 struct anna_stack_template;
 struct anna_function;
 struct anna_node_list;
+struct anna_vmstack;
 
-typedef struct anna_object *(*anna_native_function_t)( struct anna_object ** );
+typedef struct anna_vmstack *(*anna_native_function_t)( struct anna_vmstack *, struct anna_object *);
 typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *);
 typedef ssize_t mid_t;
 
@@ -537,9 +538,6 @@ int anna_type_setup(
     anna_type_t *type, 
     anna_function_t *function, 
     anna_node_list_t *parent);
-
-anna_object_t *anna_i_null_function(
-    anna_object_t **node_base);
 
 anna_object_t *anna_object_create(
     anna_type_t *type);

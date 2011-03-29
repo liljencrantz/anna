@@ -31,6 +31,7 @@
 #include "anna_node_wrapper.h"
 #include "anna_intern.h"
 #include "anna_lang.h"
+#include "anna_vm.h"
 
 
 /*
@@ -45,12 +46,22 @@ static int hash_null_func( void *data )
     return 0;
 }
 
+/**
+   This method is the best ever! All method calls on the null object run this
+*/
+anna_vmstack_t *anna_i_null_function(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_function_t *fun = anna_function_unwrap(me);
+    anna_vmstack_drop(stack,fun->input_count+1);
+    anna_vmstack_push(stack, null_object);
+    return stack;
+}
+
 static int hash_null_cmp( void *a, 
 		   void *b )
 {
     return 1;
 }
-
 
 static void anna_null_type_create()
 {

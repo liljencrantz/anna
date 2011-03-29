@@ -13,6 +13,7 @@
 #include "anna_member.h"
 #include "anna_function.h"
 #include "anna_string.h"
+#include "anna_vm.h"
 
 #include "anna_float_i.c"
 
@@ -35,31 +36,40 @@ double anna_float_get(anna_object_t *this)
     return result;
 }
 
-static anna_object_t *anna_float_cmp(anna_object_t **param)
+static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(unlikely(param[1]->type != float_type))
+    anna_object_t **param = stack->top - 2;
+    anna_vmstack_drop(stack, 3);
+    if(unlikely(param[1]==null_object))
     {
-	return null_object;
-    }    
+        anna_vmstack_push(stack, null_object);
+        return stack;
+    }  
+
     double v1 = anna_float_get(param[0]);
     double v2 = anna_float_get(param[1]);
     if(v1 > v2)
     {
-	return anna_int_one;
+	anna_vmstack_push(stack, anna_int_one);
     }
     else if(v1 < v2)
     {
-	return anna_int_minus_one;
+	anna_vmstack_push(stack, anna_int_minus_one);
     }
-    return anna_int_zero;
-    
+    else{
+	anna_vmstack_push(stack, anna_int_zero);
+    }    
+    return stack;
 }
 
-static anna_object_t *anna_float_to_string(anna_object_t **param)
+static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 2;
+    anna_vmstack_drop(stack, 3);
     string_buffer_t sb = SB_STATIC;
     sb_printf(&sb, L"%f", anna_float_get(param[0]));
-    return anna_string_create(sb_length(&sb), sb_content(&sb));
+    anna_vmstack_push(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    return stack;
 }
 
 void anna_float_type_create(anna_stack_template_t *stack)

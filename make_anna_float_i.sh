@@ -74,32 +74,54 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 "
 
     echo "
-static anna_object_t *anna_float_i_$name(anna_object_t **param)
+static anna_vmstack_t *anna_float_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(param[1]==null_object)
-        return null_object;
-  
+    anna_object_t **param = stack->top - 2;
+    if(unlikely(param[1]==null_object))
+    {
+        anna_vmstack_drop(stack, 3);
+        anna_vmstack_push(stack, null_object);
+        return stack;
+    }  
     double v1 = anna_float_get(param[0]);
     double v2 = anna_float_get(param[1]);
-    return anna_float_create($op);
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, anna_float_create($op));
+    return stack;
 }
-static anna_object_t *anna_float_i_int_$name(anna_object_t **param)
+
+static anna_vmstack_t *anna_float_i_int_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(param[1]==null_object)
-        return null_object;
+    anna_object_t **param = stack->top - 2;
+    if(unlikely(param[1]==null_object))
+    {
+        anna_vmstack_drop(stack, 3);
+        anna_vmstack_push(stack, null_object);
+        return stack;
+    }  
   
     double v1 = anna_float_get(param[0]);
     double v2 = (double)anna_int_get(param[1]);
-    return anna_float_create($op);
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, anna_float_create($op));
+    return stack;
 }
-static anna_object_t *anna_float_i_int_reverse_$name(anna_object_t **param)
+
+static anna_vmstack_t *anna_float_i_int_reverse_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(param[1]==null_object)
-        return null_object;
+    anna_object_t **param = stack->top - 2;
+    if(unlikely(param[1]==null_object))
+    {
+        anna_vmstack_drop(stack, 3);
+        anna_vmstack_push(stack, null_object);
+        return stack;
+    }  
   
     double v1 = (double)anna_int_get(param[1]);
     double v2 = anna_float_get(param[0]);
-    return anna_float_create($op);
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, anna_float_create($op));
+    return stack;
 }
 "
 done
@@ -119,10 +141,13 @@ for i in "abs fabs(v)" "neg -v" "sqrt sqrt(v)" "tan tan(v)" "atan atan(v)" "sin 
 	1, argv, argn);"
 
     echo "
-static anna_object_t *anna_float_i_$name(anna_object_t **param)
+static anna_vmstack_t *anna_float_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 1;
     double v = anna_float_get(param[0]);
-    return anna_float_create($op);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, anna_float_create($op));
+    return stack;
 }
 "
 done

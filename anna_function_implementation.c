@@ -17,47 +17,113 @@
 #include "anna_vm.h"
 #include "anna_member.h"
 
-static void anna_object_print_val(anna_object_t *value)
+static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
-    	if(value == null_object) 
-	{
-	    wprintf(L"null");
-	}
-	else 
-	{
-	    anna_object_t *o = value;
-	    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	    anna_object_t *str = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
-	    if(str->type == string_type)
-	    {
-		anna_string_print(str);
-	    }
-	    else
-	    {
-		wprintf(L"<invalid toString method>");
-	    }
-	}
-}
-
-
-static anna_object_t *anna_i_print(anna_object_t **param)
-{
-    int i;
+    anna_object_t **param = stack->top - 3;    
+    anna_object_t *value = param[2];
+    anna_object_t *list = param[0];
+    int idx = anna_int_get(param[1]);
+    anna_vmstack_drop(stack, 4);
     
-    for(i=0; i<anna_list_get_size(param[0]); i++){	
-	anna_object_t *value = anna_list_get(param[0], i);
-	anna_object_print_val(value);
+    if(value == null_object) 
+    {
+	wprintf(L"null");
     }
-    return param[0];
+    else 
+    {
+	if(value->type == string_type)
+	{
+	    anna_string_print(value);
+	}
+	else
+	{
+	    wprintf(L"<invalid toString method>");
+	}
+    }    
+    
+    if(anna_list_get_size(param[0]) > idx)
+    {
+	anna_object_t *callback_param[] = 
+	    {
+		list,
+		anna_int_create(idx+1)
+	    }
+	;
+	
+	anna_object_t *o = anna_list_get(list, idx);
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *meth = o->type->static_member[tos_mem->offset];
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_print_callback, 2, callback_param,
+	    meth, 1, &o
+	    );
+    }
+    else
+    {
+	anna_vmstack_push(stack, list);
+    }
+    
+    return stack;
 }
 
-static anna_object_t *anna_i_not(anna_object_t **param)
+
+static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 {
-    return(param[0] == null_object)?anna_int_one:null_object;
+    anna_object_t **param = stack->top - 1;    
+    
+    anna_object_t *list = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    if(anna_list_get_size(list))
+    {
+	anna_object_t *callback_param[] = 
+	    {
+		list,
+		anna_int_one
+	    }
+	;
+	
+	anna_object_t *o = anna_list_get(list, 0);
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *meth = o->type->static_member[tos_mem->offset];
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_print_callback, 2, callback_param,
+	    meth, 1, &o
+	    );
+    }
+    else
+    {
+	anna_vmstack_push(stack, list);
+    }
+    return stack;
+}
+
+static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *val = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    anna_vmstack_push(stack, (val == null_object)?anna_int_one:null_object);
+    return stack;
 }
 
 void anna_function_implementation_init(struct anna_stack_template *stack)
 {
+    static wchar_t *pc_argn[] = 
+	{
+	    L"list", L"index", L"string"
+	}
+    ;
+    
+    anna_type_t *pc_argv[] = 
+	{
+	    list_type, int_type, string_type
+	}
+    ;
+    
+
     static wchar_t *p_argn[]={L"object"};
     anna_function_t *f = anna_native_create(
 	L"print", 
@@ -65,6 +131,15 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	(anna_native_t)&anna_i_print, 
 	list_type, 1, &object_type, 
 	p_argn, stack);
+
+    anna_function_t *fc = anna_native_create(
+	L"print_callback", 
+	0, 
+	(anna_native_t)&anna_print_callback, 
+	list_type, 3, 
+	pc_argv,
+	pc_argn, stack);
+
     anna_stack_declare(
 	stack,
 	L"print",
@@ -72,7 +147,11 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	f->wrapper,
 	0);
     
-    anna_function_t *not = anna_native_create(L"__not__", 0, (anna_native_t)&anna_i_not, int_type, 1, &object_type, p_argn, stack);
+    anna_function_t *not = anna_native_create(
+	L"__not__", 0, 
+	(anna_native_t)&anna_i_not, 
+	int_type, 
+	1, &object_type, p_argn, stack);
     anna_stack_declare(
 	stack,
 	L"__not__",

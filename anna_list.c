@@ -196,7 +196,7 @@ static anna_object_t *anna_list_append(anna_object_t **param)
     
     return param[0];
 }
-
+/*
 static anna_object_t *anna_list_each_callback(void *aux1, void *aux2, void *aux3, anna_object_t *res)
 {
     anna_object_t *obj = aux1;
@@ -215,7 +215,7 @@ static anna_object_t *anna_list_each_callback(void *aux1, void *aux2, void *aux3
     }
     return obj;
 }
-
+*/
 
 static anna_object_t *anna_list_each(anna_object_t **param)
 {
@@ -231,7 +231,7 @@ static anna_object_t *anna_list_each(anna_object_t **param)
 	anna_object_t *o_param[2];
 	o_param[0] = anna_int_zero;
 	o_param[1] = arr[0];
-	anna_vm_call_once(anna_list_each_callback, param[0], param[1], 1, param[1], 2, o_param);
+	//anna_vm_call_once(anna_list_each_callback, param[0], param[1], 1, param[1], 2, o_param);
 	return 0;
     }
     

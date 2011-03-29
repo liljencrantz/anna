@@ -13,6 +13,7 @@
 #include "anna_member.h"
 #include "anna_function.h"
 #include "anna_string.h"
+#include "anna_vm.h"
 
 #include "anna_int_i.c"
 
@@ -39,34 +40,54 @@ int anna_int_get(anna_object_t *this)
     return result;
 }
 
-static anna_object_t *anna_int_init(anna_object_t **param)
+static anna_vmstack_t *anna_int_init(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 1;
     anna_int_set(param[0], 0);
-    return param[0];
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, param[0]);
+    return stack;
 }
 
-static anna_object_t *anna_int_hash(anna_object_t **param)
+static anna_vmstack_t *anna_int_hash(anna_vmstack_t *stack, anna_object_t *me)
 {
-    return param[0];
+    anna_object_t **param = stack->top - 1;
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, param[0]);
+    return stack;
 }
 
-static anna_object_t *anna_int_cmp(anna_object_t **param)
+static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 2;
+
+    anna_object_t *res;
     if(unlikely(param[1]->type != int_type))
     {
-	return null_object;
-    }    
-    anna_object_t *res =  anna_int_create(anna_int_get(param[0]) - anna_int_get(param[1]));
-    return res;
+	res = null_object;
+    }
+    else
+    {
+	res =  anna_int_create(anna_int_get(param[0]) - anna_int_get(param[1]));
+    }
+    
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, res);
+    return stack;
 }
 
-static anna_object_t *anna_int_to_string(anna_object_t **param)
+static anna_vmstack_t *anna_int_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 1;
+
     string_buffer_t sb = SB_STATIC;
     sb_printf(&sb, L"%d", anna_int_get(param[0]));
-    return anna_string_create(sb_length(&sb), sb_content(&sb));
+    
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    sb_destroy(&sb);    
+    return stack;
 }
-
 
 void anna_int_type_create(anna_stack_template_t *stack)
 {

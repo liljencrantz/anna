@@ -1,5 +1,6 @@
 
 def Int main()
 {
-["aaa","bbb","ccc"].each(val){print("Wheee ", val, "\n")};
+print(3.1 + 7);
+//["aaa","bbb","ccc"].each(val){print("Wheee ", val, "\n")};
 }

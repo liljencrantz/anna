@@ -41,14 +41,20 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 "
 
     echo "
-static anna_object_t *anna_int_i_$name(anna_object_t **param)
+static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 2;
     if(param[1]==null_object)
-        return null_object;
-  
+    {
+        anna_vmstack_drop(stack, 3);
+        anna_vmstack_push(stack, null_object);
+        return stack;
+    }  
     int v1 = anna_int_get(param[0]);
     int v2 = anna_int_get(param[1]);
-    return anna_int_create($op);
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, anna_int_create($op));
+    return stack;
 }
 "
 done
@@ -68,10 +74,13 @@ for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)" ; do
 "
 
     echo "
-static anna_object_t *anna_int_i_$name(anna_object_t **param)
+static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 1;
     int v1 = anna_int_get(param[0]);
-    return anna_int_create($op);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, anna_int_create($op));
+    return stack;
 }
 "
 done
@@ -91,10 +100,13 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
 "
 
     echo "
-static anna_object_t *anna_int_i_$name(anna_object_t **param)
+static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 1;
     int v = anna_int_get(param[0]);
-    return anna_int_create($op);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, anna_int_create($op));
+    return stack;
 }
 "
 done

@@ -415,15 +415,6 @@ size_t anna_method_create(anna_type_t *type,
     return (size_t)mid;
 }
 
-/**
-   This method is the best ever! All method calls on the null object run this
-*/
-anna_object_t *anna_i_null_function(anna_object_t **unused(node_base))
-{
-    return null_object;
-}
-
-
 static void anna_init()
 {
     hash_init(

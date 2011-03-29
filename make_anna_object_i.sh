@@ -36,23 +36,29 @@ for i in "eq ==" "gt >" "lt <" "gte >=" "lte <=" "neq !="; do
 "
 
     echo "
-static anna_object_t *anna_object_i_callback_$name(void *aux1, void *aux2, void *aux3, anna_object_t *res)
+static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_object_t *me)
+
 {
-    wprintf(L\"Whoa, got a callback!!!!\n\");
+    anna_object_t *res = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
     if(unlikely(res->type != int_type))
     {
-	return null_object;
+        anna_vmstack_push(stack, null_object);
     }
-    int res_int = anna_int_get(res);
-    return res_int $op 0? anna_int_one:null_object;
+    else
+    {
+        int res_int = anna_int_get(res);
+        anna_vmstack_push(stack, res_int $op 0? anna_int_one:null_object);
+    }
+    return stack;
 }
 
-static anna_object_t *anna_object_i_$name(anna_object_t **param)
+static anna_vmstack_t *anna_object_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    wprintf(L\"Weee, push a call\n\");
+    anna_object_t **param = stack->top - 2;    
+    anna_vmstack_drop(stack, 3);
     anna_object_t *fun_object = *anna_static_member_addr_get_mid(param[0]->type, ANNA_MID_CMP);
-    anna_vm_call_once(anna_object_i_callback_$name, 0, 0, 0, fun_object, 2, param);
-    return 0;
+    return anna_vm_callback_native(stack, anna_object_i_callback_$name, 0, 0, fun_object, 2, param);
 }
 "
 done
