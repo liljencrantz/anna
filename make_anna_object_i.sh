@@ -58,7 +58,7 @@ static anna_vmstack_t *anna_object_i_$name(anna_vmstack_t *stack, anna_object_t 
     anna_object_t **param = stack->top - 2;    
     anna_vmstack_drop(stack, 3);
     anna_object_t *fun_object = *anna_static_member_addr_get_mid(param[0]->type, ANNA_MID_CMP);
-    return anna_vm_callback_native(stack, anna_object_i_callback_$name, 0, 0, fun_object, 2, param);
+    return anna_vm_callback_native(stack, &anna_object_i_callback_$name, 0, 0, fun_object, 2, param);
 }
 "
 done

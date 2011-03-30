@@ -1802,7 +1802,7 @@ void anna_vm_compile(
 	}
     }
     
-    fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code));
+    fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);;
     fun->definition = fun->body = 0;
 //    anna_bc_print(fun->code);
 }
@@ -1841,7 +1841,7 @@ anna_vmstack_t *anna_vm_callback(
 
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *parent, 
-    anna_native_function_t *callback, int paramc, anna_object_t **param,
+    anna_native_function_t callback, int paramc, anna_object_t **param,
     anna_object_t *entry, int argc, anna_object_t **argv)
 {
     anna_vmstack_t *stack = anna_alloc_vmstack((paramc+argc+3)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
@@ -1869,4 +1869,20 @@ anna_vmstack_t *anna_vm_callback_native(
 	anna_vmstack_push(stack, argv[i]);
     }
     return stack;
+}
+
+void anna_vm_callback_reset(
+    anna_vmstack_t *stack, 
+    anna_object_t *entry, int argc, anna_object_t **argv)
+{
+	int i;    
+	
+	anna_vmstack_push(stack, entry);
+	for(i=0; i<argc; i++)
+	{
+	    anna_vmstack_push(stack, argv[i]);
+	}
+	
+	stack->code -= (sizeof(anna_op_call_t)+sizeof(anna_op_native_call_t));
+	
 }

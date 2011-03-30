@@ -321,26 +321,74 @@ static anna_vmstack_t *anna_string_i_append(anna_vmstack_t *stack, anna_object_t
     return stack;    
 }
 
-static anna_object_t *anna_string_i_each(anna_object_t **param)
-{
-    /* FIXME API*/
-    CRASH;
-    anna_object_t *body_object;
-    anna_string_t *str = as_unwrap(param[0]);
+static anna_vmstack_t *anna_string_each_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_vmstack_pop(stack);
+    anna_object_t **param = stack->top - 3;
+
+    anna_object_t *str_obj = param[0];
+    anna_object_t *body = param[1];
+    anna_string_t *str = as_unwrap(str_obj);
+    int idx = anna_int_get(param[2]);
+    size_t sz = asi_get_length(str);
+
+    if(idx < sz)
+    {
+	anna_object_t *o_param[] =
+	    {
+		param[2],
+		anna_char_create(asi_get_char(str, idx))
+	    }
+	;
+	param[2] = anna_int_create(idx+1);
+	
+	anna_vm_callback_reset(stack, body, 2, o_param);
+    }
+    else
+    {
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, str_obj);
+    }
     
-    body_object=param[1];
+    return stack;
+}
+
+static anna_vmstack_t *anna_string_i_each(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *body = anna_vmstack_pop(stack);
+    anna_object_t *str_obj = anna_vmstack_pop(stack);
+    anna_string_t *str = as_unwrap(str_obj);
     
     size_t sz = asi_get_length(str);
-    size_t i;
-    
-    anna_object_t *o_param[2];
-    for(i=0;i<sz;i++)
+    if(sz > 0)
     {
-	o_param[0] = anna_int_create(i);
-	o_param[1] = anna_char_create(asi_get_char(str, i));
-	anna_vm_run(body_object, 2, o_param);
+	anna_object_t *callback_param[] = 
+	    {
+		str_obj,
+		body,
+		anna_int_one
+	    }
+	;
+	
+	anna_object_t *o_param[] =
+	    {
+		anna_int_zero,
+		anna_char_create(asi_get_char(str, 0))
+	    }
+	;
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_string_each_callback, 3, callback_param,
+	    body, 2, o_param
+	    );
     }
-    return param[0];
+    else
+    {
+	anna_vmstack_push(stack, str_obj);
+    }
+    
+    return stack;
 }
 
 static anna_vmstack_t *anna_string_del(anna_vmstack_t *stack, anna_object_t *me)

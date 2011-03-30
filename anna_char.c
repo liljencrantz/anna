@@ -15,6 +15,7 @@
 #include "anna_member.h"
 #include "anna_function.h"
 #include "anna_string.h"
+#include "anna_vm.h"
 
 #include "anna_char_i.c"
 
@@ -39,9 +40,12 @@ wchar_t anna_char_get(anna_object_t *this)
     return result;
 }
 
-static anna_object_t *anna_char_i_get_ordinal(anna_object_t **param)
+static anna_vmstack_t *anna_char_i_get_ordinal(anna_vmstack_t *stack, anna_object_t *me)
 {
-  return anna_int_create((int)anna_char_get(param[0]));
+    anna_object_t *ch = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    anna_vmstack_push(stack, anna_int_create((int)anna_char_get(ch)));
+    return stack;
 }
 
 static anna_object_t *anna_char_i_set_ordinal(anna_object_t **param)

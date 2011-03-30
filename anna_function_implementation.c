@@ -19,12 +19,11 @@
 
 static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
-    anna_object_t **param = stack->top - 3;    
-    anna_object_t *value = param[2];
+    anna_object_t *value = anna_vmstack_pop(stack);
+    anna_object_t **param = stack->top - 2;
     anna_object_t *list = param[0];
     int idx = anna_int_get(param[1]);
-    anna_vmstack_drop(stack, 4);
-    
+
     if(value == null_object) 
     {
 	wprintf(L"null");
@@ -50,18 +49,15 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 	    }
 	;
 	
+	param[1] = anna_int_create(idx+1);	
 	anna_object_t *o = anna_list_get(list, idx);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
-	
-	stack = anna_vm_callback_native(
-	    stack,
-	    anna_print_callback, 2, callback_param,
-	    meth, 1, &o
-	    );
+	anna_vm_callback_reset(stack, meth, 1, &o);
     }
     else
     {
+	anna_vmstack_drop(stack, 3);
 	anna_vmstack_push(stack, list);
     }
     
