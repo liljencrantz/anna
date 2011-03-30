@@ -76,132 +76,158 @@ static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
     return idx;
 }
 
-static anna_object_t *anna_string_i_set_int(anna_object_t **param)
+static anna_vmstack_t *anna_string_i_set_int(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(param[1]==null_object)
-	return param[2];
-    if(param[2]==null_object)
-	return null_object;
-    wchar_t ch = anna_char_get(param[2]);
-    ssize_t idx = anna_string_idx_wrap(param[0], anna_int_get(param[1]));
-    if(idx < 0)
+    anna_object_t **param = stack->top - 3;
+    anna_object_t *res = param[2];
+    if(unlikely(param[1]==null_object))
+	res = null_object;
+    else if(likely(param[2]!=null_object))
     {
-	return param[2];
-    }
-    asi_set_char(as_unwrap(param[0]), idx, ch);
-    return param[2];
-}
-
-static anna_object_t *anna_string_i_get_int(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    ssize_t idx = anna_string_idx_wrap(param[0], anna_int_get(param[1]));
-    if(idx < 0 || idx >= anna_string_get_count(param[0]))
-    {
-	return null_object;
-    }
-    
-    return anna_char_create(asi_get_char(as_unwrap(param[0]), idx));
-}
-
-static anna_object_t *anna_string_i_get_range(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    
-    ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
-    ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
-    ssize_t step = anna_range_get_step(param[1]);
-
-    if(anna_range_get_open(param[1]))
-    {
-	to = anna_string_get_count(param[0]);	
-    }    
-    
-    assert(step==1);
-    
-    anna_object_t *res= anna_object_create(string_type);
-    asi_init(as_unwrap(res));
-    asi_append(as_unwrap(res), as_unwrap(param[0]), from, to-from);
-    
-    return res;
-    
-}
-
-static anna_object_t *anna_string_i_set_range(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-
-    if(param[2]==null_object)
-	return null_object;
-
-    ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
-    ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
-    if(anna_range_get_open(param[1]))
-    {
-	to = anna_string_get_count(param[0]);	
-    }    
-    
-    ssize_t step = anna_range_get_step(param[1]);
-    ssize_t count = (1+(to-from-sign(step))/step);
-    
-    anna_string_t *str1 = as_unwrap(param[0]);
-    anna_string_t *str2 = as_unwrap(param[2]);
-    ssize_t i;
-    
-    if(step==1)
-    {
-	asi_replace(
-	    str1,
-	    str2,
-	    from,
-	    to-from,
-	    0,
-	    asi_get_length(as_unwrap(param[2])));
-    }
-    else
-    {
-	if(count == asi_get_length(str2))
+	wchar_t ch = anna_char_get(param[2]);
+	ssize_t idx = anna_string_idx_wrap(param[0], anna_int_get(param[1]));
+	if(likely(idx >= 0))
 	{
-	    for(i=0; i<count;i++)
-	    {
-		asi_set_char(
-		    str1,
-		    from + step*i,
-		    asi_get_char(
-			str2,
-			i));
-	    }   
-	}	
+	    asi_set_char(as_unwrap(param[0]), idx, ch);
+	}
     }
+    anna_vmstack_drop(stack, 4);
+    anna_vmstack_push(stack, res);
+    return stack;
+}
+
+static anna_vmstack_t *anna_string_i_get_int(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t **param = stack->top - 2; 
+    anna_object_t *res = null_object;
+    if(likely(param[1]!=null_object))
+    {
+	ssize_t idx = anna_string_idx_wrap(param[0], anna_int_get(param[1]));
+	if(!(idx < 0 || idx >= anna_string_get_count(param[0])))
+	{
+	    res = anna_char_create(asi_get_char(as_unwrap(param[0]), idx));
+	}
+    }
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, res);
+    return stack;
+}
+
+static anna_vmstack_t *anna_string_i_get_range(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t **param = stack->top - 2;
+    anna_object_t *res = null_object;
+
+    if(param[1]!=null_object)
+    {
     
-    return param[0];
+	ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
+	ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
+	ssize_t step = anna_range_get_step(param[1]);
+
+	if(anna_range_get_open(param[1]))
+	{
+	    to = anna_string_get_count(param[0]);	
+	}    
+    
+	assert(step==1);
+    
+	res= anna_object_create(string_type);
+	asi_init(as_unwrap(res));
+	asi_append(as_unwrap(res), as_unwrap(param[0]), from, to-from);
+    }
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, res);
+    return stack;    
 }
 
-static anna_object_t *anna_string_i_init(anna_object_t **param)
+static anna_vmstack_t *anna_string_i_set_range(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 3;
+    anna_object_t *res = null_object;
+
+    if(likely(param[1]!=null_object && param[2]!=null_object))
+    {
+
+	ssize_t from = anna_string_idx_wrap(param[0], anna_range_get_from(param[1]));
+	ssize_t to = anna_string_idx_wrap(param[0], anna_range_get_to(param[1]));
+	if(anna_range_get_open(param[1]))
+	{
+	    to = anna_string_get_count(param[0]);	
+	}    
+	
+	ssize_t step = anna_range_get_step(param[1]);
+	ssize_t count = (1+(to-from-sign(step))/step);
+	
+	anna_string_t *str1 = as_unwrap(param[0]);
+	anna_string_t *str2 = as_unwrap(param[2]);
+	ssize_t i;
+	
+	if(step==1)
+	{
+	    asi_replace(
+		str1,
+		str2,
+		from,
+		to-from,
+		0,
+		asi_get_length(as_unwrap(param[2])));
+	}
+	else
+	{
+	    if(count == asi_get_length(str2))
+	    {
+		for(i=0; i<count;i++)
+		{
+		    asi_set_char(
+			str1,
+			from + step*i,
+			asi_get_char(
+			    str2,
+			    i));
+		}   
+	    }	
+	}
+    }
+    anna_vmstack_drop(stack, 4);
+    anna_vmstack_push(stack, res);
+    return stack;    
+}
+
+static anna_vmstack_t *anna_string_i_init(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t **param = stack->top - 1;
     asi_init(as_unwrap(param[0]));
-    return param[0];
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, param[0]);
+    return stack;    
 }
 
-static anna_object_t *anna_string_i_get_count(anna_object_t **param)
+static anna_vmstack_t *anna_string_i_get_count(anna_vmstack_t *stack, anna_object_t *me)
 {
-    return anna_int_create(asi_get_length(as_unwrap(param[0])));
+    anna_object_t **param = stack->top - 1;
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, anna_int_create(asi_get_length(as_unwrap(param[0]))));
+    return stack;    
 }
 
-static anna_object_t *anna_string_i_set_count(anna_object_t **param)
+static anna_vmstack_t *anna_string_i_set_count(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(param[1]==null_object)
-	return null_object;
-    int sz = anna_int_get(param[1]);
-    asi_truncate(as_unwrap(param[0]), sz);
-    return param[1];
+    anna_object_t **param = stack->top - 2;
+    if(param[1] != null_object)
+    {
+	int sz = anna_int_get(param[1]);
+	asi_truncate(as_unwrap(param[0]), sz);
+    }
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, param[1]);
+    return stack;
 }
 
 static anna_object_t *anna_string_i_join(anna_object_t **param)
 {
+    /* FIXME API*/
+    CRASH;
     if(param[1]==null_object)
 	return null_object;
 
@@ -227,6 +253,8 @@ static anna_object_t *anna_string_i_join(anna_object_t **param)
 
 static anna_object_t *anna_string_i_ljoin(anna_object_t **param)
 {
+    /* FIXME API*/
+    CRASH;
     if(param[1]==null_object)
 	return null_object;
     size_t i;
@@ -271,27 +299,32 @@ static anna_object_t *anna_string_i_ljoin(anna_object_t **param)
     return obj;
 }
 
-static anna_object_t *anna_string_i_append(anna_object_t **param)
+static anna_vmstack_t *anna_string_i_append(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(param[1]==null_object)
-	return null_object;
-    
-    anna_string_t *str1 = as_unwrap(param[0]);
-
-    anna_object_t *o = param[1];
-    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-    anna_object_t *str = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
-    if(str->type == string_type)
+    anna_object_t **param = stack->top - 2;
+    if(param[1]!=null_object)
     {
-	anna_string_t *str2 = as_unwrap(str);
-	asi_append(str1, str2, 0, asi_get_length(str2));    
+	anna_string_t *str1 = as_unwrap(param[0]);
+
+	anna_object_t *o = param[1];
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *str = anna_vm_run(o->type->static_member[tos_mem->offset], 1, &o);
+	if(str->type == string_type)
+	{
+	    anna_string_t *str2 = as_unwrap(str);
+	    asi_append(str1, str2, 0, asi_get_length(str2));    
+	}
     }
 
-    return param[0];
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, param[0]);
+    return stack;    
 }
 
 static anna_object_t *anna_string_i_each(anna_object_t **param)
 {
+    /* FIXME API*/
+    CRASH;
     anna_object_t *body_object;
     anna_string_t *str = as_unwrap(param[0]);
     
@@ -303,11 +336,6 @@ static anna_object_t *anna_string_i_each(anna_object_t **param)
     anna_object_t *o_param[2];
     for(i=0;i<sz;i++)
     {
-	/*
-	  wprintf(L"Run the following code:\n");
-	  anna_node_print((*function_ptr)->body);
-	  wprintf(L"\n");
-	*/
 	o_param[0] = anna_int_create(i);
 	o_param[1] = anna_char_create(asi_get_char(str, i));
 	anna_vm_run(body_object, 2, o_param);
@@ -315,37 +343,49 @@ static anna_object_t *anna_string_i_each(anna_object_t **param)
     return param[0];
 }
 
-static anna_object_t *anna_string_del(anna_object_t **param)
+static anna_vmstack_t *anna_string_del(anna_vmstack_t *stack, anna_object_t *me)
 {
+    anna_object_t **param = stack->top - 1;
     asi_truncate(as_unwrap(param[0]), 0);
-    return null_object;
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push(stack, param[0]);
+    return stack;    
 }
 
-static anna_object_t *anna_string_to_string(anna_object_t **param)
+static anna_vmstack_t *anna_string_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
-    return param[0];
+    anna_object_t *res = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    anna_vmstack_push(stack, res);
+    return stack;
 }
 
-static anna_object_t *anna_string_cmp(anna_object_t **param)
+static anna_vmstack_t *anna_string_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
-    if(unlikely(param[1]->type != string_type))
+    anna_object_t **param = stack->top - 2;
+    anna_object_t *res = null_object;
+    if(likely(param[1]->type == string_type))
     {
-	return null_object;
+	anna_string_t *str1 = as_unwrap(param[0]);
+	anna_string_t *str2 = as_unwrap(param[1]);
+	int cmp = asi_compare(str1,str2);
+	
+	if(cmp>0)
+	{
+	    res = anna_int_one;
+	}
+	else if(cmp<0)
+	{
+	    res = anna_int_minus_one;
+	}
+	else 
+	{
+	    res = anna_int_zero;
+	}
     }    
-
-    anna_string_t *str1 = as_unwrap(param[0]);
-    anna_string_t *str2 = as_unwrap(param[1]);
-    int res = asi_compare(str1,str2);
-    
-    if(res>0)
-    {
-	return anna_int_one;
-    }
-    else if(res<0)
-    {
-	return anna_int_minus_one;
-    }
-    return anna_int_zero;    
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, res);
+    return stack;    
 }
 
 

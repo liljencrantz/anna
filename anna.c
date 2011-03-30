@@ -495,7 +495,6 @@ int main(int argc, char **argv)
     }
     
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
-
     anna_vm_run(*main_wrapper_ptr, 0, 0);
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN
     anna_gc_destroy();

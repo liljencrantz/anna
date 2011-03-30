@@ -337,6 +337,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_object_t *wrapped = anna_vmstack_peek(stack, param);
 		
 		anna_function_t *fun = anna_function_unwrap(wrapped);
+		
 #ifdef ANNA_CHECK_VM
 		if(!fun)
 		{
@@ -390,6 +391,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    {
 		anna_op_native_call_t *cb = (anna_op_native_call_t *)stack->code;
 		stack->code += sizeof(*cb);
+
 		stack = cb->function(stack, 0);
 		break;
 	    }
@@ -1852,7 +1854,7 @@ anna_vmstack_t *anna_vm_callback_native(
 
     char *code = stack->code;
     anna_vm_call(&code, ANNA_OP_CALL, argc);
-    anna_vm_call(&code, ANNA_OP_NATIVE_CALL, callback);
+    anna_vm_native_call(&code, ANNA_OP_NATIVE_CALL, callback);
     anna_vm_null(&code, ANNA_OP_RETURN);
     
     anna_vmstack_push(stack, null_object);
