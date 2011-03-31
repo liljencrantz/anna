@@ -1,6 +1,7 @@
 
 def Int main()
 {
-print(3.1 + 7);
+print(print(3.1 + 7, "a", 0));
+print(print(print()));
 //["aaa","bbb","ccc"].each(val){print("Wheee ", val, "\n")};
 }

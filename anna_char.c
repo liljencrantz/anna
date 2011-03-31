@@ -42,7 +42,7 @@ wchar_t anna_char_get(anna_object_t *this)
 
 static inline anna_object_t *anna_char_i_get_ordinal_i(anna_object_t **param)
 {
-  return anna_int_create((int)anna_char_get(param[0]));
+    return anna_int_create(anna_char_get(param[0]));
 }
 ANNA_VM_NATIVE(anna_char_i_get_ordinal, 1)
 

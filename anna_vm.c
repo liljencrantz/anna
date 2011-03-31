@@ -337,6 +337,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_object_t *wrapped = anna_vmstack_peek(stack, param);
 		
 		anna_function_t *fun = anna_function_unwrap(wrapped);
+		
 #ifdef ANNA_CHECK_VM
 		if(!fun)
 		{
@@ -390,6 +391,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    {
 		anna_op_native_call_t *cb = (anna_op_native_call_t *)stack->code;
 		stack->code += sizeof(*cb);
+
 		stack = cb->function(stack, 0);
 		break;
 	    }
@@ -1800,7 +1802,7 @@ void anna_vm_compile(
 	}
     }
     
-    fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code));
+    fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);;
     fun->definition = fun->body = 0;
 //    anna_bc_print(fun->code);
 }
@@ -1839,7 +1841,7 @@ anna_vmstack_t *anna_vm_callback(
 
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *parent, 
-    anna_native_function_t *callback, int paramc, anna_object_t **param,
+    anna_native_function_t callback, int paramc, anna_object_t **param,
     anna_object_t *entry, int argc, anna_object_t **argv)
 {
     anna_vmstack_t *stack = anna_alloc_vmstack((paramc+argc+3)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
@@ -1852,7 +1854,7 @@ anna_vmstack_t *anna_vm_callback_native(
 
     char *code = stack->code;
     anna_vm_call(&code, ANNA_OP_CALL, argc);
-    anna_vm_call(&code, ANNA_OP_NATIVE_CALL, callback);
+    anna_vm_native_call(&code, ANNA_OP_NATIVE_CALL, callback);
     anna_vm_null(&code, ANNA_OP_RETURN);
     
     anna_vmstack_push(stack, null_object);
@@ -1867,4 +1869,20 @@ anna_vmstack_t *anna_vm_callback_native(
 	anna_vmstack_push(stack, argv[i]);
     }
     return stack;
+}
+
+void anna_vm_callback_reset(
+    anna_vmstack_t *stack, 
+    anna_object_t *entry, int argc, anna_object_t **argv)
+{
+	int i;    
+	
+	anna_vmstack_push(stack, entry);
+	for(i=0; i<argc; i++)
+	{
+	    anna_vmstack_push(stack, argv[i]);
+	}
+	
+	stack->code -= (sizeof(anna_op_call_t)+sizeof(anna_op_native_call_t));
+	
 }
