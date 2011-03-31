@@ -15,6 +15,7 @@
 #include "anna_member.h"
 #include "anna_function.h"
 #include "anna_string.h"
+#include "anna_vm.h"
 
 #include "anna_char_i.c"
 
@@ -39,12 +40,13 @@ wchar_t anna_char_get(anna_object_t *this)
     return result;
 }
 
-static anna_object_t *anna_char_i_get_ordinal(anna_object_t **param)
+static inline anna_object_t *anna_char_i_get_ordinal_i(anna_object_t **param)
 {
   return anna_int_create((int)anna_char_get(param[0]));
 }
+ANNA_VM_NATIVE(anna_char_i_get_ordinal, 1)
 
-static anna_object_t *anna_char_i_set_ordinal(anna_object_t **param)
+static inline anna_object_t *anna_char_i_set_ordinal_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
@@ -52,18 +54,21 @@ static anna_object_t *anna_char_i_set_ordinal(anna_object_t **param)
     anna_char_set(param[0], (wchar_t)o);
     return param[1];
 }
+ANNA_VM_NATIVE(anna_char_i_set_ordinal, 2)
 
-static anna_object_t *anna_char_i_get_upper(anna_object_t **param)
+static inline anna_object_t *anna_char_i_get_upper_i(anna_object_t **param)
 {
     return anna_char_create(towupper(anna_char_get(param[0])));
 }
+ANNA_VM_NATIVE(anna_char_i_get_upper, 1)
 
-static anna_object_t *anna_char_i_get_lower(anna_object_t **param)
+static inline anna_object_t *anna_char_i_get_lower_i(anna_object_t **param)
 {
     return anna_char_create(towlower(anna_char_get(param[0])));
 }
+ANNA_VM_NATIVE(anna_char_i_get_lower, 1)
 
-static anna_object_t *anna_char_cmp(anna_object_t **param)
+static inline anna_object_t *anna_char_cmp_i(anna_object_t **param)
 {
     if(unlikely(param[1]->type != char_type))
     {
@@ -72,12 +77,14 @@ static anna_object_t *anna_char_cmp(anna_object_t **param)
     anna_object_t *res =  anna_int_create(anna_char_get(param[0]) - anna_char_get(param[1]));
     return res;
 }
+ANNA_VM_NATIVE(anna_char_cmp, 2)
 
-static anna_object_t *anna_char_to_string(anna_object_t **param)
+static inline anna_object_t *anna_char_to_string_i(anna_object_t **param)
 {
     wchar_t ch = anna_char_get(param[0]);
     return anna_string_create(1, &ch);
 }
+ANNA_VM_NATIVE(anna_char_to_string, 1)
 
 void anna_char_type_create(anna_stack_template_t *stack)
 {
