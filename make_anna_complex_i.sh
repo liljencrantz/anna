@@ -261,7 +261,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
     anna_object_t **param = stack->top - 1;
     complex double v = anna_complex_get(param[0]);
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_complex_create($op));
+    anna_vmstack_push(stack, anna_float_create($op));
     return stack;
 }
 "

@@ -267,13 +267,6 @@ void anna_vm_destroy(void)
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
     anna_function_t *fun = anna_function_unwrap(entry);
-    if(fun->native.function)
-    {
-	CRASH;
-	
-//	return fun->native.function(argv);
-    }    
-    
     anna_vmstack_t *new_stack = anna_alloc_vmstack((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
     new_stack->caller = stack;
     stack = new_stack;
@@ -335,7 +328,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_op_call_t *op = (anna_op_call_t *)stack->code;
 		size_t param = op->param;
 		anna_object_t *wrapped = anna_vmstack_peek(stack, param);
-		
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		
 #ifdef ANNA_CHECK_VM
@@ -346,17 +338,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		    CRASH;
 		}
 #endif
-
-		stack->code += sizeof(*op);
-		if(fun->native.function)
-		{
-		    stack = fun->native.function(stack, wrapped);
-		}
-		else
-		{
-		    stack = anna_frame_push(stack, wrapped);
-		}
 		
+		stack->code += sizeof(*op);
+		stack = fun->native.function(stack, wrapped);
 		break;
 	    }
 	    
@@ -1804,6 +1788,8 @@ void anna_vm_compile(
     
     fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);;
     fun->definition = fun->body = 0;
+    fun->native.function = anna_frame_push;
+    
 //    anna_bc_print(fun->code);
 }
 
