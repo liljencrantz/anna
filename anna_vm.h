@@ -1,6 +1,23 @@
 #ifndef ANNA_VM_H
 #define ANNA_VM_H
 
+/**
+   A macro that creates a wrapper function for native calls. This
+   makes it a tiny bit less error prone to write your own native
+   functions, since you aren't mucking around with stack frames
+   directly. However, using this wrapper prevents you from setting up
+   callbacks that allow you to call non-native code from inside of
+   your native function.
+ */
+#define ANNA_VM_NATIVE(name,param_count) static anna_vmstack_t *name(	\
+	anna_vmstack_t *stack, anna_object_t *me)			\
+    {									\
+	anna_object_t *res = name ## _i(stack->top-param_count);	\
+	anna_vmstack_drop(stack, param_count+1);			\
+	anna_vmstack_push(stack, res);					\
+	return stack;							\
+    }
+
 //typedef anna_object_t **(*anna_vm_callback_loop_t)(void *aux);
 
 void anna_vm_compile(

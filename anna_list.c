@@ -144,7 +144,8 @@ anna_object_t **anna_list_get_payload(anna_object_t *this)
     return *(anna_object_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD);
 }
 
-static anna_object_t *anna_list_set_int(anna_object_t **param)
+
+static inline anna_object_t *anna_list_set_int_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
@@ -152,19 +153,25 @@ static anna_object_t *anna_list_set_int(anna_object_t **param)
     return param[2];
 }
 
-static anna_object_t *anna_list_get_int(anna_object_t **param)
+ANNA_VM_NATIVE(anna_list_set_int, 3)
+
+static inline anna_object_t *anna_list_get_int_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
     return anna_list_get(param[0], anna_int_get(param[1]));
 }
 
-static anna_object_t *anna_list_get_count(anna_object_t **param)
+ANNA_VM_NATIVE(anna_list_get_int, 2)
+
+static inline anna_object_t *anna_list_get_count_i(anna_object_t **param)
 {
     return anna_int_create(anna_list_get_size(param[0]));
 }
 
-static anna_object_t *anna_list_set_count(anna_object_t **param)
+ANNA_VM_NATIVE(anna_list_get_count, 1)
+
+static inline anna_object_t *anna_list_set_count_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
@@ -173,7 +180,9 @@ static anna_object_t *anna_list_set_count(anna_object_t **param)
     return param[1];
 }
 
-static anna_object_t *anna_list_append(anna_object_t **param)
+ANNA_VM_NATIVE(anna_list_set_count, 2)
+
+static inline anna_object_t *anna_list_append_i(anna_object_t **param)
 {
     size_t i;
 
@@ -196,6 +205,9 @@ static anna_object_t *anna_list_append(anna_object_t **param)
     
     return param[0];
 }
+
+ANNA_VM_NATIVE(anna_list_append, 2)
+
 /*
 static anna_object_t *anna_list_each_callback(void *aux1, void *aux2, void *aux3, anna_object_t *res)
 {
@@ -219,6 +231,7 @@ static anna_object_t *anna_list_each_callback(void *aux1, void *aux2, void *aux3
 
 static anna_object_t *anna_list_each(anna_object_t **param)
 {
+    CRASH;
     size_t sz = anna_list_get_size(param[0]);
 /*
   wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
@@ -323,7 +336,7 @@ static anna_object_t *anna_list_first(anna_object_t **param)
     return null_object;
 }
 
-static anna_object_t *anna_list_init(anna_object_t **param)
+static inline anna_object_t *anna_list_init_i(anna_object_t **param)
 {
     (*anna_member_addr_get_mid(param[0],ANNA_MID_LIST_PAYLOAD))=0;
     (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_CAPACITY)) = 0;    
@@ -339,7 +352,9 @@ static anna_object_t *anna_list_init(anna_object_t **param)
     return param[0];
 }
 
-static anna_object_t *anna_list_del(anna_object_t **param)
+ANNA_VM_NATIVE(anna_list_init, 2)
+
+static inline anna_object_t *anna_list_del_i(anna_object_t **param)
 {
     free((*anna_member_addr_get_mid(param[0],ANNA_MID_LIST_PAYLOAD)));
     (*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_CAPACITY)) = 0;    
@@ -347,7 +362,9 @@ static anna_object_t *anna_list_del(anna_object_t **param)
     return param[0];
 }
 
-static anna_object_t *anna_list_in(anna_object_t **param)
+ANNA_VM_NATIVE(anna_list_del, 1)
+
+static inline anna_object_t *anna_list_in_i(anna_object_t **param)
 {
     size_t sz = anna_list_get_size(param[0]);
     anna_object_t **arr = anna_list_get_payload(param[0]);
@@ -383,7 +400,10 @@ static anna_object_t *anna_list_in(anna_object_t **param)
     return null_object;
 }
 
-static anna_object_t *anna_list_i_get_range(anna_object_t **param)
+ANNA_VM_NATIVE(anna_list_in, 2)
+
+
+static inline anna_object_t *anna_list_i_get_range_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
@@ -408,8 +428,9 @@ static anna_object_t *anna_list_i_get_range(anna_object_t **param)
     return res;
     
 }
+ANNA_VM_NATIVE(anna_list_i_get_range, 2)
 
-static anna_object_t *anna_list_i_set_range(anna_object_t **param)
+static inline anna_object_t *anna_list_i_set_range_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
@@ -489,6 +510,7 @@ static anna_object_t *anna_list_i_set_range(anna_object_t **param)
 
     return param[0];
 }
+ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 
 static void anna_list_type_create_internal(
     anna_stack_template_t *stack,

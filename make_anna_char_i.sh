@@ -41,7 +41,7 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
 "
 
     echo "
-static anna_object_t *anna_char_i_$name(anna_object_t **param)
+static inline anna_object_t *anna_char_i_${name}_i(anna_object_t **param)
 {
     if(param[1]==null_object)
         return null_object;
@@ -50,6 +50,7 @@ static anna_object_t *anna_char_i_$name(anna_object_t **param)
     int v2 = anna_int_get(param[1]);
     return anna_char_create(v1 $op v2);
 }
+ANNA_VM_NATIVE(anna_char_i_$name, 2)
 "
 done
 
@@ -68,11 +69,12 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
 "
 
     echo "
-static anna_object_t *anna_char_i_$name(anna_object_t **param)
+static inline anna_object_t *anna_char_i_${name}_i(anna_object_t **param)
 {
     wchar_t v = anna_char_get(param[0]);
     return anna_char_create($op);
 }
+ANNA_VM_NATIVE(anna_char_i_$name, 2)
 "
 done
 
