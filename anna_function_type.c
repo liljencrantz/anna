@@ -16,26 +16,28 @@
 #include "anna_list.h"
 #include "anna_type.h"
 #include "anna_member.h"
+#include "anna_vm.h"
 
 static anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
 static array_list_t types=AL_STATIC;
 
-static anna_object_t *anna_function_type_i_get_name(anna_object_t **param)
+static inline anna_object_t *anna_function_type_i_get_name_i(anna_object_t **param)
 {
     anna_function_t *f = anna_function_unwrap(param[0]);
     return anna_string_create(wcslen(f->name), f->name);
 }
+ANNA_VM_NATIVE(anna_function_type_i_get_name, 1)
 
-static anna_object_t *anna_function_type_i_get_output(anna_object_t **param)
+static inline anna_object_t *anna_function_type_i_get_output_i(anna_object_t **param)
 {
     anna_function_t *f = anna_function_unwrap(param[0]);
     return anna_type_wrap(f->return_type);
 }
+ANNA_VM_NATIVE(anna_function_type_i_get_output, 1)
 
-static anna_object_t *anna_function_type_i_get_input_type(anna_object_t **param)
+static inline anna_object_t *anna_function_type_i_get_input_type_i(anna_object_t **param)
 {
-
     anna_object_t *lst = anna_list_create(type_type);
     int i;
     anna_function_t *f = anna_function_unwrap(param[0]);
@@ -50,8 +52,9 @@ static anna_object_t *anna_function_type_i_get_input_type(anna_object_t **param)
     
     return lst;
 }
+ANNA_VM_NATIVE(anna_function_type_i_get_input_type, 1)
 
-static anna_object_t *anna_function_type_i_get_input_name(anna_object_t **param)
+static inline anna_object_t *anna_function_type_i_get_input_name_i(anna_object_t **param)
 {
 
     anna_object_t *lst = anna_list_create(string_type);
@@ -69,6 +72,7 @@ static anna_object_t *anna_function_type_i_get_input_name(anna_object_t **param)
     
     return lst;
 }
+ANNA_VM_NATIVE(anna_function_type_i_get_input_name, 1)
 
 
 void anna_function_type_key_print(anna_function_type_key_t *k)
@@ -88,7 +92,7 @@ void anna_function_type_key_print(anna_function_type_key_t *k)
     wprintf(L")\n");
 }
 
-static anna_object_t *anna_function_type_to_string(anna_object_t **param)
+static inline anna_object_t *anna_function_type_to_string_i(anna_object_t **param)
 {
     string_buffer_t sb = SB_STATIC;
     anna_function_t *fun = anna_function_unwrap(param[0]);
@@ -101,6 +105,7 @@ static anna_object_t *anna_function_type_to_string(anna_object_t **param)
     sb_printf(&sb, L")");
     return anna_string_create(sb_length(&sb), sb_content(&sb));
 }
+ANNA_VM_NATIVE(anna_function_type_to_string, 1)
 
 
 static void anna_function_type_base_create()

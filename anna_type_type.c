@@ -13,6 +13,7 @@
 #include "anna_list.h"
 #include "anna_member.h"
 #include "anna_node_create.h"
+#include "anna_vm.h"
 /*
 static void anna_member_add_create(
     anna_type_t *type,
@@ -78,13 +79,14 @@ static void anna_native_method_add_create(
 }
 */
 
-static anna_object_t *anna_type_i_get_name(anna_object_t **param)
+static inline anna_object_t *anna_type_i_get_name_i(anna_object_t **param)
 {
     anna_type_t *type = anna_type_unwrap(param[0]);
     return anna_string_create(wcslen(type->name), type->name);
 }
+ANNA_VM_NATIVE(anna_type_i_get_name, 1)
 
-static anna_object_t *anna_type_i_get_member(anna_object_t **param)
+static inline anna_object_t *anna_type_i_get_member_i(anna_object_t **param)
 {
     anna_object_t *lst = anna_list_create(member_type);
     int i;
@@ -105,6 +107,7 @@ static anna_object_t *anna_type_i_get_member(anna_object_t **param)
     
     return lst;
 }
+ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 
 void anna_type_type_create(anna_stack_template_t *stack)
 {
