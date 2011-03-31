@@ -197,39 +197,90 @@ static anna_vmstack_t *anna_range_get_count_i(anna_vmstack_t *stack, anna_object
     return stack;    
 }
 
-static anna_object_t *anna_range_each(anna_object_t **param)
-{
-    /* FIXME API*/
-    CRASH;
+/**
+   This is the bulk of the each method
+ */
+static anna_vmstack_t *anna_range_each_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    // Discard the output of the previous method call
+    anna_vmstack_pop(stack);
+    // Set up the param list. These are the values that aren't reallocated each lap
+    anna_object_t **param = stack->top - 3;
+    // Unwrap and name the params to make things more explicit
+    anna_object_t *range = param[0];
+    anna_object_t *body = param[1];
+    int idx = anna_int_get(param[2]);
 
-    anna_object_t *body_object=param[1];
-        
     ssize_t from = anna_range_get_from(param[0]);
     ssize_t to = anna_range_get_to(param[0]);
     ssize_t step = anna_range_get_step(param[0]);
     ssize_t count = 1+(to-from-sign(step))/step;
     int open = anna_range_get_open(param[0]);
     
-    if(((to>from) != (step>0)) && !open)
-	return param[0];
-
-    size_t i;
-
-    anna_object_t *o_param[2];
-    for(i=0;(i<count) && (!open);i++)
+    // Are we done or do we need another lap?
+    if(idx < count || open)
     {
-	/*
-	  wprintf(L"Run the following code:\n");
-	  anna_node_print((*function_ptr)->body);
-	  wprintf(L"\n");
-	*/
-	o_param[0] = anna_int_create(i);
-	o_param[1] = anna_int_create(from + step*i);
-	anna_vm_run(body_object, 2, o_param);
+	// Set up params for the next lap of the each body function
+	anna_object_t *o_param[] =
+	    {
+		param[2],
+		anna_int_create(from + step*idx)
+	    }
+	;
+	// Then update our internal lap counter
+	param[2] = anna_int_create(idx+1);
+	
+	// Finally, roll the code point back a bit and push new arguments
+	anna_vm_callback_reset(stack, body, 2, o_param);
     }
-    return param[0];
+    else
+    {
+	// Oops, we're done. Drop our internal param list and push the correct output
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, range);
+    }
+    return stack;
 }
 
+static anna_vmstack_t *anna_range_each(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *body = anna_vmstack_pop(stack);
+    anna_object_t *range = anna_vmstack_pop(stack);
+
+    ssize_t from = anna_range_get_from(range);
+    ssize_t to = anna_range_get_to(range);
+    ssize_t step = anna_range_get_step(range);
+    int open = anna_range_get_open(range);
+    
+    if(((to>from) != (step>0)) && !open)
+    {
+	anna_vmstack_push(stack, range);
+    }
+    else
+    {
+	anna_object_t *callback_param[] = 
+	    {
+		range,
+		body,
+		anna_int_one
+	    }
+	;
+	
+	anna_object_t *o_param[] =
+	    {
+		anna_int_zero,
+		anna_int_create(from)
+	    }
+	;
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_range_each_callback, 3, callback_param,
+	    body, 2, o_param
+	    );
+    }    
+    return stack;
+}
 
 void anna_range_type_create(struct anna_stack_template *stack)
 {
