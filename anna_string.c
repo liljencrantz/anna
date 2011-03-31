@@ -321,31 +321,41 @@ static anna_vmstack_t *anna_string_i_append(anna_vmstack_t *stack, anna_object_t
     return stack;    
 }
 
+/**
+   This is the bulk of the each method
+ */
 static anna_vmstack_t *anna_string_each_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
+    // Discard the output of the previous method call
     anna_vmstack_pop(stack);
+    // Set up the param list. These are the values that aren't reallocated each lap
     anna_object_t **param = stack->top - 3;
-
+    // Unwrap and name the params to make things more explicit
     anna_object_t *str_obj = param[0];
     anna_object_t *body = param[1];
     anna_string_t *str = as_unwrap(str_obj);
     int idx = anna_int_get(param[2]);
     size_t sz = asi_get_length(str);
-
+    
+    // Are we done or do we need another lap?
     if(idx < sz)
     {
+	// Set up params for the next lap of the each body function
 	anna_object_t *o_param[] =
 	    {
 		param[2],
 		anna_char_create(asi_get_char(str, idx))
 	    }
 	;
+	// Then update our internal lap counter
 	param[2] = anna_int_create(idx+1);
 	
+	// Finally, roll the code point back a bit and push new arguments
 	anna_vm_callback_reset(stack, body, 2, o_param);
     }
     else
     {
+	// Oops, we're done. Drop our internal param list and push the correct output
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push(stack, str_obj);
     }
@@ -357,9 +367,9 @@ static anna_vmstack_t *anna_string_i_each(anna_vmstack_t *stack, anna_object_t *
 {
     anna_object_t *body = anna_vmstack_pop(stack);
     anna_object_t *str_obj = anna_vmstack_pop(stack);
-    anna_string_t *str = as_unwrap(str_obj);
-    
+    anna_string_t *str = as_unwrap(str_obj);    
     size_t sz = asi_get_length(str);
+
     if(sz > 0)
     {
 	anna_object_t *callback_param[] = 
