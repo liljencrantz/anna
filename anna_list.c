@@ -218,11 +218,10 @@ static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_objec
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_object_t **param = stack->top - 3;
     // Unwrap and name the params to make things more explicit
-    anna_object_t *str_obj = param[0];
+    anna_object_t *list = param[0];
     anna_object_t *body = param[1];
-    anna_string_t *str = as_unwrap(str_obj);
     int idx = anna_int_get(param[2]);
-    size_t sz = asi_get_length(str);
+    size_t sz = anna_list_get_size(list);
     
     // Are we done or do we need another lap?
     if(idx < sz)
@@ -231,7 +230,7 @@ static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_objec
 	anna_object_t *o_param[] =
 	    {
 		param[2],
-		anna_char_create(asi_get_char(str, idx))
+		anna_list_get(list, idx)
 	    }
 	;
 	// Then update our internal lap counter
@@ -244,7 +243,7 @@ static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_objec
     {
 	// Oops, we're done. Drop our internal param list and push the correct output
 	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push(stack, str_obj);
+	anna_vmstack_push(stack, list);
     }
     
     return stack;
@@ -269,68 +268,25 @@ static anna_vmstack_t *anna_list_each(anna_vmstack_t *stack, anna_object_t *me)
 	anna_object_t *o_param[] =
 	    {
 		anna_int_zero,
-		anna_list_get(list, 0);
+		anna_list_get(list, 0)
 	    }
 	;
 	
 	stack = anna_vm_callback_native(
 	    stack,
-	    anna_string_each_callback, 3, callback_param,
+	    anna_list_each_callback, 3, callback_param,
 	    body, 2, o_param
 	    );
     }
     else
     {
-	anna_vmstack_push(stack, str_obj);
+	anna_vmstack_push(stack, list);
     }
     
     return stack;
 }
 
 
-
-/*
-static anna_object_t *anna_list_each_callback(void *aux1, void *aux2, void *aux3, anna_object_t *res)
-{
-    anna_object_t *obj = aux1;
-    anna_object_t *body_object = aux2;
-    size_t i = aux3;
-    size_t sz = anna_list_get_size(obj);
-    if( i < sz )
-    {
-	anna_object_t **arr = anna_list_get_payload(obj);
-	anna_object_t *o_param[2];
-	o_param[0] = anna_int_create(i);
-	o_param[1] = arr[i];
-	anna_vm_call_once(
-	    anna_list_each_callback, aux1, aux2, i+1, body_object, 2, o_param);
-	return 0;
-    }
-    return obj;
-}
-*/
-
-static anna_object_t *anna_list_each(anna_object_t **param)
-{
-    CRASH;
-    size_t sz = anna_list_get_size(param[0]);
-/*
-  wprintf(L"each loop got function %ls\n", (*function_ptr)->name);
-  wprintf(L"with param %ls\n", (*function_ptr)->input_name[0]);
-*/  
-    if(sz > 0)
-    {
-	
-	anna_object_t **arr = anna_list_get_payload(param[0]);
-	anna_object_t *o_param[2];
-	o_param[0] = anna_int_zero;
-	o_param[1] = arr[0];
-	//anna_vm_call_once(anna_list_each_callback, param[0], param[1], 1, param[1], 2, o_param);
-	return 0;
-    }
-    
-    return param[0];
-}
 
 static anna_object_t *anna_list_map(anna_object_t **param)
 {
