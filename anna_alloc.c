@@ -390,7 +390,7 @@ static void anna_alloc_free(void *obj)
 		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
 		if(del_mem && del_mem->is_method)
 		{
-		    anna_vm_run(o->type->static_member[del_mem->offset], 1, &o);
+//		    anna_vm_run(o->type->static_member[del_mem->offset], 1, &o);
 		}
 	    }
 	    anna_slab_free(obj, sizeof(anna_object_t)+sizeof(anna_object_t *)* (o->type->member_count));

@@ -65,7 +65,7 @@ anna_object_t *anna_hash_create2(anna_type_t *hash_type)
     return obj;
 }
 
-static anna_object_t *anna_hash_init(anna_object_t **param)
+static inline anna_object_t *anna_hash_init_i(anna_object_t **param)
 {
     hash_table_t *hash = h_unwrap(param[0]);
     hash_init(hash, anna_hash_func, anna_hash_cmp);
@@ -87,9 +87,10 @@ static anna_object_t *anna_hash_init(anna_object_t **param)
     }
     return param[0];
 }
+ANNA_VM_NATIVE(anna_hash_init, 2)
 
 
-static anna_object_t *anna_hash_set(anna_object_t **param)
+static inline anna_object_t *anna_hash_set_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object; 
@@ -102,19 +103,22 @@ static anna_object_t *anna_hash_set(anna_object_t **param)
     hash_put(h_unwrap(param[0]), param[1], param[2]);
     return param[2];
 }
+ANNA_VM_NATIVE(anna_hash_set, 3)
 
-static anna_object_t *anna_hash_get(anna_object_t **param)
+static inline anna_object_t *anna_hash_get_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
     anna_object_t *res = hash_get(h_unwrap(param[0]), param[1]);
     return res ? res : null_object;
 }
+ANNA_VM_NATIVE(anna_hash_get, 2)
 
-static anna_object_t *anna_hash_get_count(anna_object_t **param)
+static inline anna_object_t *anna_hash_get_count_i(anna_object_t **param)
 {
     return anna_int_create(hash_get_count(h_unwrap(param[0])));
 }
+ANNA_VM_NATIVE(anna_hash_get_count, 1)
 
 /*
 static anna_type_t *anna_hash_get_key_specialization(anna_object_t *obj)
@@ -153,11 +157,12 @@ static anna_object_t *anna_hash_each(anna_object_t **param)
     return param[0];
 }
 
-static anna_object_t *anna_hash_del(anna_object_t **param)
+static inline anna_object_t *anna_hash_del_i(anna_object_t **param)
 {
     hash_destroy(h_unwrap(param[0]));
     return param[0];
 }
+ANNA_VM_NATIVE(anna_hash_del, 1)
 
 #if 0
 
@@ -271,13 +276,14 @@ static anna_object_t *anna_hash_first(anna_object_t **param)
 }
 #endif
 
-static anna_object_t *anna_hash_in(anna_object_t **param)
+static inline anna_object_t *anna_hash_in_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
     anna_object_t *res = hash_get(h_unwrap(param[0]), param[1]);
     return res ? anna_int_one : null_object;
 }
+ANNA_VM_NATIVE(anna_hash_in, 2)
 
 
 static void anna_hash_type_create_internal(

@@ -32,34 +32,39 @@ anna_object_t *anna_pair_create(anna_object_t *first, anna_object_t *second)
     return obj;
 }
 
-static anna_object_t *anna_pair_init(anna_object_t **param)
+static inline anna_object_t *anna_pair_init_i(anna_object_t **param)
 {
     anna_pair_set_first(param[0], param[1]);
     anna_pair_set_second(param[0], param[2]);
     return param[0];
 }
+ANNA_VM_NATIVE(anna_pair_init, 3)
 
-static anna_object_t *anna_pair_get_first_i(anna_object_t **param)
+static inline anna_object_t *anna_pair_get_first_i_i(anna_object_t **param)
 {
     return anna_pair_get_first(param[0]);
 }
+ANNA_VM_NATIVE(anna_pair_get_first_i, 1)
 
-static anna_object_t *anna_pair_get_second_i(anna_object_t **param)
+static inline anna_object_t *anna_pair_get_second_i_i(anna_object_t **param)
 {
     return anna_pair_get_second(param[0]);
 }
+ANNA_VM_NATIVE(anna_pair_get_second_i, 1)
 
-static anna_object_t *anna_pair_set_first_i(anna_object_t **param)
+static inline anna_object_t *anna_pair_set_first_i_i(anna_object_t **param)
 {
     anna_pair_set_first(param[0], param[1]);
     return param[1];
 }
+ANNA_VM_NATIVE(anna_pair_set_first_i, 2)
 
-static anna_object_t *anna_pair_set_second_i(anna_object_t **param)
+static inline anna_object_t *anna_pair_set_second_i_i(anna_object_t **param)
 {
     anna_pair_set_second(param[0], param[1]);
     return param[1];
 }
+ANNA_VM_NATIVE(anna_pair_set_second_i, 2)
 /*
 static anna_type_t *anna_pair_get_specialization1(anna_object_t *obj)
 {
