@@ -1,8 +1,5 @@
 
 def Int main()
 {
-print("a"~"b"~"c", "d" ~ "e" ~ '\n');
-print(1, [1,2,3].each(i){}[1], '\n');
-print(1, (1..4).each(i){}[1], '\n');
-print(1, ("123").each(i){}[1], '\n');
+[1,2,3].map(k){k+1}.each(k){print(k)}
 }
