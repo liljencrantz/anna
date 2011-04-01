@@ -1,0 +1,8 @@
+def main(){
+    var foo = "";
+    foo ~= 3;
+    foo ~= 'b';
+    foo ~= "a";
+    print(foo ~ '1' ~ 7 ~ "\n");
+}
+
