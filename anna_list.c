@@ -253,6 +253,7 @@ static anna_vmstack_t *anna_list_each(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop(stack);
     anna_object_t *list = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
     size_t sz = anna_list_get_size(list);
 
     if(sz > 0)
@@ -285,8 +286,6 @@ static anna_vmstack_t *anna_list_each(anna_vmstack_t *stack, anna_object_t *me)
     
     return stack;
 }
-
-
 
 static anna_object_t *anna_list_map(anna_object_t **param)
 {
@@ -354,7 +353,7 @@ static anna_object_t *anna_list_filter(anna_object_t **param)
     return result;
 }
 
-static anna_object_t *anna_list_first(anna_object_t **param)
+static anna_object_t *anna_list_filter_first(anna_object_t **param)
 {
     anna_object_t *body_object=param[1];
     size_t sz = anna_list_get_size(param[0]);
@@ -698,8 +697,8 @@ static void anna_list_type_create_internal(
 	2, e_argv, e_argn);
 
     anna_native_method_create(
-	type, -1, L"__first__", 
-	0, &anna_list_first, 
+	type, -1, L"__filterFirstfirst__", 
+	0, &anna_list_filter_first, 
 	spec,
 	2, e_argv, e_argn);  
 

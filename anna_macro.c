@@ -679,7 +679,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"each", &anna_macro_iter);
     anna_macro_add(stack, L"map", &anna_macro_iter);
     anna_macro_add(stack, L"filter", &anna_macro_iter);
-    anna_macro_add(stack, L"first", &anna_macro_iter);
+    anna_macro_add(stack, L"filterFirst", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"__collection__", &anna_macro_collection);
     anna_macro_add(stack, L"type", &anna_macro_type);

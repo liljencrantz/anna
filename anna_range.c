@@ -246,7 +246,8 @@ static anna_vmstack_t *anna_range_each(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop(stack);
     anna_object_t *range = anna_vmstack_pop(stack);
-
+    anna_vmstack_pop(stack);
+    
     ssize_t from = anna_range_get_from(range);
     ssize_t to = anna_range_get_to(range);
     ssize_t step = anna_range_get_step(range);

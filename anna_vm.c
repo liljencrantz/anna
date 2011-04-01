@@ -1862,13 +1862,25 @@ void anna_vm_callback_reset(
     anna_object_t *entry, int argc, anna_object_t **argv)
 {
 	int i;    
-	
 	anna_vmstack_push(stack, entry);
 	for(i=0; i<argc; i++)
 	{
 	    anna_vmstack_push(stack, argv[i]);
 	}
-	
-	stack->code -= (sizeof(anna_op_call_t)+sizeof(anna_op_native_call_t));
-	
+	stack->code -= (sizeof(anna_op_call_t)+sizeof(anna_op_native_call_t));	
 }
+
+/**
+   This method is the best ever! It does nothing and returns a null
+   object. All method calls on the null object run this. 
+*/
+anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
+{
+    char *code = stack->code;
+    code -= sizeof(anna_op_call_t);
+    anna_op_call_t *op = (anna_op_call_t *)code;
+    anna_vmstack_drop(stack,op->param+1);
+    anna_vmstack_push(stack, null_object);
+    return stack;
+}
+

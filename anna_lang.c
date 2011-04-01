@@ -46,17 +46,6 @@ static int hash_null_func( void *data )
     return 0;
 }
 
-/**
-   This method is the best ever! All method calls on the null object run this
-*/
-anna_vmstack_t *anna_i_null_function(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_function_t *fun = anna_function_unwrap(me);
-    anna_vmstack_drop(stack,fun->input_count+1);
-    anna_vmstack_push(stack, null_object);
-    return stack;
-}
-
 static int hash_null_cmp( void *a, 
 		   void *b )
 {
@@ -87,7 +76,7 @@ static void anna_null_type_create()
 	anna_function_wrap(
 	    anna_native_create(
 		L"!nullFunction", 0, 
-		(anna_native_t)&anna_i_null_function, 
+		(anna_native_t)&anna_vm_null_function, 
 		null_type, 1, argv, argn,
 		0));
   
@@ -127,7 +116,7 @@ anna_stack_template_t *anna_lang_load()
 
     list_type = 
 	anna_type_native_create(
-	    L"List<Object>", 
+	    L"List", 
 	    stack_lang);
 
     string_type = 

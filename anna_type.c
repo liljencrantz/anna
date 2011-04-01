@@ -17,6 +17,7 @@
 #include "anna_node_check.h"
 #include "anna_intern.h"
 #include "anna_attribute.h"
+#include "anna_vm.h"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
@@ -539,9 +540,10 @@ static void anna_type_prepare_member_internal(
     }
 }
 
-static anna_object_t *anna_type_noop(anna_object_t **param){
+static inline anna_object_t *anna_type_noop_i(anna_object_t **param){
     return param[0];
 }
+ANNA_VM_NATIVE(anna_type_noop, 1)
 
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type, 
