@@ -19,14 +19,14 @@ static inline anna_function_t *anna_function_unwrap(anna_object_t *obj)
 #endif
 
     anna_member_t *m = obj->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];
-    if(!unlikely(m))
+    if(!unlikely((long)m))
     {
 	return 0;
     }
     
     anna_function_t *fun = (anna_function_t *)obj->member[m->offset];
 
-    if(likely(fun)) 
+    if(likely((long)fun)) 
     {
 	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
 	return fun;

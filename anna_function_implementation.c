@@ -42,13 +42,6 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
     
     if(anna_list_get_size(param[0]) > idx)
     {
-	anna_object_t *callback_param[] = 
-	    {
-		list,
-		anna_int_create(idx+1)
-	    }
-	;
-	
 	param[1] = anna_int_create(idx+1);	
 	anna_object_t *o = anna_list_get(list, idx);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
@@ -67,8 +60,6 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 
 static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 1;    
-    
     anna_object_t *list = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
     if(anna_list_get_size(list))
@@ -108,19 +99,6 @@ static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
 
 void anna_function_implementation_init(struct anna_stack_template *stack)
 {
-    static wchar_t *pc_argn[] = 
-	{
-	    L"list", L"index", L"string"
-	}
-    ;
-    
-    anna_type_t *pc_argv[] = 
-	{
-	    list_type, int_type, string_type
-	}
-    ;
-    
-
     static wchar_t *p_argn[]={L"object"};
     anna_function_t *f = anna_native_create(
 	L"print", 
@@ -128,14 +106,6 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	(anna_native_t)&anna_i_print, 
 	list_type, 1, &object_type, 
 	p_argn, stack);
-
-    anna_function_t *fc = anna_native_create(
-	L"print_callback", 
-	0, 
-	(anna_native_t)&anna_print_callback, 
-	list_type, 3, 
-	pc_argv,
-	pc_argn, stack);
 
     anna_stack_declare(
 	stack,

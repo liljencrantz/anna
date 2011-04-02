@@ -6,7 +6,7 @@ static anna_node_t *anna_macro_cast(
     node->function = anna_node_create_null(&node->location);
     
     node->node_type = ANNA_NODE_CAST;
-    return node;
+    return (anna_node_t *)node;
 }
 
 #if 0

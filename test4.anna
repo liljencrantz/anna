@@ -11,7 +11,16 @@ def sign(Int i){
     return 0;
 }
 
+def ifTest()
+{
+    if(1)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 def Int main()
 {
-    print("A", sign(-4), sign(5), sign(0), "\n");
+    print("A", sign(-4), sign(5), sign(0), "\n", ifTest(), "\n");
 }

@@ -4,7 +4,6 @@ vmstacks used for native=>interpreted calls leak
 parser fails with no trailing newline in input files
 
 LANGUAGE FEATURES:
-Generic operators
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
 Named arguments for function calls.
 Implement autowrapping of methods

@@ -15,6 +15,7 @@
 #include "anna_string.h"
 #include "anna_function.h"
 #include "common.h"
+#include "anna_vm.h"
 
 static anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 
@@ -48,30 +49,33 @@ anna_member_t *anna_member_unwrap(anna_object_t *wrapper)
     return *(anna_member_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_MEMBER_PAYLOAD);
 }
 
-static anna_object_t *anna_member_i_get_name(anna_object_t **param)
+static inline anna_object_t *anna_member_i_get_name_i(anna_object_t **param)
 {
     anna_member_t *m = anna_member_unwrap(param[0]);
     return anna_string_create(wcslen(m->name), m->name);
 }
+ANNA_VM_NATIVE(anna_member_i_get_name, 1)
 
-
-static anna_object_t *anna_member_i_get_static(anna_object_t **param)
+static inline anna_object_t *anna_member_i_get_static_i(anna_object_t **param)
 {
     anna_member_t *m = anna_member_unwrap(param[0]);
     return m->is_static?anna_int_one:null_object;
 }
+ANNA_VM_NATIVE(anna_member_i_get_static, 1)
 
-static anna_object_t *anna_member_i_get_method(anna_object_t **param)
+static inline anna_object_t *anna_member_i_get_method_i(anna_object_t **param)
 {
     anna_member_t *m = anna_member_unwrap(param[0]);
     return m->is_method?anna_int_one:null_object;
 }
+ANNA_VM_NATIVE(anna_member_i_get_method, 1)
 
-static anna_object_t *anna_member_i_get_property(anna_object_t **param)
+static inline anna_object_t *anna_member_i_get_property_i(anna_object_t **param)
 {
     anna_member_t *m = anna_member_unwrap(param[0]);
     return m->is_property?anna_int_one:null_object;
 }
+ANNA_VM_NATIVE(anna_member_i_get_property, 1)
 
 static void anna_member_type_create()
 {

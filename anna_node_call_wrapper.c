@@ -1,12 +1,13 @@
 
 
-static anna_object_t *anna_node_call_wrapper_i_get_count(anna_object_t **param)
+static inline anna_object_t *anna_node_call_wrapper_i_get_count_i(anna_object_t **param)
 {
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
     return anna_int_create(node->child_count);
 }
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_count, 1)
 
-static anna_object_t *anna_node_call_wrapper_i_get_int(anna_object_t **param)
+static inline anna_object_t *anna_node_call_wrapper_i_get_int_i(anna_object_t **param)
 {
     if(param[1]==null_object)
 	return null_object;
@@ -16,8 +17,9 @@ static anna_object_t *anna_node_call_wrapper_i_get_int(anna_object_t **param)
 	return null_object;
     return anna_node_wrap(node->child[idx]);
 }
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_int, 2)
 
-static anna_object_t *anna_node_call_wrapper_i_set_int(anna_object_t **param)
+static inline anna_object_t *anna_node_call_wrapper_i_set_int_i(anna_object_t **param)
 {
     
     if(param[1]==null_object)
@@ -34,14 +36,16 @@ static anna_object_t *anna_node_call_wrapper_i_set_int(anna_object_t **param)
     node->child[idx] = anna_node_unwrap(param[2]);
     return param[2];
 }
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_int, 3)
 
-static anna_object_t *anna_node_call_wrapper_i_get_function(anna_object_t **param)
+static inline anna_object_t *anna_node_call_wrapper_i_get_function_i(anna_object_t **param)
 {
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
     return anna_node_wrap(node->function);
 }
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_function, 1)
 
-static anna_object_t *anna_node_call_wrapper_i_set_function(anna_object_t **param)
+static inline anna_object_t *anna_node_call_wrapper_i_set_function_i(anna_object_t **param)
 {
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
     if(param[1]==null_object)
@@ -50,6 +54,7 @@ static anna_object_t *anna_node_call_wrapper_i_set_function(anna_object_t **para
     return param[1];
     
 }
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_function, 2)
 
 static anna_object_t *anna_node_call_wrapper_i_join_list(anna_object_t **param)
 {
