@@ -335,5 +335,6 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     anna_alloc_gc_block();
     anna_object_t *res = anna_module_load_i(module_name);
     anna_alloc_gc_unblock();
+
     return res;
 }

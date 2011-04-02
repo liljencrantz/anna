@@ -23,7 +23,7 @@ anna_node_dummy_t *anna_node_create_blob(
     anna_location_t *loc, 
     void *val);
 
-anna_node_return_t *anna_node_create_return(
+anna_node_wrapper_t *anna_node_create_return(
     anna_location_t *loc,
     struct anna_node *val);
 
@@ -109,7 +109,7 @@ anna_node_declare_t *anna_node_create_declare(
     struct anna_node_call *attr,
     int is_const);
 
-anna_node_type_lookup_t *anna_node_create_type_lookup(
+anna_node_wrapper_t *anna_node_create_type_lookup(
     anna_location_t *loc,
     anna_node_t *payload);
 

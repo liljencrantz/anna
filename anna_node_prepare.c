@@ -91,9 +91,10 @@ anna_node_t *anna_node_macro_expand(
 	    return this;
 	}
 	
+	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
 	{
-	    anna_node_type_lookup_t *c = (anna_node_type_lookup_t *)this;
+	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
 	    c->payload = anna_node_macro_expand(c->payload, stack);
 	    break;
 	}
@@ -341,7 +342,7 @@ static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_temp
     }
     else if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
     {
-	anna_node_type_lookup_t *d = (anna_node_type_lookup_t *)node;	
+	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
 	anna_node_calculate_type(d->payload, stack);
 	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    return d->payload->return_type;
@@ -835,6 +836,14 @@ static void anna_node_calculate_type_internal(
 	    break;   
 	}
 	
+	case ANNA_NODE_RETURN:
+	{
+	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
+	    anna_node_calculate_type(c->payload, stack);
+	    c->return_type = c->payload->return_type;
+	    break;
+	}
+
 	default:
 	{
 	    anna_error(
@@ -856,6 +865,7 @@ void anna_node_prepare_body(
 	    anna_function_setup_body(c->payload);
 	    break;
 	}
+
     }
 }
 

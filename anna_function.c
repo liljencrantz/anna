@@ -295,7 +295,26 @@ void anna_function_setup_body(
     
     if(f->body)
     {
+	array_list_t ret = AL_STATIC;
+	int i;
 	anna_node_calculate_type_children( f->body, f->stack_template);
+	anna_node_find((anna_node_t *)f->body, ANNA_NODE_RETURN, &ret);	
+	int step_count = 0;
+	anna_function_t *fptr = f;
+	while(fptr->flags & ANNA_FUNCTION_BLOCK)
+	{
+	    step_count++;
+	    fptr = fptr->stack_template->parent->function;
+	    
+	}
+	
+
+	for(i=0; i<al_get_count(&ret); i++)
+	{
+	    anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
+	    wr->steps = step_count;
+	}
+	al_destroy(&ret);
     }
 }
 
@@ -310,42 +329,6 @@ anna_object_t *anna_function_wrap(anna_function_t *result)
     }
 #endif
     return result->wrapper;
-}
-
-anna_function_t *anna_function_unwrap(anna_object_t *obj)
-{
-#ifdef ANNA_WRAPPER_CHECK_ENABLED
-    if(!obj)
-    {
-	wprintf(
-	    L"Critical: Tried to unwrap null pointer as a function\n");
-	CRASH;
-    }
-#endif
-
-    anna_function_t **function_ptr = 
-	(anna_function_t **)anna_member_addr_get_mid(
-	    obj,
-	    ANNA_MID_FUNCTION_WRAPPER_PAYLOAD);
-    if(function_ptr) 
-    {
-	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
-	return *function_ptr;
-    }
-    else 
-    {
-	anna_object_t **function_wrapper_ptr =
-	    anna_static_member_addr_get_mid(
-		obj->type, 
-		ANNA_MID_CALL_PAYLOAD);
-	if(function_wrapper_ptr)
-	{
-	    //wprintf(L"Got object with __call__ member\n");
-	    return anna_function_unwrap(
-		*function_wrapper_ptr);	    
-	}
-	return 0;	
-    }
 }
 
 anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
@@ -511,6 +494,7 @@ anna_function_t *anna_function_create_from_block(
 	param);
     anna_function_t *result = anna_function_create_from_definition(
 	definition);
+    result->flags |= ANNA_FUNCTION_BLOCK;
     return result;
     
 }

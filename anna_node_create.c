@@ -74,12 +74,14 @@ anna_node_dummy_t *anna_node_create_blob(anna_location_t *loc, void *val)
     return result;  
 }
 
-anna_node_return_t *anna_node_create_return(anna_location_t *loc, struct anna_node *val)
+anna_node_wrapper_t *anna_node_create_return(anna_location_t *loc, struct anna_node *val)
 {
-    anna_node_return_t *result = anna_alloc_node(sizeof(anna_node_return_t));
+    anna_node_wrapper_t *result = anna_alloc_node(sizeof(anna_node_wrapper_t));
     result->node_type = ANNA_NODE_RETURN;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;
+    result->steps = 0;
+    
     return result;  
 }
 
@@ -94,11 +96,11 @@ anna_node_import_t *anna_node_create_import(
     return result;  
 }
 
-anna_node_type_lookup_t *anna_node_create_type_lookup(
+anna_node_wrapper_t *anna_node_create_type_lookup(
     anna_location_t *loc,
     struct anna_node *val)
 {
-    anna_node_type_lookup_t *result = anna_alloc_node(sizeof(anna_node_type_lookup_t));
+    anna_node_wrapper_t *result = anna_alloc_node(sizeof(anna_node_wrapper_t));
     result->node_type = ANNA_NODE_TYPE_LOOKUP;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;

@@ -49,28 +49,7 @@ anna_stack_template_t *stack_global;
 
 anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_template_t *stack);
 
-anna_object_t **anna_member_addr_get_str(
-    anna_object_t *obj,
-    wchar_t *name)
-{
-    anna_member_t *m = (anna_member_t *)hash_get(&(obj->type->name_identifier), name);
-    /*
-      debug(D_SPAM,L"Woo, get address of member %ls on object\n", name);
-      debug(D_SPAM,L"of type %ls\n", obj->type->name);
-    */
-    if(!m) 
-    {
-	debug(D_SPAM,L"ERROR!!! Object %d of type %ls does not have a member %ls\n",obj, obj->type->name, name);
-	exit(ANNA_STATUS_RUNTIME_ERROR);	
-    }
-    if(m->is_static) {
-	return &obj->type->static_member[m->offset];
-    } else {
-	return &(obj->member[m->offset]);
-    }
-}
-
-anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
+__pure anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
 {
     /*
       debug(D_SPAM,L"Get mid %d on object\n", mid);
@@ -94,7 +73,7 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
     }
 }
 
-anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
+__pure anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
 {
     /*  debug(D_SPAM,L"Get mid %d on object\n", mid);
 	debug(D_SPAM,L"of type %ls\n", obj->type->name);

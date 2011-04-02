@@ -318,7 +318,8 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_MEMBER_SET:
 	    return sizeof(anna_node_member_set_t);
 	case ANNA_NODE_RETURN:
-	    return sizeof(anna_node_return_t);
+	case ANNA_NODE_TYPE_LOOKUP:
+	    return sizeof(anna_node_wrapper_t);
 	default:
 	    anna_error(n, L"Unknown node type while determining size\n");
 	    CRASH;
@@ -372,16 +373,11 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	    return r;
 	}
 	
-	case ANNA_NODE_IDENTIFIER:
-	{
-	    anna_node_identifier_t *id = (anna_node_identifier_t *)anna_node_clone_shallow(n);
-	    id->name = wcsdup(id->name);
-	    return id;
-	}
 	/*
 	  These nodes are not mutable and they have no child nodes, so
 	  we can return them as is.
 	*/
+	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
@@ -444,7 +440,7 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 
 	case ANNA_NODE_RETURN:
 	{
-	    anna_node_return_t *this2 =(anna_node_return_t *)anna_node_clone_shallow(tree);
+	    anna_node_wrapper_t *this2 =(anna_node_wrapper_t *)anna_node_clone_shallow(tree);
 	    this2->payload = anna_node_replace(this2->payload,
 					       from, to);
 	    return (anna_node_t *)this2;

@@ -86,14 +86,15 @@ typedef ssize_t mid_t;
 #define ANNA_FUNCTION_MACRO 1024
 #define ANNA_FUNCTION_PREPARED_INTERFACE 2048
 #define ANNA_FUNCTION_PREPARED_BODY 4096
+#define ANNA_FUNCTION_BLOCK 8192
 
 #define ANNA_TYPE_REGISTERED 512
 #define ANNA_TYPE_PREPARED_INTERFACE 1024
 #define ANNA_TYPE_PREPARED_IMPLEMENTATION 2048
 #define ANNA_TYPE_COMPILED 4096
 
+
 /*
-#define ANNA_FUNCTION_CLOSURE 2
 #define ANNA_FUNCTION_STANDALONE 4
 */
 
@@ -506,15 +507,10 @@ anna_object_t *anna_construct(
     anna_type_t *type, struct anna_node_call *param,
     struct anna_stack_template *stack);
 
-anna_object_t **anna_static_member_addr_get_mid(
+__pure anna_object_t **anna_static_member_addr_get_mid(
     anna_type_t *type, mid_t mid);
 
-//anna_object_t **anna_static_member_addr_get_str(anna_type_t *type, wchar_t *name);
-
-anna_object_t **anna_member_addr_get_str(
-    anna_object_t *obj, wchar_t *name);
-
-anna_object_t **anna_member_addr_get_mid(
+__pure anna_object_t **anna_member_addr_get_mid(
     anna_object_t *obj, mid_t mid);
 
 anna_object_t *anna_method_wrap(

@@ -3,12 +3,14 @@
 # Copyright 2011 Axel Liljencrantz
 #
 
-PROF_FLAGS := -g
+CC := gcc-4.6
+
+PROF_FLAGS := -g #-flto -O
 
 CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration	\
 -Wmissing-braces -Wmissing-prototypes -pedantic -std=c99	\
 -D_ISO99_SOURCE=1 -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L	\
-$(PROF_FLAGS)
+$(PROF_FLAGS) -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsuggest-attribute=noreturn
 
 ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
 anna_function_implementation.o anna_int.o anna_string.o anna_char.o	\
@@ -38,20 +40,20 @@ all: $(PROGRAMS)
 #            BEGIN DEPENDENCY TRACKING                  #
 #########################################################
 %.d: %.c
-	@echo -n $@ " " >$@; gcc -MM -MG $*.c >> $@ || rm $@ 
+	@echo -n $@ " " >$@; $(CC) -MM -MG $*.c >> $@ || rm $@ 
 include $(ANNA_OBJS:.o=.d)
 #########################################################
 #             END DEPENDENCY TRACKING                   #
 #########################################################
 
 anna: $(ANNA_OBJS)
-	gcc $(ANNA_OBJS) -o $@ $(LDFLAGS) 
+	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 anna_string_internal_test: $(ANNA_STRING_INTERNAL_TEST_OBJS)
-	gcc $(ANNA_STRING_INTERNAL_TEST_OBJS) -o $@ $(LDFLAGS) 
+	$(CC) $(ANNA_STRING_INTERNAL_TEST_OBJS) -o $@ $(LDFLAGS) 
 
 anna_string_perf: $(ANNA_STRING_PERF_OBJS)
-	gcc $(ANNA_STRING_PERF_OBJS) -o $@ $(LDFLAGS) 
+	$(CC) $(ANNA_STRING_PERF_OBJS) -o $@ $(LDFLAGS) 
 
 anna_lex.c: anna_lex.y anna_yacc.h
 	flex -Cfae -oanna_lex.c -Panna_lex_ anna_lex.y 

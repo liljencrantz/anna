@@ -284,19 +284,6 @@ struct anna_node_type
     struct anna_type *payload;
 };
 
-struct anna_node_return
-{
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
-    int prepared;
-#endif    
-    struct anna_node *payload;
-};
-
 struct anna_node_float_literal
 {
     int flags;
@@ -323,7 +310,7 @@ struct anna_node_import
     struct anna_node *payload;
 };
 
-struct anna_node_type_lookup
+struct anna_node_wrapper
 {
     int flags;
     int node_type;
@@ -334,6 +321,7 @@ struct anna_node_type_lookup
     int prepared;
 #endif    
     struct anna_node *payload;
+    int steps;
 };
 /*
 struct anna_node_specialize
@@ -356,7 +344,6 @@ typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_dummy anna_node_dummy_t;
 typedef struct anna_node_closure anna_node_closure_t;
 typedef struct anna_node_type anna_node_type_t;
-typedef struct anna_node_return anna_node_return_t;
 typedef struct anna_node_member_get anna_node_member_get_t;
 typedef struct anna_node_member_set anna_node_member_set_t;
 typedef struct anna_node_assign anna_node_assign_t;
@@ -370,7 +357,7 @@ typedef struct anna_node_declare anna_node_declare_t;
 typedef struct anna_node_cond anna_node_cond_t;
 typedef struct anna_node_member_call anna_node_member_call_t;
 typedef struct anna_node_if anna_node_if_t;
-typedef struct anna_node_type_lookup anna_node_type_lookup_t;
+typedef struct anna_node_wrapper anna_node_wrapper_t;
 
 extern int anna_yacc_error_count;
 
