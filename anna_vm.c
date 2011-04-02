@@ -116,12 +116,8 @@
 #define ANNA_OP_CAST 20
 #define ANNA_OP_NATIVE_CALL 22
 
-static anna_vmstack_t *stack = 0;
+static int alloc_count = 0;
 
-anna_vmstack_t *anna_vm_stack_get()
-{
-    return stack;
-}
 
 typedef struct 
 {
@@ -245,10 +241,12 @@ static inline anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_objec
     res->caller = caller;
     res->function = fun;
     res->code = fun->code;
-    stack->top -= (fun->input_count+1);
-    memcpy(&res->base[0], stack->top+1,
+    caller->top -= (fun->input_count+1);
+    memcpy(&res->base[0], caller->top+1,
 	   sizeof(anna_object_t *)*fun->input_count);
+    memset(&res->base[fun->input_count], 0, sizeof(anna_object_t *)*(fun->variable_count-fun->input_count));
     res->top = &res->base[fun->variable_count];
+    
     return res;
 }
 
@@ -266,10 +264,15 @@ void anna_vm_destroy(void)
 
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
+    static int vm_count = 0;
+    int is_root = vm_count==0;
+    vm_count++;
+    
+    anna_vmstack_t *stack;    
     anna_function_t *fun = anna_function_unwrap(entry);
-    anna_vmstack_t *new_stack = anna_alloc_vmstack((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
-    new_stack->caller = stack;
-    stack = new_stack;
+    stack = anna_alloc_vmstack((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    stack->caller = 0;
+    
     stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     stack->function = 0;
@@ -346,6 +349,12 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
 	    case ANNA_OP_CONSTRUCT:
 	    {
+		++alloc_count;
+		if(alloc_count % GC_FREQ == 0)
+		{
+		    anna_gc(stack);
+		}
+		
 		anna_op_null_t *op = (anna_op_null_t *)stack->code;
 		anna_object_t *wrapped = anna_vmstack_pop(stack);
 
@@ -1832,6 +1841,9 @@ anna_vmstack_t *anna_vm_callback_native(
 {
     anna_vmstack_t *stack = anna_alloc_vmstack((paramc+argc+3)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
     stack->caller = parent;
+
+    anna_function_t *f = anna_function_unwrap(entry);
+    
     stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     stack->function = 0;

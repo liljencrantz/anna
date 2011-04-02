@@ -12,6 +12,8 @@
 #include "anna_function.h"
 #include "anna_member.h"
 #include "anna_int.h"
+#include "anna_module.h"
+#include "anna_list.h"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_count=0;
@@ -29,14 +31,24 @@ __pure static inline int anna_object_member_is_blob(anna_type_t *type, size_t of
     
 }
 
+__pure static inline int anna_object_member_is_alloc(anna_type_t *type, size_t off)
+{
+    return type->member_blob[off] == ANNA_GC_ALLOC;
+    
+}
+
 __pure static inline int anna_type_member_is_blob(anna_type_t *type, size_t off)
 {
     return type->static_member_blob[off];
 }
 
+__pure static inline int anna_type_member_is_alloc(anna_type_t *type, size_t off)
+{
+    return type->static_member_blob[off] == ANNA_GC_ALLOC;
+}
+
 void anna_alloc_mark_type(anna_type_t *type);
 //static void anna_alloc_mark(void *obj);
-static void anna_alloc_mark_stack_template(anna_stack_template_t *o);
 static void anna_alloc_mark_node(anna_node_t *o);
 
 
@@ -75,7 +87,7 @@ static void anna_alloc_mark_function(anna_function_t *o)
 	anna_vm_mark_code(o);
 }
 
-static void anna_alloc_mark_stack_template(anna_stack_template_t *o)
+void anna_alloc_mark_stack_template(anna_stack_template_t *o)
 {
     if( o->flags & ANNA_USED)
 	return;
@@ -255,9 +267,11 @@ void anna_alloc_mark_type(anna_type_t *type)
     size_t i;
 
     if(type == null_type)
+    {
+	anna_alloc_mark_object(type->static_member[0]);
 	return;
+    }
     
-
     for(i=0; i<type->static_member_count; i++)
     {
 	if(!type->static_member[i])
@@ -278,7 +292,13 @@ void anna_alloc_mark_type(anna_type_t *type)
 	    CRASH;	    
 	}
 	
-	if(!anna_type_member_is_blob(type, i)){
+	if(anna_type_member_is_blob(type, i))
+	{
+	    if(anna_type_member_is_alloc(type, i) && type->static_member[i])
+		anna_alloc_mark(type->static_member[i]);
+	}
+	else
+	{
 	    anna_alloc_mark_object(type->static_member[i]);
 	}
     }
@@ -292,13 +312,32 @@ void anna_alloc_mark_object(anna_object_t *obj)
     
     if(obj == null_object)
 	return;
-    
-    
+
     size_t i;
+    if(obj->type->mid_identifier[ANNA_MID_LIST_PAYLOAD])
+    {
+	/* This object is a list. Mark all list items */
+	size_t sz = anna_list_get_size(obj);
+	for(i=0; i<sz; i++)
+	{
+	    anna_alloc_mark_object(anna_list_get(obj, i));
+	}
+	
+    }
+    
+    
     anna_type_t *t = obj->type;
     for(i=0; i<t->member_count; i++)
     {
-	if(!anna_object_member_is_blob(t, i)){
+	if(anna_object_member_is_blob(t, i))
+	{
+	    if(anna_object_member_is_alloc(t, i) && obj->member[i])
+	    {
+		anna_alloc_mark(obj->member[i]);
+	    }
+	}
+	else
+	{
 	    anna_alloc_mark_object(obj->member[i]);
 	}
     }
@@ -324,15 +363,16 @@ static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
     anna_object_t **obj;
     for(obj = &stack->base[0]; obj < stack->top; obj++)
     {
-	anna_alloc_mark_object(*obj);
+	if(*obj)
+	    anna_alloc_mark_object(*obj);
     }
     if(stack->parent)
 	anna_alloc_mark_vmstack(stack->parent);
     if(stack->function)
 	anna_alloc_mark_function(stack->function);
 }
-/*
-static void anna_alloc_mark(void *obj)
+
+void anna_alloc_mark(void *obj)
 {
     switch(*((int *)obj) & ANNA_ALLOC_MASK)
     {
@@ -368,7 +408,6 @@ static void anna_alloc_mark(void *obj)
 	}
     }
 }
-*/
 
 static void free_val(void *key, void *value)
 {
@@ -400,6 +439,8 @@ static void anna_alloc_free(void *obj)
 	{
 	    int i;
 	    anna_type_t *o = (anna_type_t *)obj;
+	    //wprintf(L"Discarding unused type %ls\n", o->name);
+	    
 	    if(obj != null_type)
 	    {
 		for(i=0; i<anna_mid_max_get(); i++)
@@ -517,10 +558,12 @@ void anna_alloc_gc_unblock()
     anna_alloc_gc_block_counter--;
 }
 
-void anna_gc()
+void anna_gc(anna_vmstack_t *stack)
 {
     if(anna_alloc_gc_block_counter)
 	return;
+
+    //wprintf(L"RUNNING GC\n");
     
     anna_alloc_gc_block();
     size_t i;
@@ -530,8 +573,6 @@ void anna_gc()
 	anna_alloc_unmark(al_get(&anna_alloc, i));
     }    
     
-    anna_vmstack_t *stack = anna_vm_stack_get();
-
     while(stack)
     {
 	anna_alloc_mark_vmstack(stack);	
@@ -540,8 +581,10 @@ void anna_gc()
     anna_alloc_mark_object(anna_int_one);	
     anna_alloc_mark_object(anna_int_minus_one);	
     anna_alloc_mark_object(anna_int_zero);	
-//    anna_alloc_mark_stack_template(stack_global);
+    anna_module_mark();
     
+//    anna_alloc_mark_stack_template(stack_global);
+
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
 	void *el = al_get(&anna_alloc, i);
@@ -554,6 +597,7 @@ void anna_gc()
 	    i--;
 	}
     }
+
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
 	void *el = al_get(&anna_alloc, i);
@@ -565,6 +609,7 @@ void anna_gc()
 	    i--;
 	}
     }
+
     anna_alloc_gc_unblock();
 }
 

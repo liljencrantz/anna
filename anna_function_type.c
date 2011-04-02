@@ -200,12 +200,12 @@ void anna_function_type_create(
     anna_member_create(
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
-	0,
+	ANNA_MEMBER_ALLOC,
 	null_type);
     anna_member_create(
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
-	0,
+	ANNA_MEMBER_ALLOC,
 	null_type);
     
     /*
@@ -215,22 +215,9 @@ void anna_function_type_create(
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, 
 	L"!functionTypePayload",
-	1,
+	ANNA_MEMBER_STATIC,
 	null_type);
     
-    anna_member_create(
-	res, 
-	ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, 
-	L"!functionPayload",
-	0,
-	null_type);
-    
-    anna_member_create(
-	res, 
-	ANNA_MID_FUNCTION_WRAPPER_STACK, 
-	L"!functionStack",
-	0,
-	null_type);    
     (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)key;
 
     return;

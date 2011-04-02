@@ -6,6 +6,7 @@
 
 #define ANNA_MEMBER_STATIC 1
 #define ANNA_MEMBER_VIRTUAL 2
+#define ANNA_MEMBER_ALLOC 4
 
 anna_member_t *anna_member_unwrap(anna_object_t *obj);
 

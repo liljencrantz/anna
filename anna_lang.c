@@ -59,7 +59,7 @@ static void anna_null_type_create()
     anna_member_t *null_member;  
     null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
     //debug(D_SPAM,L"Null member is %d\n", null_member);
-
+    
     null_member->type = null_type;
     null_member->offset=0;
     null_member->is_static=1;

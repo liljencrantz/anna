@@ -40,6 +40,20 @@ void anna_function_prepare_enque()
 }
 */
 
+void anna_module_mark_item(void *name, void *stack)
+{
+    anna_stack_template_t *module = (anna_stack_template_t *)stack;
+    anna_alloc_mark_stack_template(module);
+}
+
+
+void anna_module_mark()
+{
+    hash_foreach(anna_module_imported, anna_module_mark_item);
+    
+}
+
+
 static void anna_module_find_imports_internal(anna_node_t *module, wchar_t *name, array_list_t *import)
 {
     int i;

@@ -76,6 +76,7 @@ anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
       debug(D_SPAM,L"Get mid %d on object\n", mid);
       debug(D_SPAM,L"of type %ls\n", obj->type->name);
     */
+    
     anna_member_t *m = obj->type->mid_identifier[mid];
     //wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
     
@@ -223,10 +224,17 @@ anna_type_t *anna_type_for_function(
 	{
 	    new_key->argn[i]=wcsdup(argn[i]);
 	}
-	static int num = 0;
+	static int num=0;
+	
 	string_buffer_t sb;
 	sb_init(&sb);
-	sb_printf(&sb, L"%ls%d", L"!FunctionType", num++);
+	sb_printf(&sb, L"!def %ls (", result->name);
+	for(i=0; i<argc;i++)
+	{
+	    sb_printf(&sb, L"%ls %ls%ls", argv[i]->name, argn[i], i==0?L"":L", ");
+	}
+	sb_printf(&sb, L")%d", num++);
+	
 	res = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);
 	hash_put(&anna_type_for_function_identifier, new_key, res);

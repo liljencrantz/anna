@@ -144,6 +144,23 @@ typedef ssize_t mid_t;
 #define ANNA_MID_PAIR_SECOND 41
 #define ANNA_MID_FIRST_UNRESERVED 42
 
+/**
+   type->member_blob value. If set, the value of this member is a
+   regular object.
+  */
+#define ANNA_GC_OBJECT 0
+/**
+   type->member_blob value. If set, the value of this blob is opaque
+   and should not be traversed by thr GC.
+  */
+#define ANNA_GC_BLOB 1
+/**
+   type->member_blob value. If set, the value of this blob is a
+   pointer that shoud be traversed by the GC
+*/
+#define ANNA_GC_ALLOC 2
+
+
 union anna_native
 {
     anna_native_function_t function;
@@ -282,6 +299,7 @@ struct anna_member
        member from within the anna code. 
     */
     struct anna_object *wrapper;
+
     /**
        The name of this member.
     */
