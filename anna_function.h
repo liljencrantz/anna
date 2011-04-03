@@ -88,4 +88,8 @@ int anna_function_has_alias_reverse(anna_function_t *fun, wchar_t *name);
 void anna_function_alias_add(anna_function_t *fun, wchar_t *name);
 void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name);
 
+anna_function_t *anna_continuation_create(
+    anna_vmstack_t *stack,
+    anna_type_t *return_type);
+
 #endif

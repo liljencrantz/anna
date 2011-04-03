@@ -526,10 +526,14 @@ anna_function_t *anna_native_create(
     return result;
 }
 
-static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_object_t *me)
+static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_object_t *cont)
 {
+    anna_object_t *res = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
-    anna_vmstack_push(stack, null_object);
+    
+    stack = *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK);
+    stack->code = *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS);
+    anna_vmstack_push(stack, res);
     return stack;
 }
 

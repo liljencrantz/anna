@@ -97,12 +97,27 @@ static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+static anna_vmstack_t *anna_i_callcc_callback(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *res = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    anna_vmstack_push(stack, res);
+    return stack;
+}
+
 static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *val = anna_vmstack_pop(stack);
+    anna_object_t *fun = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
-    anna_vmstack_push(stack, (val == null_object)?anna_int_one:null_object);
-    return stack;
+    anna_object_t *cont = anna_continuation_create(
+	stack,
+	object_type)->wrapper;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = stack;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = stack->code;
+    
+    return anna_vm_callback_native(
+	stack, &anna_i_callcc_callback, 0, 0, 
+	fun, 1, &cont);    
 }
 
 void anna_function_implementation_init(struct anna_stack_template *stack)

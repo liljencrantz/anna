@@ -144,7 +144,9 @@ typedef ssize_t mid_t;
 #define ANNA_MID_PAIR_SPECIALIZATION2 39
 #define ANNA_MID_PAIR_FIRST 40
 #define ANNA_MID_PAIR_SECOND 41
-#define ANNA_MID_FIRST_UNRESERVED 42
+#define ANNA_MID_CONTINUATION_STACK 42
+#define ANNA_MID_CONTINUATION_CODE_POS 43
+#define ANNA_MID_FIRST_UNRESERVED 44
 
 /**
    type->member_blob value. If set, the value of this member is a

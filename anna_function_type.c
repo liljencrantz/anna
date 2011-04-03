@@ -220,8 +220,16 @@ void anna_function_type_create(
     
     if(key->flags & ANNA_FUNCTION_CONTINUATION)
     {
-	wprintf(L"WEEEEE, creating a continuation type!!!!!!!\n");
-	CRASH;
+	anna_member_create(
+	    res,
+	    ANNA_MID_CONTINUATION_STACK, L"!continuationStack", 
+	    ANNA_MEMBER_ALLOC,
+	    null_type);
+	anna_member_create(
+	    res,
+	    ANNA_MID_CONTINUATION_CODE_POS, L"!continuationCodePos", 
+	    0,
+	    null_type);
     }
     
     (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)key;
