@@ -102,8 +102,8 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 		&node->location,
 		result
 		),
-	    1,
-	    anna_node_create_block(&node->location, 0, 0));
+	    anna_node_create_block(&node->location, 0, 0),
+	    1);
 }
 
 #if 0

@@ -428,7 +428,7 @@ static void anna_init()
     
 }
 
-void fun_key_free(void *keyp, void *val)
+static void fun_key_free(void *keyp, void *val)
 {
     anna_function_type_key_t *key = (anna_function_type_key_t *)keyp;
     int i;

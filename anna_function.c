@@ -208,12 +208,6 @@ void anna_function_setup_interface(
     
     if(f->body)
     {
-	size_t declaration_count = 1;
-	if(!(f->flags & ANNA_FUNCTION_MACRO)){
-	    anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
-	    declaration_count = declarations->child_count;
-	}
-	
 	f->stack_template = anna_stack_create(parent_stack);
 	anna_function_setup_arguments(f, parent_stack);
 	anna_node_register_declarations(

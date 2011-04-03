@@ -124,14 +124,7 @@ extern wchar_t *program_name;
 /**
    Pause for input, then exit the program. If supported, print a backtrace first.
 */
-#define FATAL_EXIT()											\
-	{															\
-		int exit_read_count;char exit_read_buff;				\
-		show_stackframe();										\
-		exit_read_count=read( 0, &exit_read_buff, 1 );			\
-		exit( 1 );												\
-	}															\
-		
+#define FATAL_EXIT() exit(1)	
 
 /**
    Exit program at once, leaving an error message about running out of memory.
