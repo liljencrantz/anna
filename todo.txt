@@ -17,10 +17,10 @@ User defined variadic functions
 User defined templates with full specialization support
 Inheritance
 True type intersections
-Continuations
 milter/fap
 Make all types inherit from Object
 Int should just be an interface,with two backing implementations
+Using <> form template specialization was ambigous, but !() is ugly and more to type. Are there no other, more attractive options?
 
 STDLIB FEATURES:
 HTML documentation extractor

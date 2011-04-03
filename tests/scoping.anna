@@ -1,7 +1,7 @@
 def Int main()
 {
     def callback(String msg){print(msg)}
-    var res = List<(def List ())>();
+    var res = List!(def List ())();
     ["do","re","mi"].each(s){res ~= [def(){callback(s)}]}
     res.each(f){f()}
     print("\n");

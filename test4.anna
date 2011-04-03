@@ -7,7 +7,7 @@ def sub( def Null ret(Object val))
 
 var Int i = 0;
 
-def sub2( def Null ret(Object val))
+def sub2(def Null ret(Object val))
 {
     i += 1;
     ret(i);
@@ -21,5 +21,4 @@ def Int main()
     print(callCC(sub2));
     print(callCC(sub2));
     print(callCC(sub2));
-
 }

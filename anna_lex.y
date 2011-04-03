@@ -103,6 +103,7 @@ else return ELSE;
 \/ return '/';
 == return EQUAL;
 != return NOT_EQUAL;
+!\( return TEMPLATE_BEGIN;
 \<= return LESS_OR_EQUAL;
 >= return GREATER_OR_EQUAL;
 => return TO;
