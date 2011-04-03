@@ -1138,7 +1138,7 @@ function_definition:
 		$2?(anna_node_t *)$2:(anna_node_t *)anna_node_create_null(&@$),
 		(anna_node_t *)$4, 
 		(anna_node_t *)$5, 
-		$6?(anna_node_t *)$6:(anna_node_t *)anna_node_create_null(&@$)
+		$6?(anna_node_t *)$6:(anna_node_t *)anna_node_create_block(&@$, 0, 0)
 	    };
 	    anna_node_t *param2[] ={$3, (anna_node_t *)anna_node_create_null(&@$), 0, (anna_node_t *)anna_node_create_block(&@$, 0, 0)};
 	    
@@ -1282,7 +1282,7 @@ templatization:
 ;
 
 templatization2:
-	expression
+	simple_expression
 	{
 	    anna_node_t *param[] ={$1};	    
 	    $$ = anna_node_create_block(
@@ -1291,7 +1291,7 @@ templatization2:
 		param);
 	}
 	|
-	templatization2 ',' expression
+	templatization2 ',' simple_expression
 	{
 	  anna_node_call_add_child($1,$3);
 	  $$ = $1;
@@ -1336,22 +1336,16 @@ attribute_list :
 ;
 
 attribute_list2 :
-	attribute_list2 ',' identifier opt_simple_expression
+	attribute_list2 ',' simple_expression
 	{
 	    $$ = $1;
-	    anna_node_call_t *attr = anna_node_create_call(&@$,$3, 0, 0);
-	    if($4)
-	      anna_node_call_add_child(attr,$4);
-	    anna_node_call_add_child($$,(anna_node_t *)attr);
+	    anna_node_call_add_child($$,(anna_node_t *)$3);
 	}
 	|
-	identifier opt_simple_expression
+	simple_expression
 	{
 	    $$ = anna_node_create_block(&@$, 0, 0);
-	    anna_node_call_t *attr = anna_node_create_call(&@$,$1, 0, 0);
-	    if($2)
-	      anna_node_call_add_child(attr,$2);
-	    anna_node_call_add_child($$,(anna_node_t *)attr);
+	    anna_node_call_add_child($$,(anna_node_t *)$1);
 	}
 ;
 
@@ -1374,7 +1368,7 @@ simple_expression '(' argument_list ')'
   anna_node_call_set_function($3, $1);
 }
 |
-'(' argument_list ')'
+'(' expression ')'
 {
   $$ = (anna_node_t *)$2;
 }

@@ -347,6 +347,13 @@ static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_temp
 	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    return d->payload->return_type;
     }
+    else if(node->node_type == ANNA_NODE_CLOSURE)
+    {
+	anna_node_closure_t *d = (anna_node_closure_t *)node;	
+	anna_node_calculate_type(node, stack);
+	if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    return d->payload->wrapper->type;
+    }
     
     return 0;
 }
@@ -440,6 +447,7 @@ static void anna_node_calculate_type_internal(
 		    new_res->return_type = type_type;
 		    break;
 		}
+		
 	    }
 	    else if(type == hash_type && call->child_count==2)
 	    {
@@ -473,7 +481,7 @@ static void anna_node_calculate_type_internal(
 		    break;
 		}
 	    }
-	    anna_error(this, L"Unimplementedtemplate specialization. Come back tomorrow.");
+	    anna_error(this, L"Unimplemented template specialization. Come back tomorrow.");
 	    break;
 	}
 		
