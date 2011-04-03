@@ -1,11 +1,12 @@
 
-static anna_object_t *anna_node_string_literal_wrapper_i_get_name(anna_object_t **param)
+static inline anna_object_t *anna_node_string_literal_wrapper_i_get_name_i(anna_object_t **param)
 {
     anna_node_string_literal_t *node = (anna_node_string_literal_t *)anna_node_unwrap(param[0]);
     return anna_string_create(node->payload_size, node->payload);
 }
+ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_get_name, 1)
 
-static anna_object_t *anna_node_string_literal_wrapper_i_init(anna_object_t **param)
+static inline anna_object_t *anna_node_string_literal_wrapper_i_init_i(anna_object_t **param)
 {
     assert(param[0] != null_object);
     assert(param[1] != null_object);
@@ -19,6 +20,7 @@ static anna_object_t *anna_node_string_literal_wrapper_i_init(anna_object_t **pa
 	    anna_string_payload(param[2]));
     return param[0];
 }
+ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_init, 3)
 
 static void anna_node_create_string_literal_wrapper_type(anna_stack_template_t *stack)
 {
