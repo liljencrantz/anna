@@ -293,7 +293,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	return count - 1;
     }
 
-    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), ABIDES_IN_TRANSIT);
+    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), (void *)(long)ABIDES_IN_TRANSIT);
 
     
     size_t i;
@@ -326,7 +326,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     }
     free(members);
 
-    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), res+1);
+    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), (void *)(long)(res+1));
 
     return res;
 }
@@ -427,22 +427,6 @@ static void anna_init()
 */  
     
 }
-
-static void fun_key_free(void *keyp, void *val)
-{
-    anna_function_type_key_t *key = (anna_function_type_key_t *)keyp;
-    int i;
-    for(i=0; i<key->argc; i++)
-    {
-	free(key->argn[i]);
-    }
-    
-    free(key->argn);
-    free(key);
-    
-    
-}
-
 
 int main(int argc, char **argv)
 {

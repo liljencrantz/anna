@@ -32,12 +32,12 @@ struct wdirent
    Call this function on startup to create internal wutil
    resources. This function doesn't do anything.
 */
-void wutil_init();
+void wutil_init(void);
 
 /**
    Call this function on exit to free internal wutil resources
 */
-void wutil_destroy();
+void wutil_destroy(void);
 
 /**
    Wide character version of fopen().

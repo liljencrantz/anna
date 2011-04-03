@@ -21,7 +21,7 @@ anna_node_t *anna_node_macro_expand(
 	    if(this2->function->node_type == ANNA_NODE_CALL)
 	    {
 
-		anna_function_t *fun = anna_node_macro_get((anna_node_call_t *)this2->function, stack);
+		anna_function_t *fun = anna_node_macro_get(this2->function, stack);
 		if(fun)
 		{
 		    anna_node_t *res = anna_macro_invoke(fun, this2);

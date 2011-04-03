@@ -25,7 +25,7 @@ typedef struct
 }
     anna_stack_prepare_data;
 
-void anna_stack_ensure_capacity(anna_stack_template_t *stack, size_t new_sz)
+static void anna_stack_ensure_capacity(anna_stack_template_t *stack, size_t new_sz)
 {
     if(stack->capacity < new_sz){
 	size_t sz = maxi(8, maxi(new_sz, stack->capacity*2));

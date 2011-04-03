@@ -305,18 +305,10 @@ static anna_vmstack_t *anna_string_ljoin_callback(anna_vmstack_t *stack, anna_ob
 
     if(sz > idx)
     {
-	anna_object_t *callback_param[] = 
-	    {
-		list,
-		anna_int_create(idx+1)
-	    }
-	;
-
 	param[2] = anna_int_create(idx+1);
 	anna_object_t *o = anna_list_get(list, idx);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
-
 	anna_vm_callback_reset(stack, meth, 1, &o);
     }
     else

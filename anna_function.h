@@ -7,7 +7,7 @@
 
 extern array_list_t anna_function_list;
 
-static inline anna_function_t *anna_function_unwrap(anna_object_t *obj)
+static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 {
 #ifdef ANNA_WRAPPER_CHECK_ENABLED
     if(!obj)
@@ -47,9 +47,9 @@ static inline anna_function_t *anna_function_unwrap(anna_object_t *obj)
     }
 }
 
-anna_object_t *anna_function_wrap(anna_function_t *result);
+__pure anna_object_t *anna_function_wrap(anna_function_t *result);
 
-anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type);
+__pure anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type);
 
 int anna_function_prepared(anna_function_t *t);
 

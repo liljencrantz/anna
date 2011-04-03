@@ -242,7 +242,7 @@ void debug( int level, const wchar_t *msg, ... );
 /**
    Print a short message about how to file a bug report to stderr
 */
-void bugreport();
+void bugreport(void);
 
 
 #endif
