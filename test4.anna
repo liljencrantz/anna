@@ -1,26 +1,14 @@
 
-def sign(Int i){
-    if(i < 0)
-    {
-        return -1;
-    }
-    if(i > 0)
-    {
-        return 1;
-    }
-    return 0;
-}
-
-def ifTest()
+def sub( def Null ret(Object val))
 {
-    if(1)
-    {
-        return 1;
-    }
-    return 0;
+    print("subPre\n");
+    ret("continuationResult\n");
+    print("subPost\n");
 }
 
 def Int main()
 {
-    print("A", sign(-4), sign(5), sign(0), "\n", ifTest(), "\n");
+    print("mainPre\n");
+    print(callCC(sub));
+    print("mainPost\n");
 }

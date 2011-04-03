@@ -97,6 +97,14 @@ static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *val = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    anna_vmstack_push(stack, (val == null_object)?anna_int_one:null_object);
+    return stack;
+}
+
 void anna_function_implementation_init(struct anna_stack_template *stack)
 {
     static wchar_t *p_argn[]={L"object"};
@@ -119,10 +127,25 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	(anna_native_t)&anna_i_not, 
 	int_type, 
 	1, &object_type, p_argn, stack);
+
     anna_stack_declare(
 	stack,
 	L"__not__",
 	not->wrapper->type,
 	not->wrapper,
 	0);
+
+    anna_function_t *callcc = anna_native_create(
+	L"callCC", 0, 
+	(anna_native_t)&anna_i_callcc, 
+	object_type, 
+	1, &object_type, p_argn, stack);
+
+    anna_stack_declare(
+	stack,
+	L"callCC",
+	callcc->wrapper->type,
+	callcc->wrapper,
+	0);
+
 }

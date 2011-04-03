@@ -145,7 +145,7 @@ anna_type_t *anna_type_for_function(
 {
     //static int count=0;
     //if((count++)==10) {CRASH};
-    flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO);
+    flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION);
     size_t i;
     static anna_function_type_key_t *key = 0;
     static size_t key_sz = 0;
@@ -207,10 +207,22 @@ anna_type_t *anna_type_for_function(
 	
 	string_buffer_t sb;
 	sb_init(&sb);
-	sb_printf(&sb, L"!def %ls (", result->name);
+	wchar_t *fn = L"def";
+	if(flags & ANNA_FUNCTION_MACRO)
+	{ 
+	    fn = L"macro";
+	}
+	else if(flags&ANNA_FUNCTION_CONTINUATION)
+	{
+	    fn = L"continuation";
+	}
+	
+	sb_printf(&sb, L"!%ls %ls (", fn, result->name);
 	for(i=0; i<argc;i++)
 	{
-	    sb_printf(&sb, L"%ls %ls%ls", argv[i]->name, argn[i], i==0?L"":L", ");
+	    wchar_t *dots = (i==argc-1) && (flags & ANNA_FUNCTION_VARIADIC)?L"...":L"";
+	    
+	    sb_printf(&sb, L"%ls%ls %ls%ls", argv[i]->name, dots, argn[i], i==0?L"":L", ");
 	}
 	sb_printf(&sb, L")%d", num++);
 	

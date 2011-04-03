@@ -153,8 +153,7 @@ static anna_node_t *anna_function_setup_arguments(
 
 static void anna_function_setup_wrapper(
     anna_function_t *f)
-{
-    
+{    
     if(!f->wrapper){
 	anna_type_t *ft = 
 	    anna_type_for_function(
@@ -172,24 +171,12 @@ static void anna_function_setup_wrapper(
 	    &f,
 	    sizeof(anna_function_t *));
 	
-/*	if(f->stack_template)
-	{
-	    memcpy(
-		anna_member_addr_get_mid(
-		    f->wrapper,
-		    ANNA_MID_FUNCTION_WRAPPER_STACK),
-		&f->stack_template->parent,
-		sizeof(anna_stack_template_t *));
-	}
-	else*/
-	{
-	    memset(
-		anna_member_addr_get_mid(
-		    f->wrapper,
-		    ANNA_MID_FUNCTION_WRAPPER_STACK),
-		0,
-		sizeof(anna_stack_template_t *));
-	}
+	memset(
+	    anna_member_addr_get_mid(
+		f->wrapper,
+		ANNA_MID_FUNCTION_WRAPPER_STACK),
+	    0,
+	    sizeof(anna_stack_template_t *));
     }
 }
     
@@ -534,6 +521,35 @@ anna_function_t *anna_native_create(
     
     anna_function_setup_interface(result, location);        
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
+    anna_vm_compile(result);
+    
+    return result;
+}
+
+static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_vmstack_pop(stack);
+    anna_vmstack_push(stack, null_object);
+    return stack;
+}
+
+anna_function_t *anna_continuation_create(
+    anna_vmstack_t *stack,
+    anna_type_t *return_type)
+{
+    int i;
+    anna_function_t *result = anna_alloc_function();
+    result->flags = ANNA_FUNCTION_CONTINUATION;
+    anna_function_attribute_empty(result);    
+    result->input_type = 0;
+    result->input_name = 0;
+    
+    result->native.function = anna_function_continuation;
+    result->name = anna_intern_static(L"!continuation");
+    result->return_type=return_type;
+    result->input_count=0;
+    
+    anna_function_setup_interface(result, stack_global);
     anna_vm_compile(result);
     
     return result;

@@ -5,7 +5,7 @@
 
 CC := gcc-4.6
 
-PROF_FLAGS := -g #-flto -O3 fuse-linker-plugin
+PROF_FLAGS := -g #-flto -O3 -fuse-linker-plugin
 
 CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration	\
 -Wmissing-braces -Wmissing-prototypes -pedantic -std=c99	\
