@@ -1282,7 +1282,7 @@ templatization:
 ;
 
 templatization2:
-	simple_expression
+	expression
 	{
 	    anna_node_t *param[] ={$1};	    
 	    $$ = anna_node_create_block(
@@ -1291,7 +1291,7 @@ templatization2:
 		param);
 	}
 	|
-	templatization2 ',' simple_expression
+	templatization2 ',' expression
 	{
 	  anna_node_call_add_child($1,$3);
 	  $$ = $1;

@@ -1,4 +1,4 @@
-
+/*
 def sub( def Null ret(Object val))
 {
     print("subPre\n");
@@ -6,9 +6,23 @@ def sub( def Null ret(Object val))
     print("subPost\n");
 }
 
+Int i = 0;
+
+def sub2( def Null ret(Object val))
+{
+    i += 1;
+    ret(i);
+}
+*/
 def Int main()
 {
+    def callback(String msg){print(msg)}
+    var res = List<def List foo()>();//[def(){callback("")}];
+    ["do","re","mi"].each(s){res ~= [def(){callback(s)}]};
+    res.each(f){f()}
+/*    
     print("mainPre\n");
     print(callCC(sub));
     print("mainPost\n");
+*/
 }
