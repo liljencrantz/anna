@@ -294,13 +294,13 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     *(stack->code) = ANNA_OP_STOP;
     
     int i;
-    
     anna_vmstack_push(stack, entry);
     for(i=0; i<argc; i++)
     {
 	anna_vmstack_push(stack, argv[i]);
     }
-    stack = anna_frame_push(stack, entry);
+    anna_function_t *root_fun = anna_function_unwrap(entry);
+    stack = root_fun->native.function(stack, entry);
     
     while(1)
     {
