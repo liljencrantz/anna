@@ -447,7 +447,6 @@ static void anna_node_calculate_type_internal(
 		    new_res->return_type = type_type;
 		    break;
 		}
-		
 	    }
 	    else if(type == hash_type && call->child_count==2)
 	    {

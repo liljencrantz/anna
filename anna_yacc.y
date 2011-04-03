@@ -483,14 +483,8 @@ expression3 :
 	    }
 	    else 
 	    {
-		
-		anna_node_t *param[] ={
-		    $1, 
-		    $2
-		};
-		anna_node_t *param2[] ={
-		    $3, 
-		};
+		anna_node_t *param[] ={$1,$2};
+		anna_node_t *param2[] ={$3};
 		$$ = (anna_node_t *)
 		    anna_node_create_call(
 			&@$, 
@@ -503,8 +497,7 @@ expression3 :
 			    param),
 			1,
 			param2);
-	    }
-	    
+	    }	    
 	}
         |
 	expression4
@@ -701,13 +694,25 @@ expression9 :
 		param);
 	}
         |
-	expression9 '(' argument_list ')' opt_block
+	expression9 opt_templatization '(' argument_list ')' opt_block
 	{
-	    $$ = (anna_node_t *)$3;
-	    anna_node_call_set_function($3, $1);
+	    $$ = (anna_node_t *)$4;
+	    anna_node_t *fun = $1;
+	    if($2)
+	    {
+		anna_node_t *param[] ={fun, (anna_node_t *)$2};	    
+		fun = (anna_node_t *)anna_node_create_call(
+		    &@$,(anna_node_t *)anna_node_create_identifier(
+			&@$,
+			L"__specialize__"), 
+		    2, param);
+		
+	    }
+	    
+	    anna_node_call_set_function($4, fun);
 	    anna_node_set_location($$, &@$);
-	    if ($5) 
-		anna_node_call_add_child($3, (anna_node_t *)$5);
+	    if ($6) 
+		anna_node_call_add_child($4, (anna_node_t *)$6);
 	}
 	| 
 	expression10 block
@@ -768,12 +773,10 @@ expression9 :
 expression10:
 	constant
 	| 
-	identifier 
+	any_identifier 
 	{
 	    $$ = $1;	    
 	}
-	|
-	templatized_type
 	| 
 	'(' expression ')'
 	{
