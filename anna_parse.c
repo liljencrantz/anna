@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common.h"
 #include "wutil.h"
 #include "anna_node.h"
 #include "anna_lex.h"
@@ -386,6 +387,13 @@ anna_node_t *anna_parse(wchar_t *filename)
 
   FILE *file = wfopen(filename, "r");
   anna_node_t *parse_tree;
+
+  if(!file)
+  {
+      debug(D_CRITICAL,L"Could not open file %ls\n", filename);
+      return 0;
+  }
+  
 
   anna_yacc_init();
   anna_lex_lex_init(&scanner);

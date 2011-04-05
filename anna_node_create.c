@@ -14,18 +14,6 @@
 #include "anna_node_create.h"
 #include "anna_alloc.h"
 #include "anna_intern.h"
-//#include "anna_node_check.h"
-//#include "anna_node_wrapper.h"
-//#include "anna_int.h"
-//#include "anna_float.h"
-//#include "anna_string.h"
-//#include "anna_char.h"
-//#include "anna_function.h"
-//#include "anna_prepare.h"
-//#include "anna_type.h"
-//#include "anna_module.h"
-
-
 
 anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_object *val, int is_trampoline)
 {
