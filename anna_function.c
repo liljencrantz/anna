@@ -531,8 +531,8 @@ static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_ob
     anna_object_t *res = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
     
-    stack = *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK);
-    stack->code = *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS);
+    stack = (anna_vmstack_t *)*anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK);
+    stack->code = (char *)*anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS);
     anna_vmstack_push(stack, res);
     return stack;
 }
@@ -541,7 +541,6 @@ anna_function_t *anna_continuation_create(
     anna_vmstack_t *stack,
     anna_type_t *return_type)
 {
-    int i;
     anna_function_t *result = anna_alloc_function();
     result->flags = ANNA_FUNCTION_CONTINUATION;
     anna_function_attribute_empty(result);    

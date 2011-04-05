@@ -112,8 +112,8 @@ static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *cont = anna_continuation_create(
 	stack,
 	object_type)->wrapper;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = stack;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = stack->code;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = (anna_object_t *)stack;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_object_t *)stack->code;
     
     return anna_vm_callback_native(
 	stack, &anna_i_callcc_callback, 0, 0, 
