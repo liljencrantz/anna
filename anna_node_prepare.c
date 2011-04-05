@@ -3,8 +3,6 @@
 
 static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack);
 
-
-
 #include "anna_node_specialize.c"
 
 static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
@@ -229,7 +227,7 @@ anna_node_t *anna_node_macro_expand(
 	{
 	    anna_error(
 		this,
-		L"Invalid node of type %d during macro expansion", this->node_type);	    
+		L"Invalid node of type %d during macro expansion", this->node_type);
 	}
     }
 
@@ -253,8 +251,6 @@ int anna_node_is_named(anna_node_t *this, wchar_t *name){
     }
     return 0;
 }
-
-
 
 static void anna_node_calculate_type_param(
     size_t argc,
@@ -362,7 +358,6 @@ void anna_node_register_declarations(
     //stack_freeze(stack);
 
 }
-
 
 static void anna_node_calculate_type_internal(
     anna_node_t *this,
@@ -482,8 +477,6 @@ static void anna_node_calculate_type_internal(
 	    call->return_type = funt->result;
 	    break;
 	}
-	
-
 
 	case ANNA_NODE_CAST:
 	{
@@ -827,7 +820,6 @@ void anna_node_prepare_body(
 
     }
 }
-
 
 void anna_node_calculate_type(
     anna_node_t *this,
