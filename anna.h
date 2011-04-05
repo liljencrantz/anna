@@ -46,6 +46,7 @@
 # define __unused	__attribute__ ((unused))
 /* Ignore alignment of struct */
 # define __packed	__attribute__ ((packed))
+# define __sentinel	__attribute__ ((sentinel))
 #else
 # define __pure		/* no pure */
 # define __const	/* no const */
@@ -56,6 +57,7 @@
 # define __used		/* no used */
 # define __unused	/* no unused */
 # define __packed	/* no packed */
+# define __sentinel	/* no sentinel */
 # define likely(x)	(x)
 # define unlikely(x)	(x)
 #endif

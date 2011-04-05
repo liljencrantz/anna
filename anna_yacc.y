@@ -390,59 +390,48 @@ ELSE block
 expression:
 	expression1 '=' expression
 	{
-	    anna_node_t *param[] ={$1, $3};	    
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@$,L"__assign__"),
-		2,
-		param);
+		$1, $3);
 	}
 	|
 	expression1 op expression
 	{
-	    anna_node_t *param[] ={$1, $3};	    
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		$2,
-		2,
-		param);
+		$1, $3);
 	}
         | expression1
 	| declaration_expression 
 	| type_definition
 	| RETURN expression1
 	{
-	    anna_node_t *param[] ={$2};	    
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
-		(anna_node_t *)anna_node_create_identifier(
-		    &@1,
-		    L"return"),
-		1,
-		param);	  
+		(anna_node_t *)anna_node_create_identifier(&@1,L"return"),
+		$2);
 	}
 	| RETURN
 	{
-	  anna_node_t *param[] ={anna_node_create_null(&@$)};	    
-	  $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 	      &@$, 
 	      (anna_node_t *)anna_node_create_identifier(
 		  &@$,
 		  L"return"), 
-	      1,
-	      param);	  
+	      anna_node_create_null(&@$));
+	  
 	}
 ;
 
 expression1 :
 	expression1 op1 expression2
 	{
-	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		$2,
-		2,
-		param);
+		$1, $3);
 	}
         | 
 	expression2
@@ -460,43 +449,29 @@ expression3 :
 	{
 	    if(anna_node_is_named($2, L"__in__"))
 	    {
-		
-		anna_node_t *param[] ={
-		    $3, 
-		    $2
-		};
-		anna_node_t *param2[] ={
-		    $1, 
-	    };
 		$$ = (anna_node_t *)
-		    anna_node_create_call(
+		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_call(
+			(anna_node_t *)anna_node_create_call2(
 			    &@$, 
 			    (anna_node_t *)anna_node_create_identifier(
 				&@$,
 				L"__memberGet__"),
-			    2,
-			    param),
-			1,
-			param2);
+			    $3, $2),
+			$1);
 	    }
 	    else 
 	    {
-		anna_node_t *param[] ={$1,$2};
-		anna_node_t *param2[] ={$3};
 		$$ = (anna_node_t *)
-		    anna_node_create_call(
+		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_call(
+			(anna_node_t *)anna_node_create_call2(
 			    &@$, 
 			    (anna_node_t *)anna_node_create_identifier(
 				&@$,
 				L"__memberGet__"),
-			    2,
-			    param),
-			1,
-			param2);
+			    $1, $2),
+			$3);
 	    }	    
 	}
         |
@@ -506,49 +481,35 @@ expression3 :
 expression4 :
 	expression4 op4 expression5
 	{
-	    anna_node_t *enc = (anna_node_t *)anna_node_create_identifier(&$2->location, enclose(((anna_node_identifier_t *)$2)->name));
+	    anna_node_t *enc = (anna_node_t *)anna_node_create_identifier(
+		&$2->location, 
+		enclose(((anna_node_identifier_t *)$2)->name));
 	    
-	    anna_node_t *param[] ={
-		$1, 
-		enc
-	    };
-	    anna_node_t *param2[] ={
-		$3, 
-	    };
 	    $$ = (anna_node_t *)
-		anna_node_create_call(
+		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call(
+		    (anna_node_t *)anna_node_create_call2(
 			&@$, 
 			(anna_node_t *)anna_node_create_identifier(
 			    &@$,
 			    L"__memberGet__"),
-			2,
-			param),
-		    1,
-		    param2);
+			$1, enc),
+		    $3);
 	}
         | 
 	expression4 RANGE expression5
 	{
 	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__range__");
-	    anna_node_t *param[] ={
-		$1,
-		$3
-	    };   
-	    $$ = (anna_node_t *)anna_node_create_call(&@$, op, 2, param);
+	    $$ = (anna_node_t *)anna_node_create_call2(&@$, op, $1, $3);
 	}
 	|
 	expression4 ELLIPSIS
 	{
 	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__range__");
-	    anna_node_t *param[] ={
-		$1,
-		anna_node_create_null(&@$)
-	    };
-	    $$ = (anna_node_t *)anna_node_create_call(&@$, op, 2, param);
+	    $$ = (anna_node_t *)anna_node_create_call2(
+		&@$, op, $1, anna_node_create_null(&@$));	    
 	}
 	|
 	expression5
@@ -557,8 +518,7 @@ expression4 :
 expression5 :
 	expression5 op5 expression6
 	{
-	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_create_call(&@$, $2, 2, param);
+	    $$ = (anna_node_t *)anna_node_create_call2(&@$, $2, $1, $3);
 	}
         | 
 	expression6
@@ -567,25 +527,16 @@ expression5 :
 expression6 :
 	expression6 op6 expression7
 	{
-	    anna_node_t *param[] ={
-		$1, 
-		$2
-	    };
-	    anna_node_t *param2[] ={
-		$3, 
-	    };
 	    $$ = (anna_node_t *)
-		anna_node_create_call(
+		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call(
+		    (anna_node_t *)anna_node_create_call2(
 			&@$, 
 			(anna_node_t *)anna_node_create_identifier(
 			    &@$,
 			    L"__memberGet__"),
-			2,
-			param),
-		    1,
-		    param2);
+			$1, $2),
+		    $3);
 	}
         | 
 	expression7
@@ -594,25 +545,16 @@ expression6 :
 expression7 :
 	expression7 op7 expression8
 	{
-	    anna_node_t *param[] ={
-		$1, 
-		$2
-	    };
-	    anna_node_t *param2[] ={
-		$3, 
-	    };
 	    $$ = (anna_node_t *)
-		anna_node_create_call(
+		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call(
+		    (anna_node_t *)anna_node_create_call2(
 			&@$, 
 			(anna_node_t *)anna_node_create_identifier(
 			    &@$,
 			    L"__memberGet__"),
-			2,
-			param),
-		    1,
-		    param2);
+			$1, $2),
+		    $3);
 	}
         | 
 	expression8
@@ -621,61 +563,48 @@ expression7 :
 expression8 :
 	'!' expression9
 	{
-	    anna_node_t *param[] ={$2};   
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@$,L"__not__"), 
-		1,
-		param);
+		$2);
 	}
 	|
 	'^' identifier expression9
 	{
 	    anna_node_identifier_t *id = (anna_node_identifier_t *)$2;
-	    anna_node_t *param[] ={
-		$3, 
-		(anna_node_t *)anna_node_create_identifier(
-		    &id->location,enclose(id->name))
-	    };
 	    $$ = (anna_node_t *)
 		anna_node_create_call(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call(
+		    (anna_node_t *)anna_node_create_call2(
 			&@$, 
 			(anna_node_t *)anna_node_create_identifier(
 			    &@2, 
 			    L"__memberGet__"),
-			2,
-			param),
-		    0,
-		    0);
+			$3, 
+			(anna_node_t *)anna_node_create_identifier(
+			    &id->location,enclose(id->name))), 0, 0);
 	}
 	|
 	pre_op8 expression9
 	{
-	  anna_node_t *param[] ={$2, 
-				 $1};   
 	  $$ = (anna_node_t *)
 	    anna_node_create_call(
 		&@$, 
-		(anna_node_t *)anna_node_create_call(
+		(anna_node_t *)anna_node_create_call2(
 		    &@$, 
 		    (anna_node_t *)anna_node_create_identifier(&@2, L"__memberGet__"),
-		    2,
-		    param),
+		    $2, $1),
 		0,
 		0);
 	}
 	| 
 	expression9 post_op8
 	{
-	  anna_node_t *param[] ={$1};   
 	  $$ = (anna_node_t *)
-	      anna_node_create_call(
+	      anna_node_create_call2(
 		  &@$, 
 		  (anna_node_t *)$2,
-		  1,
-		  param);
+		  $1);
 	}
 	| 
 	expression9
@@ -684,14 +613,12 @@ expression8 :
 expression9 :
 	expression9 '.' any_identifier
 	{
-	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(
 		    &@2,
 		    L"__memberGet__"), 
-		2,
-		param);
+		$1, $3);
 	}
         |
 	expression9 opt_templatization '(' argument_list ')' opt_block
@@ -717,8 +644,7 @@ expression9 :
 	| 
 	expression10 block
 	{
-	    anna_node_t *param[] ={(anna_node_t *)$2};
-	    $$ = (anna_node_t *)anna_node_create_call(&@$, $1, 1, param);
+	    $$ = (anna_node_t *)anna_node_create_call2(&@$, $1, $2);
 	}
 	| 
 	expression9 '[' expression ']'
@@ -729,11 +655,8 @@ expression9 :
 			    &@$,
 			    L"__get__"),
 	    };
-	    anna_node_t *param2[] ={
-		$3, 
-	    };
 	    $$ = (anna_node_t *)
-		anna_node_create_call(
+		anna_node_create_call2(
 		    &@$, 
 		    (anna_node_t *)anna_node_create_call(
 			&@$, 
@@ -742,8 +665,7 @@ expression9 :
 			    L"__memberGet__"),
 			2,
 			param),
-		    1,
-		    param2);
+		    $3);
 
 	}
 	| 

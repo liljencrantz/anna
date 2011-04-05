@@ -65,6 +65,12 @@ anna_node_call_t *anna_node_create_call(
     size_t argc, 
     anna_node_t **argv);
 
+#define anna_node_create_call2( loc, function,... ) anna_node_create_call_internal( loc, function, __VA_ARGS__, (void *)0 )
+__sentinel anna_node_call_t *anna_node_create_call_internal(
+    anna_location_t *loc, 
+    anna_node_t *function, 
+    ...);
+
 anna_node_call_t *anna_node_create_specialize(
     anna_location_t *loc, 
     anna_node_t *function, 

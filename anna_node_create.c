@@ -6,6 +6,7 @@
 #include <wctype.h>
 #include <assert.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "util.h"
 #include "wutil.h"
@@ -262,6 +263,40 @@ anna_node_call_t *anna_node_create_call(
     memcpy(result->child, argv, sizeof(anna_node_t *)*(argc));
     return result;
 }
+
+anna_node_call_t *anna_node_create_call_internal(
+    anna_location_t *loc, 
+    anna_node_t *function, 
+    ...)
+{
+    va_list va, va2;
+    anna_node_call_t *result = anna_alloc_node(sizeof(anna_node_call_t));
+    result->child = 0;
+    result->node_type = ANNA_NODE_CALL;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->function = function;
+    result->child_count = 0;
+    anna_node_t *arg;
+    
+    va_start( va, function );
+    va_copy( va2, va );
+    while( (arg=va_arg(va, anna_node_t *) )!= 0 ) 
+    {
+	result->child_count++;
+    }
+    va_end( va );
+    result->child_capacity = result->child_count;
+    result->child = calloc(1,sizeof(anna_node_t *)*(result->child_count));
+
+    int i=0;
+    while( (arg=va_arg(va2, anna_node_t *) )!= 0 ) 
+    {
+	result->child[i++] = arg;
+    }
+    va_end( va2 );
+    return result;
+}
+
 
 anna_node_call_t *anna_node_create_specialize(
     anna_location_t *loc, anna_node_t *function, size_t argc, anna_node_t **argv)
