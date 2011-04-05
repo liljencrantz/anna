@@ -102,7 +102,7 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 		&node->location,
 		result
 		),
-	    anna_node_create_block(&node->location, 0, 0),
+	    anna_node_create_block2(&node->location),
 	    1);
 }
 
@@ -167,7 +167,7 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
 	n[1] = anna_macro_iter_declare(node->child[1]);
     }
     
-    anna_node_call_t *attribute_list = anna_node_create_block(&body->location, 0, 0);
+    anna_node_call_t *attribute_list = anna_node_create_block2(&body->location);
     anna_node_call_t *declaration_list = anna_node_create_block(&body->location, 2, n);
     
     node->child[0] = (anna_node_t *)anna_node_create_call2(

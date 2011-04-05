@@ -193,9 +193,7 @@ void anna_type_definition_make(anna_type_t *type)
 	    L"class"));
     
     anna_node_call_t *attribute_list = 
-	anna_node_create_block(
-	    0,
-	    0,
+	anna_node_create_block2(
 	    0);	
 
     anna_node_call_add_child(

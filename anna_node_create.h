@@ -130,6 +130,12 @@ anna_node_call_t *anna_node_create_block(
     size_t argc, 
     anna_node_t **argv);
 
+#define anna_node_create_block2( ... ) anna_node_create_block_internal( __VA_ARGS__, (void *)0 )
+
+__sentinel anna_node_call_t *anna_node_create_block_internal(
+    anna_location_t *loc, 
+    ...);
+
 
 
 #endif

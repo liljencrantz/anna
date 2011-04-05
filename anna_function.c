@@ -420,7 +420,7 @@ anna_function_t *anna_function_create_from_definition(
 
 static void anna_function_attribute_empty(anna_function_t *fun)
 {
-    fun->attribute = anna_node_create_block(0, 0, 0);
+    fun->attribute = anna_node_create_block2(0);
 }
 
 
@@ -457,8 +457,8 @@ anna_function_t *anna_function_create_from_block(
 	anna_node_create_identifier(&body->location, L"__function__"),
 	anna_node_create_null(&body->location), //Name
 	anna_node_create_null(&body->location), //Return type
-	anna_node_create_block(&body->location, 0, 0),//Declaration list
-	anna_node_create_block(&body->location, 0, 0),//Attribute list
+	anna_node_create_block2(&body->location),//Declaration list
+	anna_node_create_block2(&body->location),//Attribute list
 	body);
     anna_function_t *result = anna_function_create_from_definition(
 	definition);
