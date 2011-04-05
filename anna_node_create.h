@@ -65,11 +65,11 @@ anna_node_call_t *anna_node_create_call(
     size_t argc, 
     anna_node_t **argv);
 
-#define anna_node_create_call2( loc, ... ) anna_node_create_call_internal( loc, __VA_ARGS__, (void *)0 )
+#define anna_node_create_call2( ... ) anna_node_create_call_internal( 0, __VA_ARGS__, (void *)0 )
 
 __sentinel anna_node_call_t *anna_node_create_call_internal(
-    anna_location_t *loc, 
-    anna_node_t *function, 
+    int is_block,
+    anna_location_t *loc,
     ...);
 
 anna_node_call_t *anna_node_create_specialize(
@@ -130,13 +130,7 @@ anna_node_call_t *anna_node_create_block(
     size_t argc, 
     anna_node_t **argv);
 
-#define anna_node_create_block2( ... ) anna_node_create_block_internal( __VA_ARGS__, (void *)0 )
-
-__sentinel anna_node_call_t *anna_node_create_block_internal(
-    anna_location_t *loc, 
-    ...);
-
-
+#define anna_node_create_block2( ... ) anna_node_create_call_internal( 1, __VA_ARGS__, (void *)0 )
 
 #endif
 
