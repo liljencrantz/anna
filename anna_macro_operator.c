@@ -52,32 +52,17 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
     
     if(method_name)
     {
-	    
-	anna_node_t *mg_param[2]=
-	    {
-		node->child[arg_offset], (anna_node_t *)anna_node_create_identifier(&node->location,method_name)
-	    }
-	;
-	
-	anna_node_t *c_param[1]=
-	    {
-		node->child[arg_offset+1]
-	    }
-	;
-	
 	return (anna_node_t *)
-	    anna_node_create_call(
+	    anna_node_create_call2(
 		&node->location,
-		(anna_node_t *)anna_node_create_call(
+		anna_node_create_call2(
 		    &node->location,
-		    (anna_node_t *)
 		    anna_node_create_identifier(
 			&node->location,
 			L"__memberGet__"),
-		    2,
-		    mg_param),
-		1,
-		c_param);
+		    node->child[arg_offset],
+		    anna_node_create_identifier(&node->location,method_name)),
+		node->child[arg_offset+1]);
     }
     else
     {
@@ -95,32 +80,18 @@ static anna_node_t *anna_macro_operator_wrapper(anna_node_call_t *node,
 		 name_prefix, t1->name, t2->name);
 	}
 
-	anna_node_t *mg_param[2]=
-	    {
-		node->child[arg_offset+1], (anna_node_t *)anna_node_create_identifier(&node->location, method_name)
-	    }
-	;
-	
-	anna_node_t *c_param[1]=
-	    {
-		node->child[arg_offset]
-	    }
-	;
-	
 	return (anna_node_t *)
-	    anna_node_create_call(
+	    anna_node_create_call2(
 		&node->location,
-		(anna_node_t *)
-		anna_node_create_call(
+		anna_node_create_call2(
 		    &node->location,
 		    (anna_node_t *)
 		    anna_node_create_identifier(
 			&node->location,
 			L"__memberGet__"),
-		    2,
-		    mg_param),
-		1,
-		c_param);
+		    node->child[arg_offset+1], 
+		    anna_node_create_identifier(&node->location, method_name)),
+		node->child[arg_offset]);
     }
 }
 #endif

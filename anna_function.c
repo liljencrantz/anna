@@ -370,25 +370,19 @@ int anna_function_has_alias_reverse(anna_function_t *fun, wchar_t *name)
 
 void anna_function_alias_add(anna_function_t *fun, wchar_t *name)
 {
-    anna_node_t *param[] = {(anna_node_t *)anna_node_create_identifier(0, name)};
-    anna_node_call_t *attr = anna_node_create_call(
+    anna_node_call_t *attr = anna_node_create_call2(
 	0,
-	(anna_node_t *)anna_node_create_identifier(0, L"alias"),
-	1,
-	param
-	);
+	anna_node_create_identifier(0, L"alias"),
+	anna_node_create_identifier(0, name));
     anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
 }
 
 void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name)
 {
-    anna_node_t *param[] = {(anna_node_t *)anna_node_create_identifier(0, name)};
-    anna_node_call_t *attr = anna_node_create_call(
+    anna_node_call_t *attr = anna_node_create_call2(
 	0,
-	(anna_node_t *)anna_node_create_identifier(0, L"aliasReverse"),
-	1,
-	param
-	);
+	anna_node_create_identifier(0, L"aliasReverse"),
+	anna_node_create_identifier(0, name));
     anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
 }
 
@@ -458,21 +452,14 @@ anna_function_t *anna_macro_create(
 anna_function_t *anna_function_create_from_block(
     struct anna_node_call *body)
 {
-    
-    anna_node_t *param[] = 
-	{
-	    (anna_node_t *)anna_node_create_null(&body->location), //Name
-	    (anna_node_t *)anna_node_create_null(&body->location), //Return type
-	    (anna_node_t *)anna_node_create_block(&body->location, 0, 0),//Declaration list
-	    (anna_node_t *)anna_node_create_block(&body->location, 0, 0),//Attribute list
-	    (anna_node_t *)body
-	}
-    ;
-    anna_node_call_t *definition = anna_node_create_call(
+    anna_node_call_t *definition = anna_node_create_call2(
 	&body->location,
-	(anna_node_t *)anna_node_create_identifier(&body->location, L"__function__"),
-	5,
-	param);
+	anna_node_create_identifier(&body->location, L"__function__"),
+	anna_node_create_null(&body->location), //Name
+	anna_node_create_null(&body->location), //Return type
+	anna_node_create_block(&body->location, 0, 0),//Declaration list
+	anna_node_create_block(&body->location, 0, 0),//Attribute list
+	body);
     anna_function_t *result = anna_function_create_from_definition(
 	definition);
     result->flags |= ANNA_FUNCTION_BLOCK;

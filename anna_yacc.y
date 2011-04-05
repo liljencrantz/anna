@@ -290,12 +290,10 @@ module:
 	| 
 	expression SEMICOLON
 	{
-	    $$ = anna_node_create_call(
+	    $$ = anna_node_create_call2(
 		&@$, 
 		(anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__module__"),
-		0,
-		0);
+		    &@$,L"__module__"));
 	    if ($1)
 		anna_node_call_add_child(
 		    $$,
@@ -588,14 +586,12 @@ expression8 :
 	pre_op8 expression9
 	{
 	  $$ = (anna_node_t *)
-	    anna_node_create_call(
+	    anna_node_create_call2(
 		&@$, 
 		(anna_node_t *)anna_node_create_call2(
 		    &@$, 
 		    (anna_node_t *)anna_node_create_identifier(&@2, L"__memberGet__"),
-		    $2, $1),
-		0,
-		0);
+		    $2, $1));
 	}
 	| 
 	expression9 post_op8
