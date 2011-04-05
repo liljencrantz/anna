@@ -627,13 +627,11 @@ expression9 :
 	    anna_node_t *fun = $1;
 	    if($2)
 	    {
-		anna_node_t *param[] ={fun, (anna_node_t *)$2};	    
-		fun = (anna_node_t *)anna_node_create_call(
+		fun = (anna_node_t *)anna_node_create_call2(
 		    &@$,(anna_node_t *)anna_node_create_identifier(
 			&@$,
 			L"__specialize__"), 
-		    2, param);
-		
+		    fun, (anna_node_t *)$2);
 	    }
 	    
 	    anna_node_call_set_function($4, fun);
@@ -649,22 +647,18 @@ expression9 :
 	| 
 	expression9 '[' expression ']'
 	{
-	    anna_node_t *param[] ={
-		$1, 
-		(anna_node_t *)anna_node_create_identifier(
-			    &@$,
-			    L"__get__"),
-	    };
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call(
+		    (anna_node_t *)anna_node_create_call2(
 			&@$, 
 			(anna_node_t *)anna_node_create_identifier(
 			    &@$,
 			    L"__memberGet__"),
-			2,
-			param),
+			$1, 
+			(anna_node_t *)anna_node_create_identifier(
+			    &@$,
+			    L"__get__")),
 		    $3);
 
 	}
@@ -681,12 +675,10 @@ expression9 :
 	|
 	expression9 AS expression10
 	{
-	    anna_node_t *param[] ={$1, $3};   
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, 
 		(anna_node_t *)anna_node_create_identifier(&@2,L"__as__"), 
-		2, 
-		param);	  
+		$1, $3);
 	}
 	|
 	expression10;
@@ -716,12 +708,10 @@ expression10:
         |
 	IF '(' expression ')' block opt_else
         {
-	    anna_node_t *param[] ={$3, (anna_node_t *)$5, (anna_node_t *)$6};	    
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@$,L"__if__"),
-		3,
-		param);
+		$3, (anna_node_t *)$5, (anna_node_t *)$6);
         }
 ;
 
@@ -1062,16 +1052,12 @@ function_definition:
 		&@$,
 		1, 
 		arg_param);	    
-	    anna_node_t *param[] ={
-		(anna_node_t *)$2,
-		arg,
-		(anna_node_t *)$6,
-	    };
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@1,L"__macro__"), 
-		3, 
-		param);	    
+		(anna_node_t *)$2,
+		arg,
+		(anna_node_t *)$6);
 	}
 ;
 
@@ -1109,13 +1095,11 @@ declaration_list2 :
 declaration_expression: 
 	VAR opt_templatized_type identifier attribute_list opt_declaration_expression_init
 	{
-	    anna_node_t *param[] ={(anna_node_t *)$3, $2, 0, (anna_node_t *)$4};	    
- 	    param[2] = $5?$5:anna_node_create_null(&@$);
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(
 		    &@$,L"__var__"),
-		4, param);
+		$3, $2, $5?$5:anna_node_create_null(&@$), $4);
 	}
 	|
 	function_definition
@@ -1124,14 +1108,12 @@ declaration_expression:
 variable_declaration:
 	templatized_type identifier attribute_list opt_declaration_init
 	{
-	    anna_node_t *param[] ={$2, $1, 0, (anna_node_t *)$3};	    
- 	    param[2] = $4?$4:anna_node_create_null(&@$);
-	    $$ = (anna_node_t *)anna_node_create_call(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(
 		    &@$,
 		    L"__var__"),
-		4, param);    
+		$2, $1, $4?$4:anna_node_create_null(&@$), $3);
 	}
 ;
 
@@ -1153,12 +1135,12 @@ type_identifier opt_templatization
    }
    else 
    {
-      anna_node_t *param[] ={$1, (anna_node_t *)$2};	    
-      $$ = (anna_node_t *)anna_node_create_call(
+      $$ = (anna_node_t *)anna_node_create_call2(
 	  &@$,(anna_node_t *)anna_node_create_identifier(
 	      &@$,
 	      L"__specialize__"), 
-	  2, param);
+	  $1, (anna_node_t *)$2);
+      
    }
 }
 ;
@@ -1197,28 +1179,15 @@ templatization2:
 type_definition :
 	identifier type_identifier attribute_list block 
 	{
-	  anna_node_t *param[] ={
-	      (anna_node_t *)$2,
-	      (anna_node_t *)$3, 
-	      (anna_node_t *)$4
-	      
-	  };
-	  
-	  anna_node_t *type  = (anna_node_t *)anna_node_create_call(
+	    
+	  anna_node_t *type  = (anna_node_t *)anna_node_create_call2(
 	      &@$,
-	      $1,
-	      3, param);
+	      $1,$2,$3,$4);
 	  
-	  anna_node_t *param2[] ={
-	      (anna_node_t *)$2, 
-	      (anna_node_t *)anna_node_create_null(&@$),
-	      (anna_node_t *)type,
-	      anna_node_clone_deep((anna_node_t *)$3)};
-	  $$ = (anna_node_t *)anna_node_create_call(
+	  $$ = (anna_node_t *)anna_node_create_call2(
 	      &@$,
 	      (anna_node_t *)anna_node_create_identifier(&@1,L"__const__"),
-	      4,
-	      param2);
+	      $2, anna_node_create_null(&@$), type, anna_node_clone_deep((anna_node_t *)$3));
 	}
 	;
 
