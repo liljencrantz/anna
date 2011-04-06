@@ -19,8 +19,7 @@ Inheritance
 True type intersections
 milter/fap
 Make all types inherit from Object
-Int should just be an interface,with two backing implementations
-Using <> form template specialization was ambigous, but !() is ugly and more typing. Are there no other, more attractive options? «»?
+Int should just be an interface, with two backing implementations
 
 STDLIB FEATURES:
 HTML documentation extractor

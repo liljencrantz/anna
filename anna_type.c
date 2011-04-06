@@ -147,6 +147,14 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 	//anna_node_print(D_CRITICAL, definition->child[2]);
 	
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
+	
+/*	
+	result->body = anna_node_replace(
+	    result->body, 
+	    anna_node_create_identifier(0, L"A"),
+	    anna_node_create_identifier(0, L"Int"));
+*/	
+
 	anna_type_mangle_methods(result);
     }
     al_push(&anna_type_list, result);
@@ -650,4 +658,9 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
 void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 {
     anna_type_setup_interface_internal(type, parent);
+}
+
+anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
+{
+    return 0;
 }

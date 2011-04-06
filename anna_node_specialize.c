@@ -54,7 +54,12 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
 	res = hash_get(&type->specializations, call);
 	if(!res)
 	{
-	    anna_error((anna_node_t *)call, L"Unimplemented template specialization. Come back tomorrow.");
+	    res = anna_type_specialize(type, call);
+	    
+	    if(!res)
+	    {
+		anna_error((anna_node_t *)call, L"Failed to specialize type %ls.", type->name);
+	    }
 	}
     }
     
