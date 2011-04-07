@@ -1,0 +1,24 @@
+def sub( def Null ret(Object val))
+{
+    print("subPre\n");
+    ret("continuationResult\n");
+    print("subPost\n");
+}
+
+var Int i = 0;
+
+def sub2(def Null ret(Object val))
+{
+    i += 1;
+    ret(i);
+}
+
+def Int main()
+{
+    print("mainPre\n");
+    print(callCC(sub));
+    print("mainPost\n");
+    print(callCC(sub2));
+    print(callCC(sub2));
+    print(callCC(sub2));
+}

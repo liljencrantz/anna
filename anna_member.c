@@ -432,9 +432,8 @@ mid_t anna_const_property_create(
 	(anna_node_t *)anna_node_create_dummy(0, value, 0)
     };
     
-    anna_node_call_t *body = anna_node_create_block(
+    anna_node_call_t *body = anna_node_create_block2(
 	0,
-	1,
 	body_param);
     anna_function_t *fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, getter_mid));
     fun->body = body;

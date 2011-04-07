@@ -1,24 +1,13 @@
-def sub( def Null ret(Object val))
-{
-    print("subPre\n");
-    ret("continuationResult\n");
-    print("subPost\n");
-}
+type Foo (template(A:Int)) {
 
-var Int i = 0;
+    def A bar(A a, A b){
+        a+b;
+    }
 
-def sub2(def Null ret(Object val))
-{
-    i += 1;
-    ret(i);
 }
 
 def Int main()
 {
-    print("mainPre\n");
-    print(callCC(sub));
-    print("mainPost\n");
-    print(callCC(sub2));
-    print(callCC(sub2));
-    print(callCC(sub2));
+    var foo = Foo();
+    print(foo.bar(3,4));
 }

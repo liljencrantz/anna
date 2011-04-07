@@ -102,7 +102,7 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 		&node->location,
 		result
 		),
-	    anna_node_create_block(&node->location, 0, 0),
+	    anna_node_create_block2(&node->location),
 	    1);
 }
 
@@ -128,17 +128,12 @@ static anna_function_type_key_t *anna_function_key_get(anna_type_t *type,
 
 static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
 {
-    anna_node_t *param[] ={
-	id,
-	(anna_node_t *)anna_node_create_null(&id->location),
-	(anna_node_t *)anna_node_create_null(&id->location),
-    };
-
-    return (anna_node_t *)anna_node_create_call(
+    return (anna_node_t *)anna_node_create_call2(
 	&id->location,
 	(anna_node_t *)anna_node_create_identifier(&id->location,L"__var__"),
-	3,
-	param);    
+	id,
+	anna_node_create_null(&id->location),
+	anna_node_create_null(&id->location));
 }
 
 anna_node_t *anna_macro_iter(anna_node_call_t *node)			    
@@ -172,24 +167,20 @@ anna_node_t *anna_macro_iter(anna_node_call_t *node)
 	n[1] = anna_macro_iter_declare(node->child[1]);
     }
     
-    anna_node_call_t *attribute_list = anna_node_create_block(&body->location, 0, 0);
+    anna_node_call_t *attribute_list = anna_node_create_block2(&body->location);
     anna_node_call_t *declaration_list = anna_node_create_block(&body->location, 2, n);
     
-    anna_node_t *param[] ={
+    node->child[0] = (anna_node_t *)anna_node_create_call2(
+	&body->location,
+	(anna_node_t *)anna_node_create_identifier(&body->location,L"__def__"), 
 	(anna_node_t *)anna_node_create_identifier(
 	    &body->location,
 	    L"!anonymous"),
-	(anna_node_t *)anna_node_create_null(&body->location),
-	(anna_node_t *)declaration_list, 
-	(anna_node_t *)attribute_list, 
-	body
-    };
+	anna_node_create_null(&body->location),
+	declaration_list, 
+	attribute_list, 
+	body);
     
-    node->child[0] = (anna_node_t *)anna_node_create_call(
-	&body->location,
-	(anna_node_t *)anna_node_create_identifier(&body->location,L"__def__"), 
-	5, 
-	param);
     
     node->child_count = 1;
     anna_node_call_t *fun = (anna_node_call_t *)node->function;
@@ -535,25 +526,19 @@ static anna_node_t *anna_macro_update(anna_node_call_t *node)
 	sb_append_substring(&name, name_id->name, wcslen(name_id->name)-2);
 	sb_append(&name, L"Assign__");
 	
-	anna_node_t *param0[] ={
-	    anna_node_clone_deep((anna_node_t *)node->child[0]),
-	    (anna_node_t *)anna_node_create_identifier(&node->location,sb_content(&name))
-	};
-	sb_destroy(&name);
 	
 	anna_node_t *param[] ={
 	    node->child[0], 
 	    (anna_node_t *)
-	    anna_node_create_call(
+	    anna_node_create_call2(
 		&node->location,
-		(anna_node_t *)anna_node_create_call(
+		(anna_node_t *)anna_node_create_call2(
 		    &node->location,
 		    (anna_node_t *)anna_node_create_identifier(&node->location,L"__memberGet__"),
-		    2,
-		    param0),
-		0,
-		0)
-	};
+	anna_node_clone_deep((anna_node_t *)node->child[0]),
+		    (anna_node_t *)anna_node_create_identifier(&node->location,sb_content(&name))))};
+	sb_destroy(&name);
+
 	anna_node_t *res = (anna_node_t *)
 	    anna_node_create_call(
 		&node->location,

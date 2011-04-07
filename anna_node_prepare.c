@@ -1,6 +1,48 @@
 
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
+static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack);
+
+#include "anna_node_specialize.c"
+
+static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
+{
+    debug(D_SPAM,L"Figure out type from:\n");
+    
+    anna_node_print(0, node);
+    
+    if(node->node_type == ANNA_NODE_IDENTIFIER)
+    {
+	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
+	anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+	
+	if(wrapper != 0)
+	{
+	    return anna_type_unwrap(wrapper);
+	}
+    }
+    else if(node->node_type == ANNA_NODE_DUMMY)
+    {
+	anna_node_dummy_t *d = (anna_node_dummy_t *)node;	
+	return anna_type_unwrap(d->payload);
+    }
+    else if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
+    {
+	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
+	anna_node_calculate_type(d->payload, stack);
+	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    return d->payload->return_type;
+    }
+    else if(node->node_type == ANNA_NODE_CLOSURE)
+    {
+	anna_node_closure_t *d = (anna_node_closure_t *)node;	
+	anna_node_calculate_type(node, stack);
+	if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    return d->payload->wrapper->type;
+    }
+    
+    return 0;
+}
 
 anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
@@ -185,7 +227,7 @@ anna_node_t *anna_node_macro_expand(
 	{
 	    anna_error(
 		this,
-		L"Invalid node of type %d during macro expansion", this->node_type);	    
+		L"Invalid node of type %d during macro expansion", this->node_type);
 	}
     }
 
@@ -209,8 +251,6 @@ int anna_node_is_named(anna_node_t *this, wchar_t *name){
     }
     return 0;
 }
-
-
 
 static void anna_node_calculate_type_param(
     size_t argc,
@@ -319,46 +359,6 @@ void anna_node_register_declarations(
 
 }
 
-static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
-{
-    debug(D_SPAM,L"Figure out type from:\n");
-    
-    anna_node_print(0, node);
-    
-    if(node->node_type == ANNA_NODE_IDENTIFIER)
-    {
-	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
-	anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
-	
-	if(wrapper != 0)
-	{
-	    return anna_type_unwrap(wrapper);
-	}
-    }
-    else if(node->node_type == ANNA_NODE_DUMMY)
-    {
-	anna_node_dummy_t *d = (anna_node_dummy_t *)node;	
-	return anna_type_unwrap(d->payload);
-    }
-    else if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
-    {
-	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
-	anna_node_calculate_type(d->payload, stack);
-	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    return d->payload->return_type;
-    }
-    else if(node->node_type == ANNA_NODE_CLOSURE)
-    {
-	anna_node_closure_t *d = (anna_node_closure_t *)node;	
-	anna_node_calculate_type(node, stack);
-	if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    return d->payload->wrapper->type;
-    }
-    
-    return 0;
-}
-
-
 static void anna_node_calculate_type_internal(
     anna_node_t *this,
     anna_stack_template_t *stack)
@@ -426,61 +426,8 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
-	    anna_node_calculate_type(call->function, stack);
-	    anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
-	    if(!type)
-	    {
-		anna_error(this, L"Invalid template type");
-		break;
-	    }
-	    if(type == list_type && call->child_count==1)
-	    {
-		anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
-		if(spec)
-		{
-		    anna_type_t *res = anna_list_type_get(spec);
-		    
-		    /* FIXME: We remake this node into a new one of a different type- Very, very fugly. Do something prettier, please? */
-		    anna_node_dummy_t *new_res = (anna_node_dummy_t *)this;
-		    new_res->node_type = ANNA_NODE_DUMMY;
-		    new_res->payload = anna_type_wrap(res);
-		    new_res->return_type = type_type;
-		    break;
-		}
-	    }
-	    else if(type == hash_type && call->child_count==2)
-	    {
-		anna_type_t *spec1 = anna_node_resolve_to_type(call->child[0], stack);
-		anna_type_t *spec2 = anna_node_resolve_to_type(call->child[1], stack);
-		if(spec1 && spec2)
-		{
-		    anna_type_t *res = anna_hash_type_get(spec1, spec2);
-		    
-		    /* FIXME: We remake this node into a new one of a different type- Very, very fugly. Do something prettier, please? */
-		    anna_node_dummy_t *new_res = (anna_node_dummy_t *)this;
-		    new_res->node_type = ANNA_NODE_DUMMY;
-		    new_res->payload = anna_type_wrap(res);
-		    new_res->return_type = type_type;
-		    break;
-		}
-	    }
-	    else if(type == pair_type && call->child_count==2)
-	    {
-		anna_type_t *spec1 = anna_node_resolve_to_type(call->child[0], stack);
-		anna_type_t *spec2 = anna_node_resolve_to_type(call->child[1], stack);
-		if(spec1 && spec2)
-		{
-		    anna_type_t *res = anna_pair_type_get(spec1, spec2);
-		    
-		    /* FIXME: We remake this node into a new one of a different type- Very, very fugly. Do something prettier, please? */
-		    anna_node_dummy_t *new_res = (anna_node_dummy_t *)this;
-		    new_res->node_type = ANNA_NODE_DUMMY;
-		    new_res->payload = anna_type_wrap(res);
-		    new_res->return_type = type_type;
-		    break;
-		}
-	    }
-	    anna_error(this, L"Unimplemented template specialization. Come back tomorrow.");
+	    anna_node_specialize(call, stack);
+	    
 	    break;
 	}
 		
@@ -530,8 +477,6 @@ static void anna_node_calculate_type_internal(
 	    call->return_type = funt->result;
 	    break;
 	}
-	
-
 
 	case ANNA_NODE_CAST:
 	{
@@ -875,7 +820,6 @@ void anna_node_prepare_body(
 
     }
 }
-
 
 void anna_node_calculate_type(
     anna_node_t *this,

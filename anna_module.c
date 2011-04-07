@@ -178,7 +178,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	debug(D_CRITICAL,L"Module %ls failed to parse correctly; exiting.\n", module_name);
 	exit(ANNA_STATUS_PARSE_ERROR);
     }
-
+    
     debug(D_SPAM,L"Parsed AST for module %ls:\n", module_name);    
 //    anna_node_print(0, program);    
 

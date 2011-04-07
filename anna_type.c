@@ -18,6 +18,7 @@
 #include "anna_intern.h"
 #include "anna_attribute.h"
 #include "anna_vm.h"
+#include "anna_node_hash.h"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
@@ -146,10 +147,19 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 	//anna_node_print(D_CRITICAL, definition->child[2]);
 	
 	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
+	
+/*	
+	result->body = anna_node_replace(
+	    result->body, 
+	    anna_node_create_identifier(0, L"A"),
+	    anna_node_create_identifier(0, L"Int"));
+*/	
+
 	anna_type_mangle_methods(result);
     }
     al_push(&anna_type_list, result);
-    return result;  
+    hash_init(&result->specializations, anna_node_hash_func, anna_node_hash_cmp);
+    return result;
 }
 			  
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type)
@@ -191,9 +201,7 @@ void anna_type_definition_make(anna_type_t *type)
 	    L"class"));
     
     anna_node_call_t *attribute_list = 
-	anna_node_create_block(
-	    0,
-	    0,
+	anna_node_create_block2(
 	    0);	
 
     anna_node_call_add_child(
@@ -650,4 +658,9 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
 void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 {
     anna_type_setup_interface_internal(type, parent);
+}
+
+anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
+{
+    return 0;
 }
