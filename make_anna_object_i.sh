@@ -48,7 +48,7 @@ static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_
     else
     {
         int res_int = anna_int_get(res);
-        anna_vmstack_push(stack, res_int $op 0? anna_int_one:null_object);
+        anna_vmstack_push(stack, (res_int $op 0)? anna_int_one:null_object);
     }
     return stack;
 }

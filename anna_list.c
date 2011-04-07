@@ -540,46 +540,81 @@ static inline anna_object_t *anna_list_del_i(anna_object_t **param)
 
 ANNA_VM_NATIVE(anna_list_del, 1)
 
-static inline anna_object_t *anna_list_in_i(anna_object_t **param)
-{
-    CRASH;
-    
-    size_t sz = anna_list_get_size(param[0]);
-    anna_object_t **arr = anna_list_get_payload(param[0]);
-    size_t i;
+static anna_vmstack_t *anna_list_in_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_object_t *ret = anna_vmstack_pop(stack);
+//    wprintf(L"Wee, in callback value: %ls\n", ret==null_object?L"null":L"not null");
+    anna_object_t **param = stack->top - 3;
+    anna_object_t *list = param[0];
+    anna_object_t *value = param[1];
+    int idx = anna_int_get(param[2]);
+    size_t sz = anna_list_get_size(list);
 
-    anna_object_t *needle = param[1];
-    if(needle == null_object)
+    if(ret != null_object)
     {
-	return null_object;
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, anna_int_create(idx-1));
     }
-    //anna_object_print(needle);
-    
-    anna_object_t **eq_obj_ptr = anna_member_addr_get_mid(needle, ANNA_MID_EQ);
-    if(eq_obj_ptr)
+    else if(sz > idx)
     {
-	for(i=0;i<sz;i++)
-	{
-	    anna_object_t *o_param[]=
-		{
-		    needle,
-		    arr[i]
-		}
-	    ;
-	    anna_object_t *result = 
-		anna_vm_run(*eq_obj_ptr, 2, o_param);
-	    
-	    if(result != null_object)
+	anna_object_t *o_param[] =
 	    {
-		return anna_int_create(i);
+		value,
+		anna_list_get(list, idx)
 	    }
-	}
+	;
+	
+	anna_object_t *fun_object = *anna_static_member_addr_get_mid(value->type, ANNA_MID_EQ);
+	param[2] = anna_int_create(idx+1);
+	anna_vm_callback_reset(stack, fun_object, 2, o_param);
     }
-    return null_object;
+    else
+    {
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, null_object);
+    }
+    return stack;
 }
 
-ANNA_VM_NATIVE(anna_list_in, 2)
+static anna_vmstack_t *anna_list_in(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *value = anna_vmstack_pop(stack);
+    anna_object_t *list = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    
+    size_t sz = anna_list_get_size(list);
+    
+    if(sz > 0)
+    {
+	anna_object_t *callback_param[] = 
+	    {
+		list,
+		value,
+		anna_int_one,
+	    }
+	;
+	
+	anna_object_t *o_param[] =
+	    {
+		value,
+		anna_list_get(list, 0)
+	    }
+	;
+	
+	anna_object_t *fun_object = *anna_static_member_addr_get_mid(value->type, ANNA_MID_EQ);
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_list_in_callback, 3, callback_param,
+	    fun_object, 2, o_param
+	    );
+    }
+    else
+    {
+	anna_vmstack_push(stack, null_object);
+    }
 
+    return stack;
+}
 
 static inline anna_object_t *anna_list_i_get_range_i(anna_object_t **param)
 {

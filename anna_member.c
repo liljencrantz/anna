@@ -241,7 +241,7 @@ anna_member_t *anna_member_method_search(
     wchar_t *match=0;
     int fault_count=0;
 
-    for(i=0; i<anna_type_member_count(type); i++)
+    for(i=0; i<hash_get_count(&type->name_identifier); i++)
     {
 	debug(D_SPAM, L"Check %ls\n", members[i]);
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));

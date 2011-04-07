@@ -222,7 +222,7 @@ anna_type_t *anna_type_for_function(
 	{
 	    wchar_t *dots = (i==argc-1) && (flags & ANNA_FUNCTION_VARIADIC)?L"...":L"";
 	    
-	    sb_printf(&sb, L"%ls%ls %ls%ls", argv[i]->name, dots, argn[i], i==0?L"":L", ");
+	    sb_printf(&sb, L"%ls%ls %ls%ls", i==0?L"":L", ", argv[i]->name, dots, argn[i]);
 	}
 	sb_printf(&sb, L")%d", num++);
 	

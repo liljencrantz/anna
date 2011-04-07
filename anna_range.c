@@ -173,6 +173,46 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
     return stack;    
 }
 
+static inline anna_object_t *anna_range_in_i(anna_object_t **param)
+{
+    ssize_t from = anna_range_get_from(param[0]);
+    ssize_t to = anna_range_get_to(param[0]);
+    ssize_t step = anna_range_get_step(param[0]);
+    int open = anna_range_get_open(param[0]);
+    if(param[1]->type == null_type)
+	return null_object;
+    int val = anna_int_get(param[1]);
+    if(step > 0)
+    {
+	if(val < from)
+	{
+	    return null_object;
+	}
+	if((val >= to) && !open)
+	{
+	    return null_object;
+	}
+	int rem = (val-from)%step;
+	int res = (val-from)/step;
+	return (rem == 0)?anna_int_create(res):null_object;
+    }
+    else
+    {
+	if(val > from)
+	{
+	    return null_object;
+	}
+	if((val <= to) && !open)
+	{
+	    return null_object;
+	}
+	int rem = (val-from)%step;
+	int res = (val-from)/step;
+	return (rem == 0)?anna_int_create(res):null_object;
+    }
+}
+ANNA_VM_NATIVE(anna_range_in, 2)
+
 static int anna_range_is_valid(anna_object_t *obj)
 {
     ssize_t from = anna_range_get_from(obj);
@@ -408,11 +448,31 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	}
     ;    
     
+    anna_type_t *a_argv[] = 
+	{
+	    range_type,
+	    int_type
+	}
+    ;
+    
+    wchar_t *a_argn[]=
+	{
+	    L"this", L"value"
+	}
+    ;
+
     anna_native_method_create(
 	range_type, -1, L"__each__", 0, 
 	&anna_range_each, 
 	range_type,
 	2, e_argv, e_argn);
+
+    anna_native_method_create(
+	range_type, -1, L"__in__", 0, 
+	&anna_range_in, 
+	int_type,
+	2, a_argv, a_argn);
+        
 
     /*
     anna_native_method_create(

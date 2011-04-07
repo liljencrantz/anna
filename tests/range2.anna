@@ -1,0 +1,21 @@
+def main()
+{
+    /*
+      This file contains a few tests for the in operator of ranges
+    */
+    var foo = 1..4;
+    print(1 in foo,'\n');
+    print(3 in foo,'\n');
+    print(69 in foo,'\n');
+    print(-12 in foo,'\n');
+
+    print(7 in (3..9:2),'\n');
+    print(9 in (3..9:2),'\n');
+    print(9 in (3..null:2),'\n');
+    print(999999 in (3..null:2),'\n');
+    print(68 in (-1..null:69),'\n');
+    print(-5 in (1..-20:-2),'\n');
+    print(-5 in (1..null:-2),'\n');
+    print(-4 in (1..null:-2),'\n');
+
+}

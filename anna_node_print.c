@@ -138,6 +138,14 @@ static void anna_node_print_internal(anna_node_t *this, int indentation)
 	    break;
 	}
 	
+	case ANNA_NODE_TYPE:
+	{
+	    anna_indent(indentation);
+	    anna_node_type_t *this2 = (anna_node_type_t *)this;
+	    fwprintf(stderr,L"%ls", this2->payload->name);
+	    break;
+	}
+	
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_indent(indentation);
