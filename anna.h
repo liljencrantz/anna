@@ -219,6 +219,7 @@ struct anna_type
        A stack template view of this type
     */
     struct anna_stack_template *stack;
+    struct anna_stack_template *stack_macro;
     /**
        An array containing all member structs. The offset is a mid.
     */
@@ -240,6 +241,10 @@ struct anna_type
        Native types do not have a body.
     */
     struct anna_node_call *body;
+    /**
+       Attribute list for this type
+     */
+    struct anna_node_call *attribute;
     /**
        The object that wraps this type. Used for
        reflection/introspection purposes.

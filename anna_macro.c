@@ -213,7 +213,7 @@ static anna_node_t *anna_macro_type(anna_node_call_t *node)
     
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
     anna_type_t *type = anna_type_create(name, node);
-
+    
     return (anna_node_t *)anna_node_create_type(
 	&node->location,
 	type);

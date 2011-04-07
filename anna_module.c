@@ -201,7 +201,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	}
 	al_set(&mimport, i, anna_stack_unwrap(mod));
     }
-
+    
     anna_stack_template_t tmp;
     
     memcpy(&tmp, &stack_global->import, sizeof(array_list_t));

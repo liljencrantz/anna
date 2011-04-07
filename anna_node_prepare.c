@@ -9,7 +9,7 @@ static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_temp
 {
     debug(D_SPAM,L"Figure out type from:\n");
     
-    anna_node_print(0, node);
+    anna_node_print(D_SPAM, node);
     
     if(node->node_type == ANNA_NODE_IDENTIFIER)
     {
@@ -160,14 +160,8 @@ anna_node_t *anna_node_macro_expand(
 	    anna_node_type_t *c = (anna_node_type_t *)this;
 	    anna_type_t *f = c->payload;
 	    
-	    if(f->definition)
-	    {
-		anna_node_call_t *body = f->body;
-		
-		int i;
-		for(i=0;i<body->child_count; i++)
-		    body->child[i] = anna_node_macro_expand(body->child[i], stack);
-	    }
+	    anna_type_macro_expand(f, stack);
+	    
 	    return this;
 	}
 
@@ -826,7 +820,7 @@ void anna_node_calculate_type(
     anna_stack_template_t *stack)
 {
     debug(D_SPAM, L"Calculate type of node:\n");
-    anna_node_print(0, this);
+    anna_node_print(D_SPAM, this);
     if(this->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
     {
 	anna_error(this, L"Circular type checking dependency");
@@ -976,7 +970,6 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    {
 		anna_type_t *param = this2->child[i]->return_type;
 		anna_type_t *templ = ftk->argv[mini(i, ftk->argc-1)];
-		anna_node_print(4,this);
 //		wprintf(L"Check if type %ls abides to %ls\n", this2->child[i]->return_type->name, ftk->argv[mini(i, ftk->argc-1)]->name);
 		if(!anna_abides(param, templ))
 		{

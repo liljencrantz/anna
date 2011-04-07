@@ -19,6 +19,7 @@
 #include "anna_attribute.h"
 #include "anna_vm.h"
 #include "anna_node_hash.h"
+#include "anna_node_check.h"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
@@ -131,7 +132,23 @@ static void anna_type_mangle_methods(
     
 }
 
-
+static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
+{
+    int i;
+    for(i=0; i<al_get_count(spec); i++)
+    {
+//	wprintf(L"SPECIALIXE\n");
+	anna_node_t *node = (anna_node_t *)al_get(spec, i);
+	CHECK_NODE_TYPE(node, ANNA_NODE_CALL);
+	anna_node_call_t *call = (anna_node_call_t *)node;
+	CHECK_CHILD_COUNT(call, L"Templace specialization", 2);
+	CHECK_NODE_TYPE(call->child[0], ANNA_NODE_IDENTIFIER);
+	code = anna_node_replace(code, (anna_node_identifier_t *)call->child[0], call->child[1]);
+	
+    }
+    
+    return code;    
+}
 
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 {
@@ -144,9 +161,17 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->stack = anna_stack_create(0);
     if(definition)
     {
+
+
 	//anna_node_print(D_CRITICAL, definition->child[2]);
+	array_list_t al = AL_STATIC;
 	
-	result->body = node_cast_call(anna_node_clone_deep(definition->child[2]));
+	result->attribute = node_cast_call(definition->child[1]);
+	anna_attribute_node_all(result->attribute, L"template", &al);
+	result->body = node_cast_call(
+	    anna_node_specialize(
+		anna_node_clone_deep(definition->child[2]),
+		&al));
 	
 /*	
 	result->body = anna_node_replace(
@@ -662,5 +687,38 @@ void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 
 anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
 {
-    return 0;
+    anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
+    anna_node_call_t *attr = def->child[1];
+    int i;
+    int spec_pos = 0;
+
+    array_list_t al = AL_STATIC;
+    anna_attribute_node_all(attr, L"template", &al);
+    
+    for(i=0; i<attr->child_count;i++)
+    {
+	anna_node_call_t *tm = node_cast_call((anna_node_t *)al_get(&al, i));
+	assert(tm->child_count == 2);
+	tm->child[1] = spec->child[i];
+    }
+//    anna_node_print(4, def);
+    anna_type_t *res = anna_type_create(L"WeeWoooWaa", def);
+
+    anna_type_macro_expand(res, type->stack_macro);
+
+    return res;
+}
+
+void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack)
+{
+    f->stack_macro = stack;
+    
+    if(f->definition)
+    {
+	anna_node_call_t *body = f->body;
+	
+	int i;
+	for(i=0;i<body->child_count; i++)
+	    body->child[i] = anna_node_macro_expand(body->child[i], stack);
+    }
 }

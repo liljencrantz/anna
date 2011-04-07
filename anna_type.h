@@ -58,5 +58,10 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
 anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec);
 
 void anna_type_object_is_created(void);
+
 void anna_type_copy_object(anna_type_t *type);
+
+void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack);
+
+
 #endif

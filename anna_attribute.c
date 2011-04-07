@@ -53,16 +53,31 @@ wchar_t *anna_attribute_identifier(anna_node_call_t *attribute, wchar_t *name)
 
 anna_node_t *anna_attribute_node(anna_node_call_t *attribute, wchar_t *name)
 {
+    array_list_t al = AL_STATIC;
+    anna_attribute_node_all(attribute, name, &al);
+    anna_node_t *res = 0;
+    if(al_get_count(&al))
+    {
+	res = (anna_node_t *)al_get(&al, 0);
+	al_destroy(&al);
+    }
+    return res;
+}
+
+
+void anna_attribute_node_all(anna_node_call_t *attribute, wchar_t *name, array_list_t *res)
+{
     if(!attribute)
 	return 0;
     int i;
     for(i=0; i<attribute->child_count; i++)
     {
+	
 	if(anna_node_is_call_to(attribute->child[i], name))
 	{
 	    anna_node_call_t *attr = node_cast_call(attribute->child[i]);
 	    assert(attr->child_count == 1);
-	    return attr->child[0];
+	    al_push(res, attr->child[0]);
 	}
     }
     return 0;
