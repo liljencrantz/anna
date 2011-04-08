@@ -18,7 +18,8 @@ void anna_slab_init()
 
 void anna_slab_alloc_batch(size_t sz)
 {
-//    wprintf(L"Allocate object batch of size %d\n", sz);
+//    wprintf(L"Allocate object batch of size %d. We have %d allocated items.\n", sz, anna_slab_alloc_count);
+
     char * mem = malloc(sz*SLAB_SZ);
     int i;
     slab_t *s;

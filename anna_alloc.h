@@ -12,7 +12,7 @@ extern int anna_alloc_obj_count;
 void anna_gc(anna_vmstack_t *stack);
 void anna_gc_destroy(void);
 
-#define GC_FREQ 1024
+#define GC_FREQ (1024*1024)
 
 static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 {
@@ -29,6 +29,7 @@ static inline __malloc anna_object_t *anna_alloc_object(size_t sz)
     anna_object_t *res = anna_slab_alloc(sz);
     res->flags = ANNA_OBJECT;
     al_push(&anna_alloc, res);
+    anna_alloc_count+=sz;
     return res;
 }
 
