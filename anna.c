@@ -486,9 +486,6 @@ int main(int argc, char **argv)
     hash_foreach(&anna_type_for_function_identifier, fun_key_free);
     hash_destroy(&anna_type_for_function_identifier);
 #endif
-//    wprintf(L"Done. Allocated %d objects\n", anna_alloc_count);
-    
-//    anna_function_wrapped_invoke(*main_wrapper_ptr, 0, 0, 0, stack_global);
     
 /*    
     anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);

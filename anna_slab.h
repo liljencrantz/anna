@@ -3,7 +3,7 @@
 
 #include "anna.h"
 
-#define SLAB_MAX 128
+#define SLAB_MAX 256
 
 struct slab
 {

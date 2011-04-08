@@ -51,8 +51,6 @@ void anna_alloc_mark_type(anna_type_t *type);
 //static void anna_alloc_mark(void *obj);
 static void anna_alloc_mark_node(anna_node_t *o);
 
-
-
 static void anna_alloc_mark_function(anna_function_t *o)
 {
     if( o->flags & ANNA_USED)
@@ -477,8 +475,10 @@ static void anna_alloc_free(void *obj)
 	case ANNA_VMSTACK:
 	{
 	    anna_vmstack_t *o = (anna_vmstack_t *)obj;
-	    if(!o->function)
+	    if(!o->function){
+		free(o);
 		return;
+	    }
 	    
 	    anna_slab_free(o, o->function->frame_size);
 	    break;
@@ -572,15 +572,10 @@ void anna_gc(anna_vmstack_t *stack)
     if(anna_alloc_gc_block_counter)
 	return;
 
-    //wprintf(L"RUNNING GC\n");
-    
     anna_alloc_gc_block();
     size_t i;
     
-    for(i=0; i<al_get_count(&anna_alloc); i++)
-    {
-	anna_alloc_unmark(al_get(&anna_alloc, i));
-    }    
+//    wprintf(L"\n\nRUNNING GC. We have %d allocated items, %d are objects, %d are stacks\n\n", al_get_count(&anna_alloc), oc, sc);
     
     while(stack)
     {
@@ -617,9 +612,13 @@ void anna_gc(anna_vmstack_t *stack)
 	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
 	    i--;
 	}
+	else{
+	    anna_alloc_unmark(al_get(&anna_alloc, i));
+	}
     }
 
     anna_alloc_gc_unblock();
+//    wprintf(L"After GC. We have %d allocated objects\n", al_get_count(&anna_alloc));
 }
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN

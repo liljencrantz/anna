@@ -68,7 +68,7 @@ anna_node_t *anna_attribute_node(anna_node_call_t *attribute, wchar_t *name)
 void anna_attribute_node_all(anna_node_call_t *attribute, wchar_t *name, array_list_t *res)
 {
     if(!attribute)
-	return 0;
+	return;
     int i;
     for(i=0; i<attribute->child_count; i++)
     {
@@ -80,6 +80,6 @@ void anna_attribute_node_all(anna_node_call_t *attribute, wchar_t *name, array_l
 	    al_push(res, attr->child[0]);
 	}
     }
-    return 0;
+    return;
 }
 

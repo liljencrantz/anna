@@ -117,7 +117,6 @@
 #define ANNA_INSTR_NATIVE_CALL 22
 #define ANNA_INSTR_RETURN_COUNT 23
 
-static int alloc_count = 0;
 
 
 typedef struct 
@@ -283,7 +282,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     vm_count++;
     
     anna_vmstack_t *stack;    
-    stack = anna_alloc_vmstack((argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    stack = calloc(1, (argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    stack->flags = ANNA_VMSTACK;
+    al_push(&anna_alloc, stack);
+    
     stack->caller = 0;
     
     stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
@@ -341,6 +343,15 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
 	    case ANNA_INSTR_CALL:
 	    {
+		if(anna_alloc_count > GC_FREQ)
+		{
+		    
+		    if(is_root)
+		    {
+			anna_alloc_count=0;
+			anna_gc(stack);
+		    }
+		}
 		anna_op_count_t *op = (anna_op_count_t *)stack->code;
 		size_t param = op->param;
 		anna_object_t *wrapped = anna_vmstack_peek(stack, param);
@@ -362,13 +373,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
 	    case ANNA_INSTR_CONSTRUCT:
 	    {
-		++alloc_count;
-		if(alloc_count % GC_FREQ == 0)
-		{
-		    if(is_root)
-			anna_gc(stack);
-		}
-		
 		anna_op_null_t *op = (anna_op_null_t *)stack->code;
 		anna_object_t *wrapped = anna_vmstack_pop(stack);
 
@@ -1848,51 +1852,23 @@ void anna_vm_compile(
 //    anna_bc_print(fun->code);
 }
 
-anna_vmstack_t *anna_vm_callback(
-    anna_vmstack_t *parent, 
-    anna_object_t *callback, int paramc, anna_object_t **param,
-    anna_object_t *entry, int argc, anna_object_t **argv)
-{
-    anna_vmstack_t *stack = anna_alloc_vmstack((paramc+argc+3)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
-    stack->caller = parent;
-    stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
-    
-    stack->function = 0;
-    stack->top = &stack->base[0];
-    stack->code = malloc(sizeof(anna_op_count_t)*2 + sizeof(anna_op_null_t));
-
-    char *code = stack->code;
-    anna_vm_call(&code, ANNA_INSTR_CALL, argc);
-    anna_vm_call(&code, ANNA_INSTR_CALL, paramc+1);
-    anna_vm_null(&code, ANNA_INSTR_RETURN);
-
-    anna_vmstack_push(stack, callback);
-    int i;    
-    for(i=0; i<paramc; i++)
-    {
-	anna_vmstack_push(stack, param[i]);
-    }
-    anna_vmstack_push(stack, entry);
-    for(i=0; i<argc; i++)
-    {
-	anna_vmstack_push(stack, argv[i]);
-    }
-    return stack;
-}
-
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *parent, 
     anna_native_function_t callback, int paramc, anna_object_t **param,
     anna_object_t *entry, int argc, anna_object_t **argv)
 {
-    anna_vmstack_t *stack = anna_alloc_vmstack((paramc+argc+3)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    size_t ss = (paramc+argc+3)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t);
+    size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t);
+    anna_vmstack_t *stack = calloc(1,ss+cs);
+    stack->flags = ANNA_VMSTACK;
+    al_push(&anna_alloc, stack);
     stack->caller = parent;
 
     stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     stack->function = 0;
     stack->top = &stack->base[0];
-    stack->code = malloc(sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t));
+    stack->code = ((char *)stack)+ss;
 
     char *code = stack->code;
     anna_vm_call(&code, ANNA_INSTR_CALL, argc);

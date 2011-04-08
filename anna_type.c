@@ -688,9 +688,8 @@ void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
 {
     anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
-    anna_node_call_t *attr = def->child[1];
+    anna_node_call_t *attr = node_cast_call(def->child[1]);
     int i;
-    int spec_pos = 0;
 
     array_list_t al = AL_STATIC;
     anna_attribute_node_all(attr, L"template", &al);

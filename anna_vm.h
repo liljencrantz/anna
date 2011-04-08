@@ -29,10 +29,6 @@ void anna_vm_init(void);
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv);
 
 //void anna_vm_call_loop(anna_vm_callback_t callback, void *aux, anna_object_t *entry, int argc);
-anna_vmstack_t *anna_vm_callback(
-    anna_vmstack_t *stack, 
-    anna_object_t *callback, int paramc, anna_object_t **param,
-    anna_object_t *entry, int argc, anna_object_t **argv);
 
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *stack, 
