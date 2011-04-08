@@ -3,7 +3,7 @@
 # Copyright 2011 Axel Liljencrantz
 #
 
-CC := gcc
+CC := gcc-4.6
 
 PROF_FLAGS := -g #-flto -O3 -fuse-linker-plugin
 

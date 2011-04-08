@@ -15,8 +15,6 @@ struct anna_sid
 
 typedef struct anna_sid anna_sid_t;
 
-#define ANNA_STACK_FROZEN 512
-
 #define ANNA_STACK_PRIVATE 512
 
 #define ANNA_STACK_READONLY 512

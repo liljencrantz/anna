@@ -73,25 +73,11 @@ void anna_stack_declare(anna_stack_template_t *stack,
     size_t *old_offset = hash_get(&stack->member_string_identifier, name);
     if(old_offset)
     {
-//	if(stack->member_type[*old_offset] != type)
-//	{
-	    wprintf(
-		L"Critical: Tried to redeclare variable %ls\n",
-		name);
-	    CRASH;
-	    
-//	}
-//	stack->member[*old_offset] = initial_value;
-//	return;
+	wprintf(
+	    L"Critical: Tried to redeclare variable %ls\n",
+	    name);
+	CRASH;
     }
-#ifdef ANNA_CHECK_STACK_ENABLED
-    if(stack->flags & ANNA_STACK_FROZEN)
-    {
-	wprintf(L"Critical: Tried to declare value %ls in stack after it was frozen\n",
-		name);
-	CRASH;	
-    }
-#endif
     anna_stack_ensure_capacity(stack, stack->count+1);
     
     size_t *offset = calloc(1,sizeof(size_t));
@@ -116,26 +102,12 @@ void anna_stack_declare2(anna_stack_template_t *stack,
     size_t *old_offset = hash_get(&stack->member_string_identifier, declare_node->name);
     if(old_offset)
     {
-//	if(stack->member_type[*old_offset] != type)
-//	{
-	    wprintf(
-		L"Critical: Tried to redeclare variable %ls\n",
-		declare_node->name);
-	    
-	    CRASH;
-	    
-//	}
-//	stack->member[*old_offset] = initial_value;
-//	return;
+	wprintf(
+	    L"Critical: Tried to redeclare variable %ls\n",
+	    declare_node->name);
+	
+	CRASH;
     }
-#ifdef ANNA_CHECK_STACK_ENABLED
-    if(stack->flags & ANNA_STACK_FROZEN)
-    {
-	wprintf(L"Critical: Tried to declare value %ls in stack after it was frozen\n",
-		declare_node->name);
-	CRASH;	
-    }
-#endif
     anna_stack_ensure_capacity(stack, stack->count+1);
     
     size_t *offset = calloc(1,sizeof(size_t));
@@ -208,20 +180,12 @@ void anna_stack_set_str(anna_stack_template_t *stack, wchar_t *name, anna_object
 
 anna_object_t *anna_stack_get_str(anna_stack_template_t *stack, wchar_t *name)
 {
-#ifdef ANNA_CHECK_STACK_ACCESS
     anna_object_t **res =anna_stack_addr_get_str(stack, name);
-    if(unlikely(!res))
+    if(!res)
     {
-	wprintf(
-	    L"Critical: Tried to access non-existing variable %ls\n",
-	    name);
-	anna_stack_print(stack);
-	CRASH;
+	return 0;
     }
     return *res;
-#else
-    return *anna_stack_addr_get_str(stack, name);
-#endif
 }
 
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
@@ -407,11 +371,6 @@ anna_object_t *anna_stack_wrap(anna_stack_template_t *stack)
 {
     if(!stack->wrapper)
     {
-/*
-#ifdef ANNA_CHECK_STACK_ENABLED
-stack->flags |= ANNA_STACK_FROZEN;
-#endif
-*/
 	anna_type_t *t = anna_stack_type_create(stack);
 	stack->wrapper = anna_object_create(t);
 	stack->wrapper->member[0] = (anna_object_t *)stack;

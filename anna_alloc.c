@@ -71,13 +71,14 @@ static void anna_alloc_mark_function(anna_function_t *o)
     int i;
     for(i=0; i<o->input_count; i++)
     {
+#ifdef ANNA_CHECK_GC
 	if(!o->input_type[i])
 	{
 	    wprintf(L"No type specified for input argument %d of function %ls\n", 
 		    i+1, o->name);
 	    CRASH;
 	}
-	
+#endif	
 	anna_alloc_mark_type(o->input_type[i]);
     }
 
@@ -272,6 +273,7 @@ void anna_alloc_mark_type(anna_type_t *type)
     
     for(i=0; i<type->static_member_count; i++)
     {
+#ifdef ANNA_CHECK_GC
 	if(!type->static_member[i])
 	{
 	    wprintf(
@@ -289,7 +291,7 @@ void anna_alloc_mark_type(anna_type_t *type)
 	    
 	    CRASH;	    
 	}
-	
+#endif
 	if(anna_type_member_is_blob(type, i))
 	{
 	    if(anna_type_member_is_alloc(type, i) && type->static_member[i])

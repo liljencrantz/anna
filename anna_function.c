@@ -211,9 +211,7 @@ void anna_function_setup_interface(
 	    f->stack_template->count);
 	anna_node_print(0, f->body);
 */	
-#ifdef ANNA_CHECK_STACK_ENABLED
 	f->stack_template->function = f;
-#endif
     }
 
     

@@ -26,6 +26,9 @@ static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
     
     anna_function_t *fun = (anna_function_t *)obj->member[m->offset];
 
+    return fun;
+    /*
+
     if(likely((long)fun)) 
     {
 	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
@@ -45,6 +48,7 @@ static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 	}
 	return 0;	
     }
+    */
 }
 
 __pure anna_object_t *anna_function_wrap(anna_function_t *result);

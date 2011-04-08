@@ -13,22 +13,16 @@
 //#define ANNA_CHECK_VM
 
 /**
+   If enabled, perform a few additional validity checks whild GC:ing
+ */
+//#define ANNA_CHECK_GC
+
+/**
    If enabled, try to free all unused memory on shutdown. This will
    slow down shutdown and is only useful when debugging memory leaks
    in the interpreter and should otherwise be disabled.
  */
 //#define ANNA_FULL_GC_ON_SHUTDOWN
-
-/**
-   If enabled, save additional stack trace information. Not very
-   expensive.
-*/
-#define ANNA_CHECK_STACK_ENABLED
-
-/**
-  Check the return type of every native function call to make sure it abides by it's stated interface.
- */
-//#define ANNA_CHECK_NATIVE
 
 /**
    If enabled, critical bugs (e.g. ones that cause Anna to exit at
