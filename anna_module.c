@@ -125,7 +125,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     static int recursion_level=0;
     int i;
     array_list_t import = AL_STATIC;
-    array_list_t mimport = AL_STATIC;
+//    array_list_t mimport = AL_STATIC;
         
     if(anna_module_imported == 0)
     {
@@ -188,32 +188,32 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     */
     al_push(&import, L"lang");
     
-    anna_module_find_import_macros(program, &mimport);    
+    anna_stack_template_t *macro_stack = anna_stack_create(stack_global);
+    anna_module_find_import_macros(program, &macro_stack->import);    
     anna_module_find_imports(program, &import);    
     
-    for(i=0; i<al_get_count(&mimport); i++ )
+    for(i=0; i<al_get_count(&macro_stack->import); i++ )
     {
-	wchar_t *str = al_get(&mimport, i);
+	wchar_t *str = al_get(&macro_stack->import, i);
 	anna_object_t *mod = anna_module_load(str);
 	if(anna_error_count || !mod)
 	{
 	    return 0;
 	}
-	al_set(&mimport, i, anna_stack_unwrap(mod));
+	al_set(&macro_stack->import, i, anna_stack_unwrap(mod));
     }
     
-    anna_stack_template_t tmp;
     
-    memcpy(&tmp, &stack_global->import, sizeof(array_list_t));
-    memcpy(&stack_global->import, &mimport, sizeof(array_list_t));
+//    memcpy(&tmp, &stack_global->import, sizeof(array_list_t));
+//    memcpy(&stack_global->import, &mimport, sizeof(array_list_t));
     /*
       Prepare the module. 
     */
     anna_node_t *node = (anna_node_t *)
 	anna_node_macro_expand(
 	    program,
-	    stack_global);
-    memcpy(&stack_global->import, &tmp, sizeof(array_list_t));
+	    macro_stack);
+//    memcpy(&stack_global->import, &tmp, sizeof(array_list_t));
 
     if(anna_error_count)
     {

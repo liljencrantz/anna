@@ -302,6 +302,15 @@ void anna_alloc_mark_type(anna_type_t *type)
 	    anna_alloc_mark_object(type->static_member[i]);
 	}
     }
+    if(type->stack_macro)
+    {
+	anna_alloc_mark_stack_template(type->stack_macro);
+    }
+    if(type->stack)
+    {
+	anna_alloc_mark_stack_template(type->stack);
+    }
+    
 }
 
 void anna_alloc_mark_object(anna_object_t *obj)
