@@ -123,16 +123,7 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
 {
     call->function = function;
 }
-/*
-static int anna_node_identifier_is_function(anna_node_identifier_t *id, anna_stack_template_t *stack)
-{
-    anna_type_t *type = anna_stack_get_type(stack, id->name);
-    if(!type)
-	return 0;
-    //CHECK(type, id, L"Unknown identifier: %ls", id->name);
-    return !!anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-}
-*/
+
 anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_template_t *stack)
 {
 /*
@@ -293,6 +284,7 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_call_t);
 	    
 	case ANNA_NODE_IDENTIFIER:
+	case ANNA_NODE_MAPPING_IDENTIFIER:
 	    return sizeof(anna_node_identifier_t);
 
 	case ANNA_NODE_INT_LITERAL:
@@ -314,9 +306,9 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_assign_t);
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_GET_WRAP:
-	    return sizeof(anna_node_member_get_t);
+	    return sizeof(anna_node_member_access_t);
 	case ANNA_NODE_MEMBER_SET:
-	    return sizeof(anna_node_member_set_t);
+	    return sizeof(anna_node_member_access_t);
 	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
 	    return sizeof(anna_node_wrapper_t);
@@ -378,6 +370,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	  we can return them as is.
 	*/
 	case ANNA_NODE_IDENTIFIER:
+	case ANNA_NODE_MAPPING_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
@@ -425,17 +418,9 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_BLOB:
 	case ANNA_NODE_CLOSURE:
+	case ANNA_NODE_MAPPING_IDENTIFIER:
 	{
 	    return tree;
-	}
-
-
-	case ANNA_NODE_IMPORT:
-	{
-	    anna_node_import_t *this2 =(anna_node_import_t *)anna_node_clone_shallow(tree);	    
-	    this2->payload = anna_node_replace(this2->payload,
-					       from, to);
-	    return (anna_node_t *)this2;	    
 	}
 
 	case ANNA_NODE_RETURN:
@@ -560,7 +545,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	
 	case ANNA_NODE_MEMBER_CALL:
 	{	    
-	    anna_node_member_call_t *n = (anna_node_member_call_t *)this;
+	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    anna_node_each(n->object, fun, aux);
 	    int i;
 	    for(i=0; i<n->child_count; i++)
@@ -577,14 +562,14 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 
 	case ANNA_NODE_MEMBER_GET:
 	{
-	    anna_node_member_get_t *n = (anna_node_member_get_t *)this;
+	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
 	    anna_node_each(n->object, fun, aux);
 	    break;   
 	}
 
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
-	    anna_node_member_get_t *n = (anna_node_member_get_t *)this;
+	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
 	    anna_node_each(n->object, fun, aux);
 	    break;   
 	}
@@ -600,7 +585,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 
 	case ANNA_NODE_MEMBER_SET:
 	{
-	    anna_node_member_set_t *n = (anna_node_member_set_t *)this;
+	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
 	    anna_node_each(n->object, fun, aux);
 	    anna_node_each(n->value, fun, aux);
 	    break;   
@@ -626,6 +611,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	}	
 
 	case ANNA_NODE_IDENTIFIER:
+	case ANNA_NODE_MAPPING_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:

@@ -11,7 +11,8 @@
 #include "anna_node.h"
 
 
-static void anna_node_hash_func_step(anna_node_t *this, void *aux)
+static void anna_node_hash_func_step(
+    anna_node_t *this, void *aux)
 {
     int *res = (int *)aux;
     *res = (*res << 3) | (*res >> 29);
@@ -35,54 +36,19 @@ static void anna_node_hash_func_step(anna_node_t *this, void *aux)
 int anna_node_hash_func( void *data )
 {
     int res = 0xDEADBEEF;
-    anna_node_each((anna_node_t *)data, anna_node_hash_func_step, &res);
+    anna_node_each(
+	(anna_node_t *)data,
+	anna_node_hash_func_step, &res);
     return res;
 }
 
-int anna_node_hash_cmp( void *a,
-			void *b )
+int anna_node_hash_cmp( 
+    void *a,
+    void *b )
 {
     anna_node_t *na = (anna_node_t *)a;
     anna_node_t *nb = (anna_node_t *)b;
-    if(na->node_type != nb->node_type)
-    {
-	return 0;
-    }
-    switch(na->node_type)
-    {
-	case ANNA_NODE_IDENTIFIER:
-	{
-	    anna_node_identifier_t *ia = (anna_node_identifier_t *)a;
-	    anna_node_identifier_t *ib = (anna_node_identifier_t *)b;
-	    return wcscmp(ia->name, ib->name)==0;
-	}
-
-	case ANNA_NODE_CALL:
-	{
-	    anna_node_call_t *ia = (anna_node_call_t *)a;
-	    anna_node_call_t *ib = (anna_node_call_t *)b;
-	    if(ia->child_count != ib->child_count)
-	    {
-		return 0;
-	    }
-	    int i;
-	    for(i=0; i<ia->child_count; i++)
-	    {
-		if(!anna_node_hash_cmp(ia->child[i], ib->child[i]))
-		{
-		    return 0;
-		}
-	    }
-	    return 1;
-	}
-
-	default:
-	{
-	    wprintf(L"Can't hash compare node types\n");
-	    CRASH;
-	}
-    }
-    
+    return anna_node_compare(na, nb);
 }
 
 

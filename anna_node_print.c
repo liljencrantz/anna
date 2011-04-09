@@ -175,7 +175,7 @@ static void anna_node_print_internal(anna_node_t *this, int indentation)
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_indent(indentation);
-	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
+	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    fwprintf(stderr,L"__memberGet__(\n");
 	    anna_node_print_internal(this2->object, indentation+1);
 	    fwprintf(stderr,L"; %ls)", anna_mid_get_reverse(this2->mid));
@@ -213,7 +213,7 @@ static void anna_node_print_internal(anna_node_t *this, int indentation)
 	case ANNA_NODE_MEMBER_SET:
 	{
 	    anna_indent(indentation);
-	    anna_node_member_set_t *this2 = (anna_node_member_set_t *)this;
+	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    fwprintf(stderr,L"__memberSet__(\n");
 	    anna_node_print_internal(this2->object, indentation+1);
 	    fwprintf(stderr,L";\n");
@@ -228,7 +228,7 @@ static void anna_node_print_internal(anna_node_t *this, int indentation)
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_indent(indentation);
-	    anna_node_member_get_t *this2 = (anna_node_member_get_t *)this;
+	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    fwprintf(stderr,L"__memberGet__(\n");
 	    anna_node_print_internal(this2->object, indentation+1);
 	    fwprintf(stderr,L", %ls)", anna_mid_get_reverse(this2->mid));
@@ -293,7 +293,7 @@ static void anna_node_print_internal(anna_node_t *this, int indentation)
 	
 	case ANNA_NODE_MEMBER_CALL:
 	{
-	    anna_node_member_call_t *this2 = (anna_node_member_call_t *)this;	    
+	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;
 	    anna_indent(indentation);
 	    fwprintf(stderr,L"*__memberGet__(\n");

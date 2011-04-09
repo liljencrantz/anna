@@ -1283,19 +1283,19 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	
 	case ANNA_NODE_MEMBER_GET:
 	{
-	    anna_node_member_get_t *node2 = (anna_node_member_get_t *)node;
+	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    return anna_vm_size(fun, node2->object) + sizeof(anna_op_member_t);
 	}
 	
 	case ANNA_NODE_MEMBER_SET:
 	{
-	    anna_node_member_set_t *node2 = (anna_node_member_set_t *)node;
+	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    return anna_vm_size(fun, node2->object) + anna_vm_size(fun, node2->value) + sizeof(anna_op_member_t);
 	}
 		
 	case ANNA_NODE_MEMBER_CALL:
 	{
-	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    size_t res = 
 		anna_vm_size(fun, node2->object) + 
 		sizeof(anna_op_count_t) + sizeof(anna_op_member_t);
@@ -1731,7 +1731,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	
 	case ANNA_NODE_MEMBER_GET:
 	{
-	    anna_node_member_get_t *node2 = (anna_node_member_get_t *)node;
+	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
 	    anna_type_t *type = node2->object->return_type;
 	    anna_member_t *m = type->mid_identifier[node2->mid];
@@ -1741,7 +1741,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	
 	case ANNA_NODE_MEMBER_SET:
 	{
-	    anna_node_member_set_t *node2 = (anna_node_member_set_t *)node;
+	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    anna_vm_compile_i(fun, node2->value, ptr, 0);
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
 	    anna_vm_member(ptr, ANNA_INSTR_MEMBER_SET, node2->mid);
@@ -1763,7 +1763,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	
 	case ANNA_NODE_MEMBER_CALL:
 	{
-	    anna_node_member_call_t *node2 = (anna_node_member_call_t *)node;
+	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
 
 	    anna_vm_member(ptr, ANNA_INSTR_MEMBER_GET_THIS, node2->mid);

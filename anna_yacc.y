@@ -397,7 +397,7 @@ expression:
         | expression1
 	| declaration_expression 
 	| type_definition
-	| RETURN expression1
+	| RETURN expression
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
@@ -411,8 +411,7 @@ expression:
 	      (anna_node_t *)anna_node_create_identifier(
 		  &@$,
 		  L"return"), 
-	      anna_node_create_null(&@$));
-	  
+	      anna_node_create_null(&@$));  
 	}
 ;
 
@@ -860,26 +859,6 @@ post_op8:
 	}
 ;
 
-/*property_expression: PROPERTY type_identifier identifier attribute_list
-{
-   anna_node_t *param[]=
-      {
-	 $3,
-	 $2,
-	 (anna_node_t *)$4
-      }
-   ;
-   
-   $$=(anna_node_t *)anna_node_create_call(
-      &@$,
-      (anna_node_t *)anna_node_create_identifier(
-	 &@$,
-	 L"__property__"),
-      3, 
-      param);
-   
-};
-*/
 opt_identifier:
 identifier
 |
@@ -928,9 +907,6 @@ constant :
 	| 
 	LITERAL_CHAR
 	{
-	    /*
-	      FIXME: We're not handling escape sequences!
-	     */
 	    $$ = anna_yacc_char_literal_create(&@$, anna_lex_get_text(scanner));
 	}
 	| 
@@ -1111,8 +1087,7 @@ type_identifier opt_specialization
 	  &@$,(anna_node_t *)anna_node_create_identifier(
 	      &@$,
 	      L"__specialize__"), 
-	  $1, (anna_node_t *)$2);
-      
+	  $1, (anna_node_t *)$2);      
    }
 }
 ;

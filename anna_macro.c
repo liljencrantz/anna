@@ -628,6 +628,8 @@ static anna_node_t *anna_macro_range(anna_node_call_t *node)
 static anna_node_t *anna_macro_mapping(anna_node_call_t *node)
 {
     CHECK_CHILD_COUNT(node,L"mapping", 2);
+    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
+    node->child[0]->node_type = ANNA_NODE_MAPPING_IDENTIFIER;
     return (anna_node_t *)anna_node_create_mapping(
 	&node->location,
 	node->child[0],

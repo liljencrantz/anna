@@ -6,41 +6,48 @@
 #include "anna.h"
 #include "anna_stack.h"
 
+
+enum anna_node_enum
+{
 /* These are the node types visible to macros */
-#define ANNA_NODE_CALL 0
-#define ANNA_NODE_IDENTIFIER 1
-#define ANNA_NODE_INT_LITERAL 2
-#define ANNA_NODE_STRING_LITERAL 3
-#define ANNA_NODE_CHAR_LITERAL 4
-#define ANNA_NODE_FLOAT_LITERAL 5
-#define ANNA_NODE_NULL 6
+    ANNA_NODE_CALL,
+    ANNA_NODE_IDENTIFIER,
+    ANNA_NODE_INT_LITERAL,
+    ANNA_NODE_STRING_LITERAL,
+    ANNA_NODE_CHAR_LITERAL,
+    ANNA_NODE_FLOAT_LITERAL,
+    ANNA_NODE_NULL,
 
 /* These are internal AST node types that are created by one of the
  * later AST transformation passes. */
-#define ANNA_NODE_DUMMY 7
-#define ANNA_NODE_CLOSURE 8
-#define ANNA_NODE_ASSIGN 9
-#define ANNA_NODE_MEMBER_GET 10
-#define ANNA_NODE_MEMBER_GET_WRAP 11
-#define ANNA_NODE_MEMBER_SET 12
-#define ANNA_NODE_CONSTRUCT 13
-#define ANNA_NODE_DECLARE 18
-#define ANNA_NODE_CONST 19
-#define ANNA_NODE_OR 20
-#define ANNA_NODE_AND 21
-#define ANNA_NODE_WHILE 22
-#define ANNA_NODE_MEMBER_CALL 23
-#define ANNA_NODE_IF 24
-#define ANNA_NODE_SPECIALIZE 25
-#define ANNA_NODE_TYPE_LOOKUP 26
-#define ANNA_NODE_TYPE 27
-#define ANNA_NODE_CAST 28
-#define ANNA_NODE_MAPPING 29
+    ANNA_NODE_DUMMY,
+    ANNA_NODE_CLOSURE,
+    ANNA_NODE_ASSIGN,
+    ANNA_NODE_MEMBER_GET,
+    ANNA_NODE_MEMBER_GET_WRAP,
+    ANNA_NODE_MEMBER_SET,
+    ANNA_NODE_CONSTRUCT,
+    ANNA_NODE_DECLARE,
+    ANNA_NODE_CONST,
+    ANNA_NODE_OR,
+    ANNA_NODE_AND,
+    ANNA_NODE_WHILE,
+    ANNA_NODE_MEMBER_CALL,
+    ANNA_NODE_IF,
+    ANNA_NODE_SPECIALIZE,
+    ANNA_NODE_TYPE_LOOKUP,
+    ANNA_NODE_TYPE,
+    ANNA_NODE_CAST,
+    ANNA_NODE_MAPPING,
+    ANNA_NODE_MAPPING_IDENTIFIER,
+    ANNA_NODE_RETURN,
 
 /* These AST node types probably are't needed and should be removed */
-#define ANNA_NODE_RETURN 14
-#define ANNA_NODE_BLOB 16
-#define ANNA_NODE_IMPORT 17
+    ANNA_NODE_BLOB,
+    ANNA_NODE_IMPORT,
+}
+    ;
+
 
 struct YYLTYPE
 {
@@ -143,21 +150,7 @@ struct anna_node_declare
     struct anna_node_call *attribute;
 };
 
-struct anna_node_member_get
-{
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
-    int prepared;
-#endif    
-    struct anna_node *object;
-    mid_t mid;
-};
-
-struct anna_node_member_set
+struct anna_node_member_access
 {
     int flags;
     int node_type;
@@ -182,24 +175,9 @@ struct anna_node_call
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
-    struct anna_node *function;
-    size_t child_count;
-    size_t child_capacity;
-    struct anna_node **child;
-};
-
-struct anna_node_member_call
-{
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
-    int prepared;
-#endif
-    struct anna_node *object;
     mid_t mid;
+    struct anna_node *object;
+    struct anna_node *function;
     size_t child_count;
     size_t child_capacity;
     struct anna_node **child;
@@ -344,8 +322,7 @@ typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_dummy anna_node_dummy_t;
 typedef struct anna_node_closure anna_node_closure_t;
 typedef struct anna_node_type anna_node_type_t;
-typedef struct anna_node_member_get anna_node_member_get_t;
-typedef struct anna_node_member_set anna_node_member_set_t;
+typedef struct anna_node_member_access anna_node_member_access_t;
 typedef struct anna_node_assign anna_node_assign_t;
 typedef struct anna_node_identifier anna_node_identifier_t;
 typedef struct anna_node_int_literal anna_node_int_literal_t;
@@ -355,7 +332,7 @@ typedef struct anna_node_char_literal anna_node_char_literal_t;
 typedef struct anna_node_import anna_node_import_t;
 typedef struct anna_node_declare anna_node_declare_t;
 typedef struct anna_node_cond anna_node_cond_t;
-typedef struct anna_node_member_call anna_node_member_call_t;
+typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_if anna_node_if_t;
 typedef struct anna_node_wrapper anna_node_wrapper_t;
 

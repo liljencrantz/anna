@@ -83,7 +83,6 @@ null return NULL_SYM;
 and return AND;
 or return OR;
 var return VAR;
-@ return '@';
 return return RETURN;
 as return AS;
 in return IN;

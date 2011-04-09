@@ -1,4 +1,8 @@
-def Mint main()
+
+def main()
 {
-    print("Test\n");
+    var lst = ["unused\n"];
+    lst.push(value => "ok\n");
+    print(lst.pop());
+
 }

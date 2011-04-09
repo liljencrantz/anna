@@ -107,7 +107,7 @@ anna_node_t *anna_node_macro_expand(
 	    
 	    if(this2->function->node_type == ANNA_NODE_MEMBER_GET)
 	    {
-		anna_node_member_get_t *mg = (anna_node_member_get_t *)this2->function;
+		anna_node_member_access_t *mg = (anna_node_member_access_t *)this2->function;
 		
 		anna_node_t *result = (anna_node_t *)anna_node_create_member_call(
 		    &this2->location,
@@ -123,6 +123,7 @@ anna_node_t *anna_node_macro_expand(
 	}
 	
 	case ANNA_NODE_IDENTIFIER:
+	case ANNA_NODE_MAPPING_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
@@ -168,14 +169,14 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
-	    anna_node_member_get_t *g = (anna_node_member_get_t *)this;
+	    anna_node_member_access_t *g = (anna_node_member_access_t *)this;
 	    g->object = anna_node_macro_expand(g->object, stack);
 	    return this;
 	}
 
 	case ANNA_NODE_MEMBER_SET:
 	{
-	    anna_node_member_set_t *g = (anna_node_member_set_t *)this;
+	    anna_node_member_access_t *g = (anna_node_member_access_t *)this;
 	    g->object = anna_node_macro_expand(g->object, stack);
 	    g->value = anna_node_macro_expand(g->value, stack);
 	    return this;
@@ -367,6 +368,12 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 	
+	case ANNA_NODE_MAPPING_IDENTIFIER:
+	{
+	    this->return_type = null_type;
+	    break;
+	}
+	
 	case ANNA_NODE_STRING_LITERAL:
 	{
 	    this->return_type = string_type;
@@ -446,6 +453,7 @@ static void anna_node_calculate_type_internal(
 		    call->return_type = type;
 		    break;
 		}
+		
 	    }
 
 	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
@@ -498,7 +506,7 @@ static void anna_node_calculate_type_internal(
 	
 	case ANNA_NODE_MEMBER_CALL:
 	{	    
-	    anna_node_member_call_t *n = (anna_node_member_call_t *)this;
+	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    
 	    anna_node_calculate_type(n->object, stack);
 	    anna_type_t *type = n->object->return_type;
@@ -623,7 +631,7 @@ static void anna_node_calculate_type_internal(
 
 	case ANNA_NODE_MEMBER_GET:
 	{
-	    anna_node_member_get_t *c = (anna_node_member_get_t *)this;
+	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
 	    anna_node_calculate_type(c->object, stack);
 	    anna_type_t *type = c->object->return_type;
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
@@ -654,7 +662,7 @@ static void anna_node_calculate_type_internal(
 
 	case ANNA_NODE_MEMBER_SET:
 	{
-	    anna_node_member_set_t *g = (anna_node_member_set_t *)this;
+	    anna_node_member_access_t *g = (anna_node_member_access_t *)this;
 	    anna_node_calculate_type(g->value, stack);
 	    g->return_type = g->value->return_type;
 	    break;
@@ -868,7 +876,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    }
 	    else
 	    {
-		anna_node_member_call_t *this2 =(anna_node_member_call_t *)this;
+		anna_node_call_t *this2 =(anna_node_call_t *)this;
 		anna_type_t *ft = 
 		    anna_member_get(this2->object->return_type, this2->mid)->type;
 		

@@ -58,6 +58,8 @@ Inlining of if/while bodies into main method
 Make a verion of the fold op that takes a count parameter
 Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
 
+UNUSED OPERATORS:
+Currently, the ? and @ symbols are unused. 
 
 Figure out how to handle the map function. We can't make a prototype
 function, we actually want the type hinting to go in the other
