@@ -53,7 +53,7 @@ Free AST nodes after compilation
 Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)
 Consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion
-Avoid creating trampolines when possible
+Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for cal with stack-on-stack. This would require that the gc knows that non-objects might be living on the stack...
 Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.Jump labels
 Add profiling information to the VM
 Inlining of if/while bodies into main method

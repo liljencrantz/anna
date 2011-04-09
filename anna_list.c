@@ -540,6 +540,28 @@ static inline anna_object_t *anna_list_del_i(anna_object_t **param)
 
 ANNA_VM_NATIVE(anna_list_del, 1)
 
+static inline anna_object_t *anna_list_push_i(anna_object_t **param)
+{
+    anna_list_set(
+	param[0], 
+	(*(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE)),
+	param[1]);
+    return param[0];
+}
+
+ANNA_VM_NATIVE(anna_list_push, 2)
+
+static inline anna_object_t *anna_list_pop_i(anna_object_t **param)
+{
+    size_t *sz = (size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_SIZE);
+    if(!*sz)
+	return null_object;
+    (*sz)--;
+    return (*(anna_object_t ***)anna_member_addr_get_mid(param[0],ANNA_MID_LIST_PAYLOAD))[*sz];
+}
+
+ANNA_VM_NATIVE(anna_list_pop, 1)
+
 static anna_vmstack_t *anna_list_in_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_object_t *ret = anna_vmstack_pop(stack);
@@ -844,6 +866,18 @@ static void anna_list_type_create_internal(
 	&anna_list_append, 
 	type,
 	2, l_argv, l_argn);
+    
+    anna_native_method_create(
+	type, -1, L"push", 0, 
+	&anna_list_push, 
+	type,
+	2, a_argv, a_argn);
+
+    anna_native_method_create(
+	type, -1, L"pop", 0, 
+	&anna_list_pop, 
+	spec,
+	1, a_argv, a_argn);
     
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!ListIterFunction", int_type, spec);
