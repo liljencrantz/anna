@@ -1,7 +1,5 @@
 KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed.
-vmstacks used for native=>interpreted calls leak
-parser fails with no trailing newline in input files
 hash type does not support continuations
 Call.each is b0rked
 

@@ -1264,7 +1264,7 @@ int anna_yacc_lex (
 
       After any other token than an end brace, line breaks are a noop.
      */
-    if(val == LINE_BREAK){
+    if(val == LINE_BREAK || val == 0){
 	if(was_end_brace)
 	{
 	    was_end_brace = 0;
@@ -1272,7 +1272,7 @@ int anna_yacc_lex (
 	}
 	else
 	{
-	    return anna_yacc_lex(lvalp, llocp, scanner, filename);
+	    return val==LINE_BREAK?anna_yacc_lex(lvalp, llocp, scanner, filename):0;
 	}
     }
     
