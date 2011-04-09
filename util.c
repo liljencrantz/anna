@@ -26,6 +26,7 @@
 #include "fallback.h"
 #include "util.h"
 
+#include "anna.h"
 #include "common.h"
 #include "wutil.h"
 
@@ -435,7 +436,7 @@ void hash_foreach2( hash_table_t *h,
 /**
    Helper function for hash_wcs_func
 */
-static unsigned int rotl1( unsigned int in )
+static __pure inline unsigned int rotl1( unsigned int in )
 {
 	return (in<<1|in>>31);
 }
@@ -443,7 +444,7 @@ static unsigned int rotl1( unsigned int in )
 /**
    Helper function for hash_wcs_func
 */
-static unsigned int rotl5( unsigned int in )
+static __pure inline unsigned int rotl5( unsigned int in )
 {
 	return (in<<5|in>>27);
 }
@@ -451,7 +452,7 @@ static unsigned int rotl5( unsigned int in )
 /**
    Helper function for hash_wcs_func
 */
-static unsigned int rotl30( unsigned int in )
+static __pure inline unsigned int rotl30( unsigned int in )
 {
 	return (in<<30|in>>2);
 }
@@ -468,10 +469,6 @@ int hash_wcs_func( void *data )
 	unsigned int a,b,c,d,e;
 	int t;
 	unsigned int k0=0x5a827999u;	
-	unsigned int k1 =0x6ed9eba1u;
-	
-	unsigned int w[2*WORD_COUNT];	
-	
 	/*
 	  Same constants used by sha1
 	*/
@@ -482,64 +479,20 @@ int hash_wcs_func( void *data )
 	e=0xc3d2e1f0u;
 	
 	if( data == 0 )
-		return 0;
+	    return 0;
 	
 	while( *in )
 	{
-		int i;
-
-		/*
-		  Read WORD_COUNT words of data into w
-		*/
-		for( i=0; i<WORD_COUNT; i++ )
-		{
-			if( !*in)
-			{
-				/*
-				  We have reached EOF, fill in the rest with zeroes
-				*/
-				for( ;i<WORD_COUNT; i++ )
-					w[i]=0;
-			}
-			else
-				w[i]=*in++;
-			
-		}
-		
-		/*
-		  And fill up the rest by rotating the previous content
-		*/
-		for( i=WORD_COUNT; i<(2*WORD_COUNT); i++ )
-		{
-			w[i]=rotl1(w[i-1]^w[i-(WORD_COUNT/2)]^w[i-(WORD_COUNT/2-1)]^w[i-WORD_COUNT]);
-		}
-
-		/*
-		  Only 2*WORD_COUNT laps, not 80 like in sha1. Only two types
-		  of laps, not 4 like in sha1
-		*/
-		for( t=0; t<WORD_COUNT; t++ )
-		{
-			unsigned int temp;
-			temp = (rotl5(a)+(b^c^d)+e+w[t]+k0);
-			e=d;
-			d=c;
-			c=rotl30(b);
-			b=a;
-			a=temp;
-		}
-		for( t=WORD_COUNT; t<(2*WORD_COUNT); t++ )
-		{
-			unsigned int temp;
-			temp = (rotl5(a)+((b&c)|(b&d)|(c&d))+e+w[t]+k1);
-			e=d;
-			d=c;
-			c=rotl30(b);
-			b=a;
-			a=temp;
-		}
+	    unsigned int temp;
+	    temp = (rotl5(a)+(b^c^d)+e+*in+k0);
+	    e=d;
+	    d=c;
+	    c=rotl30(b);
+	    b=a;
+	    a=temp;
+	    in++;
 	}
-
+	
 	/*
 	  Implode from 160 to 32 bit hash and return
 	*/

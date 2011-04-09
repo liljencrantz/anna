@@ -367,9 +367,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_CALL:
     {
 	
-	if(anna_alloc_count > GC_FREQ)
+	if(unlikely(anna_alloc_count > GC_FREQ))
 	{
-	    
 	    if(is_root)
 	    {
 		anna_alloc_count=0;
