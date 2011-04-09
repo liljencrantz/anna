@@ -1,0 +1,23 @@
+/*
+This is a comment
+/*
+This is a nested comment
+/*
+This is deep!
+/**/
+*/
+*/
+This is still a comment
+*/
+
+/*
+This is a comment as well
+///*
+This is a nested comment
+// */
+This is also still a comment
+*/
+
+def main () {
+    print("ok\n")
+}
