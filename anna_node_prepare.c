@@ -523,6 +523,60 @@ static void anna_node_calculate_type_internal(
 	    anna_type_prepare_member(type, n->mid, stack);
 	    anna_member_t *member = anna_member_get(type, n->mid);
 	    
+	    if(!member)
+	    {
+
+		int i;
+		int ok = 1;
+		
+		for(i=0; i<n->child_count; i++)
+		{
+		    anna_node_calculate_type(n->child[i], stack);
+		    if(n->child[i]->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
+		    {
+			ok = 0;
+			break;
+		    }
+		}
+		
+		if(ok)
+		{
+		    member = anna_member_method_search(
+			type, n->mid, n, 0);
+		    
+		    if(member)
+		    {
+			n->mid = anna_mid_get(member->name);
+		    }
+		    else
+		    {
+			if(n->child_count == 1)
+			{
+			    anna_node_call_t *n2 = (anna_node_call_t *)anna_node_clone_shallow(n);
+			    anna_node_t *tmp = n2->object;
+			    n2->object = n2->child[0];
+			    n2->child[0] = tmp;
+			    
+			    member = anna_member_method_search(
+				n->child[0]->return_type, n->mid, n2, 1);
+			    if(member)
+			    {
+				/*
+				  Reverse method alias. We can safely
+				  switch the pointers around, we just
+				  calculated the types of all involved
+				  nodes.
+				*/
+				tmp = n->object;
+				n->object = n->child[0];
+				n->child[0] = tmp;
+				n->mid = anna_mid_get(member->name);
+			    }
+			}
+		    }
+		}
+	    }
+	    
 	    if(member)
 	    {
 		anna_function_type_t *fun = anna_function_unwrap_type(member->type);
@@ -536,63 +590,8 @@ static void anna_node_calculate_type_internal(
 		    anna_node_call_map(n, fun, 1);
 		    
 		}
-		
 	    }
 	    else
-	    {
-
-		int i;
-		int ok = 1;
-		
-		anna_type_t **types = malloc(sizeof(anna_type_t *)*n->child_count);
-		for(i=0; i<n->child_count; i++)
-		{
-		    anna_node_calculate_type(n->child[i], stack);
-		    types[i] = n->child[i]->return_type;
-		    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
-		    {
-			ok = 0;
-			break;
-		    }
-		}
-		
-		if(ok)
-		{
-		    member = anna_member_method_search(
-			type, n->mid, n->child_count, types, 0);
-		    
-		    if(member)
-		    {
-			n->mid = anna_mid_get(member->name);
-		    }
-		    else
-		    {
-			if(n->child_count == 1)
-			{
-			    anna_type_t *param_type = n->child[0]->return_type;
-			    member = anna_member_method_search(
-				param_type, n->mid, n->child_count, &type, 1);
-			    if(member)
-			    {
-				/*
-				  Reverse method alias. We can safely
-				  switch the pointers around, we just
-				  calculated the types of all involved
-				  nodes.
-				*/
-				anna_node_t *tmp = n->object;
-				n->object = n->child[0];
-				n->child[0] = tmp;
-				n->mid = anna_mid_get(member->name);
-			    }
-			}
-		    }
-		    
-		}
-		free(types);
-	    }
-	    
-	    if(!member)
 	    {
 		anna_error(
 		    this, 

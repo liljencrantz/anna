@@ -6,15 +6,32 @@ type Foo
     {
 	print(first, second, third);
     }
+
     def barInt(Float first, Int second, Int third) (alias(bar))
     {
-	print(first + second + third);
+	print((first + second + third)==0.0, "\n");
     }
+}
+
+type Baz
+{
+
+    def barFoo(Foo other) (aliasReverse(bar))
+    {
+	print("ok\n");
+    }
+
+    def barInt(Int other) (aliasReverse(bar))
+    {
+	print("error\n");
+    }
+
 }
 
 def main()
 {
     var foo = Foo();
     foo.bar(third=>-1,second=>0,first=>1.0);    
-    foo.bar(third=>'\n', second=>"k", first=>"");
+    foo.bar(third=>'\n', second=>"k", first=>"o");
+    foo.bar(Baz());
 }

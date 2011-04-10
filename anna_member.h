@@ -14,7 +14,10 @@ anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *member);
 
 void anna_member_types_create(anna_stack_template_t *stack);
 anna_member_t *anna_member_get(anna_type_t *type, mid_t mid);
-anna_member_t *anna_member_method_search(anna_type_t *type, mid_t mid, size_t argc, anna_type_t **argv, int is_reverse);
+anna_member_t *anna_member_method_search(
+    anna_type_t *type, mid_t mid, 
+    anna_node_call_t *call, 
+    int is_reverse);
 
 mid_t anna_member_create(
     anna_type_t *type,

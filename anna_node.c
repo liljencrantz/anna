@@ -280,6 +280,7 @@ static size_t anna_node_size(anna_node_t *n)
     switch(n->node_type)
     {
 	case ANNA_NODE_CALL:
+	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_CONSTRUCT:
 	    return sizeof(anna_node_call_t);
 	    
@@ -313,10 +314,16 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_TYPE_LOOKUP:
 	    return sizeof(anna_node_wrapper_t);
 	default:
-	    anna_error(n, L"Unknown node type while determining size\n");
+	    anna_error(n, L"Unknown node type %d encoundered while determining size of node\n", n->node_type);
 	    CRASH;
     }
     
+}
+
+static void anna_node_call_dealias(anna_node_call_t *dest, anna_node_call_t *src)
+{
+    dest->child = malloc(sizeof(anna_node_t *)*src->child_capacity);
+    memcpy(dest->child, src->child, sizeof(anna_node_t *)*dest->child_count);
 }
 
 anna_node_t *anna_node_clone_shallow(anna_node_t *n)
@@ -324,12 +331,28 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     size_t sz = anna_node_size(n);
     anna_alloc_gc_block();
     anna_node_t *r = anna_alloc_node(sz);
-    anna_alloc_gc_unblock();
     memcpy(r,n,sz);
     r->wrapper=0;
     ANNA_UNPREPARED(r);
+
+    switch(n->node_type)
+    {
+	case ANNA_NODE_CALL:
+	case ANNA_NODE_CONSTRUCT:
+	case ANNA_NODE_MEMBER_CALL:
+	{
+	    anna_node_call_t *r2=(anna_node_call_t *)r;
+	    anna_node_call_t *n2=(anna_node_call_t *)n;
+	    anna_node_call_dealias(r2, n2);
+	    break;
+	}
+    }
+    
+    anna_alloc_gc_unblock();
     return r;
 }
+
+
 
 anna_node_t *anna_node_clone_deep(anna_node_t *n)
 {
@@ -343,19 +366,19 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	*/
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_CONSTRUCT:
+	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_t *r = anna_node_clone_shallow(n);
 	    int i;
 	    anna_node_call_t *r2=(anna_node_call_t *)r;
 	    anna_node_call_t *n2=(anna_node_call_t *)n;
-	    r2->child = malloc(sizeof(anna_node_t *)*r2->child_capacity);
-	    memcpy(r2->child, n2->child, sizeof(anna_node_t *)*r2->child_count);
+	    
 	    if(!r2->function)
 	    {
 		anna_error(n, L"Call node has invalid function");
 		CRASH;
 	    }
-	    
+
 	    r2->function = anna_node_clone_deep(r2->function);
 
 	    for(i=0;i<r2->child_count; i++)
