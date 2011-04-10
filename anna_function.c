@@ -108,9 +108,9 @@ static anna_node_t *anna_function_setup_arguments(
 	    }
 	    else
 	    {
-		anna_error(decl->child[1],  L"Could not determine argument type");
-		anna_node_print(0, decl->child[1]);
-		anna_node_print(0, type_node);
+		anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
+//		anna_node_print(4, decl->child[1]);
+//		anna_node_print(4, type_node);
 		CRASH;
 	    }
 	    
@@ -310,7 +310,7 @@ anna_object_t *anna_function_wrap(anna_function_t *result)
     return result->wrapper;
 }
 
-anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
+anna_function_type_t *anna_function_unwrap_type(anna_type_t *type)
 {
     if(!type)
     {
@@ -320,8 +320,8 @@ anna_function_type_key_t *anna_function_unwrap_type(anna_type_t *type)
     
     //wprintf(L"Find function signature for call %ls\n", type->name);
     
-    anna_function_type_key_t **function_ptr = 
-	(anna_function_type_key_t **)anna_static_member_addr_get_mid(
+    anna_function_type_t **function_ptr = 
+	(anna_function_type_t **)anna_static_member_addr_get_mid(
 	    type,
 	    ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     if(function_ptr) 

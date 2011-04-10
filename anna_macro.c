@@ -108,7 +108,7 @@ static anna_node_t *anna_macro_macro(anna_node_call_t *node)
 
 #if 0
 
-static anna_function_type_key_t *anna_function_key_get(anna_type_t *type,
+static anna_function_type_t *anna_function_key_get(anna_type_t *type,
 						wchar_t *name)
 {
     anna_type_t *member_type = anna_type_member_type_get(type, name);
@@ -122,7 +122,7 @@ static anna_function_type_key_t *anna_function_key_get(anna_type_t *type,
     anna_object_t **key_ptr=anna_static_member_addr_get_mid(
 	member_type, 
 	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-    return key_ptr?(anna_function_type_key_t *)(*key_ptr):0;
+    return key_ptr?(anna_function_type_t *)(*key_ptr):0;
 }
 #endif
 

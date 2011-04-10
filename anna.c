@@ -94,14 +94,14 @@ __pure anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t 
 
 static int hash_function_type_func(void *a)
 {
-    anna_function_type_key_t *key = (anna_function_type_key_t *)a;
-    int res = (int)(long)key->result ^ key->flags;
+    anna_function_type_t *key = (anna_function_type_t *)a;
+    int res = (int)(long)key->return_type ^ key->flags;
     size_t i;
     
-    for(i=0;i<key->argc; i++)
+    for(i=0;i<key->input_count; i++)
     {
-	res = (res<<19) ^ (int)(long)key->argv[i] ^ (res>>13);
-	res ^= wcslen(key->argn[i]);
+	res = (res<<19) ^ (int)(long)key->input_type[i] ^ (res>>13);
+	res ^= wcslen(key->input_name[i]);
     }
     
     return res;
@@ -111,23 +111,23 @@ static int hash_function_type_comp(void *a, void *b)
 {
     size_t i;
     
-    anna_function_type_key_t *key1 = (anna_function_type_key_t *)a;
-    anna_function_type_key_t *key2 = (anna_function_type_key_t *)b;
+    anna_function_type_t *key1 = (anna_function_type_t *)a;
+    anna_function_type_t *key2 = (anna_function_type_t *)b;
 
     //debug(D_SPAM,L"Compare type for function %ls %d and %ls %d\n", key1->result->name, hash_function_type_func(key1), key2->result->name, hash_function_type_func(key2));
 
-    if(key1->result != key2->result)
+    if(key1->return_type != key2->return_type)
 	return 0;
-    if(key1->argc != key2->argc)
+    if(key1->input_count != key2->input_count)
 	return 0;
     if(key1->flags != key2->flags)
 	return 0;
 
-    for(i=0;i<key1->argc; i++)
+    for(i=0;i<key1->input_count; i++)
     {
-	if(key1->argv[i] != key2->argv[i])
+	if(key1->input_type[i] != key2->input_type[i])
 	    return 0;
-	if(wcscmp(key1->argn[i], key2->argn[i]) != 0)
+	if(wcscmp(key1->input_name[i], key2->input_name[i]) != 0)
 	    return 0;
     }
     //debug(D_SPAM,L"Same!\n");
@@ -147,9 +147,9 @@ anna_type_t *anna_type_for_function(
     //if((count++)==10) {CRASH};
     flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION);
     size_t i;
-    static anna_function_type_key_t *key = 0;
+    static anna_function_type_t *key = 0;
     static size_t key_sz = 0;
-    size_t new_key_sz = sizeof(anna_function_type_key_t) + sizeof(anna_type_t *)*argc;
+    size_t new_key_sz = sizeof(anna_function_type_t) + sizeof(anna_type_t *)*argc;
     
     if(!result)
     {
@@ -166,12 +166,12 @@ anna_type_t *anna_type_for_function(
 	int was_null = (key==0);
 	key = realloc(key, new_key_sz);
 	key_sz = new_key_sz;
-	key->argn = was_null?malloc(sizeof(wchar_t *)*argc):realloc(key->argn, sizeof(wchar_t *)*argc);
+	key->input_name = was_null?malloc(sizeof(wchar_t *)*argc):realloc(key->input_name, sizeof(wchar_t *)*argc);
     }
     
     key->flags = flags;
-    key->result=result;
-    key->argc = argc;
+    key->return_type=result;
+    key->input_count = argc;
     
     for(i=0; i<argc;i++)
     {
@@ -182,8 +182,8 @@ anna_type_t *anna_type_for_function(
 	    CRASH;
 	}
 	
-	key->argv[i]=argv[i];
-	key->argn[i]=argn[i];
+	key->input_type[i]=argv[i];
+	key->input_name[i]=argn[i];
     }
 /*
     debug(D_SPAM,L"Weee %ls <-", result->name);
@@ -196,12 +196,12 @@ anna_type_t *anna_type_for_function(
     anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
     if(!res)
     {
-	anna_function_type_key_t *new_key = malloc(new_key_sz);
+	anna_function_type_t *new_key = malloc(new_key_sz);
 	memcpy(new_key, key, new_key_sz);	
-	new_key->argn = malloc(sizeof(wchar_t *)*argc);
+	new_key->input_name = malloc(sizeof(wchar_t *)*argc);
 	for(i=0; i<argc;i++)
 	{
-	    new_key->argn[i]=wcsdup(argn[i]);
+	    new_key->input_name[i]=wcsdup(argn[i]);
 	}
 	static int num=0;
 	
@@ -232,8 +232,8 @@ anna_type_t *anna_type_for_function(
 	anna_function_type_create(new_key, res);
     }
 
-    anna_function_type_key_t *ggg = anna_function_unwrap_type(res);
-    assert(ggg->argc == argc);
+    anna_function_type_t *ggg = anna_function_unwrap_type(res);
+    assert(ggg->input_count == argc);
     
     return res;
 }

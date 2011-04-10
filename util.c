@@ -465,38 +465,37 @@ static __pure inline unsigned int rotl30( unsigned int in )
 
 int hash_wcs_func( void *data )
 {
-	const wchar_t *in = (const wchar_t *)data;
-	unsigned int a,b,c,d,e;
-	int t;
-	unsigned int k0=0x5a827999u;	
-	/*
-	  Same constants used by sha1
-	*/
-	a=0x67452301u;
-	b=0xefcdab89u;
-	c=0x98badcfeu;
-	d=0x10325476u;
-	e=0xc3d2e1f0u;
-	
-	if( data == 0 )
-	    return 0;
-	
-	while( *in )
-	{
-	    unsigned int temp;
-	    temp = (rotl5(a)+(b^c^d)+e+*in+k0);
-	    e=d;
-	    d=c;
-	    c=rotl30(b);
-	    b=a;
-	    a=temp;
-	    in++;
-	}
-	
-	/*
-	  Implode from 160 to 32 bit hash and return
-	*/
-	return a^b^c^d^e;
+    wchar_t *in = (wchar_t *)data;
+    unsigned int a,b,c,d,e;
+    unsigned int k0=0x5a827999u;	
+    /*
+      Same constants used by sha1
+    */
+    a=0x67452301u;
+    b=0xefcdab89u;
+    c=0x98badcfeu;
+    d=0x10325476u;
+    e=0xc3d2e1f0u;
+    
+    if( data == 0 )
+	return 0;
+    
+    while( *in )
+    {
+	unsigned int temp;
+	temp = (rotl5(a)+(b^c^d)+e+*in+k0);
+	e=d;
+	d=c;
+	c=rotl30(b);
+	b=a;
+	a=temp;
+	in++;
+    }
+    
+    /*
+      Implode from 160 to 32 bit hash and return
+    */
+    return a^b^c^d^e;
 }
 
 int hash_wcs_cmp( void *a, void *b )
@@ -506,13 +505,13 @@ int hash_wcs_cmp( void *a, void *b )
 
 int hash_str_cmp( void *a, void *b )
 {
-	return strcmp((char *)a,(char *)b) == 0;
+    return strcmp((char *)a,(char *)b) == 0;
 }
 
 int hash_str_func( void *data )
 {
 	int res = 0x67452301u;
-	const char *str = data;	
+	char *str = data;	
 
 	while( *str )
 		res = (18499*rotl5(res)) ^ *str++;

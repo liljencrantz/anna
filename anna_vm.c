@@ -1214,13 +1214,13 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    size_t res = 
 		anna_vm_size(fun, node2->function) + sizeof(anna_op_count_t);
 
-	    anna_function_type_key_t *template;
+	    anna_function_type_t *template;
 	    int ra;
 	    if(node->node_type==ANNA_NODE_CALL)
 	    {
 		template = anna_function_type_extract(
 		    node2->function->return_type);
-		ra = template->argc;
+		ra = template->input_count;
 	    }
 	    else
 	    {
@@ -1234,7 +1234,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		template = anna_function_type_extract(
 		    (*constructor_ptr)->type);
 		res += sizeof(anna_op_null_t);
-		ra = template->argc-1;
+		ra = template->input_count-1;
 	    }
 	    
 	    int i;	    
@@ -1303,12 +1303,12 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
 	    
-	    anna_function_type_key_t *template = anna_function_type_extract(
+	    anna_function_type_t *template = anna_function_type_extract(
 		mem->type);
 	    
 	    int i;
 	    
-	    int ra = template->argc-1;
+	    int ra = template->input_count-1;
 	    if(template->flags & ANNA_FUNCTION_VARIADIC)
 	    {
 		ra--;
@@ -1643,13 +1643,13 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    anna_vm_compile_i(fun, node2->function, ptr, 0);
 	    
-	    anna_function_type_key_t *template;
+	    anna_function_type_t *template;
 	    int ra;
 	    if(node->node_type==ANNA_NODE_CALL)
 	    {
 		template = anna_function_type_extract(
 		    node2->function->return_type);
-		ra = template->argc;
+		ra = template->input_count;
 	    }
 	    else
 	    {
@@ -1663,7 +1663,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		template = anna_function_type_extract(
 		    (*constructor_ptr)->type);
 		anna_vm_null(ptr, ANNA_INSTR_CONSTRUCT);
-		ra = template->argc-1;
+		ra = template->input_count-1;
 	    }
 	    
 	    int i;
@@ -1682,7 +1682,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		anna_vm_type(
 		    ptr,
 		    ANNA_INSTR_LIST,
-		    anna_list_type_get(template->argv[template->argc-1]));
+		    anna_list_type_get(template->input_type[template->input_count-1]));
 		for(; i<node2->child_count; i++)
 		{
 		    anna_vm_compile_i(fun, node2->child[i], ptr, 0);		
@@ -1692,11 +1692,11 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		}
 	    }
 	    
-	    //wprintf(L"Woo argc %d\n", template->argc);
+	    //wprintf(L"Woo argc %d\n", template->input_count);
 	    anna_vm_call(
 		ptr,
 		ANNA_INSTR_CALL,
-		template->argc);
+		template->input_count);
 	    
 	    if(node->node_type==ANNA_NODE_CONSTRUCT)
 	    {
@@ -1771,12 +1771,12 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
 	    
-	    anna_function_type_key_t *template = anna_function_type_extract(
+	    anna_function_type_t *template = anna_function_type_extract(
 		mem->type);
 	    
 	    int i;
 	    
-	    int ra = template->argc-1;
+	    int ra = template->input_count-1;
 	    if(template->flags & ANNA_FUNCTION_VARIADIC)
 	    {
 		ra--;
@@ -1790,7 +1790,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		anna_vm_type(
 		    ptr,
 		    ANNA_INSTR_LIST,
-		    anna_list_type_get(template->argv[template->argc-1]));
+		    anna_list_type_get(template->input_type[template->input_count-1]));
 		
 		
 		for(; i<node2->child_count; i++)
@@ -1800,7 +1800,7 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 		}
 	    }
 	    
-	    anna_vm_call(ptr, ANNA_INSTR_CALL, template->argc);
+	    anna_vm_call(ptr, ANNA_INSTR_CALL, template->input_count);
 	    break;
 	}	
 	

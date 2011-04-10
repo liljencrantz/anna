@@ -441,12 +441,12 @@ typedef struct anna_node_list anna_node_list_t;
 
 typedef struct 
 {
-    anna_type_t *result; 
-    size_t argc;
+    anna_type_t *return_type;
+    size_t input_count;
     int flags;
-    wchar_t **argn;
-    anna_type_t *argv[];
-} anna_function_type_key_t;
+    wchar_t **input_name;
+    anna_type_t *input_type[];
+} anna_function_type_t;
 
 extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type;
 extern anna_object_t *null_object;
@@ -510,8 +510,8 @@ struct anna_node *anna_macro_invoke(
     anna_function_t *macro,
     struct anna_node_call *node);
 
-void anna_function_type_key_print(
-    anna_function_type_key_t *k);
+void anna_function_type_print(
+    anna_function_type_t *k);
 
 anna_object_t *anna_construct(
     anna_type_t *type, struct anna_node_call *param,

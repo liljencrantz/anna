@@ -251,7 +251,7 @@ static void anna_node_calculate_type_param(
     size_t argc,
     anna_node_t **argv,
     int is_method,
-    anna_function_type_key_t *funt)
+    anna_function_type_t *funt)
 {
     int i, j;
     for(i=0; i<argc; i++)
@@ -260,17 +260,17 @@ static void anna_node_calculate_type_param(
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
 	    anna_function_t *closure = c->payload;
-//	    debug(D_SPAM,L"Closure as param %d. function type says argument is of type %ls\n", i, funt->argv[i+!!is_method]->name);
-	    anna_function_type_key_t *template = anna_function_type_extract(funt->argv[i+!!is_method]);
+//	    debug(D_SPAM,L"Closure as param %d. function type says argument is of type %ls\n", i, funt->input_type[i+!!is_method]->name);
+	    anna_function_type_t *template = anna_function_type_extract(funt->input_type[i+!!is_method]);
 	    assert(template);
-//	    debug(D_SPAM,L"Closure template takes %d params\n", template->argc);
-	    for(j=0; j<template->argc; j++)
+//	    debug(D_CRITICAL,L"Closure template takes %d params\n", template->input_count);
+	    for(j=0; j<template->input_count; j++)
 	    {
-//		debug(D_SPAM,L"Argument %d should be of type %ls\n", j, template->argv[j]->name);
+//		debug(D_CRITICAL,L"Argument %d should be of type %ls\n", j, template->input_type[j]->name);
 		anna_function_argument_hint(
 		    closure,
 		    j,
-		    template->argv[j]);
+		    template->input_type[j]);
 	    }
 	}
 	
@@ -461,7 +461,7 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 
-	    anna_function_type_key_t *funt = anna_function_type_extract(fun_type);
+	    anna_function_type_t *funt = anna_function_type_extract(fun_type);
 	    if(!funt)
 	    {
 		anna_error(this, L"Value is not callable");
@@ -476,7 +476,7 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    call->return_type = funt->result;
+	    call->return_type = funt->return_type;
 	    break;
 	}
 
@@ -514,16 +514,27 @@ static void anna_node_calculate_type_internal(
 	    {
 		break;
 	    }
-
+	    
 	    anna_type_prepare_member(type, n->mid, stack);
 	    anna_member_t *member = anna_member_get(type, n->mid);
 	    
-	    if(!member)
+	    if(member)
 	    {
-		anna_type_t **types = malloc(sizeof(anna_type_t *)*n->child_count);
+		anna_function_type_t *fun = anna_function_unwrap_type(member->type);
+		
+		if(!anna_node_call_validate(n, fun, 1, 1))
+		{
+		    member = 0;
+		}
+				
+	    }
+	    else
+	    {
+
 		int i;
 		int ok = 1;
 		
+		anna_type_t **types = malloc(sizeof(anna_type_t *)*n->child_count);
 		for(i=0; i<n->child_count; i++)
 		{
 		    anna_node_calculate_type(n->child[i], stack);
@@ -534,6 +545,7 @@ static void anna_node_calculate_type_internal(
 			break;
 		    }
 		}
+		
 		if(ok)
 		{
 		    member = anna_member_method_search(
@@ -580,9 +592,9 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 
-	    anna_function_type_key_t *funt = anna_function_type_extract(member->type);
-	    n->return_type = funt->result;
-
+	    anna_function_type_t *funt = anna_function_type_extract(member->type);
+	    n->return_type = funt->return_type;
+	    
 	    anna_node_calculate_type_param(n->child_count, n->child, 1, funt);
 	    
 	    break;
@@ -738,7 +750,7 @@ static void anna_node_calculate_type_internal(
 	    {
 		break;
 	    }
-	    anna_function_type_key_t *funt = anna_function_type_extract(fun_type);
+	    anna_function_type_t *funt = anna_function_type_extract(fun_type);
 	    if(!funt)
 	    {
 		anna_error(this, L"Value is not callable");
@@ -750,7 +762,7 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    d->return_type = funt->result;
+	    d->return_type = funt->return_type;
 
 	    break;
 	}
@@ -849,7 +861,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_CONSTRUCT:
 	{
-	    anna_function_type_key_t *ftk=0;
+	    anna_function_type_t *ftk=0;
 	    int child_count;
 	    anna_node_t **child;
 
@@ -892,24 +904,24 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    }
 	    if(ftk->flags & ANNA_FUNCTION_VARIADIC)
 	    {
-		if( child_count < ftk->argc-2)
+		if( child_count < ftk->input_count-2)
 		{
 		    anna_error(
 			this,
 			L"Too few parameters to constructor call. Expected at least %d, got %d\n", 
-			ftk->argc-2, child_count);
+			ftk->input_count-2, child_count);
 		    break;
 		}
 		
 	    }
 	    else
 	    {
-		if(ftk->argc != child_count+1)
+		if(ftk->input_count != child_count+1)
 		{
 		    anna_error(
 			this,
 			L"Wrong number of parameters to constructor call. Expected %d, got %d\n", 
-			ftk->argc-1, child_count);
+			ftk->input_count-1, child_count);
 		    anna_node_print(D_ERROR, this);
 		    break;
 		}
@@ -918,7 +930,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    for(i=0; i<child_count; i++)
 	    {
 		anna_type_t *param = child[i]->return_type;
-		anna_type_t *templ = ftk->argv[mini(i+1, ftk->argc-1)];
+		anna_type_t *templ = ftk->input_type[mini(i+1, ftk->input_count-1)];
 		if(!anna_abides(param, templ))
 		{
 		    
@@ -942,7 +954,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		break;
 	    }
 	    
-	    anna_function_type_key_t *ftk;
+	    anna_function_type_t *ftk;
 	    ftk = anna_function_type_extract(ft);
 	    
 	    if(!ftk)
@@ -952,24 +964,24 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    }
 	    if(ftk->flags & ANNA_FUNCTION_VARIADIC)
 	    {
-		if( this2->child_count < ftk->argc-1)
+		if( this2->child_count < ftk->input_count-1)
 		{
 		    anna_error(
 			this,
 			L"Too few parameters to function call. Expected at least %d, got %d\n", 
-			ftk->argc-1, this2->child_count);
+			ftk->input_count-1, this2->child_count);
 		    break;
 		}
 		
 	    }
 	    else
 	    {
-		if(ftk->argc != this2->child_count)
+		if(ftk->input_count != this2->child_count)
 		{
 		    anna_error(
 			this,
 			L"Wrong number of parameters to function call. Expected %d, got %d\n", 
-			ftk->argc, this2->child_count);
+			ftk->input_count, this2->child_count);
 		    break;
 		}
 	    }
@@ -977,8 +989,8 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    for(i=0; i<this2->child_count; i++)
 	    {
 		anna_type_t *param = this2->child[i]->return_type;
-		anna_type_t *templ = ftk->argv[mini(i, ftk->argc-1)];
-//		wprintf(L"Check if type %ls abides to %ls\n", this2->child[i]->return_type->name, ftk->argv[mini(i, ftk->argc-1)]->name);
+		anna_type_t *templ = ftk->input_type[mini(i, ftk->input_count-1)];
+//		wprintf(L"Check if type %ls abides to %ls\n", this2->child[i]->return_type->name, ftk->input_type[mini(i, ftk->input_count-1)]->name);
 		if(!anna_abides(param, templ))
 		{
 		    

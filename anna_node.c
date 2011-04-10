@@ -640,6 +640,102 @@ typedef struct
 }
     anna_node_find_each_t;
 
+static int anna_node_f_get_index(anna_function_type_t *f, int is_method, wchar_t *name)
+{
+    int i;
+    for(i=(!!is_method); i<f->input_count; i++)
+    {
+	if(wcscmp(name, f->input_name[i]) == 0)
+	{
+	    return i;
+	}
+    }
+    return -1;
+}
+
+int anna_node_call_validate(
+    anna_node_call_t *call, 
+    anna_function_type_t *target, 
+    int is_method, 
+    int print_error)
+{
+    anna_type_t **param = target->input_type;
+    int param_count = target->input_count;    
+    int res=0;
+    
+    if(is_method)
+    {
+	param++;
+	param_count--;
+    }
+    if(param_count != call->child_count)
+    {
+	if(print_error)
+	{
+	    anna_error((anna_node_t *)call, L"Wrong number of parameters to function call. Get %d, expected %d.", call->child_count, param_count);
+	}
+	
+	goto END;
+    }
+    int i;
+    int *set = calloc(sizeof(int), param_count);
+    int has_named=0;
+    for(i=0; i<param_count; i++)
+    {
+	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
+	if(has_named && !is_named)
+	{
+	    if(print_error)
+	    {
+		anna_error(call->child[i], L"An anonymous parameter value can not follow after a named parameter value");
+	    }
+	    goto END;
+	}
+	int idx = i;
+	if(is_named)
+	{
+	    anna_node_cond_t *p = (anna_node_cond_t *)call->child[i];
+	    if(p->arg1->node_type != ANNA_NODE_MAPPING_IDENTIFIER)
+	    {
+		if(print_error)
+		{
+		    anna_error(call->child[i], L"Invalid named parameter");
+		}
+		goto END;
+	    }
+	    anna_node_identifier_t *name = (anna_node_identifier_t *)p->arg1;	    
+	    idx = anna_node_f_get_index(target, is_method, name->name);
+	    if(idx < 0)
+	    {
+		if(print_error)
+		{
+		    anna_error(call->child[i], L"Invalid named parameter");
+		}
+		goto END;
+	    }
+	}
+	set[idx]++;
+    }
+
+    for(i=0; i<param_count; i++)
+    {
+	if(set[i] != 1)
+	{
+	    if(print_error)
+	    {
+		anna_error((anna_node_t *)call, L"Invalid value for parameter %d", i+1);
+	    }
+	    goto END;
+	}
+    }
+    res = 1;
+
+  END:
+    free(set);
+    return res;
+}
+
+
 
 static void anna_node_find_each(anna_node_t *node, void *aux)
 {

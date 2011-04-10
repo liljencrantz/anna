@@ -176,8 +176,11 @@ struct anna_node_call
     int prepared;
 #endif    
     mid_t mid;
-    struct anna_node *object;
-    struct anna_node *function;
+    union
+    {
+	struct anna_node *object;
+	struct anna_node *function;
+    };
     size_t child_count;
     size_t child_capacity;
     struct anna_node **child;
@@ -301,22 +304,7 @@ struct anna_node_wrapper
     struct anna_node *payload;
     int steps;
 };
-/*
-struct anna_node_specialize
-{
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
-    int prepared;
-#endif
-    struct anna_node_identifier *type;
-    size_t specilization_count;
-    struct anna_node **specialization;
-};
-*/
+
 typedef struct anna_node anna_node_t;
 typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_dummy anna_node_dummy_t;
@@ -450,8 +438,10 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 
 typedef void(*anna_node_function_t)(anna_node_t *, void *);
 
-void anna_node_each(anna_node_t *tree, anna_node_function_t fun, void *aux);
-void anna_node_find(anna_node_t *tree, int node_type, array_list_t *al);
+void anna_node_each(
+    anna_node_t *tree, anna_node_function_t fun, void *aux);
+void anna_node_find(
+    anna_node_t *tree, int node_type, array_list_t *al);
 
 void anna_node_prepare_body(
     anna_node_t *this);
@@ -466,12 +456,16 @@ anna_node_t *anna_node_create_simple_template(
    Check if the node is a call node with an identifier with the
    specified name as its function.
 */
-int anna_node_is_call_to(anna_node_t *this, wchar_t *name);
+int anna_node_is_call_to(
+    anna_node_t *this, 
+    wchar_t *name);
 
 /**
    Check if the node is an identifier with the specified name.
 */
-int anna_node_is_named(anna_node_t *this, wchar_t *name);
+int anna_node_is_named(
+    anna_node_t *this, 
+    wchar_t *name);
 
 void anna_yacc_init(void);
 
@@ -483,7 +477,21 @@ anna_object_t *anna_node_static_invoke(
     anna_node_t *this, 
     anna_stack_template_t *stack);
 
-void anna_node_calculate_type_children(anna_node_call_t *node, anna_stack_template_t *stack);
+void anna_node_calculate_type_children(
+    anna_node_call_t *node, 
+    anna_stack_template_t *stack);
+
+int anna_node_call_validate(
+    anna_node_call_t *call, 
+    anna_function_type_t *target, 
+    int is_method, 
+    int print_error);
+
+int anna_node_call_map(
+    anna_node_call_t *call, 
+    anna_function_type_t *target, 
+    int is_method);
+
 
 #endif
 

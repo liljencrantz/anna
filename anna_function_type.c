@@ -75,19 +75,19 @@ static inline anna_object_t *anna_function_type_i_get_input_name_i(anna_object_t
 ANNA_VM_NATIVE(anna_function_type_i_get_input_name, 1)
 
 
-void anna_function_type_key_print(anna_function_type_key_t *k)
+void anna_function_type_print(anna_function_type_t *k)
 {
 
-    wprintf(L"%ls <- (", k->result?k->result->name:L"<null>");
+    wprintf(L"%ls <- (", k->return_type?k->return_type->name:L"<null>");
     int i;
-    for(i=0;i<k->argc; i++)
+    for(i=0;i<k->input_count; i++)
     {
 	if(i!=0)
 	    wprintf(L", ");
 	wprintf(
 	    L"%ls %ls",
-	    (k->argv && k->argv[i])?k->argv[i]->name:L"<null>",
-	    (k->argn && k->argn[i])?k->argn[i]:L"");
+	    (k->input_type && k->input_type[i])?k->input_type[i]->name:L"<null>",
+	    (k->input_name && k->input_name[i])?k->input_name[i]:L"");
     }
     wprintf(L")\n");
 }
@@ -181,10 +181,10 @@ static void anna_function_type_base_create()
 }
 
 void anna_function_type_create(
-    anna_function_type_key_t *key, 
+    anna_function_type_t *key, 
     anna_type_t *res)
 {
-    //anna_function_type_key_print(key);
+    //anna_function_type_print(key);
     
     anna_function_type_base_create();
     if(base_constructed)
@@ -237,9 +237,9 @@ void anna_function_type_create(
     return;
 }
 
-anna_function_type_key_t *anna_function_type_extract(anna_type_t *type)
+anna_function_type_t *anna_function_type_extract(anna_type_t *type)
 {
-    anna_function_type_key_t **res = (anna_function_type_key_t **)anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
+    anna_function_type_t **res = (anna_function_type_t **)anna_static_member_addr_get_mid(type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     return res?*res:0;
 }
 
@@ -248,16 +248,17 @@ anna_type_t *anna_function_type_each_create(
     anna_type_t *key_type,
     anna_type_t *value_type)
 {
-    anna_function_type_key_t *each_key = malloc(sizeof(anna_function_type_key_t) + 2*sizeof(anna_type_t *));
-    each_key->result = object_type;
-    each_key->argc = 2;
+    anna_function_type_t *each_key = malloc(sizeof(anna_function_type_t) + 2*sizeof(anna_type_t *));
+    each_key->return_type = object_type;
+    each_key->input_count = 2;
     each_key->flags = 0;
-    each_key->argn = malloc(sizeof(wchar_t *)*2);
-    each_key->argn[0] = L"key";
-    each_key->argn[1] = L"value";
 
-    each_key->argv[0] = key_type;
-    each_key->argv[1] = value_type;    
+    each_key->input_name = malloc(sizeof(wchar_t *)*2);
+    each_key->input_name[0] = L"key";
+    each_key->input_name[1] = L"value";
+
+    each_key->input_type[0] = key_type;
+    each_key->input_type[1] = value_type;    
     anna_type_t *fun_type = anna_type_native_create(name, stack_global);
     anna_function_type_create(each_key, fun_type);
     return fun_type;
