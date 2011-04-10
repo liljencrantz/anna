@@ -663,6 +663,10 @@ int anna_node_call_validate(
     wchar_t **param_name = target->input_name;
     int param_count = target->input_count;    
     int res=0;
+
+    if(ANNA_IS_VARIADIC(target))
+	return 1;
+    
     
     if(is_method)
     {
@@ -754,6 +758,9 @@ void anna_node_call_map(
     anna_function_type_t *target, 
     int is_method)
 {
+    if(ANNA_IS_VARIADIC(target))
+	return;
+
     anna_type_t **param = target->input_type;
     int param_count = target->input_count;    
     int res=0;

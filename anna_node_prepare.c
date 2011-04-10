@@ -471,10 +471,15 @@ static void anna_node_calculate_type_internal(
 	    if(funt->flags & ANNA_FUNCTION_MACRO)
 	    {
 		anna_error(this, L"Found unexpanded macro call while calculating function return type");
-		CRASH;
 		
 		break;
 	    }
+
+	    if(anna_node_call_validate(call, funt, 0, 1))
+	    {
+		anna_node_call_map(call, funt, 0);		
+	    }
+
 	    
 	    call->return_type = funt->return_type;
 	    break;

@@ -1,0 +1,10 @@
+
+def bar(String first, String second, String third)
+{
+    print(first, second, third);
+}
+
+def main()
+{
+    bar(third=>"\n", second=>"k", first=>"o");
+}
