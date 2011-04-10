@@ -487,7 +487,7 @@ int anna_node_call_validate(
     int is_method, 
     int print_error);
 
-int anna_node_call_map(
+void anna_node_call_map(
     anna_node_call_t *call, 
     anna_function_type_t *target, 
     int is_method);

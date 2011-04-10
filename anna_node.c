@@ -647,7 +647,7 @@ static int anna_node_f_get_index(anna_function_type_t *f, int is_method, wchar_t
     {
 	if(wcscmp(name, f->input_name[i]) == 0)
 	{
-	    return i;
+	    return i - !!is_method;
 	}
     }
     return -1;
@@ -660,14 +660,21 @@ int anna_node_call_validate(
     int print_error)
 {
     anna_type_t **param = target->input_type;
+    wchar_t **param_name = target->input_name;
     int param_count = target->input_count;    
     int res=0;
     
     if(is_method)
     {
 	param++;
+	param_name++;
 	param_count--;
     }
+
+    int i;
+    int *set = calloc(sizeof(int), param_count);
+    int has_named=0;
+
     if(param_count != call->child_count)
     {
 	if(print_error)
@@ -677,9 +684,6 @@ int anna_node_call_validate(
 	
 	goto END;
     }
-    int i;
-    int *set = calloc(sizeof(int), param_count);
-    int has_named=0;
     for(i=0; i<param_count; i++)
     {
 	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
@@ -719,20 +723,73 @@ int anna_node_call_validate(
 
     for(i=0; i<param_count; i++)
     {
-	if(set[i] != 1)
+	if(set[i] > 1)
 	{
 	    if(print_error)
 	    {
-		anna_error((anna_node_t *)call, L"Invalid value for parameter %d", i+1);
+		anna_error((anna_node_t *)call, L"More than one value was provided for argument %d, %ls, in function call ", i+1, param_name[i]);
 	    }
 	    goto END;
 	}
+	else if(set[i] < 1)
+	{
+	    if(print_error)
+	    {
+		anna_error((anna_node_t *)call, L"No value was provided for argument %d, %ls, in function call ", i+1, param_name[i]);
+	    }
+	    goto END;	    
+	}
+	
     }
     res = 1;
 
   END:
     free(set);
     return res;
+}
+
+
+void anna_node_call_map(
+    anna_node_call_t *call, 
+    anna_function_type_t *target, 
+    int is_method)
+{
+    anna_type_t **param = target->input_type;
+    int param_count = target->input_count;    
+    int res=0;
+    
+    if(is_method)
+    {
+	param++;
+	param_count--;
+    }
+
+    int i;
+    size_t order_sz = sizeof(anna_node_t *)* param_count;
+    anna_node_t **order = calloc(1, order_sz);
+
+    int has_named=0;
+
+    for(i=0; i<param_count; i++)
+    {
+	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
+	if(is_named)
+	{
+	    anna_node_cond_t *p = (anna_node_cond_t *)call->child[i];
+	    anna_node_identifier_t *name = (anna_node_identifier_t *)p->arg1;	    
+	    int idx = anna_node_f_get_index(target, is_method, name->name);
+	    order[idx] = p->arg2;
+	}
+	else
+	{
+	    order[i] = call->child[i];
+	}
+    }
+    memcpy(call->child, order, order_sz);
+    
+    free(order);
+    return;
+    
 }
 
 

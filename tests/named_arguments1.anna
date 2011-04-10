@@ -14,5 +14,5 @@ def main()
     lst.push(value => "ok\n");
     print(lst.pop());
     var foo = Foo();
-    foo.bar(third="\n", second="k", first="o");
+    foo.bar(third=>"\n", second=>"k", first=>"o");
 }

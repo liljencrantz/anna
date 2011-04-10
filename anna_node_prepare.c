@@ -526,7 +526,12 @@ static void anna_node_calculate_type_internal(
 		{
 		    member = 0;
 		}
-				
+		else
+		{
+		    anna_node_call_map(n, fun, 1);
+		    
+		}
+		
 	    }
 	    else
 	    {
@@ -1009,7 +1014,15 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    anna_node_assign_t *d = (anna_node_assign_t *)this;
 	    anna_type_t *param = d->value->return_type;
 	    anna_type_t *templ = anna_stack_get_type(stack, d->name);
-	    if(!anna_abides(param, templ))
+	    if(!templ)
+	    {
+		anna_error(
+		    this,
+		    L"Unknown identifier: %ls",
+		    d->name);
+//		    anna_node_print(D_ERROR,this);
+	    }
+	    else if(!anna_abides(param, templ))
 	    {
 		anna_error(
 		    this,

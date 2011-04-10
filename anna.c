@@ -311,8 +311,15 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     size_t i;
     int res = 0;    
 
-    assert(contender);
-    assert(role_model);
+    if(!contender)
+    {
+	CRASH;
+    }
+    
+    if(!role_model)
+    {
+	CRASH;
+    }
     
     debug(D_SPAM,L"Check if type %ls abides against %ls\n", contender->name, role_model->name);
     
