@@ -24,8 +24,78 @@
 #include "anna_hash.h"
 #include "anna_alloc.h"
 #include "anna_pair.h"
+#include "anna_util.h"
+#include "anna_vm.h"
 
+typedef struct
+{
+    int node_type;
+    array_list_t *al;
+}
+    anna_node_find_each_t;
+
+static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack);
+
+#include "anna_node_specialize.c"
+#include "anna_node_macro_expand.c"
 #include "anna_node_prepare.c"
+
+static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
+{
+    debug(D_SPAM,L"Figure out type from:\n");
+    
+    anna_node_print(D_SPAM, node);
+    
+    if(node->node_type == ANNA_NODE_IDENTIFIER)
+    {
+	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
+	anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+	
+	if(wrapper != 0)
+	{
+	    return anna_type_unwrap(wrapper);
+	}
+    }
+    else if(node->node_type == ANNA_NODE_DUMMY)
+    {
+	anna_node_dummy_t *d = (anna_node_dummy_t *)node;	
+	return anna_type_unwrap(d->payload);
+    }
+    else if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
+    {
+	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
+	anna_node_calculate_type(d->payload, stack);
+	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    return d->payload->return_type;
+    }
+    else if(node->node_type == ANNA_NODE_CLOSURE)
+    {
+	anna_node_closure_t *d = (anna_node_closure_t *)node;	
+	anna_node_calculate_type(node, stack);
+	if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    return d->payload->wrapper->type;
+    }
+    
+    return 0;
+}
+
+int anna_node_is_call_to(anna_node_t *this, wchar_t *name){
+    if( this->node_type == ANNA_NODE_CALL)
+    {
+	anna_node_call_t *this2 = (anna_node_call_t *)this;
+	return anna_node_is_named(this2->function, name);
+    }
+    return 0;
+}
+
+int anna_node_is_named(anna_node_t *this, wchar_t *name){
+    if( this->node_type == ANNA_NODE_IDENTIFIER)
+    {
+	anna_node_identifier_t *fun = (anna_node_identifier_t *)this;
+	return wcscmp(fun->name, name)==0;
+    }
+    return 0;
+}
 
 void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 {
@@ -368,24 +438,22 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_MEMBER_CALL:
 	{
-	    anna_node_t *r = anna_node_clone_shallow(n);
+	    anna_node_call_t *r = (anna_node_call_t *)anna_node_clone_shallow(n);
 	    int i;
-	    anna_node_call_t *r2=(anna_node_call_t *)r;
-	    anna_node_call_t *n2=(anna_node_call_t *)n;
 	    
-	    if(!r2->function)
+	    if(!r->function)
 	    {
 		anna_error(n, L"Call node has invalid function");
 		CRASH;
 	    }
 
-	    r2->function = anna_node_clone_deep(r2->function);
+	    r->function = anna_node_clone_deep(r->function);
 
-	    for(i=0;i<r2->child_count; i++)
+	    for(i=0;i<r->child_count; i++)
 	    {
-		r2->child[i] = anna_node_clone_deep(r2->child[i]);
+		r->child[i] = anna_node_clone_deep(r->child[i]);
 	    }
-	    return r;
+	    return (anna_node_t *)r;
 	}
 	
 	/*
@@ -656,13 +724,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
     
 }
 
-typedef struct
-{
-    int node_type;
-    array_list_t *al;
-}
-    anna_node_find_each_t;
-
 static int anna_node_f_get_index(anna_function_type_t *f, int is_method, wchar_t *name)
 {
     int i;
@@ -786,7 +847,6 @@ void anna_node_call_map(
 
     anna_type_t **param = target->input_type;
     int param_count = target->input_count;    
-    int res=0;
     
     if(is_method)
     {
@@ -797,8 +857,6 @@ void anna_node_call_map(
     int i;
     size_t order_sz = sizeof(anna_node_t *)* param_count;
     anna_node_t **order = calloc(1, order_sz);
-
-    int has_named=0;
 
     for(i=0; i<param_count; i++)
     {

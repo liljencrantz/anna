@@ -1,17 +1,15 @@
 KNOWN BUGS:
-List and hash types are still included in their specialization list even if GC:ed.
+List and hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 hash type does not support continuations
 Call.each is b0rked
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
-Named arguments for function calls.
 Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations (Is this needed?)
 User defined properties
 User defined variadic functions
-User defined templates with full specialization support
 Inheritance
 True type intersections
 milter/fap
@@ -68,12 +66,6 @@ return type of the function. I guess we want some kind of magical
 syntax for annotating a method that will make the return type depend
 on the input type? Or can we simply use a clever macro? A template?
 
-Map construction syntax
-var map = ["foo"=>3, "bar"=>7]
-
-Named argument syntax
-Circle(radius=>3, position=>[2,4,3]);
-
 Every module is represented by an object with properties representing
 the members. Imutable members, like types, are read-only properties.
 
@@ -87,7 +79,6 @@ import(io);
 def foo(){File();}
 
 def foo(){io.File();}
-
 
   Plans for apps written in anna:
   Documentation generator: Introspect all data types and generate html documentation on them.
