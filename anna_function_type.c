@@ -232,6 +232,15 @@ void anna_function_type_create(
 	    null_type);
     }
     
+    if(key->flags & ANNA_FUNCTION_METHOD_WRAPPER)
+    {
+	anna_member_create(
+	    res,
+	    ANNA_MID_THIS, L"!this", 
+	    ANNA_MEMBER_ALLOC,
+	    null_type);
+    }
+    
     (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)key;
 
     return;

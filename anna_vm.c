@@ -116,8 +116,6 @@
 #define ANNA_INSTR_CAST 21
 #define ANNA_INSTR_NATIVE_CALL 22
 #define ANNA_INSTR_RETURN_COUNT 23
-#define ANNA_INSTR_WRAP 24
-
 
 
 typedef struct 
@@ -304,7 +302,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_CAST,
 	    &&ANNA_LAB_NATIVE_CALL,
 	    &&ANNA_LAB_RETURN_COUNT,
-	    &&ANNA_LAB_WRAP,
 	}
     ;
 
@@ -380,20 +377,28 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_op_count_t *op = (anna_op_count_t *)stack->code;
 	size_t param = op->param;
 	anna_object_t *wrapped = anna_vmstack_peek(stack, param);
-	anna_function_t *fun = anna_function_unwrap(wrapped);
+	if(unlikely(wrapped == null_object))
+	{
+	    stack->code += sizeof(*op);
+	    anna_vmstack_drop(stack, param);
+	}
+	else
+	{
+	    anna_function_t *fun = anna_function_unwrap(wrapped);
 	
 #ifdef ANNA_CHECK_VM
-	if(!fun)
-	{
-	    wprintf(L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
-	    anna_vmstack_print(stack);
-	    CRASH;
-	}
+	    if(!fun)
+	    {
+		wprintf(L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
+		anna_vmstack_print(stack);
+		CRASH;
+	    }
 #endif
-		
-	stack->code += sizeof(*op);
-	stack = fun->native.function(stack, wrapped);
-
+	    
+	    stack->code += sizeof(*op);
+	    stack = fun->native.function(stack, wrapped);
+	}
+	
 	goto *jump_label[*stack->code];
     }
     
@@ -748,14 +753,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[*stack->code];
     }
 
-    ANNA_LAB_WRAP:
-    {
-	anna_object_t *fun = anna_vmstack_pop(stack);
-	anna_object_t *obj = anna_vmstack_pop(stack);
-	anna_vmstack_push(stack, fun);//anna_vm_trampoline(anna_function_unwrap(base), stack));
-	stack->code += sizeof(anna_op_null_t);
-	goto *jump_label[*stack->code];
-    }
 
 }
 
@@ -783,10 +780,6 @@ static size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_POP:
 	case ANNA_INSTR_NOT:
 	case ANNA_INSTR_DUP:
-	case ANNA_INSTR_WRAP:
-	{
-	    return sizeof(anna_op_null_t);
-	}
 	
 	case ANNA_INSTR_CALL:
 	{
@@ -1070,7 +1063,6 @@ static size_t anna_bc_stack_size(char *code)
 	    
 	    case ANNA_INSTR_FOLD:
 	    case ANNA_INSTR_MEMBER_SET:
-	    case ANNA_INSTR_WRAP:
 	    case ANNA_INSTR_POP:
 	    {
 		pos--;
@@ -1303,7 +1295,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
-	    return anna_vm_size(fun, node2->object) + sizeof(anna_op_member_t) + 2 * sizeof(anna_op_null_t);
+	    return sizeof(anna_op_const_t) + anna_vm_size(fun, node2->object) + sizeof(anna_op_null_t) + sizeof(anna_op_member_t) + sizeof(anna_op_count_t);
 	}
 	
 	case ANNA_NODE_MEMBER_SET:
@@ -1761,12 +1753,14 @@ static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **pt
 	case ANNA_NODE_MEMBER_GET_WRAP:
 	{
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
+	    anna_vm_const(ptr, anna_wrap_method);
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
+	    anna_vm_null(ptr, ANNA_INSTR_DUP);
+
 	    anna_type_t *type = node2->object->return_type;
 	    anna_member_t *m = type->mid_identifier[node2->mid];
-	    anna_vm_null(ptr, ANNA_INSTR_DUP);
 	    anna_vm_member(ptr, m->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET, node2->mid);
-	    anna_vm_null(ptr, ANNA_INSTR_WRAP);
+	    anna_vm_call(ptr, ANNA_INSTR_CALL, 2);
 	    
 	    break;
 	}

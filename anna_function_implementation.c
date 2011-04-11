@@ -17,6 +17,8 @@
 #include "anna_vm.h"
 #include "anna_member.h"
 
+anna_object_t *anna_wrap_method;
+
 static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_object_t *value = anna_vmstack_pop(stack);
@@ -120,6 +122,23 @@ static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
 	fun, 1, &cont);    
 }
 
+static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *meth = anna_vmstack_pop(stack);
+    anna_object_t *obj = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+/*
+    anna_object_t *cont = anna_continuation_create(
+	stack,
+	object_type)->wrapper;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = (anna_object_t *)stack;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_object_t *)stack->code;
+    */
+    anna_vmstack_push(stack, null_object);
+    
+    return stack;
+}
+
 void anna_function_implementation_init(struct anna_stack_template *stack)
 {
     static wchar_t *p_argn[]={L"object"};
@@ -163,4 +182,14 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	callcc->wrapper,
 	0);
 
+    static wchar_t *wrap_argn[]={L"object",L"method"};
+    anna_type_t *wrap_argv[]={object_type, object_type};
+    
+    anna_function_t *wrap = anna_native_create(
+	L"wrapMethod", 0,
+	(anna_native_t)&anna_i_wrap_method,
+	object_type,
+	2,
+	wrap_argv, wrap_argn, stack);
+    anna_wrap_method = wrap->wrapper;
 }
