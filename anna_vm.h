@@ -47,6 +47,7 @@ void anna_vm_destroy(void);
    This method is the best ever! All method calls on the null object run this
 */
 anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me);
+anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *stack, anna_object_t *me);
 
 static inline void anna_vmstack_push(anna_vmstack_t *stack, anna_object_t *val)
 {

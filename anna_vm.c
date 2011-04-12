@@ -469,7 +469,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_t *s = stack;
 	for(i=0; i<op->frame_count; i++)
 	    s = s->parent;
-#if ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!s->base[op->offset])
 	{
 	    wprintf(
@@ -503,7 +503,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
-#if ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!m)
 	{
 	    debug(
@@ -551,7 +551,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
-#if ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!m)
 	{
 	    debug(
@@ -595,7 +595,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop(stack);
-#if ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!obj){
 	    debug(
 		D_CRITICAL,L"Popped null ptr for member get op %ls\n",
@@ -604,7 +604,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 #endif
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
-#if ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!m){
 	    debug(
 		D_CRITICAL,L"Object %ls does not have a member named %ls\n",
@@ -642,7 +642,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
-#if ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!m)
 	{
 	    debug(
@@ -1932,6 +1932,40 @@ anna_vmstack_t *anna_vm_callback_native(
     return stack;
 }
 
+
+
+static anna_vmstack_t *anna_vm_callback(
+    anna_vmstack_t *parent, 
+    anna_object_t *entry, int argc, anna_object_t **argv)
+{
+    size_t ss = (argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t);
+    size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_null_t);
+    anna_vmstack_t *stack = calloc(1,ss+cs);
+    stack->flags = ANNA_VMSTACK;
+    al_push(&anna_alloc, stack);
+    stack->caller = parent;
+
+    stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    
+    stack->function = 0;
+    stack->top = &stack->base[0];
+    stack->code = ((char *)stack)+ss;
+
+    char *code = stack->code;
+    anna_vm_call(&code, ANNA_INSTR_CALL, argc);
+    anna_vm_null(&code, ANNA_INSTR_RETURN);
+    
+    int i;    
+    anna_vmstack_push(stack, entry);
+    for(i=0; i<argc; i++)
+    {
+	anna_vmstack_push(stack, argv[i]);
+    }
+    return stack;
+}
+
+
+
 void anna_vm_callback_reset(
     anna_vmstack_t *stack, 
     anna_object_t *entry, int argc, anna_object_t **argv)
@@ -1956,6 +1990,25 @@ anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
     anna_op_count_t *op = (anna_op_count_t *)code;
     anna_vmstack_drop(stack,op->param+1);
     anna_vmstack_push(stack, null_object);
+    return stack;
+}
+
+
+anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *parent, anna_object_t *cont)
+{
+    char *code = parent->code;
+    code -= sizeof(anna_op_count_t);
+    anna_op_count_t *op = (anna_op_count_t *)code;
+    int argc = op->param + 1;
+    anna_object_t **argv = parent->top - argc;
+    
+    anna_object_t *object = *anna_member_addr_get_mid(cont, ANNA_MID_THIS);
+    anna_object_t *method = *anna_member_addr_get_mid(cont, ANNA_MID_METHOD);
+    argv[0] = object;
+//    wprintf(L"Method wrapper is invoked, the inner method will be run\n");
+    
+    anna_vmstack_t *stack = anna_vm_callback(parent, method, argc, argv);
+    anna_vmstack_drop(parent, argc);    
     return stack;
 }
 

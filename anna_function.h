@@ -96,4 +96,8 @@ anna_function_t *anna_continuation_create(
     anna_vmstack_t *stack,
     anna_type_t *return_type);
 
+anna_function_t *anna_method_wrapper_create(
+    anna_vmstack_t *stack,
+    anna_type_t *return_type);
+
 #endif

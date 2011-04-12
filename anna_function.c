@@ -543,6 +543,27 @@ anna_function_t *anna_continuation_create(
     return result;
 }
 
+anna_function_t *anna_method_wrapper_create(
+    anna_vmstack_t *stack,
+    anna_type_t *return_type)
+{
+    anna_function_t *result = anna_alloc_function();
+    result->flags = ANNA_FUNCTION_METHOD_WRAPPER;
+    anna_function_attribute_empty(result);
+    result->input_type = 0;
+    result->input_name = 0;
+    
+    result->native.function = anna_vm_method_wrapper;
+    result->name = anna_intern_static(L"!methodWrapper");
+    result->return_type=return_type;
+    result->input_count=0;
+    
+    anna_function_setup_interface(result, stack_global);
+    anna_vm_compile(result);
+    
+    return result;
+}
+
 void anna_function_print(anna_function_t *function)
 {
     if(function->flags & ANNA_FUNCTION_MACRO)

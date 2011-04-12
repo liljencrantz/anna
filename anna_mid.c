@@ -94,6 +94,7 @@ void anna_mid_init()
     anna_mid_put(L"!continuationStack", ANNA_MID_CONTINUATION_STACK);
     anna_mid_put(L"!continuationCodePos", ANNA_MID_CONTINUATION_CODE_POS);
     anna_mid_put(L"!this", ANNA_MID_THIS);
+    anna_mid_put(L"!method", ANNA_MID_METHOD);
 }
 
 void anna_mid_put(wchar_t *name, mid_t mid)

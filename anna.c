@@ -145,7 +145,7 @@ anna_type_t *anna_type_for_function(
 {
     //static int count=0;
     //if((count++)==10) {CRASH};
-    flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION);
+    flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION | ANNA_FUNCTION_METHOD_WRAPPER);
     size_t i;
     static anna_function_type_t *key = 0;
     static size_t key_sz = 0;

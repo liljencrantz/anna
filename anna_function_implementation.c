@@ -127,15 +127,13 @@ static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *
     anna_object_t *meth = anna_vmstack_pop(stack);
     anna_object_t *obj = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
-/*
-    anna_object_t *cont = anna_continuation_create(
+    
+    anna_object_t *res = anna_method_wrapper_create(
 	stack,
 	object_type)->wrapper;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = (anna_object_t *)stack;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_object_t *)stack->code;
-    */
-    anna_vmstack_push(stack, null_object);
-    
+    *anna_member_addr_get_mid(res, ANNA_MID_THIS) = obj;
+    *anna_member_addr_get_mid(res, ANNA_MID_METHOD) = meth;
+    anna_vmstack_push(stack, res);
     return stack;
 }
 

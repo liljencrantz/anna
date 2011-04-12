@@ -10,12 +10,12 @@
    If enabled, perform a bunch of validity checks in the VM while
    executing bytecode. Pretty expensive.
 */
-//#define ANNA_CHECK_VM
+#define ANNA_CHECK_VM
 
 /**
    If enabled, perform a few additional validity checks whild GC:ing
  */
-//#define ANNA_CHECK_GC
+#define ANNA_CHECK_GC
 
 /**
    If enabled, try to free all unused memory on shutdown. This will
