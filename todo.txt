@@ -5,7 +5,6 @@ Call.each is b0rked
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
-Implement autowrapping of methods
 Implement node type: Const (Is this needed?)
 Implement node type: Type specializations (Is this needed?)
 User defined properties

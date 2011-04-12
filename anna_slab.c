@@ -7,7 +7,7 @@
 
 #include "anna_slab.h"
 
-#define SLAB_SZ 1024
+#define SLAB_SZ 128
 
 slab_t **slab_list;
 
