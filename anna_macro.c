@@ -456,8 +456,7 @@ static void anna_macro_add(
     anna_stack_template_t *stack, 
     wchar_t *name,
     anna_native_t call)
-{
-    
+{    
     anna_function_t *f = anna_native_create(
 	name,
 	ANNA_FUNCTION_MACRO,
@@ -508,6 +507,5 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__append__", &anna_macro_update);
     anna_macro_add(stack, L"__mapping__", &anna_macro_mapping);
     anna_macro_add(stack, L"cast", &anna_macro_cast);
-    anna_macro_add(stack, L"return", &anna_macro_return);
-    
+    anna_macro_add(stack, L"return", &anna_macro_return);    
 }

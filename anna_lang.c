@@ -11,7 +11,6 @@
 #include "anna_util.h"
 #include "anna_function.h"
 #include "anna_stack.h"
-
 #include "anna_int.h"
 #include "anna_float.h"
 #include "anna_complex.h"
@@ -21,7 +20,6 @@
 #include "anna_range.h"
 #include "anna_hash.h"
 #include "anna_pair.h"
-
 #include "anna_function_type.h"
 #include "anna_type_type.h"
 #include "anna_object_type.h"
@@ -33,14 +31,6 @@
 #include "anna_lang.h"
 #include "anna_vm.h"
 
-
-/*
-static void anna_module_prepare_body(
-    anna_node_t *this, void *unused)
-{
-    anna_node_prepare_body(this);
-}
-*/
 static int hash_null_func( void *data )
 {
     return 0;
@@ -100,56 +90,26 @@ anna_stack_template_t *anna_lang_load()
     /*
       Create lowest level stuff. Bits of magic, be careful with
       ordering here. A lot of intricate dependencies going on between
-      the various calls...
+      the various calls. In other words...
+
+      Here be dragons.
     */
     
-    type_type = 
-	anna_type_native_create(
-	    L"Type", 
-	    stack_lang);
+    type_type = anna_type_native_create(L"Type", stack_lang);
     object_type = anna_type_native_create(L"Object" ,stack_lang);
     null_type = anna_type_native_create(L"Null", stack_lang);
-    int_type = 
-	anna_type_native_create(
-	    L"Int", 
-	    stack_lang);
-
-    list_type = 
-	anna_type_native_create(
-	    L"List", 
-	    stack_lang);
-
-    string_type = 
-	anna_type_native_create(
-	    L"String", 
-	    stack_lang);
-    
+    int_type =anna_type_native_create(L"Int", stack_lang);
+    list_type =anna_type_native_create(L"List", stack_lang);
+    string_type = anna_type_native_create(L"String", stack_lang);
     float_type = anna_type_native_create(L"Float", stack_lang);
     complex_type = anna_type_native_create(L"Complex", stack_lang);
     char_type = anna_type_native_create(L"Char", stack_lang);
-    member_type = 
-	anna_type_native_create(
-	    L"Member",
-	    stack_lang);
+    member_type = anna_type_native_create(L"Member",stack_lang);
+    range_type = anna_type_native_create(L"Range", stack_lang);
+    hash_type = anna_type_native_create(L"HashMap", stack_lang);
+    pair_type = anna_type_native_create(L"Pair",stack_lang);
     
-    range_type = 
-	anna_type_native_create(
-	    L"Range",
-	    stack_lang);
-    
-    hash_type = 
-	anna_type_native_create(
-	    L"HashMap",
-	    stack_lang);
-    
-    pair_type = 
-	anna_type_native_create(
-	    L"Pair",
-	    stack_lang);
-    
-    
-    anna_object_type_create();    
-
+    anna_object_type_create();
     anna_type_type_create(stack_lang);    
     anna_list_type_create(stack_lang);
     anna_type_type_create2(stack_lang);    
@@ -168,23 +128,22 @@ anna_stack_template_t *anna_lang_load()
     int i;
     anna_type_t *types[] = 
 	{
-	    type_type, int_type, object_type, null_type, list_type, string_type, float_type, complex_type, char_type, range_type, hash_type, pair_type
-	}
-    ;
+	    type_type, int_type, object_type, null_type,
+	    list_type, string_type, float_type, complex_type, 
+	    char_type, range_type, hash_type, pair_type
+	};
+
     for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
     {
 	if((types[i] != object_type) && (types[i] != null_type))
 	{
 	    anna_type_copy_object(types[i]);
 	}
-	anna_stack_declare(stack_lang, types[i]->name, type_type, anna_type_wrap(types[i]), 0); 
+	anna_stack_declare(
+	    stack_lang, types[i]->name, 
+	    type_type, anna_type_wrap(types[i]), 0); 
     }
-/*
-    anna_type_print(object_type);
-    anna_type_print(float_type);
-    CRASH;
-*/  
-    
+
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     
     anna_function_implementation_init(stack_lang);
@@ -192,5 +151,4 @@ anna_stack_template_t *anna_lang_load()
     al_push(&stack_global->expand, stack_macro);
     
     return stack_lang;
-
 }

@@ -26,19 +26,19 @@ static void anna_lex_nest_init()
 static void anna_lex_push_state(yyscan_t yyscanner)
 {
    anna_lex_nest_init();
-   int current = (int)(long)hash_get(anna_lex_nest, yyscanner);
+   long current = (long)hash_get(anna_lex_nest, yyscanner);
    current++;
-   hash_put(anna_lex_nest, yyscanner, (void *)(long)current);
+   hash_put(anna_lex_nest, yyscanner, (void *)current);
 }
  
 static int anna_lex_pop_state(yyscan_t yyscanner)
 {
    anna_lex_nest_init();
-   int current = (int)(long)hash_get(anna_lex_nest, yyscanner);
+   long current = (long)hash_get(anna_lex_nest, yyscanner);
    current--;
    if(current)
    {
-       hash_put(anna_lex_nest, yyscanner, (void *)(long)current);
+       hash_put(anna_lex_nest, yyscanner, (void *)current);
    }
    else 
    {
