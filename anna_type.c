@@ -72,6 +72,10 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     }
 }
 
+/**
+   FIXME: Very ugly method. It mangles functions into methods and does
+   a bunch of related stuff. But it's a bit of an unreadable mess...
+ */
 static void anna_type_mangle_methods(
     anna_type_t *type)
 {
@@ -105,23 +109,19 @@ static void anna_type_mangle_methods(
 			if(anna_node_is_call_to(def->child[2], L"__block__"))
 			{
 			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
-			    anna_node_t *param[] ={
-				(anna_node_t *)anna_node_create_identifier(0, L"this"), 
-				(anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(type)), 
-				(anna_node_t *)anna_node_create_null(0)
-			    };	
-			    anna_node_call_t *this_decl = anna_node_create_call(
+			    anna_node_call_t *this_decl = anna_node_create_call2(
 				0,
-				(anna_node_t *)anna_node_create_identifier(
+				anna_node_create_identifier(
 				    0,
 				    L"__var__"),
-				3, param);
+				anna_node_create_identifier(0, L"this"), 
+				anna_node_create_dummy(0, anna_type_wrap(type)), 
+				anna_node_create_null(0)
+				);
 			    
 			    anna_node_call_prepend_child(
 				def_decl,
 				(anna_node_t *)this_decl);
-			    
-			    anna_node_print(0, (anna_node_t *)decl);
 			    
 			}
 		    }	    
@@ -137,14 +137,12 @@ static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
     int i;
     for(i=0; i<al_get_count(spec); i++)
     {
-//	wprintf(L"SPECIALIXE\n");
 	anna_node_t *node = (anna_node_t *)al_get(spec, i);
 	CHECK_NODE_TYPE(node, ANNA_NODE_CALL);
 	anna_node_call_t *call = (anna_node_call_t *)node;
 	CHECK_CHILD_COUNT(call, L"Templace specialization", 2);
 	CHECK_NODE_TYPE(call->child[0], ANNA_NODE_IDENTIFIER);
 	code = anna_node_replace(code, (anna_node_identifier_t *)call->child[0], call->child[1]);
-	
     }
     
     return code;    
@@ -197,70 +195,10 @@ anna_node_call_t *anna_type_definition_get(anna_type_t *type)
     return (anna_node_call_t *)type->definition->child[3];
 }
 
-void anna_type_definition_make(anna_type_t *type)
-{
-    anna_node_call_t *definition = 
-	anna_node_create_call(
-	    0,
-	    (anna_node_t *)anna_node_create_identifier(0, L"type"),
-	    0,
-	    0);
-    
-    anna_node_call_t *full_definition = 
-	anna_node_create_call(
-	    0,
-	    (anna_node_t *)anna_node_create_identifier(0, L"__type"),
-	    0,
-	    0);
-
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    type->name));
-    
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)anna_node_create_identifier(
-	    0,
-	    L"class"));
-    
-    anna_node_call_t *attribute_list = 
-	anna_node_create_block2(
-	    0);	
-
-    anna_node_call_add_child(
-	full_definition,	
-	(anna_node_t *)attribute_list);
-    
-    anna_node_call_add_child(
-	full_definition,
-	(anna_node_t *)definition);
-
-    type->definition = full_definition;
-    
-}
-
-
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack)
 {    
     anna_type_t *type = anna_type_create(name, 0);
     type->stack->parent = stack;
-/*
-    if(type_type == 0)
-    {
-	if(wcscmp(name, L"Type") == 0)
-	{
-	    type_type=type;
-	}
-	else
-	{
-	    wprintf(L"Tried to declare a type before the type type\n");
-	    CRASH;
-	}
-    }
-*/  
-//    anna_type_definition_make(type);
     return type;
 }
 
