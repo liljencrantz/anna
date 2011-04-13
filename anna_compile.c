@@ -442,7 +442,9 @@ static void anna_vm_null(char **ptr, int op)
     *ptr += sizeof(anna_op_null_t);
 }
 
-static void anna_vm_compile_i(anna_function_t *fun, anna_node_t *node, char **ptr, int drop_output)
+static void anna_vm_compile_i(
+    anna_function_t *fun, 
+    anna_node_t *node, char **ptr, int drop_output)
 {
     switch(node->node_type)
     {

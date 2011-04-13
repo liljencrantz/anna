@@ -1,3 +1,5 @@
+
+
 anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
     anna_stack_template_t *stack)
@@ -13,46 +15,17 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
+	    anna_function_t *macro = anna_node_macro_get(this2->function, stack);
 	    
-	    if(this2->function->node_type == ANNA_NODE_CALL)
+	    if(macro)
 	    {
-
-		anna_function_t *fun = anna_node_macro_get(this2->function, stack);
-		if(fun)
-		{
-		    anna_node_t *res = anna_macro_invoke(fun, this2);
-		    res = anna_node_macro_expand(res, stack);
-		    return res;
-		}
+		anna_node_t *res = anna_macro_invoke(macro, this2);
+		res = anna_node_macro_expand(res, stack);
+		return res;
 	    }
 	    
 	    this2->function = anna_node_macro_expand(this2->function, stack);
 	    
-	    if(this2->function->node_type == ANNA_NODE_IDENTIFIER)
-	    {
-		anna_node_identifier_t *fun = (anna_node_identifier_t *)this2->function;
-		anna_object_t **stack_object_ptr = anna_stack_addr_get_str(stack, fun->name);
-//		anna_stack_print(stack);
-		
-		if(stack_object_ptr)
-		{
-		    anna_function_t *fun2 = anna_function_unwrap(*stack_object_ptr);
-		    if( fun2 && (fun2->flags & ANNA_FUNCTION_MACRO))
-		    {
-						
-			anna_node_t *res = anna_macro_invoke(fun2, this2);
-			if(!res)
-			{
-			    anna_error(this, L"Macro expansion resulted in null value");
-			    return this;
-			}
-			res = anna_node_macro_expand(res, stack);
-			
-			return res;
-		    }
-		}		
-	    }
-
 	    int i;
 	    for(i=0;i<this2->child_count;i++)
 	    {

@@ -26,16 +26,15 @@ typedef struct anna_sid anna_sid_t;
    A stack frame template. Used during compilation to represent the
    stack frame for a function definition or the members of a
    namespace. The VM has a packed structure for function invocations,
-   and the stack templates used to represent namespaces are onverted
+   and the stack templates used to represent namespaces are converted
    into objects, so these objects become useless after the compilation
    phase.
 */
 struct anna_stack_template
 {
     /**
-       Store flags for this stack. Currently, the only available flag
-       is ANNA_STACK_FROZEN. If set, no more variables can be added to
-       this stack frame.
+       Store flags for this stack. Currently only used by the GC to
+       mark this allocation as a stack.
      */
     int flags;
     struct anna_stack_template *parent;

@@ -59,9 +59,9 @@ void anna_stack_declare(anna_stack_template_t *stack,
 
     if(!initial_value)
     {
-	wprintf(L"Critical: No initial value provided in declaration of %ls\n",
-		name);
-	
+	wprintf(
+	    L"Critical: No initial value provided in declaration of %ls\n",
+	    name);
 	CRASH;
     }
 
