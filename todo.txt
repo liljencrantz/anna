@@ -2,6 +2,8 @@ KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 hash type does not support continuations
 Call.each is b0rked
+User defined macros are currently b0rked
+Namespaces don't work the way they should
 
 LANGUAGE FEATURES:
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
@@ -14,6 +16,7 @@ True type intersections
 milter/fap
 Make all types inherit from Object
 Int should just be an interface, with two backing implementations
+continue/break (continue is easy with a continuation, but implementing break requires some special hacking)
 
 STDLIB FEATURES:
 HTML documentation extractor

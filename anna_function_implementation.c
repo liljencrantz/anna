@@ -19,13 +19,42 @@
 
 anna_object_t *anna_wrap_method;
 
+static int print_direct(anna_object_t *o)
+{
+    if(o->type == string_type)
+    {
+	anna_string_print(o);
+	return 1;
+    }
+    return 0;
+}
+
+static int print_direct_loop(anna_object_t *list, int idx)
+{
+    int ls = anna_list_get_size(list);
+    while(1)
+    {
+	if(ls == idx)
+	{
+	    break;
+	}
+	anna_object_t *o = anna_list_get(list, idx);
+	if(!print_direct(o))
+	{
+	    break;
+	}
+	idx++;	
+    }
+    return idx;
+}
+
 static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_object_t *value = anna_vmstack_pop(stack);
     anna_object_t **param = stack->top - 2;
     anna_object_t *list = param[0];
     int idx = anna_int_get(param[1]);
-
+    int ls = anna_list_get_size(param[0]);
     if(value == null_object) 
     {
 	wprintf(L"null");
@@ -35,17 +64,22 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 	if(value->type == string_type)
 	{
 	    anna_string_print(value);
-	}
+	}	
+
 	else
 	{
 	    wprintf(L"<invalid toString method>");
 	}
     }    
     
-    if(anna_list_get_size(param[0]) > idx)
+    anna_object_t *o;
+
+    idx = print_direct_loop(list, idx);
+
+    if(ls > idx)
     {
-	param[1] = anna_int_create(idx+1);	
 	anna_object_t *o = anna_list_get(list, idx);
+	param[1] = anna_int_create(idx+1);	
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
 	anna_vm_callback_reset(stack, meth, 1, &o);
@@ -64,16 +98,17 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *list = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
-    if(anna_list_get_size(list))
+    int idx = print_direct_loop(list, 0);
+    if(anna_list_get_size(list) > idx)
     {
 	anna_object_t *callback_param[] = 
 	    {
 		list,
-		anna_int_one
+		anna_int_create(idx+1)
 	    }
 	;
 	
-	anna_object_t *o = anna_list_get(list, 0);
+	anna_object_t *o = anna_list_get(list, idx);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
 	//wprintf(L"Get toString method of type %ls\n", o->type->name);
