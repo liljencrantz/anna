@@ -1007,10 +1007,7 @@ function_definition:
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
-		(anna_node_t *)anna_node_create_identifier(&@1,L"__macro__"), 
-		(anna_node_t *)$2,
-		anna_node_create_block2(&@$,$4),
-		(anna_node_t *)$6);
+		anna_node_create_identifier(&@1,L"__macro__"), $2, $4, $6);
 	}
 ;
 

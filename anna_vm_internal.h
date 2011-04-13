@@ -154,7 +154,7 @@ typedef struct
 typedef struct
 {
     char instruction;
-    anna_native_function_t function;
+    anna_native_t function;
 }
     anna_op_native_call_t;
 

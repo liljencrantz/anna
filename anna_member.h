@@ -31,8 +31,8 @@ size_t anna_native_property_create(
     mid_t mid,
     wchar_t *name,
     anna_type_t *property_type,
-    anna_native_function_t getter,
-    anna_native_function_t setter);
+    anna_native_t getter,
+    anna_native_t setter);
 
 mid_t anna_const_property_create(
     anna_type_t *type, mid_t mid, wchar_t *name, anna_object_t *value);

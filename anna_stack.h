@@ -80,7 +80,7 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, struct anna_obj
 
 anna_object_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name);
 
-anna_object_t *anna_stack_get_macro(anna_stack_template_t *stack, wchar_t *name);
+anna_object_t *anna_stack_macro_get(anna_stack_template_t *stack, wchar_t *name);
 
 anna_object_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name);
 

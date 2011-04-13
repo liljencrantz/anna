@@ -361,7 +361,7 @@ size_t anna_native_method_create(
     mid_t mid,
     wchar_t *name,
     int flags,
-    anna_native_function_t func,
+    anna_native_t func,
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
@@ -395,12 +395,10 @@ size_t anna_native_method_create(
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     m->is_method=1;
-    anna_native_t func_u;
-    func_u.function=func;
     type->static_member[m->offset] = 
 	anna_function_wrap(
 	    anna_native_create(
-		name, flags, func_u, result, 
+		name, flags, func, result, 
 		argc, argv, argn,
 		0));
     return (size_t)mid;

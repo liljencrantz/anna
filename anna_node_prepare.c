@@ -43,88 +43,29 @@ static void anna_node_calculate_type_param(
 		    template->input_type[j]);
 	    }
 	}
-	
     }
 }
-
 
 void anna_node_register_declarations(
     anna_stack_template_t *stack,
     anna_node_t *this)
 {
-    array_list_t decls = 
-	{
-	    0,0,0
-	}
-    ;
+    array_list_t decls = AL_STATIC;
+
     anna_node_find(this, ANNA_NODE_DECLARE, &decls);
     anna_node_find(this, ANNA_NODE_CONST, &decls);
     size_t sz = al_get_count(&decls);
     int i;
-/*
-    debug(D_SPAM,L"WOO WEE WOO %d declarations in ast\n", sz);
-    anna_node_print(0, this);
-*/  
+
     for(i=0; i<sz; i++)
     {
 	anna_node_declare_t *decl = al_get(&decls, i);
-	if(decl->node_type == ANNA_NODE_DECLARE)
-	{
-	    anna_stack_declare2(
-		stack,
-		decl);
-	}
-	else
-	{
-	    anna_object_t *value = null_object;
-	    switch(decl->value->node_type)
-	    {
-		case ANNA_NODE_TYPE:
-		{
-		    anna_node_type_t *t = (anna_node_type_t *)decl->value;
-		    value = anna_type_wrap(t->payload);
-		    break;
-		}
-		case ANNA_NODE_CLOSURE:
-		{
-		    anna_node_closure_t *t = (anna_node_closure_t *)decl->value;
-		    value = anna_function_wrap(t->payload);
-		    break;
-		}
-		case ANNA_NODE_DUMMY:
-		{
-		    anna_node_dummy_t *t = (anna_node_dummy_t *)decl->value;
-		    value = t->payload;
-		    break;
-		}
-		default:
-		{
-		    anna_error(
-			decl->value,
-			L"Constants must have static value\n");
-		    break;
-		}
-	    }
-	    
-	    anna_stack_declare(
-		stack,
-		decl->name,
-		value->type,
-		value,
-		0);
-	    
-	}
-	
-	anna_sid_t sid = anna_stack_sid_create(stack, decl->name);
-	decl->sid = sid;
+	anna_stack_declare2(
+	    stack,
+	    decl);
     }
     al_destroy(&decls);
-    
-    //stack_freeze(stack);
-
 }
-
-
 
 static void anna_node_calculate_type_internal(
     anna_node_t *this,
@@ -466,8 +407,10 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 	
-	case ANNA_NODE_DECLARE:
+
+
 	case ANNA_NODE_CONST:
+	case ANNA_NODE_DECLARE:
 	{
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
 //	    debug(D_ERROR, L"Calculating type of declaration %ls\n", d->name);
@@ -496,6 +439,51 @@ static void anna_node_calculate_type_internal(
 	    {
 		anna_stack_set_type(stack, d->name, d->return_type);
 	    }
+
+	    if(this->node_type == ANNA_NODE_CONST)
+	    {
+		
+	anna_object_t *value = null_object;
+	switch(d->value->node_type)
+	{
+	    case ANNA_NODE_TYPE:
+	    {
+		anna_node_type_t *t = (anna_node_type_t *)d->value;
+		value = anna_type_wrap(t->payload);
+		break;
+	    }
+	    case ANNA_NODE_CLOSURE:
+	    {
+		anna_node_closure_t *t = (anna_node_closure_t *)d->value;
+		value = anna_function_wrap(t->payload);
+		break;
+	    }
+	    case ANNA_NODE_DUMMY:
+	    {
+		anna_node_dummy_t *t = (anna_node_dummy_t *)d->value;
+		value = t->payload;
+		break;
+	    }
+	    default:
+	    {
+		anna_error(
+		    d->value,
+		    L"Constants must have static value\n");
+		break;
+	    }
+	}
+	if(!value)
+	{
+	    anna_node_print(5, this);
+	    CRASH;
+	}
+	
+	anna_stack_set(
+	    stack,
+	    d->name,
+	    value);
+	    }
+	    
 //	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);
 	    break;
 	}

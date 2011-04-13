@@ -12,11 +12,11 @@ static anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_templa
 //	    wprintf(L"It's an identifier\n");
 	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
 
-	    anna_object_t **obj = anna_stack_addr_get(stack, name->name);
-	    if(obj && *obj != null_object)
+	    anna_object_t *obj = anna_stack_macro_get(stack, name->name);
+	    if(obj && obj != null_object)
 	    {
 		
-		anna_function_t *func=anna_function_unwrap(*obj);
+		anna_function_t *func=anna_function_unwrap(obj);
 		//wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
 		
 		if(func && (func->flags & ANNA_FUNCTION_MACRO))

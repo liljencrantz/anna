@@ -346,7 +346,7 @@ static void anna_vm_call(char **ptr, int op, int argc)
     *ptr += sizeof(anna_op_count_t);	    
 }
 
-static void anna_vm_native_call(char **ptr, int op, anna_native_function_t fun)
+static void anna_vm_native_call(char **ptr, int op, anna_native_t fun)
 {
     anna_op_native_call_t cop = 
 	{
@@ -876,14 +876,14 @@ void anna_vm_compile(
     
     fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);;
     fun->definition = fun->body = 0;
-    fun->native.function = anna_frame_push;
+    fun->native = anna_frame_push;
     
 //    anna_bc_print(fun->code);
 }
 
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *parent, 
-    anna_native_function_t callback, int paramc, anna_object_t **param,
+    anna_native_t callback, int paramc, anna_object_t **param,
     anna_object_t *entry, int argc, anna_object_t **argv)
 {
     size_t ss = (paramc+argc+3)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t);

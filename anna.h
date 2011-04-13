@@ -70,8 +70,7 @@ struct anna_function;
 struct anna_node_list;
 struct anna_vmstack;
 
-typedef struct anna_vmstack *(*anna_native_function_t)( struct anna_vmstack *, struct anna_object *);
-typedef struct anna_node *(*anna_native_macro_t)( struct anna_node_call *);
+typedef struct anna_vmstack *(*anna_native_t)( struct anna_vmstack *, struct anna_object *);
 typedef ssize_t mid_t;
 
 #define ANNA_TYPE 0
@@ -173,12 +172,6 @@ enum anna_mid_enum
 #define ANNA_GC_ALLOC 2
 
 
-union anna_native
-{
-    anna_native_function_t function;
-    anna_native_macro_t macro;
-}
-  ;
 /**
    The struct representing an object type. 
  */
@@ -375,7 +368,7 @@ struct anna_function
        function pointer used for invocation. Otherwise, this will be a
        null function pointer.
      */
-    union anna_native native;
+    anna_native_t native;
     /**
        The return type of this function.
      */
@@ -442,7 +435,6 @@ typedef struct anna_member anna_member_t;
 typedef struct anna_object anna_object_t;
 typedef struct anna_frame anna_frame_t;
 typedef struct anna_function anna_function_t;
-typedef union anna_native anna_native_t;
 typedef struct anna_node_list anna_node_list_t;
 
 typedef struct 
@@ -538,7 +530,7 @@ size_t anna_native_method_create(
     mid_t mid,
     wchar_t *name,
     int flags,
-    anna_native_function_t func,
+    anna_native_t func,
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,

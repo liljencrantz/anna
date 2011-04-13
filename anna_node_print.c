@@ -338,6 +338,41 @@ static void anna_node_print_internal(anna_node_t *this, int indentation)
 	    break;
 	}
 	
+	case ANNA_NODE_SPECIALIZE:
+	{
+	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
+	    int i;
+//	    fwprintf(stderr,L"/*%d*/", this2);
+	    anna_indent(indentation);
+	    fwprintf(stderr,L"*__specialize__(");
+	    anna_node_print_internal(this2->function, 0);
+	    /*	    fwprintf(stderr,L"\n");
+		    anna_indent(indentation);*/
+	    if(this2->child_count == 0)
+	    {
+		fwprintf(stderr,L"()" );		
+	    }
+	    else
+	    {
+		fwprintf(stderr,L"(");
+		
+		for(i=0; i<this2->child_count; i++)
+		{
+		    if(i!=0) 
+		    {
+			fwprintf(stderr,L";");
+		    }
+		    anna_node_print_internal(this2->child[i], 0);
+		}
+		/*	    fwprintf(stderr,L"\n" );
+			    anna_indent(indentation);*/
+		fwprintf(stderr,L")" );
+		
+	    }
+	    fwprintf(stderr,L")");
+	    break;
+	}
+	
 	default:
 	{
 	    fwprintf(stderr,L"<Don't know how to print node of type %d>", this->node_type);

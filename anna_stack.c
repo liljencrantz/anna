@@ -154,7 +154,7 @@ anna_stack_template_t *anna_stack_template_search(
     return 0;
 }
 
-anna_stack_template_t *anna_stack_macro_get(
+anna_object_t *anna_stack_macro_get(
     anna_stack_template_t *stack,
     wchar_t *name)
 {

@@ -149,7 +149,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_push(stack, argv[i]);
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
-    stack = root_fun->native.function(stack, entry);
+    stack = root_fun->native(stack, entry);
     goto *jump_label[*stack->code];
 
   ANNA_LAB_CONSTANT:
@@ -215,7 +215,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #endif
 	    
 	    stack->code += sizeof(*op);
-	    stack = fun->native.function(stack, wrapped);
+	    stack = fun->native(stack, wrapped);
 	}
 	
 	goto *jump_label[*stack->code];
@@ -343,14 +343,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_vmstack_push(stack, method);
 	    anna_vmstack_push(stack, obj);
 	    stack->code += sizeof(*op);		    
-	    if(fun->native.function)
-	    {
-		stack = fun->native.function(stack, method);
-	    }
-	    else
-	    {
-		stack = anna_frame_push(stack, method);
-	    }
+	    stack = fun->native(stack, method);
 	}
 	else
 	{
@@ -391,14 +384,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_vmstack_push(stack, method);
 	    anna_vmstack_push(stack, obj);
 	    stack->code += sizeof(*op);
-	    if(fun->native.function)
-	    {
-		stack = fun->native.function(stack, method);
-	    }
-	    else
-	    {
-		stack = anna_frame_push(stack, method);
-	    }
+	    stack = fun->native(stack, method);
 	}
 	else
 	{
@@ -483,15 +469,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_vmstack_push(stack, obj);
 	    anna_vmstack_push(stack, value);
 	    stack->code += sizeof(*op);
-	    if(fun->native.function)
-	    {
-		stack = fun->native.function(
-		    stack, method);
-	    }
-	    else
-	    {
-		stack = anna_frame_push(stack, method);
-	    }
+	    stack = fun->native(
+		stack, method);
 	}
 	else
 	{

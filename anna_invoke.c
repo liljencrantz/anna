@@ -12,6 +12,7 @@
 #include "anna_node_wrapper.h"
 #include "anna_node_create.h"
 #include "anna_list.h"
+#include "anna_vm.h"
 
 
 
@@ -21,16 +22,19 @@ struct anna_node *anna_macro_invoke(
     anna_function_t *macro, 
     anna_node_call_t *node)
 {
-    if(macro->native.macro)
+/*    if(macro->native.macro)
     {
 	return macro->native.macro(
 	    node);
     }
     else
-    {
-	CRASH;
-	
-    }
+    {*/
+    //wprintf(L"ASPLODE %ls\n", macro->name);
+    
+	anna_object_t *wrapped_node = anna_node_wrap((anna_node_t *)node);
+	anna_object_t *res = anna_vm_run(macro->wrapper, 1, &wrapped_node);
+	return anna_node_unwrap(res);
+//    }
 }
 
 

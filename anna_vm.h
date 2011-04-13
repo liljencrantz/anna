@@ -18,6 +18,15 @@
 	return stack;							\
     }
 
+#define ANNA_VM_MACRO(name) static anna_vmstack_t *name(		\
+	anna_vmstack_t *stack, anna_object_t *me)			\
+    {									\
+	anna_node_t *res = name ## _i((anna_node_call_t *)anna_node_unwrap(*(stack->top-1))); \
+	anna_vmstack_drop(stack, 2);					\
+	anna_vmstack_push(stack, anna_node_wrap(res));			\
+	return stack;							\
+    }
+
 //typedef anna_object_t **(*anna_vm_callback_loop_t)(void *aux);
 
 void anna_vm_compile(
@@ -32,7 +41,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *stack, 
-    anna_native_function_t callback, int paramc, anna_object_t **param,
+    anna_native_t callback, int paramc, anna_object_t **param,
     anna_object_t *entry, int argc, anna_object_t **argv);
 
 void anna_vm_callback_reset(

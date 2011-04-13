@@ -37,6 +37,22 @@ static anna_node_t *anna_function_setup_arguments(
     anna_function_t *f,
     anna_stack_template_t *parent_stack)
 {
+    if(f->input_type)
+    {
+	int i;
+	for(i=0; i<f->input_count; i++)
+	{
+	    anna_stack_declare(
+		f->stack_template, 
+		f->input_type[i],
+		f->input_name[i],
+		null_object,
+		0);
+	}
+	return 0;   
+    }
+    
+
 //    wprintf(L"Setup function %ls\n", f->name);
     CHECK_NODE_TYPE(f->definition->child[2], ANNA_NODE_CALL);
     anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
@@ -128,25 +144,6 @@ static anna_node_t *anna_function_setup_arguments(
 	    wprintf(L"Expected declaration: %ls\n", fun->name);
 	    CRASH;
 	}
-	
-/*	    
-		if(decl->child_count ==3 &&
-		   decl->child[2]->node_type == ANNA_NODE_IDENTIFIER) 
-		{
-		    anna_node_identifier_t *def =
-			node_cast_identifier(decl->child[2]);
-		    if(wcscmp(def->name,L"__variadic__") == 0)
-		    {
-			is_variadic = 1;
-			if(i != (declarations->child_count-1))
-			{
-			    FAIL(def, L"Only the last argument to a function can be variadic");
-			}
-		    }
-		}
-	    }
-*/
-	
     }
     return 0;
 }
@@ -178,8 +175,7 @@ static void anna_function_setup_wrapper(
 	    0,
 	    sizeof(anna_stack_template_t *));
     }
-}
-    
+}    
 
 void anna_function_setup_interface(
     anna_function_t *f,
@@ -196,15 +192,13 @@ void anna_function_setup_interface(
     if(f->body)
     {
 	f->stack_template = anna_stack_create(parent_stack);
+	
 	anna_function_setup_arguments(f, parent_stack);
+	
 	anna_node_register_declarations(
 	    f->stack_template, 
 	    (anna_node_t *)f->body);
 
-	if(f->flags & ANNA_FUNCTION_MACRO){
-	    anna_stack_declare(f->stack_template, f->input_name[0], f->input_type[0], null_object, 0);
-	    
-	}
 /*
 	wprintf(
 	    L"Function's internal declarations registered (%d)\n",
@@ -391,7 +385,6 @@ anna_function_t *anna_function_create_from_definition(
     
     result->definition = definition;
     result->attribute = (anna_node_call_t *)definition->child[3];
-    //al_push(&anna_function_list, result);
 
     wchar_t *name=0;
     if (definition->child[0]->node_type == ANNA_NODE_IDENTIFIER) 
@@ -399,20 +392,12 @@ anna_function_t *anna_function_create_from_definition(
 	anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)definition->child[0];
 	name = name_identifier->name;
 	result->name = anna_intern(name);
-/*
-	wprintf(L"Creating function '%ls' from ast\n", name);
-	anna_node_print(0, definition);
-*/	
     }
     else {
 	result->name = L"<anonymous>";
     }
     result->body = node_cast_call(result->definition->child[4]);
-    
-/*
-    wprintf(L"LALALAGGG\n");
-    anna_node_print(0, definition);
-*/  
+
     return result;
 }
 
@@ -427,22 +412,26 @@ anna_function_t *anna_macro_create(
     struct anna_node_call *definition,
     wchar_t *arg_name)
 {
+    assert(arg_name);
+    
     anna_function_t *result = anna_alloc_function();
     anna_function_attribute_empty(result);
     
     result->definition = definition;
     result->body = (anna_node_call_t *)definition->child[2];
     result->name = anna_intern(name);
-    wchar_t **argn=calloc(sizeof(wchar_t *), 1);
-    anna_type_t **argv=calloc(sizeof(anna_type_t *), 1);
-    argv[0] = node_wrapper_type;
-    argn[0] = anna_intern(arg_name);
+    
     result->return_type = node_wrapper_type;
     result->flags |= ANNA_FUNCTION_MACRO;
     result->input_count=1;
-    result->input_name = argn;
-    result->input_type = argv;
-    anna_function_setup_wrapper(result);
+    
+    result->input_name = calloc(sizeof(wchar_t *), 1);
+    result->input_name[0] = anna_intern(arg_name);
+    
+    result->input_type = calloc(sizeof(anna_type_t *), 1);
+    result->input_type[0] = node_wrapper_type;
+
+//    anna_function_setup_wrapper(result);
     return result;
 }
 
@@ -532,7 +521,7 @@ anna_function_t *anna_continuation_create(
     result->input_type = 0;
     result->input_name = 0;
     
-    result->native.function = anna_function_continuation;
+    result->native = anna_function_continuation;
     result->name = anna_intern_static(L"!continuation");
     result->return_type=return_type;
     result->input_count=0;
@@ -553,7 +542,7 @@ anna_function_t *anna_method_wrapper_create(
     result->input_type = 0;
     result->input_name = 0;
     
-    result->native.function = anna_vm_method_wrapper;
+    result->native = anna_vm_method_wrapper;
     result->name = anna_intern_static(L"!methodWrapper");
     result->return_type=return_type;
     result->input_count=0;

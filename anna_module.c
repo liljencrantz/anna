@@ -54,7 +54,7 @@ void anna_module_mark()
 }
 
 
-static void anna_module_find_imports_internal(anna_node_t *module, wchar_t *name, array_list_t *import)
+static void anna_module_find_import_internal(anna_node_t *module, wchar_t *name, array_list_t *import)
 {
     int i;
     if(module->node_type != ANNA_NODE_CALL)
@@ -86,14 +86,14 @@ static void anna_module_find_imports_internal(anna_node_t *module, wchar_t *name
 	}
     }
 }
-static void anna_module_find_imports(anna_node_t *module, array_list_t *import)
+static void anna_module_find_import(anna_node_t *module, array_list_t *import)
 {
-    anna_module_find_imports_internal(module, L"import", import);
+    anna_module_find_import_internal(module, L"import", import);
 }
 
-static void anna_module_find_import_macros(anna_node_t *module, array_list_t *import)
+static void anna_module_find_expand(anna_node_t *module, array_list_t *import)
 {
-    anna_module_find_imports_internal(module, L"importMacro", import);
+    anna_module_find_import_internal(module, L"expand", import);
 }
 
 
@@ -125,6 +125,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     static int recursion_level=0;
     int i;
     array_list_t import = AL_STATIC;
+    array_list_t expand = AL_STATIC;
 //    array_list_t mimport = AL_STATIC;
         
     if(anna_module_imported == 0)
@@ -189,20 +190,19 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     al_push(&import, L"lang");
     
     anna_stack_template_t *macro_stack = anna_stack_create(stack_global);
-    anna_module_find_import_macros(program, &macro_stack->import);    
-    anna_module_find_imports(program, &import);    
+    anna_module_find_expand(program, &expand);    
+    anna_module_find_import(program, &import);
     
-    for(i=0; i<al_get_count(&macro_stack->import); i++ )
+    for(i=0; i<al_get_count(&expand); i++ )
     {
-	wchar_t *str = al_get(&macro_stack->import, i);
+	wchar_t *str = al_get(&expand, i);
 	anna_object_t *mod = anna_module_load(str);
 	if(anna_error_count || !mod)
 	{
 	    return 0;
 	}
-	al_set(&macro_stack->import, i, anna_stack_unwrap(mod));
+	al_push(&macro_stack->expand, anna_stack_unwrap(mod));
     }
-    
     
 //    memcpy(&tmp, &stack_global->import, sizeof(array_list_t));
 //    memcpy(&stack_global->import, &mimport, sizeof(array_list_t));
@@ -214,13 +214,15 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	    program,
 	    macro_stack);
 //    memcpy(&stack_global->import, &tmp, sizeof(array_list_t));
-
+    
     if(anna_error_count)
     {
 	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);
 	exit(ANNA_STATUS_MACRO_ERROR);
     }
     debug(D_SPAM,L"Macros expanded in module %ls\n", module_name);    
+
+    al_destroy(&expand);
     
     anna_node_print(0, node);
     module_stack= anna_stack_create(stack_global);
@@ -275,7 +277,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
     }
     debug(D_SPAM,L"Return types set up for module %ls\n", module_name);	
-    
+
     for(i=0; i<ggg->child_count; i++)
     {
 	anna_node_each(ggg->child[i], (anna_node_function_t)&anna_node_validate, module_stack);

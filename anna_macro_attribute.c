@@ -1,36 +1,5 @@
 
-
 /*
-static anna_node_t *anna_macro_template_attribute(anna_node_call_t *node, 
-						  anna_function_t *function, 
-						  anna_node_list_t *parent)
-{
-    CHECK_CHILD_COUNT(node, L"template instantiation", 2);
-    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_CALL);
-
-    anna_node_call_t *attribute = 
-        (anna_node_call_t *)node->child[0];
-    anna_node_t *body = node->child[1];
-    
-    CHECK_NODE_TYPE(attribute->function, ANNA_NODE_IDENTIFIER);
-    CHECK_CHILD_COUNT(attribute, L"template instantiation", 1);	
-    CHECK_NODE_IDENTIFIER_NAME(attribute->function, L"template");
-    CHECK_NODE_TYPE(attribute->child[0], ANNA_NODE_CALL);
-  
-    anna_node_call_t *pair = 
-	(anna_node_call_t *)attribute->child[0];
-    
-    CHECK_NODE_IDENTIFIER_NAME(pair->function, L"Pair");
-    CHECK_CHILD_COUNT(pair, L"template instantiation", 2);
-    CHECK_NODE_TYPE(pair->child[0], ANNA_NODE_IDENTIFIER);
-    
-    return anna_node_replace(
-	body,
-	(anna_node_identifier_t *)pair->child[0],
-	(anna_node_t *)pair->child[1]);    
-
-}
-
 static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node, 
 						  anna_function_t *function, 
 						  anna_node_list_t *parent)
