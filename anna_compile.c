@@ -600,7 +600,7 @@ static void anna_vm_compile_i(
 	    
 	    if(anna_stack_get_ro(fun->stack_template, node2->name))
 	    {
-		anna_object_t *val = anna_stack_get_str(fun->stack_template, node2->name);
+		anna_object_t *val = anna_stack_get(fun->stack_template, node2->name);
 		anna_vm_const(ptr, val);
 		break;
 	    }

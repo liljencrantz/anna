@@ -45,6 +45,7 @@ anna_stack_template_t *anna_stack_create(anna_stack_template_t *parent)
     stack->capacity = 0;
     stack->parent = parent;
     al_init(&stack->import);
+    al_init(&stack->expand);
     return stack;
 }
 
@@ -153,7 +154,35 @@ anna_stack_template_t *anna_stack_template_search(
     return 0;
 }
 
-anna_object_t **anna_stack_addr_get_str(anna_stack_template_t *stack, wchar_t *name)
+anna_stack_template_t *anna_stack_macro_get(
+    anna_stack_template_t *stack,
+    wchar_t *name)
+{
+    if(!stack)
+    {
+	wprintf(L"Critical: Null stack!\n");
+	CRASH;	
+    }  
+    assert(name);
+
+    while(stack)
+    {
+	int i;
+	for(i=0; i<al_get_count(&stack->expand); i++)
+	{
+	    anna_stack_template_t *exp = al_get(&stack->expand, i);
+	    size_t *offset = (size_t *)hash_get(&exp->member_string_identifier, name);
+	    if(offset) 
+	    {
+		return exp->member[*offset];
+	    }
+	}
+	stack = stack->parent;
+    }
+    return 0;
+}
+
+anna_object_t **anna_stack_addr_get(anna_stack_template_t *stack, wchar_t *name)
 {
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
@@ -161,7 +190,7 @@ anna_object_t **anna_stack_addr_get_str(anna_stack_template_t *stack, wchar_t *n
     return &f->member[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
-anna_object_t *anna_stack_template_get_str(anna_stack_template_t *stack, wchar_t *name)
+anna_object_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name)
 {
     size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
     if(offset) 
@@ -171,16 +200,16 @@ anna_object_t *anna_stack_template_get_str(anna_stack_template_t *stack, wchar_t
     return 0;
 }
 
-void anna_stack_set_str(anna_stack_template_t *stack, wchar_t *name, anna_object_t *value)
+void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_object_t *value)
 {
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     f->member[*(size_t *)hash_get(&f->member_string_identifier, name)] = value;
 }
 
-anna_object_t *anna_stack_get_str(anna_stack_template_t *stack, wchar_t *name)
+anna_object_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
 {
-    anna_object_t **res =anna_stack_addr_get_str(stack, name);
+    anna_object_t **res =anna_stack_addr_get(stack, name);
     if(!res)
     {
 	return 0;

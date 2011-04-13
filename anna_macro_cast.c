@@ -33,7 +33,7 @@ static anna_node_t *anna_macro_as(
 
     anna_node_identifier_t *type_name = 
 	(anna_node_identifier_t *)node->child[1];
-    anna_object_t *obj = anna_stack_get_str(function->stack_template, type_name->name);
+    anna_object_t *obj = anna_stack_get(function->stack_template, type_name->name);
     CHECK(obj, node->child[1], L"Unknown type: %ls", type_name->name);
     anna_type_t *type = anna_type_unwrap(obj);
     CHECK(type, node->child[1], L"Not a type: %ls", type_name->name);

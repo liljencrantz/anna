@@ -475,7 +475,7 @@ static void anna_node_calculate_type_internal(
 	    {
 //		debug(D_ERROR, L"Declaration %ls has identifier as type\n", d->name);
 		anna_node_identifier_t *t = node_cast_identifier(d->type);
-		anna_object_t *t2 = anna_stack_get_str(stack, t->name);	    
+		anna_object_t *t2 = anna_stack_get(stack, t->name);	    
 		d->return_type = anna_type_unwrap(t2);
 	    }
 	    else if(d->type->node_type == ANNA_NODE_NULL)

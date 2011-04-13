@@ -18,7 +18,7 @@ anna_type_t *extract_type(anna_node_t *node, anna_stack_template_t *stack)
 	return 0;
     }
     anna_node_identifier_t *id = (anna_node_identifier_t *)node;
-    anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+    anna_object_t *wrapper = anna_stack_get(stack, id->name);
     if(!wrapper)
     {
 	anna_error(node, L"Unknown type: %ls", id->name);

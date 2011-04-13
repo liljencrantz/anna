@@ -81,7 +81,7 @@ static anna_node_t *anna_function_setup_arguments(
 		    node_cast_identifier(type_node);
 		
 		anna_object_t **type_wrapper =
-		    anna_stack_addr_get_str(parent_stack, type_name->name);
+		    anna_stack_addr_get(parent_stack, type_name->name);
 
 		CHECK(
 		    type_wrapper, 
@@ -222,7 +222,7 @@ void anna_function_setup_interface(
 	if(return_type_node->node_type == ANNA_NODE_IDENTIFIER)
 	{
 	    anna_node_identifier_t *rti = (anna_node_identifier_t *)return_type_node;
-	    anna_object_t *rto = anna_stack_get_str(parent_stack, rti->name);
+	    anna_object_t *rto = anna_stack_get(parent_stack, rti->name);
 	    if(!rto)
 	    {
 		anna_error(return_type_node, L"Unknown return type: %ls", rti->name);

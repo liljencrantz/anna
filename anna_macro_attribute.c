@@ -54,7 +54,7 @@ static anna_node_t *anna_macro_extends_attribute(anna_node_call_t *node,
     anna_node_identifier_t *parent_id = 
 	(anna_node_identifier_t *)attribute->child[0];
     
-    anna_object_t *wrapper = anna_stack_get_str(function->stack_template, parent_id->name);
+    anna_object_t *wrapper = anna_stack_get(function->stack_template, parent_id->name);
     if(!wrapper)
     {
 	FAIL(parent_id, L"Unknown parent type: %ls", parent_id->name);

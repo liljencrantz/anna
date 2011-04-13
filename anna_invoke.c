@@ -111,7 +111,7 @@ anna_object_t *anna_function_invoke_values(anna_function_t *function,
 		//wprintf(L"Declare input variable %d with name %ls on stack\n",
 		//	i, function->input_name[i+offset]);
 		
-		anna_stack_set_str(my_stack, 
+		anna_stack_set(my_stack, 
 				   function->input_name[i+offset],
 				   param[i]);
 	    }

@@ -49,7 +49,7 @@ static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_temp
     if(node->node_type == ANNA_NODE_IDENTIFIER)
     {
 	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
-	anna_object_t *wrapper = anna_stack_get_str(stack, id->name);
+	anna_object_t *wrapper = anna_stack_get(stack, id->name);
 	
 	if(wrapper != 0)
 	{
@@ -217,7 +217,7 @@ static anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *th
 static anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
 {
     anna_object_t *result = anna_node_static_invoke(this->value, stack);
-    anna_stack_set_str(stack, this->name, result);
+    anna_stack_set(stack, this->name, result);
     return result;
 }
 

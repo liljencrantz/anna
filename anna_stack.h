@@ -51,6 +51,7 @@ struct anna_stack_template
     struct anna_node_declare **member_declare_node;  
     int *member_flags;
     array_list_t import;
+    array_list_t expand;
     int is_namespace;
     struct anna_object **member;
 };
@@ -73,13 +74,15 @@ void anna_stack_declare2(
     anna_stack_template_t *stack,
     struct anna_node_declare *declare_node);
 
-anna_object_t **anna_stack_addr_get_str(anna_stack_template_t *stack, wchar_t *name);
+anna_object_t **anna_stack_addr_get(anna_stack_template_t *stack, wchar_t *name);
 
-void anna_stack_set_str(anna_stack_template_t *stack, wchar_t *name, struct anna_object *value);
+void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, struct anna_object *value);
 
-anna_object_t *anna_stack_get_str(anna_stack_template_t *stack, wchar_t *name);
+anna_object_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name);
 
-anna_object_t *anna_stack_template_get_str(anna_stack_template_t *stack, wchar_t *name);
+anna_object_t *anna_stack_get_macro(anna_stack_template_t *stack, wchar_t *name);
+
+anna_object_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name);
 
 anna_object_t *anna_stack_get_const(anna_stack_template_t *stack, wchar_t *name);
 
