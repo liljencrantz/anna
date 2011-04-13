@@ -407,8 +407,6 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 	
-
-
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	{
@@ -442,42 +440,12 @@ static void anna_node_calculate_type_internal(
 	    
 	    if(this->node_type == ANNA_NODE_CONST)
 	    {
-		anna_object_t *value = null_object;
-		switch(d->value->node_type)
-		{
-		    case ANNA_NODE_TYPE:
-		    {
-			anna_node_type_t *t = (anna_node_type_t *)d->value;
-			value = anna_type_wrap(t->payload);
-			break;
-		    }
-		    case ANNA_NODE_CLOSURE:
-		    {
-			anna_node_closure_t *t = (anna_node_closure_t *)d->value;
-			value = anna_function_wrap(t->payload);
-			break;
-		    }
-		    case ANNA_NODE_DUMMY:
-		    {
-			anna_node_dummy_t *t = (anna_node_dummy_t *)d->value;
-			value = t->payload;
-			break;
-		    }
-		    default:
-		    {
-			anna_error(
-			    d->value,
-			    L"Constants must have static value\n");
-			break;
-		    }
-		}
-		if(value)
-		{
-		    anna_stack_set(
-			stack,
-			d->name,
-			value);
-		}
+		anna_object_t *value = anna_node_static_invoke(
+		    d, stack);
+		anna_stack_set(
+		    stack,
+		    d->name,
+		    value);
 	    }
 	    
 //	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);

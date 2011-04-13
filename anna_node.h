@@ -43,7 +43,6 @@ enum anna_node_enum
     ANNA_NODE_RETURN,
 
 /* These AST node types probably are't needed and should be removed */
-    ANNA_NODE_BLOB,
     ANNA_NODE_IMPORT,
 }
     ;

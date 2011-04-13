@@ -226,15 +226,6 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t 
     return 0;
 }
 
-anna_object_t *anna_trampoline(
-    anna_function_t *fun,
-    anna_stack_template_t *stack)
-{
-    assert(stack->is_namespace);
-    return fun->wrapper;
-    
-}
-
 anna_object_t *anna_node_static_invoke(
     anna_node_t *this, 
     anna_stack_template_t *stack)
@@ -250,7 +241,6 @@ anna_object_t *anna_node_static_invoke(
     switch(this->node_type)
     {
 	case ANNA_NODE_DUMMY:
-	case ANNA_NODE_BLOB:
 	{
 	    anna_node_dummy_t *node = (anna_node_dummy_t *)this;
 	    return node->payload;
@@ -259,7 +249,7 @@ anna_object_t *anna_node_static_invoke(
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *node = (anna_node_closure_t *)this;	    
-	    return anna_trampoline(node->payload, stack);
+	    return node->payload->wrapper;
 	}
 	
 	case ANNA_NODE_TYPE:
@@ -271,7 +261,6 @@ anna_object_t *anna_node_static_invoke(
 
 	case ANNA_NODE_INT_LITERAL:
 	    return anna_node_int_literal_invoke((anna_node_int_literal_t *)this, stack);
-
 	case ANNA_NODE_FLOAT_LITERAL:
 	    return anna_node_float_literal_invoke((anna_node_float_literal_t *)this, stack);
 
@@ -323,7 +312,6 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_float_literal_t);
 	case ANNA_NODE_NULL:
 	    return sizeof(anna_node_t);
-	case ANNA_NODE_BLOB:
 	case ANNA_NODE_DUMMY:
 	    return sizeof(anna_node_dummy_t);
 	case ANNA_NODE_CLOSURE:
@@ -422,7 +410,6 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	case ANNA_NODE_CHAR_LITERAL:
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
-	case ANNA_NODE_BLOB:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
 	    return anna_node_clone_shallow(n);
@@ -462,7 +449,6 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
-	case ANNA_NODE_BLOB:
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_MAPPING_IDENTIFIER:
 	{

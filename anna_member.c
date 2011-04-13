@@ -437,7 +437,7 @@ mid_t anna_const_property_create(
     sb_destroy(&sb);
     
     anna_node_t *body_param[] = {
-	(anna_node_t *)anna_node_create_dummy(0, value, 0)
+	(anna_node_t *)anna_node_create_dummy(0, value)
     };
     
     anna_node_call_t *body = anna_node_create_block2(

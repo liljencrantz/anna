@@ -156,8 +156,7 @@ static anna_node_t *anna_macro_ast_i(anna_node_call_t *node)
     CHECK_CHILD_COUNT(node,L"ast", 1);
     return (anna_node_t *)anna_node_create_dummy(
 	&node->location,
-	anna_node_wrap(node->child[0]),
-	0);
+	anna_node_wrap(node->child[0]));
 }
 ANNA_VM_MACRO(anna_macro_ast)
 
@@ -255,7 +254,7 @@ static anna_node_t *anna_macro_collection_i(anna_node_call_t *node)
 	    &node->function->location,
 	    (anna_node_t *)anna_node_create_dummy(
 		&node->function->location,
-		anna_type_wrap(hash_type), 0),
+		anna_type_wrap(hash_type)),
 	    2,
 	    param);
 
@@ -285,7 +284,7 @@ static anna_node_t *anna_macro_collection_i(anna_node_call_t *node)
 		&pp->function->location,
 		(anna_node_t *)anna_node_create_dummy(
 		    &pp->function->location,
-		    anna_type_wrap(pair_type), 0),
+		    anna_type_wrap(pair_type)),
 		2,
 		pp_param);
 	    
@@ -308,7 +307,7 @@ static anna_node_t *anna_macro_collection_i(anna_node_call_t *node)
 	    &node->function->location,
 	    (anna_node_t *)anna_node_create_dummy(
 		&node->function->location,
-		anna_type_wrap(list_type), 0),
+		anna_type_wrap(list_type)),
 	    1,
 	    param);
 	return (anna_node_t *)node;

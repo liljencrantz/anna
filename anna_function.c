@@ -29,7 +29,7 @@ void anna_function_argument_hint(
     if(declaration->child[1]->node_type == ANNA_NODE_NULL)
     {
 	declaration->child[1] = 
-	    (anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(type), 0);
+	    (anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(type));
     }
 }
 

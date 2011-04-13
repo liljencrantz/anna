@@ -15,17 +15,18 @@
 #include "anna_alloc.h"
 #include "anna_intern.h"
 
-anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_object *val, int is_trampoline)
+anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_object *val)
 {
     anna_node_dummy_t *result = anna_alloc_node(sizeof(anna_node_dummy_t));
-    result->node_type = is_trampoline?ANNA_NODE_CLOSURE:ANNA_NODE_DUMMY;
+    result->node_type = ANNA_NODE_DUMMY;
     anna_node_set_location((anna_node_t *)result,loc);
+/*
     if(!(val && val->type && val->type->name && wcslen(val->type->name)!=0))
     {
 	wprintf(L"Critical: Invalid dummy node\n");
 	CRASH;
     }
-    
+*/  
     result->payload = val;
     return result;  
 }
@@ -51,15 +52,6 @@ anna_node_type_t *anna_node_create_type(
     result->node_type = ANNA_NODE_TYPE;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;
-    return result;  
-}
-
-anna_node_dummy_t *anna_node_create_blob(anna_location_t *loc, void *val)
-{
-    anna_node_dummy_t *result = anna_alloc_node(sizeof(anna_node_dummy_t));
-    result->node_type = ANNA_NODE_BLOB;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = (anna_object_t *)val;
     return result;  
 }
 

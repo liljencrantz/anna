@@ -107,7 +107,7 @@ static void anna_type_mangle_methods(
 			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
 			    anna_node_t *param[] ={
 				(anna_node_t *)anna_node_create_identifier(0, L"this"), 
-				(anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(type), 0), 
+				(anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(type)), 
 				(anna_node_t *)anna_node_create_null(0)
 			    };	
 			    anna_node_call_t *this_decl = anna_node_create_call(

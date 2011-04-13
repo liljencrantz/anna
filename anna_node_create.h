@@ -8,8 +8,7 @@
 
 anna_node_dummy_t *anna_node_create_dummy(
     anna_location_t *loc, 
-    struct anna_object *val, 
-    int is_trampoline);
+    struct anna_object *val);
 
 anna_node_closure_t *anna_node_create_closure(
     anna_location_t *loc,

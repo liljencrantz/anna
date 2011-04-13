@@ -193,7 +193,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 
     if(*(str3+1)){
 	anna_error(
-	    (anna_node_t *)anna_node_create_blob(loc, 0),
+	    (anna_node_t *)anna_node_create_dummy(loc, 0),
 	    L"Invalid character literal");
     }
     free(str2);
@@ -1259,7 +1259,7 @@ void anna_yacc_error (
     fwprintf(stderr,L"Error in %ls, on line %d:\n", 
 	     llocp->filename,
 	     llocp->first_line);
-    anna_node_print_code((anna_node_t *)anna_node_create_blob(llocp, 0));
+    anna_node_print_code((anna_node_t *)anna_node_create_dummy(llocp, 0));
     
     fwprintf (stderr, L"%s\n", s);
     anna_yacc_error_count++;

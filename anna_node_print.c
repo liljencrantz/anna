@@ -163,15 +163,6 @@ static void anna_node_print_internal(anna_node_t *this, int indentation)
 	    break;
 	}
 	
-	case ANNA_NODE_BLOB:
-	{
-	    anna_indent(indentation);
-	    //anna_node_dummy_t *this2 = (anna_node_dummy_t *)this;
-	    fwprintf(stderr,L"<Blob>");
-	    break;
-	}
-	
-
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_indent(indentation);
