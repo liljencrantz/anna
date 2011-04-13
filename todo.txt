@@ -1,6 +1,4 @@
 CLEANUP:
-Make macros use same api as functions
-Move macros to separate namespace within the same stack
 Don't differentiate between macros and functions anymore
 
 KNOWN BUGS:

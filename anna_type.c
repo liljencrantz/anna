@@ -80,7 +80,7 @@ static void anna_type_mangle_methods(
     
     for(i=0; i<body->child_count; i++)
     {
-	if(anna_node_is_call_to(body->child[i], L"__var__"))
+	if(anna_node_is_call_to(body->child[i], L"__const__"))
 	{
 	    anna_node_call_t *decl =(anna_node_call_t *)body->child[i];
 	    if(decl->child_count >= 3)

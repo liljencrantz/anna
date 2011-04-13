@@ -18,44 +18,6 @@
 #include "anna_node_create.h"
 #include "anna_vm.h"
 
-//static hash_table_t templatize_lookup;
-/*
-typedef struct
-{
-    anna_type_t *base;
-    size_t argc;
-    anna_node_t **argv;
-}
-    templatize_key_t;
-*/
-/*
-static int templatize_key_compare(void *k1, void *k2)
-{
-    templatize_key_t *key1 =(templatize_key_t *)k1;
-    templatize_key_t *key2 =(templatize_key_t *)k2;
-    if(key1->base != key2->base)
-	return 0;
-    if(key1->argc != key2->argc)
-	return 0;
-    int i;
-    for(i=0; i<key1->argc; i++)
-    {
-	if(anna_node_compare(key1->argv[i], key2->argv[i]) == 0)
-	    return 0;
-    }
-    return 1;
-}
-
-static int templatize_key_hash(void *k1)
-{
-    templatize_key_t *key1 =(templatize_key_t *)k1;
-    int result;
-   
-    result = (int)key1->argc + (int)key1->base;
-    return result;
-}
-*/
-
 static anna_node_t *anna_macro_macro_i(anna_node_call_t *node)
 {
 
@@ -84,7 +46,7 @@ static anna_node_t *anna_macro_macro_i(anna_node_call_t *node)
 	    anna_node_create_block2(&node->location),
 	    1);
 }
-
+ANNA_VM_MACRO(anna_macro_macro)
 
 static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
 {
@@ -95,7 +57,6 @@ static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
 	anna_node_create_null(&id->location),
 	anna_node_create_null(&id->location));
 }
-ANNA_VM_MACRO(anna_macro_macro)
 
 anna_node_t *anna_macro_iter_i(anna_node_call_t *node)			    
 {
@@ -520,11 +481,6 @@ static void anna_macro_add(
 
 void anna_macro_init(anna_stack_template_t *stack)
 {
-/*
-    hash_init(&templatize_lookup,
-	      &templatize_key_hash,
-	      &templatize_key_compare);
-*/
     anna_macro_add(stack, L"__def__", &anna_macro_def);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
@@ -546,7 +502,6 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__collection__", &anna_macro_collection);
     anna_macro_add(stack, L"type", &anna_macro_type);
     anna_macro_add(stack, L"__range__", &anna_macro_range);
-
     anna_macro_add(stack, L"__next__", &anna_macro_update);
     anna_macro_add(stack, L"__prev__", &anna_macro_update);
     anna_macro_add(stack, L"__increase__", &anna_macro_update);
@@ -556,21 +511,4 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"return", &anna_macro_return);
     
-/*    
-    anna_macro_add(stack, L"__templateAttribute__", &anna_macro_template_attribute);
-    anna_macro_add(stack, L"__extendsAttribute__", &anna_macro_extends_attribute);
-    anna_macro_add(stack, L"__genericOperator__", &anna_macro_operator_wrapper);
-    anna_macro_add(stack, L"cast", &anna_macro_cast);
-    anna_macro_add(stack, L"__as__", &anna_macro_as);
-    anna_macro_add(stack, L"import", &anna_macro_import);
-*/
-/*
-    for(i =0; i<sizeof(anna_assign_operator_names)/sizeof(wchar_t[2]); i++)
-    {
-	anna_macro_add(
-	    stack,
-	    anna_assign_operator_names[i][0],
-	    &anna_macro_assign_operator);
-    }
-*/
 }

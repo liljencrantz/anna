@@ -120,5 +120,4 @@ static anna_node_t *anna_macro_member_set_i(anna_node_call_t *node)
 						      mid,
 						      node->child[2]);
 }
-
 ANNA_VM_MACRO(anna_macro_member_set)

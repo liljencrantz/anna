@@ -113,6 +113,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    return sizeof(anna_op_const_t) + sizeof(anna_op_null_t);
 	}
 
+	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	{
 	    anna_node_declare_t *node2 = (anna_node_declare_t *)node;
@@ -454,6 +455,7 @@ static void anna_vm_compile_i(
 	    break;
 	}
 
+	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	{
 	    anna_node_declare_t *node2 = (anna_node_declare_t *)node;

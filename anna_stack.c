@@ -204,6 +204,8 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_object_t *
 {
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
+    if(!f)
+	return;
     f->member[*(size_t *)hash_get(&f->member_string_identifier, name)] = value;
 }
 
