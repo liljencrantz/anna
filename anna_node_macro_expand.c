@@ -1,4 +1,49 @@
 
+static anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_template_t *stack)
+{
+/*
+    wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
+    anna_node_print(0, node);
+*/
+    switch(node->node_type)
+    {
+	case ANNA_NODE_IDENTIFIER:
+	{
+//	    wprintf(L"It's an identifier\n");
+	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
+
+	    anna_object_t **obj = anna_stack_addr_get_str(stack, name->name);
+	    if(obj && *obj != null_object)
+	    {
+		
+		anna_function_t *func=anna_function_unwrap(*obj);
+		//wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
+		
+		if(func && (func->flags & ANNA_FUNCTION_MACRO))
+		{
+		    return func;
+		}
+	    }
+	    
+	    break;
+	}
+
+	case ANNA_NODE_CALL:
+	{
+	    anna_node_call_t *call=(anna_node_call_t *)node;
+	    if(anna_node_is_named(call->function, L"__memberGet__") && (call->child_count == 2))
+	    {
+		return anna_node_macro_get(
+		    call->child[1], stack);
+	    }	
+	    break;
+	}
+	
+    }
+    return 0;
+    
+}
+
 
 anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
@@ -20,8 +65,7 @@ anna_node_t *anna_node_macro_expand(
 	    if(macro)
 	    {
 		anna_node_t *res = anna_macro_invoke(macro, this2);
-		res = anna_node_macro_expand(res, stack);
-		return res;
+		return anna_node_macro_expand(res, stack);
 	    }
 	    
 	    this2->function = anna_node_macro_expand(this2->function, stack);
@@ -34,16 +78,17 @@ anna_node_t *anna_node_macro_expand(
 	    
 	    if(this2->function->node_type == ANNA_NODE_MEMBER_GET)
 	    {
-		anna_node_member_access_t *mg = (anna_node_member_access_t *)this2->function;
+		anna_node_member_access_t *mg = 
+		    (anna_node_member_access_t *)this2->function;
 		
-		anna_node_t *result = (anna_node_t *)anna_node_create_member_call(
-		    &this2->location,
-		    mg->object,
-		    mg->mid,
-		    this2->child_count,
-		    this2->child);
+		anna_node_t *result = 
+		    (anna_node_t *)anna_node_create_member_call(
+			&this2->location,
+			mg->object,
+			mg->mid,
+			this2->child_count,
+			this2->child);
 		return result;
-		
 	    }
 
 	    return this;
@@ -78,7 +123,8 @@ anna_node_t *anna_node_macro_expand(
 	    {
 		int i;
 		for(i=0;i<f->body->child_count; i++)
-		    f->body->child[i] = anna_node_macro_expand(f->body->child[i], stack);
+		    f->body->child[i] = anna_node_macro_expand(
+			f->body->child[i], stack);
 	    }
 	    return this;
 	}
@@ -140,8 +186,10 @@ anna_node_t *anna_node_macro_expand(
 	{
 	    anna_node_if_t *c = (anna_node_if_t *)this;
 	    c->cond = anna_node_macro_expand(c->cond, stack);
-	    c->block1 = (anna_node_call_t *)anna_node_macro_expand((anna_node_t *)c->block1, stack);
-	    c->block2 = (anna_node_call_t *)anna_node_macro_expand((anna_node_t *)c->block2, stack);
+	    c->block1 = (anna_node_call_t *)anna_node_macro_expand(
+		(anna_node_t *)c->block1, stack);
+	    c->block2 = (anna_node_call_t *)anna_node_macro_expand(
+		(anna_node_t *)c->block2, stack);
 	    return this;
 	}	
 	

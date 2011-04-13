@@ -194,51 +194,6 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
     call->function = function;
 }
 
-anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_template_t *stack)
-{
-/*
-    wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
-    anna_node_print(0, node);
-*/
-    switch(node->node_type)
-    {
-	case ANNA_NODE_IDENTIFIER:
-	{
-//	    wprintf(L"It's an identifier\n");
-	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
-
-	    anna_object_t **obj = anna_stack_addr_get_str(stack, name->name);
-	    if(obj && *obj != null_object)
-	    {
-		
-		anna_function_t *func=anna_function_unwrap(*obj);
-		//wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
-		
-		if(func && (func->flags & ANNA_FUNCTION_MACRO))
-		{
-		    return func;
-		}
-	    }
-	    
-	    break;
-	}
-
-	case ANNA_NODE_CALL:
-	{
-	    anna_node_call_t *call=(anna_node_call_t *)node;
-	    if(anna_node_is_named(call->function, L"__memberGet__") && (call->child_count == 2))
-	    {
-		return anna_node_macro_get(
-		    call->child[1], stack);
-	    }	
-	    break;
-	}
-	
-    }
-    return 0;
-    
-}
-
 static anna_object_t *anna_node_int_literal_invoke(anna_node_int_literal_t *this, anna_stack_template_t *stack)
 {
     return anna_int_create(this->payload);

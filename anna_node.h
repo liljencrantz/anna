@@ -431,8 +431,6 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n);
  */
 int anna_node_compare(anna_node_t *node1, anna_node_t *node2);
 
-anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_template_t *stack);
-
 anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to);
 
 
