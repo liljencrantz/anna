@@ -1,5 +1,5 @@
 
-static anna_node_t *anna_macro_assign_i(struct anna_node_call *node)
+static inline anna_node_t *anna_macro_assign_i(struct anna_node_call *node)
 {
     CHECK_CHILD_COUNT(node,L"assignment operator", 2);
 
@@ -83,7 +83,7 @@ __memberSet__( OBJ, KEY, VAL)
 }
 ANNA_VM_MACRO(anna_macro_assign)
 
-static anna_node_t *anna_macro_member_get_i(anna_node_call_t *node)
+static inline anna_node_t *anna_macro_member_get_i(anna_node_call_t *node)
 {
 /*
   wprintf(L"member_get on node at %d\n", node);
@@ -102,7 +102,7 @@ static anna_node_t *anna_macro_member_get_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_member_get)
 
-static anna_node_t *anna_macro_member_set_i(anna_node_call_t *node)
+static inline anna_node_t *anna_macro_member_set_i(anna_node_call_t *node)
 {
 /*
   wprintf(L"member_get on node at %d\n", node);

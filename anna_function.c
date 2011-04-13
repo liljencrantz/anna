@@ -44,8 +44,8 @@ static anna_node_t *anna_function_setup_arguments(
 	{
 	    anna_stack_declare(
 		f->stack_template, 
-		f->input_type[i],
 		f->input_name[i],
+		f->input_type[i],
 		null_object,
 		0);
 	}

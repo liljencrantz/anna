@@ -46,7 +46,7 @@ static void anna_string_append_test(size_t min_len, size_t max_len, wchar_t *msg
 	{
 	    size_t len = min_len + rand()%(max_len-min_len);
 	    size_t offset = rand()%max_len;
-	    anna_string_t *dest;
+	    anna_string_t *dest=0;
 	    switch(rand()%3)
 	    {
 		case 0:
@@ -103,7 +103,7 @@ static void anna_string_append_test2(size_t min_len, size_t max_len, wchar_t *ms
 	{
 	    size_t len = min_len + rand()%(max_len-min_len);
 	    size_t offset = rand()%max_len;
-	    anna_string_t *dest;
+	    anna_string_t *dest=0;
 	    switch(rand()%3)
 	    {
 		case 0:
@@ -137,11 +137,11 @@ static void anna_string_append_test2(size_t min_len, size_t max_len, wchar_t *ms
 
 int main()
 {
-/*
+
     anna_string_append_test(1, 16, L"short strings (1-16 chars)");  
     anna_string_append_test(1, 800, L"mixed strings (1-800 chars)");  
     anna_string_append_test(400, 800, L"long strings (400-800 chars)");  
-*/
+
     anna_string_append_test2(1, 16, L"short strings (1-16 chars)");  
     anna_string_append_test2(1, 800, L"mixed strings (1-800 chars)");  
     anna_string_append_test2(400, 800, L"long strings (400-800 chars)");  

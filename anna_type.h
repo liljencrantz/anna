@@ -33,8 +33,6 @@ void anna_type_definition_make(anna_type_t *type);
 
 size_t anna_type_static_member_allocate(anna_type_t *type);
 
-int anna_type_is_fake(anna_type_t *t);
-
 /**
   Returns the type of the specified member in the specified type
  */

@@ -441,7 +441,7 @@ static void anna_node_calculate_type_internal(
 	    if(this->node_type == ANNA_NODE_CONST)
 	    {
 		anna_object_t *value = anna_node_static_invoke(
-		    d, stack);
+		    d->value, stack);
 		anna_stack_set(
 		    stack,
 		    d->name,

@@ -72,8 +72,6 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 	}
     }    
     
-    anna_object_t *o;
-
     idx = print_direct_loop(list, idx);
 
     if(ls > idx)

@@ -141,7 +141,7 @@ static void anna_string_random_test(
 		wprintf(L"with %d .. %d of string(%d)\n",
 			src_offset, src_offset+src_length, asi_get_length(c));
 		asi_print_debug(c);
-		wprintf(L"got string:\n", i);
+		wprintf(L"got string:\n");
 		asi_print_debug(a);
 		wprintf(L"Got string length %d, but expected %d.\n",asi_get_length(a),
 			asi_get_length(b)-dest_length+src_length);

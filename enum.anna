@@ -1,9 +1,11 @@
 
-macro __enumAttribute__(node, foo, bar)
+macro enum(node)
 {
-    var def = node[1] as Call;
-    var body = def[3] as Call;
-    
+    var definition = node[1] as Call;
+    var body = definition[3] as Call;
+
+    definition.print();	    
+/*    
     if(!body)
     {
 	node.error("Missing body");
@@ -25,7 +27,7 @@ macro __enumAttribute__(node, foo, bar)
 	}
 	);
 
-    var init = AST(function __init__(Int value){this.value = value;});
+    var init = AST(def __init__(Int value){this.value = value;});
     
     body.each(idx:el)
     {
@@ -36,8 +38,8 @@ macro __enumAttribute__(node, foo, bar)
 	    return null;
 	}
 	var getter = "!" ~ id.name ~ "Getter";
-	var fun = AST(function placeholder1() static {return placeholder2;});
-	var prop = AST(property Int placeholder1 getter placeholder2);
+	var fun = AST(def placeholder1() (static) {return placeholder2;});
+	var prop = AST(var Int placeholder1 getter placeholder2);
 	var cmp = AST(if(this.value == placeholder1){return placeholder2});
 	fun = fun.replace(AST(placeholder1),Identifier(node, getter))
 	    .replace(AST(placeholder2),IntLiteral(node, idx));
@@ -52,26 +54,13 @@ macro __enumAttribute__(node, foo, bar)
 
     newBody ~= [init];
     
-    var nameFun = AST(function toString(){});
+    var nameFun = AST(def toString(){});
     nameFun[4] = nameBody;
     newBody ~= [nameFun];
     
-    def[3] = newBody;
-    //def.print();
-    
-    return def;
+    definition[3] = newBody;
+    //definition.print();
+*/    
+    return definition;
 }
 
-class Blubb enum
-{
-    foo;
-    bar;
-    baz;
-}
-
-function main()  
-{
-    var ggg = Blubb(2);
-    print(ggg.toString());
-    
-}
