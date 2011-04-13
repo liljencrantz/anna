@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "anna_string_internal.h"
+#include "util.h"
 #include "anna.h"
 
 static void anna_string_random_test(

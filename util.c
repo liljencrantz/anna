@@ -6,7 +6,6 @@
 
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
@@ -86,19 +85,6 @@ void (*util_set_oom_handler( void (*h)(void *) ))(void *)
 
 void util_die_on_oom( void *unused(p) )
 {
-}
-
-int mini( int a,
-		  int b )
-{
-	return a<b?a:b;
-}
-
-
-int maxi( int a,
-		  int b )
-{
-	return a>b?a:b;
 }
 
 /* Hash table functions */
@@ -294,10 +280,11 @@ int hash_get_count( hash_table_t *h)
 	return h->count;
 }
 
-void hash_remove( hash_table_t *h,
-				  const void *key,
-				  void **old_key,
-				  void **old_val )
+void hash_remove( 
+    hash_table_t *h,
+    const void *key,
+    void **old_key,
+    void **old_val )
 {
 	if( !h->count )
 	{
@@ -501,22 +488,6 @@ int hash_wcs_func( void *data )
 int hash_wcs_cmp( void *a, void *b )
 {
 	return wcscmp((wchar_t *)a,(wchar_t *)b) == 0;
-}
-
-int hash_str_cmp( void *a, void *b )
-{
-    return strcmp((char *)a,(char *)b) == 0;
-}
-
-int hash_str_func( void *data )
-{
-	int res = 0x67452301u;
-	char *str = data;	
-
-	while( *str )
-		res = (18499*rotl5(res)) ^ *str++;
-	
-	return res;
 }
 
 int hash_ptr_func( void *data )
@@ -858,78 +829,6 @@ void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
 	
 	for( i=0; i<l->pos; i++ )
 		func( l->arr[i].ptr_val, aux );
-}
-
-int wcsfilecmp( const wchar_t *a, const wchar_t *b )
-{
-	VERIFY( a, 0 );
-	VERIFY( b, 0 );
-	
-	if( *a==0 )
-	{
-		if( *b==0)
-			return 0;
-		return -1;
-	}
-	if( *b==0 )
-	{
-		return 1;
-	}
-
-	int secondary_diff=0;
-	if( iswdigit( *a ) && iswdigit( *b ) )
-	{
-		wchar_t *aend, *bend;
-		long al;
-		long bl;
-		int diff;
-
-		errno = 0;		
-		al = wcstol( a, &aend, 10 );
-		bl = wcstol( b, &bend, 10 );
-
-		if( errno )
-		{
-			/*
-			  Huuuuuuuuge numbers - fall back to regular string comparison
-			*/
-			return wcscmp( a, b );
-		}
-		
-		diff = al - bl;
-		if( diff )
-			return diff>0?2:-2;
-
-		secondary_diff = (aend-a) - (bend-b);
-
-		a=aend-1;
-		b=bend-1;
-	}
-	else
-	{
-		int diff = towlower(*a) - towlower(*b);
-		if( diff != 0 )
-			return (diff>0)?2:-2;
-
-		secondary_diff = *a-*b;
-	}
-
-	int res = wcsfilecmp( a+1, b+1 );
-
-	if( abs(res) < 2 )
-	{
-		/*
-		  No primary difference in rest of string.
-		  Use secondary difference on this element if found.
-		*/
-		if( secondary_diff )
-		{
-			return secondary_diff>0?1:-1;
-		}
-	}
-	
-	return res;
-	
 }
 
 void sb_init( string_buffer_t * b)

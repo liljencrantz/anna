@@ -165,12 +165,19 @@ void util_die_on_oom( void *p );
 /**
    Returns the larger of two ints
 */
-int maxi( int a, int b );
+static inline int maxi( int a, int b )
+{
+    return a>b?a:b;
+}
+
 
 /**
    Returns the smaller of two ints
  */
-int mini( int a, int b );
+static inline int mini( int a, int b )
+{
+    return a<b?a:b;
+}
 
 static inline ssize_t sign(ssize_t v){
     if(v>0)
@@ -273,19 +280,7 @@ void hash_foreach2( hash_table_t *h, void (*func)( void *,
 					void *aux );
 
 /**
-   Hash function suitable for character strings. 
-*/
-int hash_str_func( void *data );
-/**
-   Hash comparison function suitable for character strings
-*/
-int hash_str_cmp( void *a,
-				  void *b );
-
-/**
-   Hash function suitable for wide character strings. Uses a version
-   of the sha cryptographic function which is simplified in order to
-   returns a 32-bit number.
+   Hash function suitable for wide character strings. 
 */
 int hash_wcs_func( void *data );
 
@@ -293,7 +288,7 @@ int hash_wcs_func( void *data );
    Hash comparison function suitable for wide character strings
 */
 int hash_wcs_cmp( void *a, 
-				  void *b );
+		  void *b );
 
 /**
    Hash function suitable for direct pointer comparison
@@ -466,42 +461,6 @@ void al_foreach( array_list_t *l, void (*func)( void * ));
 	argument, which is provided by the caller in the variable aux
 */
 void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux);
-
-/**
-   Compares two wide character strings with an (arguably) intuitive
-   ordering.
-
-   This function tries to order strings in a way which is intuitive to
-   humans with regards to sorting strings containing numbers.
-
-   Most sorting functions would sort the strings 'file1.txt'
-   'file5.txt' and 'file12.txt' as:
-
-   file1.txt
-   file12.txt
-   file5.txt
-
-   This function regards any sequence of digits as a single entity
-   when performing comparisons, so the output is instead:
-
-   file1.txt
-   file5.txt
-   file12.txt
-
-   Which most people would find more intuitive.
-
-   This won't return the optimum results for numbers in bases higher
-   than ten, such as hexadecimal, but at least a stable sort order
-   will result.
-
-   This function performs a two-tiered sort, where difference in case
-   and in number of leading zeroes in numbers only have effect if no
-   other differences between strings are found. This way, a 'file1'
-   and 'File1' will not be considered identical, and hence their
-   internal sort order is not arbitrary, but the names 'file1',
-   'File2' and 'file3' will still be sorted in the order given above.
-*/
-int wcsfilecmp( const wchar_t *a, const wchar_t *b );
 
 
 /*
