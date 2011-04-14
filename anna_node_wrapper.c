@@ -88,13 +88,16 @@ static inline anna_object_t *anna_node_wrapper_i_error_i(anna_object_t **param)
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 
-static inline anna_object_t *anna_node_wrapper_i_print_i(anna_object_t **param)
+static inline anna_object_t *anna_node_wrapper_i_to_string_i(anna_object_t **param)
 {
     anna_node_t *this = anna_node_unwrap(param[0]);
-    anna_node_print(4, this);
-    return param[0];
+    wchar_t *str = anna_node_string(this);
+    
+    anna_object_t *res = anna_string_create(wcslen(str), str);
+    free(str);
+    return res;
 }
-ANNA_VM_NATIVE(anna_node_wrapper_i_print, 1)
+ANNA_VM_NATIVE(anna_node_wrapper_i_to_string, 1)
 
 static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 {
@@ -142,9 +145,9 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	2, error_argv, error_argn);
     
     anna_native_method_create(
-	node_wrapper_type, -1, L"print", 0, 
-	&anna_node_wrapper_i_print, 
-	node_wrapper_type,
+	node_wrapper_type, -1, L"toString", 0, 
+	&anna_node_wrapper_i_to_string, 
+	string_type,
 	1, error_argv, error_argn);    
 }
 

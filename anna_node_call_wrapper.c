@@ -224,7 +224,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(node_call_wrapper_type, mmid));
     anna_function_alias_add(fun, L"__get__");
 
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	node_call_wrapper_type,
 	-1,
 	L"__set__Int__",
@@ -234,6 +234,8 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	3, 
 	i_argv, 
 	i_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(node_call_wrapper_type, mmid));
+    anna_function_alias_add(fun, L"__set__");
     
     anna_native_property_create(
 	node_call_wrapper_type,

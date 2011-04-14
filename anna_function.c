@@ -274,14 +274,18 @@ void anna_function_setup_body(
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_RETURN, &ret);	
 	int step_count = 0;
 	anna_function_t *fptr = f;
+	
 	while(fptr->flags & ANNA_FUNCTION_BLOCK)
 	{
 	    step_count++;
 	    fptr = fptr->stack_template->parent->function;
-	    
+	    if(!fptr)
+	    {
+		anna_error(f->definition, L"Blocks must be definied inside a function");
+		break;
+	    }
 	}
 	
-
 	for(i=0; i<al_get_count(&ret); i++)
 	{
 	    anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);

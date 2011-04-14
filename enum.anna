@@ -1,24 +1,16 @@
 
-macro enum(node)
+macro enum(definition)
 {
-    var definition = node[1] as Call;
-    var body = definition[3] as Call;
-
-    definition.print();	    
-/*    
-    if(!body)
-    {
-	node.error("Missing body");
-	return null;
-    }
+    var body = definition[2] as Call;
+    definition.function = ast(type);
     
-    var newBody = AST(
+    var newBody = ast(
 	{
 	    var Int value;
 	}
 	);
 
-    var nameBody = AST(
+    var nameBody = ast(
 	{
 	    if( !this.value)
 	    {
@@ -27,8 +19,9 @@ macro enum(node)
 	}
 	);
 
-    var init = AST(def __init__(Int value){this.value = value;});
-    
+    var init = ast(def __init__(Int value){this.value = value;});
+
+/*
     body.each(idx:el)
     {
 	var id = el as Identifier;
@@ -38,15 +31,15 @@ macro enum(node)
 	    return null;
 	}
 	var getter = "!" ~ id.name ~ "Getter";
-	var fun = AST(def placeholder1() (static) {return placeholder2;});
-	var prop = AST(var Int placeholder1 getter placeholder2);
-	var cmp = AST(if(this.value == placeholder1){return placeholder2});
-	fun = fun.replace(AST(placeholder1),Identifier(node, getter))
-	    .replace(AST(placeholder2),IntLiteral(node, idx));
-	prop = prop.replace(AST(placeholder1),Identifier(node, id.name))
-	    .replace(AST(placeholder2), Identifier(node, getter));
-	cmp = cmp.replace(AST(placeholder1),IntLiteral(node, idx))
-	    .replace(AST(placeholder2), StringLiteral(node, id.name));
+	var fun = ast(def placeholder1() (static) {return placeholder2;});
+	var prop = ast(var Int placeholder1 getter placeholder2);
+	var cmp = ast(if(this.value == placeholder1){return placeholder2});
+	fun = fun.replace(ast(placeholder1),Identifier(node, getter))
+	    .replace(ast(placeholder2),IntLiteral(node, idx));
+	prop = prop.replace(ast(placeholder1),Identifier(node, id.name))
+	    .replace(ast(placeholder2), Identifier(node, getter));
+	cmp = cmp.replace(ast(placeholder1),IntLiteral(node, idx))
+	    .replace(ast(placeholder2), StringLiteral(node, id.name));
 	newBody ~= [fun];
 	newBody ~= [prop];
 	nameBody ~= [cmp]
@@ -54,13 +47,13 @@ macro enum(node)
 
     newBody ~= [init];
     
-    var nameFun = AST(def toString(){});
+    var nameFun = ast(def toString(){});
     nameFun[4] = nameBody;
     newBody ~= [nameFun];
     
-    definition[3] = newBody;
-    //definition.print();
-*/    
+    definition[2] = newBody;
+*/
+    print(definition,"\n");	    
     return definition;
 }
 

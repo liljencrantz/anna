@@ -393,7 +393,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack);
 anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t *stack);
 
 /**
-   Prints a simple graphical representation of the specified AST
+   Prints a simple textual representation of the specified AST
    tree. For an unprepared AST tree, the output should be readily
    rereadable by the parser, and can hence be used as a serialization
    format. This is not the case for a prepared AST tree.
@@ -401,9 +401,17 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t 
 void anna_node_print(int level, anna_node_t *this);
 
 /**
+   Returns a simple textual representation of the specified AST
+   tree. For an unprepared AST tree, the output should be readily
+   rereadable by the parser, and can hence be used as a serialization
+   format. This is not the case for a prepared AST tree.
+*/
+wchar_t *anna_node_string(anna_node_t *this);
+
+/**
   Parse the specified file and return an unprepared AST tree that
   represents the file content.
- */
+*/
 anna_node_t *anna_parse(wchar_t *name);
 
 /**
@@ -431,7 +439,6 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n);
 int anna_node_compare(anna_node_t *node1, anna_node_t *node2);
 
 anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to);
-
 
 typedef void(*anna_node_function_t)(anna_node_t *, void *);
 
