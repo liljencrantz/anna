@@ -24,7 +24,6 @@
 
 static hash_table_t anna_abides_cache;
 
-
 anna_type_t *type_type=0, 
     *object_type=0,
     *int_type=0, 

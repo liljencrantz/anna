@@ -137,6 +137,8 @@ static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
 */
 static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 {
+    mid_t mmid;
+    anna_function_t *fun;
 
     anna_type_copy(node_call_wrapper_type, node_wrapper_type);
 
@@ -209,7 +211,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	}
     ;
     
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	node_call_wrapper_type,
 	-1,
 	L"__get__Int__",
@@ -219,6 +221,8 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	2, 
 	i_argv, 
 	i_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(node_call_wrapper_type, mmid));
+    anna_function_alias_add(fun, L"__get__");
 
     anna_native_method_create(
 	node_call_wrapper_type,

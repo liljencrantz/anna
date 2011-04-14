@@ -14,6 +14,7 @@
 #include "anna_list.h"
 #include "anna_int.h"
 #include "anna_member.h"
+#include "anna_function.h"
 #include "anna_function_type.h"
 #include "anna_vm.h"
 
@@ -90,7 +91,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 static inline anna_object_t *anna_node_wrapper_i_print_i(anna_object_t **param)
 {
     anna_node_t *this = anna_node_unwrap(param[0]);
-    anna_node_print(0, this);
+    anna_node_print(4, this);
     return param[0];
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_print, 1)
@@ -154,16 +155,35 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 
 void anna_node_create_wrapper_types(anna_stack_template_t *stack)
 {
-    node_wrapper_type = anna_type_native_create(L"Node", stack_global);
+    node_wrapper_type = anna_type_native_create(L"Node", stack);
     node_identifier_wrapper_type = anna_type_native_create(L"Identifier", stack);
     node_int_literal_wrapper_type = anna_type_native_create(L"IntLiteral", stack);
     node_string_literal_wrapper_type = anna_type_native_create(L"StringLiteral", stack);
+    
     node_call_wrapper_type = anna_type_native_create(L"Call", stack);
-
 
     anna_node_create_wrapper_type(stack);
     anna_node_create_identifier_wrapper_type(stack);
     anna_node_create_int_literal_wrapper_type(stack);
     anna_node_create_string_literal_wrapper_type(stack);
     anna_node_create_call_wrapper_type(stack);
+
+    int i;
+    anna_type_t *types[] = 
+	{
+	    node_wrapper_type,  node_identifier_wrapper_type,  
+	    node_int_literal_wrapper_type,  node_string_literal_wrapper_type, 
+	    node_call_wrapper_type, 
+	};
+
+    for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
+    {
+	anna_type_copy_object(types[i]);
+	anna_stack_declare(
+	    stack, types[i]->name, 
+	    type_type, anna_type_wrap(types[i]), 0); 
+    }
+
+
+
 }

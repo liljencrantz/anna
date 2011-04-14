@@ -429,7 +429,7 @@ anna_function_t *anna_macro_create(
     result->input_name[0] = anna_intern(arg_name);
     
     result->input_type = calloc(sizeof(anna_type_t *), 1);
-    result->input_type[0] = node_wrapper_type;
+    result->input_type[0] = node_call_wrapper_type;
 
 //    anna_function_setup_wrapper(result);
     return result;
