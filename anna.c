@@ -142,6 +142,7 @@ anna_type_t *anna_type_for_function(
     wchar_t **argn, 
     int flags)
 {
+
     //static int count=0;
     //if((count++)==10) {CRASH};
     flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION | ANNA_FUNCTION_METHOD_WRAPPER);

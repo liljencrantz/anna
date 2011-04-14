@@ -47,6 +47,8 @@ enum anna_node_enum
 }
     ;
 
+#define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
+
 
 struct YYLTYPE
 {

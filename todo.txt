@@ -4,8 +4,7 @@ Don't differentiate between macros and functions anymore
 KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 hash type does not support continuations
-Call.each is b0rked
-anna_type_member_count probably is probably used in a bunch of places where it returns the wrong number
+anna_type_member_count probably is probably used in a bunch of places where it returns the wrong number 
 
 LANGUAGE FEATURES:
 Modules should map to directories, not files

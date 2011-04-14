@@ -112,29 +112,110 @@ static inline anna_object_t *anna_node_call_wrapper_i_init_i(anna_object_t **par
     return param[0];
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
-/*
-static anna_object_t *anna_node_call_wrapper_i_each(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
 
-    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
-    size_t i;
-
-    anna_object_t *body_object;
-    body_object=param[1];
-
-    anna_object_t *o_param[2];
-    for(i=0;i<node->child_count;i++)
+/**
+   This is the bulk of the each method
+ */
+static anna_vmstack_t *anna_node_call_wrapper_each_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    // Discard the output of the previous method call
+    anna_vmstack_pop(stack);
+    // Set up the param list. These are the values that aren't reallocated each lap
+    anna_object_t **param = stack->top - 3;
+    // Unwrap and name the params to make things more explicit
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(param[0]);
+    anna_object_t *body = param[1];
+    int idx = anna_int_get(param[2]);
+    size_t sz = call->child_count;
+    
+    // Are we done or do we need another lap?
+    if(idx < sz)
     {
-
-	o_param[0] = anna_int_create(i);
-	o_param[1] = anna_node_wrap(node->child[i]);
-	anna_vm_run(body_object, 2, o_param);
+	// Set up params for the next lap of the each body function
+	anna_object_t *o_param[] =
+	    {
+		param[2],
+		anna_node_wrap(call->child[idx])
+	    }
+	;
+	// Then update our internal lap counter
+	param[2] = anna_int_create(idx+1);
+	
+	// Finally, roll the code point back a bit and push new arguments
+	anna_vm_callback_reset(stack, body, 2, o_param);
     }
+    else
+    {
+	// Oops, we're done. Drop our internal param list and push the correct output
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, param[0]);
+    }
+    return stack;
+}
+
+static anna_vmstack_t *anna_node_call_wrapper_each(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *body = anna_vmstack_pop(stack);
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_vmstack_pop(stack));
+    anna_vmstack_pop(stack);
+    size_t sz = call->child_count;
+
+    if(sz > 0)
+    {
+	anna_object_t *callback_param[] = 
+	    {
+		anna_node_wrap((anna_node_t *)call),
+		body,
+		anna_int_one
+	    }
+	;
+	
+	anna_object_t *o_param[] =
+	    {
+		anna_int_zero,
+		anna_node_wrap(call->child[0])
+	    }
+	;
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_node_call_wrapper_each_callback, 3, callback_param,
+	    body, 2, o_param
+	    );
+    }
+    else
+    {
+	anna_vmstack_push(stack, anna_node_wrap((anna_node_t *)call));
+    }
+    
+    return stack;
+}
+
+
+static inline anna_object_t *anna_node_call_wrapper_append_i(anna_object_t **param)
+{
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(param[0]);
+    
+    anna_object_t *list = param[1];
+    
+    if(list == null_object)
+    {
+	return param[0];
+    }
+
+    size_t i;    
+    size_t size2 = anna_list_get_size(list);
+    for(i=0; i<size2; i++)
+    {
+	anna_object_t *ch_obj = anna_list_get(list, i);
+	anna_node_call_add_child(call, anna_node_unwrap(ch_obj));
+    }
+    
     return param[0];
 }
-*/
+
+ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
+
 static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 {
     mid_t mmid;
@@ -165,9 +246,9 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	&anna_node_call_wrapper_i_init, 
 	object_type,
 	4, argv, argn);
-/*
+
     anna_type_t *fun_type = anna_function_type_each_create(
-	L"!StringIterFunction", int_type, node_wrapper_type);
+	L"!CallIterFunction", int_type, node_wrapper_type);
 
     anna_type_t *e_argv[] = 
 	{
@@ -184,10 +265,10 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
     
     anna_native_method_create(
 	node_call_wrapper_type, -1, L"__each__", 0, 
-	&anna_node_call_wrapper_i_each, 
+	&anna_node_call_wrapper_each, 
 	node_call_wrapper_type,
 	2, e_argv, e_argn);
-*/
+
     anna_native_property_create(
 	node_call_wrapper_type,
 	-1,
@@ -258,7 +339,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	}
     ;
     
-    anna_native_method_create(
+    mmid = anna_native_method_create(
 	node_call_wrapper_type,
 	-1,
 	L"__join__List__",
@@ -268,5 +349,13 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	2, 
 	j_argv, 
 	j_argn);
+    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(node_call_wrapper_type, mmid));
+    anna_function_alias_add(fun, L"__join__");
+
+    anna_native_method_create(
+	node_call_wrapper_type, -1, L"__appendAssign__", 0, 
+	&anna_node_call_wrapper_append, 
+	node_call_wrapper_type,
+	2, j_argv, j_argn);
     
 }

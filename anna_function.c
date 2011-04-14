@@ -243,6 +243,10 @@ void anna_function_setup_interface(
 	    {
 		anna_node_t *last_expression = f->body->child[f->body->child_count-1];
 		anna_node_calculate_type(last_expression, f->stack_template);
+		if(last_expression->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
+		{
+		    return;
+		}
 		f->return_type = last_expression->return_type;
 	    }
 	}
@@ -254,7 +258,7 @@ void anna_function_setup_interface(
     }
     
     anna_function_setup_wrapper(f);
-
+    
 }
 
 void anna_function_setup_body(

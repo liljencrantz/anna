@@ -21,25 +21,26 @@ macro enum(definition)
 
     var init = ast(def __init__(Int value){this.value = value;});
 
-/*
-    body.each(idx:el)
+    body.each(idx,el)
     {
 	var id = el as Identifier;
 	if(!id)
 	{
-	    node.error("Unexpected thingie");
+	    definition.error("Unexpected thingie");
 	    return null;
 	}
 	var getter = "!" ~ id.name ~ "Getter";
 	var fun = ast(def placeholder1() (static) {return placeholder2;});
-	var prop = ast(var Int placeholder1 getter placeholder2);
+	var prop = ast(var Int placeholder1 (getter(placeholder2)));
 	var cmp = ast(if(this.value == placeholder1){return placeholder2});
-	fun = fun.replace(ast(placeholder1),Identifier(node, getter))
-	    .replace(ast(placeholder2),IntLiteral(node, idx));
-	prop = prop.replace(ast(placeholder1),Identifier(node, id.name))
-	    .replace(ast(placeholder2), Identifier(node, getter));
-	cmp = cmp.replace(ast(placeholder1),IntLiteral(node, idx))
-	    .replace(ast(placeholder2), StringLiteral(node, id.name));
+
+	fun = fun.replace(ast(placeholder1),Identifier(definition, getter))
+	    .replace(ast(placeholder2),IntLiteral(definition, idx)) as Call;
+	prop = prop.replace(ast(placeholder1),Identifier(definition, id.name))
+	    .replace(ast(placeholder2), Identifier(definition, getter)) as Call;
+	cmp = cmp.replace(ast(placeholder1),IntLiteral(definition, idx))
+	    .replace(ast(placeholder2), StringLiteral(definition, id.name)) as Call;
+
 	newBody ~= [fun];
 	newBody ~= [prop];
 	nameBody ~= [cmp]
@@ -52,7 +53,7 @@ macro enum(definition)
     newBody ~= [nameFun];
     
     definition[2] = newBody;
-*/
+
     print(definition,"\n");	    
     return definition;
 }
