@@ -70,8 +70,7 @@ static wchar_t *anna_yacc_string(char *in)
 {
     sb_clear(&anna_yacc_str_buff);
     sb_printf(&anna_yacc_str_buff, L"%s", in);
-    return sb_content(&anna_yacc_str_buff);
-    
+    return sb_content(&anna_yacc_str_buff);    
 }
 
 static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *str)
@@ -306,8 +305,7 @@ module:
 error TERMINATOR
 {
   yyerrok;
-  $$ = 0;
-  
+  $$ = 0;  
 }
 ;
 
@@ -442,11 +440,8 @@ expression3 :
 		$$ = (anna_node_t *)
 		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_call2(
-			    &@$, 
-			    (anna_node_t *)anna_node_create_identifier(
-				&@$,
-				L"__memberGet__"),
+			anna_node_create_call2(
+			    &@$, anna_node_create_identifier(&@$,L"__memberGet__"),
 			    $3, $2),
 			$1);
 	    }
@@ -455,11 +450,9 @@ expression3 :
 		$$ = (anna_node_t *)
 		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_call2(
+			anna_node_create_call2(
 			    &@$, 
-			    (anna_node_t *)anna_node_create_identifier(
-				&@$,
-				L"__memberGet__"),
+			    anna_node_create_identifier(&@$, L"__memberGet__"),
 			    $1, $2),
 			$3);
 	    }	    
@@ -478,11 +471,9 @@ expression4 :
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call2(
+		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_identifier(
-			    &@$,
-			    L"__memberGet__"),
+			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, enc),
 		    $3);
 	}
@@ -520,11 +511,9 @@ expression6 :
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call2(
+		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_identifier(
-			    &@$,
-			    L"__memberGet__"),
+			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, $2),
 		    $3);
 	}
@@ -538,11 +527,9 @@ expression7 :
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call2(
+		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_identifier(
-			    &@$,
-			    L"__memberGet__"),
+			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, $2),
 		    $3);
 	}
@@ -555,7 +542,7 @@ expression8 :
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
-		(anna_node_t *)anna_node_create_identifier(&@$,L"__not__"), 
+		anna_node_create_identifier(&@$,L"__not__"), 
 		$2);
 	}
 	|
@@ -565,14 +552,11 @@ expression8 :
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call2(
+		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_identifier(
-			    &@2, 
-			    L"__memberGet__"),
+			anna_node_create_identifier(&@2, L"__memberGet__"),
 			$3, 
-			(anna_node_t *)anna_node_create_identifier(
-			    &id->location,enclose(id->name))));
+			anna_node_create_identifier(&id->location,enclose(id->name))));
 	}
 	|
 	pre_op8 expression9
@@ -580,9 +564,9 @@ expression8 :
 	  $$ = (anna_node_t *)
 	    anna_node_create_call2(
 		&@$, 
-		(anna_node_t *)anna_node_create_call2(
+		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_identifier(&@2, L"__memberGet__"),
+		    anna_node_create_identifier(&@2, L"__memberGet__"),
 		    $2, $1));
 	}
 	| 
@@ -591,7 +575,7 @@ expression8 :
 	  $$ = (anna_node_t *)
 	      anna_node_create_call2(
 		  &@$, 
-		  (anna_node_t *)$2,
+		  $2,
 		  $1);
 	}
 	| 
@@ -603,9 +587,7 @@ expression9 :
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
-		(anna_node_t *)anna_node_create_identifier(
-		    &@2,
-		    L"__memberGet__"), 
+		anna_node_create_identifier(&@2, L"__memberGet__"), 
 		$1, $3);
 	}
         |
@@ -616,10 +598,8 @@ expression9 :
 	    if($2)
 	    {
 		fun = (anna_node_t *)anna_node_create_call2(
-		    &@$,(anna_node_t *)anna_node_create_identifier(
-			&@$,
-			L"__specialize__"), 
-		    fun, (anna_node_t *)$2);
+		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+		    fun, $2);
 	    }
 	    
 	    anna_node_call_set_function($4, fun);
@@ -638,17 +618,12 @@ expression9 :
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
-		    (anna_node_t *)anna_node_create_call2(
+		    anna_node_create_call2(
 			&@$, 
-			(anna_node_t *)anna_node_create_identifier(
-			    &@$,
-			    L"__memberGet__"),
+			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, 
-			(anna_node_t *)anna_node_create_identifier(
-			    &@$,
-			    L"__get__")),
+			anna_node_create_identifier(&@$, L"__get__")),
 		    $3);
-
 	}
 	| 
 	'[' argument_list ']' /* Alternative list constructor syntax */
@@ -665,7 +640,7 @@ expression9 :
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, 
-		(anna_node_t *)anna_node_create_identifier(&@2,L"cast"), 
+		anna_node_create_identifier(&@2,L"cast"), 
 		$1, $3);
 	}
 	|
@@ -698,8 +673,8 @@ expression10:
         {
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
-		(anna_node_t *)anna_node_create_identifier(&@$,L"__if__"),
-		$3, (anna_node_t *)$5, (anna_node_t *)$6);
+		anna_node_create_identifier(&@$,L"__if__"),
+		$3, $5, $6);
         }
 ;
 
@@ -978,10 +953,8 @@ function_declaration:
 		anna_node_create_call2(
 		    &@$,
 		    anna_node_create_identifier(&@1,L"__def__"),
-		    $3,
-		    ($2?$2:anna_node_create_null(&@$)),
-		    $4, 
-		    anna_node_create_block2(&@$),
+		    $3, ($2?$2:anna_node_create_null(&@$)),
+		    $4, anna_node_create_block2(&@$),
 		    anna_node_create_block2(&@$)), 
 		anna_node_create_block2(&@$));
 	}
@@ -1046,9 +1019,7 @@ declaration_expression:
 	VAR opt_templatized_type identifier attribute_list opt_declaration_expression_init
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
-		&@$,
-		(anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__var__"),
+		&@$, anna_node_create_identifier(&@$, L"__var__"),
 		$3, $2, $5?$5:anna_node_create_null(&@$), $4);
 	}
 	|
@@ -1059,10 +1030,7 @@ variable_declaration:
 	templatized_type identifier attribute_list opt_declaration_init
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
-		&@$,
-		(anna_node_t *)anna_node_create_identifier(
-		    &@$,
-		    L"__var__"),
+		&@$, anna_node_create_identifier(&@$, L"__var__"),
 		$2, $1, $4?$4:anna_node_create_null(&@$), $3);
 	}
 ;
@@ -1086,10 +1054,8 @@ type_identifier opt_specialization
    else 
    {
       $$ = (anna_node_t *)anna_node_create_call2(
-	  &@$,(anna_node_t *)anna_node_create_identifier(
-	      &@$,
-	      L"__specialize__"), 
-	  $1, (anna_node_t *)$2);      
+	  &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+	  $1, $2);      
    }
 }
 ;
@@ -1135,9 +1101,9 @@ type_definition :
 	      $1,$2,$3,$4);
 	  
 	  $$ = (anna_node_t *)anna_node_create_call2(
-	      &@$,
-	      (anna_node_t *)anna_node_create_identifier(&@1,L"__const__"),
-	      $2, anna_node_create_null(&@$), type, anna_node_clone_deep((anna_node_t *)$3));
+	      &@$, anna_node_create_identifier(&@1,L"__const__"),
+	      $2, anna_node_create_null(&@$), type, 
+	      anna_node_clone_deep((anna_node_t *)$3));
 	}
 	;
 
