@@ -18,6 +18,7 @@ for i in tests/*.anna; do
 	    echo "Error in output for test $i!!"
 	fi
     fi
+
     if test -f $status_correct_file; then
 	status_correct=$(cat $status_correct_file)
     fi
@@ -33,3 +34,4 @@ for i in tests/*.anna; do
 done
 
 echo "Found $error_count errors while running $test_count tests"
+test $error_count = 0
