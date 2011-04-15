@@ -509,6 +509,34 @@ static inline anna_object_t *anna_type_noop_i(anna_object_t **param){
 }
 ANNA_VM_NATIVE(anna_type_noop, 1)
 
+static void anna_type_extend(
+    anna_type_t *type)
+{
+    array_list_t parents=AL_STATIC;
+    anna_attribute_node_all(type->attribute, L"extends", &parents);
+    
+    int i;
+    for(i=al_get_count(&parents)-1; i>=0; i--)
+    {
+	anna_node_t *c = (anna_node_call_t *)al_get(&parents, i);
+	anna_node_calculate_type(c, type->stack->parent);
+	if(c->return_type != type_type)
+	{
+	    anna_error(c, L"Invalid parent type");
+	    continue;
+	}	
+	anna_type_t *par = anna_node_resolve_to_type(c, type->stack->parent);
+	if(!par)
+	{
+	    anna_error(c, L"Could not find specified type");
+	    continue;
+	}
+	anna_type_copy(type, par);
+		
+    }
+    anna_type_copy(type, object_type);
+}
+
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type, 
     anna_stack_template_t *parent)
@@ -520,6 +548,8 @@ static anna_node_t *anna_type_setup_interface_internal(
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
     type->stack->parent = parent;
+
+    anna_type_extend(type);
     
     if(type->definition)
     {

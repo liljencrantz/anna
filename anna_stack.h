@@ -87,6 +87,7 @@ anna_object_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *na
 anna_object_t *anna_stack_get_const(anna_stack_template_t *stack, wchar_t *name);
 
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name);
+
 void anna_stack_set_type(anna_stack_template_t *stack, wchar_t *name, anna_type_t *type);
 struct anna_node_declare *anna_stack_get_declaration(
     anna_stack_template_t *stack, wchar_t *name);

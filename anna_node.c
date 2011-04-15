@@ -34,13 +34,12 @@ typedef struct
 }
     anna_node_find_each_t;
 
-static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack);
 
 #include "anna_node_specialize.c"
 #include "anna_node_macro_expand.c"
 #include "anna_node_prepare.c"
 
-static anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
+anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
 {
     debug(D_SPAM,L"Figure out type from:\n");
     

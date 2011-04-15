@@ -1,0 +1,20 @@
+type Parent
+{
+
+    def foo(){print("Parent.foo()\n")}
+
+}
+
+type Sub (extends(Parent))
+{
+    def bar(){print("Sub.bar()\n")}
+
+}
+
+def main()
+{
+    var sub=Sub();
+    sub.foo();
+    sub.bar();
+    print(sub,"\n");
+}

@@ -1,0 +1,3 @@
+Parent.foo()
+Sub.bar()
+Object of type Sub

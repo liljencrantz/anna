@@ -51,8 +51,7 @@ static inline anna_object_t *anna_node_call_wrapper_i_set_function_i(anna_object
     if(param[1]==null_object)
 	return null_object;
     node->function = anna_node_unwrap(param[1]);
-    return param[1];
-    
+    return param[1];    
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_function, 2)
 
@@ -191,7 +190,6 @@ static anna_vmstack_t *anna_node_call_wrapper_each(anna_vmstack_t *stack, anna_o
     return stack;
 }
 
-
 static inline anna_object_t *anna_node_call_wrapper_append_i(anna_object_t **param)
 {
     anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(param[0]);
@@ -213,7 +211,6 @@ static inline anna_object_t *anna_node_call_wrapper_append_i(anna_object_t **par
     
     return param[0];
 }
-
 ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
 
 static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)

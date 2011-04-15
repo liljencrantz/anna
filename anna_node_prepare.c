@@ -1,6 +1,4 @@
 
-#define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
-
 static anna_type_t *anna_method_curry(anna_function_type_t *fun)
 {
     anna_function_t *res = anna_native_create(
