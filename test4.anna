@@ -10,6 +10,5 @@ enum Blubb
 def main()  
 {
     var ggg = Blubb(1),
-    print(ggg.toString());
-    
+    print(ggg.toString(), ggg.foo);    
 }

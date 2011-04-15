@@ -8,7 +8,7 @@ macro enum(definition)
 	{
 	    var Int value;
 	}
-	);
+    );
 
     var nameBody = ast(
 	{
@@ -17,7 +17,7 @@ macro enum(definition)
 		return "null";
 	    }
 	}
-	);
+    );
 
     var init = ast(def __init__(Int value){this.value = value});
 
@@ -31,7 +31,7 @@ macro enum(definition)
 	}
 	var getter = "!" ~ id.name ~ "Getter";
 	var fun = ast(def placeholder1() (static) {return placeholder2;});
-	var prop = ast(var Int placeholder1 (getter(placeholder2)));
+	var prop = ast(var Int placeholder1 (property(placeholder2)));
 	var cmp = ast(if(this.value == placeholder1){return placeholder2});
 
 	fun = fun.replace(ast(placeholder1),Identifier(definition, getter))
@@ -49,12 +49,13 @@ macro enum(definition)
     newBody ~= [init];
     
     var nameFun = ast(def toString(){});
-    nameFun[4] = nameBody;
+    (nameFun[2] as Call)[4] = nameBody;
     newBody ~= [nameFun];
     
     definition[2] = newBody;
 
     print(definition,"\n");	    
+    print(nameFun,"\n");	    
     return definition;
 }
 
