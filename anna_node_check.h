@@ -69,31 +69,7 @@
 #define CHECK_NODE_IDENTIFIER_NAME(n, name)				\
     if(!check_node_identifier_name(n, name))				\
 	return (anna_node_t *)anna_node_create_null(&node->location)
-/**
-   Check that specified node has a known return type.
-*/
-#define CHECK_TYPE(n) if(!extract_type(n, function->stack_template))	\
-	return (anna_node_t *)anna_node_create_null(&n->location)
 
-/**
-   Return the return type of the specified node.
-*/
-#define EXTRACT_TYPE(n) extract_type(n, function->stack_template)
-
-/**
-   Check that the specified node is a first generation decendant of the
-   AST tree root of the current function/block/module/etc.
-*/
-#define CHECK_PARENT_IS_ROOT if(anna_parent_count(parent)!=1)		\
-    {									\
-	anna_error((anna_node_t *)node,					\
-		   L"Illegal expression position");			\
-	return (anna_node_t *)anna_node_create_null(&node->location);	\
-    }    
-
-anna_type_t *extract_type(
-    anna_node_t *node,
-    anna_stack_template_t *stack);
 int check_node_identifier_name(anna_node_t *node,
 			       wchar_t *name);
 
