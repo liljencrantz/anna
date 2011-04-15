@@ -54,8 +54,8 @@ macro enum(definition)
     
     definition[2] = newBody;
 
-    print(definition,"\n");	    
-    print(nameFun,"\n");	    
+//    print(definition,"\n");	    
+//    print(nameFun,"\n");	    
     return definition;
 }
 

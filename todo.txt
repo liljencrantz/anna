@@ -19,6 +19,7 @@ Make all types inherit from Object
 Int should just be an interface, with two backing implementations
 continue/break (continue is easy with a continuation, but implementing break requires some special hacking)
 No magic toString method, use attributes to specify methods for implicit conversion
+Type identifiers should contain their static members
 
 STDLIB FEATURES:
 HTML documentation extractor

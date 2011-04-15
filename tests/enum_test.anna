@@ -1,0 +1,14 @@
+expand(enum);
+
+enum Blubb 
+{
+    foo;
+    bar;
+    baz;
+}
+
+def main()  
+{
+    var ggg = Blubb(1),
+    print(ggg, ggg.foo);    
+}
