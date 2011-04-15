@@ -43,6 +43,7 @@ int anna_int_get(anna_object_t *this)
 static anna_vmstack_t *anna_int_init(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t **param = stack->top - 2;
+    //wprintf(L"LALALA %d %d\n", param[0], param[1]);
     anna_int_set(param[0], anna_int_get(param[1]));
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push(stack, param[0]);

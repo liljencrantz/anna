@@ -309,10 +309,9 @@ anna_member_t *anna_member_method_search(
 	else
 	{
 	    debug(D_SPAM, L"Not a function\n");
-	}
-	
+	}	
     }
-
+    
     if(match)
     {
 	debug(D_SPAM, L"Match: %ls\n", match);
@@ -370,8 +369,7 @@ size_t anna_native_property_create(
     ssize_t getter_offset=-1;
     ssize_t setter_offset=-1;
     string_buffer_t sb;
-    sb_init(&sb);
-    
+    sb_init(&sb);    
 
     if(getter)
     {
@@ -411,18 +409,9 @@ size_t anna_native_property_create(
     }
     sb_destroy(&sb);
     
-    mid = anna_member_create(
-	type,
-	mid,
-	name,
-	ANNA_MEMBER_VIRTUAL,
-	property_type);
-    anna_member_t *memb = anna_member_get(type, mid);
-    
-    memb->is_property=1;
-    memb->getter_offset = getter_offset;
-    memb->setter_offset = setter_offset;
-    return mid;
+    return anna_property_create(
+	type, mid, name, property_type, 
+	getter_offset, setter_offset);
 }
 
 /*

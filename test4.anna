@@ -9,7 +9,7 @@ enum Blubb
 
 def main()  
 {
-    var ggg = Blubb(2),
+    var ggg = Blubb(1),
     print(ggg.toString());
     
 }

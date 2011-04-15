@@ -19,7 +19,7 @@ macro enum(definition)
 	}
 	);
 
-    var init = ast(def __init__(Int value){this.value = value;});
+    var init = ast(def __init__(Int value){this.value = value});
 
     body.each(idx,el)
     {

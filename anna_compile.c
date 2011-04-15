@@ -833,6 +833,15 @@ static void anna_vm_compile_i(
 void anna_vm_compile(
     anna_function_t *fun)
 {
+    if(fun->code)
+    {
+	/*
+	  Already compiled
+	*/
+	return;
+    }
+    
+
     if(!fun->body)
     {
 	fun->variable_count = fun->input_count;
@@ -840,7 +849,15 @@ void anna_vm_compile(
 	return;
     }
     
-//    wprintf(L"Compile really awesome function named %ls\n", fun->name);
+    //wprintf(L"Compile really awesome function named %ls\n", fun->name);
+
+    if(!fun->stack_template)
+    {
+	anna_error(fun->definition, L"Internal compiler error: Function %ls at %d does not have a stack during compilation phase.", fun->name, fun);
+	CRASH;
+	
+    }
+    
     
     int i;
     fun->variable_count = fun->stack_template->count;
@@ -978,7 +995,6 @@ anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *parent, anna_object_t *co
     anna_object_t *object = *anna_member_addr_get_mid(cont, ANNA_MID_THIS);
     anna_object_t *method = *anna_member_addr_get_mid(cont, ANNA_MID_METHOD);
     argv[0] = object;
-//    wprintf(L"Method wrapper is invoked, the inner method will be run\n");
     
     anna_vmstack_t *stack = anna_vm_callback(parent, method, argc, argv);
     anna_vmstack_drop(parent, argc);    

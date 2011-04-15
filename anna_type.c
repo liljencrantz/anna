@@ -81,6 +81,7 @@ static void anna_type_mangle_methods(
 {
     size_t i;
     anna_node_call_t *body= type->body;
+//    wprintf(L"Mangle methods in %ls\n", type->name);
     
     for(i=0; i<body->child_count; i++)
     {
@@ -94,20 +95,21 @@ static void anna_type_mangle_methods(
 		    anna_node_call_t *def =(anna_node_call_t *)decl->child[2];
 		    if(def->child_count >= 5)
 		    {
+			anna_node_identifier_t *name = (anna_node_identifier_t *)def->child[0];
 			if(anna_node_is_named(def->child[0], L"__init__"))
 			{
 			    if(anna_node_is_call_to(def->child[4], L"__block__"))
 			    {
-				anna_node_call_t *body =(anna_node_call_t *)def->child[4];
+				//wprintf(L"Found init of type %ls\n", type->name);
+				anna_node_call_t *body = (anna_node_call_t *)def->child[4];
 				anna_node_call_add_child(
-				    body, (anna_node_t *)anna_node_create_identifier(0, L"this"));
-				
-			    }
-			    
+				    body, (anna_node_t *)anna_node_create_identifier(0, L"this"));				
+			    }		    
 			}
 			
 			if(anna_node_is_call_to(def->child[2], L"__block__"))
 			{
+			    //wprintf(L"Add this-argument to method %ls in %ls\n", name->name, type->name);
 			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
 			    anna_node_call_t *this_decl = anna_node_create_call2(
 				0,
@@ -159,7 +161,6 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->stack = anna_stack_create(0);
     if(definition)
     {
-
 
 	//anna_node_print(D_CRITICAL, definition->child[2]);
 	array_list_t al = AL_STATIC;
@@ -228,25 +229,28 @@ void anna_type_print(anna_type_t *type)
 	assert(member);
 	if(member->is_property)
 	{
-	    wprintf(L"\tproperty %ls %ls setter: %d, getter: %d\n",
-		    member->type->name, members[i], 
-		    member->setter_offset,
-		    member->getter_offset);
+	    wprintf(
+		L"\tproperty %ls %ls setter: %d, getter: %d\n",
+		member->type->name, members[i], 
+		member->setter_offset,
+		member->getter_offset);
 	}
 	else if(member->is_method)
 	{
-	    wprintf(L"\tfunction %ls: type: %ls, static: %ls, property: %ls, offset: %d\n",
-		    members[i], member->type->name, 
-		    member->is_static?L"true":L"false",
-		    member->is_property?L"true":L"false",
-		    member->offset);
+	    wprintf(
+		L"\tmethod %ls: type: %ls, static: %ls, property: %ls, offset: %d\n",
+		members[i], member->type->name, 
+		member->is_static?L"true":L"false",
+		member->is_property?L"true":L"false",
+		member->offset);
 	}
 	else
 	{
-	    wprintf(L"\tvar %ls %ls, static: %ls, offset: %d\n",
-		    member->type->name, members[i], 
-		    member->is_static?L"true":L"false",
-		    member->offset);
+	    wprintf(
+		L"\tvar %ls %ls, static: %ls, offset: %d\n",
+		member->type->name, members[i], 
+		member->is_static?L"true":L"false",
+		member->offset);
 	}
     }
 
@@ -411,7 +415,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        anna_member_t *copy = anna_member_get(
            res,
 	   anna_mid_get(memb->name));
-       if(memb->offset != -1)
+       if(memb->is_static && memb->offset != -1)
 	   res->static_member[copy->offset]=orig->static_member[memb->offset];
     }
     
@@ -443,6 +447,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	   copy->setter_offset = anna_member_get(res, setter)->offset;	   
        }
     }
+
 }
 
 static void anna_type_prepare_member_internal(
@@ -454,6 +459,7 @@ static void anna_type_prepare_member_internal(
 	   &type->name_identifier,
 	   decl->name))
     {
+//	wprintf(L"Skip %ls\n", decl->name);
 	return;
     }
     
@@ -571,7 +577,6 @@ static void anna_type_prepare_property(
 	    }
 	    setter_offset = s_memb->offset;
 	}
-	
 
 	anna_property_create(
 	    type,
@@ -630,10 +635,10 @@ static anna_node_t *anna_type_setup_interface_internal(
     
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
+//    wprintf(L"Set up interface for type %ls\n", type->name);
+    
     type->stack->parent = parent;
 
-    anna_type_extend(type);
-    
     if(type->definition)
     {
 	
@@ -669,34 +674,38 @@ static anna_node_t *anna_type_setup_interface_internal(
 		(anna_node_declare_t *)node->child[i],
 		type->stack);
 	}
-	if(!anna_member_get(type, anna_mid_get(L"__init__"))){
-
-	    wchar_t *argn[] = 
-		{
-		    L"this"
-		}
-	    ;
-	    anna_type_t *argv[] = 
-		{
-		    type,
-		}
-	    ;
-
-	    anna_native_method_create(
-		type,
-		-1,
-		L"__init__",
-		0,
-		&anna_type_noop,
-		type,
-		1, argv, argn);
-/*
-	    anna_object_t **cp = anna_static_member_addr_get_mid(
-		type,
-		ANNA_MID_INIT_PAYLOAD);
-*/
-	}
     }
+    anna_type_extend(type);    
+
+    if(!anna_member_get(type, anna_mid_get(L"__init__"))){
+
+//	    wprintf(L"Internal noop init in %ls\n", type->name);
+	wchar_t *argn[] = 
+	    {
+		L"this"
+	    }
+	;
+	anna_type_t *argv[] = 
+	    {
+		type,
+	    }
+	;
+	
+	anna_native_method_create(
+	    type,
+	    -1,
+	    L"__init__",
+	    0,
+	    &anna_type_noop,
+	    type,
+	    1, argv, argn);
+/*
+  anna_object_t **cp = anna_static_member_addr_get_mid(
+  type,
+  ANNA_MID_INIT_PAYLOAD);
+*/
+    }
+
     return 0;
 }
 
@@ -754,9 +763,9 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     }
 //    anna_node_print(4, def);
     anna_type_t *res = anna_type_create(L"WeeWoooWaa", def);
-
+    
     anna_type_macro_expand(res, type->stack_macro);
-
+    
     return res;
 }
 

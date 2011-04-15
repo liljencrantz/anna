@@ -187,11 +187,13 @@ void anna_function_setup_interface(
     }    
     f->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     
-//    wprintf(L"Set up interface for function/macro %ls\n", f->name);
+//    wprintf(L"Set up interface for function/macro %ls at %d\n", f->name, f);
     
     if(f->body)
     {
+//	wprintf(L"We have such a nice body\n");
 	f->stack_template = anna_stack_create(parent_stack);
+//	wprintf(L"Our stack is %d\n", f->stack_template);
 	
 	anna_function_setup_arguments(f, parent_stack);
 	

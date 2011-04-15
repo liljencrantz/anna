@@ -204,7 +204,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	else
 	{
 	    anna_function_t *fun = anna_function_unwrap(wrapped);
-	
+//	    wprintf(L"Call function %ls with %d params\n", fun->name, param);
+	    
 #ifdef ANNA_CHECK_VM
 	    if(!fun)
 	    {
@@ -319,7 +320,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop(stack);
-
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
 #ifdef ANNA_CHECK_VM
@@ -400,6 +400,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop(stack);
+//	wprintf(L"Get method member %d, %ls in type %ls\n", op->mid, anna_mid_get_reverse(op->mid), obj->type->name);
 #ifdef ANNA_CHECK_VM
 	if(!obj){
 	    debug(
@@ -434,7 +435,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 	anna_vmstack_push(stack, res);
 	anna_vmstack_push(stack, obj);
-
+		
 	stack->code += sizeof(*op);
 	goto *jump_label[*stack->code];
     }
