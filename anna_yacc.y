@@ -873,6 +873,26 @@ identifier:
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,anna_yacc_string(anna_lex_get_text(scanner)));
 	}
+|
+IN
+{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+}
+|
+AS
+{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+}
+|
+AND
+{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+}
+|
+OR
+{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+}
 ;
 
 type_identifier :

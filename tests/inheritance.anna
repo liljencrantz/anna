@@ -1,13 +1,13 @@
+type Sub (extends(Parent))
+{
+    def bar(){print("Sub.bar()\n")}
+
+}
+
 type Parent
 {
 
     def foo(){print("Parent.foo()\n")}
-
-}
-
-type Sub (extends(Parent))
-{
-    def bar(){print("Sub.bar()\n")}
 
 }
 
