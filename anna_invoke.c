@@ -10,8 +10,6 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_wrapper.h"
-#include "anna_node_create.h"
-#include "anna_list.h"
 #include "anna_vm.h"
 
 struct anna_node *anna_macro_invoke(

@@ -362,7 +362,7 @@ anna_node_t *anna_node_macro_expand(
     anna_stack_template_t *stack);
 
 /**
-   Node preparation phase 3: Register all variables
+   Node preparation phase 2: Register all variables
  */
 
 void anna_node_register_declarations(
@@ -370,17 +370,11 @@ void anna_node_register_declarations(
     anna_node_t *this);
 
 /**
-   Node preparation phase 4: Calculate all variable types
+   Node preparation phase 3: Calculate all variable types
  */
 void anna_node_calculate_type(
     anna_node_t *this,
     anna_stack_template_t *stack);
-
-/**
-   Node preparation phase 5: Simplify, optimize
-*/
-anna_node_t *anna_node_simplify(
-    anna_node_t *this);
 
 /**
    Check the validity of the code. This should only be run after the
@@ -446,17 +440,12 @@ typedef void(*anna_node_function_t)(anna_node_t *, void *);
 
 void anna_node_each(
     anna_node_t *tree, anna_node_function_t fun, void *aux);
+
 void anna_node_find(
     anna_node_t *tree, int node_type, array_list_t *al);
 
 void anna_node_prepare_body(
     anna_node_t *this);
-
-
-anna_node_t *anna_node_create_simple_template(
-    anna_location_t *loc,
-    wchar_t *name,
-    wchar_t *param);
 
 /**
    Check if the node is a call node with an identifier with the

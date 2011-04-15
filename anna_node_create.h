@@ -18,15 +18,7 @@ anna_node_type_t *anna_node_create_type(
     anna_location_t *loc,
     anna_type_t *val);
 
-anna_node_dummy_t *anna_node_create_blob(
-    anna_location_t *loc, 
-    void *val);
-
 anna_node_wrapper_t *anna_node_create_return(
-    anna_location_t *loc,
-    struct anna_node *val);
-
-anna_node_import_t *anna_node_create_import(
     anna_location_t *loc,
     struct anna_node *val);
 

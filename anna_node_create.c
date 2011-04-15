@@ -66,17 +66,6 @@ anna_node_wrapper_t *anna_node_create_return(anna_location_t *loc, struct anna_n
     return result;  
 }
 
-anna_node_import_t *anna_node_create_import(
-    anna_location_t *loc,
-    struct anna_node *val)
-{
-    anna_node_import_t *result = anna_alloc_node(sizeof(anna_node_import_t));
-    result->node_type = ANNA_NODE_IMPORT;
-    anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
-    return result;  
-}
-
 anna_node_wrapper_t *anna_node_create_type_lookup(
     anna_location_t *loc,
     struct anna_node *val)
