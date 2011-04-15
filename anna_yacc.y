@@ -237,7 +237,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token OR
 %token VAR
 %token RETURN
-%token SEMICOLON
+%token TERMINATOR
 %token SIGN
 %token IGNORE
 %token LINE_BREAK
@@ -280,7 +280,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %%
 
 module:
-	module expression SEMICOLON
+	module expression TERMINATOR
 	{	    
 	    $$ = $1;
 	    if($1 && $2)
@@ -290,7 +290,7 @@ module:
 	    }
 	}
 	| 
-	expression SEMICOLON
+	expression TERMINATOR
 	{
 	    $$ = anna_node_create_call2(
 		&@$, 
@@ -303,7 +303,7 @@ module:
 	    *parse_tree_ptr = (anna_node_t *)$$;
 	}
 |
-error SEMICOLON
+error TERMINATOR
 {
   yyerrok;
   $$ = 0;
@@ -326,7 +326,7 @@ block2 : /* Empty */
 ;
 
 block3 :
-	block3 SEMICOLON expression
+	block3 TERMINATOR expression
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
@@ -428,7 +428,7 @@ expression1 :
 ;
 
 
-opt_semicolon: | SEMICOLON;
+opt_semicolon: | TERMINATOR;
 
 expression2 :
 	expression3
@@ -960,7 +960,7 @@ argument_list2 :
 	    $$ = anna_node_create_block2(&@$, $1);
 	}
 	| 
-	argument_list2 ',' expression
+	argument_list2 TERMINATOR expression
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($$, (anna_node_t *)$3);
@@ -1050,7 +1050,7 @@ declaration_list2 :
 	    anna_node_call_add_child($$,$1);
 	}
 	| 
-	declaration_list2 ',' declaration_list_item
+	declaration_list2 TERMINATOR declaration_list_item
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
@@ -1134,7 +1134,7 @@ specialization2:
 	    $$ = anna_node_create_block2(&@$,$1);
 	}
 	|
-	specialization2 ',' expression
+	specialization2 TERMINATOR expression
 	{
 	  anna_node_call_add_child($1,$3);
 	  $$ = $1;
@@ -1169,7 +1169,7 @@ attribute_list :
 ;
 
 attribute_list2 :
-	attribute_list2 ',' expression
+	attribute_list2 TERMINATOR expression
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($$,(anna_node_t *)$3);
@@ -1260,7 +1260,7 @@ int anna_yacc_lex (
 	if(was_end_brace)
 	{
 	    was_end_brace = 0;
-	    return SEMICOLON;
+	    return TERMINATOR;
 	}
 	else
 	{
