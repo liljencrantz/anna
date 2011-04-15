@@ -1,4 +1,4 @@
-#! /bin/bash	
+#! /bin/bash
 
 error_count=0
 test_count=0
@@ -11,11 +11,12 @@ for i in tests/*.anna; do
     status_correct=0
     error=0
     if test -f $out_correct; then
-	if diff anna_tests.out $out_correct; then
+	if diff anna_tests.out $out_correct >/dev/null; then
 	    true
 	else
 	    error=1
-	    echo "Error in output for test $i!!"
+	    echo -e "\nError in output for test $i:"
+	    diff -u anna_tests.out $out_correct
 	fi
     fi
 
@@ -24,7 +25,7 @@ for i in tests/*.anna; do
     fi
 
     if test "$status" != "$status_correct"; then
-	echo "Error in exit status for test $i." $status_correct != $status
+	echo -e "\nError in exit status for test $i." $status_correct != $status
 	error=1
     fi
     
@@ -33,5 +34,6 @@ for i in tests/*.anna; do
     
 done
 
-echo "Found $error_count errors while running $test_count tests"
+rm anna_tests.out
+echo -e "\nFound $error_count errors while running $test_count tests"
 test $error_count = 0
