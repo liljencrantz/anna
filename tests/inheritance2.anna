@@ -1,0 +1,11 @@
+type Sub (extends(Int))
+{
+    def bar(){print("Sub.bar()\n")}
+}
+
+def main()
+{
+    var sub=Sub(7);
+    sub.bar();
+    print(sub; sub+1; "\n";); 
+}

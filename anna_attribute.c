@@ -76,8 +76,11 @@ void anna_attribute_node_all(anna_node_call_t *attribute, wchar_t *name, array_l
 	if(anna_node_is_call_to(attribute->child[i], name))
 	{
 	    anna_node_call_t *attr = node_cast_call(attribute->child[i]);
-	    assert(attr->child_count == 1);
-	    al_push(res, attr->child[0]);
+	    int j;
+	    for(j=0; j<attr->child_count; j++)
+	    {
+		al_push(res, attr->child[j]);
+	    }
 	}
     }
     return;

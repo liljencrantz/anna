@@ -401,7 +401,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     
     /*
       Then, for every copied static member with storage, copy over the initial value
-     */
+    */
     for(i=0; i<steps; i++)
     {
 	if(!copied[i])
@@ -417,7 +417,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     
     /*
       Then, for every copied property, find the offset of the getter and setter
-     */
+    */
     for(i=0; i<steps; i++)
     {
 	if(!copied[i])
@@ -443,7 +443,6 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	   copy->setter_offset = anna_member_get(res, setter)->offset;	   
        }
     }
-
 }
 
 static void anna_type_prepare_member_internal(
@@ -474,12 +473,14 @@ static void anna_type_prepare_member_internal(
     
     if(!is_method)
     {
-	anna_node_t *prop = anna_attribute_node(decl->attribute, L"property");
-	if(prop)
-	{
-	    
-	}
+	array_list_t etter = AL_STATIC;
+	anna_attribute_node_all(decl->attribute, L"property", &etter);
 	
+	if(al_get_count(&etter))
+	{
+	    al_destroy(&etter);
+	    return;
+	}
     }
     
     
@@ -502,6 +503,88 @@ static void anna_type_prepare_member_internal(
 	anna_function_setup_interface(clo->payload, stack);
 	anna_function_setup_body(clo->payload);
     }
+}
+
+
+static void anna_type_prepare_property(
+    anna_type_t *type,
+    anna_node_declare_t *decl,
+    anna_stack_template_t *stack)
+{
+    if(hash_contains(
+	   &type->name_identifier,
+	   decl->name))
+    {
+	return;
+    }
+    
+    if(decl->value->node_type == ANNA_NODE_CLOSURE)
+    {
+	return;
+    }
+    
+    array_list_t etter = AL_STATIC;
+    anna_attribute_node_all(decl->attribute, L"property", &etter);
+    if(al_get_count(&etter)>2)
+    {
+	anna_error((anna_node_t *)decl, L"Invalid property");
+	goto END;
+    }
+	
+    if(al_get_count(&etter))
+    {
+	int has_setter = al_get_count(&etter) == 2;
+	anna_node_t *g_node = (anna_node_t *)al_get(&etter, 0);
+	wchar_t *getter=0, *setter=0;
+	ssize_t getter_offset, setter_offset=-1;
+
+	if(g_node->node_type != ANNA_NODE_IDENTIFIER)
+	{
+	    anna_error(g_node, L"Invalid getter");
+	    goto END;
+	}
+	getter = ((anna_node_identifier_t *)g_node)->name;
+	
+	anna_member_t *g_memb = anna_member_get(type, anna_mid_get(getter));
+	if(!g_memb)
+	{
+	    anna_error(g_node, L"Unknown method");
+	    goto END;
+	}
+	getter_offset = g_memb->offset;
+	
+	if(has_setter)
+	{
+	    anna_node_t *s_node = al_get(&etter, 1);
+	    if(s_node->node_type != ANNA_NODE_IDENTIFIER)
+	    {
+		anna_error(s_node, L"Invalid getter");
+		goto END;
+	    }
+	    setter = ((anna_node_identifier_t *)s_node)->name;
+
+	    anna_member_t *s_memb = anna_member_get(type, anna_mid_get(setter));
+	    if(!s_memb)
+	    {
+		anna_error(s_node, L"Unknown method");
+		goto END;
+	    }
+	    setter_offset = s_memb->offset;
+	}
+	
+
+	anna_property_create(
+	    type,
+	    -1,
+	    decl->name,
+	    decl->return_type,
+	    getter_offset,
+	    setter_offset);
+    }
+
+  END:
+    al_destroy(&etter);
+
 }
 
 static inline anna_object_t *anna_type_noop_i(anna_object_t **param){
@@ -574,6 +657,14 @@ static anna_node_t *anna_type_setup_interface_internal(
 		continue;
 	    }
 	    anna_type_prepare_member_internal(
+		type,
+		(anna_node_declare_t *)node->child[i],
+		type->stack);
+	}
+	for(i=0; i<node->child_count; i++)
+	{
+	    anna_node_t *decl = node->child[i];
+	    anna_type_prepare_property(
 		type,
 		(anna_node_declare_t *)node->child[i],
 		type->stack);

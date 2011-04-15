@@ -42,8 +42,8 @@ int anna_int_get(anna_object_t *this)
 
 static anna_vmstack_t *anna_int_init(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 1;
-    anna_int_set(param[0], 0);
+    anna_object_t **param = stack->top - 2;
+    anna_int_set(param[0], anna_int_get(param[1]));
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push(stack, param[0]);
     return stack;
@@ -102,6 +102,17 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	}
     ;
     
+    anna_type_t *ii_argv[] = 
+	{
+	    int_type, int_type
+	}
+    ;
+    wchar_t *ii_argn[]=
+	{
+	    L"this", L"other"
+	}
+    ;
+    
     anna_member_create(
 	int_type,
 	ANNA_MID_INT_PAYLOAD, 
@@ -116,7 +127,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	0,
 	&anna_int_init, 
 	object_type,
-	1, i_argv, i_argn);    
+	2, ii_argv, ii_argn);    
     
     anna_native_method_create(
 	int_type,

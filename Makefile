@@ -12,6 +12,7 @@ CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration		\
 -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L $(PROF_FLAGS)		\
 #-Wsuggest-attribute=const -Wsuggest-attribute=pure
 
+# All object files used by the main anna binary
 ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
 anna_function_implementation.o anna_int.o anna_string.o anna_char.o	\
 anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o	\

@@ -323,6 +323,28 @@ anna_member_t *anna_member_method_search(
     
 }
 
+size_t anna_property_create(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    anna_type_t *property_type,
+    ssize_t getter_offset,
+    ssize_t setter_offset)
+{
+    mid = anna_member_create(
+	type,
+	mid,
+	name,
+	ANNA_MEMBER_VIRTUAL,
+	property_type);
+    anna_member_t *memb = anna_member_get(type, mid);
+    
+    memb->is_property=1;
+    memb->getter_offset = getter_offset;
+    memb->setter_offset = setter_offset;
+    return mid;
+}
+
 size_t anna_native_property_create(
     anna_type_t *type,
     mid_t mid,

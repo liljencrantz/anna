@@ -263,7 +263,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <node_val> function_definition 
 %type <node_val> function_declaration 
 %type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op3 op4 op5 op6 op7 pre_op8 post_op8
-%type <call_val> argument_list argument_list2 
+%type <call_val> argument_list argument_list2
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
 %type <node_val> declaration_list_item declaration_expression variable_declaration
@@ -320,7 +320,7 @@ block2 : /* Empty */
 	    $$ = anna_node_create_block2(&@$);
 	}
 	| 
-	block3 opt_semicolon
+	block3 opt_terminator
 ;
 
 block3 :
@@ -426,7 +426,7 @@ expression1 :
 ;
 
 
-opt_semicolon: | TERMINATOR;
+opt_terminator: | TERMINATOR;
 
 expression2 :
 	expression3
@@ -926,7 +926,7 @@ argument_list:
 	    $$ = anna_node_create_block2(&@$);
 	}
 	|
-	argument_list2 opt_semicolon
+	argument_list2 opt_terminator
 ;
 
 argument_list2 :
@@ -995,7 +995,7 @@ declaration_list :
 	    $$ = anna_node_create_block2(&@$);
 	}
 	|
-	'(' declaration_list2 ')'
+	'(' declaration_list2 opt_terminator ')'
 	{
 	    $$ = $2;
 	}
@@ -1113,7 +1113,7 @@ attribute_list :
 	    $$ = anna_node_create_block2(&@$);
 	}
 	| 
-	'(' attribute_list2 ')'
+	'(' block3 opt_terminator ')'
 	{
 	    $$ = $2;
 	}
@@ -1185,7 +1185,7 @@ static int anna_yacc_lex_inner (
 
 /**
    Returns the next token for the parser. Ignores IGNORE and
-   LINE_BREAK tokens. Adds implicit semicolons after brace/LINE_BREAK
+   LINE_BREAK tokens. Adds implicit terminators after brace/LINE_BREAK
    combos. Keeps track of file location.
  */
 int anna_yacc_lex (
@@ -1196,7 +1196,7 @@ int anna_yacc_lex (
 
     /*
       Line breaks directly following an end brace are implicitly
-      interpreted as a semicolon.
+      interpreted as a terminator.
 
       Otherwise we'd need a semi-colon after any block call, e.g.
 

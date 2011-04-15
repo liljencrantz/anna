@@ -30,8 +30,7 @@ for i in tests/*.anna; do
     fi
     
     error_count=$(echo $error_count + $error|bc)
-    test_count=$(echo $test_count + 1|bc)
-    
+    test_count=$(echo $test_count + 1|bc)    
 done
 
 rm anna_tests.out
