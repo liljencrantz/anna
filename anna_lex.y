@@ -1,4 +1,3 @@
-
 %{
 
 #include "anna.h"
@@ -52,7 +51,6 @@ static void anna_lex_unbalanced_comment()
     fwprintf(stderr, L"Error: Unbalanced comment at end of file.\n");
     anna_error_count++;
 }
-
 
 %}
 
