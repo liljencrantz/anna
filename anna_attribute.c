@@ -40,21 +40,26 @@ int anna_attribute_has_alias(anna_node_call_t *attribute, wchar_t *name)
     return anna_attribute_has_alias_internal(attribute, L"alias", name);
 }
 
-wchar_t *anna_attribute_identifier(anna_node_call_t *attribute, wchar_t *name)
+int anna_attribute_flag(anna_node_call_t *attribute, wchar_t *name)
 {
-    anna_node_t *res = anna_attribute_node(attribute, name);
-    if(res->node_type == ANNA_NODE_IDENTIFIER)
+    if(!attribute)
+	return 0;
+    int i;
+    for(i=0; i<attribute->child_count; i++)
     {
-	anna_node_identifier_t *id = (anna_node_identifier_t *)res;
-	return id->name;
+	
+	if(anna_node_is_named(attribute->child[i], name))
+	{
+	    return 1;
+	}
     }
     return 0;
 }
 
-anna_node_t *anna_attribute_node(anna_node_call_t *attribute, wchar_t *name)
+anna_node_t *anna_attribute_call(anna_node_call_t *attribute, wchar_t *name)
 {
     array_list_t al = AL_STATIC;
-    anna_attribute_node_all(attribute, name, &al);
+    anna_attribute_call_all(attribute, name, &al);
     anna_node_t *res = 0;
     if(al_get_count(&al))
     {
@@ -65,7 +70,7 @@ anna_node_t *anna_attribute_node(anna_node_call_t *attribute, wchar_t *name)
 }
 
 
-void anna_attribute_node_all(anna_node_call_t *attribute, wchar_t *name, array_list_t *res)
+void anna_attribute_call_all(anna_node_call_t *attribute, wchar_t *name, array_list_t *res)
 {
     if(!attribute)
 	return;

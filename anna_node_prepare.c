@@ -726,6 +726,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    {
 		anna_type_t *param = this2->child[i]->return_type;
 		anna_type_t *templ = ftk->input_type[mini(i, ftk->input_count-1)];
+		    
 //		wprintf(L"Check if type %ls abides to %ls\n", this2->child[i]->return_type->name, ftk->input_type[mini(i, ftk->input_count-1)]->name);
 		if(!anna_abides(param, templ))
 		{

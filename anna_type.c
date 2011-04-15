@@ -95,7 +95,7 @@ static void anna_type_mangle_methods(
 		    anna_node_call_t *def =(anna_node_call_t *)decl->child[2];
 		    if(def->child_count >= 5)
 		    {
-			anna_node_identifier_t *name = (anna_node_identifier_t *)def->child[0];
+			//anna_node_identifier_t *name = (anna_node_identifier_t *)def->child[0];
 			if(anna_node_is_named(def->child[0], L"__init__"))
 			{
 			    if(anna_node_is_call_to(def->child[4], L"__block__"))
@@ -118,7 +118,8 @@ static void anna_type_mangle_methods(
 				    L"__var__"),
 				anna_node_create_identifier(0, L"this"), 
 				anna_node_create_dummy(0, anna_type_wrap(type)), 
-				anna_node_create_null(0)
+				anna_node_create_null(0),
+				anna_node_create_block2(0)
 				);
 			    
 			    anna_node_call_prepend_child(
@@ -166,7 +167,7 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 	array_list_t al = AL_STATIC;
 	
 	result->attribute = node_cast_call(definition->child[1]);
-	anna_attribute_node_all(result->attribute, L"template", &al);
+	anna_attribute_call_all(result->attribute, L"template", &al);
 	result->body = node_cast_call(
 	    anna_node_specialize(
 		anna_node_clone_deep(definition->child[2]),
@@ -480,7 +481,7 @@ static void anna_type_prepare_member_internal(
     if(!is_method)
     {
 	array_list_t etter = AL_STATIC;
-	anna_attribute_node_all(decl->attribute, L"property", &etter);
+	anna_attribute_call_all(decl->attribute, L"property", &etter);
 	
 	if(al_get_count(&etter))
 	{
@@ -530,7 +531,7 @@ static void anna_type_prepare_property(
     }
     
     array_list_t etter = AL_STATIC;
-    anna_attribute_node_all(decl->attribute, L"property", &etter);
+    anna_attribute_call_all(decl->attribute, L"property", &etter);
     if(al_get_count(&etter)>2)
     {
 	anna_error((anna_node_t *)decl, L"Invalid property");
@@ -601,12 +602,12 @@ static void anna_type_extend(
     anna_type_t *type)
 {
     array_list_t parents=AL_STATIC;
-    anna_attribute_node_all(type->attribute, L"extends", &parents);
+    anna_attribute_call_all(type->attribute, L"extends", &parents);
     
     int i;
     for(i=al_get_count(&parents)-1; i>=0; i--)
     {
-	anna_node_t *c = (anna_node_call_t *)al_get(&parents, i);
+	anna_node_t *c = (anna_node_t *)al_get(&parents, i);
 	anna_node_calculate_type(c, type->stack->parent);
 	if(c->return_type != type_type)
 	{
@@ -668,7 +669,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	}
 	for(i=0; i<node->child_count; i++)
 	{
-	    anna_node_t *decl = node->child[i];
+	    //anna_node_t *decl = node->child[i];
 	    anna_type_prepare_property(
 		type,
 		(anna_node_declare_t *)node->child[i],
@@ -753,7 +754,7 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     int i;
 
     array_list_t al = AL_STATIC;
-    anna_attribute_node_all(attr, L"template", &al);
+    anna_attribute_call_all(attr, L"template", &al);
     
     for(i=0; i<attr->child_count;i++)
     {

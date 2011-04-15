@@ -12,7 +12,6 @@ Modules should map to directories, not files
 Submodules
 Implicit module loading
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
-User defined variadic functions
 True type intersections
 milter/fap
 Make all types inherit from Object

@@ -259,7 +259,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <call_val> module
 %type <node_val> expression expression1 expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
 %type <node_val> constant
-%type <node_val> opt_declaration_init opt_declaration_expression_init
+%type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
 %type <node_val> function_definition 
 %type <node_val> function_declaration 
 %type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op3 op4 op5 op6 op7 pre_op8 post_op8
@@ -267,7 +267,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
 %type <node_val> declaration_list_item declaration_expression variable_declaration
-%type <call_val> attribute_list attribute_list2
+%type <call_val> attribute_list 
 %type <call_val> opt_block
 %type <call_val> specialization specialization2 opt_specialization
 %type <node_val> opt_templatized_type  templatized_type 
@@ -345,11 +345,6 @@ opt_declaration_init :
 	|
 	{
 	    $$ = 0;
-	}
-	|
-	ELLIPSIS
-	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$, L"__variadic__");
 	}
 ;
 
@@ -1026,12 +1021,29 @@ declaration_expression:
 	function_definition
 	;
 
-variable_declaration:
-	templatized_type identifier attribute_list opt_declaration_init
+opt_ellipsis:
+	/* empty */
 	{
+	    $$=0;
+	}
+	|
+	ELLIPSIS
+	{
+		$$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadic");
+	}
+
+
+variable_declaration:
+	templatized_type identifier opt_ellipsis attribute_list opt_declaration_init
+	{
+	    if($3)
+	    {
+		anna_node_call_add_child($4, $3);
+	    }
+	    
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, anna_node_create_identifier(&@$, L"__var__"),
-		$2, $1, $4?$4:anna_node_create_null(&@$), $3);
+		$2, $1, $5?$5:anna_node_create_null(&@$), $4);
 	}
 ;
 
@@ -1116,19 +1128,6 @@ attribute_list :
 	'(' block3 opt_terminator ')'
 	{
 	    $$ = $2;
-	}
-;
-
-attribute_list2 :
-	attribute_list2 TERMINATOR expression
-	{
-	    $$ = $1;
-	    anna_node_call_add_child($$,(anna_node_t *)$3);
-	}
-	|
-	expression
-	{
-	    $$ = anna_node_create_block2(&@$, $1);
 	}
 ;
 

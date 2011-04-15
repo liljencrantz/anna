@@ -40,7 +40,7 @@
 	    (anna_node_t *)(n),						\
 	    L"Wrong number of arguments to %ls: Got %d, expected %d",	\
 	    name, n->child_count, count);				\
-	return (anna_node_t *)anna_node_create_null(&node->location);	\
+	return (anna_node_t *)anna_node_create_null(&n->location);	\
     }
 
 /**

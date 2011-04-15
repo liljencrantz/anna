@@ -18,6 +18,7 @@
 #include "anna_vm.h"
 #include "anna_intern.h"
 #include "anna_attribute.h"
+#include "anna_list.h"
 
 void anna_function_argument_hint(
     anna_function_t *f,
@@ -79,9 +80,9 @@ static anna_node_t *anna_function_setup_arguments(
 	anna_node_identifier_t *fun = node_cast_identifier(decl->function);
 	if(wcscmp(fun->name, L"__var__") == 0 || wcscmp(fun->name, L"__const__") == 0)
 	{
-	    //CHECK_CHILD_COUNT(decl, L"variable declaration", 3);
+	    CHECK_CHILD_COUNT(decl, L"variable declaration", 4);
 	    CHECK_NODE_TYPE(decl->child[0], ANNA_NODE_IDENTIFIER);
-	
+	    
 	    anna_node_identifier_t *name = 
 		node_cast_identifier(
 		    decl->child[0]);
@@ -90,6 +91,7 @@ static anna_node_t *anna_function_setup_arguments(
 
 	    anna_node_t *type_node = anna_node_macro_expand(decl->child[1], parent_stack);
 	    anna_node_t *val_node = anna_node_macro_expand(decl->child[2], parent_stack);
+	    int is_variadic=0;
 	    
 	    if(type_node->node_type == ANNA_NODE_IDENTIFIER)
 	    {
@@ -98,16 +100,21 @@ static anna_node_t *anna_function_setup_arguments(
 		
 		anna_object_t **type_wrapper =
 		    anna_stack_addr_get(parent_stack, type_name->name);
-
+		
 		CHECK(
 		    type_wrapper, 
 		    (anna_node_t *)type_name,
 		    L"Unknown type: %ls",
 		    type_name->name);
-
+		
 		argv[i] = 
 		    anna_type_unwrap(*type_wrapper);
-
+		if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
+		{
+		    is_variadic=1;
+		    f->flags |= ANNA_FUNCTION_VARIADIC;
+		}
+		
 	    }
 	    else if(val_node->node_type == ANNA_NODE_CLOSURE)
 	    {
@@ -130,10 +137,16 @@ static anna_node_t *anna_function_setup_arguments(
 		CRASH;
 	    }
 	    
+	    anna_type_t *t = argv[i];
+	    if(is_variadic)
+	    {
+		t = anna_list_type_get(t);
+	    }
+	    
 	    anna_stack_declare(
 		f->stack_template, 
 		argn[i],
-		argv[i],
+		t,
 		null_object,
 		0);
 	    
@@ -287,7 +300,7 @@ void anna_function_setup_body(
 	    fptr = fptr->stack_template->parent->function;
 	    if(!fptr)
 	    {
-		anna_error(f->definition, L"Blocks must be definied inside a function");
+		anna_error((anna_node_t *)f->definition, L"Blocks must be definied inside a function");
 		break;
 	    }
 	}

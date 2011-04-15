@@ -55,7 +55,8 @@ static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
 	(anna_node_t *)anna_node_create_identifier(&id->location,L"__var__"),
 	id,
 	anna_node_create_null(&id->location),
-	anna_node_create_null(&id->location));
+	anna_node_create_null(&id->location),
+	anna_node_create_block2(&id->location));
 }
 
 static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)			    
