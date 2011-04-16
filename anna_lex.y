@@ -108,7 +108,7 @@ else return ELSE;
 > return '>';
 = return '=';
 : return ':';
-[,;]([ \t\n\r]*[,;])* return TERMINATOR;
+[,;]([ \t\n\r]*[,;])* return SEPARATOR;
 ! return '!';
 % return '%';
 \^ return '^';

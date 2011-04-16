@@ -236,7 +236,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token OR
 %token VAR
 %token RETURN
-%token TERMINATOR
+%token SEPARATOR
 %token SIGN
 %token IGNORE
 %token LINE_BREAK
@@ -257,19 +257,19 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 
 %type <call_val> block block2 block3 opt_else
 %type <call_val> module
-%type <node_val> expression expression1 expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
+%type <node_val> expression expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
 %type <node_val> constant
 %type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
 %type <node_val> function_definition 
 %type <node_val> function_declaration 
-%type <node_val> opt_identifier identifier type_identifier any_identifier op op1 op3 op4 op5 op6 op7 pre_op8 post_op8
-%type <call_val> argument_list argument_list2
+%type <node_val> opt_identifier identifier type_identifier any_identifier 
+%type <node_val> op op2 op3 op4 op5 op6 op7 pre_op8 post_op8
 %type <node_val> type_definition 
 %type <call_val> declaration_list declaration_list2
 %type <node_val> declaration_list_item declaration_expression variable_declaration
 %type <call_val> attribute_list 
 %type <call_val> opt_block
-%type <call_val> specialization specialization2 opt_specialization
+%type <call_val> specialization opt_specialization
 %type <node_val> opt_templatized_type  templatized_type 
 
 %right '='
@@ -279,7 +279,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %%
 
 module:
-	module expression TERMINATOR
+	module expression SEPARATOR
 	{	    
 	    $$ = $1;
 	    if($1 && $2)
@@ -289,7 +289,7 @@ module:
 	    }
 	}
 	| 
-	expression TERMINATOR
+	expression SEPARATOR
 	{
 	    $$ = anna_node_create_call2(
 		&@$, 
@@ -302,7 +302,7 @@ module:
 	    *parse_tree_ptr = (anna_node_t *)$$;
 	}
 	|
-	error TERMINATOR
+	error SEPARATOR
 	{
 	    yyerrok;
 	    $$ = 0;  
@@ -320,11 +320,11 @@ block2 : /* Empty */
 	    $$ = anna_node_create_block2(&@$);
 	}
 	| 
-	block3 opt_terminator
+	block3 opt_separator
 ;
 
 block3 :
-	block3 TERMINATOR expression
+	block3 SEPARATOR expression
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
@@ -372,7 +372,7 @@ opt_else:
 
 
 expression:
-	expression1 '=' expression
+	expression2 '=' expression
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
@@ -380,14 +380,14 @@ expression:
 		$1, $3);
 	}
 	|
-	expression1 op expression
+	expression2 op expression
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		$2,
 		$1, $3);
 	}
-        | expression1
+        | expression2
 	| declaration_expression 
 	| type_definition
 	| RETURN expression
@@ -408,8 +408,8 @@ expression:
 	}
 ;
 
-expression1 :
-	expression1 op1 expression2
+expression2 :
+	expression2 op2 expression3
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
@@ -417,13 +417,11 @@ expression1 :
 		$1, $3);
 	}
         | 
-	expression2
+	expression3
 ;
 
 
-opt_terminator: /* Empty */| TERMINATOR;
-
-expression2 : expression3;
+opt_separator: /* Empty */| SEPARATOR;
 
 expression3 :
 	expression3 op3 expression4
@@ -584,7 +582,7 @@ expression9 :
 		$1, $3);
 	}
         |
-	expression9 opt_specialization '(' argument_list ')' opt_block
+	expression9 opt_specialization '(' block2 ')' opt_block
 	{
 	    $$ = (anna_node_t *)$4;
 	    anna_node_t *fun = $1;
@@ -619,7 +617,7 @@ expression9 :
 		    $3);
 	}
 	| 
-	'[' argument_list ']' /* Alternative list constructor syntax */
+	'[' block2 ']' /* Alternative list constructor syntax */
 	{	    
 	    $$ = (anna_node_t *)$2;
 	    anna_node_call_set_function(
@@ -698,7 +696,7 @@ op:
 ;
 
 
-op1:
+op2:
 	AND
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(
@@ -920,28 +918,6 @@ opt_block:
 	block 
 	;
 
-argument_list:
-	{
-	    $$ = anna_node_create_block2(&@$);
-	}
-	|
-	argument_list2 opt_terminator
-;
-
-argument_list2 :
-	expression 
-	{
-	    $$ = anna_node_create_block2(&@$, $1);
-	}
-	| 
-	argument_list2 TERMINATOR expression
-	{
-	    $$ = $1;
-	    anna_node_call_add_child($$, (anna_node_t *)$3);
-	    anna_node_set_location((anna_node_t *)$$, &@$);
-	}
-	;
-
 function_declaration: 
 	DEF opt_templatized_type identifier declaration_list
 	{
@@ -994,7 +970,7 @@ declaration_list :
 	    $$ = anna_node_create_block2(&@$);
 	}
 	|
-	'(' declaration_list2 opt_terminator ')'
+	'(' declaration_list2 opt_separator ')'
 	{
 	    $$ = $2;
 	}
@@ -1007,7 +983,7 @@ declaration_list2 :
 	    anna_node_call_add_child($$,$1);
 	}
 	| 
-	declaration_list2 TERMINATOR declaration_list_item
+	declaration_list2 SEPARATOR declaration_list_item
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
@@ -1084,27 +1060,14 @@ opt_specialization:
 	| specialization;
 
 specialization:
-	SPECIALIZE_BEGIN2 specialization2 ')'
+	SPECIALIZE_BEGIN2 block3 ')'
 	{
 	    $$ = $2;
 	}
 	|
-	SPECIALIZATION_BEGIN specialization2 SPECIALIZATION_END
+	SPECIALIZATION_BEGIN block3 SPECIALIZATION_END
 	{
 	    $$ = $2;
-	}
-;
-
-specialization2:
-	expression
-	{
-	    $$ = anna_node_create_block2(&@$,$1);
-	}
-	|
-	specialization2 TERMINATOR expression
-	{
-	  anna_node_call_add_child($1,$3);
-	  $$ = $1;
 	}
 ;
 
@@ -1129,7 +1092,7 @@ attribute_list :
 	    $$ = anna_node_create_block2(&@$);
 	}
 	| 
-	'(' block3 opt_terminator ')'
+	'(' block3 opt_separator ')'
 	{
 	    $$ = $2;
 	}
@@ -1188,7 +1151,7 @@ static int anna_yacc_lex_inner (
 
 /**
    Returns the next token for the parser. Ignores IGNORE and
-   LINE_BREAK tokens. Adds implicit terminators after brace/LINE_BREAK
+   LINE_BREAK tokens. Adds implicit separators after brace/LINE_BREAK
    combos. Keeps track of file location.
  */
 int anna_yacc_lex (
@@ -1199,7 +1162,7 @@ int anna_yacc_lex (
 
     /*
       Line breaks directly following an end brace are implicitly
-      interpreted as a terminator.
+      interpreted as a separator.
 
       Otherwise we'd need a semi-colon after any block call, e.g.
 
@@ -1214,7 +1177,7 @@ int anna_yacc_lex (
 	if(was_end_brace)
 	{
 	    was_end_brace = 0;
-	    return TERMINATOR;
+	    return SEPARATOR;
 	}
 	else
 	{
