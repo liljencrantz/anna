@@ -110,7 +110,6 @@ void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 
 anna_node_call_t *node_cast_call(anna_node_t *node) 
 {
-    
     if(node->node_type!=ANNA_NODE_CALL)
     {
 	anna_error(node, L"Expected a call node");
@@ -141,7 +140,6 @@ anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node)
     assert(node->node_type==ANNA_NODE_STRING_LITERAL);
     return (anna_node_string_literal_t *)node;
 }
-
 
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
 {
@@ -193,26 +191,6 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
     call->function = function;
 }
 
-static anna_object_t *anna_node_int_literal_invoke(anna_node_int_literal_t *this, anna_stack_template_t *stack)
-{
-    return anna_int_create(this->payload);
-}
-
-static anna_object_t *anna_node_float_literal_invoke(anna_node_float_literal_t *this, anna_stack_template_t *stack)
-{
-    return anna_float_create(this->payload);
-}
-
-static anna_object_t *anna_node_string_literal_invoke(anna_node_string_literal_t *this, anna_stack_template_t *stack)
-{
-    return anna_string_create(this->payload_size, this->payload);
-}
-
-static anna_object_t *anna_node_char_literal_invoke(anna_node_char_literal_t *this, anna_stack_template_t *stack)
-{
-    return anna_char_create(this->payload);
-}
-
 static anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
 {
     anna_object_t *result = anna_node_static_invoke(this->value, stack);
@@ -259,22 +237,22 @@ anna_object_t *anna_node_static_invoke(
 	}
 
 	case ANNA_NODE_INT_LITERAL:
-	    return anna_node_int_literal_invoke((anna_node_int_literal_t *)this, stack);
+	    return anna_int_create(((anna_node_int_literal_t *)this)->payload);
+
 	case ANNA_NODE_FLOAT_LITERAL:
-	    return anna_node_float_literal_invoke((anna_node_float_literal_t *)this, stack);
+	    return anna_float_create(((anna_node_float_literal_t *)this)->payload);
 
 	case ANNA_NODE_STRING_LITERAL:
-	    return anna_node_string_literal_invoke((anna_node_string_literal_t *)this, stack);
+	    return anna_string_create(
+		((anna_node_string_literal_t *)this)->payload_size, 
+		((anna_node_string_literal_t *)this)->payload);
 
 	case ANNA_NODE_CHAR_LITERAL:
-	    return anna_node_char_literal_invoke((anna_node_char_literal_t *)this, stack);
+	    return anna_char_create(((anna_node_char_literal_t *)this)->payload);
 
 	case ANNA_NODE_NULL:
 	    return null_object;
 
-	case ANNA_NODE_ASSIGN:
-	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
-	    
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
@@ -285,8 +263,6 @@ anna_object_t *anna_node_static_invoke(
 	    return null_object;
     }    
 }
-
-
 
 static size_t anna_node_size(anna_node_t *n)
 {
@@ -328,8 +304,7 @@ static size_t anna_node_size(anna_node_t *n)
 	default:
 	    anna_error(n, L"Unknown node type %d encoundered while determining size of node\n", n->node_type);
 	    CRASH;
-    }
-    
+    }    
 }
 
 static void anna_node_call_dealias(anna_node_call_t *dest, anna_node_call_t *src)
@@ -363,8 +338,6 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     anna_alloc_gc_unblock();
     return r;
 }
-
-
 
 anna_node_t *anna_node_clone_deep(anna_node_t *n)
 {
@@ -552,7 +525,6 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    CRASH;
 	
     }
-
 }
 
 void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
@@ -820,8 +792,6 @@ void anna_node_call_map(
     
 }
 
-
-
 static void anna_node_find_each(anna_node_t *node, void *aux)
 {
     anna_node_find_each_t *data = (anna_node_find_each_t *)aux;
@@ -841,5 +811,3 @@ void anna_node_find(anna_node_t *this, int node_type, array_list_t *al)
     
     anna_node_each(this, &anna_node_find_each, &data);
 }
-
-

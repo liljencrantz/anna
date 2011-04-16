@@ -176,7 +176,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
     anna_function_t *f = anna_native_create(
 	L"print", 
 	ANNA_FUNCTION_VARIADIC, 
-	(anna_native_t)&anna_i_print, 
+	&anna_i_print, 
 	list_type, 1, &object_type, 
 	p_argn, stack);
 
@@ -189,7 +189,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
     
     anna_function_t *not = anna_native_create(
 	L"__not__", 0, 
-	(anna_native_t)&anna_i_not, 
+	&anna_i_not, 
 	int_type, 
 	1, &object_type, p_argn, stack);
 
@@ -202,7 +202,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 
     anna_function_t *callcc = anna_native_create(
 	L"callCC", 0, 
-	(anna_native_t)&anna_i_callcc, 
+	&anna_i_callcc, 
 	object_type, 
 	1, &object_type, p_argn, stack);
 
@@ -218,7 +218,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
     
     anna_function_t *wrap = anna_native_create(
 	L"wrapMethod", 0,
-	(anna_native_t)&anna_i_wrap_method,
+	&anna_i_wrap_method,
 	object_type,
 	2,
 	wrap_argv, wrap_argn, stack);

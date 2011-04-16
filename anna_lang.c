@@ -48,16 +48,11 @@ static void anna_null_type_create()
     wchar_t *member_name = L"!null_member";
     anna_member_t *null_member;  
     null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
-    //debug(D_SPAM,L"Null member is %d\n", null_member);
-    
     null_member->type = null_type;
     null_member->offset=0;
     null_member->is_static=1;
     wcscpy(null_member->name, member_name);
     
-    /*  
-	anna_native_method_create(list_type, -1, L"__getInt__", 0, (anna_native_t)&anna_list_getitem, object_type, 2, i_argv, i_argn);
-    */
     anna_type_t *argv[]={null_type};
     wchar_t *argn[]={L"this"};
     anna_type_static_member_allocate(null_type);
@@ -66,7 +61,7 @@ static void anna_null_type_create()
 	anna_function_wrap(
 	    anna_native_create(
 		L"!nullFunction", 0, 
-		(anna_native_t)&anna_vm_null_function, 
+		&anna_vm_null_function, 
 		null_type, 1, argv, argn,
 		0));
   
