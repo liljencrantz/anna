@@ -46,8 +46,6 @@ anna_node_t *anna_node_null=0;
 
 anna_stack_template_t *stack_global;
 
-anna_object_t *anna_i_function_wrapper_call(anna_node_call_t *node, anna_stack_template_t *stack);
-
 __pure anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
 {
     /*
@@ -238,37 +236,6 @@ anna_type_t *anna_type_for_function(
     return res;
 }
 
-anna_object_t *anna_method_wrap(anna_object_t *method, anna_object_t *owner)
-{
-    anna_function_t *function_original = anna_function_unwrap(method);
-    size_t func_size = sizeof(anna_function_t);
-    anna_function_t *function_copy = malloc(func_size);
-    
-    memcpy(
-	function_copy,
-	function_original,
-	func_size);
-    function_copy->this = owner;
-    function_copy->wrapper = 
-	anna_object_create(
-	    function_original->wrapper->type);
-    memcpy(
-	anna_member_addr_get_mid(
-	    anna_function_wrap(function_copy),
-	    ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
-	&function_copy, sizeof(anna_function_t *));
-    memcpy(
-	anna_member_addr_get_mid(
-	    anna_function_wrap(function_copy),
-	    ANNA_MID_FUNCTION_WRAPPER_STACK),
-	anna_member_addr_get_mid(
-	    anna_function_wrap(function_original),
-	    ANNA_MID_FUNCTION_WRAPPER_STACK),
-	sizeof(anna_stack_template_t *));
-    return anna_function_wrap(function_copy);
-}
-
-
 anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 {
     if(t1 == t2)
@@ -404,21 +371,6 @@ size_t anna_native_method_create(
     return (size_t)mid;
 }
 
-size_t anna_method_create(anna_type_t *type,
-			  mid_t mid,
-			  wchar_t *name,
-			  int unused(flags),
-			  anna_function_t *definition)		
-{
-    mid = anna_member_create(type, mid, name, 1, definition->wrapper->type);
-    anna_member_t *m = type->mid_identifier[mid];
-    m->is_method=1;
-    
-    //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
-    type->static_member[m->offset] = anna_function_wrap(definition);
-    return (size_t)mid;
-}
-
 static void anna_init()
 {
     hash_init(
@@ -431,18 +383,6 @@ static void anna_init()
     stack_global = anna_stack_create(0);
 
     hash_init(&anna_abides_cache, hash_tt_func, hash_tt_cmp);
-
-/*
-    anna_member_types_create(stack_global);
-*/  
-    
-/*
-    assert(anna_abides(int_type,object_type)==1);
-    assert(anna_abides(list_type,object_type)==1);
-    assert(anna_abides(object_type,int_type)==0);
-    assert(anna_abides(int_type,int_type)==1);
-*/  
-    
 }
 
 int main(int argc, char **argv)

@@ -521,10 +521,6 @@ __pure anna_object_t **anna_static_member_addr_get_mid(
 __pure anna_object_t **anna_member_addr_get_mid(
     anna_object_t *obj, mid_t mid);
 
-anna_object_t *anna_method_wrap(
-    anna_object_t *method, 
-    anna_object_t *owner);
-
 size_t anna_native_method_create(
     anna_type_t *type,
     mid_t mid,
@@ -535,14 +531,6 @@ size_t anna_native_method_create(
     size_t argc,
     anna_type_t **argv,
     wchar_t **argn);
-
-size_t anna_method_create(
-    anna_type_t *type,
-    mid_t mid,
-    wchar_t *name,
-    int flags,
-    anna_function_t *definition);
-
 
 int anna_abides(
     anna_type_t *contender, anna_type_t *role_model);

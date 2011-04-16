@@ -431,7 +431,8 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n);
  */
 int anna_node_compare(anna_node_t *node1, anna_node_t *node2);
 
-anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to);
+anna_node_t *anna_node_replace(
+    anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to);
 
 typedef void(*anna_node_function_t)(anna_node_t *, void *);
 
@@ -484,7 +485,8 @@ void anna_node_call_map(
     anna_function_type_t *target, 
     int is_method);
 
-anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack);
+anna_type_t *anna_node_resolve_to_type(
+    anna_node_t *node, anna_stack_template_t *stack);
 
 #endif
 
