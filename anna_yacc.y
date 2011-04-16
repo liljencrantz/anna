@@ -960,7 +960,7 @@ function_definition:
 	{
 	    anna_node_t *def = (anna_node_t *)anna_node_create_call2(
 		&@$,anna_node_create_identifier(&@1,L"__def__"), 
-		$3?$3:anna_node_create_identifier(&@$,L"!anonymous"),
+		$3?$3:(anna_node_t *)anna_node_create_identifier(&@$,L"!anonymous"),
 		$2?$2:anna_node_create_null(&@$),
 		$4, $5, $6?$6:anna_node_create_block2(&@$));
 	    

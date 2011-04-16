@@ -19,6 +19,7 @@ Int should just be an interface, with two backing implementations
 continue/break (continue is easy with a continuation, but implementing break requires some special hacking)
 No magic toString method, use attributes to specify methods for implicit conversion
 Type identifiers should contain their static members
+Return value type for continuations
 
 STDLIB FEATURES:
 HTML documentation extractor
@@ -30,6 +31,7 @@ toString methods for Hash, List, Range, Function, Pair, etc
 A backtrace function
 
 RELIABILITY:
+Use continuations to make a green thread implementation as a test of continuation functionality
 Validate that all functions end with an empty stack frame
 Tests for namespaces
 Tests for nested macro members
@@ -46,12 +48,11 @@ PERFORMANCE:
 Performance target: It should be possible to do the mandelbrot calculation test in 0.05 seconds on my x301.
 variable lookup instruction version for looking up in current frame
 variable lookup instruction version for looking up in parent frame
-Free AST nodes after compilation
 Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)
 Consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion
-Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for cal with stack-on-stack. This would require that the gc knows that non-objects might be living on the stack...
-Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.Jump labels
+Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. This would require that the gc knows that non-objects might be living on the stack...
+Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
 Add profiling information to the VM
 Inlining of if/while bodies into main method
 Make a verion of the fold op that takes a count parameter

@@ -41,9 +41,6 @@ enum anna_node_enum
     ANNA_NODE_MAPPING,
     ANNA_NODE_MAPPING_IDENTIFIER,
     ANNA_NODE_RETURN,
-
-/* These AST node types probably are't needed and should be removed */
-    ANNA_NODE_IMPORT,
 }
     ;
 
