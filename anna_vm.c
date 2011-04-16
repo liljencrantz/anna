@@ -92,7 +92,6 @@ void anna_vm_destroy(void)
 }
 #endif
 
-
 anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
     static void * jump_label[] = 
@@ -150,6 +149,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
     stack = root_fun->native(stack, entry);
+
     goto *jump_label[(int)*stack->code];
 
   ANNA_LAB_CONSTANT:
@@ -551,8 +551,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
-
-
 }
 
 size_t anna_bc_op_size(char instruction)
@@ -847,6 +845,10 @@ void anna_vm_mark_code(anna_function_t *f)
 anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
 {
     char *code = stack->code;
+    /* We rewind the code pointr one function call to get to the
+     * instruction that called us. TWe then check how many parameters
+     * we were called with, and drop that number of parameters and
+     * finally push a null value to the stack */
     code -= sizeof(anna_op_count_t);
     anna_op_count_t *op = (anna_op_count_t *)code;
     anna_vmstack_drop(stack,op->param+1);
