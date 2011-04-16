@@ -315,7 +315,8 @@ block: '{' block2 '}'
 	}
 ;
 
-block2 : /* Empty */ 
+block2 : 
+	opt_separator
 	{
 	    $$ = anna_node_create_block2(&@$);
 	}
@@ -419,7 +420,6 @@ expression2 :
         | 
 	expression3
 ;
-
 
 opt_separator: /* Empty */| SEPARATOR;
 
@@ -1060,12 +1060,12 @@ opt_specialization:
 	| specialization;
 
 specialization:
-	SPECIALIZE_BEGIN2 block3 ')'
+	SPECIALIZE_BEGIN2 block3 opt_separator ')'
 	{
 	    $$ = $2;
 	}
 	|
-	SPECIALIZATION_BEGIN block3 SPECIALIZATION_END
+	SPECIALIZATION_BEGIN block3 opt_separator SPECIALIZATION_END
 	{
 	    $$ = $2;
 	}
