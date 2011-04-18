@@ -16,9 +16,12 @@ struct anna_sid
 typedef struct anna_sid anna_sid_t;
 
 
-#define ANNA_STACK_READONLY 512
-#define ANNA_STACK_MODULE 1024
-#define ANNA_STACK_LOADED 2048
+
+#define ANNA_STACK_NAMESPACE 1024
+#define ANNA_STACK_UNLOADED 2048
+
+/* Stack member flags */
+#define ANNA_STACK_READONLY 1
 
 #define anna_stack_get_ro(stack, name) !!(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
 
@@ -52,7 +55,6 @@ struct anna_stack_template
     int *member_flags;
     array_list_t import;
     array_list_t expand;
-    int is_namespace;
     struct anna_object **member;
     /**
        Only used by modules. Full name of module location.
@@ -109,6 +111,7 @@ void anna_stack_populate_wrapper(anna_stack_template_t *stack);
 void anna_stack_prepare(anna_type_t *type);
 
 int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name);
+void anna_stack_set_flag(anna_stack_template_t *stack, wchar_t *name, int value);
 
 anna_stack_template_t *anna_stack_template_search(
     anna_stack_template_t *stack,

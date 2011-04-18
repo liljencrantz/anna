@@ -254,10 +254,46 @@ anna_object_t *anna_node_static_invoke_try(
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
+
+	case ANNA_NODE_IDENTIFIER:
+	{
+	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
+	    anna_stack_template_t *frame = anna_stack_template_search(stack, this2->name);
+	    //wprintf(L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
+	    if(frame && (frame->flags & ANNA_STACK_NAMESPACE))
+	    {
+		if(anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)
+		    return anna_stack_get(frame, this2->name);		
+	    }
+	    break;
+	}
+	
+	case ANNA_NODE_MEMBER_GET:
+	{
+	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
+	    //wprintf(L"Weee member get. Member is named %ls\n", anna_mid_get_reverse(this2->mid));
+	    anna_object_t *obj = anna_node_static_invoke_try(
+		this2->object,
+		stack);
+	    if(obj)
+	    {
+		anna_member_t *memb = anna_member_get(obj->type, this2->mid);
+		if(memb->is_property)
+		{
+		    return 0;
+		}
+		
+		//wprintf(L"Weee member found object\n");
+		return *anna_member_addr_get_mid(obj, this2->mid);
+	    }
+	    else
+	    {
+		//wprintf(L"Member not constant\n");		
+	    }
 	    
-	default:
-	    return 0;
-    }    
+	}
+    }
+    return 0;
 }
 
 anna_object_t *anna_node_static_invoke(

@@ -233,6 +233,14 @@ int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)
     return f->member_flags[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
+void anna_stack_set_flag(anna_stack_template_t *stack, wchar_t *name, int value)
+{
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
+    if(!f)
+	return;
+    f->member_flags[*(size_t *)hash_get(&f->member_string_identifier, name)] = value;
+}
+
 void anna_stack_set_type(anna_stack_template_t *stack, wchar_t *name, anna_type_t *type){
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f){

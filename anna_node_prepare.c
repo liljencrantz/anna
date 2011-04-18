@@ -444,6 +444,10 @@ static void anna_node_calculate_type_internal(
 		    stack,
 		    d->name,
 		    value);
+		anna_stack_set_flag(
+		    stack,
+		    d->name,
+		    ANNA_STACK_READONLY);
 	    }
 	    
 //	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);

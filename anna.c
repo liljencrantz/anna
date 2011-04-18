@@ -381,7 +381,8 @@ static void anna_init()
     anna_slab_init();
     
     stack_global = anna_stack_create(0);
-
+    stack_global->flags |= ANNA_STACK_NAMESPACE;
+    
     hash_init(&anna_abides_cache, hash_tt_func, hash_tt_cmp);
 }
 

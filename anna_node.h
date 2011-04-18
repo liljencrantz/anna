@@ -158,9 +158,9 @@ struct anna_node_member_access
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
+    mid_t mid;
     struct anna_node *object;
     struct anna_node *value;
-    mid_t mid;
 };
 
 struct anna_node_call
@@ -464,6 +464,10 @@ void anna_yacc_init(void);
 
 anna_object_t *anna_trampoline(
     anna_function_t *fun,
+    anna_stack_template_t *stack);
+
+anna_object_t *anna_node_static_invoke_try(
+    anna_node_t *this, 
     anna_stack_template_t *stack);
 
 anna_object_t *anna_node_static_invoke(

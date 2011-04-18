@@ -191,7 +191,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     al_push(&import, L"lang");
     
     anna_stack_template_t *macro_stack = anna_stack_create(stack_global);
-    macro_stack->flags |= ANNA_STACK_MODULE;
+    macro_stack->flags |= ANNA_STACK_NAMESPACE;
     anna_module_find_expand(program, &expand);    
     anna_module_find_import(program, &import);
     
@@ -229,7 +229,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     anna_node_print(0, node);
     module_stack= anna_stack_create(stack_global);
     anna_node_register_declarations(module_stack, node);
-    module_stack->is_namespace = 1;
+    module_stack->flags |= ANNA_STACK_NAMESPACE;
     if(anna_error_count)
     {
 	debug(

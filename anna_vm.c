@@ -629,7 +629,8 @@ void anna_bc_print(char *code)
 	    case ANNA_INSTR_CONSTANT:
 	    {
 		anna_op_const_t *op = (anna_op_const_t*)code;
-		wprintf(L"Push constant of type %ls\n\n", op->value->type->name);
+		wprintf(L"Push constant of type %ls at addr %d\n\n", 
+			op->value->type->name, op->value);
 		break;
 	    }
 	    

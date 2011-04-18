@@ -80,7 +80,7 @@ anna_stack_template_t *anna_lang_load()
 {
 
     anna_stack_template_t *stack_lang = anna_stack_create(stack_global);
-    stack_lang->is_namespace = 1;
+    stack_lang->flags |= ANNA_STACK_NAMESPACE;
     
     /*
       Create lowest level stuff. Bits of magic, be careful with
