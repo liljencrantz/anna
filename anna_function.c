@@ -566,7 +566,7 @@ anna_function_t *anna_method_wrapper_create(
     result->input_name = 0;
     
     result->native = anna_vm_method_wrapper;
-    result->name = anna_intern_static(L"!methodWrapper");
+    result->name = anna_intern_static(L"!boundMethod");
     result->return_type=return_type;
     result->input_count=0;
     

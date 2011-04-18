@@ -145,6 +145,6 @@ anna_stack_template_t *anna_lang_load()
     anna_function_implementation_init(stack_lang);
     anna_macro_init(stack_macro);
     al_push(&stack_global->expand, stack_macro);
-    
+
     return stack_lang;
 }

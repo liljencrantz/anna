@@ -596,14 +596,15 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
     {
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_CONSTRUCT:
+	case ANNA_NODE_CALL:
 	{
 	    anna_function_type_t *ftk=0;
-	    int child_count;
-	    anna_node_t **child;
+	    anna_type_t **tmpl;
+	    int tmpl_count;
+	    anna_node_call_t *this2 =(anna_node_call_t *)this;
 
 	    if(this->node_type == ANNA_NODE_CONSTRUCT)
 	    {
-		anna_node_call_t *this2 =(anna_node_call_t *)this;
 		anna_type_t *ft = this2->function->return_type;
 		if(!ft)
 		{
@@ -619,79 +620,49 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		assert(constructor_ptr);
 		ftk = anna_function_type_extract(
 		    (*constructor_ptr)->type);
-		child = this2->child;
-		child_count = this2->child_count;
-	    }
-	    else
-	    {
-		anna_node_call_t *this2 =(anna_node_call_t *)this;
-		anna_type_t *ft = 
-		    anna_member_get(this2->object->return_type, this2->mid)->type;
+		if(ftk)
+		{
+		    tmpl = ftk->input_type+1;
+		    tmpl_count = ftk->input_count-1;
+		}
 		
+	    }
+	    else if(this->node_type == ANNA_NODE_MEMBER_CALL)
+	    {
+		anna_member_t *memb = 
+		    anna_member_get(this2->object->return_type, this2->mid);
+		anna_type_t *ft = memb->type;
+				
 		ftk = anna_function_type_extract(ft);	    
-		child = this2->child;
-		child_count = this2->child_count;		
-	    }
-	    
-	    if(!ftk)
-	    {
-		anna_error(this, L"Tried to call a non-function");
-		break;
-	    }
-	    if(ftk->flags & ANNA_FUNCTION_VARIADIC)
-	    {
-		if( child_count < ftk->input_count-2)
-		{
-		    anna_error(
-			this,
-			L"Too few parameters to constructor call. Expected at least %d, got %d\n", 
-			ftk->input_count-2, child_count);
-		    break;
-		}
 		
+		if(ftk)
+		{
+		    tmpl = ftk->input_type;
+		    tmpl_count = ftk->input_count;
+		    if(memb->is_method)
+		    {
+			tmpl++;
+			tmpl_count--;
+		    }
+		}
 	    }
 	    else
 	    {
-		if(ftk->input_count != child_count+1)
+		anna_type_t *ft = this2->function->return_type;
+		if(!ft)
 		{
-		    anna_error(
-			this,
-			L"Wrong number of parameters to constructor call. Expected %d, got %d\n", 
-			ftk->input_count-1, child_count);
-		    anna_node_print(D_ERROR, this);
+		    anna_error(this, L"Invalid return type");
 		    break;
 		}
-	    }
-	    int i;
-	    for(i=0; i<child_count; i++)
-	    {
-		anna_type_t *param = child[i]->return_type;
-		anna_type_t *templ = ftk->input_type[mini(i+1, ftk->input_count-1)];
-		if(!anna_abides(param, templ))
-		{
-		    
-		    anna_error(
-			this,
-			L"Invalid type of parameter %d in function call. Expected type %ls, got type %ls", i+1, templ->name, param->name);
-		}
 		
+		ftk = anna_function_type_extract(ft);
+		
+		if(ftk)
+		{
+		    tmpl = ftk->input_type;
+		    tmpl_count = ftk->input_count;
+		}
 	    }
-	    	    
-	    break;	    
-	}
-
-	case ANNA_NODE_CALL:
-	{
-	    anna_node_call_t *this2 =(anna_node_call_t *)this;
-	    anna_type_t *ft = this2->function->return_type;
-	    if(!ft)
-	    {
-		anna_error(this, L"Invalid return type");
-		break;
-	    }
-	    
-	    anna_function_type_t *ftk;
-	    ftk = anna_function_type_extract(ft);
 	    
 	    if(!ftk)
 	    {
@@ -700,24 +671,24 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    }
 	    if(ftk->flags & ANNA_FUNCTION_VARIADIC)
 	    {
-		if( this2->child_count < ftk->input_count-1)
+		if( this2->child_count < tmpl_count-1)
 		{
 		    anna_error(
 			this,
 			L"Too few parameters to function call. Expected at least %d, got %d\n", 
-			ftk->input_count-1, this2->child_count);
+			tmpl_count-1, this2->child_count);
 		    break;
 		}
-		
 	    }
 	    else
 	    {
-		if(ftk->input_count != this2->child_count)
+		if(tmpl_count != this2->child_count)
 		{
 		    anna_error(
 			this,
 			L"Wrong number of parameters to function call. Expected %d, got %d\n", 
-			ftk->input_count, this2->child_count);
+			tmpl_count, this2->child_count);
+		    anna_node_print(D_ERROR, this);
 		    break;
 		}
 	    }
@@ -725,9 +696,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    for(i=0; i<this2->child_count; i++)
 	    {
 		anna_type_t *param = this2->child[i]->return_type;
-		anna_type_t *templ = ftk->input_type[mini(i, ftk->input_count-1)];
-		    
-//		wprintf(L"Check if type %ls abides to %ls\n", this2->child[i]->return_type->name, ftk->input_type[mini(i, ftk->input_count-1)]->name);
+		anna_type_t *templ = tmpl[mini(i, tmpl_count-1)];
 		if(!anna_abides(param, templ))
 		{
 		    

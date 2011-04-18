@@ -780,17 +780,17 @@ static void anna_vm_compile_i(
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
 
-	    anna_vm_member(ptr, ANNA_INSTR_MEMBER_GET_THIS, node2->mid);
-	    
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
+	    
+	    anna_vm_member(ptr, mem->is_method?ANNA_INSTR_MEMBER_GET_THIS:ANNA_INSTR_MEMBER_GET, node2->mid);
 	    
 	    anna_function_type_t *template = anna_function_type_extract(
 		mem->type);
 	    
 	    int i;
 	    
-	    int ra = template->input_count-1;
+	    int ra = template->input_count-(mem->is_method?1:0);
 	    if(template->flags & ANNA_FUNCTION_VARIADIC)
 	    {
 		ra--;
@@ -805,7 +805,6 @@ static void anna_vm_compile_i(
 		    ptr,
 		    ANNA_INSTR_LIST,
 		    anna_list_type_get(template->input_type[template->input_count-1]));
-		
 		
 		for(; i<node2->child_count; i++)
 		{

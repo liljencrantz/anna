@@ -15,10 +15,10 @@ struct anna_sid
 
 typedef struct anna_sid anna_sid_t;
 
-#define ANNA_STACK_PRIVATE 512
 
 #define ANNA_STACK_READONLY 512
-#define ANNA_STACK_CLONE 1024
+#define ANNA_STACK_MODULE 1024
+#define ANNA_STACK_LOADED 2048
 
 #define anna_stack_get_ro(stack, name) !!(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
 
@@ -54,6 +54,10 @@ struct anna_stack_template
     array_list_t expand;
     int is_namespace;
     struct anna_object **member;
+    /**
+       Only used by modules. Full name of module location.
+     */
+    wchar_t *filename;
 };
 
 typedef struct anna_stack_template anna_stack_template_t;

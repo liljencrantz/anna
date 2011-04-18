@@ -1,10 +1,5 @@
-def wee(Int in...)
-{
-    print("count: ", in.count, "\n");
-    in.each(i){print(i, "\n")}
-}
 
 def main()  
 {
-    wee(1,2,45,6,7)
+    lang.print("aaa\n");
 }

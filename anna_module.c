@@ -54,7 +54,8 @@ void anna_module_mark()
 }
 
 
-static void anna_module_find_import_internal(anna_node_t *module, wchar_t *name, array_list_t *import)
+static void anna_module_find_import_internal(
+    anna_node_t *module, wchar_t *name, array_list_t *import)
 {
     int i;
     if(module->node_type != ANNA_NODE_CALL)
@@ -190,6 +191,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     al_push(&import, L"lang");
     
     anna_stack_template_t *macro_stack = anna_stack_create(stack_global);
+    macro_stack->flags |= ANNA_STACK_MODULE;
     anna_module_find_expand(program, &expand);    
     anna_module_find_import(program, &import);
     
