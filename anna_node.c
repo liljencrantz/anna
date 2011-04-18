@@ -203,12 +203,10 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t 
     return 0;
 }
 
-anna_object_t *anna_node_static_invoke(
+anna_object_t *anna_node_static_invoke_try(
     anna_node_t *this, 
     anna_stack_template_t *stack)
 {
-    //wprintf(L"anna_node_invoke with stack %d\n", stack);
-    //wprintf(L"invoke %d\n", this->node_type);    
     if(!this)
     {
 	wprintf(L"Critical: Invoke null node\n");
@@ -235,18 +233,18 @@ anna_object_t *anna_node_static_invoke(
 	    anna_type_t *f = c->payload;
 	    return anna_type_wrap(f);
 	}
-
+	
 	case ANNA_NODE_INT_LITERAL:
 	    return anna_int_create(((anna_node_int_literal_t *)this)->payload);
-
+	    
 	case ANNA_NODE_FLOAT_LITERAL:
 	    return anna_float_create(((anna_node_float_literal_t *)this)->payload);
-
+	    
 	case ANNA_NODE_STRING_LITERAL:
 	    return anna_string_create(
 		((anna_node_string_literal_t *)this)->payload_size, 
 		((anna_node_string_literal_t *)this)->payload);
-
+	    
 	case ANNA_NODE_CHAR_LITERAL:
 	    return anna_char_create(((anna_node_char_literal_t *)this)->payload);
 
@@ -258,11 +256,24 @@ anna_object_t *anna_node_static_invoke(
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
 	    
 	default:
-	    anna_error(
-		this,L"Illegal node type %d found during static invoke!\n", this->node_type);
-	    return null_object;
+	    return 0;
     }    
 }
+
+anna_object_t *anna_node_static_invoke(
+    anna_node_t *this, 
+    anna_stack_template_t *stack)
+{
+    anna_object_t *res = anna_node_static_invoke_try(this, stack);
+    if(!res)
+    {
+	anna_error(
+	    this,L"Code could not be invoked at compile time\n");
+	return null_object;
+    }
+    return res;
+}
+
 
 static size_t anna_node_size(anna_node_t *n)
 {

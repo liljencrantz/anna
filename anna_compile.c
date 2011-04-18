@@ -450,8 +450,12 @@ static void anna_vm_compile_i(
     switch(node->node_type)
     {
 	case ANNA_NODE_NULL:
+	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_INT_LITERAL:
+	case ANNA_NODE_CHAR_LITERAL:
+	case ANNA_NODE_FLOAT_LITERAL:
 	{
-	    anna_vm_const(ptr, null_object);
+	    anna_vm_const(ptr, anna_node_static_invoke(node, fun->stack_template));
 	    break;
 	}
 
@@ -466,28 +470,6 @@ static void anna_vm_compile_i(
 	    break;
 	}
 
-	case ANNA_NODE_DUMMY:
-	{
-	    anna_node_dummy_t *node2 = (anna_node_dummy_t *)node;
-	    anna_vm_const(ptr,node2->payload);
-	    break;
-	}
-
-	case ANNA_NODE_INT_LITERAL:
-	{
-	    anna_node_int_literal_t *node2 = (anna_node_int_literal_t *)node;
-	    anna_vm_const(ptr,anna_int_create(node2->payload));
-	    break;
-	}
-
-	case ANNA_NODE_CHAR_LITERAL:
-	{
-	    anna_node_char_literal_t *node2 = (anna_node_char_literal_t *)node;
-	    anna_vm_const(ptr,anna_char_create(node2->payload));
-	    break;
-	}
-
-	case ANNA_NODE_FLOAT_LITERAL:
 	{
 	    anna_node_float_literal_t *node2 = (anna_node_float_literal_t *)node;
 	    anna_vm_const(ptr,anna_float_create(node2->payload));
@@ -529,7 +511,7 @@ static void anna_vm_compile_i(
 
 	    break;
 	}
-
+	
 	case ANNA_NODE_RETURN:
 	{
 	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)node;
@@ -779,7 +761,7 @@ static void anna_vm_compile_i(
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
-
+	    
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
 	    
