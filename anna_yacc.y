@@ -295,7 +295,7 @@ module: opt_expression_list
 
 block: '{' opt_expression_list '}'
 	{
-		$$ = $2;
+	    $$ = $2;
 	};
 
 opt_expression_list : 
@@ -351,7 +351,6 @@ opt_else:
 	{
 	    $$ = $2;
 	};
-
 
 expression:
 	expression2 '=' expression
@@ -674,51 +673,51 @@ op2:
 	|
 	OR
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__or__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__or__");
 	};
 
 op3:
 	'<'
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__lt__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__lt__");
 	}
 	|
 	'>'
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__gt__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__gt__");
 	}
 	|
 	EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__eq__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__eq__");
 	}
 	|
 	NOT_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__neq__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__neq__");
 	}
 	|
 	LESS_OR_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__lte__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__lte__");
 	}
 	|
 	GREATER_OR_EQUAL
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__gte__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__gte__");
 	}
         |
 	IN
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__in__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&@$,L"__in__");
 	};
 
 op4: 
@@ -769,18 +768,18 @@ op7:
 pre_op8:
 	'-'
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__neg__")
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__neg__")
 	};
 
 post_op8:
 	NEXT
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__next__")
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__next__")
 	}
 	|
 	PREV
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__prev__")
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__prev__")
 	};
 
 opt_identifier:
@@ -902,7 +901,7 @@ function_definition:
 	};
 
 declaration_list :
-	'(' ')'
+	'(' opt_separator ')'
 	{
 	    $$ = anna_node_create_block2(&@$);
 	}
@@ -954,7 +953,7 @@ opt_ellipsis:
 	|
 	ELLIPSIS
 	{
-		$$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadic");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadic");
 	};
 
 variable_declaration:
@@ -1101,7 +1100,7 @@ int anna_yacc_lex (
 
     /*
       Line breaks directly following an end brace are implicitly
-      interpreted as a separator.
+      interpreted as an expression separator.
 
       Otherwise we'd need a semi-colon after any block call, e.g.
 
