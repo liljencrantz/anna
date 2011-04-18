@@ -235,6 +235,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token AND
 %token OR
 %token VAR
+%token CONST
 %token RETURN
 %token SEPARATOR
 %token SIGN
@@ -255,10 +256,10 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token SPECIALIZATION_BEGIN
 %token SPECIALIZATION_END
 
-%type <call_val> block block2 block3 opt_else
+%type <call_val> block opt_expression_list expression_list opt_else
 %type <call_val> module
 %type <node_val> expression expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
-%type <node_val> constant
+%type <node_val> constant var_or_const
 %type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
 %type <node_val> function_definition 
 %type <node_val> function_declaration 
@@ -270,7 +271,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <call_val> attribute_list 
 %type <call_val> opt_block
 %type <call_val> specialization opt_specialization
-%type <node_val> opt_templatized_type  templatized_type 
+%type <node_val> opt_specialized_type  specialized_type 
 
 %right '='
 
@@ -278,27 +279,11 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 
 %%
 
-module:
-	module expression SEPARATOR
-	{	    
-	    $$ = $1;
-	    if($1 && $2)
-	    {
-		anna_node_call_add_child($1,$2);
-		anna_node_set_location((anna_node_t *)$$, &@$);
-	    }
-	}
-	| 
-	expression SEPARATOR
+module: opt_expression_list
 	{
-	    $$ = anna_node_create_call2(
-		&@$, 
+	    $$->function = 
 		(anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__module__"));
-	    if ($1)
-		anna_node_call_add_child(
-		    $$,
-		    $1);
+		    &@$,L"__module__");
 	    *parse_tree_ptr = (anna_node_t *)$$;
 	}
 	|
@@ -306,37 +291,36 @@ module:
 	{
 	    yyerrok;
 	    $$ = 0;  
-	}
-;
+	};
 
-block: '{' block2 '}'
+block: '{' opt_expression_list '}'
 	{
 		$$ = $2;
-	}
-;
+	};
 
-block2 : 
+opt_expression_list : 
 	opt_separator
 	{
 	    $$ = anna_node_create_block2(&@$);
 	}
 	| 
-	block3 opt_separator
-;
+	expression_list opt_separator;
 
-block3 :
-	block3 SEPARATOR expression
+expression_list :
+	expression_list SEPARATOR expression
 	{
-	    $$ = $1;
-	    anna_node_call_add_child($1,$3);
-	    anna_node_set_location((anna_node_t *)$$, &@$);
+	    if($1)
+	    {
+		$$ = $1;
+		anna_node_call_add_child($1,$3);
+		anna_node_set_location((anna_node_t *)$$, &@$);
+	    }
 	}
 	| 
 	expression
 	{
 	    $$ = anna_node_create_block2(&@$, $1);
-	}
-;
+	};
 
 opt_declaration_init :
 	'=' expression
@@ -346,8 +330,7 @@ opt_declaration_init :
 	|
 	{
 	    $$ = 0;
-	}
-;
+	};
 
 opt_declaration_expression_init :
 	'=' expression
@@ -357,8 +340,7 @@ opt_declaration_expression_init :
 	|
 	{
 	    $$ = 0;
-	}
-;
+	};
 
 opt_else: 
 	/* Empty */
@@ -368,8 +350,7 @@ opt_else:
 	| ELSE block
 	{
 	    $$ = $2;
-	}
-;
+	};
 
 
 expression:
@@ -406,8 +387,7 @@ expression:
 		  &@$,
 		  L"return"), 
 	      anna_node_create_null(&@$));  
-	}
-;
+	};
 
 expression2 :
 	expression2 op2 expression3
@@ -418,8 +398,7 @@ expression2 :
 		$1, $3);
 	}
         | 
-	expression3
-;
+	expression3;
 
 opt_separator: /* Empty */| SEPARATOR;
 
@@ -449,8 +428,7 @@ expression3 :
 	    }	    
 	}
         |
-	expression4
-	;
+	expression4;
 
 expression4 :
 	expression4 op4 expression5
@@ -484,8 +462,7 @@ expression4 :
 		&@$, op, $1, anna_node_create_null(&@$));	    
 	}
 	|
-	expression5
-	;
+	expression5;
 
 expression5 :
 	expression5 op5 expression6
@@ -493,8 +470,7 @@ expression5 :
 	    $$ = (anna_node_t *)anna_node_create_call2(&@$, $2, $1, $3);
 	}
         | 
-	expression6
-	;
+	expression6;
 
 expression6 :
 	expression6 op6 expression7
@@ -509,10 +485,9 @@ expression6 :
 		    $3);
 	}
         | 
-	expression7
-	;
+	expression7;
 
-expression7 :
+expression7:
 	expression7 op7 expression8
 	{
 	    $$ = (anna_node_t *)
@@ -525,10 +500,9 @@ expression7 :
 		    $3);
 	}
         | 
-	expression8
-	;
+	expression8;
 
-expression8 :
+expression8:
 	'!' expression9
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
@@ -570,8 +544,7 @@ expression8 :
 		  $1);
 	}
 	| 
-	expression9
-;
+	expression9;
 
 expression9 :
 	expression9 '.' any_identifier
@@ -582,7 +555,7 @@ expression9 :
 		$1, $3);
 	}
         |
-	expression9 opt_specialization '(' block2 ')' opt_block
+	expression9 opt_specialization '(' opt_expression_list ')' opt_block
 	{
 	    $$ = (anna_node_t *)$4;
 	    anna_node_t *fun = $1;
@@ -617,7 +590,7 @@ expression9 :
 		    $3);
 	}
 	| 
-	'[' block2 ']' /* Alternative list constructor syntax */
+	'[' opt_expression_list ']' /* Alternative list constructor syntax */
 	{	    
 	    $$ = (anna_node_t *)$2;
 	    anna_node_call_set_function(
@@ -636,7 +609,6 @@ expression9 :
 	}
 	|
 	expression10;
-;
 
 expression10:
 	constant
@@ -666,8 +638,7 @@ expression10:
 		&@$,
 		anna_node_create_identifier(&@$,L"__if__"),
 		$3, $5, $6);
-        }
-;
+        };
 
 op:
 	APPEND
@@ -692,9 +663,7 @@ op:
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__mapping__");
-	}
-;
-
+	};
 
 op2:
 	AND
@@ -707,8 +676,7 @@ op2:
 	{
 		$$ = (anna_node_t *)anna_node_create_identifier(
 		    &@$,L"__or__");
-	}
-;
+	};
 
 op3:
 	'<'
@@ -751,26 +719,20 @@ op3:
 	{
 		$$ = (anna_node_t *)anna_node_create_identifier(
 		    &@$,L"__in__");
-	}
-;
+	};
 
 op4: 
 	'^' identifier
 	{
 	    $$ = $2
-	}
-;
-
+	};
 
 op5:
 	':'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"Pair");
-	}
-;
-
-
+	};
 
 op6:
 	'+'
@@ -786,8 +748,7 @@ op6:
 	'~'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__join__");
-	}
-;
+	};
 
 op7:
 	'*'
@@ -803,15 +764,13 @@ op7:
 	'%'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__format__");
-	}
-;
+	};
 
 pre_op8:
 	'-'
 	{
 		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__neg__")
-	}
-;
+	};
 
 post_op8:
 	NEXT
@@ -822,17 +781,14 @@ post_op8:
 	PREV
 	{
 		$$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__prev__")
-	}
-;
+	};
 
 opt_identifier:
 	identifier
 	|
 	{
 	    $$ = 0;
-	}
-;
-
+	};
 
 identifier:
 	IDENTIFIER
@@ -863,26 +819,18 @@ identifier:
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(
 		&@$,anna_yacc_string(anna_lex_get_text(scanner)));
-	}
-;
+	};
 
 type_identifier :
 	TYPE_IDENTIFIER
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(
 		&@$,anna_yacc_string(anna_lex_get_text(scanner)));
-	}
-;
+	};
 
-any_identifier:
-	identifier
-	|
-	type_identifier
-;
+any_identifier: identifier | type_identifier;
 
-
-
-constant :
+constant:
 	LITERAL_INTEGER
 	{
 	    $$ = (anna_node_t *)anna_node_create_int_literal(
@@ -905,21 +853,12 @@ constant :
 	LITERAL_STRING
 	{
 	    $$ = (anna_node_t *)anna_yacc_string_literal_create(&@$, anna_lex_get_text(scanner));
-	}
-	;
+	};
 
-
-opt_block:
-	/* Empty */
-	{
-		$$ = 0;
-	}
-	|
-	block 
-	;
+opt_block: /* Empty */{$$ = 0;} | block;
 
 function_declaration: 
-	DEF opt_templatized_type identifier declaration_list
+	DEF specialized_type identifier declaration_list
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
@@ -928,15 +867,14 @@ function_declaration:
 		anna_node_create_call2(
 		    &@$,
 		    anna_node_create_identifier(&@1,L"__def__"),
-		    $3, ($2?$2:anna_node_create_null(&@$)),
+		    $3, $2,
 		    $4, anna_node_create_block2(&@$),
 		    anna_node_create_block2(&@$)), 
 		anna_node_create_block2(&@$));
-	}
-;
+	};
 
 function_definition: 
-	DEF opt_templatized_type opt_identifier declaration_list attribute_list opt_block
+	DEF opt_specialized_type opt_identifier declaration_list attribute_list opt_block
 	{
 	    anna_node_t *def = (anna_node_t *)anna_node_create_call2(
 		&@$,anna_node_create_identifier(&@1,L"__def__"), 
@@ -961,8 +899,7 @@ function_definition:
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@1,L"__macro__"), $2, $4, $6);
-	}
-;
+	};
 
 declaration_list :
 	'(' ')'
@@ -973,8 +910,7 @@ declaration_list :
 	'(' declaration_list2 opt_separator ')'
 	{
 	    $$ = $2;
-	}
-	;
+	};
 
 declaration_list2 :
 	declaration_list_item
@@ -987,19 +923,28 @@ declaration_list2 :
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
+	};
+
+var_or_const:
+	VAR
+	{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"__var__");
 	}
-	;
+	|
+	CONST
+	{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"__const__");
+	};
 
 declaration_expression: 
-	VAR opt_templatized_type identifier attribute_list opt_declaration_expression_init
+	var_or_const opt_specialized_type identifier attribute_list opt_declaration_expression_init
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
-		&@$, anna_node_create_identifier(&@$, L"__var__"),
+		&@$, $1,
 		$3, $2, $5?$5:anna_node_create_null(&@$), $4);
 	}
 	|
-	function_definition
-	;
+	function_definition;
 
 opt_ellipsis:
 	/* Empty */
@@ -1010,11 +955,10 @@ opt_ellipsis:
 	ELLIPSIS
 	{
 		$$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadic");
-	}
-
+	};
 
 variable_declaration:
-	templatized_type identifier opt_ellipsis attribute_list opt_declaration_init
+	specialized_type identifier opt_ellipsis attribute_list opt_declaration_init
 	{
 	    if($3)
 	    {
@@ -1024,20 +968,19 @@ variable_declaration:
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, anna_node_create_identifier(&@$, L"__var__"),
 		$2, $1, $5?$5:anna_node_create_null(&@$), $4);
-	}
-;
+	};
 
 declaration_list_item : 
 	variable_declaration {$$=$1;} 
 	| function_declaration;
 
-opt_templatized_type:
+opt_specialized_type:
 	{
 	    $$=anna_node_create_null(&@$);
 	}
-	| templatized_type;
+	| specialized_type;
 
-templatized_type:
+specialized_type:
 	type_identifier opt_specialization
 	{
 	    if(!$2)
@@ -1050,8 +993,7 @@ templatized_type:
 		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
 		    $1, $2);      
 	    }
-	}
-;
+	};
 
 opt_specialization:
 	{
@@ -1060,18 +1002,17 @@ opt_specialization:
 	| specialization;
 
 specialization:
-	SPECIALIZE_BEGIN2 block3 opt_separator ')'
+	SPECIALIZE_BEGIN2 expression_list opt_separator ')'
 	{
 	    $$ = $2;
 	}
 	|
-	SPECIALIZATION_BEGIN block3 opt_separator SPECIALIZATION_END
+	SPECIALIZATION_BEGIN expression_list opt_separator SPECIALIZATION_END
 	{
 	    $$ = $2;
-	}
-;
+	};
 
-type_definition :
+type_definition:
 	identifier type_identifier attribute_list block 
 	{
 	    
@@ -1083,20 +1024,18 @@ type_definition :
 	      &@$, anna_node_create_identifier(&@1,L"__const__"),
 	      $2, anna_node_create_null(&@$), type, 
 	      anna_node_clone_deep((anna_node_t *)$3));
-	}
-	;
+	};
 
-attribute_list :
+attribute_list:
 	/* Empty */
 	{
 	    $$ = anna_node_create_block2(&@$);
 	}
 	| 
-	'(' block3 opt_separator ')'
+	'(' opt_expression_list ')'
 	{
 	    $$ = $2;
-	}
-;
+	};
 
 %%
 

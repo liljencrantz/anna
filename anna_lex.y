@@ -81,6 +81,7 @@ null return NULL_SYM;
 and return AND;
 or return OR;
 var return VAR;
+const return CONST;
 return return RETURN;
 as return AS;
 in return IN;
