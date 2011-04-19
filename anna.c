@@ -400,7 +400,7 @@ int main(int argc, char **argv)
     debug(D_SPAM,L"Initializing interpreter...\n");    
     anna_init();
     null_object = anna_object_create_raw(0);    
-    anna_module_load(L"lang");
+    anna_module_init();
     
     if(anna_error_count)
     {

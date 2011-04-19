@@ -27,37 +27,126 @@
 #include "anna_alloc.h"
 #include "anna_intern.h"
 #include "anna_lang.h"
+#include "wutil.h"
 
-static hash_table_t *anna_module_imported=0;
-//static array_list_t anna_module_unprepared = {0,0,0};
+static void anna_module_load_i(anna_stack_template_t *module);
 
-/*
-static array_list_t anna_function_unprepared = {0,0,0};
-
-void anna_function_prepare_enque()
+static anna_stack_template_t *anna_module(
+    anna_stack_template_t *parent, wchar_t *name, wchar_t *filename)
 {
     
-}
-*/
+    anna_object_t *obj;
+    anna_stack_template_t *res;
+    if(name)
+    {
+	obj = anna_stack_get(parent, name);
 
-static void anna_module_mark_item(void *name, void *stack)
-{
-    anna_stack_template_t *module = (anna_stack_template_t *)stack;
-    anna_alloc_mark_stack_template(module);
-}
-
-
-void anna_module_mark()
-{
-    hash_foreach(anna_module_imported, anna_module_mark_item);
+	if(obj)
+	{
+	    res = anna_stack_unwrap(obj);
+	    if(!res)
+	    {
+		debug(D_CRITICAL, L"%ls is not a namespace\n", name);
+		CRASH;
+	    }
+	    if(filename)
+	    {
+		if(res->filename)
+		{
+		    debug(D_CRITICAL, L"Multiple definitions for module %ls\n", name);
+		    CRASH;		
+	    }
+		res->filename = wcsdup(filename);
+	    }
+	    return res;
+	}
+    }    
     
+    res = anna_stack_create(parent);
+    obj = anna_stack_wrap(res);
+    if(name)
+    {
+	anna_stack_declare(
+	    parent, name, obj->type, obj, ANNA_STACK_READONLY);
+    }
+    if(filename)
+    {
+	res->filename = wcsdup(filename);
+    }
+    return res;
 }
 
+static void anna_module_init_recursive(
+    wchar_t *dname, anna_stack_template_t *parent)
+{
+    DIR *dir = wopendir(dname);
+    struct wdirent *ent;
+    string_buffer_t fn;
+    sb_init(&fn);
+    sb_printf(&fn, L"%ls/", dname);
+    size_t len = sb_length(&fn);
+    while((ent=wreaddir(dir)))
+    {
+	sb_truncate(&fn, len);
+	sb_append(&fn, ent->d_name);
+	struct stat statbuf;
+	
+	wchar_t *d_name = wcsdup(ent->d_name);
 
+	if(ent->d_name[0] == L'.')
+	{
+	    goto CLEANUP;
+	}	
+	
+	if(wstat(sb_content(&fn), &statbuf))
+	{
+	    debug(D_ERROR, L"Failed to stat file %ls\n", sb_content(&fn));
+	    goto CLEANUP;
+	}
+	
+	if(S_ISDIR(statbuf.st_mode))
+	{
+	    anna_module_init_recursive(sb_content(&fn), anna_module(parent, d_name, 0));
+	    goto CLEANUP;
+	}
+	
+	wchar_t *suffix = d_name + wcslen(d_name) - 5;
+	if(suffix <= d_name)
+	{
+	    goto CLEANUP;
+	}
+	
+	if(wcscmp(suffix, L".anna") == 0)
+	{
+	    *suffix=0;
+	    anna_module_load_i(
+		anna_module(parent, d_name,sb_content(&fn)));
+	}
+      CLEANUP:
+	free(d_name);
+    }
+    sb_destroy(&fn);
+}
+
+void anna_module_init()
+{
+    anna_stack_template_t *stack_lang = anna_lang_load();
+
+    anna_stack_declare(
+	stack_global,
+	L"lang",
+	anna_stack_wrap(stack_lang)->type,
+	anna_stack_wrap(stack_lang),
+	ANNA_STACK_READONLY);
+    
+    anna_module_init_recursive(L"lib", stack_global);
+    anna_stack_populate_wrapper(stack_lang);
+}
+	
 static void anna_module_find_import_internal(
     anna_node_t *module, wchar_t *name, array_list_t *import)
 {
-    int i;
+    int i, j;
     if(module->node_type != ANNA_NODE_CALL)
     {
 	anna_error(module, L"Not a valid module");
@@ -69,7 +158,6 @@ static void anna_module_find_import_internal(
 	if(anna_node_is_call_to(m->child[i], name))
 	{
 	    anna_node_call_t *im = (anna_node_call_t *)m->child[i];
-	    int j;
 	    for(j=0; j<im->child_count; j++)
 	    {
 		if(im->child[j]->node_type == ANNA_NODE_IDENTIFIER)
@@ -97,7 +185,6 @@ static void anna_module_find_expand(anna_node_t *module, array_list_t *import)
     anna_module_find_import_internal(module, L"expand", import);
 }
 
-
 static void anna_module_compile(anna_node_t *this, void *aux)
 {
     if(this->node_type == ANNA_NODE_CLOSURE)
@@ -120,68 +207,30 @@ static void anna_module_compile(anna_node_t *this, void *aux)
     }
 }
 
-static anna_object_t *anna_module_load_i(wchar_t *module_name)
+static void anna_module_load_i(anna_stack_template_t *module_stack)
 {
 //    debug_level=0;
-    static int recursion_level=0;
     int i;
     array_list_t import = AL_STATIC;
     array_list_t expand = AL_STATIC;
-//    array_list_t mimport = AL_STATIC;
-        
-    if(anna_module_imported == 0)
+
+    if(module_stack->flags & ANNA_STACK_LOADED)
     {
-	anna_module_imported = malloc(sizeof(hash_table_t));
-	hash_init(anna_module_imported, &hash_wcs_func, &hash_wcs_cmp);
+	return;
     }
-    anna_stack_template_t *module = (anna_stack_template_t *)hash_get(
-	anna_module_imported,
-	module_name);
+    module_stack->flags |= ANNA_STACK_LOADED;
     
-    if(module)
-	return anna_stack_wrap(module);
-
-    debug(D_SPAM,L"Load module %ls...\n", module_name);    
-
-    anna_stack_template_t *module_stack;
-
-    if(wcscmp(module_name, L"lang") == 0)
-    {
-	anna_stack_template_t *stack_lang = anna_lang_load();
-	hash_put(
-	    anna_module_imported,
-	    L"lang",
-	    stack_lang);
-	anna_stack_declare(
-	    stack_global,
-	    L"lang",
-	    anna_stack_wrap(stack_lang)->type,
-	    anna_stack_wrap(stack_lang),
-	    ANNA_STACK_READONLY);
-	
-	anna_stack_populate_wrapper(stack_lang);
-    
-	return anna_module_load(L"lang");	
-    }
-    recursion_level++;
-        
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_append(&sb, module_name);
-    sb_append(&sb, L".anna");
-    wchar_t *filename = sb_content(&sb);
-    
-    debug(D_SPAM,L"Parsing file %ls...\n", filename);    
-    anna_node_t *program = anna_parse(anna_intern_or_free(filename));
+    debug(D_SPAM,L"Parsing file %ls...\n", module_stack->filename);    
+    anna_node_t *program = anna_parse(module_stack->filename);
     
     if(!program || anna_error_count) 
     {
-	debug(D_CRITICAL,L"Module %ls failed to parse correctly; exiting.\n", module_name);
+	debug(D_CRITICAL,L"Module %ls failed to parse correctly; exiting.\n", module_stack->filename);
 	exit(ANNA_STATUS_PARSE_ERROR);
     }
     
-    debug(D_SPAM,L"Parsed AST for module %ls:\n", module_name);    
-//    anna_node_print(0, program);    
+    debug(D_SPAM,L"Parsed AST for module %ls:\n", module_stack->filename);    
+    anna_node_print(D_SPAM, program);    
 
     /*
       Implicitly add an import
@@ -197,16 +246,14 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     for(i=0; i<al_get_count(&expand); i++ )
     {
 	wchar_t *str = al_get(&expand, i);
-	anna_object_t *mod = anna_module_load(str);
+	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
 	if(anna_error_count || !mod)
 	{
-	    return 0;
+	    return;
 	}
-	al_push(&macro_stack->expand, anna_stack_unwrap(mod));
+	al_push(&macro_stack->expand, mod);
     }
     
-//    memcpy(&tmp, &stack_global->import, sizeof(array_list_t));
-//    memcpy(&stack_global->import, &mimport, sizeof(array_list_t));
     /*
       Prepare the module. 
     */
@@ -214,19 +261,17 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	anna_node_macro_expand(
 	    program,
 	    macro_stack);
-//    memcpy(&stack_global->import, &tmp, sizeof(array_list_t));
     
     if(anna_error_count)
     {
 	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);
 	exit(ANNA_STATUS_MACRO_ERROR);
     }
-    debug(D_SPAM,L"Macros expanded in module %ls\n", module_name);    
-
+    debug(D_SPAM,L"Macros expanded in module %ls\n", module_stack->filename);    
+    
     al_destroy(&expand);
     
     anna_node_print(0, node);
-    module_stack= anna_stack_create(stack_global);
     anna_node_register_declarations(module_stack, node);
     module_stack->flags |= ANNA_STACK_NAMESPACE;
     if(anna_error_count)
@@ -234,34 +279,23 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	debug(
 	    4,
 	    L"Critical: Found %d error(s) during loading of module %ls\n", 
-	    anna_error_count, module_name);
+	    anna_error_count, module_stack->filename);
 	exit(ANNA_STATUS_INTERFACE_ERROR);
     }
-    debug(D_SPAM,
+    debug(
+	D_SPAM,
 	L"Declarations registered in module %ls\n", 
-	module_name);
-    
-    hash_put(
-	anna_module_imported,
-	module_name,
-	module_stack);
-    anna_object_t *module_object = anna_stack_wrap(module_stack);
-    anna_stack_declare(stack_global, module_name, module_object->type, module_object, ANNA_STACK_READONLY);
-    
-/*
-    al_push(&anna_module_unprepared, module_stack);
-    al_push(&anna_module_unprepared, );
-*/   
+	module_stack->filename);
     
     for(i=0; i<al_get_count(&import); i++ )
     {
 	wchar_t *str = al_get(&import, i);
-	anna_object_t *mod = anna_module_load(str);
+	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
 	if(anna_error_count || !mod)
 	{
-	    return 0;
+	    return;
 	}
-	al_set(&import, i, anna_stack_unwrap(mod));
+	al_set(&import, i, mod);
     }
     al_push(&import, module_stack);
     memcpy(&module_stack->import, &import, sizeof(array_list_t));
@@ -277,7 +311,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	    anna_error_count);
 	exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
     }
-    debug(D_SPAM,L"Return types set up for module %ls\n", module_name);	
+    debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);	
 
     for(i=0; i<ggg->child_count; i++)
     {
@@ -295,7 +329,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     
 //	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);
     
-    debug(D_SPAM,L"AST validated for module %ls\n", module_name);	
+    debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);	
 	
 /*
 	anna_node_find(node, ANNA_NODE_CLOSURE, &al);	
@@ -323,21 +357,27 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
     
     anna_stack_populate_wrapper(module_stack);
     
-    debug(D_SPAM,L"Module stack object set up for %ls\n", module_name);	
+    debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);	
     
     anna_node_each((anna_node_t *)ggg, &anna_module_compile, 0);
     
-    debug(D_SPAM,L"Module %ls is compiled\n", module_name);	
-    
-    recursion_level--;
-    return anna_stack_wrap(module_stack);
+    debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
 }
 
 anna_object_t *anna_module_load(wchar_t *module_name)
 {
+    string_buffer_t fn;
+    sb_init(&fn);
+    sb_printf(&fn, L"%ls.anna", module_name);
+    
     anna_alloc_gc_block();
-    anna_object_t *res = anna_module_load_i(module_name);
+
+    anna_stack_template_t *module = anna_module(
+	stack_global, 0, sb_content(&fn));
+    anna_module_load_i(module);
+    
+    sb_destroy(&fn);
     anna_alloc_gc_unblock();
 
-    return res;
+    return anna_stack_wrap(module);
 }

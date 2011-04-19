@@ -12,7 +12,6 @@
 #include "anna_function.h"
 #include "anna_member.h"
 #include "anna_int.h"
-#include "anna_module.h"
 #include "anna_list.h"
 
 array_list_t anna_alloc = AL_STATIC;
@@ -587,7 +586,6 @@ void anna_gc(anna_vmstack_t *stack)
     anna_alloc_mark_object(anna_int_one);	
     anna_alloc_mark_object(anna_int_minus_one);	
     anna_alloc_mark_object(anna_int_zero);	
-    anna_module_mark();
     
 //    anna_alloc_mark_stack_template(stack_global);
     int freed = 0;

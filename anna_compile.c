@@ -22,7 +22,6 @@
 #include "anna_type.h"
 #include "anna_alloc.h"
 
-
 static anna_object_t *anna_static_invoke_as_access(anna_node_call_t *node, anna_stack_template_t *stack)
 {
     anna_node_member_access_t fake;
@@ -32,7 +31,6 @@ static anna_object_t *anna_static_invoke_as_access(anna_node_call_t *node, anna_
     return anna_node_static_invoke_try(
 	&fake, stack);
 }
-
 
 static size_t anna_bc_stack_size(char *code)
 {
@@ -101,8 +99,6 @@ static size_t anna_bc_stack_size(char *code)
 	code += anna_bc_op_size(*code);
     }
 }
-
-
 
 static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 {
@@ -717,7 +713,6 @@ static void anna_vm_compile_i(
 		}
 	    }
 	    
-	    //wprintf(L"Woo argc %d\n", template->input_count);
 	    anna_vm_call(
 		ptr,
 		ANNA_INSTR_CALL,
@@ -828,7 +823,6 @@ static void anna_vm_compile_i(
 	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
-
 	    
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
