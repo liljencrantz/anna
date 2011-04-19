@@ -1,0 +1,12 @@
+
+type File
+{
+
+    def read()
+    {
+        print("Nope\n");
+    }
+
+}
+
+
