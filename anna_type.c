@@ -636,13 +636,21 @@ static anna_node_t *anna_type_setup_interface_internal(
     
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
-//    wprintf(L"Set up interface for type %ls\n", type->name);
+    //wprintf(L"Set up interface for type %ls\n", type->name);
+    //anna_node_print(4, type->definition);
+    
     
     type->stack->parent = parent;
 
     if(type->definition)
     {
 	
+	if(type->definition->child[0]->node_type != ANNA_NODE_IDENTIFIER)
+	{
+	    CRASH;
+	}
+	
+
 	CHECK_NODE_TYPE(type->definition->child[0], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_BLOCK(type->definition->child[1]);
 	CHECK_NODE_BLOCK(type->definition->child[2]);

@@ -1,5 +1,6 @@
 
 def main()  
 {
-    lang.print("ok\n");
+    var f = io.File("tests/test4.output");
+    lang.print(f.read());
 }

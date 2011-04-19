@@ -146,6 +146,7 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
+
 	    anna_node_calculate_type(call->function, stack);
 	    anna_type_t *fun_type = call->function->return_type;
 
@@ -229,8 +230,8 @@ static void anna_node_calculate_type_internal(
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		break;
-	    }
-	    
+	    }	    
+
 	    anna_type_prepare_member(type, n->mid, stack);
 	    anna_member_t *member = anna_member_get(type, n->mid);
 	    
@@ -290,7 +291,38 @@ static void anna_node_calculate_type_internal(
 	    
 	    if(member)
 	    {
+
+
+		if(member->type == type_type && member->is_static)
+		{
+//		    debug(4,L"Hmmm, node is of type type...");
+//		    anna_node_print(4, n);
+		    
+		    anna_type_t *ctype = anna_type_unwrap(type->static_member[member->offset]);
+		    
+		    if(ctype)
+		    {
+			this->node_type = ANNA_NODE_CONSTRUCT;
+			n->function = (anna_node_t *)anna_node_create_type(
+			    &n->object->location,
+			    ctype);
+			n->return_type = ctype;
+			break;
+		    }   
+		}
+
+
+
 		anna_function_type_t *fun = anna_function_unwrap_type(member->type);
+		if(!fun)
+		{
+		    anna_error(
+			this, 
+			L"Member %ls is not a function\n", 
+			anna_mid_get_reverse(n->mid),
+			type->name);		    
+		    break;
+		}
 		
 		if(!anna_node_call_validate(n, fun, 1, 1))
 		{
