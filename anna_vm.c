@@ -203,6 +203,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 	else
 	{
+//	    wprintf(L"Call at offset %d\n", stack->code - stack->function->code);
 	    anna_function_t *fun = anna_function_unwrap(wrapped);
 //	    wprintf(L"Call function %ls with %d params\n", fun->name, param);
 	    
@@ -374,7 +375,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif 
-
+	
 	if(m->is_property)
 	{
 		    
@@ -793,15 +794,7 @@ void anna_vm_mark_code(anna_function_t *f)
 		anna_alloc_mark_type(op->value);
 		break;
 	    }
-/*
-	    case ANNA_INSTR_CALLBACK:
-	    {
-		anna_op_callback_t *op = (anna_op_callback_t*)code;
-		anna_alloc_mark_type(op->aux1);
-		anna_alloc_mark_type(op->aux2);
-		break;
-	    }
-*/	    
+
 	    case ANNA_INSTR_RETURN:
 	    case ANNA_INSTR_STOP:
 	    {

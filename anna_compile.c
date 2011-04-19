@@ -22,6 +22,18 @@
 #include "anna_type.h"
 #include "anna_alloc.h"
 
+
+static anna_object_t *anna_static_invoke_as_access(anna_node_call_t *node, anna_stack_template_t *stack)
+{
+    anna_node_member_access_t fake;
+    fake.mid=node->mid;
+    fake.object = node->object;
+    fake.node_type = ANNA_NODE_MEMBER_GET;
+    return anna_node_static_invoke_try(
+	&fake, stack);
+}
+
+
 static size_t anna_bc_stack_size(char *code)
 {
     size_t pos = 0;
@@ -310,12 +322,32 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
-	    size_t res = 
-		anna_vm_size(fun, node2->object) + 
-		sizeof(anna_op_count_t) + sizeof(anna_op_member_t);
+	    size_t res = sizeof(anna_op_count_t);
 	    
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
+
+	    anna_object_t *const_obj = anna_static_invoke_as_access(
+		node2, fun->stack_template);
+	    anna_object_t *const_obj2 = anna_node_static_invoke_try(
+		node2->object, fun->stack_template);
+	    if(const_obj && (!mem->is_method || const_obj2))
+	    {
+		res += 
+		    sizeof(anna_op_const_t);
+		if(mem->is_method)
+		{
+		    res += 
+			sizeof(anna_op_const_t);
+		}
+	    }
+	    else
+	    {
+		res +=
+		    anna_vm_size(fun, node2->object) + 
+		    sizeof(anna_op_member_t);
+	    }
+	    
 	    
 	    anna_function_type_t *template = anna_function_type_extract(
 		mem->type);
@@ -488,12 +520,6 @@ static void anna_vm_compile_i(
 	    break;
 	}
 
-	{
-	    anna_node_float_literal_t *node2 = (anna_node_float_literal_t *)node;
-	    anna_vm_const(ptr,anna_float_create(node2->payload));
-	    break;
-	}
-
 	case ANNA_NODE_TYPE:
 	{
 	    anna_node_type_t *node2 = (anna_node_type_t *)node;
@@ -598,6 +624,8 @@ static void anna_vm_compile_i(
 
 	case ANNA_NODE_IDENTIFIER:
 	{
+	    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;	    
+
 	    anna_object_t *const_obj = anna_node_static_invoke_try(
 		node, fun->stack_template);
 	    if(const_obj)
@@ -605,9 +633,7 @@ static void anna_vm_compile_i(
 		anna_vm_const(ptr, const_obj);
 		break;
 	    }
-
-	    anna_node_identifier_t *node2 = (anna_node_identifier_t *)node;	    
-
+	    
 	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
 	    if(import && import->flags & ANNA_STACK_NAMESPACE)
 	    {
@@ -615,7 +641,6 @@ static void anna_vm_compile_i(
 		anna_vm_member(ptr, ANNA_INSTR_STATIC_MEMBER_GET, anna_mid_get(node2->name));
 		break;
 	    }
-
 
 	    anna_sid_t sid = anna_stack_sid_create(
 		fun->stack_template, node2->name);
@@ -803,12 +828,28 @@ static void anna_vm_compile_i(
 	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
-	    anna_vm_compile_i(fun, node2->object, ptr, 0);
+
 	    
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
-	    
-	    anna_vm_member(ptr, mem->is_method?ANNA_INSTR_MEMBER_GET_THIS:ANNA_INSTR_MEMBER_GET, node2->mid);
+
+	    anna_object_t *const_obj = anna_static_invoke_as_access(
+		node2, fun->stack_template);
+	    anna_object_t *const_obj2 = anna_node_static_invoke_try(
+		node2->object, fun->stack_template);
+	    if(const_obj && (!mem->is_method || const_obj2))
+	    {
+		anna_vm_const(ptr, const_obj);
+		if(mem->is_method)
+		{
+		    anna_vm_const(ptr, const_obj2);		    
+		}
+	    }
+	    else
+	    {
+		anna_vm_compile_i(fun, node2->object, ptr, 0);
+		anna_vm_member(ptr, mem->is_method?ANNA_INSTR_MEMBER_GET_THIS:(mem->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET), node2->mid);
+	    }
 	    
 	    anna_function_type_t *template = anna_function_type_extract(
 		mem->type);

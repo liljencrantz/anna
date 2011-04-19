@@ -157,8 +157,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	    L"lang",
 	    anna_stack_wrap(stack_lang)->type,
 	    anna_stack_wrap(stack_lang),
-	    0
-	    );
+	    ANNA_STACK_READONLY);
 	
 	anna_stack_populate_wrapper(stack_lang);
     
@@ -247,7 +246,7 @@ static anna_object_t *anna_module_load_i(wchar_t *module_name)
 	module_name,
 	module_stack);
     anna_object_t *module_object = anna_stack_wrap(module_stack);
-    anna_stack_declare(stack_global, module_name, module_object->type, module_object, 0);
+    anna_stack_declare(stack_global, module_name, module_object->type, module_object, ANNA_STACK_READONLY);
     
 /*
     al_push(&anna_module_unprepared, module_stack);

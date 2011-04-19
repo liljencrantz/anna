@@ -16,6 +16,12 @@ static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 	    L"Critical: Tried to unwrap null pointer as a function\n");
 	CRASH;
     }
+    if(!obj->type)
+    {
+	wprintf(
+	    L"Critical: Tried to unwrap object with no type\n");
+	CRASH;
+    }
 #endif
 
     anna_member_t *m = obj->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];

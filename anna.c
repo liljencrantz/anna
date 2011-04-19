@@ -416,6 +416,8 @@ int main(int argc, char **argv)
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     
+    anna_stack_populate_wrapper(stack_global);
+
     anna_object_t **main_wrapper_ptr = anna_stack_addr_get(module, L"main");
     if(!main_wrapper_ptr)
     {

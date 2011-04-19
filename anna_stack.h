@@ -23,8 +23,6 @@ typedef struct anna_sid anna_sid_t;
 /* Stack member flags */
 #define ANNA_STACK_READONLY 1
 
-#define anna_stack_get_ro(stack, name) !!(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
-
 /**
    A stack frame template. Used during compilation to represent the
    stack frame for a function definition or the members of a

@@ -45,7 +45,7 @@ DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
-Performance target: It should be possible to do the mandelbrot calculation test in 0.05 seconds on my x301.
+Need to define new performance target
 variable lookup instruction version for looking up in current frame
 variable lookup instruction version for looking up in parent frame
 Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)
@@ -55,7 +55,7 @@ Avoid creating trampolines when possible - push other stack onto call stack and 
 Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
 Add profiling information to the VM
 Inlining of if/while bodies into main method
-Make a verion of the fold op that takes a count parameter
+Make a version of the fold op that takes a count parameter
 Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
 
 UNUSED OPERATORS:

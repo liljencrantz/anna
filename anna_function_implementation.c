@@ -185,7 +185,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	L"print",
 	f->wrapper->type,
 	f->wrapper,
-	0);
+	ANNA_STACK_READONLY);
     
     anna_function_t *not = anna_native_create(
 	L"__not__", 0, 
@@ -198,7 +198,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	L"__not__",
 	not->wrapper->type,
 	not->wrapper,
-	0);
+	ANNA_STACK_READONLY);
 
     anna_function_t *callcc = anna_native_create(
 	L"callCC", 0, 
@@ -211,7 +211,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	L"callCC",
 	callcc->wrapper->type,
 	callcc->wrapper,
-	0);
+	ANNA_STACK_READONLY);
 
     static wchar_t *wrap_argn[]={L"object",L"method"};
     anna_type_t *wrap_argv[]={object_type, object_type};
