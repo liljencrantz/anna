@@ -20,6 +20,7 @@
 #include "anna_vm.h"
 #include "anna_node_hash.h"
 #include "anna_node_check.h"
+#include "anna_pair.h"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
@@ -150,6 +151,7 @@ static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
     
     return code;    
 }
+
 
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 {
@@ -774,8 +776,49 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     anna_type_t *res = anna_type_create(L"WeeWoooWaa", def);
     
     anna_type_macro_expand(res, type->stack_macro);
-    
+    res->flags |= ANNA_TYPE_SPECIALIZED;
     return res;
+}
+
+anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call)
+{
+    if(type->flags & ANNA_TYPE_SPECIALIZED)
+    {
+	return type;
+    }
+
+    if(type == pair_type)
+    {
+	if(call->child_count != 2)
+	{
+	    anna_error((anna_node_t *)call, L"Wrong number of arguments to constructor");
+	    return type;
+	}
+	
+	return anna_pair_type_get(
+	    call->child[0]->return_type, 
+	    call->child[1]->return_type);	
+    }
+    
+    if(!type->definition)
+    {
+	return type;
+    }
+
+    anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
+    anna_node_call_t *attr = node_cast_call(def->child[1]);
+
+    array_list_t al = AL_STATIC;
+    anna_attribute_call_all(attr, L"template", &al);
+    
+    if(al_get_count(&al) == 0)    
+    {
+	return type;
+    }
+    
+    
+    
+    return type;
 }
 
 void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack)

@@ -1009,6 +1009,7 @@ anna_type_t *anna_list_type_get(anna_type_t *subtype)
 	sb_destroy(&sb);
 	hash_put(&anna_list_specialization, subtype, spec);
 	anna_list_type_create_internal(stack_global, spec, subtype);
+	spec->flags |= ANNA_TYPE_SPECIALIZED;
     }
 
     anna_type_copy_object(spec);

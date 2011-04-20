@@ -53,13 +53,24 @@ void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
 
 void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_t *stack);
 
+/**
+   Specialize the specified type with the specified temaplte specialization arguments
+ */
 anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec);
+
+/**
+   Check if the specified type is an unspecialized template, and if
+   so, use the specified constructor arguments to locate the most
+   suitable template specialization
+ */
+anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call);
 
 void anna_type_object_is_created(void);
 
 void anna_type_copy_object(anna_type_t *type);
 
 void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack);
+
 
 
 #endif

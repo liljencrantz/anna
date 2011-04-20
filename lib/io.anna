@@ -1,13 +1,17 @@
-/*
+
 type File
 {
-
+    
+    var Int filename;
+    
+    def __init__(String filename)
+    {
+        this.filename = filename;
+    }
+    
     def read()
     {
         "Nope";
     }
-
+    
 }
-
-
-*/
