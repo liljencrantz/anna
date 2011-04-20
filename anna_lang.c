@@ -137,7 +137,7 @@ anna_stack_template_t *anna_lang_load()
 	}
 	anna_stack_declare(
 	    stack_lang, types[i]->name, 
-	    type_type, anna_type_wrap(types[i]), 0); 
+	    type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
     }
 
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);

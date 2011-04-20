@@ -3,6 +3,9 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
 {
     anna_node_calculate_type(call->function, stack);
     
+//    wprintf(L"Weee, specializing\n");
+//    anna_node_print(4, call);
+        
     anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
     anna_type_t *res = 0;
 

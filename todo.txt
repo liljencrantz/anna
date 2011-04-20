@@ -6,6 +6,7 @@ KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
+Set correct locale on startup
 
 LANGUAGE FEATURES:
 Modules should map to directories, not files
@@ -29,6 +30,8 @@ String format function
 File type
 toString methods for Hash, List, Range, Function, Pair, etc
 A backtrace function
+io module
+time module
 
 RELIABILITY:
 Use continuations to make a green thread implementation as a test of continuation functionality

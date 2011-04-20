@@ -75,20 +75,23 @@ anna_node_t *anna_node_macro_expand(
 	    {
 		this2->child[i] = anna_node_macro_expand(this2->child[i], stack);
 	    }
-	    
-	    if(this2->function->node_type == ANNA_NODE_MEMBER_GET)
+
+	    if(this->node_type != ANNA_NODE_SPECIALIZE)
 	    {
-		anna_node_member_access_t *mg = 
-		    (anna_node_member_access_t *)this2->function;
-		
-		anna_node_t *result = 
-		    (anna_node_t *)anna_node_create_member_call(
-			&this2->location,
-			mg->object,
-			mg->mid,
-			this2->child_count,
-			this2->child);
-		return result;
+		if(this2->function->node_type == ANNA_NODE_MEMBER_GET)
+		{
+		    anna_node_member_access_t *mg = 
+			(anna_node_member_access_t *)this2->function;
+		    
+		    anna_node_t *result = 
+			(anna_node_t *)anna_node_create_member_call(
+			    &this2->location,
+			    mg->object,
+			    mg->mid,
+			    this2->child_count,
+			    this2->child);
+		    return result;
+		}
 	    }
 
 	    return this;

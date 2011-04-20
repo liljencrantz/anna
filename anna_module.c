@@ -271,7 +271,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     al_destroy(&expand);
     
-    anna_node_print(0, node);
+    anna_node_print(D_SPAM, node);
     anna_node_register_declarations(module_stack, node);
     module_stack->flags |= ANNA_STACK_NAMESPACE;
     if(anna_error_count)

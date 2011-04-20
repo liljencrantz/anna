@@ -167,7 +167,7 @@ static void anna_node_calculate_type_internal(
 		}
 		
 	    }
-
+	    
 	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		break;
@@ -176,7 +176,8 @@ static void anna_node_calculate_type_internal(
 	    anna_function_type_t *funt = anna_function_type_extract(fun_type);
 	    if(!funt)
 	    {
-		anna_error(this, L"Value is not callable");
+		anna_node_print(4, call->function);
+		anna_error(this, L"Value of type %ls is not callable", fun_type->name);
 		break;
 	    }
 	    

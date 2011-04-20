@@ -184,7 +184,7 @@ void anna_node_create_wrapper_types(anna_stack_template_t *stack)
 	anna_type_copy_object(types[i]);
 	anna_stack_declare(
 	    stack, types[i]->name, 
-	    type_type, anna_type_wrap(types[i]), 0); 
+	    type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
     }
 
 

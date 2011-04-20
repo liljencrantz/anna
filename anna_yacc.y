@@ -608,7 +608,7 @@ expression9 :
 		    L"__collection__"));
 	}
 	|
-	expression9 '.' any_identifier
+	expression9 '.' expression10
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,

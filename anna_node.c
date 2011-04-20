@@ -41,40 +41,32 @@ typedef struct
 
 anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
 {
-    debug(D_SPAM,L"Figure out type from:\n");
-    
+    debug(D_SPAM,L"Figure out type from:\n");    
     anna_node_print(D_SPAM, node);
     
-    if(node->node_type == ANNA_NODE_IDENTIFIER)
-    {
-	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
-	anna_object_t *wrapper = anna_stack_get(stack, id->name);
-	
-	if(wrapper != 0)
-	{
-	    return anna_type_unwrap(wrapper);
-	}
-    }
-    else if(node->node_type == ANNA_NODE_DUMMY)
-    {
-	anna_node_dummy_t *d = (anna_node_dummy_t *)node;	
-	return anna_type_unwrap(d->payload);
-    }
-    else if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
+    if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
     {
 	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
 	anna_node_calculate_type(d->payload, stack);
 	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    return d->payload->return_type;
-    }
-    else if(node->node_type == ANNA_NODE_CLOSURE)
-    {
-	anna_node_closure_t *d = (anna_node_closure_t *)node;	
-	anna_node_calculate_type(node, stack);
-	if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    return d->payload->wrapper->type;
+	return 0;
     }
     
+    anna_object_t *res = anna_node_static_invoke_try(
+	node, stack);
+    if(!res)
+    {
+	return 0;
+    }
+    if(res->type == type_type)
+    {
+	return anna_type_unwrap(res);
+    }
+    else
+    {
+	return res->type;
+    }
     return 0;
 }
 
@@ -224,7 +216,10 @@ anna_object_t *anna_node_static_invoke_try(
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *node = (anna_node_closure_t *)this;	    
-	    return node->payload->wrapper;
+	    anna_node_calculate_type(this, stack);
+	    if(node->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+		return node->payload->wrapper;
+	    break;
 	}
 	
 	case ANNA_NODE_TYPE:
@@ -233,7 +228,7 @@ anna_object_t *anna_node_static_invoke_try(
 	    anna_type_t *f = c->payload;
 	    return anna_type_wrap(f);
 	}
-	
+
 	case ANNA_NODE_INT_LITERAL:
 	    return anna_int_create(((anna_node_int_literal_t *)this)->payload);
 	    
