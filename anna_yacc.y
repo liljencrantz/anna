@@ -598,7 +598,7 @@ expression9 :
 	|
 	expression10
 	|
-	'[' opt_expression_list ']' /* Alternative list constructor syntax */
+	'[' opt_expression_list ']'
 	{	    
 	    $$ = (anna_node_t *)$2;
 	    anna_node_call_set_function(
@@ -649,82 +649,69 @@ expression10:
 op:
 	APPEND
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__append__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__append__");
 	}
 	|
 	INCREASE
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__increase__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__increase__");
 	}
 	|
 	DECREASE
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__decrease__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__decrease__");
 	}
 	|
 	TO
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__mapping__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__mapping__");
 	};
 
 op2:
 	AND
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__and__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__and__");
 	}
 	|
 	OR
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__or__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__or__");
 	};
 
 op3:
 	'<'
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__lt__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__lt__");
 	}
 	|
 	'>'
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__gt__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__gt__");
 	}
 	|
 	EQUAL
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__eq__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__eq__");
 	}
 	|
 	NOT_EQUAL
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__neq__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__neq__");
 	}
 	|
 	LESS_OR_EQUAL
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__lte__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__lte__");
 	}
 	|
 	GREATER_OR_EQUAL
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__gte__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__gte__");
 	}
         |
 	IN
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"__in__");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__in__");
 	};
 
 op4: 
@@ -804,33 +791,28 @@ identifier:
 	|
 	IN
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+	    $$ = anna_text_as_id(&@$, scanner);
 	}
 	|
 	AS
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+	    $$ = anna_text_as_id(&@$, scanner);
 	}
 	|
 	AND
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+	    $$ = anna_text_as_id(&@$, scanner);
 	}
 	|
 	OR
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+	    $$ = anna_text_as_id(&@$, scanner);
 	};
 
 type_identifier :
 	TYPE_IDENTIFIER
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,anna_yacc_string(anna_lex_get_text(scanner)));
+	    $$ = anna_text_as_id(&@$, scanner);
 	};
 
 any_identifier: identifier | type_identifier;
