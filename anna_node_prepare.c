@@ -263,7 +263,6 @@ static void anna_node_calculate_type_internal(
 	    if(!member)
 	    {
 
-		int i;
 		int ok = anna_node_calculate_type_direct_children(n, stack);
 		
 		if(ok)

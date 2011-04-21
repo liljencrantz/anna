@@ -17,16 +17,16 @@
 
 #include "anna_float_i.c"
 
+static void anna_float_set(anna_object_t *this, double value)
+{
+    memcpy(anna_member_addr_get_mid(this,ANNA_MID_FLOAT_PAYLOAD), &value, sizeof(double));
+}
+
 anna_object_t *anna_float_create(double value)
 {
     anna_object_t *obj= anna_object_create(float_type);
     anna_float_set(obj, value);
     return obj;
-}
-
-void anna_float_set(anna_object_t *this, double value)
-{
-    memcpy(anna_member_addr_get_mid(this,ANNA_MID_FLOAT_PAYLOAD), &value, sizeof(double));
 }
 
 double anna_float_get(anna_object_t *this)

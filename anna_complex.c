@@ -19,17 +19,17 @@
 
 #include "anna_complex_i.c"
 
+static inline void anna_complex_set(anna_object_t *this, complex double value)
+{
+    size_t off = this->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
+    memcpy(&this->member[off], &value, sizeof(complex double));
+}
+
 anna_object_t *anna_complex_create(complex double value)
 {
     anna_object_t *obj= anna_object_create(complex_type);
     anna_complex_set(obj, value);
     return obj;
-}
-
-inline void anna_complex_set(anna_object_t *this, complex double value)
-{
-    size_t off = this->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
-    memcpy(&this->member[off], &value, sizeof(complex double));
 }
 
 inline complex double anna_complex_get(anna_object_t *this)

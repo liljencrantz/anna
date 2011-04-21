@@ -338,6 +338,7 @@ int main(int argc, char **argv)
     anna_int_one = anna_int_create(1);
     anna_int_minus_one = anna_int_create(-1);
     anna_int_zero = anna_int_create(0);
+
     anna_vm_init();
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
@@ -362,18 +363,5 @@ int main(int argc, char **argv)
     hash_destroy(&anna_type_for_function_identifier);
 #endif
     
-/*    
-    anna_function_t *main_func = anna_function_unwrap(*main_wrapper_ptr);
-    if(!main_func)
-    {
-	debug(D_SPAM,L"\"main\" member of module \"%ls\" is not a function\n", module_name);
-	exit(1);	
-    }
-    
-    debug(D_SPAM,L"Output:\n");        
-    anna_function_invoke(main_func, 0, 0, module);
-    debug(D_SPAM,L"\n");
-*/
-
     return 0;
 }
