@@ -21,10 +21,10 @@ int main()
 	double x=-2.0;
 	while(x<=1.3)
 	{
-	    printf("%c", " .::!!!ooooOOOOO################ "[mandelbrot(x+I*y,32)]);
-	    x += 0.05;
+	    printf("%c", " .::!!!ooooOOOOO################################################ "[mandelbrot(x+I*y,1024)/16]);
+	    x += 0.025;
 	}
-	y += 0.1;
+	y += 0.05;
 	printf("\n");
     }
 }

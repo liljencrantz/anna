@@ -26,6 +26,12 @@ static int print_direct(anna_object_t *o)
 	anna_string_print(o);
 	return 1;
     }
+    else if(o->type == char_type)
+    {
+	wprintf(L"%lc", anna_char_get(o));
+	return 1;
+    }
+    
     return 0;
 }
 
