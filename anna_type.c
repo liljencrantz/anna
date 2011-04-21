@@ -21,6 +21,8 @@
 #include "anna_node_hash.h"
 #include "anna_node_check.h"
 #include "anna_pair.h"
+#include "anna_list.h"
+#include "anna_hash.h"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
@@ -773,7 +775,11 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
 	tm->child[1] = spec->child[i];
     }
 //    anna_node_print(4, def);
-    anna_type_t *res = anna_type_create(L"WeeWoooWaa", def);
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"%ls!(...)", type->name);
+    anna_type_t *res = anna_type_create(sb_content(&sb), def);
+    sb_destroy(&sb);
     
     anna_type_macro_expand(res, type->stack_macro);
     res->flags |= ANNA_TYPE_SPECIALIZED;
@@ -799,24 +805,57 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    call->child[0]->return_type, 
 	    call->child[1]->return_type);	
     }
+    else if(type == list_type)
+    {
+	if(call->child_count < 1)
+	{
+	    return type;
+	}
+	
+	return anna_list_type_get(
+	    call->child[0]->return_type);
+    }
+    else if(type == hash_type)
+    {
+	if(call->child_count < 1)
+	{
+	    return type;
+	}
+	
+	anna_type_t *arg_type = call->child[0]->return_type;
+	anna_object_t **spec1 = anna_static_member_addr_get_mid(
+	    arg_type, ANNA_MID_PAIR_SPECIALIZATION1);
+	anna_object_t **spec2 = anna_static_member_addr_get_mid(
+	    arg_type, ANNA_MID_PAIR_SPECIALIZATION2);
+	
+	if(spec1 && spec2)
+	{	    
+	    return anna_hash_type_get(
+		(anna_type_t *)*spec1, 
+		(anna_type_t *)*spec2);
+	}
+	return type;
+    }
     
     if(!type->definition)
     {
 	return type;
     }
-
-    anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
+    
+    anna_node_call_t *def = (anna_node_call_t *)
+	anna_node_clone_deep((anna_node_t *)type->definition);
     anna_node_call_t *attr = node_cast_call(def->child[1]);
-
+    
     array_list_t al = AL_STATIC;
     anna_attribute_call_all(attr, L"template", &al);
     
     if(al_get_count(&al) == 0)    
     {
 	return type;
-    }
+    }    
     
-    
+//    anna_error((anna_node_t *)call, L"Implicit specialization of user defined templates is not yet implemented. Sorry...");
+//    CRASH;
     
     return type;
 }

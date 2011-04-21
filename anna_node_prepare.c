@@ -525,6 +525,7 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_MAPPING:
 	{
 	    anna_node_cond_t *d = (anna_node_cond_t *)this;
+	    anna_node_calculate_type(d->arg1, stack);
 	    anna_node_calculate_type(d->arg2, stack);
 	    d->return_type = d->arg2->return_type;
 	    break;

@@ -228,37 +228,16 @@ ANNA_VM_MACRO(anna_macro_specialize)
 
 static inline anna_node_t *anna_macro_collection_i(anna_node_call_t *node)
 {
-    if(node->child_count == 0)
-    {
-	anna_error((anna_node_t *)node,
-		   L"At least one argument required");
-	return (anna_node_t *)anna_node_create_null(&node->location);
-    }
-
     if(anna_node_is_call_to(node->child[0], L"__mapping__"))
     {
 	anna_node_call_t *p0 = (anna_node_call_t *)node->child[0];
 	CHECK_CHILD_COUNT(p0, L"Map", 2);
 	
-	anna_node_t *param[] = 
-	    {
-		(anna_node_t *)anna_node_create_type_lookup(
-		    &node->function->location,
-		    p0->child[0]),
-		(anna_node_t *)anna_node_create_type_lookup(
-		    &node->function->location,
-		    p0->child[1])
-	    }
-	;
-	
-	node->function = (anna_node_t *)anna_node_create_specialize(
-	    &node->function->location,
+	node->function = 
 	    (anna_node_t *)anna_node_create_dummy(
 		&node->function->location,
-		anna_type_wrap(hash_type)),
-	    2,
-	    param);
-
+		anna_type_wrap(hash_type));
+	
 	int i;
 	for(i=0; i<node->child_count; i++)
 	{
@@ -270,50 +249,20 @@ static inline anna_node_t *anna_macro_collection_i(anna_node_call_t *node)
 	    anna_node_call_t *pp = (anna_node_call_t *)node->child[i];
 	    CHECK_CHILD_COUNT(pp, L"Map", 2);
 	    
-	    anna_node_t *pp_param[] = 
-		{
-		    (anna_node_t *)anna_node_create_type_lookup(
-			&pp->function->location,
-			p0->child[0]),
-		    (anna_node_t *)anna_node_create_type_lookup(
-			&pp->function->location,
-			p0->child[1])
-		}
-	    ;
-	
-	    pp->function = (anna_node_t *)anna_node_create_specialize(
-		&pp->function->location,
+	    pp->function = 		
 		(anna_node_t *)anna_node_create_dummy(
 		    &pp->function->location,
-		    anna_type_wrap(pair_type)),
-		2,
-		pp_param);
-	    
+		    anna_type_wrap(pair_type));
 	}
-	
-	return (anna_node_t *)node;
     }
     else
     {
-	
-	anna_node_t *param[] = 
-	    {
-		(anna_node_t *)anna_node_create_type_lookup(
-		    &node->function->location,
-		    node->child[0])
-	    }
-	;
-	
-	node->function = (anna_node_t *)anna_node_create_specialize(
-	    &node->function->location,
+	node->function = 
 	    (anna_node_t *)anna_node_create_dummy(
 		&node->function->location,
-		anna_type_wrap(list_type)),
-	    1,
-	    param);
-	return (anna_node_t *)node;
+		anna_type_wrap(list_type));
     }
-    
+    return (anna_node_t *)node;
 }
 ANNA_VM_MACRO(anna_macro_collection)
 
@@ -438,8 +387,9 @@ ANNA_VM_MACRO(anna_macro_range)
 static inline anna_node_t *anna_macro_mapping_i(anna_node_call_t *node)
 {
     CHECK_CHILD_COUNT(node,L"mapping", 2);
-    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
-    node->child[0]->node_type = ANNA_NODE_MAPPING_IDENTIFIER;
+//    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
+    if(node->child[0]->node_type == ANNA_NODE_IDENTIFIER)
+	node->child[0]->node_type = ANNA_NODE_MAPPING_IDENTIFIER;
     return (anna_node_t *)anna_node_create_mapping(
 	&node->location,
 	node->child[0],
