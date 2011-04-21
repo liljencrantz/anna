@@ -185,6 +185,7 @@ anna_type_t *anna_pair_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 	hash_put(&anna_pair_specialization, anna_tt_make(subtype1, subtype2), spec);
 	anna_pair_type_create_internal(spec, subtype1, subtype2);
 	spec->flags |= ANNA_TYPE_SPECIALIZED;
+	anna_type_copy_object(spec);
     }
     return spec;
 }

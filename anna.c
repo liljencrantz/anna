@@ -252,6 +252,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 
 int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 {
+    
     if(contender == role_model)
     {
 	return 0;
@@ -273,6 +274,10 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	return count - 1;
     }
 
+    static int level = 0;
+
+    level++;
+
     hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), (void *)(long)ABIDES_IN_TRANSIT);
 
     
@@ -289,7 +294,8 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	CRASH;
     }
     
-    debug(D_SPAM,L"Check if type %ls abides against %ls\n", contender->name, role_model->name);
+//    if(level==1)
+//	debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
     
     //debug(D_SPAM,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&role_model->name_identifier));
@@ -305,15 +311,24 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	
 	anna_type_t *contender_subtype = anna_type_member_type_get(contender, members[i]);
 	anna_type_t *role_model_subtype = anna_type_member_type_get(role_model, members[i]);
+//	if(level==1)
+//	    wprintf(L"Test member %ls\n", members[i]);
 	if(!contender_subtype || !anna_abides(contender_subtype, role_model_subtype))
 	{
+//	    if(level==1)
+//		wprintf(L"Miss on %ls because of %ls\n", members[i], contender_subtype?L"incompatibility":L"missing member");
+	    
 //	    anna_type_print(contender);
 	    res++;
 	}	
     }
     free(members);
 
+//    if(level==1)
+//	wprintf(L"%ls abides to %ls: %ls\n", contender->name, role_model->name, res==0?L"true": L"false");
     hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), (void *)(long)(res+1));
+    level--;
+    
 
     return res;
 }
