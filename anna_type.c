@@ -797,7 +797,9 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     {
 	if(call->child_count != 2)
 	{
-	    anna_error((anna_node_t *)call, L"Wrong number of arguments to constructor");
+	    anna_error(
+		(anna_node_t *)call, 
+		L"Wrong number of arguments to constructor");
 	    return type;
 	}
 	

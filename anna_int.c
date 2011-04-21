@@ -81,7 +81,8 @@ static anna_vmstack_t *anna_int_to_string(anna_vmstack_t *stack, anna_object_t *
 {
     anna_object_t **param = stack->top - 1;
 
-    string_buffer_t sb = SB_STATIC;
+    string_buffer_t sb;
+    sb_init(&sb);
     sb_printf(&sb, L"%d", anna_int_get(param[0]));
     
     anna_vmstack_drop(stack, 2);

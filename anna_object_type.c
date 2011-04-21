@@ -44,7 +44,8 @@ static anna_vmstack_t *anna_object_hash(anna_vmstack_t *stack, anna_object_t *me
 static anna_vmstack_t *anna_object_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t **param = stack->top - 1;
-    string_buffer_t sb = SB_STATIC;
+    string_buffer_t sb;
+    sb_init(&sb);
     sb_printf(&sb, L"Object of type %ls", param[0]->type->name);
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));

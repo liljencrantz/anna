@@ -94,7 +94,8 @@ void anna_function_type_print(anna_function_type_t *k)
 
 static inline anna_object_t *anna_function_type_to_string_i(anna_object_t **param)
 {
-    string_buffer_t sb = SB_STATIC;
+    string_buffer_t sb;
+    sb_init(&sb);
     anna_function_t *fun = anna_function_unwrap(param[0]);
     sb_printf(&sb, L"def %ls %ls (", fun->return_type->name, fun->name);
     int i;

@@ -16,7 +16,6 @@
 #include <unistd.h>
 
 #define AL_STATIC {0,0,0}
-#define SB_STATIC {0,0,0}
     
 /**
    Typedef for a generic function pointer

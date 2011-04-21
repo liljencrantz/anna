@@ -518,8 +518,9 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
     anna_type_t *spec = hash_get(&anna_hash_specialization, &tt);
     if(!spec)
     {
-	string_buffer_t sb = SB_STATIC;
-	sb_printf(&sb, L"HashMap<%ls,%ls>", subtype1->name, subtype2->name);
+	string_buffer_t sb;
+	sb_init(&sb);
+	sb_printf(&sb, L"HashMap«%ls,%ls»", subtype1->name, subtype2->name);
 	spec = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);
 	hash_put(&anna_hash_specialization, anna_tt_make(subtype1, subtype2), spec);

@@ -66,7 +66,8 @@ static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t
 {
     anna_object_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
-    string_buffer_t sb = SB_STATIC;
+    string_buffer_t sb;
+    sb_init(&sb);
     sb_printf(&sb, L"%f", anna_float_get(param[0]));
     anna_vmstack_push(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
     return stack;

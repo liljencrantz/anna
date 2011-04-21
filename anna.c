@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <locale.h>
 
 #include "common.h"
 #include "util.h"
@@ -388,6 +389,7 @@ static void anna_init()
 
 int main(int argc, char **argv)
 {
+    wsetlocale(LC_ALL, L"");
     
     if(argc != 2)
     {

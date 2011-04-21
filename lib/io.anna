@@ -11,7 +11,7 @@ type File
     
     def read()
     {
-        "Nope";
+        "Not implemented\n";
     }
     
 }

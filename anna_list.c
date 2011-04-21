@@ -1003,8 +1003,9 @@ anna_type_t *anna_list_type_get(anna_type_t *subtype)
     anna_type_t *spec = hash_get(&anna_list_specialization, subtype);
     if(!spec)
     {
-	string_buffer_t sb = SB_STATIC;
-	sb_printf(&sb, L"List!(%ls)", subtype->name);
+	string_buffer_t sb;
+	sb_init(&sb);
+	sb_printf(&sb, L"List«%ls»", subtype->name);
 	spec = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);
 	hash_put(&anna_list_specialization, subtype, spec);

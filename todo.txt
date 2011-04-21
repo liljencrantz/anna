@@ -7,6 +7,8 @@ List and hash types are still included in their specialization list even if GC:e
 hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
 Set correct locale on startup
+Pair«Int,String» doesn't abide to Pair«Object,Object»
+Coloring of error output misses on multibyte chars
 
 LANGUAGE FEATURES:
 Modules should map to directories, not files

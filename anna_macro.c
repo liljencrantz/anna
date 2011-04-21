@@ -228,7 +228,7 @@ ANNA_VM_MACRO(anna_macro_specialize)
 
 static inline anna_node_t *anna_macro_collection_i(anna_node_call_t *node)
 {
-    if(anna_node_is_call_to(node->child[0], L"__mapping__"))
+    if(node->child_count > 0 && anna_node_is_call_to(node->child[0], L"__mapping__"))
     {
 	anna_node_call_t *p0 = (anna_node_call_t *)node->child[0];
 	CHECK_CHILD_COUNT(p0, L"Map", 2);

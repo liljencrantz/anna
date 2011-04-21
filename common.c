@@ -29,7 +29,7 @@ int debug_level=3;
 /**
    String buffer used by the wsetlocale function
 */
-//static string_buffer_t *setlocale_buff=0;
+static string_buffer_t *setlocale_buff = 0;
 
 void show_stackframe() 
 {
@@ -207,31 +207,29 @@ wchar_t **strv2wcsv( const char **in )
 	return res;
 
 }
-/*
+
 const wchar_t *wsetlocale(int category, const wchar_t *locale)
 {
-
-	char *lang = locale?wcs2str( locale ):0;
-	char * res = setlocale(category,lang);
-	
+    char *lang = locale?wcs2str( locale ):0;
+    char * res = setlocale(category,lang);
+    
+    if(lang)
 	free( lang );
-
-	char *ctype = setlocale( LC_CTYPE, (void *)0 );
-		
-	if( !res )
-		return 0;
-	
-	if( !setlocale_buff )
-	{
-	    setlocale_buff = sb_halloc( global_context);
-	}
-	
-	sb_clear( setlocale_buff );
-	sb_printf( setlocale_buff, L"%s", res );
-	
-	return (wchar_t *)setlocale_buff->buff;	
+    
+    if( !res )
+	return 0;
+    
+    if(!setlocale_buff)
+    {
+	setlocale_buff = sb_new();
+    }
+    
+    sb_clear( setlocale_buff );
+    sb_printf( setlocale_buff, L"%s", res );
+    
+    return sb_content(setlocale_buff);
 }
-*/
+
 void debug( int level, const wchar_t *msg, ... )
 {
 	va_list va;
