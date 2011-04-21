@@ -6,7 +6,6 @@ KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
-Pair«Int,String» doesn't abide to Pair«Object,Object»
 Numeric locale hard coded to C
 
 LANGUAGE FEATURES:
@@ -49,7 +48,7 @@ DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
-Need to define new performance target
+Mandel test should be no more than one order of magnitude slower than the corresponding C implementation
 variable lookup instruction version for looking up in current frame
 variable lookup instruction version for looking up in parent frame
 Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)

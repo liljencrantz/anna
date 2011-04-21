@@ -48,7 +48,7 @@ macro enum(definition)
 
     newBody ~= [init];
     
-    var nameFun = ast(def toString(){});
+    var nameFun = ast(def String toString(){});
     (nameFun[2] as Call)[4] = nameBody;
     newBody ~= [nameFun];
     

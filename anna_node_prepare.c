@@ -781,7 +781,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    {
 		anna_error(
 		    this,
-		    L"Invalid type in assignment. Expected type %ls, got type %ls", 
+		    L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.", 
 		    templ->name, param->name);
 //		    anna_node_print(D_ERROR,this);
 	    }

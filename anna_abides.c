@@ -35,6 +35,25 @@ static int anna_abides_function(
     anna_function_type_t *role_model,
     int is_method)
 {
+    int i;
+    if(contender->input_count != role_model->input_count)
+    {
+	return 0;
+    }
+    
+    for(i=!!is_method; i<contender->input_count; i++)
+    {
+	if(!anna_abides(contender->input_type[i], role_model->input_type[i]))
+	{
+	    return 0;
+	}
+    }
+
+    if(!anna_abides(contender->return_type, role_model->return_type))
+    {
+	return 0;
+    }
+    
     return 1;
 }
 

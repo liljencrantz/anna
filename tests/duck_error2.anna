@@ -1,0 +1,23 @@
+type Foo
+{
+
+    def fun()
+    {
+        3;
+    }
+}
+
+type Bar
+{
+
+    def fun()
+    {
+        "3";
+    }
+}
+
+def main()
+{
+    var v = Foo();
+    v = Bar();
+}
