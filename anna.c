@@ -233,20 +233,6 @@ anna_type_t *anna_type_for_function(
     return res;
 }
 
-anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
-{
-    if(t1 == t2)
-    {
-	return t1;
-    }
-    /*
-      FIXME: Do proper intersection!
-    */
-    
-    return object_type;
-}
-
-
 size_t anna_native_method_create(
     anna_type_t *type,
     mid_t mid,

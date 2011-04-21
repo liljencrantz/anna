@@ -1,0 +1,24 @@
+type Foo
+{
+
+    def fun()
+    {
+        3;
+    }
+
+}
+
+type Bar
+{
+
+    def fun()
+    {
+        4;
+    }
+}
+
+def main()
+{
+    var v = Foo() or Bar();
+    print(v.fun(),"\n");
+}

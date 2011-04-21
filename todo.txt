@@ -11,9 +11,7 @@ Numeric locale hard coded to C
 LANGUAGE FEATURES:
 Modules should map to directories, not files
 Submodules
-Implicit module loading
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
-True type intersections
 milter/fap
 Make all types inherit from Object
 Int should just be an interface, with two backing implementations
@@ -40,7 +38,6 @@ Tests for namespaces
 Tests for nested macro members
 Tests for complex math
 Tests for floating point math
-Tests for Pair (Specialization currently known to be broken)
 Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
 
@@ -91,73 +88,4 @@ def foo(){io.File();}
   Compiler front end.
   Asynchronous continuation based app/web server
   Simple car game using my terrain rendering engine
-
-Type members:
-  member
-  name
-  intersect
-  abides
-  definition
-  filter
-
-Object members:
-  asString
-  type
-  
-  Code refactoring plan:
-  
-  - Move object code to individual .[ch] files.
-  - All node types should have a head var which is an anna_node_t, to
-    reduce the amount of casting needed.
-  
-  HashMap type
-  Pair type
-  Better Function type
-  Better Type type  
-  Stack type
-  Byte type
-  Buffer type
-  Regexp type
-  File type
-  StringLiteral type
-  FloatLiteral type
-  NullLiteral type
-  
-  attribute lists for types, functions and stack entries
-  Module variable inits
-  Make abides check properly check method signatures
-  Make abides check handle dependency cycles
-  Cache abides checks. Do all checks possible at type creation time and store the results
-  Split type namespace from type object
-  Better code validator
-  Type checking on function types
-  General purpose currying
-  Namespaces
-  Non-recursive invoke
-  Function default argument values
-  Named function arguments
-  Garbage collection  
-  Proper intersection/union of types
-  static member identifier and assignment
-  static function calls
-  String padding with null chars on «anti-truncate».
-  Add toString and a few more basic methods to Object
-  Make sure everybody inherits from Object
-  
-  Implement basic string methods
-  Implement string comparison methods
-  List arithmetic
-  
-  cast function (depends on type namespace/type object splittingx)
-  
-  elif macro
-  __extendsAttribute__ macro
-  in method
-  __returnAssign__ macro
-  __list__ macro 
-  use macro
-  __memberCall__ macro
-  __staticMemberGet__ macro
-  __staticMemberSet__ macro
-  with macro
 
