@@ -537,6 +537,8 @@ int anna_abides(
 
 int anna_abides_fault_count(
     anna_type_t *contender, anna_type_t *role_model);
+void anna_abides_init(void);
+
 
 anna_type_t *anna_type_intersect(
     anna_type_t *t1, anna_type_t *t2);
