@@ -218,7 +218,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    int ra;
 	    if(node->node_type==ANNA_NODE_CALL)
 	    {
-		template = anna_function_type_extract(
+		template = anna_function_type_unwrap(
 		    node2->function->return_type);
 		ra = template->input_count;
 	    }
@@ -231,7 +231,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
-		template = anna_function_type_extract(
+		template = anna_function_type_unwrap(
 		    (*constructor_ptr)->type);
 		res += sizeof(anna_op_null_t);
 		ra = template->input_count-1;
@@ -345,7 +345,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    }
 	    
 	    
-	    anna_function_type_t *template = anna_function_type_extract(
+	    anna_function_type_t *template = anna_function_type_unwrap(
 		mem->type);
 	    
 	    int i;
@@ -668,7 +668,7 @@ static void anna_vm_compile_i(
 	    int ra;
 	    if(node->node_type==ANNA_NODE_CALL)
 	    {
-		template = anna_function_type_extract(
+		template = anna_function_type_unwrap(
 		    node2->function->return_type);
 		ra = template->input_count;
 	    }
@@ -681,7 +681,7 @@ static void anna_vm_compile_i(
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
-		template = anna_function_type_extract(
+		template = anna_function_type_unwrap(
 		    (*constructor_ptr)->type);
 		anna_vm_null(ptr, ANNA_INSTR_CONSTRUCT);
 		ra = template->input_count-1;
@@ -845,7 +845,7 @@ static void anna_vm_compile_i(
 		anna_vm_member(ptr, mem->is_method?ANNA_INSTR_MEMBER_GET_THIS:(mem->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET), node2->mid);
 	    }
 	    
-	    anna_function_type_t *template = anna_function_type_extract(
+	    anna_function_type_t *template = anna_function_type_unwrap(
 		mem->type);
 	    
 	    int i;

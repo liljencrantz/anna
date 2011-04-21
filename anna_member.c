@@ -14,6 +14,7 @@
 #include "anna_type.h"
 #include "anna_string.h"
 #include "anna_function.h"
+#include "anna_function_type.h"
 #include "common.h"
 #include "anna_vm.h"
 
@@ -254,7 +255,7 @@ anna_member_t *anna_member_method_search(
 		continue;
 	    }
 	    
-	    anna_function_type_t *mem_fun_type = anna_function_unwrap_type(
+	    anna_function_type_t *mem_fun_type = anna_function_type_unwrap(
 		member->type);
 	    
 	    int has_alias = is_reverse ? anna_function_has_alias_reverse(mem_fun, alias_name):anna_function_has_alias(mem_fun, alias_name);

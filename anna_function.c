@@ -327,43 +327,6 @@ anna_object_t *anna_function_wrap(anna_function_t *result)
     return result->wrapper;
 }
 
-anna_function_type_t *anna_function_unwrap_type(anna_type_t *type)
-{
-    if(!type)
-    {
-	wprintf(L"Critical: Tried to get function from non-existing type\n");
-	CRASH;
-    }
-    
-    //wprintf(L"Find function signature for call %ls\n", type->name);
-    
-    anna_function_type_t **function_ptr = 
-	(anna_function_type_t **)anna_static_member_addr_get_mid(
-	    type,
-	    ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
-    if(function_ptr) 
-    {
-	//wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
-	return *function_ptr;
-    }
-    else 
-    {
-	//wprintf(L"Not a direct function, check for __call__ member\n");
-	anna_object_t **function_wrapper_ptr = 
-	    anna_static_member_addr_get_mid(
-		type,
-		ANNA_MID_CALL_PAYLOAD);
-	if(function_wrapper_ptr)
-	{
-	    //wprintf(L"Found, we're unwrapping it now\n");
-	    return anna_function_unwrap_type((*function_wrapper_ptr)->type);	    
-	}
-	return 0;	
-    }
-//     FIXME: Is there any validity checking we could do here?
-  
-}
-
 static anna_node_call_t *anna_function_attribute(anna_function_t *fun)
 {
     return fun->attribute;    

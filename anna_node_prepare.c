@@ -29,7 +29,7 @@ static void anna_node_calculate_type_param(
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
 	    anna_function_t *closure = c->payload;
 //	    debug(D_SPAM,L"Closure as param %d. function type says argument is of type %ls\n", i, funt->input_type[i+!!is_method]->name);
-	    anna_function_type_t *template = anna_function_type_extract(funt->input_type[i+!!is_method]);
+	    anna_function_type_t *template = anna_function_type_unwrap(funt->input_type[i+!!is_method]);
 	    assert(template);
 //	    debug(D_CRITICAL,L"Closure template takes %d params\n", template->input_count);
 	    for(j=0; j<template->input_count; j++)
@@ -197,7 +197,7 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 
-	    anna_function_type_t *funt = anna_function_type_extract(fun_type);
+	    anna_function_type_t *funt = anna_function_type_unwrap(fun_type);
 	    if(!funt)
 	    {
 		anna_node_print(4, call->function);
@@ -330,7 +330,7 @@ static void anna_node_calculate_type_internal(
 		    }
 		}
 
-		anna_function_type_t *fun = anna_function_unwrap_type(member->type);
+		anna_function_type_t *fun = anna_function_type_unwrap(member->type);
 		if(!fun)
 		{
 		    anna_error(
@@ -361,7 +361,7 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 
-	    anna_function_type_t *funt = anna_function_type_extract(member->type);
+	    anna_function_type_t *funt = anna_function_type_unwrap(member->type);
 	    n->return_type = funt->return_type;
 	    
 	    anna_node_calculate_type_param(n->child_count, n->child, 1, funt);
@@ -436,7 +436,7 @@ static void anna_node_calculate_type_internal(
 	    if(member->is_method)
 	    {
 		c->node_type = ANNA_NODE_MEMBER_GET_WRAP;
-		c->return_type = anna_method_curry(anna_function_unwrap_type(member->type));
+		c->return_type = anna_method_curry(anna_function_type_unwrap(member->type));
 	    }
 	    else
 	    {
@@ -540,7 +540,7 @@ static void anna_node_calculate_type_internal(
 	    {
 		break;
 	    }
-	    anna_function_type_t *funt = anna_function_type_extract(fun_type);
+	    anna_function_type_t *funt = anna_function_type_unwrap(fun_type);
 	    if(!funt)
 	    {
 		anna_error(this, L"Value is not callable");
@@ -672,7 +672,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
-		ftk = anna_function_type_extract(
+		ftk = anna_function_type_unwrap(
 		    (*constructor_ptr)->type);
 		if(ftk)
 		{
@@ -687,7 +687,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    anna_member_get(this2->object->return_type, this2->mid);
 		anna_type_t *ft = memb->type;
 				
-		ftk = anna_function_type_extract(ft);	    
+		ftk = anna_function_type_unwrap(ft);	    
 		
 		if(ftk)
 		{
@@ -709,7 +709,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    break;
 		}
 		
-		ftk = anna_function_type_extract(ft);
+		ftk = anna_function_type_unwrap(ft);
 		
 		if(ftk)
 		{

@@ -231,7 +231,7 @@ anna_type_t *anna_type_for_function(
 	anna_function_type_create(new_key, res);
     }
 
-    anna_function_type_t *ggg = anna_function_unwrap_type(res);
+    anna_function_type_t *ggg = anna_function_type_unwrap(res);
     assert(ggg->input_count == argc);
     
     return res;
@@ -342,8 +342,8 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	else if(r_memb->is_method)
 	{
 	    ok = anna_abides_function(
-		anna_function_type_extract(c_memb->type),
-		anna_function_type_extract(r_memb->type),
+		anna_function_type_unwrap(c_memb->type),
+		anna_function_type_unwrap(r_memb->type),
 		1);
 /*
 	    if(!ok && level==1)
