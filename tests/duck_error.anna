@@ -1,0 +1,23 @@
+type Foo
+{
+
+    def fun(String param)
+    {
+        print(param, "\n");
+    }
+}
+
+type Bar
+{
+
+    def fun(Int param)
+    {
+        print(param, "\n");
+    }
+}
+
+def main()
+{
+    var v = Foo();
+    v = Bar();
+}
