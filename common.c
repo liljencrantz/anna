@@ -215,7 +215,7 @@ const wchar_t *wsetlocale(int category, const wchar_t *locale)
     
     if(lang)
 	free( lang );
-    
+
     if( !res )
 	return 0;
     
