@@ -6,9 +6,8 @@ KNOWN BUGS:
 List and hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
-Set correct locale on startup
 Pair«Int,String» doesn't abide to Pair«Object,Object»
-Coloring of error output misses on multibyte chars
+Numeric locale hard coded to C
 
 LANGUAGE FEATURES:
 Modules should map to directories, not files

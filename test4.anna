@@ -1,5 +1,7 @@
 
 def main()  
 {
-    print(3.1415);
+    var foo = List«Hej»();
+    var f = io.File("tests/io.output");
+    lang.print(f.read());
 }

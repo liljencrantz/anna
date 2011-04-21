@@ -12,6 +12,12 @@
 #include "wutil.h"
 #include "anna_node.h"
 
+static int byte_count(wchar_t ch)
+{
+    char bytes[8];
+    return wctomb(bytes, ch);
+}
+
 static void anna_indent(string_buffer_t *sb, int indentation)
 {
     int indent;
@@ -451,9 +457,9 @@ void anna_node_print_code(anna_node_t *node)
 	    {
 		fwprintf(stderr, L"\x1b[31m");
 	    }
-	    else 
+	    else
 	    {
-		fwprintf(stderr, L"\x1b[0m");		
+		fwprintf(stderr, L"\x1b[0m");
 	    }
 	    
 	}
@@ -470,8 +476,8 @@ void anna_node_print_code(anna_node_t *node)
 		current_column=0;
 		break;
 	    default:
-		current_column++;
+		current_column+=byte_count(res);
 		break;
-	}	
-    }    
+	}
+    }
 }
