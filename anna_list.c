@@ -171,6 +171,20 @@ static inline anna_object_t *anna_list_get_count_i(anna_object_t **param)
 
 ANNA_VM_NATIVE(anna_list_get_count, 1)
 
+static inline anna_object_t *anna_list_get_first_i(anna_object_t **param)
+{
+    return anna_list_get(param[0], 0);
+}
+
+ANNA_VM_NATIVE(anna_list_get_first, 1)
+
+static inline anna_object_t *anna_list_get_last_i(anna_object_t **param)
+{
+    return anna_list_get(param[0], anna_list_get_size(param[0])-1);
+}
+
+ANNA_VM_NATIVE(anna_list_get_last, 1)
+
 static inline anna_object_t *anna_list_set_count_i(anna_object_t **param)
 {
     if(param[1]==null_object)
@@ -446,7 +460,7 @@ static anna_vmstack_t *anna_list_filter(anna_vmstack_t *stack, anna_object_t *me
     return stack;
 }
 
-static anna_vmstack_t *anna_list_filter_first_callback(anna_vmstack_t *stack, anna_object_t *me)
+static anna_vmstack_t *anna_list_find_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_object_t *value = anna_vmstack_pop(stack);
 
@@ -481,7 +495,7 @@ static anna_vmstack_t *anna_list_filter_first_callback(anna_vmstack_t *stack, an
     return stack;
 }
 
-static anna_vmstack_t *anna_list_filter_first(anna_vmstack_t *stack, anna_object_t *me)
+static anna_vmstack_t *anna_list_find(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop(stack);
     anna_object_t *list = anna_vmstack_pop(stack);
@@ -508,7 +522,7 @@ static anna_vmstack_t *anna_list_filter_first(anna_vmstack_t *stack, anna_object
 	
 	stack = anna_vm_callback_native(
 	    stack,
-	    anna_list_filter_first_callback, 3, callback_param,
+	    anna_list_find_callback, 3, callback_param,
 	    body, 2, o_param
 	    );
     }
@@ -869,6 +883,22 @@ static void anna_list_type_create_internal(
 	&anna_list_get_count, 
 	&anna_list_set_count);
 
+    anna_native_property_create(
+	type,
+	-1,
+	L"first",
+	spec,
+	&anna_list_get_first,
+	0);
+
+    anna_native_property_create(
+	type,
+	-1,
+	L"last",
+	spec,
+	&anna_list_get_last,
+	0);
+
     anna_native_method_create(
 	type, -1, L"__appendAssign__", 0, 
 	&anna_list_append, 
@@ -916,8 +946,8 @@ static void anna_list_type_create_internal(
 	2, e_argv, e_argn);
 
     anna_native_method_create(
-	type, -1, L"__filterFirstfirst__", 
-	0, &anna_list_filter_first, 
+	type, -1, L"__find__", 
+	0, &anna_list_find, 
 	spec,
 	2, e_argv, e_argn);  
 

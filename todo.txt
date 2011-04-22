@@ -32,6 +32,8 @@ toString methods for Hash, List, Range, Function, Pair, etc
 A backtrace function
 io module
 time module
+List.milter 
+Range.{milter,map,filter,filterFirst}
 
 RELIABILITY:
 Use continuations to make a green thread implementation as a test of continuation functionality
@@ -42,6 +44,7 @@ Tests for complex math
 Tests for floating point math
 Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
+Current method for determening map output is a bit fragile. 
 
 DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.
