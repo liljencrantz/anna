@@ -26,7 +26,7 @@ The rest of the hashtable functions (filter, contains, properties for keys and v
 Set type
 String format function
 File type
-toString methods for Hash, List, Range, Function, Pair, etc
+toString methods for Hash, Pair, etc
 A backtrace function
 io module
 time module

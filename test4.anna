@@ -1,5 +1,4 @@
-
 def main()  
 {
-	print([1 as Object,2,3,4,"hello",1.1, 'g'],"\n")
+    print(1..10, 5..., 20..0:-3,47..null:-5,'\n');
 }

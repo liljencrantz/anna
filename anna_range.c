@@ -14,6 +14,7 @@
 #include "anna_function_type.h"
 #include "anna_function.h"
 #include "anna_vm.h"
+#include "anna_string.h"
 
 ssize_t anna_range_get_from(anna_object_t *obj)
 {
@@ -323,6 +324,39 @@ static anna_vmstack_t *anna_range_each(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+static inline anna_object_t *anna_range_to_string_i(anna_object_t **param)
+{
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"[");
+
+    ssize_t from = anna_range_get_from(param[0]);
+    ssize_t to = anna_range_get_to(param[0]);
+    ssize_t step = anna_range_get_step(param[0]);
+    int open = anna_range_get_open(param[0]);
+    ssize_t count = 1+(to-from-sign(step))/step;
+
+    int i;
+    if(open)
+    {
+	sb_printf(&sb, L"%d, %d, %d...]", from, from+step, from+2*step);
+    }
+    else
+    {
+	for(i=0; i<count; i++)
+	{
+	    sb_printf(&sb, L"%ls%d", i==0?L"":L", ", from + i*step);
+	}
+	
+    }
+    
+    sb_printf(&sb, L"]");
+    anna_object_t *res =  anna_string_create(sb_length(&sb), sb_content(&sb));
+    sb_destroy(&sb);
+    return res;
+}
+ANNA_VM_NATIVE(anna_range_to_string, 1)
+
 void anna_range_type_create(struct anna_stack_template *stack)
 {
     mid_t mmid;
@@ -473,6 +507,14 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	int_type,
 	2, a_argv, a_argn);
         
+    anna_native_method_create(
+	range_type,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_range_to_string, 
+	string_type, 1, a_argv, a_argn);
+    
 
     /*
     anna_native_method_create(
