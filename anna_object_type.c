@@ -29,7 +29,7 @@ static anna_vmstack_t *anna_object_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t **param = stack->top - 2;
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, anna_int_create(wcscmp(param[0]->type->name, param[1]->type->name)));
+    anna_vmstack_push(stack, anna_int_create(param[0]->type-param[1]->type));
     return stack;
 }
 
@@ -37,7 +37,7 @@ static anna_vmstack_t *anna_object_hash(anna_vmstack_t *stack, anna_object_t *me
 {
     anna_object_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_int_create(hash_wcs_func(param[0]->type->name)));
+    anna_vmstack_push(stack, anna_int_create(hash_ptr_func(param[0]->type)));
     return stack;
 }
 

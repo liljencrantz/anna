@@ -14,77 +14,14 @@
 #include "anna_member.h"
 #include "anna_node_create.h"
 #include "anna_vm.h"
-/*
-static void anna_member_add_create(
-    anna_type_t *type,
-    mid_t mid,
-    wchar_t *name,
-    int is_static,
-    anna_type_t *member_type)
-{
-    anna_node_call_t *definition = anna_type_definition_get(type);
-    anna_member_create(
-	type,
-	mid,
-	name,
-	is_static,
-	member_type);    
-    anna_member_add_node(
-	definition,
-	mid,
-	name,
-	is_static,
-	(anna_node_t *)anna_node_create_identifier(0, member_type->name));
-}
+#include "anna_int.h"
 
-static void anna_native_method_add_create(
-    anna_type_t *type,
-    mid_t mid,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    anna_type_t *result,
-    size_t argc,
-    anna_type_t **argv,
-    wchar_t **argn)
-{
-    anna_node_call_t *definition = anna_type_definition_get(type);
-    anna_native_method_create(
-	type,
-	mid,
-	name,
-	flags,
-	func,
-	result,
-	argc,
-	argv,
-	argn);
-    anna_node_t *n_argv[argc];
-    int i;
-    for(i=0;i<argc;i++)
-    {
-	n_argv[i] = (anna_node_t *)anna_node_create_identifier(0, argv[i]->name);
-    }
-    
-    anna_native_method_add_node(
-	definition,
-	mid,
-	name,
-	flags,
-	func,
-	(anna_node_t *)anna_node_create_identifier(0, result->name),
-	argc,
-	n_argv,
-	argn);
-}
-*/
-
-static inline anna_object_t *anna_type_i_get_name_i(anna_object_t **param)
+static inline anna_object_t *anna_type_to_string_i(anna_object_t **param)
 {
     anna_type_t *type = anna_type_unwrap(param[0]);
     return anna_string_create(wcslen(type->name), type->name);
 }
-ANNA_VM_NATIVE(anna_type_i_get_name, 1)
+ANNA_VM_NATIVE(anna_type_to_string, 1)
 
 static inline anna_object_t *anna_type_i_get_member_i(anna_object_t **param)
 {
@@ -109,9 +46,37 @@ static inline anna_object_t *anna_type_i_get_member_i(anna_object_t **param)
 }
 ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 
+static anna_vmstack_t *anna_type_cmp(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t **param = stack->top - 2;
+    anna_type_t *type1 = anna_type_unwrap(param[0]);
+    anna_type_t *type2 = anna_type_unwrap(param[1]);
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, anna_int_create(type1-type2));
+    return stack;
+}
+
+static anna_vmstack_t *anna_type_abides(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t **param = stack->top - 2;
+    anna_type_t *type1 = anna_type_unwrap(param[0]);
+    anna_type_t *type2 = anna_type_unwrap(param[1]);
+    anna_vmstack_drop(stack, 3);
+    anna_vmstack_push(stack, anna_abides(type1, type2)?anna_int_one:null_object);
+    return stack;
+}
+
+static anna_vmstack_t *anna_type_hash(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t **param = stack->top - 1;
+    anna_vmstack_drop(stack, 2);
+    anna_type_t *type = anna_type_unwrap(param[0]);
+    anna_vmstack_push(stack, anna_int_create(hash_ptr_func(type)));
+    return stack;
+}
+
 void anna_type_type_create(anna_stack_template_t *stack)
 {
-
     anna_member_create(
 	type_type,
 	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
@@ -124,12 +89,23 @@ void anna_type_type_create(anna_stack_template_t *stack)
 
 void anna_type_type_create2(anna_stack_template_t *stack)
 {
+    anna_type_t *argv[] = 
+	{
+	    type_type, type_type
+	}
+    ;
+    wchar_t *argn[]=
+	{
+	    L"this", L"other"
+	}
+    ;
+
     anna_native_property_create(
 	type_type,
 	-1,
 	L"name",
 	string_type,
-	&anna_type_i_get_name, 
+	&anna_type_to_string, 
 	0);
     
     anna_native_property_create(
@@ -140,4 +116,36 @@ void anna_type_type_create2(anna_stack_template_t *stack)
 	&anna_type_i_get_member, 
 	0);
 
+    anna_native_method_create(
+	type_type,
+	ANNA_MID_HASH_CODE,
+	L"hashCode",
+	0,
+	&anna_type_hash, 
+	int_type, 1, argv, argn);
+    
+    anna_native_method_create(
+	type_type,
+	ANNA_MID_CMP,
+	L"__cmp__",
+	0,
+	&anna_type_cmp, 
+	object_type, 2, argv, argn);
+    
+    anna_native_method_create(
+	type_type,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_type_to_string, 
+	string_type, 1, argv, argn);    
+
+    anna_native_method_create(
+	type_type,
+	-1,
+	L"abides",
+	0,
+	&anna_type_abides, 
+	object_type, 2, argv, argn);
+    
 }
