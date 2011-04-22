@@ -54,6 +54,7 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
     }
     else
     {
+	
 	res = hash_get(&type->specializations, call);
 	if(!res)
 	{

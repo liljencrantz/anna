@@ -109,19 +109,41 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
     anna_node_call_t *fun = (anna_node_call_t *)node->function;
 
     anna_node_identifier_t *orig_name = (anna_node_identifier_t *)fun->child[1];
-
+    
     string_buffer_t sb;
     sb_init(&sb);
     sb_append(&sb, L"__");
     sb_append(&sb, orig_name->name);
     sb_append(&sb, L"__");
     
-
+    
     fun->child[1] = (anna_node_t *)anna_node_create_identifier(
 	&fun->child[1]->location,
 	sb_content(&sb));
     sb_destroy(&sb);
     
+    if(wcscmp(orig_name->name, L"map")==0)
+    {
+	anna_node_t *res = (anna_node_t *)anna_node_create_call2(
+	    &node->location, 
+	    anna_node_create_identifier(&node->location,L"cast"), 
+	    node, 
+	    anna_node_create_call2(
+		&node->location,
+		anna_node_create_identifier(&node->location, L"__specialize__"),
+		anna_node_create_type_lookup_return(
+		    &node->location, 
+		    node,
+		    -1),
+		anna_node_create_block2(
+		    &node->location, 
+		    anna_node_create_type_lookup_return(&node->location, node, node->child_count-1)
+		    )));
+	
+	return res;
+    }
+    
+
     return (anna_node_t *)node;
     
 }

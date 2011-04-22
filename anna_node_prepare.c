@@ -23,18 +23,14 @@ static void anna_node_calculate_type_param(
 {
     int i, j;
     for(i=0; i<argc; i++)
-    {
+    {	
 	if(argv[i]->node_type == ANNA_NODE_CLOSURE)
-	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
 	    anna_function_t *closure = c->payload;
-//	    debug(D_SPAM,L"Closure as param %d. function type says argument is of type %ls\n", i, funt->input_type[i+!!is_method]->name);
 	    anna_function_type_t *template = anna_function_type_unwrap(funt->input_type[i+!!is_method]);
 	    assert(template);
-//	    debug(D_CRITICAL,L"Closure template takes %d params\n", template->input_count);
 	    for(j=0; j<template->input_count; j++)
 	    {
-//		debug(D_CRITICAL,L"Argument %d should be of type %ls\n", j, template->input_type[j]->name);
 		anna_function_argument_hint(
 		    closure,
 		    j,
@@ -225,6 +221,18 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_CAST:
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
+	    /*
+	      First calculate the type of the thing we are casting. We
+	      do this because e.g. the map macro uses the type of the
+	      castee when determining the type to cast to. This is a
+	      bit of a fragile hack, we should probably figure out
+	      something more robust.
+	      
+	      Perhaps it would be possible for the type lookup nodes
+	      to be given a manual node which, if specified, needs to
+	      be type calculated before they are calculated?
+	    */
+	    anna_node_calculate_type(call->child[0], stack);
 	    anna_node_calculate_type(call->child[1], stack);
 	    anna_type_t *fun_type = call->child[1]->return_type;
 

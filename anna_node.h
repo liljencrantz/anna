@@ -6,7 +6,6 @@
 #include "anna.h"
 #include "anna_stack.h"
 
-
 enum anna_node_enum
 {
 /* These are the node types visible to macros */
@@ -36,13 +35,13 @@ enum anna_node_enum
     ANNA_NODE_IF,
     ANNA_NODE_SPECIALIZE,
     ANNA_NODE_TYPE_LOOKUP,
+    ANNA_NODE_TYPE_LOOKUP_RETURN,
     ANNA_NODE_TYPE,
     ANNA_NODE_CAST,
     ANNA_NODE_MAPPING,
     ANNA_NODE_MAPPING_IDENTIFIER,
     ANNA_NODE_RETURN,
-}
-    ;
+};
 
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
@@ -410,7 +409,7 @@ anna_node_t *anna_parse(wchar_t *name);
 /**
   Print the source code that lead to the creation of the specified AST
   node. This usually involves opening the source code file.
-o
+
   Does a bit of fancy markup with line numbers and color coding of the
   exact source part of the node.
  */
@@ -418,7 +417,7 @@ void anna_node_print_code(anna_node_t *node);
 
 /**
    Create an identical copy of the specified AST node.
- */
+*/
 anna_node_t *anna_node_clone_shallow(anna_node_t *);
 
 /**
@@ -428,7 +427,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n);
 
 /**
    Returns 0 if the two trees differ, 1 otherwise
- */
+*/
 int anna_node_compare(anna_node_t *node1, anna_node_t *node2);
 
 anna_node_t *anna_node_replace(

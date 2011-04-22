@@ -60,6 +60,7 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
+
 	    anna_function_t *macro = anna_node_macro_get(this2->function, stack);
 	    
 	    if(macro)
@@ -105,12 +106,14 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
+	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	{
 	    return this;
 	}
 	
-	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_RETURN:
 	{
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
 	    c->payload = anna_node_macro_expand(c->payload, stack);

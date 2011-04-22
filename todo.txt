@@ -7,8 +7,10 @@ List and hash types are still included in their specialization list even if GC:e
 hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
 Numeric locale hard coded to C
+Return type calculations don't take into account return expressions other than the last expression.
 
 LANGUAGE FEATURES:
+Function templates
 Modules should map to directories, not files
 Submodules
 Default function argumet values. These also need to be part of the function interface and contained in function keys.
@@ -60,13 +62,6 @@ Every member declaration also results in a stack template declaration because al
 
 UNUSED OPERATORS:
 Currently, the ? and @ symbols are unused. 
-
-Figure out how to handle the map function. We can't make a prototype
-function, we actually want the type hinting to go in the other
-direction; the return value of the function supplied to map should determine the
-return type of the function. I guess we want some kind of magical
-syntax for annotating a method that will make the return type depend
-on the input type? Or can we simply use a clever macro? A template?
 
 Every module is represented by an object with properties representing
 the members. Imutable members, like types, are read-only properties.

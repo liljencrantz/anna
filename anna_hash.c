@@ -530,7 +530,3 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
     }
     return spec;
 }
-
-
-
-

@@ -723,8 +723,7 @@ op4:
 op5:
 	':'
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&@$,L"Pair");
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"Pair");
 	};
 
 op6:
@@ -839,7 +838,8 @@ constant:
 	| 
 	LITERAL_STRING
 	{
-	    $$ = (anna_node_t *)anna_yacc_string_literal_create(&@$, anna_lex_get_text(scanner));
+	    $$ = (anna_node_t *)anna_yacc_string_literal_create(
+		&@$, anna_lex_get_text(scanner));
 	};
 
 opt_block: /* Empty */{$$ = 0;} | block;

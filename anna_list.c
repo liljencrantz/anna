@@ -322,42 +322,50 @@ static anna_vmstack_t *anna_list_map_callback(anna_vmstack_t *stack, anna_object
 
 static anna_vmstack_t *anna_list_map(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *res = anna_list_create(object_type);
     anna_object_t *body = anna_vmstack_pop(stack);
     anna_object_t *list = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
-    
-    size_t sz = anna_list_get_size(list);
-    
-    if(sz > 0)
+    if(body == null_object)
     {
-	anna_object_t *callback_param[] = 
-	    {
-		list,
-		body,
-		anna_int_one,
-		res
-	    }
-	;
-	
-	anna_object_t *o_param[] =
-	    {
-		anna_int_zero,
-		anna_list_get(list, 0)
-	    }
-	;
-	
-	stack = anna_vm_callback_native(
-	    stack,
-	    anna_list_map_callback, 4, callback_param,
-	    body, 2, o_param
-	    );
+	anna_vmstack_push(stack, null_object);
     }
     else
     {
-	anna_vmstack_push(stack, res);
+	anna_function_t *fun = anna_function_unwrap(body);
+	anna_object_t *res = anna_list_create(fun->return_type);
+	
+	size_t sz = anna_list_get_size(list);
+	
+	if(sz > 0)
+	{
+	    anna_object_t *callback_param[] = 
+		{
+		    list,
+		    body,
+		    anna_int_one,
+		    res
+		}
+	    ;
+	    
+	    anna_object_t *o_param[] =
+		{
+		    anna_int_zero,
+		    anna_list_get(list, 0)
+		}
+	    ;
+	    
+	    stack = anna_vm_callback_native(
+		stack,
+		anna_list_map_callback, 4, callback_param,
+		body, 2, o_param
+		);
+	}
+	else
+	{
+	    anna_vmstack_push(stack, res);
+	}
     }
-
+    
     return stack;
 }
 

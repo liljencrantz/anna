@@ -52,6 +52,25 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
 	    return d->payload->return_type;
 	return 0;
     }
+    else if(node->node_type == ANNA_NODE_TYPE_LOOKUP_RETURN)
+    {
+	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
+	anna_node_calculate_type(d->payload, stack);
+	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	{
+	    anna_node_call_t *pc = (anna_node_call_t *)d->payload;
+	    anna_node_t *chld = (d->steps >= 0)?pc->child[d->steps]:pc->function;
+	    anna_node_calculate_type(chld, stack);
+	    if(chld->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		anna_function_type_t *fun = anna_function_type_unwrap(
+		   chld->return_type);
+		return fun?fun->return_type:0;
+	    }
+	}
+	
+	return 0;
+    }
     
     anna_object_t *res = anna_node_static_invoke_try(
 	node, stack);
@@ -465,11 +484,13 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_MAPPING_IDENTIFIER:
+	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	{
 	    return tree;
 	}
 
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_TYPE_LOOKUP:
 	{
 	    anna_node_wrapper_t *this2 =(anna_node_wrapper_t *)anna_node_clone_shallow(tree);
 	    this2->payload = anna_node_replace(this2->payload,
@@ -508,6 +529,17 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
    
     switch(node1->node_type)
     {
+
+	case ANNA_NODE_RETURN:
+	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	{
+	    anna_node_wrapper_t *this1 =(anna_node_wrapper_t *)node1;
+	    anna_node_wrapper_t *this2 =(anna_node_wrapper_t *)node2;
+
+	    return anna_node_compare(this1->payload, this2->payload);
+	}
+
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *id1 = (anna_node_identifier_t *)node1;
@@ -666,6 +698,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	case ANNA_NODE_TYPE:
 	{
 	    break;   

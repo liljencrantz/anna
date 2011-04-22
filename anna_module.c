@@ -311,7 +311,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	    anna_error_count);
 	exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
     }
-    debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);	
+    debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
 
     for(i=0; i<ggg->child_count; i++)
     {
