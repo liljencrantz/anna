@@ -154,23 +154,11 @@ static void anna_node_print_internal(
 	}
 	
 	case ANNA_NODE_TYPE_LOOKUP:
-	{
-	    anna_indent(sb,indentation);
-	    anna_node_wrapper_t *this2 = (anna_node_wrapper_t *)this;
-	    sb_printf(sb,L"__typeOf__(\n");
-	    anna_node_print_internal(
-		sb, this2->payload, indentation+1);
-	    sb_printf(sb,L")");
-	    break;
-	}
-	
 	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	{
 	    anna_indent(sb,indentation);
-	    anna_node_wrapper_t *this2 = (anna_node_wrapper_t *)this;
-	    sb_printf(sb,L"__typeOfReturn__(\n");
-	    anna_node_call_t *pc = (anna_node_call_t *)this2->payload;
-	    anna_node_t *chld = (this2->steps >= 0)?pc->child[this2->steps]:pc->function;
+	    sb_printf(sb,this->node_type==ANNA_NODE_TYPE_LOOKUP?L"__typeOf__":L"__typeOfReturn__(\n");
+	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
 	    anna_node_print_internal(
 		sb, chld, indentation+1);
 	    sb_printf(sb,L")");

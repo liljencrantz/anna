@@ -109,7 +109,8 @@ anna_node_declare_t *anna_node_create_declare(
 
 anna_node_wrapper_t *anna_node_create_type_lookup(
     anna_location_t *loc,
-    anna_node_t *payload);
+    anna_node_call_t *payload,
+    int idx);
 
 anna_node_wrapper_t *anna_node_create_type_lookup_return(
     anna_location_t *loc,

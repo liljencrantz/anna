@@ -25,6 +25,7 @@ static void anna_node_calculate_type_param(
     for(i=0; i<argc; i++)
     {	
 	if(argv[i]->node_type == ANNA_NODE_CLOSURE)
+	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
 	    anna_function_t *closure = c->payload;
 	    anna_function_type_t *template = anna_function_type_unwrap(funt->input_type[i+!!is_method]);
@@ -604,6 +605,32 @@ static void anna_node_calculate_type_internal(
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
 	    anna_node_calculate_type(c->payload, stack);
 	    c->return_type = c->payload->return_type;
+	    break;
+	}
+
+	case ANNA_NODE_TYPE_LOOKUP:
+	{
+	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
+	    anna_node_calculate_type(chld, stack);
+	    this->return_type = chld->return_type;
+	    break;
+	}
+	
+	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	{
+	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
+	    anna_node_calculate_type(chld, stack);
+
+	    if(chld->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		anna_function_type_t *fun = anna_function_type_unwrap(
+		   chld->return_type);
+		if(fun)
+		{
+		    this->return_type = fun->return_type;
+		}
+		
+	    }
 	    break;
 	}
 

@@ -491,5 +491,7 @@ void anna_node_call_map(
 anna_type_t *anna_node_resolve_to_type(
     anna_node_t *node, anna_stack_template_t *stack);
 
+anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node);
+
 #endif
 

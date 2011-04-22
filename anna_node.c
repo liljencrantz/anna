@@ -35,41 +35,27 @@ typedef struct
     anna_node_find_each_t;
 
 
+
 #include "anna_node_specialize.c"
 #include "anna_node_macro_expand.c"
 #include "anna_node_prepare.c"
+
+anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
+{
+    anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;
+    anna_node_call_t *pc = (anna_node_call_t *)d->payload;
+    return (d->steps >= 0)?pc->child[d->steps]:pc->function;
+}
 
 anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
 {
     debug(D_SPAM,L"Figure out type from:\n");    
     anna_node_print(D_SPAM, node);
     
-    if(node->node_type == ANNA_NODE_TYPE_LOOKUP)
+    if((node->node_type == ANNA_NODE_TYPE_LOOKUP) || (node->node_type == ANNA_NODE_TYPE_LOOKUP_RETURN))
     {
-	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
-	anna_node_calculate_type(d->payload, stack);
-	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    return d->payload->return_type;
-	return 0;
-    }
-    else if(node->node_type == ANNA_NODE_TYPE_LOOKUP_RETURN)
-    {
-	anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;	
-	anna_node_calculate_type(d->payload, stack);
-	if(d->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	{
-	    anna_node_call_t *pc = (anna_node_call_t *)d->payload;
-	    anna_node_t *chld = (d->steps >= 0)?pc->child[d->steps]:pc->function;
-	    anna_node_calculate_type(chld, stack);
-	    if(chld->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    {
-		anna_function_type_t *fun = anna_function_type_unwrap(
-		   chld->return_type);
-		return fun?fun->return_type:0;
-	    }
-	}
-	
-	return 0;
+	anna_node_calculate_type(node, stack);
+	return node->return_type;
     }
     
     anna_object_t *res = anna_node_static_invoke_try(
@@ -361,6 +347,7 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_member_access_t);
 	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	    return sizeof(anna_node_wrapper_t);
 	default:
 	    anna_error(n, L"Unknown node type %d encoundered while determining size of node\n", n->node_type);
@@ -485,12 +472,12 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_MAPPING_IDENTIFIER:
 	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	case ANNA_NODE_TYPE_LOOKUP:
 	{
 	    return tree;
 	}
 
 	case ANNA_NODE_RETURN:
-	case ANNA_NODE_TYPE_LOOKUP:
 	{
 	    anna_node_wrapper_t *this2 =(anna_node_wrapper_t *)anna_node_clone_shallow(tree);
 	    this2->payload = anna_node_replace(this2->payload,
@@ -531,8 +518,6 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
     {
 
 	case ANNA_NODE_RETURN:
-	case ANNA_NODE_TYPE_LOOKUP:
-	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	{
 	    anna_node_wrapper_t *this1 =(anna_node_wrapper_t *)node1;
 	    anna_node_wrapper_t *this2 =(anna_node_wrapper_t *)node2;
@@ -540,6 +525,14 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    return anna_node_compare(this1->payload, this2->payload);
 	}
 
+	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	{
+	    anna_node_t *c1 = anna_node_type_lookup_get_payload(node1);
+	    anna_node_t *c2 = anna_node_type_lookup_get_payload(node2);
+	    return anna_node_compare(c1,c2);
+	}
+	
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *id1 = (anna_node_identifier_t *)node1;

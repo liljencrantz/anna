@@ -108,11 +108,11 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	case ANNA_NODE_TYPE_LOOKUP:
 	{
 	    return this;
 	}
 	
-	case ANNA_NODE_TYPE_LOOKUP:
 	case ANNA_NODE_RETURN:
 	{
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;

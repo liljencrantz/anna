@@ -68,13 +68,16 @@ anna_node_wrapper_t *anna_node_create_return(anna_location_t *loc, struct anna_n
 
 anna_node_wrapper_t *anna_node_create_type_lookup(
     anna_location_t *loc,
-    struct anna_node *val)
+    struct anna_node_call *val,
+    int idx)
 {
     anna_node_wrapper_t *result = anna_alloc_node(sizeof(anna_node_wrapper_t));
     result->node_type = ANNA_NODE_TYPE_LOOKUP;
     anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
+    result->payload = (anna_node_t *)val;
     result->return_type = type_type;
+    result->steps = idx;
+
     return result;  
 }
 
@@ -87,7 +90,6 @@ anna_node_wrapper_t *anna_node_create_type_lookup_return(
     result->node_type = ANNA_NODE_TYPE_LOOKUP_RETURN;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = (anna_node_t *)val;
-    result->return_type = type_type;
     result->steps = idx;
     return result;  
 }
