@@ -18,6 +18,7 @@
 #include "anna_function.h"
 #include "anna_range.h"
 #include "anna_vm.h"
+#include "anna_string.h"
 
 #include "anna_macro.h"
 
@@ -534,6 +535,73 @@ static anna_vmstack_t *anna_list_find(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+
+static anna_vmstack_t *anna_list_to_string_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_object_t *value = anna_vmstack_pop(stack);
+
+    anna_object_t **param = stack->top - 3;
+    anna_object_t *list = param[0];
+    int idx = anna_int_get(param[1]);
+    anna_object_t *res = param[2];
+    size_t sz = anna_list_get_size(list);
+
+    anna_string_append(res, value);
+    
+    if(sz > idx)
+    {
+	anna_string_append(res, anna_string_create(2,L", "));
+	anna_object_t *o = anna_list_get(list, idx);
+	param[1] = anna_int_create(idx+1);	
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *meth = o->type->static_member[tos_mem->offset];
+	anna_vm_callback_reset(stack, meth, 1, &o);
+    }
+    else
+    {
+	anna_string_append(res, anna_string_create(1,L"]"));
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, res);
+    }
+    return stack;
+}
+
+static anna_vmstack_t *anna_list_to_string(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *list = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+
+    size_t sz = anna_list_get_size(list);
+    
+    if(sz > 0)
+    {
+	anna_object_t *res = anna_string_create(1,L"[");
+	anna_object_t *callback_param[] = 
+	    {
+		list,
+		anna_int_one,
+		res
+	    }
+	;
+	    
+	anna_object_t *o = anna_list_get(list, 0);
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *meth = o->type->static_member[tos_mem->offset];
+
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_list_to_string_callback, 3, callback_param,
+	    meth, 1, &o
+	    );
+    }
+    else
+    {
+	anna_vmstack_push(stack, anna_string_create(2,L"[]"));
+    }
+    return stack;
+}
+
+
 static inline anna_object_t *anna_list_init_i(anna_object_t **param)
 {
     (*anna_member_addr_get_mid(param[0],ANNA_MID_LIST_PAYLOAD))=0;
@@ -1007,6 +1075,15 @@ static void anna_list_type_create_internal(
 	range_argn);
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
     anna_function_alias_add(fun, L"__set__");
+
+    
+    anna_native_method_create(
+	type,
+	ANNA_MID_TO_STRING,
+	L"toString",
+	0,
+	&anna_list_to_string, 
+	string_type, 1, a_argv, a_argn);
 
     /*
       Todo:

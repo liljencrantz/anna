@@ -33,6 +33,12 @@ void anna_string_print(anna_object_t *obj)
     asi_print_regular(str);
 }
 
+void anna_string_append(anna_object_t *this, anna_object_t *str)
+{
+    asi_append(as_unwrap(this), as_unwrap(str), 0, asi_get_length(as_unwrap(str)));
+}
+
+
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
     anna_object_t *obj= anna_object_create(string_type);
@@ -52,8 +58,6 @@ anna_object_t *anna_string_copy(anna_object_t *orig)
     asi_append(as_unwrap(obj), o, 0, asi_get_length(o));
     return obj;
 }
-
-
 
 size_t anna_string_get_count(anna_object_t *this)
 {
