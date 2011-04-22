@@ -3,11 +3,12 @@ Don't differentiate between macros and functions anymore
 Move most of stack_templates into the namespace class
 
 KNOWN BUGS:
-List and hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
+List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
 Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
+If a property returns a function which is called directly, a crash will result. This can be reliably detected and avoided at compile time. 
 
 LANGUAGE FEATURES:
 Function templates
@@ -26,7 +27,7 @@ The rest of the hashtable functions (filter, contains, properties for keys and v
 Set type
 String format function
 File type
-toString methods for Hash, Pair, etc
+toString methods for Hash, Pair
 A backtrace function
 io module
 time module
@@ -49,8 +50,9 @@ Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
 Mandel test should be no more than one order of magnitude slower than the corresponding C implementation
-variable lookup instruction version for looking up in current frame
-variable lookup instruction version for looking up in parent frame
+Start implementing a few of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance.
+Variable lookup instruction version for looking up in current frame
+Variable lookup instruction version for looking up in parent frame
 Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)
 Consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion

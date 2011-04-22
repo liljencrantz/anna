@@ -79,6 +79,8 @@ static size_t anna_bc_stack_size(char *code)
 	    case ANNA_INSTR_VAR_SET:
 	    case ANNA_INSTR_MEMBER_GET:
 	    case ANNA_INSTR_STATIC_MEMBER_GET:
+	    case ANNA_INSTR_PROPERTY_GET:
+	    case ANNA_INSTR_STATIC_PROPERTY_GET:
 	    case ANNA_INSTR_NOT:
 	    case ANNA_INSTR_JMP:
 	    case ANNA_INSTR_COND_JMP:
@@ -764,7 +766,15 @@ static void anna_vm_compile_i(
 	    anna_vm_compile_i(fun, node2->object, ptr, 0);
 	    anna_type_t *type = node2->object->return_type;
 	    anna_member_t *m = type->mid_identifier[node2->mid];
-	    anna_vm_member(ptr, m->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET, node2->mid);
+	    int instr;
+	    if(m->is_property){
+		instr = m->is_static?ANNA_INSTR_STATIC_PROPERTY_GET:ANNA_INSTR_PROPERTY_GET;
+	    }
+	    else{
+		instr = m->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
+	    }
+	    
+	    anna_vm_member(ptr, instr, node2->mid);
 	    break;
 	}
 	

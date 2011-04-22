@@ -5,100 +5,125 @@
 #include "anna_alloc.h"
 
 /**
-   Pops one value from the top stack frame, the pops the top stack
-   frame itself, and pushes the value ont the new top stack.
- */
+   Pops one value from the top stack frame, then pops the top stack
+   frame itself, and pushes the value onto the new top stack.
+*/
 #define ANNA_INSTR_RETURN 0 
 /**
    Pushes a single constant value onto the stack.
- */
+*/
 #define ANNA_INSTR_CONSTANT 1
 /**
    Calls a function. Pops the number of parameters specified in the
    op, then pops the function. The parameters are copied onto a new
    stack frame. 
- */
+*/
 #define ANNA_INSTR_CALL 2
 /**
    Stop bytecode execution and return.
- */
+*/
 #define ANNA_INSTR_STOP 3 
 /**
-   Pushes the specified variable to the stack
- */
+   Pushes the value of the specified variable to the stack.
+*/
 #define ANNA_INSTR_VAR_GET 4
 /**
    Copies the value on the top of the stack to the specified location
    without poping it.
- */
+*/
 #define ANNA_INSTR_VAR_SET 5
 /**
-   Pops an object from the stack and pushes the object member
+   Pops an object from the stack and pushes the member specified by
+   the op instead.
+*/
+#define ANNA_INSTR_MEMBER_GET 6
+/**
+   Pops an object from the stack and pushes the static member
+   specified by the op instead.
+*/
+#define ANNA_INSTR_STATIC_MEMBER_GET 7
+
+/**
+   Pops an object from the stack and pushes the property specified by
+   the op instead.
+ */
+#define ANNA_INSTR_PROPERTY_GET 8
+/**
+   Pops an object from the stack and pushes the static property
    specified by the op instead.
  */
-#define ANNA_INSTR_MEMBER_GET 6
-#define ANNA_INSTR_STATIC_MEMBER_GET 7
+#define ANNA_INSTR_STATIC_PROPERTY_GET 9
 /**
    Pops a value and an object from the stack and pushes the object member
    specified by the op instead.
  */
-#define ANNA_INSTR_MEMBER_SET 8
+#define ANNA_INSTR_MEMBER_SET 10
 /**
    Create a new string based on a string literal
  */
-#define ANNA_INSTR_STRING 9
+#define ANNA_INSTR_STRING 11
 /**
    Push an empty list to the stack
  */
-#define ANNA_INSTR_LIST 10
+#define ANNA_INSTR_LIST 12
 /**
   Pop the top value of the stack, and insert it into the new top element, which is assumed to be a list object
  */
-#define ANNA_INSTR_FOLD 11
+#define ANNA_INSTR_FOLD 13
 /**
    Pop value from stack, jump if not null
  */
-#define ANNA_INSTR_COND_JMP 12
+#define ANNA_INSTR_COND_JMP 14
 /**
    Pop value from stack, jump if null
  */
-#define ANNA_INSTR_NCOND_JMP 13
+#define ANNA_INSTR_NCOND_JMP 15
 /**
    Pop value from stack
  */
-#define ANNA_INSTR_POP 14
+#define ANNA_INSTR_POP 16
 /**
    Negate top value on stack
  */
-#define ANNA_INSTR_NOT 15
+#define ANNA_INSTR_NOT 17
 /**
    Push a duplicate of the current top stack value to the top of the stack
  */
-#define ANNA_INSTR_DUP 16
+#define ANNA_INSTR_DUP 18
 /**
    Pop value from stack, push the specified member of the popped object to the stack, and then push back the original object popped as well. 
 
    (This is useful when calling a method, we go from OBJ to METHOD, OBJ, which is nifty when we call method, as obj will be the this value)
  */
-#define ANNA_INSTR_MEMBER_GET_THIS 17
+#define ANNA_INSTR_MEMBER_GET_THIS 19
 /**
    Unconditionally jump the specified offset
  */
-#define ANNA_INSTR_JMP 18
+#define ANNA_INSTR_JMP 20
 /**
    Pop value from stack, assumed to be a closure. Push a trampolene for the specified value.
  */
-#define ANNA_INSTR_TRAMPOLENE 19
+#define ANNA_INSTR_TRAMPOLENE 21
 /**
    Pop the top value from the stack (a type) and push a newly allocated (unconstructed) object of the specified type to the stack
  */
-#define ANNA_INSTR_CONSTRUCT 20
+#define ANNA_INSTR_CONSTRUCT 22
 /**
    If the top value of the stack abides to the type specified in the op, do nothing. Otherwise, replace the current top stack value with the null object.
  */
-#define ANNA_INSTR_CAST 21
-#define ANNA_INSTR_NATIVE_CALL 22
-#define ANNA_INSTR_RETURN_COUNT 23
+#define ANNA_INSTR_CAST 23
+/**
+   Special purpose instruction used in callback trampolines used when
+   making calls into interpreted code from inside a piece of native
+   code.
+ */
+#define ANNA_INSTR_NATIVE_CALL 24
+/**
+   Pop the top value from the current stack frame, then pop the
+   specified number of frames from the call stack and finally push the
+   popped value onto the new stack. Used by return expressions.
+ */
+#define ANNA_INSTR_RETURN_COUNT 25
 
 
 typedef struct 
