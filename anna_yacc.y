@@ -848,11 +848,11 @@ function_declaration:
 	{
 	    if($2->child[0]->node_type == ANNA_NODE_NULL)
 	    {
-		anna_error($2, L"missing return type");
+		anna_error((anna_node_t *)$2, L"missing return type");
 	    }
 	    if($2->child[1]->node_type == ANNA_NODE_NULL)
 	    {
-		anna_error($2, L"missing declaration name");
+		anna_error((anna_node_t *)$2, L"missing declaration name");
 	    }
 	    
 	    $$ = (anna_node_t *)anna_node_create_call2(
@@ -873,9 +873,9 @@ function_signature:
 	{
 	    if($2->child[0]->node_type == ANNA_NODE_NULL)
 	    {
-		anna_error($2, L"missing return type");
+		anna_error((anna_node_t *)$2, L"missing return type");
 	    }
-	    $$ = anna_node_create_call2(
+	    $$ = (anna_node_t *)anna_node_create_call2(
 		    &@$,
 		    anna_node_create_identifier(&@1,L"__def__"),
 		    anna_node_create_identifier(&@$,L"!anonymous"), $2->child[0],
@@ -960,7 +960,7 @@ function_definition:
 	    anna_node_t *def = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@1,L"__def__"), 
-		anon?anna_node_create_identifier(&@$,L"!anonymous"):$2->child[1],
+		anon?(anna_node_t *)anna_node_create_identifier(&@$,L"!anonymous"):$2->child[1],
 		$2->child[0],
 		$3, $4, $5?$5:anna_node_create_block2(&@$));
 	    
@@ -1024,7 +1024,7 @@ declaration_expression:
 	{
 	    if($2->child[1]->node_type == ANNA_NODE_NULL)
 	    {
-		anna_error($2, L"missing declaration name");
+		anna_error((anna_node_t *)$2, L"missing declaration name");
 	    }
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, $1,

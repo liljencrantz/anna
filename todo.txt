@@ -8,7 +8,6 @@ hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
 Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
-If a property returns a function which is called directly, a crash will result. This can be reliably detected and avoided at compile time. 
 Implicit specialization doesn't work on user defined types
 A property with no setter can be set, resulting in run time crash
 

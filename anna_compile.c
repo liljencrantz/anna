@@ -29,7 +29,7 @@ static anna_object_t *anna_static_invoke_as_access(anna_node_call_t *node, anna_
     fake.object = node->object;
     fake.node_type = ANNA_NODE_MEMBER_GET;
     return anna_node_static_invoke_try(
-	&fake, stack);
+	(anna_node_t *)&fake, stack);
 }
 
 static size_t anna_bc_stack_size(char *code)
