@@ -161,7 +161,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_push(stack, op->value);
 	
 	stack->code += sizeof(*op);
-//	wprintf(L"FF %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
     
@@ -225,7 +224,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    stack = fun->native(stack, wrapped);
 	}
 	
-//	wprintf(L"AA %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
     
@@ -253,7 +251,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	stack = stack->caller;
 	anna_vmstack_push(stack, val);
 //		wprintf(L"Pop frame\n");
-//	wprintf(L"CC %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
     
@@ -278,7 +275,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	stack->code += sizeof(*cb);
 
 	stack = cb->function(stack, 0);
-//	wprintf(L"BB %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 
@@ -310,7 +306,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #endif
 	anna_vmstack_push(stack, s->base[op->offset]);
 	stack->code += sizeof(*op);
-//	wprintf(L"HH %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 	    
@@ -460,19 +455,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif 
-	if(m->is_property)
-	{
-//		    anna_object_t *method = obj->type->static_member[m->getter_offset];
-	    wprintf(L"PROPERTIES NOT YET IMPLEMENTED!!!\n");
-	    CRASH;
-	}
 	anna_object_t *res;
 		
-	if(m->is_static) {
-	    res = obj->type->static_member[m->offset];
-	} else {
-	    res = (obj->member[m->offset]);
-	}
+	res = obj->type->static_member[m->offset];
+	
 	anna_vmstack_push(stack, res);
 	anna_vmstack_push(stack, obj);
 		
@@ -531,7 +517,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_op_type_t *op = (anna_op_type_t *)stack->code;
 	anna_vmstack_push(stack, anna_list_create2(op->value));
 	stack->code += sizeof(*op);
-//	wprintf(L"GG %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 
@@ -547,7 +532,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_vmstack_pop(stack);
 	stack->code += sizeof(anna_op_null_t);
-//	wprintf(L"EE %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 	    
