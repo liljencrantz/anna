@@ -767,6 +767,7 @@ static void anna_vm_compile_i(
 	    anna_type_t *type = node2->object->return_type;
 	    anna_member_t *m = type->mid_identifier[node2->mid];
 	    int instr;
+	    
 	    if(m->is_property){
 		instr = m->is_static?ANNA_INSTR_STATIC_PROPERTY_GET:ANNA_INSTR_PROPERTY_GET;
 	    }
@@ -824,6 +825,8 @@ static void anna_vm_compile_i(
 	    anna_vm_const(
 		ptr,
 		anna_function_wrap(node2->payload));
+//	    wprintf(L"Compiling closure %ls @ %d\n", node2->payload->name, node2->payload);
+
 	    anna_vm_null(
 		ptr,
 		ANNA_INSTR_TRAMPOLENE);
@@ -851,8 +854,21 @@ static void anna_vm_compile_i(
 	    }
 	    else
 	    {
+		int instr;
+
+		if(mem->is_method)
+		{
+		    instr = ANNA_INSTR_MEMBER_GET_THIS;
+		}
+		else if(mem->is_property){
+		    instr = mem->is_static?ANNA_INSTR_STATIC_PROPERTY_GET:ANNA_INSTR_PROPERTY_GET;
+		}
+		else{
+		    instr = mem->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
+		}
+
 		anna_vm_compile_i(fun, node2->object, ptr, 0);
-		anna_vm_member(ptr, mem->is_method?ANNA_INSTR_MEMBER_GET_THIS:(mem->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET), node2->mid);
+		anna_vm_member(ptr, instr, node2->mid);
 	    }
 	    
 	    anna_function_type_t *template = anna_function_type_unwrap(
@@ -917,7 +933,7 @@ void anna_vm_compile(
 	return;
     }
     
-//    wprintf(L"Compile really awesome function named %ls\n", fun->name);
+//    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
 
     if(!fun->stack_template)
     {

@@ -165,6 +165,16 @@ static void anna_node_print_internal(
 	    break;
 	}
 	
+	case ANNA_NODE_RETURN:
+	{
+	    anna_indent(sb,indentation);
+	    sb_printf(sb, L"return(\n");
+	    anna_node_print_internal(
+		sb, ((anna_node_wrapper_t *)this)->payload, indentation+1);
+	    sb_printf(sb,L")");
+	    break;
+	}
+	
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_indent(sb,indentation);

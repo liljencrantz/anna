@@ -190,11 +190,12 @@ static void anna_module_compile(anna_node_t *this, void *aux)
     if(this->node_type == ANNA_NODE_CLOSURE)
     {
 	anna_node_closure_t *this2 = (anna_node_closure_t *)this;	
-	if(this2->payload->body && !this2->payload->code)
+		
+	if(this2->payload->body)
 	{
 	    anna_node_each((anna_node_t *)this2->payload->body, &anna_module_compile, 0);
-	    anna_vm_compile(this2->payload);
 	}
+	anna_vm_compile(this2->payload);
     }
     if(this->node_type == ANNA_NODE_TYPE)
     {
@@ -358,7 +359,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     anna_stack_populate_wrapper(module_stack);
     
     debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);	
-    
     anna_node_each((anna_node_t *)ggg, &anna_module_compile, 0);
     
     debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	

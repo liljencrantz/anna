@@ -788,7 +788,7 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
 
 anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call)
 {
-    if(type->flags & ANNA_TYPE_SPECIALIZED)
+    if((call->child_count < 1) || (type->flags & ANNA_TYPE_SPECIALIZED))
     {
 	return type;
     }
@@ -797,9 +797,6 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     {
 	if(call->child_count != 2)
 	{
-	    anna_error(
-		(anna_node_t *)call, 
-		L"Wrong number of arguments to constructor");
 	    return type;
 	}
 	
@@ -809,21 +806,11 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     }
     else if(type == list_type)
     {
-	if(call->child_count < 1)
-	{
-	    return type;
-	}
-	
 	return anna_list_type_get(
 	    call->child[0]->return_type);
     }
     else if(type == hash_type)
     {
-	if(call->child_count < 1)
-	{
-	    return type;
-	}
-	
 	anna_type_t *arg_type = call->child[0]->return_type;
 	anna_object_t **spec1 = anna_static_member_addr_get_mid(
 	    arg_type, ANNA_MID_PAIR_SPECIALIZATION1);
@@ -838,8 +825,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	}
 	return type;
     }
-    
-    if(!type->definition)
+    else if(!type->definition)
     {
 	return type;
     }
@@ -855,6 +841,20 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     {
 	return type;
     }    
+    
+    int i;
+    
+    anna_node_call_t *spec = anna_node_create_call2(
+	&call->location,
+	anna_node_create_identifier(
+	    &call->location,
+	    L"__block__"));
+
+    for(i=0; i<call->child_count; i++)
+    {
+	anna_type_t *ct = call->child[i]->return_type;
+	
+    }
     
 //    anna_error((anna_node_t *)call, L"Implicit specialization of user defined templates is not yet implemented. Sorry...");
 //    CRASH;

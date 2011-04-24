@@ -115,7 +115,6 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 	anna_object_t *o = anna_list_get(list, idx);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
-	//wprintf(L"Get toString method of type %ls\n", o->type->name);
 	
 	stack = anna_vm_callback_native(
 	    stack,

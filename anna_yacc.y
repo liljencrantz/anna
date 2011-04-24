@@ -268,17 +268,16 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <node_val> expression expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
 %type <node_val> constant var_or_const
 %type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
-%type <node_val> function_definition 
-%type <node_val> function_declaration 
+%type <node_val> function_definition function_declaration function_signature
 %type <node_val> opt_identifier identifier type_identifier any_identifier 
 %type <node_val> op op2 op3 op4 op5 op6 op7 pre_op8 post_op8
-%type <node_val> type_definition 
+%type <node_val> type_definition type_remainder
 %type <call_val> declaration_list declaration_list2
 %type <node_val> declaration_list_item declaration_expression variable_declaration
 %type <call_val> attribute_list 
 %type <call_val> opt_block
 %type <call_val> specialization opt_specialization
-%type <node_val> opt_specialized_type  specialized_type 
+%type <call_val> opt_type_and_opt_name type_and_name
 
 %right '='
 
@@ -845,35 +844,132 @@ constant:
 opt_block: /* Empty */{$$ = 0;} | block;
 
 function_declaration: 
-	DEF specialized_type identifier declaration_list
+	DEF opt_type_and_opt_name declaration_list
 	{
+	    if($2->child[0]->node_type == ANNA_NODE_NULL)
+	    {
+		anna_error($2, L"missing return type");
+	    }
+	    if($2->child[1]->node_type == ANNA_NODE_NULL)
+	    {
+		anna_error($2, L"missing declaration name");
+	    }
+	    
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@1,L"__var__"),
-		$3, anna_node_create_null(&@$), 
+		$2->child[1], anna_node_create_null(&@$), 
 		anna_node_create_call2(
 		    &@$,
 		    anna_node_create_identifier(&@1,L"__def__"),
-		    $3, $2,
-		    $4, anna_node_create_block2(&@$),
+		    $2->child[1], $2->child[0],
+		    $3, anna_node_create_block2(&@$),
 		    anna_node_create_block2(&@$)), 
 		anna_node_create_block2(&@$));
 	};
 
-function_definition: 
-	DEF opt_specialized_type opt_identifier declaration_list attribute_list opt_block
+function_signature: 
+	DEF opt_type_and_opt_name declaration_list
 	{
+	    if($2->child[0]->node_type == ANNA_NODE_NULL)
+	    {
+		anna_error($2, L"missing return type");
+	    }
+	    $$ = anna_node_create_call2(
+		    &@$,
+		    anna_node_create_identifier(&@1,L"__def__"),
+		    anna_node_create_identifier(&@$,L"!anonymous"), $2->child[0],
+		    $3, anna_node_create_block2(&@$),
+		    anna_node_create_block2(&@$));
+	};
+
+opt_type_and_opt_name: 
+    any_identifier '.' type_remainder opt_specialization opt_identifier
+    {
+	anna_node_t *type=(anna_node_t *)anna_node_create_call2(
+	    &@$,
+	    anna_node_create_identifier(&@2, L"__memberGet__"), 
+	    $1, $3);
+
+	if($4)
+	{
+	    type = (anna_node_t *)anna_node_create_call2(
+		&@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+		type, $4);
+	}
+
+	$$ = anna_node_create_block2(
+	    &@$, 
+	    type, $5?$5:(anna_node_t *)anna_node_create_null(&@$));
+    }
+    |
+    function_signature opt_identifier
+    {	
+	$$ = anna_node_create_block2(
+	    &@$, 
+	    $1, $2?$2:anna_node_create_null(&@$));
+    }
+    |
+    identifier
+    {
+	$$ = anna_node_create_block2(
+	    &@$, 
+	    anna_node_create_null(&@$), $1);
+    }
+    |
+    type_identifier opt_specialization opt_identifier
+    {
+	anna_node_t *t = $1;
+	if($2)
+	{
+	    t = (anna_node_t *)anna_node_create_call2(
+		&@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+		t, $2);
+	}
+
+	$$ = anna_node_create_block2(
+	    &@$, 
+	    t, $3?$3:anna_node_create_null(&@$));
+    }
+    |
+    {
+	$$ = anna_node_create_block2(
+	    &@$, 
+	    anna_node_create_null(&@$), 
+	    anna_node_create_null(&@$));
+    }
+    ;
+
+type_remainder:
+    any_identifier
+    |
+    type_remainder '.' any_identifier
+    {
+	$$ = (anna_node_t *)anna_node_create_call2(
+	    &@$,
+	    anna_node_create_identifier(&@2, L"__memberGet__"), 
+	    $1, $3);
+    }
+    ;
+
+
+function_definition: 
+	DEF opt_type_and_opt_name declaration_list attribute_list opt_block
+	{
+	    int anon = $2->child[1]->node_type == ANNA_NODE_NULL;
 	    anna_node_t *def = (anna_node_t *)anna_node_create_call2(
-		&@$,anna_node_create_identifier(&@1,L"__def__"), 
-		$3?$3:(anna_node_t *)anna_node_create_identifier(&@$,L"!anonymous"),
-		$2?$2:anna_node_create_null(&@$),
-		$4, $5, $6?$6:anna_node_create_block2(&@$));
+		&@$,
+		anna_node_create_identifier(&@1,L"__def__"), 
+		anon?anna_node_create_identifier(&@$,L"!anonymous"):$2->child[1],
+		$2->child[0],
+		$3, $4, $5?$5:anna_node_create_block2(&@$));
 	    
-	    if($3)
+	    if(!anon)
 	    {
 		$$ = (anna_node_t *)anna_node_create_call2(
 		    &@$, anna_node_create_identifier(&@1,L"__const__"),
-		    $3, anna_node_create_null(&@$), def, anna_node_create_block2(&@$));
+		    $2->child[1], anna_node_create_null(&@$), 
+		    def, anna_node_create_block2(&@$));
 	    }
 	    else
 	    {
@@ -924,11 +1020,15 @@ var_or_const:
 	};
 
 declaration_expression: 
-	var_or_const opt_specialized_type identifier attribute_list opt_declaration_expression_init
+	var_or_const opt_type_and_opt_name attribute_list opt_declaration_expression_init
 	{
+	    if($2->child[1]->node_type == ANNA_NODE_NULL)
+	    {
+		anna_error($2, L"missing declaration name");
+	    }
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, $1,
-		$3, $2, $5?$5:anna_node_create_null(&@$), $4);
+		$2->child[1], $2->child[0], $4?$4:anna_node_create_null(&@$), $3);
 	}
 	|
 	function_definition;
@@ -944,43 +1044,47 @@ opt_ellipsis:
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadic");
 	};
 
-variable_declaration:
-	specialized_type identifier opt_ellipsis attribute_list opt_declaration_init
+type_and_name:
+    type_remainder opt_specialization identifier
+    {
+	anna_node_t *type=(anna_node_t *)$1;
+
+	if($2)
 	{
-	    if($3)
+	    type = (anna_node_t *)anna_node_create_call2(
+		&@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+		type, $2);
+	}
+
+	$$ = anna_node_create_block2(
+	    &@$, 
+	    type, $3);
+    }
+    |
+    function_signature identifier
+    {
+	$$ = anna_node_create_block2(
+	    &@$, 
+	    $1, $2);	
+    };
+
+variable_declaration:
+	type_and_name opt_ellipsis attribute_list opt_declaration_init
+	{
+	    if($2)
 	    {
-		anna_node_call_add_child($4, $3);
+		anna_node_call_add_child($3, $2);
 	    }
 	    
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, anna_node_create_identifier(&@$, L"__var__"),
-		$2, $1, $5?$5:anna_node_create_null(&@$), $4);
+		$1->child[1], $1->child[0], $4?$4:anna_node_create_null(&@$), $3);
 	};
 
 declaration_list_item : 
 	variable_declaration {$$=$1;} 
 	| function_declaration;
 
-opt_specialized_type:
-	{
-	    $$=anna_node_create_null(&@$);
-	}
-	| specialized_type;
-
-specialized_type:
-	type_identifier opt_specialization
-	{
-	    if(!$2)
-	    {
-		$$=$1;
-	    }
-	    else 
-	    {
-		$$ = (anna_node_t *)anna_node_create_call2(
-		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
-		    $1, $2);      
-	    }
-	};
 
 opt_specialization:
 	{

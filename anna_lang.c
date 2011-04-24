@@ -146,5 +146,6 @@ anna_stack_template_t *anna_lang_load()
     anna_macro_init(stack_macro);
     al_push(&stack_global->expand, stack_macro);
 
+    null_object->type = null_type;
     return stack_lang;
 }

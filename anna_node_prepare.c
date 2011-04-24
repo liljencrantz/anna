@@ -349,13 +349,13 @@ static void anna_node_calculate_type_internal(
 		    break;
 		}
 		
-		if(!anna_node_call_validate(n, fun, 1, 1))
+		if(!anna_node_call_validate(n, fun, member->is_method, 1))
 		{
 		    member = 0;
 		}
 		else
 		{
-		    anna_node_call_map(n, fun, 1);
+		    anna_node_call_map(n, fun, member->is_method);
 		    
 		}
 	    }
@@ -467,14 +467,7 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
 //	    debug(D_ERROR, L"Calculating type of declaration %ls\n", d->name);
-	    if(d->type->node_type == ANNA_NODE_IDENTIFIER)
-	    {
-//		debug(D_ERROR, L"Declaration %ls has identifier as type\n", d->name);
-		anna_node_identifier_t *t = node_cast_identifier(d->type);
-		anna_object_t *t2 = anna_stack_get(stack, t->name);	    
-		d->return_type = anna_type_unwrap(t2);
-	    }
-	    else if(d->type->node_type == ANNA_NODE_NULL)
+	    if(d->type->node_type == ANNA_NODE_NULL)
 	    {
 //		debug(D_ERROR, L"Declaration %ls has implicit type\n", d->name);
 		if(d->value->node_type == ANNA_NODE_NULL)
@@ -486,7 +479,15 @@ static void anna_node_calculate_type_internal(
 	    }
 	    else
 	    {
-		anna_error(d->type, L"Invalid type for declaration");
+		d->return_type = anna_node_resolve_to_type(
+		    d->type,
+		    stack);
+		if(!d->return_type)
+		{
+		    anna_error(d->type, L"Invalid type for declaration");
+		    d->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
+		}
+		break;
 	    }
 	    if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {

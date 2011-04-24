@@ -680,6 +680,12 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	    break;
 	}	
 
+	case ANNA_NODE_RETURN:
+	{
+	    anna_node_each(((anna_node_wrapper_t *)this)->payload, fun, aux);
+	    break;
+	}
+
 	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_MAPPING_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
@@ -689,7 +695,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
-	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_LOOKUP:
 	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	case ANNA_NODE_TYPE:
@@ -747,7 +752,7 @@ int anna_node_call_validate(
     {
 	if(print_error)
 	{
-	    anna_error((anna_node_t *)call, L"Wrong number of parameters to function call. Get %d, expected %d.", call->child_count, param_count);
+	    anna_error((anna_node_t *)call, L"Wrong number of parameters to function call. Got %d, expected %d.", call->child_count, param_count);
 	}
 	
 	goto END;

@@ -38,6 +38,7 @@ static inline anna_object_t *anna_vm_trampoline(
     memcpy(&res->member[stack_offset],
 	   &stack,
 	   sizeof(anna_vmstack_t *));
+
     return res;
 }
 
@@ -158,7 +159,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_op_const_t *op = (anna_op_const_t *)stack->code;
 	anna_vmstack_push(stack, op->value);
+	
 	stack->code += sizeof(*op);
+//	wprintf(L"FF %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
     
@@ -222,6 +225,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    stack = fun->native(stack, wrapped);
 	}
 	
+//	wprintf(L"AA %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
     
@@ -249,6 +253,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	stack = stack->caller;
 	anna_vmstack_push(stack, val);
 //		wprintf(L"Pop frame\n");
+//	wprintf(L"CC %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
     
@@ -273,6 +278,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	stack->code += sizeof(*cb);
 
 	stack = cb->function(stack, 0);
+//	wprintf(L"BB %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 
@@ -304,6 +310,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #endif
 	anna_vmstack_push(stack, s->base[op->offset]);
 	stack->code += sizeof(*op);
+//	wprintf(L"HH %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 	    
@@ -524,6 +531,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_op_type_t *op = (anna_op_type_t *)stack->code;
 	anna_vmstack_push(stack, anna_list_create2(op->value));
 	stack->code += sizeof(*op);
+//	wprintf(L"GG %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 
@@ -539,6 +547,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_vmstack_pop(stack);
 	stack->code += sizeof(anna_op_null_t);
+//	wprintf(L"EE %d\n", (int)*stack->code);
 	goto *jump_label[(int)*stack->code];
     }
 	    
@@ -612,6 +621,7 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_DUP:
 	
 	case ANNA_INSTR_CALL:
+	case ANNA_INSTR_RETURN_COUNT:
 	{
 	    return sizeof(anna_op_count_t);
 	}
@@ -664,8 +674,8 @@ void anna_bc_print(char *code)
 	    case ANNA_INSTR_CONSTANT:
 	    {
 		anna_op_const_t *op = (anna_op_const_t*)code;
-		wprintf(L"Push constant of type %ls at addr %d\n\n", 
-			op->value->type->name, op->value);
+		wprintf(L"Push constant of type %ls\n\n", 
+			op->value->type->name);
 		break;
 	    }
 	    
@@ -707,6 +717,13 @@ void anna_bc_print(char *code)
 		return;
 	    }
 	    
+	    case ANNA_INSTR_RETURN_COUNT:
+	    {
+		anna_op_count_t *op = (anna_op_count_t *)code;
+		wprintf(L"Pop value, pop %d call frames and push value\n\n", op->param);
+		break;
+	    }
+	    
 	    case ANNA_INSTR_STOP:
 	    {
 		wprintf(L"Stop\n\n");
@@ -731,21 +748,29 @@ void anna_bc_print(char *code)
 	    case ANNA_INSTR_STATIC_MEMBER_GET:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Get member %d\n\n", op->mid);
+		wprintf(L"Get member %ls\n\n", anna_mid_get_reverse(op->mid));
+		break;
+	    }
+	    
+	    case ANNA_INSTR_PROPERTY_GET:
+	    case ANNA_INSTR_STATIC_PROPERTY_GET:
+	    {
+		anna_op_member_t *op = (anna_op_member_t *)code;
+		wprintf(L"Get property %ls\n\n", anna_mid_get_reverse(op->mid));
 		break;
 	    }
 	    
 	    case ANNA_INSTR_MEMBER_GET_THIS:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Get member %d and push object as implicit this param\n\n", op->mid);
+		wprintf(L"Get member %ls and push object as implicit this param\n\n", anna_mid_get_reverse(op->mid));
 		break;
 	    }
 	    
 	    case ANNA_INSTR_MEMBER_SET:
 	    {
 		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Set member %d\n\n", op->mid);
+		wprintf(L"Set member %ls\n\n", anna_mid_get_reverse(op->mid));
 		break;
 	    }
 

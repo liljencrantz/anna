@@ -9,6 +9,8 @@ anna_type_member_count is probably used in a bunch of places where it returns th
 Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
 If a property returns a function which is called directly, a crash will result. This can be reliably detected and avoided at compile time. 
+Implicit specialization doesn't work on user defined types
+A property with no setter can be set, resulting in run time crash
 
 LANGUAGE FEATURES:
 Function templates
@@ -18,7 +20,7 @@ Default function argumet values. These also need to be part of the function inte
 Int should just be an interface, with two backing implementations
 continue/break (continue is easy with a continuation, but implementing break requires some special hacking. A macro could do it, but it would be a bit ugly)
 No magic toString method, use attributes to specify methods for implicit conversion
-Type identifiers should contain their static members
+Static members of a type should be available without an instance of that type. Preferably through Type.name
 Return value type for continuations
 
 STDLIB FEATURES:
@@ -54,7 +56,6 @@ Start implementing a few of the language benchmark game tests to compare perform
 Variable lookup instruction version for looking up in current frame
 Variable lookup instruction version for looking up in parent frame
 Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)
-Consider doing something about properties, performance-wise. Gprof indicates that member access is a significant performance bottleneck.
 Implement tail recursion
 Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. This would require that the gc knows that non-objects might be living on the stack...
 Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
@@ -65,7 +66,6 @@ Every member declaration also results in a stack template declaration because al
 
 UNUSED OPERATORS:
 Currently, the ? and @ symbols are unused. 
-
 
 PLANS FOR APPS WRITTEN IN ANNA:
 Documentation generator: Introspect all data types and generate html documentation on them.
