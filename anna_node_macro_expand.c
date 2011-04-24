@@ -131,6 +131,25 @@ anna_node_t *anna_node_macro_expand(
 		for(i=0;i<f->body->child_count; i++)
 		    f->body->child[i] = anna_node_macro_expand(
 			f->body->child[i], stack);
+		
+		if(!f->return_type)
+		{
+		    f->return_type_node = anna_node_macro_expand(
+			anna_node_clone_deep(f->definition->child[1]), stack);
+		}
+		
+		if(!f->input_type)
+		{
+		    f->input_type_node = node_cast_call(
+			anna_node_clone_deep(f->definition->child[2]));
+		    for(i=0;i<f->input_type_node->child_count; i++)
+		    {
+			anna_node_call_t *decl = node_cast_call(f->input_type_node->child[i]);
+			decl->child[1] = anna_node_macro_expand(decl->child[1], stack);
+			decl->child[2] = anna_node_macro_expand(decl->child[2], stack);
+		    }
+		}
+		
 	    }
 	    return this;
 	}

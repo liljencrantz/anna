@@ -197,18 +197,18 @@ static void anna_node_calculate_type_internal(
 	    anna_function_type_t *funt = anna_function_type_unwrap(fun_type);
 	    if(!funt)
 	    {
-		anna_node_print(4, call->function);
-		anna_error(this, L"Value of type %ls is not callable", fun_type->name);
+//		anna_node_print(4, call->function);
+		anna_error(call->function, L"Value of type %ls is not callable", fun_type->name);
 		break;
 	    }
 	    
 	    if(funt->flags & ANNA_FUNCTION_MACRO)
 	    {
-		anna_error(this, L"Found unexpanded macro call while calculating function return type");
+		anna_error(call->function, L"Found unexpanded macro call while calculating function return type");
 		
 		break;
 	    }
-
+	    
 	    if(anna_node_call_validate(call, funt, 0, 1))
 	    {
 		anna_node_call_map(call, funt, 0);		

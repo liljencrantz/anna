@@ -196,7 +196,7 @@ static void anna_node_print_internal(
 	{
 	    anna_indent(sb,indentation);
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
-	    sb_printf(sb,L"__memberGet__(\n");
+	    sb_printf(sb,L"*__memberGet__(\n");
 	    anna_node_print_internal(sb,this2->object, indentation+1);
 	    sb_printf(sb,L"; %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
@@ -249,7 +249,7 @@ static void anna_node_print_internal(
 	{
 	    anna_indent(sb,indentation);
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
-	    sb_printf(sb,L"__memberGet__(\n");
+	    sb_printf(sb,L"*__memberGet__(\n");
 	    anna_node_print_internal(sb,this2->object, indentation+1);
 	    sb_printf(sb,L", %ls)", anna_mid_get_reverse(this2->mid));
 	    break;

@@ -16,6 +16,7 @@
 #include "anna_util.h"
 #include "anna_alloc.h"
 #include "anna_vm.h"
+#include "anna_function_type.h"
 #include "anna_intern.h"
 #include "anna_attribute.h"
 #include "anna_list.h"
@@ -25,7 +26,7 @@ void anna_function_argument_hint(
     int argument,
     anna_type_t *type)
 {
-    anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
+    anna_node_call_t *declarations = f->input_type_node;
     anna_node_call_t *declaration = node_cast_call(declarations->child[argument]);
     if(declaration->child[1]->node_type == ANNA_NODE_NULL)
     {
@@ -51,24 +52,17 @@ static anna_node_t *anna_function_setup_arguments(
 		0);
 	}
 	return 0;   
-    }
-    
+    }    
 
-//    wprintf(L"Setup function %ls\n", f->name);
-    CHECK_NODE_TYPE(f->definition->child[2], ANNA_NODE_CALL);
-    anna_node_call_t *declarations = node_cast_call(f->definition->child[2]);
+    anna_node_call_t *declarations = f->input_type_node;
     int i;
     f->input_count = declarations->child_count;
         
     int argc = declarations->child_count;
+//    wprintf(L"Setup input arguments for function %ls with %d argument(s)\n", f->name, argc);
     
-//    wprintf(
-//	L"Adding input arguments to function\n");
-        
     anna_type_t **argv = f->input_type = malloc(sizeof(anna_type_t *)*argc);
     wchar_t **argn = f->input_name = malloc(sizeof(wchar_t *)*argc);
-    
-//    wprintf(L"%d arguments!\n", argc);
     
     for(i=0; i<argc; i++)
     {
@@ -89,54 +83,34 @@ static anna_node_t *anna_function_setup_arguments(
 
 	    argn[i] = anna_intern(name->name);		
 
-	    anna_node_t *type_node = anna_node_macro_expand(decl->child[1], parent_stack);
-	    anna_node_t *val_node = anna_node_macro_expand(decl->child[2], parent_stack);
+	    anna_node_t *type_node = decl->child[1];
+	    anna_node_t *val_node = decl->child[2];
 	    int is_variadic=0;
 	    
-	    if(type_node->node_type == ANNA_NODE_IDENTIFIER)
+	    anna_type_t *d_type = anna_node_resolve_to_type(type_node, f->stack_template);
+	    if(!d_type || d_type == null_type)
 	    {
-		anna_node_identifier_t *type_name =
-		    node_cast_identifier(type_node);
-		
-		anna_object_t **type_wrapper =
-		    anna_stack_addr_get(parent_stack, type_name->name);
-		
-		CHECK(
-		    type_wrapper, 
-		    (anna_node_t *)type_name,
-		    L"Unknown type: %ls",
-		    type_name->name);
-		
-		argv[i] = 
-		    anna_type_unwrap(*type_wrapper);
-		if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
+		anna_type_t *d_val = anna_node_resolve_to_type(val_node, f->stack_template);
+		if(d_val)
 		{
-		    is_variadic=1;
-		    f->flags |= ANNA_FUNCTION_VARIADIC;
+		    argv[i] = d_val;		    
 		}
-		
-	    }
-	    else if(val_node->node_type == ANNA_NODE_CLOSURE)
-	    {
-		anna_node_closure_t *cl = (anna_node_closure_t *)val_node;
-		anna_function_t *derp = cl->payload;
-		anna_function_setup_interface(derp, parent_stack);
-		argv[i] = derp->wrapper->type;
-	    }
-	    else if(type_node->node_type == ANNA_NODE_DUMMY)
-	    {
-		anna_node_dummy_t *cl = (anna_node_dummy_t *)type_node;
-		anna_type_t *derp = anna_type_unwrap(cl->payload);
-		argv[i] = derp;
+		else
+		{
+		    anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
+		}
 	    }
 	    else
 	    {
-		anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
-//		anna_node_print(4, decl->child[1]);
-//		anna_node_print(4, type_node);
-		CRASH;
+		argv[i] = d_type;
 	    }
 	    
+	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
+	    {
+		is_variadic=1;
+		f->flags |= ANNA_FUNCTION_VARIADIC;
+	    }
+
 	    anna_type_t *t = argv[i];
 	    if(is_variadic)
 	    {
@@ -149,8 +123,6 @@ static anna_node_t *anna_function_setup_arguments(
 		t,
 		null_object,
 		0);
-	    
-//	    wprintf(L"Adding %ls\n", name->name);
 	}
 	else
 	{
@@ -227,26 +199,8 @@ void anna_function_setup_interface(
     if(!f->return_type)
     {
 	
-	anna_node_t *return_type_node = f->definition->child[1];
-	if(return_type_node->node_type == ANNA_NODE_IDENTIFIER)
-	{
-	    anna_node_identifier_t *rti = (anna_node_identifier_t *)return_type_node;
-	    anna_object_t *rto = anna_stack_get(parent_stack, rti->name);
-	    if(!rto)
-	    {
-		anna_error(return_type_node, L"Unknown return type: %ls", rti->name);
-		return;	
-	    }
-	    
-	    f->return_type = anna_type_unwrap(rto);
-	    
-	    if(!f->return_type)
-	    {
-		anna_error(return_type_node, L"Return type is not a type: %ls", rti->name);
-		return;	
-	    }
-	}
-	else if(return_type_node->node_type == ANNA_NODE_NULL)
+	anna_node_t *return_type_node = f->return_type_node;
+	if(return_type_node->node_type == ANNA_NODE_NULL)
 	{
 //	    wprintf(L"Function %ls has unspecified return type, we need to investigate\n", f->name);
 	    
@@ -267,8 +221,15 @@ void anna_function_setup_interface(
 	}
 	else
 	{
-	    anna_error(return_type_node, L"Don't know how to handle function definition return type node");
-	    return;
+	    f->return_type = anna_node_resolve_to_type(
+		return_type_node, f->stack_template);
+	    if(!f->return_type)
+	    {
+		anna_node_print(5, return_type_node);
+		
+		anna_error(return_type_node, L"Don't know how to handle function definition return type node");
+		return;
+	    }
 	}
     }
     
@@ -437,7 +398,6 @@ anna_function_t *anna_function_create_from_block(
 	definition);
     result->flags |= ANNA_FUNCTION_BLOCK;
     return result;
-    
 }
 
 anna_function_t *anna_native_create(
@@ -523,7 +483,7 @@ anna_function_t *anna_method_wrapper_create(
     anna_type_t *return_type)
 {
     anna_function_t *result = anna_alloc_function();
-    result->flags = ANNA_FUNCTION_METHOD_WRAPPER;
+    result->flags = ANNA_FUNCTION_BOUND_METHOD;
     anna_function_attribute_empty(result);
     result->input_type = 0;
     result->input_name = 0;

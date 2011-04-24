@@ -89,7 +89,7 @@ typedef ssize_t mid_t;
 #define ANNA_FUNCTION_PREPARED_BODY 4096
 #define ANNA_FUNCTION_BLOCK 8192
 #define ANNA_FUNCTION_CONTINUATION (8192*2)
-#define ANNA_FUNCTION_METHOD_WRAPPER (8192*4)
+#define ANNA_FUNCTION_BOUND_METHOD (8192*4)
 
 #define ANNA_TYPE_REGISTERED 512
 #define ANNA_TYPE_PREPARED_INTERFACE 1024
@@ -352,11 +352,20 @@ struct anna_function
      */
     struct anna_node_call *body;  
     /**
+       Node describing the return type of this function. Only used during compilation.
+     */
+    struct anna_node *return_type_node;  
+    /**
+       Node describing the input types of this function. Only used during compilation.
+     */
+    struct anna_node_call *input_type_node;  
+    /**
        The mid this method has in the type it is a member of
      */
     mid_t mid;
     /**
-       The full AST that originally defined this function. 
+       The full AST that originally defined this function. Not macro
+       expanded. Needed for template specialization.
     */
     struct anna_node_call *definition;
     /**

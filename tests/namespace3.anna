@@ -1,0 +1,10 @@
+def lang.Int foo(lang.Object in)
+{
+    print(in);
+    3;
+}
+
+def main()
+{
+    print(foo(7));
+}

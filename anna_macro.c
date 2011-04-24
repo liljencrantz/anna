@@ -143,7 +143,6 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
 	return res;
     }
     
-
     return (anna_node_t *)node;
     
 }

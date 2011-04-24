@@ -233,7 +233,7 @@ void anna_function_type_create(
 	    null_type);
     }
     
-    if(key->flags & ANNA_FUNCTION_METHOD_WRAPPER)
+    if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
     {
 	anna_member_create(
 	    res,
@@ -268,12 +268,12 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 	    ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     if(function_ptr) 
     {
-	//wprintf(L"Got member, has return type %ls\n", (*function_ptr)->result->name);
+//	wprintf(L"Got member, has return type %ls\n", (*function_ptr)->return_type->name);
 	return *function_ptr;
     }
     else 
     {
-	//wprintf(L"Not a direct function, check for __call__ member\n");
+//	wprintf(L"Not a direct function, check for __call__ member\n");
 	anna_object_t **function_wrapper_ptr = 
 	    anna_static_member_addr_get_mid(
 		type,
