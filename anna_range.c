@@ -205,14 +205,19 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
     ssize_t to = anna_range_get_to(param[0]);
     ssize_t step = anna_range_get_step(param[0]);
     ssize_t idx = anna_int_get(param[1]);
-    if(likely(idx >= 0)){
-	ssize_t res = from + step*idx;
-	if(likely(!(step>0 && res >= to)))
+    int open = anna_range_get_open(param[0]);
+    if(open)
+    {
+	if(idx >= 0)
 	{
-	    if(likely(!(step<0 && res <= to)))
-	    {
-		obj = anna_int_create(res);
-	    }
+	    obj = anna_int_create(from + step*idx);
+	}
+    }
+    else
+    {
+	idx = anna_list_calc_offset(idx, anna_range_get_count(param[0]));
+	if(likely(idx >= 0)){
+	    obj = anna_int_create(from + step*idx);
 	}
     }
     anna_vmstack_drop(stack, 3);

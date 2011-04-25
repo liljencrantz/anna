@@ -51,10 +51,13 @@ static anna_type_t *anna_list_get_specialization(anna_object_t *obj)
 		 ANNA_MID_LIST_SPECIALIZATION));    
 }
 
-static ssize_t calc_offset(ssize_t offset, size_t size)
+ssize_t anna_list_calc_offset(ssize_t offset, size_t size)
 {
     if(offset < 0) {
-	return size-offset;
+	if((-offset) > size)
+	    return -1;
+	
+	return size+offset;
     }
     return offset;
 }
@@ -62,8 +65,8 @@ static ssize_t calc_offset(ssize_t offset, size_t size)
 void anna_list_set(struct anna_object *this, ssize_t offset, struct anna_object *value)
 {
     size_t size = anna_list_get_size(this);
-    ssize_t pos = calc_offset(offset, size);
-    //wprintf(L"Set el %d in list of %d elements\n", pos, size);
+    ssize_t pos = anna_list_calc_offset(offset, size);
+//    wprintf(L"Set el %d in list of %d elements\n", pos, size);
     if(pos < 0)
     {
 	return;
@@ -81,7 +84,7 @@ void anna_list_set(struct anna_object *this, ssize_t offset, struct anna_object 
 anna_object_t *anna_list_get(anna_object_t *this, ssize_t offset)
 {
     size_t size = anna_list_get_size(this);
-    ssize_t pos = calc_offset(offset, size);
+    ssize_t pos = anna_list_calc_offset(offset, size);
     if(pos < 0||pos >=size)
     {
 	return null_object;
@@ -546,6 +549,11 @@ static anna_vmstack_t *anna_list_to_string_callback(anna_vmstack_t *stack, anna_
     anna_object_t *res = param[2];
     size_t sz = anna_list_get_size(list);
 
+    if(value == null_object)
+    {
+	value = anna_string_create(4,L"null");
+    }
+    
     anna_string_append(res, value);
     
     if(sz > idx)

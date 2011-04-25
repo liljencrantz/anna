@@ -2,7 +2,10 @@
 def main()
 {
     var l = [1,2,3,4,5];
-    print(l[-20], "\n");
+    l[-1] = 6;
+    l[-20] = 69;
+    l[8] = 96;
+    print(l, "\n");
     print(l[null as Int], "\n");
     print(l[null as Range], "\n");
     l[null as Int]=69;
@@ -16,8 +19,8 @@ def main()
     print(l.find(i){i>3},"\n");
 
     print([].map(i){print("Fail\n")},"\n");
-    print([].filter(i){i>0},"\n");
-    print([].find(i){i>0},"\n");
+    print([].filter(i){print("Fail\n");i>0},"\n");
+    print([].find(i){print("Fail\n");i>0},"\n");
 /*
     print(l.__map__(null),"\n");
     print(l.__filter__(null),"\n");

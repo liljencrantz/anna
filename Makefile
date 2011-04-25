@@ -97,5 +97,5 @@ test: anna
 .PHONY: test
 
 clean:
-	rm -f anna anna_string_internal_test anna_string_perf gmon.out anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  anna_string_i.c anna_complex_i.c anna_object_i.c *.d
+	rm -f anna anna_string_internal_test anna_string_perf gmon.out anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h anna_float_i.c anna_char_i.c anna_int_i.c  anna_string_i.c anna_complex_i.c anna_object_i.c *.d *.gcov *.gcda *.gcno
 .PHONY: clean

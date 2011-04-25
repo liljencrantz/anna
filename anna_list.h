@@ -24,5 +24,6 @@ anna_object_t **anna_list_get_payload(anna_object_t *this);
 
 void anna_list_type_create(struct anna_stack_template *);
 anna_type_t *anna_list_type_get(anna_type_t *subtype);
+ssize_t anna_list_calc_offset(ssize_t offset, size_t size);
 
 #endif
