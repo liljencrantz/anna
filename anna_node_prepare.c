@@ -134,7 +134,12 @@ static void anna_node_calculate_type_internal(
 		    }
 		}
 	    }
-	    
+	    if(t == null_type)
+	    {
+		anna_error(this, L"Invalid type for variable %ls", id->name);
+		break;
+	    }
+	    	    
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){
 		anna_error(this, L"Unknown identifier: %ls", id->name);
 //		anna_stack_print(stack);
@@ -161,7 +166,7 @@ static void anna_node_calculate_type_internal(
 
 	    anna_node_calculate_type(call->function, stack);
 	    anna_type_t *fun_type = call->function->return_type;
-
+	    
 	    if(fun_type == type_type)
 	    {
 //		debug(D_SPAM,L"Hmmm, node is of type type...");
@@ -262,6 +267,13 @@ static void anna_node_calculate_type_internal(
 	    {
 		break;
 	    }	    
+	    
+	    if(type == null_type)
+	    {
+		anna_error(n->object, L"Invalid type for object in call");
+		break;
+	    }
+	    
 
 	    anna_type_prepare_member(type, n->mid, stack);
 	    anna_member_t *member = anna_member_get(type, n->mid);

@@ -338,10 +338,17 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif 
-	anna_object_t *res;
-	res = obj->member[m->offset];		    
-	anna_vmstack_push(stack, res);
-		    
+	if(unlikely(obj == null_object))
+	{
+	    anna_vmstack_push(stack, null_object);
+	}
+	else
+	{
+	    anna_object_t *res;
+	    res = obj->member[m->offset];		    
+	    anna_vmstack_push(stack, res);
+	}
+	
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -390,14 +397,22 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 #endif 
 
-	anna_object_t *method = obj->type->static_member[m->getter_offset];
-	anna_function_t *fun = anna_function_unwrap(method);
+	if(unlikely(obj == null_object))
+	{
+	    anna_vmstack_push(stack, null_object);	    
+	    stack->code += sizeof(*op);		    
+	}
+	else
+	{
+	    anna_object_t *method = obj->type->static_member[m->getter_offset];
+	    anna_function_t *fun = anna_function_unwrap(method);
 	
-	anna_vmstack_push(stack, method);
-	anna_vmstack_push(stack, obj);
-	stack->code += sizeof(*op);		    
-	stack = fun->native(stack, method);
-
+	    anna_vmstack_push(stack, method);
+	    anna_vmstack_push(stack, obj);
+	    stack->code += sizeof(*op);		    
+	    stack = fun->native(stack, method);
+	}
+	
 	goto *jump_label[(int)*stack->code];
     }
 	    
@@ -484,7 +499,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_mid_get_reverse(op->mid));    
 	    CRASH;
 	}
-#endif 
+#endif
 
 	if(m->is_property)
 	{

@@ -36,6 +36,22 @@ int anna_range_get_open(anna_object_t *obj)
     return *(int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_OPEN);    
 }
 
+static int anna_range_is_valid(anna_object_t *obj)
+{
+    ssize_t from = anna_range_get_from(obj);
+    ssize_t to = anna_range_get_to(obj);
+    ssize_t step = anna_range_get_step(obj);
+    return (to>from)==(step>0);
+}
+
+ssize_t anna_range_get_count(anna_object_t *obj)
+{
+    ssize_t from = anna_range_get_from(obj);
+    ssize_t to = anna_range_get_to(obj);
+    ssize_t step = anna_range_get_step(obj);
+    return (1+(to-from-sign(step))/step);
+}
+
 void anna_range_set_from(anna_object_t *obj, ssize_t v)
 {
     *((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_FROM)) = v;
@@ -46,7 +62,7 @@ void anna_range_set_to(anna_object_t *obj, ssize_t v)
     *((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_TO)) = v;
 }
 
-void anna_range_set_step(anna_object_t *obj, ssize_t v)
+void anna_range_set_step(anna_object_t *obj, int v)
 {
     if(v != 0)
 	*((ssize_t *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_STEP)) = v;
@@ -80,6 +96,36 @@ static anna_vmstack_t *anna_range_get_step_i(anna_vmstack_t *stack, anna_object_
     anna_vmstack_push(stack, anna_int_create(anna_range_get_step(r)));
     return stack;
 }
+
+static anna_vmstack_t *anna_range_get_first_i(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *r = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    anna_vmstack_push(
+	stack, 
+	anna_range_is_valid(r)?anna_int_create(
+	    anna_range_get_from(r)):null_object);
+    return stack;
+}
+
+static anna_vmstack_t *anna_range_get_last_i(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *r = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    
+    if(!anna_range_is_valid(r) || anna_range_get_open(r))
+    {
+	anna_vmstack_push(stack, null_object);
+    }
+    else 
+    {
+	ssize_t from = anna_range_get_from(r);
+	ssize_t step = anna_range_get_step(r);
+	anna_vmstack_push(stack, anna_int_create(from + step*(anna_range_get_count(r)-1)));
+    }    
+    return stack;
+}
+
 
 static anna_vmstack_t *anna_range_get_open_i(anna_vmstack_t *stack, anna_object_t *me)
 {
@@ -213,22 +259,6 @@ static inline anna_object_t *anna_range_in_i(anna_object_t **param)
     }
 }
 ANNA_VM_NATIVE(anna_range_in, 2)
-
-static int anna_range_is_valid(anna_object_t *obj)
-{
-    ssize_t from = anna_range_get_from(obj);
-    ssize_t to = anna_range_get_to(obj);
-    ssize_t step = anna_range_get_step(obj);
-    return (to>from)==(step>0);
-}
-
-ssize_t anna_range_get_count(anna_object_t *obj)
-{
-    ssize_t from = anna_range_get_from(obj);
-    ssize_t to = anna_range_get_to(obj);
-    ssize_t step = anna_range_get_step(obj);
-    return (1+(to-from-sign(step))/step);
-}
 
 static anna_vmstack_t *anna_range_get_count_i(anna_vmstack_t *stack, anna_object_t *me)
 {
@@ -465,6 +495,22 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	int_type,
 	&anna_range_get_open_i, 
 	&anna_range_set_open_i);
+
+    anna_native_property_create(
+	range_type,
+	-1,
+	L"first",
+	int_type,
+	&anna_range_get_first_i, 
+	0);
+
+    anna_native_property_create(
+	range_type,
+	-1,
+	L"last",
+	int_type,
+	&anna_range_get_last_i,
+	0);
 
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!RangeIterFunction", int_type, int_type);

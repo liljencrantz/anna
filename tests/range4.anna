@@ -1,0 +1,11 @@
+def main()
+{
+    var r = 1..10;
+    print(r.first, "\n", r.last, "\n");
+    print(r.filter(i){ i ^mod 2 == 0}, "\n");
+/*    print(r.filter(i){ i > 100}, "\n");
+    print(r.find(i){ i ^mod 2 == 0}, "\n");
+    print(r.find(i){ i > 100}, "\n");
+    print(r.map(i){ "Pos: " ~ i}, "\n");
+*/
+}

@@ -9,6 +9,7 @@ anna_type_member_count is probably used in a bunch of places where it returns th
 Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
 Implicit specialization doesn't work on user defined types
+Multiple inheritance clashes aren't handled correctly
 
 LANGUAGE FEATURES:
 Function templates
@@ -44,6 +45,7 @@ Tests for floating point math
 Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
 Current method for determening map output is a bit fragile. 
+Lots more coverage of using null as argument 
 
 DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.
@@ -61,6 +63,7 @@ Add profiling information to the VM
 Inlining of if/while bodies into main method
 Make a version of the fold op that takes a count parameter
 Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
+Lazy loading of modules
 
 UNUSED OPERATORS:
 Currently, the ? and @ symbols are unused. 

@@ -46,11 +46,12 @@ static void anna_null_type_create()
 {
     int i;
     wchar_t *member_name = L"!null_member";
-    anna_member_t *null_member;  
-    null_member = malloc(sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
+    anna_member_t *null_member;
+    null_member = calloc(1,sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
     null_member->type = null_type;
     null_member->offset=0;
     null_member->is_static=1;
+    null_member->is_property=1;
     wcscpy(null_member->name, member_name);
     
     anna_type_t *argv[]={null_type};
@@ -64,6 +65,8 @@ static void anna_null_type_create()
 		&anna_vm_null_function, 
 		null_type, 1, argv, argn,
 		0));
+    //null_type->static_member[0] = null_object;
+    
   
     anna_object_t *null_function;  
     null_function = null_type->static_member[0];

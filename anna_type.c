@@ -547,29 +547,32 @@ static void anna_type_prepare_property(
 	int has_setter = al_get_count(&etter) == 2;
 	anna_node_t *g_node = (anna_node_t *)al_get(&etter, 0);
 	wchar_t *getter=0, *setter=0;
-	ssize_t getter_offset, setter_offset=-1;
+	ssize_t getter_offset=-1, setter_offset=-1;
 
-	if(g_node->node_type != ANNA_NODE_IDENTIFIER)
+	if(g_node->node_type != ANNA_NODE_NULL)
 	{
-	    anna_error(g_node, L"Invalid getter");
-	    goto END;
+	    if(g_node->node_type != ANNA_NODE_IDENTIFIER)
+	    {
+		anna_error(g_node, L"Invalid getter");
+		goto END;
+	    }
+	    getter = ((anna_node_identifier_t *)g_node)->name;
+	    
+	    anna_member_t *g_memb = anna_member_get(type, anna_mid_get(getter));
+	    if(!g_memb)
+	    {
+		anna_error(g_node, L"Unknown method");
+		goto END;
+	    }
+	    getter_offset = g_memb->offset;
 	}
-	getter = ((anna_node_identifier_t *)g_node)->name;
-	
-	anna_member_t *g_memb = anna_member_get(type, anna_mid_get(getter));
-	if(!g_memb)
-	{
-	    anna_error(g_node, L"Unknown method");
-	    goto END;
-	}
-	getter_offset = g_memb->offset;
 	
 	if(has_setter)
 	{
 	    anna_node_t *s_node = al_get(&etter, 1);
 	    if(s_node->node_type != ANNA_NODE_IDENTIFIER)
 	    {
-		anna_error(s_node, L"Invalid getter");
+		anna_error(s_node, L"Invalid setter");
 		goto END;
 	    }
 	    setter = ((anna_node_identifier_t *)s_node)->name;

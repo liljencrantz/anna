@@ -736,7 +736,6 @@ int anna_node_call_validate(
     if(ANNA_IS_VARIADIC(target))
 	return 1;
     
-    
     if(is_method)
     {
 	param++;
@@ -753,6 +752,7 @@ int anna_node_call_validate(
 	if(print_error)
 	{
 	    anna_error((anna_node_t *)call, L"Wrong number of parameters to function call. Got %d, expected %d.", call->child_count, param_count);
+	    CRASH;
 	}
 	
 	goto END;
