@@ -45,7 +45,6 @@ enum anna_node_enum
 
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
-
 struct YYLTYPE
 {
     int first_line;
@@ -67,6 +66,7 @@ struct anna_node
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -79,6 +79,7 @@ struct anna_node_identifier
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -93,6 +94,7 @@ struct anna_node_cond
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -107,6 +109,7 @@ struct anna_node_if
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -122,6 +125,7 @@ struct anna_node_assign
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -137,6 +141,7 @@ struct anna_node_declare
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif
@@ -154,6 +159,7 @@ struct anna_node_member_access
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -169,6 +175,7 @@ struct anna_node_call
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -190,6 +197,7 @@ struct anna_node_string_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -204,6 +212,7 @@ struct anna_node_char_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -217,6 +226,7 @@ struct anna_node_int_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -230,6 +240,7 @@ struct anna_node_dummy
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -243,6 +254,7 @@ struct anna_node_closure
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -256,6 +268,7 @@ struct anna_node_type
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -269,23 +282,11 @@ struct anna_node_float_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
     double payload;
-};
-
-struct anna_node_import
-{
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
-    int prepared;
-#endif    
-    struct anna_node *payload;
 };
 
 struct anna_node_wrapper
@@ -295,6 +296,7 @@ struct anna_node_wrapper
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
@@ -314,7 +316,6 @@ typedef struct anna_node_int_literal anna_node_int_literal_t;
 typedef struct anna_node_float_literal anna_node_float_literal_t;
 typedef struct anna_node_string_literal anna_node_string_literal_t;
 typedef struct anna_node_char_literal anna_node_char_literal_t;
-typedef struct anna_node_import anna_node_import_t;
 typedef struct anna_node_declare anna_node_declare_t;
 typedef struct anna_node_cond anna_node_cond_t;
 typedef struct anna_node_call anna_node_call_t;

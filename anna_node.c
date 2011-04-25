@@ -469,8 +469,13 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *tree2 = (anna_node_identifier_t *)tree;
-	    return (wcscmp(tree2->name,from->name)==0)?
-		anna_node_clone_deep(to):tree;
+	    if(wcscmp(tree2->name,from->name)==0)
+	    {
+		anna_node_t *res = anna_node_clone_deep(to);
+		res->unspecialized = tree;
+		return res;
+	    }
+	    return tree;
 	}
 
 	case ANNA_NODE_STRING_LITERAL:

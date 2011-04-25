@@ -789,6 +789,12 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     return res;
 }
 
+static int attr_idx(anna_node_call_t *attr, wchar_t *name)
+{
+    return -1;
+}
+
+
 anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call)
 {
     if((call->child_count < 1) || (type->flags & ANNA_TYPE_SPECIALIZED))
@@ -863,14 +869,32 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	return type;
     }
     
-    wprintf(L"Looking ok for implicit spec\n");
+//    wprintf(L"Looking ok for implicit spec\n");
+    
+    anna_node_call_t *input_node = node_cast_call(constr->definition->child[2]);
+    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), attr->child_count);
+    int spec_count;
     
     for(i=0; i<call->child_count; i++)
     {	
-//	anna_node_t *decl = constr->definition->
-	anna_type_t *ct = call->child[i]->return_type;
-	
+	anna_node_call_t *decl = node_cast_call(input_node->child[i+1]);
+	//anna_node_print(4, decl);
+	if(decl->child[1]->unspecialized)
+	{
+	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1]->unspecialized;
+	    //wprintf(L"Check if %ls is a template param thing\n", id->name);
+	    int templ_idx = attr_idx(attr, id->name);
+	    if(templ_idx >= 0)
+	    {
+		if(!type_spec[templ_idx])
+		{
+		    type_spec[templ_idx] = call->child[i]->return_type;
+		    spec_count++;
+		}
+	    }
+	}
     }
+    free(type_spec);
     
 //    anna_error((anna_node_t *)call, L"Implicit specialization of user defined templates is not yet implemented. Sorry...");
 //    CRASH;

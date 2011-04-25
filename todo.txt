@@ -7,6 +7,8 @@ What should be the return value for iterator methods like map and filter when gi
 An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that this object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
 Make api more consistent. Replace length and size in function names with count. Make naming of wrapper types consistent. Make naming of native type methods consistent.
 If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code?
+There are currently no users of the ANNA_NODE_TYPE_LOOKUP AST node type. Will we be using it in the future or can it be safely removed?
+Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge nmbers of switch statements. One possibility would be to add function pointers to the node types.
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
@@ -49,7 +51,7 @@ Tests for complex math
 Tests for floating point math
 Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
-Current method for determening map output is a bit fragile. 
+Current method for determining map output is a bit fragile. 
 Lots more coverage of using null as argument 
 
 DOCUMENTATION:
