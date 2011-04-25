@@ -440,6 +440,83 @@ static anna_vmstack_t *anna_range_filter(anna_vmstack_t *stack, anna_object_t *m
 }
 
 
+static anna_vmstack_t *anna_range_find_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_object_t *value = anna_vmstack_pop(stack);
+    
+    anna_object_t **param = stack->top - 3;
+    anna_object_t *range = param[0];
+    anna_object_t *body = param[1];
+    int idx = anna_int_get(param[2]);
+    size_t sz = anna_range_get_count(range);
+    int open = anna_range_get_open(range);
+    
+    if(value != null_object)
+    {
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, anna_range_get(range, idx-1));	
+    }
+    else if(sz > idx || open)
+    {
+	anna_object_t *o_param[] =
+	    {
+		param[2],
+		anna_range_get(range, idx)
+	    }
+	;
+	
+	param[2] = anna_int_create(idx+1);
+	anna_vm_callback_reset(stack, body, 2, o_param);
+    }
+    else
+    {
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push(stack, null_object);
+    }    
+    return stack;
+}
+
+static anna_vmstack_t *anna_range_find(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *body = anna_vmstack_pop(stack);
+    anna_object_t *range = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    
+    size_t sz = anna_range_get_count(range);
+    int open = anna_range_get_open(range);
+    
+    if(sz > 0 || open)
+    {
+	anna_object_t *callback_param[] = 
+	    {
+		range,
+		body,
+		anna_int_one,
+	    }
+	;
+	
+	anna_object_t *o_param[] =
+	    {
+		anna_int_zero,
+		anna_int_create(anna_range_get_from(range))
+	    }
+	;
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_range_find_callback, 3, callback_param,
+	    body, 2, o_param
+	    );
+    }
+    else
+    {
+	anna_vmstack_push(stack, null_object);
+    }
+    
+    return stack;
+}
+
+
 
 static inline anna_object_t *anna_range_to_string_i(anna_object_t **param)
 {
@@ -641,6 +718,12 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	2, e_argv, e_argn);
 
     anna_native_method_create(
+	range_type, -1, L"__find__", 
+	0, &anna_range_find, 
+	int_type,
+	2, e_argv, e_argn);  
+
+    anna_native_method_create(
 	range_type, -1, L"__in__", 0, 
 	&anna_range_in, 
 	int_type,
@@ -656,17 +739,6 @@ void anna_range_type_create(struct anna_stack_template *stack)
     
 
     /*
-    anna_native_method_create(
-	type, -1, L"__filter__", 
-	0, &anna_list_filter, 
-	type,
-	2, e_argv, e_argn);
-
-    anna_native_method_create(
-	type, -1, L"__first__", 
-	0, &anna_list_first, 
-	spec,
-	2, e_argv, e_argn);  
 
     anna_native_method_create(
 	type, -1, L"__map__", 
@@ -674,11 +746,6 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	list_type,
 	2, e_argv, e_argn);
     
-    anna_native_method_create(
-	type, -1, L"__in__", 0, 
-	&anna_list_in, 
-	spec,
-	2, a_argv, a_argn);
     */
 
 }

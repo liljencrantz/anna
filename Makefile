@@ -11,7 +11,7 @@ CC := gcc-4.6
 # optimization increases overall performance slightly. Unfortunatly,
 # with lto, there does not seem to be any way to drop this flag only
 # for one function or one compilation unit.
-PROF_FLAGS := -flto -O3 -fuse-linker-plugin -fno-gcse
+PROF_FLAGS := -g -pg #-flto -O3 -fuse-linker-plugin -fno-gcse
 
 CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration		\
 -Wmissing-braces -Wmissing-prototypes -std=gnu99 -D_ISO99_SOURCE=1	\
