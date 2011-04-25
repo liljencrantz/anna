@@ -1085,13 +1085,6 @@ static void anna_list_type_create_internal(
 	&anna_list_to_string, 
 	string_type, 1, a_argv, a_argn);
 
-    /*
-      Todo:
-
-      __add__, __sub__, __mul__ and friends.
-      __select__, __first__, __last__
-    */
-
 }
 
 static inline void anna_list_internal_init()

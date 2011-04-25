@@ -517,6 +517,89 @@ static anna_vmstack_t *anna_range_find(anna_vmstack_t *stack, anna_object_t *me)
 }
 
 
+static anna_vmstack_t *anna_range_map_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_object_t *value = anna_vmstack_pop(stack);
+
+    anna_object_t **param = stack->top - 4;
+    anna_object_t *range = param[0];
+    anna_object_t *body = param[1];
+    int idx = anna_int_get(param[2]);
+    anna_object_t *res = param[3];
+    size_t sz = anna_range_get_count(range);
+    int open = anna_range_get_open(range);
+    
+    anna_list_set(res, idx-1, value);
+    
+    if(sz > idx || open)
+    {
+	anna_object_t *o_param[] =
+	    {
+		param[2],
+		anna_range_get(range, idx)
+	    }
+	;
+	
+	param[2] = anna_int_create(idx+1);
+	anna_vm_callback_reset(stack, body, 2, o_param);
+    }
+    else
+    {
+	anna_vmstack_drop(stack, 5);
+	anna_vmstack_push(stack, res);
+    }    
+    return stack;
+}
+
+static anna_vmstack_t *anna_range_map(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *body = anna_vmstack_pop(stack);
+    anna_object_t *range = anna_vmstack_pop(stack);
+    anna_vmstack_pop(stack);
+    if(body == null_object)
+    {
+	anna_vmstack_push(stack, null_object);
+    }
+    else
+    {
+	anna_function_t *fun = anna_function_unwrap(body);
+	anna_object_t *res = anna_list_create(fun->return_type);
+	
+	size_t sz = anna_range_get_count(range);
+	int open = anna_range_get_open(range);
+
+	if(sz > 0 || open)
+	{
+	    anna_object_t *callback_param[] = 
+		{
+		    range,
+		    body,
+		    anna_int_one,
+		    res
+		}
+	    ;
+	    
+	    anna_object_t *o_param[] =
+		{
+		    anna_int_zero,
+		    anna_range_get(range, 0)
+		}
+	    ;
+	    
+	    stack = anna_vm_callback_native(
+		stack,
+		anna_range_map_callback, 4, callback_param,
+		body, 2, o_param
+		);
+	}
+	else
+	{
+	    anna_vmstack_push(stack, res);
+	}
+    }
+    
+    return stack;
+}
 
 static inline anna_object_t *anna_range_to_string_i(anna_object_t **param)
 {
@@ -737,15 +820,10 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	&anna_range_to_string, 
 	string_type, 1, a_argv, a_argn);
     
-
-    /*
-
     anna_native_method_create(
-	type, -1, L"__map__", 
-	0, &anna_list_map, 
+	range_type, -1, L"__map__", 
+	0, &anna_range_map, 
 	list_type,
 	2, e_argv, e_argn);
-    
-    */
 
 }
