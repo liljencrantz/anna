@@ -5,7 +5,13 @@
 
 CC := gcc-4.6
 
-PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin
+# The no-gcse flag removes the global common sub-expression
+# optimization. This optimization interacts badly with computed gotos,
+# a feature used heavily in the main interpreter loop. Dropping this
+# optimization increases overall performance slightly. Unfortunatly,
+# with lto, there does not seem to be any way to drop this flag only
+# for one function or one compilation unit.
+PROF_FLAGS := -flto -O3 -fuse-linker-plugin -fno-gcse
 
 CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration		\
 -Wmissing-braces -Wmissing-prototypes -std=gnu99 -D_ISO99_SOURCE=1	\
