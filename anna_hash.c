@@ -148,7 +148,7 @@ static void anna_hash_each_fun(void *keyp, void *valp, void *funp)
 }
 
 
-static anna_object_t *anna_hash_each(anna_object_t **param)
+static anna_object_t *anna_hash_each_i(anna_object_t **param)
 {
     anna_object_t *body_object=param[1];
     
@@ -156,6 +156,7 @@ static anna_object_t *anna_hash_each(anna_object_t **param)
 
     return param[0];
 }
+ANNA_VM_NATIVE(anna_hash_each, 2)
 
 static inline anna_object_t *anna_hash_del_i(anna_object_t **param)
 {
@@ -284,7 +285,6 @@ static inline anna_object_t *anna_hash_in_i(anna_object_t **param)
     return res ? anna_int_one : null_object;
 }
 ANNA_VM_NATIVE(anna_hash_in, 2)
-
 
 static void anna_hash_type_create_internal(
     anna_stack_template_t *stack,

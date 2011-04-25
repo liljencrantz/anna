@@ -78,8 +78,6 @@ static int anna_node_calculate_type_direct_children(anna_node_call_t *n, anna_st
     
 }
 
-
-
 static void anna_node_calculate_type_internal(
     anna_node_t *this,
     anna_stack_template_t *stack)
@@ -135,7 +133,6 @@ static void anna_node_calculate_type_internal(
 			t = decl->return_type;
 		    }
 		}
-		
 	    }
 	    
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){

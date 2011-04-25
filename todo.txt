@@ -9,7 +9,6 @@ anna_type_member_count is probably used in a bunch of places where it returns th
 Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
 Implicit specialization doesn't work on user defined types
-A property with no setter can be set, resulting in run time crash
 
 LANGUAGE FEATURES:
 Function templates
