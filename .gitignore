@@ -9,6 +9,9 @@ anna_lex.h
 *.o
 *.d
 *.out
+*.gcov
+*.gcda
+*.gcno
 anna
 anna_float_i.c
 anna_char_i.c

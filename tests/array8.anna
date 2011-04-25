@@ -1,0 +1,26 @@
+
+def main()
+{
+    var l = [1,2,3,4,5];
+    print(l[-20], "\n");
+    print(l[null as Int], "\n");
+    print(l[null as Range], "\n");
+    l[null as Int]=69;
+    l[null as Range]=[1,2,3];
+    l[1..2]=null;
+    print(l, "\n");
+    l.count = null;
+    print(l, "\n");
+    [].each(i){print("Fail\n")}
+
+    print(l.find(i){i>3},"\n");
+
+    print([].map(i){print("Fail\n")},"\n");
+    print([].filter(i){i>0},"\n");
+    print([].find(i){i>0},"\n");
+/*
+    print(l.__map__(null),"\n");
+    print(l.__filter__(null),"\n");
+    print(l.__find__(null),"\n");    
+*/
+}

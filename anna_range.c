@@ -71,7 +71,7 @@ void anna_range_set_step(anna_object_t *obj, int v)
 
 void anna_range_set_open(anna_object_t *obj, int v)
 {
-    *((int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_OPEN)) = v;
+    *((int *)anna_member_addr_get_mid(obj,ANNA_MID_RANGE_OPEN)) = !!v;
 }
 
 static anna_vmstack_t *anna_range_get_from_i(anna_vmstack_t *stack, anna_object_t *me)
@@ -86,7 +86,7 @@ static anna_vmstack_t *anna_range_get_to_i(anna_vmstack_t *stack, anna_object_t 
 {
     anna_object_t *r = anna_vmstack_pop(stack);
     anna_vmstack_pop(stack);
-    anna_vmstack_push(stack, anna_int_create(anna_range_get_to(r)));
+    anna_vmstack_push(stack, anna_range_get_open(r)?null_object:anna_int_create(anna_range_get_to(r)));
     return stack;
 }
 
@@ -148,7 +148,15 @@ static anna_vmstack_t *anna_range_set_from_i(anna_vmstack_t *stack, anna_object_
 static anna_vmstack_t *anna_range_set_to_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t **param = stack->top - 2;
-    anna_range_set_to(param[0], anna_int_get(param[1]));
+    if(param[1] == null_object)
+    {
+	anna_range_set_open(param[0], 1);
+    }
+    else
+    {
+	anna_range_set_open(param[0], 0);
+	anna_range_set_to(param[0], anna_int_get(param[1]));
+    }
     anna_vmstack_drop(stack, 3);
     anna_vmstack_push(stack, param[1]);
     return stack;    
@@ -158,15 +166,6 @@ static anna_vmstack_t *anna_range_set_step_i(anna_vmstack_t *stack, anna_object_
 {
     anna_object_t **param = stack->top - 2;
     anna_range_set_step(param[0], anna_int_get(param[1]));
-    anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, param[1]);
-    return stack;    
-}
-
-static anna_vmstack_t *anna_range_set_open_i(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_object_t **param = stack->top - 2;
-    anna_range_set_open(param[0], param[1] != null_object);
     anna_vmstack_drop(stack, 3);
     anna_vmstack_push(stack, param[1]);
     return stack;    
@@ -605,7 +604,6 @@ static inline anna_object_t *anna_range_to_string_i(anna_object_t **param)
 {
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"[");
 
     ssize_t from = anna_range_get_from(param[0]);
     ssize_t to = anna_range_get_to(param[0]);
@@ -616,18 +614,18 @@ static inline anna_object_t *anna_range_to_string_i(anna_object_t **param)
     int i;
     if(open)
     {
-	sb_printf(&sb, L"%d, %d, %d...]", from, from+step, from+2*step);
+	sb_printf(&sb, L"[%d, %d, %d...]", from, from+step, from+2*step);
     }
     else
     {
+	sb_printf(&sb, L"[");
 	for(i=0; i<count; i++)
 	{
 	    sb_printf(&sb, L"%ls%d", i==0?L"":L", ", from + i*step);
 	}
-	
+	sb_printf(&sb, L"]");
     }
     
-    sb_printf(&sb, L"]");
     anna_object_t *res =  anna_string_create(sb_length(&sb), sb_content(&sb));
     sb_destroy(&sb);
     return res;
@@ -741,7 +739,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	L"isOpen",
 	int_type,
 	&anna_range_get_open_i, 
-	&anna_range_set_open_i);
+	0);
 
     anna_native_property_create(
 	range_type,

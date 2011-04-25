@@ -1,7 +1,9 @@
 MISC:
-Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, no point in differentiating.
+Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
 Should we store most of the stack template data in the namespace class? Should hopefully simplify the code a bit.
 Is differentiating between properties and members when looking at interfaces a mistake? It adds a bunch of extra run time checks for null types, which probably negates the performance advantage. Code is a bit more obvious, but but we lose a bit of freedom for no real benefit.
+When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
+What should be the return value for iterator methods like map and filter when given a null value as a function body?
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
@@ -34,7 +36,7 @@ A backtrace function
 io module
 time module
 List.milter 
-Range.{milter,map,filter,first,last,find}
+Range.milter
 
 RELIABILITY:
 Use continuations to make a green thread implementation as a test of continuation functionality

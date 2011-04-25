@@ -760,16 +760,19 @@ static inline anna_object_t *anna_list_i_set_range_i(anna_object_t **param)
     if(param[1]==null_object)
 	return null_object;
     
-    if(param[2]==null_object)
-	return null_object;
+    anna_object_t *repl = param[2];
     
+
+    if(repl==null_object)
+	repl = anna_list_create(object_type);
+        
     int from = anna_range_get_from(param[1]);
     int step = anna_range_get_step(param[1]);
     int to = anna_range_get_to(param[1]);
     int count = anna_range_get_count(param[1]);
     int i;
     
-    int count2 = anna_list_get_size(param[2]);
+    int count2 = anna_list_get_size(repl);
 
     if(count != count2)
     {
@@ -817,7 +820,7 @@ static inline anna_object_t *anna_list_i_set_range_i(anna_object_t **param)
 	{
 	    arr[from+i] = 
 		anna_list_get(
-		    param[2],
+		    repl,
 		    i);
 	}
     }
@@ -828,7 +831,7 @@ static inline anna_object_t *anna_list_i_set_range_i(anna_object_t **param)
 	    anna_list_set(
 		param[0], from + step*i, 
 		anna_list_get(
-		    param[2],
+		    repl,
 		    i));
 	}
     }
@@ -1075,7 +1078,6 @@ static void anna_list_type_create_internal(
 	range_argn);
     fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, mmid));
     anna_function_alias_add(fun, L"__set__");
-
     
     anna_native_method_create(
 	type,

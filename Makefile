@@ -5,18 +5,20 @@
 
 CC := gcc-4.6
 
+COV_FLAGS := #--coverage
+
 # The no-gcse flag removes the global common sub-expression
 # optimization. This optimization interacts badly with computed gotos,
 # a feature used heavily in the main interpreter loop. Dropping this
 # optimization increases overall performance slightly. Unfortunatly,
 # with lto, there does not seem to be any way to drop this flag only
 # for one function or one compilation unit.
-PROF_FLAGS := -g -pg #-flto -O3 -fuse-linker-plugin -fno-gcse
+PROF_FLAGS := -g #-flto -O3 -fuse-linker-plugin -fno-gcse
 
 CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration		\
 -Wmissing-braces -Wmissing-prototypes -std=gnu99 -D_ISO99_SOURCE=1	\
 -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L $(PROF_FLAGS)		\
-#-Wsuggest-attribute=const -Wsuggest-attribute=pure
+$(COV_FLAGS) #-Wsuggest-attribute=const -Wsuggest-attribute=pure
 
 # All object files used by the main anna binary
 ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
@@ -37,7 +39,7 @@ anna_string_internal_test.o util.o common.o anna_string_naive.o
 ANNA_STRING_PERF_OBJS := anna_string_internal.o anna_string_perf.o	\
 util.o common.o anna_string_naive.o
 
-LDFLAGS := -lm -rdynamic -ll $(PROF_FLAGS)
+LDFLAGS := -lm -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 
 PROGRAMS := anna anna_string_internal_test anna_string_perf
 
