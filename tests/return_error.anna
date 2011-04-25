@@ -1,0 +1,13 @@
+def sub()
+{
+    if(1)
+    {
+        return 1;
+    }
+    return "1";
+}
+
+def main()
+{
+    print(sub() ~ "\n");
+}

@@ -62,6 +62,12 @@ void anna_node_register_declarations(
     al_destroy(&decls);
 }
 
+/**
+   Calculate the types of all direct child nodes of a call node,
+   without also calculating the type of any other grandchildren except
+   as needed. This is useful e.g. when using parameter types to pick
+   one of multiple aliased methods.
+ */
 static int anna_node_calculate_type_direct_children(anna_node_call_t *n, anna_stack_template_t *stack)
 {
     int i;

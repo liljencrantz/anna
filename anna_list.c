@@ -422,9 +422,9 @@ static anna_vmstack_t *anna_list_filter_callback(anna_vmstack_t *stack, anna_obj
 
 static anna_vmstack_t *anna_list_filter(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *res = anna_list_create(object_type);
     anna_object_t *body = anna_vmstack_pop(stack);
     anna_object_t *list = anna_vmstack_pop(stack);
+    anna_object_t *res = anna_list_create(anna_list_get_specialization(list));
     anna_vmstack_pop(stack);
     
     size_t sz = anna_list_get_size(list);
