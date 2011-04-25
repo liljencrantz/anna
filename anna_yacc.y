@@ -266,7 +266,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <call_val> block opt_expression_list expression_list opt_else
 %type <call_val> module
 %type <node_val> expression expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
-%type <node_val> constant var_or_const
+%type <node_val> literal var_or_const
 %type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
 %type <node_val> function_definition function_declaration function_signature
 %type <node_val> opt_identifier identifier type_identifier any_identifier 
@@ -616,12 +616,9 @@ expression9 :
 	};
 
 expression10:
-	constant
+	literal
 	| 
 	any_identifier 
-	{
-	    $$ = $1;	    
-	}
 	| 
 	'(' expression ')'
 	{
@@ -815,7 +812,7 @@ type_identifier :
 
 any_identifier: identifier | type_identifier;
 
-constant:
+literal:
 	LITERAL_INTEGER
 	{
 	    $$ = (anna_node_t *)anna_node_create_int_literal(
@@ -1081,8 +1078,8 @@ variable_declaration:
 		$1->child[1], $1->child[0], $4?$4:anna_node_create_null(&@$), $3);
 	};
 
-declaration_list_item : 
-	variable_declaration {$$=$1;} 
+declaration_list_item: 
+	variable_declaration
 	| function_declaration;
 
 

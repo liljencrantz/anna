@@ -419,6 +419,7 @@ static void anna_node_calculate_type_internal(
 	}
 
 	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_SET:
 	{
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
 	    anna_node_calculate_type(c->object, stack);
@@ -440,28 +441,29 @@ static void anna_node_calculate_type_internal(
 		break;
 		
 	    }
-	    
-	    if(member->is_method)
+
+	    if(c->node_type == ANNA_NODE_MEMBER_GET)
 	    {
-		c->node_type = ANNA_NODE_MEMBER_GET_WRAP;
-		c->return_type = anna_method_curry(anna_function_type_unwrap(member->type));
+		if(member->is_method)
+		{
+		    c->node_type = ANNA_NODE_MEMBER_GET_WRAP;
+		    c->return_type = anna_method_curry(anna_function_type_unwrap(member->type));
+		}
+		else
+		{
+		    c->return_type = member->type;
+		}
 	    }
 	    else
 	    {
-		c->return_type = member->type;
+		anna_node_calculate_type(c->value, stack);
+		c->return_type = c->value->return_type;
+		
 	    }
 	    
 	    break;
 	}
 
-	case ANNA_NODE_MEMBER_SET:
-	{
-	    anna_node_member_access_t *g = (anna_node_member_access_t *)this;
-	    anna_node_calculate_type(g->value, stack);
-	    g->return_type = g->value->return_type;
-	    break;
-	}
-	
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	{
@@ -683,6 +685,32 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 {
     switch(this->node_type)
     {
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
+	    anna_member_t *memb = anna_member_get(c->object->return_type, c->mid);
+	    if(memb->is_property && memb->setter_offset == -1)
+	    {
+		anna_error(this, L"No setter for property %ls", anna_mid_get_reverse(c->mid));
+		break;		
+	    }
+	    
+	    break;
+	}
+	
+	case ANNA_NODE_MEMBER_GET:
+	{
+	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
+	    anna_member_t *memb = anna_member_get(c->object->return_type, c->mid);
+	    if(memb->is_property && memb->getter_offset == -1)
+	    {
+		anna_error(this, L"No getter for property %ls", anna_mid_get_reverse(c->mid));
+		break;		
+	    }
+	    
+	    break;
+	}
+	
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
