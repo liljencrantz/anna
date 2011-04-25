@@ -255,6 +255,16 @@ anna_object_t *anna_node_static_invoke_try(
 	case ANNA_NODE_DECLARE:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
 
+	case ANNA_NODE_SPECIALIZE:
+	{
+	    anna_node_specialize((anna_node_call_t *)this, stack);
+	    if(this->node_type == ANNA_NODE_DUMMY)
+	    {
+		return anna_node_static_invoke_try(this, stack);
+	    }
+	    return 0;
+	}
+	
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;

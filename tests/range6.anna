@@ -1,4 +1,9 @@
+/*
+    Test indexing ranges from the end. 
 
+    For closed ranges, should work like on Lists, e.g. -1 is the last element.
+    For open ranges, indexing from the end is obviously not supported.
+*/
 def main()
 {
     var r = 0..5;

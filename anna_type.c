@@ -853,8 +853,21 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    &call->location,
 	    L"__block__"));
 
-    for(i=0; i<call->child_count; i++)
+    anna_object_t *constructor_obj = *anna_static_member_addr_get_mid(
+	type,
+	ANNA_MID_INIT_PAYLOAD);
+    anna_function_t *constr = anna_function_unwrap(constructor_obj);
+
+    if(call->child_count > constr->input_count)
     {
+	return type;
+    }
+    
+    wprintf(L"Looking ok for implicit spec\n");
+    
+    for(i=0; i<call->child_count; i++)
+    {	
+//	anna_node_t *decl = constr->definition->
 	anna_type_t *ct = call->child[i]->return_type;
 	
     }

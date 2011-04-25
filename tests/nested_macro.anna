@@ -1,0 +1,28 @@
+
+type Foo
+{
+    var List«Int» items;
+
+    def __init__()
+    {
+        this.items=[1,2,3];
+    }
+}
+
+type Bar
+{
+    var Foo foo;
+
+    def __init__()
+    {
+        this.foo = Foo();
+    }
+}
+
+def main()
+{
+    var bar = Bar();
+
+    bar.foo.items.each(i){print(i,'\n')}
+
+}
