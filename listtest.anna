@@ -1,8 +1,0 @@
-import(lang);
-
-function Int main()
-{
-    var lst = [1,2,3];
-    //print(lst[0]);
-    print(lst[0]+2);
-}

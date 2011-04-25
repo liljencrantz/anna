@@ -1,8 +1,0 @@
-def say(String o){
-    print(o, "\n");
-}
-/*
-def whisper(String o){
-    print(o, "\n");
-}
-*/

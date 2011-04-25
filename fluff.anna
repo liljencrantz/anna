@@ -1,4 +1,0 @@
-macro tjo(node)
-{
-    ast(3);
-}

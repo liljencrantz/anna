@@ -1,4 +1,0 @@
-var ggg=1;
-ggg+=3;
-
-print(ggg++);
