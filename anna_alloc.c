@@ -139,9 +139,9 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	    anna_error(this, L"Unimplemented node type during gc. Come back tomorrow.");
 	    CRASH;
 	    break;
-	}
-		
+	}		
 	
+	case ANNA_NODE_CAST:
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
 	{	    
@@ -504,16 +504,13 @@ static void anna_alloc_free(void *obj)
 //		    anna_node_identifier_t *n = (anna_node_identifier_t *)o;
 		    break;
 		}
+		case ANNA_NODE_STRING_LITERAL:
 		case ANNA_NODE_ASSIGN:
 		{
 //		    anna_node_assign_t *n = (anna_node_assign_t *)o;
 		    break;
 		}
-		case ANNA_NODE_STRING_LITERAL:
-		{
-//		    anna_node_string_literal_t *n = (anna_node_string_literal_t *)o;
-		    break;
-		}
+
 		case ANNA_NODE_CONST:
 		case ANNA_NODE_DECLARE:
 		{

@@ -128,7 +128,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
     static int vm_count = 0;
     int is_root = vm_count==0;
-    vm_count++;
     
     anna_vmstack_t *stack;    
     stack = calloc(1, (argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
@@ -193,6 +192,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	{
 	    if(is_root)
 	    {
+		
 		anna_alloc_count=0;
 		anna_gc(stack);
 	    }
@@ -854,6 +854,7 @@ void anna_vm_mark_code(anna_function_t *f)
 	    }
 
 	    case ANNA_INSTR_RETURN:
+	    case ANNA_INSTR_RETURN_COUNT:
 	    case ANNA_INSTR_STOP:
 	    {
 		return;
@@ -866,6 +867,8 @@ void anna_vm_mark_code(anna_function_t *f)
 	    case ANNA_INSTR_VAR_SET:
 	    case ANNA_INSTR_STATIC_MEMBER_GET:
 	    case ANNA_INSTR_MEMBER_GET:
+	    case ANNA_INSTR_PROPERTY_GET:
+	    case ANNA_INSTR_STATIC_PROPERTY_GET:
 	    case ANNA_INSTR_MEMBER_GET_THIS:
 	    case ANNA_INSTR_MEMBER_SET:
 	    case ANNA_INSTR_POP:

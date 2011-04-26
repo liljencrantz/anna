@@ -9,6 +9,10 @@ Make api more consistent. Replace length and size in function names with count. 
 If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code?
 There are currently no users of the ANNA_NODE_TYPE_LOOKUP AST node type. Will we be using it in the future or can it be safely removed?
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge nmbers of switch statements. One possibility would be to add function pointers to the node types.
+Static math expression support, e.g. 4*3
+Common constants, e.g. pi, e, etc.
+Type definition order seems to matter sometimes. Need to investigate.
+implicit this is not handled
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...

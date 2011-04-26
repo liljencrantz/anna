@@ -328,8 +328,9 @@ static anna_vmstack_t *anna_range_each(anna_vmstack_t *stack, anna_object_t *me)
     ssize_t to = anna_range_get_to(range);
     ssize_t step = anna_range_get_step(range);
     int open = anna_range_get_open(range);
+    ssize_t count = 1+(to-from-sign(step))/step;
     
-    if(((to>from) != (step>0)) && !open)
+    if(!count && !open)
     {
 	anna_vmstack_push(stack, range);
     }
