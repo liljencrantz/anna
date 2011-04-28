@@ -50,7 +50,7 @@ static int print_direct(anna_vmstack_entry_t *o)
     return 0;
 }
 
-static int print_direct_loop(anna_vmstack_entry_t *list, int idx)
+static int print_direct_loop(anna_object_t *list, int idx)
 {
     int ls = anna_list_get_size(list);
     while(1)
@@ -72,10 +72,10 @@ static int print_direct_loop(anna_vmstack_entry_t *list, int idx)
 static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_object_t *value = anna_vmstack_pop_object(stack);
-    anna_object_t **param = stack->top - 2;
-    anna_object_t *list = param[0];
-    int idx = anna_int_get(param[1]);
-    int ls = anna_list_get_size(param[0]);
+    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_object_t *list = anna_as_obj_fast(param[0]);
+    int idx = anna_as_int(param[1]);
+    int ls = anna_list_get_size(list);
     if(value == null_object) 
     {
 	wprintf(L"null");
@@ -97,11 +97,11 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 
     if(ls > idx)
     {
-	anna_object_t *o = anna_list_get(list, idx);
-	param[1] = anna_int_create(idx+1);	
+	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
+	param[1] = anna_from_int(idx+1);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
-	anna_vm_callback_reset(stack, meth, 1, &o);
+	anna_vm_callback_reset(stack, meth, 1, (anna_vmstack_entry_t **)&o);
     }
     else
     {
@@ -127,14 +127,14 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 	    }
 	;
 	
-	anna_object_t *o = anna_list_get(list, idx);
+	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
 	
 	stack = anna_vm_callback_native(
 	    stack,
 	    anna_print_callback, 2, callback_param,
-	    meth, 1, &o
+	    meth, 1, (anna_vmstack_entry_t **)&o
 	    );
     }
     else
@@ -146,9 +146,9 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *val = anna_vmstack_pop_object(stack);
+    anna_vmstack_entry_t *val = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
-    anna_vmstack_push_object(stack, (val == null_object)?anna_int_one:null_object);
+    anna_vmstack_push_entry(stack, ANNA_VM_NULL(val)?anna_from_int(1):anna_from_obj(null_object));
     return stack;
 }
 

@@ -39,15 +39,15 @@ for i in "eq ==" "gt >" "lt <" "gte >=" "lte <=" "neq !="; do
 static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_object_t *me)
 
 {
-    anna_object_t *res = anna_vmstack_pop_object(stack);
+    anna_vmstack_entry_t *res = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
-    if(unlikely(res->type != int_type))
+    if(ANNA_VM_NULL(res))
     {
         anna_vmstack_push_object(stack, null_object);
     }
     else
     {
-        int res_int = anna_int_get(res);
+        int res_int = anna_as_int(res);
         anna_vmstack_push_object(stack, (res_int $op 0)? anna_int_one:null_object);
     }
     return stack;
