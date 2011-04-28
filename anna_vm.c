@@ -537,7 +537,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
     ANNA_LAB_FOLD:
     {
-	anna_object_t *val = anna_vmstack_pop_object(stack);
+	anna_vmstack_entry_t *val = anna_vmstack_pop_entry(stack);
 	anna_list_add(anna_vmstack_peek_object(stack, 0), val);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
@@ -545,21 +545,21 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
     ANNA_LAB_POP:
     {
-	anna_vmstack_pop_object(stack);
+	anna_vmstack_pop_entry(stack);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_NOT:
     {
-	*(stack->top-1) = (anna_is_obj(*(stack->top-1)) && anna_as_obj(*(stack->top-1))==null_object)?anna_from_int(1):anna_from_obj(null_object);
+	*(stack->top-1) = ANNA_VM_NULL(*(stack->top-1))?anna_from_int(1):anna_from_obj(null_object);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 
     ANNA_LAB_DUP:
     {
-	anna_vmstack_push_object(stack, anna_vmstack_peek_object(stack, 0));
+	anna_vmstack_push_entry(stack, anna_vmstack_peek_entry(stack, 0));
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
@@ -574,20 +574,20 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_COND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += anna_vmstack_pop_object(stack) != null_object ? op->offset:sizeof(*op);
+	stack->code += !ANNA_VM_NULL(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_NCOND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += anna_vmstack_pop_object(stack) == null_object ? op->offset:sizeof(*op);
+	stack->code += ANNA_VM_NULL(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_TRAMPOLENE:
     {
-	anna_object_t *base = anna_vmstack_pop_object(stack);
+	anna_object_t *base = anna_vmstack_pop_object_fast(stack);
 	anna_vmstack_push_object(stack, anna_vm_trampoline(anna_function_unwrap(base), stack));
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];

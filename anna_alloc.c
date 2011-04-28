@@ -328,7 +328,9 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	size_t sz = anna_list_get_size(obj);
 	for(i=0; i<sz; i++)
 	{
-	    anna_alloc_mark_object(anna_list_get(obj, i));
+	    anna_vmstack_entry_t *e = anna_list_get(obj, i);
+	    if(anna_is_obj(e))
+		anna_alloc_mark_object(anna_as_obj(e));
 	}
 	
     }
@@ -368,7 +370,7 @@ static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
 	return;
     stack->flags |= ANNA_USED;    
 
-    anna_object_t **obj;
+    anna_vmstack_entry_t **obj;
     for(obj = &stack->base[0]; obj < stack->top; obj++)
     {
 	if(anna_is_obj(*obj))

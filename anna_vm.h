@@ -11,7 +11,8 @@ anna_object_t *anna_int_create(int val);
 anna_object_t *anna_float_create(double val);
 anna_object_t *anna_char_create(wchar_t val);
 
-#define ANNA_VM_NULL(par) (unlikely(anna_is_obj(par) && anna_as_obj_fast(par) == null_object))
+//#define ANNA_VM_NULL(par) (unlikely(anna_is_obj(par) && anna_as_obj_fast(par) == null_object))
+#define ANNA_VM_NULL(par) (unlikely(((anna_object_t *)par) == null_object))
 #define ANNA_VM_NULLCHECK(par) if(ANNA_VM_NULL(par)) return anna_from_obj(null_object);
 
 /**
@@ -104,19 +105,19 @@ static inline int anna_is_obj(anna_vmstack_entry_t *val)
 static inline int anna_is_float(anna_vmstack_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
-    return type & ANNA_STACK_ENTRY_FLOAT;
+    return type == ANNA_STACK_ENTRY_FLOAT;
 }
 
 static inline int anna_is_char(anna_vmstack_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
-    return type & ANNA_STACK_ENTRY_CHAR;
+    return type == ANNA_STACK_ENTRY_CHAR;
 }
 
 static inline int anna_is_int(anna_vmstack_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
-    return type & ANNA_STACK_ENTRY_INT;
+    return type == ANNA_STACK_ENTRY_INT;
 }
 
 
@@ -165,7 +166,7 @@ static inline double anna_as_float(anna_vmstack_entry_t *entry)
 	    res >>= 2;
 	    return (double)res;
 	}
-	wprintf(L"Invalid vmstack entry\n");
+	wprintf(L"Invalid vmstack entry %d\n", entry);
 	CRASH;
     }
     return anna_float_get((anna_object_t *)entry);
@@ -253,6 +254,12 @@ static inline anna_object_t *anna_vmstack_pop_object(anna_vmstack_t *stack)
     return anna_as_obj(*(stack->top));
 }
 
+static inline anna_object_t *anna_vmstack_pop_object_fast(anna_vmstack_t *stack)
+{
+    stack->top--;
+    return (anna_object_t *)*(stack->top);
+}
+
 static inline anna_vmstack_entry_t *anna_vmstack_pop_entry(anna_vmstack_t *stack)
 {
     stack->top--;
@@ -262,6 +269,11 @@ static inline anna_vmstack_entry_t *anna_vmstack_pop_entry(anna_vmstack_t *stack
 __pure static inline anna_object_t *anna_vmstack_peek_object(anna_vmstack_t *stack, size_t off)
 {
     return anna_as_obj(*(stack->top-1-off));
+}
+
+__pure static inline anna_object_t *anna_vmstack_peek_object_fast(anna_vmstack_t *stack, size_t off)
+{
+    return (anna_object_t *)*(stack->top-1-off);
 }
 
 __pure static inline anna_vmstack_entry_t *anna_vmstack_peek_entry(anna_vmstack_t *stack, size_t off)
