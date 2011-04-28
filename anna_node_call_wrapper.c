@@ -1,70 +1,74 @@
 
-
-static inline anna_object_t *anna_node_call_wrapper_i_get_count_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_call_wrapper_i_get_count_i(anna_vmstack_entry_t **param)
 {
-    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
-    return anna_int_create(node->child_count);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+    return anna_from_int(node->child_count);
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_count, 1)
 
-static inline anna_object_t *anna_node_call_wrapper_i_get_int_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_call_wrapper_i_get_int_i(anna_vmstack_entry_t **param)
 {
-    if(param[1]==null_object)
-	return null_object;
-    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
-    int idx = anna_int_get(param[1]);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    ANNA_VM_NULLCHECK(param[1]);
+    
+    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+    int idx = anna_as_int(param[1]);
     if(idx < 0 || idx >= node->child_count)
-	return null_object;
-    return anna_node_wrap(node->child[idx]);
+	return anna_from_obj(null_object);
+    return anna_from_obj(anna_node_wrap(node->child[idx]));
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_int, 2)
 
-static inline anna_object_t *anna_node_call_wrapper_i_set_int_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_call_wrapper_i_set_int_i(anna_vmstack_entry_t **param)
 {
+    anna_object_t *this = anna_as_obj_fast(param[0]);
     
-    if(param[1]==null_object)
-	return null_object;
+    ANNA_VM_NULLCHECK(param[1]);
     
-    if(param[2]==null_object)
-	param[2] = anna_node_wrap(anna_node_create_null(0));
+    if(ANNA_VM_NULL(param[2]))
+	param[2] = anna_from_obj(anna_node_wrap(anna_node_create_null(0)));
     
-    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
-    int idx = anna_int_get(param[1]);
+    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+    int idx = anna_as_int(param[1]);
     if(idx < 0 || idx >= node->child_count)
 	return param[1];
     
-    node->child[idx] = anna_node_unwrap(param[2]);
+    node->child[idx] = anna_node_unwrap(anna_as_obj(param[2]));
     return param[2];
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_int, 3)
 
-static inline anna_object_t *anna_node_call_wrapper_i_get_function_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_call_wrapper_i_get_function_i(anna_vmstack_entry_t **param)
 {
-    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
-    return anna_node_wrap(node->function);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+    return anna_from_obj(anna_node_wrap(node->function));
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_function, 1)
 
-static inline anna_object_t *anna_node_call_wrapper_i_set_function_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_call_wrapper_i_set_function_i(anna_vmstack_entry_t **param)
 {
-    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(param[0]);
-    if(param[1]==null_object)
-	return null_object;
-    node->function = anna_node_unwrap(param[1]);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+    ANNA_VM_NULLCHECK(param[1]);
+
+    node->function = anna_node_unwrap(anna_as_obj(param[1]));
     return param[1];    
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_function, 2)
 
-static inline anna_object_t *anna_node_call_wrapper_i_join_list_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_call_wrapper_i_join_list_i(anna_vmstack_entry_t **param)
 {
-    if(param[1]==null_object)
-	return null_object;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    ANNA_VM_NULLCHECK(param[1]);
+
     size_t count = 
-	anna_list_get_size(param[1]);
+	anna_list_get_size(anna_as_obj(param[1]));
     
     anna_node_call_t *src = 
 	(anna_node_call_t *)anna_node_unwrap(
-	    param[0]);
+	    this);
     anna_node_call_t *dst = 
 	anna_node_create_call(
 	    &src->location,
@@ -74,23 +78,24 @@ static inline anna_object_t *anna_node_call_wrapper_i_join_list_i(anna_object_t 
     int i;
     for(i=0;i<count; i++)
     {
-	anna_object_t *n = 
-	    anna_list_get(param[1], i);
+	anna_vmstack_entry_t *n = 
+	    anna_list_get(anna_as_obj(param[1]), i);
 	anna_node_call_add_child(
 	    dst,
-	    anna_node_unwrap(n));
+	    anna_node_unwrap(anna_as_obj(n)));
     }
-    return anna_node_wrap((anna_node_t *)dst);
+    return anna_from_obj(anna_node_wrap((anna_node_t *)dst));
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_list, 2)
 
-static inline anna_object_t *anna_node_call_wrapper_i_init_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_call_wrapper_i_init_i(anna_vmstack_entry_t **param)
 {
-    size_t sz = anna_list_get_size(param[3]);
-    anna_object_t **src = anna_list_get_payload(param[3]);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    size_t sz = anna_list_get_size(anna_as_obj(param[3]));
+    anna_vmstack_entry_t **src = anna_list_get_payload(anna_as_obj(param[3]));
     
-    anna_node_t *source = anna_node_unwrap(param[1]);
-    anna_node_t *function = anna_node_unwrap(param[2]);
+    anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
+    anna_node_t *function = anna_node_unwrap(anna_as_obj(param[2]));
     
     anna_node_call_t *dest = 
 	anna_node_create_call(
@@ -101,11 +106,11 @@ static inline anna_object_t *anna_node_call_wrapper_i_init_i(anna_object_t **par
     int i;
     for(i=0; i<sz; i++)
     {
-	anna_node_call_add_child(dest, anna_node_unwrap(src[i]));
+	anna_node_call_add_child(dest, anna_node_unwrap(anna_as_obj(src[i])));
     }
     dest->child_count = sz;
     
-    *(anna_node_t **)anna_member_addr_get_mid(param[0],ANNA_MID_NODE_PAYLOAD)=
+    *(anna_node_t **)anna_member_addr_get_mid(this,ANNA_MID_NODE_PAYLOAD)=
 	(anna_node_t *)dest;
 	
     return param[0];
