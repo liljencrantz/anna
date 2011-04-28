@@ -21,7 +21,7 @@ static anna_vmstack_t *anna_object_init(anna_vmstack_t *stack, anna_object_t *me
 {
     anna_object_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, param[0]);
+    anna_vmstack_push_object(stack, param[0]);
     return stack;
 }
 
@@ -29,7 +29,7 @@ static anna_vmstack_t *anna_object_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t **param = stack->top - 2;
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, anna_int_create(param[0]->type-param[1]->type));
+    anna_vmstack_push_object(stack, anna_int_create(param[0]->type-param[1]->type));
     return stack;
 }
 
@@ -37,7 +37,7 @@ static anna_vmstack_t *anna_object_hash(anna_vmstack_t *stack, anna_object_t *me
 {
     anna_object_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_int_create(hash_ptr_func(param[0]->type)));
+    anna_vmstack_push_object(stack, anna_int_create(hash_ptr_func(param[0]->type)));
     return stack;
 }
 
@@ -48,7 +48,7 @@ static anna_vmstack_t *anna_object_to_string(anna_vmstack_t *stack, anna_object_
     sb_init(&sb);
     sb_printf(&sb, L"Object of type %ls", param[0]->type->name);
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
     return stack;
 }
 

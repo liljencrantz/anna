@@ -371,8 +371,8 @@ static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
     anna_object_t **obj;
     for(obj = &stack->base[0]; obj < stack->top; obj++)
     {
-	if(*obj)
-	    anna_alloc_mark_object(*obj);
+	if(anna_is_obj(*obj))
+	    anna_alloc_mark_object(anna_as_obj(*obj));
     }
     if(stack->parent)
 	anna_alloc_mark_vmstack(stack->parent);

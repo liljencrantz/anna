@@ -42,8 +42,6 @@
 # define __deprecated	__attribute__ ((deprecated))
 /* Don't watn if static function never called, still compile */
 # define __used		__attribute__ ((used))
-/* Don't warn if specified function parameter is never used */
-# define __unused	__attribute__ ((unused))
 /* Ignore alignment of struct */
 # define __packed	__attribute__ ((packed))
 # define __sentinel	__attribute__ ((sentinel))
@@ -55,7 +53,6 @@
 # define __must_check	/* no warn_unused_result */
 # define __deprecated	/* no deprecated */
 # define __used		/* no used */
-# define __unused	/* no unused */
 # define __packed	/* no packed */
 # define __sentinel	/* no sentinel */
 # define likely(x)	(x)
@@ -425,6 +422,8 @@ struct anna_node_list
     struct anna_node_list *parent;
 };
 
+typedef struct {} anna_vmstack_entry_t;
+
 struct anna_vmstack
 {
     int flags;
@@ -432,8 +431,8 @@ struct anna_vmstack
     struct anna_vmstack *caller;    
     struct anna_function *function;
     char *code;    
-    struct anna_object **top;
-    struct anna_object *base[];
+    anna_vmstack_entry_t **top;
+    anna_vmstack_entry_t *base[];
 };
 
 typedef struct anna_vmstack anna_vmstack_t;

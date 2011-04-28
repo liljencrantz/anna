@@ -397,9 +397,6 @@ static inline anna_node_t *anna_macro_range_i(anna_node_call_t *node)
 	    node,
 	    (anna_node_t *)anna_node_create_null(0));
     }
-    anna_node_call_add_child(
-	node,
-	(anna_node_t *)anna_node_create_null(0));
     
     return (anna_node_t *)node;
 }

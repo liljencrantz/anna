@@ -13,6 +13,7 @@ Static math expression support, e.g. 4*3
 Common constants, e.g. pi, e, etc.
 Type definition order seems to matter sometimes. Need to investigate.
 implicit this is not handled
+Handle open ranges in list/string set/get methods
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...

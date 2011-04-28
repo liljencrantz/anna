@@ -21,7 +21,6 @@
 
 anna_object_t *anna_char_create(wchar_t value)
 {
-    
     anna_object_t *obj= anna_object_create(char_type);
     anna_char_set(obj, value);
     return obj;
@@ -40,49 +39,38 @@ wchar_t anna_char_get(anna_object_t *this)
     return result;
 }
 
-static inline anna_object_t *anna_char_i_get_ordinal_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_char_i_get_ordinal_i(anna_vmstack_entry_t **param)
 {
-    return anna_int_create(anna_char_get(param[0]));
+    return anna_from_int((int)anna_as_char(param[0]));
 }
 ANNA_VM_NATIVE(anna_char_i_get_ordinal, 1)
 
-static inline anna_object_t *anna_char_i_set_ordinal_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_char_i_get_upper_i(anna_vmstack_entry_t **param)
 {
-    if(param[1]==null_object)
-	return null_object;
-    int o = anna_int_get(param[1]);
-    anna_char_set(param[0], (wchar_t)o);
-    return param[1];
-}
-ANNA_VM_NATIVE(anna_char_i_set_ordinal, 2)
-
-static inline anna_object_t *anna_char_i_get_upper_i(anna_object_t **param)
-{
-    return anna_char_create(towupper(anna_char_get(param[0])));
+    return anna_from_char(towupper(anna_as_char(param[0])));
 }
 ANNA_VM_NATIVE(anna_char_i_get_upper, 1)
 
-static inline anna_object_t *anna_char_i_get_lower_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_char_i_get_lower_i(anna_vmstack_entry_t **param)
 {
-    return anna_char_create(towlower(anna_char_get(param[0])));
+    return anna_from_char(towlower(anna_as_char(param[0])));
 }
 ANNA_VM_NATIVE(anna_char_i_get_lower, 1)
 
-static inline anna_object_t *anna_char_cmp_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_char_cmp_i(anna_vmstack_entry_t **param)
 {
-    if(unlikely(param[1]->type != char_type))
+    if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])->type != char_type))
     {
-	return null_object;
-    }    
-    anna_object_t *res =  anna_int_create(anna_char_get(param[0]) - anna_char_get(param[1]));
-    return res;
+	return anna_from_obj(null_object);
+    }
+    return anna_from_int(anna_as_char(param[0]) - anna_as_char(param[1]));
 }
 ANNA_VM_NATIVE(anna_char_cmp, 2)
 
-static inline anna_object_t *anna_char_to_string_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_char_to_string_i(anna_vmstack_entry_t **param)
 {
-    wchar_t ch = anna_char_get(param[0]);
-    return anna_string_create(1, &ch);
+    wchar_t ch = anna_as_char(param[0]);
+    return anna_from_obj(anna_string_create(1, &ch));
 }
 ANNA_VM_NATIVE(anna_char_to_string, 1)
 
@@ -111,7 +99,7 @@ void anna_char_type_create(anna_stack_template_t *stack)
 	L"ordinal",
 	int_type,
 	&anna_char_i_get_ordinal, 
-	&anna_char_i_set_ordinal);
+	0);
     
     anna_native_property_create(
 	char_type,

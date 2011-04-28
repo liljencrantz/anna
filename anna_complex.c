@@ -47,7 +47,7 @@ static anna_vmstack_t *anna_complex_init(anna_vmstack_t *stack, anna_object_t *m
     size_t off = param[0]->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
     memcpy(&param[0]->member[off], &result, sizeof(complex double));
     anna_vmstack_drop(stack, 4);
-    anna_vmstack_push(stack, param[0]);
+    anna_vmstack_push_object(stack, param[0]);
     return stack;
 }
 
@@ -59,7 +59,7 @@ static anna_vmstack_t *anna_complex_to_string(anna_vmstack_t *stack, anna_object
     sb_init(&sb);
     sb_printf(&sb, L"%f + i%f", creal(val), cimag(val));
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
     return stack;
 }
 

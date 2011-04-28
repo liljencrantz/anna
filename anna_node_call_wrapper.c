@@ -118,7 +118,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
 static anna_vmstack_t *anna_node_call_wrapper_each_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     // Discard the output of the previous method call
-    anna_vmstack_pop(stack);
+    anna_vmstack_pop_object(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_object_t **param = stack->top - 3;
     // Unwrap and name the params to make things more explicit
@@ -147,16 +147,16 @@ static anna_vmstack_t *anna_node_call_wrapper_each_callback(anna_vmstack_t *stac
     {
 	// Oops, we're done. Drop our internal param list and push the correct output
 	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push(stack, param[0]);
+	anna_vmstack_push_object(stack, param[0]);
     }
     return stack;
 }
 
 static anna_vmstack_t *anna_node_call_wrapper_each(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *body = anna_vmstack_pop(stack);
-    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_vmstack_pop(stack));
-    anna_vmstack_pop(stack);
+    anna_object_t *body = anna_vmstack_pop_object(stack);
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_vmstack_pop_object(stack));
+    anna_vmstack_pop_object(stack);
     size_t sz = call->child_count;
 
     if(sz > 0)
@@ -184,7 +184,7 @@ static anna_vmstack_t *anna_node_call_wrapper_each(anna_vmstack_t *stack, anna_o
     }
     else
     {
-	anna_vmstack_push(stack, anna_node_wrap((anna_node_t *)call));
+	anna_vmstack_push_object(stack, anna_node_wrap((anna_node_t *)call));
     }
     
     return stack;

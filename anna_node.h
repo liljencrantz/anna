@@ -318,7 +318,6 @@ typedef struct anna_node_string_literal anna_node_string_literal_t;
 typedef struct anna_node_char_literal anna_node_char_literal_t;
 typedef struct anna_node_declare anna_node_declare_t;
 typedef struct anna_node_cond anna_node_cond_t;
-typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_if anna_node_if_t;
 typedef struct anna_node_wrapper anna_node_wrapper_t;
 

@@ -44,7 +44,7 @@ static inline anna_object_t *anna_vm_trampoline(
 
 static void anna_vmstack_print(anna_vmstack_t *stack)
 {
-    anna_object_t **p = &stack->base[0];
+    anna_vmstack_entry_t **p = &stack->base[0];
     wprintf(L"Stack content:\n");
     while(p!=stack->top)
     {
@@ -54,14 +54,14 @@ static void anna_vmstack_print(anna_vmstack_t *stack)
 	}
 	else
 	{
-	    anna_function_t *fun = anna_function_unwrap((*p));
+	    anna_function_t *fun = anna_function_unwrap(anna_as_obj(*p));
 	    if(fun)
 	    {
 		wprintf(L"Function: %ls\n", fun->name);
 	    }
 	    else
 	    {
-		wprintf(L"%ls\n", (*p)->type->name);
+		wprintf(L"%ls\n", anna_as_obj(*p)->type->name);
 	    }
 	}
 	
@@ -144,10 +144,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     *(stack->code) = ANNA_INSTR_STOP;
     
     int i;
-    anna_vmstack_push(stack, entry);
+    anna_vmstack_push_object(stack, entry);
     for(i=0; i<argc; i++)
     {
-	anna_vmstack_push(stack, argv[i]);
+	anna_vmstack_push_object(stack, argv[i]);
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
     stack = root_fun->native(stack, entry);
@@ -157,7 +157,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_CONSTANT:
     {
 	anna_op_const_t *op = (anna_op_const_t *)stack->code;
-	anna_vmstack_push(stack, op->value);
+	anna_vmstack_push_object(stack, op->value);
 	
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
@@ -166,7 +166,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_STRING:
     {
 	anna_op_const_t *op = (anna_op_const_t *)stack->code;
-	anna_vmstack_push(stack, anna_string_copy(op->value));
+	anna_vmstack_push_object(stack, anna_string_copy(op->value));
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -175,10 +175,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	
 	anna_op_type_t *op = (anna_op_type_t *)stack->code;
-	if(!anna_abides(anna_vmstack_peek(stack,0)->type, op->value))
+	if(!anna_abides(anna_vmstack_peek_object(stack,0)->type, op->value))
 	{
-	    anna_vmstack_pop(stack);
-	    anna_vmstack_push(stack, null_object);
+	    anna_vmstack_pop_object(stack);
+	    anna_vmstack_push_object(stack, null_object);
 	}
 	
 	stack->code += sizeof(*op);
@@ -199,7 +199,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 	anna_op_count_t *op = (anna_op_count_t *)stack->code;
 	size_t param = op->param;
-	anna_object_t *wrapped = anna_vmstack_peek(stack, param);
+	anna_object_t *wrapped = anna_vmstack_peek_object(stack, param);
 	if(unlikely(wrapped == null_object))
 	{
 	    stack->code += sizeof(*op);
@@ -230,7 +230,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_CONSTRUCT:
     {
 	anna_op_null_t *op = (anna_op_null_t *)stack->code;
-	anna_object_t *wrapped = anna_vmstack_pop(stack);
+	anna_object_t *wrapped = anna_vmstack_pop_object(stack);
 	
 	anna_type_t *tp = anna_type_unwrap(wrapped);
 	
@@ -239,17 +239,17 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
 	    tp,
 	    ANNA_MID_INIT_PAYLOAD);
-	anna_vmstack_push(stack, *constructor_ptr);
-	anna_vmstack_push(stack, result);
+	anna_vmstack_push_object(stack, *constructor_ptr);
+	anna_vmstack_push_object(stack, result);
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_RETURN:
     {
-	anna_object_t *val = anna_vmstack_peek(stack, 0);
+	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
 	stack = stack->caller;
-	anna_vmstack_push(stack, val);
+	anna_vmstack_push_object(stack, val);
 //		wprintf(L"Pop frame\n");
 	goto *jump_label[(int)*stack->code];
     }
@@ -257,7 +257,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_RETURN_COUNT:
     {
 	anna_op_count_t *cb = (anna_op_count_t *)stack->code;
-	anna_object_t *val = anna_vmstack_peek(stack, 0);
+	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
 	int i;
 		
 	for(i=0; i<cb->param; i++)
@@ -265,7 +265,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    stack = stack->parent;
 	}
 	stack = stack->caller;
-	anna_vmstack_push(stack, val);
+	anna_vmstack_push_object(stack, val);
 	goto *jump_label[(int)*stack->code];
     }
 
@@ -281,7 +281,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_STOP:
     {
 //		wprintf(L"Pop last frame\n");
-	anna_object_t *val = anna_vmstack_peek(stack, 0);
+	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
 	free(stack->code);
 	stack = stack->caller;
 	return val;
@@ -304,7 +304,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif
-	anna_vmstack_push(stack, s->base[op->offset]);
+	anna_vmstack_push_entry(stack, s->base[op->offset]);
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -316,7 +316,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_t *s = stack;
 	for(i=0; i<op->frame_count; i++)
 	    s = s->parent;
-	s->base[op->offset] = anna_vmstack_peek(stack, 0);
+	s->base[op->offset] = anna_vmstack_peek_entry(stack, 0);
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -324,7 +324,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_MEMBER_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
-	anna_object_t *obj = anna_vmstack_pop(stack);
+	anna_object_t *obj = anna_vmstack_pop_object(stack);
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
 #ifdef ANNA_CHECK_VM
@@ -340,13 +340,13 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #endif 
 	if(unlikely(obj == null_object))
 	{
-	    anna_vmstack_push(stack, null_object);
+	    anna_vmstack_push_object(stack, null_object);
 	}
 	else
 	{
 	    anna_object_t *res;
 	    res = obj->member[m->offset];		    
-	    anna_vmstack_push(stack, res);
+	    anna_vmstack_push_object(stack, res);
 	}
 	
 	stack->code += sizeof(*op);
@@ -356,7 +356,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_STATIC_MEMBER_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
-	anna_object_t *obj = anna_vmstack_pop(stack);
+	anna_object_t *obj = anna_vmstack_pop_object(stack);
 
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -373,7 +373,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #endif 
 	anna_object_t *res;
 	res = obj->type->static_member[m->offset];
-	anna_vmstack_push(stack, res);
+	anna_vmstack_push_object(stack, res);
 	stack->code += sizeof(*op);
 
 	goto *jump_label[(int)*stack->code];
@@ -382,7 +382,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_PROPERTY_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
-	anna_object_t *obj = anna_vmstack_pop(stack);
+	anna_object_t *obj = anna_vmstack_pop_object(stack);
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
 #ifdef ANNA_CHECK_VM
@@ -399,7 +399,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 	if(unlikely(obj == null_object))
 	{
-	    anna_vmstack_push(stack, null_object);	    
+	    anna_vmstack_push_object(stack, null_object);	    
 	    stack->code += sizeof(*op);		    
 	}
 	else
@@ -407,8 +407,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_object_t *method = obj->type->static_member[m->getter_offset];
 	    anna_function_t *fun = anna_function_unwrap(method);
 	
-	    anna_vmstack_push(stack, method);
-	    anna_vmstack_push(stack, obj);
+	    anna_vmstack_push_object(stack, method);
+	    anna_vmstack_push_object(stack, obj);
 	    stack->code += sizeof(*op);		    
 	    stack = fun->native(stack, method);
 	}
@@ -419,7 +419,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_STATIC_PROPERTY_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
-	anna_object_t *obj = anna_vmstack_pop(stack);
+	anna_object_t *obj = anna_vmstack_pop_object(stack);
 
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -438,8 +438,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_object_t *method = obj->type->static_member[m->getter_offset];
 	anna_function_t *fun = anna_function_unwrap(method);
 	
-	anna_vmstack_push(stack, method);
-	anna_vmstack_push(stack, obj);
+	anna_vmstack_push_object(stack, method);
+	anna_vmstack_push_object(stack, obj);
 	stack->code += sizeof(*op);
 	stack = fun->native(stack, method);
 
@@ -449,7 +449,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_MEMBER_GET_THIS:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
-	anna_object_t *obj = anna_vmstack_pop(stack);
+	anna_object_t *obj = anna_vmstack_pop_object(stack);
 //	wprintf(L"Get method member %d, %ls in type %ls\n", op->mid, anna_mid_get_reverse(op->mid), obj->type->name);
 #ifdef ANNA_CHECK_VM
 	if(!obj){
@@ -474,8 +474,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		
 	res = obj->type->static_member[m->offset];
 	
-	anna_vmstack_push(stack, res);
-	anna_vmstack_push(stack, obj);
+	anna_vmstack_push_object(stack, res);
+	anna_vmstack_push_object(stack, obj);
 		
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
@@ -484,8 +484,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_MEMBER_SET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
-	anna_object_t *obj = anna_vmstack_pop(stack);
-	anna_object_t *value = anna_vmstack_peek(stack, 0);
+	anna_object_t *obj = anna_vmstack_pop_object(stack);
+	anna_object_t *value = anna_vmstack_peek_object(stack, 0);
 		
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -506,10 +506,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_object_t *method = obj->type->static_member[m->setter_offset];
 	    anna_function_t *fun = anna_function_unwrap(method);
 		    
-	    anna_vmstack_pop(stack);
-	    anna_vmstack_push(stack, method);
-	    anna_vmstack_push(stack, obj);
-	    anna_vmstack_push(stack, value);
+	    anna_vmstack_pop_object(stack);
+	    anna_vmstack_push_object(stack, method);
+	    anna_vmstack_push_object(stack, obj);
+	    anna_vmstack_push_object(stack, value);
 	    stack->code += sizeof(*op);
 	    stack = fun->native(
 		stack, method);
@@ -530,36 +530,36 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_LIST:
     {
 	anna_op_type_t *op = (anna_op_type_t *)stack->code;
-	anna_vmstack_push(stack, anna_list_create2(op->value));
+	anna_vmstack_push_object(stack, anna_list_create2(op->value));
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 
     ANNA_LAB_FOLD:
     {
-	anna_object_t *val = anna_vmstack_pop(stack);
-	anna_list_add(anna_vmstack_peek(stack, 0), val);
+	anna_object_t *val = anna_vmstack_pop_object(stack);
+	anna_list_add(anna_vmstack_peek_object(stack, 0), val);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_POP:
     {
-	anna_vmstack_pop(stack);
+	anna_vmstack_pop_object(stack);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_NOT:
     {
-	*(stack->top-1) = (*(stack->top-1)==null_object)?anna_int_one:null_object;
+	*(stack->top-1) = (anna_is_obj(*(stack->top-1)) && anna_as_obj(*(stack->top-1))==null_object)?anna_from_int(1):anna_from_obj(null_object);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 
     ANNA_LAB_DUP:
     {
-	anna_vmstack_push(stack, anna_vmstack_peek(stack, 0));
+	anna_vmstack_push_object(stack, anna_vmstack_peek_object(stack, 0));
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
@@ -574,21 +574,21 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_COND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += anna_vmstack_pop(stack) != null_object ? op->offset:sizeof(*op);
+	stack->code += anna_vmstack_pop_object(stack) != null_object ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_NCOND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += anna_vmstack_pop(stack) == null_object ? op->offset:sizeof(*op);
+	stack->code += anna_vmstack_pop_object(stack) == null_object ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
     ANNA_LAB_TRAMPOLENE:
     {
-	anna_object_t *base = anna_vmstack_pop(stack);
-	anna_vmstack_push(stack, anna_vm_trampoline(anna_function_unwrap(base), stack));
+	anna_object_t *base = anna_vmstack_pop_object(stack);
+	anna_vmstack_push_object(stack, anna_vm_trampoline(anna_function_unwrap(base), stack));
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
@@ -907,7 +907,7 @@ anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
     code -= sizeof(anna_op_count_t);
     anna_op_count_t *op = (anna_op_count_t *)code;
     anna_vmstack_drop(stack,op->param+1);
-    anna_vmstack_push(stack, null_object);
+    anna_vmstack_push_object(stack, null_object);
     return stack;
 }
 

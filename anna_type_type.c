@@ -52,7 +52,7 @@ static anna_vmstack_t *anna_type_cmp(anna_vmstack_t *stack, anna_object_t *me)
     anna_type_t *type1 = anna_type_unwrap(param[0]);
     anna_type_t *type2 = anna_type_unwrap(param[1]);
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, anna_int_create(type1-type2));
+    anna_vmstack_push_object(stack, anna_int_create(type1-type2));
     return stack;
 }
 
@@ -62,7 +62,7 @@ static anna_vmstack_t *anna_type_abides(anna_vmstack_t *stack, anna_object_t *me
     anna_type_t *type1 = anna_type_unwrap(param[0]);
     anna_type_t *type2 = anna_type_unwrap(param[1]);
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, anna_abides(type1, type2)?anna_int_one:null_object);
+    anna_vmstack_push_object(stack, anna_abides(type1, type2)?anna_int_one:null_object);
     return stack;
 }
 
@@ -71,7 +71,7 @@ static anna_vmstack_t *anna_type_hash(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
     anna_type_t *type = anna_type_unwrap(param[0]);
-    anna_vmstack_push(stack, anna_int_create(hash_ptr_func(type)));
+    anna_vmstack_push_object(stack, anna_int_create(hash_ptr_func(type)));
     return stack;
 }
 

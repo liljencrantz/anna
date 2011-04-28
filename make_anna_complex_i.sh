@@ -80,7 +80,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
         res = (v1 $op v2)?param[0]:null_object;
     }
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, res);
+    anna_vmstack_push_object(stack, res);
     return stack;
 }
 "
@@ -151,7 +151,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
         res = anna_complex_create($op);
     }
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, res);
+    anna_vmstack_push_object(stack, res);
     return stack;
 }
 
@@ -166,7 +166,7 @@ static anna_vmstack_t *anna_complex_i_int_$name(anna_vmstack_t *stack, anna_obje
         res = anna_complex_create($op);
     }
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, res);
+    anna_vmstack_push_object(stack, res);
     return stack;
 }
 
@@ -181,7 +181,7 @@ static anna_vmstack_t *anna_complex_i_float_$name(anna_vmstack_t *stack, anna_ob
         res = anna_complex_create($op);
     }
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, res);
+    anna_vmstack_push_object(stack, res);
     return stack;
 }
 
@@ -196,7 +196,7 @@ static anna_vmstack_t *anna_complex_i_int_reverse_$name(anna_vmstack_t *stack, a
         res = anna_complex_create($op);
     }
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, res);
+    anna_vmstack_push_object(stack, res);
     return stack;
 }
 
@@ -211,7 +211,7 @@ static anna_vmstack_t *anna_complex_i_float_reverse_$name(anna_vmstack_t *stack,
         res = anna_complex_create($op);
     }
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, res);
+    anna_vmstack_push_object(stack, res);
     return stack;
 }
 
@@ -238,7 +238,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
     anna_object_t **param = stack->top - 1;
     complex double v = anna_complex_get(param[0]);    
     anna_vmstack_drop(stack, 2); 
-    anna_vmstack_push(stack, anna_complex_create($op));
+    anna_vmstack_push_object(stack, anna_complex_create($op));
     return stack;
 }
 "
@@ -261,7 +261,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
     anna_object_t **param = stack->top - 1;
     complex double v = anna_complex_get(param[0]);
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_float_create($op));
+    anna_vmstack_push_object(stack, anna_float_create($op));
     return stack;
 }
 "

@@ -43,17 +43,17 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     echo "
 static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 2;
-    if(param[1]==null_object)
+    anna_vmstack_entry_t **param = stack->top - 2;
+    if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object))
     {
         anna_vmstack_drop(stack, 3);
-        anna_vmstack_push(stack, null_object);
+        anna_vmstack_push_object(stack, null_object);
         return stack;
     }  
-    int v1 = anna_int_get(param[0]);
-    int v2 = anna_int_get(param[1]);
+    int v1 = anna_as_int(param[0]);
+    int v2 = anna_as_int(param[1]);
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push(stack, anna_int_create($op));
+    anna_vmstack_push_int(stack, $op);
     return stack;
 }
 "
@@ -76,10 +76,10 @@ for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)" ; do
     echo "
 static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 1;
-    int v1 = anna_int_get(param[0]);
+    anna_vmstack_entry_t **param = stack->top - 1;
+    int v1 = anna_as_int(param[0]);
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_int_create($op));
+    anna_vmstack_push_int(stack, $op);
     return stack;
 }
 "
@@ -102,15 +102,14 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
     echo "
 static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 1;
-    int v = anna_int_get(param[0]);
+    anna_vmstack_entry_t **param = stack->top - 1;
+    int v = anna_as_int(param[0]);
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push(stack, anna_int_create($op));
+    anna_vmstack_push_int(stack, $op);
     return stack;
 }
 "
 done
-
 
 echo "
 static void anna_int_type_i_create(anna_stack_template_t *stack)

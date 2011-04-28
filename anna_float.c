@@ -38,38 +38,38 @@ double anna_float_get(anna_object_t *this)
 
 static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 2;
+    anna_vmstack_entry_t **param = stack->top - 2;
     anna_vmstack_drop(stack, 3);
-    if(unlikely(param[1]->type != float_type))
+    if(unlikely(((anna_object_t *)param[1])->type == null_type))
     {
-        anna_vmstack_push(stack, null_object);
+        anna_vmstack_push_object(stack, null_object);
         return stack;
     }  
 
-    double v1 = anna_float_get(param[0]);
-    double v2 = anna_float_get(param[1]);
+    double v1 = anna_as_float(param[0]);
+    double v2 = anna_as_float(param[1]);
     if(v1 > v2)
     {
-	anna_vmstack_push(stack, anna_int_one);
+	anna_vmstack_push_object(stack, anna_int_one);
     }
     else if(v1 < v2)
     {
-	anna_vmstack_push(stack, anna_int_minus_one);
+	anna_vmstack_push_object(stack, anna_int_minus_one);
     }
     else{
-	anna_vmstack_push(stack, anna_int_zero);
+	anna_vmstack_push_object(stack, anna_int_zero);
     }    
     return stack;
 }
 
 static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 1;
+    anna_vmstack_entry_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"%f", anna_float_get(param[0]));
-    anna_vmstack_push(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    sb_printf(&sb, L"%f", anna_as_float(param[0]));
+    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
     return stack;
 }
 
