@@ -199,7 +199,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 	anna_op_count_t *op = (anna_op_count_t *)stack->code;
 	size_t param = op->param;
-	anna_object_t *wrapped = anna_vmstack_peek_object(stack, param);
+	anna_object_t *wrapped = anna_vmstack_peek_object_fast(stack, param);
 	if(unlikely(wrapped == null_object))
 	{
 	    stack->code += sizeof(*op);
@@ -230,7 +230,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_CONSTRUCT:
     {
 	anna_op_null_t *op = (anna_op_null_t *)stack->code;
-	anna_object_t *wrapped = anna_vmstack_pop_object(stack);
+	anna_object_t *wrapped = anna_vmstack_pop_object_fast(stack);
 	
 	anna_type_t *tp = anna_type_unwrap(wrapped);
 	
@@ -247,9 +247,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
     ANNA_LAB_RETURN:
     {
-	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
+	anna_vmstack_entry_t *val = anna_vmstack_peek_entry(stack, 0);
 	stack = stack->caller;
-	anna_vmstack_push_object(stack, val);
+	anna_vmstack_push_entry(stack, val);
 //		wprintf(L"Pop frame\n");
 	goto *jump_label[(int)*stack->code];
     }
@@ -257,7 +257,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_RETURN_COUNT:
     {
 	anna_op_count_t *cb = (anna_op_count_t *)stack->code;
-	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
+	anna_vmstack_entry_t *val = anna_vmstack_peek_entry(stack, 0);
 	int i;
 		
 	for(i=0; i<cb->param; i++)
@@ -265,7 +265,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    stack = stack->parent;
 	}
 	stack = stack->caller;
-	anna_vmstack_push_object(stack, val);
+	anna_vmstack_push_entry(stack, val);
 	goto *jump_label[(int)*stack->code];
     }
 
@@ -466,12 +466,12 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		D_CRITICAL,L"Object %ls does not have a member named %ls\n",
 		obj->type->name, anna_mid_get_reverse(op->mid));
 	    anna_vmstack_print(stack);
-		    
+	    
 	    CRASH;
 	}
 #endif 
 	anna_object_t *res;
-		
+	
 	res = obj->type->static_member[m->offset];
 	
 	anna_vmstack_push_object(stack, res);
