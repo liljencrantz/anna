@@ -1,9 +1,12 @@
 #ifndef ANNA_VM_H
 #define ANNA_VM_H
 
+#include <complex.h>
+
 double anna_float_get(anna_object_t *this);
 wchar_t anna_char_get(anna_object_t *this);
 int anna_int_get(anna_object_t *this);
+complex double anna_complex_get(anna_object_t *this);
 anna_object_t *anna_int_create(int val);
 anna_object_t *anna_float_create(double val);
 anna_object_t *anna_char_create(wchar_t val);
@@ -166,6 +169,23 @@ static inline double anna_as_float(anna_vmstack_entry_t *entry)
 	CRASH;
     }
     return anna_float_get((anna_object_t *)entry);
+}
+
+static inline complex double anna_as_complex(anna_vmstack_entry_t *entry)
+{
+/*    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
+    if(unlikely(type))
+    {
+	if(type & ANNA_STACK_ENTRY_INT)
+	{
+	    long res = (long)entry;
+	    res >>= 2;
+	    return (double)res;
+	}
+	wprintf(L"Invalid vmstack entry\n");
+	CRASH;
+	}*/
+    return anna_complex_get((anna_object_t *)entry);
 }
 
 void anna_vm_compile(

@@ -42,19 +42,19 @@ inline complex double anna_complex_get(anna_object_t *this)
 
 static anna_vmstack_t *anna_complex_init(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 3;
-    complex double result = anna_float_get(param[1]) + I * anna_float_get(param[2]);
-    size_t off = param[0]->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
-    memcpy(&param[0]->member[off], &result, sizeof(complex double));
+    anna_vmstack_entry_t **param = stack->top - 3;
+    complex double result = anna_as_float(param[1]) + I * anna_as_float(param[2]);
+    size_t off = anna_as_obj(param[0])->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
+    memcpy(&anna_as_obj(param[0])->member[off], &result, sizeof(complex double));
     anna_vmstack_drop(stack, 4);
-    anna_vmstack_push_object(stack, param[0]);
+    anna_vmstack_push_entry(stack, param[0]);
     return stack;
 }
 
 static anna_vmstack_t *anna_complex_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t **param = stack->top - 1;
-    complex double val = anna_complex_get(param[0]);
+    anna_vmstack_entry_t **param = stack->top - 1;
+    complex double val = anna_as_complex(param[0]);
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"%f + i%f", creal(val), cimag(val));
