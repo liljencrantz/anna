@@ -773,7 +773,6 @@ static void anna_vm_compile_i(
 		node, fun->stack_template);
 	    if(const_obj)
 	    {
-		anna_object_print(const_obj);
 		anna_vm_const(ptr, const_obj);		
 		break;
 	    }

@@ -208,7 +208,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 	else
 	{
-//	    wprintf(L"Call at offset %d\n", stack->code - stack->function->code);
+//	    wprintf(L"Call at offset %d\n", stack->code - stack->function->code);/
 	    anna_function_t *fun = anna_function_unwrap(wrapped);
 //	    wprintf(L"Call function %ls with %d params\n", fun->name, param);
 	    
@@ -596,9 +596,23 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
   ANNA_LAB_INT_ADD:
     {
-	int i2 = anna_vmstack_pop_int(stack);
-	int i1 = anna_vmstack_pop_int(stack);
-	anna_vmstack_push_int(stack, i1+i2);
+	anna_vmstack_entry_t *i2 = anna_vmstack_pop_entry(stack);
+	anna_vmstack_entry_t *i1 = anna_vmstack_pop_entry(stack);
+	if(likely(anna_is_int(i1) && anna_is_int(i2)))
+	{
+	    anna_vmstack_push_int(stack, anna_as_int(i1)+anna_as_int(i2));
+	}
+	else
+	{
+	    anna_object_t *o1 = anna_as_obj(i1);
+	    anna_object_t *wrapped = *anna_member_addr_get_mid(o1, ANNA_MID_ADD_INT);
+	    anna_function_t *fun = anna_function_unwrap(wrapped);
+	    anna_vmstack_push_object(stack,wrapped);
+	    anna_vmstack_push_object(stack,o1);
+	    anna_vmstack_push_entry(stack,i2);
+	    stack = fun->native(stack, wrapped);
+	}
+	
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }

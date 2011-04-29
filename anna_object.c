@@ -26,6 +26,8 @@ static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 
 void anna_object_print(anna_object_t *obj)
 {
+    CRASH;
+    
     wprintf(L"%ls:\n", obj->type->name);
     hash_foreach2(&obj->type->name_identifier, &anna_object_print_member, obj);
 }
