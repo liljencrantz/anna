@@ -1,20 +1,19 @@
-static inline anna_object_t *anna_node_identifier_wrapper_i_get_name_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_identifier_wrapper_i_get_name_i(anna_vmstack_entry_t **param)
 {
-    anna_node_identifier_t *node = (anna_node_identifier_t *)anna_node_unwrap(param[0]);
-    return anna_string_create(wcslen(node->name), node->name);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_identifier_t *node = (anna_node_identifier_t *)anna_node_unwrap(this);
+    return anna_from_obj(anna_string_create(wcslen(node->name), node->name));
 }
 ANNA_VM_NATIVE(anna_node_identifier_wrapper_i_get_name, 1)
 
-static inline anna_object_t *anna_node_identifier_wrapper_i_init_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_identifier_wrapper_i_init_i(anna_vmstack_entry_t **param)
 {
-    assert(param[0] != null_object);
-    assert(param[1] != null_object);
-    assert(param[2] != null_object);
-    anna_node_t *source = anna_node_unwrap(param[1]);
-    *(anna_node_identifier_t **)anna_member_addr_get_mid(param[0],ANNA_MID_NODE_PAYLOAD)=
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
+    *(anna_node_identifier_t **)anna_member_addr_get_mid(this,ANNA_MID_NODE_PAYLOAD)=
 	anna_node_create_identifier(
 	    &source->location,
-	    wcsdup(anna_string_payload(param[2])));
+	    wcsdup(anna_string_payload(anna_as_obj(param[2]))));
     return param[0];
 }
 ANNA_VM_NATIVE(anna_node_identifier_wrapper_i_init, 3)

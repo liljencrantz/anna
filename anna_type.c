@@ -600,7 +600,7 @@ static void anna_type_prepare_property(
 
 }
 
-static inline anna_object_t *anna_type_noop_i(anna_object_t **param){
+static inline anna_vmstack_entry_t *anna_type_noop_i(anna_vmstack_entry_t **param){
     return param[0];
 }
 ANNA_VM_NATIVE(anna_type_noop, 1)

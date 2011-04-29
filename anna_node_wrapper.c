@@ -60,42 +60,43 @@ anna_node_t *anna_node_unwrap(anna_object_t *this)
 }
 
 
-static inline anna_object_t *anna_node_wrapper_i_replace_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_wrapper_i_replace_i(anna_vmstack_entry_t **param)
 {
-    anna_node_t *tree = anna_node_unwrap(param[0]);
-    anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(param[1]);
-    anna_node_t *new = anna_node_unwrap(param[2]);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_t *tree = anna_node_unwrap(this);
+    anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(anna_as_obj(param[1]));
+    anna_node_t *new = anna_node_unwrap(anna_as_obj(param[2]));
     anna_node_t *res = anna_node_replace(anna_node_clone_deep(tree), old, new);
-    return anna_node_wrap(res);
+    return anna_from_obj(anna_node_wrap(res));
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
 
-static inline anna_object_t *anna_node_wrapper_i_error_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_wrapper_i_error_i(anna_vmstack_entry_t **param)
 {
-    anna_node_t *this = anna_node_unwrap(param[0]);
+    anna_node_t *this = anna_node_unwrap(anna_as_obj_fast(param[0]));
     wchar_t *msg;
-    if(param[1] == null_object)
+    if(ANNA_VM_NULL(param[1]))
     {
 	msg = L"Unknown error";
-	
     }
     else
     {
-	msg = anna_string_payload(param[1]);
+	msg = anna_string_payload(anna_as_obj(param[1]));
     }
     anna_error(this, L"%ls", msg);
     return param[0];
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 
-static inline anna_object_t *anna_node_wrapper_i_to_string_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_node_wrapper_i_to_string_i(anna_vmstack_entry_t **param)
 {
-    anna_node_t *this = anna_node_unwrap(param[0]);
+    anna_object_t *thiso = anna_as_obj_fast(param[0]);
+    anna_node_t *this = anna_node_unwrap(thiso);
     wchar_t *str = anna_node_string(this);
     
     anna_object_t *res = anna_string_create(wcslen(str), str);
     free(str);
-    return res;
+    return anna_from_obj(res);
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_to_string, 1)
 
