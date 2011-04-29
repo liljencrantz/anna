@@ -150,6 +150,7 @@ enum anna_mid_enum
     ANNA_MID_THIS,
     ANNA_MID_METHOD,
     ANNA_MID_FIRST_UNRESERVED,
+    ANNA_MID_ADD_INT,
 };
 
 /**

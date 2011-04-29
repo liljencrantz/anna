@@ -123,6 +123,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_CAST,
 	    &&ANNA_LAB_NATIVE_CALL,
 	    &&ANNA_LAB_RETURN_COUNT,
+	    &&ANNA_LAB_INT_ADD,
 	}
     ;
     
@@ -227,7 +228,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
     
-    ANNA_LAB_CONSTRUCT:
+  ANNA_LAB_CONSTRUCT:
     {
 	anna_op_null_t *op = (anna_op_null_t *)stack->code;
 	anna_object_t *wrapped = anna_vmstack_pop_object_fast(stack);
@@ -245,7 +246,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_RETURN:
+  ANNA_LAB_RETURN:
     {
 	anna_vmstack_entry_t *val = anna_vmstack_peek_entry(stack, 0);
 	stack = stack->caller;
@@ -269,7 +270,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 
-    ANNA_LAB_NATIVE_CALL:
+  ANNA_LAB_NATIVE_CALL:
     {
 	anna_op_native_call_t *cb = (anna_op_native_call_t *)stack->code;
 	stack->code += sizeof(*cb);
@@ -278,7 +279,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 
-    ANNA_LAB_STOP:
+  ANNA_LAB_STOP:
     {
 //		wprintf(L"Pop last frame\n");
 	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
@@ -287,7 +288,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	return val;
     }
 	    
-    ANNA_LAB_VAR_GET:
+  ANNA_LAB_VAR_GET:
     {
 	anna_op_var_t *op = (anna_op_var_t *)stack->code;
 	int i;
@@ -309,7 +310,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_VAR_SET:
+  ANNA_LAB_VAR_SET:
     {
 	anna_op_var_t *op = (anna_op_var_t *)stack->code;
 	int i;
@@ -321,7 +322,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_MEMBER_GET:
+  ANNA_LAB_MEMBER_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
@@ -353,7 +354,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_STATIC_MEMBER_GET:
+  ANNA_LAB_STATIC_MEMBER_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
@@ -379,7 +380,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_PROPERTY_GET:
+  ANNA_LAB_PROPERTY_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
@@ -416,7 +417,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_STATIC_PROPERTY_GET:
+  ANNA_LAB_STATIC_PROPERTY_GET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
@@ -446,7 +447,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_MEMBER_GET_THIS:
+  ANNA_LAB_MEMBER_GET_THIS:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
@@ -481,7 +482,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_MEMBER_SET:
+  ANNA_LAB_MEMBER_SET:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
@@ -527,7 +528,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 
-    ANNA_LAB_LIST:
+  ANNA_LAB_LIST:
     {
 	anna_op_type_t *op = (anna_op_type_t *)stack->code;
 	anna_vmstack_push_object(stack, anna_list_create2(op->value));
@@ -535,7 +536,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 
-    ANNA_LAB_FOLD:
+  ANNA_LAB_FOLD:
     {
 	anna_vmstack_entry_t *val = anna_vmstack_pop_entry(stack);
 	anna_list_add(anna_vmstack_peek_object(stack, 0), val);
@@ -543,52 +544,61 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_POP:
+  ANNA_LAB_POP:
     {
 	anna_vmstack_pop_entry(stack);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_NOT:
+  ANNA_LAB_NOT:
     {
 	*(stack->top-1) = ANNA_VM_NULL(*(stack->top-1))?anna_from_int(1):anna_from_obj(null_object);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 
-    ANNA_LAB_DUP:
+  ANNA_LAB_DUP:
     {
 	anna_vmstack_push_entry(stack, anna_vmstack_peek_entry(stack, 0));
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
 
-    ANNA_LAB_JMP:
+  ANNA_LAB_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
 	stack->code += op->offset;
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_COND_JMP:
+  ANNA_LAB_COND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
 	stack->code += !ANNA_VM_NULL(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_NCOND_JMP:
+  ANNA_LAB_NCOND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
 	stack->code += ANNA_VM_NULL(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
-    ANNA_LAB_TRAMPOLENE:
+  ANNA_LAB_TRAMPOLENE:
     {
 	anna_object_t *base = anna_vmstack_pop_object_fast(stack);
 	anna_vmstack_push_object(stack, anna_vm_trampoline(anna_function_unwrap(base), stack));
+	stack->code += sizeof(anna_op_null_t);
+	goto *jump_label[(int)*stack->code];
+    }
+    
+  ANNA_LAB_INT_ADD:
+    {
+	int i2 = anna_vmstack_pop_int(stack);
+	int i1 = anna_vmstack_pop_int(stack);
+	anna_vmstack_push_int(stack, i1+i2);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
@@ -618,6 +628,10 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_POP:
 	case ANNA_INSTR_NOT:
 	case ANNA_INSTR_DUP:
+	case ANNA_INSTR_ADD_INT:
+	{
+	    return sizeof(anna_op_null_t);	    
+	}
 	
 	case ANNA_INSTR_CALL:
 	case ANNA_INSTR_RETURN_COUNT:

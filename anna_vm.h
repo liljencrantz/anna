@@ -254,6 +254,15 @@ static inline anna_object_t *anna_vmstack_pop_object(anna_vmstack_t *stack)
     return anna_as_obj(*(stack->top));
 }
 
+static inline int anna_vmstack_pop_int(anna_vmstack_t *stack)
+{
+    stack->top--;
+    if(anna_is_obj(*(stack->top)))
+	anna_object_print(*(stack->top));
+    
+    return anna_as_int(*(stack->top));
+}
+
 static inline anna_object_t *anna_vmstack_pop_object_fast(anna_vmstack_t *stack)
 {
     stack->top--;

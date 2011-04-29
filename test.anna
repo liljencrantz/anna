@@ -1,0 +1,7 @@
+def main()
+{
+    (0..10).each(i){
+        print(i+i,"\n");
+    }
+
+}

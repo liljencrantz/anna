@@ -125,6 +125,8 @@
  */
 #define ANNA_INSTR_RETURN_COUNT 25
 
+#define ANNA_INSTR_ADD_INT 26
+
 
 typedef struct 
 {
