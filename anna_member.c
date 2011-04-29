@@ -50,31 +50,35 @@ anna_member_t *anna_member_unwrap(anna_object_t *wrapper)
     return *(anna_member_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_MEMBER_PAYLOAD);
 }
 
-static inline anna_object_t *anna_member_i_get_name_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_member_i_get_name_i(anna_vmstack_entry_t **param)
 {
-    anna_member_t *m = anna_member_unwrap(param[0]);
-    return anna_string_create(wcslen(m->name), m->name);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    return anna_from_obj( anna_string_create(wcslen(m->name), m->name));
 }
 ANNA_VM_NATIVE(anna_member_i_get_name, 1)
 
-static inline anna_object_t *anna_member_i_get_static_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_member_i_get_static_i(anna_vmstack_entry_t **param)
 {
-    anna_member_t *m = anna_member_unwrap(param[0]);
-    return m->is_static?anna_int_one:null_object;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    return m->is_static?anna_from_int(1):anna_from_obj(null_object);
 }
 ANNA_VM_NATIVE(anna_member_i_get_static, 1)
 
-static inline anna_object_t *anna_member_i_get_method_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_member_i_get_method_i(anna_vmstack_entry_t **param)
 {
-    anna_member_t *m = anna_member_unwrap(param[0]);
-    return m->is_method?anna_int_one:null_object;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    return m->is_method?anna_from_int(1):anna_from_obj(null_object);
 }
 ANNA_VM_NATIVE(anna_member_i_get_method, 1)
 
-static inline anna_object_t *anna_member_i_get_property_i(anna_object_t **param)
+static inline anna_vmstack_entry_t *anna_member_i_get_property_i(anna_vmstack_entry_t **param)
 {
-    anna_member_t *m = anna_member_unwrap(param[0]);
-    return m->is_property?anna_int_one:null_object;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    return anna_from_obj( m->is_property?anna_int_one:null_object);
 }
 ANNA_VM_NATIVE(anna_member_i_get_property, 1)
 

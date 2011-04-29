@@ -35,9 +35,9 @@ anna_object_t *anna_char_create(wchar_t val);
 #define ANNA_VM_MACRO(name) static anna_vmstack_t *name(		\
 	anna_vmstack_t *stack, anna_object_t *me)			\
     {									\
-	anna_node_t *res = name ## _i((anna_node_call_t *)anna_node_unwrap(*(stack->top-1))); \
+	anna_node_t *res = name ## _i((anna_node_call_t *)anna_node_unwrap(anna_as_obj(*(stack->top-1)))); \
 	anna_vmstack_drop(stack, 2);					\
-	anna_vmstack_push_object(stack, anna_node_wrap(res));			\
+	anna_vmstack_push_object(stack, anna_node_wrap(res)); \
 	return stack;							\
     }
 

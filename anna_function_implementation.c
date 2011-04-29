@@ -120,10 +120,10 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
     int idx = print_direct_loop(list, 0);
     if(anna_list_get_size(list) > idx)
     {
-	anna_object_t *callback_param[] = 
+	anna_vmstack_entry_t *callback_param[] = 
 	    {
-		list,
-		anna_int_create(idx+1)
+		anna_from_obj(list),
+		anna_from_int(idx+1)
 	    }
 	;
 	
@@ -172,7 +172,7 @@ static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
     
     return anna_vm_callback_native(
 	stack, &anna_i_callcc_callback, 0, 0, 
-	fun, 1, &cont);    
+	fun, 1, (anna_vmstack_entry_t **)&cont);    
 }
 
 static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *me)
