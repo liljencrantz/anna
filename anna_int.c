@@ -42,7 +42,7 @@ int anna_int_get(anna_object_t *this)
 
 static anna_vmstack_t *anna_int_init(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     //wprintf(L"LALALA %d %d\n", param[0], param[1]);
     anna_int_set(anna_as_obj(param[0]), anna_as_int(param[1]));
     anna_vmstack_drop(stack, 2);
@@ -52,7 +52,7 @@ static anna_vmstack_t *anna_int_init(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_int_hash(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 1;
+    anna_entry_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_entry(stack, param[0]);
     return stack;
@@ -60,9 +60,9 @@ static anna_vmstack_t *anna_int_hash(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
 
-    anna_vmstack_entry_t *res;
+    anna_entry_t *res;
     if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1]) == null_object))
     {
 	res = anna_from_obj(null_object);
@@ -79,7 +79,7 @@ static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_int_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 1;
+    anna_entry_t **param = stack->top - 1;
 
     string_buffer_t sb;
     sb_init(&sb);

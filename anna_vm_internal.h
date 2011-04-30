@@ -149,7 +149,7 @@ typedef struct
 typedef struct
 {
     char instruction;
-    anna_vmstack_entry_t *value;
+    anna_entry_t *value;
 }
     anna_op_const_t;
 

@@ -22,7 +22,7 @@ static anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
 static array_list_t types=AL_STATIC;
 
-static inline anna_vmstack_entry_t *anna_function_type_i_get_name_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_function_type_i_get_name_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_function_t *f = anna_function_unwrap(this);
@@ -30,7 +30,7 @@ static inline anna_vmstack_entry_t *anna_function_type_i_get_name_i(anna_vmstack
 }
 ANNA_VM_NATIVE(anna_function_type_i_get_name, 1)
 
-static inline anna_vmstack_entry_t *anna_function_type_i_get_output_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_function_type_i_get_output_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_function_t *f = anna_function_unwrap(this);
@@ -38,7 +38,7 @@ static inline anna_vmstack_entry_t *anna_function_type_i_get_output_i(anna_vmsta
 }
 ANNA_VM_NATIVE(anna_function_type_i_get_output, 1)
 
-static inline anna_vmstack_entry_t *anna_function_type_i_get_input_type_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_function_type_i_get_input_type_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create(type_type);
@@ -58,7 +58,7 @@ static inline anna_vmstack_entry_t *anna_function_type_i_get_input_type_i(anna_v
 }
 ANNA_VM_NATIVE(anna_function_type_i_get_input_type, 1)
 
-static inline anna_vmstack_entry_t *anna_function_type_i_get_input_name_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_function_type_i_get_input_name_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create(string_type);
@@ -97,7 +97,7 @@ void anna_function_type_print(anna_function_type_t *k)
     wprintf(L")\n");
 }
 
-static inline anna_vmstack_entry_t *anna_function_type_to_string_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_function_type_to_string_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     string_buffer_t sb;

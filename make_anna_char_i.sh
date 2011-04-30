@@ -40,7 +40,7 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
 "
 
     echo "
-static inline anna_vmstack_entry_t *anna_char_i_${name}_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_char_i_${name}_i(anna_entry_t **param)
 {
     if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object))
         return anna_from_obj(null_object);
@@ -68,7 +68,7 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
 "
 
     echo "
-static inline anna_vmstack_entry_t *anna_char_i_${name}_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_char_i_${name}_i(anna_entry_t **param)
 {
     wchar_t v = anna_as_char(param[0]);
     return anna_from_char($op);

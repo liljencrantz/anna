@@ -26,7 +26,7 @@ anna_object_t *anna_char_create(wchar_t val);
 #define ANNA_VM_NATIVE(name,param_count) static anna_vmstack_t *name(	\
 	anna_vmstack_t *stack, anna_object_t *me)			\
     {									\
-	anna_vmstack_entry_t *res = name ## _i(stack->top-param_count);	\
+	anna_entry_t *res = name ## _i(stack->top-param_count);	\
 	anna_vmstack_drop(stack, param_count+1);			\
 	anna_vmstack_push_entry(stack, res);				\
 	return stack;							\
@@ -46,64 +46,64 @@ anna_object_t *anna_char_create(wchar_t val);
 #define ANNA_STACK_ENTRY_CHAR 2
 #define ANNA_STACK_ENTRY_FLOAT 3
 
-static inline double anna_as_float(anna_vmstack_entry_t *entry);
+static inline double anna_as_float(anna_entry_t *entry);
 
-static inline int anna_is_obj(anna_vmstack_entry_t *val)
+static inline int anna_is_obj(anna_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
     return !type;
 }
 
-static inline int anna_is_float(anna_vmstack_entry_t *val)
+static inline int anna_is_float(anna_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
     return type == ANNA_STACK_ENTRY_FLOAT;
 }
 
-static inline int anna_is_char(anna_vmstack_entry_t *val)
+static inline int anna_is_char(anna_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
     return type == ANNA_STACK_ENTRY_CHAR;
 }
 
-static inline int anna_is_int(anna_vmstack_entry_t *val)
+static inline int anna_is_int(anna_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
     return type == ANNA_STACK_ENTRY_INT;
 }
 
-static inline anna_vmstack_entry_t *anna_from_int(int val)
+static inline anna_entry_t *anna_from_int(int val)
 {
     long res = (long)val;
     res <<= 2;
     res |= ANNA_STACK_ENTRY_INT;
-    return (anna_vmstack_entry_t *)res;
+    return (anna_entry_t *)res;
 }
 
-static inline anna_vmstack_entry_t *anna_from_float(double val)
+static inline anna_entry_t *anna_from_float(double val)
 {
     double *res = anna_alloc_blob(sizeof(double));
     *res = val;
     res  = (double *)((long)res | ANNA_STACK_ENTRY_FLOAT);
-    assert(anna_is_float((anna_vmstack_entry_t *)res));
-    assert(anna_as_float((anna_vmstack_entry_t *)res) == val);
-    return (anna_vmstack_entry_t *)res;
+    assert(anna_is_float((anna_entry_t *)res));
+    assert(anna_as_float((anna_entry_t *)res) == val);
+    return (anna_entry_t *)res;
 }
 
-static inline anna_vmstack_entry_t *anna_from_char(wchar_t val)
+static inline anna_entry_t *anna_from_char(wchar_t val)
 {
     long res = (long)val;
     res <<= 2;
     res |= ANNA_STACK_ENTRY_CHAR;
-    return (anna_vmstack_entry_t *)res;
+    return (anna_entry_t *)res;
 }
 
-static inline anna_vmstack_entry_t *anna_from_obj(anna_object_t *val)
+static inline anna_entry_t *anna_from_obj(anna_object_t *val)
 {
-    return (anna_vmstack_entry_t *)val;
+    return (anna_entry_t *)val;
 }
 
-static inline anna_object_t *anna_as_obj(anna_vmstack_entry_t *entry)
+static inline anna_object_t *anna_as_obj(anna_entry_t *entry)
 {
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(unlikely(type))
@@ -131,13 +131,13 @@ static inline anna_object_t *anna_as_obj(anna_vmstack_entry_t *entry)
     return (anna_object_t *)entry;
 }
 
-static inline anna_object_t *anna_as_obj_fast(anna_vmstack_entry_t *entry)
+static inline anna_object_t *anna_as_obj_fast(anna_entry_t *entry)
 {
     return (anna_object_t *)entry;
 }
 
 
-static inline int anna_as_int(anna_vmstack_entry_t *entry)
+static inline int anna_as_int(anna_entry_t *entry)
 {
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
@@ -154,7 +154,7 @@ static inline int anna_as_int(anna_vmstack_entry_t *entry)
     return anna_int_get((anna_object_t *)entry);
 }
 
-static inline wchar_t anna_as_char(anna_vmstack_entry_t *entry)
+static inline wchar_t anna_as_char(anna_entry_t *entry)
 {
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
@@ -171,7 +171,7 @@ static inline wchar_t anna_as_char(anna_vmstack_entry_t *entry)
     return anna_char_get((anna_object_t *)entry);
 }
 
-static inline double anna_as_float(anna_vmstack_entry_t *entry)
+static inline double anna_as_float(anna_entry_t *entry)
 {
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
@@ -187,7 +187,7 @@ static inline double anna_as_float(anna_vmstack_entry_t *entry)
     return anna_float_get((anna_object_t *)entry);
 }
 
-static inline complex double anna_as_complex(anna_vmstack_entry_t *entry)
+static inline complex double anna_as_complex(anna_entry_t *entry)
 {
 /*    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(unlikely(type))
@@ -204,9 +204,9 @@ static inline complex double anna_as_complex(anna_vmstack_entry_t *entry)
     return anna_complex_get((anna_object_t *)entry);
 }
 
-static inline anna_vmstack_entry_t *anna_as_native(anna_object_t *obj)
+static inline anna_entry_t *anna_as_native(anna_object_t *obj)
 {
-    anna_vmstack_entry_t *e = anna_from_obj(obj);
+    anna_entry_t *e = anna_from_obj(obj);
     if(obj->type == int_type)
     {
 	return anna_from_int(anna_as_int(e));
@@ -235,12 +235,12 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *stack, 
-    anna_native_t callback, int paramc, anna_vmstack_entry_t **param,
-    anna_object_t *entry, int argc, anna_vmstack_entry_t **argv);
+    anna_native_t callback, int paramc, anna_entry_t **param,
+    anna_object_t *entry, int argc, anna_entry_t **argv);
 
 void anna_vm_callback_reset(
     anna_vmstack_t *stack, 
-    anna_object_t *entry, int argc, anna_vmstack_entry_t **argv);
+    anna_object_t *entry, int argc, anna_entry_t **argv);
 
 anna_vmstack_t *anna_vm_stack_get(void);
 void anna_vm_mark_code(anna_function_t *f);
@@ -254,11 +254,11 @@ anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *stack, anna_object_t *me)
 
 static inline void anna_vmstack_push_object(anna_vmstack_t *stack, anna_object_t *val)
 {
-    *stack->top= (anna_vmstack_entry_t *)val;
+    *stack->top= (anna_entry_t *)val;
     stack->top++;
 }
 
-static inline void anna_vmstack_push_entry(anna_vmstack_t *stack, anna_vmstack_entry_t *val)
+static inline void anna_vmstack_push_entry(anna_vmstack_t *stack, anna_entry_t *val)
 {
     *stack->top= val;
     stack->top++;
@@ -278,7 +278,7 @@ static inline void anna_vmstack_push_char(anna_vmstack_t *stack, wchar_t val)
 
 static inline void anna_vmstack_push_float(anna_vmstack_t *stack, double val)
 {
-    *stack->top= (anna_vmstack_entry_t *)anna_from_float(val);
+    *stack->top= (anna_entry_t *)anna_from_float(val);
     stack->top++;
 }
 
@@ -300,7 +300,7 @@ static inline anna_object_t *anna_vmstack_pop_object_fast(anna_vmstack_t *stack)
     return (anna_object_t *)*(stack->top);
 }
 
-static inline anna_vmstack_entry_t *anna_vmstack_pop_entry(anna_vmstack_t *stack)
+static inline anna_entry_t *anna_vmstack_pop_entry(anna_vmstack_t *stack)
 {
     stack->top--;
     return *(stack->top);
@@ -316,7 +316,7 @@ __pure static inline anna_object_t *anna_vmstack_peek_object_fast(anna_vmstack_t
     return (anna_object_t *)*(stack->top-1-off);
 }
 
-__pure static inline anna_vmstack_entry_t *anna_vmstack_peek_entry(anna_vmstack_t *stack, size_t off)
+__pure static inline anna_entry_t *anna_vmstack_peek_entry(anna_vmstack_t *stack, size_t off)
 {
     return *(stack->top-1-off);
 }

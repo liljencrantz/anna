@@ -44,7 +44,7 @@ static inline anna_object_t *anna_vm_trampoline(
 
 static void anna_vmstack_print(anna_vmstack_t *stack)
 {
-    anna_vmstack_entry_t **p = &stack->base[0];
+    anna_entry_t **p = &stack->base[0];
     wprintf(L"Stack content:\n");
     while(p!=stack->top)
     {
@@ -259,7 +259,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
   ANNA_LAB_RETURN:
     {
-	anna_vmstack_entry_t *val = anna_vmstack_peek_entry(stack, 0);
+	anna_entry_t *val = anna_vmstack_peek_entry(stack, 0);
 	stack = stack->caller;
 	anna_vmstack_push_entry(stack, val);
 //		wprintf(L"Pop frame\n");
@@ -269,7 +269,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_RETURN_COUNT:
     {
 	anna_op_count_t *cb = (anna_op_count_t *)stack->code;
-	anna_vmstack_entry_t *val = anna_vmstack_peek_entry(stack, 0);
+	anna_entry_t *val = anna_vmstack_peek_entry(stack, 0);
 	int i;
 		
 	for(i=0; i<cb->param; i++)
@@ -502,7 +502,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
-	anna_vmstack_entry_t *value = anna_vmstack_peek_entry(stack, 0);
+	anna_entry_t *value = anna_vmstack_peek_entry(stack, 0);
 	
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -554,7 +554,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
   ANNA_LAB_FOLD:
     {
-	anna_vmstack_entry_t *val = anna_vmstack_pop_entry(stack);
+	anna_entry_t *val = anna_vmstack_pop_entry(stack);
 	anna_list_add(anna_vmstack_peek_object(stack, 0), val);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];

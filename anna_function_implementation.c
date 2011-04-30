@@ -19,7 +19,7 @@
 
 anna_object_t *anna_wrap_method;
 
-static int print_direct(anna_vmstack_entry_t *o)
+static int print_direct(anna_entry_t *o)
 {
     if(anna_is_obj(o))
     {
@@ -59,7 +59,7 @@ static int print_direct_loop(anna_object_t *list, int idx)
 	{
 	    break;
 	}
-	anna_vmstack_entry_t *o = anna_list_get(list, idx);
+	anna_entry_t *o = anna_list_get(list, idx);
 	if(!print_direct(o))
 	{
 	    break;
@@ -72,7 +72,7 @@ static int print_direct_loop(anna_object_t *list, int idx)
 static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_object_t *value = anna_vmstack_pop_object(stack);
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *list = anna_as_obj_fast(param[0]);
     int idx = anna_as_int(param[1]);
     int ls = anna_list_get_size(list);
@@ -101,7 +101,7 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 	param[1] = anna_from_int(idx+1);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = o->type->static_member[tos_mem->offset];
-	anna_vm_callback_reset(stack, meth, 1, (anna_vmstack_entry_t **)&o);
+	anna_vm_callback_reset(stack, meth, 1, (anna_entry_t **)&o);
     }
     else
     {
@@ -120,7 +120,7 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
     int idx = print_direct_loop(list, 0);
     if(anna_list_get_size(list) > idx)
     {
-	anna_vmstack_entry_t *callback_param[] = 
+	anna_entry_t *callback_param[] = 
 	    {
 		anna_from_obj(list),
 		anna_from_int(idx+1)
@@ -134,7 +134,7 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 	stack = anna_vm_callback_native(
 	    stack,
 	    anna_print_callback, 2, callback_param,
-	    meth, 1, (anna_vmstack_entry_t **)&o
+	    meth, 1, (anna_entry_t **)&o
 	    );
     }
     else
@@ -146,7 +146,7 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t *val = anna_vmstack_pop_entry(stack);
+    anna_entry_t *val = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
     anna_vmstack_push_entry(stack, ANNA_VM_NULL(val)?anna_from_int(1):anna_from_obj(null_object));
     return stack;
@@ -172,7 +172,7 @@ static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
     
     return anna_vm_callback_native(
 	stack, &anna_i_callcc_callback, 0, 0, 
-	fun, 1, (anna_vmstack_entry_t **)&cont);    
+	fun, 1, (anna_entry_t **)&cont);    
 }
 
 static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *me)

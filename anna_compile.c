@@ -474,7 +474,7 @@ static void anna_vm_native_call(char **ptr, int op, anna_native_t fun)
 
 static void anna_vm_const(char **ptr, anna_object_t *val)
 {
-    anna_vmstack_entry_t *e = anna_as_native(val);
+    anna_entry_t *e = anna_as_native(val);
     
     anna_op_const_t op = 
 	{
@@ -1058,10 +1058,10 @@ void anna_vm_compile(
 
 anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *parent, 
-    anna_native_t callback, int paramc, anna_vmstack_entry_t **param,
-    anna_object_t *entry, int argc, anna_vmstack_entry_t **argv)
+    anna_native_t callback, int paramc, anna_entry_t **param,
+    anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    size_t ss = (paramc+argc+3)*sizeof(anna_vmstack_entry_t *) + sizeof(anna_vmstack_t);
+    size_t ss = (paramc+argc+3)*sizeof(anna_entry_t *) + sizeof(anna_vmstack_t);
     size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t);
     anna_vmstack_t *stack = calloc(1,ss+cs);
     stack->flags = ANNA_VMSTACK;
@@ -1097,9 +1097,9 @@ anna_vmstack_t *anna_vm_callback_native(
 
 static anna_vmstack_t *anna_vm_callback(
     anna_vmstack_t *parent, 
-    anna_object_t *entry, int argc, anna_vmstack_entry_t **argv)
+    anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    size_t ss = (argc+1)*sizeof(anna_vmstack_entry_t *) + sizeof(anna_vmstack_t);
+    size_t ss = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_vmstack_t);
     size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_null_t);
     anna_vmstack_t *stack = calloc(1,ss+cs);
     stack->flags = ANNA_VMSTACK;
@@ -1129,7 +1129,7 @@ static anna_vmstack_t *anna_vm_callback(
 
 void anna_vm_callback_reset(
     anna_vmstack_t *stack, 
-    anna_object_t *entry, int argc, anna_vmstack_entry_t **argv)
+    anna_object_t *entry, int argc, anna_entry_t **argv)
 {
 	int i;    
 	anna_vmstack_push_object(stack, entry);
@@ -1146,7 +1146,7 @@ anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *parent, anna_object_t *co
     code -= sizeof(anna_op_count_t);
     anna_op_count_t *op = (anna_op_count_t *)code;
     int argc = op->param + 1;
-    anna_vmstack_entry_t **argv = parent->top - argc;
+    anna_entry_t **argv = parent->top - argc;
     
     anna_object_t *object = *anna_member_addr_get_mid(cont, ANNA_MID_THIS);
     anna_object_t *method = *anna_member_addr_get_mid(cont, ANNA_MID_METHOD);

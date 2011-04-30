@@ -24,7 +24,7 @@
 
 static hash_table_t anna_pair_specialization;
 
-anna_object_t *anna_pair_create(anna_vmstack_entry_t *first, anna_vmstack_entry_t *second)
+anna_object_t *anna_pair_create(anna_entry_t *first, anna_entry_t *second)
 {
     anna_object_t *obj= anna_object_create(anna_pair_type_get(anna_as_obj(first)->type, anna_as_obj(second)->type));
     anna_pair_set_first(obj, first);
@@ -32,7 +32,7 @@ anna_object_t *anna_pair_create(anna_vmstack_entry_t *first, anna_vmstack_entry_
     return obj;
 }
 
-static inline anna_vmstack_entry_t *anna_pair_init_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_pair_init_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_pair_set_first(this, param[1]);
@@ -41,21 +41,21 @@ static inline anna_vmstack_entry_t *anna_pair_init_i(anna_vmstack_entry_t **para
 }
 ANNA_VM_NATIVE(anna_pair_init, 3)
 
-static inline anna_vmstack_entry_t *anna_pair_get_first_i_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_pair_get_first_i_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     return anna_pair_get_first(this);
 }
 ANNA_VM_NATIVE(anna_pair_get_first_i, 1)
 
-static inline anna_vmstack_entry_t *anna_pair_get_second_i_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_pair_get_second_i_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     return anna_pair_get_second(this);
 }
 ANNA_VM_NATIVE(anna_pair_get_second_i, 1)
 
-static inline anna_vmstack_entry_t *anna_pair_set_first_i_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_pair_set_first_i_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_pair_set_first(this, param[1]);
@@ -63,7 +63,7 @@ static inline anna_vmstack_entry_t *anna_pair_set_first_i_i(anna_vmstack_entry_t
 }
 ANNA_VM_NATIVE(anna_pair_set_first_i, 2)
 
-static inline anna_vmstack_entry_t *anna_pair_set_second_i_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_pair_set_second_i_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_pair_set_second(this, param[1]);

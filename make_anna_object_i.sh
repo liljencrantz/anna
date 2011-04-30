@@ -39,7 +39,7 @@ for i in "eq ==" "gt >" "lt <" "gte >=" "lte <=" "neq !="; do
 static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_object_t *me)
 
 {
-    anna_vmstack_entry_t *res = anna_vmstack_pop_entry(stack);
+    anna_entry_t *res = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
     if(ANNA_VM_NULL(res))
     {
@@ -55,7 +55,7 @@ static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_
 
 static anna_vmstack_t *anna_object_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;    
+    anna_entry_t **param = stack->top - 2;    
     anna_object_t *this = anna_as_obj(param[0]);
     anna_vmstack_drop(stack, 3);
     anna_object_t *fun_object = *anna_static_member_addr_get_mid(this->type, ANNA_MID_CMP);

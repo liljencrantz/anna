@@ -60,7 +60,7 @@ anna_node_t *anna_node_unwrap(anna_object_t *this)
 }
 
 
-static inline anna_vmstack_entry_t *anna_node_wrapper_i_replace_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_node_wrapper_i_replace_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *tree = anna_node_unwrap(this);
@@ -71,7 +71,7 @@ static inline anna_vmstack_entry_t *anna_node_wrapper_i_replace_i(anna_vmstack_e
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
 
-static inline anna_vmstack_entry_t *anna_node_wrapper_i_error_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_node_wrapper_i_error_i(anna_entry_t **param)
 {
     anna_node_t *this = anna_node_unwrap(anna_as_obj_fast(param[0]));
     wchar_t *msg;
@@ -88,7 +88,7 @@ static inline anna_vmstack_entry_t *anna_node_wrapper_i_error_i(anna_vmstack_ent
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 
-static inline anna_vmstack_entry_t *anna_node_wrapper_i_to_string_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_node_wrapper_i_to_string_i(anna_entry_t **param)
 {
     anna_object_t *thiso = anna_as_obj_fast(param[0]);
     anna_node_t *this = anna_node_unwrap(thiso);

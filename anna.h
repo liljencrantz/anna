@@ -438,7 +438,7 @@ struct anna_node_list
     struct anna_node_list *parent;
 };
 
-typedef struct {} anna_vmstack_entry_t;
+typedef struct {} anna_entry_t;
 
 struct anna_vmstack
 {
@@ -447,8 +447,8 @@ struct anna_vmstack
     struct anna_vmstack *caller;    
     struct anna_function *function;
     char *code;    
-    anna_vmstack_entry_t **top;
-    anna_vmstack_entry_t *base[];
+    anna_entry_t **top;
+    anna_entry_t *base[];
 };
 
 typedef struct anna_vmstack anna_vmstack_t;

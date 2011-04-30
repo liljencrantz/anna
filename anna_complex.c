@@ -42,7 +42,7 @@ inline complex double anna_complex_get(anna_object_t *this)
 
 static anna_vmstack_t *anna_complex_init(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 3;
+    anna_entry_t **param = stack->top - 3;
     complex double result = anna_as_float(param[1]) + I * anna_as_float(param[2]);
     size_t off = anna_as_obj(param[0])->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
     memcpy(&anna_as_obj(param[0])->member[off], &result, sizeof(complex double));
@@ -53,7 +53,7 @@ static anna_vmstack_t *anna_complex_init(anna_vmstack_t *stack, anna_object_t *m
 
 static anna_vmstack_t *anna_complex_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 1;
+    anna_entry_t **param = stack->top - 1;
     complex double val = anna_as_complex(param[0]);
     string_buffer_t sb;
     sb_init(&sb);

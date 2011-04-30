@@ -1,5 +1,5 @@
 
-static inline anna_vmstack_entry_t *anna_node_int_literal_wrapper_i_get_payload_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_node_int_literal_wrapper_i_get_payload_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_int_literal_t *node = (anna_node_int_literal_t *)anna_node_unwrap(this);
@@ -7,7 +7,7 @@ static inline anna_vmstack_entry_t *anna_node_int_literal_wrapper_i_get_payload_
 }
 ANNA_VM_NATIVE(anna_node_int_literal_wrapper_i_get_payload, 1)
 
-static inline anna_vmstack_entry_t *anna_node_int_literal_wrapper_i_init_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_node_int_literal_wrapper_i_init_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));

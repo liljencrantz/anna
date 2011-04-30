@@ -15,8 +15,8 @@ echo "
     
   ANNA_LAB_${name}_INT:
     {
-	anna_vmstack_entry_t *i2 = anna_vmstack_pop_entry(stack);
-	anna_vmstack_entry_t *i1 = anna_vmstack_pop_entry(stack);
+	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
+	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
 	if(likely(anna_is_int(i1) && anna_is_int(i2)))
 	{
 	    anna_vmstack_push_int(stack, anna_as_int(i1) $op anna_as_int(i2));
@@ -53,8 +53,8 @@ echo "
     
   ANNA_LAB_${name}_FLOAT:
     {
-	anna_vmstack_entry_t *i2 = anna_vmstack_pop_entry(stack);
-	anna_vmstack_entry_t *i1 = anna_vmstack_pop_entry(stack);
+	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
+	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
   //          wprintf(L\"Wee %f $op %f = %f\n\", anna_as_float(i1), anna_as_float(i2), anna_as_float(i1) $op anna_as_float(i2));

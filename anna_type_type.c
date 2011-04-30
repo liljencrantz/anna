@@ -16,7 +16,7 @@
 #include "anna_vm.h"
 #include "anna_int.h"
 
-static inline anna_vmstack_entry_t *anna_type_to_string_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_type_to_string_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type = anna_type_unwrap(this);
@@ -24,7 +24,7 @@ static inline anna_vmstack_entry_t *anna_type_to_string_i(anna_vmstack_entry_t *
 }
 ANNA_VM_NATIVE(anna_type_to_string, 1)
 
-static inline anna_vmstack_entry_t *anna_type_i_get_member_i(anna_vmstack_entry_t **param)
+static inline anna_entry_t *anna_type_i_get_member_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create(member_type);
@@ -50,7 +50,7 @@ ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 
 static anna_vmstack_t *anna_type_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type1 = anna_type_unwrap(this);
     anna_type_t *type2 = anna_type_unwrap(anna_as_obj(param[1]));
@@ -61,7 +61,7 @@ static anna_vmstack_t *anna_type_cmp(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_type_abides(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type1 = anna_type_unwrap(this);
     anna_type_t *type2 = anna_type_unwrap(anna_as_obj(param[1]));
@@ -72,7 +72,7 @@ static anna_vmstack_t *anna_type_abides(anna_vmstack_t *stack, anna_object_t *me
 
 static anna_vmstack_t *anna_type_hash(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 1;
+    anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_vmstack_drop(stack, 2);
     anna_type_t *type = anna_type_unwrap(this);

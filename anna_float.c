@@ -38,7 +38,7 @@ double anna_float_get(anna_object_t *this)
 
 static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_vmstack_drop(stack, 3);
     if(unlikely(((anna_object_t *)param[1])->type == null_type))
     {
@@ -64,7 +64,7 @@ static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 1;
+    anna_entry_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
     string_buffer_t sb;
     sb_init(&sb);

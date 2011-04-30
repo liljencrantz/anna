@@ -71,8 +71,8 @@ for i in "eq ==" "neq !="; do
     echo "
 static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
-    anna_vmstack_entry_t *res = anna_from_obj(null_object);
+    anna_entry_t **param = stack->top - 2;
+    anna_entry_t *res = anna_from_obj(null_object);
     if(likely(!ANNA_VM_NULL(param[1])))
     {  
         complex double v1 = anna_as_complex(param[0]);
@@ -142,7 +142,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 
 static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
     if(likely(!ANNA_VM_NULL(param[1])))
     {  
@@ -157,7 +157,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
 
 static anna_vmstack_t *anna_complex_i_int_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
     if(likely(!ANNA_VM_NULL(param[1])))
     {  
@@ -172,7 +172,7 @@ static anna_vmstack_t *anna_complex_i_int_$name(anna_vmstack_t *stack, anna_obje
 
 static anna_vmstack_t *anna_complex_i_float_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
     if(likely(!ANNA_VM_NULL(param[1])))
     {  
@@ -187,7 +187,7 @@ static anna_vmstack_t *anna_complex_i_float_$name(anna_vmstack_t *stack, anna_ob
 
 static anna_vmstack_t *anna_complex_i_int_reverse_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
     if(likely(!ANNA_VM_NULL(param[1])))
     {  
@@ -202,7 +202,7 @@ static anna_vmstack_t *anna_complex_i_int_reverse_$name(anna_vmstack_t *stack, a
 
 static anna_vmstack_t *anna_complex_i_float_reverse_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 2;
+    anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
     if(likely(!ANNA_VM_NULL(param[1])))
     {  
@@ -235,7 +235,7 @@ for i in "neg -v" "sqrt csqrt(v)" "tan ctan(v)" "atan catan(v)" "sin csin(v)" "c
     echo "
 static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 1;
+    anna_entry_t **param = stack->top - 1;
     complex double v = anna_as_complex(param[0]);    
     anna_vmstack_drop(stack, 2); 
     anna_vmstack_push_object(stack, anna_complex_create($op));
@@ -258,7 +258,7 @@ for i in "abs cabs(v)" ; do
     echo "
 static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_vmstack_entry_t **param = stack->top - 1;
+    anna_entry_t **param = stack->top - 1;
     complex double v = anna_as_complex(param[0]);
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_object(stack, anna_float_create($op));
