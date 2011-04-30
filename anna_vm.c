@@ -169,7 +169,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_CONSTANT:
     {
 	anna_op_const_t *op = (anna_op_const_t *)stack->code;
-	anna_vmstack_push_object(stack, op->value);
+	anna_vmstack_push_entry(stack, op->value);
 	
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
@@ -178,7 +178,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_STRING:
     {
 	anna_op_const_t *op = (anna_op_const_t *)stack->code;
-	anna_vmstack_push_object(stack, anna_string_copy(op->value));
+	anna_vmstack_push_object(stack, anna_string_copy(anna_as_obj_fast(op->value)));
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -358,7 +358,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	{
 	    anna_object_t *res;
 	    res = obj->member[m->offset];		    
-	    anna_vmstack_push_object(stack, res);
+	    anna_vmstack_push_entry(stack, res);
 	}
 	
 	stack->code += sizeof(*op);
@@ -526,7 +526,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_vmstack_pop_object(stack);
 	    anna_vmstack_push_object(stack, method);
 	    anna_vmstack_push_object(stack, obj);
-	    anna_vmstack_push_object(stack, value);
+	    anna_vmstack_push_entry(stack, value);
 	    stack->code += sizeof(*op);
 	    stack = fun->native(
 		stack, method);
@@ -709,7 +709,7 @@ void anna_bc_print(char *code)
 	    {
 		anna_op_const_t *op = (anna_op_const_t*)code;
 		wprintf(L"Push constant of type %ls\n\n", 
-			op->value->type->name);
+			anna_as_obj(op->value)->type->name);
 		break;
 	    }
 	    

@@ -474,10 +474,12 @@ static void anna_vm_native_call(char **ptr, int op, anna_native_t fun)
 
 static void anna_vm_const(char **ptr, anna_object_t *val)
 {
+    anna_vmstack_entry_t *e = anna_as_native(val);
+    
     anna_op_const_t op = 
 	{
 	    ANNA_INSTR_CONSTANT,
-	    val
+	    e
 	}
     ;
     memcpy(*ptr, &op, sizeof(anna_op_const_t));

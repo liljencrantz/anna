@@ -31,7 +31,7 @@ echo "
 	    }
 	    else
 	    {
-//            wprintf(L\"Fallback for int $name \n\");
+  //          wprintf(L\"Fallback for int $name \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
 		anna_object_t *wrapped;
 		wrapped = o1->type->static_member[m->offset];
@@ -70,7 +70,7 @@ echo "
 	    }
 	    else
 	    {
-//            wprintf(L\"Fallback for float $name %d %d \n\", anna_is_float(i1), anna_is_float(i2));
+//            wprintf(L\"Fallback for float $name %d %d %f %f\n\", anna_is_float(i1), anna_is_float(i2), anna_as_float(i1), anna_as_float(i2));
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_FLOAT];
 		anna_object_t *wrapped;
 		wrapped = o1->type->static_member[m->offset];

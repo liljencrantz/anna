@@ -204,6 +204,25 @@ static inline complex double anna_as_complex(anna_vmstack_entry_t *entry)
     return anna_complex_get((anna_object_t *)entry);
 }
 
+static inline anna_vmstack_entry_t *anna_as_native(anna_object_t *obj)
+{
+    anna_vmstack_entry_t *e = anna_from_obj(obj);
+    if(obj->type == int_type)
+    {
+	return anna_from_int(anna_as_int(e));
+    }
+    if(obj->type == float_type)
+    {
+	return anna_from_float(anna_as_float(e));
+    }
+    if(obj->type == char_type)
+    {
+	return anna_from_char(anna_as_char(e));
+    }
+    return e;
+}
+
+
 void anna_vm_compile(
     anna_function_t *fun);
 
