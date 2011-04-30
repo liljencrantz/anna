@@ -3,7 +3,7 @@
 # Copyright 2011 Axel Liljencrantz
 #
 
-CC := gcc
+CC := gcc-4.6
 
 COV_FLAGS := #--coverage
 
@@ -13,7 +13,7 @@ COV_FLAGS := #--coverage
 # optimization increases overall performance slightly. Unfortunatly,
 # with lto, there does not seem to be any way to drop this flag only
 # for one function or one compilation unit.
-PROF_FLAGS := -g  #-flto -O3 -fuse-linker-plugin -fno-gcse
+PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
 
 CFLAGS := -rdynamic -Wall -Werror=implicit-function-declaration		\
 -Wmissing-braces -Wmissing-prototypes -std=gnu99 -D_ISO99_SOURCE=1	\
@@ -73,6 +73,9 @@ anna_float_i.c: make_anna_float_i.sh
 
 anna_int_i.c: make_anna_int_i.sh
 	./make_anna_int_i.sh >anna_int_i.c
+
+anna_vm_short_circut.c: make_anna_vm_short_circut.sh
+	./make_anna_vm_short_circut.sh >anna_vm_short_circut.c
 
 anna_char_i.c: make_anna_char_i.sh
 	./make_anna_char_i.sh >anna_char_i.c

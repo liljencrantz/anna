@@ -67,7 +67,6 @@ static void anna_null_type_create()
 		0));
     //null_type->static_member[0] = null_object;
     
-  
     anna_object_t *null_function;  
     null_function = null_type->static_member[0];
     hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);

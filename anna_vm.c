@@ -123,7 +123,18 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_CAST,
 	    &&ANNA_LAB_NATIVE_CALL,
 	    &&ANNA_LAB_RETURN_COUNT,
-	    &&ANNA_LAB_INT_ADD,
+	    &&ANNA_LAB_ADD_INT,
+	    &&ANNA_LAB_SUB_INT,
+	    &&ANNA_LAB_MUL_INT,
+	    &&ANNA_LAB_DIV_INT,
+	    &&ANNA_LAB_INCREASE_ASSIGN_INT,
+	    &&ANNA_LAB_DECREASE_ASSIGN_INT,
+	    &&ANNA_LAB_ADD_FLOAT,
+	    &&ANNA_LAB_SUB_FLOAT,
+	    &&ANNA_LAB_MUL_FLOAT,
+	    &&ANNA_LAB_DIV_FLOAT,
+	    &&ANNA_LAB_INCREASE_ASSIGN_FLOAT,
+	    &&ANNA_LAB_DECREASE_ASSIGN_FLOAT,
 	}
     ;
     
@@ -472,6 +483,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 #endif 
 	anna_object_t *res;
+
+	if(obj->type == float_type)
+	{
+	    //    wprintf(L"FAS %ls\n", anna_mid_get_reverse(op->mid));	    
+	}
 	
 	res = obj->type->static_member[m->offset];
 	
@@ -486,8 +502,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
-	anna_object_t *value = anna_vmstack_peek_object(stack, 0);
-		
+	anna_vmstack_entry_t *value = anna_vmstack_peek_entry(stack, 0);
+	
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
 #ifdef ANNA_CHECK_VM
@@ -506,7 +522,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	{
 	    anna_object_t *method = obj->type->static_member[m->setter_offset];
 	    anna_function_t *fun = anna_function_unwrap(method);
-		    
+	    
 	    anna_vmstack_pop_object(stack);
 	    anna_vmstack_push_object(stack, method);
 	    anna_vmstack_push_object(stack, obj);
@@ -593,29 +609,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
-    
-  ANNA_LAB_INT_ADD:
-    {
-	anna_vmstack_entry_t *i2 = anna_vmstack_pop_entry(stack);
-	anna_vmstack_entry_t *i1 = anna_vmstack_pop_entry(stack);
-	if(likely(anna_is_int(i1) && anna_is_int(i2)))
-	{
-	    anna_vmstack_push_int(stack, anna_as_int(i1)+anna_as_int(i2));
-	}
-	else
-	{
-	    anna_object_t *o1 = anna_as_obj(i1);
-	    anna_object_t *wrapped = *anna_member_addr_get_mid(o1, ANNA_MID_ADD_INT);
-	    anna_function_t *fun = anna_function_unwrap(wrapped);
-	    anna_vmstack_push_object(stack,wrapped);
-	    anna_vmstack_push_object(stack,o1);
-	    anna_vmstack_push_entry(stack,i2);
-	    stack = fun->native(stack, wrapped);
-	}
-	
-	stack->code += sizeof(anna_op_null_t);
-	goto *jump_label[(int)*stack->code];
-    }
+
+#include "anna_vm_short_circut.c"
+
 }
 
 size_t anna_bc_op_size(char instruction)
@@ -643,6 +639,17 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_NOT:
 	case ANNA_INSTR_DUP:
 	case ANNA_INSTR_ADD_INT:
+	case ANNA_INSTR_SUB_INT:
+	case ANNA_INSTR_MUL_INT:
+	case ANNA_INSTR_DIV_INT:
+	case ANNA_INSTR_INCREASE_ASSIGN_INT:
+	case ANNA_INSTR_DECREASE_ASSIGN_INT:
+	case ANNA_INSTR_ADD_FLOAT:
+	case ANNA_INSTR_SUB_FLOAT:
+	case ANNA_INSTR_MUL_FLOAT:
+	case ANNA_INSTR_DIV_FLOAT:
+	case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
+	case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	{
 	    return sizeof(anna_op_null_t);	    
 	}
@@ -906,6 +913,18 @@ void anna_vm_mark_code(anna_function_t *f)
 	    case ANNA_INSTR_COND_JMP:
 	    case ANNA_INSTR_NCOND_JMP:
 	    case ANNA_INSTR_TRAMPOLENE:
+	    case ANNA_INSTR_ADD_INT:
+	    case ANNA_INSTR_SUB_INT:
+	    case ANNA_INSTR_MUL_INT:
+	    case ANNA_INSTR_DIV_INT:
+	    case ANNA_INSTR_INCREASE_ASSIGN_INT:
+	    case ANNA_INSTR_DECREASE_ASSIGN_INT:
+	    case ANNA_INSTR_ADD_FLOAT:
+	    case ANNA_INSTR_SUB_FLOAT:
+	    case ANNA_INSTR_MUL_FLOAT:
+	    case ANNA_INSTR_DIV_FLOAT:
+	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
+	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	    {
 		break;
 	    }

@@ -24,6 +24,15 @@ static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
     return res;
 }
 
+static inline __malloc void *anna_alloc_blob(size_t sz)
+{
+    long *res = anna_slab_alloc(sz+ sizeof(long));
+    *res = ANNA_BLOB;
+    al_push(&anna_alloc, res);
+    anna_alloc_count+=sz;
+    return (void *)&res[1];
+}
+
 static inline __malloc anna_object_t *anna_alloc_object(size_t sz)
 {
     anna_object_t *res = anna_slab_alloc(sz);

@@ -96,6 +96,17 @@ void anna_mid_init()
     anna_mid_put(L"!this", ANNA_MID_THIS);
     anna_mid_put(L"!method", ANNA_MID_METHOD);
     anna_mid_put(L"__add__Int__", ANNA_MID_ADD_INT);
+    anna_mid_put(L"__sub__Int__", ANNA_MID_SUB_INT);
+    anna_mid_put(L"__mul__Int__", ANNA_MID_MUL_INT);
+    anna_mid_put(L"__div__Int__", ANNA_MID_DIV_INT);
+    anna_mid_put(L"__increaseAssign__Int__", ANNA_MID_INCREASE_ASSIGN_INT);
+    anna_mid_put(L"__decreaseAssign__Int__", ANNA_MID_DECREASE_ASSIGN_INT);
+    anna_mid_put(L"__add__Float__", ANNA_MID_ADD_FLOAT);
+    anna_mid_put(L"__sub__Float__", ANNA_MID_SUB_FLOAT);
+    anna_mid_put(L"__mul__Float__", ANNA_MID_MUL_FLOAT);
+    anna_mid_put(L"__div__Float__", ANNA_MID_DIV_FLOAT);
+    anna_mid_put(L"__increaseAssign__Float__", ANNA_MID_INCREASE_ASSIGN_FLOAT);
+    anna_mid_put(L"__decreaseAssign__Float__", ANNA_MID_DECREASE_ASSIGN_FLOAT);
 }
 
 void anna_mid_put(wchar_t *name, mid_t mid)

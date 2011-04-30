@@ -2,6 +2,7 @@
 #define ANNA_VM_H
 
 #include <complex.h>
+#include "anna_alloc.h"
 
 double anna_float_get(anna_object_t *this);
 wchar_t anna_char_get(anna_object_t *this);
@@ -11,7 +12,6 @@ anna_object_t *anna_int_create(int val);
 anna_object_t *anna_float_create(double val);
 anna_object_t *anna_char_create(wchar_t val);
 
-//#define ANNA_VM_NULL(par) (unlikely(anna_is_obj(par) && anna_as_obj_fast(par) == null_object))
 #define ANNA_VM_NULL(par) (unlikely(((anna_object_t *)par) == null_object))
 #define ANNA_VM_NULLCHECK(par) if(ANNA_VM_NULL(par)) return anna_from_obj(null_object);
 
@@ -46,55 +46,7 @@ anna_object_t *anna_char_create(wchar_t val);
 #define ANNA_STACK_ENTRY_CHAR 2
 #define ANNA_STACK_ENTRY_FLOAT 3
 
-//typedef anna_object_t **(*anna_vm_callback_loop_t)(void *aux);
-
-static inline anna_vmstack_entry_t *anna_from_int(int val)
-{
-    long res = (long)val;
-    res <<= 2;
-    res |= ANNA_STACK_ENTRY_INT;
-    return (anna_vmstack_entry_t *)res;
-}
-
-static inline anna_vmstack_entry_t *anna_from_char(wchar_t val)
-{
-    long res = (long)val;
-    res <<= 2;
-    res |= ANNA_STACK_ENTRY_CHAR;
-    return (anna_vmstack_entry_t *)res;
-}
-
-static inline anna_vmstack_entry_t *anna_from_obj(anna_object_t *val)
-{
-    return (anna_vmstack_entry_t *)val;
-}
-
-static inline anna_object_t *anna_as_obj(anna_vmstack_entry_t *entry)
-{
-    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
-    if(unlikely(type))
-    {
-	if(type & ANNA_STACK_ENTRY_INT)
-	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return anna_int_create((int)res);
-	}
-	if(type & ANNA_STACK_ENTRY_CHAR)
-	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return anna_char_create((int)res);
-	}
-	
-    }
-    return (anna_object_t *)entry;
-}
-
-static inline anna_object_t *anna_as_obj_fast(anna_vmstack_entry_t *entry)
-{
-    return (anna_object_t *)entry;
-}
+static inline double anna_as_float(anna_vmstack_entry_t *entry);
 
 static inline int anna_is_obj(anna_vmstack_entry_t *val)
 {
@@ -120,13 +72,77 @@ static inline int anna_is_int(anna_vmstack_entry_t *val)
     return type == ANNA_STACK_ENTRY_INT;
 }
 
+static inline anna_vmstack_entry_t *anna_from_int(int val)
+{
+    long res = (long)val;
+    res <<= 2;
+    res |= ANNA_STACK_ENTRY_INT;
+    return (anna_vmstack_entry_t *)res;
+}
+
+static inline anna_vmstack_entry_t *anna_from_float(double val)
+{
+    double *res = anna_alloc_blob(sizeof(double));
+    *res = val;
+    res  = (double *)((long)res | ANNA_STACK_ENTRY_FLOAT);
+    assert(anna_is_float((anna_vmstack_entry_t *)res));
+    assert(anna_as_float((anna_vmstack_entry_t *)res) == val);
+    return (anna_vmstack_entry_t *)res;
+}
+
+static inline anna_vmstack_entry_t *anna_from_char(wchar_t val)
+{
+    long res = (long)val;
+    res <<= 2;
+    res |= ANNA_STACK_ENTRY_CHAR;
+    return (anna_vmstack_entry_t *)res;
+}
+
+static inline anna_vmstack_entry_t *anna_from_obj(anna_object_t *val)
+{
+    return (anna_vmstack_entry_t *)val;
+}
+
+static inline anna_object_t *anna_as_obj(anna_vmstack_entry_t *entry)
+{
+    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
+    if(unlikely(type))
+    {
+	if(type == ANNA_STACK_ENTRY_INT)
+	{
+	    long res = (long)entry;
+	    res >>= 2;
+	    return anna_int_create((int)res);
+	}
+	if(type == ANNA_STACK_ENTRY_CHAR)
+	{
+	    long res = (long)entry;
+	    res >>= 2;
+	    return anna_char_create((int)res);
+	}
+	if(type == ANNA_STACK_ENTRY_FLOAT)
+	{
+	    double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
+	    return anna_float_create(*res);
+	}
+	wprintf(L"BEEEEEEEEEEP\n");
+	
+    }
+    return (anna_object_t *)entry;
+}
+
+static inline anna_object_t *anna_as_obj_fast(anna_vmstack_entry_t *entry)
+{
+    return (anna_object_t *)entry;
+}
+
 
 static inline int anna_as_int(anna_vmstack_entry_t *entry)
 {
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
     {
-	if(type & ANNA_STACK_ENTRY_INT)
+	if(type == ANNA_STACK_ENTRY_INT)
 	{
 	    long res = (long)entry;
 	    res >>= 2;
@@ -143,7 +159,7 @@ static inline wchar_t anna_as_char(anna_vmstack_entry_t *entry)
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
     {
-	if(type & ANNA_STACK_ENTRY_CHAR)
+	if(type == ANNA_STACK_ENTRY_CHAR)
 	{
 	    long res = (long)entry;
 	    res >>= 2;
@@ -158,13 +174,12 @@ static inline wchar_t anna_as_char(anna_vmstack_entry_t *entry)
 static inline double anna_as_float(anna_vmstack_entry_t *entry)
 {
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
-    if(unlikely(type))
+    if(likely(type))
     {
-	if(type & ANNA_STACK_ENTRY_INT)
+	if(type == ANNA_STACK_ENTRY_FLOAT)
 	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return (double)res;
+	    double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
+	    return *res;
 	}
 	wprintf(L"Invalid vmstack entry %d\n", entry);
 	CRASH;
@@ -244,7 +259,7 @@ static inline void anna_vmstack_push_char(anna_vmstack_t *stack, wchar_t val)
 
 static inline void anna_vmstack_push_float(anna_vmstack_t *stack, double val)
 {
-    *stack->top= (anna_vmstack_entry_t *)anna_float_create(val);
+    *stack->top= (anna_vmstack_entry_t *)anna_from_float(val);
     stack->top++;
 }
 

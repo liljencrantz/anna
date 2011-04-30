@@ -312,8 +312,29 @@ void anna_alloc_mark_type(anna_type_t *type)
     
 }
 
+static void anna_alloc_mark_blob(void *mem)
+{
+    long *mem2 = (long *)mem;
+    mem2--;
+    *mem2 |= ANNA_USED;
+}
+
 void anna_alloc_mark_object(anna_object_t *obj)
 {
+    if(!obj)
+	return;
+    
+    if(anna_is_float((anna_vmstack_entry_t *)obj))
+    {
+	anna_alloc_mark_blob((void *)obj);
+	return;
+    }
+    
+    if(!anna_is_obj((anna_vmstack_entry_t *)obj))
+    {
+	return;
+    }
+        
     if( obj->flags & ANNA_USED)
 	return;
     obj->flags |= ANNA_USED;
@@ -372,9 +393,8 @@ static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
 
     anna_vmstack_entry_t **obj;
     for(obj = &stack->base[0]; obj < stack->top; obj++)
-    {
-	if(anna_is_obj(*obj))
-	    anna_alloc_mark_object(anna_as_obj(*obj));
+    {	
+	anna_alloc_mark_object(anna_as_obj(*obj));
     }
     if(stack->parent)
 	anna_alloc_mark_vmstack(stack->parent);

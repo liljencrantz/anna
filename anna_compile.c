@@ -22,7 +22,9 @@
 #include "anna_type.h"
 #include "anna_alloc.h"
 
-static anna_object_t *anna_static_invoke_as_access(anna_node_call_t *node, anna_stack_template_t *stack)
+static anna_object_t *anna_static_invoke_as_access(
+    anna_node_call_t *node, 
+    anna_stack_template_t *stack)
 {
     anna_node_member_access_t fake;
     fake.mid=node->mid;
@@ -31,6 +33,48 @@ static anna_object_t *anna_static_invoke_as_access(anna_node_call_t *node, anna_
     return anna_node_static_invoke_try(
 	(anna_node_t *)&fake, stack);
 }
+
+static int anna_short_circut_instr_int_int(int mid)
+{
+    
+    if(mid >= ANNA_MID_ADD_INT && mid <= ANNA_MID_DECREASE_ASSIGN_INT)
+	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD_INT;
+    
+    return 0;
+}
+
+static int anna_short_circut_instr_float_float(int mid)
+{
+    if((mid >= ANNA_MID_ADD_FLOAT) && (mid <= ANNA_MID_DECREASE_ASSIGN_FLOAT))
+	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
+    
+    return 0;
+}
+
+static int anna_short_circut_instr(anna_node_call_t *node, anna_stack_template_t *stack)
+{
+    anna_type_t *obj_type = node->object->return_type;
+    anna_member_t *mem = anna_member_get(obj_type, node->mid);
+
+    anna_object_t *const_obj = anna_static_invoke_as_access(
+	node, stack);
+    anna_object_t *const_obj2 = anna_node_static_invoke_try(
+	node->object, stack);
+    
+    if(!(const_obj && (!mem->is_method || const_obj2)))
+    {
+	if(obj_type == int_type && node->child_count == 1 && node->child[0]->return_type == int_type)
+	{
+	    return anna_short_circut_instr_int_int(node->mid);
+	}
+	if(obj_type == float_type && node->child_count == 1 && node->child[0]->return_type == float_type)
+	{
+	    return anna_short_circut_instr_float_float(node->mid);
+	}
+    }
+    return 0;
+}
+
 
 static size_t anna_bc_stack_size(char *code)
 {
@@ -88,6 +132,17 @@ static size_t anna_bc_stack_size(char *code)
 	    case ANNA_INSTR_TRAMPOLENE:
 	    case ANNA_INSTR_CAST:
 	    case ANNA_INSTR_ADD_INT:
+	    case ANNA_INSTR_SUB_INT:
+	    case ANNA_INSTR_MUL_INT:
+	    case ANNA_INSTR_DIV_INT:
+	    case ANNA_INSTR_INCREASE_ASSIGN_INT:
+	    case ANNA_INSTR_DECREASE_ASSIGN_INT:
+	    case ANNA_INSTR_ADD_FLOAT:
+	    case ANNA_INSTR_SUB_FLOAT:
+	    case ANNA_INSTR_MUL_FLOAT:
+	    case ANNA_INSTR_DIV_FLOAT:
+	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
+	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	    {
 		break;
 	    }
@@ -321,6 +376,14 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
+	    if(anna_short_circut_instr(node2, fun->stack_template))
+	    {
+		return anna_vm_size(fun, node2->object) + 
+		    anna_vm_size(fun, node2->child[0]) + 
+		    sizeof(anna_op_null_t);
+		
+	    }
+
 	    size_t res = 0;
 	    
 	    anna_type_t *obj_type = node2->object->return_type;
@@ -330,7 +393,6 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		node2, fun->stack_template);
 	    anna_object_t *const_obj2 = anna_node_static_invoke_try(
 		node2->object, fun->stack_template);
-	    int short_circut=0;
 
 	    if(const_obj && (!mem->is_method || const_obj2))
 	    {
@@ -344,22 +406,11 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 	    }
 	    else
 	    {
-		if(node2->mid == ANNA_MID_ADD_INT && obj_type == int_type && node2->child[0]->return_type == int_type)
-		{
-		    short_circut=1;
-		    res +=
-			anna_vm_size(fun, node2->object) + 
-			sizeof(anna_op_null_t);
-		}
-		else{
-		    res +=
-			anna_vm_size(fun, node2->object) + 
-			sizeof(anna_op_member_t);
-		}
+		res +=
+		    anna_vm_size(fun, node2->object) + 
+		    sizeof(anna_op_member_t);
 	    }
-	    if(!short_circut)
-	    {
-		res += sizeof(anna_op_count_t);
+	    res += sizeof(anna_op_count_t);
 	    
 	    anna_function_type_t *template = anna_function_type_unwrap(
 		mem->type);
@@ -385,8 +436,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		    res += sizeof(anna_op_null_t);
 		}
 	    }
-	    }
-	    
+	    	    
 	    return res;
 	}	
 	
@@ -851,17 +901,22 @@ static void anna_vm_compile_i(
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    
+	    if(anna_short_circut_instr(node2, fun->stack_template))
+	    {
+		anna_vm_compile_i(fun, node2->object, ptr, 0);
+		anna_vm_compile_i(fun, node2->child[0], ptr, 0);
+		anna_vm_null(ptr, anna_short_circut_instr(node2, fun->stack_template));
+		break;
+	    }
+	    
 	    anna_type_t *obj_type = node2->object->return_type;
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
-
+	    
 	    anna_object_t *const_obj = anna_static_invoke_as_access(
 		node2, fun->stack_template);
 	    anna_object_t *const_obj2 = anna_node_static_invoke_try(
 		node2->object, fun->stack_template);
-
-	    int short_circut=0;
 	    
-
 	    if(const_obj && (!mem->is_method || const_obj2))
 	    {
 		anna_vm_const(ptr, const_obj);
@@ -874,33 +929,19 @@ static void anna_vm_compile_i(
 	    {
 		int instr;
 
-		if(node2->mid == ANNA_MID_ADD_INT && obj_type == int_type && node2->child[0]->return_type == int_type)
+		if(mem->is_method)
 		{
-		    short_circut=1;
-		    anna_vm_compile_i(fun, node2->object, ptr, 0);
-		    anna_vm_compile_i(fun, node2->child[0], ptr, 0);
-		    anna_vm_null(ptr, ANNA_INSTR_ADD_INT);
+		    instr = ANNA_INSTR_MEMBER_GET_THIS;
 		}
-		else
-		{
-		    if(mem->is_method)
-		    {
-			instr = ANNA_INSTR_MEMBER_GET_THIS;
-		    }
-		    else if(mem->is_property){
-			instr = mem->is_static?ANNA_INSTR_STATIC_PROPERTY_GET:ANNA_INSTR_PROPERTY_GET;
-		    }
-		    else{
-			instr = mem->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
-		    }
-		    anna_vm_compile_i(fun, node2->object, ptr, 0);
-		    anna_vm_member(ptr, instr, node2->mid);
+		else if(mem->is_property){
+		    instr = mem->is_static?ANNA_INSTR_STATIC_PROPERTY_GET:ANNA_INSTR_PROPERTY_GET;
 		}
-		
+		else{
+		    instr = mem->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
+		}
+		anna_vm_compile_i(fun, node2->object, ptr, 0);
+		anna_vm_member(ptr, instr, node2->mid);
 	    }
-
-	    if(!short_circut)
-	    {
 		
 	    anna_function_type_t *template = anna_function_type_unwrap(
 		mem->type);
@@ -931,7 +972,6 @@ static void anna_vm_compile_i(
 	    }
 	    
 	    anna_vm_call(ptr, ANNA_INSTR_CALL, template->input_count);
-	    }
 	    
 	    break;
 	}	
