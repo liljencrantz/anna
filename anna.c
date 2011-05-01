@@ -273,11 +273,12 @@ size_t anna_native_method_create(
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
     m->is_method=1;
     type->static_member[m->offset] = 
-	anna_function_wrap(
-	    anna_native_create(
-		name, flags, func, result, 
-		argc, argv, argn,
-		0));
+	anna_from_obj(
+	    anna_function_wrap(
+		anna_native_create(
+		    name, flags, func, result, 
+		    argc, argv, argn,
+		    0)));
     return (size_t)mid;
 }
 
