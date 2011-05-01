@@ -105,6 +105,7 @@ void anna_mid_init()
     anna_mid_put(L"__sub__Float__", ANNA_MID_SUB_FLOAT);
     anna_mid_put(L"__mul__Float__", ANNA_MID_MUL_FLOAT);
     anna_mid_put(L"__div__Float__", ANNA_MID_DIV_FLOAT);
+    anna_mid_put(L"__exp__Float__", ANNA_MID_EXP_FLOAT);
     anna_mid_put(L"__increaseAssign__Float__", ANNA_MID_INCREASE_ASSIGN_FLOAT);
     anna_mid_put(L"__decreaseAssign__Float__", ANNA_MID_DECREASE_ASSIGN_FLOAT);
 }

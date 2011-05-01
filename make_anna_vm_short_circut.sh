@@ -11,8 +11,7 @@ for i in "ADD +" "SUB -" "INCREASE_ASSIGN +" "DECREASE_ASSIGN -" "MUL *" "DIV /"
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
 
-echo "
-    
+echo "    
   ANNA_LAB_${name}_INT:
     {
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
@@ -45,19 +44,24 @@ echo "
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
-
 "
 
-echo "
-    
+done
+
+for i in "ADD v1 + v2" "SUB v1 - v2" "INCREASE_ASSIGN v1 + v2" "DECREASE_ASSIGN v1 - v2" "MUL v1 * v2" "DIV v1 / v2" "EXP pow(v1, v2)"; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+
+echo "    
   ANNA_LAB_${name}_FLOAT:
     {
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
-  //          wprintf(L\"Wee %f $op %f = %f\n\", anna_as_float(i1), anna_as_float(i2), anna_as_float(i1) $op anna_as_float(i2));
-	    anna_vmstack_push_float(stack, anna_as_float(i1) $op anna_as_float(i2));
+            double v1 = anna_as_float(i1);
+            double v2 = anna_as_float(i2);
+	    anna_vmstack_push_float(stack, $op);
 	}
 	else
 	{
@@ -83,6 +87,5 @@ echo "
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
-
 "
 done

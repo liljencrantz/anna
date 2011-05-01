@@ -141,6 +141,7 @@ static size_t anna_bc_stack_size(char *code)
 	    case ANNA_INSTR_SUB_FLOAT:
 	    case ANNA_INSTR_MUL_FLOAT:
 	    case ANNA_INSTR_DIV_FLOAT:
+	    case ANNA_INSTR_EXP_FLOAT:
 	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
 	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	    {

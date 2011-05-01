@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
 
 #include "common.h"
 #include "anna.h"
@@ -133,6 +134,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_SUB_FLOAT,
 	    &&ANNA_LAB_MUL_FLOAT,
 	    &&ANNA_LAB_DIV_FLOAT,
+	    &&ANNA_LAB_EXP_FLOAT,
 	    &&ANNA_LAB_INCREASE_ASSIGN_FLOAT,
 	    &&ANNA_LAB_DECREASE_ASSIGN_FLOAT,
 	}
@@ -638,6 +640,7 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_SUB_FLOAT:
 	case ANNA_INSTR_MUL_FLOAT:
 	case ANNA_INSTR_DIV_FLOAT:
+	case ANNA_INSTR_EXP_FLOAT:
 	case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
 	case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	{
@@ -854,6 +857,7 @@ void anna_bc_print(char *code)
 	    case ANNA_INSTR_SUB_FLOAT:
 	    case ANNA_INSTR_MUL_FLOAT:
 	    case ANNA_INSTR_DIV_FLOAT:
+	    case ANNA_INSTR_EXP_FLOAT:
 	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
 	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	    {
@@ -930,6 +934,7 @@ void anna_vm_mark_code(anna_function_t *f)
 	    case ANNA_INSTR_SUB_FLOAT:
 	    case ANNA_INSTR_MUL_FLOAT:
 	    case ANNA_INSTR_DIV_FLOAT:
+	    case ANNA_INSTR_EXP_FLOAT:
 	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
 	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	    {
