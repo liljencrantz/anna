@@ -9,6 +9,7 @@
 #include "util.h"
 #include "anna.h"
 #include "anna_alloc.h"
+#include "anna_vm.h"
 
 static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {
@@ -48,7 +49,7 @@ anna_object_t *anna_object_create_raw(size_t sz)
     int i;
     for(i=0; i<sz; i++)
     {
-	result->member[i]=null_object;
+	result->member[i]=anna_from_obj(null_object);
     }
     
     return result;

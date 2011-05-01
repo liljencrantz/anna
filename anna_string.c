@@ -252,7 +252,7 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
     }
     else
     {
-	anna_object_t *fun_object = *anna_static_member_addr_get_mid(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *fun_object = anna_as_obj_fast(*anna_static_member_addr_get_mid(o->type, ANNA_MID_TO_STRING));
 	anna_entry_t *callback_param[] = 
 	    {
 		anna_from_obj(this),
@@ -302,7 +302,7 @@ static anna_vmstack_t *anna_string_ljoin_callback(anna_vmstack_t *stack, anna_ob
 	param[2] = anna_from_int(idx+1);
 	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = o->type->static_member[tos_mem->offset];
+	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
 	anna_vm_callback_reset(stack, meth, 1, (anna_entry_t **)&o);
     }
     else
@@ -341,7 +341,7 @@ static anna_vmstack_t *anna_string_i_ljoin(anna_vmstack_t *stack, anna_object_t 
 	    
 	    anna_object_t *o = anna_as_obj(anna_list_get(list, 0));
 	    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	    anna_object_t *meth = o->type->static_member[tos_mem->offset];
+	    anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
 
 	    stack = anna_vm_callback_native(
 		stack,
@@ -392,7 +392,7 @@ static anna_vmstack_t *anna_string_i_append(anna_vmstack_t *stack, anna_object_t
 	;
 	
 	anna_member_t *tos_mem = anna_member_get(obj->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = obj->type->static_member[tos_mem->offset];
+	anna_object_t *meth = anna_as_obj_fast(obj->type->static_member[tos_mem->offset]);
 	
 	stack = anna_vm_callback_native(
 	    stack,
@@ -635,7 +635,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	2, 
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
+    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
 
@@ -751,7 +751,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	3,
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
+    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
     anna_type_t *range_argv[] = 
@@ -778,7 +778,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	2,
 	range_argv, 
 	range_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
+    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
     mmid = anna_native_method_create(
@@ -791,7 +791,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	3,
 	range_argv, 
 	range_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(string_type, mmid));
+    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
     

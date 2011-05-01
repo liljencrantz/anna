@@ -710,7 +710,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	2, 
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(range_type, mmid));
+    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(range_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
     
     anna_native_property_create(

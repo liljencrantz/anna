@@ -100,7 +100,7 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
 	param[1] = anna_from_int(idx+1);
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = o->type->static_member[tos_mem->offset];
+	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
 	anna_vm_callback_reset(stack, meth, 1, (anna_entry_t **)&o);
     }
     else
@@ -129,7 +129,7 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 	
 	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = o->type->static_member[tos_mem->offset];
+	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
 	
 	stack = anna_vm_callback_native(
 	    stack,
@@ -167,8 +167,8 @@ static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *cont = anna_continuation_create(
 	stack,
 	object_type)->wrapper;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = (anna_object_t *)stack;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_object_t *)stack->code;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)stack;
+    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)stack->code;
     
     return anna_vm_callback_native(
 	stack, &anna_i_callcc_callback, 0, 0, 
@@ -177,8 +177,8 @@ static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *meth = anna_vmstack_pop_object(stack);
-    anna_object_t *obj = anna_vmstack_pop_object(stack);
+    anna_entry_t *meth = anna_vmstack_pop_entry(stack);
+    anna_entry_t *obj = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
     
     anna_object_t *res = anna_method_wrapper_create(

@@ -202,7 +202,7 @@ mid_t anna_member_create(
 	if(storage & ANNA_MEMBER_STATIC) {
 	    member->offset = anna_type_static_member_allocate(type);
 	    type->static_member_blob[type->static_member_count-1] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
-	    type->static_member[type->static_member_count-1] = null_object;
+	    type->static_member[type->static_member_count-1] = anna_from_obj(null_object);
 	} else {
 	    type->member_blob = realloc(
 		type->member_blob, 
@@ -252,7 +252,7 @@ anna_member_t *anna_member_method_search(
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
 	if(member->is_static && member->offset>=0 && member->type != null_type)
 	{
-	    anna_object_t *mem_val = type->static_member[member->offset];
+	    anna_object_t *mem_val = anna_as_obj(type->static_member[member->offset]);
 	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
 	    if(!mem_fun)
 	    {

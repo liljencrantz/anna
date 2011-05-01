@@ -253,7 +253,7 @@ void anna_function_type_create(
 	    null_type);
     }
     
-    (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_object_t *)key;
+    (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_entry_t *)key;
 
     return;
 }
@@ -280,14 +280,14 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
     else 
     {
 //	wprintf(L"Not a direct function, check for __call__ member\n");
-	anna_object_t **function_wrapper_ptr = 
+	anna_entry_t **function_wrapper_ptr = 
 	    anna_static_member_addr_get_mid(
 		type,
 		ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)
 	{
 	    //wprintf(L"Found, we're unwrapping it now\n");
-	    return anna_function_type_unwrap((*function_wrapper_ptr)->type);	    
+	    return anna_function_type_unwrap(anna_as_obj(*function_wrapper_ptr)->type);	    
 	}
 	return 0;	
     }

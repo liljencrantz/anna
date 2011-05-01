@@ -510,7 +510,7 @@ static void anna_type_prepare_member_internal(
     {
 	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
 	member->is_method = 1;	
-	*anna_static_member_addr_get_mid(type, mid) = anna_function_wrap(clo->payload);
+	*anna_static_member_addr_get_mid(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
 	anna_function_setup_interface(clo->payload, stack);
 	anna_function_setup_body(clo->payload);
     }
@@ -821,10 +821,12 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     else if(type == hash_type)
     {
 	anna_type_t *arg_type = call->child[0]->return_type;
-	anna_object_t **spec1 = anna_static_member_addr_get_mid(
-	    arg_type, ANNA_MID_PAIR_SPECIALIZATION1);
-	anna_object_t **spec2 = anna_static_member_addr_get_mid(
-	    arg_type, ANNA_MID_PAIR_SPECIALIZATION2);
+	anna_entry_t **spec1 = 
+	    anna_static_member_addr_get_mid(
+		arg_type, ANNA_MID_PAIR_SPECIALIZATION1);
+	anna_entry_t **spec2 =
+	    anna_static_member_addr_get_mid(
+		arg_type, ANNA_MID_PAIR_SPECIALIZATION2);
 	
 	if(spec1 && spec2)
 	{	    
@@ -859,9 +861,10 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    &call->location,
 	    L"__block__"));
 
-    anna_object_t *constructor_obj = *anna_static_member_addr_get_mid(
-	type,
-	ANNA_MID_INIT_PAYLOAD);
+    anna_object_t *constructor_obj = anna_as_obj_fast(
+	*anna_static_member_addr_get_mid(
+	    type,
+	    ANNA_MID_INIT_PAYLOAD));
     anna_function_t *constr = anna_function_unwrap(constructor_obj);
 
     if(call->child_count > constr->input_count)
