@@ -353,8 +353,7 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	size_t sz = anna_list_get_size(obj);
 	for(i=0; i<sz; i++)
 	{
-	    anna_entry_t *e = anna_list_get(obj, i);
-	    anna_alloc_mark_entry(e);
+	    anna_alloc_mark_entry(anna_list_get(obj, i));
 	}	
     }
     

@@ -26,6 +26,13 @@ mid_t anna_member_create(
     int storage,
     anna_type_t *member_type);
 
+mid_t anna_member_create_blob(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    int storage,
+    size_t sz);
+
 size_t anna_native_property_create(
     anna_type_t *type,
     mid_t mid,

@@ -85,26 +85,10 @@ void anna_float_type_create(anna_stack_template_t *stack)
 	    L"this", L"other"
 	}
     ;
-
-    anna_member_create(
+    
+    anna_member_create_blob(
 	float_type, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload",
-	0, null_type);
-    /*
-      If we can't fit a double into a void * on this platform, add a
-      second dummy payload. This assumes that sizeof(double) is never
-      more than twice the size of sizeof(void *).
-
-      This code also assumes that consecutively registered members
-      will be stored next to each other, which is currently true, but
-      we will need to keep this in mind when trying to optimize member
-      layout in the future.
-    */
-    if(sizeof(double) > sizeof(void *)) 
-    {
-	anna_member_create(
-	    float_type, -1,  L"!floatPayload2", 0, 
-	    null_type);
-    }
+	0, sizeof(double));
     
     anna_native_method_create(
 	float_type,

@@ -66,31 +66,9 @@ static anna_vmstack_t *anna_complex_to_string(anna_vmstack_t *stack, anna_object
 void anna_complex_type_create(anna_stack_template_t *stack)
 {
 
-    anna_member_create(
+    anna_member_create_blob(
 	complex_type, ANNA_MID_COMPLEX_PAYLOAD,  L"!complexPayload",
-	0, null_type);
-    anna_member_create(
-	complex_type, -1,  L"!complexPayload2", 0, 
-	null_type);
-    /*
-      If we can't fit a complex into a void * on this platform, add a
-      second dummy payload. This assumes that sizeof(complex) is never
-      more than twice the size of sizeof(void *).
-
-      This code also assumes that consecutively registered members
-      will be stored next to each other, which is currently true, but
-      we will need to keep this in mind when trying to optimize member
-      layout in the future.
-    */
-    if(sizeof(complex double) > sizeof(void *)*2) 
-    {
-	anna_member_create(
-	    complex_type, -1,  L"!complexPayload3", 0, 
-	    null_type);
-	anna_member_create(
-	    complex_type, -1,  L"!complexPayload4", 0, 
-	    null_type);
-    }
+	0, sizeof(complex double));
 
     anna_type_t *argv[] = 
 	{

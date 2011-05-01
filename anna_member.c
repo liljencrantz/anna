@@ -227,6 +227,37 @@ mid_t anna_member_create(
     return mid;
 }
 
+mid_t anna_member_create_blob(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    int storage,
+    size_t sz)
+{
+    mid_t res = anna_member_create(
+	type,
+	mid,
+	name,
+	storage,
+	null_type);
+    
+    int i;
+    string_buffer_t sb;
+    sb_init(&sb);
+    for(i=1; i<(((sz+1)/sizeof(anna_entry_t *))+1);i++)
+    {
+	sb_clear(&sb);
+	sb_printf(&sb, L"%ls%d", name, i+1);
+	anna_member_create(
+	    type, -1, sb_content(&sb), 
+	    storage & ANNA_MEMBER_STATIC, null_type);
+    }
+    sb_destroy(&sb);
+    
+    return res;
+}
+
+
 anna_member_t *anna_member_get(anna_type_t *type, mid_t mid)
 {
     return type->mid_identifier[mid];

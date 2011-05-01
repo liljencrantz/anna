@@ -292,23 +292,10 @@ static void anna_hash_type_create_internal(
     anna_type_t *spec1,
     anna_type_t *spec2)
 {
-    anna_member_create(
+    anna_member_create_blob(
 	type, ANNA_MID_HASH_PAYLOAD,  L"!hashPayload",
-	0, null_type);
-
-    int i;
-    string_buffer_t sb;
-    sb_init(&sb);
-    for(i=1; i<(((sizeof(hash_table_t)+1)/sizeof(anna_object_t *))+1);i++)
-    {
-	sb_clear(&sb);
-	sb_printf(&sb, L"!hashPayload%d", i+1);
-	anna_member_create(
-	    type, anna_mid_get(sb_content(&sb)), sb_content(&sb), 
-	    0, null_type);
-    }
-    sb_destroy(&sb);
-
+	0, sizeof(hash_table_t));
+    
     anna_member_create(
 	type, ANNA_MID_HASH_SPECIALIZATION1,  L"!hashSpecialization1",
 	1, null_type);
