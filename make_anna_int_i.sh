@@ -35,7 +35,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn);
-    fun = anna_function_unwrap(*anna_static_member_addr_get_mid(int_type, mmid));
+    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(int_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
 "

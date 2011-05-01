@@ -334,7 +334,7 @@ static void anna_node_calculate_type_internal(
 //		    debug(4,L"Hmmm, node is of type type...");
 //		    anna_node_print(4, n);
 		    
-		    anna_type_t *ctype = anna_type_unwrap(type->static_member[member->offset]);
+		    anna_type_t *ctype = anna_type_unwrap(anna_as_obj(type->static_member[member->offset]));
 		    
 		    if(ctype)
 		    {
@@ -746,12 +746,12 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    
 		anna_node_type_t *tn = (anna_node_type_t *)this2->function;
 		
-		anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+		anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
 		ftk = anna_function_type_unwrap(
-		    (*constructor_ptr)->type);
+		    anna_as_obj(*constructor_ptr)->type);
 		if(ftk)
 		{
 		    tmpl = ftk->input_type+1;

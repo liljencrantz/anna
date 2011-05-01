@@ -58,24 +58,23 @@ static void anna_null_type_create()
     wchar_t *argn[]={L"this"};
     anna_type_static_member_allocate(null_type);
     
-    null_type->static_member[0] = 
+    //null_type->static_member[0] = null_object;
+    
+    anna_object_t *null_function = 
 	anna_function_wrap(
 	    anna_native_create(
 		L"!nullFunction", 0, 
 		&anna_vm_null_function, 
 		null_type, 1, argv, argn,
 		0));
-    //null_type->static_member[0] = null_object;
-    
-    anna_object_t *null_function;  
-    null_function = null_type->static_member[0];
+    null_type->static_member[0]= (anna_entry_t *)null_function;
     hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
     hash_put(&null_type->name_identifier, L"!null_member", null_member);
     
     for(i=0; i<anna_mid_get_count();i++) {
 	null_type->mid_identifier[i] = null_member;
     }
-    assert(*anna_static_member_addr_get_mid(null_type, 5) == null_function);    
+    assert(*anna_static_member_addr_get_mid(null_type, 5) == (anna_entry_t *)null_function);    
 }
 
 anna_stack_template_t *anna_lang_load()

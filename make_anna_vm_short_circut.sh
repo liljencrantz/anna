@@ -33,8 +33,7 @@ echo "
 	    {
   //          wprintf(L\"Fallback for int $name \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
-		anna_object_t *wrapped;
-		wrapped = o1->type->static_member[m->offset];
+		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
@@ -72,8 +71,7 @@ echo "
 	    {
 //            wprintf(L\"Fallback for float $name %d %d %f %f\n\", anna_is_float(i1), anna_is_float(i2), anna_as_float(i1), anna_as_float(i2));
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_FLOAT];
-		anna_object_t *wrapped;
-		wrapped = o1->type->static_member[m->offset];
+		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);

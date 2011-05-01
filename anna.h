@@ -184,6 +184,7 @@ enum anna_mid_enum
 */
 #define ANNA_GC_ALLOC 2
 
+typedef struct {} anna_entry_t;
 
 /**
    The struct representing an object type. 
@@ -265,7 +266,7 @@ struct anna_type
     /**
        An array containing all static members.
      */
-    struct anna_object **static_member;
+    anna_entry_t **static_member;
     /**
        A hash of all template specializations of this type.
     */
@@ -343,7 +344,7 @@ struct anna_object
        The array of members. To decode what member lives at what
        offset, use the information stored in the type object.
      */
-    struct anna_object *member[];
+    anna_entry_t *member[];
 };
 
 struct anna_function
@@ -437,8 +438,6 @@ struct anna_node_list
     size_t idx;
     struct anna_node_list *parent;
 };
-
-typedef struct {} anna_entry_t;
 
 struct anna_vmstack
 {
@@ -539,10 +538,10 @@ anna_object_t *anna_construct(
     anna_type_t *type, struct anna_node_call *param,
     struct anna_stack_template *stack);
 
-__pure anna_object_t **anna_static_member_addr_get_mid(
+__pure anna_entry_t **anna_static_member_addr_get_mid(
     anna_type_t *type, mid_t mid);
 
-__pure anna_object_t **anna_member_addr_get_mid(
+__pure anna_entry_t **anna_member_addr_get_mid(
     anna_object_t *obj, mid_t mid);
 
 size_t anna_native_method_create(

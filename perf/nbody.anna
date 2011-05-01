@@ -112,9 +112,9 @@ type NBodySystem {
     }
 }
 
-var pi = 3.141592653589793;
-var solarMass = 39.478417604357428;
-var daysPerYear = 365.24;
+const pi = 3.141592653589793;
+const solarMass = 39.478417604357428;
+const daysPerYear = 365.24;
 
 def jupiter(){
     var p = Body();

@@ -43,7 +43,7 @@ anna_node_t *anna_node_null=0;
 
 anna_stack_template_t *stack_global;
 
-__pure anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
+__pure anna_entry_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
 {
     /*
       debug(D_SPAM,L"Get mid %d on object\n", mid);
@@ -67,7 +67,7 @@ __pure anna_object_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
     }
 }
 
-__pure anna_object_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
+__pure anna_entry_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
 {
     /*  debug(D_SPAM,L"Get mid %d on object\n", mid);
 	debug(D_SPAM,L"of type %ls\n", obj->type->name);

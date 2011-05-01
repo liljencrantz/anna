@@ -372,7 +372,7 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 	L"!stackTypePayload",
 	1,
 	null_type);
-    (*anna_static_member_addr_get_mid(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_object_t *)stack;
+    (*anna_static_member_addr_get_mid(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_entry_t *)stack;
     return res;
 }
 
@@ -399,7 +399,7 @@ void anna_stack_populate_wrapper(anna_stack_template_t *stack)
 	    mem_type);
 	*anna_static_member_addr_get_mid(
 	    res,
-	    mid) = initial_value;	
+	    mid) = (anna_entry_t *)initial_value;	
     }
     al_destroy(&names);
     
@@ -412,7 +412,7 @@ anna_object_t *anna_stack_wrap(anna_stack_template_t *stack)
     {
 	anna_type_t *t = anna_stack_type_create(stack);
 	stack->wrapper = anna_object_create(t);
-	stack->wrapper->member[0] = (anna_object_t *)stack;
+	stack->wrapper->member[0] = (anna_entry_t *)stack;
     }
     return stack->wrapper;
 }

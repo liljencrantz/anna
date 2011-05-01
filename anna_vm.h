@@ -85,8 +85,6 @@ static inline anna_entry_t *anna_from_float(double val)
     double *res = anna_alloc_blob(sizeof(double));
     *res = val;
     res  = (double *)((long)res | ANNA_STACK_ENTRY_FLOAT);
-    assert(anna_is_float((anna_entry_t *)res));
-    assert(anna_as_float((anna_entry_t *)res) == val);
     return (anna_entry_t *)res;
 }
 
@@ -211,11 +209,11 @@ static inline anna_entry_t *anna_as_native(anna_object_t *obj)
     {
 	return anna_from_int(anna_as_int(e));
     }
-    if(obj->type == float_type)
+    else if(obj->type == float_type)
     {
 	return anna_from_float(anna_as_float(e));
     }
-    if(obj->type == char_type)
+    else if(obj->type == char_type)
     {
 	return anna_from_char(anna_as_char(e));
     }
@@ -254,32 +252,27 @@ anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *stack, anna_object_t *me)
 
 static inline void anna_vmstack_push_object(anna_vmstack_t *stack, anna_object_t *val)
 {
-    *stack->top= (anna_entry_t *)val;
-    stack->top++;
+    *(stack->top++)= (anna_entry_t *)val;
 }
 
 static inline void anna_vmstack_push_entry(anna_vmstack_t *stack, anna_entry_t *val)
 {
-    *stack->top= val;
-    stack->top++;
+    *(stack->top++)= val;
 }
 
 static inline void anna_vmstack_push_int(anna_vmstack_t *stack, int val)
 {
-    *stack->top= anna_from_int(val);
-    stack->top++;
+    *(stack->top++)= anna_from_int(val);
 }
 
 static inline void anna_vmstack_push_char(anna_vmstack_t *stack, wchar_t val)
 {
-    *stack->top= anna_from_char(val);
-    stack->top++;
+    *(stack->top++)= anna_from_char(val);
 }
 
 static inline void anna_vmstack_push_float(anna_vmstack_t *stack, double val)
 {
-    *stack->top= (anna_entry_t *)anna_from_float(val);
-    stack->top++;
+    *(stack->top++)= (anna_entry_t *)anna_from_float(val);
 }
 
 static inline anna_object_t *anna_vmstack_pop_object(anna_vmstack_t *stack)
@@ -290,20 +283,17 @@ static inline anna_object_t *anna_vmstack_pop_object(anna_vmstack_t *stack)
 
 static inline int anna_vmstack_pop_int(anna_vmstack_t *stack)
 {
-    stack->top--;
-    return anna_as_int(*(stack->top));
+    return anna_as_int(*(--stack->top));
 }
 
 static inline anna_object_t *anna_vmstack_pop_object_fast(anna_vmstack_t *stack)
 {
-    stack->top--;
-    return (anna_object_t *)*(stack->top);
+    return (anna_object_t *)*(--stack->top);
 }
 
 static inline anna_entry_t *anna_vmstack_pop_entry(anna_vmstack_t *stack)
 {
-    stack->top--;
-    return *(stack->top);
+    return *(--stack->top);
 }
 
 __pure static inline anna_object_t *anna_vmstack_peek_object(anna_vmstack_t *stack, size_t off)

@@ -294,7 +294,7 @@ anna_object_t *anna_node_static_invoke_try(
 		}
 		
 		//wprintf(L"Weee member found object\n");
-		return *anna_member_addr_get_mid(obj, this2->mid);
+		return anna_as_obj(*anna_member_addr_get_mid(obj, this2->mid));
 	    }
 	    else
 	    {

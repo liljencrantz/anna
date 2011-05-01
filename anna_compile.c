@@ -285,12 +285,12 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		anna_node_type_t *tn = (anna_node_type_t *)node2->function;
 //		anna_type_print(tn->payload);
 		
-		anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+		anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
 		template = anna_function_type_unwrap(
-		    (*constructor_ptr)->type);
+		    anna_as_obj(*constructor_ptr)->type);
 		res += sizeof(anna_op_null_t);
 		ra = template->input_count-1;
 	    }
@@ -491,7 +491,7 @@ static void anna_vm_string(char **ptr, anna_object_t *val)
     anna_op_const_t op = 
 	{
 	    ANNA_INSTR_STRING,
-	    val
+	    anna_from_obj(val)
 	}
     ;
     memcpy(*ptr, &op, sizeof(anna_op_const_t));
@@ -746,12 +746,12 @@ static void anna_vm_compile_i(
 		anna_node_type_t *tn = (anna_node_type_t *)node2->function;
 //		anna_type_print(tn->payload);
 		
-		anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+		anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
 		template = anna_function_type_unwrap(
-		    (*constructor_ptr)->type);
+		    anna_as_obj(*constructor_ptr)->type);
 		anna_vm_null(ptr, ANNA_INSTR_CONSTRUCT);
 		ra = template->input_count-1;
 	    }
@@ -1148,8 +1148,8 @@ anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *parent, anna_object_t *co
     int argc = op->param + 1;
     anna_entry_t **argv = parent->top - argc;
     
-    anna_object_t *object = *anna_member_addr_get_mid(cont, ANNA_MID_THIS);
-    anna_object_t *method = *anna_member_addr_get_mid(cont, ANNA_MID_METHOD);
+    anna_object_t *object = anna_as_obj(*anna_member_addr_get_mid(cont, ANNA_MID_THIS));
+    anna_object_t *method = anna_as_obj(*anna_member_addr_get_mid(cont, ANNA_MID_METHOD));
     argv[0] = anna_from_obj(object);
     
     anna_vmstack_t *stack = anna_vm_callback(parent, method, argc, argv);

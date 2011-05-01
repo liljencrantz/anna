@@ -248,10 +248,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	
 	anna_object_t *result = anna_object_create(tp);
 	
-	anna_object_t **constructor_ptr = anna_static_member_addr_get_mid(
+	anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
 	    tp,
 	    ANNA_MID_INIT_PAYLOAD);
-	anna_vmstack_push_object(stack, *constructor_ptr);
+	anna_vmstack_push_object(stack, anna_as_obj_fast(*constructor_ptr));
 	anna_vmstack_push_object(stack, result);
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
@@ -356,8 +356,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 	else
 	{
-	    anna_object_t *res;
-	    res = obj->member[m->offset];		    
+	    anna_entry_t *res = obj->member[m->offset];		    
 	    anna_vmstack_push_entry(stack, res);
 	}
 	
@@ -383,9 +382,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif 
-	anna_object_t *res;
-	res = obj->type->static_member[m->offset];
-	anna_vmstack_push_object(stack, res);
+	anna_vmstack_push_entry(stack, obj->type->static_member[m->offset]);
 	stack->code += sizeof(*op);
 
 	goto *jump_label[(int)*stack->code];
@@ -416,9 +413,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 	else
 	{
-	    anna_object_t *method = obj->type->static_member[m->getter_offset];
+	    anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->getter_offset]);
 	    anna_function_t *fun = anna_function_unwrap(method);
-	
+	    
 	    anna_vmstack_push_object(stack, method);
 	    anna_vmstack_push_object(stack, obj);
 	    stack->code += sizeof(*op);		    
@@ -447,7 +444,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 #endif 
 	
-	anna_object_t *method = obj->type->static_member[m->getter_offset];
+	anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->getter_offset]);
 	anna_function_t *fun = anna_function_unwrap(method);
 	
 	anna_vmstack_push_object(stack, method);
@@ -482,16 +479,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif 
-	anna_object_t *res;
-
-	if(obj->type == float_type)
-	{
-	    //    wprintf(L"FAS %ls\n", anna_mid_get_reverse(op->mid));	    
-	}
+	anna_entry_t *res = obj->type->static_member[m->offset];
 	
-	res = obj->type->static_member[m->offset];
-	
-	anna_vmstack_push_object(stack, res);
+	anna_vmstack_push_entry(stack, res);
 	anna_vmstack_push_object(stack, obj);
 		
 	stack->code += sizeof(*op);
@@ -520,7 +510,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 	if(m->is_property)
 	{
-	    anna_object_t *method = obj->type->static_member[m->setter_offset];
+	    anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->setter_offset]);
 	    anna_function_t *fun = anna_function_unwrap(method);
 	    
 	    anna_vmstack_pop_object(stack);
@@ -851,6 +841,23 @@ void anna_bc_print(char *code)
 	    case ANNA_INSTR_TRAMPOLENE:
 	    {
 		wprintf(L"Create trampolene\n\n");
+		break;
+	    }
+	    
+	    case ANNA_INSTR_ADD_INT:
+	    case ANNA_INSTR_SUB_INT:
+	    case ANNA_INSTR_MUL_INT:
+	    case ANNA_INSTR_DIV_INT:
+	    case ANNA_INSTR_INCREASE_ASSIGN_INT:
+	    case ANNA_INSTR_DECREASE_ASSIGN_INT:
+	    case ANNA_INSTR_ADD_FLOAT:
+	    case ANNA_INSTR_SUB_FLOAT:
+	    case ANNA_INSTR_MUL_FLOAT:
+	    case ANNA_INSTR_DIV_FLOAT:
+	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
+	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
+	    {
+		wprintf(L"Short sircut arithmetic operator\n\n");
 		break;
 	    }
 	    
