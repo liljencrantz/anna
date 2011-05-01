@@ -464,7 +464,7 @@ static anna_vmstack_t *anna_list_find_callback(anna_vmstack_t *stack, anna_objec
     int idx = anna_as_int(param[2]);
     size_t sz = anna_list_get_size(list);
 
-    if(anna_is_obj(value) && anna_as_obj(value) != null_object)
+    if(!ANNA_VM_NULL(value))
     {
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_list_get(list, idx-1));
@@ -659,7 +659,7 @@ static anna_vmstack_t *anna_list_in_callback(anna_vmstack_t *stack, anna_object_
     int idx = anna_as_int(param[2]);
     size_t sz = anna_list_get_size(list);
     
-    if(anna_is_obj(ret) && anna_as_obj(ret) != null_object)
+    if(!ANNA_VM_NULL(ret))
     {
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_from_int(idx-1));
@@ -759,7 +759,7 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
     anna_object_t *list = anna_as_obj(param[0]);
     anna_object_t *range = anna_as_obj(param[1]);
     
-    if(unlikely(anna_is_obj(param[2]) && anna_as_obj_fast(param[2]) == null_object))
+    if(unlikely(ANNA_VM_NULL(param[2])))
 	repl = anna_list_create(object_type);
     else
 	repl = anna_as_obj(param[2]);

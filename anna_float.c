@@ -50,14 +50,14 @@ static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
     double v2 = anna_as_float(param[1]);
     if(v1 > v2)
     {
-	anna_vmstack_push_object(stack, anna_int_one);
+	anna_vmstack_push_entry(stack, anna_from_int(1));
     }
     else if(v1 < v2)
     {
-	anna_vmstack_push_object(stack, anna_int_minus_one);
+	anna_vmstack_push_entry(stack, anna_from_int(-1));
     }
     else{
-	anna_vmstack_push_object(stack, anna_int_zero);
+	anna_vmstack_push_entry(stack, anna_from_int(0));
     }    
     return stack;
 }

@@ -48,7 +48,7 @@ static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_
     else
     {
         int res_int = anna_as_int(res);
-        anna_vmstack_push_object(stack, (res_int $op 0)? anna_int_one:null_object);
+        anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):anna_from_obj(null_object));
     }
     return stack;
 }
@@ -58,7 +58,7 @@ static anna_vmstack_t *anna_object_i_$name(anna_vmstack_t *stack, anna_object_t 
     anna_entry_t **param = stack->top - 2;    
     anna_object_t *this = anna_as_obj(param[0]);
     anna_vmstack_drop(stack, 3);
-    anna_object_t *fun_object = *anna_static_member_addr_get_mid(this->type, ANNA_MID_CMP);
+    anna_object_t *fun_object = anna_as_obj_fast(*anna_static_member_addr_get_mid(this->type, ANNA_MID_CMP));
     return anna_vm_callback_native(stack, &anna_object_i_callback_$name, 0, 0, fun_object, 2, param);
 }
 "

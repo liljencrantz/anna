@@ -266,7 +266,7 @@ void anna_alloc_mark_type(anna_type_t *type)
 
     if(type == null_type)
     {
-	anna_alloc_mark_object(type->static_member[0]);
+	anna_alloc_mark_entry(type->static_member[0]);
 	return;
     }
     
@@ -298,7 +298,7 @@ void anna_alloc_mark_type(anna_type_t *type)
 	}
 	else
 	{
-	    anna_alloc_mark_object(type->static_member[i]);
+	    anna_alloc_mark_entry(type->static_member[i]);
 	}
     }
     if(type->stack_macro)
@@ -319,22 +319,26 @@ static void anna_alloc_mark_blob(void *mem)
     *mem2 |= ANNA_USED;
 }
 
+void anna_alloc_mark_entry(anna_entry_t *e)
+{
+    if(!e)
+	return;
+    
+    if(!anna_is_obj(e))
+    {
+	if(anna_is_float(e))
+	{
+	    anna_alloc_mark_blob((void *)e);
+	    return;
+	}
+	return;
+    }
+    anna_object_t *obj = anna_as_obj_fast(e);
+    anna_alloc_mark_object(obj);
+}
+
 void anna_alloc_mark_object(anna_object_t *obj)
 {
-    if(!obj)
-	return;
-    
-    if(anna_is_float((anna_entry_t *)obj))
-    {
-	anna_alloc_mark_blob((void *)obj);
-	return;
-    }
-    
-    if(!anna_is_obj((anna_entry_t *)obj))
-    {
-	return;
-    }
-        
     if( obj->flags & ANNA_USED)
 	return;
     obj->flags |= ANNA_USED;
@@ -350,10 +354,8 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	for(i=0; i<sz; i++)
 	{
 	    anna_entry_t *e = anna_list_get(obj, i);
-	    if(anna_is_obj(e))
-		anna_alloc_mark_object(anna_as_obj(e));
-	}
-	
+	    anna_alloc_mark_entry(e);
+	}	
     }
     
     
@@ -369,7 +371,7 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	}
 	else
 	{
-	    anna_alloc_mark_object(obj->member[i]);
+	    anna_alloc_mark_entry(obj->member[i]);
 	}
     }
     anna_alloc_mark_type(obj->type);
@@ -394,7 +396,7 @@ static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
     anna_entry_t **obj;
     for(obj = &stack->base[0]; obj < stack->top; obj++)
     {	
-	anna_alloc_mark_object(anna_as_obj(*obj));
+	anna_alloc_mark_entry(*obj);
     }
     if(stack->parent)
 	anna_alloc_mark_vmstack(stack->parent);
@@ -459,7 +461,10 @@ static void anna_alloc_free(void *obj)
 		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
 		if(del_mem && del_mem->is_method)
 		{
-		    anna_vm_run(o->type->static_member[del_mem->offset], 1, &o);
+		    anna_vm_run(
+			anna_as_obj_fast(o->type->static_member[del_mem->offset]),
+			1,
+			&o);
 		}
 	    }
 	    anna_slab_free(obj, sizeof(anna_object_t)+sizeof(anna_object_t *)* (o->type->member_count));
@@ -602,9 +607,9 @@ void anna_gc(anna_vmstack_t *stack)
 	anna_alloc_mark_vmstack(stack);	
 	stack = stack->caller;
     }
-    anna_alloc_mark_object(anna_int_one);	
-    anna_alloc_mark_object(anna_int_minus_one);	
-    anna_alloc_mark_object(anna_int_zero);	
+    anna_alloc_mark_entry(anna_int_one);	
+    anna_alloc_mark_entry(anna_int_minus_one);	
+    anna_alloc_mark_entry(anna_int_zero);	
     
 //    anna_alloc_mark_stack_template(stack_global);
     int freed = 0;

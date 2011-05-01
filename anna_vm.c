@@ -874,7 +874,7 @@ void anna_vm_mark_code(anna_function_t *f)
 		case ANNA_INSTR_CONSTANT:
 		{
 		    anna_op_const_t *op = (anna_op_const_t*)code;
-		    anna_alloc_mark_object(op->value);
+		    anna_alloc_mark_entry(op->value);
 		    break;
 		}
 	    

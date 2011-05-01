@@ -453,7 +453,7 @@ static anna_vmstack_t *anna_range_filter(anna_vmstack_t *stack, anna_object_t *m
 
 static anna_vmstack_t *anna_range_find_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
-    anna_object_t *value = anna_vmstack_pop_object(stack);
+    anna_entry_t *value = anna_vmstack_pop_entry(stack);
     
     anna_entry_t **param = stack->top - 3;
     anna_object_t *range = anna_as_obj_fast(param[0]);
@@ -462,7 +462,7 @@ static anna_vmstack_t *anna_range_find_callback(anna_vmstack_t *stack, anna_obje
     size_t sz = anna_range_get_count(range);
     int open = anna_range_get_open(range);
     
-    if(value != null_object)
+    if(!ANNA_VM_NULL(value))
     {
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_range_get(range, idx-1));	

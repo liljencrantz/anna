@@ -82,6 +82,7 @@ static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
    al allocations it references.
  */
 void anna_alloc_mark(void *obj);
+void anna_alloc_mark_entry(anna_entry_t *obj);
 void anna_alloc_mark_object(anna_object_t *obj);
 void anna_alloc_mark_type(anna_type_t *obj);
 void anna_alloc_mark_stack_template(anna_stack_template_t *o);

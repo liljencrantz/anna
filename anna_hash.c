@@ -282,7 +282,7 @@ static inline anna_object_t *anna_hash_in_i(anna_object_t **param)
     if(param[1]==null_object)
 	return null_object;
     anna_object_t *res = hash_get(h_unwrap(param[0]), param[1]);
-    return res ? anna_int_one : null_object;
+    return res ? anna_from_int(1) : null_object;
 }
 ANNA_VM_NATIVE(anna_hash_in, 2)
 

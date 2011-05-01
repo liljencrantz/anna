@@ -78,7 +78,7 @@ static inline anna_entry_t *anna_member_i_get_property_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return anna_from_obj( m->is_property?anna_int_one:null_object);
+    return m->is_property?anna_from_int(1):anna_from_obj(null_object);
 }
 ANNA_VM_NATIVE(anna_member_i_get_property, 1)
 
