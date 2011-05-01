@@ -608,6 +608,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 size_t anna_bc_op_size(char instruction)
 {
+    if(anna_instr_is_short_circut(instruction))
+    {
+	return sizeof(anna_op_null_t);	    
+    }
+    
     switch(instruction)
     {
 	case ANNA_INSTR_STRING:
@@ -630,19 +635,6 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_POP:
 	case ANNA_INSTR_NOT:
 	case ANNA_INSTR_DUP:
-	case ANNA_INSTR_ADD_INT:
-	case ANNA_INSTR_SUB_INT:
-	case ANNA_INSTR_MUL_INT:
-	case ANNA_INSTR_DIV_INT:
-	case ANNA_INSTR_INCREASE_ASSIGN_INT:
-	case ANNA_INSTR_DECREASE_ASSIGN_INT:
-	case ANNA_INSTR_ADD_FLOAT:
-	case ANNA_INSTR_SUB_FLOAT:
-	case ANNA_INSTR_MUL_FLOAT:
-	case ANNA_INSTR_DIV_FLOAT:
-	case ANNA_INSTR_EXP_FLOAT:
-	case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
-	case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
 	{
 	    return sizeof(anna_op_null_t);	    
 	}
@@ -695,182 +687,174 @@ void anna_bc_print(char *code)
     {
 	wprintf(L"%d: ", code-base);
 	char instruction = *code;
-	switch(instruction)
-	{
-	    case ANNA_INSTR_STRING:
-	    case ANNA_INSTR_CONSTANT:
-	    {
-		anna_op_const_t *op = (anna_op_const_t*)code;
-		wprintf(L"Push constant of type %ls\n\n", 
-			anna_as_obj(op->value)->type->name);
-		break;
-	    }
-	    
-	    case ANNA_INSTR_LIST:
-	    {
-		wprintf(L"List creation\n\n");
-		break;
-	    }
-	    
-	    case ANNA_INSTR_CAST:
-	    {
-		wprintf(L"Type cast\n\n");
-		break;
-	    }
-	    
-	    case ANNA_INSTR_FOLD:
-	    {
-		wprintf(L"List fold\n\n");
-		break;
-	    }
-	    
-	    case ANNA_INSTR_CALL:
-	    {
-		anna_op_count_t *op = (anna_op_count_t *)code;
-		size_t param = op->param;
-		wprintf(L"Call function with %d parameter(s)\n\n", param);
-		break;
-	    }
-	    
-	    case ANNA_INSTR_CONSTRUCT:
-	    {
-		wprintf(L"Construct object\n\n");
-		break;
-	    }
-	    
-	    case ANNA_INSTR_RETURN:
-	    {
-		wprintf(L"Return\n\n");
-		return;
-	    }
-	    
-	    case ANNA_INSTR_RETURN_COUNT:
-	    {
-		anna_op_count_t *op = (anna_op_count_t *)code;
-		wprintf(L"Pop value, pop %d call frames and push value\n\n", op->param);
-		break;
-	    }
-	    
-	    case ANNA_INSTR_STOP:
-	    {
-		wprintf(L"Stop\n\n");
-		return;
-	    }
-	    
-	    case ANNA_INSTR_VAR_GET:
-	    {
-		anna_op_var_t *op = (anna_op_var_t *)code;
-		wprintf(L"Get var %d : %d\n\n", op->frame_count, op->offset);
-		break;
-	    }
-	    
-	    case ANNA_INSTR_VAR_SET:
-	    {
-		anna_op_var_t *op = (anna_op_var_t *)code;
-		wprintf(L"Set var %d : %d\n\n", op->frame_count, op->offset);
-		break;
-	    }
-	    
-	    case ANNA_INSTR_MEMBER_GET:
-	    case ANNA_INSTR_STATIC_MEMBER_GET:
-	    {
-		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Get member %ls\n\n", anna_mid_get_reverse(op->mid));
-		break;
-	    }
-	    
-	    case ANNA_INSTR_PROPERTY_GET:
-	    case ANNA_INSTR_STATIC_PROPERTY_GET:
-	    {
-		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Get property %ls\n\n", anna_mid_get_reverse(op->mid));
-		break;
-	    }
-	    
-	    case ANNA_INSTR_MEMBER_GET_THIS:
-	    {
-		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Get member %ls and push object as implicit this param\n\n", anna_mid_get_reverse(op->mid));
-		break;
-	    }
-	    
-	    case ANNA_INSTR_MEMBER_SET:
-	    {
-		anna_op_member_t *op = (anna_op_member_t *)code;
-		wprintf(L"Set member %ls\n\n", anna_mid_get_reverse(op->mid));
-		break;
-	    }
 
-	    case ANNA_INSTR_POP:
-	    {
-		wprintf(L"Pop stack\n\n");
-		break;
-	    }
+	if(anna_instr_is_short_circut(instruction))
+	{
+	    wprintf(L"Short sircut arithmetic operator\n\n");
+	}
+	else
+	{
 	    
-	    case ANNA_INSTR_NOT:
+	    switch(instruction)
 	    {
-		wprintf(L"Invert stack top element\n\n");
-		break;
-	    }
+		case ANNA_INSTR_STRING:
+		case ANNA_INSTR_CONSTANT:
+		{
+		    anna_op_const_t *op = (anna_op_const_t*)code;
+		    wprintf(L"Push constant of type %ls\n\n", 
+			    anna_as_obj(op->value)->type->name);
+		    break;
+		}
 	    
-	    case ANNA_INSTR_DUP:
-	    {
-		wprintf(L"Duplicate stack top element\n\n");
-		break;
-	    }
+		case ANNA_INSTR_LIST:
+		{
+		    wprintf(L"List creation\n\n");
+		    break;
+		}
 	    
-	    case ANNA_INSTR_JMP:
-	    {
-		anna_op_off_t *op = (anna_op_off_t *)code;
-		wprintf(L"Jump %d bytes\n\n", op->offset);
-		break;
-	    }
+		case ANNA_INSTR_CAST:
+		{
+		    wprintf(L"Type cast\n\n");
+		    break;
+		}
 	    
-	    case ANNA_INSTR_COND_JMP:
-	    {
-		anna_op_off_t *op = (anna_op_off_t *)code;
-		wprintf(L"Conditionally jump %d bytes\n\n", op->offset);
-		break;
-	    }
+		case ANNA_INSTR_FOLD:
+		{
+		    wprintf(L"List fold\n\n");
+		    break;
+		}
+	    
+		case ANNA_INSTR_CALL:
+		{
+		    anna_op_count_t *op = (anna_op_count_t *)code;
+		    size_t param = op->param;
+		    wprintf(L"Call function with %d parameter(s)\n\n", param);
+		    break;
+		}
+	    
+		case ANNA_INSTR_CONSTRUCT:
+		{
+		    wprintf(L"Construct object\n\n");
+		    break;
+		}
+	    
+		case ANNA_INSTR_RETURN:
+		{
+		    wprintf(L"Return\n\n");
+		    return;
+		}
+	    
+		case ANNA_INSTR_RETURN_COUNT:
+		{
+		    anna_op_count_t *op = (anna_op_count_t *)code;
+		    wprintf(L"Pop value, pop %d call frames and push value\n\n", op->param);
+		    break;
+		}
+	    
+		case ANNA_INSTR_STOP:
+		{
+		    wprintf(L"Stop\n\n");
+		    return;
+		}
+	    
+		case ANNA_INSTR_VAR_GET:
+		{
+		    anna_op_var_t *op = (anna_op_var_t *)code;
+		    wprintf(L"Get var %d : %d\n\n", op->frame_count, op->offset);
+		    break;
+		}
+	    
+		case ANNA_INSTR_VAR_SET:
+		{
+		    anna_op_var_t *op = (anna_op_var_t *)code;
+		    wprintf(L"Set var %d : %d\n\n", op->frame_count, op->offset);
+		    break;
+		}
+	    
+		case ANNA_INSTR_MEMBER_GET:
+		case ANNA_INSTR_STATIC_MEMBER_GET:
+		{
+		    anna_op_member_t *op = (anna_op_member_t *)code;
+		    wprintf(L"Get member %ls\n\n", anna_mid_get_reverse(op->mid));
+		    break;
+		}
+	    
+		case ANNA_INSTR_PROPERTY_GET:
+		case ANNA_INSTR_STATIC_PROPERTY_GET:
+		{
+		    anna_op_member_t *op = (anna_op_member_t *)code;
+		    wprintf(L"Get property %ls\n\n", anna_mid_get_reverse(op->mid));
+		    break;
+		}
+	    
+		case ANNA_INSTR_MEMBER_GET_THIS:
+		{
+		    anna_op_member_t *op = (anna_op_member_t *)code;
+		    wprintf(L"Get member %ls and push object as implicit this param\n\n", anna_mid_get_reverse(op->mid));
+		    break;
+		}
+	    
+		case ANNA_INSTR_MEMBER_SET:
+		{
+		    anna_op_member_t *op = (anna_op_member_t *)code;
+		    wprintf(L"Set member %ls\n\n", anna_mid_get_reverse(op->mid));
+		    break;
+		}
+
+		case ANNA_INSTR_POP:
+		{
+		    wprintf(L"Pop stack\n\n");
+		    break;
+		}
+	    
+		case ANNA_INSTR_NOT:
+		{
+		    wprintf(L"Invert stack top element\n\n");
+		    break;
+		}
+	    
+		case ANNA_INSTR_DUP:
+		{
+		    wprintf(L"Duplicate stack top element\n\n");
+		    break;
+		}
+	    
+		case ANNA_INSTR_JMP:
+		{
+		    anna_op_off_t *op = (anna_op_off_t *)code;
+		    wprintf(L"Jump %d bytes\n\n", op->offset);
+		    break;
+		}
+	    
+		case ANNA_INSTR_COND_JMP:
+		{
+		    anna_op_off_t *op = (anna_op_off_t *)code;
+		    wprintf(L"Conditionally jump %d bytes\n\n", op->offset);
+		    break;
+		}
 	    
 	    
-	    case ANNA_INSTR_NCOND_JMP:
-	    {
-		anna_op_off_t *op = (anna_op_off_t *)code;
-		wprintf(L"Conditionally not jump %d bytes\n\n", op->offset);
-		break;
-	    }
+		case ANNA_INSTR_NCOND_JMP:
+		{
+		    anna_op_off_t *op = (anna_op_off_t *)code;
+		    wprintf(L"Conditionally not jump %d bytes\n\n", op->offset);
+		    break;
+		}
 	    
-	    case ANNA_INSTR_TRAMPOLENE:
-	    {
-		wprintf(L"Create trampolene\n\n");
-		break;
-	    }
+		case ANNA_INSTR_TRAMPOLENE:
+		{
+		    wprintf(L"Create trampolene\n\n");
+		    break;
+		}
 	    
-	    case ANNA_INSTR_ADD_INT:
-	    case ANNA_INSTR_SUB_INT:
-	    case ANNA_INSTR_MUL_INT:
-	    case ANNA_INSTR_DIV_INT:
-	    case ANNA_INSTR_INCREASE_ASSIGN_INT:
-	    case ANNA_INSTR_DECREASE_ASSIGN_INT:
-	    case ANNA_INSTR_ADD_FLOAT:
-	    case ANNA_INSTR_SUB_FLOAT:
-	    case ANNA_INSTR_MUL_FLOAT:
-	    case ANNA_INSTR_DIV_FLOAT:
-	    case ANNA_INSTR_EXP_FLOAT:
-	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
-	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
-	    {
-		wprintf(L"Short sircut arithmetic operator\n\n");
-		break;
-	    }
-	    
-	    default:
-	    {
-		wprintf(L"Unknown opcode %d during print\n", instruction);
-		CRASH;
+		default:
+		{
+		    wprintf(L"Unknown opcode %d during print\n", instruction);
+		    CRASH;
+		}
 	    }
 	}
+	
 	code += anna_bc_op_size(*code);
     }
 }
@@ -881,72 +865,64 @@ void anna_vm_mark_code(anna_function_t *f)
     while(1)
     {
 	char instruction = *code;
-	switch(instruction)
-	{
-	    case ANNA_INSTR_STRING:
-	    case ANNA_INSTR_CONSTANT:
-	    {
-		anna_op_const_t *op = (anna_op_const_t*)code;
-		anna_alloc_mark_object(op->value);
-		break;
-	    }
-	    
-	    case ANNA_INSTR_LIST:
-	    case ANNA_INSTR_CAST:
-	    {
-		anna_op_type_t *op = (anna_op_type_t*)code;
-		anna_alloc_mark_type(op->value);
-		break;
-	    }
 
-	    case ANNA_INSTR_RETURN:
-	    case ANNA_INSTR_RETURN_COUNT:
-	    case ANNA_INSTR_STOP:
+	if(!anna_instr_is_short_circut(instruction))
+	{
+	    switch(instruction)
 	    {
-		return;
-	    }
+		case ANNA_INSTR_STRING:
+		case ANNA_INSTR_CONSTANT:
+		{
+		    anna_op_const_t *op = (anna_op_const_t*)code;
+		    anna_alloc_mark_object(op->value);
+		    break;
+		}
 	    
-	    case ANNA_INSTR_FOLD:
-	    case ANNA_INSTR_CALL:
-	    case ANNA_INSTR_CONSTRUCT:
-	    case ANNA_INSTR_VAR_GET:
-	    case ANNA_INSTR_VAR_SET:
-	    case ANNA_INSTR_STATIC_MEMBER_GET:
-	    case ANNA_INSTR_MEMBER_GET:
-	    case ANNA_INSTR_PROPERTY_GET:
-	    case ANNA_INSTR_STATIC_PROPERTY_GET:
-	    case ANNA_INSTR_MEMBER_GET_THIS:
-	    case ANNA_INSTR_MEMBER_SET:
-	    case ANNA_INSTR_POP:
-	    case ANNA_INSTR_NOT:
-	    case ANNA_INSTR_DUP:
-	    case ANNA_INSTR_JMP:
-	    case ANNA_INSTR_COND_JMP:
-	    case ANNA_INSTR_NCOND_JMP:
-	    case ANNA_INSTR_TRAMPOLENE:
-	    case ANNA_INSTR_ADD_INT:
-	    case ANNA_INSTR_SUB_INT:
-	    case ANNA_INSTR_MUL_INT:
-	    case ANNA_INSTR_DIV_INT:
-	    case ANNA_INSTR_INCREASE_ASSIGN_INT:
-	    case ANNA_INSTR_DECREASE_ASSIGN_INT:
-	    case ANNA_INSTR_ADD_FLOAT:
-	    case ANNA_INSTR_SUB_FLOAT:
-	    case ANNA_INSTR_MUL_FLOAT:
-	    case ANNA_INSTR_DIV_FLOAT:
-	    case ANNA_INSTR_EXP_FLOAT:
-	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
-	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
-	    {
-		break;
-	    }
+		case ANNA_INSTR_LIST:
+		case ANNA_INSTR_CAST:
+		{
+		    anna_op_type_t *op = (anna_op_type_t*)code;
+		    anna_alloc_mark_type(op->value);
+		    break;
+		}
+
+		case ANNA_INSTR_RETURN:
+		case ANNA_INSTR_RETURN_COUNT:
+		case ANNA_INSTR_STOP:
+		{
+		    return;
+		}
 	    
-	    default:
-	    {
-		wprintf(L"Unknown opcode %d during GC\n", instruction);
-		CRASH;
+		case ANNA_INSTR_FOLD:
+		case ANNA_INSTR_CALL:
+		case ANNA_INSTR_CONSTRUCT:
+		case ANNA_INSTR_VAR_GET:
+		case ANNA_INSTR_VAR_SET:
+		case ANNA_INSTR_STATIC_MEMBER_GET:
+		case ANNA_INSTR_MEMBER_GET:
+		case ANNA_INSTR_PROPERTY_GET:
+		case ANNA_INSTR_STATIC_PROPERTY_GET:
+		case ANNA_INSTR_MEMBER_GET_THIS:
+		case ANNA_INSTR_MEMBER_SET:
+		case ANNA_INSTR_POP:
+		case ANNA_INSTR_NOT:
+		case ANNA_INSTR_DUP:
+		case ANNA_INSTR_JMP:
+		case ANNA_INSTR_COND_JMP:
+		case ANNA_INSTR_NCOND_JMP:
+		case ANNA_INSTR_TRAMPOLENE:
+		{
+		    break;
+		}
+	    
+		default:
+		{
+		    wprintf(L"Unknown opcode %d during GC\n", instruction);
+		    CRASH;
+		}
 	    }
 	}
+	
 	code += anna_bc_op_size(*code);
     }
 }

@@ -217,5 +217,9 @@ static inline anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_objec
     return res;
 }
 
+static inline int anna_instr_is_short_circut(char instr)
+{
+    return instr >= ANNA_INSTR_ADD_INT;
+}
 
 #endif

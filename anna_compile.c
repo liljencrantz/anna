@@ -83,77 +83,68 @@ static size_t anna_bc_stack_size(char *code)
     while(1)
     {
 	char instruction = *code;
-	switch(instruction)
+	if(!anna_instr_is_short_circut(instruction))
 	{
-	    case ANNA_INSTR_STRING:
-	    case ANNA_INSTR_CONSTANT:
-	    case ANNA_INSTR_LIST:
-	    case ANNA_INSTR_CONSTRUCT:
-	    case ANNA_INSTR_VAR_GET:
-	    case ANNA_INSTR_MEMBER_GET_THIS:
-	    case ANNA_INSTR_DUP:
+	    switch(instruction)
 	    {
-		pos++;
-		break;
-	    }
+		case ANNA_INSTR_STRING:
+		case ANNA_INSTR_CONSTANT:
+		case ANNA_INSTR_LIST:
+		case ANNA_INSTR_CONSTRUCT:
+		case ANNA_INSTR_VAR_GET:
+		case ANNA_INSTR_MEMBER_GET_THIS:
+		case ANNA_INSTR_DUP:
+		{
+		    pos++;
+		    break;
+		}
 	    
-	    case ANNA_INSTR_FOLD:
-	    case ANNA_INSTR_MEMBER_SET:
-	    case ANNA_INSTR_POP:
-	    {
-		pos--;
-		break;
-	    }
+		case ANNA_INSTR_FOLD:
+		case ANNA_INSTR_MEMBER_SET:
+		case ANNA_INSTR_POP:
+		{
+		    pos--;
+		    break;
+		}
 
-	    case ANNA_INSTR_CALL:
-	    {
-		anna_op_count_t *op = (anna_op_count_t *)code;
-		size_t param = op->param;
-		pos -= param;
-		break;
-	    }
+		case ANNA_INSTR_CALL:
+		{
+		    anna_op_count_t *op = (anna_op_count_t *)code;
+		    size_t param = op->param;
+		    pos -= param;
+		    break;
+		}
 	    
-	    case ANNA_INSTR_RETURN:
-	    case ANNA_INSTR_RETURN_COUNT:
-	    case ANNA_INSTR_STOP:
-	    {
-		return max;
-	    }
+		case ANNA_INSTR_RETURN:
+		case ANNA_INSTR_RETURN_COUNT:
+		case ANNA_INSTR_STOP:
+		{
+		    return max;
+		}
 	    
-	    case ANNA_INSTR_VAR_SET:
-	    case ANNA_INSTR_MEMBER_GET:
-	    case ANNA_INSTR_STATIC_MEMBER_GET:
-	    case ANNA_INSTR_PROPERTY_GET:
-	    case ANNA_INSTR_STATIC_PROPERTY_GET:
-	    case ANNA_INSTR_NOT:
-	    case ANNA_INSTR_JMP:
-	    case ANNA_INSTR_COND_JMP:
-	    case ANNA_INSTR_NCOND_JMP:
-	    case ANNA_INSTR_TRAMPOLENE:
-	    case ANNA_INSTR_CAST:
-	    case ANNA_INSTR_ADD_INT:
-	    case ANNA_INSTR_SUB_INT:
-	    case ANNA_INSTR_MUL_INT:
-	    case ANNA_INSTR_DIV_INT:
-	    case ANNA_INSTR_INCREASE_ASSIGN_INT:
-	    case ANNA_INSTR_DECREASE_ASSIGN_INT:
-	    case ANNA_INSTR_ADD_FLOAT:
-	    case ANNA_INSTR_SUB_FLOAT:
-	    case ANNA_INSTR_MUL_FLOAT:
-	    case ANNA_INSTR_DIV_FLOAT:
-	    case ANNA_INSTR_EXP_FLOAT:
-	    case ANNA_INSTR_INCREASE_ASSIGN_FLOAT:
-	    case ANNA_INSTR_DECREASE_ASSIGN_FLOAT:
-	    {
-		break;
-	    }
+		case ANNA_INSTR_VAR_SET:
+		case ANNA_INSTR_MEMBER_GET:
+		case ANNA_INSTR_STATIC_MEMBER_GET:
+		case ANNA_INSTR_PROPERTY_GET:
+		case ANNA_INSTR_STATIC_PROPERTY_GET:
+		case ANNA_INSTR_NOT:
+		case ANNA_INSTR_JMP:
+		case ANNA_INSTR_COND_JMP:
+		case ANNA_INSTR_NCOND_JMP:
+		case ANNA_INSTR_TRAMPOLENE:
+		case ANNA_INSTR_CAST:
+		{
+		    break;
+		}
 	    
-	    default:
-	    {
-		wprintf(L"Unknown opcode %d during size calculation\n", instruction);
-		CRASH;
+		default:
+		{
+		    wprintf(L"Unknown opcode %d during size calculation\n", instruction);
+		    CRASH;
+		}
 	    }
 	}
+	
 	max = maxi(max, pos);
 	code += anna_bc_op_size(*code);
     }
