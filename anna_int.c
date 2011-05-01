@@ -17,10 +17,6 @@
 
 #include "anna_int_i.c"
 
-anna_object_t *anna_int_one;
-anna_object_t *anna_int_zero;
-anna_object_t *anna_int_minus_one;
-
 static void anna_int_set(anna_object_t *this, int value)
 {
     memcpy(anna_member_addr_get_mid(this,ANNA_MID_INT_PAYLOAD), &value, sizeof(int));

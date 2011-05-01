@@ -66,7 +66,7 @@ static anna_vmstack_t *anna_type_abides(anna_vmstack_t *stack, anna_object_t *me
     anna_type_t *type1 = anna_type_unwrap(this);
     anna_type_t *type2 = anna_type_unwrap(anna_as_obj(param[1]));
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push_object(stack, anna_abides(type1, type2)?anna_int_one:null_object);
+    anna_vmstack_push_entry(stack, anna_abides(type1, type2)?anna_from_int(1):anna_from_obj(null_object));
     return stack;
 }
 

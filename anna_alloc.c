@@ -607,9 +607,6 @@ void anna_gc(anna_vmstack_t *stack)
 	anna_alloc_mark_vmstack(stack);	
 	stack = stack->caller;
     }
-    anna_alloc_mark_entry(anna_int_one);	
-    anna_alloc_mark_entry(anna_int_minus_one);	
-    anna_alloc_mark_entry(anna_int_zero);	
     
 //    anna_alloc_mark_stack_template(stack_global);
     int freed = 0;

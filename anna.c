@@ -320,10 +320,6 @@ int main(int argc, char **argv)
 	exit(1);
     }
     
-    anna_int_one = anna_int_create(1);
-    anna_int_minus_one = anna_int_create(-1);
-    anna_int_zero = anna_int_create(0);
-
     anna_vm_init();
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
