@@ -278,13 +278,13 @@ anna_object_t *anna_type_wrap(anna_type_t *result)
 	return result->wrapper;
 
     result->wrapper = anna_object_create(type_type);
-    memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
+    memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
     return result->wrapper;
 }
 
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper)
 {
-    anna_type_t **tmp = (anna_type_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD);
+    anna_type_t **tmp = (anna_type_t **)anna_entry_get_addr(wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD);
     return tmp?*tmp:0;
 }
 
@@ -341,7 +341,7 @@ int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
     return memb->is_method;
     
 /*anna_type_t *member_type = anna_type_member_type_get(type, name);
-  return !!anna_static_member_addr_get_mid(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
+  return !!anna_entry_get_addr_static(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
 }
 
 static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
@@ -509,8 +509,8 @@ static void anna_type_prepare_member_internal(
     if(is_method)
     {
 	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
-	member->is_method = 1;	
-	*anna_static_member_addr_get_mid(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
+	member->is_method = 1;
+	*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
 	anna_function_setup_interface(clo->payload, stack);
 	anna_function_setup_body(clo->payload);
     }
@@ -716,7 +716,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	    type,
 	    1, argv, argn);
 /*
-  anna_object_t **cp = anna_static_member_addr_get_mid(
+  anna_object_t **cp = anna_entry_get_addr_static(
   type,
   ANNA_MID_INIT_PAYLOAD);
 */
@@ -822,10 +822,10 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     {
 	anna_type_t *arg_type = call->child[0]->return_type;
 	anna_entry_t **spec1 = 
-	    anna_static_member_addr_get_mid(
+	    anna_entry_get_addr_static(
 		arg_type, ANNA_MID_PAIR_SPECIALIZATION1);
 	anna_entry_t **spec2 =
-	    anna_static_member_addr_get_mid(
+	    anna_entry_get_addr_static(
 		arg_type, ANNA_MID_PAIR_SPECIALIZATION2);
 	
 	if(spec1 && spec2)
@@ -862,7 +862,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    L"__block__"));
 
     anna_object_t *constructor_obj = anna_as_obj_fast(
-	*anna_static_member_addr_get_mid(
+	anna_entry_get_static(
 	    type,
 	    ANNA_MID_INIT_PAYLOAD));
     anna_function_t *constr = anna_function_unwrap(constructor_obj);

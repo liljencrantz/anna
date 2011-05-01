@@ -746,7 +746,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    
 		anna_node_type_t *tn = (anna_node_type_t *)this2->function;
 		
-		anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
+		anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);

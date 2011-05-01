@@ -34,7 +34,7 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
     
     init="$init
     mmid = anna_native_method_create(char_type, -1, L\"__${name}__Int__\", 0, &anna_char_i_${name}, char_type, 2, i_argv, argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(char_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(char_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
 "

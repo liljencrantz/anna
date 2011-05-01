@@ -28,13 +28,13 @@ static hash_table_t anna_hash_specialization;
 
 static inline hash_table_t *h_unwrap(anna_object_t *obj)
 {
-    return (hash_table_t *)anna_member_addr_get_mid(obj,ANNA_MID_HASH_PAYLOAD);
+    return (hash_table_t *)anna_entry_get_addr(obj,ANNA_MID_HASH_PAYLOAD);
 }
 
 static int anna_hash_func(void *data)
 {
     anna_object_t *param[] = {data};
-    anna_object_t *fun_object = *anna_static_member_addr_get_mid(param[0]->type, ANNA_MID_HASH_CODE);
+    anna_object_t *fun_object = anna_entry_get_static(param[0]->type, ANNA_MID_HASH_CODE);
     anna_object_t *res = anna_vm_run(fun_object, 1, param);
     if(unlikely(res->type != int_type)){
 	return 0;
@@ -45,7 +45,7 @@ static int anna_hash_func(void *data)
 static int anna_hash_cmp(void *data1, void *data2)
 {
     anna_object_t *param[] = {data1,data2};
-    anna_object_t *fun_object = *anna_static_member_addr_get_mid(param[0]->type, ANNA_MID_EQ);
+    anna_object_t *fun_object = anna_entry_get_static(param[0]->type, ANNA_MID_EQ);
     anna_object_t *res = anna_vm_run(fun_object, 2, param);
     
     return res != null_object;
@@ -124,7 +124,7 @@ ANNA_VM_NATIVE(anna_hash_get_count, 1)
 static anna_type_t *anna_hash_get_key_specialization(anna_object_t *obj)
 {
     return *((anna_type_t **)
-	     anna_member_addr_get_mid(
+	     anna_entry_get_addr(
 		 obj,
 		 ANNA_MID_HASH_SPECIALIZATION1));    
 }
@@ -132,7 +132,7 @@ static anna_type_t *anna_hash_get_key_specialization(anna_object_t *obj)
 static anna_type_t *anna_hash_get_value_specialization(anna_object_t *obj)
 {
     return *((anna_type_t **)
-	     anna_member_addr_get_mid(
+	     anna_entry_get_addr(
 		 obj,
 		 ANNA_MID_HASH_SPECIALIZATION2));    
 }
@@ -182,7 +182,7 @@ static anna_object_t *anna_hash_append(anna_object_t **param)
     }
     anna_object_t **ptr = anna_hash_get_payload(param[0]);
     anna_object_t **ptr2 = anna_hash_get_payload(param[1]);
-    *(size_t *)anna_member_addr_get_mid(param[0],ANNA_MID_HASH_SIZE) = new_size;
+    *(size_t *)anna_entry_get_addr(param[0],ANNA_MID_HASH_SIZE) = new_size;
     for(i=0; i<size2; i++)
     {
 	ptr[size+i]=ptr2[i];
@@ -317,8 +317,8 @@ static void anna_hash_type_create_internal(
 	type, ANNA_MID_HASH_SPECIALIZATION2,  L"!hashSpecialization2",
 	1, null_type);
 
-    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION1)) = spec1;
-    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_HASH_SPECIALIZATION2)) = spec2;
+    (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION1)) = spec1;
+    (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION2)) = spec2;
     
     anna_type_t *kv_argv[] = 
 	{

@@ -40,14 +40,14 @@ anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
     }
     
     result->wrapper = anna_object_create(m_type);
-    memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_MEMBER_PAYLOAD), &result, sizeof(anna_member_t *));  
-    memcpy(anna_member_addr_get_mid(result->wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD), &type, sizeof(anna_type_t *));  
+    memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_MEMBER_PAYLOAD), &result, sizeof(anna_member_t *));  
+    memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD), &type, sizeof(anna_type_t *));  
     return result->wrapper;
 }
 
 anna_member_t *anna_member_unwrap(anna_object_t *wrapper)
 {
-    return *(anna_member_t **)anna_member_addr_get_mid(wrapper, ANNA_MID_MEMBER_PAYLOAD);
+    return *(anna_member_t **)anna_entry_get_addr(wrapper, ANNA_MID_MEMBER_PAYLOAD);
 }
 
 static inline anna_entry_t *anna_member_i_get_name_i(anna_entry_t **param)
@@ -459,7 +459,7 @@ mid_t anna_const_property_create(
     anna_node_call_t *body = anna_node_create_block2(
 	0,
 	body_param);
-    anna_function_t *fun = anna_function_unwrap(*anna_static_member_addr_get_mid(type, getter_mid));
+    anna_function_t *fun = anna_function_unwrap(anna_entry_get_static(type, getter_mid));
     fun->body = body;
     fun->stack_template = anna_stack_create(0);
     anna_stack_declare(fun->stack_template, L"this", type, null_object, 0);

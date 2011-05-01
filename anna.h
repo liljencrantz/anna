@@ -539,11 +539,52 @@ anna_object_t *anna_construct(
     anna_type_t *type, struct anna_node_call *param,
     struct anna_stack_template *stack);
 
-__pure anna_entry_t **anna_static_member_addr_get_mid(
-    anna_type_t *type, mid_t mid);
+static __pure inline anna_entry_t **anna_entry_get_addr(
+    anna_object_t *obj, mid_t mid)
+{
+    
+    anna_member_t *m = obj->type->mid_identifier[mid];
+    //wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
+    
+    if(unlikely(!m)) 
+    {
+	return 0;
+    }
+    if(m->is_static) {
+	return &obj->type->static_member[m->offset];
+    } else {
+	return &(obj->member[m->offset]);
+    }
+}
 
-__pure anna_entry_t **anna_member_addr_get_mid(
-    anna_object_t *obj, mid_t mid);
+static __pure inline anna_entry_t *anna_entry_get(
+    anna_object_t *obj, mid_t mid)
+{
+    return *anna_entry_get_addr(obj, mid);
+}
+
+
+static __pure inline anna_entry_t **anna_entry_get_addr_static(
+    anna_type_t *type, mid_t mid)
+{
+    anna_member_t *m = type->mid_identifier[mid];
+    if(unlikely(!m)) 
+    {
+	return 0;
+    }
+
+    if(m->is_static) {
+	return &type->static_member[m->offset];
+    } else {
+	return 0;
+    }
+}
+
+static __pure inline anna_entry_t *anna_entry_get_static(
+    anna_type_t *type, mid_t mid)
+{
+    return *anna_entry_get_addr_static(type, mid);
+}
 
 size_t anna_native_method_create(
     anna_type_t *type,

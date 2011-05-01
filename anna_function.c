@@ -147,14 +147,14 @@ static void anna_function_setup_wrapper(
 	
 	f->wrapper = anna_object_create(ft);    
 	memcpy(
-	    anna_member_addr_get_mid(
+	    anna_entry_get_addr(
 		f->wrapper,
 		ANNA_MID_FUNCTION_WRAPPER_PAYLOAD), 
 	    &f,
 	    sizeof(anna_function_t *));
 	
 	memset(
-	    anna_member_addr_get_mid(
+	    anna_entry_get_addr(
 		f->wrapper,
 		ANNA_MID_FUNCTION_WRAPPER_STACK),
 	    0,
@@ -451,8 +451,8 @@ static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_ob
     anna_object_t *res = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     
-    stack = (anna_vmstack_t *)*anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK);
-    stack->code = (char *)*anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS);
+    stack = (anna_vmstack_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
+    stack->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
     anna_vmstack_push_object(stack, res);
     return stack;
 }

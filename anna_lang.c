@@ -74,7 +74,7 @@ static void anna_null_type_create()
     for(i=0; i<anna_mid_get_count();i++) {
 	null_type->mid_identifier[i] = null_member;
     }
-    assert(*anna_static_member_addr_get_mid(null_type, 5) == (anna_entry_t *)null_function);    
+    assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    
 }
 
 anna_stack_template_t *anna_lang_load()

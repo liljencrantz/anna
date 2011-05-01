@@ -52,7 +52,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	&anna_float_i_${name}, 
 	float_type,
 	2, argv, argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(float_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
     mmid = anna_native_method_create(
@@ -60,7 +60,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	&anna_float_i_int_${name}, 
 	float_type,
 	2, i_argv, i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(float_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
     mmid = anna_native_method_create(
@@ -68,7 +68,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	&anna_float_i_int_reverse_${name}, 
 	float_type,
 	2, i_argv, i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(float_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
 "

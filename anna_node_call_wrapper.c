@@ -110,7 +110,7 @@ static inline anna_entry_t *anna_node_call_wrapper_i_init_i(anna_entry_t **param
     }
     dest->child_count = sz;
     
-    *(anna_node_t **)anna_member_addr_get_mid(this,ANNA_MID_NODE_PAYLOAD)=
+    *(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD)=
 	(anna_node_t *)dest;
 	
     return param[0];
@@ -307,7 +307,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	2, 
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(node_call_wrapper_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(node_call_wrapper_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
     mmid = anna_native_method_create(
@@ -320,7 +320,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	3, 
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(node_call_wrapper_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(node_call_wrapper_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
     anna_native_property_create(
@@ -354,7 +354,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	2, 
 	j_argv, 
 	j_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(node_call_wrapper_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(node_call_wrapper_type, mmid)));
     anna_function_alias_add(fun, L"__join__");
 
     anna_native_method_create(

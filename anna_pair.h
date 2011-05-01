@@ -4,22 +4,22 @@
 
 static inline void anna_pair_set_first(anna_object_t *p, anna_entry_t *v)
 {
-    (*anna_member_addr_get_mid(p,ANNA_MID_PAIR_FIRST)) = v;
+    (*anna_entry_get_addr(p,ANNA_MID_PAIR_FIRST)) = v;
 }
 
 static inline void anna_pair_set_second(anna_object_t *p, anna_entry_t *v)
 {
-    (*anna_member_addr_get_mid(p,ANNA_MID_PAIR_SECOND)) = v;
+    (*anna_entry_get_addr(p,ANNA_MID_PAIR_SECOND)) = v;
 }
 
 static inline anna_entry_t *anna_pair_get_first(anna_object_t *p)
 {
-    return (*anna_member_addr_get_mid(p,ANNA_MID_PAIR_FIRST));    
+    return (*anna_entry_get_addr(p,ANNA_MID_PAIR_FIRST));    
 }
 
 static inline anna_entry_t *anna_pair_get_second(anna_object_t *p)
 {
-    return (*anna_member_addr_get_mid(p,ANNA_MID_PAIR_SECOND));    
+    return (*anna_entry_get_addr(p,ANNA_MID_PAIR_SECOND));    
 }
 
 anna_object_t *anna_pair_create(anna_entry_t *first, anna_entry_t *second);

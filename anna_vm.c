@@ -150,7 +150,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
     stack->caller = 0;
     
-    stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    stack->parent = *(anna_vmstack_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     stack->function = 0;
     stack->top = &stack->base[0];
@@ -250,7 +250,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	
 	anna_object_t *result = anna_object_create(tp);
 	
-	anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
+	anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 	    tp,
 	    ANNA_MID_INIT_PAYLOAD);
 	anna_vmstack_push_object(stack, anna_as_obj_fast(*constructor_ptr));

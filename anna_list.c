@@ -28,25 +28,25 @@ static hash_table_t anna_list_specialization;
 anna_object_t *anna_list_create(anna_type_t *spec)
 {
     anna_object_t *obj= anna_object_create(anna_list_type_get(spec));
-    (*anna_member_addr_get_mid(obj,ANNA_MID_LIST_PAYLOAD))=0;
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SIZE)) = 0;
+    (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
     return obj;
 }
 
 anna_object_t *anna_list_create2(anna_type_t *list_type)
 {
     anna_object_t *obj= anna_object_create(list_type);
-    (*anna_member_addr_get_mid(obj,ANNA_MID_LIST_PAYLOAD))=0;
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(obj,ANNA_MID_LIST_SIZE)) = 0;
+    (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
     return obj;
 }
 
 static anna_type_t *anna_list_get_specialization(anna_object_t *obj)
 {
     return *((anna_type_t **)
-	     anna_member_addr_get_mid(
+	     anna_entry_get_addr(
 		 obj,
 		 ANNA_MID_LIST_SPECIALIZATION));    
 }
@@ -102,7 +102,7 @@ void anna_list_add(struct anna_object *this, anna_entry_t *value)
 size_t anna_list_get_size(anna_object_t *this)
 {
     assert(this);
-    return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE);
+    return *(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE);
 }
 
 void anna_list_set_size(anna_object_t *this, size_t sz)
@@ -123,12 +123,12 @@ void anna_list_set_size(anna_object_t *this, size_t sz)
 	    ptr[i] = anna_from_obj(null_object);
 	}
     }
-    *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_SIZE) = sz;
+    *(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE) = sz;
 }
 
 size_t anna_list_get_capacity(anna_object_t *this)
 {
-    return *(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_CAPACITY);
+    return *(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_CAPACITY);
 }
 
 void anna_list_set_capacity(anna_object_t *this, size_t sz)
@@ -139,13 +139,13 @@ void anna_list_set_capacity(anna_object_t *this, size_t sz)
     {
 	CRASH;
     }    
-    (*(size_t *)anna_member_addr_get_mid(this,ANNA_MID_LIST_CAPACITY)) = sz;
-    *(anna_entry_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD) = ptr;
+    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_CAPACITY)) = sz;
+    *(anna_entry_t ***)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD) = ptr;
 }
 
 anna_entry_t **anna_list_get_payload(anna_object_t *this)
 {
-    return *(anna_entry_t ***)anna_member_addr_get_mid(this,ANNA_MID_LIST_PAYLOAD);
+    return *(anna_entry_t ***)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD);
 }
 
 
@@ -206,7 +206,7 @@ static inline anna_entry_t *anna_list_append_i(anna_entry_t **param)
     }
     anna_entry_t **ptr = anna_list_get_payload(anna_as_obj(param[0]));
     anna_entry_t **ptr2 = anna_list_get_payload(anna_as_obj(param[1]));
-    *(size_t *)anna_member_addr_get_mid(anna_as_obj(param[0]),ANNA_MID_LIST_SIZE) = new_size;
+    *(size_t *)anna_entry_get_addr(anna_as_obj(param[0]),ANNA_MID_LIST_SIZE) = new_size;
     for(i=0; i<size2; i++)
     {
 	ptr[size+i]=ptr2[i];
@@ -601,9 +601,9 @@ static anna_vmstack_t *anna_list_to_string(anna_vmstack_t *stack, anna_object_t 
 
 static inline anna_entry_t *anna_list_init_i(anna_entry_t **param)
 {
-    (*anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))=0;
-    (*(size_t *)anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)) = 0;
+    (*anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)) = 0;
 
     size_t sz = anna_list_get_size(anna_as_obj_fast(param[1]));
     anna_entry_t **src = anna_list_get_payload(anna_as_obj_fast(param[1]));
@@ -619,9 +619,9 @@ ANNA_VM_NATIVE(anna_list_init, 2)
 
 static inline anna_entry_t *anna_list_del_i(anna_entry_t **param)
 {
-    free((*anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD)));
-    (*(size_t *)anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)) = 0;
+    free((*anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD)));
+    (*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)) = 0;
     return param[0];
 }
 
@@ -631,7 +631,7 @@ static inline anna_entry_t *anna_list_push_i(anna_entry_t **param)
 {
     anna_list_set(
 	anna_as_obj_fast(param[0]), 
-	(*(size_t *)anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)),
+	(*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)),
 	param[1]);
     return param[0];
 }
@@ -640,11 +640,11 @@ ANNA_VM_NATIVE(anna_list_push, 2)
 
 static inline anna_entry_t *anna_list_pop_i(anna_entry_t **param)
 {
-    size_t *sz = (size_t *)anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE);
+    size_t *sz = (size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE);
     if(!*sz)
 	return anna_from_obj(null_object);
     (*sz)--;
-    return (*(anna_entry_t ***)anna_member_addr_get_mid(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))[*sz];
+    return (*(anna_entry_t ***)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))[*sz];
 }
 
 ANNA_VM_NATIVE(anna_list_pop, 1)
@@ -673,7 +673,7 @@ static anna_vmstack_t *anna_list_in_callback(anna_vmstack_t *stack, anna_object_
 	    }
 	;
 	
-	anna_object_t *fun_object = anna_as_obj_fast(*anna_static_member_addr_get_mid(value->type, ANNA_MID_EQ));
+	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(value->type, ANNA_MID_EQ));
 	param[2] = anna_from_int(idx+1);
 	anna_vm_callback_reset(stack, fun_object, 2, o_param);
     }
@@ -710,7 +710,7 @@ static anna_vmstack_t *anna_list_in(anna_vmstack_t *stack, anna_object_t *me)
 	    }
 	;
 	
-	anna_object_t *fun_object = anna_as_obj_fast(*anna_static_member_addr_get_mid(value->type, ANNA_MID_EQ));
+	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(value->type, ANNA_MID_EQ));
 	stack = anna_vm_callback_native(
 	    stack,
 	    anna_list_in_callback, 3, callback_param,
@@ -794,7 +794,7 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 		anna_list_set(
 		    list, i, anna_from_obj(null_object));		
 	    }
-	    *(size_t *)anna_member_addr_get_mid(list,ANNA_MID_LIST_SIZE) = new_size;
+	    *(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
 	    arr = anna_list_get_payload(list);
 	}
 	else
@@ -804,7 +804,7 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 		anna_list_set_capacity(list, new_size);
 	    }
 	    
-	    *(size_t *)anna_member_addr_get_mid(list,ANNA_MID_LIST_SIZE) = new_size;
+	    *(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
 	    arr = anna_list_get_payload(list);
 	    memmove(&arr[from+count2], &arr[from+count], sizeof(anna_object_t *)*abs(old_size - from - count ));
 	}
@@ -858,7 +858,7 @@ static void anna_list_type_create_internal(
     anna_member_create(
 	type, ANNA_MID_LIST_SPECIALIZATION,  L"!listSpecialization",
 	1, null_type);
-    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
+    (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
     
     anna_type_t *a_argv[] = 
 	{
@@ -928,7 +928,7 @@ static void anna_list_type_create_internal(
 	2, 
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
     
     mmid = anna_native_method_create(
@@ -941,7 +941,7 @@ static void anna_list_type_create_internal(
 	3,
 	i_argv, 
 	i_argn);    
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
     anna_native_property_create(
@@ -1061,7 +1061,7 @@ static void anna_list_type_create_internal(
 	2,
 	range_argv, 
 	range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
     mmid = anna_native_method_create(
@@ -1074,7 +1074,7 @@ static void anna_list_type_create_internal(
 	3,
 	range_argv, 
 	range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
     anna_native_method_create(

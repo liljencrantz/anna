@@ -22,7 +22,7 @@
 
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
-    return (anna_string_t *)anna_member_addr_get_mid(obj,ANNA_MID_STRING_PAYLOAD);
+    return (anna_string_t *)anna_entry_get_addr(obj,ANNA_MID_STRING_PAYLOAD);
 }
 
 #include "anna_string_i.c"
@@ -252,7 +252,7 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
     }
     else
     {
-	anna_object_t *fun_object = anna_as_obj_fast(*anna_static_member_addr_get_mid(o->type, ANNA_MID_TO_STRING));
+	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
 	anna_entry_t *callback_param[] = 
 	    {
 		anna_from_obj(this),
@@ -635,7 +635,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	2, 
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
 
@@ -751,7 +751,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	3,
 	i_argv, 
 	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
     anna_type_t *range_argv[] = 
@@ -778,7 +778,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	2,
 	range_argv, 
 	range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
     mmid = anna_native_method_create(
@@ -791,7 +791,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	3,
 	range_argv, 
 	range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(*anna_static_member_addr_get_mid(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
     

@@ -253,7 +253,7 @@ void anna_function_type_create(
 	    null_type);
     }
     
-    (*anna_static_member_addr_get_mid(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD)) = (anna_entry_t *)key;
+    *anna_entry_get_addr_static(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD) = (anna_entry_t *)key;
 
     return;
 }
@@ -269,7 +269,7 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
     //wprintf(L"Find function signature for call %ls\n", type->name);
     
     anna_function_type_t **function_ptr = 
-	(anna_function_type_t **)anna_static_member_addr_get_mid(
+	(anna_function_type_t **)anna_entry_get_addr_static(
 	    type,
 	    ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
     if(function_ptr) 
@@ -281,7 +281,7 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
     {
 //	wprintf(L"Not a direct function, check for __call__ member\n");
 	anna_entry_t **function_wrapper_ptr = 
-	    anna_static_member_addr_get_mid(
+	    anna_entry_get_addr_static(
 		type,
 		ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)

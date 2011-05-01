@@ -277,7 +277,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
 		anna_node_type_t *tn = (anna_node_type_t *)node2->function;
 //		anna_type_print(tn->payload);
 		
-		anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
+		anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
@@ -738,7 +738,7 @@ static void anna_vm_compile_i(
 		anna_node_type_t *tn = (anna_node_type_t *)node2->function;
 //		anna_type_print(tn->payload);
 		
-		anna_entry_t **constructor_ptr = anna_static_member_addr_get_mid(
+		anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 		    tn->payload,
 		    ANNA_MID_INIT_PAYLOAD);
 		assert(constructor_ptr);
@@ -1060,7 +1060,7 @@ anna_vmstack_t *anna_vm_callback_native(
     al_push(&anna_alloc, stack);
     stack->caller = parent;
 
-    stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    stack->parent = *(anna_vmstack_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     stack->function = 0;
     stack->top = &stack->base[0];
@@ -1098,7 +1098,7 @@ static anna_vmstack_t *anna_vm_callback(
     al_push(&anna_alloc, stack);
     stack->caller = parent;
 
-    stack->parent = *(anna_vmstack_t **)anna_member_addr_get_mid(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    stack->parent = *(anna_vmstack_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     stack->function = 0;
     stack->top = &stack->base[0];
@@ -1140,8 +1140,8 @@ anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *parent, anna_object_t *co
     int argc = op->param + 1;
     anna_entry_t **argv = parent->top - argc;
     
-    anna_object_t *object = anna_as_obj(*anna_member_addr_get_mid(cont, ANNA_MID_THIS));
-    anna_object_t *method = anna_as_obj(*anna_member_addr_get_mid(cont, ANNA_MID_METHOD));
+    anna_object_t *object = anna_as_obj(*anna_entry_get_addr(cont, ANNA_MID_THIS));
+    anna_object_t *method = anna_as_obj(*anna_entry_get_addr(cont, ANNA_MID_METHOD));
     argv[0] = anna_from_obj(object);
     
     anna_vmstack_t *stack = anna_vm_callback(parent, method, argc, argv);

@@ -43,7 +43,7 @@ static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
     else 
     {
 	anna_object_t **function_wrapper_ptr =
-	    anna_static_member_addr_get_mid(
+	    anna_entry_get_addr_static(
 		obj->type, 
 		ANNA_MID_CALL_PAYLOAD);
 	if(function_wrapper_ptr)

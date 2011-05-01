@@ -49,14 +49,14 @@ anna_object_t *anna_node_wrap(anna_node_t *node)
 	    break;
     }
     anna_object_t *obj= anna_object_create(type);
-    *(anna_node_t **)anna_member_addr_get_mid(obj,ANNA_MID_NODE_PAYLOAD)=node;
+    *(anna_node_t **)anna_entry_get_addr(obj,ANNA_MID_NODE_PAYLOAD)=node;
     node->wrapper = obj;
     return obj;
 }
 
 anna_node_t *anna_node_unwrap(anna_object_t *this)
 {
-    return *(anna_node_t **)anna_member_addr_get_mid(this,ANNA_MID_NODE_PAYLOAD);
+    return *(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD);
 }
 
 

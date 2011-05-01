@@ -19,7 +19,7 @@
 
 static void anna_float_set(anna_object_t *this, double value)
 {
-    memcpy(anna_member_addr_get_mid(this,ANNA_MID_FLOAT_PAYLOAD), &value, sizeof(double));
+    memcpy(anna_entry_get_addr(this,ANNA_MID_FLOAT_PAYLOAD), &value, sizeof(double));
 }
 
 anna_object_t *anna_float_create(double value)
@@ -32,7 +32,7 @@ anna_object_t *anna_float_create(double value)
 double anna_float_get(anna_object_t *this)
 {
     double result;
-    memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_FLOAT_PAYLOAD), sizeof(double));
+    memcpy(&result, anna_entry_get_addr(this,ANNA_MID_FLOAT_PAYLOAD), sizeof(double));
     return result;
 }
 

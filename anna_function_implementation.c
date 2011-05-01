@@ -167,8 +167,8 @@ static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *cont = anna_continuation_create(
 	stack,
 	object_type)->wrapper;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)stack;
-    *anna_member_addr_get_mid(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)stack->code;
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)stack;
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)stack->code;
     
     return anna_vm_callback_native(
 	stack, &anna_i_callcc_callback, 0, 0, 
@@ -184,8 +184,8 @@ static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *
     anna_object_t *res = anna_method_wrapper_create(
 	stack,
 	object_type)->wrapper;
-    *anna_member_addr_get_mid(res, ANNA_MID_THIS) = obj;
-    *anna_member_addr_get_mid(res, ANNA_MID_METHOD) = meth;
+    *anna_entry_get_addr(res, ANNA_MID_THIS) = obj;
+    *anna_entry_get_addr(res, ANNA_MID_METHOD) = meth;
     anna_vmstack_push_object(stack, res);
     return stack;
 }

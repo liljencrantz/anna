@@ -19,7 +19,7 @@
 
 static void anna_int_set(anna_object_t *this, int value)
 {
-    memcpy(anna_member_addr_get_mid(this,ANNA_MID_INT_PAYLOAD), &value, sizeof(int));
+    memcpy(anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), &value, sizeof(int));
 }
 
 anna_object_t *anna_int_create(int value)
@@ -32,7 +32,7 @@ anna_object_t *anna_int_create(int value)
 int anna_int_get(anna_object_t *this)
 {
     int result;
-    memcpy(&result, anna_member_addr_get_mid(this,ANNA_MID_INT_PAYLOAD), sizeof(int));
+    memcpy(&result, anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), sizeof(int));
     return result;
 }
 

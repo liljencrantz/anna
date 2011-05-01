@@ -43,49 +43,6 @@ anna_node_t *anna_node_null=0;
 
 anna_stack_template_t *stack_global;
 
-__pure anna_entry_t **anna_member_addr_get_mid(anna_object_t *obj, mid_t mid)
-{
-    /*
-      debug(D_SPAM,L"Get mid %d on object\n", mid);
-      debug(D_SPAM,L"of type %ls\n", obj->type->name);
-    */
-    
-    anna_member_t *m = obj->type->mid_identifier[mid];
-    //wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
-    
-    if(unlikely(!m)) 
-    {
-	return 0;
-    }
-    //debug(D_SPAM,L"Found! Pos is %d, static is %d\n", m->offset, m->is_static);
-    
-    //debug(D_SPAM,L"Lala, get addr of member %ls\n", m->name);    
-    if(m->is_static) {
-	return &obj->type->static_member[m->offset];
-    } else {
-	return &(obj->member[m->offset]);
-    }
-}
-
-__pure anna_entry_t **anna_static_member_addr_get_mid(anna_type_t *type, mid_t mid)
-{
-    /*  debug(D_SPAM,L"Get mid %d on object\n", mid);
-	debug(D_SPAM,L"of type %ls\n", obj->type->name);
-    */
-    anna_member_t *m = type->mid_identifier[mid];
-    if(unlikely(!m)) 
-    {
-	return 0;
-    }
-    
-    //debug(D_SPAM,L"Lala, get addr of member %ls\n", m->name);    
-    if(m->is_static) {
-	return &type->static_member[m->offset];
-    } else {
-	return 0;
-    }
-}
-
 static int hash_function_type_func(void *a)
 {
     anna_function_type_t *key = (anna_function_type_t *)a;
@@ -180,14 +137,7 @@ anna_type_t *anna_type_for_function(
 	key->input_type[i]=argv[i];
 	key->input_name[i]=argn[i];
     }
-/*
-    debug(D_SPAM,L"Weee %ls <-", result->name);
-    for(i=0;i<argc; i++)
-    {
-	debug(D_SPAM,L" %ls", argv[i]->name);	
-    }
-    debug(D_SPAM,L"\n");
-*/
+
     anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
     if(!res)
     {
@@ -216,7 +166,6 @@ anna_type_t *anna_type_for_function(
 	for(i=0; i<argc;i++)
 	{
 	    wchar_t *dots = (i==argc-1) && (flags & ANNA_FUNCTION_VARIADIC)?L"...":L"";
-	    
 	    sb_printf(&sb, L"%ls%ls %ls%ls", i==0?L"":L", ", argv[i]->name, dots, argn[i]);
 	}
 	sb_printf(&sb, L")%d", num++);
@@ -226,7 +175,7 @@ anna_type_t *anna_type_for_function(
 	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_function_type_create(new_key, res);
     }
-
+    
     anna_function_type_t *ggg = anna_function_type_unwrap(res);
     assert(ggg->input_count == argc);
     

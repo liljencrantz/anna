@@ -74,7 +74,7 @@ ANNA_VM_NATIVE(anna_pair_set_second_i, 2)
 static anna_type_t *anna_pair_get_specialization1(anna_object_t *obj)
 {
     return *((anna_type_t **)
-	     anna_member_addr_get_mid(
+	     anna_entry_get_addr(
 		 obj,
 		 ANNA_MID_PAIR_SPECIALIZATION1));    
 }
@@ -82,7 +82,7 @@ static anna_type_t *anna_pair_get_specialization1(anna_object_t *obj)
 static anna_type_t *anna_pair_get_specialization2(anna_object_t *obj)
 {
     return *((anna_type_t **)
-	     anna_member_addr_get_mid(
+	     anna_entry_get_addr(
 		 obj,
 		 ANNA_MID_PAIR_SPECIALIZATION2));    
 }
@@ -108,8 +108,8 @@ static void anna_pair_type_create_internal(
 	type, ANNA_MID_PAIR_SPECIALIZATION2,  L"!pairSpecialization2",
 	1, null_type);
     
-    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_PAIR_SPECIALIZATION1)) = spec1;
-    (*(anna_type_t **)anna_static_member_addr_get_mid(type,ANNA_MID_PAIR_SPECIALIZATION2)) = spec2;
+    (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_PAIR_SPECIALIZATION1)) = spec1;
+    (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_PAIR_SPECIALIZATION2)) = spec2;
     
     anna_type_t *argv[] = 
 	{
