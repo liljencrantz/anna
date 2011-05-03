@@ -77,6 +77,7 @@ typedef ssize_t mid_t;
 #define ANNA_VMSTACK 4
 #define ANNA_FUNCTION 5
 #define ANNA_BLOB 6
+#define ANNA_ALLOC_FLAGS_SIZE 4
 #define ANNA_ALLOC_MASK 15
 #define ANNA_MOVE 16
 #define ANNA_USED 32

@@ -331,6 +331,11 @@ void anna_alloc_mark_entry(anna_entry_t *e)
 	    anna_alloc_mark_blob((void *)e);
 	    return;
 	}
+	if(anna_is_blob(e))
+	{
+	    anna_alloc_mark_blob((void *)e);
+	    return;
+	}
 	return;
     }
     anna_object_t *obj = anna_as_obj_fast(e);
@@ -572,6 +577,13 @@ static void anna_alloc_free(void *obj)
 	    hash_foreach(&o->member_string_identifier, free_val);
 	    hash_destroy(&o->member_string_identifier);
 	    anna_slab_free(obj, sizeof(anna_stack_template_t));
+	    break;
+	}
+	case ANNA_BLOB:
+	{	    
+	    long long *blob = (long long *)obj;
+	    size_t sz = *blob >> ANNA_ALLOC_FLAGS_SIZE;
+	    anna_slab_free(obj, sz);
 	    break;
 	}
 	default:

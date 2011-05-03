@@ -28,7 +28,7 @@ static inline __malloc void *anna_alloc_blob(size_t sz)
 {
     long long *res = anna_slab_alloc(sz+ sizeof(long long));
 //    wprintf(L"Alloc %d (%d)=> %d (%d)\n", sz, sz+ sizeof(long long), res, (long)res & 7);
-    *res = ANNA_BLOB;
+    *res = ANNA_BLOB | (sz << ANNA_ALLOC_FLAGS_SIZE);
     al_push(&anna_alloc, res);
     anna_alloc_count+=sz;
     return (void *)&res[1];

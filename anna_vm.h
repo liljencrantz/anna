@@ -70,7 +70,7 @@ anna_object_t *anna_char_create(wchar_t val);
        / \     / \     Chr     Int
       0   1   0   1
      Obj Blb Flt  ?
- */
+*/
 
 
 static inline double anna_as_float(anna_entry_t *entry);
@@ -85,6 +85,12 @@ static inline int anna_is_float(anna_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
     return type == ANNA_STACK_ENTRY_FLOAT;
+}
+
+static inline int anna_is_blob(anna_entry_t *val)
+{
+    long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
+    return type == ANNA_STACK_ENTRY_BLOB;
 }
 
 static inline int anna_is_char(anna_entry_t *val)
