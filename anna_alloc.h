@@ -26,7 +26,8 @@ static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 
 static inline __malloc void *anna_alloc_blob(size_t sz)
 {
-    long *res = anna_slab_alloc(sz+ sizeof(long));
+    long long *res = anna_slab_alloc(sz+ sizeof(long long));
+//    wprintf(L"Alloc %d (%d)=> %d (%d)\n", sz, sz+ sizeof(long long), res, (long)res & 7);
     *res = ANNA_BLOB;
     al_push(&anna_alloc, res);
     anna_alloc_count+=sz;

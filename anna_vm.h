@@ -41,10 +41,37 @@ anna_object_t *anna_char_create(wchar_t val);
 	return stack;							\
     }
 
-#define ANNA_STACK_ENTRY_FILTER 3
-#define ANNA_STACK_ENTRY_INT 1
-#define ANNA_STACK_ENTRY_CHAR 2
-#define ANNA_STACK_ENTRY_FLOAT 3
+#define ANNA_ENTRY_JMP_TABLE static void *jmp_table[] =			\
+    {									\
+	&&LAB_ENTRY_OBJ, &&LAB_ENTRY_CHAR, &&LAB_ENTRY_FLOAT, &&LAB_ENTRY_INT,	\
+	&&LAB_ENTRY_BLOB, &&LAB_ENTRY_CHAR, 0, &&LAB_ENTRY_INT		\
+    }
+
+#define ANNA_STACK_ENTRY_FILTER 7
+#define ANNA_STACK_ENTRY_SUBFILTER 3
+#define ANNA_STACK_ENTRY_BLOB 4
+#define ANNA_STACK_ENTRY_FLOAT 2
+#define ANNA_STACK_ENTRY_CHAR 1
+#define ANNA_STACK_ENTRY_INT 3
+
+/*  
+
+                  /   \
+
+                /       \
+
+              /           \             
+
+            0               1
+ 
+          /   \           /   \
+     
+        0       1       0       1
+       / \     / \     Chr     Int
+      0   1   0   1
+     Obj Blb Flt  ?
+ */
+
 
 static inline double anna_as_float(anna_entry_t *entry);
 
@@ -62,13 +89,13 @@ static inline int anna_is_float(anna_entry_t *val)
 
 static inline int anna_is_char(anna_entry_t *val)
 {
-    long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
+    long type = ((long)val) & ANNA_STACK_ENTRY_SUBFILTER;
     return type == ANNA_STACK_ENTRY_CHAR;
 }
 
 static inline int anna_is_int(anna_entry_t *val)
 {
-    long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
+    long type = ((long)val) & ANNA_STACK_ENTRY_SUBFILTER;
     return type == ANNA_STACK_ENTRY_INT;
 }
 
@@ -84,6 +111,7 @@ static inline anna_entry_t *anna_from_float(double val)
 {
     double *res = anna_alloc_blob(sizeof(double));
     *res = val;
+//    assert((((long)res) & ANNA_STACK_ENTRY_FILTER) == 0);
     res  = (double *)((long)res | ANNA_STACK_ENTRY_FLOAT);
     return (anna_entry_t *)res;
 }
@@ -98,35 +126,42 @@ static inline anna_entry_t *anna_from_char(wchar_t val)
 
 static inline anna_entry_t *anna_from_obj(anna_object_t *val)
 {
+/*
+    if(((long)val) & ANNA_STACK_ENTRY_FILTER == 0)
+    {
+	wprintf(L"OOOPS %ls %d\n", val->type->name, val);
+	CRASH;
+    }
+*/  
     return (anna_entry_t *)val;
 }
 
 static inline anna_object_t *anna_as_obj(anna_entry_t *entry)
 {
+    ANNA_ENTRY_JMP_TABLE;
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
-    if(unlikely(type))
-    {
-	if(type == ANNA_STACK_ENTRY_INT)
-	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return anna_int_create((int)res);
-	}
-	if(type == ANNA_STACK_ENTRY_CHAR)
-	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return anna_char_create((int)res);
-	}
-	if(type == ANNA_STACK_ENTRY_FLOAT)
-	{
-	    double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
-	    return anna_float_create(*res);
-	}
-	wprintf(L"BEEEEEEEEEEP\n");
-	
-    }
+    goto *jmp_table[type];
+  LAB_ENTRY_OBJ:
     return (anna_object_t *)entry;
+  LAB_ENTRY_CHAR:
+    {
+	long res = (long)entry;
+	res >>= 2;
+	return anna_char_create((int)res);
+    }
+  LAB_ENTRY_FLOAT:
+    {
+	double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
+	return anna_float_create(*res);
+    }
+  LAB_ENTRY_INT:
+    {
+	long res = (long)entry;
+	res >>= 2;
+	return anna_int_create((int)res);
+    }
+  LAB_ENTRY_BLOB:
+    CRASH;
 }
 
 static inline anna_object_t *anna_as_obj_fast(anna_entry_t *entry)
@@ -140,6 +175,7 @@ static inline int anna_as_int(anna_entry_t *entry)
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
     {
+	type = ((long)entry) & ANNA_STACK_ENTRY_SUBFILTER;
 	if(type == ANNA_STACK_ENTRY_INT)
 	{
 	    long res = (long)entry;
@@ -157,6 +193,7 @@ static inline wchar_t anna_as_char(anna_entry_t *entry)
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
     {
+	type = ((long)entry) & ANNA_STACK_ENTRY_SUBFILTER;
 	if(type == ANNA_STACK_ENTRY_CHAR)
 	{
 	    long res = (long)entry;
