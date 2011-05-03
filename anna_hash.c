@@ -24,7 +24,43 @@
 
 #include "anna_macro.h"
 
+#define ANNA_HASH_MINSIZE 16
+
+typedef struct
+{
+    int hash;
+    anna_entry_t *key;
+    anna_entry_t *value;
+}
+    anna_hash_entry_t;
+
+typedef struct {
+    size_t fill;
+    size_t used;
+    size_t mask;
+    anna_hash_entry_t *table;
+    anna_hash_entry_t *small_table[ANNA_HASH_MINSIZE];
+} anna_hash_t;
+
+typedef anna_vmstack_t *(*ahi_callback_t)(anna_vmstack_t *, anna_hash_entry_t *);
+
 static hash_table_t anna_hash_specialization;
+
+static inline void ahi_init(anna_hash_t *this)
+{
+    this->fill = this->used = 0;
+    this->mask = (1<<ANNA_HASH_MINSIZE)-1;
+    this->table = &this->small_table[0];
+}
+
+static inline anna_vmstack_t *ahi_search(
+    anna_vmstack_t *stack,
+    anna_entry_t *key,
+    ahi_callback_t callback)
+{
+        
+}
+
 
 static inline hash_table_t *h_unwrap(anna_object_t *obj)
 {

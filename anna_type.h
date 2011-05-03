@@ -71,6 +71,8 @@ void anna_type_copy_object(anna_type_t *type);
 
 void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack);
 
+void anna_type_calculate_size(anna_type_t *this);
+
 
 
 #endif

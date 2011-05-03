@@ -188,6 +188,8 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     }
     al_push(&anna_type_list, result);
     hash_init(&result->specializations, anna_node_hash_func, anna_node_hash_cmp);
+
+    anna_type_calculate_size(result);
     return result;
 }
 			  
@@ -918,3 +920,12 @@ void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack)
 	    body->child[i] = anna_node_macro_expand(body->child[i], stack);
     }
 }
+
+void anna_type_calculate_size(anna_type_t *this)
+{
+    this->object_size = 
+	anna_align(
+	    sizeof(anna_object_t)+sizeof(anna_object_t *)*this->member_count);
+}
+
+

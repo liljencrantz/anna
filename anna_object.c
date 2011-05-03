@@ -36,21 +36,23 @@ void anna_object_print(anna_object_t *obj)
 anna_object_t *anna_object_create(anna_type_t *type) {
     assert(type);
     anna_object_t *result = 
-	anna_object_create_raw(type->member_count);
+	anna_object_create_raw(type->object_size);
     result->type = type;
+    
+    int i;
+
+    for(i=0; i<type->member_count; i++)
+    {
+	result->member[i]=anna_from_obj(null_object);
+    }
+    
     return result;
 }
 
 anna_object_t *anna_object_create_raw(size_t sz)
 {
     anna_object_t *result = 
-	anna_alloc_object(
-	    sizeof(anna_object_t)+sizeof(anna_object_t *)*sz);
-    int i;
-    for(i=0; i<sz; i++)
-    {
-	result->member[i]=anna_from_obj(null_object);
-    }
+	anna_alloc_object(sz);
     
     return result;
 }

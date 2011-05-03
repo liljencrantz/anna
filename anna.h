@@ -199,6 +199,8 @@ struct anna_type
     
     int *member_blob;
     int *static_member_blob;
+
+    size_t object_size;
     /**
        The number of non-static members in an object of this type.
     */
@@ -474,6 +476,12 @@ extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type
 extern anna_object_t *null_object, *anna_wrap_method;
 extern int anna_error_count;
 extern struct anna_stack_template *stack_global;
+
+static inline size_t anna_align(size_t sz)
+{
+    return (((sz-1)/8)+1)*8;
+}
+
 
 /**
    Declare all global, native functions

@@ -261,7 +261,7 @@ int main(int argc, char **argv)
     
     debug(D_SPAM,L"Initializing interpreter...\n");    
     anna_init();
-    null_object = anna_object_create_raw(0);    
+    null_object = anna_object_create_raw(anna_align(sizeof(anna_object_t)));    
     anna_module_init();
     
     if(anna_error_count)

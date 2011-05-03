@@ -224,6 +224,7 @@ mid_t anna_member_create(
 	member_type,
 	null_object,
 	0);
+    anna_type_calculate_size(type);
     return mid;
 }
 

@@ -466,7 +466,7 @@ static void anna_alloc_free(void *obj)
 			&o);
 		}
 	    }
-	    anna_slab_free(obj, sizeof(anna_object_t)+sizeof(anna_object_t *)* (o->type->member_count));
+	    anna_slab_free(obj, o->type->object_size);
 	    break;
 	}
 	case ANNA_TYPE:
