@@ -32,7 +32,7 @@ static int print_direct(anna_entry_t *o)
     }
     else
     {
-	if(anna_is_float(o))
+	if(anna_is_alloc(o))
 	{
 	    wprintf(L"%f", anna_as_float(o));
 	}

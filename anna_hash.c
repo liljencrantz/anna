@@ -39,12 +39,17 @@ typedef struct {
     size_t used;
     size_t mask;
     anna_hash_entry_t *table;
-    anna_hash_entry_t *small_table[ANNA_HASH_MINSIZE];
+    anna_hash_entry_t small_table[ANNA_HASH_MINSIZE];
 } anna_hash_t;
 
 typedef anna_vmstack_t *(*ahi_callback_t)(anna_vmstack_t *, anna_hash_entry_t *);
 
 static hash_table_t anna_hash_specialization;
+
+static inline anna_hash_t *ahi_unwrap(anna_object_t *obj)
+{
+}
+
 
 static inline void ahi_init(anna_hash_t *this)
 {
@@ -53,12 +58,48 @@ static inline void ahi_init(anna_hash_t *this)
     this->table = &this->small_table[0];
 }
 
+static anna_vmstack_t *ahi_search_callback(anna_vmstack_t *stack, anna_object_t *me)
+{
+    int hash = anna_vmstack_pop_int(stack);
+    anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
+    anna_entry_t *key = anna_vmstack_pop_entry(stack);
+    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
+    int idx = hash & this->mask;
+    int i;
+    for(i=0; i<= this->mask; i++)
+    {
+	int pos = (hash + i) & this->mask;
+	if(this->table[pos].key)
+	{	    
+	}
+	
+    }    
+    
+}
+
 static inline anna_vmstack_t *ahi_search(
     anna_vmstack_t *stack,
     anna_entry_t *key,
+    anna_entry_t *hash,
     ahi_callback_t callback)
 {
-        
+    anna_entry_t *callback_param[] = 
+	{
+	    key,
+	    hash
+	}
+    ;
+    
+    anna_object_t *o = anna_as_obj(key);
+    wprintf(L"Search for object of type %ls in hash table\n", o->type->name);
+    anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_HASH_CODE);
+    anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
+    
+    return anna_vm_callback_native(
+	stack,
+	ahi_search_callback, 2, callback_param,
+	meth, 1, (anna_entry_t **)&o
+	);
 }
 
 

@@ -314,7 +314,7 @@ void anna_alloc_mark_type(anna_type_t *type)
 
 static void anna_alloc_mark_blob(void *mem)
 {
-    long *mem2 = (long *)mem;
+    long long *mem2 = (long *)mem;
     mem2--;
     *mem2 |= ANNA_USED;
 }
@@ -326,12 +326,7 @@ void anna_alloc_mark_entry(anna_entry_t *e)
     
     if(!anna_is_obj(e))
     {
-	if(anna_is_float(e))
-	{
-	    anna_alloc_mark_blob((void *)e);
-	    return;
-	}
-	if(anna_is_blob(e))
+	if(anna_is_alloc(e))
 	{
 	    anna_alloc_mark_blob((void *)e);
 	    return;
@@ -548,7 +543,7 @@ static void anna_alloc_free(void *obj)
 //		    anna_node_declare_t *n = (anna_node_declare_t *)o;
 		    break;
 		}
-
+		
 		case ANNA_NODE_CALL:
 		case ANNA_NODE_CONSTRUCT:
 		{

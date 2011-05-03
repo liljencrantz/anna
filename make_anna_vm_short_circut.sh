@@ -57,7 +57,7 @@ echo "
     {
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
-	if(likely(anna_is_float(i1) && anna_is_float(i2)))
+	if(likely(anna_is_alloc(i1) && anna_is_alloc(i2)))
 	{
             double v1 = anna_as_float(i1);
             double v2 = anna_as_float(i2);
@@ -73,7 +73,7 @@ echo "
 	    }
 	    else
 	    {
-//            wprintf(L\"Fallback for float $name %d %d %f %f\n\", anna_is_float(i1), anna_is_float(i2), anna_as_float(i1), anna_as_float(i2));
+//            wprintf(L\"Fallback for float $name %d %d %f %f\n\", anna_is_alloc(i1), anna_is_alloc(i2), anna_as_float(i1), anna_as_float(i2));
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_FLOAT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);

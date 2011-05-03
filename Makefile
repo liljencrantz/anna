@@ -3,7 +3,7 @@
 # Copyright 2011 Axel Liljencrantz
 #
 
-CC := gcc-4.6
+CC := gcc
 
 COV_FLAGS := #--coverage
 

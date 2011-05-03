@@ -13,6 +13,7 @@ anna_lex.h
 *.gcda
 *.gcno
 anna
+mandel
 anna_float_i.c
 anna_char_i.c
 anna_int_i.c
