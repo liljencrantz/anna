@@ -117,10 +117,7 @@ static inline anna_entry_t *anna_from_float(double val)
 {
     double *res = anna_alloc_blob(sizeof(double));
     *res = val;
-//    assert((((long)res) & ANNA_STACK_ENTRY_FILTER) == 0);
     res  = (double *)((long)res | ANNA_STACK_ENTRY_ALLOC);
-    assert(anna_is_alloc(res));
-    assert(anna_as_float(res) == val);
     return (anna_entry_t *)res;
 }
 

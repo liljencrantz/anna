@@ -42,14 +42,14 @@ typedef struct {
     anna_hash_entry_t small_table[ANNA_HASH_MINSIZE];
 } anna_hash_t;
 
-typedef anna_vmstack_t *(*ahi_callback_t)(anna_vmstack_t *, anna_hash_entry_t *);
+typedef anna_vmstack_t *(*ahi_callback_t)(anna_vmstack_t *stack, anna_entry_t *key, anna_entry_t *hash, anna_entry_t *aux, anna_hash_entry_t *hash_entry);
 
 static hash_table_t anna_hash_specialization;
 
 static inline anna_hash_t *ahi_unwrap(anna_object_t *obj)
 {
+    return (anna_hash_t *)anna_entry_get_addr(obj,ANNA_MID_HASH_PAYLOAD);
 }
-
 
 static inline void ahi_init(anna_hash_t *this)
 {
@@ -58,35 +58,69 @@ static inline void ahi_init(anna_hash_t *this)
     this->table = &this->small_table[0];
 }
 
+static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t *me)
+{
+    
+}
+
 static anna_vmstack_t *ahi_search_callback(anna_vmstack_t *stack, anna_object_t *me)
 {
     int hash = anna_vmstack_pop_int(stack);
+    anna_entry_t *aux = anna_vmstack_pop_entry(stack);
+    ahi_callback_t callback = (ahi_callback_t)anna_vmstack_pop_entry(stack);
     anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
     anna_entry_t *key = anna_vmstack_pop_entry(stack);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
+    anna_vmstack_pop_entry(stack);
     int idx = hash & this->mask;
     int i;
-    for(i=0; i<= this->mask; i++)
+    int pos = hash & this->mask;
+    if(this->table[pos].key)
     {
-	int pos = (hash + i) & this->mask;
-	if(this->table[pos].key)
-	{	    
-	}
+	anna_entry_t *callback_param[] = 
+	    {
+		key,
+		hash_obj,
+		anna_from_blob(callback),
+		aux,
+		anna_from_int(hash),
+		anna_from_int(0)		
+	    }
+	;
+
+	anna_entry_t *o_param[] = 
+	    {
+		key,
+		this->table[pos].key
+	    }
+	;
 	
-    }    
-    
+	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(anna_as_obj(key)->type, ANNA_MID_EQ));
+	return anna_vm_callback_native(
+	    stack,
+	    ahi_search_callback2, 6, callback_param,
+	    fun_object, 2, o_param
+	    );
+    }
+    else
+    {
+	return callback(stack, key, hash_obj, aux, &this->table[pos]);
+    }
 }
 
 static inline anna_vmstack_t *ahi_search(
     anna_vmstack_t *stack,
     anna_entry_t *key,
     anna_entry_t *hash,
-    ahi_callback_t callback)
+    ahi_callback_t callback,
+    anna_entry_t *aux)
 {
     anna_entry_t *callback_param[] = 
 	{
 	    key,
-	    hash
+	    hash,
+	    anna_from_blob(callback),
+	    aux
 	}
     ;
     
@@ -97,7 +131,7 @@ static inline anna_vmstack_t *ahi_search(
     
     return anna_vm_callback_native(
 	stack,
-	ahi_search_callback, 2, callback_param,
+	ahi_search_callback, 4, callback_param,
 	meth, 1, (anna_entry_t **)&o
 	);
 }
