@@ -44,8 +44,6 @@ typedef struct {
 
 typedef anna_vmstack_t *(*ahi_callback_t)(anna_vmstack_t *stack, anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, anna_hash_entry_t *hash_entry);
 
-static ahi_callback_t *set_callback=0, *get_callback=0;
-
 static hash_table_t anna_hash_specialization;
 
 static inline int hash_entry_is_used(anna_hash_entry_t *e)
@@ -82,7 +80,7 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
     int idx = anna_vmstack_pop_int(stack);
     int hash = anna_vmstack_pop_int(stack);
     anna_entry_t *aux = anna_vmstack_pop_entry(stack);
-    ahi_callback_t *callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
+    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
     anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
     anna_entry_t *key = anna_vmstack_pop_entry(stack);
 
@@ -96,11 +94,11 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
 	idx++;
 	int pos = (hash+idx) & this->mask;
 
-	wprintf(L"Position is non-empty, and keys are not equal. Check next position: %d.\n", pos);
+//	wprintf(L"Position is non-empty, and keys are not equal. Check next position: %d.\n", pos);
 	
 	if(this->table[pos].key)
 	{
-	    wprintf(L"Position %d is non-empty, check if keys are equal\n", pos);
+//	    wprintf(L"Position %d is non-empty, check if keys are equal\n", pos);
 	    anna_entry_t *callback_param[] = 
 		{
 		    key,
@@ -131,15 +129,15 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
 	}
 	else
 	{
-	    wprintf(L"Position %d is empty, there is no match! Run callback function %d\n", pos, *callback);
-	    return (*callback)(stack, key, hash, hash_obj, aux, &this->table[pos]);
+//	    wprintf(L"Position %d is empty, there is no match! Run callback function %d\n", pos, *callback);
+	    return callback(stack, key, hash, hash_obj, aux, &this->table[pos]);
 	}
     }
     else
     {
 	int pos = (hash+idx) & this->mask;
-	wprintf(L"Position %d is non-empty, but keys are equal. Found match, run callback function!\n", pos);
-	return (*callback)(stack, key, hash, hash_obj, aux, &this->table[pos]);
+//	wprintf(L"Position %d is non-empty, but keys are equal. Found match, run callback function!\n", pos);
+	return callback(stack, key, hash, hash_obj, aux, &this->table[pos]);
     }
 }
 
@@ -147,18 +145,18 @@ static anna_vmstack_t *ahi_search_callback(anna_vmstack_t *stack, anna_object_t 
 {
     int hash = anna_vmstack_pop_int(stack);
     anna_entry_t *aux = anna_vmstack_pop_entry(stack);
-    ahi_callback_t *callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
+    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
     anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
     anna_entry_t *key = anna_vmstack_pop_entry(stack);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
     anna_vmstack_pop_entry(stack);
     int pos = hash & this->mask;
     
-    wprintf(L"Calculated hash value %d, maps top position %d\n", hash, pos);
+//    wprintf(L"Calculated hash value %d, maps top position %d\n", hash, pos);
     
     if(this->table[pos].key)
     {
-	wprintf(L"Position %d is non-empty, check if keys are equal\n", pos);
+//	wprintf(L"Position %d is non-empty, check if keys are equal\n", pos);
 	anna_entry_t *callback_param[] = 
 	    {
 		key,
@@ -186,8 +184,8 @@ static anna_vmstack_t *ahi_search_callback(anna_vmstack_t *stack, anna_object_t 
     }
     else
     {
-	wprintf(L"Position %d is empty, there is no match! Run callback function %d\n", pos, *callback);
-	return (*callback)(stack, key, hash, hash_obj, aux, &this->table[pos]);
+//	wprintf(L"Position %d is empty, there is no match! Run callback function %d\n", pos, callback);
+	return callback(stack, key, hash, hash_obj, aux, &this->table[pos]);
     }
 }
 
@@ -195,7 +193,7 @@ static inline anna_vmstack_t *ahi_search(
     anna_vmstack_t *stack,
     anna_entry_t *key,
     anna_entry_t *hash,
-    ahi_callback_t *callback,
+    ahi_callback_t callback,
     anna_entry_t *aux)
 {
     anna_entry_t *callback_param[] = 
@@ -208,7 +206,7 @@ static inline anna_vmstack_t *ahi_search(
     ;
     
     anna_object_t *o = anna_as_obj(key);
-    wprintf(L"Search for object of type %ls in hash table\n", o->type->name);
+//    wprintf(L"Search for object of type %ls in hash table\n", o->type->name);
     anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_HASH_CODE);
     anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
     
@@ -239,38 +237,114 @@ anna_object_t *anna_hash_create2(anna_type_t *hash_type)
     return obj;
 }
 
-static inline anna_entry_t *anna_hash_init_i(anna_entry_t **param)
-{
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    ahi_init(ahi_unwrap(this));
-/*
-    size_t i;
-    if(likely(param[1] != null_object))
-    {
-	size_t sz = anna_list_get_size(param[1]);
-    
-	for(i=0; i<sz; i++)
-	{
-	    anna_object_t *pair = anna_list_get(param[1], i);
-	    if(likely(pair != null_object))
-	    {
-		anna_object_t *key = anna_pair_get_first(pair);
-		if(likely(key != null_object))
-		    hash_put(hash, anna_pair_get_first(pair), anna_pair_get_second(pair));
-	    }
-	}	
-    }
-*/
-    return param[0];
-}
-ANNA_VM_NATIVE(anna_hash_init, 2)
-
-static anna_vmstack_t *anna_hash_set_callback(
+static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
     anna_vmstack_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
     anna_hash_entry_t *hash_entry)
 {
-    wprintf(L"La la la %d %d\n", hash, hash_entry);
+    anna_entry_t ** data = anna_as_blob(aux);
+    anna_object_t *list = anna_as_obj(data[0]);
+    int idx = anna_as_int(data[1]);
+        
+//    wprintf(L"Init callback\n");
+    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
+    if(!hash_entry_is_used(hash_entry))
+    {
+	this->used++;
+	if(!hash_entry_is_dummy(hash_entry))
+	{
+	    this->fill++;
+	}
+    }
+    
+//    wprintf(L"Hash table now has %d used slots and %d dummy slots\n", this->used, this->fill-this->used);
+    
+    hash_entry->hash = hash_code;
+    hash_entry->key = key;
+    
+    anna_object_t *pair = anna_list_get(list, idx);
+    hash_entry->value = anna_pair_get_second(pair);
+
+
+    int i;
+    size_t sz = anna_list_get_size(list);
+    if(sz > idx)
+    {
+	
+	for(i=idx+1; i<sz; i++)
+	{
+	    anna_object_t *pair = anna_list_get(list, i);
+	    if(likely(pair != null_object))
+	    {
+		anna_object_t *key = anna_pair_get_first(pair);
+		if(likely(key != null_object))
+		{
+//		    wprintf(L"LALAJ, insert pos %d in init\n", i);
+		    
+		    anna_entry_t *key = anna_pair_get_first(pair);
+		    data[1] = anna_from_int(i);
+		    return ahi_search(
+			stack,
+			key,
+			hash,
+			anna_hash_init_callback,
+			anna_from_blob(data));
+		}
+	    }
+	}
+    }	
+
+    free(data);
+    anna_vmstack_push_entry(stack, hash);
+    return stack;
+}
+
+static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *list = anna_vmstack_pop_object(stack);
+    anna_object_t *this = anna_vmstack_pop_object(stack);
+    ahi_init(ahi_unwrap(this));
+    size_t i;
+
+    if(likely(list != null_object))
+    {
+	size_t sz = anna_list_get_size(list);
+	if(sz > 0)
+	{
+	    anna_entry_t ** data = malloc(2*sizeof(anna_entry_t *));
+	    data[0] = anna_from_obj(list);
+
+	    for(i=0; i<sz; i++)
+	    {
+		anna_object_t *pair = anna_list_get(list, i);
+		if(likely(pair != null_object))
+		{
+		    anna_object_t *key = anna_pair_get_first(pair);
+		    if(likely(key != null_object))
+		    {
+			anna_entry_t *key = anna_pair_get_first(pair);
+			data[1] = anna_from_int(i);
+			return ahi_search(
+			    stack,
+			    key,
+			    this,
+			    anna_hash_init_callback,
+			    anna_from_blob(data));
+		    }
+		}
+	    }
+	}	
+    }
+    anna_vmstack_push_object(stack, this);
+    return stack;
+}
+
+static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_set_callback(
+    anna_vmstack_t *stack, 
+    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
+    anna_hash_entry_t *hash_entry)
+{
+//    wprintf(L"La la la %d %d\n", hash, hash_entry);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
     if(!hash_entry_is_used(hash_entry))
     {
@@ -281,7 +355,7 @@ static anna_vmstack_t *anna_hash_set_callback(
 	}
     }
 
-    wprintf(L"Hash table now has %d used slots and %d dummy slots\n", this->used, this->fill-this->used);
+//    wprintf(L"Hash table now has %d used slots and %d dummy slots\n", this->used, this->fill-this->used);
     
     hash_entry->hash = hash_code;
     hash_entry->key = key;
@@ -303,22 +377,22 @@ static inline anna_vmstack_t *anna_hash_set(anna_vmstack_t *stack, anna_object_t
 	return stack;
     }
     
-    wprintf(L"Do a hash search with callback functino %d\n", &anna_hash_set_callback);
+//    wprintf(L"Do a hash search with callback functino %d\n", &anna_hash_set_callback);
     
     return ahi_search(
 	stack,
 	key,
 	this,
-	set_callback,
+	anna_hash_set_callback,
 	val);
 }
 
-static anna_vmstack_t *anna_hash_get_callback(
+static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_get_callback(
     anna_vmstack_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
     anna_hash_entry_t *hash_entry)
 {
-    wprintf(L"La la la %d %d\n", hash, hash_entry);
+//    wprintf(L"La la la %d %d\n", hash, hash_entry);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
     if(!hash_entry_is_used(hash_entry))
     {
@@ -344,13 +418,13 @@ static inline anna_vmstack_t *anna_hash_get(anna_vmstack_t *stack, anna_object_t
 	return stack;
     }
     
-    wprintf(L"Do a hash search with callback functino %d\n", &anna_hash_get_callback);
+//    wprintf(L"Do a hash search with callback functino %d\n", &anna_hash_get_callback);
     
     return ahi_search(
 	stack,
 	key,
 	this,
-	get_callback,
+	anna_hash_get_callback,
 	0);
 }
 
@@ -620,12 +694,6 @@ static inline void anna_hash_internal_init()
 
 void anna_hash_type_create(anna_stack_template_t *stack)
 {
-    set_callback = malloc(sizeof(ahi_callback_t));
-    *set_callback = &anna_hash_set_callback;
-
-    get_callback = malloc(sizeof(ahi_callback_t));
-    *get_callback = &anna_hash_get_callback;
-    
     anna_hash_internal_init();
     hash_put(&anna_hash_specialization, anna_tt_make(object_type, object_type), hash_type);
     anna_hash_type_create_internal(stack, hash_type, object_type, object_type);
