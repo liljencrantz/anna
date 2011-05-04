@@ -2,8 +2,11 @@
 def main()  
 {
     var d = [1 => "baberiba"];
-    d[4] = "flöjt";
-    d[20] = "flöjt";
-    d[36] = "flöjt";
-    
+    d[4] = "flöjt1";
+    d[20] = "flöjt2";
+    d[36] = "flöjt3";
+    d[52] = "flöjt4";
+    print(d[4], ' ', d[20], ' ', d[36], ' ', d[52], ' ', d[69], "\n");    
+    print(d.count,"\n");
+
 }
