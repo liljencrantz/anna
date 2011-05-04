@@ -1,15 +1,9 @@
-type Foo (template(T:Object))
-{
-    var T val;
-
-    def __init__(T val)
-    {
-        this.val = val;
-    }
-}
 
 def main()  
 {
-    var f = Foo(7);
-    print(f.val +1, "\n");
+    var d = [1 => "baberiba"];
+    d[4] = "flöjt";
+    d[20] = "flöjt";
+    d[36] = "flöjt";
+    
 }

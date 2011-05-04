@@ -44,6 +44,7 @@ Set type
 String format function
 File type
 toString methods for Hash, Pair
+hashCode function for String, Pair, List, Range, Float, Complex, Char
 A backtrace function
 io module
 time module

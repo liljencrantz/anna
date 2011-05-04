@@ -245,7 +245,10 @@ mid_t anna_member_create_blob(
     int i;
     string_buffer_t sb;
     sb_init(&sb);
-    for(i=1; i<(((sz+1)/sizeof(anna_entry_t *))+1);i++)
+    
+//    wprintf( L"Allocate blob of size %d, uses %d slots\n", sz, (((sz-1)/sizeof(anna_entry_t *))+1));
+    
+    for(i=1; i<(((sz-1)/sizeof(anna_entry_t *))+1);i++)
     {
 	sb_clear(&sb);
 	sb_printf(&sb, L"%ls%d", name, i+1);

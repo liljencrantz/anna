@@ -239,7 +239,7 @@ static inline double anna_as_float(anna_entry_t *entry)
 
 static inline void *anna_as_blob(anna_entry_t *entry)
 {
-    return (void *)(((long)entry) & ANNA_STACK_ENTRY_SUBFILTER);
+    return (void *)(((long)entry) & ~ANNA_STACK_ENTRY_SUBFILTER);
 }
 
 static inline complex double anna_as_complex(anna_entry_t *entry)
