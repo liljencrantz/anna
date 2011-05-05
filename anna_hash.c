@@ -423,6 +423,19 @@ static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
 	size_t sz = anna_list_get_size(list);
 	if(sz > 0)
 	{
+	    if(0.7 * ANNA_HASH_MINSIZE < sz)
+	    {
+		
+		
+		size_t new_sz = ANNA_HASH_MINSIZE;
+		do
+		{
+		    new_sz *= 4;
+		}
+		while(0.7 * new_sz < sz);
+		anna_hash_resize(ahi_unwrap(this), new_sz);
+	    }
+	    
 	    anna_entry_t ** data = malloc(2*sizeof(anna_entry_t *));
 	    data[0] = anna_from_obj(list);
 

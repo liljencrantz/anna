@@ -23,6 +23,7 @@ Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
 Implicit specialization doesn't work on user defined types
 Multiple inheritance clashes aren't handled correctly
+Use over 20 arguments i HashMap constructor and watch the crash!
 
 LANGUAGE FEATURES:
 Function templates
@@ -52,6 +53,7 @@ Hash.milter
 List and Hash should be made fail fast
 
 RELIABILITY:
+Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not)
 Test suite should be at lest 10 % of total code in project. (Currently ~ 4 %)
 Use continuations to make a green thread implementation as a test of continuation functionality
 Validate that all functions end with an empty stack frame
