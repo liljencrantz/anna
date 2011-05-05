@@ -1,0 +1,13 @@
+type A
+{
+    var B memb;
+}
+
+type B
+{
+
+}
+
+def main()
+{
+}

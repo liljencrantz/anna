@@ -14,12 +14,10 @@ Common constants, e.g. pi, e, etc.
 Type definition order seems to matter sometimes. Need to investigate.
 implicit this is not handled
 Handle open ranges in list/string set/get methods
-Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other can't e.g. close files on exit.
-
+Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit.
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
-hash type does not support continuations
 anna_type_member_count is probably used in a bunch of places where it returns the wrong number 
 Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
@@ -39,7 +37,7 @@ Return value type for continuations
 
 STDLIB FEATURES:
 HTML documentation extractor
-The rest of the hashtable functions (filter, contains, properties for keys and values, etc)
+The rest of the hashtable functions (filter, find, properties for key and value lists, etc)
 Set type
 String format function
 File type
@@ -50,6 +48,8 @@ io module
 time module
 List.milter 
 Range.milter
+Hash.milter
+List and Hash should be made fail fast
 
 RELIABILITY:
 Test suite should be at lest 10 % of total code in project. (Currently ~ 4 %)

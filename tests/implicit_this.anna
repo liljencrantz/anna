@@ -1,0 +1,15 @@
+type Tp
+{
+    var Int memb;
+    def meth()
+    {
+	return memb;
+    }
+}
+
+def main()
+{
+    var v = Tp();
+    v.memb = 7;
+    print(v.meth(), "\n");
+}
