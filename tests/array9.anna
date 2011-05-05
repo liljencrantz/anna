@@ -1,0 +1,10 @@
+def main()
+{
+    var arr = [0,1,2,3,4,5,6,7];
+    print(arr[3...], "\n");
+    arr[4...] = [0];
+    print(arr, "\n");
+    print(arr[3..null:-2], "\n");
+    arr[3..null:-2] = [99, 69];
+    print(arr, "\n");
+}

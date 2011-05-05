@@ -11,9 +11,6 @@ There are currently no users of the ANNA_NODE_TYPE_LOOKUP AST node type. Will we
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge nmbers of switch statements. One possibility would be to add function pointers to the node types.
 Static math expression support, e.g. 4*3
 Common constants, e.g. pi, e, etc.
-Type definition order seems to matter sometimes. Need to investigate.
-implicit this is not handled
-Handle open ranges in list/string set/get methods
 Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit.
 
 KNOWN BUGS:
@@ -23,7 +20,9 @@ Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
 Implicit specialization doesn't work on user defined types
 Multiple inheritance clashes aren't handled correctly
-Use over 20 arguments i HashMap constructor and watch the crash!
+Type definition order seems to matter sometimes. Need to investigate.
+implicit this is not handled
+Handle open ranges in list/string set/get methods
 
 LANGUAGE FEATURES:
 Function templates

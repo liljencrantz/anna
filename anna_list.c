@@ -732,20 +732,24 @@ static inline anna_entry_t *anna_list_i_get_range_i(anna_entry_t **param)
     anna_object_t *range = anna_as_obj(param[1]);
     int from = anna_range_get_from(range);
     int step = anna_range_get_step(range);
-    int count = anna_range_get_count(range);
+    int to = anna_range_get_to(range);
     int i;
+
+    if(anna_range_get_open(range))
+    {
+	to = step>0?anna_list_get_size(list):-1;
+    }
     
     anna_object_t *res = anna_list_create(anna_list_get_specialization(list));
-    anna_list_set_capacity(res, count);
-    for(i=0;i<count;i++)
+    for(i=from;(step>0)? i<to : i>to; i+=step)
     {
-	anna_list_set(
-	    res, i, 
+	anna_list_add(
+	    res, 
 	    anna_list_get(
 		list,
-		from + step*i));
-    }    
-
+		i));
+    }
+    
     return anna_from_obj(res);
     
 }
@@ -769,6 +773,13 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
     int to = anna_range_get_to(range);
     int count = anna_range_get_count(range);
     int i;
+
+    if(anna_range_get_open(anna_as_obj_fast(param[1])))
+    {
+	to = step>0?anna_list_get_size(list):-1;
+    }
+    
+    count = (1+(to-from-sign(step))/step);
     
     int count2 = anna_list_get_size(repl);
 

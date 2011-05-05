@@ -1,0 +1,12 @@
+def main()
+{
+    var arr = "abcdefghijklmno";
+    print(arr[3...], "\n");
+    arr[4...] = "boooooring";
+    print(arr, "\n");
+
+    print(arr[3..null:-2], "\n");
+    arr[3..null:-2] = "aa";
+    print(arr, "\n");
+
+}

@@ -110,13 +110,14 @@ static anna_entry_t *anna_string_i_get_range_i(anna_entry_t **param)
 {
     ANNA_VM_NULLCHECK(param[1]);
     
+    anna_object_t *this = anna_as_obj(param[0]);
     ssize_t from = anna_string_idx_wrap(anna_as_obj_fast(param[0]), anna_range_get_from(anna_as_obj_fast(param[1])));
     ssize_t to = anna_string_idx_wrap(anna_as_obj_fast(param[0]), anna_range_get_to(anna_as_obj_fast(param[1])));
     ssize_t step = anna_range_get_step(anna_as_obj_fast(param[1]));
     
     if(anna_range_get_open(anna_as_obj_fast(param[1])))
     {
-	to = anna_string_get_count(anna_as_obj_fast(param[0]));
+	to = step>0?anna_string_get_count(this):-1;
     }
     
     assert(step==1);
@@ -142,12 +143,12 @@ static anna_vmstack_t *anna_string_i_set_range(anna_vmstack_t *stack, anna_objec
 	
 	ssize_t from = anna_string_idx_wrap(this, anna_range_get_from(range));
 	ssize_t to = anna_string_idx_wrap(this, anna_range_get_to(range));
+	ssize_t step = anna_range_get_step(range);
 	if(anna_range_get_open(range))
 	{
-	    to = anna_string_get_count(this);	
-	}    
+	    to = step>0?anna_string_get_count(this):-1;
+	}
 	
-	ssize_t step = anna_range_get_step(range);
 	ssize_t count = (1+(to-from-sign(step))/step);
 	
 	anna_string_t *str1 = as_unwrap(this);
