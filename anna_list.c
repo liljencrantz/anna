@@ -903,7 +903,7 @@ static void anna_list_type_create_internal(
 	&anna_list_del, 
 	object_type,
 	1, a_argv, a_argn);    
-
+    
     anna_type_t *i_argv[] = 
 	{
 	    type,

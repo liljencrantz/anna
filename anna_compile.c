@@ -80,8 +80,11 @@ static size_t anna_bc_stack_size(char *code)
 {
     size_t pos = 0;
     size_t max = 0;
+    char *base = code;
+//    wprintf(L"Check code that starts at %d\n", code);
     while(1)
     {
+//	wprintf(L"Check instruction at %d\n", code-base);
 	char instruction = *code;
 	if(!anna_instr_is_short_circut(instruction))
 	{
@@ -498,7 +501,7 @@ static void anna_vm_member(char **ptr, int op, mid_t val)
 	    val
 	}
     ;
-    memcpy(*ptr, &mop, sizeof(anna_op_const_t));
+    memcpy(*ptr, &mop, sizeof(anna_op_member_t));
     *ptr += sizeof(anna_op_member_t);	    
 }
 
@@ -554,6 +557,7 @@ static void anna_vm_compile_i(
     anna_function_t *fun, 
     anna_node_t *node, char **ptr, int drop_output)
 {
+//    wprintf(L"Compile AST node of type %d\n", node->node_type);
     switch(node->node_type)
     {
 	case ANNA_NODE_NULL:
@@ -812,6 +816,7 @@ static void anna_vm_compile_i(
 	
 	case ANNA_NODE_MEMBER_GET:
 	{
+//	    wprintf(L"MEMGET\n\n");
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    anna_object_t *const_obj = anna_node_static_invoke_try(
 		node, fun->stack_template);
@@ -1028,6 +1033,7 @@ void anna_vm_compile(
     }
     
     fun->code = calloc(sz, 1);
+    //wprintf(L"Allocate memory for code block of size %d\n", sz);
     char *code_ptr = fun->code;
     if(is_empty)
     {
@@ -1040,12 +1046,19 @@ void anna_vm_compile(
 	    anna_vm_compile_i(fun, fun->body->child[i], &code_ptr, i != (fun->body->child_count-1));
 	}
     }
-    
-    fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);;
+/*    wprintf(L"Compiled code used %d bytes\n", code_ptr - fun->code);
+    if(code_ptr - fun->code == 16){
+	for(i=0; i<20; i++){
+	    wprintf( L"%d\t", fun->code[i]);
+	}
+    }
+    *code_ptr = 0;
+    */
+    fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
     
-//    anna_bc_print(fun->code);
+    //anna_bc_print(fun->code);
 }
 
 anna_vmstack_t *anna_vm_callback_native(

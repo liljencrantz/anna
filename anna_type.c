@@ -65,7 +65,8 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
 	    int j;
 	    for(j=old_sz; j<sz; j++)
 	    {
-		type->mid_identifier[i] = type->mid_identifier[0];
+		type->mid_identifier[j] = type->mid_identifier[0];
+//		wprintf(L"Setting mid %d of null type to point to null member %d\n", j, type->mid_identifier[0]);
 	    }
 	}
 	else

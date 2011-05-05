@@ -575,9 +575,9 @@ static void anna_alloc_free(void *obj)
 	    break;
 	}
 	case ANNA_BLOB:
-	{	    
+	{
 	    long long *blob = (long long *)obj;
-	    size_t sz = *blob >> ANNA_ALLOC_FLAGS_SIZE;
+	    size_t sz = (*blob >> ANNA_ALLOC_FLAGS_SIZE) & (0xffffffff);
 	    anna_slab_free(obj, sz);
 	    break;
 	}

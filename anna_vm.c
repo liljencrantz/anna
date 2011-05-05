@@ -503,9 +503,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	{
 	    debug(
 		D_CRITICAL,
-		L"Object of type %ls does not have a member of type %ls\n",
+		L"Object of type %ls does not have a member of named %ls (mid %d)\n",
 		obj->type->name,
-		anna_mid_get_reverse(op->mid));    
+		anna_mid_get_reverse(op->mid), op->mid);    
 	    CRASH;
 	}
 #endif
