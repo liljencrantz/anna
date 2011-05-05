@@ -702,6 +702,92 @@ static anna_vmstack_t *anna_hash_each(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+
+static anna_vmstack_t *anna_hash_map_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_object_t *value = anna_vmstack_pop_object(stack);
+    
+    anna_entry_t **param = stack->top - 4;
+    anna_object_t *hash = anna_as_obj_fast(param[0]);
+    anna_object_t *body = anna_as_obj_fast(param[1]);
+    int idx = anna_as_int(param[2]);
+    anna_object_t *res = anna_as_obj_fast(param[3]);
+    size_t sz = anna_hash_get_size(hash);
+    
+    anna_list_add(res, anna_from_obj(value));
+    int next_idx = anna_hash_get_next_idx(hash, idx);
+    
+    if(next_idx >= 0)
+    {
+	anna_entry_t *o_param[] =
+	    {
+		anna_hash_get_key_from_idx(hash, next_idx),
+		anna_hash_get_value_from_idx(hash, next_idx)
+	    }
+	;
+	
+	param[2] = anna_from_int(next_idx+1);
+	anna_vm_callback_reset(stack, body, 2, o_param);
+    }
+    else
+    {
+	anna_vmstack_drop(stack, 5);
+	anna_vmstack_push_object(stack, res);
+    }    
+    return stack;
+}
+
+static anna_vmstack_t *anna_hash_map(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *body = anna_vmstack_pop_object(stack);
+    anna_object_t *hash = anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_object(stack);
+    if(body == null_object)
+    {
+	anna_vmstack_push_object(stack, null_object);
+    }
+    else
+    {
+	anna_function_t *fun = anna_function_unwrap(body);
+	anna_object_t *res = anna_list_create(fun->return_type);
+	
+	size_t sz = anna_hash_get_size(hash);
+	
+	if(sz > 0)
+	{
+	    int next_idx = anna_hash_get_next_idx(hash, 0);
+	    anna_entry_t *callback_param[] = 
+		{
+		    anna_from_obj(hash),
+		    anna_from_obj(body),
+		    anna_from_int(next_idx+1),
+		    anna_from_obj(res)
+		}
+	    ;
+	    
+	    anna_entry_t *o_param[] =
+		{
+		    anna_hash_get_key_from_idx(hash, next_idx),
+		    anna_hash_get_value_from_idx(hash, next_idx)
+		}
+	    ;
+	    
+	    stack = anna_vm_callback_native(
+		stack,
+		anna_hash_map_callback, 4, callback_param,
+		body, 2, o_param
+		);
+	}
+	else
+	{
+	    anna_vmstack_push_object(stack, res);
+	}
+    }
+    
+    return stack;
+}
+
+
 /*
 static anna_type_t *anna_hash_get_key_specialization(anna_object_t *obj)
 {
@@ -720,27 +806,6 @@ static anna_type_t *anna_hash_get_value_specialization(anna_object_t *obj)
 }
 */
 /*
-static void anna_hash_each_fun(void *keyp, void *valp, void *funp)
-{
-    anna_object_t *o_param[]=
-	{
-	    keyp, valp
-	}
-    ;   
-    anna_vm_run(funp, 2, o_param);
-}
-
-
-static anna_object_t *anna_hash_each_i(anna_object_t **param)
-{
-    anna_object_t *body_object=param[1];
-    
-    hash_foreach2(h_unwrap(param[0]), anna_hash_each_fun, body_object);
-
-    return param[0];
-}
-ANNA_VM_NATIVE(anna_hash_each, 2)
-
 static inline anna_object_t *anna_hash_del_i(anna_object_t **param)
 {
     hash_destroy(h_unwrap(param[0]));
@@ -748,17 +813,7 @@ static inline anna_object_t *anna_hash_del_i(anna_object_t **param)
 }
 ANNA_VM_NATIVE(anna_hash_del, 1)
 */
-/*
 
-static inline anna_object_t *anna_hash_in_i(anna_object_t **param)
-{
-    if(param[1]==null_object)
-	return null_object;
-    anna_object_t *res = hash_get(h_unwrap(param[0]), param[1]);
-    return res ? anna_from_int(1) : null_object;
-}
-ANNA_VM_NATIVE(anna_hash_in, 2)
-*/
 static void anna_hash_type_create_internal(
     anna_stack_template_t *stack,
     anna_type_t *type, 
@@ -867,6 +922,13 @@ static void anna_hash_type_create_internal(
 	&anna_hash_each, 
 	type,
 	2, e_argv, e_argn);
+    
+    anna_native_method_create(
+	type, -1, L"__map__", 
+	0, &anna_hash_map, 
+	list_type,
+	2, e_argv, e_argn);
+    
 /*
     anna_native_method_create(
 	type,
@@ -945,11 +1007,6 @@ static void anna_hash_type_create_internal(
       Hash<Object>. I guess map needs to be a template function or
       something.
     */
-    anna_native_method_create(
-	type, -1, L"__map__", 
-	0, &anna_hash_map, 
-	hash_type,
-	2, e_argv, e_argn);
     
 #endif
 
