@@ -24,7 +24,26 @@
 
 #include "anna_macro.h"
 
+/**
+   The size of the builtin table used for very small hashes to avoid a memory allocation.
+ */
 #define ANNA_HASH_MINSIZE 16
+
+/**
+  The factor to increase hash size by wwhen running full. Must be a power of two.
+ */
+#define ANNA_HASH_SIZE_STEP 4
+
+/**
+   The maximum allowed fill rate of the hash when inserting
+ */
+#define ANNA_HASH_USED_MAX 0.75
+
+/**
+   The minimum allowed fill rate of the hash when inserting
+ */
+#define ANNA_HASH_USED_MIN 0.1
+
 
 typedef struct
 {
@@ -164,20 +183,20 @@ static void anna_hash_check_resize(anna_hash_t *this)
 {
     size_t old_sz = this->mask+1;
 //    if(old_sz <= 64)
-//	wprintf(L"%d: %f > %d?\n", old_sz, 0.1*old_sz, this->used);
-    if(0.75*old_sz < this->used)
+//	wprintf(L"%d: %f > %d?\n", old_sz, ANNA_HASH_USED_MIN*old_sz, this->used);
+    if(ANNA_HASH_USED_MAX*old_sz < this->used)
     {
-	size_t new_sz = 4 * old_sz;
+	size_t new_sz = ANNA_HASH_SIZE_STEP * old_sz;
 	anna_hash_resize(this, new_sz);
     }
-    else if( 0.1*old_sz > this->used)
+    else if( ANNA_HASH_USED_MIN*old_sz > this->used)
     {
 	size_t new_sz = old_sz;
 	do
 	{
-	    new_sz /= 4;
+	    new_sz /= ANNA_HASH_SIZE_STEP;
 	}
-	while(0.1*new_sz > this->used && new_sz >= ANNA_HASH_MINSIZE);
+	while(ANNA_HASH_USED_MIN*new_sz > this->used && new_sz >= ANNA_HASH_MINSIZE);
 	anna_hash_resize(this, new_sz);
     }
 }
@@ -423,16 +442,16 @@ static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
 	size_t sz = anna_list_get_size(list);
 	if(sz > 0)
 	{
-	    if(0.7 * ANNA_HASH_MINSIZE < sz)
+	    if(ANNA_HASH_USED_MAX * ANNA_HASH_MINSIZE < sz)
 	    {
 		
 		
 		size_t new_sz = ANNA_HASH_MINSIZE;
 		do
 		{
-		    new_sz *= 4;
+		    new_sz *= ANNA_HASH_SIZE_STEP;
 		}
-		while(0.7 * new_sz < sz);
+		while(ANNA_HASH_USED_MAX * new_sz < sz);
 		anna_hash_resize(ahi_unwrap(this), new_sz);
 	    }
 	    

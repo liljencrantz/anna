@@ -12,6 +12,8 @@ Can the list of anna_node_*_t structs be reduced? Can the node type specific cod
 Static math expression support, e.g. 4*3
 Common constants, e.g. pi, e, etc.
 Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit.
+Hash: Don't create a dummy of next entry i completely empty
+Hash: If search fails, return first dummy node (if it exists) instead of first empty node. 
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
