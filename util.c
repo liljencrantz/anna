@@ -30,13 +30,6 @@
 #include "wutil.h"
 
 /**
-   Minimum allocated size for data structures. Used to avoid excessive
-   memory allocations for lists, hash tables, etc, which are nearly
-   empty.
-*/
-#define MIN_SIZE 32
-
-/**
    Minimum size for hash tables
 */
 #define HASH_MIN_SIZE 7
@@ -530,35 +523,6 @@ void al_destroy( array_list_t *l )
 	free( l->arr );
 }
 
-/**
-   Real implementation of all al_push_* versions. Pushes arbitrary
-   element to end of list.
- */
-static int al_push_generic( array_list_t *l, anything_t o )
-{
-	if( l->pos >= l->size )
-	{
-		int new_size = l->pos == 0 ? MIN_SIZE : 2 * l->pos;
-		void *tmp = realloc( l->arr, sizeof( anything_t )*new_size );
-		if( tmp == 0 )
-		{
-			oom_handler( l );
-			return 0;
-		}
-		l->arr = tmp;
-		l->size = new_size;		
-	}
-	l->arr[l->pos++] = o;
-	return 1;
-}
-
-int al_push( array_list_t *l, const void *o )
-{
-	anything_t v;
-	v.ptr_val = (void *)o;
-	return al_push_generic( l, v );
-}
-
 int al_push_long( array_list_t *l, long val )
 {
 	anything_t v;
@@ -712,12 +676,6 @@ func_ptr_t al_get_func( array_list_t *l, int pos )
 
 
 
-void al_truncate( array_list_t *l, int new_sz )
-{
-	VERIFY( l, );
-	l->pos = new_sz;
-}
-
 /**
    Real implementation of all al_pop_* versions. Pops arbitrary
    element from end of list.
@@ -801,13 +759,6 @@ int al_empty( array_list_t *l )
 {
 	VERIFY( l, 1 );
 	return l->pos == 0;
-}
-
-int al_get_count( array_list_t *l )
-
-{
-	VERIFY( l, 0 );
-	return l->pos;
 }
 
 void al_foreach( array_list_t *l, void (*func)( void * ))

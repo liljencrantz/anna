@@ -705,7 +705,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
     char *ptr = 0;
     anna_vm_compile_i(
 	fun, node, &ptr, 0, ANNA_COMPILE_SIZE);
-    return ptr;
+    return ptr - ((char *)0);
 }
 
 void anna_vm_compile(
@@ -718,7 +718,7 @@ void anna_vm_compile(
 	*/
 	return;
     }
-
+    
     if(!fun->body)
     {
 	fun->variable_count = fun->input_count;
@@ -730,7 +730,11 @@ void anna_vm_compile(
 
     if(!fun->stack_template)
     {
-	anna_error((anna_node_t *)fun->definition, L"Internal compiler error: Function %ls at %d does not have a stack during compilation phase.", fun->name, fun);
+	anna_error(
+	    (anna_node_t *)fun->definition,
+	    L"Internal compiler error: Function %ls at %d does not have a stack during compilation phase.", 
+	    fun->name, 
+	    fun);
 	CRASH;	
     }
     

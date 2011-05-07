@@ -18,6 +18,13 @@
 #define AL_STATIC {0,0,0}
     
 /**
+   Minimum allocated size for data structures. Used to avoid excessive
+   memory allocations for lists, hash tables, etc, which are nearly
+   empty.
+*/
+#define MIN_SIZE 32
+
+/**
    Typedef for a generic function pointer
  */
 typedef void (*func_ptr_t)();
@@ -326,7 +333,24 @@ void al_destroy( array_list_t *l );
    \return
    \return 1 if succesfull, 0 otherwise
 */
-int al_push( array_list_t *l, const void *o );
+/**
+   Real implementation of all al_push_* versions. Pushes arbitrary
+   element to end of list.
+ */
+static inline int al_push_generic( array_list_t *l, anything_t o )
+{
+    if( l->pos >= l->size )
+    {
+	int new_size = l->pos == 0 ? MIN_SIZE : 2 * l->pos;
+	void *tmp = realloc( l->arr, sizeof( anything_t )*new_size );
+	l->arr = tmp;
+	l->size = new_size;		
+    }
+    l->arr[l->pos++] = o;
+    return 1;
+}
+
+
 /**
    Append element to list
 
@@ -335,6 +359,13 @@ int al_push( array_list_t *l, const void *o );
    \return
    \return 1 if succesfull, 0 otherwise
 */
+static inline int al_push( array_list_t *l, const void *o )
+{
+	anything_t v;
+	v.ptr_val = (void *)o;
+	return al_push_generic( l, v );
+}
+
 int al_push_long( array_list_t *l, long o );
 /**
    Append element to list
@@ -392,6 +423,34 @@ int al_set_func( array_list_t *l, int pos, func_ptr_t f );
    \return The element 
 */
 void *al_get( array_list_t *l, int pos );
+
+static inline void *al_get_fast( array_list_t *l, int pos )
+{
+    return l->arr[pos].ptr_val;
+}
+
+/**
+   Returns the number of elements in the list
+*/
+static inline int al_get_count( array_list_t *l )
+
+{
+    return l->pos;
+}
+
+/**
+   Real implementation of all al_set_* versions. Sets arbitrary
+   element of list.
+ */
+
+static inline void al_set_fast( array_list_t *l, int pos, void *v )
+{
+    anything_t vv;
+    vv.ptr_val = v;
+    l->arr[pos] = vv;
+}
+
+
 /**
    Returns the element at the specified index
 
@@ -412,7 +471,10 @@ func_ptr_t al_get_func( array_list_t *l, int pos );
 /**
   Truncates the list to new_sz items.
 */
-void al_truncate( array_list_t *l, int new_sz );
+static inline void al_truncate( array_list_t *l, int new_sz )
+{
+    l->pos = new_sz;
+}
 
 /**
   Removes and returns the last entry in the list
@@ -426,11 +488,6 @@ long al_pop_long( array_list_t *l );
   Removes and returns the last entry in the list
 */
 func_ptr_t al_pop_func( array_list_t *l );
-
-/**
-   Returns the number of elements in the list
-*/
-int al_get_count( array_list_t *l );
 
 /**
   Returns the last entry in the list witout removing it.

@@ -51,7 +51,6 @@ static void asi_cache_clear(anna_string_t *s)
 #ifdef ANNA_STRING_VALIDATE_ENABLE
 static void asi_validate(anna_string_t *s)
 {
-
     int i;
     size_t result=0;
     for(i=0;i<s->element_count; i++) {

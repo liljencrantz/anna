@@ -73,15 +73,13 @@ Mandel test should be no more than one order of magnitude slower than the corres
 Start implementing a few of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance.
 Variable lookup instruction version for looking up in current frame
 Variable lookup instruction version for looking up in parent frame
-Special purpose bytecode instructions for arithmetic on common artithmetic types (int, float, complex)
 Implement tail recursion
 Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. This would require that the gc knows that non-objects might be living on the stack...
-Perform escape analysis on stack frames and allocate ones who are never referenced in non-GC:ed memory.
 Add profiling information to the VM
-Inlining of if/while bodies into main method
 Make a version of the fold op that takes a count parameter
 Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
 Lazy loading of modules
+Can we make string literals faster?
 
 UNUSED OPERATORS:
 Currently, the ? and @ symbols are unused. 

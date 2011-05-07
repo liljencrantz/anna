@@ -618,13 +618,13 @@ void anna_gc(anna_vmstack_t *stack)
     int freed = 0;
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
-	void *el = al_get(&anna_alloc, i);
+	void *el = al_get_fast(&anna_alloc, i);
 	int flags = *((int *)el);
 	if(!(flags & ANNA_USED) && ((flags & ANNA_ALLOC_MASK) == ANNA_OBJECT))
 	{
 	    freed++;
 	    anna_alloc_free(el);
-	    al_set(&anna_alloc, i, al_get(&anna_alloc, al_get_count(&anna_alloc)-1));
+	    al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
 	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
 	    i--;
 	}
@@ -632,17 +632,17 @@ void anna_gc(anna_vmstack_t *stack)
 
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
-	void *el = al_get(&anna_alloc, i);
+	void *el = al_get_fast(&anna_alloc, i);
 	if(!(*((int *)el) & ANNA_USED))
 	{
 	    freed++;
 	    anna_alloc_free(el);
-	    al_set(&anna_alloc, i, al_get(&anna_alloc, al_get_count(&anna_alloc)-1));
+	    al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
 	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
 	    i--;
 	}
 	else{
-	    anna_alloc_unmark(al_get(&anna_alloc, i));
+	    anna_alloc_unmark(al_get_fast(&anna_alloc, i));
 	}
     }
 //    wprintf(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
