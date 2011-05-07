@@ -32,17 +32,17 @@
 /**
   The factor to increase hash size by wwhen running full. Must be a power of two.
  */
-#define ANNA_HASH_SIZE_STEP 4
+#define ANNA_HASH_SIZE_STEP 2
 
 /**
    The maximum allowed fill rate of the hash when inserting
  */
-#define ANNA_HASH_USED_MAX 0.75
+#define ANNA_HASH_USED_MAX 0.85
 
 /**
    The minimum allowed fill rate of the hash when inserting
  */
-#define ANNA_HASH_USED_MIN 0.1
+#define ANNA_HASH_USED_MIN 0.2
 
 
 typedef struct
@@ -201,24 +201,106 @@ static void anna_hash_check_resize(anna_hash_t *this)
     }
 }
 
-static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t *me)
+static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t *me);
+static anna_vmstack_t *ahi_search_callback2_internal(
+    anna_vmstack_t *stack, 
+    anna_entry_t *key,
+    anna_entry_t *hash_obj,
+    ahi_callback_t callback,
+    anna_entry_t *aux,
+    int hash,
+    int idx,
+    void *dummy_ptr,
+    anna_entry_t *eq);
+
+
+static inline anna_vmstack_t *ahi_search_callback2_next(
+    anna_vmstack_t *stack, 
+    anna_entry_t *hash_obj, 
+    anna_entry_t *key,
+    ahi_callback_t callback,
+    anna_entry_t *aux,
+    int hash,
+    int idx,
+    void *dummy_ptr,
+    int pos)
 {
-    anna_entry_t *eq = anna_vmstack_pop_entry(stack);
-    int idx = anna_vmstack_pop_int(stack);
-    int hash = anna_vmstack_pop_int(stack);
-    anna_entry_t *aux = anna_vmstack_pop_entry(stack);
-    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
-    anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
-    anna_entry_t *key = anna_vmstack_pop_entry(stack);
+    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
 
+    if(!anna_is_obj(key))
+    {
+	if(anna_is_int(key) && anna_is_int(this->table[pos].key))
+	{
+	    int eq = anna_as_int(key) == anna_as_int(this->table[pos].key);
+	    return ahi_search_callback2_internal(
+		stack,
+		key,
+		hash_obj,
+		callback,
+		aux,
+		hash,
+		idx,
+		dummy_ptr,
+		eq ? anna_from_int(1):anna_from_obj(null_object));	
+	}
+    }
+    
+    anna_entry_t *callback_param[] = 
+	{
+	    key,
+	    hash_obj,
+	    anna_from_blob(callback),
+	    aux,
+	    anna_from_int(hash),
+	    anna_from_int(idx),
+	    anna_from_blob(dummy_ptr)
+	}
+    ;
+    
+    anna_entry_t *o_param[] = 
+	{
+	    key,
+	    this->table[pos].key
+	}
+    ;
+    
+    anna_object_t *fun_object = anna_as_obj_fast(
+	anna_entry_get_static(
+	    anna_as_obj(key)->type, ANNA_MID_EQ));
 
+    return anna_vm_callback_native(
+	stack,
+	ahi_search_callback2, 7, callback_param,
+	fun_object, 2, o_param
+	);    
+
+}
+
+static anna_vmstack_t *ahi_search_callback2_internal(
+    anna_vmstack_t *stack, 
+    anna_entry_t *key,
+    anna_entry_t *hash_obj,
+    ahi_callback_t callback,
+    anna_entry_t *aux,
+    int hash,
+    int idx,
+    void *dummy_ptr,
+    anna_entry_t *eq)
+{
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
 
     if(ANNA_VM_NULL(eq))
     {
-
-
+	
 	idx++;
+	if(dummy_ptr == 0)
+	{
+	    int d_pos = idx & this->mask;
+	    if(hash_entry_is_dummy(&this->table[d_pos]))
+	    {
+		dummy_ptr = &this->table[d_pos];
+	    }
+	}
 	int pos = anna_hash_get_next_non_dummy(anna_as_obj(hash_obj), hash+idx);
 	anna_hash_entry_t *e = &this->table[pos];
 	idx = pos-hash;
@@ -227,37 +309,20 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
 	if(hash_entry_is_used(e))
 	{
 //	    wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
-	    anna_entry_t *callback_param[] = 
-		{
-		    key,
-		    hash_obj,
-		    anna_from_blob(callback),
-		    aux,
-		    anna_from_int(hash),
-		    anna_from_int(idx)
-		}
-	    ;
-	    
-	    anna_entry_t *o_param[] = 
-		{
-		    key,
-		    this->table[pos].key
-		}
-	    ;
-	    
-	    anna_object_t *fun_object = 
-		anna_as_obj_fast(
-		    anna_entry_get_static(
-			anna_as_obj(key)->type, 
-			ANNA_MID_EQ));
-	    return anna_vm_callback_native(
-		stack,
-		ahi_search_callback2, 6, callback_param,
-		fun_object, 2, o_param);
+	    return ahi_search_callback2_next(
+		stack, 
+		hash_obj,
+		key,
+		callback,
+		aux,
+		hash,
+		idx,
+		dummy_ptr,
+		pos);
 	}
 	else
 	{
-	    return callback(stack, key, hash, hash_obj, aux, &this->table[pos]);
+	    return callback(stack, key, hash, hash_obj, aux, dummy_ptr?dummy_ptr : &this->table[pos]);
 	}
     }
     else
@@ -268,6 +333,64 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
     }
 }
 
+static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t *eq = anna_vmstack_pop_entry(stack);
+    void *dummy_ptr = anna_vmstack_pop_blob(stack);
+    int idx = anna_vmstack_pop_int(stack);
+    int hash = anna_vmstack_pop_int(stack);
+    anna_entry_t *aux = anna_vmstack_pop_entry(stack);
+    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
+    anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
+    anna_entry_t *key = anna_vmstack_pop_entry(stack);
+    return ahi_search_callback2_internal(
+	stack, key, hash_obj, callback, aux, hash, idx, dummy_ptr, eq);
+}
+
+static inline anna_vmstack_t *ahi_search_callback_internal(
+    anna_vmstack_t *stack, 
+    anna_entry_t *hash_obj, 
+    anna_entry_t *key,
+    ahi_callback_t callback,
+    anna_entry_t *aux,
+    int hash)
+{
+    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
+    int idx = 0;
+    int pos = anna_hash_get_next_non_dummy(anna_as_obj(hash_obj), hash);
+    anna_hash_entry_t *e = &this->table[pos];
+    idx = pos-hash;
+    
+//    wprintf(L"Calculated hash value %d, maps to position %d\n", hash, pos);
+    if(hash_entry_is_used(e))
+    {
+	int d_pos = hash & this->mask;
+	void * dummy_ptr = 0;
+	if(hash_entry_is_dummy(&this->table[d_pos]))
+	{
+	    dummy_ptr = &this->table[d_pos];
+	}
+	
+//	wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
+	return ahi_search_callback2_next(
+	    stack, 
+	    hash_obj,
+	    key,
+	    callback,
+	    aux,
+	    hash,
+	    idx,
+	    dummy_ptr,
+	    pos);
+    }
+    else
+    {
+//	wprintf(L"Position %d (idx %d) is empty\n", pos, idx);
+	return callback(stack, key, hash, hash_obj, aux, &this->table[pos]);
+    }
+    
+}
+
 static anna_vmstack_t *ahi_search_callback(anna_vmstack_t *stack, anna_object_t *me)
 {
     int hash = anna_vmstack_pop_int(stack);
@@ -275,51 +398,14 @@ static anna_vmstack_t *ahi_search_callback(anna_vmstack_t *stack, anna_object_t 
     ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
     anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
     anna_entry_t *key = anna_vmstack_pop_entry(stack);
-    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
     anna_vmstack_pop_entry(stack);
     
-    
-    int idx = 0;
-    int pos = anna_hash_get_next_non_dummy(anna_as_obj(hash_obj), hash);
-    anna_hash_entry_t *e = &this->table[pos];
-    idx = pos-hash;
-
-//    wprintf(L"Calculated hash value %d, maps to position %d\n", hash, pos);
-    if(hash_entry_is_used(e))
-    {
-//	wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
-	anna_entry_t *callback_param[] = 
-	    {
-		key,
-		hash_obj,
-		anna_from_blob(callback),
-		aux,
-		anna_from_int(hash),
-		anna_from_int(idx)		
-	    }
-	;
-
-	anna_entry_t *o_param[] = 
-	    {
-		key,
-		this->table[pos].key
-	    }
-	;
-	
-	anna_object_t *fun_object = anna_as_obj_fast(
-	    anna_entry_get_static(
-		anna_as_obj(key)->type, ANNA_MID_EQ));
-	return anna_vm_callback_native(
-	    stack,
-	    ahi_search_callback2, 6, callback_param,
-	    fun_object, 2, o_param
-	    );
-    }
-    else
-    {
-//	wprintf(L"Position %d (idx %d) is empty\n", pos, idx);
-	return callback(stack, key, hash, hash_obj, aux, &this->table[pos]);
-    }
+    return ahi_search_callback_internal(
+	stack,
+	hash_obj,
+	key,
+	callback,
+	aux, hash);
 }
 
 static inline anna_vmstack_t *ahi_search(
@@ -329,6 +415,17 @@ static inline anna_vmstack_t *ahi_search(
     ahi_callback_t callback,
     anna_entry_t *aux)
 {
+    if(anna_is_int(key))
+    {
+	return ahi_search_callback_internal(
+	    stack,
+	    hash,
+	    key,
+	    callback,
+	    aux,
+	    anna_as_int(key));
+    }
+    
     anna_entry_t *callback_param[] = 
 	{
 	    key,
@@ -510,16 +607,13 @@ static inline anna_vmstack_t *anna_hash_set(anna_vmstack_t *stack, anna_object_t
     anna_entry_t *key = anna_vmstack_pop_entry(stack);
     anna_entry_t *this = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_entry(stack);
-    
-    int i;
-    anna_hash_t *h = ahi_unwrap(anna_as_obj_fast(this));
 
     if(ANNA_VM_NULL(key))
     {
 	anna_vmstack_push_object(stack, null_object);
 	return stack;
     }
-
+    
     anna_hash_check_resize(ahi_unwrap(anna_as_obj_fast(this)));
     
     return ahi_search(
@@ -744,7 +838,6 @@ static anna_vmstack_t *anna_hash_map_callback(anna_vmstack_t *stack, anna_object
     anna_object_t *body = anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
     anna_object_t *res = anna_as_obj_fast(param[3]);
-    size_t sz = anna_hash_get_size(hash);
     
     anna_list_add(res, anna_from_obj(value));
     int next_idx = anna_hash_get_next_idx(hash, idx);

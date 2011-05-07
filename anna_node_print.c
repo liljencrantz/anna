@@ -182,7 +182,8 @@ static void anna_node_print_internal(
 	    if(this2->payload)
 	    {
 		sb_printf(sb,L"*closure(\n");
-		anna_node_print_internal(sb,(anna_node_t *)this2->payload->body, indentation+1);
+		if(this2->payload->body)
+		    anna_node_print_internal(sb,(anna_node_t *)this2->payload->body, indentation+1);
 		sb_printf(sb,L")");
 	    }
 	    else

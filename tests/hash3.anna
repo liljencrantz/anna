@@ -9,16 +9,16 @@ def main()
 
     print(d.map(i){i}, "\n");
 
-    (0..10000).each(i){d[10*i] = "AAA"}
+    (0..100000).each(i){d[10*i] = "AAA"}
     print(d.count, '\n');
 
-    (0..10000).each(i){d.remove(10*i)}
+    (0..100000).each(i){d.remove(10*i)}
     print(d.count, '\n');
 
-    (0..10000).each(i){d[10*i] = "AAA"}
+    (0..100000).each(i){d[10*i] = "AAA"}
     print(d.count, '\n');
 
-    (0..10000).each(i){d.remove(10*i)}
+    (0..100000).each(i){d.remove(10*i)}
     print(d.count, '\n');
 
 }

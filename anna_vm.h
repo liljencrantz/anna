@@ -330,6 +330,11 @@ static inline int anna_vmstack_pop_int(anna_vmstack_t *stack)
     return anna_as_int(*(--stack->top));
 }
 
+static inline void *anna_vmstack_pop_blob(anna_vmstack_t *stack)
+{
+    return anna_as_blob(*(--stack->top));
+}
+
 static inline anna_object_t *anna_vmstack_pop_object_fast(anna_vmstack_t *stack)
 {
     return (anna_object_t *)*(--stack->top);

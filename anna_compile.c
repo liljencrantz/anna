@@ -60,18 +60,17 @@ static int anna_short_circut_instr(anna_node_call_t *node, anna_stack_template_t
 	node, stack);
     anna_object_t *const_obj2 = anna_node_static_invoke_try(
 	node->object, stack);
-    
-    if(!(const_obj && (!mem->is_method || const_obj2)))
+	
+    if(obj_type == int_type && node->child_count == 1 && node->child[0]->return_type == int_type)
     {
-	if(obj_type == int_type && node->child_count == 1 && node->child[0]->return_type == int_type)
-	{
-	    return anna_short_circut_instr_int_int(node->mid);
-	}
-	if(obj_type == float_type && node->child_count == 1 && node->child[0]->return_type == float_type)
-	{
-	    return anna_short_circut_instr_float_float(node->mid);
-	}
+	return anna_short_circut_instr_int_int(node->mid);
     }
+
+    if(obj_type == float_type && node->child_count == 1 && node->child[0]->return_type == float_type)
+    {
+	return anna_short_circut_instr_float_float(node->mid);
+    }
+
     return 0;
 }
 

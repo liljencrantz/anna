@@ -449,6 +449,21 @@ void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t l
 
 //    wprintf(L"Append from %d to %d in string of length %d to string of previous length %d\n", offset, offset+length, asi_get_length(src), asi_get_length(dest));
 
+    if(src->element_count == 1)
+    {
+	//	wprintf(L"FAST\n");
+	
+	asi_ensure_element_capacity(dest, dest->element_count + 1);
+	dest->element[dest->element_count] = src->element[0];
+	dest->element_length[dest->element_count] = length;
+	dest->element_offset[dest->element_count] = src->element_offset[0]+offset;
+	dest->element[dest->element_count]->users++;
+	dest->element_count++;	
+	dest->length += length;
+	asi_validate(dest);
+	return;    
+    }
+    
     if(length < ANNA_STRING_APPEND_TINY_LIMIT || (src->element_count>1 && length<ANNA_STRING_APPEND_SHORT_LIMIT)) 
     {
 	asi_make_appendable(dest, length);
@@ -477,21 +492,6 @@ void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t l
 	dest->length += length;
 	asi_validate(dest);
 	return;
-    }
-    
-    if(src->element_count == 1)
-    {
-	//	wprintf(L"FAST\n");
-	
-	asi_ensure_element_capacity(dest, dest->element_count + 1);
-	dest->element[dest->element_count] = src->element[0];
-	dest->element_length[dest->element_count] = length;
-	dest->element_offset[dest->element_count] = src->element_offset[0]+offset;
-	dest->element[dest->element_count]->users++;
-	dest->element_count++;	
-	dest->length += length;
-	asi_validate(dest);
-	return;    
     }
     
     //wprintf(L"SLOW!!!");

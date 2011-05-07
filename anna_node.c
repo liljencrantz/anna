@@ -269,12 +269,16 @@ anna_object_t *anna_node_static_invoke_try(
 	{
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
 	    anna_stack_template_t *frame = anna_stack_template_search(stack, this2->name);
-	    //wprintf(L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
+//	    fwprintf(stderr, L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
 	    if(frame && (frame->flags & ANNA_STACK_NAMESPACE))
 	    {
 		if(anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)
+		{
+//		    fwprintf(stderr, L"Identifier %ls is a constant\n", this2->name);
 		    return anna_stack_get(frame, this2->name);		
+		}
 	    }
+//	    fwprintf(stderr, L"Identifier lookup failed\n");
 	    break;
 	}
 	
