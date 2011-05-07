@@ -37,7 +37,7 @@
 /**
    The maximum allowed fill rate of the hash when inserting
  */
-#define ANNA_HASH_USED_MAX 0.85
+#define ANNA_HASH_USED_MAX 0.7
 
 /**
    The minimum allowed fill rate of the hash when inserting
@@ -99,6 +99,31 @@ static inline anna_entry_t *anna_hash_get_value_from_idx(anna_object_t *this, in
 {
     return ahi_unwrap(this)->table[idx].value;
 }
+
+static void anna_hash_print(anna_hash_t *this)
+{
+    int i;
+    for(i=0; i<=this->mask; i++)
+    {
+	wprintf(L"%d:\t", i);
+	if(hash_entry_is_used(&this->table[i]))
+	{
+	    wprintf(L"%d: %d", this->table[i].hash, anna_as_int(this->table[i].key));	    
+	}
+	else if(hash_entry_is_dummy(&this->table[i]))
+	{
+	    wprintf(L"dummy");	    
+	}
+	else
+	{
+	    wprintf(L"empty");	    
+	}
+	
+	wprintf(L"\n");
+    }
+    
+}
+
 
 static inline ssize_t anna_hash_get_next_idx(anna_object_t *this, ssize_t idx)
 {
@@ -347,6 +372,17 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
 	stack, key, hash_obj, callback, aux, hash, idx, dummy_ptr, eq);
 }
 
+static inline int anna_hash_mangle(int a)
+{
+    a = (a+0x7ed55d16) + (a<<12);
+    a = (a^0xc761c23c) ^ (a>>19);
+    a = (a+0x165667b1) + (a<<5);
+    a = (a+0xd3a2646c) ^ (a<<9);
+    a = (a+0xfd7046c5) + (a<<3);
+    a = (a^0xb55a4f09) ^ (a>>16);
+    return a;
+}
+
 static inline anna_vmstack_t *ahi_search_callback_internal(
     anna_vmstack_t *stack, 
     anna_entry_t *hash_obj, 
@@ -355,6 +391,7 @@ static inline anna_vmstack_t *ahi_search_callback_internal(
     anna_entry_t *aux,
     int hash)
 {
+    hash = anna_hash_mangle(hash);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
     int idx = 0;
     int pos = anna_hash_get_next_non_dummy(anna_as_obj(hash_obj), hash);
@@ -417,6 +454,7 @@ static inline anna_vmstack_t *ahi_search(
 {
     if(anna_is_int(key))
     {
+//	wprintf(L"Search for Int in hash table\n");
 	return ahi_search_callback_internal(
 	    stack,
 	    hash,
@@ -706,6 +744,9 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_remove_callback(
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
 
+//    wprintf(L"Returned element %d\n", hash_entry - this->table);
+    
+    
     if(hash_entry_is_used(hash_entry))
     {
 	anna_vmstack_push_entry(stack, hash_entry->key);	
@@ -714,7 +755,7 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_remove_callback(
     }
     else
     {
-	wprintf(L"Failed to remove element %d %d\n", anna_as_int(key), hash_entry->key);
+//	wprintf(L"Failed to remove element %d %d\n", anna_as_int(key), hash_entry->key);
 	anna_vmstack_push_object(stack, null_object);	
     }
     
@@ -726,7 +767,7 @@ static inline anna_vmstack_t *anna_hash_remove(anna_vmstack_t *stack, anna_objec
     anna_entry_t *key = anna_vmstack_pop_entry(stack);
     anna_entry_t *this = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_entry(stack);
-
+//    anna_hash_print(ahi_unwrap(this));
     if(ANNA_VM_NULL(key))
     {
 	anna_vmstack_push_object(stack, null_object);
