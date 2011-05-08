@@ -523,21 +523,6 @@ void al_destroy( array_list_t *l )
 	free( l->arr );
 }
 
-int al_push_long( array_list_t *l, long val )
-{
-	anything_t v;
-	v.long_val = val;
-	return al_push_generic( l, v );
-}
-
-int al_push_func( array_list_t *l, func_ptr_t f )
-{
-	anything_t v;
-	v.func_val = f;
-	return al_push_generic( l, v );
-}
-
-
 int al_push_all( array_list_t *a, array_list_t *b )
 {
 	int k;
@@ -569,7 +554,7 @@ int al_insert( array_list_t *a, int pos, int count )
 		  want to do some more reallocating any time soon
 		*/
 		size_t new_size = maxi( maxi( pos, a->pos ) + count +32, a->size*2); 
-		void *tmp = realloc( a->arr, sizeof( anything_t )*new_size );
+		void *tmp = realloc( a->arr, sizeof( void * )*new_size );
 		if( tmp )
 		{
 			a->arr = tmp;
@@ -586,10 +571,10 @@ int al_insert( array_list_t *a, int pos, int count )
 	{
 		memmove( &a->arr[pos],
 				 &a->arr[pos+count], 
-				 sizeof(anything_t ) * (a->pos-pos) );
+				 sizeof(void * ) * (a->pos-pos) );
 	}
 	
-	memset( &a->arr[pos], 0, sizeof(anything_t)*count );
+	memset( &a->arr[pos], 0, sizeof(void *)*count );
 	a->pos += count;
 	
 	return 1;
@@ -600,7 +585,7 @@ int al_insert( array_list_t *a, int pos, int count )
    element of list.
  */
 
-static int al_set_generic( array_list_t *l, int pos, anything_t v )
+int al_set( array_list_t *l, int pos, void * v )
 {
 	int old_pos;
 	
@@ -614,79 +599,31 @@ static int al_set_generic( array_list_t *l, int pos, anything_t v )
 	old_pos=l->pos;
 	
 	l->pos = pos;
-	if( al_push_generic( l, v ) )
+	if( al_push( l, v ) )
 	{
 		memset( &l->arr[old_pos], 
 				0,
-				sizeof(anything_t) * (pos - old_pos) );
+				sizeof(void *) * (pos - old_pos) );
 		return 1;		
 	}
 	return 0;	
 }
 
-int al_set( array_list_t *l, int pos, const void *o )
-{
-	anything_t v;
-	v.ptr_val = (void *)o;
-	return al_set_generic( l, pos, v );
-}
-
-int al_set_long( array_list_t *l, int pos, long o )
-{
-	anything_t v;
-	v.long_val = o;
-	return al_set_generic( l, pos, v );
-}
-
-int al_set_func( array_list_t *l, int pos, func_ptr_t f )
-{
-	anything_t v;
-	v.func_val = f;
-	return al_set_generic( l, pos, v );
-}
-
 /**
    Real implementation of all al_get_* versions. Returns element from list.
  */
-static anything_t al_get_generic( array_list_t *l, int pos )
+void * al_get( array_list_t *l, int pos )
 {
-	anything_t res;
-	res.ptr_val=0;
-	
-	if( (pos >= 0) && (pos < l->pos) )
-		res = l->arr[pos];
-
-	return res;
+    return ((pos >= 0) && (pos < l->pos))?l->arr[pos]:0;
 }
 
-void *al_get( array_list_t *l, int pos )
+void * al_pop( array_list_t *l )
 {
-	return al_get_generic(l,pos).ptr_val;
-}
-
-long al_get_long( array_list_t *l, int pos )
-{
-	return al_get_generic(l,pos).long_val;
-}
-
-func_ptr_t al_get_func( array_list_t *l, int pos )
-{
-	return al_get_generic(l,pos).func_val;
-}
-
-
-
-/**
-   Real implementation of all al_pop_* versions. Pops arbitrary
-   element from end of list.
- */
-static anything_t al_pop_generic( array_list_t *l )
-{
-	anything_t e;
+	void * e;
 
 	if( l->pos <= 0 )
 	{
-		memset( &e, 0, sizeof(anything_t ) );
+		memset( &e, 0, sizeof(void * ) );
 		return e;
 	}
 	
@@ -694,10 +631,10 @@ static anything_t al_pop_generic( array_list_t *l )
 	e = l->arr[--l->pos];
 	if( (l->pos*3 < l->size) && (l->size < MIN_SIZE) )
 	{
-		anything_t *old_arr = l->arr;
+		void * *old_arr = l->arr;
 		int old_size = l->size;
 		l->size = l->size/2;
-		l->arr = realloc( l->arr, sizeof(anything_t)*l->size );
+		l->arr = realloc( l->arr, sizeof(void *)*l->size );
 		if( l->arr == 0 )
 		{
 			l->arr = old_arr;
@@ -712,47 +649,9 @@ static anything_t al_pop_generic( array_list_t *l )
 	return e;
 }
 
-void *al_pop( array_list_t *l )
+void * al_peek( array_list_t *l )
 {
-	return al_pop_generic(l).ptr_val;	
-}
-
-long al_pop_long( array_list_t *l )
-{
-	return al_pop_generic(l).long_val;	
-}
-
-func_ptr_t al_pop_func( array_list_t *l )
-{
-	return al_pop_generic(l).func_val;	
-}
-
-/**
-   Real implementation of all al_peek_* versions. Peeks last element
-   of list.
- */
-static anything_t al_peek_generic( array_list_t *l )
-{
-	anything_t res;
-	res.ptr_val=0;
-	if( l->pos>0)
-		res = l->arr[l->pos-1];
-	return res;
-}
-
-void *al_peek( array_list_t *l )
-{
-	return al_peek_generic(l).ptr_val;	
-}
-
-long al_peek_long( array_list_t *l )
-{
-	return al_peek_generic(l).long_val;	
-}
-
-func_ptr_t al_peek_func( array_list_t *l )
-{
-	return al_peek_generic(l).func_val;	
+	return (l->pos>0)?l->arr[l->pos-1]:0;
 }
 
 int al_empty( array_list_t *l )
@@ -769,7 +668,7 @@ void al_foreach( array_list_t *l, void (*func)( void * ))
 	VERIFY( func, );
 
 	for( i=0; i<l->pos; i++ )
-		func( l->arr[i].ptr_val );
+		func( l->arr[i] );
 }
 
 void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
@@ -780,7 +679,7 @@ void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
 	VERIFY( func, );
 	
 	for( i=0; i<l->pos; i++ )
-		func( l->arr[i].ptr_val, aux );
+		func( l->arr[i], aux );
 }
 
 void sb_init( string_buffer_t * b)

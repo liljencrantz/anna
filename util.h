@@ -105,7 +105,7 @@ typedef struct array_list
 	/** 
 		Array containing the data
 	*/
-	anything_t *arr;
+	void * *arr;
 	
 	/** 
 		Internal cursor position of the array_list_t. This is the
@@ -333,48 +333,18 @@ void al_destroy( array_list_t *l );
    \return
    \return 1 if succesfull, 0 otherwise
 */
-/**
-   Real implementation of all al_push_* versions. Pushes arbitrary
-   element to end of list.
- */
-static inline int al_push_generic( array_list_t *l, anything_t o )
+static inline int al_push( array_list_t *l, void *o )
 {
     if( l->pos >= l->size )
     {
 	int new_size = l->pos == 0 ? MIN_SIZE : 2 * l->pos;
-	void *tmp = realloc( l->arr, sizeof( anything_t )*new_size );
+	void *tmp = realloc( l->arr, sizeof( void * )*new_size );
 	l->arr = tmp;
 	l->size = new_size;		
     }
     l->arr[l->pos++] = o;
     return 1;
 }
-
-
-/**
-   Append element to list
-
-   \param l The list
-   \param o The element
-   \return
-   \return 1 if succesfull, 0 otherwise
-*/
-static inline int al_push( array_list_t *l, const void *o )
-{
-	anything_t v;
-	v.ptr_val = (void *)o;
-	return al_push_generic( l, v );
-}
-
-int al_push_long( array_list_t *l, long o );
-/**
-   Append element to list
-
-   \param l The list
-   \param f The element
-   \return 1 if succesfull, 0 otherwise
-*/
-int al_push_func( array_list_t *l, func_ptr_t f );
 
 /**
    Append all elements of a list to another
@@ -397,23 +367,7 @@ int al_insert( array_list_t *a, int pos, int count );
    \param pos The index 
    \param o The element 
 */
-int al_set( array_list_t *l, int pos, const void *o );
-/**
-   Sets the element at the specified index
-
-   \param l The array_list_t
-   \param pos The index 
-   \param v The element to set
-*/
-int al_set_long( array_list_t *l, int pos, long v );
-/**
-   Sets the element at the specified index
-
-   \param l The array_list_t
-   \param pos The index 
-   \param f The element to insert
-*/
-int al_set_func( array_list_t *l, int pos, func_ptr_t f );
+int al_set( array_list_t *l, int pos, void *o );
 
 /**
    Returns the element at the specified index
@@ -424,49 +378,30 @@ int al_set_func( array_list_t *l, int pos, func_ptr_t f );
 */
 void *al_get( array_list_t *l, int pos );
 
+/**
+   Same as al_get, but no bounds checking, hence ever so slightly faster
+ */
 static inline void *al_get_fast( array_list_t *l, int pos )
 {
-    return l->arr[pos].ptr_val;
+    return l->arr[pos];
 }
 
 /**
    Returns the number of elements in the list
 */
 static inline int al_get_count( array_list_t *l )
-
 {
     return l->pos;
 }
 
 /**
-   Real implementation of all al_set_* versions. Sets arbitrary
-   element of list.
+   Same as al_set, but no bounds checking, hence ever so slightly faster
  */
 
 static inline void al_set_fast( array_list_t *l, int pos, void *v )
 {
-    anything_t vv;
-    vv.ptr_val = v;
-    l->arr[pos] = vv;
+    l->arr[pos] = v;
 }
-
-
-/**
-   Returns the element at the specified index
-
-   \param l The array_list_t
-   \param pos The index 
-   \return The element 
-*/
-long al_get_long( array_list_t *l, int pos );
-/**
-   Returns the element at the specified index
-
-   \param l The array_list_t
-   \param pos The index 
-   \return The element 
-*/
-func_ptr_t al_get_func( array_list_t *l, int pos );
 
 /**
   Truncates the list to new_sz items.
@@ -480,27 +415,11 @@ static inline void al_truncate( array_list_t *l, int new_sz )
   Removes and returns the last entry in the list
 */
 void *al_pop( array_list_t *l );
-/**
-  Removes and returns the last entry in the list
-*/
-long al_pop_long( array_list_t *l );
-/**
-  Removes and returns the last entry in the list
-*/
-func_ptr_t al_pop_func( array_list_t *l );
 
 /**
   Returns the last entry in the list witout removing it.
 */
 void *al_peek( array_list_t *l );
-/**
-  Returns the last entry in the list witout removing it.
-*/
-long al_peek_long( array_list_t *l );
-/**
-  Returns the last entry in the list witout removing it.
-*/
-func_ptr_t al_peek_func( array_list_t *l );
 
 /**
    Returns 1 if the list is empty, 0 otherwise
