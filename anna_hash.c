@@ -21,6 +21,7 @@
 #include "anna_tt.h"
 #include "anna_pair.h"
 #include "anna_list.h"
+#include "anna_string.h"
 
 #include "anna_macro.h"
 
@@ -108,7 +109,23 @@ static void anna_hash_print(anna_hash_t *this)
 	wprintf(L"%d:\t", i);
 	if(hash_entry_is_used(&this->table[i]))
 	{
-	    wprintf(L"%d: %d", this->table[i].hash, anna_as_int(this->table[i].key));	    
+	    wprintf(L"%d", this->table[i].hash);	    
+	    anna_entry_t *e = this->table[i].key;
+	    if(anna_is_int(e))
+		wprintf(L": %d", anna_as_int(e));	    
+	    else if(anna_is_obj(e))
+	    {
+		anna_object_t *o = anna_as_obj_fast(e);
+		if(o->type == string_type)
+		{
+		    wprintf(L":aaaaa %ls", anna_string_payload(o));		    
+		}
+		else
+		{
+		    wprintf(L": %ls", o->type->name);		    
+		}
+	    }
+
 	}
 	else if(hash_entry_is_dummy(&this->table[i]))
 	{
@@ -163,7 +180,9 @@ static inline void ahi_init(anna_hash_t *this)
 
 static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
 {
-//    wprintf(L"Weee, resize to %d\n", new_sz);
+//    wprintf(L"Weee, resize to %d\nBefore:\n", new_sz);
+//    anna_hash_print(this);
+    
     size_t old_sz = this->mask+1;
     size_t new_mask = new_sz-1;
     
@@ -202,6 +221,8 @@ static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
     }
     this->table = new_table;
     this->mask = new_mask;
+//    wprintf(L"After\n");
+//    anna_hash_print(this);
 }
 
 static void anna_hash_check_resize(anna_hash_t *this)
@@ -209,12 +230,12 @@ static void anna_hash_check_resize(anna_hash_t *this)
     size_t old_sz = this->mask+1;
 //    if(old_sz <= 64)
 //	wprintf(L"%d: %f > %d?\n", old_sz, ANNA_HASH_USED_MIN*old_sz, this->used);
-    if(ANNA_HASH_USED_MAX*old_sz < this->used)
+    if(ANNA_HASH_USED_MAX*old_sz < this->fill)
     {
 	size_t new_sz = ANNA_HASH_SIZE_STEP * old_sz;
 	anna_hash_resize(this, new_sz);
     }
-    else if( ANNA_HASH_USED_MIN*old_sz > this->used)
+    else if( ANNA_HASH_USED_MIN*old_sz > this->fill)
     {
 	size_t new_sz = old_sz;
 	do
@@ -235,7 +256,7 @@ static anna_vmstack_t *ahi_search_callback2_internal(
     anna_entry_t *aux,
     int hash,
     int idx,
-    void *dummy_ptr,
+    int dummy_idx,
     anna_entry_t *eq);
 
 
@@ -247,7 +268,7 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
     anna_entry_t *aux,
     int hash,
     int idx,
-    void *dummy_ptr,
+    int dummy_idx,
     int pos)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
@@ -265,7 +286,7 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
 		aux,
 		hash,
 		idx,
-		dummy_ptr,
+		dummy_idx,
 		eq ? anna_from_int(1):anna_from_obj(null_object));	
 	}
     }
@@ -278,7 +299,7 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
 	    aux,
 	    anna_from_int(hash),
 	    anna_from_int(idx),
-	    anna_from_blob(dummy_ptr)
+	    anna_from_int(dummy_idx)
 	}
     ;
     
@@ -309,7 +330,7 @@ static anna_vmstack_t *ahi_search_callback2_internal(
     anna_entry_t *aux,
     int hash,
     int idx,
-    void *dummy_ptr,
+    int dummy_idx,
     anna_entry_t *eq)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
@@ -318,22 +339,22 @@ static anna_vmstack_t *ahi_search_callback2_internal(
     {
 	
 	idx++;
-	if(dummy_ptr == 0)
+	if(dummy_idx == -1)
 	{
-	    int d_pos = idx & this->mask;
+	    int d_pos = (hash+idx) & this->mask;
 	    if(hash_entry_is_dummy(&this->table[d_pos]))
 	    {
-		dummy_ptr = &this->table[d_pos];
+		dummy_idx = d_pos;
 	    }
 	}
 	int pos = anna_hash_get_next_non_dummy(anna_as_obj(hash_obj), hash+idx);
 	anna_hash_entry_t *e = &this->table[pos];
 	idx = pos-hash;
-//	wprintf(L"Position is non-empty, and keys are not equal. Check next position: %d (idx %d).\n", pos, idx);
+	//wprintf(L"Position is non-empty, and keys are not equal. Check next position: %d (idx %d).\n", pos, idx);
 	
 	if(hash_entry_is_used(e))
 	{
-//	    wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
+	    //  wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
 	    return ahi_search_callback2_next(
 		stack, 
 		hash_obj,
@@ -342,12 +363,19 @@ static anna_vmstack_t *ahi_search_callback2_internal(
 		aux,
 		hash,
 		idx,
-		dummy_ptr,
+		dummy_idx,
 		pos);
 	}
 	else
 	{
-	    return callback(stack, key, hash, hash_obj, aux, dummy_ptr?dummy_ptr : &this->table[pos]);
+/*	    
+	    wprintf(L"Position %d (idx %d) is empty. Yay, object does not exist\n", pos, idx);
+	    if(dummy_idx != -1)
+	    {
+		wprintf(L"Interesting, we've already found a dummy slot at pos %d\n", dummy_idx);
+	    }
+*/	    
+	    return callback(stack, key, hash, hash_obj, aux, &this->table[(dummy_idx != -1 )? dummy_idx:pos]);
 	}
     }
     else
@@ -361,7 +389,7 @@ static anna_vmstack_t *ahi_search_callback2_internal(
 static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t *eq = anna_vmstack_pop_entry(stack);
-    void *dummy_ptr = anna_vmstack_pop_blob(stack);
+    int dummy_idx = anna_vmstack_pop_int(stack);
     int idx = anna_vmstack_pop_int(stack);
     int hash = anna_vmstack_pop_int(stack);
     anna_entry_t *aux = anna_vmstack_pop_entry(stack);
@@ -369,17 +397,20 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
     anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
     anna_entry_t *key = anna_vmstack_pop_entry(stack);
     return ahi_search_callback2_internal(
-	stack, key, hash_obj, callback, aux, hash, idx, dummy_ptr, eq);
+	stack, key, hash_obj, callback, aux, hash, idx, dummy_idx, eq);
 }
 
 static inline int anna_hash_mangle(int a)
 {
+    
     a = (a+0x7ed55d16) + (a<<12);
     a = (a^0xc761c23c) ^ (a>>19);
     a = (a+0x165667b1) + (a<<5);
     a = (a+0xd3a2646c) ^ (a<<9);
     a = (a+0xfd7046c5) + (a<<3);
     a = (a^0xb55a4f09) ^ (a>>16);
+    a = abs(a & 0x3fffffff);
+//    wprintf(L"Mangled hash is %d\n", a);
     return a;
 }
 
@@ -398,14 +429,15 @@ static inline anna_vmstack_t *ahi_search_callback_internal(
     anna_hash_entry_t *e = &this->table[pos];
     idx = pos-hash;
     
-//    wprintf(L"Calculated hash value %d, maps to position %d\n", hash, pos);
+    //wprintf(L"Calculated hash value %d, maps to position %d, first non-dummy is %d\n", hash, hash & this->mask, pos);
     if(hash_entry_is_used(e))
     {
 	int d_pos = hash & this->mask;
-	void * dummy_ptr = 0;
+	
+	int dummy_idx = -1;
 	if(hash_entry_is_dummy(&this->table[d_pos]))
 	{
-	    dummy_ptr = &this->table[d_pos];
+	    dummy_idx = d_pos;
 	}
 	
 //	wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
@@ -417,7 +449,7 @@ static inline anna_vmstack_t *ahi_search_callback_internal(
 	    aux,
 	    hash,
 	    idx,
-	    dummy_ptr,
+	    dummy_idx,
 	    pos);
     }
     else
@@ -513,7 +545,7 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
     anna_entry_t ** data = anna_as_blob(aux);
     anna_object_t *list = anna_as_obj(data[0]);
     int idx = anna_as_int(data[1]);
-        
+    
 //    wprintf(L"Init callback\n");
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
     if(!hash_entry_is_used(hash_entry))
@@ -755,7 +787,12 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_remove_callback(
     }
     else
     {
-//	wprintf(L"Failed to remove element %d %d\n", anna_as_int(key), hash_entry->key);
+/*	wprintf(L"Failed to remove element %ls with hash code %d (%d), which maps to pos %d\n", anna_string_payload(key), hash_code, anna_hash_mangle(anna_string_hash(key)), hash_code & this->mask);
+
+	anna_hash_print(this);
+
+
+	CRASH;*/
 	anna_vmstack_push_object(stack, null_object);	
     }
     
@@ -1218,3 +1255,19 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
     }
     return spec;
 }
+
+void anna_hash_mark(anna_object_t *obj)
+{
+    anna_hash_t *this = ahi_unwrap(obj);
+    int i;
+    for(i=0; i<=this->mask; i++)
+    {
+	if(hash_entry_is_used(&this->table[i]))
+	{
+	    anna_alloc_mark_entry(this->table[i].key);
+	    anna_alloc_mark_entry(this->table[i].value);
+	}
+    }
+    
+}
+

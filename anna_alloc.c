@@ -13,6 +13,7 @@
 #include "anna_member.h"
 #include "anna_int.h"
 #include "anna_list.h"
+#include "anna_hash.h"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_count=0;
@@ -314,9 +315,8 @@ void anna_alloc_mark_type(anna_type_t *type)
 
 static void anna_alloc_mark_blob(void *mem)
 {
-    long long *mem2 = (long *)mem;
-    mem2--;
-    *mem2 |= ANNA_USED;
+    int *mem2 = (int *)mem;
+    mem2[-2] |= ANNA_USED;
 }
 
 void anna_alloc_mark_entry(anna_entry_t *e)
@@ -328,7 +328,7 @@ void anna_alloc_mark_entry(anna_entry_t *e)
     {
 	if(anna_is_alloc(e))
 	{
-	    anna_alloc_mark_blob((void *)e);
+	    anna_alloc_mark_blob(anna_as_alloc(e));
 	    return;
 	}
 	return;
@@ -355,6 +355,10 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	{
 	    anna_alloc_mark_entry(anna_list_get(obj, i));
 	}	
+    }
+    if(obj->type->mid_identifier[ANNA_MID_HASH_PAYLOAD])
+    {
+	anna_hash_mark(obj);
     }
     
     
@@ -437,6 +441,10 @@ void anna_alloc_mark(void *obj)
 	    anna_alloc_mark_stack_template((anna_stack_template_t *)obj);
 	    break;
 	}
+	default:
+	{
+	    CRASH;
+	}
     }
 }
 
@@ -457,6 +465,8 @@ static void anna_alloc_free(void *obj)
 	    anna_object_t *o = (anna_object_t *)obj;
 	    if(anna_alloc_run_finalizers)
 	    {
+//		wprintf(L"AAA %ls\n", o->type->name);
+		
 		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
 		if(del_mem && del_mem->is_method)
 		{
@@ -485,7 +495,7 @@ static void anna_alloc_free(void *obj)
 		    free(memb);
 		}
 	    }
-
+	    
 	    free(o->member_blob);
 	    if(o->static_member_count)
 	    {
@@ -506,7 +516,6 @@ static void anna_alloc_free(void *obj)
 		free(o);
 		return;
 	    }
-	    
 	    anna_slab_free(o, o->function->frame_size);
 	    break;
 	}
@@ -576,8 +585,10 @@ static void anna_alloc_free(void *obj)
 	}
 	case ANNA_BLOB:
 	{
-	    long long *blob = (long long *)obj;
-	    size_t sz = (*blob >> ANNA_ALLOC_FLAGS_SIZE) & (0xffffffff);
+//	    wprintf(L"DA BLOB\n");
+	    
+	    int *blob = (int *)obj;
+	    size_t sz = blob[1];
 	    anna_slab_free(obj, sz);
 	    break;
 	}
@@ -616,35 +627,86 @@ void anna_gc(anna_vmstack_t *stack)
     
 //    anna_alloc_mark_stack_template(stack_global);
     int freed = 0;
-    for(i=0; i<al_get_count(&anna_alloc); i++)
-    {
-	void *el = al_get_fast(&anna_alloc, i);
-	int flags = *((int *)el);
-	if(!(flags & ANNA_USED) && ((flags & ANNA_ALLOC_MASK) == ANNA_OBJECT))
-	{
-	    freed++;
-	    anna_alloc_free(el);
-	    al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
-	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
-	    i--;
-	}
-    }
+    static int gc_first = 1;
 
-    for(i=0; i<al_get_count(&anna_alloc); i++)
+    if(gc_first)
     {
-	void *el = al_get_fast(&anna_alloc, i);
-	if(!(*((int *)el) & ANNA_USED))
+	gc_first=0;
+	
+	for(i=0; i<al_get_count(&anna_alloc); i++)
 	{
-	    freed++;
-	    anna_alloc_free(el);
-	    al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
-	    al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
-	    i--;
+	    void *el = al_get_fast(&anna_alloc, i);
+	    int flags = *((int *)el);
+	    int alloc = (flags & ANNA_ALLOC_MASK);	
+	    if(!(flags & ANNA_USED) && ((alloc == ANNA_OBJECT) || (alloc == ANNA_BLOB) || (alloc == ANNA_VMSTACK)))
+	    {
+		freed++;
+		anna_alloc_free(el);
+		al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
+		al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
+		i--;
+	    }
 	}
-	else{
-	    anna_alloc_unmark(al_get_fast(&anna_alloc, i));
+	
+	for(i=0; i<al_get_count(&anna_alloc); i++)
+	{
+	    void *el = al_get_fast(&anna_alloc, i);
+	    if(!(*((int *)el) & ANNA_USED))
+	    {
+		freed++;
+		anna_alloc_free(el);
+		al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
+		al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
+		i--;
+	    }
+	    else{
+		anna_alloc_unmark(al_get_fast(&anna_alloc, i));
+	    }
 	}
     }
+    else
+    {
+	for(i=0; i<al_get_count(&anna_alloc); i++)
+	{
+	    void *el = al_get_fast(&anna_alloc, i);
+	    int flags = *((int *)el);
+	    int alloc = (flags & ANNA_ALLOC_MASK);	
+	    if(!(flags & ANNA_USED))
+	    {
+		freed++;
+		anna_alloc_free(el);
+		al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
+		al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
+		i--;
+	    }
+	    else
+	    {
+		anna_alloc_unmark(el);	    
+	    }
+	}
+    }
+    
+
+#ifdef ANNA_CHECK_GC_LEAKS
+    int o_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
+    for(i=0; i<al_get_count(&anna_alloc); i++)
+    {
+	void *obj = al_get_fast(&anna_alloc, i);
+	o_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
+    }
+    wchar_t *name[]=
+	{
+	    L"type", L"object", L"stack template", L"AST node", L"runtime stack", L"function", L"blob"
+	}
+    ;
+    for(i=0; i<7; i++)
+    {
+	wprintf(L"After gc, %d objects of type %ls remain\n", o_count[i], name[i]);
+    }
+    
+#endif
+
+    
 //    wprintf(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
     anna_alloc_gc_unblock();
 //    wprintf(L"After GC. We have %d allocated objects\n", al_get_count(&anna_alloc));

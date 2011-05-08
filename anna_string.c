@@ -528,24 +528,36 @@ static anna_vmstack_t *anna_string_cmp(anna_vmstack_t *stack, anna_object_t *me)
 	anna_object_t *that = anna_as_obj(param[1]);
 	anna_string_t *str1 = as_unwrap(this);
 	anna_string_t *str2 = as_unwrap(that);
-	int cmp = asi_compare(str1,str2);
+	res = anna_from_int(asi_compare(str1,str2));
 	
-	if(cmp>0)
-	{
-	    res = anna_from_int(1);
-	}
-	else if(cmp<0)
-	{
-	    res = anna_from_int(-1);
-	}
-	else 
-	{
-	    res = anna_from_int(0);
-	}
     }    
     anna_vmstack_drop(stack, 3);
     anna_vmstack_push_entry(stack, res);
     return stack;    
+}
+
+int anna_string_hash(anna_object_t *this)
+{
+    anna_string_t *s = as_unwrap(this);
+    size_t l = asi_get_length(s);
+    size_t i;
+    unsigned hash = 5381;
+    
+    for(i=0; i<l; i++){
+	wchar_t ch = asi_get_char(s, i);
+	hash = ((hash << 5) + hash) ^ ch; 
+    }
+//    wprintf(L"%ls => %d\n", asi_cstring(s), hash);  
+    return hash;
+}
+
+
+static anna_vmstack_t *anna_string_hash_i(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push_entry(stack, anna_from_int(anna_string_hash(anna_as_obj_fast(param[0]))));
+    return stack;
 }
 
 
@@ -816,6 +828,14 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	&anna_string_to_string, 
 	string_type, 1, i_argv, i_argn);    
 
+    anna_native_method_create(
+	string_type,
+	ANNA_MID_HASH_CODE,
+	L"hashCode",
+	0,
+	&anna_string_hash_i, 
+	int_type, 1, i_argv, i_argn);
+    
     anna_string_type_i_create(stack);
     
 }

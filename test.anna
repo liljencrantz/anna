@@ -1,7 +1,11 @@
 def main()
 {
-    (0..10).each(i){
-        print(i+i,"\n");
+    var steps = 100000;
+    var m = HashMap«String,Int»();
+    (0..100000:10000).each(offset){
+        (offset..(steps+offset)).each(i){m["string" ~ i] = i}
+	print(m.count, "\n");
+        (offset..(steps+offset)).each(i){m.remove("string" ~ (i-50000))}
+	print(m.count, "\n");
     }
-
 }

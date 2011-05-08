@@ -12,5 +12,9 @@ void anna_string_type_create(anna_stack_template_t *stack);
 void anna_string_print(anna_object_t *obj);
 wchar_t *anna_string_payload(anna_object_t *obj);
 size_t anna_string_get_count(anna_object_t *obj);
+/**
+   Hash specified string. Uses the djb2 algorithm.
+ */
+int anna_string_hash(anna_object_t *this);
 
 #endif

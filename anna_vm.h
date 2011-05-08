@@ -242,6 +242,11 @@ static inline void *anna_as_blob(anna_entry_t *entry)
     return (void *)(((long)entry) & ~ANNA_STACK_ENTRY_SUBFILTER);
 }
 
+static inline void *anna_as_alloc(anna_entry_t *entry)
+{
+    return (void *)(((long)entry) & ~ANNA_STACK_ENTRY_FILTER);
+}
+
 static inline complex double anna_as_complex(anna_entry_t *entry)
 {
     return anna_complex_get((anna_object_t *)entry);

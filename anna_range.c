@@ -282,25 +282,23 @@ static anna_vmstack_t *anna_range_get_count_i(anna_vmstack_t *stack, anna_object
 /**
    This is the bulk of the each method
  */
-static anna_vmstack_t *anna_range_each_callback(anna_vmstack_t *stack, anna_object_t *me)
+static anna_vmstack_t *anna_range_each_callback_closed(anna_vmstack_t *stack, anna_object_t *me)
 {    
     // Discard the output of the previous method call
     anna_vmstack_pop_object(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
-    anna_entry_t **param = stack->top - 3;
+    anna_entry_t **param = stack->top - 4;
     // Unwrap and name the params to make things more explicit
     anna_object_t *range = anna_as_obj_fast(param[0]);
     anna_object_t *body =  anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
-
+    int count = anna_as_int(param[3]);
+    
     ssize_t from = anna_range_get_from(range);
-    ssize_t to = anna_range_get_to(range);
     ssize_t step = anna_range_get_step(range);
-    ssize_t count = 1+(to-from-sign(step))/step;
-    int open = anna_range_get_open(range);
     
     // Are we done or do we need another lap?
-    if(idx < count || open)
+    if(idx < count)
     {
 	// Set up params for the next lap of the each body function
 	anna_entry_t *o_param[] =
@@ -321,6 +319,36 @@ static anna_vmstack_t *anna_range_each_callback(anna_vmstack_t *stack, anna_obje
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_object(stack, range);
     }
+    return stack;
+}
+
+static anna_vmstack_t *anna_range_each_callback_open(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    // Discard the output of the previous method call
+    anna_vmstack_pop_object(stack);
+    // Set up the param list. These are the values that aren't reallocated each lap
+    anna_entry_t **param = stack->top - 4;
+    // Unwrap and name the params to make things more explicit
+    anna_object_t *range = anna_as_obj_fast(param[0]);
+    anna_object_t *body =  anna_as_obj_fast(param[1]);
+    int idx = anna_as_int(param[2]);
+    
+    ssize_t from = anna_range_get_from(range);
+    ssize_t step = anna_range_get_step(range);
+
+    // Set up params for the next lap of the each body function
+    anna_entry_t *o_param[] =
+	{
+	    param[2],
+	    anna_from_int(from + step*idx)
+	}
+    ;
+    // Then update our internal lap counter
+    param[2] = anna_from_int(idx+1);
+    
+    // Finally, roll the code point back a bit and push new arguments
+    anna_vm_callback_reset(stack, body, 2, o_param);
+
     return stack;
 }
 
@@ -346,7 +374,8 @@ static anna_vmstack_t *anna_range_each(anna_vmstack_t *stack, anna_object_t *me)
 	    {
 		anna_from_obj(range),
 		anna_from_obj(body),
-		anna_from_int(1)
+		anna_from_int(1),
+		anna_from_int(count)
 	    }
 	;
 	
@@ -356,10 +385,12 @@ static anna_vmstack_t *anna_range_each(anna_vmstack_t *stack, anna_object_t *me)
 		anna_from_int(from)
 	    }
 	;
+	anna_native_t callback = open ? anna_range_each_callback_open : 
+	    anna_range_each_callback_closed;
 	
 	stack = anna_vm_callback_native(
 	    stack,
-	    anna_range_each_callback, 3, callback_param,
+	    callback, 4, callback_param,
 	    body, 2, o_param
 	    );
     }    

@@ -20,18 +20,20 @@ static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 //    anna_vmstack_t *res = malloc(sz);
     res->flags = ANNA_VMSTACK;
     al_push(&anna_alloc, res);
-    
+    anna_alloc_count+=sz;
     return res;
 }
 
 static inline __malloc void *anna_alloc_blob(size_t sz)
 {
-    long long *res = anna_slab_alloc(sz+ sizeof(long long));
+    sz += 2*sizeof(int);
+    int *res = anna_slab_alloc(sz);
 //    wprintf(L"Alloc %d (%d)=> %d (%d)\n", sz, sz+ sizeof(long long), res, (long)res & 7);
-    *res = ANNA_BLOB | (sz << ANNA_ALLOC_FLAGS_SIZE);
+    res[0] = ANNA_BLOB;
+    res[1] = sz;
     al_push(&anna_alloc, res);
     anna_alloc_count+=sz;
-    return (void *)&res[1];
+    return (void *)&res[2];
 }
 
 static inline __malloc anna_object_t *anna_alloc_object(size_t sz)

@@ -95,9 +95,9 @@ void asi_print(anna_string_t *string)
   wprintf(L"%.*ls\n", string->count, string->str);
 }
 
-void asi_print_regular(anna_string_t *str)
+void asi_print_regular(anna_string_t *string)
 {
-    CRASH;
+    wprintf(L"%.*ls\n", string->count, string->str);
 }
 
 void asi_print_debug(anna_string_t *str)
@@ -115,12 +115,19 @@ wchar_t *asi_cstring(anna_string_t *str)
  */
 int asi_compare(anna_string_t *a, anna_string_t *b)
 {
-    CRASH;
+    size_t sz = mini(a->count, b->count);
+    int res = wcsncmp(a->str, b->str, sz);
+    if(res == 0)
+    {
+	return a->count-b->count;
+    }
+    return res;
 }
 
-void asi_append_cstring(anna_string_t *a, wchar_t *str, size_t len)
+void asi_append_cstring(anna_string_t *dest, wchar_t *str, size_t len)
 {
-    CRASH;
+    asi_ensure_capacity(dest, dest->count + len);
+    memcpy(&dest->str[dest->count], str, sizeof(wchar_t)*len);  
 }
 
 
