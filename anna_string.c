@@ -255,16 +255,29 @@ static anna_vmstack_t *anna_string_join_callback(anna_vmstack_t *stack, anna_obj
 
 static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *o = anna_vmstack_pop_object(stack);
+    anna_entry_t *e = anna_vmstack_pop_entry(stack);
     anna_object_t *this = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
-
-    if(o == null_object)
+    
+    if(ANNA_VM_NULL(e))
     {
 	anna_vmstack_push_object(stack, this);
     }
+    else if(anna_is_int(e))
+    {	
+	anna_object_t *res = anna_object_create(string_type);
+	wchar_t is[32];
+	swprintf(is, 32, L"%d", anna_as_int(e));
+	asi_init(as_unwrap(res));
+	asi_append(as_unwrap(res), as_unwrap(this), 0, asi_get_length(as_unwrap(this)));
+	asi_append_cstring(as_unwrap(res), is, wcslen(is));
+	
+	anna_vmstack_push_object(stack, res);
+    }
     else
     {
+	anna_object_t *o = anna_as_obj(e);
+	
 	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
 	anna_entry_t *callback_param[] = 
 	    {
@@ -518,7 +531,14 @@ static anna_vmstack_t *anna_string_to_string(anna_vmstack_t *stack, anna_object_
     return stack;
 }
 
-static anna_vmstack_t *anna_string_cmp(anna_vmstack_t *stack, anna_object_t *me)
+int anna_string_cmp(anna_object_t *this, anna_object_t *that)
+{
+    anna_string_t *str1 = as_unwrap(this);
+    anna_string_t *str2 = as_unwrap(that);
+    return asi_compare(str1,str2);
+}
+
+static anna_vmstack_t *anna_string_cmp_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
     anna_entry_t *res = anna_from_obj(null_object);
@@ -526,11 +546,8 @@ static anna_vmstack_t *anna_string_cmp(anna_vmstack_t *stack, anna_object_t *me)
     {
 	anna_object_t *this = anna_as_obj(param[0]);
 	anna_object_t *that = anna_as_obj(param[1]);
-	anna_string_t *str1 = as_unwrap(this);
-	anna_string_t *str2 = as_unwrap(that);
-	res = anna_from_int(asi_compare(str1,str2));
-	
-    }    
+	res = anna_from_int(anna_string_cmp(this, that));	
+    }
     anna_vmstack_drop(stack, 3);
     anna_vmstack_push_entry(stack, res);
     return stack;    
@@ -646,7 +663,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	-1,
 	L"__cmp__",
 	0,//	ANNA_FUNCTION_VARIADIC, 
-	&anna_string_cmp, 
+	&anna_string_cmp_i, 
 	int_type,
 	2, c_argv, c_argn);    
     

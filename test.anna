@@ -5,7 +5,7 @@ def main()
     (0..100000:10000).each(offset){
         (offset..(steps+offset)).each(i){m["string" ~ i] = i}
 	print(m.count, "\n");
-        (offset..(steps+offset)).each(i){m.remove("string" ~ (i-50000))}
+        (offset..(steps+offset)).each(i){m.remove("string" ~ (i-5000))}
 	print(m.count, "\n");
     }
 }

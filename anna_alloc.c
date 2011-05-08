@@ -347,6 +347,11 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	return;
 
     size_t i;
+    if(obj->type == string_type)
+    {
+	return;
+    }
+
     if(obj->type->mid_identifier[ANNA_MID_LIST_PAYLOAD])
     {
 	/* This object is a list. Mark all list items */
@@ -359,8 +364,7 @@ void anna_alloc_mark_object(anna_object_t *obj)
     if(obj->type->mid_identifier[ANNA_MID_HASH_PAYLOAD])
     {
 	anna_hash_mark(obj);
-    }
-    
+    }    
     
     anna_type_t *t = obj->type;
     for(i=0; i<t->member_count; i++)

@@ -56,13 +56,16 @@ typedef struct anna_string anna_string_t;
 
 #else
 
+#define ANNA_NAIVE_INTERNAL 16
+
 struct anna_string
 {
-  size_t count;
-  size_t capacity;
-  wchar_t *str;
+    size_t count;
+    size_t capacity;
+    wchar_t *str;
+    wchar_t internal[ANNA_NAIVE_INTERNAL];
 }
-  ;
+    ;
 typedef struct anna_string anna_string_t;
 
 #endif

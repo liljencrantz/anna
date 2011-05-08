@@ -16,5 +16,6 @@ size_t anna_string_get_count(anna_object_t *obj);
    Hash specified string. Uses the djb2 algorithm.
  */
 int anna_string_hash(anna_object_t *this);
+int anna_string_cmp(anna_object_t *this, anna_object_t *that);
 
 #endif

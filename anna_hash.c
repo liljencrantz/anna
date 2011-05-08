@@ -230,12 +230,12 @@ static void anna_hash_check_resize(anna_hash_t *this)
     size_t old_sz = this->mask+1;
 //    if(old_sz <= 64)
 //	wprintf(L"%d: %f > %d?\n", old_sz, ANNA_HASH_USED_MIN*old_sz, this->used);
-    if(ANNA_HASH_USED_MAX*old_sz < this->fill)
+    if(ANNA_HASH_USED_MAX*old_sz < this->used)
     {
 	size_t new_sz = ANNA_HASH_SIZE_STEP * old_sz;
 	anna_hash_resize(this, new_sz);
     }
-    else if( ANNA_HASH_USED_MIN*old_sz > this->fill)
+    else if( ANNA_HASH_USED_MIN*old_sz > this->used)
     {
 	size_t new_sz = old_sz;
 	do
@@ -273,7 +273,34 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
 
-    if(!anna_is_obj(key))
+    if(anna_is_obj(key))
+    {
+	anna_object_t *o = anna_as_obj_fast(key);
+	if(o->type == string_type)
+	{
+	    if(anna_is_obj(this->table[pos].key))
+	    {
+		anna_object_t *o2 = anna_as_obj_fast(this->table[pos].key);
+		if(o2->type == string_type)
+		{
+		    int eq = anna_string_cmp(o, o2)==0;
+		    return ahi_search_callback2_internal(
+			stack,
+			key,
+			hash_obj,
+			callback,
+			aux,
+			hash,
+			idx,
+			dummy_idx,
+			eq ? anna_from_int(1):anna_from_obj(null_object));
+		}
+	    }
+	    
+	}
+	
+    }
+    else
     {
 	if(anna_is_int(key) && anna_is_int(this->table[pos].key))
 	{
@@ -484,7 +511,21 @@ static inline anna_vmstack_t *ahi_search(
     ahi_callback_t callback,
     anna_entry_t *aux)
 {
-    if(anna_is_int(key))
+    if(anna_is_obj(key))
+    {
+	anna_object_t *o = anna_as_obj_fast(key);
+	if(o->type == string_type)
+	{
+	    return ahi_search_callback_internal(
+		stack,
+		hash,
+		key,
+		callback,
+		aux,
+		anna_string_hash(o));
+	}
+    }
+    else if(anna_is_int(key))
     {
 //	wprintf(L"Search for Int in hash table\n");
 	return ahi_search_callback_internal(
