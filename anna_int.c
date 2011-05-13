@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <gmp.h>
 
 #include "anna.h"
 #include "anna_node.h"
@@ -15,25 +16,60 @@
 #include "anna_string.h"
 #include "anna_vm.h"
 
+#define ANNA_SMALL_MAX_BIT 29
+
 #include "anna_int_i.c"
 
-static void anna_int_set(anna_object_t *this, int value)
+static void anna_int_set(anna_object_t *this, long value)
 {
-    memcpy(anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), &value, sizeof(int));
+    mpz_init(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
+    mpz_set_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), value);
 }
 
-anna_object_t *anna_int_create(int value)
+anna_object_t *anna_int_create_mp(mpz_t value)
+{
+    anna_object_t *obj= anna_object_create(int_type);
+    mpz_init(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD));
+    mpz_set(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD), value);
+
+//    wprintf(L"Create bignum %s from bignum %s\n", mpz_get_str(0, 10, *(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD)), mpz_get_str(0, 10, value));
+    return obj;
+}
+
+anna_object_t *anna_int_create(long value)
 {
     anna_object_t *obj= anna_object_create(int_type);
     anna_int_set(obj, value);
     return obj;
 }
 
-int anna_int_get(anna_object_t *this)
+anna_object_t *anna_int_create_ll(long long value)
 {
-    int result;
-    memcpy(&result, anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), sizeof(int));
-    return result;
+    anna_object_t *obj= anna_object_create(int_type);
+    mpz_init(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD));
+    mpz_set_si(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD), value>>32);
+    return obj;
+}
+
+mpz_t *anna_int_unwrap(anna_object_t *this)
+{
+    return (mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD);
+}
+
+long int anna_int_get(anna_object_t *this)
+{
+    return mpz_get_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
+}
+
+anna_entry_t *anna_int_entry(anna_object_t *this)
+{
+    mpz_t *me = anna_int_unwrap(this);
+    if(mpz_sizeinbase(*me, 2)<=ANNA_SMALL_MAX_BIT)
+    {
+//	wprintf(L"Weee, small int %d (%d bits)\n", anna_int_get(this), mpz_sizeinbase(*me, 2));
+	return anna_from_int(anna_int_get(this));
+    }
+    return anna_from_obj(this);
 }
 
 static anna_vmstack_t *anna_int_init(anna_vmstack_t *stack, anna_object_t *me)
@@ -50,7 +86,10 @@ static anna_vmstack_t *anna_int_hash(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_entry(stack, param[0]);
+    anna_vmstack_push_int(
+	stack,
+	mpz_get_si(
+	    *anna_int_unwrap(anna_as_obj(param[0]))) & ANNA_INT_FAST_MAX);
     return stack;
 }
 
@@ -65,7 +104,20 @@ static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
     }
     else
     {
-	res =  anna_from_int(anna_as_int(param[0]) - anna_as_int(param[1]));
+	if(anna_is_int(param[1]))
+	{
+	    res = anna_from_int(
+		(long)mpz_cmp_si(
+		    *anna_int_unwrap(anna_as_obj(param[0])), 
+		    anna_as_int(param[1])));
+	}
+	else
+	{
+	    res = anna_from_int(
+		(long)mpz_cmp(
+		    *anna_int_unwrap(anna_as_obj(param[0])), 
+		    *anna_int_unwrap(anna_as_obj_fast(param[1]))));
+	}
     }
     
     anna_vmstack_drop(stack, 3);
@@ -77,15 +129,27 @@ static anna_vmstack_t *anna_int_to_string(anna_vmstack_t *stack, anna_object_t *
 {
     anna_entry_t **param = stack->top - 1;
 
+    char *nstr = mpz_get_str(0, 10, *anna_int_unwrap(anna_as_obj(param[0])));
+    
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"%d", anna_as_int(param[0]));
+    sb_printf(&sb, L"%s", nstr);
+
+    free(nstr);
     
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return stack;
 }
+
+static inline anna_entry_t *anna_int_del_i(anna_entry_t **param)
+{
+    mpz_clear(*anna_int_unwrap(anna_as_obj(param[0])));
+    return param[0];
+}
+ANNA_VM_NATIVE(anna_int_del, 1)
+
 
 void anna_int_type_create(anna_stack_template_t *stack)
 {
@@ -111,12 +175,12 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	}
     ;
     
-    anna_member_create(
+    anna_member_create_blob(
 	int_type,
 	ANNA_MID_INT_PAYLOAD, 
 	L"!intPayload", 
 	0,
-	null_type);
+	sizeof(mpz_t));
     
     anna_native_method_create(
 	int_type,
@@ -152,5 +216,14 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	&anna_int_to_string, 
 	string_type, 1, i_argv, i_argn);
     
+    anna_native_method_create(
+	int_type,
+	ANNA_MID_DEL,
+	L"__del__",
+	0,
+	&anna_int_del, 
+	int_type,
+	1, i_argv, i_argn);
+
     anna_int_type_i_create(stack);
 }
