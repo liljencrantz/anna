@@ -1,15 +1,20 @@
+/*
+  Check that user defined method aliases work
+*/
 
 type Foo
 {
 
-    def barString(String first, String second, String third) (alias(bar))
+    def bar__String__(String first, String second, String third) (alias(bar))
     {
 	print(first, second, third);
     }
-    def barInt(Int first, Int second, Int third) (alias(bar))
+
+    def bar__Int__(Int first, Int second, Int third) (alias(bar))
     {
 	print(first + second + third);
     }
+
 }
 
 def main()

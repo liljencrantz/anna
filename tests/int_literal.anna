@@ -1,0 +1,9 @@
+/*
+  Simple tests on small decimal int literals
+*/
+def main()
+{
+    print(
+        100_000, ' ', 100000, ' ', 1_0_0_0_0_0, ' ', 
+        -100_000, ' ', -100000, ' ', - 1_0_0_0_0_0, '\n');
+}

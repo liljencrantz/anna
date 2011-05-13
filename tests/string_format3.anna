@@ -1,0 +1,13 @@
+/*
+  Map based String formating
+*/
+
+def main()
+{
+    print("Testing string formating using maps!
+An int: %(myInt)
+Same int again: %(myInt)
+Here comes a float: %(myFloat)
+Let's try a percent symbol: %%
+" % ["myFloat" => 123.45 as Object, "myInt" => 0xdead_beef]);
+}

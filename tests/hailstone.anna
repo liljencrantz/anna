@@ -1,0 +1,32 @@
+
+var List hailstoneCache;
+
+def Int hailstone(Int i)
+{
+    if(hailstoneCache[i]) { return hailstoneCache[i] }
+    hailstoneCache[i] = 
+	hailstone(if(i ^bitand 1 == 0) {i/2} else {i*3+1})+1;
+}
+
+def main()
+{
+    var max = 20_000;
+    var maxCount = 0;
+    var maxValue = 0;
+
+    hailstoneCache = [1, 1];
+
+    (2..max).each(i)
+    {
+	var count = hailstone(i);
+	if(count > maxCount)
+	{
+	    maxCount = count;
+	    maxValue = i;
+	}
+    }
+
+    print(
+	"Maximum hailstone sequence under ", 
+	max, " is ", maxValue, '\n');
+}

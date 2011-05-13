@@ -1,0 +1,5 @@
+def main()
+{
+    /* This value is outside of the legal range for 64 bit IEEE floats, and should fail to parse */
+    print( 2.2250738585072010e308, "\n");
+}

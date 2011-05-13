@@ -1,0 +1,55 @@
+
+def main()
+{
+    var digits=10000;
+
+    var i = 0;
+    var k = 0;
+    var ns = 0;
+    var k1 = 1;
+    var n = 1;
+    var a = 0;
+    var d = 1;
+    var t = 0;
+    var u=0;
+
+    def calc()
+    {
+	while(1)
+	{
+	    k += 1;
+	    t = n ^shl 1;
+	    n = n*k;
+	    a += t;
+	    k1 += 2;
+	    a = a* k1;
+//	    print("HMMM %*%=%\n" %[d, k1, d*k1]);
+	    d = d*k1;
+	    if(a >= n){
+//		print("AAA % % %\n" %[ns, d, u]);
+		var tmp = n*3+a;
+		t = tmp/d;
+		u = tmp ^mod d;
+		u += n;
+		if (d > u)
+		{
+//		    print("BBB % % %\n" %[ns, d, u]);
+		    ns = ns*10 + t;
+		    i += 1;
+		    if (i ^mod 10 == 0)
+		    {
+			print("%\t:%\n" % [ns, i]);
+			ns = 0;
+		    }
+		    if (i >= digits){
+			return;
+		    }
+		    a -= d*t;
+		    a = a*10;
+		    n = n*10;
+		}
+	    }
+	}
+    }
+    calc();
+}

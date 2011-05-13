@@ -1,0 +1,14 @@
+/*
+  Exteremely simple string formating, only uses the toString method of each argument
+*/
+
+def main()
+{
+    print("Lets try some basic string formating. 
+An Int: %
+Here comes a Char: %
+And another Int: %
+Why not s String: %
+Let's try a percent symbol: %%
+" % [1234 as Object, 'd', 0xdead_BEEF, "This is a string"]);
+}

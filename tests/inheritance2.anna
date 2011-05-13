@@ -1,3 +1,7 @@
+/*
+  Check that we can inherit from built in types
+*/
+
 type Sub (extends(Int))
 {
     def bar(){print("Sub.bar()\n")}

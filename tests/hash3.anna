@@ -7,7 +7,9 @@ def main()
     print(d[1], ' ', d[2], ' ', d[4], ' ', d[20], ' ', d[36], ' ', d[52], ' ', d[69], "\n");
     print(d.count,"\n");
 
-    print(d.map(i){i}, "\n");
+    var ordinalSum = 0;
+    d.map(i){i[0].ordinal}.each(i){ordinalSum += i}
+    print("Sum of ordinal number of first char of each value: ", ordinalSum, "\n");
 
     (0..100000).each(i){d[10*i] = "AAA"}
     print(d.count, '\n');
