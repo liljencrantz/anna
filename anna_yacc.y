@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <wchar.h>
 #include <string.h>
+#include <math.h>
 
 #include "common.h"
 #include "anna_node.h"
@@ -64,6 +65,92 @@ static wchar_t *enclose(wchar_t *in)
     sb_append(&sb,in);
     sb_append(&sb,L"__");
     return sb_content(&sb);
+}
+
+static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
+{
+    mpz_t res;
+    mpz_t mpval;
+    mpz_t mpbase;
+    mpz_init(res);
+    mpz_init(mpval);
+    mpz_init(mpbase);
+    mpz_set_si(res, 0);
+    mpz_set_si(mpbase, base);
+    
+    while(1)
+    {
+	char ch = *(c++);
+	if(ch == '_')
+	    continue;
+
+	int val;
+
+	if( (ch >= '0') && (ch <= '9'))
+	{
+	    val = ch - '0';
+	}
+	else if( (ch >= 'a') && (ch <= 'f'))
+	{
+	    val = ch - 'a' + 10;
+	}
+	else if( (ch >= 'A') && (ch <= 'F'))
+	{
+	    val = ch - 'A' + 10;
+	}
+	else
+	{
+	    break;
+	}
+	if(val >= base)
+	{
+	    break;
+	}
+
+	mpz_set_si(mpval, val);
+
+	mpz_mul(res, mpbase, res);
+	mpz_add(res, res, mpval);
+    }
+
+
+//    wprintf(L"Parse int literal %s\n", mpz_get_str(0, 10, res));
+    anna_node_t *node = (anna_node_t *)anna_node_create_int_literal(llocp, res);
+    mpz_clear(res);
+    mpz_clear(mpbase);
+    mpz_clear(mpval);
+    return node;
+}
+
+
+static anna_node_t *anna_atof(YYLTYPE *llocp, char *c)
+{
+    char *cpy = malloc(strlen(c)+1);
+    char *ptr = cpy;
+    while(*c)
+    {
+	if(*c != '_')
+	    *(ptr++) = *c;
+	c++;
+    }
+    *ptr=0;
+    char *end;
+    int tmp = errno;
+    errno = 0;
+    double res = strtod(cpy, &end);
+    free(cpy);
+    if(errno)
+    {
+	fwprintf(stderr,L"Error in %ls, on line %d:\n", 
+		 llocp->filename,
+		 llocp->first_line);
+	anna_node_print_code((anna_node_t *)anna_node_create_dummy(llocp, 0));
+	
+	fwprintf (stderr, L"Invalid value for Float literal\n");
+	anna_yacc_error_count++;
+    }
+    errno = tmp;
+    return (anna_node_t *)anna_node_create_float_literal(llocp, res);
 }
 
 static wchar_t *anna_yacc_string(char *in)
@@ -220,7 +307,10 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 
 %locations
 
-%token LITERAL_INTEGER
+%token LITERAL_INTEGER_BASE_2
+%token LITERAL_INTEGER_BASE_8
+%token LITERAL_INTEGER_BASE_10
+%token LITERAL_INTEGER_BASE_16
 %token LITERAL_FLOAT
 %token LITERAL_CHAR
 %token LITERAL_STRING
@@ -813,18 +903,29 @@ type_identifier :
 any_identifier: identifier | type_identifier;
 
 literal:
-	LITERAL_INTEGER
+	LITERAL_INTEGER_BASE_10
 	{
-	    $$ = (anna_node_t *)anna_node_create_int_literal(
-		&@$,
-		atoi(anna_lex_get_text(scanner)));
+	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner), 10);
+	}
+	| 
+	LITERAL_INTEGER_BASE_16
+	{
+	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner)+2, 16);
+	}
+	| 
+	LITERAL_INTEGER_BASE_8
+	{
+	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner)+2, 8);
+	}
+	| 
+	LITERAL_INTEGER_BASE_2
+	{
+	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner)+2, 2);
 	}
 	| 
 	LITERAL_FLOAT
 	{
-	    $$ = (anna_node_t *)anna_node_create_float_literal(
-		&@$,
-		atof(anna_lex_get_text(scanner)));
+	    $$ = anna_atof(&@$, anna_lex_get_text(scanner));
 	}
 	| 
 	LITERAL_CHAR
