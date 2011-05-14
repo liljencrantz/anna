@@ -133,7 +133,7 @@ static void asi_element_stepford(anna_string_t *dest, int eid, size_t min_availa
  */
 static void asi_ensure_length(anna_string_t *dest, size_t len)
 {
-    if(asi_get_length(dest) < len)
+    if(asi_get_count(dest) < len)
     {
 	if(asi_null_element == 0)
 	{
@@ -142,7 +142,7 @@ static void asi_ensure_length(anna_string_t *dest, size_t len)
 	    asi_null_element->capacity=ANNA_STRING_NULL_ELEMENT_LENGTH;
 	    memset(&asi_null_element->payload, 0, ANNA_STRING_NULL_ELEMENT_LENGTH*sizeof(wchar_t));
 	}
-	size_t padding = len - asi_get_length(dest);
+	size_t padding = len - asi_get_count(dest);
 	asi_ensure_element_capacity(dest, 1+(padding/ANNA_STRING_NULL_ELEMENT_LENGTH));
 	asi_null_element->users++;
 	while(1)
@@ -276,7 +276,7 @@ static void asi_haircut(anna_string_t *hippie)
 	    count++;
 	}
 	
-	//size_t old_length = asi_get_length(hippie);
+	//size_t old_length = asi_get_count(hippie);
 	
 	size_t pos = hippie->element_length[start_pos];
 	
@@ -304,7 +304,7 @@ static void asi_haircut(anna_string_t *hippie)
 	memmove(&hippie->element_offset[start_pos+1], &hippie->element_offset[stop_pos], sizeof(size_t)*(hippie->element_count-stop_pos));
 	hippie->element_count -= (stop_pos-start_pos-1);
 	
-	//assert(old_length == asi_get_length(hippie));
+	//assert(old_length == asi_get_count(hippie));
 	/*
 	  for(m=0; m<hippie->element_count; m++)
 	  {
@@ -338,7 +338,7 @@ static void asi_ensure_element_capacity(anna_string_t *string, size_t count)
 //    wprintf(L"AAA\n");
     if(string->element_capacity >= count)
     {
-//	wprintf(L"BBB string of len %d needed %d elements, has %d\n", asi_get_length(string), count, string->element_capacity);
+//	wprintf(L"BBB string of len %d needed %d elements, has %d\n", asi_get_count(string), count, string->element_capacity);
 	return;
     }
 
@@ -446,7 +446,7 @@ void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t l
       return;
     }
 
-//    wprintf(L"Append from %d to %d in string of length %d to string of previous length %d\n", offset, offset+length, asi_get_length(src), asi_get_length(dest));
+//    wprintf(L"Append from %d to %d in string of length %d to string of previous length %d\n", offset, offset+length, asi_get_count(src), asi_get_count(dest));
 
     if(src->element_count == 1)
     {
@@ -669,7 +669,7 @@ wchar_t asi_get_char(anna_string_t *dest, size_t offset)
     return 0;
 }
 
-size_t asi_get_length(anna_string_t *dest)
+size_t asi_get_count(anna_string_t *dest)
 {
     return dest->length;
 }
@@ -737,7 +737,7 @@ void asi_replace(anna_string_t *dest,
     asi_ensure_element_capacity(&tmp, dest->element_count + src->element_count);
     asi_append(&tmp, dest, 0, dest_offset);
     asi_append(&tmp, src, src_offset, src_length);
-    asi_append(&tmp, dest, dest_offset+dest_length, asi_get_length(dest)-dest_offset-dest_length);
+    asi_append(&tmp, dest, dest_offset+dest_length, asi_get_count(dest)-dest_offset-dest_length);
     
     /*
       Replace the destination string with the temporary one
@@ -765,7 +765,7 @@ void asi_print_debug(anna_string_t *dest)
 	}
     }
     wprintf(L"\n");
-    for(i=0;i<asi_get_length(dest); i++) {
+    for(i=0;i<asi_get_count(dest); i++) {
 	wprintf(L"%d", i%10);
     }
     wprintf(L"\n");
@@ -774,17 +774,17 @@ void asi_print_debug(anna_string_t *dest)
 void asi_print_regular(anna_string_t *dest)
 {
     int i;
-    for(i=0;i<asi_get_length(dest); i++) {
+    for(i=0;i<asi_get_count(dest); i++) {
 	putwchar(asi_get_char(dest, i));
     }
 }
 
 wchar_t *asi_cstring(anna_string_t *str)
 {
-    wchar_t *res = malloc(sizeof(wchar_t)*(1+asi_get_length(str)));
+    wchar_t *res = malloc(sizeof(wchar_t)*(1+asi_get_count(str)));
     int i;
-    res[asi_get_length(str)] = 0;
-    for(i=0; i<asi_get_length(str); i++)
+    res[asi_get_count(str)] = 0;
+    for(i=0; i<asi_get_count(str); i++)
     {
 	res[i] = asi_get_char(str, i);
     }
@@ -794,7 +794,7 @@ wchar_t *asi_cstring(anna_string_t *str)
 
 int asi_compare(anna_string_t *a, anna_string_t *b){
     size_t i;
-    size_t count = mini(asi_get_length(a), asi_get_length(b));
+    size_t count = mini(asi_get_count(a), asi_get_count(b));
     for(i=0; i<count; i++)
     {
 	int diff = asi_get_char(a,i) - asi_get_char(b,i);
@@ -803,7 +803,7 @@ int asi_compare(anna_string_t *a, anna_string_t *b){
 	    return diff;
 	}	
     }
-    return asi_get_length(a) - asi_get_length(b);
+    return asi_get_count(a) - asi_get_count(b);
 }
 
 #endif

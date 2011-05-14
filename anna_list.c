@@ -54,7 +54,7 @@ static anna_type_t *anna_list_get_specialization(anna_object_t *obj)
 
 void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value)
 {
-    size_t size = anna_list_get_size(this);
+    size_t size = anna_list_get_count(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
 //    wprintf(L"Set el %d in list of %d elements\n", pos, size);
     if(unlikely(pos < 0))
@@ -63,7 +63,7 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value
     }
     if(unlikely(pos >= size))
     {
-	anna_list_set_size(this, pos+1);      
+	anna_list_set_count(this, pos+1);      
     }
     
     anna_entry_t **ptr = anna_list_get_payload(this);
@@ -84,7 +84,7 @@ anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset)
 	return ptr[pos];
     }
     
-    size_t size = anna_list_get_size(this);
+    size_t size = anna_list_get_count(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
     anna_entry_t **ptr = anna_list_get_payload(this);
     if(pos < 0||pos >=size)
@@ -96,18 +96,18 @@ anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset)
 
 void anna_list_add(struct anna_object *this, anna_entry_t *value)
 {
-    size_t size = anna_list_get_size(this);
+    size_t size = anna_list_get_count(this);
     anna_list_set(this, size, value);
 }
 
-size_t anna_list_get_size(anna_object_t *this)
+size_t anna_list_get_count(anna_object_t *this)
 {
     return *(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE);
 }
 
-void anna_list_set_size(anna_object_t *this, size_t sz)
+void anna_list_set_count(anna_object_t *this, size_t sz)
 {
-    size_t old_size = anna_list_get_size(this);
+    size_t old_size = anna_list_get_count(this);
     size_t capacity = anna_list_get_capacity(this);
     
     if(sz>old_size)
@@ -163,11 +163,11 @@ static inline anna_entry_t *anna_list_get_int_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_list_get_int, 2)
 
-static inline anna_entry_t *anna_list_get_count_i(anna_entry_t **param)
+static inline anna_entry_t *anna_list_get_count_method_i(anna_entry_t **param)
 {
-    return anna_from_int(anna_list_get_size(anna_as_obj(param[0])));
+    return anna_from_int(anna_list_get_count(anna_as_obj(param[0])));
 }
-ANNA_VM_NATIVE(anna_list_get_count, 1)
+ANNA_VM_NATIVE(anna_list_get_count_method, 1)
 
 static inline anna_entry_t *anna_list_get_first_i(anna_entry_t **param)
 {
@@ -177,26 +177,26 @@ ANNA_VM_NATIVE(anna_list_get_first, 1)
 
 static inline anna_entry_t *anna_list_get_last_i(anna_entry_t **param)
 {
-    return anna_list_get(anna_as_obj(param[0]), anna_list_get_size(anna_as_obj(param[0]))-1);
+    return anna_list_get(anna_as_obj(param[0]), anna_list_get_count(anna_as_obj(param[0]))-1);
 }
 ANNA_VM_NATIVE(anna_list_get_last, 1)
 
-static inline anna_entry_t *anna_list_set_count_i(anna_entry_t **param)
+static inline anna_entry_t *anna_list_set_count_method_i(anna_entry_t **param)
 {
     ANNA_VM_NULLCHECK(param[1]);
     int sz = anna_as_int(param[1]);
-    anna_list_set_size(anna_as_obj(param[0]), sz);
+    anna_list_set_count(anna_as_obj(param[0]), sz);
     return param[1];
 }
-ANNA_VM_NATIVE(anna_list_set_count, 2)
+ANNA_VM_NATIVE(anna_list_set_count_method, 2)
 
 static inline anna_entry_t *anna_list_append_i(anna_entry_t **param)
 {
     size_t i;
 
     size_t capacity = anna_list_get_capacity(anna_as_obj(param[0]));
-    size_t size = anna_list_get_size(anna_as_obj(param[0]));
-    size_t size2 = anna_list_get_size(anna_as_obj(param[1]));
+    size_t size = anna_list_get_count(anna_as_obj(param[0]));
+    size_t size2 = anna_list_get_count(anna_as_obj(param[1]));
     size_t new_size = size+size2;
     
     if(capacity <= (new_size))
@@ -228,7 +228,7 @@ static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_objec
     anna_object_t *list = anna_as_obj(param[0]);
     anna_object_t *body = anna_as_obj(param[1]);
     int idx = anna_as_int(param[2]);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
     
     // Are we done or do we need another lap?
     if(idx < sz)
@@ -261,7 +261,7 @@ static anna_vmstack_t *anna_list_each(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
 
     if(sz > 0)
     {
@@ -303,7 +303,7 @@ static anna_vmstack_t *anna_list_map_callback(anna_vmstack_t *stack, anna_object
     anna_object_t *body = anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
     anna_object_t *res = anna_as_obj_fast(param[3]);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
 
     anna_list_set(res, idx-1, value);
 
@@ -341,7 +341,7 @@ static anna_vmstack_t *anna_list_map(anna_vmstack_t *stack, anna_object_t *me)
 	anna_function_t *fun = anna_function_unwrap(body);
 	anna_object_t *res = anna_list_create(fun->return_type);
 	
-	size_t sz = anna_list_get_size(list);
+	size_t sz = anna_list_get_count(list);
 	
 	if(sz > 0)
 	{
@@ -385,7 +385,7 @@ static anna_vmstack_t *anna_list_filter_callback(anna_vmstack_t *stack, anna_obj
     anna_object_t *body = anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
     anna_object_t *res = anna_as_obj_fast(param[3]);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
 
     if(!ANNA_VM_NULL(value))
     {
@@ -419,7 +419,7 @@ static anna_vmstack_t *anna_list_filter(anna_vmstack_t *stack, anna_object_t *me
     anna_object_t *res = anna_list_create(anna_list_get_specialization(list));
     anna_vmstack_pop_entry(stack);
     
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
     
     if(sz > 0)
     {
@@ -461,7 +461,7 @@ static anna_vmstack_t *anna_list_find_callback(anna_vmstack_t *stack, anna_objec
     anna_object_t *list = anna_as_obj_fast(param[0]);
     anna_object_t *body = anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
 
     if(!ANNA_VM_NULL(value))
     {
@@ -494,7 +494,7 @@ static anna_vmstack_t *anna_list_find(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
     
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
     
     if(sz > 0)
     {
@@ -536,7 +536,7 @@ static anna_vmstack_t *anna_list_to_string_callback(anna_vmstack_t *stack, anna_
     anna_object_t *list = anna_as_obj_fast(param[0]);
     int idx = anna_as_int(param[1]);
     anna_object_t *res = anna_as_obj_fast(param[2]);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
 
     if(value == null_object)
     {
@@ -568,7 +568,7 @@ static anna_vmstack_t *anna_list_to_string(anna_vmstack_t *stack, anna_object_t 
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
     
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
     
     if(sz > 0)
     {
@@ -608,10 +608,10 @@ static inline anna_entry_t *anna_list_init_i(anna_entry_t **param)
     
     this->flags |= ANNA_OBJECT_LIST;
     
-    size_t sz = anna_list_get_size(that);
+    size_t sz = anna_list_get_count(that);
     anna_entry_t **src = anna_list_get_payload(that);
     
-    anna_list_set_size(this, sz);
+    anna_list_set_count(this, sz);
     anna_entry_t **dest = anna_list_get_payload(this);
     memcpy(dest, src, sizeof(anna_object_t *)*sz);
     
@@ -660,7 +660,7 @@ static anna_vmstack_t *anna_list_in_callback(anna_vmstack_t *stack, anna_object_
     anna_object_t *list = anna_as_obj_fast(param[0]);
     anna_object_t *value = anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
     
     if(!ANNA_VM_NULL(ret))
     {
@@ -694,7 +694,7 @@ static anna_vmstack_t *anna_list_in(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
     
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
     
     if(sz > 0)
     {
@@ -740,7 +740,7 @@ static inline anna_entry_t *anna_list_i_get_range_i(anna_entry_t **param)
 
     if(anna_range_get_open(range))
     {
-	to = step>0?anna_list_get_size(list):-1;
+	to = step>0?anna_list_get_count(list):-1;
     }
     
     anna_object_t *res = anna_list_create(anna_list_get_specialization(list));
@@ -779,12 +779,12 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 
     if(anna_range_get_open(anna_as_obj_fast(param[1])))
     {
-	to = step>0?anna_list_get_size(list):-1;
+	to = step>0?anna_list_get_count(list):-1;
     }
     
     count = (1+(to-from-sign(step))/step);
     
-    int count2 = anna_list_get_size(repl);
+    int count2 = anna_list_get_count(repl);
 
     if(count != count2)
     {
@@ -793,7 +793,7 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 	    return anna_from_obj(null_object);
 	}
 
-	int old_size = anna_list_get_size(list);
+	int old_size = anna_list_get_count(list);
 
 	/* If we're assigning past the end of the array, just silently
 	 * take the whole array and go on */
@@ -823,7 +823,7 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 	    memmove(&arr[from+count2], &arr[from+count], sizeof(anna_object_t *)*abs(old_size - from - count ));
 	}
 	
-	/* Set new size - don't call anna_list_set_size, since that might truncate the list if we're shrinking */
+	/* Set new size - don't call anna_list_set_count, since that might truncate the list if we're shrinking */
 
 	/* Move the old data */
 
@@ -963,8 +963,8 @@ static void anna_list_type_create_internal(
 	-1,
 	L"count",
 	int_type,
-	&anna_list_get_count, 
-	&anna_list_set_count);
+	&anna_list_get_count_method, 
+	&anna_list_set_count_method);
 
     anna_native_property_create(
 	type,

@@ -23,12 +23,12 @@ static void anna_string_random_test(
     for(cnt=0; cnt<count; cnt++)
     {
 	
-	asi_truncate(a, mini(4096, asi_get_length(a)));
-	asi_truncate(b, mini(4096, asi_get_length(b)));
-	asi_truncate(c, mini(4096, asi_get_length(c)));
-	asi_truncate(d, mini(4096, asi_get_length(d)));
-	asi_truncate(e, mini(4096, asi_get_length(e)));
-	asi_truncate(f, mini(4096, asi_get_length(f)));
+	asi_truncate(a, mini(4096, asi_get_count(a)));
+	asi_truncate(b, mini(4096, asi_get_count(b)));
+	asi_truncate(c, mini(4096, asi_get_count(c)));
+	asi_truncate(d, mini(4096, asi_get_count(d)));
+	asi_truncate(e, mini(4096, asi_get_count(e)));
+	asi_truncate(f, mini(4096, asi_get_count(f)));
 	//asi_print_debug(a);
 	
 	switch(rand() % 5)
@@ -38,15 +38,15 @@ static void anna_string_random_test(
 	        asi_destroy(f);
 		asi_init_from_ptr(f, L"valsi udfgha sljdcv asldfka sfgyerkfs djchakjyg", 45);
 		asi_append(a, f, 0, 45);
-		size_t offset = rand()%(asi_get_length(f)+1);
-		size_t length = rand()%(asi_get_length(f)-offset+1);
+		size_t offset = rand()%(asi_get_count(f)+1);
+		size_t length = rand()%(asi_get_count(f)-offset+1);
 		
 		asi_substring(b, a, offset, length);
 		int i;
-		if(asi_get_length(b) != length)
+		if(asi_get_count(b) != length)
 		{
 		    wprintf(L"Substring error. Wrong length. Expected %d, got %d\n",
-			    length, asi_get_length(b));
+			    length, asi_get_count(b));
 		    asi_print_debug(b);
 		    CRASH;
 		}
@@ -72,15 +72,15 @@ static void anna_string_random_test(
 		int i;
 		for(i=0; i<4; i++)
 		{
-		    asi_append(a, c, 0, rand() % (asi_get_length(c)+1));
-		    asi_append(a, e, 0, rand() % (asi_get_length(e)+1));
+		    asi_append(a, c, 0, rand() % (asi_get_count(c)+1));
+		    asi_append(a, e, 0, rand() % (asi_get_count(e)+1));
 		}
 		
 		wchar_t *data = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		int len = wcslen(data);
 		
-		size_t offset = rand()%(asi_get_length(a)+1);
-		size_t length = rand()%(asi_get_length(a)-offset+1);
+		size_t offset = rand()%(asi_get_count(a)+1);
+		size_t length = rand()%(asi_get_count(a)-offset+1);
 		
 		for(i=0; i < length;i++)
 		{
@@ -102,10 +102,10 @@ static void anna_string_random_test(
 	    {
 		int i;
 	    
-		size_t length = rand()%(asi_get_length(a)+1);
-		asi_substring(b, a, 0, asi_get_length(a));
+		size_t length = rand()%(asi_get_count(a)+1);
+		asi_substring(b, a, 0, asi_get_count(a));
 		asi_truncate(a, length);
-		if(length != asi_get_length(a))
+		if(length != asi_get_count(a))
 		{
 		    wprintf(L"Wrong length after truncation!\n");
 		    exit(1);
@@ -125,31 +125,31 @@ static void anna_string_random_test(
 	  {
 	    int i;
 	    
-	    size_t src_offset = rand()%(asi_get_length(c)+1);
-	    size_t src_length = rand()%(asi_get_length(c)-src_offset+1);
+	    size_t src_offset = rand()%(asi_get_count(c)+1);
+	    size_t src_length = rand()%(asi_get_count(c)-src_offset+1);
 	    
-	    size_t dest_offset = rand()%(asi_get_length(a)+1);
-	    size_t dest_length = rand()%(asi_get_length(a)-dest_offset+1);
+	    size_t dest_offset = rand()%(asi_get_count(a)+1);
+	    size_t dest_length = rand()%(asi_get_count(a)-dest_offset+1);
 	    
-	    asi_substring(b, a, 0, asi_get_length(a));
+	    asi_substring(b, a, 0, asi_get_count(a));
 	    asi_replace(a, c, dest_offset, dest_length, src_offset, src_length);
-	    if(asi_get_length(a) != asi_get_length(b)-dest_length+src_length)
+	    if(asi_get_count(a) != asi_get_count(b)-dest_length+src_length)
 	      {
 		wprintf(L"String replacement error. Tried to replace %d .. %d of string(%d)\n",
-			dest_offset, dest_offset+dest_length, asi_get_length(b));
+			dest_offset, dest_offset+dest_length, asi_get_count(b));
 		asi_print_debug(b);
 		wprintf(L"with %d .. %d of string(%d)\n",
-			src_offset, src_offset+src_length, asi_get_length(c));
+			src_offset, src_offset+src_length, asi_get_count(c));
 		asi_print_debug(c);
 		wprintf(L"got string:\n");
 		asi_print_debug(a);
-		wprintf(L"Got string length %d, but expected %d.\n",asi_get_length(a),
-			asi_get_length(b)-dest_length+src_length);
+		wprintf(L"Got string length %d, but expected %d.\n",asi_get_count(a),
+			asi_get_count(b)-dest_length+src_length);
 		exit(1);		
 	      }
 
 	    
-	    for(i=0; i<asi_get_length(a); i++) {
+	    for(i=0; i<asi_get_count(a); i++) {
 	      wchar_t c1 = asi_get_char(a, i);
 	      wchar_t c2;
 	      if(i < dest_offset)
@@ -167,10 +167,10 @@ static void anna_string_random_test(
 	      if(c1 != c2)
 		{
 		  wprintf(L"String replacement error. Tried to replace %d .. %d of string(%d)\n",
-			  dest_offset, dest_offset+dest_length, asi_get_length(b));
+			  dest_offset, dest_offset+dest_length, asi_get_count(b));
 		  asi_print_debug(b);
 		  wprintf(L"with %d .. %d of string(%d)\n",
-			  src_offset, src_offset+src_length, asi_get_length(c));
+			  src_offset, src_offset+src_length, asi_get_count(c));
 		  asi_print_debug(c);
 		  wprintf(L"but got error at char %d of resulting string:\n", i);
 		  asi_print_debug(a);

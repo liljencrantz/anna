@@ -103,7 +103,7 @@ static inline anna_hash_t *ahi_unwrap(anna_object_t *obj)
     return (anna_hash_t *)anna_entry_get_addr(obj,ANNA_MID_HASH_PAYLOAD);
 }
 
-static inline size_t anna_hash_get_size(anna_object_t *this)
+static inline size_t anna_hash_get_count(anna_object_t *this)
 {
     return ahi_unwrap(this)->used;
 }
@@ -654,7 +654,7 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
     
 //    wprintf(L"Hash table now has %d used slots and %d dummy slots\n", this->used, this->fill-this->used);    
     
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
     if(sz > idx)
     {	
 	anna_vmstack_t *new_stack = anna_hash_init_search_pair(
@@ -679,7 +679,7 @@ static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
     
     if(likely(list != null_object))
     {
-	size_t sz = anna_list_get_size(list);
+	size_t sz = anna_list_get_count(list);
 	if(sz > 0)
 	{
 	    if(ANNA_HASH_USED_MAX * ANNA_HASH_MINSIZE < sz)
@@ -876,12 +876,12 @@ static inline anna_vmstack_t *anna_hash_remove(anna_vmstack_t *stack, anna_objec
 	0);
 }
 
-static inline anna_entry_t *anna_hash_get_count_i(anna_entry_t **param)
+static inline anna_entry_t *anna_hash_get_count_method_i(anna_entry_t **param)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(param[0]));
     return anna_from_int(this->used);
 }
-ANNA_VM_NATIVE(anna_hash_get_count, 1)
+ANNA_VM_NATIVE(anna_hash_get_count_method, 1)
 
 /**
    This is the bulk of the each method
@@ -929,7 +929,7 @@ static anna_vmstack_t *anna_hash_each(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *hash = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
-    size_t sz = anna_hash_get_size(hash);
+    size_t sz = anna_hash_get_count(hash);
 
     if(sz > 0)
     {
@@ -1011,7 +1011,7 @@ static anna_vmstack_t *anna_hash_map(anna_vmstack_t *stack, anna_object_t *me)
 	anna_function_t *fun = anna_function_unwrap(body);
 	anna_object_t *res = anna_list_create(fun->return_type);
 	
-	size_t sz = anna_hash_get_size(hash);
+	size_t sz = anna_hash_get_count(hash);
 	
 	if(sz > 0)
 	{
@@ -1143,7 +1143,7 @@ static void anna_hash_type_create_internal(
 	-1,
 	L"count",
 	int_type,
-	&anna_hash_get_count, 
+	&anna_hash_get_count_method, 
 	0);
 
 

@@ -117,7 +117,7 @@ static void anna_string_append_test2(size_t min_len, size_t max_len, wchar_t *ms
 		    break;
 	    }
 	    
-	    size_t d_o = asi_get_length(dest)?rand()%asi_get_length(dest):0;
+	    size_t d_o = asi_get_count(dest)?rand()%asi_get_count(dest):0;
 	    size_t d_l = 0;
 	    asi_replace(dest, &d, d_o, d_l, offset, len);
 	    chars_done += len;

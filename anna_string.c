@@ -35,7 +35,7 @@ void anna_string_print(anna_object_t *obj)
 
 void anna_string_append(anna_object_t *this, anna_object_t *str)
 {
-    asi_append(as_unwrap(this), as_unwrap(str), 0, asi_get_length(as_unwrap(str)));
+    asi_append(as_unwrap(this), as_unwrap(str), 0, asi_get_count(as_unwrap(str)));
 }
 
 
@@ -55,13 +55,13 @@ anna_object_t *anna_string_copy(anna_object_t *orig)
     
     asi_init(as_unwrap(obj));
     anna_string_t *o = as_unwrap(orig);
-    asi_append(as_unwrap(obj), o, 0, asi_get_length(o));
+    asi_append(as_unwrap(obj), o, 0, asi_get_count(o));
     return obj;
 }
 
 size_t anna_string_get_count(anna_object_t *this)
 {
-    return asi_get_length(as_unwrap(this));
+    return asi_get_count(as_unwrap(this));
 }
 
 wchar_t *anna_string_payload(anna_object_t *obj)
@@ -175,11 +175,11 @@ static anna_vmstack_t *anna_string_i_set_range(anna_vmstack_t *stack, anna_objec
 		from,
 		to-from,
 		0,
-		asi_get_length(as_unwrap(val)));
+		asi_get_count(as_unwrap(val)));
 	}
 	else
 	{
-	    if(count == asi_get_length(str2))
+	    if(count == asi_get_count(str2))
 	    {
 		for(i=0; i<count;i++)
 		{
@@ -213,7 +213,7 @@ static anna_vmstack_t *anna_string_i_get_count(anna_vmstack_t *stack, anna_objec
     anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj(param[0]);
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_int_create(asi_get_length(as_unwrap(this))));
+    anna_vmstack_push_object(stack, anna_int_create(asi_get_count(as_unwrap(this))));
     return stack;    
 }
 
@@ -243,8 +243,8 @@ static anna_vmstack_t *anna_string_join_callback(anna_vmstack_t *stack, anna_obj
 	res = anna_object_create(string_type);
 
 	asi_init(as_unwrap(res));
-	asi_append(as_unwrap(res), str, 0, asi_get_length(str));
-	asi_append(as_unwrap(res), str2, 0, asi_get_length(str2));
+	asi_append(as_unwrap(res), str, 0, asi_get_count(str));
+	asi_append(as_unwrap(res), str2, 0, asi_get_count(str2));
     }
     anna_vmstack_pop_entry(stack);
     anna_vmstack_push_object(stack, res);
@@ -269,7 +269,7 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
 	wchar_t is[32];
 	swprintf(is, 32, L"%d", anna_as_int(e));
 	asi_init(as_unwrap(res));
-	asi_append(as_unwrap(res), as_unwrap(this), 0, asi_get_length(as_unwrap(this)));
+	asi_append(as_unwrap(res), as_unwrap(this), 0, asi_get_count(as_unwrap(this)));
 	asi_append_cstring(as_unwrap(res), is, wcslen(is));
 	
 	anna_vmstack_push_object(stack, res);
@@ -309,7 +309,7 @@ static anna_vmstack_t *anna_string_ljoin_callback(anna_vmstack_t *stack, anna_ob
     anna_object_t *list = anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
     anna_object_t *res = anna_as_obj_fast(param[3]);
-    size_t sz = anna_list_get_size(list);
+    size_t sz = anna_list_get_count(list);
 
     if(value == null_object) 
     {
@@ -319,9 +319,9 @@ static anna_vmstack_t *anna_string_ljoin_callback(anna_vmstack_t *stack, anna_ob
     }
 
     if(idx>1){
-	asi_append(as_unwrap(res), as_unwrap(joint), 0, asi_get_length(as_unwrap(joint)));
+	asi_append(as_unwrap(res), as_unwrap(joint), 0, asi_get_count(as_unwrap(joint)));
     }
-    asi_append(as_unwrap(res), as_unwrap(value), 0, asi_get_length(as_unwrap(value)));
+    asi_append(as_unwrap(res), as_unwrap(value), 0, asi_get_count(as_unwrap(value)));
     
     if(sz > idx)
     {
@@ -352,7 +352,7 @@ static anna_vmstack_t *anna_string_i_ljoin(anna_vmstack_t *stack, anna_object_t 
     }
     else
     {
-	size_t sz = anna_list_get_size(list);
+	size_t sz = anna_list_get_count(list);
 	
 	if(sz > 0)
 	{
@@ -397,7 +397,7 @@ static anna_vmstack_t *anna_string_append_callback(anna_vmstack_t *stack, anna_o
     }
     else
     {
-	asi_append(as_unwrap(this), as_unwrap(value), 0, asi_get_length(as_unwrap(value)));
+	asi_append(as_unwrap(this), as_unwrap(value), 0, asi_get_count(as_unwrap(value)));
 	anna_vmstack_push_object(stack, this);        
     }
     return stack;
@@ -446,7 +446,7 @@ static anna_vmstack_t *anna_string_each_callback(anna_vmstack_t *stack, anna_obj
     anna_object_t *body = anna_as_obj_fast(param[1]);
     anna_string_t *str = as_unwrap(str_obj);
     int idx = anna_as_int(param[2]);
-    size_t sz = asi_get_length(str);
+    size_t sz = asi_get_count(str);
     
     // Are we done or do we need another lap?
     if(idx < sz)
@@ -480,7 +480,7 @@ static anna_vmstack_t *anna_string_i_each(anna_vmstack_t *stack, anna_object_t *
     anna_object_t *str_obj = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
     anna_string_t *str = as_unwrap(str_obj);    
-    size_t sz = asi_get_length(str);
+    size_t sz = asi_get_count(str);
 
     if(sz > 0)
     {
@@ -556,7 +556,7 @@ static anna_vmstack_t *anna_string_cmp_i(anna_vmstack_t *stack, anna_object_t *m
 int anna_string_hash(anna_object_t *this)
 {
     anna_string_t *s = as_unwrap(this);
-    size_t l = asi_get_length(s);
+    size_t l = asi_get_count(s);
     size_t i;
     unsigned hash = 5381;
     
@@ -822,19 +822,6 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	range_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
-
-    wchar_t *format_list_argn[] =
-	{
-	    L"this", L"list"
-	}
-    ;
-    
-    anna_type_t *format_list_argv[] = 
-	{
-	    string_type,
-	    list_type
-	}
-    ;    
 
     anna_native_method_create(
 	string_type,

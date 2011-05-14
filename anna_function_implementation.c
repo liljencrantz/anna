@@ -61,7 +61,7 @@ static int print_direct(anna_entry_t *o)
 
 static int print_direct_loop(anna_object_t *list, int idx)
 {
-    int ls = anna_list_get_size(list);
+    int ls = anna_list_get_count(list);
     while(1)
     {
 	if(ls == idx)
@@ -84,7 +84,7 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
     anna_entry_t **param = stack->top - 2;
     anna_object_t *list = anna_as_obj_fast(param[0]);
     int idx = anna_as_int(param[1]);
-    int ls = anna_list_get_size(list);
+    int ls = anna_list_get_count(list);
     if(value == null_object) 
     {
 	wprintf(L"null");
@@ -127,7 +127,7 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     int idx = print_direct_loop(list, 0);
-    if(anna_list_get_size(list) > idx)
+    if(anna_list_get_count(list) > idx)
     {
 	anna_entry_t *callback_param[] = 
 	    {

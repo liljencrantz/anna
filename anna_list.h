@@ -14,8 +14,8 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value
 anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset);
 void anna_list_add(struct anna_object *this, anna_entry_t *value);
 
-size_t anna_list_get_size(anna_object_t *this);
-void anna_list_set_size(anna_object_t *this, size_t sz);
+size_t anna_list_get_count(anna_object_t *this);
+void anna_list_set_count(anna_object_t *this, size_t sz);
 
 size_t anna_list_get_capacity(anna_object_t *this);
 void anna_list_set_capacity(anna_object_t *this, size_t sz);

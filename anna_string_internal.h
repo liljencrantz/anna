@@ -87,12 +87,12 @@ void asi_destroy(anna_string_t *string);
 /**
    Append the specified substring to the end of the specified string
  */
-void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length);
+void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t count);
 
 /**
    Copies the specified substring into the specified string
  */
-void asi_substring(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length);
+void asi_substring(anna_string_t *dest, anna_string_t *src, size_t offset, size_t count);
 
 /**
    Sets the character at the specified offset of the string
@@ -106,13 +106,13 @@ wchar_t asi_get_char(anna_string_t *dest, size_t offset);
 /**
    Replace the pecified substring in source with the specified substring of dest
  */
-void asi_replace(anna_string_t *dest, anna_string_t *src, size_t dest_offset, size_t dest_length, size_t src_offset, size_t src_length);
+void asi_replace(anna_string_t *dest, anna_string_t *src, size_t dest_offset, size_t dest_count, size_t src_offset, size_t src_count);
 /**
-   Return the length of the string
+   Return the character count of the string
  */
-size_t asi_get_length(anna_string_t *str);
+size_t asi_get_count(anna_string_t *str);
 
-void asi_truncate(anna_string_t *str, size_t length);
+void asi_truncate(anna_string_t *str, size_t count);
 
 /**
    Print the specified string, together with a load of debug and

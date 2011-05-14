@@ -113,7 +113,7 @@ void asi_replace(
     }
 }
 
-size_t asi_get_length(anna_string_t *dest)
+size_t asi_get_count(anna_string_t *dest)
 {
     return dest->count;
 }

@@ -356,7 +356,7 @@ void anna_alloc_mark_object(anna_object_t *obj)
     if(obj->flags & ANNA_OBJECT_LIST)
     {
 	/* This object is a list. Mark all list items */
-	size_t sz = anna_list_get_size(obj);
+	size_t sz = anna_list_get_count(obj);
 	anna_entry_t **data = anna_list_get_payload(obj);
 //	wprintf(L"GC LIST OF TYPE %ls WITH %d ELEMENTS\n\n", obj->type->name, sz);
 	
@@ -369,7 +369,7 @@ void anna_alloc_mark_object(anna_object_t *obj)
     }
     else if(obj->type->mid_identifier[ANNA_MID_LIST_PAYLOAD])
     {
-	size_t sz = anna_list_get_size(obj);
+	size_t sz = anna_list_get_count(obj);
 //	wprintf(L"SKIP GC OF LIST OF TYPE %ls with %d elements!!!\n\n", obj->type->name, sz);
 	
     }

@@ -64,7 +64,7 @@ static inline anna_entry_t *anna_node_call_wrapper_i_join_list_i(anna_entry_t **
     ANNA_VM_NULLCHECK(param[1]);
 
     size_t count = 
-	anna_list_get_size(anna_as_obj(param[1]));
+	anna_list_get_count(anna_as_obj(param[1]));
     
     anna_node_call_t *src = 
 	(anna_node_call_t *)anna_node_unwrap(
@@ -91,7 +91,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_list, 2)
 static inline anna_entry_t *anna_node_call_wrapper_i_init_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    size_t sz = anna_list_get_size(anna_as_obj(param[3]));
+    size_t sz = anna_list_get_count(anna_as_obj(param[3]));
     anna_entry_t **src = anna_list_get_payload(anna_as_obj(param[3]));
     
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
@@ -210,7 +210,7 @@ static inline anna_entry_t *anna_node_call_wrapper_append_i(anna_entry_t **param
     }
 
     size_t i;    
-    size_t size2 = anna_list_get_size(list);
+    size_t size2 = anna_list_get_count(list);
     for(i=0; i<size2; i++)
     {
 	anna_object_t *ch_obj = anna_as_obj(anna_list_get(list, i));
