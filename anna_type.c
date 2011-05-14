@@ -797,7 +797,6 @@ static int attr_idx(anna_node_call_t *attr, wchar_t *name)
     return -1;
 }
 
-
 anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call)
 {
     if((call->child_count < 1) || (type->flags & ANNA_TYPE_SPECIALIZED))
