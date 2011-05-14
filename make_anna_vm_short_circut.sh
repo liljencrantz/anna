@@ -28,7 +28,10 @@ echo "
             if(likely(abs(res)<=ANNA_INT_FAST_MAX))
   	        anna_vmstack_push_int(stack, (long)res);
             else
+{
+//wprintf(L\"Oops, moving to slow track with %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
   	        anna_vmstack_push_object(stack, anna_int_create(res));
+}
 	}
 	else
 	{

@@ -1,0 +1,16 @@
+/*
+  Test that over and underflows of addition and subtraction work
+  correctly 
+*/
+def main()
+{
+    var a=0;
+    var b=0;
+    var c=0;
+    var d=0;
+    (0..100_000).each(i){a += 10_000}
+    (0..100_000).each(i){b -= 10_000}
+    (0..100_000).each(i){c += -10_000}
+    (0..100_000).each(i){d -= -10_000}
+    print(a, ' ', b, ' ', c, ' ', d, '\n');
+}

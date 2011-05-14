@@ -42,7 +42,7 @@ static int anna_short_circut_instr_int_int(int mid)
 {
     
     if((mid >= ANNA_MID_ADD_INT) && (mid <= ANNA_MID_BITXOR_INT))
-	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD_INT;
+ 	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD_INT;
 
     if((mid >= ANNA_MID_EQ) && (mid <= ANNA_MID_GT))
     {
@@ -607,7 +607,7 @@ static void anna_vm_compile_i(
 		ptr,
 		anna_function_wrap(node2->payload), flags);
 //	    wprintf(L"Compiling closure %ls @ %d\n", node2->payload->name, node2->payload);
-
+	    
 	    anna_vm_null(
 		ptr,
 		ANNA_INSTR_TRAMPOLENE, flags);
@@ -788,7 +788,7 @@ void anna_vm_compile(
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
     
-    //anna_bc_print(fun->code);
+//    anna_bc_print(fun->code);
 }
 
 anna_vmstack_t *anna_vm_callback_native(
