@@ -23,17 +23,14 @@ def main()
 	    a += t;
 	    k1 += 2;
 	    a = a* k1;
-//	    print("HMMM %*%=%\n" %[d, k1, d*k1]);
 	    d = d*k1;
 	    if(a >= n){
-//		print("AAA % % %\n" %[ns, d, u]);
 		var tmp = n*3+a;
 		t = tmp/d;
 		u = tmp ^mod d;
 		u += n;
 		if (d > u)
 		{
-//		    print("BBB % % %\n" %[ns, d, u]);
 		    ns = ns*10 + t;
 		    i += 1;
 		    if (i ^mod 10 == 0)

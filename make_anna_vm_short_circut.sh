@@ -7,7 +7,49 @@ echo "
 */
 "
 
-for i in "ADD +" "SUB -" "INCREASE_ASSIGN +" "DECREASE_ASSIGN -" "BITAND &" "BITOR |" "BITXOR ^"; do
+for i in "BITAND &" "BITOR |" "BITXOR ^"; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+
+echo "    
+  ANNA_LAB_${name}_INT:
+    {
+//            wprintf(L\"$name\n\");
+	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
+	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
+	stack->code += sizeof(anna_op_null_t);
+	if(likely(anna_is_int(i1) && anna_is_int(i2)))
+	{
+	    int res = anna_as_int(i1) $op anna_as_int(i2);
+            anna_vmstack_push_int(stack, (long)res);
+	}
+	else
+	{
+	    anna_object_t *o1 = anna_as_obj(i1);
+	    
+	    if(o1 == null_object)
+	    {
+		anna_vmstack_push_object(stack, null_object);		
+	    }
+	    else
+	    {
+  //          wprintf(L\"Fallback for int $name \n\");
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
+		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
+		anna_function_t *fun = anna_function_unwrap(wrapped);
+		anna_vmstack_push_object(stack,wrapped);
+		anna_vmstack_push_object(stack,o1);
+		anna_vmstack_push_entry(stack,i2);
+		stack = fun->native(stack, wrapped);
+	    }
+	}
+	
+	goto *jump_label[(int)*stack->code];
+    }
+"
+done
+
+for i in "ADD +" "SUB -" "INCREASE_ASSIGN +" "DECREASE_ASSIGN -"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
 
@@ -22,16 +64,15 @@ echo "
 	{
 	    int res = anna_as_int(i1) $op anna_as_int(i2);
 
-//            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
-//anna_as_int(i1), anna_as_int(i2), res);
+//            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
 
             if(likely(abs(res)<=ANNA_INT_FAST_MAX))
   	        anna_vmstack_push_int(stack, (long)res);
             else
-{
-//wprintf(L\"Oops, moving to slow track with %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
+	    {
+                //wprintf(L\"Moving to slow track with %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
   	        anna_vmstack_push_object(stack, anna_int_create(res));
-}
+            }
 	}
 	else
 	{
