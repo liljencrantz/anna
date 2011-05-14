@@ -1,0 +1,105 @@
+/*
+  A bunch of additional functions to be inserted into the basic builtin types
+ */
+
+def Int search__Char__(
+    String this, Char ch)
+(
+    alias(search),
+    target(String),
+)
+{
+    this.each(idx, i){if(i == ch){return idx}}
+    return null;
+}
+
+def String __format__List__(
+    String fmt, 
+    List«Object» data) 
+(
+    alias(__format__), 
+    target(String), 
+)
+{
+    var res = "";
+    var listIdx = 0;
+    var i = 0;
+    while(i < fmt.count)
+    {
+        var ch = fmt[i];
+        if(ch == '%')
+        {
+	    if(fmt[i+1] == '%')
+            {
+  	        i++;
+                res ~= '%'
+            } else {
+                res ~= data[listIdx].toString();
+                listIdx++;
+            }
+        } else
+        {
+	    res ~= ch;
+        }
+        i++;
+    }
+    return res;
+}
+
+def String __format__Map__(
+    String fmt, 
+    HashMap«String, Object» data) 
+(
+    alias(__format__), 
+    target(String), 
+)
+{
+    var res = "";
+    var listIdx = 0;
+    var i = 0;
+    while(i < fmt.count)
+    {
+        var ch = fmt[i];
+        if(ch == '%')
+        {
+	    if(fmt[i+1] == '%')
+            {
+  	        i++;
+                res ~= '%'
+            } else {
+	        i++;
+		if(fmt[i] == '(')
+		{
+		    i++;
+		    var end = search__Char__(fmt[i...], ')');
+		    if(end)
+		    {
+			var name = fmt[i..(i+end)];
+			res ~= data[name];
+			i+=end;
+		    } else {
+			// ERROR
+		    }
+		} else
+		{
+		    // ERROR
+		}
+            }
+        } else
+        {
+	    res ~= ch;
+        }
+        i++;
+    }
+    return res;
+}
+
+
+def String hashMapToString(HashMap this)
+(
+    name(toString), 
+    target(HashMap), 
+)
+{
+    return "[...]"
+}

@@ -28,6 +28,7 @@
 #include "anna_intern.h"
 #include "anna_lang.h"
 #include "wutil.h"
+#include "anna_attribute.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 
@@ -128,6 +129,52 @@ static void anna_module_init_recursive(
     sb_destroy(&fn);
 }
 
+static void anna_module_insert_internal(anna_stack_template_t *lang)
+{
+    anna_object_t *int_obj = anna_stack_get(stack_global, L"internal");
+    assert(int_obj);
+    anna_stack_template_t *int_mod = anna_stack_unwrap(int_obj);
+    assert(int_mod);
+    
+    int i;
+    for(i=0; i<int_mod->count; i++)
+    {
+	anna_object_t *fun_obj = int_mod->member[i];
+	assert(fun_obj);
+	anna_function_t *fun = anna_function_unwrap(fun_obj);
+	assert(fun);
+	
+	anna_node_t *target_node = anna_attribute_call(fun->attribute, L"target");
+	anna_node_t *name_node = anna_attribute_call(fun->attribute, L"name");
+	
+	if((!target_node || target_node->node_type != ANNA_NODE_IDENTIFIER) ||
+	   (name_node && name_node->node_type != ANNA_NODE_IDENTIFIER))
+	{
+	    anna_error(fun->definition, L"Invalid import");
+	    return;
+	}
+	
+	anna_node_identifier_t *target_id = (anna_node_identifier_t *)target_node;
+	if(name_node)
+	{
+	    anna_node_identifier_t *name_id = (anna_node_identifier_t *)name_node;	
+	    fun->name = name_id->name;
+	}
+	
+	anna_type_t * type = anna_type_unwrap(
+	    anna_stack_get(
+		lang, target_id->name));
+			
+	anna_member_create_method(
+	    type,
+	    -1,
+	    fun->name,
+	    fun);
+    }
+    
+}
+
+
 void anna_module_init()
 {
     anna_stack_template_t *stack_lang = anna_lang_load();
@@ -141,6 +188,7 @@ void anna_module_init()
     
     anna_module_init_recursive(L"lib", stack_global);
     anna_stack_populate_wrapper(stack_lang);
+    anna_module_insert_internal(stack_lang);
 }
 	
 static void anna_module_find_import_internal(
@@ -287,7 +335,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	D_SPAM,
 	L"Declarations registered in module %ls\n", 
 	module_stack->filename);
-    
+
     for(i=0; i<al_get_count(&import); i++ )
     {
 	wchar_t *str = al_get(&import, i);
