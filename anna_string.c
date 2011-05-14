@@ -42,7 +42,7 @@ void anna_string_append(anna_object_t *this, anna_object_t *str)
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
     anna_object_t *obj= anna_object_create(string_type);
-    //  wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    // wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init_from_ptr(as_unwrap(obj),  data, sz);
     return obj;
@@ -94,7 +94,7 @@ static anna_entry_t *anna_string_i_set_int_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_string_i_set_int, 3)
 
-static anna_entry_t *anna_string_i_get_int_i(anna_entry_t **param)
+static inline anna_entry_t *anna_string_i_get_int_i(anna_entry_t **param)
 {
     ANNA_VM_NULLCHECK(param[1]);
     ssize_t idx = anna_string_idx_wrap(anna_as_obj(param[0]), anna_as_int(param[1]));
@@ -106,7 +106,7 @@ static anna_entry_t *anna_string_i_get_int_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_string_i_get_int, 2)
 
-static anna_entry_t *anna_string_i_get_range_i(anna_entry_t **param)
+static inline anna_entry_t *anna_string_i_get_range_i(anna_entry_t **param)
 {
     ANNA_VM_NULLCHECK(param[1]);
     
@@ -246,7 +246,7 @@ static anna_vmstack_t *anna_string_join_callback(anna_vmstack_t *stack, anna_obj
 	asi_append(as_unwrap(res), str, 0, asi_get_length(str));
 	asi_append(as_unwrap(res), str2, 0, asi_get_length(str2));
     }
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     anna_vmstack_push_object(stack, res);
     return stack;
 }
@@ -257,7 +257,7 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
 {
     anna_entry_t *e = anna_vmstack_pop_entry(stack);
     anna_object_t *this = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     if(ANNA_VM_NULL(e))
     {
@@ -344,7 +344,7 @@ static anna_vmstack_t *anna_string_i_ljoin(anna_vmstack_t *stack, anna_object_t 
 {
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_object_t *joint = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
 
     if(list == null_object)
     {
@@ -407,7 +407,7 @@ static anna_vmstack_t *anna_string_i_append(anna_vmstack_t *stack, anna_object_t
 {
     anna_object_t *obj = anna_vmstack_pop_object(stack);
     anna_object_t *this = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     if(obj!=null_object)
     {
@@ -438,7 +438,7 @@ static anna_vmstack_t *anna_string_i_append(anna_vmstack_t *stack, anna_object_t
 static anna_vmstack_t *anna_string_each_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     // Discard the output of the previous method call
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 3;
     // Unwrap and name the params to make things more explicit
@@ -478,7 +478,7 @@ static anna_vmstack_t *anna_string_i_each(anna_vmstack_t *stack, anna_object_t *
 {
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *str_obj = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     anna_string_t *str = as_unwrap(str_obj);    
     size_t sz = asi_get_length(str);
 
@@ -583,22 +583,9 @@ void anna_string_type_create(anna_stack_template_t *stack)
     mid_t mmid;
     anna_function_t *fun;
 
-    anna_member_create(
-	string_type, ANNA_MID_STRING_PAYLOAD,  L"!stringPayload", 
-	0, null_type);
-    int i;
-    string_buffer_t sb;
-    sb_init(&sb);
-    for(i=1; i<(((sizeof(anna_string_t)+1)/sizeof(anna_object_t *))+1);i++)
-    {
-	sb_clear(&sb);
-	sb_printf(&sb, L"!stringPayload%d", i+1);
-	anna_member_create(
-	    string_type, anna_mid_get(sb_content(&sb)),  sb_content(&sb), 
-	    0, null_type);
-    }
-
-    sb_destroy(&sb);
+    anna_member_create_blob(
+	string_type, ANNA_MID_STRING_PAYLOAD,  L"!stringPayload",
+	0, sizeof(anna_string_t));
     
     anna_type_t *i_argv[] = 
 	{
@@ -836,7 +823,19 @@ void anna_string_type_create(anna_stack_template_t *stack)
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
+    wchar_t *format_list_argn[] =
+	{
+	    L"this", L"list"
+	}
+    ;
     
+    anna_type_t *format_list_argv[] = 
+	{
+	    string_type,
+	    list_type
+	}
+    ;    
+
     anna_native_method_create(
 	string_type,
 	ANNA_MID_TO_STRING,

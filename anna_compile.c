@@ -22,7 +22,6 @@
 #include "anna_type.h"
 #include "anna_alloc.h"
 
-
 #define ANNA_COMPILE_SIZE 1
 
 static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node);
@@ -42,8 +41,14 @@ static anna_object_t *anna_static_invoke_as_access(
 static int anna_short_circut_instr_int_int(int mid)
 {
     
-    if(mid >= ANNA_MID_ADD_INT && mid <= ANNA_MID_DECREASE_ASSIGN_INT)
+    if((mid >= ANNA_MID_ADD_INT) && (mid <= ANNA_MID_BITXOR_INT))
 	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD_INT;
+
+    if((mid >= ANNA_MID_EQ) && (mid <= ANNA_MID_GT))
+    {
+//	wprintf(L"LALALALA %d => %d\n", mid, ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ);
+	return ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ;
+    }
     
     return 0;
 }
@@ -854,8 +859,6 @@ static anna_vmstack_t *anna_vm_callback(
     }
     return stack;
 }
-
-
 
 void anna_vm_callback_reset(
     anna_vmstack_t *stack, 

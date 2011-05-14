@@ -40,7 +40,7 @@ static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
     anna_vmstack_drop(stack, 3);
-    if(unlikely(((anna_object_t *)param[1])->type == null_type))
+    if(unlikely( ANNA_VM_NULL(param[1])))
     {
         anna_vmstack_push_object(stack, null_object);
         return stack;
@@ -69,7 +69,13 @@ static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"%f", anna_as_float(param[0]));
-    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    wchar_t *buff = sb_content(&sb);
+    wchar_t *comma = wcschr(buff, ',');
+    if(comma)
+    {
+	*comma = '.';
+    }
+    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), buff));
     return stack;
 }
 

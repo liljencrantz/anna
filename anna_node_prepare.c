@@ -503,6 +503,7 @@ static void anna_node_calculate_type_internal(
 		{
 		    anna_error(d->type, L"Invalid type for declaration");
 		    d->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
+		    CRASH;
 		}
 		break;
 	    }

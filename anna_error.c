@@ -16,11 +16,19 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
 {
     
     va_list va;
-    va_start( va, msg );	
-    fwprintf(stderr,L"Error in %ls, on line %d:\n", 
-	     node->location.filename?node->location.filename:L"<internal>",
-	     node->location.first_line);
-    anna_node_print_code(node);
+    va_start( va, msg );
+    if(node)
+    {
+	fwprintf(stderr,L"Error in %ls, on line %d:\n", 
+		 node->location.filename?node->location.filename:L"<internal>",
+		 node->location.first_line);
+	anna_node_print_code(node);
+    }
+    else
+    {
+	fwprintf(stderr,L"Error in unknown location\n");
+    }
+    
     fwprintf(stderr,L"\n");
     
     vfwprintf(stderr, msg, va);

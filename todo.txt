@@ -6,14 +6,20 @@ When no method alias matches a call, output a clearer and more helpful error mes
 What should be the return value for iterator methods like map and filter when given a null value as a function body?
 An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that this object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
 Make api more consistent. Replace length and size in function names with count. Make naming of wrapper types consistent. Make naming of native type methods consistent.
-If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code?
-There are currently no users of the ANNA_NODE_TYPE_LOOKUP AST node type. Will we be using it in the future or can it be safely removed?
-Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge nmbers of switch statements. One possibility would be to add function pointers to the node types.
+If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code?There are currently no users of the ANNA_NODE_TYPE_LOOKUP AST node type. Will we be using it in the future or can it be safely removed?
+Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge numbers of switch statements. One possibility would be to add function pointers to the node types.
 Static math expression support, e.g. 4*3
 Common constants, e.g. pi, e, etc.
-Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit.
-Hash: Don't create a dummy of next entry i completely empty
-Hash: If search fails, return first dummy node (if it exists) instead of first empty node. 
+Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit, and we'd have to use the GC for a bunch of extra stuff, like list payloads
+Should we switch to using ? for null value?
+Should we switch to using «foo := 3» as the variable declaration syntax? Declaring with a null initial value then becomes «foo := ? as Int» which is pretty comparable in verbosity to «var Int foo». Downside: this looks nothing like the syntax for declaring function input arguments.
+Should print work like python print, e.g. autoinsert newlines and spaces?
+Instead of a static using flag in the GC, the value shouls switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
+Make Char and Float fast as HashMap keys
+Add bytecodes for comparisons
+Check method aliases even when exact name match found, use to find quicker version of comparison functions
+Implicit specialization should use intersection of all relevant arguments, not just the first one
+More builtin integer ops, e.g. mod, and Float comparisons
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
@@ -22,9 +28,8 @@ Numeric locale hard coded to C
 Return type calculations don't take into account return expressions other than the last expression.
 Implicit specialization doesn't work on user defined types
 Multiple inheritance clashes aren't handled correctly
-Type definition order seems to matter sometimes. Need to investigate.
 implicit this is not handled
-Handle open ranges in list/string set/get methods
+Comparing e.g. float to int crashes
 
 LANGUAGE FEATURES:
 Function templates
@@ -51,6 +56,9 @@ time module
 List.milter 
 Range.milter
 Hash.milter
+List.reduce
+Range.reduce
+List.sort
 List and Hash should be made fail fast
 
 RELIABILITY:

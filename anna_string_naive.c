@@ -13,7 +13,7 @@
 
 #ifndef ANNA_STRING_CHUNKED_ENABLED
 
-void asi_ensure_capacity(anna_string_t *string, size_t size)
+static void asi_ensure_capacity(anna_string_t *string, size_t size)
 {
     if(string->capacity < size)
     {	
@@ -69,7 +69,7 @@ void asi_set_char(anna_string_t *dest, size_t offset, wchar_t ch)
     if(offset >= dest->count)
     {
 	asi_ensure_capacity(dest, offset+1);
-	memset(&dest->str[dest->count], 0, sizeof(wchar_t)* (offset - dest->count-1));
+	memset(&dest->str[dest->count], 0, sizeof(wchar_t)* (offset - dest->count));
 	dest->count = offset+1;
     }
     
@@ -135,7 +135,10 @@ void asi_print_debug(anna_string_t *string)
 
 wchar_t *asi_cstring(anna_string_t *str)
 {
-    CRASH;
+    wchar_t *res = malloc(sizeof(wchar_t)*(str->count+1));
+    memcpy(res, str->str, sizeof(wchar_t)*(str->count));
+    res[str->count] = 0;
+    return res;
 }
 
 /**

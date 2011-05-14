@@ -77,42 +77,42 @@ void anna_range_set_open(anna_object_t *obj, int v)
 static anna_vmstack_t *anna_range_get_from_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
-    anna_vmstack_push_object(stack, anna_int_create(anna_range_get_from(r)));
+    anna_vmstack_pop_entry(stack);
+    anna_vmstack_push_entry(stack, anna_from_int(anna_range_get_from(r)));
     return stack;
 }
 
 static anna_vmstack_t *anna_range_get_to_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
-    anna_vmstack_push_object(stack, anna_range_get_open(r)?null_object:anna_int_create(anna_range_get_to(r)));
+    anna_vmstack_pop_entry(stack);
+    anna_vmstack_push_entry(stack, anna_range_get_open(r)?anna_from_obj(null_object):anna_from_int(anna_range_get_to(r)));
     return stack;
 }
 
 static anna_vmstack_t *anna_range_get_step_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
-    anna_vmstack_push_object(stack, anna_int_create(anna_range_get_step(r)));
+    anna_vmstack_pop_entry(stack);
+    anna_vmstack_push_entry(stack, anna_from_int(anna_range_get_step(r)));
     return stack;
 }
 
 static anna_vmstack_t *anna_range_get_first_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
-    anna_vmstack_push_object(
+    anna_vmstack_pop_entry(stack);
+    anna_vmstack_push_entry(
 	stack, 
-	anna_range_is_valid(r)?anna_int_create(
-	    anna_range_get_from(r)):null_object);
+	anna_range_is_valid(r)?anna_from_int(
+	    anna_range_get_from(r)):anna_from_obj(null_object));
     return stack;
 }
 
 static anna_vmstack_t *anna_range_get_last_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     if(!anna_range_is_valid(r) || anna_range_get_open(r))
     {
@@ -122,7 +122,7 @@ static anna_vmstack_t *anna_range_get_last_i(anna_vmstack_t *stack, anna_object_
     {
 	ssize_t from = anna_range_get_from(r);
 	ssize_t step = anna_range_get_step(r);
-	anna_vmstack_push_object(stack, anna_int_create(from + step*(anna_range_get_count(r)-1)));
+	anna_vmstack_push_entry(stack, anna_from_int(from + step*(anna_range_get_count(r)-1)));
     }    
     return stack;
 }
@@ -131,8 +131,8 @@ static anna_vmstack_t *anna_range_get_last_i(anna_vmstack_t *stack, anna_object_
 static anna_vmstack_t *anna_range_get_open_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
-    anna_vmstack_push_object(stack, anna_int_create(anna_range_get_open(r)));
+    anna_vmstack_pop_entry(stack);
+    anna_vmstack_push_entry(stack, anna_from_int(anna_range_get_open(r)));
     return stack;
 }
 
@@ -204,7 +204,7 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
 {  
     anna_entry_t **param = stack->top - 2;
     anna_object_t *range = anna_as_obj_fast(param[0]);
-    anna_object_t *obj = null_object;
+    anna_entry_t *obj = anna_from_obj(null_object);
     ssize_t from = anna_range_get_from(range);
     ssize_t step = anna_range_get_step(range);
     ssize_t idx = anna_as_int(param[1]);
@@ -213,18 +213,18 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
     {
 	if(idx >= 0)
 	{
-	    obj = anna_int_create(from + step*idx);
+	    obj = anna_from_int(from + step*idx);
 	}
     }
     else
     {
 	idx = anna_list_calc_offset(idx, anna_range_get_count(range));
 	if(likely(idx >= 0)){
-	    obj = anna_int_create(from + step*idx);
+	    obj = anna_from_int(from + step*idx);
 	}
     }
     anna_vmstack_drop(stack, 3);
-    anna_vmstack_push_object(stack, obj);
+    anna_vmstack_push_entry(stack, obj);
     return stack;    
 }
 
@@ -285,7 +285,7 @@ static anna_vmstack_t *anna_range_get_count_i(anna_vmstack_t *stack, anna_object
 static anna_vmstack_t *anna_range_each_callback_closed(anna_vmstack_t *stack, anna_object_t *me)
 {    
     // Discard the output of the previous method call
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 4;
     // Unwrap and name the params to make things more explicit
@@ -325,7 +325,7 @@ static anna_vmstack_t *anna_range_each_callback_closed(anna_vmstack_t *stack, an
 static anna_vmstack_t *anna_range_each_callback_open(anna_vmstack_t *stack, anna_object_t *me)
 {    
     // Discard the output of the previous method call
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 4;
     // Unwrap and name the params to make things more explicit
@@ -356,7 +356,7 @@ static anna_vmstack_t *anna_range_each(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     ssize_t from = anna_range_get_from(range);
     ssize_t to = anna_range_get_to(range);
@@ -444,7 +444,7 @@ static anna_vmstack_t *anna_range_filter(anna_vmstack_t *stack, anna_object_t *m
     anna_object_t *res = anna_list_create(int_type);
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     size_t sz = anna_range_get_count(range);
     int open = anna_range_get_open(range);
@@ -522,7 +522,7 @@ static anna_vmstack_t *anna_range_find(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     size_t sz = anna_range_get_count(range);
     int open = anna_range_get_open(range);
@@ -597,7 +597,7 @@ static anna_vmstack_t *anna_range_map(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     if(body == null_object)
     {
 	anna_vmstack_push_object(stack, null_object);

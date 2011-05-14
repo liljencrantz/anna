@@ -454,6 +454,39 @@ size_t anna_native_property_create(
 	getter_offset, setter_offset);
 }
 
+mid_t anna_member_create_method(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    anna_function_t *method)
+{
+    if(hash_get(&type->name_identifier, name))
+    {
+	mid = anna_mid_get(name);
+    }
+    else
+    {
+	mid = 
+	    anna_member_create(
+		type,
+		mid,
+		name,
+		1,
+		anna_function_wrap(method)->type);
+    }
+    
+    anna_member_t *m = type->mid_identifier[mid];
+    //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    m->is_method=1;
+    type->static_member[m->offset] = 
+	anna_from_obj(
+	    anna_function_wrap(
+		method));
+    //wprintf(L"INSERTELISERT!!!!\n");
+    
+    return mid;
+}
+
 /*
 mid_t anna_const_property_create(
     anna_type_t *type, mid_t mid, wchar_t *name, anna_object_t *value)

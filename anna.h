@@ -96,6 +96,11 @@ typedef ssize_t mid_t;
 #define ANNA_TYPE_COMPILED 4096
 #define ANNA_TYPE_SPECIALIZED 8192
 
+#define ANNA_OBJECT_LIST 512
+
+#define ANNA_VMSTACK_STATIC 512
+
+
 /*
 #define ANNA_FUNCTION_STANDALONE 4
 */
@@ -130,7 +135,14 @@ enum anna_mid_enum
     ANNA_MID_TO,
     ANNA_MID_STEP,
     ANNA_MID_FLOAT_PAYLOAD,
+
     ANNA_MID_EQ,
+    ANNA_MID_NEQ,
+    ANNA_MID_LT,
+    ANNA_MID_LTE,
+    ANNA_MID_GTE,
+    ANNA_MID_GT,
+
     ANNA_MID_RANGE_FROM,
     ANNA_MID_RANGE_TO,
     ANNA_MID_RANGE_STEP,
@@ -158,6 +170,9 @@ enum anna_mid_enum
     ANNA_MID_DIV_INT,
     ANNA_MID_INCREASE_ASSIGN_INT,
     ANNA_MID_DECREASE_ASSIGN_INT,
+    ANNA_MID_BITAND_INT,
+    ANNA_MID_BITOR_INT,
+    ANNA_MID_BITXOR_INT,
 
     ANNA_MID_ADD_FLOAT,
     ANNA_MID_SUB_FLOAT,
@@ -531,6 +546,20 @@ anna_object_t *anna_function_invoke(
 
 
 
+void anna_mid_init(void);
+void anna_mid_destroy(void);
+
+/**
+   Returns the mid (i.e. the offset in the type vtable) of the
+   specified name. If there is no mid yet, create one.
+ */
+size_t anna_mid_get(wchar_t *name);
+wchar_t *anna_mid_get_reverse(mid_t mid);
+void anna_mid_put(wchar_t *name, mid_t mid);
+size_t anna_mid_max_get(void);
+anna_member_t **anna_mid_identifier_create(void);
+size_t anna_mid_get_count(void);
+
 
 
 /**
@@ -553,7 +582,7 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
 {
     
     anna_member_t *m = obj->type->mid_identifier[mid];
-    //wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
+//    wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
     
     if(unlikely(!m)) 
     {
@@ -632,20 +661,6 @@ anna_object_t *anna_object_create_raw(
 
 void anna_object_print(
     anna_object_t *obj);
-
-void anna_mid_init(void);
-void anna_mid_destroy(void);
-
-/**
-   Returns the mid (i.e. the offset in the type vtable) of the
-   specified name. If there is no mid yet, create one.
- */
-size_t anna_mid_get(wchar_t *name);
-wchar_t *anna_mid_get_reverse(mid_t mid);
-void anna_mid_put(wchar_t *name, mid_t mid);
-size_t anna_mid_max_get(void);
-anna_member_t **anna_mid_identifier_create(void);
-size_t anna_mid_get_count(void);
 
 
 

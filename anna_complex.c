@@ -58,8 +58,21 @@ static anna_vmstack_t *anna_complex_to_string(anna_vmstack_t *stack, anna_object
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"%f + i%f", creal(val), cimag(val));
+
+    wchar_t *buff = sb_content(&sb);
+    wchar_t *comma = wcschr(buff, ',');
+    if(comma)
+    {
+	*comma = '.';
+	comma = wcschr(comma+1, ',');
+	if(comma)
+	{
+	    *comma = '.';
+	}
+    }
+
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), buff));
     return stack;
 }
 

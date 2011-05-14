@@ -16,7 +16,7 @@ static inline anna_entry_t *anna_node_string_literal_wrapper_i_init_i(anna_entry
 	(anna_node_t *)anna_node_create_string_literal(
 	    &source->location,
 	    anna_string_get_count(anna_as_obj(param[2])),
-	    anna_string_payload(anna_as_obj(param[2])));
+	    anna_intern_or_free(anna_string_payload(anna_as_obj(param[2]))));
     return param[0];
 }
 ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_init, 3)

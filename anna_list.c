@@ -24,13 +24,13 @@
 
 static hash_table_t anna_list_specialization;
 
-
 anna_object_t *anna_list_create(anna_type_t *spec)
 {
     anna_object_t *obj= anna_object_create(anna_list_type_get(spec));
     (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
+    obj->flags |= ANNA_OBJECT_LIST;
     return obj;
 }
 
@@ -40,6 +40,7 @@ anna_object_t *anna_list_create2(anna_type_t *list_type)
     (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
+    obj->flags |= ANNA_OBJECT_LIST;
     return obj;
 }
 
@@ -51,29 +52,17 @@ static anna_type_t *anna_list_get_specialization(anna_object_t *obj)
 		 ANNA_MID_LIST_SPECIALIZATION));    
 }
 
-ssize_t anna_list_calc_offset(ssize_t offset, size_t size)
-{
-    if(offset < 0) {
-	if((-offset) > size)
-	    return -1;
-	
-	return size+offset;
-    }
-    return offset;
-}
-
 void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value)
 {
     size_t size = anna_list_get_size(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
 //    wprintf(L"Set el %d in list of %d elements\n", pos, size);
-    if(pos < 0)
+    if(unlikely(pos < 0))
     {
 	return;
     }
-    if(pos >= size)
+    if(unlikely(pos >= size))
     {
-//	wprintf(L"Set new size\n");
 	anna_list_set_size(this, pos+1);      
     }
     
@@ -83,13 +72,25 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value
 
 anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset)
 {
+    if(likely(this->type->mid_identifier[ANNA_MID_LIST_PAYLOAD]->offset == 0))
+    {
+	size_t size = (ssize_t)this->member[1];
+	ssize_t pos = anna_list_calc_offset(offset, size);
+	anna_entry_t **ptr = (anna_entry_t **)this->member[0];
+	if(pos >=size || pos < 0)
+	{
+	    return anna_from_obj(null_object);
+	}
+	return ptr[pos];
+    }
+    
     size_t size = anna_list_get_size(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
+    anna_entry_t **ptr = anna_list_get_payload(this);
     if(pos < 0||pos >=size)
     {
 	return anna_from_obj(null_object);
     }
-    anna_entry_t **ptr = anna_list_get_payload(this);
     return ptr[pos];
 }
 
@@ -101,7 +102,6 @@ void anna_list_add(struct anna_object *this, anna_entry_t *value)
 
 size_t anna_list_get_size(anna_object_t *this)
 {
-    assert(this);
     return *(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE);
 }
 
@@ -147,7 +147,6 @@ anna_entry_t **anna_list_get_payload(anna_object_t *this)
 {
     return *(anna_entry_t ***)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD);
 }
-
 
 static inline anna_entry_t *anna_list_set_int_i(anna_entry_t **param)
 {
@@ -222,7 +221,7 @@ ANNA_VM_NATIVE(anna_list_append, 2)
 static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     // Discard the output of the previous method call
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 3;
     // Unwrap and name the params to make things more explicit
@@ -261,7 +260,7 @@ static anna_vmstack_t *anna_list_each(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     size_t sz = anna_list_get_size(list);
 
     if(sz > 0)
@@ -297,7 +296,7 @@ static anna_vmstack_t *anna_list_each(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_list_map_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
-    anna_object_t *value = anna_vmstack_pop_object(stack);
+    anna_entry_t *value = anna_vmstack_pop_entry(stack);
 
     anna_entry_t **param = stack->top - 4;
     anna_object_t *list = anna_as_obj_fast(param[0]);
@@ -306,7 +305,7 @@ static anna_vmstack_t *anna_list_map_callback(anna_vmstack_t *stack, anna_object
     anna_object_t *res = anna_as_obj_fast(param[3]);
     size_t sz = anna_list_get_size(list);
 
-    anna_list_set(res, idx-1, anna_from_obj(value));
+    anna_list_set(res, idx-1, value);
 
     if(sz > idx)
     {
@@ -332,7 +331,7 @@ static anna_vmstack_t *anna_list_map(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     if(body == null_object)
     {
 	anna_vmstack_push_object(stack, null_object);
@@ -379,7 +378,7 @@ static anna_vmstack_t *anna_list_map(anna_vmstack_t *stack, anna_object_t *me)
 
 static anna_vmstack_t *anna_list_filter_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
-    anna_object_t *value = anna_vmstack_pop_object(stack);
+    anna_entry_t *value = anna_vmstack_pop_entry(stack);
 
     anna_entry_t **param = stack->top - 4;
     anna_object_t *list = anna_as_obj_fast(	param[0]);
@@ -388,7 +387,7 @@ static anna_vmstack_t *anna_list_filter_callback(anna_vmstack_t *stack, anna_obj
     anna_object_t *res = anna_as_obj_fast(param[3]);
     size_t sz = anna_list_get_size(list);
 
-    if(value != null_object)
+    if(!ANNA_VM_NULL(value))
     {
 	anna_list_add(res, anna_list_get(list, idx-1));
     }
@@ -418,7 +417,7 @@ static anna_vmstack_t *anna_list_filter(anna_vmstack_t *stack, anna_object_t *me
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_object_t *res = anna_list_create(anna_list_get_specialization(list));
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     size_t sz = anna_list_get_size(list);
     
@@ -493,7 +492,7 @@ static anna_vmstack_t *anna_list_find(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     size_t sz = anna_list_get_size(list);
     
@@ -567,8 +566,8 @@ static anna_vmstack_t *anna_list_to_string_callback(anna_vmstack_t *stack, anna_
 static anna_vmstack_t *anna_list_to_string(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
-
+    anna_vmstack_pop_entry(stack);
+    
     size_t sz = anna_list_get_size(list);
     
     if(sz > 0)
@@ -601,15 +600,19 @@ static anna_vmstack_t *anna_list_to_string(anna_vmstack_t *stack, anna_object_t 
 
 static inline anna_entry_t *anna_list_init_i(anna_entry_t **param)
 {
-    (*anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))=0;
-    (*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)) = 0;
-
-    size_t sz = anna_list_get_size(anna_as_obj_fast(param[1]));
-    anna_entry_t **src = anna_list_get_payload(anna_as_obj_fast(param[1]));
-
-    anna_list_set_size(anna_as_obj_fast(param[0]), sz);
-    anna_entry_t **dest = anna_list_get_payload(anna_as_obj_fast(param[0]));
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_object_t *that = anna_as_obj_fast(param[1]);
+    (*anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE)) = 0;
+    
+    this->flags |= ANNA_OBJECT_LIST;
+    
+    size_t sz = anna_list_get_size(that);
+    anna_entry_t **src = anna_list_get_payload(that);
+    
+    anna_list_set_size(this, sz);
+    anna_entry_t **dest = anna_list_get_payload(this);
     memcpy(dest, src, sizeof(anna_object_t *)*sz);
     
     return param[0];
@@ -689,7 +692,7 @@ static anna_vmstack_t *anna_list_in(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *value = anna_vmstack_pop_object(stack);
     anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_entry(stack);
     
     size_t sz = anna_list_get_size(list);
     
@@ -1031,11 +1034,6 @@ static void anna_list_type_create_internal(
 	spec,
 	2, e_argv, e_argn);  
 
-    /*
-      FIXME: It would be nice if map returned something other than
-      List<Object>. I guess map needs to be a template function or
-      something.
-    */
     anna_native_method_create(
 	type, -1, L"__map__", 
 	0, &anna_list_map, 

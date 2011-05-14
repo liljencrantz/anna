@@ -75,6 +75,11 @@ void anna_mid_init()
     anna_mid_put(L"to", ANNA_MID_TO);
     anna_mid_put(L"step", ANNA_MID_STEP);
     anna_mid_put(L"__eq__", ANNA_MID_EQ);
+    anna_mid_put(L"__neq__", ANNA_MID_NEQ);
+    anna_mid_put(L"__gt__", ANNA_MID_GT);
+    anna_mid_put(L"__lt__", ANNA_MID_LT);
+    anna_mid_put(L"__gte__", ANNA_MID_GTE);
+    anna_mid_put(L"__lte__", ANNA_MID_LTE);
     anna_mid_put(L"!rangeFrom", ANNA_MID_RANGE_FROM);
     anna_mid_put(L"!rangeTo", ANNA_MID_RANGE_TO);
     anna_mid_put(L"!rangeStep", ANNA_MID_RANGE_STEP);
@@ -101,6 +106,10 @@ void anna_mid_init()
     anna_mid_put(L"__div__Int__", ANNA_MID_DIV_INT);
     anna_mid_put(L"__increaseAssign__Int__", ANNA_MID_INCREASE_ASSIGN_INT);
     anna_mid_put(L"__decreaseAssign__Int__", ANNA_MID_DECREASE_ASSIGN_INT);
+    anna_mid_put(L"__bitand__Int__", ANNA_MID_BITAND_INT);
+    anna_mid_put(L"__bitor__Int__", ANNA_MID_BITOR_INT);
+    anna_mid_put(L"__bitxor__Int__", ANNA_MID_BITXOR_INT);
+
     anna_mid_put(L"__add__Float__", ANNA_MID_ADD_FLOAT);
     anna_mid_put(L"__sub__Float__", ANNA_MID_SUB_FLOAT);
     anna_mid_put(L"__mul__Float__", ANNA_MID_MUL_FLOAT);

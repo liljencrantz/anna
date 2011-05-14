@@ -6,12 +6,14 @@
 
 double anna_float_get(anna_object_t *this);
 wchar_t anna_char_get(anna_object_t *this);
-int anna_int_get(anna_object_t *this);
+long anna_int_get(anna_object_t *this);
 complex double anna_complex_get(anna_object_t *this);
-anna_object_t *anna_int_create(int val);
+anna_object_t *anna_int_create(long val);
 anna_object_t *anna_float_create(double val);
 anna_object_t *anna_char_create(wchar_t val);
+anna_entry_t *anna_int_entry(anna_object_t *this);
 
+#define ANNA_INT_FAST_MAX 0x1fffffff
 #define ANNA_VM_NULL(par) (unlikely(((anna_object_t *)par) == null_object))
 #define ANNA_VM_NULLCHECK(par) if(ANNA_VM_NULL(par)) return anna_from_obj(null_object);
 
@@ -105,9 +107,8 @@ static inline int anna_is_int(anna_entry_t *val)
     return type == ANNA_STACK_ENTRY_INT;
 }
 
-static inline anna_entry_t *anna_from_int(int val)
+static inline anna_entry_t *anna_from_int(long res)
 {
-    long res = (long)val;
     res <<= 2;
     res |= ANNA_STACK_ENTRY_INT;
     return (anna_entry_t *)res;
@@ -173,7 +174,7 @@ static inline anna_object_t *anna_as_obj(anna_entry_t *entry)
     {
 	long res = (long)entry;
 	res >>= 2;
-	return anna_int_create((int)res);
+	return anna_int_create(res);
     }
   LAB_ENTRY_BLOB:
     CRASH;
@@ -185,7 +186,7 @@ static inline anna_object_t *anna_as_obj_fast(anna_entry_t *entry)
 }
 
 
-static inline int anna_as_int(anna_entry_t *entry)
+static inline long anna_as_int(anna_entry_t *entry)
 {
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
@@ -195,7 +196,7 @@ static inline int anna_as_int(anna_entry_t *entry)
 	{
 	    long res = (long)entry;
 	    res >>= 2;
-	    return (int)res;
+	    return res;
 	}
 	wprintf(L"Invalid vmstack entry\n");
 	CRASH;
@@ -257,7 +258,7 @@ static inline anna_entry_t *anna_as_native(anna_object_t *obj)
     anna_entry_t *e = anna_from_obj(obj);
     if(obj->type == int_type)
     {
-	return anna_from_int(anna_as_int(e));
+	return anna_int_entry(obj);
     }
     else if(obj->type == float_type)
     {
@@ -330,7 +331,7 @@ static inline anna_object_t *anna_vmstack_pop_object(anna_vmstack_t *stack)
     return anna_as_obj(*(stack->top));
 }
 
-static inline int anna_vmstack_pop_int(anna_vmstack_t *stack)
+static inline long anna_vmstack_pop_int(anna_vmstack_t *stack)
 {
     return anna_as_int(*(--stack->top));
 }

@@ -23,6 +23,11 @@
 #include "anna_type.h"
 #include "anna_alloc.h"
 
+char *anna_vmstack_static_ptr;
+char anna_vmstack_static_data[18192];
+
+static void anna_vmstack_print(anna_vmstack_t *stack);
+
 
 static inline anna_object_t *anna_vm_trampoline(
     anna_function_t *fun,
@@ -43,27 +48,109 @@ static inline anna_object_t *anna_vm_trampoline(
     return res;
 }
 
+static int stack_idx(anna_vmstack_t *stack)
+{
+    return stack ? 1 + stack_idx(stack->caller): 0;
+}
+
+
+static int stack_sum(anna_vmstack_t *stack)
+{
+    
+    int res = 0xdeadbeef;
+    char *chr = (char *)&stack->base[0];
+    char *end = (char *)stack->top;
+    
+    for(; chr < end; chr++)
+    {
+	res = res ^ (res << 5) ^ *chr;
+    }
+    return res;
+}
+
+static void stack_describe(anna_vmstack_t *stack)
+{
+    if(stack)
+    {
+	wprintf(
+	    L"Frame %d:\tParent: %d\tDynamic: %ls\tSize: %d\tUsed: %d \tAddress: %d\tChecksum: %d\tFunction: %ls\n",
+	    stack_idx(stack),
+	    stack_idx(stack->parent), 
+	    (stack->flags & ANNA_VMSTACK_STATIC)?L"no":L"yes",
+	    stack->function?stack->function->frame_size:-1,
+	    (char *)stack->top - (char *)&stack->base[0],
+	    stack,
+	    stack_sum(stack),
+	    stack->function?stack->function->name:L"<null>");
+	
+	//anna_vmstack_print(stack);
+	stack_describe(stack->caller);
+    }
+}
+
+anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
+{
+    anna_vmstack_t *ptr = stack;
+    anna_vmstack_t *first_copy = 0;
+    anna_vmstack_t *prev = 0;
+    
+    if(!(ptr->flags & ANNA_VMSTACK_STATIC))
+    {
+	return ptr;
+    }
+/*    
+    wprintf(L"BEFORE:\n");
+    stack_describe(stack);
+*/  
+    while(ptr && (ptr->flags & ANNA_VMSTACK_STATIC))
+    {
+	anna_vmstack_t *copy = anna_alloc_vmstack(ptr->function->frame_size);
+	if(!first_copy)
+	    first_copy = copy;
+	if(prev)
+	{
+	    prev->caller = copy;
+	}
+	
+	anna_frame_return(ptr);
+	memcpy(copy, ptr, (char *)ptr->top - (char *)ptr);
+	ptr->code = (char *)copy;
+	copy->top = &copy->base[ptr->top - &ptr->base[0]];
+	
+	prev = copy;
+	ptr = ptr->caller;	
+    }
+    
+    ptr = first_copy;
+    while(ptr && ptr->flags & ANNA_VMSTACK_STATIC)
+    {
+	ptr->flags = ptr->flags & ~ANNA_VMSTACK_STATIC;
+	if(ptr->parent && ptr->parent->flags & ANNA_VMSTACK_STATIC)
+	{
+	    ptr->parent = (anna_vmstack_t *)ptr->parent->code;
+	}
+	ptr = ptr->caller;
+    }
+    /*  
+    wprintf(L"\nAFTER:\n");
+    stack_describe(first_copy);
+    */
+    return first_copy;    
+}
+
+
 static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_entry_t **p = &stack->base[0];
-    wprintf(L"Stack content:\n");
+    wprintf(L"\tFrame content:\n");
     while(p!=stack->top)
     {
 	if(!*p){
-	    wprintf(L"Error: Null slot\n");
-	    
+	    wprintf(L"\tError: Null slot\n");	    
 	}
 	else
 	{
-	    anna_function_t *fun = anna_function_unwrap(anna_as_obj(*p));
-	    if(fun)
-	    {
-		wprintf(L"Function: %ls\n", fun->name);
-	    }
-	    else
-	    {
-		wprintf(L"%ls\n", anna_as_obj(*p)->type->name);
-	    }
+	    wprintf(L"\t%ls\n", anna_as_obj(*p)->type->name);
 	}
 	
 	p++;
@@ -85,6 +172,8 @@ static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 
 void anna_vm_init()
 {
+    anna_vmstack_static_ptr = &anna_vmstack_static_data[0];
+    
 }
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN
@@ -124,12 +213,24 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_CAST,
 	    &&ANNA_LAB_NATIVE_CALL,
 	    &&ANNA_LAB_RETURN_COUNT,
+
 	    &&ANNA_LAB_ADD_INT,
 	    &&ANNA_LAB_SUB_INT,
 	    &&ANNA_LAB_MUL_INT,
 	    &&ANNA_LAB_DIV_INT,
 	    &&ANNA_LAB_INCREASE_ASSIGN_INT,
 	    &&ANNA_LAB_DECREASE_ASSIGN_INT,
+	    &&ANNA_LAB_BITAND_INT,
+	    &&ANNA_LAB_BITOR_INT,
+	    &&ANNA_LAB_BITXOR_INT,
+
+	    &&ANNA_LAB_EQ_INT,
+	    &&ANNA_LAB_NEQ_INT,
+	    &&ANNA_LAB_LT_INT,
+	    &&ANNA_LAB_LTE_INT,
+	    &&ANNA_LAB_GTE_INT,
+	    &&ANNA_LAB_GT_INT,
+
 	    &&ANNA_LAB_ADD_FLOAT,
 	    &&ANNA_LAB_SUB_FLOAT,
 	    &&ANNA_LAB_MUL_FLOAT,
@@ -262,6 +363,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_RETURN:
     {
 	anna_entry_t *val = anna_vmstack_peek_entry(stack, 0);
+	anna_frame_return(stack);
+	
 	stack = stack->caller;
 	anna_vmstack_push_entry(stack, val);
 //		wprintf(L"Pop frame\n");
@@ -276,8 +379,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		
 	for(i=0; i<cb->param; i++)
 	{
+	    anna_frame_return(stack);
 	    stack = stack->parent;
 	}
+	anna_frame_return(stack);
 	stack = stack->caller;
 	anna_vmstack_push_entry(stack, val);
 	goto *jump_label[(int)*stack->code];
@@ -297,6 +402,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 //		wprintf(L"Pop last frame\n");
 	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
 	free(stack->code);
+	anna_frame_return(stack);
 	stack = stack->caller;
 	return val;
     }
@@ -460,8 +566,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_MEMBER_GET_THIS:
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+//	wprintf(L"Get method member %d, %ls\n", op->mid, anna_mid_get_reverse(op->mid));
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
-//	wprintf(L"Get method member %d, %ls in type %ls\n", op->mid, anna_mid_get_reverse(op->mid), obj->type->name);
 #ifdef ANNA_CHECK_VM
 	if(!obj){
 	    debug(
@@ -547,6 +653,29 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_FOLD:
     {
 	anna_entry_t *val = anna_vmstack_pop_entry(stack);
+#ifdef ANNA_CHECK_VM
+	anna_object_t *lst = anna_vmstack_peek_object(stack, 0);
+	if(lst->type->mid_identifier[ANNA_MID_LIST_PAYLOAD] == 0)
+	{
+	    debug(
+		D_CRITICAL,
+		L"Tried to fold value into something that is not a list.\n");
+	    debug(
+		D_CRITICAL,
+		L"Non-list:\n");
+	    anna_object_print(lst);
+	    
+	    if(anna_is_obj(val))
+	    {
+		debug(
+		    D_CRITICAL,
+ 		    L"Value:\n");
+		anna_object_print(anna_as_obj(val));
+	    }
+	    
+	    CRASH;
+	}
+#endif	
 	anna_list_add(anna_vmstack_peek_object(stack, 0), val);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
@@ -596,8 +725,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
   ANNA_LAB_TRAMPOLENE:
     {
+	stack = anna_frame_to_heap(stack);
 	anna_object_t *base = anna_vmstack_pop_object_fast(stack);
 	anna_vmstack_push_object(stack, anna_vm_trampoline(anna_function_unwrap(base), stack));
+	
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
@@ -690,7 +821,7 @@ void anna_bc_print(char *code)
 
 	if(anna_instr_is_short_circut(instruction))
 	{
-	    wprintf(L"Short sircut arithmetic operator\n\n");
+	    wprintf(L"Short circut arithmetic operator %d\n\n", instruction);
 	}
 	else
 	{

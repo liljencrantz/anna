@@ -16,7 +16,7 @@ static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
     wchar_t *key = (wchar_t *)key_ptr;
     anna_member_t *member = (anna_member_t *)val_ptr;
     //anna_object_t *obj = (anna_object_t *)aux_ptr;
-    //anna_object_t *value = member->is_static?obj->type->static_member[member->offset]:obj->member[member->offset];    
+    //anna_object_t *value = member->is_static?obj->type->static_member[member->offset]:obj->member[member->offset];
     wprintf(
 	L"  mid %d, name %ls: Type, %ls. %ls.\n", 
 	anna_mid_get(key),
@@ -27,8 +27,6 @@ static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 
 void anna_object_print(anna_object_t *obj)
 {
-    CRASH;
-    
     wprintf(L"%ls:\n", obj->type->name);
     hash_foreach2(&obj->type->name_identifier, &anna_object_print_member, obj);
 }
@@ -45,6 +43,7 @@ anna_object_t *anna_object_create(anna_type_t *type) {
     {
 	result->member[i]=anna_from_obj(null_object);
     }
+//    wprintf(L"%ls\n", type->name);
     
     return result;
 }

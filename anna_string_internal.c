@@ -649,7 +649,7 @@ wchar_t asi_get_char(anna_string_t *dest, size_t offset)
 	    dest->cache_value.element++;
 	}
 	dest->cache_pos++;
-
+	
 	return dest->element[dest->cache_value.element]->payload[
 	    dest->cache_value.offset+dest->element_offset[dest->cache_value.element]
 	    ];

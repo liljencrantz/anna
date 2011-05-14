@@ -1,7 +1,7 @@
 
 def main()
 {
-    var digits=10000;
+    var digits=1000;
 
     var i = 0;
     var k = 0;

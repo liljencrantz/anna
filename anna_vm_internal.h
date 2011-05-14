@@ -131,14 +131,24 @@
 #define ANNA_INSTR_DIV_INT 29
 #define ANNA_INSTR_INCREASE_ASSIGN_INT 30
 #define ANNA_INSTR_DECREASE_ASSIGN_INT 31
+#define ANNA_INSTR_BITAND_INT 32
+#define ANNA_INSTR_BITOR_INT 33
+#define ANNA_INSTR_BITXOR_INT 34
 
-#define ANNA_INSTR_ADD_FLOAT 32
-#define ANNA_INSTR_SUB_FLOAT 33
-#define ANNA_INSTR_MUL_FLOAT 34
-#define ANNA_INSTR_DIV_FLOAT 35
-#define ANNA_INSTR_EXP_FLOAT 36
-#define ANNA_INSTR_INCREASE_ASSIGN_FLOAT 37
-#define ANNA_INSTR_DECREASE_ASSIGN_FLOAT 38
+#define ANNA_INSTR_EQ_INT 35
+#define ANNA_INSTR_NEQ_INT 36
+#define ANNA_INSTR_LT_INT 37
+#define ANNA_INSTR_LTE_INT 38
+#define ANNA_INSTR_GTE_INT 39
+#define ANNA_INSTR_GT_INT 40
+
+#define ANNA_INSTR_ADD_FLOAT 41
+#define ANNA_INSTR_SUB_FLOAT 42
+#define ANNA_INSTR_MUL_FLOAT 43
+#define ANNA_INSTR_DIV_FLOAT 44
+#define ANNA_INSTR_EXP_FLOAT 45
+#define ANNA_INSTR_INCREASE_ASSIGN_FLOAT 46
+#define ANNA_INSTR_DECREASE_ASSIGN_FLOAT 47
 
 typedef struct 
 {
@@ -199,11 +209,35 @@ typedef struct
 
 size_t anna_bc_op_size(char instruction);
 
+extern char *anna_vmstack_static_ptr;
+extern char anna_vmstack_static_data[18192];
+
+static inline anna_vmstack_t *anna_frame_get_static(size_t sz)
+{
+//    wprintf(L"+");
+    anna_vmstack_t *res = (anna_vmstack_t *)anna_vmstack_static_ptr;
+    anna_vmstack_static_ptr += sz; 
+    res->flags = ANNA_VMSTACK | ANNA_VMSTACK_STATIC;
+    return res;
+}
+
+static inline void anna_frame_return(anna_vmstack_t *stack)
+{
+    if(stack->flags & ANNA_VMSTACK_STATIC)
+    {
+//	wprintf(L"-");
+//	wprintf(L"\n%d\n", anna_vmstack_static_ptr - &anna_vmstack_static_data[0]);
+	anna_vmstack_static_ptr -= stack->function->frame_size;
+    }
+}
+
+anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack);
+
 static inline anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_object_t *wfun) {
     size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
     anna_vmstack_t *parent = *(anna_vmstack_t **)&wfun->member[stack_offset];
     anna_function_t *fun = anna_function_unwrap(wfun);
-    anna_vmstack_t *res = anna_alloc_vmstack(fun->frame_size);
+    anna_vmstack_t *res = anna_frame_get_static(fun->frame_size);//anna_alloc_vmstack(fun->frame_size);
     res->parent=parent;
     res->caller = caller;
     res->function = fun;

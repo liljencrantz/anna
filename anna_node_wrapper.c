@@ -17,9 +17,9 @@
 #include "anna_function.h"
 #include "anna_function_type.h"
 #include "anna_vm.h"
+#include "anna_intern.h"
 
 anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_int_literal_wrapper_type, *node_string_literal_wrapper_type;
-
 
 anna_type_t *node_call_wrapper_type;
 
@@ -78,12 +78,14 @@ static inline anna_entry_t *anna_node_wrapper_i_error_i(anna_entry_t **param)
     if(ANNA_VM_NULL(param[1]))
     {
 	msg = L"Unknown error";
+	anna_error(this, L"%ls", msg);
     }
     else
     {
 	msg = anna_string_payload(anna_as_obj(param[1]));
+	anna_error(this, L"%ls", msg);
+	free(msg);
     }
-    anna_error(this, L"%ls", msg);
     return param[0];
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)

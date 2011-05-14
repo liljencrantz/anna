@@ -194,13 +194,17 @@ anna_node_if_t *anna_node_create_if(
 }
 
 anna_node_int_literal_t *anna_node_create_int_literal(
-    anna_location_t *loc, int val)
+    anna_location_t *loc, mpz_t val)
 {
     anna_node_int_literal_t *result = 
 	anna_alloc_node(sizeof(anna_node_int_literal_t));
     result->node_type = ANNA_NODE_INT_LITERAL;
     anna_node_set_location((anna_node_t *)result,loc);
-    result->payload = val;
+    
+    mpz_init(result->payload);
+    mpz_set(result->payload, val);
+//    wprintf(L"Created int literal %s\n", mpz_get_str(0, 10, result->payload));
+    
     return result;
 }
 

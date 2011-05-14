@@ -15,6 +15,7 @@
 #include "anna_function.h"
 #include "anna_function_type.h"
 #include "anna_vm.h"
+#include "anna_vm_internal.h"
 #include "anna_member.h"
 
 anna_object_t *anna_wrap_method;
@@ -34,7 +35,15 @@ static int print_direct(anna_entry_t *o)
     {
 	if(anna_is_alloc(o))
 	{
-	    wprintf(L"%f", anna_as_float(o));
+	    wchar_t buff[32];
+	    
+	    swprintf(buff, 32, L"%f", anna_as_float(o));
+	    wchar_t *comma = wcschr(buff, ',');
+	    if(comma)
+	    {
+		*comma = '.';
+	    }
+	    wprintf(L"%ls", buff);
 	}
 	else if(anna_is_char(o))
 	{
@@ -162,6 +171,8 @@ static anna_vmstack_t *anna_i_callcc_callback(anna_vmstack_t *stack, anna_object
 
 static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
 {
+    stack = anna_frame_to_heap(stack);
+    
     anna_object_t *fun = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     anna_object_t *cont = anna_continuation_create(

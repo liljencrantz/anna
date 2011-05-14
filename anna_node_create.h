@@ -1,6 +1,7 @@
 #ifndef ANNA_NODE_CREATE_H
 #define ANNA_NODE_CREATE_H
 
+#include <gmp.h>
 #include <stdio.h>
 
 #include "anna.h"
@@ -35,7 +36,7 @@ anna_node_member_access_t *anna_node_create_member_set(
 
 anna_node_int_literal_t *anna_node_create_int_literal(
     anna_location_t *loc, 
-    int val);
+    mpz_t val);
 
 anna_node_float_literal_t *anna_node_create_float_literal(
     anna_location_t *loc,

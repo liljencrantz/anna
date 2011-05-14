@@ -56,7 +56,7 @@ typedef struct anna_string anna_string_t;
 
 #else
 
-#define ANNA_NAIVE_INTERNAL 16
+#define ANNA_NAIVE_INTERNAL 8
 
 struct anna_string
 {

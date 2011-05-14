@@ -60,6 +60,7 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
     
     anna_object_t *res = anna_node_static_invoke_try(
 	node, stack);
+    
     if(!res)
     {
 	return 0;
@@ -235,7 +236,7 @@ anna_object_t *anna_node_static_invoke_try(
 	}
 
 	case ANNA_NODE_INT_LITERAL:
-	    return anna_int_create(((anna_node_int_literal_t *)this)->payload);
+	    return anna_int_create_mp(((anna_node_int_literal_t *)this)->payload);
 	    
 	case ANNA_NODE_FLOAT_LITERAL:
 	    return anna_float_create(((anna_node_float_literal_t *)this)->payload);
@@ -272,6 +273,14 @@ anna_object_t *anna_node_static_invoke_try(
 //	    fwprintf(stderr, L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
 	    if(frame && (frame->flags & ANNA_STACK_NAMESPACE))
 	    {
+//		fwprintf(stderr, L"Frame is namespace. Readonly? %ls\n", (anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)?L"yes":L"no");
+
+		anna_node_declare_t *decl = anna_stack_get_declaration(frame, this2->name);
+		if(decl)
+		{
+		    anna_node_calculate_type((anna_node_t *)decl,frame);
+		}
+		
 		if(anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)
 		{
 //		    fwprintf(stderr, L"Identifier %ls is a constant\n", this2->name);

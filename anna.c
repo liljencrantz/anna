@@ -249,7 +249,6 @@ static void anna_init()
 int main(int argc, char **argv)
 {
     wsetlocale(LC_ALL, L"");
-    wsetlocale(LC_NUMERIC, L"C");
     
     if(argc != 2)
     {

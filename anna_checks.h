@@ -10,7 +10,7 @@
    If enabled, perform a bunch of validity checks in the VM while
    executing bytecode. Pretty expensive.
 */
-//#define ANNA_CHECK_VM
+#define ANNA_CHECK_VM
 
 /**
    If enabled, perform a few additional validity checks whild GC:ing
@@ -38,7 +38,7 @@
    strings, but slightly slower on simple operations and a head ache
    to debug because of its increased complexity.
 */
-#define ANNA_STRING_CHUNKED_ENABLED
+//#define ANNA_STRING_CHUNKED_ENABLED
 
 /**
    If enabled, anna will validate the internal concistency of string

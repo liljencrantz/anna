@@ -2,6 +2,7 @@
 #define ANNA_NODE_H
 
 #include <stdio.h>
+#include <gmp.h>
 
 #include "anna.h"
 #include "anna_stack.h"
@@ -230,7 +231,7 @@ struct anna_node_int_literal
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    
-    int payload;
+    mpz_t payload;
 };
 
 struct anna_node_dummy

@@ -61,6 +61,8 @@ static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
 
 static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)			    
 {
+    CHECK_NODE_TYPE(node->function, ANNA_NODE_CALL);
+    
     anna_node_t *n[]={0,0};
     anna_node_t *body;
     if(node->child_count < 2)
@@ -73,8 +75,11 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
 	anna_error((anna_node_t *)node,
 		   L"Invalid arguments for iteration");
     }
+    
+
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_BLOCK(node->child[node->child_count-1]);
+
     body = node->child[node->child_count-1];
     if(node->child_count == 2)
     {
@@ -90,7 +95,11 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
 	n[1] = anna_macro_iter_declare(node->child[1]);
     }
     
-    anna_node_call_t *attribute_list = anna_node_create_block2(&body->location);
+    anna_node_call_t *attribute_list = 
+	anna_node_create_block2(
+	    &body->location,
+	    anna_node_create_identifier(&body->location, L"block"));
+    
     anna_node_call_t *declaration_list = anna_node_create_block(&body->location, 2, n);
     
     node->child[0] = (anna_node_t *)anna_node_create_call2(

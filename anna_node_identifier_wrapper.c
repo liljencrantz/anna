@@ -13,7 +13,7 @@ static inline anna_entry_t *anna_node_identifier_wrapper_i_init_i(anna_entry_t *
     *(anna_node_identifier_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD)=
 	anna_node_create_identifier(
 	    &source->location,
-	    wcsdup(anna_string_payload(anna_as_obj(param[2]))));
+	    anna_intern_or_free(anna_string_payload(anna_as_obj(param[2]))));
     return param[0];
 }
 ANNA_VM_NATIVE(anna_node_identifier_wrapper_i_init, 3)

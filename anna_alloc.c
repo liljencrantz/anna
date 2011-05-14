@@ -345,22 +345,35 @@ void anna_alloc_mark_object(anna_object_t *obj)
     
     if(obj == null_object)
 	return;
-
+    
     size_t i;
     if(obj->type == string_type)
     {
 	return;
     }
 
-    if(obj->type->mid_identifier[ANNA_MID_LIST_PAYLOAD])
+//    if(obj->type->mid_identifier[ANNA_MID_LIST_PAYLOAD])
+    if(obj->flags & ANNA_OBJECT_LIST)
     {
 	/* This object is a list. Mark all list items */
 	size_t sz = anna_list_get_size(obj);
+	anna_entry_t **data = anna_list_get_payload(obj);
+//	wprintf(L"GC LIST OF TYPE %ls WITH %d ELEMENTS\n\n", obj->type->name, sz);
+	
+//	KRASHAR EFTERSOM VI FYLLT LISTAN MED NULL_OBJECT, MEN SIZE ÄR MEDLEM, SÅ FÅR NULL_OBJECT SOM STORLEK, OCH SÅ KOMMER GC OCH OJ OJ OJ !!!	
+	
 	for(i=0; i<sz; i++)
 	{
-	    anna_alloc_mark_entry(anna_list_get(obj, i));
+	    anna_alloc_mark_entry(data[i]);
 	}	
     }
+    else if(obj->type->mid_identifier[ANNA_MID_LIST_PAYLOAD])
+    {
+	size_t sz = anna_list_get_size(obj);
+//	wprintf(L"SKIP GC OF LIST OF TYPE %ls with %d elements!!!\n\n", obj->type->name, sz);
+	
+    }
+    
     if(obj->type->mid_identifier[ANNA_MID_HASH_PAYLOAD])
     {
 	anna_hash_mark(obj);
@@ -480,6 +493,7 @@ static void anna_alloc_free(void *obj)
 			&o);
 		}
 	    }
+	    
 	    anna_slab_free(obj, o->type->object_size);
 	    break;
 	}
@@ -620,13 +634,25 @@ void anna_gc(anna_vmstack_t *stack)
 
     anna_alloc_gc_block();
     size_t i;
+
+#ifdef ANNA_CHECK_GC_LEAKS
+    int s_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
+    for(i=0; i<al_get_count(&anna_alloc); i++)
+    {
+	void *obj = al_get_fast(&anna_alloc, i);
+	s_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
+    }
+    size_t start_count = al_get_count(&anna_alloc);
+#endif
+
     
 //    wprintf(L"\n\nRUNNING GC. We have %d allocated items, %d are objects, %d are stacks\n\n", al_get_count(&anna_alloc), oc, sc);
-    
-    while(stack)
+
+    anna_vmstack_t *stack_ptr = stack;
+    while(stack_ptr)
     {
-	anna_alloc_mark_vmstack(stack);	
-	stack = stack->caller;
+	anna_alloc_mark_vmstack(stack_ptr);	
+	stack_ptr = stack_ptr->caller;
     }
     
 //    anna_alloc_mark_stack_template(stack_global);
@@ -674,7 +700,6 @@ void anna_gc(anna_vmstack_t *stack)
 	{
 	    void *el = al_get_fast(&anna_alloc, i);
 	    int flags = *((int *)el);
-	    int alloc = (flags & ANNA_ALLOC_MASK);	
 	    if(!(flags & ANNA_USED))
 	    {
 		freed++;
@@ -691,7 +716,16 @@ void anna_gc(anna_vmstack_t *stack)
     }
     
 
+    stack_ptr = stack;
+    while(stack_ptr)
+    {
+	anna_alloc_unmark(stack_ptr);	    
+	stack_ptr = stack_ptr->caller;
+    }    
+
+
 #ifdef ANNA_CHECK_GC_LEAKS
+    size_t end_count = al_get_count(&anna_alloc);
     int o_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
@@ -703,9 +737,11 @@ void anna_gc(anna_vmstack_t *stack)
 	    L"type", L"object", L"stack template", L"AST node", L"runtime stack", L"function", L"blob"
 	}
     ;
+
+    wprintf(L"Collected %d elements\n", start_count-end_count);
     for(i=0; i<7; i++)
     {
-	wprintf(L"After gc, %d objects of type %ls remain\n", o_count[i], name[i]);
+	wprintf(L"Collected %d elements of type %ls, after gc, %d elements remain\n", s_count[i] - o_count[i] , name[i], o_count[i]);
     }
     
 #endif
