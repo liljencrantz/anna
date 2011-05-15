@@ -1,0 +1,6 @@
+def main()
+{
+    var mm = [1 as Object => "ggg" as Object];
+    print(mm, '\n');
+    print([16 => "sweet"], '\n');
+}

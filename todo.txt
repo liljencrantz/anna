@@ -20,6 +20,8 @@ Add bytecodes for comparisons
 Check method aliases even when exact name match found, use to find quicker version of comparison functions
 Implicit specialization should use intersection of all relevant arguments, not just the first one
 More builtin integer ops, e.g. mod, and Float comparisons
+It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
+Should Range really be mutable?
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...

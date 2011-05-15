@@ -538,16 +538,32 @@ int anna_string_cmp(anna_object_t *this, anna_object_t *that)
     return asi_compare(str1,str2);
 }
 
+static int anna_is_string(anna_entry_t *e)
+{
+    if(ANNA_VM_NULL(e))
+    {
+	return 0;
+    }
+    if(!anna_is_obj(e))
+    {
+	return 0;
+    }
+    anna_object_t *obj = anna_as_obj_fast(e);
+    return !!obj->type->mid_identifier[ANNA_MID_STRING_PAYLOAD];
+}
+
+
 static anna_vmstack_t *anna_string_cmp_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
     anna_entry_t *res = anna_from_obj(null_object);
-    if(likely(!ANNA_VM_NULL(param[1])))
+    if(likely(anna_is_string(param[1])))
     {
 	anna_object_t *this = anna_as_obj(param[0]);
 	anna_object_t *that = anna_as_obj(param[1]);
 	res = anna_from_int(anna_string_cmp(this, that));	
     }
+    
     anna_vmstack_drop(stack, 3);
     anna_vmstack_push_entry(stack, res);
     return stack;    
