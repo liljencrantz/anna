@@ -1,6 +1,6 @@
 
 def main(){
     /* Test Use of if expressions inside other expressions */
-    print(1+if(null) { 1 } else { 2 },"\n");
-    print(if(null) { 1 } else { 2 }+1,"\n");
+    print(1+if(?) { 1 } else { 2 },"\n");
+    print(if(?) { 1 } else { 2 }+1,"\n");
 }

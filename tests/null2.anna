@@ -5,10 +5,10 @@ type Foo
 
 def main(){
     var a = [1,2,3];
-    a=null;
+    a=?;
     a.count=69;
-    var b = null as Foo;
+    var b = ? as Foo;
     b.memb = 12;
-    print(null, a, a.count, a[3], b, b.memb, '\n');
+    print(?, a, a.count, a[3], b, b.memb, '\n');
 }
 

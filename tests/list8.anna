@@ -6,13 +6,13 @@ def main()
     l[-20] = 69;
     l[8] = 96;
     print(l, "\n");
-    print(l[null as Int], "\n");
-    print(l[null as Range], "\n");
-    l[null as Int]=69;
-    l[null as Range]=[1,2,3];
-    l[1..2]=null;
+    print(l[? as Int], "\n");
+    print(l[? as Range], "\n");
+    l[? as Int]=69;
+    l[? as Range]=[1,2,3];
+    l[1..2]=?;
     print(l, "\n");
-    l.count = null;
+    l.count = ?;
     print(l, "\n");
     [].each(i){print("Fail\n")}
 
@@ -22,8 +22,8 @@ def main()
     print([].filter(i){print("Fail\n");i>0},"\n");
     print([].find(i){print("Fail\n");i>0},"\n");
 /*
-    print(l.__map__(null),"\n");
-    print(l.__filter__(null),"\n");
-    print(l.__find__(null),"\n");    
+    print(l.__map__(?),"\n");
+    print(l.__filter__(?),"\n");
+    print(l.__find__(?),"\n");    
 */
 }

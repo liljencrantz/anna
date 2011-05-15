@@ -2,7 +2,7 @@ def main()
 {
     var open = 7...;
     print(open.to, "\n");
-    var open2 = 7..null:-3;
+    var open2 = 7..?:-3;
     print(open2, "\n", open2.from, ' ', open2.step, ' ', open2.to, "\n");
     print(open2.find(i){i < -100},'\n');
 
@@ -10,7 +10,7 @@ def main()
     print(open2, "\n", open2.from, ' ', open2.step, ' ', open2.to, "\n");
     print(open2.find(i){i < -100},'\n');
     
-    open2.to = null;
+    open2.to = ?;
     print(open2, "\n", open2.from, ' ', open2.step, ' ', open2.to, "\n");
     print(open2.find(i){i < -100},'\n');
 

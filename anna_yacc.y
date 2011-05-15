@@ -349,6 +349,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token IF
 %token ELSE
 %token TO
+%token DECLARE
 %token SPECIALIZE_BEGIN2
 %token SPECIALIZATION_BEGIN
 %token SPECIALIZATION_END
@@ -1129,7 +1130,14 @@ declaration_expression:
 		$2->child[1], $2->child[0], $4?$4:anna_node_create_null(&@$), $3);
 	}
 	|
-	function_definition;
+	function_definition
+	|
+	identifier DECLARE expression
+        {
+	    $$ = (anna_node_t *)anna_node_create_call2(
+		&@$, anna_node_create_identifier(&@$, L"__var__"),
+		$1, anna_node_create_null(&@$), $3, anna_node_create_block2(&@$));
+        };
 
 opt_ellipsis:
 	/* Empty */

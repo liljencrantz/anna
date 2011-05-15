@@ -1,6 +1,6 @@
 def main()
 {
-    var mm = HashMap();
+    mm := HashMap();
     mm[4] = 'g';
     mm["oyster"] = 1.234;
     print(mm, '\n');

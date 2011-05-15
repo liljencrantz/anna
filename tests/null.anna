@@ -1,6 +1,6 @@
 def main(){
     var a = 3;
-    a=null;
-    print(null, a, a+1, 1+a, 2.0*a, a*2.0, -a, '\n');
+    a=?;
+    print(?, a, a+1, 1+a, 2.0*a, a*2.0, -a, '\n');
 }
 

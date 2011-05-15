@@ -11,11 +11,11 @@ def main()
 
     print(7 in (3..9:2),'\n');
     print(9 in (3..9:2),'\n');
-    print(9 in (3..null:2),'\n');
-    print(999999 in (3..null:2),'\n');
-    print(68 in (-1..null:69),'\n');
+    print(9 in (3..?:2),'\n');
+    print(999999 in (3..?:2),'\n');
+    print(68 in (-1..?:69),'\n');
     print(-5 in (1..-20:-2),'\n');
-    print(-5 in (1..null:-2),'\n');
-    print(-4 in (1..null:-2),'\n');
+    print(-5 in (1..?:-2),'\n');
+    print(-4 in (1..?:-2),'\n');
 
 }

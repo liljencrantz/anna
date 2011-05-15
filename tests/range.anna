@@ -6,6 +6,6 @@ def main(){
     print((10..0:-3).count, "\n"); // 4
     print((9..0:-3).count, "\n"); // 3
     print((9..0).count, "\n"); // 9
-    print((9..0:3).count, "\n"); // null
+    print((9..0:3).count, "\n"); // ?
     (9..0:3).each(val){print(val)} // Nothing
 }

@@ -8,7 +8,7 @@ type MyType {
         this.storage = value;
     }
 
-    var Int prop (property(null,mySetter));
+    var Int prop (property(?,mySetter));
 
 }
 

@@ -81,7 +81,7 @@ static void anna_lex_unbalanced_comment()
 \} return '}';
 def return DEF;
 macro return MACRO;
-null return NULL_SYM;
+\? return NULL_SYM;
 and return AND;
 or return OR;
 var return VAR;
@@ -112,6 +112,7 @@ else return ELSE;
 \< return '<';
 > return '>';
 = return '=';
+:= return DECLARE;
 : return ':';
 [,;]([ \t\n\r]*[,;])* return SEPARATOR;
 ! return '!';
