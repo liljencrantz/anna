@@ -145,3 +145,4 @@ def String intFormat(Int this, Int base, Char padding, Int length)
     
     return neg ~ res;
 }
+

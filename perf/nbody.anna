@@ -1,44 +1,16 @@
 def main() {
-    var n = 500000;
+    var n = 500_000;
     var bodies = NBodySystem();
     print(bodies.energy(), '\n');
     bodies.advance(n, 0.01);
     print(bodies.energy(), '\n');
 }
 
-type Body {
-
-    var Float x;
-    var Float y;
-    var Float z;
-    var Float vx;
-    var Float vy;
-    var Float vz;
-    var Float mass;
-
-    def __init__(){
-       this.x=0.0;
-       this.y=0.0;
-       this.z=0.0;
-       this.vx=0.0;
-       this.vy=0.0;
-       this.vz=0.0;
-       this.mass=0.0;
-   }
-
-   def offsetMomentum(Float px, Float py, Float pz){
-      this.vx = -px / solarMass;
-      this.vy = -py / solarMass;
-      this.vz = -pz / solarMass;
-      this;
-   }
-}
-
 type NBodySystem {
     var List«Body» bodies;
     
     def __init__(){
-	this.bodies = [
+	bodies = [
             sun(),
             jupiter(),
             saturn(),
@@ -49,22 +21,21 @@ type NBodySystem {
 	var px = 0.0;
 	var py = 0.0;
 	var pz = 0.0;
-	this.bodies.each(body)
+	bodies.each(body)
 	{
 	    px += body.vx * body.mass;
 	    py += body.vy * body.mass;
 	    pz += body.vz * body.mass;
 	}
-	this.bodies[0].offsetMomentum(px,py,pz);
+	bodies[0].offsetMomentum(px,py,pz);
     }
     
-    def advance(Int n, Float dt) {
-	
+    def advance(Int n, Float dt) {	
 	(0..n).each(nn){ 
-	    this.bodies.each(i, iBody){
-		(i+1..this.bodies.count).each(j)
+	    bodies.each(i, iBody){
+		(i+1..bodies.count).each(j)
 		{
-		    var jBody = this.bodies[j];
+		    var jBody = bodies[j];
 		    var dx = iBody.x - jBody.x;
 		    var dy = iBody.y - jBody.y;
 		    var dz = iBody.z - jBody.z;
@@ -82,7 +53,7 @@ type NBodySystem {
 		}
 	    }
 	    
-	    this.bodies.each(body){
+	    bodies.each(body){
 		body.x += dt * body.vx;
 		body.y += dt * body.vy;
 		body.z += dt * body.vz;
@@ -93,14 +64,14 @@ type NBodySystem {
     def energy(){
 	var e = 0.0;
 	
-	this.bodies.each(i, iBody){
+	bodies.each(i, iBody){
 	    e += 0.5 * iBody.mass *
 		( iBody.vx * iBody.vx
 		  + iBody.vy * iBody.vy
 		  + iBody.vz * iBody.vz );
 	    
-	    (i+1..this.bodies.count).each(j){
-		var jBody = this.bodies[j];
+	    (i+1..bodies.count).each(j){
+		var jBody = bodies[j];
 		var dx = iBody.x - jBody.x;
 		var dy = iBody.y - jBody.y;
 		var dz = iBody.z - jBody.z;
@@ -170,3 +141,30 @@ def sun(){
     p;
 }
 
+type Body {
+
+    var Float x;
+    var Float y;
+    var Float z;
+    var Float vx;
+    var Float vy;
+    var Float vz;
+    var Float mass;
+
+    def __init__(){
+       x=0.0;
+       y=0.0;
+       z=0.0;
+       vx=0.0;
+       vy=0.0;
+       vz=0.0;
+       mass=0.0;
+   }
+
+   def offsetMomentum(Float px, Float py, Float pz){
+      vx = -px / solarMass;
+      vy = -py / solarMass;
+      vz = -pz / solarMass;
+      this;
+   }
+}
