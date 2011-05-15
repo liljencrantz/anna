@@ -150,7 +150,7 @@ static void anna_module_insert_internal(anna_stack_template_t *lang)
 	if((!target_node || target_node->node_type != ANNA_NODE_IDENTIFIER) ||
 	   (name_node && name_node->node_type != ANNA_NODE_IDENTIFIER))
 	{
-	    anna_error(fun->definition, L"Invalid import");
+	    anna_error((anna_node_t *)fun->definition, L"Invalid import");
 	    return;
 	}
 	
