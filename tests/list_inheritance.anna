@@ -1,0 +1,29 @@
+/*
+  Check that extending a template class works
+ */
+
+type Derived
+(
+    extends(List)
+)
+{
+    def __init__()
+    {
+	Int.__init__(this);
+	Range.__init__(0,10,1);
+    }
+
+}
+
+
+def main()
+{
+    var vv = Derived();
+    vv[3] = 7;
+    print(vv, '\n');
+
+    var vv2 = Derived«Int»();
+    vv2[3] = 7;
+    print(vv2, '\n');
+
+}

@@ -1,0 +1,16 @@
+
+def main()
+{
+
+    var lst=[1,2,3,4,5,6,7,8];
+    // Invalid Range assignment - replacement has wrog length and step != 1. Should be a noop and should return null.
+    print(lst[1..5:2]=[0], '\n');
+    print(lst, '\n');
+    
+    /* Check that growing list on assignment works */
+    lst[200] = 1;
+    print(lst, '\n');
+
+    var silly = SillyList();
+    silly[4] = 0.0;
+}
