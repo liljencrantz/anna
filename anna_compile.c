@@ -275,6 +275,25 @@ static void anna_vm_null(char **ptr, int op, int flags)
     *ptr += sizeof(anna_op_null_t);
 }
 
+static void anna_vm_compile_mid_lookup(
+    char **ptr, 
+    anna_type_t *type,
+    mid_t mid, 
+    int flags)
+{
+    anna_member_t *m = type->mid_identifier[mid];
+    int instr;
+    
+    if(m->is_property){
+	instr = m->is_static?ANNA_INSTR_STATIC_PROPERTY_GET:ANNA_INSTR_PROPERTY_GET;
+    }
+    else{
+	instr = m->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
+    }
+    
+    anna_vm_member(ptr, instr, mid, flags);
+}
+
 static void anna_vm_compile_i(
     anna_function_t *fun, 
     anna_node_t *node, char **ptr, int drop_output, int flags)
@@ -417,14 +436,31 @@ static void anna_vm_compile_i(
 		break;
 	    }
 	    
-	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
-	    if(import && import->flags & ANNA_STACK_NAMESPACE)
+	    anna_stack_template_t *frame = anna_stack_template_search(fun->stack_template, node2->name);
+	    if(frame && frame->flags & ANNA_STACK_NAMESPACE)
 	    {
-		anna_vm_const(ptr, anna_stack_wrap(import), flags);
+		anna_vm_const(ptr, anna_stack_wrap(frame), flags);
 		anna_vm_member(ptr, ANNA_INSTR_STATIC_MEMBER_GET, anna_mid_get(node2->name), flags);
 		break;
 	    }
-
+	    else if(frame && frame->flags & ANNA_STACK_THIS)
+	    {
+		anna_sid_t sid = anna_stack_sid_create(
+		    fun->stack_template, L"this");
+		
+		anna_vm_var(
+		    ptr,
+		    ANNA_INSTR_VAR_GET,
+		    sid.frame,
+		    sid.offset, flags);
+		
+		anna_type_t *type = anna_stack_get_type(fun->stack_template, L"this");
+		anna_vm_compile_mid_lookup(
+		    ptr, type, anna_mid_get(node2->name), flags);
+		
+		break;
+	    }
+	    
 	    anna_sid_t sid = anna_stack_sid_create(
 		fun->stack_template, node2->name);
 
@@ -512,14 +548,30 @@ static void anna_vm_compile_i(
 	{
 	    anna_node_assign_t *node2 = (anna_node_assign_t *)node;
 	    anna_vm_compile_i(fun, node2->value, ptr, 0, flags);
-	    anna_stack_template_t *import = anna_stack_template_search(fun->stack_template, node2->name);
-	    if(import->flags & ANNA_STACK_NAMESPACE)
+	    anna_stack_template_t *frame = anna_stack_template_search(fun->stack_template, node2->name);
+	    if(frame->flags & ANNA_STACK_NAMESPACE)
 	    {
-		anna_vm_const(ptr, anna_stack_wrap(import), flags);
+		anna_vm_const(ptr, anna_stack_wrap(frame), flags);
+		anna_vm_member(ptr, ANNA_INSTR_MEMBER_SET, anna_mid_get(node2->name), 
+flags);
+		break;
+	    }
+	    else if(frame && frame->flags & ANNA_STACK_THIS)
+	    {
+
+		anna_sid_t sid = anna_stack_sid_create(
+		    fun->stack_template, L"this");
+		
+		anna_vm_var(
+		    ptr,
+		    ANNA_INSTR_VAR_GET,
+		    sid.frame,
+		    sid.offset, flags);
+
 		anna_vm_member(ptr, ANNA_INSTR_MEMBER_SET, anna_mid_get(node2->name), flags);
 		break;
 	    }
-
+	    
 	    anna_sid_t sid = anna_stack_sid_create(
 		fun->stack_template, node2->name);
 	    
@@ -545,18 +597,11 @@ static void anna_vm_compile_i(
 	    }
 	    
 	    anna_vm_compile_i(fun, node2->object, ptr, 0, flags);
+
 	    anna_type_t *type = node2->object->return_type;
-	    anna_member_t *m = type->mid_identifier[node2->mid];
-	    int instr;
+	    anna_vm_compile_mid_lookup(
+		ptr, type, node2->mid, flags);
 	    
-	    if(m->is_property){
-		instr = m->is_static?ANNA_INSTR_STATIC_PROPERTY_GET:ANNA_INSTR_PROPERTY_GET;
-	    }
-	    else{
-		instr = m->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
-	    }
-	    
-	    anna_vm_member(ptr, instr, node2->mid, flags);
 	    break;
 	}
 	

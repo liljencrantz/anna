@@ -96,6 +96,7 @@ typedef ssize_t mid_t;
 #define ANNA_TYPE_COMPILED 4096
 #define ANNA_TYPE_SPECIALIZED 8192
 
+
 #define ANNA_OBJECT_LIST 512
 
 #define ANNA_VMSTACK_STATIC 512

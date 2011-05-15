@@ -163,8 +163,10 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
     result->mid_identifier = anna_mid_identifier_create();
     result->name = anna_intern(name);
     result->definition = definition;
-
+    
     result->stack = anna_stack_create(0);
+    result->stack->flags |= ANNA_STACK_THIS;
+    
     if(definition)
     {
 

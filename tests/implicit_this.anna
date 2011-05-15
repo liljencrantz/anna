@@ -5,11 +5,18 @@ type Tp
     {
 	return memb;
     }
+
+    def setter()
+    {
+	memb = 12;
+    }
 }
 
 def main()
 {
     var v = Tp();
     v.memb = 7;
+    print(v.meth(), "\n");
+    v.setter();
     print(v.meth(), "\n");
 }

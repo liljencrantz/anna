@@ -19,6 +19,7 @@ typedef struct anna_sid anna_sid_t;
 
 #define ANNA_STACK_NAMESPACE 1024
 #define ANNA_STACK_LOADED 2048
+#define ANNA_STACK_THIS 4096
 
 /* Stack member flags */
 #define ANNA_STACK_READONLY 1
