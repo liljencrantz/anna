@@ -129,4 +129,3 @@ else return ELSE;
 [ \t] return IGNORE;
 [\n\r] return LINE_BREAK;
 . return 0;
-

@@ -22,6 +22,7 @@ Implicit specialization should use intersection of all relevant arguments, not j
 More builtin integer ops, e.g. mod, and Float comparisons
 It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
 Should Range really be mutable?
+How should inherited constructors be handled?
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
@@ -50,7 +51,6 @@ The rest of the hashtable functions (filter, find, properties for key and value 
 Set type
 String format function
 File type
-toString methods for Hash, Pair
 hashCode function for String, Pair, List, Range, Float, Complex, Char
 A backtrace function
 io module
