@@ -128,7 +128,7 @@ static void anna_hash_print(anna_hash_t *this)
 	{
 	    wprintf(L"%d", this->table[i].hash);	    
 	    anna_entry_t *e = this->table[i].key;
-	    if(anna_is_int(e))
+	    if(anna_is_int_small(e))
 		wprintf(L": %d", anna_as_int(e));	    
 	    else if(anna_is_obj(e))
 	    {
@@ -319,7 +319,7 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
     }
     else
     {
-	if(anna_is_int(key) && anna_is_int(this->table[pos].key))
+	if(anna_is_int_small(key) && anna_is_int_small(this->table[pos].key))
 	{
 	    int eq = anna_as_int(key) == anna_as_int(this->table[pos].key);
 	    return ahi_search_callback2_internal(
@@ -534,7 +534,7 @@ static inline anna_vmstack_t *ahi_search(
 		anna_string_hash(o));
 	}
     }
-    else if(anna_is_int(key))
+    else if(anna_is_int_small(key))
     {
 //	wprintf(L"Search for Int in hash table\n");
 	return ahi_search_callback_internal(

@@ -166,3 +166,39 @@ def String pairToString(Pair this)
     return "" ~ this.first ~ ":" ~ this.second;
 }
 
+def Int rangeCmp(Range this, Object other)
+(
+    name(__cmp__), 
+    target(Range), 
+)
+{
+    r := other as Range;
+    if(!r)
+    {
+	return -1;
+    }
+    if(this.from != r.from)
+    {
+	return this.from-r.from;
+    }
+
+    if(this.to != r.to)
+    {
+	return this.to-r.to;
+    }
+
+    if(this.step != r.step)
+    {
+	return this.step-r.step;
+    }
+    return 0;
+}
+
+def rangeHashCode(Range this)
+(
+    name(hashCode), 
+    target(Range), 
+)
+{
+    return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
+}

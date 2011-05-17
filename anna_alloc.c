@@ -326,9 +326,9 @@ void anna_alloc_mark_entry(anna_entry_t *e)
     
     if(!anna_is_obj(e))
     {
-	if(anna_is_alloc(e))
+	if(anna_is_float(e))
 	{
-	    anna_alloc_mark_blob(anna_as_alloc(e));
+	    anna_alloc_mark_blob(anna_as_float_payload(e));
 	    return;
 	}
 	return;

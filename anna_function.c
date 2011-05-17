@@ -162,14 +162,20 @@ static void anna_function_setup_wrapper(
     }
 }    
 
-static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *initial)
+static anna_type_t *handle_closure_return(anna_function_t *fun, anna_stack_template_t *stack, anna_type_t *initial)
 {
     anna_type_t *res = initial;
     array_list_t returns = AL_STATIC;    
     anna_node_find((anna_node_t *)fun->body, ANNA_NODE_RETURN, &returns);
     
+    if(al_get_count(&returns))
+	anna_function_setup_interface(fun, stack);
+
     while(al_get_count(&returns))
     {
+	
+
+
 	anna_node_t *ret = (anna_node_t *)al_pop(&returns);
 	anna_node_calculate_type(ret, fun->stack_template);
 	if(ret->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
@@ -242,7 +248,7 @@ void anna_function_setup_interface(
 		f->return_type = last_expression->return_type;
 		array_list_t closures = AL_STATIC;
 		
-		f->return_type = handle_closure_return(f, f->return_type);
+		f->return_type = handle_closure_return(f, f->stack_template, f->return_type);
 		
 		anna_node_find((anna_node_t *)f->body, ANNA_NODE_CLOSURE, &closures);
 		while(al_get_count(&closures))
@@ -251,8 +257,10 @@ void anna_function_setup_interface(
 			(anna_node_closure_t *)al_pop(&closures);
 		    if(closure->payload->body && (closure->payload->flags & ANNA_FUNCTION_BLOCK))
 		    {
+			
 			anna_node_find((anna_node_t *)closure->payload->body, ANNA_NODE_CLOSURE, &closures);
-			f->return_type = handle_closure_return(closure->payload, f->return_type);
+			
+			f->return_type = handle_closure_return(closure->payload, f->stack_template, f->return_type);
 			
 		    }		    
 		}

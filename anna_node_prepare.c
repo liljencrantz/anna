@@ -125,6 +125,7 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *id = (anna_node_identifier_t *)this;
+//	    anna_node_print(6,id);
 	    anna_type_t *t = anna_stack_get_type(stack, id->name);
 	    
 	    if(!t)
@@ -682,6 +683,12 @@ void anna_node_calculate_type(
     anna_node_t *this,
     anna_stack_template_t *stack)
 {
+    if(!stack)
+    {
+	anna_error(this,L"Invalid stack value while determining types\n");
+	CRASH;
+    }
+    
     debug(D_SPAM, L"Calculate type of node:\n");
     anna_node_print(D_SPAM, this);
     if(this->return_type == ANNA_NODE_TYPE_IN_TRANSIT && anna_error_count == 0)

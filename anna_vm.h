@@ -46,7 +46,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this);
 #define ANNA_ENTRY_JMP_TABLE static void *jmp_table[] =			\
     {									\
 	&&LAB_ENTRY_OBJ, &&LAB_ENTRY_CHAR, &&LAB_ENTRY_BLOB, &&LAB_ENTRY_INT, \
-	&&LAB_ENTRY_ALLOC, &&LAB_ENTRY_CHAR, &&LAB_ENTRY_BLOB, &&LAB_ENTRY_INT \
+	&&LAB_ENTRY_FLOAT, &&LAB_ENTRY_CHAR, &&LAB_ENTRY_BLOB, &&LAB_ENTRY_INT \
     }
 
 #define ANNA_STACK_ENTRY_FILTER 7l
@@ -56,7 +56,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this);
 #define ANNA_STACK_ENTRY_CHAR 1l
 #define ANNA_STACK_ENTRY_BLOB 2l
 #define ANNA_STACK_ENTRY_INT 3l
-#define ANNA_STACK_ENTRY_ALLOC 4l
+#define ANNA_STACK_ENTRY_FLOAT 4l
 
 /*  
                   /   \
@@ -83,10 +83,10 @@ static inline int anna_is_obj(anna_entry_t *val)
     return type == ANNA_STACK_ENTRY_OBJ;
 }
 
-static inline int anna_is_alloc(anna_entry_t *val)
+static inline int anna_is_float(anna_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_FILTER;
-    return type == ANNA_STACK_ENTRY_ALLOC;
+    return type == ANNA_STACK_ENTRY_FLOAT;
 }
 
 static inline int anna_is_blob(anna_entry_t *val)
@@ -101,7 +101,7 @@ static inline int anna_is_char(anna_entry_t *val)
     return type == ANNA_STACK_ENTRY_CHAR;
 }
 
-static inline int anna_is_int(anna_entry_t *val)
+static inline int anna_is_int_small(anna_entry_t *val)
 {
     long type = ((long)val) & ANNA_STACK_ENTRY_SUBFILTER;
     return type == ANNA_STACK_ENTRY_INT;
@@ -118,7 +118,7 @@ static inline anna_entry_t *anna_from_float(double val)
 {
     double *res = anna_alloc_blob(sizeof(double));
     *res = val;
-    res  = (double *)((long)res | ANNA_STACK_ENTRY_ALLOC);
+    res  = (double *)((long)res | ANNA_STACK_ENTRY_FLOAT);
     return (anna_entry_t *)res;
 }
 
@@ -126,12 +126,12 @@ static inline anna_entry_t *anna_from_blob(void *val)
 {
     return (anna_entry_t *)((long)val | ANNA_STACK_ENTRY_BLOB);
 }
-
+/*
 static inline anna_entry_t *anna_from_alloc(void *val)
 {
     return (anna_entry_t *)((long)val | ANNA_STACK_ENTRY_ALLOC);
 }
-
+*/
 static inline anna_entry_t *anna_from_char(wchar_t val)
 {
     long res = (long)val;
@@ -165,7 +165,7 @@ static inline anna_object_t *anna_as_obj(anna_entry_t *entry)
 	res >>= 2;
 	return anna_char_create((int)res);
     }
-  LAB_ENTRY_ALLOC:
+  LAB_ENTRY_FLOAT:
     {
 	double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
 	return anna_float_create(*res);
@@ -227,7 +227,7 @@ static inline double anna_as_float(anna_entry_t *entry)
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
     {
-	if(type == ANNA_STACK_ENTRY_ALLOC)
+	if(type == ANNA_STACK_ENTRY_FLOAT)
 	{
 	    double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
 	    return *res;
@@ -243,7 +243,7 @@ static inline void *anna_as_blob(anna_entry_t *entry)
     return (void *)(((long)entry) & ~ANNA_STACK_ENTRY_SUBFILTER);
 }
 
-static inline void *anna_as_alloc(anna_entry_t *entry)
+static inline void *anna_as_float_payload(anna_entry_t *entry)
 {
     return (void *)(((long)entry) & ~ANNA_STACK_ENTRY_FILTER);
 }

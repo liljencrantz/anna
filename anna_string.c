@@ -263,7 +263,7 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
     {
 	anna_vmstack_push_object(stack, this);
     }
-    else if(anna_is_int(e))
+    else if(anna_is_int_small(e))
     {	
 	anna_object_t *res = anna_object_create(string_type);
 	wchar_t is[32];

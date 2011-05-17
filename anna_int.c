@@ -26,6 +26,21 @@ static void anna_int_set(anna_object_t *this, long value)
     mpz_set_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), value);
 }
 
+int anna_is_int(anna_entry_t *this)
+{
+    if(anna_is_int_small(this))
+    {
+	return 1;
+    }
+    if(anna_is_obj(this))
+    {
+	anna_object_t *obj = anna_as_obj_fast(this);
+	return !!obj->type->mid_identifier[ANNA_MID_INT_PAYLOAD];
+    }
+    return 0;    
+}
+
+
 anna_object_t *anna_int_create_mp(mpz_t value)
 {
     anna_object_t *obj= anna_object_create(int_type);
@@ -98,26 +113,30 @@ static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
     anna_entry_t **param = stack->top - 2;
 
     anna_entry_t *res;
-    if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1]) == null_object))
+    if(unlikely(ANNA_VM_NULL(param[1])))
     {
 	res = anna_from_obj(null_object);
     }
     else
     {
-	if(anna_is_int(param[1]))
+	if(anna_is_int_small(param[1]))
 	{
 	    res = anna_from_int(
 		(long)mpz_cmp_si(
 		    *anna_int_unwrap(anna_as_obj(param[0])), 
 		    anna_as_int(param[1])));
 	}
-	else
+	else if(anna_is_int(param[1]))
 	{
 	    res = anna_from_int(
 		(long)mpz_cmp(
 		    *anna_int_unwrap(anna_as_obj(param[0])), 
 		    *anna_int_unwrap(anna_as_obj_fast(param[1]))));
 	}
+	else
+	{
+	    res = anna_from_obj(null_object);	    
+	}	
     }
     
     anna_vmstack_drop(stack, 3);

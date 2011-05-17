@@ -19,7 +19,6 @@ Make Char and Float fast as HashMap keys
 Add bytecodes for comparisons
 Check method aliases even when exact name match found, use to find quicker version of comparison functions
 Implicit specialization should use intersection of all relevant arguments, not just the first one
-More builtin integer ops, e.g. mod, and Float comparisons
 It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
 Should Range really be mutable?
 How should inherited constructors be handled?
@@ -81,6 +80,7 @@ Document all vm ops w.r.t. manipulating the stack, etc.
 PERFORMANCE:
 Mandel test should be no more than one order of magnitude slower than the corresponding C implementation
 Start implementing a few of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance.
+More builtin integer ops, e.g. mod, and Float comparisons
 Variable lookup instruction version for looking up in current frame
 Variable lookup instruction version for looking up in parent frame
 Implement tail recursion

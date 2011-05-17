@@ -1,0 +1,28 @@
+def main()
+{
+    print(1==1,'\n');
+    print(1 as Object == 2,'\n');
+    print(1 as Object == 1,'\n');
+    print(1 == 2.0,'\n');
+    print(1 == 1.0,'\n');
+    print(1 as Object == 2.0,'\n');
+
+/*
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+    print(,'\n');
+*/
+
+}

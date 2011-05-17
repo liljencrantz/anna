@@ -54,7 +54,7 @@ static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me
     }
     mpz_t tmp1, tmp2;
     mpz_t *v1, *v2;
-    if(anna_is_int(param[0]))
+    if(anna_is_int_small(param[0]))
     {
         v1 = &tmp1;
         mpz_init(tmp1);
@@ -64,7 +64,7 @@ static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me
     {
         v1 = anna_int_unwrap(anna_as_obj_fast(param[0]));
     }
-    if(anna_is_int(param[1]))
+    if(anna_is_int_small(param[1]))
     {
         v2 = &tmp2;
         mpz_init(tmp2);
@@ -90,11 +90,11 @@ static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me
         anna_vmstack_push_object(stack, anna_int_create_mp(res));
     }
 
-    if(anna_is_int(param[0]))
+    if(anna_is_int_small(param[0]))
     {
         mpz_clear(tmp1);
     }
-    if(anna_is_int(param[1]))
+    if(anna_is_int_small(param[1]))
     {
         mpz_clear(tmp2);
     }

@@ -33,7 +33,7 @@ static int print_direct(anna_entry_t *o)
     }
     else
     {
-	if(anna_is_alloc(o))
+	if(anna_is_float(o))
 	{
 	    wchar_t buff[32];
 	    
@@ -49,7 +49,7 @@ static int print_direct(anna_entry_t *o)
 	{
 	    wprintf(L"%lc", anna_as_char(o));
 	}
-	else if(anna_is_int(o))
+	else if(anna_is_int_small(o))
 	{
 	    wprintf(L"%d", anna_as_int(o));
 	}
