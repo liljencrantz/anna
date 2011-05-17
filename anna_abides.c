@@ -38,6 +38,7 @@ static int anna_abides_function(
     int i;
     if(contender->input_count != role_model->input_count)
     {
+//	wprintf(L"Inpput count mismatch\n");
 	return 0;
     }
     
@@ -45,12 +46,14 @@ static int anna_abides_function(
     {
 	if(!anna_abides(contender->input_type[i], role_model->input_type[i]))
 	{
+//	    wprintf(L"Inpput %d mismatches\n", i);
 	    return 0;
 	}
     }
 
     if(!anna_abides(contender->return_type, role_model->return_type))
     {
+//	wprintf(L"Return mismatch\n");
 	return 0;
     }
     
@@ -102,9 +105,9 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     }
     /*  
     if(level==1)
-	debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
     */
-    //debug(D_SPAM,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
+    //debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
+    //debug(D_ERROR,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&role_model->name_identifier));
     anna_type_get_member_names(role_model, members);    
     
@@ -127,15 +130,17 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	{
 	    ok=0;
 /*	    if(!ok && level==1)
-		wprintf(L"Miss on %ls because of missing member in contender\n", members[i]);
 */
+//	    if(verbose)
+//	    wprintf(L"Miss on %ls because of missing member in contender\n", members[i]);
 	}
 	else if(r_memb->is_method != c_memb->is_method)
 	{
 	    ok=0;
 /*	    if(!ok && level==1)
-		wprintf(L"Miss on %ls because of one is a method\n", members[i]);
 */
+//	    if(verbose)
+//	    wprintf(L"Miss on %ls because of one is a method\n", members[i]);
 	}
 	else if(r_memb->is_static != c_memb->is_static)
 	{
@@ -153,16 +158,18 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 		1);
 /*
 	    if(!ok && level==1)
-	    wprintf(L"Miss on %ls because method signature mismatch\n", members[i]);
 */
+//	    if(verbose)
+//	    wprintf(L"Miss on %ls because method signature mismatch\n", members[i]);
 	}
 	else
 	{
 	    ok = anna_abides(c_memb->type, r_memb->type);
 /*	    
 	    if(!ok && level==1)
-		wprintf(L"Miss on %ls because of %ls\n", members[i], c_memb->type?L"incompatibility":L"missing member");
 */	    
+//	    if(verbose)
+//	    wprintf(L"Miss on %ls because of %ls\n", members[i], c_memb->type?L"incompatibility":L"missing member");
 	}
 
 	res += !ok;

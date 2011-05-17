@@ -53,40 +53,6 @@ init="
 
 "
 
-for i in "eq ==" "neq !="; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
-    op=$(echo "$i"|cut -f 2 -d ' ')
-    
-    init="$init
-    mmid = anna_native_method_create(
-	complex_type, -1, L\"__${name}__Complex__\", 0, 
-	&anna_complex_i_${name}, 
-	complex_type,
-	2, argv, argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
-    anna_function_alias_add(fun, L\"__${name}__\");
-
-"
-
-    echo "
-static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_entry_t **param = stack->top - 2;
-    anna_entry_t *res = anna_from_obj(null_object);
-    if(likely(!ANNA_VM_NULL(param[1])))
-    {  
-        complex double v1 = anna_as_complex(param[0]);
-        complex double v2 = anna_as_complex(param[1]);
-        res = (v1 $op v2)?param[0]:anna_from_obj(null_object);
-    }
-    anna_vmstack_drop(stack, 3);
-    anna_vmstack_push_entry(stack, res);
-    return stack;
-}
-"
-
-done
-
 init="$init
 "
 

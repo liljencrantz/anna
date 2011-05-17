@@ -43,27 +43,44 @@ static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
     if(unlikely( ANNA_VM_NULL(param[1])))
     {
         anna_vmstack_push_object(stack, null_object);
-        return stack;
     }
-    if(!anna_is_float(param[1]))
+    else if(anna_is_float(param[1]))
     {
+        double v1 = anna_as_float(param[0]);
+	double v2 = anna_as_float(param[1]);
+	if(v1 > v2)
+	{
+	    anna_vmstack_push_entry(stack, anna_from_int(1));
+	}
+	else if(v1 < v2)
+	{
+	    anna_vmstack_push_entry(stack, anna_from_int(-1));
+	}
+	else{
+	    anna_vmstack_push_entry(stack, anna_from_int(0));
+	}   
+    }
+    else if(anna_is_int(param[1]))
+    {
+        double v1 = anna_as_float(param[0]);
+	double v2 = (double)anna_as_int(param[1]);
+	if(v1 > v2)
+	{
+	    anna_vmstack_push_entry(stack, anna_from_int(1));
+	}
+	else if(v1 < v2)
+	{
+	    anna_vmstack_push_entry(stack, anna_from_int(-1));
+	}
+	else{
+	    anna_vmstack_push_entry(stack, anna_from_int(0));
+	}   
+    }
+    else
+    {	
         anna_vmstack_push_object(stack, null_object);
-        return stack;
     }
-    
-    double v1 = anna_as_float(param[0]);
-    double v2 = anna_as_float(param[1]);
-    if(v1 > v2)
-    {
-	anna_vmstack_push_entry(stack, anna_from_int(1));
-    }
-    else if(v1 < v2)
-    {
-	anna_vmstack_push_entry(stack, anna_from_int(-1));
-    }
-    else{
-	anna_vmstack_push_entry(stack, anna_from_int(0));
-    }    
+
     return stack;
 }
 

@@ -25,6 +25,12 @@ static inline void anna_complex_set(anna_object_t *this, complex double value)
     memcpy(&this->member[off], &value, sizeof(complex double));
 }
 
+int anna_is_complex(anna_entry_t *this)
+{
+    anna_object_t *obj = anna_as_obj(this);
+    return !!obj->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD];
+}
+
 anna_object_t *anna_complex_create(complex double value)
 {
     anna_object_t *obj= anna_object_create(complex_type);
@@ -48,6 +54,68 @@ static anna_vmstack_t *anna_complex_init(anna_vmstack_t *stack, anna_object_t *m
     memcpy(&anna_as_obj(param[0])->member[off], &result, sizeof(complex double));
     anna_vmstack_drop(stack, 4);
     anna_vmstack_push_entry(stack, param[0]);
+    return stack;
+}
+
+static anna_vmstack_t *anna_complex_cmp(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 2;
+    anna_vmstack_drop(stack, 3);
+    if(unlikely( ANNA_VM_NULL(param[1])))
+    {
+        anna_vmstack_push_object(stack, null_object);
+    }
+    else if(anna_is_complex(param[1]))
+    {
+	complex double v1 = anna_as_complex(param[0]);
+	complex double v2 = anna_as_complex(param[1]);
+	if(v1 == v2)
+	{
+	    anna_vmstack_push_entry(stack, anna_from_int(0));
+	}
+	else{
+	    anna_vmstack_push_object(stack, null_object);
+	}
+    }
+    else if(anna_is_float(param[1]) || anna_is_int(param[1]))
+    {
+	complex double c1 = anna_as_complex(param[0]);
+	double v2;
+	if(anna_is_float(param[1]))
+	{
+	    v2 = anna_as_float(param[1]);
+	}
+	else
+	{
+	    v2 = (double)anna_as_int(param[1]);
+	}
+	    
+	if(cimag(c1) != 0.0)
+	{
+	    anna_vmstack_push_object(stack, null_object);
+	}
+	else
+	{
+	    double v1 = creal(c1);
+	    
+	    if(v1 > v2)
+	    {
+		anna_vmstack_push_entry(stack, anna_from_int(1));
+	    }
+	    else if(v1 < v2)
+	    {
+		anna_vmstack_push_entry(stack, anna_from_int(-1));
+	    }
+	    else{
+		anna_vmstack_push_entry(stack, anna_from_int(0));
+	    }   
+	}
+	
+    }
+    else
+    {
+	anna_vmstack_push_object(stack, null_object);
+    }
     return stack;
 }
 
@@ -105,6 +173,15 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	&anna_complex_init, 
 	complex_type,
 	3, argv, argn);
+    
+    anna_native_method_create(
+	complex_type,
+	-1,
+	L"__cmp__",
+	0,
+	&anna_complex_cmp, 
+	int_type,
+	2, argv, argn);    
     
     anna_native_method_create(
 	complex_type,

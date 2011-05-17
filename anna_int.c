@@ -32,7 +32,7 @@ int anna_is_int(anna_entry_t *this)
     {
 	return 1;
     }
-    if(anna_is_obj(this))
+    else if(anna_is_obj(this))
     {
 	anna_object_t *obj = anna_as_obj_fast(this);
 	return !!obj->type->mid_identifier[ANNA_MID_INT_PAYLOAD];
@@ -117,28 +117,25 @@ static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
     {
 	res = anna_from_obj(null_object);
     }
+    else if(anna_is_int_small(param[1]))
+    {
+	res = anna_from_int(
+	    (long)mpz_cmp_si(
+		*anna_int_unwrap(anna_as_obj(param[0])), 
+		anna_as_int(param[1])));
+    }
+    else if(anna_is_int(param[1]))
+    {
+	res = anna_from_int(
+	    (long)mpz_cmp(
+		*anna_int_unwrap(anna_as_obj(param[0])), 
+		*anna_int_unwrap(anna_as_obj_fast(param[1]))));
+    }
     else
     {
-	if(anna_is_int_small(param[1]))
-	{
-	    res = anna_from_int(
-		(long)mpz_cmp_si(
-		    *anna_int_unwrap(anna_as_obj(param[0])), 
-		    anna_as_int(param[1])));
-	}
-	else if(anna_is_int(param[1]))
-	{
-	    res = anna_from_int(
-		(long)mpz_cmp(
-		    *anna_int_unwrap(anna_as_obj(param[0])), 
-		    *anna_int_unwrap(anna_as_obj_fast(param[1]))));
-	}
-	else
-	{
-	    res = anna_from_obj(null_object);	    
-	}	
-    }
-    
+	res = anna_from_obj(null_object);	    
+    }	
+        
     anna_vmstack_drop(stack, 3);
     anna_vmstack_push_entry(stack, res);
     return stack;
