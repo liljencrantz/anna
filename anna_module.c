@@ -27,6 +27,8 @@
 #include "anna_alloc.h"
 #include "anna_intern.h"
 #include "anna_lang.h"
+#include "anna_list.h"
+#include "anna_hash.h"
 #include "wutil.h"
 #include "anna_attribute.h"
 
@@ -54,7 +56,7 @@ static anna_stack_template_t *anna_module(
     if(name)
     {
 	obj = anna_stack_get(parent, name);
-
+	
 	if(obj)
 	{
 	    res = anna_stack_unwrap(obj);
@@ -182,12 +184,23 @@ static void anna_module_insert_internal(anna_stack_template_t *lang)
 	anna_type_t * type = anna_type_unwrap(
 	    anna_stack_get(
 		lang, target_id->name));
-			
-	anna_member_create_method(
-	    type,
-	    -1,
-	    fun->name,
-	    fun);
+	
+	if(type == list_type)
+	{
+	    anna_list_add_method(fun);
+	}
+	else if(type == hash_type)
+	{
+	    anna_hash_add_method(fun);
+	}
+	else
+	{
+	    anna_member_create_method(
+		type,
+		-1,
+		fun->name,
+		fun);
+	}
     }
     
 }

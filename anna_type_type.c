@@ -135,7 +135,7 @@ void anna_type_type_create2(anna_stack_template_t *stack)
 	L"__cmp__",
 	0,
 	&anna_type_cmp, 
-	object_type, 2, argv, argn);
+	int_type, 2, argv, argn);
     
     anna_native_method_create(
 	type_type,

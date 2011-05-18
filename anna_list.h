@@ -35,6 +35,8 @@ static inline ssize_t anna_list_calc_offset(ssize_t offset, size_t size)
     }
     return offset;
 }
+void anna_list_add_method(anna_function_t *fun);
+
 
 
 #endif

@@ -71,6 +71,43 @@ typedef struct {
 typedef anna_vmstack_t *(*ahi_callback_t)(anna_vmstack_t *stack, anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, anna_hash_entry_t *hash_entry);
 
 static hash_table_t anna_hash_specialization;
+static array_list_t anna_hash_additional_methods = AL_STATIC;
+
+static void add_hash_method(void *key, void *value, void *aux)
+{
+    anna_type_t *hash = (anna_type_t *)value;
+    anna_function_t *fun = (anna_function_t *)aux;
+//    wprintf(L"Add function %ls to type %ls\n", fun->name, hash->name);
+    anna_member_create_method(
+	hash,
+	-1,
+	fun->name,
+	fun);
+}
+
+void anna_hash_add_method(anna_function_t *fun)
+{
+//    wprintf(L"Function %ls to all hash types\n", fun->name);
+    al_push(&anna_hash_additional_methods, fun);
+    hash_foreach2(&anna_hash_specialization, &add_hash_method, fun);
+}
+
+static void anna_hash_add_all_extra_methods(anna_type_t *hash)
+{
+    int i;
+    for(i=0; i<al_get_count(&anna_hash_additional_methods); i++)
+    {
+	anna_function_t *fun = (anna_function_t *)al_get(&anna_hash_additional_methods, i);
+//	wprintf(L"Add function %ls to type %ls\n", fun->name, hash->name);
+	anna_member_create_method(
+	    hash,
+	    -1,
+	    fun->name,
+	    fun);
+    }
+}
+
+
 
 static inline int hash_entry_is_used(anna_hash_entry_t *e)
 {
@@ -1196,6 +1233,8 @@ static void anna_hash_type_create_internal(
 	spec2,
 	2, kv_argv, kv_argn);
     
+    anna_hash_add_all_extra_methods(type);
+
 #if 0    
     anna_native_method_create(
 	type, -1, L"__filter__", 

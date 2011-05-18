@@ -20,5 +20,6 @@ void anna_hash_set_count(anna_object_t *this, size_t sz);
 void anna_hash_type_create(struct anna_stack_template *);
 anna_type_t *anna_hash_type_get(anna_type_t *, anna_type_t *);
 void anna_hash_mark(anna_object_t *obj);
+void anna_hash_add_method(anna_function_t *fun);
 
 #endif

@@ -68,6 +68,9 @@ static int anna_abides_function(
 int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 {
     
+    if(anna_abides_verbose)
+	debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
+    
     if(contender == role_model || contender == null_type)
     {
 	return 0;
@@ -79,7 +82,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	}
     ;
     
-    if(!anna_abides_verbose)
+//    if(!anna_abides_verbose)
     {
 	
 	long count = (long)hash_get(&anna_abides_cache, &tt);

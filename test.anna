@@ -1,5 +1,5 @@
 def main()
 {
     ll := [1,2,3,4,5,6,7];
-    print(ll[0]+1);
+    print(ll);
 }

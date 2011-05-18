@@ -112,7 +112,7 @@ def String hashMapToString(HashMap this)
     target(HashMap), 
 )
 {
-    return "[" ~ ", ".join(this.map(key, value){"" ~ key ~ " => " ~ value}) ~ "]";
+    return "[" ~ ", ".join(this.map(key, value){"" ~ key ~ " => " ~ (value or "null")}) ~ "]";
 }
 
 def String intFormat(Int this, Int base, Char padding, Int length)
@@ -202,3 +202,13 @@ def rangeHashCode(Range this)
 {
     return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
 }
+
+def listToString(List this)
+    (
+	target(List),
+	name(toString)
+	)
+{
+    return "[" ~ ", ".join(this.map(value){""~(value or "null")}) ~ "]";
+}
+

@@ -15,8 +15,6 @@ Should print work like python print, e.g. autoinsert newlines and spaces?
 Instead of a static using flag in the GC, the value shouls switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
 Make Char and Float fast as HashMap keys
 Add bytecodes for comparisons
-Check method aliases even when exact name match found, use to find quicker version of comparison functions
-Implicit specialization should use intersection of all relevant arguments, not just the first one
 It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
 Should Range really be mutable?
 How should inherited constructors be handled?

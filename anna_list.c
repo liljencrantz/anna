@@ -23,6 +23,41 @@
 #include "anna_macro.h"
 
 static hash_table_t anna_list_specialization;
+static array_list_t anna_list_additional_methods = AL_STATIC;
+
+static void add_list_method(void *key, void *value, void *aux)
+{
+    anna_type_t *list = (anna_type_t *)value;
+    anna_function_t *fun = (anna_function_t *)aux;
+//    wprintf(L"Add function %ls to type %ls\n", fun->name, list->name);
+    anna_member_create_method(
+	list,
+	-1,
+	fun->name,
+	fun);
+}
+
+void anna_list_add_method(anna_function_t *fun)
+{
+//    wprintf(L"Function %ls to all list types\n", fun->name);
+    al_push(&anna_list_additional_methods, fun);
+    hash_foreach2(&anna_list_specialization, &add_list_method, fun);
+}
+
+void anna_list_add_all_extra_methods(anna_type_t *list)
+{
+    int i;
+    for(i=0; i<al_get_count(&anna_list_additional_methods); i++)
+    {
+	anna_function_t *fun = (anna_function_t *)al_get(&anna_list_additional_methods, i);
+//	wprintf(L"Add function %ls to type %ls\n", fun->name, list->name);
+	anna_member_create_method(
+	    list,
+	    -1,
+	    fun->name,
+	    fun);
+    }
+}
 
 anna_object_t *anna_list_create(anna_type_t *spec)
 {
@@ -528,76 +563,6 @@ static anna_vmstack_t *anna_list_find(anna_vmstack_t *stack, anna_object_t *me)
 }
 
 
-static anna_vmstack_t *anna_list_to_string_callback(anna_vmstack_t *stack, anna_object_t *me)
-{    
-    anna_object_t *value = anna_vmstack_pop_object(stack);
-
-    anna_entry_t **param = stack->top - 3;
-    anna_object_t *list = anna_as_obj_fast(param[0]);
-    int idx = anna_as_int(param[1]);
-    anna_object_t *res = anna_as_obj_fast(param[2]);
-    size_t sz = anna_list_get_count(list);
-
-    if(value == null_object)
-    {
-	value = anna_string_create(4,L"null");
-    }
-    
-    anna_string_append(res, value);
-    
-    if(sz > idx)
-    {
-	anna_string_append(res, anna_string_create(2,L", "));
-	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
-	param[1] = anna_from_int(idx+1);	
-	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
-	anna_vm_callback_reset(stack, meth, 1, (anna_entry_t **)&o);
-    }
-    else
-    {
-	anna_string_append(res, anna_string_create(1,L"]"));
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, res);
-    }
-    return stack;
-}
-
-static anna_vmstack_t *anna_list_to_string(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
-    
-    size_t sz = anna_list_get_count(list);
-    
-    if(sz > 0)
-    {
-	anna_object_t *res = anna_string_create(1,L"[");
-	anna_entry_t *callback_param[] = 
-	    {
-		anna_from_obj(list),
-		anna_from_int(1),
-		anna_from_obj(res)
-	    }
-	;
-	    
-	anna_object_t *o = anna_as_obj(anna_list_get(list, 0));
-	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
-	stack = anna_vm_callback_native(
-	    stack,
-	    anna_list_to_string_callback, 3, callback_param,
-	    meth, 1, (anna_entry_t **)&o
-	    );
-    }
-    else
-    {
-	anna_vmstack_push_object(stack, anna_string_create(2,L"[]"));
-    }
-    return stack;
-}
-
-
 static inline anna_entry_t *anna_list_init_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -1086,14 +1051,7 @@ static void anna_list_type_create_internal(
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
-    anna_native_method_create(
-	type,
-	ANNA_MID_TO_STRING,
-	L"toString",
-	0,
-	&anna_list_to_string, 
-	string_type, 1, a_argv, a_argn);
-
+    anna_list_add_all_extra_methods(type);
 }
 
 static inline void anna_list_internal_init()
