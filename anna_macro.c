@@ -182,15 +182,6 @@ static inline anna_node_t *anna_macro_return_i(
 }
 ANNA_VM_MACRO(anna_macro_return)
 
-static inline anna_node_t *anna_macro_ast_i(anna_node_call_t *node)
-{
-    CHECK_CHILD_COUNT(node,L"ast", 1);
-    return (anna_node_t *)anna_node_create_dummy(
-	&node->location,
-	anna_node_wrap(node->child[0]));
-}
-ANNA_VM_MACRO(anna_macro_ast)
-
 static inline anna_node_t *anna_macro_def_i(
     anna_node_call_t *node)
 {
@@ -467,7 +458,6 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__and__", &anna_macro_and);
     anna_macro_add(stack, L"__if__", &anna_macro_if);
     anna_macro_add(stack, L"while", &anna_macro_while);
-    anna_macro_add(stack, L"ast", &anna_macro_ast);
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);
     anna_macro_add(stack, L"each", &anna_macro_iter);

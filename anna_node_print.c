@@ -71,7 +71,9 @@ static void anna_node_print_internal(
 	{
 	    anna_indent(sb,indentation);
 	    anna_node_int_literal_t *this2 = (anna_node_int_literal_t *)this;
-	    sb_printf(sb,L"%d", this2->payload);
+	    char *nstr = mpz_get_str(0, 10, this2->payload);
+	    sb_printf(sb,L"%s", nstr);
+	    free(nstr);
 	    break;
 	}
 	

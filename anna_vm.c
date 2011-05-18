@@ -173,7 +173,6 @@ static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 void anna_vm_init()
 {
     anna_vmstack_static_ptr = &anna_vmstack_static_data[0];
-    
 }
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN

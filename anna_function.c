@@ -208,6 +208,13 @@ void anna_function_setup_interface(
 //	wprintf(L"We have such a nice body\n");
 	f->stack_template = anna_stack_create(parent_stack);
 //	wprintf(L"Our stack is %d\n", f->stack_template);
+	al_push(
+	    &f->stack_template->import, 
+	    anna_stack_unwrap(
+		anna_stack_get(
+		    stack_global,
+		    L"parser")));
+	
 	
 	anna_function_setup_arguments(f, parent_stack);
 	
@@ -223,12 +230,17 @@ void anna_function_setup_interface(
 */	
 	f->stack_template->function = f;
     }
-
     
     if(!f->return_type)
-    {
-	
+    {	
 	anna_node_t *return_type_node = f->return_type_node;
+	if(!return_type_node)
+	{
+	    debug(D_CRITICAL, L"Internal error: Function %ls has invalid return type node\n", f->name);
+	    
+	    CRASH;
+	}
+	
 	if(return_type_node->node_type == ANNA_NODE_NULL)
 	{
 //	    wprintf(L"Function %ls has unspecified return type, we need to investigate\n", f->name);

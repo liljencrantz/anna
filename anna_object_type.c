@@ -96,7 +96,7 @@ void anna_object_type_create()
 	L"__cmp__",
 	0,
 	&anna_object_cmp, 
-	object_type, 2, argv, argn);
+	int_type, 2, argv, argn);
     
     anna_native_method_create(
 	object_type,

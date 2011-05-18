@@ -232,7 +232,7 @@ void anna_type_print(anna_type_t *type)
     wprintf(L"Type %ls:\n", type->name);
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&type->name_identifier));
     anna_type_get_member_names(type, members);    
-    for(i=0; i< anna_type_member_count(type); i++)
+    for(i=0; i< hash_get_count(&type->name_identifier); i++)
     {
 	assert(members[i]);
 	anna_member_t *member = anna_type_member_info_get(type, members[i]);
@@ -819,24 +819,44 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     }
     else if(type == list_type)
     {
+	anna_type_t *tt = call->child[0]->return_type;
+	int i;
+	for(i=1; i<call->child_count; i++)
+	{
+	    tt = anna_type_intersect(tt, call->child[i]->return_type);
+	}
+	
 	return anna_list_type_get(
-	    call->child[0]->return_type);
+	    tt);
     }
     else if(type == hash_type)
     {
 	anna_type_t *arg_type = call->child[0]->return_type;
-	anna_entry_t **spec1 = 
-	    anna_entry_get_addr_static(
+	anna_type_t *spec1 = 
+	    (anna_type_t *)*anna_entry_get_addr_static(
 		arg_type, ANNA_MID_PAIR_SPECIALIZATION1);
-	anna_entry_t **spec2 =
-	    anna_entry_get_addr_static(
+	anna_type_t *spec2 =
+	    (anna_type_t *)*anna_entry_get_addr_static(
 		arg_type, ANNA_MID_PAIR_SPECIALIZATION2);
+	int i;
+	for(i=1; i<call->child_count; i++)
+	{
+	    arg_type = call->child[i]->return_type;
+	    spec1 = anna_type_intersect(
+		spec1, 
+		(anna_type_t *)*anna_entry_get_addr_static(
+		    arg_type, ANNA_MID_PAIR_SPECIALIZATION1));
+	    spec2 = anna_type_intersect(
+		spec2, 
+		(anna_type_t *)*anna_entry_get_addr_static(
+		    arg_type, ANNA_MID_PAIR_SPECIALIZATION2));
+	}
 	
 	if(spec1 && spec2)
 	{	    
 	    return anna_hash_type_get(
-		(anna_type_t *)*spec1, 
-		(anna_type_t *)*spec2);
+		spec1, 
+		spec2);
 	}
 	return type;
     }

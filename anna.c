@@ -239,6 +239,7 @@ static void anna_init()
 	&hash_function_type_comp);
     anna_mid_init();
     anna_slab_init();
+    anna_vm_init();
     
     stack_global = anna_stack_create(0);
     stack_global->flags |= ANNA_STACK_NAMESPACE;
@@ -269,7 +270,6 @@ int main(int argc, char **argv)
 	exit(1);
     }
     
-    anna_vm_init();
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     

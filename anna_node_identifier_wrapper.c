@@ -20,7 +20,6 @@ ANNA_VM_NATIVE(anna_node_identifier_wrapper_i_init, 3)
 
 static void anna_node_create_identifier_wrapper_type(anna_stack_template_t *stack)
 {
-    node_identifier_wrapper_type = anna_type_native_create(L"Identifier", stack);
     anna_type_copy(node_identifier_wrapper_type, node_wrapper_type);
 
     wchar_t *argn[] =

@@ -144,6 +144,7 @@ static void anna_node_calculate_type_internal(
 	    if(t == null_type)
 	    {
 		anna_error(this, L"Invalid type for variable %ls", id->name);
+		CRASH;
 		break;
 	    }
 	    	    
@@ -280,14 +281,15 @@ static void anna_node_calculate_type_internal(
 		anna_error(n->object, L"Invalid type for object in call");
 		break;
 	    }
-	    
 
 	    anna_type_prepare_member(type, n->mid, stack);
+	    
+	    array_list_t method_candidate = AL_STATIC;
 	    anna_member_t *member = anna_member_get(type, n->mid);
 	    
 	    if(!member)
 	    {
-
+		
 		int ok = anna_node_calculate_type_direct_children(n, stack);
 		
 		if(ok)
@@ -771,8 +773,9 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    {
 		anna_member_t *memb = 
 		    anna_member_get(this2->object->return_type, this2->mid);
+		
 		anna_type_t *ft = memb->type;
-				
+		
 		ftk = anna_function_type_unwrap(ft);	    
 		
 		if(ftk)

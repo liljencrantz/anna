@@ -18,8 +18,9 @@
 #include "anna_function_type.h"
 #include "anna_vm.h"
 #include "anna_intern.h"
+#include "anna_stack.h"
 
-anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_int_literal_wrapper_type, *node_string_literal_wrapper_type;
+anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_int_literal_wrapper_type, *node_string_literal_wrapper_type, *node_dummy_wrapper_type;
 
 anna_type_t *node_call_wrapper_type;
 
@@ -158,28 +159,29 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_int_literal_wrapper.c"
 #include "anna_node_string_literal_wrapper.c"
 #include "anna_node_call_wrapper.c"
+#include "anna_node_dummy_wrapper.c"
 
-void anna_node_create_wrapper_types(anna_stack_template_t *stack)
+void anna_node_create_wrapper_types()
 {
+    anna_stack_template_t *stack = anna_stack_create(stack_global);
+    stack->flags |= ANNA_STACK_NAMESPACE;
+    
     node_wrapper_type = anna_type_native_create(L"Node", stack);
     node_identifier_wrapper_type = anna_type_native_create(L"Identifier", stack);
-    node_int_literal_wrapper_type = anna_type_native_create(L"IntLiteral", stack);
-    node_string_literal_wrapper_type = anna_type_native_create(L"StringLiteral", stack);
     
-    node_call_wrapper_type = anna_type_native_create(L"Call", stack);
-
     anna_node_create_wrapper_type(stack);
     anna_node_create_identifier_wrapper_type(stack);
     anna_node_create_int_literal_wrapper_type(stack);
     anna_node_create_string_literal_wrapper_type(stack);
     anna_node_create_call_wrapper_type(stack);
-
+    anna_node_create_dummy_wrapper_type(stack);
+    
     int i;
     anna_type_t *types[] = 
 	{
 	    node_wrapper_type,  node_identifier_wrapper_type,  
 	    node_int_literal_wrapper_type,  node_string_literal_wrapper_type, 
-	    node_call_wrapper_type, 
+	    node_call_wrapper_type, node_dummy_wrapper_type
 	};
 
     for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
@@ -190,6 +192,12 @@ void anna_node_create_wrapper_types(anna_stack_template_t *stack)
 	    type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
     }
 
-
+    anna_stack_populate_wrapper(stack);
+    anna_stack_declare(
+	stack_global,
+	L"parser",
+	anna_stack_wrap(stack)->type,
+	anna_stack_wrap(stack),
+	ANNA_STACK_READONLY);
 
 }

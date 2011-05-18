@@ -32,6 +32,19 @@
 
 static void anna_module_load_i(anna_stack_template_t *module);
 
+static wchar_t *anna_module_search(
+    anna_stack_template_t *parent, wchar_t *name)
+{
+    /*
+      FIXME: Hardcoded uglyness...
+     */
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"lib/%ls.anna", name);
+    return sb_content(&sb);
+}
+
+
 static anna_stack_template_t *anna_module(
     anna_stack_template_t *parent, wchar_t *name, wchar_t *filename)
 {
@@ -52,11 +65,11 @@ static anna_stack_template_t *anna_module(
 	    }
 	    if(filename)
 	    {
-		if(res->filename)
+		if(res->filename && wcscmp(res->filename, filename) != 0)
 		{
 		    debug(D_CRITICAL, L"Multiple definitions for module %ls\n", name);
 		    CRASH;		
-	    }
+		}
 		res->filename = wcsdup(filename);
 	    }
 	    return res;
@@ -74,6 +87,11 @@ static anna_stack_template_t *anna_module(
     {
 	res->filename = wcsdup(filename);
     }
+    else
+    {
+	res->filename = anna_module_search(parent, name);
+    }
+    
     return res;
 }
 
@@ -174,20 +192,19 @@ static void anna_module_insert_internal(anna_stack_template_t *lang)
     
 }
 
-
 void anna_module_init()
 {
     anna_stack_template_t *stack_lang = anna_lang_load();
-
-    anna_stack_declare(
-	stack_global,
-	L"lang",
-	anna_stack_wrap(stack_lang)->type,
-	anna_stack_wrap(stack_lang),
-	ANNA_STACK_READONLY);
+    
+    anna_node_create_wrapper_types();
+    
+    anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
+    anna_macro_init(stack_macro);
+    al_push(&stack_global->expand, stack_macro);
+    
+    null_object->type = null_type;
     
     anna_module_init_recursive(L"lib", stack_global);
-    anna_stack_populate_wrapper(stack_lang);
     anna_module_insert_internal(stack_lang);
 }
 	
@@ -263,6 +280,8 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     array_list_t import = AL_STATIC;
     array_list_t expand = AL_STATIC;
 
+    al_push(&expand, L"macros");
+
     if(module_stack->flags & ANNA_STACK_LOADED)
     {
 	return;
@@ -295,7 +314,12 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     for(i=0; i<al_get_count(&expand); i++ )
     {
 	wchar_t *str = al_get(&expand, i);
+	debug(D_SPAM,L"expand statement: expand(%ls)\n", str);
+	
 	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
+	anna_module_load_i(
+	    mod);
+	
 	if(anna_error_count || !mod)
 	{
 	    return;

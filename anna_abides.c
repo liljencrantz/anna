@@ -25,6 +25,8 @@
 
 static hash_table_t anna_abides_cache;
 
+static int anna_abides_verbose=0;
+
 void anna_abides_init()
 {
     hash_init(&anna_abides_cache, hash_tt_func, hash_tt_cmp);
@@ -38,7 +40,8 @@ static int anna_abides_function(
     int i;
     if(contender->input_count != role_model->input_count)
     {
-//	wprintf(L"Inpput count mismatch\n");
+	if(anna_abides_verbose)
+	    wprintf(L"Input count mismatch\n");
 	return 0;
     }
     
@@ -46,14 +49,16 @@ static int anna_abides_function(
     {
 	if(!anna_abides(contender->input_type[i], role_model->input_type[i]))
 	{
-//	    wprintf(L"Inpput %d mismatches\n", i);
+	    if(anna_abides_verbose)
+		wprintf(L"Input %d mismatches\n", i);
 	    return 0;
 	}
     }
 
     if(!anna_abides(contender->return_type, role_model->return_type))
     {
-//	wprintf(L"Return mismatch\n");
+	if(anna_abides_verbose)
+	    wprintf(L"Return mismatch\n");
 	return 0;
     }
     
@@ -74,22 +79,25 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	}
     ;
     
-    long count = (long)hash_get(&anna_abides_cache, &tt);
-    if(count == ABIDES_IN_TRANSIT)
+    if(!anna_abides_verbose)
     {
-	return 0;
+	
+	long count = (long)hash_get(&anna_abides_cache, &tt);
+	if(count == ABIDES_IN_TRANSIT)
+	{
+	    return 0;
+	}
+	else if(count != 0)
+	{
+	    return count - 1;
+	}
     }
-    else if(count != 0)
-    {
-	return count - 1;
-    }
-
+    
     static int level = 0;
 
     level++;
 
     hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), (void *)(long)ABIDES_IN_TRANSIT);
-
     
     size_t i;
     int res = 0;    
@@ -111,7 +119,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&role_model->name_identifier));
     anna_type_get_member_names(role_model, members);    
     
-    for(i=0; i<anna_type_member_count(role_model); i++)
+    for(i=0; i<hash_get_count(&role_model->name_identifier); i++)
     {
 	assert(members[i]);
 	if(wcscmp(members[i], L"__init__") == 0)
@@ -132,7 +140,8 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 /*	    if(!ok && level==1)
 */
 //	    if(verbose)
-//	    wprintf(L"Miss on %ls because of missing member in contender\n", members[i]);
+	    if(anna_abides_verbose)
+		wprintf(L"Miss on %ls because of missing member in contender\n", members[i]);
 	}
 	else if(r_memb->is_method != c_memb->is_method)
 	{
@@ -140,14 +149,19 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 /*	    if(!ok && level==1)
 */
 //	    if(verbose)
-//	    wprintf(L"Miss on %ls because of one is a method\n", members[i]);
+	    if(anna_abides_verbose)
+		wprintf(L"Miss on %ls because of one is a method and not the other\n", members[i]);
 	}
 	else if(r_memb->is_static != c_memb->is_static)
 	{
+	    if(anna_abides_verbose)
+		wprintf(L"Miss on %ls because of one is static and not the other\n", members[i]);
 	    ok=0;
 	}
 	else if(r_memb->is_property != c_memb->is_property)
 	{
+	    if(anna_abides_verbose)
+		wprintf(L"Miss on %ls because of one is a property and not the other\n", members[i]);
 	    ok=0;
 	}
 	else if(r_memb->is_method)
@@ -160,16 +174,18 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	    if(!ok && level==1)
 */
 //	    if(verbose)
-//	    wprintf(L"Miss on %ls because method signature mismatch\n", members[i]);
+	    if(!ok && anna_abides_verbose)
+		wprintf(L"Miss on %ls because of method signature mismatch\n", members[i]);
 	}
 	else
 	{
 	    ok = anna_abides(c_memb->type, r_memb->type);
 /*	    
 	    if(!ok && level==1)
-*/	    
+*/
 //	    if(verbose)
-//	    wprintf(L"Miss on %ls because of %ls\n", members[i], c_memb->type?L"incompatibility":L"missing member");
+	    if(!ok && anna_abides_verbose)
+		wprintf(L"Miss on %ls because of %ls\n", members[i], c_memb->type?L"incompatibility":L"missing member");
 	}
 
 	res += !ok;
@@ -193,6 +209,8 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
 
 anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 {
+    //  wprintf(L"\n\n\nSTART\n\n\n\n");
+
     if(t1 == t2 || t2 == null_type)
     {
 	return t1;
@@ -212,7 +230,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&t2->name_identifier));
     anna_type_get_member_names(t2, members);    
     
-    for(i=0; i<anna_type_member_count(t2); i++)
+    for(i=0; i<hash_get_count(&t2->name_identifier); i++)
     {
 	if(wcscmp(members[i], L"__init__") == 0)
 	    continue;
@@ -227,18 +245,22 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 	    anna_mid_get(members[i]));
 	if(!memb1)
 	{
+//	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
 	else if(memb1->is_method != memb2->is_method)
 	{
+//	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
 	else if(memb1->is_static != memb2->is_static)
 	{
+//	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
 	else if(memb1->is_property != memb2->is_property)
 	{
+//	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
 	else if(memb2->is_method)
@@ -262,10 +284,17 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 		    ft2->input_count,
 		    ft2->input_type,
 		    ft2->input_name);				
+//		wprintf(L"Meth %ls\n", members[i]);
 	    }
+	    else
+	    {
+//		wprintf(L"Skip meth %ls\n", members[i]);		
+	    }
+	    
 	}
 	else
 	{
+//	    wprintf(L"Memb %ls\n", members[i]);
 	    if(anna_abides(memb1->type, memb2->type) && anna_abides(memb2->type, memb1->type))
 	    {
 		anna_member_create(
@@ -276,6 +305,12 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 	}
     }
     free(members);
+
+    if(!anna_abides(res, object_type))
+    {
+	CRASH;
+    }
+    
     return res;
 }
 

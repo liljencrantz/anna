@@ -273,7 +273,7 @@ anna_member_t *anna_member_method_search(
     anna_node_call_t *call,
     int is_reverse)
 {
-    debug(D_SPAM, L"\nSEARCH for match to %ls in type %ls\n", anna_mid_get_reverse(mid), type->name);
+    debug(D_SPAM, L"SEARCH for match to %ls in type %ls\n", anna_mid_get_reverse(mid), type->name);
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&type->name_identifier));
     wchar_t *alias_name = anna_mid_get_reverse(mid);
@@ -298,7 +298,7 @@ anna_member_t *anna_member_method_search(
 		member->type);
 	    
 	    int has_alias = is_reverse ? anna_function_has_alias_reverse(mem_fun, alias_name):anna_function_has_alias(mem_fun, alias_name);
-	
+	    has_alias |= (!is_reverse && wcscmp(members[i], alias_name)==0);
 
 	    if(has_alias)
 	    {

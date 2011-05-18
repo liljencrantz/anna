@@ -226,6 +226,7 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
     mid_t mmid;
     anna_function_t *fun;
 
+    node_call_wrapper_type = anna_type_native_create(L"Call", stack);
     anna_type_copy(node_call_wrapper_type, node_wrapper_type);
 
     anna_type_t *argv[] = 

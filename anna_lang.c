@@ -119,8 +119,6 @@ anna_stack_template_t *anna_lang_load()
     anna_complex_type_create(stack_lang);
     anna_pair_type_create();
     anna_hash_type_create(stack_lang);
-
-    anna_node_create_wrapper_types(stack_lang);
     
     int i;
     anna_type_t *types[] = 
@@ -141,12 +139,15 @@ anna_stack_template_t *anna_lang_load()
 	    type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
     }
 
-    anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
-    
     anna_function_implementation_init(stack_lang);
-    anna_macro_init(stack_macro);
-    al_push(&stack_global->expand, stack_macro);
 
-    null_object->type = null_type;
+    anna_stack_populate_wrapper(stack_lang);
+    anna_stack_declare(
+	stack_global,
+	L"lang",
+	anna_stack_wrap(stack_lang)->type,
+	anna_stack_wrap(stack_lang),
+	ANNA_STACK_READONLY);
+    
     return stack_lang;
 }

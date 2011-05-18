@@ -1,10 +1,5 @@
 def main()
 {
-    mm := HashMap();
-    mm[4] = 'g';
-    mm["oyster"] = 1.234;
-    print(mm, '\n');
-    
-    /* Vowel stripping filter */
-    print("HEY baberiba!\n".filter(ch){! ("aoueiy".search(ch.lower))});
+    ll := [1,2,3,4,5,6,7];
+    print(ll[0]+1);
 }

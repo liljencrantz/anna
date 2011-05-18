@@ -33,7 +33,7 @@ static inline anna_entry_t *anna_type_i_get_member_i(anna_entry_t **param)
 
     wchar_t **member_name = malloc(sizeof(wchar_t *)*anna_type_member_count(type));
     anna_type_get_member_names(type, member_name);
-    for(i=0;i<anna_type_member_count(type); i++)
+    for(i=0;i<hash_get_count(&type->name_identifier); i++)
     {
 	anna_list_add(
 	    lst,
