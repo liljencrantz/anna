@@ -132,7 +132,7 @@ static anna_vmstack_t *anna_range_get_open_i(anna_vmstack_t *stack, anna_object_
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
-    anna_vmstack_push_entry(stack, anna_from_int(anna_range_get_open(r)));
+    anna_vmstack_push_entry(stack, anna_range_get_open(r)?anna_from_int(1):anna_from_obj(null_object));
     return stack;
 }
 
@@ -643,38 +643,6 @@ static anna_vmstack_t *anna_range_map(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-static inline anna_entry_t *anna_range_to_string_i(anna_entry_t **param)
-{
-    string_buffer_t sb;
-    sb_init(&sb);
-
-    ssize_t from = anna_range_get_from(anna_as_obj_fast(param[0]));
-    ssize_t to = anna_range_get_to(anna_as_obj_fast(param[0]));
-    ssize_t step = anna_range_get_step(anna_as_obj_fast(param[0]));
-    int open = anna_range_get_open(anna_as_obj_fast(param[0]));
-    ssize_t count = 1+(to-from-sign(step))/step;
-
-    int i;
-    if(open)
-    {
-	sb_printf(&sb, L"[%d, %d, %d...]", from, from+step, from+2*step);
-    }
-    else
-    {
-	sb_printf(&sb, L"[");
-	for(i=0; i<count; i++)
-	{
-	    sb_printf(&sb, L"%ls%d", i==0?L"":L", ", from + i*step);
-	}
-	sb_printf(&sb, L"]");
-    }
-    
-    anna_object_t *res =  anna_string_create(sb_length(&sb), sb_content(&sb));
-    sb_destroy(&sb);
-    return anna_from_obj(res);
-}
-ANNA_VM_NATIVE(anna_range_to_string, 1)
-
 void anna_range_type_create(struct anna_stack_template *stack)
 {
     mid_t mmid;
@@ -853,14 +821,6 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	int_type,
 	2, a_argv, a_argn);
         
-    anna_native_method_create(
-	range_type,
-	ANNA_MID_TO_STRING,
-	L"toString",
-	0,
-	&anna_range_to_string, 
-	string_type, 1, a_argv, a_argn);
-    
     anna_native_method_create(
 	range_type, -1, L"__map__", 
 	0, &anna_range_map, 

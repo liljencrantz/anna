@@ -203,6 +203,19 @@ def rangeHashCode(Range this)
     return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
 }
 
+def rangeToString(Range this)
+(
+    target(Range),
+    name(toString),
+)
+{
+    if(this.isOpen)
+    {
+	return "[" ~ this.from ~", "~ (this.from+this.step)~", "~ (this.from+this.step+this.step)~"...]";
+    }
+    return "[" ~ ", ".join(this.map(value){""~(value)}) ~ "]";
+}
+
 def listToString(List this)
 (
     target(List),
