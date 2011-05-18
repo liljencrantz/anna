@@ -1,0 +1,4 @@
+def main()
+{
+    print(ast(1+1), "\n");
+}
