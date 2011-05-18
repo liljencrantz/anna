@@ -918,6 +918,10 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 		    type_spec[templ_idx] = call->child[i]->return_type;
 		    spec_count++;
 		}
+		else
+		{
+		    type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
+		}
 	    }
 	}
     }

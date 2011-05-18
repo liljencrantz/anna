@@ -10,5 +10,5 @@ Here comes a Char: %
 And another Int: %
 Why not s String: %
 Let's try a percent symbol: %%
-" % [1234 as Object, 'd', 0xdead_BEEF, "This is a string"]);
+" % [1234, 'd', 0xdead_BEEF, "This is a string"]);
 }
