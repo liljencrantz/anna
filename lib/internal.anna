@@ -21,12 +21,12 @@ def String __format__List__(
     target(String), 
 )
 {
-    var res = "";
-    var listIdx = 0;
-    var i = 0;
+    res := "";
+    listIdx := 0;
+    i := 0;
     while(i < fmt.count)
     {
-        var ch = fmt[i];
+        ch := fmt[i];
         if(ch == '%')
         {
 	    if(fmt[i+1] == '%')
@@ -54,12 +54,12 @@ def String __format__Map__(
     target(String), 
 )
 {
-    var res = "";
-    var listIdx = 0;
-    var i = 0;
+    res := "";
+    listIdx := 0;
+    i := 0;
     while(i < fmt.count)
     {
-        var ch = fmt[i];
+        ch := fmt[i];
         if(ch == '%')
         {
 	    if(fmt[i+1] == '%')
@@ -71,10 +71,10 @@ def String __format__Map__(
 		if(fmt[i] == '(')
 		{
 		    i++;
-		    var end = search__Char__(fmt[i...], ')');
+		    end := search__Char__(fmt[i...], ')');
 		    if(end)
 		    {
-			var name = fmt[i..(i+end)];
+		        name := fmt[i..(i+end)];
 			res ~= data[name];
 			i+=end;
 		    } else {
@@ -101,7 +101,7 @@ def String __filter__(
     target(String), 
 )
 {
-    var res = "";
+    res := "";
     this.each(key, value){if(body(key, value)){res ~= value;}}
     return res;
 }
@@ -163,7 +163,7 @@ def String pairToString(Pair this)
     target(Pair), 
 )
 {
-    return "" ~ this.first ~ ":" ~ this.second;
+    return "" ~ (this.first or "null") ~ ":" ~ (this.second or "null");
 }
 
 def Int rangeCmp(Range this, Object other)
@@ -204,10 +204,10 @@ def rangeHashCode(Range this)
 }
 
 def listToString(List this)
-    (
-	target(List),
-	name(toString)
-	)
+(
+    target(List),
+    name(toString),
+)
 {
     return "[" ~ ", ".join(this.map(value){""~(value or "null")}) ~ "]";
 }
