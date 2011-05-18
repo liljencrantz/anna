@@ -14,7 +14,7 @@ type Parent
 
 def main()
 {
-    var sub=Sub();
+    sub:=Sub();
     sub.foo();
     sub.bar();
     print(sub,"\n");

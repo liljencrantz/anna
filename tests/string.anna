@@ -3,7 +3,7 @@ def main(){
 
     /* Test replacing substring with other string of same length */
     print("Test 1\n");
-    var a = "aaabbbccc";
+    a := "aaabbbccc";
     a[3..6] = "ddd";
     print(a,"\n");
 

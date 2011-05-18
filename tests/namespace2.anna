@@ -1,6 +1,6 @@
 
 def main()  
 {
-    var f = lang.List!(lang.Int)(1,2,3);
+    f := lang.List!(lang.Int)(1,2,3);
     lang.print(f[1]);
 }

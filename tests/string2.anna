@@ -1,6 +1,6 @@
 def main()
 {
-    var arr = "abcdefghijklmno";
+    arr := "abcdefghijklmno";
     print(arr[3...], "\n");
     arr[4...] = "boooooring";
     print(arr, "\n");

@@ -13,7 +13,7 @@ def Int fac(Int in)
 
 def myExp(Int a, Int b)
 {
-    var res = 1;
+    res := 1;
     (0..b).each(i){res = res * a}
     return res;
 }

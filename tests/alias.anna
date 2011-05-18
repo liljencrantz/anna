@@ -19,7 +19,7 @@ type Foo
 
 def main()
 {
-    var foo = Foo();
+    foo := Foo();
     foo.bar(-1,0,1);    
     foo.bar("", "k", "\n");
 }

@@ -3,7 +3,7 @@ def main()
     /*
       This file contains a few tests for the in operator of ranges
     */
-    var foo = 1..4;
+    foo := 1..4;
     print(1 in foo,'\n');
     print(3 in foo,'\n');
     print(69 in foo,'\n');

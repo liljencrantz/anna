@@ -10,9 +10,9 @@ type Foo
 
 def main()
 {
-    var lst = ["unused\n"];
+    lst := ["unused\n"];
     lst.push(value => "ok\n");
     print(lst.pop());
-    var foo = Foo();
+    foo := Foo();
     foo.bar(third=>"\n", second=>"k", first=>"o");
 }

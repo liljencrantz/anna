@@ -18,11 +18,11 @@ type Derived
 
 def main()
 {
-    var vv = Derived();
+    vv := Derived();
     vv[3] = 7;
     print(vv, '\n');
 
-    var vv2 = Derived«Int»();
+    vv2 := Derived«Int»();
     vv2[3] = 7;
     print(vv2, '\n');
 

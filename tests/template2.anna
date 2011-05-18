@@ -11,8 +11,8 @@ type Foo (template(op:__add__)) {
 
 def Int main()
 {
-    var foo = Foo();
+    foo := Foo();
     print(foo.bar(3,4),"\n");
-    var boo = Foo«__sub__»();
+    boo := Foo«__sub__»();
     print(boo.bar(3,4),"\n");
 }

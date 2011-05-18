@@ -2,9 +2,9 @@
 
 def main()
 {
-    var l = [1,2,3];
-    var f1 = l.push;
-    var f2 = l.pop;
+    l := [1,2,3];
+    f1 := l.push;
+    f2 := l.pop;
     print(f2(), "\n");
     print(f2(), "\n");
     print(f2(), "\n");

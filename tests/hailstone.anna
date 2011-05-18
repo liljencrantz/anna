@@ -10,15 +10,15 @@ def Int hailstone(Int i)
 
 def main()
 {
-    var max = 20_000;
-    var maxCount = 0;
-    var maxValue = 0;
+    max := 20_000;
+    maxCount := 0;
+    maxValue := 0;
 
     hailstoneCache = [1, 1];
 
     (2..max).each(i)
     {
-	var count = hailstone(i);
+	count := hailstone(i);
 	if(count > maxCount)
 	{
 	    maxCount = count;

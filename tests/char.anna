@@ -1,5 +1,5 @@
 
 def main(){
-    var a = 'a';
+    a := 'a';
     print(a, a.upper, a.lower, a.lower.upper, a.ordinal, a.upper.ordinal);
 }

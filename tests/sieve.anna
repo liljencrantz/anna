@@ -5,9 +5,9 @@
 
 def main()
 {
-    var end = 1000000;
-    var sieve = [];
-    var count = 0;
+    end := 1000000;
+    sieve := [];
+    count := 0;
     (2..end).each(i)
     {
         if(!sieve[i])

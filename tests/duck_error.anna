@@ -18,6 +18,6 @@ type Bar
 
 def main()
 {
-    var v = Foo();
+    v := Foo();
     v = Bar();
 }

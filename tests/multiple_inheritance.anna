@@ -15,7 +15,7 @@ type Derived
 
 def main()
 {
-    var vv = Derived();
+    vv := Derived();
 
     // Int.__add__
     print(vv + 5, '\n');

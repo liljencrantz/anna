@@ -19,6 +19,6 @@ type Bar
 
 def main()
 {
-    var v = Foo() or Bar();
+    v := Foo() or Bar();
     print(v.fun(),"\n");
 }

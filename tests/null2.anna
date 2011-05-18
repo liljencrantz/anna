@@ -4,10 +4,10 @@ type Foo
 }
 
 def main(){
-    var a = [1,2,3];
+    a := [1,2,3];
     a=?;
     a.count=69;
-    var b = ? as Foo;
+    b := ? as Foo;
     b.memb = 12;
     print(?, a, a.count, a[3], b, b.memb, '\n');
 }

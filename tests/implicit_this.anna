@@ -14,7 +14,7 @@ type Tp
 
 def main()
 {
-    var v = Tp();
+    v := Tp();
     v.memb = 7;
     print(v.meth(), "\n");
     v.setter();

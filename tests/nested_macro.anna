@@ -21,7 +21,7 @@ type Bar
 
 def main()
 {
-    var bar = Bar();
+    bar := Bar();
 
     bar.foo.items.each(i){print(i,'\n')}
 

@@ -1,10 +1,10 @@
 def main()
 {
-    var g = 4:"DDD";
+    g := 4:"DDD";
     g.first += 1;
     print(g.first+62, "\n", g.second[0].ordinal, "\n");
 
-    var g2 = lang.Pair(4,7:"9");
+    g2 := lang.Pair(4,7:"9");
     g2.first += 1;
     print(g2.first+1, g2.second.second,"\n");
 

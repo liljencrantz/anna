@@ -18,7 +18,7 @@ type MyType {
 }
 
 def main(){
-    var g = MyType();
+    g := MyType();
     g.prop = 7;
     print(g.prop, "\n");
 }

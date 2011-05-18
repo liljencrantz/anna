@@ -1,6 +1,6 @@
 
 def main(){
-    var hh = ['A' => "ape", 'B' => "baboon", 'C' => "cat", 'D' => "dinosaur"];
+    hh := ['A' => "ape", 'B' => "baboon", 'C' => "cat", 'D' => "dinosaur"];
     print(hh.count, "\n");
     hh.each(k,v){print(k == v[0].upper)}
     print("\n");

@@ -1,5 +1,5 @@
 def main(){
-    var foo = "";
+    foo := "";
     foo ~= 3;
     foo ~= 'b';
     foo ~= "a";

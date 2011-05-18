@@ -9,6 +9,6 @@ enum Blubb
 
 def main()  
 {
-    var ggg = Blubb(1),
+    ggg := Blubb(1),
     print(ggg, ggg.foo);    
 }

@@ -2,7 +2,7 @@
 def main()
 {
 
-    var lst=[1,2,3,4,5,6,7,8];
+    lst:=[1,2,3,4,5,6,7,8];
     // Invalid Range assignment - replacement has wrog length and step != 1. Should be a noop and should return ?.
     print(lst[1..5:2]=[0], '\n');
     print(lst, '\n');
@@ -11,6 +11,6 @@ def main()
     lst[200] = 1;
     print(lst, '\n');
 
-    var silly = SillyList();
+    silly := SillyList();
     silly[4] = 0.0;
 }

@@ -3,7 +3,7 @@ type Foo
 {
     def numGetter()
     {
-        var i=0;
+        i:=0;
         return def (){i++}
     }
     
@@ -13,13 +13,13 @@ type Foo
 
 def main()
 {
-    var foo = Foo();
+    foo := Foo();
     /* Every time we access foo.num, a new closure is created, with a new counter. All these calls should therefore return 1 */
     print(foo.num(), "\n");
     print(foo.num(), "\n");
     print(foo.num(), "\n");
 
-    var bar = foo.num;
+    bar := foo.num;
     /* Every time we access bar, the same closure is used, with the same counter. These calls will therefore count up. */
     print(bar(), "\n");
     print(bar(), "\n");

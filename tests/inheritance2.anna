@@ -9,7 +9,7 @@ type Sub (extends(Int))
 
 def main()
 {
-    var sub=Sub(7);
+    sub:=Sub(7);
     sub.bar();
     print(sub; sub+1; "\n";); 
 }

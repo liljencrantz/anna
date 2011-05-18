@@ -15,6 +15,6 @@ def main()
       The type should be implicitly specialized to Foo«Int» because
       the constructor argument is of type Int.
     */
-    var f = Foo(7);
+    f := Foo(7);
     print(f.val +1, "\n");
 }

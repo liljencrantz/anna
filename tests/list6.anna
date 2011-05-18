@@ -1,6 +1,6 @@
 
 def main()  
 {
-    var l = [1,2,3];
+    l := [1,2,3];
     print(l.first, l.last, [].first, [].last, "\n");
 }
