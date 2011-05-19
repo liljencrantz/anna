@@ -18,22 +18,22 @@ static inline anna_entry_t *anna_node_dummy_wrapper_i_init_i(anna_entry_t **para
 }
 ANNA_VM_NATIVE(anna_node_dummy_wrapper_i_init, 3)
 
-static void anna_node_create_dummy_wrapper_type(anna_stack_template_t *stack)
+static anna_type_t *anna_node_create_dummy_wrapper_type(anna_stack_template_t *stack)
 {
-    node_dummy_wrapper_type = anna_type_native_create(L"Dummy", stack);
+    anna_type_t *node_dummy_wrapper_type = anna_type_native_create(L"Dummy", stack);
     anna_type_copy(node_dummy_wrapper_type, node_wrapper_type);
-
+    
     wchar_t *argn[] =
 	{
 	    L"this", L"source", L"name"
 	}
     ;
-
+    
     anna_type_t *argv[] = 
 	{
 	    node_dummy_wrapper_type,
 	    node_wrapper_type,
-	    node_wrapper_type
+	    object_type
 	}
     ;
     
@@ -51,5 +51,6 @@ static void anna_node_create_dummy_wrapper_type(anna_stack_template_t *stack)
 	node_wrapper_type,
 	&anna_node_dummy_wrapper_i_get_value, 
 	0);
+    return node_dummy_wrapper_type;
 }
 

@@ -332,7 +332,7 @@ static inline anna_node_t *anna_macro_update_i(anna_node_call_t *node)
               => 
 	  __assign(i, __memberGet(i,__appendAssign__)(j))
 
-	 */
+	*/
 	string_buffer_t name;
 	CHECK_NODE_TYPE(node->function, ANNA_NODE_IDENTIFIER);
 	anna_node_identifier_t *name_id = (anna_node_identifier_t *)node->function;
@@ -375,32 +375,6 @@ static inline anna_node_t *anna_macro_update_i(anna_node_call_t *node)
     return anna_node_create_null(&node->location);
 }
 ANNA_VM_MACRO(anna_macro_update)
-
-static inline anna_node_t *anna_macro_range_i(anna_node_call_t *node)
-{
-    CHECK_CHILD_COUNT(node,L"Range", 2);
-    node->function = (anna_node_t *)anna_node_create_identifier(
-	&node->function->location,
-	L"Range");
-
-    if(anna_node_is_call_to(node->child[1], L"Pair")){
-	anna_node_call_t *pair = (anna_node_call_t *)node->child[1];
-	CHECK_CHILD_COUNT(pair,L"Range", 2);
-	node->child[1] = pair->child[0];
-	anna_node_call_add_child(
-	    node,
-	    pair->child[1]);
-    }
-    else 
-    {
-	anna_node_call_add_child(
-	    node,
-	    (anna_node_t *)anna_node_create_null(0));
-    }
-    
-    return (anna_node_t *)node;
-}
-ANNA_VM_MACRO(anna_macro_range)
 
 static inline anna_node_t *anna_macro_mapping_i(anna_node_call_t *node)
 {
@@ -467,7 +441,6 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"__collection__", &anna_macro_collection);
     anna_macro_add(stack, L"type", &anna_macro_type);
-    anna_macro_add(stack, L"__range__", &anna_macro_range);
     anna_macro_add(stack, L"__next__", &anna_macro_update);
     anna_macro_add(stack, L"__prev__", &anna_macro_update);
     anna_macro_add(stack, L"__increase__", &anna_macro_update);

@@ -20,35 +20,17 @@
 #include "anna_intern.h"
 #include "anna_stack.h"
 
-anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_int_literal_wrapper_type, *node_string_literal_wrapper_type, *node_dummy_wrapper_type;
+anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
 
-anna_type_t *node_call_wrapper_type;
+static anna_type_t *anna_node_type_mapping[ANNA_NODE_TYPE_COUNT];
 
 anna_object_t *anna_node_wrap(anna_node_t *node)
 {
     if(node->wrapper)
 	return node->wrapper;
     
-    anna_type_t *type=0;
-    
-    switch(node->node_type)
-    {
-	case ANNA_NODE_IDENTIFIER:
-	    type = node_identifier_wrapper_type;
-	    break;
+    anna_type_t *type= anna_node_type_mapping[node->node_type] ? anna_node_type_mapping[node->node_type] : node_wrapper_type;
 
-	case ANNA_NODE_INT_LITERAL:
-	    type = node_int_literal_wrapper_type;
-	    break;
-
-	case ANNA_NODE_CALL:
-	    type = node_call_wrapper_type;
-	    break;
-	    
-	default:
-	    type = node_wrapper_type;
-	    break;
-    }
     anna_object_t *obj= anna_object_create(type);
     *(anna_node_t **)anna_entry_get_addr(obj,ANNA_MID_NODE_PAYLOAD)=node;
     node->wrapper = obj;
@@ -160,9 +142,11 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_string_literal_wrapper.c"
 #include "anna_node_call_wrapper.c"
 #include "anna_node_dummy_wrapper.c"
+#include "anna_node_null_wrapper.c"
 
 void anna_node_create_wrapper_types()
 {
+    int i;
     anna_stack_template_t *stack = anna_stack_create(stack_global);
     stack->flags |= ANNA_STACK_NAMESPACE;
     
@@ -171,27 +155,36 @@ void anna_node_create_wrapper_types()
     
     anna_node_create_wrapper_type(stack);
     anna_node_create_identifier_wrapper_type(stack);
-    anna_node_create_int_literal_wrapper_type(stack);
-    anna_node_create_string_literal_wrapper_type(stack);
-    anna_node_create_call_wrapper_type(stack);
-    anna_node_create_dummy_wrapper_type(stack);
     
-    int i;
     anna_type_t *types[] = 
 	{
-	    node_wrapper_type,  node_identifier_wrapper_type,  
-	    node_int_literal_wrapper_type,  node_string_literal_wrapper_type, 
-	    node_call_wrapper_type, node_dummy_wrapper_type
+	    node_call_wrapper_type = anna_node_create_call_wrapper_type(stack),
+	    node_identifier_wrapper_type,  
+	    anna_node_create_int_literal_wrapper_type(stack),
+	    anna_node_create_string_literal_wrapper_type(stack),
+	    0,
+	    0,
+	    anna_node_create_null_wrapper_type(stack),
+	    anna_node_create_dummy_wrapper_type(stack)
 	};
 
+    memset(anna_node_type_mapping, 0, sizeof(anna_node_type_mapping));
+    memcpy(anna_node_type_mapping, types, sizeof(types));
+
+    anna_type_copy_object(node_wrapper_type);
+    anna_stack_declare(
+	stack, node_wrapper_type->name, 
+	type_type, anna_type_wrap(node_wrapper_type), ANNA_STACK_READONLY); 
     for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
     {
+	if(!types[i])
+	    continue;
 	anna_type_copy_object(types[i]);
 	anna_stack_declare(
 	    stack, types[i]->name, 
 	    type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
     }
-
+    
     anna_stack_populate_wrapper(stack);
     anna_stack_declare(
 	stack_global,

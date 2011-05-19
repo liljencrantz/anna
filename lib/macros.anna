@@ -8,7 +8,7 @@ macro ast(node)
     }
     return Dummy(node, node[0]);
 }
-/*
+
 macro __range__(node)
 {
     if(node.count != 2)
@@ -27,12 +27,24 @@ macro __range__(node)
 	    return ?;
 	}
 	node[1] = pair[0];
-//	node ~= pair[1];
+	node ~= [pair[1]];
     } else
     {
-//	node ~= parser.Null(node);
+	node ~= [parser.Null(node)];
     }
 
     return node;
 }
-*/
+
+macro blaj(node)
+{
+    if(node.count == 1)
+    {
+	
+    } else
+    {
+
+    }
+
+
+}

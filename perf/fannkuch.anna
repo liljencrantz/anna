@@ -1,14 +1,14 @@
 
 def fannkuch(Int n)
 {
-    var maxFlipsCount = 0;
-    var permSign = 1;
-    var checksum = 0;
+    maxFlipsCount := 0;
+    permSign := 1;
+    checksum := 0;
 
-    var perm1 = 0..n;
-    var count = perm1[0...];
-    var rxrange = 2 .. n-1;
-    var nm = n - 1;
+    perm1 := 0..n;
+    count := perm1[0...];
+    rxrange := 2 .. n-1;
+    nm := n - 1;
     while(1)
     {
         k = perm1[0]

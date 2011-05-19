@@ -796,8 +796,67 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
 
 static int attr_idx(anna_node_call_t *attr, wchar_t *name)
 {
+    int i;
+//    anna_node_print(5, attr);
+    int idx=0;
+    for(i=0; i<attr->child_count; i++)
+    {
+	if (anna_node_is_call_to(attr->child[i], L"template"))
+	{
+	    anna_node_call_t *tmpl = (anna_node_call_t *)attr->child[i];
+	    if(tmpl->child_count == 1)
+	    {
+		if (anna_node_is_call_to(tmpl->child[i], L"Pair"))
+		{
+		    anna_node_call_t *pair = (anna_node_call_t *)tmpl->child[0];
+		    if(pair->child_count == 2)
+		    {
+			if( anna_node_is_named(pair->child[0], name))
+			{
+			    return idx;
+			}
+		    }
+		}
+		
+	    }
+	    idx++;
+	}
+    }
     return -1;
 }
+
+static anna_node_call_t *get_constructor_input_list(anna_node_call_t *def)
+{
+    int i;
+    if(def->child[2]->node_type == ANNA_NODE_CALL)
+    {
+	anna_node_call_t *body = (anna_node_call_t *)def->child[2];
+	
+	for(i=0; i<body->child_count; i++)
+	{
+	    if(anna_node_is_call_to(body->child[i], L"__const__"))
+	    {
+		anna_node_call_t *decl = (anna_node_call_t *)body->child[i];
+		if(decl->child_count == 4 && anna_node_is_named(decl->child[0], L"__init__"))
+		{
+		    if(anna_node_is_call_to(decl->child[2], L"__def__"))
+		    {
+			anna_node_call_t *meth = (anna_node_call_t *)decl->child[2];
+			if(meth->child_count == 5)
+			    return (anna_node_call_t *)meth->child[2];
+		    }
+		    
+		}
+		
+	    }
+	    
+	}
+    }
+    
+    return 0;
+    
+}
+
 
 anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call)
 {
@@ -879,12 +938,6 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     
     int i;
     
-    anna_node_call_t *spec = anna_node_create_call2(
-	&call->location,
-	anna_node_create_identifier(
-	    &call->location,
-	    L"__block__"));
-
     anna_object_t *constructor_obj = anna_as_obj_fast(
 	anna_entry_get_static(
 	    type,
@@ -898,18 +951,20 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     
 //    wprintf(L"Looking ok for implicit spec\n");
     
-    anna_node_call_t *input_node = node_cast_call(constr->definition->child[2]);
+    anna_node_call_t *input_node = get_constructor_input_list(type->definition);
     anna_type_t **type_spec = calloc(sizeof(anna_type_t *), attr->child_count);
-    int spec_count;
-    
-    for(i=0; i<call->child_count; i++)
-    {	
-	anna_node_call_t *decl = node_cast_call(input_node->child[i+1]);
-	//anna_node_print(4, decl);
-	if(decl->child[1]->unspecialized)
+    int spec_count=0;
+    if(input_node)
+    {
+	for(i=0; i<input_node->child_count; i++)
+	{	
+	anna_node_call_t *decl = node_cast_call(input_node->child[i]);
+//	anna_node_print(4, decl);
+	if(decl->child[1]->node_type == ANNA_NODE_IDENTIFIER)
 	{
-	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1]->unspecialized;
-	    //wprintf(L"Check if %ls is a template param thing\n", id->name);
+	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
+
+//	    wprintf(L"Check if %ls is a template param\n", id->name);
 	    int templ_idx = attr_idx(attr, id->name);
 	    if(templ_idx >= 0)
 	    {
@@ -925,6 +980,23 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    }
 	}
     }
+    }
+    
+
+    if(spec_count ==attr->child_count)
+    {
+	anna_node_call_t *spec_call = anna_node_create_block2(0);
+	for(i=0; i<attr->child_count; i++)
+	{
+	    anna_node_call_add_child(
+		spec_call, 
+		(anna_node_t *)anna_node_create_dummy(
+		    0,
+		    anna_type_wrap(type_spec[i])));
+	}
+	type = anna_type_specialize(type, spec_call);
+    }
+    
     free(type_spec);
     
 //    anna_error((anna_node_t *)call, L"Implicit specialization of user defined templates is not yet implemented. Sorry...");

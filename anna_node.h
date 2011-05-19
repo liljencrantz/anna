@@ -42,6 +42,7 @@ enum anna_node_enum
     ANNA_NODE_MAPPING,
     ANNA_NODE_MAPPING_IDENTIFIER,
     ANNA_NODE_RETURN,
+    ANNA_NODE_TYPE_COUNT
 };
 
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)

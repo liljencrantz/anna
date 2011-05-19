@@ -15,10 +15,10 @@ Should print work like python print, e.g. autoinsert newlines and spaces?
 It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
 Should Range really be mutable?
 How should inherited constructors be handled?
+It should be possible to declare members with initial values. 
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
-Implicit specialization doesn't work on user defined types
 Multiple inheritance clashes aren't handled correctly
 
 LANGUAGE FEATURES:

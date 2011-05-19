@@ -221,12 +221,12 @@ static inline anna_entry_t *anna_node_call_wrapper_append_i(anna_entry_t **param
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
 
-static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
+static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 {
     mid_t mmid;
     anna_function_t *fun;
 
-    node_call_wrapper_type = anna_type_native_create(L"Call", stack);
+    anna_type_t *node_call_wrapper_type = anna_type_native_create(L"Call", stack);
     anna_type_copy(node_call_wrapper_type, node_wrapper_type);
 
     anna_type_t *argv[] = 
@@ -364,4 +364,5 @@ static void anna_node_create_call_wrapper_type(anna_stack_template_t *stack)
 	node_call_wrapper_type,
 	2, j_argv, j_argn);
     
+    return node_call_wrapper_type;
 }

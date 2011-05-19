@@ -1,6 +1,6 @@
 def main() {
-    var n = 500_000;
-    var bodies = NBodySystem();
+    n := 500_000;
+    bodies := NBodySystem();
     print(bodies.energy(), '\n');
     bodies.advance(n, 0.01);
     print(bodies.energy(), '\n');
@@ -18,9 +18,7 @@ type NBodySystem {
             neptune()
 	    ];
 	
-	var px = 0.0;
-	var py = 0.0;
-	var pz = 0.0;
+        px := 0.0, py := 0.0, pz := 0.0;
 	bodies.each(body)
 	{
 	    px += body.vx * body.mass;
@@ -35,14 +33,14 @@ type NBodySystem {
 	    bodies.each(i, iBody){
 		(i+1..bodies.count).each(j)
 		{
-		    var jBody = bodies[j];
-		    var dx = iBody.x - jBody.x;
-		    var dy = iBody.y - jBody.y;
-		    var dz = iBody.z - jBody.z;
+		    jBody := bodies[j];
+		    dx := iBody.x - jBody.x;
+		    dy := iBody.y - jBody.y;
+		    dz := iBody.z - jBody.z;
 		    
-		    var mag = dt * ((dx * dx + dy * dy + dz * dz) ^exp -1.5);
-		    var jm = jBody.mass * mag;
-		    var im = iBody.mass * mag;
+		    mag := dt * ((dx * dx + dy * dy + dz * dz) ^exp -1.5);
+		    jm := jBody.mass * mag;
+		    im := iBody.mass * mag;
 		    iBody.vx -= dx * jm;
 		    iBody.vy -= dy * jm;
 		    iBody.vz -= dz * jm;
@@ -62,7 +60,7 @@ type NBodySystem {
     }
     
     def energy(){
-	var e = 0.0;
+	e := 0.0;
 	
 	bodies.each(i, iBody){
 	    e += 0.5 * iBody.mass *
@@ -71,11 +69,11 @@ type NBodySystem {
 		  + iBody.vz * iBody.vz );
 	    
 	    (i+1..bodies.count).each(j){
-		var jBody = bodies[j];
-		var dx = iBody.x - jBody.x;
-		var dy = iBody.y - jBody.y;
-		var dz = iBody.z - jBody.z;
-		var distance = ^sqrt(dx*dx + dy*dy + dz*dz);
+		jBody := bodies[j];
+		dx := iBody.x - jBody.x;
+		dy := iBody.y - jBody.y;
+		dz := iBody.z - jBody.z;
+		distance := ^sqrt(dx*dx + dy*dy + dz*dz);
 		e -= (iBody.mass * jBody.mass) / distance;
 	    }
 	}
@@ -88,7 +86,7 @@ const solarMass = 39.478417604357428;
 const daysPerYear = 365.24;
 
 def jupiter(){
-    var p = Body();
+    p := Body();
     p.x = 4.84143144246472090;
     p.y = -1.16032004402742839;
     p.z = -0.103622044471123109;
@@ -100,7 +98,7 @@ def jupiter(){
 }
 
 def saturn(){
-    var p = Body();
+    p := Body();
     p.x = 8.34336671824457987;
     p.y = 4.12479856412430479;
     p.z = -0.403523417114321381;
@@ -112,7 +110,7 @@ def saturn(){
 }
 
 def uranus(){
-    var p = Body();
+    p := Body();
     p.x = 12.8943695621391310;
     p.y = -15.1111514016986312;
     p.z = -0.223307578892655734;
@@ -124,7 +122,7 @@ def uranus(){
 }
 
 def neptune(){
-    var p = Body();
+    p := Body();
     p.x = 15.3796971148509165;
     p.y = -25.9193146099879641;
     p.z = 0.179258772950371181;
@@ -136,7 +134,7 @@ def neptune(){
 }
 
 def sun(){
-    var p = Body();
+    p := Body();
     p.mass = solarMass;
     p;
 }
