@@ -19,6 +19,7 @@
 #include "anna_vm.h"
 #include "anna_intern.h"
 #include "anna_stack.h"
+#include "anna_node_hash.h"
 
 anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
 
@@ -85,6 +86,25 @@ static inline anna_entry_t *anna_node_wrapper_i_to_string_i(anna_entry_t **param
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_to_string, 1)
 
+static inline anna_entry_t *anna_node_wrapper_cmp_i(anna_entry_t **param)
+{
+    if(ANNA_VM_NULL(param[1]))
+    {
+	return anna_from_obj(null_object);
+    }
+    return anna_from_int(anna_node_compare(
+	anna_node_unwrap(anna_as_obj(param[0])),
+	anna_node_unwrap(anna_as_obj(param[1])))); 
+}
+ANNA_VM_NATIVE(anna_node_wrapper_cmp, 2)
+
+static inline anna_entry_t *anna_node_wrapper_hash_i(anna_entry_t **param)
+{
+    anna_from_int(anna_node_hash_func(anna_node_unwrap(anna_as_obj(param[0]))));
+}
+ANNA_VM_NATIVE(anna_node_wrapper_hash, 1)
+
+
 static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 {
 
@@ -135,6 +155,35 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	&anna_node_wrapper_i_to_string, 
 	string_type,
 	1, error_argv, error_argn);    
+
+    anna_type_t *cmp_argv[] = 
+	{
+	    node_wrapper_type, object_type
+	}
+    ;
+    wchar_t *cmp_argn[]=
+	{
+	    L"this", L"other"
+	}
+    ;
+
+    anna_native_method_create(
+	node_wrapper_type,
+	-1,
+	L"__cmp__",
+	0,
+	&anna_node_wrapper_cmp, 
+	int_type,
+	2, cmp_argv, cmp_argn);
+
+    anna_native_method_create(
+	node_wrapper_type,
+	-1,
+	L"hashCode",
+	0,
+	&anna_node_wrapper_hash, 
+	int_type,
+	1, cmp_argv, cmp_argn);
 }
 
 #include "anna_node_identifier_wrapper.c"
@@ -142,7 +191,9 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_string_literal_wrapper.c"
 #include "anna_node_call_wrapper.c"
 #include "anna_node_dummy_wrapper.c"
+#include "anna_node_float_literal_wrapper.c"
 #include "anna_node_null_wrapper.c"
+#include "anna_node_char_literal_wrapper.c"
 
 void anna_node_create_wrapper_types()
 {
@@ -162,8 +213,8 @@ void anna_node_create_wrapper_types()
 	    node_identifier_wrapper_type,  
 	    anna_node_create_int_literal_wrapper_type(stack),
 	    anna_node_create_string_literal_wrapper_type(stack),
-	    0,
-	    0,
+	    anna_node_create_char_literal_wrapper_type(stack),
+	    anna_node_create_float_literal_wrapper_type(stack),
 	    anna_node_create_null_wrapper_type(stack),
 	    anna_node_create_dummy_wrapper_type(stack)
 	};
@@ -179,6 +230,7 @@ void anna_node_create_wrapper_types()
     {
 	if(!types[i])
 	    continue;
+	anna_type_copy(types[i], node_wrapper_type);
 	anna_type_copy_object(types[i]);
 	anna_stack_declare(
 	    stack, types[i]->name, 
@@ -192,5 +244,5 @@ void anna_node_create_wrapper_types()
 	anna_stack_wrap(stack)->type,
 	anna_stack_wrap(stack),
 	ANNA_STACK_READONLY);
-
+    
 }

@@ -1,0 +1,29 @@
+def main()
+{
+    f := parser.FloatLiteral(?, 1.0);
+    print(f, ' ', f.payload, '\n');
+
+    i := parser.IntLiteral(?, 1);
+    print(i, ' ', i.payload, '\n');
+    
+    i2 := parser.IntLiteral(?, 2);
+    print(i, ' ', i.payload, '\n');
+    
+    i22 := parser.IntLiteral(?, 2);
+    print(i, ' ', i.payload, '\n');
+    
+    s := parser.StringLiteral(?, "bla");
+    print(s, ' ', s.payload, '\n');
+    
+    c := parser.CharLiteral(?, 'b');
+    print(c, ' ', c.payload, '\n');
+    
+    cc := parser.Call(?, c, i, s);
+    print(cc, ' ', cc.function, ' ', cc.count, ' ', cc[0], ' ', cc[1],'\n');
+    
+    print(f == i, ' ', i==i2, ' ', i2==i22, '\n');
+    
+    dict := [i=>1, i2=>2];
+    dict[i22] = 3;
+    print(dict[i2],'\n');
+}

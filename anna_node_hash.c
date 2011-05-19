@@ -48,7 +48,7 @@ int anna_node_hash_cmp(
 {
     anna_node_t *na = (anna_node_t *)a;
     anna_node_t *nb = (anna_node_t *)b;
-    return anna_node_compare(na, nb);
+    return anna_node_compare(na, nb) == 0;
 }
 
 

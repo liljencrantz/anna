@@ -30,7 +30,7 @@ macro __range__(node)
 	node ~= [pair[1]];
     } else
     {
-	node ~= [parser.Null(node)];
+	node ~= [NullLiteral(node)];
     }
 
     return node;

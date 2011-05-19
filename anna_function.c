@@ -208,14 +208,17 @@ void anna_function_setup_interface(
 //	wprintf(L"We have such a nice body\n");
 	f->stack_template = anna_stack_create(parent_stack);
 //	wprintf(L"Our stack is %d\n", f->stack_template);
-	al_push(
-	    &f->stack_template->import, 
-	    anna_stack_unwrap(
-		anna_stack_get(
-		    stack_global,
-		    L"parser")));
-	
-	
+
+	if(f->flags & ANNA_FUNCTION_MACRO)
+	{
+	    al_push(
+		&f->stack_template->import, 
+		anna_stack_unwrap(
+		    anna_stack_get(
+			stack_global,
+			L"parser")));
+	}
+		
 	anna_function_setup_arguments(f, parent_stack);
 	
 	anna_node_register_declarations(

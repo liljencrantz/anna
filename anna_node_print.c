@@ -81,7 +81,19 @@ static void anna_node_print_internal(
 	{
 	    anna_indent(sb,indentation);
 	    anna_node_float_literal_t *this2 = (anna_node_float_literal_t *)this;
-	    sb_printf(sb,L"%f", this2->payload);
+
+	    string_buffer_t tmp;
+	    sb_init(&tmp);
+	    sb_printf(&tmp,L"%f", this2->payload);
+	    wchar_t *buff = sb_content(&tmp);
+	    wchar_t *comma = wcschr(buff, ',');
+	    if(comma)
+	    {
+		*comma = '.';
+	    }
+	    sb_printf(sb, L"%ls", buff);
+	    sb_destroy(&tmp);
+	    
 	    break;
 	}
 	

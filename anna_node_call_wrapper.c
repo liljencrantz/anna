@@ -106,7 +106,8 @@ static inline anna_entry_t *anna_node_call_wrapper_i_init_i(anna_entry_t **param
     int i;
     for(i=0; i<sz; i++)
     {
-	anna_node_call_add_child(dest, anna_node_unwrap(anna_as_obj(src[i])));
+	if(!ANNA_VM_NULL(src[i]))
+	    anna_node_call_add_child(dest, anna_node_unwrap(anna_as_obj(src[i])));
     }
     dest->child_count = sz;
     
@@ -234,7 +235,7 @@ static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *st
 	    node_call_wrapper_type,
 	    node_wrapper_type,
 	    node_wrapper_type,
-	    anna_list_type_get(node_wrapper_type)
+	    node_wrapper_type
 	}
     ;
     
