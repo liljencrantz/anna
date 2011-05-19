@@ -1,0 +1,39 @@
+/*
+  Test the clone, hash and equality functions of all ast node types
+*/
+def main()
+{
+    f := parser.FloatLiteral(?, 1.0);
+    i := parser.IntLiteral(?, 1);
+    i2 := parser.IntLiteral(?, 2);
+    i22 := parser.IntLiteral(?, 2);
+    s := parser.StringLiteral(?, "bla");
+    c := parser.CharLiteral(?, 'b');
+    cc := parser.Call(?, c, i, s);
+    cl := parser.Closure(?, def (Int in){in+3});
+    mm := parser.Mapping(?, ast(1), ast('d'));
+
+    print(f == i, ' ', i==i2, ' ', i2==i22, '\n');
+
+    dict := [i as parser.Node=>1, i2=>2];
+    dict[i22] = -3;
+    dict[i22] = 3;
+    print(dict[i2],'\n');
+    
+    dict[mm] = -9;
+    dict[mm] = 4;
+    dict[cl] = -10;
+    dict[cl] = 5;
+    dict[f] = -11;
+    dict[f] = 6;
+    dict[s] = -12;
+    dict[s] = 7;
+    dict[c] = -13;
+    dict[c] = 8;
+    dict[cc] = -14;
+    dict[cc] = 9;
+
+    sum := 0;
+    dict.each(val){sum += val}
+    print("Sum: %\n" % [sum]);
+}

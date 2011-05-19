@@ -15,22 +15,84 @@ static void anna_node_hash_func_step(
     anna_node_t *this, void *aux)
 {
     int *res = (int *)aux;
-    *res = (*res << 3) | (*res >> 29);
-    *res += this->node_type;
+    *res ^= this->node_type;
+    int contrib = 0;
+    
     switch(this->node_type)
     {
-	case ANNA_NODE_IDENTIFIER:
-	{
-	    anna_node_identifier_t *i = (anna_node_identifier_t *)this;
-	    *res += wcslen(i->name);
-	}
-
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *i = (anna_node_call_t *)this;
-	    *res += i->child_count;
+	    contrib = i->child_count;
+	    break;
 	}
-    }    
+	
+	case ANNA_NODE_IDENTIFIER:
+	{
+	    anna_node_identifier_t *i = (anna_node_identifier_t *)this;
+	    contrib = wcslen(i->name);
+	    break;
+	}
+
+	case ANNA_NODE_INT_LITERAL:
+	{
+	    anna_node_int_literal_t *i = (anna_node_int_literal_t *)this;
+	    contrib = (int)mpz_get_si(i->payload);
+	    break;
+	}
+
+	case ANNA_NODE_STRING_LITERAL:
+	{
+	    anna_node_string_literal_t *i = (anna_node_string_literal_t *)this;
+	    contrib = (int)i->payload_size;
+	    break;
+	}
+	
+	case ANNA_NODE_CHAR_LITERAL:
+	{
+	    anna_node_char_literal_t *i = (anna_node_char_literal_t *)this;
+	    contrib = (int)i->payload;
+	    break;
+	}
+	case ANNA_NODE_FLOAT_LITERAL:
+	{
+	    anna_node_float_literal_t *i = (anna_node_float_literal_t *)this;
+	    union int_double
+	    {
+		int i;
+		double d;
+	    }
+	    ;
+	    
+	    contrib = (int)i->payload;
+	    break;
+	}
+	
+	case ANNA_NODE_CLOSURE:
+	{
+	    anna_node_closure_t *i = (anna_node_closure_t *)this;
+	    contrib = wcslen(i->payload->name) + i->payload->input_count;
+	    break;
+	}
+	
+	case ANNA_NODE_WHILE:
+	case ANNA_NODE_IF:
+	case ANNA_NODE_AND:
+	case ANNA_NODE_OR:
+	case ANNA_NODE_MAPPING:
+	{
+	    break;
+	}
+	
+	default:
+	{
+	    anna_error(this, L"Can't calculate hash code for specified node type %d", this->node_type);
+	}
+    }
+    
+    *res ^= contrib ^ contrib << 5;
+    *res = (*res << 3) | (*res >> 29);
+    
 }
 
 int anna_node_hash_func( void *data )

@@ -710,6 +710,19 @@ expression10:
 	literal
 	| 
 	any_identifier 
+	|
+	'%' any_identifier
+	{
+	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
+	    string_buffer_t sb;
+	    sb_init(&sb);
+	    sb_printf(&sb, L"%%%ls", ii->name);
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&ii->location,
+		sb_content(&sb));
+	    sb_destroy(&sb);
+	    
+	}
 	| 
 	'(' expression ')'
 	{

@@ -589,6 +589,13 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    return 0;
 	}
 	
+	case ANNA_NODE_CLOSURE:
+	{
+	    anna_node_closure_t *n1 = (anna_node_closure_t *)node1;
+	    anna_node_closure_t *n2 = (anna_node_closure_t *)node2;
+	    return n1->payload - n2->payload;
+	}
+	
 	case ANNA_NODE_INT_LITERAL:
 	{
 	    anna_node_int_literal_t *n1 = (anna_node_int_literal_t *)node1;
@@ -622,6 +629,16 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    if(n1->payload_size != n2->payload_size)
 		return n1->payload_size - n2->payload_size;
 	    return wcsncmp(n1->payload, n2->payload, n1->payload_size);   
+	}
+	
+	case ANNA_NODE_OR:
+	case ANNA_NODE_AND:
+	case ANNA_NODE_MAPPING:
+	{
+	    anna_node_cond_t *n1 = (anna_node_cond_t *)node1;
+	    anna_node_cond_t *n2 = (anna_node_cond_t *)node2;
+	    int d1 = anna_node_compare(n1->arg1, n2->arg1);
+	    return d1?d1:anna_node_compare(n1->arg2, n2->arg2);
 	}
 	
 	default:
@@ -812,7 +829,7 @@ int anna_node_call_validate(
 	    {
 		if(print_error)
 		{
-		    anna_error(call->child[i], L"Invalid named parameter");
+		    anna_error(call->child[i], L"Invalid named parameter %d", p->arg1->node_type);
 		}
 		goto END;
 	    }

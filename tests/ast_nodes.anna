@@ -20,10 +20,12 @@ def main()
     
     cc := parser.Call(?, c, i, s);
     print(cc, ' ', cc.function, ' ', cc.count, ' ', cc[0], ' ', cc[1],'\n');
+
+    cl := parser.Closure(?, def (Int in){in+3});
+    print(cl.payload.inputName,'\n');
+
+    mm := parser.Mapping(?, ast(1), ast('d'));
+    print(mm.from, ' ', mm.to,'\n');
+
     
-    print(f == i, ' ', i==i2, ' ', i2==i22, '\n');
-    
-    dict := [i=>1, i2=>2];
-    dict[i22] = 3;
-    print(dict[i2],'\n');
 }

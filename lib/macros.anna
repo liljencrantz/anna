@@ -1,4 +1,4 @@
-
+/*
 macro ast(node)
 {
     if(node.count != 1)
@@ -8,7 +8,7 @@ macro ast(node)
     }
     return Dummy(node, node[0]);
 }
-
+*/
 macro __range__(node)
 {
     if(node.count != 2)
@@ -27,24 +27,54 @@ macro __range__(node)
 	    return ?;
 	}
 	node[1] = pair[0];
-	node ~= [pair[1]];
+	node = node ~ [pair[1]];
     } else
     {
-	node ~= [NullLiteral(node)];
+	node = node ~ [NullLiteral(node)];
     }
 
     return node;
 }
 
-macro blaj(node)
-{
-    if(node.count == 1)
+macro __mapping__(node)
+{ 
+    a1 := if(node[0] as Identifier)
     {
-	
+	MappingIdentifier(node[0], (node[0] as Identifier).name);
     } else
     {
-
+	node[0];
     }
 
-
+    return Mapping(node, a1, node[1]);
 }
+
+
+
+def parser.Node __update__(parser.Call node)
+{
+    nameId := node.function as parser.Identifier;
+    if(!nameId)
+    {
+	node.function.error("Expected an identifier");
+	return parser.NullLiteral(node);
+    }
+    name := nameId.name[Range(0,-2,1)] ~ "Assign__";
+
+    if(node.count == 1)
+    {
+	return ast(%x = %x.%y()).replace(ast(%x), node[0]).replace(ast(%y), parser.Identifier(node.function, name));
+    }
+    if(node.count == 2)
+    {
+	return ast(%x = %x.%y(%z)).replace(ast(%x), node[0]).replace(ast(%y), parser.Identifier(node.function, name)).replace(ast(%z), node[1]);
+    }
+    node.error("Invalid number of arguments");
+    return parser.NullLiteral(node);
+}
+
+macro __increase__(node){__update__(node)}
+macro __decrease__(node){__update__(node)}
+macro __append__(node){__update__(node)}
+macro __next__(node){__update__(node)}
+macro __prev__(node){__update__(node)}

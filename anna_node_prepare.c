@@ -387,10 +387,13 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 
-	    anna_function_type_t *funt = anna_function_type_unwrap(member->type);
-	    n->return_type = funt->return_type;
+	    if(member)
+	    {
+		anna_function_type_t *funt = anna_function_type_unwrap(member->type);
+		n->return_type = funt->return_type;
 	    
-	    anna_node_calculate_type_param(n->child_count, n->child, 1, funt);
+		anna_node_calculate_type_param(n->child_count, n->child, 1, funt);
+	    }
 	    
 	    break;
 	}

@@ -18,7 +18,7 @@
 #include "anna_member.h"
 #include "anna_vm.h"
 
-static anna_type_t *function_type_base = 0;
+anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
 static array_list_t types=AL_STATIC;
 

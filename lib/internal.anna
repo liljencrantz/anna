@@ -76,7 +76,7 @@ def String __format__Map__(
 		    {
 		        name := fmt[i..(i+end)];
 			res ~= data[name];
-			i+=end;
+			i=i+end;
 		    } else {
 			// ERROR
 		    }

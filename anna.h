@@ -490,6 +490,7 @@ typedef struct
 } anna_function_type_t;
 
 extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type;
+extern anna_type_t *function_type_base;
 extern anna_object_t *null_object, *anna_wrap_method;
 extern int anna_error_count;
 extern struct anna_stack_template *stack_global;
