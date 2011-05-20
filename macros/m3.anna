@@ -1,0 +1,27 @@
+
+macro __range__(node)
+{
+    if(node.count != 2)
+    {
+	node.error("Wrong number of argument for Range macro");
+	return ?;
+    }
+    node.function = Identifier(node, "Range");
+
+    if(((node[1] as Call).function as Identifier).name == "Pair")
+    {
+	var pair = node[1] as Call;
+	if(pair.count != 2)
+	{
+	    node.error("Wrong number of argument for Range macro");
+	    return ?;
+	}
+	node[1] = pair[0];
+	node ~= [pair[1]];
+    } else
+    {
+	node ~= [NullLiteral(node)];
+    }
+
+    return node;
+}

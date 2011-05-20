@@ -1,0 +1,21 @@
+
+macro ast(node)
+{
+    if(node.count != 1)
+    {
+	node.error("ast macro expects exactly one argument");
+	return ?;
+    }
+    return Dummy(node, node[0]);
+}
+
+macro cast(node)
+{
+    if(node.count != 2)
+    {
+	node.error("cast macro expects exactly one argument");
+	return ?;
+    }
+    return Cast(node, node[0], node[1]);
+}
+

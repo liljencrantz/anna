@@ -87,9 +87,9 @@ static anna_node_t *anna_function_setup_arguments(
 	    anna_node_t *val_node = decl->child[2];
 	    int is_variadic=0;
 	    
-	    anna_type_t *d_type = anna_node_resolve_to_type(type_node, f->stack_template);
-	    if(!d_type || d_type == null_type)
+	    if(type_node->node_type == ANNA_NODE_NULL)
 	    {
+		
 		anna_type_t *d_val = anna_node_resolve_to_type(val_node, f->stack_template);
 		if(d_val)
 		{
@@ -102,9 +102,18 @@ static anna_node_t *anna_function_setup_arguments(
 	    }
 	    else
 	    {
-		argv[i] = d_type;
+		anna_type_t *d_type = anna_node_resolve_to_type(type_node, f->stack_template);
+		if(!d_type || d_type == null_type)
+		{
+		    anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
+		}
+		else
+		{
+		    argv[i] = d_type;
+		}
 	    }
 	    
+
 	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
 	    {
 		is_variadic=1;
@@ -116,6 +125,7 @@ static anna_node_t *anna_function_setup_arguments(
 	    {
 		t = anna_list_type_get(t);
 	    }
+//	    wprintf(L"Declare %ls as %ls in %ls\n", argn[i], t->name, f->name);
 	    
 	    anna_stack_declare(
 		f->stack_template, 
@@ -162,30 +172,89 @@ static void anna_function_setup_wrapper(
     }
 }    
 
-static anna_type_t *handle_closure_return(anna_function_t *fun, anna_stack_template_t *stack, anna_type_t *initial)
+static int anna_has_returns(anna_function_t *fun)
 {
-    anna_type_t *res = initial;
+
     array_list_t returns = AL_STATIC;    
-    anna_node_find((anna_node_t *)fun->body, ANNA_NODE_RETURN, &returns);
+    array_list_t closures = AL_STATIC;
+    anna_node_find((anna_node_t *)fun->body, ANNA_NODE_RETURN, &returns);	    
+    int res = 0;
     
     if(al_get_count(&returns))
-	anna_function_setup_interface(fun, stack);
+	res = 1;
 
-    while(al_get_count(&returns))
+    if(!res)
     {
-	
+	anna_node_find((anna_node_t *)fun->body, ANNA_NODE_CLOSURE, &closures);
+	while(al_get_count(&closures))
+	{
+	    anna_node_closure_t *closure = 
+		(anna_node_closure_t *)al_pop(&closures);
+	    if(closure->payload->body && (closure->payload->flags & ANNA_FUNCTION_BLOCK))
+	    {
+		if(anna_has_returns(closure->payload))
+		{
+		    res = 1;
+		    break;
+		}
+	    }
+	}
+    }
+    
+    al_destroy(&returns);	    
+    al_destroy(&closures);   
+    return res;
+}
 
 
-	anna_node_t *ret = (anna_node_t *)al_pop(&returns);
+static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *initial)
+{
+
+    array_list_t closures = AL_STATIC;
+    anna_type_t *res = initial;
+    array_list_t my_returns = AL_STATIC;    
+
+    anna_node_find((anna_node_t *)fun->body, ANNA_NODE_RETURN, &my_returns);
+
+    while(al_get_count(&my_returns))
+    {
+	anna_node_t *ret = (anna_node_t *)al_pop(&my_returns);
 	anna_node_calculate_type(ret, fun->stack_template);
 	if(ret->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
 	{
-	    al_destroy(&returns);
-	    return 0;
+	    res = 0;
+	    goto CLEANUP;
+	    
 	}
 	res = anna_type_intersect(
 	    res, ret->return_type);
     }
+    		
+    anna_node_find((anna_node_t *)fun->body, ANNA_NODE_CLOSURE, &closures);
+    while(al_get_count(&closures))
+    {
+	anna_node_closure_t *closure = 
+	    (anna_node_closure_t *)al_pop(&closures);
+	if(closure->payload->body && (closure->payload->flags & ANNA_FUNCTION_BLOCK))
+	{
+
+	    if(anna_has_returns(closure->payload))
+	    {
+		anna_function_setup_interface(closure->payload, fun->stack_template);
+		res = handle_closure_return(closure->payload, res);
+		if(!res)
+		{
+		    goto CLEANUP;
+		}
+	    }
+	}
+    }
+
+  CLEANUP:
+
+    al_destroy(&closures);
+	    al_destroy(&my_returns);
+  
     return res;
     
 }
@@ -260,28 +329,9 @@ void anna_function_setup_interface(
 		{
 		    return;
 		}
-		f->return_type = last_expression->return_type;
-		array_list_t closures = AL_STATIC;
-		
-		f->return_type = handle_closure_return(f, f->stack_template, f->return_type);
-		
-		anna_node_find((anna_node_t *)f->body, ANNA_NODE_CLOSURE, &closures);
-		while(al_get_count(&closures))
-		{
-		    anna_node_closure_t *closure = 
-			(anna_node_closure_t *)al_pop(&closures);
-		    if(closure->payload->body && (closure->payload->flags & ANNA_FUNCTION_BLOCK))
-		    {
-			
-			anna_node_find((anna_node_t *)closure->payload->body, ANNA_NODE_CLOSURE, &closures);
-			
-			f->return_type = handle_closure_return(closure->payload, f->stack_template, f->return_type);
-			
-		    }		    
-		}
-		
-		
-		
+		f->return_type = last_expression->return_type;		
+		f->return_type = handle_closure_return(f, f->return_type);
+
 	    }
 	}
 	else
@@ -310,7 +360,7 @@ void anna_function_setup_body(
 	return;
     }    
     f->flags |= ANNA_FUNCTION_PREPARED_BODY;
-    
+//    wprintf(L"Setup body of %ls\n",f->name);
     if(f->body)
     {
 	array_list_t ret = AL_STATIC;

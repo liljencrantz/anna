@@ -131,6 +131,7 @@ static void anna_node_calculate_type_internal(
 	    if(!t)
 	    {
 		anna_node_declare_t *decl = anna_stack_get_declaration(stack, id->name);
+		
 		if(decl)
 		{
 		    anna_node_calculate_type((anna_node_t *)decl,stack);
@@ -150,7 +151,8 @@ static void anna_node_calculate_type_internal(
 	    	    
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){
 		anna_error(this, L"Unknown identifier: %ls", id->name);
-//		anna_stack_print(stack);
+		anna_stack_print(stack);
+		CRASH;
 	    }
 	    else
 	    {

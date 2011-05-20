@@ -1,0 +1,69 @@
+
+macro __mapping__(node)
+{ 
+    a1 := if(node[0] as Identifier)
+    {
+	MappingIdentifier(node[0], (node[0] as Identifier).name);
+    } else
+    {
+	node[0];
+    }
+
+    return Mapping(node, a1, node[1]);
+}
+
+def parser.Node __update__(parser.Call node)
+{
+    nameId := node.function as parser.Identifier;
+    if(!nameId)
+    {
+	node.function.error("Expected an identifier");
+	return parser.NullLiteral(node);
+    }
+    /* We'd like to use the Range short hand here, but can't because
+     * that would cause a circular dependency. */
+    name := nameId.name[Range(0,-2,1)] ~ "Assign__";
+
+    if(node.count == 1)
+    {
+	return ast(%x = %x.%y()).replace(ast(%x), node[0]).replace(ast(%y), parser.Identifier(node.function, name));
+    }
+    if(node.count == 2)
+    {
+	return ast(%x = %x.%y(%z)).replace(ast(%x), node[0]).replace(ast(%y), parser.Identifier(node.function, name)).replace(ast(%z), node[1]);
+    }
+    node.error("Invalid number of arguments");
+    return parser.NullLiteral(node);
+}
+
+macro __increase__(node){__update__(node)}
+macro __decrease__(node){__update__(node)}
+macro __append__(node){__update__(node)}
+macro __next__(node){__update__(node)}
+macro __prev__(node){__update__(node)}
+
+def isCallTo(parser.Node node, String name)
+{
+    return ((node as parser.Call).function as parser.Identifier).name == name;
+}
+
+macro __collection__(node)
+{
+    if(node.count > 0 and isCallTo(node[0], "__mapping__"))
+    {
+	node.function = Dummy(node, HashMap);
+	node.each(ch)
+	{
+	    if(!isCallTo(ch, "__mapping__"))
+	    {
+		ch.error("Not a key/value pair");
+		return NullLiteral(node);
+	    }
+	    (ch as Call).function = Dummy(ch, Pair);
+	}
+    } else
+    {
+	node.function = Dummy(node, List);
+    }
+    return node;
+}

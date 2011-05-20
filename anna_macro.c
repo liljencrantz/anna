@@ -107,7 +107,7 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
 	(anna_node_t *)anna_node_create_identifier(&body->location,L"__def__"), 
 	(anna_node_t *)anna_node_create_identifier(
 	    &body->location,
-	    L"!anonymous"),
+	    L"!iterator"),
 	anna_node_create_null(&body->location),
 	declaration_list, 
 	attribute_list, 
@@ -247,60 +247,9 @@ static inline anna_node_t *anna_macro_specialize_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_specialize)
 
-static inline anna_node_t *anna_macro_collection_i(anna_node_call_t *node)
-{
-    if(node->child_count > 0 && anna_node_is_call_to(node->child[0], L"__mapping__"))
-    {
-	anna_node_call_t *p0 = (anna_node_call_t *)node->child[0];
-	CHECK_CHILD_COUNT(p0, L"Map", 2);
-	
-	node->function = 
-	    (anna_node_t *)anna_node_create_dummy(
-		&node->function->location,
-		anna_type_wrap(hash_type));
-	
-	int i;
-	for(i=0; i<node->child_count; i++)
-	{
-	    if(!anna_node_is_call_to(node->child[i], L"__mapping__"))
-	    {
-		anna_error(node->child[i], L"Not a key value pair");
-		return (anna_node_t *)anna_node_create_null(&node->location);
-	    }
-	    anna_node_call_t *pp = (anna_node_call_t *)node->child[i];
-	    CHECK_CHILD_COUNT(pp, L"Map", 2);
-	    
-	    pp->function = 		
-		(anna_node_t *)anna_node_create_dummy(
-		    &pp->function->location,
-		    anna_type_wrap(pair_type));
-	}
-    }
-    else
-    {
-	node->function = 
-	    (anna_node_t *)anna_node_create_dummy(
-		&node->function->location,
-		anna_type_wrap(list_type));
-    }
-    return (anna_node_t *)node;
-}
-ANNA_VM_MACRO(anna_macro_collection)
-
-static inline anna_node_t *anna_macro_ast_i(anna_node_call_t *node)
-{
-    CHECK_CHILD_COUNT(node,L"ast", 1);
-    return (anna_node_t *)anna_node_create_dummy(
-       &node->location,
-       anna_node_wrap(node->child[0]));
-}
-ANNA_VM_MACRO(anna_macro_ast)
-
-
 #include "anna_macro_attribute.c"
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
-#include "anna_macro_cast.c"
 
 static void anna_macro_add(
     anna_stack_template_t *stack, 
@@ -337,7 +286,6 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__const__", &anna_macro_var);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
     anna_macro_add(stack, L"__and__", &anna_macro_and);
-    anna_macro_add(stack, L"ast", &anna_macro_ast);
     anna_macro_add(stack, L"__if__", &anna_macro_if);
     anna_macro_add(stack, L"while", &anna_macro_while);
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
@@ -347,8 +295,6 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"filter", &anna_macro_iter);
     anna_macro_add(stack, L"find", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
-    anna_macro_add(stack, L"__collection__", &anna_macro_collection);
     anna_macro_add(stack, L"type", &anna_macro_type);
-    anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"return", &anna_macro_return);    
 }

@@ -33,6 +33,7 @@
 #include "anna_attribute.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
+array_list_t anna_module_default_macros = AL_STATIC;
 
 static wchar_t *anna_module_search(
     anna_stack_template_t *parent, wchar_t *name)
@@ -216,6 +217,19 @@ void anna_module_init()
     al_push(&stack_global->expand, stack_macro);
     
     null_object->type = null_type;
+
+    anna_stack_template_t *mm = anna_module(stack_global, L"m1", L"macros/m1.anna");
+    anna_module_load_i(mm);
+    al_push(&anna_module_default_macros, mm);
+    
+    mm = anna_module(stack_global, L"m2", L"macros/m2.anna");
+    anna_module_load_i(mm);
+    al_push(&anna_module_default_macros, mm);
+    
+    mm = anna_module(stack_global, L"m3", L"macros/m3.anna");
+    anna_module_load_i(mm);
+    al_push(&anna_module_default_macros, mm);
+    
     
     anna_module_init_recursive(L"lib", stack_global);
     anna_module_insert_internal(stack_lang);
@@ -293,8 +307,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     array_list_t import = AL_STATIC;
     array_list_t expand = AL_STATIC;
 
-    al_push(&expand, L"macros");
-
     if(module_stack->flags & ANNA_STACK_LOADED)
     {
 	return;
@@ -323,6 +335,12 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     macro_stack->flags |= ANNA_STACK_NAMESPACE;
     anna_module_find_expand(program, &expand);    
     anna_module_find_import(program, &import);
+    
+    for(i=0; i<al_get_count(&anna_module_default_macros); i++ )
+    {
+	anna_stack_template_t *mod = al_get(&anna_module_default_macros, i);
+	al_push(&macro_stack->expand, mod);
+    }
     
     for(i=0; i<al_get_count(&expand); i++ )
     {

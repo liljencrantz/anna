@@ -216,6 +216,7 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_null_wrapper.c"
 #include "anna_node_dummy_wrapper.c"
 #include "anna_node_closure_wrapper.c"
+#include "anna_node_cast_wrapper.c"
 #include "anna_node_mapping_wrapper.c"
 
 void anna_node_create_wrapper_types()
@@ -258,7 +259,7 @@ void anna_node_create_wrapper_types()
 	    0,
 	    0,
 	    0,
-	    0,
+	    anna_node_create_cast_wrapper_type(stack),
 	    anna_node_create_mapping_wrapper_type(stack),
 	    mapping_id_type,
 	    0,
