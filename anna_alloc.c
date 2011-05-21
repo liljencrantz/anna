@@ -56,9 +56,13 @@ static void anna_alloc_mark_function(anna_function_t *o)
     if( o->flags & ANNA_USED)
 	return;
     o->flags |= ANNA_USED;
-        
+    
     if(o->body)
+    {
+	//wprintf(L"FAFADS %ls\n", o->name);
 	anna_alloc_mark_node((anna_node_t *)o->body);
+    }
+    
     if(o->definition)
 	anna_alloc_mark_node((anna_node_t *)o->definition);
     anna_alloc_mark_node((anna_node_t *)o->attribute);
@@ -101,10 +105,10 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
     int i;
     for(i=0; i<o->count; i++)
     {
-	if(o->member[i])
+/*	if(o->member[i])
 	    anna_alloc_mark_object(o->member[i]);
 	if(o->member_type[i])
-	    anna_alloc_mark_type(o->member_type[i]);
+	anna_alloc_mark_type(o->member_type[i]);*/
 	if(o->member_declare_node[i])
 	    anna_alloc_mark_node((anna_node_t *)o->member_declare_node[i]);
     }
@@ -148,6 +152,12 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    int i;
+	    if(!n->function)
+	    {
+		anna_error(n, L"FASFDDSA");
+		anna_node_print(5, n);		
+		CRASH;
+	    }
 	    
 	    anna_alloc_mark_node(n->function);
 	    for(i=0; i<n->child_count; i++)
@@ -388,6 +398,7 @@ void anna_alloc_mark_object(anna_object_t *obj)
     anna_alloc_mark_type(obj->type);
     anna_function_t *f = anna_function_unwrap(obj);
     if(f){
+//	anna_object_print(obj);
 	anna_alloc_mark_function(f);
     }
     anna_type_t *wt = anna_type_unwrap(obj);
@@ -582,9 +593,9 @@ static void anna_alloc_free(void *obj)
 	case ANNA_STACK_TEMPLATE:
 	{
 	    anna_stack_template_t *o = (anna_stack_template_t *)obj;
-	    free(o->member_type);
+//	    free(o->member_type);
 	    free(o->member_declare_node);
-	    free(o->member);
+//	    free(o->member);
 	    free(o->member_flags);
 	    al_destroy(&o->import);
 	    hash_foreach(&o->member_string_identifier, free_val);

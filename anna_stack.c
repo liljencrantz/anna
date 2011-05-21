@@ -17,6 +17,7 @@
 #include "anna_member.h"
 #include "anna_alloc.h"
 #include "anna_intern.h"
+#include "anna_vm.h"
 
 typedef struct
 {
@@ -29,8 +30,6 @@ static void anna_stack_ensure_capacity(anna_stack_template_t *stack, size_t new_
 {
     if(stack->capacity < new_sz){
 	size_t sz = maxi(8, maxi(new_sz, stack->capacity*2));
-	stack->member = realloc(stack->member, sizeof(anna_object_t *)*sz);
-	stack->member_type = realloc(stack->member_type, sizeof(anna_type_t *)*sz);
 	stack->member_declare_node = realloc(stack->member_declare_node, sizeof(anna_node_t *)*sz);
 	stack->member_flags = realloc(stack->member_flags, sizeof(int)*sz);
 	stack->capacity = sz;
@@ -58,6 +57,15 @@ void anna_stack_declare(anna_stack_template_t *stack,
     if(!name)
 	CRASH;
 
+    if(stack->flags & ANNA_STACK_DECLARE)
+    {
+	return;
+    }
+
+    if(name[0]==L'!' && (wcscmp(name, L"!unused")!=0))
+	return;
+    
+    
     if(!initial_value)
     {
 	wprintf(
@@ -86,9 +94,22 @@ void anna_stack_declare(anna_stack_template_t *stack,
     
     hash_put(&stack->member_string_identifier, anna_intern(name), offset);
     stack->member_flags[*offset] = flags;
-    stack->member_type[*offset] = type;
     stack->member_declare_node[*offset] = 0;
-    stack->member[*offset] = initial_value;
+    
+    anna_type_t *res = anna_stack_wrap(stack)->type;    
+    stack->flags |= ANNA_STACK_DECLARE;
+    mid_t mid = anna_member_create(
+	res,
+	-1,
+	name,
+	1,
+	type);    
+    stack->flags = stack->flags & ~ANNA_STACK_DECLARE;
+    
+    *anna_entry_get_addr_static(
+	res,
+	mid) = (anna_entry_t *)initial_value;
+
 }
 
 void anna_stack_declare2(anna_stack_template_t *stack, 
@@ -115,9 +136,17 @@ void anna_stack_declare2(anna_stack_template_t *stack,
     *offset = stack->count++;
     hash_put(&stack->member_string_identifier, wcsdup(declare_node->name), offset);
     stack->member_flags[*offset] = 0;
-    stack->member_type[*offset] = 0;
     stack->member_declare_node[*offset] = declare_node;
-    stack->member[*offset] = null_object;
+
+    anna_type_t *res = anna_stack_wrap(stack)->type;
+    stack->flags |= ANNA_STACK_DECLARE;
+    anna_member_create(
+	res,
+	-1,
+	declare_node->name,
+	1,
+	0);
+    stack->flags = stack->flags & ~ANNA_STACK_DECLARE;
 }
 
 anna_stack_template_t *anna_stack_template_search(
@@ -172,9 +201,12 @@ anna_object_t *anna_stack_macro_get(
 	{
 	    anna_stack_template_t *exp = al_get(&stack->expand, i);
 	    size_t *offset = (size_t *)hash_get(&exp->member_string_identifier, name);
+	    
 	    if(offset) 
 	    {
-		return exp->member[*offset];
+		return anna_as_obj(
+		    anna_entry_get(
+			exp->wrapper, anna_mid_get(name)));
 	    }
 	}
 	stack = stack->parent;
@@ -182,20 +214,14 @@ anna_object_t *anna_stack_macro_get(
     return 0;
 }
 
-anna_object_t **anna_stack_addr_get(anna_stack_template_t *stack, wchar_t *name)
-{
-    anna_stack_template_t *f = anna_stack_template_search(stack, name);
-    if(!f)
-	return 0;
-    return &f->member[*(size_t *)hash_get(&f->member_string_identifier, name)];
-}
-
 anna_object_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name)
 {
     size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
     if(offset) 
     {
-	return stack->member[*offset];
+	return anna_as_obj(
+	    anna_entry_get(
+		stack->wrapper, anna_mid_get(name)));
     }
     return 0;
 }
@@ -206,17 +232,22 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_object_t *
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return;
-    f->member[*(size_t *)hash_get(&f->member_string_identifier, name)] = value;
+
+    anna_type_t *res = anna_stack_wrap(f)->type;
+    *anna_entry_get_addr_static(
+	res,
+	anna_mid_get(name)) = (anna_entry_t *)value;
 }
 
 anna_object_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
 {
-    anna_object_t **res =anna_stack_addr_get(stack, name);
-    if(!res)
-    {
+    anna_stack_template_t *f = anna_stack_template_search(stack, name);
+    if(!f)
 	return 0;
-    }
-    return *res;
+    anna_type_t *res = anna_stack_wrap(f)->type;
+    return anna_as_obj(anna_entry_get_static(
+	res,
+	anna_mid_get(name)));
 }
 
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
@@ -224,7 +255,8 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
-    return f->member_type[*(size_t *)hash_get(&f->member_string_identifier, name)];
+    anna_type_t *res = anna_stack_wrap(f)->type;
+    return anna_member_get(res, anna_mid_get(name))->type;
 }
 
 int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)
@@ -251,7 +283,8 @@ void anna_stack_set_type(anna_stack_template_t *stack, wchar_t *name, anna_type_
 	anna_stack_print(stack);
 	CRASH;
     }
-    f->member_type[*(size_t *)hash_get(&f->member_string_identifier, name)] = type;
+    anna_type_t *res = anna_stack_wrap(f)->type;    
+    anna_member_type_set(res, anna_mid_get(name), type);
 }
 
 anna_node_declare_t *anna_stack_get_declaration(
@@ -293,10 +326,9 @@ anna_sid_t anna_stack_sid_create(anna_stack_template_t *stack, wchar_t *name)
 static void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {
     wchar_t *name = (wchar_t *)key_ptr;
-    size_t *offset=(size_t *)val_ptr;
     anna_stack_template_t *stack = (anna_stack_template_t *)aux_ptr;
-    anna_type_t *type = stack->member_type[*offset];
-    //anna_object_t *value = stack->member[*offset];
+    anna_type_t *res = anna_stack_wrap(stack)->type;
+    anna_type_t *type = anna_member_get(res, anna_mid_get(name))->type;
     wprintf(L"%ls %ls = %ls\n", type?type->name:L"<UNKNOWN>", name, L"...");
 }
 
@@ -340,29 +372,13 @@ static void anna_stack_save_name(void *key_ptr,void *val_ptr, void *aux_ptr)
     al_push(al, name);
 }
 
-/*
-static void anna_stack_create_property(anna_type_t *res, anna_stack_template_t *stack, wchar_t *name)
-{
-    size_t *offset = hash_get(&stack->member_string_identifier, name);
-    anna_type_t *type = stack->member_type[*offset];
-    anna_object_t *value = stack->member[*offset];
-
-    if(!type)
-    {
-	debug(D_CRITICAL, L"Dang it. Stack variable %ls totally doesn't have a type!\n", name);
-	CRASH;
-    }
-    
-    anna_const_property_create(res, -1, name, value);
-}
-*/
 static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 {
-    anna_type_t *res = anna_type_native_create(
+    anna_type_t *res = anna_type_stack_create(
 	anna_util_identifier_generate(
 	    L"StackType",
 	    stack->function?&(stack->function->definition->location):0),
-	stack_global);
+	stack);
     anna_member_create(
 	res, ANNA_MID_STACK_PAYLOAD,  L"!stackPayload", 
 	0, null_type);
@@ -374,36 +390,6 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 	null_type);
     *(anna_entry_get_addr_static(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_entry_t *)stack;
     return res;
-}
-
-void anna_stack_populate_wrapper(anna_stack_template_t *stack)
-{
-//    anna_stack_print(stack);
-    anna_type_t *res = anna_stack_wrap(stack)->type;
-    int i;
-    array_list_t names = AL_STATIC;
-    hash_foreach2(&stack->member_string_identifier, &anna_stack_save_name, &names);
-    assert(al_get_count(&names) == stack->count);
-    for(i=0; i<al_get_count(&names); i++)
-    {
-	wchar_t *name = (wchar_t *)al_get(&names, i);
-	size_t *offset = hash_get(&stack->member_string_identifier, name);
-	anna_type_t *mem_type = stack->member_type[*offset];
-	anna_object_t *initial_value = stack->member[*offset];
-	
-	mid_t mid = anna_member_create(
-	    res,
-	    -1,
-	    name,
-	    1,
-	    mem_type);
-	*anna_entry_get_addr_static(
-	    res,
-	    mid) = (anna_entry_t *)initial_value;	
-    }
-    al_destroy(&names);
-    
-//    anna_type_print(res);
 }
 
 anna_object_t *anna_stack_wrap(anna_stack_template_t *stack)

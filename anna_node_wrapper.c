@@ -284,7 +284,6 @@ void anna_node_create_wrapper_types()
 	    type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
     }
     
-    anna_stack_populate_wrapper(stack);
     anna_stack_declare(
 	stack_global,
 	L"parser",

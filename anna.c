@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 #include <locale.h>
+#include <sys/prctl.h>
 
 #include "common.h"
 #include "util.h"
@@ -258,8 +259,17 @@ int main(int argc, char **argv)
     }
     
     wchar_t *module_name = str2wcs(argv[1]);
+
+    char *name = strrchr(argv[1], '/');
+    if(!name)
+	name = argv[1];
+    else
+	name++;
+    
+    prctl(PR_SET_NAME,name,0,0,0);
     
     debug(D_SPAM,L"Initializing interpreter...\n");    
+    anna_alloc_gc_block();
     anna_init();
     null_object = anna_object_create_raw(anna_align(sizeof(anna_object_t)));    
     anna_module_init();
@@ -273,17 +283,16 @@ int main(int argc, char **argv)
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     
-    anna_stack_populate_wrapper(stack_global);
-
-    anna_object_t **main_wrapper_ptr = anna_stack_addr_get(module, L"main");
-    if(!main_wrapper_ptr)
+    anna_object_t *main_wrapper = anna_stack_get(module, L"main");
+    if(!main_wrapper)
     {
 	debug(D_CRITICAL,L"No main method defined in module %ls\n", module_name);
 	exit(1);	
     }
     
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    
-    anna_vm_run(*main_wrapper_ptr, 0, 0);
+    anna_alloc_gc_unblock();
+    anna_vm_run(main_wrapper, 0, 0);
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN
     anna_gc_destroy();

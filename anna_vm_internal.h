@@ -210,7 +210,7 @@ typedef struct
 size_t anna_bc_op_size(char instruction);
 
 extern char *anna_vmstack_static_ptr;
-extern char anna_vmstack_static_data[18192];
+extern char anna_vmstack_static_data[48192];
 
 static inline anna_vmstack_t *anna_frame_get_static(size_t sz)
 {
@@ -245,6 +245,20 @@ static inline anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_objec
     caller->top -= (fun->input_count+1);
     memcpy(&res->base[0], caller->top+1,
 	   sizeof(anna_object_t *)*fun->input_count);
+    if(fun->input_count > fun->variable_count)
+    {
+	wprintf(
+	    L"AFDSFDSA %ls %d %d %d\n", 
+	    fun->name, fun->variable_count, fun->stack_template->count,
+	    fun->input_count);
+	anna_stack_print(fun->stack_template);
+	
+
+	CRASH;
+    }
+    
+    //wprintf(L"LALLLLAAA %d %d %d\n", fun->input_count, fun->variable_count, (char *)res - (char *)(&anna_vmstack_static_data[0]));
+    
     memset(&res->base[fun->input_count], 0, sizeof(anna_object_t *)*(fun->variable_count-fun->input_count));
     res->top = &res->base[fun->variable_count];
     

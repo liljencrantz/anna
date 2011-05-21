@@ -144,6 +144,14 @@ void anna_member_types_create(anna_stack_template_t *stack)
     anna_member_variable_type_create(stack);    
 }
 
+void anna_member_type_set(
+    anna_type_t *type,
+    mid_t mid,
+    anna_type_t *member_type)
+{
+    type->mid_identifier[mid]->type = member_type;
+}
+
 mid_t anna_member_create(
     anna_type_t *type,
     mid_t mid,
@@ -151,11 +159,13 @@ mid_t anna_member_create(
     int storage,
     anna_type_t *member_type)
 {
+/*
     if(!member_type)
     {
 	wprintf(L"Critical: Create a member with unspecified type\n");
 	CRASH;
     }
+*/
     //wprintf(L"Create member %ls in type %ls at mid %d\n", name, type->name, mid);
     
     if(hash_get(&type->name_identifier, name))

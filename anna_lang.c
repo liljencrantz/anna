@@ -141,7 +141,6 @@ anna_stack_template_t *anna_lang_load()
 
     anna_function_implementation_init(stack_lang);
 
-    anna_stack_populate_wrapper(stack_lang);
     anna_stack_declare(
 	stack_global,
 	L"lang",

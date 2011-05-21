@@ -24,7 +24,7 @@
 #include "anna_alloc.h"
 
 char *anna_vmstack_static_ptr;
-char anna_vmstack_static_data[18192];
+char anna_vmstack_static_data[48192];
 
 static void anna_vmstack_print(anna_vmstack_t *stack);
 

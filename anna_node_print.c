@@ -65,6 +65,13 @@ static int is_simple(anna_node_call_t *call, int max_items)
 static void anna_node_print_internal(
     string_buffer_t *sb, anna_node_t *this, int indentation)
 {
+    if(!this)
+    {
+	anna_indent(sb,indentation);
+	sb_printf(sb,L"<null>");
+	return;
+    }
+    
     switch(this->node_type)
     {
 	case ANNA_NODE_INT_LITERAL:

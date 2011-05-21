@@ -158,9 +158,10 @@ static void anna_module_insert_internal(anna_stack_template_t *lang)
     assert(int_mod);
     
     int i;
-    for(i=0; i<int_mod->count; i++)
+    anna_type_t *int_mod_type = anna_stack_wrap(int_mod)->type;
+    for(i=1; i<int_mod_type->static_member_count; i++)
     {
-	anna_object_t *fun_obj = int_mod->member[i];
+	anna_object_t *fun_obj = int_mod_type->static_member[i];
 	assert(fun_obj);
 	anna_function_t *fun = anna_function_unwrap(fun_obj);
 	assert(fun);
@@ -458,9 +459,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 		ANNA_STATUS_MODULE_SETUP_ERROR);
 	}
     }
-    
-    anna_stack_populate_wrapper(module_stack);
-    
+        
     debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);	
     anna_node_each((anna_node_t *)ggg, &anna_module_compile, 0);
     
@@ -473,14 +472,12 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     sb_init(&fn);
     sb_printf(&fn, L"%ls.anna", module_name);
     
-    anna_alloc_gc_block();
 
     anna_stack_template_t *module = anna_module(
 	stack_global, 0, sb_content(&fn));
     anna_module_load_i(module);
     
     sb_destroy(&fn);
-    anna_alloc_gc_unblock();
 
     return anna_stack_wrap(module);
 }

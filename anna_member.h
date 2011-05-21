@@ -58,4 +58,9 @@ size_t anna_property_create(
 mid_t anna_const_property_create(
     anna_type_t *type, mid_t mid, wchar_t *name, anna_object_t *value);
 
+void anna_member_type_set(
+    anna_type_t *type,
+    mid_t mid,
+    anna_type_t *member_type);
+
 #endif

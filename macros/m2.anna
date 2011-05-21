@@ -1,3 +1,4 @@
+use(parser);
 
 macro __mapping__(node)
 { 
@@ -12,13 +13,13 @@ macro __mapping__(node)
     return Mapping(node, a1, node[1]);
 }
 
-def parser.Node __update__(parser.Call node)
+def Node __update__(Call node)
 {
-    nameId := node.function as parser.Identifier;
+    nameId := node.function as Identifier;
     if(!nameId)
     {
 	node.function.error("Expected an identifier");
-	return parser.NullLiteral(node);
+	return NullLiteral(node);
     }
     /* We'd like to use the Range short hand here, but can't because
      * that would cause a circular dependency. */
@@ -26,14 +27,14 @@ def parser.Node __update__(parser.Call node)
 
     if(node.count == 1)
     {
-	return ast(%x = %x.%y()).replace(ast(%x), node[0]).replace(ast(%y), parser.Identifier(node.function, name));
+	return ast(%x = %x.%y()).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name));
     }
     if(node.count == 2)
     {
-	return ast(%x = %x.%y(%z)).replace(ast(%x), node[0]).replace(ast(%y), parser.Identifier(node.function, name)).replace(ast(%z), node[1]);
+	return ast(%x = %x.%y(%z)).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1]);
     }
     node.error("Invalid number of arguments");
-    return parser.NullLiteral(node);
+    return NullLiteral(node);
 }
 
 macro __increase__(node){__update__(node)}
@@ -42,9 +43,9 @@ macro __append__(node){__update__(node)}
 macro __next__(node){__update__(node)}
 macro __prev__(node){__update__(node)}
 
-def isCallTo(parser.Node node, String name)
+def isCallTo(Node node, String name)
 {
-    return ((node as parser.Call).function as parser.Identifier).name == name;
+    return ((node as Call).function as Identifier).name == name;
 }
 
 macro __collection__(node)

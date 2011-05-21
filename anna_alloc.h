@@ -94,5 +94,4 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o);
 void anna_alloc_gc_block(void);
 void anna_alloc_gc_unblock(void);
 
-
 #endif

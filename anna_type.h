@@ -12,6 +12,7 @@ anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type);
 anna_node_call_t *anna_type_definition_get(anna_type_t *type);
 
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack);
+anna_type_t *anna_type_stack_create(wchar_t *name, anna_stack_template_t *stack);
 
 void anna_type_copy(anna_type_t *dst, anna_type_t *src);
 

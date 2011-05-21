@@ -15,11 +15,10 @@ struct anna_sid
 
 typedef struct anna_sid anna_sid_t;
 
-
-
 #define ANNA_STACK_NAMESPACE 1024
 #define ANNA_STACK_LOADED 2048
 #define ANNA_STACK_THIS 4096
+#define ANNA_STACK_DECLARE 8196
 
 /* Stack member flags */
 #define ANNA_STACK_READONLY 1
@@ -35,9 +34,8 @@ typedef struct anna_sid anna_sid_t;
 struct anna_stack_template
 {
     /**
-       Store flags for this stack. Currently only used by the GC to
-       mark this allocation as a stack.
-     */
+       Store flags for this stack. 
+    */
     int flags;
     struct anna_stack_template *parent;
     size_t count;
@@ -49,15 +47,13 @@ struct anna_stack_template
        An object representing this stack frame
     */
     struct anna_object *wrapper;
-    struct anna_type **member_type;  
     struct anna_node_declare **member_declare_node;  
     int *member_flags;
     array_list_t import;
     array_list_t expand;
-    struct anna_object **member;
     /**
        Only used by modules. Full name of module location.
-     */
+    */
     wchar_t *filename;
 };
 
@@ -104,8 +100,6 @@ void anna_stack_print(anna_stack_template_t *stack);
 int anna_stack_depth(anna_stack_template_t *stack);
 
 void anna_stack_print_trace(anna_stack_template_t *stack);
-
-void anna_stack_populate_wrapper(anna_stack_template_t *stack);
 
 void anna_stack_prepare(anna_type_t *type);
 
