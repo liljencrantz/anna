@@ -269,7 +269,7 @@ static void anna_module_find_import_internal(
 }
 static void anna_module_find_import(anna_node_t *module, array_list_t *import)
 {
-    anna_module_find_import_internal(module, L"import", import);
+    anna_module_find_import_internal(module, L"use", import);
 }
 
 static void anna_module_find_expand(anna_node_t *module, array_list_t *import)

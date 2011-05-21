@@ -76,7 +76,6 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
 		   L"Invalid arguments for iteration");
     }
     
-
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_BLOCK(node->child[node->child_count-1]);
 
