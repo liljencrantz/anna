@@ -14,7 +14,7 @@ static inline anna_entry_t *anna_node_closure_wrapper_i_init_i(
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
     *(anna_node_closure_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD)=
 	anna_node_create_closure(
-	    &source->location,
+	    source?&source->location:0,
 	    anna_function_unwrap(anna_as_obj(param[2])));
     return param[0];
 }

@@ -13,7 +13,7 @@ static inline anna_entry_t *anna_node_null_wrapper_i_init_i(anna_entry_t **param
 	anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
 	*(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD)=
 	    anna_node_create_null(
-		&source->location);
+		source?&source->location:0);
     }
     return param[0];
 }

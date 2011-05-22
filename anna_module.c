@@ -231,6 +231,18 @@ void anna_module_init()
     anna_module_load_i(mm);
     al_push(&anna_module_default_macros, mm);
     
+    mm = anna_module(stack_global, L"m4", L"macros/m4.anna");
+    anna_module_load_i(mm);
+    al_push(&anna_module_default_macros, mm);
+    
+    mm = anna_module(stack_global, L"m5", L"macros/m5.anna");
+    anna_module_load_i(mm);
+    al_push(&anna_module_default_macros, mm);
+    
+    mm = anna_module(stack_global, L"m6", L"macros/m6.anna");
+    anna_module_load_i(mm);
+    al_push(&anna_module_default_macros, mm);
+    
     
     anna_module_init_recursive(L"lib", stack_global);
     anna_module_insert_internal(stack_lang);

@@ -1,0 +1,99 @@
+use(parser);
+
+def Node iterDeclare(Node id)
+{
+    ast(__var__(%id, ?, ?, {})).replace(ast(%id), id);
+//    ast(__var__(%id, ?, ?, {})) % {"x": id}
+}
+
+def Node __iter__(Call node)
+{
+    checkNodeType(node.function, Call);
+
+    n := List«Node»();  
+    if(node.count < 2 or node.count > 3)
+    {
+	node.error("Invalid arguments for iteration");
+    }
+    
+    checkNodeType(node[0], Identifier);
+    checkNodeBlock(node[-1]);
+    body := node[-1];
+
+    if(node.count == 2)
+    {
+	n[0] = iterDeclare(Identifier(body, "!unused"));
+	n[1] = iterDeclare(node[0]);
+    } else
+    {
+	checkNodeType(node[1], Identifier);
+	n[0] = iterDeclare(node[0]);
+	n[1] = iterDeclare(node[1]);
+    }
+    
+    attr := ast({block});
+    decl := Call(body, Identifier(body, "__block__"), n[0], n[1]);    
+
+    fun := node.function as Call;
+    origName := fun[1] as Identifier;  
+
+    fun[1] = Identifier(fun[1], "__" ~ origName.name ~ "__");
+
+    res := Call(
+	node, 
+	fun,  
+	Call(
+	    body, 
+	    Identifier(body, "__def__"),
+	    Identifier(body, "!iterator"), 
+	    NullLiteral(body),
+	    decl,
+	    attr, 
+	    body));
+/*
+    if(origName == "map")
+    {
+    /*
+      %x => %x as RTO(%x)«RTO(%x[-1])»
+    */
+	return Call(
+	    node, Identifier(node, "cast"),
+	    node,
+	    Call(
+		node,
+		Identifier(node, "__specialize__"),
+		ReturnOf(node,TypeOf(node, node, -1))
+		Call(
+		    node,
+		    Identifier(node, "__block__"),
+		    ReturnOf(node,TypeOf(node, node, node.count-1)))));
+    }
+*/
+/*
+    if(wcscmp(orig_name->name, L"map")==0)
+    {
+	anna_node_t *res = (anna_node_t *)anna_node_create_call2(
+	    &node->location, 
+	    anna_node_create_identifier(&node->location,L"cast"), 
+	    node, 
+	    anna_node_create_call2(
+		&node->location,
+		anna_node_create_identifier(&node->location, L"__specialize__"),
+		anna_node_create_type_lookup_return(
+		    &node->location, 
+		    node,
+		    -1),
+		anna_node_create_block2(
+		    &node->location, 
+		    anna_node_create_type_lookup_return(&node->location, node, node->child_count-1)
+		    )));
+	
+	return res;
+    }
+*/
+    return res;
+}
+
+macro each(node){__iter__(node)}
+macro filter(node){__iter__(node)}
+macro find(node){__iter__(node)}

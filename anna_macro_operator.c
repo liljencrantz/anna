@@ -20,7 +20,7 @@ static inline anna_node_t *anna_macro_assign_i(struct anna_node_call *node)
 	{
 
 	    anna_node_call_t *call = node_cast_call(node->child[0]);
-	    anna_node_print(0, call->function);
+	    //    anna_node_print(0, call->function);
 
 	    if(call->function->node_type == ANNA_NODE_IDENTIFIER)
 	    {
@@ -102,22 +102,3 @@ static inline anna_node_t *anna_macro_member_get_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_member_get)
 
-static inline anna_node_t *anna_macro_member_set_i(anna_node_call_t *node)
-{
-/*
-  wprintf(L"member_get on node at %d\n", node);
-  anna_node_print(0, (anna_node_t *)node);
-  wprintf(L"\n");
-*/
-    CHECK_CHILD_COUNT(node,L"member assignment", 3);
-    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
-    
-    anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
-    mid_t mid = anna_mid_get(name_node->name);
-
-    return (anna_node_t *)anna_node_create_member_set(&node->location,
-						      node->child[0], 
-						      mid,
-						      node->child[2]);
-}
-ANNA_VM_MACRO(anna_macro_member_set)

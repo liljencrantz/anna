@@ -1,70 +1,45 @@
-use(parser);
 
-macro __mapping__(node)
-{ 
-    a1 := if(node[0] as Identifier)
-    {
-	MappingIdentifier(node[0], (node[0] as Identifier).name);
-    } else
-    {
-	node[0];
-    }
-
-    return Mapping(node, a1, node[1]);
-}
-
-def Node __update__(Call node)
+macro __memberSet__(node)
 {
-    nameId := node.function as Identifier;
-    if(!nameId)
+    if(node.count != 3)
     {
-	node.function.error("Expected an identifier");
+	node.error("Expected three arguments");
 	return NullLiteral(node);
     }
-    /* We'd like to use the Range short hand here, but can't because
-     * that would cause a circular dependency. */
-    name := nameId.name[Range(0,-2,1)] ~ "Assign__";
-
-    if(node.count == 1)
+    if(! (node[1] as Identifier))
     {
-	return ast(%x = %x.%y()).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name));
+	node.error("Member is not an identifier");
+	return NullLiteral(node);
     }
-    if(node.count == 2)
-    {
-	return ast(%x = %x.%y(%z)).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1]);
-    }
-    node.error("Invalid number of arguments");
-    return NullLiteral(node);
+    return MemberSet(node, node[0], (node[1] as Identifier).name, node[2]);
 }
 
-macro __increase__(node){__update__(node)}
-macro __decrease__(node){__update__(node)}
-macro __append__(node){__update__(node)}
-macro __next__(node){__update__(node)}
-macro __prev__(node){__update__(node)}
-
-def isCallTo(Node node, String name)
+macro checkNodeType(node)
 {
-    return ((node as Call).function as Identifier).name == name;
-}
-
-macro __collection__(node)
-{
-    if(node.count > 0 and isCallTo(node[0], "__mapping__"))
-    {
-	node.function = Dummy(node, HashMap);
-	node.each(ch)
+    return ast(
+	if(! (%x as %y) )
 	{
-	    if(!isCallTo(ch, "__mapping__"))
-	    {
-		ch.error("Not a key/value pair");
-		return NullLiteral(node);
-	    }
-	    (ch as Call).function = Dummy(ch, Pair);
+	    %x.error("Unexpected node type. Expected node of type "~ %y); 
+	    return NullLiteral(%x);
+	}).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
+}
+
+macro checkNodeBlock(node)
+{
+    return ast(
+	if(! (((%x as Call).function as Identifier).name == "__block__"))
+	{
+	    %x.error("Expected a block definition"); 
+	    return NullLiteral(%x);
+	}).replace(ast(%x), node[0]);
+}
+macro checkCallCount(node)
+{
+    return ast(
+	if(%node.count != %count)
+	{
+	    %node.error("Call has " ~ %node.count ~ " paramtersr, expected " ~ %count);
+	    return NullLiteral(%node);
 	}
-    } else
-    {
-	node.function = Dummy(node, List);
-    }
-    return node;
+	).replace(ast(%node), node[0]).replace(ast(%count), node[1]);
 }

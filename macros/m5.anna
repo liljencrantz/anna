@@ -1,0 +1,28 @@
+use(parser);
+
+def isCallTo(Node node, String name)
+{
+    return ((node as Call).function as Identifier).name == name;
+}
+
+macro __collection__(node)
+{
+    if(node.count > 0 and isCallTo(node[0], "__mapping__"))
+    {
+	node.function = Dummy(node, HashMap);
+	node.each(ch)
+	{
+	    if(!isCallTo(ch, "__mapping__"))
+	    {
+		ch.error("Not a key/value pair");
+		return NullLiteral(node);
+	    }
+	    (ch as Call).function = Dummy(ch, Pair);
+	}
+    } else
+    {
+	node.function = Dummy(node, List);
+    }
+    return node;
+}
+

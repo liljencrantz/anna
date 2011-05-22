@@ -17,7 +17,7 @@ static inline anna_entry_t *anna_node_int_literal_wrapper_i_init_i(
 	this,
 	ANNA_MID_NODE_PAYLOAD)=
 	(anna_node_t *)anna_node_create_int_literal(
-	    &source->location,
+	    source?&source->location:0,
 	    *anna_int_unwrap(anna_as_obj(param[2])));
     return param[0];
 }

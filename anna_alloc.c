@@ -105,10 +105,6 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
     int i;
     for(i=0; i<o->count; i++)
     {
-/*	if(o->member[i])
-	    anna_alloc_mark_object(o->member[i]);
-	if(o->member_type[i])
-	anna_alloc_mark_type(o->member_type[i]);*/
 	if(o->member_declare_node[i])
 	    anna_alloc_mark_node((anna_node_t *)o->member_declare_node[i]);
     }
@@ -593,9 +589,7 @@ static void anna_alloc_free(void *obj)
 	case ANNA_STACK_TEMPLATE:
 	{
 	    anna_stack_template_t *o = (anna_stack_template_t *)obj;
-//	    free(o->member_type);
 	    free(o->member_declare_node);
-//	    free(o->member);
 	    free(o->member_flags);
 	    al_destroy(&o->import);
 	    hash_foreach(&o->member_string_identifier, free_val);

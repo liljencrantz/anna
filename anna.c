@@ -266,7 +266,17 @@ int main(int argc, char **argv)
     else
 	name++;
     
-    prctl(PR_SET_NAME,name,0,0,0);
+    if(strlen(name) > 15)
+    {
+	name = strdup(name);
+	name[16] = 0;
+	prctl(PR_SET_NAME,name,0,0,0);
+	free(name);
+    }
+    else
+    {
+	prctl(PR_SET_NAME,name,0,0,0);
+    }
     
     debug(D_SPAM,L"Initializing interpreter...\n");    
     anna_alloc_gc_block();

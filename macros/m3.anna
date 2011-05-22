@@ -1,27 +1,42 @@
+use(parser);
 
-macro __range__(node)
-{
-    if(node.count != 2)
+macro __mapping__(node)
+{ 
+    a1 := if(node[0] as Identifier)
     {
-	node.error("Wrong number of argument for Range macro");
-	return ?;
-    }
-    node.function = Identifier(node, "Range");
-
-    if(((node[1] as Call).function as Identifier).name == "Pair")
-    {
-	var pair = node[1] as Call;
-	if(pair.count != 2)
-	{
-	    node.error("Wrong number of argument for Range macro");
-	    return ?;
-	}
-	node[1] = pair[0];
-	node ~= [pair[1]];
+	MappingIdentifier(node[0], (node[0] as Identifier).name);
     } else
     {
-	node ~= [NullLiteral(node)];
+	node[0];
     }
 
-    return node;
+    return Mapping(node, a1, node[1]);
 }
+
+def Node __update__(Call node)
+{
+    checkNodeType(node.function, Identifier);
+    nameId := node.function as Identifier;
+
+    /* We'd like to use the Range short hand here, but can't because
+     * that would cause a circular dependency. */
+    name := nameId.name[Range(0,-2,1)] ~ "Assign__";
+
+    if(node.count == 1)
+    {
+	return ast(%x = %x.%y()).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name));
+    }
+    if(node.count == 2)
+    {
+	return ast(%x = %x.%y(%z)).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1]);
+    }
+    node.error("Invalid number of arguments");
+    return NullLiteral(node);
+}
+
+macro __increase__(node){__update__(node)}
+macro __decrease__(node){__update__(node)}
+macro __append__(node){__update__(node)}
+macro __next__(node){__update__(node)}
+macro __prev__(node){__update__(node)}
+

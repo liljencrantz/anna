@@ -13,7 +13,7 @@ static inline anna_entry_t *anna_node_call_wrapper_i_get_int_i(anna_entry_t **pa
     ANNA_VM_NULLCHECK(param[1]);
     
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
-    int idx = anna_as_int(param[1]);
+    int idx = anna_list_calc_offset(anna_as_int(param[1]), node->child_count);
     if(idx < 0 || idx >= node->child_count)
 	return anna_from_obj(null_object);
     return anna_from_obj(anna_node_wrap(node->child[idx]));
@@ -30,11 +30,14 @@ static inline anna_entry_t *anna_node_call_wrapper_i_set_int_i(anna_entry_t **pa
 	param[2] = anna_from_obj(anna_node_wrap(anna_node_create_null(0)));
     
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
-    int idx = anna_as_int(param[1]);
+    int idx = anna_list_calc_offset(anna_as_int(param[1]), node->child_count);
     if(idx < 0 || idx >= node->child_count)
 	return param[1];
+    anna_node_t *val = anna_node_unwrap(anna_as_obj(param[2]));
+    assert(val);
     
-    node->child[idx] = anna_node_unwrap(anna_as_obj(param[2]));
+    node->child[idx] = val;
+
     return param[2];
 }
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_int, 3)
@@ -99,7 +102,7 @@ static inline anna_entry_t *anna_node_call_wrapper_i_init_i(anna_entry_t **param
     
     anna_node_call_t *dest = 
 	anna_node_create_call(
-	    &source->location,
+	    source?&source->location:0,
 	    function,
 	    0,
 	    0);
@@ -107,9 +110,16 @@ static inline anna_entry_t *anna_node_call_wrapper_i_init_i(anna_entry_t **param
     for(i=0; i<sz; i++)
     {
 	if(!ANNA_VM_NULL(src[i]))
+	{
+//	    anna_object_print(anna_as_obj(src[i]));
 	    anna_node_call_add_child(dest, anna_node_unwrap(anna_as_obj(src[i])));
+	}
+	else
+	{
+	    anna_error(source, L"Element number %d in call list is invalid", i+1);
+	}
+	
     }
-    dest->child_count = sz;
     
     *(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD)=
 	(anna_node_t *)dest;

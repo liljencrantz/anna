@@ -790,7 +790,7 @@ void anna_vm_compile(
     
     int i;
     fun->variable_count = fun->stack_template->count;
-
+    
     int is_empty = fun->body->child_count == 0;
     
     size_t sz;

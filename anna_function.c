@@ -458,7 +458,17 @@ anna_function_t *anna_function_create_from_definition(
     else {
 	result->name = L"<anonymous>";
     }
-    result->body = node_cast_call(result->definition->child[4]);
+    
+    if(result->definition->child[4]->node_type != ANNA_NODE_CALL)
+    {
+	anna_error(result->definition->child[4], L"Expected a function body");
+	result->body = anna_node_create_block2(0);
+    }
+    else
+    {
+	result->body = node_cast_call(result->definition->child[4]);
+    }
+    
     if(anna_attribute_flag(result->attribute, L"block"))
     {
 	result->flags |= ANNA_FUNCTION_BLOCK;

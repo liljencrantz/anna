@@ -112,7 +112,6 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
 	attribute_list, 
 	body);
     
-    
     node->child_count = 1;
     anna_node_call_t *fun = (anna_node_call_t *)node->function;
 
@@ -220,9 +219,6 @@ static inline anna_node_t *anna_macro_var_i(struct anna_node_call *node)
     
     anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
     
-    debug(D_SPAM,L"Declare a stack variable %ls with initial value\n", name->name);
-    anna_node_print(0, node->child[2]);
-    
     return (anna_node_t *)
 	anna_node_create_declare(
 	    &node->location,
@@ -280,7 +276,6 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__def__", &anna_macro_def);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
-    anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
     anna_macro_add(stack, L"__var__", &anna_macro_var);
     anna_macro_add(stack, L"__const__", &anna_macro_var);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
@@ -289,10 +284,10 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"while", &anna_macro_while);
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);
-    anna_macro_add(stack, L"each", &anna_macro_iter);
+//    anna_macro_add(stack, L"each", &anna_macro_iter);
     anna_macro_add(stack, L"map", &anna_macro_iter);
-    anna_macro_add(stack, L"filter", &anna_macro_iter);
-    anna_macro_add(stack, L"find", &anna_macro_iter);
+//    anna_macro_add(stack, L"filter", &anna_macro_iter);
+//    anna_macro_add(stack, L"find", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"type", &anna_macro_type);
     anna_macro_add(stack, L"return", &anna_macro_return);    
