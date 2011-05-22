@@ -150,21 +150,38 @@ static void anna_module_init_recursive(
     sb_destroy(&fn);
 }
 
-static void anna_module_insert_internal(anna_stack_template_t *lang)
+static void anna_module_bootstrap_macro(wchar_t *name)
 {
-    anna_object_t *int_obj = anna_stack_get(stack_global, L"internal");
-    assert(int_obj);
-    anna_stack_template_t *int_mod = anna_stack_unwrap(int_obj);
-    assert(int_mod);
+    
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"bootstrap/%ls.anna", name);
+    wchar_t *path = sb_content(&sb);
+
+    anna_stack_template_t *mm = anna_module(stack_global, name, path);
+    sb_destroy(&sb);
+
+    anna_module_load_i(mm);
+    al_push(&anna_module_default_macros, mm);
+}
+
+static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar_t *name)
+{
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"bootstrap/%ls.anna", name);
+    wchar_t *path = sb_content(&sb);    
+    anna_stack_template_t *int_mod = anna_module(stack_global, name, path);
+    sb_destroy(&sb);
+    
+    anna_module_load_i(int_mod);
     
     int i;
     anna_type_t *int_mod_type = anna_stack_wrap(int_mod)->type;
     for(i=1; i<int_mod_type->static_member_count; i++)
     {
-	anna_object_t *fun_obj = int_mod_type->static_member[i];
-	assert(fun_obj);
+	anna_object_t *fun_obj = anna_as_obj(int_mod_type->static_member[i]);
 	anna_function_t *fun = anna_function_unwrap(fun_obj);
-	assert(fun);
 	
 	anna_node_t *target_node = anna_attribute_call(fun->attribute, L"target");
 	anna_node_t *name_node = anna_attribute_call(fun->attribute, L"name");
@@ -211,41 +228,24 @@ void anna_module_init()
 {
     anna_stack_template_t *stack_lang = anna_lang_load();
     
-    anna_node_create_wrapper_types();
+    anna_stack_template_t *stack_parser = anna_node_create_wrapper_types();
     
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     anna_macro_init(stack_macro);
     al_push(&stack_global->expand, stack_macro);
     
     null_object->type = null_type;
-
-    anna_stack_template_t *mm = anna_module(stack_global, L"m1", L"macros/m1.anna");
-    anna_module_load_i(mm);
-    al_push(&anna_module_default_macros, mm);
     
-    mm = anna_module(stack_global, L"m2", L"macros/m2.anna");
-    anna_module_load_i(mm);
-    al_push(&anna_module_default_macros, mm);
-    
-    mm = anna_module(stack_global, L"m3", L"macros/m3.anna");
-    anna_module_load_i(mm);
-    al_push(&anna_module_default_macros, mm);
-    
-    mm = anna_module(stack_global, L"m4", L"macros/m4.anna");
-    anna_module_load_i(mm);
-    al_push(&anna_module_default_macros, mm);
-    
-    mm = anna_module(stack_global, L"m5", L"macros/m5.anna");
-    anna_module_load_i(mm);
-    al_push(&anna_module_default_macros, mm);
-    
-    mm = anna_module(stack_global, L"m6", L"macros/m6.anna");
-    anna_module_load_i(mm);
-    al_push(&anna_module_default_macros, mm);
-    
+    anna_module_bootstrap_macro(L"macro1");
+    anna_module_bootstrap_macro(L"macro2");
+    anna_module_bootstrap_macro(L"macro3");
+    anna_module_bootstrap_macro(L"macro4");
+    //anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatch1");
+    anna_module_bootstrap_macro(L"macro5");
+    anna_module_bootstrap_macro(L"macro6");
+    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatch2");
     
     anna_module_init_recursive(L"lib", stack_global);
-    anna_module_insert_internal(stack_lang);
 }
 	
 static void anna_module_find_import_internal(

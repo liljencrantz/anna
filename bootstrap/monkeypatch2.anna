@@ -55,7 +55,6 @@ def String __format__Map__(
 )
 {
     res := "";
-    listIdx := 0;
     i := 0;
     while(i < fmt.count)
     {

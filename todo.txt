@@ -16,10 +16,11 @@ It would be useful to have a function to construct an instance of a specific lis
 Should Range really be mutable?
 How should inherited constructors be handled?
 It should be possible to declare members with initial values. 
+How exactly should the api for using the return type of one AST node as the value of another AST node look? What we have in place today seems rather kludgy and special purpose.
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
-Multiple inheritance clashes aren't handled correctly
+Multiple inheritance clashes aren't handled sanely
 
 LANGUAGE FEATURES:
 Function templates

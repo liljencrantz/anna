@@ -1,0 +1,18 @@
+use(parser);
+
+def Node __format__Map__(
+    Node this, 
+    HashMap«String, Node» data) 
+(
+    alias(__format__), 
+    target(Node), 
+)
+{
+    res := this;
+    data.each(key, value)
+    {
+	res = res.replace(Identifier(?, key), value);
+    }   
+    return res;
+}
+

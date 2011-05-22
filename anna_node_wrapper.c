@@ -224,7 +224,7 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_cast_wrapper.c"
 #include "anna_node_mapping_wrapper.c"
 
-void anna_node_create_wrapper_types()
+anna_stack_template_t *anna_node_create_wrapper_types()
 {
     int i;
     anna_stack_template_t *stack = anna_stack_create(stack_global);
@@ -302,5 +302,6 @@ void anna_node_create_wrapper_types()
 	anna_stack_wrap(stack)->type,
 	anna_stack_wrap(stack),
 	ANNA_STACK_READONLY);
-    
+
+    return stack;
 }
