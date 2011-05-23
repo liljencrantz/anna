@@ -46,6 +46,25 @@ anna_node_t *anna_node_unwrap(anna_object_t *this)
     return *(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD);
 }
 
+void anna_node_wrapper_add_method(anna_function_t *fun)
+{
+    int i;
+    mid_t mid = anna_mid_get(fun->name);
+    for(i=0; i<ANNA_NODE_TYPE_COUNT; i++)
+    {
+	anna_type_t *type = anna_node_type_mapping[i];
+
+	if(type && !type->mid_identifier[mid])
+	{
+	    anna_member_create_method(
+		type,
+		-1,
+		fun->name,
+		fun);
+	}
+    }
+    
+}
 
 static inline anna_entry_t *anna_node_wrapper_i_replace_i(anna_entry_t **param)
 {

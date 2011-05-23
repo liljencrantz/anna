@@ -29,13 +29,15 @@ static void anna_node_calculate_type_param(
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
 	    anna_function_t *closure = c->payload;
 	    anna_function_type_t *template = anna_function_type_unwrap(funt->input_type[i+!!is_method]);
-	    assert(template);
-	    for(j=0; j<template->input_count; j++)
+	    if(template)
 	    {
-		anna_function_argument_hint(
-		    closure,
-		    j,
-		    template->input_type[j]);
+		for(j=0; j<template->input_count; j++)
+		{
+		    anna_function_argument_hint(
+			closure,
+			j,
+			template->input_type[j]);
+		}
 	    }
 	}
     }

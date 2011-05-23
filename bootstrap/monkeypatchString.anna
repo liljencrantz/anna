@@ -1,0 +1,103 @@
+def Int search__Char__(
+    String this, Char ch)
+(
+    alias(search),
+    target(String),
+)
+{
+    this.each(idx, i){if(i == ch){return idx}}
+    return ?;
+}
+
+def String __format__List__(
+    String this, 
+    List«Object» data) 
+(
+    alias(__format__), 
+    target(String), 
+)
+{
+    res := "";
+    listIdx := 0;
+    i := 0;
+    while(i < this.count)
+    {
+        ch := this[i];
+        if(ch == '%')
+        {
+	    if(this[i+1] == '%')
+            {
+  	        i++;
+                res ~= '%'
+            } else {
+                res ~= data[listIdx].toString();
+                listIdx++;
+            }
+        } else
+        {
+	    res ~= ch;
+        }
+        i++;
+    }
+    return res;
+}
+
+def String __format__Map__(
+    String this, 
+    HashMap«String, Object» data) 
+(
+    alias(__format__), 
+    target(String), 
+)
+{
+    res := "";
+    i := 0;
+    while(i < this.count)
+    {
+        ch := this[i];
+        if(ch == '%')
+        {
+	    if(this[i+1] == '%')
+            {
+  	        i++;
+                res ~= '%'
+            } else {
+	        i++;
+		if(this[i] == '(')
+		{
+		    i++;
+		    end := search__Char__(this[i...], ')');
+		    if(end)
+		    {
+		        name := this[i..(i+end)];
+			res ~= data[name];
+			i=i+end;
+		    } else {
+			// ERROR
+		    }
+		} else
+		{
+		    // ERROR
+		}
+            }
+        } else
+        {
+	    res ~= ch;
+        }
+        i++;
+    }
+    return res;
+}
+
+def String __filter__(
+    String this, 
+    def Object body(Int idx, Char value) )
+(
+    target(String), 
+)
+{
+    res := "";
+    this.each(key, value){if(body(key, value)){res ~= value;}}
+    return res;
+}
+

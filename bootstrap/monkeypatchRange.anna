@@ -1,0 +1,46 @@
+def Int __cmp__(Range this, Object other)
+(
+    target(Range), 
+)
+{
+    r := other as Range;
+    if(!r)
+    {
+	return -1;
+    }
+    if(this.from != r.from)
+    {
+	return this.from-r.from;
+    }
+
+    if(this.to != r.to)
+    {
+	return this.to-r.to;
+    }
+
+    if(this.step != r.step)
+    {
+	return this.step-r.step;
+    }
+    return 0;
+}
+
+def hashCode(Range this)
+(
+    target(Range), 
+)
+{
+    return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
+}
+
+def toString(Range this)
+(
+    target(Range),
+)
+{
+    if(this.isOpen)
+    {
+	return "[" ~ this.from ~", "~ (this.from+this.step)~", "~ (this.from+this.step+this.step)~"...]";
+    }
+    return "[" ~ ", ".join(this.map(value){""~(value)}) ~ "]";
+}

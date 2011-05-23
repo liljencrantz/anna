@@ -13,5 +13,7 @@ anna_stack_template_t *anna_node_create_wrapper_types(void);
 
 anna_node_t *anna_node_unwrap(anna_object_t *this);
 
+void anna_node_wrapper_add_method(anna_function_t *fun);
+
 
 #endif

@@ -39,7 +39,7 @@ The rest of the hashtable functions (filter, find, properties for key and value 
 Set type
 String format function
 File type
-hashCode function for String, Pair, List, Range, Float, Complex, Char
+hashCode function for Pair, List, Range, Float, Complex, Char
 A backtrace function
 io module
 time module

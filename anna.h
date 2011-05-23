@@ -664,7 +664,8 @@ anna_object_t *anna_object_create_raw(
 void anna_object_print(
     anna_object_t *obj);
 
-
-
+void anna_add_subtype(
+    anna_type_t *parent,
+    anna_type_t *child);
 
 #endif

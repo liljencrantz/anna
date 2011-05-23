@@ -30,17 +30,27 @@ macro enum(definition)
 	    return ?;
 	}
 	var getter = "!" ~ id.name ~ "Getter";
-	var fun = ast(def placeholder1() (static) {return placeholder2;});
-	var prop = ast(var Int placeholder1 (property(placeholder2)));
-	var cmp = ast(if(this.value == placeholder1){return placeholder2});
-
-	fun = fun.replace(ast(placeholder1),Identifier(definition, getter))
-	    .replace(ast(placeholder2),IntLiteral(definition, idx)) as Call;
-	prop = prop.replace(ast(placeholder1),Identifier(definition, id.name))
-	    .replace(ast(placeholder2), Identifier(definition, getter)) as Call;
-	cmp = cmp.replace(ast(placeholder1),IntLiteral(definition, idx))
-	    .replace(ast(placeholder2), StringLiteral(definition, id.name)) as Call;
-
+	var fun = ast(def name() (static) {return value;});
+	var prop = ast(var Int name (property(functionName)));
+	var cmp = ast(if(this.value == intValue){return strValue});
+	
+	fun = (
+	    fun % [
+		"name" => Identifier(definition, getter),
+		"value" => IntLiteral(definition, idx)
+		]) as Call;
+	
+	prop = (
+	    prop % [
+		"name" => Identifier(definition, id.name),
+		"functionName" => Identifier(definition, getter)
+		]) as Call;
+	cmp = (
+	    cmp % [
+		"intValue" => IntLiteral(definition, idx),
+		"strValue" => StringLiteral(definition, id.name)
+		]) as Call;
+	
 	newBody ~= [fun];
 	newBody ~= [prop];
 	nameBody ~= [cmp]

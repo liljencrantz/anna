@@ -1,6 +1,6 @@
 use(parser);
 
-def Node __format__Map__(
+def Node __format__(
     Node this, 
     HashMap«String, Node» data) 
 (
@@ -12,7 +12,7 @@ def Node __format__Map__(
     data.each(key, value)
     {
 	res = res.replace(Identifier(?, key), value);
-    }   
+    }
     return res;
 }
 
