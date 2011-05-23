@@ -270,9 +270,10 @@ void anna_node_create_wrapper_types()
 	    anna_node_create_cast_wrapper_type(stack),
 	    anna_node_create_mapping_wrapper_type(stack),
 	    mapping_id_type,
-	    0,
 	    0
 	};
+
+    assert(sizeof(anna_node_type_mapping) >= sizeof(types));
 
     memset(anna_node_type_mapping, 0, sizeof(anna_node_type_mapping));
     memcpy(anna_node_type_mapping, types, sizeof(types));
@@ -281,12 +282,17 @@ void anna_node_create_wrapper_types()
     anna_stack_declare(
 	stack, node_wrapper_type->name, 
 	type_type, anna_type_wrap(node_wrapper_type), ANNA_STACK_READONLY); 
+    /*
+      Insert all the cool stuff from node_wrapper and 
+     */
     for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
     {
 	if(!types[i])
 	    continue;
 	anna_type_copy(types[i], node_wrapper_type);
 	anna_type_copy_object(types[i]);
+	/* Declare all types in our namespace.  Don't redeclare types
+	   that are used for more than one mapping */
 	if(!anna_stack_template_get(stack, types[i]->name))
 	{
 	    anna_stack_declare(
