@@ -244,10 +244,10 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"macro2");
     anna_module_bootstrap_macro(L"macro3");
     anna_module_bootstrap_macro(L"macro4");
-    anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatch1");
+    anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
     anna_module_bootstrap_macro(L"macro5");
     anna_module_bootstrap_macro(L"macro6");
-    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatch2");
+    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchString");
     

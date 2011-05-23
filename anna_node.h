@@ -68,7 +68,6 @@ struct anna_node
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    struct anna_node *unspecialized;
 #ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
     int prepared;
 #endif    

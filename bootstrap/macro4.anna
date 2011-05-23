@@ -55,18 +55,20 @@ def Node __iter__(Call node)
     {
     /*
       %x => %x as RTO(%x)«RTO(%x[-1])»
+      {
+          !body := BODY;
+          !res := LST.__map__(!body);
+          !res as RetornOf(TypeOf(LST.__map__))«ReturnOf(TypeOf(!body))»	  
+      }()
     */
-	return Call(
-	    node, Identifier(node, "cast"),
-	    node,
-	    Call(
-		node,
-		Identifier(node, "__specialize__"),
-		ReturnOf(node,TypeOf(node, node, -1))
-		Call(
-		    node,
-		    Identifier(node, "__block__"),
-		    ReturnOf(node,TypeOf(node, node, node.count-1)))));
+    return ast(
+	{
+	    %body := %bodyValue;
+	    %list := %listValue;
+	    %res := %list.__map__(%body);
+	    return %res as ReturnOf(TypeOf(%list.__map__))«ReturnOf(TypeOf(%body))»;
+	}()) % ["%body" => tmp, "%list" => tmp, "%bodyValue" => func, "%listValue" => list];
+
     }
 */
 /*

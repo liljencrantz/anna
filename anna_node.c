@@ -485,7 +485,6 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	    if(wcscmp(tree2->name,from->name)==0)
 	    {
 		anna_node_t *res = anna_node_clone_deep(to);
-		res->unspecialized = tree;
 		return res;
 	    }
 	    return tree;
