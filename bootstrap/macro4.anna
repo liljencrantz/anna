@@ -39,17 +39,19 @@ def Node __iter__(Call node)
 
     fun[1] = Identifier(fun[1], "__" ~ origName.name ~ "__");
 
+    func := Call(
+	body, 
+	Identifier(body, "__def__"),
+	Identifier(body, "!iterator"), 
+	NullLiteral(body),
+	decl,
+	attr, 
+	body);
+
     res := Call(
 	node, 
 	fun,  
-	Call(
-	    body, 
-	    Identifier(body, "__def__"),
-	    Identifier(body, "!iterator"), 
-	    NullLiteral(body),
-	    decl,
-	    attr, 
-	    body));
+	func);
 /*
     if(origName == "map")
     {
@@ -66,7 +68,7 @@ def Node __iter__(Call node)
 	    %body := %bodyValue;
 	    %list := %listValue;
 	    %res := %list.__map__(%body);
-	    return %res as ReturnOf(TypeOf(%list.__map__))«ReturnOf(TypeOf(%body))»;
+	    return %res as staticReturnOf(staticTypeOf(%list.__map__))«staticReturnOf(staticTypeOf(%body))»;
 	}()) % ["%body" => tmp, "%list" => tmp, "%bodyValue" => func, "%listValue" => list];
 
     }
