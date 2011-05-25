@@ -68,6 +68,7 @@ struct anna_node
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 };
 
 struct anna_node_identifier
@@ -77,6 +78,7 @@ struct anna_node_identifier
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     wchar_t *name;
     anna_sid_t sid;
@@ -89,6 +91,7 @@ struct anna_node_cond
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     struct anna_node *arg1;
     struct anna_node *arg2;
@@ -101,6 +104,7 @@ struct anna_node_if
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     struct anna_node *cond;
     struct anna_node_call *block1;
@@ -114,6 +118,7 @@ struct anna_node_assign
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     wchar_t *name;
     anna_sid_t sid;
@@ -127,6 +132,7 @@ struct anna_node_declare
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     wchar_t *name;
     anna_sid_t sid;
@@ -142,6 +148,7 @@ struct anna_node_member_access
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     mid_t mid;
     struct anna_node *object;
@@ -155,6 +162,7 @@ struct anna_node_call
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     mid_t mid;
     union
@@ -174,6 +182,7 @@ struct anna_node_string_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     size_t payload_size;
     wchar_t *payload;
@@ -186,6 +195,7 @@ struct anna_node_char_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     wchar_t payload;
 };
@@ -197,6 +207,7 @@ struct anna_node_int_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     mpz_t payload;
 };
@@ -208,6 +219,7 @@ struct anna_node_dummy
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     struct anna_object *payload;
 };
@@ -219,6 +231,7 @@ struct anna_node_closure
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     struct anna_function *payload;
 };
@@ -230,6 +243,7 @@ struct anna_node_type
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     struct anna_type *payload;
 };
@@ -241,6 +255,7 @@ struct anna_node_float_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     double payload;
 };
@@ -252,6 +267,7 @@ struct anna_node_wrapper
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
+    array_list_t dependencies;
 
     struct anna_node *payload;
     int steps;

@@ -696,6 +696,13 @@ void anna_node_calculate_type(
 	anna_error(this,L"Invalid stack value while determining types\n");
 	CRASH;
     }
+
+    int i;
+    for(i=0; i<al_get_count(&this->dependencies); i++)
+    {
+	anna_node_t *dep = (anna_node_t *)al_get(&this->dependencies, i);
+	anna_node_calculate_type(dep, stack);
+    }
     
     debug(D_SPAM, L"Calculate type of node:\n");
     anna_node_print(D_SPAM, this);
