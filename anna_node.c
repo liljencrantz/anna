@@ -54,7 +54,7 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
     
     if((node->node_type == ANNA_NODE_TYPE_LOOKUP) || (node->node_type == ANNA_NODE_TYPE_LOOKUP_RETURN))
     {
-	anna_node_calculate_type(node, stack);
+	anna_node_calculate_type(node);
 	return node->return_type;
     }
     
@@ -222,7 +222,7 @@ anna_object_t *anna_node_static_invoke_try(
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *node = (anna_node_closure_t *)this;	    
-	    anna_node_calculate_type(this, stack);
+	    anna_node_calculate_type(this);
 	    if(node->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		return node->payload->wrapper;
 	    break;
@@ -278,7 +278,7 @@ anna_object_t *anna_node_static_invoke_try(
 		anna_node_declare_t *decl = anna_stack_get_declaration(frame, this2->name);
 		if(decl)
 		{
-		    anna_node_calculate_type((anna_node_t *)decl,frame);
+		    anna_node_calculate_type((anna_node_t *)decl);
 		}
 		
 		if(anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)

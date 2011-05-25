@@ -219,7 +219,7 @@ static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *ini
     while(al_get_count(&my_returns))
     {
 	anna_node_t *ret = (anna_node_t *)al_pop(&my_returns);
-	anna_node_calculate_type(ret, fun->stack_template);
+	anna_node_calculate_type(ret);
 	if(ret->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
 	{
 	    res = 0;
@@ -240,7 +240,8 @@ static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *ini
 
 	    if(anna_has_returns(closure->payload))
 	    {
-		anna_function_setup_interface(closure->payload, fun->stack_template);
+		anna_function_set_stack(closure->payload, fun->stack_template);
+		anna_function_setup_interface(closure->payload);
 		res = handle_closure_return(closure->payload, res);
 		if(!res)
 		{
@@ -259,10 +260,26 @@ static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *ini
     
 }
 
-
-void anna_function_setup_interface(
+void anna_function_set_stack(
     anna_function_t *f,
     anna_stack_template_t *parent_stack)
+{
+    if(f->body && !f->stack_template)
+    {
+	f->stack_template = anna_stack_create(parent_stack);
+	f->stack_template->function = f;
+	anna_node_set_stack(
+	    (anna_node_t *)f->body,
+	    f->stack_template);
+	if(f->input_type_node)
+	    anna_node_set_stack(
+		(anna_node_t *)f->input_type_node,
+		f->stack_template);
+    }
+}
+
+void anna_function_setup_interface(
+    anna_function_t *f)
 {
     if(f->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
     {
@@ -275,7 +292,6 @@ void anna_function_setup_interface(
     if(f->body)
     {
 //	wprintf(L"We have such a nice body\n");
-	f->stack_template = anna_stack_create(parent_stack);
 //	wprintf(L"Our stack is %d\n", f->stack_template);
 
 	if(f->flags & ANNA_FUNCTION_MACRO)
@@ -288,11 +304,11 @@ void anna_function_setup_interface(
 			L"parser")));
 	}
 		
-	anna_function_setup_arguments(f, parent_stack);
+	anna_function_setup_arguments(f, f->stack_template->parent);
 	
 	anna_node_register_declarations(
-	    f->stack_template, 
-	    (anna_node_t *)f->body);
+	    (anna_node_t *)f->body,
+	    f->stack_template);
 
 /*
 	wprintf(
@@ -300,7 +316,6 @@ void anna_function_setup_interface(
 	    f->stack_template->count);
 	anna_node_print(0, f->body);
 */	
-	f->stack_template->function = f;
     }
     
     if(!f->return_type)
@@ -324,7 +339,7 @@ void anna_function_setup_interface(
 	    else
 	    {
 		anna_node_t *last_expression = f->body->child[f->body->child_count-1];
-		anna_node_calculate_type(last_expression, f->stack_template);
+		anna_node_calculate_type(last_expression);
 		if(last_expression->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
 		{
 		    return;
@@ -365,7 +380,7 @@ void anna_function_setup_body(
     {
 	array_list_t ret = AL_STATIC;
 	int i;
-	anna_node_calculate_type_children( f->body, f->stack_template);
+	anna_node_calculate_type_children( f->body );
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_RETURN, &ret);	
 	int step_count = 0;
 	anna_function_t *fptr = f;
@@ -515,14 +530,28 @@ anna_function_t *anna_macro_create(
 anna_function_t *anna_function_create_from_block(
     struct anna_node_call *body)
 {
+    string_buffer_t sb_name;
+    sb_init(&sb_name);
+    if(body->location.filename)
+    {
+	sb_printf(&sb_name, L"!block_%ls_%d_%d", body->location.filename, body->location.first_line, body->location.last_line);
+    }
+    else
+    {
+	sb_printf(&sb_name, L"!block");
+    }
+    
     anna_node_call_t *definition = anna_node_create_call2(
 	&body->location,
 	anna_node_create_identifier(&body->location, L"__function__"),
-	anna_node_create_null(&body->location), //Name
+	anna_node_create_identifier(&body->location, sb_content(&sb_name)),
 	anna_node_create_null(&body->location), //Return type
 	anna_node_create_block2(&body->location),//Declaration list
 	anna_node_create_block2(&body->location),//Attribute list
 	body);
+
+    sb_destroy(&sb_name);
+    
     anna_function_t *result = anna_function_create_from_definition(
 	definition);
     result->flags |= ANNA_FUNCTION_BLOCK;
@@ -568,7 +597,8 @@ anna_function_t *anna_native_create(
 	result->input_name[i] = anna_intern(argn[i]);	
     }
     
-    anna_function_setup_interface(result, location);        
+    anna_function_set_stack(result, location);
+    anna_function_setup_interface(result);
     //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
     anna_vm_compile(result);
     
@@ -601,7 +631,8 @@ anna_function_t *anna_continuation_create(
     result->return_type=return_type;
     result->input_count=0;
     
-    anna_function_setup_interface(result, stack_global);
+    anna_function_set_stack(result, stack_global);
+    anna_function_setup_interface(result);
     anna_vm_compile(result);
     
     return result;
@@ -622,7 +653,8 @@ anna_function_t *anna_method_wrapper_create(
     result->return_type=return_type;
     result->input_count=0;
     
-    anna_function_setup_interface(result, stack_global);
+    anna_function_set_stack(result, stack_global);
+    anna_function_setup_interface(result);
     anna_vm_compile(result);
     
     return result;

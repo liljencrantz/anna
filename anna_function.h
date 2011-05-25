@@ -83,8 +83,13 @@ anna_function_t *anna_function_create_from_block(
 
 void anna_function_print(anna_function_t *function);
 
-void anna_function_setup_interface(anna_function_t *f, anna_stack_template_t *location);
+void anna_function_set_stack(
+    anna_function_t *f,
+    anna_stack_template_t *parent_stack);
+
+void anna_function_setup_interface(anna_function_t *f);
 void anna_function_setup_body(anna_function_t *f);
+
 void anna_function_argument_hint(
     anna_function_t *f,
     int argument,

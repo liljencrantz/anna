@@ -501,8 +501,7 @@ static void anna_type_prepare_member_internal(
     }
     
     anna_node_calculate_type(
-	(anna_node_t *)decl,
-	stack);
+	(anna_node_t *)decl);
     
     if(!is_method)
     {
@@ -533,7 +532,8 @@ static void anna_type_prepare_member_internal(
 	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
 	member->is_method = 1;
 	*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
-	anna_function_setup_interface(clo->payload, stack);
+	anna_function_set_stack(clo->payload, stack);
+	anna_function_setup_interface(clo->payload);
 	anna_function_setup_body(clo->payload);
     }
 }
@@ -637,7 +637,7 @@ static void anna_type_extend(
     for(i=al_get_count(&parents)-1; i>=0; i--)
     {
 	anna_node_t *c = (anna_node_t *)al_get(&parents, i);
-	anna_node_calculate_type(c, type->stack->parent);
+	anna_node_calculate_type(c);
 	if(c->return_type != type_type)
 	{
 	    anna_error(c, L"Invalid parent type");
@@ -655,9 +655,24 @@ static void anna_type_extend(
     anna_type_copy(type, object_type);
 }
 
+void anna_type_set_stack(
+    anna_type_t *t,
+    anna_stack_template_t *parent_stack)
+{
+    t->stack->parent = parent_stack;
+    if(t->body)
+    {
+	anna_node_set_stack(
+	    (anna_node_t *)t->body,
+	    t->stack);
+	anna_node_set_stack(
+	    (anna_node_t *)t->attribute,
+	    t->stack);
+    }
+}
+
 static anna_node_t *anna_type_setup_interface_internal(
-    anna_type_t *type, 
-    anna_stack_template_t *parent)
+    anna_type_t *type)
 {
 
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
@@ -666,10 +681,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
     //wprintf(L"Set up interface for type %ls\n", type->name);
-    //anna_node_print(4, type->definition);
-    
-    
-    type->stack->parent = parent;
+    //anna_node_print(4, type->definition);    
 
     if(type->definition)
     {
@@ -677,8 +689,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	if(type->definition->child[0]->node_type != ANNA_NODE_IDENTIFIER)
 	{
 	    CRASH;
-	}
-	
+	}	
 
 	CHECK_NODE_TYPE(type->definition->child[0], ANNA_NODE_IDENTIFIER);
 	CHECK_NODE_BLOCK(type->definition->child[1]);
@@ -779,9 +790,9 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
     }    
 }
 
-void anna_type_setup_interface(anna_type_t *type, anna_stack_template_t *parent)
+void anna_type_setup_interface(anna_type_t *type)
 {
-    anna_type_setup_interface_internal(type, parent);
+    anna_type_setup_interface_internal(type);
 }
 
 anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)

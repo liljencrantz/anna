@@ -261,7 +261,8 @@ static void anna_macro_add(
 	0,
 	stack);
     
-    anna_function_setup_interface(f, stack);
+    anna_function_set_stack(f, stack);
+    anna_function_setup_interface(f);
     anna_function_setup_body(f);
     anna_stack_declare(
 	stack,

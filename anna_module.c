@@ -395,7 +395,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     al_destroy(&expand);
     
     anna_node_print(D_SPAM, node);
-    anna_node_register_declarations(module_stack, node);
+    anna_node_register_declarations(node, module_stack);
     module_stack->flags |= ANNA_STACK_NAMESPACE;
     if(anna_error_count)
     {
@@ -409,6 +409,8 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	D_SPAM,
 	L"Declarations registered in module %ls\n", 
 	module_stack->filename);
+
+    anna_node_set_stack(node, module_stack);
 
     for(i=0; i<al_get_count(&import); i++ )
     {
@@ -425,7 +427,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     anna_node_call_t *ggg = node_cast_call(node);
     
-    anna_node_calculate_type_children(ggg, module_stack);
+    anna_node_calculate_type_children(ggg);
     if(anna_error_count)
     {
 	debug(
