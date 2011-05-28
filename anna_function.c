@@ -103,9 +103,16 @@ static anna_node_t *anna_function_setup_arguments(
 	    else
 	    {
 		anna_type_t *d_type = anna_node_resolve_to_type(type_node, f->stack_template);
+		if(d_type == 1)
+		{
+		    anna_node_print(99, type_node);
+		    CRASH;
+		}
+		
 		if(!d_type || d_type == null_type)
 		{
 		    anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
+		    CRASH;
 		}
 		else
 		{
@@ -344,6 +351,7 @@ void anna_function_setup_interface(
 		{
 		    return;
 		}
+		
 		f->return_type = last_expression->return_type;		
 		f->return_type = handle_closure_return(f, f->return_type);
 

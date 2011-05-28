@@ -43,8 +43,7 @@ typedef struct
 anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
 {
     anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;
-    anna_node_call_t *pc = (anna_node_call_t *)d->payload;
-    return (d->steps >= 0)?pc->child[d->steps]:pc->function;
+    return d->payload;
 }
 
 anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
@@ -52,9 +51,14 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
     debug(D_SPAM,L"Figure out type from:\n");    
     anna_node_print(D_SPAM, node);
     
-    if((node->node_type == ANNA_NODE_TYPE_LOOKUP) || (node->node_type == ANNA_NODE_TYPE_LOOKUP_RETURN))
+    if((node->node_type == ANNA_NODE_TYPE_OF) || 
+       (node->node_type == ANNA_NODE_RETURN_OF) || 
+       (node->node_type == ANNA_NODE_INPUT_TYPE_OF) )
     {
+//	wprintf(L"Start type calc for node %d of type %d\n", node, node->node_type);
 	anna_node_calculate_type(node);
+//	wprintf(L"Finished type calc for node %d of type %d\n", node, node->node_type);
+//	wprintf(L"Woo WEEE woo2, input type thingie is now %ls\n", node->return_type->name);
 	return node->return_type;
     }
     
@@ -271,7 +275,7 @@ anna_object_t *anna_node_static_invoke_try(
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
 	    anna_stack_template_t *frame = anna_stack_template_search(stack, this2->name);
 //	    fwprintf(stderr, L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
-	    if(frame && (frame->flags & ANNA_STACK_NAMESPACE))
+//	    if(frame && (frame->flags & ANNA_STACK_NAMESPACE))
 	    {
 //		fwprintf(stderr, L"Frame is namespace. Readonly? %ls\n", (anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)?L"yes":L"no");
 
@@ -369,8 +373,9 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_MEMBER_SET:
 	    return sizeof(anna_node_member_access_t);
 	case ANNA_NODE_RETURN:
-	case ANNA_NODE_TYPE_LOOKUP:
-	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	case ANNA_NODE_TYPE_OF:
+	case ANNA_NODE_INPUT_TYPE_OF:
+	case ANNA_NODE_RETURN_OF:
 	    return sizeof(anna_node_wrapper_t);
 	default:
 	    anna_error(n, L"Unknown node type %d encoundered while determining size of node\n", n->node_type);
@@ -498,8 +503,9 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_MAPPING_IDENTIFIER:
-	case ANNA_NODE_TYPE_LOOKUP_RETURN:
-	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_TYPE_OF:
+	case ANNA_NODE_INPUT_TYPE_OF:
 	{
 	    return tree;
 	}
@@ -552,8 +558,22 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    return anna_node_compare(this1->payload, this2->payload);
 	}
 
-	case ANNA_NODE_TYPE_LOOKUP:
-	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	case ANNA_NODE_INPUT_TYPE_OF:
+	{
+	    anna_node_wrapper_t *this1 =(anna_node_wrapper_t *)node1;
+	    anna_node_wrapper_t *this2 =(anna_node_wrapper_t *)node2;
+	    
+	    anna_node_t *c1 = anna_node_type_lookup_get_payload(node1);
+	    anna_node_t *c2 = anna_node_type_lookup_get_payload(node2);
+	    if(this1->steps != this2->steps)
+	    {
+		return this1->steps - this2->steps;
+	    }
+	    return anna_node_compare(c1,c2);
+	}
+
+	case ANNA_NODE_TYPE_OF:
+	case ANNA_NODE_RETURN_OF:
 	{
 	    anna_node_t *c1 = anna_node_type_lookup_get_payload(node1);
 	    anna_node_t *c2 = anna_node_type_lookup_get_payload(node2);
@@ -733,6 +753,9 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	}	
 
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_TYPE_OF:
+	case ANNA_NODE_INPUT_TYPE_OF:
 	{
 	    anna_node_each(((anna_node_wrapper_t *)this)->payload, fun, aux);
 	    break;
@@ -747,8 +770,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
-	case ANNA_NODE_TYPE_LOOKUP:
-	case ANNA_NODE_TYPE_LOOKUP_RETURN:
 	case ANNA_NODE_TYPE:
 	{
 	    break;   

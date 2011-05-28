@@ -66,31 +66,40 @@ anna_node_wrapper_t *anna_node_create_return(anna_location_t *loc, struct anna_n
     return result;  
 }
 
-anna_node_wrapper_t *anna_node_create_type_lookup(
+anna_node_wrapper_t *anna_node_create_type_of(
     anna_location_t *loc,
-    struct anna_node_call *val,
-    int idx)
+    struct anna_node *val)
 {
     anna_node_wrapper_t *result = anna_alloc_node(sizeof(anna_node_wrapper_t));
-    result->node_type = ANNA_NODE_TYPE_LOOKUP;
+    result->node_type = ANNA_NODE_TYPE_OF;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = (anna_node_t *)val;
     result->return_type = type_type;
-    result->steps = idx;
-
     return result;  
 }
 
-anna_node_wrapper_t *anna_node_create_type_lookup_return(
+anna_node_wrapper_t *anna_node_create_return_of(
     anna_location_t *loc,
-    struct anna_node_call *val,
+    struct anna_node *val)
+{
+    anna_node_wrapper_t *result = anna_alloc_node(sizeof(anna_node_wrapper_t));
+    result->node_type = ANNA_NODE_RETURN_OF;
+    anna_node_set_location((anna_node_t *)result,loc);
+    result->payload = (anna_node_t *)val;
+    return result;  
+}
+
+anna_node_wrapper_t *anna_node_create_input_type_of(
+    anna_location_t *loc,
+    struct anna_node *val,
     int idx)
 {
     anna_node_wrapper_t *result = anna_alloc_node(sizeof(anna_node_wrapper_t));
-    result->node_type = ANNA_NODE_TYPE_LOOKUP_RETURN;
+    result->node_type = ANNA_NODE_INPUT_TYPE_OF;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = (anna_node_t *)val;
     result->steps = idx;
+
     return result;  
 }
 

@@ -128,6 +128,8 @@ anna_type_t *anna_type_for_function(
     
     for(i=0; i<argc;i++)
     {
+//	wprintf(L"%d %d %d\n", argv, argv[i], argv[i]);
+	
 	if(argv[i] && wcscmp(argv[i]->name, L"!FakeFunctionType")==0)
 	{
 	    debug(D_CRITICAL,

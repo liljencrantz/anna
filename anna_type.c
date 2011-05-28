@@ -707,7 +707,9 @@ static anna_node_t *anna_type_setup_interface_internal(
 	    if((decl->node_type != ANNA_NODE_DECLARE) && 
 	       (decl->node_type != ANNA_NODE_CONST))
 	    {
-		anna_error(decl, L"Only declarations are allowed directly inside class definitions\n");
+		anna_error(
+		    decl,
+		    L"Only declarations are allowed directly inside class definitions\n");
 		continue;
 	    }
 	    anna_type_prepare_member_internal(

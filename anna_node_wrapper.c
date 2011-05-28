@@ -19,6 +19,7 @@
 #include "anna_vm.h"
 #include "anna_intern.h"
 #include "anna_stack.h"
+#include "anna_util.h"
 #include "anna_node_hash.h"
 
 anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
@@ -42,8 +43,8 @@ anna_node_t *anna_node_unwrap(anna_object_t *this)
 {
     if(this == null_object)
 	return 0;
-    
-    return *(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD);
+    anna_node_t **resp = (anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD);
+    return resp?*resp:0;
 }
 
 void anna_node_wrapper_add_method(anna_function_t *fun)
@@ -76,6 +77,16 @@ static inline anna_entry_t *anna_node_wrapper_i_replace_i(anna_entry_t **param)
     return anna_from_obj(anna_node_wrap(res));
 }
 ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
+
+static inline anna_entry_t *anna_generate_identifier_i(anna_entry_t **param)
+{
+    wchar_t *nam = anna_util_identifier_generate("", 0);
+    return anna_from_obj(anna_string_create(wcslen(nam), nam));
+}
+ANNA_VM_NATIVE(anna_generate_identifier, 1)
+
+
+
 
 static inline anna_entry_t *anna_node_wrapper_i_error_i(anna_entry_t **param)
 {
@@ -114,6 +125,13 @@ static inline anna_entry_t *anna_node_wrapper_cmp_i(anna_entry_t **param)
     {
 	return anna_from_obj(null_object);
     }
+
+    anna_node_t *o = anna_node_unwrap(anna_as_obj(param[1])); 
+    if(!o)
+    {
+	return anna_from_obj(null_object);
+    }
+    
     return anna_from_int(anna_node_compare(
 	anna_node_unwrap(anna_as_obj(param[0])),
 	anna_node_unwrap(anna_as_obj(param[1])))); 
@@ -286,6 +304,7 @@ anna_stack_template_t *anna_node_create_wrapper_types()
 	    0,
 	    0,
 	    0,
+	    0,
 	    anna_node_create_cast_wrapper_type(stack),
 	    anna_node_create_mapping_wrapper_type(stack),
 	    mapping_id_type,
@@ -319,6 +338,24 @@ anna_stack_template_t *anna_node_create_wrapper_types()
 		type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
 	}
     }
+
+
+    static wchar_t *p_argn[]={L"hint"};
+    anna_function_t *f = anna_native_create(
+	L"identifier", 
+	0,
+	&anna_generate_identifier, 
+	string_type, 1, &string_type, 
+	p_argn, stack);
+
+    anna_stack_declare(
+	stack,
+	L"identifier",
+	f->wrapper->type,
+	f->wrapper,
+	ANNA_STACK_READONLY);
+    
+
     
     
     anna_stack_declare(

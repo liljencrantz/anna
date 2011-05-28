@@ -108,15 +108,18 @@ anna_node_declare_t *anna_node_create_declare(
     struct anna_node_call *attr,
     int is_const);
 
-anna_node_wrapper_t *anna_node_create_type_lookup(
+anna_node_wrapper_t *anna_node_create_type_of(
     anna_location_t *loc,
-    anna_node_call_t *payload,
-    int idx);
+    anna_node_t *payload);
 
-anna_node_wrapper_t *anna_node_create_type_lookup_return(
+anna_node_wrapper_t *anna_node_create_return_of(
     anna_location_t *loc,
-    anna_node_call_t *parent,
-    int child_idx);
+    anna_node_t *payload);
+
+anna_node_wrapper_t *anna_node_create_input_type_of(
+    anna_location_t *loc,
+    anna_node_t *payload,
+    int idx);
 
 anna_node_cond_t *anna_node_create_mapping(
     anna_location_t *loc,

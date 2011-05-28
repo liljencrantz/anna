@@ -1,8 +1,8 @@
 use(parser);
 
-def Node iterDeclare(Node id)
+def Node iterDeclare(Node id, Node nodeType)
 {
-    ast(__var__(%id, ?, ?, {})).replace(ast(%id), id);
+    ast(__var__(%id, %nodeType, ?, {})).replace(ast(%id), id).replace(ast(%nodeType), nodeType);
 //    ast(__var__(%id, ?, ?, {})) % {"x": id}
 }
 
@@ -22,18 +22,26 @@ def Node __iter__(Call node)
 
     if(node.count == 2)
     {
-	n[0] = iterDeclare(Identifier(body, "!unused"));
-	n[1] = iterDeclare(node[0]);
+	n[0] = iterDeclare(
+	    Identifier(body, "!unused"), 
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0),0)));
+	n[1] = iterDeclare(
+	    node[0],
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0), 1)));
     } else
     {
 	checkNodeType(node[1], Identifier);
-	n[0] = iterDeclare(node[0]);
-	n[1] = iterDeclare(node[1]);
+	n[0] = iterDeclare(
+	    node[0],
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0),0)));
+	n[1] = iterDeclare(
+	    node[1],
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0), 1)));
     }
     
     attr := ast({block});
     decl := Call(body, Identifier(body, "__block__"), n[0], n[1]);    
-
+    
     fun := node.function as Call;
     origName := fun[1] as Identifier;  
 
@@ -52,52 +60,40 @@ def Node __iter__(Call node)
 	node, 
 	fun,  
 	func);
-/*
-    if(origName == "map")
+    list := (fun as Call)[0];
+    if(origName.name == "map")
     {
-    /*
-      %x => %x as RTO(%x)«RTO(%x[-1])»
-      {
-          !body := BODY;
-          !res := LST.__map__(!body);
-          !res as RetornOf(TypeOf(LST.__map__))«ReturnOf(TypeOf(!body))»	  
-      }()
-    */
-    return ast(
-	{
-	    %body := %bodyValue;
-	    %list := %listValue;
-	    %res := %list.__map__(%body);
-	    return %res as staticReturnOf(staticTypeOf(%list.__map__))«staticReturnOf(staticTypeOf(%body))»;
-	}()) % ["%body" => tmp, "%list" => tmp, "%bodyValue" => func, "%listValue" => list];
+//	print(list, "\n\n");
+        res = ast(
+	    {
+		%body := %bodyValue;
+	        %list := %listValue;
+	        __res := %list.__map__(%body);
+		__res as %nodeType;
+	    }()).replace(ast(%bodyValue), func) 
+	    .replace(ast(%listValue), list) 
+	    .replace(
+		ast(%nodeType), 
+		Call(?, ast(__specialize__), ast(__staticReturnTypeOf__(%list.__map__)), ast({__staticReturnTypeOf__(%body)}))) as Call;
+    } else
+    {
+        res = ast(
+	    {
+ 	        %list := %listValue;
+		%body := %bodyValue;
+	        %list.%fun(%body);
+	    }()).replace(ast(%bodyValue), func) 
+	    .replace(ast(%fun), fun[1])
+	    .replace(ast(%listValue), list) as Call;
+    }
+    res = res.replace(ast(%body), Identifier(?, identifier("body")))
+	.replace(ast(%list), Identifier(?, identifier("list"))) as Call;
+//    print("Iteration body:\n", res, "\n");
 
-    }
-*/
-/*
-    if(wcscmp(orig_name->name, L"map")==0)
-    {
-	anna_node_t *res = (anna_node_t *)anna_node_create_call2(
-	    &node->location, 
-	    anna_node_create_identifier(&node->location,L"cast"), 
-	    node, 
-	    anna_node_create_call2(
-		&node->location,
-		anna_node_create_identifier(&node->location, L"__specialize__"),
-		anna_node_create_type_lookup_return(
-		    &node->location, 
-		    node,
-		    -1),
-		anna_node_create_block2(
-		    &node->location, 
-		    anna_node_create_type_lookup_return(&node->location, node, node->child_count-1)
-		    )));
-	
-	return res;
-    }
-*/
     return res;
 }
 
 macro each(node){__iter__(node)}
 macro filter(node){__iter__(node)}
 macro find(node){__iter__(node)}
+macro map(node){__iter__(node)}

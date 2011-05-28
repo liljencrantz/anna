@@ -14,6 +14,25 @@ static anna_type_t *anna_method_curry(anna_function_type_t *fun)
     return res->wrapper->type;
 }
 
+static void try_hint(
+    anna_function_t *closure,
+    anna_function_type_t *template)
+{    
+    int j;
+    if(template)
+    {
+	for(j=0; j<template->input_count; j++)
+	{
+	    anna_function_argument_hint(
+		closure,
+		j,
+		template->input_type[j]);
+	}
+    }
+}
+
+int blabla = 0;
+
 
 static void anna_node_calculate_type_param(
     size_t argc,
@@ -21,24 +40,42 @@ static void anna_node_calculate_type_param(
     int is_method,
     anna_function_type_t *funt)
 {
-    int i, j;
+    return;
+    int i;
     for(i=0; i<argc; i++)
     {	
+	anna_function_type_t *template = anna_function_type_unwrap(funt->input_type[i+!!is_method]);
+
+	if(template && (argv[i]->node_type != ANNA_NODE_CLOSURE))
+	{
+	    wprintf(L"Trying to give a hint to\n");
+	    anna_node_print(5, argv[i]);
+	}
+	
 	if(argv[i]->node_type == ANNA_NODE_CLOSURE)
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
-	    anna_function_t *closure = c->payload;
-	    anna_function_type_t *template = anna_function_type_unwrap(funt->input_type[i+!!is_method]);
-	    if(template)
+	    try_hint(c->payload, template);
+	}
+	else if(argv[i]->node_type == ANNA_NODE_IDENTIFIER)
+	{
+	    anna_object_t *fun_obj = anna_node_static_invoke_try(
+		argv[i],
+		argv[i]->stack);
+	    if(blabla)
 	    {
-		for(j=0; j<template->input_count; j++)
+		wprintf(L"%d\n", fun_obj);
+		CRASH;
+	    }	
+
+	    if(fun_obj)
+	    {
+		anna_function_t *closure = anna_function_unwrap(fun_obj);
+		if(closure)
 		{
-		    anna_function_argument_hint(
-			closure,
-			j,
-			template->input_type[j]);
-		}
-	    }
+		    try_hint(closure, template);
+		}		
+	    }	    
 	}
     }
 }
@@ -188,7 +225,7 @@ static void anna_node_calculate_type_internal(
 		CRASH;
 		break;
 	    }
-	    	    
+	    
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){
 		anna_error(this, L"Unknown identifier: %ls", id->name);
 //		anna_stack_print(stack);
@@ -434,6 +471,9 @@ static void anna_node_calculate_type_internal(
 	    {
 		anna_function_type_t *funt = anna_function_type_unwrap(member->type);
 		n->return_type = funt->return_type;
+		if(n->mid == anna_mid_get(L"__map__"))
+		    blabla=1;
+		
 	    
 		anna_node_calculate_type_param(n->child_count, n->child, 1, funt);
 	    }
@@ -540,9 +580,14 @@ static void anna_node_calculate_type_internal(
 		}
 		anna_node_calculate_type(d->value);
 		d->return_type = d->value->return_type;
+		if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+		{
+		    anna_stack_set_type(stack, d->name, d->return_type);
+		}
 	    }
 	    else
 	    {
+//		debug(D_ERROR, L"Declaration %ls has explicit type\n", d->name);
 		d->return_type = anna_node_resolve_to_type(
 		    d->type,
 		    stack);
@@ -552,15 +597,11 @@ static void anna_node_calculate_type_internal(
 		    d->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
 		    CRASH;
 		}
-		break;
-	    }
-	    if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    {
-		anna_stack_set_type(stack, d->name, d->return_type);
 	    }
 	    
 	    if(this->node_type == ANNA_NODE_CONST)
 	    {
+//		debug(D_ERROR, L"Declaration %ls is a constant\n", d->name);
 		anna_object_t *value = anna_node_static_invoke(
 		    d->value, stack);
 		anna_stack_set(
@@ -674,22 +715,23 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 
-	case ANNA_NODE_TYPE_LOOKUP:
+	case ANNA_NODE_TYPE_OF:
 	{	    
 	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
 	    if(!chld->stack)
-		chld->stack = this->stack;
+		CRASH;
 	    
 	    anna_node_calculate_type(chld);
 	    this->return_type = chld->return_type;
 	    break;
 	}
 	
-	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	case ANNA_NODE_RETURN_OF:
 	{
 	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
 	    if(!chld->stack)
-		chld->stack = this->stack;
+		CRASH;
+	    
 	    anna_node_calculate_type(chld);
 
 	    if(chld->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
@@ -699,6 +741,33 @@ static void anna_node_calculate_type_internal(
 		if(fun)
 		{
 		    this->return_type = fun->return_type;
+		}
+	    }
+	    break;
+	}
+	
+	case ANNA_NODE_INPUT_TYPE_OF:
+	{
+//	    wprintf(L"GGGG, input type thingie %ld\n", this);
+//	    anna_node_print(5, this);
+	    
+	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
+	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
+	    if(!chld->stack)
+		CRASH;
+	    
+	    anna_node_calculate_type(chld);
+	    
+	    if(chld->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		anna_function_type_t *fun = anna_function_type_unwrap(
+		   chld->return_type);
+//		wprintf(L"Wee %ls\n", chld->return_type->name);
+		if(fun && fun->input_count > c->steps)
+		{
+		    this->return_type = fun->input_type[c->steps];
+//		    wprintf(L"Woo WEEE woo, input type thingie is %ls\n", this->return_type->name);
+		    
 		}
 	    }
 	    break;
@@ -742,8 +811,8 @@ void anna_node_calculate_type(
     
     anna_stack_template_t *stack = this->stack;
     
-    debug(D_SPAM, L"Calculate type of node:\n");
-    anna_node_print(D_SPAM, this);
+//    debug(D_CRITICAL, L"Calculate type of node:\n");
+//    anna_node_print(D_CRITICAL, this);
     if(this->return_type == ANNA_NODE_TYPE_IN_TRANSIT && anna_error_count == 0)
     {
 	anna_error(this, L"Circular type checking dependency");

@@ -2,7 +2,7 @@
 macro enum(definition)
 {
     var body = definition[2] as Call;
-    definition.function = ast(type);
+    definition.function = ast(__type__);
     
     var newBody = ast(
 	{

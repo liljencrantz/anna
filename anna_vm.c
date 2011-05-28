@@ -412,7 +412,23 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	int i;
 	anna_vmstack_t *s = stack;
 	for(i=0; i<op->frame_count; i++)
+	{
+
 	    s = s->parent;
+#ifdef ANNA_CHECK_VM
+	    if(!s)
+	    {
+		wprintf(
+		    L"Var get op to invalid stack frame: %d %d %ls\n",
+		    op->frame_count, op->offset,
+		    stack->function->name);
+		anna_vmstack_print_parent(stack);
+		stack_describe(stack);
+		
+		CRASH;
+	    }
+#endif
+	}
 #ifdef ANNA_CHECK_VM
 	if(!s->base[op->offset])
 	{

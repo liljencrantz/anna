@@ -353,6 +353,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token SPECIALIZE_BEGIN2
 %token SPECIALIZATION_BEGIN
 %token SPECIALIZATION_END
+%token TYPE
 
 %type <call_val> block opt_expression_list expression_list opt_else
 %type <call_val> module
@@ -360,7 +361,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <node_val> literal var_or_const
 %type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
 %type <node_val> function_definition function_declaration function_signature
-%type <node_val> opt_identifier identifier type_identifier any_identifier 
+%type <node_val> opt_identifier identifier identifier2 type_identifier type_identifier2 any_identifier
 %type <node_val> op op2 op3 op4 op5 op6 op7 pre_op9 post_op8
 %type <node_val> type_definition type_remainder
 %type <call_val> declaration_list declaration_list2
@@ -710,19 +711,6 @@ expression10:
 	literal
 	| 
 	any_identifier 
-	|
-	'%' any_identifier
-	{
-	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
-	    string_buffer_t sb;
-	    sb_init(&sb);
-	    sb_printf(&sb, L"%%%ls", ii->name);
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&ii->location,
-		sb_content(&sb));
-	    sb_destroy(&sb);
-	    
-	}
 	| 
 	'(' expression ')'
 	{
@@ -882,7 +870,49 @@ opt_identifier:
 	    $$ = 0;
 	};
 
+type_identifier:
+	type_identifier2
+
+	|
+	'%' type_identifier2
+	{
+	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
+	    string_buffer_t sb;
+	    sb_init(&sb);
+	    sb_printf(&sb, L"%%%ls", ii->name);
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&ii->location,
+		sb_content(&sb));
+	    sb_destroy(&sb);
+	    
+	}
+
+
+type_identifier2:
+	TYPE_IDENTIFIER
+	{
+	    $$ = anna_text_as_id(&@$, scanner);
+	};
+
 identifier:
+	identifier2
+
+	|
+	'%' identifier2
+	{
+	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
+	    string_buffer_t sb;
+	    sb_init(&sb);
+	    sb_printf(&sb, L"%%%ls", ii->name);
+	    $$ = (anna_node_t *)anna_node_create_identifier(
+		&ii->location,
+		sb_content(&sb));
+	    sb_destroy(&sb);
+	    
+	}
+
+
+identifier2:
 	IDENTIFIER
 	{
 	    $$ = anna_text_as_id(&@$, scanner);
@@ -904,12 +934,6 @@ identifier:
 	}
 	|
 	OR
-	{
-	    $$ = anna_text_as_id(&@$, scanner);
-	};
-
-type_identifier :
-	TYPE_IDENTIFIER
 	{
 	    $$ = anna_text_as_id(&@$, scanner);
 	};
@@ -1223,12 +1247,12 @@ specialization:
 	};
 
 type_definition:
-	identifier type_identifier attribute_list block 
+	TYPE type_identifier attribute_list block 
 	{
 	    
 	  anna_node_t *type  = (anna_node_t *)anna_node_create_call2(
 	      &@$,
-	      $1,$2,$3,$4);
+	      anna_node_create_identifier(&@$, L"__type__"),$2,$3,$4);
 	  
 	  $$ = (anna_node_t *)anna_node_create_call2(
 	      &@$, anna_node_create_identifier(&@1,L"__const__"),

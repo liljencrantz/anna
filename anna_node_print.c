@@ -65,6 +65,7 @@ static int is_simple(anna_node_call_t *call, int max_items)
 static void anna_node_print_internal(
     string_buffer_t *sb, anna_node_t *this, int indentation)
 {
+        
     if(!this)
     {
 	anna_indent(sb,indentation);
@@ -174,15 +175,26 @@ static void anna_node_print_internal(
 	    break;
 	}
 	
-	case ANNA_NODE_TYPE_LOOKUP:
-	case ANNA_NODE_TYPE_LOOKUP_RETURN:
+	case ANNA_NODE_TYPE_OF:
+	case ANNA_NODE_RETURN_OF:
 	{
 	    anna_indent(sb,indentation);
-	    sb_printf(sb,this->node_type==ANNA_NODE_TYPE_LOOKUP?L"__typeOf__":L"__typeOfReturn__(\n");
+	    sb_printf(sb,this->node_type==ANNA_NODE_TYPE_OF?L"__typeOf__":L"__typeOfReturn__(\n");
 	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
 	    anna_node_print_internal(
 		sb, chld, indentation+1);
 	    sb_printf(sb,L")");
+	    break;
+	}
+	
+	case ANNA_NODE_INPUT_TYPE_OF:
+	{
+	    anna_indent(sb,indentation);
+	    sb_printf(sb,L"__staticInputTypeOf__(\n");
+	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
+	    anna_node_print_internal(
+		sb, chld, indentation+1);
+	    sb_printf(sb,L", %d)", ((anna_node_wrapper_t *)this)->steps);
 	    break;
 	}
 	

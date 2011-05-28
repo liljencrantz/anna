@@ -212,7 +212,7 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
 
 anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 {
-    //  wprintf(L"\n\n\nSTART\n\n\n\n");
+//    wprintf(L"\n\n\nSTART %ls vs %ls\n\n\n\n", t1->name, t2->name);
 
     if(t1 == t2 || t2 == null_type)
     {

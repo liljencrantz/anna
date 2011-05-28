@@ -138,13 +138,12 @@ static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)
 	    anna_node_create_call2(
 		&node->location,
 		anna_node_create_identifier(&node->location, L"__specialize__"),
-		anna_node_create_type_lookup_return(
+		anna_node_create_return_of(
 		    &node->location, 
-		    node,
-		    -1),
+		    node->function),
 		anna_node_create_block2(
 		    &node->location, 
-		    anna_node_create_type_lookup_return(&node->location, node, node->child_count-1)
+		    anna_node_create_return_of(&node->location, node->child[node->child_count-1])
 		    )));
 	
 	return res;
@@ -242,6 +241,31 @@ static inline anna_node_t *anna_macro_specialize_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_specialize)
 
+
+static inline anna_node_t *anna_macro_return_type_of_i(anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"type of return", 1);
+    anna_node_wrapper_t *res = anna_node_create_return_of(
+	&node->location,
+	node->child[0]);
+    return (anna_node_t *)res;    
+}
+ANNA_VM_MACRO(anna_macro_return_type_of)
+
+static inline anna_node_t *anna_macro_input_type_of_i(anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"type of return", 2);
+    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_INT_LITERAL);
+    anna_node_int_literal_t *idx = (anna_node_int_literal_t *)node->child[1];
+    int i_idx = mpz_get_si(idx->payload);
+    anna_node_wrapper_t *res = anna_node_create_input_type_of(
+	&node->location,
+	node->child[0],
+	i_idx);
+    return (anna_node_t *)res;    
+}
+ANNA_VM_MACRO(anna_macro_input_type_of)
+
 #include "anna_macro_attribute.c"
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
@@ -286,10 +310,12 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);
 //    anna_macro_add(stack, L"each", &anna_macro_iter);
-    anna_macro_add(stack, L"map", &anna_macro_iter);
+//    anna_macro_add(stack, L"map", &anna_macro_iter);
 //    anna_macro_add(stack, L"filter", &anna_macro_iter);
 //    anna_macro_add(stack, L"find", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
-    anna_macro_add(stack, L"type", &anna_macro_type);
+    anna_macro_add(stack, L"__type__", &anna_macro_type);
     anna_macro_add(stack, L"return", &anna_macro_return);    
+    anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of);    
+   anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of);    
 }
