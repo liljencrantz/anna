@@ -21,7 +21,8 @@ anna_node_type_t *anna_node_create_type(
 
 anna_node_wrapper_t *anna_node_create_return(
     anna_location_t *loc,
-    struct anna_node *val);
+    struct anna_node *val,
+    int type);
 
 anna_node_member_access_t *anna_node_create_member_get(
     anna_location_t *loc, 

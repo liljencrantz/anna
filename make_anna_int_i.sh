@@ -46,7 +46,7 @@ for i in "add mpz_add(res, *v1, *v2)" "increaseAssign mpz_add(res, *v1, *v2)" "s
 static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
-    if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object))
+    if(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object)
     {
         anna_vmstack_drop(stack, 3);
         anna_vmstack_push_object(stack, null_object);

@@ -334,6 +334,8 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token VAR
 %token CONST
 %token RETURN
+%token BREAK
+%token CONTINUE
 %token SEPARATOR
 %token SIGN
 %token IGNORE
@@ -735,7 +737,21 @@ expression10:
 		&@$,
 		anna_node_create_identifier(&@$,L"__if__"),
 		$3, $5, $6);
-        };
+        }
+	|
+	BREAK
+	{
+	    $$ = (anna_node_t *)anna_node_create_call2(
+		&@$,
+		anna_node_create_identifier(&@$,L"__break__"));
+	}
+	|
+	CONTINUE
+	{
+	    $$ = (anna_node_t *)anna_node_create_call2(
+		&@$,
+		anna_node_create_identifier(&@$,L"__continue__"));
+	};
 
 op:
 	APPEND
@@ -881,7 +897,7 @@ type_identifier:
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
 	    ii->node_type = ANNA_NODE_INTERNAL_IDENTIFIER;
-	    $$ = ii;
+	    $$ = $2;
 	}
 
 
@@ -898,7 +914,7 @@ identifier:
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
 	    ii->node_type = ANNA_NODE_INTERNAL_IDENTIFIER;
-	    $$ = ii;
+	    $$ = $2;
 	}
 
 

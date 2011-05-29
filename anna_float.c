@@ -40,7 +40,7 @@ static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
     anna_vmstack_drop(stack, 3);
-    if(unlikely( ANNA_VM_NULL(param[1])))
+    if(unlikely( anna_entry_null(param[1])))
     {
         anna_vmstack_push_object(stack, null_object);
     }

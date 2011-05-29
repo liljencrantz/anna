@@ -82,14 +82,14 @@ static inline anna_entry_t *anna_generate_identifier_i(anna_entry_t **param)
 {
     wchar_t *ss = L"";
 
-    if(!ANNA_VM_NULL(param[0]))
+    if(!anna_entry_null(param[0]))
     {
 	ss = anna_string_payload(anna_as_obj(param[0]));
     }
     
     wchar_t *nam = anna_util_identifier_generate(ss, 0);
     
-    if(!ANNA_VM_NULL(param[0]))
+    if(!anna_entry_null(param[0]))
     {
 	free(ss);
     }
@@ -103,7 +103,7 @@ static inline anna_entry_t *anna_node_wrapper_i_error_i(anna_entry_t **param)
 {
     anna_node_t *this = anna_node_unwrap(anna_as_obj_fast(param[0]));
     wchar_t *msg;
-    if(ANNA_VM_NULL(param[1]))
+    if(anna_entry_null(param[1]))
     {
 	msg = L"Unknown error";
 	anna_error(this, L"%ls", msg);
@@ -132,7 +132,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_to_string, 1)
 
 static inline anna_entry_t *anna_node_wrapper_cmp_i(anna_entry_t **param)
 {
-    if(ANNA_VM_NULL(param[1]))
+    if(anna_entry_null(param[1]))
     {
 	return anna_from_obj(null_object);
     }

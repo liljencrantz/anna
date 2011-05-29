@@ -110,7 +110,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
 {
     anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
-    if(likely(!ANNA_VM_NULL(param[1])))
+    if(likely(!anna_entry_null(param[1])))
     {  
         complex double v1 = anna_as_complex(param[0]);
         complex double v2 = anna_as_complex(param[1]);
@@ -125,7 +125,7 @@ static anna_vmstack_t *anna_complex_i_int_$name(anna_vmstack_t *stack, anna_obje
 {
     anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
-    if(likely(!ANNA_VM_NULL(param[1])))
+    if(likely(!anna_entry_null(param[1])))
     {  
         complex double v1 = anna_as_complex(param[0]);
         complex double v2 = (complex double)anna_as_int(param[1]);
@@ -140,7 +140,7 @@ static anna_vmstack_t *anna_complex_i_float_$name(anna_vmstack_t *stack, anna_ob
 {
     anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
-    if(likely(!ANNA_VM_NULL(param[1])))
+    if(likely(!anna_entry_null(param[1])))
     {  
         complex double v1 = anna_as_complex(param[0]);
         complex double v2 = (complex double)anna_as_float(param[1]);
@@ -155,7 +155,7 @@ static anna_vmstack_t *anna_complex_i_int_reverse_$name(anna_vmstack_t *stack, a
 {
     anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
-    if(likely(!ANNA_VM_NULL(param[1])))
+    if(likely(!anna_entry_null(param[1])))
     {  
         complex double v2 = anna_as_complex(param[0]);
         complex double v1 = (complex double)anna_as_int(param[1]);
@@ -170,7 +170,7 @@ static anna_vmstack_t *anna_complex_i_float_reverse_$name(anna_vmstack_t *stack,
 {
     anna_entry_t **param = stack->top - 2;
     anna_object_t *res = null_object;
-    if(likely(!ANNA_VM_NULL(param[1])))
+    if(likely(!anna_entry_null(param[1])))
     {  
         complex double v2 = anna_as_complex(param[0]);
         complex double v1 = (complex double)anna_as_float(param[1]);

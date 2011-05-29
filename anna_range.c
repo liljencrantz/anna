@@ -150,7 +150,7 @@ static anna_vmstack_t *anna_range_set_to_i(anna_vmstack_t *stack, anna_object_t 
 {
     anna_entry_t **param = stack->top - 2;
     anna_object_t *range = anna_as_obj_fast(param[0]);
-    if(ANNA_VM_NULL(param[1]))
+    if(anna_entry_null(param[1]))
     {
 	anna_range_set_open(range, 1);
     }
@@ -179,14 +179,14 @@ static anna_vmstack_t *anna_range_init(anna_vmstack_t *stack, anna_object_t *me)
     anna_entry_t **param = stack->top - 4;
     anna_object_t *range = anna_as_obj_fast(param[0]);
 
-    ssize_t from = ANNA_VM_NULL(param[1])?0:anna_as_int(param[1]);
+    ssize_t from = anna_entry_null(param[1])?0:anna_as_int(param[1]);
     anna_range_set_from(range, from);
-    ssize_t to = ANNA_VM_NULL(param[2])?0:anna_as_int(param[2]);
+    ssize_t to = anna_entry_null(param[2])?0:anna_as_int(param[2]);
     anna_range_set_to(range, to);
-    int open = ANNA_VM_NULL(param[2]);
+    int open = anna_entry_null(param[2]);
     anna_range_set_open(range, open);
 
-    if(ANNA_VM_NULL(param[3]))
+    if(anna_entry_null(param[3]))
     {
 	anna_range_set_step(range, ((to>from)|| open)?1:-1);
     }
@@ -231,7 +231,7 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
 static inline anna_entry_t *anna_range_in_i(anna_entry_t **param)
 {
     anna_object_t *range = anna_as_obj_fast(param[0]);
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     ssize_t from = anna_range_get_from(range);
     ssize_t to = anna_range_get_to(range);
     ssize_t step = anna_range_get_step(range);
@@ -414,7 +414,7 @@ static anna_vmstack_t *anna_range_filter_callback(anna_vmstack_t *stack, anna_ob
     size_t sz = anna_range_get_count(range);
     int open = anna_range_get_open(range);
     
-    if(!ANNA_VM_NULL(value))
+    if(!anna_entry_null(value))
     {
 	anna_list_add(res, anna_range_get(range, idx-1));
     }
@@ -493,7 +493,7 @@ static anna_vmstack_t *anna_range_find_callback(anna_vmstack_t *stack, anna_obje
     size_t sz = anna_range_get_count(range);
     int open = anna_range_get_open(range);
     
-    if(!ANNA_VM_NULL(value))
+    if(!anna_entry_null(value))
     {
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_range_get(range, idx-1));	

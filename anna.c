@@ -292,7 +292,6 @@ int main(int argc, char **argv)
 	exit(1);
     }
     
-    
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     
     anna_object_t *main_wrapper = anna_stack_get(module, L"main");

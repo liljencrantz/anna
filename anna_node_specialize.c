@@ -15,7 +15,6 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
     }
     else if(type == list_type && call->child_count==1)
     {
-	int i;
 	anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
 	
 	if(spec)

@@ -34,9 +34,9 @@
 
 /**
    If enabled, anna will use the chunked string implementation, which
-   is significantly faster for complex string operations on large
-   strings, but slightly slower on simple operations and a head ache
-   to debug because of its increased complexity.
+   is faster for complex string operations on large strings, but
+   slower on simple operations and a head ache to debug because of its
+   increased complexity.
 */
 //#define ANNA_STRING_CHUNKED_ENABLED
 

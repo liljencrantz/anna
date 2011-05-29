@@ -41,7 +41,7 @@ static anna_vmstack_t *anna_object_i_callback_${name}_reverse(anna_vmstack_t *st
 {
     anna_entry_t *res = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
-    if(ANNA_VM_NULL(res))
+    if(anna_entry_null(res))
     {
         anna_vmstack_push_object(stack, null_object);
     }
@@ -62,7 +62,7 @@ static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_
     anna_entry_t *that_entry = anna_vmstack_pop_entry(stack);
     anna_entry_t *this_entry = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_entry(stack);
-    if(ANNA_VM_NULL(res))
+    if(anna_entry_null(res))
     {
 //wprintf(L\"NULL, LETS CHECK REVERSE!!!\n\");
         anna_object_t *that = anna_as_obj(that_entry);

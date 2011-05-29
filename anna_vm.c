@@ -705,7 +705,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
   ANNA_LAB_NOT:
     {
-	*(stack->top-1) = ANNA_VM_NULL(*(stack->top-1))?anna_from_int(1):anna_from_obj(null_object);
+	*(stack->top-1) = anna_entry_null(*(stack->top-1))?anna_from_int(1):anna_from_obj(null_object);
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }
@@ -727,14 +727,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_COND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += !ANNA_VM_NULL(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
+	stack->code += !anna_entry_null(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
   ANNA_LAB_NCOND_JMP:
     {
 	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += ANNA_VM_NULL(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
+	stack->code += anna_entry_null(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    

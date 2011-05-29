@@ -363,7 +363,6 @@ static void anna_node_calculate_type_internal(
 
 	    anna_type_prepare_member(type, n->mid, stack);
 	    
-	    array_list_t method_candidate = AL_STATIC;
 	    anna_member_t *member = anna_member_get(type, n->mid);
 	    
 	    if(!member)
@@ -808,8 +807,6 @@ void anna_node_calculate_type(
 	anna_error(this,L"Invalid stack value while determining types\n");
 	CRASH;
     }
-    
-    anna_stack_template_t *stack = this->stack;
     
 //    debug(D_CRITICAL, L"Calculate type of node:\n");
 //    anna_node_print(D_CRITICAL, this);

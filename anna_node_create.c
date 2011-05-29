@@ -55,10 +55,11 @@ anna_node_type_t *anna_node_create_type(
     return result;  
 }
 
-anna_node_wrapper_t *anna_node_create_return(anna_location_t *loc, struct anna_node *val)
+anna_node_wrapper_t *anna_node_create_return(
+    anna_location_t *loc, struct anna_node *val, int type)
 {
     anna_node_wrapper_t *result = anna_alloc_node(sizeof(anna_node_wrapper_t));
-    result->node_type = ANNA_NODE_RETURN;
+    result->node_type = type;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;
     result->steps = 0;

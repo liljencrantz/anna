@@ -70,6 +70,12 @@ struct anna_vmstack;
 typedef struct anna_vmstack *(*anna_native_t)( struct anna_vmstack *, struct anna_object *);
 typedef ssize_t mid_t;
 
+/*
+  These values are used by the flags param of the various GC:ed memory
+  allocation types in order to determine what type of allocation a
+  pointer points to. The memory allocator reserves the first 8 bits of every allocation.
+ */
+
 #define ANNA_TYPE 0
 #define ANNA_OBJECT 1
 #define ANNA_STACK_TEMPLATE 2
@@ -82,13 +88,43 @@ typedef ssize_t mid_t;
 #define ANNA_MOVE 16
 #define ANNA_USED 32
 
+/*
+  Various flags used by functions. 
+ */
+
+/**
+  Set to true for variadic functions.
+ */
 #define ANNA_FUNCTION_VARIADIC 512
+/**
+   This function can be used as a macro.
+ */
 #define ANNA_FUNCTION_MACRO 1024
+/**
+   The outwardly visible interface of this function, i.e. it's input
+   and return types have been calculated.
+ */
 #define ANNA_FUNCTION_PREPARED_INTERFACE 2048
+/**
+   The body of this function has been prepared, i.e. the return type
+   of every node has been calculated.
+ */
 #define ANNA_FUNCTION_PREPARED_BODY 4096
+/**
+   This function is a block-type function. This implies that a return
+   expression within this function will return not just this function
+   but it's innermost non-block function.
+ */
 #define ANNA_FUNCTION_BLOCK 8192
+/**
+   This function is a continuation.
+ */
 #define ANNA_FUNCTION_CONTINUATION (8192*2)
+/**
+   This function is a bound method.
+ */
 #define ANNA_FUNCTION_BOUND_METHOD (8192*4)
+
 
 #define ANNA_TYPE_REGISTERED 512
 #define ANNA_TYPE_PREPARED_INTERFACE 1024

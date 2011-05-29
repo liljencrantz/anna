@@ -42,7 +42,7 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
     echo "
 static inline anna_entry_t *anna_char_i_${name}_i(anna_entry_t **param)
 {
-    if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object))
+    if(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object)
         return anna_from_obj(null_object);
   
     wchar_t v1 = anna_as_char(param[0]);

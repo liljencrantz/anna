@@ -77,7 +77,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 static anna_vmstack_t *anna_float_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
-    if(unlikely(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object))
+    if(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object)
     {
         anna_vmstack_drop(stack, 3);
         anna_vmstack_push_object(stack, null_object);
@@ -93,7 +93,7 @@ static anna_vmstack_t *anna_float_i_$name(anna_vmstack_t *stack, anna_object_t *
 static anna_vmstack_t *anna_float_i_int_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
-    if(unlikely(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object))
+    if(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object)
     {
         anna_vmstack_drop(stack, 3);
         anna_vmstack_push_object(stack, null_object);
@@ -110,7 +110,7 @@ static anna_vmstack_t *anna_float_i_int_$name(anna_vmstack_t *stack, anna_object
 static anna_vmstack_t *anna_float_i_int_reverse_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
-    if(unlikely(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object))
+    if(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object)
     {
         anna_vmstack_drop(stack, 3);
         anna_vmstack_push_object(stack, null_object);

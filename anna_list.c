@@ -92,11 +92,11 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value
     size_t size = anna_list_get_count(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
 //    wprintf(L"Set el %d in list of %d elements\n", pos, size);
-    if(unlikely(pos < 0))
+    if(pos < 0)
     {
 	return;
     }
-    if(unlikely(pos >= size))
+    if(pos >= size)
     {
 	anna_list_set_count(this, pos+1);      
     }
@@ -107,7 +107,7 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value
 
 anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset)
 {
-    if(likely(this->type->mid_identifier[ANNA_MID_LIST_PAYLOAD]->offset == 0))
+    if(this->type->mid_identifier[ANNA_MID_LIST_PAYLOAD]->offset == 0)
     {
 	size_t size = (ssize_t)this->member[1];
 	ssize_t pos = anna_list_calc_offset(offset, size);
@@ -185,7 +185,7 @@ anna_entry_t **anna_list_get_payload(anna_object_t *this)
 
 static inline anna_entry_t *anna_list_set_int_i(anna_entry_t **param)
 {
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     anna_list_set(anna_as_obj(param[0]), anna_as_int(param[1]), param[2]);
     return param[2];
 }
@@ -193,7 +193,7 @@ ANNA_VM_NATIVE(anna_list_set_int, 3)
 
 static inline anna_entry_t *anna_list_get_int_i(anna_entry_t **param)
 { 
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     return anna_list_get(anna_as_obj(param[0]), anna_as_int(param[1]));
 }
 ANNA_VM_NATIVE(anna_list_get_int, 2)
@@ -218,7 +218,7 @@ ANNA_VM_NATIVE(anna_list_get_last, 1)
 
 static inline anna_entry_t *anna_list_set_count_method_i(anna_entry_t **param)
 {
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     int sz = anna_as_int(param[1]);
     anna_list_set_count(anna_as_obj(param[0]), sz);
     return param[1];
@@ -422,7 +422,7 @@ static anna_vmstack_t *anna_list_filter_callback(anna_vmstack_t *stack, anna_obj
     anna_object_t *res = anna_as_obj_fast(param[3]);
     size_t sz = anna_list_get_count(list);
 
-    if(!ANNA_VM_NULL(value))
+    if(!anna_entry_null(value))
     {
 	anna_list_add(res, anna_list_get(list, idx-1));
     }
@@ -498,7 +498,7 @@ static anna_vmstack_t *anna_list_find_callback(anna_vmstack_t *stack, anna_objec
     int idx = anna_as_int(param[2]);
     size_t sz = anna_list_get_count(list);
 
-    if(!ANNA_VM_NULL(value))
+    if(!anna_entry_null(value))
     {
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_list_get(list, idx-1));
@@ -627,7 +627,7 @@ static anna_vmstack_t *anna_list_in_callback(anna_vmstack_t *stack, anna_object_
     int idx = anna_as_int(param[2]);
     size_t sz = anna_list_get_count(list);
     
-    if(!ANNA_VM_NULL(ret))
+    if(!anna_entry_null(ret))
     {
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_from_int(idx-1));
@@ -695,7 +695,7 @@ static anna_vmstack_t *anna_list_in(anna_vmstack_t *stack, anna_object_t *me)
 
 static inline anna_entry_t *anna_list_i_get_range_i(anna_entry_t **param)
 {
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     anna_object_t *list = anna_as_obj(param[0]);
     anna_object_t *range = anna_as_obj(param[1]);
     int from = anna_range_get_from(range);
@@ -725,13 +725,13 @@ ANNA_VM_NATIVE(anna_list_i_get_range, 2)
 
 static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 {
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     
     anna_object_t *repl;
     anna_object_t *list = anna_as_obj(param[0]);
     anna_object_t *range = anna_as_obj(param[1]);
     
-    if(unlikely(ANNA_VM_NULL(param[2])))
+    if(anna_entry_null(param[2]))
 	repl = anna_list_create(object_type);
     else
 	repl = anna_as_obj(param[2]);
@@ -1057,7 +1057,7 @@ static void anna_list_type_create_internal(
 static inline void anna_list_internal_init()
 {
     static int init = 0;
-    if(likely(init))
+    if(init)
 	return;
     init=1;
     hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);

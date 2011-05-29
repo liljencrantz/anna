@@ -148,13 +148,14 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    int i;
+#ifdef ANNA_CHECK_GC
 	    if(!n->function)
 	    {
-		anna_error(n, L"FASFDDSA");
+		anna_error(n, L"Critical: Invalid AST node");
 		anna_node_print(5, n);		
 		CRASH;
 	    }
-	    
+#endif
 	    anna_alloc_mark_node(n->function);
 	    for(i=0; i<n->child_count; i++)
 	    {

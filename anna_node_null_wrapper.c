@@ -2,7 +2,7 @@
 static inline anna_entry_t *anna_node_null_wrapper_i_init_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    if(ANNA_VM_NULL(param[1]))
+    if(anna_entry_null(param[1]))
     {
 	*(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD)=
 	    anna_node_create_null(

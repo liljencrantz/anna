@@ -82,8 +82,8 @@ static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
 
 static anna_entry_t *anna_string_i_set_int_i(anna_entry_t **param)
 {
-    ANNA_VM_NULLCHECK(param[1]);
-    ANNA_VM_NULLCHECK(param[2]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[2]);
     wchar_t ch = anna_as_char(param[2]);
     ssize_t idx = anna_string_idx_wrap(anna_as_obj(param[0]), anna_as_int(param[1]));
     if(likely(idx >= 0))
@@ -96,7 +96,7 @@ ANNA_VM_NATIVE(anna_string_i_set_int, 3)
 
 static inline anna_entry_t *anna_string_i_get_int_i(anna_entry_t **param)
 {
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     ssize_t idx = anna_string_idx_wrap(anna_as_obj(param[0]), anna_as_int(param[1]));
     if(!(idx < 0 || idx >= anna_string_get_count(anna_as_obj(param[0]))))
     {
@@ -108,7 +108,7 @@ ANNA_VM_NATIVE(anna_string_i_get_int, 2)
 
 static inline anna_entry_t *anna_string_i_get_range_i(anna_entry_t **param)
 {
-    ANNA_VM_NULLCHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
     
     anna_object_t *this = anna_as_obj_fast(param[0]);
     ssize_t from = anna_string_idx_wrap(anna_as_obj_fast(param[0]), anna_range_get_from(anna_as_obj_fast(param[1])));
@@ -147,7 +147,7 @@ static anna_vmstack_t *anna_string_i_set_range(anna_vmstack_t *stack, anna_objec
     anna_entry_t **param = stack->top - 3;
     anna_object_t *res = null_object;
 
-    if(likely(!ANNA_VM_NULL(param[1]) && !ANNA_VM_NULL(param[2])))
+    if(likely(!anna_entry_null(param[1]) && !anna_entry_null(param[2])))
     {
 	anna_object_t *this = anna_as_obj(param[0]);
 	anna_object_t *range = anna_as_obj(param[1]);
@@ -221,7 +221,7 @@ static anna_vmstack_t *anna_string_i_set_count(anna_vmstack_t *stack, anna_objec
 {
     anna_entry_t **param = stack->top - 2;
     anna_object_t *this = anna_as_obj(param[0]);
-    if(!ANNA_VM_NULL(param[1]))
+    if(!anna_entry_null(param[1]))
     {
 	int sz = anna_as_int(param[1]);
 	asi_truncate(as_unwrap(this), sz);
@@ -259,7 +259,7 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
     anna_object_t *this = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
     
-    if(ANNA_VM_NULL(e))
+    if(anna_entry_null(e))
     {
 	anna_vmstack_push_object(stack, this);
     }
@@ -540,7 +540,7 @@ int anna_string_cmp(anna_object_t *this, anna_object_t *that)
 
 static int anna_is_string(anna_entry_t *e)
 {
-    if(ANNA_VM_NULL(e))
+    if(anna_entry_null(e))
     {
 	return 0;
     }
