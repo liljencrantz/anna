@@ -350,7 +350,8 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token ELSE
 %token TO
 %token PAIR
-%token DECLARE
+%token DECLARE_VAR
+%token DECLARE_CONST
 %token SPECIALIZATION_BEGIN
 %token SPECIALIZATION_END
 %token SPECIALIZATION_BEGIN2
@@ -879,14 +880,8 @@ type_identifier:
 	'%' type_identifier2
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
-	    string_buffer_t sb;
-	    sb_init(&sb);
-	    sb_printf(&sb, L"%%%ls", ii->name);
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&ii->location,
-		sb_content(&sb));
-	    sb_destroy(&sb);
-	    
+	    ii->node_type = ANNA_NODE_INTERNAL_IDENTIFIER;
+	    $$ = ii;
 	}
 
 
@@ -898,19 +893,12 @@ type_identifier2:
 
 identifier:
 	identifier2
-
 	|
 	'%' identifier2
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
-	    string_buffer_t sb;
-	    sb_init(&sb);
-	    sb_printf(&sb, L"%%%ls", ii->name);
-	    $$ = (anna_node_t *)anna_node_create_identifier(
-		&ii->location,
-		sb_content(&sb));
-	    sb_destroy(&sb);
-	    
+	    ii->node_type = ANNA_NODE_INTERNAL_IDENTIFIER;
+	    $$ = ii;
 	}
 
 
@@ -1171,10 +1159,17 @@ declaration_expression:
 	|
 	function_definition
 	|
-	identifier DECLARE expression
+	identifier DECLARE_VAR expression
         {
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, anna_node_create_identifier(&@$, L"__var__"),
+		$1, anna_node_create_null(&@$), $3, anna_node_create_block2(&@$));
+        }
+	|
+	identifier DECLARE_CONST expression
+        {
+	    $$ = (anna_node_t *)anna_node_create_call2(
+		&@$, anna_node_create_identifier(&@$, L"__const__"),
 		$1, anna_node_create_null(&@$), $3, anna_node_create_block2(&@$));
         };
 

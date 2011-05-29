@@ -266,7 +266,7 @@ anna_stack_template_t *anna_node_create_wrapper_types()
     
     node_wrapper_type = anna_type_native_create(L"Node", stack);
     node_identifier_wrapper_type = anna_type_native_create(L"Identifier", stack);
-    anna_type_t *mapping_id_type = anna_type_native_create(L"MappingIdentifier", stack);
+    anna_type_t *mapping_id_type = anna_type_native_create(L"InternalIdentifier", stack);
     anna_node_create_wrapper_type(stack);
     anna_node_create_identifier_wrapper_type(stack, node_identifier_wrapper_type, 0);
     anna_node_create_identifier_wrapper_type(stack, mapping_id_type, 1);

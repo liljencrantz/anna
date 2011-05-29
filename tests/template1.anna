@@ -1,6 +1,6 @@
-type Foo (template(A|Int)) {
+type Foo (template(%A|Int)) {
 
-    def A bar(A a, A b){
+    def %A bar(%A a, %A b){
         a+b;
     }
 

@@ -90,7 +90,8 @@ int anna_node_is_call_to(anna_node_t *this, wchar_t *name){
 }
 
 int anna_node_is_named(anna_node_t *this, wchar_t *name){
-    if( this->node_type == ANNA_NODE_IDENTIFIER)
+    if( ( this->node_type == ANNA_NODE_IDENTIFIER) ||
+	( this->node_type == ANNA_NODE_INTERNAL_IDENTIFIER))
     {
 	anna_node_identifier_t *fun = (anna_node_identifier_t *)this;
 	return wcscmp(fun->name, name)==0;
@@ -349,7 +350,7 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_call_t);
 	    
 	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_MAPPING_IDENTIFIER:
+	case ANNA_NODE_INTERNAL_IDENTIFIER:
 	    return sizeof(anna_node_identifier_t);
 
 	case ANNA_NODE_INT_LITERAL:
@@ -453,7 +454,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	  we can return them as is.
 	*/
 	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_MAPPING_IDENTIFIER:
+	case ANNA_NODE_INTERNAL_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
@@ -485,7 +486,7 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 {
     switch(tree->node_type)
     {
-	case ANNA_NODE_IDENTIFIER:
+	case ANNA_NODE_INTERNAL_IDENTIFIER:
 	{
 	    anna_node_identifier_t *tree2 = (anna_node_identifier_t *)tree;
 	    if(wcscmp(tree2->name,from->name)==0)
@@ -496,6 +497,7 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	    return tree;
 	}
 
+	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
 	case ANNA_NODE_INT_LITERAL:
@@ -503,7 +505,6 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
-	case ANNA_NODE_MAPPING_IDENTIFIER:
 	case ANNA_NODE_RETURN_TYPE_OF:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
@@ -763,7 +764,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	}
 
 	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_MAPPING_IDENTIFIER:
+	case ANNA_NODE_INTERNAL_IDENTIFIER:
 	case ANNA_NODE_INT_LITERAL:
 	case ANNA_NODE_STRING_LITERAL:
 	case ANNA_NODE_CHAR_LITERAL:
@@ -846,7 +847,7 @@ int anna_node_call_validate(
 	if(is_named)
 	{
 	    anna_node_cond_t *p = (anna_node_cond_t *)call->child[i];
-	    if(p->arg1->node_type != ANNA_NODE_MAPPING_IDENTIFIER)
+	    if(p->arg1->node_type != ANNA_NODE_INTERNAL_IDENTIFIER)
 	    {
 		if(print_error)
 		{

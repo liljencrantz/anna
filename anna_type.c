@@ -148,7 +148,7 @@ static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
 	CHECK_NODE_TYPE(node, ANNA_NODE_CALL);
 	anna_node_call_t *call = (anna_node_call_t *)node;
 	CHECK_CHILD_COUNT(call, L"Templace specialization", 2);
-	CHECK_NODE_TYPE(call->child[0], ANNA_NODE_IDENTIFIER);
+	CHECK_NODE_TYPE(call->child[0], ANNA_NODE_INTERNAL_IDENTIFIER);
 	code = anna_node_replace(code, (anna_node_identifier_t *)call->child[0], call->child[1]);
     }
     
@@ -990,7 +990,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	{	
 	anna_node_call_t *decl = node_cast_call(input_node->child[i]);
 //	anna_node_print(4, decl);
-	if(decl->child[1]->node_type == ANNA_NODE_IDENTIFIER)
+	if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
 	{
 	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
 

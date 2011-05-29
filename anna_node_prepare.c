@@ -175,7 +175,7 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 	
-	case ANNA_NODE_MAPPING_IDENTIFIER:
+	case ANNA_NODE_INTERNAL_IDENTIFIER:
 	{
 	    this->return_type = null_type;
 	    break;

@@ -1,10 +1,10 @@
 /*
   Test template specialization of function names in types
 */
-type Foo (template(op|__add__)) {
+type Foo (template(%op|__add__)) {
 
     def Int bar(Int a, Int b){
-        a.op(b);
+        a.%op(b);
     }
 
 }

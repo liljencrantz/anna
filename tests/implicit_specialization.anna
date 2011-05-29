@@ -1,9 +1,9 @@
 
-type Foo (template(T|Object))
+type Foo (template(%T|Object))
 {
-    var T val;
+    var %T val;
 
-    def __init__(T val)
+    def __init__(%T val)
     {
         this.val = val;
     }

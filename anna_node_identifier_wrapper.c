@@ -25,7 +25,7 @@ static inline anna_entry_t *anna_node_mapping_identifier_wrapper_i_init_i(anna_e
     anna_node_identifier_t *n = anna_node_create_identifier(
 	source?&source->location:0,
 	anna_intern_or_free(anna_string_payload(anna_as_obj(param[2]))));
-    n->node_type = ANNA_NODE_MAPPING_IDENTIFIER;
+    n->node_type = ANNA_NODE_INTERNAL_IDENTIFIER;
     *(anna_node_identifier_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD)=
 	n;
     

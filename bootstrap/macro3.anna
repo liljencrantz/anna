@@ -4,7 +4,7 @@ macro __mapping__(node)
 { 
     a1 := if(node[0] as Identifier)
     {
-	MappingIdentifier(node[0], (node[0] as Identifier).name);
+	InternalIdentifier(node[0], (node[0] as Identifier).name);
     } else
     {
 	node[0];
