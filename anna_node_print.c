@@ -52,7 +52,7 @@ static int is_simple(anna_node_call_t *call, int max_items)
 	     (ct==ANNA_NODE_CLOSURE) ||
 	     (ct==ANNA_NODE_MEMBER_CALL) ||
 	     (ct==ANNA_NODE_MEMBER_GET) ||
-	     (ct==ANNA_NODE_MEMBER_GET_WRAP) ||
+	     (ct==ANNA_NODE_MEMBER_BIND) ||
 	     (ct==ANNA_NODE_MEMBER_SET) ||
 	     (ct==ANNA_NODE_IF) ||
 	     (ct==ANNA_NODE_NULL)))
@@ -176,7 +176,7 @@ static void anna_node_print_internal(
 	}
 	
 	case ANNA_NODE_TYPE_OF:
-	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	{
 	    anna_indent(sb,indentation);
 	    sb_printf(sb,this->node_type==ANNA_NODE_TYPE_OF?L"__typeOf__":L"__typeOfReturn__(\n");
@@ -279,7 +279,7 @@ static void anna_node_print_internal(
 	    break;
 	}
 
-	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_BIND:
 	{
 	    anna_indent(sb,indentation);
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;

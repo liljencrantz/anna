@@ -52,7 +52,7 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
     anna_node_print(D_SPAM, node);
     
     if((node->node_type == ANNA_NODE_TYPE_OF) || 
-       (node->node_type == ANNA_NODE_RETURN_OF) || 
+       (node->node_type == ANNA_NODE_RETURN_TYPE_OF) || 
        (node->node_type == ANNA_NODE_INPUT_TYPE_OF) )
     {
 //	wprintf(L"Start type calc for node %d of type %d\n", node, node->node_type);
@@ -369,14 +369,14 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_ASSIGN:
 	    return sizeof(anna_node_assign_t);
 	case ANNA_NODE_MEMBER_GET:
-	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_BIND:
 	    return sizeof(anna_node_member_access_t);
 	case ANNA_NODE_MEMBER_SET:
 	    return sizeof(anna_node_member_access_t);
 	case ANNA_NODE_RETURN:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
-	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	    return sizeof(anna_node_wrapper_t);
 	default:
 	    anna_error(n, L"Unknown node type %d encoundered while determining size of node\n", n->node_type);
@@ -471,7 +471,7 @@ anna_node_t *anna_node_clone_deep(anna_node_t *n)
 	    */
 	case ANNA_NODE_ASSIGN:
 	case ANNA_NODE_MEMBER_GET:
-	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_BIND:
 	case ANNA_NODE_MEMBER_SET:
 	case ANNA_NODE_RETURN:
 	default:
@@ -504,7 +504,7 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_MAPPING_IDENTIFIER:
-	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	{
@@ -574,7 +574,7 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	}
 
 	case ANNA_NODE_TYPE_OF:
-	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	{
 	    anna_node_t *c1 = anna_node_type_lookup_get_payload(node1);
 	    anna_node_t *c2 = anna_node_type_lookup_get_payload(node2);
@@ -710,7 +710,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	    break;   
 	}
 
-	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_BIND:
 	{
 	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
 	    anna_node_each(n->object, fun, aux);
@@ -754,7 +754,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	}	
 
 	case ANNA_NODE_RETURN:
-	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	{

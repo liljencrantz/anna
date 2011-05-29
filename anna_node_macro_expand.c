@@ -111,7 +111,7 @@ anna_node_t *anna_node_macro_expand(
 	    return this;
 	}
 	
-	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	case ANNA_NODE_RETURN:
@@ -166,7 +166,7 @@ anna_node_t *anna_node_macro_expand(
 	}
 
 	case ANNA_NODE_MEMBER_GET:
-	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_BIND:
 	{
 	    anna_node_member_access_t *g = (anna_node_member_access_t *)this;
 	    g->object = anna_node_macro_expand(g->object, stack);

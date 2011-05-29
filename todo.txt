@@ -1,12 +1,11 @@
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
-Should we store most of the stack template data in the namespace class? Should hopefully simplify the code a bit.
 Is differentiating between properties and members when looking at interfaces a mistake? It adds a bunch of extra run time checks for null types, which probably negates the performance advantage. Code is a bit more obvious, but but we lose a bit of freedom for no real benefit.
 When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 What should be the return value for iterator methods like map and filter when given a null value as a function body?
 An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that this object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
 Make api more consistent. Make naming of wrapper types consistent. Make naming of native type methods consistent.
-If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code? There are currently no users of the ANNA_NODE_TYPE_LOOKUP AST node type. Will we be using it in the future or can it be safely removed?
+If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code?
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge numbers of switch statements. One possibility would be to add function pointers to the node types.
 Static math expression support, e.g. 4*3
 Common constants, e.g. pi, e, etc.

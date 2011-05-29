@@ -256,7 +256,6 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_null_wrapper.c"
 #include "anna_node_dummy_wrapper.c"
 #include "anna_node_closure_wrapper.c"
-#include "anna_node_declare_wrapper.c"
 #include "anna_node_mapping_wrapper.c"
 
 anna_stack_template_t *anna_node_create_wrapper_types()
@@ -273,7 +272,6 @@ anna_stack_template_t *anna_node_create_wrapper_types()
     anna_node_create_identifier_wrapper_type(stack, mapping_id_type, 1);
 
     node_call_wrapper_type = anna_node_create_call_wrapper_type(stack);
-    anna_type_t *decl_type = anna_node_create_declare_wrapper_type(stack);
 
     anna_type_t *types[] = 
 	{
@@ -291,8 +289,8 @@ anna_stack_template_t *anna_node_create_wrapper_types()
 	    0,
 	    0,
 	    0,
-	    decl_type,
-	    decl_type,
+	    0,
+	    0,
 	    0,
 	    0,
 	    0,

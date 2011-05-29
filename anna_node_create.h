@@ -112,7 +112,7 @@ anna_node_wrapper_t *anna_node_create_type_of(
     anna_location_t *loc,
     anna_node_t *payload);
 
-anna_node_wrapper_t *anna_node_create_return_of(
+anna_node_wrapper_t *anna_node_create_return_type_of(
     anna_location_t *loc,
     anna_node_t *payload);
 

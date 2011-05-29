@@ -138,7 +138,7 @@ ANNA_VM_MACRO(anna_macro_specialize)
 static inline anna_node_t *anna_macro_return_type_of_i(anna_node_call_t *node)
 {
     CHECK_CHILD_COUNT(node,L"type of return", 1);
-    anna_node_wrapper_t *res = anna_node_create_return_of(
+    anna_node_wrapper_t *res = anna_node_create_return_type_of(
 	&node->location,
 	node->child[0]);
     return (anna_node_t *)res;    

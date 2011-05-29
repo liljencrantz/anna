@@ -548,7 +548,7 @@ static void anna_node_calculate_type_internal(
 	    {
 		if(member->is_method)
 		{
-		    c->node_type = ANNA_NODE_MEMBER_GET_WRAP;
+		    c->node_type = ANNA_NODE_MEMBER_BIND;
 		    c->return_type = anna_method_curry(anna_function_type_unwrap(member->type));
 		}
 		else
@@ -726,7 +726,7 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 	
-	case ANNA_NODE_RETURN_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	{
 	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
 	    if(!chld->stack)

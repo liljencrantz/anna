@@ -605,7 +605,7 @@ flags);
 	    break;
 	}
 	
-	case ANNA_NODE_MEMBER_GET_WRAP:
+	case ANNA_NODE_MEMBER_BIND:
 	{
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    anna_object_t *const_obj = anna_node_static_invoke_try(
