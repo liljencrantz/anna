@@ -1,19 +1,3 @@
-
-macro __memberSet__(node)
-{
-    if(node.count != 3)
-    {
-	node.error("Expected three arguments");
-	return NullLiteral(node);
-    }
-    if(! (node[1] as Identifier))
-    {
-	node.error("Member is not an identifier");
-	return NullLiteral(node);
-    }
-    return MemberSet(node, node[0], (node[1] as Identifier).name, node[2]);
-}
-
 macro checkNodeType(node)
 {
     return ast(

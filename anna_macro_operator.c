@@ -102,3 +102,19 @@ static inline anna_node_t *anna_macro_member_get_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_member_get)
 
+ 
+static inline anna_node_t *anna_macro_member_set_i(anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"member assignment", 3);
+    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
+    
+    anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
+    mid_t mid = anna_mid_get(name_node->name);
+
+    return (anna_node_t *)anna_node_create_member_set(
+	&node->location,
+	node->child[0], 
+	mid,
+	node->child[2]);
+}
+ANNA_VM_MACRO(anna_macro_member_set)

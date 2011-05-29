@@ -48,113 +48,6 @@ static inline anna_node_t *anna_macro_macro_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_macro)
 
-static anna_node_t *anna_macro_iter_declare(anna_node_t *id)
-{
-    return (anna_node_t *)anna_node_create_call2(
-	&id->location,
-	(anna_node_t *)anna_node_create_identifier(&id->location,L"__var__"),
-	id,
-	anna_node_create_null(&id->location),
-	anna_node_create_null(&id->location),
-	anna_node_create_block2(&id->location));
-}
-
-static inline anna_node_t *anna_macro_iter_i(anna_node_call_t *node)			    
-{
-    CHECK_NODE_TYPE(node->function, ANNA_NODE_CALL);
-    
-    anna_node_t *n[]={0,0};
-    anna_node_t *body;
-    if(node->child_count < 2)
-    {
-	anna_error((anna_node_t *)node,
-		   L"Invalid arguments for iteration");
-    }
-    if(node->child_count > 3)
-    {
-	anna_error((anna_node_t *)node,
-		   L"Invalid arguments for iteration");
-    }
-    
-    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
-    CHECK_NODE_BLOCK(node->child[node->child_count-1]);
-
-    body = node->child[node->child_count-1];
-    if(node->child_count == 2)
-    {
-	n[0] = anna_macro_iter_declare((anna_node_t *)anna_node_create_identifier(
-	    &body->location,
-	    L"!unused"));
-	n[1] = anna_macro_iter_declare(node->child[0]);
-    }
-    else
-    {
-	CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
-	n[0] = anna_macro_iter_declare(node->child[0]);
-	n[1] = anna_macro_iter_declare(node->child[1]);
-    }
-    
-    anna_node_call_t *attribute_list = 
-	anna_node_create_block2(
-	    &body->location,
-	    anna_node_create_identifier(&body->location, L"block"));
-    
-    anna_node_call_t *declaration_list = anna_node_create_block(&body->location, 2, n);
-    
-    node->child[0] = (anna_node_t *)anna_node_create_call2(
-	&body->location,
-	(anna_node_t *)anna_node_create_identifier(&body->location,L"__def__"), 
-	(anna_node_t *)anna_node_create_identifier(
-	    &body->location,
-	    L"!iterator"),
-	anna_node_create_null(&body->location),
-	declaration_list, 
-	attribute_list, 
-	body);
-    
-    node->child_count = 1;
-    anna_node_call_t *fun = (anna_node_call_t *)node->function;
-
-    anna_node_identifier_t *orig_name = (anna_node_identifier_t *)fun->child[1];
-    
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_append(&sb, L"__");
-    sb_append(&sb, orig_name->name);
-    sb_append(&sb, L"__");
-    
-    
-    fun->child[1] = (anna_node_t *)anna_node_create_identifier(
-	&fun->child[1]->location,
-	sb_content(&sb));
-    sb_destroy(&sb);
-    
-    if(wcscmp(orig_name->name, L"map")==0)
-    {
-	anna_node_t *res = (anna_node_t *)anna_node_create_call2(
-	    &node->location, 
-	    anna_node_create_identifier(&node->location,L"cast"), 
-	    node, 
-	    anna_node_create_call2(
-		&node->location,
-		anna_node_create_identifier(&node->location, L"__specialize__"),
-		anna_node_create_return_of(
-		    &node->location, 
-		    node->function),
-		anna_node_create_block2(
-		    &node->location, 
-		    anna_node_create_return_of(&node->location, node->child[node->child_count-1])
-		    )));
-	
-	return res;
-    }
-    
-    return (anna_node_t *)node;
-    
-}
-ANNA_VM_MACRO(anna_macro_iter)
-
-
 static inline anna_node_t *anna_macro_type_i(anna_node_call_t *node)
 {
     CHECK_CHILD_COUNT(node,L"type macro", 3);
@@ -266,6 +159,20 @@ static inline anna_node_t *anna_macro_input_type_of_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_input_type_of)
 
+static anna_node_t *anna_macro_cast_i(
+    anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"cast", 2);
+//    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
+    node->function = anna_node_create_null(&node->location);
+    
+    node->node_type = ANNA_NODE_CAST;
+    return (anna_node_t *)node;
+}
+
+ANNA_VM_MACRO(anna_macro_cast)
+
+
 #include "anna_macro_attribute.c"
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
@@ -301,6 +208,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__def__", &anna_macro_def);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
+    anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
     anna_macro_add(stack, L"__var__", &anna_macro_var);
     anna_macro_add(stack, L"__const__", &anna_macro_var);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
@@ -309,13 +217,10 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"while", &anna_macro_while);
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);
-//    anna_macro_add(stack, L"each", &anna_macro_iter);
-//    anna_macro_add(stack, L"map", &anna_macro_iter);
-//    anna_macro_add(stack, L"filter", &anna_macro_iter);
-//    anna_macro_add(stack, L"find", &anna_macro_iter);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"__type__", &anna_macro_type);
-    anna_macro_add(stack, L"return", &anna_macro_return);    
-    anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of);    
-   anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of);    
+    anna_macro_add(stack, L"return", &anna_macro_return);
+    anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of);
+    anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of);
+    anna_macro_add(stack, L"cast", &anna_macro_cast);
 }
