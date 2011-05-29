@@ -12,7 +12,7 @@ def main()
     {
         if(!sieve[i])
         {
-	    ((2*i)..end:i).each(j){
+	    ((2*i)..end|i).each(j){
                 sieve[j] = 1;
             }
             count++;

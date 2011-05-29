@@ -5,8 +5,8 @@ def main()
     arr[4...] = "boooooring";
     print(arr, "\n");
 
-    print(arr[3..?:-2], "\n");
-    arr[3..?:-2] = "aa";
+    print(arr[3..?|-2], "\n");
+    arr[3..?|-2] = "aa";
     print(arr, "\n");
 
 }

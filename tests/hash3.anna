@@ -1,7 +1,7 @@
 
 def main()  
 {
-    d := [1 => "baberiba", 2 => "tjoho"];
+    d := [1 : "baberiba", 2 : "tjoho"];
     d[4] = "flöjt1";
     d[20] = "flöjt2";
     print(d[1], ' ', d[2], ' ', d[4], ' ', d[20], ' ', d[36], ' ', d[52], ' ', d[69], "\n");

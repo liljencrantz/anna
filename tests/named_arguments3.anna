@@ -31,7 +31,7 @@ type Baz
 def main()
 {
     foo := Foo();
-    foo.bar(third=>-1,second=>0,first=>1.0);    
-    foo.bar(third=>'\n', second=>"k", first=>"o");
+    foo.bar(third:-1,second:0,first:1.0);    
+    foo.bar(third:'\n', second:"k", first:"o");
     foo.bar(Baz());
 }

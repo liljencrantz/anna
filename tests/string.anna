@@ -28,19 +28,19 @@ def main(){
     /* Test replacing non-consecutive characters */
     print("Test 5\n");
     a = "aaabbbccc";
-    a[1..7:2] = "qqq";
+    a[1..7|2] = "qqq";
     print(a,"\n");
 
     /* Try replacing non-consecutive characters with wrong length of replacement. This should be a no-op. */
     print("Test 6\n");
     a = "aaabbbccc";
-    a[1..7:2] = "qqqaaa";
+    a[1..7|2] = "qqqaaa";
     print(a,"\n");
 
     /* Test replacing non-consecutive characters past end of original string. */
     print("Test 7\n");
     a = "aaabbbccc";
-    a[1..15:10] = "qq";
+    a[1..15|10] = "qq";
     a.each(idx, val){print(idx, ": ", val.ordinal, "\n")}
 
     /* Test replacing by index from end */

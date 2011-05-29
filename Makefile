@@ -16,7 +16,7 @@ COV_FLAGS := #--coverage
 # optimization increases overall performance slightly. Unfortunatly,
 # with lto, there does not seem to be any way to drop this flag only
 # for one function or one compilation unit.
-PROF_FLAGS := -g #-flto -O3 -fuse-linker-plugin -fno-gcse
+PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
 
 # CFLAGS_NOWARN consists of all cflags not related to warnings
 CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1		\

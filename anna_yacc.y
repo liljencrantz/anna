@@ -349,10 +349,12 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token IF
 %token ELSE
 %token TO
+%token PAIR
 %token DECLARE
-%token SPECIALIZE_BEGIN2
 %token SPECIALIZATION_BEGIN
 %token SPECIALIZATION_END
+%token SPECIALIZATION_BEGIN2
+%token SPECIALIZATION_END2
 %token TYPE
 
 %type <call_val> block opt_expression_list expression_list opt_else
@@ -809,7 +811,7 @@ op4:
 	};
 
 op5:
-	':'
+	PAIR
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"Pair");
 	};
@@ -1236,7 +1238,7 @@ opt_specialization:
 	| specialization;
 
 specialization:
-	SPECIALIZE_BEGIN2 expression_list opt_separator ')'
+	SPECIALIZATION_BEGIN2 expression_list opt_separator SPECIALIZATION_END2
 	{
 	    $$ = $2;
 	}

@@ -1,4 +1,4 @@
-type Foo (template(A:Int)) {
+type Foo (template(A|Int)) {
 
     def A bar(A a, A b){
         a+b;
@@ -8,6 +8,6 @@ type Foo (template(A:Int)) {
 
 def Int main()
 {
-    foo := Foo!(Float)();
+    foo := Foo«Float»();
     print(foo.bar(3.0,4.0));
 }

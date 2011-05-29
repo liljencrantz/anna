@@ -36,7 +36,6 @@ STDLIB FEATURES:
 HTML documentation extractor
 The rest of the hashtable functions (filter, find, properties for key and value lists, etc)
 Set type
-String format function
 File type
 hashCode function for Pair, List, Range, Float, Complex, Char
 A backtrace function

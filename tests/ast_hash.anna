@@ -15,7 +15,7 @@ def main()
 
     print(f == i, ' ', i==i2, ' ', i2==i22, '\n');
 
-    dict := [i as parser.Node=>1, i2=>2];
+    dict := [i as parser.Node:1, i2:2];
     dict[i22] = -3;
     dict[i22] = 3;
     print(dict[i2],'\n');
@@ -35,5 +35,5 @@ def main()
 
     sum := 0;
     dict.each(val){sum += val}
-    print("Sum: %\n" % [sum]);
+    print("Sum| %\n" % [sum]);
 }

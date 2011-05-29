@@ -6,5 +6,5 @@ def bar(String first, String second, String third)
 
 def main()
 {
-    bar(third=>"\n", second=>"k", first=>"o");
+    bar(third:"\n", second:"k", first:"o");
 }

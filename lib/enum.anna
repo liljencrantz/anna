@@ -36,19 +36,19 @@ macro enum(definition)
 	
 	fun = (
 	    fun % [
-		"name" => Identifier(definition, getter),
-		"value" => IntLiteral(definition, idx)
+		"name": Identifier(definition, getter),
+		"value": IntLiteral(definition, idx)
 		]) as Call;
 	
 	prop = (
 	    prop % [
-		"name" => Identifier(definition, id.name),
-		"functionName" => Identifier(definition, getter)
+		"name": Identifier(definition, id.name),
+		"functionName": Identifier(definition, getter)
 		]) as Call;
 	cmp = (
 	    cmp % [
-		"intValue" => IntLiteral(definition, idx),
-		"strValue" => StringLiteral(definition, id.name)
+		"intValue": IntLiteral(definition, idx),
+		"strValue": StringLiteral(definition, id.name)
 		]) as Call;
 	
 	newBody ~= [fun];

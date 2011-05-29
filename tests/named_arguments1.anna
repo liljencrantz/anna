@@ -11,8 +11,8 @@ type Foo
 def main()
 {
     lst := ["unused\n"];
-    lst.push(value => "ok\n");
+    lst.push(value : "ok\n");
     print(lst.pop());
     foo := Foo();
-    foo.bar(third=>"\n", second=>"k", first=>"o");
+    foo.bar(third:"\n", second:"k", first:"o");
 }
