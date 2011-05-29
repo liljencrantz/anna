@@ -815,7 +815,7 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
 //    anna_node_print(4, def);
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"%ls!(...)", type->name);
+    sb_printf(&sb, L"%ls«...»", type->name);
     anna_type_t *res = anna_type_create(sb_content(&sb), def);
     sb_destroy(&sb);
     
@@ -836,7 +836,7 @@ static int attr_idx(anna_node_call_t *attr, wchar_t *name)
 	    anna_node_call_t *tmpl = (anna_node_call_t *)attr->child[i];
 	    if(tmpl->child_count == 1)
 	    {
-		if (anna_node_is_call_to(tmpl->child[i], L"Pair"))
+		if (anna_node_is_call_to(tmpl->child[i], L"__mapping__"))
 		{
 		    anna_node_call_t *pair = (anna_node_call_t *)tmpl->child[0];
 		    if(pair->child_count == 2)
@@ -847,7 +847,6 @@ static int attr_idx(anna_node_call_t *attr, wchar_t *name)
 			}
 		    }
 		}
-		
 	    }
 	    idx++;
 	}

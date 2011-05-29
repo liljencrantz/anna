@@ -80,12 +80,23 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
 
 static inline anna_entry_t *anna_generate_identifier_i(anna_entry_t **param)
 {
-    wchar_t *nam = anna_util_identifier_generate("", 0);
+    wchar_t *ss = L"";
+
+    if(!ANNA_VM_NULL(param[0]))
+    {
+	ss = anna_string_payload(anna_as_obj(param[0]));
+    }
+    
+    wchar_t *nam = anna_util_identifier_generate(ss, 0);
+    
+    if(!ANNA_VM_NULL(param[0]))
+    {
+	free(ss);
+    }
+    
     return anna_from_obj(anna_string_create(wcslen(nam), nam));
 }
 ANNA_VM_NATIVE(anna_generate_identifier, 1)
-
-
 
 
 static inline anna_entry_t *anna_node_wrapper_i_error_i(anna_entry_t **param)
