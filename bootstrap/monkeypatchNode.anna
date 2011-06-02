@@ -4,7 +4,6 @@ def Node __format__(
     Node this, 
     HashMap«String, Node» data) 
 (
-    alias(__format__), 
     target(Node), 
 )
 {
@@ -16,3 +15,21 @@ def Node __format__(
     return res;
 }
 
+def Int isCallTo(
+    Node this,
+    String name)
+(
+    target(Node)
+)
+{
+    if(((this as Call).function as Identifier).name == name) { 1 } else { ? }
+}
+
+def Int isBlock(
+    Node this)
+(
+    target(Node)
+)
+{
+    if(((this as Call).function as Identifier).name == "__block__") { 1 } else { ? }
+}

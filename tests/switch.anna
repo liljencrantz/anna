@@ -13,6 +13,11 @@ def main()
 	    {
 		print("Seven\n");
 	    }
+
+	    default
+	    {
+		print("Whatever\n");
+	    }
 	}
     }
 }
