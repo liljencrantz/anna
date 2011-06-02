@@ -145,6 +145,14 @@ static void anna_node_print_internal(
 	    break;
 	}
 	
+	case ANNA_NODE_INTERNAL_IDENTIFIER:
+	{
+	    anna_indent(sb,indentation);
+	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
+	    sb_printf(sb,L"%%%ls", this2->name);
+	    break;
+	}
+	
 	case ANNA_NODE_ASSIGN:
 	{
 	    anna_indent(sb,indentation);

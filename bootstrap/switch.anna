@@ -1,0 +1,35 @@
+
+macro switch(node)
+{
+    checkCallCount(node, 2);
+    checkNodeBlock(node[1]);
+    switchBody := node[1] as Call;
+//    print(node, '\n');
+    switchBlock := Call(
+	node, 
+	Identifier(node, "__block__"),
+	ast(%val := %input));
+    switchBody.each(case)
+    {
+	checkNodeCallTo(case, "case");
+        caseCall := case as Call;
+	checkCallCount(caseCall, 2);
+	checkNodeBlock(caseCall[1]);
+//	print(caseCall[1]);
+	switchBlock ~= [
+	    ast(
+		__if__(%val == %cond, %caseBody, {})
+		) % [
+		    "cond": caseCall[0],
+		    "caseBody": caseCall[1]
+		    ]
+	    ];
+
+    }
+    
+    res := Call(node, switchBlock) % [
+	"val": Identifier(node, identifier("switchValue")), 
+	"input": node[0]];
+//    print(res, '\n');
+    return res;
+}

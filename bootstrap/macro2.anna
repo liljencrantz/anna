@@ -8,6 +8,24 @@ macro checkNodeType(node)
 	}).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
 }
 
+macro checkNodeCallTo(node)
+{
+    return ast(
+	{
+	    if(!(%x as Call))
+	    {
+		%x.error("Unexpected node type. Expected node of type Call"); 
+		return NullLiteral(%x);
+	    }
+	    if(%y != ((%x as Call).function as Identifier).name)
+	    {
+		(%x as Call).function.error("Unexpected node. Expected an identifier named " ~ %y); 
+		return NullLiteral(%x);
+	    }
+	}()
+	).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
+}
+
 macro checkNodeBlock(node)
 {
     return ast(
