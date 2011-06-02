@@ -1,2 +1,37 @@
-Four
+__block__(
+    __var__(
+        !switchValue:644;
+        null;
+        foo;
+        __block__());
+    __if__(
+        __or__(
+            __or__(
+                __or__(
+                    __memberGet__(!switchValue:644;__eq__)(2);
+                    __memberGet__(!switchValue:644;__eq__)(4));
+                __memberGet__(!switchValue:644;__eq__)(6));
+            __memberGet__(!switchValue:644;__eq__)(8));
+        __block__(print("Even\x0a"));
+        __block__(
+            __if__(
+                __memberGet__(!switchValue:644;__eq__)(7);
+                __block__(print("Seven\x0a"));
+                __block__(
+                    __if__(
+                        __memberGet__(
+                            __range__(
+                                1;
+                                Pair(5;2));
+                            __in__)(!switchValue:644);
+                        __block__(print("Odd\x0a"));
+                        __block__(print("Whatever\x0a"))))))))()Whatever
+Odd
+Even
+Odd
+Even
+Whatever
+Even
 Seven
+Even
+Whatever

@@ -4,16 +4,21 @@ def main()
     {
 	switch(foo)
 	{
-	    case(4)
+	    case(2,4,6,8)
 	    {
-		print("Four\n");
+		print("Even\n");
 	    }
-	    
+
 	    case(7)
 	    {
 		print("Seven\n");
 	    }
 
+	    cases(1..5|2)
+	    {
+		print("Odd\n");
+	    }
+	    
 	    default
 	    {
 		print("Whatever\n");

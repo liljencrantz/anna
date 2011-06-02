@@ -12,20 +12,38 @@ macro switch(node)
     lastIf := ? as Call;
     switchBody.each(idx, case)
     {
+	def makeCond(Node cond)
+	{
+	    return ast(%val == %cond) % ["cond":cond]
+	}
+
         caseCall := case as Call;
         next := ? as Call;
 	if(caseCall.isCallTo("case"))
 	{
-	    checkCallCount(caseCall, 2);
-	    checkNodeBlock(caseCall[1]);
+	    if(caseCall < 2)
+	    {
+		caseCall.error("Call has " ~ caseCall.count ~ " paramters, expected at lest 2");
+		return NullLiteral(caseCall);
+		
+	    }
+	    checkNodeBlock(caseCall[-1]);
 //	print(caseCall[1]);
+  	    cond := makeCond(caseCall[0]);
+	    (1..(caseCall.count-1)).each(idx)
+	    {
+		cond = ast(%cond1 or %cond2) % [
+		    "cond1": cond,
+		    "cond2": makeCond(caseCall[idx])
+		    ]; 
+	    }
 	    next =
 		(
 		    ast(
-			__if__(%val == %cond, %caseBody, {})
+			__if__(%cond, %caseBody, {})
 			) % [
-			    "cond": caseCall[0],
-			    "caseBody": caseCall[1]
+			    "cond": cond,
+			    "caseBody": caseCall[-1]
 			    ]) as Call;
 	} else
 	{
@@ -41,8 +59,25 @@ macro switch(node)
 		next = caseCall[0] as Call;
 	    } else
 	    {
-		case.error("Expected a case or default statement");
-		return NullLiteral(node);
+		if(caseCall.isCallTo("cases"))
+		{
+		    checkCallCount(caseCall, 2);
+		    checkNodeBlock(caseCall[-1]);
+
+		    next =
+			(
+			    ast(
+				__if__(%val in %items, %caseBody, {})
+				) % [
+				    "items": caseCall[0],
+				    "caseBody": caseCall[-1]
+				    ]) as Call;
+		    
+		} else
+		{
+		    case.error("Expected a case or default statement");
+		    return NullLiteral(node);
+		}
 	    }
 	}
 	if(lastIf)
@@ -68,5 +103,6 @@ macro switch(node)
     res := Call(node, switchBlock) % [
 	"val": Identifier(node, identifier("switchValue")), 
 	"input": node[0]];
+    print(res);
     return res;
 }
