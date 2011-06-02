@@ -1,0 +1,16 @@
+macro struct(node)
+{
+    initBlock := Call(node, Identifier(node, "__block__"));
+    typeBlock := Call(node, Identifier(node, "__block__"));
+    fullType := ast(__type__(anon, {}, %body)) % ["body": typeBlock];
+    call := Call(node, fullType);
+    
+    node.each(item)
+    {
+	checkNodeCallTo(item, "__mapping__");
+        map := item as Call;
+	
+    }
+    print(call, "\n");
+    return call;
+}

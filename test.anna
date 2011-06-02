@@ -1,18 +1,16 @@
 def main()
 {
-    (0..10).each(foo)
-    {
-	switch(foo)
+/*    foo := (
+	type  
 	{
-	    case(4)
+	    var Int first; 
+	    var String second; 
+	    def __init__(Int first, String second)
 	    {
-		print("Four\n");
+		this.first=first;
+		this.second=second;
 	    }
-	    
-	    case(7)
-	    {
-		print("Seven\n");
-	    }
-	}
-    }
+	    })(3, "aaa");*/
+    foo := struct(first:3, second:"aaa");
+    print(foo.first, " ", foo.second, "\n");
 }

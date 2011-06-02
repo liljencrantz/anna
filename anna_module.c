@@ -251,6 +251,7 @@ void anna_module_init()
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchString");
     anna_module_bootstrap_macro(L"switch");
+    anna_module_bootstrap_macro(L"struct");
     
     anna_module_init_recursive(L"lib", stack_global);
 }
