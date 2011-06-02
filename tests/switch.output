@@ -25,7 +25,36 @@ __block__(
                                 Pair(5;2));
                             __in__)(!switchValue:644);
                         __block__(print("Odd\x0a"));
-                        __block__(print("Whatever\x0a"))))))))()Whatever
+                        __block__(print("Whatever\x0a"))))))))()__block__(
+    __var__(
+        !switchValue:647;
+        null;
+        bar;
+        __block__());
+    __if__(
+        __memberGet__(!switchValue:647;__eq__)("abc");
+        __block__(print("abc\x0a"));
+        __block__(
+            __if__(
+                __or__(
+                    __or__(
+                        __memberGet__(!switchValue:647;__eq__)("b");
+                        __memberGet__(!switchValue:647;__eq__)("bb"));
+                    __memberGet__(!switchValue:647;__eq__)("bbb"));
+                __block__(print("Bunch of b:s\x0a"));
+                __block__(
+                    __if__(
+                        __memberGet__(
+                            __collection__(
+                                __mapping__("a";null);
+                                __mapping__("o";null);
+                                __mapping__("u";null);
+                                __mapping__("e";null);
+                                __mapping__("i";null);
+                                __mapping__("y";null));
+                            __in__)(!switchValue:647);
+                        __block__(print("Vowel\x0a"));
+                        __block__(print("Don't righly know\x0a"))))))))()Whatever
 Odd
 Even
 Odd
@@ -35,3 +64,8 @@ Even
 Seven
 Even
 Whatever
+abc
+Vowel
+Don't righly know
+Don't righly know
+Bunch of b:s

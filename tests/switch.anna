@@ -1,5 +1,11 @@
+/*
+  Test the switch expression
+ */
 def main()
 {
+    /*
+      Switch containing Int:s
+     */
     (0..10).each(foo)
     {
 	switch(foo)
@@ -22,6 +28,35 @@ def main()
 	    default
 	    {
 		print("Whatever\n");
+	    }
+	}
+    }
+
+    /*
+      Switch containing strings
+    */
+    ["abc", "a", "aa", ?, "bbb"].each(bar)
+    {
+	switch(bar)
+	{
+	    case("abc")
+	    {
+		print("abc\n");
+	    }
+
+	    case("b", "bb", "bbb")
+	    {
+		print("Bunch of b:s\n");
+	    }
+	    
+	    cases(["a":?, "o":?, "u":?, "e":?, "i":?, "y":?])
+	    {
+		print("Vowel\n");
+	    }
+	    
+	    default
+	    {
+		print("Don't righly know\n");
 	    }
 	}
     }

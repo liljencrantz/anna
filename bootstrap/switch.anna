@@ -1,5 +1,11 @@
-
-macro switch(node)
+macro switch(node) 
+/*(
+    documentation("
+The switch statement. This macro a conditional structure that allows
+you to execute one of many potential code blocks. It strongly
+resembles the switch statement found in e.g. C, and Java.
+")
+)*/
 {
     checkCallCount(node, 2);
     checkNodeBlock(node[1]);
