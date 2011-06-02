@@ -135,6 +135,16 @@ static inline anna_node_t *anna_macro_specialize_i(anna_node_call_t *node)
 ANNA_VM_MACRO(anna_macro_specialize)
 
 
+static inline anna_node_t *anna_macro_type_of_i(anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"type of", 1);
+    anna_node_wrapper_t *res = anna_node_create_type_of(
+	&node->location,
+	node->child[0]);
+    return (anna_node_t *)res;    
+}
+ANNA_VM_MACRO(anna_macro_type_of)
+
 static inline anna_node_t *anna_macro_return_type_of_i(anna_node_call_t *node)
 {
     CHECK_CHILD_COUNT(node,L"type of return", 1);
@@ -242,6 +252,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"__type__", &anna_macro_type);
     anna_macro_add(stack, L"return", &anna_macro_return);
+    anna_macro_add(stack, L"__staticTypeOf__", &anna_macro_type_of);
     anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of);
     anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of);
     anna_macro_add(stack, L"cast", &anna_macro_cast);

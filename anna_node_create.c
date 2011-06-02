@@ -75,7 +75,6 @@ anna_node_wrapper_t *anna_node_create_type_of(
     result->node_type = ANNA_NODE_TYPE_OF;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = (anna_node_t *)val;
-    result->return_type = type_type;
     return result;  
 }
 

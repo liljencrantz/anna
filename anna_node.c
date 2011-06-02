@@ -55,10 +55,7 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
        (node->node_type == ANNA_NODE_RETURN_TYPE_OF) || 
        (node->node_type == ANNA_NODE_INPUT_TYPE_OF) )
     {
-//	wprintf(L"Start type calc for node %d of type %d\n", node, node->node_type);
 	anna_node_calculate_type(node);
-//	wprintf(L"Finished type calc for node %d of type %d\n", node, node->node_type);
-//	wprintf(L"Woo WEEE woo2, input type thingie is now %ls\n", node->return_type->name);
 	return node->return_type;
     }
     
@@ -773,6 +770,8 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_TYPE:
+	case ANNA_NODE_BREAK:
+	case ANNA_NODE_CONTINUE:
 	{
 	    break;   
 	}

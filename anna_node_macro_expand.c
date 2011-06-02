@@ -107,6 +107,8 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_BREAK:
+	case ANNA_NODE_CONTINUE:
 	{
 	    return this;
 	}

@@ -179,7 +179,7 @@ static void anna_node_print_internal(
 	case ANNA_NODE_RETURN_TYPE_OF:
 	{
 	    anna_indent(sb,indentation);
-	    sb_printf(sb,this->node_type==ANNA_NODE_TYPE_OF?L"__typeOf__":L"__typeOfReturn__(\n");
+	    sb_printf(sb,this->node_type==ANNA_NODE_TYPE_OF?L"__typeOf__(\n":L"__typeOfReturn__(\n");
 	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
 	    anna_node_print_internal(
 		sb, chld, indentation+1);

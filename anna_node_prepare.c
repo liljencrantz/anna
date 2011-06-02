@@ -717,8 +717,6 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_TYPE_OF:
 	{	    
 	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
-	    if(!chld->stack)
-		CRASH;
 	    
 	    anna_node_calculate_type(chld);
 	    this->return_type = chld->return_type;
@@ -728,8 +726,6 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_RETURN_TYPE_OF:
 	{
 	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
-	    if(!chld->stack)
-		CRASH;
 	    
 	    anna_node_calculate_type(chld);
 
@@ -817,15 +813,16 @@ void anna_node_calculate_type(
     }
     else if(this->return_type == 0)
     {
+	
 	this->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
-
+/*	
 	int i;
 	for(i=0; i<al_get_count(&this->dependencies); i++)
 	{
 	    anna_node_t *dep = (anna_node_t *)al_get(&this->dependencies, i);
 	    anna_node_calculate_type(dep);
 	}
-
+*/
 	anna_node_calculate_type_internal( this );
     }
     debug(D_SPAM, L"Done\n");
