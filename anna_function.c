@@ -514,10 +514,10 @@ anna_function_t *anna_macro_create(
     assert(arg_name);
     
     anna_function_t *result = anna_alloc_function();
-    anna_function_attribute_empty(result);
+    result->attribute = (anna_node_call_t *)definition->child[2];
     
     result->definition = definition;
-    result->body = (anna_node_call_t *)definition->child[2];
+    result->body = (anna_node_call_t *)definition->child[3];
     result->name = anna_intern(name);
     
     result->return_type = node_wrapper_type;

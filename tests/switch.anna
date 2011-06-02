@@ -1,6 +1,6 @@
 /*
   Test the switch expression
- */
+*/
 def main()
 {
     /*

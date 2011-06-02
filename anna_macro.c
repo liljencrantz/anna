@@ -21,10 +21,11 @@
 static inline anna_node_t *anna_macro_macro_i(anna_node_call_t *node)
 {
 
-    CHECK_CHILD_COUNT(node,L"macro definition", 3);
+    CHECK_CHILD_COUNT(node,L"macro definition", 4);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_BLOCK(node->child[2]);
+    CHECK_NODE_BLOCK(node->child[3]);
 
     anna_node_identifier_t *name_identifier = (anna_node_identifier_t *)node->child[0];
     anna_node_identifier_t *param = (anna_node_identifier_t *)node->child[1];

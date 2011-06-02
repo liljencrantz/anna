@@ -1119,11 +1119,11 @@ function_definition:
 	    }
 	}
 	|
-	MACRO identifier '(' identifier ')' block
+	MACRO identifier '(' identifier ')' attribute_list block
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
-		anna_node_create_identifier(&@1,L"__macro__"), $2, $4, $6);
+		anna_node_create_identifier(&@1,L"__macro__"), $2, $4, $6, $7);
 	};
 
 declaration_list :
