@@ -1,16 +1,28 @@
+
 macro struct(node)
 {
     initBlock := Call(node, Identifier(node, "__block__"));
     typeBlock := Call(node, Identifier(node, "__block__"));
-    fullType := ast(__type__(anon, {}, %body)) % ["body": typeBlock];
-    call := Call(node, fullType);
-    
+    callParam := List«Node»();
     node.each(item)
     {
 	checkNodeCallTo(item, "__mapping__");
-        map := item as Call;
-	
+        mapping := item as Call;
+	typeBlock ~= [ast(__var__(%name, __staticTypeOf__(%value), ?, {}))
+		      % ["name": mapping[0], "value": mapping[1]]];
+        callParam ~= [mapping[1]];
+	initBlock ~= [ast(this.%name = %name) % ["name": mapping[0]]];
     }
-    print(call, "\n");
+    initParam := typeBlock.copy() as Call;
+    typeBlock ~= [ast(__const__(__init__, ?, __def__(__init__, Object, %initParam, {}, %initBlock), {})) %
+	[
+	    "initParam": initParam,
+	    "initBlock": initBlock
+	    ]];
+
+    fullType := ast(__type__(anon, {}, %body)) % ["body": typeBlock];
+    call := Call(node, fullType);
+    call ~= callParam;
+//    print(call, "\n");
     return call;
 }
