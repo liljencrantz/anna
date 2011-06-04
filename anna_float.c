@@ -101,6 +101,30 @@ static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t
     return stack;
 }
 
+static anna_vmstack_t *anna_float_hash(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_vmstack_drop(stack, 2);
+    union 
+    {
+	double dbl;
+	char chr[sizeof(double)];
+    } val;
+    val.dbl = anna_as_float(param[0]);
+    int res = 0xdeadbeef;
+    int i;
+    for(i = 0; i<sizeof(double); i++)
+    {
+	res = res ^ (res << 7) ^ (res >> 5) ^ val.chr[i] ^ (val.chr[i] << 11);
+    }
+    res = res & ANNA_INT_FAST_MAX;
+
+    anna_vmstack_push_int(
+	stack,
+	res);
+    return stack;
+}
+
 void anna_float_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *argv[] = 
@@ -134,6 +158,14 @@ void anna_float_type_create(anna_stack_template_t *stack)
 	0,
 	&anna_float_to_string, 
 	string_type, 1, argv, argn);
+    
+    anna_native_method_create(
+	float_type,
+	ANNA_MID_HASH_CODE,
+	L"hashCode",
+	0,
+	&anna_float_hash, 
+	int_type, 1, argv, argn);
     
     anna_float_type_i_create(stack);
     
