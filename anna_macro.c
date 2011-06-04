@@ -98,7 +98,7 @@ static inline anna_node_t *anna_macro_block_i(
     anna_function_t *fun = 
 	anna_function_create_from_block(
 	    node);
-
+    
     return (anna_node_t *)anna_node_create_closure(
 	&node->location,
 	fun);    
@@ -189,7 +189,7 @@ static inline anna_node_t *anna_macro_break_i(anna_node_call_t *node)
     CHECK_CHILD_COUNT(node,L"break", 0);
     return (anna_node_t *)anna_node_create_return(
 	&node->location,
-	0,
+	anna_node_create_null(&node->location),
 	ANNA_NODE_BREAK);
 }
 ANNA_VM_MACRO(anna_macro_break)
@@ -199,7 +199,7 @@ static inline anna_node_t *anna_macro_continue_i(anna_node_call_t *node)
     CHECK_CHILD_COUNT(node,L"continue", 0);
     return (anna_node_t *)anna_node_create_return(
 	&node->location,
-	0,
+	anna_node_create_null(&node->location),
 	ANNA_NODE_CONTINUE);
 }
 ANNA_VM_MACRO(anna_macro_continue)
@@ -240,6 +240,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 {
     anna_macro_add(stack, L"__def__", &anna_macro_def);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
+    anna_macro_add(stack, L"__loopBlock__", &anna_macro_block);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
     anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
     anna_macro_add(stack, L"__var__", &anna_macro_var);

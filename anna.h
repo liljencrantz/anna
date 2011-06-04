@@ -124,6 +124,10 @@ typedef ssize_t mid_t;
    This function is a bound method.
  */
 #define ANNA_FUNCTION_BOUND_METHOD (8192*4)
+/**
+   This function is the body of a loop.
+ */
+#define ANNA_FUNCTION_LOOP (8192*8)
 
 
 #define ANNA_TYPE_REGISTERED 512
@@ -136,6 +140,7 @@ typedef ssize_t mid_t;
 #define ANNA_OBJECT_LIST 512
 
 #define ANNA_VMSTACK_STATIC 512
+#define ANNA_VMSTACK_BREAK 1024
 
 
 /*
@@ -598,8 +603,6 @@ size_t anna_mid_max_get(void);
 anna_member_t **anna_mid_identifier_create(void);
 size_t anna_mid_get_count(void);
 
-
-
 /**
    \param macro the macro to invoke
    \param node the ast node to transform
@@ -662,6 +665,9 @@ static __pure inline anna_entry_t *anna_entry_get_static(
     return *anna_entry_get_addr_static(type, mid);
 }
 
+/**
+   Convenience method for creating a new method in the specified type.
+*/
 size_t anna_native_method_create(
     anna_type_t *type,
     mid_t mid,

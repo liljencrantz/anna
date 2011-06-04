@@ -298,7 +298,12 @@ static anna_vmstack_t *anna_range_each_callback_closed(anna_vmstack_t *stack, an
     ssize_t step = anna_range_get_step(range);
     
     // Are we done or do we need another lap?
-    if(idx < count)
+    if(stack->flags & ANNA_VMSTACK_BREAK)
+    {
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push_object(stack, range);	
+    }
+    else if(idx < count)
     {
 	// Set up params for the next lap of the each body function
 	anna_entry_t *o_param[] =

@@ -20,7 +20,7 @@ wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *locatio
     if(location)
     {
 	sb_printf(
-	    &sb, L"!%ls:%ls:%d:%d",
+	    &sb, L"@%ls:%ls:%d:%d",
 	    prefix?prefix:L"anonymous",
 	    location->filename,
 	    location->first_line,
@@ -30,7 +30,7 @@ wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *locatio
     {
 	static int idx=0;
 	sb_printf(
-	    &sb, L"!%ls:%d",
+	    &sb, L"@%ls:%d",
 	    prefix?prefix:L"anonymous",
 	    idx++);
     }

@@ -1,8 +1,24 @@
 def main()
 {
+
     while(1)
     {
 	print("1\n");
 	break;
     }
+
+
+    (0..100).each(i)
+    {   
+	if(i ^mod 5 != 0)
+	{
+	    continue;
+	}
+	print(i, '\n');
+	if(i > 15)
+	{
+	    break;
+	}
+    }
+
 }

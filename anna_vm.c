@@ -212,7 +212,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_CAST,
 	    &&ANNA_LAB_NATIVE_CALL,
 	    &&ANNA_LAB_RETURN_COUNT,
+	    &&ANNA_LAB_RETURN_COUNT_BREAK, //26
+	    &&ANNA_LAB_CHECK_BREAK, //27
 
+	    0, 0, 0, 0, 0, //32
+	    0, 0, 0, 0, 0, 0, 0, 0, //40
+	    0, 0, 0, 0, 0, 0, 0, 0, //48
+	    0, 0, 0, 0, 0, 0, 0, 0, //56
+	    0, 0, 0, 0, 0, 0, 0, //63
 	    &&ANNA_LAB_ADD_INT,
 	    &&ANNA_LAB_SUB_INT,
 	    &&ANNA_LAB_MUL_INT,
@@ -386,6 +393,37 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_push_entry(stack, val);
 	goto *jump_label[(int)*stack->code];
     }
+
+    ANNA_LAB_RETURN_COUNT_BREAK:
+    {
+	anna_op_count_t *cb = (anna_op_count_t *)stack->code;
+	anna_entry_t *val = anna_vmstack_peek_entry(stack, 0);
+	int i;
+		
+	for(i=0; i<cb->param; i++)
+	{
+	    anna_frame_return(stack);
+	    stack = stack->parent;
+	}
+	anna_frame_return(stack);
+	stack = stack->caller;
+	anna_vmstack_push_entry(stack, val);
+	stack->flags |= ANNA_VMSTACK_BREAK;
+	goto *jump_label[(int)*stack->code];
+    }
+
+    ANNA_LAB_CHECK_BREAK:
+    {
+	anna_vmstack_push_entry( 
+	    stack, 
+	    stack->flags & ANNA_VMSTACK_BREAK ? anna_from_int(1) : anna_from_obj(null_object));
+	// Clear the break flag on check
+	stack->flags  = stack->flags & ~ANNA_VMSTACK_BREAK;
+	stack->code += sizeof(anna_op_null_t);
+	goto *jump_label[(int)*stack->code];
+	
+    }
+    
 
   ANNA_LAB_NATIVE_CALL:
     {
@@ -781,12 +819,14 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_POP:
 	case ANNA_INSTR_NOT:
 	case ANNA_INSTR_DUP:
+	case ANNA_INSTR_CHECK_BREAK:
 	{
 	    return sizeof(anna_op_null_t);	    
 	}
 	
 	case ANNA_INSTR_CALL:
 	case ANNA_INSTR_RETURN_COUNT:
+	case ANNA_INSTR_RETURN_COUNT_BREAK:
 	{
 	    return sizeof(anna_op_count_t);
 	}
@@ -1034,6 +1074,7 @@ void anna_vm_mark_code(anna_function_t *f)
 
 		case ANNA_INSTR_RETURN:
 		case ANNA_INSTR_RETURN_COUNT:
+		case ANNA_INSTR_RETURN_COUNT_BREAK:
 		case ANNA_INSTR_STOP:
 		{
 		    return;
@@ -1057,6 +1098,7 @@ void anna_vm_mark_code(anna_function_t *f)
 		case ANNA_INSTR_COND_JMP:
 		case ANNA_INSTR_NCOND_JMP:
 		case ANNA_INSTR_TRAMPOLENE:
+		case ANNA_INSTR_CHECK_BREAK:
 		{
 		    break;
 		}

@@ -707,6 +707,8 @@ static void anna_node_calculate_type_internal(
 	}
 	
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_CONTINUE:
+	case ANNA_NODE_BREAK:
 	{
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
 	    anna_node_calculate_type(c->payload);

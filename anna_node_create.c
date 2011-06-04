@@ -62,7 +62,7 @@ anna_node_wrapper_t *anna_node_create_return(
     result->node_type = type;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = val;
-    result->steps = 0;
+    result->steps = -1;
     
     return result;  
 }

@@ -38,7 +38,7 @@ def Node __iter__(Call node)
 	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0), 1)));
     }
     
-    attr := ast({block});
+    attr := ast({block, loop});
     decl := Call(body, Identifier(body, "__block__"), n[0], n[1]);    
     
     fun := node.function as Call;

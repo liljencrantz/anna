@@ -100,6 +100,7 @@ static size_t anna_bc_stack_size(char *code)
 		case ANNA_INSTR_VAR_GET:
 		case ANNA_INSTR_MEMBER_GET_THIS:
 		case ANNA_INSTR_DUP:
+		case ANNA_INSTR_CHECK_BREAK:
 		{
 		    pos++;
 		    break;
@@ -123,6 +124,7 @@ static size_t anna_bc_stack_size(char *code)
 	    
 		case ANNA_INSTR_RETURN:
 		case ANNA_INSTR_RETURN_COUNT:
+		case ANNA_INSTR_RETURN_COUNT_BREAK:
 		case ANNA_INSTR_STOP:
 		{
 		    return max;
@@ -359,11 +361,26 @@ static void anna_vm_compile_i(
 	}
 	
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_CONTINUE:
+	case ANNA_NODE_BREAK:
 	{
 	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)node;
+	    if(node2->steps < 0)
+	    {
+		anna_error(node, L"Invalid return expression");
+		CRASH;
+	    }
+	    
 	    anna_vm_compile_i(fun, node2->payload, ptr, 0, flags);
 	    assert(node2->steps>=0);
-	    anna_vm_call(ptr, ANNA_INSTR_RETURN_COUNT, node2->steps, flags);
+	    if(node->node_type == ANNA_NODE_BREAK)
+	    {
+		anna_vm_call(ptr, ANNA_INSTR_RETURN_COUNT_BREAK, node2->steps, flags);		
+	    }
+	    else
+	    {
+		anna_vm_call(ptr, ANNA_INSTR_RETURN_COUNT, node2->steps, flags);
+	    }
 	    break;
 	}
 	
@@ -375,21 +392,28 @@ static void anna_vm_compile_i(
 	    size_t sz2 = anna_vm_size(fun, node2->arg2);
 	    
 	    
-	    anna_vm_const(ptr, null_object, flags); // +1
-	    anna_vm_compile_i(fun, node2->arg1, ptr, 0, flags); // +1
+	    anna_vm_const(ptr, null_object, flags); 
+	    anna_vm_compile_i(fun, node2->arg1, ptr, 0, flags); 
 	    anna_vm_jmp(
 		ptr, ANNA_INSTR_NCOND_JMP, 
-		2*sizeof(anna_op_off_t) +
-		sz2 +sizeof(anna_op_null_t) +
-		sizeof(anna_op_count_t), flags);  // -1
-	    anna_vm_null(ptr, ANNA_INSTR_POP, flags); // -1
-	    anna_vm_compile_i(fun, node2->arg2, ptr, 0, flags); // +1
-	    anna_vm_call(ptr, ANNA_INSTR_CALL, 0, flags); // 0
+		3*sizeof(anna_op_off_t) +
+		sz2 +2*sizeof(anna_op_null_t) +
+		sizeof(anna_op_count_t), flags);  
+	    anna_vm_null(ptr, ANNA_INSTR_POP, flags); 
+	    anna_vm_compile_i(fun, node2->arg2, ptr, 0, flags); 
+	    anna_vm_call(ptr, ANNA_INSTR_CALL, 0, flags); 
+
+	    anna_vm_null(ptr, ANNA_INSTR_CHECK_BREAK, flags);
+	    anna_vm_jmp(
+		ptr, ANNA_INSTR_COND_JMP, 
+		2*sizeof(anna_op_off_t), 
+		flags); 
+
 	    anna_vm_jmp(
 		ptr, ANNA_INSTR_JMP,
-		-( sizeof(anna_op_off_t) +sizeof(anna_op_null_t) +
+		-( 2*sizeof(anna_op_off_t) + 2*sizeof(anna_op_null_t) +
 		   sz1 + sz2 +
-		   sizeof(anna_op_count_t)), flags); // 0
+		   sizeof(anna_op_count_t)), flags); 
 	    break;
 	}
 

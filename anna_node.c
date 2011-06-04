@@ -750,8 +750,10 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	    anna_node_each((anna_node_t *)c->block2, fun, aux);
 	    break;
 	}	
-
+	
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_BREAK:
+	case ANNA_NODE_CONTINUE:
 	case ANNA_NODE_RETURN_TYPE_OF:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
@@ -770,8 +772,6 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_CLOSURE:
 	case ANNA_NODE_TYPE:
-	case ANNA_NODE_BREAK:
-	case ANNA_NODE_CONTINUE:
 	{
 	    break;   
 	}

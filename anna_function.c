@@ -103,11 +103,6 @@ static anna_node_t *anna_function_setup_arguments(
 	    else
 	    {
 		anna_type_t *d_type = anna_node_resolve_to_type(type_node, f->stack_template);
-		if(d_type == 1)
-		{
-		    anna_node_print(99, type_node);
-		    CRASH;
-		}
 		
 		if(!d_type || d_type == null_type)
 		{
@@ -391,6 +386,7 @@ void anna_function_setup_body(
 	anna_node_calculate_type_children( f->body );
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_RETURN, &ret);	
 	int step_count = 0;
+	int loop_step_count = 0;
 	anna_function_t *fptr = f;
 	
 	while(fptr->flags & ANNA_FUNCTION_BLOCK)
@@ -404,11 +400,42 @@ void anna_function_setup_body(
 	    }
 	}
 	
+	fptr = f;
+
+	while(!(fptr->flags & ANNA_FUNCTION_LOOP))
+	{
+	    loop_step_count++;
+	    fptr = fptr->stack_template->parent->function;
+	    if(!fptr)
+	    {
+		loop_step_count = -1;
+//		wprintf(L"TROLOLOL\n");
+		break;
+	    }
+	    
+	}
+
 	for(i=0; i<al_get_count(&ret); i++)
 	{
 	    anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
 	    wr->steps = step_count;
 	}
+
+	al_truncate(&ret, 0);
+	anna_node_find((anna_node_t *)f->body, ANNA_NODE_CONTINUE, &ret);	
+	anna_node_find((anna_node_t *)f->body, ANNA_NODE_BREAK, &ret);	
+
+	if(al_get_count(&ret))
+	{
+	    
+	    for(i=0; i<al_get_count(&ret); i++)
+	    {
+		anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
+		wr->steps = loop_step_count;
+		//wprintf(L"continue/break should jump %d steps\n", loop_step_count);
+	    }
+	}
+	
 	al_destroy(&ret);
     }
 }
@@ -497,6 +524,13 @@ anna_function_t *anna_function_create_from_definition(
 	result->flags |= ANNA_FUNCTION_BLOCK;
     }
 
+    if(anna_attribute_flag(result->attribute, L"loop"))
+    {
+//	wprintf(L"WEEEE %ls\n", result->name);
+	
+	result->flags |= ANNA_FUNCTION_LOOP;
+    }
+
     return result;
 }
 
@@ -548,14 +582,25 @@ anna_function_t *anna_function_create_from_block(
     {
 	sb_printf(&sb_name, L"!block");
     }
-    
+
+    anna_node_call_t *attr = anna_node_create_block2(&body->location);
+    if(anna_node_is_call_to((anna_node_t *)body, L"__loopBlock__"))
+    {
+//	wprintf(L"Make block %ls into loop block\n", sb_content(&sb_name));
+	
+	body->function = (anna_node_t *)anna_node_create_identifier(&body->function->location, L"__block__");
+	anna_node_call_add_child(attr, anna_node_create_identifier(&body->function->location, L"loop"));
+	
+	
+    }
+        
     anna_node_call_t *definition = anna_node_create_call2(
 	&body->location,
 	anna_node_create_identifier(&body->location, L"__function__"),
 	anna_node_create_identifier(&body->location, sb_content(&sb_name)),
 	anna_node_create_null(&body->location), //Return type
 	anna_node_create_block2(&body->location),//Declaration list
-	anna_node_create_block2(&body->location),//Attribute list
+	attr,
 	body);
 
     sb_destroy(&sb_name);

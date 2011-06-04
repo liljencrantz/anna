@@ -254,7 +254,7 @@ ANNA_VM_NATIVE(anna_list_append, 2)
    This is the bulk of the each method
  */
 static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_object_t *me)
-{    
+{
     // Discard the output of the previous method call
     anna_vmstack_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
@@ -266,7 +266,12 @@ static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_objec
     size_t sz = anna_list_get_count(list);
     
     // Are we done or do we need another lap?
-    if(idx < sz)
+    if(stack->flags & ANNA_VMSTACK_BREAK)
+    {
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push_object(stack, list);	
+    }
+    else if(idx < sz)
     {
 	// Set up params for the next lap of the each body function
 	anna_entry_t *o_param[] =
