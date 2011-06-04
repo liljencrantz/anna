@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "anna_util.h"
+#include "anna_vm.h"
 
 wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *location)
 {
@@ -35,4 +36,23 @@ wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *locatio
     }
     
     return sb_content(&sb);
+}
+
+int anna_hash(int *data, size_t count)
+{
+    int a = 0x7ed55d16;
+    int b = 0xc761c23c;
+    int c = 0x7ed55d16;
+    int i;
+    int tmp, f;
+    for(i=0; i<count; i++)
+    {
+	f = (b & a) | c;
+	tmp = (a << 5) + f + data[i];
+	c = b << 30;
+	b = a;
+	a = tmp;	    
+    }
+    
+    return (a ^ b ^ c) & ANNA_INT_FAST_MAX;
 }

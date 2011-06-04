@@ -105,21 +105,9 @@ static anna_vmstack_t *anna_float_hash(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
-    union 
-    {
-	double dbl;
-	char chr[sizeof(double)];
-    } val;
-    val.dbl = anna_as_float(param[0]);
-    int res = 0xdeadbeef;
-    int i;
-    for(i = 0; i<sizeof(double); i++)
-    {
-	res = res ^ (res << 7) ^ (res >> 5) ^ val.chr[i] ^ (val.chr[i] << 11);
-    }
-    res = res & ANNA_INT_FAST_MAX;
-
-    anna_vmstack_push_int(
+    double cmp = anna_as_float(param[0]);
+    int res = anna_hash((int *)&cmp, sizeof(double) / sizeof(int));
+     anna_vmstack_push_int(
 	stack,
 	res);
     return stack;

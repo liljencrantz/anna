@@ -16,6 +16,7 @@
 #include "anna_function.h"
 #include "anna_string.h"
 #include "anna_vm.h"
+#include "anna_util.h"
 
 #include "anna_complex_i.c"
 
@@ -148,20 +149,8 @@ static anna_vmstack_t *anna_complex_hash(anna_vmstack_t *stack, anna_object_t *m
 {
     anna_entry_t **param = stack->top - 1;
     anna_vmstack_drop(stack, 2);
-    union 
-    {
-	complex double cmp;
-	char chr[sizeof(complex double)];
-    } val;
-    val.cmp = anna_complex_get(param[0]);
-    int res = 0xdeadbeef;
-    int i;
-    for(i = 0; i<sizeof(complex double); i++)
-    {
-	res = res ^ (res << 7) ^ (res >> 5) ^val.chr[i] ^ (val.chr[i] << 11);
-    }
-    res = res & ANNA_INT_FAST_MAX;
-    
+    complex double cmp = anna_complex_get(anna_as_obj_fast(param[0]));
+    int res = anna_hash((int *)&cmp, sizeof(complex double) / sizeof(int));
     anna_vmstack_push_int(
 	stack,
 	res);
