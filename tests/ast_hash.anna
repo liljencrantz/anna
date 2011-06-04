@@ -1,21 +1,22 @@
+use(parser);
 /*
   Test the clone, hash and equality functions of all ast node types
 */
 def main()
 {
-    f := parser.FloatLiteral(?, 1.0);
-    i := parser.IntLiteral(?, 1);
-    i2 := parser.IntLiteral(?, 2);
-    i22 := parser.IntLiteral(?, 2);
-    s := parser.StringLiteral(?, "bla");
-    c := parser.CharLiteral(?, 'b');
-    cc := parser.Call(?, c, i, s);
-    cl := parser.Closure(?, def (Int in){in+3});
-    mm := parser.Mapping(?, ast(1), ast('d'));
+    f := FloatLiteral(?, 1.0);
+    i := IntLiteral(?, 1);
+    i2 := IntLiteral(?, 2);
+    i22 := IntLiteral(?, 2);
+    s := StringLiteral(?, "bla");
+    c := CharLiteral(?, 'b');
+    cc := Call(?, c, i, s);
+    cl := Closure(?, def (Int in){in+3});
+    mm := Mapping(?, ast(1), ast('d'));
 
     print(f == i, ' ', i==i2, ' ', i2==i22, '\n');
 
-    dict := [i as parser.Node:1, i2:2];
+    dict := [i as Node:1, i2:2];
     dict[i22] = -3;
     dict[i22] = 3;
     print(dict[i2],'\n');
@@ -35,5 +36,5 @@ def main()
 
     sum := 0;
     dict.each(val){sum += val}
-    print("Sum| %\n" % [sum]);
+    print("Sum: %\n" % [sum]);
 }

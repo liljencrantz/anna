@@ -9,6 +9,7 @@
 
 #include "anna_node_hash.h"
 #include "anna_node.h"
+#include "anna_util.h"
 
 
 static void anna_node_hash_func_step(
@@ -23,21 +24,22 @@ static void anna_node_hash_func_step(
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *i = (anna_node_call_t *)this;
-	    contrib = i->child_count;
+	    contrib = anna_hash(&i->child_count, 1);
 	    break;
 	}
 	
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *i = (anna_node_identifier_t *)this;
-	    contrib = wcslen(i->name);
+	    contrib = anna_hash((int *)i->name, wcslen(i->name)*sizeof(wchar_t)/sizeof(int));
 	    break;
 	}
 
 	case ANNA_NODE_INT_LITERAL:
 	{
 	    anna_node_int_literal_t *i = (anna_node_int_literal_t *)this;
-	    contrib = (int)mpz_get_si(i->payload);
+	    int payload = (int)mpz_get_si(i->payload);
+	    contrib = anna_hash(&payload, 1);
 	    break;
 	}
 
@@ -51,7 +53,7 @@ static void anna_node_hash_func_step(
 	case ANNA_NODE_CHAR_LITERAL:
 	{
 	    anna_node_char_literal_t *i = (anna_node_char_literal_t *)this;
-	    contrib = (int)i->payload;
+	    contrib = anna_hash((int *)&i->payload, sizeof(wchar_t)/sizeof(int));
 	    break;
 	}
 	case ANNA_NODE_FLOAT_LITERAL:
@@ -63,15 +65,14 @@ static void anna_node_hash_func_step(
 		double d;
 	    }
 	    ;
-	    
-	    contrib = (int)i->payload;
+	    contrib = anna_hash((int *)&i->payload, sizeof(double)/sizeof(int));
 	    break;
 	}
 	
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *i = (anna_node_closure_t *)this;
-	    contrib = wcslen(i->payload->name) + i->payload->input_count;
+	    contrib = anna_hash(i->payload->name, wcslen(i->payload->name)*sizeof(wchar_t)/sizeof(int)) + i->payload->input_count;
 	    break;
 	}
 	
@@ -90,7 +91,7 @@ static void anna_node_hash_func_step(
 	}
     }
     
-    *res ^= contrib ^ contrib << 5;
+    *res ^= contrib ^ (contrib << 5);
     *res = (*res << 3) | (*res >> 29);
     
 }
