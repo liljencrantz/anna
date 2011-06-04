@@ -15,29 +15,31 @@ It would be useful to have a function to construct an instance of a specific lis
 Should Range really be mutable?
 How should inherited constructors be handled?
 It should be possible to declare members with initial values. 
-How exactly should the api for using the return type of one AST node as the value of another AST node look? What we have in place today seems rather kludgy and special purpose.
+How exactly should the api for using the return type of one AST node as the value of another AST node look? What we have in place today seems rather kludgy and special purpose.Can we drop Pair?
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 Multiple inheritance clashes aren't handled sanely
+A bunch of AST node types are missing some functionality, e.g. equality comparison, hashing, shallow cloning, deep cloning, etc.
 
 LANGUAGE FEATURES:
 Function templates
 Modules should map to directories, not files
 Submodules
-Default function argumet values. These also need to be part of the function interface and contained in function keys.
-Int should just be an interface, with two backing implementations
+Default function argument values. These also need to be part of the function interface and contained in function keys.
 continue/break (continue is easy with a continuation, but implementing break requires some special hacking. A macro could do it, but it would be a bit ugly)
 No magic toString method, use attributes to specify methods for implicit conversion
 Static members of a type should be available without an instance of that type. Preferably through Type.name
 Return value type for continuations
+Class methods
+
 
 STDLIB FEATURES:
 HTML documentation extractor
 The rest of the hashtable functions (filter, find, properties for key and value lists, etc)
 Set type
 File type
-hashCode function for Pair, List, Range, Float, Complex, Char
+hashCode function for Pair, List, Range, Complex, Char
 A backtrace function
 io module
 time module

@@ -64,6 +64,12 @@ void anna_node_wrapper_add_method(anna_function_t *fun)
 		fun);
 	}
     }
+
+    anna_member_create_method(
+	node_wrapper_type,
+	-1,
+	fun->name,
+	fun);
     
 }
 

@@ -1,19 +1,10 @@
 use(parser);
 
-macro __mapping__(node)
-{ 
-    a1 := if(node[0] as Identifier)
-    {
-	InternalIdentifier(node[0], (node[0] as Identifier).name);
-    } else
-    {
-	node[0];
-    }
-
-    return Mapping(node, a1, node[1]);
-}
-
 def Node __update__(Call node)
+(
+    documentation("
+*The common function used by __append__ and friends to implement in-place updating.")
+)
 {
     checkNodeType(node.function, Identifier);
     nameId := node.function as Identifier;
@@ -34,9 +25,38 @@ def Node __update__(Call node)
     return NullLiteral(node);
 }
 
-macro __increase__(node){__update__(node)}
-macro __decrease__(node){__update__(node)}
-macro __append__(node){__update__(node)}
-macro __next__(node){__update__(node)}
-macro __prev__(node){__update__(node)}
+macro __increase__(node)
+(
+    documentation("
+Increase the specified value by the specified amount.")
+)
+{__update__(node)}
+
+macro __decrease__(node)
+(
+    documentation("
+Decrease the specified value by the specified amount.")
+)
+{__update__(node)}
+
+macro __append__(node)
+(
+    documentation("
+Append the specified value to the specified base")
+)
+{__update__(node)}
+
+macro __next__(node)
+(
+    documentation("
+Nove the specified value forward one step")
+)
+{__update__(node)}
+
+macro __prev__(node)
+(
+    documentation("
+*Move the specified value backwards one step")
+)
+{__update__(node)}
 

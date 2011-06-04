@@ -1,5 +1,21 @@
 
 macro struct(node)
+(
+    documentation("
+The struct macro is used as a short hand for defining objects used
+exclusively for quick access to it's members. It is used by passing a set of name/value mappings like so:
+
+foo := struct(something: 3, other: getMeSomeOtherObject());
+
+The above code will make foo into an object of a type with two
+members. The first member will be of type Int and the second will be
+of the return type of the getMeSomeOtherObject function. The something
+member will have an initial value of 3, and the other member will have
+the return value of getMeSomeOtherObject as its value.
+
+Struct values can be any Anna expression, including another struct. 
+")
+)
 {
     initBlock := Call(node, Identifier(node, "__block__"));
     typeBlock := Call(node, Identifier(node, "__block__"));
@@ -14,11 +30,13 @@ macro struct(node)
 	initBlock ~= [ast(this.%name = %name) % ["name": mapping[0]]];
     }
     initParam := typeBlock.copy() as Call;
-    typeBlock ~= [ast(__const__(__init__, ?, __def__(__init__, Object, %initParam, {}, %initBlock), {})) %
+    typeBlock ~= [
+	ast(__const__(__init__, ?, __def__(__init__, Object, %initParam, {}, %initBlock), {})) %
 	[
 	    "initParam": initParam,
 	    "initBlock": initBlock
-	    ]];
+	]
+    ];
 
     fullType := ast(__type__(anon, {}, %body)) % ["body": typeBlock];
     call := Call(node, fullType);

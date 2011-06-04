@@ -1,5 +1,19 @@
 
 macro ast(node)
+(
+    documentation("
+A macro that takes an AST tree and returns it verbatim. This is useful for creating code templates, and often used togerther with the AST Node formating function. 
+
+Example:
+
+ast(%value := 0) % [\"value\": Identifier(?, \"someVariableName\") ];
+
+The above example will return an AST that is equivalent to the following code:
+
+someVariableName := 0;
+
+")
+)
 {
     if(node.count != 1)
     {
@@ -8,4 +22,3 @@ macro ast(node)
     }
     return Dummy(node, node[0]);
 }
-

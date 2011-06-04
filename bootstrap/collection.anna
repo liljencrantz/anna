@@ -1,18 +1,13 @@
 use(parser);
 
-def isCallTo(Node node, String name)
-{
-    return ((node as Call).function as Identifier).name == name;
-}
-
 macro __collection__(node)
 {
-    if(node.count > 0 and isCallTo(node[0], "__mapping__"))
+    if(node.count > 0 and node[0].isCallTo("__mapping__"))
     {
 	node.function = Dummy(node, HashMap);
 	node.each(ch)
 	{
-	    if(!isCallTo(ch, "__mapping__"))
+	    if(!ch.isCallTo("__mapping__"))
 	    {
 		ch.error("Not a key/value pair");
 		return NullLiteral(node);

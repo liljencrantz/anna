@@ -35,6 +35,7 @@ macro checkNodeBlock(node)
 	    return NullLiteral(%x);
 	}).replace(ast(%x), node[0]);
 }
+
 macro checkCallCount(node)
 {
     return ast(

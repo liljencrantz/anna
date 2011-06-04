@@ -1,0 +1,18 @@
+
+macro __mapping__(node)
+(
+    documentation("
+Internal utility macro. Makes sure that identifiers in mapping are internal identifiers, not regular identifiers.")
+)
+{ 
+    a1 := if(node[0] as Identifier)
+    {
+	InternalIdentifier(node[0], (node[0] as Identifier).name);
+    } else
+    {
+	node[0];
+    }
+
+    return Mapping(node, a1, node[1]);
+}
+
