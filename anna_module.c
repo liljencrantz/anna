@@ -173,7 +173,7 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
     wchar_t *path = sb_content(&sb);    
     anna_stack_template_t *int_mod = anna_module(stack_global, name, path);
     sb_destroy(&sb);
-    
+
     anna_module_load_i(int_mod);
     
     int i;
@@ -240,13 +240,14 @@ void anna_module_init()
     
     null_object->type = null_type;
     
-    anna_module_bootstrap_macro(L"macro1");
-    anna_module_bootstrap_macro(L"macro2");
-    anna_module_bootstrap_macro(L"macro3");
-    anna_module_bootstrap_macro(L"macro4");
+    anna_module_bootstrap_macro(L"ast");
+    anna_module_bootstrap_macro(L"macroUtil");
+    anna_module_bootstrap_macro(L"mapping");
+    anna_module_bootstrap_macro(L"update");
+    anna_module_bootstrap_macro(L"iter");
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
-    anna_module_bootstrap_macro(L"macro5");
-    anna_module_bootstrap_macro(L"macro6");
+    anna_module_bootstrap_macro(L"collection");
+    anna_module_bootstrap_macro(L"range");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchString");
