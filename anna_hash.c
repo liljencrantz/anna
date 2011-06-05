@@ -936,7 +936,7 @@ static anna_vmstack_t *anna_hash_each_callback(anna_vmstack_t *stack, anna_objec
     
     int next_idx = anna_hash_get_next_idx(hash, idx);
     
-    if(next_idx >= 0)
+    if((next_idx >= 0) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	// Set up params for the next lap of the each body function
 	anna_entry_t *o_param[] =
@@ -1014,7 +1014,7 @@ static anna_vmstack_t *anna_hash_map_callback(anna_vmstack_t *stack, anna_object
     anna_list_add(res, value);
     int next_idx = anna_hash_get_next_idx(hash, idx);
     
-    if(next_idx >= 0)
+    if((next_idx >= 0) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	anna_entry_t *o_param[] =
 	    {

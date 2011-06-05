@@ -107,8 +107,6 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_NULL:
 	case ANNA_NODE_DUMMY:
 	case ANNA_NODE_MEMBER_CALL:
-	case ANNA_NODE_BREAK:
-	case ANNA_NODE_CONTINUE:
 	{
 	    return this;
 	}
@@ -117,6 +115,8 @@ anna_node_t *anna_node_macro_expand(
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_BREAK:
+	case ANNA_NODE_CONTINUE:
 	{
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
 	    c->payload = anna_node_macro_expand(c->payload, stack);

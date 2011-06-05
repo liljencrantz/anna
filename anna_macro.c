@@ -186,20 +186,20 @@ ANNA_VM_MACRO(anna_macro_cast)
 
 static inline anna_node_t *anna_macro_break_i(anna_node_call_t *node)
 {
-    CHECK_CHILD_COUNT(node,L"break", 0);
+    CHECK_CHILD_COUNT(node,L"break", 1);
     return (anna_node_t *)anna_node_create_return(
 	&node->location,
-	anna_node_create_null(&node->location),
+	node->child[0],
 	ANNA_NODE_BREAK);
 }
 ANNA_VM_MACRO(anna_macro_break)
 
 static inline anna_node_t *anna_macro_continue_i(anna_node_call_t *node)
 {
-    CHECK_CHILD_COUNT(node,L"continue", 0);
+    CHECK_CHILD_COUNT(node,L"continue", 1);
     return (anna_node_t *)anna_node_create_return(
 	&node->location,
-	anna_node_create_null(&node->location),
+	node->child[0],
 	ANNA_NODE_CONTINUE);
 }
 ANNA_VM_MACRO(anna_macro_continue)
@@ -258,6 +258,6 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of);
     anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of);
     anna_macro_add(stack, L"cast", &anna_macro_cast);
-    anna_macro_add(stack, L"__break__", &anna_macro_break);
-    anna_macro_add(stack, L"__continue__", &anna_macro_continue);
+    anna_macro_add(stack, L"break", &anna_macro_break);
+    anna_macro_add(stack, L"continue", &anna_macro_continue);
 }

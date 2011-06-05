@@ -266,12 +266,7 @@ static anna_vmstack_t *anna_list_each_callback(anna_vmstack_t *stack, anna_objec
     size_t sz = anna_list_get_count(list);
     
     // Are we done or do we need another lap?
-    if(stack->flags & ANNA_VMSTACK_BREAK)
-    {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, list);	
-    }
-    else if(idx < sz)
+    if( (idx < sz) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	// Set up params for the next lap of the each body function
 	anna_entry_t *o_param[] =
@@ -347,7 +342,7 @@ static anna_vmstack_t *anna_list_map_callback(anna_vmstack_t *stack, anna_object
 
     anna_list_set(res, idx-1, value);
 
-    if(sz > idx)
+    if( (sz > idx) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	anna_entry_t *o_param[] =
 	    {
@@ -432,7 +427,7 @@ static anna_vmstack_t *anna_list_filter_callback(anna_vmstack_t *stack, anna_obj
 	anna_list_add(res, anna_list_get(list, idx-1));
     }
     
-    if(sz > idx)
+    if((sz > idx) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	anna_entry_t *o_param[] =
 	    {
@@ -508,7 +503,7 @@ static anna_vmstack_t *anna_list_find_callback(anna_vmstack_t *stack, anna_objec
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_list_get(list, idx-1));
     }
-    else if(sz > idx)
+    else if( (sz > idx) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	anna_entry_t *o_param[] =
 	    {

@@ -341,18 +341,27 @@ static anna_vmstack_t *anna_range_each_callback_open(anna_vmstack_t *stack, anna
     ssize_t from = anna_range_get_from(range);
     ssize_t step = anna_range_get_step(range);
 
-    // Set up params for the next lap of the each body function
-    anna_entry_t *o_param[] =
-	{
-	    param[2],
+    if(stack->flags & ANNA_VMSTACK_BREAK)
+    {
+	anna_vmstack_drop(stack, 4);
+	anna_vmstack_push_object(stack, range);	
+    }
+    else
+    {
+	
+	// Set up params for the next lap of the each body function
+	anna_entry_t *o_param[] =
+	    {
+		param[2],
 	    anna_from_int(from + step*idx)
-	}
-    ;
-    // Then update our internal lap counter
-    param[2] = anna_from_int(idx+1);
-    
-    // Finally, roll the code point back a bit and push new arguments
-    anna_vm_callback_reset(stack, body, 2, o_param);
+	    }
+	;
+	// Then update our internal lap counter
+	param[2] = anna_from_int(idx+1);
+	
+	// Finally, roll the code point back a bit and push new arguments
+	anna_vm_callback_reset(stack, body, 2, o_param);
+    }
 
     return stack;
 }
@@ -424,7 +433,7 @@ static anna_vmstack_t *anna_range_filter_callback(anna_vmstack_t *stack, anna_ob
 	anna_list_add(res, anna_range_get(range, idx-1));
     }
     
-    if(sz > idx || open)
+    if(sz > idx || open && (!(stack->flags & ANNA_VMSTACK_BREAK)))
     {
 	anna_entry_t *o_param[] =
 	    {
@@ -503,7 +512,7 @@ static anna_vmstack_t *anna_range_find_callback(anna_vmstack_t *stack, anna_obje
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, anna_range_get(range, idx-1));	
     }
-    else if(sz > idx || open)
+    else if((sz > idx || open) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	anna_entry_t *o_param[] =
 	    {
@@ -563,7 +572,6 @@ static anna_vmstack_t *anna_range_find(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-
 static anna_vmstack_t *anna_range_map_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_entry_t *value = anna_vmstack_pop_entry(stack);
@@ -578,7 +586,7 @@ static anna_vmstack_t *anna_range_map_callback(anna_vmstack_t *stack, anna_objec
     
     anna_list_set(res, idx-1, value);
     
-    if(sz > idx || open)
+    if((sz > idx || open) && !(stack->flags & ANNA_VMSTACK_BREAK))
     {
 	anna_entry_t *o_param[] =
 	    {

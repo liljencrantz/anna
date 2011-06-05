@@ -375,6 +375,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <call_val> opt_block
 %type <call_val> specialization opt_specialization
 %type <call_val> opt_type_and_opt_name type_and_name
+%type <node_val> jump
 
 %right '='
 
@@ -474,22 +475,37 @@ expression:
         | expression2
 	| declaration_expression 
 	| type_definition
-	| RETURN expression
+	| jump expression
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
-		(anna_node_t *)anna_node_create_identifier(&@1,L"return"),
+		$1,
 		$2);
 	}
-	| RETURN
+	| jump
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 	      &@$, 
-	      (anna_node_t *)anna_node_create_identifier(
-		  &@$,
-		  L"return"), 
+	      $1,
 	      anna_node_create_null(&@$));  
 	};
+
+jump:
+	RETURN
+	{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@1,L"return");
+	}
+	|
+	CONTINUE
+	{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@1,L"continue");
+	}
+	|
+	BREAK
+	{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@1,L"break");
+	}
+;
 
 expression2 :
 	expression2 op2 expression3
@@ -738,20 +754,8 @@ expression10:
 		anna_node_create_identifier(&@$,L"__if__"),
 		$3, $5, $6);
         }
-	|
-	BREAK
-	{
-	    $$ = (anna_node_t *)anna_node_create_call2(
-		&@$,
-		anna_node_create_identifier(&@$,L"__break__"));
-	}
-	|
-	CONTINUE
-	{
-	    $$ = (anna_node_t *)anna_node_create_call2(
-		&@$,
-		anna_node_create_identifier(&@$,L"__continue__"));
-	};
+;
+
 
 op:
 	APPEND
