@@ -684,6 +684,17 @@ size_t anna_native_method_create(
     anna_type_t **argv,
     wchar_t **argn);
 
+size_t anna_native_type_method_create(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn);
+
 int anna_abides(
     anna_type_t *contender, anna_type_t *role_model);
 

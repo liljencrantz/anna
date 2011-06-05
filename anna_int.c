@@ -166,6 +166,64 @@ static inline anna_entry_t *anna_int_del_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_int_del, 1)
 
+static inline anna_entry_t *anna_int_convert_i(anna_entry_t **param)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return anna_from_obj(null_object);
+    }
+    wchar_t *str = anna_string_payload(param[0]);
+    size_t sz = anna_string_get_count(param[0]);
+    wchar_t *c = str;
+    
+    mpz_t res;
+    mpz_t mpval;
+    mpz_t mpbase;
+    mpz_init(res);
+    mpz_init(mpval);
+    mpz_init(mpbase);
+    mpz_set_si(res, 0);
+    mpz_set_si(mpbase, 10);
+    wchar_t ch;
+    
+    while(1)
+    {
+	ch = *(c++);
+	if(ch == '_')
+	    continue;
+
+	int val;
+
+	if( (ch >= '0') && (ch <= '9'))
+	{
+	    val = ch - '0';
+	}
+	else
+	{
+	    break;
+	}
+
+	mpz_set_si(mpval, val);
+
+	mpz_mul(res, mpbase, res);
+	mpz_add(res, res, mpval);
+    }    
+    
+    anna_object_t *res_obj = anna_int_create_mp(res);
+    int err = !!ch;
+    free(str);
+    mpz_clear(res);
+    mpz_clear(mpbase);
+    mpz_clear(mpval);
+
+    if(err)
+    {
+	return anna_from_obj(null_object);
+    }
+
+    return anna_from_obj(res_obj);
+}
+ANNA_VM_NATIVE(anna_int_convert, 1)
 
 void anna_int_type_create(anna_stack_template_t *stack)
 {
@@ -231,7 +289,33 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	0,
 	&anna_int_to_string, 
 	string_type, 1, i_argv, i_argn);
-    
+
+
+    anna_type_t *s_argv[] = 
+	{
+	    string_type
+	}
+    ;
+    wchar_t *s_argn[]=
+	{
+	    L"value"
+	}
+    ;
+
+    mid_t mmid;
+    anna_function_t *fun;
+
+    mmid = anna_native_type_method_create(
+	int_type,
+	-1,
+	L"convertString",
+	0,
+	&anna_int_convert, 
+	int_type, 1, s_argv, s_argn);
+
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+
     anna_native_method_create(
 	int_type,
 	ANNA_MID_DEL,

@@ -305,12 +305,15 @@ anna_member_t *anna_member_method_search(
 
     for(i=0; i<hash_get_count(&type->name_identifier); i++)
     {
-	debug(D_SPAM, L"Check %ls\n", members[i]);
 	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
+//	debug(D_ERROR, L"Check %ls %d %d %ls\n", members[i],
+//	      member->is_static, member->offset, member->type->name);
 	if(member->is_static && member->offset>=0 && member->type != null_type)
 	{
 	    anna_object_t *mem_val = anna_as_obj(type->static_member[member->offset]);
 	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
+	
+	    
 	    if(!mem_fun)
 	    {
 		continue;
@@ -321,51 +324,53 @@ anna_member_t *anna_member_method_search(
 	    
 	    int has_alias = is_reverse ? anna_function_has_alias_reverse(mem_fun, alias_name):anna_function_has_alias(mem_fun, alias_name);
 	    has_alias |= (!is_reverse && wcscmp(members[i], alias_name)==0);
+	
 
 	    if(has_alias)
 	    {
-	    int j;
-	    
-	    if(mem_fun->input_count != call->child_count+1)
-		continue;	    
-	    //debug(D_SPAM, L"YAY, right number of arguments (%d)\n", argc);
-	    
-	    debug(D_SPAM, L"Check %ls against %ls\n",call->child[0]->return_type->name, mem_fun->input_type[1]->name);
-	    int my_fault_count = 0;
-	    int ok1 = anna_node_call_validate(call, mem_fun_type, 1, 0);
-	    int ok2 = 1;
-	    
-	    if(ok1)
-	    {
-		anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
-		anna_node_call_map(call_copy, mem_fun_type, 1);
+		int j;
+		int off = !!member->is_method;
 		
-		for(j=0; j<call->child_count; j++)
+		if(mem_fun->input_count != call->child_count+off)
+		    continue;	    
+		//debug(D_SPAM, L"YAY, right number of arguments (%d)\n", argc);
+		
+		debug(D_SPAM, L"Check %ls against %ls\n",call->child[0]->return_type->name, mem_fun->input_type[off]->name);
+		int my_fault_count = 0;
+		int ok1 = anna_node_call_validate(call, mem_fun_type, off, 0);
+		int ok2 = 1;
+		
+		if(ok1)
 		{
-		    if(anna_abides(call_copy->child[j]->return_type, mem_fun->input_type[j+1]))
+		    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
+		    anna_node_call_map(call_copy, mem_fun_type, 1);
+		    
+		    for(j=0; j<call->child_count; j++)
 		    {
-			my_fault_count += 
-			    anna_abides_fault_count(mem_fun->input_type[j+1], call_copy->child[j]->return_type);
+			if(anna_abides(call_copy->child[j]->return_type, mem_fun->input_type[j+off]))
+			{
+			    my_fault_count += 
+				anna_abides_fault_count(mem_fun->input_type[j+off], call_copy->child[j]->return_type);
+			}
+			else
+			{
+			    ok2=0;
+			    debug(D_SPAM, L"Argument %d, %ls does not match %ls!\n", j, 
+				  call_copy->child[j]->return_type->name, mem_fun->input_type[j+off]->name);
+			}
+			
 		    }
-		    else
+		}
+		
+		if(ok1 && ok2){
+		    debug(D_SPAM, L"Match!\n");
+		    
+		    if(!match || my_fault_count < fault_count)
 		    {
-			ok2=0;
-			debug(D_SPAM, L"Argument %d, %ls does not match %ls!\n", j, 
-			      call_copy->child[j]->return_type->name, mem_fun->input_type[j+1]->name);
+			match = members[i];
+			fault_count = my_fault_count;
 		    }
-		
 		}
-	    }
-	    
-	    if(ok1 && ok2){
-		debug(D_SPAM, L"Match!\n");
-		
-		if(!match || my_fault_count < fault_count)
-		{
-		    match = members[i];
-		    fault_count = my_fault_count;
-		}
-	    }
 	    }
 	}
 	else

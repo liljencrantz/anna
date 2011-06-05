@@ -900,7 +900,7 @@ static void anna_list_type_create_internal(
     mmid = anna_native_method_create(
 	type,
 	-1,
-	L"__get__Int__",
+	L"__get__Int",
 	0, 
 	&anna_list_get_int, 
 	spec,
@@ -913,7 +913,7 @@ static void anna_list_type_create_internal(
     mmid = anna_native_method_create(
 	type, 
 	-1,
-	L"__set__Int__", 
+	L"__set__Int", 
 	0, 
 	&anna_list_set_int, 
 	spec,
@@ -1028,7 +1028,7 @@ static void anna_list_type_create_internal(
     mmid = anna_native_method_create(
 	type,
 	-1,
-	L"__get__Range__",
+	L"__get__Range",
 	0, 
 	&anna_list_i_get_range, 
 	type,
@@ -1041,7 +1041,7 @@ static void anna_list_type_create_internal(
     mmid = anna_native_method_create(
 	type,
 	-1,
-	L"__set__Range__",
+	L"__set__Range",
 	0, 
 	&anna_list_i_set_range, 
 	type,
