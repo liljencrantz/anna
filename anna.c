@@ -44,6 +44,9 @@ anna_node_t *anna_node_null=0;
 
 anna_stack_template_t *stack_global;
 
+int anna_argc;
+char **anna_argv;
+
 static int hash_function_type_func(void *a)
 {
     anna_function_type_t *key = (anna_function_type_t *)a;
@@ -253,6 +256,9 @@ static void anna_init()
 int main(int argc, char **argv)
 {
     wsetlocale(LC_ALL, L"");
+
+    anna_argc= argc;
+    anna_argv = argv;
     
     if(argc != 2)
     {

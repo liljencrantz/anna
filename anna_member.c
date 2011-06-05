@@ -179,6 +179,10 @@ mid_t anna_member_create(
 	    mid == ANNA_MID_STACK_TYPE_PAYLOAD)
 	    return mid;
 	
+	if(type->flags & ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS)
+	{
+	    return anna_mid_get(name);
+	}
 	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
 		name, type->name);
 	CRASH;
@@ -227,14 +231,22 @@ mid_t anna_member_create(
     hash_put(&type->name_identifier, member->name, member);
     
 //    wprintf(L"Create member named %ls to type %ls\n", name, type->name);
-    
-    anna_stack_declare(
-	type->stack,
-	name,
-	member_type,
-	null_object,
-	0);
+
+        
     anna_type_calculate_size(type);
+
+    if(!(storage & ANNA_MEMBER_VIRTUAL))
+    {
+	type->flags |= ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
+	anna_stack_declare(
+	    type->stack,
+	    name,
+	    member_type,
+	    null_object,
+	    0);
+	type->flags &= ~ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
+    }
+    
     return mid;
 }
 

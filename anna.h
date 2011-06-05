@@ -135,6 +135,7 @@ typedef ssize_t mid_t;
 #define ANNA_TYPE_PREPARED_IMPLEMENTATION 2048
 #define ANNA_TYPE_COMPILED 4096
 #define ANNA_TYPE_SPECIALIZED 8192
+#define ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS (8192*2)
 
 
 #define ANNA_OBJECT_LIST 512
@@ -535,6 +536,10 @@ extern anna_type_t *function_type_base;
 extern anna_object_t *null_object, *anna_wrap_method;
 extern int anna_error_count;
 extern struct anna_stack_template *stack_global;
+
+extern int anna_argc;
+extern char **anna_argv;
+
 
 static inline size_t anna_align(size_t sz)
 {

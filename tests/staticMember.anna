@@ -1,0 +1,11 @@
+type SomeType
+{
+    var Int (static);
+    
+    
+}
+
+def main()
+{
+    
+}

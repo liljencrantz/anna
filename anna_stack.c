@@ -105,7 +105,6 @@ void anna_stack_declare(anna_stack_template_t *stack,
 	1,
 	type);    
     stack->flags = stack->flags & ~ANNA_STACK_DECLARE;
-    
     *anna_entry_get_addr_static(
 	res,
 	mid) = (anna_entry_t *)initial_value;

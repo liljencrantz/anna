@@ -371,12 +371,5 @@ anna_stack_template_t *anna_node_create_wrapper_types()
 
     
     
-    anna_stack_declare(
-	stack_global,
-	L"parser",
-	anna_stack_wrap(stack)->type,
-	anna_stack_wrap(stack),
-	ANNA_STACK_READONLY);
-
     return stack;
 }

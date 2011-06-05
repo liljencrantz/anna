@@ -27,9 +27,8 @@ Function templates
 Modules should map to directories, not files
 Submodules
 Default function argument values. These also need to be part of the function interface and contained in function keys.
-continue/break (continue is easy with a continuation, but implementing break requires some special hacking. A macro could do it, but it would be a bit ugly)
 No magic toString method, use attributes to specify methods for implicit conversion
-Static members of a type should be available without an instance of that type. Preferably through Type.name
+Static members of a type should be available without an instance of that type. Preferably through TypeName.name
 Return value type for continuations
 Class methods
 

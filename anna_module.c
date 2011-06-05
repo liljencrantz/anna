@@ -31,6 +31,7 @@
 #include "anna_hash.h"
 #include "wutil.h"
 #include "anna_attribute.h"
+#include "anna_string.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 array_list_t anna_module_default_macros = AL_STATIC;
@@ -228,11 +229,66 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
     
 }
 
+static inline anna_entry_t *anna_system_get_arguments_i(anna_entry_t **param)
+{
+    static anna_object_t *res = 0;
+    if(!res)
+    {
+	res = anna_list_create(string_type);
+	int i;
+	for(i=1; i<anna_argc; i++)
+	{
+	    wchar_t *data = str2wcs(anna_argv[i]);
+	    anna_object_t *arg = anna_string_create(wcslen(data), data);
+	    anna_list_add(res, arg);
+	    
+	}
+	
+    }
+    
+    return res;
+}
+ANNA_VM_NATIVE(anna_system_get_arguments, 1)
+
+static anna_stack_template_t *anna_system_create()
+{
+    anna_stack_template_t *stack = anna_stack_create(stack_global);
+    
+    anna_type_t *type = anna_stack_wrap(stack)->type;
+    
+    anna_native_property_create(
+	type,
+	-1,
+	L"arguments",
+	anna_list_type_get(string_type),
+	&anna_system_get_arguments, 
+	0);
+    
+    return stack;
+}
+
+
 void anna_module_init()
 {
     anna_stack_template_t *stack_lang = anna_lang_load();
     
     anna_stack_template_t *stack_parser = anna_node_create_wrapper_types();
+    anna_stack_declare(
+	stack_global,
+	L"parser",
+	anna_stack_wrap(stack_parser)->type,
+	anna_stack_wrap(stack_parser),
+	ANNA_STACK_READONLY);
+
+
+    anna_stack_template_t *stack_system = anna_system_create();
+    anna_stack_declare(
+	stack_global,
+	L"system",
+	anna_stack_wrap(stack_system)->type,
+	anna_stack_wrap(stack_system),
+	ANNA_STACK_READONLY);
+
     
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     anna_macro_init(stack_macro);
