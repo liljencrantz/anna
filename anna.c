@@ -267,6 +267,11 @@ int main(int argc, char **argv)
     }
     
     wchar_t *module_name = str2wcs(argv[1]);
+    size_t mlen = wcslen(module_name);
+    if(mlen > 5 && wcscmp(&module_name[mlen-5], L".anna") == 0)
+    {
+	module_name[mlen-5] = 0;
+    }
 
     char *name = strrchr(argv[1], '/');
     if(!name)
