@@ -1,8 +1,7 @@
 
 def main()
 {
-    digits:=1000;
-
+    digits := Int.convert(system.arguments[1]) or 1000;
     i := 0;
     k := 0;
     ns := 0;
@@ -13,40 +12,36 @@ def main()
     t := 0;
     u:=0;
 
-    def calc()
+    while(1)
     {
-	while(1)
-	{
-	    k += 1;
-	    t = n ^shl 1;
-	    n = n*k;
-	    a += t;
-	    k1 += 2;
-	    a = a* k1;
-	    d = d*k1;
-	    if(a >= n){
-		tmp := n*3+a;
-		t = tmp/d;
-		u = tmp ^mod d;
-		u += n;
-		if (d > u)
+	k += 1;
+	t = n ^shl 1;
+	n = n*k;
+	a += t;
+	k1 += 2;
+	a = a*k1;
+	d = d*k1;
+	if(a >= n){
+  	    tmp := n*3+a;
+	    t = tmp/d;
+	    u = tmp ^mod d;
+	    u += n;
+	    if (d > u)
+	    {
+		ns = ns*10 + t;
+		i += 1;
+		if (i ^mod 10 == 0)
 		{
-		    ns = ns*10 + t;
-		    i += 1;
-		    if (i ^mod 10 == 0)
-		    {
-			print("%\t|%\n" % [ns, i]);
-			ns = 0;
-		    }
-		    if (i >= digits){
-			return;
-		    }
-		    a -= d*t;
-		    a = a*10;
-		    n = n*10;
+		    print("%\t|%\n" % [ns, i]);
+		    ns = 0;
 		}
+		if (i >= digits){
+		    break;
+		}
+		a -= d*t;
+		a = a*10;
+		n = n*10;
 	    }
 	}
     }
-    calc();
 }

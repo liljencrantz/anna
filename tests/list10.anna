@@ -11,6 +11,4 @@ def main()
     lst[200] = 1;
     print(lst, '\n');
 
-    silly := SillyList();
-    silly[4] = 0.0;
 }

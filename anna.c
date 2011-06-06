@@ -309,7 +309,7 @@ int main(int argc, char **argv)
     anna_argc= argc;
     anna_argv = argv;
     
-    if(argc != 2)
+    if(argc < 2)
     {
 	debug(D_CRITICAL,L"Error: Expected at least one argument, a name of a file to run.\n");
 	exit(ANNA_STATUS_ARGUMENT_ERROR);

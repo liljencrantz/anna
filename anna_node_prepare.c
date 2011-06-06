@@ -363,15 +363,15 @@ static void anna_node_calculate_type_internal(
 		anna_error(n->object, L"Invalid type for object in call");
 		break;
 	    }
-
-	    if(type == type_type)
+	    
+	    if(type == type_type && anna_member_get(type, n->mid)==0)
 	    {
-
 		type = anna_node_resolve_to_type(n->object, stack);
-		obj_is_type = 1;
+		n->access_type = ANNA_NODE_ACCESS_STATIC_MEMBER;
 		
 		if(!type)
 		{
+		    anna_error(n->object, L"Unknown type");
 		    break;
 		}
 	    }
@@ -910,10 +910,13 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    }
 	    else if(this->node_type == ANNA_NODE_MEMBER_CALL)
 	    {
-	      anna_type_t * type = 
-		  this2->object->return_type;
-	      
-		if(type == type_type)
+		anna_node_call_t *n = (anna_node_call_t *)this;
+	
+		anna_type_t * type = 
+		    this2->object->return_type;
+		
+		
+		if(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
 		{
 		    type = anna_node_resolve_to_type(this2->object, stack);
 		}

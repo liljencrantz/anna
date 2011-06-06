@@ -699,7 +699,7 @@ flags);
 	    
 	    int obj_is_type = 0;
 	    
-	    if(obj_type == type_type)
+	    if(node2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
 	    {
 		obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
 		obj_is_type=1;

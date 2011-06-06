@@ -1,3 +1,25 @@
+1.0 RELEASE CRITERIA:
+* Static member access fully working
+* Constructor and inheritance fully working
+* Inheritance and method overloading fully working
+* Add memory overhead of Ints and lists to GC estimates
+* Smarter GC timing algorithm
+* File type
+* Date type
+* HTML api documentation
+* Introduction
+* Check that node each, node hash and all other node functions support all ast node types
+* Default argument values
+
+2.0 RELEASE CRITERIA:
+* Regexp
+* Query macro (SQL Alchemy/Linq/etc. replacement)
+* Live debugger
+* Mutable and Imutable versions of List, String and HashMap, switch between them using freeze/thaw
+* Multithread support using message passing and a common frozen object store
+
+
+
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
 Is differentiating between properties and members when looking at interfaces a mistake? It adds a bunch of extra run time checks for null types, which probably negates the performance advantage. Code is a bit more obvious, but but we lose a bit of freedom for no real benefit.

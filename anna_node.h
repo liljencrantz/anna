@@ -50,6 +50,8 @@ enum anna_node_enum
 
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
+#define ANNA_NODE_ACCESS_STATIC_MEMBER 1
+
 struct YYLTYPE
 {
     int first_line;
@@ -163,6 +165,7 @@ struct anna_node_member_access
     mid_t mid;
     struct anna_node *object;
     struct anna_node *value;
+    int access_type;
 };
 
 struct anna_node_call
@@ -184,6 +187,7 @@ struct anna_node_call
     size_t child_count;
     size_t child_capacity;
     struct anna_node **child;
+    int access_type;
 };
 
 struct anna_node_string_literal
