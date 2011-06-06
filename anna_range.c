@@ -433,7 +433,7 @@ static anna_vmstack_t *anna_range_filter_callback(anna_vmstack_t *stack, anna_ob
 	anna_list_add(res, anna_range_get(range, idx-1));
     }
     
-    if(sz > idx || open && (!(stack->flags & ANNA_VMSTACK_BREAK)))
+    if( ((sz > idx) || open) && (!(stack->flags & ANNA_VMSTACK_BREAK)))
     {
 	anna_entry_t *o_param[] =
 	    {

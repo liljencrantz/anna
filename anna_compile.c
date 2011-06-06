@@ -696,14 +696,27 @@ flags);
 	    }
 	    
 	    anna_type_t *obj_type = node2->object->return_type;
+	    
+	    int obj_is_type = 0;
+	    
+	    if(obj_type == type_type)
+	    {
+		obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
+		obj_is_type=1;
+	    }
+
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
 	    
 	    anna_object_t *const_obj = anna_static_invoke_as_access(
 		node2, fun->stack_template);
 	    anna_object_t *const_obj2 = anna_node_static_invoke_try(
 		node2->object, fun->stack_template);
-	    
-	    if(const_obj && (!mem->is_method || const_obj2))
+
+	    if(obj_is_type)
+	    {
+		anna_vm_const(ptr, anna_as_obj(obj_type->static_member[mem->offset]), flags);
+	    }
+	    else if(const_obj && (!mem->is_method || const_obj2))
 	    {
 		anna_vm_const(ptr, const_obj, flags);
 		if(mem->is_method)

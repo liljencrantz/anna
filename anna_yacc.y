@@ -1278,14 +1278,14 @@ type_definition:
 	  anna_node_t *type  = (anna_node_t *)anna_node_create_call2(
 	      &@$,
 	      anna_node_create_identifier(&@$, L"__type__"),
-	      $2?$2:anna_node_create_identifier(&@$, L"!anonymous"),
+	      $2?$2:(anna_node_t *)anna_node_create_identifier(&@$, L"!anonymous"),
 	      $3,$4);
 	  
 	  if($2)
 	  {
 	      $$ = (anna_node_t *)anna_node_create_call2(
 		  &@$, anna_node_create_identifier(&@1,L"__const__"),
-		  $2?$2:anna_node_create_identifier(&@$, L"!anonymous"),
+		  $2?$2:(anna_node_t *)anna_node_create_identifier(&@$, L"!anonymous"),
 		  anna_node_create_null(&@$), type, 
 		  anna_node_clone_deep((anna_node_t *)$3));
 	  }

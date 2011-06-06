@@ -350,6 +350,9 @@ static void anna_node_calculate_type_internal(
 	    
 	    anna_node_calculate_type(n->object);
 	    anna_type_t *type = n->object->return_type;
+	    int obj_is_type = 0;
+	    
+	    
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		break;
@@ -361,6 +364,18 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 
+	    if(type == type_type)
+	    {
+
+		type = anna_node_resolve_to_type(n->object, stack);
+		obj_is_type = 1;
+		
+		if(!type)
+		{
+		    break;
+		}
+	    }
+	    
 	    anna_type_prepare_member(type, n->mid, stack);
 	    
 	    anna_member_t *member = anna_member_get(type, n->mid);
@@ -895,9 +910,19 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    }
 	    else if(this->node_type == ANNA_NODE_MEMBER_CALL)
 	    {
+	      anna_type_t * type = 
+		  this2->object->return_type;
+	      
+		if(type == type_type)
+		{
+		    type = anna_node_resolve_to_type(this2->object, stack);
+		}
+	    
 		anna_member_t *memb = 
-		    anna_member_get(this2->object->return_type, this2->mid);
-		
+		    anna_member_get(type, this2->mid);
+	
+
+	
 		anna_type_t *ft = memb->type;
 		
 		ftk = anna_function_type_unwrap(ft);	    

@@ -303,7 +303,14 @@ anna_object_t *anna_node_static_invoke_try(
 		stack);
 	    if(obj)
 	    {
+
+
 		anna_member_t *memb = anna_member_get(obj->type, this2->mid);
+		if(!memb)
+		{
+		    return 0;
+		}
+		
 		if(memb->is_property)
 		{
 		    return 0;

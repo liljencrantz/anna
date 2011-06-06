@@ -24,7 +24,7 @@ static void anna_node_hash_func_step(
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *i = (anna_node_call_t *)this;
-	    contrib = anna_hash(&i->child_count, 1);
+	    contrib = anna_hash((int *)&i->child_count, 1);
 	    break;
 	}
 	

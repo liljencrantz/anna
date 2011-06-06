@@ -5,7 +5,9 @@
 #include <assert.h>
 #include <string.h>
 #include <math.h>
+#include <errno.h>
 
+#include "common.h"
 #include "anna.h"
 #include "anna_float.h"
 #include "anna_type.h"
@@ -114,6 +116,66 @@ static anna_vmstack_t *anna_float_hash(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+static inline anna_entry_t *anna_float_convert_string_i(anna_entry_t **param)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return anna_from_obj(null_object);
+    }
+    wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
+    if(wcslen(str) != anna_string_get_count(anna_as_obj(param[0])))
+    {
+	return anna_from_obj(null_object);	
+    }
+    
+    /* Strip any underscores from the string */
+    wchar_t *in = str;
+    wchar_t *out = str;
+    while(*in)
+    {
+	if(*in == L'_')
+	{
+	    in++;
+	}
+	else
+	{
+	    *out++ = *in++;
+	}
+    }
+    *out = 0;
+    
+    /* Convert to narrow string and send if to strtod */
+    char *nstr = wcs2str(str);
+    char *end=0;
+    errno=0;
+    
+    double res = strtod(nstr, &end);
+    if(errno || *end != 0)
+    {
+	return anna_from_obj(null_object);
+    }
+    return anna_from_float(res);
+}
+ANNA_VM_NATIVE(anna_float_convert_string, 1)
+
+static inline anna_entry_t *anna_float_convert_float_i(anna_entry_t **param)
+{
+    return param[0];
+}
+ANNA_VM_NATIVE(anna_float_convert_float, 1)
+
+static inline anna_entry_t *anna_float_convert_int_i(anna_entry_t **param)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return anna_from_obj(null_object);
+    }
+    mpz_t *int_val = anna_int_unwrap(anna_as_obj(param[0]));
+    double res = mpz_get_d(*int_val);
+    return anna_from_float(res);
+}
+ANNA_VM_NATIVE(anna_float_convert_int, 1)
+
 void anna_float_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *argv[] = 
@@ -156,6 +218,45 @@ void anna_float_type_create(anna_stack_template_t *stack)
 	&anna_float_hash, 
 	int_type, 1, argv, argn);
     
-    anna_float_type_i_create(stack);
+
+    wchar_t *conv_argn[]=
+	{
+	    L"value"
+	}
+    ;
+
+    mid_t mmid;
+    anna_function_t *fun;
+
+    mmid = anna_native_type_method_create(
+	float_type,
+	-1,
+	L"convertString",
+	0,
+	&anna_float_convert_string, 
+	float_type, 1, &string_type, conv_argn);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+
+    mmid = anna_native_type_method_create(
+	float_type,
+	-1,
+	L"convertFloat",
+	0,
+	&anna_float_convert_float, 
+	float_type, 1, &float_type, conv_argn);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+
+    mmid = anna_native_type_method_create(
+	float_type,
+	-1,
+	L"convertInt",
+	0,
+	&anna_float_convert_int, 
+	float_type, 1, &int_type, conv_argn);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
     
+    anna_float_type_i_create(stack);
 }
