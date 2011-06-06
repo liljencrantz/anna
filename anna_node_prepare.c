@@ -544,6 +544,18 @@ static void anna_node_calculate_type_internal(
 	    {
 		break;
 	    }
+
+	    if(type == type_type && anna_member_get(type, c->mid)==0)
+	    {
+		type = anna_node_resolve_to_type(c->object, stack);
+		c->access_type = ANNA_NODE_ACCESS_STATIC_MEMBER;
+		
+		if(!type)
+		{
+		    anna_error(c->object, L"Unknown type");
+		    break;
+		}
+	    }
 	    
 	    anna_type_prepare_member(type, c->mid, stack);
 	    anna_member_t *member = anna_member_get(type, c->mid);
@@ -865,7 +877,14 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
-	    anna_member_t *memb = anna_member_get(c->object->return_type, c->mid);
+	    anna_type_t * type = 
+		c->object->return_type;
+	    if(c->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
+	    {
+		type = anna_node_resolve_to_type(c->object, stack);
+	    }
+
+	    anna_member_t *memb = anna_member_get(type, c->mid);
 	    if(memb->is_property && memb->getter_offset == -1)
 	    {
 		anna_error(this, L"No getter for property %ls", anna_mid_get_reverse(c->mid));
@@ -910,22 +929,16 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    }
 	    else if(this->node_type == ANNA_NODE_MEMBER_CALL)
 	    {
-		anna_node_call_t *n = (anna_node_call_t *)this;
 	
 		anna_type_t * type = 
 		    this2->object->return_type;
-		
-		
-		if(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
+				
+		if(this2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
 		{
 		    type = anna_node_resolve_to_type(this2->object, stack);
 		}
 	    
-		anna_member_t *memb = 
-		    anna_member_get(type, this2->mid);
-	
-
-	
+		anna_member_t *memb = anna_member_get(type, this2->mid);
 		anna_type_t *ft = memb->type;
 		
 		ftk = anna_function_type_unwrap(ft);	    

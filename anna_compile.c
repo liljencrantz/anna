@@ -614,7 +614,15 @@ flags);
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    anna_object_t *const_obj = anna_node_static_invoke_try(
 		node, fun->stack_template);
-	    if(const_obj)
+
+	    if(node2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
+	    {
+		anna_type_t *obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
+		anna_member_t *mem = anna_member_get(obj_type, node2->mid);
+		anna_vm_const(ptr, anna_as_obj(obj_type->static_member[mem->offset]), flags);
+		break;
+	    }
+	    else if(const_obj)
 	    {
 		anna_vm_const(ptr, const_obj, flags);		
 		break;

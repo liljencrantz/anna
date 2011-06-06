@@ -6,6 +6,7 @@
 #include <string.h>
 #include <math.h>
 #include <errno.h>
+#include <float.h>
 
 #include "common.h"
 #include "anna.h"
@@ -176,6 +177,13 @@ static inline anna_entry_t *anna_float_convert_int_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_float_convert_int, 1)
 
+static inline anna_entry_t *anna_float_max_exponent_i(anna_entry_t **param)
+{
+    return anna_from_int(DBL_MAX_EXP);
+}
+ANNA_VM_NATIVE(anna_float_max_exponent, 1)
+
+
 void anna_float_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *argv[] = 
@@ -258,5 +266,15 @@ void anna_float_type_create(anna_stack_template_t *stack)
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
     
+    anna_native_property_create(
+	float_type,
+	-1,
+	L"maxExponent",
+	int_type,
+	&anna_float_max_exponent,
+	0);
+    
+
+
     anna_float_type_i_create(stack);
 }

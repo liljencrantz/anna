@@ -10,5 +10,5 @@ def main()
     /* Check that growing list on assignment works */
     lst[200] = 1;
     print(lst, '\n');
-
+    
 }

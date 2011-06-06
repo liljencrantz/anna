@@ -1,24 +1,5 @@
 
 def main()
 {
-    print("Int conversions\n");
-    print(Int.convert("123456789_10_11_12_13_14_15_16_17_18_19_20"), "\n");
-    print(Int.convert("-123"), "\n");
-    print(Int.convert(31415.9265), "\n");
-    print(Int.convert(-2.0), "\n");
-    print(Int.convert("hello"), "\n");
-    print(Int.convert(9), "\n");
-    print(Int.convert(-7), "\n");
-    print(Int.convert(?), "\n");
-
-    print("Float conversions\n");
-    print(Float.convert(66.5) == 66.5, "\n");
-    print(Float.convert(9)==9.0, "\n");
-    print(Float.convert("_3_._5_") == 3.5, "\n");
-    print(Float.convert("3") == 3.0, "\n");
-    print(Float.convert("3_3.0e5") == 3300000, "\n");
-    print(Float.convert("3.5g"), "\n");
-    print(Float.convert("hello"), "\n");
-    print(Float.convert(?), "\n");
-    
+    print(Float.maxExponent, "\n");
 }
