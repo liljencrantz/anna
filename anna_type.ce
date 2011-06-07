@@ -262,7 +262,7 @@ void anna_type_print(anna_type_t *type)
 		member->setter_offset,
 		member->getter_offset);
 	}
-	else if(member->is_bound_method)
+	else if(member->is_method)
 	{
 	    wprintf(
 		L"\tmethod %ls: type: %ls, static: %ls, property: %ls, offset: %d\n",
@@ -298,7 +298,7 @@ anna_object_t *anna_type_wrap(anna_type_t *result)
 {
     if(likely((long)result->wrapper))
 	return result->wrapper;
-    
+
     result->wrapper = anna_object_create(type_type);
     memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_TYPE_WRAPPER_PAYLOAD), &result, sizeof(anna_type_t *));  
     return result->wrapper;
@@ -360,7 +360,7 @@ anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
 int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
 {
     anna_member_t *memb = anna_type_member_info_get(type, name);
-    return memb->is_bound_method;
+    return memb->is_method;
     
 /*anna_type_t *member_type = anna_type_member_type_get(type, name);
   return !!anna_entry_get_addr_static(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
@@ -418,7 +418,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
                res,
                anna_mid_get(memb->name), memb->name, 
 	       storage, memb->type));
-       copy->is_bound_method = memb->is_bound_method;
+       copy->is_method = memb->is_method;
        copy->is_property = memb->is_property;
        copy->getter_offset = -1;
        copy->setter_offset = -1;
@@ -505,8 +505,6 @@ static void anna_type_prepare_member_internal(
     
     if(!is_method)
     {
-	is_static = anna_attribute_flag(decl->attribute, L"static");
-	
 	array_list_t etter = AL_STATIC;
 	anna_attribute_call_all(decl->attribute, L"property", &etter);
 	
@@ -516,7 +514,8 @@ static void anna_type_prepare_member_internal(
 	    return;
 	}
     }
-        
+    
+    
     mid_t mid = anna_member_create(
 	type,
 	-1,
@@ -531,7 +530,7 @@ static void anna_type_prepare_member_internal(
     if(is_method)
     {
 	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
-	member->is_bound_method = 1;
+	member->is_method = 1;
 	*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
 	anna_function_set_stack(clo->payload, stack);
 	anna_function_setup_interface(clo->payload);

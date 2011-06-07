@@ -146,7 +146,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	    if(anna_abides_verbose)
 		wprintf(L"Miss on %ls because of missing member in contender\n", members[i]);
 	}
-	else if(r_memb->is_bound_method != c_memb->is_bound_method)
+	else if(r_memb->is_method != c_memb->is_method)
 	{
 	    ok=0;
 /*	    if(!ok && level==1)
@@ -167,7 +167,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 		wprintf(L"Miss on %ls because of one is a property and not the other\n", members[i]);
 	    ok=0;
 	}
-	else if(r_memb->is_bound_method)
+	else if(r_memb->is_method)
 	{
 	    ok = anna_abides_function(
 		anna_function_type_unwrap(c_memb->type),
@@ -251,7 +251,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 //	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(memb1->is_bound_method != memb2->is_bound_method)
+	else if(memb1->is_method != memb2->is_method)
 	{
 //	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
@@ -266,7 +266,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 //	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(memb2->is_bound_method)
+	else if(memb2->is_method)
 	{
 	    anna_function_type_t *ft1 = anna_function_type_unwrap(memb1->type);
 	    anna_function_type_t *ft2 = anna_function_type_unwrap(memb2->type);

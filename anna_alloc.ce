@@ -277,10 +277,6 @@ void anna_alloc_mark_type(anna_type_t *type)
 	anna_alloc_mark_entry(type->static_member[0]);
 	return;
     }
-    if(type->wrapper)
-    {
-	anna_alloc_mark_object(type->wrapper);
-    }
     
     for(i=0; i<type->static_member_count; i++)
     {
@@ -488,7 +484,7 @@ static void anna_alloc_free(void *obj)
 //		wprintf(L"AAA %ls\n", o->type->name);
 		
 		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
-		if(del_mem && del_mem->is_bound_method)
+		if(del_mem && del_mem->is_method)
 		{
 		    anna_vm_run(
 			anna_as_obj_fast(o->type->static_member[del_mem->offset]),
@@ -504,7 +500,7 @@ static void anna_alloc_free(void *obj)
 	{
 	    int i;
 	    anna_type_t *o = (anna_type_t *)obj;
-//	    wprintf(L"Discarding unused type %ls\n", o->name);
+	    //wprintf(L"Discarding unused type %ls\n", o->name);
 	    
 	    if(obj != null_type)
 	    {

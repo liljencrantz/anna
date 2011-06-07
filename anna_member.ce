@@ -26,7 +26,7 @@ anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 	return result->wrapper;
     
     anna_type_t * m_type;
-    if(result->is_bound_method)
+    if(result->is_method)
     {
 	m_type = member_method_type;
     }
@@ -70,7 +70,7 @@ static inline anna_entry_t *anna_member_i_get_method_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return m->is_bound_method?anna_from_int(1):anna_from_obj(null_object);
+    return m->is_method?anna_from_int(1):anna_from_obj(null_object);
 }
 ANNA_VM_NATIVE(anna_member_i_get_method, 1)
 
@@ -329,7 +329,7 @@ anna_member_t *anna_member_method_search(
 	    if(has_alias)
 	    {
 		int j;
-		int off = !!member->is_bound_method;
+		int off = !!member->is_method;
 		
 		if(mem_fun->input_count != call->child_count+off)
 		    continue;	    
@@ -504,7 +504,7 @@ mid_t anna_member_create_method(
     
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
-    m->is_bound_method=1;
+    m->is_method=1;
     type->static_member[m->offset] = 
 	anna_from_obj(
 	    anna_function_wrap(

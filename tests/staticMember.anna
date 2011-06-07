@@ -1,12 +1,10 @@
 type SomeType
 {
     var Int foo (static);
-    
-    
 }
 
 def main()
 {
     SomeType.foo = 7;
-    print(SomeType.foo);    
+    print(SomeType.foo, "\n");
 }

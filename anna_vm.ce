@@ -214,10 +214,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_RETURN_COUNT,
 	    &&ANNA_LAB_RETURN_COUNT_BREAK, //26
 	    &&ANNA_LAB_CHECK_BREAK, //27
-	    &&ANNA_LAB_STATIC_MEMBER_SET, // 28
-	    &&ANNA_LAB_TYPE_OF, // 29
 
-	    0, 0, 0, //32
+	    0, 0, 0, 0, 0, //32
 	    0, 0, 0, 0, 0, 0, 0, 0, //40
 	    0, 0, 0, 0, 0, 0, 0, 0, //48
 	    0, 0, 0, 0, 0, 0, 0, 0, //56
@@ -479,13 +477,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif
-/*
-	wprintf(
-	    L"Var get in function %ls, pos %d %d. Result: Object of type %ls\n",
-	    stack->function->name,
-	    op->frame_count, op->offset,
-	    anna_as_obj(s->base[op->offset])->type->name);
-*/
 	anna_vmstack_push_entry(stack, s->base[op->offset]);
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
@@ -499,13 +490,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	for(i=0; i<op->frame_count; i++)
 	    s = s->parent;
 	s->base[op->offset] = anna_vmstack_peek_entry(stack, 0);
-/*
-	wprintf(
-	    L"Var set in function %ls, pos %d %d. Value: Object of type %ls\n",
-	    stack->function->name,
-	    op->frame_count, op->offset,
-	    anna_as_obj(s->base[op->offset])->type->name);
-*/
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -527,38 +511,17 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    CRASH;
 	}
 #endif 
-	if(m->is_property)
+	if(unlikely(obj == null_object))
 	{
-	    if(unlikely(obj == null_object))
-	    {
-		anna_vmstack_push_object(stack, null_object);	    
-		stack->code += sizeof(*op);		    
-	    }
-	    else
-	    {
-		anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->getter_offset]);
-		anna_function_t *fun = anna_function_unwrap(method);
-		
-		anna_vmstack_push_object(stack, method);
-		anna_vmstack_push_object(stack, obj);
-		stack->code += sizeof(*op);		    
-		stack = fun->native(stack, method);
-	    }
+	    anna_vmstack_push_object(stack, null_object);
 	}
 	else
 	{
-	    if(unlikely(obj == null_object))
-	    {
-		anna_vmstack_push_object(stack, null_object);
-	    }
-	    else
-	    {
-		anna_entry_t *res = obj->member[m->offset];		    
-		anna_vmstack_push_entry(stack, res);
-	    }
-	    stack->code += sizeof(*op);
+	    anna_entry_t *res = obj->member[m->offset];		    
+	    anna_vmstack_push_entry(stack, res);
 	}
 	
+	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
 	    
@@ -566,25 +529,23 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_op_member_t *op = (anna_op_member_t *)stack->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
-	
-	anna_type_t *type = anna_type_unwrap(obj);
-	anna_member_t *m = type->mid_identifier[op->mid];
 
-	//wprintf(L"Static member get of %ls\n", anna_mid_get_reverse(op->mid));
-	
+	anna_member_t *m = obj->type->mid_identifier[op->mid];
+
 #ifdef ANNA_CHECK_VM
 	if(!m)
 	{
 	    debug(
 		D_CRITICAL,
 		L"Object of type %ls does not have a member of type %ls\n",
-		type->name,
+		obj->type->name,
 		anna_mid_get_reverse(op->mid));    
 	    CRASH;
 	}
 #endif 
-	anna_vmstack_push_entry(stack, type->static_member[m->offset]);
+	anna_vmstack_push_entry(stack, obj->type->static_member[m->offset]);
 	stack->code += sizeof(*op);
+
 	goto *jump_label[(int)*stack->code];
     }
 	    
@@ -674,15 +635,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    debug(
 		D_CRITICAL,L"Object %ls does not have a member named %ls\n",
 		obj->type->name, anna_mid_get_reverse(op->mid));
-	    if(stack->function)
-	    {
-		
-		debug(
-		    D_CRITICAL,
-		    L"Function %ls\n",
-		    stack->function->name);	
-	    }
-	    anna_vmstack_print(stack);	    
+	    anna_vmstack_print(stack);
+	    
 	    CRASH;
 	}
 #endif 
@@ -741,56 +695,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 
-  ANNA_LAB_STATIC_MEMBER_SET:
-    {
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
-	anna_object_t *obj = anna_vmstack_pop_object(stack);
-	anna_entry_t *value = anna_vmstack_peek_entry(stack, 0);
-	anna_type_t * type = anna_type_unwrap(obj);
-	anna_member_t *m = type->mid_identifier[op->mid];
-
-#ifdef ANNA_CHECK_VM
-	if(!m)
-	{
-	    debug(
-		D_CRITICAL,
-		L"Object of type %ls does not have a member of named %ls (mid %d)\n",
-		obj->type->name,
-		anna_mid_get_reverse(op->mid), op->mid);    
-	    CRASH;
-	}
-
-	if(m->is_property)
-	{
-	    debug(
-		D_CRITICAL,
-		L"Set property through bad call error\n");
-	    CRASH;
-	}
-
-#endif
-	
-	type->static_member[m->offset] = value;
-	stack->code += sizeof(*op);
-	goto *jump_label[(int)*stack->code];
-    }
-
   ANNA_LAB_LIST:
     {
 	anna_op_type_t *op = (anna_op_type_t *)stack->code;
 	anna_vmstack_push_object(stack, anna_list_create2(op->value));
-	stack->code += sizeof(*op);
-	goto *jump_label[(int)*stack->code];
-    }
-
-  ANNA_LAB_TYPE_OF:
-    {
-	anna_op_null_t *op = (anna_op_null_t *)stack->code;
-	anna_vmstack_push_object(
-	    stack,
-	    anna_type_wrap(
-		anna_vmstack_pop_object(stack)->type)
-	    );
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -912,7 +820,6 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_NOT:
 	case ANNA_INSTR_DUP:
 	case ANNA_INSTR_CHECK_BREAK:
-	case ANNA_INSTR_TYPE_OF:
 	{
 	    return sizeof(anna_op_null_t);	    
 	}
@@ -936,7 +843,6 @@ size_t anna_bc_op_size(char instruction)
 	case ANNA_INSTR_STATIC_MEMBER_GET:
 	case ANNA_INSTR_MEMBER_GET_THIS:
 	case ANNA_INSTR_MEMBER_SET:
-	case ANNA_INSTR_STATIC_MEMBER_SET:
 	{
 	    return sizeof(anna_op_member_t);
 	}
@@ -1037,12 +943,6 @@ void anna_bc_print(char *code)
 		    return;
 		}
 	    
-		case ANNA_INSTR_TYPE_OF:
-		{
-		    wprintf(L"Type of object\n\n");
-		    break;
-		}
-	    
 		case ANNA_INSTR_VAR_GET:
 		{
 		    anna_op_var_t *op = (anna_op_var_t *)code;
@@ -1087,13 +987,6 @@ void anna_bc_print(char *code)
 		    break;
 		}
 
-		case ANNA_INSTR_STATIC_MEMBER_SET:
-		{
-		    anna_op_member_t *op = (anna_op_member_t *)code;
-		    wprintf(L"Set static member %ls\n\n", anna_mid_get_reverse(op->mid));
-		    break;
-		}
-
 		case ANNA_INSTR_POP:
 		{
 		    wprintf(L"Pop stack\n\n");
@@ -1124,7 +1017,8 @@ void anna_bc_print(char *code)
 		    anna_op_off_t *op = (anna_op_off_t *)code;
 		    wprintf(L"Conditionally jump %d bytes\n\n", op->offset);
 		    break;
-		}	    
+		}
+	    
 	    
 		case ANNA_INSTR_NCOND_JMP:
 		{
@@ -1153,7 +1047,6 @@ void anna_bc_print(char *code)
 
 void anna_vm_mark_code(anna_function_t *f)
 {
-    
     char *code = f->code;
     while(1)
     {
@@ -1198,7 +1091,6 @@ void anna_vm_mark_code(anna_function_t *f)
 		case ANNA_INSTR_STATIC_PROPERTY_GET:
 		case ANNA_INSTR_MEMBER_GET_THIS:
 		case ANNA_INSTR_MEMBER_SET:
-		case ANNA_INSTR_STATIC_MEMBER_SET:
 		case ANNA_INSTR_POP:
 		case ANNA_INSTR_NOT:
 		case ANNA_INSTR_DUP:
@@ -1207,7 +1099,6 @@ void anna_vm_mark_code(anna_function_t *f)
 		case ANNA_INSTR_NCOND_JMP:
 		case ANNA_INSTR_TRAMPOLENE:
 		case ANNA_INSTR_CHECK_BREAK:
-		case ANNA_INSTR_TYPE_OF:
 		{
 		    break;
 		}

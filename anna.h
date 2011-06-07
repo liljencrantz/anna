@@ -340,37 +340,35 @@ struct anna_member
     /**
       The type object that describes the interface that any value
       stored in this member must implement.
-     */
+    */
     struct anna_type *type;
     /**
        The offset into either the object->member ot the
        type->static_member array that this member is located at.
-     */
+    */
     ssize_t offset;
     /**
        If true, this member is static, i.e. shared between all objects
        of this type. If so, it is stored in the type object's
        static_member array instead of in the objects member array.
-     */
+    */
     int is_static;
     /**
        If true, this member is a property, i.e. a getter and/or setter
        method that act as a regular variable.
-     */
+    */
     int is_property;
     /**
-       If true, this member is a method. Methods are functions that,
-       when accessed, are implicitly curried so that the this variable
-       is bound to the owning object.
-     */
-    int is_method;
+       If true, this member is a bound method. 
+    */
+    int is_bound_method;
     /**
        Only used if the member is a property. Gives the offset of the
        setter method. Note that all non-static variables are
        implicitly properties.
 
        -1 if member is a property but unused;
-     */
+    */
     ssize_t setter_offset;
     /**
        Only used if the member is a property. Gives the offset of the
