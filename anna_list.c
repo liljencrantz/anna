@@ -44,7 +44,7 @@ void anna_list_add_method(anna_function_t *fun)
     hash_foreach2(&anna_list_specialization, &add_list_method, fun);
 }
 
-void anna_list_add_all_extra_methods(anna_type_t *list)
+static void anna_list_add_all_extra_methods(anna_type_t *list)
 {
     int i;
     for(i=0; i<al_get_count(&anna_list_additional_methods); i++)

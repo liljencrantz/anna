@@ -80,7 +80,6 @@ static void anna_lex_unbalanced_comment()
 \{ return '{';
 \} return '}';
 def return DEF;
-type return TYPE;
 macro return MACRO;
 \? return NULL_SYM;
 and return AND;

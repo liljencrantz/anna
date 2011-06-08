@@ -10,19 +10,23 @@
 * Introduction
 * Check that node each, node hash and all other node functions support all ast node types
 * Default argument values
+* More validation:
+  - Only static members can be accessed statically
+  - Can't assign to constants
+ 
 
 2.0 RELEASE CRITERIA:
 * Regexp
 * Query macro (SQL Alchemy/Linq/etc. replacement)
 * Live debugger
 * Mutable and Imutable versions of List, String and HashMap, switch between them using freeze/thaw
-* Multithread support using message passing and a common frozen object store
-
-
+* Multithreading support using message passing and a common frozen object store
+* Cache for mpz_t numbers
+* Proper iterators? Possibly rethink how map/filter and friends are implemented
+* Protected members
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
-Is differentiating between properties and members when looking at interfaces a mistake? It adds a bunch of extra run time checks for null types, which probably negates the performance advantage. Code is a bit more obvious, but but we lose a bit of freedom for no real benefit.
 When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 What should be the return value for iterator methods like map and filter when given a null value as a function body?
 An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that this object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
@@ -83,6 +87,7 @@ Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
 Current method for determining map output is a bit fragile. 
 Lots more coverage of using null as argument 
+Many more null value tests
 
 DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.

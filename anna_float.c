@@ -183,7 +183,6 @@ static inline anna_entry_t *anna_float_max_exponent_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_float_max_exponent, 1)
 
-
 void anna_float_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *argv[] = 

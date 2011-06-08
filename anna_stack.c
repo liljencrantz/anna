@@ -364,13 +364,6 @@ void anna_stack_print_trace(anna_stack_template_t *stack)
     }
 }
 
-static void anna_stack_save_name(void *key_ptr,void *val_ptr, void *aux_ptr)
-{
-    array_list_t *al = (array_list_t *)aux_ptr;
-    wchar_t *name = (wchar_t *)key_ptr;
-    al_push(al, name);
-}
-
 static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *res = anna_type_stack_create(

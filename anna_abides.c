@@ -161,12 +161,6 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 		wprintf(L"Miss on %ls because of one is static and not the other\n", members[i]);
 	    ok=0;
 	}
-	else if(r_memb->is_property != c_memb->is_property)
-	{
-	    if(anna_abides_verbose)
-		wprintf(L"Miss on %ls because of one is a property and not the other\n", members[i]);
-	    ok=0;
-	}
 	else if(r_memb->is_bound_method)
 	{
 	    ok = anna_abides_function(

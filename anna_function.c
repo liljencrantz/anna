@@ -588,10 +588,12 @@ anna_function_t *anna_function_create_from_block(
     {
 //	wprintf(L"Make block %ls into loop block\n", sb_content(&sb_name));
 	
-	body->function = (anna_node_t *)anna_node_create_identifier(&body->function->location, L"__block__");
-	anna_node_call_add_child(attr, anna_node_create_identifier(&body->function->location, L"loop"));
-	
-	
+	body->function = (anna_node_t *)anna_node_create_identifier(
+	    &body->function->location, L"__block__");
+	anna_node_call_add_child(
+	    attr, 
+	    (anna_node_t *)anna_node_create_identifier(
+		&body->function->location, L"loop"));
     }
         
     anna_node_call_t *definition = anna_node_create_call2(

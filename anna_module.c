@@ -240,13 +240,13 @@ static inline anna_entry_t *anna_system_get_arguments_i(anna_entry_t **param)
 	{
 	    wchar_t *data = str2wcs(anna_argv[i]);
 	    anna_object_t *arg = anna_string_create(wcslen(data), data);
-	    anna_list_add(res, arg);
+	    anna_list_add(res, anna_from_obj(arg));
 	    
 	}
 	
     }
     
-    return res;
+    return anna_from_obj(res);
 }
 ANNA_VM_NATIVE(anna_system_get_arguments, 1)
 
@@ -295,6 +295,19 @@ void anna_module_init()
     al_push(&stack_global->expand, stack_macro);
     
     null_object->type = null_type;
+
+    /*
+      Load a bunch of built in macros and monkey patch some of the
+      built in types with additional methods.
+      
+      This must be done in a specific order, since many of these
+      patches rely on each other.
+
+      Right now, we separate these things into different files for
+      clarity.  Long term, we probably want to use as few files as
+      possible in order to reduce overhead. We'll worry about that
+      once the functionality is mostly set in stone.
+     */
     
     anna_module_bootstrap_macro(L"ast");
     anna_module_bootstrap_macro(L"macroUtil");

@@ -366,7 +366,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <node_val> literal var_or_const
 %type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
 %type <node_val> function_definition function_declaration function_signature
-%type <node_val> opt_identifier identifier identifier2 type_identifier type_identifier2 any_identifier opt_type_identifier
+%type <node_val> opt_identifier identifier identifier2 type_identifier type_identifier2 any_identifier
 %type <node_val> op op2 op3 op4 op5 op6 op7 pre_op9 post_op8
 %type <node_val> type_definition type_remainder
 %type <call_val> declaration_list declaration_list2
@@ -893,14 +893,6 @@ opt_identifier:
 	    $$ = 0;
 	};
 
-opt_type_identifier:
-	{
-	    $$ = 0;
-	}
-	|
-	type_identifier;
-
-
 type_identifier:
 	type_identifier2
 
@@ -1272,12 +1264,12 @@ specialization:
 	};
 
 type_definition:
-	TYPE opt_type_identifier attribute_list block 
+	identifier type_identifier2 attribute_list block 
 	{
 	    
 	  anna_node_t *type  = (anna_node_t *)anna_node_create_call2(
 	      &@$,
-	      anna_node_create_identifier(&@$, L"__type__"),
+	      $1,
 	      $2?$2:(anna_node_t *)anna_node_create_identifier(&@$, L"!anonymous"),
 	      $3,$4);
 	  

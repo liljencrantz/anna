@@ -10,5 +10,5 @@ enum Blubb
 def main()  
 {
     ggg := Blubb(1),
-    print(ggg, ggg.foo);    
+    print(ggg, Blubb.foo);    
 }

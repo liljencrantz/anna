@@ -625,8 +625,18 @@ flags);
 	    {
 		anna_type_t *obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
 		anna_member_t *mem = anna_member_get(obj_type, node2->mid);
-		anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
-		anna_vm_member(ptr, ANNA_INSTR_STATIC_MEMBER_GET, node2->mid, flags);
+		if(mem->is_property)
+		{
+		    anna_vm_const(ptr, anna_as_obj(obj_type->static_member[mem->getter_offset]), flags);
+		    anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
+		    
+		    anna_vm_call(ptr, ANNA_INSTR_CALL, 1, flags);
+		}
+		else
+		{
+		    anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
+		    anna_vm_member(ptr, ANNA_INSTR_STATIC_MEMBER_GET, node2->mid, flags);
+		}
 		break;
 	    }
 	    if(const_obj)
@@ -694,9 +704,19 @@ flags);
 	    {
 		anna_type_t *obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
 		anna_member_t *mem = anna_member_get(obj_type, node2->mid);
-		anna_vm_compile_i(fun, node2->value, ptr, 0, flags);
-		anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
-		anna_vm_member(ptr, ANNA_INSTR_STATIC_MEMBER_SET, node2->mid, flags);
+		if(mem->is_property)
+		{
+		    anna_vm_const(ptr, anna_as_obj(obj_type->static_member[mem->setter_offset]), flags);
+		    anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
+		    anna_vm_compile_i(fun, node2->value, ptr, 0, flags);
+		    anna_vm_call(ptr, ANNA_INSTR_CALL, 2, flags);
+		}
+		else
+		{
+		    anna_vm_compile_i(fun, node2->value, ptr, 0, flags);
+		    anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
+		    anna_vm_member(ptr, ANNA_INSTR_STATIC_MEMBER_SET, node2->mid, flags);
+		}
 	    }
 	    else
 	    {

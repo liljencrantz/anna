@@ -2,7 +2,7 @@
 macro enum(definition)
 {
     var body = definition[2] as Call;
-    definition.function = ast(__type__);
+    definition.function = Identifier(definition, "type");
     
     var newBody = ast(
 	{
@@ -30,13 +30,14 @@ macro enum(definition)
 	    return ?;
 	}
 	var getter = "!" ~ id.name ~ "Getter";
-	var fun = ast(def name() (static) {return value;});
-	var prop = ast(var Int name (property(functionName)));
-	var cmp = ast(if(this.value == intValue){return strValue});
+	var fun = ast(def %Type %name() (static) {return %Type(%value)});
+	var prop = ast(var Int %name (static, property(%functionName)));
+	var cmp = ast(if(this.value == %intValue){return %strValue});
 	
 	fun = (
 	    fun % [
 		"name": Identifier(definition, getter),
+		"Type": definition[0].copy(),
 		"value": IntLiteral(definition, idx)
 		]) as Call;
 	
@@ -64,7 +65,7 @@ macro enum(definition)
     
     definition[2] = newBody;
 
-//    print(definition,"\n");	    
+    print(definition,"\n");	    
 //    print(nameFun,"\n");	    
     return definition;
 }
