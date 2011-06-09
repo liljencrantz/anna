@@ -628,9 +628,9 @@ flags);
 		if(mem->is_property)
 		{
 		    anna_vm_const(ptr, anna_as_obj(obj_type->static_member[mem->getter_offset]), flags);
-		    anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
+//		    anna_vm_const(ptr, anna_type_wrap(obj_type), flags);
 		    
-		    anna_vm_call(ptr, ANNA_INSTR_CALL, 1, flags);
+		    anna_vm_call(ptr, ANNA_INSTR_CALL, 0, flags);
 		}
 		else
 		{
@@ -931,7 +931,8 @@ void anna_vm_compile(
     fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
-    //anna_bc_print(fun->code);
+//    if(wcscmp(fun->name, L"main")==0)
+//    anna_bc_print(fun->code);
 }
 
 anna_vmstack_t *anna_vm_callback_native(

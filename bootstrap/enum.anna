@@ -1,0 +1,171 @@
+
+macro enum(definition)
+(
+    documentation("
+The enum macro is used to define enumerations types. Te basic syntax is:
+
+enum TypeName
+{
+    enumName, someOtherEnumName, enumWithValue64= 64, ...
+}
+
+")
+)
+{
+    body := definition[2] as Call;
+    definition.function = ast(type);
+    
+    newBody := ast(
+	{
+	    var Int %value;
+	}
+    );
+
+    nameBody := ast(
+	{
+	    if( !this.%value)
+	    {
+		return "?";
+	    }
+	}
+    );
+
+    initFun := ast(
+	def __init__(Int value)
+	{
+	    this.%value = value
+	}
+    );
+
+    hashFun := ast(
+	def hashCode()
+	{
+	    %value.hashCode();
+	}
+    );
+
+    valueGetter := ast(
+	def %valueGetter()
+	{
+	    %value;
+	}
+    );
+
+    valueProperty := ast(
+	var Int __value (static, property(%valueGetter));
+    );
+
+    cmpFun := ast(
+	def __cmp__(Object value)
+	{
+	    if(value as Int)
+	    {
+		return this.%value - (value as Int);
+	    } else {
+		if(value as %Type)
+		{
+		    return this.%value - (value as %Type).%value;
+		}
+	    }
+	    return ?;
+	}
+    );
+
+    idx := 0;
+    isFirst := 1;
+    body.each(el)
+    {
+        id := ? as Identifier;
+
+	if(el as Identifier)
+	{
+	    id = el as Identifier;
+	}
+	if(el.isCallTo("__assign__"))
+	{
+  	    ass := el as Call;
+	    checkCallCount(ass, 2);
+	    checkNodeType(ass[0], Identifier); 
+	    checkNodeType(ass[1], IntLiteral); 
+  	    id = ass[0] as Identifier;
+  	    nextIdx := (ass[1] as IntLiteral).payload;
+	    if(nextIdx <= idx and !isFirst)
+	    {
+		ass[1].error("Invalid enum value %. Previous value was %d and values must be increasing." % [nextIdx, idx]);
+		return ?;
+	    }
+	    idx = nextIdx;
+	    
+	}
+	
+	isFirst = ?;
+
+	if(!id)
+	{
+	    
+	    definition.error("Unexpected thingie");
+	    return ?;
+	}
+	getter := "!" ~ id.name ~ "Getter";
+	fun := ast(
+	    def %Type %name() (static) 
+	    {
+		return %Type(%myValue)
+	    }
+	    );
+	prop := ast(
+	    var %Type %name (static, property(%functionName))
+	    );
+	cmp := ast(
+	    if(this.%value == %intValue)
+	    {
+		return %strValue
+	    }
+	    );
+	
+	fun = (
+	    fun % [
+		"name": Identifier(definition, getter),
+		"myValue": IntLiteral(definition, idx)
+		]) as Call;
+	
+	prop = (
+	    prop % [
+		"name": Identifier(definition, id.name),
+		"functionName": Identifier(definition, getter)
+		]) as Call;
+	cmp = (
+	    cmp % [
+		"intValue": IntLiteral(definition, idx),
+		"strValue": StringLiteral(definition, id.name)
+		]) as Call;
+	
+	newBody ~= [fun];
+	newBody ~= [prop];
+	nameBody ~= [cmp];
+	idx++;
+    }
+
+    newBody ~= [
+	initFun, cmpFun, hashFun, 
+	valueGetter, valueProperty];
+    
+    nameFun := ast(
+	def String toString()
+	{}
+	);
+    (nameFun[2] as Call)[4] = nameBody;
+    newBody ~= [nameFun];
+    
+    definition[2] = newBody;
+    definition = (definition % [
+		      "value": Identifier(?, identifier("value")),
+		      "Type": definition[0].copy(),
+		      "valueGetter": Identifier(?, identifier("valueGetter")),
+		      ]) as Call;
+
+//    print(definition,"\n");	    
+
+    return definition;
+}
+

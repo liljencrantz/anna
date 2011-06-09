@@ -347,6 +347,23 @@ void anna_stack_print(anna_stack_template_t *stack)
     anna_stack_print(stack->parent);
 }
 
+int anna_stack_check(anna_stack_template_t *stack, int i)
+{
+
+    if(!stack)
+    {
+	return 0;
+    }
+
+    if(i<=0)
+    {
+	return 1;
+    }
+
+    return anna_stack_check(stack->parent, i-1);
+}
+
+
 int anna_stack_depth(anna_stack_template_t *stack)
 {
     return stack?anna_stack_depth(stack->parent)+1:0;

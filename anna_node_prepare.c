@@ -89,7 +89,7 @@ static void anna_node_set_stack_fun(anna_node_t *node, void *stack_ptr)
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)node;
-//	    wprintf(L"Set stack %d for closure %ls\n", stack_ptr, c->payload->name);
+//	    wprintf(L"\nSet stack %d for closure %ls\n", stack_ptr, c->payload->name);
 	    anna_function_set_stack(
 		c->payload,
 		(anna_stack_template_t *)stack_ptr);
@@ -99,14 +99,13 @@ static void anna_node_set_stack_fun(anna_node_t *node, void *stack_ptr)
 	case ANNA_NODE_TYPE:
 	{
 	    anna_node_type_t *c = (anna_node_type_t *)node;
+//	    wprintf(L"\nSet stack %d for type %ls\n", stack_ptr, c->payload->name);
 	    anna_type_set_stack(
 		c->payload,
 		(anna_stack_template_t *)stack_ptr);	    
 	    break;
 	}
-	
     }
-    
 }
 
 void anna_node_set_stack(
@@ -352,7 +351,6 @@ static void anna_node_calculate_type_internal(
 	    anna_type_t *type = n->object->return_type;
 	    int obj_is_type = 0;
 	    
-	    
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		break;
@@ -364,6 +362,8 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 	    
+	    anna_type_setup_interface(type);	    
+
 	    if(type == type_type && anna_member_get(type, n->mid)==0)
 	    {
 		type = anna_node_resolve_to_type(n->object, stack);
@@ -516,7 +516,7 @@ static void anna_node_calculate_type_internal(
 	    c->return_type = type_type;	    
 	    anna_type_set_stack(f, stack);
 	    anna_type_setup_interface(f);
-
+	    
 	    break;
 	}
 
@@ -544,6 +544,8 @@ static void anna_node_calculate_type_internal(
 	    {
 		break;
 	    }
+
+	    anna_type_setup_interface(type);	    
 
 	    if(type == type_type && anna_member_get(type, c->mid)==0)
 	    {
@@ -604,8 +606,16 @@ static void anna_node_calculate_type_internal(
 		{
 		    anna_error(this, L"No type specified for variable declaration\n");
 		}
-		anna_node_calculate_type(d->value);
-		d->return_type = d->value->return_type;
+		if(d->value->node_type == ANNA_NODE_TYPE)
+		{
+		    d->return_type = type_type;	    
+		}
+		else
+		{
+		    anna_node_calculate_type(d->value);
+		    d->return_type = d->value->return_type;
+		}
+		
 		if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		{
 		    anna_stack_set_type(stack, d->name, d->return_type);
@@ -617,6 +627,7 @@ static void anna_node_calculate_type_internal(
 		d->return_type = anna_node_resolve_to_type(
 		    d->type,
 		    stack);
+//		debug(D_ERROR, L"Resolved\n");
 		if(!d->return_type)
 		{
 		    anna_error(d->type, L"Invalid type for declaration");

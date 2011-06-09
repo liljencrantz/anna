@@ -1,5 +1,22 @@
 
+type Blobb
+{
+    var Int value;
+    
+    def Blobb fooGetter() (static)
+    {
+	return Blobb(0);
+    }
+    
+    def __init__(Int value)
+    {
+	this.value = value;
+    }
+    
+}
+
 def main()
 {
-    print(Float.maxExponent, "\n");
+    bbb := Blobb.fooGetter();
+    print(bbb, "\n");
 }

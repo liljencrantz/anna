@@ -47,6 +47,7 @@ KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing some functionality, e.g. equality comparison, hashing, shallow cloning, deep cloning, etc.
+If explicit function return type exists, return type of return expressions aren't abides checked against it
 
 LANGUAGE FEATURES:
 Function templates

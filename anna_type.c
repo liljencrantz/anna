@@ -111,25 +111,30 @@ static void anna_type_mangle_methods(
 			    }		    
 			}
 			
-			if(anna_node_is_call_to(def->child[2], L"__block__"))
+			if(anna_node_is_call_to(def->child[2], L"__block__") && 
+			   anna_node_is_call_to(def->child[3], L"__block__"))
 			{
+
 			    //wprintf(L"Add this-argument to method %ls in %ls\n", name->name, type->name);
 			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
-			    anna_node_call_t *this_decl = anna_node_create_call2(
-				0,
-				anna_node_create_identifier(
+			    anna_node_call_t *attr =(anna_node_call_t *)def->child[3];
+			    if(!anna_attribute_flag(attr, L"static"))
+			    {
+				anna_node_call_t *this_decl = anna_node_create_call2(
 				    0,
-				    L"__var__"),
-				anna_node_create_identifier(0, L"this"), 
-				anna_node_create_dummy(0, anna_type_wrap(type)), 
-				anna_node_create_null(0),
-				anna_node_create_block2(0)
-				);
-			    
-			    anna_node_call_prepend_child(
-				def_decl,
-				(anna_node_t *)this_decl);
-			    
+				    anna_node_create_identifier(
+					0,
+					L"__var__"),
+				    anna_node_create_identifier(0, L"this"), 
+				    anna_node_create_dummy(0, anna_type_wrap(type)), 
+				    anna_node_create_null(0),
+				    anna_node_create_block2(0)
+				    );
+				
+				anna_node_call_prepend_child(
+				    def_decl,
+				    (anna_node_t *)this_decl);
+			    }
 			}
 		    }	    
 		}
@@ -492,12 +497,14 @@ static void anna_type_prepare_member_internal(
     
     int is_static = 0;
     int is_method = 0;
+    int is_bound = 0;
 //    wprintf(L"Register %ls\n", decl->name);
     
     if(decl->value->node_type == ANNA_NODE_CLOSURE)
     {
 	is_static = 1;
 	is_method = 1;
+	is_bound = !anna_attribute_flag(decl->attribute, L"static");
     }
     
     anna_node_calculate_type(
@@ -531,12 +538,13 @@ static void anna_type_prepare_member_internal(
     if(is_method)
     {
 	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
-	member->is_bound_method = 1;
+	member->is_bound_method = is_bound;
 	*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
 	anna_function_set_stack(clo->payload, stack);
 	anna_function_setup_interface(clo->payload);
 	anna_function_setup_body(clo->payload);
     }
+
 }
 
 
@@ -650,6 +658,7 @@ static void anna_type_extend(
 	    anna_error(c, L"Could not find specified type");
 	    continue;
 	}
+	anna_type_setup_interface(par);
 	anna_type_copy(type, par);
 		
     }
@@ -660,7 +669,11 @@ void anna_type_set_stack(
     anna_type_t *t,
     anna_stack_template_t *parent_stack)
 {
+    if(t->stack->parent)
+	return;
+    
     t->stack->parent = parent_stack;
+    
     if(t->body)
     {
 	anna_node_set_stack(

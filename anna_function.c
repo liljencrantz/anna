@@ -268,6 +268,9 @@ void anna_function_set_stack(
 {
     if(f->body && !f->stack_template)
     {
+	if(f->stack_template)
+	    return;
+	
 	f->stack_template = anna_stack_create(parent_stack);
 	f->stack_template->function = f;
 	anna_node_set_stack(
@@ -283,6 +286,7 @@ void anna_function_set_stack(
 void anna_function_setup_interface(
     anna_function_t *f)
 {
+        
     if(f->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
     {
 	return;
@@ -383,7 +387,9 @@ void anna_function_setup_body(
     {
 	array_list_t ret = AL_STATIC;
 	int i;
+
 	anna_node_calculate_type_children( f->body );
+
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_RETURN, &ret);	
 	int step_count = 0;
 	int loop_step_count = 0;
@@ -438,6 +444,8 @@ void anna_function_setup_body(
 	
 	al_destroy(&ret);
     }
+
+
 }
 
 anna_object_t *anna_function_wrap(anna_function_t *result)

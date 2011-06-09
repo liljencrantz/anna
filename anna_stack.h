@@ -110,4 +110,6 @@ anna_stack_template_t *anna_stack_template_search(
     anna_stack_template_t *stack,
     wchar_t *name);
 
+int anna_stack_check(anna_stack_template_t *stack, int i);
+
 #endif

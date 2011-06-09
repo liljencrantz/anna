@@ -322,6 +322,7 @@ void anna_module_init()
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchString");
     anna_module_bootstrap_macro(L"switch");
     anna_module_bootstrap_macro(L"struct");
+    anna_module_bootstrap_macro(L"enum");
     
     anna_module_init_recursive(L"lib", stack_global);
 }
@@ -483,6 +484,10 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	module_stack->filename);
 
     anna_node_set_stack(node, module_stack);
+    debug(
+	D_SPAM,
+	L"Stack set in module %ls\n", 
+	module_stack->filename);
 
     for(i=0; i<al_get_count(&import); i++ )
     {
@@ -498,6 +503,10 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     memcpy(&module_stack->import, &import, sizeof(array_list_t));
     
     anna_node_call_t *ggg = node_cast_call(node);
+    debug(
+	D_SPAM,
+	L"Dependencies imported in module %ls\n", 
+	module_stack->filename);
     
     anna_node_calculate_type_children(ggg);
     if(anna_error_count)

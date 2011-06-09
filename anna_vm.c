@@ -323,6 +323,19 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_op_count_t *op = (anna_op_count_t *)stack->code;
 	size_t param = op->param;
 	anna_object_t *wrapped = anna_vmstack_peek_object_fast(stack, param);
+
+#ifdef ANNA_CHECK_VM
+	if(!wrapped)
+	{
+	    wprintf(
+		L"Error: Tried to call null pointer at offset %d of function %ls\n", 
+		stack->code - stack->function->code, stack->function->name);
+	
+	    CRASH;
+	}
+	
+#endif
+
 	if(unlikely(wrapped == null_object))
 	{
 	    stack->code += sizeof(*op);

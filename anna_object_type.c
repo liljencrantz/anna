@@ -14,7 +14,7 @@
 #include "anna_vm.h"
 #include "anna_string.h"
 #include "anna_type.h"
-
+#include "anna_member.h"
 #include "anna_object_i.c"
 
 static anna_vmstack_t *anna_object_init(anna_vmstack_t *stack, anna_object_t *me)
@@ -53,6 +53,15 @@ static anna_vmstack_t *anna_object_to_string(anna_vmstack_t *stack, anna_object_
     sb_printf(&sb, L"Object of type %ls", this->type->name);
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    return stack;
+}
+
+static anna_vmstack_t *anna_object_type(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push_object(stack, anna_type_wrap(this->type));
     return stack;
 }
 
@@ -106,6 +115,14 @@ void anna_object_type_create()
 	&anna_object_to_string, 
 	string_type, 1, argv, argn);
     
+    anna_native_method_create(
+	object_type,
+	-1,
+	L"__type__",
+	0,
+	&anna_object_type,
+	type_type, 1, argv, argn);
+
     anna_object_type_i_create();
     anna_type_object_is_created();
 }

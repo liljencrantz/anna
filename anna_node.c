@@ -48,8 +48,6 @@ anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
 
 anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
 {
-    debug(D_SPAM,L"Figure out type from:\n");    
-    anna_node_print(D_SPAM, node);
     
     if((node->node_type == ANNA_NODE_TYPE_OF) || 
        (node->node_type == ANNA_NODE_RETURN_TYPE_OF) || 
@@ -59,6 +57,7 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
 	return node->return_type;
     }
     
+
     anna_object_t *res = anna_node_static_invoke_try(
 	node, stack);
     
@@ -272,10 +271,10 @@ anna_object_t *anna_node_static_invoke_try(
 	{
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
 	    anna_stack_template_t *frame = anna_stack_template_search(stack, this2->name);
-//	    fwprintf(stderr, L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
+	    //fwprintf(stderr, L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
 	    if(frame)
 	    {
-//		fwprintf(stderr, L"Frame is namespace. Readonly? %ls\n", (anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)?L"yes":L"no");
+		//fwprintf(stderr, L"Frame is namespace. Readonly? %ls\n", (anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)?L"yes":L"no");
 
 		anna_node_declare_t *decl = anna_stack_get_declaration(frame, this2->name);
 		if(decl)
@@ -285,12 +284,12 @@ anna_object_t *anna_node_static_invoke_try(
 		
 		if(anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)
 		{
-//		    fwprintf(stderr, L"Identifier %ls is a constant\n", this2->name);
+		    //fwprintf(stderr, L"Identifier %ls is a constant\n", this2->name);
 		    anna_object_t *res = anna_stack_get(frame, this2->name);
 		    return anna_function_unwrap(res)?0:res;
 		}
 	    }
-//	    fwprintf(stderr, L"Identifier lookup failed\n");
+	    //fwprintf(stderr, L"Identifier lookup failed\n");
 	    break;
 	}
 	

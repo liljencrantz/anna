@@ -1,3 +1,8 @@
+/*
+  Check that it's possible to define a type that uses a type that is
+  defined later in the same file.
+*/
+
 type A
 {
     var B memb;
@@ -5,7 +10,6 @@ type A
 
 type B
 {
-
 }
 
 def main()
