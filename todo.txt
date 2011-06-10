@@ -1,5 +1,4 @@
 1.0 RELEASE CRITERIA:
-* Static member access fully working
 * Constructor and inheritance fully working
 * Inheritance and method overloading fully working
 * Add memory overhead of Ints and lists to GC estimates
@@ -13,17 +12,21 @@
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
+
+1.0 RELEASE CRITERIA(Done):
+* Static member access fully working
  
 
 2.0 RELEASE CRITERIA:
-* Regexp
-* Query macro (SQL Alchemy/Linq/etc. replacement)
+* Regexp api
+* Query api (SQL Alchemy/Linq/etc. replacement)
 * Live debugger
 * Mutable and Imutable versions of List, String and HashMap, switch between them using freeze/thaw
 * Multithreading support using message passing and a common frozen object store
 * Cache for mpz_t numbers
 * Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
+* switchCast macro
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
@@ -41,13 +44,14 @@ It would be useful to have a function to construct an instance of a specific lis
 Should Range really be mutable?
 How should inherited constructors be handled?
 It should be possible to declare members with initial values. 
-How exactly should the api for using the return type of one AST node as the value of another AST node look? What we have in place today seems rather kludgy and special purpose.Can we drop Pair?
+Can we drop Pair?
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing some functionality, e.g. equality comparison, hashing, shallow cloning, deep cloning, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
+__type__ should be a property, but something goes wrong in the abides checks if we make it one. 
 
 LANGUAGE FEATURES:
 Function templates
@@ -55,9 +59,7 @@ Modules should map to directories, not files
 Submodules
 Default function argument values. These also need to be part of the function interface and contained in function keys.
 No magic toString method, use attributes to specify methods for implicit conversion
-Static members of a type should be available without an instance of that type. Preferably through TypeName.name
 Return value type for continuations
-Class methods
 
 
 STDLIB FEATURES:

@@ -367,7 +367,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
 %type <node_val> function_definition function_declaration function_signature
 %type <node_val> opt_identifier identifier identifier2 type_identifier type_identifier2 any_identifier
-%type <node_val> op op2 op3 op4 op5 op6 op7 pre_op9 post_op8
+%type <node_val> op op2 op3 op4 op5 op6 op7 post_op8
 %type <node_val> type_definition type_remainder
 %type <call_val> declaration_list declaration_list2
 %type <node_val> declaration_list_item declaration_expression variable_declaration
@@ -679,15 +679,31 @@ expression9 :
 		anna_node_call_add_child($4, (anna_node_t *)$6);
 	}
 	|
-	pre_op9 expression10
+	'-' expression10
 	{
-	  $$ = (anna_node_t *)
-	    anna_node_create_call2(
-		&@$, 
-		anna_node_create_call2(
-		    &@$, 
-		    anna_node_create_identifier(&@2, L"__memberGet__"),
-		    $2, $1));
+	    if($2->node_type == ANNA_NODE_INT_LITERAL)
+	    {
+		anna_node_int_literal_t *val = (anna_node_int_literal_t *)$2;
+		mpz_neg(val->payload, val->payload);
+		$$ = $2;		
+	    }
+	    else if($2->node_type == ANNA_NODE_FLOAT_LITERAL)
+	    {
+		anna_node_float_literal_t *val = (anna_node_float_literal_t *)$2;
+		val->payload = -val->payload;
+		$$ = $2;
+	    }
+	    else
+	    {
+		anna_node_t *op = (anna_node_t *)anna_node_create_identifier(&@$,L"__neg__");
+		$$ = (anna_node_t *)
+		    anna_node_create_call2(
+			&@$, 
+			anna_node_create_call2(
+			    &@$, 
+			    anna_node_create_identifier(&@2, L"__memberGet__"),
+			    $2, op));
+	    }
 	}
 	| 
 	expression10 block
@@ -867,12 +883,6 @@ op7:
 	'%'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__format__");
-	};
-
-pre_op9:
-	'-'
-	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__neg__")
 	};
 
 post_op8:

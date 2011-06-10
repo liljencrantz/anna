@@ -91,7 +91,9 @@ enum TypeName
   	    nextIdx := (ass[1] as IntLiteral).payload;
 	    if(nextIdx <= idx and !isFirst)
 	    {
-		ass[1].error("Invalid enum value %. Previous value was %d and values must be increasing." % [nextIdx, idx]);
+		ass[1].error(
+                    "Invalid enum value %. Previous value was % and values must be increasing." % [
+                        nextIdx, idx-1]);
 		return ?;
 	    }
 	    idx = nextIdx;

@@ -107,7 +107,7 @@ done
 
 init="$init
 "
-for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)" ; do
+for i in "abs mpz_abs(res, *v1)" "neg mpz_neg(res, *v1)" "sign mpz_set_si(res, mpz_sgn(*v1))" ; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
     
@@ -123,9 +123,13 @@ for i in "abs abs(v1)" "neg -v1" "bitnot ~v1" "sign v1==0?0:(v1>0?1:-1)" ; do
 static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 1;
-    int v1 = anna_as_int(param[0]);
+    mpz_t *v1 = anna_int_unwrap(anna_as_obj_fast(param[0]));
+    mpz_t res;
+    mpz_init(res);
     anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_int(stack, $op);
+    $op;
+    anna_vmstack_push_object(stack, anna_int_create_mp(res));
+    mpz_clear(res);
     return stack;
 }
 "

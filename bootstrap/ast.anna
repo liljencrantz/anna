@@ -20,15 +20,6 @@ someVariableName := 0;
 	node.error("ast macro expects exactly one argument");
 	return ?;
     }
-    nam := "Node";
-    if(node[0] as Identifier)
-    {
-	nam = "Identifier";
-    }
-    if(node[0] as Call)
-    {
-	nam = "Call";
-    }
     return Call(
 	node,	   
 	Identifier(node, "cast"), 
