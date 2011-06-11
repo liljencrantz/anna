@@ -19,6 +19,7 @@
 #include "anna_range.h"
 #include "anna_vm.h"
 #include "anna_string.h"
+#include "anna_mid.h"
 
 #include "anna_macro.h"
 

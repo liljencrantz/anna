@@ -16,6 +16,7 @@
 #include "anna_function.h"
 #include "anna_string.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 #include "anna_char_i.c"
 

@@ -156,7 +156,6 @@ void anna_member_type_set(
 mid_t anna_member_create(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     int storage,
     anna_type_t *member_type)
 {
@@ -168,6 +167,8 @@ mid_t anna_member_create(
     }
 */
     //wprintf(L"Create member %ls in type %ls at mid %d\n", name, type->name, mid);
+
+    wchar_t *name = anna_mid_get_reverse(mid);
     
     if(hash_get(&type->name_identifier, name))
     {
@@ -393,7 +394,6 @@ anna_member_t *anna_member_method_search(
 size_t anna_property_create(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     anna_type_t *property_type,
     ssize_t getter_offset,
     ssize_t setter_offset)
