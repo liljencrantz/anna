@@ -217,14 +217,21 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
 anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 {
 //    wprintf(L"\n\n\nSTART %ls vs %ls\n\n\n\n", t1->name, t2->name);
-
-    if(t1 == t2 || t2 == null_type)
+    if(t2 == null_type)
     {
 	return t1;
     }
     if(t1 == null_type)
     {
 	return t2;
+    }
+    if(anna_abides(t1, t2))
+    {
+	return t2;
+    }
+    if(anna_abides(t2, t1))
+    {
+	return t1;
     }
     
     string_buffer_t sb;
@@ -311,9 +318,28 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
     if(!anna_abides(res, object_type))
     {
 	
-	debug(D_CRITICAL, L"Type %ls does not abide to the object type. Reasons:\n", res->name);
+	debug(
+	    D_CRITICAL, 
+	    L"Type %ls does not abide to the object type. Reasons:\n", res->name);
 	anna_abides_fault_count_internal(res, object_type, D_CRITICAL);
-	
+	CRASH;
+    }
+    
+    if(!anna_abides(t1, res))
+    {
+	debug(
+	    D_CRITICAL, 
+	    L"Intersected type %ls is not subset of it's defining types, %ls\n", res->name, t1->name);
+	anna_abides_fault_count_internal(t1, res, D_CRITICAL);
+	CRASH;
+    }
+    
+    if(!anna_abides(t2, res))
+    {
+	debug(
+	    D_CRITICAL, 
+	    L"Intersected type %ls is not subset it's defining types, %ls\n", res->name, t2->name);
+	anna_abides_fault_count_internal(t2, res, D_CRITICAL);
 	CRASH;
     }
     
