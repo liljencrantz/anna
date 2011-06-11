@@ -17,21 +17,20 @@ static array_list_t anna_mid_identifier_reverse;
 static mid_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
 static size_t anna_type_mid_max = 256;
 
+static void anna_mid_put(wchar_t *name, mid_t mid);
+
 static void anna_mid_free(void *key, void *val)
 {
     free(key);
     free(val);
 }
 
-
 void anna_mid_destroy(void)
 {
     al_destroy(&anna_mid_identifier_reverse);
-
     hash_foreach(&anna_mid_identifier, anna_mid_free);
     hash_destroy(&anna_mid_identifier);
 }
-
 
 size_t anna_mid_max_get()
 {
@@ -120,7 +119,7 @@ void anna_mid_init()
     anna_mid_put(L"__decreaseAssign__Float__", ANNA_MID_DECREASE_ASSIGN_FLOAT);
 }
 
-void anna_mid_put(wchar_t *name, mid_t mid)
+static void anna_mid_put(wchar_t *name, mid_t mid)
 {
     size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
     if(offset_ptr)

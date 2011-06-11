@@ -105,7 +105,7 @@ static void anna_main_run(anna_stack_template_t *module)
   Figure out the name of the module we want to run based on the
   command line arguments
  */
-wchar_t *anna_module_name_extract(int argc, char **argv)
+static wchar_t *anna_module_name_extract(int argc, char **argv)
 {
     if(argc < 2)
     {
