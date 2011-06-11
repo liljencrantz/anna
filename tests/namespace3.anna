@@ -1,3 +1,4 @@
+
 def lang.Int foo(lang.Object in)
 {
     print(in);
@@ -6,5 +7,5 @@ def lang.Int foo(lang.Object in)
 
 def main()
 {
-    print(foo(7));
+    print(foo(7), "\n");
 }

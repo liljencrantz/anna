@@ -28,5 +28,5 @@ someVariableName := 0;
 		  Identifier(node, "__memberGet__"), 
 		  Dummy(node, node[0]),
 		  Identifier(node, "copy"))),
-	Dummy(node, node[0].__type__()));
+	Dummy(node, node[0].__type__));
 }

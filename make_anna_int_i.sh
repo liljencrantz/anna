@@ -25,8 +25,6 @@ init="
     anna_function_t *fun;
 "
 
-
-# "shl v1 << v2" "shr v1 >> v2" "bitand v1 & v2" "bitor v1 | v2" "xor v1 ^ v2" ; do
 for i in "add mpz_add(res, *v1, *v2)" "increaseAssign mpz_add(res, *v1, *v2)" "sub mpz_sub(res, *v1, *v2)" "decreaseAssign mpz_sub(res, *v1, *v2)" "mul mpz_mul(res, *v1, *v2)"  "div mpz_fdiv_q(res, *v1, *v2)" "mod mpz_mod(res, *v1, *v2)" "bitand mpz_and(res, *v1, *v2)" "bitor mpz_ior(res, *v1, *v2)" "bitxor mpz_xor(res, *v1, *v2)" "exp mpz_pow_ui(res, *v1, mpz_get_si(*v2))" "shl long bits = mpz_get_si(*v2); if(bits > 0) mpz_mul_2exp(res, *v1, bits); else mpz_tdiv_q_2exp(res, *v1, -bits)" "shr long bits = mpz_get_si(*v2); if(bits > 0) mpz_tdiv_q_2exp(res, *v1, bits); else mpz_mul_2exp(res, *v1, -bits)" ; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')

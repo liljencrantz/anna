@@ -65,7 +65,10 @@ static int anna_abides_function(
     return 1;
 }
 
-int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
+static int anna_abides_fault_count_internal(
+    anna_type_t *contender, 
+    anna_type_t *role_model, 
+    int verbose)
 {
     
     if(anna_abides_verbose)
@@ -82,7 +85,7 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	}
     ;
     
-//    if(!anna_abides_verbose)
+    if(!verbose)
     {
 	
 	long count = (long)hash_get(&anna_abides_cache, &tt);
@@ -143,8 +146,8 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 /*	    if(!ok && level==1)
 */
 //	    if(verbose)
-	    if(anna_abides_verbose)
-		wprintf(L"Miss on %ls because of missing member in contender\n", members[i]);
+	    if(verbose)
+		debug(verbose, L"No member named %ls\n", members[i]);
 	}
 	else if(r_memb->is_bound_method != c_memb->is_bound_method)
 	{
@@ -152,13 +155,13 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 /*	    if(!ok && level==1)
 */
 //	    if(verbose)
-	    if(anna_abides_verbose)
-		wprintf(L"Miss on %ls because of one is a method and not the other\n", members[i]);
+	    if(verbose)
+		debug(verbose, L"Miss on %ls because of one is a method and not the other\n", members[i]);
 	}
 	else if(r_memb->is_static != c_memb->is_static)
 	{
-	    if(anna_abides_verbose)
-		wprintf(L"Miss on %ls because of one is static and not the other\n", members[i]);
+	    if(verbose)
+		debug(verbose, L"Miss on %ls because of one is static and not the other\n", members[i]);
 	    ok=0;
 	}
 	else if(r_memb->is_bound_method)
@@ -171,8 +174,8 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	    if(!ok && level==1)
 */
 //	    if(verbose)
-	    if(!ok && anna_abides_verbose)
-		wprintf(L"Miss on %ls because of method signature mismatch\n", members[i]);
+	    if(!ok && verbose)
+		debug(verbose, L"Miss on %ls because of method signature mismatch\n", members[i]);
 	}
 	else
 	{
@@ -181,8 +184,8 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 	    if(!ok && level==1)
 */
 //	    if(verbose)
-	    if(!ok && anna_abides_verbose)
-		wprintf(L"Miss on %ls because of %ls\n", members[i], c_memb->type?L"incompatibility":L"missing member");
+	    if(!ok && verbose)
+		debug(verbose, L"Miss on %ls because of %ls\n", members[i], c_memb->type?L"incompatibility":L"missing member");
 	}
 
 	res += !ok;
@@ -197,6 +200,13 @@ int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
     
 
     return res;
+}
+
+int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
+{
+    return anna_abides_fault_count_internal(contender, role_model, 0);
+    
+    
 }
 
 int anna_abides(anna_type_t *contender, anna_type_t *role_model)
@@ -255,11 +265,6 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 //	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(memb1->is_property != memb2->is_property)
-	{
-//	    wprintf(L"Skip %ls\n", members[i]);
-	    continue;
-	}
 	else if(memb2->is_bound_method)
 	{
 	    anna_function_type_t *ft1 = anna_function_type_unwrap(memb1->type);
@@ -305,7 +310,9 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 
     if(!anna_abides(res, object_type))
     {
-	debug(D_CRITICAL, L"Type %ls does not abide to the object type\n", res->name);
+	
+	debug(D_CRITICAL, L"Type %ls does not abide to the object type. Reasons:\n", res->name);
+	anna_abides_fault_count_internal(res, object_type, D_CRITICAL);
 	
 	CRASH;
     }

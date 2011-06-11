@@ -115,13 +115,13 @@ void anna_object_type_create()
 	&anna_object_to_string, 
 	string_type, 1, argv, argn);
     
-    anna_native_method_create(
+    anna_native_property_create(
 	object_type,
 	-1,
 	L"__type__",
-	0,
+	type_type,
 	&anna_object_type,
-	type_type, 1, argv, argn);
+	0);
 
     anna_object_type_i_create();
     anna_type_object_is_created();
