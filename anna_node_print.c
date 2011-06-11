@@ -11,6 +11,7 @@
 #include "util.h"
 #include "wutil.h"
 #include "anna_node.h"
+#include "anna_mid.h"
 
 static int byte_count(wchar_t ch)
 {

@@ -21,6 +21,7 @@
 #include "anna_tt.h"
 #include "anna_alloc.h"
 #include "anna_slab.h"
+#include "anna_mid.h"
 
 anna_stack_template_t *stack_global;
 int anna_argc;

@@ -10,6 +10,7 @@
 #include "anna.h"
 #include "anna_alloc.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {

@@ -30,6 +30,7 @@
 #include "anna_intern.h"
 #include "anna_lang.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 static int hash_null_func( void *data )
 {

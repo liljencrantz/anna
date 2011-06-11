@@ -21,6 +21,7 @@
 #include "anna_stack.h"
 #include "anna_util.h"
 #include "anna_node_hash.h"
+#include "anna_mid.h"
 
 anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
 

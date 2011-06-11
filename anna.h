@@ -4,60 +4,8 @@
 #include "util.h"
 #include "anna_checks.h"
 #include "anna_crash.h"
+#include "anna_preproc.h"
 
-#ifdef ANNA_CHECK_NODE_PREPARED_ENABLED
-#define ANNA_PREPARED(n) ((n)->prepared=1)
-#define ANNA_UNPREPARED(n) ((n)->prepared=0)
-#define ANNA_CHECK_NODE_PREPARED(n)  if(!(n)->prepared)			\
-    {									\
-	anna_error(n,L"Critical: Tried to invoke unprepared AST node");	\
-	anna_node_print(n);						\
-	wprintf(L"\n");							\
-	CRASH;								\
-    }
-#else
-#define ANNA_PREPARED(n) 
-#define ANNA_UNPREPARED(n) 
-#define ANNA_CHECK_NODE_PREPARED(n) 
-#endif
-
-#if __GNUC__ >= 3
-/* Tell the compiler which outcome in an if block is the likelier, so
- * that the code can be laid out in an optimal manner */
-# define likely(x) __builtin_expect((x),1)
-/* Tell the compiler which outcome in an if block is the likelier, so
- * that the code can be laid out in an optimal manner */
-# define unlikely(x) __builtin_expect((x),0)
-/* No side effects */
-# define __pure		__attribute__ ((pure))
-/* Like __pure, but stricteer. Not even read-only checking of globals or pointers */
-# define __const	__attribute__ ((const))
-/* Function never returns */
-# define __noreturn	__attribute__ ((noreturn))
-/* Return value can not be aliased */
-# define __malloc	__attribute__ ((malloc))
-/* Warn if return value is not used */
-# define __must_check	__attribute__ ((warn_unused_result))
-/* Warn if function is used */
-# define __deprecated	__attribute__ ((deprecated))
-/* Don't watn if static function never called, still compile */
-# define __used		__attribute__ ((used))
-/* Ignore alignment of struct */
-# define __packed	__attribute__ ((packed))
-# define __sentinel	__attribute__ ((sentinel))
-#else
-# define __pure		/* no pure */
-# define __const	/* no const */
-# define __noreturn	/* no noreturn */
-# define __malloc	/* no malloc */
-# define __must_check	/* no warn_unused_result */
-# define __deprecated	/* no deprecated */
-# define __used		/* no used */
-# define __packed	/* no packed */
-# define __sentinel	/* no sentinel */
-# define likely(x)	(x)
-# define unlikely(x)	(x)
-#endif
 struct anna_type;
 struct anna_object;
 struct anna_member;
@@ -88,65 +36,10 @@ typedef ssize_t mid_t;
 #define ANNA_MOVE 16
 #define ANNA_USED 32
 
-/*
-  Various flags used by functions. 
- */
-
-/**
-  Set to true for variadic functions.
- */
-#define ANNA_FUNCTION_VARIADIC 512
-/**
-   This function can be used as a macro.
- */
-#define ANNA_FUNCTION_MACRO 1024
-/**
-   The outwardly visible interface of this function, i.e. it's input
-   and return types have been calculated.
- */
-#define ANNA_FUNCTION_PREPARED_INTERFACE 2048
-/**
-   The body of this function has been prepared, i.e. the return type
-   of every node has been calculated.
- */
-#define ANNA_FUNCTION_PREPARED_BODY 4096
-/**
-   This function is a block-type function. This implies that a return
-   expression within this function will return not just this function
-   but it's innermost non-block function.
- */
-#define ANNA_FUNCTION_BLOCK 8192
-/**
-   This function is a continuation.
- */
-#define ANNA_FUNCTION_CONTINUATION (8192*2)
-/**
-   This function is a bound method.
- */
-#define ANNA_FUNCTION_BOUND_METHOD (8192*4)
-/**
-   This function is the body of a loop.
- */
-#define ANNA_FUNCTION_LOOP (8192*8)
-
-
-#define ANNA_TYPE_REGISTERED 512
-#define ANNA_TYPE_PREPARED_INTERFACE 1024
-#define ANNA_TYPE_PREPARED_IMPLEMENTATION 2048
-#define ANNA_TYPE_COMPILED 4096
-#define ANNA_TYPE_SPECIALIZED 8192
-#define ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS (8192*2)
-
-
 #define ANNA_OBJECT_LIST 512
 
 #define ANNA_VMSTACK_STATIC 512
 #define ANNA_VMSTACK_BREAK 1024
-
-
-/*
-#define ANNA_FUNCTION_STANDALONE 4
-*/
 
 /*
   The preallocated MIDs
@@ -584,22 +477,6 @@ anna_object_t *anna_function_invoke(
     struct anna_node **param,
     struct anna_stack_template *param_invoke_stack,
     struct anna_stack_template *function_parent_stack);
-
-
-
-void anna_mid_init(void);
-void anna_mid_destroy(void);
-
-/**
-   Returns the mid (i.e. the offset in the type vtable) of the
-   specified name. If there is no mid yet, create one.
- */
-size_t anna_mid_get(wchar_t *name);
-wchar_t *anna_mid_get_reverse(mid_t mid);
-void anna_mid_put(wchar_t *name, mid_t mid);
-size_t anna_mid_max_get(void);
-anna_member_t **anna_mid_identifier_create(void);
-size_t anna_mid_get_count(void);
 
 /**
    \param macro the macro to invoke

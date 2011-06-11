@@ -22,6 +22,7 @@
 #include "anna_member.h"
 #include "anna_type.h"
 #include "anna_alloc.h"
+#include "anna_mid.h"
 
 char *anna_vmstack_static_ptr;
 char anna_vmstack_static_data[48192];

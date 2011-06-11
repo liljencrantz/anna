@@ -26,6 +26,7 @@
 #include "anna_pair.h"
 #include "anna_util.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 typedef struct
 {
@@ -401,7 +402,6 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     anna_node_t *r = anna_alloc_node(sz);
     memcpy(r,n,sz);
     r->wrapper=0;
-    ANNA_UNPREPARED(r);
 
     switch(n->node_type)
     {

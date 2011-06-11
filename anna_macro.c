@@ -17,6 +17,7 @@
 #include "anna_node_check.h"
 #include "anna_node_create.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 static inline anna_node_t *anna_macro_macro_i(anna_node_call_t *node)
 {

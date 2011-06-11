@@ -17,6 +17,7 @@
 #include "anna_function_type.h"
 #include "common.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 static anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 

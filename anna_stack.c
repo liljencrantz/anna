@@ -18,6 +18,7 @@
 #include "anna_alloc.h"
 #include "anna_intern.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 typedef struct
 {

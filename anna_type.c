@@ -24,6 +24,7 @@
 #include "anna_list.h"
 #include "anna_hash.h"
 #include "anna_function_type.h"
+#include "anna_mid.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,

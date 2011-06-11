@@ -5,6 +5,48 @@
 //#include "anna_node.h"
 #include "anna_stack.h"
 
+/*
+  Various flags used by functions. 
+ */
+
+/**
+  Set to true for variadic functions.
+ */
+#define ANNA_FUNCTION_VARIADIC 512
+/**
+   This function can be used as a macro.
+ */
+#define ANNA_FUNCTION_MACRO 1024
+/**
+   The outwardly visible interface of this function, i.e. it's input
+   and return types have been calculated.
+ */
+#define ANNA_FUNCTION_PREPARED_INTERFACE 2048
+/**
+   The body of this function has been prepared, i.e. the return type
+   of every node has been calculated.
+ */
+#define ANNA_FUNCTION_PREPARED_BODY 4096
+/**
+   This function is a block-type function. This implies that a return
+   expression within this function will return not just this function
+   but it's innermost non-block function.
+ */
+#define ANNA_FUNCTION_BLOCK 8192
+/**
+   This function is a continuation.
+ */
+#define ANNA_FUNCTION_CONTINUATION (8192*2)
+/**
+   This function is a bound method.
+ */
+#define ANNA_FUNCTION_BOUND_METHOD (8192*4)
+/**
+   This function is the body of a loop.
+ */
+#define ANNA_FUNCTION_LOOP (8192*8)
+
+
 extern array_list_t anna_function_list;
 
 static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)

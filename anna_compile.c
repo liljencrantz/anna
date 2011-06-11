@@ -21,6 +21,7 @@
 #include "anna_member.h"
 #include "anna_type.h"
 #include "anna_alloc.h"
+#include "anna_mid.h"
 
 #define ANNA_COMPILE_SIZE 1
 

@@ -20,6 +20,7 @@
 #include "anna_tt.h"
 #include "anna_alloc.h"
 #include "anna_slab.h"
+#include "anna_mid.h"
 
 #define ABIDES_IN_TRANSIT -1
 
