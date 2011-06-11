@@ -255,17 +255,16 @@ mid_t anna_member_create(
 mid_t anna_member_create_blob(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     int storage,
     size_t sz)
 {
     mid_t res = anna_member_create(
 	type,
 	mid,
-	name,
 	storage,
 	null_type);
     
+    wchar_t *name = anna_mid_get_reverse(mid);
     int i;
     string_buffer_t sb;
     sb_init(&sb);
@@ -401,7 +400,6 @@ size_t anna_property_create(
     mid = anna_member_create(
 	type,
 	mid,
-	name,
 	ANNA_MEMBER_VIRTUAL,
 	property_type);
     anna_member_t *memb = anna_member_get(type, mid);
@@ -415,7 +413,6 @@ size_t anna_property_create(
 size_t anna_native_property_create(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     anna_type_t *property_type,
     anna_native_t getter,
     anna_native_t setter)
@@ -438,6 +435,8 @@ size_t anna_native_property_create(
     ssize_t setter_offset=-1;
     string_buffer_t sb;
     sb_init(&sb);    
+
+    wchar_t *name = anna_mid_get_reverse(mid);
 
     if(getter)
     {
@@ -485,9 +484,10 @@ size_t anna_native_property_create(
 mid_t anna_member_create_method(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     anna_function_t *method)
 {
+    wchar_t *name = anna_mid_get_reverse(mid);
+
     if(hash_get(&type->name_identifier, name))
     {
 	mid = anna_mid_get(name);
@@ -498,7 +498,6 @@ mid_t anna_member_create_method(
 	    anna_member_create(
 		type,
 		mid,
-		name,
 		1,
 		anna_function_wrap(method)->type);
     }
@@ -584,7 +583,6 @@ mid_t anna_const_property_create(
 size_t anna_member_create_native_method(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     int flags,
     anna_native_t func,
     anna_type_t *result,
@@ -592,6 +590,8 @@ size_t anna_member_create_native_method(
     anna_type_t **argv,
     wchar_t **argn)
 {
+    wchar_t *name = anna_mid_get_reverse(mid);
+
     if(!flags) 
     {
 	if(!result)
@@ -608,8 +608,7 @@ size_t anna_member_create_native_method(
     
     mid = anna_member_create(
 	type,
-	mid, 
-	name,
+	mid,
 	1,
 	anna_type_for_function(
 	    result, 
@@ -633,7 +632,6 @@ size_t anna_member_create_native_method(
 size_t anna_member_create_native_type_method(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     int flags,
     anna_native_t func,
     anna_type_t *result,
@@ -641,6 +639,7 @@ size_t anna_member_create_native_type_method(
     anna_type_t **argv,
     wchar_t **argn)
 {
+    wchar_t *name = anna_mid_get_reverse(mid);
     if(!flags) 
     {
 	if(!result)
@@ -657,8 +656,7 @@ size_t anna_member_create_native_type_method(
     
     mid = anna_member_create(
 	type,
-	mid, 
-	name,
+	mid,
 	1,
 	anna_type_for_function(
 	    result, 

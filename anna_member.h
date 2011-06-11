@@ -28,20 +28,17 @@ mid_t anna_member_create(
 mid_t anna_member_create_method(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     anna_function_t *method);
 
 mid_t anna_member_create_blob(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     int storage,
     size_t sz);
 
 size_t anna_native_property_create(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     anna_type_t *property_type,
     anna_native_t getter,
     anna_native_t setter);
@@ -49,13 +46,12 @@ size_t anna_native_property_create(
 size_t anna_property_create(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     anna_type_t *property_type,
     ssize_t getter_offset,
     ssize_t setter_offset);
 
 mid_t anna_const_property_create(
-    anna_type_t *type, mid_t mid, wchar_t *name, anna_object_t *value);
+    anna_type_t *type, mid_t mid, anna_object_t *value);
 
 void anna_member_type_set(
     anna_type_t *type,
@@ -68,7 +64,6 @@ void anna_member_type_set(
 size_t anna_member_create_native_method(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     int flags,
     anna_native_t func,
     anna_type_t *result,
@@ -79,7 +74,6 @@ size_t anna_member_create_native_method(
 size_t anna_member_create_native_type_method(
     anna_type_t *type,
     mid_t mid,
-    wchar_t *name,
     int flags,
     anna_native_t func,
     anna_type_t *result,
