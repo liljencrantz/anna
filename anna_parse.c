@@ -10,8 +10,8 @@
 #include "common.h"
 #include "wutil.h"
 #include "anna_node.h"
-#include "anna_lex.h"
 #include "anna_yacc.h"
+#include "anna_lex.h"
 
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
 void anna_yacc_init();

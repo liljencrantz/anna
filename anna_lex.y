@@ -55,6 +55,7 @@ static void anna_lex_unbalanced_comment()
 %}
 
 %option reentrant 
+%option bison-bridge
 %option header-file="anna_lex.h"
 %x COMMENT
 

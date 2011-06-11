@@ -16,8 +16,8 @@
 #include "common.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "anna_lex.h"
 #include "anna_yacc.h"
+#include "anna_lex.h"
 
 void anna_yacc_error(YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr, char *s);
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
@@ -1337,7 +1337,7 @@ static int anna_yacc_lex_inner (
     {
 	char *p;
 		
-	yylex_val = anna_lex_lex(scanner);
+	yylex_val = anna_lex_lex(lvalp, scanner);
 	llocp->filename = filename;
 	llocp->first_line= llocp->last_line;
 	llocp->first_column = llocp->last_column;
