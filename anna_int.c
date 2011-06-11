@@ -15,6 +15,7 @@
 #include "anna_function.h"
 #include "anna_string.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 #define ANNA_SMALL_MAX_BIT 29
 
