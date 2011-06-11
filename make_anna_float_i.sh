@@ -48,7 +48,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     
     init="$init
     mmid = anna_member_create_native_method(
-	float_type, -1, L\"__${name}__Float__\", 0,
+	float_type, anna_mid_get(L\"__${name}__Float__\"), 0,
 	&anna_float_i_${name}, 
 	float_type,
 	2, argv, argn);
@@ -56,7 +56,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     anna_function_alias_add(fun, L\"__${name}__\");
 
     mmid = anna_member_create_native_method(
-        float_type, -1, L\"__${name}__Int__\", 0, 
+        float_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
 	&anna_float_i_int_${name}, 
 	float_type,
 	2, i_argv, i_argn);
@@ -64,7 +64,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     anna_function_alias_add(fun, L\"__${name}__\");
 
     mmid = anna_member_create_native_method(
-	float_type, -1, L\"__${name}__IntReverse__\", 0, 
+	float_type, anna_mid_get(L\"__${name}__IntReverse__\"), 0, 
 	&anna_float_i_int_reverse_${name}, 
 	float_type,
 	2, i_argv, i_argn);
@@ -135,7 +135,7 @@ for i in "abs fabs(v)" "neg -v" "sqrt sqrt(v)" "tan tan(v)" "atan atan(v)" "sin 
     
     init="$init
     anna_member_create_native_method(
-	float_type, -1, L\"__${name}__\", 0, 
+	float_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_float_i_${name}, 
 	float_type,
 	1, argv, argn);"

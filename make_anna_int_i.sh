@@ -31,7 +31,7 @@ for i in "add mpz_add(res, *v1, *v2)" "increaseAssign mpz_add(res, *v1, *v2)" "s
     
     init="$init
     mmid = anna_member_create_native_method(
-	int_type, -1, L\"__${name}__Int__\", 0, 
+	int_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn);
@@ -111,7 +111,7 @@ for i in "abs mpz_abs(res, *v1)" "neg mpz_neg(res, *v1)" "sign mpz_set_si(res, m
     
     init="$init
     anna_member_create_native_method(
-	int_type, -1, L\"__${name}__\", 0, 
+	int_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	1, argv, argn);
@@ -141,7 +141,7 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
     
     init="$init
     anna_member_create_native_method(
-	int_type, -1, L\"__${name}__\", 0, 
+	int_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	1, argv, argn);

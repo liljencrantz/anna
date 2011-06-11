@@ -18,6 +18,7 @@
 #include "anna_string.h"
 #include "anna_vm.h"
 #include "anna_util.h"
+#include "anna_mid.h"
 
 #include "anna_float_i.c"
 
