@@ -57,10 +57,12 @@ typedef union
 */
 typedef struct
 {
-	/** Hash key*/
-	void *key;
-	/** Value */
-	void *data;
+    /* Hash value */
+    int hash_code;
+    /** Hash key*/
+    void *key;
+    /** Value */
+    void *data;
 }
 	hash_struct_t;
 
@@ -83,8 +85,6 @@ typedef struct hash_table
 {
 	/** The array containing the data */
 	hash_struct_t *arr;
-	/** A simple one item cache. This should always point to the index of the last item to be used */
-	int cache;	
 	/** Number of elements */
 	int count;
 	/** Length of array */
