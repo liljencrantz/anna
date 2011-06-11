@@ -75,6 +75,14 @@ void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack);
 
 void anna_type_calculate_size(anna_type_t *this);
 
+void anna_type_init(void);
 
+/**
+   Returns a type representing a function with the specified signature.
+*/
+anna_type_t *anna_type_for_function(
+    anna_type_t *result, size_t argc,
+    anna_type_t **argv, wchar_t **argn,
+    int is_variadic);
 
 #endif

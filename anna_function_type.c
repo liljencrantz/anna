@@ -135,7 +135,7 @@ static void anna_function_type_base_create()
 	}
     ;
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	res,
 	ANNA_MID_TO_STRING,
 	L"toString",

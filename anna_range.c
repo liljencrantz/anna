@@ -690,7 +690,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	}
     ;
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	range_type,
 	-1,
 	L"__init__", 0,
@@ -712,7 +712,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	}
     ;
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
 	range_type,
 	-1,
 	L"__get__Int__",
@@ -810,31 +810,31 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	}
     ;
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	range_type, -1, L"__each__", 0, 
 	&anna_range_each, 
 	range_type,
 	2, e_argv, e_argn);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	range_type, -1, L"__filter__", 
 	0, &anna_range_filter, 
 	anna_list_type_get(int_type),
 	2, e_argv, e_argn);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	range_type, -1, L"__find__", 
 	0, &anna_range_find, 
 	int_type,
 	2, e_argv, e_argn);  
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	range_type, -1, L"__in__", 0, 
 	&anna_range_in, 
 	int_type,
 	2, a_argv, a_argn);
         
-    anna_native_method_create(
+    anna_member_create_native_method(
 	range_type, -1, L"__map__", 
 	0, &anna_range_map, 
 	list_type,

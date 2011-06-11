@@ -442,7 +442,7 @@ size_t anna_native_property_create(
     {
 	sb_printf(&sb, L"!%lsGetter", name);
 	
-	getter_mid = anna_native_method_create(
+	getter_mid = anna_member_create_native_method(
 	    type,
 	    -1,
 	    sb_content(&sb),
@@ -460,7 +460,7 @@ size_t anna_native_property_create(
     {
 	sb_clear(&sb);
 	sb_printf(&sb, L"!%lsSetter", name);
-	setter_mid = anna_native_method_create(
+	setter_mid = anna_member_create_native_method(
 	    type,
 	    -1,
 	    sb_content(&sb),
@@ -534,7 +534,7 @@ mid_t anna_const_property_create(
     sb_init(&sb);
     sb_printf(&sb, L"!%lsGetter", name);
     
-    getter_mid = anna_native_method_create(
+    getter_mid = anna_member_create_native_method(
 	type,
 	-1,
 	sb_content(&sb),
@@ -579,3 +579,102 @@ mid_t anna_const_property_create(
 
 }
 */
+
+size_t anna_member_create_native_method(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn)
+{
+    if(!flags) 
+    {
+	if(!result)
+	{
+	    CRASH;
+	}
+	
+	if(argc) 
+	{
+	    assert(argv);
+	    assert(argn);
+	}
+    }
+    
+    mid = anna_member_create(
+	type,
+	mid, 
+	name,
+	1,
+	anna_type_for_function(
+	    result, 
+	    argc, 
+	    argv,
+	    argn,
+	    flags));
+    anna_member_t *m = type->mid_identifier[mid];
+    //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    m->is_bound_method=1;
+    type->static_member[m->offset] = 
+	anna_from_obj(
+	    anna_function_wrap(
+		anna_native_create(
+		    name, flags, func, result, 
+		    argc, argv, argn,
+		    0)));
+    return (size_t)mid;
+}
+
+size_t anna_member_create_native_type_method(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn)
+{
+    if(!flags) 
+    {
+	if(!result)
+	{
+	    CRASH;
+	}
+	
+	if(argc) 
+	{
+	    assert(argv);
+	    assert(argn);
+	}
+    }
+    
+    mid = anna_member_create(
+	type,
+	mid, 
+	name,
+	1,
+	anna_type_for_function(
+	    result, 
+	    argc, 
+	    argv,
+	    argn,
+	    flags));
+    anna_member_t *m = type->mid_identifier[mid];
+    //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+    m->is_bound_method=0;
+    type->static_member[m->offset] = 
+	anna_from_obj(
+	    anna_function_wrap(
+		anna_native_create(
+		    name, flags, func, result, 
+		    argc, argv, argn,
+		    0)));
+    return (size_t)mid;
+}
+

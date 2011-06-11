@@ -557,11 +557,6 @@ void anna_function_implementation_init(
 anna_type_t *anna_type_unwrap(
     anna_object_t *wrapper);
 
-anna_type_t *anna_type_for_function(
-    anna_type_t *result, size_t argc,
-    anna_type_t **argv, wchar_t **argn,
-    int is_variadic);
-
 anna_object_t *anna_function_wrapped_invoke(
     anna_object_t *function,
     anna_object_t *this,
@@ -667,31 +662,6 @@ static __pure inline anna_entry_t *anna_entry_get_static(
 {
     return *anna_entry_get_addr_static(type, mid);
 }
-
-/**
-   Convenience method for creating a new method in the specified type.
-*/
-size_t anna_native_method_create(
-    anna_type_t *type,
-    mid_t mid,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    anna_type_t *result,
-    size_t argc,
-    anna_type_t **argv,
-    wchar_t **argn);
-
-size_t anna_native_type_method_create(
-    anna_type_t *type,
-    mid_t mid,
-    wchar_t *name,
-    int flags,
-    anna_native_t func,
-    anna_type_t *result,
-    size_t argc,
-    anna_type_t **argv,
-    wchar_t **argn);
 
 int anna_abides(
     anna_type_t *contender, anna_type_t *role_model);

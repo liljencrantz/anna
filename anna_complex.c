@@ -178,7 +178,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	}
     ;
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	complex_type,
 	-1,
 	L"__init__",
@@ -187,7 +187,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	complex_type,
 	3, argv, argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	complex_type,
 	-1,
 	L"__cmp__",
@@ -196,7 +196,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	int_type,
 	2, argv, argn);    
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	complex_type,
 	ANNA_MID_TO_STRING,
 	L"toString",
@@ -204,7 +204,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	&anna_complex_to_string, 
 	string_type, 1, argv, argn);    
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	complex_type,
 	ANNA_MID_HASH_CODE,
 	L"hashCode",

@@ -121,7 +121,7 @@ void anna_type_type_create2(anna_stack_template_t *stack)
 	&anna_type_i_get_member, 
 	0);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type_type,
 	ANNA_MID_HASH_CODE,
 	L"hashCode",
@@ -129,7 +129,7 @@ void anna_type_type_create2(anna_stack_template_t *stack)
 	&anna_type_hash, 
 	int_type, 1, argv, argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type_type,
 	ANNA_MID_CMP,
 	L"__cmp__",
@@ -137,7 +137,7 @@ void anna_type_type_create2(anna_stack_template_t *stack)
 	&anna_type_cmp, 
 	int_type, 2, argv, argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type_type,
 	ANNA_MID_TO_STRING,
 	L"toString",
@@ -145,7 +145,7 @@ void anna_type_type_create2(anna_stack_template_t *stack)
 	&anna_type_to_string, 
 	string_type, 1, argv, argn);    
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type_type,
 	-1,
 	L"abides",

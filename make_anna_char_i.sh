@@ -33,7 +33,7 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
     op=$(echo "$i"|cut -f 2 -d ' ')
     
     init="$init
-    mmid = anna_native_method_create(char_type, -1, L\"__${name}__Int__\", 0, &anna_char_i_${name}, char_type, 2, i_argv, argn);
+    mmid = anna_member_create_native_method(char_type, -1, L\"__${name}__Int__\", 0, &anna_char_i_${name}, char_type, 2, i_argv, argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(char_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
@@ -60,7 +60,7 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_create(
+    anna_member_create_native_method(
 	char_type, -1, L\"__${name}__\", 0, 
 	&anna_char_i_${name}, 
 	char_type,

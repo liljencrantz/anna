@@ -283,7 +283,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 		anna_abides_function(
 		    ft2, ft1, 1))
 	    {
-		anna_native_method_create(
+		anna_member_create_native_method(
 		    res,
 		    -1,
 		    memb2->name,

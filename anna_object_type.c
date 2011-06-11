@@ -83,7 +83,7 @@ void anna_object_type_create()
     mid_t mmid;
     anna_function_t *fun;
 */  
-    anna_native_method_create(
+    anna_member_create_native_method(
 	object_type,
 	-1,
 	L"__init__",
@@ -91,7 +91,7 @@ void anna_object_type_create()
 	&anna_object_init, 
 	object_type, 1, argv, argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	object_type,
 	ANNA_MID_HASH_CODE,
 	L"hashCode",
@@ -99,7 +99,7 @@ void anna_object_type_create()
 	&anna_object_hash, 
 	int_type, 1, argv, argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	object_type,
 	ANNA_MID_CMP,
 	L"__cmp__",
@@ -107,7 +107,7 @@ void anna_object_type_create()
 	&anna_object_cmp, 
 	int_type, 2, argv, argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	object_type,
 	ANNA_MID_TO_STRING,
 	L"toString",

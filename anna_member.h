@@ -63,4 +63,29 @@ void anna_member_type_set(
     mid_t mid,
     anna_type_t *member_type);
 
+/**
+   Convenience method for creating a new method in the specified type.
+*/
+size_t anna_member_create_native_method(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn);
+
+size_t anna_member_create_native_type_method(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *name,
+    int flags,
+    anna_native_t func,
+    anna_type_t *result,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn);
+
 #endif

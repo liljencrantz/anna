@@ -295,7 +295,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	0,
 	sizeof(mpz_t));
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	int_type,
 	-1,
 	L"__init__",
@@ -304,7 +304,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	object_type,
 	2, ii_argv, ii_argn);    
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	int_type,
 	-1,
 	L"__cmp__",
@@ -313,7 +313,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	int_type,
 	2, i_argv, i_argn);    
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	int_type,
 	ANNA_MID_HASH_CODE,
 	L"hashCode",
@@ -321,7 +321,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	&anna_int_hash, 
 	int_type, 1, i_argv, i_argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	int_type,
 	ANNA_MID_TO_STRING,
 	L"toString",
@@ -339,7 +339,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
     mid_t mmid;
     anna_function_t *fun;
 
-    mmid = anna_native_type_method_create(
+    mmid = anna_member_create_native_type_method(
 	int_type,
 	-1,
 	L"convertString",
@@ -349,7 +349,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
-    mmid = anna_native_type_method_create(
+    mmid = anna_member_create_native_type_method(
 	int_type,
 	-1,
 	L"convertFloat",
@@ -359,7 +359,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
-    mmid = anna_native_type_method_create(
+    mmid = anna_member_create_native_type_method(
 	int_type,
 	-1,
 	L"convertInt",
@@ -370,7 +370,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
     anna_function_alias_add(fun, L"convert");
 
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	int_type,
 	ANNA_MID_DEL,
 	L"__del__",

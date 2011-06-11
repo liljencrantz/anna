@@ -125,7 +125,7 @@ static void anna_pair_type_create_internal(
 	}
     ;
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, 
 	-1,
 	L"__init__", 

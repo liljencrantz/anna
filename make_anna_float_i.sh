@@ -47,7 +47,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
 	float_type, -1, L\"__${name}__Float__\", 0,
 	&anna_float_i_${name}, 
 	float_type,
@@ -55,7 +55,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
         float_type, -1, L\"__${name}__Int__\", 0, 
 	&anna_float_i_int_${name}, 
 	float_type,
@@ -63,7 +63,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
 	float_type, -1, L\"__${name}__IntReverse__\", 0, 
 	&anna_float_i_int_reverse_${name}, 
 	float_type,
@@ -134,7 +134,7 @@ for i in "abs fabs(v)" "neg -v" "sqrt sqrt(v)" "tan tan(v)" "atan atan(v)" "sin 
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_create(
+    anna_member_create_native_method(
 	float_type, -1, L\"__${name}__\", 0, 
 	&anna_float_i_${name}, 
 	float_type,

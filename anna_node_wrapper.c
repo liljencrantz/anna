@@ -207,19 +207,19 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	node_wrapper_type, ANNA_MID_NODE_PAYLOAD,  L"!nodePayload", 
 	0, null_type);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	node_wrapper_type, -1, L"replace", 0, 
 	&anna_node_wrapper_i_replace, 
 	node_wrapper_type,
 	3, replace_argv, replace_argn);
  
-    anna_native_method_create(
+    anna_member_create_native_method(
 	node_wrapper_type, -1, L"error", 0, 
 	&anna_node_wrapper_i_error, 
 	node_wrapper_type,
 	2, error_argv, error_argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	node_wrapper_type, -1, L"toString", 0, 
 	&anna_node_wrapper_i_to_string, 
 	string_type,
@@ -236,7 +236,7 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	}
     ;
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	node_wrapper_type,
 	-1,
 	L"__cmp__",
@@ -245,7 +245,7 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	int_type,
 	2, cmp_argv, cmp_argn);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	node_wrapper_type,
 	-1,
 	L"hashCode",
@@ -254,7 +254,7 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	int_type,
 	1, cmp_argv, cmp_argn);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	node_wrapper_type,
 	-1,
 	L"copy",

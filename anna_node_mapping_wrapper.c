@@ -51,7 +51,7 @@ static anna_type_t *anna_node_create_mapping_wrapper_type(
 	}
     ;
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type,
 	-1,
 	L"__init__",

@@ -27,7 +27,7 @@ for i in "eq ==" "gt >" "lt <" "gte >=" "lte <=" "neq !="; do
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_create(
+    anna_member_create_native_method(
 	object_type, -1, L\"__${name}__\", 0, 
 	&anna_object_i_${name}, 
 	int_type,

@@ -117,7 +117,7 @@ void anna_char_type_create(anna_stack_template_t *stack)
 	&anna_char_i_get_lower, 
 	0);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	char_type,
 	-1,
 	L"__cmp__",
@@ -126,7 +126,7 @@ void anna_char_type_create(anna_stack_template_t *stack)
 	int_type,
 	2, argv, argn);    
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	char_type,
 	ANNA_MID_TO_STRING,
 	L"toString",

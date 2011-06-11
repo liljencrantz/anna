@@ -49,7 +49,7 @@ static void anna_node_create_identifier_wrapper_type(anna_stack_template_t *stac
 	}
     ;
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type,
 	-1,
 	L"__init__",

@@ -1132,7 +1132,7 @@ static void anna_hash_type_create_internal(
 	}
     ;
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, 
 	-1,
 	L"__set__", 
@@ -1143,7 +1143,7 @@ static void anna_hash_type_create_internal(
 	kv_argv, 
 	kv_argn);    
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, 
 	-1,
 	L"__get__", 
@@ -1167,7 +1167,7 @@ static void anna_hash_type_create_internal(
 	}
     ;
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type,
 	-1,
 	L"__init__",
@@ -1200,19 +1200,19 @@ static void anna_hash_type_create_internal(
 	}
     ;    
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, -1, L"__each__", 0, 
 	&anna_hash_each, 
 	type,
 	2, e_argv, e_argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, -1, L"__map__", 
 	0, &anna_hash_map, 
 	list_type,
 	2, e_argv, e_argn);
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type,
 	ANNA_MID_DEL,
 	L"__del__",
@@ -1221,13 +1221,13 @@ static void anna_hash_type_create_internal(
 	object_type,
 	1, e_argv, e_argn);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, -1, L"__in__", 0, 
 	&anna_hash_in, 
 	spec1,
 	2, kv_argv, kv_argn);
 
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, -1, L"remove", 0, 
 	&anna_hash_remove, 
 	spec2,
@@ -1236,7 +1236,7 @@ static void anna_hash_type_create_internal(
     anna_hash_add_all_extra_methods(type);
 
 #if 0    
-    anna_native_method_create(
+    anna_member_create_native_method(
 	type, -1, L"__filter__", 
 	0, &anna_hash_filter, 
 	type,

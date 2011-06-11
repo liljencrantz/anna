@@ -62,7 +62,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     
     init="$init
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
 	complex_type, -1, L\"__${name}__Complex__\", 0,
 	&anna_complex_i_${name}, 
 	complex_type,
@@ -70,7 +70,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
         complex_type, -1, L\"__${name}__Int__\", 0, 
 	&anna_complex_i_int_${name}, 
 	complex_type,
@@ -78,7 +78,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
 	complex_type, -1, L\"__${name}__Float__\", 0, 
 	&anna_complex_i_float_${name}, 
 	complex_type,
@@ -86,7 +86,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
         complex_type, -1, L\"__${name}__IntReverse__\", 0, 
 	&anna_complex_i_int_reverse_${name}, 
 	complex_type,
@@ -94,7 +94,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
-    mmid = anna_native_method_create(
+    mmid = anna_member_create_native_method(
 	complex_type, -1, L\"__${name}__FloatReverse__\", 0, 
 	&anna_complex_i_float_reverse_${name}, 
 	complex_type,
@@ -192,7 +192,7 @@ for i in "neg -v" "sqrt csqrt(v)" "tan ctan(v)" "atan catan(v)" "sin csin(v)" "c
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_create(
+    anna_member_create_native_method(
 	complex_type, -1, L\"__${name}__\", 0, 
 	&anna_complex_i_${name}, 
 	complex_type,
@@ -215,7 +215,7 @@ for i in "abs cabs(v)" ; do
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_native_method_create(
+    anna_member_create_native_method(
 	complex_type, -1, L\"__${name}__\", 0, 
 	&anna_complex_i_${name}, 
 	float_type,

@@ -36,7 +36,7 @@ static anna_type_t *anna_node_create_null_wrapper_type(anna_stack_template_t *st
 	}
     ;
     
-    anna_native_method_create(
+    anna_member_create_native_method(
 	node_null_wrapper_type,
 	-1,
 	L"__init__",
