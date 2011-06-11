@@ -52,25 +52,25 @@ static anna_type_t *anna_node_create_mapping_wrapper_type(
     ;
     
     anna_member_create_native_method(
-	type,
-	-1,
-	L"__init__",
-	0,
-	&anna_node_mapping_wrapper_i_init, 
+	type, anna_mid_get(L"__init__"), 0,
+	&anna_node_mapping_wrapper_i_init,
 	null_type,
-	4, argv, argn);
+	4,
+	argv,
+	argn);
     
     anna_native_property_create(
-	type, -1, L"from",
+	type, anna_mid_get(L"from"),
 	node_wrapper_type,
-	&anna_node_mapping_wrapper_i_get_from, 
+	&anna_node_mapping_wrapper_i_get_from,
 	0);
 
     anna_native_property_create(
-	type, -1, L"to",
+	type,
+	anna_mid_get(L"to"),
 	node_wrapper_type,
-	&anna_node_mapping_wrapper_i_get_to, 
+	&anna_node_mapping_wrapper_i_get_to,
 	0);
-
+    
     return type;
 }

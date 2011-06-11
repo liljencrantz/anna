@@ -28,6 +28,7 @@
 #include "anna_pair.h"
 #include "anna_list.h"
 #include "anna_string.h"
+#include "anna_mid.h"
 
 #include "anna_macro.h"
 
@@ -78,11 +79,7 @@ static void add_hash_method(void *key, void *value, void *aux)
     anna_type_t *hash = (anna_type_t *)value;
     anna_function_t *fun = (anna_function_t *)aux;
 //    wprintf(L"Add function %ls to type %ls\n", fun->name, hash->name);
-    anna_member_create_method(
-	hash,
-	-1,
-	fun->name,
-	fun);
+    anna_member_create_method(hash, anna_mid_get(fun->name), fun);
 }
 
 void anna_hash_add_method(anna_function_t *fun)
@@ -99,11 +96,7 @@ static void anna_hash_add_all_extra_methods(anna_type_t *hash)
     {
 	anna_function_t *fun = (anna_function_t *)al_get(&anna_hash_additional_methods, i);
 //	wprintf(L"Add function %ls to type %ls\n", fun->name, hash->name);
-	anna_member_create_method(
-	    hash,
-	    -1,
-	    fun->name,
-	    fun);
+	anna_member_create_method(hash, anna_mid_get(fun->name), fun);
     }
 }
 
@@ -1103,17 +1096,13 @@ static void anna_hash_type_create_internal(
     anna_type_t *spec1,
     anna_type_t *spec2)
 {
-    anna_member_create_blob(
-	type, ANNA_MID_HASH_PAYLOAD,  L"!hashPayload",
-	0, sizeof(anna_hash_t));
+    anna_member_create_blob(type, ANNA_MID_HASH_PAYLOAD, 0,
+                            sizeof(anna_hash_t));
     
-    anna_member_create(
-	type, ANNA_MID_HASH_SPECIALIZATION1,  L"!hashSpecialization1",
-	1, null_type);
-
-    anna_member_create(
-	type, ANNA_MID_HASH_SPECIALIZATION2,  L"!hashSpecialization2",
-	1, null_type);
+    anna_member_create(type, ANNA_MID_HASH_SPECIALIZATION1, 1, null_type);anna_member_create(type,
+                                                                                             ANNA_MID_HASH_SPECIALIZATION2,
+                                                                                             1,
+                                                                                             null_type);
 
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION1)) = spec1;
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION2)) = spec2;
@@ -1132,27 +1121,16 @@ static void anna_hash_type_create_internal(
 	}
     ;
 
-    anna_member_create_native_method(
-	type, 
-	-1,
-	L"__set__", 
-	0, 
-	&anna_hash_set, 
-	spec2,
-	3,
-	kv_argv, 
-	kv_argn);    
-    
-    anna_member_create_native_method(
-	type, 
-	-1,
-	L"__get__", 
-	0, 
-	&anna_hash_get, 
-	spec2,
-	2,
-	kv_argv, 
-	kv_argn);    
+    anna_member_create_native_method(type, anna_mid_get(L"__set__"), 0,
+                                     &anna_hash_set, spec2, 3, kv_argv,
+                                     kv_argn);anna_member_create_native_method(type,
+                                                                               anna_mid_get(L"__get__"),
+                                                                               0,
+                                                                               &anna_hash_get,
+                                                                               spec2,
+                                                                               2,
+                                                                               kv_argv,
+                                                                               kv_argn);    
 
     anna_type_t *i_argv[] = 
 	{
@@ -1167,21 +1145,11 @@ static void anna_hash_type_create_internal(
 	}
     ;
 
-    anna_member_create_native_method(
-	type,
-	-1,
-	L"__init__",
-	ANNA_FUNCTION_VARIADIC, 
-	&anna_hash_init, 
-	type,
-	2, i_argv, i_argn);
-    anna_native_property_create(
-	type,
-	-1,
-	L"count",
-	int_type,
-	&anna_hash_get_count_method, 
-	0);
+    anna_member_create_native_method(type, anna_mid_get(L"__init__"),
+                                     ANNA_FUNCTION_VARIADIC, &anna_hash_init,
+                                     type, 2, i_argv, i_argn);
+    anna_native_property_create(type, anna_mid_get(L"count"), int_type,
+                                &anna_hash_get_count_method, 0);
 
 
     anna_type_t *fun_type = anna_function_type_each_create(
@@ -1201,48 +1169,40 @@ static void anna_hash_type_create_internal(
     ;    
     
     anna_member_create_native_method(
-	type, -1, L"__each__", 0, 
-	&anna_hash_each, 
-	type,
-	2, e_argv, e_argn);
-    
-    anna_member_create_native_method(
-	type, -1, L"__map__", 
-	0, &anna_hash_map, 
-	list_type,
-	2, e_argv, e_argn);
-    
+	type, anna_mid_get(L"__each__"), 0,
+	&anna_hash_each, type, 2, e_argv, e_argn);
+
     anna_member_create_native_method(
 	type,
-	ANNA_MID_DEL,
-	L"__del__",
+	anna_mid_get(L"__map__"),
 	0,
-	&anna_hash_del, 
-	object_type,
-	1, e_argv, e_argn);
+	&anna_hash_map,
+	list_type,
+	2,
+	e_argv,
+	e_argn);
+    
+    anna_member_create_native_method(
+	type, ANNA_MID_DEL, 0, &anna_hash_del,
+	object_type, 1, e_argv, e_argn);
+    
+    anna_member_create_native_method(
+	type, anna_mid_get(L"__in__"), 0,
+	&anna_hash_in, spec1, 2, kv_argv,
+	kv_argn);
 
     anna_member_create_native_method(
-	type, -1, L"__in__", 0, 
-	&anna_hash_in, 
-	spec1,
-	2, kv_argv, kv_argn);
-
-    anna_member_create_native_method(
-	type, -1, L"remove", 0, 
-	&anna_hash_remove, 
+	type,
+	anna_mid_get(L"remove"),
+	0,
+	&anna_hash_remove,
 	spec2,
-	2, kv_argv, kv_argn);
+	2,
+	kv_argv,
+	kv_argn);
     
     anna_hash_add_all_extra_methods(type);
-
-#if 0    
-    anna_member_create_native_method(
-	type, -1, L"__filter__", 
-	0, &anna_hash_filter, 
-	type,
-	2, e_argv, e_argn);
-#endif
-
+    
 }
 
 static inline void anna_hash_internal_init()

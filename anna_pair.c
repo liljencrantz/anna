@@ -19,6 +19,7 @@
 #include "anna_range.h"
 #include "anna_vm.h"
 #include "anna_tt.h"
+#include "anna_mid.h"
 
 #include "anna_macro.h"
 
@@ -93,20 +94,20 @@ static void anna_pair_type_create_internal(
     anna_type_t *spec2)
 {
     anna_member_create(
-	type, ANNA_MID_PAIR_FIRST,  L"!pairFirst",
-	0, null_type);
-    
+	type, ANNA_MID_PAIR_FIRST, 0, null_type);
     anna_member_create(
-	type, ANNA_MID_PAIR_SECOND,  L"!pairSecond",
-	0, null_type);
-    
+	type, ANNA_MID_PAIR_SECOND, 0,
+	null_type);
     anna_member_create(
-	type, ANNA_MID_PAIR_SPECIALIZATION1,  L"!pairSpecialization1",
-	1, null_type);
-    
+	type,
+	ANNA_MID_PAIR_SPECIALIZATION1,
+	1,
+	null_type);
     anna_member_create(
-	type, ANNA_MID_PAIR_SPECIALIZATION2,  L"!pairSpecialization2",
-	1, null_type);
+	type,
+	ANNA_MID_PAIR_SPECIALIZATION2,
+	1,
+	null_type);
     
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_PAIR_SPECIALIZATION1)) = spec1;
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_PAIR_SPECIALIZATION2)) = spec2;
@@ -126,31 +127,19 @@ static void anna_pair_type_create_internal(
     ;
 
     anna_member_create_native_method(
-	type, 
-	-1,
-	L"__init__", 
-	0, 
-	&anna_pair_init, 
-	type,
-	3,
-	argv, 
-	argn);    
+	type, anna_mid_get(L"__init__"), 0,
+	&anna_pair_init, type, 3, argv, argn);    
     
     
     anna_native_property_create(
-	type,
-	-1,
-	L"first",
-	spec1,
-	&anna_pair_get_first_i, 
+	type, anna_mid_get(L"first"), spec1,
+	&anna_pair_get_first_i,
 	&anna_pair_set_first_i);
-
     anna_native_property_create(
 	type,
-	-1,
-	L"second",
+	anna_mid_get(L"second"),
 	spec2,
-	&anna_pair_get_second_i, 
+	&anna_pair_get_second_i,
 	&anna_pair_set_second_i);
 }
 

@@ -198,35 +198,27 @@ void anna_float_type_create(anna_stack_template_t *stack)
     ;
     
     anna_member_create_blob(
-	float_type, ANNA_MID_FLOAT_PAYLOAD,  L"!floatPayload",
-	0, sizeof(double));
+	float_type, ANNA_MID_FLOAT_PAYLOAD, 0,
+	sizeof(double));
     
     anna_member_create_native_method(
-	float_type,
-	-1,
-	L"__cmp__",
-	0,
-	&anna_float_cmp, 
-	int_type,
-	2, argv, argn);    
+	float_type, anna_mid_get(L"__cmp__"), 0,
+	&anna_float_cmp, int_type, 2, argv, argn);    
     
     anna_member_create_native_method(
-	float_type,
-	ANNA_MID_TO_STRING,
-	L"toString",
-	0,
-	&anna_float_to_string, 
-	string_type, 1, argv, argn);
-    
+	float_type, ANNA_MID_TO_STRING, 0,
+	&anna_float_to_string, string_type, 1,
+	argv, argn);
     anna_member_create_native_method(
 	float_type,
 	ANNA_MID_HASH_CODE,
-	L"hashCode",
 	0,
-	&anna_float_hash, 
-	int_type, 1, argv, argn);
+	&anna_float_hash,
+	int_type,
+	1,
+	argv,
+	argn);
     
-
     wchar_t *conv_argn[]=
 	{
 	    L"value"
@@ -237,42 +229,32 @@ void anna_float_type_create(anna_stack_template_t *stack)
     anna_function_t *fun;
 
     mmid = anna_member_create_native_type_method(
-	float_type,
-	-1,
-	L"convertString",
-	0,
-	&anna_float_convert_string, 
+	float_type, anna_mid_get(L"convertString"),
+	0, &anna_float_convert_string,
 	float_type, 1, &string_type, conv_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
     mmid = anna_member_create_native_type_method(
-	float_type,
-	-1,
-	L"convertFloat",
-	0,
-	&anna_float_convert_float, 
+	float_type, anna_mid_get(L"convertFloat"),
+	0, &anna_float_convert_float,
 	float_type, 1, &float_type, conv_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
     mmid = anna_member_create_native_type_method(
-	float_type,
-	-1,
-	L"convertInt",
-	0,
-	&anna_float_convert_int, 
+	float_type, anna_mid_get(L"convertInt"),
+	0, &anna_float_convert_int,
 	float_type, 1, &int_type, conv_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
     
     anna_native_property_create(
-	float_type,
-	-1,
-	L"maxExponent",
-	int_type,
-	&anna_float_max_exponent,
-	0);
+	float_type, anna_mid_get(L"maxExponent"),
+	int_type, &anna_float_max_exponent, 0);
     
 
 

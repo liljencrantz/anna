@@ -15,6 +15,7 @@
 #include "anna_node_create.h"
 #include "anna_vm.h"
 #include "anna_int.h"
+#include "anna_mid.h"
 
 static inline anna_entry_t *anna_type_to_string_i(anna_entry_t **param)
 {
@@ -82,13 +83,7 @@ static anna_vmstack_t *anna_type_hash(anna_vmstack_t *stack, anna_object_t *me)
 
 void anna_type_type_create(anna_stack_template_t *stack)
 {
-    anna_member_create(
-	type_type,
-	ANNA_MID_TYPE_WRAPPER_PAYLOAD,
-	L"!typeWrapperPayload",
-	0,
-	null_type
-	);
+    anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, 0, null_type);
 }
 
 
@@ -106,51 +101,41 @@ void anna_type_type_create2(anna_stack_template_t *stack)
     ;
 
     anna_native_property_create(
-	type_type,
-	-1,
-	L"name",
-	string_type,
-	&anna_type_to_string, 
-	0);
-    
+	type_type, anna_mid_get(L"name"),
+	string_type, &anna_type_to_string, 0);
     anna_native_property_create(
 	type_type,
-	-1,
-	L"member",
+	anna_mid_get(L"member"),
 	anna_list_type_get(member_type),
-	&anna_type_i_get_member, 
+	&anna_type_i_get_member,
 	0);
-
+    
     anna_member_create_native_method(
-	type_type,
-	ANNA_MID_HASH_CODE,
-	L"hashCode",
-	0,
-	&anna_type_hash, 
-	int_type, 1, argv, argn);
+	type_type, ANNA_MID_HASH_CODE, 0,
+	&anna_type_hash, int_type, 1, argv, argn);
     
     anna_member_create_native_method(
 	type_type,
 	ANNA_MID_CMP,
-	L"__cmp__",
 	0,
-	&anna_type_cmp, 
-	int_type, 2, argv, argn);
-    
+	&anna_type_cmp,
+	int_type,
+	2,
+	argv,
+	argn);
     anna_member_create_native_method(
 	type_type,
 	ANNA_MID_TO_STRING,
-	L"toString",
 	0,
-	&anna_type_to_string, 
-	string_type, 1, argv, argn);    
-
+	&anna_type_to_string,
+	string_type,
+	1,
+	argv,
+	argn);    
+    
     anna_member_create_native_method(
-	type_type,
-	-1,
-	L"abides",
-	0,
-	&anna_type_abides, 
-	object_type, 2, argv, argn);
+	type_type, anna_mid_get(L"abides"), 0,
+	&anna_type_abides, object_type, 2, argv,
+	argn);
     
 }

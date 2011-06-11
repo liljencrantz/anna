@@ -40,16 +40,16 @@ static anna_type_t *anna_node_create_string_literal_wrapper_type(anna_stack_temp
     
     anna_member_create_native_method(
 	node_string_literal_wrapper_type,
-	-1,
-	L"__init__",
-	0,
-	&anna_node_string_literal_wrapper_i_init, 
+	anna_mid_get(L"__init__"), 0,
+	&anna_node_string_literal_wrapper_i_init,
 	null_type,
-	3, argv, argn);
+	3,
+	argv,
+	argn);
 
     anna_native_property_create(
-	node_string_literal_wrapper_type, -1, L"payload",
-	string_type,
+	node_string_literal_wrapper_type,
+	anna_mid_get(L"payload"), string_type,
 	&anna_node_string_literal_wrapper_i_get_name,
 	0);
     return node_string_literal_wrapper_type;

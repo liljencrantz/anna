@@ -32,6 +32,7 @@
 #include "wutil.h"
 #include "anna_attribute.h"
 #include "anna_string.h"
+#include "anna_mid.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 array_list_t anna_module_default_macros = AL_STATIC;
@@ -219,11 +220,7 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
 	}
 	else
 	{
-	    anna_member_create_method(
-		type,
-		-1,
-		fun->name,
-		fun);
+	    anna_member_create_method(type, anna_mid_get(fun->name), fun);
 	}
     }
     
@@ -257,11 +254,9 @@ static anna_stack_template_t *anna_system_create()
     anna_type_t *type = anna_stack_wrap(stack)->type;
     
     anna_native_property_create(
-	type,
-	-1,
-	L"arguments",
+	type, anna_mid_get(L"arguments"),
 	anna_list_type_get(string_type),
-	&anna_system_get_arguments, 
+	&anna_system_get_arguments,
 	0);
     
     return stack;

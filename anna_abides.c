@@ -286,8 +286,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 	    {
 		anna_member_create_native_method(
 		    res,
-		    -1,
-		    memb2->name,
+		    anna_mid_get(memb2->name),
 		    ft2->flags,
 		    &anna_vm_null_function,
 		    ft2->return_type,
@@ -308,9 +307,8 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 	    if(anna_abides(memb1->type, memb2->type) && anna_abides(memb2->type, memb1->type))
 	    {
 		anna_member_create(
-		    res, -1, memb2->name,
-		    memb2->is_static,
-		    memb2->type);
+		    res, anna_mid_get(memb2->name),
+		    memb2->is_static, memb2->type);
 	    }
 	}
     }

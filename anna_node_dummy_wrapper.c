@@ -38,17 +38,17 @@ static anna_type_t *anna_node_create_dummy_wrapper_type(anna_stack_template_t *s
     
     anna_member_create_native_method(
 	node_dummy_wrapper_type,
-	-1,
-	L"__init__",
-	0,
-	&anna_node_dummy_wrapper_i_init, 
+	anna_mid_get(L"__init__"), 0,
+	&anna_node_dummy_wrapper_i_init,
 	null_type,
-	3, argv, argn);
+	3,
+	argv,
+	argn);
     
     anna_native_property_create(
-	node_dummy_wrapper_type, -1, L"payload",
-	object_type,
-	&anna_node_dummy_wrapper_i_get_payload, 
-	0);
+	node_dummy_wrapper_type,
+	anna_mid_get(L"payload"), object_type,
+	&anna_node_dummy_wrapper_i_get_payload, 0);
+
     return node_dummy_wrapper_type;
 }

@@ -28,7 +28,7 @@ for i in "eq ==" "gt >" "lt <" "gte >=" "lte <=" "neq !="; do
     
     init="$init
     anna_member_create_native_method(
-	object_type, -1, L\"__${name}__\", 0, 
+	object_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_object_i_${name}, 
 	int_type,
 	2, argv, argn);

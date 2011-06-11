@@ -442,7 +442,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
            res,
            anna_member_create(
                res,
-               anna_mid_get(memb->name), memb->name, 
+               anna_mid_get(memb->name), 
 	       storage, memb->type));
        copy->is_bound_method = memb->is_bound_method;
        copy->is_property = memb->is_property;
@@ -547,8 +547,7 @@ static void anna_type_prepare_member_internal(
         
     mid_t mid = anna_member_create(
 	type,
-	-1,
-	decl->name,
+	anna_mid_get(decl->name),
 	is_static,
 	decl->return_type
 	);
@@ -639,12 +638,8 @@ static void anna_type_prepare_property(
 	}
 
 	anna_property_create(
-	    type,
-	    -1,
-	    decl->name,
-	    decl->return_type,
-	    getter_offset,
-	    setter_offset);
+	    type, anna_mid_get(decl->name),
+	    decl->return_type, getter_offset, setter_offset);
     }
 
   END:
@@ -778,13 +773,8 @@ static anna_node_t *anna_type_setup_interface_internal(
 	;
 	
 	anna_member_create_native_method(
-	    type,
-	    -1,
-	    L"__init__",
-	    0,
-	    &anna_type_noop,
-	    type,
-	    1, argv, argn);
+	    type, anna_mid_get(L"__init__"), 0,
+	    &anna_type_noop, type, 1, argv, argn);
 /*
   anna_object_t **cp = anna_entry_get_addr_static(
   type,

@@ -87,47 +87,35 @@ static void anna_member_type_create()
 {
 
     anna_member_create(
-	member_type, 
-	ANNA_MID_MEMBER_PAYLOAD, 
-	L"!memberPayload", 
-	0,
-	null_type);
-    
-    anna_member_create(
-	member_type, 
-	ANNA_MID_MEMBER_TYPE_PAYLOAD, 
-	L"!memberTypePayload", 
+	member_type, ANNA_MID_MEMBER_PAYLOAD, 0, null_type);
+ 
+   anna_member_create(
+	member_type,
+	ANNA_MID_MEMBER_TYPE_PAYLOAD,
 	0,
 	null_type);
     
     anna_native_property_create(
-	member_type,
-	-1,
-	L"name",
-	string_type,
-	&anna_member_i_get_name, 
-	0);
-    
+	member_type, anna_mid_get(L"name"),
+	string_type, &anna_member_i_get_name, 0);
+
     anna_native_property_create(
 	member_type,
-	-1,
-	L"isStatic",
+	anna_mid_get(L"isStatic"),
 	int_type,
 	&anna_member_i_get_static,
 	0);
-    
+
     anna_native_property_create(
 	member_type,
-	-1,
-	L"isMethod",
+	anna_mid_get(L"isMethod"),
 	int_type,
 	&anna_member_i_get_method,
 	0);
-    
+
     anna_native_property_create(
 	member_type,
-	-1,
-	L"isProperty",
+	anna_mid_get(L"isProperty"),
 	int_type,
 	&anna_member_i_get_property,
 	0);
@@ -275,9 +263,8 @@ mid_t anna_member_create_blob(
     {
 	sb_clear(&sb);
 	sb_printf(&sb, L"%ls%d", name, i+1);
-	anna_member_create(
-	    type, -1, sb_content(&sb), 
-	    storage & ANNA_MEMBER_STATIC, null_type);
+	anna_member_create(type, anna_mid_get(sb_content(&sb)),
+                           storage & ANNA_MEMBER_STATIC, null_type);
     }
     sb_destroy(&sb);
     
@@ -444,8 +431,7 @@ size_t anna_native_property_create(
 	
 	getter_mid = anna_member_create_native_method(
 	    type,
-	    -1,
-	    sb_content(&sb),
+	    anna_mid_get(sb_content(&sb)),
 	    0,
 	    getter,
 	    property_type,
@@ -462,22 +448,20 @@ size_t anna_native_property_create(
 	sb_printf(&sb, L"!%lsSetter", name);
 	setter_mid = anna_member_create_native_method(
 	    type,
-	    -1,
-	    sb_content(&sb),
+	    anna_mid_get(sb_content(&sb)),
 	    0,
 	    setter,
 	    property_type,
 	    2,
 	    argv,
-	    argn
-	    );
+	    argn);
 	anna_member_t *sm = anna_member_get(type, setter_mid);
 	setter_offset = sm->offset;
     }
     sb_destroy(&sb);
     
     return anna_property_create(
-	type, mid, name, property_type, 
+	type, mid, property_type, 
 	getter_offset, setter_offset);
 }
 

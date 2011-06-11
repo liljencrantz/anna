@@ -50,18 +50,15 @@ static void anna_node_create_identifier_wrapper_type(anna_stack_template_t *stac
     ;
     
     anna_member_create_native_method(
-	type,
-	-1,
-	L"__init__",
-	0,
-	mapping?&anna_node_mapping_identifier_wrapper_i_init:&anna_node_identifier_wrapper_i_init, 
+	type, anna_mid_get(L"__init__"), 0,
+	mapping ? &anna_node_mapping_identifier_wrapper_i_init : &anna_node_identifier_wrapper_i_init,
 	null_type,
-	3, argv, argn);
+	3,
+	argv,
+	argn);
 
     anna_native_property_create(
-	type, -1, L"name",
-	string_type,
-	&anna_node_identifier_wrapper_i_get_name, 
-	0);
+	type, anna_mid_get(L"name"), string_type,
+	&anna_node_identifier_wrapper_i_get_name, 0);
 }
 

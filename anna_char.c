@@ -88,53 +88,34 @@ void anna_char_type_create(anna_stack_template_t *stack)
 	}
     ;
 
-    anna_member_create(
-	char_type, 
-	ANNA_MID_CHAR_PAYLOAD,  
-	L"!charPayload", 
-	0, null_type);
+    anna_member_create(char_type, ANNA_MID_CHAR_PAYLOAD, 0, null_type);
 
     anna_native_property_create(
-	char_type,
-	-1,
-	L"ordinal",
-	int_type,
-	&anna_char_i_get_ordinal, 
-	0);
+	char_type, anna_mid_get(L"ordinal"),
+	int_type, &anna_char_i_get_ordinal, 0);
     
     anna_native_property_create(
 	char_type,
-	-1,
-	L"upper",
+	anna_mid_get(L"upper"),
 	char_type,
-	&anna_char_i_get_upper, 
+	&anna_char_i_get_upper,
 	0);
 
     anna_native_property_create(
 	char_type,
-	-1,
-	L"lower",
+	anna_mid_get(L"lower"),
 	char_type,
-	&anna_char_i_get_lower, 
+	&anna_char_i_get_lower,
 	0);
-
-    anna_member_create_native_method(
-	char_type,
-	-1,
-	L"__cmp__",
-	0,
-	&anna_char_cmp, 
-	int_type,
-	2, argv, argn);    
     
     anna_member_create_native_method(
-	char_type,
-	ANNA_MID_TO_STRING,
-	L"toString",
-	0,
-	&anna_char_to_string, 
-	string_type, 1, argv, argn);
+	char_type, anna_mid_get(L"__cmp__"), 0,
+	&anna_char_cmp, int_type, 2, argv, argn);    
     
+    anna_member_create_native_method(
+	char_type, ANNA_MID_TO_STRING, 0,
+	&anna_char_to_string, string_type, 1,
+	argv, argn);
 
     anna_char_type_i_create(stack);
 }

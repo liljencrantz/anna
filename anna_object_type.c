@@ -15,6 +15,7 @@
 #include "anna_string.h"
 #include "anna_type.h"
 #include "anna_member.h"
+#include "anna_mid.h"
 #include "anna_object_i.c"
 
 static anna_vmstack_t *anna_object_init(anna_vmstack_t *stack, anna_object_t *me)
@@ -84,45 +85,38 @@ void anna_object_type_create()
     anna_function_t *fun;
 */  
     anna_member_create_native_method(
-	object_type,
-	-1,
-	L"__init__",
-	0,
-	&anna_object_init, 
-	object_type, 1, argv, argn);
+	object_type, anna_mid_get(L"__init__"),
+	0, &anna_object_init, object_type, 1,
+	argv, argn);
     
     anna_member_create_native_method(
-	object_type,
-	ANNA_MID_HASH_CODE,
-	L"hashCode",
-	0,
-	&anna_object_hash, 
-	int_type, 1, argv, argn);
-    
+	object_type, ANNA_MID_HASH_CODE, 0,
+	&anna_object_hash, int_type, 1, argv,
+	argn);
     anna_member_create_native_method(
 	object_type,
 	ANNA_MID_CMP,
-	L"__cmp__",
 	0,
-	&anna_object_cmp, 
-	int_type, 2, argv, argn);
-    
+	&anna_object_cmp,
+	int_type,
+	2,
+	argv,
+	argn);
+
     anna_member_create_native_method(
 	object_type,
 	ANNA_MID_TO_STRING,
-	L"toString",
 	0,
-	&anna_object_to_string, 
-	string_type, 1, argv, argn);
+	&anna_object_to_string,
+	string_type,
+	1,
+	argv,
+	argn);
     
     anna_native_property_create(
-	object_type,
-	-1,
-	L"__type__",
-	type_type,
-	&anna_object_type,
-	0);
-
+	object_type, anna_mid_get(L"__type__"),
+	type_type, &anna_object_type, 0);
+    
     anna_object_type_i_create();
     anna_type_object_is_created();
 }

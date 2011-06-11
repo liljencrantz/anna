@@ -257,13 +257,12 @@ static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *st
 
     anna_member_create_native_method(
 	node_call_wrapper_type,
-	-1,
-	L"__init__",
+	anna_mid_get(L"__init__"),
 	ANNA_FUNCTION_VARIADIC,
-	&anna_node_call_wrapper_i_init, 
+	&anna_node_call_wrapper_i_init,
 	object_type,
 	4, argv, argn);
-
+    
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!CallIterFunction", int_type, node_wrapper_type);
 
@@ -281,18 +280,16 @@ static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *st
     ;
     
     anna_member_create_native_method(
-	node_call_wrapper_type, -1, L"__each__", 0, 
-	&anna_node_call_wrapper_each, 
+	node_call_wrapper_type,
+	anna_mid_get(L"__each__"), 0,
+	&anna_node_call_wrapper_each,
 	node_call_wrapper_type,
 	2, e_argv, e_argn);
 
     anna_native_property_create(
 	node_call_wrapper_type,
-	-1,
-	L"count",
-	int_type,
-	&anna_node_call_wrapper_i_get_count, 
-	0);
+	anna_mid_get(L"count"), int_type,
+	&anna_node_call_wrapper_i_get_count, 0);
 
   
     anna_type_t *i_argv[] = 
@@ -311,36 +308,28 @@ static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *st
     
     mmid = anna_member_create_native_method(
 	node_call_wrapper_type,
-	-1,
-	L"__get__Int__",
-	0, 
-	&anna_node_call_wrapper_i_get_int, 
+	anna_mid_get(L"__get__Int__"), 0,
+	&anna_node_call_wrapper_i_get_int,
 	node_wrapper_type,
-	2, 
-	i_argv, 
-	i_argn);
+	2, i_argv, i_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(node_call_wrapper_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
     mmid = anna_member_create_native_method(
 	node_call_wrapper_type,
-	-1,
-	L"__set__Int__",
-	0, 
-	&anna_node_call_wrapper_i_set_int, 
+	anna_mid_get(L"__set__Int__"), 0,
+	&anna_node_call_wrapper_i_set_int,
 	node_wrapper_type,
-	3, 
-	i_argv, 
+	3,
+	i_argv,
 	i_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(node_call_wrapper_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
     anna_native_property_create(
 	node_call_wrapper_type,
-	-1,
-	L"function",
-	node_wrapper_type,
-	&anna_node_call_wrapper_i_get_function, 
+	anna_mid_get(L"function"), node_wrapper_type,
+	&anna_node_call_wrapper_i_get_function,
 	&anna_node_call_wrapper_i_set_function);
     
     anna_type_t *j_argv[] = 
@@ -358,22 +347,24 @@ static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *st
     
     mmid = anna_member_create_native_method(
 	node_call_wrapper_type,
-	-1,
-	L"__join__List__",
-	0, 
-	&anna_node_call_wrapper_i_join_list, 
+	anna_mid_get(L"__join__List__"),
+	0,
+	&anna_node_call_wrapper_i_join_list,
 	node_call_wrapper_type,
-	2, 
-	j_argv, 
+	2,
+	j_argv,
 	j_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(node_call_wrapper_type, mmid)));
     anna_function_alias_add(fun, L"__join__");
 
     anna_member_create_native_method(
-	node_call_wrapper_type, -1, L"__appendAssign__", 0, 
-	&anna_node_call_wrapper_append, 
 	node_call_wrapper_type,
-	2, j_argv, j_argn);
+	anna_mid_get(L"__appendAssign__"), 0,
+	&anna_node_call_wrapper_append,
+	node_call_wrapper_type,
+	2,
+	j_argv,
+	j_argn);
     
     return node_call_wrapper_type;
 }

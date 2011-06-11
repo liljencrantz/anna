@@ -101,8 +101,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
     stack->flags |= ANNA_STACK_DECLARE;
     mid_t mid = anna_member_create(
 	res,
-	-1,
-	name,
+	anna_mid_get(name),
 	1,
 	type);    
     stack->flags = stack->flags & ~ANNA_STACK_DECLARE;
@@ -140,12 +139,7 @@ void anna_stack_declare2(anna_stack_template_t *stack,
 
     anna_type_t *res = anna_stack_wrap(stack)->type;
     stack->flags |= ANNA_STACK_DECLARE;
-    anna_member_create(
-	res,
-	-1,
-	declare_node->name,
-	1,
-	0);
+    anna_member_create(res, anna_mid_get(declare_node->name), 1, 0);
     stack->flags = stack->flags & ~ANNA_STACK_DECLARE;
 }
 
@@ -389,13 +383,10 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 	    L"StackType",
 	    stack->function?&(stack->function->definition->location):0),
 	stack);
-    anna_member_create(
-	res, ANNA_MID_STACK_PAYLOAD,  L"!stackPayload", 
-	0, null_type);
+    anna_member_create(res, ANNA_MID_STACK_PAYLOAD, 0, null_type);
     anna_member_create(
 	res,
 	ANNA_MID_STACK_TYPE_PAYLOAD,
-	L"!stackTypePayload",
 	1,
 	null_type);
     *(anna_entry_get_addr_static(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_entry_t *)stack;

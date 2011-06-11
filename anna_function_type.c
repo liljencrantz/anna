@@ -17,6 +17,7 @@
 #include "anna_type.h"
 #include "anna_member.h"
 #include "anna_vm.h"
+#include "anna_mid.h"
 
 anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
@@ -136,41 +137,28 @@ static void anna_function_type_base_create()
     ;
     
     anna_member_create_native_method(
-	res,
-	ANNA_MID_TO_STRING,
-	L"toString",
-	0,
-	&anna_function_type_to_string, 
+	res, ANNA_MID_TO_STRING, 0,
+	&anna_function_type_to_string,
 	string_type, 1, argv, argn);
 
     anna_native_property_create(
-	res,
-	-1,
-	L"name",
-	string_type,
-	&anna_function_type_i_get_name,
-	0);
-    
+	res, anna_mid_get(L"name"), string_type,
+	&anna_function_type_i_get_name, 0);
+
     anna_native_property_create(
-	res,
-	-1,
-	L"outputType",
+	res, anna_mid_get(L"outputType"),
 	type_type,
 	&anna_function_type_i_get_output,
 	0);
 
     anna_native_property_create(
-	res,
-	-1,
-	L"inputType",
+	res, anna_mid_get(L"inputType"),
 	anna_list_type_get(type_type),
 	&anna_function_type_i_get_input_type,
 	0);
-
+    
     anna_native_property_create(
-	res,
-	-1,
-	L"inputName",
+	res, anna_mid_get(L"inputName"),
 	anna_list_type_get(string_type),
 	&anna_function_type_i_get_input_name,
 	0);
@@ -205,13 +193,11 @@ void anna_function_type_create(
       Non-static member variables
     */
     anna_member_create(
-	res,
-	ANNA_MID_FUNCTION_WRAPPER_PAYLOAD, L"!functionPayload", 
-	ANNA_MEMBER_ALLOC,
-	null_type);
+	res, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD,
+	ANNA_MEMBER_ALLOC, null_type);
     anna_member_create(
 	res,
-	ANNA_MID_FUNCTION_WRAPPER_STACK, L"!functionStack", 
+	ANNA_MID_FUNCTION_WRAPPER_STACK,
 	ANNA_MEMBER_ALLOC,
 	null_type);
     
@@ -219,38 +205,26 @@ void anna_function_type_create(
       Static member variables
     */
     anna_member_create(
-	res,
-	ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, 
-	L"!functionTypePayload",
-	ANNA_MEMBER_STATIC,
-	null_type);
+	res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD,
+	ANNA_MEMBER_STATIC, null_type);
     
     if(key->flags & ANNA_FUNCTION_CONTINUATION)
     {
 	anna_member_create(
-	    res,
-	    ANNA_MID_CONTINUATION_STACK, L"!continuationStack", 
-	    ANNA_MEMBER_ALLOC,
-	    null_type);
+	    res, ANNA_MID_CONTINUATION_STACK,
+	    ANNA_MEMBER_ALLOC, null_type);
+	
 	anna_member_create(
-	    res,
-	    ANNA_MID_CONTINUATION_CODE_POS, L"!continuationCodePos", 
-	    0,
-	    null_type);
+	    res, ANNA_MID_CONTINUATION_CODE_POS,
+	    0, null_type);
     }
     
     if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
     {
-	anna_member_create(
-	    res,
-	    ANNA_MID_THIS, L"!this", 
-	    ANNA_MEMBER_ALLOC,
-	    null_type);
-	anna_member_create(
-	    res,
-	    ANNA_MID_METHOD, L"!method", 
-	    ANNA_MEMBER_ALLOC,
-	    null_type);
+	anna_member_create(res, ANNA_MID_THIS, ANNA_MEMBER_ALLOC, null_type);anna_member_create(res,
+                                                                                                ANNA_MID_METHOD,
+                                                                                                ANNA_MEMBER_ALLOC,
+                                                                                                null_type);
     }
     
     *anna_entry_get_addr_static(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD) = (anna_entry_t *)key;
@@ -277,20 +251,7 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 //	wprintf(L"Got member, has return type %ls\n", (*function_ptr)->return_type->name);
 	return *function_ptr;
     }
-    else 
-    {
-//	wprintf(L"Not a direct function, check for __call__ member\n");
-	anna_entry_t **function_wrapper_ptr = 
-	    anna_entry_get_addr_static(
-		type,
-		ANNA_MID_CALL_PAYLOAD);
-	if(function_wrapper_ptr)
-	{
-	    //wprintf(L"Found, we're unwrapping it now\n");
-	    return anna_function_type_unwrap(anna_as_obj(*function_wrapper_ptr)->type);	    
-	}
-	return 0;	
-    }
+    return 0;	
 //     FIXME: Is there any validity checking we could do here?
 }
 

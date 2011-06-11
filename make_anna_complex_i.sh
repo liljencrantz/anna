@@ -95,7 +95,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
     anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
     mmid = anna_member_create_native_method(
-	complex_type, anna_mid_get(anna_mid_get(L\"__${name}__FloatReverse__\"), 0, 
+	complex_type, anna_mid_get(L\"__${name}__FloatReverse__\"), 0, 
 	&anna_complex_i_float_reverse_${name}, 
 	complex_type,
 	2, f_argv, f_argn);

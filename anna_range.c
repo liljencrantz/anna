@@ -16,6 +16,7 @@
 #include "anna_vm.h"
 #include "anna_string.h"
 #include "anna_list.h"
+#include "anna_mid.h"
 
 ssize_t anna_range_get_from(anna_object_t *obj)
 {
@@ -661,18 +662,22 @@ void anna_range_type_create(struct anna_stack_template *stack)
     mid_t mmid;
     anna_function_t *fun;
 
+    anna_member_create(range_type, ANNA_MID_RANGE_FROM, 0, null_type);
     anna_member_create(
-	range_type, ANNA_MID_RANGE_FROM,  L"!rangeFrom", 
-	0, null_type);
+	range_type,
+	ANNA_MID_RANGE_TO,
+	0,
+	null_type);
     anna_member_create(
-	range_type, ANNA_MID_RANGE_TO,  L"!rangeTo", 
-	0, null_type);
+	range_type,
+	ANNA_MID_RANGE_STEP,
+	0,
+	null_type);
     anna_member_create(
-	range_type, ANNA_MID_RANGE_STEP,  L"!rangeStep", 
-	0, null_type);
-    anna_member_create(
-	range_type, ANNA_MID_RANGE_OPEN,  L"!rangeOpen", 
-	0, null_type);    
+	range_type,
+	ANNA_MID_RANGE_OPEN,
+	0,
+	null_type);    
     
     anna_type_t *c_argv[] = 
 	{
@@ -691,13 +696,10 @@ void anna_range_type_create(struct anna_stack_template *stack)
     ;
 
     anna_member_create_native_method(
-	range_type,
-	-1,
-	L"__init__", 0,
-	&anna_range_init, 
-	range_type,
-	4, c_argv, c_argn);
-
+	range_type, anna_mid_get(L"__init__"),
+	0, &anna_range_init, range_type, 4,
+	c_argv, c_argn);
+    
 
     anna_type_t *i_argv[] = 
 	{
@@ -714,73 +716,52 @@ void anna_range_type_create(struct anna_stack_template *stack)
 
     mmid = anna_member_create_native_method(
 	range_type,
-	-1,
-	L"__get__Int__",
-	0, 
-	&anna_range_get_int, 
-	int_type,
-	2, 
-	i_argv, 
-	i_argn);
+	anna_mid_get(L"__get__Int__"), 0,
+	&anna_range_get_int, int_type, 2,
+	i_argv, i_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(range_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
     
     anna_native_property_create(
-	range_type,
-	-1,
-	L"count",
-	int_type,
-	&anna_range_get_count_i, 
-	0);
-
+	range_type, anna_mid_get(L"count"), int_type,
+	&anna_range_get_count_i, 0);
     anna_native_property_create(
 	range_type,
-	-1,
-	L"from",
+	anna_mid_get(L"from"),
 	int_type,
-	&anna_range_get_from_i, 
+	&anna_range_get_from_i,
 	&anna_range_set_from_i);
-
     anna_native_property_create(
 	range_type,
-	-1,
-	L"to",
+	anna_mid_get(L"to"),
 	int_type,
-	&anna_range_get_to_i, 
+	&anna_range_get_to_i,
 	&anna_range_set_to_i);
-
     anna_native_property_create(
 	range_type,
-	-1,
-	L"step",
+	anna_mid_get(L"step"),
 	int_type,
-	&anna_range_get_step_i, 
+	&anna_range_get_step_i,
 	&anna_range_set_step_i);
-
     anna_native_property_create(
 	range_type,
-	-1,
-	L"isOpen",
+	anna_mid_get(L"isOpen"),
 	int_type,
-	&anna_range_get_open_i, 
+	&anna_range_get_open_i,
 	0);
-
     anna_native_property_create(
 	range_type,
-	-1,
-	L"first",
+	anna_mid_get(L"first"),
 	int_type,
-	&anna_range_get_first_i, 
+	&anna_range_get_first_i,
 	0);
-
     anna_native_property_create(
 	range_type,
-	-1,
-	L"last",
+	anna_mid_get(L"last"),
 	int_type,
 	&anna_range_get_last_i,
 	0);
-
+    
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!RangeIterFunction", int_type, int_type);
 
@@ -811,33 +792,44 @@ void anna_range_type_create(struct anna_stack_template *stack)
     ;
 
     anna_member_create_native_method(
-	range_type, -1, L"__each__", 0, 
-	&anna_range_each, 
+	range_type, anna_mid_get(L"__each__"),
+	0, &anna_range_each, range_type, 2,
+	e_argv, e_argn);
+    anna_member_create_native_method(
 	range_type,
-	2, e_argv, e_argn);
-
-    anna_member_create_native_method(
-	range_type, -1, L"__filter__", 
-	0, &anna_range_filter, 
+	anna_mid_get(L"__filter__"),
+	0,
+	&anna_range_filter,
 	anna_list_type_get(int_type),
-	2, e_argv, e_argn);
-
+	2,
+	e_argv,
+	e_argn);
     anna_member_create_native_method(
-	range_type, -1, L"__find__", 
-	0, &anna_range_find, 
+	range_type,
+	anna_mid_get(L"__find__"),
+	0,
+	&anna_range_find,
 	int_type,
-	2, e_argv, e_argn);  
-
+	2,
+	e_argv,
+	e_argn);
     anna_member_create_native_method(
-	range_type, -1, L"__in__", 0, 
-	&anna_range_in, 
+	range_type,
+	anna_mid_get(L"__in__"),
+	0,
+	&anna_range_in,
 	int_type,
-	2, a_argv, a_argn);
-        
+	2,
+	a_argv,
+	a_argn);
     anna_member_create_native_method(
-	range_type, -1, L"__map__", 
-	0, &anna_range_map, 
+	range_type,
+	anna_mid_get(L"__map__"),
+	0,
+	&anna_range_map,
 	list_type,
-	2, e_argv, e_argn);
+	2,
+	e_argv,
+	e_argn);
 
 }

@@ -289,47 +289,37 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	}
     ;
     
-    anna_member_create_blob(
-	int_type,
-	ANNA_MID_INT_PAYLOAD, 
-	L"!intPayload", 
-	0,
-	sizeof(mpz_t));
+    anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
+    
+    anna_member_create_native_method(
+	int_type, anna_mid_get(L"__init__"), 0,
+	&anna_int_init, object_type, 2, ii_argv,
+	ii_argn);
     
     anna_member_create_native_method(
 	int_type,
-	-1,
-	L"__init__",
+	anna_mid_get(L"__cmp__"),
 	0,
-	&anna_int_init, 
-	object_type,
-	2, ii_argv, ii_argn);    
+	&anna_int_cmp,
+	int_type,
+	2,
+	i_argv,
+	i_argn);    
     
     anna_member_create_native_method(
-	int_type,
-	-1,
-	L"__cmp__",
-	0,
-	&anna_int_cmp, 
-	int_type,
-	2, i_argv, i_argn);    
-    
-    anna_member_create_native_method(
-	int_type,
-	ANNA_MID_HASH_CODE,
-	L"hashCode",
-	0,
-	&anna_int_hash, 
-	int_type, 1, i_argv, i_argn);
-    
+	int_type, ANNA_MID_HASH_CODE, 0,
+	&anna_int_hash, int_type, 1, i_argv,
+	i_argn);
+
     anna_member_create_native_method(
 	int_type,
 	ANNA_MID_TO_STRING,
-	L"toString",
 	0,
-	&anna_int_to_string, 
-	string_type, 1, i_argv, i_argn);
-
+	&anna_int_to_string,
+	string_type,
+	1,
+	i_argv,
+	i_argn);
 
     wchar_t *conv_argn[]=
 	{
@@ -341,44 +331,32 @@ void anna_int_type_create(anna_stack_template_t *stack)
     anna_function_t *fun;
 
     mmid = anna_member_create_native_type_method(
-	int_type,
-	-1,
-	L"convertString",
-	0,
-	&anna_int_convert_string, 
-	int_type, 1, &string_type, conv_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
+	int_type, anna_mid_get(L"convertString"),
+	0, &anna_int_convert_string, int_type,
+	1, &string_type, conv_argn);
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
     mmid = anna_member_create_native_type_method(
-	int_type,
-	-1,
-	L"convertFloat",
-	0,
-	&anna_int_convert_float, 
-	int_type, 1, &float_type, conv_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
+	int_type, anna_mid_get(L"convertFloat"),
+	0, &anna_int_convert_float, int_type, 1,
+	&float_type, conv_argn);
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
     mmid = anna_member_create_native_type_method(
-	int_type,
-	-1,
-	L"convertInt",
-	0,
-	&anna_int_convert_int, 
-	int_type, 1, &int_type, conv_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
+	int_type, anna_mid_get(L"convertInt"), 0,
+	&anna_int_convert_int, int_type, 1, &int_type,
+	conv_argn);
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
 
     anna_member_create_native_method(
-	int_type,
-	ANNA_MID_DEL,
-	L"__del__",
-	0,
-	&anna_int_del, 
-	int_type,
-	1, i_argv, i_argn);
+	int_type, ANNA_MID_DEL, 0, &anna_int_del, int_type, 1, i_argv, i_argn);
 
     anna_int_type_i_create(stack);
 }

@@ -41,18 +41,18 @@ static anna_type_t *anna_node_create_closure_wrapper_type(
     ;
     
     anna_member_create_native_method(
-	type,
-	-1,
-	L"__init__",
-	0,
-	&anna_node_closure_wrapper_i_init, 
+	type, anna_mid_get(L"__init__"), 0,
+	&anna_node_closure_wrapper_i_init,
 	null_type,
-	3, argv, argn);
+	3,
+	argv,
+	argn);
     
     anna_native_property_create(
-	type, -1, L"payload",
+	type, anna_mid_get(L"payload"),
 	function_type_base,
-	&anna_node_closure_wrapper_i_get_payload, 
+	&anna_node_closure_wrapper_i_get_payload,
 	0);
+
     return type;
 }

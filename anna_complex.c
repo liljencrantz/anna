@@ -162,7 +162,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 {
 
     anna_member_create_blob(
-	complex_type, ANNA_MID_COMPLEX_PAYLOAD,  L"!complexPayload",
+	complex_type, ANNA_MID_COMPLEX_PAYLOAD,
 	0, sizeof(complex double));
 
     anna_type_t *argv[] = 
@@ -181,8 +181,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 
     anna_member_create_native_method(
 	complex_type,
-	-1,
-	L"__init__",
+	anna_mid_get(L"__init__"),
 	0,
 	&anna_complex_init, 
 	complex_type,
@@ -190,8 +189,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
     
     anna_member_create_native_method(
 	complex_type,
-	-1,
-	L"__cmp__",
+	anna_mid_get(L"__cmp__"),
 	0,
 	&anna_complex_cmp, 
 	int_type,
@@ -200,7 +198,6 @@ void anna_complex_type_create(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	complex_type,
 	ANNA_MID_TO_STRING,
-	L"toString",
 	0,
 	&anna_complex_to_string, 
 	string_type, 1, argv, argn);    
@@ -208,7 +205,6 @@ void anna_complex_type_create(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	complex_type,
 	ANNA_MID_HASH_CODE,
-	L"hashCode",
 	0,
 	&anna_complex_hash, 
 	int_type, 1, argv, argn);
