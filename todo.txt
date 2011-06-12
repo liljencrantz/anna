@@ -1,7 +1,7 @@
 1.0 RELEASE CRITERIA:
 * Constructor and inheritance fully working
 * Inheritance and method overloading fully working
-* Add memory overhead of Ints and lists to GC estimates
+* Add memory overhead of Ints, Floats, Hashes and Lists to GC estimates
 * Smarter GC timing algorithm
 * File type
 * Date type
@@ -14,14 +14,13 @@
   - Can't assign to constants
 
 1.0 RELEASE CRITERIA(Done):
-* Static member access fully working
- 
+* Static member access fully working 
 
 2.0 RELEASE CRITERIA:
 * Regexp api
 * Query api (SQL Alchemy/Linq/etc. replacement)
 * Live debugger
-* Mutable and Imutable versions of List, String and HashMap, switch between them using freeze/thaw
+* Mutable and Imutable versions of List, String and HashMap, switch between them using freeze/thaw properties
 * Multithreading support using message passing and a common frozen object store
 * Cache for mpz_t numbers
 * Proper iterators? Possibly rethink how map/filter and friends are implemented

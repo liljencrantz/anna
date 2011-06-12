@@ -20,7 +20,7 @@ void anna_slab_init(void);
 
 static inline __malloc void *anna_slab_alloc(size_t sz)
 {
-    if(unlikely(sz >= SLAB_MAX))
+    if(sz >= SLAB_MAX)
     {
 	return malloc(sz);
     }
@@ -36,7 +36,7 @@ static inline __malloc void *anna_slab_alloc(size_t sz)
 
 static inline void anna_slab_free(void *ptr, size_t sz)
 {
-    if(unlikely(sz >= SLAB_MAX))
+    if(sz >= SLAB_MAX)
     {
 	free(ptr);
 	return;

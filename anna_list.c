@@ -905,18 +905,18 @@ static void anna_list_type_create_internal(
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
 	&anna_list_get_count_method,
 	&anna_list_set_count_method);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type,
 	anna_mid_get(L"first"),
 	spec,
 	&anna_list_get_first, 0);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type,
 	anna_mid_get(L"last"),
 	spec,

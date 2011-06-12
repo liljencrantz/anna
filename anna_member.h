@@ -36,22 +36,19 @@ mid_t anna_member_create_blob(
     int storage,
     size_t sz);
 
-size_t anna_native_property_create(
+size_t anna_member_create_native_property(
     anna_type_t *type,
     mid_t mid,
     anna_type_t *property_type,
     anna_native_t getter,
     anna_native_t setter);
 
-size_t anna_property_create(
+size_t anna_member_create_property(
     anna_type_t *type,
     mid_t mid,
     anna_type_t *property_type,
     ssize_t getter_offset,
     ssize_t setter_offset);
-
-mid_t anna_const_property_create(
-    anna_type_t *type, mid_t mid, anna_object_t *value);
 
 void anna_member_type_set(
     anna_type_t *type,

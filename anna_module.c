@@ -253,7 +253,7 @@ static anna_stack_template_t *anna_system_create()
     
     anna_type_t *type = anna_stack_wrap(stack)->type;
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type, anna_mid_get(L"arguments"),
 	anna_list_type_get(string_type),
 	&anna_system_get_arguments,

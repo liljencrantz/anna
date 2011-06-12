@@ -730,7 +730,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	}
     ;
 */
-    anna_native_property_create(
+    anna_member_create_native_property(
 	string_type, anna_mid_get(L"count"),
 	int_type, &anna_string_i_get_count,
 	&anna_string_i_set_count);

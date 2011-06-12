@@ -722,40 +722,40 @@ void anna_range_type_create(struct anna_stack_template *stack)
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(range_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	range_type, anna_mid_get(L"count"), int_type,
 	&anna_range_get_count_i, 0);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"from"),
 	int_type,
 	&anna_range_get_from_i,
 	&anna_range_set_from_i);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"to"),
 	int_type,
 	&anna_range_get_to_i,
 	&anna_range_set_to_i);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"step"),
 	int_type,
 	&anna_range_get_step_i,
 	&anna_range_set_step_i);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"isOpen"),
 	int_type,
 	&anna_range_get_open_i,
 	0);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"first"),
 	int_type,
 	&anna_range_get_first_i,
 	0);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"last"),
 	int_type,

@@ -59,13 +59,13 @@ static anna_type_t *anna_node_create_mapping_wrapper_type(
 	argv,
 	argn);
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type, anna_mid_get(L"from"),
 	node_wrapper_type,
 	&anna_node_mapping_wrapper_i_get_from,
 	0);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type,
 	anna_mid_get(L"to"),
 	node_wrapper_type,

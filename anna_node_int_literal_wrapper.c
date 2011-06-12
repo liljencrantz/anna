@@ -50,7 +50,7 @@ static anna_type_t *anna_node_create_int_literal_wrapper_type(
 	argv,
 	argn);
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type, anna_mid_get(L"payload"), int_type,
 	&anna_node_int_literal_wrapper_i_get_payload,
 	0);

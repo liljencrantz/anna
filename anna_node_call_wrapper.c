@@ -286,7 +286,7 @@ static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *st
 	node_call_wrapper_type,
 	2, e_argv, e_argn);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	node_call_wrapper_type,
 	anna_mid_get(L"count"), int_type,
 	&anna_node_call_wrapper_i_get_count, 0);
@@ -326,7 +326,7 @@ static anna_type_t *anna_node_create_call_wrapper_type(anna_stack_template_t *st
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(node_call_wrapper_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	node_call_wrapper_type,
 	anna_mid_get(L"function"), node_wrapper_type,
 	&anna_node_call_wrapper_i_get_function,

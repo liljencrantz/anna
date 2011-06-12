@@ -141,23 +141,23 @@ static void anna_function_type_base_create()
 	&anna_function_type_to_string,
 	string_type, 1, argv, argn);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	res, anna_mid_get(L"name"), string_type,
 	&anna_function_type_i_get_name, 0);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	res, anna_mid_get(L"outputType"),
 	type_type,
 	&anna_function_type_i_get_output,
 	0);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	res, anna_mid_get(L"inputType"),
 	anna_list_type_get(type_type),
 	&anna_function_type_i_get_input_type,
 	0);
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	res, anna_mid_get(L"inputName"),
 	anna_list_type_get(string_type),
 	&anna_function_type_i_get_input_name,

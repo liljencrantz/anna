@@ -45,7 +45,7 @@ static anna_type_t *anna_node_create_dummy_wrapper_type(anna_stack_template_t *s
 	argv,
 	argn);
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	node_dummy_wrapper_type,
 	anna_mid_get(L"payload"), object_type,
 	&anna_node_dummy_wrapper_i_get_payload, 0);

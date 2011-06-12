@@ -48,7 +48,7 @@ static anna_type_t *anna_node_create_closure_wrapper_type(
 	argv,
 	argn);
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type, anna_mid_get(L"payload"),
 	function_type_base,
 	&anna_node_closure_wrapper_i_get_payload,

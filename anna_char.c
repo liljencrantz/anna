@@ -90,18 +90,18 @@ void anna_char_type_create(anna_stack_template_t *stack)
 
     anna_member_create(char_type, ANNA_MID_CHAR_PAYLOAD, 0, null_type);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	char_type, anna_mid_get(L"ordinal"),
 	int_type, &anna_char_i_get_ordinal, 0);
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	char_type,
 	anna_mid_get(L"upper"),
 	char_type,
 	&anna_char_i_get_upper,
 	0);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	char_type,
 	anna_mid_get(L"lower"),
 	char_type,

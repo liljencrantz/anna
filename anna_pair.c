@@ -131,11 +131,11 @@ static void anna_pair_type_create_internal(
 	&anna_pair_init, type, 3, argv, argn);    
     
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type, anna_mid_get(L"first"), spec1,
 	&anna_pair_get_first_i,
 	&anna_pair_set_first_i);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type,
 	anna_mid_get(L"second"),
 	spec2,

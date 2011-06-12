@@ -47,7 +47,7 @@ static anna_type_t *anna_node_create_string_literal_wrapper_type(anna_stack_temp
 	argv,
 	argn);
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	node_string_literal_wrapper_type,
 	anna_mid_get(L"payload"), string_type,
 	&anna_node_string_literal_wrapper_i_get_name,

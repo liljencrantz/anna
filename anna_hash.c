@@ -1148,7 +1148,7 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_method(type, anna_mid_get(L"__init__"),
                                      ANNA_FUNCTION_VARIADIC, &anna_hash_init,
                                      type, 2, i_argv, i_argn);
-    anna_native_property_create(type, anna_mid_get(L"count"), int_type,
+    anna_member_create_native_property(type, anna_mid_get(L"count"), int_type,
                                 &anna_hash_get_count_method, 0);
 
 

@@ -252,7 +252,7 @@ void anna_float_type_create(anna_stack_template_t *stack)
 	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
     
-    anna_native_property_create(
+    anna_member_create_native_property(
 	float_type, anna_mid_get(L"maxExponent"),
 	int_type, &anna_float_max_exponent, 0);
     

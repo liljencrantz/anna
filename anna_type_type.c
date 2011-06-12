@@ -100,10 +100,10 @@ void anna_type_type_create2(anna_stack_template_t *stack)
 	}
     ;
 
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type_type, anna_mid_get(L"name"),
 	string_type, &anna_type_to_string, 0);
-    anna_native_property_create(
+    anna_member_create_native_property(
 	type_type,
 	anna_mid_get(L"member"),
 	anna_list_type_get(member_type),

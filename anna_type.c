@@ -637,7 +637,7 @@ static void anna_type_prepare_property(
 	    setter_offset = s_memb->offset;
 	}
 
-	anna_property_create(
+	anna_member_create_property(
 	    type, anna_mid_get(decl->name),
 	    decl->return_type, getter_offset, setter_offset);
     }
