@@ -167,7 +167,6 @@ static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 	L"Function %ls, offset %d\n", 
 	stack->function?stack->function->name:L"<null>", 
 	stack->function? (stack->code - stack->function->code): -1);
-    
 }
 
 
@@ -311,16 +310,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
   ANNA_LAB_CALL:
     {
-	
-	if(unlikely(anna_alloc_count > GC_FREQ))
+	if(is_root)
 	{
-	    if(is_root)
-	    {
-		
-		anna_alloc_count=0;
-		anna_gc(stack);
-	    }
+	    anna_alloc_check_gc(stack);
 	}
+	
 	anna_op_count_t *op = (anna_op_count_t *)stack->code;
 	size_t param = op->param;
 	anna_object_t *wrapped = anna_vmstack_peek_object_fast(stack, param);

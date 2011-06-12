@@ -149,6 +149,7 @@ static void anna_module_init_recursive(
       CLEANUP:
 	free(d_name);
     }
+    closedir(dir);
     sb_destroy(&fn);
 }
 

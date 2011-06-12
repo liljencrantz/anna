@@ -18,7 +18,9 @@
 #include "anna_type.h"
 
 array_list_t anna_alloc = AL_STATIC;
+int anna_alloc_tot=0;
 int anna_alloc_count=0;
+int anna_alloc_count_next_gc=1024*1024;
 int anna_alloc_gc_block_counter;
 int anna_alloc_run_finalizers=1;
 
@@ -498,7 +500,7 @@ static void anna_alloc_free(void *obj)
 			&o);
 		}
 	    }
-	    
+	    anna_alloc_count -= o->type->object_size;
 	    anna_slab_free(obj, o->type->object_size);
 	    break;
 	}
@@ -529,6 +531,7 @@ static void anna_alloc_free(void *obj)
 	    hash_destroy(&o->name_identifier);
 	    free(o->mid_identifier);
 	    
+	    anna_alloc_count -= sizeof(anna_type_t);
 	    anna_slab_free(obj, sizeof(anna_type_t));
 	    break;
 	}
@@ -539,6 +542,7 @@ static void anna_alloc_free(void *obj)
 		free(o);
 		return;
 	    }
+	    anna_alloc_count -= o->function->frame_size;
 	    anna_slab_free(o, o->function->frame_size);
 	    break;
 	}
@@ -549,6 +553,7 @@ static void anna_alloc_free(void *obj)
 	    free(o->input_type);
 	    free(o->input_name);
 	    
+	    anna_alloc_count -= sizeof(anna_function_t);
 	    anna_slab_free(obj, sizeof(anna_function_t));
 	    break;
 	}
@@ -601,6 +606,7 @@ static void anna_alloc_free(void *obj)
 	    al_destroy(&o->import);
 	    hash_foreach(&o->member_string_identifier, free_val);
 	    hash_destroy(&o->member_string_identifier);
+	    anna_alloc_count -= sizeof(anna_stack_template_t);
 	    anna_slab_free(obj, sizeof(anna_stack_template_t));
 	    break;
 	}
@@ -610,6 +616,7 @@ static void anna_alloc_free(void *obj)
 	    
 	    int *blob = (int *)obj;
 	    size_t sz = blob[1];
+	    anna_alloc_count -= sz;
 	    anna_slab_free(obj, sz);
 	    break;
 	}
@@ -635,10 +642,13 @@ void anna_gc(anna_vmstack_t *stack)
     if(anna_alloc_gc_block_counter)
 	return;
 
+    
+    
     anna_alloc_gc_block();
     size_t i;
 
 #ifdef ANNA_CHECK_GC_LEAKS
+    int old_anna_alloc_count = anna_alloc_count;
     int s_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
     for(i=0; i<al_get_count(&anna_alloc); i++)
     {
@@ -746,9 +756,22 @@ void anna_gc(anna_vmstack_t *stack)
     {
 	wprintf(L"Collected %d elements of type %ls, after gc, %d elements remain\n", s_count[i] - o_count[i] , name[i], o_count[i]);
     }
+
+    int old_anna_alloc_tot = anna_alloc_tot;
     
 #endif
-
+    
+    anna_alloc_tot += anna_alloc_count;
+    anna_alloc_count = 0;
+    anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 1, 1024*1024*8);
+    
+#ifdef ANNA_CHECK_GC_LEAKS
+    wprintf(
+	L"Collected %d bytes. %d bytes currently in use. Next GC in %d bytes\n",
+	old_anna_alloc_tot + old_anna_alloc_count - anna_alloc_tot,
+	anna_alloc_tot, 
+	anna_alloc_count_next_gc);
+#endif
     
 //    wprintf(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
     anna_alloc_gc_unblock();

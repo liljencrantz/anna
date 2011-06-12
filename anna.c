@@ -32,6 +32,7 @@ char **anna_argv;
  */
 static void anna_init()
 {
+    anna_int_init();
     anna_type_init();
     
     anna_mid_init();

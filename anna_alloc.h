@@ -7,12 +7,30 @@
 #include "anna_slab.h"
 
 extern array_list_t anna_alloc;
+/*
+  The total amount of memory allocated at the last time the garbage
+  collector was run
+ */
+extern int anna_alloc_tot;
+/*
+  The total amount of memory allocated after the last time the garbage
+  collector was run
+ */
 extern int anna_alloc_count;
 extern int anna_alloc_obj_count;
+extern int anna_alloc_count_next_gc;
 void anna_gc(anna_vmstack_t *stack);
 void anna_gc_destroy(void);
 
 #define GC_FREQ (1024*1024*4)
+
+static inline void anna_alloc_check_gc(anna_vmstack_t *stack)
+{
+    if(unlikely(anna_alloc_count >= anna_alloc_count_next_gc))
+    {
+	anna_gc(stack);
+    }
+}
 
 static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 {

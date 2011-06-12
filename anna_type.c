@@ -501,6 +501,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        }
     }
 
+    free(copied);
 }
 
 static void anna_type_prepare_member_internal(

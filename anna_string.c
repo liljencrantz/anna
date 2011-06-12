@@ -355,7 +355,6 @@ static anna_vmstack_t *anna_string_convert(anna_vmstack_t *stack, anna_object_t 
 	    );
     }
     return stack;
-    
 }
 
 static anna_vmstack_t *anna_string_ljoin_callback(anna_vmstack_t *stack, anna_object_t *me)
@@ -574,7 +573,7 @@ static anna_vmstack_t *anna_string_del(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    asi_truncate(as_unwrap(this), 0);
+    asi_destroy(as_unwrap(this));
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_object(stack, this);
     return stack;    

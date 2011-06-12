@@ -21,6 +21,33 @@
 
 #include "anna_int_i.c"
 
+static void *anna_int_alloc(size_t sz)
+{
+    anna_alloc_count += sz;
+    return malloc(sz);
+}
+
+static void *anna_int_realloc(void *ptr, size_t osz, size_t nsz)
+{
+    anna_alloc_count += nsz;
+    anna_alloc_count -= osz;
+    return realloc(ptr, nsz);
+}
+
+static void anna_int_free(void *ptr, size_t sz)
+{
+    anna_alloc_count -= sz;
+    free(ptr);
+}
+
+void anna_int_init(void)
+{
+    mp_set_memory_functions (
+	&anna_int_alloc,
+	&anna_int_realloc,
+	&anna_int_free);
+}
+
 static void anna_int_set(anna_object_t *this, long value)
 {
     mpz_init(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
@@ -88,7 +115,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this)
     return anna_from_obj(this);
 }
 
-static anna_vmstack_t *anna_int_init(anna_vmstack_t *stack, anna_object_t *me)
+static anna_vmstack_t *anna_int_init_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
     //wprintf(L"LALALA %d %d\n", param[0], param[1]);
@@ -302,7 +329,7 @@ void anna_int_type_create(anna_stack_template_t *stack)
     
     anna_member_create_native_method(
 	int_type, anna_mid_get(L"__init__"), 0,
-	&anna_int_init, object_type, 2, ii_argv,
+	&anna_int_init_i, object_type, 2, ii_argv,
 	ii_argn);
     
     anna_member_create_native_method(

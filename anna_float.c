@@ -218,6 +218,12 @@ void anna_float_type_create(anna_stack_template_t *stack)
 	1,
 	argv,
 	argn);
+
+/*
+    anna_member_create_native_method(
+	float_type, anna_mid_get(L"format"), 0,
+	&anna_float_format, string_type, 2, argv, argn);    
+*/
     
     wchar_t *conv_argn[]=
 	{

@@ -8,7 +8,6 @@
 * HTML api documentation
 * Introduction
 * Check that node each, node hash and all other node functions support all ast node types
-* Default argument values
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
@@ -26,6 +25,7 @@
 * Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
 * switchCast macro
+* Default argument values
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
