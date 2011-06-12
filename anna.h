@@ -407,9 +407,7 @@ typedef struct anna_vmstack anna_vmstack_t;
 typedef struct anna_type anna_type_t;
 typedef struct anna_member anna_member_t;
 typedef struct anna_object anna_object_t;
-typedef struct anna_frame anna_frame_t;
 typedef struct anna_function anna_function_t;
-typedef struct anna_node_list anna_node_list_t;
 
 typedef struct 
 {
@@ -443,40 +441,6 @@ void anna_function_implementation_init(
     struct anna_stack_template *stack);
 
 /**
-  Return the anna_type_t contained in the specified anna_type_t.wrapper
- */
-anna_type_t *anna_type_unwrap(
-    anna_object_t *wrapper);
-
-anna_object_t *anna_function_wrapped_invoke(
-    anna_object_t *function,
-    anna_object_t *this,
-    size_t param_count,
-    struct anna_node **param, 
-    struct anna_stack_template *local);
-
-anna_object_t *anna_function_invoke_values(
-    anna_function_t *function, 
-    anna_object_t *this,
-    anna_object_t **param,
-    struct anna_stack_template *outer);
-
-/**
-   \param function the function to invoke
-   \param this the value of the this parameter
-   \param param the ast call that invoked the function, which containz the argument list for the function
-   \param stack the stack
-   \param Don't know?
- */
-anna_object_t *anna_function_invoke(
-    anna_function_t *function, 
-    anna_object_t *this,
-    size_t param_count,
-    struct anna_node **param,
-    struct anna_stack_template *param_invoke_stack,
-    struct anna_stack_template *function_parent_stack);
-
-/**
    \param macro the macro to invoke
    \param node the ast node to transform
 */
@@ -486,10 +450,6 @@ struct anna_node *anna_macro_invoke(
 
 void anna_function_type_print(
     anna_function_type_t *k);
-
-anna_object_t *anna_construct(
-    anna_type_t *type, struct anna_node_call *param,
-    struct anna_stack_template *stack);
 
 static __pure inline anna_entry_t **anna_entry_get_addr(
     anna_object_t *obj, mid_t mid)
@@ -545,17 +505,11 @@ int anna_abides_fault_count(
     anna_type_t *contender, anna_type_t *role_model);
 void anna_abides_init(void);
 
-
 anna_type_t *anna_type_intersect(
     anna_type_t *t1, anna_type_t *t2);
 
 void anna_error(
     struct anna_node *node, wchar_t *msg, ...);
-
-int anna_type_setup(
-    anna_type_t *type, 
-    anna_function_t *function, 
-    anna_node_list_t *parent);
 
 anna_object_t *anna_object_create(
     anna_type_t *type);
@@ -564,9 +518,5 @@ anna_object_t *anna_object_create_raw(
 
 void anna_object_print(
     anna_object_t *obj);
-
-void anna_add_subtype(
-    anna_type_t *parent,
-    anna_type_t *child);
 
 #endif

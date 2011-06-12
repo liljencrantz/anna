@@ -15,6 +15,7 @@
 #include "anna_list.h"
 #include "anna_hash.h"
 #include "anna_mid.h"
+#include "anna_type.h"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_count=0;

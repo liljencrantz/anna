@@ -205,9 +205,6 @@ static inline anna_node_t *anna_macro_continue_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_continue)
 
-
-
-#include "anna_macro_attribute.c"
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
 

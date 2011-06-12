@@ -12,6 +12,12 @@
 #define ANNA_TYPE_SPECIALIZED 8192
 #define ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS (8192*2)
 
+/**
+  Return the anna_type_t contained in the specified anna_type_t.wrapper
+ */
+anna_type_t *anna_type_unwrap(
+    anna_object_t *wrapper);
+
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition);
 
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type);
