@@ -99,6 +99,16 @@ static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
     */
 }
 
+static inline int anna_function_is_variadic(anna_function_t *f)
+{
+    return !!(f->flags & ANNA_FUNCTION_VARIADIC);
+}
+
+static inline int anna_function_type_is_variadic(anna_function_type_t *f)
+{
+    return !!(f->flags & ANNA_FUNCTION_VARIADIC);
+}
+
 __pure anna_object_t *anna_function_wrap(anna_function_t *result);
 
 int anna_function_prepared(anna_function_t *t);

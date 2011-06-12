@@ -39,7 +39,7 @@ static anna_object_t *anna_static_invoke_as_access(
 	(anna_node_t *)&fake, stack);
 }
 
-static int anna_short_circut_instr_int_int(int mid)
+static int anna_short_circut_instr_int_int(mid_t mid)
 {
     
     if((mid >= ANNA_MID_ADD_INT) && (mid <= ANNA_MID_BITXOR_INT))
@@ -54,7 +54,7 @@ static int anna_short_circut_instr_int_int(int mid)
     return 0;
 }
 
-static int anna_short_circut_instr_float_float(int mid)
+static int anna_short_circut_instr_float_float(mid_t mid)
 {
     if((mid >= ANNA_MID_ADD_FLOAT) && (mid <= ANNA_MID_DECREASE_ASSIGN_FLOAT))
 	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
@@ -544,7 +544,7 @@ static void anna_vm_compile_i(
 	    int i;
 	    
 	    
-	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    if(anna_function_type_is_variadic(template))
 	    {
 		ra--;
 	    }
@@ -552,7 +552,7 @@ static void anna_vm_compile_i(
 	    {
 		anna_vm_compile_i(fun, node2->child[i], ptr, 0, flags);		
 	    }
-	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    if(anna_function_type_is_variadic(template))
 	    {
 		anna_vm_type(
 		    ptr,
@@ -811,7 +811,7 @@ flags);
 	    int i;
 	    
 	    int ra = template->input_count-(mem->is_bound_method?1:0);
-	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    if(anna_function_type_is_variadic(template))
 	    {
 		ra--;
 	    }
@@ -819,7 +819,7 @@ flags);
 	    {
 		anna_vm_compile_i(fun, node2->child[i], ptr, 0, flags);		
 	    }
-	    if(template->flags & ANNA_FUNCTION_VARIADIC)
+	    if(anna_function_type_is_variadic(template))
 	    {
 		anna_vm_type(
 		    ptr,

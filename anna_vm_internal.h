@@ -193,7 +193,7 @@ typedef struct
 typedef struct
 {
     char instruction;
-    int mid;
+    mid_t mid;
 }
     anna_op_member_t;
 

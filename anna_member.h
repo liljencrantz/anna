@@ -21,7 +21,7 @@ anna_member_t *anna_member_method_search(
 
 mid_t anna_member_create(
     anna_type_t *type,
-    int mid,
+    mid_t mid,
     int storage,
     anna_type_t *member_type);
 

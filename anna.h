@@ -12,7 +12,6 @@ struct anna_member;
 struct anna_node_call;
 struct anna_stack_template;
 struct anna_function;
-struct anna_node_list;
 struct anna_vmstack;
 
 typedef struct anna_vmstack *(*anna_native_t)( struct anna_vmstack *, struct anna_object *);
@@ -380,16 +379,6 @@ struct anna_function
     size_t variable_count;
 };
 
-#define ANNA_IS_MACRO(f) (!!((f)->flags & ANNA_FUNCTION_MACRO))
-#define ANNA_IS_VARIADIC(f) (!!((f)->flags & ANNA_FUNCTION_VARIADIC))
-
-struct anna_node_list
-{
-    struct anna_node *node;
-    size_t idx;
-    struct anna_node_list *parent;
-};
-
 struct anna_vmstack
 {
     int flags;
@@ -402,8 +391,6 @@ struct anna_vmstack
 };
 
 typedef struct anna_vmstack anna_vmstack_t;
-
-
 typedef struct anna_type anna_type_t;
 typedef struct anna_member anna_member_t;
 typedef struct anna_object anna_object_t;
@@ -411,9 +398,9 @@ typedef struct anna_function anna_function_t;
 
 typedef struct 
 {
+    int flags;
     anna_type_t *return_type;
     size_t input_count;
-    int flags;
     wchar_t **input_name;
     anna_type_t *input_type[];
 } anna_function_type_t;
@@ -426,7 +413,6 @@ extern struct anna_stack_template *stack_global;
 
 extern int anna_argc;
 extern char **anna_argv;
-
 
 static inline size_t anna_align(size_t sz)
 {
@@ -451,6 +437,11 @@ struct anna_node *anna_macro_invoke(
 void anna_function_type_print(
     anna_function_type_t *k);
 
+/**
+   Return the memory address location for the object entry with the
+   specified mid in the specified object, or a null pointer if it does
+   not exist.
+ */
 static __pure inline anna_entry_t **anna_entry_get_addr(
     anna_object_t *obj, mid_t mid)
 {
@@ -469,13 +460,28 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
     }
 }
 
+/**
+   Return the object entry with the specified mid in the specified
+   object. Causes undefined behavior if the object has no such
+   member. If you need to check if the entry exists, use
+   anna_entry_get_addr instead.
+ */
 static __pure inline anna_entry_t *anna_entry_get(
     anna_object_t *obj, mid_t mid)
 {
-    return *anna_entry_get_addr(obj, mid);
+    anna_member_t *m = obj->type->mid_identifier[mid];
+    if(m->is_static) {
+	return obj->type->static_member[m->offset];
+    } else {
+	return (obj->member[m->offset]);
+    }
 }
 
-
+/**
+   Return the memory address location for the object entry with the
+   specified mid in the specified type, or a null pointer if it does
+   not exist. If the entry does not exist, or is not static, null is returned.
+ */
 static __pure inline anna_entry_t **anna_entry_get_addr_static(
     anna_type_t *type, mid_t mid)
 {
@@ -492,10 +498,17 @@ static __pure inline anna_entry_t **anna_entry_get_addr_static(
     }
 }
 
+/**
+   Return the object entry with the specified mid in the specified
+   type. Causes undefined behavior if the object has no such member or
+   if the member is not static. If you need to check if the entry
+   exists, use anna_entry_get_addr_static instead.
+ */
 static __pure inline anna_entry_t *anna_entry_get_static(
     anna_type_t *type, mid_t mid)
 {
-    return *anna_entry_get_addr_static(type, mid);
+    anna_member_t *m = type->mid_identifier[mid];
+    return type->static_member[m->offset];
 }
 
 int anna_abides(
