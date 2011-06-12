@@ -35,16 +35,13 @@ typedef struct
 }
     anna_node_find_each_t;
 
-
-
 #include "anna_node_specialize.c"
 #include "anna_node_macro_expand.c"
 #include "anna_node_prepare.c"
 
 anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
 {
-    anna_node_wrapper_t *d = (anna_node_wrapper_t *)node;
-    return d->payload;
+    return ((anna_node_wrapper_t *)node)->payload;
 }
 
 anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
@@ -900,7 +897,6 @@ int anna_node_call_validate(
     free(set);
     return res;
 }
-
 
 void anna_node_call_map(
     anna_node_call_t *call, 

@@ -14,26 +14,6 @@ static anna_type_t *anna_method_curry(anna_function_type_t *fun)
     return res->wrapper->type;
 }
 
-static void try_hint(
-    anna_function_t *closure,
-    anna_function_type_t *template)
-{    
-    int j;
-    if(template)
-    {
-	for(j=0; j<template->input_count; j++)
-	{
-	    anna_function_argument_hint(
-		closure,
-		j,
-		template->input_type[j]);
-	}
-    }
-}
-
-int blabla = 0;
-
-
 static void anna_node_calculate_type_param(
     size_t argc,
     anna_node_t **argv,
@@ -52,29 +32,15 @@ static void anna_node_calculate_type_param(
 	    anna_node_print(5, argv[i]);
 	}
 	
-	if(argv[i]->node_type == ANNA_NODE_CLOSURE)
-	{
-	    anna_node_closure_t *c = (anna_node_closure_t *)argv[i];
-	    try_hint(c->payload, template);
-	}
-	else if(argv[i]->node_type == ANNA_NODE_IDENTIFIER)
+	if(argv[i]->node_type == ANNA_NODE_IDENTIFIER)
 	{
 	    anna_object_t *fun_obj = anna_node_static_invoke_try(
 		argv[i],
 		argv[i]->stack);
-	    if(blabla)
-	    {
-		wprintf(L"%d\n", fun_obj);
-		CRASH;
-	    }	
 
 	    if(fun_obj)
 	    {
 		anna_function_t *closure = anna_function_unwrap(fun_obj);
-		if(closure)
-		{
-		    try_hint(closure, template);
-		}		
 	    }	    
 	}
     }
@@ -485,9 +451,6 @@ static void anna_node_calculate_type_internal(
 	    {
 		anna_function_type_t *funt = anna_function_type_unwrap(member->type);
 		n->return_type = funt->return_type;
-		if(n->mid == anna_mid_get(L"__map__"))
-		    blabla=1;
-		
 	    
 		anna_node_calculate_type_param(n->child_count, n->child, 1, funt);
 	    }
@@ -818,7 +781,7 @@ static void anna_node_calculate_type_internal(
     }
 }
 
-void anna_node_prepare_body(
+static void anna_node_prepare_body(
     anna_node_t *this)
 {
     switch(this->node_type)
@@ -855,14 +818,6 @@ void anna_node_calculate_type(
     {
 	
 	this->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
-/*	
-	int i;
-	for(i=0; i<al_get_count(&this->dependencies); i++)
-	{
-	    anna_node_t *dep = (anna_node_t *)al_get(&this->dependencies, i);
-	    anna_node_calculate_type(dep);
-	}
-*/
 	anna_node_calculate_type_internal( this );
     }
     debug(D_SPAM, L"Done\n");

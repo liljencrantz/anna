@@ -73,7 +73,6 @@ struct anna_node
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 };
 
@@ -84,7 +83,6 @@ struct anna_node_identifier
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     wchar_t *name;
@@ -98,7 +96,6 @@ struct anna_node_cond
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     struct anna_node *arg1;
@@ -112,7 +109,6 @@ struct anna_node_if
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     struct anna_node *cond;
@@ -127,7 +123,6 @@ struct anna_node_assign
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     wchar_t *name;
@@ -142,7 +137,6 @@ struct anna_node_declare
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     wchar_t *name;
@@ -159,7 +153,6 @@ struct anna_node_member_access
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     mid_t mid;
@@ -175,7 +168,6 @@ struct anna_node_call
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     mid_t mid;
@@ -197,7 +189,6 @@ struct anna_node_string_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     size_t payload_size;
@@ -211,7 +202,6 @@ struct anna_node_char_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     wchar_t payload;
@@ -224,7 +214,6 @@ struct anna_node_int_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     mpz_t payload;
@@ -237,7 +226,6 @@ struct anna_node_dummy
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     struct anna_object *payload;
@@ -250,7 +238,6 @@ struct anna_node_closure
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     struct anna_function *payload;
@@ -263,7 +250,6 @@ struct anna_node_type
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     struct anna_type *payload;
@@ -276,7 +262,6 @@ struct anna_node_float_literal
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     double payload;
@@ -289,7 +274,6 @@ struct anna_node_wrapper
     struct anna_object *wrapper;
     anna_location_t location;
     anna_type_t *return_type;
-    array_list_t dependencies;
     anna_stack_template_t *stack;    
 
     struct anna_node *payload;
@@ -315,8 +299,9 @@ typedef struct anna_node_wrapper anna_node_wrapper_t;
 
 extern int anna_yacc_error_count;
 
-void anna_node_set_location(anna_node_t *node, 
-			    anna_location_t *l);
+void anna_node_set_location(
+    anna_node_t *node, 
+    anna_location_t *l);
 
 void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
@@ -367,13 +352,11 @@ void anna_node_set_stack(
 void anna_node_calculate_type(
     anna_node_t *this);
 
-
 /**
    Check the validity of the code. This should only be run after the
    AST has been prepared.
 */
 void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack);
-
 
 /**
    Returns the return type of the specified AST node
@@ -437,9 +420,6 @@ void anna_node_each(
 void anna_node_find(
     anna_node_t *tree, int node_type, array_list_t *al);
 
-void anna_node_prepare_body(
-    anna_node_t *this);
-
 /**
    Check if the node is a call node with an identifier with the
    specified name as its function.
@@ -456,10 +436,6 @@ int anna_node_is_named(
     wchar_t *name);
 
 void anna_yacc_init(void);
-
-anna_object_t *anna_trampoline(
-    anna_function_t *fun,
-    anna_stack_template_t *stack);
 
 anna_object_t *anna_node_static_invoke_try(
     anna_node_t *this, 
