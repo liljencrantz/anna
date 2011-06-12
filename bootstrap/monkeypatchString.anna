@@ -31,7 +31,7 @@ def String __format__List__(
   	        i++;
                 res ~= '%'
             } else {
-                res ~= data[listIdx].toString();
+                res ~= String.convert(data[listIdx]);
                 listIdx++;
             }
         } else

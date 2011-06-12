@@ -289,6 +289,15 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	}
     ;
     
+    wchar_t *conv_argn[]=
+	{
+	    L"value"
+	}
+    ;
+
+    mid_t mmid;
+    anna_function_t *fun;
+
     anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     
     anna_member_create_native_method(
@@ -320,15 +329,6 @@ void anna_int_type_create(anna_stack_template_t *stack)
 	1,
 	i_argv,
 	i_argn);
-
-    wchar_t *conv_argn[]=
-	{
-	    L"value"
-	}
-    ;
-
-    mid_t mmid;
-    anna_function_t *fun;
 
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertString"),

@@ -302,6 +302,62 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
     
 }
 
+static anna_vmstack_t *anna_string_convert_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_object_t *str_obj = anna_vmstack_pop_object(stack);
+    anna_object_t *res = null_object;
+    if(str_obj->type == string_type)
+    {
+	anna_string_t *str = as_unwrap(str_obj);
+	res = anna_object_create(string_type);
+
+	asi_init(as_unwrap(res));
+	asi_append(as_unwrap(res), str, 0, asi_get_count(str));
+    }
+    anna_vmstack_pop_entry(stack);
+    anna_vmstack_push_object(stack, res);
+    return stack;
+}
+
+static anna_vmstack_t *anna_string_convert(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t *e = anna_vmstack_pop_entry(stack);
+    anna_vmstack_pop_entry(stack);
+    
+    if(anna_entry_null(e))
+    {
+	anna_vmstack_push_entry(stack, e);
+    }
+    else if(anna_is_int_small(e))
+    {	
+	anna_object_t *res = anna_object_create(string_type);
+	wchar_t is[32];
+	swprintf(is, 32, L"%d", anna_as_int(e));
+	asi_init(as_unwrap(res));
+	asi_append_cstring(as_unwrap(res), is, wcslen(is));	
+	anna_vmstack_push_object(stack, res);
+    }
+    else
+    {
+	anna_object_t *o = anna_as_obj(e);
+	
+	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
+	anna_entry_t *o_param[] =
+	    {
+		anna_from_obj(o)
+	    }
+	;
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_string_convert_callback, 0, 0,
+	    fun_object, 1, o_param
+	    );
+    }
+    return stack;
+    
+}
+
 static anna_vmstack_t *anna_string_ljoin_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
     anna_object_t *value = anna_vmstack_pop_object(stack);
@@ -766,7 +822,18 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	i_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
     anna_function_alias_add(fun, L"__set__");
-
+    
+    wchar_t *conv_argn[]=
+	{
+	    L"value"
+	}
+    ;
+    
+    mmid = anna_member_create_native_type_method(
+	string_type, anna_mid_get(L"convert"),
+	0, &anna_string_convert, string_type,
+	1, &object_type, conv_argn);
+    
     anna_type_t *range_argv[] = 
 	{
 	    string_type,
