@@ -102,3 +102,43 @@ def String __filter__(
     return res;
 }
 
+def String lpad(
+    String this,
+    Char char,
+    Int minimumCount)
+(
+    target(String)
+)
+{
+    if(this.count > minimumCount)
+    {
+	return this;
+    }
+    res := "";
+    (0..(minimumCount - this.count)).each(i)
+    {
+	res ~= char;
+    }
+    res ~= this;
+    return res;
+}
+
+def String rpad(
+    String this,
+    Char char,
+    Int minimumCount)
+(
+    target(String)
+)
+{
+    if(this.count > minimumCount)
+    {
+	return this;
+    }
+    res := "" ~ this;
+    (0..(minimumCount - this.count)).each(i)
+    {
+	res ~= char;
+    }
+    return res;
+}
