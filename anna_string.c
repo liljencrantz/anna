@@ -650,17 +650,18 @@ static anna_vmstack_t *anna_string_hash_i(anna_vmstack_t *stack, anna_object_t *
 }
 
 
-void anna_string_type_create(anna_stack_template_t *stack)
+static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 {
     mid_t mmid;
     anna_function_t *fun;
 
-    anna_member_create_blob(string_type, ANNA_MID_STRING_PAYLOAD, 0,
-                            sizeof(anna_string_t));
+    anna_member_create_blob(
+	type, ANNA_MID_STRING_PAYLOAD, 0,
+	sizeof(anna_string_t));
     
     anna_type_t *i_argv[] = 
 	{
-	    string_type,
+	    type,
 	    int_type,
 	    char_type
 	}
@@ -674,7 +675,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
     
     anna_type_t *c_argv[] = 
 	{
-	    string_type,
+	    type,
 	    object_type
 	}
     ;
@@ -687,7 +688,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
     
     anna_type_t *o_argv[] = 
 	{
-	    string_type,
+	    type,
 	    object_type
 	}
     ;
@@ -699,29 +700,29 @@ void anna_string_type_create(anna_stack_template_t *stack)
     ;
     
     anna_member_create_native_method(
-	string_type, anna_mid_get(L"__init__"),
-	0, &anna_string_i_init, string_type, 1,
+	type, anna_mid_get(L"__init__"),
+	0, &anna_string_i_init, type, 1,
 	o_argv, o_argn);    
     
     anna_member_create_native_method(
-	string_type, ANNA_MID_DEL, 0,
+	type, ANNA_MID_DEL, 0,
 	&anna_string_del, object_type, 1,
 	o_argv, o_argn);    
     
     anna_member_create_native_method(
-	string_type, anna_mid_get(L"__cmp__"),
+	type, anna_mid_get(L"__cmp__"),
 	0, &anna_string_cmp_i, int_type, 2,
 	c_argv, c_argn);    
     
     mmid = anna_member_create_native_method(
-	string_type,
+	type,
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_string_i_get_int,
 	char_type,
 	2,
 	i_argv,
 	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
 
@@ -733,15 +734,15 @@ void anna_string_type_create(anna_stack_template_t *stack)
     
     anna_type_t *join_argv[] = 
 	{
-	    string_type,
+	    type,
 	    object_type
 	}
     ;
 
     mmid = anna_member_create_native_method(
-	string_type,
+	type,
 	anna_mid_get(L"__join__"), 0,
-	&anna_string_i_join, string_type,
+	&anna_string_i_join, type,
 	2, join_argv, join_argn);
     
     wchar_t *ljoin_argn[] =
@@ -752,22 +753,22 @@ void anna_string_type_create(anna_stack_template_t *stack)
     
     anna_type_t *ljoin_argv[] = 
 	{
-	    string_type,
+	    type,
 	    list_type
 	}
     ;
 
     anna_member_create_native_method(
-	string_type, anna_mid_get(L"join"), 0,
-	&anna_string_i_ljoin, string_type, 2,
+	type, anna_mid_get(L"join"), 0,
+	&anna_string_i_ljoin, type, 2,
 	ljoin_argv, ljoin_argn);
     
     mmid = anna_member_create_native_method(
-	string_type,
+	type,
 	anna_mid_get(L"__appendAssign__"),
 	0,
 	&anna_string_i_append,
-	string_type,
+	type,
 	2,
 	join_argv,
 	join_argn);
@@ -786,7 +787,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
     ;
 */
     anna_member_create_native_property(
-	string_type, anna_mid_get(L"count"),
+	type, anna_mid_get(L"count"),
 	int_type, &anna_string_i_get_count,
 	&anna_string_i_set_count);
 
@@ -795,7 +796,7 @@ void anna_string_type_create(anna_stack_template_t *stack)
 
     anna_type_t *e_argv[] = 
 	{
-	    string_type,
+	    type,
 	    fun_type
 	}
     ;
@@ -807,19 +808,19 @@ void anna_string_type_create(anna_stack_template_t *stack)
     ;    
     
     anna_member_create_native_method(
-	string_type, anna_mid_get(L"__each__"),
-	0, &anna_string_i_each, string_type, 2,
+	type, anna_mid_get(L"__each__"),
+	0, &anna_string_i_each, type, 2,
 	e_argv, e_argn);
 
     mmid = anna_member_create_native_method(
-	string_type,
+	type,
 	anna_mid_get(L"__set__Int__"), 0,
 	&anna_string_i_set_int,
 	char_type,
 	3,
 	i_argv,
 	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
     
     wchar_t *conv_argn[]=
@@ -829,15 +830,15 @@ void anna_string_type_create(anna_stack_template_t *stack)
     ;
     
     mmid = anna_member_create_native_type_method(
-	string_type, anna_mid_get(L"convert"),
-	0, &anna_string_convert, string_type,
+	type, anna_mid_get(L"convert"),
+	0, &anna_string_convert, type,
 	1, &object_type, conv_argn);
     
     anna_type_t *range_argv[] = 
 	{
-	    string_type,
+	    type,
 	    range_type,
-	    string_type
+	    type
 	}
     ;
 
@@ -848,34 +849,34 @@ void anna_string_type_create(anna_stack_template_t *stack)
     ;
 
     mmid = anna_member_create_native_method(
-	string_type,
+	type,
 	anna_mid_get(L"__get__Range__"),
 	0,
 	&anna_string_i_get_range,
-	string_type,
+	type,
 	2,
 	range_argv,
 	range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
     mmid = anna_member_create_native_method(
-	string_type,
+	type,
 	anna_mid_get(L"__set__Range__"),
 	0,
 	&anna_string_i_set_range,
-	string_type,
+	type,
 	3,
 	range_argv,
 	range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(string_type, mmid)));
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
-    anna_member_create_native_method(string_type, ANNA_MID_TO_STRING, 0,
+    anna_member_create_native_method(type, ANNA_MID_TO_STRING, 0,
                                      &anna_string_to_string, string_type, 1,
                                      i_argv, i_argn);
     anna_member_create_native_method(
-	string_type,
+	type,
 	ANNA_MID_HASH_CODE,
 	0,
 	&anna_string_hash_i,
@@ -883,7 +884,12 @@ void anna_string_type_create(anna_stack_template_t *stack)
 	1,
 	i_argv,
 	i_argn);
-    
-    anna_string_type_i_create(stack);
-    
+
+    anna_string_type_i_create();
+}
+
+void anna_string_type_create(anna_stack_template_t *stack)
+{
+    anna_string_type_create_internal(string_type, 0);
+    anna_type_t *mutable_string_type = anna_type_native_create(L"MutableString", stack);    anna_string_type_create_internal(mutable_string_type, 1);
 }

@@ -162,7 +162,13 @@ static void anna_function_type_base_create()
 	anna_list_type_get(string_type),
 	&anna_function_type_i_get_input_name,
 	0);
-
+/*
+    anna_member_create_native_property(
+	res, anna_mid_get(L"attributes"),
+	node_call_wrapper_type,
+	&anna_function_type_i_get_attributes,
+	0);
+*/
     anna_type_copy_object(res);
 
     int i;
