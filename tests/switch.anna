@@ -60,4 +60,31 @@ def main()
 	    }
 	}
     }
+
+    [3, 4.0, "foo", 'g'].each(item)
+    {
+	switch(item)
+	{
+	    case(i as Int)
+	    {
+		print("It is an Int, its square is ", i*i, "\n");
+	    }
+
+	    case(f as Float)
+	    {
+		print("It is a Float, its square root is ", ^sqrt f, "\n");
+	    }
+
+	    case(s as String)
+	    {
+		print("It is a String, its length is ", s.count, "\n");
+	    }
+	    
+	    default
+	    {
+		print("Don't know, don't care\n");
+	    }
+	}
+    }
+
 }

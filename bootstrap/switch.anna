@@ -19,6 +19,12 @@ switch(someVariable)
         ...
     }
 
+    case(foo as Int)
+    {
+        print(foo+foo);
+        ...
+    }
+
     default
     {
         ...
@@ -30,9 +36,11 @@ The above code demonstrates the three types of conditional blocks permitted in a
 
 * The first one is the simple case expression, consisting of a series of permitted values and a block. If calling equals on the value supplied to switch returns true for any of the given values, the corresponding block will be run.
 
-* The second one id the cases expression, which takes any kind of collection as its value. If the value supplied to switch is contained in the set (checked using the in operator), then the corresponing block will be run.
+* The second one is the cases expression, which takes any kind of collection as its value. If the value supplied to switch is contained in the set (checked using the in operator), then the corresponing block will be run.
 
-* The last one is the default block. If none of the previous blocks match, the default block, if supplide, will be run. There can only be one default block in a switch expression, and it must be the last block.
+* The third one is a cast case. If the supplied value can be cast to the specified type (in the example above, an Int), then the block wil be run, and the value will available inside the block using the name specified. (In the example above, the variable foo will hold the value of someVariable cast to an Int)
+
+* The last one is the default block. If none of the previous blocks match, the default block, if supplied, will be run. There can only be one default block in a switch expression, and it must be the last block.
 
 Note that at most, one of the switch blocks are run, namely the first block to match. Also note that any type of values can be used in switch expressions, not just Int values.
 
@@ -58,32 +66,52 @@ Note that at most, one of the switch blocks are run, namely the first block to m
         checkNodeType(caseNode, Call);
         caseCall := caseNode as Call;
         next := ? as Call;
-	if(caseCall.isCallTo("case"))
+  	if(caseCall.isCallTo("case"))
 	{
-	    if(caseCall < 2)
+	    if(caseCall.count < 2)
 	    {
 		caseCall.error("Call has " ~ caseCall.count ~ " paramters, expected at least 2");
 		return NullLiteral(caseCall);
 		
 	    }
 	    checkNodeBlock(caseCall[-1]);
-//	print(caseCall[1]);
-  	    cond := makeCond(caseCall[0]);
-	    (1..(caseCall.count-1)).each(idx)
-	    {
-		cond = ast(%cond1 or %cond2) % [
-		    "cond1": cond,
-		    "cond2": makeCond(caseCall[idx])
-		    ]; 
-	    }
-	    next =
-		(
-		    ast(
-			__if__(%cond, %caseBody, {})
+            if(caseCall.count == 2 and caseCall[0].isCallTo( "cast"))
+            {
+                caseCast := caseCall[0] as Call;
+		checkCallCount(caseCast, 2);
+	        caseBody := ast({%varName := %val as %type});
+		(caseCall[-1] as Call).each(node){caseBody ~= [node]}
+		next = 
+		    (ast(
+			__if__(%val as %type, %caseBody, {})
 			) % [
-			    "cond": cond,
-			    "caseBody": caseCall[-1]
-			    ]) as Call;
+			    "caseBody": caseBody,
+                            ] % [
+                                "type": caseCast[1],
+                                "varName": caseCast[0],
+                                ]) as Call;
+//print(next);
+	    } else
+	    {
+		
+//	print(caseCall[1]);
+	        cond := makeCond(caseCall[0]);
+		(1..(caseCall.count-1)).each(idx)
+		{
+		    cond = ast(%cond1 or %cond2) % [
+			"cond1": cond,
+			"cond2": makeCond(caseCall[idx])
+			]; 
+		}
+		next =
+		    (
+			ast(
+			    __if__(%cond, %caseBody, {})
+			    ) % [
+				"cond": cond,
+				"caseBody": caseCall[-1]
+				]) as Call;
+	    }
 	} else
 	{
 	    if(caseCall.isCallTo("default"))
@@ -111,10 +139,10 @@ Note that at most, one of the switch blocks are run, namely the first block to m
 				    "items": caseCall[0],
 				    "caseBody": caseCall[-1]
 				    ]) as Call;
-		    
+                 
 		} else
 		{
-		    caseNode.error("Expected a case or default statement");
+                    caseNode.error("Expected a case or default statement");
 		    return NullLiteral(node);
 		}
 	    }
