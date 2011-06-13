@@ -29,7 +29,17 @@ char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
 
 static void anna_vmstack_print(anna_vmstack_t *stack);
 
+static inline void anna_frame_return(anna_vmstack_t *stack)
+{
+    if(stack->flags & ANNA_VMSTACK_STATIC)
+    {
+//	wprintf(L"-");
+//	wprintf(L"\n%d\n", anna_vmstack_static_ptr - &anna_vmstack_static_data[0]);
+	anna_vmstack_static_ptr -= stack->function->frame_size;
+    }
+}
 
+anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack);
 static inline anna_object_t *anna_vm_trampoline(
     anna_function_t *fun,
     anna_vmstack_t *stack)

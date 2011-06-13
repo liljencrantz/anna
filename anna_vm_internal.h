@@ -222,25 +222,6 @@ size_t anna_bc_op_size(char instruction);
 extern char *anna_vmstack_static_ptr;
 extern char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
 
-static inline anna_vmstack_t *anna_frame_get_static(size_t sz)
-{
-//    wprintf(L"+");
-    anna_vmstack_t *res = (anna_vmstack_t *)anna_vmstack_static_ptr;
-    anna_vmstack_static_ptr += sz; 
-    res->flags = ANNA_VMSTACK | ANNA_VMSTACK_STATIC;
-    return res;
-}
-
-static inline void anna_frame_return(anna_vmstack_t *stack)
-{
-    if(stack->flags & ANNA_VMSTACK_STATIC)
-    {
-//	wprintf(L"-");
-//	wprintf(L"\n%d\n", anna_vmstack_static_ptr - &anna_vmstack_static_data[0]);
-	anna_vmstack_static_ptr -= stack->function->frame_size;
-    }
-}
-
 anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack);
 
 static inline int anna_instr_is_short_circut(char instr)

@@ -27,6 +27,15 @@
 
 static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node);
 
+static inline anna_vmstack_t *anna_frame_get_static(size_t sz)
+{
+//    wprintf(L"+");
+    anna_vmstack_t *res = (anna_vmstack_t *)anna_vmstack_static_ptr;
+    anna_vmstack_static_ptr += sz; 
+    res->flags = ANNA_VMSTACK | ANNA_VMSTACK_STATIC;
+    return res;
+}
+
 static anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_object_t *wfun) {
     size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
     anna_vmstack_t *parent = *(anna_vmstack_t **)&wfun->member[stack_offset];
