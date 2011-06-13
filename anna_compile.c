@@ -27,6 +27,38 @@
 
 static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node);
 
+static anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_object_t *wfun) {
+    size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
+    anna_vmstack_t *parent = *(anna_vmstack_t **)&wfun->member[stack_offset];
+    anna_function_t *fun = anna_function_unwrap(wfun);
+    anna_vmstack_t *res = anna_frame_get_static(fun->frame_size);//anna_alloc_vmstack(fun->frame_size);
+    res->parent=parent;
+    res->caller = caller;
+    res->function = fun;
+    res->code = fun->code;
+    caller->top -= (fun->input_count+1);
+    memcpy(&res->base[0], caller->top+1,
+	   sizeof(anna_object_t *)*fun->input_count);
+    if(fun->input_count > fun->variable_count)
+    {
+	wprintf(
+	    L"AFDSFDSA %ls %d %d %d\n", 
+	    fun->name, fun->variable_count, fun->stack_template->count,
+	    fun->input_count);
+	anna_stack_print(fun->stack_template);
+	
+
+	CRASH;
+    }
+    
+    //wprintf(L"LALLLLAAA %d %d %d\n", fun->input_count, fun->variable_count, (char *)res - (char *)(&anna_vmstack_static_data[0]));
+    
+    memset(&res->base[fun->input_count], 0, sizeof(anna_object_t *)*(fun->variable_count-fun->input_count));
+    res->top = &res->base[fun->variable_count];
+    
+    return res;
+}
+
 static anna_object_t *anna_static_invoke_as_access(
     anna_node_call_t *node, 
     anna_stack_template_t *stack)
