@@ -21,6 +21,9 @@
 #include "anna_function.h"
 #include "anna_mid.h"
 
+anna_type_t *mutable_string_type = 0;
+static anna_type_t *string_intersection_type = 0;
+
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
     return (anna_string_t *)anna_entry_get_addr(obj,ANNA_MID_STRING_PAYLOAD);
@@ -52,6 +55,17 @@ anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 anna_object_t *anna_string_copy(anna_object_t *orig)
 {
     anna_object_t *obj= anna_object_create(string_type);
+    //  wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    
+    asi_init(as_unwrap(obj));
+    anna_string_t *o = as_unwrap(orig);
+    asi_append(as_unwrap(obj), o, 0, asi_get_count(o));
+    return obj;
+}
+
+anna_object_t *anna_mutable_string_copy(anna_object_t *orig)
+{
+    anna_object_t *obj= anna_object_create(mutable_string_type);
     //  wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init(as_unwrap(obj));
@@ -199,13 +213,31 @@ static anna_vmstack_t *anna_string_i_set_range(anna_vmstack_t *stack, anna_objec
     return stack;    
 }
 
-static anna_vmstack_t *anna_string_i_init(anna_vmstack_t *stack, anna_object_t *me)
+static anna_vmstack_t *anna_string_noop(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj(param[0]);
     asi_init(as_unwrap(this));
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_object(stack, this);
+    return stack;    
+}
+
+static anna_vmstack_t *anna_string_i_copy(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push_object(stack, anna_string_copy(this));
+    return stack;    
+}
+
+static anna_vmstack_t *anna_mutable_string_i_copy(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push_object(stack, anna_mutable_string_copy(this));
     return stack;    
 }
 
@@ -701,7 +733,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     anna_member_create_native_method(
 	type, anna_mid_get(L"__init__"),
-	0, &anna_string_i_init, type, 1,
+	0, &anna_string_noop, type, 1,
 	o_argv, o_argn);    
     
     anna_member_create_native_method(
@@ -767,11 +799,12 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	type,
 	anna_mid_get(L"__appendAssign__"),
 	0,
-	&anna_string_i_append,
+	mutable ? &anna_string_i_append : anna_string_i_join,
 	type,
 	2,
 	join_argv,
 	join_argn);
+
 /*
     wchar_t *ac_argn[] =
 	{
@@ -789,7 +822,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"),
 	int_type, &anna_string_i_get_count,
-	&anna_string_i_set_count);
+	mutable?&anna_string_i_set_count:0);
 
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!StringIterFunction", int_type, char_type);
@@ -812,17 +845,6 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	0, &anna_string_i_each, type, 2,
 	e_argv, e_argn);
 
-    mmid = anna_member_create_native_method(
-	type,
-	anna_mid_get(L"__set__Int__"), 0,
-	&anna_string_i_set_int,
-	char_type,
-	3,
-	i_argv,
-	i_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__set__");
-    
     wchar_t *conv_argn[]=
 	{
 	    L"value"
@@ -838,7 +860,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	{
 	    type,
 	    range_type,
-	    type
+	    string_intersection_type
 	}
     ;
 
@@ -860,36 +882,72 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
-    mmid = anna_member_create_native_method(
-	type,
-	anna_mid_get(L"__set__Range__"),
-	0,
-	&anna_string_i_set_range,
-	type,
-	3,
-	range_argv,
-	range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__set__");
-
     anna_member_create_native_method(type, ANNA_MID_TO_STRING, 0,
                                      &anna_string_to_string, string_type, 1,
                                      i_argv, i_argn);
-    anna_member_create_native_method(
-	type,
-	ANNA_MID_HASH_CODE,
-	0,
-	&anna_string_hash_i,
-	int_type,
-	1,
-	i_argv,
-	i_argn);
-
+    
+    
+    if(mutable)
+    {
+	mmid = anna_member_create_native_method(
+	    type,
+	    anna_mid_get(L"__set__Int__"), 0,
+	    &anna_string_i_set_int,
+	    char_type,
+	    3,
+	    i_argv,
+	    i_argn);
+	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+	anna_function_alias_add(fun, L"__set__");
+	
+	mmid = anna_member_create_native_method(
+	    type,
+	    anna_mid_get(L"__set__Range__"),
+	    0,
+	    &anna_string_i_set_range,
+	    type,
+	    3,
+	    range_argv,
+	    range_argn);
+	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+	anna_function_alias_add(fun, L"__set__");
+    }
+    else
+    {
+	anna_member_create_native_method(
+	    type,
+	    ANNA_MID_HASH_CODE,
+	    0,
+	    &anna_string_hash_i,
+	    int_type,
+	    1,
+	    i_argv,
+	    i_argn);
+    }
+    
+    anna_member_create_native_property(
+	type, anna_mid_get(L"freeze"),
+	string_type, mutable ? &anna_string_i_copy : &anna_string_noop,
+	0);
+    
+    anna_member_create_native_property(
+	type, anna_mid_get(L"thaw"),
+	mutable_string_type, mutable ? &anna_string_noop : &anna_mutable_string_i_copy,
+	0);
+    
     anna_string_type_i_create();
 }
 
 void anna_string_type_create(anna_stack_template_t *stack)
 {
+    mutable_string_type = anna_type_native_create(L"MutableString", stack);
+    /* FIXME */
+    string_intersection_type = string_type;
     anna_string_type_create_internal(string_type, 0);
-    anna_type_t *mutable_string_type = anna_type_native_create(L"MutableString", stack);    anna_string_type_create_internal(mutable_string_type, 1);
+    anna_string_type_create_internal(mutable_string_type, 1);
+    anna_type_copy_object(mutable_string_type);
+    anna_stack_declare(
+	stack, mutable_string_type->name, 
+	type_type, anna_type_wrap(mutable_string_type), ANNA_STACK_READONLY); 
+
 }

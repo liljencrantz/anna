@@ -340,7 +340,7 @@ static void anna_vm_compile_i(
 	case ANNA_NODE_STRING_LITERAL:
 	{
 	    anna_node_string_literal_t *node2 = (anna_node_string_literal_t *)node;
-	    anna_vm_string(ptr, anna_string_create(node2->payload_size, node2->payload), flags);
+	    anna_vm_const(ptr, anna_string_create(node2->payload_size, node2->payload), flags);
 	    break;
 	}
 

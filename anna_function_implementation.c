@@ -91,7 +91,7 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
     }
     else 
     {
-	if(value->type == string_type)
+	if(value->type == string_type || value->type == mutable_string_type)
 	{
 	    anna_string_print(value);
 	}	

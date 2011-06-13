@@ -1,6 +1,6 @@
 def main()
 {
-    arr := "abcdefghijklmno";
+    arr := "abcdefghijklmno".thaw;
     print(arr[3...], "\n");
     arr[4...] = "boooooring";
     print(arr, "\n");
