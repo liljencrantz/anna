@@ -25,7 +25,7 @@
 #include "anna_mid.h"
 
 char *anna_vmstack_static_ptr;
-char anna_vmstack_static_data[48192];
+char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
 
 static void anna_vmstack_print(anna_vmstack_t *stack);
 
