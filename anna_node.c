@@ -46,30 +46,20 @@ anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
 
 anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t *stack)
 {
-    
     if((node->node_type == ANNA_NODE_TYPE_OF) || 
        (node->node_type == ANNA_NODE_RETURN_TYPE_OF) || 
        (node->node_type == ANNA_NODE_INPUT_TYPE_OF) )
     {
 	anna_node_calculate_type(node);
 	return node->return_type;
-    }
+    }    
     
-
     anna_object_t *res = anna_node_static_invoke_try(
 	node, stack);
     
-    if(!res)
+    if(res)
     {
-	return 0;
-    }
-    if(res->type == type_type)
-    {
-	return anna_type_unwrap(res);
-    }
-    else
-    {
-	return res->type;
+	return (res->type == type_type) ? anna_type_unwrap(res) : res->type;
     }
     return 0;
 }

@@ -1,19 +1,21 @@
 1.0 RELEASE CRITERIA:
 * Constructor and inheritance fully working
 * Inheritance and method overloading fully working
-* Add memory overhead of Ints, Floats, Hashes and Lists to GC estimates
-* Smarter GC timing algorithm
+* Add memory overhead of Hashes and Lists to GC estimates
 * File type
 * Date type
-* HTML api documentation
+* Documentation attribute for all standard API functions and types
+* HTML api documentation extractor
 * Introduction
-* Check that node each, node hash and all other node functions support all ast node types
+* Check that node each, node, print, compare, hash and all other node functions support all ast node types
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
 
 1.0 RELEASE CRITERIA(Done):
 * Static member access fully working 
+* Add memory overhead of Ints and Floats to GC estimates
+* Smarter GC timing algorithm
 
 2.0 RELEASE CRITERIA:
 * Regexp api
