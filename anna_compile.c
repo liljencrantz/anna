@@ -94,7 +94,6 @@ static size_t anna_bc_stack_size(char *code)
 	{
 	    switch(instruction)
 	    {
-		case ANNA_INSTR_STRING:
 		case ANNA_INSTR_CONSTANT:
 		case ANNA_INSTR_LIST:
 		case ANNA_INSTR_CONSTRUCT:
@@ -199,19 +198,6 @@ static void anna_vm_const(char **ptr, anna_object_t *val, int flags)
 	{
 	    ANNA_INSTR_CONSTANT,
 	    e
-	}
-    ;
-    if(!(flags & ANNA_COMPILE_SIZE))
-	memcpy(*ptr, &op, sizeof(anna_op_const_t));
-    *ptr += sizeof(anna_op_const_t);	    
-}
-
-static void anna_vm_string(char **ptr, anna_object_t *val, int flags)
-{
-    anna_op_const_t op = 
-	{
-	    ANNA_INSTR_STRING,
-	    anna_from_obj(val)
 	}
     ;
     if(!(flags & ANNA_COMPILE_SIZE))

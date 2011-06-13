@@ -59,10 +59,6 @@
  */
 #define ANNA_INSTR_MEMBER_SET 10
 /**
-   Create a new string based on a string literal
- */
-#define ANNA_INSTR_STRING 11
-/**
    Push an empty list to the stack
  */
 #define ANNA_INSTR_LIST 12

@@ -197,7 +197,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_PROPERTY_GET,
 	    &&ANNA_LAB_STATIC_PROPERTY_GET,
 	    &&ANNA_LAB_MEMBER_SET,
-	    &&ANNA_LAB_STRING,
+	    0,
 	    &&ANNA_LAB_LIST,
 	    &&ANNA_LAB_FOLD,
 	    &&ANNA_LAB_COND_JMP,
@@ -282,14 +282,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_op_const_t *op = (anna_op_const_t *)stack->code;
 	anna_vmstack_push_entry(stack, op->value);
 	
-	stack->code += sizeof(*op);
-	goto *jump_label[(int)*stack->code];
-    }
-    
-  ANNA_LAB_STRING:
-    {
-	anna_op_const_t *op = (anna_op_const_t *)stack->code;
-	anna_vmstack_push_object(stack, anna_string_copy(anna_as_obj_fast(op->value)));
 	stack->code += sizeof(*op);
 	goto *jump_label[(int)*stack->code];
     }
@@ -899,7 +891,6 @@ size_t anna_bc_op_size(char instruction)
     
     switch(instruction)
     {
-	case ANNA_INSTR_STRING:
 	case ANNA_INSTR_CONSTANT:
 	{
 	    return sizeof(anna_op_const_t);
@@ -985,7 +976,6 @@ void anna_bc_print(char *code)
 	    
 	    switch(instruction)
 	    {
-		case ANNA_INSTR_STRING:
 		case ANNA_INSTR_CONSTANT:
 		{
 		    anna_op_const_t *op = (anna_op_const_t*)code;
@@ -1171,7 +1161,6 @@ void anna_vm_mark_code(anna_function_t *f)
 	{
 	    switch(instruction)
 	    {
-		case ANNA_INSTR_STRING:
 		case ANNA_INSTR_CONSTANT:
 		{
 		    anna_op_const_t *op = (anna_op_const_t*)code;
