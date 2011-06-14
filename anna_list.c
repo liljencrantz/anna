@@ -23,6 +23,7 @@
 
 #include "anna_macro.h"
 
+anna_type_t *tuple_type = 0;
 static hash_table_t anna_list_specialization;
 static array_list_t anna_list_additional_methods = AL_STATIC;
 
@@ -54,6 +55,18 @@ static void anna_list_add_all_extra_methods(anna_type_t *list)
 
 anna_object_t *anna_list_create(anna_type_t *spec)
 {
+    anna_object_t *obj= anna_object_create(anna_list_type_get(spec));
+    (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
+    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
+    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
+    obj->flags |= ANNA_OBJECT_LIST;
+    return obj;
+}
+
+anna_object_t *anna_tuple_create(anna_type_t *spec)
+{
+    CRASH;
+    
     anna_object_t *obj= anna_object_create(anna_list_type_get(spec));
     (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
@@ -810,10 +823,45 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 
-static void anna_list_type_create_internal(
+static anna_vmstack_t *anna_list_noop(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_object_t *this = anna_as_obj(param[0]);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push_object(stack, this);
+    return stack;    
+}
+
+static anna_vmstack_t *anna_list_i_copy(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_vmstack_drop(stack, 2);
+    anna_object_t *that = anna_tuple_create(anna_list_get_specialization(this));
+    anna_vmstack_push_object(stack, anna_string_copy(that));
+    return stack;    
+}
+
+static anna_vmstack_t *anna_mutable_list_i_copy(anna_vmstack_t *stack, anna_object_t *me)
+{
+    CRASH;
+    anna_entry_t **param = stack->top - 1;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_vmstack_drop(stack, 2);
+    anna_object_t *that = anna_list_create(anna_list_get_specialization(this));
+    anna_vmstack_push_object(stack, anna_mutable_string_copy(that));
+    return stack;    
+}
+
+
+static void anna_list_type_create_internal2(
     anna_stack_template_t *stack,
     anna_type_t *type, 
-    anna_type_t *spec)
+    anna_type_t *spec,
+    anna_type_t *imutable_type, 
+    anna_type_t *mutable_type, 
+    anna_type_t *intersection_type,
+    int mutable)
 {
     mid_t mmid;
     anna_function_t *fun;
@@ -896,19 +944,11 @@ static void anna_list_type_create_internal(
 	i_argv, i_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
-    
-    mmid = anna_member_create_native_method(
-	type,
-	anna_mid_get(L"__set__Int"), 0,
-	&anna_list_set_int, spec, 3,
-	i_argv, i_argn);    
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__set__");
-    
+
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
 	&anna_list_get_count_method,
-	&anna_list_set_count_method);
+	mutable ? &anna_list_set_count_method : 0);
 
     anna_member_create_native_property(
 	type,
@@ -928,18 +968,6 @@ static void anna_list_type_create_internal(
 	0, &anna_list_append, type, 2, l_argv,
 	l_argn);
 
-    anna_member_create_native_method(
-	type, anna_mid_get(L"push"),
-	0, &anna_list_push,
-	type,
-	2,
-	a_argv,
-	a_argn);
-    
-    anna_member_create_native_method(
-	type, anna_mid_get(L"pop"), 0,
-	&anna_list_pop, spec, 1, a_argv, a_argn);
-    
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!ListIterFunction", int_type, spec);
 
@@ -1022,15 +1050,52 @@ static void anna_list_type_create_internal(
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
-    mmid = anna_member_create_native_method(
-	type,
-	anna_mid_get(L"__set__Range"), 0,
-	&anna_list_i_set_range, type, 3,
-	range_argv, range_argn);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__set__");
-    
     anna_list_add_all_extra_methods(type);
+
+    if(mutable)
+    {
+	
+	mmid = anna_member_create_native_method(
+	    type,
+	    anna_mid_get(L"__set__Int"), 0,
+	    &anna_list_set_int, spec, 3,
+	    i_argv, i_argn);    
+	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+	anna_function_alias_add(fun, L"__set__");
+
+	anna_member_create_native_method(
+	    type, anna_mid_get(L"push"),
+	    0, &anna_list_push,
+	    type,
+	    2,
+	    a_argv,
+	    a_argn);
+	
+	anna_member_create_native_method(
+	    type, anna_mid_get(L"pop"), 0,
+	    &anna_list_pop, spec, 1, a_argv, a_argn);
+	
+	mmid = anna_member_create_native_method(
+	    type,
+	    anna_mid_get(L"__set__Range"), 0,
+	    &anna_list_i_set_range, type, 3,
+	    range_argv, range_argn);
+	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+	anna_function_alias_add(fun, L"__set__");
+
+    }
+
+    anna_member_create_native_property(
+	type, anna_mid_get(L"freeze"),
+	imutable_type, mutable ? &anna_list_i_copy : &anna_list_noop,
+	0);
+    
+    anna_member_create_native_property(
+	type, anna_mid_get(L"thaw"),
+	mutable_type, mutable ? &anna_list_noop : &anna_mutable_list_i_copy,
+	0);
+    
+
 }
 
 static inline void anna_list_internal_init()
@@ -1041,6 +1106,51 @@ static inline void anna_list_internal_init()
     init=1;
     hash_init(&anna_list_specialization, hash_ptr_func, hash_ptr_cmp);
 }
+
+static void anna_list_type_create_internal(
+    anna_stack_template_t *stack,
+    anna_type_t *type, 
+    anna_type_t *spec)
+{
+
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_append(&sb, L"Tuple");
+    if(spec != object_type)
+	sb_printf(&sb, L"«%ls»", spec->name );
+    anna_type_t *imutable_type = anna_type_native_create(sb_content(&sb), stack_global);
+    sb_destroy(&sb);
+
+    /* FIXME */
+    anna_type_t *intersection_type = type;
+    
+    anna_list_type_create_internal2(
+	stack, 
+	type, 
+	spec, 
+	imutable_type, type, intersection_type, 1);
+    anna_list_type_create_internal2(
+	stack, 
+	imutable_type, 
+	spec, 
+	imutable_type, type, intersection_type, 0);
+    
+    anna_type_copy_object(imutable_type);
+
+    if(spec == object_type)
+    {
+	tuple_type = imutable_type;
+	anna_stack_declare(
+	    stack, imutable_type->name, 
+	    type_type, anna_type_wrap(imutable_type), ANNA_STACK_READONLY); 
+    }
+    else
+    {
+	imutable_type->flags |= ANNA_TYPE_SPECIALIZED;
+    }
+    
+}
+
 
 void anna_list_type_create(anna_stack_template_t *stack)
 {

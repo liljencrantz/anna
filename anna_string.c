@@ -217,7 +217,6 @@ static anna_vmstack_t *anna_string_noop(anna_vmstack_t *stack, anna_object_t *me
 {
     anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj(param[0]);
-    asi_init(as_unwrap(this));
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_object(stack, this);
     return stack;    

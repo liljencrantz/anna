@@ -5,6 +5,8 @@
 #include "anna.h"
 #include "anna_node.h"
 
+extern anna_type_t *tuple_type;
+
 struct anna_stack_template;
 
 anna_object_t *anna_list_create(anna_type_t *spec);
@@ -36,7 +38,5 @@ static inline ssize_t anna_list_calc_offset(ssize_t offset, size_t size)
     return offset;
 }
 void anna_list_add_method(anna_function_t *fun);
-
-
 
 #endif
