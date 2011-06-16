@@ -125,7 +125,7 @@ static anna_node_t *anna_function_setup_arguments(
 	    anna_type_t *t = argv[i];
 	    if(is_variadic)
 	    {
-		t = anna_list_type_get(t);
+		t = anna_list_type_get_imutable(t);
 	    }
 //	    wprintf(L"Declare %ls as %ls in %ls\n", argn[i], t->name, f->name);
 	    

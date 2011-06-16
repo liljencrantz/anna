@@ -1,11 +1,6 @@
 
-def main()
+def main()(snopp)
 {
-    print(
-	String.convert(1), 
-	String.convert(2345678910111213141516171819), 
-	String.convert('a'), 
-	String.convert("bcd"), 
-	"\n");
+    print(main.attribute);
 }
 

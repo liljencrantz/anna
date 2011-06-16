@@ -28,7 +28,7 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
 static inline anna_entry_t *anna_type_i_get_member_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_object_t *lst = anna_list_create(member_type);
+    anna_object_t *lst = anna_list_create_imutable(member_type);
     int i;
     anna_type_t *type = anna_type_unwrap(this);
 
@@ -106,7 +106,7 @@ void anna_type_type_create2(anna_stack_template_t *stack)
     anna_member_create_native_property(
 	type_type,
 	anna_mid_get(L"member"),
-	anna_list_type_get(member_type),
+	anna_list_type_get_imutable(member_type),
 	&anna_type_i_get_member,
 	0);
     

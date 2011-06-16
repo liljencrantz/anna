@@ -179,6 +179,19 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	}
     ;
 
+    anna_type_t *c_argv[] = 
+	{
+	    complex_type,
+	    object_type,
+	}
+    ;
+    
+    wchar_t *c_argn[]=
+	{
+	    L"this", L"other"
+	}
+    ;
+
     anna_member_create_native_method(
 	complex_type,
 	anna_mid_get(L"__init__"),
@@ -193,7 +206,7 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	0,
 	&anna_complex_cmp, 
 	int_type,
-	2, argv, argn);    
+	2, c_argv, c_argn);    
     
     anna_member_create_native_method(
 	complex_type,

@@ -1,7 +1,7 @@
 
 def main()
 {
-    digits := Int.convert(system.arguments[1]) or 1000;
+    digits := Int.convert(system.argument[1]) or 1000;
     i := 0;
     k := 0;
     ns := 0;

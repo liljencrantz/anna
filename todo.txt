@@ -11,6 +11,7 @@
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
+* Mutable and Imutable versions of List, String, Call and HashMap, switch between them using freeze/thaw properties
 
 1.0 RELEASE CRITERIA(Done):
 * Static member access fully working 
@@ -21,7 +22,6 @@
 * Regexp api
 * Query api (SQL Alchemy/Linq/etc. replacement)
 * Live debugger
-* Mutable and Imutable versions of List, String and HashMap, switch between them using freeze/thaw properties
 * Multithreading support using message passing and a common frozen object store
 * Cache for mpz_t numbers
 * Proper iterators? Possibly rethink how map/filter and friends are implemented

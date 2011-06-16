@@ -56,15 +56,15 @@ enum TypeName
     );
 
     cmpFun := ast(
-	def __cmp__(Object value)
+	def __cmp__(Object other)
 	{
-	    if(value as Int)
+	    if(other as Int)
 	    {
-		return this.%value - (value as Int);
+		return this.%value - (other as Int);
 	    } else {
-		if(value as %Type)
+		if(other as %Type)
 		{
-		    return this.%value - (value as %Type).%value;
+		    return this.%value - (other as %Type).%value;
 		}
 	    }
 	    return ?;

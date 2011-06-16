@@ -405,7 +405,7 @@ typedef struct
     anna_type_t *input_type[];
 } anna_function_type_t;
 
-extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *list_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type;
+extern anna_type_t *type_type, *object_type, *int_type, *string_type, *char_type, *null_type,  *string_type, *char_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type;
 extern anna_type_t *function_type_base;
 extern anna_object_t *null_object, *anna_wrap_method;
 extern int anna_error_count;
@@ -519,6 +519,10 @@ int anna_abides_fault_count(
 void anna_abides_init(void);
 
 anna_type_t *anna_type_intersect(
+    anna_type_t *t1, anna_type_t *t2);
+
+void anna_type_intersect_into(
+    anna_type_t *dest, 
     anna_type_t *t1, anna_type_t *t2);
 
 void anna_error(

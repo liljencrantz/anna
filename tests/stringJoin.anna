@@ -1,4 +1,4 @@
 def main(){
     /* Test the join method of the String object */
-    print(1,",".join([1,2,3]),"".join(List«Int»()), "xxx".join(["ac","bc","cc"]), "AAA".join(['\n']));
+    print(1,",".join([1,2,3]),"".join( «Int»[] ), "xxx".join(["ac","bc","cc"]), "AAA".join(['\n']));
 }

@@ -9,7 +9,7 @@ def Node __iter__(Call node)
 {
     checkNodeType(node.function, Call);
 
-    n := List«Node»();  
+    n := MutableList«Node»();  
     if(node.count < 2 or node.count > 3)
     {
 	node.error("Invalid arguments for iteration");

@@ -584,7 +584,7 @@ static void anna_vm_compile_i(
 		anna_vm_type(
 		    ptr,
 		    ANNA_INSTR_LIST,
-		    anna_list_type_get(template->input_type[template->input_count-1]), flags);
+		    anna_list_type_get_imutable(template->input_type[template->input_count-1]), flags);
 		for(; i<node2->child_count; i++)
 		{
 		    anna_vm_compile_i(fun, node2->child[i], ptr, 0, flags);
@@ -851,7 +851,7 @@ flags);
 		anna_vm_type(
 		    ptr,
 		    ANNA_INSTR_LIST,
-		    anna_list_type_get(template->input_type[template->input_count-1]), flags);
+		    anna_list_type_get_imutable(template->input_type[template->input_count-1]), flags);
 		
 		for(; i<node2->child_count; i++)
 		{

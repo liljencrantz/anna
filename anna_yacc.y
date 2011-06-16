@@ -726,14 +726,44 @@ expression9 :
 	|
 	expression10
 	|
-	'[' opt_expression_list ']'
-	{	    
-	    $$ = (anna_node_t *)$2;
+	opt_specialization '[' opt_expression_list ']'
+	{
+	    $$ = (anna_node_t *)$3;
+
+	    wchar_t *fun_name = L"MutableList";
+	    if(($3->child_count > 0 && anna_node_is_call_to($3->child[0], L"__mapping__")) ||
+	       ($1 && $1->child_count > 1))
+	    {
+		int i;
+		fun_name = L"HashMap";
+		for(i=0; i<$3->child_count; i++)
+		{
+		    if(anna_node_is_call_to($3->child[i], L"__mapping__"))
+		    {
+			anna_node_call_t *call = (anna_node_call_t *)$3->child[i];
+			call->function = (anna_node_t *)
+			    anna_node_create_identifier(
+				&call->function->location,
+				L"Pair");
+		    }
+		}
+		
+	    }
+	    
+	    anna_node_t *fun = (anna_node_t *)anna_node_create_identifier(
+		&@$,
+		fun_name);
+
+	    if($1)
+	    {
+		fun = (anna_node_t *)anna_node_create_call2(
+		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+		    fun, $1);		
+	    }
+
 	    anna_node_call_set_function(
-		$2,
-		(anna_node_t *)anna_node_create_identifier(
-		    &@$,
-		    L"__collection__"));
+		$3,
+		fun);
 	}
 	|
 	expression9 '.' expression10

@@ -32,7 +32,6 @@ anna_type_t *type_type=0,
     *null_type=0,
     *string_type=0, 
     *char_type=0,
-    *list_type=0,
     *float_type=0,
     *member_type=0,
     *range_type=0,
@@ -931,7 +930,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    call->child[0]->return_type, 
 	    call->child[1]->return_type);	
     }
-    else if(type == list_type)
+    else if(type == any_list_type)
     {
 	anna_type_t *tt = call->child[0]->return_type;
 	int i;
@@ -940,7 +939,31 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    tt = anna_type_intersect(tt, call->child[i]->return_type);
 	}
 	
-	return anna_list_type_get(
+	return anna_list_type_get_any(
+	    tt);
+    }
+    else if(type == mutable_list_type)
+    {
+	anna_type_t *tt = call->child[0]->return_type;
+	int i;
+	for(i=1; i<call->child_count; i++)
+	{
+	    tt = anna_type_intersect(tt, call->child[i]->return_type);
+	}
+	
+	return anna_list_type_get_mutable(
+	    tt);
+    }
+    else if(type == imutable_list_type)
+    {
+	anna_type_t *tt = call->child[0]->return_type;
+	int i;
+	for(i=1; i<call->child_count; i++)
+	{
+	    tt = anna_type_intersect(tt, call->child[i]->return_type);
+	}
+	
+	return anna_list_type_get_imutable(
 	    tt);
     }
     else if(type == hash_type)

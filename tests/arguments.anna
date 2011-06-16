@@ -1,4 +1,4 @@
 def main()
 {
-    print(system.arguments, system.arguments.count, "\n");
+    print(system.argument, system.argument.count, "\n");
 }

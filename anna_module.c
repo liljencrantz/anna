@@ -207,7 +207,7 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
 	    anna_stack_get(
 		lang, target_id->name));
 	
-	if(type == list_type)
+	if(type == any_list_type)
 	{
 	    anna_list_add_method(fun);
 	}
@@ -227,12 +227,12 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
     
 }
 
-static inline anna_entry_t *anna_system_get_arguments_i(anna_entry_t **param)
+static inline anna_entry_t *anna_system_get_argument_i(anna_entry_t **param)
 {
     static anna_object_t *res = 0;
     if(!res)
     {
-	res = anna_list_create(string_type);
+	res = anna_list_create_imutable(string_type);
 	int i;
 	for(i=1; i<anna_argc; i++)
 	{
@@ -246,7 +246,7 @@ static inline anna_entry_t *anna_system_get_arguments_i(anna_entry_t **param)
     
     return anna_from_obj(res);
 }
-ANNA_VM_NATIVE(anna_system_get_arguments, 1)
+ANNA_VM_NATIVE(anna_system_get_argument, 1)
 
 static anna_stack_template_t *anna_system_create()
 {
@@ -255,9 +255,9 @@ static anna_stack_template_t *anna_system_create()
     anna_type_t *type = anna_stack_wrap(stack)->type;
     
     anna_member_create_native_property(
-	type, anna_mid_get(L"arguments"),
-	anna_list_type_get(string_type),
-	&anna_system_get_arguments,
+	type, anna_mid_get(L"argument"),
+	anna_list_type_get_imutable(string_type),
+	&anna_system_get_argument,
 	0);
     
     return stack;
@@ -266,9 +266,12 @@ static anna_stack_template_t *anna_system_create()
 
 void anna_module_init()
 {
-    anna_stack_template_t *stack_lang = anna_lang_load();
+    anna_stack_template_t *stack_parser = anna_stack_create(stack_global);
+    anna_stack_template_t *stack_lang = anna_stack_create(stack_global);
     
-    anna_stack_template_t *stack_parser = anna_node_create_wrapper_types();
+    anna_lang_load(stack_lang);
+    anna_node_create_wrapper_types(stack_parser);
+    
     anna_stack_declare(
 	stack_global,
 	L"parser",
@@ -311,7 +314,6 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"update");
     anna_module_bootstrap_macro(L"iter");
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
-    anna_module_bootstrap_macro(L"collection");
     anna_module_bootstrap_macro(L"range");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");

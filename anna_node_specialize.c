@@ -13,13 +13,39 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
     {
 	anna_error((anna_node_t *)call, L"Invalid template type");
     }
-    else if(type == list_type && call->child_count==1)
+    else if(type == mutable_list_type && call->child_count==1)
     {
 	anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
 	
 	if(spec)
 	{
-	    res = anna_list_type_get(spec);
+	    res = anna_list_type_get_mutable(spec);
+	}
+	else
+	{
+	    anna_error((anna_node_t *)call, L"List specialization can not be resolved into type");
+	}
+    }
+    else if(type == any_list_type && call->child_count==1)
+    {
+	anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
+	
+	if(spec)
+	{
+	    res = anna_list_type_get_any(spec);
+	}
+	else
+	{
+	    anna_error((anna_node_t *)call, L"List specialization can not be resolved into type");
+	}
+    }
+    else if(type == imutable_list_type && call->child_count==1)
+    {
+	anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
+	
+	if(spec)
+	{
+	    res = anna_list_type_get_imutable(spec);
 	}
 	else
 	{

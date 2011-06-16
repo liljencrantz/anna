@@ -6,10 +6,13 @@ struct anna_stack_template;
 
 extern anna_type_t *node_call_wrapper_type;
 extern anna_type_t *node_wrapper_type;
+extern anna_type_t *node_identifier_wrapper_type;
+extern anna_type_t *node_imutable_call_wrapper_type;
 
 anna_object_t *anna_node_wrap(anna_node_t *node);
+anna_object_t *anna_node_wrap_imutable(anna_node_t *node);
 
-anna_stack_template_t *anna_node_create_wrapper_types(void);
+void anna_node_create_wrapper_types(anna_stack_template_t *stack);
 
 anna_node_t *anna_node_unwrap(anna_object_t *this);
 

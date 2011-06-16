@@ -456,7 +456,7 @@ static anna_vmstack_t *anna_range_filter_callback(anna_vmstack_t *stack, anna_ob
 
 static anna_vmstack_t *anna_range_filter(anna_vmstack_t *stack, anna_object_t *me)
 {
-    anna_object_t *res = anna_list_create(int_type);
+    anna_object_t *res = anna_list_create_mutable(int_type);
     anna_object_t *body = anna_vmstack_pop_object(stack);
     anna_object_t *range = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
@@ -619,7 +619,7 @@ static anna_vmstack_t *anna_range_map(anna_vmstack_t *stack, anna_object_t *me)
     else
     {
 	anna_function_t *fun = anna_function_unwrap(body);
-	anna_object_t *res = anna_list_create(fun->return_type);
+	anna_object_t *res = anna_list_create_mutable(fun->return_type);
 	
 	size_t sz = anna_range_get_count(range);
 	int open = anna_range_get_open(range);
@@ -800,7 +800,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	anna_mid_get(L"__filter__"),
 	0,
 	&anna_range_filter,
-	anna_list_type_get(int_type),
+	anna_list_type_get_mutable(int_type),
 	2,
 	e_argv,
 	e_argn);
@@ -827,7 +827,7 @@ void anna_range_type_create(struct anna_stack_template *stack)
 	anna_mid_get(L"__map__"),
 	0,
 	&anna_range_map,
-	list_type,
+	mutable_list_type,
 	2,
 	e_argv,
 	e_argn);

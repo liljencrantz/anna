@@ -23,7 +23,7 @@
 #include "anna_node_hash.h"
 #include "anna_mid.h"
 
-anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
+anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type, *node_imutable_call_wrapper_type;
 
 static anna_type_t *anna_node_type_mapping[ANNA_NODE_TYPE_COUNT];
 
@@ -204,22 +204,26 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 				     node_wrapper_type,
 				     3,
 				     replace_argv,
-				     replace_argn);anna_member_create_native_method(node_wrapper_type,
-																		      anna_mid_get(L"error"),
-																		      0,
-																		      &anna_node_wrapper_i_error,
-																		      node_wrapper_type,
-																		      2,
-																		      error_argv,
-																		      error_argn);anna_member_create_native_method(node_wrapper_type,
-																																			    anna_mid_get(L"toString"),
-																																			    0,
-																																			    &anna_node_wrapper_i_to_string,
-																																			    string_type,
-																																			    1,
-																																			    error_argv,
-																																			    error_argn);    
+				     replace_argn);
 
+    anna_member_create_native_method(node_wrapper_type,
+				     anna_mid_get(L"error"),
+				     0,
+				     &anna_node_wrapper_i_error,
+				     node_wrapper_type,
+				     2,
+				     error_argv,
+				     error_argn);
+    
+    anna_member_create_native_method(node_wrapper_type,
+				     anna_mid_get(L"toString"),
+				     0,
+				     &anna_node_wrapper_i_to_string,
+				     string_type,
+				     1,
+				     error_argv,
+				     error_argn);    
+    
     anna_type_t *cmp_argv[] = 
 	{
 	    node_wrapper_type, object_type
@@ -234,21 +238,25 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
     anna_member_create_native_method(node_wrapper_type,
 				     anna_mid_get(L"__cmp__"), 0,
 				     &anna_node_wrapper_cmp, int_type, 2,
-				     cmp_argv, cmp_argn);anna_member_create_native_method(node_wrapper_type,
-											  anna_mid_get(L"hashCode"),
-											  0,
-											  &anna_node_wrapper_hash,
-											  int_type,
-											  1,
-											  cmp_argv,
-											  cmp_argn);anna_member_create_native_method(node_wrapper_type,
-																										   anna_mid_get(L"copy"),
-																										   0,
-																										   &anna_node_wrapper_copy,
-																										   node_wrapper_type,
-																										   1,
-																										   cmp_argv,
-																										   cmp_argn);
+				     cmp_argv, cmp_argn);
+
+    anna_member_create_native_method(node_wrapper_type,
+				     anna_mid_get(L"hashCode"),
+				     0,
+				     &anna_node_wrapper_hash,
+				     int_type,
+				     1,
+				     cmp_argv,
+				     cmp_argn);
+
+    anna_member_create_native_method(node_wrapper_type,
+				     anna_mid_get(L"copy"),
+				     0,
+				     &anna_node_wrapper_copy,
+				     node_wrapper_type,
+				     1,
+				     cmp_argv,
+				     cmp_argn);
 }
 
 #include "anna_node_call_wrapper.c"
@@ -262,20 +270,20 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_closure_wrapper.c"
 #include "anna_node_mapping_wrapper.c"
 
-anna_stack_template_t *anna_node_create_wrapper_types()
+void anna_node_create_wrapper_types(anna_stack_template_t *stack)
 {
     int i;
-    anna_stack_template_t *stack = anna_stack_create(stack_global);
     stack->flags |= ANNA_STACK_NAMESPACE;
     
-    node_wrapper_type = anna_type_native_create(L"Node", stack);
-    node_identifier_wrapper_type = anna_type_native_create(L"Identifier", stack);
     anna_type_t *mapping_id_type = anna_type_native_create(L"InternalIdentifier", stack);
     anna_node_create_wrapper_type(stack);
     anna_node_create_identifier_wrapper_type(stack, node_identifier_wrapper_type, 0);
     anna_node_create_identifier_wrapper_type(stack, mapping_id_type, 1);
-
-    node_call_wrapper_type = anna_node_create_call_wrapper_type(stack);
+    
+    node_imutable_call_wrapper_type = anna_type_native_create(L"ImutableCall", stack);
+    
+    anna_node_create_call_wrapper_type(stack, node_call_wrapper_type, 1);
+    anna_node_create_call_wrapper_type(stack, node_imutable_call_wrapper_type, 0);
 
     anna_type_t *types[] = 
 	{
@@ -339,6 +347,11 @@ anna_stack_template_t *anna_node_create_wrapper_types()
 	}
     }
 
+	anna_type_copy(node_imutable_call_wrapper_type, node_wrapper_type);
+	anna_type_copy_object(node_imutable_call_wrapper_type);
+	anna_stack_declare(
+	    stack, node_imutable_call_wrapper_type->name, 
+	    type_type, anna_type_wrap(node_imutable_call_wrapper_type), ANNA_STACK_READONLY);
 
     static wchar_t *p_argn[]={L"hint"};
     anna_function_t *f = anna_native_create(
@@ -354,9 +367,5 @@ anna_stack_template_t *anna_node_create_wrapper_types()
 	f->wrapper->type,
 	f->wrapper,
 	ANNA_STACK_READONLY);
-    
 
-    
-    
-    return stack;
 }

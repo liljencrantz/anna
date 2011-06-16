@@ -785,7 +785,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_type_t *ljoin_argv[] = 
 	{
 	    type,
-	    list_type
+	    any_list_type
 	}
     ;
 

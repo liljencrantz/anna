@@ -21,6 +21,7 @@
 #include "anna_alloc.h"
 #include "anna_slab.h"
 #include "anna_mid.h"
+#include "anna_attribute.h"
 
 #define ABIDES_IN_TRANSIT -1
 
@@ -36,7 +37,8 @@ void anna_abides_init()
 static int anna_abides_function(
     anna_function_type_t *contender,
     anna_function_type_t *role_model,
-    int is_method)
+    int is_method,
+    int check_type)
 {
     int i;
     if(contender->input_count != role_model->input_count)
@@ -46,16 +48,29 @@ static int anna_abides_function(
 	return 0;
     }
     
+    if(check_type)
+    {
+	for(i=!!is_method; i<contender->input_count; i++)
+	{
+	    if(!anna_abides(contender->input_type[i], role_model->input_type[i]))
+	    {
+		if(anna_abides_verbose)
+		    wprintf(L"Input %d mismatches\n", i);
+		return 0;
+	    }
+	}
+    }
     for(i=!!is_method; i<contender->input_count; i++)
     {
-	if(!anna_abides(contender->input_type[i], role_model->input_type[i]))
+	if(wcscmp(contender->input_name[i], role_model->input_name[i]) != 0)
 	{
 	    if(anna_abides_verbose)
-		wprintf(L"Input %d mismatches\n", i);
+		wprintf(L"Input %d mismatches on name %ls != %ls\n", i, role_model->input_name[i], contender->input_name[i]);
+	    	    
 	    return 0;
 	}
     }
-
+    
     if(!anna_abides(contender->return_type, role_model->return_type))
     {
 	if(anna_abides_verbose)
@@ -71,7 +86,6 @@ static int anna_abides_fault_count_internal(
     anna_type_t *role_model, 
     int verbose)
 {
-    
     if(anna_abides_verbose)
 	debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
     
@@ -170,6 +184,7 @@ static int anna_abides_fault_count_internal(
 	    ok = anna_abides_function(
 		anna_function_type_unwrap(c_memb->type),
 		anna_function_type_unwrap(r_memb->type),
+		1,
 		1);
 /*
 	    if(!ok && level==1)
@@ -206,8 +221,6 @@ static int anna_abides_fault_count_internal(
 int anna_abides_fault_count(anna_type_t *contender, anna_type_t *role_model)
 {
     return anna_abides_fault_count_internal(contender, role_model, 0);
-    
-    
 }
 
 int anna_abides(anna_type_t *contender, anna_type_t *role_model)
@@ -215,32 +228,9 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
     return !anna_abides_fault_count(contender, role_model);
 }
 
-anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
+void anna_type_intersect_into(
+    anna_type_t *res, anna_type_t *t1, anna_type_t *t2)
 {
-//    wprintf(L"\n\n\nSTART %ls vs %ls\n\n\n\n", t1->name, t2->name);
-    if(t2 == null_type)
-    {
-	return t1;
-    }
-    if(t1 == null_type)
-    {
-	return t2;
-    }
-    if(anna_abides(t1, t2))
-    {
-	return t2;
-    }
-    if(anna_abides(t2, t1))
-    {
-	return t1;
-    }
-    
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_printf(&sb,L"!intersection(%ls,%ls)", t1->name, t2->name);
-    anna_type_t *res = anna_type_create(sb_content(&sb), 0);
-    sb_destroy(&sb);
-    
     int i;
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&t2->name_identifier));
     anna_type_get_member_names(t2, members);    
@@ -280,10 +270,22 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 	    
 	    if(
 		anna_abides_function(
-		    ft1, ft2, 1) &&
-		anna_abides_function(
-		    ft2, ft1, 1))
+		    ft1, ft2, 1, 0)) 
 	    {
+		anna_type_t **types = malloc(sizeof(anna_type_t *)*ft2->input_count);
+		int i;
+		for(i=0; i<ft2->input_count; i++)
+		{
+		    if(ft1->input_type[i] == t1 && ft2->input_type[i] == t2)
+		    {
+			types[i] = res;
+		    }
+		    else
+		    {
+			types[i] = anna_type_intersect(ft1->input_type[i], ft2->input_type[i]);		    
+		    }
+		}
+		
 		anna_member_create_native_method(
 		    res,
 		    anna_mid_get(memb2->name),
@@ -292,7 +294,50 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 		    ft2->return_type,
 		    ft2->input_count,
 		    ft2->input_type,
-		    ft2->input_name);				
+		    ft2->input_name);
+		anna_function_t *new_fun = 
+		    anna_function_unwrap(
+			anna_as_obj_fast(
+			    anna_entry_get_static(
+				res, 
+				anna_mid_get(
+				    memb2->name))));
+
+		anna_function_t *ff1 = 
+		    anna_function_unwrap(
+			anna_as_obj_fast(
+			    anna_entry_get_static(
+				t1, 
+				anna_mid_get(
+				    memb2->name))));
+		
+		anna_function_t *ff2 = 
+		    anna_function_unwrap(
+			anna_as_obj_fast(
+			    anna_entry_get_static(
+				t2, 
+				anna_mid_get(
+				    memb2->name))));
+		
+		array_list_t alias = AL_STATIC;
+		anna_attribute_call_all(ff1->attribute, L"alias", &alias);
+
+		for(i=0; i<al_get_count(&alias); i++)
+		{
+		    anna_node_t *al = al_get(&alias, i);
+
+		    if(al->node_type == ANNA_NODE_IDENTIFIER)
+		    {
+			anna_node_identifier_t *nam = al;
+			if(anna_attribute_has_alias(ff2->attribute, nam->name))
+			{
+			    anna_function_alias_add(new_fun, nam->name);
+			}
+		    }
+		    
+		}
+		    
+		
 //		wprintf(L"Meth %ls\n", members[i]);
 	    }
 	    else
@@ -312,8 +357,37 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 	    }
 	}
     }
-    free(members);
+    free(members);    
+}
 
+anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
+{
+//    wprintf(L"\n\n\nSTART %ls vs %ls\n\n\n\n", t1->name, t2->name);
+    if(t2 == null_type)
+    {
+	return t1;
+    }
+    if(t1 == null_type)
+    {
+	return t2;
+    }
+    if(anna_abides(t1, t2))
+    {
+	return t2;
+    }
+    if(anna_abides(t2, t1))
+    {
+	return t1;
+    }
+    
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb,L"!intersection(%ls,%ls)", t1->name, t2->name);
+    anna_type_t *res = anna_type_create(sb_content(&sb), 0);
+    sb_destroy(&sb);
+    
+    anna_type_intersect_into(res, t1, t2);
+    
     if(!anna_abides(res, object_type))
     {
 	

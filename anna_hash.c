@@ -1039,7 +1039,7 @@ static anna_vmstack_t *anna_hash_map(anna_vmstack_t *stack, anna_object_t *me)
     else
     {
 	anna_function_t *fun = anna_function_unwrap(body);
-	anna_object_t *res = anna_list_create(fun->return_type);
+	anna_object_t *res = anna_list_create_mutable(fun->return_type);
 	
 	size_t sz = anna_hash_get_count(hash);
 	
@@ -1177,7 +1177,7 @@ static void anna_hash_type_create_internal(
 	anna_mid_get(L"__map__"),
 	0,
 	&anna_hash_map,
-	list_type,
+	mutable_list_type,
 	2,
 	e_argv,
 	e_argn);

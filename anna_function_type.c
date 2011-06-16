@@ -18,6 +18,7 @@
 #include "anna_member.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
+#include "anna_node_wrapper.h"
 
 anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
@@ -42,7 +43,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_output, 1)
 static inline anna_entry_t *anna_function_type_i_get_input_type_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_object_t *lst = anna_list_create(type_type);
+    anna_object_t *lst = anna_list_create_imutable(type_type);
     int i;
     anna_function_t *f = anna_function_unwrap(this);
 
@@ -62,7 +63,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_input_type, 1)
 static inline anna_entry_t *anna_function_type_i_get_input_name_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_object_t *lst = anna_list_create(string_type);
+    anna_object_t *lst = anna_list_create_imutable(string_type);
     int i;
     anna_function_t *f = anna_function_unwrap(this);
 
@@ -79,6 +80,15 @@ static inline anna_entry_t *anna_function_type_i_get_input_name_i(anna_entry_t *
     return anna_from_obj( lst);
 }
 ANNA_VM_NATIVE(anna_function_type_i_get_input_name, 1)
+
+static inline anna_entry_t *anna_function_type_i_get_attributes_i(anna_entry_t **param)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_function_t *f = anna_function_unwrap(this);
+    
+    return anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute));
+}
+ANNA_VM_NATIVE(anna_function_type_i_get_attributes, 1)
 
 
 void anna_function_type_print(anna_function_type_t *k)
@@ -153,22 +163,22 @@ static void anna_function_type_base_create()
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"inputType"),
-	anna_list_type_get(type_type),
+	anna_list_type_get_imutable(type_type),
 	&anna_function_type_i_get_input_type,
 	0);
     
     anna_member_create_native_property(
 	res, anna_mid_get(L"inputName"),
-	anna_list_type_get(string_type),
+	anna_list_type_get_imutable(string_type),
 	&anna_function_type_i_get_input_name,
 	0);
-/*
+
     anna_member_create_native_property(
-	res, anna_mid_get(L"attributes"),
+	res, anna_mid_get(L"attribute"),
 	node_call_wrapper_type,
 	&anna_function_type_i_get_attributes,
 	0);
-*/
+
     anna_type_copy_object(res);
 
     int i;

@@ -78,10 +78,8 @@ static void anna_null_type_create()
     assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    
 }
 
-anna_stack_template_t *anna_lang_load()
+void anna_lang_load(anna_stack_template_t *stack_lang)
 {
-
-    anna_stack_template_t *stack_lang = anna_stack_create(stack_global);
     stack_lang->flags |= ANNA_STACK_NAMESPACE;
     
     /*
@@ -91,20 +89,42 @@ anna_stack_template_t *anna_lang_load()
 
       Here be dragons.
     */
+
+    typedef struct 
+    {
+	anna_type_t **addr;
+	wchar_t *name;
+    }
+    type_data_t;
     
-    type_type = anna_type_native_create(L"Type", stack_lang);
-    object_type = anna_type_native_create(L"Object" ,stack_lang);
-    null_type = anna_type_native_create(L"Null", stack_lang);
-    int_type =anna_type_native_create(L"Int", stack_lang);
-    list_type =anna_type_native_create(L"List", stack_lang);
-    string_type = anna_type_native_create(L"String", stack_lang);
-    float_type = anna_type_native_create(L"Float", stack_lang);
-    complex_type = anna_type_native_create(L"Complex", stack_lang);
-    char_type = anna_type_native_create(L"Char", stack_lang);
-    member_type = anna_type_native_create(L"Member",stack_lang);
-    range_type = anna_type_native_create(L"Range", stack_lang);
-    hash_type = anna_type_native_create(L"HashMap", stack_lang);
-    pair_type = anna_type_native_create(L"Pair",stack_lang);
+    type_data_t type_data[] = 
+	{
+	    { &type_type,L"Type" },
+	    { &object_type,L"Object" },
+	    { &null_type,L"Null" },
+	    { &int_type,L"Int" },
+	    { &any_list_type,L"List" },
+	    { &imutable_list_type,L"ImutableList" },
+	    { &mutable_list_type, L"MutableList" },
+	    { &string_type, L"String" },
+	    { &float_type, L"Float" },
+	    { &complex_type, L"Complex" },
+	    { &char_type, L"Char" },
+	    { &member_type, L"Member" },
+	    { &range_type, L"Range" },
+	    { &hash_type, L"HashMap" },
+	    { &pair_type, L"Pair" },
+	    { &node_call_wrapper_type, L"Call" },
+	    { &node_wrapper_type, L"Node" },
+	    { &node_identifier_wrapper_type, L"Identifier" },
+	}
+    ;
+    	    
+    int i;
+    for(i=0; i<(sizeof(type_data)/sizeof(*type_data)); i++)
+    {
+	*(type_data[i].addr) = anna_type_native_create(type_data[i].name, stack_lang);
+    }
     
     anna_object_type_create();
     anna_type_type_create(stack_lang);    
@@ -121,12 +141,12 @@ anna_stack_template_t *anna_lang_load()
     anna_pair_type_create();
     anna_hash_type_create(stack_lang);
     
-    int i;
     anna_type_t *types[] = 
 	{
 	    type_type, int_type, object_type, null_type,
-	    list_type, string_type, float_type, complex_type, 
-	    char_type, range_type, hash_type, pair_type
+	    mutable_list_type, any_list_type, imutable_list_type, string_type, 
+	    float_type, complex_type, char_type, range_type, 
+	    hash_type, pair_type
 	};
 
     for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
@@ -148,6 +168,4 @@ anna_stack_template_t *anna_lang_load()
 	anna_stack_wrap(stack_lang)->type,
 	anna_stack_wrap(stack_lang),
 	ANNA_STACK_READONLY);
-    
-    return stack_lang;
 }
