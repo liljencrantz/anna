@@ -268,9 +268,11 @@ void anna_module_init()
 {
     anna_stack_template_t *stack_parser = anna_stack_create(stack_global);
     anna_stack_template_t *stack_lang = anna_stack_create(stack_global);
+    anna_stack_template_t *stack_reflection = anna_stack_create(stack_global);
     
     anna_lang_load(stack_lang);
     anna_node_create_wrapper_types(stack_parser);
+    anna_member_types_create(stack_reflection);
     
     anna_stack_declare(
 	stack_global,
@@ -288,6 +290,12 @@ void anna_module_init()
 	anna_stack_wrap(stack_system),
 	ANNA_STACK_READONLY);
 
+    anna_stack_declare(
+	stack_global,
+	L"reflection",
+	anna_stack_wrap(stack_reflection)->type,
+	anna_stack_wrap(stack_reflection),
+	ANNA_STACK_READONLY);
     
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     anna_macro_init(stack_macro);

@@ -415,8 +415,9 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     {
 	anna_type_copy_object(res);
     }
-//    wprintf(L"Copy type %ls into type %ls\n", orig->name, res->name);
-
+    //wprintf(L"Copy type %ls into type %ls\n", orig->name, res->name);
+    //anna_type_print(res);
+    
     /*
       First copy all members that have a previously unused mid, making
       note of which members already existed

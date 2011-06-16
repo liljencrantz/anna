@@ -1,11 +1,36 @@
+use(enum);
+
+def documentType(Type t)
+{
+    print( "Type %\n" % [t.name]);
+    t.member.each(mem)
+    {
+	switch(mem)
+	{
+	    case(meth as reflection.Method)
+	    {
+		print("    def %()\n" % [mem.name]);
+	    }
+	}
+    }
+}
+
 def main()
 {
     lang.__type__.member.each(mem)
     {
-	print("%
+       
+	if(mem.isConstant and mem.isStatic)
+	{
 
-% % %
-
-" % [mem.name, if(mem.isProperty){"property"} else {"not a property"}, ' ', ' '])
+	    val := mem.value(?);
+	    switch(val)
+	    {
+		case(t as Type)
+		{
+		    documentType(t);
+		}
+	    }
+	}
     }
 }

@@ -133,7 +133,6 @@ void anna_lang_load(anna_stack_template_t *stack_lang)
     anna_null_type_create();    
     anna_int_type_create(stack_lang);
     anna_string_type_create(stack_lang);
-    anna_member_types_create(stack_lang);
     anna_char_type_create(stack_lang);
     anna_float_type_create(stack_lang);
     anna_range_type_create(stack_lang);

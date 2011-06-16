@@ -11,12 +11,12 @@
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
-* Mutable and Imutable versions of List, String, Call and HashMap, switch between them using freeze/thaw properties
 
 1.0 RELEASE CRITERIA(Done):
 * Static member access fully working 
 * Add memory overhead of Ints and Floats to GC estimates
 * Smarter GC timing algorithm
+* Mutable and Imutable versions of List and String, switch between them using freeze/thaw properties
 
 2.0 RELEASE CRITERIA:
 * Regexp api
@@ -28,6 +28,7 @@
 * Protected members
 * switchCast macro
 * Default argument values
+* Set type
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

@@ -389,6 +389,7 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 	ANNA_MID_STACK_TYPE_PAYLOAD,
 	1,
 	null_type);
+//    anna_type_copy_object(res);
     *(anna_entry_get_addr_static(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_entry_t *)stack;
     return res;
 }

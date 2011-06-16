@@ -52,6 +52,11 @@ anna_member_t *anna_member_unwrap(anna_object_t *wrapper)
     return *(anna_member_t **)anna_entry_get_addr(wrapper, ANNA_MID_MEMBER_PAYLOAD);
 }
 
+anna_member_t *anna_member_of(anna_object_t *wrapper)
+{
+    return *(anna_type_t **)anna_entry_get_addr(wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD);
+}
+
 static inline anna_entry_t *anna_member_i_get_name_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -88,11 +93,37 @@ static inline anna_entry_t *anna_member_i_get_constant_i(anna_entry_t **param)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    anna_stack_template_t *frame = 0;
+    anna_type_t *type = anna_member_of(this);
+    anna_stack_template_t *frame = type->stack;
+    if(!anna_stack_get(frame, m->name))
+    {
+	return anna_from_obj(null_object);
+    }
     
     return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): anna_from_obj(null_object);
 }
 ANNA_VM_NATIVE(anna_member_i_get_constant, 1)
+
+static inline anna_entry_t *anna_member_i_value_i(anna_entry_t **param)
+{
+    anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
+    anna_object_t *obj = anna_as_obj_fast(param[1]);
+    anna_member_t *memb = anna_member_unwrap(memb_obj);
+    anna_type_t *type = anna_member_of(memb_obj);
+    if(memb->is_static)
+    {
+	return type->static_member[memb->offset];
+    }
+    else if(type != obj->type)
+    {
+	return anna_from_obj(null_object);
+    }
+    else
+    {
+	return obj->member[memb->offset];	
+    }
+}
+ANNA_VM_NATIVE(anna_member_i_value, 2)
 
 static void anna_member_type_create()
 {
@@ -137,8 +168,27 @@ static void anna_member_type_create()
 	int_type,
 	&anna_member_i_get_constant,
 	0);
+    
+    anna_type_t *v_argv[] = 
+	{
+	    member_type,
+	    object_type
+	}
+    ;
 
-
+    wchar_t *v_argn[] =
+	{
+	    L"this", L"object"
+	}
+    ;
+    
+    anna_member_create_native_method(
+	member_type, anna_mid_get(L"value"),
+	0, &anna_member_i_value,
+	object_type,
+	2,
+	v_argv,
+	v_argn);
 }
 
 #include "anna_member_method.c"
