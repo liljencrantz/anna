@@ -1,0 +1,11 @@
+def main()
+{
+    lang.__type__.member.each(mem)
+    {
+	print("%
+
+% % %
+
+" % [mem.name, if(mem.isProperty){"property"} else {"not a property"}, ' ', ' '])
+    }
+}

@@ -23,7 +23,7 @@ static anna_type_t *member_method_type, *member_property_type, *member_variable_
 
 anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 {
-    if(likely((long)result->wrapper))
+    if(result->wrapper)
 	return result->wrapper;
     
     anna_type_t * m_type;
@@ -43,6 +43,7 @@ anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
     result->wrapper = anna_object_create(m_type);
     memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_MEMBER_PAYLOAD), &result, sizeof(anna_member_t *));  
     memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD), &type, sizeof(anna_type_t *));  
+    assert(result->wrapper);
     return result->wrapper;
 }
 
@@ -83,6 +84,16 @@ static inline anna_entry_t *anna_member_i_get_property_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_member_i_get_property, 1)
 
+static inline anna_entry_t *anna_member_i_get_constant_i(anna_entry_t **param)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    anna_stack_template_t *frame = 0;
+    
+    return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): anna_from_obj(null_object);
+}
+ANNA_VM_NATIVE(anna_member_i_get_constant, 1)
+
 static void anna_member_type_create()
 {
 
@@ -119,6 +130,15 @@ static void anna_member_type_create()
 	int_type,
 	&anna_member_i_get_property,
 	0);
+
+    anna_member_create_native_property(
+	member_type,
+	anna_mid_get(L"isConstant"),
+	int_type,
+	&anna_member_i_get_constant,
+	0);
+
+
 }
 
 #include "anna_member_method.c"
