@@ -886,7 +886,6 @@ static anna_vmstack_t *anna_list_i_copy_mutable(anna_vmstack_t *stack, anna_obje
 
 
 static void anna_list_type_create_internal(
-    anna_stack_template_t *stack,
     anna_type_t *type, 
     anna_type_t *spec,
     anna_type_t *imutable_type, 
@@ -1149,7 +1148,7 @@ static anna_type_t **anna_list_type_insert(
     return res;
 }
 
-void anna_list_type_create(anna_stack_template_t *stack)
+void anna_list_type_create()
 {
     anna_list_internal_init();
 
@@ -1157,10 +1156,10 @@ void anna_list_type_create(anna_stack_template_t *stack)
 	object_type, mutable_list_type, imutable_list_type, any_list_type);
     
     anna_list_type_create_internal(
-	stack, mutable_list_type, object_type, 
+	mutable_list_type, object_type, 
 	imutable_list_type, mutable_list_type, any_list_type, 1);
     anna_list_type_create_internal(
-	stack, imutable_list_type, object_type, 
+	imutable_list_type, object_type, 
 	imutable_list_type, mutable_list_type, any_list_type, 0);
     anna_type_intersect_into(
 	any_list_type, mutable_list_type, imutable_list_type);
@@ -1201,9 +1200,9 @@ static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)
 	res = anna_list_type_insert(subtype, mutable, imutable, any);
 	
 	anna_list_type_create_internal(
-	    stack_global, mutable, subtype, imutable, mutable, any, 1);
+	    mutable, subtype, imutable, mutable, any, 1);
 	anna_list_type_create_internal(
-	    stack_global, imutable, subtype, imutable, mutable, any, 0);
+	    imutable, subtype, imutable, mutable, any, 0);
 	anna_type_intersect_into(any, mutable, imutable);
 	
 	mutable->flags |= ANNA_TYPE_SPECIALIZED;

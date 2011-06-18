@@ -81,14 +81,10 @@ static anna_vmstack_t *anna_type_hash(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-void anna_type_type_create(anna_stack_template_t *stack)
+void anna_type_type_create()
 {
     anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, 0, null_type);
-}
 
-
-void anna_type_type_create2(anna_stack_template_t *stack)
-{
     anna_type_t *argv[] = 
 	{
 	    type_type, type_type
@@ -136,6 +132,5 @@ void anna_type_type_create2(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	type_type, anna_mid_get(L"abides"), 0,
 	&anna_type_abides, object_type, 2, argv,
-	argn);
-    
+	argn);   
 }

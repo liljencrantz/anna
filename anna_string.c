@@ -937,16 +937,10 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_string_type_i_create();
 }
 
-void anna_string_type_create(anna_stack_template_t *stack)
+void anna_string_type_create()
 {
-    mutable_string_type = anna_type_native_create(L"MutableString", stack);
     /* FIXME */
     string_intersection_type = string_type;
     anna_string_type_create_internal(string_type, 0);
     anna_string_type_create_internal(mutable_string_type, 1);
-    anna_type_copy_object(mutable_string_type);
-    anna_stack_declare(
-	stack, mutable_string_type->name, 
-	type_type, anna_type_wrap(mutable_string_type), ANNA_STACK_READONLY); 
-
 }

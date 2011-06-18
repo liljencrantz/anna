@@ -292,7 +292,7 @@ static inline anna_entry_t *anna_int_convert_int_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_int_convert_int, 1)
 
-void anna_int_type_create(anna_stack_template_t *stack)
+void anna_int_type_create()
 {
     anna_type_t *i_argv[] = 
 	{
@@ -385,5 +385,5 @@ void anna_int_type_create(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	int_type, ANNA_MID_DEL, 0, &anna_int_del, int_type, 1, i_argv, i_argn);
 
-    anna_int_type_i_create(stack);
+    anna_int_type_i_create();
 }

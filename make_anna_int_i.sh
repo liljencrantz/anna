@@ -160,7 +160,7 @@ static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me
 done
 
 echo "
-static void anna_int_type_i_create(anna_stack_template_t *stack)
+static void anna_int_type_i_create()
 {
 $init
 }

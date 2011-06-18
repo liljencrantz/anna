@@ -89,6 +89,7 @@ const static anna_type_data_t anna_lang_type_data[] =
     { &imutable_list_type,L"ImutableList" },
     { &mutable_list_type, L"MutableList" },
     { &string_type, L"String" },
+    { &mutable_string_type, L"MutableString" },
     { &float_type, L"Float" },
     { &complex_type, L"Complex" },
     { &char_type, L"Char" },
@@ -106,11 +107,10 @@ void anna_lang_create_types(anna_stack_template_t *stack_lang)
 void anna_lang_load(anna_stack_template_t *stack_lang)
 {
     anna_object_type_create();
-    anna_type_type_create(stack_lang);    
-    anna_list_type_create(stack_lang);
-    anna_type_type_create2(stack_lang);    
+    anna_type_type_create();    
+    anna_list_type_create();
     anna_null_type_create();    
-    anna_int_type_create(stack_lang);
+    anna_int_type_create();
     anna_string_type_create(stack_lang);
     anna_char_type_create(stack_lang);
     anna_float_type_create(stack_lang);
@@ -120,6 +120,5 @@ void anna_lang_load(anna_stack_template_t *stack_lang)
     anna_hash_type_create(stack_lang);
     
     anna_function_implementation_init(stack_lang);
-    anna_type_data_register(anna_lang_type_data, stack_lang);
-    
+    anna_type_data_register(anna_lang_type_data, stack_lang);    
 }
