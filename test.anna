@@ -1,6 +1,5 @@
 
-def main()(snopp)
+def main()
 {
-    print(main.attribute);
+    print(String.convert(3), "\n");
 }
-

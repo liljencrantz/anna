@@ -71,7 +71,12 @@ static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
     {
 	return 0;
     }
-    
+
+    if(obj == null_object)
+    {
+	return 0;
+    }
+        
     anna_function_t *fun = (anna_function_t *)obj->member[m->offset];
 
     return fun;

@@ -31,7 +31,7 @@ def String __format__List__(
   	        i++;
                 res ~= '%'
             } else {
-                res ~= String.convert(data[listIdx]);
+                res ~= data[listIdx];
                 listIdx++;
             }
         } else
@@ -51,7 +51,7 @@ def String __format__Map__(
     target(String), 
 )
 {
-    res := "";
+    res := "".thaw;
     i := 0;
     while(i < this.count)
     {

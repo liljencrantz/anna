@@ -148,7 +148,7 @@ static void anna_node_calculate_type_internal(
 	
 	case ANNA_NODE_STRING_LITERAL:
 	{
-	    this->return_type = string_type;
+	    this->return_type = imutable_string_type;
 	    break;
 	}
 	

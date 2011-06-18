@@ -1154,14 +1154,8 @@ void anna_list_type_create()
 	imutable_list_type, object_type, 
 	imutable_list_type, mutable_list_type, any_list_type, 0);
     anna_type_intersect_into(
-	any_list_type, mutable_list_type, imutable_list_type);
-    
-/*    anna_type_print(mutable_list_type);
-    anna_type_print(imutable_list_type);
-    anna_type_print(any_list_type);
-    
-    CRASH;
-*/  
+	any_list_type, mutable_list_type, imutable_list_type);    
+
 }
 
 static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)

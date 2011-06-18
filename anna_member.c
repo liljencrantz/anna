@@ -386,7 +386,6 @@ anna_member_t *anna_member_method_search(
 	{
 	    anna_object_t *mem_val = anna_as_obj(type->static_member[member->offset]);
 	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
-	
 	    
 	    if(!mem_fun)
 	    {
