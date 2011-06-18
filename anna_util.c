@@ -56,3 +56,13 @@ int anna_hash(int *data, size_t count)
     
     return (a ^ b ^ c) & ANNA_INT_FAST_MAX;
 }
+
+anna_vmstack_t *anna_util_noop(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t **param = stack->top - 1;
+    anna_object_t *this = anna_as_obj(param[0]);
+    anna_vmstack_drop(stack, 2);
+    anna_vmstack_push_object(stack, this);
+    return stack;    
+}
+

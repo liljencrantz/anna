@@ -20,6 +20,7 @@
 #include "anna_list.h"
 #include "anna_function.h"
 #include "anna_mid.h"
+#include "anna_util.h"
 
 anna_type_t *mutable_string_type = 0;
 static anna_type_t *string_intersection_type = 0;
@@ -210,15 +211,6 @@ static anna_vmstack_t *anna_string_i_set_range(anna_vmstack_t *stack, anna_objec
     }
     anna_vmstack_drop(stack, 4);
     anna_vmstack_push_object(stack, res);
-    return stack;    
-}
-
-static anna_vmstack_t *anna_string_noop(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_entry_t **param = stack->top - 1;
-    anna_object_t *this = anna_as_obj(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, this);
     return stack;    
 }
 
@@ -732,7 +724,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     anna_member_create_native_method(
 	type, anna_mid_get(L"__init__"),
-	0, &anna_string_noop, type, 1,
+	0, &anna_util_noop, type, 1,
 	o_argv, o_argn);    
     
     anna_member_create_native_method(
@@ -926,12 +918,12 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"freeze"),
-	string_type, mutable ? &anna_string_i_copy : &anna_string_noop,
+	string_type, mutable ? &anna_string_i_copy : &anna_util_noop,
 	0);
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"thaw"),
-	mutable_string_type, mutable ? &anna_string_noop : &anna_mutable_string_i_copy,
+	mutable_string_type, mutable ? &anna_util_noop : &anna_mutable_string_i_copy,
 	0);
     
     anna_string_type_i_create();

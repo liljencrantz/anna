@@ -20,6 +20,7 @@
 #include "anna_vm.h"
 #include "anna_string.h"
 #include "anna_mid.h"
+#include "anna_util.h"
 
 #include "anna_macro.h"
 
@@ -842,15 +843,6 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 
-static anna_vmstack_t *anna_list_noop(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_entry_t **param = stack->top - 1;
-    anna_object_t *this = anna_as_obj(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, this);
-    return stack;    
-}
-
 static anna_vmstack_t *anna_list_i_copy_imutable(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 1;
@@ -1117,12 +1109,12 @@ static void anna_list_type_create_internal(
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"freeze"),
-	imutable_type, mutable ? &anna_list_i_copy_imutable : &anna_list_noop,
+	imutable_type, mutable ? &anna_list_i_copy_imutable : &anna_util_noop,
 	0);
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"thaw"),
-	mutable_type, mutable ? &anna_list_noop : &anna_list_i_copy_mutable,
+	mutable_type, mutable ? &anna_util_noop : &anna_list_i_copy_mutable,
 	0);
 }
 

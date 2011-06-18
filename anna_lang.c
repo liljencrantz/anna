@@ -33,6 +33,41 @@
 #include "anna_mid.h"
 #include "anna_type_data.h"
 
+anna_type_t *type_type=0, 
+    *object_type=0,
+    *int_type=0, 
+    *null_type=0,
+    *string_type=0, 
+    *char_type=0,
+    *float_type=0,
+    *member_type=0,
+    *range_type=0,
+    *complex_type=0,
+    *hash_type=0,
+    *pair_type=0;
+
+anna_object_t *null_object=0;
+
+const static anna_type_data_t anna_lang_type_data[] = 
+{
+    { &type_type,L"Type" },
+    { &object_type,L"Object" },
+    { &null_type,L"Null" },
+    { &int_type,L"Int" },
+    { &any_list_type,L"List" },
+    { &imutable_list_type,L"ImutableList" },
+    { &mutable_list_type, L"MutableList" },
+    { &string_type, L"String" },
+    { &mutable_string_type, L"MutableString" },
+    { &float_type, L"Float" },
+    { &complex_type, L"Complex" },
+    { &char_type, L"Char" },
+    { &range_type, L"Range" },
+    { &hash_type, L"HashMap" },
+    { &pair_type, L"Pair" },
+}
+    ;
+
 static int hash_null_func( void *data )
 {
     return 0;
@@ -78,26 +113,6 @@ static void anna_null_type_create()
     }
     assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    
 }
-
-const static anna_type_data_t anna_lang_type_data[] = 
-{
-    { &type_type,L"Type" },
-    { &object_type,L"Object" },
-    { &null_type,L"Null" },
-    { &int_type,L"Int" },
-    { &any_list_type,L"List" },
-    { &imutable_list_type,L"ImutableList" },
-    { &mutable_list_type, L"MutableList" },
-    { &string_type, L"String" },
-    { &mutable_string_type, L"MutableString" },
-    { &float_type, L"Float" },
-    { &complex_type, L"Complex" },
-    { &char_type, L"Char" },
-    { &range_type, L"Range" },
-    { &hash_type, L"HashMap" },
-    { &pair_type, L"Pair" },
-}
-    ;
 
 void anna_lang_create_types(anna_stack_template_t *stack_lang)
 {

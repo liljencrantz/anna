@@ -20,4 +20,6 @@ wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *definit
  */
 int anna_hash(int *data, size_t count);
 
+anna_vmstack_t *anna_util_noop(anna_vmstack_t *stack, anna_object_t *me);
+
 #endif

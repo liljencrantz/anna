@@ -26,22 +26,6 @@
 #include "anna_function_type.h"
 #include "anna_mid.h"
 
-anna_type_t *type_type=0, 
-    *object_type=0,
-    *int_type=0, 
-    *null_type=0,
-    *string_type=0, 
-    *char_type=0,
-    *float_type=0,
-    *member_type=0,
-    *range_type=0,
-    *complex_type=0,
-    *hash_type=0,
-    *pair_type=0;
-anna_object_t *null_object=0;
-
-
-
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
