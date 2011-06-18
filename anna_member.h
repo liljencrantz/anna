@@ -12,7 +12,10 @@ anna_member_t *anna_member_unwrap(anna_object_t *obj);
 
 anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *member);
 
-void anna_member_types_create(anna_stack_template_t *stack);
+void anna_member_create_types(anna_stack_template_t *stack);
+void anna_member_load(anna_stack_template_t *stack);
+
+
 anna_member_t *anna_member_get(anna_type_t *type, mid_t mid);
 anna_member_t *anna_member_method_search(
     anna_type_t *type, mid_t mid, 

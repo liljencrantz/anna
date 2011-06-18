@@ -248,10 +248,8 @@ static inline anna_entry_t *anna_system_get_argument_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_system_get_argument, 1)
 
-static anna_stack_template_t *anna_system_create()
+static void anna_system_load(anna_stack_template_t *stack)
 {
-    anna_stack_template_t *stack = anna_stack_create(stack_global);
-    
     anna_type_t *type = anna_stack_wrap(stack)->type;
     
     anna_member_create_native_property(
@@ -259,44 +257,55 @@ static anna_stack_template_t *anna_system_create()
 	anna_list_type_get_imutable(string_type),
 	&anna_system_get_argument,
 	0);
-    
-    return stack;
 }
 
 
 void anna_module_init()
 {
-    anna_stack_template_t *stack_parser = anna_stack_create(stack_global);
-    anna_stack_template_t *stack_lang = anna_stack_create(stack_global);
-    anna_stack_template_t *stack_reflection = anna_stack_create(stack_global);
+    typedef void (*mfun_t)(anna_stack_template_t *mod);
     
-    anna_lang_load(stack_lang);
-    anna_node_create_wrapper_types(stack_parser);
-    anna_member_types_create(stack_reflection);
+    typedef struct
+    {
+	wchar_t *name;
+	mfun_t creator;
+	mfun_t loader;
+    } module_data_t;
+
+    #define LANG 0
+    #define PARSER 1
     
-    anna_stack_declare(
-	stack_global,
-	L"parser",
-	anna_stack_wrap(stack_parser)->type,
-	anna_stack_wrap(stack_parser),
-	ANNA_STACK_READONLY);
+    module_data_t modules[] = 
+	{
+	    { L"lang", anna_lang_create_types, anna_lang_load },
+	    { L"parser", anna_node_wrapper_create_types, anna_node_wrapper_load },
+	    { L"system", 0, anna_system_load },
+	    { L"reflaction", anna_member_create_types, anna_member_load },
+	};
 
-
-    anna_stack_template_t *stack_system = anna_system_create();
-    anna_stack_declare(
-	stack_global,
-	L"system",
-	anna_stack_wrap(stack_system)->type,
-	anna_stack_wrap(stack_system),
-	ANNA_STACK_READONLY);
-
-    anna_stack_declare(
-	stack_global,
-	L"reflection",
-	anna_stack_wrap(stack_reflection)->type,
-	anna_stack_wrap(stack_reflection),
-	ANNA_STACK_READONLY);
+    int i;
+    anna_stack_template_t *substack[sizeof(modules)/sizeof(*modules)];
     
+    for(i=0; i<sizeof(modules)/sizeof(*modules); i++)
+    {
+	substack[i] = anna_stack_create(stack_global);
+	substack[i]->flags |= ANNA_STACK_NAMESPACE;
+    }
+    for(i=0; i<sizeof(modules)/sizeof(*modules); i++)
+    {
+	if(modules[i].creator)
+	    modules[i].creator(substack[i]);
+    }
+    for(i=0; i<sizeof(modules)/sizeof(*modules); i++)
+    {
+	modules[i].loader(substack[i]);
+	anna_stack_declare(
+	    stack_global,
+	    modules[i].name,
+	    anna_stack_wrap(substack[i])->type,
+	    anna_stack_wrap(substack[i]),
+	    ANNA_STACK_READONLY);
+    }
+
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     anna_macro_init(stack_macro);
     al_push(&stack_global->expand, stack_macro);
@@ -321,11 +330,11 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"mapping");
     anna_module_bootstrap_macro(L"update");
     anna_module_bootstrap_macro(L"iter");
-    anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
+    anna_module_bootstrap_monkeypatch(substack[PARSER], L"monkeypatchNode");
     anna_module_bootstrap_macro(L"range");
-    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
-    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");
-    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchString");
+    anna_module_bootstrap_monkeypatch(substack[LANG], L"monkeypatchMisc");
+    anna_module_bootstrap_monkeypatch(substack[LANG], L"monkeypatchRange");
+    anna_module_bootstrap_monkeypatch(substack[LANG], L"monkeypatchString");
     anna_module_bootstrap_macro(L"switch");
     anna_module_bootstrap_macro(L"struct");
     anna_module_bootstrap_macro(L"enum");

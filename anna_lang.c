@@ -31,6 +31,7 @@
 #include "anna_lang.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
+#include "anna_type_data.h"
 
 static int hash_null_func( void *data )
 {
@@ -78,54 +79,32 @@ static void anna_null_type_create()
     assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    
 }
 
+const static anna_type_data_t anna_lang_type_data[] = 
+{
+    { &type_type,L"Type" },
+    { &object_type,L"Object" },
+    { &null_type,L"Null" },
+    { &int_type,L"Int" },
+    { &any_list_type,L"List" },
+    { &imutable_list_type,L"ImutableList" },
+    { &mutable_list_type, L"MutableList" },
+    { &string_type, L"String" },
+    { &float_type, L"Float" },
+    { &complex_type, L"Complex" },
+    { &char_type, L"Char" },
+    { &range_type, L"Range" },
+    { &hash_type, L"HashMap" },
+    { &pair_type, L"Pair" },
+}
+    ;
+
+void anna_lang_create_types(anna_stack_template_t *stack_lang)
+{
+    anna_type_data_create(anna_lang_type_data, stack_lang);    
+}
+
 void anna_lang_load(anna_stack_template_t *stack_lang)
 {
-    stack_lang->flags |= ANNA_STACK_NAMESPACE;
-    
-    /*
-      Create lowest level stuff. Bits of magic, be careful with
-      ordering here. A lot of intricate dependencies going on between
-      the various calls. In other words...
-
-      Here be dragons.
-    */
-
-    typedef struct 
-    {
-	anna_type_t **addr;
-	wchar_t *name;
-    }
-    type_data_t;
-    
-    type_data_t type_data[] = 
-	{
-	    { &type_type,L"Type" },
-	    { &object_type,L"Object" },
-	    { &null_type,L"Null" },
-	    { &int_type,L"Int" },
-	    { &any_list_type,L"List" },
-	    { &imutable_list_type,L"ImutableList" },
-	    { &mutable_list_type, L"MutableList" },
-	    { &string_type, L"String" },
-	    { &float_type, L"Float" },
-	    { &complex_type, L"Complex" },
-	    { &char_type, L"Char" },
-	    { &member_type, L"Member" },
-	    { &range_type, L"Range" },
-	    { &hash_type, L"HashMap" },
-	    { &pair_type, L"Pair" },
-	    { &node_call_wrapper_type, L"Call" },
-	    { &node_wrapper_type, L"Node" },
-	    { &node_identifier_wrapper_type, L"Identifier" },
-	}
-    ;
-    	    
-    int i;
-    for(i=0; i<(sizeof(type_data)/sizeof(*type_data)); i++)
-    {
-	*(type_data[i].addr) = anna_type_native_create(type_data[i].name, stack_lang);
-    }
-    
     anna_object_type_create();
     anna_type_type_create(stack_lang);    
     anna_list_type_create(stack_lang);
@@ -140,31 +119,7 @@ void anna_lang_load(anna_stack_template_t *stack_lang)
     anna_pair_type_create();
     anna_hash_type_create(stack_lang);
     
-    anna_type_t *types[] = 
-	{
-	    type_type, int_type, object_type, null_type,
-	    mutable_list_type, any_list_type, imutable_list_type, string_type, 
-	    float_type, complex_type, char_type, range_type, 
-	    hash_type, pair_type
-	};
-
-    for(i=0; i<(sizeof(types)/sizeof(*types)); i++)
-    {
-	if((types[i] != object_type) && (types[i] != null_type))
-	{
-	    anna_type_copy_object(types[i]);
-	}
-	anna_stack_declare(
-	    stack_lang, types[i]->name, 
-	    type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
-    }
-
     anna_function_implementation_init(stack_lang);
-
-    anna_stack_declare(
-	stack_global,
-	L"lang",
-	anna_stack_wrap(stack_lang)->type,
-	anna_stack_wrap(stack_lang),
-	ANNA_STACK_READONLY);
+    anna_type_data_register(anna_lang_type_data, stack_lang);
+    
 }

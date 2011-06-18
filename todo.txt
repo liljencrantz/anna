@@ -48,6 +48,8 @@ How should inherited constructors be handled?
 It should be possible to declare members with initial values. 
 Can we drop Pair?
 Instead of 3.toString(), it should be Strong.convert(3). In order to make this work well, we'll need aliases for static methods, something like (aliasReverseStatic(String.convert))
+Add a variable named global in the global namespace, pointing to itself. 
+
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
@@ -55,6 +57,7 @@ Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing some functionality, e.g. equality comparison, hashing, shallow cloning, deep cloning, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
 __type__ should be a property, but something goes wrong in the abides checks if we make it one. 
+Stack types don't abide to Object. Making them do so causes a clash on e.g. __eq__. How do we handle this?
 
 LANGUAGE FEATURES:
 Function templates

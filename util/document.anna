@@ -1,4 +1,3 @@
-use(enum);
 
 def documentType(Type t)
 {

@@ -12,7 +12,9 @@ extern anna_type_t *node_imutable_call_wrapper_type;
 anna_object_t *anna_node_wrap(anna_node_t *node);
 anna_object_t *anna_node_wrap_imutable(anna_node_t *node);
 
-void anna_node_create_wrapper_types(anna_stack_template_t *stack);
+void anna_node_wrapper_create_types(anna_stack_template_t *stack);
+void anna_node_wrapper_load(anna_stack_template_t *stack);
+
 
 anna_node_t *anna_node_unwrap(anna_object_t *this);
 
