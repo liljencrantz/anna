@@ -234,7 +234,7 @@ static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t
 done
 
 echo "
-static void anna_complex_type_i_create(anna_stack_template_t *stack)
+static void anna_complex_type_i_create()
 {
 $init
 }"

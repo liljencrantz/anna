@@ -158,7 +158,7 @@ static anna_vmstack_t *anna_complex_hash(anna_vmstack_t *stack, anna_object_t *m
     return stack;
 }
 
-void anna_complex_type_create(anna_stack_template_t *stack)
+void anna_complex_type_create()
 {
 
     anna_member_create_blob(
@@ -221,7 +221,6 @@ void anna_complex_type_create(anna_stack_template_t *stack)
 	0,
 	&anna_complex_hash, 
 	int_type, 1, argv, argn);
-    
 
-    anna_complex_type_i_create(stack);
+    anna_complex_type_i_create();
 }

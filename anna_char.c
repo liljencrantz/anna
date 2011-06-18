@@ -75,7 +75,7 @@ static inline anna_entry_t *anna_char_to_string_i(anna_entry_t **param)
 }
 ANNA_VM_NATIVE(anna_char_to_string, 1)
 
-void anna_char_type_create(anna_stack_template_t *stack)
+void anna_char_type_create()
 {
     anna_type_t *argv[] = 
 	{
@@ -117,5 +117,5 @@ void anna_char_type_create(anna_stack_template_t *stack)
 	&anna_char_to_string, string_type, 1,
 	argv, argn);
 
-    anna_char_type_i_create(stack);
+    anna_char_type_i_create();
 }

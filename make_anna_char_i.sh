@@ -78,7 +78,7 @@ ANNA_VM_NATIVE(anna_char_i_$name, 2)
 done
 
 echo "
-static void anna_char_type_i_create(anna_stack_template_t *stack)
+static void anna_char_type_i_create()
 {
 $init
 }"

@@ -111,13 +111,13 @@ void anna_lang_load(anna_stack_template_t *stack_lang)
     anna_list_type_create();
     anna_null_type_create();    
     anna_int_type_create();
-    anna_string_type_create(stack_lang);
-    anna_char_type_create(stack_lang);
-    anna_float_type_create(stack_lang);
-    anna_range_type_create(stack_lang);
-    anna_complex_type_create(stack_lang);
+    anna_string_type_create();
+    anna_char_type_create();
+    anna_float_type_create();
+    anna_range_type_create();
+    anna_complex_type_create();
     anna_pair_type_create();
-    anna_hash_type_create(stack_lang);
+    anna_hash_type_create();
     
     anna_function_implementation_init(stack_lang);
     anna_type_data_register(anna_lang_type_data, stack_lang);    

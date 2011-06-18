@@ -1091,7 +1091,6 @@ ANNA_VM_NATIVE(anna_hash_del, 1)
 
 
 static void anna_hash_type_create_internal(
-    anna_stack_template_t *stack,
     anna_type_t *type, 
     anna_type_t *spec1,
     anna_type_t *spec2)
@@ -1214,11 +1213,11 @@ static inline void anna_hash_internal_init()
     hash_init(&anna_hash_specialization, hash_tt_func, hash_tt_cmp);
 }
 
-void anna_hash_type_create(anna_stack_template_t *stack)
+void anna_hash_type_create()
 {
     anna_hash_internal_init();
     hash_put(&anna_hash_specialization, anna_tt_make(object_type, object_type), hash_type);
-    anna_hash_type_create_internal(stack, hash_type, object_type, object_type);
+    anna_hash_type_create_internal(hash_type, object_type, object_type);
 }
 
 anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
@@ -1240,7 +1239,7 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 	spec = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);
 	hash_put(&anna_hash_specialization, anna_tt_make(subtype1, subtype2), spec);
-	anna_hash_type_create_internal(stack_global, spec, subtype1, subtype2);
+	anna_hash_type_create_internal(spec, subtype1, subtype2);
 	spec->flags |= ANNA_TYPE_SPECIALIZED;
 	anna_type_copy_object(spec);
     }

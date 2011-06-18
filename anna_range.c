@@ -657,7 +657,7 @@ static anna_vmstack_t *anna_range_map(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-void anna_range_type_create(struct anna_stack_template *stack)
+void anna_range_type_create()
 {
     mid_t mmid;
     anna_function_t *fun;

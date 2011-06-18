@@ -19,7 +19,7 @@ void anna_range_set_step(anna_object_t *obj, ssize_t v);
 
 ssize_t anna_range_get_count(anna_object_t *obj);
 
-void anna_range_type_create(struct anna_stack_template *);
+void anna_range_type_create(void);
 int anna_range_get_open(anna_object_t *obj);
 void anna_range_set_open(anna_object_t *obj, int v);
 
