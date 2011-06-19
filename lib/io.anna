@@ -11,20 +11,19 @@ type File
     
     def String read()
     {
-        fd := cio.open(filename, cio.readOnly, 0);
+        (fd := cio.open(filename, cio.readOnly, 0)) or (return ?);
         buff := Buffer();
         res := cio.read(fd, buff, ?);
 	cio.close(fd);
 	return if(res){buff.encode()} else {?}
     }
-/*
+    
     def write(String data)
     {
-        fd := cio.open(filename, cio.writeOnly ^bitor cio.truncate, 0o666);	
+        (fd := cio.open(filename, cio.writeOnly ^bitor cio.truncate ^bitor cio.create, 0o666)) or (return ?); 
         buff := Buffer();
-	return buff.decode(data) 
-	    and cio.write(fd, buff, ?) 
-	    and cio.close(fd);
+        ok := buff.decode(data) and cio.write(fd, buff, ?);
+	return cio.close(fd) and ok;
     }
-*/
+    
 }

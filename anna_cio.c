@@ -36,7 +36,11 @@ ANNA_NATIVE(anna_cio_open, 3)
     int mode = anna_as_int(param[2]);
     int res = wopen(nam, flags, mode);
     if(res == -1)
+    {
+	wprintf(L"AFDASFA %s\n", strerror(errno));
+	
 	return anna_from_obj(null_object);
+    }
     return anna_from_int(res);
 }
 
@@ -86,6 +90,29 @@ ANNA_NATIVE(anna_cio_read, 3)
     return anna_from_int(done);
 }
 
+ANNA_NATIVE(anna_cio_write, 3)
+{
+    if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
+    {
+	return anna_from_obj(null_object);
+    }
+    
+    int fd = anna_as_int(param[0]);
+    anna_object_t *buff = anna_as_obj(param[1]);
+    int done=0;
+    int count = anna_buffer_get_count(buff);
+    
+    if(!anna_entry_null(param[2]))
+    {
+	count = maxi(0, mini(anna_as_int(param[2]), count));
+    }
+    
+    unsigned char *ptr = anna_buffer_get_payload(buff);
+    int res = write(fd, ptr, count);
+    
+    return (res != -1) ? anna_from_int(res) : anna_from_obj(null_object);
+}
+
 ANNA_NATIVE(anna_cio_close, 1)
 {
     if(!anna_entry_null(param[0]))
@@ -114,7 +141,7 @@ void anna_cio_load(anna_stack_template_t *stack)
 	f->wrapper,
 	ANNA_STACK_READONLY);
 
-    wchar_t *r_argn[]={L"fd", L"buffer", L"cound"};
+    wchar_t *r_argn[]={L"fd", L"buffer", L"count"};
     anna_type_t *r_argv[] = {int_type, buffer_type, int_type};
     
     f = anna_native_create(
@@ -131,6 +158,20 @@ void anna_cio_load(anna_stack_template_t *stack)
 	f->wrapper,
 	ANNA_STACK_READONLY);
 
+    f = anna_native_create(
+	L"write", 
+	0, &anna_cio_write, 
+	int_type, 
+	3, r_argv, r_argn, 
+	stack);
+    
+    anna_stack_declare(
+	stack,
+	L"write",
+	f->wrapper->type,
+	f->wrapper,
+	ANNA_STACK_READONLY);
+    
     wchar_t *c_argn[]={L"fd"};
     anna_type_t *c_argv[] = {int_type};
 	    

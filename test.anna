@@ -3,4 +3,7 @@ def main()
 {
     f := io.File("test.anna");
     print(f.read(), "\n");
+    f2 := io.File("weee.err");
+    f2.write("Hej hopp\n");
+    
 }

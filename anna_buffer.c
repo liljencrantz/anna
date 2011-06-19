@@ -192,6 +192,52 @@ ANNA_NATIVE(anna_buffer_encode, 1)
     return anna_from_obj(str);
 }
 
+ANNA_NATIVE(anna_buffer_decode, 2)
+{
+    anna_object_t *this = anna_as_obj(param[0]);
+    anna_object_t *str = anna_as_obj(param[1]);
+    
+    if(str == null_object)
+    {
+	return anna_from_obj(null_object);
+    }
+    
+    wchar_t *src = anna_string_payload(str);
+    size_t count = anna_string_get_count(str);
+    
+    int i=0;
+
+    unsigned char *dest = anna_buffer_get_payload(this);
+    size_t off = 0;
+    size_t dest_count = anna_buffer_get_capacity(this);
+
+    for(i=0; i<count; i++)
+    {
+	if(dest_count - off < 6)
+	{
+	    dest_count = maxi(128, 2*dest_count);
+	    anna_buffer_set_capacity(this, dest_count);
+	    dest = anna_buffer_get_payload(this);
+	}
+	if(src[i])
+	{
+	    int res = wctomb(&dest[off], src[i]);
+	    if(res == -1)
+	    {
+		return anna_from_obj(null_object);
+	    }
+	    off += res;
+	}
+	else
+	{
+	    dest[off++] = 0;
+	}
+	
+    }
+    anna_buffer_set_count(this, off);
+    return this;
+}
+
 void anna_buffer_type_create()
 {
     anna_type_t *type = buffer_type;
@@ -314,6 +360,25 @@ void anna_buffer_type_create()
 	type, anna_mid_get(L"encode"), 0,
 	&anna_buffer_encode, string_type, 1,
 	a_argv, a_argn);
+
+     anna_type_t *d_argv[] = 
+	{
+	    type,
+	    string_type
+	}
+    ;
+    
+    wchar_t *d_argn[]=
+	{
+	    L"this",
+	    L"value"
+	}
+    ;
+
+    anna_member_create_native_method(
+	type, anna_mid_get(L"decode"), 0,
+	&anna_buffer_decode, type, 2,
+	d_argv, d_argn);
 
 }
 
