@@ -17,15 +17,14 @@
 #include "anna_int.h"
 #include "anna_mid.h"
 
-static inline anna_entry_t *anna_type_to_string_i(anna_entry_t **param)
+ANNA_NATIVE(anna_type_to_string, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type = anna_type_unwrap(this);
     return anna_from_obj(anna_string_create(wcslen(type->name), type->name));
 }
-ANNA_VM_NATIVE(anna_type_to_string, 1)
 
-static inline anna_entry_t *anna_type_i_get_member_i(anna_entry_t **param)
+ANNA_NATIVE(anna_type_i_get_member, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create_imutable(member_type);
@@ -47,7 +46,6 @@ static inline anna_entry_t *anna_type_i_get_member_i(anna_entry_t **param)
     
     return anna_from_obj(lst);
 }
-ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 
 static anna_vmstack_t *anna_type_cmp(anna_vmstack_t *stack, anna_object_t *me)
 {

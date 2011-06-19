@@ -40,25 +40,22 @@ wchar_t anna_char_get(anna_object_t *this)
     return result;
 }
 
-static inline anna_entry_t *anna_char_i_get_ordinal_i(anna_entry_t **param)
+ANNA_NATIVE(anna_char_i_get_ordinal, 1)
 {
     return anna_from_int((int)anna_as_char(param[0]));
 }
-ANNA_VM_NATIVE(anna_char_i_get_ordinal, 1)
 
-static inline anna_entry_t *anna_char_i_get_upper_i(anna_entry_t **param)
+ANNA_NATIVE(anna_char_i_get_upper, 1)
 {
     return anna_from_char(towupper(anna_as_char(param[0])));
 }
-ANNA_VM_NATIVE(anna_char_i_get_upper, 1)
 
-static inline anna_entry_t *anna_char_i_get_lower_i(anna_entry_t **param)
+ANNA_NATIVE(anna_char_i_get_lower, 1)
 {
     return anna_from_char(towlower(anna_as_char(param[0])));
 }
-ANNA_VM_NATIVE(anna_char_i_get_lower, 1)
 
-static inline anna_entry_t *anna_char_cmp_i(anna_entry_t **param)
+ANNA_NATIVE(anna_char_cmp, 2)
 {
     if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])->type != char_type))
     {
@@ -66,14 +63,12 @@ static inline anna_entry_t *anna_char_cmp_i(anna_entry_t **param)
     }
     return anna_from_int(anna_as_char(param[0]) - anna_as_char(param[1]));
 }
-ANNA_VM_NATIVE(anna_char_cmp, 2)
 
-static inline anna_entry_t *anna_char_to_string_i(anna_entry_t **param)
+ANNA_NATIVE(anna_char_to_string, 1)
 {
     wchar_t ch = anna_as_char(param[0]);
     return anna_from_obj(anna_string_create(1, &ch));
 }
-ANNA_VM_NATIVE(anna_char_to_string, 1)
 
 void anna_char_type_create()
 {

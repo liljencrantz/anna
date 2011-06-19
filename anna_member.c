@@ -58,39 +58,35 @@ anna_member_t *anna_member_of(anna_object_t *wrapper)
     return *(anna_type_t **)anna_entry_get_addr(wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD);
 }
 
-static inline anna_entry_t *anna_member_i_get_name_i(anna_entry_t **param)
+ANNA_NATIVE(anna_member_i_get_name, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return anna_from_obj( anna_string_create(wcslen(m->name), m->name));
 }
-ANNA_VM_NATIVE(anna_member_i_get_name, 1)
 
-static inline anna_entry_t *anna_member_i_get_static_i(anna_entry_t **param)
+ANNA_NATIVE(anna_member_i_get_static, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return m->is_static?anna_from_int(1):anna_from_obj(null_object);
 }
-ANNA_VM_NATIVE(anna_member_i_get_static, 1)
 
-static inline anna_entry_t *anna_member_i_get_method_i(anna_entry_t **param)
+ANNA_NATIVE(anna_member_i_get_method, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return m->is_bound_method?anna_from_int(1):anna_from_obj(null_object);
 }
-ANNA_VM_NATIVE(anna_member_i_get_method, 1)
 
-static inline anna_entry_t *anna_member_i_get_property_i(anna_entry_t **param)
+ANNA_NATIVE(anna_member_i_get_property, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return m->is_property?anna_from_int(1):anna_from_obj(null_object);
 }
-ANNA_VM_NATIVE(anna_member_i_get_property, 1)
 
-static inline anna_entry_t *anna_member_i_get_constant_i(anna_entry_t **param)
+ANNA_NATIVE(anna_member_i_get_constant, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
@@ -103,9 +99,8 @@ static inline anna_entry_t *anna_member_i_get_constant_i(anna_entry_t **param)
     
     return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): anna_from_obj(null_object);
 }
-ANNA_VM_NATIVE(anna_member_i_get_constant, 1)
 
-static inline anna_entry_t *anna_member_i_value_i(anna_entry_t **param)
+ANNA_NATIVE(anna_member_i_value, 2)
 {
     anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
     anna_object_t *obj = anna_as_obj(param[1]);
@@ -124,7 +119,6 @@ static inline anna_entry_t *anna_member_i_value_i(anna_entry_t **param)
 	return obj->member[memb->offset];	
     }
 }
-ANNA_VM_NATIVE(anna_member_i_value, 2)
 
 static void anna_member_type_create()
 {

@@ -209,7 +209,7 @@ void anna_function_implementation_init(struct anna_stack_template *stack)
 	&anna_i_print, 
 	imutable_list_type, 1, &object_type, 
 	p_argn, stack);
-
+    
     anna_stack_declare(
 	stack,
 	L"print",

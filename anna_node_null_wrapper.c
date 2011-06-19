@@ -1,5 +1,5 @@
 
-static inline anna_entry_t *anna_node_null_wrapper_i_init_i(anna_entry_t **param)
+ANNA_NATIVE(anna_node_null_wrapper_i_init, 2)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     if(anna_entry_null(param[1]))
@@ -17,7 +17,6 @@ static inline anna_entry_t *anna_node_null_wrapper_i_init_i(anna_entry_t **param
     }
     return param[0];
 }
-ANNA_VM_NATIVE(anna_node_null_wrapper_i_init, 2)
 
 static anna_type_t *anna_node_create_null_wrapper_type(anna_stack_template_t *stack)
 {

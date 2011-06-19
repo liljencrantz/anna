@@ -201,49 +201,43 @@ anna_entry_t **anna_list_get_payload(anna_object_t *this)
     return *(anna_entry_t ***)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD);
 }
 
-static inline anna_entry_t *anna_list_set_int_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_set_int, 3)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     anna_list_set(anna_as_obj(param[0]), anna_as_int(param[1]), param[2]);
     return param[2];
 }
-ANNA_VM_NATIVE(anna_list_set_int, 3)
 
-static inline anna_entry_t *anna_list_get_int_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_get_int, 2)
 { 
     ANNA_ENTRY_NULL_CHECK(param[1]);
     return anna_list_get(anna_as_obj(param[0]), anna_as_int(param[1]));
 }
-ANNA_VM_NATIVE(anna_list_get_int, 2)
 
-static inline anna_entry_t *anna_list_get_count_method_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_get_count_method, 1)
 {
     return anna_from_int(anna_list_get_count(anna_as_obj(param[0])));
 }
-ANNA_VM_NATIVE(anna_list_get_count_method, 1)
 
-static inline anna_entry_t *anna_list_get_first_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_get_first, 1)
 {
     return anna_list_get(anna_as_obj(param[0]), 0);
 }
-ANNA_VM_NATIVE(anna_list_get_first, 1)
 
-static inline anna_entry_t *anna_list_get_last_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_get_last, 1)
 {
     return anna_list_get(anna_as_obj(param[0]), anna_list_get_count(anna_as_obj(param[0]))-1);
 }
-ANNA_VM_NATIVE(anna_list_get_last, 1)
 
-static inline anna_entry_t *anna_list_set_count_method_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_set_count_method, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     int sz = anna_as_int(param[1]);
     anna_list_set_count(anna_as_obj(param[0]), sz);
     return param[1];
 }
-ANNA_VM_NATIVE(anna_list_set_count_method, 2)
 
-static inline anna_entry_t *anna_list_append_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_append, 2)
 {
     size_t i;
 
@@ -266,7 +260,6 @@ static inline anna_entry_t *anna_list_append_i(anna_entry_t **param)
     
     return param[0];
 }
-ANNA_VM_NATIVE(anna_list_append, 2)
 
 /**
    This is the bulk of the each method
@@ -586,7 +579,7 @@ static anna_vmstack_t *anna_list_find(anna_vmstack_t *stack, anna_object_t *me)
 }
 
 
-static inline anna_entry_t *anna_list_init_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_init, 2)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *that = anna_as_obj_fast(param[1]);
@@ -606,9 +599,7 @@ static inline anna_entry_t *anna_list_init_i(anna_entry_t **param)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_list_init, 2)
-
-static inline anna_entry_t *anna_list_del_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_del, 1)
 {
     free((*anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD)));
     (*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_CAPACITY)) = 0;    
@@ -616,9 +607,7 @@ static inline anna_entry_t *anna_list_del_i(anna_entry_t **param)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_list_del, 1)
-
-static inline anna_entry_t *anna_list_push_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_push, 2)
 {
     anna_list_set(
 	anna_as_obj_fast(param[0]), 
@@ -627,9 +616,7 @@ static inline anna_entry_t *anna_list_push_i(anna_entry_t **param)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_list_push, 2)
-
-static inline anna_entry_t *anna_list_pop_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_pop, 1)
 {
     size_t *sz = (size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE);
     if(!*sz)
@@ -637,8 +624,6 @@ static inline anna_entry_t *anna_list_pop_i(anna_entry_t **param)
     (*sz)--;
     return (*(anna_entry_t ***)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))[*sz];
 }
-
-ANNA_VM_NATIVE(anna_list_pop, 1)
 
 static anna_vmstack_t *anna_list_in_callback(anna_vmstack_t *stack, anna_object_t *me)
 {    
@@ -716,7 +701,7 @@ static anna_vmstack_t *anna_list_in(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-static inline anna_entry_t *anna_list_i_get_range_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_i_get_range, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     anna_object_t *list = anna_as_obj(param[0]);
@@ -747,9 +732,8 @@ static inline anna_entry_t *anna_list_i_get_range_i(anna_entry_t **param)
     return anna_from_obj(res);
     
 }
-ANNA_VM_NATIVE(anna_list_i_get_range, 2)
 
-static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
+ANNA_NATIVE(anna_list_i_set_range, 3)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     
@@ -841,7 +825,6 @@ static inline anna_entry_t *anna_list_i_set_range_i(anna_entry_t **param)
 
     return param[0];
 }
-ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 
 static anna_vmstack_t *anna_list_i_copy_imutable(anna_vmstack_t *stack, anna_object_t *me)
 {

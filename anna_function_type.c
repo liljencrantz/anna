@@ -24,23 +24,21 @@ anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
 static array_list_t types=AL_STATIC;
 
-static inline anna_entry_t *anna_function_type_i_get_name_i(anna_entry_t **param)
+ANNA_NATIVE(anna_function_type_i_get_name, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_function_t *f = anna_function_unwrap(this);
     return anna_from_obj( anna_string_create(wcslen(f->name), f->name));
 }
-ANNA_VM_NATIVE(anna_function_type_i_get_name, 1)
 
-static inline anna_entry_t *anna_function_type_i_get_output_i(anna_entry_t **param)
+ANNA_NATIVE(anna_function_type_i_get_output, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_function_t *f = anna_function_unwrap(this);
     return anna_from_obj( anna_type_wrap(f->return_type));
 }
-ANNA_VM_NATIVE(anna_function_type_i_get_output, 1)
 
-static inline anna_entry_t *anna_function_type_i_get_input_type_i(anna_entry_t **param)
+ANNA_NATIVE(anna_function_type_i_get_input_type, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create_imutable(type_type);
@@ -58,9 +56,8 @@ static inline anna_entry_t *anna_function_type_i_get_input_type_i(anna_entry_t *
     
     return anna_from_obj( lst);
 }
-ANNA_VM_NATIVE(anna_function_type_i_get_input_type, 1)
 
-static inline anna_entry_t *anna_function_type_i_get_input_name_i(anna_entry_t **param)
+ANNA_NATIVE(anna_function_type_i_get_input_name, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create_imutable(string_type);
@@ -79,21 +76,17 @@ static inline anna_entry_t *anna_function_type_i_get_input_name_i(anna_entry_t *
     
     return anna_from_obj( lst);
 }
-ANNA_VM_NATIVE(anna_function_type_i_get_input_name, 1)
 
-static inline anna_entry_t *anna_function_type_i_get_attributes_i(anna_entry_t **param)
+ANNA_NATIVE(anna_function_type_i_get_attributes, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_function_t *f = anna_function_unwrap(this);
     
     return anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute));
 }
-ANNA_VM_NATIVE(anna_function_type_i_get_attributes, 1)
-
 
 void anna_function_type_print(anna_function_type_t *k)
 {
-
     wprintf(L"%ls <- (", k->return_type?k->return_type->name:L"<null>");
     int i;
     for(i=0;i<k->input_count; i++)
@@ -108,7 +101,7 @@ void anna_function_type_print(anna_function_type_t *k)
     wprintf(L")\n");
 }
 
-static inline anna_entry_t *anna_function_type_to_string_i(anna_entry_t **param)
+ANNA_NATIVE(anna_function_type_to_string, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     string_buffer_t sb;
@@ -123,7 +116,6 @@ static inline anna_entry_t *anna_function_type_to_string_i(anna_entry_t **param)
     sb_printf(&sb, L")");
     return anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
 }
-ANNA_VM_NATIVE(anna_function_type_to_string, 1)
 
 
 static void anna_function_type_base_create()

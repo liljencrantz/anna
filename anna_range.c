@@ -229,7 +229,7 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
     return stack;    
 }
 
-static inline anna_entry_t *anna_range_in_i(anna_entry_t **param)
+ANNA_NATIVE(anna_range_in, 2)
 {
     anna_object_t *range = anna_as_obj_fast(param[0]);
     ANNA_ENTRY_NULL_CHECK(param[1]);
@@ -267,7 +267,6 @@ static inline anna_entry_t *anna_range_in_i(anna_entry_t **param)
 	return (rem == 0)?anna_from_int(res):anna_from_obj(null_object);
     }
 }
-ANNA_VM_NATIVE(anna_range_in, 2)
 
 static anna_vmstack_t *anna_range_get_count_i(anna_vmstack_t *stack, anna_object_t *me)
 {

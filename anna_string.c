@@ -93,7 +93,7 @@ static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
     return idx;
 }
 
-static anna_entry_t *anna_string_i_set_int_i(anna_entry_t **param)
+ANNA_NATIVE(anna_string_i_set_int, 3)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     ANNA_ENTRY_NULL_CHECK(param[2]);
@@ -105,9 +105,8 @@ static anna_entry_t *anna_string_i_set_int_i(anna_entry_t **param)
     }
     return param[2];
 }
-ANNA_VM_NATIVE(anna_string_i_set_int, 3)
 
-static inline anna_entry_t *anna_string_i_get_int_i(anna_entry_t **param)
+ANNA_NATIVE(anna_string_i_get_int, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     ssize_t idx = anna_string_idx_wrap(anna_as_obj(param[0]), anna_as_int(param[1]));
@@ -117,9 +116,8 @@ static inline anna_entry_t *anna_string_i_get_int_i(anna_entry_t **param)
     }
     return anna_from_obj(null_object);
 }
-ANNA_VM_NATIVE(anna_string_i_get_int, 2)
 
-static inline anna_entry_t *anna_string_i_get_range_i(anna_entry_t **param)
+ANNA_NATIVE(anna_string_i_get_range, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     
@@ -153,7 +151,6 @@ static inline anna_entry_t *anna_string_i_get_range_i(anna_entry_t **param)
     
     return anna_from_obj(res);
 }
-ANNA_VM_NATIVE(anna_string_i_get_range, 2)
 
 static anna_vmstack_t *anna_string_i_set_range(anna_vmstack_t *stack, anna_object_t *me)
 {

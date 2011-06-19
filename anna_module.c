@@ -233,7 +233,7 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
     
 }
 
-static inline anna_entry_t *anna_system_get_argument_i(anna_entry_t **param)
+ANNA_NATIVE(anna_system_get_argument, 1)
 {
     static anna_object_t *res = 0;
     if(!res)
@@ -252,7 +252,6 @@ static inline anna_entry_t *anna_system_get_argument_i(anna_entry_t **param)
     
     return anna_from_obj(res);
 }
-ANNA_VM_NATIVE(anna_system_get_argument, 1)
 
 static void anna_system_load(anna_stack_template_t *stack)
 {
@@ -263,6 +262,33 @@ static void anna_system_load(anna_stack_template_t *stack)
 	anna_list_type_get_imutable(string_type),
 	&anna_system_get_argument,
 	0);
+}
+
+ANNA_NATIVE(anna_cio_open, 2)
+{
+    return null_object;
+}
+
+
+static void anna_cio_load(anna_stack_template_t *stack)
+{
+    static wchar_t *o_argn[]={L"name", L"flags"};
+    anna_type_t *o_argv[] = {string_type, int_type};
+	    
+    anna_function_t *f = anna_native_create(
+	L"open", 
+	0, &anna_cio_open, 
+	int_type, 
+	2, o_argv, o_argn, 
+	stack);
+    
+    anna_stack_declare(
+	stack,
+	L"open",
+	f->wrapper->type,
+	f->wrapper,
+	ANNA_STACK_READONLY);
+
 }
 
 
@@ -286,6 +312,7 @@ void anna_module_init()
 	    { L"parser", anna_node_wrapper_create_types, anna_node_wrapper_load },
 	    { L"system", 0, anna_system_load },
 	    { L"reflection", anna_member_create_types, anna_member_load },
+	    { L"cio", 0, anna_cio_load },
 	};
 
     int i;
@@ -380,6 +407,7 @@ static void anna_module_find_import_internal(
 	}
     }
 }
+
 static void anna_module_find_import(anna_node_t *module, array_list_t *import)
 {
     anna_module_find_import_internal(module, L"use", import);

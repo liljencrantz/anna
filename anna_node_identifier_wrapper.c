@@ -1,12 +1,11 @@
-static inline anna_entry_t *anna_node_identifier_wrapper_i_get_name_i(anna_entry_t **param)
+ANNA_NATIVE(anna_node_identifier_wrapper_i_get_name, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_identifier_t *node = (anna_node_identifier_t *)anna_node_unwrap(this);
     return anna_from_obj(anna_string_create(wcslen(node->name), node->name));
 }
-ANNA_VM_NATIVE(anna_node_identifier_wrapper_i_get_name, 1)
 
-static inline anna_entry_t *anna_node_identifier_wrapper_i_init_i(anna_entry_t **param)
+ANNA_NATIVE(anna_node_identifier_wrapper_i_init, 3)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
@@ -16,9 +15,8 @@ static inline anna_entry_t *anna_node_identifier_wrapper_i_init_i(anna_entry_t *
 	    anna_intern_or_free(anna_string_payload(anna_as_obj(param[2]))));
     return param[0];
 }
-ANNA_VM_NATIVE(anna_node_identifier_wrapper_i_init, 3)
 
-static inline anna_entry_t *anna_node_mapping_identifier_wrapper_i_init_i(anna_entry_t **param)
+ANNA_NATIVE(anna_node_mapping_identifier_wrapper_i_init, 3)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
@@ -31,7 +29,6 @@ static inline anna_entry_t *anna_node_mapping_identifier_wrapper_i_init_i(anna_e
     
     return param[0];
 }
-ANNA_VM_NATIVE(anna_node_mapping_identifier_wrapper_i_init, 3)
 
 static void anna_node_create_identifier_wrapper_type(anna_stack_template_t *stack, anna_type_t *type, int mapping)
 {

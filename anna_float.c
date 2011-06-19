@@ -118,7 +118,7 @@ static anna_vmstack_t *anna_float_hash(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-static inline anna_entry_t *anna_float_convert_string_i(anna_entry_t **param)
+ANNA_NATIVE(anna_float_convert_string, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -158,15 +158,13 @@ static inline anna_entry_t *anna_float_convert_string_i(anna_entry_t **param)
     }
     return anna_from_float(res);
 }
-ANNA_VM_NATIVE(anna_float_convert_string, 1)
 
-static inline anna_entry_t *anna_float_convert_float_i(anna_entry_t **param)
+ANNA_NATIVE(anna_float_convert_float, 1)
 {
     return param[0];
 }
-ANNA_VM_NATIVE(anna_float_convert_float, 1)
 
-static inline anna_entry_t *anna_float_convert_int_i(anna_entry_t **param)
+ANNA_NATIVE(anna_float_convert_int, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -176,13 +174,11 @@ static inline anna_entry_t *anna_float_convert_int_i(anna_entry_t **param)
     double res = mpz_get_d(*int_val);
     return anna_from_float(res);
 }
-ANNA_VM_NATIVE(anna_float_convert_int, 1)
 
-static inline anna_entry_t *anna_float_max_exponent_i(anna_entry_t **param)
+ANNA_NATIVE(anna_float_max_exponent, 1)
 {
     return anna_from_int(DBL_MAX_EXP);
 }
-ANNA_VM_NATIVE(anna_float_max_exponent, 1)
 
 void anna_float_type_create()
 {
