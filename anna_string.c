@@ -27,8 +27,6 @@ static inline anna_string_t *as_unwrap(anna_object_t *obj)
     return (anna_string_t *)anna_entry_get_addr(obj,ANNA_MID_STRING_PAYLOAD);
 }
 
-#include "anna_string_i.c"
-
 void anna_string_print(anna_object_t *obj)
 {
     anna_string_t *str = as_unwrap(obj);
@@ -913,7 +911,6 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	mutable_string_type, mutable ? &anna_util_noop : &anna_mutable_string_i_copy,
 	0);
     
-    anna_string_type_i_create();
 }
 
 void anna_string_type_create()

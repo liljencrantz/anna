@@ -23,8 +23,19 @@
 #include "anna_slab.h"
 #include "anna_mid.h"
 
+/**
+   The root of the namespace hierarchy
+ */
 anna_stack_template_t *stack_global;
+
+/**
+   Number of arguments given to the program
+ */
 int anna_argc;
+
+/**
+   All arguments given to the program
+ */
 char **anna_argv;
 
 /**
@@ -124,6 +135,12 @@ static wchar_t *anna_module_name_extract(int argc, char **argv)
     return module_name;
 }
 
+/**
+   Main program entry point.
+
+   Save the argument list, initialize the interpreter, parse the
+   specified module and run its main function.
+*/
 
 int main(int argc, char **argv)
 {

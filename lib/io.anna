@@ -17,12 +17,14 @@ type File
 	cio.close(fd);
 	return if(res){buff.encode()} else {?}
     }
-/*    
+/*
     def write(String data)
     {
         fd := cio.open(filename, cio.writeOnly ^bitor cio.truncate, 0o666);	
-	cio.write(fd, Buffer.convert(data), ?);
-	cio.clode(fd);
+        buff := Buffer();
+	return buff.decode(data) 
+	    and cio.write(fd, buff, ?) 
+	    and cio.close(fd);
     }
-*/  
+*/
 }
