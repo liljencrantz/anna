@@ -11,8 +11,6 @@
 #include "anna_crash.h"
 #include "anna_string_internal.h"
 
-#ifndef ANNA_STRING_CHUNKED_ENABLED
-
 static void asi_ensure_capacity(anna_string_t *string, size_t size)
 {
     if(string->capacity < size)
@@ -162,4 +160,3 @@ void asi_append_cstring(anna_string_t *dest, wchar_t *str, size_t len)
     dest->count += len;    
 }
 
-#endif

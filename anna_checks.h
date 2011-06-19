@@ -33,14 +33,6 @@
 #define ANNA_CRASH_ON_CRITICAL_ENABLED
 
 /**
-   If enabled, anna will use the chunked string implementation, which
-   is faster for complex string operations on large strings, but
-   slower on simple operations and a head ache to debug because of its
-   increased complexity.
-*/
-//#define ANNA_STRING_CHUNKED_ENABLED
-
-/**
    If enabled, anna will validate the internal concistency of string
    objects after complex string operations. 
 */

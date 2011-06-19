@@ -32,7 +32,7 @@ CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
 ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
 anna_function_implementation.o anna_int.o anna_string.o anna_char.o	\
 anna_float.o anna_list.o anna_stack.o anna_lex.o anna_yacc.o common.o	\
-wutil.o anna_type.o anna_node_print.o anna_string_naive.o		\
+wutil.o anna_type.o anna_node_print.o anna_string_internal.o		\
 anna_node_wrapper.o anna_type_type.o anna_function.o anna_node_check.o	\
 anna_member.o anna_function_type.o anna_util.o anna_module.o		\
 anna_node_create.o anna_object.o anna_invoke.o anna_error.o anna_mid.o	\
@@ -42,10 +42,10 @@ anna_slab.o anna_pair.o anna_node_hash.o anna_compile.o anna_abides.o	\
 dtoa.o anna_buffer.o anna_cio.o
 
 ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
-anna_string_internal_test.o util.o common.o anna_string_naive.o
+anna_string_internal_test.o util.o common.o 
 
 ANNA_STRING_PERF_OBJS := anna_string_internal.o anna_string_perf.o	\
-util.o common.o anna_string_naive.o
+util.o common.o 
 
 LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 
