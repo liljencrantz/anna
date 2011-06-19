@@ -121,11 +121,14 @@ void anna_mid_init()
 	    L"__div__Float__",
 	    L"__exp__Float__",
 	    L"__increaseAssign__Float__",
-	    L"__decreaseAssign__Float__"
+	    L"__decreaseAssign__Float__",
+	    L"!bufferPayload",
+	    L"!bufferSize",
+	    L"!bufferCapacity",
 	};
     
     int i;
-    assert((sizeof(mid_name)/sizeof(wchar_t *)) == ANNA_MID_FIRST_UNRESERVED);    
+    assert((sizeof(mid_name)/sizeof(wchar_t *)) == (ANNA_MID_FIRST_UNRESERVED));    
     
     for(i=0; i<(sizeof(mid_name)/sizeof(wchar_t *)); i++)
     {

@@ -32,6 +32,7 @@
 #include "anna_vm.h"
 #include "anna_mid.h"
 #include "anna_type_data.h"
+#include "anna_buffer.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -46,7 +47,10 @@ anna_type_t *type_type=0,
     *range_type=0,
     *complex_type=0,
     *hash_type=0,
-    *pair_type=0;
+    *pair_type=0,
+    *buffer_type=0
+    ;
+
 
 anna_object_t *null_object=0;
 
@@ -68,6 +72,7 @@ const static anna_type_data_t anna_lang_type_data[] =
     { &range_type, L"Range" },
     { &hash_type, L"HashMap" },
     { &pair_type, L"Pair" },
+    { &buffer_type, L"Buffer" },
 }
     ;
 
@@ -136,6 +141,7 @@ void anna_lang_load(anna_stack_template_t *stack_lang)
     anna_complex_type_create();
     anna_pair_type_create();
     anna_hash_type_create();
+    anna_buffer_type_create();
     
     anna_function_implementation_init(stack_lang);
     anna_type_data_register(anna_lang_type_data, stack_lang);    

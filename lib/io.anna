@@ -2,16 +2,27 @@
 type File
 {
     
-    var Int filename;
+    var String filename;
     
     def __init__(String filename)
     {
         this.filename = filename;
     }
     
-    def read()
+    def String read()
     {
-        "Not implemented\n";
+        fd := cio.open(filename, cio.readOnly, 0);
+        buff := Buffer();
+        res := cio.read(fd, buff, ?);
+	cio.close(fd);
+	return if(res){buff.encode()} else {?}
     }
-    
+/*    
+    def write(String data)
+    {
+        fd := cio.open(filename, cio.writeOnly ^bitor cio.truncate, 0o666);	
+	cio.write(fd, Buffer.convert(data), ?);
+	cio.clode(fd);
+    }
+*/  
 }

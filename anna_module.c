@@ -33,6 +33,7 @@
 #include "anna_attribute.h"
 #include "anna_string.h"
 #include "anna_mid.h"
+#include "anna_cio.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 array_list_t anna_module_default_macros = AL_STATIC;
@@ -168,6 +169,20 @@ static void anna_module_bootstrap_macro(wchar_t *name)
     al_push(&anna_module_default_macros, mm);
 }
 
+void anna_module_const_int(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    int value)
+{
+    anna_stack_declare(
+	stack,
+	name,
+	int_type,
+	anna_from_int(value),
+	ANNA_STACK_READONLY);
+    
+}
+
 static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar_t *name)
 {
     string_buffer_t sb;
@@ -263,34 +278,6 @@ static void anna_system_load(anna_stack_template_t *stack)
 	&anna_system_get_argument,
 	0);
 }
-
-ANNA_NATIVE(anna_cio_open, 2)
-{
-    return null_object;
-}
-
-
-static void anna_cio_load(anna_stack_template_t *stack)
-{
-    static wchar_t *o_argn[]={L"name", L"flags"};
-    anna_type_t *o_argv[] = {string_type, int_type};
-	    
-    anna_function_t *f = anna_native_create(
-	L"open", 
-	0, &anna_cio_open, 
-	int_type, 
-	2, o_argv, o_argn, 
-	stack);
-    
-    anna_stack_declare(
-	stack,
-	L"open",
-	f->wrapper->type,
-	f->wrapper,
-	ANNA_STACK_READONLY);
-
-}
-
 
 void anna_module_init()
 {

@@ -115,6 +115,10 @@ enum anna_mid_enum
     ANNA_MID_EXP_FLOAT,
     ANNA_MID_INCREASE_ASSIGN_FLOAT,
     ANNA_MID_DECREASE_ASSIGN_FLOAT,
+    ANNA_MID_BUFFER_PAYLOAD,
+    ANNA_MID_BUFFER_SIZE,
+    ANNA_MID_BUFFER_CAPACITY,
+
     ANNA_MID_FIRST_UNRESERVED,
 };
 
@@ -405,7 +409,7 @@ typedef struct
     anna_type_t *input_type[];
 } anna_function_type_t;
 
-extern anna_type_t *type_type, *object_type, *int_type, *string_type, *mutable_string_type, *imutable_string_type, *char_type, *null_type,  *string_type, *char_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type;
+extern anna_type_t *type_type, *object_type, *int_type, *string_type, *mutable_string_type, *imutable_string_type, *char_type, *null_type,  *string_type, *char_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type, *buffer_type;
 extern anna_type_t *function_type_base;
 extern anna_object_t *null_object, *anna_wrap_method;
 extern int anna_error_count;

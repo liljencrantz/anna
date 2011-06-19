@@ -1,5 +1,6 @@
 
 def main()
 {
-    print(String.convert(3), "\n");
+    f := io.File("test.anna");
+    print(f.read(), "\n");
 }

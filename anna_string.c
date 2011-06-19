@@ -40,6 +40,11 @@ void anna_string_append(anna_object_t *this, anna_object_t *str)
     asi_append(as_unwrap(this), as_unwrap(str), 0, asi_get_count(as_unwrap(str)));
 }
 
+void anna_string_append_cstring(anna_object_t *this, size_t len, wchar_t *str)
+{
+    asi_append_cstring(as_unwrap(this), str, len);
+}
+
 
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
