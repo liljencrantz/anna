@@ -26,7 +26,6 @@
 * Cache for mpz_t numbers
 * Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
-* switchCast macro
 * Default argument values
 * Set type
 * Fast imutable lists/strings, supporting zero copy slicing, substringing, etc.

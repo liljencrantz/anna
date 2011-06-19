@@ -22,6 +22,7 @@
 #include "anna_string.h"
 #include "anna_mid.h"
 #include "anna_util.h"
+#include "anna_intern.h"
 
 #include "anna_macro.h"
 
@@ -72,7 +73,6 @@ size_t anna_buffer_get_count(anna_object_t *this)
 
 void anna_buffer_set_count(anna_object_t *this, size_t sz)
 {
-    size_t old_size = anna_buffer_get_count(this);
     size_t capacity = anna_buffer_get_capacity(this);
     
     if(sz>capacity)
@@ -173,7 +173,7 @@ ANNA_NATIVE(anna_buffer_encode, 1)
 	else
 	{
 	    wchar_t dst;
-	    int res = mbtowc(&dst, &src[i], count-i);
+	    int res = mbtowc(&dst, (char *)&src[i], count-i);
 	    switch(res)
 	    {
 		case -1:
@@ -221,7 +221,7 @@ ANNA_NATIVE(anna_buffer_decode, 2)
 	}
 	if(src[i])
 	{
-	    int res = wctomb(&dest[off], src[i]);
+	    int res = wctomb((char *)&dest[off], src[i]);
 	    if(res == -1)
 	    {
 		return anna_from_obj(null_object);
@@ -235,7 +235,7 @@ ANNA_NATIVE(anna_buffer_decode, 2)
 	
     }
     anna_buffer_set_count(this, off);
-    return this;
+    return anna_from_obj(this);
 }
 
 void anna_buffer_type_create()
@@ -269,19 +269,6 @@ void anna_buffer_type_create()
     wchar_t *a_argn[]=
 	{
 	    L"this"
-	}
-    ;
-
-    anna_type_t *l_argv[] = 
-	{
-	    type,
-	    type
-	}
-    ;
-    
-    wchar_t *l_argn[]=
-	{
-	    L"this", L"value"
 	}
     ;
 
@@ -334,20 +321,6 @@ void anna_buffer_type_create()
 	&anna_buffer_get_last,
 	0);
 
-    anna_type_t *range_argv[] = 
-	{
-	    type,
-	    range_type,
-	    type
-	}
-    ;
-    
-    wchar_t *range_argn[] =
-	{
-	    L"this", L"range", L"value"
-	}
-    ;
-    
     mmid = anna_member_create_native_method(
 	type,
 	anna_mid_get(L"__set__Int"), 0,
@@ -360,8 +333,11 @@ void anna_buffer_type_create()
 	type, anna_mid_get(L"encode"), 0,
 	&anna_buffer_encode, string_type, 1,
 	a_argv, a_argn);
-
-     anna_type_t *d_argv[] = 
+    anna_member_document(
+	type, anna_mid_get(L"encode"), 
+	anna_intern_static(L"Encode the byte array into a character string using the default encoding of the locale."));
+    
+    anna_type_t *d_argv[] = 
 	{
 	    type,
 	    string_type
@@ -374,11 +350,14 @@ void anna_buffer_type_create()
 	    L"value"
 	}
     ;
-
+    
     anna_member_create_native_method(
 	type, anna_mid_get(L"decode"), 0,
 	&anna_buffer_decode, type, 2,
 	d_argv, d_argn);
-
+    anna_member_document(
+	type, anna_mid_get(L"decode"), 
+	anna_intern_static(L"Decode the String into a byte array using the default encoding of the locale."));
+    
 }
 

@@ -21,6 +21,7 @@
 #include "anna_string.h"
 #include "anna_function.h"
 #include "anna_buffer.h"
+#include "anna_intern.h"
 
 #define READ_SZ 4096
 
@@ -99,7 +100,6 @@ ANNA_NATIVE(anna_cio_write, 3)
     
     int fd = anna_as_int(param[0]);
     anna_object_t *buff = anna_as_obj(param[1]);
-    int done=0;
     int count = anna_buffer_get_count(buff);
     
     if(!anna_entry_null(param[2]))
@@ -140,6 +140,9 @@ void anna_cio_load(anna_stack_template_t *stack)
 	f->wrapper->type,
 	f->wrapper,
 	ANNA_STACK_READONLY);
+    anna_function_document(
+	f,
+	anna_intern_static(L"Open a file descriptor. Equivalent to the C open function."));
 
     wchar_t *r_argn[]={L"fd", L"buffer", L"count"};
     anna_type_t *r_argv[] = {int_type, buffer_type, int_type};
@@ -157,6 +160,9 @@ void anna_cio_load(anna_stack_template_t *stack)
 	f->wrapper->type,
 	f->wrapper,
 	ANNA_STACK_READONLY);
+    anna_function_document(
+	f,
+	anna_intern_static(L"Read from the specified file descriptor. Equivalent to the C read function."));
 
     f = anna_native_create(
 	L"write", 
@@ -171,6 +177,9 @@ void anna_cio_load(anna_stack_template_t *stack)
 	f->wrapper->type,
 	f->wrapper,
 	ANNA_STACK_READONLY);
+    anna_function_document(
+	f,
+	anna_intern_static(L"Write to the specified file descriptor. Equivalent to the C write function."));
     
     wchar_t *c_argn[]={L"fd"};
     anna_type_t *c_argv[] = {int_type};
@@ -188,6 +197,9 @@ void anna_cio_load(anna_stack_template_t *stack)
 	f->wrapper->type,
 	f->wrapper,
 	ANNA_STACK_READONLY);
+    anna_function_document(
+	f,
+	anna_intern_static(L"Close the specified file descriptor. Equivalent to the C close function."));
 
     anna_module_const_int(
 	stack,
