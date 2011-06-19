@@ -108,7 +108,7 @@ ANNA_VM_NATIVE(anna_member_i_get_constant, 1)
 static inline anna_entry_t *anna_member_i_value_i(anna_entry_t **param)
 {
     anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
-    anna_object_t *obj = anna_as_obj_fast(param[1]);
+    anna_object_t *obj = anna_as_obj(param[1]);
     anna_member_t *memb = anna_member_unwrap(memb_obj);
     anna_type_t *type = anna_member_of(memb_obj);
     if(memb->is_static)
@@ -680,3 +680,17 @@ size_t anna_member_create_native_type_method(
     return (size_t)mid;
 }
 
+void anna_member_document(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *doc)
+{
+    anna_function_t *fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(type, mid)));
+    if(!fun)
+    {
+	CRASH;
+    }
+    anna_function_document(fun, doc);
+    
+}

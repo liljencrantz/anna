@@ -48,7 +48,7 @@ static inline anna_object_t *anna_vm_trampoline(
     anna_object_t *res = anna_object_create(orig->type);
     size_t payload_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD]->offset;
     size_t stack_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
-    
+
     memcpy(&res->member[payload_offset],
 	   &orig->member[payload_offset],
 	   sizeof(anna_function_t *));    
@@ -298,7 +298,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
   ANNA_LAB_CAST:	    
     {
-	
 	anna_op_type_t *op = (anna_op_type_t *)stack->code;
 	if(!anna_abides(anna_vmstack_peek_object(stack,0)->type, op->value))
 	{
@@ -682,7 +681,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #ifdef ANNA_CHECK_VM
 	if(!m){
 	    debug(
-		D_CRITICAL,L"Object %ls does not have a member named %ls\n",
+		D_CRITICAL,L"Object of type %ls does not have a member named %ls\n",
 		obj->type->name, anna_mid_get_reverse(op->mid));
 	    if(stack->function)
 	    {

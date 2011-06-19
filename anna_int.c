@@ -381,7 +381,6 @@ void anna_int_type_create()
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
 
-
     anna_member_create_native_method(
 	int_type, ANNA_MID_DEL, 0, &anna_int_del, int_type, 1, i_argv, i_argn);
 

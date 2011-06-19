@@ -81,4 +81,10 @@ size_t anna_member_create_native_type_method(
     anna_type_t **argv,
     wchar_t **argn);
 
+void anna_member_document(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *doc);
+
+
 #endif

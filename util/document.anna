@@ -1,4 +1,29 @@
 
+def extractDocumentation(parser.Call attr)
+{
+    res := "".thaw;
+    attr.each(at)
+    {
+	if(at.isCallTo("documentation"))
+	{
+	    switch((at as parser.Call)[0])
+	    {
+		case(str as parser.StringLiteral)
+		{
+		    res ~= str.payload;
+		}
+	    }
+	}
+    }
+    return res;
+}
+
+def documentMethod(reflection.Method meth)
+{
+    doc := extractDocumentation(meth.function.attribute);
+    print("    %\n%\n\n" %[meth.function, doc]);
+}
+
 def documentType(Type t)
 {
     print( "Type %\n" % [t.name]);
@@ -8,7 +33,7 @@ def documentType(Type t)
 	{
 	    case(meth as reflection.Method)
 	    {
-		print("    def %()\n" % [mem.name]);
+		documentMethod(meth);
 	    }
 	}
     }

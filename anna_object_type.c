@@ -93,6 +93,11 @@ void anna_object_type_create()
 	object_type, ANNA_MID_HASH_CODE, 0,
 	&anna_object_hash, int_type, 1, argv,
 	argn);
+    anna_member_document(
+	object_type,
+	ANNA_MID_HASH_CODE,
+	L"Hash function. Should return the same number for two identical objects.");
+
     anna_member_create_native_method(
 	object_type,
 	ANNA_MID_CMP,
@@ -102,7 +107,11 @@ void anna_object_type_create()
 	2,
 	argv,
 	argn);
-
+    anna_member_document(
+	object_type,
+	ANNA_MID_CMP,
+	L"Comparison method. Should return a negative number, zero or a positive number if the compared object is smaller than, equal to or greater than the object being called, respectively. If the objects can't be compared, null should be returned.");
+    
     anna_member_create_native_method(
 	object_type,
 	ANNA_MID_TO_STRING,
@@ -112,6 +121,10 @@ void anna_object_type_create()
 	1,
 	argv,
 	argn);
+    anna_member_document(
+	object_type,
+	ANNA_MID_TO_STRING,
+	L"String conversion. Called by the String.convert method.");
     
     anna_member_create_native_property(
 	object_type, anna_mid_get(L"__type__"),
@@ -119,4 +132,6 @@ void anna_object_type_create()
     
     anna_object_type_i_create();
     anna_type_object_is_created();
+
 }
+

@@ -125,6 +125,9 @@ static void anna_alloc_mark_node(anna_node_t *o)
     o->flags |= ANNA_USED;
 
     anna_node_t *this = o;
+
+    if(o->wrapper)
+	anna_alloc_mark_object(o->wrapper);
     
     switch(this->node_type)
     {
@@ -560,6 +563,7 @@ static void anna_alloc_free(void *obj)
 	case ANNA_NODE:
 	{
 	    anna_node_t *o = (anna_node_t *)obj;
+	    	    
 	    switch(o->node_type)
 	    {
 		case ANNA_NODE_IDENTIFIER:

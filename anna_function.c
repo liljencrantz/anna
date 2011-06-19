@@ -489,6 +489,15 @@ void anna_function_alias_add(anna_function_t *fun, wchar_t *name)
     anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
 }
 
+void anna_function_document(anna_function_t *fun, wchar_t *doc)
+{
+    anna_node_call_t *attr = anna_node_create_call2(
+	0,
+	anna_node_create_identifier(0, L"documentation"),
+	anna_node_create_string_literal(0, wcslen(doc), doc));
+    anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
+}
+
 void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name)
 {
     anna_node_call_t *attr = anna_node_create_call2(

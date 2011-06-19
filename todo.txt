@@ -29,6 +29,7 @@
 * switchCast macro
 * Default argument values
 * Set type
+* Fast imutable lists/strings, supporting zero copy slicing, substringing, etc.
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

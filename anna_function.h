@@ -159,6 +159,8 @@ int anna_function_has_alias_reverse_static(anna_function_t *fun, wchar_t *name, 
 void anna_function_alias_add(anna_function_t *fun, wchar_t *name);
 void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name);
 
+void anna_function_document(anna_function_t *fun, wchar_t *documentation);
+
 anna_function_t *anna_continuation_create(
     anna_vmstack_t *stack,
     anna_type_t *return_type);

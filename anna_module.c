@@ -285,7 +285,7 @@ void anna_module_init()
 	    { L"lang", anna_lang_create_types, anna_lang_load },
 	    { L"parser", anna_node_wrapper_create_types, anna_node_wrapper_load },
 	    { L"system", 0, anna_system_load },
-	    { L"reflaction", anna_member_create_types, anna_member_load },
+	    { L"reflection", anna_member_create_types, anna_member_load },
 	};
 
     int i;

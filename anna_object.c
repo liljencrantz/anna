@@ -37,7 +37,6 @@ anna_object_t *anna_object_create(anna_type_t *type) {
     anna_object_t *result = 
 	anna_object_create_raw(type->object_size);
     result->type = type;
-    
     int i;
 
     for(i=0; i<type->member_count; i++)
