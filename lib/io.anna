@@ -18,7 +18,7 @@ type File
 	documentation("Read the contents of the file and return it as a String")
     )
     {
-        (fd := cio.open(filename, cio.readOnly, 0)) or (return ?);
+        (fd := cio.open(filename, cio.openMode.readOnly, 0)) or (return ?);
         buff := Buffer();
         res := cio.read(fd, buff, ?);
 	cio.close(fd);
@@ -30,7 +30,7 @@ type File
 	documentation("Write the contents of the String into the specified file")
     )
     {
-        (fd := cio.open(filename, cio.writeOnly ^bitor cio.truncate ^bitor cio.create, 0o666)) or (return ?); 
+        (fd := cio.open(filename, cio.openMode.writeOnly ^bitor cio.openMode.truncate ^bitor cio.openMode.create, 0o666)) or (return ?); 
         buff := Buffer();
         ok := buff.decode(data) and cio.write(fd, buff, ?);
 	return cio.close(fd) and ok;
@@ -41,7 +41,7 @@ type File
 	documentation("Open the specified file for reading and writing")
     )
     {
-        fd = cio.open(filename, cio.readWrite, 0o666);
+        fd = cio.open(filename, cio.openMode.readWrite, 0o666);
     }
 
     def close()

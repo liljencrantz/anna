@@ -161,6 +161,26 @@ ANNA_NATIVE(anna_cio_stat, 1)
     return anna_from_obj(res);
 }
 
+void anna_open_mode_load(anna_stack_template_t *stack)
+{
+    anna_module_const_int(stack, L"readOnly", O_RDONLY);
+    anna_module_const_int(stack, L"writeOnly", O_WRONLY);
+    anna_module_const_int(stack, L"readWrite", O_RDWR);
+
+    anna_module_const_int(stack, L"append", O_APPEND);
+    anna_module_const_int(stack, L"create", O_CREAT);
+    anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC);
+    anna_module_const_int(stack, L"direct", O_DIRECT);    
+    anna_module_const_int(stack, L"directory", O_DIRECTORY);
+    anna_module_const_int(stack, L"exclusive", O_EXCL);
+    anna_module_const_int(stack, L"largeFile", O_LARGEFILE);
+    anna_module_const_int(stack, L"noAccessTime", O_NOATIME);
+    anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY);
+    anna_module_const_int(stack, L"noFollow", O_NOFOLLOW);
+    anna_module_const_int(stack, L"nonBlock", O_NONBLOCK);
+    anna_module_const_int(stack, L"synchronous", O_SYNC);
+    anna_module_const_int(stack, L"truncate", O_TRUNC);
+}
 
 void anna_stat_mode_load(anna_stack_template_t *stack)
 {
@@ -190,7 +210,6 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"otherRead", S_IROTH);
     anna_module_const_int(stack, L"otherwrite", S_IWOTH);
     anna_module_const_int(stack, L"otherExecute", S_IXOTH);
-    
 }
 
 void anna_cio_load(anna_stack_template_t *stack)
@@ -198,6 +217,7 @@ void anna_cio_load(anna_stack_template_t *stack)
     anna_module_data_t modules[] = 
 	{
 	    { L"statMode", 0, anna_stat_mode_load },
+	    { L"openMode", 0, anna_open_mode_load },
 	};
 
     anna_module_data_create(modules, stack);
@@ -296,71 +316,6 @@ void anna_cio_load(anna_stack_template_t *stack)
 	f,
 	anna_intern_static(L"Obtain status information on the file with the specified name. Equivalent to the C stat function."));
 
-    anna_module_const_int(
-	stack,
-	L"readOnly",
-	O_RDONLY);
-    anna_module_const_int(
-	stack,
-	L"writeOnly",
-	O_WRONLY);
-    anna_module_const_int(
-	stack,
-	L"readWrite",
-	O_RDWR);
-
-    anna_module_const_int(
-	stack,
-	L"append",
-	O_APPEND);
-    anna_module_const_int(
-	stack,
-	L"create",
-	O_CREAT);
-    anna_module_const_int(
-	stack,
-	L"closeOnExec",
-	O_CLOEXEC);
-    anna_module_const_int(
-	stack,
-	L"direct",
-	O_DIRECT);    
-    anna_module_const_int(
-	stack,
-	L"directory",
-	O_DIRECTORY);
-    anna_module_const_int(
-	stack,
-	L"exclusive",
-	O_EXCL);
-    anna_module_const_int(
-	stack,
-	L"largeFile",
-	O_LARGEFILE);
-    anna_module_const_int(
-	stack,
-	L"noAccessTime",
-	O_NOATIME);
-    anna_module_const_int(
-	stack,
-	L"noControllingTTY",
-	O_NOCTTY);
-    anna_module_const_int(
-	stack,
-	L"noFollow",
-	O_NOFOLLOW);
-    anna_module_const_int(
-	stack,
-	L"nonBlock",
-	O_NONBLOCK);
-    anna_module_const_int(
-	stack,
-	L"synchronous",
-	O_SYNC);
-    anna_module_const_int(
-	stack,
-	L"truncate",
-	O_TRUNC);
 }
 
 
