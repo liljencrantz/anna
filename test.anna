@@ -4,5 +4,8 @@ def main()
 {
     print(File("anna.c").exists, "\n");
     print(File("annapanna.c").exists, "\n");
+
+    print(File("anna.c").isFile, "\n");
+    print(File("annapanna.c").isFile, "\n");
 }
 

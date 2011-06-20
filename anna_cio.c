@@ -15,6 +15,7 @@
 #include "wutil.h"
 #include "anna.h"
 #include "anna_module.h"
+#include "anna_module_data.h"
 #include "anna_cio.h"
 #include "anna_stack.h"
 #include "anna_vm.h"
@@ -161,8 +162,45 @@ ANNA_NATIVE(anna_cio_stat, 1)
 }
 
 
+void anna_stat_mode_load(anna_stack_template_t *stack)
+{
+    anna_module_const_int(stack, L"regular", S_IFREG);
+    anna_module_const_int(stack, L"socket", S_IFSOCK);
+    anna_module_const_int(stack, L"link", S_IFLNK);
+    anna_module_const_int(stack, L"block", S_IFBLK);
+    anna_module_const_int(stack, L"directory", S_IFDIR);
+    anna_module_const_int(stack, L"character", S_IFCHR);
+    anna_module_const_int(stack, L"fifo", S_IFIFO);
+
+    anna_module_const_int(stack, L"suid", S_ISUID);
+    anna_module_const_int(stack, L"sgid", S_ISGID);
+    anna_module_const_int(stack, L"sticky", S_ISVTX);
+
+    anna_module_const_int(stack, L"userAll", S_IRWXU);
+    anna_module_const_int(stack, L"userRead", S_IRUSR);
+    anna_module_const_int(stack, L"userwrite", S_IWUSR);
+    anna_module_const_int(stack, L"userExecute", S_IXUSR);
+
+    anna_module_const_int(stack, L"groupAll", S_IRWXG);
+    anna_module_const_int(stack, L"groupRead", S_IRGRP);
+    anna_module_const_int(stack, L"groupwrite", S_IWGRP);
+    anna_module_const_int(stack, L"groupExecute", S_IXGRP);
+
+    anna_module_const_int(stack, L"otherAll", S_IRWXO);
+    anna_module_const_int(stack, L"otherRead", S_IROTH);
+    anna_module_const_int(stack, L"otherwrite", S_IWOTH);
+    anna_module_const_int(stack, L"otherExecute", S_IXOTH);
+    
+}
+
 void anna_cio_load(anna_stack_template_t *stack)
 {
+    anna_module_data_t modules[] = 
+	{
+	    { L"statMode", 0, anna_stat_mode_load },
+	};
+
+    anna_module_data_create(modules, stack);
 
     wchar_t *o_argn[]={L"name", L"flags", L"mode"};
     anna_type_t *o_argv[] = {string_type, int_type, int_type};

@@ -63,11 +63,19 @@ type File
 	documentation(
 	    "This value is non-null if the file pointed to by this object currently exists")
     );
-/*    
+
     def isFileGetter() (internal)
     {
         (val := cio.stat(filename)) or (return ?);
 	return (val[2] ^bitand cio.statMode.regular) != 0;      
     }
-*/  
+
+    var Int isFile 
+    (
+	property(isFileGetter), 
+	documentation(
+	    "This value is non-null if the file pointed to by this object is a regular file")
+    );
+
+  
 }
