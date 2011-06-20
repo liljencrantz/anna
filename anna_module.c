@@ -9,6 +9,7 @@
 #include "util.h"
 #include "anna.h"
 #include "anna_module.h"
+#include "anna_module_data.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
 #include "anna_util.h"
@@ -281,19 +282,7 @@ static void anna_system_load(anna_stack_template_t *stack)
 
 void anna_module_init()
 {
-    typedef void (*mfun_t)(anna_stack_template_t *mod);
-    
-    typedef struct
-    {
-	wchar_t *name;
-	mfun_t creator;
-	mfun_t loader;
-    } module_data_t;
-
-    #define LANG 0
-    #define PARSER 1
-    
-    module_data_t modules[] = 
+    anna_module_data_t modules[] = 
 	{
 	    { L"lang", anna_lang_create_types, anna_lang_load },
 	    { L"parser", anna_node_wrapper_create_types, anna_node_wrapper_load },
@@ -302,36 +291,21 @@ void anna_module_init()
 	    { L"cio", 0, anna_cio_load },
 	};
 
-    int i;
-    anna_stack_template_t *substack[sizeof(modules)/sizeof(*modules)];
+    anna_module_data_create(modules, stack_global);
     
-    for(i=0; i<sizeof(modules)/sizeof(*modules); i++)
-    {
-	substack[i] = anna_stack_create(stack_global);
-	substack[i]->flags |= ANNA_STACK_NAMESPACE;
-    }
-    for(i=0; i<sizeof(modules)/sizeof(*modules); i++)
-    {
-	if(modules[i].creator)
-	    modules[i].creator(substack[i]);
-    }
-    for(i=0; i<sizeof(modules)/sizeof(*modules); i++)
-    {
-	modules[i].loader(substack[i]);
-	anna_stack_declare(
-	    stack_global,
-	    modules[i].name,
-	    anna_stack_wrap(substack[i])->type,
-	    anna_stack_wrap(substack[i]),
-	    ANNA_STACK_READONLY);
-    }
-
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     anna_macro_init(stack_macro);
     al_push(&stack_global->expand, stack_macro);
     
     null_object->type = null_type;
-
+    anna_stack_template_t *stack_lang = anna_stack_unwrap(
+	anna_stack_get(
+	    stack_global, L"lang"));
+    
+    anna_stack_template_t *stack_parser = anna_stack_unwrap(
+	anna_stack_get(
+	    stack_global, L"parser"));
+    
     /*
       Load a bunch of built in macros and monkey patch some of the
       built in types with additional methods.
@@ -350,11 +324,11 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"mapping");
     anna_module_bootstrap_macro(L"update");
     anna_module_bootstrap_macro(L"iter");
-    anna_module_bootstrap_monkeypatch(substack[PARSER], L"monkeypatchNode");
+    anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
     anna_module_bootstrap_macro(L"range");
-    anna_module_bootstrap_monkeypatch(substack[LANG], L"monkeypatchMisc");
-    anna_module_bootstrap_monkeypatch(substack[LANG], L"monkeypatchRange");
-    anna_module_bootstrap_monkeypatch(substack[LANG], L"monkeypatchString");
+    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
+    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");
+    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchString");
     anna_module_bootstrap_macro(L"switch");
     anna_module_bootstrap_macro(L"struct");
     anna_module_bootstrap_macro(L"enum");
