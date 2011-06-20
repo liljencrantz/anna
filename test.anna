@@ -1,9 +1,8 @@
+use(io);
 
 def main()
 {
-    f := io.File("test.anna");
-    print(f.read(), "\n");
-    f2 := io.File("weee.err");
-    f2.write("Hej hopp\n");
-    
+    print(File("anna.c").exists, "\n");
+    print(File("annapanna.c").exists, "\n");
 }
+

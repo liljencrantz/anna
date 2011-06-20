@@ -22,6 +22,7 @@
 #include "anna_function.h"
 #include "anna_buffer.h"
 #include "anna_intern.h"
+#include "anna_list.h"
 
 #define READ_SZ 4096
 
@@ -122,8 +123,47 @@ ANNA_NATIVE(anna_cio_close, 1)
     return anna_from_obj(null_object);
 }
 
+static void handle_stat(struct stat *buf, anna_object_t *list)
+{
+    anna_list_add(list, anna_from_int(buf->st_dev));
+    anna_list_add(list, anna_from_int(buf->st_ino));
+    anna_list_add(list, anna_from_int(buf->st_mode));
+    anna_list_add(list, anna_from_int(buf->st_nlink));
+    anna_list_add(list, anna_from_int(buf->st_uid));
+    anna_list_add(list, anna_from_int(buf->st_gid));
+    anna_list_add(list, anna_from_int(buf->st_rdev));
+    anna_list_add(list, anna_from_int(buf->st_size));
+    anna_list_add(list, anna_from_int(buf->st_blksize));
+    anna_list_add(list, anna_from_int(buf->st_blocks));
+    anna_list_add(list, anna_from_int(buf->st_atime));
+    anna_list_add(list, anna_from_int(buf->st_mtime));
+    anna_list_add(list, anna_from_int(buf->st_ctime));
+}
+
+ANNA_NATIVE(anna_cio_stat, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return anna_from_obj(null_object);
+    }
+    
+    wchar_t *nam = anna_string_payload(anna_as_obj(param[0]));
+    struct stat buf;
+    if(wstat(nam, &buf))
+    {
+	free(nam);
+	return anna_from_obj(null_object);
+    }
+    free(nam);
+    anna_object_t *res = anna_list_create_imutable(int_type);
+    handle_stat(&buf, res);
+    return anna_from_obj(res);
+}
+
+
 void anna_cio_load(anna_stack_template_t *stack)
 {
+
     wchar_t *o_argn[]={L"name", L"flags", L"mode"};
     anna_type_t *o_argv[] = {string_type, int_type, int_type};
 	    
@@ -200,6 +240,23 @@ void anna_cio_load(anna_stack_template_t *stack)
     anna_function_document(
 	f,
 	anna_intern_static(L"Close the specified file descriptor. Equivalent to the C close function."));
+
+    f = anna_native_create(
+	L"stat", 
+	0, &anna_cio_stat, 
+	anna_list_type_get_imutable(int_type), 
+	1, o_argv, o_argn, 
+	stack);
+    
+    anna_stack_declare(
+	stack,
+	L"stat",
+	f->wrapper->type,
+	f->wrapper,
+	ANNA_STACK_READONLY);
+    anna_function_document(
+	f,
+	anna_intern_static(L"Obtain status information on the file with the specified name. Equivalent to the C stat function."));
 
     anna_module_const_int(
 	stack,
