@@ -161,7 +161,45 @@ ANNA_NATIVE(anna_cio_stat, 1)
     return anna_from_obj(res);
 }
 
-void anna_open_mode_load(anna_stack_template_t *stack)
+ANNA_NATIVE(anna_cio_lstat, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return anna_from_obj(null_object);
+    }
+    
+    wchar_t *nam = anna_string_payload(anna_as_obj(param[0]));
+    struct stat buf;
+    if(lwstat(nam, &buf))
+    {
+	free(nam);
+	return anna_from_obj(null_object);
+    }
+    free(nam);
+    anna_object_t *res = anna_list_create_imutable(int_type);
+    handle_stat(&buf, res);
+    return anna_from_obj(res);
+}
+
+ANNA_NATIVE(anna_cio_fstat, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return anna_from_obj(null_object);
+    }
+    
+    int fd = anna_as_int(param[0]);
+    struct stat buf;
+    if(fstat(fd, &buf))
+    {
+	return anna_from_obj(null_object);
+    }
+    anna_object_t *res = anna_list_create_imutable(int_type);
+    handle_stat(&buf, res);
+    return anna_from_obj(res);
+}
+
+static void anna_open_mode_load(anna_stack_template_t *stack)
 {
     anna_module_const_int(stack, L"readOnly", O_RDONLY);
     anna_module_const_int(stack, L"writeOnly", O_WRONLY);
@@ -182,7 +220,7 @@ void anna_open_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"truncate", O_TRUNC);
 }
 
-void anna_stat_mode_load(anna_stack_template_t *stack)
+static void anna_stat_mode_load(anna_stack_template_t *stack)
 {
     anna_module_const_int(stack, L"regular", S_IFREG);
     anna_module_const_int(stack, L"socket", S_IFSOCK);
@@ -240,7 +278,8 @@ void anna_cio_load(anna_stack_template_t *stack)
 	ANNA_STACK_READONLY);
     anna_function_document(
 	f,
-	anna_intern_static(L"Open a file descriptor. Equivalent to the C open function."));
+	anna_intern_static(
+	    L"Open a file descriptor. Equivalent to the C open function."));
 
     wchar_t *r_argn[]={L"fd", L"buffer", L"count"};
     anna_type_t *r_argv[] = {int_type, buffer_type, int_type};
@@ -260,7 +299,8 @@ void anna_cio_load(anna_stack_template_t *stack)
 	ANNA_STACK_READONLY);
     anna_function_document(
 	f,
-	anna_intern_static(L"Read from the specified file descriptor. Equivalent to the C read function."));
+	anna_intern_static(
+	    L"Read from the specified file descriptor. Equivalent to the C read function."));
 
     f = anna_native_create(
 	L"write", 
@@ -277,7 +317,8 @@ void anna_cio_load(anna_stack_template_t *stack)
 	ANNA_STACK_READONLY);
     anna_function_document(
 	f,
-	anna_intern_static(L"Write to the specified file descriptor. Equivalent to the C write function."));
+	anna_intern_static(
+	    L"Write to the specified file descriptor. Equivalent to the C write function."));
     
     wchar_t *c_argn[]={L"fd"};
     anna_type_t *c_argv[] = {int_type};
@@ -297,7 +338,8 @@ void anna_cio_load(anna_stack_template_t *stack)
 	ANNA_STACK_READONLY);
     anna_function_document(
 	f,
-	anna_intern_static(L"Close the specified file descriptor. Equivalent to the C close function."));
+	anna_intern_static(
+	    L"Close the specified file descriptor. Equivalent to the C close function."));
 
     f = anna_native_create(
 	L"stat", 
@@ -314,7 +356,44 @@ void anna_cio_load(anna_stack_template_t *stack)
 	ANNA_STACK_READONLY);
     anna_function_document(
 	f,
-	anna_intern_static(L"Obtain status information on the file with the specified name. Equivalent to the C stat function."));
+	anna_intern_static(
+	    L"Obtain status information on the file with the specified name. Equivalent to the C stat function."));
+
+    f = anna_native_create(
+	L"lstat", 
+	0, &anna_cio_lstat, 
+	anna_list_type_get_imutable(int_type), 
+	1, o_argv, o_argn, 
+	stack);
+    
+    anna_stack_declare(
+	stack,
+	L"lstat",
+	f->wrapper->type,
+	f->wrapper,
+	ANNA_STACK_READONLY);
+    anna_function_document(
+	f,
+	anna_intern_static(
+	    L"Obtain status information on the file with the specified name. Does not follow symlinks. Equivalent to the C lstat function."));
+
+    f = anna_native_create(
+	L"fstat", 
+	0, &anna_cio_lstat, 
+	anna_list_type_get_imutable(int_type), 
+	1, c_argv, c_argn, 
+	stack);
+    
+    anna_stack_declare(
+	stack,
+	L"fstat",
+	f->wrapper->type,
+	f->wrapper,
+	ANNA_STACK_READONLY);
+    anna_function_document(
+	f,
+	anna_intern_static(
+	    L"Obtain status information on the file connected to the specified file descriptor. Equivalent to the C fstat function."));
 
 }
 
