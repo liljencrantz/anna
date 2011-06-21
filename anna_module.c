@@ -282,6 +282,9 @@ static void anna_system_load(anna_stack_template_t *stack)
 
 void anna_module_init()
 {
+    /*
+      Set up all native modules
+     */
     anna_module_data_t modules[] = 
 	{
 	    { L"lang", anna_lang_create_types, anna_lang_load },
@@ -307,17 +310,17 @@ void anna_module_init()
 	    stack_global, L"parser"));
     
     /*
-      Load a bunch of built in macros and monkey patch some of the
-      built in types with additional methods.
+      Load a bunch of built in non-native macros and monkey patch some
+      of the built in types with additional methods.
       
       This must be done in a specific order, since many of these
       patches rely on each other.
-
+      
       Right now, we separate these things into different files for
-      clarity.  Long term, we probably want to use as few files as
+      clarity. Long term, we probably want to use as few files as
       possible in order to reduce overhead. We'll worry about that
       once the functionality is mostly set in stone.
-     */
+    */
     
     anna_module_bootstrap_macro(L"ast");
     anna_module_bootstrap_macro(L"macroUtil");
@@ -335,7 +338,7 @@ void anna_module_init()
     
     anna_module_init_recursive(L"lib", stack_global);
 }
-	
+
 static void anna_module_find_import_internal(
     anna_node_t *module, wchar_t *name, array_list_t *import)
 {
@@ -543,19 +546,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	    ANNA_STATUS_VALIDATION_ERROR);
     }
     
-//	anna_node_each((anna_node_t *)ggg, &anna_module_prepare_body, module_stack);
-    
     debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);	
-	
-/*
-	anna_node_find(node, ANNA_NODE_CLOSURE, &al);	
-	for(i=0; i<al_get_count(&al); i++)
-	{
-	    anna_function_t *f = ((anna_node_closure_t *)al_get(&al, i))->payload;
-	    anna_function_setup_type(f, module_stack);
-	}
-	debug(D_SPAM,L"%d function types set up\n", al_get_count(&al));	
-*/
 	
     for(i=0; i<ggg->child_count; i++)
     {
@@ -570,8 +561,8 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 		ANNA_STATUS_MODULE_SETUP_ERROR);
 	}
     }
-        
-    debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);	
+    
+    debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
     anna_node_each((anna_node_t *)ggg, &anna_module_compile, 0);
     
     debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
@@ -581,8 +572,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 {
     string_buffer_t fn;
     sb_init(&fn);
-    sb_printf(&fn, L"%ls.anna", module_name);
-    
+    sb_printf(&fn, L"%ls.anna", module_name);    
 
     anna_stack_template_t *module = anna_module(
 	stack_global, 0, sb_content(&fn));
@@ -591,4 +581,39 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     sb_destroy(&fn);
 
     return anna_stack_wrap(module);
+}
+
+anna_function_t *anna_module_function(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    int flags,
+    anna_native_t native, 
+    anna_type_t *return_type,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn,
+    wchar_t *doc
+    )
+{
+    anna_function_t *f = anna_native_create(
+	name,
+	flags, native,
+	return_type, 
+	argc, argv, argn,
+	stack);
+    
+    anna_stack_declare(
+	stack,
+	name,
+	f->wrapper->type,
+	f->wrapper,
+	ANNA_STACK_READONLY);
+    if(doc)
+    {
+	anna_function_document(
+	    f,
+	    anna_intern_static(
+		doc));
+    }
+    return f;
 }

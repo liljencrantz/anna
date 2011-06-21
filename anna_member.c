@@ -53,7 +53,7 @@ anna_member_t *anna_member_unwrap(anna_object_t *wrapper)
     return *(anna_member_t **)anna_entry_get_addr(wrapper, ANNA_MID_MEMBER_PAYLOAD);
 }
 
-anna_member_t *anna_member_of(anna_object_t *wrapper)
+static anna_type_t *anna_member_of(anna_object_t *wrapper)
 {
     return *(anna_type_t **)anna_entry_get_addr(wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD);
 }
@@ -404,7 +404,8 @@ anna_member_t *anna_member_method_search(
 		
 		debug(D_SPAM, L"Check %ls against %ls\n",call->child[0]->return_type->name, mem_fun->input_type[off]->name);
 		int my_fault_count = 0;
-		int ok1 = anna_node_call_validate(call, mem_fun_type, off, 0);
+		int ok1 = anna_node_validate_call_parameters(
+		    call, mem_fun_type, off, 0);
 		int ok2 = 1;
 		
 		if(ok1)

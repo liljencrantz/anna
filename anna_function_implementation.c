@@ -17,6 +17,7 @@
 #include "anna_vm.h"
 #include "anna_vm_internal.h"
 #include "anna_member.h"
+#include "anna_module.h"
 
 anna_object_t *anna_wrap_method;
 
@@ -203,45 +204,30 @@ static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *
 void anna_function_implementation_init(struct anna_stack_template *stack)
 {
     static wchar_t *p_argn[]={L"object"};
-    anna_function_t *f = anna_native_create(
+    anna_module_function(
+	stack,
 	L"print", 
 	ANNA_FUNCTION_VARIADIC, 
 	&anna_i_print, 
 	imutable_list_type, 1, &object_type, 
-	p_argn, stack);
+	p_argn, 
+	L"Print all the supplied arguments to standard output");
     
-    anna_stack_declare(
+    anna_module_function(
 	stack,
-	L"print",
-	f->wrapper->type,
-	f->wrapper,
-	ANNA_STACK_READONLY);
-    
-    anna_function_t *not = anna_native_create(
 	L"__not__", 0, 
 	&anna_i_not, 
 	int_type, 
-	1, &object_type, p_argn, stack);
+	1, &object_type, p_argn, 
+	L"Negates the value. Returns 1 of the input is null, null otherwise.");
 
-    anna_stack_declare(
+    anna_module_function(
 	stack,
-	L"__not__",
-	not->wrapper->type,
-	not->wrapper,
-	ANNA_STACK_READONLY);
-
-    anna_function_t *callcc = anna_native_create(
 	L"callCC", 0, 
 	&anna_i_callcc, 
 	object_type, 
-	1, &object_type, p_argn, stack);
-
-    anna_stack_declare(
-	stack,
-	L"callCC",
-	callcc->wrapper->type,
-	callcc->wrapper,
-	ANNA_STACK_READONLY);
+	1, &object_type, p_argn, 
+	L"Call with current continuation.");
 
     static wchar_t *wrap_argn[]={L"object",L"method"};
     anna_type_t *wrap_argv[]={object_type, object_type};

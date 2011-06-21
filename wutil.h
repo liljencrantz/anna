@@ -20,12 +20,12 @@
 */
 struct wdirent
 {
-	/**
-	   The name of the current directory
-	*/
-	wchar_t *d_name;
+    /**
+       The name of the current directory
+    */
+    wchar_t *d_name;
 }
-	;
+    ;
 
 
 /**

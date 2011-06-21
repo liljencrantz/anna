@@ -1155,7 +1155,7 @@ function_definition:
 		$$ = (anna_node_t *)anna_node_create_call2(
 		    &@$, anna_node_create_identifier(&@1,L"__const__"),
 		    $2->child[1], anna_node_create_null(&@$), 
-		    def, anna_node_clone_deep($4));
+		    def, anna_node_clone_deep((anna_node_t *)$4));
 	    }
 	    else
 	    {

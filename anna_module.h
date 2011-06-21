@@ -10,5 +10,20 @@ void anna_module_const_int(
     wchar_t *name,
     int value);
 
+/* 
+   Conveniance function. Creates a function object for the specified function, declares it in the specified module and adds the specified documentation. The documentation must be a string literal.
+ */
+anna_function_t *anna_module_function(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    int flags,
+    anna_native_t native, 
+    anna_type_t *return_type,
+    size_t argc,
+    anna_type_t **argv,
+    wchar_t **argn,
+    wchar_t *documentation
+    );
+
 
 #endif

@@ -64,7 +64,7 @@ anna_object_t *anna_string_copy(anna_object_t *orig)
     return obj;
 }
 
-anna_object_t *anna_mutable_string_copy(anna_object_t *orig)
+static anna_object_t *anna_mutable_string_copy(anna_object_t *orig)
 {
     anna_object_t *obj= anna_object_create(mutable_string_type);
     //  wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);

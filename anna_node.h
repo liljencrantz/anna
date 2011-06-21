@@ -448,7 +448,7 @@ anna_object_t *anna_node_static_invoke(
 void anna_node_calculate_type_children(
     anna_node_call_t *node);
 
-int anna_node_call_validate(
+int anna_node_validate_call_parameters(
     anna_node_call_t *call, 
     anna_function_type_t *target, 
     int is_method, 

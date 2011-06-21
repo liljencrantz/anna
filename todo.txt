@@ -1,7 +1,7 @@
 1.0 RELEASE CRITERIA:
 * Constructor and inheritance fully working
 * Inheritance and method overloading fully working
-* Add memory overhead of Hashes and Lists to GC estimates
+* Add memory overhead of Hashes, Buffers and Lists to GC estimates
 * File type
 * Date type
 * Documentation attribute for all standard API functions and types
@@ -28,7 +28,7 @@
 * Protected members
 * Default argument values
 * Set type
-* Fast imutable lists/strings, supporting zero copy slicing, substringing, etc.
+* Faster imutable lists/strings, supporting zero copy slicing, substringing, etc.
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
@@ -49,6 +49,7 @@ It should be possible to declare members with initial values.
 Can we drop Pair?
 Instead of 3.toString(), it should be Strong.convert(3). In order to make this work well, we'll need aliases for static methods, something like (aliasReverseStatic(String.convert))
 Add a variable named global in the global namespace, pointing to itself. 
+Going forward, as much code as possible should be written in Anna, not C. 
 
 
 KNOWN BUGS:
