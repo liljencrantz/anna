@@ -210,6 +210,24 @@ ANNA_NATIVE(anna_cio_fstat, 1)
     return anna_from_obj(res);
 }
 
+ANNA_NATIVE(anna_cio_mkdir, 2)
+{
+    if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
+    {
+	return anna_from_obj(null_object);
+    }
+    
+    wchar_t *nam = anna_string_payload(
+	anna_as_obj(param[0]));
+    int mode = anna_as_int(param[1]);
+    int res = wmkdir(nam, mode);
+    if(res == -1)
+    {
+	return anna_from_obj(null_object);
+    }
+    return anna_from_int(res);
+}
+
 static void anna_open_mode_load(anna_stack_template_t *stack)
 {
     anna_module_const_int(stack, L"readOnly", O_RDONLY);
@@ -329,6 +347,23 @@ void anna_cio_load(anna_stack_template_t *stack)
 	anna_list_type_get_imutable(int_type), 
 	1, c_argv, c_argn, 
 	L"Obtain status information on the file connected to the specified file descriptor. Equivalent to the C fstat function.\n\nReturns the fields st_dev, st_ino, st_mode, st_nlink, st_uid, st_gid, st_rdev, st_size, st_blksize, st_blocks, st_atime, st_mtime and st_ctime as a list of integers.");
+
+    anna_type_t *m_argv[] = 
+	{
+	    string_type, int_type
+	}
+    ;
+    wchar_t *m_argn[] =
+	{
+	    L"pathname", L"mode"
+	}
+    ;
+    anna_module_function(
+	stack, L"mkdir", 
+	0, &anna_cio_mkdir, 
+	object_type,
+	2, m_argv, m_argn, 
+	L"Creates the specified directory. Equivalent to the C mkdir function.");
     
     anna_module_const_int(stack, L"standardInput", 0);
     anna_module_const_int(stack, L"standardOutput", 1);
