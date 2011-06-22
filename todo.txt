@@ -17,6 +17,7 @@
 * Add memory overhead of Ints and Floats to GC estimates
 * Smarter GC timing algorithm
 * Mutable and Imutable versions of List and String, switch between them using freeze/thaw properties
+* Default argument values
 
 2.0 RELEASE CRITERIA:
 * Regexp api
@@ -26,7 +27,6 @@
 * Cache for mpz_t numbers
 * Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
-* Default argument values
 * Set type
 * Faster imutable lists/strings, supporting zero copy slicing, substringing, etc.
 
@@ -59,6 +59,7 @@ A bunch of AST node types are missing some functionality, e.g. equality comparis
 If explicit function return type exists, return type of return expressions aren't abides checked against it
 __type__ should be a property, but something goes wrong in the abides checks if we make it one. 
 Stack types don't abide to Object. Making them do so causes a clash on e.g. __eq__. How do we handle this?
+Can't mix named arguments and varargs
 
 LANGUAGE FEATURES:
 Function templates

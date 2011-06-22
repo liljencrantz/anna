@@ -350,7 +350,10 @@ void anna_node_call_map(
     int i;
     size_t order_sz = sizeof(anna_node_t *)* param_count;
     anna_node_t **order = calloc(1, order_sz);
-
+    //wprintf(L"AAA %d\n", is_method);
+    
+    //anna_node_print(5, call);
+    
     for(i=0; i<call->child_count; i++)
     {
 	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;

@@ -411,7 +411,7 @@ anna_member_t *anna_member_method_search(
 		if(ok1)
 		{
 		    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
-		    anna_node_call_map(call_copy, mem_fun_type, 1);
+		    anna_node_call_map(call_copy, mem_fun_type, off);
 		    
 		    for(j=0; j<call->child_count; j++)
 		    {

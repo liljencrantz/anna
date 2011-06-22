@@ -66,6 +66,12 @@ static void anna_alloc_mark_function(anna_function_t *o)
     int i;
     for(i=0; i<o->input_count; i++)
     {
+	if(!o->input_default)
+	{
+	    wprintf(L"AAAA %ls\n", o->name);
+	    
+	    CRASH;
+	}
 	if(o->input_default[i])
 	{
 	    anna_alloc_mark_node(o->input_default[i]);

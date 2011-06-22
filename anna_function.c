@@ -578,6 +578,7 @@ anna_function_t *anna_macro_create(
     result->flags |= ANNA_FUNCTION_MACRO;
     result->input_count=1;
     
+    result->input_default = calloc(1, sizeof(anna_node_t *));
     result->input_name = calloc(sizeof(wchar_t *), 1);
     result->input_name[0] = anna_intern(arg_name);
     
@@ -657,6 +658,7 @@ anna_function_t *anna_native_create(
     anna_function_attribute_empty(result);    
     result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
     result->input_name = calloc(1, sizeof(wchar_t *)*argc);
+    result->input_default = calloc(1, sizeof(anna_node_t *)*argc);
 
     result->flags |= flags;
     result->native = native;
