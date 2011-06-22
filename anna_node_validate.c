@@ -235,20 +235,21 @@ int anna_node_validate_call_parameters(
     int param_count = target->input_count;    
     int res=0;
     
-    if(anna_function_type_is_variadic(target))
-	return 1;
-    
     if(is_method)
     {
 	param++;
 	param_name++;
 	param_count--;
     }
+
+    if(anna_function_type_is_variadic(target))
+    {
+	param_count--;
+    }
     
     int i;
-    int *set = calloc(sizeof(int), param_count);
-    int has_named=0;
-
+    int *set = calloc(sizeof(int), param_count + call->child_count);
+/*
     if(param_count < call->child_count)
     {
 	if(print_error)
@@ -257,20 +258,12 @@ int anna_node_validate_call_parameters(
 	}
 	goto END;
     }
+*/
+    int unnamed_idx = 0;
     
     for(i=0; i<call->child_count; i++)
-    {
-	
+    {	
 	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
-	if(has_named && !is_named)
-	{
-	    if(print_error)
-	    {
-		anna_error(call->child[i], L"An anonymous parameter value can not follow after a named parameter value");
-	    }
-	    goto END;
-	}
-	int idx = i;
 	if(is_named)
 	{
 	    anna_node_cond_t *p = (anna_node_cond_t *)call->child[i];
@@ -283,7 +276,7 @@ int anna_node_validate_call_parameters(
 		goto END;
 	    }
 	    anna_node_identifier_t *name = (anna_node_identifier_t *)p->arg1;	    
-	    idx = anna_node_f_get_index(target, is_method, name->name);
+	    int idx = anna_node_f_get_index(target, is_method, name->name);
 	    if(idx < 0)
 	    {
 		if(print_error)
@@ -292,8 +285,19 @@ int anna_node_validate_call_parameters(
 		}
 		goto END;
 	    }
+	    set[idx]++;
 	}
-	set[idx]++;
+    }
+    
+    for(i=0; i<call->child_count; i++)
+    {	
+	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
+	if(!is_named)
+	{
+	    while(set[unnamed_idx])
+		unnamed_idx++;
+	    set[unnamed_idx]++;
+	}
     }
     for(i=0; i<param_count; i++)
     {
@@ -321,8 +325,18 @@ int anna_node_validate_call_parameters(
 	    }
 	    goto END;	    
 	}
-	
     }
+/*
+    if(!anna_function_type_is_variadic(target))
+    {
+	if(set[param_count])
+	{
+	    anna_error(
+		(anna_node_t *)call,
+		L"Wrong number of parameters to function call.");
+	}
+    }
+*/  
     res = 1;
 
   END:
@@ -335,8 +349,6 @@ void anna_node_call_map(
     anna_function_type_t *target, 
     int is_method)
 {
-    if(anna_function_type_is_variadic(target))
-	return;
 
     anna_type_t **param = target->input_type;
     int param_count = target->input_count;    
@@ -347,13 +359,23 @@ void anna_node_call_map(
 	param_count--;
     }
     
+    if(anna_function_type_is_variadic(target))
+    {
+	param_count--;
+    }
+        
     int i;
-    size_t order_sz = sizeof(anna_node_t *)* param_count;
-    anna_node_t **order = calloc(1, order_sz);
+    size_t arg_count=0;
+    
+    anna_node_t **order = calloc(sizeof(anna_node_t *), param_count + call->child_count+1);
     //wprintf(L"AAA %d\n", is_method);
     
     //anna_node_print(5, call);
     
+    int unnamed_idx = 0;
+    int count = 0;
+
+
     for(i=0; i<call->child_count; i++)
     {
 	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
@@ -363,27 +385,48 @@ void anna_node_call_map(
 	    anna_node_identifier_t *name = (anna_node_identifier_t *)p->arg1;	    
 	    int idx = anna_node_f_get_index(target, is_method, name->name);
 	    order[idx] = p->arg2;
-	}
-	else
-	{
-	    order[i] = call->child[i];
+	    count = maxi(count, idx+1);
 	}
     }
+
+    for(i=0; i<call->child_count; i++)
+    {
+	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
+	if(!is_named)
+	{
+	    while(order[unnamed_idx])
+		unnamed_idx++;
+	    order[unnamed_idx] = call->child[i];
+	    count = maxi(count, unnamed_idx+1);
+	}
+    }
+
     for(i=0; i<param_count; i++)
     {
 	if(!order[i])
 	{
 	    order[i] = target->input_default[i];
+	    count = maxi(count, i+1);
 	}
     }
-    if(call->child_count != param_count)
+    
+    for(i=0; i<count; i++)
     {
-	call->child_count = param_count;	
-	call->child = realloc(call->child, order_sz);
+	if(!order[i])
+	{
+	    wprintf(L"DFAS %d\n", i);
+	    anna_node_print(5, call);
+	    CRASH;
+	}
 	
     }
-    memcpy(call->child, order, order_sz);
-    
+
+    if(call->child_count != count)
+    {
+	call->child_count = count;	
+	call->child = realloc(call->child, sizeof(anna_node_t *)*count);
+    }
+    memcpy(call->child, order, sizeof(anna_node_t *)*count);
 
     free(order);
     return;

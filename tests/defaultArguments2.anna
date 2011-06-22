@@ -1,0 +1,21 @@
+/*
+  Test combination of default arguments, named arguments and variadic
+  arguments.
+ */
+def fun(Int a, Int b = 2, Int rest...)
+{
+    res := a*b;
+    rest.each(i)
+    {
+	res = res * i;
+    }
+    res;
+}
+
+def main()
+{
+    print(fun(a:5, b:5, 5), "\n");
+    print(fun(1), "\n");
+    print(fun(1,1,1,1,1,1,1,1,1,1,10), "\n");
+    print(fun(3,2,a:1, 1, b:1), "\n");
+}

@@ -2,8 +2,8 @@
 * Constructor and inheritance fully working
 * Inheritance and method overloading fully working
 * Add memory overhead of Hashes, Buffers and Lists to GC estimates
-* File type
-* Date type
+* Usable File type
+* Usable Date type
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
 * Introduction
