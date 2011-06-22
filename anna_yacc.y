@@ -364,7 +364,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <call_val> module
 %type <node_val> expression expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
 %type <node_val> literal var_or_const
-%type <node_val> opt_declaration_init opt_declaration_expression_init opt_ellipsis
+%type <node_val> opt_declaration_init opt_ellipsis
 %type <node_val> function_definition function_declaration function_signature
 %type <node_val> opt_identifier identifier identifier2 type_identifier type_identifier2 any_identifier
 %type <node_val> op op2 op3 op4 op5 op6 op7 post_op8
@@ -427,16 +427,6 @@ expression_list :
 	};
 
 opt_declaration_init :
-	'=' expression
-	{
-	    $$ = $2;
-	}
-	|
-	{
-	    $$ = 0;
-	};
-
-opt_declaration_expression_init :
 	'=' expression
 	{
 	    $$ = $2;
@@ -1206,7 +1196,7 @@ var_or_const:
 	};
 
 declaration_expression: 
-	var_or_const opt_type_and_opt_name attribute_list opt_declaration_expression_init
+	var_or_const opt_type_and_opt_name attribute_list opt_declaration_init
 	{
 	    if($2->child[1]->node_type == ANNA_NODE_NULL)
 	    {
@@ -1242,6 +1232,11 @@ opt_ellipsis:
 	ELLIPSIS
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadic");
+	}
+	|
+	TO
+	{
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadicNamed");
 	};
 
 type_and_name:
@@ -1274,6 +1269,18 @@ variable_declaration:
 	    if($2)
 	    {
 		anna_node_call_add_child($3, $2);
+	    }
+	    
+	    if($4)
+	    {
+		anna_node_call_add_child(
+		    $3,
+		    anna_node_create_call2(
+			&$4->location,
+			anna_node_create_identifier(
+			    &$4->location,
+			    L"default"),
+			anna_node_clone_deep($4)));
 	    }
 	    
 	    $$ = (anna_node_t *)anna_node_create_call2(

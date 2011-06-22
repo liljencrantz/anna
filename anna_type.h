@@ -95,7 +95,7 @@ void anna_type_init(void);
 */
 anna_type_t *anna_type_for_function(
     anna_type_t *result, size_t argc,
-    anna_type_t **argv, wchar_t **argn,
+    anna_type_t **argv, wchar_t **argn, anna_node_t **argd,
     int is_variadic);
 
 #endif

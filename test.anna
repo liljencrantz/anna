@@ -1,11 +1,12 @@
 use(io);
 
+def hasDef(Int g = 5)
+{
+    return g;
+}
+
 def main()
 {
-    print(File("anna.c").exists, "\n");
-    print(File("annapanna.c").exists, "\n");
-
-    print(File("anna.c").isFile, "\n");
-    print(File("annapanna.c").isFile, "\n");
+    print(hasDef(3), ' ', hasDef(), "\n");
 }
 

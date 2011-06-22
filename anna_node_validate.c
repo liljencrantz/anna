@@ -244,23 +244,23 @@ int anna_node_validate_call_parameters(
 	param_name++;
 	param_count--;
     }
-
+    
     int i;
     int *set = calloc(sizeof(int), param_count);
     int has_named=0;
 
-    if(param_count != call->child_count)
+    if(param_count < call->child_count)
     {
 	if(print_error)
 	{
 	    anna_error((anna_node_t *)call, L"Wrong number of parameters to function call. Got %d, expected %d.", call->child_count, param_count);
-	    CRASH;
 	}
-	
 	goto END;
     }
-    for(i=0; i<param_count; i++)
+    
+    for(i=0; i<call->child_count; i++)
     {
+	
 	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
 	if(has_named && !is_named)
 	{
@@ -295,7 +295,14 @@ int anna_node_validate_call_parameters(
 	}
 	set[idx]++;
     }
-
+    for(i=0; i<param_count; i++)
+    {
+	if(set[i] == 0 && target->input_default[i])
+	{
+	    set[i]++;
+	}
+    }
+    
     for(i=0; i<param_count; i++)
     {
 	if(set[i] > 1)
@@ -339,12 +346,12 @@ void anna_node_call_map(
 	param++;
 	param_count--;
     }
-
+    
     int i;
     size_t order_sz = sizeof(anna_node_t *)* param_count;
     anna_node_t **order = calloc(1, order_sz);
 
-    for(i=0; i<param_count; i++)
+    for(i=0; i<call->child_count; i++)
     {
 	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
 	if(is_named)
@@ -359,8 +366,22 @@ void anna_node_call_map(
 	    order[i] = call->child[i];
 	}
     }
+    for(i=0; i<param_count; i++)
+    {
+	if(!order[i])
+	{
+	    order[i] = target->input_default[i];
+	}
+    }
+    if(call->child_count != param_count)
+    {
+	call->child_count = param_count;	
+	call->child = realloc(call->child, order_sz);
+	
+    }
     memcpy(call->child, order, order_sz);
     
+
     free(order);
     return;
     

@@ -10,6 +10,7 @@
 #include "anna_alloc.h"
 #include "anna_vm.h"
 #include "anna_function.h"
+#include "anna_function_type.h"
 #include "anna_member.h"
 #include "anna_int.h"
 #include "anna_list.h"
@@ -61,6 +62,18 @@ static void anna_alloc_mark_function(anna_function_t *o)
 	return;
     o->flags |= ANNA_USED;
     
+    anna_function_type_t *ft = anna_function_type_unwrap(o->wrapper->type);
+    int i;
+    for(i=0; i<o->input_count; i++)
+    {
+	if(o->input_default[i])
+	{
+	    anna_alloc_mark_node(o->input_default[i]);
+	    anna_alloc_mark_node(ft->input_default[i]);
+	}
+    }
+    
+
     if(o->body)
     {
 	//wprintf(L"FAFADS %ls\n", o->name);
@@ -76,7 +89,7 @@ static void anna_alloc_mark_function(anna_function_t *o)
 	anna_alloc_mark_object(o->this);
     if(o->stack_template)
 	anna_alloc_mark_stack_template(o->stack_template);
-    int i;
+
     for(i=0; i<o->input_count; i++)
     {
 #ifdef ANNA_CHECK_GC

@@ -613,6 +613,7 @@ size_t anna_member_create_native_method(
 	    argc, 
 	    argv,
 	    argn,
+	    0,
 	    flags));
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
@@ -661,6 +662,7 @@ size_t anna_member_create_native_type_method(
 	    argc, 
 	    argv,
 	    argn,
+	    0,
 	    flags));
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);

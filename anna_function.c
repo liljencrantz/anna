@@ -63,6 +63,7 @@ static anna_node_t *anna_function_setup_arguments(
     
     anna_type_t **argv = f->input_type = malloc(sizeof(anna_type_t *)*argc);
     wchar_t **argn = f->input_name = malloc(sizeof(wchar_t *)*argc);
+    anna_node_t **argd = f->input_default = calloc(1, sizeof(anna_node_t *)*argc);
     
     for(i=0; i<argc; i++)
     {
@@ -114,8 +115,9 @@ static anna_node_t *anna_function_setup_arguments(
 		    argv[i] = d_type;
 		}
 	    }
+	    argd[i] = anna_attribute_call(
+		(anna_node_call_t *)decl->child[3], L"default");
 	    
-
 	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
 	    {
 		is_variadic=1;
@@ -155,6 +157,7 @@ static void anna_function_setup_wrapper(
 		f->input_count,
 		f->input_type,
 		f->input_name,
+		f->input_default,
 		f->flags);
 	
 	f->wrapper = anna_object_create(ft);    

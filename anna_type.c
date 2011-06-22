@@ -1126,6 +1126,24 @@ static int hash_function_type_comp(void *a, void *b)
 	    return 0;
 	if(wcscmp(key1->input_name[i], key2->input_name[i]) != 0)
 	    return 0;
+	if(key1->input_default[i])
+	{
+	    if(key2->input_default[i])
+	    {
+		if(anna_node_compare(key1->input_default[i], key2->input_default[i]))
+		{
+		    return 0;
+		}
+	    }
+	    else
+	    {
+		return 0;
+	    }
+	}
+	else if(key2->input_default[i])
+	{
+	    return 0;
+	}
     }
     //debug(D_SPAM,L"Same!\n");
     
@@ -1145,6 +1163,7 @@ anna_type_t *anna_type_for_function(
     size_t argc, 
     anna_type_t **argv, 
     wchar_t **argn, 
+    anna_node_t **argd, 
     int flags)
 {
 
@@ -1172,6 +1191,7 @@ anna_type_t *anna_type_for_function(
 	key = realloc(key, new_key_sz);
 	key_sz = new_key_sz;
 	key->input_name = was_null?malloc(sizeof(wchar_t *)*argc):realloc(key->input_name, sizeof(wchar_t *)*argc);
+	key->input_default = was_null?malloc(sizeof(anna_node_t *)*argc):realloc(key->input_default, sizeof(anna_node_t *)*argc);
     }
     
     key->flags = flags;
@@ -1191,6 +1211,7 @@ anna_type_t *anna_type_for_function(
 	
 	key->input_type[i]=argv[i];
 	key->input_name[i]=argn[i];
+	key->input_default[i]=argd ? argd[i] : 0;
     }
 
     anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
@@ -1199,15 +1220,18 @@ anna_type_t *anna_type_for_function(
 	anna_function_type_t *new_key = malloc(new_key_sz);
 	memcpy(new_key, key, new_key_sz);	
 	new_key->input_name = malloc(sizeof(wchar_t *)*argc);
+	new_key->input_default = malloc(sizeof(anna_node_t *)*argc);
 	for(i=0; i<argc;i++)
 	{
 	    new_key->input_name[i]=wcsdup(argn[i]);
+	    new_key->input_default[i]= (argd && argd[i]) ? anna_node_clone_deep(argd[i]) : 0;
 	}
 	static int num=0;
 	
 	string_buffer_t sb;
 	sb_init(&sb);
 	wchar_t *fn = L"def";
+	
 	if(flags & ANNA_FUNCTION_MACRO)
 	{ 
 	    fn = L"macro";

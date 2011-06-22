@@ -6,6 +6,7 @@
 #include "anna_crash.h"
 #include "anna_preproc.h"
 
+struct anna_node;
 struct anna_type;
 struct anna_object;
 struct anna_member;
@@ -375,6 +376,7 @@ struct anna_function
        The type of each input argument
      */
     struct anna_type **input_type;    
+    struct anna_node **input_default;
     /**
        Bytecode
      */
@@ -406,6 +408,7 @@ typedef struct
     anna_type_t *return_type;
     size_t input_count;
     wchar_t **input_name;
+    struct anna_node **input_default;
     anna_type_t *input_type[];
 } anna_function_type_t;
 
