@@ -7,7 +7,7 @@
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
 * Introduction
-* Check that node each, node, print, compare, hash and all other node functions support all ast node types
+* Check that node each, print, compare, hash and all other node functions support all ast node types
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
@@ -47,17 +47,15 @@ Should Range really be mutable?
 How should inherited constructors be handled?
 It should be possible to declare members with initial values. 
 Can we drop Pair?
-Instead of 3.toString(), it should be Strong.convert(3). In order to make this work well, we'll need aliases for static methods, something like (aliasReverseStatic(String.convert))
+We need aliases for static methods, something like (aliasReverseStatic(String.convert))
 Add a variable named global in the global namespace, pointing to itself. 
 Going forward, as much code as possible should be written in Anna, not C. 
-
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing some functionality, e.g. equality comparison, hashing, shallow cloning, deep cloning, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
-__type__ should be a property, but something goes wrong in the abides checks if we make it one. 
 Stack types don't abide to Object. Making them do so causes a clash on e.g. __eq__. How do we handle this?
 Can't mix named arguments and varargs
 
@@ -68,7 +66,6 @@ Submodules
 Default function argument values. These also need to be part of the function interface and contained in function keys.
 No magic toString method, use attributes to specify methods for implicit conversion
 Return value type for continuations
-
 
 STDLIB FEATURES:
 HTML documentation extractor
@@ -96,7 +93,6 @@ Tests for complex math
 Tests for floating point math
 Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
-Current method for determining map output is a bit fragile. 
 Lots more coverage of using null as argument 
 Many more null value tests
 
@@ -108,12 +104,12 @@ Mandel test should be no more than one order of magnitude slower than the corres
 Start implementing a few of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance.
 More builtin integer ops, e.g. mod, and Float comparisons
 Variable lookup instruction version for looking up in current frame
-Variable lookup instruction version for looking up in parent frame
+Variable lookup instruction version for looking up in first parent frame
 Implement tail recursion
-Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. This would require that the gc knows that non-objects might be living on the stack...
+Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. 
 Add profiling information to the VM
 Make a version of the fold op that takes a count parameter
-Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t. 
+Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t.
 Lazy loading of modules
 Can we make string literals faster?
 Instead of a static using flag in the GC, the value shouls switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.

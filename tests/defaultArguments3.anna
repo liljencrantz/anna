@@ -1,0 +1,29 @@
+/*
+  Test default arguments when calling a function through a function
+  variable. 
+*/
+def fun(Int a, Int b, Int c, Int rest...)
+{
+    res := a*b*c;
+    rest.each(i)
+    {
+	res = res * i;
+    }
+    res;
+}
+
+def fun2(def Int f(Int a=1, Int b=1, Int c=1, Int res...))
+{
+    return f();
+}
+
+def fun3(def Int f(Int a=1, Int b, Int c, Int res...))
+{
+    return f(b:2, c:3);
+}
+
+def main()
+{
+    print(fun2(fun), "\n");
+    print(fun3(fun), "\n");
+}

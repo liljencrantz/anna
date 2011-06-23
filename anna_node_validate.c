@@ -249,16 +249,7 @@ int anna_node_validate_call_parameters(
     
     int i;
     int *set = calloc(sizeof(int), param_count + call->child_count);
-/*
-    if(param_count < call->child_count)
-    {
-	if(print_error)
-	{
-	    anna_error((anna_node_t *)call, L"Wrong number of parameters to function call. Got %d, expected %d.", call->child_count, param_count);
-	}
-	goto END;
-    }
-*/
+
     int unnamed_idx = 0;
     
     for(i=0; i<call->child_count; i++)
@@ -326,17 +317,7 @@ int anna_node_validate_call_parameters(
 	    goto END;	    
 	}
     }
-/*
-    if(!anna_function_type_is_variadic(target))
-    {
-	if(set[param_count])
-	{
-	    anna_error(
-		(anna_node_t *)call,
-		L"Wrong number of parameters to function call.");
-	}
-    }
-*/  
+
     res = 1;
 
   END:
@@ -349,7 +330,6 @@ void anna_node_call_map(
     anna_function_type_t *target, 
     int is_method)
 {
-
     anna_type_t **param = target->input_type;
     int param_count = target->input_count;    
     
@@ -367,14 +347,12 @@ void anna_node_call_map(
     int i;
     size_t arg_count=0;
     
-    anna_node_t **order = calloc(sizeof(anna_node_t *), param_count + call->child_count+1);
-    //wprintf(L"AAA %d\n", is_method);
-    
-    //anna_node_print(5, call);
+    anna_node_t **order = calloc(
+	sizeof(anna_node_t *),
+	param_count + call->child_count+1);
     
     int unnamed_idx = 0;
     int count = 0;
-
 
     for(i=0; i<call->child_count; i++)
     {
@@ -409,17 +387,6 @@ void anna_node_call_map(
 	    count = maxi(count, i+1);
 	}
     }
-    
-    for(i=0; i<count; i++)
-    {
-	if(!order[i])
-	{
-	    wprintf(L"DFAS %d\n", i);
-	    anna_node_print(5, call);
-	    CRASH;
-	}
-	
-    }
 
     if(call->child_count != count)
     {
@@ -430,6 +397,5 @@ void anna_node_call_map(
 
     free(order);
     return;
-    
 }
 
