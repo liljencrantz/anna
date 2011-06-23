@@ -120,6 +120,7 @@ static void anna_null_type_create()
 	null_type->mid_identifier[i] = null_member;
     }
     assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    
+    null_object->type = null_type;
 }
 
 void anna_lang_create_types(anna_stack_template_t *stack_lang)

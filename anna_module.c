@@ -184,6 +184,20 @@ void anna_module_const_int(
     
 }
 
+void anna_module_const_float(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    double value)
+{
+    anna_stack_declare(
+	stack,
+	name,
+	float_type,
+	anna_from_float(value),
+	ANNA_STACK_READONLY);
+    
+}
+
 static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar_t *name)
 {
     string_buffer_t sb;
@@ -281,6 +295,12 @@ static void anna_system_load(anna_stack_template_t *stack)
 	0);
 }
 
+#include <math.h>
+static void anna_math_load(anna_stack_template_t *stack)
+{
+    anna_module_const_float(stack, L"pi", M_PI);
+}
+
 void anna_module_init()
 {
     /*
@@ -293,6 +313,7 @@ void anna_module_init()
 	    { L"system", 0, anna_system_load },
 	    { L"reflection", anna_member_create_types, anna_member_load },
 	    { L"cio", 0, anna_cio_load },
+	    { L"math", 0, anna_math_load },
 	};
 
     anna_module_data_create(modules, stack_global);
@@ -301,7 +322,6 @@ void anna_module_init()
     anna_macro_init(stack_macro);
     al_push(&stack_global->expand, stack_macro);
     
-    null_object->type = null_type;
     anna_stack_template_t *stack_lang = anna_stack_unwrap(
 	anna_as_obj(
 	    anna_stack_get(
