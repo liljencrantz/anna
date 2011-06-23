@@ -259,9 +259,9 @@ static inline complex double anna_as_complex(anna_entry_t *entry)
     return anna_complex_get((anna_object_t *)entry);
 }
 
-static inline anna_entry_t *anna_as_native(anna_object_t *obj)
+static inline anna_entry_t *anna_as_native(anna_entry_t *e)
 {
-    anna_entry_t *e = anna_from_obj(obj);
+    anna_object_t *obj = anna_as_obj(e);
     if(obj->type == int_type)
     {
 	return anna_int_entry(obj);

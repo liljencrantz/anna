@@ -12,7 +12,7 @@ static anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_templa
 //	    wprintf(L"It's an identifier\n");
 	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
 
-	    anna_object_t *obj = anna_stack_macro_get(stack, name->name);
+	    anna_object_t *obj = anna_as_obj(anna_stack_macro_get(stack, name->name));
 	    if(obj && obj != null_object)
 	    {
 		

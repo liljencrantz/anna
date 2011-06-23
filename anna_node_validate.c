@@ -345,7 +345,6 @@ void anna_node_call_map(
     }
         
     int i;
-    size_t arg_count=0;
     
     anna_node_t **order = calloc(
 	sizeof(anna_node_t *),

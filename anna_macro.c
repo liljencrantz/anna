@@ -230,7 +230,7 @@ static void anna_macro_add(
 	stack,
 	name,
 	f->wrapper->type,
-	f->wrapper,
+	anna_from_obj(f->wrapper),
 	0);
 }
 

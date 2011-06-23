@@ -336,7 +336,8 @@ void anna_node_wrapper_load(anna_stack_template_t *stack)
     anna_type_copy_object(node_wrapper_type);
     anna_stack_declare(
 	stack, node_wrapper_type->name, 
-	type_type, anna_type_wrap(node_wrapper_type), ANNA_STACK_READONLY); 
+	type_type, anna_from_obj(anna_type_wrap(node_wrapper_type)),
+	ANNA_STACK_READONLY); 
     /*
       Insert all the cool stuff from node_wrapper and 
      */
@@ -352,7 +353,8 @@ void anna_node_wrapper_load(anna_stack_template_t *stack)
 	{
 	    anna_stack_declare(
 		stack, types[i]->name, 
-		type_type, anna_type_wrap(types[i]), ANNA_STACK_READONLY); 
+		type_type, anna_from_obj(anna_type_wrap(types[i])),
+		ANNA_STACK_READONLY); 
 	}
     }
 
@@ -360,7 +362,8 @@ void anna_node_wrapper_load(anna_stack_template_t *stack)
     anna_type_copy_object(node_imutable_call_wrapper_type);
     anna_stack_declare(
 	stack, node_imutable_call_wrapper_type->name, 
-	type_type, anna_type_wrap(node_imutable_call_wrapper_type), ANNA_STACK_READONLY);
+	type_type, anna_from_obj(anna_type_wrap(node_imutable_call_wrapper_type)), 
+	ANNA_STACK_READONLY);
     
     static wchar_t *p_argn[]={L"hint"};
     anna_function_t *f = anna_native_create(
@@ -374,7 +377,7 @@ void anna_node_wrapper_load(anna_stack_template_t *stack)
 	stack,
 	L"identifier",
 	f->wrapper->type,
-	f->wrapper,
+	anna_from_obj(f->wrapper),
 	ANNA_STACK_READONLY);
 
 }

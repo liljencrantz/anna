@@ -101,7 +101,7 @@ static void anna_shutdown()
  */
 static void anna_main_run(anna_stack_template_t *module)
 {
-    anna_object_t *main_wrapper = anna_stack_get(module, L"main");
+    anna_object_t *main_wrapper = anna_as_obj(anna_stack_get(module, L"main"));
 
     if(!main_wrapper)
     {

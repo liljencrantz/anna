@@ -60,7 +60,7 @@ static anna_stack_template_t *anna_module(
     anna_stack_template_t *res;
     if(name)
     {
-	obj = anna_stack_get(parent, name);
+	obj = anna_as_obj(anna_stack_get(parent, name));
 	
 	if(obj)
 	{
@@ -88,7 +88,7 @@ static anna_stack_template_t *anna_module(
     if(name)
     {
 	anna_stack_declare(
-	    parent, name, obj->type, obj, ANNA_STACK_READONLY);
+	    parent, name, obj->type, anna_from_obj(obj), ANNA_STACK_READONLY);
     }
     if(filename)
     {
@@ -220,8 +220,9 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
 	}
 	
 	anna_type_t * type = anna_type_unwrap(
-	    anna_stack_get(
-		lang, target_id->name));
+	    anna_as_obj(
+		anna_stack_get(
+		    lang, target_id->name)));
 	
 	if(type == any_list_type)
 	{
@@ -302,12 +303,14 @@ void anna_module_init()
     
     null_object->type = null_type;
     anna_stack_template_t *stack_lang = anna_stack_unwrap(
-	anna_stack_get(
-	    stack_global, L"lang"));
+	anna_as_obj(
+	    anna_stack_get(
+		stack_global, L"lang")));
     
     anna_stack_template_t *stack_parser = anna_stack_unwrap(
-	anna_stack_get(
-	    stack_global, L"parser"));
+	anna_as_obj(
+	    anna_stack_get(
+		stack_global, L"parser")));
     
     /*
       Load a bunch of built in non-native macros and monkey patch some
@@ -606,7 +609,7 @@ anna_function_t *anna_module_function(
 	stack,
 	name,
 	f->wrapper->type,
-	f->wrapper,
+	anna_from_obj(f->wrapper),
 	ANNA_STACK_READONLY);
     if(doc)
     {

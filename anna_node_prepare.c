@@ -572,7 +572,7 @@ static void anna_node_calculate_type_internal(
 	    if(this->node_type == ANNA_NODE_CONST)
 	    {
 //		debug(D_ERROR, L"Declaration %ls is a constant\n", d->name);
-		anna_object_t *value = anna_node_static_invoke(
+		anna_entry_t *value = anna_node_static_invoke(
 		    d->value, stack);
 		anna_stack_set(
 		    stack,

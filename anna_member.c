@@ -312,7 +312,7 @@ mid_t anna_member_create(
 	    type->stack,
 	    name,
 	    member_type,
-	    null_object,
+	    null_entry,
 	    0);
 	type->flags &= ~ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
     }

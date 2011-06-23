@@ -35,9 +35,9 @@ typedef struct
 		stack,							\
 		modules[i].name,					\
 		anna_stack_wrap(substack[i])->type,			\
-		anna_stack_wrap(substack[i]),				\
-	    ANNA_STACK_READONLY);\
-	}			 \
+		anna_from_obj(anna_stack_wrap(substack[i])),		\
+		ANNA_STACK_READONLY);					\
+	}								\
     }
 
 #endif

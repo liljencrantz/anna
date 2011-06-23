@@ -139,6 +139,8 @@ enum anna_mid_enum
 */
 #define ANNA_GC_ALLOC 2
 
+#define null_entry ((anna_entry_t *)null_object)
+
 typedef struct {} anna_entry_t;
 
 /**

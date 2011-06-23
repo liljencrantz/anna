@@ -68,24 +68,24 @@ void anna_stack_declare(
     anna_stack_template_t *stack,
     wchar_t *name,
     anna_type_t *type,
-    anna_object_t *initial_value,
+    anna_entry_t *initial_value,
     int flags);
 
 void anna_stack_declare2(
     anna_stack_template_t *stack,
     struct anna_node_declare *declare_node);
 
-anna_object_t **anna_stack_addr_get(anna_stack_template_t *stack, wchar_t *name);
+anna_entry_t **anna_stack_addr_get(anna_stack_template_t *stack, wchar_t *name);
 
-void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, struct anna_object *value);
+void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *value);
 
-anna_object_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name);
+anna_entry_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name);
 
-anna_object_t *anna_stack_macro_get(anna_stack_template_t *stack, wchar_t *name);
+anna_entry_t *anna_stack_macro_get(anna_stack_template_t *stack, wchar_t *name);
 
-anna_object_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name);
+anna_entry_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name);
 
-anna_object_t *anna_stack_get_const(anna_stack_template_t *stack, wchar_t *name);
+anna_entry_t *anna_stack_get_const(anna_stack_template_t *stack, wchar_t *name);
 
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name);
 

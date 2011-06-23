@@ -48,7 +48,7 @@ static anna_node_t *anna_function_setup_arguments(
 		f->stack_template, 
 		f->input_name[i],
 		f->input_type[i],
-		null_object,
+		anna_from_obj(null_object),
 		0);
 	}
 	return 0;   
@@ -135,7 +135,7 @@ static anna_node_t *anna_function_setup_arguments(
 		f->stack_template, 
 		argn[i],
 		t,
-		null_object,
+		null_entry,
 		0);
 	}
 	else
@@ -308,9 +308,10 @@ void anna_function_setup_interface(
 	    al_push(
 		&f->stack_template->import, 
 		anna_stack_unwrap(
-		    anna_stack_get(
-			stack_global,
-			L"parser")));
+		    anna_as_obj(
+			anna_stack_get(
+			    stack_global,
+			    L"parser"))));
 	}
 		
 	anna_function_setup_arguments(f, f->stack_template->parent);

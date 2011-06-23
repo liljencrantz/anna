@@ -52,7 +52,7 @@ anna_stack_template_t *anna_stack_create(anna_stack_template_t *parent)
 void anna_stack_declare(anna_stack_template_t *stack, 
 			wchar_t *name,
 			anna_type_t *type, 
-			anna_object_t *initial_value,
+			anna_entry_t *initial_value,
 			int flags)
 {
     if(!name)
@@ -177,7 +177,7 @@ anna_stack_template_t *anna_stack_template_search(
     return 0;
 }
 
-anna_object_t *anna_stack_macro_get(
+anna_entry_t *anna_stack_macro_get(
     anna_stack_template_t *stack,
     wchar_t *name)
 {
@@ -198,9 +198,8 @@ anna_object_t *anna_stack_macro_get(
 	    
 	    if(offset) 
 	    {
-		return anna_as_obj(
-		    anna_entry_get(
-			exp->wrapper, anna_mid_get(name)));
+		return anna_entry_get(
+		    exp->wrapper, anna_mid_get(name));
 	    }
 	}
 	stack = stack->parent;
@@ -208,19 +207,18 @@ anna_object_t *anna_stack_macro_get(
     return 0;
 }
 
-anna_object_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name)
+anna_entry_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *name)
 {
     size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
     if(offset) 
     {
-	return anna_as_obj(
-	    anna_entry_get(
-		stack->wrapper, anna_mid_get(name)));
+	return anna_entry_get(
+	    stack->wrapper, anna_mid_get(name));
     }
     return 0;
 }
 
-void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_object_t *value)
+void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *value)
 {
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
@@ -233,15 +231,13 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_object_t *
 	anna_mid_get(name)) = (anna_entry_t *)value;
 }
 
-anna_object_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
+anna_entry_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
 {
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
     anna_type_t *res = anna_stack_wrap(f)->type;
-    return anna_as_obj(anna_entry_get_static(
-	res,
-	anna_mid_get(name)));
+    return anna_entry_get_static(res, anna_mid_get(name));
 }
 
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)

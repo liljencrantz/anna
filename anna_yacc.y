@@ -1275,7 +1275,7 @@ variable_declaration:
 	    {
 		anna_node_call_add_child(
 		    $3,
-		    anna_node_create_call2(
+		    (anna_node_t *)anna_node_create_call2(
 			&$4->location,
 			anna_node_create_identifier(
 			    &$4->location,

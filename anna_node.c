@@ -55,11 +55,12 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
 	return node->return_type;
     }    
     
-    anna_object_t *res = anna_node_static_invoke_try(
+    anna_entry_t *eres = anna_node_static_invoke_try(
 	node, stack);
     
-    if(res)
+    if(eres)
     {
+	anna_object_t *res = anna_as_obj(eres);
 	return (res->type == type_type) ? anna_type_unwrap(res) : res->type;
     }
     return 0;
@@ -179,9 +180,9 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
     call->function = function;
 }
 
-static anna_object_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
+static anna_entry_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
 {
-    anna_object_t *result = anna_node_static_invoke(this->value, stack);
+    anna_entry_t *result = anna_node_static_invoke(this->value, stack);
     anna_stack_set(stack, this->name, result);
     return result;
 }
@@ -191,7 +192,7 @@ anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t 
     return 0;
 }
 
-anna_object_t *anna_node_static_invoke_try(
+anna_entry_t *anna_node_static_invoke_try(
     anna_node_t *this, 
     anna_stack_template_t *stack)
 {
@@ -206,7 +207,7 @@ anna_object_t *anna_node_static_invoke_try(
 	case ANNA_NODE_DUMMY:
 	{
 	    anna_node_dummy_t *node = (anna_node_dummy_t *)this;
-	    return node->payload;
+	    return anna_from_obj(node->payload);
 	}
 	
 	case ANNA_NODE_CLOSURE:
@@ -214,7 +215,7 @@ anna_object_t *anna_node_static_invoke_try(
 	    anna_node_closure_t *node = (anna_node_closure_t *)this;	    
 	    anna_node_calculate_type(this);
 	    if(node->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-		return node->payload->wrapper;
+		return anna_from_obj(node->payload->wrapper);
 	    break;
 	}
 	
@@ -222,25 +223,25 @@ anna_object_t *anna_node_static_invoke_try(
 	{
 	    anna_node_type_t *c = (anna_node_type_t *)this;
 	    anna_type_t *f = c->payload;
-	    return anna_type_wrap(f);
+	    return anna_from_obj(anna_type_wrap(f));
 	}
 
 	case ANNA_NODE_INT_LITERAL:
-	    return anna_int_create_mp(((anna_node_int_literal_t *)this)->payload);
+	    return anna_from_obj(anna_int_create_mp(((anna_node_int_literal_t *)this)->payload));
 	    
 	case ANNA_NODE_FLOAT_LITERAL:
-	    return anna_float_create(((anna_node_float_literal_t *)this)->payload);
+	    return anna_from_obj(anna_float_create(((anna_node_float_literal_t *)this)->payload));
 	    
 	case ANNA_NODE_STRING_LITERAL:
-	    return anna_string_create(
+	    return anna_from_obj(anna_string_create(
 		((anna_node_string_literal_t *)this)->payload_size, 
-		((anna_node_string_literal_t *)this)->payload);
+		((anna_node_string_literal_t *)this)->payload));
 	    
 	case ANNA_NODE_CHAR_LITERAL:
-	    return anna_char_create(((anna_node_char_literal_t *)this)->payload);
+	    return anna_from_obj(anna_char_create(((anna_node_char_literal_t *)this)->payload));
 
 	case ANNA_NODE_NULL:
-	    return null_object;
+	    return anna_from_obj(null_object);
 
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
@@ -274,8 +275,8 @@ anna_object_t *anna_node_static_invoke_try(
 		if(anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)
 		{
 		    //fwprintf(stderr, L"Identifier %ls is a constant\n", this2->name);
-		    anna_object_t *res = anna_stack_get(frame, this2->name);
-		    return anna_function_unwrap(res)?0:res;
+		    anna_object_t *res = anna_as_obj(anna_stack_get(frame, this2->name));
+		    return anna_function_unwrap(res)?0:anna_from_obj(res);
 		}
 	    }
 	    //fwprintf(stderr, L"Identifier lookup failed\n");
@@ -286,13 +287,12 @@ anna_object_t *anna_node_static_invoke_try(
 	{
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    //wprintf(L"Weee member get. Member is named %ls\n", anna_mid_get_reverse(this2->mid));
-	    anna_object_t *obj = anna_node_static_invoke_try(
-		this2->object,
-		stack);
+	    anna_object_t *obj = anna_as_obj(
+		anna_node_static_invoke_try(
+		    this2->object,
+		    stack));
 	    if(obj)
 	    {
-
-
 		anna_member_t *memb = anna_member_get(obj->type, this2->mid);
 		if(!memb)
 		{
@@ -305,28 +305,27 @@ anna_object_t *anna_node_static_invoke_try(
 		}
 		
 		//wprintf(L"Weee member found object\n");
-		return anna_as_obj(*anna_entry_get_addr(obj, this2->mid));
+		return *anna_entry_get_addr(obj, this2->mid);
 	    }
 	    else
 	    {
 		//wprintf(L"Member not constant\n");		
 	    }
-	    
 	}
     }
     return 0;
 }
 
-anna_object_t *anna_node_static_invoke(
+anna_entry_t *anna_node_static_invoke(
     anna_node_t *this, 
     anna_stack_template_t *stack)
 {
-    anna_object_t *res = anna_node_static_invoke_try(this, stack);
+    anna_entry_t *res = anna_node_static_invoke_try(this, stack);
     if(!res)
     {
 	anna_error(
 	    this,L"Code could not be invoked at compile time\n");
-	return null_object;
+	return anna_from_obj(null_object);
     }
     return res;
 }

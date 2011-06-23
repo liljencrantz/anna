@@ -35,7 +35,7 @@ anna_type_data_t;
 	    }								\
 	    anna_stack_declare(						\
 		stack, (*type_data[i].addr)->name,			\
-		type_type, anna_type_wrap(*type_data[i].addr), ANNA_STACK_READONLY); \
+		type_type, anna_from_obj(anna_type_wrap(*type_data[i].addr)), ANNA_STACK_READONLY); \
 	}								\
     }
     
