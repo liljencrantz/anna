@@ -35,6 +35,7 @@
 #include "anna_string.h"
 #include "anna_mid.h"
 #include "anna_cio.h"
+#include "anna_math.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 array_list_t anna_module_default_macros = AL_STATIC;
@@ -289,14 +290,6 @@ static void anna_system_load(anna_stack_template_t *stack)
 	anna_list_type_get_imutable(string_type),
 	&anna_system_get_argument,
 	0);
-}
-
-#include <math.h>
-static void anna_math_load(anna_stack_template_t *stack)
-{
-    anna_module_const_float(stack, L"pi", M_PI);
-    anna_module_const_float(stack, L"e", M_E);
-    
 }
 
 void anna_module_init()
