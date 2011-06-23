@@ -14,7 +14,7 @@ anna_object_t *anna_char_create(wchar_t val);
 anna_entry_t *anna_int_entry(anna_object_t *this);
 
 #define ANNA_INT_FAST_MAX 0x1fffffff
-#define ANNA_ENTRY_NULL_CHECK(par) if(anna_entry_null(par)) return anna_from_obj(null_object);
+#define ANNA_ENTRY_NULL_CHECK(par) if(anna_entry_null(par)) return null_entry;
 
 /**
    A macro that creates a wrapper function for native calls. This

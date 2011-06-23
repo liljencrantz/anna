@@ -69,21 +69,21 @@ ANNA_NATIVE(anna_member_i_get_static, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return m->is_static?anna_from_int(1):anna_from_obj(null_object);
+    return m->is_static?anna_from_int(1):null_entry;
 }
 
 ANNA_NATIVE(anna_member_i_get_method, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return m->is_bound_method?anna_from_int(1):anna_from_obj(null_object);
+    return m->is_bound_method?anna_from_int(1):null_entry;
 }
 
 ANNA_NATIVE(anna_member_i_get_property, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return m->is_property?anna_from_int(1):anna_from_obj(null_object);
+    return m->is_property?anna_from_int(1):null_entry;
 }
 
 ANNA_NATIVE(anna_member_i_get_constant, 1)
@@ -94,10 +94,10 @@ ANNA_NATIVE(anna_member_i_get_constant, 1)
     anna_stack_template_t *frame = type->stack;
     if(!anna_stack_get(frame, m->name))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
-    return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): anna_from_obj(null_object);
+    return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): null_entry;
 }
 
 ANNA_NATIVE(anna_member_i_value, 2)
@@ -112,7 +112,7 @@ ANNA_NATIVE(anna_member_i_value, 2)
     }
     else if(type != obj->type)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     else
     {
@@ -286,7 +286,7 @@ mid_t anna_member_create(
 	if(storage & ANNA_MEMBER_STATIC) {
 	    member->offset = anna_type_static_member_allocate(type);
 	    type->static_member_blob[type->static_member_count-1] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
-	    type->static_member[type->static_member_count-1] = anna_from_obj(null_object);
+	    type->static_member[type->static_member_count-1] = null_entry;
 	} else {
 	    type->member_blob = realloc(
 		type->member_blob, 

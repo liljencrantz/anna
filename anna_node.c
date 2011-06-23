@@ -241,7 +241,7 @@ anna_entry_t *anna_node_static_invoke_try(
 	    return anna_from_obj(anna_char_create(((anna_node_char_literal_t *)this)->payload));
 
 	case ANNA_NODE_NULL:
-	    return anna_from_obj(null_object);
+	    return null_entry;
 
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
@@ -325,7 +325,7 @@ anna_entry_t *anna_node_static_invoke(
     {
 	anna_error(
 	    this,L"Code could not be invoked at compile time\n");
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     return res;
 }

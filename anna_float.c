@@ -122,12 +122,12 @@ ANNA_NATIVE(anna_float_convert_string, 1)
 {
     if(anna_entry_null(param[0]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
     if(wcslen(str) != anna_string_get_count(anna_as_obj(param[0])))
     {
-	return anna_from_obj(null_object);	
+	return null_entry;	
     }
     
     /* Strip any underscores from the string */
@@ -154,7 +154,7 @@ ANNA_NATIVE(anna_float_convert_string, 1)
     double res = strtod(nstr, &end);
     if(errno || *end != 0)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     return anna_from_float(res);
 }
@@ -168,7 +168,7 @@ ANNA_NATIVE(anna_float_convert_int, 1)
 {
     if(anna_entry_null(param[0]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     mpz_t *int_val = anna_int_unwrap(anna_as_obj(param[0]));
     double res = mpz_get_d(*int_val);

@@ -117,7 +117,7 @@ ANNA_NATIVE(anna_string_i_get_int, 2)
     {
 	return anna_from_char(asi_get_char(as_unwrap(anna_as_obj(param[0])), idx));
     }
-    return anna_from_obj(null_object);
+    return null_entry;
 }
 
 ANNA_NATIVE(anna_string_i_get_range, 2)
@@ -632,7 +632,7 @@ static int anna_is_string(anna_entry_t *e)
 static anna_vmstack_t *anna_string_cmp_i(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 2;
-    anna_entry_t *res = anna_from_obj(null_object);
+    anna_entry_t *res = null_entry;
     if(likely(anna_is_string(param[1])))
     {
 	anna_object_t *this = anna_as_obj(param[0]);

@@ -87,7 +87,7 @@ static anna_vmstack_t *anna_range_get_to_i(anna_vmstack_t *stack, anna_object_t 
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
-    anna_vmstack_push_entry(stack, anna_range_get_open(r)?anna_from_obj(null_object):anna_from_int(anna_range_get_to(r)));
+    anna_vmstack_push_entry(stack, anna_range_get_open(r)?null_entry:anna_from_int(anna_range_get_to(r)));
     return stack;
 }
 
@@ -106,7 +106,7 @@ static anna_vmstack_t *anna_range_get_first_i(anna_vmstack_t *stack, anna_object
     anna_vmstack_push_entry(
 	stack, 
 	anna_range_is_valid(r)?anna_from_int(
-	    anna_range_get_from(r)):anna_from_obj(null_object));
+	    anna_range_get_from(r)):null_entry);
     return stack;
 }
 
@@ -133,7 +133,7 @@ static anna_vmstack_t *anna_range_get_open_i(anna_vmstack_t *stack, anna_object_
 {
     anna_object_t *r = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
-    anna_vmstack_push_entry(stack, anna_range_get_open(r)?anna_from_int(1):anna_from_obj(null_object));
+    anna_vmstack_push_entry(stack, anna_range_get_open(r)?anna_from_int(1):null_entry);
     return stack;
 }
 
@@ -205,7 +205,7 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
 {  
     anna_entry_t **param = stack->top - 2;
     anna_object_t *range = anna_as_obj_fast(param[0]);
-    anna_entry_t *obj = anna_from_obj(null_object);
+    anna_entry_t *obj = null_entry;
     ssize_t from = anna_range_get_from(range);
     ssize_t step = anna_range_get_step(range);
     ssize_t idx = anna_as_int(param[1]);
@@ -242,29 +242,29 @@ ANNA_NATIVE(anna_range_in, 2)
     {
 	if(val < from)
 	{
-	    return anna_from_obj(null_object);
+	    return null_entry;
 	}
 	if((val >= to) && !open)
 	{
-	    return anna_from_obj(null_object);
+	    return null_entry;
 	}
 	int rem = (val-from)%step;
 	int res = (val-from)/step;
-	return (rem == 0)?anna_from_int(res):anna_from_obj(null_object);
+	return (rem == 0)?anna_from_int(res):null_entry;
     }
     else
     {
 	if(val > from)
 	{
-	    return anna_from_obj(null_object);
+	    return null_entry;
 	}
 	if((val <= to) && !open)
 	{
-	    return anna_from_obj(null_object);
+	    return null_entry;
 	}
 	int rem = (val-from)%step;
 	int res = (val-from)/step;
-	return (rem == 0)?anna_from_int(res):anna_from_obj(null_object);
+	return (rem == 0)?anna_from_int(res):null_entry;
     }
 }
 
@@ -275,7 +275,7 @@ static anna_vmstack_t *anna_range_get_count_i(anna_vmstack_t *stack, anna_object
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_entry(
 	stack,
-	anna_range_get_open(range)? anna_from_obj(null_object):(anna_range_is_valid(range)?anna_from_int(anna_range_get_count(range)):anna_from_obj(null_object)));
+	anna_range_get_open(range)? null_entry:(anna_range_is_valid(range)?anna_from_int(anna_range_get_count(range)):null_entry));
     return stack;    
 }
 

@@ -157,7 +157,7 @@ static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t *val = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
-    anna_vmstack_push_entry(stack, anna_entry_null(val)?anna_from_int(1):anna_from_obj(null_object));
+    anna_vmstack_push_entry(stack, anna_entry_null(val)?anna_from_int(1):null_entry);
     return stack;
 }
 

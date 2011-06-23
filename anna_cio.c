@@ -31,7 +31,7 @@ ANNA_NATIVE(anna_cio_open, 3)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]) || anna_entry_null(param[1]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     wchar_t *nam = anna_string_payload(anna_as_obj(param[0]));
@@ -40,7 +40,7 @@ ANNA_NATIVE(anna_cio_open, 3)
     int res = wopen(nam, flags, mode);
     if(res == -1)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     return anna_from_int(res);
 }
@@ -49,7 +49,7 @@ ANNA_NATIVE(anna_cio_read, 3)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     int fd = anna_as_int(param[0]);
@@ -75,7 +75,7 @@ ANNA_NATIVE(anna_cio_read, 3)
 			break;
 			
 		    default:
-			return anna_from_obj(null_object);
+			return null_entry;
 		}
 	    }
 	    else if(rd == 0)
@@ -96,7 +96,7 @@ ANNA_NATIVE(anna_cio_read, 3)
 	ssize_t rd = read(fd, &ptr[0], count);
 	if(rd == -1)
 	{
-	    return anna_from_obj(null_object);
+	    return null_entry;
 	}
 	done = rd;
     }
@@ -108,7 +108,7 @@ ANNA_NATIVE(anna_cio_write, 3)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     int fd = anna_as_int(param[0]);
@@ -123,7 +123,7 @@ ANNA_NATIVE(anna_cio_write, 3)
     unsigned char *ptr = anna_buffer_get_payload(buff);
     int res = write(fd, ptr, count);
     
-    return (res != -1) ? anna_from_int(res) : anna_from_obj(null_object);
+    return (res != -1) ? anna_from_int(res) : null_entry;
 }
 
 ANNA_NATIVE(anna_cio_close, 1)
@@ -132,7 +132,7 @@ ANNA_NATIVE(anna_cio_close, 1)
     {
     	close(anna_as_int(param[0]));
     }
-    return anna_from_obj(null_object);
+    return null_entry;
 }
 
 static void handle_stat(struct stat *buf, anna_object_t *list)
@@ -156,7 +156,7 @@ ANNA_NATIVE(anna_cio_stat, 1)
 {
     if(anna_entry_null(param[0]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     wchar_t *nam = anna_string_payload(anna_as_obj(param[0]));
@@ -164,7 +164,7 @@ ANNA_NATIVE(anna_cio_stat, 1)
     if(wstat(nam, &buf))
     {
 	free(nam);
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     free(nam);
     anna_object_t *res = anna_list_create_imutable(int_type);
@@ -176,7 +176,7 @@ ANNA_NATIVE(anna_cio_lstat, 1)
 {
     if(anna_entry_null(param[0]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     wchar_t *nam = anna_string_payload(anna_as_obj(param[0]));
@@ -184,7 +184,7 @@ ANNA_NATIVE(anna_cio_lstat, 1)
     if(lwstat(nam, &buf))
     {
 	free(nam);
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     free(nam);
     anna_object_t *res = anna_list_create_imutable(int_type);
@@ -196,14 +196,14 @@ ANNA_NATIVE(anna_cio_fstat, 1)
 {
     if(anna_entry_null(param[0]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     int fd = anna_as_int(param[0]);
     struct stat buf;
     if(fstat(fd, &buf))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     anna_object_t *res = anna_list_create_imutable(int_type);
     handle_stat(&buf, res);
@@ -214,7 +214,7 @@ ANNA_NATIVE(anna_cio_mkdir, 2)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     wchar_t *nam = anna_string_payload(
@@ -223,7 +223,7 @@ ANNA_NATIVE(anna_cio_mkdir, 2)
     int res = wmkdir(nam, mode);
     if(res == -1)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     return anna_from_int(res);
 }

@@ -49,7 +49,7 @@ static anna_vmstack_t *anna_object_i_callback_${name}_reverse(anna_vmstack_t *st
     {
         // Negate answer, because we reversed order of operands
         int res_int = -anna_as_int(res);
-        anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):anna_from_obj(null_object)
+        anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry
 );
     }
     return stack;
@@ -79,7 +79,7 @@ static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_
     {
         int res_int = anna_as_int(res);
 //wprintf(L\"Got result %d\n\", res_int);
-        anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):anna_from_obj(null_object));
+        anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry);
     }
     return stack;
 }

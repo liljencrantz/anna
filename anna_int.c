@@ -143,7 +143,7 @@ static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
     anna_entry_t *res;
     if(unlikely(anna_entry_null(param[1])))
     {
-	res = anna_from_obj(null_object);
+	res = null_entry;
     }
     else if(anna_is_int_small(param[1]))
     {
@@ -161,7 +161,7 @@ static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
     }
     else
     {
-	res = anna_from_obj(null_object);	    
+	res = null_entry;	    
     }	
         
     anna_vmstack_drop(stack, 3);
@@ -197,12 +197,12 @@ ANNA_NATIVE(anna_int_convert_string, 1)
 {
     if(anna_entry_null(param[0]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
     if(wcslen(str) != anna_string_get_count(anna_as_obj(param[0])))
     {
-	return anna_from_obj(null_object);	
+	return null_entry;	
     }
     
     wchar_t *c = str;
@@ -259,7 +259,7 @@ ANNA_NATIVE(anna_int_convert_string, 1)
 
     if(err)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
 
     return anna_from_obj(res_obj);
@@ -269,7 +269,7 @@ ANNA_NATIVE(anna_int_convert_float, 1)
 {
     if(anna_entry_null(param[0]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     double value = anna_as_float(param[0]);
     

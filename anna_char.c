@@ -59,7 +59,7 @@ ANNA_NATIVE(anna_char_cmp, 2)
 {
     if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])->type != char_type))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     return anna_from_int(anna_as_char(param[0]) - anna_as_char(param[1]));
 }

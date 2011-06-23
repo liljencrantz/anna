@@ -14,7 +14,7 @@ ANNA_NATIVE(anna_node_call_wrapper_i_get_int, 2)
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
     int idx = anna_list_calc_offset(anna_as_int(param[1]), node->child_count);
     if(idx < 0 || idx >= node->child_count)
-	return anna_from_obj(null_object);
+	return null_entry;
     return anna_from_obj(anna_node_wrap(node->child[idx]));
 }
 

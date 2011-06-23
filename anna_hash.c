@@ -340,7 +340,7 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
 			hash,
 			idx,
 			dummy_idx,
-			eq ? anna_from_int(1):anna_from_obj(null_object));
+			eq ? anna_from_int(1):null_entry);
 		}
 	    }
 	    
@@ -361,7 +361,7 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
 		hash,
 		idx,
 		dummy_idx,
-		eq ? anna_from_int(1):anna_from_obj(null_object));	
+		eq ? anna_from_int(1):null_entry);	
 	}
     }
     

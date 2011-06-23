@@ -427,7 +427,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	anna_vmstack_push_entry( 
 	    stack, 
-	    stack->flags & ANNA_VMSTACK_BREAK ? anna_from_int(1) : anna_from_obj(null_object));
+	    stack->flags & ANNA_VMSTACK_BREAK ? anna_from_int(1) : null_entry);
 	// Clear the break flag on check
 	stack->flags  = stack->flags & ~ANNA_VMSTACK_BREAK;
 	stack->code += sizeof(anna_op_null_t);
@@ -844,7 +844,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
   ANNA_LAB_NOT:
     {
-	*(stack->top-1) = anna_entry_null(*(stack->top-1))?anna_from_int(1):anna_from_obj(null_object);
+	*(stack->top-1) = anna_entry_null(*(stack->top-1))?anna_from_int(1):null_entry;
 	stack->code += sizeof(anna_op_null_t);
 	goto *jump_label[(int)*stack->code];
     }

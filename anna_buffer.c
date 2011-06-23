@@ -178,7 +178,7 @@ ANNA_NATIVE(anna_buffer_encode, 1)
 	    {
 		case -1:
 		{
-		    return anna_from_obj(null_object);
+		    return null_entry;
 		}
 		default:
 		{
@@ -199,7 +199,7 @@ ANNA_NATIVE(anna_buffer_decode, 2)
     
     if(str == null_object)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     wchar_t *src = anna_string_payload(str);
@@ -224,7 +224,7 @@ ANNA_NATIVE(anna_buffer_decode, 2)
 	    int res = wctomb((char *)&dest[off], src[i]);
 	    if(res == -1)
 	    {
-		return anna_from_obj(null_object);
+		return null_entry;
 	    }
 	    off += res;
 	}

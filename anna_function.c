@@ -48,7 +48,7 @@ static anna_node_t *anna_function_setup_arguments(
 		f->stack_template, 
 		f->input_name[i],
 		f->input_type[i],
-		anna_from_obj(null_object),
+		null_entry,
 		0);
 	}
 	return 0;   

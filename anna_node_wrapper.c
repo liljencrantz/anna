@@ -130,13 +130,13 @@ ANNA_NATIVE(anna_node_wrapper_cmp, 2)
 {
     if(anna_entry_null(param[1]))
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
 
     anna_node_t *o = anna_node_unwrap(anna_as_obj(param[1])); 
     if(!o)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     
     return anna_from_int(anna_node_compare(

@@ -117,7 +117,7 @@ echo "
 	{
 //            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
 //anna_as_int(i1), anna_as_int(i2),(anna_as_int(i1) $op anna_as_int(i2)));
-            anna_vmstack_push_entry(stack, (anna_as_int(i1) $op anna_as_int(i2))?anna_from_int(1):anna_from_obj(null_object));
+            anna_vmstack_push_entry(stack, (anna_as_int(i1) $op anna_as_int(i2))?anna_from_int(1):null_entry);
 	}
 	else
 	{

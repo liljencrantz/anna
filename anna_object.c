@@ -41,7 +41,7 @@ anna_object_t *anna_object_create(anna_type_t *type) {
 
     for(i=0; i<type->member_count; i++)
     {
-	result->member[i]=anna_from_obj(null_object);
+	result->member[i]=null_entry;
     }
 //    wprintf(L"%ls\n", type->name);
     

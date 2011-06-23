@@ -43,7 +43,7 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
 ANNA_NATIVE(anna_char_i_$name, 2)
 {
     if(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object)
-        return anna_from_obj(null_object);
+        return null_entry;
   
     wchar_t v1 = anna_as_char(param[0]);
     int v2 = anna_as_int(param[1]);

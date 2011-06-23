@@ -132,7 +132,7 @@ anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset)
 	anna_entry_t **ptr = (anna_entry_t **)this->member[0];
 	if(pos >=size || pos < 0)
 	{
-	    return anna_from_obj(null_object);
+	    return null_entry;
 	}
 	return ptr[pos];
     }
@@ -142,7 +142,7 @@ anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset)
     anna_entry_t **ptr = anna_list_get_payload(this);
     if(pos < 0||pos >=size)
     {
-	return anna_from_obj(null_object);
+	return null_entry;
     }
     return ptr[pos];
 }
@@ -173,7 +173,7 @@ void anna_list_set_count(anna_object_t *this, size_t sz)
 	int i;
 	for(i=old_size; i<sz; i++)
 	{
-	    ptr[i] = anna_from_obj(null_object);
+	    ptr[i] = null_entry;
 	}
     }
     *(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE) = sz;
@@ -620,7 +620,7 @@ ANNA_NATIVE(anna_list_pop, 1)
 {
     size_t *sz = (size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE);
     if(!*sz)
-	return anna_from_obj(null_object);
+	return null_entry;
     (*sz)--;
     return (*(anna_entry_t ***)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))[*sz];
 }
@@ -765,7 +765,7 @@ ANNA_NATIVE(anna_list_i_set_range, 3)
     {
 	if(step != 1)
 	{
-	    return anna_from_obj(null_object);
+	    return null_entry;
 	}
 
 	int old_size = anna_list_get_count(list);
@@ -781,7 +781,7 @@ ANNA_NATIVE(anna_list_i_set_range, 3)
 	    for(i=old_size; i<new_size; i++)
 	    {
 		anna_list_set(
-		    list, i, anna_from_obj(null_object));		
+		    list, i, null_entry);		
 	    }
 	    *(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
 	    arr = anna_list_get_payload(list);
