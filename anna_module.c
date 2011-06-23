@@ -261,7 +261,6 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
 	    anna_member_create_method(type, anna_mid_get(fun->name), fun);
 	}
     }
-    
 }
 
 ANNA_NATIVE(anna_system_get_argument, 1)
@@ -275,12 +274,9 @@ ANNA_NATIVE(anna_system_get_argument, 1)
 	{
 	    wchar_t *data = str2wcs(anna_argv[i]);
 	    anna_object_t *arg = anna_string_create(wcslen(data), data);
-	    anna_list_add(res, anna_from_obj(arg));
-	    
+	    anna_list_add(res, anna_from_obj(arg));	    
 	}
-	
     }
-    
     return anna_from_obj(res);
 }
 
@@ -299,6 +295,8 @@ static void anna_system_load(anna_stack_template_t *stack)
 static void anna_math_load(anna_stack_template_t *stack)
 {
     anna_module_const_float(stack, L"pi", M_PI);
+    anna_module_const_float(stack, L"e", M_E);
+    
 }
 
 void anna_module_init()
