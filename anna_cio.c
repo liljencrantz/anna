@@ -24,6 +24,8 @@
 #include "anna_buffer.h"
 #include "anna_intern.h"
 #include "anna_list.h"
+#include "anna_member.h"
+#include "anna_mid.h"
 
 #define READ_SZ 4096
 
@@ -228,6 +230,47 @@ ANNA_NATIVE(anna_cio_mkdir, 2)
     return anna_from_int(res);
 }
 
+ANNA_NATIVE(anna_cio_get_cwd, 1)
+{
+#define SZ 4096				\
+    
+    wchar_t buff[SZ];
+    
+    wchar_t *cwd = wgetcwd(buff, SZ);
+    if(cwd)
+    {
+	return anna_from_obj(anna_string_create(wcslen(cwd), cwd));
+    }
+    
+    return null_entry;
+}
+
+ANNA_NATIVE(anna_cio_set_cwd, 2)
+{
+    if(anna_entry_null(param[1]))
+    {
+	return null_entry;
+    }
+
+    anna_entry_t *res = null_entry;
+    
+    wchar_t *dir = anna_string_payload(anna_as_obj(param[1]));
+    if(wcslen(dir) != anna_string_get_count(anna_as_obj(param[1])))
+    {	
+	goto CLEANUP;
+    }
+    if(wchdir(dir))
+    {
+	goto CLEANUP;
+    }
+    
+    res = param[1];
+ 
+  CLEANUP:
+    free(dir);
+    return res;
+}
+
 static void anna_open_mode_load(anna_stack_template_t *stack)
 {
     anna_module_const_int(stack, L"readOnly", O_RDONLY);
@@ -368,5 +411,15 @@ void anna_cio_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"standardInput", 0);
     anna_module_const_int(stack, L"standardOutput", 1);
     anna_module_const_int(stack, L"standardError", 2);
-}
+    
+    anna_module_const_char(stack, L"separator", L'/');
 
+    anna_type_t *type = anna_stack_wrap(stack)->type;
+    
+    anna_member_create_native_property(
+	type, anna_mid_get(L"cwd"),
+	imutable_string_type,
+	&anna_cio_get_cwd,
+	&anna_cio_set_cwd); 
+    
+}

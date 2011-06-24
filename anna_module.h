@@ -9,6 +9,10 @@ void anna_module_const_int(
     anna_stack_template_t *stack,
     wchar_t *name,
     int value);
+void anna_module_const_char(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    wchar_t value);
 void anna_module_const_float(
     anna_stack_template_t *stack,
     wchar_t *name,

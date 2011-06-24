@@ -77,5 +77,9 @@ type File
 	    "This value is non-null if the file pointed to by this object is a regular file")
     );
 
+    def makeDirectory()
+    {
+	
+    }
   
 }

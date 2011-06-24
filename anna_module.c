@@ -185,6 +185,20 @@ void anna_module_const_int(
     
 }
 
+void anna_module_const_char(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    wchar_t value)
+{
+    anna_stack_declare(
+	stack,
+	name,
+	char_type,
+	anna_from_char(value),
+	ANNA_STACK_READONLY);
+    
+}
+
 void anna_module_const_float(
     anna_stack_template_t *stack,
     wchar_t *name,

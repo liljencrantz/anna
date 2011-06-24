@@ -1,27 +1,8 @@
-use(math);
-
-def check(Float val)
-{
-    return if(^abs val < 0.0001){"ok"} else {"error"}
-}
 
 def main()
 {
-    print(check(pi - 3.141592), "\n");
-    print(check(e  - 2.718282), "\n");
-    
-    print(check(sin(pi)), "\n");
-    print(check(sin(0.0)), "\n");
-    print(check(cos(pi)+1.0), "\n");
-    print(check(cos(0.0)-1.0), "\n");
-    print(check(tan(0.0)), "\n");    
-
-    [0.1, 0.3, 0.5, 0.7].each(x)
-    {
-	print(check(sin(asin(x))-x), "\n");
-	print(check(cos(acos(x))-x), "\n");
-	print(check(tan(atan(x))-x), "\n");
-    }
-    
+    print(cio.cwd, "\n");
+    print(cio.cwd = "..", "\n");
+    print(cio.cwd, "\n");    
 }
 
