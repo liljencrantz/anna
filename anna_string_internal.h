@@ -3,73 +3,17 @@
 
 #include "anna_checks.h"
 
-#ifdef ANNA_STRING_CHUNKED_ENABLED
-
-struct anna_string_element;
-
-typedef struct 
-{
-    size_t element;
-    size_t offset;
-}
-    anna_string_location_t;
-
-struct anna_string
-{
-    /**
-      The number of string_element objects used in theis string
-     */
-    size_t element_count;
-    /**
-       The number of string_element slots allocated for usin in this string
-     */
-    size_t element_capacity;
-    /**
-       Array of string_element objects
-     */
-    struct anna_string_element **element;
-    /**
-       The offset of the specified string element at which this string
-       starts using the specified string element.
-     */
-    size_t *element_offset;
-    /**
-       The number of characters of data used in this string element
-     */
-    size_t *element_length;
-    /**
-       Total string length
-     */
-    size_t length;
-    /**
-       The index of the position that was last accessed
-     */
-    size_t cache_pos;
-    /**
-       Element index and offset of the position that was last accessed
-     */
-    anna_string_location_t cache_value;
-}
-  ;
-
-typedef struct anna_string anna_string_t;
-
-#else
-
-#define ANNA_NAIVE_INTERNAL 8
+#define ANNA_STRING_INTERNAL 8
 
 struct anna_string
 {
     size_t count;
     size_t capacity;
     wchar_t *str;
-    wchar_t internal[ANNA_NAIVE_INTERNAL];
+    wchar_t internal[ANNA_STRING_INTERNAL];
 }
     ;
 typedef struct anna_string anna_string_t;
-
-#endif
-
 
 /**
    Init the string to an empty value
@@ -79,9 +23,9 @@ void asi_init(anna_string_t *string);
    Init the string to contain the specified C string
  */
 void asi_init_from_ptr(anna_string_t *string, wchar_t *payload, size_t size);
-/*
+/**
   Destroy the specified string, free:ing all memory used by it.
- */
+*/
 void asi_destroy(anna_string_t *string);
 
 /**
