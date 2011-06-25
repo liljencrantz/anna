@@ -31,7 +31,7 @@ static void asi_ensure_capacity(anna_string_t *string, size_t size)
 void asi_init(anna_string_t *string)
 {
     string->count = 0;
-    string->capacity = ANNA_NAIVE_INTERNAL;
+    string->capacity = ANNA_STRING_INTERNAL;
     string->str = &string->internal[0];
 }
 
