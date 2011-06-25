@@ -271,6 +271,18 @@ ANNA_NATIVE(anna_cio_set_cwd, 2)
     return res;
 }
 
+ANNA_NATIVE(anna_cio_is_relative, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    
+    wchar_t *nam = anna_string_payload(
+	anna_as_obj(param[0]));
+    return (nam[0] != L'/') ? anna_from_int(1) : null_entry;
+}
+
 static void anna_open_mode_load(anna_stack_template_t *stack)
 {
     anna_module_const_int(stack, L"readOnly", O_RDONLY);
@@ -421,5 +433,12 @@ void anna_cio_load(anna_stack_template_t *stack)
 	imutable_string_type,
 	&anna_cio_get_cwd,
 	&anna_cio_set_cwd); 
+
+    anna_module_function(
+	stack, L"isRelative", 
+	0, &anna_cio_is_relative, 
+	object_type,
+	1, m_argv, m_argn, 
+	L"Checks if the specified file path is relative.");
     
 }

@@ -1,8 +1,11 @@
 
 type File
+(
+    documentation("A high level object respresenting a filesystem object such as a file, directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations.")
+)
 {
     
-    var String filename (internal);
+    var List «String» path (internal);
     var Int fd (internal);
 
     def __init__(String filename)
@@ -10,15 +13,28 @@ type File
 	documentation("Create a file object")
     )
     {
-        this.filename = filename;
+	if(cio.isRelative(filename))
+	{
+	    this.path = cio.cwd.split(cio.separator, ?);
+	    this.path ~= filename.split(cio.separator, ?);
+	} else {
+	    this.path = filename.split(cio.separator, ?);
+	}
     }
     
+    def filenameGetter()
+    {
+	"" ~ cio.separator ~ String.convert(cio.separator).join(path)
+    }
+    
+    var String filename (property(filenameGetter));
+
     def String readFile()
     (
 	documentation("Read the contents of the file and return it as a String")
     )
     {
-        (fd := cio.open(filename, cio.openMode.readOnly, 0)) or (return ?);
+        (fd := cio.open(this.filename, cio.openMode.readOnly, 0)) or (return ?);
         buff := Buffer();
         res := cio.read(fd, buff, ?);
 	cio.close(fd);
@@ -30,7 +46,7 @@ type File
 	documentation("Write the contents of the String into the specified file")
     )
     {
-        (fd := cio.open(filename, cio.openMode.writeOnly ^bitor cio.openMode.truncate ^bitor cio.openMode.create, 0o666)) or (return ?); 
+        (fd := cio.open(this.filename, cio.openMode.writeOnly ^bitor cio.openMode.truncate ^bitor cio.openMode.create, 0o666)) or (return ?); 
         buff := Buffer();
         ok := buff.decode(data) and cio.write(fd, buff, ?);
 	return cio.close(fd) and ok;
@@ -41,7 +57,7 @@ type File
 	documentation("Open the specified file for reading and writing")
     )
     {
-        fd = cio.open(filename, cio.openMode.readWrite, 0o666);
+        fd = cio.open(this.filename, cio.openMode.readWrite, 0o666);
     }
 
     def close()
@@ -54,7 +70,7 @@ type File
 
     def existsGetter() (internal)
     {
-	return if(cio.stat(filename)){1} else {?};
+	return if(cio.stat(this.filename)){1} else {?};
     }
     
     var Int exists 
@@ -66,7 +82,7 @@ type File
 
     def isFileGetter() (internal)
     {
-        (val := cio.stat(filename)) or (return ?);
+        (val := cio.stat(this.filename)) or (return ?);
 	return (val[2] ^bitand cio.statMode.regular) != 0;      
     }
 
@@ -77,9 +93,35 @@ type File
 	    "This value is non-null if the file pointed to by this object is a regular file")
     );
 
+    def isDirectoryGetter() (internal)
+    {
+        (val := cio.stat(this.filename)) or (return ?);
+	return (val[2] ^bitand cio.statMode.directory) != 0;      
+    }
+
+    var Int isDirectory
+    (
+	property(isDirectoryGetter), 
+	documentation(
+	    "This value is non-null if the file pointed to by this object is a directory.")
+    );
+
     def makeDirectory()
     {
-	
+	(0..this.path.count).each(last)
+	{
+	    name := "" ~ cio.separator ~ String.convert(cio.separator).join(this.path[0..last+1]);
+//	    print("mkdir on " ~ name, "\n");
+	    cio.mkdir(name, 0o666);
+	}
     }
   
+    def Object changeDirectory()
+    (
+	"Change the current working directory to the directory represented by this File object."
+    )
+    {
+	cio.cwd = this.filename;
+    }
+    
 }

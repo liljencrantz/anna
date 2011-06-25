@@ -142,3 +142,30 @@ def String rpad(
     }
     return res;
 }
+
+def String split(
+    String this,
+    Char char,
+    Object allowEmpty = 1)
+(
+    target(String)
+)
+{
+    res := «String»[];
+    start := 0;
+    stop := 0;
+    while(stop <= this.count)
+    {
+	while(stop < this.count and this[stop] != char)
+	{
+	    stop++;
+	}
+	if(allowEmpty or stop > start)
+	{
+	    res ~= [this[start..stop]];
+	}
+	stop = start = stop + 1;
+    }
+    return res;
+}
+

@@ -339,13 +339,13 @@ void anna_module_init()
     
     /*
       Load a bunch of built in non-native macros and monkey patch some
-      of the built in types with additional methods.
+      of the native types with additional non-native methods.
       
       This must be done in a specific order, since many of these
       patches rely on each other.
       
-      Right now, we separate these things into different files for
-      clarity. Long term, we probably want to use as few files as
+      Right now, we separate these things into many different files
+      for clarity. Long term, we probably want to use as few files as
       possible in order to reduce overhead. We'll worry about that
       once the functionality is mostly set in stone.
     */
@@ -363,7 +363,10 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"switch");
     anna_module_bootstrap_macro(L"struct");
     anna_module_bootstrap_macro(L"enum");
-    
+
+    /*
+      Load all non-native libraries
+    */
     anna_module_init_recursive(L"lib", stack_global);
 }
 
@@ -391,7 +394,7 @@ static void anna_module_find_import_internal(
 		}
 		else
 		{
-		    anna_error(im->child[j], L"Invalid module. Must be an identifier");
+		    anna_error(im->child[j], L"Invalid module. All module names must be identifiers");
 		}
 	    }
 	    m->child[i] = anna_node_create_null(

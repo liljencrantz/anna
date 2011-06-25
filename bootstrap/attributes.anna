@@ -1,0 +1,10 @@
+
+macro propertyAttribute(node)
+{
+    checkNodeType(node[1], Identifier);
+    name := node[1] as Identifier;
+
+    node[1] = Identifier(name, identifier(name.name));
+    
+}
+

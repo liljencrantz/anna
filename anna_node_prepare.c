@@ -309,6 +309,8 @@ static void anna_node_calculate_type_internal(
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){
 		anna_error(this, L"Unknown identifier: %ls", id->name);
 //		anna_stack_print(stack);
+		CRASH;
+		
 	    }
 	    else
 	    {
@@ -501,6 +503,8 @@ static void anna_node_calculate_type_internal(
 		    L"No member named %ls in type %ls\n", 
 		    anna_mid_get_reverse(c->mid),
 		    type->name);
+		anna_type_print(type);
+		CRASH;
 		break;
 		
 	    }

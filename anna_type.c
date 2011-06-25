@@ -547,7 +547,7 @@ static void anna_type_prepare_member_internal(
 	*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
 	anna_function_set_stack(clo->payload, stack);
 	anna_function_setup_interface(clo->payload);
-	anna_function_setup_body(clo->payload);
+	//anna_function_setup_body(clo->payload);
     }
 
 }
@@ -742,6 +742,24 @@ static anna_node_t *anna_type_setup_interface_internal(
 	}
     }
     anna_type_extend(type);    
+    int i;
+    for(i=0; i<anna_mid_max_get(); i++)
+    {
+	anna_member_t *memb = type->mid_identifier[i];
+	if(memb && memb->is_static && memb->type != null_type)
+	{
+	    anna_entry_t *val = *anna_entry_get_addr_static(type, i);
+	    if(!anna_entry_null(val))
+	    {
+		anna_function_t *fun = anna_function_unwrap(anna_as_obj(val));
+		if(fun)
+		{
+		    anna_function_setup_body(fun);
+		}
+	    }	    
+	}
+    }
+    
 
     if(!anna_member_get(type, anna_mid_get(L"__init__"))){
 
