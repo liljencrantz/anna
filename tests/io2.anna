@@ -1,0 +1,8 @@
+use(io);
+
+def main()
+{
+    f := File("io2.tmp").open();
+    f.print("Test\n");
+    print(File("io2.tmp").readFile());
+}

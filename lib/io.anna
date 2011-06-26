@@ -61,6 +61,7 @@ type File
     )
     {
         fd = cio.open(this.filename, cio.openMode.readWrite, 0o666);
+	if(fd) {this} else {?};
     }
 
     def close()
@@ -70,7 +71,17 @@ type File
     {
         cio.close(fd)
     }
-
+    
+    def print(Object value...)
+    {
+        b := Buffer();
+	value.each(v)
+	{
+	    b.decode(String.convert(v));
+	}
+	cio.write(this.fd, b, ?);
+    }
+    
     def existsGetter() (internal)
     {
 	return if(cio.stat(this.filename)){1} else {?};
