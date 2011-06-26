@@ -1,7 +1,10 @@
+/*
+error IoError (Error) {}
+*/
 
 type File
 (
-    documentation("A high level object respresenting a filesystem object such as a file, directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations.")
+    documentation("A high level object respresenting a filesystem entry such as a file, directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations.")
 )
 {
     

@@ -368,6 +368,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"switch");
     anna_module_bootstrap_macro(L"struct");
     anna_module_bootstrap_macro(L"enum");
+    anna_module_bootstrap_macro(L"error");
 
     /*
       Load all non-native libraries

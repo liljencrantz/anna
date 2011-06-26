@@ -1,0 +1,20 @@
+
+macro error(definition)
+{
+    name := definition[0] as Identifier;
+    definition.function = ast(type);
+    par := definition[1];
+    definition[1] = ast({});
+    body := definition[2] as Call;
+    fun := ast(
+	def check(Error error)
+	     {
+		 return error == %me;
+	     }) % ["me": name];
+    
+    print(definition);
+    body ~= [fun];
+    
+    return definition;
+}
+
