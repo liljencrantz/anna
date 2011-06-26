@@ -49,7 +49,10 @@ type File
 	documentation("Write the contents of the String into the specified file")
     )
     {
-        (fd := cio.open(this.filename, cio.openMode.writeOnly ^bitor cio.openMode.truncate ^bitor cio.openMode.create, 0o666)) or (return ?); 
+        (fd := cio.open(
+	    this.filename, 
+	    cio.openMode.writeOnly ^bitor cio.openMode.truncate ^bitor cio.openMode.create, 
+	    0o666)) or (return ?); 
         buff := Buffer();
         ok := buff.decode(data) and cio.write(fd, buff, ?);
 	return cio.close(fd) and ok;
@@ -60,7 +63,10 @@ type File
 	documentation("Open the specified file for reading and writing")
     )
     {
-        fd = cio.open(this.filename, cio.openMode.readWrite, 0o666);
+        fd = cio.open(
+	    this.filename, 
+	    cio.openMode.readWrite ^bitor cio.openMode.create, 
+	    0o666);
 	if(fd) {this} else {?};
     }
 
@@ -78,8 +84,8 @@ type File
 	value.each(v)
 	{
 	    b.decode(String.convert(v));
+	    cio.write(this.fd, b, ?);
 	}
-	cio.write(this.fd, b, ?);
     }
     
     def existsGetter() (internal)

@@ -3,6 +3,9 @@ use(io);
 def main()
 {
     f := File("io2.tmp").open();
-    f.print("Test\n");
+    f.print("Test", "\n");
+    f.close();
+
     print(File("io2.tmp").readFile());
 }
+

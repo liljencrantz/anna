@@ -503,8 +503,6 @@ static void anna_node_calculate_type_internal(
 		    L"No member named %ls in type %ls\n", 
 		    anna_mid_get_reverse(c->mid),
 		    type->name);
-		anna_type_print(type);
-		CRASH;
 		break;
 		
 	    }
@@ -578,6 +576,13 @@ static void anna_node_calculate_type_internal(
 //		debug(D_ERROR, L"Declaration %ls is a constant\n", d->name);
 		anna_entry_t *value = anna_node_static_invoke(
 		    d->value, stack);
+/*
+		if(wcscmp(d->name, L"print")==0)
+		{
+		    anna_stack_print(stack);
+		    CRASH;
+		}
+*/
 		anna_stack_set(
 		    stack,
 		    d->name,
@@ -586,6 +591,7 @@ static void anna_node_calculate_type_internal(
 		    stack,
 		    d->name,
 		    ANNA_STACK_READONLY);
+
 	    }
 	    
 //	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);

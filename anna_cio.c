@@ -31,7 +31,7 @@
 
 ANNA_NATIVE(anna_cio_open, 3)
 {
-    if(anna_entry_null(param[0]) || anna_entry_null(param[1]) || anna_entry_null(param[1]))
+    if(anna_entry_null(param[0]) || anna_entry_null(param[1]) || anna_entry_null(param[2]))
     {
 	return null_entry;
     }
@@ -40,6 +40,7 @@ ANNA_NATIVE(anna_cio_open, 3)
     int flags = anna_as_int(param[1]);
     int mode = anna_as_int(param[2]);
     int res = wopen(nam, flags, mode);
+
     if(res == -1)
     {
 	return null_entry;

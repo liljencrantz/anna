@@ -83,6 +83,8 @@ void anna_stack_declare(anna_stack_template_t *stack,
     size_t *old_offset = hash_get(&stack->member_string_identifier, name);
     if(old_offset)
     {
+	return;
+	
 	wprintf(
 	    L"Critical: Tried to redeclare variable %ls\n",
 	    name);
@@ -220,6 +222,14 @@ anna_entry_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *nam
 
 void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *value)
 {
+/*
+    if(wcscmp(name, L"print")==0)
+    {
+	wprintf(L"FASFDSAFSADFASDFADSFASD\n");
+	CRASH;
+	
+    }
+*/  
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)

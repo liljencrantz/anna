@@ -13,11 +13,12 @@ static int anna_node_f_get_index(anna_function_type_t *f, int is_method, wchar_t
 
 static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *stack)
 {
+    
     anna_function_type_t *ftk=0;
     anna_type_t **tmpl;
     int tmpl_count;
     anna_node_call_t *this2 =(anna_node_call_t *)this;
-
+    
     if(this->node_type == ANNA_NODE_CONSTRUCT)
     {
 	anna_type_t *ft = this2->function->return_type;
@@ -44,7 +45,6 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
     }
     else if(this->node_type == ANNA_NODE_MEMBER_CALL)
     {
-	
 	anna_type_t * type = 
 	    this2->object->return_type;
 				
@@ -126,6 +126,7 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 		this,
 		L"Invalid type of parameter %d in function call. Expected type %ls, got type %ls",
 		i+1, templ->name, param->name);
+
 	}
     }
 }

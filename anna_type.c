@@ -512,6 +512,8 @@ static void anna_type_prepare_member_internal(
 	is_method = 1;
 	is_bound = !anna_attribute_flag(decl->attribute, L"static");
     }
+
+    anna_stack_declare(type->stack, decl->name, object_type, null_entry, 0);
     
     anna_node_calculate_type(
 	(anna_node_t *)decl);

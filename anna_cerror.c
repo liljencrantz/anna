@@ -28,6 +28,11 @@ ANNA_NATIVE(anna_cerror_strerror, 1)
     int err = anna_as_int(param[0]);
     
     char *desc = strerror(err);
+    if(!desc)
+    {
+	return null_entry;
+    }
+    
     wchar_t *wdesc = str2wcs(desc);
     anna_object_t *res = anna_string_create(wcslen(wdesc), wdesc);
     free(wdesc);
