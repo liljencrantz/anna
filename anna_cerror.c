@@ -45,7 +45,7 @@ void anna_cerror_load(anna_stack_template_t *stack)
     anna_type_t *s_argv[] = {int_type};
     
     anna_module_function(
-	stack, L"strError", 
+	stack, L"errorString", 
 	0, &anna_cerror_strerror, 
 	string_type, 
 	1, s_argv, s_argn, 

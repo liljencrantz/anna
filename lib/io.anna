@@ -114,7 +114,7 @@ type File
 	    
 	    if(!cio.mkdir(name, 0o777) and !(cerror.errno in [cerror.exist]))
 	    {
-		print(cerror.strError(cerror.errno), "\n");
+		print(cerror.errorString(cerror.errno), "\n");
 		return ?;
 	    }
 	}
