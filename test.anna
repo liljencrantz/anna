@@ -12,9 +12,9 @@ type A
 def main()
 {
     print(io.File("///a/b/c///aaa").filename, "\n");
-
+    
     io.File("aaa/bbb/ccc").makeDirectory();
-
+    
     a := A();
     print(a.myProp, "\n");
 }

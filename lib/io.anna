@@ -111,11 +111,16 @@ type File
 	(0..this.path.count).each(last)
 	{
 	    name := "" ~ cio.separator ~ String.convert(cio.separator).join(this.path[0..last+1]);
-//	    print("mkdir on " ~ name, "\n");
-	    cio.mkdir(name, 0o666);
+	    
+	    if(!cio.mkdir(name, 0o777) and !(cerror.errno in [cerror.exist]))
+	    {
+		print(cerror.strError(cerror.errno), "\n");
+		return ?;
+	    }
 	}
+	return 1;
     }
-  
+    
     def Object changeDirectory()
     (
 	"Change the current working directory to the directory represented by this File object."

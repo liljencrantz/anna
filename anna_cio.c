@@ -285,53 +285,53 @@ ANNA_NATIVE(anna_cio_is_relative, 1)
 
 static void anna_open_mode_load(anna_stack_template_t *stack)
 {
-    anna_module_const_int(stack, L"readOnly", O_RDONLY);
-    anna_module_const_int(stack, L"writeOnly", O_WRONLY);
-    anna_module_const_int(stack, L"readWrite", O_RDWR);
+    anna_module_const_int(stack, L"readOnly", O_RDONLY, 0);
+    anna_module_const_int(stack, L"writeOnly", O_WRONLY, 0);
+    anna_module_const_int(stack, L"readWrite", O_RDWR, 0);
 
-    anna_module_const_int(stack, L"append", O_APPEND);
-    anna_module_const_int(stack, L"create", O_CREAT);
-    anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC);
-    anna_module_const_int(stack, L"direct", O_DIRECT);    
-    anna_module_const_int(stack, L"directory", O_DIRECTORY);
-    anna_module_const_int(stack, L"exclusive", O_EXCL);
-    anna_module_const_int(stack, L"largeFile", O_LARGEFILE);
-    anna_module_const_int(stack, L"noAccessTime", O_NOATIME);
-    anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY);
-    anna_module_const_int(stack, L"noFollow", O_NOFOLLOW);
-    anna_module_const_int(stack, L"nonBlock", O_NONBLOCK);
-    anna_module_const_int(stack, L"synchronous", O_SYNC);
-    anna_module_const_int(stack, L"truncate", O_TRUNC);
+    anna_module_const_int(stack, L"append", O_APPEND, 0);
+    anna_module_const_int(stack, L"create", O_CREAT, 0);
+    anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC, 0);
+    anna_module_const_int(stack, L"direct", O_DIRECT, 0);    
+    anna_module_const_int(stack, L"directory", O_DIRECTORY, 0);
+    anna_module_const_int(stack, L"exclusive", O_EXCL, 0);
+    anna_module_const_int(stack, L"largeFile", O_LARGEFILE, 0);
+    anna_module_const_int(stack, L"noAccessTime", O_NOATIME, 0);
+    anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY, 0);
+    anna_module_const_int(stack, L"noFollow", O_NOFOLLOW, 0);
+    anna_module_const_int(stack, L"nonBlock", O_NONBLOCK, 0);
+    anna_module_const_int(stack, L"synchronous", O_SYNC, 0);
+    anna_module_const_int(stack, L"truncate", O_TRUNC, 0);
 }
 
 static void anna_stat_mode_load(anna_stack_template_t *stack)
 {
-    anna_module_const_int(stack, L"regular", S_IFREG);
-    anna_module_const_int(stack, L"socket", S_IFSOCK);
-    anna_module_const_int(stack, L"link", S_IFLNK);
-    anna_module_const_int(stack, L"block", S_IFBLK);
-    anna_module_const_int(stack, L"directory", S_IFDIR);
-    anna_module_const_int(stack, L"character", S_IFCHR);
-    anna_module_const_int(stack, L"fifo", S_IFIFO);
+    anna_module_const_int(stack, L"regular", S_IFREG, 0);
+    anna_module_const_int(stack, L"socket", S_IFSOCK, 0);
+    anna_module_const_int(stack, L"link", S_IFLNK, 0);
+    anna_module_const_int(stack, L"block", S_IFBLK, 0);
+    anna_module_const_int(stack, L"directory", S_IFDIR, 0);
+    anna_module_const_int(stack, L"character", S_IFCHR, 0);
+    anna_module_const_int(stack, L"fifo", S_IFIFO, 0);
     
-    anna_module_const_int(stack, L"suid", S_ISUID);
-    anna_module_const_int(stack, L"sgid", S_ISGID);
-    anna_module_const_int(stack, L"sticky", S_ISVTX);
+    anna_module_const_int(stack, L"suid", S_ISUID, 0);
+    anna_module_const_int(stack, L"sgid", S_ISGID, 0);
+    anna_module_const_int(stack, L"sticky", S_ISVTX, 0);
     
-    anna_module_const_int(stack, L"userAll", S_IRWXU);
-    anna_module_const_int(stack, L"userRead", S_IRUSR);
-    anna_module_const_int(stack, L"userwrite", S_IWUSR);
-    anna_module_const_int(stack, L"userExecute", S_IXUSR);
+    anna_module_const_int(stack, L"userAll", S_IRWXU, 0);
+    anna_module_const_int(stack, L"userRead", S_IRUSR, 0);
+    anna_module_const_int(stack, L"userwrite", S_IWUSR, 0);
+    anna_module_const_int(stack, L"userExecute", S_IXUSR, 0);
     
-    anna_module_const_int(stack, L"groupAll", S_IRWXG);
-    anna_module_const_int(stack, L"groupRead", S_IRGRP);
-    anna_module_const_int(stack, L"groupwrite", S_IWGRP);
-    anna_module_const_int(stack, L"groupExecute", S_IXGRP);
+    anna_module_const_int(stack, L"groupAll", S_IRWXG, 0);
+    anna_module_const_int(stack, L"groupRead", S_IRGRP, 0);
+    anna_module_const_int(stack, L"groupwrite", S_IWGRP, 0);
+    anna_module_const_int(stack, L"groupExecute", S_IXGRP, 0);
     
-    anna_module_const_int(stack, L"otherAll", S_IRWXO);
-    anna_module_const_int(stack, L"otherRead", S_IROTH);
-    anna_module_const_int(stack, L"otherwrite", S_IWOTH);
-    anna_module_const_int(stack, L"otherExecute", S_IXOTH);
+    anna_module_const_int(stack, L"otherAll", S_IRWXO, 0);
+    anna_module_const_int(stack, L"otherRead", S_IROTH, 0);
+    anna_module_const_int(stack, L"otherwrite", S_IWOTH, 0);
+    anna_module_const_int(stack, L"otherExecute", S_IXOTH, 0);
 }
 
 void anna_cio_load(anna_stack_template_t *stack)
@@ -420,11 +420,11 @@ void anna_cio_load(anna_stack_template_t *stack)
 	2, m_argv, m_argn, 
 	L"Creates the specified directory. Equivalent to the C mkdir function.");
     
-    anna_module_const_int(stack, L"standardInput", 0);
-    anna_module_const_int(stack, L"standardOutput", 1);
-    anna_module_const_int(stack, L"standardError", 2);
+    anna_module_const_int(stack, L"standardInput", 0, 0);
+    anna_module_const_int(stack, L"standardOutput", 1, 0);
+    anna_module_const_int(stack, L"standardError", 2, 0);
     
-    anna_module_const_char(stack, L"separator", L'/');
+    anna_module_const_char(stack, L"separator", L'/', 0);
 
     anna_type_t *type = anna_stack_wrap(stack)->type;
     

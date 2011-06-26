@@ -36,6 +36,7 @@
 #include "anna_mid.h"
 #include "anna_cio.h"
 #include "anna_math.h"
+#include "anna_cerror.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 array_list_t anna_module_default_macros = AL_STATIC;
@@ -174,7 +175,9 @@ static void anna_module_bootstrap_macro(wchar_t *name)
 void anna_module_const_int(
     anna_stack_template_t *stack,
     wchar_t *name,
-    int value)
+    int value,
+    wchar_t *documentation
+    )
 {
     anna_stack_declare(
 	stack,
@@ -182,13 +185,14 @@ void anna_module_const_int(
 	int_type,
 	anna_from_int(value),
 	ANNA_STACK_READONLY);
-    
 }
 
 void anna_module_const_char(
     anna_stack_template_t *stack,
     wchar_t *name,
-    wchar_t value)
+    wchar_t value,
+    wchar_t *documentation
+    )
 {
     anna_stack_declare(
 	stack,
@@ -196,13 +200,14 @@ void anna_module_const_char(
 	char_type,
 	anna_from_char(value),
 	ANNA_STACK_READONLY);
-    
 }
 
 void anna_module_const_float(
     anna_stack_template_t *stack,
     wchar_t *name,
-    double value)
+    double value,
+    wchar_t *documentation
+    )
 {
     anna_stack_declare(
 	stack,
@@ -210,7 +215,6 @@ void anna_module_const_float(
 	float_type,
 	anna_from_float(value),
 	ANNA_STACK_READONLY);
-    
 }
 
 static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar_t *name)
@@ -319,6 +323,7 @@ void anna_module_init()
 	    { L"reflection", anna_member_create_types, anna_member_load },
 	    { L"cio", 0, anna_cio_load },
 	    { L"math", 0, anna_math_load },
+	    { L"cerror", 0, anna_cerror_load },
 	};
 
     anna_module_data_create(modules, stack_global);

@@ -59,8 +59,8 @@ ANNA_NATIVE(anna_math_log, 1)
 
 void anna_math_load(anna_stack_template_t *stack)
 {
-    anna_module_const_float(stack, L"pi", M_PI);
-    anna_module_const_float(stack, L"e", M_E);
+    anna_module_const_float(stack, L"pi", M_PI, 0);
+    anna_module_const_float(stack, L"e", M_E, 0);
     
     wchar_t *f_argn[]={L"value"};
     anna_type_t *f_argv[] = {float_type};
