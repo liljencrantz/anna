@@ -1,0 +1,21 @@
+
+error MyError(IOError)
+{
+    
+}
+
+def main()
+{
+    err := collect(IOError)
+    {
+	File("/").makeDirectory();
+	MyError("")
+    }
+    print(err.count, "\n");
+
+    err ~= collect(MyError)
+    {
+	MyError("test");
+    }
+    print(err[1].message, "\n");
+}
