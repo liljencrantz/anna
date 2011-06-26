@@ -222,14 +222,6 @@ anna_entry_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *nam
 
 void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *value)
 {
-/*
-    if(wcscmp(name, L"print")==0)
-    {
-	wprintf(L"FASFDSAFSADFASDFADSFASD\n");
-	CRASH;
-	
-    }
-*/  
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
