@@ -682,6 +682,7 @@ void anna_type_set_stack(
 	anna_node_set_stack(
 	    (anna_node_t *)t->body,
 	    t->stack);
+	anna_node_resolve_identifiers((anna_node_t *)t->body);
 	anna_node_set_stack(
 	    (anna_node_t *)t->attribute,
 	    t->stack);

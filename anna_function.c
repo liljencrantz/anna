@@ -280,10 +280,13 @@ void anna_function_set_stack(
 	anna_node_set_stack(
 	    (anna_node_t *)f->body,
 	    f->stack_template);
+	anna_node_resolve_identifiers((anna_node_t *)f->body);
 	if(f->input_type_node)
+	{
 	    anna_node_set_stack(
 		(anna_node_t *)f->input_type_node,
 		f->stack_template);
+	}
     }
 }
 

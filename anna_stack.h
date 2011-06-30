@@ -8,6 +8,7 @@ struct anna_stack_template;
 struct anna_node_declare;
 struct anna_node;
 struct anna_type;
+struct anna_use;
 
 struct anna_sid
 {
@@ -109,6 +110,10 @@ int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name);
 void anna_stack_set_flag(anna_stack_template_t *stack, wchar_t *name, int value);
 
 anna_stack_template_t *anna_stack_template_search(
+    anna_stack_template_t *stack,
+    wchar_t *name);
+
+struct anna_use *anna_stack_search_use(
     anna_stack_template_t *stack,
     wchar_t *name);
 

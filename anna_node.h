@@ -346,6 +346,10 @@ void anna_node_set_stack(
     anna_node_t *this,
     anna_stack_template_t *stack);
 
+void anna_node_resolve_identifiers(
+    anna_node_t *this);
+
+
 /**
    Node preparation phase 3: Calculate all variable types
  */

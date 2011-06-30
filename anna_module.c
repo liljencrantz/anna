@@ -447,8 +447,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 {
 //    debug_level=0;
     int i;
-    array_list_t import = AL_STATIC;
-    array_list_t expand = AL_STATIC;
 
     if(module_stack->flags & ANNA_STACK_LOADED)
     {
@@ -472,22 +470,16 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
       Implicitly add an import
       of the lang module to the top of the ast.
     */
-    al_push(&import, L"lang");
+    al_push(&module_stack->import, L"lang");
     
     anna_stack_template_t *macro_stack = anna_stack_create(stack_global);
     macro_stack->flags |= ANNA_STACK_NAMESPACE;
-    anna_module_find_expand(program, &expand);    
-    anna_module_find_import(program, &import);
+    anna_module_find_expand(program, &module_stack->expand);    
+    anna_module_find_import(program, &module_stack->import);
     
-    for(i=0; i<al_get_count(&anna_module_default_macros); i++ )
+    for(i=0; i<al_get_count(&module_stack->expand); i++ )
     {
-	anna_stack_template_t *mod = al_get(&anna_module_default_macros, i);
-	al_push(&macro_stack->expand, anna_use_create_stack(mod));
-    }
-    
-    for(i=0; i<al_get_count(&expand); i++ )
-    {
-	wchar_t *str = al_get(&expand, i);
+	wchar_t *str = al_get(&macro_stack->expand, i);
 	debug(D_SPAM,L"expand statement: expand(%ls)\n", str);
 	
 	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
@@ -498,6 +490,12 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	{
 	    return;
 	}
+	al_set(&macro_stack->expand, i, anna_use_create_stack(mod));
+    }
+    
+    for(i=0; i<al_get_count(&anna_module_default_macros); i++ )
+    {
+	anna_stack_template_t *mod = al_get(&anna_module_default_macros, i);
 	al_push(&macro_stack->expand, anna_use_create_stack(mod));
     }
     
@@ -515,9 +513,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	exit(ANNA_STATUS_MACRO_ERROR);
     }
     debug(D_SPAM,L"Macros expanded in module %ls\n", module_stack->filename);    
-    
-    al_destroy(&expand);
-    
+        
     anna_node_print(D_SPAM, node);
     anna_node_register_declarations(node, module_stack);
     module_stack->flags |= ANNA_STACK_NAMESPACE;
@@ -533,34 +529,34 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	D_SPAM,
 	L"Declarations registered in module %ls\n", 
 	module_stack->filename);
-
+    
     anna_node_set_stack(node, module_stack);
+    anna_node_resolve_identifiers(node);
+
     debug(
 	D_SPAM,
 	L"Stack set in module %ls\n", 
 	module_stack->filename);
-
-    for(i=0; i<al_get_count(&import); i++ )
+    
+    for(i=0; i<al_get_count(&module_stack->import); i++ )
     {
-	wchar_t *str = al_get(&import, i);
+	wchar_t *str = al_get(&module_stack->import, i);
 	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
 	if(anna_error_count || !mod)
 	{
 	    return;
 	}
-	al_set(&import, i, anna_use_create_stack(mod));
+	al_set(&module_stack->import, i, anna_use_create_stack(mod));
     }
-    al_push(&import, anna_use_create_stack(module_stack));
+    al_push(&module_stack->import, anna_use_create_stack(module_stack));
     
-    memcpy(&module_stack->import, &import, sizeof(array_list_t));
-    
-    anna_node_call_t *ggg = node_cast_call(node);
+    anna_node_call_t *module_node = node_cast_call(node);
     debug(
 	D_SPAM,
 	L"Dependencies imported in module %ls\n", 
 	module_stack->filename);
     
-    anna_node_calculate_type_children(ggg);
+    anna_node_calculate_type_children(module_node);
     if(anna_error_count)
     {
 	debug(
@@ -571,9 +567,9 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     }
     debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
 
-    for(i=0; i<ggg->child_count; i++)
+    for(i=0; i<module_node->child_count; i++)
     {
-	anna_node_each(ggg->child[i], (anna_node_function_t)&anna_node_validate, module_stack);
+	anna_node_each(module_node->child[i], (anna_node_function_t)&anna_node_validate, module_stack);
     }
     if(anna_error_count)
     {
@@ -587,9 +583,9 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);	
 	
-    for(i=0; i<ggg->child_count; i++)
+    for(i=0; i<module_node->child_count; i++)
     {
-	anna_node_static_invoke(ggg->child[i], module_stack);
+	anna_node_static_invoke(module_node->child[i], module_stack);
 	if(anna_error_count)
 	{
 	    debug(
@@ -602,7 +598,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     }
     
     debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
-    anna_node_each((anna_node_t *)ggg, &anna_module_compile, 0);
+    anna_node_each((anna_node_t *)module_node, &anna_module_compile, 0);
     
     debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
 }

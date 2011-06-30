@@ -9,6 +9,7 @@
 #include "util.h"
 #include "common.h"
 #include "anna_node.h"
+#include "anna_use.h"
 #include "anna_stack.h"
 #include "anna_node_create.h"
 #include "anna_type.h"
@@ -19,7 +20,6 @@
 #include "anna_intern.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
-#include "anna_use.h"
 
 typedef struct
 {
@@ -179,6 +179,40 @@ anna_stack_template_t *anna_stack_template_search(
 	    if(offset) 
 	    {
 		return import;
+	    }
+	}
+	stack = stack->parent;
+    }
+    return 0;
+}
+
+struct anna_use *anna_stack_search_use(
+    anna_stack_template_t *stack,
+    wchar_t *name)
+{
+    if(!stack)
+    {
+	wprintf(L"Critical: Null stack!\n");
+	CRASH;	
+    }    
+  
+    assert(name);
+    while(stack)
+    {
+	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
+	if(offset) 
+	{
+	    return 0;
+	}
+	
+	int i;
+	for(i=0; i<al_get_count(&stack->import); i++)
+	{
+	    anna_use_t *use = al_get(&stack->import, i);
+	    
+	    if(anna_type_member_info_get(use->type, name))
+	    {
+		return use;
 	    }
 	}
 	stack = stack->parent;

@@ -27,6 +27,8 @@
 #include "anna_util.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
+#include "anna_use.h"
+#include "anna_stack.h"
 
 typedef struct
 {
