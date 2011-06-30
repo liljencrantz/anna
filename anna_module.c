@@ -37,6 +37,7 @@
 #include "anna_cio.h"
 #include "anna_math.h"
 #include "anna_cerror.h"
+#include "anna_use.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 array_list_t anna_module_default_macros = AL_STATIC;
@@ -330,7 +331,7 @@ void anna_module_init()
     
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     anna_macro_init(stack_macro);
-    al_push(&stack_global->expand, stack_macro);
+    al_push(&stack_global->expand, anna_use_create_stack(stack_macro));
     
     anna_stack_template_t *stack_lang = anna_stack_unwrap(
 	anna_as_obj(
@@ -481,7 +482,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     for(i=0; i<al_get_count(&anna_module_default_macros); i++ )
     {
 	anna_stack_template_t *mod = al_get(&anna_module_default_macros, i);
-	al_push(&macro_stack->expand, mod);
+	al_push(&macro_stack->expand, anna_use_create_stack(mod));
     }
     
     for(i=0; i<al_get_count(&expand); i++ )
@@ -497,7 +498,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	{
 	    return;
 	}
-	al_push(&macro_stack->expand, mod);
+	al_push(&macro_stack->expand, anna_use_create_stack(mod));
     }
     
     /*
@@ -547,9 +548,10 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	{
 	    return;
 	}
-	al_set(&import, i, mod);
+	al_set(&import, i, anna_use_create_stack(mod));
     }
-    al_push(&import, module_stack);
+    al_push(&import, anna_use_create_stack(module_stack));
+    
     memcpy(&module_stack->import, &import, sizeof(array_list_t));
     
     anna_node_call_t *ggg = node_cast_call(node);
@@ -616,7 +618,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     anna_module_load_i(module);
     
     sb_destroy(&fn);
-
+    
     return anna_stack_wrap(module);
 }
 

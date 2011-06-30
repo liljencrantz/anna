@@ -39,7 +39,7 @@ anna_node_create.o anna_object.o anna_invoke.o anna_error.o anna_mid.o	\
 anna_range.o anna_vm.o anna_alloc.o anna_complex.o anna_attribute.o	\
 anna_intern.o anna_object_type.o anna_hash.o anna_lang.o anna_tt.o	\
 anna_slab.o anna_pair.o anna_node_hash.o anna_compile.o anna_abides.o	\
-dtoa.o anna_buffer.o anna_cio.o anna_math.o anna_cerror.o
+dtoa.o anna_buffer.o anna_cio.o anna_math.o anna_cerror.o anna_use.o
 
 ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
 anna_string_internal_test.o util.o common.o 

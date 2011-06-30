@@ -20,6 +20,7 @@
 #include "anna_intern.h"
 #include "anna_attribute.h"
 #include "anna_list.h"
+#include "anna_use.h"
 
 void anna_function_argument_hint(
     anna_function_t *f,
@@ -307,11 +308,12 @@ void anna_function_setup_interface(
 	{
 	    al_push(
 		&f->stack_template->import, 
-		anna_stack_unwrap(
-		    anna_as_obj(
-			anna_stack_get(
-			    stack_global,
-			    L"parser"))));
+		anna_use_create_stack(
+		    anna_stack_unwrap(
+			anna_as_obj(
+			    anna_stack_get(
+				stack_global,
+				L"parser")))));
 	}
 		
 	anna_function_setup_arguments(f, f->stack_template->parent);

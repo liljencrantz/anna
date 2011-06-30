@@ -19,6 +19,7 @@
 #include "anna_intern.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
+#include "anna_use.h"
 
 typedef struct
 {
@@ -167,7 +168,13 @@ anna_stack_template_t *anna_stack_template_search(
 	int i;
 	for(i=0; i<al_get_count(&stack->import); i++)
 	{
-	    anna_stack_template_t *import = al_get(&stack->import, i);
+	    anna_use_t *use = al_get(&stack->import, i);
+
+//	    wprintf(L"LALALA %ls %ls\n", name, use->type->name);
+	    
+	    anna_stack_template_t *import = 
+		anna_stack_unwrap(
+		    anna_as_obj(anna_node_static_invoke_try(use->node, use->node->stack)));
 	    size_t *offset = (size_t *)hash_get(&import->member_string_identifier, name);
 	    if(offset) 
 	    {
@@ -195,7 +202,10 @@ anna_entry_t *anna_stack_macro_get(
 	int i;
 	for(i=0; i<al_get_count(&stack->expand); i++)
 	{
-	    anna_stack_template_t *exp = al_get(&stack->expand, i);
+	    anna_use_t *use = al_get(&stack->expand, i);
+	    anna_stack_template_t *exp = 
+		anna_stack_unwrap(
+		    anna_as_obj(anna_node_static_invoke_try(use->node, use->node->stack)));
 	    size_t *offset = (size_t *)hash_get(&exp->member_string_identifier, name);
 	    
 	    if(offset) 

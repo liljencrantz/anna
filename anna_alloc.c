@@ -17,6 +17,7 @@
 #include "anna_hash.h"
 #include "anna_mid.h"
 #include "anna_type.h"
+#include "anna_use.h"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_tot=0;
@@ -133,7 +134,15 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
     }
     for(i=0; i<al_get_count(&o->import); i++)
     {
-	anna_alloc_mark_stack_template((anna_stack_template_t *)al_get(&o->import, i));
+	anna_use_t *use = (anna_use_t *)al_get(&o->import, i);
+	anna_alloc_mark_type(use->type);
+	anna_alloc_mark_node(use->node);
+    }
+    for(i=0; i<al_get_count(&o->expand); i++)
+    {
+	anna_use_t *use = (anna_use_t *)al_get(&o->expand, i);
+	anna_alloc_mark_type(use->type);
+	anna_alloc_mark_node(use->node);
     }
 }
 
@@ -623,10 +632,20 @@ static void anna_alloc_free(void *obj)
 	}
 	case ANNA_STACK_TEMPLATE:
 	{
+	    int i;
 	    anna_stack_template_t *o = (anna_stack_template_t *)obj;
 	    free(o->member_declare_node);
 	    free(o->member_flags);
+	    for(i=0; i<al_get_count(&o->import); i++)
+	    {
+		free(al_get(&o->import, i));
+	    }
 	    al_destroy(&o->import);
+	    for(i=0; i<al_get_count(&o->expand); i++)
+	    {
+		free(al_get(&o->expand, i));
+	    }
+	    al_destroy(&o->expand);
 	    hash_foreach(&o->member_string_identifier, free_val);
 	    hash_destroy(&o->member_string_identifier);
 	    anna_alloc_count -= sizeof(anna_stack_template_t);

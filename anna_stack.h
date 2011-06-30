@@ -6,6 +6,8 @@
 
 struct anna_stack_template;
 struct anna_node_declare;
+struct anna_node;
+struct anna_type;
 
 struct anna_sid
 {
