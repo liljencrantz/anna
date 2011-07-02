@@ -21,10 +21,12 @@ anna_use_t *anna_use_create_stack(struct anna_stack_template *stack)
     return res;
 }
 
-anna_use_t *anna_use_create_identifier(wchar_t *name, struct anna_type *type)
+anna_use_t *anna_use_create_node(anna_node_t *node, struct anna_type *type)
 {
-    CRASH;
-    return 0;
+    anna_use_t *res = malloc(sizeof(anna_use_t));
+    res->type = type;
+    res->node = node;
+    return res;
 }
 
 

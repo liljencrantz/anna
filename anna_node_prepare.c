@@ -282,6 +282,15 @@ static void anna_node_calculate_type_internal(
 
 	case ANNA_NODE_IDENTIFIER:
 	{
+/*
+	    anna_node_t *tmp = resolve_identifiers_each(
+		this, 0);
+	    if(tmp != this)
+	    {
+		anna_node_calculate_type(tmp);
+		break;
+	    }
+*/	    
 	    anna_node_identifier_t *id = (anna_node_identifier_t *)this;
 //	    anna_node_print(6,id);
 	    anna_type_t *t = anna_stack_get_type(stack, id->name);
@@ -310,7 +319,7 @@ static void anna_node_calculate_type_internal(
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){
 		anna_error(this, L"Unknown identifier: %ls", id->name);
 //		anna_stack_print(stack);
-		CRASH;
+//		CRASH;
 		
 	    }
 	    else
@@ -692,25 +701,39 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
 
+	case ANNA_NODE_USE:
+	{
+	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
+	    anna_node_calculate_type(c->payload);
+	    c->return_type = c->payload->return_type;
+	    al_push(
+		&stack->import, 
+		anna_use_create_node(
+		    c->payload,
+		    c->return_type));
+	    break;
+	}
+	
+
 	case ANNA_NODE_TYPE_OF:
 	{	    
-	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
+	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    
-	    anna_node_calculate_type(chld);
-	    this->return_type = chld->return_type;
+	    anna_node_calculate_type(n->payload);
+	    this->return_type = n->payload->return_type;
 	    break;
 	}
 	
 	case ANNA_NODE_RETURN_TYPE_OF:
 	{
-	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
+	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    
-	    anna_node_calculate_type(chld);
+	    anna_node_calculate_type(n->payload);
 
-	    if(chld->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    if(n->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		anna_function_type_t *fun = anna_function_type_unwrap(
-		   chld->return_type);
+		   n->payload->return_type);
 		if(fun)
 		{
 		    this->return_type = fun->return_type;
@@ -721,26 +744,19 @@ static void anna_node_calculate_type_internal(
 	
 	case ANNA_NODE_INPUT_TYPE_OF:
 	{
-//	    wprintf(L"GGGG, input type thingie %ld\n", this);
-//	    anna_node_print(5, this);
-	    
-	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
-	    anna_node_t *chld = anna_node_type_lookup_get_payload(this);
-	    if(!chld->stack)
+	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
+	    if(!n->payload->stack)
 		CRASH;
 	    
-	    anna_node_calculate_type(chld);
+	    anna_node_calculate_type(n->payload);
 	    
-	    if(chld->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    if(n->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		anna_function_type_t *fun = anna_function_type_unwrap(
-		   chld->return_type);
-//		wprintf(L"Wee %ls\n", chld->return_type->name);
-		if(fun && fun->input_count > c->steps)
+		   n->payload->return_type);
+		if(fun && fun->input_count > n->steps)
 		{
-		    this->return_type = fun->input_type[c->steps];
-//		    wprintf(L"Woo WEEE woo, input type thingie is %ls\n", this->return_type->name);
-		    
+		    this->return_type = fun->input_type[n->steps];
 		}
 	    }
 	    break;
@@ -832,13 +848,31 @@ static anna_node_t *resolve_identifiers_each(
     anna_use_t *use = anna_stack_search_use(
 	id->stack,
 	id->name);
+    
+    int debug=0;
+    if(wcscmp(id->name, L"count") == 0)
+    {
+	debug=1;
+    }
+    
+    if(debug)
+	anna_node_print(5,id);
+
     if(use)
     {
+	if(debug)
+	{
+	    wprintf(L"WEEEEE\n");
+	    anna_node_print(5,use->node);
+	}	
+	
 	anna_node_t *res = (anna_node_t *)anna_node_create_member_get(
 	    &id->location,
 	    use->node,
 	    anna_mid_get(id->name));
 	anna_node_set_stack(res, id->stack);
+	if(wcscmp(id->name, L"count") == 0)
+	    anna_node_print(5,res);
 	return res;
     }
     return this;

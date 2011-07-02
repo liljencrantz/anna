@@ -100,16 +100,10 @@ anna_node_t *anna_node_each_replace(
 	case ANNA_NODE_RETURN_TYPE_OF:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
+	case ANNA_NODE_USE:
 	{
 	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    n->payload = anna_node_each_replace(n->payload, fun, aux);
-	    break;
-	}
-
-	case ANNA_NODE_USE:
-	{
-	    anna_node_use_t *n = (anna_node_use_t *)this;
-	    n->node = anna_node_each_replace(n->node, fun, aux);
 	    break;
 	}
 

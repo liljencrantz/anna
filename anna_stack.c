@@ -175,11 +175,19 @@ anna_stack_template_t *anna_stack_template_search(
 	    anna_stack_template_t *import = 
 		anna_stack_unwrap(
 		    anna_as_obj(anna_node_static_invoke_try(use->node, use->node->stack)));
-	    size_t *offset = (size_t *)hash_get(&import->member_string_identifier, name);
-	    if(offset) 
+	    if(import)
 	    {
-		return import;
+		size_t *offset = (size_t *)hash_get(&import->member_string_identifier, name);
+		if(offset) 
+		{
+		    return import;
+		}
 	    }
+	    else
+	    {
+		return 0;
+	    }
+	    
 	}
 	stack = stack->parent;
     }
@@ -266,6 +274,12 @@ anna_entry_t *anna_stack_template_get(anna_stack_template_t *stack, wchar_t *nam
 
 void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *value)
 {
+    anna_use_t *use = anna_stack_search_use(stack, name);
+    if(use)
+    {
+	CRASH;
+    }
+    
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
@@ -279,6 +293,12 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *v
 
 anna_entry_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
 {
+    anna_use_t *use = anna_stack_search_use(stack, name);
+    if(use)
+    {
+	CRASH;
+    }
+
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
@@ -288,6 +308,13 @@ anna_entry_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
 
 anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
 {
+    anna_use_t *use = anna_stack_search_use(stack, name);
+    if(use)
+    {
+	anna_member_t *memb = anna_type_member_info_get(use->type, name);
+	return memb->type;
+    }
+    
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
@@ -297,12 +324,24 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
 
 int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)
 {
+    anna_use_t *use = anna_stack_search_use(stack, name);
+    if(use)
+    {
+	CRASH;
+    }
+
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     return f->member_flags[*(size_t *)hash_get(&f->member_string_identifier, name)];
 }
 
 void anna_stack_set_flag(anna_stack_template_t *stack, wchar_t *name, int value)
 {
+    anna_use_t *use = anna_stack_search_use(stack, name);
+    if(use)
+    {
+	CRASH;
+    }
+
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return;
@@ -449,6 +488,9 @@ anna_object_t *anna_stack_wrap(anna_stack_template_t *stack)
 
 anna_stack_template_t *anna_stack_unwrap(anna_object_t *wrapper)
 {
-    return *(anna_stack_template_t **)anna_entry_get_addr(wrapper, ANNA_MID_STACK_PAYLOAD);
+    if(!wrapper)
+	return 0;
+    anna_stack_template_t **res = (anna_stack_template_t **)anna_entry_get_addr(wrapper, ANNA_MID_STACK_PAYLOAD);
+    return res?*res:0;
 }
 

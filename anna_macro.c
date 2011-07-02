@@ -205,6 +205,16 @@ static inline anna_node_t *anna_macro_continue_i(anna_node_call_t *node)
 }
 ANNA_VM_MACRO(anna_macro_continue)
 
+static inline anna_node_t *anna_macro_use_i(anna_node_call_t *node)
+{
+    CHECK_CHILD_COUNT(node,L"use", 1);
+    return (anna_node_t *)anna_node_create_return(
+	&node->location,
+	node->child[0],
+	ANNA_NODE_USE);
+}
+ANNA_VM_MACRO(anna_macro_use)
+
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"
 
@@ -258,4 +268,5 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"cast", &anna_macro_cast);
     anna_macro_add(stack, L"break", &anna_macro_break);
     anna_macro_add(stack, L"continue", &anna_macro_continue);
+    anna_macro_add(stack, L"use", &anna_macro_use);
 }

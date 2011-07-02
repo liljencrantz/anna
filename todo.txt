@@ -7,7 +7,7 @@
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
 * Introduction
-* Check that node each, print, compare, hash and all other node functions support all ast node types
+* Check that node print, compare, hash and all other node functions support all ast node types
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
@@ -18,6 +18,7 @@
 * Smarter GC timing algorithm
 * Mutable and Imutable versions of List and String, switch between them using freeze/thaw properties
 * Default argument values
+* Check that node each supports all ast node types
 
 2.0 RELEASE CRITERIA:
 * Regexp library
@@ -30,6 +31,7 @@
 * Set type
 * Faster imutable lists/strings, supporting zero copy slicing, substringing, etc.
 * Imutable Map/Set? Maybe...
+* make anna_node_print print out ast nodes with some syntax sugar support
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

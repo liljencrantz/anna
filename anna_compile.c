@@ -864,6 +864,11 @@ flags);
 	    
 	    break;
 	}	
+
+	case ANNA_NODE_USE:
+	{
+	    break;
+	}
 	
 	default:
 	{

@@ -1,21 +1,13 @@
 
-type A
-{
-
-    def myProp()(property)
-    {
-	return 7;
-    }
-
-}
-
 def main()
 {
-    print(io.File("///a/b/c///aaa").filename, "\n");
-    
-    io.File("aaa/bbb/ccc").makeDirectory();
-    
-    a := A();
-    print(a.myProp, "\n");
+    a := [];
+    use(a);
+/*
+    push(1);
+    push(2);
+    push(3);
+    print(pop(), ' ', pop(), ' ', pop(), '\n');
+*/
+    print(count);
 }
-

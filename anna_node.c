@@ -370,6 +370,7 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	case ANNA_NODE_RETURN_TYPE_OF:
+	case ANNA_NODE_USE:
 	    return sizeof(anna_node_wrapper_t);
 	    
 	case ANNA_NODE_DECLARE:
@@ -388,9 +389,6 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_TYPE:
 	    return sizeof(anna_node_type_t);
 
-	case ANNA_NODE_USE:
-	    return sizeof(anna_node_use_t);
-	    
 	default:
 	    anna_error(n, L"Unknown node type %d encoundered while determining size of node\n", n->node_type);
 	    CRASH;
@@ -590,10 +588,9 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 
 	case ANNA_NODE_USE:
 	{
-	    anna_node_use_t *n1 = (anna_node_use_t *)node1;
-	    anna_node_use_t *n2 = (anna_node_use_t *)node2;
-	    int d1 = (int)(n1->type - n2->type);
-	    return d1?d1:anna_node_compare(n1->node, n2->node);
+	    anna_node_wrapper_t *n1 = (anna_node_use_t *)node1;
+	    anna_node_wrapper_t *n2 = (anna_node_use_t *)node2;
+	    return anna_node_compare(n1->payload, n2->payload);
 	}
 	
 	default:

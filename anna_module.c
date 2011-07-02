@@ -544,7 +544,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     anna_node_set_stack(node, module_stack);
     anna_node_resolve_identifiers(node);
-
+    
     debug(
 	D_SPAM,
 	L"Stack set in module %ls\n", 
