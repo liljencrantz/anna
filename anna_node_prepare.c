@@ -700,7 +700,7 @@ static void anna_node_calculate_type_internal(
 	    c->return_type = c->payload->return_type;
 	    break;
 	}
-
+/*
 	case ANNA_NODE_USE:
 	{
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
@@ -713,7 +713,7 @@ static void anna_node_calculate_type_internal(
 		    c->return_type));
 	    break;
 	}
-	
+*/	
 
 	case ANNA_NODE_TYPE_OF:
 	{	    
@@ -849,30 +849,13 @@ static anna_node_t *resolve_identifiers_each(
 	id->stack,
 	id->name);
     
-    int debug=0;
-    if(wcscmp(id->name, L"count") == 0)
-    {
-	debug=1;
-    }
-    
-    if(debug)
-	anna_node_print(5,id);
-
     if(use)
     {
-	if(debug)
-	{
-	    wprintf(L"WEEEEE\n");
-	    anna_node_print(5,use->node);
-	}	
-	
 	anna_node_t *res = (anna_node_t *)anna_node_create_member_get(
 	    &id->location,
 	    use->node,
 	    anna_mid_get(id->name));
 	anna_node_set_stack(res, id->stack);
-	if(wcscmp(id->name, L"count") == 0)
-	    anna_node_print(5,res);
 	return res;
     }
     return this;

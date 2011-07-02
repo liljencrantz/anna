@@ -867,6 +867,7 @@ flags);
 
 	case ANNA_NODE_USE:
 	{
+	    anna_vm_const(ptr, null_entry, flags);
 	    break;
 	}
 	
@@ -907,7 +908,10 @@ void anna_vm_compile(
 	fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count);
 	return;
     }
-    
+/*
+    if(wcscmp(fun->name, L"main")==0)
+	anna_node_print(5, fun->body);
+	/**/  
 //    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
 
     if(!fun->stack_template)
@@ -964,8 +968,10 @@ void anna_vm_compile(
     fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
-//    if(wcscmp(fun->name, L"main")==0)
-//    anna_bc_print(fun->code);
+/*
+    if(wcscmp(fun->name, L"main")==0)
+	anna_bc_print(fun->code);
+/**/
 }
 
 anna_vmstack_t *anna_vm_callback_native(

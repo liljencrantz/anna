@@ -22,6 +22,28 @@
 #include "anna_list.h"
 #include "anna_use.h"
 
+static void anna_function_handle_use(anna_node_call_t *body)
+{
+    int i;
+    for(i=0; i<body->child_count; i++)
+    {
+	if(body->child[i]->node_type == ANNA_NODE_USE && !body->child[i]->return_type)
+	{
+	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)body->child[i];
+	    anna_node_calculate_type(c->payload);
+	    c->return_type = c->payload->return_type;
+	    al_push(
+		&c->stack->import, 
+		anna_use_create_node(
+		    c->payload,
+		    c->return_type));	    
+//	    wprintf(L"Hmm, add use thingie\n");
+//	    anna_node_print(5, c->payload);
+	}
+    }
+    anna_node_resolve_identifiers((anna_node_t *)body);
+}
+
 void anna_function_argument_hint(
     anna_function_t *f,
     int argument,
@@ -280,7 +302,7 @@ void anna_function_set_stack(
 	anna_node_set_stack(
 	    (anna_node_t *)f->body,
 	    f->stack_template);
-	anna_node_resolve_identifiers((anna_node_t *)f->body);
+
 	if(f->input_type_node)
 	{
 	    anna_node_set_stack(
@@ -353,6 +375,7 @@ void anna_function_setup_interface(
 	    }
 	    else
 	    {
+		anna_function_handle_use(f->body);
 		anna_node_t *last_expression = f->body->child[f->body->child_count-1];
 		anna_node_calculate_type(last_expression);
 		if(last_expression->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
@@ -397,6 +420,8 @@ void anna_function_setup_body(
 	array_list_t ret = AL_STATIC;
 	int i;
 
+	anna_function_handle_use(f->body);
+	
 	anna_node_calculate_type_children( f->body );
 
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_RETURN, &ret);	
