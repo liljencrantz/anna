@@ -530,14 +530,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	L"Declarations registered in module %ls\n", 
 	module_stack->filename);
     
-    anna_node_set_stack(node, module_stack);
-    anna_node_resolve_identifiers(node);
-
-    debug(
-	D_SPAM,
-	L"Stack set in module %ls\n", 
-	module_stack->filename);
-    
     for(i=0; i<al_get_count(&module_stack->import); i++ )
     {
 	wchar_t *str = al_get(&module_stack->import, i);
@@ -549,6 +541,14 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	al_set(&module_stack->import, i, anna_use_create_stack(mod));
     }
     al_push(&module_stack->import, anna_use_create_stack(module_stack));
+    
+    anna_node_set_stack(node, module_stack);
+    anna_node_resolve_identifiers(node);
+
+    debug(
+	D_SPAM,
+	L"Stack set in module %ls\n", 
+	module_stack->filename);
     
     anna_node_call_t *module_node = node_cast_call(node);
     debug(

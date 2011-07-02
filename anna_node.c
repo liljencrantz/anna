@@ -30,17 +30,11 @@
 #include "anna_use.h"
 #include "anna_stack.h"
 
-typedef struct
-{
-    int node_type;
-    array_list_t *al;
-}
-    anna_node_find_each_t;
-
 #include "anna_node_specialize.c"
 #include "anna_node_macro_expand.c"
 #include "anna_node_prepare.c"
 #include "anna_node_validate.c"
+#include "anna_node_each.c"
 
 anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
 {
@@ -103,7 +97,7 @@ anna_node_call_t *node_cast_call(anna_node_t *node)
 {
     if(node->node_type!=ANNA_NODE_CALL)
     {
-	anna_error(node, L"Expected a call node");
+	anna_error(node, L"Expected a call node, got node of type %d", node->node_type);
 	CRASH;
     }
     
@@ -660,140 +654,3 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
     }
 }
 
-void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
-{
-    fun(this, aux);
-    switch(this->node_type)
-    {
-
-	case ANNA_NODE_CALL:
-	case ANNA_NODE_SPECIALIZE:
-	case ANNA_NODE_CONSTRUCT:
-	case ANNA_NODE_CAST:
-	{	    
-	    anna_node_call_t *n = (anna_node_call_t *)this;
-	    anna_node_each(n->function, fun, aux);
-	    int i;
-	    for(i=0; i<n->child_count; i++)
-		anna_node_each(n->child[i], fun, aux);
-	    break;
-	}
-	
-	case ANNA_NODE_MEMBER_CALL:
-	{	    
-	    anna_node_call_t *n = (anna_node_call_t *)this;
-	    anna_node_each(n->object, fun, aux);
-	    int i;
-	    for(i=0; i<n->child_count; i++)
-		anna_node_each(n->child[i], fun, aux);
-	    break;
-	}
-	
-	case ANNA_NODE_ASSIGN:
-	{
-	    anna_node_assign_t *n = (anna_node_assign_t *)this;
-	    anna_node_each(n->value, fun, aux);
-	    break;   
-	}
-
-	case ANNA_NODE_MEMBER_GET:
-	{
-	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
-	    anna_node_each(n->object, fun, aux);
-	    break;   
-	}
-
-	case ANNA_NODE_MEMBER_BIND:
-	{
-	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
-	    anna_node_each(n->object, fun, aux);
-	    break;   
-	}
-
-	case ANNA_NODE_DECLARE:
-	case ANNA_NODE_CONST:
-	{
-	    anna_node_declare_t *n = (anna_node_declare_t *)this;
-	    anna_node_each(n->type, fun, aux);
-	    anna_node_each(n->value, fun, aux);
-	    break;   
-	}
-
-	case ANNA_NODE_MEMBER_SET:
-	{
-	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
-	    anna_node_each(n->object, fun, aux);
-	    anna_node_each(n->value, fun, aux);
-	    break;   
-	}
-
-	case ANNA_NODE_WHILE:
-	case ANNA_NODE_OR:
-	case ANNA_NODE_AND:
-	case ANNA_NODE_MAPPING:
-	{
-	    anna_node_cond_t *n = (anna_node_cond_t *)this;
-	    anna_node_each(n->arg1, fun, aux);
-	    anna_node_each(n->arg2, fun, aux);
-	    break;   
-	}
-	case ANNA_NODE_IF:
-	{
-	    anna_node_if_t *c = (anna_node_if_t *)this;
-	    anna_node_each(c->cond, fun, aux);
-	    anna_node_each((anna_node_t *)c->block1, fun, aux);
-	    anna_node_each((anna_node_t *)c->block2, fun, aux);
-	    break;
-	}	
-	
-	case ANNA_NODE_RETURN:
-	case ANNA_NODE_BREAK:
-	case ANNA_NODE_CONTINUE:
-	case ANNA_NODE_RETURN_TYPE_OF:
-	case ANNA_NODE_TYPE_OF:
-	case ANNA_NODE_INPUT_TYPE_OF:
-	{
-	    anna_node_each(((anna_node_wrapper_t *)this)->payload, fun, aux);
-	    break;
-	}
-
-	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_INTERNAL_IDENTIFIER:
-	case ANNA_NODE_INT_LITERAL:
-	case ANNA_NODE_STRING_LITERAL:
-	case ANNA_NODE_CHAR_LITERAL:
-	case ANNA_NODE_FLOAT_LITERAL:
-	case ANNA_NODE_NULL:
-	case ANNA_NODE_DUMMY:
-	case ANNA_NODE_CLOSURE:
-	case ANNA_NODE_TYPE:
-	{
-	    break;   
-	}
-	
-	default:
-	    wprintf(L"OOPS! Unknown node type when iterating over AST: %d\n", this->node_type);
-	    CRASH;
-    }    
-    
-}
-
-static void anna_node_find_each(anna_node_t *node, void *aux)
-{
-    anna_node_find_each_t *data = (anna_node_find_each_t *)aux;
-    if(node->node_type == data->node_type)
-    {
-	al_push(data->al, node);
-    }
-}
-
-void anna_node_find(anna_node_t *this, int node_type, array_list_t *al)
-{
-    anna_node_find_each_t data = 
-	{
-	    node_type, al
-	}
-    ;
-    
-    anna_node_each(this, &anna_node_find_each, &data);
-}

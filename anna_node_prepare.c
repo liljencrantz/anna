@@ -822,10 +822,9 @@ void anna_node_calculate_type_children(anna_node_call_t *node)
 void anna_node_resolve_identifiers(
     anna_node_t *this)
 {
-    return;
     
     array_list_t ids = AL_STATIC;
-
+    
     anna_node_find(this, ANNA_NODE_IDENTIFIER, &ids);
     size_t sz = al_get_count(&ids);
     int i;
@@ -838,7 +837,7 @@ void anna_node_resolve_identifiers(
 	    id->name);
 	if(use)
 	{
-	    wprintf(L"Hmm, id %ls is use thingie\n", id->name);
+	    //    wprintf(L"Hmm, id %ls is use thingie\n", id->name);
 	}
     }
     al_destroy(&ids);    

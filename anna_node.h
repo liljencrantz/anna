@@ -417,9 +417,13 @@ anna_node_t *anna_node_replace(
     anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to);
 
 typedef void(*anna_node_function_t)(anna_node_t *, void *);
+typedef anna_node_t *(*anna_node_replace_function_t)(anna_node_t *, void *);
 
 void anna_node_each(
     anna_node_t *tree, anna_node_function_t fun, void *aux);
+
+anna_node_t *anna_node_each_replace(
+    anna_node_t *tree, anna_node_replace_function_t fun, void *aux);
 
 void anna_node_find(
     anna_node_t *tree, int node_type, array_list_t *al);

@@ -25,22 +25,22 @@
 
 /**
    The root of the namespace hierarchy
- */
+*/
 anna_stack_template_t *stack_global;
 
 /**
    Number of arguments given to the program
- */
+*/
 int anna_argc;
 
 /**
    All arguments given to the program
- */
+*/
 char **anna_argv;
 
 /**
    Init the interpreter. 
- */
+*/
 static void anna_init()
 {
     anna_int_init();
@@ -60,7 +60,7 @@ static void anna_init()
 
 /**
    Set the name of the application
- */
+*/
 static void anna_set_program_name(char *arg)
 {    
     char *name = strrchr(arg, '/');
@@ -84,7 +84,7 @@ static void anna_set_program_name(char *arg)
 
 /**
    Perform shutdown operations
- */
+*/
 static void anna_shutdown()
 {
     #ifdef ANNA_FULL_GC_ON_SHUTDOWN
@@ -98,7 +98,7 @@ static void anna_shutdown()
 
 /**
    Run the function named main in the specified module.
- */
+*/
 static void anna_main_run(anna_stack_template_t *module)
 {
     anna_object_t *main_wrapper = anna_as_obj(anna_stack_get(module, L"main"));
@@ -114,8 +114,8 @@ static void anna_main_run(anna_stack_template_t *module)
 }
 
 /**
-  Figure out the name of the module we want to run based on the
-  command line arguments
+   Figure out the name of the module we want to run based on the
+   command line arguments
  */
 static wchar_t *anna_module_name_extract(int argc, char **argv)
 {
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     free(module_name);
-
+    
     anna_alloc_gc_unblock();
     anna_main_run(module);
     anna_shutdown();
