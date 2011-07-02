@@ -20,6 +20,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
     aux2[0] = aux;
     aux2[1] = fun;
     anna_node_each_replace(this, &anna_node_each_fun, aux2);
+    free(aux2);
 }
 
 anna_node_t *anna_node_each_replace(
@@ -86,8 +87,10 @@ anna_node_t *anna_node_each_replace(
 	{
 	    anna_node_if_t *c = (anna_node_if_t *)this;
 	    c->cond = anna_node_each_replace(c->cond, fun, aux);
-	    c->block1 = (anna_node_call_t *)anna_node_each_replace((anna_node_t *)c->block1, fun, aux);
-	    c->block2 = (anna_node_call_t *)anna_node_each_replace((anna_node_t *)c->block2, fun, aux);
+	    c->block1 = (anna_node_call_t *)anna_node_each_replace(
+		(anna_node_t *)c->block1, fun, aux);
+	    c->block2 = (anna_node_call_t *)anna_node_each_replace(
+		(anna_node_t *)c->block2, fun, aux);
 	    break;
 	}	
 	
@@ -100,6 +103,13 @@ anna_node_t *anna_node_each_replace(
 	{
 	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    n->payload = anna_node_each_replace(n->payload, fun, aux);
+	    break;
+	}
+
+	case ANNA_NODE_USE:
+	{
+	    anna_node_use_t *n = (anna_node_use_t *)this;
+	    n->node = anna_node_each_replace(n->node, fun, aux);
 	    break;
 	}
 
@@ -118,7 +128,9 @@ anna_node_t *anna_node_each_replace(
 	}
 	
 	default:
-	    wprintf(L"OOPS! Unknown node type when iterating over AST: %d\n", this->node_type);
+	    wprintf(
+		L"OOPS! Unknown node type when iterating over AST: %d\n", 
+		this->node_type);
 	    CRASH;
     }    
     return res;
@@ -140,7 +152,6 @@ void anna_node_find(anna_node_t *this, int node_type, array_list_t *al)
 	    node_type, al
 	}
     ;
-    
     anna_node_each(this, &anna_node_find_each, &data);
 }
 

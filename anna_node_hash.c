@@ -84,11 +84,12 @@ static void anna_node_hash_func_step(
 	{
 	    break;
 	}
-	
+	/*
 	default:
 	{
 	    anna_error(this, L"Can't calculate hash code for specified node type %d", this->node_type);
 	}
+	*/
     }
     
     *res ^= contrib ^ (contrib << 5);

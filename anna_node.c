@@ -334,12 +334,14 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_CONSTRUCT:
+	case ANNA_NODE_SPECIALIZE:
+	case ANNA_NODE_CAST:
 	    return sizeof(anna_node_call_t);
 	    
 	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_INTERNAL_IDENTIFIER:
 	    return sizeof(anna_node_identifier_t);
-
+	    
 	case ANNA_NODE_INT_LITERAL:
 	    return sizeof(anna_node_int_literal_t);
 	case ANNA_NODE_STRING_LITERAL:
@@ -356,16 +358,39 @@ static size_t anna_node_size(anna_node_t *n)
 	    return sizeof(anna_node_closure_t);
 	case ANNA_NODE_ASSIGN:
 	    return sizeof(anna_node_assign_t);
+	    
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_BIND:
-	    return sizeof(anna_node_member_access_t);
 	case ANNA_NODE_MEMBER_SET:
 	    return sizeof(anna_node_member_access_t);
+	    
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_BREAK:
+	case ANNA_NODE_CONTINUE:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	case ANNA_NODE_RETURN_TYPE_OF:
 	    return sizeof(anna_node_wrapper_t);
+	    
+	case ANNA_NODE_DECLARE:
+	case ANNA_NODE_CONST:
+	    return sizeof(anna_node_declare_t);
+
+	case ANNA_NODE_OR:
+	case ANNA_NODE_AND:
+	case ANNA_NODE_WHILE:
+	case ANNA_NODE_MAPPING:
+	    return sizeof(anna_node_cond_t);
+
+	case ANNA_NODE_IF:
+	    return sizeof(anna_node_if_t);
+
+	case ANNA_NODE_TYPE:
+	    return sizeof(anna_node_type_t);
+
+	case ANNA_NODE_USE:
+	    return sizeof(anna_node_use_t);
+	    
 	default:
 	    anna_error(n, L"Unknown node type %d encoundered while determining size of node\n", n->node_type);
 	    CRASH;
@@ -385,18 +410,14 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     anna_node_t *r = anna_alloc_node(sz);
     memcpy(r,n,sz);
     r->wrapper=0;
-
-    switch(n->node_type)
+    
+    if( (n->node_type == ANNA_NODE_CALL) || 
+	(n->node_type == ANNA_NODE_CONSTRUCT) || 
+	(n->node_type == ANNA_NODE_MEMBER_CALL))
     {
-	case ANNA_NODE_CALL:
-	case ANNA_NODE_CONSTRUCT:
-	case ANNA_NODE_MEMBER_CALL:
-	{
-	    anna_node_call_t *r2=(anna_node_call_t *)r;
-	    anna_node_call_t *n2=(anna_node_call_t *)n;
-	    anna_node_call_dealias(r2, n2);
-	    break;
-	}
+	anna_node_call_t *r2=(anna_node_call_t *)r;
+	anna_node_call_t *n2=(anna_node_call_t *)n;
+	anna_node_call_dealias(r2, n2);
     }
     
     anna_alloc_gc_unblock();
@@ -420,26 +441,19 @@ static anna_node_t *anna_node_replace_each(
 {
     anna_node_t **aux2 = (anna_node_t **)aux;
     
-    switch(this->node_type)
+    if(this->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
     {
-	case ANNA_NODE_INTERNAL_IDENTIFIER:
+	anna_node_identifier_t *from = aux2[0];
+	anna_node_t *to = aux2[1];
+	anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
+	if(wcscmp(this2->name,from->name)==0)
 	{
-	    anna_node_identifier_t *from = aux2[0];
-	    anna_node_t *to = aux2[1];
-	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
-	    if(wcscmp(this2->name,from->name)==0)
-	    {
-		anna_node_t *res = anna_node_clone_deep(to);
-		return res;
-	    }
-	    return this;
-	}
-
-	default:
-	{
-	    return this;
+	    anna_node_t *res = anna_node_clone_deep(to);
+	    return res;
 	}
     }
+    
+    return this;
 }
 
 anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to)
@@ -572,6 +586,14 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    anna_node_cond_t *n2 = (anna_node_cond_t *)node2;
 	    int d1 = anna_node_compare(n1->arg1, n2->arg1);
 	    return d1?d1:anna_node_compare(n1->arg2, n2->arg2);
+	}
+
+	case ANNA_NODE_USE:
+	{
+	    anna_node_use_t *n1 = (anna_node_use_t *)node1;
+	    anna_node_use_t *n2 = (anna_node_use_t *)node2;
+	    int d1 = (int)(n1->type - n2->type);
+	    return d1?d1:anna_node_compare(n1->node, n2->node);
 	}
 	
 	default:

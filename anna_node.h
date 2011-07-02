@@ -45,6 +45,9 @@ enum anna_node_enum
     ANNA_NODE_RETURN,
     ANNA_NODE_BREAK,
     ANNA_NODE_CONTINUE,
+    ANNA_NODE_USE,
+
+    /* This needs to be the last element of the enum! */
     ANNA_NODE_TYPE_COUNT
 };
 
@@ -280,6 +283,19 @@ struct anna_node_wrapper
     int steps;
 };
 
+struct anna_node_use
+{
+    int flags;
+    int node_type;
+    struct anna_object *wrapper;
+    anna_location_t location;
+    anna_type_t *return_type;
+    anna_stack_template_t *stack;    
+
+    struct anna_node *node;
+    struct anna_type *type;
+};
+
 typedef struct anna_node anna_node_t;
 typedef struct anna_node_call anna_node_call_t;
 typedef struct anna_node_dummy anna_node_dummy_t;
@@ -296,6 +312,7 @@ typedef struct anna_node_declare anna_node_declare_t;
 typedef struct anna_node_cond anna_node_cond_t;
 typedef struct anna_node_if anna_node_if_t;
 typedef struct anna_node_wrapper anna_node_wrapper_t;
+typedef struct anna_node_use anna_node_use_t;
 
 extern int anna_yacc_error_count;
 

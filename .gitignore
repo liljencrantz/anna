@@ -12,6 +12,7 @@ anna_lex.h
 *.gcov
 *.gcda
 *.gcno
+*.err
 anna
 mandel
 anna_float_i.c
