@@ -154,7 +154,7 @@ struct anna_node_member_access
     anna_location_t location;
     anna_type_t *return_type;
     anna_stack_template_t *stack;    
-
+    
     mid_t mid;
     struct anna_node *object;
     struct anna_node *value;

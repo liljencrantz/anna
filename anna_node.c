@@ -403,129 +403,55 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     return r;
 }
 
+static anna_node_t *anna_node_clone_deep_each(
+    anna_node_t *this, void *aux)
+{
+    return anna_node_clone_shallow(this);    
+}
+
 anna_node_t *anna_node_clone_deep(anna_node_t *n)
 {
+    return anna_node_each_replace(
+	n, anna_node_clone_deep_each, 0);
+}
+
+static anna_node_t *anna_node_replace_each(
+    anna_node_t *this, void *aux)
+{
+    anna_node_t **aux2 = (anna_node_t **)aux;
     
-    switch(n->node_type)
+    switch(this->node_type)
     {
-	/*
-	  Clone a call node. This invlolves a shallow clone of the
-	  node as well as calling the deep clone of every child and
-	  the function node.
-	*/
-	case ANNA_NODE_CALL:
-	case ANNA_NODE_CONSTRUCT:
-	case ANNA_NODE_MEMBER_CALL:
-	{
-	    anna_node_call_t *r = (anna_node_call_t *)anna_node_clone_shallow(n);
-	    int i;
-	    
-	    if(!r->function)
-	    {
-		anna_error(n, L"Call node has invalid function");
-		CRASH;
-	    }
-
-	    r->function = anna_node_clone_deep(r->function);
-
-	    for(i=0;i<r->child_count; i++)
-	    {
-		r->child[i] = anna_node_clone_deep(r->child[i]);
-	    }
-	    return (anna_node_t *)r;
-	}
-	
-	/*
-	  These nodes are not mutable and they have no child nodes, so
-	  we can return them as is.
-	*/
-	case ANNA_NODE_IDENTIFIER:
 	case ANNA_NODE_INTERNAL_IDENTIFIER:
-	case ANNA_NODE_INT_LITERAL:
-	case ANNA_NODE_STRING_LITERAL:
-	case ANNA_NODE_CHAR_LITERAL:
-	case ANNA_NODE_FLOAT_LITERAL:
-	case ANNA_NODE_NULL:
-	case ANNA_NODE_DUMMY:
-	case ANNA_NODE_CLOSURE:
-	    return anna_node_clone_shallow(n);
-	    
-	    /*
-	      These nodes are not yet handled, but that should be
-	      perfectly ok for now, since they are only ever created
-	      by the prepare system, and cloning a prepared AST is
-	      never supported or possible.
-	    */
-	case ANNA_NODE_ASSIGN:
-	case ANNA_NODE_MEMBER_GET:
-	case ANNA_NODE_MEMBER_BIND:
-	case ANNA_NODE_MEMBER_SET:
-	case ANNA_NODE_RETURN:
+	{
+	    anna_node_identifier_t *from = aux2[0];
+	    anna_node_t *to = aux2[1];
+	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
+	    if(wcscmp(this2->name,from->name)==0)
+	    {
+		anna_node_t *res = anna_node_clone_deep(to);
+		return res;
+	    }
+	    return this;
+	}
+
 	default:
-	    anna_error(n, L"Unsupported node type %d for deep copy!\n", n->node_type);
-	    CRASH;
-	
+	{
+	    return this;
+	}
     }
 }
 
 anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to)
 {
-    switch(tree->node_type)
-    {
-	case ANNA_NODE_INTERNAL_IDENTIFIER:
-	{
-	    anna_node_identifier_t *tree2 = (anna_node_identifier_t *)tree;
-	    if(wcscmp(tree2->name,from->name)==0)
-	    {
-		anna_node_t *res = anna_node_clone_deep(to);
-		return res;
-	    }
-	    return tree;
-	}
-
-	case ANNA_NODE_IDENTIFIER:
-	case ANNA_NODE_STRING_LITERAL:
-	case ANNA_NODE_CHAR_LITERAL:
-	case ANNA_NODE_INT_LITERAL:
-	case ANNA_NODE_FLOAT_LITERAL:
-	case ANNA_NODE_NULL:
-	case ANNA_NODE_DUMMY:
-	case ANNA_NODE_CLOSURE:
-	case ANNA_NODE_RETURN_TYPE_OF:
-	case ANNA_NODE_TYPE_OF:
-	case ANNA_NODE_INPUT_TYPE_OF:
-	{
-	    return tree;
-	}
-
-	case ANNA_NODE_RETURN:
-	{
-	    anna_node_wrapper_t *this2 =(anna_node_wrapper_t *)anna_node_clone_shallow(tree);
-	    this2->payload = anna_node_replace(this2->payload,
-					       from, to);
-	    return (anna_node_t *)this2;
-	}
-
-	case ANNA_NODE_CALL:
-	case ANNA_NODE_CONSTRUCT:
-	{
-	    int i;
-	    anna_node_call_t *this2 =(anna_node_call_t *)anna_node_clone_shallow(tree);	    
-	    this2->function = anna_node_replace(this2->function,
-						from, to);
-	    for(i=0;i<this2->child_count;i++)
-	    {
-		this2->child[i] = anna_node_replace(this2->child[i],
-						    from, to);
-	    }
-	    return (anna_node_t *)this2;	    
-	}
-	
-	default:
-	    wprintf(L"OOPS! Unknown node type when replacing: %d\n", tree->node_type);
-	    CRASH;
-    }
+    anna_node_t **aux = malloc(sizeof(anna_node_t *)*2);
+    aux[0] = from;
+    aux[1] = to;
     
+    anna_node_t *res = anna_node_each_replace(
+	tree, anna_node_replace_each, aux);
+    free(aux);
+    return res;    
 }
 
 int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
