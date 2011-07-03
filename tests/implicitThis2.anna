@@ -1,0 +1,30 @@
+
+type MyType {
+
+    var Int storage;
+
+    def myGetter()
+    {
+        this.storage;
+    }
+
+    def mySetter(Int val)
+    {
+        this.storage = -val;
+    }
+
+    var Int prop (property(myGetter, mySetter));
+
+    def print()
+    {   
+	lang.print(prop, "\n");
+    }
+
+}
+
+def main(){
+    g := MyType();
+    g.prop = 7;
+    g.print();
+}
+
