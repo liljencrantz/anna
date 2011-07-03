@@ -40,7 +40,10 @@ anna_node_t *anna_node_each_replace(
 	    n->function = anna_node_each_replace(n->function, fun, aux);
 	    int i;
 	    for(i=0; i<n->child_count; i++)
+	    {
 		n->child[i] = anna_node_each_replace(n->child[i], fun, aux);
+	    }
+	    
 	    break;
 	}
 	

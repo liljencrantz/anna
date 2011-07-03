@@ -530,9 +530,13 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	{
 	    debug(
 		D_CRITICAL,
-		L"Object of type %ls does not have a member of type %ls\n",
+		L"Error in function %ls, offset %d: Object of type %ls does not have a member of type %ls\n",
+		stack->function->name,
+		stack->code - stack->function->code,
 		obj->type->name,
-		anna_mid_get_reverse(op->mid));    
+		anna_mid_get_reverse(op->mid));
+	    anna_vmstack_print_parent(stack);
+	    
 	    CRASH;
 	}
 #endif 

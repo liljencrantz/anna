@@ -308,12 +308,14 @@ mid_t anna_member_create(
     if(!(storage & ANNA_MEMBER_VIRTUAL))
     {
 	type->flags |= ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
+/*
 	anna_stack_declare(
 	    type->stack,
 	    name,
 	    member_type,
 	    null_entry,
 	    0);
+*/
 	type->flags &= ~ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
     }
     

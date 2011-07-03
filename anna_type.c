@@ -126,9 +126,7 @@ static void anna_type_mangle_methods(
 			    {
 				anna_node_call_t *this_decl = anna_node_create_call2(
 				    0,
-				    anna_node_create_identifier(
-					0,
-					L"__var__"),
+				    anna_node_create_identifier(0,L"__var__"),
 				    anna_node_create_identifier(0, L"this"), 
 				    anna_node_create_dummy(0, anna_type_wrap(type)), 
 				    anna_node_create_null(0),
@@ -138,6 +136,13 @@ static void anna_type_mangle_methods(
 				anna_node_call_prepend_child(
 				    def_decl,
 				    (anna_node_t *)this_decl);
+				anna_node_call_prepend_child(
+				    (anna_node_call_t *)def->child[4],
+				    (anna_node_t *)anna_node_create_call2(
+					0,
+					anna_node_create_identifier(0,L"use"),
+					anna_node_create_identifier(0, L"this")));
+				
 			    }
 			}
 		    }	    
@@ -206,8 +211,8 @@ anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 {
     anna_type_t *result = anna_type_create_internal(name, definition);
     
-    result->stack = anna_stack_create(0);
-    result->stack->flags |= ANNA_STACK_THIS;
+//    result->stack = anna_stack_create(0);
+//    result->stack->flags |= ANNA_STACK_THIS;
     
     return result;
     
@@ -226,8 +231,8 @@ anna_node_call_t *anna_type_definition_get(anna_type_t *type)
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack)
 {    
     anna_type_t *result = anna_type_create_internal(name, 0);
-    result->stack = anna_stack_create(stack);
-    result->stack->flags |= ANNA_STACK_THIS;
+//    result->stack = anna_stack_create(stack);
+//    result->stack->flags |= ANNA_STACK_THIS;
     
     return result;
 }
@@ -513,7 +518,7 @@ static void anna_type_prepare_member_internal(
 	is_bound = !anna_attribute_flag(decl->attribute, L"static");
     }
 
-    anna_stack_declare(type->stack, decl->name, object_type, null_entry, 0);
+//    anna_stack_declare(type->stack, decl->name, object_type, null_entry, 0);
     
     anna_node_calculate_type(
 	(anna_node_t *)decl);
@@ -655,7 +660,7 @@ static void anna_type_extend(
 	    anna_error(c, L"Invalid parent type");
 	    continue;
 	}	
-	anna_type_t *par = anna_node_resolve_to_type(c, type->stack->parent);
+	anna_type_t *par = anna_node_resolve_to_type(c, type->stack);
 	if(!par)
 	{
 	    anna_error(c, L"Could not find specified type");
@@ -672,10 +677,10 @@ void anna_type_set_stack(
     anna_type_t *t,
     anna_stack_template_t *parent_stack)
 {
-    if(t->stack->parent)
+    if(t->body && t->body->stack)
 	return;
     
-    t->stack->parent = parent_stack;
+    t->stack = parent_stack;
     
     if(t->body)
     {
@@ -802,7 +807,7 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
     size_t i;
     wchar_t *name = anna_mid_get_reverse(mid);
 
-//    type->stack->parent = stack;
+    type->stack = stack;
     
     for(i=0; i<node->child_count; i++)
     {

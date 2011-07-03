@@ -77,7 +77,7 @@ type File
     {
         cio.close(fd)
     }
-    
+
     def print(Object value...)
     {
         b := Buffer();
@@ -87,7 +87,7 @@ type File
 	    cio.write(this.fd, b, ?);
 	}
     }
-    
+  
     def existsGetter() (internal)
     {
 	return if(cio.stat(this.filename)){1} else {?};
@@ -134,7 +134,7 @@ type File
 	    
 	    if(!cio.mkdir(name, 0o777) and !(cerror.errno in [cerror.exist]))
 	    {
-		print(cerror.errorString(cerror.errno), "\n");
+		lang.print(cerror.errorString(cerror.errno), "\n");
 		return ?;
 	    }
 	}

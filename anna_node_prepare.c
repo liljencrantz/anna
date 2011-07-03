@@ -86,7 +86,7 @@ static int anna_node_calculate_type_direct_children(anna_node_call_t *n, anna_st
     
     for(i=0; i<n->child_count; i++)
     {
-	anna_node_calculate_type(n->child[i]);
+	n->child[i] = anna_node_calculate_type(n->child[i]);
 	if(n->child[i]->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
 	{
 	    return 0;
@@ -96,23 +96,23 @@ static int anna_node_calculate_type_direct_children(anna_node_call_t *n, anna_st
     
 }
 
-static void anna_node_calculate_type_internal_call(
+static anna_node_t *anna_node_calculate_type_internal_call(
     anna_node_call_t *n)
 {
     anna_stack_template_t *stack = n->stack;
 	    
-    anna_node_calculate_type(n->object);
+    n->object = anna_node_calculate_type(n->object);
     anna_type_t *type = n->object->return_type;
 	    
     if(type == ANNA_NODE_TYPE_IN_TRANSIT)
     {
-	return;
+	return n;
     }	    
 	    
     if(type == null_type)
     {
 	anna_error(n->object, L"Invalid type for object in call");
-	return;
+	return n;
     }
 	    
     anna_type_setup_interface(type);	    
@@ -125,7 +125,7 @@ static void anna_node_calculate_type_internal_call(
 	if(!type)
 	{
 	    anna_error(n->object, L"Unknown type");
-	    return;
+	    return n;
 	}
     }
 	    
@@ -189,7 +189,7 @@ static void anna_node_calculate_type_internal_call(
 	    {
 		if(!anna_node_calculate_type_direct_children(n, stack))
 		{
-		    return;
+		    return n;
 		}
 
 		ctype = anna_type_implicit_specialize(ctype, n);
@@ -199,7 +199,7 @@ static void anna_node_calculate_type_internal_call(
 		    ctype);
 		n->function->stack = n->stack;
 		n->return_type = ctype;
-		return;
+		return n;
 	    }
 	}
 
@@ -211,7 +211,7 @@ static void anna_node_calculate_type_internal_call(
 		L"Member %ls is not a function\n", 
 		anna_mid_get_reverse(n->mid),
 		type->name);		    
-	    return;
+	    return n;
 	}
 		
 	if(!anna_node_validate_call_parameters(n, fun, member->is_bound_method, 1))
@@ -231,7 +231,7 @@ static void anna_node_calculate_type_internal_call(
 	    L"No member named %ls in type %ls\n", 
 	    anna_mid_get_reverse(n->mid),
 	    type->name);
-	return;
+	return n;
     }
 
     if(member)
@@ -239,10 +239,10 @@ static void anna_node_calculate_type_internal_call(
 	anna_function_type_t *funt = anna_function_type_unwrap(member->type);
 	n->return_type = funt->return_type;
     }
-	    
+    return (anna_node_t *)n;
 }
 
-static void anna_node_calculate_type_internal(
+static anna_node_t *anna_node_calculate_type_internal(
     anna_node_t *this)
 {
     anna_stack_template_t *stack = this->stack;
@@ -298,7 +298,6 @@ static void anna_node_calculate_type_internal(
 	    if(!t)
 	    {
 		anna_node_declare_t *decl = anna_stack_get_declaration(stack, id->name);
-		
 		if(decl)
 		{
 		    anna_node_calculate_type((anna_node_t *)decl);
@@ -316,11 +315,11 @@ static void anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT){
+	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
 		anna_error(this, L"Unknown identifier: %ls", id->name);
-//		anna_stack_print(stack);
-//		CRASH;
-		
+		anna_stack_print(stack);
+		CRASH;
 	    }
 	    else
 	    {
@@ -341,7 +340,7 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
 
-	    anna_node_calculate_type(call->function);
+	    call->function = anna_node_calculate_type(call->function);
 	    anna_type_t *fun_type = call->function->return_type;
 	    
 	    if(fun_type == type_type)
@@ -413,8 +412,8 @@ static void anna_node_calculate_type_internal(
 	      to be given a manual node which, if specified, needs to
 	      be type calculated before they are calculated?
 	    */
-	    anna_node_calculate_type(call->child[0]);
-	    anna_node_calculate_type(call->child[1]);
+	    call->child[0] = anna_node_calculate_type(call->child[0]);
+	    call->child[1] = anna_node_calculate_type(call->child[1]);
 	    anna_type_t *fun_type = call->child[1]->return_type;
 
 	    if(fun_type == type_type)
@@ -437,7 +436,7 @@ static void anna_node_calculate_type_internal(
 	
 	case ANNA_NODE_MEMBER_CALL:
 	{	    
-	    anna_node_calculate_type_internal_call((anna_node_call_t *)this);
+	    this = anna_node_calculate_type_internal_call((anna_node_call_t *)this);
 	    break;
 	}	
 	
@@ -468,8 +467,25 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_ASSIGN:
 	{
 	    anna_node_assign_t *c = (anna_node_assign_t *)this;
-	    anna_node_calculate_type(c->value);
-	    c->return_type = c->value->return_type;
+	    
+	    anna_use_t *use = anna_stack_search_use(c->stack, c->name);
+	    if(use)
+	    {
+		anna_node_member_access_t *this2 = 
+		    anna_node_create_member_set(
+			0, use->node, anna_mid_get(c->name), c->value);
+		this2->stack = c->stack;
+		this2->value = anna_node_calculate_type(this2->value);
+		this2->return_type = this2->value->return_type;
+		this = this2;
+		//CRASH;
+	    }
+	    else
+	    {
+		c->value = anna_node_calculate_type(c->value);
+		c->return_type = c->value->return_type;
+	    }
+	    
 	    break;
 	}
 
@@ -483,7 +499,7 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_MEMBER_SET:
 	{
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
-	    anna_node_calculate_type(c->object);
+	    c->object = anna_node_calculate_type(c->object);
 	    anna_type_t *type = c->object->return_type;
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
@@ -531,7 +547,7 @@ static void anna_node_calculate_type_internal(
 	    }
 	    else
 	    {
-		anna_node_calculate_type(c->value);
+		c->value = anna_node_calculate_type(c->value);
 		c->return_type = c->value->return_type;
 		
 	    }
@@ -542,7 +558,9 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	{
+	    
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
+	    int do_decl = anna_stack_template_search(this->stack, d->name) == this->stack;
 //	    debug(D_ERROR, L"Calculating type of declaration %ls\n", d->name);
 	    if(d->type->node_type == ANNA_NODE_NULL)
 	    {
@@ -557,13 +575,14 @@ static void anna_node_calculate_type_internal(
 		}
 		else
 		{
-		    anna_node_calculate_type(d->value);
+		    d->value = anna_node_calculate_type(d->value);
 		    d->return_type = d->value->return_type;
 		}
 		
 		if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		{
-		    anna_stack_set_type(stack, d->name, d->return_type);
+		    if(do_decl)
+			anna_stack_set_type(stack, d->name, d->return_type);
 		}
 	    }
 	    else
@@ -583,19 +602,21 @@ static void anna_node_calculate_type_internal(
 	    
 	    if(this->node_type == ANNA_NODE_CONST)
 	    {
-//		debug(D_ERROR, L"Declaration %ls is a constant\n", d->name);
+		//debug(D_ERROR, L"Declaration %ls is a constant\n", d->name);
 		anna_entry_t *value = anna_node_static_invoke(
 		    d->value, stack);
 
-		anna_stack_set(
-		    stack,
-		    d->name,
-		    value);
-		anna_stack_set_flag(
-		    stack,
-		    d->name,
-		    ANNA_STACK_READONLY);
-
+		if(do_decl)
+		{
+		    anna_stack_set(
+			stack,
+			d->name,
+			value);
+		    anna_stack_set_flag(
+			stack,
+			d->name,
+			ANNA_STACK_READONLY);
+		}
 	    }
 	    
 //	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);
@@ -605,8 +626,8 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_OR:
 	{
 	    anna_node_cond_t *d = (anna_node_cond_t *)this;
-	    anna_node_calculate_type(d->arg1);
-	    anna_node_calculate_type(d->arg2);
+	    d->arg1 = anna_node_calculate_type(d->arg1);
+	    d->arg2 = anna_node_calculate_type(d->arg2);
 	    if((d->arg1->return_type == ANNA_NODE_TYPE_IN_TRANSIT) ||
 	       (d->arg2->return_type == ANNA_NODE_TYPE_IN_TRANSIT))
 	    {
@@ -624,8 +645,8 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_MAPPING:
 	{
 	    anna_node_cond_t *d = (anna_node_cond_t *)this;
-	    anna_node_calculate_type(d->arg1);
-	    anna_node_calculate_type(d->arg2);
+	    d->arg1 = anna_node_calculate_type(d->arg1);
+	    d->arg2 = anna_node_calculate_type(d->arg2);
 	    d->return_type = d->arg2->return_type;
 	    break;
 	}
@@ -633,7 +654,7 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_WHILE:
 	{
 	    anna_node_cond_t *d = (anna_node_cond_t *)this;
-	    anna_node_calculate_type(d->arg2);
+	    d->arg2 = anna_node_calculate_type(d->arg2);
 	    anna_type_t *fun_type =  d->arg2->return_type;
 	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
@@ -660,8 +681,8 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_if_t *d = (anna_node_if_t *)this;
 
-	    anna_node_calculate_type((anna_node_t *)d->block1);
-	    anna_node_calculate_type((anna_node_t *)d->block2);
+	    d->block1 = anna_node_calculate_type((anna_node_t *)d->block1);
+	    d->block2 = anna_node_calculate_type((anna_node_t *)d->block2);
 	    if((d->block1->return_type == ANNA_NODE_TYPE_IN_TRANSIT) ||
 	       (d->block2->return_type == ANNA_NODE_TYPE_IN_TRANSIT))
 	    {
@@ -696,30 +717,16 @@ static void anna_node_calculate_type_internal(
 	case ANNA_NODE_BREAK:
 	{
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
-	    anna_node_calculate_type(c->payload);
+	    c->payload = anna_node_calculate_type(c->payload);
 	    c->return_type = c->payload->return_type;
 	    break;
 	}
-/*
-	case ANNA_NODE_USE:
-	{
-	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
-	    anna_node_calculate_type(c->payload);
-	    c->return_type = c->payload->return_type;
-	    al_push(
-		&stack->import, 
-		anna_use_create_node(
-		    c->payload,
-		    c->return_type));
-	    break;
-	}
-*/	
 
 	case ANNA_NODE_TYPE_OF:
 	{	    
 	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    
-	    anna_node_calculate_type(n->payload);
+	    n->payload = anna_node_calculate_type(n->payload);
 	    this->return_type = n->payload->return_type;
 	    break;
 	}
@@ -728,7 +735,7 @@ static void anna_node_calculate_type_internal(
 	{
 	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    
-	    anna_node_calculate_type(n->payload);
+	    n->payload = anna_node_calculate_type(n->payload);
 
 	    if(n->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
@@ -748,7 +755,7 @@ static void anna_node_calculate_type_internal(
 	    if(!n->payload->stack)
 		CRASH;
 	    
-	    anna_node_calculate_type(n->payload);
+	    n->payload = anna_node_calculate_type(n->payload);
 	    
 	    if(n->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
@@ -770,6 +777,7 @@ static void anna_node_calculate_type_internal(
 	    break;
 	}
     }
+    return this;
 }
 
 static void anna_node_prepare_body(
@@ -787,7 +795,7 @@ static void anna_node_prepare_body(
     }
 }
 
-void anna_node_calculate_type(
+anna_node_t *anna_node_calculate_type(
     anna_node_t *this)
 {
 
@@ -803,22 +811,35 @@ void anna_node_calculate_type(
     if(this->return_type == ANNA_NODE_TYPE_IN_TRANSIT && anna_error_count == 0)
     {
 	anna_error(this, L"Circular type checking dependency");
-	anna_node_print(0, this);
+	this->transformed = this;
     }
     else if(this->return_type == 0)
     {
 	
 	this->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
-	anna_node_calculate_type_internal( this );
+	anna_node_t *transformed = anna_node_calculate_type_internal(this);
+	assert(transformed);
+	
+	if(!this->transformed)
+	    this->transformed = transformed;
+	
     }
-    debug(D_SPAM, L"Done\n");
+    else
+    {
+	if(!this->transformed)
+	    this->transformed = this;
+    }
+
+//    debug(D_SPAM, L"Done\n");
+    assert(this->transformed);
+    return this->transformed;
 }
 
-static void anna_node_calculate_type_fun(
+static anna_node_t *anna_node_calculate_type_fun(
     anna_node_t *this,
     void *aux)
 {
-    anna_node_calculate_type(this);
+    return anna_node_calculate_type(this);
 }
 
 void anna_node_calculate_type_children(anna_node_call_t *node)
@@ -826,7 +847,7 @@ void anna_node_calculate_type_children(anna_node_call_t *node)
     int i;
     for(i=0; i<node->child_count; i++)
     {
-	anna_node_each(node->child[i], (anna_node_function_t)&anna_node_calculate_type_fun, 0);
+	node->child[i] = anna_node_each_replace(node->child[i], &anna_node_calculate_type_fun, 0);
 	if(anna_error_count)
 	{
 	    return;
@@ -844,18 +865,32 @@ static anna_node_t *resolve_identifiers_each(
     }
     
     anna_node_identifier_t *id = (anna_node_identifier_t *)this;
-    
+/*
+    int debug = wcscmp(id->name, L"abcde")==0;
+    if(debug)
+    {
+	anna_stack_print(id->stack);	
+	wprintf(L"FDAFSAD\n");
+    }
+*/  
     anna_use_t *use = anna_stack_search_use(
 	id->stack,
 	id->name);
     
     if(use)
     {
+/*	if(debug)
+	{
+	    wprintf(L"FDAFSAD2\n");
+	}
+*/	
 	anna_node_t *res = (anna_node_t *)anna_node_create_member_get(
 	    &id->location,
 	    use->node,
 	    anna_mid_get(id->name));
 	anna_node_set_stack(res, id->stack);
+//	if(debug)anna_node_print(5, res);
+	
 	return res;
     }
     return this;

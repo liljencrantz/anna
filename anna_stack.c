@@ -58,7 +58,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
 {
     if(!name)
 	CRASH;
-
+    
     if(stack->flags & ANNA_STACK_DECLARE)
     {
 	return;
@@ -169,7 +169,7 @@ anna_stack_template_t *anna_stack_template_search(
 	for(i=0; i<al_get_count(&stack->import); i++)
 	{
 	    anna_use_t *use = al_get(&stack->import, i);
-
+	    
 //	    wprintf(L"LALALA %ls %ls\n", name, use->type->name);
 	    
 	    anna_stack_template_t *import = 
@@ -183,11 +183,12 @@ anna_stack_template_t *anna_stack_template_search(
 		    return import;
 		}
 	    }
-	    else
+	    else if(anna_type_member_info_get(use->type, name))
 	    {
+		wprintf(L"OOOps %ls\n", name);
+		
 		return 0;
 	    }
-	    
 	}
 	stack = stack->parent;
     }
@@ -277,7 +278,16 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *v
     anna_use_t *use = anna_stack_search_use(stack, name);
     if(use)
     {
-	CRASH;
+	anna_member_t *memb = anna_type_member_info_get(use->type, name);
+	if(memb->is_static)
+	{
+	    use->type->static_member[memb->offset] = value;
+	}
+	else
+	{
+	    CRASH;
+	}
+	return;
     }
     
 //    wprintf(L"Set %ls to %ls\n", name, value->type->name);
@@ -339,7 +349,11 @@ void anna_stack_set_flag(anna_stack_template_t *stack, wchar_t *name, int value)
     anna_use_t *use = anna_stack_search_use(stack, name);
     if(use)
     {
-	CRASH;
+/*
+	anna_member_t *memb = anna_type_member_info_get(use->type, name);
+	memb->flag = value;
+*/
+	return;
     }
 
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
@@ -409,17 +423,21 @@ static void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 
 void anna_stack_print(anna_stack_template_t *stack)
 {
-    //CRASH;
-    
     if(!stack)
 	return;
-
+    
     wprintf(
 	L"Stack frame with %d members belonging to function %ls:\n",
 	stack->count,
 	stack->function?stack->function->name:L"<null>");
     hash_foreach2(&stack->member_string_identifier, &anna_print_stack_member, stack);
     
+    int i;
+    for(i=0; i<al_get_count(&stack->import); i++)
+    {
+	anna_use_t *use = al_get(&stack->import, i);
+	wprintf(L"    use %ls\n", use->type->name);
+    }
     anna_stack_print(stack->parent);
 }
 

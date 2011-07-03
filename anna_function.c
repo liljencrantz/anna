@@ -30,7 +30,7 @@ static void anna_function_handle_use(anna_node_call_t *body)
 	if(body->child[i]->node_type == ANNA_NODE_USE && !body->child[i]->return_type)
 	{
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)body->child[i];
-	    anna_node_calculate_type(c->payload);
+	    c->payload = anna_node_calculate_type(c->payload);
 	    c->return_type = c->payload->return_type;
 	    al_push(
 		&c->stack->import, 
@@ -247,12 +247,11 @@ static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *ini
     while(al_get_count(&my_returns))
     {
 	anna_node_t *ret = (anna_node_t *)al_pop(&my_returns);
-	anna_node_calculate_type(ret);
+	ret = anna_node_calculate_type(ret);
 	if(ret->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
 	{
 	    res = 0;
 	    goto CLEANUP;
-	    
 	}
 	res = anna_type_intersect(
 	    res, ret->return_type);

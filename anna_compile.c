@@ -607,6 +607,13 @@ static void anna_vm_compile_i(
 	    anna_node_assign_t *node2 = (anna_node_assign_t *)node;
 	    anna_vm_compile_i(fun, node2->value, ptr, 0, flags);
 	    anna_stack_template_t *frame = anna_stack_template_search(fun->stack_template, node2->name);
+	    if(!frame)
+	    {
+		anna_node_print(5, node2);
+		anna_error(node2, L"AAAA %ls\n", node2->name);
+		CRASH;
+	    }
+	    
 	    if(frame->flags & ANNA_STACK_NAMESPACE)
 	    {
 		anna_vm_const(ptr, anna_from_obj(anna_stack_wrap(frame)), flags);
