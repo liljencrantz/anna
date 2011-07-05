@@ -39,6 +39,8 @@ static void anna_function_handle_use(anna_node_call_t *body)
 		    c->return_type));	    
 //	    wprintf(L"Hmm, add use thingie\n");
 //	    anna_node_print(5, c->payload);
+//	    anna_type_print(c->return_type);
+	    
 	}
     }
     anna_node_resolve_identifiers((anna_node_t *)body);
@@ -376,7 +378,7 @@ void anna_function_setup_interface(
 	    {
 		anna_function_handle_use(f->body);
 		anna_node_t *last_expression = f->body->child[f->body->child_count-1];
-		anna_node_calculate_type(last_expression);
+		last_expression = anna_node_calculate_type(last_expression);
 		if(last_expression->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
 		{
 		    return;

@@ -208,11 +208,30 @@ static void anna_node_print_internal(
 	}
 	
 	case ANNA_NODE_RETURN:
+	case ANNA_NODE_BREAK:
+	case ANNA_NODE_CONTINUE:
 	{
 	    anna_indent(sb,indentation);
-	    sb_printf(sb, L"return(\n");
+
+	    if(this->node_type == ANNA_NODE_RETURN)
+		sb_printf(sb,L"return(\n");
+	    else if(this->node_type == ANNA_NODE_BREAK)
+		sb_printf(sb,L"break(\n");
+	    else
+		sb_printf(sb,L"continue(\n");
+
 	    anna_node_print_internal(
 		sb, ((anna_node_wrapper_t *)this)->payload, indentation+1);
+	    sb_printf(sb,L")");
+	    break;
+	}
+	
+	case ANNA_NODE_USE:
+	{
+	    anna_indent(sb,indentation);
+	    sb_printf(sb, L"use(");
+	    anna_node_print_internal(
+		sb, ((anna_node_wrapper_t *)this)->payload, 0);
 	    sb_printf(sb,L")");
 	    break;
 	}
@@ -301,7 +320,7 @@ static void anna_node_print_internal(
 	case ANNA_NODE_NULL:
 	{
 	    anna_indent(sb,indentation);
-	    sb_printf(sb,L"null");
+	    sb_printf(sb,L"?");
 	    break;
 	}
 	
@@ -410,6 +429,28 @@ static void anna_node_print_internal(
 	    anna_node_print_internal(sb,(anna_node_t *)this2->block2, indentation+1);
 	    sb_printf(sb,L")");
 		
+	    break;
+	}
+	
+	case ANNA_NODE_AND:
+	case ANNA_NODE_OR:
+	case ANNA_NODE_WHILE:
+	case ANNA_NODE_MAPPING:
+	{
+	    anna_node_cond_t *this2 = (anna_node_cond_t *)this;	    
+	    anna_indent(sb,indentation);
+	    if(this->node_type == ANNA_NODE_AND)
+		sb_printf(sb,L"__and__(\n");
+	    else if(this->node_type == ANNA_NODE_OR)
+		sb_printf(sb,L"__or__(\n");
+	    else if(this->node_type == ANNA_NODE_MAPPING)
+		sb_printf(sb,L"__mapping__(\n");
+	    else
+		sb_printf(sb,L"__while__(\n");
+	    anna_node_print_internal(sb,this2->arg1, indentation+1);
+	    sb_printf(sb,L",\n");
+	    anna_node_print_internal(sb,this2->arg2, indentation+1);
+	    sb_printf(sb,L")");		
 	    break;
 	}
 	

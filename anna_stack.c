@@ -172,9 +172,10 @@ anna_stack_template_t *anna_stack_template_search(
 	    
 //	    wprintf(L"LALALA %ls %ls\n", name, use->type->name);
 	    
-	    anna_stack_template_t *import = 
+	    anna_stack_template_t *import =
 		anna_stack_unwrap(
 		    anna_as_obj(anna_node_static_invoke_try(use->node, use->node->stack)));
+	    
 	    if(import)
 	    {
 		size_t *offset = (size_t *)hash_get(&import->member_string_identifier, name);
@@ -185,8 +186,6 @@ anna_stack_template_t *anna_stack_template_search(
 	    }
 	    else if(anna_type_member_info_get(use->type, name))
 	    {
-		wprintf(L"OOOps %ls\n", name);
-		
 		return 0;
 	    }
 	}
@@ -324,12 +323,65 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
 	anna_member_t *memb = anna_type_member_info_get(use->type, name);
 	return memb->type;
     }
-    
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return 0;
     anna_type_t *res = anna_stack_wrap(f)->type;
     return anna_member_get(res, anna_mid_get(name))->type;
+}
+
+anna_entry_t *anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name)
+{
+    if(!stack)
+    {
+	wprintf(L"Critical: Null stack!\n");
+	CRASH;	
+    }    
+
+    int deb = wcscmp(name, L"node") == 0;
+    
+    assert(name);
+    while(stack)
+    {
+	size_t *offset = (size_t *)hash_get(&stack->member_string_identifier, name);
+	if(offset) 
+	{
+	    anna_node_declare_t *decl = anna_stack_get_declaration(stack, name);
+	    if(decl)
+	    {
+		anna_node_calculate_type((anna_node_t *)decl);
+	    }
+	    
+	    if(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
+		return anna_entry_get(
+		    stack->wrapper, anna_mid_get(name));
+	    else
+		return 0;
+	}
+	
+	int i;
+	for(i=0; i<al_get_count(&stack->import); i++)
+	{
+	    anna_use_t *use = al_get(&stack->import, i);
+	    if(anna_type_member_info_get(use->type, name))
+	    {
+		anna_object_t *obj = anna_as_obj(
+		    anna_node_static_invoke_try(
+			use->node,
+			use->node->stack));
+		if(!obj)
+		{
+		    return 0;
+		}
+		anna_entry_t **res = anna_entry_get_addr(
+		    obj,
+		    anna_mid_get(name));
+		return res?*res:0;
+	    }
+	}
+	stack = stack->parent;
+    }
+    return 0;
 }
 
 int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)

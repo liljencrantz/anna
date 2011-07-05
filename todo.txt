@@ -1,5 +1,5 @@
 1.0 RELEASE CRITERIA:
-* Constructor and inheritance fully working
+* Constructors and inheritance fully working
 * Inheritance and method overloading fully working
 * Add memory overhead of Hashes, Buffers and Lists to GC estimates
 * Usable File type
@@ -7,7 +7,7 @@
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
 * Introduction
-* Check that node print, compare, hash and all other node functions support all ast node types
+* Check that node compare support all ast node types
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
@@ -18,7 +18,7 @@
 * Smarter GC timing algorithm
 * Mutable and Imutable versions of List and String, switch between them using freeze/thaw properties
 * Default argument values
-* Check that node each supports all ast node types
+* Check that node each, print supports all ast node types
 
 2.0 RELEASE CRITERIA:
 * Regexp library
@@ -89,7 +89,7 @@ List and Hash should be made fail fast
 
 RELIABILITY:
 Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not)
-Test suite should be at lest 10 % of total code in project. (Currently ~ 5 %)
+Test suite should be at lest 10 % of total code in project. (Currently ~ 6 %)
 Use continuations to make a green thread implementation as a test of continuation functionality
 Validate that all functions end with an empty stack frame
 Tests for complex math

@@ -161,7 +161,7 @@ static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
 	anna_node_t *node = (anna_node_t *)al_get(spec, i);
 	CHECK_NODE_TYPE(node, ANNA_NODE_CALL);
 	anna_node_call_t *call = (anna_node_call_t *)node;
-	CHECK_CHILD_COUNT(call, L"Templace specialization", 2);
+	CHECK_CHILD_COUNT(call, L"Template specialization", 2);
 	CHECK_NODE_TYPE(call->child[0], ANNA_NODE_INTERNAL_IDENTIFIER);
 	code = anna_node_replace(code, (anna_node_identifier_t *)call->child[0], call->child[1]);
     }
@@ -191,13 +191,6 @@ static anna_type_t *anna_type_create_internal(wchar_t *name, anna_node_call_t *d
 		anna_node_clone_deep(definition->child[2]),
 		&al));
 	
-/*	
-	result->body = anna_node_replace(
-	    result->body, 
-	    anna_node_create_identifier(0, L"A"),
-	    anna_node_create_identifier(0, L"Int"));
-*/	
-
 	anna_type_mangle_methods(result);
     }
     al_push(&anna_type_list, result);
@@ -210,12 +203,7 @@ static anna_type_t *anna_type_create_internal(wchar_t *name, anna_node_call_t *d
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
 {
     anna_type_t *result = anna_type_create_internal(name, definition);
-    
-//    result->stack = anna_stack_create(0);
-//    result->stack->flags |= ANNA_STACK_THIS;
-    
-    return result;
-    
+    return result;    
 }
 
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type)
@@ -230,10 +218,7 @@ anna_node_call_t *anna_type_definition_get(anna_type_t *type)
 
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack)
 {    
-    anna_type_t *result = anna_type_create_internal(name, 0);
-//    result->stack = anna_stack_create(stack);
-//    result->stack->flags |= ANNA_STACK_THIS;
-    
+    anna_type_t *result = anna_type_create_internal(name, 0);    
     return result;
 }
 
@@ -246,7 +231,6 @@ anna_type_t *anna_type_stack_create(wchar_t *name, anna_stack_template_t *stack)
 
 static void add_member(void *key, void *value, void *aux)
 {
-    //wprintf(L"Got member %ls\n", key);
     wchar_t ***dest = (wchar_t ***)aux;
     **dest = key;
     (*dest)++;
@@ -517,8 +501,6 @@ static void anna_type_prepare_member_internal(
 	is_method = 1;
 	is_bound = !anna_attribute_flag(decl->attribute, L"static");
     }
-
-//    anna_stack_declare(type->stack, decl->name, object_type, null_entry, 0);
     
     anna_node_calculate_type(
 	(anna_node_t *)decl);
@@ -556,7 +538,13 @@ static void anna_type_prepare_member_internal(
 	anna_function_setup_interface(clo->payload);
 	//anna_function_setup_body(clo->payload);
     }
-
+    if(is_static)
+    {
+	anna_entry_t *value = anna_node_static_invoke(
+	    decl->value, decl->stack);
+	type->static_member[member->offset] = value;
+    }
+    
 }
 
 
@@ -1087,9 +1075,6 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     }
     
     free(type_spec);
-    
-//    anna_error((anna_node_t *)call, L"Implicit specialization of user defined templates is not yet implemented. Sorry...");
-//    CRASH;
     
     return type;
 }

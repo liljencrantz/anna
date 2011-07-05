@@ -256,27 +256,9 @@ anna_entry_t *anna_node_static_invoke_try(
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
-	    anna_stack_template_t *frame = anna_stack_template_search(stack, this2->name);
-	    //fwprintf(stderr, L"Weee identifier %ls found. Frame? %ls\n", this2->name, frame?L"yes": L"no");
-	    if(frame)
-	    {
-		//fwprintf(stderr, L"Frame is namespace. Readonly? %ls\n", (anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)?L"yes":L"no");
-
-		anna_node_declare_t *decl = anna_stack_get_declaration(frame, this2->name);
-		if(decl)
-		{
-		    anna_node_calculate_type((anna_node_t *)decl);
-		}
-		
-		if(anna_stack_get_flag(frame, this2->name) & ANNA_STACK_READONLY)
-		{
-		    //fwprintf(stderr, L"Identifier %ls is a constant\n", this2->name);
-		    anna_object_t *res = anna_as_obj(anna_stack_get(frame, this2->name));
-		    return anna_function_unwrap(res)?0:anna_from_obj(res);
-		}
-	    }
-	    //fwprintf(stderr, L"Identifier lookup failed\n");
-	    break;
+	    return anna_stack_get_try(
+		stack,
+		this2->name);
 	}
 	
 	case ANNA_NODE_MEMBER_GET:
@@ -441,7 +423,7 @@ static anna_node_t *anna_node_replace_each(
     
     if(this->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
     {
-	anna_node_identifier_t *from = aux2[0];
+	anna_node_identifier_t *from = (anna_node_identifier_t *)aux2[0];
 	anna_node_t *to = aux2[1];
 	anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
 	if(wcscmp(this2->name,from->name)==0)
@@ -457,7 +439,7 @@ static anna_node_t *anna_node_replace_each(
 anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, anna_node_t *to)
 {
     anna_node_t **aux = malloc(sizeof(anna_node_t *)*2);
-    aux[0] = from;
+    aux[0] = (anna_node_t *)from;
     aux[1] = to;
     
     anna_node_t *res = anna_node_each_replace(
@@ -588,8 +570,8 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 
 	case ANNA_NODE_USE:
 	{
-	    anna_node_wrapper_t *n1 = (anna_node_use_t *)node1;
-	    anna_node_wrapper_t *n2 = (anna_node_use_t *)node2;
+	    anna_node_wrapper_t *n1 = (anna_node_wrapper_t *)node1;
+	    anna_node_wrapper_t *n2 = (anna_node_wrapper_t *)node2;
 	    return anna_node_compare(n1->payload, n2->payload);
 	}
 	

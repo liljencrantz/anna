@@ -20,8 +20,7 @@ typedef struct anna_sid anna_sid_t;
 
 #define ANNA_STACK_NAMESPACE 1024
 #define ANNA_STACK_LOADED 2048
-#define ANNA_STACK_THIS 4096
-#define ANNA_STACK_DECLARE 8196
+#define ANNA_STACK_DECLARE 4096
 
 /* Stack member flags */
 #define ANNA_STACK_READONLY 1
@@ -118,5 +117,7 @@ struct anna_use *anna_stack_search_use(
     wchar_t *name);
 
 int anna_stack_check(anna_stack_template_t *stack, int i);
+anna_entry_t *anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name);
+
 
 #endif

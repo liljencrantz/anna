@@ -316,7 +316,6 @@ typedef struct anna_node_declare anna_node_declare_t;
 typedef struct anna_node_cond anna_node_cond_t;
 typedef struct anna_node_if anna_node_if_t;
 typedef struct anna_node_wrapper anna_node_wrapper_t;
-typedef struct anna_node_use anna_node_use_t;
 
 extern int anna_yacc_error_count;
 

@@ -591,12 +591,6 @@ static void anna_vm_compile_i(
 	    anna_node_assign_t *node2 = (anna_node_assign_t *)node;
 	    anna_vm_compile_i(fun, node2->value, ptr, 0, flags);
 	    anna_stack_template_t *frame = anna_stack_template_search(fun->stack_template, node2->name);
-	    if(!frame)
-	    {
-		anna_node_print(5, node2);
-		anna_error(node2, L"AAAA %ls\n", node2->name);
-		CRASH;
-	    }
 	    
 	    if(frame->flags & ANNA_STACK_NAMESPACE)
 	    {
@@ -884,10 +878,10 @@ void anna_vm_compile(
 	fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count);
 	return;
     }
-/*
+#if 0
     if(wcscmp(fun->name, L"main")==0)
 	anna_node_print(5, fun->body);
-	/**/  
+#endif
 //    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
 
     if(!fun->stack_template)
@@ -944,10 +938,10 @@ void anna_vm_compile(
     fun->frame_size = sizeof(anna_vmstack_t) + sizeof(anna_object_t *)*(fun->variable_count + anna_bc_stack_size(fun->code)) + 2*sizeof(void *);
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
-/*
+#if 0
     if(wcscmp(fun->name, L"main")==0)
 	anna_bc_print(fun->code);
-/**/
+#endif
 }
 
 anna_vmstack_t *anna_vm_callback_native(

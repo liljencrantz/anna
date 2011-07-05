@@ -26,7 +26,9 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 anna_node_t *anna_node_each_replace(
     anna_node_t *this, anna_node_replace_function_t fun, void *aux)
 {
+//    wprintf(L".1 %d\n", this->node_type);
     anna_node_t *res = fun(this, aux);
+//    wprintf(L".2 %d\n", res->node_type);
     switch(this->node_type)
     {
 
@@ -129,7 +131,8 @@ anna_node_t *anna_node_each_replace(
 		L"OOPS! Unknown node type when iterating over AST: %d\n", 
 		this->node_type);
 	    CRASH;
-    }    
+    }
+//    wprintf(L".3 %d\n", res->node_type);
     return res;
 }
 
