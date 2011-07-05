@@ -56,10 +56,14 @@ all: $(PROGRAMS)
 
 #########################################################
 #            BEGIN DEPENDENCY TRACKING                  #
+#    See "Recursive make considered harmful" for an     #
+#          explanation of how this code works.          #
 #########################################################
 %.d: %.c
 	@echo -n $@ " " >$@; $(CC) -MM -MG $*.c >> $@ || rm $@ 
-include $(ANNA_OBJS:.o=.d)
+ifneq "$(MAKECMDGOALS)" "clean"
+-include $(ANNA_OBJS:.o=.d)
+endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #
 #########################################################
@@ -120,5 +124,4 @@ anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h	\
 anna_float_i.c anna_char_i.c anna_int_i.c anna_string_i.c		\
 anna_complex_i.c anna_object_i.c *.d *.gcov *.gcda *.gcno		\
 anna_vm_short_circut.c
-
 .PHONY: clean
