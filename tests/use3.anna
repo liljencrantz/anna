@@ -1,0 +1,6 @@
+
+def main()
+{
+    use(io);
+    print(File.currentDirectory.filename.__type__.name, "\n");
+}

@@ -1,6 +1,6 @@
 1.0 RELEASE CRITERIA:
 * Constructors and inheritance fully working
-* Inheritance and method overloading fully working
+* Working collect function for error handling
 * Add memory overhead of Hashes, Buffers and Lists to GC estimates
 * Usable File type
 * Usable Date type
@@ -13,6 +13,7 @@
   - Can't assign to constants
 
 1.0 RELEASE CRITERIA(Done):
+* Inheritance and method overloading fully working
 * Static member access fully working 
 * Add memory overhead of Ints and Floats to GC estimates
 * Smarter GC timing algorithm

@@ -62,7 +62,7 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	{
 	    tmpl = ftk->input_type;
 	    tmpl_count = ftk->input_count;
-	    if(memb->is_bound_method)
+	    if(memb->is_bound_method && !(this2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER))
 	    {
 		tmpl++;
 		tmpl_count--;

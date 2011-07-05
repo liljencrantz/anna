@@ -3,17 +3,16 @@ def main()
 {
     a := [];
     use(a);
-
+    
     push(1);
     push(2);
     push(3);
-  
+    
     print(count, ' ', pop(), ' ', pop(), ' ', pop(), ' ', count, '\n');
-
+    
     push(1);
     push(2);
     push(3);
     
     print(__get__(1), ' ', __get__(0..1), '\n');
-    
 }

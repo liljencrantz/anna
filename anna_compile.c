@@ -760,7 +760,7 @@ flags);
 		obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
 		obj_is_type=1;
 	    }
-
+	    
 	    anna_member_t *mem = anna_member_get(obj_type, node2->mid);
 	    
 	    anna_entry_t *const_obj = anna_static_invoke_as_access(
@@ -807,7 +807,13 @@ flags);
 	    
 	    int i;
 	    
-	    int ra = template->input_count-(mem->is_bound_method?1:0);
+	    int ra = template->input_count;
+
+	    if(mem->is_bound_method && !(node2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER))
+	    {
+		ra--;
+	    }
+	    
 	    if(anna_function_type_is_variadic(template))
 	    {
 		ra--;

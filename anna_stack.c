@@ -1,7 +1,6 @@
 #define _GNU_SOURCE
-#include <stdlib.h>     
-#include <stdio.h>     
-#include <GL/glew.h>	// Header File For The OpenGL32 Library
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <wchar.h>

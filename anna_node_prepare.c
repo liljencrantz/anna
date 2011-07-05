@@ -122,7 +122,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     {
 	type = anna_node_resolve_to_type(n->object, stack);
 	n->access_type = ANNA_NODE_ACCESS_STATIC_MEMBER;
-		
+
 	if(!type)
 	{
 	    anna_error(n->object, L"Unknown type");
@@ -183,7 +183,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	{
 //		    debug(4,L"Hmmm, node is of type type...");
 //		    anna_node_print(4, n);
-		    
+	    
 	    anna_type_t *ctype = anna_type_unwrap(anna_as_obj(type->static_member[member->offset]));
 		    
 	    if(ctype)
@@ -203,7 +203,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		return (anna_node_t *)n;
 	    }
 	}
-
+	
 	anna_function_type_t *fun = anna_function_type_unwrap(member->type);
 	if(!fun)
 	{
@@ -215,8 +215,12 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    return (anna_node_t *)n;
 	}
 		
-	if(!anna_node_validate_call_parameters(n, fun, member->is_bound_method, 1))
+	if(!anna_node_validate_call_parameters(
+	       n, fun, 
+	       member->is_bound_method && !(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER), 
+	       1))
 	{
+	    
 	    member = 0;
 	}
 	else

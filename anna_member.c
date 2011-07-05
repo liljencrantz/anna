@@ -393,12 +393,11 @@ anna_member_t *anna_member_method_search(
 	    
 	    int has_alias = is_reverse ? anna_function_has_alias_reverse(mem_fun, alias_name):anna_function_has_alias(mem_fun, alias_name);
 	    has_alias |= (!is_reverse && wcscmp(members[i], alias_name)==0);
-	
-
+	    
 	    if(has_alias)
 	    {
 		int j;
-		int off = !!member->is_bound_method;
+		int off = !!member->is_bound_method && !(call->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER);
 		
 		if(mem_fun->input_count != call->child_count+off)
 		    continue;	    
