@@ -78,7 +78,7 @@ type File
         cio.close(fd)
     }
 
-    def print(Object value...)
+    def write(Object value...)
     {
         b := Buffer();
 	value.each(v)
@@ -134,7 +134,7 @@ type File
 	    
 	    if(!cio.mkdir(name, 0o777) and !(cerror.errno in [cerror.exist]))
 	    {
-		lang.print(cerror.errorString(cerror.errno), "\n");
+		print(cerror.errorString(cerror.errno), "\n");
 		return ?;
 	    }
 	}
@@ -148,5 +148,12 @@ type File
     {
 	cio.cwd = this.filename;
     }
+    
+    def File currentDirectoryGetter() (static)
+    {
+	File(cio.cwd)
+    }
+
+    var File currentDirectory (static, property(currentDirectoryGetter));
     
 }
