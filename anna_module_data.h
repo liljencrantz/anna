@@ -21,6 +21,7 @@ typedef struct
 	for(i=0; i<sizeof(modules)/sizeof(*modules); i++)		\
 	{								\
 	    substack[i] = anna_stack_create(stack);			\
+	    anna_stack_name(substack[i], module_data[i].name);		\
 	    substack[i]->flags |= ANNA_STACK_NAMESPACE;			\
 	}								\
 	for(i=0; i<sizeof(modules)/sizeof(*modules); i++)		\

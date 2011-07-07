@@ -529,6 +529,7 @@ void anna_stack_print_trace(anna_stack_template_t *stack)
 static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *res = anna_type_stack_create(
+	stack->name ? stack->name: 
 	anna_util_identifier_generate(
 	    L"StackType",
 	    stack->function?&(stack->function->definition->location):0),
@@ -539,7 +540,6 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 	ANNA_MID_STACK_TYPE_PAYLOAD,
 	1,
 	null_type);
-//    anna_type_copy_object(res);
     *(anna_entry_get_addr_static(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_entry_t *)stack;
     return res;
 }
@@ -563,3 +563,7 @@ anna_stack_template_t *anna_stack_unwrap(anna_object_t *wrapper)
     return res?*res:0;
 }
 
+void anna_stack_name(anna_stack_template_t *stack, wchar_t *name)
+{
+    stack->name = anna_intern(name);
+}

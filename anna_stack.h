@@ -54,6 +54,10 @@ struct anna_stack_template
     array_list_t import;
     array_list_t expand;
     /**
+       Only used by modules. Module name.
+     */
+    wchar_t *name;
+    /**
        Only used by modules. Full name of module location.
     */
     wchar_t *filename;
@@ -65,6 +69,7 @@ anna_object_t *anna_stack_wrap(anna_stack_template_t *stack);
 anna_stack_template_t *anna_stack_unwrap(anna_object_t *stack);
 
 anna_stack_template_t *anna_stack_create(anna_stack_template_t *parent);
+void anna_stack_name(anna_stack_template_t *stack, wchar_t *name);
 
 void anna_stack_declare(
     anna_stack_template_t *stack,
