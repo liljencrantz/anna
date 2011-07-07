@@ -11,6 +11,9 @@
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
+* Types, Stacks etc. should be hashable
+* Access attributes of variables and properties
+* Place all relevant base classes in sane modules, e.g. Function, Type
 
 1.0 RELEASE CRITERIA(Done):
 * Inheritance and method overloading fully working

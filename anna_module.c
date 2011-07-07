@@ -311,6 +311,18 @@ static void anna_system_load(anna_stack_template_t *stack)
 	0);
 }
 
+static void anna_reflection_create_types(anna_stack_template_t *stack)
+{
+    anna_member_create_types(stack);
+    anna_function_type_create_types(stack);
+}
+
+static void anna_reflection_load(anna_stack_template_t *stack)
+{
+    anna_member_load(stack);
+    anna_function_type_load(stack);
+}
+
 void anna_module_init()
 {
     /*
@@ -321,7 +333,7 @@ void anna_module_init()
 	    { L"lang", anna_lang_create_types, anna_lang_load },
 	    { L"parser", anna_node_wrapper_create_types, anna_node_wrapper_load },
 	    { L"system", 0, anna_system_load },
-	    { L"reflection", anna_member_create_types, anna_member_load },
+	    { L"reflection", anna_reflection_create_types, anna_reflection_load },
 	    { L"cio", 0, anna_cio_load },
 	    { L"math", 0, anna_math_load },
 	    { L"cerror", 0, anna_cerror_load },

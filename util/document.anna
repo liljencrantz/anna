@@ -1,13 +1,22 @@
 use(io);
 
 type DocumentationExtractor
+(
+    document("
+A tool for extracting the documentation from modules and generating an
+HTML manual based on it. Currently very incomplete, and needs
+significant additions to the reflection API before it can be
+completed, but is a nice proof of concept and exercises various less
+often used code paths, which makes it useful for regression testing.")
+)
 {
 
     var io.File baseDir (internal);
 
     def __init__()
     {
-	baseDir = io.File("documentation")
+	baseDir = io.File("documentation");
+	baseDir.makeDirectory();
     }
     
     def extractDocumentation(parser.Call attr)
@@ -34,7 +43,7 @@ type DocumentationExtractor
     
     def String getSignature(reflection.Function fun)
     {
-	"FFF"
+	String.convert(fun)
     }
 
     def documentMethod(reflection.Method meth, File file)
@@ -118,6 +127,15 @@ type DocumentationExtractor
 
     def documentModule(Object module)
     {
+        file := baseDir ~ (module.__type__.name ~ ".html");
+	file.open();
+	module.__type__.member.each(mem)
+	{
+	    
+	}
+
+	file.close();
+
         dir := baseDir ~ module.__type__.name;
 	dir.makeDirectory();
 	module.__type__.member.each(mem)

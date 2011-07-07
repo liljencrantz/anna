@@ -3,10 +3,22 @@
 
 typedef void (*anna_module_function_t)(anna_stack_template_t *mod);
 
+
 typedef struct
 {
+    /**
+       The name of the module.
+     */
     wchar_t *name;
+    /**
+       A reference to a function that creates empty type objects for
+       all types in the module.
+     */
     anna_module_function_t creator;
+    /**
+       A reference to a function that adds all functions and members
+       to the module and it's types.
+     */
     anna_module_function_t loader;
 } anna_module_data_t;
 

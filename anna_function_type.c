@@ -19,6 +19,7 @@
 #include "anna_vm.h"
 #include "anna_mid.h"
 #include "anna_node_wrapper.h"
+#include "anna_type_data.h"
 
 anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
@@ -117,14 +118,19 @@ ANNA_NATIVE(anna_function_type_to_string, 1)
     return anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
 }
 
-
-static void anna_function_type_base_create()
+static anna_type_data_t anna_member_type_data[] = 
 {
+    { &function_type_base, L"Function" },
+}
+    ;
 
-    if(function_type_base)
-	return;
-    
-    function_type_base = anna_type_native_create(L"Function", stack_global);
+void anna_function_type_create_types(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_member_type_data, stack);
+}
+
+void anna_function_type_load(anna_stack_template_t *stack)
+{
     anna_type_t *res = function_type_base;
     
     anna_type_t *argv[] = 
@@ -181,6 +187,8 @@ static void anna_function_type_base_create()
     }
     al_destroy(&types);
     base_constructed = 1;
+
+    anna_type_data_register(anna_member_type_data, stack);
 }
 
 void anna_function_type_create(
@@ -189,7 +197,6 @@ void anna_function_type_create(
 {
     //anna_function_type_print(key);
     
-    anna_function_type_base_create();
     if(base_constructed)
 	anna_type_copy(res, function_type_base);
     else
