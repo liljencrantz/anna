@@ -730,7 +730,7 @@ anna_function_t *anna_continuation_create(
     anna_type_t *return_type)
 {
     anna_function_t *result = anna_alloc_function();
-    result->flags = ANNA_FUNCTION_CONTINUATION;
+    result->flags |= ANNA_FUNCTION_CONTINUATION;
     anna_function_attribute_empty(result);    
     result->input_type = 0;
     result->input_name = 0;
@@ -752,11 +752,10 @@ anna_function_t *anna_method_wrapper_create(
     anna_type_t *return_type)
 {
     anna_function_t *result = anna_alloc_function();
-    result->flags = ANNA_FUNCTION_BOUND_METHOD;
+    result->flags |= ANNA_FUNCTION_BOUND_METHOD;
     anna_function_attribute_empty(result);
     result->input_type = 0;
     result->input_name = 0;
-    
     result->native = anna_vm_method_wrapper;
     result->name = anna_intern_static(L"!boundMethod");
     result->return_type=return_type;
@@ -764,8 +763,9 @@ anna_function_t *anna_method_wrapper_create(
     
     anna_function_set_stack(result, stack_global);
     anna_function_setup_interface(result);
+
     anna_vm_compile(result);
-    
+
     return result;
 }
 

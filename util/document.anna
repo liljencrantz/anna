@@ -1,58 +1,62 @@
 
-def extractDocumentation(parser.Call attr)
+type DocumentationExtractor
 {
-    res := "".thaw;
-    attr.each(at)
+
+    def extractDocumentation(parser.Call attr)
     {
-	if(at.isCallTo("documentation"))
+      res := "".thaw;
+	attr.each(at)
 	{
-	    switch((at as parser.Call)[0])
+	    if(at.isCallTo("documentation"))
 	    {
-		case(str as parser.StringLiteral)
+		switch((at as parser.Call)[0])
 		{
-		    res ~= str.payload;
+		    case(str as parser.StringLiteral)
+		    {
+			res ~= str.payload;
+		    }
+		}
+	    }
+	}
+	return res;
+    }
+    
+    def documentMethod(reflection.Method meth)
+    {
+        doc := extractDocumentation(meth.function.attribute);
+	("    %\n%\n\n" %[meth.function, doc]);
+    }
+    
+    def documentType(Type t)
+    {
+	print( "Type %\n" % [t.name]);
+	t.member.each(mem)
+	{
+	    switch(mem)
+	    {
+		case(meth as reflection.Method)
+		{
+		    documentMethod(meth);
 		}
 	    }
 	}
     }
-    return res;
-}
-
-def documentMethod(reflection.Method meth)
-{
-    doc := extractDocumentation(meth.function.attribute);
-    print("    %\n%\n\n" %[meth.function, doc]);
-}
-
-def documentType(Type t)
-{
-    print( "Type %\n" % [t.name]);
-    t.member.each(mem)
-    {
-	switch(mem)
-	{
-	    case(meth as reflection.Method)
-	    {
-		documentMethod(meth);
-	    }
-	}
-    }
+    
 }
 
 def main()
 {
+    doc := DocumentationExtractor();
     lang.__type__.member.each(mem)
     {
-       
 	if(mem.isConstant and mem.isStatic)
 	{
-
 	    val := mem.value(?);
 	    switch(val)
 	    {
 		case(t as Type)
 		{
-		    documentType(t);
+		    doc.documentType(t);
 		}
 	    }
 	}

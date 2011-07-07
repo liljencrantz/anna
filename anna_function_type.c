@@ -248,7 +248,7 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 	CRASH;
     }
     
-    //wprintf(L"Find function signature for call %ls\n", type->name);
+//    wprintf(L"Find function signature for call %ls\n", type->name);
     
     anna_function_type_t **function_ptr = 
 	(anna_function_type_t **)anna_entry_get_addr_static(

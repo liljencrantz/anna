@@ -98,4 +98,6 @@ anna_type_t *anna_type_for_function(
     anna_type_t **argv, wchar_t **argn, anna_node_t **argd,
     int is_variadic);
 
+void anna_type_mark_static(void);
+
 #endif

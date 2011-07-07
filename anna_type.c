@@ -31,6 +31,20 @@ static int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
 static hash_table_t anna_type_for_function_identifier;
 
+static void anna_type_mark_static_iter(void *key_ptr,void *val_ptr, void *aux_ptr)
+{
+    anna_alloc_mark_type(val_ptr);
+}
+
+
+void anna_type_mark_static()
+{
+    hash_foreach(
+	&anna_type_for_function_identifier,
+	anna_type_mark_static_iter);
+    
+}
+
 
 void anna_type_copy_object(anna_type_t *type)
 {

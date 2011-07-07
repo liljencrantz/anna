@@ -239,6 +239,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	}
 
 
+	case ANNA_NODE_MEMBER_BIND:
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
@@ -348,6 +349,17 @@ void anna_alloc_mark_type(anna_type_t *type)
 	    anna_alloc_mark_entry(type->static_member[i]);
 	}
     }
+    int steps = anna_mid_max_get();
+
+    for(i=0; i<steps; i++)
+    {
+	anna_member_t *memb = type->mid_identifier[i];
+	if(!memb)
+	    continue;
+	anna_alloc_mark_type(memb->type);
+	
+    }
+
     if(type->stack_macro)
     {
 	anna_alloc_mark_stack_template(type->stack_macro);
@@ -539,8 +551,9 @@ static void anna_alloc_free(void *obj)
 	{
 	    int i;
 	    anna_type_t *o = (anna_type_t *)obj;
-//	    wprintf(L"Discarding unused type %ls\n", o->name);
 	    
+//	    wprintf(L"Discarding unused type %ls\n", o->name);
+
 	    if(obj != null_type)
 	    {
 		for(i=0; i<anna_mid_max_get(); i++)
@@ -699,9 +712,8 @@ void anna_gc(anna_vmstack_t *stack)
     }
     size_t start_count = al_get_count(&anna_alloc);
 #endif
-
     
-//    wprintf(L"\n\nRUNNING GC. We have %d allocated items, %d are objects, %d are stacks\n\n", al_get_count(&anna_alloc), oc, sc);
+//    wprintf(L"\n\nRUNNING GC. We have %d allocated items.\n", al_get_count(&anna_alloc));
 
     anna_vmstack_t *stack_ptr = stack;
     while(stack_ptr)
@@ -709,6 +721,7 @@ void anna_gc(anna_vmstack_t *stack)
 	anna_alloc_mark_vmstack(stack_ptr);	
 	stack_ptr = stack_ptr->caller;
     }
+    anna_type_mark_static();
     
 //    anna_alloc_mark_stack_template(stack_global);
     int freed = 0;

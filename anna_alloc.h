@@ -67,6 +67,7 @@ static inline __malloc anna_object_t *anna_alloc_object(size_t sz)
 static inline __malloc anna_type_t *anna_alloc_type()
 {
     anna_type_t *res = anna_slab_alloc(sizeof(anna_type_t));
+//    wprintf(L"Alloc type @ %d\n", res);
     memset(res, 0, sizeof(anna_type_t));
     res->flags = ANNA_TYPE;
     al_push(&anna_alloc, res);
