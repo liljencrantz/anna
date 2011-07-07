@@ -124,7 +124,7 @@ static void anna_function_type_base_create()
     if(function_type_base)
 	return;
     
-    function_type_base = anna_type_native_create(L"!FunctionBase", stack_global);
+    function_type_base = anna_type_native_create(L"Function", stack_global);
     anna_type_t *res = function_type_base;
     
     anna_type_t *argv[] = 
