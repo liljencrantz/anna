@@ -18,11 +18,16 @@ type File
     {
 	if(cio.isRelative(filename))
 	{
-	    this.path = cio.cwd.split(cio.separator, ?);
-	    this.path ~= filename.split(cio.separator, ?);
+	    path = cio.cwd.split(cio.separator, ?);
+	    path ~= filename.split(cio.separator, ?);
 	} else {
-	    this.path = filename.split(cio.separator, ?);
+	    path = filename.split(cio.separator, ?);
 	}
+    }
+
+    def File __join__(String name)
+    {
+	File(filename ~ cio.separator ~ name);
     }
     
     def filenameGetter()
@@ -155,5 +160,10 @@ type File
     }
 
     var File currentDirectory (static, property(currentDirectoryGetter));
+
+    def String toString()
+    {
+	return filename;
+    }
     
 }

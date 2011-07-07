@@ -33,6 +33,7 @@
 * Faster imutable lists/strings, supporting zero copy slicing, substringing, etc.
 * Imutable Map/Set? Maybe...
 * make anna_node_print print out ast nodes with some syntax sugar support
+* List.sort
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

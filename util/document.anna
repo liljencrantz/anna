@@ -1,8 +1,19 @@
+use(io);
 
 type DocumentationExtractor
 {
 
+    var io.File baseDir (internal);
+
+    def __init__()
+    {
+	baseDir = io.File("documentation")
+    }
+    
     def extractDocumentation(parser.Call attr)
+    (
+	internal
+    )
     {
       res := "".thaw;
 	attr.each(at)
@@ -21,22 +32,62 @@ type DocumentationExtractor
 	return res;
     }
     
-    def documentMethod(reflection.Method meth)
+    def documentMethod(reflection.Method meth, File file)
     {
         doc := extractDocumentation(meth.function.attribute);
-	("    %\n%\n\n" %[meth.function, doc]);
+	file.write("<hr>%\n<br>%\n\n" %[meth.function, doc]);
     }
     
-    def documentType(Type t)
+    def documentType(Type t, File dir)
     {
-	print( "Type %\n" % [t.name]);
+        file := dir ~ (t.name ~ ".html");
+	file.open();
+	file.write("
+<html>
+<head>
+</head>
+<body>
+");
+	file.write( "<h1>Type %</h1>
+<ul>" % [t.name]);
+	t.member.each(mem)
+	{
+	    file.write("<li><a href='#%(name)'>%(name)</a></li>" % ["name": mem.name]);
+	}
+	file.write("</ul>
+");
 	t.member.each(mem)
 	{
 	    switch(mem)
 	    {
 		case(meth as reflection.Method)
 		{
-		    documentMethod(meth);
+		    documentMethod(meth, file);
+		}
+	    }
+	}
+	file.write("
+</body>
+</html>
+");
+	file.close();
+    }
+
+    def documentModule(Object module)
+    {
+        dir := baseDir ~ module.__type__.name;
+	dir.makeDirectory();
+	module.__type__.member.each(mem)
+	{
+	    if(mem.isConstant and mem.isStatic)
+	    {
+	      val := mem.value(?);
+		switch(val)
+		{
+		    case(t as Type)
+		    {
+			documentType(t, dir);
+		    }
 		}
 	    }
 	}
@@ -47,18 +98,5 @@ type DocumentationExtractor
 def main()
 {
     doc := DocumentationExtractor();
-    lang.__type__.member.each(mem)
-    {
-	if(mem.isConstant and mem.isStatic)
-	{
-	    val := mem.value(?);
-	    switch(val)
-	    {
-		case(t as Type)
-		{
-		    doc.documentType(t);
-		}
-	    }
-	}
-    }
+    doc.documentModule(lang);
 }
