@@ -32,7 +32,6 @@ anna_object_t *anna_buffer_create()
     (*anna_entry_get_addr(obj,ANNA_MID_BUFFER_PAYLOAD))=0;
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_BUFFER_CAPACITY)) = 0;    
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_BUFFER_SIZE)) = 0;
-    obj->flags |= ANNA_OBJECT_LIST;
     return obj;
 }
 
@@ -146,7 +145,6 @@ ANNA_NATIVE(anna_buffer_init, 1)
     (*anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD))=0;
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_CAPACITY)) = 0;    
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE)) = 0;
-    this->flags |= ANNA_OBJECT_LIST;    
     return param[0];
 }
 

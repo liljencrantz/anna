@@ -12,11 +12,14 @@ often used code paths, which makes it useful for regression testing.")
 {
 
     var io.File baseDir (internal);
+    var HashMap«Object, String» pathLookup;
+
 
     def __init__()
     {
 	baseDir = io.File("documentation");
 	baseDir.makeDirectory();
+	pathLookup = HashMap«Object, String»();
     }
     
     def extractDocumentation(parser.Call attr)
@@ -62,10 +65,10 @@ often used code paths, which makes it useful for regression testing.")
     {
 	file.write("
 <hr>
-<a name='%'>%</a>
+var <a href='../%'>%</a><a name='%'>%</a>
 <br>
 
-" %[prop.name, prop.name]);
+" % [pathLookup[prop.type], prop.type.name, prop.name, prop.name]);
     }
     
     def documentVariable(reflection.Variable vari, File file)
@@ -128,6 +131,26 @@ often used code paths, which makes it useful for regression testing.")
     def documentModule(Object module)
     {
         file := baseDir ~ (module.__type__.name ~ ".html");
+        dir  := baseDir ~ module.__type__.name;
+	dir.makeDirectory();
+
+	module.__type__.member.each(mem)
+	{
+	    if(mem.isConstant and mem.isStatic)
+	    {
+  	        val := mem.value(?);
+		switch(val)
+		{
+		    case(t as Type)
+		    {
+			pathLookup[t] = module.__type__.name ~ "/" ~ t.name ~ ".html";
+		    }
+		}
+	    }
+	}
+
+
+
 	file.open();
 	module.__type__.member.each(mem)
 	{
@@ -136,8 +159,6 @@ often used code paths, which makes it useful for regression testing.")
 
 	file.close();
 
-        dir := baseDir ~ module.__type__.name;
-	dir.makeDirectory();
 	module.__type__.member.each(mem)
 	{
 	    if(mem.isConstant and mem.isStatic)

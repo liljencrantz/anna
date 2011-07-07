@@ -100,6 +100,13 @@ ANNA_NATIVE(anna_member_i_get_constant, 1)
     return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): null_entry;
 }
 
+ANNA_NATIVE(anna_member_i_get_type, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    return anna_from_obj(anna_type_wrap(m->type));
+}
+
 ANNA_NATIVE(anna_member_i_value, 2)
 {
     anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
@@ -162,6 +169,13 @@ static void anna_member_type_create()
 	anna_mid_get(L"isConstant"),
 	int_type,
 	&anna_member_i_get_constant,
+	0);
+    
+    anna_member_create_native_property(
+	member_type,
+	anna_mid_get(L"type"),
+	type_type,
+	&anna_member_i_get_type,
 	0);
     
     anna_type_t *v_argv[] = 
