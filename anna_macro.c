@@ -19,7 +19,7 @@
 #include "anna_vm.h"
 #include "anna_mid.h"
 
-static inline anna_node_t *anna_macro_macro_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_macro)
 {
 
     CHECK_CHILD_COUNT(node,L"macro definition", 4);
@@ -48,9 +48,8 @@ static inline anna_node_t *anna_macro_macro_i(anna_node_call_t *node)
 	    anna_node_create_block2(&node->location),
 	    1);
 }
-ANNA_VM_MACRO(anna_macro_macro)
 
-static inline anna_node_t *anna_macro_type_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_type)
 {
     CHECK_CHILD_COUNT(node,L"type macro", 3);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
@@ -64,18 +63,14 @@ static inline anna_node_t *anna_macro_type_i(anna_node_call_t *node)
 	&node->location,
 	type);
 }
-ANNA_VM_MACRO(anna_macro_type)
 
-static inline anna_node_t *anna_macro_return_i(
-    anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_return)
 {
     CHECK_CHILD_COUNT(node,L"return", 1);
     return (anna_node_t *)anna_node_create_return(&node->location, node->child[0], ANNA_NODE_RETURN);
 }
-ANNA_VM_MACRO(anna_macro_return)
 
-static inline anna_node_t *anna_macro_def_i(
-    anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_def)
 {
     CHECK_CHILD_COUNT(node, L"__def__", 5);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
@@ -89,13 +84,10 @@ static inline anna_node_t *anna_macro_def_i(
 	&node->location,
 	fun);    
 }
-ANNA_VM_MACRO(anna_macro_def)
 
-static inline anna_node_t *anna_macro_block_i(
-    anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_block)
 {
     //debug(D_SPAM,L"Create new block with %d elements at %d\n", node->child_count, node);
-     
     anna_function_t *fun = 
 	anna_function_create_from_block(
 	    node);
@@ -104,9 +96,8 @@ static inline anna_node_t *anna_macro_block_i(
 	&node->location,
 	fun);    
 }
-ANNA_VM_MACRO(anna_macro_block)
 
-static inline anna_node_t *anna_macro_var_i(struct anna_node_call *node)
+ANNA_VM_MACRO(anna_macro_var)
 {
     CHECK_CHILD_COUNT(node,L"variable declaration", 4);
     CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
@@ -122,9 +113,8 @@ static inline anna_node_t *anna_macro_var_i(struct anna_node_call *node)
 	    (anna_node_call_t *)node->child[3],
 	    anna_node_is_named(node->function, L"__const__"));
 }
-ANNA_VM_MACRO(anna_macro_var)
 
-static inline anna_node_t *anna_macro_specialize_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_specialize)
 {
     CHECK_CHILD_COUNT(node,L"type specialization", 2);
     CHECK_NODE_BLOCK(node->child[1]);
@@ -134,10 +124,8 @@ static inline anna_node_t *anna_macro_specialize_i(anna_node_call_t *node)
     res->location = node->location;   
     return node->child[1];
 }
-ANNA_VM_MACRO(anna_macro_specialize)
 
-
-static inline anna_node_t *anna_macro_type_of_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_type_of)
 {
     CHECK_CHILD_COUNT(node,L"type of", 1);
     anna_node_wrapper_t *res = anna_node_create_type_of(
@@ -145,9 +133,8 @@ static inline anna_node_t *anna_macro_type_of_i(anna_node_call_t *node)
 	node->child[0]);
     return (anna_node_t *)res;    
 }
-ANNA_VM_MACRO(anna_macro_type_of)
 
-static inline anna_node_t *anna_macro_return_type_of_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_return_type_of)
 {
     CHECK_CHILD_COUNT(node,L"type of return", 1);
     anna_node_wrapper_t *res = anna_node_create_return_type_of(
@@ -155,9 +142,8 @@ static inline anna_node_t *anna_macro_return_type_of_i(anna_node_call_t *node)
 	node->child[0]);
     return (anna_node_t *)res;    
 }
-ANNA_VM_MACRO(anna_macro_return_type_of)
 
-static inline anna_node_t *anna_macro_input_type_of_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_input_type_of)
 {
     CHECK_CHILD_COUNT(node,L"type of return", 2);
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_INT_LITERAL);
@@ -169,10 +155,8 @@ static inline anna_node_t *anna_macro_input_type_of_i(anna_node_call_t *node)
 	i_idx);
     return (anna_node_t *)res;    
 }
-ANNA_VM_MACRO(anna_macro_input_type_of)
 
-static anna_node_t *anna_macro_cast_i(
-    anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_cast)
 {
     CHECK_CHILD_COUNT(node,L"cast", 2);
 //    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
@@ -182,10 +166,7 @@ static anna_node_t *anna_macro_cast_i(
     return (anna_node_t *)node;
 }
 
-ANNA_VM_MACRO(anna_macro_cast)
-
-
-static inline anna_node_t *anna_macro_break_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_break)
 {
     CHECK_CHILD_COUNT(node,L"break", 1);
     return (anna_node_t *)anna_node_create_return(
@@ -193,9 +174,8 @@ static inline anna_node_t *anna_macro_break_i(anna_node_call_t *node)
 	node->child[0],
 	ANNA_NODE_BREAK);
 }
-ANNA_VM_MACRO(anna_macro_break)
 
-static inline anna_node_t *anna_macro_continue_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_continue)
 {
     CHECK_CHILD_COUNT(node,L"continue", 1);
     return (anna_node_t *)anna_node_create_return(
@@ -203,9 +183,8 @@ static inline anna_node_t *anna_macro_continue_i(anna_node_call_t *node)
 	node->child[0],
 	ANNA_NODE_CONTINUE);
 }
-ANNA_VM_MACRO(anna_macro_continue)
 
-static inline anna_node_t *anna_macro_use_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_use)
 {
     CHECK_CHILD_COUNT(node,L"use", 1);
     return (anna_node_t *)anna_node_create_return(
@@ -213,7 +192,6 @@ static inline anna_node_t *anna_macro_use_i(anna_node_call_t *node)
 	node->child[0],
 	ANNA_NODE_USE);
 }
-ANNA_VM_MACRO(anna_macro_use)
 
 #include "anna_macro_conditional.c"
 #include "anna_macro_operator.c"

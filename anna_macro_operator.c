@@ -1,5 +1,5 @@
 
-static inline anna_node_t *anna_macro_assign_i(struct anna_node_call *node)
+ANNA_VM_MACRO(anna_macro_assign)
 {
     CHECK_CHILD_COUNT(node,L"assignment operator", 2);
 
@@ -81,9 +81,8 @@ __memberSet__( OBJ, KEY, VAL)
     }
     FAIL(node->child[0], L"Invalid left-hand value in assignment");
 }
-ANNA_VM_MACRO(anna_macro_assign)
 
-static inline anna_node_t *anna_macro_member_get_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_member_get)
 {
 /*
   wprintf(L"member_get on node at %d\n", node);
@@ -100,10 +99,9 @@ static inline anna_node_t *anna_macro_member_get_i(anna_node_call_t *node)
 						      node->child[0], 
 						      mid);
 }
-ANNA_VM_MACRO(anna_macro_member_get)
 
  
-static inline anna_node_t *anna_macro_member_set_i(anna_node_call_t *node)
+ANNA_VM_MACRO(anna_macro_member_set)
 {
     CHECK_CHILD_COUNT(node,L"member assignment", 3);
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
@@ -117,4 +115,3 @@ static inline anna_node_t *anna_macro_member_set_i(anna_node_call_t *node)
 	mid,
 	node->child[2]);
 }
-ANNA_VM_MACRO(anna_macro_member_set)

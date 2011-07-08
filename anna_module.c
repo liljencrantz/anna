@@ -524,14 +524,14 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	exit(ANNA_STATUS_MACRO_ERROR);
     }
     debug(D_SPAM,L"Macros expanded in module %ls\n", module_stack->filename);    
-        
+    
     anna_node_print(D_SPAM, node);
     anna_node_register_declarations(node, module_stack);
     module_stack->flags |= ANNA_STACK_NAMESPACE;
     if(anna_error_count)
     {
 	debug(
-	    4,
+	    D_CRITICAL,
 	    L"Critical: Found %d error(s) during loading of module %ls\n", 
 	    anna_error_count, module_stack->filename);
 	exit(ANNA_STATUS_INTERFACE_ERROR);

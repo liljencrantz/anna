@@ -6,7 +6,8 @@ typedef struct
 }
     anna_node_find_each_t;
 
-static anna_node_t *anna_node_each_fun(anna_node_t *this, void *aux)
+static anna_node_t *anna_node_each_fun(
+    anna_node_t *this, void *aux)
 {
     void **aux2 = (void **)aux;
     anna_node_function_t fun = aux2[1];
@@ -14,7 +15,8 @@ static anna_node_t *anna_node_each_fun(anna_node_t *this, void *aux)
     return this;
 }
 
-void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
+void anna_node_each(
+    anna_node_t *this, anna_node_function_t fun, void *aux)
 {
     void **aux2 = malloc(sizeof(void *)*2);
     aux2[0] = aux;
@@ -26,9 +28,7 @@ void anna_node_each(anna_node_t *this, anna_node_function_t fun, void *aux)
 anna_node_t *anna_node_each_replace(
     anna_node_t *this, anna_node_replace_function_t fun, void *aux)
 {
-//    wprintf(L".1 %d\n", this->node_type);
     this = fun(this, aux);
-//    wprintf(L".2 %d\n", res->node_type);
     switch(this->node_type)
     {
 
@@ -132,7 +132,6 @@ anna_node_t *anna_node_each_replace(
 		this->node_type);
 	    CRASH;
     }
-//    wprintf(L".3 %d\n", res->node_type);
     return this;
 }
 

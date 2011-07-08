@@ -35,14 +35,16 @@ anna_entry_t *anna_int_entry(anna_object_t *this);
     }									\
     static inline anna_entry_t *name ## _i(anna_entry_t **param)
 
-#define ANNA_VM_MACRO(name) static anna_vmstack_t *name(		\
-	anna_vmstack_t *stack, anna_object_t *me)			\
+#define ANNA_VM_MACRO(name)						\
+    static inline anna_node_t *name ## _i(anna_node_call_t *node);	\
+    static anna_vmstack_t *name(anna_vmstack_t *stack, anna_object_t *me) \
     {									\
 	anna_node_t *res = name ## _i((anna_node_call_t *)anna_node_unwrap(anna_as_obj(*(stack->top-1)))); \
 	anna_vmstack_drop(stack, 2);					\
-	anna_vmstack_push_object(stack, anna_node_wrap(res)); \
+	anna_vmstack_push_object(stack, anna_node_wrap(res));		\
 	return stack;							\
-    }
+    }									\
+    static inline anna_node_t *name ## _i(anna_node_call_t *node)
 
 #define ANNA_ENTRY_JMP_TABLE static void *jmp_table[] =			\
     {									\
