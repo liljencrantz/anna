@@ -1,18 +1,18 @@
-ANNA_NATIVE(anna_node_mapping_wrapper_i_get_from, 1)
+ANNA_VM_NATIVE(anna_node_mapping_wrapper_i_get_from, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_cond_t *node = (anna_node_cond_t *)anna_node_unwrap(this);
     return anna_from_obj(anna_node_wrap(node->arg1));
 }
 
-ANNA_NATIVE(anna_node_mapping_wrapper_i_get_to, 1)
+ANNA_VM_NATIVE(anna_node_mapping_wrapper_i_get_to, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_cond_t *node = (anna_node_cond_t *)anna_node_unwrap(this);
     return anna_from_obj(anna_node_wrap(node->arg2));
 }
 
-ANNA_NATIVE(anna_node_mapping_wrapper_i_init, 4)
+ANNA_VM_NATIVE(anna_node_mapping_wrapper_i_init, 4)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));

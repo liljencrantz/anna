@@ -24,7 +24,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this);
    callbacks that allow you to call non-native code from inside of
    your native function.
  */
-#define ANNA_NATIVE(name,param_count) \
+#define ANNA_VM_NATIVE(name,param_count) \
     static inline anna_entry_t *name ## _i(anna_entry_t **param);	\
     static anna_vmstack_t *name(anna_vmstack_t *stack, anna_object_t *me) \
     {									\

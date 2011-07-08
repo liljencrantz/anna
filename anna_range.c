@@ -229,7 +229,7 @@ static anna_vmstack_t *anna_range_get_int(anna_vmstack_t *stack, anna_object_t *
     return stack;    
 }
 
-ANNA_NATIVE(anna_range_in, 2)
+ANNA_VM_NATIVE(anna_range_in, 2)
 {
     anna_object_t *range = anna_as_obj_fast(param[0]);
     ANNA_ENTRY_NULL_CHECK(param[1]);

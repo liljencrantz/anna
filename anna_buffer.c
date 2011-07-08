@@ -103,35 +103,35 @@ unsigned char *anna_buffer_get_payload(anna_object_t *this)
     return *(unsigned char **)anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD);
 }
 
-ANNA_NATIVE(anna_buffer_set_int, 3)
+ANNA_VM_NATIVE(anna_buffer_set_int, 3)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     anna_buffer_set(anna_as_obj(param[0]), anna_as_int(param[1]), anna_as_int(param[2]));
     return param[2];
 }
 
-ANNA_NATIVE(anna_buffer_get_int, 2)
+ANNA_VM_NATIVE(anna_buffer_get_int, 2)
 { 
     ANNA_ENTRY_NULL_CHECK(param[1]);
     return anna_from_int(anna_buffer_get(anna_as_obj(param[0]), anna_as_int(param[1])));
 }
 
-ANNA_NATIVE(anna_buffer_get_count_method, 1)
+ANNA_VM_NATIVE(anna_buffer_get_count_method, 1)
 {
     return anna_from_int(anna_buffer_get_count(anna_as_obj(param[0])));
 }
 
-ANNA_NATIVE(anna_buffer_get_first, 1)
+ANNA_VM_NATIVE(anna_buffer_get_first, 1)
 {
     return anna_from_int(anna_buffer_get(anna_as_obj(param[0]), 0));
 }
 
-ANNA_NATIVE(anna_buffer_get_last, 1)
+ANNA_VM_NATIVE(anna_buffer_get_last, 1)
 {
     return anna_from_int(anna_buffer_get(anna_as_obj(param[0]), -1));
 }
 
-ANNA_NATIVE(anna_buffer_set_count_method, 2)
+ANNA_VM_NATIVE(anna_buffer_set_count_method, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     int sz = anna_as_int(param[1]);
@@ -139,7 +139,7 @@ ANNA_NATIVE(anna_buffer_set_count_method, 2)
     return param[1];
 }
 
-ANNA_NATIVE(anna_buffer_init, 1)
+ANNA_VM_NATIVE(anna_buffer_init, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     (*anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD))=0;
@@ -148,13 +148,13 @@ ANNA_NATIVE(anna_buffer_init, 1)
     return param[0];
 }
 
-ANNA_NATIVE(anna_buffer_del, 1)
+ANNA_VM_NATIVE(anna_buffer_del, 1)
 {
     free((*anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_BUFFER_PAYLOAD)));
     return param[0];
 }
 
-ANNA_NATIVE(anna_buffer_encode, 1)
+ANNA_VM_NATIVE(anna_buffer_encode, 1)
 {    
     anna_object_t *this = anna_as_obj(param[0]);
     anna_object_t *str = anna_string_create(0, 0);
@@ -190,7 +190,7 @@ ANNA_NATIVE(anna_buffer_encode, 1)
     return anna_from_obj(str);
 }
 
-ANNA_NATIVE(anna_buffer_decode, 2)
+ANNA_VM_NATIVE(anna_buffer_decode, 2)
 {
     anna_object_t *this = anna_as_obj(param[0]);
     anna_object_t *str = anna_as_obj(param[1]);

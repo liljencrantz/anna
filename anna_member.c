@@ -66,35 +66,35 @@ static anna_type_t *anna_member_of(anna_object_t *wrapper)
     return *(anna_type_t **)anna_entry_get_addr(wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD);
 }
 
-ANNA_NATIVE(anna_member_i_get_name, 1)
+ANNA_VM_NATIVE(anna_member_i_get_name, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return anna_from_obj( anna_string_create(wcslen(m->name), m->name));
 }
 
-ANNA_NATIVE(anna_member_i_get_static, 1)
+ANNA_VM_NATIVE(anna_member_i_get_static, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return m->is_static?anna_from_int(1):null_entry;
 }
 
-ANNA_NATIVE(anna_member_i_get_method, 1)
+ANNA_VM_NATIVE(anna_member_i_get_method, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return m->is_bound_method?anna_from_int(1):null_entry;
 }
 
-ANNA_NATIVE(anna_member_i_get_property, 1)
+ANNA_VM_NATIVE(anna_member_i_get_property, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return m->is_property?anna_from_int(1):null_entry;
 }
 
-ANNA_NATIVE(anna_member_i_get_constant, 1)
+ANNA_VM_NATIVE(anna_member_i_get_constant, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
@@ -108,14 +108,14 @@ ANNA_NATIVE(anna_member_i_get_constant, 1)
     return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): null_entry;
 }
 
-ANNA_NATIVE(anna_member_i_get_type, 1)
+ANNA_VM_NATIVE(anna_member_i_get_type, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
     return anna_from_obj(anna_type_wrap(m->type));
 }
 
-ANNA_NATIVE(anna_member_i_value, 2)
+ANNA_VM_NATIVE(anna_member_i_value, 2)
 {
     anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
     anna_object_t *obj = anna_as_obj(param[1]);

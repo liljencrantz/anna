@@ -29,7 +29,7 @@
 
 #define READ_SZ 4096
 
-ANNA_NATIVE(anna_cio_open, 3)
+ANNA_VM_NATIVE(anna_cio_open, 3)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]) || anna_entry_null(param[2]))
     {
@@ -48,7 +48,7 @@ ANNA_NATIVE(anna_cio_open, 3)
     return anna_from_int(res);
 }
 
-ANNA_NATIVE(anna_cio_read, 3)
+ANNA_VM_NATIVE(anna_cio_read, 3)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
     {
@@ -107,7 +107,7 @@ ANNA_NATIVE(anna_cio_read, 3)
     return anna_from_int(done);
 }
 
-ANNA_NATIVE(anna_cio_write, 3)
+ANNA_VM_NATIVE(anna_cio_write, 3)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
     {
@@ -129,7 +129,7 @@ ANNA_NATIVE(anna_cio_write, 3)
     return (res != -1) ? anna_from_int(res) : null_entry;
 }
 
-ANNA_NATIVE(anna_cio_close, 1)
+ANNA_VM_NATIVE(anna_cio_close, 1)
 {
     if(!anna_entry_null(param[0]))
     {
@@ -155,7 +155,7 @@ static void handle_stat(struct stat *buf, anna_object_t *list)
     anna_list_add(list, anna_from_int(buf->st_ctime));
 }
 
-ANNA_NATIVE(anna_cio_stat, 1)
+ANNA_VM_NATIVE(anna_cio_stat, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -175,7 +175,7 @@ ANNA_NATIVE(anna_cio_stat, 1)
     return anna_from_obj(res);
 }
 
-ANNA_NATIVE(anna_cio_lstat, 1)
+ANNA_VM_NATIVE(anna_cio_lstat, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -195,7 +195,7 @@ ANNA_NATIVE(anna_cio_lstat, 1)
     return anna_from_obj(res);
 }
 
-ANNA_NATIVE(anna_cio_fstat, 1)
+ANNA_VM_NATIVE(anna_cio_fstat, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -213,7 +213,7 @@ ANNA_NATIVE(anna_cio_fstat, 1)
     return anna_from_obj(res);
 }
 
-ANNA_NATIVE(anna_cio_mkdir, 2)
+ANNA_VM_NATIVE(anna_cio_mkdir, 2)
 {
     if(anna_entry_null(param[0]) || anna_entry_null(param[1]))
     {
@@ -231,7 +231,7 @@ ANNA_NATIVE(anna_cio_mkdir, 2)
     return anna_from_int(res);
 }
 
-ANNA_NATIVE(anna_cio_get_cwd, 1)
+ANNA_VM_NATIVE(anna_cio_get_cwd, 1)
 {
 #define SZ 4096				\
     
@@ -246,7 +246,7 @@ ANNA_NATIVE(anna_cio_get_cwd, 1)
     return null_entry;
 }
 
-ANNA_NATIVE(anna_cio_set_cwd, 2)
+ANNA_VM_NATIVE(anna_cio_set_cwd, 2)
 {
     if(anna_entry_null(param[1]))
     {
@@ -272,7 +272,7 @@ ANNA_NATIVE(anna_cio_set_cwd, 2)
     return res;
 }
 
-ANNA_NATIVE(anna_cio_is_relative, 1)
+ANNA_VM_NATIVE(anna_cio_is_relative, 1)
 {
     if(anna_entry_null(param[0]))
     {

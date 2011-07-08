@@ -1,5 +1,5 @@
 
-ANNA_NATIVE(anna_member_method_value, 1)
+ANNA_VM_NATIVE(anna_member_method_value, 1)
 {
     anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
     anna_member_t *memb = anna_member_unwrap(memb_obj);

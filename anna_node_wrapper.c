@@ -67,7 +67,7 @@ void anna_node_wrapper_add_method(anna_function_t *fun)
     
 }
 
-ANNA_NATIVE(anna_node_wrapper_i_replace, 3)
+ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *tree = anna_node_unwrap(this);
@@ -77,7 +77,7 @@ ANNA_NATIVE(anna_node_wrapper_i_replace, 3)
     return anna_from_obj(anna_node_wrap(res));
 }
 
-ANNA_NATIVE(anna_generate_identifier, 1)
+ANNA_VM_NATIVE(anna_generate_identifier, 1)
 {
     wchar_t *ss = L"";
 
@@ -97,7 +97,7 @@ ANNA_NATIVE(anna_generate_identifier, 1)
 }
 
 
-ANNA_NATIVE(anna_node_wrapper_i_error, 2)
+ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 {
     anna_node_t *this = anna_node_unwrap(anna_as_obj_fast(param[0]));
     wchar_t *msg;
@@ -115,7 +115,7 @@ ANNA_NATIVE(anna_node_wrapper_i_error, 2)
     return param[0];
 }
 
-ANNA_NATIVE(anna_node_wrapper_i_to_string, 1)
+ANNA_VM_NATIVE(anna_node_wrapper_i_to_string, 1)
 {
     anna_object_t *thiso = anna_as_obj_fast(param[0]);
     anna_node_t *this = anna_node_unwrap(thiso);
@@ -126,7 +126,7 @@ ANNA_NATIVE(anna_node_wrapper_i_to_string, 1)
     return anna_from_obj(res);
 }
 
-ANNA_NATIVE(anna_node_wrapper_cmp, 2)
+ANNA_VM_NATIVE(anna_node_wrapper_cmp, 2)
 {
     if(anna_entry_null(param[1]))
     {
@@ -144,12 +144,12 @@ ANNA_NATIVE(anna_node_wrapper_cmp, 2)
 	anna_node_unwrap(anna_as_obj(param[1])))); 
 }
 
-ANNA_NATIVE(anna_node_wrapper_hash, 1)
+ANNA_VM_NATIVE(anna_node_wrapper_hash, 1)
 {
     return anna_from_int(anna_node_hash_func(anna_node_unwrap(anna_as_obj(param[0]))));
 }
 
-ANNA_NATIVE(anna_node_wrapper_copy, 1)
+ANNA_VM_NATIVE(anna_node_wrapper_copy, 1)
 {
     return anna_from_obj(
 	anna_node_wrap(

@@ -19,7 +19,7 @@
 #include "anna_member.h"
 #include "anna_mid.h"
 
-ANNA_NATIVE(anna_cerror_strerror, 1)
+ANNA_VM_NATIVE(anna_cerror_strerror, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -39,7 +39,7 @@ ANNA_NATIVE(anna_cerror_strerror, 1)
     return anna_from_obj(res);
 }
 
-ANNA_NATIVE(anna_cerror_get_errno, 1)
+ANNA_VM_NATIVE(anna_cerror_get_errno, 1)
 {
     return anna_from_int(errno);    
 }

@@ -118,7 +118,7 @@ static anna_vmstack_t *anna_float_hash(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-ANNA_NATIVE(anna_float_convert_string, 1)
+ANNA_VM_NATIVE(anna_float_convert_string, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -159,12 +159,12 @@ ANNA_NATIVE(anna_float_convert_string, 1)
     return anna_from_float(res);
 }
 
-ANNA_NATIVE(anna_float_convert_float, 1)
+ANNA_VM_NATIVE(anna_float_convert_float, 1)
 {
     return param[0];
 }
 
-ANNA_NATIVE(anna_float_convert_int, 1)
+ANNA_VM_NATIVE(anna_float_convert_int, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -175,7 +175,7 @@ ANNA_NATIVE(anna_float_convert_int, 1)
     return anna_from_float(res);
 }
 
-ANNA_NATIVE(anna_float_max_exponent, 1)
+ANNA_VM_NATIVE(anna_float_max_exponent, 1)
 {
     return anna_from_int(DBL_MAX_EXP);
 }

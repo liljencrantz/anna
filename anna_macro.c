@@ -21,7 +21,6 @@
 
 ANNA_VM_MACRO(anna_macro_macro)
 {
-
     CHECK_CHILD_COUNT(node,L"macro definition", 4);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);

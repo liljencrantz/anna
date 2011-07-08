@@ -96,7 +96,7 @@ static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
     return idx;
 }
 
-ANNA_NATIVE(anna_string_i_set_int, 3)
+ANNA_VM_NATIVE(anna_string_i_set_int, 3)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     ANNA_ENTRY_NULL_CHECK(param[2]);
@@ -109,7 +109,7 @@ ANNA_NATIVE(anna_string_i_set_int, 3)
     return param[2];
 }
 
-ANNA_NATIVE(anna_string_i_get_int, 2)
+ANNA_VM_NATIVE(anna_string_i_get_int, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     ssize_t idx = anna_string_idx_wrap(anna_as_obj(param[0]), anna_as_int(param[1]));
@@ -120,7 +120,7 @@ ANNA_NATIVE(anna_string_i_get_int, 2)
     return null_entry;
 }
 
-ANNA_NATIVE(anna_string_i_get_range, 2)
+ANNA_VM_NATIVE(anna_string_i_get_range, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     

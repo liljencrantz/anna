@@ -1,12 +1,12 @@
 
-ANNA_NATIVE(anna_node_string_literal_wrapper_i_get_name, 1)
+ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_get_name, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_string_literal_t *node = (anna_node_string_literal_t *)anna_node_unwrap(this);
     return anna_from_obj(anna_string_create(node->payload_size, node->payload));
 }
 
-ANNA_NATIVE(anna_node_string_literal_wrapper_i_init, 3)
+ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_init, 3)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));

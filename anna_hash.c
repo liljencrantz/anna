@@ -906,7 +906,7 @@ static inline anna_vmstack_t *anna_hash_remove(anna_vmstack_t *stack, anna_objec
 	0);
 }
 
-ANNA_NATIVE(anna_hash_get_count_method, 1)
+ANNA_VM_NATIVE(anna_hash_get_count_method, 1)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(param[0]));
     return anna_from_int(this->used);
@@ -1076,7 +1076,7 @@ static anna_vmstack_t *anna_hash_map(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
-ANNA_NATIVE(anna_hash_del, 1)
+ANNA_VM_NATIVE(anna_hash_del, 1)
 {
     anna_object_t *hash = anna_as_obj(param[0]);
     anna_hash_t *this = ahi_unwrap(hash);

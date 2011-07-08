@@ -17,14 +17,14 @@
 #include "anna_int.h"
 #include "anna_mid.h"
 
-ANNA_NATIVE(anna_type_to_string, 1)
+ANNA_VM_NATIVE(anna_type_to_string, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type = anna_type_unwrap(this);
     return anna_from_obj(anna_string_create(wcslen(type->name), type->name));
 }
 
-ANNA_NATIVE(anna_type_i_get_member, 1)
+ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create_imutable(member_type);

@@ -40,7 +40,7 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
 "
 
     echo "
-ANNA_NATIVE(anna_char_i_$name, 2)
+ANNA_VM_NATIVE(anna_char_i_$name, 2)
 {
     if(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object)
         return null_entry;
@@ -67,7 +67,7 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
 "
 
     echo "
-ANNA_NATIVE(anna_char_i_$name, 2)
+ANNA_VM_NATIVE(anna_char_i_$name, 2)
 {
     wchar_t v = anna_as_char(param[0]);
     return anna_from_char($op);

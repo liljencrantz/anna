@@ -283,7 +283,7 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
     }
 }
 
-ANNA_NATIVE(anna_system_get_argument, 1)
+ANNA_VM_NATIVE(anna_system_get_argument, 1)
 {
     static anna_object_t *res = 0;
     if(!res)

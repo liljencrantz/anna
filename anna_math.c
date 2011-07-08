@@ -15,37 +15,37 @@
 #include "anna_vm.h"
 #include "anna_math.h"
 
-ANNA_NATIVE(anna_math_sin, 1)
+ANNA_VM_NATIVE(anna_math_sin, 1)
 {
     return anna_entry_null(param[0])? null_entry : anna_from_float(sin(anna_as_float(param[0])));
 }
 
-ANNA_NATIVE(anna_math_cos, 1)
+ANNA_VM_NATIVE(anna_math_cos, 1)
 {
     return anna_entry_null(param[0])? null_entry : anna_from_float(cos(anna_as_float(param[0])));
 }
 
-ANNA_NATIVE(anna_math_tan, 1)
+ANNA_VM_NATIVE(anna_math_tan, 1)
 {
     return anna_entry_null(param[0])? null_entry : anna_from_float(tan(anna_as_float(param[0])));
 }
 
-ANNA_NATIVE(anna_math_asin, 1)
+ANNA_VM_NATIVE(anna_math_asin, 1)
 {
     return anna_entry_null(param[0])? null_entry : anna_from_float(asin(anna_as_float(param[0])));
 }
 
-ANNA_NATIVE(anna_math_acos, 1)
+ANNA_VM_NATIVE(anna_math_acos, 1)
 {
     return anna_entry_null(param[0])? null_entry : anna_from_float(acos(anna_as_float(param[0])));
 }
 
-ANNA_NATIVE(anna_math_atan, 1)
+ANNA_VM_NATIVE(anna_math_atan, 1)
 {
     return anna_entry_null(param[0])? null_entry : anna_from_float(atan(anna_as_float(param[0])));
 }
 
-ANNA_NATIVE(anna_math_log, 1)
+ANNA_VM_NATIVE(anna_math_log, 1)
 {
     return anna_entry_null(param[0])? null_entry : anna_from_float(log(anna_as_float(param[0])));
 }

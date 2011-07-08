@@ -187,13 +187,13 @@ static anna_vmstack_t *anna_int_to_string(anna_vmstack_t *stack, anna_object_t *
     return stack;
 }
 
-ANNA_NATIVE(anna_int_del, 1)
+ANNA_VM_NATIVE(anna_int_del, 1)
 {
     mpz_clear(*anna_int_unwrap(anna_as_obj(param[0])));
     return param[0];
 }
 
-ANNA_NATIVE(anna_int_convert_string, 1)
+ANNA_VM_NATIVE(anna_int_convert_string, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -265,7 +265,7 @@ ANNA_NATIVE(anna_int_convert_string, 1)
     return anna_from_obj(res_obj);
 }
 
-ANNA_NATIVE(anna_int_convert_float, 1)
+ANNA_VM_NATIVE(anna_int_convert_float, 1)
 {
     if(anna_entry_null(param[0]))
     {
@@ -283,7 +283,7 @@ ANNA_NATIVE(anna_int_convert_float, 1)
     return anna_from_obj(res_obj);
 }
 
-ANNA_NATIVE(anna_int_convert_int, 1)
+ANNA_VM_NATIVE(anna_int_convert_int, 1)
 {
     return param[0];
 }

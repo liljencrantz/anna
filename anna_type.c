@@ -641,7 +641,7 @@ static void anna_type_prepare_property(
 
 }
 
-ANNA_NATIVE(anna_type_noop, 1)
+ANNA_VM_NATIVE(anna_type_noop, 1)
 {
     return param[0];
 }

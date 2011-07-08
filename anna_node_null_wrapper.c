@@ -1,5 +1,5 @@
 
-ANNA_NATIVE(anna_node_null_wrapper_i_init, 2)
+ANNA_VM_NATIVE(anna_node_null_wrapper_i_init, 2)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     if(anna_entry_null(param[1]))
