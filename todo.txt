@@ -13,7 +13,7 @@
   - Can't assign to constants
 * Types, Stacks etc. should be hashable
 * Access attributes of variables and properties
-* Place all relevant base classes in sane modules, e.g. Function, Type
+* Place all relevant base classes in sane modules, e.g. Type should be moved to reflection
 
 1.0 RELEASE CRITERIA(Done):
 * Inheritance and method overloading fully working
@@ -42,7 +42,7 @@ MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
 When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 What should be the return value for iterator methods like map and filter when given a null value as a function body?
-An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that this object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
+An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that the «this» object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
 Make api more consistent. Make naming of wrapper types consistent. Make naming of native type methods consistent.
 If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code?
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge numbers of switch statements. One possibility would be to add function pointers to the node types.
@@ -51,12 +51,12 @@ Should finalizers be dropped? If we drop them, we get a lot more freedom with re
 Should print work like python print, e.g. autoinsert newlines and spaces?
 It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
 Should Range really be mutable?
-How should inherited constructors be handled?
+How should the argument list for inherited constructors be handled?
 It should be possible to declare type members with initial values. 
 Can we drop the Pair type?
 We need reverse aliases for static methods, something like (aliasReverseStatic(String.convert))
 Add a variable named global in the global namespace, pointing to itself. 
-Implicit this lookup can't use properties. We need to revise the method used for use expressions to fix this.
+Type member setup needs some dependency resolution in order for type calculations to work properly.
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...

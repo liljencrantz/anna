@@ -14,7 +14,6 @@ often used code paths, which makes it useful for regression testing.")
     var io.File baseDir (internal);
     var HashMap«Object, String» pathLookup;
 
-
     def __init__()
     {
 	baseDir = io.File("documentation");
@@ -44,9 +43,20 @@ often used code paths, which makes it useful for regression testing.")
 	return res;
     }
     
+    def String getLink(Type typ)
+    {
+	"<a href='../%'>%</a>" % [pathLookup[typ], typ.name];
+
+    }
+
     def String getSignature(reflection.Function fun)
     {
-	String.convert(fun)
+        argv := ", ".join(
+	    fun.inputType.map(idx, t)
+	    {
+		"% %" % [getLink(t), fun.inputName[idx]]
+	    });
+	"def % % (%)" % [getLink(fun.outputType), fun.name, argv]
     }
 
     def documentMethod(reflection.Method meth, File file)
@@ -58,14 +68,14 @@ often used code paths, which makes it useful for regression testing.")
 <br>
 %
 
-" %[meth.name, getSignature(meth.function), doc]);
+" % [meth.name, getSignature(meth.function), doc]);
     }
     
     def documentProperty(reflection.Property prop, File file)
     {
 	file.write("
 <hr>
-var <a href='../%'>%</a><a name='%'>%</a>
+var <a href='../%'>%</a> <a name='%'>%</a>
 <br>
 
 " % [pathLookup[prop.type], prop.type.name, prop.name, prop.name]);
@@ -88,9 +98,10 @@ var <a href='../%'>%</a><a name='%'>%</a>
 	file.write("
 <html>
 <head>
+<title>Anna documentation for % type</title>
 </head>
 <body>
-");
+" % [t.name]);
 	file.write( "<h1>Type %</h1>
 <ul>
 " % [t.name]);
@@ -149,14 +160,12 @@ var <a href='../%'>%</a><a name='%'>%</a>
 	    }
 	}
 
-
-
 	file.open();
 	module.__type__.member.each(mem)
 	{
 	    
 	}
-
+	
 	file.close();
 
 	module.__type__.member.each(mem)
