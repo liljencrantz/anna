@@ -42,8 +42,16 @@ anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
     }
     
     result->wrapper = anna_object_create(m_type);
-    memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_MEMBER_PAYLOAD), &result, sizeof(anna_member_t *));  
-    memcpy(anna_entry_get_addr(result->wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD), &type, sizeof(anna_type_t *));  
+    memcpy(
+	anna_entry_get_addr(
+	    result->wrapper, ANNA_MID_MEMBER_PAYLOAD),
+	&result, 
+	sizeof(anna_member_t *));  
+    memcpy(
+	anna_entry_get_addr(
+	    result->wrapper, ANNA_MID_MEMBER_TYPE_PAYLOAD), 
+	&type, 
+	sizeof(anna_type_t *));  
     assert(result->wrapper);
     return result->wrapper;
 }

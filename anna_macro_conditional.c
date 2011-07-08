@@ -26,7 +26,6 @@ ANNA_VM_MACRO(anna_macro_and)
 
 static inline anna_node_t *anna_macro_if_i(anna_node_call_t *node)
 {
-
     CHECK_CHILD_COUNT(node,L"if expression", 3);
     CHECK_NODE_BLOCK(node->child[1]);
     CHECK_NODE_BLOCK(node->child[2]);

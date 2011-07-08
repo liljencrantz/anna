@@ -327,7 +327,7 @@ void anna_module_init()
 {
     /*
       Set up all native modules
-     */
+    */
     anna_module_data_t modules[] = 
 	{
 	    { L"lang", anna_lang_create_types, anna_lang_load },
@@ -518,7 +518,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	anna_node_macro_expand(
 	    program,
 	    macro_stack);
-    
     if(anna_error_count)
     {
 	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);
