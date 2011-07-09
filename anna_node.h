@@ -404,12 +404,6 @@ void anna_node_print(int level, anna_node_t *this);
 wchar_t *anna_node_string(anna_node_t *this);
 
 /**
-  Parse the specified file and return an unprepared AST tree that
-  represents the file content.
-*/
-anna_node_t *anna_parse(wchar_t *name);
-
-/**
   Print the source code that lead to the creation of the specified AST
   node. This usually involves opening the source code file.
 

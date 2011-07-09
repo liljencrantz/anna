@@ -160,7 +160,6 @@ static void anna_module_init_recursive(
 
 static void anna_module_bootstrap_macro(wchar_t *name)
 {
-    
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"bootstrap/%ls.anna", name);
@@ -485,31 +484,28 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     */
     al_push(&module_stack->import, L"lang");
     
-    anna_stack_template_t *macro_stack = anna_stack_create(stack_global);
-    macro_stack->flags |= ANNA_STACK_NAMESPACE;
     anna_module_find_expand(program, &module_stack->expand);    
     anna_module_find_import(program, &module_stack->import);
     
     for(i=0; i<al_get_count(&module_stack->expand); i++ )
     {
-	wchar_t *str = al_get(&macro_stack->expand, i);
+	wchar_t *str = al_get(&module_stack->expand, i);
 	debug(D_SPAM,L"expand statement: expand(%ls)\n", str);
 	
 	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
-	anna_module_load_i(
-	    mod);
+	anna_module_load_i(mod);
 	
 	if(anna_error_count || !mod)
 	{
 	    return;
 	}
-	al_set(&macro_stack->expand, i, anna_use_create_stack(mod));
+	al_set(&module_stack->expand, i, anna_use_create_stack(mod));
     }
     
     for(i=0; i<al_get_count(&anna_module_default_macros); i++ )
     {
 	anna_stack_template_t *mod = al_get(&anna_module_default_macros, i);
-	al_push(&macro_stack->expand, anna_use_create_stack(mod));
+	al_push(&module_stack->expand, anna_use_create_stack(mod));
     }
     
     /*
@@ -518,7 +514,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     anna_node_t *node = (anna_node_t *)
 	anna_node_macro_expand(
 	    program,
-	    macro_stack);
+	    module_stack);
     if(anna_error_count)
     {
 	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);

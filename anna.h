@@ -546,4 +546,16 @@ anna_object_t *anna_object_create_raw(
 void anna_object_print(
     anna_object_t *obj);
 
+/**
+   Parse the specified file and return an unprepared AST tree that
+   represents the file content.
+*/
+struct anna_node *anna_parse(wchar_t *filename);
+
+/**
+   Parse the specified string and return an unprepared AST tree that
+   represents the file content.
+*/
+struct anna_node *anna_parse_string(wchar_t *str);
+
 #endif

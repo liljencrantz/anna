@@ -96,6 +96,22 @@ ANNA_VM_NATIVE(anna_generate_identifier, 1)
     return anna_from_obj(anna_string_create(wcslen(nam), nam));
 }
 
+ANNA_VM_NATIVE(anna_parse_i, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    
+    wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
+    anna_node_t *res = anna_parse_string(str);
+    if(res)
+    {
+	return anna_from_obj(anna_node_wrap(res));
+    }
+    return null_entry;
+}
+
 
 ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 {
@@ -365,17 +381,32 @@ void anna_node_wrapper_load(anna_stack_template_t *stack)
 	type_type, anna_from_obj(anna_type_wrap(node_imutable_call_wrapper_type)), 
 	ANNA_STACK_READONLY);
     
-    static wchar_t *p_argn[]={L"hint"};
+    static wchar_t *i_argn[]={L"hint"};
     anna_function_t *f = anna_native_create(
 	L"identifier", 
 	0,
 	&anna_generate_identifier, 
 	string_type, 1, &string_type, 
-	p_argn, stack);
+	i_argn, stack);
 
     anna_stack_declare(
 	stack,
 	L"identifier",
+	f->wrapper->type,
+	anna_from_obj(f->wrapper),
+	ANNA_STACK_READONLY);
+
+    static wchar_t *p_argn[]={L"input"};
+    f = anna_native_create(
+	L"parse", 
+	0,
+	&anna_parse_i, 
+	node_wrapper_type, 1, &string_type, 
+	p_argn, stack);
+    
+    anna_stack_declare(
+	stack,
+	L"parse",
 	f->wrapper->type,
 	anna_from_obj(f->wrapper),
 	ANNA_STACK_READONLY);

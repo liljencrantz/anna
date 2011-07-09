@@ -1,5 +1,6 @@
+expand(template);
 
 def main()
 {
-    String.member.each(i){if(i.name == "thaw"){print(i.name, " ", i.attribute, "\n")}} 
+    print(template("util/document/type.html", foo:3));
 }

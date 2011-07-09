@@ -1,0 +1,93 @@
+use(io);
+
+macro template(node)
+{
+    tmplText := File((node[0] as StringLiteral).payload).readFile();
+    transformed := "literal(\"".thaw;
+    code := ? as Int;
+    wasBrack := ? as Int;
+    tmplText.each(ch)
+    {
+	if(code)
+	{
+	    switch(ch)
+	    {
+		case('?')
+		{
+		    wasBrack = 1;
+		}
+		case('>')
+		{
+		    if(wasBrack)
+		    {
+			transformed ~= ";\n    literal(\"";
+			code = ?;
+			wasBrack = ?;
+		    } else
+		    {
+			transformed ~= ch;
+		    }
+		}
+		default
+		{
+		    if(wasBrack)
+		    {
+			transformed ~= '?';
+			wasBrack = ?;
+		    }
+		    transformed ~= ch;
+		}
+	    }
+	} else
+	{
+	    switch(ch)
+	    {
+		case('<')
+		{
+		    wasBrack = 1;
+		}
+		case('?')
+		{
+		    if(wasBrack)
+		    {
+			transformed ~= "\");\n    ";
+			code = 1;
+			wasBrack = ?;
+		    } else
+		    {
+			transformed ~= ch;
+		    }
+		}
+		default
+		{
+		    if(wasBrack)
+		    {
+			transformed ~= '<';
+			wasBrack = ?;
+		    }
+		    transformed ~= ch;
+		}
+	    }
+	}
+    }
+    if(code)
+    {
+	transformed ~= ";\n";
+    } else 
+    {
+	transformed ~= "\");\n";
+    }
+    
+    print(transformed);
+    nodes := parse(transformed);
+    print(nodes);
+    res := ast(
+	(def String()
+	{
+	    return %text;
+	})()
+	) % ["text": Dummy(node, tmplText)];
+    print(res, "\n");
+    return res;
+}
+
