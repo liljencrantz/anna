@@ -36,6 +36,7 @@ often used code paths, which makes it useful for regression testing.")
 		    case(str as parser.StringLiteral)
 		    {
 			res ~= str.payload;
+			res ~= "<p>";
 		    }
 		}
 	    }
@@ -61,7 +62,7 @@ often used code paths, which makes it useful for regression testing.")
 
     def documentMethod(reflection.Method meth, File file)
     {
-        doc := extractDocumentation(meth.function.attribute);
+        doc := extractDocumentation(meth.attribute);
 	file.write("
 <hr>
 <a name='%'>%</a>
@@ -73,12 +74,13 @@ often used code paths, which makes it useful for regression testing.")
     
     def documentProperty(reflection.Property prop, File file)
     {
+        doc := extractDocumentation(prop.attribute);
 	file.write("
 <hr>
 var <a href='../%'>%</a> <a name='%'>%</a>
 <br>
-
-" % [pathLookup[prop.type], prop.type.name, prop.name, prop.name]);
+%
+" % [pathLookup[prop.type], prop.type.name, prop.name, prop.name, doc]);
     }
     
     def documentVariable(reflection.Variable vari, File file)
@@ -159,7 +161,7 @@ var <a href='../%'>%</a> <a name='%'>%</a>
 		}
 	    }
 	}
-
+	
 	file.open();
 	module.__type__.member.each(mem)
 	{

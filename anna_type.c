@@ -542,6 +542,7 @@ static void anna_type_prepare_member_internal(
     
     anna_member_t *member = anna_member_get(
 	type, mid);
+    member->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)decl->attribute);
     
     if(is_method)
     {

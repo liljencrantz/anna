@@ -44,7 +44,8 @@ size_t anna_member_create_native_property(
     mid_t mid,
     anna_type_t *property_type,
     anna_native_t getter,
-    anna_native_t setter);
+    anna_native_t setter,
+    wchar_t *doc);
 
 size_t anna_member_create_property(
     anna_type_t *type,

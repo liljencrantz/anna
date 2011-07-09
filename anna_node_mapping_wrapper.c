@@ -57,14 +57,16 @@ static anna_type_t *anna_node_create_mapping_wrapper_type(
 	type, anna_mid_get(L"from"),
 	node_wrapper_type,
 	&anna_node_mapping_wrapper_i_get_from,
-	0);
+	0,
+	L"The key node of this mapping.");
 
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"to"),
 	node_wrapper_type,
 	&anna_node_mapping_wrapper_i_get_to,
-	0);
+	0,
+	L"The value node of this mapping.");
     
     return type;
 }

@@ -1142,12 +1142,15 @@ static void anna_hash_type_create_internal(
 	}
     ;
 
-    anna_member_create_native_method(type, anna_mid_get(L"__init__"),
-                                     ANNA_FUNCTION_VARIADIC, &anna_hash_init,
-                                     type, 2, i_argv, i_argn);
-    anna_member_create_native_property(type, anna_mid_get(L"count"), int_type,
-                                &anna_hash_get_count_method, 0);
+    anna_member_create_native_method(
+	type, anna_mid_get(L"__init__"),
+	ANNA_FUNCTION_VARIADIC, &anna_hash_init,
+	type, 2, i_argv, i_argn);
 
+    anna_member_create_native_property(
+	type, anna_mid_get(L"count"), int_type,
+	&anna_hash_get_count_method, 0,
+	L"The number of elements in this Map.");
 
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!MapIterFunction", spec1, spec2);

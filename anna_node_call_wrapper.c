@@ -321,7 +321,8 @@ static void anna_node_create_call_wrapper_type(
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"count"), int_type,
-	&anna_node_call_wrapper_i_get_count, 0);
+	&anna_node_call_wrapper_i_get_count, 0,
+	L"The number of argument nodes in this Call.");
   
     anna_type_t *i_argv[] = 
 	{
@@ -363,18 +364,19 @@ static void anna_node_create_call_wrapper_type(
     anna_member_create_native_property(
 	type, anna_mid_get(L"freeze"),
 	node_imutable_call_wrapper_type, mutable ? &anna_node_call_wrapper_copy_imutable : &anna_node_call_wrapper_noop,
-	0);
+	0, 0);
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"thaw"),
 	node_call_wrapper_type, mutable ? &anna_node_call_wrapper_noop : &anna_node_call_wrapper_copy_mutable,
-	0);
+	0, 0);
     
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"function"), node_wrapper_type,
 	&anna_node_call_wrapper_i_get_function,
-	mutable?&anna_node_call_wrapper_i_set_function:0);
+	mutable?&anna_node_call_wrapper_i_set_function:0,
+	L"The function node of this call.");
     
     anna_type_t *j_argv[] = 
 	{

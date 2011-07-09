@@ -180,6 +180,7 @@ void anna_cerror_load(anna_stack_template_t *stack)
 	type, anna_mid_get(L"errno"),
 	int_type,
 	&anna_cerror_get_errno,
-	0);
+	0,
+	L"The latest C library error to occur");
 }
 

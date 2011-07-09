@@ -151,31 +151,36 @@ void anna_function_type_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"name"), string_type,
-	&anna_function_type_i_get_name, 0);
+	&anna_function_type_i_get_name, 0,
+	L"The name of this function.");
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"outputType"),
 	type_type,
 	&anna_function_type_i_get_output,
-	0);
+	0,
+	L"The return type of this function.");
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"inputType"),
 	anna_list_type_get_imutable(type_type),
 	&anna_function_type_i_get_input_type,
-	0);
+	0,
+	L"A list of the input types of this function.");
     
     anna_member_create_native_property(
 	res, anna_mid_get(L"inputName"),
 	anna_list_type_get_imutable(string_type),
 	&anna_function_type_i_get_input_name,
-	0);
+	0,
+	L"A list of the input names of this function.");
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"attribute"),
 	node_call_wrapper_type,
 	&anna_function_type_i_get_attributes,
-	0);
+	0,
+	L"All attributes specified for this function.");
 
     anna_type_copy_object(res);
 

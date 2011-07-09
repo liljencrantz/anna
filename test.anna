@@ -1,7 +1,5 @@
 
 def main()
 {
-    list := [1,2,3,4];
-    MutableList.push(list, 5);
-    print(list, "\n");
+    String.member.each(i){if(i.name == "thaw"){print(i.name, " ", i.attribute, "\n")}} 
 }

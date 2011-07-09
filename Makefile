@@ -16,7 +16,7 @@ COV_FLAGS := #--coverage
 # optimization increases overall performance slightly. Unfortunatly,
 # with lto, there does not seem to be any way to drop this flag only
 # for one function or one compilation unit.
-PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
+PROF_FLAGS := -g #-flto -O3 -fuse-linker-plugin -fno-gcse
 
 # CFLAGS_NOWARN consists of all cflags not related to warnings
 CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1		\
@@ -114,6 +114,9 @@ anna_lex.o: anna_lex.c
 check: test
 .PHONY: check
 
+documentation: anna
+	./anna util/document
+
 test: anna
 	time ./anna_tests.sh
 .PHONY: test
@@ -124,4 +127,5 @@ anna_yacc.output *.o anna_lex.c anna_lex.h anna_yacc.c anna_yacc.h	\
 anna_float_i.c anna_char_i.c anna_int_i.c anna_string_i.c		\
 anna_complex_i.c anna_object_i.c *.d *.gcov *.gcda *.gcno		\
 anna_vm_short_circut.c
+	rm -r documentation
 .PHONY: clean

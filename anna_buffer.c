@@ -304,20 +304,23 @@ void anna_buffer_type_create()
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
 	&anna_buffer_get_count_method,
-	&anna_buffer_set_count_method);
+	&anna_buffer_set_count_method,
+	L"The number of bytes in this buffer.");
 
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"first"),
 	int_type,
-	&anna_buffer_get_first, 0);
+	&anna_buffer_get_first, 0,
+	L"The first byte in this buffer.");
 
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"last"),
 	int_type,
 	&anna_buffer_get_last,
-	0);
+	0,
+	L"The last byte in this buffer.");
 
     mmid = anna_member_create_native_method(
 	type,

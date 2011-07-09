@@ -48,7 +48,8 @@ static anna_type_t *anna_node_create_closure_wrapper_type(
 	type, anna_mid_get(L"payload"),
 	function_type_base,
 	&anna_node_closure_wrapper_i_get_payload,
-	0);
+	0,
+	L"The payload of this node.");
 
     return type;
 }

@@ -215,7 +215,7 @@ struct anna_type
     struct anna_node_call *body;
     /**
        Attribute list for this type
-     */
+    */
     struct anna_node_call *attribute;
     /**
        The object that wraps this type. Used for
@@ -224,7 +224,7 @@ struct anna_type
     struct anna_object *wrapper;
     /**
        An array containing all static members.
-     */
+    */
     anna_entry_t **static_member;
     /**
        A hash of all template specializations of this type.
@@ -280,7 +280,8 @@ struct anna_member
        member from within the anna code. 
     */
     struct anna_object *wrapper;
-
+    
+    struct anna_node_call *attribute;
     /**
        The name of this member.
     */

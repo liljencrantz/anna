@@ -46,6 +46,7 @@ static anna_type_t *anna_node_create_float_literal_wrapper_type(anna_stack_templ
     anna_member_create_native_property(
 	type, anna_mid_get(L"payload"), float_type,
 	&anna_node_float_literal_wrapper_i_get_payload,
-	0);
+	0,
+	L"The payload of this node");
     return type;
 }

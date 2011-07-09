@@ -56,6 +56,7 @@ static void anna_node_create_identifier_wrapper_type(anna_stack_template_t *stac
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"name"), string_type,
-	&anna_node_identifier_wrapper_i_get_name, 0);
+	&anna_node_identifier_wrapper_i_get_name, 0,
+	L"The name of this identifier.");
 }
 

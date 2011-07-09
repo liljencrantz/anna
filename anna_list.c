@@ -953,20 +953,23 @@ static void anna_list_type_create_internal(
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
 	&anna_list_get_count_method,
-	mutable ? &anna_list_set_count_method : 0);
+	mutable ? &anna_list_set_count_method : 0,
+	L"The number of elements in this list.");
 
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"first"),
 	spec,
-	&anna_list_get_first, 0);
+	&anna_list_get_first, 0,
+	L"The first element of this list.");
 
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"last"),
 	spec,
 	&anna_list_get_last,
-	0);
+	0,
+	L"The last element of this list");
 
     anna_member_create_native_method(
 	type, anna_mid_get(L"__appendAssign__"),
@@ -1093,12 +1096,13 @@ static void anna_list_type_create_internal(
     anna_member_create_native_property(
 	type, anna_mid_get(L"freeze"),
 	imutable_type, mutable ? &anna_list_i_copy_imutable : &anna_util_noop,
-	0);
+	0,
+	L"An imutable copy of this List, or the List itself if it is already imutable.");
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"thaw"),
-	mutable_type, mutable ? &anna_util_noop : &anna_list_i_copy_mutable,
-	0);
+	mutable_type, mutable ? &anna_util_noop : &anna_list_i_copy_mutable, 0,
+	L"A mutable copy of this List, or the List itself if it is already mutable.");
 }
 
 static inline void anna_list_internal_init()

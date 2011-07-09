@@ -723,43 +723,44 @@ void anna_range_type_create()
     
     anna_member_create_native_property(
 	range_type, anna_mid_get(L"count"), int_type,
-	&anna_range_get_count_i, 0);
+	&anna_range_get_count_i, 0, "The number of elements in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"from"),
 	int_type,
 	&anna_range_get_from_i,
-	&anna_range_set_from_i);
+	&anna_range_set_from_i, L"The first element in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"to"),
 	int_type,
 	&anna_range_get_to_i,
-	&anna_range_set_to_i);
+	&anna_range_set_to_i, L"The last element in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"step"),
 	int_type,
 	&anna_range_get_step_i,
-	&anna_range_set_step_i);
+	&anna_range_set_step_i, L"The distance between elements in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"isOpen"),
 	int_type,
 	&anna_range_get_open_i,
-	0);
+	0,
+	"is this range semi-infinite?");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"first"),
 	int_type,
 	&anna_range_get_first_i,
-	0);
+	0, L"The first element of this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"last"),
 	int_type,
 	&anna_range_get_last_i,
-	0);
+	0, L"The last element of this Range.");
     
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!RangeIterFunction", int_type, int_type);

@@ -49,7 +49,8 @@ static anna_type_t *anna_node_create_string_literal_wrapper_type(anna_stack_temp
 	node_string_literal_wrapper_type,
 	anna_mid_get(L"payload"), string_type,
 	&anna_node_string_literal_wrapper_i_get_name,
-	0);
+	0,
+	L"The payload of this node");
     return node_string_literal_wrapper_type;
     
 }

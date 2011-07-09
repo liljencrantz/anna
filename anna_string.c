@@ -810,7 +810,8 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"),
 	int_type, &anna_string_i_get_count,
-	mutable?&anna_string_i_set_count:0);
+	mutable?&anna_string_i_set_count:0,
+	L"The number of characters in this String.");
 
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!StringIterFunction", int_type, char_type);
@@ -904,13 +905,13 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_member_create_native_property(
 	type, anna_mid_get(L"freeze"),
 	string_type, mutable ? &anna_string_i_copy : &anna_util_noop,
-	0);
-    
+	0,
+    	L"An imutable copy of this String, or the String itself if it is already imutable.");
     anna_member_create_native_property(
 	type, anna_mid_get(L"thaw"),
 	mutable_string_type, mutable ? &anna_util_noop : &anna_mutable_string_i_copy,
-	0);
-    
+	0,
+	L"A mutable copy of this String, or the String itself if it is already mutable.");
 }
 
 void anna_string_type_create()

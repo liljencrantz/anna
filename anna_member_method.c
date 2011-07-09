@@ -14,6 +14,6 @@ static void anna_member_method_type_create(anna_stack_template_t *stack)
     anna_member_create_native_property(
 	member_method_type, anna_mid_get(L"function"),
 	function_type_base, &anna_member_method_value,
-	0);
-
+	0,
+	L"The function object of this method");
 }

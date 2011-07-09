@@ -256,7 +256,8 @@ void anna_float_type_create()
     
     anna_member_create_native_property(
 	float_type, anna_mid_get(L"maxExponent"),
-	int_type, &anna_float_max_exponent, 0);
+	int_type, &anna_float_max_exponent, 0,
+	L"The largest value for the exponent that can be stored in a float.");
     
     anna_float_type_i_create();
 }

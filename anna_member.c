@@ -7,6 +7,7 @@
 
 #include "anna.h"
 #include "anna_node.h"
+#include "anna_node_wrapper.h"
 #include "anna_node_create.h"
 #include "anna_member.h"
 #include "anna_int.h"
@@ -19,6 +20,7 @@
 #include "anna_vm.h"
 #include "anna_mid.h"
 #include "anna_type_data.h"
+#include "anna_intern.h"
 
 static anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 
@@ -135,13 +137,22 @@ ANNA_VM_NATIVE(anna_member_i_value, 2)
     }
 }
 
+ANNA_VM_NATIVE(anna_member_i_get_attributes, 1)
+{
+    anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
+    anna_member_t *memb = anna_member_unwrap(memb_obj);
+    if(!memb->attribute)
+       return null_entry;
+    return anna_from_obj(anna_node_wrap((anna_node_t *)memb->attribute));
+}
+
 static void anna_member_type_create()
 {
 
     anna_member_create(
 	member_type, ANNA_MID_MEMBER_PAYLOAD, 0, null_type);
  
-   anna_member_create(
+    anna_member_create(
 	member_type,
 	ANNA_MID_MEMBER_TYPE_PAYLOAD,
 	0,
@@ -149,43 +160,56 @@ static void anna_member_type_create()
     
     anna_member_create_native_property(
 	member_type, anna_mid_get(L"name"),
-	string_type, &anna_member_i_get_name, 0);
+	string_type, &anna_member_i_get_name, 0,
+	L"The name of this member.");
 
     anna_member_create_native_property(
 	member_type,
 	anna_mid_get(L"isStatic"),
 	int_type,
 	&anna_member_i_get_static,
-	0);
+	0,
+	L"Is this member static?");
 
     anna_member_create_native_property(
 	member_type,
 	anna_mid_get(L"isMethod"),
 	int_type,
 	&anna_member_i_get_method,
-	0);
+	0,
+	L"Is this member a method?");
 
     anna_member_create_native_property(
 	member_type,
 	anna_mid_get(L"isProperty"),
 	int_type,
 	&anna_member_i_get_property,
-	0);
+	0,
+	L"Is this member a property?");
 
     anna_member_create_native_property(
 	member_type,
 	anna_mid_get(L"isConstant"),
 	int_type,
 	&anna_member_i_get_constant,
-	0);
+	0,
+	L"Is this member constant?");
     
     anna_member_create_native_property(
 	member_type,
 	anna_mid_get(L"type"),
 	type_type,
 	&anna_member_i_get_type,
-	0);
+	0,
+	L"The type of this member.");
     
+    anna_member_create_native_property(
+	member_type, anna_mid_get(L"attribute"),
+	node_call_wrapper_type,
+	&anna_member_i_get_attributes,
+	0,
+	L"All attributes specified for this member.");
+
     anna_type_t *v_argv[] = 
 	{
 	    member_type,
@@ -505,7 +529,8 @@ size_t anna_member_create_native_property(
     mid_t mid,
     anna_type_t *property_type,
     anna_native_t getter,
-    anna_native_t setter)
+    anna_native_t setter,
+    wchar_t *doc)
 {
     wchar_t *argn[] = 
 	{
@@ -563,9 +588,18 @@ size_t anna_member_create_native_property(
     }
     sb_destroy(&sb);
     
-    return anna_member_create_property(
+    mid = anna_member_create_property(
 	type, mid, property_type, 
 	getter_offset, setter_offset);
+    
+    if(doc)
+    {
+	doc = anna_intern_static(doc);
+	anna_member_document(
+	    type, mid, doc);
+    }
+    
+    return mid;
 }
 
 mid_t anna_member_create_method(
@@ -705,12 +739,24 @@ void anna_member_document(
     mid_t mid,
     wchar_t *doc)
 {
-    anna_function_t *fun = anna_function_unwrap(
-	anna_as_obj_fast(anna_entry_get_static(type, mid)));
-    if(!fun)
+    anna_entry_t ** e = anna_entry_get_addr_static(type, mid);
+    if(e)
     {
-	CRASH;
+	anna_function_t *fun = anna_function_unwrap(anna_as_obj(*e));
+	if(fun)
+	{
+	    anna_function_document(fun, doc);
+	}
     }
-    anna_function_document(fun, doc);
     
+    anna_member_t *memb = anna_member_get(type, mid);
+    anna_node_call_t *attr = anna_node_create_call2(
+	0,
+	anna_node_create_identifier(0, L"documentation"),
+	anna_node_create_string_literal(0, wcslen(doc), doc));
+    if(!memb->attribute)
+    {
+	memb->attribute = anna_node_create_block2(0);
+    }
+    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
 }

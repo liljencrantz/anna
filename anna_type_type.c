@@ -96,13 +96,13 @@ void anna_type_type_create()
 
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"name"),
-	string_type, &anna_type_to_string, 0);
+	string_type, &anna_type_to_string, 0, L"The name of this type.");
     anna_member_create_native_property(
 	type_type,
 	anna_mid_get(L"member"),
 	anna_list_type_get_imutable(member_type),
 	&anna_type_i_get_member,
-	0);
+	0, L"A list of all members of this type.");
     
     anna_member_create_native_method(
 	type_type, ANNA_MID_HASH_CODE, 0,

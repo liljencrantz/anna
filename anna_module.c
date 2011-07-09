@@ -308,7 +308,8 @@ static void anna_system_load(anna_stack_template_t *stack)
 	type, anna_mid_get(L"argument"),
 	anna_list_type_get_imutable(string_type),
 	&anna_system_get_argument,
-	0);
+	0,
+	L"The arguments that where given to the program at launch.");
 }
 
 static void anna_reflection_create_types(anna_stack_template_t *stack)

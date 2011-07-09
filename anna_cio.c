@@ -433,7 +433,8 @@ void anna_cio_load(anna_stack_template_t *stack)
 	type, anna_mid_get(L"cwd"),
 	imutable_string_type,
 	&anna_cio_get_cwd,
-	&anna_cio_set_cwd); 
+	&anna_cio_set_cwd,
+	L"The current working directory."); 
 
     anna_module_function(
 	stack, L"isRelative", 

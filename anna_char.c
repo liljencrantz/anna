@@ -87,21 +87,24 @@ void anna_char_type_create()
 
     anna_member_create_native_property(
 	char_type, anna_mid_get(L"ordinal"),
-	int_type, &anna_char_i_get_ordinal, 0);
+	int_type, &anna_char_i_get_ordinal, 0,
+	L"The ordinal number of this Char");
     
     anna_member_create_native_property(
 	char_type,
 	anna_mid_get(L"upper"),
 	char_type,
 	&anna_char_i_get_upper,
-	0);
+	0,
+	L"The upper case equivalent of this Char");
 
     anna_member_create_native_property(
 	char_type,
 	anna_mid_get(L"lower"),
 	char_type,
 	&anna_char_i_get_lower,
-	0);
+	0,
+	L"The lower case eqivalent of this Char");
     
     anna_member_create_native_method(
 	char_type, anna_mid_get(L"__cmp__"), 0,

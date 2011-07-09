@@ -128,7 +128,8 @@ void anna_object_type_create()
     
     anna_member_create_native_property(
 	object_type, anna_mid_get(L"__type__"),
-	type_type, &anna_object_type, 0);
+	type_type, &anna_object_type, 0,
+	L"The type of this object");
     
     anna_object_type_i_create();
     anna_type_object_is_created();
