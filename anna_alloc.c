@@ -358,7 +358,7 @@ void anna_alloc_mark_type(anna_type_t *type)
 	    continue;
 	anna_alloc_mark_type(memb->type);
 	if(memb->attribute)
-	    anna_alloc_mark_node(memb->attribute);
+	    anna_alloc_mark_node((anna_node_t *)memb->attribute);
     }
 
     if(type->stack_macro)

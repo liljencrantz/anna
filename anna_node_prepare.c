@@ -112,7 +112,6 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     if(type == null_type)
     {
 	anna_error(n->object, L"Invalid type for object in call");
-	anna_node_print(5, n);
 	return (anna_node_t *)n;
     }
 	    

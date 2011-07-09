@@ -723,7 +723,7 @@ void anna_range_type_create()
     
     anna_member_create_native_property(
 	range_type, anna_mid_get(L"count"), int_type,
-	&anna_range_get_count_i, 0, "The number of elements in this Range.");
+	&anna_range_get_count_i, 0, L"The number of elements in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"from"),
@@ -748,7 +748,7 @@ void anna_range_type_create()
 	int_type,
 	&anna_range_get_open_i,
 	0,
-	"is this range semi-infinite?");
+	L"Is this range semi-infinite?");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"first"),

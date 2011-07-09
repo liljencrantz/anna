@@ -129,3 +129,4 @@ anna_complex_i.c anna_object_i.c *.d *.gcov *.gcda *.gcno		\
 anna_vm_short_circut.c
 	rm -r documentation
 .PHONY: clean
+

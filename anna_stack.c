@@ -336,8 +336,6 @@ anna_entry_t *anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name)
 	wprintf(L"Critical: Null stack!\n");
 	CRASH;	
     }    
-
-    int deb = wcscmp(name, L"node") == 0;
     
     assert(name);
     while(stack)
