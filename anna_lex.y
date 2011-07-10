@@ -117,7 +117,7 @@ else return ELSE;
 := return DECLARE_VAR;
 :== return DECLARE_CONST;
 \| return PAIR;
-[,;]([ \t\n\r]*[,;])* return SEPARATOR;
+[,;] return SEPARATOR;
 ! return '!';
 % return '%';
 \^ return '^';

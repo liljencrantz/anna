@@ -391,7 +391,7 @@ module: opt_expression_list
 	    *parse_tree_ptr = (anna_node_t *)$$;
 	}
 	|
-	error SEPARATOR
+	error separators
 	{
 	    yyerrok;
 	    $$ = 0;  
@@ -401,6 +401,8 @@ block: '{' opt_expression_list '}'
 	{
 	    $$ = $2;
 	};
+
+separators : SEPARATOR | separators SEPARATOR;
 
 opt_expression_list : 
 	opt_separator
@@ -414,7 +416,7 @@ opt_expression_list :
 	};
 
 expression_list :
-	expression_list SEPARATOR expression
+	expression_list separators expression
 	{
 	    if($1)
 	    {
@@ -511,7 +513,7 @@ expression2 :
         | 
 	expression3;
 
-opt_separator: /* Empty */| SEPARATOR;
+opt_separator: /* Empty */| separators;
 
 expression3 :
 	expression3 op3 expression4
@@ -1181,7 +1183,7 @@ declaration_list2 :
 	    anna_node_call_add_child($$,$1);
 	}
 	| 
-	declaration_list2 SEPARATOR declaration_list_item
+	declaration_list2 separators declaration_list_item
 	{
 	    $$ = $1;
 	    anna_node_call_add_child($1,$3);
