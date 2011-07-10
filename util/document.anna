@@ -1,4 +1,5 @@
 use(io);
+expand(template);
 
 type DocumentationExtractor
 (
@@ -50,54 +51,45 @@ often used code paths, which makes it useful for regression testing.")
 
     }
 
-    def String getSignature(reflection.Function fun)
+    def String getSignature(reflection.Member mem)
     {
-        argv := ", ".join(
-	    fun.inputType.map(idx, t)
+	switch(mem)
+	{
+	    case(meth as reflection.Method)
 	    {
-		"% %" % [getLink(t), fun.inputName[idx]]
-	    });
-	"def % % (%)" % [getLink(fun.outputType), fun.name, argv]
+	      fun := meth.function;
+	      argv := ", ".join(
+		  fun.inputType.map(idx, t)
+		  {
+		      "% %" % [getLink(t), fun.inputName[idx]]
+		  });
+		"def % % (%)" % [getLink(fun.outputType), fun.name, argv];
+	    }
+	    default
+	    {
+		"var % %" % [getLink(mem.type), mem.name];
+	    }
+	}
     }
 
-    def documentMethod(reflection.Method meth, File file)
+    def documentMember(reflection.Member mem)
     {
-        doc := extractDocumentation(meth.attribute);
-	file.write("
-<hr>
+        doc := extractDocumentation(mem.attribute);
+	"
 <a name='%'>%</a>
 <br>
 %
 
-" % [meth.name, getSignature(meth.function), doc]);
-    }
-    
-    def documentProperty(reflection.Property prop, File file)
-    {
-        doc := extractDocumentation(prop.attribute);
-	file.write("
-<hr>
-var <a href='../%'>%</a> <a name='%'>%</a>
-<br>
-%
-" % [pathLookup[prop.type], prop.type.name, prop.name, prop.name, doc]);
-    }
-    
-    def documentVariable(reflection.Variable vari, File file)
-    {
-	file.write("
-<hr>
-<a name='%'>%</a>
-<br>
-
-" %[vari.name, vari.name]);
+" % [mem.name, getSignature(mem), doc];
     }
     
     def documentType(Type t, File dir)
     {
         file := dir ~ (t.name ~ ".html");
 	file.open();
-	file.write("
+	file.write(template("util/document/type.html", type: t));
+/*
+"
 <html>
 <head>
 <title>Anna documentation for % type</title>
@@ -138,6 +130,7 @@ var <a href='../%'>%</a> <a name='%'>%</a>
 </body>
 </html>
 ");
+*/
 	file.close();
     }
 

@@ -2,5 +2,6 @@ expand(template);
 
 def main()
 {
-    print(template("util/document/type.html", foo:3));
+    print(template("util/document/type.html", val:"1 > 0"));
 }
+

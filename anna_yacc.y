@@ -408,7 +408,10 @@ opt_expression_list :
 	    $$ = anna_node_create_block2(&@$);
 	}
 	| 
-	expression_list opt_separator;
+	opt_separator expression_list opt_separator
+	{
+	    $$ = $2;
+	};
 
 expression_list :
 	expression_list SEPARATOR expression

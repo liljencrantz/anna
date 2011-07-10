@@ -3,16 +3,40 @@ use(io);
 macro template(node)
 {
     tmplText := File((node[0] as StringLiteral).payload).readFile();
-    transformed := "literal(\"".thaw;
+    transformed := "%res ~= \"".thaw;
     code := ? as Int;
     wasBrack := ? as Int;
+    first := ? as Int;
+    addParen := ? as Int;
     tmplText.each(ch)
     {
 	if(code)
 	{
+	    if(first)
+	    {
+		switch(ch)
+		{
+		    case('=')
+		    {
+			transformed ~= "%res ~= html.escape(";
+			addParen = 1;
+		    } 
+		    case('!')
+		    {
+			transformed ~= "%res ~= (";
+			addParen = 1;
+		    } 
+		    default
+		    {
+			transformed ~= ch;		    
+			addParen = ?;
+		    }
+		}
+	    } else
+	    {
 	    switch(ch)
 	    {
-		case('?')
+		case('%')
 		{
 		    wasBrack = 1;
 		}
@@ -20,7 +44,14 @@ macro template(node)
 		{
 		    if(wasBrack)
 		    {
-			transformed ~= ";\n    literal(\"";
+			if(addParen)
+			{			    
+
+			    transformed ~= ");\n    %res ~= \"";
+			} else
+			{
+			    transformed ~= ";\n    %res ~= \"";
+			}
 			code = ?;
 			wasBrack = ?;
 		    } else
@@ -32,12 +63,14 @@ macro template(node)
 		{
 		    if(wasBrack)
 		    {
-			transformed ~= '?';
+			transformed ~= '%';
 			wasBrack = ?;
 		    }
 		    transformed ~= ch;
 		}
 	    }
+	    }
+	    first = ?;
 	} else
 	{
 	    switch(ch)
@@ -46,13 +79,14 @@ macro template(node)
 		{
 		    wasBrack = 1;
 		}
-		case('?')
+		case('%')
 		{
 		    if(wasBrack)
 		    {
-			transformed ~= "\");\n    ";
+			transformed ~= "\";\n    ";
 			code = 1;
 			wasBrack = ?;
+			first = 1;
 		    } else
 		    {
 			transformed ~= ch;
@@ -65,29 +99,36 @@ macro template(node)
 			transformed ~= '<';
 			wasBrack = ?;
 		    }
+		    if(ch == '"')
+		    {
+			transformed ~= "\\";
+		    }
 		    transformed ~= ch;
 		}
 	    }
 	}
     }
-    if(code)
-    {
-	transformed ~= ";\n";
-    } else 
-    {
-	transformed ~= "\");\n";
-    }
+    transformed ~= "\";\n";
+//    print(transformed);
     
-    print(transformed);
-    nodes := parse(transformed);
-    print(nodes);
+    nodes := parse(transformed) as Call;
+//    print(nodes);
     res := ast(
 	(def String()
 	{
-	    return %text;
+	    %res := "".thaw
 	})()
 	) % ["text": Dummy(node, tmplText)];
-    print(res, "\n");
+    body := (((res as Call).function) as Call)[4] as Call;
+
+    (1..node.count).each(idx){
+        mapping := node[idx] as Call;
+	body ~= [ast(%name := %val) % ["name": mapping[0], "val":mapping[1]]]
+    }
+    nodes.each(node){body ~= [node]}
+    body ~= [ast(return %res)];
+    res = res % ["res": Identifier(?,"!res")];
+//    print(res, "\n");
     return res;
 }
 

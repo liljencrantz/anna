@@ -1,0 +1,29 @@
+
+
+def escape(String str...)
+{
+    res := "".thaw;
+    "".join(str).each(ch)
+    {
+	res ~= switch(ch)
+	{
+	    case('<')
+	    {
+		"&lt;";
+	    }
+	    case('&')
+	    {
+		"&amp;";
+	    }
+	    case('>')
+	    {
+		"&gt;";
+	    }
+	    default
+	    {
+		ch;
+	    }
+	}
+    };
+    res;
+}

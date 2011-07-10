@@ -1,6 +1,22 @@
-hej hopp!
+<html>
+  <head>
+    <title>Anna documentation for <%= type.name %> type</title>
+  </head>
+  <body>
+    
+    <h1>Type <%= type.name %></h1>
+    
+    <ul>
+    <% t.member.each(mem){ %>    
+    <li><a href="#<%= mem.name  %>"><%= mem.name %></a></li>
+    <% } %>
+    </ul>
 
-<? type.name ?>
+    <% t.member.each(mem){ %>    
+    <hr>
+    <%! documentMember(mem) %>
+    <% } %>
 
-<b>tralala!</b>
 
+  </body>
+</html>
