@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Anna documentation for <%= module.__type__.name %> module</title>
+  </head>
+  <body>
+    
+    <h1>Module <%= module.__type__.name %></h1>
+    
+    
+    <h2>Types</h2>
+    <ul>
+    <% 
+       module.__type__.member.each(mem)
+       {
+	    if(mem.isConstant and mem.isStatic)
+	    {
+  	        val := mem.value(?);
+		switch(val)
+		{
+		    case(t as Type)
+		    {
+       %><li><%= t.name %></li>  <%
+		    }
+		}
+	    }
+	}
+    %>
+    </ul>
+
+    <ul>
+    <% module.__type__.member.each(mem){ %>    
+    <li><a href="#<%= mem.name  %>"><%= mem.name %></a></li>
+    <% } %>
+    
+    <% module.__type__.member.each(mem){ %>    
+    <hr>
+    <%! documentMember(mem) %>
+    <% } %>
+
+
+
+  </body>
+</html>

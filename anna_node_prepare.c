@@ -504,7 +504,6 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_type_t *type = c->object->return_type;
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
-		wprintf(L"AAAB %ls\n", anna_mid_get_reverse(c->mid));
 		break;
 	    }
 

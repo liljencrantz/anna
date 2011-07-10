@@ -114,7 +114,7 @@ anna_lex.o: anna_lex.c
 check: test
 .PHONY: check
 
-documentation: anna
+documentation: anna util/document.anna util/document/*.html
 	./anna util/document
 
 test: anna

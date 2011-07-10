@@ -1,7 +1,42 @@
-expand(template);
+%res ~= "<html>
+  <head>
+    <title>Anna documentation for ";
+    %res ~= html.escape( module.__type__.name );
+    %res ~= " module</title>
+  </head>
+  <body>
+    
+    <h1>Module ";
+    %res ~= html.escape( module.__type__.name );
+    %res ~= "</h1>
+    
+    
+    <h2>Types</h2>
+    <ul>
+    ";
+     
+       module.__type__.member.each(mem)
+       {
+	    if(mem.isConstant and mem.isStatic)
+	    {
+  	        val := mem.value(?);
+		switch(val)
+		{
+		    case(t as Type)
+		    {
+       ;
+    %res ~= "<li>";
+    %res ~= html.escape( t.name );
+    %res ~= "</li>  ";
+    
+		    }
+		}
+	    }
+	}
+    ;
+    %res ~= "
+    </ul>
 
-def main()
-{
-    print(template("util/document/type.html", val:"1 > 0"));
-}
-
+  </body>
+</html>
+";

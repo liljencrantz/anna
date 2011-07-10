@@ -7,16 +7,15 @@
     <h1>Type <%= type.name %></h1>
     
     <ul>
-    <% t.member.each(mem){ %>    
+    <% type.member.each(mem){ %>    
     <li><a href="#<%= mem.name  %>"><%= mem.name %></a></li>
     <% } %>
     </ul>
 
-    <% t.member.each(mem){ %>    
+    <% type.member.each(mem){ %>    
     <hr>
     <%! documentMember(mem) %>
     <% } %>
-
 
   </body>
 </html>

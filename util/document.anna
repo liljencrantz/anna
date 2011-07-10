@@ -86,54 +86,9 @@ often used code paths, which makes it useful for regression testing.")
     def documentType(Type t, File dir)
     {
         file := dir ~ (t.name ~ ".html");
-	file.open();
-	file.write(template("util/document/type.html", type: t));
-/*
-"
-<html>
-<head>
-<title>Anna documentation for % type</title>
-</head>
-<body>
-" % [t.name]);
-	file.write( "<h1>Type %</h1>
-<ul>
-" % [t.name]);
-	t.member.each(mem)
-	{
-	    file.write("<li><a href='#%(name)'>%(name)</a></li>
-" % ["name": mem.name]);
-	}
-	file.write("</ul>
-");
-	t.member.each(mem)
-	{
-	    switch(mem)
-	    {
-		case(meth as reflection.Method)
-		{
-		    documentMethod(meth, file);
-		}
-
-		case(prop as reflection.Property)
-		{
-		    documentProperty(prop, file);
-		}
-
-		case(vari as reflection.Variable)
-		{
-		    documentVariable(vari, file);
-		}
-	    }
-	}
-	file.write("
-</body>
-</html>
-");
-*/
-	file.close();
+	file.writeFile(template("util/document/type.html", type: t));
     }
-
+    
     def documentModule(Object module)
     {
         file := baseDir ~ (module.__type__.name ~ ".html");
@@ -155,13 +110,7 @@ often used code paths, which makes it useful for regression testing.")
 	    }
 	}
 	
-	file.open();
-	module.__type__.member.each(mem)
-	{
-	    
-	}
-	
-	file.close();
+	file.writeFile(template("util/document/module.html"));
 
 	module.__type__.member.each(mem)
 	{
