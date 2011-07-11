@@ -1,6 +1,13 @@
 use(io);
 
 macro template(node)
+(
+    document("
+A simple proof of concept HTML templating engine. Uses a templating
+system very similar to e.g, Ruby on Rails, but the template is
+compiled into the calling code, in order to provide the template with
+the properly typed parameters.")
+)
 {
     tmplText := File((node[0] as StringLiteral).payload).readFile();
     transformed := "%res ~= \"".thaw;

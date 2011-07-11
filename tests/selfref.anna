@@ -1,5 +1,5 @@
 
 def Int main()
 {
-    print(main.name);
+    print(main.__name__);
 }

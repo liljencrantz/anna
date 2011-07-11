@@ -150,7 +150,7 @@ void anna_function_type_load(anna_stack_template_t *stack)
 	string_type, 1, argv, argn);
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"name"), string_type,
+	res, anna_mid_get(L"__name__"), string_type,
 	&anna_function_type_i_get_name, 0,
 	L"The name of this function.");
 
@@ -176,7 +176,7 @@ void anna_function_type_load(anna_stack_template_t *stack)
 	L"A list of the input names of this function.");
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"attribute"),
+	res, anna_mid_get(L"__attribute__"),
 	node_call_wrapper_type,
 	&anna_function_type_i_get_attributes,
 	0,

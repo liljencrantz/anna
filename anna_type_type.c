@@ -13,6 +13,7 @@
 #include "anna_list.h"
 #include "anna_member.h"
 #include "anna_node_create.h"
+#include "anna_node_wrapper.h"
 #include "anna_vm.h"
 #include "anna_int.h"
 #include "anna_mid.h"
@@ -79,6 +80,14 @@ static anna_vmstack_t *anna_type_hash(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+ANNA_VM_NATIVE(anna_type_i_get_attribute, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_type_t *f = anna_type_unwrap(this);
+    
+    return anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute));
+}
+
 void anna_type_type_create()
 {
     anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, 0, null_type);
@@ -95,11 +104,11 @@ void anna_type_type_create()
     ;
 
     anna_member_create_native_property(
-	type_type, anna_mid_get(L"name"),
+	type_type, anna_mid_get(L"__name__"),
 	string_type, &anna_type_to_string, 0, L"The name of this type.");
     anna_member_create_native_property(
 	type_type,
-	anna_mid_get(L"member"),
+	anna_mid_get(L"__member__"),
 	anna_list_type_get_imutable(member_type),
 	&anna_type_i_get_member,
 	0, L"A list of all members of this type.");
@@ -128,7 +137,16 @@ void anna_type_type_create()
 	argn);    
     
     anna_member_create_native_method(
-	type_type, anna_mid_get(L"abides"), 0,
+	type_type, anna_mid_get(L"__abides__"), 0,
 	&anna_type_abides, object_type, 2, argv,
 	argn);   
+
+    anna_member_create_native_property(
+	type_type, anna_mid_get(L"__attribute__"),
+	node_call_wrapper_type,
+	&anna_type_i_get_attribute,
+	0,
+	L"All attributes specified for this type.");
+
+
 }

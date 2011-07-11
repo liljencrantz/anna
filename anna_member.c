@@ -159,7 +159,7 @@ static void anna_member_type_create()
 	null_type);
     
     anna_member_create_native_property(
-	member_type, anna_mid_get(L"name"),
+	member_type, anna_mid_get(L"__name__"),
 	string_type, &anna_member_i_get_name, 0,
 	L"The name of this member.");
 
@@ -204,12 +204,13 @@ static void anna_member_type_create()
 	L"The type of this member.");
     
     anna_member_create_native_property(
-	member_type, anna_mid_get(L"attribute"),
+	member_type, anna_mid_get(L"__attribute__"),
 	node_call_wrapper_type,
 	&anna_member_i_get_attributes,
 	0,
 	L"All attributes specified for this member.");
-
+    
+    
     anna_type_t *v_argv[] = 
 	{
 	    member_type,

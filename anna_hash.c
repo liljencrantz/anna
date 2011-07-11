@@ -2,6 +2,9 @@
 
   The implementation of a hashmap for Anna. Because of Annas support
   of continuations, this code is very hard to read or maintain. 
+
+  The basic algorithm and implementation strategy is borrowed from
+  Python's dict implementation.
  */
 
 #define _GNU_SOURCE
@@ -187,7 +190,6 @@ static void anna_hash_print(anna_hash_t *this)
     }
     
 }
-
 
 static inline ssize_t anna_hash_get_next_idx(anna_object_t *this, ssize_t idx)
 {
@@ -468,6 +470,9 @@ static anna_vmstack_t *ahi_search_callback2(anna_vmstack_t *stack, anna_object_t
 	stack, key, hash_obj, callback, aux, hash, idx, dummy_idx, eq);
 }
 
+/**
+   Add a bit of extra bit mangling to all hash values.
+ */
 static inline int anna_hash_mangle(int a)
 {
     a = (a+0x7ed55d16) + (a<<12);
@@ -1096,10 +1101,9 @@ static void anna_hash_type_create_internal(
     anna_member_create_blob(type, ANNA_MID_HASH_PAYLOAD, 0,
                             sizeof(anna_hash_t));
     
-    anna_member_create(type, ANNA_MID_HASH_SPECIALIZATION1, 1, null_type);anna_member_create(type,
-                                                                                             ANNA_MID_HASH_SPECIALIZATION2,
-                                                                                             1,
-                                                                                             null_type);
+    anna_member_create(type, ANNA_MID_HASH_SPECIALIZATION1, 1, null_type);
+    anna_member_create(
+	type, ANNA_MID_HASH_SPECIALIZATION2, 1, null_type);
 
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION1)) = spec1;
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION2)) = spec2;
@@ -1118,16 +1122,15 @@ static void anna_hash_type_create_internal(
 	}
     ;
 
-    anna_member_create_native_method(type, anna_mid_get(L"__set__"), 0,
-                                     &anna_hash_set, spec2, 3, kv_argv,
-                                     kv_argn);anna_member_create_native_method(type,
-                                                                               anna_mid_get(L"__get__"),
-                                                                               0,
-                                                                               &anna_hash_get,
-                                                                               spec2,
-                                                                               2,
-                                                                               kv_argv,
-                                                                               kv_argn);    
+    anna_member_create_native_method(
+	type, anna_mid_get(L"__set__"), 
+	0, &anna_hash_set, spec2, 
+	3, kv_argv, kv_argn);
+
+    anna_member_create_native_method(
+	type, anna_mid_get(L"__get__"),
+	0, &anna_hash_get,
+	spec2, 2, kv_argv, kv_argn);    
 
     anna_type_t *i_argv[] = 
 	{
@@ -1258,6 +1261,5 @@ void anna_hash_mark(anna_object_t *obj)
 	    anna_alloc_mark_entry(this->table[i].value);
 	}
     }
-    
 }
 

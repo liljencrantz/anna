@@ -384,7 +384,7 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
     for(i=0; i<anna_mid_max_get(); i++)
     {
 	anna_member_t *memb = orig->mid_identifier[i];
-	if(!memb)
+	if(!memb || !memb->is_static)
 	    continue;
 	
 	if(memb->offset == off)
@@ -462,6 +462,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     /*
       Then, for every copied property, find the offset of the getter and setter
     */
+
     for(i=0; i<steps; i++)
     {
 	if(!copied[i])
@@ -475,6 +476,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        anna_member_t *copy = anna_member_get(
            res,
 	   anna_mid_get(memb->name));
+       
        
        if(memb->getter_offset != -1)
        {

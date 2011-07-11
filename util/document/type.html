@@ -1,18 +1,18 @@
 <html>
   <head>
-    <title>Anna documentation for <%= type.name %> type</title>
+    <title>Anna documentation for <%= type.__name__ %> type</title>
   </head>
   <body>
     
-    <h1>Type <%= type.name %></h1>
+    <h1>Type <%= type.__name__ %></h1>
     
     <ul>
-    <% type.member.each(mem){ %>    
-    <li><a href="#<%= mem.name  %>"><%= mem.name %></a></li>
+    <% type.__member__.each(mem){ %>    
+    <li><a href="#<%= mem.__name__  %>"><%= mem.__name__ %></a></li>
     <% } %>
     </ul>
 
-    <% type.member.each(mem){ %>    
+    <% type.__member__.each(mem){ %>    
     <hr>
     <%! documentMember(mem) %>
     <% } %>
