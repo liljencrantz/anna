@@ -457,6 +457,10 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 
 static void anna_module_load_i(anna_stack_template_t *module_stack)
 {
+    if(!module_stack->filename)
+    {
+        return;
+    }
 //    debug_level=0;
     int i;
 
@@ -542,6 +546,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     {
 	wchar_t *str = al_get(&module_stack->import, i);
 	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
+	anna_module_load_i(mod);
 	if(anna_error_count || !mod)
 	{
 	    return;

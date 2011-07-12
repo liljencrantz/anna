@@ -1,0 +1,27 @@
+Overview
+
+Anna requires GNU make and GCC. Anna depends on the following external
+libraries to build:
+
+* Flex
+* Bison
+* GNU MP
+
+Anna should build and run on any modern 32 or 64 bit UNIX-like system
+with the above dependencies met. For OS specific installation
+instructions, read on below.
+
+Installing on Debian-like systems, including Ubuntu
+
+sudo apt-get install gcc bison flex libgmp3-dev make
+make -s && make install
+
+Installing on RedHat-like systems, including Fedora
+
+TODO
+
+Installing on *BSD systems
+
+TODO
+
+
