@@ -920,7 +920,7 @@ void anna_string_type_create()
     anna_string_type_create_internal(mutable_string_type, 1);
     anna_type_intersect_into(
 	string_type, imutable_string_type, mutable_string_type);
-
+    
     wchar_t *conv_argn[]=
 	{
 	    L"value"

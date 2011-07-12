@@ -102,6 +102,10 @@ void anna_type_type_create()
 	}
     ;
 
+    anna_type_document(
+	type_type,
+	L"The Type type represents an Anna Type. It is mostly used for object introspection.");
+    
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"__name__"),
 	string_type, &anna_type_to_string, 0, L"The name of this type.");

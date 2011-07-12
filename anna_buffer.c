@@ -243,6 +243,11 @@ void anna_buffer_type_create()
     mid_t mmid;
     anna_function_t *fun;
 
+
+    anna_type_document(
+	type,
+	L"The buffer type represents a byte oriented mutable array of binary data. It is primarily used for reading and writing from file descriptors.");  
+
     anna_member_create(
 	type, ANNA_MID_BUFFER_PAYLOAD, 0, null_type);
 
