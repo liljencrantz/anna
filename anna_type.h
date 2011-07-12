@@ -100,4 +100,6 @@ anna_type_t *anna_type_for_function(
 
 void anna_type_mark_static(void);
 
+void anna_type_document(anna_type_t *type, wchar_t *documentation);
+
 #endif

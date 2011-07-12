@@ -369,6 +369,10 @@ void anna_alloc_mark_type(anna_type_t *type)
     {
 	anna_alloc_mark_stack_template(type->stack);
     }
+    if(type->attribute)
+    {
+	anna_alloc_mark_node(type->attribute);
+    }
     
 }
 

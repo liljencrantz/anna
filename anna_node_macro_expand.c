@@ -141,5 +141,6 @@ anna_node_t *anna_node_macro_expand(
     anna_stack_template_t *stack)
 {
     return anna_node_each_replace(
-	this, anna_node_macro_expand_each, stack);
+	this, 
+	(anna_node_replace_function_t)anna_node_macro_expand_each, stack);
 }

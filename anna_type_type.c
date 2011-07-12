@@ -84,8 +84,7 @@ ANNA_VM_NATIVE(anna_type_i_get_attribute, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *f = anna_type_unwrap(this);
-    
-    return anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute));
+    return f->attribute ? anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute)): null_entry;
 }
 
 void anna_type_type_create()

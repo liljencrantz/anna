@@ -192,6 +192,15 @@ void anna_float_type_create()
 	    L"this", L"other"
 	}
     ;
+
+    anna_type_document(
+	float_type,
+	L"The float Type represents a double precision floating point number.");
+    
+    anna_type_document(
+	float_type,
+	L"Float objects are imutable, can be used as hash keys and implement the basic arithmetic operations like addition, multiplication, etc.");
+    
     
     anna_member_create_blob(
 	float_type, ANNA_MID_FLOAT_PAYLOAD, 0,

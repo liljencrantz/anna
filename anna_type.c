@@ -31,20 +31,17 @@ static int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
 static hash_table_t anna_type_for_function_identifier;
 
-static void anna_type_mark_static_iter(void *key_ptr,void *val_ptr, void *aux_ptr)
+static void anna_type_mark_static_iter(void *key_ptr,void *val_ptr)
 {
     anna_alloc_mark_type(val_ptr);
 }
-
 
 void anna_type_mark_static()
 {
     hash_foreach(
 	&anna_type_for_function_identifier,
 	anna_type_mark_static_iter);
-    
 }
-
 
 void anna_type_copy_object(anna_type_t *type)
 {
@@ -164,7 +161,6 @@ static void anna_type_mangle_methods(
 	    }   
 	}
     }
-    
 }
 
 static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
@@ -194,7 +190,6 @@ static anna_type_t *anna_type_create_internal(wchar_t *name, anna_node_call_t *d
     
     if(definition)
     {
-
 	//anna_node_print(D_CRITICAL, definition->child[2]);
 	array_list_t al = AL_STATIC;
 	
@@ -231,7 +226,7 @@ anna_node_call_t *anna_type_definition_get(anna_type_t *type)
 }
 
 anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack)
-{    
+{
     anna_type_t *result = anna_type_create_internal(name, 0);    
     return result;
 }
@@ -1287,5 +1282,25 @@ anna_type_t *anna_type_for_function(
     assert(ggg->input_count == argc);
     
     return res;
+}
+
+void anna_type_document(anna_type_t *type, wchar_t *doc)
+{
+    anna_node_call_t *attr = anna_node_create_call2(
+	0,
+	anna_node_create_identifier(0, L"documentation"),
+	anna_node_create_string_literal(0, wcslen(doc), doc));
+    
+    if(!type->attribute)
+    {
+	type->attribute = anna_node_create_call2(
+	    0,
+	    anna_node_create_identifier(0, L"__call__"),
+	    attr);
+    }
+    else
+    {
+	anna_node_call_add_child(type->attribute, (anna_node_t *)attr);    
+    }
 }
 

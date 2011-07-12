@@ -582,7 +582,10 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 
     for(i=0; i<module_node->child_count; i++)
     {
-	anna_node_each(module_node->child[i], (anna_node_function_t)&anna_node_validate, module_stack);
+	anna_node_each(
+	    module_node->child[i], 
+	    (anna_node_function_t)&anna_node_validate, 
+	    module_stack);
     }
     if(anna_error_count)
     {

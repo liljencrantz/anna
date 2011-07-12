@@ -321,6 +321,14 @@ void anna_int_type_create()
     mid_t mmid;
     anna_function_t *fun;
 
+    anna_type_document(
+	int_type,
+	L"The Int type is the basic integer type of the Anna language.");
+    
+    anna_type_document(
+	int_type,
+	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, those with 30 or fewer bits used, are stored directly on the stack and use no head memory at all. Larger integers are implemented using the GNU MP library.");    
+
     anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     
     anna_member_create_native_method(

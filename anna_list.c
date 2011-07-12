@@ -1143,6 +1143,18 @@ void anna_list_type_create()
     anna_type_intersect_into(
 	any_list_type, mutable_list_type, imutable_list_type);    
 
+    anna_type_document(
+	any_list_type,
+	L"The List type represents any list, either a mutable or imutable one. It is the intersection of the MutableList and the ImutableList.");
+    
+    anna_type_document(
+	mutable_list_type,
+	L"The MutableList type is type representing a mutable (changing) list of objects.");
+    
+    anna_type_document(
+	imutable_list_type,
+	L"The ImutableList type is type representing an imutable (unchanging) list of objects.");
+
 }
 
 static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)
