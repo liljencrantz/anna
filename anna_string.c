@@ -939,4 +939,26 @@ void anna_string_type_create()
 	string_type, anna_mid_get(L"convert"),
 	0, &anna_string_convert, string_type,
 	1, &object_type, conv_argn);
+
+
+    anna_type_document(
+	string_type,
+	L"The String type represents any character string, either a mutable or imutable one. It is the intersection of the MutableString and the ImutableString.");
+    
+    anna_type_document(
+	mutable_string_type,
+	L"The MutableString type is type representing a mutable (changing) character string.");
+    
+    anna_type_document(
+	mutable_string_type,
+	L"In order to obtain an imutable (unchangable) version of a MutableString, use the freeze property.");
+    
+    anna_type_document(
+	imutable_string_type,
+	L"The ImutableString type is type representing an imutable (unchanging) character string.");
+    
+    anna_type_document(
+	imutable_string_type,
+	L"String literals, such as \"test\" are all instances of ImutableString. In order to obtain a mutable (changable) version of an ImutableString, use the thaw property.");
+    
 }
