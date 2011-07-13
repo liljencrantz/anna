@@ -371,7 +371,7 @@ void anna_alloc_mark_type(anna_type_t *type)
     }
     if(type->attribute)
     {
-	anna_alloc_mark_node(type->attribute);
+	anna_alloc_mark_node((anna_node_t *)type->attribute);
     }
     
 }

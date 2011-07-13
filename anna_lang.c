@@ -51,7 +51,6 @@ anna_type_t *type_type=0,
     *buffer_type=0
     ;
 
-
 anna_object_t *null_object=0;
 
 const static anna_type_data_t anna_lang_type_data[] = 
@@ -73,16 +72,14 @@ const static anna_type_data_t anna_lang_type_data[] =
     { &hash_type, L"HashMap" },
     { &pair_type, L"Pair" },
     { &buffer_type, L"Buffer" },
-}
-    ;
+};
 
 static int hash_null_func( void *data )
 {
     return 0;
 }
 
-static int hash_null_cmp( void *a, 
-		   void *b )
+static int hash_null_cmp( void *a, void *b )
 {
     return 1;
 }

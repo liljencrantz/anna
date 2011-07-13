@@ -6,6 +6,13 @@
 * Usable Date type
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
+  - document attribute for modules
+  - Better module templates
+  - Correct path for links
+  - Iterate over global namespace
+  - Search functionality
+  - Show/hide different elements
+  - expand/minimize docs
 * Introduction
 * Check that node compare support all ast node types
 * More validation:
@@ -17,6 +24,11 @@
 * Place all relevant base classes in sane modules, e.g. Type should be moved to reflection
 
 1.0 RELEASE CRITERIA(Done):
+* HTML api documentation extractor
+  - Basic iteration working
+  - document attribute for memebers and types
+  - HTML templates
+  - File output working
 * Inheritance and method overloading fully working
 * Static member access fully working 
 * Add memory overhead of Ints and Floats to GC estimates
