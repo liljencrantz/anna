@@ -117,7 +117,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    
     anna_type_setup_interface(type);	    
 	    
-    if(type == type_type && anna_member_get(type, n->mid)==0)
+    if(type == type_type && !anna_type_mid_internal(n->mid))
     {
 	type = anna_node_resolve_to_type(n->object, stack);
 	n->access_type = ANNA_NODE_ACCESS_STATIC_MEMBER;

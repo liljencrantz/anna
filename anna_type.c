@@ -1304,3 +1304,11 @@ void anna_type_document(anna_type_t *type, wchar_t *doc)
     }
 }
 
+int anna_type_mid_internal(mid_t mid)
+{
+    return 
+	(mid == anna_mid_get(L"__name__"))||
+	(mid == anna_mid_get(L"__member__"))||
+	(mid == anna_mid_get(L"__abides__"))||
+	(mid == anna_mid_get(L"__attribute__"));
+}

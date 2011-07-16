@@ -102,4 +102,7 @@ void anna_type_mark_static(void);
 
 void anna_type_document(anna_type_t *type, wchar_t *documentation);
 
+int anna_type_mid_internal(mid_t mid);
+
+
 #endif
