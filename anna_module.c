@@ -323,6 +323,12 @@ static void anna_reflection_load(anna_stack_template_t *stack)
     anna_function_type_load(stack);
 }
 
+ANNA_VM_NATIVE(anna_global_get_global, 1)
+{
+    return anna_from_obj(anna_stack_wrap(stack_global));    
+}
+
+
 void anna_module_init()
 {
     /*
@@ -354,6 +360,14 @@ void anna_module_init()
 	anna_as_obj(
 	    anna_stack_get(
 		stack_global, L"parser")));
+
+    anna_type_t *type = anna_stack_wrap(stack_global)->type;
+    anna_member_create_native_property(
+	type, anna_mid_get(L"global"),
+	type,
+	&anna_global_get_global,
+	0,
+	L"The global namespace");
     
     /*
       Load a bunch of built in non-native macros and monkey patch some
