@@ -23,6 +23,8 @@
 #include "anna_slab.h"
 #include "anna_mid.h"
 
+#define PRCTL_MAX_LENGTH 15
+
 /**
    The root of the namespace hierarchy
 */
@@ -51,6 +53,7 @@ static void anna_init()
     anna_vm_init();
 
     stack_global = anna_stack_create(0);
+    anna_stack_name(stack_global, L"global");
     stack_global->flags |= ANNA_STACK_NAMESPACE;
 
     anna_abides_init();
@@ -64,15 +67,15 @@ static void anna_init()
 static void anna_set_program_name(char *arg)
 {    
     char *name = strrchr(arg, '/');
+
     if(!name)
 	name = arg;
     else
 	name++;
     
-    if(strlen(name) > 15)
+    if(strlen(name) > PRCTL_MAX_LENGTH)
     {
-	name = strdup(name);
-	name[16] = 0;
+	name = strndup(name, PRCTL_MAX_LENGTH);
 	prctl(PR_SET_NAME,name,0,0,0);
 	free(name);
     }
@@ -87,13 +90,13 @@ static void anna_set_program_name(char *arg)
 */
 static void anna_shutdown()
 {
-    #ifdef ANNA_FULL_GC_ON_SHUTDOWN
+#ifdef ANNA_FULL_GC_ON_SHUTDOWN
     anna_gc_destroy();
     anna_vm_destroy();
     anna_mid_destroy();
     hash_foreach(&anna_type_for_function_identifier, fun_key_free);
     hash_destroy(&anna_type_for_function_identifier);
-#endif    
+#endif
 }
 
 /**
@@ -163,15 +166,24 @@ int main(int argc, char **argv)
 	    D_CRITICAL,
 	    L"Found %d error(s) during initialization, exiting\n", 
 	    anna_error_count);
-	exit(1);
+	exit(ANNA_STATUS_INTERNAL_ERROR);
     }
     
     anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
     free(module_name);
     
+    if(anna_error_count)
+    {
+	debug(
+	    D_CRITICAL,
+	    L"Found %d error(s) during module loading, exiting\n", 
+	    anna_error_count);
+	exit(ANNA_STATUS_MODULE_SETUP_ERROR);
+    }
+    
     anna_alloc_gc_unblock();
     anna_main_run(module);
     anna_shutdown();
     
-    return 0;
+    return ANNA_STATUS_OK;
 }
