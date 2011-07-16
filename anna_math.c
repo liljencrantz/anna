@@ -60,6 +60,11 @@ ANNA_VM_NATIVE(anna_math_log10, 1)
     return anna_entry_null(param[0])? null_entry : anna_from_float(log10(anna_as_float(param[0])));
 }
 
+ANNA_VM_NATIVE(anna_math_sqrt, 1)
+{
+    return anna_entry_null(param[0])? null_entry : anna_from_float(sqrt(anna_as_float(param[0])));
+}
+
 void anna_math_load(anna_stack_template_t *stack)
 {
     anna_module_const_float(stack, L"pi", M_PI, 0);
@@ -122,13 +127,20 @@ void anna_math_load(anna_stack_template_t *stack)
 	0, &anna_math_log2, 
 	float_type,
 	1, f_argv, f_argn, 
-	L"The log function computes the base 2 logarithm of value.");
+	L"The log2 function computes the base 2 logarithm of value.");
 
     anna_module_function(
 	stack, L"log10", 
 	0, &anna_math_log10, 
 	float_type,
 	1, f_argv, f_argn, 
-	L"The log function computes the base 10 logarithm of value.");
+	L"The log10 function computes the base 10 logarithm of value.");
+
+    anna_module_function(
+	stack, L"sqrt", 
+	0, &anna_math_sqrt, 
+	float_type,
+	1, f_argv, f_argn, 
+	L"The sqrt function computes the square root of value.");
 }
 
