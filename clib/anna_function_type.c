@@ -5,21 +5,21 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
-#include "util.h"
-#include "anna.h"
-#include "anna_node.h"
-#include "anna_node_create.h"
+#include "../common.h"
+#include "../util.h"
+#include "../anna.h"
+#include "../anna_node.h"
+#include "../anna_node_create.h"
 #include "anna_function_type.h"
-#include "anna_function.h"
+#include "../anna_function.h"
 #include "anna_string.h"
 #include "anna_list.h"
-#include "anna_type.h"
-#include "anna_member.h"
-#include "anna_vm.h"
-#include "anna_mid.h"
+#include "../anna_type.h"
+#include "../anna_member.h"
+#include "../anna_vm.h"
+#include "../anna_mid.h"
 #include "anna_node_wrapper.h"
-#include "anna_type_data.h"
+#include "../anna_type_data.h"
 
 anna_type_t *function_type_base = 0;
 static int base_constructed = 0;

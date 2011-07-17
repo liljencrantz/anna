@@ -1,9 +1,5 @@
-
 #ifndef ANNA_HASH_H
 #define ANNA_HASH_H
-
-#include "anna.h"
-#include "anna_node.h"
 
 struct anna_stack_template;
 

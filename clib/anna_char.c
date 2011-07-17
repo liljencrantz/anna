@@ -11,14 +11,15 @@
 #include "anna_node_create.h"
 #include "anna_char.h"
 #include "anna_type.h"
-#include "anna_int.h"
 #include "anna_member.h"
 #include "anna_function.h"
-#include "anna_string.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
 
-#include "anna_char_i.c"
+#include "clib/anna_int.h"
+#include "clib/anna_string.h"
+
+#include "autogen/anna_char_i.c"
 
 anna_object_t *anna_char_create(wchar_t value)
 {

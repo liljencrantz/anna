@@ -2,7 +2,7 @@
 
 #include "anna.h"
 #include "anna_node.h"
-#include "anna_yacc.h"
+#include "autogen/anna_yacc.h"
 #include "util.h"
 
 int anna_lex_wrap(yyscan_t yyscanner) 

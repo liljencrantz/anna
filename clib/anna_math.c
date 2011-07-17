@@ -7,12 +7,13 @@
 #include <math.h>
 #include <errno.h>
 
-#include "common.h"
-#include "util.h"
-#include "wutil.h"
-#include "anna.h"
-#include "anna_module.h"
-#include "anna_vm.h"
+#include "../common.h"
+#include "../util.h"
+#include "../wutil.h"
+#include "../anna.h"
+#include "../anna_module.h"
+#include "../anna_vm.h"
+
 #include "anna_math.h"
 
 ANNA_VM_NATIVE(anna_math_sin, 1)

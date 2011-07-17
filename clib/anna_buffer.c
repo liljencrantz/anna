@@ -9,22 +9,22 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "anna_buffer.h"
-#include "anna_int.h"
 #include "anna_stack.h"
 #include "anna_type.h"
 #include "anna_member.h"
-#include "anna_function_type.h"
 #include "anna_function.h"
-#include "anna_range.h"
 #include "anna_vm.h"
-#include "anna_list.h"
-#include "anna_string.h"
 #include "anna_mid.h"
 #include "anna_util.h"
 #include "anna_intern.h"
-
 #include "anna_macro.h"
+
+#include "clib/anna_function_type.h"
+#include "clib/anna_range.h"
+#include "clib/anna_buffer.h"
+#include "clib/anna_int.h"
+#include "clib/anna_list.h"
+#include "clib/anna_string.h"
 
 anna_object_t *anna_buffer_create()
 {

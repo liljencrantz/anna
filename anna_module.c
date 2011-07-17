@@ -16,27 +16,27 @@
 #include "anna_function.h"
 #include "anna_stack.h"
 
-#include "anna_function_type.h"
-#include "anna_type_type.h"
-#include "anna_object_type.h"
+#include "clib/anna_function_type.h"
+#include "clib/anna_type_type.h"
+#include "clib/anna_object_type.h"
 #include "anna_type.h"
 #include "anna_macro.h"
 #include "anna_member.h"
-#include "anna_node_wrapper.h"
+#include "clib/anna_node_wrapper.h"
 #include "anna_status.h"
 #include "anna_vm.h"
 #include "anna_alloc.h"
 #include "anna_intern.h"
-#include "anna_lang.h"
-#include "anna_list.h"
-#include "anna_hash.h"
+#include "clib/anna_lang.h"
+#include "clib/anna_list.h"
+#include "clib/anna_hash.h"
 #include "wutil.h"
 #include "anna_attribute.h"
-#include "anna_string.h"
+#include "clib/anna_string.h"
 #include "anna_mid.h"
-#include "anna_cio.h"
-#include "anna_math.h"
-#include "anna_cerror.h"
+#include "clib/anna_cio.h"
+#include "clib/anna_math.h"
+#include "clib/anna_cerror.h"
 #include "anna_use.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
@@ -361,14 +361,14 @@ void anna_module_init()
 	    anna_stack_get(
 		stack_global, L"parser")));
 
-    anna_type_t *type = anna_stack_wrap(stack_global)->type;
-    anna_member_create_native_property(
-	type, anna_mid_get(L"global"),
-	type,
-	&anna_global_get_global,
-	0,
-	L"The global namespace");
-    
+    anna_object_t *g_obj = anna_stack_wrap(stack_global);
+    anna_stack_declare(
+	stack_global,
+	L"global",
+	g_obj->type,
+	anna_from_obj(g_obj),
+	ANNA_STACK_READONLY);
+
     /*
       Load a bunch of built in non-native macros and monkey patch some
       of the native types with additional non-native methods.

@@ -9,7 +9,7 @@
 #include "common.h"
 #include "anna.h"
 #include "anna_node.h"
-#include "anna_node_wrapper.h"
+#include "clib/anna_node_wrapper.h"
 #include "anna_macro.h"
 #include "anna_type.h"
 #include "anna_util.h"

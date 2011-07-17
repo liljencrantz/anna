@@ -9,17 +9,17 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "anna_int.h"
+#include "clib/anna_int.h"
 #include "anna_type.h"
 #include "anna_member.h"
 #include "anna_function.h"
-#include "anna_string.h"
+#include "clib/anna_string.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
 
 #define ANNA_SMALL_MAX_BIT 29
 
-#include "anna_int_i.c"
+#include "autogen/anna_int_i.c"
 
 static void *anna_int_alloc(size_t sz)
 {

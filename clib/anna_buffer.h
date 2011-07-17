@@ -2,9 +2,6 @@
 #ifndef ANNA_BUFFER_H
 #define ANNA_BUFFER_H
 
-#include "anna.h"
-#include "anna_node.h"
-
 struct anna_stack_template;
 
 anna_object_t *anna_buffer_create(void);

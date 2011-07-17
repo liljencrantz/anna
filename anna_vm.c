@@ -12,13 +12,13 @@
 #include "anna_vm_internal.h"
 #include "anna_function.h"
 #include "anna_node.h"
-#include "anna_list.h"
-#include "anna_int.h"
-#include "anna_float.h"
-#include "anna_string.h"
-#include "anna_char.h"
+#include "clib/anna_list.h"
+#include "clib/anna_int.h"
+#include "clib/anna_float.h"
+#include "clib/anna_string.h"
+#include "clib/anna_char.h"
 #include "anna_stack.h"
-#include "anna_function_type.h"
+#include "clib/anna_function_type.h"
 #include "anna_member.h"
 #include "anna_type.h"
 #include "anna_alloc.h"
@@ -891,7 +891,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	goto *jump_label[(int)*stack->code];
     }
 
-#include "anna_vm_short_circut.c"
+#include "autogen/anna_vm_short_circut.c"
 
 }
 

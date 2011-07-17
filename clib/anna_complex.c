@@ -8,18 +8,19 @@
 #include <complex.h>
 
 #include "anna.h"
-#include "anna_complex.h"
 #include "anna_type.h"
-#include "anna_int.h"
-#include "anna_float.h"
 #include "anna_member.h"
 #include "anna_function.h"
-#include "anna_string.h"
 #include "anna_vm.h"
 #include "anna_util.h"
 #include "anna_mid.h"
 
-#include "anna_complex_i.c"
+#include "clib/anna_complex.h"
+#include "clib/anna_int.h"
+#include "clib/anna_float.h"
+#include "clib/anna_string.h"
+
+#include "autogen/anna_complex_i.c"
 
 static inline void anna_complex_set(anna_object_t *this, complex double value)
 {

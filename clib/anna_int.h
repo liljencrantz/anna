@@ -3,9 +3,6 @@
 
 #include <gmp.h>
 
-#include "anna.h"
-#include "anna_node.h"
-
 struct anna_stack_template;
 extern anna_object_t *anna_int_one;
 extern anna_object_t *anna_int_minus_one;

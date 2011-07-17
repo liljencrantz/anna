@@ -20,10 +20,10 @@
 #include "anna_vm.h"
 #include "anna_node_hash.h"
 #include "anna_node_check.h"
-#include "anna_pair.h"
-#include "anna_list.h"
-#include "anna_hash.h"
-#include "anna_function_type.h"
+#include "clib/anna_pair.h"
+#include "clib/anna_list.h"
+#include "clib/anna_hash.h"
+#include "clib/anna_function_type.h"
 #include "anna_mid.h"
 
 static array_list_t  anna_type_list = AL_STATIC;

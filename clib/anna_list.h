@@ -1,9 +1,5 @@
-
 #ifndef ANNA_LIST_H
 #define ANNA_LIST_H
-
-#include "anna.h"
-#include "anna_node.h"
 
 extern anna_type_t *imutable_list_type;
 extern anna_type_t *mutable_list_type;

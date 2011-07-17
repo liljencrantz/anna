@@ -14,10 +14,11 @@
 #include "anna.h"
 #include "anna_module.h"
 #include "anna_vm.h"
-#include "anna_string.h"
-#include "anna_cerror.h"
 #include "anna_member.h"
 #include "anna_mid.h"
+
+#include "clib/anna_string.h"
+#include "clib/anna_cerror.h"
 
 ANNA_VM_NATIVE(anna_cerror_strerror, 1)
 {

@@ -2,9 +2,6 @@
 #ifndef ANNA_RANGE_H
 #define ANNA_RANGE_H
 
-#include "anna.h"
-#include "anna_node.h"
-
 struct anna_stack_template;
 
 anna_object_t *anna_range_create(ssize_t from, ssize_t step, ssize_t to);

@@ -16,16 +16,17 @@
 #include "anna.h"
 #include "anna_module.h"
 #include "anna_module_data.h"
-#include "anna_cio.h"
 #include "anna_stack.h"
 #include "anna_vm.h"
-#include "anna_string.h"
-#include "anna_function.h"
-#include "anna_buffer.h"
 #include "anna_intern.h"
-#include "anna_list.h"
 #include "anna_member.h"
 #include "anna_mid.h"
+#include "anna_function.h"
+
+#include "clib/anna_cio.h"
+#include "clib/anna_string.h"
+#include "clib/anna_buffer.h"
+#include "clib/anna_list.h"
 
 #define READ_SZ 4096
 

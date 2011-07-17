@@ -5,12 +5,20 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
-#include "util.h"
-#include "anna.h"
-#include "anna_util.h"
-#include "anna_function.h"
-#include "anna_stack.h"
+#include "../common.h"
+#include "../util.h"
+#include "../anna.h"
+#include "../anna_util.h"
+#include "../anna_function.h"
+#include "../anna_stack.h"
+#include "../anna_type.h"
+#include "../anna_macro.h"
+#include "../anna_member.h"
+#include "../anna_intern.h"
+#include "../anna_vm.h"
+#include "../anna_mid.h"
+#include "../anna_type_data.h"
+
 #include "anna_int.h"
 #include "anna_float.h"
 #include "anna_complex.h"
@@ -23,16 +31,9 @@
 #include "anna_function_type.h"
 #include "anna_type_type.h"
 #include "anna_object_type.h"
-#include "anna_type.h"
-#include "anna_macro.h"
-#include "anna_member.h"
-#include "anna_node_wrapper.h"
-#include "anna_intern.h"
-#include "anna_lang.h"
-#include "anna_vm.h"
-#include "anna_mid.h"
-#include "anna_type_data.h"
 #include "anna_buffer.h"
+#include "anna_node_wrapper.h"
+#include "anna_lang.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,

@@ -10,17 +10,17 @@
 
 #include "common.h"
 #include "anna.h"
-#include "anna_float.h"
+#include "clib/anna_float.h"
 #include "anna_type.h"
-#include "anna_int.h"
+#include "clib/anna_int.h"
 #include "anna_member.h"
 #include "anna_function.h"
-#include "anna_string.h"
+#include "clib/anna_string.h"
 #include "anna_vm.h"
 #include "anna_util.h"
 #include "anna_mid.h"
 
-#include "anna_float_i.c"
+#include "autogen/anna_float_i.c"
 
 static void anna_float_set(anna_object_t *this, double value)
 {

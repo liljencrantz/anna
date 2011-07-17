@@ -7,16 +7,18 @@
 #include <math.h>
 #include <complex.h>
 
-#include "anna.h"
+#include "../anna.h"
+#include "../anna_function.h"
+#include "../anna_vm.h"
+#include "../anna_type.h"
+#include "../anna_member.h"
+#include "../anna_mid.h"
+
 #include "anna_object_type.h"
-#include "anna_function.h"
 #include "anna_int.h"
-#include "anna_vm.h"
 #include "anna_string.h"
-#include "anna_type.h"
-#include "anna_member.h"
-#include "anna_mid.h"
-#include "anna_object_i.c"
+
+#include "autogen/anna_object_i.c"
 
 static anna_vmstack_t *anna_object_init(anna_vmstack_t *stack, anna_object_t *me)
 {

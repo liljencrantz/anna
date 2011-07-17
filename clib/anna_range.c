@@ -6,17 +6,18 @@
 #include <assert.h>
 #include <string.h>
 
-#include "anna.h"
+#include "../anna.h"
+#include "../anna_stack.h"
+#include "../anna_member.h"
+#include "../anna_function.h"
+#include "../anna_vm.h"
+#include "../anna_mid.h"
+
 #include "anna_range.h"
-#include "anna_stack.h"
 #include "anna_int.h"
-#include "anna_member.h"
 #include "anna_function_type.h"
-#include "anna_function.h"
-#include "anna_vm.h"
 #include "anna_string.h"
 #include "anna_list.h"
-#include "anna_mid.h"
 
 ssize_t anna_range_get_from(anna_object_t *obj)
 {

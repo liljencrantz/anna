@@ -1,9 +1,6 @@
 #ifndef ANNA_STRING_H
 #define ANNA_STRING_H
 
-#include "anna.h"
-#include "anna_node.h"
-
 anna_object_t *anna_string_create(size_t sz, wchar_t *data);
 anna_object_t *anna_string_copy(anna_object_t *obj);
 void anna_string_append(anna_object_t *this, anna_object_t *str);
