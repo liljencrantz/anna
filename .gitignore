@@ -4,6 +4,7 @@
 *.o
 *.d
 *.out
+*.output
 *.gcov
 *.gcda
 *.gcno
@@ -12,7 +13,4 @@ anna
 mandel
 autogen/*.c
 autogen/*.h
-autogen/*.output
-anna_string_perf
-anna_string_internal_test
 documentation

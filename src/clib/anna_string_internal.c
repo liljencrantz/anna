@@ -1,15 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-#include <time.h>
-
-#include "util.h"
-#include "common.h"
-#include "anna_checks.h"
-#include "anna_crash.h"
-#include "anna_string_internal.h"
 
 static void asi_ensure_capacity(anna_string_t *string, size_t size)
 {

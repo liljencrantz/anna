@@ -22,6 +22,8 @@
 #include "anna_mid.h"
 #include "anna_util.h"
 
+#include "anna_string_internal.c"
+
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
     return (anna_string_t *)anna_entry_get_addr(obj,ANNA_MID_STRING_PAYLOAD);
