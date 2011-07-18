@@ -13,7 +13,7 @@ error_count=0
 test_count=0
 
 for i in tests/*.anna; do
-    ./anna tests/$(basename $i .anna) >anna_tests.out 2>/dev/null
+    ./bin/anna tests/$(basename $i .anna) >anna_tests.out 2>/dev/null
     status=$?
     out_correct=tests/$(basename $i .anna).output
     status_correct_file=tests/$(basename $i .anna).status

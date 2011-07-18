@@ -54,7 +54,7 @@ util.o common.o
 
 LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 
-PROGRAMS := anna 
+PROGRAMS := bin/anna 
 
 all: $(PROGRAMS)
 .PHONY: all
@@ -73,7 +73,7 @@ endif
 #             END DEPENDENCY TRACKING                   #
 #########################################################
 
-anna: $(ANNA_OBJS)
+bin/anna: $(ANNA_OBJS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 anna_string_internal_test: $(ANNA_STRING_INTERNAL_TEST_OBJS)
@@ -123,17 +123,16 @@ autogen/anna_lex.o: autogen/anna_lex.c
 check: test
 .PHONY: check
 
-documentation: anna util/document.anna util/document/*.html
-	./anna util/document
+documentation: bin/anna util/document.anna util/document/*.html
+	./bin/anna util/document
 
-test: anna
+test: bin/anna
 	time ./anna_tests.sh
 .PHONY: test
 
 clean:
-	rm -f anna anna_string_internal_test anna_string_perf gmon.out	\
-anna_yacc.output *.o autogen/*.h autogen/*.c */*.d *.gcov *.gcda	\
-*.gcno 
+	rm -f bin/anna gmon.out anna_yacc.output *.o autogen/*.h	\
+autogen/*.c */*.d *.gcov *.gcda *.gcno autogen/*.o clib/*.o *.d
 	if test -d documentation; then rm -r documentation; fi
 .PHONY: clean
 
