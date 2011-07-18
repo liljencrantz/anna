@@ -33,9 +33,9 @@ src/clib/anna_math.o src/clib/anna_cerror.o				\
 src/clib/anna_object_type.o src/clib/anna_hash.o src/clib/anna_lang.o	\
 src/clib/anna_complex.o src/clib/anna_range.o				\
 src/clib/anna_function_type.o src/clib/anna_type_type.o			\
-src/clib/anna_node_wrapper.o src/clib/anna_int.o			\
-src/clib/anna_string.o src/clib/anna_char.o src/clib/anna_float.o	\
-src/clib/anna_list.o src/clib/anna_pair.o
+src/clib/parser.o src/clib/anna_int.o src/clib/anna_string.o		\
+src/clib/anna_char.o src/clib/anna_float.o src/clib/anna_list.o		\
+src/clib/anna_pair.o
 
 # All object files used by the main anna binary
 ANNA_OBJS := src/anna.o src/util.o src/anna_parse.o src/anna_node.o	\

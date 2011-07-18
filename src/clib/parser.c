@@ -8,7 +8,7 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "anna_node_wrapper.h"
+#include "parser.h"
 #include "anna_type.h"
 #include "anna_string.h"
 #include "anna_list.h"
@@ -281,7 +281,7 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 #include "anna_node_closure_wrapper.c"
 #include "anna_node_mapping_wrapper.c"
 
-void anna_node_wrapper_create_types(anna_stack_template_t *stack)
+void anna_parser_create_types(anna_stack_template_t *stack)
 {
     static anna_type_data_t type_data[] = 
 	{
@@ -295,7 +295,7 @@ void anna_node_wrapper_create_types(anna_stack_template_t *stack)
     
 }
 
-void anna_node_wrapper_load(anna_stack_template_t *stack)
+void anna_parser_load(anna_stack_template_t *stack)
 {
     int i;
     stack->flags |= ANNA_STACK_NAMESPACE;

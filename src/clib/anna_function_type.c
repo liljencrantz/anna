@@ -18,7 +18,7 @@
 #include "../anna_member.h"
 #include "../anna_vm.h"
 #include "../anna_mid.h"
-#include "anna_node_wrapper.h"
+#include "parser.h"
 #include "../anna_type_data.h"
 
 anna_type_t *function_type_base = 0;

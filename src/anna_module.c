@@ -22,7 +22,7 @@
 #include "anna_type.h"
 #include "anna_macro.h"
 #include "anna_member.h"
-#include "clib/anna_node_wrapper.h"
+#include "clib/parser.h"
 #include "anna_status.h"
 #include "anna_vm.h"
 #include "anna_alloc.h"
@@ -331,7 +331,7 @@ void anna_module_init()
     anna_module_data_t modules[] = 
 	{
 	    { L"lang", anna_lang_create_types, anna_lang_load },
-	    { L"parser", anna_node_wrapper_create_types, anna_node_wrapper_load },
+	    { L"parser", anna_parser_create_types, anna_parser_load },
 	    { L"system", 0, anna_system_load },
 	    { L"reflection", anna_reflection_create_types, anna_reflection_load },
 	    { L"cio", 0, anna_cio_load },
