@@ -323,12 +323,6 @@ static void anna_reflection_load(anna_stack_template_t *stack)
     anna_function_type_load(stack);
 }
 
-ANNA_VM_NATIVE(anna_global_get_global, 1)
-{
-    return anna_from_obj(anna_stack_wrap(stack_global));    
-}
-
-
 void anna_module_init()
 {
     /*

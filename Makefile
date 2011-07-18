@@ -25,32 +25,30 @@ $(COV_FLAGS)
 
 # Full cflags, including warnings 
 CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
--Wmissing-braces -Wmissing-prototypes -I .
+-Wmissing-braces -Wmissing-prototypes -I src -I .
 #-Wsuggest-attribute=const	-Wsuggest-attribute=pure
 
-ANNA_CLIB_OBJS := clib/anna_buffer.o clib/anna_cio.o clib/anna_math.o	\
-clib/anna_cerror.o clib/anna_object_type.o clib/anna_hash.o		\
-clib/anna_lang.o clib/anna_complex.o clib/anna_range.o			\
-clib/anna_function_type.o clib/anna_type_type.o				\
-clib/anna_node_wrapper.o clib/anna_string_internal.o clib/anna_int.o	\
-clib/anna_string.o clib/anna_char.o clib/anna_float.o clib/anna_list.o	\
-clib/anna_pair.o clib/anna_function_implementation.o 
+ANNA_CLIB_OBJS := src/clib/anna_buffer.o src/clib/anna_cio.o		\
+src/clib/anna_math.o src/clib/anna_cerror.o				\
+src/clib/anna_object_type.o src/clib/anna_hash.o src/clib/anna_lang.o	\
+src/clib/anna_complex.o src/clib/anna_range.o				\
+src/clib/anna_function_type.o src/clib/anna_type_type.o			\
+src/clib/anna_node_wrapper.o src/clib/anna_string_internal.o		\
+src/clib/anna_int.o src/clib/anna_string.o src/clib/anna_char.o		\
+src/clib/anna_float.o src/clib/anna_list.o src/clib/anna_pair.o		\
+src/clib/anna_function_implementation.o
 
 # All object files used by the main anna binary
-ANNA_OBJS := anna.o util.o anna_parse.o anna_node.o anna_macro.o	\
-anna_stack.o autogen/anna_lex.o autogen/anna_yacc.o common.o wutil.o	\
-anna_type.o anna_node_print.o anna_function.o anna_node_check.o		\
-anna_member.o anna_util.o anna_module.o anna_node_create.o		\
-anna_object.o anna_invoke.o anna_error.o anna_mid.o anna_vm.o		\
-anna_alloc.o anna_attribute.o anna_intern.o anna_tt.o anna_slab.o	\
-anna_node_hash.o anna_compile.o anna_abides.o dtoa.o anna_use.o		\
-$(ANNA_CLIB_OBJS)
-
-ANNA_STRING_INTERNAL_TEST_OBJS := anna_string_internal.o	\
-anna_string_internal_test.o util.o common.o 
-
-ANNA_STRING_PERF_OBJS := anna_string_internal.o anna_string_perf.o	\
-util.o common.o 
+ANNA_OBJS := src/anna.o src/util.o src/anna_parse.o src/anna_node.o	\
+src/anna_macro.o src/anna_stack.o autogen/anna_lex.o			\
+autogen/anna_yacc.o src/common.o src/wutil.o src/anna_type.o		\
+src/anna_node_print.o src/anna_function.o src/anna_node_check.o		\
+src/anna_member.o src/anna_util.o src/anna_module.o			\
+src/anna_node_create.o src/anna_object.o src/anna_invoke.o		\
+src/anna_error.o src/anna_mid.o src/anna_vm.o src/anna_alloc.o		\
+src/anna_attribute.o src/anna_intern.o src/anna_tt.o src/anna_slab.o	\
+src/anna_node_hash.o src/anna_compile.o src/anna_abides.o src/dtoa.o	\
+src/anna_use.o $(ANNA_CLIB_OBJS)
 
 LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 
@@ -65,7 +63,7 @@ all: $(PROGRAMS)
 #          explanation of how this code works.          #
 #########################################################
 %.d: %.c
-	@echo -n $@ " " >$@; $(CC) -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
+	@echo -n $@ " " >$@; $(CC) -I src -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
 ifneq "$(MAKECMDGOALS)" "clean"
 -include $(ANNA_OBJS:.o=.d)
 endif
@@ -76,49 +74,44 @@ endif
 bin/anna: $(ANNA_OBJS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
-anna_string_internal_test: $(ANNA_STRING_INTERNAL_TEST_OBJS)
-	$(CC) $(ANNA_STRING_INTERNAL_TEST_OBJS) -o $@ $(LDFLAGS) 
-
-anna_string_perf: $(ANNA_STRING_PERF_OBJS)
-	$(CC) $(ANNA_STRING_PERF_OBJS) -o $@ $(LDFLAGS) 
-
-autogen/anna_lex.c: anna_lex.y 
-	cd autogen; flex -CFe -8 -oanna_lex.c -Panna_lex_ ../anna_lex.y 
+autogen/anna_lex.c: src/anna_lex.y 
+	cd autogen; flex -CFe -8 -oanna_lex.c -Panna_lex_ ../src/anna_lex.y 
 
 autogen/anna_lex.h: autogen/anna_lex.c
 
-autogen/anna_yacc.c: anna_yacc.y
-	bison -d anna_yacc.y -o autogen/anna_yacc.c -v -p anna_yacc_
+autogen/anna_yacc.c: src/anna_yacc.y
+	bison -d src/anna_yacc.y -o autogen/anna_yacc.c -v -p anna_yacc_
 
 autogen/anna_yacc.h: autogen/anna_yacc.c
 
-autogen/anna_vm_short_circut.c: make_anna_vm_short_circut.sh
-	./make_anna_vm_short_circut.sh >autogen/anna_vm_short_circut.c
+autogen/anna_vm_short_circut.c: bin/make_anna_vm_short_circut.sh
+	./bin/make_anna_vm_short_circut.sh >autogen/anna_vm_short_circut.c
 
-autogen/anna_float_i.c: clib/make_anna_float_i.sh
-	./clib/make_anna_float_i.sh >autogen/anna_float_i.c
+autogen/anna_float_i.c: bin/make_anna_float_i.sh
+	./bin/make_anna_float_i.sh >autogen/anna_float_i.c
 
-autogen/anna_int_i.c: clib/make_anna_int_i.sh
-	./clib/make_anna_int_i.sh >autogen/anna_int_i.c
+autogen/anna_int_i.c: bin/make_anna_int_i.sh
+	./bin/make_anna_int_i.sh >autogen/anna_int_i.c
 
-autogen/anna_char_i.c: clib/make_anna_char_i.sh
-	./clib/make_anna_char_i.sh >autogen/anna_char_i.c
+autogen/anna_char_i.c: bin/make_anna_char_i.sh
+	./bin/make_anna_char_i.sh >autogen/anna_char_i.c
 
-autogen/anna_string_i.c: clib/make_anna_string_i.sh
-	./clib/make_anna_string_i.sh >autogen/anna_string_i.c
+autogen/anna_string_i.c: bin/make_anna_string_i.sh
+	./bin/make_anna_string_i.sh >autogen/anna_string_i.c
 
-autogen/anna_complex_i.c: clib/make_anna_complex_i.sh
-	./clib/make_anna_complex_i.sh >autogen/anna_complex_i.c
+autogen/anna_complex_i.c: bin/make_anna_complex_i.sh
+	./bin/make_anna_complex_i.sh >autogen/anna_complex_i.c
 
-autogen/anna_object_i.c: clib/make_anna_object_i.sh
-	./clib/make_anna_object_i.sh >autogen/anna_object_i.c
+autogen/anna_object_i.c: bin/make_anna_object_i.sh
+	./bin/make_anna_object_i.sh >autogen/anna_object_i.c
 
 # These files consist of either external or autogenerated code, not
 # much to do about the warnings, so we silence them...
-dtoa.o: dtoa.c
-	$(CC) $(CFLAGS_NOWARN) -c dtoa.c -o dtoa.o -DIEEE_8087 -DLong=int
+src/dtoa.o: src/dtoa.c
+	$(CC) $(CFLAGS_NOWARN) -c src/dtoa.c -o src/dtoa.o -DIEEE_8087 -DLong=int
+
 autogen/anna_lex.o: autogen/anna_lex.c
-	$(CC) $(CFLAGS_NOWARN) -c autogen/anna_lex.c -o autogen/anna_lex.o -I . 
+	$(CC) $(CFLAGS_NOWARN) -c autogen/anna_lex.c -o autogen/anna_lex.o -I src -I .
 
 check: test
 .PHONY: check
@@ -131,8 +124,9 @@ test: bin/anna
 .PHONY: test
 
 clean:
-	rm -f bin/anna gmon.out anna_yacc.output *.o autogen/*.h	\
-autogen/*.c */*.d *.gcov *.gcda *.gcno autogen/*.o clib/*.o *.d
+	rm -f bin/anna gmon.out anna_yacc.output src/*.o autogen/*.h	\
+autogen/*.c autogen/*.d src/*/*.d src/*.d *.gcov *.gcda *.gcno		\
+autogen/*.o src/clib/*.o
 	if test -d documentation; then rm -r documentation; fi
 .PHONY: clean
 
