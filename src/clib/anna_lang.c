@@ -5,35 +5,37 @@
 #include <assert.h>
 #include <string.h>
 
-#include "../common.h"
-#include "../util.h"
-#include "../anna.h"
-#include "../anna_util.h"
-#include "../anna_function.h"
-#include "../anna_stack.h"
-#include "../anna_type.h"
-#include "../anna_macro.h"
-#include "../anna_member.h"
-#include "../anna_intern.h"
-#include "../anna_vm.h"
-#include "../anna_mid.h"
-#include "../anna_type_data.h"
+#include "common.h"
+#include "util.h"
+#include "anna.h"
+#include "anna_util.h"
+#include "anna_function.h"
+#include "anna_stack.h"
+#include "anna_type.h"
+#include "anna_macro.h"
+#include "anna_member.h"
+#include "anna_intern.h"
+#include "anna_vm.h"
+#include "anna_mid.h"
+#include "anna_type_data.h"
+#include "anna_vm_internal.h"
+#include "anna_module.h"
 
-#include "anna_int.h"
-#include "anna_float.h"
-#include "anna_complex.h"
-#include "anna_string.h"
-#include "anna_char.h"
-#include "anna_list.h"
-#include "anna_range.h"
-#include "anna_hash.h"
-#include "anna_pair.h"
-#include "anna_function_type.h"
-#include "anna_type_type.h"
-#include "anna_object_type.h"
-#include "anna_buffer.h"
-#include "anna_node_wrapper.h"
-#include "anna_lang.h"
+#include "clib/anna_int.h"
+#include "clib/anna_float.h"
+#include "clib/anna_complex.h"
+#include "clib/anna_string.h"
+#include "clib/anna_char.h"
+#include "clib/anna_list.h"
+#include "clib/anna_range.h"
+#include "clib/anna_hash.h"
+#include "clib/anna_pair.h"
+#include "clib/anna_function_type.h"
+#include "clib/anna_type_type.h"
+#include "clib/anna_object_type.h"
+#include "clib/anna_buffer.h"
+#include "clib/anna_node_wrapper.h"
+#include "clib/anna_lang.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,
@@ -121,12 +123,194 @@ static void anna_null_type_create()
     null_object->type = null_type;
 }
 
+
+anna_object_t *anna_wrap_method;
+
+static int print_direct(anna_entry_t *o)
+{
+    if(anna_is_obj(o))
+    {
+	anna_object_t *o2 = anna_as_obj(o);
+	if(o2->type == string_type)
+	{
+	    anna_string_print(o2);
+	    return 1;
+	}
+    }
+    else
+    {
+	if(anna_is_float(o))
+	{
+	    wchar_t buff[32];
+	    
+	    swprintf(buff, 32, L"%f", anna_as_float(o));
+	    wchar_t *comma = wcschr(buff, ',');
+	    if(comma)
+	    {
+		*comma = '.';
+	    }
+	    wprintf(L"%ls", buff);
+	}
+	else if(anna_is_char(o))
+	{
+	    wprintf(L"%lc", anna_as_char(o));
+	}
+	else if(anna_is_int_small(o))
+	{
+	    wprintf(L"%d", anna_as_int(o));
+	}
+	return 1;
+    }
+    
+    return 0;
+}
+
+static int print_direct_loop(anna_object_t *list, int idx)
+{
+    int ls = anna_list_get_count(list);
+    while(1)
+    {
+	if(ls == idx)
+	{
+	    break;
+	}
+	anna_entry_t *o = anna_list_get(list, idx);
+	if(!print_direct(o))
+	{
+	    break;
+	}
+	idx++;	
+    }
+    return idx;
+}
+
+static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
+{    
+    anna_object_t *value = anna_vmstack_pop_object(stack);
+    anna_entry_t **param = stack->top - 2;
+    anna_object_t *list = anna_as_obj_fast(param[0]);
+    int idx = anna_as_int(param[1]);
+    int ls = anna_list_get_count(list);
+    if(value == null_object) 
+    {
+	wprintf(L"null");
+    }
+    else 
+    {
+	if(value->type == imutable_string_type || value->type == mutable_string_type)
+	{
+	    anna_string_print(value);
+	}	
+	else
+	{
+	    wprintf(L"<invalid toString method>");
+	}
+    }    
+    
+    idx = print_direct_loop(list, idx);
+
+    if(ls > idx)
+    {
+	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
+	param[1] = anna_from_int(idx+1);
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
+	anna_vm_callback_reset(stack, meth, 1, (anna_entry_t **)&o);
+    }
+    else
+    {
+	anna_vmstack_drop(stack, 3);
+	anna_vmstack_push_object(stack, list);
+    }
+    
+    return stack;
+}
+
+static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *list = anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_object(stack);
+    int idx = print_direct_loop(list, 0);
+    if(anna_list_get_count(list) > idx)
+    {
+	anna_entry_t *callback_param[] = 
+	    {
+		anna_from_obj(list),
+		anna_from_int(idx+1)
+	    }
+	;
+	
+	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
+	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
+	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
+	
+	stack = anna_vm_callback_native(
+	    stack,
+	    anna_print_callback, 2, callback_param,
+	    meth, 1, (anna_entry_t **)&o
+	    );
+    }
+    else
+    {
+	anna_vmstack_push_object(stack, list);
+    }
+    return stack;
+}
+
+static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t *val = anna_vmstack_pop_entry(stack);
+    anna_vmstack_pop_object(stack);
+    anna_vmstack_push_entry(stack, anna_entry_null(val)?anna_from_int(1):null_entry);
+    return stack;
+}
+
+static anna_vmstack_t *anna_i_callcc_callback(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_object_t *res = anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_object(stack);
+    anna_vmstack_push_object(stack, res);
+    return stack;
+}
+
+static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
+{
+    stack = anna_frame_to_heap(stack);
+    
+    anna_object_t *fun = anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_object(stack);
+    anna_object_t *cont = anna_continuation_create(
+	stack,
+	object_type)->wrapper;
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)stack;
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)stack->code;
+    
+    return anna_vm_callback_native(
+	stack, &anna_i_callcc_callback, 0, 0, 
+	fun, 1, (anna_entry_t **)&cont);    
+}
+
+static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *me)
+{
+    anna_entry_t *meth = anna_vmstack_pop_entry(stack);
+    anna_entry_t *obj = anna_vmstack_pop_entry(stack);
+    anna_vmstack_pop_object(stack);
+    
+    anna_object_t *res = anna_method_wrapper_create(
+	stack,
+	object_type)->wrapper;
+    *anna_entry_get_addr(res, ANNA_MID_THIS) = obj;
+    *anna_entry_get_addr(res, ANNA_MID_METHOD) = meth;
+    anna_vmstack_push_object(stack, res);
+    return stack;
+}
+
 void anna_lang_create_types(anna_stack_template_t *stack_lang)
 {
     anna_type_data_create(anna_lang_type_data, stack_lang);    
 }
 
-void anna_lang_load(anna_stack_template_t *stack_lang)
+void anna_lang_load(anna_stack_template_t *stack)
 {
     anna_object_type_create();
     anna_type_type_create();    
@@ -142,6 +326,42 @@ void anna_lang_load(anna_stack_template_t *stack_lang)
     anna_hash_type_create();
     anna_buffer_type_create();
     
-    anna_function_implementation_init(stack_lang);
-    anna_type_data_register(anna_lang_type_data, stack_lang);    
+    static wchar_t *p_argn[]={L"object"};
+    anna_module_function(
+	stack,
+	L"print", 
+	ANNA_FUNCTION_VARIADIC, 
+	&anna_i_print, 
+	imutable_list_type, 1, &object_type, 
+	p_argn, 
+	L"Print all the supplied arguments to standard output");
+    
+    anna_module_function(
+	stack,
+	L"__not__", 0, 
+	&anna_i_not, 
+	int_type, 
+	1, &object_type, p_argn, 
+	L"Negates the value. Returns 1 of the input is null, null otherwise.");
+
+    anna_module_function(
+	stack,
+	L"callCC", 0, 
+	&anna_i_callcc, 
+	object_type, 
+	1, &object_type, p_argn, 
+	L"Call with current continuation.");
+
+    static wchar_t *wrap_argn[]={L"object",L"method"};
+    anna_type_t *wrap_argv[]={object_type, object_type};
+    
+    anna_function_t *wrap = anna_native_create(
+	L"wrapMethod", 0,
+	&anna_i_wrap_method,
+	object_type,
+	2,
+	wrap_argv, wrap_argn, stack);
+    anna_wrap_method = wrap->wrapper;
+
+    anna_type_data_register(anna_lang_type_data, stack);    
 }
