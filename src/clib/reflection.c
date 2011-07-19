@@ -8,7 +8,8 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "parser.h"
+#include "clib/reflection.h"
+#include "clib/parser.h"
 #include "anna_type.h"
 #include "anna_string.h"
 #include "anna_list.h"
@@ -26,6 +27,7 @@
 #include "anna_module.h"
 
 #include "clib/function.c"
+#include "clib/member.c"
 
 static anna_type_data_t anna_member_type_data[] = 
 {
