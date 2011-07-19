@@ -24,7 +24,7 @@
 #include "anna_mid.h"
 #include "anna_type_data.h"
 
-anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type, *node_imutable_call_wrapper_type;
+anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
 
 static anna_type_t *anna_node_type_mapping[ANNA_NODE_TYPE_COUNT];
 
@@ -305,10 +305,7 @@ void anna_parser_load(anna_stack_template_t *stack)
     anna_node_create_identifier_wrapper_type(stack, node_identifier_wrapper_type, 0);
     anna_node_create_identifier_wrapper_type(stack, mapping_id_type, 1);
     
-    node_imutable_call_wrapper_type = anna_type_native_create(L"ImutableCall", stack);
-    
-    anna_node_create_call_wrapper_type(stack, node_call_wrapper_type, 1);
-    anna_node_create_call_wrapper_type(stack, node_imutable_call_wrapper_type, 0);
+    anna_node_create_call_wrapper_type(stack, node_call_wrapper_type);
 
     anna_type_t *types[] = 
 	{
@@ -374,13 +371,6 @@ void anna_parser_load(anna_stack_template_t *stack)
 	}
     }
 
-    anna_type_copy(node_imutable_call_wrapper_type, node_wrapper_type);
-    anna_type_copy_object(node_imutable_call_wrapper_type);
-    anna_stack_declare(
-	stack, node_imutable_call_wrapper_type->name, 
-	type_type, anna_from_obj(anna_type_wrap(node_imutable_call_wrapper_type)), 
-	ANNA_STACK_READONLY);
-    
     static wchar_t *i_argn[]={L"hint"};
     anna_function_t *f = anna_native_create(
 	L"identifier", 

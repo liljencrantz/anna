@@ -224,20 +224,6 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
     return param[0];
 }
 
-static anna_vmstack_t *anna_node_call_wrapper_copy_imutable(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_entry_t **param = stack->top - 1;
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_object_t *that = anna_object_create(node_imutable_call_wrapper_type);
-    *(anna_node_t **)anna_entry_get_addr(that,ANNA_MID_NODE_PAYLOAD)=
-	anna_node_clone_deep(*(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD));
-    
-    
-    anna_vmstack_push_object(stack, that);
-    return stack;    
-}
-
 static anna_vmstack_t *anna_node_call_wrapper_copy_mutable(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t **param = stack->top - 1;
@@ -251,21 +237,9 @@ static anna_vmstack_t *anna_node_call_wrapper_copy_mutable(anna_vmstack_t *stack
     return stack;    
 }
 
-static anna_vmstack_t *anna_node_call_wrapper_noop(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_entry_t **param = stack->top - 1;
-    anna_object_t *this = anna_as_obj(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, this);
-    return stack;    
-}
-
-
-
-
 static void anna_node_create_call_wrapper_type(
     anna_stack_template_t *stack, 
-    anna_type_t *type, int mutable)
+    anna_type_t *type)
 {
     mid_t mmid;
     anna_function_t *fun;
@@ -347,35 +321,22 @@ static void anna_node_create_call_wrapper_type(
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
-    if(mutable)
-    {
-	mmid = anna_member_create_native_method(
-	    type,
-	    anna_mid_get(L"__set__Int__"), 0,
-	    &anna_node_call_wrapper_i_set_int,
-	    node_wrapper_type,
-	    3,
-	    i_argv,
-	    i_argn);
-	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-	anna_function_alias_add(fun, L"__set__");
-    }
+    mmid = anna_member_create_native_method(
+	type,
+	anna_mid_get(L"__set__Int__"), 0,
+	&anna_node_call_wrapper_i_set_int,
+	node_wrapper_type,
+	3,
+	i_argv,
+	i_argn);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+    anna_function_alias_add(fun, L"__set__");
 
-    anna_member_create_native_property(
-	type, anna_mid_get(L"freeze"),
-	node_imutable_call_wrapper_type, mutable ? &anna_node_call_wrapper_copy_imutable : &anna_node_call_wrapper_noop,
-	0, 0);
-    
-    anna_member_create_native_property(
-	type, anna_mid_get(L"thaw"),
-	node_call_wrapper_type, mutable ? &anna_node_call_wrapper_noop : &anna_node_call_wrapper_copy_mutable,
-	0, 0);
-    
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"function"), node_wrapper_type,
 	&anna_node_call_wrapper_i_get_function,
-	mutable?&anna_node_call_wrapper_i_set_function:0,
+	&anna_node_call_wrapper_i_set_function,
 	L"The function node of this call.");
     
     anna_type_t *j_argv[] = 
@@ -406,7 +367,7 @@ static void anna_node_create_call_wrapper_type(
     anna_member_create_native_method(
 	type,
 	anna_mid_get(L"__appendAssign__"), 0,
-	mutable ? &anna_node_call_wrapper_append : &anna_node_call_wrapper_i_join_list,
+	&anna_node_call_wrapper_append,
 	type,
 	2,
 	j_argv,
