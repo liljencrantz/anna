@@ -30,7 +30,7 @@ ANNA_VM_NATIVE(anna_node_mapping_identifier_wrapper_i_init, 3)
     return param[0];
 }
 
-static void anna_node_create_identifier_wrapper_type(anna_stack_template_t *stack, anna_type_t *type, int mapping)
+static void anna_node_create_identifier_type(anna_stack_template_t *stack, anna_type_t *type, int mapping)
 {
     wchar_t *argn[] =
 	{
@@ -41,7 +41,7 @@ static void anna_node_create_identifier_wrapper_type(anna_stack_template_t *stac
     anna_type_t *argv[] = 
 	{
 	    type,
-	    node_wrapper_type,
+	    node_type,
 	    string_type
 	}
     ;

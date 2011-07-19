@@ -24,7 +24,7 @@ ANNA_VM_NATIVE(anna_node_mapping_wrapper_i_init, 4)
     return param[0];
 }
 
-static anna_type_t *anna_node_create_mapping_wrapper_type(
+static anna_type_t *anna_node_create_mapping_type(
     anna_stack_template_t *stack)
 {
     anna_type_t *type = anna_type_native_create(
@@ -39,9 +39,9 @@ static anna_type_t *anna_node_create_mapping_wrapper_type(
     anna_type_t *argv[] = 
 	{
 	    type,
-	    node_wrapper_type,
-	    node_wrapper_type,
-	    node_wrapper_type,
+	    node_type,
+	    node_type,
+	    node_type,
 	}
     ;
     
@@ -55,7 +55,7 @@ static anna_type_t *anna_node_create_mapping_wrapper_type(
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"from"),
-	node_wrapper_type,
+	node_type,
 	&anna_node_mapping_wrapper_i_get_from,
 	0,
 	L"The key node of this mapping.");
@@ -63,7 +63,7 @@ static anna_type_t *anna_node_create_mapping_wrapper_type(
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"to"),
-	node_wrapper_type,
+	node_type,
 	&anna_node_mapping_wrapper_i_get_to,
 	0,
 	L"The value node of this mapping.");

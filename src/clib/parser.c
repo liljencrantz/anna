@@ -25,7 +25,7 @@
 #include "anna_type_data.h"
 #include "anna_module.h"
 
-anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
+anna_type_t *node_type, *node_identifier_type, *node_call_type;
 static anna_type_t *anna_node_type_mapping[ANNA_NODE_TYPE_COUNT];
 
 anna_object_t *anna_node_wrap(anna_node_t *node)
@@ -33,7 +33,7 @@ anna_object_t *anna_node_wrap(anna_node_t *node)
     if(node->wrapper)
 	return node->wrapper;
     
-    anna_type_t *type= anna_node_type_mapping[node->node_type] ? anna_node_type_mapping[node->node_type] : node_wrapper_type;
+    anna_type_t *type= anna_node_type_mapping[node->node_type] ? anna_node_type_mapping[node->node_type] : node_type;
 
     anna_object_t *obj= anna_object_create(type);
     *(anna_node_t **)anna_entry_get_addr(obj,ANNA_MID_NODE_PAYLOAD)=node;
@@ -63,7 +63,7 @@ void anna_node_wrapper_add_method(anna_function_t *fun)
 	}
     }
 
-    anna_member_create_method(node_wrapper_type, anna_mid_get(fun->name), fun);
+    anna_member_create_method(node_type, anna_mid_get(fun->name), fun);
     
 }
 
@@ -175,13 +175,13 @@ ANNA_VM_NATIVE(anna_node_wrapper_copy, 1)
 	  		param[0])))));
 }
 
-static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
+void anna_node_basic_create_type(anna_stack_template_t *stack)
 {
     anna_type_t *replace_argv[] = 
 	{
-	    node_wrapper_type,
-	    node_identifier_wrapper_type,
-	    node_wrapper_type,
+	    node_type,
+	    node_identifier_type,
+	    node_type,
 	}
     ;
     wchar_t *replace_argn[] =
@@ -192,7 +192,7 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
     
     anna_type_t *error_argv[] = 
 	{
-	    node_wrapper_type,
+	    node_type,
 	    string_type
 	}
     ;
@@ -202,27 +202,27 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	}
     ;
     
-    anna_member_create(node_wrapper_type, ANNA_MID_NODE_PAYLOAD, 0, null_type);
+    anna_member_create(node_type, ANNA_MID_NODE_PAYLOAD, 0, null_type);
     
     anna_member_create_native_method(
-	node_wrapper_type, anna_mid_get(L"replace"), 0,
+	node_type, anna_mid_get(L"replace"), 0,
 	&anna_node_wrapper_i_replace,
-	node_wrapper_type, 3, replace_argv, replace_argn);
+	node_type, 3, replace_argv, replace_argn);
 
     anna_member_create_native_method(
-	node_wrapper_type, anna_mid_get(L"error"), 0,
+	node_type, anna_mid_get(L"error"), 0,
 	&anna_node_wrapper_i_error,
-	node_wrapper_type, 2, error_argv, error_argn);
+	node_type, 2, error_argv, error_argn);
 
     anna_member_create_native_method(
-	node_wrapper_type, anna_mid_get(L"toString"),
+	node_type, anna_mid_get(L"toString"),
 	0,
 	&anna_node_wrapper_i_to_string,
 	string_type, 1, error_argv, error_argn);    
     
     anna_type_t *cmp_argv[] = 
 	{
-	    node_wrapper_type, object_type
+	    node_type, object_type
 	}
     ;
     wchar_t *cmp_argn[]=
@@ -232,19 +232,19 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
     ;
 
     anna_member_create_native_method(
-	node_wrapper_type, anna_mid_get(L"__cmp__"), 0,
+	node_type, anna_mid_get(L"__cmp__"), 0,
 	&anna_node_wrapper_cmp, 
 	int_type, 2, cmp_argv, cmp_argn);
 
     anna_member_create_native_method(
-	node_wrapper_type, anna_mid_get(L"hashCode"), 0,
+	node_type, anna_mid_get(L"hashCode"), 0,
 	&anna_node_wrapper_hash,
 	int_type, 1, cmp_argv, cmp_argn);
 
     anna_member_create_native_method(
-	node_wrapper_type, anna_mid_get(L"copy"), 0,
+	node_type, anna_mid_get(L"copy"), 0,
 	&anna_node_wrapper_copy,
-	node_wrapper_type, 1, cmp_argv, cmp_argn);
+	node_type, 1, cmp_argv, cmp_argn);
 }
 
 #include "anna_node_call_wrapper.c"
@@ -262,9 +262,9 @@ void anna_parser_create_types(anna_stack_template_t *stack)
 {
     static anna_type_data_t type_data[] = 
 	{
-	    { &node_call_wrapper_type, L"Call" },
-	    { &node_wrapper_type, L"Node" },
-	    { &node_identifier_wrapper_type, L"Identifier" },
+	    { &node_call_type, L"Call" },
+	    { &node_type, L"Node" },
+	    { &node_identifier_type, L"Identifier" },
 	}
     ;
     
@@ -278,23 +278,23 @@ void anna_parser_load(anna_stack_template_t *stack)
     stack->flags |= ANNA_STACK_NAMESPACE;
         
     anna_type_t *mapping_id_type = anna_type_native_create(L"InternalIdentifier", stack);
-    anna_node_create_wrapper_type(stack);
-    anna_node_create_identifier_wrapper_type(stack, node_identifier_wrapper_type, 0);
-    anna_node_create_identifier_wrapper_type(stack, mapping_id_type, 1);
+    anna_node_basic_create_type(stack);
+    anna_node_create_identifier_type(stack, node_identifier_type, 0);
+    anna_node_create_identifier_type(stack, mapping_id_type, 1);
     
-    anna_node_create_call_wrapper_type(stack, node_call_wrapper_type);
+    anna_node_create_call_type(stack, node_call_type);
 
     anna_type_t *types[] = 
 	{
-	    node_call_wrapper_type,
-	    node_identifier_wrapper_type,  
-	    anna_node_create_int_literal_wrapper_type(stack),
-	    anna_node_create_string_literal_wrapper_type(stack),
-	    anna_node_create_char_literal_wrapper_type(stack),
-	    anna_node_create_float_literal_wrapper_type(stack),
-	    anna_node_create_null_wrapper_type(stack),
-	    anna_node_create_dummy_wrapper_type(stack),
-	    anna_node_create_closure_wrapper_type(stack),
+	    node_call_type,
+	    node_identifier_type,  
+	    anna_node_create_int_literal_type(stack),
+	    anna_node_create_string_literal_type(stack),
+	    anna_node_create_char_literal_type(stack),
+	    anna_node_create_float_literal_type(stack),
+	    anna_node_create_null_type(stack),
+	    anna_node_create_dummy_type(stack),
+	    anna_node_create_closure_type(stack),
 	    0,
 	    0,
 	    0,
@@ -313,7 +313,7 @@ void anna_parser_load(anna_stack_template_t *stack)
 	    0,
 	    0,
 	    0,
-	    anna_node_create_mapping_wrapper_type(stack),
+	    anna_node_create_mapping_type(stack),
 	    mapping_id_type,
 	    0
 	};
@@ -323,10 +323,10 @@ void anna_parser_load(anna_stack_template_t *stack)
     memset(anna_node_type_mapping, 0, sizeof(anna_node_type_mapping));
     memcpy(anna_node_type_mapping, types, sizeof(types));
 
-    anna_type_copy_object(node_wrapper_type);
+    anna_type_copy_object(node_type);
     anna_stack_declare(
-	stack, node_wrapper_type->name, 
-	type_type, anna_from_obj(anna_type_wrap(node_wrapper_type)),
+	stack, node_type->name, 
+	type_type, anna_from_obj(anna_type_wrap(node_type)),
 	ANNA_STACK_READONLY); 
     /*
       Insert all the cool stuff from node_wrapper and 
@@ -335,7 +335,7 @@ void anna_parser_load(anna_stack_template_t *stack)
     {
 	if(!types[i])
 	    continue;
-	anna_type_copy(types[i], node_wrapper_type);
+	anna_type_copy(types[i], node_type);
 	anna_type_copy_object(types[i]);
 	/* Declare all types in our namespace.  Don't redeclare types
 	   that are used for more than one mapping */
@@ -357,7 +357,7 @@ void anna_parser_load(anna_stack_template_t *stack)
     static wchar_t *p_argn[]={L"input"};
     anna_module_function(
 	stack, L"parse", 0, anna_parse_i,
-	node_wrapper_type, 1, &string_type, p_argn,
+	node_type, 1, &string_type, p_argn,
 	L"Parse the specified string and return an AST tree representing it");
 
 }

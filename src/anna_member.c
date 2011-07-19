@@ -205,7 +205,7 @@ static void anna_member_type_create()
     
     anna_member_create_native_property(
 	member_type, anna_mid_get(L"__attribute__"),
-	node_call_wrapper_type,
+	node_call_type,
 	&anna_member_i_get_attributes,
 	0,
 	L"All attributes specified for this member.");

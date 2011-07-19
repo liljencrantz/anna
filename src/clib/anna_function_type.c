@@ -177,7 +177,7 @@ void anna_function_type_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"__attribute__"),
-	node_call_wrapper_type,
+	node_call_type,
 	&anna_function_type_i_get_attributes,
 	0,
 	L"All attributes specified for this function.");

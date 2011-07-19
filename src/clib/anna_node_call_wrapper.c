@@ -229,7 +229,7 @@ static anna_vmstack_t *anna_node_call_wrapper_copy_mutable(anna_vmstack_t *stack
     anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_vmstack_drop(stack, 2);
-    anna_object_t *that = anna_object_create(node_call_wrapper_type);
+    anna_object_t *that = anna_object_create(node_call_type);
     
     *(anna_node_t **)anna_entry_get_addr(that,ANNA_MID_NODE_PAYLOAD)=
 	anna_node_clone_deep(*(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD));
@@ -237,21 +237,21 @@ static anna_vmstack_t *anna_node_call_wrapper_copy_mutable(anna_vmstack_t *stack
     return stack;    
 }
 
-static void anna_node_create_call_wrapper_type(
+static void anna_node_create_call_type(
     anna_stack_template_t *stack, 
     anna_type_t *type)
 {
     mid_t mmid;
     anna_function_t *fun;
 
-    anna_type_copy(type, node_wrapper_type);
+    anna_type_copy(type, node_type);
 
     anna_type_t *argv[] = 
 	{
 	    type,
-	    node_wrapper_type,
-	    node_wrapper_type,
-	    node_wrapper_type
+	    node_type,
+	    node_type,
+	    node_type
 	}
     ;
     
@@ -270,7 +270,7 @@ static void anna_node_create_call_wrapper_type(
 	4, argv, argn);
     
     anna_type_t *fun_type = anna_function_type_each_create(
-	L"!CallIterFunction", int_type, node_wrapper_type);
+	L"!CallIterFunction", int_type, node_type);
 
     anna_type_t *e_argv[] = 
 	{
@@ -302,7 +302,7 @@ static void anna_node_create_call_wrapper_type(
 	{
 	    type,
 	    int_type,
-	    node_wrapper_type
+	    node_type
 	}
     ;
     
@@ -316,7 +316,7 @@ static void anna_node_create_call_wrapper_type(
 	type,
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_node_call_wrapper_i_get_int,
-	node_wrapper_type,
+	node_type,
 	2, i_argv, i_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
@@ -325,7 +325,7 @@ static void anna_node_create_call_wrapper_type(
 	type,
 	anna_mid_get(L"__set__Int__"), 0,
 	&anna_node_call_wrapper_i_set_int,
-	node_wrapper_type,
+	node_type,
 	3,
 	i_argv,
 	i_argn);
@@ -334,7 +334,7 @@ static void anna_node_create_call_wrapper_type(
 
     anna_member_create_native_property(
 	type,
-	anna_mid_get(L"function"), node_wrapper_type,
+	anna_mid_get(L"function"), node_type,
 	&anna_node_call_wrapper_i_get_function,
 	&anna_node_call_wrapper_i_set_function,
 	L"The function node of this call.");
@@ -342,7 +342,7 @@ static void anna_node_create_call_wrapper_type(
     anna_type_t *j_argv[] = 
 	{
 	    type,
-	    anna_list_type_get_any(node_wrapper_type)
+	    anna_list_type_get_any(node_type)
 	}
     ;
     

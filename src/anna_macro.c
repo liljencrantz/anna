@@ -204,7 +204,7 @@ static void anna_macro_add(
 	name,
 	ANNA_FUNCTION_MACRO,
 	call,
-	node_call_wrapper_type,
+	node_call_type,
 	0,
 	0,
 	0,

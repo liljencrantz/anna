@@ -17,7 +17,7 @@ ANNA_VM_NATIVE(anna_node_float_literal_wrapper_i_init, 3)
     return param[0];
 }
 
-static anna_type_t *anna_node_create_float_literal_wrapper_type(anna_stack_template_t *stack)
+static anna_type_t *anna_node_create_float_literal_type(anna_stack_template_t *stack)
 {
     anna_type_t *type = anna_type_native_create(L"FloatLiteral", stack);
     
@@ -30,7 +30,7 @@ static anna_type_t *anna_node_create_float_literal_wrapper_type(anna_stack_templ
     anna_type_t *argv[] = 
 	{
 	    type,
-	    node_wrapper_type,
+	    node_type,
 	    float_type
 	}
     ;

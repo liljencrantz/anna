@@ -17,9 +17,9 @@ ANNA_VM_NATIVE(anna_node_dummy_wrapper_i_init, 3)
     return param[0];
 }
 
-static anna_type_t *anna_node_create_dummy_wrapper_type(anna_stack_template_t *stack)
+static anna_type_t *anna_node_create_dummy_type(anna_stack_template_t *stack)
 {
-    anna_type_t *node_dummy_wrapper_type = anna_type_native_create(L"Dummy", stack);
+    anna_type_t *node_dummy_type = anna_type_native_create(L"Dummy", stack);
     
     wchar_t *argn[] =
 	{
@@ -29,14 +29,14 @@ static anna_type_t *anna_node_create_dummy_wrapper_type(anna_stack_template_t *s
     
     anna_type_t *argv[] = 
 	{
-	    node_dummy_wrapper_type,
-	    node_wrapper_type,
+	    node_dummy_type,
+	    node_type,
 	    object_type
 	}
     ;
     
     anna_member_create_native_method(
-	node_dummy_wrapper_type,
+	node_dummy_type,
 	anna_mid_get(L"__init__"), 0,
 	&anna_node_dummy_wrapper_i_init,
 	null_type,
@@ -45,10 +45,10 @@ static anna_type_t *anna_node_create_dummy_wrapper_type(anna_stack_template_t *s
 	argn);
     
     anna_member_create_native_property(
-	node_dummy_wrapper_type,
+	node_dummy_type,
 	anna_mid_get(L"payload"), object_type,
 	&anna_node_dummy_wrapper_i_get_payload, 0, 
 	L"The payload of this node.");
 
-    return node_dummy_wrapper_type;
+    return node_dummy_type;
 }

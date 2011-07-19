@@ -19,13 +19,13 @@ ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_init, 3)
     return param[0];
 }
 
-static anna_type_t *anna_node_create_string_literal_wrapper_type(anna_stack_template_t *stack)
+static anna_type_t *anna_node_create_string_literal_type(anna_stack_template_t *stack)
 {
-    anna_type_t *node_string_literal_wrapper_type = anna_type_native_create(L"StringLiteral", stack);
+    anna_type_t *node_string_literal_type = anna_type_native_create(L"StringLiteral", stack);
     anna_type_t *argv[] = 
 	{
-	    node_string_literal_wrapper_type,
-	    node_wrapper_type,
+	    node_string_literal_type,
+	    node_type,
 	    string_type
 	}
     ;
@@ -37,7 +37,7 @@ static anna_type_t *anna_node_create_string_literal_wrapper_type(anna_stack_temp
     ;
     
     anna_member_create_native_method(
-	node_string_literal_wrapper_type,
+	node_string_literal_type,
 	anna_mid_get(L"__init__"), 0,
 	&anna_node_string_literal_wrapper_i_init,
 	null_type,
@@ -46,12 +46,12 @@ static anna_type_t *anna_node_create_string_literal_wrapper_type(anna_stack_temp
 	argn);
 
     anna_member_create_native_property(
-	node_string_literal_wrapper_type,
+	node_string_literal_type,
 	anna_mid_get(L"payload"), string_type,
 	&anna_node_string_literal_wrapper_i_get_name,
 	0,
 	L"The payload of this node");
-    return node_string_literal_wrapper_type;
+    return node_string_literal_type;
     
 }
 

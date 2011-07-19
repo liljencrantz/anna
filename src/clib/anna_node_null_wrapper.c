@@ -18,9 +18,9 @@ ANNA_VM_NATIVE(anna_node_null_wrapper_i_init, 2)
     return param[0];
 }
 
-static anna_type_t *anna_node_create_null_wrapper_type(anna_stack_template_t *stack)
+static anna_type_t *anna_node_create_null_type(anna_stack_template_t *stack)
 {
-    anna_type_t *node_null_wrapper_type = anna_type_native_create(L"NullLiteral", stack);
+    anna_type_t *node_null_type = anna_type_native_create(L"NullLiteral", stack);
 
     wchar_t *argn[] =
 	{
@@ -30,20 +30,20 @@ static anna_type_t *anna_node_create_null_wrapper_type(anna_stack_template_t *st
 
     anna_type_t *argv[] = 
 	{
-	    node_null_wrapper_type,
-	    node_wrapper_type,
+	    node_null_type,
+	    node_type,
 	}
     ;
     
     anna_member_create_native_method(
-	node_null_wrapper_type,
+	node_null_type,
 	anna_mid_get(L"__init__"), 0,
 	&anna_node_null_wrapper_i_init,
-	node_null_wrapper_type,
+	node_null_type,
 	2,
 	argv,
 	argn);
-    return node_null_wrapper_type;
+    return node_null_type;
     
 }
 

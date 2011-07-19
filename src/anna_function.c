@@ -606,7 +606,7 @@ anna_function_t *anna_macro_create(
     result->body = (anna_node_call_t *)definition->child[3];
     result->name = anna_intern(name);
     
-    result->return_type = node_wrapper_type;
+    result->return_type = node_type;
     result->flags |= ANNA_FUNCTION_MACRO;
     result->input_count=1;
     
@@ -615,7 +615,7 @@ anna_function_t *anna_macro_create(
     result->input_name[0] = anna_intern(arg_name);
     
     result->input_type = calloc(sizeof(anna_type_t *), 1);
-    result->input_type[0] = node_call_wrapper_type;
+    result->input_type[0] = node_call_type;
 
 //    anna_function_setup_wrapper(result);
     return result;

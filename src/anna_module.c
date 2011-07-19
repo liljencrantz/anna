@@ -265,7 +265,7 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
 	{
 	    anna_hash_add_method(fun);
 	}
-	else if(type == node_wrapper_type)
+	else if(type == node_type)
 	{
 	    anna_node_wrapper_add_method(fun);
 	}
