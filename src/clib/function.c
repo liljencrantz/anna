@@ -96,18 +96,7 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
     return anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
 }
 
-static anna_type_data_t anna_member_type_data[] = 
-{
-    { &function_type_base, L"Function" },
-}
-    ;
-
-void anna_function_type_create_types(anna_stack_template_t *stack)
-{
-    anna_type_data_create(anna_member_type_data, stack);
-}
-
-void anna_function_type_load(anna_stack_template_t *stack)
+static void anna_function_type_load(anna_stack_template_t *stack)
 {
     anna_type_t *res = function_type_base;
     
@@ -171,7 +160,6 @@ void anna_function_type_load(anna_stack_template_t *stack)
     al_destroy(&types);
     base_constructed = 1;
 
-    anna_type_data_register(anna_member_type_data, stack);
 }
 
 void anna_function_type_create(

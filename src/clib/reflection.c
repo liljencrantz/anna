@@ -25,17 +25,23 @@
 #include "anna_type_data.h"
 #include "anna_module.h"
 
-#include "clib/anna_function_type.c"
+#include "clib/function.c"
+
+static anna_type_data_t anna_member_type_data[] = 
+{
+    { &function_type_base, L"Function" },
+}
+    ;
 
 void anna_reflection_create_types(anna_stack_template_t *stack)
 {
     anna_member_create_types(stack);
-    anna_function_type_create_types(stack);
+    anna_type_data_create(anna_member_type_data, stack);
 }
 
 void anna_reflection_load(anna_stack_template_t *stack)
 {
     anna_member_load(stack);
     anna_function_type_load(stack);
+    anna_type_data_register(anna_member_type_data, stack);
 }
-

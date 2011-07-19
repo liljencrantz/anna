@@ -23,6 +23,7 @@
 #include "anna_macro.h"
 #include "anna_member.h"
 #include "clib/parser.h"
+#include "clib/reflection.h"
 #include "anna_status.h"
 #include "anna_vm.h"
 #include "anna_alloc.h"
