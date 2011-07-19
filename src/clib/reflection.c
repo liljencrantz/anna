@@ -30,6 +30,10 @@
 static anna_type_data_t anna_member_type_data[] = 
 {
     { &function_type_base, L"Function" },
+    { &member_type, L"Member" },
+    { &member_method_type, L"Method" },
+    { &member_property_type, L"Property" },
+    { &member_variable_type, L"Variable" },
 }
     ;
 

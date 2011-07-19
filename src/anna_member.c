@@ -22,7 +22,7 @@
 #include "anna_type_data.h"
 #include "anna_intern.h"
 
-static anna_type_t *member_method_type, *member_property_type, *member_variable_type;
+anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 
 anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 {
@@ -237,18 +237,8 @@ static void anna_member_type_create()
 #include "anna_member_property.c"
 #include "anna_member_variable.c"
 
-static anna_type_data_t anna_member_type_data[] = 
-{
-    { &member_type, L"Member" },
-    { &member_method_type, L"Method" },
-    { &member_property_type, L"Property" },
-    { &member_variable_type, L"Variable" },
-}
-    ;
-
 void anna_member_create_types(anna_stack_template_t *stack)
 {    
-    anna_type_data_create(anna_member_type_data, stack);
 }
 
 void anna_member_load(anna_stack_template_t *stack)
@@ -257,7 +247,6 @@ void anna_member_load(anna_stack_template_t *stack)
     anna_member_method_type_create(stack);
     anna_member_property_type_create(stack);
     anna_member_variable_type_create(stack);    
-    anna_type_data_register(anna_member_type_data, stack);
 }
 
 void anna_member_type_set(

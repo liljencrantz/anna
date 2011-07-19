@@ -8,6 +8,8 @@
 #define ANNA_MEMBER_VIRTUAL 2
 #define ANNA_MEMBER_ALLOC 4
 
+extern anna_type_t *member_method_type, *member_property_type, *member_variable_type;
+
 anna_member_t *anna_member_unwrap(anna_object_t *obj);
 
 anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *member);
