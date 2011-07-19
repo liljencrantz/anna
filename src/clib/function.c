@@ -96,7 +96,7 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
     return anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
 }
 
-static void anna_function_type_load(anna_stack_template_t *stack)
+static void anna_function_load(anna_stack_template_t *stack)
 {
     anna_type_t *res = function_type_base;
     

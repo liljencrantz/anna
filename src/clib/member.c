@@ -169,13 +169,9 @@ static void anna_member_type_create()
 	v_argn);
 }
 
-#include "clib/anna_member_method.c"
-#include "clib/anna_member_property.c"
-#include "clib/anna_member_variable.c"
-
-void anna_member_create_types(anna_stack_template_t *stack)
-{    
-}
+#include "clib/method.c"
+#include "clib/property.c"
+#include "clib/variable.c"
 
 void anna_member_load(anna_stack_template_t *stack)
 {
