@@ -15,25 +15,25 @@
 #include <assert.h>
 #include <string.h>
 
-#include "../anna.h"
-#include "../anna_node.h"
-#include "../anna_node_create.h"
-#include "../anna_stack.h"
-#include "../anna_type.h"
-#include "../anna_member.h"
-#include "../anna_function.h"
-#include "../anna_vm.h"
-#include "../anna_tt.h"
-#include "../anna_mid.h"
-#include "../anna_macro.h"
+#include "anna.h"
+#include "anna_node.h"
+#include "anna_node_create.h"
+#include "anna_stack.h"
+#include "anna_type.h"
+#include "anna_member.h"
+#include "anna_function.h"
+#include "anna_vm.h"
+#include "anna_tt.h"
+#include "anna_mid.h"
+#include "anna_macro.h"
 
-#include "anna_hash.h"
-#include "anna_int.h"
-#include "anna_function_type.h"
-#include "anna_range.h"
-#include "anna_pair.h"
-#include "anna_list.h"
-#include "anna_string.h"
+#include "clib/lang/hash.h"
+#include "clib/lang/int.h"
+#include "clib/anna_function_type.h"
+#include "clib/lang/range.h"
+#include "clib/lang/pair.h"
+#include "clib/lang/list.h"
+#include "clib/lang/string.h"
 
 /**
    The size of the builtin table used for very small hashes to avoid a memory allocation.

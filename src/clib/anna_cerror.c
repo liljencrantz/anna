@@ -17,7 +17,7 @@
 #include "anna_member.h"
 #include "anna_mid.h"
 
-#include "clib/anna_string.h"
+#include "clib/lang/string.h"
 #include "clib/anna_cerror.h"
 
 ANNA_VM_NATIVE(anna_cerror_strerror, 1)

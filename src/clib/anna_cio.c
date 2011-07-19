@@ -24,9 +24,9 @@
 #include "anna_function.h"
 
 #include "clib/anna_cio.h"
-#include "clib/anna_string.h"
-#include "clib/anna_buffer.h"
-#include "clib/anna_list.h"
+#include "clib/lang/string.h"
+#include "clib/lang/buffer.h"
+#include "clib/lang/list.h"
 
 #define READ_SZ 4096
 

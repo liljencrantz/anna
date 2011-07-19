@@ -20,11 +20,11 @@
 #include "anna_macro.h"
 
 #include "clib/anna_function_type.h"
-#include "clib/anna_range.h"
-#include "clib/anna_buffer.h"
-#include "clib/anna_int.h"
-#include "clib/anna_list.h"
-#include "clib/anna_string.h"
+#include "clib/lang/range.h"
+#include "clib/lang/buffer.h"
+#include "clib/lang/int.h"
+#include "clib/lang/list.h"
+#include "clib/lang/string.h"
 
 anna_object_t *anna_buffer_create()
 {

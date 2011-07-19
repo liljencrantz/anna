@@ -15,10 +15,10 @@
 #include "anna_util.h"
 #include "anna_mid.h"
 
-#include "clib/anna_complex.h"
-#include "clib/anna_int.h"
-#include "clib/anna_float.h"
-#include "clib/anna_string.h"
+#include "clib/lang/complex.h"
+#include "clib/lang/int.h"
+#include "clib/lang/float.h"
+#include "clib/lang/string.h"
 
 #include "autogen/anna_complex_i.c"
 

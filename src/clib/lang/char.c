@@ -9,15 +9,15 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "anna_char.h"
+#include "clib/lang/char.h"
 #include "anna_type.h"
 #include "anna_member.h"
 #include "anna_function.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
 
-#include "clib/anna_int.h"
-#include "clib/anna_string.h"
+#include "clib/lang/int.h"
+#include "clib/lang/string.h"
 
 #include "autogen/anna_char_i.c"
 

@@ -9,13 +9,13 @@
 #include "anna_node.h"
 #include "anna_type.h"
 #include "anna_type_type.h"
-#include "anna_string.h"
-#include "anna_list.h"
+#include "lang/string.h"
+#include "lang/list.h"
 #include "anna_member.h"
 #include "anna_node_create.h"
 #include "parser.h"
 #include "anna_vm.h"
-#include "anna_int.h"
+#include "lang/int.h"
 #include "anna_mid.h"
 
 ANNA_VM_NATIVE(anna_type_to_string, 1)

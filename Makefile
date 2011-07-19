@@ -28,14 +28,14 @@ CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
 -Wmissing-braces -Wmissing-prototypes -I src -I .
 #-Wsuggest-attribute=const	-Wsuggest-attribute=pure
 
-ANNA_CLIB_OBJS := src/clib/anna_buffer.o src/clib/anna_cio.o		\
+ANNA_CLIB_OBJS := src/clib/lang/buffer.o src/clib/anna_cio.o		\
 src/clib/anna_math.o src/clib/anna_cerror.o				\
-src/clib/anna_object_type.o src/clib/anna_hash.o src/clib/lang.o	\
-src/clib/anna_complex.o src/clib/anna_range.o				\
+src/clib/lang/object.o src/clib/lang/hash.o src/clib/lang.o	\
+src/clib/lang/complex.o src/clib/lang/range.o				\
 src/clib/reflection.o src/clib/anna_type_type.o			\
-src/clib/parser.o src/clib/anna_int.o src/clib/anna_string.o		\
-src/clib/anna_char.o src/clib/anna_float.o src/clib/anna_list.o		\
-src/clib/anna_pair.o
+src/clib/parser.o src/clib/lang/int.o src/clib/lang/string.o		\
+src/clib/lang/char.o src/clib/lang/float.o src/clib/lang/list.o		\
+src/clib/lang/pair.o
 
 # All object files used by the main anna binary
 ANNA_OBJS := src/anna.o src/util.o src/anna_parse.o src/anna_node.o	\
@@ -64,7 +64,7 @@ all: $(PROGRAMS)
 %.d: %.c
 	@echo -n $@ " " >$@; $(CC) -I src -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
 ifneq "$(MAKECMDGOALS)" "clean"
--include $(ANNA_OBJS:.o=.d)
+include $(ANNA_OBJS:.o=.d)
 endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #
@@ -123,7 +123,7 @@ test: bin/anna
 .PHONY: test
 
 clean:
-	rm -f src/*.o src/*.d src/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out 
+	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out 
 	if test -d documentation; then rm -r documentation; fi
 .PHONY: clean
 

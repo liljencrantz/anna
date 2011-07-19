@@ -20,9 +20,9 @@
 #include "anna_vm.h"
 #include "anna_node_hash.h"
 #include "anna_node_check.h"
-#include "clib/anna_pair.h"
-#include "clib/anna_list.h"
-#include "clib/anna_hash.h"
+#include "clib/lang/pair.h"
+#include "clib/lang/list.h"
+#include "clib/lang/hash.h"
 #include "clib/anna_function_type.h"
 #include "anna_mid.h"
 

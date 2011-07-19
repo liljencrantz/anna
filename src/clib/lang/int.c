@@ -9,11 +9,11 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "clib/anna_int.h"
+#include "clib/lang/int.h"
 #include "anna_type.h"
 #include "anna_member.h"
 #include "anna_function.h"
-#include "clib/anna_string.h"
+#include "clib/lang/string.h"
 #include "anna_vm.h"
 #include "anna_mid.h"
 

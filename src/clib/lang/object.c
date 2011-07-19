@@ -7,16 +7,16 @@
 #include <math.h>
 #include <complex.h>
 
-#include "../anna.h"
-#include "../anna_function.h"
-#include "../anna_vm.h"
-#include "../anna_type.h"
-#include "../anna_member.h"
-#include "../anna_mid.h"
+#include "anna.h"
+#include "anna_function.h"
+#include "anna_vm.h"
+#include "anna_type.h"
+#include "anna_member.h"
+#include "anna_mid.h"
 
-#include "anna_object_type.h"
-#include "anna_int.h"
-#include "anna_string.h"
+#include "clib/lang/object.h"
+#include "clib/lang/int.h"
+#include "clib/lang/string.h"
 
 #include "autogen/anna_object_i.c"
 

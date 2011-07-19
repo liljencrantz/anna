@@ -12,7 +12,7 @@
 #include "anna_function.h"
 #include "anna.h"
 #include "anna_module.h"
-#include "clib/anna_int.h"
+#include "clib/lang/int.h"
 #include "clib/anna_function_type.h"
 #include "anna_type.h"
 #include "anna_member.h"
