@@ -28,7 +28,7 @@
 #include "anna_vm.h"
 #include "anna_alloc.h"
 #include "anna_intern.h"
-#include "clib/anna_lang.h"
+#include "clib/lang.h"
 #include "clib/anna_list.h"
 #include "clib/anna_hash.h"
 #include "wutil.h"

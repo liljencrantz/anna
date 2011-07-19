@@ -30,7 +30,7 @@ CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
 
 ANNA_CLIB_OBJS := src/clib/anna_buffer.o src/clib/anna_cio.o		\
 src/clib/anna_math.o src/clib/anna_cerror.o				\
-src/clib/anna_object_type.o src/clib/anna_hash.o src/clib/anna_lang.o	\
+src/clib/anna_object_type.o src/clib/anna_hash.o src/clib/lang.o	\
 src/clib/anna_complex.o src/clib/anna_range.o				\
 src/clib/reflection.o src/clib/anna_type_type.o			\
 src/clib/parser.o src/clib/anna_int.o src/clib/anna_string.o		\

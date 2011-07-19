@@ -35,7 +35,7 @@
 #include "clib/anna_object_type.h"
 #include "clib/anna_buffer.h"
 #include "clib/parser.h"
-#include "clib/anna_lang.h"
+#include "clib/lang.h"
 
 anna_type_t *type_type=0, 
     *object_type=0,

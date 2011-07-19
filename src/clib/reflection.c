@@ -26,8 +26,8 @@
 #include "anna_type_data.h"
 #include "anna_module.h"
 
-#include "clib/function.c"
-#include "clib/member.c"
+#include "clib/reflection/function.c"
+#include "clib/reflection/member.c"
 
 static anna_type_data_t anna_member_type_data[] = 
 {
