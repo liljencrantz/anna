@@ -311,18 +311,6 @@ static void anna_system_load(anna_stack_template_t *stack)
 	L"The arguments that where given to the program at launch.");
 }
 
-static void anna_reflection_create_types(anna_stack_template_t *stack)
-{
-    anna_member_create_types(stack);
-    anna_function_type_create_types(stack);
-}
-
-static void anna_reflection_load(anna_stack_template_t *stack)
-{
-    anna_member_load(stack);
-    anna_function_type_load(stack);
-}
-
 void anna_module_init()
 {
     /*
