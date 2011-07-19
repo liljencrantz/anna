@@ -26,7 +26,6 @@
 #include "anna_module.h"
 
 anna_type_t *node_wrapper_type, *node_identifier_wrapper_type, *node_call_wrapper_type;
-
 static anna_type_t *anna_node_type_mapping[ANNA_NODE_TYPE_COUNT];
 
 anna_object_t *anna_node_wrap(anna_node_t *node)
@@ -173,13 +172,11 @@ ANNA_VM_NATIVE(anna_node_wrapper_copy, 1)
 	    anna_node_clone_deep(
 		anna_node_unwrap(
 		    anna_as_obj(
-			param[0])))));
+	  		param[0])))));
 }
 
 static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 {
-
-
     anna_type_t *replace_argv[] = 
 	{
 	    node_wrapper_type,
@@ -208,33 +205,20 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
     anna_member_create(node_wrapper_type, ANNA_MID_NODE_PAYLOAD, 0, null_type);
     
     anna_member_create_native_method(
-	node_wrapper_type,
-	anna_mid_get(L"replace"), 0,
+	node_wrapper_type, anna_mid_get(L"replace"), 0,
 	&anna_node_wrapper_i_replace,
-	node_wrapper_type,
-	3,
-	replace_argv,
-	replace_argn);
+	node_wrapper_type, 3, replace_argv, replace_argn);
 
     anna_member_create_native_method(
-	node_wrapper_type,
-	anna_mid_get(L"error"),
-	0,
+	node_wrapper_type, anna_mid_get(L"error"), 0,
 	&anna_node_wrapper_i_error,
-	node_wrapper_type,
-	2,
-	error_argv,
-	error_argn);
+	node_wrapper_type, 2, error_argv, error_argn);
 
     anna_member_create_native_method(
-	node_wrapper_type,
-	anna_mid_get(L"toString"),
+	node_wrapper_type, anna_mid_get(L"toString"),
 	0,
 	&anna_node_wrapper_i_to_string,
-	string_type,
-	1,
-	error_argv,
-	error_argn);    
+	string_type, 1, error_argv, error_argn);    
     
     anna_type_t *cmp_argv[] = 
 	{
@@ -247,28 +231,20 @@ static void anna_node_create_wrapper_type(anna_stack_template_t *stack)
 	}
     ;
 
-    anna_member_create_native_method(node_wrapper_type,
-				     anna_mid_get(L"__cmp__"), 0,
-				     &anna_node_wrapper_cmp, int_type, 2,
-				     cmp_argv, cmp_argn);
+    anna_member_create_native_method(
+	node_wrapper_type, anna_mid_get(L"__cmp__"), 0,
+	&anna_node_wrapper_cmp, 
+	int_type, 2, cmp_argv, cmp_argn);
 
-    anna_member_create_native_method(node_wrapper_type,
-				     anna_mid_get(L"hashCode"),
-				     0,
-				     &anna_node_wrapper_hash,
-				     int_type,
-				     1,
-				     cmp_argv,
-				     cmp_argn);
+    anna_member_create_native_method(
+	node_wrapper_type, anna_mid_get(L"hashCode"), 0,
+	&anna_node_wrapper_hash,
+	int_type, 1, cmp_argv, cmp_argn);
 
-    anna_member_create_native_method(node_wrapper_type,
-				     anna_mid_get(L"copy"),
-				     0,
-				     &anna_node_wrapper_copy,
-				     node_wrapper_type,
-				     1,
-				     cmp_argv,
-				     cmp_argn);
+    anna_member_create_native_method(
+	node_wrapper_type, anna_mid_get(L"copy"), 0,
+	&anna_node_wrapper_copy,
+	node_wrapper_type, 1, cmp_argv, cmp_argn);
 }
 
 #include "anna_node_call_wrapper.c"
