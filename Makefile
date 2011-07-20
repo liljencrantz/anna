@@ -21,11 +21,11 @@ PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
 # CFLAGS_NOWARN consists of all cflags not related to warnings
 CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1		\
 -D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L $(PROF_FLAGS)	\
-$(COV_FLAGS)
+$(COV_FLAGS) -I src -I .
 
 # Full cflags, including warnings 
 CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
--Wmissing-braces -Wmissing-prototypes -I src -I .
+-Wmissing-braces -Wmissing-prototypes 
 #-Wsuggest-attribute=const	-Wsuggest-attribute=pure
 
 ANNA_CLIB_OBJS := src/clib/lang.o src/clib/reflection.o			\
@@ -102,7 +102,7 @@ src/dtoa.o: src/dtoa.c
 	$(CC) $(CFLAGS_NOWARN) -c src/dtoa.c -o src/dtoa.o -DIEEE_8087 -DLong=int
 
 autogen/anna_lex.o: autogen/anna_lex.c
-	$(CC) $(CFLAGS_NOWARN) -c autogen/anna_lex.c -o autogen/anna_lex.o -I src -I .
+	$(CC) $(CFLAGS_NOWARN) -c autogen/anna_lex.c -o autogen/anna_lex.o
 
 check: test
 .PHONY: check

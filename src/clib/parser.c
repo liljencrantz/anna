@@ -162,7 +162,10 @@ ANNA_VM_NATIVE(anna_node_wrapper_cmp, 2)
 
 ANNA_VM_NATIVE(anna_node_wrapper_hash, 1)
 {
-    return anna_from_int(anna_node_hash_func(anna_node_unwrap(anna_as_obj(param[0]))));
+    return anna_from_int(
+	anna_node_hash_func(
+	    anna_node_unwrap(
+		anna_as_obj(param[0]))));
 }
 
 ANNA_VM_NATIVE(anna_node_wrapper_copy, 1)
@@ -175,7 +178,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_copy, 1)
 	  		param[0])))));
 }
 
-void anna_node_basic_create_type(anna_stack_template_t *stack)
+static void anna_node_basic_create_type(anna_stack_template_t *stack)
 {
     anna_type_t *replace_argv[] = 
 	{

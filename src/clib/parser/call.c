@@ -224,19 +224,6 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
     return param[0];
 }
 
-static anna_vmstack_t *anna_node_call_wrapper_copy_mutable(anna_vmstack_t *stack, anna_object_t *me)
-{
-    anna_entry_t **param = stack->top - 1;
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_object_t *that = anna_object_create(node_call_type);
-    
-    *(anna_node_t **)anna_entry_get_addr(that,ANNA_MID_NODE_PAYLOAD)=
-	anna_node_clone_deep(*(anna_node_t **)anna_entry_get_addr(this,ANNA_MID_NODE_PAYLOAD));
-    anna_vmstack_push_object(stack, that);
-    return stack;    
-}
-
 static void anna_node_create_call_type(
     anna_stack_template_t *stack, 
     anna_type_t *type)
