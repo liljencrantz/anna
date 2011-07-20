@@ -17,7 +17,7 @@
 #include "anna_stack.h"
 
 #include "clib/anna_function_type.h"
-#include "clib/anna_type_type.h"
+#include "clib/reflection/type.h"
 #include "clib/lang/object.h"
 #include "anna_type.h"
 #include "anna_macro.h"
@@ -319,10 +319,10 @@ void anna_module_init()
     */
     anna_module_data_t modules[] = 
 	{
+	    { L"reflection", anna_reflection_create_types, anna_reflection_load },
 	    { L"lang", anna_lang_create_types, anna_lang_load },
 	    { L"parser", anna_parser_create_types, anna_parser_load },
 	    { L"system", 0, anna_system_load },
-	    { L"reflection", anna_reflection_create_types, anna_reflection_load },
 	    { L"cio", 0, anna_cio_load },
 	    { L"math", 0, anna_math_load },
 	    { L"cerror", 0, anna_cerror_load },

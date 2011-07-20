@@ -31,7 +31,7 @@
 #include "clib/lang/hash.h"
 #include "clib/lang/pair.h"
 #include "clib/anna_function_type.h"
-#include "clib/anna_type_type.h"
+#include "clib/reflection/type.h"
 #include "clib/lang/object.h"
 #include "clib/lang/buffer.h"
 #include "clib/parser.h"
@@ -58,7 +58,6 @@ anna_object_t *null_object=0;
 
 const static anna_type_data_t anna_lang_type_data[] = 
 {
-    { &type_type,L"Type" },
     { &object_type,L"Object" },
     { &null_type,L"Null" },
     { &int_type,L"Int" },
@@ -313,7 +312,6 @@ void anna_lang_create_types(anna_stack_template_t *stack_lang)
 void anna_lang_load(anna_stack_template_t *stack)
 {
     anna_object_type_create();
-    anna_type_type_create();    
     anna_list_type_create();
     anna_null_type_create();    
     anna_int_type_create();

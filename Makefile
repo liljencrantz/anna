@@ -32,7 +32,7 @@ ANNA_CLIB_OBJS := src/clib/lang/buffer.o src/clib/anna_cio.o		\
 src/clib/anna_math.o src/clib/anna_cerror.o				\
 src/clib/lang/object.o src/clib/lang/hash.o src/clib/lang.o	\
 src/clib/lang/complex.o src/clib/lang/range.o				\
-src/clib/reflection.o src/clib/anna_type_type.o			\
+src/clib/reflection.o src/clib/reflection/type.o			\
 src/clib/parser.o src/clib/lang/int.o src/clib/lang/string.o		\
 src/clib/lang/char.o src/clib/lang/float.o src/clib/lang/list.o		\
 src/clib/lang/pair.o
@@ -64,7 +64,7 @@ all: $(PROGRAMS)
 %.d: %.c
 	@echo -n $@ " " >$@; $(CC) -I src -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
 ifneq "$(MAKECMDGOALS)" "clean"
-include $(ANNA_OBJS:.o=.d)
+-include $(ANNA_OBJS:.o=.d)
 endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #

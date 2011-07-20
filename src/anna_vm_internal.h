@@ -6,7 +6,6 @@
 
 #define ANNA_VMSTACK_SZ (8192*32)
 
-
 /**
    Pops one value from the top stack frame, then pops the top stack
    frame itself, and pushes the value onto the new top stack.

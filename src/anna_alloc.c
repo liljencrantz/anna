@@ -699,6 +699,7 @@ void anna_alloc_gc_unblock()
 
 void anna_gc(anna_vmstack_t *stack)
 {
+//    alc();
     if(anna_alloc_gc_block_counter)
 	return;
 

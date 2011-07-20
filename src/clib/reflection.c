@@ -25,12 +25,14 @@
 #include "anna_mid.h"
 #include "anna_type_data.h"
 #include "anna_module.h"
+#include "clib/reflection/type.h"
 
 #include "clib/reflection/function.c"
 #include "clib/reflection/member.c"
 
 static anna_type_data_t anna_member_type_data[] = 
 {
+    { &type_type,L"Type" },
     { &function_type_base, L"Function" },
     { &member_type, L"Member" },
     { &member_method_type, L"Method" },
@@ -46,6 +48,7 @@ void anna_reflection_create_types(anna_stack_template_t *stack)
 
 void anna_reflection_load(anna_stack_template_t *stack)
 {
+    anna_type_type_create();    
     anna_member_load(stack);
     anna_function_load(stack);
     anna_type_data_register(anna_member_type_data, stack);

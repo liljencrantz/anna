@@ -142,7 +142,6 @@ mid_t anna_member_create(
 		type->member_blob, 
 		sizeof(int)*(type->member_count+1));
 	    type->member_blob[type->member_count] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
-	    
 	    member->offset = type->member_count++;
 	}
     }
