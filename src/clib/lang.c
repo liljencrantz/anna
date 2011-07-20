@@ -31,7 +31,6 @@
 #include "clib/lang/hash.h"
 #include "clib/lang/pair.h"
 #include "clib/anna_function_type.h"
-#include "clib/reflection/type.h"
 #include "clib/lang/object.h"
 #include "clib/lang/buffer.h"
 #include "clib/parser.h"

@@ -25,10 +25,10 @@
 #include "anna_mid.h"
 #include "anna_type_data.h"
 #include "anna_module.h"
-#include "clib/reflection/type.h"
 
 #include "clib/reflection/function.c"
 #include "clib/reflection/member.c"
+#include "clib/reflection/type.c"
 
 static anna_type_data_t anna_member_type_data[] = 
 {

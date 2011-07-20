@@ -1,22 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-
-#include "anna.h"
-#include "anna_node.h"
-#include "anna_type.h"
-#include "clib/reflection/type.h"
-#include "clib/lang/string.h"
-#include "clib/lang/list.h"
-#include "anna_member.h"
-#include "anna_node_create.h"
-#include "clib/parser.h"
-#include "anna_vm.h"
-#include "clib/lang/int.h"
-#include "anna_mid.h"
 
 ANNA_VM_NATIVE(anna_type_to_string, 1)
 {
@@ -87,7 +68,7 @@ ANNA_VM_NATIVE(anna_type_i_get_attribute, 1)
     return f->attribute ? anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute)): null_entry;
 }
 
-void anna_type_type_create()
+static void anna_type_type_create()
 {
     anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, 0, null_type);
 

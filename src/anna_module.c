@@ -17,7 +17,6 @@
 #include "anna_stack.h"
 
 #include "clib/anna_function_type.h"
-#include "clib/reflection/type.h"
 #include "clib/lang/object.h"
 #include "anna_type.h"
 #include "anna_macro.h"

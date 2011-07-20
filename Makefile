@@ -29,13 +29,11 @@ CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
 #-Wsuggest-attribute=const	-Wsuggest-attribute=pure
 
 ANNA_CLIB_OBJS := src/clib/lang/buffer.o src/clib/anna_cio.o		\
-src/clib/anna_math.o src/clib/anna_cerror.o				\
-src/clib/lang/object.o src/clib/lang/hash.o src/clib/lang.o	\
-src/clib/lang/complex.o src/clib/lang/range.o				\
-src/clib/reflection.o src/clib/reflection/type.o			\
-src/clib/parser.o src/clib/lang/int.o src/clib/lang/string.o		\
-src/clib/lang/char.o src/clib/lang/float.o src/clib/lang/list.o		\
-src/clib/lang/pair.o
+src/clib/anna_math.o src/clib/anna_cerror.o src/clib/lang/object.o	\
+src/clib/lang/hash.o src/clib/lang.o src/clib/lang/complex.o		\
+src/clib/lang/range.o src/clib/reflection.o src/clib/parser.o		\
+src/clib/lang/int.o src/clib/lang/string.o src/clib/lang/char.o		\
+src/clib/lang/float.o src/clib/lang/list.o src/clib/lang/pair.o
 
 # All object files used by the main anna binary
 ANNA_OBJS := src/anna.o src/util.o src/anna_parse.o src/anna_node.o	\
