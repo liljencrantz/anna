@@ -1,25 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-#include <math.h>
-#include <errno.h>
-#include <float.h>
-
-#include "common.h"
-#include "anna.h"
-#include "clib/lang/float.h"
-#include "anna_type.h"
-#include "clib/lang/int.h"
-#include "anna_member.h"
-#include "anna_function.h"
-#include "clib/lang/string.h"
-#include "anna_vm.h"
-#include "anna_util.h"
-#include "anna_mid.h"
-
 #include "autogen/anna_float_i.c"
 
 static void anna_float_set(anna_object_t *this, double value)

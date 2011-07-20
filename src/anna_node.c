@@ -29,12 +29,20 @@
 #include "anna_mid.h"
 #include "anna_use.h"
 #include "anna_stack.h"
+#include "anna_stack.h"
+#include "anna_intern.h"
+#include "anna_node_hash.h"
+#include "anna_node_check.h"
 
-#include "anna_node_specialize.c"
-#include "anna_node_macro_expand.c"
-#include "anna_node_prepare.c"
-#include "anna_node_validate.c"
-#include "anna_node_each.c"
+#include "node/specialize.c"
+#include "node/macro_expand.c"
+#include "node/prepare.c"
+#include "node/validate.c"
+#include "node/each.c"
+#include "node/hash.c"
+#include "node/create.c"
+#include "node/print.c"
+#include "node/check.c"
 
 anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
 {

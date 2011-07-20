@@ -28,24 +28,18 @@ CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
 -Wmissing-braces -Wmissing-prototypes -I src -I .
 #-Wsuggest-attribute=const	-Wsuggest-attribute=pure
 
-ANNA_CLIB_OBJS := src/clib/lang/buffer.o src/clib/anna_cio.o		\
-src/clib/anna_math.o src/clib/anna_cerror.o src/clib/lang/object.o	\
-src/clib/lang/hash.o src/clib/lang.o src/clib/lang/complex.o		\
-src/clib/lang/range.o src/clib/reflection.o src/clib/parser.o		\
-src/clib/lang/int.o src/clib/lang/string.o src/clib/lang/char.o		\
-src/clib/lang/float.o src/clib/lang/list.o src/clib/lang/pair.o
+ANNA_CLIB_OBJS := src/clib/lang.o src/clib/reflection.o			\
+src/clib/parser.o src/clib/cio.o src/clib/math.o src/clib/cerror.o
 
 # All object files used by the main anna binary
-ANNA_OBJS := src/anna.o src/util.o src/anna_parse.o src/anna_node.o	\
-src/anna_macro.o src/anna_stack.o autogen/anna_lex.o			\
-autogen/anna_yacc.o src/common.o src/wutil.o src/anna_type.o		\
-src/anna_node_print.o src/anna_function.o src/anna_node_check.o		\
-src/anna_member.o src/anna_util.o src/anna_module.o			\
-src/anna_node_create.o src/anna_object.o src/anna_invoke.o		\
-src/anna_error.o src/anna_mid.o src/anna_vm.o src/anna_alloc.o		\
-src/anna_attribute.o src/anna_intern.o src/anna_tt.o src/anna_slab.o	\
-src/anna_node_hash.o src/anna_compile.o src/anna_abides.o src/dtoa.o	\
-src/anna_use.o $(ANNA_CLIB_OBJS)
+ANNA_OBJS := $(ANNA_CLIB_OBJS) src/dtoa.o src/anna.o src/util.o		\
+src/anna_parse.o src/anna_node.o src/anna_macro.o src/anna_stack.o	\
+autogen/anna_lex.o autogen/anna_yacc.o src/common.o src/wutil.o		\
+src/anna_type.o src/anna_function.o src/anna_member.o src/anna_util.o	\
+src/anna_module.o src/anna_object.o src/anna_invoke.o src/anna_error.o	\
+src/anna_mid.o src/anna_vm.o src/anna_alloc.o src/anna_attribute.o	\
+src/anna_intern.o src/anna_tt.o src/anna_slab.o src/anna_compile.o	\
+src/anna_abides.o src/anna_use.o
 
 LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 
@@ -62,7 +56,7 @@ all: $(PROGRAMS)
 %.d: %.c
 	@echo -n $@ " " >$@; $(CC) -I src -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
 ifneq "$(MAKECMDGOALS)" "clean"
--include $(ANNA_OBJS:.o=.d)
+include $(ANNA_OBJS:.o=.d)
 endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #

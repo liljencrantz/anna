@@ -1,24 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-#include <math.h>
-#include <complex.h>
-
-#include "anna.h"
-#include "anna_type.h"
-#include "anna_member.h"
-#include "anna_function.h"
-#include "anna_vm.h"
-#include "anna_util.h"
-#include "anna_mid.h"
-
-#include "clib/lang/complex.h"
-#include "clib/lang/int.h"
-#include "clib/lang/float.h"
-#include "clib/lang/string.h"
 
 #include "autogen/anna_complex_i.c"
 

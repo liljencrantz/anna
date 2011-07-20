@@ -1,24 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-#include <wctype.h>
-
-#include "anna.h"
-#include "anna_node.h"
-#include "anna_node_create.h"
-#include "clib/lang/char.h"
-#include "anna_type.h"
-#include "anna_member.h"
-#include "anna_function.h"
-#include "anna_vm.h"
-#include "anna_mid.h"
-
-#include "clib/lang/int.h"
-#include "clib/lang/string.h"
-
 #include "autogen/anna_char_i.c"
 
 anna_object_t *anna_char_create(wchar_t value)

@@ -1,27 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-
-#include "anna.h"
-#include "anna_node.h"
-#include "anna_node_create.h"
-#include "clib/lang/string.h"
-#include "clib/lang/int.h"
-#include "clib/lang/char.h"
-#include "anna_type.h"
-#include "anna_string_internal.h"
-#include "anna_member.h"
-#include "clib/anna_function_type.h"
-#include "clib/lang/range.h"
-#include "anna_vm.h"
-#include "clib/lang/list.h"
-#include "anna_function.h"
-#include "anna_mid.h"
-#include "anna_util.h"
-
 #include "anna_string_internal.c"
 
 static inline anna_string_t *as_unwrap(anna_object_t *obj)

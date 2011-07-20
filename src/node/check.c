@@ -1,14 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-
-#include "util.h"
-#include "anna.h"
-#include "anna_node.h"
-#include "anna_node_check.h"
 
 int check_node_identifier_name(anna_node_t *n,
 			       wchar_t *name)

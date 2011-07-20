@@ -1,28 +1,3 @@
-#define _GNU_SOURCE
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-
-#include "anna.h"
-#include "anna_node.h"
-#include "anna_node_create.h"
-#include "clib/lang/list.h"
-#include "clib/lang/int.h"
-#include "anna_stack.h"
-#include "anna_type.h"
-#include "anna_member.h"
-#include "clib/anna_function_type.h"
-#include "anna_function.h"
-#include "clib/lang/range.h"
-#include "anna_vm.h"
-#include "clib/lang/string.h"
-#include "anna_mid.h"
-#include "anna_util.h"
-
-#include "anna_macro.h"
 
 #define MUTABLE_OFF 0
 #define IMUTABLE_OFF 1

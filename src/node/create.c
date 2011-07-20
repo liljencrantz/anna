@@ -1,20 +1,3 @@
-#define _GNU_SOURCE
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <wctype.h>
-#include <assert.h>
-#include <string.h>
-#include <stdarg.h>
-
-#include "util.h"
-#include "wutil.h"
-#include "anna_node.h"
-#include "anna_node_create.h"
-#include "anna_alloc.h"
-#include "anna_intern.h"
-
 anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_object *val)
 {
     anna_node_dummy_t *result = anna_alloc_node(sizeof(anna_node_dummy_t));

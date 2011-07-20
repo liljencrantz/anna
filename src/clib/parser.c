@@ -247,16 +247,16 @@ void anna_node_basic_create_type(anna_stack_template_t *stack)
 	node_type, 1, cmp_argv, cmp_argn);
 }
 
-#include "anna_node_call_wrapper.c"
-#include "anna_node_identifier_wrapper.c"
-#include "anna_node_int_literal_wrapper.c"
-#include "anna_node_string_literal_wrapper.c"
-#include "anna_node_char_literal_wrapper.c"
-#include "anna_node_float_literal_wrapper.c"
-#include "anna_node_null_wrapper.c"
-#include "anna_node_dummy_wrapper.c"
-#include "anna_node_closure_wrapper.c"
-#include "anna_node_mapping_wrapper.c"
+#include "clib/parser/call.c"
+#include "clib/parser/identifier.c"
+#include "clib/parser/int_literal.c"
+#include "clib/parser/string_literal.c"
+#include "clib/parser/char_literal.c"
+#include "clib/parser/float_literal.c"
+#include "clib/parser/null.c"
+#include "clib/parser/dummy.c"
+#include "clib/parser/closure.c"
+#include "clib/parser/mapping.c"
 
 void anna_parser_create_types(anna_stack_template_t *stack)
 {
@@ -269,7 +269,6 @@ void anna_parser_create_types(anna_stack_template_t *stack)
     ;
     
     anna_type_data_create(type_data, stack);
-    
 }
 
 void anna_parser_load(anna_stack_template_t *stack)

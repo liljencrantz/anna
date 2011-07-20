@@ -1,15 +1,3 @@
-#define _GNU_SOURCE
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <wctype.h>
-#include <assert.h>
-#include <string.h>
-
-#include "anna_node_hash.h"
-#include "anna_node.h"
-#include "anna_util.h"
 
 
 static void anna_node_hash_func_step(

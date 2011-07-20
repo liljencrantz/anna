@@ -1,17 +1,3 @@
-#define _GNU_SOURCE
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <wctype.h>
-#include <assert.h>
-#include <string.h>
-
-#include "common.h"
-#include "util.h"
-#include "wutil.h"
-#include "anna_node.h"
-#include "anna_mid.h"
 
 static int byte_count(wchar_t ch)
 {

@@ -14,7 +14,7 @@
 #include "../anna_module.h"
 #include "../anna_vm.h"
 
-#include "anna_math.h"
+#include "math.h"
 
 ANNA_VM_NATIVE(anna_math_sin, 1)
 {

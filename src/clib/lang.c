@@ -4,6 +4,10 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
+#include <errno.h>
+#include <float.h>
+#include <wctype.h>
 
 #include "common.h"
 #include "util.h"
@@ -35,6 +39,20 @@
 #include "clib/lang/buffer.h"
 #include "clib/parser.h"
 #include "clib/lang.h"
+#include "clib/lang/anna_string_internal.h"
+#include "anna_tt.h"
+
+#include "clib/lang/buffer.c"
+#include "clib/lang/int.c"
+#include "clib/lang/float.c"
+#include "clib/lang/complex.c"
+#include "clib/lang/string.c"
+#include "clib/lang/char.c"
+#include "clib/lang/list.c"
+#include "clib/lang/range.c"
+#include "clib/lang/hash.c"
+#include "clib/lang/pair.c"
+#include "clib/lang/object.c"
 
 anna_type_t *type_type=0, 
     *object_type=0,

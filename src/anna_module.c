@@ -34,9 +34,9 @@
 #include "anna_attribute.h"
 #include "clib/lang/string.h"
 #include "anna_mid.h"
-#include "clib/anna_cio.h"
-#include "clib/anna_math.h"
-#include "clib/anna_cerror.h"
+#include "clib/cio.h"
+#include "clib/math.h"
+#include "clib/cerror.h"
 #include "anna_use.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
