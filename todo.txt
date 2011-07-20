@@ -21,9 +21,8 @@
   - Check argument types to function calls better...
 * Types, Stacks etc. should be hashable
 * Access attributes of variables and properties
-* Place all relevant base classes in sane modules, e.g. Type should be moved to reflection
 
-1.0 RELEASE CRITERIA(Done):
+1.0 RELEASE CRITERIA (Done):
 * HTML api documentation extractor
   - Basic iteration working
   - document attribute for memebers and types

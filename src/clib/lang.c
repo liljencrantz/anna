@@ -38,7 +38,7 @@
 #include "clib/lang/object.h"
 #include "clib/lang/buffer.h"
 #include "clib/parser.h"
-#include "clib/lang.h"
+#include "clib/clib.h"
 #include "clib/lang/anna_string_internal.h"
 #include "anna_tt.h"
 

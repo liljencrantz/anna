@@ -8,8 +8,6 @@
 #include "anna.h"
 #include "anna_node.h"
 #include "anna_node_create.h"
-#include "clib/reflection.h"
-#include "clib/parser.h"
 #include "anna_type.h"
 #include "lang/string.h"
 #include "lang/list.h"
@@ -26,6 +24,8 @@
 #include "anna_type_data.h"
 #include "anna_module.h"
 
+#include "clib/clib.h"
+#include "clib/parser.h"
 #include "clib/reflection/function.c"
 #include "clib/reflection/member.c"
 #include "clib/reflection/type.c"

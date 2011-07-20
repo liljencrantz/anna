@@ -22,22 +22,19 @@
 #include "anna_macro.h"
 #include "anna_member.h"
 #include "clib/parser.h"
-#include "clib/reflection.h"
 #include "anna_status.h"
 #include "anna_vm.h"
 #include "anna_alloc.h"
 #include "anna_intern.h"
-#include "clib/lang.h"
-#include "clib/lang/list.h"
-#include "clib/lang/hash.h"
 #include "wutil.h"
 #include "anna_attribute.h"
 #include "clib/lang/string.h"
 #include "anna_mid.h"
-#include "clib/cio.h"
-#include "clib/math.h"
-#include "clib/cerror.h"
 #include "anna_use.h"
+
+#include "clib/clib.h"
+#include "clib/lang/list.h"
+#include "clib/lang/hash.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 array_list_t anna_module_default_macros = AL_STATIC;
