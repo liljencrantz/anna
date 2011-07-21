@@ -6,6 +6,7 @@
 #include <string.h>
 #include <locale.h>
 #include <sys/prctl.h>
+#include <time.h>
 
 #include "common.h"
 #include "util.h"
@@ -148,7 +149,8 @@ static wchar_t *anna_module_name_extract(int argc, char **argv)
 int main(int argc, char **argv)
 {
     wsetlocale(LC_ALL, L"");
-
+    tzset();
+    
     anna_argc= argc;
     anna_argv = argv;
     

@@ -5,14 +5,28 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 
+#include "anna.h"
+#include "anna_tt.h"
 #include "anna_util.h"
 #include "anna_vm.h"
+#include "util.h"
+#include "common.h"
+#include "anna_intern.h"
+#include "anna_node.h"
+#include "anna_node_create.h"
+#include "anna_stack.h"
+#include "anna_use.h"
+
+#include "anna_intern.c"
+#include "anna_tt.c"
+#include "anna_use.c"
 
 wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *location)
 {
     if(prefix)
-	while(*prefix == L'!')
+	while((*prefix == L'!') || (*prefix == L'@'))
 	    prefix++;
     
     string_buffer_t sb;
@@ -51,7 +65,7 @@ int anna_hash(int *data, size_t count)
 	tmp = (a << 5) + f + data[i];
 	c = b << 30;
 	b = a;
-	a = tmp;	    
+	a = tmp;
     }
     
     return (a ^ b ^ c) & ANNA_INT_FAST_MAX;

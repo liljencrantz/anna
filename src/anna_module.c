@@ -322,6 +322,7 @@ void anna_module_init()
 	    { L"cio", 0, anna_cio_load },
 	    { L"math", 0, anna_math_load },
 	    { L"cerror", 0, anna_cerror_load },
+	    { L"ctime", 0, anna_ctime_load },
 	};
 
     anna_module_data_create(modules, stack_global);

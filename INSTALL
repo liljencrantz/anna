@@ -1,7 +1,7 @@
 Overview
 
-Anna requires GNU make and GCC. Anna depends on the following external
-libraries to build:
+Anna requires GNU make and GCC to build. Anna also depends on the
+following external libraries:
 
 * Flex
 * Bison
@@ -14,7 +14,7 @@ instructions, read on below.
 Installing on Debian-like systems, including Ubuntu
 
 sudo apt-get install gcc bison flex libgmp3-dev make
-make -s && make install
+make -s && sudo make install
 
 Installing on RedHat-like systems, including Fedora
 

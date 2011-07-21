@@ -3,18 +3,6 @@
     Library for pooling common strings
 
 */
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <unistd.h>
-
-#include "fallback.h"
-#include "util.h"
-#include "anna.h"
-#include "common.h"
-
-#include "anna_intern.h"
 
 /**
    Table of interned strings

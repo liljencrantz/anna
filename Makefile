@@ -39,8 +39,7 @@ autogen/anna_lex.o autogen/anna_yacc.o src/common.o src/wutil.o		\
 src/anna_type.o src/anna_function.o src/anna_member.o src/anna_util.o	\
 src/anna_module.o src/anna_object.o src/anna_invoke.o src/anna_error.o	\
 src/anna_mid.o src/anna_vm.o src/anna_alloc.o src/anna_attribute.o	\
-src/anna_intern.o src/anna_tt.o src/anna_slab.o src/anna_compile.o	\
-src/anna_abides.o src/anna_use.o
+src/anna_slab.o src/anna_compile.o src/anna_abides.o
 
 LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 
@@ -112,7 +111,7 @@ documentation: bin/anna util/document.anna util/document/*.html
 	./bin/anna util/document
 
 test: bin/anna
-	time ./anna_tests.sh
+	time ./bin/anna_tests.sh
 .PHONY: test
 
 clean:
