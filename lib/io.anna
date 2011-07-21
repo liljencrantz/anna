@@ -4,7 +4,7 @@ error IoError (Error) {}
 
 type File
 (
-    documentation("A high level object respresenting a filesystem entry such as a file, directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations.")
+    documentation("A high level object respresenting a filesystem entry such as a file, directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations. A File object represents a file system path; it does not always point to an actually existing file.")
 )
 {
     
@@ -13,7 +13,7 @@ type File
 
     def __init__(String filename)
     (
-	documentation("Create a file object")
+	documentation("Create a new file object.")
     )
     {
 	if(cio.isRelative(filename))
@@ -26,11 +26,14 @@ type File
     }
 
     def File __join__(String name)
+    (
+	documentation("Joins the specified subdirectory to the directory represented by the File object and returns the result.")
+    )
     {
 	File(filename ~ cio.separator ~ name);
     }
     
-    def filenameGetter()
+    def filenameGetter() (internal)
     {
 	"" ~ cio.separator ~ String.convert(cio.separator).join(path)
     }
@@ -39,7 +42,7 @@ type File
 
     def String readFile()
     (
-	documentation("Read the contents of the file and return it as a String")
+	documentation("Read the contents of the file and return it as a String.")
     )
     {
         (fd := cio.open(this.filename, cio.openMode.readOnly, 0)) or (return ?);
@@ -51,7 +54,7 @@ type File
     
     def writeFile(String data)
     (
-	documentation("Write the contents of the String into the specified file")
+	documentation("Write the contents of the String into the specified file.")
     )
     {
         (fd := cio.open(
@@ -65,7 +68,7 @@ type File
     
     def open()
     (
-	documentation("Open the specified file for reading and writing")
+	documentation("Open the specified file for reading and writing.")
     )
     {
         fd = cio.open(
@@ -77,13 +80,16 @@ type File
 
     def close()
     (
-	documentation("Close the specified file for reading and writing")
+	documentation("Close the specified file for reading and writing.")
     )
     {
         cio.close(fd)
     }
 
     def write(Object value...)
+    (
+	documentation("Write the string representation of the specified objects to the file.")
+    )
     {
         b := Buffer();
 	value.each(v)
@@ -102,7 +108,7 @@ type File
     (
 	property(existsGetter), 
 	documentation(
-	    "This value is non-null if the file pointed to by this object currently exists")
+	    "This value is non-null if the file pointed to by this object currently exists.")
     );
 
     def isFileGetter() (internal)
@@ -132,6 +138,9 @@ type File
     );
 
     def makeDirectory()
+    (
+	documentation("Creates a directory in the path specified by the File object.")
+    )
     {
 	(0..this.path.count).each(last)
 	{
@@ -148,22 +157,35 @@ type File
     
     def Object changeDirectory()
     (
-	"Change the current working directory to the directory represented by this File object."
+	documentation("Change the current working directory to the directory represented by this File object.")
     )
     {
 	cio.cwd = this.filename;
     }
     
-    def File currentDirectoryGetter() (static)
+    def File currentDirectoryGetter() (static, internal)
     {
 	File(cio.cwd)
     }
 
-    var File currentDirectory (static, property(currentDirectoryGetter));
+    var File currentDirectory 
+    (
+	static, 
+	property(currentDirectoryGetter),
+        documentation("Returns a File object representing the current working directory")
+    );
+
+    def delete()
+    (
+	documentation("Deletes the file system path represented by the File object.")
+    )
+    {
+	cio.unlink(this.filename);
+    }
 
     def String toString()
     {
 	return filename;
     }
-    
+
 }

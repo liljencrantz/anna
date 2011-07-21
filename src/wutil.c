@@ -566,3 +566,9 @@ int wrename( const wchar_t *old, const wchar_t *new )
 
 	return res;
 }
+
+int wunlink( const wchar_t *path)
+{
+    char *name_narrow =wutil_wcs2str(path);
+    return unlink( name_narrow);
+}

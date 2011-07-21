@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "util.h"
@@ -232,6 +233,23 @@ ANNA_VM_NATIVE(anna_cio_mkdir, 2)
     return anna_from_int(res);
 }
 
+ANNA_VM_NATIVE(anna_cio_unlink, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    
+    wchar_t *nam = anna_string_payload(
+	anna_as_obj(param[0]));
+    int res = wunlink(nam);
+    if(res == -1)
+    {
+	return null_entry;
+    }
+    return anna_from_int(res);
+}
+
 ANNA_VM_NATIVE(anna_cio_get_cwd, 1)
 {
 #define SZ 4096				\
@@ -355,7 +373,7 @@ void anna_cio_load(anna_stack_template_t *stack)
 	0, &anna_cio_open, 
 	int_type, 
 	3, o_argv, o_argn, 
-	L"Open a file descriptor. Equivalent to the C open function.");
+	L"Open a file descriptor. Equivalent to the C open function. Returns null on failiure.");
     
     wchar_t *r_argn[]={L"fd", L"buffer", L"count"};
     anna_type_t *r_argv[] = {int_type, buffer_type, int_type};
@@ -366,14 +384,14 @@ void anna_cio_load(anna_stack_template_t *stack)
 	0, &anna_cio_read, 
 	int_type, 
 	3, r_argv, r_argn, 
-	L"Read from the specified file descriptor. \n\nWhen called with a specified file size, this function is equivalent to the C read function.\n\nWhen no size is given, the function will perform reads of 4096 bytes at a time until the file is empty or an error occurs. In this mode, the function will also retry reading when encountering the EAGAIN error. This usually happens when a signal was delivered to the process.");
+	L"Read from the specified file descriptor. \n\nWhen called with a specified file size, this function is equivalent to the C read function.\n\nWhen no size is given, the function will perform reads of 4096 bytes at a time until the file is empty or an error occurs. In this mode, the function will also retry reading when encountering the EAGAIN error. This usually happens when a signal was delivered to the process. Returns null on failure.");
     anna_module_function(
 	stack,
 	L"write", 
 	0, &anna_cio_write, 
 	int_type, 
 	3, r_argv, r_argn, 
-	L"Write to the specified file descriptor. Equivalent to the C write function. If size is null, the entire buffer will be written.");    
+	L"Write to the specified file descriptor. Equivalent to the C write function. If size is null, the entire buffer will be written. Returns null on failure.");    
     wchar_t *c_argn[]={L"fd"};
     anna_type_t *c_argv[] = {int_type};
 	    
@@ -382,28 +400,28 @@ void anna_cio_load(anna_stack_template_t *stack)
 	0, &anna_cio_close, 
 	object_type, 
 	1, c_argv, c_argn, 
-	L"Close the specified file descriptor. Equivalent to the C close function.");
+	L"Close the specified file descriptor. Equivalent to the C close function. Returns null on failiure.");
 
     anna_module_function(
 	stack, L"stat", 
 	0, &anna_cio_stat, 
 	anna_list_type_get_imutable(int_type), 
 	1, o_argv, o_argn, 
-	L"Obtain status information on the file with the specified name. Equivalent to the C stat function.\n\nReturns the fields st_dev, st_ino, st_mode, st_nlink, st_uid, st_gid, st_rdev, st_size, st_blksize, st_blocks, st_atime, st_mtime and st_ctime as a list of integers.");
+	L"Obtain status information on the file with the specified name. Equivalent to the C stat function.\n\nReturns the fields st_dev, st_ino, st_mode, st_nlink, st_uid, st_gid, st_rdev, st_size, st_blksize, st_blocks, st_atime, st_mtime and st_ctime as a list of integers. Returns null on failure.");
 
     anna_module_function(
 	stack, L"lstat", 
 	0, &anna_cio_lstat, 
 	anna_list_type_get_imutable(int_type), 
 	1, o_argv, o_argn, 
-	L"Obtain status information on the file with the specified name. Does not follow symlinks. Equivalent to the C lstat function.\n\nReturns the fields st_dev, st_ino, st_mode, st_nlink, st_uid, st_gid, st_rdev, st_size, st_blksize, st_blocks, st_atime, st_mtime and st_ctime as a list of integers.");
+	L"Obtain status information on the file with the specified name. Does not follow symlinks. Equivalent to the C lstat function.\n\nReturns the fields st_dev, st_ino, st_mode, st_nlink, st_uid, st_gid, st_rdev, st_size, st_blksize, st_blocks, st_atime, st_mtime and st_ctime as a list of integers. Returns null on failure.");
     
     anna_module_function(
 	stack, L"fstat", 
 	0, &anna_cio_fstat, 
 	anna_list_type_get_imutable(int_type), 
 	1, c_argv, c_argn, 
-	L"Obtain status information on the file connected to the specified file descriptor. Equivalent to the C fstat function.\n\nReturns the fields st_dev, st_ino, st_mode, st_nlink, st_uid, st_gid, st_rdev, st_size, st_blksize, st_blocks, st_atime, st_mtime and st_ctime as a list of integers.");
+	L"Obtain status information on the file connected to the specified file descriptor. Equivalent to the C fstat function.\n\nReturns the fields st_dev, st_ino, st_mode, st_nlink, st_uid, st_gid, st_rdev, st_size, st_blksize, st_blocks, st_atime, st_mtime and st_ctime as a list of integers. Returns null on failure.");
 
     anna_type_t *m_argv[] = 
 	{
@@ -420,7 +438,14 @@ void anna_cio_load(anna_stack_template_t *stack)
 	0, &anna_cio_mkdir, 
 	object_type,
 	2, m_argv, m_argn, 
-	L"Creates the specified directory. Equivalent to the C mkdir function.");
+	L"Creates the specified directory. Equivalent to the C mkdir function. Returns null on failure.");
+
+    anna_module_function(
+	stack, L"unlink", 
+	0, &anna_cio_unlink, 
+	object_type,
+	1, m_argv, m_argn, 
+	L"Deletes a name from the file system. Equivalant to the C unlink function. Returns null on failure.");
     
     anna_module_const_int(stack, L"standardInput", 0, 0);
     anna_module_const_int(stack, L"standardOutput", 1, 0);

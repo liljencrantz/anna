@@ -143,4 +143,9 @@ int wmkdir( const wchar_t *dir, int mode );
 */
 int wrename( const wchar_t *old, const wchar_t *new );
 
+/**
+   Wide character version of unlink
+*/
+int wunlink( const wchar_t *path);
+
 #endif

@@ -5,7 +5,17 @@ def main()
     f := File("io2.tmp").open();
     f.write("Test", "\n");
     f.close();
+    if(!f.exists)
+    {
+	print("file.exists broken?\n");
+    }
 
     print(File("io2.tmp").readFile());
+    f.delete();
+
+    if(f.exists)
+    {
+	print("file.exists broken?\n");
+    }
 }
 
