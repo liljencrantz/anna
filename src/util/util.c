@@ -19,9 +19,9 @@
 #include "anna_stack.h"
 #include "anna_use.h"
 
-#include "anna_intern.c"
-#include "anna_tt.c"
-#include "anna_use.c"
+#include "util/intern.c"
+#include "util/tt.c"
+#include "util/use.c"
 
 wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *location)
 {

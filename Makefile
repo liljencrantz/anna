@@ -36,10 +36,10 @@ src/clib/ctime.o
 ANNA_OBJS := $(ANNA_CLIB_OBJS) src/dtoa.o src/anna.o src/util.o		\
 src/anna_parse.o src/anna_node.o src/anna_macro.o src/anna_stack.o	\
 autogen/anna_lex.o autogen/anna_yacc.o src/common.o src/wutil.o		\
-src/anna_type.o src/anna_function.o src/anna_member.o src/anna_util.o	\
+src/anna_type.o src/anna_function.o src/anna_member.o src/util/util.o	\
 src/anna_module.o src/anna_object.o src/anna_invoke.o src/anna_error.o	\
 src/anna_mid.o src/anna_vm.o src/anna_alloc.o src/anna_attribute.o	\
-src/anna_slab.o src/anna_compile.o src/anna_abides.o
+src/anna_compile.o src/anna_abides.o
 
 LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 

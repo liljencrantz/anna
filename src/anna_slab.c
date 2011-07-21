@@ -1,12 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-
-#include "anna_slab.h"
-
 #define SLAB_SZ 128
 
 slab_t **slab_list;

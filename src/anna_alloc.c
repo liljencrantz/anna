@@ -19,6 +19,8 @@
 #include "anna_type.h"
 #include "anna_use.h"
 
+#include "anna_slab.c"
+
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_tot=0;
 int anna_alloc_count=0;
