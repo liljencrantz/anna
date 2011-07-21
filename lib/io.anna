@@ -4,7 +4,8 @@ error IoError (Error) {}
 
 type File
 (
-    documentation("A high level object respresenting a filesystem entry such as a file, directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations. A File object represents a file system path; it does not always point to an actually existing file.")
+    documentation(
+	"A high level object respresenting a filesystem entry such as a file, directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations. A File object represents a file system path; it does not always point to an actually existing file.")
 )
 {
     
@@ -27,7 +28,8 @@ type File
 
     def File __join__(String name)
     (
-	documentation("Joins the specified subdirectory to the directory represented by the File object and returns the result.")
+	documentation(
+	    "Joins the specified subdirectory to the directory represented by the File object and returns the result.")
     )
     {
 	File(filename ~ cio.separator ~ name);
@@ -42,7 +44,8 @@ type File
 
     def String readFile()
     (
-	documentation("Read the contents of the file and return it as a String.")
+	documentation(
+	    "Read the contents of the file and return it as a String.")
     )
     {
         (fd := cio.open(this.filename, cio.openMode.readOnly, 0)) or (return ?);
@@ -54,12 +57,15 @@ type File
     
     def writeFile(String data)
     (
-	documentation("Write the contents of the String into the specified file.")
+	documentation(
+	    "Write the contents of the String into the specified file.")
     )
     {
         (fd := cio.open(
 	    this.filename, 
-	    cio.openMode.writeOnly ^bitor cio.openMode.truncate ^bitor cio.openMode.create, 
+	    cio.openMode.writeOnly ^bitor 
+	    cio.openMode.truncate ^bitor 
+	    cio.openMode.create, 
 	    0o666)) or (return ?); 
         buff := Buffer();
         ok := buff.decode(data) and cio.write(fd, buff, ?);
@@ -88,7 +94,8 @@ type File
 
     def write(Object value...)
     (
-	documentation("Write the string representation of the specified objects to the file.")
+	documentation(
+	    "Write the string representation of the specified objects to the file.")
     )
     {
         b := Buffer();

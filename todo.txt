@@ -14,7 +14,7 @@
   - Show/hide different elements
   - expand/minimize docs
 * Introduction
-* Check that node compare support all ast node types
+* Check that node compare supports all ast node types
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
@@ -77,7 +77,6 @@ A bunch of AST node types are missing some functionality, e.g. equality comparis
 If explicit function return type exists, return type of return expressions aren't abides checked against it
 Stack types don't abide to Object. Making them do so causes a clash on e.g. __eq__. How do we handle this?
 Can't mix named arguments and varargs
-When a method is called throug an implicit this, the argument list is messed up, resulting in a crash.
 
 LANGUAGE FEATURES:
 Function templates
@@ -91,7 +90,6 @@ STDLIB FEATURES:
 HTML documentation extractor
 The rest of the hashtable functions (filter, find, properties for key and value lists, etc)
 Set type
-File type
 hashCode function for Pair, List, Range, Complex, Char
 A backtrace function
 io module
@@ -114,7 +112,6 @@ Tests for floating point math
 Tests for type checking on invalid specialization
 Test return types of complex expression types, e.g. if(){}+1.
 Lots more coverage of using null as argument 
-Many more null value tests
 
 DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.
