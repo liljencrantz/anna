@@ -2,7 +2,6 @@
 * Constructors and inheritance fully working
 * Working collect function for error handling
 * Add memory overhead of Hashes, Buffers and Lists to GC estimates
-* Usable File type
 * Usable Date type
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
@@ -35,6 +34,7 @@
 * Mutable and Imutable versions of List and String, switch between them using freeze/thaw properties
 * Default argument values
 * Check that node each, print supports all ast node types
+* Usable File type
 
 2.0 RELEASE CRITERIA:
 * Regexp library

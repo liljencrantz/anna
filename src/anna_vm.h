@@ -79,6 +79,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this);
 */
 
 static inline double anna_as_float(anna_entry_t *entry);
+static inline anna_entry_t *anna_from_obj(anna_object_t *val);
 
 static inline int anna_entry_null(anna_entry_t *par)
 {
@@ -117,9 +118,16 @@ static inline int anna_is_int_small(anna_entry_t *val)
 
 static inline anna_entry_t *anna_from_int(long res)
 {
-    res <<= 2;
-    res |= ANNA_STACK_ENTRY_INT;
-    return (anna_entry_t *)res;
+    if(abs(res) < ANNA_INT_FAST_MAX)
+    {
+	res <<= 2;
+	res |= ANNA_STACK_ENTRY_INT;
+	return (anna_entry_t *)res;
+    }
+    else
+    {
+	return anna_from_obj(anna_int_create(res));
+    }    
 }
 
 static inline anna_entry_t *anna_from_float(double val)

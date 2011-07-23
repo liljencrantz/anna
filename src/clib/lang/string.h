@@ -7,6 +7,12 @@ void anna_string_append(anna_object_t *this, anna_object_t *str);
 void anna_string_append_cstring(anna_object_t *this, size_t len, wchar_t *str);
 void anna_string_type_create(void);
 void anna_string_print(anna_object_t *obj);
+
+/**
+   Returns a newly allocated c string representation of this
+   string. The caller needs to call free on the resulting pointer once
+   it is no longer required.
+ */
 wchar_t *anna_string_payload(anna_object_t *obj);
 size_t anna_string_get_count(anna_object_t *obj);
 /**

@@ -3,6 +3,8 @@
 
 #include <gmp.h>
 
+#define ANNA_SMALL_MAX_BIT 29
+
 struct anna_stack_template;
 extern anna_object_t *anna_int_one;
 extern anna_object_t *anna_int_minus_one;

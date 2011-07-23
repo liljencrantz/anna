@@ -15,7 +15,10 @@
 #include "anna_mid.h"
 
 #include "clib/lang/list.h"
+#include "clib/lang/string.h"
 #include "clib/clib.h"
+
+#define CTIME_BUFF_SZ 512
 
 ANNA_VM_NATIVE(anna_ctime_gettimeofday, 0)
 {    
@@ -38,9 +41,173 @@ ANNA_VM_NATIVE(anna_ctime_get_timezone, 1)
     return anna_from_int(timezone);    
 }
 
-ANNA_VM_NATIVE(anna_ctime_get_daylight, 1)
+ANNA_VM_NATIVE(anna_ctime_get_timezone_name, 1)
 {
-    return daylight ? anna_from_int(1):null_entry;    
+    char *tz = getenv("TZ");
+    if(tz)
+    {
+	wchar_t *wtz = str2wcs(tz);
+	anna_object_t *res = anna_string_create(wcslen(wtz), wtz);
+	free(wtz);
+	return anna_from_obj(res);
+    }
+    FILE *fp = fopen("/etc/timezone", "r");
+    char buff[CTIME_BUFF_SZ];
+    if(fp)
+    {
+	char *res = fgets(buff, CTIME_BUFF_SZ, fp);
+	fclose(fp);
+	if(res)
+	{
+	    /* Strip newline and anything following it */
+	    char *ptr;
+	    for(ptr=&buff[0]; *ptr; ptr++)
+	    {
+		if(*ptr == '\n')
+		{
+		    *ptr=0;
+		    break;
+		}
+	    }
+	    
+	    wchar_t *wtz = str2wcs(buff);
+	    anna_object_t *res = anna_string_create(wcslen(wtz), wtz);
+	    free(wtz);
+	    return anna_from_obj(res);	    
+	}
+    }
+    
+    return null_entry;
+}
+
+ANNA_VM_NATIVE(anna_ctime_set_timezone_name, 2)
+{
+    if(param[1] == null_entry)
+    {
+	unsetenv("TZ");
+    }
+    else
+    {
+	wchar_t *wtz = anna_string_payload(anna_as_obj(param[1]));
+	char *ntz = wcs2str(wtz);
+	free(wtz);
+	
+	setenv("TZ", ntz, 1);
+	free(ntz);
+    }
+    tzset();
+    return param[1];
+}
+
+ANNA_VM_NATIVE(anna_ctime_mktime, 8)
+{
+    struct tm tm = 
+	{
+	    anna_as_int(param[0]),
+	    anna_as_int(param[1]),
+	    anna_as_int(param[2]),
+	    anna_as_int(param[3]),
+	    anna_as_int(param[4]),
+	    anna_as_int(param[5]),
+	    0,
+	    0,
+	    param[6] == null_entry ? -1: anna_as_int(param[6])
+	}
+    ;
+    
+    int reset_tz=0;
+    char *tz;
+    char *ntz;
+    
+    if(param[7] != null_entry)
+    {
+	reset_tz=1;
+	wchar_t *wtz = anna_string_payload(anna_as_obj(param[7]));
+	ntz = wcs2str(wtz);
+	free(wtz);
+
+	tz = getenv("TZ");
+	setenv("TZ", ntz, 1);
+	tzset();
+    }
+    
+    anna_entry_t *res = anna_from_int(mktime(&tm));
+
+    if(reset_tz)
+    {
+	if (tz)
+	    setenv("TZ", tz, 1);
+	else
+	    unsetenv("TZ");
+	tzset();
+	free(ntz);
+    }
+    return res;
+}
+
+static anna_entry_t *handle_tm(struct tm *tm)
+{
+    anna_object_t *res = anna_list_create_imutable(int_type);
+    anna_list_add(res, anna_from_int(tm->tm_sec));
+    anna_list_add(res, anna_from_int(tm->tm_min));
+    anna_list_add(res, anna_from_int(tm->tm_hour));
+    anna_list_add(res, anna_from_int(tm->tm_mday));
+    anna_list_add(res, anna_from_int(tm->tm_mon));
+    anna_list_add(res, anna_from_int(tm->tm_year));
+    anna_list_add(res, anna_from_int(tm->tm_wday));
+    anna_list_add(res, anna_from_int(tm->tm_yday));
+    anna_list_add(res, anna_from_int(tm->tm_isdst));
+    return anna_from_obj(res);
+}
+
+ANNA_VM_NATIVE(anna_ctime_break_time, 2)
+{
+    time_t timestamp;
+    struct tm tm;
+
+    if(param[0] == null_entry)
+    {
+	return null_entry;
+    }
+    
+    timestamp = anna_as_int(param[0]);
+    if(param[1] == null_entry)
+    {
+	if(!localtime_r(&timestamp, &tm))
+	{
+	    return null_entry;
+	}
+	
+	return handle_tm(&tm);
+    }
+    
+    wchar_t *wtz = anna_string_payload(anna_as_obj(param[1]));
+    if(wcscmp(wtz, L"UTC")==0)
+    {
+	if(!gmtime_r(&timestamp, &tm))
+	{
+	    return null_entry;
+	}
+	return handle_tm(&tm);
+    }
+    
+    char *ntz = wcs2str(wtz);
+    free(wtz);
+    
+    char *tz = getenv("TZ");
+    setenv("TZ", ntz, 1);
+    tzset();
+    
+    struct tm *res = localtime_r(&timestamp, &tm);    
+
+    if (tz)
+	setenv("TZ", tz, 1);
+    else
+	unsetenv("TZ");
+    tzset();
+    free(ntz);
+
+    return res ? handle_tm(&tm) : null_entry;
 }
 
 void anna_ctime_load(anna_stack_template_t *stack)
@@ -51,22 +218,58 @@ void anna_ctime_load(anna_stack_template_t *stack)
 	0, &anna_ctime_gettimeofday, 
 	anna_list_type_get_imutable(int_type), 
 	0, 0, 0,
-	L"Returns the current time of day as the number of seconds and microseconds since the Epoch (midnight, January 1, 1970, UTC). Wrapper for the C gettimeofday function, see man 2 gettimeofday. Because the timezone argument of gettimeofday doesn't work, it's not included.");
+	L"Returns the current time of day as the number of seconds and microseconds since the Epoch (midnight, January 1, 1970, UTC). Wrapper for the C gettimeofday function, see man 2 gettimeofday. Because the timezone argument of gettimeofday doesn't reliably work, it's not supported. See the timezoneName and timezoneOffset properties for actually working timezone information.");
+    
+    anna_type_t *mt_argv[] = 
+	{
+	    int_type, int_type, int_type, int_type, int_type, int_type, int_type, string_type
+	}
+    ;
+    wchar_t *mt_argn[] = 
+	{
+	    L"sec", L"min", L"hour", L"mday", L"month", L"year", L"isDaylightSaving", L"timezone"
+	}
+    ;
+
+    anna_module_function(
+	stack, L"mkTime", 
+	0, &anna_ctime_mktime, 
+	int_type, 
+	8, mt_argv, mt_argn,
+	L"Convert a time list to a time stamp");
+    
+    anna_type_t *a_argv[] = 
+	{
+	    int_type, string_type
+	}
+    ;
+    wchar_t *a_argn[] = 
+	{
+	    L"timestamp", L"timezone"
+	}
+    ;
+    
+    anna_module_function(
+	stack, L"breakTime", 
+	0, &anna_ctime_break_time, 
+	anna_list_type_get_imutable(int_type), 
+	2, a_argv, a_argn,
+	L"Convert a time stamp to a list of date data in the specified timezone. If no timezone is specified, this function is equivalent to the localtime C function.");
     
     anna_type_t *type = anna_stack_wrap(stack)->type;
+
     anna_member_create_native_property(
-	type, anna_mid_get(L"timezone"),
+	type, anna_mid_get(L"timezoneOffset"),
 	int_type,
 	&anna_ctime_get_timezone,
 	0,
-	L"The offset from UTC of the local timezone, in seconds");
+	L"The offset from UTC of the local timezone, in seconds.");
 
     anna_member_create_native_property(
-	type, anna_mid_get(L"daylight"),
-	int_type,
-	&anna_ctime_get_daylight,
-	0,
-	L"This property is non-null if at some part of the year, daylight saving time applies");
-    
+	type, anna_mid_get(L"timezoneName"),
+	anna_list_type_get_imutable(string_type), 
+	&anna_ctime_get_timezone_name,
+	&anna_ctime_set_timezone_name,
+	L"The name of the currently configured timezone.");
 }
 

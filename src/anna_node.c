@@ -466,6 +466,105 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
     switch(node1->node_type)
     {
 
+	case ANNA_NODE_CALL:
+	{
+	    anna_node_call_t *n1 = (anna_node_call_t *)node1;
+	    anna_node_call_t *n2 = (anna_node_call_t *)node2;
+	    if(n1->child_count != n2->child_count)
+		return n1->child_count - n2->child_count;
+	    int ff = anna_node_compare(n1->function, n2->function);
+	    
+	    if(ff)
+		return ff;
+	    
+	    int i;
+	    for(i=0; i<n1->child_count;i++)
+	    {
+		int cf = anna_node_compare(n1->child[i], n2->child[i]);
+		if(cf)
+		    return cf;
+	    }
+	    return 0;
+	}
+	
+	case ANNA_NODE_IDENTIFIER:
+	{
+	    anna_node_identifier_t *id1 = (anna_node_identifier_t *)node1;
+	    anna_node_identifier_t *id2 = (anna_node_identifier_t *)node2;
+	    return wcscmp(id1->name, id2->name);
+	}
+	
+	case ANNA_NODE_INT_LITERAL:
+	{
+	    anna_node_int_literal_t *n1 = (anna_node_int_literal_t *)node1;
+	    anna_node_int_literal_t *n2 = (anna_node_int_literal_t *)node2;
+	    return mpz_cmp( n1->payload, n2->payload);
+	}
+	
+	case ANNA_NODE_STRING_LITERAL:
+	{
+	    anna_node_string_literal_t *n1 = (anna_node_string_literal_t *)node1;
+	    anna_node_string_literal_t *n2 = (anna_node_string_literal_t *)node2;
+	    if(n1->payload_size != n2->payload_size)
+		return n1->payload_size - n2->payload_size;
+	    return wcsncmp(n1->payload, n2->payload, n1->payload_size);   
+	}
+	
+	case ANNA_NODE_CHAR_LITERAL:
+	{
+	    anna_node_char_literal_t *n1 = (anna_node_char_literal_t *)node1;
+	    anna_node_char_literal_t *n2 = (anna_node_char_literal_t *)node2;
+	    return n1->payload - n2->payload;
+	}
+	
+	case ANNA_NODE_FLOAT_LITERAL:
+	{
+	    anna_node_float_literal_t *n1 = (anna_node_float_literal_t *)node1;
+	    anna_node_float_literal_t *n2 = (anna_node_float_literal_t *)node2;
+	    if(n1->payload > n2->payload)
+		return 1;
+	    else if(n1->payload < n2->payload)
+		return -1;
+	    else
+		return 0;
+	}
+	
+	case ANNA_NODE_NULL:
+	{
+	    return 0;
+	}
+	
+	case ANNA_NODE_DUMMY:
+	{
+	    anna_node_dummy_t *n1 = (anna_node_dummy_t *)node1;
+	    anna_node_dummy_t *n2 = (anna_node_dummy_t *)node2;
+	    return n1->payload - n2->payload;
+	}
+
+	case ANNA_NODE_CLOSURE:
+	{
+	    anna_node_closure_t *n1 = (anna_node_closure_t *)node1;
+	    anna_node_closure_t *n2 = (anna_node_closure_t *)node2;
+	    return n1->payload - n2->payload;
+	}
+	
+	case ANNA_NODE_ASSIGN:
+	{
+	    anna_node_assign_t *n1 =(anna_node_assign_t *)node1;
+	    anna_node_assign_t *n2 =(anna_node_assign_t *)node2;
+	    int n = wcscmp(n1->name, n2->name);
+	    if(n != 0)
+		return n;
+	    return anna_node_compare(n1->value, n2->value);
+	}
+/*	
+	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_MEMBER_BIND:
+	case ANNA_NODE_MEMBER_SET:
+	{
+	    
+	}
+*/
 	case ANNA_NODE_RETURN:
 	{
 	    anna_node_wrapper_t *this1 =(anna_node_wrapper_t *)node1;
@@ -494,76 +593,6 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    anna_node_t *c1 = anna_node_type_lookup_get_payload(node1);
 	    anna_node_t *c2 = anna_node_type_lookup_get_payload(node2);
 	    return anna_node_compare(c1,c2);
-	}
-	
-	case ANNA_NODE_IDENTIFIER:
-	{
-	    anna_node_identifier_t *id1 = (anna_node_identifier_t *)node1;
-	    anna_node_identifier_t *id2 = (anna_node_identifier_t *)node2;
-	    return wcscmp(id1->name, id2->name);
-	}
-	
-	case ANNA_NODE_CALL:
-	{
-	    anna_node_call_t *n1 = (anna_node_call_t *)node1;
-	    anna_node_call_t *n2 = (anna_node_call_t *)node2;
-	    if(n1->child_count != n2->child_count)
-		return n1->child_count - n2->child_count;
-	    int ff = anna_node_compare(n1->function, n2->function);
-	    
-	    if(ff)
-		return ff;
-	    
-	    int i;
-	    for(i=0; i<n1->child_count;i++)
-	    {
-		int cf = anna_node_compare(n1->child[i], n2->child[i]);
-		if(cf)
-		    return cf;
-	    }
-	    return 0;
-	}
-	
-	case ANNA_NODE_CLOSURE:
-	{
-	    anna_node_closure_t *n1 = (anna_node_closure_t *)node1;
-	    anna_node_closure_t *n2 = (anna_node_closure_t *)node2;
-	    return n1->payload - n2->payload;
-	}
-	
-	case ANNA_NODE_INT_LITERAL:
-	{
-	    anna_node_int_literal_t *n1 = (anna_node_int_literal_t *)node1;
-	    anna_node_int_literal_t *n2 = (anna_node_int_literal_t *)node2;
-	    return mpz_cmp( n1->payload, n2->payload);
-	}
-	
-	case ANNA_NODE_CHAR_LITERAL:
-	{
-	    anna_node_char_literal_t *n1 = (anna_node_char_literal_t *)node1;
-	    anna_node_char_literal_t *n2 = (anna_node_char_literal_t *)node2;
-	    return n1->payload - n2->payload;
-	}
-	
-	case ANNA_NODE_FLOAT_LITERAL:
-	{
-	    anna_node_float_literal_t *n1 = (anna_node_float_literal_t *)node1;
-	    anna_node_float_literal_t *n2 = (anna_node_float_literal_t *)node2;
-	    if(n1->payload > n2->payload)
-		return 1;
-	    else if(n1->payload < n2->payload)
-		return -1;
-	    else
-		return 0;
-	}
-	
-	case ANNA_NODE_STRING_LITERAL:
-	{
-	    anna_node_string_literal_t *n1 = (anna_node_string_literal_t *)node1;
-	    anna_node_string_literal_t *n2 = (anna_node_string_literal_t *)node2;
-	    if(n1->payload_size != n2->payload_size)
-		return n1->payload_size - n2->payload_size;
-	    return wcsncmp(n1->payload, n2->payload, n1->payload_size);   
 	}
 	
 	case ANNA_NODE_OR:

@@ -1,6 +1,4 @@
 
-#define ANNA_SMALL_MAX_BIT 29
-
 #include "autogen/anna_int_i.c"
 
 static void *anna_int_alloc(size_t sz)
