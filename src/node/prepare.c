@@ -69,10 +69,8 @@ void anna_node_register_declarations(
 	    stack,
 	    decl);
     }
-    al_destroy(&decls);   
-    
+    al_destroy(&decls);
 }
-
 
 /**
    Calculate the types of all direct child nodes of a call node,
@@ -80,7 +78,8 @@ void anna_node_register_declarations(
    as needed. This is useful e.g. when using parameter types to pick
    one of multiple aliased methods.
  */
-static int anna_node_calculate_type_direct_children(anna_node_call_t *n, anna_stack_template_t *stack)
+static int anna_node_calculate_type_direct_children(
+    anna_node_call_t *n, anna_stack_template_t *stack)
 {
     int i;
     
@@ -99,6 +98,7 @@ static int anna_node_calculate_type_direct_children(anna_node_call_t *n, anna_st
 static anna_node_t *anna_node_calculate_type_internal_call(
     anna_node_call_t *n)
 {
+    int is_constructor = 0;
     anna_stack_template_t *stack = n->stack;
 	    
     n->object = anna_node_calculate_type(n->object);
@@ -107,7 +107,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     if(type == ANNA_NODE_TYPE_IN_TRANSIT)
     {
 	return (anna_node_t *)n;
-    }	    
+    }
 	    
     if(type == null_type)
     {
@@ -115,7 +115,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	return (anna_node_t *)n;
     }
 	    
-    anna_type_setup_interface(type);	    
+    anna_type_set_stack(type, n->stack);
+    anna_type_setup_interface(type);
 	    
     if(type == type_type && !anna_type_mid_internal(n->mid))
     {
@@ -128,9 +129,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    return (anna_node_t *)n;
 	}
     }
-	    
-    anna_type_prepare_member(type, n->mid, stack);
-	    
+    
+    anna_type_prepare_member(type, n->mid, stack);	    
     anna_member_t *member = anna_member_get(type, n->mid);
 	    
     if(!member)
@@ -142,7 +142,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	{
 	    member = anna_member_method_search(
 		type, n->mid, n, 0);
-		    
+	    
 	    if(member)
 	    {
 		n->mid = anna_mid_get(member->name);
@@ -151,7 +151,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    {
 		if(n->child_count == 1)
 		{
-		    anna_node_call_t *n2 = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)n);
+		    anna_node_call_t *n2 = (anna_node_call_t *)anna_node_clone_shallow(
+			(anna_node_t *)n);
 		    anna_node_t *tmp = n2->object;
 		    n2->object = n2->child[0];
 		    n2->child[0] = tmp;
@@ -183,7 +184,9 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 //		    debug(4,L"Hmmm, node is of type type...");
 //		    anna_node_print(4, n);
 	    
-	    anna_type_t *ctype = anna_type_unwrap(anna_as_obj(type->static_member[member->offset]));
+	    anna_type_t *ctype = anna_type_unwrap(
+		anna_as_obj(
+		    type->static_member[member->offset]));
 		    
 	    if(ctype)
 	    {
@@ -199,7 +202,9 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		    ctype);
 		n->function->stack = n->stack;
 		n->return_type = ctype;
-		return (anna_node_t *)n;
+		
+		member = anna_member_get(ctype, anna_mid_get(L"__init__"));
+		is_constructor = 1;
 	    }
 	}
 	
@@ -207,25 +212,23 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	if(!fun)
 	{
 	    anna_error(
-		(anna_node_t *)n, 
-		L"Member %ls is not a function\n", 
+		(anna_node_t *)n,
+		L"Member %ls is not a function\n",
 		anna_mid_get_reverse(n->mid),
-		type->name);		    
+		type->name);
 	    return (anna_node_t *)n;
 	}
 		
 	if(!anna_node_validate_call_parameters(
-	       n, fun, 
-	       member->is_bound_method && !(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER), 
+	       n, fun,
+	       member->is_bound_method && !(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER),
 	       1))
 	{
-	    
 	    member = 0;
 	}
 	else
 	{
 	    anna_node_call_map(n, fun, member->is_bound_method);
-		    
 	}
     }
     else
@@ -238,7 +241,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	return (anna_node_t *)n;
     }
 
-    if(member)
+    if(!is_constructor && member)
     {
 	anna_function_type_t *funt = anna_function_type_unwrap(member->type);
 	n->return_type = funt->return_type;
@@ -342,6 +345,8 @@ static anna_node_t *anna_node_calculate_type_internal(
 
 	    call->function = anna_node_calculate_type(call->function);
 	    anna_type_t *fun_type = call->function->return_type;
+
+	    int is_method = 0;
 	    
 	    if(fun_type == type_type)
 	    {
@@ -357,15 +362,26 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    }
 		    
 		    type = anna_type_implicit_specialize(type, call);
+		    assert(type);
+		    anna_type_set_stack(type, stack);
+		    anna_type_setup_interface(type);
+		    
 		    this->node_type = ANNA_NODE_CONSTRUCT;
 		    call->function = (anna_node_t *)anna_node_create_type(
 			&call->function->location,
 			type);
 		    call->function->stack = call->stack;
 		    call->return_type = type;
-		    break;
-		}
-		
+		    anna_member_t *member = anna_member_get(type, anna_mid_get(L"__init__"));
+		    if(!member)
+		    {
+			anna_type_print(type);
+			CRASH;
+		    }
+		    
+		    fun_type = member->type;
+		    is_method=1;
+		}		
 	    }
 	    
 	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
@@ -388,13 +404,14 @@ static anna_node_t *anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    if(anna_node_validate_call_parameters(call, funt, 0, 1))
+	    if(anna_node_validate_call_parameters(call, funt, is_method, 1))
 	    {
-		anna_node_call_map(call, funt, 0);		
+		anna_node_call_map(call, funt, is_method);
 	    }
 
 	    
-	    call->return_type = funt->return_type;
+	    if(!is_method)
+		call->return_type = funt->return_type;
 	    break;
 	}
 
@@ -507,6 +524,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		break;
 	    }
 
+	    anna_type_set_stack(type, stack);
 	    anna_type_setup_interface(type);	    
 
 	    if(type == type_type && anna_member_get(type, c->mid)==0)

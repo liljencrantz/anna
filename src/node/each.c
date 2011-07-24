@@ -28,6 +28,11 @@ void anna_node_each(
 anna_node_t *anna_node_each_replace(
     anna_node_t *this, anna_node_replace_function_t fun, void *aux)
 {
+    if(!this)
+    {
+
+	CRASH;
+    }
     this = fun(this, aux);
     switch(this->node_type)
     {
@@ -43,6 +48,12 @@ anna_node_t *anna_node_each_replace(
 	    int i;
 	    for(i=0; i<n->child_count; i++)
 	    {
+		if(!n->child[i])
+		{
+		    anna_error(n, L"Invalid child %d of %d\n", i+1, n->child_count);
+		    CRASH;
+		}
+		
 		n->child[i] = anna_node_each_replace(n->child[i], fun, aux);
 	    }
 	    

@@ -233,6 +233,7 @@ int anna_node_validate_call_parameters(
 {
     anna_type_t **param = target->input_type;
     wchar_t **param_name = target->input_name;
+    anna_node_t **param_default = target->input_default;
     int param_count = target->input_count;    
     int res=0;
     
@@ -240,6 +241,7 @@ int anna_node_validate_call_parameters(
     {
 	param++;
 	param_name++;
+	param_default++;
 	param_count--;
     }
 
@@ -293,7 +295,7 @@ int anna_node_validate_call_parameters(
     }
     for(i=0; i<param_count; i++)
     {
-	if(set[i] == 0 && target->input_default[i])
+	if(set[i] == 0 && param_default[i])
 	{
 	    set[i]++;
 	}
@@ -314,6 +316,14 @@ int anna_node_validate_call_parameters(
 	    if(print_error)
 	    {
 		anna_error((anna_node_t *)call, L"No value was provided for argument %d, %ls, in function call ", i+1, param_name[i]);
+/*
+		for(i=0; i<param_count; i++)
+		{
+		    wprintf(
+			L"Default value for arg %d %ls: %ls\n",
+			i, target->input_name[i], param_default[i]? L"yes":L"no");
+			}
+*/
 	    }
 	    goto END;	    
 	}
@@ -333,10 +343,12 @@ void anna_node_call_map(
 {
     anna_type_t **param = target->input_type;
     int param_count = target->input_count;    
+    anna_node_t **param_default = target->input_default;
     
     if(is_method)
     {
 	param++;
+	param_default++;
 	param_count--;
     }
     
@@ -383,7 +395,7 @@ void anna_node_call_map(
     {
 	if(!order[i])
 	{
-	    order[i] = target->input_default[i];
+	    order[i] = param_default[i];
 	    count = maxi(count, i+1);
 	}
     }
