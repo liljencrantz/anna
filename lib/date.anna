@@ -1,0 +1,197 @@
+
+type Timezone
+{
+    var String name (internal);
+
+    def __init__(String name)
+    {
+	this.name = name;
+    }
+}
+
+type Delta
+{
+
+    var Int year (internal); 
+    var Int month (internal); 
+    var Int day (internal); 
+    var Int hour (internal);
+    var Int minute (internal);
+    var Int second (internal);
+    var Int microsecond (internal);
+
+    def __init__(
+	Int year=0, Int month=0, Int day=0, 
+	Int hour=0, Int minute=0, Int second=0, 
+	Int microsecond=0)
+    {
+	this.year = year or 0;
+	this.month = month or 0;
+	this.day = day or 0;
+	this.hour = hour or 0;
+	this.minute = minute or 0;
+	this.second = second or 0;
+	this.microsecond = microsecond or 0;
+    }
+
+    def __add__(Delta other)
+    {
+        res := Delta(
+	    year+other.year, month + other.year, day+other.day, 
+	    hour+other.hour, minute+ other.minute, second+other.second, 
+	    microsecond+other.microsecond);
+    }
+
+    def toString()
+    {
+        res := «String»[];
+
+	if(year != 0)
+	{
+	    res ~= ["% year(s)" % [String.convert(year)]];
+	}
+
+	if(month != 0)
+	{
+	    res ~= ["% month(s)" % [String.convert(month)]];
+	}
+
+	if(day != 0)
+	{
+	    res ~= ["% day(s)" % [String.convert(day)]];
+	}
+
+	if(hour != 0)
+	{
+	    res ~= ["% hour(s)" % [String.convert(hour)]];
+	}
+
+	if(minute != 0)
+	{
+	    res ~= ["% minute(s)" % [String.convert(minute)]];
+	}
+
+	if(second != 0)
+	{
+	    res ~= ["% second(s)" % [String.convert(second)]];
+	}
+
+	if(microsecond != 0)
+	{
+	    res ~= ["% microsecond(s)" % [String.convert(microsecond)]];
+	}
+
+	return ", ".join(res);
+    }
+}
+
+type Date
+(
+    documentation(
+	"The Date object represents a point in time with microsecond precision. Dates object are always relative to a specific timezone.")
+)
+{
+    var Int timestamp (internal);
+    var Int microsecond (internal);
+    var Timezone timezone (internal);
+
+    var List«Int» broken (internal);
+
+    def __init__(
+	Int year=?, Int month=?, Int day=?, 
+	Int hour=?, Int minute=?, Int second=?, 
+	Int microsecond=?, Timezone tz=?)
+    {
+	if(!tz)
+	{
+	    tz = Timezone(ctime.timezoneName);
+	}
+
+        lst := [year, month, day, hour, minute, second, microsecond];
+
+	if(1)
+	{
+	    tm := ctime.getTimeOfDay();
+	    timestamp = tm[0];
+	    microsecond = tm[1];
+	}
+	
+	broken = ctime.breakTime(timestamp, tz.name);
+	timezone = tz
+    }
+
+    var Int year (property(yearGetter));
+    def yearGetter() (internal)
+    {
+	broken[ctime.broken.year]+1900;
+    }
+
+    var Int month (property(monthGetter));
+    def monthGetter() (internal)
+    {
+	broken[ctime.broken.month]+1;
+    }
+
+    var Int day (property(dayGetter));
+    def dayGetter() (internal)
+    {
+	broken[ctime.broken.dayOfMonth];
+    }
+
+    var Int hour (property(hourGetter));
+    def hourGetter() (internal)
+    {
+	broken[ctime.broken.hour];
+    }
+
+    var Int minute (property(minuteGetter));
+    def minuteGetter() (internal)
+    {
+	broken[ctime.broken.minute];
+    }
+
+    var Int second (property(secondGetter));
+    def secondGetter() (internal)
+    {
+	broken[ctime.broken.second];
+    }
+
+    var Int microsecond (property(microsecondGetter));
+    def microsecondGetter() (internal)
+    {
+	microsecond;
+    }
+    
+    var Int isDaylightSaving (property(isDaylightSavingGetter));
+    def isDaylightSavingGetter() (internal)
+    {
+	broken[ctime.broken.isDaylightSaving];
+    }
+ 
+    var Int dayOfWeek (property(dayOfWeekGetter));
+    def dayOfWeekGetter() (internal)
+    {
+	broken[ctime.broken.dayOfWeek];	
+    }
+    
+    var Int dayOfYear (property(dayOfYearGetter));
+    def dayOfYearGetter() (internal)
+    {
+	broken[ctime.broken.dayOfYear];	
+    }
+
+    def toString()
+    {
+	return "%-%-% %:%:% (%)" % 
+	    [
+		String.convert(year),
+		String.convert(month).lpad(char:'0',minimumCount:2),
+		String.convert(day).lpad(char:'0',minimumCount:2),
+		String.convert(hour),
+		String.convert(minute).lpad(char:'0',minimumCount:2),
+		String.convert(second).lpad(char:'0',minimumCount:2),
+		timezone.name
+	    ];
+    }
+    
+}

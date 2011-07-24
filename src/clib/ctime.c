@@ -158,7 +158,7 @@ static anna_entry_t *handle_tm(struct tm *tm)
     anna_list_add(res, anna_from_int(tm->tm_year));
     anna_list_add(res, anna_from_int(tm->tm_wday));
     anna_list_add(res, anna_from_int(tm->tm_yday));
-    anna_list_add(res, anna_from_int(tm->tm_isdst));
+    anna_list_add(res, tm->tm_isdst?anna_from_int(1):null_entry);
     return anna_from_obj(res);
 }
 
