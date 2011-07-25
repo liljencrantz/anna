@@ -761,21 +761,20 @@ expression9 :
 		&@$,
 		anna_node_create_identifier(&@2, L"__memberGet__"), 
 		$1, $3);
-	};
+	}
+	|
+	expression9 specialization
+	{
+		$$ = (anna_node_t *)anna_node_create_call2(
+		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+		    $1, $2);		
+	}
+;
 
 expression10:
 	literal
-	| 
-	any_identifier opt_specialization
-	{
-	    $$ = $1;
-	    if($2)
-	    {
-		$$ = (anna_node_t *)anna_node_create_call2(
-		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
-		    $$, $2);		
-	    }
-	}
+	|
+	any_identifier
 	| 
 	'(' expression ')'
 	{

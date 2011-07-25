@@ -65,9 +65,7 @@ static anna_node_t *anna_node_macro_expand_each(
 	    
 	    if(macro)
 	    {
-		anna_node_t *ggg = anna_node_clone_deep(this);
-		anna_node_t *res = anna_macro_invoke(macro, this2);
-		return anna_node_macro_expand(res, stack);
+		return anna_node_macro_expand(anna_macro_invoke(macro, this2), stack);
 	    }
 	    
 	    if(this->node_type != ANNA_NODE_SPECIALIZE)
