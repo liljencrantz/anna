@@ -1,15 +1,12 @@
 def main()
 {
-    use(ctime);
-
-    tz := timezoneName;
-    timezoneName = "America/Toronto";
-    print(timezoneName, "\n");
-    timezoneName = ?;
-    print(tz == timezoneName, "\n");
-
-    print(breakTime(mkTime(0,1,2,3,4,100, ?, "America/Toronto"), "America/Toronto"), "\n");
-    print(breakTime(mkTime(0,1,2,3,4,100, ?, ?), ?)[0..8], "\n");
-
+    use(date);
+    d := date.Date();
+    d2 := Date();
+    print(d, ' ', d2, "\n");
+    delta := Delta(day:1);
+    delta2 := Delta(minute:1);
+    print(delta + delta2, "\n");
+    print(d+delta + delta2, "\n");
 }
 

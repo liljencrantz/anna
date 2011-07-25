@@ -37,7 +37,7 @@ type Delta
     def __add__(Delta other)
     {
         res := Delta(
-	    year+other.year, month + other.year, day+other.day, 
+	    year+other.year, month + other.month, day+other.day, 
 	    hour+other.hour, minute+ other.minute, second+other.second, 
 	    microsecond+other.microsecond);
     }
@@ -100,26 +100,64 @@ type Date
     def __init__(
 	Int year=?, Int month=?, Int day=?, 
 	Int hour=?, Int minute=?, Int second=?, 
-	Int microsecond=?, Timezone tz=?)
+	Int microsecond=?, Timezone timezone=?)
     {
-	if(!tz)
+	if(!timezone)
 	{
-	    tz = Timezone(ctime.timezoneName);
+	    timezone = Timezone(ctime.timezoneName);
 	}
 
         lst := [year, month, day, hour, minute, second, microsecond];
 
-	if(1)
+	if(!lst.all())
 	{
 	    tm := ctime.getTimeOfDay();
-	    timestamp = tm[0];
-	    microsecond = tm[1];
+  	    brk := ctime.breakTime(tm[0], timezone.name);
+	    if(!year)
+	    {
+		year = brk[ctime.broken.year] + 1900;
+	    }
+	    if(!month)
+	    {
+		month = brk[ctime.broken.month]+1;
+	    }
+	    if(!day)
+	    {
+		day = brk[ctime.broken.dayOfMonth];
+	    }
+	    if(!hour)
+	    {
+		hour = brk[ctime.broken.hour];
+	    }
+	    if(!minute)
+	    {
+		minute = brk[ctime.broken.minute];
+	    }
+	    if(!second)
+	    {
+		second = brk[ctime.broken.second];
+	    }
+	    if(!microsecond)
+	    {
+		microsecond = tm[0];
+	    }
 	}
 	
-	broken = ctime.breakTime(timestamp, tz.name);
-	timezone = tz
+	timestamp = ctime.mkTime(second, minute, hour, day, month-1, year-1900, ?, timezone.name);
+	this.microsecond = microsecond;
+	this.timezone = timezone;
+	broken = ctime.breakTime(timestamp, timezone.name);
     }
 
+    def Date __add__(Delta other)
+    {
+        res := Date(
+	    year+other.year, month + other.month, day+other.day, 
+	    hour+other.hour, minute+ other.minute, second+other.second, 
+	    microsecond+other.microsecond,
+	    timezone);
+    }    
+    
     var Int year (property(yearGetter));
     def yearGetter() (internal)
     {
@@ -193,5 +231,5 @@ type Date
 		timezone.name
 	    ];
     }
-    
+
 }

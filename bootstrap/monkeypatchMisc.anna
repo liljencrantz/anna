@@ -72,3 +72,13 @@ def listToString(List this)
     return "[" ~ ", ".join(this.map(value){""~(value or "null")}) ~ "]";
 }
 
+def listAll(List this)
+(
+    target(List),
+    name(all)
+)
+{
+    res := 1 as Object;
+    this.each(i){ res = res and i }
+    return res;
+}
