@@ -657,21 +657,15 @@ expression8:
 	};
 
 expression9 :
-	expression9 opt_specialization '(' opt_expression_list ')' opt_block
+	expression9 '(' opt_expression_list ')' opt_block
 	{
-	    $$ = (anna_node_t *)$4;
+	    $$ = (anna_node_t *)$3;
 	    anna_node_t *fun = $1;
-	    if($2)
-	    {
-		fun = (anna_node_t *)anna_node_create_call2(
-		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
-		    fun, $2);
-	    }
-	    
-	    anna_node_call_set_function($4, fun);
+
+	    anna_node_call_set_function($3, fun);
 	    anna_node_set_location($$, &@$);
-	    if ($6) 
-		anna_node_call_add_child($4, (anna_node_t *)$6);
+	    if ($5) 
+		anna_node_call_add_child($3, (anna_node_t *)$5);
 	}
 	|
 	'-' expression10
@@ -772,7 +766,16 @@ expression9 :
 expression10:
 	literal
 	| 
-	any_identifier 
+	any_identifier opt_specialization
+	{
+	    $$ = $1;
+	    if($2)
+	    {
+		$$ = (anna_node_t *)anna_node_create_call2(
+		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
+		    $$, $2);		
+	    }
+	}
 	| 
 	'(' expression ')'
 	{

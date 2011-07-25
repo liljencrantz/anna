@@ -273,6 +273,17 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
     return stack;
 }
 
+ANNA_VM_NATIVE(anna_i_nothing, 1)
+{
+    anna_object_t *list = anna_as_obj(param[0]);
+    size_t count = anna_list_get_count(list);
+    if(count)
+    {
+	return anna_list_get(list, count-1);
+    }
+    return null_entry;
+}
+
 static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t *val = anna_vmstack_pop_entry(stack);
@@ -350,6 +361,15 @@ void anna_lang_load(anna_stack_template_t *stack)
 	imutable_list_type, 1, &object_type, 
 	p_argn, 
 	L"Print all the supplied arguments to standard output");
+
+    anna_module_function(
+	stack,
+	L"nothing", 
+	ANNA_FUNCTION_VARIADIC, 
+	&anna_i_nothing, 
+	imutable_list_type, 1, &object_type, 
+	p_argn, 
+	L"Returns the last argument in the parameter list, or null");
     
     anna_module_function(
 	stack,

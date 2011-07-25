@@ -95,9 +95,10 @@ ANNA_VM_MACRO(anna_macro_member_get)
     anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
     mid_t mid = anna_mid_get(name_node->name);
 
-    return (anna_node_t *)anna_node_create_member_get(&node->location,
-						      node->child[0], 
-						      mid);
+    return (anna_node_t *)anna_node_create_member_get(
+	&node->location,
+	node->child[0], 
+	mid);
 }
 
  

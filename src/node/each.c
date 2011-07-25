@@ -30,7 +30,6 @@ anna_node_t *anna_node_each_replace(
 {
     if(!this)
     {
-
 	CRASH;
     }
     this = fun(this, aux);

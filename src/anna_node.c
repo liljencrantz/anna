@@ -449,6 +449,11 @@ anna_node_t *anna_node_replace(anna_node_t *tree, anna_node_identifier_t *from, 
     anna_node_t **aux = malloc(sizeof(anna_node_t *)*2);
     aux[0] = (anna_node_t *)from;
     aux[1] = to;
+    if(!to)
+    {
+	debug(D_CRITICAL, L"Replace node with nothing\n");
+	CRASH;
+    }
     
     anna_node_t *res = anna_node_each_replace(
 	tree, anna_node_replace_each, aux);

@@ -25,13 +25,9 @@ type Delta
 	Int hour=0, Int minute=0, Int second=0, 
 	Int microsecond=0)
     {
-	this.year = year or 0;
-	this.month = month or 0;
-	this.day = day or 0;
-	this.hour = hour or 0;
-	this.minute = minute or 0;
-	this.second = second or 0;
-	this.microsecond = microsecond or 0;
+	expandCode(
+	    this.%name = %name or 0,
+	    name: [year, month, day, hour, minute, second, microsecond]);
     }
 
     def __add__(Delta other)
@@ -46,40 +42,10 @@ type Delta
     {
         res := «String»[];
 
-	if(year != 0)
-	{
-	    res ~= ["% year(s)" % [String.convert(year)]];
-	}
-
-	if(month != 0)
-	{
-	    res ~= ["% month(s)" % [String.convert(month)]];
-	}
-
-	if(day != 0)
-	{
-	    res ~= ["% day(s)" % [String.convert(day)]];
-	}
-
-	if(hour != 0)
-	{
-	    res ~= ["% hour(s)" % [String.convert(hour)]];
-	}
-
-	if(minute != 0)
-	{
-	    res ~= ["% minute(s)" % [String.convert(minute)]];
-	}
-
-	if(second != 0)
-	{
-	    res ~= ["% second(s)" % [String.convert(second)]];
-	}
-
-	if(microsecond != 0)
-	{
-	    res ~= ["% microsecond(s)" % [String.convert(microsecond)]];
-	}
+	expandCode(
+	    if(%name != 0){res ~= [%text % [String.convert(%name)]]},
+	    name: [year, month, day, minute, second, microsecond],
+	    text: ["% year(s)", "% month(s)", "% day(s)", "% minute(s)", "% second(s)", "% microsecond(s)"]);
 
 	return ", ".join(res);
     }
@@ -113,30 +79,13 @@ type Date
 	{
 	    tm := ctime.getTimeOfDay();
   	    brk := ctime.breakTime(tm[0], timezone.name);
-	    if(!year)
-	    {
-		year = brk[ctime.broken.year] + 1900;
-	    }
-	    if(!month)
-	    {
-		month = brk[ctime.broken.month]+1;
-	    }
-	    if(!day)
-	    {
-		day = brk[ctime.broken.dayOfMonth];
-	    }
-	    if(!hour)
-	    {
-		hour = brk[ctime.broken.hour];
-	    }
-	    if(!minute)
-	    {
-		minute = brk[ctime.broken.minute];
-	    }
-	    if(!second)
-	    {
-		second = brk[ctime.broken.second];
-	    }
+
+	    expandCode(
+		if(!%name){%name = brk[ctime.broken.%field] + %offset},
+		name: [year, month, day, hour, minute, second],
+		field: [year, month, dayOfMonth, hour, minute, second], 
+		offset: [1900,1,0,0,0,0]);
+
 	    if(!microsecond)
 	    {
 		microsecond = tm[0];
@@ -151,13 +100,27 @@ type Date
 
     def Date __add__(Delta other)
     {
-        res := Date(
+        Date(
 	    year+other.year, month + other.month, day+other.day, 
 	    hour+other.hour, minute+ other.minute, second+other.second, 
 	    microsecond+other.microsecond,
 	    timezone);
     }    
     
+    def Delta __sub__(Date other)
+    {
+	other = other.toTimezone(timezone);
+        Delta(
+	    year - other.year, month - other.month, day - other.day, 
+	    hour - other.hour, minute - other.minute, second - other.second, 
+	    microsecond - other.microsecond);
+    }
+    
+    def Date toTimezone(Timezone timezone)
+    {
+	this;
+    }
+
     var Int year (property(yearGetter));
     def yearGetter() (internal)
     {

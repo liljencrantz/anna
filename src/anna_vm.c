@@ -287,7 +287,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
     stack = root_fun->native(stack, entry);
-
+    
     OP_LEAVE(stack);	
 
   ANNA_LAB_CONSTANT:

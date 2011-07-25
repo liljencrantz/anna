@@ -8,5 +8,6 @@ def main()
     delta2 := Delta(minute:1);
     print(delta + delta2, "\n");
     print(d+delta + delta2, "\n");
+    print((d+delta + delta2)-d, "\n");
+    print(Date(2000,2,3),"\n");
 }
-

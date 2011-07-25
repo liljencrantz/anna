@@ -20,10 +20,12 @@ struct anna_node *anna_macro_invoke(
     anna_object_t *wrapped_node = anna_node_wrap((anna_node_t *)node);
     anna_object_t *res = anna_vm_run(macro->wrapper, 1, &wrapped_node);
     anna_node_t *nn = anna_node_unwrap(res);
+    
     if(!nn)
     {
 	nn = (anna_node_t *)anna_node_create_null(&node->location);
     }
+    
     return nn;
 }
 

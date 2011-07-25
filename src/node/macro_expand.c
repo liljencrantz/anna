@@ -65,6 +65,7 @@ static anna_node_t *anna_node_macro_expand_each(
 	    
 	    if(macro)
 	    {
+		anna_node_t *ggg = anna_node_clone_deep(this);
 		anna_node_t *res = anna_macro_invoke(macro, this2);
 		return anna_node_macro_expand(res, stack);
 	    }
@@ -98,8 +99,10 @@ static anna_node_t *anna_node_macro_expand_each(
 	    {
 		int i;
 		for(i=0;i<f->body->child_count; i++)
+		{
 		    f->body->child[i] = anna_node_macro_expand(
 			f->body->child[i], stack);
+		}
 		
 		if(!f->return_type)
 		{

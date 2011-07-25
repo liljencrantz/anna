@@ -376,6 +376,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"struct");
     anna_module_bootstrap_macro(L"enum");
     anna_module_bootstrap_macro(L"error");
+    anna_module_bootstrap_macro(L"expandCode");
 
     /*
       Load all non-native libraries

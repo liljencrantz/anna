@@ -69,9 +69,14 @@ void anna_node_wrapper_add_method(anna_function_t *fun)
 
 ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
 {
+    if((param[1] == null_entry) || (param[2] == null_entry))
+    {
+	return null_entry;
+    }
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *tree = anna_node_unwrap(this);
     anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(anna_as_obj(param[1]));
+    
     anna_node_t *new = anna_node_unwrap(anna_as_obj(param[2]));
     anna_node_t *res = anna_node_replace(anna_node_clone_deep(tree), old, new);
     return anna_from_obj(anna_node_wrap(res));
