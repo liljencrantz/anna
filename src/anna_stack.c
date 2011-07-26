@@ -304,6 +304,12 @@ anna_entry_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
     anna_use_t *use = anna_stack_search_use(stack, name);
     if(use)
     {
+	anna_member_t *memb = anna_type_member_info_get(use->type, name);
+	if(memb->is_static)
+	{
+	    return use->type->static_member[memb->offset];
+	}
+	debug(D_CRITICAL, L"Called stack_get on variable %ls, but it is accessed through use clause\n", name);
 	CRASH;
     }
 
@@ -386,6 +392,7 @@ int anna_stack_get_flag(anna_stack_template_t *stack, wchar_t *name)
     anna_use_t *use = anna_stack_search_use(stack, name);
     if(use)
     {
+	debug(D_CRITICAL, L"Called stack_get_flag on variable %ls, but it is accessed through use clause\n", name);
 	CRASH;
     }
 

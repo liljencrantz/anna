@@ -26,7 +26,7 @@ type Delta
 	Int microsecond=0)
     {
 	expandCode(
-	    this.%name = %name or 0,
+	    this.%name = %name,
 	    name: [year, month, day, hour, minute, second, microsecond]);
     }
 

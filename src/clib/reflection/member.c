@@ -32,20 +32,6 @@ ANNA_VM_NATIVE(anna_member_i_get_property, 1)
     return m->is_property?anna_from_int(1):null_entry;
 }
 
-ANNA_VM_NATIVE(anna_member_i_get_constant, 1)
-{
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_member_t *m = anna_member_unwrap(this);
-    anna_type_t *type = anna_member_of(this);
-    anna_stack_template_t *frame = type->stack;
-    if(!anna_stack_get(frame, m->name))
-    {
-	return null_entry;
-    }
-    
-    return anna_stack_get_flag(frame, m->name) & ANNA_STACK_READONLY ? anna_from_int(1): null_entry;
-}
-
 ANNA_VM_NATIVE(anna_member_i_get_type, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -59,6 +45,11 @@ ANNA_VM_NATIVE(anna_member_i_value, 2)
     anna_object_t *obj = anna_as_obj(param[1]);
     anna_member_t *memb = anna_member_unwrap(memb_obj);
     anna_type_t *type = anna_member_of(memb_obj);
+    if(memb->type == null_type)
+    {
+	return null_entry;
+    }
+        
     if(memb->is_static)
     {
 	return type->static_member[memb->offset];
@@ -123,14 +114,6 @@ static void anna_member_type_create()
 	0,
 	L"Is this member a property?");
 
-    anna_member_create_native_property(
-	member_type,
-	anna_mid_get(L"isConstant"),
-	int_type,
-	&anna_member_i_get_constant,
-	0,
-	L"Is this member constant?");
-    
     anna_member_create_native_property(
 	member_type,
 	anna_mid_get(L"type"),

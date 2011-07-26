@@ -160,7 +160,6 @@ static int anna_abides_fault_count_internal(
 	    continue;
 	if(wcscmp(members[i], L"__del__") == 0)
 	    continue;
-
 	anna_member_t *c_memb = anna_member_get(
 	    contender, 
 	    anna_mid_get(members[i]));	

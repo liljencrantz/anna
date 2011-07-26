@@ -570,7 +570,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		
 		anna_vmstack_push_object(stack, method);
 		anna_vmstack_push_object(stack, obj);
-		stack->code += sizeof(*op);		    
+		stack->code += sizeof(*op);
 		stack = fun->native(stack, method);
 	    }
 	}

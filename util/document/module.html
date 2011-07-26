@@ -12,7 +12,7 @@
     <% 
        module.__type__.__member__.each(mem)
        {
-	    if(mem.isConstant and mem.isStatic)
+	    if(mem.isStatic)
 	    {
   	        val := mem.value(?);
 		switch(val)

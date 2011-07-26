@@ -1,5 +1,40 @@
 
 macro expandCode(node)
+(
+    documentation(
+	"
+    The expandCode macro is used to create multiple instances of the
+    same basic piece of code but with slight variations. One example
+    of where this is useful is the constructor for date.Delta, where
+    we need to assign every argument to the equivalent member:",
+
+        code:"
+    this.year = year;
+    this.month = month;
+    ...
+    this.microsecond = microsecond;",
+
+    "The expandCode macro allows us to write the same thing in a less
+    verbose way.",
+
+        code:"
+    expandCode(
+	this.%name = %name,
+	name: [year, ..., microsecond]);",
+    
+        "
+    During the compilation pass the expandCode will expand the above
+    code into statements identical to the ones given above. Using
+    expandCode not only allows you to write less code, because you're
+    not repeating yourself, you can quickly change the code in a
+    single place.",
+
+        "
+    Code equivalent to code written using expandCode can usually be
+    created using the reflection api, but such cde offers no compile time type
+    safety and is significantly more verbose.
+")
+)
 {
     if(node.count < 2)
     {
@@ -46,3 +81,4 @@ macro expandCode(node)
     //  print(res, "\n");
     return res;
 }
+
