@@ -25,5 +25,5 @@ def escape(String str...)
 	    }
 	}
     };
-    res;
+    res.freeze;
 }

@@ -361,6 +361,8 @@ void anna_alloc_mark_type(anna_type_t *type)
 	anna_alloc_mark_type(memb->type);
 	if(memb->attribute)
 	    anna_alloc_mark_node((anna_node_t *)memb->attribute);
+	if(memb->wrapper)
+	    anna_alloc_mark_object(memb->wrapper);
     }
 
     if(type->stack_macro)
@@ -417,7 +419,6 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	return;
     }
 
-//    if(obj->type->mid_identifier[ANNA_MID_LIST_PAYLOAD])
     if(obj->flags & ANNA_OBJECT_LIST)
     {
 	/* This object is a list. Mark all list items */
@@ -430,7 +431,7 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	}
     }
     
-    if(obj->type->mid_identifier[ANNA_MID_HASH_PAYLOAD])
+    if(obj->flags & ANNA_OBJECT_HASH)
     {
 	anna_hash_mark(obj);
     }    
@@ -552,6 +553,7 @@ static void anna_alloc_free(void *obj)
 	    }
 	    anna_alloc_count -= o->type->object_size;
 	    anna_slab_free(obj, o->type->object_size);
+	    
 	    break;
 	}
 	case ANNA_TYPE:
@@ -705,8 +707,6 @@ void anna_gc(anna_vmstack_t *stack)
     if(anna_alloc_gc_block_counter)
 	return;
 
-    
-    
     anna_alloc_gc_block();
     size_t i;
 

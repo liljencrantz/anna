@@ -84,7 +84,7 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value
 {
     size_t size = anna_list_get_count(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
-//    wprintf(L"Set el %d in list of %d elements\n", pos, size);
+    //wprintf(L"Set el %d in list of %d elements\n", pos, size);
     if(pos < 0)
     {
 	return;

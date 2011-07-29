@@ -33,8 +33,7 @@ void anna_object_print(anna_object_t *obj)
 }
 
 anna_object_t *anna_object_create(anna_type_t *type) {
-    assert(type);
-    anna_object_t *result = 
+     anna_object_t *result = 
 	anna_object_create_raw(type->object_size);
     result->type = type;
     int i;
@@ -52,6 +51,5 @@ anna_object_t *anna_object_create_raw(size_t sz)
 {
     anna_object_t *result = 
 	anna_alloc_object(sz);
-    
     return result;
 }

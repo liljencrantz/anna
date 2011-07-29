@@ -1,6 +1,7 @@
-def Int __cmp__(Range this, Object other)
+def Int range__cmp__(Range this, Object other)
 (
     target(Range), 
+    name(__cmp__),
 )
 {
     r := other as Range;
@@ -25,17 +26,19 @@ def Int __cmp__(Range this, Object other)
     return 0;
 }
 
-def hashCode(Range this)
+def rangeHashCode(Range this)
 (
     target(Range), 
+    name(hashCode)
 )
 {
     return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
 }
 
-def toString(Range this)
+def rangeToString(Range this)
 (
     target(Range),
+    name(toString)
 )
 {
     if(this.isOpen)

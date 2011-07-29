@@ -584,6 +584,7 @@ anna_object_t *anna_hash_create(anna_type_t *spec1, anna_type_t *spec2)
 {
     anna_object_t *obj= anna_object_create(anna_hash_type_get(spec1, spec2));
     ahi_init(ahi_unwrap(obj));    
+    obj->flags |= ANNA_OBJECT_HASH;
     return obj;
 }
 
@@ -591,6 +592,7 @@ anna_object_t *anna_hash_create2(anna_type_t *hash_type)
 {
     anna_object_t *obj= anna_object_create(hash_type);
     ahi_init(ahi_unwrap(obj));    
+    obj->flags |= ANNA_OBJECT_HASH;
     return obj;
 }
 
@@ -683,6 +685,7 @@ static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
     anna_object_t *this = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_entry(stack);
     ahi_init(ahi_unwrap(this));
+    this->flags |= ANNA_OBJECT_HASH;
     
     if(likely(list != null_object))
     {
@@ -1224,6 +1227,7 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 void anna_hash_mark(anna_object_t *obj)
 {
     anna_hash_t *this = ahi_unwrap(obj);
+//    wprintf(L"HASHMARK %ls %d %d %d %d\n", obj->type->name, obj, null_entry, this->mask, this->table);
     int i;
     for(i=0; i<=this->mask; i++)
     {

@@ -1,6 +1,58 @@
 use(io);
 use(reflection);
+
 expand(template);
+
+var io.File baseDir;
+
+type DocumentationData
+{
+    var Type object;
+    var DocumentationData parent;
+    var Int done;
+
+    def __init__(Type object, DocumentationData parent)
+    {
+	this.object = object;
+	this.parent = parent;
+	done = ?;
+    }
+
+    def String link(DocumentationData from)
+    {
+	if(!from)
+	{
+	    return ?;
+	}
+        res := "".thaw;
+	(0..from.steps).each(i){ res ~= "../" }
+	return res ~ path() ~ ".html";
+    }
+
+    def String path()
+    {
+	return ((parent.path() ~ "/") or "") ~ object.__name__;
+    }
+
+    def File fileGetter()
+    {
+	directory ~ (object.__name__ ~ ".html");
+    }
+    var File file (property(fileGetter));
+
+    def File directoryGetter()
+    {
+	if(parent) {parent.directory ~ parent.object.__name__} else {baseDir}
+    }
+    var File directory (property(directoryGetter));
+    
+    def Int stepsGetter()
+    {
+	return (parent.steps + 1) or 0;
+    }
+    var Int steps (property(stepsGetter));
+    
+}
 
 type DocumentationExtractor
 (
@@ -13,14 +65,12 @@ often used code paths, which makes it useful for regression testing.")
 )
 {
 
-    var io.File baseDir (internal);
-    var HashMap«Object, String» pathLookup;
+    var HashMap«Type, DocumentationData» path;
 
     def __init__()
     {
-	baseDir = io.File("documentation");
 	baseDir.makeDirectory();
-	pathLookup = HashMap«Object, String»();
+	path = HashMap«Type, String»();
     }
     
     def extractDocumentation(parser.Call attr)
@@ -46,10 +96,9 @@ often used code paths, which makes it useful for regression testing.")
 	return res;
     }
     
-    def String getLink(Type typ)
+    def String getLink(Type from, Type to)
     {
-	"<a href='../%'>%</a>" % [pathLookup[typ], typ.__name__];
-
+       "<a href='%'>%</a>" % [path[to].link(path[from]), to.__name__];
     }
 
     def String getSignature(reflection.Member mem)
@@ -62,13 +111,13 @@ often used code paths, which makes it useful for regression testing.")
 	      argv := ", ".join(
 		  fun.inputType.map(idx, t)
 		  {
-		      "% %" % [getLink(t), fun.inputName[idx]]
+		      "% %" % [getLink(mem.memberOf, t), fun.inputName[idx]]
 		  });
-		"def % % (%)" % [getLink(fun.outputType), fun.__name__, argv];
+		"def % <em>%</em> (%);" % [getLink(mem.memberOf, fun.outputType), fun.__name__, argv];
 	    }
 	    default
 	    {
-		"var % %" % [getLink(mem.type), mem.__name__];
+		"var % <em>%</em>;" % [getLink(mem.memberOf, mem.type), mem.__name__];
 	    }
 	}
     }
@@ -89,41 +138,62 @@ often used code paths, which makes it useful for regression testing.")
         file := dir ~ (type.__name__ ~ ".html");
 	file.writeFile(template("util/document/type.html"));
     }
-    
-    def documentModule(Object module)
-    {
-        file := baseDir ~ (module.__type__.__name__ ~ ".html");
-        dir  := baseDir ~ module.__type__.__name__;
-	dir.makeDirectory();
 
-	module.__type__.__member__.each(mem)
+    def document(Object module)
+    {
+	lookup(module.__type__, ?);
+	this.writeFile(module.__type__);
+    }
+
+    def lookup(Type module, Object parent)
+    {
+	if(module in path)
+	{
+	    return;
+	}
+        parentData := path[parent];
+
+	path[module] = DocumentationData(module, parentData);
+	path[module].directory.makeDirectory();
+
+	module.__member__.each(mem)
 	{
 	    if(mem.isStatic)
 	    {
   	        val := mem.value(?);
-		switch(val)
+		if(val.__type__.isModule)
 		{
-		    case(t as Type)
-		    {
-			pathLookup[t] = module.__type__.__name__ ~ "/" ~ t.__name__ ~ ".html";
-		    }
+		    lookup(module: val.__type__, parent: module);
+		}
+		if(val as Type and module.isModule)
+		{
+		    lookup(module: val as Type, parent: module);
 		}
 	    }
 	}
-	
-	file.writeFile(template("util/document/module.html"));
+    }
 
-	module.__type__.__member__.each(mem)
+    def writeFile(Type module)
+    {
+	if(!(module in path)){ return }
+        data := path[module];
+	if(data.done){return}
+	data.done=1;
+	
+	data.file.writeFile(template("util/document/module.html"));
+
+	module.__member__.each(mem)
 	{
 	    if(mem.isStatic)
 	    {
   	        val := mem.value(?);
-		switch(val)
+		if(val.__type__.isModule)
 		{
-		    case(t as Type)
-		    {
-			documentType(t, dir);
-		    }
+		    writeFile(val.__type__);
+		}
+		if(val as Type)
+		{
+		    writeFile(val as Type);
 		}
 	    }
 	}
@@ -132,6 +202,7 @@ often used code paths, which makes it useful for regression testing.")
 
 def main()
 {
+    baseDir = io.File("documentation");
     doc := DocumentationExtractor();
-    doc.documentModule(lang);
+    doc.document(global);
 }

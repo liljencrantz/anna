@@ -14,6 +14,7 @@
 #include "anna_vm.h"
 #include "anna_member.h"
 #include "anna_mid.h"
+#include "anna_type.h"
 
 #include "clib/lang/list.h"
 #include "clib/lang/string.h"

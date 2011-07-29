@@ -6,5 +6,6 @@ macro propertyAttribute(node)
 
     node[1] = Identifier(name, identifier(name.name));
     
+    
 }
 

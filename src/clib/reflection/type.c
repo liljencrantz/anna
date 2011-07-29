@@ -6,24 +6,38 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
     return anna_from_obj(anna_string_create(wcslen(type->name), type->name));
 }
 
+ANNA_VM_NATIVE(anna_type_is_module, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_type_t *type = anna_type_unwrap(this);
+    return anna_entry_get_addr_static(type, ANNA_MID_STACK_TYPE_PAYLOAD) ? anna_from_int(1) : null_entry;
+}
+
 ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *lst = anna_list_create_imutable(member_type);
     int i;
     anna_type_t *type = anna_type_unwrap(this);
-
+    if(type == null_type)
+    {
+	return anna_from_obj(lst);
+    }
+    
     wchar_t **member_name = malloc(sizeof(wchar_t *)*hash_get_count(&type->name_identifier));
     anna_type_get_member_names(type, member_name);
     for(i=0;i<hash_get_count(&type->name_identifier); i++)
     {
-	anna_list_add(
-	    lst,
-	    anna_from_obj(anna_member_wrap(
+	anna_object_t *memb_obj = anna_member_wrap(
 		type,
 		anna_type_member_info_get(
 		    type,
-		    member_name[i]))));	
+		    member_name[i]));	
+	
+	anna_list_add(
+	    lst,
+	    anna_from_obj(memb_obj));
+	
     }
     
     return anna_from_obj(lst);
@@ -90,6 +104,9 @@ static void anna_type_type_create()
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"__name__"),
 	string_type, &anna_type_to_string, 0, L"The name of this type.");
+    anna_member_create_native_property(
+	type_type, anna_mid_get(L"isModule"),
+	int_type, &anna_type_is_module, 0, L"Is true if this type represents a module.");
     anna_member_create_native_property(
 	type_type,
 	anna_mid_get(L"__member__"),

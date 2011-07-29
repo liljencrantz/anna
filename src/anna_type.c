@@ -393,6 +393,10 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
+    if(wcscmp(res->name, L"lang")==0)
+    {
+//	CRASH;
+    }
 
     if(orig == object_type && !anna_type_object_created)
     {
@@ -698,7 +702,6 @@ void anna_type_set_stack(
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type)
 {
-
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
 	return 0;
     
@@ -765,7 +768,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 		{
 		    anna_function_setup_body(fun);
 		}
-	    }	    
+	    }
 	}
     }
     

@@ -19,9 +19,9 @@ COV_FLAGS := #--coverage
 PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
 
 # CFLAGS_NOWARN consists of all cflags not related to warnings
-CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1		\
--D_XOPEN_SOURCE=500 -D_POSIX_C_SOURCE=199309L $(PROF_FLAGS)	\
-$(COV_FLAGS) -I src -I .
+CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1			\
+-D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500	\
+-D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I src -I .
 
 # Full cflags, including warnings 
 CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\

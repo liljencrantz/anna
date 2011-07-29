@@ -37,11 +37,11 @@ ANNA_VM_NATIVE(anna_char_i_get_lower, 1)
 
 ANNA_VM_NATIVE(anna_char_cmp, 2)
 {
-    if(unlikely(anna_is_obj(param[1]) && anna_as_obj(param[1])->type != char_type))
+    if(anna_is_char(param[1]) || anna_as_obj(param[1])->type == char_type)
     {
-	return null_entry;
+	return anna_from_int(anna_as_char(param[0]) - anna_as_char(param[1]));
     }
-    return anna_from_int(anna_as_char(param[0]) - anna_as_char(param[1]));
+    return null_entry;
 }
 
 ANNA_VM_NATIVE(anna_char_to_string, 1)

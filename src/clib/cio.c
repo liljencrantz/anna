@@ -23,6 +23,7 @@
 #include "anna_member.h"
 #include "anna_mid.h"
 #include "anna_function.h"
+#include "anna_type.h"
 
 #include "clib/clib.h"
 #include "clib/lang/string.h"

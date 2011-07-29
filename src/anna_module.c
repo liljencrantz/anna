@@ -84,6 +84,7 @@ static anna_stack_template_t *anna_module(
     }    
     
     res = anna_stack_create(parent);
+    anna_stack_name(res, name);
     obj = anna_stack_wrap(res);
     if(name)
     {
@@ -238,8 +239,11 @@ static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar
 	if((!target_node || target_node->node_type != ANNA_NODE_IDENTIFIER) ||
 	   (name_node && name_node->node_type != ANNA_NODE_IDENTIFIER))
 	{
-	    anna_error((anna_node_t *)fun->definition, L"Invalid import");
-	    return;
+	    /*
+	      Skip monkeypatch elements without valid targets. These
+	      are hopefully just internal helper functions.
+	     */
+	    continue;
 	}
 	
 	anna_node_identifier_t *target_id = (anna_node_identifier_t *)target_node;
@@ -348,7 +352,8 @@ void anna_module_init()
 	g_obj->type,
 	anna_from_obj(g_obj),
 	ANNA_STACK_READONLY);
-
+    anna_type_setup_interface(g_obj->type);
+    
     /*
       Load a bunch of built in non-native macros and monkey patch some
       of the native types with additional non-native methods.
@@ -456,6 +461,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     {
         return;
     }
+
 //    debug_level=0;
     int i;
 
@@ -612,6 +618,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     anna_node_each((anna_node_t *)module_node, &anna_module_compile, 0);
     
     debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
+    anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
 }
 
 anna_object_t *anna_module_load(wchar_t *module_name)

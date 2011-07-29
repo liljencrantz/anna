@@ -1,13 +1,8 @@
 def main()
 {
-    use(date);
-    d := date.Date();
-    d2 := Date();
-    print(d, ' ', d2, "\n");
-    delta := Delta(day:1);
-    delta2 := Delta(minute:1);
-    print(delta + delta2, "\n");
-    print(d+delta + delta2, "\n");
-    print((d+delta + delta2)-d, "\n");
-    print(Date(2000,2,3),"\n");
+    print(lang,"\n");
+    print(global,"\n");
+    print(global as Object,"\n");
+    print(lang.__type__,"\n");
+    print(global.__type__,"\n");
 }

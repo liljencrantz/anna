@@ -404,7 +404,10 @@ void anna_function_setup_interface(
     }
     
     anna_function_setup_wrapper(f);
-    
+    if(f->stack_template)
+    {
+	anna_type_setup_interface(anna_stack_wrap(f->stack_template)->type);    
+    }
 }
 
 void anna_function_setup_body(
@@ -413,7 +416,7 @@ void anna_function_setup_body(
     if(f->flags & ANNA_FUNCTION_PREPARED_BODY)
     {
 	return;
-    }    
+    }
     f->flags |= ANNA_FUNCTION_PREPARED_BODY;
 //    wprintf(L"Setup body of %ls\n",f->name);
     if(f->body)

@@ -885,7 +885,7 @@ void anna_vm_compile(
 	return;
     }
 #if 0
-    if(wcscmp(fun->name, L"main")==0)
+    if(wcscmp(fun->name, L"__format__List__")==0)
 	anna_node_print(5, fun->body);
 #endif
 //    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
@@ -945,7 +945,7 @@ void anna_vm_compile(
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
 #if 0
-    if(wcscmp(fun->name, L"main")==0)
+    if(wcscmp(fun->name, L"__format__List__")==0)
 	anna_bc_print(fun->code);
 #endif
 }

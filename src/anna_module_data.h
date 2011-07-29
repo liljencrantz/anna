@@ -1,3 +1,8 @@
+/** 
+    This file contains a convenience macro, useful for creating
+    interdependent multiple interdependent native modules. 
+*/
+
 #ifndef ANNA_MODULE_DATA_H
 #define ANNA_MODULE_DATA_H
 
@@ -24,15 +29,15 @@ typedef struct
 
 
 /**
-   Create all the specified modules in the specified stack 
+   Create all the specified submodules in the specified parent module
  */
-#define anna_module_data_create(module_data, stack)			\
+#define anna_module_data_create(module_data, parent)			\
     {									\
 	int i;								\
 	anna_stack_template_t *substack[sizeof(modules)/sizeof(*modules)]; \
 	for(i=0; i<sizeof(modules)/sizeof(*modules); i++)		\
 	{								\
-	    substack[i] = anna_stack_create(stack);			\
+	    substack[i] = anna_stack_create(parent);			\
 	    anna_stack_name(substack[i], module_data[i].name);		\
 	    substack[i]->flags |= ANNA_STACK_NAMESPACE;			\
 	}								\
@@ -45,11 +50,12 @@ typedef struct
 	{								\
 	    modules[i].loader(substack[i]);				\
 	    anna_stack_declare(						\
-		stack,							\
+		parent,							\
 		modules[i].name,					\
 		anna_stack_wrap(substack[i])->type,			\
 		anna_from_obj(anna_stack_wrap(substack[i])),		\
 		ANNA_STACK_READONLY);					\
+	    anna_type_setup_interface(anna_stack_wrap(substack[i])->type); \
 	}								\
     }
 

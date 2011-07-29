@@ -39,6 +39,13 @@ ANNA_VM_NATIVE(anna_member_i_get_type, 1)
     return anna_from_obj(anna_type_wrap(m->type));
 }
 
+ANNA_VM_NATIVE(anna_member_i_get_member_of, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_type_t *type = anna_member_of(this);
+    return anna_from_obj(anna_type_wrap(type));
+}
+
 ANNA_VM_NATIVE(anna_member_i_value, 2)
 {
     anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
@@ -119,6 +126,14 @@ static void anna_member_type_create()
 	anna_mid_get(L"type"),
 	type_type,
 	&anna_member_i_get_type,
+	0,
+	L"The type of this member.");
+    
+    anna_member_create_native_property(
+	member_type,
+	anna_mid_get(L"memberOf"),
+	type_type,
+	&anna_member_i_get_member_of,
 	0,
 	L"The type of this member.");
     

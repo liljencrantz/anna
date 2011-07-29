@@ -37,6 +37,7 @@ typedef ssize_t mid_t;
 #define ANNA_USED 32
 
 #define ANNA_OBJECT_LIST 512
+#define ANNA_OBJECT_HASH 1024
 
 #define ANNA_VMSTACK_STATIC 512
 #define ANNA_VMSTACK_BREAK 1024

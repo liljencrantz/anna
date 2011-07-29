@@ -25,6 +25,7 @@
 #include "anna_mid.h"
 
 #define OP_LEAVE(stack) goto *jump_label[(int)*(stack)->code] 
+
 #define OP_ENTER(stack) 
 
 char *anna_vmstack_static_ptr;
@@ -49,7 +50,9 @@ static inline anna_object_t *anna_vm_trampoline(
 {
     anna_object_t *orig = fun->wrapper;
     anna_object_t *res = anna_object_create(orig->type);
+
     size_t payload_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD]->offset;
+
     size_t stack_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
 
     memcpy(&res->member[payload_offset],
@@ -318,6 +321,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_CALL:
     {
 	OP_ENTER(stack);	
+
 	if(is_root)
 	{
 	    anna_alloc_check_gc(stack);
@@ -334,7 +338,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    wprintf(
 		L"Error: Tried to call null pointer at offset %d of function %ls\n", 
 		stack->code - stack->function->code, stack->function->name);
-	
+	    
 	    CRASH;
 	}
 	
@@ -363,6 +367,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    stack->code += sizeof(*op);
 	    stack = fun->native(stack, wrapped);
 	}
+	
 	OP_LEAVE(stack);	
     }
     
@@ -725,6 +730,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_push_object(stack, obj);
 		
 	stack->code += sizeof(*op);
+
 	OP_LEAVE(stack);	
     }
 	    
@@ -917,7 +923,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	OP_ENTER(stack);	
 	stack = anna_frame_to_heap(stack);
 	anna_object_t *base = anna_vmstack_pop_object_fast(stack);
-	anna_vmstack_push_object(stack, anna_vm_trampoline(anna_function_unwrap(base), stack));
+	anna_object_t *tramp = anna_vm_trampoline(anna_function_unwrap(base), stack);
+	anna_vmstack_push_object(stack, tramp);
 	
 	stack->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);	
@@ -1179,6 +1186,12 @@ void anna_bc_print(char *code)
 		case ANNA_INSTR_TRAMPOLENE:
 		{
 		    wprintf(L"Create trampolene\n\n");
+		    break;
+		}
+	    
+		case ANNA_INSTR_CHECK_BREAK:
+		{
+		    wprintf(L"Check break flag to detect loop termination\n\n");
 		    break;
 		}
 	    
