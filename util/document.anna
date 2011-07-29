@@ -29,6 +29,16 @@ type DocumentationData
 	return res ~ path() ~ ".html";
     }
 
+    def String linkPath(DocumentationData from = ?)
+    {
+        prev := (parent.linkPath(from or this) ~ ".") or "";
+	return prev ~ if(from) {
+	    "<a href='%'>%</a>" % [link(from), object.__name__];
+	} else {
+	    "<em>%</em>" % [object.__name__]
+	}
+    }
+
     def String path()
     {
 	return ((parent.path() ~ "/") or "") ~ object.__name__;

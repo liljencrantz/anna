@@ -5,12 +5,11 @@
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
   - document attribute for modules
+  - document attribute for properties
+  - Hide internal elements by default
+  - Inherit documentation attribute
   - Better module templates
-  - Correct path for links
-  - Iterate over global namespace
-  - Search functionality
-  - Show/hide different elements
-  - expand/minimize docs
+  - Handle complex documentation attributes, e.g. named stuff
 * Introduction
 * Check that node compare supports all ast node types
 * More validation:
@@ -26,6 +25,8 @@
   - document attribute for memebers and types
   - HTML templates
   - File output working
+  - Iterate over global namespace
+  - Correct path for links
 * Inheritance and method overloading fully working
 * Static member access fully working 
 * Add memory overhead of Ints and Floats to GC estimates
@@ -37,6 +38,10 @@
 * Usable Date type
 
 2.0 RELEASE CRITERIA:
+* HTML api documentation extractor
+  - Search functionality
+  - Show/hide different elements
+  - expand/minimize docs
 * Regexp library
 * Query library (SQL Alchemy/Linq/etc. replacement)
 * Live debugger library
