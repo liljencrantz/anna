@@ -63,6 +63,18 @@ void anna_char_type_create()
 	}
     ;
 
+    anna_type_document(
+	char_type,
+	L"The Char type is the basic character type of the Anna language.");
+    
+    anna_type_document(
+	char_type,
+	L"Anna Char objects are implemented using wide characters, e.g. the wchar_t type in C. This means that every character takes the same amount of memory. Nearly all Char values, (those with 30 or fewer bits used), are stored directly on the stack and use no heap memory at all.");
+
+    anna_type_document(
+	char_type,
+	L"Anna Char objects are imutable, meaning their value never changes.");
+
     anna_member_create(char_type, ANNA_MID_CHAR_PAYLOAD, 0, null_type);
 
     anna_member_create_native_property(

@@ -929,11 +929,15 @@ void anna_string_type_create()
     
     anna_type_document(
 	mutable_string_type,
-	L"In order to obtain an imutable (unchangable) version of a MutableString, use the freeze property.");
+	L"In order to obtain an imutable (unchangable) version of a MutableString, use the freeze property. On ImutableString, this property is a returns the original string.");
     
     anna_type_document(
 	imutable_string_type,
 	L"The ImutableString type is type representing an imutable (unchanging) character string.");
+    
+    anna_type_document(
+	imutable_string_type,
+	L"In order to obtain a mutable (changable) version of an ImutableString, use the thaw property. On MutableString, this property is a returns the original string.");
     
     anna_type_document(
 	imutable_string_type,

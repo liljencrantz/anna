@@ -307,7 +307,11 @@ void anna_int_type_create()
     
     anna_type_document(
 	int_type,
-	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, those with 30 or fewer bits used, are stored directly on the stack and use no head memory at all. Larger integers are implemented using the GNU MP library.");    
+	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, those with 30 or fewer bits used, are stored directly on the stack and use no heap memory at all. Larger integers are implemented using the GNU MP library.");    
+
+    anna_type_document(
+	int_type,
+	L"Anna Int objects are imutable, meaning their value never changes.");
 
     anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     

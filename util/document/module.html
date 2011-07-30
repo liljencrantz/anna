@@ -5,6 +5,8 @@
   <body>
     
     <h1><%! data.linkPath() %></h1>
+
+    <%! extractDocumentation(module.__attribute__) %>
     
     <h2>Submodules</h2>
     <ul>
@@ -60,13 +62,10 @@
     %>
     </ul>
 
-
     <% module.__member__.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type)}.each(mem){ %>    
     <hr>
     <%! documentMember(mem) %>
     <% } %>
-
-
 
   </body>
 </html>

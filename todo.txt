@@ -18,6 +18,7 @@
   - Check argument types to function calls better...
 * Types, Stacks etc. should be hashable
 * Access attributes of variables and properties
+* List.sort
 
 1.0 RELEASE CRITERIA (Done):
 * HTML api documentation extractor
