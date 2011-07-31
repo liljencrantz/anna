@@ -613,6 +613,7 @@ flags);
 	}
 	
 	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_STATIC_MEMBER_GET:
 	{
 //	    wprintf(L"MEMGET\n\n");
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
@@ -674,6 +675,7 @@ flags);
 	    
 	    anna_type_t *type = node2->object->return_type;
 	    anna_member_t *m = type->mid_identifier[node2->mid];
+	    
 	    if(m->is_static)
 	    {
 		anna_vm_null(ptr, ANNA_INSTR_TYPE_OF, flags);
@@ -696,6 +698,7 @@ flags);
 	}
 	
 	case ANNA_NODE_MEMBER_SET:
+	case ANNA_NODE_STATIC_MEMBER_SET:
 	{
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    if(node2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
@@ -740,6 +743,7 @@ flags);
 	}
 	
 	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    

@@ -215,4 +215,6 @@ def main()
     baseDir = io.File("documentation");
     doc := DocumentationExtractor();
     doc.document(global);
+    File("documentation/js").makeDirectory();
+    File("util/document(jquery.js").copyTo(File("documentation/js/jquery.js"));
 }

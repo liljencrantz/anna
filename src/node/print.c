@@ -38,9 +38,12 @@ static int is_simple(anna_node_call_t *call, int max_items)
 	     (ct==ANNA_NODE_DUMMY) ||
 	     (ct==ANNA_NODE_CLOSURE) ||
 	     (ct==ANNA_NODE_MEMBER_CALL) ||
+	     (ct==ANNA_NODE_STATIC_MEMBER_CALL) ||
 	     (ct==ANNA_NODE_MEMBER_GET) ||
-	     (ct==ANNA_NODE_MEMBER_BIND) ||
 	     (ct==ANNA_NODE_MEMBER_SET) ||
+	     (ct==ANNA_NODE_STATIC_MEMBER_GET) ||
+	     (ct==ANNA_NODE_STATIC_MEMBER_SET) ||
+	     (ct==ANNA_NODE_MEMBER_BIND) ||
 	     (ct==ANNA_NODE_IF) ||
 	     (ct==ANNA_NODE_NULL)))
 	    return 0;	
@@ -250,6 +253,16 @@ static void anna_node_print_internal(
 	    break;
 	}
 
+	case ANNA_NODE_STATIC_MEMBER_GET:
+	{
+	    anna_indent(sb,indentation);
+	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
+	    sb_printf(sb,L"*__staticMemberGet__(\n");
+	    anna_node_print_internal(sb,this2->object, indentation+1);
+	    sb_printf(sb,L"; %ls)", anna_mid_get_reverse(this2->mid));
+	    break;
+	}
+
 	case ANNA_NODE_DECLARE:
 	{
 	    anna_indent(sb,indentation);
@@ -283,6 +296,21 @@ static void anna_node_print_internal(
 	    anna_indent(sb,indentation);
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    sb_printf(sb,L"__memberSet__(\n");
+	    anna_node_print_internal(sb,this2->object, indentation+1);
+	    sb_printf(sb,L";\n");
+	    anna_indent(sb,indentation+1);
+	    sb_printf(sb,L"%ls;\n", anna_mid_get_reverse(this2->mid));
+	    anna_node_print_internal(sb,this2->value, indentation+1);
+	    sb_printf(sb,L")");
+
+	    break;
+	}
+
+	case ANNA_NODE_STATIC_MEMBER_SET:
+	{
+	    anna_indent(sb,indentation);
+	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
+	    sb_printf(sb,L"__staticMemberSet__(\n");
 	    anna_node_print_internal(sb,this2->object, indentation+1);
 	    sb_printf(sb,L";\n");
 	    anna_indent(sb,indentation+1);
@@ -372,11 +400,16 @@ static void anna_node_print_internal(
 	}
 	
 	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;
 	    anna_indent(sb,indentation);
-	    sb_printf(sb,L"*__memberGet__(\n");
+	    sb_printf(
+		sb, 
+		(this->node_type == ANNA_NODE_MEMBER_CALL) ? 
+		L"*__memberGet__(\n" :
+		L"*__staticMemberGet__(\n");
 	    anna_node_print_internal(sb,this2->object, indentation+1);
 	    sb_printf(sb,L",\n");
 	    anna_indent(sb,indentation+1);

@@ -7,6 +7,6 @@ def main()
 )
 {
     list := [1,2,3,4];
-    MutableList.push(list, 5);
+    MutableList::push(list, 5);
     print(list, "\n");
 }

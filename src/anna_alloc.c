@@ -204,6 +204,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	
 	
 	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    int i;
@@ -243,6 +244,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 
 	case ANNA_NODE_MEMBER_BIND:
 	case ANNA_NODE_MEMBER_GET:
+	case ANNA_NODE_STATIC_MEMBER_GET:
 	{
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
 	    anna_alloc_mark_node(c->object);
@@ -250,6 +252,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	}
 
 	case ANNA_NODE_MEMBER_SET:
+	case ANNA_NODE_STATIC_MEMBER_SET:
 	{
 	    anna_node_member_access_t *g = (anna_node_member_access_t *)this;
 	    anna_alloc_mark_node(g->object);

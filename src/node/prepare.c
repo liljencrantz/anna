@@ -117,8 +117,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    
     anna_type_set_stack(type, n->stack);
     anna_type_setup_interface(type);
-	    
-    if(type == type_type && !anna_type_mid_internal(n->mid))
+
+    if(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL)
     {
 	type = anna_node_resolve_to_type(n->object, stack);
 	n->access_type = ANNA_NODE_ACCESS_STATIC_MEMBER;
@@ -289,15 +289,6 @@ static anna_node_t *anna_node_calculate_type_internal(
 
 	case ANNA_NODE_IDENTIFIER:
 	{
-/*
-	    anna_node_t *tmp = resolve_identifiers_each(
-		this, 0);
-	    if(tmp != this)
-	    {
-		anna_node_calculate_type(tmp);
-		break;
-	    }
-*/	    
 	    anna_node_identifier_t *id = (anna_node_identifier_t *)this;
 	    anna_type_t *t = anna_stack_get_type(stack, id->name);
 	    
@@ -452,6 +443,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	}
 	
 	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{	    
 	    this = anna_node_calculate_type_internal_call((anna_node_call_t *)this);
 	    break;
@@ -490,7 +482,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    {
 		anna_node_member_access_t *this2 = 
 		    anna_node_create_member_set(
-			0, use->node, anna_mid_get(c->name), c->value);
+			0, ANNA_NODE_MEMBER_SET, use->node, anna_mid_get(c->name), c->value);
 		this2->stack = c->stack;
 		this2->value = anna_node_calculate_type(this2->value);
 		this2->return_type = this2->value->return_type;
@@ -513,9 +505,16 @@ static anna_node_t *anna_node_calculate_type_internal(
 
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_SET:
+	case ANNA_NODE_STATIC_MEMBER_GET:
+	case ANNA_NODE_STATIC_MEMBER_SET:
 	{
 
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
+
+	    int is_static = (this->node_type == ANNA_NODE_STATIC_MEMBER_GET) || 
+		(this->node_type == ANNA_NODE_STATIC_MEMBER_SET);
+	    
+	    
 
 	    c->object = anna_node_calculate_type(c->object);
 	    anna_type_t *type = c->object->return_type;
@@ -527,7 +526,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_type_set_stack(type, stack);
 	    anna_type_setup_interface(type);	    
 
-	    if(type == type_type && anna_member_get(type, c->mid)==0)
+	    if(is_static)
 	    {
 		type = anna_node_resolve_to_type(c->object, stack);
 		c->access_type = ANNA_NODE_ACCESS_STATIC_MEMBER;
@@ -538,7 +537,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    break;
 		}
 	    }
-	    
+
 	    anna_type_prepare_member(type, c->mid, stack);
 	    anna_member_t *member = anna_member_get(type, c->mid);
 	    if(!member)
@@ -552,9 +551,12 @@ static anna_node_t *anna_node_calculate_type_internal(
 		
 	    }
 
-	    if(c->node_type == ANNA_NODE_MEMBER_GET)
+	    if((c->node_type == ANNA_NODE_MEMBER_GET) || 
+	       (c->node_type == ANNA_NODE_STATIC_MEMBER_GET))
 	    {
-		if(member->is_bound_method)
+		if( (member->is_bound_method) && 
+		    (c->node_type == ANNA_NODE_MEMBER_GET) )
+
 		{
 		    c->node_type = ANNA_NODE_MEMBER_BIND;
 		    c->return_type = anna_method_curry(anna_function_type_unwrap(member->type));
@@ -892,6 +894,7 @@ static anna_node_t *resolve_identifiers_each(
     {
 	anna_node_t *res = (anna_node_t *)anna_node_create_member_get(
 	    &id->location,
+	    ANNA_NODE_MEMBER_GET,
 	    use->node,
 	    anna_mid_get(id->name));
 	anna_node_set_stack(res, id->stack);

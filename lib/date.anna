@@ -43,7 +43,7 @@ type Delta
         res := «String»[];
 
 	expandCode(
-	    if(%name != 0){res ~= [%text % [String.convert(%name)]]},
+	    if(%name != 0){res ~= [%text % [String::convert(%name)]]},
 	    name: [year, month, day, minute, second, microsecond],
 	    text: ["% year(s)", "% month(s)", "% day(s)", "% minute(s)", "% second(s)", "% microsecond(s)"]);
 
@@ -185,12 +185,12 @@ type Date
     {
 	return "%-%-% %:%:% (%)" % 
 	    [
-		String.convert(year),
-		String.convert(month).lpad(char:'0',minimumCount:2),
-		String.convert(day).lpad(char:'0',minimumCount:2),
-		String.convert(hour),
-		String.convert(minute).lpad(char:'0',minimumCount:2),
-		String.convert(second).lpad(char:'0',minimumCount:2),
+		String::convert(year),
+		String::convert(month).lpad(char:'0',minimumCount:2),
+		String::convert(day).lpad(char:'0',minimumCount:2),
+		String::convert(hour),
+		String::convert(minute).lpad(char:'0',minimumCount:2),
+		String::convert(second).lpad(char:'0',minimumCount:2),
 		timezone.name
 	    ];
     }

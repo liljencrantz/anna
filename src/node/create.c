@@ -88,11 +88,12 @@ anna_node_wrapper_t *anna_node_create_input_type_of(
 
 anna_node_member_access_t *anna_node_create_member_get(
     anna_location_t *loc,
+    int type,
     struct anna_node *object,
     mid_t mid)
 {
     anna_node_member_access_t *result = anna_alloc_node(sizeof(anna_node_member_access_t));
-    result->node_type = ANNA_NODE_MEMBER_GET;
+    result->node_type = type;
     anna_node_set_location((anna_node_t *)result,loc);
     result->object=object;
     result->mid=mid;
@@ -101,10 +102,11 @@ anna_node_member_access_t *anna_node_create_member_get(
 }
 
 anna_node_member_access_t *anna_node_create_member_set(
-    anna_location_t *loc, struct anna_node *object, mid_t mid, struct anna_node *value)
+    anna_location_t *loc, int type,
+    struct anna_node *object, mid_t mid, struct anna_node *value)
 {
     anna_node_member_access_t *result = anna_alloc_node(sizeof(anna_node_member_access_t));
-    result->node_type = ANNA_NODE_MEMBER_SET;
+    result->node_type = type;
     anna_node_set_location((anna_node_t *)result,loc);
     result->object=object;
     result->value=value;
@@ -300,6 +302,7 @@ anna_node_call_t *anna_node_create_specialize(
 
 anna_node_call_t *anna_node_create_member_call(
     anna_location_t *loc, 
+    int type,
     anna_node_t *object,
     mid_t mid,
     size_t argc, 
@@ -307,7 +310,7 @@ anna_node_call_t *anna_node_create_member_call(
 {
     anna_node_call_t *result = anna_alloc_node(sizeof(anna_node_call_t));
     result->child = calloc(1,sizeof(anna_node_t *)*(argc));
-    result->node_type = ANNA_NODE_MEMBER_CALL;
+    result->node_type = type;
     anna_node_set_location((anna_node_t *)result,loc);
     result->object = object;
     result->mid = mid;

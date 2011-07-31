@@ -41,6 +41,7 @@ anna_node_t *anna_node_each_replace(
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CAST:
 	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    n->function = anna_node_each_replace(n->function, fun, aux);
@@ -69,10 +70,13 @@ anna_node_t *anna_node_each_replace(
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_BIND:
 	case ANNA_NODE_MEMBER_SET:
+	case ANNA_NODE_STATIC_MEMBER_GET:
+	case ANNA_NODE_STATIC_MEMBER_SET:
 	{
 	    anna_node_member_access_t *n = (anna_node_member_access_t *)this;
 	    n->object = anna_node_each_replace(n->object, fun, aux);
-	    if(this->node_type == ANNA_NODE_MEMBER_SET)
+	    if((this->node_type == ANNA_NODE_MEMBER_SET) ||
+	       (this->node_type == ANNA_NODE_STATIC_MEMBER_SET))
 	    {
 		n->value = anna_node_each_replace(n->value, fun, aux);
 	    }

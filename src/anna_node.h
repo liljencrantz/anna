@@ -46,6 +46,9 @@ enum anna_node_enum
     ANNA_NODE_BREAK,
     ANNA_NODE_CONTINUE,
     ANNA_NODE_USE,
+    ANNA_NODE_STATIC_MEMBER_GET,
+    ANNA_NODE_STATIC_MEMBER_SET,
+    ANNA_NODE_STATIC_MEMBER_CALL,
 
     /* This needs to be the last element of the enum! */
     ANNA_NODE_TYPE_COUNT

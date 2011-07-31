@@ -359,6 +359,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token SPECIALIZATION_BEGIN2
 %token SPECIALIZATION_END2
 %token TYPE
+%token STATIC_MEMBER_GET
 
 %type <call_val> block opt_expression_list expression_list opt_else
 %type <call_val> module
@@ -760,6 +761,14 @@ expression9 :
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@2, L"__memberGet__"), 
+		$1, $3);
+	}
+	|
+	expression9 STATIC_MEMBER_GET expression10
+	{
+	    $$ = (anna_node_t *)anna_node_create_call2(
+		&@$,
+		anna_node_create_identifier(&@2, L"__staticMemberGet__"), 
 		$1, $3);
 	}
 	|

@@ -323,6 +323,7 @@ static size_t anna_node_size(anna_node_t *n)
     {
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_MEMBER_CALL:
+	case ANNA_NODE_STATIC_MEMBER_CALL:
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_SPECIALIZE:
 	case ANNA_NODE_CAST:
@@ -352,6 +353,8 @@ static size_t anna_node_size(anna_node_t *n)
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_BIND:
 	case ANNA_NODE_MEMBER_SET:
+	case ANNA_NODE_STATIC_MEMBER_GET:
+	case ANNA_NODE_STATIC_MEMBER_SET:
 	    return sizeof(anna_node_member_access_t);
 	    
 	case ANNA_NODE_RETURN:
@@ -401,7 +404,8 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     
     if( (n->node_type == ANNA_NODE_CALL) || 
 	(n->node_type == ANNA_NODE_CONSTRUCT) || 
-	(n->node_type == ANNA_NODE_MEMBER_CALL))
+	(n->node_type == ANNA_NODE_MEMBER_CALL) ||
+	(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL))
     {
 	anna_node_call_t *r2=(anna_node_call_t *)r;
 	anna_node_call_t *n2=(anna_node_call_t *)n;

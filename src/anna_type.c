@@ -1113,6 +1113,13 @@ void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack)
 	for(i=0;i<body->child_count; i++)
 	    body->child[i] = anna_node_macro_expand(body->child[i], stack);
     }
+    if(f->attribute)
+    {
+	int i;
+	for(i=0;i<f->attribute->child_count; i++)
+	    f->attribute->child[i] = anna_node_macro_expand(f->attribute->child[i], stack);
+    }
+    
 }
 
 void anna_type_calculate_size(anna_type_t *this)

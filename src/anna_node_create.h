@@ -26,11 +26,13 @@ anna_node_wrapper_t *anna_node_create_return(
 
 anna_node_member_access_t *anna_node_create_member_get(
     anna_location_t *loc, 
+    int type,
     struct anna_node *object, 
     mid_t mid);
 
 anna_node_member_access_t *anna_node_create_member_set(
     anna_location_t *loc, 
+    int type,
     struct anna_node *object, 
     mid_t mid, 
     struct anna_node *value);
@@ -73,6 +75,7 @@ anna_node_call_t *anna_node_create_specialize(
 
 anna_node_call_t *anna_node_create_member_call(
     anna_location_t *loc, 
+    int type,
     anna_node_t *object,
     mid_t mid,
     size_t argc, 

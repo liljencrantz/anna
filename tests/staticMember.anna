@@ -5,6 +5,6 @@ type SomeType
 
 def main()
 {
-    SomeType.foo = 7;
-    print(SomeType.foo, "\n");
+    SomeType::foo = 7;
+    print(SomeType::foo, "\n");
 }

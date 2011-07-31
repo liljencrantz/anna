@@ -3,7 +3,7 @@ def bar(){3}
 
 def Int main()
 {
-    if(String.convert(bar)){
+    if(String::convert(bar)){
         print("ok")
     }
 }

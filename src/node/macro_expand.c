@@ -70,14 +70,20 @@ static anna_node_t *anna_node_macro_expand_each(
 	    
 	    if(this->node_type != ANNA_NODE_SPECIALIZE)
 	    {
-		if(this2->function->node_type == ANNA_NODE_MEMBER_GET)
+		if((this2->function->node_type == ANNA_NODE_MEMBER_GET) ||
+		   (this2->function->node_type == ANNA_NODE_STATIC_MEMBER_GET))
 		{
 		    anna_node_member_access_t *mg = 
 			(anna_node_member_access_t *)this2->function;
-		    
+		    int type = 
+			(this2->function->node_type == ANNA_NODE_STATIC_MEMBER_GET)?
+			ANNA_NODE_STATIC_MEMBER_CALL:
+			ANNA_NODE_MEMBER_CALL;
+
 		    anna_node_t *result = 
 			(anna_node_t *)anna_node_create_member_call(
 			    &this2->location,
+			    type,
 			    mg->object,
 			    mg->mid,
 			    this2->child_count,

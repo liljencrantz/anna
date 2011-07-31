@@ -10,7 +10,7 @@ def Int hailstone(Int i)
 
 def main()
 {
-    max := Int.convert(system.argument[1]) or 20_000;
+    max := Int::convert(system.argument[1]) or 20_000;
     maxCount := 0;
     maxValue := 0;
 

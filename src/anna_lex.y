@@ -72,7 +72,7 @@ static void anna_lex_unbalanced_comment()
 0[oO][0-7][0-7_]* return LITERAL_INTEGER_BASE_8;
 0[bB][0-1][0-1_]* return LITERAL_INTEGER_BASE_2;
 0[xX][0-9a-fA-F][0-9a-fA-F_]* return LITERAL_INTEGER_BASE_16;
-[0-9][0-9_]*\.[0-9_]+([eE]-?[0-9_]+)? return LITERAL_FLOAT;
+[0-9][0-9_]*\.[0-9_]*[0-9]+[0-9_]*([eE]-?[0-9_]+)? return LITERAL_FLOAT;
 0 return LITERAL_INTEGER_BASE_10;
 \( return '(';
 \) return ')';
@@ -110,6 +110,7 @@ else return ELSE;
 != return NOT_EQUAL;
 \<= return LESS_OR_EQUAL;
 >= return GREATER_OR_EQUAL;
+:: return STATIC_MEMBER_GET;
 : return TO;
 \< return '<';
 > return '>';

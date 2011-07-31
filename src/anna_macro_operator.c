@@ -32,13 +32,16 @@ __memberSet__( OBJ, KEY, VAL)
 
  */
 		anna_node_identifier_t *name_identifier = node_cast_identifier(call->function);
-		if(wcscmp(name_identifier->name, L"__memberGet__")==0)
+		int is_set = (wcscmp(name_identifier->name, L"__memberGet__")==0) || (wcscmp(name_identifier->name, L"__staticMemberGet__")==0);
+		int is_static = wcscmp(name_identifier->name, L"__staticMemberGet__")==0;
+		
+		if(is_set)
 		{
 		    // foo.bar = baz
 		    call->function = (anna_node_t *)
 			anna_node_create_identifier(
 			&name_identifier->location, 
-			L"__memberSet__");
+			is_static ? L"__staticMemberSet__":L"__memberSet__");
 		    anna_node_call_add_child(
 			call, 
 			node->child[1]);
@@ -97,6 +100,27 @@ ANNA_VM_MACRO(anna_macro_member_get)
 
     return (anna_node_t *)anna_node_create_member_get(
 	&node->location,
+	ANNA_NODE_MEMBER_GET,
+	node->child[0], 
+	mid);
+}
+
+ANNA_VM_MACRO(anna_macro_static_member_get)
+{
+/*
+  wprintf(L"member_get on node at %d\n", node);
+  anna_node_print(0, (anna_node_t *)node);
+  wprintf(L"\n");
+*/
+    CHECK_CHILD_COUNT(node,L". operator", 2);
+    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
+        
+    anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
+    mid_t mid = anna_mid_get(name_node->name);
+
+    return (anna_node_t *)anna_node_create_member_get(
+	&node->location,
+	ANNA_NODE_STATIC_MEMBER_GET,
 	node->child[0], 
 	mid);
 }
@@ -112,6 +136,23 @@ ANNA_VM_MACRO(anna_macro_member_set)
 
     return (anna_node_t *)anna_node_create_member_set(
 	&node->location,
+	ANNA_NODE_MEMBER_SET,
+	node->child[0], 
+	mid,
+	node->child[2]);
+}
+
+ANNA_VM_MACRO(anna_macro_static_member_set)
+{
+    CHECK_CHILD_COUNT(node,L"static member assignment", 3);
+    CHECK_NODE_TYPE(node->child[1], ANNA_NODE_IDENTIFIER);
+    
+    anna_node_identifier_t *name_node = node_cast_identifier(node->child[1]);
+    mid_t mid = anna_mid_get(name_node->name);
+
+    return (anna_node_t *)anna_node_create_member_set(
+	&node->location,
+	ANNA_NODE_STATIC_MEMBER_SET,
 	node->child[0], 
 	mid,
 	node->child[2]);

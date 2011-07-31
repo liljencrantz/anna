@@ -4,13 +4,13 @@
 
 type Derived
 (
-    extends(List«Int»)
+    extends(Int), extends(MutableList«Int»)
 )
 {
     def __init__()
     {
-	Int.__init__(this);
-	Range.__init__(0,10,1);
+	Int::__init__(this, 7);
+	MutableList«Int»::__init__(this, 0,10,1);
     }
 
 }

@@ -226,8 +226,10 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__def__", &anna_macro_def);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__loopBlock__", &anna_macro_block);
+    anna_macro_add(stack, L"__staticMemberGet__", &anna_macro_static_member_get);
     anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
     anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
+    anna_macro_add(stack, L"__staticMemberSet__", &anna_macro_static_member_set);
     anna_macro_add(stack, L"__var__", &anna_macro_var);
     anna_macro_add(stack, L"__const__", &anna_macro_var);
     anna_macro_add(stack, L"__or__", &anna_macro_or);

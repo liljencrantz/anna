@@ -1,8 +1,5 @@
+
 def main()
 {
-    print(lang,"\n");
-    print(global,"\n");
-    print(global as Object,"\n");
-    print(lang.__type__,"\n");
-    print(global.__type__,"\n");
+    print(Int == 3.__type__,  "\n");
 }

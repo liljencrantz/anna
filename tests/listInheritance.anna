@@ -9,8 +9,7 @@ type Derived
 {
     def __init__()
     {
-	Int.__init__(this);
-	Range.__init__(0,10,1);
+	List::__init__(this);
     }
 
 }
