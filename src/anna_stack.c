@@ -572,3 +572,10 @@ void anna_stack_name(anna_stack_template_t *stack, wchar_t *name)
 {
     stack->name = anna_intern(name);
 }
+
+void anna_stack_document(anna_stack_template_t *stack, wchar_t *documentation)
+{
+    anna_type_document(
+	anna_stack_wrap(stack)->type,
+	documentation);
+}

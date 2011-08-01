@@ -68,8 +68,8 @@ ANNA_VM_NATIVE(anna_math_sqrt, 1)
 
 void anna_math_load(anna_stack_template_t *stack)
 {
-    anna_module_const_float(stack, L"pi", M_PI, 0);
-    anna_module_const_float(stack, L"e", M_E, 0);
+    anna_module_const_float(stack, L"pi", M_PI, L"The mathematical constant pi, i.e. the circumference of a circle divided by its diameter.");
+    anna_module_const_float(stack, L"e", M_E, L"The mathematical constant e, i.e. the base of the natural logarithm.");
     
     wchar_t *f_argn[]={L"value"};
     anna_type_t *f_argv[] = {float_type};

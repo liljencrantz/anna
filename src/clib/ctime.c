@@ -215,51 +215,64 @@ ANNA_VM_NATIVE(anna_ctime_break_time, 2)
 
 static void anna_ctime_broken_load(anna_stack_template_t *stack)
 {
-    anna_module_const_int(stack, L"second", 0, 0);
-    anna_module_const_int(stack, L"minute", 1, 0);
-    anna_module_const_int(stack, L"hour", 2, 0);
-    anna_module_const_int(stack, L"dayOfMonth", 3, 0);
-    anna_module_const_int(stack, L"month", 4, 0);
-    anna_module_const_int(stack, L"year", 5, 0);
-    anna_module_const_int(stack, L"dayOfWeek", 6, 0);
-    anna_module_const_int(stack, L"dayOfYear", 7, 0);
-    anna_module_const_int(stack, L"isDaylightSaving", 8, 0);
+    anna_stack_document(
+	stack,
+	L"The constants found in this module are used to access the different fields of a broken down time as returned by ctime.breakTime.");
+    
+    anna_module_const_int(stack, L"second", 0, L"Number of seconds past last whole minute.");
+    anna_module_const_int(stack, L"minute", 1, L"Number of minutes past last whole hour.");
+    anna_module_const_int(stack, L"hour", 2, L"Number of hours past midnight.");
+    anna_module_const_int(stack, L"dayOfMonth", 3, L"Number of days since first day of month.");
+    anna_module_const_int(stack, L"month", 4, L"Month, January is 0.");
+    anna_module_const_int(stack, L"year", 5, L"Number of years since 1900.");
+    anna_module_const_int(stack, L"dayOfWeek", 6, L"Day of week, Sunday is 0.");
+    anna_module_const_int(stack, L"dayOfYear", 7, L"Number of days since January 1:st.");
+    anna_module_const_int(stack, L"isDaylightSaving", 8, L"If non-null, daylight savings time is in effect");
 }
 
 void anna_ctime_load(anna_stack_template_t *stack)
 {
-    /*
-      A simple, low level time API. Unlike most other c* api:s in
-      Anna, this one doesn't mimic the underlying C
-      functions. Specifically, it is rather different in how timezones
-      are handled, as a timezone name can be passed as an argument to
-      various functions.
+    anna_stack_document(
+	stack,
+	L"A simple, low level time API. Unlike most other c* api:s in "
+	L"Anna, this one doesn't closely mimic the underlying C "
+	L"functions. Specifically, it is rather different in how timezones "
+	L"are handled, as a timezone name can be passed as an argument to "
+	L"various functions.");
+    
+    anna_stack_document(
+	stack,
+	L"Internally, timezone handling is handled using an extremely ugly "
+	L"hack: The TZ environment variable is set, and the tzset function "
+	L"is called. This temporarily changes the timezone information of "
+	L"the running application, something which is obviously not thread "
+	L"safe. Unfortunatly, this seems to be the only reliable way to "
+	L"perform timezone calculations using the C API.");
       
-      Internally, timezone handling is handled using an extremely ugly
-      hack: The TZ environment variable is set, and the tzset function
-      is called. This temporarily changes the timezone information of
-      the running application, something which is obviously not thread
-      safe. Unfortunatly, this seems to be the only reliable way to
-      perform timezone calculations using the C API.
+    anna_stack_document(
+	stack,
+	L"This library deals with time in two different formats, time "
+	L"stamps and broken down time.");
+    
       
-      This library deals with time in two different formats, time
-      stamps and broken down time. 
-      
-      A time stamp counts the number of whole seconds that have passed
-      since the Epoch (midnight, January 1, 1970, UTC). A time stamp
-      is never relative to any timezone other than UTC. The
-      getTimeOfDay function returns a time stamp plus an additional
-      microsecond fraction of time.
-      
-      Broken down time a time separated into fields representing the
-      number of seconds past the minute (0..60), minutes past the hour
-      (0..59), hours after midnight (0..24), day of the month (1..31),
-      months since january (0..11), years after 1900, days since
-      sunday (0..6), days since january 1 (0..365) and finally a field
-      that is set to 1 if daylight saving time is in effect, 0
-      otherwise. Broken down time is always relative to some specific
-      time zone.
-    */
+    anna_stack_document(
+	stack,
+	L"A time stamp counts the number of whole seconds that have passed "
+	L"since the Epoch (midnight, January 1, 1970, UTC). A time stamp "
+	L"is never relative to any timezone other than UTC. The "
+	L"getTimeOfDay function returns a time stamp plus an additional "
+	L"microsecond fraction of time.");
+    
+    anna_stack_document(
+	stack,
+	L"Broken down time a time separated into fields representing the "
+	L"number of seconds past the minute (0..60), minutes past the hour "
+	L"(0..59), hours after midnight (0..24), day of the month (1..31), "
+	L"months since january (0..11), years after 1900, days since "
+	L"sunday (0..6), days since january 1 (0..365) and finally a field "
+	L"that is set to 1 if daylight saving time is in effect, 0 "
+	L"otherwise. Broken down time is always relative to some specific "
+	L"time zone.");
 
     anna_module_data_t modules[] = 
 	{

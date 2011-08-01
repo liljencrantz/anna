@@ -216,17 +216,29 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 	node_type, anna_mid_get(L"replace"), 0,
 	&anna_node_wrapper_i_replace,
 	node_type, 3, replace_argv, replace_argn);
+    anna_member_document(
+	node_type,
+	anna_mid_get(L"replace"), 
+	L"Replace all instances of the specified identifier AST node within a copy of the original AST tree with the specified replacement AST node and return the nesulting new tree. The original tree is not modified.");
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"error"), 0,
 	&anna_node_wrapper_i_error,
 	node_type, 2, error_argv, error_argn);
+    anna_member_document(
+	node_type,
+	anna_mid_get(L"error"), 
+	L"Report a compiler error at the source code location of the specified node");
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"toString"),
 	0,
 	&anna_node_wrapper_i_to_string,
 	string_type, 1, error_argv, error_argn);    
+    anna_member_document(
+	node_type,
+	anna_mid_get(L"replace"), 
+	L"Returns a string representation of the specified AST tree");
     
     anna_type_t *cmp_argv[] = 
 	{
@@ -253,6 +265,10 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 	node_type, anna_mid_get(L"copy"), 0,
 	&anna_node_wrapper_copy,
 	node_type, 1, cmp_argv, cmp_argn);
+    anna_member_document(
+	node_type,
+	anna_mid_get(L"copy"), 
+	L"Return an identical copy of the specified AST tree");
 }
 
 #include "clib/parser/call.c"

@@ -306,23 +306,24 @@ ANNA_VM_NATIVE(anna_cio_is_relative, 1)
 
 static void anna_open_mode_load(anna_stack_template_t *stack)
 {
-    anna_module_const_int(stack, L"readOnly", O_RDONLY, 0);
-    anna_module_const_int(stack, L"writeOnly", O_WRONLY, 0);
-    anna_module_const_int(stack, L"readWrite", O_RDWR, 0);
+    anna_module_const_int(stack, L"readOnly", O_RDONLY, L"Open file in read-only mode.");
+    anna_module_const_int(stack, L"writeOnly", O_WRONLY, L"Open file in write-only mode.");
+    anna_module_const_int(stack, L"readWrite", O_RDWR, L"Open file in read-write mode.");
 
-    anna_module_const_int(stack, L"append", O_APPEND, 0);
-    anna_module_const_int(stack, L"create", O_CREAT, 0);
-    anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC, 0);
-    anna_module_const_int(stack, L"direct", O_DIRECT, 0);    
-    anna_module_const_int(stack, L"directory", O_DIRECTORY, 0);
-    anna_module_const_int(stack, L"exclusive", O_EXCL, 0);
-    anna_module_const_int(stack, L"largeFile", O_LARGEFILE, 0);
-    anna_module_const_int(stack, L"noAccessTime", O_NOATIME, 0);
-    anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY, 0);
-    anna_module_const_int(stack, L"noFollow", O_NOFOLLOW, 0);
-    anna_module_const_int(stack, L"nonBlock", O_NONBLOCK, 0);
-    anna_module_const_int(stack, L"synchronous", O_SYNC, 0);
-    anna_module_const_int(stack, L"truncate", O_TRUNC, 0);
+    anna_module_const_int(stack, L"append", O_APPEND, L"The file is opened in append mode.");
+    anna_module_const_int(stack, L"async", O_ASYNC, L"Enable signal-driven I/O.");
+    anna_module_const_int(stack, L"create", O_CREAT, L"If the file does not exist it will be created.");
+    anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC, L"Enable the close-on-exec flag for the new file descriptor.");
+    anna_module_const_int(stack, L"direct", O_DIRECT, L"Try to minimize cache effects of the I/O to and from this file.");
+    anna_module_const_int(stack, L"directory", O_DIRECTORY, L"If pathname is not a directory, cause the open to fail.");
+    anna_module_const_int(stack, L"exclusive", O_EXCL, L"Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail.");
+    anna_module_const_int(stack, L"largeFile", O_LARGEFILE, L"(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened.");
+    anna_module_const_int(stack, L"noAccessTime", O_NOATIME, L"Do not update the file last access time (st_atime in the inode) when the file is read().");
+    anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY, L"If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one.");
+    anna_module_const_int(stack, L"noFollow", O_NOFOLLOW, L"If pathname is a symbolic link, then the open fails.");
+    anna_module_const_int(stack, L"nonBlock", O_NONBLOCK, L"When possible, the file is opened in nonblocking mode.");
+    anna_module_const_int(stack, L"synchronous", O_SYNC, L"The file is opened for synchronous I/O.");
+    anna_module_const_int(stack, L"truncate", O_TRUNC, L"f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0.");
 }
 
 static void anna_stat_mode_load(anna_stack_template_t *stack)
@@ -448,11 +449,11 @@ void anna_cio_load(anna_stack_template_t *stack)
 	1, m_argv, m_argn, 
 	L"Deletes a name from the file system. Equivalant to the C unlink function. Returns null on failure.");
     
-    anna_module_const_int(stack, L"standardInput", 0, 0);
-    anna_module_const_int(stack, L"standardOutput", 1, 0);
-    anna_module_const_int(stack, L"standardError", 2, 0);
+    anna_module_const_int(stack, L"standardInput", 0, L"The default file descriptor for input");
+    anna_module_const_int(stack, L"standardOutput", 1, L"The default file descriptor for output");
+    anna_module_const_int(stack, L"standardError", 2, L"The default file descriptor for error messages");
     
-    anna_module_const_char(stack, L"separator", L'/', 0);
+    anna_module_const_char(stack, L"separator", L'/', L"The directory separator");
 
     anna_type_t *type = anna_stack_wrap(stack)->type;
     

@@ -183,7 +183,17 @@ void anna_module_const_int(
 	int_type,
 	anna_from_int(value),
 	ANNA_STACK_READONLY);
+    if(documentation)
+    {
+	anna_type_t *type = 
+	    anna_stack_wrap(stack)->type;
+	anna_member_document(
+	    type,
+	    anna_mid_get(name),
+	    documentation);
+    }
 }
+
 
 void anna_module_const_char(
     anna_stack_template_t *stack,
@@ -198,6 +208,15 @@ void anna_module_const_char(
 	char_type,
 	anna_from_char(value),
 	ANNA_STACK_READONLY);
+    if(documentation)
+    {
+	anna_type_t *type = 
+	    anna_stack_wrap(stack)->type;
+	anna_member_document(
+	    type,
+	    anna_mid_get(name),
+	    documentation);
+    }
 }
 
 void anna_module_const_float(
@@ -213,6 +232,15 @@ void anna_module_const_float(
 	float_type,
 	anna_from_float(value),
 	ANNA_STACK_READONLY);
+    if(documentation)
+    {
+	anna_type_t *type = 
+	    anna_stack_wrap(stack)->type;
+	anna_member_document(
+	    type,
+	    anna_mid_get(name),
+	    documentation);
+    }
 }
 
 static void anna_module_bootstrap_monkeypatch(

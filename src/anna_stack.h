@@ -124,5 +124,6 @@ struct anna_use *anna_stack_search_use(
 int anna_stack_check(anna_stack_template_t *stack, int i);
 anna_entry_t *anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name);
 
+void anna_stack_document(anna_stack_template_t *stack, wchar_t *documentation);
 
 #endif
