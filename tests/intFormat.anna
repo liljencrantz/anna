@@ -1,8 +1,8 @@
 def main()
 {
-    print(1234.format(base:10, padding:'0', length:10), '\n');
-    print(0xdead_beef.format(base:16, padding:'X', length:10), '\n');
-    print(0xdead_beef_dead_beef.format(base:2, padding:?, length:?), '\n');
-    print(1.format(base:44, padding:?, length:?), '\n');
-    print(-1.format(base:8, padding:?, length:?), '\n');
+    print(1234.format(base:10).lpad(char:'0', count:10), '\n');
+    print(0xdead_beef.format(base:16).lpad(char:'X', count:10), '\n');
+    print(0xdead_beef_dead_beef.format(base:2), '\n');
+    print(1.format(base:44), '\n');
+    print(-1.format(base:8), '\n');
 }

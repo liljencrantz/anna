@@ -186,11 +186,11 @@ type Date
 	return "%-%-% %:%:% (%)" % 
 	    [
 		String::convert(year),
-		String::convert(month).lpad(char:'0',minimumCount:2),
-		String::convert(day).lpad(char:'0',minimumCount:2),
+		String::convert(month).lpad(char:'0',count:2),
+		String::convert(day).lpad(char:'0',count:2),
 		String::convert(hour),
-		String::convert(minute).lpad(char:'0',minimumCount:2),
-		String::convert(second).lpad(char:'0',minimumCount:2),
+		String::convert(minute).lpad(char:'0',count:2),
+		String::convert(second).lpad(char:'0',count:2),
 		timezone.name
 	    ];
     }

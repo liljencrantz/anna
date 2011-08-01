@@ -1053,10 +1053,18 @@ static void anna_list_type_create_internal(
 	    2,
 	    a_argv,
 	    a_argn);
+	anna_member_document(
+	    type,
+	    anna_mid_get(L"push"), 
+	    L"Adds the specified element to the end of the list. Returns the mutated list.");
 	
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"pop"), 0,
 	    &anna_list_pop, spec, 1, a_argv, a_argn);
+	anna_member_document(
+	    type,
+	    anna_mid_get(L"pop"), 
+	    L"Removes the last element from the list and returns it. Returns null if the list is already empty.");
 	
 	mmid = anna_member_create_native_method(
 	    type,

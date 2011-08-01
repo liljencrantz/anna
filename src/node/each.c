@@ -56,7 +56,6 @@ anna_node_t *anna_node_each_replace(
 		
 		n->child[i] = anna_node_each_replace(n->child[i], fun, aux);
 	    }
-	    
 	    break;
 	}
 	

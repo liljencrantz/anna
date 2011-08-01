@@ -135,6 +135,11 @@ often used code paths, which makes it useful for regression testing.")
     def documentMember(reflection.Member mem)
     {
         doc := extractDocumentation(mem.__attribute__);
+	if(doc == "")
+	{
+	    print("Missing documentation for member %.%\n" % [mem.memberOf.__name__, mem.__name__]);
+	}
+
 	"
 <a name='%'>%</a>
 <br>

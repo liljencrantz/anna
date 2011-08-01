@@ -122,8 +122,8 @@ static void anna_type_mangle_methods(
 				//wprintf(L"Found init of type %ls\n", type->name);
 				anna_node_call_t *body = (anna_node_call_t *)def->child[4];
 				anna_node_call_add_child(
-				    body, (anna_node_t *)anna_node_create_identifier(0, L"this"));				
-			    }		    
+				    body, (anna_node_t *)anna_node_create_identifier(0, L"this"));
+			    }
 			}
 			
 			if(anna_node_is_call_to(def->child[2], L"__block__") && 
@@ -169,11 +169,20 @@ static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
     for(i=0; i<al_get_count(spec); i++)
     {
 	anna_node_t *node = (anna_node_t *)al_get(spec, i);
-	CHECK_NODE_TYPE(node, ANNA_NODE_CALL);
-	anna_node_call_t *call = (anna_node_call_t *)node;
-	CHECK_CHILD_COUNT(call, L"Template specialization", 2);
-	CHECK_NODE_TYPE(call->child[0], ANNA_NODE_INTERNAL_IDENTIFIER);
-	code = anna_node_replace(code, (anna_node_identifier_t *)call->child[0], call->child[1]);
+	if(node->node_type == ANNA_NODE_CALL)
+	{
+	    anna_node_call_t *call = (anna_node_call_t *)node;
+	    CHECK_CHILD_COUNT(call, L"Template specialization", 2);
+	    CHECK_NODE_TYPE(call->child[0], ANNA_NODE_INTERNAL_IDENTIFIER);
+	    code = anna_node_replace(code, (anna_node_identifier_t *)call->child[0], call->child[1]);
+	}
+	else
+	{
+	    CHECK_NODE_TYPE(node, ANNA_NODE_MAPPING);
+	    anna_node_cond_t *call = (anna_node_cond_t *)node;
+	    CHECK_NODE_TYPE(call->arg1, ANNA_NODE_INTERNAL_IDENTIFIER);
+	    code = anna_node_replace(code, (anna_node_identifier_t *)call->arg1, call->arg2);
+	}
     }
     
     return code;    
@@ -859,14 +868,15 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     
     for(i=0; i<attr->child_count;i++)
     {
-	anna_node_call_t *tm = node_cast_call((anna_node_t *)al_get(&al, i));
-	assert(tm->child_count == 2);
-	tm->child[1] = spec->child[i];
+	anna_node_cond_t *tm = node_cast_mapping((anna_node_t *)al_get(&al, i));
+	tm->arg2 = spec->child[i];
     }
 //    anna_node_print(4, def);
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"%ls«...»", type->name);
+    sb_printf(&sb, L"%ls«", type->name);
+//    for(i=0; i<
+    sb_printf(&sb, L"»");
     anna_type_t *res = anna_type_create(sb_content(&sb), def);
     sb_destroy(&sb);
     
@@ -896,6 +906,14 @@ static int attr_idx(anna_node_call_t *attr, wchar_t *name)
 			{
 			    return idx;
 			}
+		    }
+		}
+		else if(tmpl->child[i]->node_type == ANNA_NODE_MAPPING)
+		{
+		    anna_node_cond_t *pair = (anna_node_cond_t *)tmpl->child[0];
+		    if( anna_node_is_named(pair->arg1, name))
+		    {
+			return idx;
 		    }
 		}
 	    }
@@ -1068,7 +1086,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	{
 	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
 
-//	    wprintf(L"Check if %ls is a template param\n", id->name);
+	    //wprintf(L"Check if %ls is a template param\n", id->name);
 	    int templ_idx = attr_idx(attr, id->name);
 	    if(templ_idx >= 0)
 	    {

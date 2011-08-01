@@ -32,7 +32,7 @@ def main()
 		i += 1;
 		if (i ^mod 10 == 0)
 		{
-		    print("%\t:%\n" % [String::convert(ns).lpad('0', 10), i]);
+		    print("%\t:%\n" % [String::convert(ns).lpad(char:'0', count:10), i]);
 		    ns = 0;
 		}
 		if (i >= digits){

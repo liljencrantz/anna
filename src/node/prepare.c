@@ -819,6 +819,7 @@ anna_node_t *anna_node_calculate_type(
     if(!this->stack)
     {
 	anna_error(this,L"Invalid stack value while determining types\n");
+	CRASH;
     }
     
 //    debug(D_CRITICAL, L"Calculate type of node:\n");

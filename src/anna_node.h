@@ -334,6 +334,10 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function);
    If the specified node is a call, return it properly casted. Otherwise, exit the program with an error message.
  */
 anna_node_call_t *node_cast_call(anna_node_t *node);
+/**
+   If the specified node is a mapping node, return it properly casted. Otherwise, exit the program with an error message.
+ */
+anna_node_cond_t *node_cast_mapping(anna_node_t *node);
 
 /**
    If the specified node is an identifier, return it properly casted. Otherwise, exit the program with an error message.

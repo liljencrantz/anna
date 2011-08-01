@@ -1,19 +1,18 @@
 /*
-  Check that extending a template class works
- */
+  Check that extending a native template class works
+*/
 
 type Derived
 (
-    extends(List)
+    extends(MutableList)
 )
 {
     def __init__()
     {
-	List::__init__(this);
+	MutableList::__init__(this);
     }
 
 }
-
 
 def main()
 {

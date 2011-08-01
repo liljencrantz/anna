@@ -310,6 +310,12 @@ void anna_function_set_stack(
 		(anna_node_t *)f->input_type_node,
 		f->stack_template);
 	}
+	if(f->return_type_node)
+	{
+	    anna_node_set_stack(
+		(anna_node_t *)f->return_type_node,
+		f->stack_template);
+	}
     }
 }
 

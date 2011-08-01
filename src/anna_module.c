@@ -215,7 +215,8 @@ void anna_module_const_float(
 	ANNA_STACK_READONLY);
 }
 
-static void anna_module_bootstrap_monkeypatch(anna_stack_template_t *lang, wchar_t *name)
+static void anna_module_bootstrap_monkeypatch(
+    anna_stack_template_t *lang, wchar_t *name)
 {
     string_buffer_t sb;
     sb_init(&sb);
