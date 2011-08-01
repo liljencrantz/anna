@@ -71,7 +71,6 @@ void anna_object_type_create()
     anna_type_document(
 	object_type,
 	L"There is rarely any point in instantiating an object of the Object type.");
-    
 
     anna_member_create_native_method(
 	object_type, anna_mid_get(L"__init__"),
@@ -85,7 +84,7 @@ void anna_object_type_create()
     anna_member_document(
 	object_type,
 	ANNA_MID_HASH_CODE,
-	L"Hash function. Should return the same number for two identical objects.");
+	L"Hash function. Should always return the same number for the same object and should also return the same number for two equal objects.");
 
     anna_member_create_native_method(
 	object_type,

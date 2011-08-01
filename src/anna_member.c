@@ -352,7 +352,10 @@ size_t anna_member_create_native_property(
     ssize_t getter_offset=-1;
     ssize_t setter_offset=-1;
     string_buffer_t sb;
-    sb_init(&sb);    
+    sb_init(&sb);
+
+    string_buffer_t sb_doc;
+    sb_init(&sb_doc);
 
     wchar_t *name = anna_mid_get_reverse(mid);
 
@@ -371,6 +374,13 @@ size_t anna_member_create_native_property(
 	    argn);
 	anna_member_t *gm = anna_member_get(type, getter_mid);
 	getter_offset = gm->offset;
+
+	sb_printf(&sb_doc, L"Getter function for the %ls property.", name);
+	
+	anna_member_document(
+	    type,
+	    anna_mid_get(sb_content(&sb)),
+	    anna_intern(sb_content(&sb_doc)));
     }
     
     if(setter)
@@ -388,8 +398,17 @@ size_t anna_member_create_native_property(
 	    argn);
 	anna_member_t *sm = anna_member_get(type, setter_mid);
 	setter_offset = sm->offset;
+
+	sb_clear(&sb_doc);
+	sb_printf(&sb_doc, L"Setter function for the %ls property.", name);
+	
+	anna_member_document(
+	    type,
+	    anna_mid_get(sb_content(&sb)),
+	    anna_intern(sb_content(&sb_doc)));
     }
     sb_destroy(&sb);
+    sb_destroy(&sb_doc);
     
     mid = anna_member_create_property(
 	type, mid, property_type, 
@@ -427,13 +446,12 @@ mid_t anna_member_create_method(
     }
     
     anna_member_t *m = type->mid_identifier[mid];
-    //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
+
     m->is_bound_method=1;
     type->static_member[m->offset] = 
 	anna_from_obj(
 	    anna_function_wrap(
 		method));
-    //wprintf(L"INSERTELISERT!!!!\n");
     
     return mid;
 }

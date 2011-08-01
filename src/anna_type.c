@@ -435,6 +435,11 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        copy->is_property = memb->is_property;
        copy->getter_offset = -1;
        copy->setter_offset = -1;
+       if(memb->attribute)
+       {
+	   copy->attribute = anna_node_clone_deep(memb->attribute);
+       }
+       
        if(memb->is_static)
        {
 	   assert(res->static_member);
