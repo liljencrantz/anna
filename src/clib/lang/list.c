@@ -970,6 +970,10 @@ static void anna_list_type_create_internal(
     anna_member_create_native_method(
 	type, anna_mid_get(L"__each__"), 0,
 	&anna_list_each, type, 2, e_argv, e_argn);
+    anna_member_document(
+	type,
+	anna_mid_get(L"__each__"), 
+	L"Execute the specified function once for each element in the list.");
     
     anna_member_create_native_method(
 	type,
@@ -980,6 +984,10 @@ static void anna_list_type_create_internal(
 	2,
 	e_argv,
 	e_argn);
+    anna_member_document(
+	type,
+	anna_mid_get(L"__filter__"), 
+	L"Execute the specified function once for each element in the list, and return a new list containing all the elements for which the function retuned non-null");
 
     anna_member_create_native_method(
 	type,
@@ -1010,6 +1018,11 @@ static void anna_list_type_create_internal(
 	2,
 	a_argv,
 	a_argn);
+
+    anna_member_document(
+	type,
+	anna_mid_get(L"__in__"), 
+	L"If the specified value exists in the list, the first index where it can be found is returned, otherwise, null is returned.");
     
     anna_type_t *range_argv[] = 
 	{
@@ -1031,6 +1044,11 @@ static void anna_list_type_create_internal(
 	&anna_list_i_get_range, type, 2,
 	range_argv, range_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+    anna_member_document(
+	type,
+	anna_mid_get(L"__get__Range"), 
+	L"Returns a new list containing the values in the specified Range.");
+
     anna_function_alias_add(fun, L"__get__");
 
     anna_list_add_all_extra_methods(type);
@@ -1043,7 +1061,11 @@ static void anna_list_type_create_internal(
 	    anna_mid_get(L"__set__Int"), 0,
 	    &anna_list_set_int, spec, 3,
 	    i_argv, i_argn);    
-	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));	anna_member_document(
+	    type,
+	    anna_mid_get(L"__set__Int"), 
+	    L"Assign a new value to the element at the specified index.");
+
 	anna_function_alias_add(fun, L"__set__");
 
 	anna_member_create_native_method(
@@ -1071,7 +1093,11 @@ static void anna_list_type_create_internal(
 	    anna_mid_get(L"__set__Range"), 0,
 	    &anna_list_i_set_range, type, 3,
 	    range_argv, range_argn);
-	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));	anna_member_document(
+	    type,
+	    anna_mid_get(L"__set__Range"), 
+	    L"Replace all the values in the specified range with the values from the specified List.");
+
 	anna_function_alias_add(fun, L"__set__");
 
     }

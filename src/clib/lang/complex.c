@@ -171,7 +171,11 @@ void anna_complex_type_create()
 	    L"this", L"other"
 	}
     ;
-
+    
+    anna_type_document(
+	complex_type,
+	L"The Complex type is the basic complex floating point number type of the Anna language.");
+    
     anna_member_create_native_method(
 	complex_type,
 	anna_mid_get(L"__init__"),

@@ -573,13 +573,16 @@ void anna_member_document(
     }
     
     anna_member_t *memb = anna_member_get(type, mid);
-    anna_node_call_t *attr = anna_node_create_call2(
-	0,
-	anna_node_create_identifier(0, L"documentation"),
-	anna_node_create_string_literal(0, wcslen(doc), doc));
-    if(!memb->attribute)
+    if(memb)
     {
-	memb->attribute = anna_node_create_block2(0);
+	anna_node_call_t *attr = anna_node_create_call2(
+	    0,
+	    anna_node_create_identifier(0, L"documentation"),
+	    anna_node_create_string_literal(0, wcslen(doc), doc));
+	if(!memb->attribute)
+	{
+	    memb->attribute = anna_node_create_block2(0);
+	}
+	anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
     }
-    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
 }

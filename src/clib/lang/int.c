@@ -307,7 +307,7 @@ void anna_int_type_create()
     
     anna_type_document(
 	int_type,
-	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, those with 30 or fewer bits used, are stored directly on the stack and use no heap memory at all. Larger integers are implemented using the GNU MP library.");    
+	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, numbers that use 29 bits or less to represent (excluding the sign bit, so 30 bits total of data) can be stored directly on the stack and use no heap memory at all. Larger integers are implemented using a multiple precision library such as GNU MP.");    
 
     anna_type_document(
 	int_type,

@@ -399,6 +399,33 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
     CRASH;
 }
 
+void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *orig)
+{
+    anna_node_t *doc = anna_attribute_call(res->attribute, L"documentation");
+    if(!doc)
+    {
+	array_list_t odoc = AL_STATIC;
+	int i;
+	anna_attribute_call_all(orig->attribute, L"documentation", &odoc);
+	for(i=0; i<al_get_count(&odoc); i++)
+	{
+	    anna_node_t *dd = (anna_node_t *)al_get(&odoc, i);
+	    if(!res->attribute)
+	    {
+		res->attribute = anna_node_create_block2(0);
+	    }
+	    
+	    anna_node_call_add_child(
+		res->attribute, 
+		anna_node_create_call2(
+		    0,
+		    anna_node_create_identifier(0, L"documentation"),
+		    anna_node_clone_deep(dd)));
+	}
+	al_destroy(&odoc);	
+    }
+}
+
 void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
@@ -428,7 +455,10 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
            continue;
        
        if(res->mid_identifier[i])
-	  continue;
+       {
+	   anna_type_copy_check_interface(res->mid_identifier[i], memb);
+	   continue;
+       }
        
        copied[i] = 1;
        

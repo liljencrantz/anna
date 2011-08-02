@@ -306,6 +306,10 @@ ANNA_VM_NATIVE(anna_cio_is_relative, 1)
 
 static void anna_open_mode_load(anna_stack_template_t *stack)
 {
+     anna_stack_document(
+	stack,
+	L"This module contains the flags that can be used when opening a file descriptor using the cio.open function.");
+
     anna_module_const_int(stack, L"readOnly", O_RDONLY, L"Open file in read-only mode.");
     anna_module_const_int(stack, L"writeOnly", O_WRONLY, L"Open file in write-only mode.");
     anna_module_const_int(stack, L"readWrite", O_RDWR, L"Open file in read-write mode.");
@@ -328,22 +332,26 @@ static void anna_open_mode_load(anna_stack_template_t *stack)
 
 static void anna_stat_mode_load(anna_stack_template_t *stack)
 {
-    anna_module_const_int(stack, L"regular", S_IFREG, 0);
-    anna_module_const_int(stack, L"socket", S_IFSOCK, 0);
-    anna_module_const_int(stack, L"link", S_IFLNK, 0);
-    anna_module_const_int(stack, L"block", S_IFBLK, 0);
-    anna_module_const_int(stack, L"directory", S_IFDIR, 0);
-    anna_module_const_int(stack, L"character", S_IFCHR, 0);
-    anna_module_const_int(stack, L"fifo", S_IFIFO, 0);
+     anna_stack_document(
+	stack,
+	L"This module contains the flags that can be used when checking the mode flags as retuned by a call to one of the cio.stat functions.");
+     
+    anna_module_const_int(stack, L"regular", S_IFREG, L"Regular file");
+    anna_module_const_int(stack, L"socket", S_IFSOCK, L"Socket");
+    anna_module_const_int(stack, L"link", S_IFLNK, L"Symbolic link");
+    anna_module_const_int(stack, L"block", S_IFBLK, L"Block device");
+    anna_module_const_int(stack, L"directory", S_IFDIR, L"Directory");
+    anna_module_const_int(stack, L"character", S_IFCHR, L"Character device");
+    anna_module_const_int(stack, L"fifo", S_IFIFO, L"FIFO");
     
-    anna_module_const_int(stack, L"suid", S_ISUID, 0);
-    anna_module_const_int(stack, L"sgid", S_ISGID, 0);
-    anna_module_const_int(stack, L"sticky", S_ISVTX, 0);
+    anna_module_const_int(stack, L"suid", S_ISUID, L"Set UID bit");
+    anna_module_const_int(stack, L"sgid", S_ISGID, L"Set-group-ID bit");
+    anna_module_const_int(stack, L"sticky", S_ISVTX, L"Sticky bit");
     
-    anna_module_const_int(stack, L"userAll", S_IRWXU, 0);
-    anna_module_const_int(stack, L"userRead", S_IRUSR, 0);
-    anna_module_const_int(stack, L"userwrite", S_IWUSR, 0);
-    anna_module_const_int(stack, L"userExecute", S_IXUSR, 0);
+    anna_module_const_int(stack, L"userAll", S_IRWXU, L"Mask for all file owner permissions");
+    anna_module_const_int(stack, L"userRead", S_IRUSR, L"File owner read permission");
+    anna_module_const_int(stack, L"userwrite", S_IWUSR, L"File owner write permission");
+    anna_module_const_int(stack, L"userExecute", S_IXUSR, L"File owner execute permission");
     
     anna_module_const_int(stack, L"groupAll", S_IRWXG, 0);
     anna_module_const_int(stack, L"groupRead", S_IRGRP, 0);

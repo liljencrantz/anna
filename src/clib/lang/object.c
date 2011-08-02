@@ -112,7 +112,7 @@ void anna_object_type_create()
     anna_member_document(
 	object_type,
 	ANNA_MID_TO_STRING,
-	L"String conversion. Called by the String.convert method.");
+	L"String conversion. Called by the String::convert method.");
     
     anna_member_create_native_property(
 	object_type, anna_mid_get(L"__type__"),

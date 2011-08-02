@@ -22,7 +22,14 @@ init="
     ;
 "
 
-for i in "eq == Return non-null if this object is equal to the other object, null otherwise." "gt > Returns non-null if this object is greater than the other object, null otherwise." "lt < Returns non-null if this object is smaller than the other object, null otherwise." "gte >= Return non-null if this object is greater than or equal to the other object, null otherwise" "lte <= Return non-null if this object is less than or equal to the other object, null otherwise" "neq != Return non-null if this object is not equal to the other object, null otherwise"; do
+for i in \
+    "eq == Return non-null if this object is equal to the other object, null otherwise." \
+    "gt > Returns non-null if this object is greater than the other object, null otherwise." \
+    "lt < Returns non-null if this object is smaller than the other object, null otherwise." \
+    "gte >= Return non-null if this object is greater than or equal to the other object, null otherwise" \
+    "lte <= Return non-null if this object is less than or equal to the other object, null otherwise" \
+    "neq != Return non-null if this object is not equal to the other object, null otherwise" 
+    do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2 -d ' ')
     doc=$(echo "$i"|cut -f 3- -d ' ')

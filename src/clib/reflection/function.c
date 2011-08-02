@@ -56,6 +56,27 @@ ANNA_VM_NATIVE(anna_function_type_i_get_input_name, 1)
     return anna_from_obj( lst);
 }
 
+ANNA_VM_NATIVE(anna_function_type_i_get_default_value, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_object_t *lst = anna_list_create_imutable(string_type);
+    int i;
+    anna_function_t *f = anna_function_unwrap(this);
+
+    for(i=0;i<f->input_count; i++)
+    {
+	anna_list_add(
+	    lst,
+	    f->input_default[i] ? 
+	    anna_from_obj(
+		anna_node_wrap(f->input_default[i])) :
+	    null_entry);
+	
+    }
+    
+    return anna_from_obj( lst);
+}
+
 ANNA_VM_NATIVE(anna_function_type_i_get_attributes, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -141,6 +162,13 @@ static void anna_function_load(anna_stack_template_t *stack)
 	&anna_function_type_i_get_input_name,
 	0,
 	L"A list of the input names of this function.");
+
+    anna_member_create_native_property(
+	res, anna_mid_get(L"defaultValue"),
+	anna_list_type_get_imutable(node_type),
+	&anna_function_type_i_get_default_value,
+	0,
+	L"A list of the default values for the input parameters of this function. Null means no default value exists.");
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"__attribute__"),

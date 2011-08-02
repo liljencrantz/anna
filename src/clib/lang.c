@@ -337,6 +337,84 @@ void anna_lang_create_types(anna_stack_template_t *stack_lang)
     anna_type_data_create(anna_lang_type_data, stack_lang);    
 }
 
+static void anna_lang_doc_item(
+    anna_type_t *type, 
+    wchar_t *name1,
+    wchar_t *name2,
+    wchar_t *doc)
+{
+    static string_buffer_t *sb = 0;
+    if(!sb)
+    {
+	sb = malloc(sizeof(string_buffer_t));
+	sb_init(sb);
+    }
+    sb_clear(sb);
+    sb_printf(sb, L"%ls%ls", name1, name2);
+    
+    anna_member_document(
+	type,
+	anna_mid_get(sb_content(sb)),
+	doc);
+    
+}
+
+static void anna_lang_doc()
+{
+    wchar_t *data_0[][2] = {
+	{L"__neg__", L"Negate the number."},
+	{L"__abs__", L"The absolute value of the number."},
+	{L"__sign__", L"Return the sign of the number."},
+	{0, 0}
+    };
+    
+
+    wchar_t *data_2[][2] = {
+	{L"__add__", L"Add two numbers together."},
+	{L"__sub__", L"Subtract two numbers from each other."},
+	{L"__mul__", L"Multiply two numbers with each other."},
+	{L"__div__", L"Divide one number with another."},
+	{L"__exp__", L"Raise one number to the power of another."},
+	{L"__increaseAssign__", L"Increase a number by the specified amount."},
+	{L"__decreaseAssign__", L"Decrease a number by the specified amount."},
+	{0, 0}
+    };
+    
+    int i;
+    
+    for(i=0; data_0[i][0]; i++)
+    {
+	anna_member_document(
+	    int_type,
+	    anna_mid_get(data_0[i][0]),
+	    data_0[i][1]);
+	anna_member_document(
+	    float_type,
+	    anna_mid_get(data_0[i][0]),
+	    data_0[i][1]);
+	anna_member_document(
+	    complex_type,
+	    anna_mid_get(data_0[i][0]),
+	    data_0[i][1]);
+    }    
+
+    for(i=0; data_2[i][0]; i++)
+    {
+	anna_lang_doc_item(int_type, data_2[i][0], L"Int__", data_2[i][1]);
+
+	anna_lang_doc_item(float_type, data_2[i][0], L"Int__", data_2[i][1]);
+	anna_lang_doc_item(float_type, data_2[i][0], L"Float__", data_2[i][1]);
+	anna_lang_doc_item(float_type, data_2[i][0], L"IntReverse__", data_2[i][1]);
+
+	anna_lang_doc_item(complex_type, data_2[i][0], L"Int__", data_2[i][1]);
+	anna_lang_doc_item(complex_type, data_2[i][0], L"IntReverse__", data_2[i][1]);
+	anna_lang_doc_item(complex_type, data_2[i][0], L"Float__", data_2[i][1]);
+	anna_lang_doc_item(complex_type, data_2[i][0], L"FloatReverse__", data_2[i][1]);
+	anna_lang_doc_item(complex_type, data_2[i][0], L"Complex__", data_2[i][1]);
+    }
+    
+}
+
 void anna_lang_load(anna_stack_template_t *stack)
 {
     anna_object_type_create();
@@ -399,4 +477,6 @@ void anna_lang_load(anna_stack_template_t *stack)
     anna_wrap_method = wrap->wrapper;
 
     anna_type_data_register(anna_lang_type_data, stack);    
+
+    anna_lang_doc();
 }

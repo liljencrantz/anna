@@ -76,11 +76,16 @@ often used code paths, which makes it useful for regression testing.")
 {
 
     var HashMap«Type, DocumentationData» path;
+    var Int memberMissing;
+    var Int memberTot;
+    var Int moduleMissing;
+    var Int moduleTot;
 
     def __init__()
     {
 	baseDir.makeDirectory();
 	path = HashMap«Type, String»();
+	memberMissing = memberTot = moduleMissing = moduleTot = 0;
     }
     
     def extractDocumentation(parser.Call attr)
@@ -103,7 +108,7 @@ often used code paths, which makes it useful for regression testing.")
 		}
 	    }
 	}
-	return res;
+	if(res.count > 0){res}else{?}
     }
     
     def String getLink(Type from, Type to)
@@ -113,31 +118,28 @@ often used code paths, which makes it useful for regression testing.")
 
     def String getSignature(reflection.Member mem)
     {
-	switch(mem)
+        fun := mem.value(?) as Function;
+	if(fun)
 	{
-	    case(meth as reflection.Method)
-	    {
-	      fun := meth.function;
-	      argv := ", ".join(
-		  fun.inputType.map(idx, t)
-		  {
-		      "% %" % [getLink(mem.memberOf, t), fun.inputName[idx]]
-		  });
-		"def % <em>%</em> (%);" % [getLink(mem.memberOf, fun.outputType), fun.__name__, argv];
-	    }
-	    default
-	    {
-		"var % <em>%</em>;" % [getLink(mem.memberOf, mem.type), mem.__name__];
-	    }
+	  argv := ", ".join(
+	      fun.inputType.map(idx, t)
+	      {
+		  "%(type) %(name)%(default)" % ["type": getLink(mem.memberOf, t), "name": fun.inputName[idx], "default": if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""}]
+	      });
+	    "def % <em>%</em> (%);" % [getLink(mem.memberOf, fun.outputType), fun.__name__, argv];
+	} else {
+	    "var % <em>%</em>;" % [getLink(mem.memberOf, mem.type), mem.__name__];
 	}
     }
 
     def documentMember(reflection.Member mem)
     {
-        doc := extractDocumentation(mem.__attribute__);
+	memberTot++;
+        doc := extractDocumentation(mem.__attribute__) or extractDocumentation((mem.value(?) as Function).__attribute__) or "";
 	if(doc == "")
 	{
 	    print("Missing documentation for member %.%\n" % [mem.memberOf.__name__, mem.__name__]);
+	    memberMissing++;
 	}
 
 	"
@@ -148,12 +150,6 @@ often used code paths, which makes it useful for regression testing.")
 " % [mem.__name__, getSignature(mem), doc];
     }
     
-    def documentType(Type type, File dir)
-    {
-        file := dir ~ (type.__name__ ~ ".html");
-	file.writeFile(template("util/document/type.html"));
-    }
-
     def document(Object module)
     {
 	lookup(module.__type__, ?);
@@ -190,11 +186,28 @@ often used code paths, which makes it useful for regression testing.")
 
     def writeFile(Type module)
     {
+	moduleTot++;
 	if(!(module in path)){ return }
         data := path[module];
 	if(data.done){return}
 	data.done=1;
-	
+
+        submodule := module.__member__.filter(mem)
+	{
+	    val := mem.value(?);
+	    mem.isStatic and val.__type__.isModule;
+	}
+        subtype := module.__member__.filter(mem)
+	{
+	    val := mem.value(?);
+	    mem.isStatic and (val as Type);
+	}
+        subother := module.__member__.filter(mem)
+	{
+	    val := mem.value(?);
+	    mem.isStatic and (!(val.__type__.isModule) and !(val as Type) and (mem.type != Null));
+	}
+
 	data.file.writeFile(template("util/document/module.html"));
 
 	module.__member__.each(mem)
@@ -222,4 +235,6 @@ def main()
     doc.document(global);
     File("documentation/js").makeDirectory();
     File("util/document(jquery.js").copyTo(File("documentation/js/jquery.js"));
+    print(
+	"Documented % modules with % members, out of which % where missing their documentation\n" % [doc.moduleTot, doc.memberTot, doc.memberMissing]);  
 }

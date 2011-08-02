@@ -591,6 +591,11 @@ static void anna_vm_compile_i(
 	    anna_node_assign_t *node2 = (anna_node_assign_t *)node;
 	    anna_vm_compile_i(fun, node2->value, ptr, 0, flags);
 	    anna_stack_template_t *frame = anna_stack_template_search(fun->stack_template, node2->name);
+	    if(!frame)
+	    {
+		debug(D_CRITICAL, L"Unknown variable %ls\n", node2->name);
+		CRASH;
+	    }
 	    
 	    if(frame->flags & ANNA_STACK_NAMESPACE)
 	    {

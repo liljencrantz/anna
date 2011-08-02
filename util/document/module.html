@@ -6,61 +6,64 @@
     
     <h1><%! data.linkPath() %></h1>
 
-    <%! extractDocumentation(module.__attribute__) %>
+    <%! extractDocumentation(module.__attribute__) or ""%>
     
+    <%
+       if(submodule.count > 0)
+       {
+    %>
     <h2>Submodules</h2>
     <ul>
     <% 
-       module.__member__.each(mem)
+       submodule.each(mem)
        {
-	    if(mem.isStatic)
-	    {
-  	        val := mem.value(?);
-		if(val.__type__.isModule)
-                { %>
-      <li><%! getLink(module, val.__type__) %></li>
+           %>
+      <li><%! getLink(module, mem.value(?).__type__) %></li>
 <%
-		}
-	    }
 	}
     %>
     </ul>
-
+    <%
+       }
+    %>
+    <% 
+       if(subtype.count > 0)
+       {
+    %>
     <h2>Types</h2>
     <ul>
     <% 
-       module.__member__.each(mem)
-       {
-	    if(mem.isStatic)
-	    {
-  	        val := mem.value(?);
-		if(val as Type)
-                { %>
+        subtype.each(mem)
+        {
+           val := mem.value(?);
+           %>
       <li><%! getLink(module, val as Type) %></li>
-<%
-		}
-	    }
+      <%
 	}
-    %>
+      %>
     </ul>
-
+    <% 
+       }
+    %>
+    <% 
+       if(subother.count > 0)
+       {
+    %>
     <h2>Other members</h2>
     <ul>
     <% 
-       module.__member__.each(mem)
+       subother.each(mem)
        {
-	    if(mem.isStatic)
-	    {
-   	        val := mem.value(?);
-		if(!(val.__type__.isModule) and !(val as Type) and mem.type != Null)
-                { %>
+           val := mem.value(?);
+       %>
       <li><a href="#<%= mem.__name__  %>"><%= mem.__name__ %></a></li>
 <%
-		}
-	    }
 	}
     %>
     </ul>
+    <% 
+       }
+    %>
 
     <% module.__member__.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type) and mem.type != Null}.each(mem){ %>    
     <hr>
