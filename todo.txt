@@ -4,11 +4,10 @@
 * Add memory overhead of Hashes, Buffers and Lists to GC estimates
 * Documentation attribute for all standard API functions and types
 * HTML api documentation extractor
-  - document attribute for properties
   - Hide internal elements by default
   - Better module templates
   - Handle complex documentation attributes, e.g. named stuff
-  - Handle regular module functions
+  - Sort members
 * Introduction
 * Check that node compare supports all ast node types
 * More validation:
@@ -22,6 +21,7 @@
 1.0 RELEASE CRITERIA (Done):
 * HTML api documentation extractor
   - document attribute for modules
+  - document attribute for properties
   - Basic iteration working
   - document attribute for memebers and types
   - HTML templates
@@ -30,6 +30,7 @@
   - Correct path for links
   - document default values
   - Inherit documentation attribute from base classes
+  - Handle regular module functions
 * Inheritance and method overloading fully working
 * Static member access fully working 
 * Add memory overhead of Ints and Floats to GC estimates

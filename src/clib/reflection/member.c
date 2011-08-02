@@ -165,6 +165,9 @@ static void anna_member_type_create()
 	2,
 	v_argv,
 	v_argn);
+    anna_member_document(
+	member_type, anna_mid_get(L"value"),
+	L"The value of the specified member in the specified object.");
 }
 
 #include "clib/reflection/method.c"

@@ -1067,7 +1067,6 @@ ANNA_VM_NATIVE(anna_hash_del, 1)
     return param[0];
 }
 
-
 static void anna_hash_type_create_internal(
     anna_type_t *type, 
     anna_type_t *spec1,
@@ -1101,11 +1100,17 @@ static void anna_hash_type_create_internal(
 	type, anna_mid_get(L"__set__"), 
 	0, &anna_hash_set, spec2, 
 	3, kv_argv, kv_argn);
+    anna_member_document(
+	type, anna_mid_get(L"__set__"),
+	L"Assigns the specified value to the specified key.");
 
     anna_member_create_native_method(
 	type, anna_mid_get(L"__get__"),
 	0, &anna_hash_get,
 	spec2, 2, kv_argv, kv_argn);    
+    anna_member_document(
+	type, anna_mid_get(L"__get__"),
+	L"Returns the value associated with the specified key.");
 
     anna_type_t *i_argv[] = 
 	{
@@ -1168,6 +1173,9 @@ static void anna_hash_type_create_internal(
 	type, anna_mid_get(L"__in__"), 0,
 	&anna_hash_in, spec1, 2, kv_argv,
 	kv_argn);
+    anna_member_document(
+	type, anna_mid_get(L"__in__"),
+	L"Returns true if the specified key exists in the Hash");
 
     anna_member_create_native_method(
 	type,
@@ -1178,6 +1186,9 @@ static void anna_hash_type_create_internal(
 	2,
 	kv_argv,
 	kv_argn);
+    anna_member_document(
+	type, anna_mid_get(L"remove"),
+	L"Remove the specified key from the hash");
     
     anna_hash_add_all_extra_methods(type);
     

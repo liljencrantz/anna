@@ -1,6 +1,8 @@
 
-
 def escape(String str...)
+(
+    documentation("Perform HTML escaping of the specified string.")
+)
 {
     res := "".thaw;
     "".join(str).each(ch)

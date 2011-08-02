@@ -681,6 +681,10 @@ static void anna_type_prepare_property(
 	anna_member_create_property(
 	    type, anna_mid_get(decl->name),
 	    decl->return_type, getter_offset, setter_offset);
+	anna_member_t *member = anna_member_get(type, anna_mid_get(decl->name));
+	member->attribute = 
+	    (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)decl->attribute);
+
     }
 
   END:

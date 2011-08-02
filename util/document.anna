@@ -236,5 +236,7 @@ def main()
     File("documentation/js").makeDirectory();
     File("util/document(jquery.js").copyTo(File("documentation/js/jquery.js"));
     print(
-	"Documented % modules with % members, out of which % where missing their documentation\n" % [doc.moduleTot, doc.memberTot, doc.memberMissing]);  
+	"Documented % namespaces with % members, out of which % (% %%) where documented\n" % [
+	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 
+	    Int::convert(100 * (1 -(Float::convert(doc.memberMissing) / doc.memberTot)))]);  
 }

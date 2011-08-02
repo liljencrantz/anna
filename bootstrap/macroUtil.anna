@@ -1,4 +1,7 @@
 macro checkNodeType(node)
+(
+    documentation("Inserts a code test that checks that the specified node is of the specified type. If the test fails, a Null Literal is returned.")
+)
 {
     return ast(
 	if(! (%x as %y) )
