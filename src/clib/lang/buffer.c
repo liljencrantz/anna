@@ -273,7 +273,7 @@ void anna_buffer_type_create()
 
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__get__Int"), 0,
+	anna_mid_get(L"__get__Int__"), 0,
 	&anna_buffer_get_int, int_type, 2,
 	i_argv, i_argn);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
@@ -302,7 +302,7 @@ void anna_buffer_type_create()
 
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__set__Int"), 0,
+	anna_mid_get(L"__set__Int__"), 0,
 	&anna_buffer_set_int, int_type, 3,
 	i_argv, i_argn);    
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));

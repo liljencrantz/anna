@@ -341,6 +341,113 @@ static void anna_system_load(anna_stack_template_t *stack)
 	L"The arguments that where given to the program at launch.");
 }
 
+static void anna_module_doc_item(
+    anna_type_t *type, 
+    wchar_t *name1,
+    wchar_t *name2,
+    wchar_t *doc)
+{
+    static string_buffer_t *sb = 0;
+    if(!sb)
+    {
+	sb = malloc(sizeof(string_buffer_t));
+	sb_init(sb);
+    }
+    sb_clear(sb);
+    sb_printf(sb, L"%ls%ls", name1, name2);
+    
+    anna_member_document(
+	type,
+	anna_mid_get(sb_content(sb)),
+	doc);
+    
+}
+
+static void anna_module_doc()
+{
+    wchar_t *data_0[][2] = {
+	{L"__neg__", L"Negate the number."},
+	{L"__abs__", L"The absolute value of the number."},
+	{L"__sign__", L"Return the sign of the number."},
+	{0, 0}
+    };    
+
+    wchar_t *data_2[][2] = {
+	{L"__add__", L"Add two numbers together."},
+	{L"__sub__", L"Subtract two numbers from each other."},
+	{L"__mul__", L"Multiply two numbers with each other."},
+	{L"__div__", L"Divide one number with another."},
+	{L"__exp__", L"Raise one number to the power of another."},
+	{L"__increaseAssign__", L"Increase a number by the specified amount."},
+	{L"__decreaseAssign__", L"Decrease a number by the specified amount."},
+	{0, 0}
+    };
+
+    wchar_t *data_iter[][2] = {
+	{L"__map__", L"Exacute the specified function once for each element and return a list containing the output of each function call."},
+	{L"__each__", L"Execute the specified function once for each element."},
+	{L"__filter__", L"Execute the specified function once for each element and return a new object of the same type, containing the elements for which the function returned non-null."},
+	{L"__appendAssign__", L"Append the specified items to this collection."},
+	{L"__get__Int__", L"Return the item at the specified offset."},
+	{L"__get__Range__", L"Return the items in the specified range."},
+	{L"__set__Int__", L"Set the item at the specified offset to the specified value."},
+	{L"__set__Range__", L"Set all of the items in the specified Range to the items in the specified list."},
+	{L"__find__", L"Exacute the specified function once for each element until the function returns a non-null value, then return the corresponding element. Returns null if no element matched."},
+	{0, 0}
+    };
+    
+    anna_type_t *iter_type[] = 
+	{
+	    string_type, mutable_string_type, imutable_string_type, 
+	    any_list_type, mutable_list_type, imutable_list_type, 
+	    buffer_type, node_call_type, hash_type, 0
+	};
+    
+    int i, j;
+    
+    for(i=0; data_0[i][0]; i++)
+    {
+	anna_member_document(
+	    int_type,
+	    anna_mid_get(data_0[i][0]),
+	    data_0[i][1]);
+	anna_member_document(
+	    float_type,
+	    anna_mid_get(data_0[i][0]),
+	    data_0[i][1]);
+	anna_member_document(
+	    complex_type,
+	    anna_mid_get(data_0[i][0]),
+	    data_0[i][1]);
+    }    
+    
+    for(i=0; data_2[i][0]; i++)
+    {
+	anna_module_doc_item(int_type, data_2[i][0], L"Int__", data_2[i][1]);
+
+	anna_module_doc_item(float_type, data_2[i][0], L"Int__", data_2[i][1]);
+	anna_module_doc_item(float_type, data_2[i][0], L"Float__", data_2[i][1]);
+	anna_module_doc_item(float_type, data_2[i][0], L"IntReverse__", data_2[i][1]);
+
+	anna_module_doc_item(complex_type, data_2[i][0], L"Int__", data_2[i][1]);
+	anna_module_doc_item(complex_type, data_2[i][0], L"IntReverse__", data_2[i][1]);
+	anna_module_doc_item(complex_type, data_2[i][0], L"Float__", data_2[i][1]);
+	anna_module_doc_item(complex_type, data_2[i][0], L"FloatReverse__", data_2[i][1]);
+	anna_module_doc_item(complex_type, data_2[i][0], L"Complex__", data_2[i][1]);
+    }
+
+    for(i=0; data_iter[i][0]; i++)
+    {
+	for(j=0;iter_type[j]; j++)
+	{
+	    anna_member_document(
+		iter_type[j],
+		anna_mid_get(data_iter[i][0]),
+		data_iter[i][1]);
+	}
+    }
+}
+
 void anna_module_init()
 {
     /*
@@ -359,6 +466,7 @@ void anna_module_init()
 	};
 
     anna_module_data_create(modules, stack_global);
+    anna_module_doc();
     
     anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
     anna_macro_init(stack_macro);
@@ -442,7 +550,9 @@ static void anna_module_find_import_internal(
 		}
 		else
 		{
-		    anna_error(im->child[j], L"Invalid module. All module names must be identifiers");
+		    anna_error(
+			im->child[j],
+			L"Invalid module. All module names must be identifiers");
 		}
 	    }
 	    m->child[i] = anna_node_create_null(

@@ -9,8 +9,8 @@ type File
 )
 {
     
-    var List «String» path (internal);
-    var Int fd (internal);
+    var List «String» path (internal, documentation("The path to this file"));
+    var Int fd (internal, documentation("If this file is open, this is its file descriptor."));
 
     def __init__(String filename)
     (
@@ -40,7 +40,7 @@ type File
 	"" ~ cio.separator ~ String::convert(cio.separator).join(path)
     }
     
-    var String filename (property(filenameGetter));
+    var String filename (property(filenameGetter), documentation("The name of the file."));
 
     def String readFile()
     (
