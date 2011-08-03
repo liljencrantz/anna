@@ -138,7 +138,7 @@ static void anna_function_load(anna_stack_template_t *stack)
 	string_type, 1, argv, argn);
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"__name__"), string_type,
+	res, anna_mid_get(L"name"), string_type,
 	&anna_function_type_i_get_name, 0,
 	L"The name of this function.");
 
@@ -171,7 +171,7 @@ static void anna_function_load(anna_stack_template_t *stack)
 	L"A list of the default values for the input parameters of this function. Null means no default value exists.");
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"__attribute__"),
+	res, anna_mid_get(L"attribute"),
 	node_call_type,
 	&anna_function_type_i_get_attributes,
 	0,

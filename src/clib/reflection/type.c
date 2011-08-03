@@ -102,14 +102,14 @@ static void anna_type_type_create()
 	L"The Type type represents an Anna Type. It is mostly used for object introspection.");
     
     anna_member_create_native_property(
-	type_type, anna_mid_get(L"__name__"),
+	type_type, anna_mid_get(L"name"),
 	string_type, &anna_type_to_string, 0, L"The name of this type.");
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"isModule"),
 	int_type, &anna_type_is_module, 0, L"Is true if this type represents a module.");
     anna_member_create_native_property(
 	type_type,
-	anna_mid_get(L"__member__"),
+	anna_mid_get(L"member"),
 	anna_list_type_get_imutable(member_type),
 	&anna_type_i_get_member,
 	0, L"A list of all members of this type.");
@@ -138,12 +138,12 @@ static void anna_type_type_create()
 	argn);    
     
     anna_member_create_native_method(
-	type_type, anna_mid_get(L"__abides__"), 0,
+	type_type, anna_mid_get(L"abides"), 0,
 	&anna_type_abides, object_type, 2, argv,
 	argn);   
 
     anna_member_create_native_property(
-	type_type, anna_mid_get(L"__attribute__"),
+	type_type, anna_mid_get(L"attribute"),
 	node_call_type,
 	&anna_type_i_get_attribute,
 	0,

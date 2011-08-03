@@ -33,26 +33,26 @@ type DocumentationData
     {
         prev := (parent.linkPath(from or this) ~ ".") or "";
 	return prev ~ if(from) {
-	    "<a href='%'>%</a>" % [link(from), object.__name__];
+	    "<a href='%'>%</a>" % [link(from), object.name];
 	} else {
-	    "<em>%</em>" % [object.__name__]
+	    "<em>%</em>" % [object.name]
 	}
     }
 
     def String path()
     {
-	return ((parent.path() ~ "/") or "") ~ object.__name__;
+	return ((parent.path() ~ "/") or "") ~ object.name;
     }
 
     def File fileGetter()
     {
-	directory ~ (object.__name__ ~ ".html");
+	directory ~ (object.name ~ ".html");
     }
     var File file (property(fileGetter));
 
     def File directoryGetter()
     {
-	if(parent) {parent.directory ~ parent.object.__name__} else {baseDir}
+	if(parent) {parent.directory ~ parent.object.name} else {baseDir}
     }
     var File directory (property(directoryGetter));
     
@@ -113,7 +113,7 @@ often used code paths, which makes it useful for regression testing.")
     
     def String getLink(Type from, Type to)
     {
-       "<a href='%'>%</a>" % [path[to].link(path[from]), to.__name__];
+       "<a href='%'>%</a>" % [path[to].link(path[from]), to.name];
     }
 
     def String getSignature(reflection.Member mem)
@@ -126,19 +126,19 @@ often used code paths, which makes it useful for regression testing.")
 	      {
 		  "%(type) %(name)%(default)" % ["type": getLink(mem.memberOf, t), "name": fun.inputName[idx], "default": if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""}]
 	      });
-	    "def % <em>%</em> (%);" % [getLink(mem.memberOf, fun.outputType), fun.__name__, argv];
+	    "def % <em>%</em> (%);" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
 	} else {
-	    "var % <em>%</em>;" % [getLink(mem.memberOf, mem.type), mem.__name__];
+	    "var % <em>%</em>;" % [getLink(mem.memberOf, mem.type), mem.name];
 	}
     }
 
     def documentMember(reflection.Member mem)
     {
 	memberTot++;
-        doc := extractDocumentation(mem.__attribute__) or extractDocumentation((mem.value(?) as Function).__attribute__) or "";
+        doc := extractDocumentation(mem.attribute) or extractDocumentation((mem.value(?) as Function).attribute) or "";
 	if(doc == "")
 	{
-	    print("Missing documentation for member %.%\n" % [mem.memberOf.__name__, mem.__name__]);
+	    print("Missing documentation for member %.%\n" % [mem.memberOf.name, mem.name]);
 	    memberMissing++;
 	}
 
@@ -147,7 +147,7 @@ often used code paths, which makes it useful for regression testing.")
 <br>
 %
 
-" % [mem.__name__, getSignature(mem), doc];
+" % [mem.name, getSignature(mem), doc];
     }
     
     def document(Object module)
@@ -167,7 +167,7 @@ often used code paths, which makes it useful for regression testing.")
 	path[module] = DocumentationData(module, parentData);
 	path[module].directory.makeDirectory();
 
-	module.__member__.each(mem)
+	module.member.each(mem)
 	{
 	    if(mem.isStatic)
 	    {
@@ -192,17 +192,17 @@ often used code paths, which makes it useful for regression testing.")
 	if(data.done){return}
 	data.done=1;
 
-        submodule := module.__member__.filter(mem)
+        submodule := module.member.filter(mem)
 	{
 	    val := mem.value(?);
 	    mem.isStatic and val.__type__.isModule;
 	}
-        subtype := module.__member__.filter(mem)
+        subtype := module.member.filter(mem)
 	{
 	    val := mem.value(?);
 	    mem.isStatic and (val as Type);
 	}
-        subother := module.__member__.filter(mem)
+        subother := module.member.filter(mem)
 	{
 	    val := mem.value(?);
 	    mem.isStatic and (!(val.__type__.isModule) and !(val as Type) and (mem.type != Null));
@@ -210,7 +210,7 @@ often used code paths, which makes it useful for regression testing.")
 
 	data.file.writeFile(template("util/document/module.html"));
 
-	module.__member__.each(mem)
+	module.member.each(mem)
 	{
 	    if(mem.isStatic)
 	    {

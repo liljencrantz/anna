@@ -6,8 +6,8 @@ def main()
     hh := [Int:3, String:7, Pair : 9];
     print(hh[Int],"\n");
 
-    print(Int.__abides__(Int));
-    print(Int.__abides__(String));
+    print(Int.abides(Int));
+    print(Int.abides(String));
     print("\n");
 
 }
