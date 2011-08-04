@@ -666,6 +666,20 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     }
     debug(D_SPAM,L"Macros expanded in module %ls\n", module_stack->filename);    
     
+    anna_node_call_t *module_node = node_cast_call(node);
+
+    anna_node_call_t *attribute = 0;
+    for(i=0; i<module_node->child_count; i++)
+    {
+	if(anna_node_is_call_to(module_node->child[i], L"attribute"))
+	{
+	    anna_stack_wrap(module_stack)->type->attribute = node_cast_call(module_node->child[i]);
+	    module_node->child[i] = anna_node_create_null(0);
+	    break;
+	}
+    }
+    
+    
     anna_node_print(D_SPAM, node);
     anna_node_register_declarations(node, module_stack);
     module_stack->flags |= ANNA_STACK_NAMESPACE;
@@ -703,7 +717,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	L"Stack set in module %ls\n", 
 	module_stack->filename);
     
-    anna_node_call_t *module_node = node_cast_call(node);
+    module_node = node_cast_call(node);
     debug(
 	D_SPAM,
 	L"Dependencies imported in module %ls\n", 
