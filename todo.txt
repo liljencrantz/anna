@@ -7,7 +7,6 @@
   - Hide internal elements by default
   - Better module templates
   - Handle complex documentation attributes, e.g. named stuff
-  - Sort members
 * Introduction
 * Check that node compare supports all ast node types
 * More validation:
@@ -17,8 +16,15 @@
 * Types, Stacks etc. should be hashable
 * Access attributes of variables and properties
 * List.sort
+  - List specialization
+  - Return ImutableList when calling ImutableList.sort
+  - Reverse sorting
+  - Sort structure member
 
 1.0 RELEASE CRITERIA (Done):
+* List.sort
+  - Basic sort function in place
+  - Sort function
 * HTML api documentation extractor
   - document attribute for modules
   - document attribute for properties
@@ -31,6 +37,7 @@
   - document default values
   - Inherit documentation attribute from base classes
   - Handle regular module functions
+  - Sort members
 * Inheritance and method overloading fully working
 * Static member access fully working 
 * Add memory overhead of Ints and Floats to GC estimates

@@ -1,5 +1,10 @@
 
+def Int f(Object first, Object second)
+{
+    -(first.__cmp__(second))
+}
+
 def main()
 {
-    print([1,2,75,6,7,3,5,0].sort(), "\n");
+    print([1,2,75,6,7,3,5,0].sort(f), "\n");
 }
