@@ -1036,7 +1036,7 @@ literal:
 opt_block: /* Empty */{$$ = 0;} | block;
 
 function_declaration: 
-	DEF opt_type_and_opt_name declaration_list
+	DEF opt_type_and_opt_name declaration_list opt_declaration_init
 	{
 	    if($2->child[0]->node_type == ANNA_NODE_NULL)
 	    {
@@ -1047,6 +1047,19 @@ function_declaration:
 		anna_error((anna_node_t *)$2, L"missing declaration name");
 	    }
 	    
+	    anna_node_call_t *attr = anna_node_create_block2(&@$);
+	    if($4)
+	    {
+		anna_node_call_add_child(
+		    attr,
+		    (anna_node_t *)anna_node_create_call2(
+			&$4->location,
+			anna_node_create_identifier(
+			    &$4->location,
+			    L"default"),
+			anna_node_clone_deep($4)));
+	    }
+	    	    
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@1,L"__var__"),
@@ -1057,7 +1070,7 @@ function_declaration:
 		    $2->child[1], $2->child[0],
 		    $3, anna_node_create_block2(&@$),
 		    anna_node_create_block2(&@$)), 
-		anna_node_create_block2(&@$));
+		attr);
 	};
 
 function_signature: 
