@@ -59,24 +59,3 @@ def String pairToString(Pair this)
 }
 
 
-def listToString(List this)
-(
-    target(List),
-    name(toString),
-    documentation("Returns a string representation of this List."),
-)
-{
-    return "[" ~ ", ".join(this.map(value){""~(value or "null")}) ~ "]";
-}
-
-def listAll(List this)
-(
-    target(List),
-    name(all),
-    documentation("Returns true if all members of this list are non-Null."),
-)
-{
-    res := 1 as Object;
-    this.each(i){ res = res and i }
-    return res;
-}

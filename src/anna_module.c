@@ -512,6 +512,7 @@ void anna_module_init()
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
     anna_module_bootstrap_macro(L"range");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
+    anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchList");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchString");
     anna_module_bootstrap_macro(L"switch");
