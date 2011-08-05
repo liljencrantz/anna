@@ -191,8 +191,14 @@ often used code paths, which makes it useful for regression testing.")
         data := path[module];
 	if(data.done){return}
 	data.done=1;
-
-      smemb := module.member.sort(def Int(Object first, Object second){(first as Member).name.__cmp__((second as Member).name)}).map(memb){memb as Member};
+        memb := module.member;
+	if(module.isModule)
+	{
+  	    objMemb := «String, Member»[];
+	    Object.member.each(mem){objMemb[mem.name] = mem}
+	    memb = memb.filter(mem){!(mem.name in objMemb)}
+	}
+        smemb := memb.sort(def Int(Object first, Object second){(first as Member).name.__cmp__((second as Member).name)}).map(memb){memb as Member};
 	
         submodule := smemb.filter(mem)
 	{
@@ -212,20 +218,15 @@ often used code paths, which makes it useful for regression testing.")
 
 	data.file.writeFile(template("util/document/module.html"));
 
-	module.member.each(mem)
+	submodule.each(mem)
 	{
-	    if(mem.isStatic)
-	    {
-  	        val := mem.value(?);
-		if(val.__type__.isModule)
-		{
-		    writeFile(val.__type__);
-		}
-		if(val as Type)
-		{
-		    writeFile(val as Type);
-		}
-	    }
+	    val := mem.value(?);
+	    writeFile(val.__type__);
+	}
+	subtype.each(mem)
+	{
+	    val := mem.value(?);
+	    writeFile(val as Type);
 	}
     }
 }

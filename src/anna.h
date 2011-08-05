@@ -430,7 +430,6 @@ static inline size_t anna_align(size_t sz)
     return (((sz-1)/8)+1)*8;
 }
 
-
 /**
    Declare all global, native functions
  */

@@ -1,11 +1,11 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Anna documentation for <%= module.name %></title>
+    <title>Anna - documentation for namespace <%= module.name %></title>
   </head>
   <body>
     
-    <h1><%! data.linkPath() %></h1>
+    <h1>Namespace <%! data.linkPath() %></h1>
 
     <%! extractDocumentation(module.attribute) or ""%>
     
@@ -66,7 +66,7 @@
        }
     %>
 
-    <% module.member.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type) and mem.type != Null}.each(mem){ %>    
+    <% smemb.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type) and mem.type != Null}.each(mem){ %>    
     <hr>
     <%! documentMember(mem) %>
     <% } %>
