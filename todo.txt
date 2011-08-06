@@ -1,25 +1,15 @@
 1.0 RELEASE CRITERIA:
-* Constructors and inheritance fully working
-* Working collect function for error handling
-* Add memory overhead of Hashes, Buffers and Lists to GC estimates
-* Documentation attribute for all standard API functions and types
+* Working raise/collect functions for error handling
+* Documentation coverage of standard API functions and types should be at least 95 %.
 * HTML api documentation extractor
   - Hide internal elements by default
-  - Better module templates
-  - Handle complex documentation attributes, e.g. named stuff
-* Introduction
+  - Better module templates (pretty)
+* Introductory segment in the documentation
 * Check that node compare supports all ast node types
 * More validation:
   - Only static members can be accessed statically
   - Can't assign to constants
   - Check argument types to function calls better...
-* Types, Stacks etc. should be hashable
-* Access attributes of variables and properties
-* List.sort
-  - List specialization
-  - Return ImutableList when calling ImutableList.sort
-  - Reverse sorting
-  - Sort structure member
 
 1.0 RELEASE CRITERIA (Done):
 * List.sort
@@ -47,12 +37,17 @@
 * Check that node each, print supports all ast node types
 * Usable File type
 * Usable Date type
+* Access attributes of variables and properties
 
 2.0 RELEASE CRITERIA:
+* Documentation coverage of standard API functions and types should be 100 %.
+* Constructors and inheritance _fully_ working
+* Add memory overhead of Hashes, Buffers and Lists to GC estimates
 * HTML api documentation extractor
   - Search functionality
   - Show/hide different elements
   - expand/minimize docs
+  - Handle complex documentation attributes, e.g. named stuff
 * Regexp library
 * Query library (SQL Alchemy/Linq/etc. replacement)
 * Live debugger library
@@ -65,6 +60,10 @@
 * Imutable Map/Set? Maybe...
 * make anna_node_print print out ast nodes with some syntax sugar support
 * List.sort
+  - List specialization
+  - Return ImutableList when calling ImutableList.sort
+  - Reverse sorting
+  - Sort structure member
 
 MISC:
 Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
@@ -89,33 +88,23 @@ Type member setup needs some dependency resolution in order for type calculation
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
 Multiple inheritance clashes aren't handled sanely
-A bunch of AST node types are missing some functionality, e.g. equality comparison, hashing, shallow cloning, deep cloning, etc.
+A bunch of AST node types are missing equality comparison, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
-Stack types don't abide to Object. Making them do so causes a clash on e.g. __eq__. How do we handle this?
 Can't mix named arguments and varargs
 
 LANGUAGE FEATURES:
 Function templates
-Should modules map to directories, not files?
 Submodules
-Default function argument values. These also need to be part of the function interface and contained in function keys.
-No magic toString method, use attributes to specify methods for implicit conversion
 Return value type for continuations
 
 STDLIB FEATURES:
-HTML documentation extractor
-The rest of the hashtable functions (filter, find, properties for key and value lists, etc)
+The rest of the hashtable functions (filter, find, properties for key and value lists, etc.)
 Set type
-hashCode function for Pair, List, Range, Complex, Char
+hashCode function for Pair
 A backtrace function
-io module
-time module
 List.milter 
 Range.milter
 Hash.milter
-List.reduce
-Range.reduce
-List.sort
 List and Hash should be made fail fast
 
 RELIABILITY:
@@ -126,36 +115,32 @@ Validate that all functions end with an empty stack frame
 Tests for complex math
 Tests for floating point math
 Tests for type checking on invalid specialization
-Test return types of complex expression types, e.g. if(){}+1.
-Lots more coverage of using null as argument 
+Lots more coverage of using null value as function argument
 
 DOCUMENTATION:
 Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
 Mandel test should be no more than one order of magnitude slower than the corresponding C implementation
-Start implementing a few of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance.
+Start implementing a few of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance without too much work.
 More builtin integer ops, e.g. mod, and Float comparisons
 Variable lookup instruction version for looking up in current frame
 Variable lookup instruction version for looking up in first parent frame
 Implement tail recursion
-Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. 
+Optimization idea: Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. 
 Add profiling information to the VM
 Make a version of the fold op that takes a count parameter
-Every member declaration also results in a stack template declaration because all members are also part of the stack. This further adds to the argument that we should nix stack_template_t.
 Lazy loading of modules
-Can we make string literals faster?
 Instead of a static using flag in the GC, the value shouls switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
-Make Char and Float fast as HashMap keys
+Make Char and Float fast when used as HashMap keys
 Add bytecodes for comparisons
 
 UNUSED OPERATORS:
 Currently, the @ symbol is unused. 
 
 PLANS FOR APPS WRITTEN IN ANNA:
-Documentation generator: Introspect all data types and generate html documentation on them.
 live: Debug a running application using command line or web browser.
 Compiler front end.
 Asynchronous continuation based app/web server
-Simple car game using my terrain rendering engine
+Switch the Anna dungeon crawler to use Anna instead of Lua as it's scripting language.
 

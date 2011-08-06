@@ -352,7 +352,10 @@ void anna_int_type_create()
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-
+    anna_member_document(
+	int_type, mmid,
+	L"Convert a String to an Int. The String must be in decimal and the entire string (not just a prefix of it) must be a legal number.");
+    
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertFloat"),
 	0, &anna_int_convert_float, int_type, 1,
@@ -360,6 +363,9 @@ void anna_int_type_create()
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
+    anna_member_document(
+	int_type, mmid,
+	L"Convert a Float to an Int, truncating any stray precision.");
 
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertInt"), 0,
@@ -368,6 +374,9 @@ void anna_int_type_create()
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
+    anna_member_document(
+	int_type, mmid,
+	L"Converts an Int to itself. This is a noop.");
 
     anna_member_create_native_method(
 	int_type, ANNA_MID_DEL, 0, &anna_int_del, int_type, 1, i_argv, i_argn);
