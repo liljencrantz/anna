@@ -50,6 +50,12 @@ ANNA_VM_NATIVE(anna_char_to_string, 1)
     return anna_from_obj(anna_string_create(1, &ch));
 }
 
+ANNA_VM_NATIVE(anna_char_convert, 1)
+{
+    int ch = anna_as_int(param[0]);
+    return anna_from_obj(anna_char_create(ch));
+}
+
 void anna_char_type_create()
 {
     anna_type_t *argv[] = 
@@ -97,7 +103,22 @@ void anna_char_type_create()
 	&anna_char_i_get_lower,
 	0,
 	L"The lower case eqivalent of this Char");
-    
+    mid_t mmid;
+    wchar_t *conv_argn[]=
+	{
+	    L"value"
+	}
+    ;
+
+    mmid = anna_member_create_native_type_method(
+	char_type, anna_mid_get(L"convert"), 0,
+	&anna_char_convert, char_type, 1, &int_type,
+	conv_argn);
+    anna_member_document(
+	char_type, mmid,
+	L"Creates a new Char object with the specified ordinal number.");
+
+
     anna_member_create_native_method(
 	char_type, anna_mid_get(L"__cmp__"), 0,
 	&anna_char_cmp, int_type, 2, argv, argn);    

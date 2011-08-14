@@ -21,4 +21,11 @@ def main()
     print(Float::convert("hello"), "\n");
     print(Float::convert(?), "\n");
     
+    count := 0;
+    (0..100_000).each(idx)
+    {   
+	count += Char::convert(idx).ordinal == idx;
+    }
+    print(count, '\n');
+
 }

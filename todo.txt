@@ -91,6 +91,7 @@ Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing equality comparison, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
 Can't mix named arguments and varargs
+No working raise/collect functions
 
 LANGUAGE FEATURES:
 Function templates

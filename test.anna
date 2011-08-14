@@ -6,5 +6,7 @@ def Int f(Object first, Object second)
 
 def main()
 {
+    print(Char::convert(69), '\n');
+    print('\0' + 69, '\n');
     print([1,2,75,6,7,3,5,0].sort(f), "\n");
 }

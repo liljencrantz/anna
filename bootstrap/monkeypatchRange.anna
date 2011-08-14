@@ -44,9 +44,10 @@ def rangeToString(Range this)
     documentation("String conversion. Called by the String::convert method."),
 )
 {
-    if(this.isOpen)
+    use(this);
+    if(isOpen)
     {
-	return "[" ~ this.from ~", "~ (this.from+this.step)~", "~ (this.from+this.step+this.step)~"...]";
+	return "[" ~ from ~", "~ (from+step)~", "~ (from+step+step)~"...]";
     }
     return "[" ~ ", ".join(this.map(value){""~(value)}) ~ "]";
 }
