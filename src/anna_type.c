@@ -399,7 +399,7 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
     CRASH;
 }
 
-void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *orig)
+static void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *orig)
 {
     anna_node_t *doc = anna_attribute_call(res->attribute, L"documentation");
     if(!doc)
@@ -417,7 +417,7 @@ void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *orig)
 	    
 	    anna_node_call_add_child(
 		res->attribute, 
-		anna_node_create_call2(
+		(anna_node_t *)anna_node_create_call2(
 		    0,
 		    anna_node_create_identifier(0, L"documentation"),
 		    anna_node_clone_deep(dd)));
@@ -476,7 +476,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        copy->setter_offset = -1;
        if(memb->attribute)
        {
-	   copy->attribute = anna_node_clone_deep(memb->attribute);
+	   copy->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)memb->attribute);
        }
        
        if(memb->is_static)
@@ -889,7 +889,10 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
 {
     if(!type->definition)
     {
-	anna_error(spec, L"Invalid specialization for type %ls\n", type->name);
+	anna_error(
+	    (anna_node_t *)spec, 
+	    L"Invalid specialization for type %ls\n",
+	    type->name);
 	return type;
     }
     

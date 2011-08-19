@@ -365,14 +365,14 @@ static void anna_module_doc_item(
 
 static void anna_module_doc()
 {
-    wchar_t *data_0[][2] = {
+    wchar_t *data_numerical[][2] = {
 	{L"__neg__", L"Negate the number."},
 	{L"__abs__", L"The absolute value of the number."},
 	{L"__sign__", L"Return the sign of the number."},
 	{0, 0}
-    };    
+    };
 
-    wchar_t *data_2[][2] = {
+    wchar_t *data_numerical_with_alias[][2] = {
 	{L"__add__", L"Add two numbers together."},
 	{L"__sub__", L"Subtract two numbers from each other."},
 	{L"__mul__", L"Multiply two numbers with each other."},
@@ -380,6 +380,8 @@ static void anna_module_doc()
 	{L"__exp__", L"Raise one number to the power of another."},
 	{L"__increaseAssign__", L"Increase a number by the specified amount."},
 	{L"__decreaseAssign__", L"Decrease a number by the specified amount."},
+	{L"__nextAssign__", L"Increase a number by one step."},
+	{L"__prevAssign__", L"Decrease a number by one step."},
 	{L"__shl__", L"Shift the bit pattern representing this number the specified number of bits left."},
 	{L"__shr__", L"Shift the bit pattern representing this number the specified number of bits right."},
 	{0, 0}
@@ -403,40 +405,45 @@ static void anna_module_doc()
 	{
 	    string_type, mutable_string_type, imutable_string_type, 
 	    any_list_type, mutable_list_type, imutable_list_type, 
-	    buffer_type, node_call_type, hash_type, 0
+	    buffer_type, node_call_type, hash_type, range_type, 0
 	};
     
     int i, j;
     
-    for(i=0; data_0[i][0]; i++)
+    for(i=0; data_numerical[i][0]; i++)
     {
 	anna_member_document(
 	    int_type,
-	    anna_mid_get(data_0[i][0]),
-	    data_0[i][1]);
+	    anna_mid_get(data_numerical[i][0]),
+	    data_numerical[i][1]);
 	anna_member_document(
 	    float_type,
-	    anna_mid_get(data_0[i][0]),
-	    data_0[i][1]);
+	    anna_mid_get(data_numerical[i][0]),
+	    data_numerical[i][1]);
 	anna_member_document(
 	    complex_type,
-	    anna_mid_get(data_0[i][0]),
-	    data_0[i][1]);
+	    anna_mid_get(data_numerical[i][0]),
+	    data_numerical[i][1]);
     }    
     
-    for(i=0; data_2[i][0]; i++)
+    for(i=0; data_numerical_with_alias[i][0]; i++)
     {
-	anna_module_doc_item(int_type, data_2[i][0], L"Int__", data_2[i][1]);
+	anna_module_doc_item(int_type, data_numerical_with_alias[i][0], L"Int__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(int_type, data_numerical_with_alias[i][0], L"", data_numerical_with_alias[i][1]);
 
-	anna_module_doc_item(float_type, data_2[i][0], L"Int__", data_2[i][1]);
-	anna_module_doc_item(float_type, data_2[i][0], L"Float__", data_2[i][1]);
-	anna_module_doc_item(float_type, data_2[i][0], L"IntReverse__", data_2[i][1]);
+	anna_module_doc_item(char_type, data_numerical_with_alias[i][0], L"Int__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(char_type, data_numerical_with_alias[i][0], L"Char__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(char_type, data_numerical_with_alias[i][0], L"", data_numerical_with_alias[i][1]);
 
-	anna_module_doc_item(complex_type, data_2[i][0], L"Int__", data_2[i][1]);
-	anna_module_doc_item(complex_type, data_2[i][0], L"IntReverse__", data_2[i][1]);
-	anna_module_doc_item(complex_type, data_2[i][0], L"Float__", data_2[i][1]);
-	anna_module_doc_item(complex_type, data_2[i][0], L"FloatReverse__", data_2[i][1]);
-	anna_module_doc_item(complex_type, data_2[i][0], L"Complex__", data_2[i][1]);
+	anna_module_doc_item(float_type, data_numerical_with_alias[i][0], L"Int__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(float_type, data_numerical_with_alias[i][0], L"Float__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(float_type, data_numerical_with_alias[i][0], L"IntReverse__", data_numerical_with_alias[i][1]);
+
+	anna_module_doc_item(complex_type, data_numerical_with_alias[i][0], L"Int__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(complex_type, data_numerical_with_alias[i][0], L"IntReverse__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(complex_type, data_numerical_with_alias[i][0], L"Float__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(complex_type, data_numerical_with_alias[i][0], L"FloatReverse__", data_numerical_with_alias[i][1]);
+	anna_module_doc_item(complex_type, data_numerical_with_alias[i][0], L"Complex__", data_numerical_with_alias[i][1]);
     }
 
     for(i=0; data_iter[i][0]; i++)

@@ -6,8 +6,8 @@ type Derived
 {
     def __init__()
     {
-	Int.__init__(this, 0);
-	Range.__init__(this, 0,10,1);
+	Int::__init__(this, 0);
+	Range::__init__(this, 0,10,1);
     }
 }
 

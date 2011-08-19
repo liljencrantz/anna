@@ -268,6 +268,11 @@ ANNA_VM_NATIVE(anna_int_convert_int, 1)
     return param[0];
 }
 
+ANNA_VM_NATIVE(anna_int_convert_char, 1)
+{
+    return anna_from_int((int)anna_as_char(param[0]));
+}
+
 void anna_int_type_create()
 {
     anna_type_t *i_argv[] = 
@@ -366,6 +371,17 @@ void anna_int_type_create()
     anna_member_document(
 	int_type, mmid,
 	L"Convert a Float to an Int, truncating any stray precision.");
+
+    mmid = anna_member_create_native_type_method(
+	int_type, anna_mid_get(L"convertChar"), 0,
+	&anna_int_convert_char, int_type, 1, &char_type,
+	conv_argn);
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+    anna_member_document(
+	int_type, mmid,
+	L"Returns the ordinal number of a Char. This method returns the same value as the Char.ordinal property.");
 
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertInt"), 0,

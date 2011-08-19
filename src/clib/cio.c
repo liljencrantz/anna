@@ -338,30 +338,30 @@ static void anna_stat_mode_load(anna_stack_template_t *stack)
      
     anna_module_const_int(stack, L"regular", S_IFREG, L"Regular file");
     anna_module_const_int(stack, L"socket", S_IFSOCK, L"Socket");
-    anna_module_const_int(stack, L"link", S_IFLNK, L"Symbolic link");
-    anna_module_const_int(stack, L"block", S_IFBLK, L"Block device");
-    anna_module_const_int(stack, L"directory", S_IFDIR, L"Directory");
-    anna_module_const_int(stack, L"character", S_IFCHR, L"Character device");
-    anna_module_const_int(stack, L"fifo", S_IFIFO, L"FIFO");
+    anna_module_const_int(stack, L"link", S_IFLNK, L"Symbolic link.");
+    anna_module_const_int(stack, L"block", S_IFBLK, L"Block device.");
+    anna_module_const_int(stack, L"directory", S_IFDIR, L"Directory.");
+    anna_module_const_int(stack, L"character", S_IFCHR, L"Character device.");
+    anna_module_const_int(stack, L"fifo", S_IFIFO, L"FIFO.");
     
-    anna_module_const_int(stack, L"suid", S_ISUID, L"Set UID bit");
-    anna_module_const_int(stack, L"sgid", S_ISGID, L"Set-group-ID bit");
-    anna_module_const_int(stack, L"sticky", S_ISVTX, L"Sticky bit");
+    anna_module_const_int(stack, L"suid", S_ISUID, L"Set UID bit.");
+    anna_module_const_int(stack, L"sgid", S_ISGID, L"Set-group-ID bit.");
+    anna_module_const_int(stack, L"sticky", S_ISVTX, L"Sticky bit.");
     
-    anna_module_const_int(stack, L"userAll", S_IRWXU, L"Mask for all file owner permissions");
-    anna_module_const_int(stack, L"userRead", S_IRUSR, L"File owner read permission");
-    anna_module_const_int(stack, L"userwrite", S_IWUSR, L"File owner write permission");
-    anna_module_const_int(stack, L"userExecute", S_IXUSR, L"File owner execute permission");
+    anna_module_const_int(stack, L"userAll", S_IRWXU, L"Mask for all file owner permissions.");
+    anna_module_const_int(stack, L"userRead", S_IRUSR, L"File owner read permission.");
+    anna_module_const_int(stack, L"userwrite", S_IWUSR, L"File owner write permission.");
+    anna_module_const_int(stack, L"userExecute", S_IXUSR, L"File owner execute permission.");
     
-    anna_module_const_int(stack, L"groupAll", S_IRWXG, 0);
-    anna_module_const_int(stack, L"groupRead", S_IRGRP, 0);
-    anna_module_const_int(stack, L"groupwrite", S_IWGRP, 0);
-    anna_module_const_int(stack, L"groupExecute", S_IXGRP, 0);
+    anna_module_const_int(stack, L"groupAll", S_IRWXG, L"Mask for all group permissions.");
+    anna_module_const_int(stack, L"groupRead", S_IRGRP, L"Group has read permission.");
+    anna_module_const_int(stack, L"groupwrite", S_IWGRP, L"Group has write permission.");
+    anna_module_const_int(stack, L"groupExecute", S_IXGRP, L"Group has execute permission.");
     
-    anna_module_const_int(stack, L"otherAll", S_IRWXO, 0);
-    anna_module_const_int(stack, L"otherRead", S_IROTH, 0);
-    anna_module_const_int(stack, L"otherwrite", S_IWOTH, 0);
-    anna_module_const_int(stack, L"otherExecute", S_IXOTH, 0);
+    anna_module_const_int(stack, L"otherAll", S_IRWXO, L"Mask for permissions for others (not in group).");
+    anna_module_const_int(stack, L"otherRead", S_IROTH, L"Others have read permission.");
+    anna_module_const_int(stack, L"otherwrite", S_IWOTH, L"Others have write permission.");
+    anna_module_const_int(stack, L"otherExecute", S_IXOTH, L"Others have execute permission.");
 }
 
 void anna_cio_load(anna_stack_template_t *stack)

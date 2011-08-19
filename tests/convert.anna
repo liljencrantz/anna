@@ -10,6 +10,8 @@ def main()
     print(Int::convert(9), "\n");
     print(Int::convert(-7), "\n");
     print(Int::convert(?), "\n");
+    val := 2 ^shl 100;
+    print(val == Int::convert(Float::convert(val)), "\n");
 
     print("Float conversions\n");
     print(Float::convert(66.5) == 66.5, "\n");
@@ -25,6 +27,7 @@ def main()
     (0..100_000).each(idx)
     {   
 	count += Char::convert(idx).ordinal == idx;
+	count += Int::convert(Char::convert(idx)) == idx;
     }
     print(count, '\n');
 

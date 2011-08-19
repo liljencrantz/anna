@@ -56,6 +56,16 @@ ANNA_VM_NATIVE(anna_char_convert, 1)
     return anna_from_obj(anna_char_create(ch));
 }
 
+ANNA_VM_NATIVE(anna_char_sub_char, 2)
+{
+    if(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object)
+        return null_entry;
+  
+    wchar_t v1 = anna_as_char(param[0]);
+    wchar_t v2 = anna_as_char(param[1]);
+    return anna_from_int(v1 - v2);
+}
+
 void anna_char_type_create()
 {
     anna_type_t *argv[] = 
@@ -86,7 +96,7 @@ void anna_char_type_create()
     anna_member_create_native_property(
 	char_type, anna_mid_get(L"ordinal"),
 	int_type, &anna_char_i_get_ordinal, 0,
-	L"The ordinal number of this Char");
+	L"The ordinal number of this Char. This property returns the same value as the Int::convert static method.");
     
     anna_member_create_native_property(
 	char_type,
@@ -104,6 +114,8 @@ void anna_char_type_create()
 	0,
 	L"The lower case eqivalent of this Char");
     mid_t mmid;
+    anna_function_t *fun;
+
     wchar_t *conv_argn[]=
 	{
 	    L"value"
@@ -119,6 +131,7 @@ void anna_char_type_create()
 	L"Creates a new Char object with the specified ordinal number.");
 
 
+
     anna_member_create_native_method(
 	char_type, anna_mid_get(L"__cmp__"), 0,
 	&anna_char_cmp, int_type, 2, argv, argn);    
@@ -127,6 +140,25 @@ void anna_char_type_create()
 	char_type, ANNA_MID_TO_STRING, 0,
 	&anna_char_to_string, string_type, 1,
 	argv, argn);
+
+
+    anna_type_t *sub_argv[]=
+	{
+	    char_type,
+            char_type
+	}
+    ;
+    
+    wchar_t *sub_argn[]=
+	{
+	  L"this", L"param"
+	}
+    ;
+
+    mmid = anna_member_create_native_method(
+	char_type, anna_mid_get(L"__sub__Char__"), 0, &anna_char_sub_char, int_type, 2, sub_argv, sub_argn);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(char_type, mmid)));
+    anna_function_alias_add(fun, L"__sub__");
 
     anna_char_type_i_create();
 }

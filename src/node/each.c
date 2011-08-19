@@ -50,7 +50,7 @@ anna_node_t *anna_node_each_replace(
 	    {
 		if(!n->child[i])
 		{
-		    anna_error(n, L"Invalid child %d of %d\n", i+1, n->child_count);
+		    anna_error((anna_node_t *)n, L"Invalid child %d of %d\n", i+1, n->child_count);
 		    CRASH;
 		}
 		

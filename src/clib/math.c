@@ -13,6 +13,7 @@
 #include "../anna.h"
 #include "../anna_module.h"
 #include "../anna_vm.h"
+#include "clib/clib.h"
 
 #include "math.h"
 
