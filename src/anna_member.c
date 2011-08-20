@@ -453,7 +453,7 @@ mid_t anna_member_create_method(
 	    anna_function_wrap(
 		method));
 
-    m->attribute = anna_node_clone_deep(method->attribute);
+    m->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)method->attribute);
         
     return mid;
 }

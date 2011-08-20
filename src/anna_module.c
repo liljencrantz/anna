@@ -679,7 +679,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     anna_node_call_t *module_node = node_cast_call(node);
 
-    anna_node_call_t *attribute = 0;
     for(i=0; i<module_node->child_count; i++)
     {
 	if(anna_node_is_call_to(module_node->child[i], L"attribute"))
@@ -688,8 +687,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	    module_node->child[i] = anna_node_create_null(0);
 	    break;
 	}
-    }
-    
+    }    
     
     anna_node_print(D_SPAM, node);
     anna_node_register_declarations(node, module_stack);
