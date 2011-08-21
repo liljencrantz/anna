@@ -1,26 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-
-#include "anna.h"
-#include "anna_node.h"
-#include "clib/parser.h"
-#include "anna_node_create.h"
-#include "anna_member.h"
-#include "clib/lang/int.h"
-#include "clib/lang/char.h"
-#include "anna_type.h"
-#include "clib/lang/string.h"
-#include "anna_function.h"
-#include "clib/anna_function_type.h"
-#include "common.h"
-#include "anna_vm.h"
-#include "anna_mid.h"
-#include "anna_type_data.h"
-#include "anna_intern.h"
 
 anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 

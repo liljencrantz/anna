@@ -42,9 +42,7 @@ array_list_t anna_module_default_macros = AL_STATIC;
 static wchar_t *anna_module_search(
     anna_stack_template_t *parent, wchar_t *name)
 {
-    /*
-      FIXME: Hardcoded uglyness...
-     */
+    FIXME("library search path is hardcoded")
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"lib/%ls.anna", name);

@@ -451,7 +451,7 @@ void anna_function_type_print(
    Return the memory address location for the object entry with the
    specified mid in the specified object, or a null pointer if it does
    not exist.
- */
+*/
 static __pure inline anna_entry_t **anna_entry_get_addr(
     anna_object_t *obj, mid_t mid)
 {

@@ -97,7 +97,8 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
     if(res)
     {
 	
-	/* FIXME: We remake this node into a new one of a different type- Very, very fugly. Do something prettier, please? */
+	FIXME("Changing a node into a new one of a different type- Very, very ugly. Do something prettier, please?")
+
 	anna_node_dummy_t *new_res = (anna_node_dummy_t *)call;
 	new_res->node_type = ANNA_NODE_DUMMY;
 	new_res->payload = anna_type_wrap(res);

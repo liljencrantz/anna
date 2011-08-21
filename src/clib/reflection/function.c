@@ -266,7 +266,7 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 	return *function_ptr;
     }
     return 0;	
-//     FIXME: Is there any validity checking we could do here?
+    FIXME("Missing validity checking")
 }
 
 anna_type_t *anna_function_type_each_create(

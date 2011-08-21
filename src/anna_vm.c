@@ -155,7 +155,6 @@ anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
     return first_copy;    
 }
 
-
 static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_entry_t **p = &stack->base[0];
@@ -184,7 +183,6 @@ static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 	stack->function?stack->function->name:L"<null>", 
 	stack->function? (stack->code - stack->function->code): -1);
 }
-
 
 void anna_vm_init()
 {

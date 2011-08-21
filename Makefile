@@ -25,10 +25,12 @@ CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1			\
 -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500	\
 -D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I src -I .
 
-# Full cflags, including warnings 
-CFLAGS := $(CFLAGS_NOWARN) -Wall -Werror=implicit-function-declaration	\
--Wmissing-braces -Wmissing-prototypes 
+WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
+-Wmissing-prototypes
 #-Wsuggest-attribute=const	-Wsuggest-attribute=pure
+
+# Full cflags, including warnings 
+CFLAGS := $(CFLAGS_NOWARN) $(WARN)
 
 ANNA_CLIB_OBJS := src/clib/lang.o src/clib/reflection.o			\
 src/clib/parser.o src/clib/cio.o src/clib/math.o src/clib/cerror.o	\
@@ -38,10 +40,10 @@ src/clib/ctime.o
 ANNA_OBJS := $(ANNA_CLIB_OBJS) src/dtoa.o src/anna.o src/util.o		\
 src/anna_node.o src/anna_macro.o src/anna_stack.o autogen/anna_lex.o	\
 autogen/anna_yacc.o src/anna_type.o src/anna_function.o			\
-src/anna_member.o src/util/util.o src/anna_module.o src/anna_vm.o	\
-src/anna_alloc.o src/anna_compile.o src/anna_abides.o src/wutil.o	\
-src/anna_mid.o src/common.o src/anna_attribute.o src/anna_object.o	\
-src/anna_error.o src/anna_parse.o src/anna_invoke.o
+src/util/util.o src/anna_module.o src/anna_vm.o src/anna_alloc.o	\
+src/anna_compile.o src/wutil.o src/common.o		\
+src/anna_attribute.o src/anna_object.o src/anna_error.o			\
+src/anna_parse.o src/anna_invoke.o
 
 LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
 

@@ -181,9 +181,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 	ptr_in++)
     {
 
-	/*
-	  FIXME: We're not handling hex escape sequences.
-	 */
+	FIXME("Hex escape sequences are still not handled")
 
 	switch(*ptr_in)
 	{

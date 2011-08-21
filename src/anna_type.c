@@ -25,6 +25,11 @@
 #include "clib/lang/hash.h"
 #include "clib/anna_function_type.h"
 #include "anna_mid.h"
+#include "anna_tt.h"
+
+#include "anna_member.c"
+#include "anna_abides.c"
+#include "anna_mid.c"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;
@@ -91,10 +96,8 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     }
 }
 
-/**
-   FIXME: Very ugly method. It mangles functions into methods and does
-   a bunch of related stuff. But it's a bit of an unreadable mess...
- */
+FIXME("anna_type_mangle_methods is horrible and should be rewriten as an anna macro")
+
 static void anna_type_mangle_methods(
     anna_type_t *type)
 {

@@ -25,6 +25,9 @@
 /* Ignore alignment of struct */
 # define __packed	__attribute__ ((packed))
 # define __sentinel	__attribute__ ((sentinel))
+#define DO_PRAGMA(x) _Pragma (#x)
+#define FIXME(x) DO_PRAGMA(message ("FIXME - " #x))
+
 #else
 # define __pure		/* no pure */
 # define __const	/* no const */
@@ -37,6 +40,9 @@
 # define __sentinel	/* no sentinel */
 # define likely(x)	(x)
 # define unlikely(x)	(x)
+#define FIXME(x) 
 #endif
+
+          
 
 #endif

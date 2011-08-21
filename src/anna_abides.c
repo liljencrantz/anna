@@ -1,27 +1,3 @@
-#define _GNU_SOURCE
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-#include <assert.h>
-#include <string.h>
-#include <locale.h>
-
-#include "common.h"
-#include "util.h"
-#include "anna_function.h"
-#include "anna.h"
-#include "anna_module.h"
-#include "clib/lang/int.h"
-#include "clib/anna_function_type.h"
-#include "anna_type.h"
-#include "anna_member.h"
-#include "anna_status.h"
-#include "anna_vm.h"
-#include "anna_tt.h"
-#include "anna_alloc.h"
-#include "anna_slab.h"
-#include "anna_mid.h"
-#include "anna_attribute.h"
 
 #define ABIDES_IN_TRANSIT -1
 
@@ -344,7 +320,7 @@ void anna_type_intersect_into(
 		
 		array_list_t alias = AL_STATIC;
 		anna_attribute_call_all(ff1->attribute, L"alias", &alias);
-
+		
 		for(i=0; i<al_get_count(&alias); i++)
 		{
 		    anna_node_t *al = al_get(&alias, i);
