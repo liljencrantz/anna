@@ -44,6 +44,7 @@ static inline void anna_frame_return(anna_vmstack_t *stack)
 }
 
 anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack);
+
 static inline anna_object_t *anna_vm_trampoline(
     anna_function_t *fun,
     anna_vmstack_t *stack)
@@ -71,7 +72,7 @@ static int stack_idx(anna_vmstack_t *stack)
 }
 
 
-static int stack_sum(anna_vmstack_t *stack)
+__cold static int stack_sum(anna_vmstack_t *stack)
 {
     
     int res = 0xdeadbeef;
@@ -85,7 +86,7 @@ static int stack_sum(anna_vmstack_t *stack)
     return res;
 }
 
-static void stack_describe(anna_vmstack_t *stack)
+__unused __cold static void stack_describe(anna_vmstack_t *stack)
 {
     if(stack)
     {
@@ -155,7 +156,7 @@ anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
     return first_copy;    
 }
 
-static void anna_vmstack_print(anna_vmstack_t *stack)
+__unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_entry_t **p = &stack->base[0];
     wprintf(L"\tFrame content:\n");
@@ -173,7 +174,7 @@ static void anna_vmstack_print(anna_vmstack_t *stack)
     }
 }
 
-static void anna_vmstack_print_parent(anna_vmstack_t *stack)
+__unused __cold static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 {
     if(!stack)
 	return;
@@ -184,7 +185,7 @@ static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 	stack->function? (stack->code - stack->function->code): -1);
 }
 
-void anna_vm_init()
+__cold void anna_vm_init()
 {
     anna_vmstack_static_ptr = &anna_vmstack_static_data[0];
 }
@@ -1277,7 +1278,6 @@ void anna_vm_mark_code(anna_function_t *f)
     }
 }
 
-
 /**
    This method is the best ever! It does nothing and returns a null
    object. All method calls on the null object run this. 
@@ -1286,9 +1286,13 @@ anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
 {
     char *code = stack->code;
     /* We rewind the code pointr one function call to get to the
-     * instruction that called us. TWe then check how many parameters
-     * we were called with, and drop that number of parameters and
-     * finally push a null value to the stack */
+     * instruction that called us. If the previous instruction was a
+     * member access, this function call is in fact a getter/setter so
+     * we pop the correct number of arguments for that. Otherwise, we
+     * check how many parameters we were called with, and drop that
+     * number of parameters+1 (The extra pop is the function
+     * itself). Regardless of how we where called, we finally push a
+     * null value to the stack */
     code -= sizeof(anna_op_count_t);
     anna_op_count_t *op = (anna_op_count_t *)code;
     switch(op->instruction)
@@ -1312,5 +1316,3 @@ anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
     anna_vmstack_push_object(stack, null_object);
     return stack;
 }
-
-

@@ -1,0 +1,16 @@
+def foo(Int first, Int second, Int rest...)
+{
+    print(first, ' ', second, ' ', rest, '\n');
+}
+
+def main()
+    (
+	documentation("Test that variadic arguments and named arguments mix properly")
+    )
+{
+    foo(first:1, second:2);
+    foo(first:1, second:2, 3,4,5);
+    foo(1, 2, 3, 4, 5);
+    foo(1, 2);
+    foo(3,4,5,first:1, second:2);
+}

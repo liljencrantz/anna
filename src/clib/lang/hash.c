@@ -123,7 +123,7 @@ static inline anna_entry_t *anna_hash_get_value_from_idx(anna_object_t *this, in
     return ahi_unwrap(this)->table[idx].value;
 }
 
-static void anna_hash_print(anna_hash_t *this)
+__unused static void anna_hash_print(anna_hash_t *this)
 {
     int i;
     for(i=0; i<=this->mask; i++)

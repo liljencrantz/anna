@@ -538,9 +538,9 @@ void anna_type_intersect_into(
 void anna_error(
     struct anna_node *node, wchar_t *msg, ...);
 
-anna_object_t *anna_object_create(
+__hot __malloc anna_object_t *anna_object_create(
     anna_type_t *type);
-anna_object_t *anna_object_create_raw(
+__hot __malloc anna_object_t *anna_object_create_raw(
     size_t sz);
 
 void anna_object_print(

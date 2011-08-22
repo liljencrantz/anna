@@ -25,8 +25,13 @@
 /* Ignore alignment of struct */
 # define __packed	__attribute__ ((packed))
 # define __sentinel	__attribute__ ((sentinel))
+
+# define __hot	__attribute__ ((hot))
+# define __cold	__attribute__ ((cold))
 #define DO_PRAGMA(x) _Pragma (#x)
 #define FIXME(x) DO_PRAGMA(message ("FIXME - " #x))
+
+# define __unused	__attribute__ ((unused))
 
 #else
 # define __pure		/* no pure */
@@ -38,9 +43,14 @@
 # define __used		/* no used */
 # define __packed	/* no packed */
 # define __sentinel	/* no sentinel */
+# define __hot	
+# define __cold
 # define likely(x)	(x)
 # define unlikely(x)	(x)
 #define FIXME(x) 
+
+# define __unused	__attribute__ ((unused))
+
 #endif
 
           

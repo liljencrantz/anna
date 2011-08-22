@@ -26,7 +26,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this);
  */
 #define ANNA_VM_NATIVE(name,param_count) \
     static inline anna_entry_t *name ## _i(anna_entry_t **param);	\
-    static anna_vmstack_t *name(anna_vmstack_t *stack, anna_object_t *me) \
+    static __hot anna_vmstack_t *name(anna_vmstack_t *stack, anna_object_t *me) \
     {									\
 	anna_entry_t *res = name ## _i(stack->top-param_count);		\
 	anna_vmstack_drop(stack, param_count+1);			\
@@ -37,7 +37,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this);
 
 #define ANNA_VM_MACRO(name)						\
     static inline anna_node_t *name ## _i(anna_node_call_t *node);	\
-    static anna_vmstack_t *name(anna_vmstack_t *stack, anna_object_t *me) \
+    static __cold anna_vmstack_t *name(anna_vmstack_t *stack, anna_object_t *me) \
     {									\
 	anna_node_t *res = name ## _i((anna_node_call_t *)anna_node_unwrap(anna_as_obj(*(stack->top-1)))); \
 	anna_vmstack_drop(stack, 2);					\
@@ -290,31 +290,31 @@ static inline anna_entry_t *anna_as_native(anna_entry_t *e)
 void anna_vm_compile(
     anna_function_t *fun);
 
-void anna_bc_print(char *code);
+__cold void anna_bc_print(char *code);
 
-void anna_vm_init(void);
-anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv);
+__cold void anna_vm_init(void);
+__hot anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv);
 
 //void anna_vm_call_loop(anna_vm_callback_t callback, void *aux, anna_object_t *entry, int argc);
 
-anna_vmstack_t *anna_vm_callback_native(
+__hot anna_vmstack_t *anna_vm_callback_native(
     anna_vmstack_t *stack, 
     anna_native_t callback, int paramc, anna_entry_t **param,
     anna_object_t *entry, int argc, anna_entry_t **argv);
 
-void anna_vm_callback_reset(
+__hot void anna_vm_callback_reset(
     anna_vmstack_t *stack, 
     anna_object_t *entry, int argc, anna_entry_t **argv);
 
-anna_vmstack_t *anna_vm_stack_get(void);
-void anna_vm_mark_code(anna_function_t *f);
-void anna_vm_destroy(void);
+__hot anna_vmstack_t *anna_vm_stack_get(void);
+__hot void anna_vm_mark_code(anna_function_t *f);
+__cold void anna_vm_destroy(void);
 
 /**
    This method is the best ever! All method calls on the null object run this
 */
-anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me);
-anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *stack, anna_object_t *me);
+__hot anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me);
+__hot anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *stack, anna_object_t *me);
 
 static inline void anna_vmstack_push_object(anna_vmstack_t *stack, anna_object_t *val)
 {

@@ -1,13 +1,11 @@
 
-def Int f(Object first, Object second)
-{
-    -(first.__cmp__(second))
-}
-
 def main()
 {
-    print('c' - 'a', 'a' + ('c' - 'a'), '\n');
-    print(Char::convert(69), '\n');
-    print('\0' + 69, '\n');
-    print([1,2,75,6,7,3,5,0].sort(f), "\n");
+  er := collect
+    {
+	1+1;
+	raise(error.Error);
+    };
+
+    print(er);
 }

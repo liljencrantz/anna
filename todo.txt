@@ -10,6 +10,7 @@
   - Only static members can be accessed statically
   - Can't assign to constants
   - Check argument types to function calls better...
+* Fix if/else snafu. What is the best solution?
 
 1.0 RELEASE CRITERIA (Done):
 * List.sort
@@ -71,9 +72,8 @@ When no method alias matches a call, output a clearer and more helpful error mes
 What should be the return value for iterator methods like map and filter when given a null value as a function body?
 An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that the «this» object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
 Make api more consistent. Make naming of wrapper types consistent. Make naming of native type methods consistent.
-If we add a bunch of implicit type conversions through aliases, we'll no longer need as many methods in e.g. the Complex type. Is the loss of transparency worth the clearer code?
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge numbers of switch statements. One possibility would be to add function pointers to the node types.
-Static math expression support, e.g. 4*3
+Static expression support, e.g. 4*3 should be possible to evaluate at compile time. 
 Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit, and we'd have to use the GC for a bunch of extra stuff, like list payloads
 Should print work like python print, e.g. autoinsert newlines and spaces?
 It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
@@ -81,8 +81,7 @@ Should Range really be mutable?
 How should the argument list for inherited constructors be handled?
 It should be possible to declare type members with initial values. 
 Can we drop the Pair type?
-We need reverse aliases for static methods, something like (aliasReverseStatic(String.convert))
-Add a variable named global in the global namespace, pointing to itself. 
+We need reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
 Type member setup needs some dependency resolution in order for type calculations to work properly.
 
 KNOWN BUGS:
@@ -90,7 +89,6 @@ List, Pair and Hash types are still included in their specialization list even i
 Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing equality comparison, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
-Can't mix named arguments and varargs
 No working raise/collect functions
 
 LANGUAGE FEATURES:
@@ -144,4 +142,22 @@ live: Debug a running application using command line or web browser.
 Compiler front end.
 Asynchronous continuation based app/web server
 Switch the Anna dungeon crawler to use Anna instead of Lua as it's scripting language.
+
+collect
+{
+    ...
+}.each(err)
+{
+    ...
+}
+
+=>
+
+({!collect := List«Error»(); ...; !collect;}()).each(err)
+{
+    ...
+}
+
+raise(SomeError("Oh noes!"));
+
 
