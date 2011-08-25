@@ -2,6 +2,7 @@
 #define ANNA_PREPROC_H
 
 #if __GNUC__ >= 3
+
 /* Tell the compiler which outcome in an if block is the likelier, so
  * that the code can be laid out in an optimal manner */
 # define likely(x) __builtin_expect((x),1)
@@ -10,7 +11,7 @@
 # define unlikely(x) __builtin_expect((x),0)
 /* No side effects */
 # define __pure		__attribute__ ((pure))
-/* Like __pure, but stricteer. Not even read-only checking of globals or pointers */
+/* Like __pure, but stricter. Not even read-only checking of globals or pointers */
 # define __const	__attribute__ ((const))
 /* Function never returns */
 # define __noreturn	__attribute__ ((noreturn))
@@ -20,7 +21,7 @@
 # define __must_check	__attribute__ ((warn_unused_result))
 /* Warn if function is used */
 # define __deprecated	__attribute__ ((deprecated))
-/* Don't watn if static function never called, still compile */
+/* Don't warn if static function never called, still compile */
 # define __used		__attribute__ ((used))
 /* Ignore alignment of struct */
 # define __packed	__attribute__ ((packed))
@@ -28,12 +29,13 @@
 
 # define __hot	__attribute__ ((hot))
 # define __cold	__attribute__ ((cold))
-#define DO_PRAGMA(x) _Pragma (#x)
-#define FIXME(x) DO_PRAGMA(message ("FIXME - " #x))
-
-# define __unused	__attribute__ ((unused))
+# define DO_PRAGMA(x) _Pragma (#x)
+# define FIXME(x) DO_PRAGMA(message ("FIXME - " #x))
+/* Don't warn if static function never called, don't compile. Silly name because the name __unused is used by glibc headers. :-/ */
+# define __attr_unused	__attribute__ ((unused))
 
 #else
+
 # define __pure		/* no pure */
 # define __const	/* no const */
 # define __noreturn	/* no noreturn */
@@ -47,12 +49,9 @@
 # define __cold
 # define likely(x)	(x)
 # define unlikely(x)	(x)
-#define FIXME(x) 
+# define FIXME(x)
+# define __attr_unused	__attribute__ ((unused))
 
-# define __unused	__attribute__ ((unused))
-
-#endif
-
-          
+#endif          
 
 #endif

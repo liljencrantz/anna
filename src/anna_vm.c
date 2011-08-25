@@ -86,7 +86,7 @@ __cold static int stack_sum(anna_vmstack_t *stack)
     return res;
 }
 
-__unused __cold static void stack_describe(anna_vmstack_t *stack)
+__attr_unused __cold static void stack_describe(anna_vmstack_t *stack)
 {
     if(stack)
     {
@@ -156,7 +156,7 @@ anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
     return first_copy;    
 }
 
-__unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
+__attr_unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_entry_t **p = &stack->base[0];
     wprintf(L"\tFrame content:\n");
@@ -174,7 +174,7 @@ __unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
     }
 }
 
-__unused __cold static void anna_vmstack_print_parent(anna_vmstack_t *stack)
+__attr_unused __cold static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 {
     if(!stack)
 	return;

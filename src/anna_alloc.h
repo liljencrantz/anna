@@ -19,8 +19,8 @@ extern int anna_alloc_tot;
 extern int anna_alloc_count;
 extern int anna_alloc_obj_count;
 extern int anna_alloc_count_next_gc;
-void anna_gc(anna_vmstack_t *stack);
-void anna_gc_destroy(void);
+__hot void anna_gc(anna_vmstack_t *stack);
+__cold void anna_gc_destroy(void);
 
 #define GC_FREQ (1024*1024*4)
 
@@ -104,13 +104,13 @@ static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
    Mark an arbitrary memory allocation as used, and traverse and mark
    al allocations it references.
  */
-void anna_alloc_mark(void *obj);
-void anna_alloc_mark_entry(anna_entry_t *obj);
-void anna_alloc_mark_object(anna_object_t *obj);
-void anna_alloc_mark_type(anna_type_t *obj);
-void anna_alloc_mark_stack_template(anna_stack_template_t *o);
+__hot void anna_alloc_mark(void *obj);
+__hot void anna_alloc_mark_entry(anna_entry_t *obj);
+__hot void anna_alloc_mark_object(anna_object_t *obj);
+__hot void anna_alloc_mark_type(anna_type_t *obj);
+__hot void anna_alloc_mark_stack_template(anna_stack_template_t *o);
 
-void anna_alloc_gc_block(void);
-void anna_alloc_gc_unblock(void);
+__hot void anna_alloc_gc_block(void);
+__hot void anna_alloc_gc_unblock(void);
 
 #endif

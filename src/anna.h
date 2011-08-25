@@ -433,18 +433,18 @@ static inline size_t anna_align(size_t sz)
 /**
    Declare all global, native functions
  */
-void anna_function_implementation_init(
+__cold void anna_function_implementation_init(
     struct anna_stack_template *stack);
 
 /**
    \param macro the macro to invoke
    \param node the ast node to transform
 */
-struct anna_node *anna_macro_invoke(
+__cold struct anna_node *anna_macro_invoke(
     anna_function_t *macro,
     struct anna_node_call *node);
 
-void anna_function_type_print(
+__cold void anna_function_type_print(
     anna_function_type_t *k);
 
 /**
@@ -528,10 +528,10 @@ int anna_abides_fault_count(
     anna_type_t *contender, anna_type_t *role_model);
 void anna_abides_init(void);
 
-anna_type_t *anna_type_intersect(
+__cold anna_type_t *anna_type_intersect(
     anna_type_t *t1, anna_type_t *t2);
 
-void anna_type_intersect_into(
+__cold void anna_type_intersect_into(
     anna_type_t *dest, 
     anna_type_t *t1, anna_type_t *t2);
 
@@ -543,19 +543,19 @@ __hot __malloc anna_object_t *anna_object_create(
 __hot __malloc anna_object_t *anna_object_create_raw(
     size_t sz);
 
-void anna_object_print(
+__cold void anna_object_print(
     anna_object_t *obj);
 
 /**
    Parse the specified file and return an unprepared AST tree that
    represents the file content.
 */
-struct anna_node *anna_parse(wchar_t *filename);
+__cold struct anna_node *anna_parse(wchar_t *filename);
 
 /**
    Parse the specified string and return an unprepared AST tree that
    represents the file content.
 */
-struct anna_node *anna_parse_string(wchar_t *str);
+__cold struct anna_node *anna_parse_string(wchar_t *str);
 
 #endif

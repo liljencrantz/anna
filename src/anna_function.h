@@ -116,9 +116,9 @@ __pure static inline int anna_function_type_is_variadic(anna_function_type_t *f)
 
 __pure anna_object_t *anna_function_wrap(anna_function_t *result);
 
-int anna_function_prepared(anna_function_t *t);
+__cold int anna_function_prepared(anna_function_t *t);
 
-anna_function_t *anna_native_create(
+__cold anna_function_t *anna_native_create(
     wchar_t *name,
     int flags,
     anna_native_t native, 
@@ -128,20 +128,20 @@ anna_function_t *anna_native_create(
     wchar_t **argn,
     struct anna_stack_template *parent_stack);
 
-anna_function_t *anna_function_create_from_definition(
+__cold anna_function_t *anna_function_create_from_definition(
     struct anna_node_call *definition);
 
-anna_function_t *anna_macro_create(
+__cold anna_function_t *anna_macro_create(
     wchar_t *name,
     struct anna_node_call *body,
     wchar_t *arg_name);
 
-anna_function_t *anna_function_create_from_block(
+__cold anna_function_t *anna_function_create_from_block(
     struct anna_node_call *definition);
 
-void anna_function_print(anna_function_t *function);
+__cold void anna_function_print(anna_function_t *function);
 
-void anna_function_set_stack(
+__cold void anna_function_set_stack(
     anna_function_t *f,
     anna_stack_template_t *parent_stack);
 
