@@ -1,5 +1,4 @@
 
-anna_type_t *function_type_base = 0;
 static int base_constructed = 0;
 static array_list_t types=AL_STATIC;
 
@@ -117,6 +116,17 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
     return anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
 }
 
+ANNA_VM_NATIVE(anna_function_type_i_call_count, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    if(null_entry == anna_entry_get(this, ANNA_MID_CONTINUATION_CALL_COUNT))
+    {
+	return anna_from_int(0);
+    }
+        
+    return anna_entry_get(this, ANNA_MID_CONTINUATION_CALL_COUNT);
+}
+
 static void anna_function_load(anna_stack_template_t *stack)
 {
     anna_type_t *res = function_type_base;
@@ -231,6 +241,17 @@ void anna_function_type_create(
 	anna_member_create(
 	    res, ANNA_MID_CONTINUATION_CODE_POS,
 	    0, null_type);
+	
+	anna_member_create(
+	    res, ANNA_MID_CONTINUATION_CALL_COUNT,
+	    0, null_type);
+	
+	anna_member_create_native_property(
+	    res, anna_mid_get(L"callCount"),
+	    int_type,
+	    &anna_function_type_i_call_count,
+	    0,
+	    L"The number of times this continuation has been called.");
     }
     
     if(key->flags & ANNA_FUNCTION_BOUND_METHOD)

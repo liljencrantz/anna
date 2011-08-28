@@ -821,8 +821,39 @@ static anna_node_t *anna_type_setup_interface_internal(
 		}
 	    }
 	}
+	if(memb)
+	{
+	    if(!memb->type)
+	    {
+		debug(D_CRITICAL, L"Ooops %ls.%ls has no type\n", type->name, memb->name);
+		
+		if(type->stack)
+		{
+		    memb->type = anna_stack_get_type(type->stack, memb->name);
+		    
+		    if(!memb->type)
+		    {
+			anna_node_t *decl = anna_stack_get_declaration(type->stack, memb->name);
+			debug(D_CRITICAL, L"Has stack\n");
+			if(decl)
+			{
+			    debug(D_CRITICAL, L"Has decl\n");
+			    anna_node_calculate_type(decl);
+			    memb->type = decl->return_type;			
+			}
+		    }
+		}
+		if(!memb->type)
+		{
+		    debug(D_CRITICAL, L"%ls.%ls has no type\n", type->name, memb->name);
+		    anna_type_print(type);
+		    
+		    CRASH;
+		}
+	    }
+	}
+	
     }
-    
 
     if(!anna_member_get(type, anna_mid_get(L"__init__"))){
 
@@ -1281,7 +1312,7 @@ anna_type_t *anna_type_for_function(
     if(!result)
     {
 	debug(D_CRITICAL,
-	    L"Critical: Function lacks return type!\n");
+	    L"Function lacks return type!\n");
 	CRASH;
     }
     
@@ -1333,24 +1364,28 @@ anna_type_t *anna_type_for_function(
 	
 	string_buffer_t sb;
 	sb_init(&sb);
-	wchar_t *fn = L"def";
-	
-	if(flags & ANNA_FUNCTION_MACRO)
-	{ 
-	    fn = L"macro";
-	}
-	else if(flags&ANNA_FUNCTION_CONTINUATION)
+
+	if(flags&ANNA_FUNCTION_CONTINUATION)
 	{
-	    fn = L"continuation";
+	    sb_printf(&sb, L"Continuation");
 	}
-	
-	sb_printf(&sb, L"!%ls %ls (", fn, result->name);
-	for(i=0; i<argc;i++)
+	else
 	{
-	    wchar_t *dots = (i==argc-1) && (flags & ANNA_FUNCTION_VARIADIC)?L"...":L"";
-	    sb_printf(&sb, L"%ls%ls %ls%ls", i==0?L"":L", ", argv[i]->name, dots, argn[i]);
+	    wchar_t *fn = L"def";
+	    
+	    if(flags & ANNA_FUNCTION_MACRO)
+	    { 
+		fn = L"macro";
+	    }
+	    
+	    sb_printf(&sb, L"!%ls %ls (", fn, result->name);
+	    for(i=0; i<argc;i++)
+	    {
+		wchar_t *dots = (i==argc-1) && (flags & ANNA_FUNCTION_VARIADIC)?L"...":L"";
+		sb_printf(&sb, L"%ls%ls %ls%ls", i==0?L"":L", ", argv[i]->name, dots, argn[i]);
+	    }
+	    sb_printf(&sb, L")%d", num++);
 	}
-	sb_printf(&sb, L")%d", num++);
 	
 	res = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);

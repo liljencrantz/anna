@@ -90,6 +90,8 @@ Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing equality comparison, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
 No working raise/collect functions
+Default argument values and static calls to bound members seem to cause a crash
+
 
 LANGUAGE FEATURES:
 Function templates

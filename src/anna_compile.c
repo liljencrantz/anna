@@ -818,7 +818,7 @@ flags);
 	    
 	    int ra = template->input_count;
 
-	    if(mem->is_bound_method && !(node2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER))
+	    if(mem->is_bound_method && !(node2->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER))
 	    {
 		ra--;
 	    }
@@ -898,7 +898,7 @@ void anna_vm_compile(
 	anna_node_print(5, fun->body);
 #endif
 //    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
-
+    
     if(!fun->stack_template)
     {
 	anna_error(

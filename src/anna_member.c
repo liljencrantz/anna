@@ -1,5 +1,4 @@
 
-anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 
 anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 {

@@ -310,6 +310,7 @@ void anna_alloc_mark_type(anna_type_t *type)
 {
     if( type->flags & ANNA_USED)
 	return;
+    
     type->flags |= ANNA_USED;
     size_t i;
 
@@ -361,6 +362,15 @@ void anna_alloc_mark_type(anna_type_t *type)
 	anna_member_t *memb = type->mid_identifier[i];
 	if(!memb)
 	    continue;
+
+#ifdef ANNA_CHECK_GC
+	if(!memb->type)
+	{
+	    debug(D_CRITICAL, L"%ls.%ls has no type\n", type->name, memb->name);
+	    CRASH;
+	}
+#endif
+
 	anna_alloc_mark_type(memb->type);
 	if(memb->attribute)
 	    anna_alloc_mark_node((anna_node_t *)memb->attribute);
@@ -706,7 +716,6 @@ void anna_alloc_gc_unblock()
 
 void anna_gc(anna_vmstack_t *stack)
 {
-//    alc();
     if(anna_alloc_gc_block_counter)
 	return;
 

@@ -58,15 +58,6 @@
  */
 #define ESCAPE_NO_QUOTED 2
 
-#ifdef unused
-#elif defined(__GNUC__)
-# define unused(x) UNUSED_ ## x __attribute__((unused))
-#elif defined(__LCLINT__)
-# define unused(x) /*@unused@*/ x
-#else
-# define unused(x) x
-#endif
-
 /**
    Information that is likely to be of little use except in debugging
  */

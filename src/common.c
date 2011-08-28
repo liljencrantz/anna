@@ -232,20 +232,32 @@ const wchar_t *wsetlocale(int category, const wchar_t *locale)
 
 void debug( int level, const wchar_t *msg, ... )
 {
+       
 	va_list va;
 
 	string_buffer_t sb;
 
 	int errno_old = errno;
+	wchar_t *level_name[] = 
+	    {
+		L"Spam", L"Info", L"Warning", L"Error",
+	    }
+	;
 	
+	wchar_t *pre = L"CRITICAL";
 	if( level < debug_level )
 		return;
 
+	if(level >= 0 && level <= D_ERROR)
+	{
+	    pre = level_name[level];
+	}
+		
 	VERIFY( msg, );
 		
 	sb_init( &sb );
 
-	sb_printf( &sb, L"anna: " );
+	sb_printf( &sb, L"%ls: ", pre);
 
 	va_start( va, msg );	
 	sb_vprintf( &sb, msg, va );

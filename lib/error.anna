@@ -1,6 +1,28 @@
 
-
 type Error
 {
 
 }
+
+def raise(Error error)
+{
+/*
+    (def funEach(Continuation item)
+    {
+	if(coll := (item.getValue("!collect") as MutableList))
+	{
+	    coll ~= [error];
+	} else 
+	{
+	    if(item.caller)
+	    {
+		funEach(item.caller);
+	    } else
+	    {
+		print(error, '\n');
+	    }
+	}
+    })(reflection.currentContinuation);
+*/
+}
+

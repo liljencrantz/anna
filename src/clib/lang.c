@@ -54,8 +54,7 @@
 #include "clib/lang/pair.c"
 #include "clib/lang/object.c"
 
-anna_type_t *type_type=0, 
-    *object_type=0,
+anna_type_t *object_type=0,
     *int_type=0, 
     *null_type=0,
     *string_type=0, 
@@ -63,7 +62,6 @@ anna_type_t *type_type=0,
     *mutable_string_type=0, 
     *char_type=0,
     *float_type=0,
-    *member_type=0,
     *range_type=0,
     *complex_type=0,
     *hash_type=0,
@@ -393,15 +391,15 @@ void anna_lang_load(anna_stack_template_t *stack)
 	object_type, 
 	1, &object_type, p_argn, 
 	L"Call with current continuation.");
-    /*
+    
     anna_module_function(
 	stack,
 	L"raise", 0, 
 	&anna_i_raise, 
-	error_type, 
-	1, &error_type, r_argn, 
+	object_type, 
+	1, &object_type, r_argn, 
 	L"Raise the specified error.");
-    */
+    
     static wchar_t *wrap_argn[]={L"object",L"method"};
     anna_type_t *wrap_argv[]={object_type, object_type};
     

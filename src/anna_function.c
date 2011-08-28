@@ -410,10 +410,7 @@ void anna_function_setup_interface(
     }
     
     anna_function_setup_wrapper(f);
-    if(f->stack_template)
-    {
-	anna_type_setup_interface(anna_stack_wrap(f->stack_template)->type);    
-    }
+
 }
 
 void anna_function_setup_body(
@@ -424,6 +421,7 @@ void anna_function_setup_body(
 	return;
     }
     f->flags |= ANNA_FUNCTION_PREPARED_BODY;
+
 //    wprintf(L"Setup body of %ls\n",f->name);
     if(f->body)
     {
@@ -489,6 +487,10 @@ void anna_function_setup_body(
 	al_destroy(&ret);
     }
 
+    if(f->stack_template)
+    {
+	anna_type_setup_interface(anna_stack_wrap(f->stack_template)->type);    
+    }
 
 }
 
@@ -727,6 +729,10 @@ static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_ob
 {
     anna_object_t *res = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
+
+    anna_entry_t *cce = anna_entry_get(cont, ANNA_MID_CONTINUATION_CALL_COUNT);
+    int cc = 1 + ((cce == null_entry)?0:anna_as_int(cce));
+    anna_entry_set(cont, ANNA_MID_CONTINUATION_CALL_COUNT, anna_from_int(cc));
     
     stack = (anna_vmstack_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
     stack->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
@@ -745,7 +751,7 @@ anna_function_t *anna_continuation_create(
     result->input_name = 0;
     
     result->native = anna_function_continuation;
-    result->name = anna_intern_static(L"!continuation");
+    result->name = anna_intern_static(L"continuation");
     result->return_type=return_type;
     result->input_count=0;
     

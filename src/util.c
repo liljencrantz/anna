@@ -76,7 +76,7 @@ void (*util_set_oom_handler( void (*h)(void *) ))(void *)
     return old;
 }
 
-void util_die_on_oom( void *unused(p) )
+void util_die_on_oom( void *p __attr_unused )
 {
 }
 
@@ -353,14 +353,13 @@ int hash_contains(
    Push hash value into array_list_t
 */
 static void hash_put_data(
-    void *unused(key),
+    void *key __attr_unused,
     void *data,
     void *al )
 {
     al_push( (array_list_t *)al,
 	     data );
 }
-
 
 void hash_get_data( 
     hash_table_t *h,
@@ -372,7 +371,7 @@ void hash_get_data(
 /**
    Push hash key into array_list_t
 */
-static void hash_put_key( void *key, void *unused(data), void *al )
+static void hash_put_key( void *key, void *data __attr_unused, void *al )
 {
     al_push( (array_list_t *)al, key );
 }

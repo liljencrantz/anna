@@ -1,0 +1,33 @@
+
+use(fiber);
+
+type SillyFiber (extends(Fiber))
+{
+    var String msg;
+
+    def __init__(String msg)
+    {
+	this.msg = msg.freeze;
+	Fiber::__init__(this);
+    }
+
+    def run()
+    {
+	(0..10).each(idx)
+	{
+	    print(msg, '\n');
+	    yield();
+	}
+    }
+}
+
+
+def main()
+{
+    f1 := SillyFiber("A");
+    f2 := SillyFiber("B");
+    print("Fibers created\n");
+    Fiber::yield();
+    print("All fibers have finished\n");
+}
+

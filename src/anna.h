@@ -120,6 +120,7 @@ enum anna_mid_enum
     ANNA_MID_BUFFER_PAYLOAD,
     ANNA_MID_BUFFER_SIZE,
     ANNA_MID_BUFFER_CAPACITY,
+    ANNA_MID_CONTINUATION_CALL_COUNT,
 
     ANNA_MID_FIRST_UNRESERVED,
 };
@@ -416,8 +417,11 @@ typedef struct
     anna_type_t *input_type[];
 } anna_function_type_t;
 
-extern anna_type_t *type_type, *object_type, *int_type, *string_type, *mutable_string_type, *imutable_string_type, *char_type, *null_type,  *string_type, *char_type, *float_type, *member_type, *range_type, *complex_type, *hash_type, *pair_type, *buffer_type;
-extern anna_type_t *function_type_base;
+extern anna_type_t *type_type, *object_type, *int_type, *string_type, 
+    *mutable_string_type, *imutable_string_type, *char_type, *null_type,
+    *string_type, *char_type, *float_type, *member_type, *range_type, 
+    *complex_type, *hash_type, *pair_type, *buffer_type, 
+    *function_type_base, *continuation_type;
 extern anna_object_t *null_object, *anna_wrap_method;
 extern int anna_error_count;
 extern struct anna_stack_template *stack_global;
@@ -468,6 +472,12 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
     } else {
 	return &(obj->member[m->offset]);
     }
+}
+
+static inline void anna_entry_set(
+    anna_object_t *obj, mid_t mid, anna_entry_t *value)
+{
+    *anna_entry_get_addr(obj, mid) = value;
 }
 
 /**

@@ -82,7 +82,7 @@ ANNA_VM_NATIVE(anna_type_i_get_attribute, 1)
     return f->attribute ? anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute)): null_entry;
 }
 
-static void anna_type_type_create()
+static void anna_type_load()
 {
     anna_member_create(type_type, ANNA_MID_TYPE_WRAPPER_PAYLOAD, 0, null_type);
 
