@@ -15,6 +15,7 @@
 #include "clib/lang/int.h"
 #include "clib/lang/list.h"
 #include "clib/lang/hash.h"
+#include "clib/parser.h"
 #include "anna_mid.h"
 #include "anna_type.h"
 #include "anna_use.h"
@@ -168,11 +169,20 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	case ANNA_NODE_CHAR_LITERAL:
 	case ANNA_NODE_FLOAT_LITERAL:
 	case ANNA_NODE_IDENTIFIER:
+	case ANNA_NODE_INTERNAL_IDENTIFIER:
 	{
 	    break;
 	}
 	
 	case ANNA_NODE_SPECIALIZE:
+	case ANNA_NODE_RETURN:
+	case ANNA_NODE_BREAK:
+	case ANNA_NODE_CONTINUE:
+	case ANNA_NODE_USE:
+	case ANNA_NODE_MAPPING:
+	case ANNA_NODE_TYPE_OF:
+	case ANNA_NODE_INPUT_TYPE_OF:
+	case ANNA_NODE_RETURN_TYPE_OF:
 	{
 	    anna_error(this, L"Unimplemented node type during gc. Come back tomorrow.");
 	    CRASH;
@@ -294,7 +304,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	    anna_alloc_mark_object(d->payload);
 	    break;   
 	}
-	
+
 	default:
 	{
 	    anna_error(
@@ -473,6 +483,11 @@ void anna_alloc_mark_object(anna_object_t *obj)
     anna_type_t *wt = anna_type_unwrap(obj);
     if(wt){
 	anna_alloc_mark_type(wt);
+    }
+    anna_node_t *nn = anna_node_unwrap(obj);
+    if(nn)
+    {
+	anna_alloc_mark_node(nn);
     }
 }
 

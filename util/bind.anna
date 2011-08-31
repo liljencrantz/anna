@@ -1,0 +1,533 @@
+use(io);
+use(parser);
+use(error);
+
+type ParseError (extends(error.Error))
+{
+    var Node node;
+    var String message;
+
+    def __init__(Node node, String message)
+    {
+	this.node=node;
+	this.message=message;
+    }
+
+}
+
+type BindingType (doc("Base class for the types used in the bindings."))
+{
+    def String annaCType(Node type, Node attr){}
+    def String convertToC(Node decl, Node attr, String dest, String source){}
+    def String convertToAnna(Node decl, Node attr, String dest, String source){}
+    def String cleanupToC(Node decl, Node attr, String dest, String source){}
+    def String cleanupToAnna(Node decl, Node attr, String dest, String source){}
+    def String validateToC(Node decl, Node attr, String dest, String source){}
+    def String validateToAnna(Node decl, Node attr, String dest, String source){}
+
+    def specialize(Call node)
+    {
+	return this;
+    }
+
+}
+
+def List«Node» findAttr(Call attr, String name)
+{
+    res := «Node»[];
+    attr.each(at)
+    {
+	(at.isCallTo(name)) and (at as Call).each(item){res.push(item)}
+    }
+    res;
+}
+
+type BasicBindingType (extends(BindingType), doc("A very simple BindingType implementation that simply relies on string templates to perform its tasks. Works well for basic types like Int, String, etc."))
+{
+    var String annaCTypeStr;
+    var String convertToCStr;
+    var String convertToAnnaStr;
+    var String cleanupToCStr;
+    var String cleanupToAnnaStr;
+    var String capacityCheck;
+    
+    def __init__(
+	String annaCType, String convertToC, String convertToAnna,
+	String capacityCheck = ?, String cleanupToC = ?, String cleanupToAnna= ?)
+    {
+	this.annaCTypeStr = annaCType;
+	this.convertToCStr = convertToC;
+	this.convertToAnnaStr = convertToAnna;
+	this.capacityCheck = capacityCheck;
+	this.cleanupToCStr = cleanupToC;
+	this.cleanupToAnnaStr = cleanupToAnna;
+    }
+    
+    def String annaCType(Node decl, Node attr){
+	return annaCTypeStr;
+    }
+
+    def String convertToC(Node decl, Node attr, String dest, String source)
+    {
+        return convertToCStr % ["dest": dest, "source": source];
+    }
+
+    def String validateToC(Node decl, Node attr, String dest, String source)
+    {
+        res := "".thaw;
+        findAttr(attr, "ensureCapacity").each(cap)
+	{
+	  capStr := switch(cap)
+	    {
+		case(capId as Identifier)
+		{
+		    BindingGenerator::getNativeParamName(capId.name);
+		}
+		case(capNum as IntLiteral)
+		{
+		    String::convert(capNum.payload);
+		}
+	    }
+	    res ~= "    " ~ capacityCheck % ["dest": dest, "source": source, "capacity": capStr] ~ "\n";
+	}
+	res;
+    }
+    
+    def String convertToAnna(Node decl, Node attr, String dest, String source)
+    {
+	return convertToAnnaStr % ["dest": dest, "source": source];
+    }
+
+    def String cleanupToAnna(Node decl, Node attr, String dest, String source)
+    {
+	return cleanupToAnnaStr % ["dest": dest, "source": source];
+    }
+
+    def String cleanupToC(Node decl, Node attr, String dest, String source)
+    {
+	return cleanupToCStr % ["dest": dest, "source": source];
+    }
+
+}
+
+type CStructBindingType (extends(BindingType), doc("A BindingType used when passing cStruct objects as parameters."))
+{
+    var String structName;
+    var String typeName;
+    
+    def __init__(
+	String structName, String typeName)
+    {
+	this.structName = structName;
+	this.typeName = typeName;
+    }
+    
+    def String annaCType(Node decl, Node attr){
+	return typeName;
+    }
+
+    def String convertToC(Node decl, Node attr, String dest, String source)
+    {
+	"char *%(dest) = anna_string_payload_narrow(anna_as_obj(%(source)));";
+	"struct %(structName) *%(dest) = (struct %(structName) *)anna_entry_get(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % ["structName": structName, "dest": dest, "source": source];
+    }
+
+}
+
+
+
+
+type BindingGenerator
+{
+
+    var String path;
+    var String name;
+
+    var HashMap«Node, BindingType» bindingType;
+
+    def __init__(String name)
+    {
+	path = name.freeze;
+	this.name = name.split('/')[-1].split('.')[0];
+	bindingType = [
+	    ast(String): BasicBindingType(
+		"string_type", 
+		"char *%(dest) = anna_string_payload_narrow(anna_as_obj(%(source)));",
+		"anna_entry_t *%(dest) = anna_string_create_narrow(%(source));",
+		cleanupToC: "free(%(dest));"),
+	    ast(Int): BasicBindingType(
+		"int_type", 
+		"int %(dest) = anna_as_int(%(source));",
+		"anna_entry_t *%(dest) = anna_from_int(%(source));"),
+	    ast(Float): BasicBindingType(
+		"float_type", 
+		"float %(dest) = (float)anna_as_float(%(source));",
+		"anna_entry_t *%(dest) = anna_from_float((double)%(source));"),
+	    ast(Double): BasicBindingType(
+		"float_type", 
+		"double %(dest) = anna_as_float(%(source));",
+		"anna_entry_t *%(dest) = anna_from_float(%(source));"),
+	    ast(Buffer): BasicBindingType(
+		"buffer_type", 
+		"unsigned char *%(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));",
+		?,
+		capacityCheck: "if(anna_buffer_ensure_capacity(anna_as_obj(%(source)), %(capacity))) 
+    {
+        return null_entry;
+    }
+    else
+    {
+        %(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));
+    }"),
+	    ];
+    }
+
+    def mangleFunctionName(String name)
+    {
+	this.name ~ "_i_" ~ name;
+    }
+
+    def getBindingType(Node node)
+    {
+	return bindingType[node];
+    }
+
+    def getFunctionNativeName(Call decl)
+    {
+	(decl[0] as Identifier).name;
+    }
+
+    def getNativeParamName(String originalName) (static)
+    {
+	return "native_param_" ~originalName;
+    }
+
+    def generateFunctionCode(Call decl)
+    {
+        init := "".thaw;
+        validate := "".thaw;
+        cleanup := "".thaw;
+        code := "".thaw;
+        inp := decl[2] as Call;
+	
+        paramNames := «String»[];
+	inp.each(idx, inp){
+	    inpDecl := inp as Call;
+	    inpBindingType := getBindingType(inpDecl[1]);
+            npn := getNativeParamName((inpDecl[0] as Identifier).name);
+	    paramNames.push(npn);
+	    init ~= "    if(param[%] == null_entry){return null_entry;}\n" % [idx];
+	    init ~= "    " ~ inpBindingType.convertToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n";
+	    validate ~= inpBindingType.validateToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]);
+	    cleanup ~= ("    " ~ inpBindingType.cleanupToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n") or "";
+	}
+	
+        nname := getFunctionNativeName(decl);
+        responseType := getBindingType(decl[1]);
+        args := ", ".join(paramNames);
+	code ~= "    " ~ responseType.convertToAnna(decl[1], decl[3], "result", nname ~"(" ~args~")");
+
+	"    // Mangle input parameters
+%(init)
+    // Validate parameters
+%(validate)
+    // Call the function
+%(code)
+    // Perform cleanup
+%(cleanup)
+    // Return result
+    return result;" % ["init": init, "validate": validate, "code": code, "cleanup": cleanup];
+
+    }
+
+    def generateFunction(String name, Call decl)
+    {
+        mangled := mangleFunctionName(name);
+        returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3]);
+        inputTypeVar := mangled ~ "_argv";
+        inputNameVar := mangled ~ "_argn";
+
+        inputTypeData := «String»[];
+        inputNameData := «String»[];
+
+	(decl[2] as Call).each(inp){
+  	    inpCall := inp as Call;
+	    inputTypeData.push(getBindingType(inpCall[1]).annaCType(inpCall[1], inpCall[3]));
+	    inputNameData.push("L\"" ~ ((inp as Call)[0] as Identifier).name ~"\"");
+	}
+        inputCount := inputTypeData.count;
+	
+        doc := "";
+	
+        data := 
+	    [
+		"functionName": name, 
+		"mangledName": mangled,
+		"returnType": returnType,
+		"inputCount": inputCount,
+		"inputTypeVar": inputTypeVar,
+		"inputTypeData": ", ".join(inputTypeData),
+		"inputNameVar": inputNameVar,
+		"inputNameData": ", ".join(inputNameData),
+		"doc": "L\"" ~doc~"\"",
+		"codeInternal": generateFunctionCode(decl),
+	    ];
+
+        load := "
+    anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
+    wchar_t *%(inputNameVar)[] = {%(inputNameData)};
+    anna_module_function(stack, L\"%(functionName)\", 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), %(doc));
+" % data;
+  
+        code := "
+ANNA_VM_NATIVE(%(mangledName), %(inputCount))
+{
+%(codeInternal)
+}
+" % data;
+
+	    return struct(load:load, code:code);
+    }
+
+    def mangleName(String name)
+    {
+        res := "".thaw ~ name[0].lower;
+	name[1...].each(ch)
+	{
+	    if(ch.lower != ch){
+		res ~= "_";
+	    }
+	    res ~= ch.lower;
+	}
+	res;
+    }
+
+    def mangleTypeName(String name)
+    {
+	this.name ~ '_' ~ mangleName(name) ~ "_type";
+    }
+
+    def generateGetterCode(
+	String structName, String fieldName, 
+	BindingType bindingType, Node decl, Node attr)
+    {
+	return "
+    struct %(structName) *data = (struct %(structName) *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    %(wrapData)
+    return result;
+" %
+	    [
+		"structName": structName,
+		"wrapData": bindingType.convertToAnna(decl, attr, "result", "data->"~fieldName)
+		];
+    }
+
+    def mangleGetterName(String typeName, String fieldName)
+    {
+	return "%_i_%_%_getter" % [this.name, mangleName(typeName), mangleName(fieldName)];
+    }
+
+    def mangleMethodName(String typeName, String methodName)
+    {
+	return "%_i_%_%" % [this.name, mangleName(typeName), mangleName(methodName)];
+    }
+
+    def generateCStruct(String structName, Call decl)
+    {
+        typeName := mangleTypeName(structName);
+        code := "".thaw;
+	typeDecl := "anna_type_t *%;".thaw %[typeName];
+        typeData := "    { &%, L\"%\" },\n".thaw % [typeName, structName];
+        load := "".thaw;
+        nativeStructName := findAttr(decl[1], "name")[0] or structName;
+        initName := mangleMethodName(structName, "init");
+
+	bindingType[decl[0]] = CStructBindingType(nativeStructName, typeName);
+
+        commonData := ["typeName": typeName, "nativeStructName": nativeStructName, "initName": initName, "structName": nativeStructName];
+
+	load ~= "
+    anna_member_create_blob(%(typeName), ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct %(nativeStructName)));
+
+    anna_member_create_native_method(
+	%(typeName), anna_mid_get(L\"__init__\"), 0,
+	&%(initName), object_type, 1, &%(typeName), this_argn);    
+" % commonData;
+
+	code ~= "
+ANNA_VM_NATIVE(%(initName), 1)
+{
+    struct %(structName) *data = (struct %(structName) *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    memset(data, 0, sizeof(struct %(structName)));
+    return param[0];
+}
+" % commonData;
+
+
+	(decl[2] as Call).each(node)
+	{
+	    if(node.isCallTo("__const__"))
+	    {
+		
+	        it := node as Call;
+	        fieldName := (it[0] as Identifier).name;
+	        nativeFieldName := findAttr(it[3], "name")[0] or fieldName;
+		
+  	        bindingType := getBindingType(it[1]);
+  	        getterName := mangleGetterName(structName, fieldName);
+		
+  	        data := [
+		    "name": fieldName,
+		    "typeName": typeName,
+		    "returnType": bindingType.annaCType(it[1], it[3]),
+		    "getterName": getterName,
+		    "setterName": 0,
+		    "getterCode": generateGetterCode(nativeStructName, nativeFieldName, bindingType, it[1], it[3])
+		    ];
+		code ~= "
+ANNA_VM_NATIVE(%(getterName), 1)
+{%(getterCode)}
+" % data;
+
+		load ~= "
+    anna_member_create_native_property(
+        %(typeName), anna_mid_get(L\"%(name)\"),
+        %(returnType), %(getterName), %(setterName), 0);
+" % data;
+
+	    } else
+	    {
+		raise(ParseError(node, "Invalid struct member"));
+	    }
+
+	}
+
+	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load);
+    }
+    
+    def generate()
+    {
+        code := "".thaw;
+        load := "".thaw;
+        typeDecl := "".thaw;
+        typeData := "".thaw;
+        customInclude := "".thaw;
+	
+        text := File(path).readFile();
+        nodes := parse(text);
+	(nodes as Call).each(node)
+	{
+	    decl := node as Call;
+	    switch((decl.function as Identifier).name)
+	    {
+		case("__const__")
+		{
+		    name := (decl[0] as Identifier).name;
+		    switch(((decl[2] as Call).function as Identifier).name)
+		    {
+			case("__def__")
+			{
+			  out := generateFunction(name, decl[2] as Call);
+			    load ~= out.load;
+			    code ~= out.code;
+		    }
+			
+			case("cStruct")
+			{
+			  out := generateCStruct(name, decl[2] as Call);
+			    load ~= out.load;
+			    code ~= out.code;
+			    typeDecl ~= out.typeDecl;
+			    typeData ~= out.typeData;
+			    
+			}
+			
+			default
+			{
+			    print(decl[2]);
+			}	
+		    }	
+		}
+		
+		case("include")
+		{
+		    decl.each(inc)
+		    {
+			customInclude ~= "#include %\n" %[(inc as StringLiteral).payload];
+		    }
+		}
+
+		default
+		{
+		    print("Skipping %\n" % [node]);
+		}
+
+	    }
+	}
+	print( "
+#define _GNU_SOURCE
+#include <stdlib.h>
+#include <stdio.h>
+#include <wchar.h>
+#include <string.h>
+#include <errno.h>
+
+%(customInclude)
+#include \"common.h\"
+#include \"util.h\"
+#include \"anna.h\"
+#include \"anna_mid.h\"
+#include \"anna_type.h\"
+#include \"anna_type_data.h\"
+#include \"anna_vm.h\"
+#include \"anna_module.h\"
+#include \"clib/lang/string.h\"
+#include \"clib/lang/buffer.h\"
+#include \"anna_member.h\"
+
+// Declare internal variables for all types defined in this module
+%(typeDecl)
+
+// Data used to initialize all types defined in this module
+const static anna_type_data_t anna_type_data[] = 
+{
+%(typeData)};
+
+// This is the source code of the various wrapper functions
+%(code)
+
+// This function is called to create all types defined in this module
+void create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_type_data, stack);        
+}
+
+// This function is called to load all functions and other declarations into the module
+void load(anna_stack_template_t *stack)
+{
+    wchar_t *this_argn[] = {L\"this\"};
+
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+%(load)
+    anna_type_data_register(anna_type_data, stack);
+}
+" %
+	    [
+		"customInclude": customInclude,
+		"typeDecl": typeDecl,
+		"typeData": typeData,
+		"code": code,
+		"load": load,
+	    ]
+	    );
+    }
+}
+
+def main()
+{
+    system.argument[1...].each(binding)
+    {
+	BindingGenerator(binding).generate();
+    }    
+}
+

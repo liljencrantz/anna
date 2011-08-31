@@ -14,6 +14,7 @@ for i in "BITAND &" "BITOR |" "BITXOR ^"; do
 echo "    
   ANNA_LAB_${name}_INT:
     {
+        OP_ENTER(stack);
 //            wprintf(L\"$name\n\");
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
@@ -44,7 +45,7 @@ echo "
 	    }
 	}
 	
-	goto *jump_label[(int)*stack->code];
+	OP_LEAVE(stack);
     }
 "
 done
@@ -56,6 +57,7 @@ for i in "ADD +" "SUB -" "INCREASE_ASSIGN +" "DECREASE_ASSIGN -"; do
 echo "    
   ANNA_LAB_${name}_INT:
     {
+        OP_ENTER(stack);
 //            wprintf(L\"$name\n\");
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
@@ -95,7 +97,7 @@ echo "
 	    }
 	}
 	
-	goto *jump_label[(int)*stack->code];
+	OP_LEAVE(stack);
     }
 "
 
@@ -109,6 +111,7 @@ for i in "EQ ==" "NEQ !=" "LT <" "LTE <=" "GT >" "GTE >="; do
 echo "    
   ANNA_LAB_${name}_INT:
     {
+        OP_ENTER(stack);
 //            wprintf(L\"$name\n\");
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
@@ -142,7 +145,7 @@ echo "
 	}
 	
 //            wprintf(L\"Next instruction is %d!\n\", *stack->code);
-	goto *jump_label[(int)*stack->code];
+	OP_LEAVE(stack);
     }
 "
 
@@ -153,6 +156,7 @@ done
 echo "    
   ANNA_LAB_DIV_INT:
     {
+        OP_ENTER(stack);
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
 //wprintf(L\"DIV\n\");
@@ -183,11 +187,12 @@ echo "
 	}
 	
 	stack->code += sizeof(anna_op_null_t);
-	goto *jump_label[(int)*stack->code];
+	OP_LEAVE(stack);
     }
 
   ANNA_LAB_MUL_INT:
     {
+        OP_ENTER(stack);
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
 //wprintf(L\"MUL\n\");
@@ -243,7 +248,7 @@ echo "
 	    }
 	}
 	
-	goto *jump_label[(int)*stack->code];
+	OP_LEAVE(stack);
     }
 "
 
@@ -255,6 +260,7 @@ for i in "ADD v1 + v2" "SUB v1 - v2" "INCREASE_ASSIGN v1 + v2" "DECREASE_ASSIGN 
 echo "    
   ANNA_LAB_${name}_FLOAT:
     {
+        OP_ENTER(stack);
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
 	stack->code += sizeof(anna_op_null_t);
@@ -285,7 +291,7 @@ echo "
 	    }
 	}
 	
-	goto *jump_label[(int)*stack->code];
+	OP_LEAVE(stack);
     }
 "
 done

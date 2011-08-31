@@ -22,11 +22,12 @@
 
 ANNA_VM_NATIVE(anna_cerror_strerror, 1)
 {
-    if(anna_entry_null(param[0]))
+    int err = errno;
+    
+    if(!anna_entry_null(param[0]))
     {
-	return null_entry;
+	err = anna_as_int(param[0]);
     }
-    int err = anna_as_int(param[0]);
     
     char *desc = strerror(err);
     if(!desc)

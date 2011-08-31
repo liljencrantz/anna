@@ -127,6 +127,19 @@ wchar_t *asi_cstring(anna_string_t *str)
     return res;
 }
 
+char *asi_cstring_narrow(anna_string_t *str)
+{
+    size_t sz = wcstombs(0, str->str, 0);
+    if(sz == (size_t)-1)
+    {
+	CRASH;
+    }
+    
+    char *res = malloc(sz+1);
+    wcstombs(res, str->str, sz+1);
+    return res;
+}
+
 /**
    Compare the two specified strings
  */

@@ -282,11 +282,6 @@ ANNA_VM_NATIVE(anna_i_nothing, 1)
     return null_entry;
 }
 
-ANNA_VM_NATIVE(anna_i_raise, 1)
-{
-    return null_entry;
-}
-
 static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_entry_t *val = anna_vmstack_pop_entry(stack);
@@ -356,7 +351,6 @@ void anna_lang_load(anna_stack_template_t *stack)
     anna_buffer_type_create();
     
     static wchar_t *p_argn[]={L"object"};
-    static wchar_t *r_argn[]={L"err"};
 
     anna_module_function(
 	stack,
@@ -391,14 +385,6 @@ void anna_lang_load(anna_stack_template_t *stack)
 	object_type, 
 	1, &object_type, p_argn, 
 	L"Call with current continuation.");
-    
-    anna_module_function(
-	stack,
-	L"raise", 0, 
-	&anna_i_raise, 
-	object_type, 
-	1, &object_type, r_argn, 
-	L"Raise the specified error.");
     
     static wchar_t *wrap_argn[]={L"object",L"method"};
     anna_type_t *wrap_argv[]={object_type, object_type};

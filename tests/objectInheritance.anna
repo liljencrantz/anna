@@ -1,0 +1,21 @@
+/*
+  This checks for a bug where inheritance is implemented after
+  interface setup, which causes problems for methods with implicit
+  return type that want to use inherited fields.  
+
+  The workaround is to define the return type of such members
+  explicitly.
+*/
+type T
+{
+    def toString()
+    {
+	this.__type__.name;
+    }
+}
+
+def main()
+{
+    print(T(), "\n");
+}
+

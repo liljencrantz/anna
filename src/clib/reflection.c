@@ -62,6 +62,7 @@ static anna_vmstack_t *anna_i_cc(anna_vmstack_t *stack, anna_object_t *me)
     stack = anna_frame_to_heap(stack);
     
     anna_vmstack_pop_object(stack);
+    anna_vmstack_pop_object(stack);
     anna_object_t *cont = anna_continuation_create(
 	stack,
 	object_type)->wrapper;

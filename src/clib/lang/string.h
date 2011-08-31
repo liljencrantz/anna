@@ -14,6 +14,7 @@ void anna_string_print(anna_object_t *obj);
    it is no longer required.
  */
 wchar_t *anna_string_payload(anna_object_t *obj);
+char *anna_string_payload_narrow(anna_object_t *obj);
 size_t anna_string_get_count(anna_object_t *obj);
 /**
    Hash specified string. Uses the djb2 algorithm.

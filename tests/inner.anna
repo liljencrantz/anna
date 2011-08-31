@@ -1,0 +1,9 @@
+def main()
+{
+  vv := 3;
+    def inner()
+    {
+	print(vv, "\n");
+    }
+    inner();
+}

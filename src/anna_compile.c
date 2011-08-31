@@ -487,7 +487,7 @@ static void anna_vm_compile_i(
 
 	    anna_entry_t *const_obj = anna_node_static_invoke_try(
 		node, fun->stack_template);
-	    if(const_obj)
+	    if(const_obj && !anna_entry_get_addr(const_obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD))
 	    {
 		anna_vm_const(ptr, const_obj, flags);
 		break;
@@ -894,7 +894,7 @@ void anna_vm_compile(
 	return;
     }
 #if 0
-    if(wcscmp(fun->name, L"__format__List__")==0)
+    if(wcscmp(fun->name, L"raise")==0)
 	anna_node_print(5, fun->body);
 #endif
 //    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
@@ -954,7 +954,7 @@ void anna_vm_compile(
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
 #if 0
-    if(wcscmp(fun->name, L"__format__List__")==0)
+    if(wcscmp(fun->name, L"raise")==0)
 	anna_bc_print(fun->code);
 #endif
 }

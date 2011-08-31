@@ -32,6 +32,8 @@ char *anna_vmstack_static_ptr;
 char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
 
 static void anna_vmstack_print(anna_vmstack_t *stack);
+__attr_unused __cold static void stack_describe(anna_vmstack_t *stack);
+__attr_unused __cold static void anna_vmstack_print_parent(anna_vmstack_t *stack);
 
 static inline void anna_frame_return(anna_vmstack_t *stack)
 {
@@ -109,6 +111,9 @@ __attr_unused __cold static void stack_describe(anna_vmstack_t *stack)
 anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
 {
     anna_vmstack_t *ptr = stack;
+ 
+    ptr = stack;
+    
     anna_vmstack_t *first_copy = 0;
     anna_vmstack_t *prev = 0;
     
@@ -116,10 +121,10 @@ anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
     {
 	return ptr;
     }
-/*    
+/*
     wprintf(L"BEFORE:\n");
     stack_describe(stack);
-*/  
+*/
     while(ptr && (ptr->flags & ANNA_VMSTACK_STATIC))
     {
 	anna_vmstack_t *copy = anna_alloc_vmstack(ptr->function->frame_size);
@@ -149,11 +154,12 @@ anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
 	}
 	ptr = ptr->caller;
     }
-    /*  
+
+/*
     wprintf(L"\nAFTER:\n");
     stack_describe(first_copy);
-    */
-    return first_copy;    
+*/
+    return first_copy;
 }
 
 __attr_unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
@@ -486,7 +492,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    if(!s)
 	    {
 		wprintf(
-		    L"Var get op to invalid stack frame: %d %d %ls\n",
+		    L"Error: Var get op to invalid stack frame: %d %d %ls\n",
 		    op->frame_count, op->offset,
 		    stack->function->name);
 		anna_vmstack_print_parent(stack);

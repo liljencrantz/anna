@@ -65,6 +65,13 @@ wchar_t *anna_string_payload(anna_object_t *obj)
     return asi_cstring(str);
 }
 
+char *anna_string_payload_narrow(anna_object_t *obj)
+{
+//    wprintf(L"Get payload from string at %d\n", obj);
+    anna_string_t *str = as_unwrap(obj);
+    return asi_cstring_narrow(str);
+}
+
 static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
 {
     if(idx < 0)
@@ -260,7 +267,7 @@ static anna_vmstack_t *anna_string_i_join(anna_vmstack_t *stack, anna_object_t *
     
     if(anna_entry_null(e))
     {
-	anna_vmstack_push_object(stack, this);
+	anna_vmstack_push_object(stack, null_object);
     }
     else if(anna_is_int_small(e))
     {	
@@ -481,7 +488,7 @@ static anna_vmstack_t *anna_string_i_append(anna_vmstack_t *stack, anna_object_t
 	    );
     }
     else{
-	anna_vmstack_push_object(stack, null_object);
+	anna_vmstack_push_object(stack, this);
     }
     return stack;    
 }

@@ -310,7 +310,7 @@ static void anna_open_mode_load(anna_stack_template_t *stack)
 	stack,
 	L"This module contains the flags that can be used when opening a file descriptor using the cio.open function.");
 
-    anna_module_const_int(stack, L"readOnly", O_RDONLY, L"Open file in read-only mode.");
+     anna_module_const_int(stack, L"readOnly", O_RDONLY, L"Open file in read-only mode.");
     anna_module_const_int(stack, L"writeOnly", O_WRONLY, L"Open file in write-only mode.");
     anna_module_const_int(stack, L"readWrite", O_RDWR, L"Open file in read-write mode.");
 

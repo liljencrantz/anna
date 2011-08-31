@@ -72,6 +72,7 @@ void asi_print_debug(anna_string_t *str);
 void asi_print_regular(anna_string_t *str);
 
 wchar_t *asi_cstring(anna_string_t *str);
+char *asi_cstring_narrow(anna_string_t *str);
 
 /**
    Compare the two specified strings

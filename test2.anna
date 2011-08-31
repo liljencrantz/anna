@@ -1,0 +1,17 @@
+use(cio2);
+
+def main()
+{
+    print(fd := cio2.open("test.anna", 0, 0), "\n");
+    buf := Buffer();
+    print(read(fd, buf, 4096), "\n");
+    print(cerror.errorString(?), "\n");
+    print(close(fd), "\n");
+    
+    sb := cio2.Stat();
+    print(cio2.stat("test.anna", sb), "\n");
+    print(sb.uid, "\n");
+    print(sb.size, "\n");
+    print(sb.blksize, "\n");
+    
+}

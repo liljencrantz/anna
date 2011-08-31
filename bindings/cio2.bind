@@ -1,0 +1,46 @@
+
+include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>");
+
+cStruct Stat (name(stat))
+{
+    const Int dev (name(st_dev), doc("ID of device containing file"));
+    const Int ino (name(st_ino), doc("Inode number"));
+    const Int mode (name(st_mode), doc("File protection mask"));
+    const Int nlink (name(st_nlink), doc("Number of hard links."));
+    const Int uid (name(st_uid), doc("User ID of owner."));
+    const Int gid (name(st_gid), doc("Group ID of owner."));
+    const Int rdev (name(st_rdev), doc("Device ID."));
+    const Int size (name(st_size), doc("Total size in bytes."));
+    const Int blksize (name(st_blksize), doc("Block size for file system IO."));
+    const Int blocks (name(st_blocks), doc("Number of 512 byte blocks allocated."));
+    const Int atime (name(st_atime), doc("Time of latest acccess."));
+    const Int mtime (name(st_mtime), doc("Time of latest modification."));
+    const Int ctime (name(st_ctime), doc("Time of latest change."));
+}
+
+/*
+module(name:openMode)
+{
+    const Int readOnly (name(O_RDONLY), doc("Open file in read-only mode."));
+//    const Int writeOnly (name(O_WRONLY), doc("Open file in write-only mode."));
+//	...;
+}
+*/
+
+def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor. Equivalent to the C open function. Returns null on failiure."));
+def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
+def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
+def Int close(Int fd);
+
+def Int stat(String path, Stat buf);
+def Int lstat(String path, Stat buf);
+def Int fstat(Int fd, Stat buf);
+
+def Int mkdir(String path, Int mode);
+def Int unlink(String path);
+
+/*      
+const Int standardInput (value(0));
+const Int standardOutput (value(1));
+const Int standardError (value(2));    
+*/

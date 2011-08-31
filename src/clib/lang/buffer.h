@@ -14,6 +14,7 @@ void anna_buffer_set_count(anna_object_t *this, size_t sz);
 
 size_t anna_buffer_get_capacity(anna_object_t *this);
 void anna_buffer_set_capacity(anna_object_t *this, size_t sz);
+int anna_buffer_ensure_capacity(anna_object_t *this, size_t sz);
 
 unsigned char *anna_buffer_get_payload(anna_object_t *this);
 

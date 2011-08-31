@@ -456,6 +456,9 @@ static void anna_module_doc()
     }
 }
 
+void create(anna_stack_template_t *stack);
+void load(anna_stack_template_t *stack);
+
 void anna_module_init()
 {
     /*
@@ -471,6 +474,7 @@ void anna_module_init()
 	    { L"math", 0, anna_math_load },
 	    { L"cerror", 0, anna_cerror_load },
 	    { L"ctime", 0, anna_ctime_load },
+	    { L"cio2", create, load },
 	};
 
     anna_module_data_create(modules, stack_global);

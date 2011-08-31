@@ -43,6 +43,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_function, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+
     return anna_from_obj(anna_node_wrap(node->function));
 }
 

@@ -127,6 +127,66 @@ ANNA_VM_NATIVE(anna_function_type_i_call_count, 1)
     return anna_entry_get(this, ANNA_MID_CONTINUATION_CALL_COUNT);
 }
 
+ANNA_VM_NATIVE(anna_function_type_i_get, 2)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    if(param[1] == null_entry)
+    {
+	return null_entry;
+    }
+    
+    wchar_t *name = anna_string_payload(anna_as_obj(param[1]));
+    anna_vmstack_t *c_stack = (anna_vmstack_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
+    anna_entry_t *res = null_entry;
+    anna_function_t *fun = c_stack->function;
+
+    if(fun)
+    {
+	anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
+	if(sid.frame == 0)
+	{
+	    res = c_stack->base[sid.offset];
+	}
+    }
+    
+    free(name);
+    return res;
+}
+
+ANNA_VM_NATIVE(anna_function_type_i_caller, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_vmstack_t *c_stack = (anna_vmstack_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
+    if(c_stack->caller)
+    {
+	anna_object_t *cont = anna_continuation_create(
+	    c_stack->caller,
+	    object_type)->wrapper;
+	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)c_stack->caller;
+	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)c_stack->caller->code;
+	return anna_from_obj(cont);
+	
+
+    }
+    return null_entry;
+}
+
+ANNA_VM_NATIVE(anna_function_type_i_parent, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_vmstack_t *c_stack = (anna_vmstack_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
+    if(c_stack->parent)
+    {
+	anna_object_t *cont = anna_continuation_create(
+	    c_stack->parent,
+	    object_type)->wrapper;
+	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)c_stack->parent;
+	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)c_stack->parent->code;
+	return anna_from_obj(cont);
+    }
+    return null_entry;
+}
+
 static void anna_function_load(anna_stack_template_t *stack)
 {
     anna_type_t *res = function_type_base;
@@ -252,6 +312,44 @@ void anna_function_type_create(
 	    &anna_function_type_i_call_count,
 	    0,
 	    L"The number of times this continuation has been called.");
+
+	anna_type_t *v_argv[] = 
+	    {
+		res,
+		string_type,
+		object_type
+	    }
+	;
+    
+	wchar_t *v_argn[]=
+	    {
+		L"this", L"key", L"value"
+	    }
+	;
+
+	anna_member_create_native_method(
+	    res, anna_mid_get(L"__get__"), 0,
+	    &anna_function_type_i_get, object_type, 2, v_argv, v_argn);
+	anna_member_document(
+	    res,
+	    anna_mid_get(L"__get__"), 
+	    L"Returns the value of the local variable with the specified name.");
+
+	anna_member_create_native_property(
+	    res, anna_mid_get(L"caller"),
+	    res,
+	    &anna_function_type_i_caller,
+	    0,
+	    L"The continuation of the caller of this continuation.");
+
+	anna_member_create_native_property(
+	    res, anna_mid_get(L"parent"),
+	    res,
+	    &anna_function_type_i_parent,
+	    0,
+	    L"The continuation of the parent scope of this continuation.");
+
+
     }
     
     if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
