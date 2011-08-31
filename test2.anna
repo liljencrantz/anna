@@ -2,7 +2,7 @@ use(cio2);
 
 def main()
 {
-    print(fd := cio2.open("test.anna", 0, 0), "\n");
+    print(fd := cio2.open("test.anna", cio2.openMode.readOnly, 0), "\n");
     buf := Buffer();
     print(read(fd, buf, 4096), "\n");
     print(cerror.errorString(?), "\n");

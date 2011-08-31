@@ -18,14 +18,57 @@ cStruct Stat (name(stat))
     const Int ctime (name(st_ctime), doc("Time of latest change."));
 }
 
-/*
-module(name:openMode)
+openMode
 {
     const Int readOnly (name(O_RDONLY), doc("Open file in read-only mode."));
-//    const Int writeOnly (name(O_WRONLY), doc("Open file in write-only mode."));
-//	...;
+    const Int writeOnly (name(O_WRONLY), doc("Open file in write-only mode."));
+    const Int readWrite (name(O_RDWR), doc("Open file in read-write mode."));
+
+    const Int append (name(O_APPEND), doc("The file is opened in append mode."));
+    const Int async (name(O_ASYNC), doc("Enable signal-driven I/O."));
+    const Int create (name(O_CREAT), doc("If the file does not exist it will be created."));
+    const Int closeOnExec (name(O_CLOEXEC), doc("Enable the close-on-exec flag for the new file descriptor."));
+    const Int direct (name(O_DIRECT), doc("Try to minimize cache effects of the I/O to and from this file."));
+    const Int directory (name(O_DIRECTORY), doc("If pathname is not a directory, cause the open to fail."));
+    const Int exclusive (name(O_EXCL), doc("Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail."));
+    const Int largeFile (name(O_LARGEFILE), doc("(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened."));
+    const Int noAccessTime (name(O_NOATIME), doc("Do not update the file last access time (st_atime in the inode) when the file is read()."));
+    const Int noControllingTTY (name(O_NOCTTY), doc("If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one."));
+    const Int noFollow (name(O_NOFOLLOW), doc("If pathname is a symbolic link, then the open fails."));
+    const Int nonBlock (name(O_NONBLOCK), doc("When possible, the file is opened in nonblocking mode."));
+    const Int synchronous (name(O_SYNC), doc("The file is opened for synchronous I/O."));
+    const Int truncate (name(O_TRUNC), doc("f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0."));
 }
-*/
+
+statMode
+{
+    const Int regular (name(S_IFREG), doc("Regular file"));
+    const Int socket (name(S_IFSOCK), doc("Socket"));
+    const Int link (name(S_IFLNK), doc("Symbolic link."));
+    const Int block (name(S_IFBLK), doc("Block device."));
+    const Int directory (name(S_IFDIR), doc("Directory."));
+    const Int character (name(S_IFCHR), doc("Character device."));
+    const Int fifo (name(S_IFIFO), doc("FIFO."));
+    
+    const Int suid (name(S_ISUID), doc("Set UID bit."));
+    const Int sgid (name(S_ISGID), doc("Set-group-ID bit."));
+    const Int sticky (name(S_ISVTX), doc("Sticky bit."));
+    
+    const Int userAll (name(S_IRWXU), doc("Mask for all file owner permissions."));
+    const Int userRead (name(S_IRUSR), doc("File owner read permission."));
+    const Int userwrite (name(S_IWUSR), doc("File owner write permission."));
+    const Int userExecute (name(S_IXUSR), doc("File owner execute permission."));
+    
+    const Int groupAll (name(S_IRWXG), doc("Mask for all group permissions."));
+    const Int groupRead (name(S_IRGRP), doc("Group has read permission."));
+    const Int groupwrite (name(S_IWGRP), doc("Group has write permission."));
+    const Int groupExecute (name(S_IXGRP), doc("Group has execute permission."));
+    
+    const Int otherAll (name(S_IRWXO), doc("Mask for permissions for others (not in group)."));
+    const Int otherRead (name(S_IROTH), doc("Others have read permission."));
+    const Int otherwrite (name(S_IWOTH), doc("Others have write permission."));
+    const Int otherExecute (name(S_IXOTH), doc("Others have execute permission."));
+}
 
 def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor. Equivalent to the C open function. Returns null on failiure."));
 def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
@@ -39,8 +82,10 @@ def Int fstat(Int fd, Stat buf);
 def Int mkdir(String path, Int mode);
 def Int unlink(String path);
 
-/*      
-const Int standardInput (value(0));
-const Int standardOutput (value(1));
-const Int standardError (value(2));    
-*/
+standardInput :== 0;
+standardOutput :== 1;
+standardError :== 2;
+
+def Int getcwd(Buffer buf(ensureCapacity(size)), Int size);
+def Int chdir(String path);
+def Int fchdir(Int fd);

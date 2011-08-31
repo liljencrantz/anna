@@ -201,7 +201,7 @@ type BindingGenerator
     {
 	return "native_param_" ~originalName;
     }
-
+    
     def generateFunctionCode(Call decl)
     {
         init := "".thaw;
@@ -404,17 +404,16 @@ ANNA_VM_NATIVE(%(getterName), 1)
 
 	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load);
     }
-    
-    def generate()
+
+    def generateModule(Node nodes)
     {
         code := "".thaw;
         load := "".thaw;
         typeDecl := "".thaw;
         typeData := "".thaw;
+        moduleData := "".thaw;
         customInclude := "".thaw;
-	
-        text := File(path).readFile();
-        nodes := parse(text);
+
 	(nodes as Call).each(node)
 	{
 	    decl := node as Call;
@@ -423,28 +422,57 @@ ANNA_VM_NATIVE(%(getterName), 1)
 		case("__const__")
 		{
 		    name := (decl[0] as Identifier).name;
-		    switch(((decl[2] as Call).function as Identifier).name)
+		    
+		    switch(decl[2])
 		    {
-			case("__def__")
+			case (intVal as IntLiteral)
 			{
-			  out := generateFunction(name, decl[2] as Call);
-			    load ~= out.load;
-			    code ~= out.code;
-		    }
-			
-			case("cStruct")
-			{
-			  out := generateCStruct(name, decl[2] as Call);
-			    load ~= out.load;
-			    code ~= out.code;
-			    typeDecl ~= out.typeDecl;
-			    typeData ~= out.typeData;
-			    
+			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), L\"%(doc)\");\n" % 
+				[
+				    "name": name,
+				    "value": intVal.payload,
+				    "doc": "",
+				    ];
 			}
-			
+
+			case (callVal as Call)
+			{
+			    switch(((decl[2] as Call).function as Identifier).name)
+			    {
+				case("__def__")
+				{
+				  out := generateFunction(name, decl[2] as Call);
+				    load ~= out.load;
+				    code ~= out.code;
+				}
+				
+				case("cStruct")
+				{
+  				    out := generateCStruct(name, decl[2] as Call);
+				    load ~= out.load;
+				    code ~= out.code;
+				    typeDecl ~= out.typeDecl;
+				    typeData ~= out.typeData;
+				}
+				
+				default
+				{
+				    print(decl);
+				}	
+			    }
+			}
+
 			default
 			{
-			    print(decl[2]);
+
+ 			    nativeName := findAttr(decl[3], "name")[0] or name;
+			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), L\"%(doc)\");
+" % 
+				[
+				    "name": name,
+				    "value": nativeName,
+				    "doc": "",
+				    ];
 			}	
 		    }	
 		}
@@ -459,11 +487,51 @@ ANNA_VM_NATIVE(%(getterName), 1)
 
 		default
 		{
-		    print("Skipping %\n" % [node]);
-		}
+                    if(decl.count == 1 and decl[0].isCallTo("__block__"))
+                    {
+  		        mangledName := "anna_" ~ mangleName(String::convert(decl.function))~"_load";
 
+		        out := generateModule(decl[0]);
+			typeData ~= out.typeData;
+			typeDecl ~= out.typeDecl;
+			customInclude ~= out.customInclude;
+                        code ~= out.code;
+                        code ~= generateLoadFunction(mangledName, out.moduleData, out.load, ?);
+                        moduleData ~= "            { L\"%(name)\", 0, %(loadName)},\n" %
+                            [
+				"name": decl.function,
+				"loadName": mangledName,
+                            ];
+                    }
+		}
 	    }
 	}
+	
+	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load, customInclude: customInclude, moduleData: moduleData);
+
+    }
+    
+    def generate()
+    {
+        code := "".thaw;
+        load := "".thaw;
+        typeDecl := "".thaw;
+        typeData := "".thaw;
+        customInclude := "".thaw;
+        moduleData := "".thaw;
+	
+        text := File(path).readFile();
+        nodes := parse(text);
+	
+        out := generateModule(nodes);
+
+        load ~= out.load;
+        code ~= out.code;
+        typeDecl ~= out.typeDecl;
+        typeData ~= out.typeData;
+	customInclude ~= out.customInclude;
+	moduleData ~= out.moduleData;
+
 	print( "
 #define _GNU_SOURCE
 #include <stdlib.h>
@@ -484,6 +552,7 @@ ANNA_VM_NATIVE(%(getterName), 1)
 #include \"clib/lang/string.h\"
 #include \"clib/lang/buffer.h\"
 #include \"anna_member.h\"
+#include \"anna_module_data.h\"
 
 // Declare internal variables for all types defined in this module
 %(typeDecl)
@@ -503,24 +572,36 @@ void create(anna_stack_template_t *stack)
 }
 
 // This function is called to load all functions and other declarations into the module
-void load(anna_stack_template_t *stack)
-{
-    wchar_t *this_argn[] = {L\"this\"};
-
-    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
-%(load)
-    anna_type_data_register(anna_type_data, stack);
-}
+%(loadFunction)
 " %
 	    [
 		"customInclude": customInclude,
 		"typeDecl": typeDecl,
 		"typeData": typeData,
 		"code": code,
-		"load": load,
+		"loadFunction": generateLoadFunction("load", moduleData, load, 1),
 	    ]
 	    );
     }
+
+    def generateLoadFunction(String functionName, String moduleData, String load, Int isRootFunction)
+    {
+        return "
+void %(functionName)(anna_stack_template_t *stack)
+{
+    anna_module_data_t modules[] =
+        {
+%(moduleData)        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L\"this\"};
+
+%(load)
+%(register)
+}
+" % ["functionName": functionName, "moduleData": moduleData, "load": load, "register": if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"}else{""}]
+    }
+
 }
 
 def main()
