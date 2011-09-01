@@ -14,4 +14,8 @@ def main()
     print(sb.size, "\n");
     print(sb.blksize, "\n");
     
+    cb := Buffer();
+    cio2.getcwd(cb, 4096);
+    print(cb.encode(), "\n");
+
 }

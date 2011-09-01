@@ -2,6 +2,65 @@ use(io);
 use(parser);
 use(error);
 
+attribute(doc("
+  This is the Anna binding compiler. Unlike many other binding
+  generators, this one doesn't parse headers in any way. Instead, the
+  binding creator has to write headers that contain roughly the same
+  information as traditional C headers, but expressed in a syntax that
+  is very easy to parse. This is a pretty simple solution, and it
+  means more work in order to get things up and running. But on the
+  plus side, it avoids the often significant amount of hand holding
+  required in order to get C header files to behave well enough in
+  order to let them be parsed. It should also be noted that aside from
+  the obvious problems with finding a good strategy for mixing GC:ed
+  and non-GC:ed objects, there is very little to prevent this strategy
+  from working beutifully with C++ bindings as well.
+  
+  The bind utility simply outputs a C file that when compiled into a
+  library can be linked into Anna at runtime in order to provide the
+  runtime with an additional library.  It would be nice if the whole
+  build chain could be moved into Anna, but that would require that
+  Anna has access to a C compiler. Using exec(\"cc\", ...) should be
+  enough. This might happen later on.
+
+  Basic function declarations look like this:
+
+  def Int foo(Int x, Buffer y);
+
+  this is equivalent to the following C header:
+
+  int foo(int x, char *y);
+
+  The following basic types are built in:
+
+  * Int: maps to the regular Anna Int. Should be used for all integer types of the C 'int' of the platform.
+  * Float: maps to the regular Anna Float. Should be used for the C 'float' type.
+  * Double: maps to the regular Anna Float. Should be used for the C 'double' type.
+  * Buffer: maps to a memory region. Should be used for various array data.
+
+  The following additional types are planned:
+
+  * UnsignedInt: maps to the regular Anna Int. Should be used for all integer types of the C 'unsigned int' of the platform.
+  * Short, UnsignedShort, Long, UnsignedLong, Char, UnsignedChar, Int32, UnsignedInt32, Int64, UnsignedInt64 all work the same as well.
+  * Void: Only available as a return type. A function which returns nothing. Will be translated into a function of return type Object and return value null.
+  * Pointer«X»: Opaque pointer value. Opaque pointers can not be used inside of anny except for sending them as parameters to other functions. Pointers can be recast as any other pointer type. 
+  * List«X»: Maps to a list of items. X needs to be another basic type, potentially including another list. When a List is given as an output type, it will need annotations to inform the binder of the vector size, see below.
+  * XXXVector, Maps to a list of numbers. When a List is given as an output type, it will need annotations to inform the binder of the vector size, see below.
+  
+  There should be a mechanism for adding library specific types. 
+
+  cStruct information:
+
+  TODO
+
+  Constants:
+
+  TODO
+
+"));
+
+
+
 type ParseError (extends(error.Error))
 {
     var Node node;
@@ -167,6 +226,10 @@ type BindingGenerator
 		"float_type", 
 		"double %(dest) = anna_as_float(%(source));",
 		"anna_entry_t *%(dest) = anna_from_float(%(source));"),
+	    ast(Pointer): BasicBindingType(
+		"pointer_type", 
+		"void *%(dest) = anna_entry_get(anna_as_obj(%(source)), ANNA_MID_POINTER_PAYLOAD);",
+		"anna_entry_t *%(dest) = anna_from_obj(anna_pointer_create(%(source)));"),
 	    ast(Buffer): BasicBindingType(
 		"buffer_type", 
 		"unsigned char *%(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));",
@@ -184,7 +247,7 @@ type BindingGenerator
 
     def mangleFunctionName(String name)
     {
-	this.name ~ "_i_" ~ name;
+	this.name ~ "_i_" ~mangleName(name);
     }
 
     def getBindingType(Node node)
@@ -194,7 +257,7 @@ type BindingGenerator
 
     def getFunctionNativeName(Call decl)
     {
-	(decl[0] as Identifier).name;
+	String::convert(findAttr(decl[3], "name")[0]) or (decl[0] as Identifier).name;
     }
 
     def getNativeParamName(String originalName) (static)

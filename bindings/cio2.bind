@@ -1,23 +1,6 @@
 
 include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>");
 
-cStruct Stat (name(stat))
-{
-    const Int dev (name(st_dev), doc("ID of device containing file"));
-    const Int ino (name(st_ino), doc("Inode number"));
-    const Int mode (name(st_mode), doc("File protection mask"));
-    const Int nlink (name(st_nlink), doc("Number of hard links."));
-    const Int uid (name(st_uid), doc("User ID of owner."));
-    const Int gid (name(st_gid), doc("Group ID of owner."));
-    const Int rdev (name(st_rdev), doc("Device ID."));
-    const Int size (name(st_size), doc("Total size in bytes."));
-    const Int blksize (name(st_blksize), doc("Block size for file system IO."));
-    const Int blocks (name(st_blocks), doc("Number of 512 byte blocks allocated."));
-    const Int atime (name(st_atime), doc("Time of latest acccess."));
-    const Int mtime (name(st_mtime), doc("Time of latest modification."));
-    const Int ctime (name(st_ctime), doc("Time of latest change."));
-}
-
 openMode
 {
     const Int readOnly (name(O_RDONLY), doc("Open file in read-only mode."));
@@ -75,6 +58,23 @@ def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
 def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
 def Int close(Int fd);
 
+cStruct Stat (name(stat))
+{
+    const Int dev (name(st_dev), doc("ID of device containing file"));
+    const Int ino (name(st_ino), doc("Inode number"));
+    const Int mode (name(st_mode), doc("File protection mask"));
+    const Int nlink (name(st_nlink), doc("Number of hard links."));
+    const Int uid (name(st_uid), doc("User ID of owner."));
+    const Int gid (name(st_gid), doc("Group ID of owner."));
+    const Int rdev (name(st_rdev), doc("Device ID."));
+    const Int size (name(st_size), doc("Total size in bytes."));
+    const Int blksize (name(st_blksize), doc("Block size for file system IO."));
+    const Int blocks (name(st_blocks), doc("Number of 512 byte blocks allocated."));
+    const Int atime (name(st_atime), doc("Time of latest acccess."));
+    const Int mtime (name(st_mtime), doc("Time of latest modification."));
+    const Int ctime (name(st_ctime), doc("Time of latest change."));
+}
+
 def Int stat(String path, Stat buf);
 def Int lstat(String path, Stat buf);
 def Int fstat(Int fd, Stat buf);
@@ -84,8 +84,29 @@ def Int unlink(String path);
 
 standardInput :== 0;
 standardOutput :== 1;
-standardError :== 2;
+const standardError(doc("File descriptor for error output")) = 2;
 
 def Int getcwd(Buffer buf(ensureCapacity(size)), Int size);
 def Int chdir(String path);
 def Int fchdir(Int fd);
+
+cStruct FLock (name(flock))
+{
+    const Int type (name(l_type), doc("Type of lock: F_RDLCK, F_WRLCK, F_UNLCK."));
+    const Int whence (name(l_whence), doc("How to interpret l_start: SEEK_SET, SEEK_CUR, SEEK_END."));
+    const Int start (name(l_start), doc("Starting offset for lock"));
+    const Int len (name(l_len), doc("Number of bytes to lock"));
+    const Int pid (name(l_pid), doc("PID of process blocking our lock (F_GETLK only)"));
+}
+
+fcntlMode
+{
+    const Int dupFd (name(F_DUPFD));
+    // ...
+}
+
+def Int fcntl(Int fd, Int cmd);
+def Int fcntlInt(Int fd, Int cmd, Int arg) (name(fcntl), alias(fcntl));
+def Int fcntlFLock(Int fd, Int cmd, FLock arg) (name(fcntl), alias(fcntl));
+
+

@@ -25,12 +25,13 @@
 #include "anna_module_data.h"
 
 // Declare internal variables for all types defined in this module
-anna_type_t *cio2_stat_type;
+anna_type_t *cio2_stat_type;anna_type_t *cio2_f_lock_type;
 
 // Data used to initialize all types defined in this module
 const static anna_type_data_t anna_type_data[] = 
 {
     { &cio2_stat_type, L"Stat" },
+    { &cio2_f_lock_type, L"FLock" },
 };
 
 // This is the source code of the various wrapper functions
@@ -133,6 +134,48 @@ ANNA_VM_NATIVE(cio2_i_stat_ctime_getter, 1)
     return result;
 }
 
+ANNA_VM_NATIVE(cio2_i_f_lock_init, 1)
+{
+    struct flock *data = (struct flock *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    memset(data, 0, sizeof(struct flock));
+    return param[0];
+}
+
+ANNA_VM_NATIVE(cio2_i_f_lock_type_getter, 1)
+{
+    struct flock *data = (struct flock *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->l_type);
+    return result;
+}
+
+ANNA_VM_NATIVE(cio2_i_f_lock_whence_getter, 1)
+{
+    struct flock *data = (struct flock *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->l_whence);
+    return result;
+}
+
+ANNA_VM_NATIVE(cio2_i_f_lock_start_getter, 1)
+{
+    struct flock *data = (struct flock *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->l_start);
+    return result;
+}
+
+ANNA_VM_NATIVE(cio2_i_f_lock_len_getter, 1)
+{
+    struct flock *data = (struct flock *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->l_len);
+    return result;
+}
+
+ANNA_VM_NATIVE(cio2_i_f_lock_pid_getter, 1)
+{
+    struct flock *data = (struct flock *)anna_entry_get(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->l_pid);
+    return result;
+}
+
 void anna_open_mode_load(anna_stack_template_t *stack)
 {
     anna_module_data_t modules[] =
@@ -194,6 +237,20 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"otherRead", S_IROTH, L"");
     anna_module_const_int(stack, L"otherwrite", S_IWOTH, L"");
     anna_module_const_int(stack, L"otherExecute", S_IXOTH, L"");
+
+
+}
+
+void anna_fcntl_mode_load(anna_stack_template_t *stack)
+{
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+    anna_module_const_int(stack, L"dupFd", F_DUPFD, L"");
 
 
 }
@@ -442,6 +499,64 @@ ANNA_VM_NATIVE(cio2_i_fchdir, 1)
     return result;
 }
 
+ANNA_VM_NATIVE(cio2_i_fcntl, 2)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    int native_param_fd = anna_as_int(param[0]);
+    if(param[1] == null_entry){return null_entry;}
+    int native_param_cmd = anna_as_int(param[1]);
+
+    // Validate parameters
+
+    // Call the function
+    anna_entry_t *result = anna_from_int(fcntl(native_param_fd, native_param_cmd));
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(cio2_i_fcntl_int, 3)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    int native_param_fd = anna_as_int(param[0]);
+    if(param[1] == null_entry){return null_entry;}
+    int native_param_cmd = anna_as_int(param[1]);
+    if(param[2] == null_entry){return null_entry;}
+    int native_param_arg = anna_as_int(param[2]);
+
+    // Validate parameters
+
+    // Call the function
+    anna_entry_t *result = anna_from_int(fcntl(native_param_fd, native_param_cmd, native_param_arg));
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(cio2_i_fcntl_f_lock, 3)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    int native_param_fd = anna_as_int(param[0]);
+    if(param[1] == null_entry){return null_entry;}
+    int native_param_cmd = anna_as_int(param[1]);
+    if(param[2] == null_entry){return null_entry;}
+    struct flock *native_param_arg = (struct flock *)anna_entry_get(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+
+    // Call the function
+    anna_entry_t *result = anna_from_int(fcntl(native_param_fd, native_param_cmd, native_param_arg));
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
 
 // This function is called to create all types defined in this module
 void create(anna_stack_template_t *stack)
@@ -457,6 +572,7 @@ void load(anna_stack_template_t *stack)
         {
             { L"openMode", 0, anna_open_mode_load},
             { L"statMode", 0, anna_stat_mode_load},
+            { L"fcntlMode", 0, anna_fcntl_mode_load},
         };
     anna_module_data_create(modules, stack);
 
@@ -521,6 +637,32 @@ void load(anna_stack_template_t *stack)
         cio2_stat_type, anna_mid_get(L"ctime"),
         int_type, cio2_i_stat_ctime_getter, 0, 0);
 
+    anna_member_create_blob(cio2_f_lock_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct flock));
+
+    anna_member_create_native_method(
+	cio2_f_lock_type, anna_mid_get(L"__init__"), 0,
+	&cio2_i_f_lock_init, object_type, 1, &cio2_f_lock_type, this_argn);    
+
+    anna_member_create_native_property(
+        cio2_f_lock_type, anna_mid_get(L"type"),
+        int_type, cio2_i_f_lock_type_getter, 0, 0);
+
+    anna_member_create_native_property(
+        cio2_f_lock_type, anna_mid_get(L"whence"),
+        int_type, cio2_i_f_lock_whence_getter, 0, 0);
+
+    anna_member_create_native_property(
+        cio2_f_lock_type, anna_mid_get(L"start"),
+        int_type, cio2_i_f_lock_start_getter, 0, 0);
+
+    anna_member_create_native_property(
+        cio2_f_lock_type, anna_mid_get(L"len"),
+        int_type, cio2_i_f_lock_len_getter, 0, 0);
+
+    anna_member_create_native_property(
+        cio2_f_lock_type, anna_mid_get(L"pid"),
+        int_type, cio2_i_f_lock_pid_getter, 0, 0);
+
     anna_type_t *cio2_i_open_argv[] = {string_type, int_type, int_type};
     wchar_t *cio2_i_open_argn[] = {L"name", L"flags", L"mode"};
     anna_module_function(stack, L"open", 0, &cio2_i_open, int_type, 3, cio2_i_open_argv, cio2_i_open_argn, L"");
@@ -571,6 +713,18 @@ void load(anna_stack_template_t *stack)
     anna_type_t *cio2_i_fchdir_argv[] = {int_type};
     wchar_t *cio2_i_fchdir_argn[] = {L"fd"};
     anna_module_function(stack, L"fchdir", 0, &cio2_i_fchdir, int_type, 1, cio2_i_fchdir_argv, cio2_i_fchdir_argn, L"");
+
+    anna_type_t *cio2_i_fcntl_argv[] = {int_type, int_type};
+    wchar_t *cio2_i_fcntl_argn[] = {L"fd", L"cmd"};
+    anna_module_function(stack, L"fcntl", 0, &cio2_i_fcntl, int_type, 2, cio2_i_fcntl_argv, cio2_i_fcntl_argn, L"");
+
+    anna_type_t *cio2_i_fcntl_int_argv[] = {int_type, int_type, int_type};
+    wchar_t *cio2_i_fcntl_int_argn[] = {L"fd", L"cmd", L"arg"};
+    anna_module_function(stack, L"fcntlInt", 0, &cio2_i_fcntl_int, int_type, 3, cio2_i_fcntl_int_argv, cio2_i_fcntl_int_argn, L"");
+
+    anna_type_t *cio2_i_fcntl_f_lock_argv[] = {int_type, int_type, cio2_f_lock_type};
+    wchar_t *cio2_i_fcntl_f_lock_argn[] = {L"fd", L"cmd", L"arg"};
+    anna_module_function(stack, L"fcntlFLock", 0, &cio2_i_fcntl_f_lock, int_type, 3, cio2_i_fcntl_f_lock_argv, cio2_i_fcntl_f_lock_argn, L"");
 
     anna_type_data_register(anna_type_data, stack);
 }
