@@ -7,7 +7,7 @@ def main()
     print(cerror.errorString(?), "\n");
     print(unix.io.close(fd), "\n");
 
-    sb := unix.Stat();
+    sb := unix.io.Stat();
     print(unix.io.stat("test.anna", sb), "\n");
     print(sb.uid, "\n");
     print(sb.size, "\n");
@@ -22,9 +22,15 @@ def main()
     if(unix.proc.fork() == 0)
     {
 	print("child\n");
+	return;
     } else
     {
 	print("parent\n");
     }
+
+    pfd := [0];
+    print(unix.io.pipe(pfd), ' ', pfd, "\n");
+    
+
 }
 

@@ -1,5 +1,5 @@
 
-include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>");
+include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", "<grp.h>");
 
 io
 {
@@ -128,9 +128,7 @@ io
 
     def Int rename(String oldpath, String newpath);
 
-/* 
-   def Int pipe(MutableList«Int» fd (ensureCapacity(2)));
-*/
+    def Int pipe(MutableList«Int» fd (ensureCapacity(2)));
 
 }
 
@@ -148,11 +146,9 @@ proc
     def Int getpid();
     def Int getppid();
 
-     
-/* Todo
-   def Int wait(Int pid, MutableList«Int» (ensureCapacity(1)), Int options); 
-   def Int waitpid(Int pid, MutableList«Int» (ensureCapacity(1)), Int options); 
-*/
+    def Int wait(MutableList«Int» status (ensureCapacity(1))); 
+    def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options);
+
 }
 
 user
@@ -170,10 +166,8 @@ user
     def Int setpgid(Int pid, Int pgid);
     def Int getpgid(Int pid);
 
-/* Todo
     def Int getgroups(Int size, MutableList«Int» list (ensureCapacity(size)));
     def Int setgroups(Int size, MutableList«Int» list (ensureCapacity(size)));
-*/
 }
 
 rLimit

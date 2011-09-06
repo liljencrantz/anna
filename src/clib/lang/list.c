@@ -171,6 +171,34 @@ void anna_list_set_capacity(anna_object_t *this, size_t sz)
     *(anna_entry_t ***)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD) = ptr;
 }
 
+int anna_list_ensure_capacity(anna_object_t *this, size_t sz)
+{
+    anna_entry_t **ptr = anna_list_get_payload(this);
+    size_t old_cap = (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_CAPACITY));
+    size_t old_sz = (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE));
+    
+    if(old_cap >= sz)
+    {
+	return 0;
+    }
+    size_t cap = anna_size_round(sz);
+    
+    ptr = realloc(ptr, sizeof(anna_entry_t *)*cap);
+    if(!ptr)
+    {
+	return 1;
+    }
+    size_t i;
+    for(i=old_sz; i<sz; i++)
+    {
+	ptr[i] = null_entry;
+    }
+    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_CAPACITY)) = cap;
+    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE)) = maxi(sz, old_sz);
+    *(unsigned char **)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD) = ptr;
+    return 0;    
+}
+
 anna_entry_t **anna_list_get_payload(anna_object_t *this)
 {
     return *(anna_entry_t ***)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD);

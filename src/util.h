@@ -193,6 +193,20 @@ static inline ssize_t sign(ssize_t v){
     return 0;
 }
 
+/* Round to next higher power of two */
+static inline size_t anna_size_round(size_t v)
+{
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+}
+
+
 /*
   All the datastuctures below autoresize. The queue, stack and
   priority queue are all impemented using an array and are guaranteed

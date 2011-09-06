@@ -562,7 +562,11 @@ void *wdlopen(const wchar_t *filename, int flag)
     return dlopen(name_narrow, flag);
 }
 
-
+void *wdlsym(void *handle, const wchar_t *symbol)
+{
+    char *symbol_narrow =wutil_wcs2str(symbol);
+    return dlsym(handle, symbol_narrow);
+}
 
 int wrename( const wchar_t *old, const wchar_t *new )
 {

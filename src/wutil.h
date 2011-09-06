@@ -153,5 +153,9 @@ int wunlink( const wchar_t *path);
  */
 void *wdlopen(const wchar_t *filename, int flag);
 
+/**
+   Wide character version of dlsym
+ */
+void *wdlsym(void *handle, const wchar_t *symbol);
 
 #endif

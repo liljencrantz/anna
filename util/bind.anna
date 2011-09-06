@@ -166,6 +166,116 @@ type ListBindingType (extends(BindingType), doc(""))
 
 }
 
+type MutableListBindingType (extends(BindingType), doc(""))
+{
+
+    def String annaNativeType(Node decl, Node attr){
+        subType := ((decl as Call)[1] as Call)[0];
+        subBinding := getBindingType(subType);
+	return subBinding.annaNativeType(subType, ?) ~"*";
+    }
+
+    def String annaCType(Node decl, Node attr){
+      subType := ((decl as Call)[1] as Call)[0];
+      subBinding := getBindingType(subType);
+	return "anna_list_type_get_mutable(%)" % [subBinding.annaCType(subType, ?)];
+    }
+
+    def String convertToC(Node decl, Node attr, String dest, String source){
+        subType := ((decl as Call)[1] as Call)[0];
+        subBinding := getBindingType(subType);
+        subTypeNative := subBinding.annaNativeType(subType, ?);
+	
+      res := "".thaw;
+
+        findAttr(attr, "ensureCapacity").each(cap)
+	{
+	    capStr := switch(cap)
+	    {
+		case(capId as Identifier)
+		{
+		    BindingGenerator::getNativeParamName(capId.name);
+		}
+		case(capNum as IntLiteral)
+		{
+		    String::convert(capNum.payload);
+		}
+	    }
+	    res ~= "if(anna_list_ensure_capacity(anna_as_obj(%(source)), %(capacity)))
+    {
+        return null_entry;
+    }\n    " % ["source": source, "capacity": capStr];
+	}
+
+	res ~= "size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
+    %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
+    if(!%(dest)){ return null_entry; }
+    int %(dest)_idx;
+    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+    {
+        anna_entry_t *tmp = %(value);
+        if(tmp == null_entry)
+        {
+            %(dest)[%(dest)_idx] = 0;
+        }
+        else
+        {
+            %(conversion)
+            %(dest)[%(dest)_idx] = %(dest)_val;
+        }
+    }
+" % [
+	    "subTypeNative": subTypeNative,
+	    "dest": dest,
+	    "source": source,
+	    "szName": dest ~ "_count",
+            "conversion": subBinding.convertToC(subType, ?, dest ~ "_val", "tmp"),
+	    "value": "anna_list_get(anna_as_obj(%), %)" % [source, dest ~ "_idx"],
+	    
+            ];
+
+	return res;
+    }
+
+    def String convertToAnna(Node decl, Node attr, String dest, String source){
+	?
+    }
+    def String cleanupToC(Node decl, Node attr, String dest, String source)
+    {	
+        subType := ((decl as Call)[1] as Call)[0];
+        subBinding := getBindingType(subType);
+        subTypeNative := subBinding.annaNativeType(subType, ?);
+	return "
+    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+    {
+        %(value)
+        anna_list_set(anna_as_obj(%(source)), %(dest)_idx, tmp);
+        %(subCleanup)
+    }
+    free(%(dest));
+" % [
+	    "subTypeNative": subTypeNative,
+	    "dest": dest,
+	    "source": source,
+	    "szName": dest ~ "_count",
+	    "value": subBinding.convertToAnna(subType, ?, "tmp", "%(dest)[%(dest)_idx]" % ["dest": dest]),
+            "subCleanup": subBinding.cleanupToC(subType, ?, dest ~ "["~dest~"_idx]", "anna_list_get(anna_as_obj(%), %" % [source, dest ~ "_idx"])
+            ];
+    }
+
+    def String cleanupToAnna(Node decl, Node attr, String dest, String source){	
+
+    }
+
+    def String validateToC(Node decl, Node attr, String dest, String source){	
+	"";
+    }
+    def String validateToAnna(Node decl, Node attr, String dest, String source){
+	"";
+    }
+
+}
+
 def List«Node» findAttr(Call attr, String name)
 {
     res := «Node»[];
@@ -663,18 +773,25 @@ ANNA_VM_NATIVE(%(setterName), 2)
 		{
                     if(decl.count == 1 and decl[0].isCallTo("__block__"))
                     {
-  		        mangledName := "anna_" ~ mangleName(String::convert(decl.function))~"_load";
+  		        mangledName := mangleName(String::convert(decl.function));
+  		        loadName := "anna_" ~ mangledName~"_load";
+  		        createName := "anna_" ~ mangledName~"_create";
 
 		        out := generateModule(decl[0]);
-			typeData ~= out.typeData;
+			code ~= "const static anna_type_data_t anna_%(moduleName)_type_data[] = 
+{
+%(typeData)};
+" % ["typeData": out.typeData, "moduleName": mangledName];
 			typeDecl ~= out.typeDecl;
 			customInclude ~= out.customInclude;
                         code ~= out.code;
+                        code ~= generateCreateFunction(mangledName);
                         code ~= generateLoadFunction(mangledName, out.moduleData, out.load, ?);
-                        moduleData ~= "            { L\"%(name)\", 0, %(loadName)},\n" %
+                        moduleData ~= "            { L\"%(name)\", %(createName), %(loadName)},\n" %
                             [
 				"name": decl.function,
-				"loadName": mangledName,
+				"loadName": loadName,
+				"createName": createName,
                             ];
                     }
 		}
@@ -734,7 +851,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 %(typeDecl)
 
 // Data used to initialize all types defined in this module
-const static anna_type_data_t anna_type_data[] = 
+const static anna_type_data_t anna_%(moduleName)_type_data[] = 
 {
 %(typeData)};
 
@@ -742,10 +859,7 @@ const static anna_type_data_t anna_type_data[] =
 %(code)
 
 // This function is called to create all types defined in this module
-void create(anna_stack_template_t *stack)
-{
-    anna_type_data_create(anna_type_data, stack);        
-}
+%(createFunction)
 
 // This function is called to load all functions and other declarations into the module
 %(loadFunction)
@@ -755,15 +869,28 @@ void create(anna_stack_template_t *stack)
 		"typeDecl": typeDecl,
 		"typeData": typeData,
 		"code": code,
-		"loadFunction": generateLoadFunction("load", moduleData, load, 1),
+		"loadFunction": generateLoadFunction(this.name, moduleData, load, 1),
+		"createFunction": generateCreateFunction(this.name),
+		"moduleName": this.name,
 	    ]
 	    );
     }
 
-    def generateLoadFunction(String functionName, String moduleData, String load, Int isRootFunction)
+    def generateCreateFunction(String moduleName)
+    {
+"
+void anna_%(moduleName)_create(anna_stack_template_t *stack);
+void anna_%(moduleName)_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_%(moduleName)_type_data, stack);        
+}" % ["moduleName": moduleName];
+    }
+
+    def generateLoadFunction(String moduleName, String moduleData, String load, Int isRootFunction)
     {
         return "
-void %(functionName)(anna_stack_template_t *stack)
+void anna_%(moduleName)_load(anna_stack_template_t *stack);
+void anna_%(moduleName)_load(anna_stack_template_t *stack)
 {
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
@@ -774,9 +901,9 @@ void %(functionName)(anna_stack_template_t *stack)
     wchar_t *this_argn[] = {L\"this\"};
 
 %(load)
-%(register)
+     anna_type_data_register(anna_%(moduleName)_type_data, stack);
 }
-" % ["functionName": functionName, "moduleData": moduleData, "load": load, "register": if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"}else{""}]
+" % ["moduleName": moduleName, "moduleData": moduleData, "load": load, "register": if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"}else{""}]
     }
 
 }
@@ -830,6 +957,7 @@ def main()
         %(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));
     }"),
 	    ast(List): ListBindingType(),
+	    ast(MutableList): MutableListBindingType(),
 	    ];
 
     system.argument[1...].each(binding)

@@ -474,19 +474,23 @@ static void anna_module_load_dynamic(wchar_t *name, anna_stack_template_t *paren
     lib_handle = wdlopen(fullname,RTLD_NOW);
     if(!lib_handle) {
 	debug(D_ERROR, L"Failed to open lib %ls: %s\n", name, dlerror());
-	return;
-    }
-    
-    create = (void (*)(anna_stack_template_t *)) dlsym(lib_handle,"create");
-    if(!create) {
-	debug(D_ERROR,L"Failed to get create function in library %ls: %s\n", name, dlerror());
-	return;
+	goto CLEANUP;
     }
 
-    load = (void (*)(anna_stack_template_t *)) dlsym(lib_handle,"load");
+    sb_clear(&sb);
+    sb_printf(&sb, L"anna_%ls_create", name);    
+    create = (void (*)(anna_stack_template_t *)) wdlsym(lib_handle,sb_content(&sb));
+    if(!create) {
+	debug(D_ERROR,L"Failed to get create function in library %ls: %s\n", name, dlerror());
+	goto CLEANUP;
+    }
+
+    sb_clear(&sb);
+    sb_printf(&sb, L"anna_%ls_load", name);    
+    load = (void (*)(anna_stack_template_t *)) wdlsym(lib_handle,sb_content(&sb));
     if(!load) {
 	debug(D_ERROR,L"Failed to get load function in library %ls: %s\n", name, dlerror());
-	return;
+	goto CLEANUP;
     }
     anna_module_data_t data[] = 
 	{
@@ -495,6 +499,9 @@ static void anna_module_load_dynamic(wchar_t *name, anna_stack_template_t *paren
 	}
     ;
     anna_module_data_create(data, parent);    
+
+  CLEANUP:
+    sb_destroy(&sb);
 }
 
 void anna_module_init()
@@ -571,12 +578,14 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"errorMacros");
     anna_module_bootstrap_macro(L"expandCode");
 
+    /* Load additional binary modules */
+    anna_module_load_dynamic(L"unix", stack_global);
+
     /*
       Load all non-native libraries
     */
     anna_module_init_recursive(L"lib", stack_global);
     
-    anna_module_load_dynamic(L"unix", stack_global);
 }
 
 static void anna_module_find_import_internal(
