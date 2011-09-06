@@ -18,6 +18,7 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <libgen.h>
+#include <dlfcn.h>
 
 #if HAVE_LIBINTL_H
 #include <libintl.h>
@@ -554,6 +555,14 @@ int wmkdir( const wchar_t *name, int mode )
 	char *name_narrow =wutil_wcs2str(name);
 	return mkdir( name_narrow, mode );
 }
+
+void *wdlopen(const wchar_t *filename, int flag)
+{
+    char *name_narrow =wutil_wcs2str(filename);
+    return dlopen(name_narrow, flag);
+}
+
+
 
 int wrename( const wchar_t *old, const wchar_t *new )
 {

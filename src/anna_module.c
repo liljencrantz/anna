@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <dlfcn.h>
 
 #include "common.h"
 #include "util.h"
@@ -459,6 +460,43 @@ static void anna_module_doc()
 void create(anna_stack_template_t *stack);
 void load(anna_stack_template_t *stack);
 
+static void anna_module_load_dynamic(wchar_t *name, anna_stack_template_t *parent)
+{
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"autogen/%ls.so", name);
+    wchar_t *fullname = sb_content(&sb);
+    
+    void * lib_handle;
+    void (*load)(anna_stack_template_t *stack);
+    void (*create)(anna_stack_template_t *stack);
+    
+    lib_handle = wdlopen(fullname,RTLD_NOW);
+    if(!lib_handle) {
+	debug(D_ERROR, L"Failed to open lib %ls: %s\n", name, dlerror());
+	return;
+    }
+    
+    create = (void (*)(anna_stack_template_t *)) dlsym(lib_handle,"create");
+    if(!create) {
+	debug(D_ERROR,L"Failed to get create function in library %ls: %s\n", name, dlerror());
+	return;
+    }
+
+    load = (void (*)(anna_stack_template_t *)) dlsym(lib_handle,"load");
+    if(!load) {
+	debug(D_ERROR,L"Failed to get load function in library %ls: %s\n", name, dlerror());
+	return;
+    }
+    anna_module_data_t data[] = 
+	{
+	    { name, create, load 
+	    }
+	}
+    ;
+    anna_module_data_create(data, parent);    
+}
+
 void anna_module_init()
 {
     /*
@@ -537,6 +575,8 @@ void anna_module_init()
       Load all non-native libraries
     */
     anna_module_init_recursive(L"lib", stack_global);
+    
+    anna_module_load_dynamic(L"unix", stack_global);
 }
 
 static void anna_module_find_import_internal(

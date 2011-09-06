@@ -13,7 +13,7 @@
 #define ANNA_HASH_MINSIZE 16
 
 /**
-  The factor to increase hash size by wwhen running full. Must be a power of two.
+  The factor to increase hash size by when running full. Must be a power of two.
  */
 #define ANNA_HASH_SIZE_STEP 2
 
@@ -610,7 +610,7 @@ static inline void anna_hash_set_entry(anna_hash_t *this, anna_hash_entry_t *has
     hash_entry->key = key;
     hash_entry->value = value;
 }
-
+/*
 static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
     anna_vmstack_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
@@ -620,7 +620,7 @@ static inline anna_vmstack_t *anna_hash_init_search_pair(
     anna_vmstack_t *stack, anna_entry_t *this,  
     anna_object_t *list, 
     int start_offset, size_t sz,
-    anna_entry_t ** data )
+    anna_entry_t * data )
 {    
     int i;
 
@@ -632,13 +632,13 @@ static inline anna_vmstack_t *anna_hash_init_search_pair(
 	    anna_entry_t *key = anna_pair_get_first(pair);
 	    if(!anna_entry_null(key))
 	    {
-		data[1] = anna_from_int(i);
+		anna_list_set(anna_as_obj_fast(data), 1, anna_from_int(i));
 		return ahi_search(
 		    stack,
 		    key,
 		    this,
 		    anna_hash_init_callback,
-		    anna_from_blob(data));
+		    data);
 	    }
 	}
     }
@@ -648,12 +648,11 @@ static inline anna_vmstack_t *anna_hash_init_search_pair(
 
 static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
     anna_vmstack_t *stack, 
-    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
+    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *data, 
     anna_hash_entry_t *hash_entry)
 {
-    anna_entry_t ** data = anna_as_blob(aux);
-    anna_object_t *list = anna_as_obj(data[0]);
-    int idx = anna_as_int(data[1]);
+    anna_object_t *list = anna_as_obj(anna_list_get(anna_as_obj_fast(data), 0));
+    int idx = anna_as_int((anna_list_get(anna_as_obj_fast(data), 1)));
     
 //    wprintf(L"Init callback\n");
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
@@ -674,11 +673,10 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
 	}
     }
     
-    free(data);
     anna_vmstack_push_entry(stack, hash);
     return stack;
 }
-
+*/
 static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
 {
     anna_object_t *list = anna_vmstack_pop_object(stack);
@@ -689,6 +687,18 @@ static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
     
     if(likely(list != null_object))
     {
+	anna_entry_t *argv[] =
+	    {
+		anna_from_obj(this),
+		anna_from_obj(list)
+	    }
+	;
+	anna_entry_t *fun = *anna_entry_get_addr(this, anna_mid_get(L"__setAll__"));
+	stack = anna_vm_callback(
+	    stack,
+	    fun, 2, argv);
+	return stack;
+/*
 	size_t sz = anna_list_get_count(list);
 	if(sz > 0)
 	{
@@ -703,18 +713,19 @@ static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
 		anna_hash_resize(ahi_unwrap(this), new_sz);
 	    }
 	    
-	    anna_entry_t ** data = malloc(2*sizeof(anna_entry_t *));
-	    data[0] = anna_from_obj(list);
-
+	    anna_entry_t * data = anna_from_obj(anna_list_create_mutable(object_type));
+	    anna_list_set(anna_as_obj_fast(data), 0, anna_from_obj(list));
+	    
 	    anna_vmstack_t *new_stack = anna_hash_init_search_pair(
 		stack, anna_from_obj(this),
 		list, 0, sz, data);
-
+	    
 	    if(new_stack)
 	    {
 		return new_stack;
-	    }	    
+	    }
 	}
+*/
     }
     anna_vmstack_push_object(stack, this);
     return stack;

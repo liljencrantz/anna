@@ -39,9 +39,8 @@ static inline void anna_frame_return(anna_vmstack_t *stack)
 {
     if(stack->flags & ANNA_VMSTACK_STATIC)
     {
-//	wprintf(L"-");
-//	wprintf(L"\n%d\n", anna_vmstack_static_ptr - &anna_vmstack_static_data[0]);
 	anna_vmstack_static_ptr -= stack->function->frame_size;
+	assert(stack == anna_vmstack_static_ptr);
     }
 }
 
@@ -165,7 +164,7 @@ anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
 __attr_unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
 {
     anna_entry_t **p = &stack->base[0];
-    wprintf(L"\tFrame content:\n");
+    wprintf(L"\tFrame content (bottom to top):\n");
     while(p!=stack->top)
     {
 	if(!*p){
@@ -273,8 +272,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     static int vm_count = 0;
     int is_root = vm_count==0;
     
-    anna_vmstack_t *stack;    
-    stack = calloc(1, (argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t));
+    anna_vmstack_t *stack;  
+    size_t ss = (argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t);
+    stack = calloc(1, ss+1);
     stack->flags = ANNA_VMSTACK;
     al_push(&anna_alloc, stack);
     
@@ -284,7 +284,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     
     stack->function = 0;
     stack->top = &stack->base[0];
-    stack->code = malloc(1);
+    stack->code = ((char *)stack)+ss;
     *(stack->code) = ANNA_INSTR_STOP;
     
     int i;
@@ -330,7 +330,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	if(is_root)
 	{
 	    anna_alloc_check_gc(stack);
-	    
 	}
 	
 	anna_op_count_t *op = (anna_op_count_t *)stack->code;
@@ -363,7 +362,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #ifdef ANNA_CHECK_VM
 	    if(!fun)
 	    {
-		wprintf(L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
+		debug(D_CRITICAL, L"In function %ls\n", stack->function->name );
+		anna_bc_print(stack->function->code);
+		debug(D_CRITICAL, L"Offset %d\n", stack->code - stack->function->code);
+
+		debug(D_CRITICAL, L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
 		anna_vmstack_print(stack);
 		CRASH;
 	    }
@@ -472,9 +475,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	OP_ENTER(stack);	
 //		wprintf(L"Pop last frame\n");
 	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
-	free(stack->code);
+//	free(stack->code);
 	anna_frame_return(stack);
-	stack = stack->caller;
+//	stack = stack->caller;
 	return val;
     }
 	    
@@ -840,6 +843,16 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_vmstack_pop_object(stack)->type)
 	    );
 	stack->code += sizeof(*op);
+/*	    int i;
+	    wprintf(L"Type of stack content:\n");
+	    for(i=0; i < 3 && &stack->base[i] < stack->top; i++)
+	    {
+		anna_entry_t *e = anna_vmstack_peek_entry(stack, i);
+		wprintf(L"Object of type %ls\n", anna_is_obj(e)?(anna_vmstack_peek_object(stack, i)->type->name): L"???");
+		
+	    }
+	    wprintf(L"\n");
+*/
 	OP_LEAVE(stack);	
     }
 
@@ -851,12 +864,28 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_object_t *lst = anna_vmstack_peek_object(stack, 0);
 	if(lst->type->mid_identifier[ANNA_MID_LIST_PAYLOAD] == 0)
 	{
+	    if(stack->function)
+	    {
+		debug(D_CRITICAL, L"In function %ls\n", stack->function->name );
+		anna_bc_print(stack->function->code);
+		debug(D_CRITICAL, L"Offset %d\n", stack->code - stack->function->code);
+	    }
+	    
 	    debug(
 		D_CRITICAL,
 		L"Tried to fold value into something that is not a list.\n");
 	    debug(
 		D_CRITICAL,
 		L"Non-list:\n");
+	    
+	    int i;
+	    
+	    for(i=0; &stack->base[i] < stack->top; i++)
+	    {
+		wprintf(L"Object of type %ls\n", anna_vmstack_peek_object(stack, i)->type->name);		
+	    }
+	    
+/*
 	    anna_object_print(lst);
 	    
 	    if(anna_is_obj(val))
@@ -866,7 +895,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
  		    L"Value:\n");
 		anna_object_print(anna_as_obj(val));
 	    }
-	    
+*/	    
 	    CRASH;
 	}
 #endif	

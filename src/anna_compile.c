@@ -29,7 +29,6 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node);
 
 static inline anna_vmstack_t *anna_frame_get_static(size_t sz)
 {
-//    wprintf(L"+");
     anna_vmstack_t *res = (anna_vmstack_t *)anna_vmstack_static_ptr;
     anna_vmstack_static_ptr += sz; 
     res->flags = ANNA_VMSTACK | ANNA_VMSTACK_STATIC;
@@ -40,7 +39,7 @@ static anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_object_t *wf
     size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
     anna_vmstack_t *parent = *(anna_vmstack_t **)&wfun->member[stack_offset];
     anna_function_t *fun = anna_function_unwrap(wfun);
-    anna_vmstack_t *res = anna_frame_get_static(fun->frame_size);//anna_alloc_vmstack(fun->frame_size);
+    anna_vmstack_t *res = anna_frame_get_static(fun->frame_size);
     res->parent=parent;
     res->caller = caller;
     res->function = fun;
@@ -48,19 +47,6 @@ static anna_vmstack_t *anna_frame_push(anna_vmstack_t *caller, anna_object_t *wf
     caller->top -= (fun->input_count+1);
     memcpy(&res->base[0], caller->top+1,
 	   sizeof(anna_object_t *)*fun->input_count);
-    if(fun->input_count > fun->variable_count)
-    {
-	wprintf(
-	    L"AFDSFDSA %ls %d %d %d\n", 
-	    fun->name, fun->variable_count, fun->stack_template->count,
-	    fun->input_count);
-	anna_stack_print(fun->stack_template);
-	
-
-	CRASH;
-    }
-    
-    //wprintf(L"LALLLLAAA %d %d %d\n", fun->input_count, fun->variable_count, (char *)res - (char *)(&anna_vmstack_static_data[0]));
     
     memset(&res->base[fun->input_count], 0, sizeof(anna_object_t *)*(fun->variable_count-fun->input_count));
     res->top = &res->base[fun->variable_count];
@@ -674,30 +660,39 @@ flags);
 		break;
 	    }
 	    
-	    anna_vm_const(ptr, anna_from_obj(anna_wrap_method), flags);
-	    anna_vm_compile_i(fun, node2->object, ptr, 0, flags);
-	    anna_vm_null(ptr, ANNA_INSTR_DUP, flags);
-	    
 	    anna_type_t *type = node2->object->return_type;
 	    anna_member_t *m = type->mid_identifier[node2->mid];
 	    
-	    if(m->is_static)
+	    if(!m->is_bound_method)
 	    {
-		anna_vm_null(ptr, ANNA_INSTR_TYPE_OF, flags);
+		anna_vm_compile_i(fun, node2->object, ptr, 0, flags);
 		anna_vm_member(
 		    ptr, 
 		    ANNA_INSTR_STATIC_MEMBER_GET,
 		    node2->mid, flags);
+		wprintf(L"FDSAFADSFSAD %ls\n", anna_mid_get_reverse(node2->mid));
 	    }
 	    else
 	    {
+		anna_vm_const(ptr, anna_from_obj(anna_wrap_method), flags);
+		anna_vm_compile_i(fun, node2->object, ptr, 0, flags);
+		anna_vm_null(ptr, ANNA_INSTR_DUP, flags);
+	    
+
+		anna_vm_null(ptr, ANNA_INSTR_TYPE_OF, flags);
+		anna_vm_member(
+                    ptr, 
+                    ANNA_INSTR_STATIC_MEMBER_GET,
+                    node2->mid, flags);
+
+/*
 		anna_vm_member(
 		    ptr, 
 		    ANNA_INSTR_MEMBER_GET,
 		    node2->mid, flags);
+*/
+		anna_vm_call(ptr, ANNA_INSTR_CALL, 2, flags);
 	    }
-	    
-	    anna_vm_call(ptr, ANNA_INSTR_CALL, 2, flags);
 	    
 	    break;
 	}
@@ -964,6 +959,7 @@ anna_vmstack_t *anna_vm_callback_native(
     anna_native_t callback, int paramc, anna_entry_t **param,
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
+    parent = anna_frame_to_heap(parent);
     size_t ss = (paramc+argc+3)*sizeof(anna_entry_t *) + sizeof(anna_vmstack_t);
     size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t);
     anna_vmstack_t *stack = calloc(1,ss+cs);
@@ -998,10 +994,11 @@ anna_vmstack_t *anna_vm_callback_native(
 
 
 
-static anna_vmstack_t *anna_vm_callback(
+anna_vmstack_t *anna_vm_callback(
     anna_vmstack_t *parent, 
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
+    parent = anna_frame_to_heap(parent);
     size_t ss = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_vmstack_t);
     size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_null_t);
     anna_vmstack_t *stack = calloc(1,ss+cs);
@@ -1032,17 +1029,18 @@ void anna_vm_callback_reset(
     anna_vmstack_t *stack, 
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-	int i;    
-	anna_vmstack_push_object(stack, entry);
-	for(i=0; i<argc; i++)
-	{
-	    anna_vmstack_push_entry(stack, argv[i]);
-	}
-	stack->code -= (sizeof(anna_op_count_t)+sizeof(anna_op_native_call_t));	
+    int i;    
+    anna_vmstack_push_object(stack, entry);
+    for(i=0; i<argc; i++)
+    {
+	anna_vmstack_push_entry(stack, argv[i]);
+    }
+    stack->code -= (sizeof(anna_op_count_t)+sizeof(anna_op_native_call_t));	
 }
 
 anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *parent, anna_object_t *cont)
 {
+    parent = anna_frame_to_heap(parent);
     char *code = parent->code;
     code -= sizeof(anna_op_count_t);
     anna_op_count_t *op = (anna_op_count_t *)code;
@@ -1054,7 +1052,7 @@ anna_vmstack_t *anna_vm_method_wrapper(anna_vmstack_t *parent, anna_object_t *co
     argv[0] = anna_from_obj(object);
     
     anna_vmstack_t *stack = anna_vm_callback(parent, method, argc, argv);
-    anna_vmstack_drop(parent, argc);    
+    anna_vmstack_drop(stack->caller, argc);    
     return stack;
 }
 

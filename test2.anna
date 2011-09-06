@@ -1,21 +1,30 @@
-use(cio2);
 
 def main()
 {
-    print(fd := cio2.open("test.anna", cio2.openMode.readOnly, 0), "\n");
+    print(fd := unix.io.open("test.anna", unix.io.openMode.readOnly, 0), "\n");
     buf := Buffer();
-    print(read(fd, buf, 4096), "\n");
+    print(unix.io.read(fd, buf, 4096), "\n");
     print(cerror.errorString(?), "\n");
-    print(close(fd), "\n");
-    
-    sb := cio2.Stat();
-    print(cio2.stat("test.anna", sb), "\n");
+    print(unix.io.close(fd), "\n");
+
+    sb := unix.Stat();
+    print(unix.io.stat("test.anna", sb), "\n");
     print(sb.uid, "\n");
     print(sb.size, "\n");
     print(sb.blksize, "\n");
     
     cb := Buffer();
-    cio2.getcwd(cb, 4096);
+    unix.io.getcwd(cb, 4096);
     print(cb.encode(), "\n");
-
+    
+    print(unix.proc.getpid(), "\n");
+    
+    if(unix.proc.fork() == 0)
+    {
+	print("child\n");
+    } else
+    {
+	print("parent\n");
+    }
 }
+

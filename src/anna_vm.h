@@ -306,6 +306,10 @@ __hot void anna_vm_callback_reset(
     anna_vmstack_t *stack, 
     anna_object_t *entry, int argc, anna_entry_t **argv);
 
+__hot anna_vmstack_t *anna_vm_callback(
+    anna_vmstack_t *parent, 
+    anna_object_t *entry, int argc, anna_entry_t **argv);
+
 __hot anna_vmstack_t *anna_vm_stack_get(void);
 __hot void anna_vm_mark_code(anna_function_t *f);
 __cold void anna_vm_destroy(void);

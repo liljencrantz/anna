@@ -129,14 +129,18 @@ wchar_t *asi_cstring(anna_string_t *str)
 
 char *asi_cstring_narrow(anna_string_t *str)
 {
+    asi_ensure_capacity(str, str->count+1);
+    str->str[str->count] = 0;
     size_t sz = wcstombs(0, str->str, 0);
-    if(sz == (size_t)-1)
+    if(sz == ((size_t)-1))
     {
 	CRASH;
     }
     
     char *res = malloc(sz+1);
     wcstombs(res, str->str, sz+1);
+    res[sz]=0;
+    
     return res;
 }
 
