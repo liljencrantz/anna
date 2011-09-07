@@ -928,6 +928,11 @@ def main()
  		"int_type", 
 		"int %(dest) = anna_as_int(%(source));",
 		"anna_entry_t *%(dest) = anna_from_int(%(source));"),
+	    ast(UInt64): BasicBindingType(
+                "unsigned int64_t",
+ 		"int_type", 
+		"uint64_t %(dest) = anna_as_int(%(source));",
+		"anna_entry_t *%(dest) = anna_from_int(%(source));"),
 	    ast(Float): BasicBindingType(
                 "float",
 		"float_type", 

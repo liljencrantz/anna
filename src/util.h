@@ -14,6 +14,8 @@
 #include <wchar.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <gmp.h>
 
 #define AL_STATIC {0,0,0}
     
@@ -549,6 +551,6 @@ void b_destroy( buffer_t *b );
 */
 int b_append( buffer_t *b, const void *d, ssize_t len );
 
-
+uint64_t anna_mpz_get_ui64(mpz_t mp);
 
 #endif

@@ -1,5 +1,5 @@
 
-include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", "<grp.h>");
+include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", "<grp.h>", "<stdint.h>", "<poll.h>");
 
 io
 {
@@ -108,6 +108,13 @@ io
 	// ...
     }
 
+    seekMode
+    {
+	const Int set (name(SEEK_SET));
+	const Int cur (name(SEEK_CUR));
+	const Int end (name(SEEK_END));
+    }
+
     def Int fcntl(Int fd, Int cmd);
     def Int fcntlInt(Int fd, Int cmd, Int arg) (name(fcntl), alias(fcntl));
     def Int fcntlFLock(Int fd, Int cmd, FLock arg) (name(fcntl), alias(fcntl));
@@ -125,11 +132,19 @@ io
     def Int symlink(String oldpath, String newpath);
     def Int link(String oldpath, String newpath);
     def Int unlink(String path);
+    def Int rmdir(String path);    
 
     def Int rename(String oldpath, String newpath);
 
     def Int pipe(MutableList«Int» fd (ensureCapacity(2)));
 
+    def UInt64 lseek(Int fd, UInt64 offset, Int whence); 
+
+    def Void sync();
+    def Int fsync(Int fd);
+    def Int fdatasync(Int fd);
+
+    def Int umask(Int mask);    
 }
 
 proc

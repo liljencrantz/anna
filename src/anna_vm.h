@@ -2,16 +2,15 @@
 #define ANNA_VM_H
 
 #include <complex.h>
+#include <stdint.h>
 #include "anna_alloc.h"
+#include "clib/lang/int.h"
 
 double anna_float_get(anna_object_t *this);
 wchar_t anna_char_get(anna_object_t *this);
-long anna_int_get(anna_object_t *this);
 complex double anna_complex_get(anna_object_t *this);
-anna_object_t *anna_int_create(long val);
 anna_object_t *anna_float_create(double val);
 anna_object_t *anna_char_create(wchar_t val);
-anna_entry_t *anna_int_entry(anna_object_t *this);
 
 #define ANNA_INT_FAST_MAX 0x1fffffff
 #define ANNA_ENTRY_NULL_CHECK(par) if(anna_entry_null(par)) return null_entry;
@@ -218,6 +217,25 @@ static inline long anna_as_int(anna_entry_t *entry)
 	CRASH;
     }
     return anna_int_get((anna_object_t *)entry);
+}
+
+static inline uint64_t anna_as_uint64(anna_entry_t *entry)
+{
+    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
+    if(likely(type))
+    {
+	type = ((long)entry) & ANNA_STACK_ENTRY_SUBFILTER;
+	if(type == ANNA_STACK_ENTRY_INT)
+	{
+	    long res = (long)entry;
+	    res >>= 2;
+	    return res;
+	}
+	wprintf(L"Invalid vmstack entry\n");
+	CRASH;
+    }
+    mpz_t *mp = anna_int_unwrap((anna_object_t *)entry);
+    return anna_mpz_get_ui64(*mp);
 }
 
 static inline wchar_t anna_as_char(anna_entry_t *entry)

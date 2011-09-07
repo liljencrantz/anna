@@ -937,3 +937,36 @@ int b_append( buffer_t *b, const void *d, ssize_t len )
     return 1;
 }
 
+uint64_t anna_mpz_get_ui64(mpz_t mp)
+{
+    if (sizeof (uint64_t) == sizeof (unsigned long))
+    {
+	return mpz_get_ui(mp);
+    }
+    else
+    {
+	mpz_t tmp;
+	mpz_init_set(tmp, mp);
+	unsigned long low = mpz_get_ui(tmp);
+	mpz_tdiv_q_2exp(tmp, tmp, 32);
+	unsigned long high = mpz_get_ui(tmp);
+	return (((uint64_t)high) << 32) | low;
+    }
+}
+
+
+void anna_mpz_set_ui64(mpz_t mp, uint64_t val)
+{
+    if (sizeof (val) != sizeof (unsigned long))
+    {
+	unsigned long h = val >> 32;
+	mpz_set_ui (mp, h);
+	mpz_mul_2exp (mp, mp, 32);
+	mpz_add_ui (mp, mp, (unsigned long) val);
+    }
+    else
+    {
+	mpz_set_ui(mp, val);
+    }
+}
+
