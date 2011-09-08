@@ -16,7 +16,7 @@ struct anna_function;
 struct anna_vmstack;
 
 typedef struct anna_vmstack *(*anna_native_t)( struct anna_vmstack *, struct anna_object *);
-typedef ssize_t mid_t;
+typedef int mid_t;
 
 /*
   These values are used by the flags param of the various GC:ed memory

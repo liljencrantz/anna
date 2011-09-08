@@ -769,6 +769,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_vmstack_push_object(stack, method);
 	    anna_vmstack_push_object(stack, obj);
 	    anna_vmstack_push_entry(stack, value);
+
 	    stack->code += sizeof(*op);
 	    stack = fun->native(
 		stack, method);
@@ -1316,7 +1317,7 @@ anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
 	    break;
 	    
 	default:
-	    wprintf(L"Unknown null fun op %d\n", op->instruction);
+	  wprintf(L"Unknown null fun opcode %d at byte offset %d (started rollback at offset %d)\n", op->instruction, code - stack->function->code, stack->code-stack->function->code);
 	    CRASH;
     }
     anna_vmstack_push_object(stack, null_object);

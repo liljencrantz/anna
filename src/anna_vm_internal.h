@@ -4,6 +4,38 @@
 #include "anna_function.h"
 #include "anna_alloc.h"
 
+/**
+   The Anna bytecode format is the simplest, stupidest byte code
+   format I could come up with. It has not been designed knowing any
+   lessons from other formats (I have no experience of other formats),
+   nor has it been designed with code size or speed in mind. It is
+   also not designed to be serializable to disk, since the simplest
+   way to implement e.g. known constants is through memory pointers,
+   which obviously change between invocations.
+
+   Additionally, there is one rather horrible uglyness in the bytecode
+   format. The size of the anna_op_member_t and anna_op_count_t
+   structures must be identical. This is because of some intricate
+   uglieness performed when accessing a member on a null object - the
+   accerss gets turned into a getter/setter call, and any method calls
+   on null objects rewind the stack code pointer to figure out the
+   number of arguments that need to be popped. The rewinding will go
+   horribly wrong if the bytecode is of the wrong size.
+
+   Long term, performance should not be the prime concern for the
+   bytecode format, as it would make more sense to use e.g. LLVM if
+   going for maximum performance and prioritize simplicity and
+   correctness in the bytecode format. A much revized format that can
+   be serialized to disk, has more orthogonal and well planned opcodes
+   and is designed by somebody with more experience designing a
+   bytecode language would be more than beneficial.
+*/
+
+/**
+   Size of the statically allocated chunk of memory used for
+   activation records before they are referenced and need to move to
+   the heap.
+*/
 #define ANNA_VMSTACK_SZ (8192*32)
 
 /**

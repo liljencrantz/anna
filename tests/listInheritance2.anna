@@ -4,17 +4,14 @@
 
 type Derived
 (
-    extends(Int), extends(MutableList«Int»)
+    extends(MutableList«Int»)
 )
 {
     def __init__()
     {
-	Int::__init__(this, 7);
 	MutableList«Int»::__init__(this, 0,10,1);
     }
-
 }
-
 
 def main()
 {
