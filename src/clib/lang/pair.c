@@ -65,10 +65,9 @@ static void anna_pair_type_create_internal(
     anna_type_t *spec2)
 {
     anna_member_create(
-	type, ANNA_MID_PAIR_FIRST, 0, null_type);
+	type, ANNA_MID_PAIR_FIRST, 0, spec1);
     anna_member_create(
-	type, ANNA_MID_PAIR_SECOND, 0,
-	null_type);
+	type, ANNA_MID_PAIR_SECOND, 0, spec2);
     anna_member_create(
 	type,
 	ANNA_MID_PAIR_SPECIALIZATION1,

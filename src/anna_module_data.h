@@ -34,24 +34,24 @@ typedef struct
 #define anna_module_data_create(module_data, parent)			\
     {									\
 	int i;								\
-	anna_stack_template_t *substack[sizeof(modules)/sizeof(*modules)]; \
-	for(i=0; i<sizeof(modules)/sizeof(*modules); i++)		\
+	anna_stack_template_t *substack[sizeof(module_data)/sizeof(*module_data)]; \
+	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)		\
 	{								\
 	    substack[i] = anna_stack_create(parent);			\
 	    anna_stack_name(substack[i], module_data[i].name);		\
 	    substack[i]->flags |= ANNA_STACK_NAMESPACE;			\
 	}								\
-	for(i=0; i<sizeof(modules)/sizeof(*modules); i++)		\
+	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)		\
 	{								\
-	    if(modules[i].creator)					\
-		modules[i].creator(substack[i]);			\
+	    if(module_data[i].creator)					\
+		module_data[i].creator(substack[i]);			\
 	}								\
-	for(i=0; i<sizeof(modules)/sizeof(*modules); i++)		\
+	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)		\
 	{								\
-	    modules[i].loader(substack[i]);				\
+	    module_data[i].loader(substack[i]);				\
 	    anna_stack_declare(						\
 		parent,							\
-		modules[i].name,					\
+		module_data[i].name,					\
 		anna_stack_wrap(substack[i])->type,			\
 		anna_from_obj(anna_stack_wrap(substack[i])),		\
 		ANNA_STACK_READONLY);					\

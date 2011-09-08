@@ -148,4 +148,14 @@ int wrename( const wchar_t *old, const wchar_t *new );
 */
 int wunlink( const wchar_t *path);
 
+/**
+   Wide character version of dlopen
+ */
+void *wdlopen(const wchar_t *filename, int flag);
+
+/**
+   Wide character version of dlsym
+ */
+void *wdlsym(void *handle, const wchar_t *symbol);
+
 #endif

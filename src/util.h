@@ -14,6 +14,8 @@
 #include <wchar.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <gmp.h>
 
 #define AL_STATIC {0,0,0}
     
@@ -192,6 +194,20 @@ static inline ssize_t sign(ssize_t v){
 	return -1;
     return 0;
 }
+
+/* Round to next higher power of two */
+static inline size_t anna_size_round(size_t v)
+{
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+}
+
 
 /*
   All the datastuctures below autoresize. The queue, stack and
@@ -535,6 +551,6 @@ void b_destroy( buffer_t *b );
 */
 int b_append( buffer_t *b, const void *d, ssize_t len );
 
-
+uint64_t anna_mpz_get_ui64(mpz_t mp);
 
 #endif

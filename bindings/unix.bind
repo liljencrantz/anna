@@ -1,0 +1,211 @@
+
+include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", "<grp.h>", "<stdint.h>", "<poll.h>");
+
+io
+{
+
+    openMode
+    {
+	const Int readOnly (name(O_RDONLY), doc("Open file in read-only mode."));
+	const Int writeOnly (name(O_WRONLY), doc("Open file in write-only mode."));
+	const Int readWrite (name(O_RDWR), doc("Open file in read-write mode."));
+
+	const Int append (name(O_APPEND), doc("The file is opened in append mode."));
+	const Int async (name(O_ASYNC), doc("Enable signal-driven I/O."));
+	const Int create (name(O_CREAT), doc("If the file does not exist it will be created."));
+	const Int closeOnExec (name(O_CLOEXEC), doc("Enable the close-on-exec flag for the new file descriptor."));
+	const Int direct (name(O_DIRECT), doc("Try to minimize cache effects of the I/O to and from this file."));
+	const Int directory (name(O_DIRECTORY), doc("If pathname is not a directory, cause the open to fail."));
+	const Int exclusive (name(O_EXCL), doc("Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail."));
+	const Int largeFile (name(O_LARGEFILE), doc("(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened."));
+	const Int noAccessTime (name(O_NOATIME), doc("Do not update the file last access time (st_atime in the inode) when the file is read()."));
+	const Int noControllingTTY (name(O_NOCTTY), doc("If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one."));
+	const Int noFollow (name(O_NOFOLLOW), doc("If pathname is a symbolic link, then the open fails."));
+	const Int nonBlock (name(O_NONBLOCK), doc("When possible, the file is opened in nonblocking mode."));
+	const Int synchronous (name(O_SYNC), doc("The file is opened for synchronous I/O."));
+	const Int truncate (name(O_TRUNC), doc("f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0."));
+    }
+
+    statMode
+    {
+	const Int regular (name(S_IFREG), doc("Regular file"));
+	const Int socket (name(S_IFSOCK), doc("Socket"));
+	const Int link (name(S_IFLNK), doc("Symbolic link."));
+	const Int block (name(S_IFBLK), doc("Block device."));
+	const Int directory (name(S_IFDIR), doc("Directory."));
+	const Int character (name(S_IFCHR), doc("Character device."));
+	const Int fifo (name(S_IFIFO), doc("FIFO."));
+    
+	const Int suid (name(S_ISUID), doc("Set UID bit."));
+	const Int sgid (name(S_ISGID), doc("Set-group-ID bit."));
+	const Int sticky (name(S_ISVTX), doc("Sticky bit."));
+    
+	const Int userAll (name(S_IRWXU), doc("Mask for all file owner permissions."));
+	const Int userRead (name(S_IRUSR), doc("File owner read permission."));
+	const Int userwrite (name(S_IWUSR), doc("File owner write permission."));
+	const Int userExecute (name(S_IXUSR), doc("File owner execute permission."));
+    
+	const Int groupAll (name(S_IRWXG), doc("Mask for all group permissions."));
+	const Int groupRead (name(S_IRGRP), doc("Group has read permission."));
+	const Int groupwrite (name(S_IWGRP), doc("Group has write permission."));
+	const Int groupExecute (name(S_IXGRP), doc("Group has execute permission."));
+    
+	const Int otherAll (name(S_IRWXO), doc("Mask for permissions for others (not in group)."));
+	const Int otherRead (name(S_IROTH), doc("Others have read permission."));
+	const Int otherwrite (name(S_IWOTH), doc("Others have write permission."));
+	const Int otherExecute (name(S_IXOTH), doc("Others have execute permission."));
+    }
+
+    def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor. Equivalent to the C open function."));
+    def Int creat(String name, Int mode) (doc("Open a file descriptor. Equivalent to the C creat function."), alias(create));
+    def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
+    def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
+    def Int close(Int fd);
+
+    cStruct Stat (name(stat))
+    {
+	const Int dev (name(st_dev), doc("ID of device containing file"));
+	const Int ino (name(st_ino), doc("Inode number"));
+	const Int mode (name(st_mode), doc("File protection mask"));
+	const Int nlink (name(st_nlink), doc("Number of hard links."));
+	const Int uid (name(st_uid), doc("User ID of owner."));
+	const Int gid (name(st_gid), doc("Group ID of owner."));
+	const Int rdev (name(st_rdev), doc("Device ID."));
+	const Int size (name(st_size), doc("Total size in bytes."));
+	const Int blksize (name(st_blksize), doc("Block size for file system IO."));
+	const Int blocks (name(st_blocks), doc("Number of 512 byte blocks allocated."));
+	const Int atime (name(st_atime), doc("Time of latest acccess."));
+	const Int mtime (name(st_mtime), doc("Time of latest modification."));
+	const Int ctime (name(st_ctime), doc("Time of latest change."));
+    }
+
+    def Int stat(String path, Stat buf);
+    def Int lstat(String path, Stat buf);
+    def Int fstat(Int fd, Stat buf);
+
+    def Int mkdir(String path, Int mode);
+
+    standardInput :== 0;
+    standardOutput :== 1;
+    const standardError(doc("File descriptor for error output")) = 2;
+
+    def Int getcwd(Buffer buf(ensureCapacity(size)), Int size);
+    def Int chdir(String path);
+    def Int fchdir(Int fd);
+
+    cStruct FLock (name(flock))
+    {
+	const Int type (name(l_type), doc("Type of lock: F_RDLCK, F_WRLCK, F_UNLCK."));
+	const Int whence (name(l_whence), doc("How to interpret l_start: SEEK_SET, SEEK_CUR, SEEK_END."));
+	const Int start (name(l_start), doc("Starting offset for lock"));
+	const Int len (name(l_len), doc("Number of bytes to lock"));
+	const Int pid (name(l_pid), doc("PID of process blocking our lock (F_GETLK only)"));
+    }
+
+    fcntlMode
+    {
+	const Int dupFd (name(F_DUPFD));
+	// ...
+    }
+
+    seekMode
+    {
+	const Int set (name(SEEK_SET));
+	const Int cur (name(SEEK_CUR));
+	const Int end (name(SEEK_END));
+    }
+
+    def Int fcntl(Int fd, Int cmd);
+    def Int fcntlInt(Int fd, Int cmd, Int arg) (name(fcntl), alias(fcntl));
+    def Int fcntlFLock(Int fd, Int cmd, FLock arg) (name(fcntl), alias(fcntl));
+
+    def Int dup(Int fd);
+    def Int dup2(Int oldfd, Int newfd) (alias(dup));
+
+    def Int chown(String path, Int owner, Int group);
+    def Int fchown(Int fd, Int owner, Int group);
+    def Int lchown(String path, Int owner, Int group);
+
+    def Int chmod(String path, Int mode);
+    def Int fchmod(Int fd, Int mode);
+
+    def Int symlink(String oldpath, String newpath);
+    def Int link(String oldpath, String newpath);
+    def Int unlink(String path);
+    def Int rmdir(String path);    
+
+    def Int rename(String oldpath, String newpath);
+
+    def Int pipe(MutableList«Int» fd (ensureCapacity(2)));
+
+    def UInt64 lseek(Int fd, UInt64 offset, Int whence); 
+
+    def Void sync();
+    def Int fsync(Int fd);
+    def Int fdatasync(Int fd);
+
+    def Int umask(Int mask);    
+}
+
+proc
+{
+
+    def Int exec(String filename, List«String» argv, List«String» envp) (name(execve));
+    def Void exit(Int status);
+    def Int fork();
+    def Int kill(Int pid, Int sig);
+
+    def Int getsid(Int pid);
+    def Int setsid();
+
+    def Int getpid();
+    def Int getppid();
+
+    def Int wait(MutableList«Int» status (ensureCapacity(1))); 
+    def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options);
+
+}
+
+user
+{
+    def Int getuid();
+    def Int geteuid();
+    def Int getgid();
+    def Int getegid();
+
+    def Int setuid(Int uid);
+    def Int seteuid(Int uid);
+    def Int setegid(Int uid);
+    def Int setgid(Int uid);
+
+    def Int setpgid(Int pid, Int pgid);
+    def Int getpgid(Int pid);
+
+    def Int getgroups(Int size, MutableList«Int» list (ensureCapacity(size)));
+    def Int setgroups(Int size, MutableList«Int» list (ensureCapacity(size)));
+}
+
+rLimit
+{
+    
+    rLimitMode
+    {
+	const Int as (name(RLIMIT_AS));
+	const Int core (name(RLIMIT_CORE));
+	const Int cpu (name(RLIMIT_CPU));
+	const Int data (name(RLIMIT_DATA));
+	const Int fsize (name(RLIMIT_FSIZE));
+	const Int memlock (name(RLIMIT_MEMLOCK));
+	// ...
+    }
+
+    cStruct RLimit (name(rlimit))
+    {
+	const Int cur (name(rlim_cur));
+	const Int max (name(rlim_max));
+    }
+
+    def Int getRLimit(Int resource, RLimit rlim) (name(getrlimit));
+    def Int setRLimit(Int resource, RLimit rlim) (name(setrlimit));
+
+}

@@ -31,6 +31,24 @@ anna_object_t *anna_string_create(size_t sz, wchar_t *data)
     return obj;
 }
 
+anna_object_t *anna_string_create_narrow(size_t sz, char *data)
+{
+    wchar_t *wdata = malloc(sizeof(wchar_t)*(sz+1));
+    size_t wsz;
+    
+    if((wsz = mbstowcs(wdata, data, sz)) == (size_t)-1)
+    {
+	free(wdata);
+	return null_object;
+    }
+    
+    anna_object_t *obj= anna_object_create(imutable_string_type);
+    // wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    
+    asi_init_from_ptr(as_unwrap(obj),  wdata, wsz);
+    return obj;
+}
+
 anna_object_t *anna_string_copy(anna_object_t *orig)
 {
     anna_object_t *obj= anna_object_create(imutable_string_type);

@@ -15,6 +15,7 @@
 #include "clib/lang/int.h"
 #include "clib/lang/list.h"
 #include "clib/lang/hash.h"
+#include "clib/lang/string.h"
 #include "clib/parser.h"
 #include "anna_mid.h"
 #include "anna_type.h"
@@ -493,8 +494,6 @@ void anna_alloc_mark_object(anna_object_t *obj)
 
 static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
 {
-    assert((stack->flags & ANNA_ALLOC_MASK) == ANNA_VMSTACK);
-
     if( stack->flags & ANNA_USED)
 	return;
     stack->flags |= ANNA_USED;    
@@ -569,7 +568,6 @@ static void anna_alloc_free(void *obj)
 	    if(anna_alloc_run_finalizers)
 	    {
 //		wprintf(L"AAA %ls\n", o->type->name);
-		
 		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
 		if(del_mem && del_mem->is_bound_method)
 		{
@@ -736,7 +734,7 @@ void anna_gc(anna_vmstack_t *stack)
 
     anna_alloc_gc_block();
     size_t i;
-
+    
 #ifdef ANNA_CHECK_GC_LEAKS
     int old_anna_alloc_count = anna_alloc_count;
     int s_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -748,9 +746,20 @@ void anna_gc(anna_vmstack_t *stack)
     size_t start_count = al_get_count(&anna_alloc);
 #endif
     
-//    wprintf(L"\n\nRUNNING GC. We have %d allocated items.\n", al_get_count(&anna_alloc));
-
     anna_vmstack_t *stack_ptr = stack;
+
+/*
+    wprintf(L"\n\nRUNNING GC. We have %d allocated items.\n", al_get_count(&anna_alloc));
+    while(stack_ptr)
+    {
+	wprintf(L"Frame %ls\n", stack_ptr->function? stack_ptr->function->name: L"<null>");
+	
+	stack_ptr = stack_ptr->caller;
+    }
+    fflush(stdout);
+*/  
+
+    stack_ptr = stack;
     while(stack_ptr)
     {
 	anna_alloc_mark_vmstack(stack_ptr);	
@@ -799,6 +808,7 @@ void anna_gc(anna_vmstack_t *stack)
     }
     else
     {
+
 	for(i=0; i<al_get_count(&anna_alloc); i++)
 	{
 	    void *el = al_get_fast(&anna_alloc, i);
@@ -816,17 +826,38 @@ void anna_gc(anna_vmstack_t *stack)
 		anna_alloc_unmark(el);	    
 	    }
 	}
+
+/*
+	stack_ptr = stack;
+	while(stack_ptr)
+	{
+	    wprintf(L"\n\n\nFASDFADS %ls\n", stack_ptr->function ? stack_ptr->function->name : L"ANON");
+	anna_entry_t **obj;
+	//wprintf(L"FASFAS %d %d\n", stack_ptr->top - &stack_ptr->base[0], stack_ptr->function->input_count);
+
+	for(obj = &stack_ptr->base[0]; obj < stack_ptr->top; obj++)
+	{	
+	    wprintf(L"Pos %d\n", obj - stack_ptr->base);
+	    if(!*obj)
+	    {
+		wprintf(L"Pos %d is C null pointer\n");		
+	    }
+	    else if(anna_is_obj(*obj))
+	    {
+		anna_object_print(anna_as_obj(*obj));
+	    }
+	    else
+	    {
+		wprintf(L"Pos %d is not an object\n", obj - stack_ptr->base);
+	    }
+	    fflush(stdout);	    
+	}
+	stack_ptr = stack_ptr->caller;
+	
+	}
+*/	
     }
     
-
-    stack_ptr = stack;
-    while(stack_ptr)
-    {
-	anna_alloc_unmark(stack_ptr);	    
-	stack_ptr = stack_ptr->caller;
-    }    
-
-
 #ifdef ANNA_CHECK_GC_LEAKS
     size_t end_count = al_get_count(&anna_alloc);
     int o_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};

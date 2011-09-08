@@ -71,20 +71,6 @@ void anna_buffer_set_capacity(anna_object_t *this, size_t sz)
     *(unsigned char **)anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD) = ptr;
 }
 
-/* Round to next higher power of two */
-static size_t anna_buffer_round(size_t v)
-{
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-    return v;
-}
-
-
 int anna_buffer_ensure_capacity(anna_object_t *this, size_t sz)
 {
     unsigned char *ptr = anna_buffer_get_payload(this);
@@ -95,7 +81,7 @@ int anna_buffer_ensure_capacity(anna_object_t *this, size_t sz)
     {
 	return 0;
     }
-    size_t cap = anna_buffer_round(sz);
+    size_t cap = anna_size_round(sz);
     
     ptr = realloc(ptr, sizeof(char)*cap);
     if(!ptr)

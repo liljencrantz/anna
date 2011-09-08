@@ -20,6 +20,7 @@ void anna_list_set_count(anna_object_t *this, size_t sz);
 
 size_t anna_list_get_capacity(anna_object_t *this);
 void anna_list_set_capacity(anna_object_t *this, size_t sz);
+int anna_list_ensure_capacity(anna_object_t *this, size_t sz);
 
 anna_entry_t **anna_list_get_payload(anna_object_t *this);
 

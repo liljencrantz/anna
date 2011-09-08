@@ -45,7 +45,7 @@ src/anna_compile.o src/wutil.o src/common.o		\
 src/anna_attribute.o src/anna_object.o src/anna_error.o			\
 src/anna_parse.o src/anna_invoke.o
 
-LDFLAGS := -lm -lgmp -rdynamic -ll $(PROF_FLAGS) $(COV_FLAGS)
+LDFLAGS := -lm -lgmp -rdynamic -ll -ldl $(PROF_FLAGS) $(COV_FLAGS)
 
 PROGRAMS := bin/anna 
 
@@ -65,6 +65,9 @@ endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #
 #########################################################
+
+%.so: %.c
+	$(CC) -fPIC -c $*.c -o $*.o $(CFLAGS) && $(CC) -shared $*.o -o $@ $(LDFLAGS)
 
 bin/anna: $(ANNA_OBJS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 

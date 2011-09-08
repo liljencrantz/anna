@@ -59,3 +59,17 @@ def String pairToString(Pair this)
 }
 
 
+def String hashMapSetAll(HashMap this, Pair value...)
+(
+    name(__setAll__), 
+    target(HashMap), 
+)
+{
+    value.each(pair)
+    {
+	this[pair.first] = pair.second;
+    }
+    return this;
+}
+
+
