@@ -129,6 +129,18 @@ static inline anna_entry_t *anna_from_int(long res)
     }    
 }
 
+static inline anna_entry_t *anna_from_uint64(uint64_t val)
+{
+    mpz_t mp;
+    mpz_init(mp);
+    anna_mpz_set_ui64(mp, val);
+    
+    anna_entry_t *res = anna_from_obj(anna_int_create_mp(mp));
+    mpz_clear(mp);
+    return res;
+    
+}
+
 static inline anna_entry_t *anna_from_float(double val)
 {
     double *res = anna_alloc_blob(sizeof(double));

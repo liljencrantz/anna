@@ -1,0 +1,20 @@
+use(test);
+
+def main()
+{
+    fs := FdSet();
+    fs2 := FdSet();
+    fs3 := FdSet();
+    fdZero(fs);
+      fdZero(fs2);
+    fdZero(fs3);
+    //[].each(idx){fdSet(idx, fs)}
+    //  (0..10).each(idx){print("Fd %: %\n" % [ idx, fdIsSet(idx, fs)])}
+    tv := TimeVal();
+    tv.sec = 5;
+    tv.usec = 0;
+
+    fdSet(2, fs2);
+    print(tv.sec, ' ', tv.usec, '\n');
+    print(select(1, fs, fs2, fs3, tv), "\n");
+}

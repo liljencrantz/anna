@@ -1,5 +1,5 @@
 
-include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", "<grp.h>", "<stdint.h>", "<poll.h>");
+include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>");
 
 io
 {
@@ -145,6 +145,24 @@ io
     def Int fdatasync(Int fd);
 
     def Int umask(Int mask);    
+
+    cType FdSet (name(fd_set))
+    {
+    }
+    
+    cStruct TimeVal (name(timeval))
+    {
+	var Int sec (name(tv_sec));
+	var Int usec (name(tv_usec));
+    }
+    
+    def Void fdClear(Int fd, FdSet set) (name(FD_CLR));
+    def Int fdIsSet(Int fd, FdSet set) (name(FD_ISSET));
+    def Void fdSet(Int fd, FdSet set) (name(FD_SET));
+    def Void fdZero(FdSet set) (name(FD_ZERO));
+    
+    def Int select(Int nfds, FdSet readfds, FdSet writefds, FdSet exceptfds, TimeVal timeout);
+    
 }
 
 proc

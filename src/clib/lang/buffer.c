@@ -87,7 +87,8 @@ int anna_buffer_ensure_capacity(anna_object_t *this, size_t sz)
     if(!ptr)
     {
 	return 1;
-    }    
+    }
+    memset(ptr+old_sz, 0, cap-old_sz);
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_CAPACITY)) = cap;
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE)) = maxi(sz, old_sz);
     *(unsigned char **)anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD) = ptr;

@@ -1,7 +1,7 @@
 def main()
 {
-    args := ["anna", "-bc", "bbb", "ccc"];
-    opt := "abc";
+    args := ["anna", "-bcd", "bbb", "ccc", "-a", "-gagga", "-d"];
+    opt := "abcdefg:";
     while((c := getopt.getopt(args.count, args, opt)) != -1)
     {
 	print(c, ' ', Char::convert(c), "\n");

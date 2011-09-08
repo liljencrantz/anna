@@ -6,5 +6,5 @@ var Int optind;
 var Int optopt;
 var Int opterr;
 
-def Int getopt(Int argc, List«String» argv, String options);
+def Int getopt(Int argc, MutableList«String» argv, String options);
 
