@@ -323,7 +323,7 @@ void anna_int_type_create()
     anna_member_create_native_method(
 	int_type, anna_mid_get(L"__init__"), 0,
 	&anna_int_init_i, object_type, 2, ii_argv,
-	ii_argn);
+	ii_argn, 0, 0);
     
     anna_member_create_native_method(
 	int_type,
@@ -333,12 +333,12 @@ void anna_int_type_create()
 	int_type,
 	2,
 	i_argv,
-	i_argn);    
+	i_argn, 0, 0);
     
     anna_member_create_native_method(
 	int_type, ANNA_MID_HASH_CODE, 0,
 	&anna_int_hash, int_type, 1, i_argv,
-	i_argn);
+	i_argn, 0, 0);
 
     anna_member_create_native_method(
 	int_type,
@@ -348,12 +348,12 @@ void anna_int_type_create()
 	string_type,
 	1,
 	i_argv,
-	i_argn);
+	i_argn, 0, 0);
 
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertString"),
 	0, &anna_int_convert_string, int_type,
-	1, &string_type, conv_argn);
+	1, &string_type, conv_argn, 0, 0);
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
@@ -364,7 +364,7 @@ void anna_int_type_create()
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertFloat"),
 	0, &anna_int_convert_float, int_type, 1,
-	&float_type, conv_argn);
+	&float_type, conv_argn, 0, 0);
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
@@ -375,7 +375,7 @@ void anna_int_type_create()
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertChar"), 0,
 	&anna_int_convert_char, int_type, 1, &char_type,
-	conv_argn);
+	conv_argn, 0, 0);
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
@@ -386,7 +386,7 @@ void anna_int_type_create()
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertInt"), 0,
 	&anna_int_convert_int, int_type, 1, &int_type,
-	conv_argn);
+	conv_argn, 0, 0);
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
@@ -395,7 +395,7 @@ void anna_int_type_create()
 	L"Converts an Int to itself. This is a noop.");
 
     anna_member_create_native_method(
-	int_type, ANNA_MID_DEL, 0, &anna_int_del, int_type, 1, i_argv, i_argn);
+	int_type, ANNA_MID_DEL, 0, &anna_int_del, int_type, 1, i_argv, i_argn, 0, 0);
 
     anna_int_type_i_create();
 }

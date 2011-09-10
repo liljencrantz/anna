@@ -9,6 +9,7 @@ static anna_type_t *anna_method_curry(anna_function_type_t *fun)
 	fun->input_count-1,
 	fun->input_type+1,
 	fun->input_name+1,
+	fun->input_default+1,
 	0);
     
     return res->wrapper->type;

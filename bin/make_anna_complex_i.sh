@@ -66,7 +66,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	complex_type, anna_mid_get(L\"__${name}__Complex__\"), 0,
 	&anna_complex_i_${name}, 
 	complex_type,
-	2, argv, argn);
+	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
@@ -74,7 +74,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
         complex_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
 	&anna_complex_i_int_${name}, 
 	complex_type,
-	2, i_argv, i_argn);
+	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
@@ -82,7 +82,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	complex_type, anna_mid_get(L\"__${name}__Float__\"), 0, 
 	&anna_complex_i_float_${name}, 
 	complex_type,
-	2, f_argv, f_argn);
+	2, f_argv, f_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
@@ -90,7 +90,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
         complex_type, anna_mid_get(L\"__${name}__IntReverse__\"), 0, 
 	&anna_complex_i_int_reverse_${name}, 
 	complex_type,
-	2, i_argv, i_argn);
+	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
@@ -98,7 +98,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	complex_type, anna_mid_get(L\"__${name}__FloatReverse__\"), 0, 
 	&anna_complex_i_float_reverse_${name}, 
 	complex_type,
-	2, f_argv, f_argn);
+	2, f_argv, f_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
@@ -196,7 +196,7 @@ for i in "neg -v" "sqrt csqrt(v)" "tan ctan(v)" "atan catan(v)" "sin csin(v)" "c
 	complex_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_complex_i_${name}, 
 	complex_type,
-	1, argv, argn);"
+	1, argv, argn, 0, 0);"
 
     echo "
 static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t *me)
@@ -219,7 +219,7 @@ for i in "abs cabs(v)" ; do
 	complex_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_complex_i_${name}, 
 	float_type,
-	1, argv, argn);"
+	1, argv, argn, 0, 0);"
 
     echo "
 static anna_vmstack_t *anna_complex_i_$name(anna_vmstack_t *stack, anna_object_t *me)

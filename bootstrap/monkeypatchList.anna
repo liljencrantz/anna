@@ -5,7 +5,7 @@ def listToString(List this)
     documentation("Returns a string representation of this List."),
 )
 {
-    return "[" ~ ", ".join(this.map(value){""~(value or "null")}) ~ "]";
+    return "[" ~ ", ".join(this.map(value){String::convert(value) or "null";}) ~ "]";
 }
 
 def all(List this)

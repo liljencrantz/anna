@@ -51,7 +51,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	float_type, anna_mid_get(L\"__${name}__Float__\"), 0,
 	&anna_float_i_${name}, 
 	float_type,
-	2, argv, argn);
+	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
@@ -59,7 +59,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
         float_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
 	&anna_float_i_int_${name}, 
 	float_type,
-	2, i_argv, i_argn);
+	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
@@ -67,7 +67,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	float_type, anna_mid_get(L\"__${name}__IntReverse__\"), 0, 
 	&anna_float_i_int_reverse_${name}, 
 	float_type,
-	2, i_argv, i_argn);
+	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
@@ -138,7 +138,7 @@ for i in "abs fabs(v)" "neg -v" "sign (v==0.0?0.0:(v>0?1.0:-1.0))"; do
 	float_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_float_i_${name}, 
 	float_type,
-	1, argv, argn);"
+	1, argv, argn, 0, 0);"
 
     echo "
 static anna_vmstack_t *anna_float_i_$name(anna_vmstack_t *stack, anna_object_t *me)

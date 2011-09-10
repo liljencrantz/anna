@@ -871,7 +871,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"__init__"), 0,
-	    &anna_type_noop, type, 1, argv, argn);
+	    &anna_type_noop, type, 1, argv, argn, 0, 0);
 /*
   anna_object_t **cp = anna_entry_get_addr_static(
   type,

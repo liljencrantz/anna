@@ -2,6 +2,21 @@
 error IoError (Error) {}
 */
 
+
+def isRelative(String filename)
+{
+    return filename[0] != separator;
+}
+
+const separator (doc("The directory separator")) = '/';
+
+def getCwd()
+{
+    b := Buffer();
+    unix.io.getcwd(b, 4096);
+    b.encode(nullTerminated:1);
+}
+
 type File
 (
     documentation(
@@ -17,12 +32,12 @@ type File
 	documentation("Create a new file object.")
     )
     {
-	if(cio.isRelative(filename))
+	if(isRelative(filename))
 	{
-	    path = cio.cwd.split(cio.separator, ?);
-	    path ~= filename.split(cio.separator, ?);
+	    path = getCwd().split(separator, ?);
+	    path ~= filename.split(separator, ?);
 	} else {
-	    path = filename.split(cio.separator, ?);
+	    path = filename.split(separator, ?);
 	}
     }
 
@@ -32,12 +47,12 @@ type File
 	    "Joins the specified subdirectory to the directory represented by the File object and returns the result.")
     )
     {
-	File(filename ~ cio.separator ~ name);
+	File(filename ~ separator ~ name);
     }
     
     def filenameGetter() (internal)
     {
-	"" ~ cio.separator ~ String::convert(cio.separator).join(path)
+	"" ~ separator ~ String::convert(separator).join(path)
     }
     
     var String filename (property(filenameGetter), documentation("The name of the file."));
@@ -151,7 +166,7 @@ type File
     {
 	(0..this.path.count).each(last)
 	{
-	    name := "" ~ cio.separator ~ String::convert(cio.separator).join(this.path[0..last+1]);
+	    name := "" ~ separator ~ String::convert(separator).join(this.path[0..last+1]);
 	    
 	    if(!cio.mkdir(name, 0o777) and !(cerror.errno in [cerror.exist]))
 	    {

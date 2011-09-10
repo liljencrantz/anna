@@ -208,6 +208,7 @@ static void anna_macro_add(
 	0,
 	0,
 	0,
+	0,
 	stack);
     
     anna_function_set_stack(f, stack);

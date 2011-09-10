@@ -195,7 +195,7 @@ int anna_list_ensure_capacity(anna_object_t *this, size_t sz)
     }
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_CAPACITY)) = cap;
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE)) = maxi(sz, old_sz);
-    *(unsigned char **)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD) = ptr;
+    *(anna_entry_t ***)anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD) = ptr;
     return 0;    
 }
 
@@ -925,11 +925,11 @@ static void anna_list_type_create_internal(
     anna_member_create_native_method(
 	type, anna_mid_get(L"__init__"),
 	ANNA_FUNCTION_VARIADIC, &anna_list_init,
-	type, 2, a_argv, a_argn);
+	type, 2, a_argv, a_argn, 0, 0);
     
     anna_member_create_native_method(
 	type, ANNA_MID_DEL, 0, &anna_list_del,
-	object_type, 1, a_argv, a_argn);    
+	object_type, 1, a_argv, a_argn, 0, 0);
     
     anna_type_t *i_argv[] = 
 	{
@@ -949,7 +949,7 @@ static void anna_list_type_create_internal(
 	type,
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_list_get_int, spec, 2,
-	i_argv, i_argn);
+	i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
@@ -977,7 +977,7 @@ static void anna_list_type_create_internal(
     anna_member_create_native_method(
 	type, anna_mid_get(L"__appendAssign__"),
 	0, &anna_list_append, type, 2, l_argv,
-	l_argn);
+	l_argn, 0, 0);
 
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!ListIterFunction", int_type, spec);
@@ -997,7 +997,7 @@ static void anna_list_type_create_internal(
     
     anna_member_create_native_method(
 	type, anna_mid_get(L"__each__"), 0,
-	&anna_list_each, type, 2, e_argv, e_argn);
+	&anna_list_each, type, 2, e_argv, e_argn, 0, 0);
     
     anna_member_create_native_method(
 	type,
@@ -1007,10 +1007,7 @@ static void anna_list_type_create_internal(
 	mutable?mutable_type:imutable_type,
 	2,
 	e_argv,
-	e_argn);
-    anna_member_document(
-	type,
-	anna_mid_get(L"__filter__"), 
+	e_argn, 0,
 	L"Execute the specified function once for each element in the list, and return a new list containing all the elements for which the function retuned non-null");
 
     anna_member_create_native_method(
@@ -1021,7 +1018,7 @@ static void anna_list_type_create_internal(
 	spec,
 	2,
 	e_argv,
-	e_argn);
+	e_argn, 0, 0);
     
     anna_member_create_native_method(
 	type,
@@ -1031,7 +1028,7 @@ static void anna_list_type_create_internal(
 	mutable?mutable_list_type:imutable_list_type,
 	2,
 	e_argv,
-	e_argn);
+	e_argn, 0, 0);
     
     anna_member_create_native_method(
 	type,
@@ -1041,7 +1038,7 @@ static void anna_list_type_create_internal(
 	int_type,
 	2,
 	a_argv,
-	a_argn);
+	a_argn, 0, 0);
 
     anna_member_document(
 	type,
@@ -1066,7 +1063,7 @@ static void anna_list_type_create_internal(
 	type,
 	anna_mid_get(L"__get__Range__"), 0,
 	&anna_list_i_get_range, type, 2,
-	range_argv, range_argn);
+	range_argv, range_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
@@ -1079,7 +1076,7 @@ static void anna_list_type_create_internal(
 	    type,
 	    anna_mid_get(L"__set__Int__"), 0,
 	    &anna_list_set_int, spec, 3,
-	    i_argv, i_argn);    
+	    i_argv, i_argn, 0, 0);
 	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));	anna_function_alias_add(fun, L"__set__");
 
 	anna_member_create_native_method(
@@ -1088,7 +1085,7 @@ static void anna_list_type_create_internal(
 	    type,
 	    2,
 	    a_argv,
-	    a_argn);
+	    a_argn, 0, 0);
 	anna_member_document(
 	    type,
 	    anna_mid_get(L"push"), 
@@ -1096,17 +1093,14 @@ static void anna_list_type_create_internal(
 	
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"pop"), 0,
-	    &anna_list_pop, spec, 1, a_argv, a_argn);
-	anna_member_document(
-	    type,
-	    anna_mid_get(L"pop"), 
+	    &anna_list_pop, spec, 1, a_argv, a_argn, 0, 
 	    L"Removes the last element from the list and returns it. Returns null if the list is already empty.");
 	
 	mmid = anna_member_create_native_method(
 	    type,
 	    anna_mid_get(L"__set__Range__"), 0,
 	    &anna_list_i_set_range, type, 3,
-	    range_argv, range_argn);
+	    range_argv, range_argn, 0, 0);
 	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));	anna_function_alias_add(fun, L"__set__");
 
     }

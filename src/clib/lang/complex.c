@@ -182,7 +182,7 @@ void anna_complex_type_create()
 	0,
 	&anna_complex_init, 
 	complex_type,
-	3, argv, argn);
+	3, argv, argn, 0, 0);
     
     anna_member_create_native_method(
 	complex_type,
@@ -190,21 +190,21 @@ void anna_complex_type_create()
 	0,
 	&anna_complex_cmp, 
 	int_type,
-	2, c_argv, c_argn);    
+	2, c_argv, c_argn, 0, 0);    
     
     anna_member_create_native_method(
 	complex_type,
 	ANNA_MID_TO_STRING,
 	0,
 	&anna_complex_to_string, 
-	string_type, 1, argv, argn);    
+	string_type, 1, argv, argn, 0, 0);    
 
     anna_member_create_native_method(
 	complex_type,
 	ANNA_MID_HASH_CODE,
 	0,
 	&anna_complex_hash, 
-	int_type, 1, argv, argn);
+	int_type, 1, argv, argn, 0, 0);
 
     anna_complex_type_i_create();
 }

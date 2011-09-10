@@ -173,7 +173,7 @@ def MutableList«String» split(
 	}
 	if(allowEmpty or stop > start)
 	{
-	    res ~= [this[start..stop]];
+	    res.push(this[start..stop]);
 	}
 	stop = start = stop + 1;
     }

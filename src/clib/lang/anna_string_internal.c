@@ -39,9 +39,11 @@ void asi_destroy(anna_string_t *string)
 
 void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
 {
+//    wprintf(L"\"%.*ls\" (%d) ~ \"%.*ls\" (%d)",dest->count, dest->str, dest->count, length, &src->str[offset], length);
     asi_ensure_capacity(dest, length+dest->count);
     memcpy(&dest->str[dest->count], &src->str[offset], sizeof(wchar_t)*length);  
     dest->count += length;
+//    wprintf(L" == \"%.*ls\" (%d)\n",dest->count, dest->str, dest->count);
 }
 
 void asi_substring(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)

@@ -347,7 +347,8 @@ size_t anna_member_create_native_property(
 	    property_type,
 	    1,
 	    argv,
-	    argn);
+	    argn,
+	    0, 0);
 	anna_member_t *gm = anna_member_get(type, getter_mid);
 	getter_offset = gm->offset;
 
@@ -371,7 +372,7 @@ size_t anna_member_create_native_property(
 	    property_type,
 	    2,
 	    argv,
-	    argn);
+	    argn, 0, 0);
 	anna_member_t *sm = anna_member_get(type, setter_mid);
 	setter_offset = sm->offset;
 
@@ -442,7 +443,9 @@ size_t anna_member_create_native_method(
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
-    wchar_t **argn)
+    wchar_t **argn,
+    anna_node_t **argd,
+    wchar_t *doc)
 {
     wchar_t *name = anna_mid_get_reverse(mid);
 
@@ -469,7 +472,7 @@ size_t anna_member_create_native_method(
 	    argc, 
 	    argv,
 	    argn,
-	    0,
+	    argd,
 	    flags));
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
@@ -479,8 +482,13 @@ size_t anna_member_create_native_method(
 	    anna_function_wrap(
 		anna_native_create(
 		    name, flags, func, result, 
-		    argc, argv, argn,
+		    argc, argv, argn, argd,
 		    0)));
+    if(doc)
+    {
+	anna_member_document(type, mid, doc);
+    }
+    
     return (size_t)mid;
 }
 
@@ -492,7 +500,9 @@ size_t anna_member_create_native_type_method(
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
-    wchar_t **argn)
+    wchar_t **argn,
+    anna_node_t **argd,
+    wchar_t *doc)
 {
     wchar_t *name = anna_mid_get_reverse(mid);
     if(!flags) 
@@ -518,7 +528,7 @@ size_t anna_member_create_native_type_method(
 	    argc, 
 	    argv,
 	    argn,
-	    0,
+	    argd,
 	    flags));
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
@@ -528,8 +538,11 @@ size_t anna_member_create_native_type_method(
 	    anna_function_wrap(
 		anna_native_create(
 		    name, flags, func, result, 
-		    argc, argv, argn,
-		    0)));
+		    argc, argv, argn, argd, 0)));
+    if(doc)
+    {
+	anna_member_document(type, mid, doc);
+    }
     return (size_t)mid;
 }
 
@@ -553,7 +566,7 @@ void anna_member_document(
     {
 	anna_node_call_t *attr = anna_node_create_call2(
 	    0,
-	    anna_node_create_identifier(0, L"documentation"),
+	    anna_node_create_identifier(0, L"doc"),
 	    anna_node_create_string_literal(0, wcslen(doc), doc));
 	if(!memb->attribute)
 	{

@@ -216,29 +216,20 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"replace"), 0,
 	&anna_node_wrapper_i_replace,
-	node_type, 3, replace_argv, replace_argn);
-    anna_member_document(
-	node_type,
-	anna_mid_get(L"replace"), 
+	node_type, 3, replace_argv, replace_argn, 0,
 	L"Replace all instances of the specified identifier AST node within a copy of the original AST tree with the specified replacement AST node and return the nesulting new tree. The original tree is not modified.");
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"error"), 0,
 	&anna_node_wrapper_i_error,
-	node_type, 2, error_argv, error_argn);
-    anna_member_document(
-	node_type,
-	anna_mid_get(L"error"), 
+	node_type, 2, error_argv, error_argn, 0,
 	L"Report a compiler error at the source code location of the specified node");
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"toString"),
 	0,
 	&anna_node_wrapper_i_to_string,
-	string_type, 1, error_argv, error_argn);    
-    anna_member_document(
-	node_type,
-	anna_mid_get(L"replace"), 
+	string_type, 1, error_argv, error_argn, 0,
 	L"Returns a string representation of the specified AST tree");
     
     anna_type_t *cmp_argv[] = 
@@ -255,20 +246,17 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"__cmp__"), 0,
 	&anna_node_wrapper_cmp, 
-	int_type, 2, cmp_argv, cmp_argn);
+	int_type, 2, cmp_argv, cmp_argn, 0, 0);
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"hashCode"), 0,
 	&anna_node_wrapper_hash,
-	int_type, 1, cmp_argv, cmp_argn);
+	int_type, 1, cmp_argv, cmp_argn, 0, 0);
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"copy"), 0,
 	&anna_node_wrapper_copy,
-	node_type, 1, cmp_argv, cmp_argn);
-    anna_member_document(
-	node_type,
-	anna_mid_get(L"copy"), 
+	node_type, 1, cmp_argv, cmp_argn, 0,
 	L"Return an identical copy of the specified AST tree");
 }
 

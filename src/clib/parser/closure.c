@@ -42,7 +42,7 @@ static anna_type_t *anna_node_create_closure_type(
 	null_type,
 	3,
 	argv,
-	argn);
+	argn, 0, 0);
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"payload"),

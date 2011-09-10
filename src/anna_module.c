@@ -491,7 +491,8 @@ static void anna_module_load_dynamic(wchar_t *name, anna_stack_template_t *paren
     }
     anna_module_data_t data[] = 
 	{
-	    { name, create, load 
+	    { 
+		name, create, load 
 	    }
 	}
     ;
@@ -861,7 +862,7 @@ anna_function_t *anna_module_function(
 	name,
 	flags, native,
 	return_type, 
-	argc, argv, argn,
+	argc, argv, argn, 0,
 	stack);
     
     anna_stack_declare(

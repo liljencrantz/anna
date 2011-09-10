@@ -2,7 +2,7 @@
 #define ANNA_FUNCTION_H
 
 #include "anna.h"
-//#include "anna_node.h"
+#include "anna_node.h"
 #include "anna_stack.h"
 
 /*
@@ -126,6 +126,7 @@ __cold anna_function_t *anna_native_create(
     size_t argc,
     anna_type_t **argv,
     wchar_t **argn,
+    anna_node_t **argd,
     struct anna_stack_template *parent_stack);
 
 __cold anna_function_t *anna_function_create_from_definition(

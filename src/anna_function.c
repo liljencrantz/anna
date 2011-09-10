@@ -685,6 +685,7 @@ anna_function_t *anna_native_create(
     size_t argc,
     anna_type_t **argv,
     wchar_t **argn,
+    anna_node_t **argd,
     anna_stack_template_t *location)
 {
     int i;
@@ -712,6 +713,13 @@ anna_function_t *anna_native_create(
 	result->input_type,
 	argv, 
 	sizeof(anna_type_t *)*argc);
+    if(argd)
+    {
+	memcpy(
+	    result->input_default,
+	    argd, 
+	    sizeof(anna_node_t *)*argc);
+    }
     for(i=0;i<argc; i++)
     {
 	result->input_name[i] = anna_intern(argn[i]);	
@@ -802,3 +810,4 @@ void anna_function_print(anna_function_t *function)
     }   
 
 }
+

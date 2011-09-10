@@ -205,7 +205,7 @@ static void anna_function_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	res, ANNA_MID_TO_STRING, 0,
 	&anna_function_type_to_string,
-	string_type, 1, argv, argn);
+	string_type, 1, argv, argn, 0, 0);
 
     anna_member_create_native_property(
 	res, anna_mid_get(L"name"), string_type,
@@ -329,10 +329,7 @@ void anna_function_type_create(
 
 	anna_member_create_native_method(
 	    res, anna_mid_get(L"__get__"), 0,
-	    &anna_function_type_i_get, object_type, 2, v_argv, v_argn);
-	anna_member_document(
-	    res,
-	    anna_mid_get(L"__get__"), 
+	    &anna_function_type_i_get, object_type, 2, v_argv, v_argn, 0, 
 	    L"Returns the value of the local variable with the specified name.");
 
 	anna_member_create_native_property(

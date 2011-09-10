@@ -42,7 +42,7 @@ static anna_type_t *anna_node_create_dummy_type(anna_stack_template_t *stack)
 	null_type,
 	3,
 	argv,
-	argn);
+	argn, 0, 0);
     
     anna_member_create_native_property(
 	node_dummy_type,

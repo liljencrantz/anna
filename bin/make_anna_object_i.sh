@@ -39,11 +39,7 @@ for i in \
 	object_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_object_i_${name}, 
 	int_type,
-	2, argv, argn);
-    anna_member_document(
-	object_type,
-	anna_mid_get(L\"__${name}__\"), 
-	L\"${doc}\");
+	2, argv, argn, 0, L\"${doc}\");
 
 "
 

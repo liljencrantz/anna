@@ -255,7 +255,7 @@ static void anna_node_create_call_type(
 	ANNA_FUNCTION_VARIADIC,
 	&anna_node_call_wrapper_i_init,
 	object_type,
-	4, argv, argn);
+	4, argv, argn, 0, 0);
     
     anna_type_t *fun_type = anna_function_type_each_create(
 	L"!CallIterFunction", int_type, node_type);
@@ -278,7 +278,7 @@ static void anna_node_create_call_type(
 	anna_mid_get(L"__each__"), 0,
 	&anna_node_call_wrapper_each,
 	type,
-	2, e_argv, e_argn);
+	2, e_argv, e_argn, 0, 0);
 
     anna_member_create_native_property(
 	type,
@@ -305,7 +305,7 @@ static void anna_node_create_call_type(
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_node_call_wrapper_i_get_int,
 	node_type,
-	2, i_argv, i_argn);
+	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
@@ -316,7 +316,7 @@ static void anna_node_create_call_type(
 	node_type,
 	3,
 	i_argv,
-	i_argn);
+	i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
@@ -348,7 +348,7 @@ static void anna_node_create_call_type(
 	type,
 	2,
 	j_argv,
-	j_argn);
+	j_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__join__");
 
@@ -359,6 +359,6 @@ static void anna_node_create_call_type(
 	type,
 	2,
 	j_argv,
-	j_argn);
+	j_argn, 0, 0);
     
 }

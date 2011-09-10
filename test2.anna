@@ -1,6 +1,9 @@
 
 def main()
 {
+    print(io.getCwd(),"\n");
+
+/*
     print(fd := unix.io.open("test.anna", unix.io.openMode.readOnly, 0), "\n");
     buf := Buffer();
     print(unix.io.read(fd, buf, 4096), "\n");
@@ -30,7 +33,7 @@ def main()
 
     pfd := [0];
     print(unix.io.pipe(pfd), ' ', pfd, "\n");
-    
+    */
 
 }
 

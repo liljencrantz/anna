@@ -678,7 +678,7 @@ void anna_range_type_create()
     anna_member_create_native_method(
 	range_type, anna_mid_get(L"__init__"),
 	0, &anna_range_init, range_type, 4,
-	c_argv, c_argn);
+	c_argv, c_argn, 0, 0);
     
 
     anna_type_t *i_argv[] = 
@@ -698,7 +698,7 @@ void anna_range_type_create()
 	range_type,
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_range_get_int, int_type, 2,
-	i_argv, i_argn);
+	i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(range_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
     
@@ -775,7 +775,7 @@ void anna_range_type_create()
     anna_member_create_native_method(
 	range_type, anna_mid_get(L"__each__"),
 	0, &anna_range_each, range_type, 2,
-	e_argv, e_argn);
+	e_argv, e_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
 	anna_mid_get(L"__filter__"),
@@ -784,7 +784,7 @@ void anna_range_type_create()
 	anna_list_type_get_mutable(int_type),
 	2,
 	e_argv,
-	e_argn);
+	e_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
 	anna_mid_get(L"__find__"),
@@ -793,7 +793,7 @@ void anna_range_type_create()
 	int_type,
 	2,
 	e_argv,
-	e_argn);
+	e_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
 	anna_mid_get(L"__in__"),
@@ -802,7 +802,7 @@ void anna_range_type_create()
 	int_type,
 	2,
 	a_argv,
-	a_argn);
+	a_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
 	anna_mid_get(L"__map__"),
@@ -811,6 +811,6 @@ void anna_range_type_create()
 	mutable_list_type,
 	2,
 	e_argv,
-	e_argn);
+	e_argn, 0, 0);
 
 }

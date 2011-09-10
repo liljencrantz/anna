@@ -277,10 +277,18 @@ void anna_type_intersect_into(
 		    ft1, ft2, 1, 0, 0)) 
 	    {
 		anna_type_t **types = malloc(sizeof(anna_type_t *)*ft2->input_count);
+		anna_node_t **defaults = calloc(1,sizeof(anna_node_t *)*ft2->input_count);
 		int i;
 		for(i=0; i<ft2->input_count; i++)
 		{
 		    types[i] = anna_type_intersect(ft1->input_type[i], ft2->input_type[i]);		    
+		    if(ft1->input_default[i] && ft2->input_default[i] && 
+		       anna_node_compare(
+			   ft1->input_default[i],
+			   ft2->input_default[i])==0)
+		    {
+			defaults[i] = ft1->input_default[i];
+		    }
 		}
 		
 		anna_member_create_native_method(
@@ -291,7 +299,9 @@ void anna_type_intersect_into(
 		    anna_type_intersect(ft1->return_type,ft2->return_type),
 		    ft2->input_count,
 		    types,
-		    ft2->input_name);
+		    ft2->input_name,
+		    defaults,
+		    0);
 		free(types);
 		
 		anna_function_t *new_fun = 

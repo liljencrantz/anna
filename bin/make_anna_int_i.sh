@@ -34,7 +34,7 @@ for i in "add mpz_add(res, *v1, *v2)" "increaseAssign mpz_add(res, *v1, *v2)" "s
 	int_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
-	2, argv, argn);
+	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
 
@@ -114,7 +114,7 @@ for i in "abs mpz_abs(res, *v1)" "neg mpz_neg(res, *v1)" "sign mpz_set_si(res, m
 	int_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
-	1, argv, argn);
+	1, argv, argn, 0, 0);
 "
 
     echo "
@@ -144,7 +144,7 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
 	int_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
-	1, argv, argn);
+	1, argv, argn, 0, 0);
 "
 
     echo "

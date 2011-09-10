@@ -42,7 +42,7 @@ static anna_type_t *anna_node_create_null_type(anna_stack_template_t *stack)
 	node_null_type,
 	2,
 	argv,
-	argn);
+	argn, 0, 0);
     return node_null_type;
     
 }

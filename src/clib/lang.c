@@ -24,6 +24,7 @@
 #include "anna_type_data.h"
 #include "anna_vm_internal.h"
 #include "anna_module.h"
+#include "anna_node_create.h"
 
 #include "clib/lang/int.h"
 #include "clib/lang/float.h"
@@ -124,8 +125,7 @@ static void anna_null_type_create()
 	    anna_native_create(
 		L"!nullFunction", 0, 
 		&anna_vm_null_function, 
-		null_type, 1, argv, argn,
-		0));
+		null_type, 1, argv, argn, 0, 0));
     null_type->static_member[0]= (anna_entry_t *)null_function;
     hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
     hash_put(&null_type->name_identifier, L"!null_member", null_member);
@@ -394,7 +394,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	&anna_i_wrap_method,
 	object_type,
 	2,
-	wrap_argv, wrap_argn, stack);
+	wrap_argv, wrap_argn, 0, stack);
     anna_wrap_method = wrap->wrapper;
 
     anna_type_data_register(anna_lang_type_data, stack);

@@ -1110,7 +1110,7 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_method(
 	type, anna_mid_get(L"__set__"), 
 	0, &anna_hash_set, spec2, 
-	3, kv_argv, kv_argn);
+	3, kv_argv, kv_argn, 0, 0);
     anna_member_document(
 	type, anna_mid_get(L"__set__"),
 	L"Assigns the specified value to the specified key.");
@@ -1118,7 +1118,7 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_method(
 	type, anna_mid_get(L"__get__"),
 	0, &anna_hash_get,
-	spec2, 2, kv_argv, kv_argn);    
+	spec2, 2, kv_argv, kv_argn, 0, 0);    
     anna_member_document(
 	type, anna_mid_get(L"__get__"),
 	L"Returns the value associated with the specified key.");
@@ -1139,7 +1139,7 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_method(
 	type, anna_mid_get(L"__init__"),
 	ANNA_FUNCTION_VARIADIC, &anna_hash_init,
-	type, 2, i_argv, i_argn);
+	type, 2, i_argv, i_argn, 0, 0);
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
@@ -1164,7 +1164,7 @@ static void anna_hash_type_create_internal(
     
     anna_member_create_native_method(
 	type, anna_mid_get(L"__each__"), 0,
-	&anna_hash_each, type, 2, e_argv, e_argn);
+	&anna_hash_each, type, 2, e_argv, e_argn, 0, 0);
 
     anna_member_create_native_method(
 	type,
@@ -1174,18 +1174,16 @@ static void anna_hash_type_create_internal(
 	mutable_list_type,
 	2,
 	e_argv,
-	e_argn);
+	e_argn, 0, 0);
     
     anna_member_create_native_method(
 	type, ANNA_MID_DEL, 0, &anna_hash_del,
-	object_type, 1, e_argv, e_argn);
+	object_type, 1, e_argv, e_argn, 0, 0);
     
     anna_member_create_native_method(
 	type, anna_mid_get(L"__in__"), 0,
 	&anna_hash_in, spec1, 2, kv_argv,
-	kv_argn);
-    anna_member_document(
-	type, anna_mid_get(L"__in__"),
+	kv_argn, 0, 
 	L"Returns true if the specified key exists in the Hash");
 
     anna_member_create_native_method(
@@ -1196,9 +1194,7 @@ static void anna_hash_type_create_internal(
 	spec2,
 	2,
 	kv_argv,
-	kv_argn);
-    anna_member_document(
-	type, anna_mid_get(L"remove"),
+	kv_argn, 0,
 	L"Remove the specified key from the hash");
     
     anna_hash_add_all_extra_methods(type);

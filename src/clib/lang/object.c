@@ -75,7 +75,7 @@ void anna_object_type_create()
     anna_member_create_native_method(
 	object_type, anna_mid_get(L"__init__"),
 	0, &anna_object_init, object_type, 1,
-	argv, argn);
+	argv, argn, 0, 0);
     anna_member_document(
 	object_type, anna_mid_get(L"__init__"),
 	L"Constructor for the specified type. This method is run during object creation and should be overloaded to perform object setup.");
@@ -83,7 +83,7 @@ void anna_object_type_create()
     anna_member_create_native_method(
 	object_type, ANNA_MID_HASH_CODE, 0,
 	&anna_object_hash, int_type, 1, argv,
-	argn);
+	argn, 0, 0);
     anna_member_document(
 	object_type,
 	ANNA_MID_HASH_CODE,
@@ -97,7 +97,7 @@ void anna_object_type_create()
 	int_type,
 	2,
 	argv,
-	argn);
+	argn, 0, 0);
     anna_member_document(
 	object_type,
 	ANNA_MID_CMP,
@@ -111,7 +111,7 @@ void anna_object_type_create()
 	string_type,
 	1,
 	argv,
-	argn);
+	argn, 0, 0);
     anna_member_document(
 	object_type,
 	ANNA_MID_TO_STRING,

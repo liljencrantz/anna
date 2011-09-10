@@ -116,7 +116,7 @@ static void anna_type_load()
     
     anna_member_create_native_method(
 	type_type, ANNA_MID_HASH_CODE, 0,
-	&anna_type_hash, int_type, 1, argv, argn);
+	&anna_type_hash, int_type, 1, argv, argn, 0, 0);
     
     anna_member_create_native_method(
 	type_type,
@@ -126,7 +126,7 @@ static void anna_type_load()
 	int_type,
 	2,
 	argv,
-	argn);
+	argn, 0, 0);
     anna_member_create_native_method(
 	type_type,
 	ANNA_MID_TO_STRING,
@@ -135,12 +135,12 @@ static void anna_type_load()
 	string_type,
 	1,
 	argv,
-	argn);    
+	argn, 0, 0);
     
     anna_member_create_native_method(
 	type_type, anna_mid_get(L"abides"), 0,
 	&anna_type_abides, object_type, 2, argv,
-	argn);   
+	argn, 0, 0);
 
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"attribute"),

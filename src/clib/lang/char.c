@@ -125,21 +125,19 @@ void anna_char_type_create()
     mmid = anna_member_create_native_type_method(
 	char_type, anna_mid_get(L"convert"), 0,
 	&anna_char_convert, char_type, 1, &int_type,
-	conv_argn);
-    anna_member_document(
-	char_type, mmid,
+	conv_argn, 0,
 	L"Creates a new Char object with the specified ordinal number.");
 
 
 
     anna_member_create_native_method(
 	char_type, anna_mid_get(L"__cmp__"), 0,
-	&anna_char_cmp, int_type, 2, argv, argn);    
+	&anna_char_cmp, int_type, 2, argv, argn, 0, 0); 
     
     anna_member_create_native_method(
 	char_type, ANNA_MID_TO_STRING, 0,
 	&anna_char_to_string, string_type, 1,
-	argv, argn);
+	argv, argn, 0, 0);
 
 
     anna_type_t *sub_argv[]=
@@ -156,7 +154,7 @@ void anna_char_type_create()
     ;
 
     mmid = anna_member_create_native_method(
-	char_type, anna_mid_get(L"__sub__Char__"), 0, &anna_char_sub_char, int_type, 2, sub_argv, sub_argn);
+	char_type, anna_mid_get(L"__sub__Char__"), 0, &anna_char_sub_char, int_type, 2, sub_argv, sub_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(char_type, mmid)));
     anna_function_alias_add(fun, L"__sub__");
 

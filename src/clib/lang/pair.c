@@ -98,8 +98,7 @@ static void anna_pair_type_create_internal(
 
     anna_member_create_native_method(
 	type, anna_mid_get(L"__init__"), 0,
-	&anna_pair_init, type, 3, argv, argn);    
-    
+	&anna_pair_init, type, 3, argv, argn, 0, 0);
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"first"), spec1,

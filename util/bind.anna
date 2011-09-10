@@ -628,7 +628,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     anna_member_create_native_method(
 	%(typeName), anna_mid_get(L\"__init__\"), 0,
-	&%(initName), object_type, 1, &%(typeName), this_argn);    
+	&%(initName), object_type, 1, &%(typeName), this_argn, 0, 0);    
 " % commonData;
 
 	code ~= "

@@ -151,9 +151,10 @@ ANNA_VM_NATIVE(anna_buffer_del, 1)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_buffer_encode, 1)
+ANNA_VM_NATIVE(anna_buffer_encode, 2)
 {    
     anna_object_t *this = anna_as_obj(param[0]);
+    int null_terminated = param[1] != null_entry;
     anna_object_t *str = anna_string_create(0, 0);
     int i=0;
     unsigned char *src = anna_buffer_get_payload(this);
@@ -162,6 +163,11 @@ ANNA_VM_NATIVE(anna_buffer_encode, 1)
     {
 	if(!src[i])
 	{
+	    if(null_terminated)
+	    {
+		break;
+	    }
+	    
 	    anna_string_append_cstring(str, 1, L"\0");
 	    i++;
 	}
@@ -260,7 +266,7 @@ void anna_buffer_type_create()
 	0,
 	null_type);
 
-     anna_type_t *a_argv[] = 
+    anna_type_t *a_argv[] = 
 	{
 	    type
 	}
@@ -275,11 +281,11 @@ void anna_buffer_type_create()
     anna_member_create_native_method(
 	type, ANNA_MID_INIT_PAYLOAD,
 	0, &anna_buffer_init,
-	type, 1, a_argv, a_argn);
+	type, 1, a_argv, a_argn, 0, 0);
     
     anna_member_create_native_method(
 	type, ANNA_MID_DEL, 0, &anna_buffer_del,
-	object_type, 1, a_argv, a_argn);    
+	object_type, 1, a_argv, a_argn, 0, 0);
     
     anna_type_t *i_argv[] = 
 	{
@@ -299,7 +305,7 @@ void anna_buffer_type_create()
 	type,
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_buffer_get_int, int_type, 2,
-	i_argv, i_argn);
+	i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
@@ -328,17 +334,34 @@ void anna_buffer_type_create()
 	type,
 	anna_mid_get(L"__set__Int__"), 0,
 	&anna_buffer_set_int, int_type, 3,
-	i_argv, i_argn);    
+	i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__set__");
 
-    anna_member_create_native_method(
+    anna_type_t *e_argv[] = 
+	{
+	    type,
+	    int_type
+	}
+    ;
+    
+    wchar_t *e_argn[]=
+	{
+	    L"this",
+	    L"nullTerminated"
+	}
+    ;
+    
+    anna_node_t *e_argd[] = 
+	{
+	    0, anna_node_create_null(0)
+	}
+    ;
+
+    mmid = anna_member_create_native_method(
 	type, anna_mid_get(L"encode"), 0,
-	&anna_buffer_encode, string_type, 1,
-	a_argv, a_argn);
-    anna_member_document(
-	type, anna_mid_get(L"encode"), 
-	anna_intern_static(L"Encode the byte array into a character string using the default encoding of the locale."));
+	&anna_buffer_encode, string_type, 2,
+	e_argv, e_argn, e_argd, L"Encode the byte array into a character string using the default encoding of the locale.");
     
     anna_type_t *d_argv[] = 
 	{
@@ -357,10 +380,7 @@ void anna_buffer_type_create()
     anna_member_create_native_method(
 	type, anna_mid_get(L"decode"), 0,
 	&anna_buffer_decode, type, 2,
-	d_argv, d_argn);
-    anna_member_document(
-	type, anna_mid_get(L"decode"), 
-	anna_intern_static(L"Decode the String into a byte array using the default encoding of the locale."));
+	d_argv, d_argn, 0, L"Decode the String into a byte array using the default encoding of the locale.");
     
 }
 

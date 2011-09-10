@@ -72,7 +72,9 @@ size_t anna_member_create_native_method(
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
-    wchar_t **argn);
+    wchar_t **argn,
+    anna_node_t **argd,
+    wchar_t *doc);
 
 size_t anna_member_create_native_type_method(
     anna_type_t *type,
@@ -82,7 +84,9 @@ size_t anna_member_create_native_type_method(
     anna_type_t *result,
     size_t argc,
     anna_type_t **argv,
-    wchar_t **argn);
+    wchar_t **argn,
+    anna_node_t **argd,
+    wchar_t *doc);
 
 void anna_member_document(
     anna_type_t *type,

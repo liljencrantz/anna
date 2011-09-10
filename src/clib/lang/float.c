@@ -186,12 +186,12 @@ void anna_float_type_create()
     
     anna_member_create_native_method(
 	float_type, anna_mid_get(L"__cmp__"), 0,
-	&anna_float_cmp, int_type, 2, argv, argn);    
+	&anna_float_cmp, int_type, 2, argv, argn, 0, 0);
     
     anna_member_create_native_method(
 	float_type, ANNA_MID_TO_STRING, 0,
 	&anna_float_to_string, string_type, 1,
-	argv, argn);
+	argv, argn, 0, 0);
     anna_member_create_native_method(
 	float_type,
 	ANNA_MID_HASH_CODE,
@@ -200,7 +200,7 @@ void anna_float_type_create()
 	int_type,
 	1,
 	argv,
-	argn);
+	argn, 0, 0);
 
 /*
     anna_member_create_native_method(
@@ -220,7 +220,7 @@ void anna_float_type_create()
     mmid = anna_member_create_native_type_method(
 	float_type, anna_mid_get(L"convertString"),
 	0, &anna_float_convert_string,
-	float_type, 1, &string_type, conv_argn);
+	float_type, 1, &string_type, conv_argn, 0, 0);
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
@@ -231,7 +231,7 @@ void anna_float_type_create()
     mmid = anna_member_create_native_type_method(
 	float_type, anna_mid_get(L"convertFloat"),
 	0, &anna_float_convert_float,
-	float_type, 1, &float_type, conv_argn);
+	float_type, 1, &float_type, conv_argn, 0, 0);
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
@@ -242,7 +242,7 @@ void anna_float_type_create()
     mmid = anna_member_create_native_type_method(
 	float_type, anna_mid_get(L"convertInt"),
 	0, &anna_float_convert_int,
-	float_type, 1, &int_type, conv_argn);
+	float_type, 1, &int_type, conv_argn, 0, 0);
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
