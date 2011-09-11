@@ -1,8 +1,11 @@
 /*
 error IoError (Error) {}
 */
-
-
+/*
+type IoError (extends(error.Error))
+{
+}
+*/
 def isRelative(String filename)
 {
     return filename[0] != separator;
@@ -15,6 +18,41 @@ def getCwd()
     b := Buffer();
     unix.io.getcwd(b, 4096);
     b.encode(nullTerminated:1);
+}
+
+def String readWholeFile(Int fd)
+{
+    buf := Buffer();
+    res := "".thaw;
+//    print("Read fd %\n" % [fd]);
+    while(1)
+    {
+      count := unix.io.read(fd, buf, 4096);
+//	print("Read % chars\n" % [count]);
+	switch(count)
+	{
+	    case(0)
+	    {
+//		print("OK '%' \n" % [res]);
+		return res;
+	    }
+
+	    case(-1)
+	    {
+//		print("ERROR\n");
+//		error.raise(IoError());
+		return ?;
+	    }
+	    
+	    default
+	    {
+		buf.count = count;
+//		print("FADFA '%' \n" % [buf.encode()]);
+		res ~= buf.encode();
+	    }
+
+	}
+    }
 }
 
 type File
@@ -63,11 +101,10 @@ type File
 	    "Read the contents of the file and return it as a String.")
     )
     {
-        (fd := cio.open(this.filename, cio.openMode.readOnly, 0)) or (return ?);
-        buff := Buffer();
-        res := cio.read(fd, buff, ?);
-	cio.close(fd);
-	return if(res){buff.encode()} else {?}
+        (fd := unix.io.open(this.filename, unix.io.openMode.readOnly, 0)) or (return ?);
+        res := readWholeFile(fd);
+	unix.io.close(fd);
+	res;
     }
     
     def writeFile(String data)
@@ -76,15 +113,15 @@ type File
 	    "Write the contents of the String into the specified file.")
     )
     {
-        (fd := cio.open(
+        (fd := unix.io.open(
 	    this.filename, 
-	    cio.openMode.writeOnly ^bitor 
-	    cio.openMode.truncate ^bitor 
-	    cio.openMode.create, 
+	    unix.io.openMode.writeOnly ^bitor 
+	    unix.io.openMode.truncate ^bitor 
+	    unix.io.openMode.create, 
 	    0o666)) or (return ?); 
         buff := Buffer();
-        ok := buff.decode(data) and cio.write(fd, buff, ?);
-	return cio.close(fd) and ok;
+        ok := buff.decode(data) and unix.io.write(fd, buff, buff.count);
+	return unix.io.close(fd) and ok;
     }
     
     def open()
@@ -92,9 +129,9 @@ type File
 	documentation("Open the specified file for reading and writing.")
     )
     {
-        fd = cio.open(
+        fd = unix.io.open(
 	    this.filename, 
-	    cio.openMode.readWrite ^bitor cio.openMode.create, 
+	    unix.io.openMode.readWrite ^bitor unix.io.openMode.create, 
 	    0o666);
 	if(fd) {this} else {?};
     }
@@ -104,7 +141,7 @@ type File
 	documentation("Close the specified file for reading and writing.")
     )
     {
-        cio.close(fd)
+        unix.io.close(fd)
     }
 
     def write(Object value...)
@@ -117,13 +154,14 @@ type File
 	value.each(v)
 	{
 	    b.decode(String::convert(v));
-	    cio.write(this.fd, b, ?);
+	    unix.io.write(this.fd, b, b.count);
 	}
     }
   
     def existsGetter() (internal)
     {
-	return if(cio.stat(this.filename)){1} else {?};
+        buf := unix.io.Stat();
+	return unix.io.stat(this.filename, buf) == 0;
     }
     
     var Int exists 
@@ -135,8 +173,13 @@ type File
 
     def isFileGetter() (internal)
     {
-        (val := cio.stat(this.filename)) or (return ?);
-	return (val[2] ^bitand cio.statMode.regular) != 0;      
+        buf := unix.io.Stat();
+	return if(unix.io.stat(this.filename, buf) == 0)
+	{
+	    buf.mode ^bitand unix.io.statMode.regular != 0;
+	} else {
+	    ?
+	};
     }
 
     var Int isFile 
@@ -148,8 +191,13 @@ type File
 
     def isDirectoryGetter() (internal)
     {
-        (val := cio.stat(this.filename)) or (return ?);
-	return (val[2] ^bitand cio.statMode.directory) != 0;      
+        buf := unix.io.Stat();
+	return if(unix.io.stat(this.filename, buf) == 0)
+	{
+	    buf.mode ^bitand unix.io.statMode.directory != 0;
+	} else {
+	    ?
+	};
     }
 
     var Int isDirectory
@@ -168,7 +216,7 @@ type File
 	{
 	    name := "" ~ separator ~ String::convert(separator).join(this.path[0..last+1]);
 	    
-	    if(!cio.mkdir(name, 0o777) and !(cerror.errno in [cerror.exist]))
+	    if((unix.io.mkdir(name, 0o777)!= 0) and !(cerror.errno in [cerror.exist]))
 	    {
 		print(cerror.errorString(cerror.errno), "\n");
 		return ?;
@@ -183,12 +231,12 @@ type File
 	    "Change the current working directory to the directory represented by this File object.")
     )
     {
-	cio.cwd = this.filename;
+	unix.io.chdir(this.filename);
     }
     
     def File currentDirectoryGetter() (static, internal)
     {
-	File(cio.cwd)
+	File(getCwd());
     }
 
     var File currentDirectory 
@@ -203,7 +251,7 @@ type File
 	documentation("Deletes the file system path represented by the File object.")
     )
     {
-	cio.unlink(this.filename);
+	unix.io.unlink(this.filename);
     }
 
     def String toString()
