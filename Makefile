@@ -33,8 +33,7 @@ WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 CFLAGS := $(CFLAGS_NOWARN) $(WARN)
 
 ANNA_CLIB_OBJS := src/clib/lang.o src/clib/reflection.o			\
-src/clib/parser.o src/clib/cio.o src/clib/math.o src/clib/cerror.o	\
-src/clib/ctime.o
+src/clib/parser.o src/clib/math.o src/clib/cerror.o src/clib/ctime.o
 
 # All object files used by the main anna binary
 ANNA_OBJS := $(ANNA_CLIB_OBJS) src/dtoa.o src/anna.o src/util.o		\
