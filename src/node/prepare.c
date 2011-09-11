@@ -291,6 +291,9 @@ static anna_node_t *anna_node_calculate_type_internal(
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *id = (anna_node_identifier_t *)this;
+	    
+	    anna_module_check(stack_global, id->name);
+	    
 	    anna_type_t *t = anna_stack_get_type(stack, id->name);
 	    
 	    if(!t)
@@ -311,7 +314,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		anna_error(this, L"Invalid type for variable %ls", id->name);
 		break;
 	    }
-	    
+	    	    
 	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		anna_error(this, L"Unknown identifier: %ls", id->name);

@@ -1,7 +1,7 @@
 
 def main()
 {
-    print(io.getCwd(),"\n");
+    print(unix.env.environ,"\n");
 
 /*
     print(fd := unix.io.open("test.anna", unix.io.openMode.readOnly, 0), "\n");

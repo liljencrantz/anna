@@ -551,7 +551,10 @@ void b_destroy( buffer_t *b );
 */
 int b_append( buffer_t *b, const void *d, ssize_t len );
 
+/** 64-bit gmp value retrieval */
 uint64_t anna_mpz_get_ui64(mpz_t mp);
+
+/** 64-bit gmp value assignment */
 void anna_mpz_set_ui64(mpz_t mp, uint64_t val);
 
 #endif

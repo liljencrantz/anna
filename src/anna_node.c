@@ -24,6 +24,7 @@
 #include "anna_intern.h"
 #include "anna_node_hash.h"
 #include "anna_node_check.h"
+#include "anna_module.h"
 
 #include "clib/lang/int.h"
 #include "clib/lang/float.h"

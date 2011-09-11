@@ -38,23 +38,35 @@
 #include "clib/lang/hash.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
+
 array_list_t anna_module_default_macros = AL_STATIC;
 
 static wchar_t *anna_module_search(
     anna_stack_template_t *parent, wchar_t *name)
 {
+    
     FIXME("library search path is hardcoded")
     string_buffer_t sb;
+    struct stat buf;
     sb_init(&sb);
     sb_printf(&sb, L"lib/%ls.anna", name);
-    return sb_content(&sb);
+    if(!wstat(sb_content(&sb), &buf))
+    {
+	return sb_content(&sb);
+    }
+    sb_clear(&sb);
+    sb_printf(&sb, L"lib/%ls.so", name);
+    
+    if(!wstat(sb_content(&sb), &buf))
+    {
+	return sb_content(&sb);
+    }
+    return 0;
 }
-
 
 static anna_stack_template_t *anna_module(
     anna_stack_template_t *parent, wchar_t *name, wchar_t *filename)
-{
-    
+{    
     anna_object_t *obj;
     anna_stack_template_t *res;
     if(name)
@@ -80,7 +92,7 @@ static anna_stack_template_t *anna_module(
 	    }
 	    return res;
 	}
-    }    
+    }
     
     res = anna_stack_create(parent);
     anna_stack_name(res, name);
@@ -98,8 +110,37 @@ static anna_stack_template_t *anna_module(
     {
 	res->filename = anna_module_search(parent, name);
     }
+//    wprintf(L"FASDFDSAFDSA FILENAME OF %ls IS %ls\n\n\n", res->name, res->filename);
     
     return res;
+}
+
+
+void anna_module_check(
+    anna_stack_template_t *parent, wchar_t *name)
+{
+    static hash_table_t *cache= 0;
+    
+    if(!cache)
+    {
+	cache = malloc(sizeof(hash_table_t));
+	hash_init(cache, hash_wcs_func, hash_wcs_cmp);
+    }
+    long checked = (long)hash_get(cache, name);
+    if(checked)
+    {
+	return;
+    }
+    hash_put(cache, name, (void *)1);
+    
+    wchar_t *path = anna_module_search(parent, name);
+    if(path)
+    {
+	free(path);
+	
+	anna_module_load_i(
+	    anna_module(parent, name, 0));
+    }
 }
 
 static void anna_module_init_recursive(
@@ -136,17 +177,18 @@ static void anna_module_init_recursive(
 	    goto CLEANUP;
 	}
 	
-	wchar_t *suffix = d_name + wcslen(d_name) - 5;
-	if(suffix <= d_name)
+	wchar_t *suffix = wcsrchr(d_name, L'.');
+	if(!suffix)
 	{
 	    goto CLEANUP;
 	}
-	
-	if(wcscmp(suffix, L".anna") == 0)
+
+	if((wcscmp(suffix, L".anna") == 0) || (wcscmp(suffix, L".so") == 0))
 	{
 	    *suffix=0;
+	    
 	    anna_module_load_i(
-		anna_module(parent, d_name,sb_content(&fn)));
+		anna_module(parent, d_name, sb_content(&fn)));
 	}
       CLEANUP:
 	free(d_name);
@@ -457,47 +499,39 @@ static void anna_module_doc()
     }
 }
 
-static void anna_module_load_dynamic(wchar_t *name, anna_stack_template_t *parent)
+static void anna_module_load_native(
+    anna_stack_template_t *stack)
 {
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"autogen/%ls.so", name);
-    wchar_t *fullname = sb_content(&sb);
     
     void * lib_handle;
     void (*load)(anna_stack_template_t *stack);
     void (*create)(anna_stack_template_t *stack);
     
-    lib_handle = wdlopen(fullname,RTLD_NOW);
+    lib_handle = wdlopen(stack->filename,RTLD_NOW);
     if(!lib_handle) {
-	debug(D_ERROR, L"Failed to open lib %ls: %s\n", name, dlerror());
+	debug(D_ERROR, L"Failed to open lib %ls: %s\n", stack->name, dlerror());
 	goto CLEANUP;
     }
 
     sb_clear(&sb);
-    sb_printf(&sb, L"anna_%ls_create", name);    
+    sb_printf(&sb, L"anna_%ls_create", stack->name);    
     create = (void (*)(anna_stack_template_t *)) wdlsym(lib_handle,sb_content(&sb));
     if(!create) {
-	debug(D_ERROR,L"Failed to get create function in library %ls: %s\n", name, dlerror());
+	debug(D_ERROR,L"Failed to get create function in library %ls: %s\n", stack->name, dlerror());
 	goto CLEANUP;
     }
 
     sb_clear(&sb);
-    sb_printf(&sb, L"anna_%ls_load", name);    
+    sb_printf(&sb, L"anna_%ls_load", stack->name);    
     load = (void (*)(anna_stack_template_t *)) wdlsym(lib_handle,sb_content(&sb));
     if(!load) {
-	debug(D_ERROR,L"Failed to get load function in library %ls: %s\n", name, dlerror());
+	debug(D_ERROR,L"Failed to get load function in library %ls: %s\n", stack->name, dlerror());
 	goto CLEANUP;
     }
-    anna_module_data_t data[] = 
-	{
-	    { 
-		name, create, load 
-	    }
-	}
-    ;
-    anna_module_data_create(data, parent);    
-
+    create(stack);
+    load(stack);
   CLEANUP:
     sb_destroy(&sb);
 }
@@ -575,7 +609,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"expandCode");
 
     /* Load additional binary modules */
-    anna_module_load_dynamic(L"unix", stack_global);
+    //anna_module_load_dynamic(L"unix", stack_global);
 
     /*
       Load all non-native libraries
@@ -658,7 +692,20 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     {
         return;
     }
+    
+//    wprintf(L"FASDFDSAFDSA LOAD %ls %ls\n\n\n", module_stack->name, module_stack->filename);
 
+    wchar_t *suffix = wcsrchr(module_stack->filename, L'.');
+    if(suffix && wcscmp(suffix, L".so")==0)
+    {
+//	wprintf(L"FASDFDSAFDSA LOAD NATIVE %ls %ls\n\n\n", module_stack->name, module_stack->filename);
+	
+	anna_module_load_native(module_stack);
+	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
+	return;
+	
+    }
+    
 //    debug_level=0;
     int i;
 
@@ -694,7 +741,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	wchar_t *str = al_get(&module_stack->expand, i);
 	debug(D_SPAM,L"expand statement: expand(%ls)\n", str);
 	
-	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
+	anna_stack_template_t *mod = anna_module(stack_global, str, 0);	
 	anna_module_load_i(mod);
 	
 	if(anna_error_count || !mod)
@@ -835,14 +882,33 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     string_buffer_t fn;
     sb_init(&fn);
     sb_printf(&fn, L"%ls.anna", module_name);    
-
-    anna_stack_template_t *module = anna_module(
-	stack_global, 0, sb_content(&fn));
-    anna_module_load_i(module);
+    struct stat buf;
+    anna_stack_template_t *module=0;
+    if(!wstat(sb_content(&fn), &buf))
+    {
+	module = anna_module(
+	    stack_global, 0, sb_content(&fn));
+	anna_module_load_i(module);
+    }
+    else
+    {
+	sb_clear(&fn);
+	sb_printf(&fn, L"%ls.so", module_name);    
+	if(!wstat(sb_content(&fn), &buf))
+	{
+	    module = anna_module(
+		stack_global, 0, sb_content(&fn));
+	    anna_module_load_i(module);
+	}
+	else
+	{
+	    debug(D_CRITICAL, L"Failed to find module %ls\n", module_name);
+	}
+    }
     
     sb_destroy(&fn);
     
-    return anna_stack_wrap(module);
+    return module?anna_stack_wrap(module):0;
 }
 
 anna_function_t *anna_module_function(

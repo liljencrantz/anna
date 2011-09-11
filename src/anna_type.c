@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <limits.h>
 
 #include "common.h"
 #include "util.h"
@@ -386,10 +387,10 @@ int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
   return !!anna_entry_get_addr_static(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
 }
 
-static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
+static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off, int first, int last)
 {
     int i;
-    for(i=0; i<anna_mid_max_get(); i++)
+    for(i=first; i<=last; i++)
     {
 	anna_member_t *memb = orig->mid_identifier[i];
 	if(!memb || !memb->is_static)
@@ -404,12 +405,12 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 
 static void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *orig)
 {
-    anna_node_t *doc = anna_attribute_call(res->attribute, L"documentation");
+    anna_node_t *doc = anna_attribute_call(res->attribute, L"doc");
     if(!doc)
     {
 	array_list_t odoc = AL_STATIC;
 	int i;
-	anna_attribute_call_all(orig->attribute, L"documentation", &odoc);
+	anna_attribute_call_all(orig->attribute, L"doc", &odoc);
 	for(i=0; i<al_get_count(&odoc); i++)
 	{
 	    anna_node_t *dd = (anna_node_t *)al_get(&odoc, i);
@@ -422,7 +423,7 @@ static void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *or
 		res->attribute, 
 		(anna_node_t *)anna_node_create_call2(
 		    0,
-		    anna_node_create_identifier(0, L"documentation"),
+		    anna_node_create_identifier(0, L"doc"),
 		    anna_node_clone_deep(dd)));
 	}
 	al_destroy(&odoc);	
@@ -450,13 +451,15 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
      */
     int steps = anna_mid_max_get();
     int *copied = calloc(sizeof(int), steps);
-    
+    int first = INT_MAX;
+    int last = 0;
     for(i=0; i<steps; i++)
     {
        anna_member_t *memb = orig->mid_identifier[i];
        if(!memb)
            continue;
-       
+       first = mini(i, first);
+       last = i;
        if(res->mid_identifier[i])
        {
 	   anna_type_copy_check_interface(res->mid_identifier[i], memb);
@@ -484,8 +487,6 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        
        if(memb->is_static)
        {
-	   assert(res->static_member);
-	   assert(orig->static_member);       
 	   res->static_member[copy->offset] = orig->static_member[memb->offset];
        }
     }
@@ -493,7 +494,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     /*
       Then, for every copied static member with storage, copy over the initial value
     */
-    for(i=0; i<steps; i++)
+    for(i=first; i<=last; i++)
     {
 	if(!copied[i])
 	    continue;
@@ -510,7 +511,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
       Then, for every copied property, find the offset of the getter and setter
     */
 
-    for(i=0; i<steps; i++)
+    for(i=first; i<=last; i++)
     {
 	if(!copied[i])
 	    continue;
@@ -524,15 +525,14 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
            res,
 	   anna_mid_get(memb->name));
        
-       
        if(memb->getter_offset != -1)
        {
-	   mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset);
+	   mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset, first, last);
 	   copy->getter_offset = anna_member_get(res, getter)->offset;
        }
        if(memb->setter_offset != -1)
        {
-	   mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset);
+	   mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset, first, last);
 	   copy->setter_offset = anna_member_get(res, setter)->offset;	   
        }
     }

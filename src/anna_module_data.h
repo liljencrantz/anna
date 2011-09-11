@@ -25,6 +25,7 @@ typedef struct
        to the module and it's types.
      */
     anna_module_function_t loader;
+    anna_stack_template_t *module;
 } anna_module_data_t;
 
 
@@ -34,28 +35,27 @@ typedef struct
 #define anna_module_data_create(module_data, parent)			\
     {									\
 	int i;								\
-	anna_stack_template_t *substack[sizeof(module_data)/sizeof(*module_data)]; \
-	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)		\
+	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)	\
 	{								\
-	    substack[i] = anna_stack_create(parent);			\
-	    anna_stack_name(substack[i], module_data[i].name);		\
-	    substack[i]->flags |= ANNA_STACK_NAMESPACE;			\
+	    module_data[i].module = anna_stack_create(parent);		\
+	    anna_stack_name(module_data[i].module, module_data[i].name); \
+	    module_data[i].module->flags |= ANNA_STACK_NAMESPACE;	\
 	}								\
-	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)		\
+	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)	\
 	{								\
 	    if(module_data[i].creator)					\
-		module_data[i].creator(substack[i]);			\
+		module_data[i].creator(module_data[i].module);		\
 	}								\
-	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)		\
+	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)	\
 	{								\
-	    module_data[i].loader(substack[i]);				\
+	    module_data[i].loader(module_data[i].module);		\
 	    anna_stack_declare(						\
 		parent,							\
 		module_data[i].name,					\
-		anna_stack_wrap(substack[i])->type,			\
-		anna_from_obj(anna_stack_wrap(substack[i])),		\
+		anna_stack_wrap(module_data[i].module)->type,		\
+		anna_from_obj(anna_stack_wrap(module_data[i].module)),	\
 		ANNA_STACK_READONLY);					\
-	    anna_type_setup_interface(anna_stack_wrap(substack[i])->type); \
+	    anna_type_setup_interface(anna_stack_wrap(module_data[i].module)->type); \
 	}								\
     }
 

@@ -32,7 +32,7 @@
 /**
    Minimum size for hash tables
 */
-#define HASH_MIN_SIZE 7
+#define HASH_MIN_SIZE 8
 
 /**
    Maximum number of characters that can be inserted using a single
@@ -140,9 +140,8 @@ static int hash_search(
     void *key,
     int hv)
 {
-    int pos;
-    
-    pos = (hv & 0x7fffffff) % h->size;
+    int mask = (h->size-1);
+    int pos = (hv & 0x7fffffff) & mask;
     while(1)
     {
 	if( ( h->arr[pos].key == 0 ) ||
@@ -151,8 +150,7 @@ static int hash_search(
 	    h->arr[pos].hash_code = hv;
 	    return pos;
 	}
-	pos++;
-	pos %= h->size;
+	pos = (pos+1) & mask;	
     }
 }
 
@@ -192,7 +190,20 @@ static int hash_realloc(
     {
 	if( old_arr[i].key != 0 )
 	{
-	    int pos = hash_search( h, old_arr[i].key, old_arr[i].hash_code );
+	    int pos;
+	    int mask = (h->size-1);
+	    pos = (old_arr[i].hash_code & 0x7fffffff) & mask;
+	    while(1)
+	    {
+		if( h->arr[pos].key == 0 )
+		{
+		    break;
+		}
+		pos++;
+		pos = pos & mask;
+	    }
+
+	    h->arr[pos].hash_code = old_arr[i].hash_code;
 	    h->arr[pos].key = old_arr[i].key;
 	    h->arr[pos].data = old_arr[i].data;
 	}
@@ -212,7 +223,7 @@ int hash_put(
     
     if( (float)(h->count+1)/h->size > 0.75f )
     {
-	if( !hash_realloc( h, (h->size+1) * 2 -1 ) )
+	if( !hash_realloc( h, h->size * 2  ) )
 	{
 	    return 0;
 	}
@@ -221,11 +232,7 @@ int hash_put(
     pos = hash_search( h, (void *)key,
 		       h->hash_func( (void *)key ));	
     
-    if( h->arr[pos].key == 0 )
-    {
-	h->count++;
-    }
-    
+    h->count+= (h->arr[pos].key == 0);
     h->arr[pos].key = (void *)key;
     h->arr[pos].data = (void *)data;
     return 1;
@@ -237,17 +244,8 @@ void *hash_get(
 {
     if( !h->count )
 	return 0;
-    
     int pos = hash_search( h, (void *)key, h->hash_func( (void *)key ));	
-    if( h->arr[pos].key == 0 )
-    {
-	return 0;
-    }
-    else
-    {
-	void *res =h->arr[pos].data;
-	return res;
-    }
+    return h->arr[pos].key ? h->arr[pos].data : 0;
 }
 
 void *hash_get_key( 
@@ -332,7 +330,7 @@ void hash_remove(
 
     if( (float)(h->count+1)/h->size < 0.2f && h->count < 63 )
     {
-	hash_realloc( h, (h->size+1) / 2 -1 );
+	hash_realloc( h, h->size / 2 );
     }
 
     return;
@@ -413,70 +411,17 @@ void hash_foreach2(
     }
 }
 
-
-/**
-   Helper function for hash_wcs_func
-*/
-static __pure inline unsigned int rotl1( unsigned int in )
-{
-    return (in<<1|in>>31);
-}
-
-/**
-   Helper function for hash_wcs_func
-*/
-static __pure inline unsigned int rotl5( unsigned int in )
-{
-    return (in<<5|in>>27);
-}
-
-/**
-   Helper function for hash_wcs_func
-*/
-static __pure inline unsigned int rotl30( unsigned int in )
-{
-    return (in<<30|in>>2);
-}
-
-/**
-   The number of words of input used in each lap by the sha-like
-   string hashing algorithm. 
-*/
-#define WORD_COUNT 16
-
 int hash_wcs_func( void *data )
 {
     wchar_t *in = (wchar_t *)data;
-    unsigned int a,b,c,d,e;
-    unsigned int k0=0x5a827999u;	
-    /*
-      Same constants used by sha1
-    */
-    a=0x67452301u;
-    b=0xefcdab89u;
-    c=0x98badcfeu;
-    d=0x10325476u;
-    e=0xc3d2e1f0u;
+
+    unsigned hash = 5381;
     
-    if( data == 0 )
-	return 0;
-    
-    while( *in )
+    for(in = (wchar_t *)data; *in; in++)
     {
-	unsigned int temp;
-	temp = (rotl5(a)+(b^c^d)+e+*in+k0);
-	e=d;
-	d=c;
-	c=rotl30(b);
-	b=a;
-	a=temp;
-	in++;
+	hash = ((hash << 5) + hash) ^ *in; 
     }
-    
-    /*
-      Implode from 160 to 32 bit hash and return
-    */
-    return a^b^c^d^e;
+    return hash;
 }
 
 int hash_wcs_cmp( void *a, void *b )

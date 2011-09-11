@@ -39,5 +39,7 @@ anna_function_t *anna_module_function(
     wchar_t *documentation
     );
 
+void anna_module_check(
+    anna_stack_template_t *parent, wchar_t *name);
 
 #endif

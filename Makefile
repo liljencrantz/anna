@@ -48,8 +48,17 @@ LDFLAGS := -lm -lgmp -rdynamic -ll -ldl $(PROF_FLAGS) $(COV_FLAGS)
 
 PROGRAMS := bin/anna 
 
+ANNA_INTERNAL_BINDINGS := lib/unix.so
+ANNA_EXTERNAL_BINDINGS := lib/getopt.so
+
 all: $(PROGRAMS)
 .PHONY: all
+
+bindings: $(ANNA_EXTERNAL_BINDINGS)
+.PHONY: bindings
+
+lib/%.c: bindings/%.bind
+	./bin/anna util/bind bindings/$*.bind  > $@
 
 #########################################################
 #            BEGIN DEPENDENCY TRACKING                  #
@@ -68,7 +77,7 @@ endif
 %.so: %.c
 	$(CC) -fPIC -c $*.c -o $*.o $(CFLAGS) && $(CC) -shared $*.o -o $@ $(LDFLAGS)
 
-bin/anna: $(ANNA_OBJS)
+bin/anna: $(ANNA_OBJS) $(ANNA_INTERNAL_BINDINGS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 autogen/anna_lex.c: src/anna_lex.y 
