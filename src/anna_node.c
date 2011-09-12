@@ -245,7 +245,7 @@ anna_entry_t *anna_node_static_invoke_try(
 	    return anna_from_obj(anna_int_create_mp(((anna_node_int_literal_t *)this)->payload));
 	    
 	case ANNA_NODE_FLOAT_LITERAL:
-	    return anna_from_obj(anna_float_create(((anna_node_float_literal_t *)this)->payload));
+	    return anna_from_float(((anna_node_float_literal_t *)this)->payload);
 	    
 	case ANNA_NODE_STRING_LITERAL:
 	    return anna_from_obj(anna_string_create(
