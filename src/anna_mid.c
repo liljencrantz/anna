@@ -97,13 +97,15 @@ void anna_mid_init()
 	    L"__div__Int__",
 	    L"__increaseAssign__Int__",
 	    L"__decreaseAssign__Int__",
+	    L"__nextAssign__",
+	    L"__prevAssign__",
 	    L"__bitand__Int__",
 	    L"__bitor__Int__",
 	    L"__bitxor__Int__",
 	    L"__add__Float__",
+
 	    L"__sub__Float__",
-	    L"__mul__Float__",
-	    
+	    L"__mul__Float__",	    
 	    L"__div__Float__",
 	    L"__exp__Float__",
 	    L"__increaseAssign__Float__",
@@ -112,6 +114,7 @@ void anna_mid_init()
 	    L"!bufferSize",
 	    L"!bufferCapacity",
 	    L"!continuationCallCount",
+
 	    L"!cStructPayload",
 	};
     

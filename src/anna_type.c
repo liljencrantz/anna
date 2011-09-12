@@ -433,10 +433,6 @@ static void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *or
 void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
-    if(wcscmp(res->name, L"lang")==0)
-    {
-//	CRASH;
-    }
 
     if(orig == object_type && !anna_type_object_created)
     {
@@ -453,6 +449,8 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     int *copied = calloc(sizeof(int), steps);
     int first = INT_MAX;
     int last = 0;
+    int copy_property = 0;
+    
     for(i=0; i<steps; i++)
     {
        anna_member_t *memb = orig->mid_identifier[i];
@@ -474,7 +472,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
            res,
            anna_member_create(
                res,
-               anna_mid_get(memb->name), 
+               i,
 	       storage, memb->type));
        copy->is_bound_method = memb->is_bound_method;
        copy->is_property = memb->is_property;
@@ -488,55 +486,45 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        if(memb->is_static)
        {
 	   res->static_member[copy->offset] = orig->static_member[memb->offset];
+	   
+	   if(memb->offset != -1)
+	       res->static_member[copy->offset]=orig->static_member[memb->offset];
        }
+       copy_property |= memb->is_property;
     }
     
     /*
-      Then, for every copied static member with storage, copy over the initial value
+      Finally, for every copied property, find the offset of the getter and setter
     */
-    for(i=first; i<=last; i++)
+    if(copy_property)
     {
-	if(!copied[i])
-	    continue;
-	
-       anna_member_t *memb = orig->mid_identifier[i];
-       anna_member_t *copy = anna_member_get(
-           res,
-	   anna_mid_get(memb->name));
-       if(memb->is_static && memb->offset != -1)
-	   res->static_member[copy->offset]=orig->static_member[memb->offset];
+	for(i=first; i<=last; i++)
+	{
+	    if(!copied[i])
+		continue;
+	    
+	    anna_member_t *memb = orig->mid_identifier[i];
+	    
+	    if(!memb->is_property)
+		continue;
+	    
+	    anna_member_t *copy = anna_member_get(
+		res,
+		i);
+	    
+	    if(memb->getter_offset != -1)
+	    {
+		mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset, first, last);
+		copy->getter_offset = anna_member_get(res, getter)->offset;
+	    }
+	    if(memb->setter_offset != -1)
+	    {
+		mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset, first, last);
+		copy->setter_offset = anna_member_get(res, setter)->offset;	   
+	    }
+	}
     }
     
-    /*
-      Then, for every copied property, find the offset of the getter and setter
-    */
-
-    for(i=first; i<=last; i++)
-    {
-	if(!copied[i])
-	    continue;
-
-       anna_member_t *memb = orig->mid_identifier[i];
-
-       if(!memb->is_property)
-	   continue;
-
-       anna_member_t *copy = anna_member_get(
-           res,
-	   anna_mid_get(memb->name));
-       
-       if(memb->getter_offset != -1)
-       {
-	   mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset, first, last);
-	   copy->getter_offset = anna_member_get(res, getter)->offset;
-       }
-       if(memb->setter_offset != -1)
-       {
-	   mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset, first, last);
-	   copy->setter_offset = anna_member_get(res, setter)->offset;	   
-       }
-    }
-
     free(copied);
 }
 

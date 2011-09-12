@@ -40,7 +40,7 @@ static inline void anna_frame_return(anna_vmstack_t *stack)
     if(stack->flags & ANNA_VMSTACK_STATIC)
     {
 	anna_vmstack_static_ptr -= stack->function->frame_size;
-	assert(stack == anna_vmstack_static_ptr);
+//	assert(stack == anna_vmstack_static_ptr);
     }
 }
 
@@ -71,7 +71,6 @@ static int stack_idx(anna_vmstack_t *stack)
 {
     return stack ? 1 + stack_idx(stack->caller): 0;
 }
-
 
 __cold static int stack_sum(anna_vmstack_t *stack)
 {
@@ -248,6 +247,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_DIV_INT,
 	    &&ANNA_LAB_INCREASE_ASSIGN_INT,
 	    &&ANNA_LAB_DECREASE_ASSIGN_INT,
+	    &&ANNA_LAB_NEXT_ASSIGN_INT,
+	    &&ANNA_LAB_PREV_ASSIGN_INT,
 	    &&ANNA_LAB_BITAND_INT,
 	    &&ANNA_LAB_BITOR_INT,
 	    &&ANNA_LAB_BITXOR_INT,
@@ -962,6 +963,84 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_push_object(stack, tramp);
 	
 	stack->code += sizeof(anna_op_null_t);
+	OP_LEAVE(stack);	
+    }
+
+  ANNA_LAB_NEXT_ASSIGN_INT:
+    {
+	OP_ENTER(stack);	
+	anna_entry_t *iv = anna_vmstack_pop_entry(stack);
+	stack->code += sizeof(anna_op_null_t);
+	if(likely(anna_is_int_small(iv)))
+	{
+	    int res = anna_as_int(iv)+1;
+
+            if(likely(abs(res)<=ANNA_INT_FAST_MAX))
+  	        anna_vmstack_push_int(stack, (long)res);
+            else
+	    {
+  	        anna_vmstack_push_object(stack, anna_int_create(res));
+            }
+	}
+	else
+	{
+	    anna_object_t *o1 = anna_as_obj(iv);
+	    
+	    if(o1 == null_object)
+	    {
+		anna_vmstack_push_object(stack, null_object);		
+	    }
+	    else
+	    {
+  //          wprintf(L\"Fallback for int $name \n\");
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_NEXT_ASSIGN_INT];
+		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
+		anna_function_t *fun = anna_function_unwrap(wrapped);
+		anna_vmstack_push_object(stack,wrapped);
+		anna_vmstack_push_object(stack,o1);
+		stack = fun->native(stack, wrapped);
+	    }
+	}
+	
+	OP_LEAVE(stack);	
+    }
+
+  ANNA_LAB_PREV_ASSIGN_INT:
+    {
+	OP_ENTER(stack);	
+	anna_entry_t *iv = anna_vmstack_pop_entry(stack);
+	stack->code += sizeof(anna_op_null_t);
+	if(likely(anna_is_int_small(iv)))
+	{
+	    int res = anna_as_int(iv)-1;
+
+            if(likely(abs(res)<=ANNA_INT_FAST_MAX))
+  	        anna_vmstack_push_int(stack, (long)res);
+            else
+	    {
+  	        anna_vmstack_push_object(stack, anna_int_create(res));
+            }
+	}
+	else
+	{
+	    anna_object_t *o1 = anna_as_obj(iv);
+	    
+	    if(o1 == null_object)
+	    {
+		anna_vmstack_push_object(stack, null_object);		
+	    }
+	    else
+	    {
+  //          wprintf(L\"Fallback for int $name \n\");
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_PREV_ASSIGN_INT];
+		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
+		anna_function_t *fun = anna_function_unwrap(wrapped);
+		anna_vmstack_push_object(stack,wrapped);
+		anna_vmstack_push_object(stack,o1);
+		stack = fun->native(stack, wrapped);
+	    }
+	}	
+	
 	OP_LEAVE(stack);	
     }
 

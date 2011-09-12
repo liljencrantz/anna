@@ -93,7 +93,7 @@ static int anna_short_circut_instr(anna_node_call_t *node, anna_stack_template_t
 {
     anna_type_t *obj_type = node->object->return_type;
 	
-    if(obj_type == int_type && node->child_count == 1 && node->child[0]->return_type == int_type)
+    if(obj_type == int_type && (node->child_count == 1 && node->child[0]->return_type == int_type) || (node->child_count == 0))
     {
 	return anna_short_circut_instr_int_int(node->mid);
     }
@@ -750,7 +750,10 @@ flags);
 	    if(anna_short_circut_instr(node2, fun->stack_template))
 	    {
 		anna_vm_compile_i(fun, node2->object, ptr, 0, flags);
-		anna_vm_compile_i(fun, node2->child[0], ptr, 0, flags);
+		if(node2->child_count)
+		{
+		    anna_vm_compile_i(fun, node2->child[0], ptr, 0, flags);
+		}
 		anna_vm_null(ptr, anna_short_circut_instr(node2, fun->stack_template), flags);
 		break;
 	    }
@@ -889,7 +892,7 @@ void anna_vm_compile(
 	return;
     }
 #if 0
-    if(wcscmp(fun->name, L"raise")==0)
+    if(wcscmp(fun->name, L"main")==0)
 	anna_node_print(5, fun->body);
 #endif
 //    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
@@ -949,7 +952,7 @@ void anna_vm_compile(
     fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
 #if 0
-    if(wcscmp(fun->name, L"raise")==0)
+    if(wcscmp(fun->name, L"main")==0)
 	anna_bc_print(fun->code);
 #endif
 }
