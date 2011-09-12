@@ -96,7 +96,7 @@ often used code paths, which makes it useful for regression testing.")
         res := "".thaw;
 	attr.each(at)
 	{
-	    if(at.isCallTo("documentation"))
+	    if(at.isCallTo("doc"))
 	    {
 		switch((at as parser.Call)[0])
 		{

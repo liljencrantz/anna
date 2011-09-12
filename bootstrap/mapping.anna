@@ -1,7 +1,7 @@
 
 macro __mapping__(node)
 (
-    documentation("
+    doc("
 Internal utility macro. Makes sure that identifiers in mapping are internal identifiers, not regular identifiers.")
 )
 { 

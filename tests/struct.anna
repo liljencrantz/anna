@@ -1,6 +1,6 @@
 def main()
 (
-    documentation("Test the struct macro")
+    doc("Test the struct macro")
 )
 {
     /*

@@ -6,7 +6,7 @@ def String hashMapToString(HashMap this)
 (
     name(toString), 
     target(HashMap), 
-    documentation("Returns a String representation of this HashMap."),
+    doc("Returns a String representation of this HashMap."),
 )
 {
     return "[" ~ ", ".join(this.map(key, value){"" ~ key ~ " : " ~ (value or "null")}) ~ "]";
@@ -16,7 +16,7 @@ def String intFormat(Int this, Int base=10)
 (
     name(format), 
     target(Int), 
-    documentation("Returns a formated version of this string in the specified base."),
+    doc("Returns a formated version of this string in the specified base."),
 )
 {
     var digits = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -52,7 +52,7 @@ def String pairToString(Pair this)
 (
     name(toString), 
     target(Pair), 
-    documentation("Returns a String representation of this Pair."),
+    doc("Returns a String representation of this Pair."),
 )
 {
     return "" ~ (this.first or "null") ~ ":" ~ (this.second or "null");

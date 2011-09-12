@@ -2,7 +2,7 @@ def listToString(List this)
 (
     target(List),
     name(toString),
-    documentation("Returns a string representation of this List."),
+    doc("Returns a string representation of this List."),
 )
 {
     return "[" ~ ", ".join(this.map(value){String::convert(value) or "null";}) ~ "]";
@@ -11,7 +11,7 @@ def listToString(List this)
 def all(List this)
 (
     target(List),
-    documentation("Returns true if all members of this list are non-Null."),
+    doc("Returns true if all members of this list are non-Null."),
 )
 {
     res := 1 as Object;
@@ -59,7 +59,7 @@ def Int sortSub(MutableList list, Int from, Int to, def Int fun(Object first, Ob
 def List sort(List this, def Int fun(Object first, Object second) = ?)
 (
     target(List),
-    documentation(
+    doc(
 	"Sort the list. If the original list is mutable, it is sorted inplace, otherwise a new list is returned")
 )
 {

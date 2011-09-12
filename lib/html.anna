@@ -1,7 +1,7 @@
 
 def escape(String str...)
 (
-    documentation("Perform HTML escaping of the specified string.")
+    doc("Perform HTML escaping of the specified string.")
 )
 {
     res := "".thaw;

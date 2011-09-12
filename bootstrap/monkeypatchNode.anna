@@ -5,7 +5,7 @@ def Node __format__(
     HashMap«String, Node» data) 
 (
     target(Node), 
-    documentation("Replace every internal identifier (an identifier prefixed with a '%' character) in the specified AST tree with the corresponding AST tree."),
+    doc("Replace every internal identifier (an identifier prefixed with a '%' character) in the specified AST tree with the corresponding AST tree."),
 )
 {
     res := this;
@@ -21,7 +21,7 @@ def Int isCallTo(
     String name)
 (
     target(Node),
-    documentation("Returns true if the specified AST node is a call node and the function node is an identifier with the specified name."),
+    doc("Returns true if the specified AST node is a call node and the function node is an identifier with the specified name."),
 )
 {
     if(((this as Call).function as Identifier).name == name) { 1 } else { ? }
@@ -31,7 +31,7 @@ def Int isBlock(
     Node this)
 (
     target(Node),
-    documentation("Returns true if the specified AST node is a block."),
+    doc("Returns true if the specified AST node is a block."),
 )
 {
     if(((this as Call).function as Identifier).name == "__block__") { 1 } else { ? }

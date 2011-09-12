@@ -7,14 +7,14 @@ var reflection.Continuation entry;
 
 type Fiber
 (
-    documentation("A simple cooperative thread implementation")
+    doc("A simple cooperative thread implementation")
 )
 {
     var reflection.Continuation continuation (internal);
     var Int idx (internal);
 
     def __init__()
-    (documentation("Create a new Fiber"))
+    (doc("Create a new Fiber"))
     {
 	enable();
     }
@@ -44,7 +44,7 @@ type Fiber
     }
 
     def run()
-    (documentation("Subclasses of Fiber should reimplement this method"))
+    (doc("Subclasses of Fiber should reimplement this method"))
     {
     }
 

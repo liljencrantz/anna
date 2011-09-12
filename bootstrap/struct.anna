@@ -1,7 +1,7 @@
 
 macro struct(node)
 (
-    documentation("
+    doc("
 The struct macro is used as a short hand for defining objects used
 exclusively for quick access to it's members. It is used by passing a
 set of name/value mappings like so:

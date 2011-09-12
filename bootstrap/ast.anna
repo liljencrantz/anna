@@ -1,7 +1,7 @@
 
 macro ast(node)
 (
-    documentation("
+    doc("
 A macro that takes an AST tree and returns it verbatim. This is useful for creating code templates, and often used togerther with the AST Node formating function. 
 
 Example:

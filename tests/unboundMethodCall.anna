@@ -1,7 +1,7 @@
 
 def main()
 (
-    documentation(
+    doc(
 	"Check that bound method can be called unbound by accessing them statically"
     )
 )

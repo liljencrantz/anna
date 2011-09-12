@@ -5,7 +5,7 @@ def foo(Int first, Int second, Int rest...)
 
 def main()
     (
-	documentation("Test that variadic arguments and named arguments mix properly")
+	doc("Test that variadic arguments and named arguments mix properly")
     )
 {
     foo(first:1, second:2);

@@ -1,17 +1,17 @@
 
 type Timezone
-(documentation("A Timezone object"))
+(doc("A Timezone object"))
 {
     var String name (internal);
 
-    def __init__(String name)(documentation("Create a new Timezone object with the specified name"))
+    def __init__(String name)(doc("Create a new Timezone object with the specified name"))
     {
 	this.name = name;
     }
 }
 
 type Delta
-(documentation("An object representing a time delta, e.g. the difference between two points in time."))
+(doc("An object representing a time delta, e.g. the difference between two points in time."))
 {
 
     var Int year (internal); 
@@ -55,7 +55,7 @@ type Delta
 
 type Date
 (
-    documentation(
+    doc(
 	"The Date object represents a point in time with microsecond precision. Dates object are always relative to a specific timezone.")
 )
 {

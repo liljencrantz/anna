@@ -1,7 +1,7 @@
 
 macro enum(definition)
 (
-    documentation("
+    doc("
 The enum macro is used to define enumerations types. Te basic syntax is:
 
 enum TypeName

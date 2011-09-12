@@ -2,7 +2,7 @@ use(parser);
 
 def Node __update__(Call node)
 (
-    documentation("
+    doc("
 *The common function used by __append__ and friends to implement in-place updating.")
 )
 {
@@ -27,35 +27,35 @@ def Node __update__(Call node)
 
 macro __increase__(node)
 (
-    documentation("
+    doc("
 Increase the specified value by the specified amount.")
 )
 {__update__(node)}
 
 macro __decrease__(node)
 (
-    documentation("
+    doc("
 Decrease the specified value by the specified amount.")
 )
 {__update__(node)}
 
 macro __append__(node)
 (
-    documentation("
+    doc("
 Append the specified value to the specified base")
 )
 {__update__(node)}
 
 macro __next__(node)
 (
-    documentation("
+    doc("
 Nove the specified value forward one step")
 )
 {__update__(node)}
 
 macro __prev__(node)
 (
-    documentation("
+    doc("
 *Move the specified value backwards one step")
 )
 {__update__(node)}

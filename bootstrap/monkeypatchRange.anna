@@ -2,7 +2,7 @@ def Int range__cmp__(Range this, Object other)
 (
     target(Range), 
     name(__cmp__),
-    documentation("Compare two ranges against each other"),
+    doc("Compare two ranges against each other"),
 )
 {
     r := other as Range;
@@ -31,7 +31,7 @@ def rangeHashCode(Range this)
 (
     target(Range), 
     name(hashCode),
-    documentation("Hash function. Always returns the same number for the same object and also returns the same number for two equal objects."),
+    doc("Hash function. Always returns the same number for the same object and also returns the same number for two equal objects."),
 )
 {
     return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
@@ -41,7 +41,7 @@ def rangeToString(Range this)
 (
     target(Range),
     name(toString),
-    documentation("String conversion. Called by the String::convert method."),
+    doc("String conversion. Called by the String::convert method."),
 )
 {
     use(this);

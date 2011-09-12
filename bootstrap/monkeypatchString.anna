@@ -4,7 +4,7 @@ def Int search__Char__(
 (
     alias(search),
     target(String),
-    documentation("Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise."),
+    doc("Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise."),
 )
 {
     this.each(idx, i){if(i == ch){return idx}}
@@ -17,7 +17,7 @@ def String __format__List__(
 (
     alias(__format__), 
     target(String), 
-    documentation(
+    doc(
 	"String formating. Replaces each % character found in the format string with the corresponding object from the list of parameters.", 
 	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various String::format functions for e.g. numeric formating."),
 )
@@ -53,7 +53,7 @@ def String __format__Map__(
 (
     alias(__format__), 
     target(String), 
-    documentation(
+    doc(
 	"String formating. Replaces each %(NAME) token found in the format string with the corresponding object from the map of named parameters.", 
 	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various format functions for e.g. numeric formating, such as Int::format."),
 )
@@ -102,7 +102,7 @@ def String __filter__(
     def Object body(Int idx, Char value) )
 (
     target(String), 
-    documentation("Runs the specified test on each character in the string, and return a new string with the characters for which the test returned null removed."),
+    doc("Runs the specified test on each character in the string, and return a new string with the characters for which the test returned null removed."),
 )
 {
     res := "";
@@ -116,7 +116,7 @@ def String lpad(
     Char char = ' ')
 (
     target(String),
-    documentation("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
+    doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
 )
 {
     if(this.count > count)
@@ -138,7 +138,7 @@ def String rpad(
     Char char = ' ')
 (
     target(String),
-    documentation("Pad the right side of this string with the specified character up to a minimum of the specified number of characters"),
+    doc("Pad the right side of this string with the specified character up to a minimum of the specified number of characters"),
 )
 {
     if(this.count > count)
@@ -159,7 +159,7 @@ def MutableList«String» split(
     Object allowEmpty = 1)
 (
     target(String),
-    documentation("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+    doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
 )
 {
     res := «String»[];

@@ -1,7 +1,7 @@
 
 macro expandCode(node)
 (
-    documentation(
+    doc(
 	"
     The expandCode macro is used to create multiple instances of the
     same basic piece of code but with slight variations. One example

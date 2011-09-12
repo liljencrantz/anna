@@ -57,17 +57,17 @@ def String readWholeFile(Int fd)
 
 type File
 (
-    documentation(
+    doc(
 	"A high level object respresenting a filesystem entry such as a file, a directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations. A File object represents a file system path; it does not always point to an actually existing file.")
 )
 {
     
-    var List «String» path (internal, documentation("The path to this file"));
-    var Int fd (internal, documentation("If this file is open, this is its file descriptor."));
+    var List «String» path (internal, doc("The path to this file"));
+    var Int fd (internal, doc("If this file is open, this is its file descriptor."));
 
     def __init__(String filename)
     (
-	documentation("Create a new file object.")
+	doc("Create a new file object.")
     )
     {
 	if(isRelative(filename))
@@ -81,7 +81,7 @@ type File
 
     def File __join__(String name)
     (
-	documentation(
+	doc(
 	    "Joins the specified subdirectory to the directory represented by the File object and returns the result.")
     )
     {
@@ -93,11 +93,11 @@ type File
 	"" ~ separator ~ String::convert(separator).join(path)
     }
     
-    var String filename (property(filenameGetter), documentation("The name of the file."));
+    var String filename (property(filenameGetter), doc("The name of the file."));
 
     def String readFile()
     (
-	documentation(
+	doc(
 	    "Read the contents of the file and return it as a String.")
     )
     {
@@ -109,7 +109,7 @@ type File
     
     def writeFile(String data)
     (
-	documentation(
+	doc(
 	    "Write the contents of the String into the specified file.")
     )
     {
@@ -126,7 +126,7 @@ type File
     
     def open()
     (
-	documentation("Open the specified file for reading and writing.")
+	doc("Open the specified file for reading and writing.")
     )
     {
         fd = unix.io.open(
@@ -138,7 +138,7 @@ type File
 
     def close()
     (
-	documentation("Close the specified file for reading and writing.")
+	doc("Close the specified file for reading and writing.")
     )
     {
         unix.io.close(fd)
@@ -146,7 +146,7 @@ type File
 
     def write(Object value...)
     (
-	documentation(
+	doc(
 	    "Write the string representation of the specified objects to the file.")
     )
     {
@@ -167,7 +167,7 @@ type File
     var Int exists 
     (
 	property(existsGetter), 
-	documentation(
+	doc(
 	    "This value is non-null if the file pointed to by this object currently exists.")
     );
 
@@ -185,7 +185,7 @@ type File
     var Int isFile 
     (
 	property(isFileGetter), 
-	documentation(
+	doc(
 	    "This value is non-null if the file pointed to by this object is a regular file")
     );
 
@@ -203,13 +203,13 @@ type File
     var Int isDirectory
     (
 	property(isDirectoryGetter), 
-	documentation(
+	doc(
 	    "This value is non-null if the file pointed to by this object is a directory.")
     );
 
     def makeDirectory()
     (
-	documentation("Creates a directory in the path specified by the File object.")
+	doc("Creates a directory in the path specified by the File object.")
     )
     {
 	(0..this.path.count).each(last)
@@ -227,7 +227,7 @@ type File
     
     def Object changeDirectory()
     (
-	documentation(
+	doc(
 	    "Change the current working directory to the directory represented by this File object.")
     )
     {
@@ -243,12 +243,12 @@ type File
     (
 	static, 
 	property(currentDirectoryGetter),
-        documentation("Returns a File object representing the current working directory")
+        doc("Returns a File object representing the current working directory")
     );
 
     def delete()
     (
-	documentation("Deletes the file system path represented by the File object.")
+	doc("Deletes the file system path represented by the File object.")
     )
     {
 	unix.io.unlink(this.filename);
