@@ -242,8 +242,20 @@ anna_entry_t *anna_node_static_invoke_try(
 	}
 
 	case ANNA_NODE_INT_LITERAL:
-	    return anna_from_obj(anna_int_create_mp(((anna_node_int_literal_t *)this)->payload));
+	{
+	    mpz_t *mp = &((anna_node_int_literal_t *)this)->payload;
 	    
+	    if(mpz_sizeinbase(*mp, 2) < ANNA_SMALL_MAX_BIT)
+	    {
+		return anna_from_int(mpz_get_si(*mp));	
+	    }
+	    else
+	    {
+		return anna_from_obj(anna_int_create_mp(((anna_node_int_literal_t *)this)->payload));
+	    }
+	    
+	}
+	
 	case ANNA_NODE_FLOAT_LITERAL:
 	    return anna_from_float(((anna_node_float_literal_t *)this)->payload);
 	    
