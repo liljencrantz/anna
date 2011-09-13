@@ -85,6 +85,11 @@ static int anna_short_circut_instr_float_float(mid_t mid)
 {
     if((mid >= ANNA_MID_ADD_FLOAT) && (mid <= ANNA_MID_DECREASE_ASSIGN_FLOAT))
 	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
+
+    if((mid >= ANNA_MID_EQ) && (mid <= ANNA_MID_GT))
+    {
+	return ANNA_INSTR_EQ_FLOAT + mid - ANNA_MID_EQ;
+    }
     
     return 0;
 }
@@ -93,14 +98,14 @@ static int anna_short_circut_instr(anna_node_call_t *node, anna_stack_template_t
 {
     anna_type_t *obj_type = node->object->return_type;
 	
-    if(obj_type == int_type && (node->child_count == 1 && node->child[0]->return_type == int_type) || (node->child_count == 0))
+    if(obj_type == int_type && ((node->child_count == 1) && (node->child[0]->return_type == int_type)) || (node->child_count == 0))
     {
 	return anna_short_circut_instr_int_int(node->mid);
     }
 
-    if(obj_type == float_type && node->child_count == 1 && node->child[0]->return_type == float_type)
+    if(obj_type == float_type && ((node->child_count == 1) && (node->child[0]->return_type == float_type)) || (node->child_count == 0))
     {
-	return anna_short_circut_instr_float_float(node->mid);
+      return anna_short_circut_instr_float_float(node->mid);
     }
 
     return 0;
@@ -473,7 +478,7 @@ static void anna_vm_compile_i(
 
 	    anna_entry_t *const_obj = anna_node_static_invoke_try(
 		node, fun->stack_template);
-	    if(const_obj && !anna_entry_get_addr(const_obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD))
+	    if(const_obj && (!anna_is_obj(const_obj) || !anna_entry_get_addr(const_obj, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD)))
 	    {
 		anna_vm_const(ptr, const_obj, flags);
 		break;

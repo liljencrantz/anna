@@ -407,6 +407,18 @@ static void anna_node_call_dealias(anna_node_call_t *dest, anna_node_call_t *src
 
 anna_node_t *anna_node_clone_shallow(anna_node_t *n)
 {
+    /* Don't actually clone imutable nodes */
+    if((n->node_type == ANNA_NODE_IDENTIFIER) || 
+       (n->node_type == ANNA_NODE_STRING_LITERAL)||
+       (n->node_type == ANNA_NODE_FLOAT_LITERAL)||
+       (n->node_type == ANNA_NODE_NULL)||
+       (n->node_type == ANNA_NODE_DUMMY)||
+       (n->node_type == ANNA_NODE_INT_LITERAL)
+       )
+    {
+        return n;
+    }
+  
     size_t sz = anna_node_size(n);
     anna_alloc_gc_block();
     anna_node_t *r = anna_alloc_node(sz);

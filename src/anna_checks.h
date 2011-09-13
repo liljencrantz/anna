@@ -55,6 +55,6 @@
    If enabled, every GC run will print a bunch of debug info, useful
    for tracking down leaks.
  */
-//#define ANNA_CHECK_GC_LEAKS
+#define ANNA_CHECK_GC_LEAKS
 
 #endif

@@ -147,6 +147,45 @@ echo "
 //            wprintf(L\"Next instruction is %d!\n\", *stack->code);
 	OP_LEAVE(stack);
     }
+
+  ANNA_LAB_${name}_FLOAT:
+    {
+        OP_ENTER(stack);
+//            wprintf(L\"$name\n\");
+	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
+	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
+	stack->code += sizeof(anna_op_null_t);
+	if(likely(anna_is_float(i1) && anna_is_float(i2)))
+	{
+//            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
+//anna_as_int(i1), anna_as_int(i2),(anna_as_int(i1) $op anna_as_int(i2)));
+            anna_vmstack_push_entry(stack, (anna_as_float(i1) $op anna_as_float(i2))?anna_from_int(1):null_entry);
+	}
+	else
+	{
+	    anna_object_t *o1 = anna_as_obj(i1);
+	    
+	    if(o1 == null_object)
+	    {
+		anna_vmstack_push_object(stack, null_object);		
+	    }
+	    else
+	    {
+//                wprintf(L\"Fallback for int $name \n\");
+//                wprintf(L\"%d %d %ls\n\", o1, anna_is_obj(i1), o1->type->name);
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}];
+		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
+		anna_function_t *fun = anna_function_unwrap(wrapped);
+		anna_vmstack_push_object(stack,wrapped);
+		anna_vmstack_push_object(stack,o1);
+		anna_vmstack_push_entry(stack,i2);
+		stack = fun->native(stack, wrapped);
+	    }
+	}
+	
+//            wprintf(L\"Next instruction is %d!\n\", *stack->code);
+	OP_LEAVE(stack);
+    }
 "
 
 done
