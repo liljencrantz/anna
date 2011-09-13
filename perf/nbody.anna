@@ -1,5 +1,5 @@
 def main() {
-    n := 500_000;
+    n := Int::convert(system.argument[1]) or 50_000;
     bodies := NBodySystem();
     print(bodies.energy(), '\n');
     bodies.advance(n, 0.01);
@@ -73,7 +73,7 @@ type NBodySystem {
 		dx := iBody.x - jBody.x;
 		dy := iBody.y - jBody.y;
 		dz := iBody.z - jBody.z;
-		distance := ^sqrt(dx*dx + dy*dy + dz*dz);
+		distance := math.sqrt(dx*dx + dy*dy + dz*dz);
 		e -= (iBody.mass * jBody.mass) / distance;
 	    }
 	}
