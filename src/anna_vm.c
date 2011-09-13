@@ -267,6 +267,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    &&ANNA_LAB_EXP_FLOAT,
 	    &&ANNA_LAB_INCREASE_ASSIGN_FLOAT,
 	    &&ANNA_LAB_DECREASE_ASSIGN_FLOAT,
+
+	    &&ANNA_LAB_EQ_FLOAT,
+	    &&ANNA_LAB_NEQ_FLOAT,
+	    &&ANNA_LAB_LT_FLOAT,
+	    &&ANNA_LAB_LTE_FLOAT,
+	    &&ANNA_LAB_GTE_FLOAT,
+	    &&ANNA_LAB_GT_FLOAT,
+
 	}
     ;
     
