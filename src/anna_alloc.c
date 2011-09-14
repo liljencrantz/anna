@@ -71,12 +71,6 @@ static void anna_alloc_mark_function(anna_function_t *o)
     int i;
     for(i=0; i<o->input_count; i++)
     {
-	if(!o->input_default)
-	{
-	    wprintf(L"AAAA %ls\n", o->name);
-	    
-	    CRASH;
-	}
 	if(o->input_default[i])
 	{
 	    anna_alloc_mark_node(o->input_default[i]);
@@ -84,15 +78,6 @@ static void anna_alloc_mark_function(anna_function_t *o)
 	}
     }
     
-
-    if(o->body)
-    {
-	//wprintf(L"FAFADS %ls\n", o->name);
-	anna_alloc_mark_node((anna_node_t *)o->body);
-    }
-    
-    if(o->definition)
-	anna_alloc_mark_node((anna_node_t *)o->definition);
     anna_alloc_mark_node((anna_node_t *)o->attribute);
     anna_alloc_mark_type(o->return_type);
     anna_alloc_mark_object(o->wrapper);
@@ -134,20 +119,11 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
     for(i=0; i<o->count; i++)
     {
 	if(o->member_declare_node[i])
+	{
 	    anna_alloc_mark_node((anna_node_t *)o->member_declare_node[i]);
+	}
     }
-    for(i=0; i<al_get_count(&o->import); i++)
-    {
-	anna_use_t *use = (anna_use_t *)al_get(&o->import, i);
-	anna_alloc_mark_type(use->type);
-	anna_alloc_mark_node(use->node);
-    }
-    for(i=0; i<al_get_count(&o->expand); i++)
-    {
-	anna_use_t *use = (anna_use_t *)al_get(&o->expand, i);
-	anna_alloc_mark_type(use->type);
-	anna_alloc_mark_node(use->node);
-    }
+    
 }
 
 static void anna_alloc_mark_node(anna_node_t *o)
@@ -384,7 +360,10 @@ void anna_alloc_mark_type(anna_type_t *type)
 
 	anna_alloc_mark_type(memb->type);
 	if(memb->attribute)
+	{
 	    anna_alloc_mark_node((anna_node_t *)memb->attribute);
+	}
+	
 	if(memb->wrapper)
 	    anna_alloc_mark_object(memb->wrapper);
     }

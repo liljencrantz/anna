@@ -558,6 +558,7 @@ void anna_member_document(
 	if(fun)
 	{
 	    anna_function_document(fun, doc);
+	    return;
 	}
     }
     

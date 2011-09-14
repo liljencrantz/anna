@@ -297,12 +297,14 @@ static inline anna_vmstack_t *ahi_search_callback2_next(
     if(anna_is_obj(key))
     {
 	anna_object_t *o = anna_as_obj_fast(key);
-	if(o->type == string_type)
+	if((o->type == mutable_string_type) ||
+	   (o->type == imutable_string_type))
 	{
 	    if(anna_is_obj(this->table[pos].key))
 	    {
 		anna_object_t *o2 = anna_as_obj_fast(this->table[pos].key);
-		if(o2->type == string_type)
+		if((o2->type == mutable_string_type) ||
+		   (o2->type == imutable_string_type))
 		{
 		    int eq = anna_string_cmp(o, o2)==0;
 		    return ahi_search_callback2_internal(
@@ -530,7 +532,8 @@ static inline anna_vmstack_t *ahi_search(
     if(anna_is_obj(key))
     {
 	anna_object_t *o = anna_as_obj_fast(key);
-	if(o->type == string_type)
+	if((o->type == mutable_string_type) ||
+	   (o->type == imutable_string_type))
 	{
 	    return ahi_search_callback_internal(
 		stack,
