@@ -485,13 +485,12 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        
        if(memb->is_static)
        {
-	   res->static_member[copy->offset] = orig->static_member[memb->offset];
-	   
 	   if(memb->offset != -1)
 	       res->static_member[copy->offset]=orig->static_member[memb->offset];
        }
        copy_property |= memb->is_property;
     }
+
     
     /*
       Finally, for every copied property, find the offset of the getter and setter
