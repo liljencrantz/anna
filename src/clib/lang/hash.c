@@ -699,7 +699,7 @@ static anna_vmstack_t *anna_hash_init(anna_vmstack_t *stack, anna_object_t *me)
 	anna_entry_t *fun = *anna_entry_get_addr(this, anna_mid_get(L"__setAll__"));
 	stack = anna_vm_callback(
 	    stack,
-	    fun, 2, argv);
+	    anna_as_obj(fun), 2, argv);
 	return stack;
 /*
 	size_t sz = anna_list_get_count(list);

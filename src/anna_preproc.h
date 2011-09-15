@@ -12,7 +12,7 @@
 /* No side effects */
 # define __pure		__attribute__ ((pure))
 /* Like __pure, but stricter. Not even read-only checking of globals or pointers */
-# define __const	__attribute__ ((const))
+# define __attr_const	__attribute__ ((const))
 /* Function never returns */
 # define __noreturn	__attribute__ ((noreturn))
 /* Return value can not be aliased */
@@ -37,7 +37,7 @@
 #else
 
 # define __pure		/* no pure */
-# define __const	/* no const */
+# define __attr_const	/* no const */
 # define __noreturn	/* no noreturn */
 # define __malloc	/* no malloc */
 # define __must_check	/* no warn_unused_result */

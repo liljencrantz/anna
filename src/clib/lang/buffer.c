@@ -46,10 +46,16 @@ size_t anna_buffer_get_count(anna_object_t *this)
 void anna_buffer_set_count(anna_object_t *this, size_t sz)
 {
     size_t capacity = anna_buffer_get_capacity(this);
+    size_t old_sz = (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE));
     
     if(sz>capacity)
     {
 	anna_buffer_set_capacity(this, sz);
+    }
+    unsigned char *ptr = anna_buffer_get_payload(this);
+    if(sz > old_sz)
+    {
+        memset(ptr+old_sz, 0, sz-old_sz);
     }
     *(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE) = sz;
 }
@@ -66,7 +72,7 @@ void anna_buffer_set_capacity(anna_object_t *this, size_t sz)
     if(!ptr)
     {
 	CRASH;
-    }    
+    }
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_CAPACITY)) = sz;
     *(unsigned char **)anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD) = ptr;
 }
@@ -79,6 +85,12 @@ int anna_buffer_ensure_capacity(anna_object_t *this, size_t sz)
 
     if(old_cap >= sz)
     {
+        if(old_sz < sz)
+	{
+	    ptr = anna_buffer_get_payload(this);
+	    memset(ptr+old_sz, 0, sz-old_sz);
+	    *(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE) = sz;
+	}
 	return 0;
     }
     size_t cap = anna_size_round(sz);
@@ -235,7 +247,7 @@ ANNA_VM_NATIVE(anna_buffer_decode, 2)
 	}
 	
     }
-    anna_buffer_set_count(this, off);
+    *(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE) = off;
     return anna_from_obj(this);
 }
 

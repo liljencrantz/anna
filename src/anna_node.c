@@ -428,6 +428,8 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     if( (n->node_type == ANNA_NODE_CALL) || 
 	(n->node_type == ANNA_NODE_CONSTRUCT) || 
 	(n->node_type == ANNA_NODE_MEMBER_CALL) ||
+	(n->node_type == ANNA_NODE_SPECIALIZE) ||
+	(n->node_type == ANNA_NODE_CAST) ||
 	(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL))
     {
 	anna_node_call_t *r2=(anna_node_call_t *)r;

@@ -74,12 +74,6 @@ static anna_vmstack_t *anna_i_cc(anna_vmstack_t *stack, anna_object_t *me)
 
 void anna_reflection_load(anna_stack_template_t *stack)
 {
-    wchar_t *argn[] = 
-	{
-	    L"value"
-	}
-    ;
-    
     continuation_type = anna_type_for_function(
 	object_type,
 	0, 0, 0,

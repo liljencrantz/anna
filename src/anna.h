@@ -236,6 +236,7 @@ struct anna_type
        A hash of all template specializations of this type.
     */
     hash_table_t specializations;
+    array_list_t member_list;
 };
 
 struct anna_member

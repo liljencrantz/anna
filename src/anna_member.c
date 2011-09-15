@@ -143,7 +143,7 @@ mid_t anna_member_create(
 */
 	type->flags &= ~ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
     }
-    
+    al_push(&type->member_list, member);
     return mid;
 }
 

@@ -76,9 +76,12 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
     }
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *tree = anna_node_unwrap(this);
-    anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(anna_as_obj(param[1]));
-    
+    anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(anna_as_obj(param[1]));    
     anna_node_t *new = anna_node_unwrap(anna_as_obj(param[2]));
+    if(!old || !new)
+    {
+        return null_entry;
+    }
     anna_node_t *res = anna_node_replace(anna_node_clone_deep(tree), old, new);
     return anna_from_obj(anna_node_wrap(res));
 }

@@ -151,7 +151,6 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	    break;
 	}
 	
-	case ANNA_NODE_SPECIALIZE:
 	case ANNA_NODE_RETURN:
 	case ANNA_NODE_BREAK:
 	case ANNA_NODE_CONTINUE:
@@ -169,6 +168,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	case ANNA_NODE_CAST:
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
+	case ANNA_NODE_SPECIALIZE:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    int i;
@@ -204,7 +204,6 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	    
 	    break;
 	}
-	
 	
 	case ANNA_NODE_CLOSURE:
 	{
@@ -342,13 +341,11 @@ void anna_alloc_mark_type(anna_type_t *type)
 	    anna_alloc_mark_entry(type->static_member[i]);
 	}
     }
-    int steps = anna_mid_max_get();
-
+    int steps = al_get_count(&type->member_list);
+    
     for(i=0; i<steps; i++)
     {
-	anna_member_t *memb = type->mid_identifier[i];
-	if(!memb)
-	    continue;
+        anna_member_t *memb = al_get_fast(&type->member_list, i);
 
 #ifdef ANNA_CHECK_GC
 	if(!memb->type)
@@ -378,7 +375,7 @@ void anna_alloc_mark_type(anna_type_t *type)
     }
     if(type->attribute)
     {
-	anna_alloc_mark_node((anna_node_t *)type->attribute);
+      	anna_alloc_mark_node((anna_node_t *)type->attribute);
     }
     
 }
@@ -642,12 +639,10 @@ static void anna_alloc_free(void *obj)
 		
 		case ANNA_NODE_CALL:
 		case ANNA_NODE_CONSTRUCT:
-		{
-		    anna_node_call_t *n = (anna_node_call_t *)o;
-		    free(n->child);
-		    break;
-		}
 		case ANNA_NODE_MEMBER_CALL:
+		case ANNA_NODE_STATIC_MEMBER_CALL:
+	        case ANNA_NODE_SPECIALIZE:
+		case ANNA_NODE_CAST:
 		{
 		    anna_node_call_t *n = (anna_node_call_t *)o;
 		    free(n->child);

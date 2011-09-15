@@ -219,14 +219,16 @@ static inline long anna_as_int(anna_entry_t *entry)
     if(likely(type))
     {
 	type = ((long)entry) & ANNA_STACK_ENTRY_SUBFILTER;
-	if(type == ANNA_STACK_ENTRY_INT)
+#ifdef ANNA_CHECK_VM
+	if(type != ANNA_STACK_ENTRY_INT)
 	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return res;
+  	    wprintf(L"Invalid vmstack entry\n");
+	    CRASH;
 	}
-	wprintf(L"Invalid vmstack entry\n");
-	CRASH;
+#endif	
+	long res = (long)entry;
+	res >>= 2;
+	return res;
     }
     return anna_int_get((anna_object_t *)entry);
 }
@@ -237,14 +239,16 @@ static inline uint64_t anna_as_uint64(anna_entry_t *entry)
     if(likely(type))
     {
 	type = ((long)entry) & ANNA_STACK_ENTRY_SUBFILTER;
-	if(type == ANNA_STACK_ENTRY_INT)
+#ifdef ANNA_CHECK_VM
+	if(type != ANNA_STACK_ENTRY_INT)
 	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return res;
+	    wprintf(L"Invalid vmstack entry\n");
+	    CRASH;
 	}
-	wprintf(L"Invalid vmstack entry\n");
-	CRASH;
+#endif
+	long res = (long)entry;
+	res >>= 2;
+	return res;
     }
     mpz_t *mp = anna_int_unwrap((anna_object_t *)entry);
     return anna_mpz_get_ui64(*mp);
@@ -256,14 +260,16 @@ static inline wchar_t anna_as_char(anna_entry_t *entry)
     if(likely(type))
     {
 	type = ((long)entry) & ANNA_STACK_ENTRY_SUBFILTER;
-	if(type == ANNA_STACK_ENTRY_CHAR)
+#ifdef ANNA_CHECK_VM
+	if(type != ANNA_STACK_ENTRY_CHAR)
 	{
-	    long res = (long)entry;
-	    res >>= 2;
-	    return (wchar_t)res;
+	    wprintf(L"Invalid vmstack entry\n");
+	    CRASH;
 	}
-	wprintf(L"Invalid vmstack entry\n");
-	CRASH;
+#endif
+	long res = (long)entry;
+	res >>= 2;
+	return (wchar_t)res;
     }
     return anna_char_get((anna_object_t *)entry);
 }
@@ -273,13 +279,15 @@ static inline double anna_as_float(anna_entry_t *entry)
     long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     if(likely(type))
     {
-	if(type == ANNA_STACK_ENTRY_FLOAT)
+#ifdef ANNA_CHECK_VM
+	if(type != ANNA_STACK_ENTRY_FLOAT)
 	{
-	    double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
-	    return *res;
+	    wprintf(L"Invalid vmstack entry %d\n", entry);
+	    CRASH;
 	}
-	wprintf(L"Invalid vmstack entry %d\n", entry);
-	CRASH;
+#endif
+	double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
+	return *res;
     }
     return anna_float_get((anna_object_t *)entry);
 }

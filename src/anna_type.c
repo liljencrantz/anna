@@ -387,17 +387,18 @@ int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
   return !!anna_entry_get_addr_static(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
 }
 
-static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off, int first, int last)
+static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 {
     int i;
-    for(i=first; i<=last; i++)
+    int steps = al_get_count(&orig->member_list);
+    for(i=0; i<=steps; i++)
     {
-	anna_member_t *memb = orig->mid_identifier[i];
-	if(!memb || !memb->is_static)
+        anna_member_t *memb = al_get(&orig->member_list, i);
+	if(!memb->is_static)
 	    continue;
 	
 	if(memb->offset == off)
-	    return i;
+  	    return anna_mid_get(memb->name);
        
     }
     CRASH;
@@ -445,50 +446,47 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
       First copy all members that have a previously unused mid, making
       note of which members already existed
      */
-    int steps = anna_mid_max_get();
+    int steps = al_get_count(&orig->member_list);
     int *copied = calloc(sizeof(int), steps);
-    int first = INT_MAX;
-    int last = 0;
     int copy_property = 0;
     
     for(i=0; i<steps; i++)
     {
-       anna_member_t *memb = orig->mid_identifier[i];
-       if(!memb)
-           continue;
-       first = mini(i, first);
-       last = i;
-       if(res->mid_identifier[i])
-       {
-	   anna_type_copy_check_interface(res->mid_identifier[i], memb);
-	   continue;
-       }
+        anna_member_t *memb = al_get(&orig->member_list, i);
+	//       if(!memb)
+	// continue;
+	mid_t mid = anna_mid_get(memb->name);
+	if(res->mid_identifier[mid])
+        {
+	    anna_type_copy_check_interface(res->mid_identifier[mid], memb);
+	    continue;
+        }
        
-       copied[i] = 1;
+	copied[i] = 1;
        
-       int storage = (memb->is_static?ANNA_MEMBER_STATIC:0)|((memb->offset==-1)?ANNA_MEMBER_VIRTUAL:0);
+	int storage = (memb->is_static?ANNA_MEMBER_STATIC:0)|((memb->offset==-1)?ANNA_MEMBER_VIRTUAL:0);
        
-       anna_member_t *copy = anna_member_get(
-           res,
-           anna_member_create(
-               res,
-               i,
-	       storage, memb->type));
-       copy->is_bound_method = memb->is_bound_method;
-       copy->is_property = memb->is_property;
-       copy->getter_offset = -1;
-       copy->setter_offset = -1;
-       if(memb->attribute)
-       {
-	   copy->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)memb->attribute);
-       }
+	anna_member_t *copy = anna_member_get(
+            res,
+            anna_member_create(
+                res,
+                mid,
+	        storage, memb->type));
+	copy->is_bound_method = memb->is_bound_method;
+	copy->is_property = memb->is_property;
+	copy->getter_offset = -1;
+	copy->setter_offset = -1;
+	if(memb->attribute)
+        {
+	    copy->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)memb->attribute);
+	}
        
-       if(memb->is_static)
-       {
-	   if(memb->offset != -1)
-	       res->static_member[copy->offset]=orig->static_member[memb->offset];
-       }
-       copy_property |= memb->is_property;
+	if(memb->is_static)
+        {
+	    if(memb->offset != -1)
+	        res->static_member[copy->offset]=orig->static_member[memb->offset];
+	}
+	copy_property |= memb->is_property;
     }
 
     
@@ -497,29 +495,29 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     */
     if(copy_property)
     {
-	for(i=first; i<=last; i++)
+        for(i=0; i<steps; i++)
 	{
+            anna_member_t *memb = al_get(&orig->member_list, i);
 	    if(!copied[i])
 		continue;
-	    
-	    anna_member_t *memb = orig->mid_identifier[i];
 	    
 	    if(!memb->is_property)
 		continue;
 	    
+	    mid_t mid = anna_mid_get(memb->name);
 	    anna_member_t *copy = anna_member_get(
 		res,
-		i);
+		mid);
 	    
 	    if(memb->getter_offset != -1)
 	    {
-		mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset, first, last);
+		mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset);
 		copy->getter_offset = anna_member_get(res, getter)->offset;
 	    }
 	    if(memb->setter_offset != -1)
 	    {
-		mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset, first, last);
-		copy->setter_offset = anna_member_get(res, setter)->offset;	   
+		mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset);
+		copy->setter_offset = anna_member_get(res, setter)->offset;
 	    }
 	}
     }
@@ -820,12 +818,12 @@ static anna_node_t *anna_type_setup_interface_internal(
 		    
 		    if(!memb->type)
 		    {
-			anna_node_t *decl = anna_stack_get_declaration(type->stack, memb->name);
+		        anna_node_declare_t *decl = anna_stack_get_declaration(type->stack, memb->name);
 			debug(D_CRITICAL, L"Has stack\n");
 			if(decl)
 			{
 			    debug(D_CRITICAL, L"Has decl\n");
-			    anna_node_calculate_type(decl);
+			    anna_node_calculate_type((anna_node_t *)decl);
 			    memb->type = decl->return_type;			
 			}
 		    }

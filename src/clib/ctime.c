@@ -119,8 +119,8 @@ ANNA_VM_NATIVE(anna_ctime_mktime, 8)
     ;
     
     int reset_tz=0;
-    char *tz;
-    char *ntz;
+    char *tz=0;
+    char *ntz=0;
     
     if(param[7] != null_entry)
     {
