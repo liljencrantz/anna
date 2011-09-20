@@ -95,64 +95,47 @@ anna_entry_t *anna_int_entry(anna_object_t *this)
     return anna_from_obj(this);
 }
 
-static anna_vmstack_t *anna_int_init_i(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_int_init_i, 2)
 {
-    anna_entry_t **param = stack->top - 2;
-    //wprintf(L"LALALA %d %d\n", param[0], param[1]);
     anna_int_set(anna_as_obj(param[0]), anna_as_int(param[1]));
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_as_obj(param[0]));
-    return stack;
+    return param[0];
 }
 
-static anna_vmstack_t *anna_int_hash(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_int_hash, 1)
 {
-    anna_entry_t **param = stack->top - 1;
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_int(
-	stack,
+    return anna_from_int(
 	mpz_get_si(
 	    *anna_int_unwrap(anna_as_obj(param[0]))) & ANNA_INT_FAST_MAX);
-    return stack;
 }
 
-static anna_vmstack_t *anna_int_cmp(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_int_cmp, 2)
 {
-    anna_entry_t **param = stack->top - 2;
-
-    anna_entry_t *res;
     if(unlikely(anna_entry_null(param[1])))
     {
-	res = null_entry;
+	return null_entry;
     }
     else if(anna_is_int_small(param[1]))
     {
-	res = anna_from_int(
+	return anna_from_int(
 	    (long)mpz_cmp_si(
 		*anna_int_unwrap(anna_as_obj(param[0])), 
 		anna_as_int(param[1])));
     }
     else if(anna_is_int(param[1]))
     {
-	res = anna_from_int(
+	return anna_from_int(
 	    (long)mpz_cmp(
 		*anna_int_unwrap(anna_as_obj(param[0])), 
 		*anna_int_unwrap(anna_as_obj_fast(param[1]))));
     }
     else
     {
-	res = null_entry;	    
-    }	
-        
-    anna_vmstack_drop(stack, 3);
-    anna_vmstack_push_entry(stack, res);
-    return stack;
+	return null_entry;	    
+    }
 }
 
-static anna_vmstack_t *anna_int_to_string(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_int_to_string, 1)
 {
-    anna_entry_t **param = stack->top - 1;
-
     char *nstr = mpz_get_str(0, 10, *anna_int_unwrap(anna_as_obj(param[0])));
     
     string_buffer_t sb;
@@ -160,11 +143,9 @@ static anna_vmstack_t *anna_int_to_string(anna_vmstack_t *stack, anna_object_t *
     sb_printf(&sb, L"%s", nstr);
 
     free(nstr);
-    
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), sb_content(&sb)));
     sb_destroy(&sb);
-    return stack;
+    return res;
 }
 
 ANNA_VM_NATIVE(anna_int_del, 1)

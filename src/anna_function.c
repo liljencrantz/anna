@@ -733,8 +733,9 @@ anna_function_t *anna_native_create(
     return result;
 }
 
-static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_object_t *cont)
+static void anna_function_continuation(anna_vmstack_t *stack)
 {
+    anna_object_t *cont = stack->function_object;
     anna_object_t *res = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
 
@@ -742,15 +743,20 @@ static anna_vmstack_t *anna_function_continuation(anna_vmstack_t *stack, anna_ob
     int cc = 1 + ((cce == null_entry)?0:anna_as_int(cce));
     anna_entry_set(cont, ANNA_MID_CONTINUATION_CALL_COUNT, anna_from_int(cc));
     
-    stack = (anna_vmstack_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
-    stack->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
+    anna_entry_t **mem = (anna_entry_t **)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
+    size_t sz = *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT);
+    memcpy(&stack->stack[0], mem, sz*sizeof(anna_entry_t *));
+    stack->top = &stack->stack[sz];
+
+    stack->frame = (anna_activation_frame_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    stack->frame->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
+
     anna_vmstack_push_object(stack, res);
-    return stack;
 }
 
 anna_function_t *anna_continuation_create(
     anna_vmstack_t *stack,
-    anna_type_t *return_type)
+    anna_activation_frame_t *frame)
 {
     anna_function_t *result = anna_alloc_function();
     result->flags |= ANNA_FUNCTION_CONTINUATION;
@@ -760,19 +766,30 @@ anna_function_t *anna_continuation_create(
     
     result->native = anna_function_continuation;
     result->name = anna_intern_static(L"continuation");
-    result->return_type=return_type;
+    result->return_type=object_type;
     result->input_count=0;
     
     anna_function_set_stack(result, stack_global);
     anna_function_setup_interface(result);
     anna_vm_compile(result);
     
+    size_t sz = stack->top - &stack->stack[0];
+    anna_entry_t **mem = malloc(sz*sizeof(anna_entry_t *));
+    memcpy(mem, &stack->stack[0], sz*sizeof(anna_entry_t *));
+
+    anna_object_t *cont = result->wrapper;
+    
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)mem;
+    *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT) = sz;
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME) = (anna_entry_t *)frame;
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)frame->code;
+    
     return result;
 }
 
-anna_function_t *anna_method_wrapper_create(
+anna_function_t *anna_method_bind(
     anna_vmstack_t *stack,
-    anna_type_t *return_type)
+    anna_function_t *method)
 {
     anna_function_t *result = anna_alloc_function();
     result->flags |= ANNA_FUNCTION_BOUND_METHOD;
@@ -781,14 +798,27 @@ anna_function_t *anna_method_wrapper_create(
     result->input_name = 0;
     result->native = anna_vm_method_wrapper;
     result->name = anna_intern_static(L"!boundMethod");
-    result->return_type=return_type;
-    result->input_count=0;
+    result->return_type=method->return_type;
+    
+    int argc = method->input_count-1;
+    
+    result->input_count=argc;
+    result->variable_count = argc;
+    
+    result->input_type = malloc(sizeof(anna_type_t *)*argc);
+    result->input_name = malloc(sizeof(wchar_t *)*argc);
+    result->input_default = calloc(1, sizeof(anna_node_t *)*argc);
+    int i;
+    for(i=0; i<argc;i++)
+    {
+	result->input_type[i] = method->input_type[i+1];
+	result->input_name[i] = method->input_name[i+1];
+    }
     
     anna_function_set_stack(result, stack_global);
     anna_function_setup_interface(result);
-
+    
     anna_vm_compile(result);
-
     return result;
 }
 

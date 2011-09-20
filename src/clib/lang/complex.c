@@ -28,24 +28,19 @@ inline complex double anna_complex_get(anna_object_t *this)
     return result;
 }
 
-static anna_vmstack_t *anna_complex_init(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_complex_init, 3)
 {
-    anna_entry_t **param = stack->top - 3;
     complex double result = anna_as_float(param[1]) + I * anna_as_float(param[2]);
     size_t off = anna_as_obj(param[0])->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD]->offset;
     memcpy(&anna_as_obj(param[0])->member[off], &result, sizeof(complex double));
-    anna_vmstack_drop(stack, 4);
-    anna_vmstack_push_entry(stack, param[0]);
-    return stack;
+    return param[0];
 }
 
-static anna_vmstack_t *anna_complex_cmp(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_complex_cmp, 2)
 {
-    anna_entry_t **param = stack->top - 2;
-    anna_vmstack_drop(stack, 3);
     if(unlikely( anna_entry_null(param[1])))
     {
-        anna_vmstack_push_object(stack, null_object);
+        return null_entry;
     }
     else if(anna_is_complex(param[1]))
     {
@@ -53,10 +48,10 @@ static anna_vmstack_t *anna_complex_cmp(anna_vmstack_t *stack, anna_object_t *me
 	complex double v2 = anna_as_complex(param[1]);
 	if(v1 == v2)
 	{
-	    anna_vmstack_push_entry(stack, anna_from_int(0));
+	    return anna_from_int(0);
 	}
 	else{
-	    anna_vmstack_push_object(stack, null_object);
+	    return null_entry;
 	}
     }
     else if(anna_is_float(param[1]) || anna_is_int(param[1]))
@@ -74,7 +69,7 @@ static anna_vmstack_t *anna_complex_cmp(anna_vmstack_t *stack, anna_object_t *me
 	    
 	if(cimag(c1) != 0.0)
 	{
-	    anna_vmstack_push_object(stack, null_object);
+	    return null_entry;
 	}
 	else
 	{
@@ -82,28 +77,25 @@ static anna_vmstack_t *anna_complex_cmp(anna_vmstack_t *stack, anna_object_t *me
 	    
 	    if(v1 > v2)
 	    {
-		anna_vmstack_push_entry(stack, anna_from_int(1));
+		return anna_from_int(1);
 	    }
 	    else if(v1 < v2)
 	    {
-		anna_vmstack_push_entry(stack, anna_from_int(-1));
+		return anna_from_int(-1);
 	    }
 	    else{
-		anna_vmstack_push_entry(stack, anna_from_int(0));
+		return anna_from_int(0);
 	    }   
 	}
-	
     }
     else
     {
-	anna_vmstack_push_object(stack, null_object);
+	return null_entry;
     }
-    return stack;
 }
 
-static anna_vmstack_t *anna_complex_to_string(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_complex_to_string, 1)
 {
-    anna_entry_t **param = stack->top - 1;
     complex double val = anna_as_complex(param[0]);
     string_buffer_t sb;
     sb_init(&sb);
@@ -121,26 +113,18 @@ static anna_vmstack_t *anna_complex_to_string(anna_vmstack_t *stack, anna_object
 	}
     }
 
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), buff));
-    return stack;
+    return anna_from_obj(anna_string_create(sb_length(&sb), buff));
 }
 
-static anna_vmstack_t *anna_complex_hash(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_complex_hash, 1)
 {
-    anna_entry_t **param = stack->top - 1;
-    anna_vmstack_drop(stack, 2);
     complex double cmp = anna_complex_get(anna_as_obj_fast(param[0]));
     int res = anna_hash((int *)&cmp, sizeof(complex double) / sizeof(int));
-    anna_vmstack_push_int(
-	stack,
-	res);
-    return stack;
+    return anna_from_int(res);
 }
 
 void anna_complex_type_create()
 {
-
     anna_member_create_blob(
 	complex_type, ANNA_MID_COMPLEX_PAYLOAD,
 	0, sizeof(complex double));

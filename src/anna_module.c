@@ -590,7 +590,7 @@ void anna_module_init()
       possible in order to reduce overhead. We'll worry about that
       once the functionality is mostly set in stone.
     */
-    
+
     anna_module_bootstrap_macro(L"ast");
     anna_module_bootstrap_macro(L"macroUtil");
     anna_module_bootstrap_macro(L"mapping");

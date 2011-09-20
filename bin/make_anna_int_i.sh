@@ -41,14 +41,11 @@ for i in "add mpz_add(res, *v1, *v2)" "increaseAssign mpz_add(res, *v1, *v2)" "s
 "
 
     echo "
-static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_int_i_$name, 2)
 {
-    anna_entry_t **param = stack->top - 2;
     if(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object)
     {
-        anna_vmstack_drop(stack, 3);
-        anna_vmstack_push_object(stack, null_object);
-        return stack;
+        return null_entry;
     }
     mpz_t tmp1, tmp2;
     mpz_t *v1, *v2;
@@ -76,16 +73,16 @@ static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me
     mpz_t res;
     mpz_init(res);
     $op;
-    anna_vmstack_drop(stack, 3);
 
 //    wprintf(L\"Perform bignum op $name, %s $name %s = %s\n\", mpz_get_str(0, 10, *v1), mpz_get_str(0, 10, *v2),mpz_get_str(0, 10, res));
 
+    anna_entry_t *res2;
     if(mpz_sizeinbase(res, 2)<= ANNA_SMALL_MAX_BIT)
     {
-        anna_vmstack_push_int(stack, mpz_get_si(res));
+        res2 = anna_from_int(mpz_get_si(res));
     }
     else{
-        anna_vmstack_push_object(stack, anna_int_create_mp(res));
+        res2 = anna_from_obj(anna_int_create_mp(res));
     }
 
     if(anna_is_int_small(param[0]))
@@ -98,7 +95,7 @@ static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me
     }
     mpz_clear(res);
 
-    return stack;
+    return res2;
 }
 "
 done
@@ -118,17 +115,15 @@ for i in "abs mpz_abs(res, *v1)" "neg mpz_neg(res, *v1)" "sign mpz_set_si(res, m
 "
 
     echo "
-static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_int_i_$name, 1)
 {
-    anna_entry_t **param = stack->top - 1;
     mpz_t *v1 = anna_int_unwrap(anna_as_obj_fast(param[0]));
     mpz_t res;
     mpz_init(res);
-    anna_vmstack_drop(stack, 2);
     $op;
-    anna_vmstack_push_object(stack, anna_int_create_mp(res));
+    anna_entry_t *res2 = anna_from_obj(anna_int_create_mp(res));
     mpz_clear(res);
-    return stack;
+    return res2;
 }
 "
 done
@@ -148,13 +143,10 @@ for i in "nextAssign v+1" "prevAssign v-1" ; do
 "
 
     echo "
-static anna_vmstack_t *anna_int_i_$name(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_int_i_$name, 1)
 {
-    anna_entry_t **param = stack->top - 1;
     int v = anna_as_int(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_int(stack, $op);
-    return stack;
+    return anna_from_int($op);
 }
 "
 done

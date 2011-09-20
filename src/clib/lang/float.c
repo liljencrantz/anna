@@ -19,13 +19,11 @@ double anna_float_get(anna_object_t *this)
     return result;
 }
 
-static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_float_cmp, 2)
 {
-    anna_entry_t **param = stack->top - 2;
-    anna_vmstack_drop(stack, 3);
     if(unlikely( anna_entry_null(param[1])))
     {
-        anna_vmstack_push_object(stack, null_object);
+        return null_entry;
     }
     else if(anna_is_float(param[1]))
     {
@@ -33,14 +31,14 @@ static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 	double v2 = anna_as_float(param[1]);
 	if(v1 > v2)
 	{
-	    anna_vmstack_push_entry(stack, anna_from_int(1));
+	    return anna_from_int(1);
 	}
 	else if(v1 < v2)
 	{
-	    anna_vmstack_push_entry(stack, anna_from_int(-1));
+	    return anna_from_int(-1);
 	}
 	else{
-	    anna_vmstack_push_entry(stack, anna_from_int(0));
+	    return anna_from_int(0);
 	}   
     }
     else if(anna_is_int(param[1]))
@@ -49,28 +47,24 @@ static anna_vmstack_t *anna_float_cmp(anna_vmstack_t *stack, anna_object_t *me)
 	double v2 = (double)anna_as_int(param[1]);
 	if(v1 > v2)
 	{
-	    anna_vmstack_push_entry(stack, anna_from_int(1));
+	    return anna_from_int(1);
 	}
 	else if(v1 < v2)
 	{
-	    anna_vmstack_push_entry(stack, anna_from_int(-1));
+	    return anna_from_int(-1);
 	}
 	else{
-	    anna_vmstack_push_entry(stack, anna_from_int(0));
+	    return anna_from_int(0);
 	}   
     }
     else
     {	
-        anna_vmstack_push_object(stack, null_object);
+        return null_entry;
     }
-
-    return stack;
 }
 
-static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_float_to_string, 1)
 {
-    anna_entry_t **param = stack->top - 1;
-    anna_vmstack_drop(stack, 2);
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"%f", anna_as_float(param[0]));
@@ -80,20 +74,16 @@ static anna_vmstack_t *anna_float_to_string(anna_vmstack_t *stack, anna_object_t
     {
 	*comma = '.';
     }
-    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), buff));
-    return stack;
+    anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), buff));
+    sb_destroy(&sb);
+    return res;
 }
 
-static anna_vmstack_t *anna_float_hash(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_float_hash, 1)
 {
-    anna_entry_t **param = stack->top - 1;
-    anna_vmstack_drop(stack, 2);
     double cmp = anna_as_float(param[0]);
     int res = anna_hash((int *)&cmp, sizeof(double) / sizeof(int));
-     anna_vmstack_push_int(
-	stack,
-	res);
-    return stack;
+    return anna_from_int(res);
 }
 
 ANNA_VM_NATIVE(anna_float_convert_string, 1)

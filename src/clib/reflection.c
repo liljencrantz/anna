@@ -57,19 +57,16 @@ void anna_reflection_create_types(anna_stack_template_t *stack)
     anna_type_data_create(anna_member_type_data, stack);
 }
 
-static anna_vmstack_t *anna_i_cc(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_i_cc(anna_vmstack_t *stack)
 {
-    stack = anna_frame_to_heap(stack);
+    stack->frame = anna_frame_to_heap(stack->frame);
     
     anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     anna_object_t *cont = anna_continuation_create(
 	stack,
-	object_type)->wrapper;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)stack;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)stack->code;
+	stack->frame)->wrapper;
     anna_vmstack_push_object(stack, cont);
-    return stack;
 }
 
 void anna_reflection_load(anna_stack_template_t *stack)

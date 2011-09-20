@@ -43,36 +43,27 @@ ANNA_VM_NATIVE(anna_type_i_get_member, 1)
     return anna_from_obj(lst);
 }
 
-static anna_vmstack_t *anna_type_cmp(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_type_cmp, 2)
 {
-    anna_entry_t **param = stack->top - 2;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type1 = anna_type_unwrap(this);
     anna_type_t *type2 = anna_type_unwrap(anna_as_obj(param[1]));
-    anna_vmstack_drop(stack, 3);
-    anna_vmstack_push_object(stack, anna_int_create(type1-type2));
-    return stack;
+    return anna_from_obj(anna_int_create(type1-type2));
 }
 
-static anna_vmstack_t *anna_type_abides(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_type_abides, 2)
 {
-    anna_entry_t **param = stack->top - 2;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type1 = anna_type_unwrap(this);
     anna_type_t *type2 = anna_type_unwrap(anna_as_obj(param[1]));
-    anna_vmstack_drop(stack, 3);
-    anna_vmstack_push_entry(stack, anna_abides(type1, type2)?anna_from_int(1):null_entry);
-    return stack;
+    return anna_abides(type1, type2)?anna_from_int(1):null_entry;
 }
 
-static anna_vmstack_t *anna_type_hash(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_type_hash, 1)
 {
-    anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_drop(stack, 2);
     anna_type_t *type = anna_type_unwrap(this);
-    anna_vmstack_push_object(stack, anna_int_create(hash_ptr_func(type)));
-    return stack;
+    return anna_from_obj(anna_int_create(hash_ptr_func(type)));
 }
 
 ANNA_VM_NATIVE(anna_type_i_get_attribute, 1)

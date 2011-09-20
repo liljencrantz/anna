@@ -262,7 +262,7 @@ size_t anna_bc_op_size(char instruction);
 extern char *anna_vmstack_static_ptr;
 extern char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
 
-anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack);
+anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *stack);
 
 static inline int anna_instr_is_short_circut(char instr)
 {

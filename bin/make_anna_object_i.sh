@@ -44,7 +44,7 @@ for i in \
 "
 
     echo "
-static anna_vmstack_t *anna_object_i_callback_${name}_reverse(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_object_i_callback_${name}_reverse(anna_vmstack_t *stack)
 
 {
     anna_entry_t *res = anna_vmstack_pop_entry(stack);
@@ -60,10 +60,9 @@ static anna_vmstack_t *anna_object_i_callback_${name}_reverse(anna_vmstack_t *st
         anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry
 );
     }
-    return stack;
 }
 
-static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_object_i_callback_$name(anna_vmstack_t *stack)
 
 {
     anna_entry_t *res = anna_vmstack_pop_entry(stack);
@@ -72,7 +71,6 @@ static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_
     anna_vmstack_pop_entry(stack);
     if(anna_entry_null(res))
     {
-//wprintf(L\"NULL, LETS CHECK REVERSE!!!\n\");
         anna_object_t *that = anna_as_obj(that_entry);
         anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(that->type, ANNA_MID_CMP));
 	anna_entry_t *param[] = 
@@ -81,24 +79,22 @@ static anna_vmstack_t *anna_object_i_callback_$name(anna_vmstack_t *stack, anna_
 	    }
 	;
 	
-        return anna_vm_callback_native(stack, &anna_object_i_callback_${name}_reverse, 0, 0, fun_object, 2, param);
+        anna_vm_callback_native(stack, &anna_object_i_callback_${name}_reverse, 0, 0, fun_object, 2, param);
     }
     else
     {
         int res_int = anna_as_int(res);
-//wprintf(L\"Got result %d\n\", res_int);
         anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry);
     }
-    return stack;
 }
 
-static anna_vmstack_t *anna_object_i_$name(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_object_i_$name(anna_vmstack_t *stack)
 {
     anna_entry_t **param = stack->top - 2;    
     anna_object_t *this = anna_as_obj(param[0]);
     anna_vmstack_drop(stack, 3);
     anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(this->type, ANNA_MID_CMP));
-    return anna_vm_callback_native(stack, &anna_object_i_callback_$name, 2, param, fun_object, 2, param);
+    anna_vm_callback_native(stack, &anna_object_i_callback_$name, 2, param, fun_object, 2, param);
 }
 "
 done

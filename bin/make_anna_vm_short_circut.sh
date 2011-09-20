@@ -18,7 +18,7 @@ echo "
 //            wprintf(L\"$name\n\");
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    int res = anna_as_int(i1) $op anna_as_int(i2);
@@ -41,7 +41,8 @@ echo "
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
 		anna_vmstack_push_entry(stack,i2);
-		stack = fun->native(stack, wrapped);
+                stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	
@@ -61,7 +62,7 @@ echo "
 //            wprintf(L\"$name\n\");
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    int res = anna_as_int(i1) $op anna_as_int(i2);
@@ -93,7 +94,8 @@ echo "
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
 		anna_vmstack_push_entry(stack,i2);
-		stack = fun->native(stack, wrapped);
+                stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	
@@ -115,7 +117,7 @@ echo "
 //            wprintf(L\"$name\n\");
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 //            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
@@ -140,11 +142,12 @@ echo "
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
 		anna_vmstack_push_entry(stack,i2);
-		stack = fun->native(stack, wrapped);
+                stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	
-//            wprintf(L\"Next instruction is %d!\n\", *stack->code);
+//            wprintf(L\"Next instruction is %d!\n\", *stack->frame->code);
 	OP_LEAVE(stack);
     }
 
@@ -154,7 +157,7 @@ echo "
 //            wprintf(L\"$name\n\");
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
 //            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
@@ -179,11 +182,12 @@ echo "
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
 		anna_vmstack_push_entry(stack,i2);
-		stack = fun->native(stack, wrapped);
+                stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	
-//            wprintf(L\"Next instruction is %d!\n\", *stack->code);
+//            wprintf(L\"Next instruction is %d!\n\", *stack->frame->code);
 	OP_LEAVE(stack);
     }
 "
@@ -221,11 +225,12 @@ echo "
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
 		anna_vmstack_push_entry(stack,i2);
-		stack = fun->native(stack, wrapped);
+                stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);
     }
 
@@ -235,7 +240,7 @@ echo "
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
 //wprintf(L\"MUL\n\");
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    long long res = (long long)anna_as_int(i1) * anna_as_int(i2);
@@ -283,7 +288,8 @@ echo "
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
 		anna_vmstack_push_entry(stack,i2);
-		stack = fun->native(stack, wrapped);
+                stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	
@@ -302,7 +308,7 @@ echo "
         OP_ENTER(stack);
 	anna_entry_t *i2 = anna_vmstack_pop_entry(stack);
 	anna_entry_t *i1 = anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
             double v1 = anna_as_float(i1);
@@ -326,7 +332,8 @@ echo "
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
 		anna_vmstack_push_entry(stack,i2);
-		stack = fun->native(stack, wrapped);
+                stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	

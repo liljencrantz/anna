@@ -125,8 +125,8 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
 /**
    This is the bulk of the each method
  */
-static anna_vmstack_t *anna_node_call_wrapper_each_callback(
-    anna_vmstack_t *stack, anna_object_t *me)
+static void anna_node_call_wrapper_each_callback(
+    anna_vmstack_t *stack)
 {    
     // Discard the output of the previous method call
     anna_vmstack_pop_object(stack);
@@ -161,10 +161,9 @@ static anna_vmstack_t *anna_node_call_wrapper_each_callback(
 	anna_vmstack_drop(stack, 4);
 	anna_vmstack_push_entry(stack, param[0]);
     }
-    return stack;
 }
 
-static anna_vmstack_t *anna_node_call_wrapper_each(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_node_call_wrapper_each(anna_vmstack_t *stack)
 {
     anna_entry_t *body = anna_vmstack_pop_entry(stack);
     anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_vmstack_pop_object(stack));
@@ -188,7 +187,7 @@ static anna_vmstack_t *anna_node_call_wrapper_each(anna_vmstack_t *stack, anna_o
 	    }
 	;
 	
-	stack = anna_vm_callback_native(
+	anna_vm_callback_native(
 	    stack,
 	    anna_node_call_wrapper_each_callback, 3, callback_param,
 	    anna_as_obj_fast(body), 2, o_param
@@ -198,8 +197,6 @@ static anna_vmstack_t *anna_node_call_wrapper_each(anna_vmstack_t *stack, anna_o
     {
 	anna_vmstack_push_object(stack, anna_node_wrap((anna_node_t *)call));
     }
-    
-    return stack;
 }
 
 ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)

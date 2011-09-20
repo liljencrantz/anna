@@ -165,10 +165,10 @@ void anna_function_document(anna_function_t *fun, wchar_t *documentation);
 
 anna_function_t *anna_continuation_create(
     anna_vmstack_t *stack,
-    anna_type_t *return_type);
+    anna_activation_frame_t *frame);
 
-anna_function_t *anna_method_wrapper_create(
+anna_function_t *anna_method_bind(
     anna_vmstack_t *stack,
-    anna_type_t *return_type);
+    anna_function_t *method);
 
 #endif

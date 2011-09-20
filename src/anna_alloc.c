@@ -66,7 +66,10 @@ static void anna_alloc_mark_function(anna_function_t *o)
     if( o->flags & ANNA_USED)
 	return;
     o->flags |= ANNA_USED;
-    
+
+    if(!o->wrapper)
+	return;
+        
     anna_function_type_t *ft = anna_function_type_unwrap(o->wrapper->type);
     int i;
     for(i=0; i<o->input_count; i++)
@@ -155,7 +158,6 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	case ANNA_NODE_BREAK:
 	case ANNA_NODE_CONTINUE:
 	case ANNA_NODE_USE:
-	case ANNA_NODE_MAPPING:
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	case ANNA_NODE_RETURN_TYPE_OF:
@@ -255,6 +257,7 @@ static void anna_alloc_mark_node(anna_node_t *o)
 	    break;
 	}
 	
+	case ANNA_NODE_MAPPING:
 	case ANNA_NODE_OR:
 	case ANNA_NODE_AND:
 	case ANNA_NODE_WHILE:
@@ -468,6 +471,23 @@ void anna_alloc_mark_object(anna_object_t *obj)
     }
 }
 
+static void anna_alloc_mark_activation_frame(anna_activation_frame_t *frame)
+{
+    if( frame->flags & ANNA_USED)
+	return;
+    frame->flags |= ANNA_USED;    
+
+    int i;
+    
+    for(i=0; i<frame->function->variable_count; i++)
+    {	
+	anna_alloc_mark_entry(frame->slot[i]);
+    }
+    if(frame->dynamic_frame)
+	anna_alloc_mark_activation_frame(frame->dynamic_frame);
+    anna_alloc_mark_function(frame->function);
+}
+
 static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
 {
     if( stack->flags & ANNA_USED)
@@ -475,14 +495,11 @@ static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
     stack->flags |= ANNA_USED;    
 
     anna_entry_t **obj;
-    for(obj = &stack->base[0]; obj < stack->top; obj++)
+    for(obj = &stack->stack[0]; obj < stack->top; obj++)
     {	
 	anna_alloc_mark_entry(*obj);
     }
-    if(stack->parent)
-	anna_alloc_mark_vmstack(stack->parent);
-    if(stack->function)
-	anna_alloc_mark_function(stack->function);
+    anna_alloc_mark_activation_frame(stack->frame);
 }
 
 void anna_alloc_mark(void *obj)
@@ -517,6 +534,11 @@ void anna_alloc_mark(void *obj)
 	case ANNA_STACK_TEMPLATE:
 	{
 	    anna_alloc_mark_stack_template((anna_stack_template_t *)obj);
+	    break;
+	}
+	case ANNA_ACTIVATION_FRAME:
+	{
+	    anna_alloc_mark_activation_frame((anna_activation_frame_t *)obj);
 	    break;
 	}
 	default:
@@ -593,10 +615,13 @@ static void anna_alloc_free(void *obj)
 	case ANNA_VMSTACK:
 	{
 	    anna_vmstack_t *o = (anna_vmstack_t *)obj;
-	    if(!o->function){
-		free(o);
-		return;
-	    }
+	    anna_alloc_count -= o->size;
+	    anna_slab_free(o, o->size);
+	    break;
+	}
+	case ANNA_ACTIVATION_FRAME:
+	{
+	    anna_activation_frame_t *o = (anna_activation_frame_t *)obj;
 	    anna_alloc_count -= o->function->frame_size;
 	    anna_slab_free(o, o->function->frame_size);
 	    break;
@@ -705,7 +730,7 @@ void anna_gc(anna_vmstack_t *stack)
 {
     if(anna_alloc_gc_block_counter)
 	return;
-
+    
     anna_alloc_gc_block();
     size_t i;
     
@@ -717,10 +742,11 @@ void anna_gc(anna_vmstack_t *stack)
 	void *obj = al_get_fast(&anna_alloc, i);
 	s_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
     }
+
     size_t start_count = al_get_count(&anna_alloc);
 #endif
     
-    anna_vmstack_t *stack_ptr = stack;
+//    anna_vmstack_t *stack_ptr = stack;
 
 /*
     wprintf(L"\n\nRUNNING GC. We have %d allocated items.\n", al_get_count(&anna_alloc));
@@ -732,13 +758,17 @@ void anna_gc(anna_vmstack_t *stack)
     }
     fflush(stdout);
 */  
-
-    stack_ptr = stack;
-    while(stack_ptr)
+    anna_activation_frame_t *f = stack->frame;
+    while(f)
     {
-	anna_alloc_mark_vmstack(stack_ptr);	
-	stack_ptr = stack_ptr->caller;
+	anna_alloc_unmark(f);
+	f = f->dynamic_frame;
     }
+
+
+    anna_alloc_mark_vmstack(stack);	
+    anna_alloc_mark_function(anna_vm_run_fun);
+
     anna_type_mark_static();
     
 //    anna_alloc_mark_stack_template(stack_global);

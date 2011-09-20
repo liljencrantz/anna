@@ -40,6 +40,18 @@ static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
     res->flags = ANNA_VMSTACK;
     al_push(&anna_alloc, res);
     anna_alloc_count+=sz;
+    res->size = sz;
+    return res;
+}
+
+static inline __malloc anna_activation_frame_t *anna_alloc_activation_frame(size_t sz)
+{
+    anna_activation_frame_t *res = anna_slab_alloc(sz);
+//    anna_vmstack_t *res = malloc(sz);
+    
+    res->flags = ANNA_ACTIVATION_FRAME;
+    al_push(&anna_alloc, res);
+    anna_alloc_count+=sz;
     return res;
 }
 

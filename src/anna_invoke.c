@@ -25,7 +25,6 @@ struct anna_node *anna_macro_invoke(
     {
 	nn = (anna_node_t *)anna_node_create_null(&node->location);
     }
-    
     return nn;
 }
 

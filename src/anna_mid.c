@@ -113,9 +113,12 @@ void anna_mid_init()
 	    L"!bufferPayload",
 	    L"!bufferSize",
 	    L"!bufferCapacity",
-	    L"!continuationCallCount",
-
 	    L"!cStructPayload",
+
+	    L"!continuationCallCount",
+	    L"!continuationStackCount",
+	    L"!continuationActivationFrame",
+
 	};
     
     int i;

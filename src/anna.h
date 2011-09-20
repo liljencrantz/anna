@@ -15,7 +15,7 @@ struct anna_stack_template;
 struct anna_function;
 struct anna_vmstack;
 
-typedef struct anna_vmstack *(*anna_native_t)( struct anna_vmstack *, struct anna_object *);
+typedef void (*anna_native_t)( struct anna_vmstack *stack);
 typedef int mid_t;
 
 /*
@@ -31,6 +31,7 @@ typedef int mid_t;
 #define ANNA_VMSTACK 4
 #define ANNA_FUNCTION 5
 #define ANNA_BLOB 6
+#define ANNA_ACTIVATION_FRAME 7 
 #define ANNA_ALLOC_FLAGS_SIZE 4
 #define ANNA_ALLOC_MASK 15
 #define ANNA_MOVE 16
@@ -39,8 +40,8 @@ typedef int mid_t;
 #define ANNA_OBJECT_LIST 512
 #define ANNA_OBJECT_HASH 1024
 
-#define ANNA_VMSTACK_STATIC 512
-#define ANNA_VMSTACK_BREAK 1024
+#define ANNA_ACTIVATION_FRAME_STATIC 512
+#define ANNA_ACTIVATION_FRAME_BREAK 1024
 
 /*
   The preallocated MIDs
@@ -122,9 +123,11 @@ enum anna_mid_enum
     ANNA_MID_BUFFER_PAYLOAD,
     ANNA_MID_BUFFER_SIZE,
     ANNA_MID_BUFFER_CAPACITY,
-    ANNA_MID_CONTINUATION_CALL_COUNT,
-
     ANNA_MID_CSTRUCT_PAYLOAD,
+
+    ANNA_MID_CONTINUATION_CALL_COUNT,
+    ANNA_MID_CONTINUATION_STACK_COUNT,    
+    ANNA_MID_CONTINUATION_ACTIVATION_FRAME, 
 
     ANNA_MID_FIRST_UNRESERVED,
 };
@@ -395,17 +398,30 @@ struct anna_function
     size_t variable_count;
 };
 
+struct anna_activation_frame
+{
+    int flags;
+    struct anna_activation_frame *static_frame;
+    struct anna_activation_frame *dynamic_frame;
+    struct anna_function *function;
+    char *code;
+    anna_entry_t **return_stack_top;
+    char *return_address;
+    anna_entry_t *slot[];
+};
+
+
 struct anna_vmstack
 {
     int flags;
-    struct anna_vmstack *parent;    
-    struct anna_vmstack *caller;    
-    struct anna_function *function;
-    char *code;    
+    size_t size;
+    struct anna_activation_frame *frame;
+    struct anna_object *function_object;
     anna_entry_t **top;
-    anna_entry_t *base[];
+    anna_entry_t *stack[];
 };
 
+typedef struct anna_activation_frame anna_activation_frame_t;
 typedef struct anna_vmstack anna_vmstack_t;
 typedef struct anna_type anna_type_t;
 typedef struct anna_member anna_member_t;

@@ -24,27 +24,40 @@
 #include "anna_alloc.h"
 #include "anna_mid.h"
 
-#define OP_LEAVE(stack) goto *jump_label[(int)*(stack)->code] 
+#define OP_LEAVE(stack) goto *jump_label[(int)*(stack)->frame->code] 
 
 #define OP_ENTER(stack) 
+//wprintf(L"Weee, instruction %d at offset %d\n", *stack->frame->code, stack->frame->code - stack->frame->function->code)
 
 char *anna_vmstack_static_ptr;
 char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
+anna_function_t *anna_vm_run_fun;
 
 static void anna_vmstack_print(anna_vmstack_t *stack);
 __attr_unused __cold static void stack_describe(anna_vmstack_t *stack);
 __attr_unused __cold static void anna_vmstack_print_parent(anna_vmstack_t *stack);
 
-static inline void anna_frame_return(anna_vmstack_t *stack)
+static inline void anna_frame_return(anna_activation_frame_t *frame)
 {
-    if(stack->flags & ANNA_VMSTACK_STATIC)
+    if(frame->flags & ANNA_ACTIVATION_FRAME_STATIC)
     {
-	anna_vmstack_static_ptr -= stack->function->frame_size;
+	anna_vmstack_static_ptr -= frame->function->frame_size;
 //	assert(stack == anna_vmstack_static_ptr);
     }
 }
 
-anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack);
+static inline void anna_stack_frame_return(anna_vmstack_t *stack)
+{
+    stack->top = stack->frame->return_stack_top;
+    anna_frame_return(stack->frame);
+    stack->frame = stack->frame->dynamic_frame;
+}
+
+static inline void anna_stack_frame_return_static(anna_vmstack_t *stack)
+{
+    anna_frame_return(stack->frame);
+    stack->frame = stack->frame->static_frame;
+}
 
 static inline anna_object_t *anna_vm_trampoline(
     anna_function_t *fun,
@@ -61,23 +74,23 @@ static inline anna_object_t *anna_vm_trampoline(
 	   &orig->member[payload_offset],
 	   sizeof(anna_function_t *));    
     memcpy(&res->member[stack_offset],
-	   &stack,
+	   &stack->frame,
 	   sizeof(anna_vmstack_t *));
 
     return res;
 }
 
-static int stack_idx(anna_vmstack_t *stack)
+__cold static int frame_idx(anna_activation_frame_t *frame)
 {
-    return stack ? 1 + stack_idx(stack->caller): 0;
+    return frame ? 1 + frame_idx(frame->dynamic_frame): 0;
 }
 
-__cold static int stack_sum(anna_vmstack_t *stack)
+__cold static int frame_checksum(anna_activation_frame_t *frame)
 {
     
     int res = 0xdeadbeef;
-    char *chr = (char *)&stack->base[0];
-    char *end = (char *)stack->top;
+    char *chr = (char *)&frame->slot[0];
+    char *end = (char *)&frame->slot[frame->function->variable_count];
     
     for(; chr < end; chr++)
     {
@@ -86,85 +99,117 @@ __cold static int stack_sum(anna_vmstack_t *stack)
     return res;
 }
 
-__attr_unused __cold static void stack_describe(anna_vmstack_t *stack)
+__attr_unused __cold static void anna_stack_describe(anna_vmstack_t *stack)
 {
-    if(stack)
+    anna_entry_t **p = &stack->stack[0];
+    while(p<stack->top)
     {
-	wprintf(
-	    L"Frame %d:\tParent: %d\tDynamic: %ls\tSize: %d\tUsed: %d \tAddress: %d\tChecksum: %d\tFunction: %ls\n",
-	    stack_idx(stack),
-	    stack_idx(stack->parent), 
-	    (stack->flags & ANNA_VMSTACK_STATIC)?L"no":L"yes",
-	    stack->function?stack->function->frame_size:-1,
-	    (char *)stack->top - (char *)&stack->base[0],
-	    stack,
-	    stack_sum(stack),
-	    stack->function?stack->function->name:L"<null>");
+/*	if(anna_is_int(*p))
+	{
+	    wprintf(L"Doo dee doo %d\n", anna_as_int(*p));
+	}
+	else*/
+	{
+	    wprintf(L"lalala %ls\n", anna_is_obj(*p)?anna_as_obj(*p)->type->name: L"?");
+	}
 	
-	//anna_vmstack_print(stack);
-	stack_describe(stack->caller);
+	p++;
     }
 }
 
-anna_vmstack_t *anna_frame_to_heap(anna_vmstack_t *stack)
+__attr_unused __cold static void frame_describe(anna_activation_frame_t *frame)
 {
-    anna_vmstack_t *ptr = stack;
- 
-    ptr = stack;
+    if(frame)
+    {
+	wprintf(
+	    L"Frame %d:\tParent: %d\tDynamic: %ls\tSize: %d\tUsed: %d \tAddress: %d\tChecksum: %d\tFunction: %ls\n",
+	    frame_idx(frame),
+	    frame_idx(frame->static_frame), 
+	    (frame->flags & ANNA_ACTIVATION_FRAME_STATIC)?L"no":L"yes",
+	    frame->function->variable_count,
+	    frame,
+	    frame_checksum(frame),
+	    frame->function->name);
+	
+	//anna_vmstack_print(stack);
+	frame_describe(frame->dynamic_frame);
+    }
+}
+
+anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *frame)
+{
+    /*
+      Move an activation record from the stack to the heap. A heap
+      allocated frame may never point to a statically allocated frame,
+      so this means we have to go through the list of activation
+      frames and move all of them to the heap. This code is quite
+      tricky since it has to update all the static_frame and
+      dynamic_frame pointers as well. Don't touch it unless you know
+      what you are doing!
+     */
+
+    anna_activation_frame_t *ptr = frame;
+    anna_activation_frame_t *first_copy = 0;
+    anna_activation_frame_t *prev = 0;
     
-    anna_vmstack_t *first_copy = 0;
-    anna_vmstack_t *prev = 0;
-    
-    if(!(ptr->flags & ANNA_VMSTACK_STATIC))
+    if(!(ptr->flags & ANNA_ACTIVATION_FRAME_STATIC))
     {
 	return ptr;
     }
 /*
     wprintf(L"BEFORE:\n");
-    stack_describe(stack);
+    frame_describe(frame);
 */
-    while(ptr && (ptr->flags & ANNA_VMSTACK_STATIC))
+    while(ptr && (ptr->flags & ANNA_ACTIVATION_FRAME_STATIC))
     {
-	anna_vmstack_t *copy = anna_alloc_vmstack(ptr->function->frame_size);
+	anna_activation_frame_t *copy = anna_alloc_activation_frame(ptr->function->frame_size);
 	if(!first_copy)
 	    first_copy = copy;
 	if(prev)
 	{
-	    prev->caller = copy;
+	    prev->dynamic_frame = copy;
 	}
 	
 	anna_frame_return(ptr);
-	memcpy(copy, ptr, (char *)ptr->top - (char *)ptr);
+	memcpy(copy, ptr, ptr->function->frame_size);
+	/* 
+	   Save a pointer to the new heap allocated frame inside the
+	   old stack allocated frame. We'll use this value when going
+	   through the frame list a second time and fixing up all the
+	   static_frame pointers.
+	 */
 	ptr->code = (char *)copy;
-	copy->top = &copy->base[ptr->top - &ptr->base[0]];
-	
 	prev = copy;
-	ptr = ptr->caller;	
+	ptr = ptr->dynamic_frame;
     }
     
     ptr = first_copy;
-    while(ptr && ptr->flags & ANNA_VMSTACK_STATIC)
+    /* 
+       Perform a second iteration through the loop in order to repoint
+       all the static_frame pointers. This can't be done in the first run-through, since the parent pointers haven't been created yet.
+     */
+    while(ptr && ptr->flags & ANNA_ACTIVATION_FRAME_STATIC)
     {
-	ptr->flags = ptr->flags & ~ANNA_VMSTACK_STATIC;
-	if(ptr->parent && ptr->parent->flags & ANNA_VMSTACK_STATIC)
+	ptr->flags = ptr->flags & ~ANNA_ACTIVATION_FRAME_STATIC;
+	if(ptr->static_frame && ptr->static_frame->flags & ANNA_ACTIVATION_FRAME_STATIC)
 	{
-	    ptr->parent = (anna_vmstack_t *)ptr->parent->code;
+	    ptr->static_frame = (anna_activation_frame_t *)ptr->static_frame->code;
 	}
-	ptr = ptr->caller;
+	ptr = ptr->dynamic_frame;
     }
 
 /*
     wprintf(L"\nAFTER:\n");
-    stack_describe(first_copy);
+    frame_describe(first_copy);
 */
     return first_copy;
 }
 
-__attr_unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
+__attr_unused __cold static void anna_frame_print(anna_activation_frame_t *frame)
 {
-    anna_entry_t **p = &stack->base[0];
+//    anna_entry_t **p = &stack->slot[0];
     wprintf(L"\tFrame content (bottom to top):\n");
-    while(p!=stack->top)
+/*    while(p!=stack->top)
     {
 	if(!*p){
 	    wprintf(L"\tError: Null slot\n");	    
@@ -176,22 +221,30 @@ __attr_unused __cold static void anna_vmstack_print(anna_vmstack_t *stack)
 	
 	p++;
     }
+*/
 }
 
 __attr_unused __cold static void anna_vmstack_print_parent(anna_vmstack_t *stack)
 {
-    if(!stack)
+/*    if(!stack)
 	return;
     anna_vmstack_print_parent(stack->parent);
     wprintf(
 	L"Function %ls, offset %d\n", 
 	stack->function?stack->function->name:L"<null>", 
 	stack->function? (stack->code - stack->function->code): -1);
+*/
 }
 
 __cold void anna_vm_init()
 {
     anna_vmstack_static_ptr = &anna_vmstack_static_data[0];
+    anna_vm_run_fun = anna_alloc_function();
+    anna_vm_run_fun->code = malloc(1);
+    *(anna_vm_run_fun->code) = ANNA_INSTR_STOP;
+    anna_vm_run_fun->frame_size = sizeof(anna_activation_frame_t);
+    anna_vm_run_fun->input_count = 0;
+    anna_vm_run_fun->variable_count = 0;
 }
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN
@@ -282,19 +335,20 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     int is_root = vm_count==0;
     
     anna_vmstack_t *stack;  
-    size_t ss = (argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t);
-    stack = calloc(1, ss+1);
-    stack->flags = ANNA_VMSTACK;
-    al_push(&anna_alloc, stack);
+    size_t ss = 8192;//(argc+1)*sizeof(anna_object_t *) + sizeof(anna_vmstack_t);
+    size_t afs = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_activation_frame_t);
+    stack = anna_alloc_vmstack(ss);
+
+    stack->frame = anna_alloc_activation_frame(afs);
+    stack->frame->dynamic_frame = 0;
     
-    stack->caller = 0;
+    stack->frame->static_frame = *(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
-    stack->parent = *(anna_vmstack_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
-    
-    stack->function = 0;
-    stack->top = &stack->base[0];
-    stack->code = ((char *)stack)+ss;
-    *(stack->code) = ANNA_INSTR_STOP;
+    stack->frame->function = anna_vm_run_fun;
+    stack->top = &stack->stack[0];
+    stack->frame->code = stack->frame->function->code;
+    stack->frame->return_stack_top = stack->top;
+//    *(stack->code) = ANNA_INSTR_STOP;
     
     int i;
     anna_vmstack_push_object(stack, entry);
@@ -303,7 +357,12 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_push_object(stack, argv[i]);
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
-    stack = root_fun->native(stack, entry);
+    stack->function_object = entry;
+    root_fun->native(stack);
+
+//    wprintf(L"Lalala, run function %ls\n", root_fun->name);
+//    if(root_fun->code)
+//	anna_bc_print(root_fun->code);
     
     OP_LEAVE(stack);	
 
@@ -311,24 +370,24 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);	
 
-	anna_op_const_t *op = (anna_op_const_t *)stack->code;
+	anna_op_const_t *op = (anna_op_const_t *)stack->frame->code;
 	anna_vmstack_push_entry(stack, op->value);
 	
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);	
     }
     
   ANNA_LAB_CAST:	    
     {
 	OP_ENTER(stack);	
-	anna_op_type_t *op = (anna_op_type_t *)stack->code;
+	anna_op_type_t *op = (anna_op_type_t *)stack->frame->code;
 	if(!anna_abides(anna_vmstack_peek_object(stack,0)->type, op->value))
 	{
 	    anna_vmstack_pop_object(stack);
 	    anna_vmstack_push_object(stack, null_object);
 	}
 	
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);	
     }
     
@@ -341,7 +400,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_alloc_check_gc(stack);
 	}
 	
-	anna_op_count_t *op = (anna_op_count_t *)stack->code;
+	anna_op_count_t *op = (anna_op_count_t *)stack->frame->code;
 	size_t param = op->param;
 	anna_object_t *wrapped = anna_vmstack_peek_object_fast(stack, param);
 
@@ -350,7 +409,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	{
 	    wprintf(
 		L"Error: Tried to call null pointer at offset %d of function %ls\n", 
-		stack->code - stack->function->code, stack->function->name);
+		stack->frame->code - stack->frame->function->code, stack->frame->function->name);
 	    
 	    CRASH;
 	}
@@ -359,31 +418,34 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 
 	if(unlikely(wrapped == null_object))
 	{
-	    stack->code += sizeof(*op);
+	wprintf(L"null\n");
+	    stack->frame->code += sizeof(*op);
 	    anna_vmstack_drop(stack, param);
 	}
 	else
 	{
-//	    wprintf(L"Call at offset %d\n", stack->code - stack->function->code);/
 	    anna_function_t *fun = anna_function_unwrap(wrapped);
+	    
 //	    wprintf(L"Call function %ls with %d params\n", fun->name, param);
 	    
 #ifdef ANNA_CHECK_VM
 	    if(!fun)
 	    {
-		debug(D_CRITICAL, L"In function %ls\n", stack->function->name );
-		anna_bc_print(stack->function->code);
-		debug(D_CRITICAL, L"Offset %d\n", stack->code - stack->function->code);
+		debug(D_CRITICAL, L"In function %ls\n", stack->frame->function->name );
+		anna_bc_print(stack->frame->function->code);
+		debug(D_CRITICAL, L"Offset %d\n", stack->frame->code - stack->frame->function->code);
 
 		debug(D_CRITICAL, L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
-		anna_vmstack_print(stack);
+		anna_frame_print(stack->frame);
 		CRASH;
 	    }
 #endif
 	    
-	    stack->code += sizeof(*op);
-	    stack = fun->native(stack, wrapped);
+	    stack->frame->code += sizeof(*op);
+	    stack->function_object = wrapped;
+	    fun->native(stack);
 	}
+
 	
 	OP_LEAVE(stack);	
     }
@@ -391,7 +453,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_CONSTRUCT:
     {
 	OP_ENTER(stack);	
-	anna_op_null_t *op = (anna_op_null_t *)stack->code;
+	anna_op_null_t *op = (anna_op_null_t *)stack->frame->code;
 	anna_object_t *wrapped = anna_vmstack_pop_object_fast(stack);
 	
 	anna_type_t *tp = anna_type_unwrap(wrapped);
@@ -403,7 +465,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    ANNA_MID_INIT_PAYLOAD);
 	anna_vmstack_push_object(stack, anna_as_obj_fast(*constructor_ptr));
 	anna_vmstack_push_object(stack, result);
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);	
     }
 	    
@@ -411,9 +473,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);	
 	anna_entry_t *val = anna_vmstack_peek_entry(stack, 0);
-	anna_frame_return(stack);
-	
-	stack = stack->caller;
+	anna_stack_frame_return(stack);
 	anna_vmstack_push_entry(stack, val);
 //		wprintf(L"Pop frame\n");
 	OP_LEAVE(stack);	
@@ -422,17 +482,15 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_RETURN_COUNT:
     {
 	OP_ENTER(stack);	
-	anna_op_count_t *cb = (anna_op_count_t *)stack->code;
+	anna_op_count_t *cb = (anna_op_count_t *)stack->frame->code;
 	anna_entry_t *val = anna_vmstack_peek_entry(stack, 0);
 	int i;
 		
 	for(i=0; i<cb->param; i++)
 	{
-	    anna_frame_return(stack);
-	    stack = stack->parent;
+	    anna_stack_frame_return_static(stack);
 	}
-	anna_frame_return(stack);
-	stack = stack->caller;
+	anna_stack_frame_return(stack);
 	anna_vmstack_push_entry(stack, val);
 	OP_LEAVE(stack);	
     }
@@ -440,19 +498,17 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     ANNA_LAB_RETURN_COUNT_BREAK:
     {
 	OP_ENTER(stack);	
-	anna_op_count_t *cb = (anna_op_count_t *)stack->code;
+	anna_op_count_t *cb = (anna_op_count_t *)stack->frame->code;
 	anna_entry_t *val = anna_vmstack_peek_entry(stack, 0);
 	int i;
 		
 	for(i=0; i<cb->param; i++)
 	{
-	    anna_frame_return(stack);
-	    stack = stack->parent;
+	    anna_stack_frame_return_static(stack);
 	}
-	anna_frame_return(stack);
-	stack = stack->caller;
+	anna_stack_frame_return(stack);
 	anna_vmstack_push_entry(stack, val);
-	stack->flags |= ANNA_VMSTACK_BREAK;
+	stack->frame->flags |= ANNA_ACTIVATION_FRAME_BREAK;
 	OP_LEAVE(stack);	
     }
 
@@ -461,10 +517,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	OP_ENTER(stack);	
 	anna_vmstack_push_entry( 
 	    stack, 
-	    stack->flags & ANNA_VMSTACK_BREAK ? anna_from_int(1) : null_entry);
+	    stack->frame->flags & ANNA_ACTIVATION_FRAME_BREAK ? anna_from_int(1) : null_entry);
 	// Clear the break flag on check
-	stack->flags  = stack->flags & ~ANNA_VMSTACK_BREAK;
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->flags  = stack->frame->flags & ~ANNA_ACTIVATION_FRAME_BREAK;
+	stack->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);	
     }
     
@@ -472,11 +528,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_NATIVE_CALL:
     {
 	OP_ENTER(stack);	
-	anna_op_native_call_t *cb = (anna_op_native_call_t *)stack->code;
-	stack->code += sizeof(*cb);
+	anna_op_native_call_t *cb = (anna_op_native_call_t *)stack->frame->code;
+	stack->frame->code += sizeof(*cb);
 
-	stack = cb->function(stack, 0);
-	OP_LEAVE(stack);	
+	cb->function(stack);
+	OP_LEAVE(stack);
     }
 
   ANNA_LAB_STOP:
@@ -484,8 +540,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	OP_ENTER(stack);	
 //		wprintf(L"Pop last frame\n");
 	anna_object_t *val = anna_vmstack_peek_object(stack, 0);
-//	free(stack->code);
-	anna_frame_return(stack);
+//	free(stack->frame->code);
+	anna_stack_frame_return(stack);
 //	stack = stack->caller;
 	return val;
     }
@@ -493,29 +549,27 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_VAR_GET:
     {
 	OP_ENTER(stack);	
-	anna_op_var_t *op = (anna_op_var_t *)stack->code;
+	anna_op_var_t *op = (anna_op_var_t *)stack->frame->code;
 	int i;
-	anna_vmstack_t *s = stack;
+	anna_activation_frame_t *s = stack->frame;
 	for(i=0; i<op->frame_count; i++)
 	{
-
-	    s = s->parent;
+	    s = s->static_frame;
 #ifdef ANNA_CHECK_VM
 	    if(!s)
 	    {
 		wprintf(
-		    L"Error: Var get op to invalid stack frame: %d %d %ls\n",
+		    L"Error: Var get op of to invalid stack frame: %d %d %ls\n",
 		    op->frame_count, op->offset,
-		    stack->function->name);
+		    stack->frame->function->name);
 		anna_vmstack_print_parent(stack);
-		stack_describe(stack);
-		
+		anna_stack_describe(stack);
 		CRASH;
 	    }
 #endif
 	}
 #ifdef ANNA_CHECK_VM
-	if(!s->base[op->offset])
+	if(!s->slot[op->offset])
 	{
 	    wprintf(
 		L"Var get op on unassigned var: %d %d\n",
@@ -527,39 +581,39 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 /*
 	wprintf(
 	    L"Var get in function %ls, pos %d %d. Result: Object of type %ls\n",
-	    stack->function->name,
+	    stack->frame->function->name,
 	    op->frame_count, op->offset,
 	    anna_as_obj(s->base[op->offset])->type->name);
 */
-	anna_vmstack_push_entry(stack, s->base[op->offset]);
-	stack->code += sizeof(*op);
+	anna_vmstack_push_entry(stack, s->slot[op->offset]);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);	
     }
 	    
   ANNA_LAB_VAR_SET:
     {
 	OP_ENTER(stack);	
-	anna_op_var_t *op = (anna_op_var_t *)stack->code;
+	anna_op_var_t *op = (anna_op_var_t *)stack->frame->code;
 	int i;
-	anna_vmstack_t *s = stack;
+	anna_activation_frame_t *s = stack->frame;
 	for(i=0; i<op->frame_count; i++)
-	    s = s->parent;
-	s->base[op->offset] = anna_vmstack_peek_entry(stack, 0);
+	    s = s->static_frame;
+	s->slot[op->offset] = anna_vmstack_peek_entry(stack, 0);
 /*
 	wprintf(
 	    L"Var set in function %ls, pos %d %d. Value: Object of type %ls\n",
-	    stack->function->name,
+	    stack->frame->function->name,
 	    op->frame_count, op->offset,
 	    anna_as_obj(s->base[op->offset])->type->name);
 */
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);	
     }
 	    
   ANNA_LAB_MEMBER_GET:
     {
 	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -569,8 +623,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    debug(
 		D_CRITICAL,
 		L"Error in function %ls, offset %d: Object of type %ls does not have a member of type %ls\n",
-		stack->function->name,
-		stack->code - stack->function->code,
+		stack->frame->function->name,
+		stack->frame->code - stack->frame->function->code,
 		obj->type->name,
 		anna_mid_get_reverse(op->mid));
 	    anna_vmstack_print_parent(stack);
@@ -583,7 +637,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    if(unlikely(obj == null_object))
 	    {
 		anna_vmstack_push_object(stack, null_object);	    
-		stack->code += sizeof(*op);		    
+		stack->frame->code += sizeof(*op);		    
 	    }
 	    else
 	    {
@@ -592,8 +646,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		
 		anna_vmstack_push_object(stack, method);
 		anna_vmstack_push_object(stack, obj);
-		stack->code += sizeof(*op);
-		stack = fun->native(stack, method);
+		stack->frame->code += sizeof(*op);
+		stack->function_object = method;
+		fun->native(stack);
 	    }
 	}
 	else
@@ -607,7 +662,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_entry_t *res = obj->member[m->offset];		    
 		anna_vmstack_push_entry(stack, res);
 	    }
-	    stack->code += sizeof(*op);
+	    stack->frame->code += sizeof(*op);
 	}
 	
 	OP_LEAVE(stack);	
@@ -616,7 +671,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_STATIC_MEMBER_GET:
     {
 	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
 	
 	anna_type_t *type = anna_type_unwrap(obj);
@@ -636,14 +691,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 #endif 
 	anna_vmstack_push_entry(stack, type->static_member[m->offset]);
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);	
     }
 	    
   ANNA_LAB_PROPERTY_GET:
     {
 	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -662,7 +717,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	if(unlikely(obj == null_object))
 	{
 	    anna_vmstack_push_object(stack, null_object);	    
-	    stack->code += sizeof(*op);		    
+	    stack->frame->code += sizeof(*op);		    
 	}
 	else
 	{
@@ -671,8 +726,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
 	    anna_vmstack_push_object(stack, method);
 	    anna_vmstack_push_object(stack, obj);
-	    stack->code += sizeof(*op);		    
-	    stack = fun->native(stack, method);
+	    stack->frame->code += sizeof(*op);		    
+	    stack->function_object = method;
+	    fun->native(stack);
 	}
 	OP_LEAVE(stack);	
     }
@@ -680,7 +736,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_STATIC_PROPERTY_GET:
     {
 	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
 
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
@@ -702,8 +758,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	
 	anna_vmstack_push_object(stack, method);
 	anna_vmstack_push_object(stack, obj);
-	stack->code += sizeof(*op);
-	stack = fun->native(stack, method);
+	stack->frame->code += sizeof(*op);
+	stack->function_object = method;
+	fun->native(stack);
 
 	OP_LEAVE(stack);	
     }
@@ -712,7 +769,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);
 
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
 //	wprintf(L"Get method member %d, %ls\n", op->mid, anna_mid_get_reverse(op->mid));
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
 #ifdef ANNA_CHECK_VM
@@ -729,15 +786,15 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    debug(
 		D_CRITICAL,L"Object of type %ls does not have a member named %ls\n",
 		obj->type->name, anna_mid_get_reverse(op->mid));
-	    if(stack->function)
+	    if(stack->frame->function)
 	    {
 		
 		debug(
 		    D_CRITICAL,
 		    L"Function %ls\n",
-		    stack->function->name);	
+		    stack->frame->function->name);	
 	    }
-	    anna_vmstack_print(stack);	    
+	    anna_frame_print(stack->frame);	    
 	    CRASH;
 	}
 #endif 
@@ -746,7 +803,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_vmstack_push_entry(stack, res);
 	anna_vmstack_push_object(stack, obj);
 		
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 
 	OP_LEAVE(stack);	
     }
@@ -754,7 +811,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_MEMBER_SET:
     {
 	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
 	anna_entry_t *value = anna_vmstack_peek_entry(stack, 0);
 	
@@ -782,9 +839,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    anna_vmstack_push_object(stack, obj);
 	    anna_vmstack_push_entry(stack, value);
 
-	    stack->code += sizeof(*op);
-	    stack = fun->native(
-		stack, method);
+	    stack->frame->code += sizeof(*op);
+	    stack->function_object = method;
+	    fun->native(stack);
 	}
 	else
 	{
@@ -794,7 +851,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		obj->member[m->offset] = value;
 	    }
 		    
-	    stack->code += sizeof(*op);
+	    stack->frame->code += sizeof(*op);
 	}
 	OP_LEAVE(stack);	
     }
@@ -802,7 +859,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
   ANNA_LAB_STATIC_MEMBER_SET:
     {
 	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->code;
+	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
 	anna_object_t *obj = anna_vmstack_pop_object(stack);
 	anna_entry_t *value = anna_vmstack_peek_entry(stack, 0);
 	anna_type_t * type = anna_type_unwrap(obj);
@@ -830,29 +887,29 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 #endif
 	
 	type->static_member[m->offset] = value;
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);	
     }
 
   ANNA_LAB_LIST:
     {
 	OP_ENTER(stack);	
-	anna_op_type_t *op = (anna_op_type_t *)stack->code;
+	anna_op_type_t *op = (anna_op_type_t *)stack->frame->code;
 	anna_vmstack_push_object(stack, anna_list_create2(op->value));
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 	OP_LEAVE(stack);
     }
 
   ANNA_LAB_TYPE_OF:
     {
 	OP_ENTER(stack);	
-	anna_op_null_t *op = (anna_op_null_t *)stack->code;
+	anna_op_null_t *op = (anna_op_null_t *)stack->frame->code;
 	anna_vmstack_push_object(
 	    stack,
 	    anna_type_wrap(
 		anna_vmstack_pop_object(stack)->type)
 	    );
-	stack->code += sizeof(*op);
+	stack->frame->code += sizeof(*op);
 /*	    int i;
 	    wprintf(L"Type of stack content:\n");
 	    for(i=0; i < 3 && &stack->base[i] < stack->top; i++)
@@ -874,11 +931,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	anna_object_t *lst = anna_vmstack_peek_object(stack, 0);
 	if(lst->type->mid_identifier[ANNA_MID_LIST_PAYLOAD] == 0)
 	{
-	    if(stack->function)
+	    if(stack->frame->function)
 	    {
-		debug(D_CRITICAL, L"In function %ls\n", stack->function->name );
-		anna_bc_print(stack->function->code);
-		debug(D_CRITICAL, L"Offset %d\n", stack->code - stack->function->code);
+		debug(D_CRITICAL, L"In function %ls\n", stack->frame->function->name );
+		anna_bc_print(stack->frame->function->code);
+		debug(D_CRITICAL, L"Offset %d\n", stack->frame->code - stack->frame->function->code);
 	    }
 	    
 	    debug(
@@ -890,7 +947,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    
 	    int i;
 	    
-	    for(i=0; &stack->base[i] < stack->top; i++)
+	    for(i=0; &stack->stack[i] < stack->top; i++)
 	    {
 		wprintf(L"Object of type %ls\n", anna_vmstack_peek_object(stack, i)->type->name);		
 	    }
@@ -910,7 +967,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	}
 #endif	
 	anna_list_add(anna_vmstack_peek_object(stack, 0), val);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);	
     }
 	    
@@ -918,7 +975,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);	
 	anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);	
     }
 	    
@@ -926,7 +983,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);	
 	*(stack->top-1) = anna_entry_null(*(stack->top-1))?anna_from_int(1):null_entry;
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);	
     }
 
@@ -934,43 +991,43 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);	
 	anna_vmstack_push_entry(stack, anna_vmstack_peek_entry(stack, 0));
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);	
     }
 
   ANNA_LAB_JMP:
     {
 	OP_ENTER(stack);	
-	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += op->offset;
+	anna_op_off_t *op = (anna_op_off_t *)stack->frame->code;
+	stack->frame->code += op->offset;
 	OP_LEAVE(stack);	
     }
 	    
   ANNA_LAB_COND_JMP:
     {
 	OP_ENTER(stack);	
-	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += !anna_entry_null(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
+	anna_op_off_t *op = (anna_op_off_t *)stack->frame->code;
+	stack->frame->code += !anna_entry_null(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	OP_LEAVE(stack);	
     }
 	    
   ANNA_LAB_NCOND_JMP:
     {
 	OP_ENTER(stack);	
-	anna_op_off_t *op = (anna_op_off_t *)stack->code;
-	stack->code += anna_entry_null(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
+	anna_op_off_t *op = (anna_op_off_t *)stack->frame->code;
+	stack->frame->code += anna_entry_null(anna_vmstack_pop_entry(stack)) ? op->offset:sizeof(*op);
 	OP_LEAVE(stack);	
     }
 	    
   ANNA_LAB_TRAMPOLENE:
     {
 	OP_ENTER(stack);	
-	stack = anna_frame_to_heap(stack);
+	stack->frame = anna_frame_to_heap(stack->frame);
 	anna_object_t *base = anna_vmstack_pop_object_fast(stack);
 	anna_object_t *tramp = anna_vm_trampoline(anna_function_unwrap(base), stack);
 	anna_vmstack_push_object(stack, tramp);
 	
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(stack);	
     }
 
@@ -978,7 +1035,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);	
 	anna_entry_t *iv = anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(iv)))
 	{
 	    int res = anna_as_int(iv)+1;
@@ -1006,7 +1063,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
-		stack = fun->native(stack, wrapped);
+		stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}
 	
@@ -1017,7 +1075,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     {
 	OP_ENTER(stack);	
 	anna_entry_t *iv = anna_vmstack_pop_entry(stack);
-	stack->code += sizeof(anna_op_null_t);
+	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(iv)))
 	{
 	    int res = anna_as_int(iv)-1;
@@ -1045,7 +1103,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_vmstack_push_object(stack,wrapped);
 		anna_vmstack_push_object(stack,o1);
-		stack = fun->native(stack, wrapped);
+		stack->function_object = wrapped;
+		fun->native(stack);
 	    }
 	}	
 	
@@ -1405,9 +1464,9 @@ void anna_vm_mark_code(anna_function_t *f)
    This method is the best ever! It does nothing and returns a null
    object. All method calls on the null object run this. 
 */
-anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
+void anna_vm_null_function(anna_vmstack_t *stack)
 {
-    char *code = stack->code;
+    char *code = stack->frame->code;
     /* We rewind the code pointr one function call to get to the
      * instruction that called us. If the previous instruction was a
      * member access, this function call is in fact a getter/setter so
@@ -1433,9 +1492,8 @@ anna_vmstack_t *anna_vm_null_function(anna_vmstack_t *stack, anna_object_t *me)
 	    break;
 	    
 	default:
-	  wprintf(L"Unknown null fun opcode %d at byte offset %d (started rollback at offset %d)\n", op->instruction, code - stack->function->code, stack->code-stack->function->code);
+	  wprintf(L"Unknown null fun opcode %d at byte offset %d (started rollback at offset %d)\n", op->instruction, code - stack->frame->function->code, stack->frame->code-stack->frame->function->code);
 	    CRASH;
     }
     anna_vmstack_push_object(stack, null_object);
-    return stack;
 }

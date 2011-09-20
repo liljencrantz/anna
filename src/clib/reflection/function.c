@@ -136,17 +136,13 @@ ANNA_VM_NATIVE(anna_function_type_i_get, 2)
     }
     
     wchar_t *name = anna_string_payload(anna_as_obj(param[1]));
-    anna_vmstack_t *c_stack = (anna_vmstack_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_entry_t *res = null_entry;
-    anna_function_t *fun = c_stack->function;
-
-    if(fun)
+    anna_function_t *fun = frame->function;
+    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
+    if(sid.frame == 0)
     {
-	anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
-	if(sid.frame == 0)
-	{
-	    res = c_stack->base[sid.offset];
-	}
+	res = frame->slot[sid.offset];
     }
     
     free(name);
@@ -156,17 +152,13 @@ ANNA_VM_NATIVE(anna_function_type_i_get, 2)
 ANNA_VM_NATIVE(anna_function_type_i_caller, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_t *c_stack = (anna_vmstack_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
-    if(c_stack->caller)
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    if(frame->dynamic_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    c_stack->caller,
-	    object_type)->wrapper;
-	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)c_stack->caller;
-	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)c_stack->caller->code;
+	    0,
+	    frame->dynamic_frame)->wrapper;
 	return anna_from_obj(cont);
-	
-
     }
     return null_entry;
 }
@@ -175,13 +167,12 @@ ANNA_VM_NATIVE(anna_function_type_i_parent, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_vmstack_t *c_stack = (anna_vmstack_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
-    if(c_stack->parent)
+    anna_activation_frame_t *frame = c_stack->frame;
+    if(frame->static_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    c_stack->parent,
-	    object_type)->wrapper;
-	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)c_stack->parent;
-	*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)c_stack->parent->code;
+	    c_stack,
+	    frame->static_frame)->wrapper;
 	return anna_from_obj(cont);
     }
     return null_entry;
@@ -296,6 +287,14 @@ void anna_function_type_create(
     {
 	anna_member_create(
 	    res, ANNA_MID_CONTINUATION_STACK,
+	    ANNA_MEMBER_ALLOC, null_type);
+	
+	anna_member_create(
+	    res, ANNA_MID_CONTINUATION_STACK_COUNT,
+	    ANNA_MEMBER_ALLOC, null_type);
+	
+	anna_member_create(
+	    res, ANNA_MID_CONTINUATION_ACTIVATION_FRAME,
 	    ANNA_MEMBER_ALLOC, null_type);
 	
 	anna_member_create(

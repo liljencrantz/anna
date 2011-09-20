@@ -1,52 +1,38 @@
 
 #include "autogen/anna_object_i.c"
 
-static anna_vmstack_t *anna_object_init(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_object_init, 1)
 {
-    anna_entry_t **param = stack->top - 1;
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, this);
-    return stack;
+    return param[0];
 }
 
-static anna_vmstack_t *anna_object_cmp(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_object_cmp, 2)
 {
-    anna_entry_t **param = stack->top - 2;
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_drop(stack, 3);
-    anna_vmstack_push_entry(stack, anna_from_int(this->type- anna_as_obj(param[1])->type));
-    return stack;
+    return anna_from_int(this->type - anna_as_obj(param[1])->type);
 }
 
-static anna_vmstack_t *anna_object_hash(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_object_hash, 1)
 {
-    anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_int_create(hash_ptr_func(this->type)));
-    return stack;
+    return anna_from_obj(anna_int_create(hash_ptr_func(this->type)));
 }
 
-static anna_vmstack_t *anna_object_to_string(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_object_to_string, 1)
 {
-    anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"Object of type %ls", this->type->name);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_string_create(sb_length(&sb), sb_content(&sb)));
-    return stack;
+    anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), sb_content(&sb)));
+    sb_destroy(&sb);
+    return res;
 }
 
-static anna_vmstack_t *anna_object_type(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_object_type, 1)
 {
-    anna_entry_t **param = stack->top - 1;
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_drop(stack, 2);
-    anna_vmstack_push_object(stack, anna_type_wrap(this->type));
-    return stack;
+    return anna_from_obj(anna_type_wrap(this->type));
 }
 
 void anna_object_type_create()

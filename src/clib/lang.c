@@ -198,8 +198,8 @@ static int print_direct_loop(anna_object_t *list, int idx)
     return idx;
 }
 
-static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t *me)
-{    
+static void anna_print_callback(anna_vmstack_t *stack)
+{
     anna_object_t *value = anna_vmstack_pop_object(stack);
     anna_entry_t **param = stack->top - 2;
     anna_object_t *list = anna_as_obj_fast(param[0]);
@@ -236,12 +236,12 @@ static anna_vmstack_t *anna_print_callback(anna_vmstack_t *stack, anna_object_t 
 	anna_vmstack_drop(stack, 3);
 	anna_vmstack_push_object(stack, list);
     }
-    
-    return stack;
 }
 
-static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_i_print(anna_vmstack_t *stack)
 {
+//    wprintf(L"whoa, print\n");
+
     anna_object_t *list = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     int idx = print_direct_loop(list, 0);
@@ -257,8 +257,7 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
 	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
-	
-	stack = anna_vm_callback_native(
+	anna_vm_callback_native(
 	    stack,
 	    anna_print_callback, 2, callback_param,
 	    meth, 1, (anna_entry_t **)&o
@@ -268,7 +267,6 @@ static anna_vmstack_t *anna_i_print(anna_vmstack_t *stack, anna_object_t *me)
     {
 	anna_vmstack_push_object(stack, list);
     }
-    return stack;
 }
 
 ANNA_VM_NATIVE(anna_i_nothing, 1)
@@ -282,52 +280,45 @@ ANNA_VM_NATIVE(anna_i_nothing, 1)
     return null_entry;
 }
 
-static anna_vmstack_t *anna_i_not(anna_vmstack_t *stack, anna_object_t *me)
+ANNA_VM_NATIVE(anna_i_not, 1)
 {
-    anna_entry_t *val = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_object(stack);
-    anna_vmstack_push_entry(stack, anna_entry_null(val)?anna_from_int(1):null_entry);
-    return stack;
+    return anna_entry_null(param[0])?anna_from_int(1):null_entry;
 }
 
-static anna_vmstack_t *anna_i_callcc_callback(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_i_callcc_callback(anna_vmstack_t *stack)
 {
     anna_object_t *res = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     anna_vmstack_push_object(stack, res);
-    return stack;
 }
 
-static anna_vmstack_t *anna_i_callcc(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_i_callcc(anna_vmstack_t *stack)
 {
-    stack = anna_frame_to_heap(stack);
+    stack->frame = anna_frame_to_heap(stack->frame);
     
     anna_object_t *fun = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     anna_object_t *cont = anna_continuation_create(
 	stack,
-	object_type)->wrapper;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)stack;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)stack->code;
+	stack->frame)->wrapper;
     
-    return anna_vm_callback_native(
+    anna_vm_callback_native(
 	stack, &anna_i_callcc_callback, 0, 0, 
 	fun, 1, (anna_entry_t **)&cont);    
 }
 
-static anna_vmstack_t *anna_i_wrap_method(anna_vmstack_t *stack, anna_object_t *me)
+static void anna_i_wrap_method(anna_vmstack_t *stack)
 {
     anna_entry_t *meth = anna_vmstack_pop_entry(stack);
     anna_entry_t *obj = anna_vmstack_pop_entry(stack);
     anna_vmstack_pop_object(stack);
     
-    anna_object_t *res = anna_method_wrapper_create(
+    anna_object_t *res = anna_method_bind(
 	stack,
-	object_type)->wrapper;
+	anna_function_unwrap(anna_as_obj(meth)))->wrapper;
     *anna_entry_get_addr(res, ANNA_MID_THIS) = obj;
     *anna_entry_get_addr(res, ANNA_MID_METHOD) = meth;
     anna_vmstack_push_object(stack, res);
-    return stack;
 }
 
 void anna_lang_create_types(anna_stack_template_t *stack_lang)

@@ -23,7 +23,7 @@ someVariableName := 0;
     return Call(
 	node,	   
 	Identifier(node, "cast"), 
-	Call(node, 
+	Call(node,
 	     Call(node, 
 		  Identifier(node, "__memberGet__"), 
 		  Dummy(node, node[0]),
