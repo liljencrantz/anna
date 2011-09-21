@@ -5,7 +5,7 @@
 *.so
 *.d
 *.out
-*.output
+autogen/*.output
 *.gcov
 *.gcda
 *.gcno
