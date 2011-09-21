@@ -11,7 +11,6 @@
   - Can't assign to constants
   - Check argument types to function calls better...
 * Fix if/else snafu. What is the best solution?
-* Rename vmstack to context
 
 1.0 RELEASE CRITERIA (Done):
 * List.sort
@@ -40,6 +39,7 @@
 * Usable File type
 * Usable Date type
 * Access attributes of variables and properties
+* Rename vmstack to context
 
 2.0 RELEASE CRITERIA:
 * Documentation coverage of standard API functions and types should be 100 %.

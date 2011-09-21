@@ -27,6 +27,7 @@
 #include "clib/anna_function_type.h"
 #include "anna_mid.h"
 #include "anna_tt.h"
+#include "anna_util.h"
 
 #include "anna_member.c"
 #include "anna_abides.c"
@@ -601,7 +602,6 @@ static void anna_type_prepare_member_internal(
     
 }
 
-
 static void anna_type_prepare_property(
     anna_type_t *type,
     anna_node_declare_t *decl,
@@ -683,11 +683,6 @@ static void anna_type_prepare_property(
   END:
     al_destroy(&etter);
 
-}
-
-ANNA_VM_NATIVE(anna_type_noop, 1)
-{
-    return param[0];
 }
 
 static void anna_type_extend(
@@ -860,7 +855,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"__init__"), 0,
-	    &anna_type_noop, type, 1, argv, argn, 0, 0);
+	    &anna_util_noop, type, 1, argv, argn, 0, 0);
 /*
   anna_object_t **cp = anna_entry_get_addr_static(
   type,
