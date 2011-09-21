@@ -141,22 +141,14 @@ def sun(){
 
 type Body {
 
-    var Float x;
-    var Float y;
-    var Float z;
-    var Float vx;
-    var Float vy;
-    var Float vz;
-    var Float mass;
+    expandCode(
+	var Float %name,
+	name: [x, y, z, vx, vy, vz, mass]);
 
     def __init__(){
-       x=0.0;
-       y=0.0;
-       z=0.0;
-       vx=0.0;
-       vy=0.0;
-       vz=0.0;
-       mass=0.0;
+	expandCode(
+	    this.%name = 0.0,
+	    name: [x, y, z, vx, vy, vz, mass]);
    }
 
    def offsetMomentum(Float px, Float py, Float pz){

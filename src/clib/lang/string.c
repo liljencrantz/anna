@@ -740,6 +740,11 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	anna_mid_get(L"__join__"), 0,
 	&anna_string_i_join, type,
 	2, join_argv, join_argn, 0, 0);
+    if(!mutable)
+    {
+	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+	fun->flags |= ANNA_FUNCTION_PURE;
+    }
     
     wchar_t *ljoin_argn[] =
 	{

@@ -322,7 +322,6 @@ anna_entry_t *anna_node_static_invoke_try(
 	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_call_t *this2 = (anna_node_member_access_t *)this;
-	    //wprintf(L"Weee member get. Member is named %ls\n", anna_mid_get_reverse(this2->mid));
 	    anna_object_t *obj = anna_as_obj(
 		anna_node_static_invoke_try(
 		    this2->object,
@@ -359,7 +358,7 @@ anna_entry_t *anna_node_static_invoke_try(
 		anna_entry_t *res = 0;
 		if(ok)
 		{
-		    anna_object_t *res = anna_vm_run(
+		    res = anna_vm_run(
 			anna_function_wrap(meth),
 			meth->input_count,
 			argv);

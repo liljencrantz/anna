@@ -21,6 +21,7 @@
 #include "anna_vm.h"
 #include "anna_node_hash.h"
 #include "anna_node_check.h"
+#include "clib/clib.h"
 #include "clib/lang/pair.h"
 #include "clib/lang/list.h"
 #include "clib/lang/hash.h"
@@ -607,6 +608,11 @@ static void anna_type_prepare_property(
     anna_node_declare_t *decl,
     anna_stack_template_t *stack)
 {
+    if(!decl->name)
+    {
+	return;
+    }
+    
     if(hash_contains(
 	   &type->name_identifier,
 	   decl->name))
@@ -734,6 +740,46 @@ void anna_type_set_stack(
     }
 }
 
+static void anna_type_def_flatten(anna_type_t *type)
+{
+    anna_node_call_t *ndef = anna_node_create_call2(
+	&type->body->location,
+	type->body->function);
+    int i, j;
+
+    for(i=0; i<type->body->child_count; i++)
+    {
+	anna_node_t *next = type->body->child[i];
+	int skip = 0;
+	
+	if(next->node_type == ANNA_NODE_CALL)
+	{
+	    
+	    anna_node_call_t *c = (anna_node_call_t *)next;
+	    anna_entry_t *val = anna_node_static_invoke_try(c->function, type->stack);
+	    if(anna_function_unwrap(val) == anna_lang_nothing)
+	    {
+		skip = 1;
+		
+		for(j=0; j<c->child_count; j++)
+		{
+		    anna_node_call_add_child(ndef, c->child[j]);
+		    
+		}
+		
+	    }
+	    
+	}
+	if(!skip)
+	{
+	    anna_node_call_add_child(ndef, next);
+	}
+	
+    }
+    type->body = ndef;
+}
+
+
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type)
 {
@@ -747,6 +793,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 
     if(type->definition)
     {
+	anna_type_def_flatten(type);
 	
 	if(type->definition->child[0]->node_type != ANNA_NODE_IDENTIFIER)
 	{

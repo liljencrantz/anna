@@ -71,6 +71,7 @@ anna_type_t *object_type=0,
     ;
 
 anna_object_t *null_object=0;
+anna_function_t *anna_lang_nothing;
 
 const static anna_type_data_t anna_lang_type_data[] = 
 {
@@ -354,7 +355,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	p_argn, 
 	L"Print all the supplied arguments to standard output");
 
-    anna_module_function(
+    anna_lang_nothing = anna_module_function(
 	stack,
 	L"nothing", 
 	ANNA_FUNCTION_VARIADIC, 
