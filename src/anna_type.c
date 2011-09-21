@@ -79,7 +79,7 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
     
     for(i=0;i<al_get_count(&anna_type_list); i++)
     {
-	anna_type_t *type = (anna_type_t *)al_get(&anna_type_list, i);
+	anna_type_t *type = (anna_type_t *)al_get_fast(&anna_type_list, i);
 	type->mid_identifier = realloc(type->mid_identifier, sz*sizeof(anna_member_t *));
 	if(type == null_type)
 	{
@@ -393,7 +393,7 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
     int steps = al_get_count(&orig->member_list);
     for(i=0; i<=steps; i++)
     {
-        anna_member_t *memb = al_get(&orig->member_list, i);
+        anna_member_t *memb = al_get_fast(&orig->member_list, i);
 	if(!memb->is_static)
 	    continue;
 	
@@ -414,7 +414,7 @@ static void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *or
 	anna_attribute_call_all(orig->attribute, L"doc", &odoc);
 	for(i=0; i<al_get_count(&odoc); i++)
 	{
-	    anna_node_t *dd = (anna_node_t *)al_get(&odoc, i);
+	    anna_node_t *dd = (anna_node_t *)al_get_fast(&odoc, i);
 	    if(!res->attribute)
 	    {
 		res->attribute = anna_node_create_block2(0);
@@ -435,6 +435,11 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
 
+    for(i=0; i<orig->finalizer_count; i++)
+    {
+	anna_type_finalizer_add(res, orig->finalizer[i]);
+    }
+
     if(orig == object_type && !anna_type_object_created)
     {
 	anna_type_copy_object(res);
@@ -452,7 +457,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     
     for(i=0; i<steps; i++)
     {
-        anna_member_t *memb = al_get(&orig->member_list, i);
+        anna_member_t *memb = al_get_fast(&orig->member_list, i);
 	//       if(!memb)
 	// continue;
 	mid_t mid = anna_mid_get(memb->name);
@@ -497,7 +502,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     {
         for(i=0; i<steps; i++)
 	{
-            anna_member_t *memb = al_get(&orig->member_list, i);
+            anna_member_t *memb = al_get_fast(&orig->member_list, i);
 	    if(!copied[i])
 		continue;
 	    
@@ -709,7 +714,6 @@ static void anna_type_extend(
 	}
 	anna_type_setup_interface(par);
 	anna_type_copy(type, par);
-		
     }
     anna_type_copy(type, object_type);
 }
@@ -1319,15 +1323,6 @@ anna_type_t *anna_type_for_function(
     
     for(i=0; i<argc;i++)
     {
-//	wprintf(L"%d %d %d\n", argv, argv[i], argv[i]);
-	FIXME("FakeFunctionType should not be needed anymore");
-	if(argv[i] && wcscmp(argv[i]->name, L"!FakeFunctionType")==0)
-	{
-	    debug(D_CRITICAL,
-		L"Critical: Tried to get a function key for function with uninitialized argument types\n");
-	    CRASH;
-	}
-	
 	key->input_type[i]=argv[i];
 	key->input_name[i]=argn[i];
 	key->input_default[i]=argd ? argd[i] : 0;
@@ -1411,4 +1406,16 @@ int anna_type_mid_internal(mid_t mid)
 	(mid == anna_mid_get(L"__member__"))||
 	(mid == anna_mid_get(L"__abides__"))||
 	(mid == anna_mid_get(L"__attribute__"));
+}
+
+void anna_type_finalizer_add(anna_type_t *type, anna_finalizer_t finalizer)
+{
+    int i;
+    for(i=0; i<type->finalizer_count; i++)
+    {
+	if(type->finalizer[i] == finalizer)
+	    return;
+    }
+    type->finalizer = realloc(type->finalizer, sizeof(anna_finalizer_t) * (type->finalizer_count+1));
+    type->finalizer[type->finalizer_count++] = finalizer;
 }

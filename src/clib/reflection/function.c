@@ -156,8 +156,9 @@ ANNA_VM_NATIVE(anna_function_type_i_caller, 1)
     if(frame->dynamic_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    0,
-	    frame->dynamic_frame)->wrapper;
+	    (anna_entry_t **)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK),
+	    (size_t)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK_COUNT),
+	    frame->dynamic_frame, 0)->wrapper;
 	return anna_from_obj(cont);
     }
     return null_entry;
@@ -171,8 +172,9 @@ ANNA_VM_NATIVE(anna_function_type_i_parent, 1)
     if(frame->static_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    c_stack,
-	    frame->static_frame)->wrapper;
+	    (anna_entry_t **)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK),
+	    (size_t)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK_COUNT),
+	    frame->static_frame, 0)->wrapper;
 	return anna_from_obj(cont);
     }
     return null_entry;

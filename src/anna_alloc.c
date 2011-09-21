@@ -560,24 +560,15 @@ static void anna_alloc_free(void *obj)
     {
 	case ANNA_OBJECT:
 	{
-	    if(obj == null_object)
-		break;
 	    anna_object_t *o = (anna_object_t *)obj;
-	    if(anna_alloc_run_finalizers)
+	    int i;
+	    for(i=0; i<o->type->finalizer_count; i++)
 	    {
-//		wprintf(L"AAA %ls\n", o->type->name);
-		anna_member_t *del_mem = anna_member_get(o->type, ANNA_MID_DEL);
-		if(del_mem && del_mem->is_bound_method)
-		{
-		    anna_vm_run(
-			anna_as_obj_fast(o->type->static_member[del_mem->offset]),
-			1,
-			&o);
-		}
+		o->type->finalizer[i](o);
 	    }
 	    anna_alloc_count -= o->type->object_size;
 	    anna_slab_free(obj, o->type->object_size);
-	    
+
 	    break;
 	}
 	case ANNA_TYPE:
@@ -637,31 +628,13 @@ static void anna_alloc_free(void *obj)
 	    anna_slab_free(obj, sizeof(anna_function_t));
 	    break;
 	}
+
 	case ANNA_NODE:
 	{
 	    anna_node_t *o = (anna_node_t *)obj;
-	    	    
+	    
 	    switch(o->node_type)
 	    {
-		case ANNA_NODE_IDENTIFIER:
-		{
-//		    anna_node_identifier_t *n = (anna_node_identifier_t *)o;
-		    break;
-		}
-		case ANNA_NODE_STRING_LITERAL:
-		case ANNA_NODE_ASSIGN:
-		{
-//		    anna_node_assign_t *n = (anna_node_assign_t *)o;
-		    break;
-		}
-
-		case ANNA_NODE_CONST:
-		case ANNA_NODE_DECLARE:
-		{
-//		    anna_node_declare_t *n = (anna_node_declare_t *)o;
-		    break;
-		}
-		
 		case ANNA_NODE_CALL:
 		case ANNA_NODE_CONSTRUCT:
 		case ANNA_NODE_MEMBER_CALL:
@@ -677,6 +650,7 @@ static void anna_alloc_free(void *obj)
 	    free(obj);
 	    break;
 	}
+
 	case ANNA_STACK_TEMPLATE:
 	{
 	    int i;
@@ -746,18 +720,6 @@ void anna_gc(anna_vmstack_t *stack)
     size_t start_count = al_get_count(&anna_alloc);
 #endif
     
-//    anna_vmstack_t *stack_ptr = stack;
-
-/*
-    wprintf(L"\n\nRUNNING GC. We have %d allocated items.\n", al_get_count(&anna_alloc));
-    while(stack_ptr)
-    {
-	wprintf(L"Frame %ls\n", stack_ptr->function? stack_ptr->function->name: L"<null>");
-	
-	stack_ptr = stack_ptr->caller;
-    }
-    fflush(stdout);
-*/  
     anna_activation_frame_t *f = stack->frame;
     while(f)
     {
@@ -768,10 +730,10 @@ void anna_gc(anna_vmstack_t *stack)
 
     anna_alloc_mark_vmstack(stack);	
     anna_alloc_mark_function(anna_vm_run_fun);
-
-    anna_type_mark_static();
-    
+    anna_type_mark_static();    
+    anna_alloc_mark_object(null_object);
 //    anna_alloc_mark_stack_template(stack_global);
+
     int freed = 0;
     static int gc_first = 1;
 

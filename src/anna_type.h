@@ -104,5 +104,7 @@ void anna_type_document(anna_type_t *type, wchar_t *documentation);
 
 int anna_type_mid_internal(mid_t mid);
 
+void anna_type_finalizer_add(anna_type_t *type, anna_finalizer_t finalizer);
+
 
 #endif

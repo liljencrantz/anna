@@ -148,10 +148,9 @@ ANNA_VM_NATIVE(anna_int_to_string, 1)
     return res;
 }
 
-ANNA_VM_NATIVE(anna_int_del, 1)
+static void anna_int_del(anna_object_t *victim)
 {
-    mpz_clear(*anna_int_unwrap(anna_as_obj(param[0])));
-    return param[0];
+    mpz_clear(*anna_int_unwrap(victim));
 }
 
 ANNA_VM_NATIVE(anna_int_convert_string, 1)
@@ -375,8 +374,8 @@ void anna_int_type_create()
 	int_type, mmid,
 	L"Converts an Int to itself. This is a noop.");
 
-    anna_member_create_native_method(
-	int_type, ANNA_MID_DEL, 0, &anna_int_del, int_type, 1, i_argv, i_argn, 0, 0);
+    anna_type_finalizer_add(
+	int_type, anna_int_del);
 
     anna_int_type_i_create();
 }

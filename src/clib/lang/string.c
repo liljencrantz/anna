@@ -294,7 +294,6 @@ static void anna_string_i_join(anna_vmstack_t *stack)
 	}
 	else
 	{
-	    	
 	    anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
 	    anna_entry_t *callback_param[] = 
 		{
@@ -587,11 +586,9 @@ static void anna_string_i_each(anna_vmstack_t *stack)
     }
 }
 
-ANNA_VM_NATIVE(anna_string_del, 1)
+static void anna_string_del(anna_object_t *victim)
 {
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    asi_destroy(as_unwrap(this));
-    return param[0];
+    asi_destroy(as_unwrap(victim));
 }
 
 ANNA_VM_NATIVE(anna_string_to_string, 1)
@@ -707,10 +704,8 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	0, &anna_util_noop, type, 1,
 	o_argv, o_argn, 0, 0);
     
-    anna_member_create_native_method(
-	type, ANNA_MID_DEL, 0,
-	&anna_string_del, object_type, 1,
-	o_argv, o_argn, 0, 0);
+    anna_type_finalizer_add(
+	type, anna_string_del);
     
     anna_member_create_native_method(
 	type, anna_mid_get(L"__cmp__"),

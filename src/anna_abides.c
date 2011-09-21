@@ -134,8 +134,6 @@ static int anna_abides_fault_count_internal(
 	assert(members[i]);
 	if(wcscmp(members[i], L"__init__") == 0)
 	    continue;
-	if(wcscmp(members[i], L"__del__") == 0)
-	    continue;
 	anna_member_t *c_memb = anna_member_get(
 	    contender, 
 	    anna_mid_get(members[i]));	
@@ -223,6 +221,7 @@ void anna_type_intersect_into(
     int i;
 
     anna_tt_t *tt = malloc(sizeof(anna_tt_t));
+
     if(t1 < t2)
     {
 	tt->type1 = t1;
@@ -235,15 +234,13 @@ void anna_type_intersect_into(
     }    
     
     hash_put(&anna_intersect_cache, tt, res);
-
+    
     wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&t2->name_identifier));
     anna_type_get_member_names(t2, members);    
     
     for(i=0; i<hash_get_count(&t2->name_identifier); i++)
     {
 	if(wcscmp(members[i], L"__init__") == 0)
-	    continue;
-	if(wcscmp(members[i], L"__del__") == 0)
 	    continue;
 
 	anna_member_t *memb1 = anna_member_get(

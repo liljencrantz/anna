@@ -64,8 +64,10 @@ static void anna_i_cc(anna_vmstack_t *stack)
     anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     anna_object_t *cont = anna_continuation_create(
-	stack,
-	stack->frame)->wrapper;
+	&stack->stack[0],
+	stack->top - &stack->stack[0],
+	stack->frame,
+	1)->wrapper;
     anna_vmstack_push_object(stack, cont);
 }
 
@@ -81,11 +83,12 @@ void anna_reflection_load(anna_stack_template_t *stack)
     anna_member_load(stack);
     anna_function_load(stack);
     anna_vmstack_load(stack);
-    anna_type_data_register(anna_member_type_data, stack);
+    anna_type_data_register(
+	anna_member_type_data, stack);
     anna_stack_declare(
 	stack, continuation_type->name,
 	type_type, anna_from_obj(anna_type_wrap(continuation_type)), ANNA_STACK_READONLY);
-
+    
     anna_type_t *type = anna_stack_wrap(stack)->type;
     anna_member_create_native_property(
 	type, anna_mid_get(L"currentContinuation"),

@@ -33,8 +33,6 @@ char *anna_vmstack_static_ptr;
 char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
 anna_function_t *anna_vm_run_fun;
 
-static void anna_vmstack_print(anna_vmstack_t *stack);
-__attr_unused __cold static void stack_describe(anna_vmstack_t *stack);
 __attr_unused __cold static void anna_vmstack_print_parent(anna_vmstack_t *stack);
 
 static inline void anna_frame_return(anna_activation_frame_t *frame)

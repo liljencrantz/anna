@@ -157,10 +157,9 @@ ANNA_VM_NATIVE(anna_buffer_init, 1)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_buffer_del, 1)
+static void anna_buffer_del(anna_object_t *victim)
 {
-    free((*anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_BUFFER_PAYLOAD)));
-    return param[0];
+    free(anna_entry_get(victim, ANNA_MID_BUFFER_PAYLOAD));
 }
 
 ANNA_VM_NATIVE(anna_buffer_encode, 2)
@@ -295,9 +294,8 @@ void anna_buffer_type_create()
 	0, &anna_buffer_init,
 	type, 1, a_argv, a_argn, 0, 0);
     
-    anna_member_create_native_method(
-	type, ANNA_MID_DEL, 0, &anna_buffer_del,
-	object_type, 1, a_argv, a_argn, 0, 0);
+    anna_type_finalizer_add(
+	type, anna_buffer_del);
     
     anna_type_t *i_argv[] = 
 	{

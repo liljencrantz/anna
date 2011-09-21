@@ -755,8 +755,10 @@ static void anna_function_continuation(anna_vmstack_t *stack)
 }
 
 anna_function_t *anna_continuation_create(
-    anna_vmstack_t *stack,
-    anna_activation_frame_t *frame)
+    anna_entry_t **stack_ptr,
+    size_t stack_sz,
+    anna_activation_frame_t *frame,
+    int copy)
 {
     anna_function_t *result = anna_alloc_function();
     result->flags |= ANNA_FUNCTION_CONTINUATION;
@@ -773,14 +775,14 @@ anna_function_t *anna_continuation_create(
     anna_function_setup_interface(result);
     anna_vm_compile(result);
     
-    size_t sz = stack->top - &stack->stack[0];
-    anna_entry_t **mem = malloc(sz*sizeof(anna_entry_t *));
-    memcpy(mem, &stack->stack[0], sz*sizeof(anna_entry_t *));
+//    size_t sz = stack->top - &stack->stack[0];
+    anna_entry_t **mem = malloc(stack_sz*sizeof(anna_entry_t *));
+    memcpy(mem, stack_ptr, stack_sz*sizeof(anna_entry_t *));
 
     anna_object_t *cont = result->wrapper;
     
     *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)mem;
-    *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT) = sz;
+    *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT) = stack_sz;
     *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME) = (anna_entry_t *)frame;
     *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)frame->code;
     

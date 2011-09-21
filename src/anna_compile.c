@@ -86,8 +86,10 @@ static int anna_short_circut_instr_int_int(mid_t mid)
 static int anna_short_circut_instr_float_float(mid_t mid)
 {
     if((mid >= ANNA_MID_ADD_FLOAT) && (mid <= ANNA_MID_DECREASE_ASSIGN_FLOAT))
-	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
-
+    {
+    	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
+    }
+    
     if((mid >= ANNA_MID_EQ) && (mid <= ANNA_MID_GT))
     {
 	return ANNA_INSTR_EQ_FLOAT + mid - ANNA_MID_EQ;
@@ -904,13 +906,13 @@ void anna_vm_callback_native(
     frame->function->code = frame->code;
     frame->function->variable_count = 0;
     frame->function->frame_size = tot_sz;
+    frame->function->name = L"!callbackHandler";
     frame->return_stack_top = stack->top;
     
     char *code = frame->code;
     anna_vm_call(&code, ANNA_INSTR_CALL, argc, 0);
     anna_vm_native_call(&code, ANNA_INSTR_NATIVE_CALL, callback, 0);
     anna_vm_null(&code, ANNA_INSTR_RETURN, 0);
-    frame->function->name=L"!callbackHandler";
     
     memmove(stack->top+1, param, sizeof(anna_entry_t *)*paramc);
     anna_vmstack_push_object(stack, null_object);
@@ -923,8 +925,6 @@ void anna_vm_callback_native(
     stack->frame = frame;
 //    wprintf(L"CALLBACK\n");
 }
-
-
 
 void anna_vm_callback(
     anna_vmstack_t *stack, 
@@ -944,6 +944,7 @@ void anna_vm_callback(
     frame->function->variable_count = 0;
     frame->function->code = frame->code;
     frame->function->frame_size = tot_sz;
+    frame->function->name = L"!callbackHandler";
     frame->return_stack_top = stack->top;
     
     char *code = frame->code;
@@ -961,16 +962,10 @@ void anna_vm_callback_reset(
     anna_vmstack_t *stack, 
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    int i;    
+    memmove(stack->top+1, argv, sizeof(anna_entry_t *)*argc);
     anna_vmstack_push_object(stack, entry);
-    for(i=0; i<argc; i++)
-    {
-	anna_vmstack_push_entry(stack, argv[i]);
-    }
-    stack->frame->code -= (sizeof(anna_op_count_t)+sizeof(anna_op_native_call_t));	
-//    wprintf(L"RESET\n");
-
-}
+    stack->top += argc;
+    stack->frame->code -= (sizeof(anna_op_count_t)+sizeof(anna_op_native_call_t));	}
 
 void anna_vm_method_wrapper(anna_vmstack_t *stack)
 {
@@ -981,7 +976,7 @@ void anna_vm_method_wrapper(anna_vmstack_t *stack)
     int argc = op->param + 1;
     anna_entry_t **argv = stack->top - argc;
     anna_object_t *cont = stack->function_object;    
-
+    
     anna_object_t *object = anna_as_obj(*anna_entry_get_addr(cont, ANNA_MID_THIS));
     anna_object_t *method = anna_as_obj(*anna_entry_get_addr(cont, ANNA_MID_METHOD));
     argv[0] = anna_from_obj(object);

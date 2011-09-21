@@ -77,5 +77,4 @@ void anna_util_noop(anna_vmstack_t *stack)
     anna_object_t *this = anna_as_obj(param[0]);
     anna_vmstack_drop(stack, 2);
     anna_vmstack_push_object(stack, this);
-    return stack;    
 }

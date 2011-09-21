@@ -299,8 +299,10 @@ static void anna_i_callcc(anna_vmstack_t *stack)
     anna_object_t *fun = anna_vmstack_pop_object(stack);
     anna_vmstack_pop_object(stack);
     anna_object_t *cont = anna_continuation_create(
-	stack,
-	stack->frame)->wrapper;
+	&stack->stack[0],
+	stack->top - &stack->stack[0],
+	stack->frame,
+	1)->wrapper;
     
     anna_vm_callback_native(
 	stack, &anna_i_callcc_callback, 0, 0, 

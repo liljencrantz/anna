@@ -1060,15 +1060,13 @@ static void anna_hash_map(anna_vmstack_t *stack)
     }
 }
 
-ANNA_VM_NATIVE(anna_hash_del, 1)
+static void anna_hash_del(anna_object_t *victim)
 {
-    anna_object_t *hash = anna_as_obj(param[0]);
-    anna_hash_t *this = ahi_unwrap(hash);
+    anna_hash_t *this = ahi_unwrap(victim);
     if(this->table != this->small_table)
     {
 	free(this->table);
     }
-    return param[0];
 }
 
 static void anna_hash_type_create_internal(
@@ -1169,10 +1167,9 @@ static void anna_hash_type_create_internal(
 	e_argv,
 	e_argn, 0, 0);
     
-    anna_member_create_native_method(
-	type, ANNA_MID_DEL, 0, &anna_hash_del,
-	object_type, 1, e_argv, e_argn, 0, 0);
-    
+    anna_type_finalizer_add(
+	type, anna_hash_del);
+
     anna_member_create_native_method(
 	type, anna_mid_get(L"__in__"), 0,
 	&anna_hash_in, spec1, 2, kv_argv,

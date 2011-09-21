@@ -16,6 +16,7 @@ struct anna_function;
 struct anna_vmstack;
 
 typedef void (*anna_native_t)( struct anna_vmstack *stack);
+typedef void (*anna_finalizer_t)( struct anna_object *victim);
 typedef int mid_t;
 
 /*
@@ -240,6 +241,8 @@ struct anna_type
     */
     hash_table_t specializations;
     array_list_t member_list;
+    size_t finalizer_count;
+    anna_finalizer_t *finalizer;
 };
 
 struct anna_member
@@ -398,11 +401,26 @@ struct anna_function
     size_t variable_count;
 };
 
+/**
+   All the variables of a function call instance are stored in an
+   activation frame (sometimes also called activation record or stack
+   frame), together with some other data about the current execution
+   context.
+ */
 struct anna_activation_frame
 {
     int flags;
+    /**
+       The static context of this frame is the frame that should be
+       used when using scope lookup.
+     */
     struct anna_activation_frame *static_frame;
+    /**
+       The dynamic context of this frame is the frame that should be
+       used when returning to a calling frame.
+     */
     struct anna_activation_frame *dynamic_frame;
+
     struct anna_function *function;
     char *code;
     anna_entry_t **return_stack_top;
