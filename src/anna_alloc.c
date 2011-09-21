@@ -446,6 +446,8 @@ void anna_alloc_mark_object(anna_object_t *obj)
 	{
 	    if(anna_object_member_is_alloc(t, i) && obj->member[i])
 	    {
+//		wprintf(L"FASFDSA %ls.%ls\n", t->name, L"FAS");
+		
 		anna_alloc_mark(obj->member[i]);
 	    }
 	}
@@ -488,7 +490,7 @@ static void anna_alloc_mark_activation_frame(anna_activation_frame_t *frame)
     anna_alloc_mark_function(frame->function);
 }
 
-static void anna_alloc_mark_vmstack(anna_vmstack_t *stack)
+static void anna_alloc_mark_vmstack(anna_context_t *stack)
 {
     if( stack->flags & ANNA_USED)
 	return;
@@ -516,9 +518,9 @@ void anna_alloc_mark(void *obj)
 	    anna_alloc_mark_type((anna_type_t *)obj);
 	    break;
 	}
-	case ANNA_VMSTACK:
+	case ANNA_CONTEXT:
 	{
-	    anna_alloc_mark_vmstack((anna_vmstack_t *)obj);
+	    anna_alloc_mark_vmstack((anna_context_t *)obj);
 	    break;
 	}
 	case ANNA_FUNCTION:
@@ -603,9 +605,9 @@ static void anna_alloc_free(void *obj)
 	    anna_slab_free(obj, sizeof(anna_type_t));
 	    break;
 	}
-	case ANNA_VMSTACK:
+	case ANNA_CONTEXT:
 	{
-	    anna_vmstack_t *o = (anna_vmstack_t *)obj;
+	    anna_context_t *o = (anna_context_t *)obj;
 	    anna_alloc_count -= o->size;
 	    anna_slab_free(o, o->size);
 	    break;
@@ -700,7 +702,7 @@ void anna_alloc_gc_unblock()
     anna_alloc_gc_block_counter--;
 }
 
-void anna_gc(anna_vmstack_t *stack)
+void anna_gc(anna_context_t *stack)
 {
     if(anna_alloc_gc_block_counter)
 	return;
@@ -732,7 +734,7 @@ void anna_gc(anna_vmstack_t *stack)
     anna_alloc_mark_function(anna_vm_run_fun);
     anna_type_mark_static();    
     anna_alloc_mark_object(null_object);
-//    anna_alloc_mark_stack_template(stack_global);
+    anna_alloc_mark_stack_template(stack_global);
 
     int freed = 0;
     static int gc_first = 1;
@@ -746,7 +748,7 @@ void anna_gc(anna_vmstack_t *stack)
 	    void *el = al_get_fast(&anna_alloc, i);
 	    int flags = *((int *)el);
 	    int alloc = (flags & ANNA_ALLOC_MASK);	
-	    if(!(flags & ANNA_USED) && ((alloc == ANNA_OBJECT) || (alloc == ANNA_BLOB) || (alloc == ANNA_VMSTACK)))
+	    if(!(flags & ANNA_USED) && ((alloc == ANNA_OBJECT) || (alloc == ANNA_BLOB) || (alloc == ANNA_CONTEXT)))
 	    {
 		freed++;
 		anna_alloc_free(el);
@@ -863,6 +865,8 @@ void anna_gc(anna_vmstack_t *stack)
 //    wprintf(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
     anna_alloc_gc_unblock();
 //    wprintf(L"After GC. We have %d allocated objects\n", al_get_count(&anna_alloc));
+//    anna_slab_print();
+    
 }
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN

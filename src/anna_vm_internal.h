@@ -36,7 +36,7 @@
    activation records before they are referenced and need to move to
    the heap.
 */
-#define ANNA_VMSTACK_SZ (8192*32)
+#define ANNA_CONTEXT_SZ (8192*32)
 
 /**
    Pops one value from the top stack frame, then pops the top stack
@@ -259,8 +259,8 @@ typedef struct
 
 size_t anna_bc_op_size(char instruction);
 
-extern char *anna_vmstack_static_ptr;
-extern char anna_vmstack_static_data[ANNA_VMSTACK_SZ];
+extern char *anna_context_static_ptr;
+extern char anna_context_static_data[ANNA_CONTEXT_SZ];
 
 anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *stack);
 

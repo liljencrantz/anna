@@ -69,8 +69,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_default_value, 1)
 	    f->input_default[i] ? 
 	    anna_from_obj(
 		anna_node_wrap(f->input_default[i])) :
-	    null_entry);
-	
+	    null_entry);	
     }
     
     return anna_from_obj( lst);
@@ -82,6 +81,29 @@ ANNA_VM_NATIVE(anna_function_type_i_get_attributes, 1)
     anna_function_t *f = anna_function_unwrap(this);
     
     return anna_from_obj(anna_node_wrap((anna_node_t *)f->attribute));
+}
+
+ANNA_VM_NATIVE(anna_function_type_i_get_filename, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_function_t *f = anna_function_unwrap(this);
+    return f->filename?anna_string_create(wcslen(f->filename), f->filename):null_entry;
+}
+
+ANNA_VM_NATIVE(anna_continuation_type_i_get_filename, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_function_t *f = frame->function;
+    return f->filename?anna_string_create(wcslen(f->filename), f->filename):null_entry;
+}
+
+ANNA_VM_NATIVE(anna_continuation_type_i_get_line, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    int line = anna_function_line(frame->function, frame->code - frame->function->code);
+    return line >= 0 ? anna_from_int(line): null_entry;
 }
 
 void anna_function_type_print(anna_function_type_t *k)
@@ -114,6 +136,35 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
     }
     sb_printf(&sb, L")");
     return anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
+}
+
+void anna_function_type_trace_recursive(
+    string_buffer_t *sb, anna_activation_frame_t *frame)
+{
+    if(!frame)
+    {
+	return;
+    }
+    anna_function_type_trace_recursive(sb, frame->dynamic_frame);
+    if(frame->function->name)
+    {
+	sb_printf(
+	    sb, L"%ls: %ls:%d\n", 
+	    frame->function->name, frame->function->filename,
+	    anna_function_line(frame->function, frame->code - frame->function->code));
+    }
+}
+
+ANNA_VM_NATIVE(anna_function_type_trace, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    string_buffer_t sb;
+    sb_init(&sb);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_function_type_trace_recursive(&sb, frame);
+    anna_entry_t *res = anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
+    sb_destroy(&sb);
+    return res;
 }
 
 ANNA_VM_NATIVE(anna_function_type_i_call_count, 1)
@@ -167,7 +218,7 @@ ANNA_VM_NATIVE(anna_function_type_i_caller, 1)
 ANNA_VM_NATIVE(anna_function_type_i_parent, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_vmstack_t *c_stack = (anna_vmstack_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
+    anna_context_t *c_stack = (anna_context_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
     anna_activation_frame_t *frame = c_stack->frame;
     if(frame->static_frame)
     {
@@ -240,6 +291,13 @@ static void anna_function_load(anna_stack_template_t *stack)
 	0,
 	L"All attributes specified for this function.");
 
+    anna_member_create_native_property(
+	res, anna_mid_get(L"filename"),
+	imutable_string_type,
+	&anna_function_type_i_get_filename,
+	0,
+	L"The name of the file in which this function was defined.");
+
     anna_type_copy_object(res);
 
     int i;
@@ -289,11 +347,11 @@ void anna_function_type_create(
     {
 	anna_member_create(
 	    res, ANNA_MID_CONTINUATION_STACK,
-	    ANNA_MEMBER_ALLOC, null_type);
+	    0, null_type);
 	
 	anna_member_create(
 	    res, ANNA_MID_CONTINUATION_STACK_COUNT,
-	    ANNA_MEMBER_ALLOC, null_type);
+	    0, null_type);
 	
 	anna_member_create(
 	    res, ANNA_MID_CONTINUATION_ACTIVATION_FRAME,
@@ -328,11 +386,17 @@ void anna_function_type_create(
 	    }
 	;
 
+	anna_member_create_native_property(
+	    res, anna_mid_get(L"trace"), 
+	    string_type,
+	    &anna_function_type_trace,
+	    0, 0);
+
 	anna_member_create_native_method(
 	    res, anna_mid_get(L"__get__"), 0,
 	    &anna_function_type_i_get, object_type, 2, v_argv, v_argn, 0, 
 	    L"Returns the value of the local variable with the specified name.");
-
+	
 	anna_member_create_native_property(
 	    res, anna_mid_get(L"caller"),
 	    res,
@@ -346,7 +410,20 @@ void anna_function_type_create(
 	    &anna_function_type_i_parent,
 	    0,
 	    L"The continuation of the parent scope of this continuation.");
+	
+	anna_member_create_native_property(
+	    res, anna_mid_get(L"filename"),
+	    imutable_string_type,
+	    &anna_continuation_type_i_get_filename,
+	    0,
+	    L"The name of the file in which this function was defined.");
 
+	anna_member_create_native_property(
+	    res, anna_mid_get(L"line"),
+	    int_type,
+	    &anna_continuation_type_i_get_line,
+	    0,
+	    L"The name of the file in which this function was defined.");
 
     }
     

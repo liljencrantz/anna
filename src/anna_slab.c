@@ -23,3 +23,25 @@ void anna_slab_alloc_batch(size_t sz)
     }
     slab_list[sz] = s;    
 }
+
+void anna_slab_print()
+{
+    size_t tot=0;
+    int i;
+    for(i=0;i<SLAB_MAX;i++)
+    {
+	if(slab_list[i])
+	{
+	    int count = 0;
+	    slab_t *t = slab_list[i];
+	    while(t)
+	    {
+		count++;
+		t = t->next;
+	    }
+	    tot += count*i;
+	    wprintf(L"%d free allocations of size %d use %d kB\n", count, i, count*i/1024);
+	}
+    }
+    wprintf(L"In total, %d kB has been allocated but is unused\n", tot/1024);
+}

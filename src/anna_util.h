@@ -24,6 +24,6 @@ int anna_hash(int *data, size_t count);
    Simple native method definition that returns this, e.g. the first
    argument it is given.
  */
-void anna_util_noop(anna_vmstack_t *stack);
+void anna_util_noop(anna_context_t *stack);
 
 #endif

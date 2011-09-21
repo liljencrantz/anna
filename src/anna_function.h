@@ -46,63 +46,21 @@
  */
 #define ANNA_FUNCTION_LOOP (8192*8)
 
-
 extern array_list_t anna_function_list;
 
-static inline __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
+/**
+   Same as anna_function_unwrap, but is slightly faster but causes
+   undefined behavior if the supplied object is not a valid function
+   wrapper.
+ */
+static inline __pure anna_function_t *anna_function_unwrap_fast(anna_object_t *wrapper)
 {
-#ifdef ANNA_WRAPPER_CHECK_ENABLED
-    if(!obj)
-    {
-	wprintf(
-	    L"Critical: Tried to unwrap null pointer as a function\n");
-	CRASH;
-    }
-    if(!obj->type)
-    {
-	wprintf(
-	    L"Critical: Tried to unwrap object with no type\n");
-	CRASH;
-    }
-#endif
-
-    anna_member_t *m = obj->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];
-    if(unlikely(!(long)m))
-    {
-	return 0;
-    }
-
-    if(obj == null_object)
-    {
-	return 0;
-    }
-        
-    anna_function_t *fun = (anna_function_t *)obj->member[m->offset];
-
-    return fun;
-    /*
-
-    if(likely((long)fun)) 
-    {
-	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
-	return fun;
-    }
-    else 
-    {
-	anna_object_t **function_wrapper_ptr =
-	    anna_entry_get_addr_static(
-		obj->type, 
-		ANNA_MID_CALL_PAYLOAD);
-	if(function_wrapper_ptr)
-	{
-	    //wprintf(L"Got object with __call__ member\n");
-	    return anna_function_unwrap(
-		*function_wrapper_ptr);	    
-	}
-	return 0;	
-    }
-    */
+    anna_member_t *m = wrapper->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];
+    return (anna_function_t *)wrapper->member[m->offset];
 }
+
+
+__pure anna_function_t *anna_function_unwrap(anna_object_t *wrapper);
 
 __pure static inline int anna_function_is_variadic(anna_function_t *f)
 {
@@ -114,7 +72,7 @@ __pure static inline int anna_function_type_is_variadic(anna_function_type_t *f)
     return !!(f->flags & ANNA_FUNCTION_VARIADIC);
 }
 
-__pure anna_object_t *anna_function_wrap(anna_function_t *result);
+__pure anna_object_t *anna_function_wrap(anna_function_t *fun);
 
 __cold int anna_function_prepared(anna_function_t *t);
 
@@ -170,7 +128,11 @@ anna_function_t *anna_continuation_create(
     int copy);
 
 anna_function_t *anna_method_bind(
-    anna_vmstack_t *stack,
+    anna_context_t *stack,
     anna_function_t *method);
+
+int anna_function_line(
+    anna_function_t *fun,
+    int offset);
 
 #endif

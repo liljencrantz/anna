@@ -126,10 +126,10 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
    This is the bulk of the each method
  */
 static void anna_node_call_wrapper_each_callback(
-    anna_vmstack_t *stack)
+    anna_context_t *stack)
 {    
     // Discard the output of the previous method call
-    anna_vmstack_pop_object(stack);
+    anna_context_pop_object(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 3;
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -158,16 +158,16 @@ static void anna_node_call_wrapper_each_callback(
     else
     {
 	// Oops, we're done. Drop our internal param list and push the correct output
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_entry(stack, param[0]);
+	anna_context_drop(stack, 4);
+	anna_context_push_entry(stack, param[0]);
     }
 }
 
-static void anna_node_call_wrapper_each(anna_vmstack_t *stack)
+static void anna_node_call_wrapper_each(anna_context_t *stack)
 {
-    anna_entry_t *body = anna_vmstack_pop_entry(stack);
-    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_vmstack_pop_object(stack));
-    anna_vmstack_pop_entry(stack);
+    anna_entry_t *body = anna_context_pop_entry(stack);
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_context_pop_object(stack));
+    anna_context_pop_entry(stack);
     size_t sz = call->child_count;
 
     if(sz > 0)
@@ -195,7 +195,7 @@ static void anna_node_call_wrapper_each(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, anna_node_wrap((anna_node_t *)call));
+	anna_context_push_object(stack, anna_node_wrap((anna_node_t *)call));
     }
 }
 

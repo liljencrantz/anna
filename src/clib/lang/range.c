@@ -230,10 +230,10 @@ ANNA_VM_NATIVE(anna_range_get_count_i, 1)
 /**
    This is the bulk of the each method
  */
-static void anna_range_each_callback_closed(anna_vmstack_t *stack)
+static void anna_range_each_callback_closed(anna_context_t *stack)
 {
     // Discard the output of the previous method call
-    anna_vmstack_pop_entry(stack);
+    anna_context_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 4;
     // Unwrap and name the params to make things more explicit
@@ -249,8 +249,8 @@ static void anna_range_each_callback_closed(anna_vmstack_t *stack)
     // Are we done or do we need another lap?
     if(stack->frame->flags & ANNA_ACTIVATION_FRAME_BREAK)
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, range);	
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, range);	
     }
     else if(idx < count)
     {
@@ -270,15 +270,15 @@ static void anna_range_each_callback_closed(anna_vmstack_t *stack)
     else
     {
 	// Oops, we're done. Drop our internal param list and push the correct output
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, range);
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, range);
     }
 }
 
-static void anna_range_each_callback_open(anna_vmstack_t *stack)
+static void anna_range_each_callback_open(anna_context_t *stack)
 {
     // Discard the output of the previous method call
-    anna_vmstack_pop_entry(stack);
+    anna_context_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 4;
     // Unwrap and name the params to make things more explicit
@@ -291,8 +291,8 @@ static void anna_range_each_callback_open(anna_vmstack_t *stack)
 
     if(stack->frame->flags & ANNA_ACTIVATION_FRAME_BREAK)
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, range);	
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, range);	
     }
     else
     {
@@ -312,11 +312,11 @@ static void anna_range_each_callback_open(anna_vmstack_t *stack)
     }
 }
 
-static void anna_range_each(anna_vmstack_t *stack)
+static void anna_range_each(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *range = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     
     ssize_t from = anna_range_get_from(range);
     ssize_t to = anna_range_get_to(range);
@@ -326,7 +326,7 @@ static void anna_range_each(anna_vmstack_t *stack)
     
     if((count<=0) && !open)
     {
-	anna_vmstack_push_object(stack, range);
+	anna_context_push_object(stack, range);
     }
     else
     {
@@ -361,9 +361,9 @@ static inline anna_entry_t *anna_range_get(anna_object_t *this, ssize_t idx)
     return anna_from_int(anna_range_get_from(this) + idx * anna_range_get_step(this));
 }
 
-static void anna_range_filter_callback(anna_vmstack_t *stack)
+static void anna_range_filter_callback(anna_context_t *stack)
 {
-    anna_entry_t *value = anna_vmstack_pop_entry(stack);
+    anna_entry_t *value = anna_context_pop_entry(stack);
 
     anna_entry_t **param = stack->top - 4;
     anna_object_t *range = anna_as_obj_fast(param[0]);
@@ -392,17 +392,17 @@ static void anna_range_filter_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 5);
-	anna_vmstack_push_object(stack, res);
+	anna_context_drop(stack, 5);
+	anna_context_push_object(stack, res);
     }    
 }
 
-static void anna_range_filter(anna_vmstack_t *stack)
+static void anna_range_filter(anna_context_t *stack)
 {
     anna_object_t *res = anna_list_create_mutable(int_type);
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *range = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     
     size_t sz = anna_range_get_count(range);
     int open = anna_range_get_open(range);
@@ -433,13 +433,13 @@ static void anna_range_filter(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, res);
+	anna_context_push_object(stack, res);
     }
 }
 
-static void anna_range_find_callback(anna_vmstack_t *stack)
+static void anna_range_find_callback(anna_context_t *stack)
 {
-    anna_entry_t *value = anna_vmstack_pop_entry(stack);
+    anna_entry_t *value = anna_context_pop_entry(stack);
     
     anna_entry_t **param = stack->top - 3;
     anna_object_t *range = anna_as_obj_fast(param[0]);
@@ -450,8 +450,8 @@ static void anna_range_find_callback(anna_vmstack_t *stack)
     
     if(!anna_entry_null(value))
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_entry(stack, anna_range_get(range, idx-1));	
+	anna_context_drop(stack, 4);
+	anna_context_push_entry(stack, anna_range_get(range, idx-1));	
     }
     else if((sz > idx || open) && !(stack->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
     {
@@ -467,16 +467,16 @@ static void anna_range_find_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, null_object);
     }    
 }
 
-static void anna_range_find(anna_vmstack_t *stack)
+static void anna_range_find(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *range = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     
     size_t sz = anna_range_get_count(range);
     int open = anna_range_get_open(range);
@@ -506,13 +506,13 @@ static void anna_range_find(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
 }
 
-static void anna_range_map_callback(anna_vmstack_t *stack)
+static void anna_range_map_callback(anna_context_t *stack)
 {
-    anna_entry_t *value = anna_vmstack_pop_entry(stack);
+    anna_entry_t *value = anna_context_pop_entry(stack);
 
     anna_entry_t **param = stack->top - 4;
     anna_object_t *range = anna_as_obj_fast(param[0]);
@@ -538,19 +538,19 @@ static void anna_range_map_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 5);
-	anna_vmstack_push_object(stack, res);
+	anna_context_drop(stack, 5);
+	anna_context_push_object(stack, res);
     }    
 }
 
-static void anna_range_map(anna_vmstack_t *stack)
+static void anna_range_map(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *range = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *range = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     if(body == null_object)
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
     else
     {
@@ -586,7 +586,7 @@ static void anna_range_map(anna_vmstack_t *stack)
 	}
 	else
 	{
-	    anna_vmstack_push_object(stack, res);
+	    anna_context_push_object(stack, res);
 	}
     }
 }

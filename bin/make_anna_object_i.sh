@@ -44,31 +44,31 @@ for i in \
 "
 
     echo "
-static void anna_object_i_callback_${name}_reverse(anna_vmstack_t *stack)
+static void anna_object_i_callback_${name}_reverse(anna_context_t *stack)
 
 {
-    anna_entry_t *res = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_object(stack);
+    anna_entry_t *res = anna_context_pop_entry(stack);
+    anna_context_pop_object(stack);
     if(anna_entry_null(res))
     {
-        anna_vmstack_push_object(stack, null_object);
+        anna_context_push_object(stack, null_object);
     }
     else
     {
         // Negate answer, because we reversed order of operands
         int res_int = -anna_as_int(res);
-        anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry
+        anna_context_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry
 );
     }
 }
 
-static void anna_object_i_callback_$name(anna_vmstack_t *stack)
+static void anna_object_i_callback_$name(anna_context_t *stack)
 
 {
-    anna_entry_t *res = anna_vmstack_pop_entry(stack);
-    anna_entry_t *that_entry = anna_vmstack_pop_entry(stack);
-    anna_entry_t *this_entry = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_entry_t *res = anna_context_pop_entry(stack);
+    anna_entry_t *that_entry = anna_context_pop_entry(stack);
+    anna_entry_t *this_entry = anna_context_pop_entry(stack);
+    anna_context_pop_entry(stack);
     if(anna_entry_null(res))
     {
         anna_object_t *that = anna_as_obj(that_entry);
@@ -84,15 +84,15 @@ static void anna_object_i_callback_$name(anna_vmstack_t *stack)
     else
     {
         int res_int = anna_as_int(res);
-        anna_vmstack_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry);
+        anna_context_push_entry(stack, (res_int $op 0)? anna_from_int(1):null_entry);
     }
 }
 
-static void anna_object_i_$name(anna_vmstack_t *stack)
+static void anna_object_i_$name(anna_context_t *stack)
 {
     anna_entry_t **param = stack->top - 2;    
     anna_object_t *this = anna_as_obj(param[0]);
-    anna_vmstack_drop(stack, 3);
+    anna_context_drop(stack, 3);
     anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(this->type, ANNA_MID_CMP));
     anna_vm_callback_native(stack, &anna_object_i_callback_$name, 2, param, fun_object, 2, param);
 }

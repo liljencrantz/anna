@@ -6,7 +6,7 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
     return anna_from_obj(anna_string_create(wcslen(type->name), type->name));
 }
 */
-static void anna_vmstack_load()
+static void anna_context_load()
 {
 //    anna_member_create_blob(vmstack_type, ANNA_MID_VMSTACK_WRAPPER_PAYLOAD, 0, sizeof(void *));
 /*

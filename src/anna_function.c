@@ -22,6 +22,59 @@
 #include "clib/lang/list.h"
 #include "anna_use.h"
 
+__pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
+{
+    if(!obj)
+    {
+	wprintf(
+	    L"Critical: Tried to unwrap null pointer as a function\n");
+	CRASH;
+    }
+    if(!obj->type)
+    {
+	wprintf(
+	    L"Critical: Tried to unwrap object with no type\n");
+	CRASH;
+    }
+
+    anna_member_t *m = obj->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];
+    if(unlikely(!(long)m))
+    {
+	return 0;
+    }
+
+    if(obj == null_object)
+    {
+	return 0;
+    }
+        
+    anna_function_t *fun = (anna_function_t *)obj->member[m->offset];
+
+    return fun;
+    /*
+
+    if(likely((long)fun)) 
+    {
+	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
+	return fun;
+    }
+    else 
+    {
+	anna_object_t **function_wrapper_ptr =
+	    anna_entry_get_addr_static(
+		obj->type, 
+		ANNA_MID_CALL_PAYLOAD);
+	if(function_wrapper_ptr)
+	{
+	    //wprintf(L"Got object with __call__ member\n");
+	    return anna_function_unwrap(
+		*function_wrapper_ptr);	    
+	}
+	return 0;	
+    }
+    */
+}
+
 static void anna_function_handle_use(anna_node_call_t *body)
 {
     int i;
@@ -733,11 +786,11 @@ anna_function_t *anna_native_create(
     return result;
 }
 
-static void anna_function_continuation(anna_vmstack_t *stack)
+static void anna_function_continuation(anna_context_t *stack)
 {
     anna_object_t *cont = stack->function_object;
-    anna_object_t *res = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_object(stack);
+    anna_object_t *res = anna_context_pop_object(stack);
+    anna_context_pop_object(stack);
 
     anna_entry_t *cce = anna_entry_get(cont, ANNA_MID_CONTINUATION_CALL_COUNT);
     int cc = 1 + ((cce == null_entry)?0:anna_as_int(cce));
@@ -751,7 +804,7 @@ static void anna_function_continuation(anna_vmstack_t *stack)
     stack->frame = (anna_activation_frame_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     stack->frame->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
 
-    anna_vmstack_push_object(stack, res);
+    anna_context_push_object(stack, res);
 }
 
 anna_function_t *anna_continuation_create(
@@ -790,7 +843,7 @@ anna_function_t *anna_continuation_create(
 }
 
 anna_function_t *anna_method_bind(
-    anna_vmstack_t *stack,
+    anna_context_t *stack,
     anna_function_t *method)
 {
     anna_function_t *result = anna_alloc_function();
@@ -843,3 +896,19 @@ void anna_function_print(anna_function_t *function)
 
 }
 
+int anna_function_line(
+    anna_function_t *fun,
+    int offset)
+{
+    int line = -1;
+    int i;
+    for(i=0; i<fun->line_offset_count; i++)
+    {
+	if(fun->line_offset[i].offset > offset)
+	{
+	    break;
+	}
+	line = fun->line_offset[i].line;
+    }
+    return line;
+}

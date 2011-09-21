@@ -19,12 +19,12 @@ extern int anna_alloc_tot;
 extern int anna_alloc_count;
 extern int anna_alloc_obj_count;
 extern int anna_alloc_count_next_gc;
-__hot void anna_gc(anna_vmstack_t *stack);
+__hot void anna_gc(anna_context_t *stack);
 __cold void anna_gc_destroy(void);
 
 #define GC_FREQ (1024*1024*4)
 
-static inline void anna_alloc_check_gc(anna_vmstack_t *stack)
+static inline void anna_alloc_check_gc(anna_context_t *stack)
 {
     if(unlikely(anna_alloc_count >= anna_alloc_count_next_gc))
     {
@@ -32,12 +32,12 @@ static inline void anna_alloc_check_gc(anna_vmstack_t *stack)
     }
 }
 
-static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
+static inline __malloc anna_context_t *anna_alloc_vmstack(size_t sz)
 {
-    anna_vmstack_t *res = anna_slab_alloc(sz);
-//    anna_vmstack_t *res = malloc(sz);
+    anna_context_t *res = anna_slab_alloc(sz);
+//    anna_context_t *res = malloc(sz);
     
-    res->flags = ANNA_VMSTACK;
+    res->flags = ANNA_CONTEXT;
     al_push(&anna_alloc, res);
     anna_alloc_count+=sz;
     res->size = sz;
@@ -47,7 +47,7 @@ static inline __malloc anna_vmstack_t *anna_alloc_vmstack(size_t sz)
 static inline __malloc anna_activation_frame_t *anna_alloc_activation_frame(size_t sz)
 {
     anna_activation_frame_t *res = anna_slab_alloc(sz);
-//    anna_vmstack_t *res = malloc(sz);
+//    anna_context_t *res = malloc(sz);
     
     res->flags = ANNA_ACTIVATION_FRAME;
     al_push(&anna_alloc, res);

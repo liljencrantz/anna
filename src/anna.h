@@ -13,9 +13,9 @@ struct anna_member;
 struct anna_node_call;
 struct anna_stack_template;
 struct anna_function;
-struct anna_vmstack;
+struct anna_context;
 
-typedef void (*anna_native_t)( struct anna_vmstack *stack);
+typedef void (*anna_native_t)( struct anna_context *stack);
 typedef void (*anna_finalizer_t)( struct anna_object *victim);
 typedef int mid_t;
 
@@ -29,7 +29,7 @@ typedef int mid_t;
 #define ANNA_OBJECT 1
 #define ANNA_STACK_TEMPLATE 2
 #define ANNA_NODE 3
-#define ANNA_VMSTACK 4
+#define ANNA_CONTEXT 4
 #define ANNA_FUNCTION 5
 #define ANNA_BLOB 6
 #define ANNA_ACTIVATION_FRAME 7 
@@ -318,6 +318,12 @@ struct anna_object
     anna_entry_t *member[];
 };
 
+struct anna_line_pair
+{
+    int offset;
+    int line;
+};
+
 struct anna_function
 {
     /**
@@ -399,6 +405,9 @@ struct anna_function
     char *code;
     size_t frame_size;
     size_t variable_count;
+    size_t line_offset_count;
+    struct anna_line_pair *line_offset;
+    wchar_t *filename;
 };
 
 /**
@@ -428,23 +437,47 @@ struct anna_activation_frame
     anna_entry_t *slot[];
 };
 
-
-struct anna_vmstack
+/**
+   An execution context for an Anna thread.
+ */
+struct anna_context
 {
     int flags;
     size_t size;
+    
+    /*
+      The activation frame holds the values of all variables of the
+      currently executing function, as well as a pointer to the
+      current position in the source code.
+     */
     struct anna_activation_frame *frame;
+    /*
+      function_object is the anna object representing the function
+      currently being executed. Use anna_function_unwrap to unwrap it
+      and access the actual anna_function_t. This value is rarely useful.
+     */
     struct anna_object *function_object;
+
+    /*
+      The top of the scratch stack. The scratch stack in anna is never used
+      for passing parameters, it is used purely as a scratch space for
+      storing output of function calls that will in turn be used as
+      input to future function calls.
+     */
     anna_entry_t **top;
+    /*
+      The base of the scratch stack.
+     */
     anna_entry_t *stack[];
 };
 
 typedef struct anna_activation_frame anna_activation_frame_t;
-typedef struct anna_vmstack anna_vmstack_t;
+typedef struct anna_context anna_context_t;
 typedef struct anna_type anna_type_t;
 typedef struct anna_member anna_member_t;
 typedef struct anna_object anna_object_t;
 typedef struct anna_function anna_function_t;
+typedef struct anna_line_pair anna_line_pair_t;
 
 typedef struct 
 {

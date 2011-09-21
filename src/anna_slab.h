@@ -46,4 +46,10 @@ static inline void anna_slab_free(void *ptr, size_t sz)
     slab_list[sz] = s;
 }
 
+/**
+   Print some statistics about slab allocations
+ */
+void anna_slab_print();
+
+
 #endif

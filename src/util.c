@@ -43,7 +43,7 @@
    reached, it is instead assumed that something was wrong with the
    format string.
 */
-#define SB_MAX_SIZE (128*1024*1024)
+#define SB_MAX_SIZE (1024*1024)
 
 /**
    Handle oom condition. Default action is to print a stack trace and

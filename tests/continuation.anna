@@ -1,0 +1,10 @@
+def plain()
+{
+    print(reflection.currentContinuation.filename, "\n");
+    print(reflection.currentContinuation.line, "\n");
+}
+
+def main()
+{
+    plain();
+}

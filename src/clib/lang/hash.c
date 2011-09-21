@@ -44,7 +44,7 @@ typedef struct {
     anna_hash_entry_t small_table[ANNA_HASH_MINSIZE];
 } anna_hash_t;
 
-typedef void (*ahi_callback_t)(anna_vmstack_t *stack, anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, anna_hash_entry_t *hash_entry);
+typedef void (*ahi_callback_t)(anna_context_t *stack, anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, anna_hash_entry_t *hash_entry);
 
 static hash_table_t anna_hash_specialization;
 static array_list_t anna_hash_additional_methods = AL_STATIC;
@@ -268,9 +268,9 @@ static void anna_hash_check_resize(anna_hash_t *this)
     }
 }
 
-static void ahi_search_callback2(anna_vmstack_t *stack);
+static void ahi_search_callback2(anna_context_t *stack);
 static void ahi_search_callback2_internal(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *key,
     anna_entry_t *hash_obj,
     ahi_callback_t callback,
@@ -282,7 +282,7 @@ static void ahi_search_callback2_internal(
 
 
 static inline void ahi_search_callback2_next(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *hash_obj, 
     anna_entry_t *key,
     ahi_callback_t callback,
@@ -373,7 +373,7 @@ static inline void ahi_search_callback2_next(
 }
 
 static void ahi_search_callback2_internal(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *key,
     anna_entry_t *hash_obj,
     ahi_callback_t callback,
@@ -430,16 +430,16 @@ static void ahi_search_callback2_internal(
     }
 }
 
-static void ahi_search_callback2(anna_vmstack_t *stack)
+static void ahi_search_callback2(anna_context_t *stack)
 {
-    anna_entry_t *eq = anna_vmstack_pop_entry(stack);
-    int dummy_idx = anna_vmstack_pop_int(stack);
-    int idx = anna_vmstack_pop_int(stack);
-    int hash = anna_vmstack_pop_int(stack);
-    anna_entry_t *aux = anna_vmstack_pop_entry(stack);
-    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
-    anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
-    anna_entry_t *key = anna_vmstack_pop_entry(stack);
+    anna_entry_t *eq = anna_context_pop_entry(stack);
+    int dummy_idx = anna_context_pop_int(stack);
+    int idx = anna_context_pop_int(stack);
+    int hash = anna_context_pop_int(stack);
+    anna_entry_t *aux = anna_context_pop_entry(stack);
+    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_context_pop_entry(stack));
+    anna_entry_t *hash_obj = anna_context_pop_entry(stack);
+    anna_entry_t *key = anna_context_pop_entry(stack);
     ahi_search_callback2_internal(
 	stack, key, hash_obj, callback, aux, hash, idx, dummy_idx, eq);
 }
@@ -460,7 +460,7 @@ static inline int anna_hash_mangle(int a)
 }
 
 static inline void ahi_search_callback_internal(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *hash_obj, 
     anna_entry_t *key,
     ahi_callback_t callback,
@@ -505,14 +505,14 @@ static inline void ahi_search_callback_internal(
     
 }
 
-static void ahi_search_callback(anna_vmstack_t *stack)
+static void ahi_search_callback(anna_context_t *stack)
 {
-    int hash = anna_vmstack_pop_int(stack);
-    anna_entry_t *aux = anna_vmstack_pop_entry(stack);
-    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_vmstack_pop_entry(stack));
-    anna_entry_t *hash_obj = anna_vmstack_pop_entry(stack);
-    anna_entry_t *key = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_entry(stack);
+    int hash = anna_context_pop_int(stack);
+    anna_entry_t *aux = anna_context_pop_entry(stack);
+    ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_context_pop_entry(stack));
+    anna_entry_t *hash_obj = anna_context_pop_entry(stack);
+    anna_entry_t *key = anna_context_pop_entry(stack);
+    anna_context_pop_entry(stack);
     
     ahi_search_callback_internal(
 	stack,
@@ -523,7 +523,7 @@ static void ahi_search_callback(anna_vmstack_t *stack)
 }
 
 static inline void ahi_search(
-    anna_vmstack_t *stack,
+    anna_context_t *stack,
     anna_entry_t *key,
     anna_entry_t *hash,
     ahi_callback_t callback,
@@ -616,13 +616,13 @@ static inline void anna_hash_set_entry(anna_hash_t *this, anna_hash_entry_t *has
     hash_entry->value = value;
 }
 /*
-static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
-    anna_vmstack_t *stack, 
+static __attribute__((aligned(8))) anna_context_t *anna_hash_init_callback(
+    anna_context_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
     anna_hash_entry_t *hash_entry);
 
-static inline anna_vmstack_t *anna_hash_init_search_pair(
-    anna_vmstack_t *stack, anna_entry_t *this,  
+static inline anna_context_t *anna_hash_init_search_pair(
+    anna_context_t *stack, anna_entry_t *this,  
     anna_object_t *list, 
     int start_offset, size_t sz,
     anna_entry_t * data )
@@ -651,8 +651,8 @@ static inline anna_vmstack_t *anna_hash_init_search_pair(
     return 0;	
 }
 
-static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
-    anna_vmstack_t *stack, 
+static __attribute__((aligned(8))) anna_context_t *anna_hash_init_callback(
+    anna_context_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *data, 
     anna_hash_entry_t *hash_entry)
 {
@@ -670,7 +670,7 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
     size_t sz = anna_list_get_count(list);
     if(sz > idx)
     {	
-	anna_vmstack_t *new_stack = anna_hash_init_search_pair(
+	anna_context_t *new_stack = anna_hash_init_search_pair(
 	    stack, hash, list, idx + 1, sz, data);
 	if(new_stack)
 	{
@@ -678,15 +678,15 @@ static __attribute__((aligned(8))) anna_vmstack_t *anna_hash_init_callback(
 	}
     }
     
-    anna_vmstack_push_entry(stack, hash);
+    anna_context_push_entry(stack, hash);
     return stack;
 }
 */
-static void anna_hash_init(anna_vmstack_t *stack)
+static void anna_hash_init(anna_context_t *stack)
 {
-    anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_object_t *this = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *list = anna_context_pop_object(stack);
+    anna_object_t *this = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     ahi_init(ahi_unwrap(this));
     this->flags |= ANNA_OBJECT_HASH;
     
@@ -721,7 +721,7 @@ static void anna_hash_init(anna_vmstack_t *stack)
 	    anna_entry_t * data = anna_from_obj(anna_list_create_mutable(object_type));
 	    anna_list_set(anna_as_obj_fast(data), 0, anna_from_obj(list));
 	    
-	    anna_vmstack_t *new_stack = anna_hash_init_search_pair(
+	    anna_context_t *new_stack = anna_hash_init_search_pair(
 		stack, anna_from_obj(this),
 		list, 0, sz, data);
 	    
@@ -732,11 +732,11 @@ static void anna_hash_init(anna_vmstack_t *stack)
 	}
 */
     }
-    anna_vmstack_push_object(stack, this);
+    anna_context_push_object(stack, this);
 }
 
 static __attribute__((aligned(8))) void anna_hash_set_callback(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
     anna_hash_entry_t *hash_entry)
 {
@@ -744,19 +744,19 @@ static __attribute__((aligned(8))) void anna_hash_set_callback(
 
     anna_hash_set_entry(this, hash_entry, hash_code, key, aux);
     
-    anna_vmstack_push_entry(stack, aux);
+    anna_context_push_entry(stack, aux);
 }
 
-static inline void anna_hash_set(anna_vmstack_t *stack)
+static inline void anna_hash_set(anna_context_t *stack)
 {
-    anna_entry_t *val = anna_vmstack_pop_entry(stack);
-    anna_entry_t *key = anna_vmstack_pop_entry(stack);
-    anna_entry_t *this = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_entry_t *val = anna_context_pop_entry(stack);
+    anna_entry_t *key = anna_context_pop_entry(stack);
+    anna_entry_t *this = anna_context_pop_entry(stack);
+    anna_context_pop_entry(stack);
 
     if(anna_entry_null(key))
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
 	return;
     }
     
@@ -771,29 +771,29 @@ static inline void anna_hash_set(anna_vmstack_t *stack)
 }
 
 static __attribute__((aligned(8))) void anna_hash_get_callback(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
     anna_hash_entry_t *hash_entry)
 {
     if(!hash_entry_is_used(hash_entry))
     {
-	anna_vmstack_push_object(stack, null_object);	
+	anna_context_push_object(stack, null_object);	
     }
     else
     {
-	anna_vmstack_push_entry(stack, hash_entry->value);	
+	anna_context_push_entry(stack, hash_entry->value);	
     }
 }
 
-static inline void anna_hash_get(anna_vmstack_t *stack)
+static inline void anna_hash_get(anna_context_t *stack)
 {
-    anna_entry_t *key = anna_vmstack_pop_entry(stack);
-    anna_entry_t *this = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_entry_t *key = anna_context_pop_entry(stack);
+    anna_entry_t *this = anna_context_pop_entry(stack);
+    anna_context_pop_entry(stack);
     
     if(anna_entry_null(key))
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
     else 
     {
@@ -809,29 +809,29 @@ static inline void anna_hash_get(anna_vmstack_t *stack)
 
 
 static __attribute__((aligned(8))) void anna_hash_in_callback(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
     anna_hash_entry_t *hash_entry)
 {
     if(!hash_entry_is_used(hash_entry))
     {
-	anna_vmstack_push_object(stack, null_object);	
+	anna_context_push_object(stack, null_object);	
     }
     else
     {
-	anna_vmstack_push_entry(stack, hash_entry->key);	
+	anna_context_push_entry(stack, hash_entry->key);	
     }
 }
 
-static inline void anna_hash_in(anna_vmstack_t *stack)
+static inline void anna_hash_in(anna_context_t *stack)
 {
-    anna_entry_t *key = anna_vmstack_pop_entry(stack);
-    anna_entry_t *this = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_entry_t *key = anna_context_pop_entry(stack);
+    anna_entry_t *this = anna_context_pop_entry(stack);
+    anna_context_pop_entry(stack);
     
     if(anna_entry_null(key))
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
     else
     {
@@ -845,7 +845,7 @@ static inline void anna_hash_in(anna_vmstack_t *stack)
 }
 
 static __attribute__((aligned(8))) void anna_hash_remove_callback(
-    anna_vmstack_t *stack, 
+    anna_context_t *stack, 
     anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
     anna_hash_entry_t *hash_entry)
 {
@@ -855,7 +855,7 @@ static __attribute__((aligned(8))) void anna_hash_remove_callback(
     
     if(hash_entry_is_used(hash_entry))
     {
-	anna_vmstack_push_entry(stack, hash_entry->key);	
+	anna_context_push_entry(stack, hash_entry->key);	
 	int next_idx = (hash_entry - this->table + 1) & this->mask;
 	anna_hash_entry_t *next = &this->table[next_idx];
 	if(hash_entry_is_unused_and_not_dummy(next))
@@ -873,19 +873,19 @@ static __attribute__((aligned(8))) void anna_hash_remove_callback(
     {
 //	wprintf(L"Failed to remove element %ls with hash code %d (%d), which maps to pos %d\n", anna_string_payload(key), hash_code, anna_hash_mangle(anna_string_hash(key)), hash_code & this->mask);
 
-	anna_vmstack_push_object(stack, null_object);	
+	anna_context_push_object(stack, null_object);	
     }
 }
 
-static inline void anna_hash_remove(anna_vmstack_t *stack)
+static inline void anna_hash_remove(anna_context_t *stack)
 {
-    anna_entry_t *key = anna_vmstack_pop_entry(stack);
-    anna_entry_t *this = anna_vmstack_pop_entry(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_entry_t *key = anna_context_pop_entry(stack);
+    anna_entry_t *this = anna_context_pop_entry(stack);
+    anna_context_pop_entry(stack);
 //    anna_hash_print(ahi_unwrap(this));
     if(anna_entry_null(key))
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
 	return;
     }
     
@@ -906,10 +906,10 @@ ANNA_VM_NATIVE(anna_hash_get_count_method, 1)
 /**
    This is the bulk of the each method
  */
-static void anna_hash_each_callback(anna_vmstack_t *stack)
+static void anna_hash_each_callback(anna_context_t *stack)
 {    
     // Discard the output of the previous method call
-    anna_vmstack_pop_entry(stack);
+    anna_context_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 3;
     // Unwrap and name the params to make things more explicit
@@ -937,16 +937,16 @@ static void anna_hash_each_callback(anna_vmstack_t *stack)
     else
     {
 	// Oops, we're done. Drop our internal param list and push the correct output
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, hash);
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, hash);
     }
 }
 
-static void anna_hash_each(anna_vmstack_t *stack)
+static void anna_hash_each(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *hash = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *hash = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     size_t sz = anna_hash_get_count(hash);
 
     if(sz > 0)
@@ -975,14 +975,14 @@ static void anna_hash_each(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, hash);
+	anna_context_push_object(stack, hash);
     }
 }
 
 
-static void anna_hash_map_callback(anna_vmstack_t *stack)
+static void anna_hash_map_callback(anna_context_t *stack)
 {
-    anna_entry_t *value = anna_vmstack_pop_entry(stack);
+    anna_entry_t *value = anna_context_pop_entry(stack);
     
     anna_entry_t **param = stack->top - 4;
     anna_object_t *hash = anna_as_obj_fast(param[0]);
@@ -1007,19 +1007,19 @@ static void anna_hash_map_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 5);
-	anna_vmstack_push_object(stack, res);
+	anna_context_drop(stack, 5);
+	anna_context_push_object(stack, res);
     }    
 }
 
-static void anna_hash_map(anna_vmstack_t *stack)
+static void anna_hash_map(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *hash = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *hash = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     if(body == null_object)
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
     else
     {
@@ -1055,7 +1055,7 @@ static void anna_hash_map(anna_vmstack_t *stack)
 	}
 	else
 	{
-	    anna_vmstack_push_object(stack, res);
+	    anna_context_push_object(stack, res);
 	}
     }
 }

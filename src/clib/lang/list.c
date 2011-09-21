@@ -267,10 +267,10 @@ ANNA_VM_NATIVE(anna_list_append, 2)
 /**
    This is the bulk of the each method
  */
-static void anna_list_each_callback(anna_vmstack_t *stack)
+static void anna_list_each_callback(anna_context_t *stack)
 {
     // Discard the output of the previous method call
-    anna_vmstack_pop_entry(stack);
+    anna_context_pop_entry(stack);
     // Set up the param list. These are the values that aren't reallocated each lap
     anna_entry_t **param = stack->top - 3;
     // Unwrap and name the params to make things more explicit
@@ -298,16 +298,16 @@ static void anna_list_each_callback(anna_vmstack_t *stack)
     else
     {
 	// Oops, we're done. Drop our internal param list and push the correct output
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, list);
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, list);
     }
 }
 
-static void anna_list_each(anna_vmstack_t *stack)
+static void anna_list_each(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *list = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     size_t sz = anna_list_get_count(list);
 
     if(sz > 0)
@@ -335,13 +335,13 @@ static void anna_list_each(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, list);
+	anna_context_push_object(stack, list);
     }
 }
 
-static void anna_list_map_callback(anna_vmstack_t *stack)
+static void anna_list_map_callback(anna_context_t *stack)
 {
-    anna_entry_t *value = anna_vmstack_pop_entry(stack);
+    anna_entry_t *value = anna_context_pop_entry(stack);
 
     anna_entry_t **param = stack->top - 4;
     anna_object_t *list = anna_as_obj_fast(param[0]);
@@ -366,19 +366,19 @@ static void anna_list_map_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 5);
-	anna_vmstack_push_object(stack, res);
+	anna_context_drop(stack, 5);
+	anna_context_push_object(stack, res);
     }    
 }
 
-static void anna_list_map(anna_vmstack_t *stack)
+static void anna_list_map(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *list = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     if(body == null_object)
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
     else
     {
@@ -416,14 +416,14 @@ static void anna_list_map(anna_vmstack_t *stack)
 	}
 	else
 	{
-	    anna_vmstack_push_object(stack, res);
+	    anna_context_push_object(stack, res);
 	}
     }
 }
 
-static void anna_list_filter_callback(anna_vmstack_t *stack)
+static void anna_list_filter_callback(anna_context_t *stack)
 {
-    anna_entry_t *value = anna_vmstack_pop_entry(stack);
+    anna_entry_t *value = anna_context_pop_entry(stack);
 
     anna_entry_t **param = stack->top - 4;
     anna_object_t *list = anna_as_obj_fast(	param[0]);
@@ -451,19 +451,19 @@ static void anna_list_filter_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 5);
-	anna_vmstack_push_object(stack, res);
+	anna_context_drop(stack, 5);
+	anna_context_push_object(stack, res);
     }    
 }
 
-static void anna_list_filter(anna_vmstack_t *stack)
+static void anna_list_filter(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *list = anna_vmstack_pop_object(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *list = anna_context_pop_object(stack);
     anna_object_t *res = anna_list_is_mutable(list)?
 	anna_list_create_mutable(anna_list_get_specialization(list)):
 	anna_list_create_imutable(anna_list_get_specialization(list));
-    anna_vmstack_pop_entry(stack);
+    anna_context_pop_entry(stack);
     
     size_t sz = anna_list_get_count(list);
     
@@ -493,13 +493,13 @@ static void anna_list_filter(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, res);
+	anna_context_push_object(stack, res);
     }
 }
 
-static void anna_list_find_callback(anna_vmstack_t *stack)
+static void anna_list_find_callback(anna_context_t *stack)
 {
-    anna_entry_t *value = anna_vmstack_pop_entry(stack);
+    anna_entry_t *value = anna_context_pop_entry(stack);
 
     anna_entry_t **param = stack->top - 3;
     anna_object_t *list = anna_as_obj_fast(param[0]);
@@ -509,8 +509,8 @@ static void anna_list_find_callback(anna_vmstack_t *stack)
 
     if(!anna_entry_null(value))
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_entry(stack, anna_list_get(list, idx-1));
+	anna_context_drop(stack, 4);
+	anna_context_push_entry(stack, anna_list_get(list, idx-1));
     }
     else if( (sz > idx) && !(stack->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
     {
@@ -526,16 +526,16 @@ static void anna_list_find_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, null_object);
     }
 }
 
-static void anna_list_find(anna_vmstack_t *stack)
+static void anna_list_find(anna_context_t *stack)
 {
-    anna_object_t *body = anna_vmstack_pop_object(stack);
-    anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *body = anna_context_pop_object(stack);
+    anna_object_t *list = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     
     size_t sz = anna_list_get_count(list);
     
@@ -564,7 +564,7 @@ static void anna_list_find(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
 }
 
@@ -615,9 +615,9 @@ ANNA_VM_NATIVE(anna_list_pop, 1)
     return (*(anna_entry_t ***)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_PAYLOAD))[*sz];
 }
 
-static void anna_list_in_callback(anna_vmstack_t *stack)
+static void anna_list_in_callback(anna_context_t *stack)
 {
-    anna_entry_t *ret = anna_vmstack_pop_entry(stack);
+    anna_entry_t *ret = anna_context_pop_entry(stack);
 //    wprintf(L"Wee, in callback value: %ls\n", ret==null_object?L"null":L"not null");
     anna_entry_t **param = stack->top - 3;
     anna_object_t *list = anna_as_obj_fast(param[0]);
@@ -627,8 +627,8 @@ static void anna_list_in_callback(anna_vmstack_t *stack)
     
     if(!anna_entry_null(ret))
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_entry(stack, anna_from_int(idx-1));
+	anna_context_drop(stack, 4);
+	anna_context_push_entry(stack, anna_from_int(idx-1));
     }
     else if(sz > idx)
     {
@@ -645,16 +645,16 @@ static void anna_list_in_callback(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_drop(stack, 4);
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_drop(stack, 4);
+	anna_context_push_object(stack, null_object);
     }
 }
 
-static void anna_list_in(anna_vmstack_t *stack)
+static void anna_list_in(anna_context_t *stack)
 {
-    anna_object_t *value = anna_vmstack_pop_object(stack);
-    anna_object_t *list = anna_vmstack_pop_object(stack);
-    anna_vmstack_pop_entry(stack);
+    anna_object_t *value = anna_context_pop_object(stack);
+    anna_object_t *list = anna_context_pop_object(stack);
+    anna_context_pop_entry(stack);
     
     size_t sz = anna_list_get_count(list);
     
@@ -684,7 +684,7 @@ static void anna_list_in(anna_vmstack_t *stack)
     }
     else
     {
-	anna_vmstack_push_object(stack, null_object);
+	anna_context_push_object(stack, null_object);
     }
 }
 
