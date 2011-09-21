@@ -87,7 +87,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_filename, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_function_t *f = anna_function_unwrap(this);
-    return f->filename?anna_string_create(wcslen(f->filename), f->filename):null_entry;
+    return f->filename?anna_from_obj(anna_string_create(wcslen(f->filename), f->filename)):null_entry;
 }
 
 ANNA_VM_NATIVE(anna_continuation_type_i_get_filename, 1)
@@ -95,7 +95,7 @@ ANNA_VM_NATIVE(anna_continuation_type_i_get_filename, 1)
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_function_t *f = frame->function;
-    return f->filename?anna_string_create(wcslen(f->filename), f->filename):null_entry;
+    return f->filename?anna_from_obj(anna_string_create(wcslen(f->filename), f->filename)):null_entry;
 }
 
 ANNA_VM_NATIVE(anna_continuation_type_i_get_line, 1)
@@ -135,10 +135,12 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
 	sb_printf(&sb, L"%ls%ls %ls", i>0?L", ":L"", fun->input_type[i]->name, fun->input_name[i]);
     }
     sb_printf(&sb, L")");
-    return anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_entry_t *res = anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
+    sb_destroy(&sb);
+    return res;
 }
 
-void anna_function_type_trace_recursive(
+static void anna_function_type_trace_recursive(
     string_buffer_t *sb, anna_activation_frame_t *frame)
 {
     if(!frame)
@@ -347,7 +349,7 @@ void anna_function_type_create(
     {
 	anna_member_create(
 	    res, ANNA_MID_CONTINUATION_STACK,
-	    0, null_type);
+	    ANNA_MEMBER_ALLOC, null_type);
 	
 	anna_member_create(
 	    res, ANNA_MID_CONTINUATION_STACK_COUNT,

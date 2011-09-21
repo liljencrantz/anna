@@ -37,7 +37,7 @@ for i in "add mpz_add(res, *v1, *v2)" "increaseAssign mpz_add(res, *v1, *v2)" "s
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L\"__${name}__\");
-
+    fun->flags |= ANNA_FUNCTION_PURE;
 "
 
     echo "
@@ -107,11 +107,13 @@ for i in "abs mpz_abs(res, *v1)" "neg mpz_neg(res, *v1)" "sign mpz_set_si(res, m
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_member_create_native_method(
+    mmid = anna_member_create_native_method(
 	int_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	1, argv, argn, 0, 0);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
+    fun->flags |= ANNA_FUNCTION_PURE;
 "
 
     echo "

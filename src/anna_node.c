@@ -197,8 +197,11 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
 
 static anna_entry_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
 {
-    anna_entry_t *result = anna_node_static_invoke(this->value, stack);
-    anna_stack_set(stack, this->name, result);
+    anna_entry_t *result = anna_node_static_invoke_try(this->value, stack);
+    if(result)
+    {
+	anna_stack_set(stack, this->name, result);
+    }
     return result;
 }
 
@@ -295,7 +298,6 @@ anna_entry_t *anna_node_static_invoke_try(
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
-	    //wprintf(L"Weee member get. Member is named %ls\n", anna_mid_get_reverse(this2->mid));
 	    anna_object_t *obj = anna_as_obj(
 		anna_node_static_invoke_try(
 		    this2->object,
@@ -313,14 +315,62 @@ anna_entry_t *anna_node_static_invoke_try(
 		    return 0;
 		}
 		
-		//wprintf(L"Weee member found object\n");
 		return *anna_entry_get_addr(obj, this2->mid);
 	    }
-	    else
-	    {
-		//wprintf(L"Member not constant\n");		
-	    }
 	}
+
+	case ANNA_NODE_MEMBER_CALL:
+	{
+	    anna_node_call_t *this2 = (anna_node_member_access_t *)this;
+	    //wprintf(L"Weee member get. Member is named %ls\n", anna_mid_get_reverse(this2->mid));
+	    anna_object_t *obj = anna_as_obj(
+		anna_node_static_invoke_try(
+		    this2->object,
+		    stack));
+	    if(obj)
+	    {
+		anna_member_t *memb = anna_member_get(obj->type, this2->mid);
+		if((!memb) || (!memb->is_bound_method))
+		{
+		    break;
+		}
+		anna_function_t *meth = anna_function_unwrap(obj->type->static_member[memb->offset]);
+		if(!(meth->flags & ANNA_FUNCTION_PURE))
+		{
+		    break;
+		}
+
+		anna_entry_t **argv = malloc(sizeof(anna_entry_t *)* meth->input_count);
+		int i;
+		int ok=1;
+		argv[0] = anna_from_obj(obj);
+		for(i=0; i<this2->child_count; i++)
+		{
+		    anna_entry_t *next = anna_node_static_invoke_try(
+			this2->child[i],
+			stack);
+		    if(!next)
+		    {
+			ok = 0;
+			break;
+		    }
+		    argv[i+1] = next;
+		}
+		anna_entry_t *res = 0;
+		if(ok)
+		{
+		    anna_object_t *res = anna_vm_run(
+			anna_function_wrap(meth),
+			meth->input_count,
+			argv);
+		    res = anna_as_native(anna_from_obj(res));
+		}
+		free(argv);
+		return res;
+	    }
+	    
+	}
+	
     }
     return 0;
 }

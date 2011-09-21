@@ -53,6 +53,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	float_type,
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    fun->flags |= ANNA_FUNCTION_PURE;
     anna_function_alias_add(fun, L\"__${name}__\");
 
     mmid = anna_member_create_native_method(
@@ -61,6 +62,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	float_type,
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    fun->flags |= ANNA_FUNCTION_PURE;
     anna_function_alias_add(fun, L\"__${name}__\");
 
     mmid = anna_member_create_native_method(
@@ -69,6 +71,7 @@ for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1
 	float_type,
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    fun->flags |= ANNA_FUNCTION_PURE;
     anna_function_alias_reverse_add(fun, L\"__${name}__\");
 
 "
@@ -119,11 +122,15 @@ for i in "abs fabs(v)" "neg -v" "sign (v==0.0?0.0:(v>0?1.0:-1.0))"; do
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
-    anna_member_create_native_method(
+    mmid = anna_member_create_native_method(
 	float_type, anna_mid_get(L\"__${name}__\"), 0, 
 	&anna_float_i_${name}, 
 	float_type,
-	1, argv, argn, 0, 0);"
+	1, argv, argn, 0, 0);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
+    fun->flags |= ANNA_FUNCTION_PURE;
+
+"
 
     echo "
 ANNA_VM_NATIVE(anna_float_i_$name, 1)

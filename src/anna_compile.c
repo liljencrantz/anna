@@ -295,6 +295,7 @@ static void anna_vm_compile_i(
 {
 //    wprintf(L"Compile AST node of type %d\n", node->node_type);
     al_push(&ctx->node, node);
+
     switch(node->node_type)
     {
 	case ANNA_NODE_NULL:
@@ -702,6 +703,14 @@ static void anna_vm_compile_i(
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{
+	    anna_entry_t *const_whole = anna_node_static_invoke_try(
+		node, fun->stack_template);
+	    if(const_whole)
+	    {
+		anna_vm_const(ctx, const_whole);
+		break;
+	    }
+	    
 	    anna_node_call_t *node2 = (anna_node_call_t *)node;
 	    
 	    if(anna_short_circut_instr(node2, fun->stack_template))
@@ -798,10 +807,9 @@ static void anna_vm_compile_i(
 		    anna_vm_compile_i(ctx, fun, node2->child[i], 0);
 		    anna_vm_null(ctx, ANNA_INSTR_FOLD);
 		}
-	    }
-	    
+	    }	    
 	    anna_vm_call(ctx, ANNA_INSTR_CALL, template->input_count);
-	    
+    
 	    break;
 	}	
 
@@ -817,6 +825,8 @@ static void anna_vm_compile_i(
 	    CRASH;
 	}
     }
+    
+    
     if(drop_output){
 	anna_vm_null(ctx, ANNA_INSTR_POP);
     }

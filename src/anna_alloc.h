@@ -35,8 +35,6 @@ static inline void anna_alloc_check_gc(anna_context_t *stack)
 static inline __malloc anna_context_t *anna_alloc_vmstack(size_t sz)
 {
     anna_context_t *res = anna_slab_alloc(sz);
-//    anna_context_t *res = malloc(sz);
-    
     res->flags = ANNA_CONTEXT;
     al_push(&anna_alloc, res);
     anna_alloc_count+=sz;
@@ -47,8 +45,6 @@ static inline __malloc anna_context_t *anna_alloc_vmstack(size_t sz)
 static inline __malloc anna_activation_frame_t *anna_alloc_activation_frame(size_t sz)
 {
     anna_activation_frame_t *res = anna_slab_alloc(sz);
-//    anna_context_t *res = malloc(sz);
-    
     res->flags = ANNA_ACTIVATION_FRAME;
     al_push(&anna_alloc, res);
     anna_alloc_count+=sz;

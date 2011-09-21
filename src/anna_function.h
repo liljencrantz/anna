@@ -46,6 +46,11 @@
  */
 #define ANNA_FUNCTION_LOOP (8192*8)
 
+/**
+   This function is pure (has no side effects).
+*/
+#define ANNA_FUNCTION_PURE (8192*16)
+
 extern array_list_t anna_function_list;
 
 /**
