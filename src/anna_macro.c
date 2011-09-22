@@ -86,6 +86,22 @@ ANNA_VM_MACRO(anna_macro_type)
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_BLOCK(node->child[1]);
     CHECK_NODE_BLOCK(node->child[2]);
+
+    anna_node_call_t *attr = (anna_node_call_t *)node->child[1];
+    
+    node->function = (anna_node_t *)anna_node_create_identifier(
+	&node->function->location,
+	L"__typeInternal__");
+    
+    return anna_macro_attribute_expand(node, attr);
+}
+
+ANNA_VM_MACRO(anna_macro_type_internal)
+{
+    CHECK_CHILD_COUNT(node,L"type macro", 3);
+    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
+    CHECK_NODE_BLOCK(node->child[1]);
+    CHECK_NODE_BLOCK(node->child[2]);
     
     wchar_t *name = ((anna_node_identifier_t *)node->child[0])->name;
     anna_type_t *type = anna_type_create(name, node);
@@ -314,6 +330,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
     anna_macro_add(stack, L"type", &anna_macro_type);
+    anna_macro_add(stack, L"__typeInternal__", &anna_macro_type_internal);
     anna_macro_add(stack, L"return", &anna_macro_return);
     anna_macro_add(stack, L"__staticTypeOf__", &anna_macro_type_of);
     anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of);

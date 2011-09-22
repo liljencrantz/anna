@@ -1,0 +1,8 @@
+type Foo (someNoneExistingAttribute)
+{
+
+}
+
+def main()
+{
+}

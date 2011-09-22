@@ -1,0 +1,8 @@
+def Int foo() (someNoneExistingAttribute)
+{
+
+}
+
+def main()
+{
+}
