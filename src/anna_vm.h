@@ -235,8 +235,6 @@ static inline long anna_as_int(anna_entry_t *entry)
 
 static inline long anna_as_int_unsafe(anna_entry_t *entry)
 {
-    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
-    type = ((long)entry) & ANNA_STACK_ENTRY_SUBFILTER;
     long res = (long)entry;
     res >>= 2;
     return res;
@@ -303,7 +301,6 @@ static inline double anna_as_float(anna_entry_t *entry)
 
 static inline double anna_as_float_unsafe(anna_entry_t *entry)
 {
-    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
     return *(double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
 }
 

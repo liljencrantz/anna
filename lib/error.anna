@@ -3,7 +3,7 @@ type Error
 {
     var reflection.Continuation source(internal);
     var String message;
-    def __init__(String message)
+    def __init__(String message=?)
     {
 	this.message = message;
 	source = reflection.currentContinuation;

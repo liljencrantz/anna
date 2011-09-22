@@ -116,6 +116,19 @@ static anna_stack_template_t *anna_module(
     return res;
 }
 
+static anna_stack_template_t *anna_module_recursive(
+    anna_stack_template_t *parent, array_list_t *path, int offset)
+{
+    wchar_t *el = (wchar_t *)al_get(path, offset);
+    anna_stack_template_t *mod = anna_module(parent, el, 0);
+    anna_module_load_i(mod);
+    if(al_get_count(path) > (offset+1))
+    {
+	return anna_module_recursive(mod, path, offset+1);
+    }
+    return mod;
+}
+
 
 void anna_module_check(
     anna_stack_template_t *parent, wchar_t *name)
@@ -625,6 +638,33 @@ void anna_module_init()
     
 }
 
+static void import_parse(anna_node_t *node, array_list_t *list)
+{
+    
+    if(node->node_type == ANNA_NODE_IDENTIFIER)
+    {
+	anna_node_identifier_t *id = (anna_node_identifier_t *)node;
+	al_push(list, id->name);
+	return;	
+    }
+    if(anna_node_is_call_to(node, L"__memberGet__"))
+    {
+	anna_node_call_t *call = (anna_node_call_t *)node;
+	if(call->child_count == 2 && call->child[1]->node_type == ANNA_NODE_IDENTIFIER)
+	{
+	    import_parse(call->child[0], list);
+	    anna_node_identifier_t *id = (anna_node_identifier_t *)call->child[1];
+	    al_push(list, id->name);
+	    return;
+	}	
+    }
+
+    anna_error(
+	node,
+	L"Invalid module. All module names must be valid namespaces");
+}
+
+
 static void anna_module_find_import_internal(
     anna_node_t *module, wchar_t *name, array_list_t *import)
 {
@@ -642,17 +682,10 @@ static void anna_module_find_import_internal(
 	    anna_node_call_t *im = (anna_node_call_t *)m->child[i];
 	    for(j=0; j<im->child_count; j++)
 	    {
-		if(im->child[j]->node_type == ANNA_NODE_IDENTIFIER)
-		{
-		    anna_node_identifier_t *id = (anna_node_identifier_t *)im->child[j];
-		    al_push(import, id->name);
-		}
-		else
-		{
-		    anna_error(
-			im->child[j],
-			L"Invalid module. All module names must be identifiers");
-		}
+		array_list_t *el_list = malloc(sizeof(array_list_t));
+		al_init(el_list);
+		al_push(import, el_list);		
+		import_parse(im->child[j], el_list);
 	    }
 	    m->child[i] = anna_node_create_null(
 		&module->location);	    
@@ -737,18 +770,20 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
       Implicitly add an import
       of the lang module to the top of the ast.
     */
-    al_push(&module_stack->import, L"lang");
+    array_list_t *lang_list = malloc(sizeof(array_list_t));    
+    al_init(lang_list);
+    al_push(lang_list, L"lang");
+    al_push(&module_stack->import, lang_list);
     
     anna_module_find_expand(program, &module_stack->expand);    
     anna_module_find_import(program, &module_stack->import);
     
     for(i=0; i<al_get_count(&module_stack->expand); i++ )
     {
-	wchar_t *str = al_get(&module_stack->expand, i);
-	debug(D_SPAM,L"expand statement: expand(%ls)\n", str);
-	
-	anna_stack_template_t *mod = anna_module(stack_global, str, 0);	
-	anna_module_load_i(mod);
+	array_list_t *el_list = (array_list_t *)al_get(&module_stack->expand, i);
+	anna_stack_template_t *mod = anna_module_recursive(stack_global, el_list, 0);
+	al_destroy(el_list);
+	free(el_list);
 	
 	if(anna_error_count || !mod)
 	{
@@ -807,9 +842,11 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     for(i=0; i<al_get_count(&module_stack->import); i++ )
     {
-	wchar_t *str = al_get(&module_stack->import, i);
-	anna_stack_template_t *mod = anna_module(stack_global, str, 0);
-	anna_module_load_i(mod);
+	array_list_t *el_list = (array_list_t *)al_get(&module_stack->import, i);
+	anna_stack_template_t *mod = anna_module_recursive(stack_global, el_list, 0);
+	al_destroy(el_list);
+	free(el_list);
+
 	if(anna_error_count || !mod)
 	{
 	    return;
