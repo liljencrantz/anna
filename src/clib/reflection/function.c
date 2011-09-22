@@ -202,7 +202,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get, 2)
     return res;
 }
 
-ANNA_VM_NATIVE(anna_function_type_i_caller, 1)
+ANNA_VM_NATIVE(anna_function_type_i_dynamic, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
@@ -217,7 +217,7 @@ ANNA_VM_NATIVE(anna_function_type_i_caller, 1)
     return null_entry;
 }
 
-ANNA_VM_NATIVE(anna_function_type_i_parent, 1)
+ANNA_VM_NATIVE(anna_function_type_i_static, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_context_t *c_stack = (anna_context_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
@@ -400,32 +400,32 @@ void anna_function_type_create(
 	    L"Returns the value of the local variable with the specified name.");
 	
 	anna_member_create_native_property(
-	    res, anna_mid_get(L"caller"),
+	    res, anna_mid_get(L"dynamicFrame"),
 	    res,
-	    &anna_function_type_i_caller,
+	    &anna_function_type_i_dynamic,
 	    0,
-	    L"The continuation of the caller of this continuation.");
+	    L"The continuation of the dynamic scope (the caller) of this continuation.");
 
 	anna_member_create_native_property(
-	    res, anna_mid_get(L"parent"),
+	    res, anna_mid_get(L"staticFrame"),
 	    res,
-	    &anna_function_type_i_parent,
+	    &anna_function_type_i_static,
 	    0,
-	    L"The continuation of the parent scope of this continuation.");
+	    L"The continuation of the static scope of this continuation.");
 	
 	anna_member_create_native_property(
 	    res, anna_mid_get(L"filename"),
 	    imutable_string_type,
 	    &anna_continuation_type_i_get_filename,
 	    0,
-	    L"The name of the file in which this function was defined.");
+	    L"The name of the file in which the function that this continuation points into was defined in.");
 
 	anna_member_create_native_property(
 	    res, anna_mid_get(L"line"),
 	    int_type,
 	    &anna_continuation_type_i_get_line,
 	    0,
-	    L"The name of the file in which this function was defined.");
+	    L"The line number of the code offset of the function that this continuation points into.");
 
     }
     

@@ -37,14 +37,12 @@ static void anna_alloc_unmark(void *obj)
 
 __pure static inline int anna_object_member_is_blob(anna_type_t *type, size_t off)
 {
-    return type->member_blob[off];
-    
+    return type->member_blob[off];    
 }
 
 __pure static inline int anna_object_member_is_alloc(anna_type_t *type, size_t off)
 {
-    return type->member_blob[off] == ANNA_GC_ALLOC;
-    
+    return type->member_blob[off] == ANNA_GC_ALLOC;    
 }
 
 __pure static inline int anna_type_member_is_blob(anna_type_t *type, size_t off)
@@ -58,7 +56,6 @@ __pure static inline int anna_type_member_is_alloc(anna_type_t *type, size_t off
 }
 
 void anna_alloc_mark_type(anna_type_t *type);
-//static void anna_alloc_mark(void *obj);
 static void anna_alloc_mark_node(anna_node_t *o);
 
 static void anna_alloc_mark_function(anna_function_t *o)
@@ -126,7 +123,6 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
 	    anna_alloc_mark_node((anna_node_t *)o->member_declare_node[i]);
 	}
     }
-    
 }
 
 static void anna_alloc_mark_node(anna_node_t *o)
@@ -381,7 +377,6 @@ void anna_alloc_mark_type(anna_type_t *type)
     {
       	anna_alloc_mark_node((anna_node_t *)type->attribute);
     }
-    
 }
 
 static void anna_alloc_mark_blob(void *mem)

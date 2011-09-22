@@ -1101,17 +1101,13 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_method(
 	type, anna_mid_get(L"__set__"), 
 	0, &anna_hash_set, spec2, 
-	3, kv_argv, kv_argn, 0, 0);
-    anna_member_document(
-	type, anna_mid_get(L"__set__"),
+	3, kv_argv, kv_argn, 0,
 	L"Assigns the specified value to the specified key.");
 
     anna_member_create_native_method(
 	type, anna_mid_get(L"__get__"),
 	0, &anna_hash_get,
-	spec2, 2, kv_argv, kv_argn, 0, 0);    
-    anna_member_document(
-	type, anna_mid_get(L"__get__"),
+	spec2, 2, kv_argv, kv_argn, 0,
 	L"Returns the value associated with the specified key.");
 
     anna_type_t *i_argv[] = 

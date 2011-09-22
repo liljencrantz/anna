@@ -1013,11 +1013,7 @@ static void anna_list_type_create_internal(
 	int_type,
 	2,
 	a_argv,
-	a_argn, 0, 0);
-
-    anna_member_document(
-	type,
-	anna_mid_get(L"__in__"), 
+	a_argn, 0, 
 	L"If the specified value exists in the list, the first index where it can be found is returned, otherwise, null is returned.");
     
     anna_type_t *range_argv[] = 
@@ -1060,10 +1056,7 @@ static void anna_list_type_create_internal(
 	    type,
 	    2,
 	    a_argv,
-	    a_argn, 0, 0);
-	anna_member_document(
-	    type,
-	    anna_mid_get(L"push"), 
+	    a_argn, 0, 
 	    L"Adds the specified element to the end of the list. Returns the mutated list.");
 	
 	anna_member_create_native_method(

@@ -158,13 +158,25 @@
    Same as ANNA_INSTR_RETURN_COUNT, but also set the breal flag
  */
 #define ANNA_INSTR_RETURN_COUNT_BREAK 26
-
+/**
+   Checks if the current activation frame has the BREAK flag set, indicating that it was returned through a break expression.
+ */
 #define ANNA_INSTR_CHECK_BREAK 27
 
+/**
+   Set the value of a member in a type
+ */
 #define ANNA_INSTR_STATIC_MEMBER_SET 28
 
+/**
+   Pops a value from the stack and pushes the type of the popped value
+ */
 #define ANNA_INSTR_TYPE_OF 29
 
+/*
+  Here comes a bunch of short circuted operatiosn for e.g. adding two
+  integers. Their meaning should be pretty self explanatory.
+ */
 
 #define ANNA_INSTR_ADD_INT 64
 #define ANNA_INSTR_SUB_INT 65

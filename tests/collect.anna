@@ -1,9 +1,4 @@
 
-error MyError(IOError)
-{
-    
-}
-
 def main()
 {
     collect

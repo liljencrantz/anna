@@ -210,35 +210,29 @@ void anna_float_type_create()
     mmid = anna_member_create_native_type_method(
 	float_type, anna_mid_get(L"convertString"),
 	0, &anna_float_convert_string,
-	float_type, 1, &string_type, conv_argn, 0, 0);
+	float_type, 1, &string_type, conv_argn, 0,
+	L"Convert the specified character String to a floating point number.");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-    anna_member_document(
-	float_type, anna_mid_get(L"convertString"),
-	L"Convert the specified character String to a floating point number.");
 
     mmid = anna_member_create_native_type_method(
 	float_type, anna_mid_get(L"convertFloat"),
 	0, &anna_float_convert_float,
-	float_type, 1, &float_type, conv_argn, 0, 0);
+	float_type, 1, &float_type, conv_argn, 0,
+	L"Convert the specified floating point number to a floating point number. (This is a no-op.)");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-    anna_member_document(
-	float_type, anna_mid_get(L"convertFloat"),
-	L"Convert the specified floating point number to a floating point number. (This is a no-op.)");
 
     mmid = anna_member_create_native_type_method(
 	float_type, anna_mid_get(L"convertInt"),
 	0, &anna_float_convert_int,
-	float_type, 1, &int_type, conv_argn, 0, 0);
+	float_type, 1, &int_type, conv_argn, 0,
+	L"Convert the specified Integer value to a floating point number.");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-    anna_member_document(
-	float_type, anna_mid_get(L"convertInt"),
-	L"Convert the specified Integer value to a floating point number.");
     
     anna_member_create_native_property(
 	float_type, anna_mid_get(L"maxExponent"),

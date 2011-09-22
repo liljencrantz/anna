@@ -333,46 +333,38 @@ void anna_int_type_create()
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertString"),
 	0, &anna_int_convert_string, int_type,
-	1, &string_type, conv_argn, 0, 0);
+	1, &string_type, conv_argn, 0, 
+	L"Convert a String to an Int. The String must be in decimal and the entire string (not just a prefix of it) must be a legal number.");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-    anna_member_document(
-	int_type, mmid,
-	L"Convert a String to an Int. The String must be in decimal and the entire string (not just a prefix of it) must be a legal number.");
     
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertFloat"),
 	0, &anna_int_convert_float, int_type, 1,
-	&float_type, conv_argn, 0, 0);
+	&float_type, conv_argn, 0,
+	L"Convert a Float to an Int, truncating any stray precision.");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-    anna_member_document(
-	int_type, mmid,
-	L"Convert a Float to an Int, truncating any stray precision.");
 
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertChar"), 0,
 	&anna_int_convert_char, int_type, 1, &char_type,
-	conv_argn, 0, 0);
+	conv_argn, 0,
+	L"Returns the ordinal number of a Char. This method returns the same value as the Char.ordinal property.");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-    anna_member_document(
-	int_type, mmid,
-	L"Returns the ordinal number of a Char. This method returns the same value as the Char.ordinal property.");
 
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertInt"), 0,
 	&anna_int_convert_int, int_type, 1, &int_type,
-	conv_argn, 0, 0);
+	conv_argn, 0,
+	L"Converts an Int to itself. This is a noop.");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-    anna_member_document(
-	int_type, mmid,
-	L"Converts an Int to itself. This is a noop.");
 
     anna_type_finalizer_add(
 	int_type, anna_int_del);

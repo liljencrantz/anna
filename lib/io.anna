@@ -1,11 +1,11 @@
 /*
 error IoError (Error) {}
 */
-/*
-type IoError (extends(error.Error))
-{
+
+type IOError (extends(error.Error))
+{    
 }
-*/
+
 def isRelative(String filename)
 {
     return filename[0] != separator;
@@ -101,7 +101,12 @@ type File
 	    "Read the contents of the file and return it as a String.")
     )
     {
-        (fd := unix.io.open(this.filename, unix.io.openMode.readOnly, 0)) or (return ?);
+      fd := unix.io.open(this.filename, unix.io.openMode.readOnly, 0);
+	if(!fd)
+	{
+	    error.raise(IOError("Failed to open file"));
+	    return ?;
+	}
         res := readWholeFile(fd);
 	unix.io.close(fd);
 	res;

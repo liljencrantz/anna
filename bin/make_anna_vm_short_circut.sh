@@ -21,7 +21,7 @@ echo "
 	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
-	    int res = anna_as_int(i1) $op anna_as_int(i2);
+	    int res = anna_as_int_unsafe(i1) $op anna_as_int_unsafe(i2);
             anna_context_push_int(stack, (long)res);
 	}
 	else
@@ -65,7 +65,7 @@ echo "
 	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
-	    int res = anna_as_int(i1) $op anna_as_int(i2);
+	    int res = anna_as_int_unsafe(i1) $op anna_as_int_unsafe(i2);
 
 //            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
 
@@ -205,7 +205,7 @@ echo "
 //wprintf(L\"DIV\n\");
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
-	    int res = anna_as_int(i1) / anna_as_int(i2);
+	    int res = anna_as_int_unsafe(i1) / anna_as_int_unsafe(i2);
             anna_context_push_int(stack, (long)res);
 	}
 	else
@@ -243,7 +243,7 @@ echo "
 	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
-	    long long res = (long long)anna_as_int(i1) * anna_as_int(i2);
+	    long long res = (long long)anna_as_int_unsafe(i1) * anna_as_int_unsafe(i2);
 //wprintf(L\"FAST %d * %d = %lld, %d\n\", anna_as_int(i1), anna_as_int(i2), res, ANNA_INT_FAST_MAX);
 
             if(likely(llabs(res)<=ANNA_INT_FAST_MAX))
@@ -311,8 +311,8 @@ echo "
 	stack->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
-            double v1 = anna_as_float(i1);
-            double v2 = anna_as_float(i2);
+            double v1 = anna_as_float_unsafe(i1);
+            double v2 = anna_as_float_unsafe(i2);
 	    anna_context_push_float(stack, $op);
 	}
 	else

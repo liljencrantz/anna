@@ -1,11 +1,11 @@
 
 type Error
 {
-
     var reflection.Continuation source(internal);
-
-    def __init__()
+    var String message;
+    def __init__(String message)
     {
+	this.message = message;
 	source = reflection.currentContinuation;
     }
     
@@ -13,7 +13,6 @@ type Error
     {
 	this.__type__.name;
     }
-    
 }
 
 def raise(Error error)
@@ -23,16 +22,16 @@ def raise(Error error)
 	if(coll := (item["!collect"] as MutableList))
 	{
 	    coll ~= [error];
-	} else 
+	    return;
+	} 
+
+	if(item.dynamicFrame)
 	{
-	    if(item.caller)
-	    {
-		funEach(item.caller);
-	    } else
-	    {
-		print("Uncaught error:\n", error, '\n');
-	    }
+	    funEach(item.dynamicFrame);
+	    return;
 	}
+
+	print("Uncaught error:\n", error, '\n');
     }
     
     funEach(reflection.currentContinuation);
