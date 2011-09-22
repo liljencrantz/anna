@@ -55,9 +55,36 @@ def String pairToString(Pair this)
     doc("Returns a String representation of this Pair."),
 )
 {
-    return "" ~ (this.first or "null") ~ ":" ~ (this.second or "null");
+    return "" ~ (this.first or "null") ~ "|" ~ (this.second or "null");
 }
 
+def Int pairHashCode(Pair this)
+(
+    name(hashCode), 
+    target(Pair), 
+    doc("Returns a hash code for this Pair."),
+)
+{
+    this.first.hashCode() ^bitand this.second.hashCode()
+}
+
+def Int pairCmp(Pair this, Object other)
+(
+    name(__cmp__), 
+    target(Pair), 
+    doc("Compares two pairs."),
+)
+{
+    (that := other as Pair) or (return ?);
+    cmp1 := this.first.__cmp__(that.first);
+    if(cmp1 == 0)
+    {
+	return this.second.__cmp__(that.second);
+    } else
+    {
+	return cmp1;
+    }    
+}
 
 def String hashMapSetAll(HashMap this, Pair value...)
 (

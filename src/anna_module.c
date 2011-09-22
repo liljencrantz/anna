@@ -18,7 +18,6 @@
 #include "anna_stack.h"
 
 #include "clib/anna_function_type.h"
-#include "clib/lang/object.h"
 #include "anna_type.h"
 #include "anna_macro.h"
 #include "anna_member.h"
@@ -29,13 +28,15 @@
 #include "anna_intern.h"
 #include "wutil.h"
 #include "anna_attribute.h"
-#include "clib/lang/string.h"
 #include "anna_mid.h"
 #include "anna_use.h"
-
 #include "clib/clib.h"
+
+#include "clib/lang/object.h"
 #include "clib/lang/list.h"
 #include "clib/lang/hash.h"
+#include "clib/lang/string.h"
+#include "clib/lang/pair.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
 
@@ -335,6 +336,10 @@ static void anna_module_bootstrap_monkeypatch(
 	else if(type == hash_type)
 	{
 	    anna_hash_add_method(fun);
+	}
+	else if(type == pair_type)
+	{
+	    anna_pair_add_method(fun);
 	}
 	else if(type == node_type)
 	{
@@ -696,6 +701,11 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     }
     
 //    wprintf(L"FASDFDSAFDSA LOAD %ls %ls\n\n\n", module_stack->name, module_stack->filename);
+    if(module_stack->flags & ANNA_STACK_LOADED)
+    {
+	return;
+    }
+    module_stack->flags |= ANNA_STACK_LOADED;
 
     wchar_t *suffix = wcsrchr(module_stack->filename, L'.');
     if(suffix && wcscmp(suffix, L".so")==0)
@@ -711,12 +721,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 //    debug_level=0;
     int i;
 
-    if(module_stack->flags & ANNA_STACK_LOADED)
-    {
-	return;
-    }
-    module_stack->flags |= ANNA_STACK_LOADED;
-    
     debug(D_SPAM,L"Parsing file %ls...\n", module_stack->filename);    
     anna_node_t *program = anna_parse(module_stack->filename);
     

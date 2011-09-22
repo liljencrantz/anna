@@ -101,7 +101,6 @@ STDLIB FEATURES:
 The rest of the hashtable functions (filter, find, properties for key and value lists, etc.)
 Set type
 hashCode function for Pair
-A backtrace function
 List.milter 
 Range.milter
 Hash.milter
@@ -110,11 +109,9 @@ List and Hash should be made fail fast
 RELIABILITY:
 Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not)
 Test suite should be at lest 10 % of total code in project. (Currently ~ 6 %)
-Use continuations to make a green thread implementation as a test of continuation functionality
-Validate that all functions end with an empty stack frame
-Tests for complex math
-Tests for floating point math
-Tests for type checking on invalid specialization
+More tests for complex math
+More tests for floating point math
+More tests for type checking on invalid specialization
 Lots more coverage of using null value as function argument
 
 DOCUMENTATION:

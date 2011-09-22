@@ -44,7 +44,19 @@ void anna_member_type_set(
     mid_t mid,
     anna_type_t *member_type)
 {
-    type->mid_identifier[mid]->type = member_type;
+    anna_member_t *memb = type->mid_identifier[mid];
+    assert(memb);
+    memb->type = member_type;
+
+    if(memb->is_static)
+    {
+	type->static_member_blob[memb->offset] = (member_type == null_type);
+    }
+    else
+    {
+	type->member_blob[memb->offset] = (member_type == null_type);	
+    }
+    
 }
 
 mid_t anna_member_create(
@@ -109,16 +121,17 @@ mid_t anna_member_create(
     }
     else
     {
-	if(storage & ANNA_MEMBER_STATIC) {
+	if(member->is_static) {
 	    member->offset = anna_type_static_member_allocate(type);
-	    type->static_member_blob[type->static_member_count-1] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
+	    type->static_member_blob[member->offset] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
+	    assert(member->offset == (type->static_member_count-1));
 	    type->static_member[type->static_member_count-1] = null_entry;
 	} else {
+	    member->offset = type->member_count++;
 	    type->member_blob = realloc(
 		type->member_blob, 
-		sizeof(int)*(type->member_count+1));
-	    type->member_blob[type->member_count] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
-	    member->offset = type->member_count++;
+		sizeof(int)*(type->member_count));
+	    type->member_blob[member->offset] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
 	}
     }
     
@@ -407,7 +420,6 @@ mid_t anna_member_create_method(
     anna_function_t *method)
 {
     wchar_t *name = anna_mid_get_reverse(mid);
-
     if(hash_get(&type->name_identifier, name))
     {
 	mid = anna_mid_get(name);
@@ -423,15 +435,15 @@ mid_t anna_member_create_method(
     }
     
     anna_member_t *m = type->mid_identifier[mid];
-
+    
     m->is_bound_method=1;
     type->static_member[m->offset] = 
 	anna_from_obj(
 	    anna_function_wrap(
 		method));
-
+    
     m->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)method->attribute);
-        
+    
     return mid;
 }
 

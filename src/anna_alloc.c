@@ -299,6 +299,7 @@ void anna_alloc_mark_type(anna_type_t *type)
 {
     if( type->flags & ANNA_USED)
 	return;
+//    wprintf(L"Mark type %ls %d\n", type->name, type);
     
     type->flags |= ANNA_USED;
     size_t i;
@@ -578,8 +579,8 @@ static void anna_alloc_free(void *obj)
 	    int i;
 	    anna_type_t *o = (anna_type_t *)obj;
 	    
-//	    wprintf(L"Discarding unused type %ls\n", o->name);
-
+	    //wprintf(L"Discarding unused type %ls %d\n", o->name, o);
+	    	    
 	    if(obj != null_type)
 	    {
 		for(i=0; i<anna_mid_max_get(); i++)
@@ -622,6 +623,8 @@ static void anna_alloc_free(void *obj)
 	case ANNA_FUNCTION:
 	{
 	    anna_function_t *o = (anna_function_t *)obj;
+//	    wprintf(L"FREE FUNCTION %ls %d\n", o->name, o);
+	    
 	    free(o->code);
 	    free(o->input_type);
 	    free(o->input_name);
@@ -728,14 +731,13 @@ void anna_gc(anna_context_t *stack)
 	anna_alloc_unmark(f);
 	f = f->dynamic_frame;
     }
-
-
+    
     anna_alloc_mark_vmstack(stack);	
     anna_alloc_mark_function(anna_vm_run_fun);
     anna_type_mark_static();    
     anna_alloc_mark_object(null_object);
-    anna_alloc_mark_stack_template(stack_global);
-
+    anna_alloc_mark(anna_stack_wrap(stack_global));
+    
     int freed = 0;
     static int gc_first = 1;
 

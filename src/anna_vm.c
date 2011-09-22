@@ -63,11 +63,11 @@ static inline anna_object_t *anna_vm_trampoline(
 {
     anna_object_t *orig = fun->wrapper;
     anna_object_t *res = anna_object_create(orig->type);
-
+    
     size_t payload_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD]->offset;
-
+    
     size_t stack_offset = orig->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
-
+    
     memcpy(&res->member[payload_offset],
 	   &orig->member[payload_offset],
 	   sizeof(anna_function_t *));    
@@ -444,7 +444,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	    fun->native(stack);
 	}
 
-	
 	OP_LEAVE(stack);	
     }
     
@@ -1388,7 +1387,6 @@ void anna_bc_print(char *code)
 
 void anna_vm_mark_code(anna_function_t *f)
 {
-    
     char *code = f->code;
     while(1)
     {
@@ -1404,7 +1402,7 @@ void anna_vm_mark_code(anna_function_t *f)
 		    anna_alloc_mark_entry(op->value);
 		    break;
 		}
-	    
+
 		case ANNA_INSTR_LIST:
 		case ANNA_INSTR_CAST:
 		{
@@ -1414,13 +1412,15 @@ void anna_vm_mark_code(anna_function_t *f)
 		}
 
 		case ANNA_INSTR_RETURN:
-		case ANNA_INSTR_RETURN_COUNT:
-		case ANNA_INSTR_RETURN_COUNT_BREAK:
 		case ANNA_INSTR_STOP:
 		{
 		    return;
 		}
 	    
+		case ANNA_INSTR_RETURN_COUNT:
+		case ANNA_INSTR_RETURN_COUNT_BREAK:
+		case ANNA_INSTR_TRAMPOLENE:
+		case ANNA_INSTR_NATIVE_CALL:
 		case ANNA_INSTR_FOLD:
 		case ANNA_INSTR_CALL:
 		case ANNA_INSTR_CONSTRUCT:
@@ -1439,7 +1439,6 @@ void anna_vm_mark_code(anna_function_t *f)
 		case ANNA_INSTR_JMP:
 		case ANNA_INSTR_COND_JMP:
 		case ANNA_INSTR_NCOND_JMP:
-		case ANNA_INSTR_TRAMPOLENE:
 		case ANNA_INSTR_CHECK_BREAK:
 		case ANNA_INSTR_TYPE_OF:
 		{

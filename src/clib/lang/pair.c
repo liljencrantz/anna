@@ -1,5 +1,31 @@
 
 static hash_table_t anna_pair_specialization;
+static array_list_t anna_pair_additional_methods = AL_STATIC;
+
+static void add_pair_method(void *key, void *value, void *aux)
+{
+    anna_type_t *pair = (anna_type_t **)value;
+    anna_function_t *fun = (anna_function_t *)aux;
+    anna_member_create_method(pair, anna_mid_get(fun->name), fun);
+}
+
+void anna_pair_add_method(anna_function_t *fun)
+{
+    al_push(&anna_pair_additional_methods, fun);
+    hash_foreach2(&anna_pair_specialization, &add_pair_method, fun);
+}
+
+static void anna_pair_add_all_extra_methods(anna_type_t *pair)
+{
+    int i;
+    for(i=0; i<al_get_count(&anna_pair_additional_methods); i++)
+    {
+	anna_function_t *fun = (anna_function_t *)al_get(&anna_pair_additional_methods, i);
+//	wprintf(L"Add function %ls to type %ls\n", fun->name, pair->name);
+	anna_member_create_method(pair, anna_mid_get(fun->name), fun);
+    }
+}
+
 
 anna_object_t *anna_pair_create(anna_entry_t *first, anna_entry_t *second)
 {
@@ -110,6 +136,7 @@ static void anna_pair_type_create_internal(
 	spec2,
 	&anna_pair_get_second_i,
 	&anna_pair_set_second_i, 0);
+    anna_pair_add_all_extra_methods(type);
 }
 
 static inline void anna_pair_internal_init()

@@ -756,8 +756,8 @@ static void anna_type_def_flatten(anna_type_t *type)
 	{
 	    anna_node_call_t *c = (anna_node_call_t *)next;
 	    anna_entry_t *val = anna_node_static_invoke_try(c->function, type->stack);
-
-	    if(anna_function_unwrap(val) == anna_lang_nothing)
+	    
+	    if(val && anna_function_unwrap(anna_as_obj(val)) == anna_lang_nothing)
 	    {
 		skip = 1;		
 		for(j=0; j<c->child_count; j++)

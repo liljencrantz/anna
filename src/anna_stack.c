@@ -104,7 +104,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
     mid_t mid = anna_member_create(
 	res,
 	anna_mid_get(name),
-	1,
+	ANNA_MEMBER_STATIC,
 	type);    
     stack->flags = stack->flags & ~ANNA_STACK_DECLARE;
     *anna_entry_get_addr_static(
