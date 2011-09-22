@@ -1,14 +1,12 @@
-
 type A
 {
 
-    def myProp()(property)
+    def Int myProp() (property)
     {
 	return 7;
     }
 
 }
-
 
 def main()
 {

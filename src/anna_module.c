@@ -595,6 +595,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"macroUtil");
     anna_module_bootstrap_macro(L"mapping");
     anna_module_bootstrap_macro(L"update");
+    anna_module_bootstrap_macro(L"attributes");
     anna_module_bootstrap_macro(L"iter");
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
     anna_module_bootstrap_macro(L"range");
@@ -607,6 +608,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"enum");
     anna_module_bootstrap_macro(L"errorMacros");
     anna_module_bootstrap_macro(L"expandCode");
+    anna_module_bootstrap_macro(L"propertyAttribute");
 
     /* Load additional binary modules */
     //anna_module_load_dynamic(L"unix", stack_global);

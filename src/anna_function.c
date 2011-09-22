@@ -519,7 +519,7 @@ void anna_function_setup_body(
 	for(i=0; i<al_get_count(&ret); i++)
 	{
 	    anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
-	    wr->steps = step_count;
+	    wr->steps = step_count;	    
 	}
 
 	al_truncate(&ret, 0);

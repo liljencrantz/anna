@@ -754,21 +754,18 @@ static void anna_type_def_flatten(anna_type_t *type)
 	
 	if(next->node_type == ANNA_NODE_CALL)
 	{
-	    
 	    anna_node_call_t *c = (anna_node_call_t *)next;
 	    anna_entry_t *val = anna_node_static_invoke_try(c->function, type->stack);
+
 	    if(anna_function_unwrap(val) == anna_lang_nothing)
 	    {
-		skip = 1;
-		
+		skip = 1;		
 		for(j=0; j<c->child_count; j++)
 		{
 		    anna_node_call_add_child(ndef, c->child[j]);
 		    
 		}
-		
 	    }
-	    
 	}
 	if(!skip)
 	{
@@ -776,9 +773,10 @@ static void anna_type_def_flatten(anna_type_t *type)
 	}
 	
     }
+    //anna_node_print(5, ndef);
+    
     type->body = ndef;
 }
-
 
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type)

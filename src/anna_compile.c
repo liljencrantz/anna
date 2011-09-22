@@ -362,7 +362,7 @@ static void anna_vm_compile_i(
 	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)node;
 	    if(node2->steps < 0)
 	    {
-		anna_error(node, L"Invalid return expression");
+		anna_error(node, L"Invalid return expression - return %d steps", node2->steps);
 		CRASH;
 	    }
 	    

@@ -1,11 +1,20 @@
 
-macro propertyAttribute(node)
+macro loopAttribute(node)
 {
-    checkNodeType(node[1], Identifier);
-    name := node[1] as Identifier;
-
-    node[1] = Identifier(name, identifier(name.name));
-    
-    
+    node[0];
 }
 
+macro staticAttribute(node)
+{
+    node[0];
+}
+
+macro internalAttribute(node)
+{
+    node[0];
+}
+
+macro blockAttribute(node)
+{
+    node[0];
+}

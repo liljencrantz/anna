@@ -19,6 +19,38 @@
 #include "anna_vm.h"
 #include "anna_mid.h"
 
+static anna_node_t *anna_macro_attribute_expand(anna_node_call_t *node, anna_node_call_t *attr)
+{
+    int i;
+    
+    for(i = attr->child_count-1; i >= 0; i--)
+    {
+	if(attr->child[i]->node_type == ANNA_NODE_IDENTIFIER)
+	{
+	    anna_node_identifier_t *nam = (anna_node_identifier_t *)attr->child[i];
+	    string_buffer_t sb;
+	    sb_init(&sb);
+	    sb_printf(&sb, L"%lsAttribute", nam->name);
+	    
+	    node = anna_node_create_call2(
+		&node->location,
+		anna_node_create_identifier(
+		    &nam->location,
+		    sb_content(&sb)),
+		node);
+	    sb_destroy(&sb);
+/*
+	    wprintf(L"FADFADS\n");
+	    anna_node_print(5, nam);
+	    wprintf(L"\n\n");
+*/
+	}
+	
+    }
+    return (anna_node_t *)node;
+}
+
+
 ANNA_VM_MACRO(anna_macro_macro)
 {
     CHECK_CHILD_COUNT(node,L"macro definition", 4);
@@ -73,6 +105,22 @@ ANNA_VM_MACRO(anna_macro_def)
 {
     CHECK_CHILD_COUNT(node, L"__def__", 5);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
+    CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
+
+    anna_node_call_t *attr = (anna_node_call_t *)node->child[3];
+    
+    node->function = (anna_node_t *)anna_node_create_identifier(
+	&node->function->location,
+	L"__defInternal__");
+    
+    return anna_macro_attribute_expand(node, attr);
+}
+
+ANNA_VM_MACRO(anna_macro_def_internal)
+{
+    CHECK_CHILD_COUNT(node, L"__defInternal__", 5);
+    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
+    CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
 
     anna_function_t *fun = 
 	anna_function_create_from_definition(
@@ -91,6 +139,11 @@ ANNA_VM_MACRO(anna_macro_block)
 	anna_function_create_from_block(
 	    node);
     
+    if(!fun)
+    {
+	return (anna_node_t *)anna_node_create_null(&node->location);
+    }
+    
     return (anna_node_t *)anna_node_create_closure(
 	&node->location,
 	fun);    
@@ -98,7 +151,24 @@ ANNA_VM_MACRO(anna_macro_block)
 
 ANNA_VM_MACRO(anna_macro_var)
 {
+    CHECK_CHILD_COUNT(node, L"variable declaration", 4);
+    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
+    CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
+
+    anna_node_call_t *attr = (anna_node_call_t *)node->child[3];
+    
+    node->function = (anna_node_t *)anna_node_create_identifier(
+	&node->function->location,
+	anna_node_is_named(node->function, L"__const__")?L"__constInternal__": L"__varInternal__");
+
+    return anna_macro_attribute_expand(node, attr);
+}
+
+
+ANNA_VM_MACRO(anna_macro_var_internal)
+{
     CHECK_CHILD_COUNT(node,L"variable declaration", 4);
+    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
     
     anna_node_identifier_t *name = node_cast_identifier(node->child[0]);
@@ -110,7 +180,7 @@ ANNA_VM_MACRO(anna_macro_var)
 	    node->child[1],
 	    node->child[2],
 	    (anna_node_call_t *)node->child[3],
-	    anna_node_is_named(node->function, L"__const__"));
+	    anna_node_is_named(node->function, L"__constInternal__"));
 }
 
 ANNA_VM_MACRO(anna_macro_specialize)
@@ -225,6 +295,7 @@ static void anna_macro_add(
 void anna_macro_init(anna_stack_template_t *stack)
 {
     anna_macro_add(stack, L"__def__", &anna_macro_def);
+    anna_macro_add(stack, L"__defInternal__", &anna_macro_def_internal);
     anna_macro_add(stack, L"__block__", &anna_macro_block);
     anna_macro_add(stack, L"__loopBlock__", &anna_macro_block);
     anna_macro_add(stack, L"__staticMemberGet__", &anna_macro_static_member_get);
@@ -233,6 +304,8 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__staticMemberSet__", &anna_macro_static_member_set);
     anna_macro_add(stack, L"__var__", &anna_macro_var);
     anna_macro_add(stack, L"__const__", &anna_macro_var);
+    anna_macro_add(stack, L"__varInternal__", &anna_macro_var_internal);
+    anna_macro_add(stack, L"__constInternal__", &anna_macro_var_internal);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
     anna_macro_add(stack, L"__and__", &anna_macro_and);
     anna_macro_add(stack, L"__if__", &anna_macro_if);

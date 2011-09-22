@@ -1,0 +1,45 @@
+use(parser);
+
+def Call getAttributePayload(Call c)
+{
+    expandCode(
+	if(c.isCallTo(%name)) { return c },
+	name: ["__constInternal__", "__varInternal__", "__typeInternal__", "__defInternal"]);
+    if(c.count == 1 and c[0] as Call)
+    {
+	return getAttributePayload(c[0] as Call);
+    }
+    return ?
+}
+
+macro propertyAttribute(node)
+{
+    payload := getAttributePayload(node);
+    if(payload.isCallTo("__constInternal__"))
+    {
+        decl := payload as Call;
+	if(decl[2].isCallTo("__def__"))
+	{
+	   
+	    getter := decl[2] as Call;
+  	    propType := getter[1];
+	    propName := (decl[0] as Identifier).name;
+            getterName := "!" ~ propName ~ "Getter";
+	    getter[0] = Identifier(getter[0], getterName);
+	    decl[0] = Identifier(decl[0], getterName);
+	    propDecl := ast(var %Type %name (property(%getterName))) % [
+		"Type": propType,
+		"name": Identifier(node, propName),
+		"getterName": Identifier(node, getterName)
+		];
+
+	    res := ast(nothing(%property, %getter)) % [
+		"property": propDecl,
+		"getter": node[0] ];
+//	    print(res);
+	    return res;
+	}
+    }
+    return node[0];
+}
+
