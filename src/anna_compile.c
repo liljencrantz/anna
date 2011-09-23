@@ -134,7 +134,7 @@ static int anna_short_circut_instr(anna_node_call_t *node, anna_stack_template_t
 
 static void anna_vm_line(anna_compile_context_t *ctx)
 {
-    if(!(ctx->flags & ANNA_COMPILE_LINE))
+    if((!(ctx->flags & ANNA_COMPILE_LINE)) || (!al_get_count(&ctx->node)))
     {
 	return;
     }
@@ -896,11 +896,11 @@ void anna_vm_compile(
     size_t sz;
     if(is_empty)
     {
-	sz = anna_bc_op_size(ANNA_INSTR_CONSTANT) + anna_bc_op_size(ANNA_INSTR_RETURN);
+	sz = anna_bc_op_size(ANNA_INSTR_CONSTANT) + anna_bc_op_size(ANNA_INSTR_RETURN)+1;
     }
     else
     {
-	sz=1;
+	sz=1 + sizeof(anna_op_null_t);
 	for(i=0; i<fun->body->child_count; i++)
 	{
 	    sz += anna_vm_size(fun, fun->body->child[i]) + sizeof(anna_op_null_t);
@@ -928,6 +928,7 @@ void anna_vm_compile(
     if(is_empty)
     {
 	anna_vm_const(&ctx, null_entry);
+	anna_vm_null(&ctx, ANNA_INSTR_RETURN);
     }
     else
     {
@@ -935,6 +936,7 @@ void anna_vm_compile(
 	{
 	    anna_vm_compile_i(&ctx, fun, fun->body->child[i], i != (fun->body->child_count-1));
 	}
+	anna_vm_null(&ctx, ANNA_INSTR_RETURN);
     }
 /*    wprintf(L"Compiled code used %d bytes\n", code_ptr - fun->code);
     if(code_ptr - fun->code == 16){
@@ -971,7 +973,7 @@ void anna_vm_callback_native(
 {
     stack->frame = anna_frame_to_heap(stack->frame);
     size_t ss = sizeof(anna_activation_frame_t);
-    size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t);
+    size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t)+1;
     size_t tot_sz = ss;
     anna_activation_frame_t *frame = anna_alloc_activation_frame(tot_sz);
     frame->dynamic_frame = stack->frame;
@@ -1020,7 +1022,7 @@ void anna_vm_callback(
 {
     stack->frame = anna_frame_to_heap(stack->frame);
     size_t ss = sizeof(anna_activation_frame_t);
-    size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_null_t);
+    size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_null_t)+1;
     size_t tot_sz = ss;
     anna_activation_frame_t *frame = anna_alloc_activation_frame(tot_sz);
     frame->dynamic_frame = stack->frame;

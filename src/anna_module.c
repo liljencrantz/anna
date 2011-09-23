@@ -111,7 +111,14 @@ static anna_stack_template_t *anna_module(
     {
 	res->filename = anna_module_search(parent, name);
     }
-//    wprintf(L"FASDFDSAFDSA FILENAME OF %ls IS %ls\n\n\n", res->name, res->filename);
+
+    if(!res->filename)
+    {
+	wprintf(L"Oops %ls\n", res->name);
+	
+	return 0;
+    }
+
     
     return res;
 }
@@ -121,6 +128,12 @@ static anna_stack_template_t *anna_module_recursive(
 {
     wchar_t *el = (wchar_t *)al_get(path, offset);
     anna_stack_template_t *mod = anna_module(parent, el, 0);
+    if(!mod)
+    {
+	wprintf(L"Oops2 %ls\n", el);
+	return 0;
+    }
+    
     anna_module_load_i(mod);
     if(al_get_count(path) > (offset+1))
     {
@@ -726,14 +739,16 @@ static void anna_module_compile(anna_node_t *this, void *aux)
     }
 }
 
+/**
+   Actually perform the loading of a module
+ */
 static void anna_module_load_i(anna_stack_template_t *module_stack)
 {
     if(!module_stack->filename)
     {
         return;
     }
-    
-//    wprintf(L"FASDFDSAFDSA LOAD %ls %ls\n\n\n", module_stack->name, module_stack->filename);
+
     if(module_stack->flags & ANNA_STACK_LOADED)
     {
 	return;
@@ -743,15 +758,11 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     wchar_t *suffix = wcsrchr(module_stack->filename, L'.');
     if(suffix && wcscmp(suffix, L".so")==0)
     {
-//	wprintf(L"FASDFDSAFDSA LOAD NATIVE %ls %ls\n\n\n", module_stack->name, module_stack->filename);
-	
 	anna_module_load_native(module_stack);
 	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
-	return;
-	
+	return;	
     }
     
-//    debug_level=0;
     int i;
 
     debug(D_SPAM,L"Parsing file %ls...\n", module_stack->filename);    
@@ -784,6 +795,13 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	anna_stack_template_t *mod = anna_module_recursive(stack_global, el_list, 0);
 	al_destroy(el_list);
 	free(el_list);
+
+	if(!mod)
+	{
+	    anna_error(
+		program,
+		L"Invalid module");
+	}
 	
 	if(anna_error_count || !mod)
 	{
@@ -846,7 +864,14 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	anna_stack_template_t *mod = anna_module_recursive(stack_global, el_list, 0);
 	al_destroy(el_list);
 	free(el_list);
-
+	
+	if(!mod)
+	{
+	    anna_error(
+		program,
+		L"Invalid module");
+	}
+	
 	if(anna_error_count || !mod)
 	{
 	    return;

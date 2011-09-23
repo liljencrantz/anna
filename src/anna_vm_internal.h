@@ -39,10 +39,9 @@
 #define ANNA_CONTEXT_SZ (8192*32)
 
 /**
-   Pops one value from the top stack frame, then pops the top stack
-   frame itself, and pushes the value onto the new top stack.
+   Stop bytecode execution and return.
 */
-#define ANNA_INSTR_RETURN 0 
+#define ANNA_INSTR_STOP 0
 /**
    Pushes a single constant value onto the stack.
 */
@@ -54,9 +53,10 @@
 */
 #define ANNA_INSTR_CALL 2
 /**
-   Stop bytecode execution and return.
+   Pops one value from the top stack frame, then pops the top stack
+   frame itself, and pushes the value onto the new top stack.
 */
-#define ANNA_INSTR_STOP 3 
+#define ANNA_INSTR_RETURN 3
 /**
    Pushes the value of the specified variable to the stack.
 */
@@ -236,22 +236,22 @@ typedef struct
 typedef struct
 {
     char instruction;
-    short frame_count;
-    int offset;
+    unsigned char frame_count;
+    unsigned short offset;
 }
     anna_op_var_t;
 
 typedef struct
 {
     char instruction;
-    mid_t mid;
+    unsigned short mid;
 }
     anna_op_member_t;
 
 typedef struct
 {
     char instruction;
-    int param;
+    unsigned short param;
 }
     anna_op_count_t;
 

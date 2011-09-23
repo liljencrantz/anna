@@ -256,10 +256,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 {
     static void * jump_label[] = 
 	{
-	    &&ANNA_LAB_RETURN, 
+	    &&ANNA_LAB_STOP,
 	    &&ANNA_LAB_CONSTANT,
 	    &&ANNA_LAB_CALL,
-	    &&ANNA_LAB_STOP,
+	    &&ANNA_LAB_RETURN, 
 	    &&ANNA_LAB_VAR_GET,
 	    &&ANNA_LAB_VAR_SET,
 	    &&ANNA_LAB_MEMBER_GET,
@@ -1249,7 +1249,7 @@ void anna_bc_print(char *code)
 		case ANNA_INSTR_RETURN:
 		{
 		    wprintf(L"Return\n\n");
-		    return;
+		    break;
 		}
 	    
 		case ANNA_INSTR_RETURN_COUNT:
@@ -1411,12 +1411,12 @@ void anna_vm_mark_code(anna_function_t *f)
 		    break;
 		}
 
-		case ANNA_INSTR_RETURN:
 		case ANNA_INSTR_STOP:
 		{
 		    return;
 		}
 	    
+		case ANNA_INSTR_RETURN:
 		case ANNA_INSTR_RETURN_COUNT:
 		case ANNA_INSTR_RETURN_COUNT_BREAK:
 		case ANNA_INSTR_TRAMPOLENE:
