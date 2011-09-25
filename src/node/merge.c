@@ -85,10 +85,6 @@ static void anna_node_merge_each(anna_node_t *node, void *aux)
 {
     if(is_call(node))
     {
-/*	wprintf(L"merge each\n");
-	anna_node_print(5, node);
-	wprintf(L"\n");
-*/	
 	anna_node_call_t *call = (anna_node_call_t *)node;
 	int i;
 	for(i=0; i<call->child_count; i++)
@@ -96,7 +92,6 @@ static void anna_node_merge_each(anna_node_t *node, void *aux)
 	    anna_node_t *el = call->child[i];
 	    if(el->flags & ANNA_NODE_MERGE)
 	    {
-		//anna_node_print(5, node);
 		if(i == 0)
 		{
 		    anna_error(el, L"Failed to merge node");
@@ -104,23 +99,15 @@ static void anna_node_merge_each(anna_node_t *node, void *aux)
 		}
 		if(merge_node(call->child[i-1], el))
 		{
-		    
 		    memmove(
 			&call->child[i], &call->child[i+1],
 			sizeof(anna_entry_t *)*(call->child_count -i-1));
 		    i--;
 		    call->child_count--;
-		}	
+		}
 	    }
 	}
     }
-/*    else
-    {
-	wprintf(L"skip each\n");
-	anna_node_print(5, node);
-	wprintf(L"\n");
-    }
-*/  
 }
 
 anna_node_t *anna_node_merge(
