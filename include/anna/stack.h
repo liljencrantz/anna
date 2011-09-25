@@ -2,7 +2,7 @@
 #define ANNA_STACK_H
 
 #include "anna/util.h"
-#include "anna/anna.h"
+#include "anna/base.h"
 
 struct anna_stack_template;
 struct anna_node_declare;

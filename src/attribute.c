@@ -7,7 +7,7 @@
 
 #include "anna/common.h"
 #include "anna/util.h"
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/attribute.h"
 #include "anna/node.h"
 

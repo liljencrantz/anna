@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "anna/common.h"
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/vm.h"
 #include "anna/vm_internal.h"
 #include "anna/function.h"

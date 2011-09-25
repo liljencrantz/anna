@@ -1,7 +1,7 @@
 #ifndef ANNA_SLAB_H
 #define ANNA_SLAB_H
 
-#include "anna/anna.h"
+#include "anna/base.h"
 
 #define SLAB_MAX 256
 

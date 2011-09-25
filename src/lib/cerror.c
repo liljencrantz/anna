@@ -11,7 +11,7 @@
 #include "anna/common.h"
 #include "anna/util.h"
 #include "anna/wutil.h"
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/module.h"
 #include "anna/vm.h"
 #include "anna/member.h"

@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/tt.h"
 #include "anna/util.h"
 #include "anna/vm.h"

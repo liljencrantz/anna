@@ -2,7 +2,7 @@
 #define ANNA_ALLOC_H
 
 #include "anna/util.h"
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/node.h"
 #include "anna/slab.h"
 

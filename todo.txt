@@ -11,6 +11,10 @@
   - Only static members can be accessed statically
   - Can't assign to constants
   - Check argument types to function calls better...
+* getopt replacement
+  - basic design
+  - implementation
+  - use it in annabind and annadoc  
 
 1.0 RELEASE CRITERIA (Done):
 * Working error handling

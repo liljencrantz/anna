@@ -13,7 +13,7 @@
 #include "anna/macro.h"
 #include "anna/function.h"
 #include "anna/member.h"
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/alloc.h"
 #include "anna/node_check.h"
 #include "anna/intern.h"

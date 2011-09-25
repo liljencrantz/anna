@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <gmp.h>
 
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/stack.h"
 
 enum anna_node_enum

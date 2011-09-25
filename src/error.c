@@ -7,7 +7,7 @@
 
 #include "anna/common.h"
 #include "anna/util.h"
-#include "anna/anna.h"
+#include "anna/base.h"
 #include "anna/node.h"
 
 int anna_error_count=0;
