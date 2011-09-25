@@ -959,6 +959,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
     int i;
     anna_stack_template_t *module=0;
     struct stat buf;
+    int ok = 0;
     
     for(i=0; i<sizeof(suff)/sizeof(suff[0]); i++)
     {
@@ -969,13 +970,15 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	    module = anna_module(
 		stack_global, 0, sb_content(&fn));
 	    anna_module_load_i(module);
-	    goto CLEANUP;
+	    ok = 1;
+	    break;	    
 	}
     }
+    if(!ok)
+    {
+	anna_error(0, L"Failed to find module named «%ls»", module_name);
+    }
     
-    anna_error(0, L"Failed to find module named «%ls»", module_name);
-        
-  CLEANUP:
     sb_destroy(&fn);
     
     return module?anna_stack_wrap(module):0;
