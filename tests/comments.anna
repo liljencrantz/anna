@@ -1,0 +1,10 @@
+#! /usr/bin/env anna
+// This is a comment
+# So is this
+/*
+Yet another comment
+*/
+def main()
+{
+    print("ok\n");
+}
