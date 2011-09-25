@@ -68,6 +68,7 @@ static void anna_lex_unbalanced_comment()
 <COMMENT>.  return IGNORE;
 <COMMENT>[ \t\n]  return IGNORE;
 \/\/[^\n]*\n  return IGNORE;
+^#[^\n]*\n  return IGNORE;
 [1-9][0-9_]* return LITERAL_INTEGER_BASE_10;
 0[oO][0-7][0-7_]* return LITERAL_INTEGER_BASE_8;
 0[bB][0-1][0-1_]* return LITERAL_INTEGER_BASE_2;
