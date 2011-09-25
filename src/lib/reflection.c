@@ -30,7 +30,6 @@
 
 #include "src/lib/reflection/function.c"
 #include "src/lib/reflection/type.c"
-#include "src/lib/reflection/continuation.c"
 #include "src/lib/reflection/member.c"
 
 anna_type_t *type_type=0, 
@@ -83,7 +82,6 @@ void anna_reflection_load(anna_stack_template_t *stack)
     anna_type_load();    
     anna_member_load(stack);
     anna_function_load(stack);
-    anna_context_load(stack);
     anna_type_data_register(
 	anna_member_type_data, stack);
     anna_stack_declare(

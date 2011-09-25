@@ -486,18 +486,18 @@ static void anna_alloc_mark_activation_frame(anna_activation_frame_t *frame)
     anna_alloc_mark_function(frame->function);
 }
 
-static void anna_alloc_mark_vmstack(anna_context_t *stack)
+static void anna_alloc_mark_context(anna_context_t *context)
 {
-    if( stack->flags & ANNA_USED)
+    if( context->flags & ANNA_USED)
 	return;
-    stack->flags |= ANNA_USED;    
+    context->flags |= ANNA_USED;    
 
     anna_entry_t **obj;
-    for(obj = &stack->stack[0]; obj < stack->top; obj++)
+    for(obj = &context->stack[0]; obj < context->top; obj++)
     {	
 	anna_alloc_mark_entry(*obj);
     }
-    anna_alloc_mark_activation_frame(stack->frame);
+    anna_alloc_mark_activation_frame(context->frame);
 }
 
 void anna_alloc_mark(void *obj)
@@ -516,7 +516,7 @@ void anna_alloc_mark(void *obj)
 	}
 	case ANNA_CONTEXT:
 	{
-	    anna_alloc_mark_vmstack((anna_context_t *)obj);
+	    anna_alloc_mark_context((anna_context_t *)obj);
 	    break;
 	}
 	case ANNA_FUNCTION:
@@ -700,7 +700,7 @@ void anna_alloc_gc_unblock()
     anna_alloc_gc_block_counter--;
 }
 
-void anna_gc(anna_context_t *stack)
+void anna_gc(anna_context_t *context)
 {
     if(anna_alloc_gc_block_counter)
 	return;
@@ -720,14 +720,14 @@ void anna_gc(anna_context_t *stack)
     size_t start_count = al_get_count(&anna_alloc);
 #endif
     
-    anna_activation_frame_t *f = stack->frame;
+    anna_activation_frame_t *f = context->frame;
     while(f)
     {
 	anna_alloc_unmark(f);
 	f = f->dynamic_frame;
     }
     
-    anna_alloc_mark_vmstack(stack);	
+    anna_alloc_mark_context(context);	
     anna_alloc_mark_function(anna_vm_run_fun);
     anna_type_mark_static();    
     anna_alloc_mark_object(null_object);

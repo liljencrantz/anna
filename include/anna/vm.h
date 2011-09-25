@@ -222,7 +222,7 @@ static inline long anna_as_int(anna_entry_t *entry)
 #ifdef ANNA_CHECK_VM
 	if(type != ANNA_STACK_ENTRY_INT)
 	{
-  	    wprintf(L"Invalid vmstack entry\n");
+  	    wprintf(L"Invalid entry\n");
 	    CRASH;
 	}
 #endif	
@@ -249,7 +249,7 @@ static inline uint64_t anna_as_uint64(anna_entry_t *entry)
 #ifdef ANNA_CHECK_VM
 	if(type != ANNA_STACK_ENTRY_INT)
 	{
-	    wprintf(L"Invalid vmstack entry\n");
+	    wprintf(L"Invalid entry\n");
 	    CRASH;
 	}
 #endif
@@ -270,7 +270,7 @@ static inline wchar_t anna_as_char(anna_entry_t *entry)
 #ifdef ANNA_CHECK_VM
 	if(type != ANNA_STACK_ENTRY_CHAR)
 	{
-	    wprintf(L"Invalid vmstack entry\n");
+	    wprintf(L"Invalid entry\n");
 	    CRASH;
 	}
 #endif
@@ -289,7 +289,7 @@ static inline double anna_as_float(anna_entry_t *entry)
 #ifdef ANNA_CHECK_VM
 	if(type != ANNA_STACK_ENTRY_FLOAT)
 	{
-	    wprintf(L"Invalid vmstack entry %d\n", entry);
+	    wprintf(L"Invalid entry %d\n", entry);
 	    CRASH;
 	}
 #endif

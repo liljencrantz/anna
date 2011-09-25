@@ -335,7 +335,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     anna_context_t *stack;  
     size_t ss = 8192;//(argc+1)*sizeof(anna_object_t *) + sizeof(anna_context_t);
     size_t afs = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_activation_frame_t);
-    stack = anna_alloc_vmstack(ss);
+    stack = anna_alloc_context(ss);
 
     stack->frame = anna_alloc_activation_frame(afs);
     stack->frame->dynamic_frame = 0;

@@ -24,15 +24,15 @@ __cold void anna_gc_destroy(void);
 
 #define GC_FREQ (1024*1024*4)
 
-static inline void anna_alloc_check_gc(anna_context_t *stack)
+static inline void anna_alloc_check_gc(anna_context_t *context)
 {
     if(unlikely(anna_alloc_count >= anna_alloc_count_next_gc))
     {
-	anna_gc(stack);
+	anna_gc(context);
     }
 }
 
-static inline __malloc anna_context_t *anna_alloc_vmstack(size_t sz)
+static inline __malloc anna_context_t *anna_alloc_context(size_t sz)
 {
     anna_context_t *res = anna_slab_alloc(sz);
     res->flags = ANNA_CONTEXT;
