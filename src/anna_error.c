@@ -23,13 +23,12 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
 		 node->location.filename?node->location.filename:L"<internal>",
 		 node->location.first_line);
 	anna_node_print_code(node);
+	fwprintf(stderr,L"\n");
     }
     else
     {
-	fwprintf(stderr,L"Error in unknown location\n");
+	fwprintf(stderr,L"CRITICAL: ");
     }
-    
-    fwprintf(stderr,L"\n");
     
     vfwprintf(stderr, msg, va);
     va_end( va );
