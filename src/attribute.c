@@ -6,8 +6,8 @@
 #include <string.h>
 
 #include "anna/common.h"
-#include "util.h"
-#include "anna.h"
+#include "anna/util.h"
+#include "anna/anna.h"
 #include "anna/attribute.h"
 #include "anna/node.h"
 

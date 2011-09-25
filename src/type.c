@@ -7,13 +7,13 @@
 #include <limits.h>
 
 #include "anna/common.h"
-#include "util.h"
+#include "anna/util.h"
 #include "anna/type.h"
 #include "anna/node_create.h"
 #include "anna/macro.h"
 #include "anna/function.h"
 #include "anna/member.h"
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/alloc.h"
 #include "anna/node_check.h"
 #include "anna/intern.h"
@@ -25,14 +25,14 @@
 #include "anna/lib/lang/pair.h"
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/hash.h"
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/mid.h"
 #include "anna/tt.h"
-#include "anna/util.h"
+#include "anna/misc.h"
 
-#include "anna/member.c"
-#include "anna/abides.c"
-#include "anna/mid.c"
+#include "src/member.c"
+#include "src/abides.c"
+#include "src/mid.c"
 
 static array_list_t  anna_type_list = AL_STATIC;
 static int anna_type_object_created = 0;

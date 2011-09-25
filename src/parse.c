@@ -8,11 +8,11 @@
 #include <string.h>
 
 #include "anna/common.h"
-#include "wutil.h"
+#include "anna/wutil.h"
 #include "anna/node.h"
 
-#include "autogen/anna_yacc.h"
-#include "autogen/anna_lex.h"
+#include "autogen/yacc.h"
+#include "autogen/lex.h"
 
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
 void anna_yacc_init();

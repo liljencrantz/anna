@@ -16,7 +16,7 @@
 #include "anna/util.h"
 #include "anna/alloc.h"
 #include "anna/vm.h"
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/intern.h"
 #include "anna/attribute.h"
 #include "anna/lib/lang/list.h"

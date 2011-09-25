@@ -5,16 +5,16 @@
 #include <assert.h>
 #include <string.h>
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 #include "anna/node_create.h"
 #include "anna/type.h"
-#include "lang/string.h"
-#include "lang/list.h"
-#include "lang/int.h"
+#include "anna/lib/lang/string.h"
+#include "anna/lib/lang/list.h"
+#include "anna/lib/lang/int.h"
 #include "anna/member.h"
 #include "anna/function.h"
-#include "anna/function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/vm.h"
 #include "anna/intern.h"
 #include "anna/stack.h"
@@ -27,10 +27,11 @@
 
 #include "anna/lib/clib.h"
 #include "anna/lib/parser.h"
-#include "anna/lib/reflection/function.c"
-#include "anna/lib/reflection/member.c"
-#include "anna/lib/reflection/type.c"
-#include "anna/lib/reflection/continuation.c"
+
+#include "src/lib/reflection/function.c"
+#include "src/lib/reflection/type.c"
+#include "src/lib/reflection/continuation.c"
+#include "src/lib/reflection/member.c"
 
 anna_type_t *type_type=0, 
     *member_type=0,

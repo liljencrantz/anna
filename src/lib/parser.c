@@ -5,21 +5,21 @@
 #include <assert.h>
 #include <string.h>
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 #include "anna/node_create.h"
-#include "parser.h"
+#include "anna/lib/parser.h"
 #include "anna/type.h"
-#include "lang/string.h"
-#include "lang/list.h"
-#include "lang/int.h"
+#include "anna/lib/lang/string.h"
+#include "anna/lib/lang/list.h"
+#include "anna/lib/lang/int.h"
 #include "anna/member.h"
 #include "anna/function.h"
-#include "anna/function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/vm.h"
 #include "anna/intern.h"
 #include "anna/stack.h"
-#include "anna/util.h"
+#include "anna/misc.h"
 #include "anna/node_hash.h"
 #include "anna/mid.h"
 #include "anna/type_data.h"
@@ -263,16 +263,16 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 	L"Return an identical copy of the specified AST tree");
 }
 
-#include "anna/lib/parser/call.c"
-#include "anna/lib/parser/identifier.c"
-#include "anna/lib/parser/int_literal.c"
-#include "anna/lib/parser/string_literal.c"
-#include "anna/lib/parser/char_literal.c"
-#include "anna/lib/parser/float_literal.c"
-#include "anna/lib/parser/null.c"
-#include "anna/lib/parser/dummy.c"
-#include "anna/lib/parser/closure.c"
-#include "anna/lib/parser/mapping.c"
+#include "src/lib/parser/call.c"
+#include "src/lib/parser/identifier.c"
+#include "src/lib/parser/int_literal.c"
+#include "src/lib/parser/string_literal.c"
+#include "src/lib/parser/char_literal.c"
+#include "src/lib/parser/float_literal.c"
+#include "src/lib/parser/null.c"
+#include "src/lib/parser/dummy.c"
+#include "src/lib/parser/closure.c"
+#include "src/lib/parser/mapping.c"
 
 void anna_parser_create_types(anna_stack_template_t *stack)
 {

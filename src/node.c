@@ -7,16 +7,16 @@
 #include <assert.h>
 #include <string.h>
 
-#include "util.h"
+#include "anna/util.h"
 #include "anna/common.h"
-#include "wutil.h"
+#include "anna/wutil.h"
 #include "anna/node.h"
 #include "anna/function.h"
 #include "anna/type.h"
 #include "anna/node_create.h"
 #include "anna/member.h"
 #include "anna/alloc.h"
-#include "anna/util.h"
+#include "anna/misc.h"
 #include "anna/vm.h"
 #include "anna/mid.h"
 #include "anna/use.h"
@@ -31,7 +31,7 @@
 #include "anna/lib/lang/string.h"
 #include "anna/lib/lang/char.h"
 #include "anna/lib/lang/pair.h"
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/hash.h"
 

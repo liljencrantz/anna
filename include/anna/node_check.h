@@ -1,7 +1,7 @@
 #ifndef ANNA_NODE_CHECK_H
 #define ANNA_NODE_CHECK_H
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 #include "anna/stack.h"
 

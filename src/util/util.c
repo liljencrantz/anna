@@ -7,11 +7,11 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/tt.h"
 #include "anna/util.h"
 #include "anna/vm.h"
-#include "util.h"
+#include "anna/util.h"
 #include "anna/common.h"
 #include "anna/intern.h"
 #include "anna/node.h"
@@ -19,9 +19,9 @@
 #include "anna/stack.h"
 #include "anna/use.h"
 
-#include "util/intern.c"
-#include "util/tt.c"
-#include "util/use.c"
+#include "src/util/intern.c"
+#include "src/util/tt.c"
+#include "src/util/use.c"
 
 wchar_t *anna_util_identifier_generate(wchar_t *prefix, anna_location_t *location)
 {

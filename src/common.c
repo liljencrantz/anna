@@ -4,7 +4,7 @@ Various functions, mostly string utilities, that are used by most
 parts of fish.
 */
 #define _GNU_SOURCE
-#include "config.h"
+#include "anna/config.h"
 
 #include <stdlib.h>
 #include <wchar.h>
@@ -18,10 +18,10 @@ parts of fish.
 #include <locale.h>
 #include <execinfo.h>
 
-#include "fallback.h"
-#include "util.h"
+#include "anna/fallback.h"
+#include "anna/util.h"
 
-#include "wutil.h"
+#include "anna/wutil.h"
 #include "anna/common.h"
 
 int debug_level=3;

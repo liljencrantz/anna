@@ -1,7 +1,7 @@
 #ifndef ANNA_MEMBER_H
 #define ANNA_MEMBER_H
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 
 #define ANNA_MEMBER_STATIC 1

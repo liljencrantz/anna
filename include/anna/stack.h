@@ -1,8 +1,8 @@
 #ifndef ANNA_STACK_H
 #define ANNA_STACK_H
 
-#include "util.h"
-#include "anna.h"
+#include "anna/util.h"
+#include "anna/anna.h"
 
 struct anna_stack_template;
 struct anna_node_declare;

@@ -4,7 +4,7 @@
     Contains datastructures such as hash tables, automatically growing array lists, priority queues, etc.
 */
 
-#include "config.h"
+#include "anna/config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,12 +22,12 @@
 #include <errno.h>
 #include <assert.h>
 
-#include "fallback.h"
-#include "util.h"
+#include "anna/fallback.h"
+#include "anna/util.h"
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/common.h"
-#include "wutil.h"
+#include "anna/wutil.h"
 
 /**
    Minimum size for hash tables

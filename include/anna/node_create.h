@@ -4,7 +4,7 @@
 #include <gmp.h>
 #include <stdio.h>
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 
 anna_node_dummy_t *anna_node_create_dummy(

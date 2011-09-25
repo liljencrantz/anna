@@ -1,9 +1,9 @@
 %{
 
-#include "anna.h"
-#include "anna_node.h"
-#include "autogen/anna_yacc.h"
-#include "util.h"
+#include "anna/anna.h"
+#include "anna/node.h"
+#include "autogen/yacc.h"
+#include "anna/util.h"
 
 int anna_lex_wrap(yyscan_t yyscanner) 
 {
@@ -56,7 +56,7 @@ static void anna_lex_unbalanced_comment()
 
 %option reentrant 
 %option bison-bridge
-%option header-file="anna_lex.h"
+%option header-file="autogen/lex.h"
 %x COMMENT
 
 %%

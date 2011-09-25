@@ -7,7 +7,7 @@
 #include <math.h>
 
 #include "anna/common.h"
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/vm.h"
 #include "anna/vm_internal.h"
 #include "anna/function.h"
@@ -18,7 +18,7 @@
 #include "anna/lib/lang/string.h"
 #include "anna/lib/lang/char.h"
 #include "anna/stack.h"
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/member.h"
 #include "anna/type.h"
 #include "anna/alloc.h"
@@ -1108,7 +1108,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
 	OP_LEAVE(stack);	
     }
 
-#include "autogen/anna_vm_short_circut.c"
+#include "autogen/vm_short_circut.c"
 
 }
 

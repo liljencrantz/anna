@@ -1,8 +1,8 @@
 #ifndef ANNA_ALLOC_H
 #define ANNA_ALLOC_H
 
-#include "util.h"
-#include "anna.h"
+#include "anna/util.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 #include "anna/slab.h"
 

@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <wchar.h>
 
-#include "util.h"
+#include "anna/util.h"
 
 /**
    Maximum number of bytes used by a single utf-8 character

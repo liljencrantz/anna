@@ -1,4 +1,4 @@
-#include "autogen/anna_float_i.c"
+#include "autogen/float_i.c"
 
 static void anna_float_set(anna_object_t *this, double value)
 {

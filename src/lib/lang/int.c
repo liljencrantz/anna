@@ -1,5 +1,5 @@
 
-#include "autogen/anna_int_i.c"
+#include "autogen/int_i.c"
 
 static void *anna_int_alloc(size_t sz)
 {

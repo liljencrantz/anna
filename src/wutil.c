@@ -2,7 +2,7 @@
 	Wide character equivalents of various standard unix
 	functions.
 */
-#include "config.h"
+#include "anna/config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,11 +24,11 @@
 #include <libintl.h>
 #endif
 
-#include "fallback.h"
-#include "util.h"
+#include "anna/fallback.h"
+#include "anna/util.h"
 
 #include "anna/common.h"
-#include "wutil.h"
+#include "anna/wutil.h"
 /*
 #include "halloc.h"
 #include "halloc_util.h"

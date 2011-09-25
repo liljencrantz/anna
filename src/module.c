@@ -7,8 +7,8 @@
 #include <dlfcn.h>
 
 #include "anna/common.h"
-#include "util.h"
-#include "anna.h"
+#include "anna/util.h"
+#include "anna/anna.h"
 #include "anna/module.h"
 #include "anna/module_data.h"
 #include "anna/node.h"
@@ -17,7 +17,7 @@
 #include "anna/function.h"
 #include "anna/stack.h"
 
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/type.h"
 #include "anna/macro.h"
 #include "anna/member.h"
@@ -26,7 +26,7 @@
 #include "anna/vm.h"
 #include "anna/alloc.h"
 #include "anna/intern.h"
-#include "wutil.h"
+#include "anna/wutil.h"
 #include "anna/attribute.h"
 #include "anna/mid.h"
 #include "anna/use.h"

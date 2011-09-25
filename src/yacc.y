@@ -13,11 +13,11 @@
 #include <string.h>
 #include <math.h>
 
-#include "common.h"
-#include "anna_node.h"
-#include "anna_node_create.h"
-#include "autogen/anna_yacc.h"
-#include "autogen/anna_lex.h"
+#include "anna/common.h"
+#include "anna/node.h"
+#include "anna/node_create.h"
+#include "autogen/yacc.h"
+#include "autogen/lex.h"
 
 void anna_yacc_error(YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr, char *s);
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);

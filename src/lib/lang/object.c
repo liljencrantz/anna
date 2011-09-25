@@ -1,5 +1,5 @@
 
-#include "autogen/anna_object_i.c"
+#include "autogen/object_i.c"
 
 ANNA_VM_NATIVE(anna_object_init, 1)
 {

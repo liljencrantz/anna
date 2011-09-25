@@ -7,12 +7,12 @@
 #include <math.h>
 #include <errno.h>
 
-#include "../common.h"
-#include "../util.h"
-#include "../wutil.h"
-#include "../anna.h"
-#include "../anna_module.h"
-#include "../anna_vm.h"
+#include "anna/common.h"
+#include "anna/util.h"
+#include "anna/wutil.h"
+#include "anna/anna.h"
+#include "anna/module.h"
+#include "anna/vm.h"
 #include "anna/lib/clib.h"
 
 #include "math.h"

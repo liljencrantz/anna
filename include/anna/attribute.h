@@ -1,7 +1,7 @@
 #ifndef ANNA_ATTRIBUTEQ_H
 #define ANNA_ATTRIBUTE_H
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 
 

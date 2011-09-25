@@ -5,9 +5,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "util.h"
+#include "anna/util.h"
 #include "anna/common.h"
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 #include "anna/lib/parser.h"
 #include "anna/macro.h"
@@ -278,8 +278,8 @@ ANNA_VM_MACRO(anna_macro_use)
 	ANNA_NODE_USE);
 }
 
-#include "anna/macro_conditional.c"
-#include "anna/macro_operator.c"
+#include "src/macro_conditional.c"
+#include "src/macro_operator.c"
 
 static void anna_macro_add(
     anna_stack_template_t *stack, 

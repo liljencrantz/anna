@@ -1,4 +1,4 @@
-#include "anna/string_internal.c"
+#include "src/lib/lang/string_internal.c"
 
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {

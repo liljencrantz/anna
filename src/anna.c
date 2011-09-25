@@ -9,12 +9,12 @@
 #include <time.h>
 
 #include "anna/common.h"
-#include "util.h"
+#include "anna/util.h"
 #include "anna/function.h"
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/module.h"
 #include "anna/lib/lang/int.h"
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/type.h"
 #include "anna/member.h"
 #include "anna/status.h"

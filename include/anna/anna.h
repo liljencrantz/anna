@@ -1,7 +1,7 @@
 #ifndef ANNA_H
 #define ANNA_H
 
-#include "util.h"
+#include "anna/util.h"
 #include "anna/checks.h"
 #include "anna/crash.h"
 #include "anna/preproc.h"

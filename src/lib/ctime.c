@@ -6,9 +6,9 @@
 #include <time.h>
 
 #include "anna/common.h"
-#include "util.h"
-#include "wutil.h"
-#include "anna.h"
+#include "anna/util.h"
+#include "anna/wutil.h"
+#include "anna/anna.h"
 #include "anna/module.h"
 #include "anna/module_data.h"
 #include "anna/vm.h"

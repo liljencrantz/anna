@@ -1,7 +1,7 @@
 #ifndef ANNA_TYPE_H
 #define ANNA_TYPE_H
 
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/node.h"
 #include "anna/stack.h"
 

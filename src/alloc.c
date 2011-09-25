@@ -6,11 +6,11 @@
 #include <string.h>
 
 #include "anna/common.h"
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/alloc.h"
 #include "anna/vm.h"
 #include "anna/function.h"
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/member.h"
 #include "anna/lib/lang/int.h"
 #include "anna/lib/lang/list.h"
@@ -21,7 +21,7 @@
 #include "anna/type.h"
 #include "anna/use.h"
 
-#include "anna/slab.c"
+#include "src/slab.c"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_tot=0;

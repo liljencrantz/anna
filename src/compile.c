@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "anna/common.h"
-#include "anna.h"
+#include "anna/anna.h"
 #include "anna/vm.h"
 #include "anna/vm_internal.h"
 #include "anna/function.h"
@@ -17,7 +17,7 @@
 #include "anna/lib/lang/string.h"
 #include "anna/lib/lang/char.h"
 #include "anna/stack.h"
-#include "anna/lib/anna_function_type.h"
+#include "anna/lib/function_type.h"
 #include "anna/member.h"
 #include "anna/type.h"
 #include "anna/alloc.h"

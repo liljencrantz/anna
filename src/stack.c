@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <wchar.h>
 
-#include "util.h"
+#include "anna/util.h"
 #include "anna/common.h"
 #include "anna/node.h"
 #include "anna/use.h"
@@ -13,7 +13,7 @@
 #include "anna/node_create.h"
 #include "anna/type.h"
 #include "anna/function.h"
-#include "anna/util.h"
+#include "anna/misc.h"
 #include "anna/member.h"
 #include "anna/alloc.h"
 #include "anna/intern.h"
