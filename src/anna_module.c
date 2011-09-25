@@ -130,7 +130,6 @@ static anna_stack_template_t *anna_module_recursive(
     anna_stack_template_t *mod = anna_module(parent, el, 0);
     if(!mod)
     {
-	wprintf(L"Oops2 %ls\n", el);
 	return 0;
     }
     
@@ -828,7 +827,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);
 	exit(ANNA_STATUS_MACRO_ERROR);
     }
-    debug(D_SPAM,L"Macros expanded in module %ls\n", module_stack->filename);    
     
     anna_node_call_t *module_node = node_cast_call(node);
 

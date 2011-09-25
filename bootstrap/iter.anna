@@ -27,7 +27,8 @@ def Node __iter__(Call node)
 	n[1] = iterDeclare(
 	    node[0],
 	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0), 1)));
-    } else
+    } 
+    else
     {
 	checkNodeType(node[1], Identifier);
 	n[0] = iterDeclare(
@@ -74,7 +75,8 @@ def Node __iter__(Call node)
 	    .replace(
 		ast(nodeType) , 
 		Call(?, ast(__specialize__), ast(__staticReturnTypeOf__(%list.__map__)), ast({__staticReturnTypeOf__(%body)}))) as Call;
-    } else
+    }
+    else
     {
         res = ast(
 	    {

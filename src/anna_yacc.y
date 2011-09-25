@@ -346,8 +346,6 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token AS
 %token IN
 %token ELLIPSIS
-%token IF
-%token ELSE
 %token TO
 %token PAIR
 %token DECLARE_VAR
@@ -359,7 +357,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token TYPE
 %token STATIC_MEMBER_GET
 
-%type <call_val> block opt_expression_list expression_list opt_else
+%type <call_val> block opt_expression_list expression_list
 %type <call_val> module
 %type <node_val> expression expression2 expression3 expression4 expression5 expression6 expression7 expression8 expression9 expression10 
 %type <node_val> literal var_or_const
@@ -438,16 +436,6 @@ opt_declaration_init :
 	|
 	{
 	    $$ = 0;
-	};
-
-opt_else: 
-	/* Empty */
-	{
-	    $$=anna_node_create_block2(&@$);
-	}
-	| ELSE block
-	{
-	    $$ = $2;
 	};
 
 expression:
@@ -796,14 +784,6 @@ expression10:
 	{
 	    $$ = (anna_node_t *)$1; 
 	}
-        |
-	IF '(' expression ')' block opt_else
-        {
-	    $$ = (anna_node_t *)anna_node_create_call2(
-		&@$,
-		anna_node_create_identifier(&@$,L"__if__"),
-		$3, $5, $6);
-        }
 ;
 
 
@@ -1432,6 +1412,14 @@ static int anna_yacc_lex_inner (
 int anna_yacc_lex (
     YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
 {
+    static int was_injected_separator = 0;
+    static int real_val = 0;
+    
+    if(was_injected_separator)
+    {
+	was_injected_separator = 0;
+	return real_val;
+    }
     
     int val = anna_yacc_lex_inner(lvalp, llocp, scanner, filename);
 
@@ -1459,6 +1447,13 @@ int anna_yacc_lex (
 	    return val==LINE_BREAK?anna_yacc_lex(lvalp, llocp, scanner, filename):0;
 	}
     }
+    if(was_end_brace && ((val == IDENTIFIER) || (val == TYPE_IDENTIFIER) || (val == '%')))
+    {
+	was_end_brace = 0;
+	was_injected_separator = 1;
+	real_val = val;
+	return SEPARATOR;
+    }    
     
     was_end_brace = (val == '}');
     return val;

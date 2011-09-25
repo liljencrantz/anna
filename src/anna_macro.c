@@ -324,7 +324,8 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__constInternal__", &anna_macro_var_internal);
     anna_macro_add(stack, L"__or__", &anna_macro_or);
     anna_macro_add(stack, L"__and__", &anna_macro_and);
-    anna_macro_add(stack, L"__if__", &anna_macro_if);
+    anna_macro_add(stack, L"if", &anna_macro_if);
+    anna_macro_add(stack, L"else", &anna_macro_else);
     anna_macro_add(stack, L"while", &anna_macro_while);
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);

@@ -65,7 +65,8 @@ macro expandCode(node)
 	    {
 		param[idx][name] = val;
 	    }
-	} else
+	} 
+        else
 	{
 	    count = lst.count;
 	    lst.each(val)

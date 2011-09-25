@@ -92,8 +92,6 @@ break return BREAK;
 continue return CONTINUE;
 as return AS;
 in return IN;
-if return IF;
-else return ELSE;
 [a-z_][a-zA-Z0-9_]* return IDENTIFIER;
 [A-Z][a-zA-Z0-9_]* return TYPE_IDENTIFIER;
 ~ return '~';

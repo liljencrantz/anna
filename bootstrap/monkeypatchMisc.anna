@@ -36,7 +36,8 @@ def String intFormat(Int this, Int base=10)
     if(this == 0)
     {
 	res = "0";
-    } else 
+    } 
+    else 
     {
 	while(this != 0)
 	{
@@ -80,7 +81,8 @@ def Int pairCmp(Pair this, Object other)
     if(cmp1 == 0)
     {
 	return this.second.__cmp__(that.second);
-    } else
+    } 
+    else
     {
 	return cmp1;
     }    

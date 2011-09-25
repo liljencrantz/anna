@@ -37,6 +37,7 @@
 
 #include "node/specialize.c"
 #include "node/macro_expand.c"
+#include "node/merge.c"
 #include "node/prepare.c"
 #include "node/validate.c"
 #include "node/each.c"
@@ -321,7 +322,7 @@ anna_entry_t *anna_node_static_invoke_try(
 
 	case ANNA_NODE_MEMBER_CALL:
 	{
-	    anna_node_call_t *this2 = (anna_node_member_access_t *)this;
+	    anna_node_call_t *this2 = (anna_node_call_t *)this;
 	    anna_object_t *obj = anna_as_obj(
 		anna_node_static_invoke_try(
 		    this2->object,
@@ -333,7 +334,7 @@ anna_entry_t *anna_node_static_invoke_try(
 		{
 		    break;
 		}
-		anna_function_t *meth = anna_function_unwrap(obj->type->static_member[memb->offset]);
+		anna_function_t *meth = anna_function_unwrap(anna_as_obj(obj->type->static_member[memb->offset]));
 		if(!(meth->flags & ANNA_FUNCTION_PURE))
 		{
 		    break;
@@ -358,11 +359,12 @@ anna_entry_t *anna_node_static_invoke_try(
 		anna_entry_t *res = 0;
 		if(ok)
 		{
-		    res = anna_vm_run(
-			anna_function_wrap(meth),
-			meth->input_count,
-			argv);
-		    res = anna_as_native(anna_from_obj(res));
+		    res = anna_from_obj(
+			anna_vm_run(
+			    anna_function_wrap(meth),
+			    meth->input_count,
+			    argv));
+		    res = anna_as_native(res);
 		}
 		free(argv);
 		return res;

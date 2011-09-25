@@ -39,7 +39,8 @@ the properly typed parameters.")
 			addParen = ?;
 		    }
 		}
-	    } else
+	    } 
+	    else
 	    {
 	    switch(ch)
 	    {
@@ -55,13 +56,15 @@ the properly typed parameters.")
 			{			    
 
 			    transformed ~= ");\n    %res ~= \"";
-			} else
+			} 
+			else
 			{
 			    transformed ~= ";\n    %res ~= \"";
 			}
 			code = ?;
 			wasBrack = ?;
-		    } else
+		    } 
+		    else
 		    {
 			transformed ~= ch;
 		    }
@@ -78,7 +81,8 @@ the properly typed parameters.")
 	    }
 	    }
 	    first = ?;
-	} else
+	} 
+	else
 	{
 	    switch(ch)
 	    {
@@ -94,7 +98,8 @@ the properly typed parameters.")
 			code = 1;
 			wasBrack = ?;
 			first = 1;
-		    } else
+		    } 
+		    else
 		    {
 			transformed ~= ch;
 		    }

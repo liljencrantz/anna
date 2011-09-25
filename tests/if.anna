@@ -1,0 +1,57 @@
+def fun(Object val)
+{
+    return if(val){"true\n"} else {"false\n"}
+}
+
+def main()
+(
+    doc("Test a bunch of ways the if expression can be used and abused"),
+)
+{
+    if(1)
+    {
+	print("true\n");
+    }
+    else
+    {
+	print("false\n");
+    }
+
+    if(?)
+    {
+	print("true\n");
+    } else 
+    {
+	print("false\n");
+    }
+
+    if(1){print("true\n");}else{print("false\n");}
+
+    print(if(?){"true\n"}else{"false\n"});
+
+    val := if(1){"true\n"}else{"false\n"}
+    print(val);
+
+    val = if(?){"true\n"}else{"false\n"}
+    print(val);
+    
+    print(fun(1));
+    print(fun(?));
+    
+    print(
+	while(1)
+	{
+	    break if(1){"true\n"} else {"false\n"};
+	});
+
+    done := ? as Object;
+    print(
+	while(!done)
+	{
+	    done = 1;
+	    continue if(?){"true\n"} else {"false\n"};
+	});
+
+    print(3+if(?) { 1 } else { 2 },"\n");
+
+}

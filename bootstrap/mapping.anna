@@ -8,7 +8,8 @@ Internal utility macro. Makes sure that identifiers in mapping are internal iden
     a1 := if(node[0] as Identifier)
     {
 	InternalIdentifier(node[0], (node[0] as Identifier).name);
-    } else
+    } 
+    else
     {
 	node[0];
     }

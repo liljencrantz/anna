@@ -34,11 +34,14 @@ def String __format__List__(
             {
   	        i++;
                 res ~= '%'
-            } else {
+            } 
+	    else 
+	    {
                 res ~= data[listIdx];
                 listIdx++;
             }
-        } else
+        } 
+	else
         {
 	    res ~= ch;
         }
@@ -69,7 +72,9 @@ def String __format__Map__(
             {
   	        i++;
                 res ~= '%'
-            } else {
+            } 
+	    else
+	    {
 	        i++;
 		if(this[i] == '(')
 		{
@@ -80,15 +85,19 @@ def String __format__Map__(
 		        name := this[i..(i+end)];
 			res ~= data[name];
 			i=i+end;
-		    } else {
+		    } 
+		    else 
+		    {
 			// ERROR
 		    }
-		} else
+		} 
+		else
 		{
 		    // ERROR
 		}
             }
-        } else
+        } 
+	else
         {
 	    res ~= ch;
         }

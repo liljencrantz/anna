@@ -83,7 +83,7 @@ Note that at most, one of the switch blocks are run, namely the first block to m
 		(caseCall[-1] as Call).each(node){caseBody ~= [node]}
 		next = 
 		    (ast(
-			__if__(%val as %type, %caseBody, {})
+			if(%val as %type, %caseBody, {})
 			) % [
 			    "caseBody": caseBody,
                             ] % [
@@ -91,7 +91,8 @@ Note that at most, one of the switch blocks are run, namely the first block to m
                                 "varName": caseCast[0],
                                 ]) as Call;
 //print(next);
-	    } else
+	    } 
+            else
 	    {
 		
 //	print(caseCall[1]);
@@ -106,13 +107,14 @@ Note that at most, one of the switch blocks are run, namely the first block to m
 		next =
 		    (
 			ast(
-			    __if__(%cond, %caseBody, {})
+			    if(%cond, %caseBody, {})
 			    ) % [
 				"cond": cond,
 				"caseBody": caseCall[-1]
 				]) as Call;
 	    }
-	} else
+	} 
+        else
 	{
 	    if(caseCall.isCallTo("default"))
 	    {
@@ -124,7 +126,8 @@ Note that at most, one of the switch blocks are run, namely the first block to m
 		checkCallCount(caseCall, 1);
 		checkNodeBlock(caseCall[0]);
 		next = caseCall[0] as Call;
-	    } else
+	    } 
+            else
 	    {
 		if(caseCall.isCallTo("cases"))
 		{
@@ -134,13 +137,14 @@ Note that at most, one of the switch blocks are run, namely the first block to m
 		    next =
 			(
 			    ast(
-				__if__(%val in %items, %caseBody, {})
+				if(%val in %items, %caseBody, {})
 				) % [
 				    "items": caseCall[0],
 				    "caseBody": caseCall[-1]
 				    ]) as Call;
                  
-		} else
+		} 
+                else
 		{
                     caseNode.error("Expected a case or default statement");
 		    return NullLiteral(node);
@@ -152,11 +156,13 @@ Note that at most, one of the switch blocks are run, namely the first block to m
 	    lastIf[2] = if(!next.isBlock())
 	    {
 		Call(node, Identifier(node, "__block__"), next);
-	    } else 
+	    } 
+            else 
 	    {
 		next;
 	    }
-	} else
+	} 
+        else
 	{
 	    if(next.isBlock())
 	    {

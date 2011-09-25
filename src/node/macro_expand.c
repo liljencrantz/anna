@@ -61,11 +61,14 @@ static anna_node_t *anna_node_macro_expand_each(
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
 	    
-	    anna_function_t *macro = anna_node_macro_get(this2->function, stack);
-	    
-	    if(macro)
+	    if(!(this2->flags & ANNA_NODE_DONT_EXPAND))
 	    {
-		return anna_node_macro_expand(anna_macro_invoke(macro, this2), stack);
+		anna_function_t *macro = anna_node_macro_get(this2->function, stack);
+	    
+		if(macro)
+		{
+		    return anna_node_macro_expand(anna_macro_invoke(macro, this2), stack);
+		}
 	    }
 	    
 	    if(this->node_type != ANNA_NODE_SPECIALIZE)
@@ -102,11 +105,10 @@ static anna_node_t *anna_node_macro_expand_each(
 	    if(f->body)
 	    {
 		int i;
-		for(i=0;i<f->body->child_count; i++)
-		{
-		    f->body->child[i] = anna_node_macro_expand(
-			f->body->child[i], stack);
-		}
+		f->body->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
+		f->body = node_cast_call(
+		    anna_node_macro_expand(
+			f->body, stack));
 		
 		if(!f->return_type)
 		{
@@ -147,7 +149,7 @@ anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
     anna_stack_template_t *stack)
 {
-    return anna_node_each_replace(
+    return anna_node_merge(anna_node_each_replace(
 	this, 
-	(anna_node_replace_function_t)anna_node_macro_expand_each, stack);
+	(anna_node_replace_function_t)anna_node_macro_expand_each, stack));
 }

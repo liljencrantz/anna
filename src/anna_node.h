@@ -54,6 +54,9 @@ enum anna_node_enum
     ANNA_NODE_TYPE_COUNT
 };
 
+#define ANNA_NODE_DONT_EXPAND 512
+#define ANNA_NODE_MERGE 1024
+
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
 #define ANNA_NODE_ACCESS_STATIC_MEMBER 1
@@ -125,6 +128,7 @@ struct anna_node_if
     struct anna_node *cond;
     struct anna_node_call *block1;
     struct anna_node_call *block2;
+    int has_else;
 };
 
 struct anna_node_assign
@@ -362,7 +366,13 @@ anna_node_t *anna_node_macro_expand(
     anna_stack_template_t *stack);
 
 /**
-   Node preparation phase 2: Register all variables
+   Node preparation phase 2: Merge in all nodes marked as such into previous call
+ */
+anna_node_t *anna_node_merge(
+    anna_node_t *this);
+
+/**
+   Node preparation phase 3: Register all variables
  */
 
 void anna_node_register_declarations(
