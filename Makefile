@@ -6,7 +6,7 @@
 # Choose the compiler. Probably has to be a modern GCC version, since
 # Anna uses a few GCC extensions.
 CC := gcc
-INSTALL:=/usr/bin/install -c
+INSTALL:=install
 
 #
 # Installation directories

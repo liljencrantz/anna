@@ -1,6 +1,5 @@
 1.0 RELEASE CRITERIA:
-* Working error handling
-  - option to catch only some error types
+* anna-game as a proof that the language works for solving reasonably complex problems
 * Documentation coverage of standard API functions and types should be at least 95 %.
 * HTML api documentation extractor
   - Hide internal elements by default
@@ -47,9 +46,11 @@
 * Usable Date type
 * Access attributes of variables and properties
 * Rename vmstack to context
-* Fix if/else snafu. Current solution is hardly elegant, but it works. Hopefully, we can come up with something better...
+* Fix if/else snafu. Current solution is hardly elegant and it fails in some edge cases. Hopefully, we can come up with something significantly better...
 
 2.0 RELEASE CRITERIA:
+* Working error handling
+  - option to catch only some error types
 * Working error handling
   - catch function?
 * Documentation coverage of standard API functions and types should be 100 %.
@@ -129,43 +130,23 @@ Document all vm ops w.r.t. manipulating the stack, etc.
 
 PERFORMANCE:
 Mandel test should be no more than one order of magnitude slower than the corresponding C implementation
-Start implementing a few of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance without too much work.
-More builtin integer ops, e.g. mod, and Float comparisons
-Variable lookup instruction version for looking up in current frame
-Variable lookup instruction version for looking up in first parent frame
+Implement more of the language benchmark game tests to compare performance against various other languages. It should be possible to make Anna roughly comparable to Python in performance without too much work.
+More builtin integer ops, e.g. mod, shift, etc.
+Variable lookup instruction version for looking up in current frame?
+Variable lookup instruction version for looking up in first parent frame?
 Implement tail recursion
 Optimization idea: Avoid creating trampolines when possible - push other stack onto call stack and have special case instruction for call with stack-on-stack. 
 Add profiling information to the VM
 Make a version of the fold op that takes a count parameter
 Lazy loading of modules
-Instead of a static using flag in the GC, the value shouls switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
+Instead of a static using flag in the GC, the value should switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
 Make Char and Float fast when used as HashMap keys
-Add bytecodes for comparisons
 
 UNUSED OPERATORS:
 Currently, the @ symbol is unused. 
 
 PLANS FOR APPS WRITTEN IN ANNA:
+Switch the Anna dungeon crawler to use Anna instead of Lua as it's scripting language.
 live: Debug a running application using command line or web browser.
 Compiler front end.
-Asynchronous continuation based app/web server
-Switch the Anna dungeon crawler to use Anna instead of Lua as it's scripting language.
-
-collect
-{
-    ...
-}.each(err)
-{
-    ...
-}
-
-=>
-
-({!collect := List«Error»(); ...; !collect;}()).each(err)
-{
-    ...
-}
-
-raise(SomeError("Oh noes!"));
-
 
