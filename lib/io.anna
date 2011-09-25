@@ -88,13 +88,11 @@ type File
 	File(filename ~ separator ~ name);
     }
     
-    def filenameGetter() (internal)
+    def String filename() (property, doc("The name of the file."),)
     {
 	"" ~ separator ~ String::convert(separator).join(path)
     }
     
-    var String filename (property(filenameGetter), doc("The name of the file."));
-
     def String readFile()
     (
 	doc(
@@ -163,20 +161,13 @@ type File
 	}
     }
   
-    def existsGetter() (internal)
+    def Object exists() (property, doc("This value is non-null if the file pointed to by this object currently exists."),)
     {
         buf := unix.io.Stat();
 	return unix.io.stat(this.filename, buf) == 0;
     }
     
-    var Int exists 
-    (
-	property(existsGetter), 
-	doc(
-	    "This value is non-null if the file pointed to by this object currently exists.")
-    );
-
-    def isFileGetter() (internal)
+    def Object isFile() (property, doc("This value is non-null if the file pointed to by this object is a regular file"))
     {
         buf := unix.io.Stat();
 	return if(unix.io.stat(this.filename, buf) == 0)
@@ -184,17 +175,14 @@ type File
 	    buf.mode ^bitand unix.io.statMode.regular != 0;
 	} else {
 	    ?
-	};
+	}
     }
 
-    var Int isFile 
+    def Object isDirectory() 
     (
-	property(isFileGetter), 
-	doc(
-	    "This value is non-null if the file pointed to by this object is a regular file")
-    );
-
-    def isDirectoryGetter() (internal)
+	property, 
+	doc("This value is non-null if the file pointed to by this object is a directory."),
+)
     {
         buf := unix.io.Stat();
 	return if(unix.io.stat(this.filename, buf) == 0)
@@ -204,13 +192,6 @@ type File
 	    ?
 	};
     }
-
-    var Int isDirectory
-    (
-	property(isDirectoryGetter), 
-	doc(
-	    "This value is non-null if the file pointed to by this object is a directory.")
-    );
 
     def makeDirectory()
     (
@@ -239,17 +220,10 @@ type File
 	unix.io.chdir(this.filename);
     }
     
-    def File currentDirectoryGetter() (static, internal)
+    def File currentDirectory() (static, doc("Returns a File object representing the current working directory"))
     {
 	File(getCwd());
     }
-
-    var File currentDirectory 
-    (
-	static, 
-	property(currentDirectoryGetter),
-        doc("Returns a File object representing the current working directory")
-    );
 
     def delete()
     (
