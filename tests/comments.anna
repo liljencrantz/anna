@@ -8,3 +8,4 @@ def main()
 {
     print("ok\n");
 }
+
