@@ -954,31 +954,28 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 {
     string_buffer_t fn;
     sb_init(&fn);
-    sb_printf(&fn, L"%ls.anna", module_name);    
-    struct stat buf;
+
+    static const wchar_t *suff[] = {L"", L".anna", L".so"};
+    int i;
     anna_stack_template_t *module=0;
-    if(!wstat(sb_content(&fn), &buf))
-    {
-	module = anna_module(
-	    stack_global, 0, sb_content(&fn));
-	anna_module_load_i(module);
-    }
-    else
+    struct stat buf;
+    
+    for(i=0; i<sizeof(suff)/sizeof(suff[0]); i++)
     {
 	sb_clear(&fn);
-	sb_printf(&fn, L"%ls.so", module_name);    
+	sb_printf(&fn, L"%ls%ls", module_name, suff[i]);    
 	if(!wstat(sb_content(&fn), &buf))
 	{
 	    module = anna_module(
 		stack_global, 0, sb_content(&fn));
 	    anna_module_load_i(module);
-	}
-	else
-	{
-	    anna_error(0, L"Failed to find module named «%ls»", module_name);
+	    goto CLEANUP;
 	}
     }
     
+    anna_error(0, L"Failed to find module named «%ls»", module_name);
+        
+  CLEANUP:
     sb_destroy(&fn);
     
     return module?anna_stack_wrap(module):0;

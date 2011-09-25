@@ -90,6 +90,8 @@ install: all $(ANNA_EXTERNAL_BINDINGS)
 	for i in $(PROGRAMS); do\
 		$(INSTALL) -m 755 $$i $(DESTDIR)$(bindir) ; \
 	done;
+	$(INSTALL) -m 755 util/annabind.anna $(DESTDIR)$(bindir)/annabind
+	$(INSTALL) -m 755 util/annadoc.anna $(DESTDIR)$(bindir)/annadoc
 	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/anna/lib
 	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/anna/bootstrap
 	$(INSTALL) -m 644 lib/*.anna lib/*.so $(DESTDIR)$(datadir)/anna/lib
@@ -157,7 +159,7 @@ check: test
 .PHONY: check
 
 documentation:
-	anna util/document
+	anna util/annadoc.anna
 
 test: 
 	time ./bin/anna_tests.sh

@@ -1,3 +1,4 @@
+#! /usr/bin/env anna
 use(io);
 use(parser);
 use(error);
