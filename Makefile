@@ -6,6 +6,20 @@
 # Choose the compiler. Probably has to be a modern GCC version, since
 # Anna uses a few GCC extensions.
 CC := gcc
+INSTALL:=/usr/bin/install -c
+
+#
+# Installation directories
+#
+
+prefix = /usr/local
+exec_prefix = ${prefix}
+datadir = ${prefix}/share
+bindir = ${exec_prefix}/bin
+mandir = ${prefix}/share/man
+sysconfdir = /etc
+docdir = ${prefix}/share/doc/anna
+localedir = ${prefix}/share/locale
 
 # Uncomment to get output suitable for gcov
 COV_FLAGS := #--coverage
@@ -23,7 +37,7 @@ PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
 # code and code from external sources.
 CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1			\
 -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500	\
--D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I src -I .
+-D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I src -I . -DANNA_BOOTSTRAP_DIR=L\"$(datadir)/anna/bootstrap\" -DANNA_LIB_DIR=L\"$(datadir)/anna/lib\"
 
 WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 -Wmissing-prototypes
@@ -73,6 +87,29 @@ endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #
 #########################################################
+
+install: all $(ANNA_EXTERNAL_BINDINGS)
+	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
+	for i in $(PROGRAMS); do\
+		$(INSTALL) -m 755 $$i $(DESTDIR)$(bindir) ; \
+	done;
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/anna/lib
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/anna/bootstrap
+	$(INSTALL) -m 644 lib/*.anna lib/*.so $(DESTDIR)$(datadir)/anna/lib
+	$(INSTALL) -m 644 bootstrap/*.anna $(DESTDIR)$(datadir)/anna/bootstrap
+.PHONY: install
+
+uninstall: 
+	-for i in $(PROGRAMS); do \
+		rm -f $(DESTDIR)$(bindir)/$$i; \
+	done;
+	rm $(DESTDIR)$(datadir)/anna/lib/*
+	-rmdir $(DESTDIR)$(datadir)/anna/lib/
+	rm $(DESTDIR)$(datadir)/anna/bootstrap/*
+	-rmdir $(DESTDIR)$(datadir)/anna/bootstrap
+	-rmdir $(DESTDIR)$(datadir)/anna/
+	-rmdir $(DESTDIR)$(bindir)
+.PHONY: uninstall
 
 %.so: %.c
 	$(CC) -fPIC -c $*.c -o $*.o $(CFLAGS) && $(CC) -shared $*.o -o $@ $(LDFLAGS)

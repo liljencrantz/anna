@@ -173,6 +173,11 @@ static void anna_module_init_recursive(
     wchar_t *dname, anna_stack_template_t *parent)
 {
     DIR *dir = wopendir(dname);
+    if(!dir)
+    {
+	anna_error(0, L"Failed to initialize library directory «%ls»\n", dname);
+	return;
+    }
     struct wdirent *ent;
     string_buffer_t fn;
     sb_init(&fn);
@@ -227,7 +232,7 @@ static void anna_module_bootstrap_macro(wchar_t *name)
 {
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"bootstrap/%ls.anna", name);
+    sb_printf(&sb, L"%ls/%ls.anna", ANNA_BOOTSTRAP_DIR, name);
     wchar_t *path = sb_content(&sb);
 
     anna_stack_template_t *mm = anna_module(stack_global, name, path);
@@ -315,7 +320,7 @@ static void anna_module_bootstrap_monkeypatch(
 {
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"bootstrap/%ls.anna", name);
+    sb_printf(&sb, L"%ls/%ls.anna", ANNA_BOOTSTRAP_DIR, name);
     wchar_t *path = sb_content(&sb);    
     anna_stack_template_t *int_mod = anna_module(stack_global, name, path);
     sb_destroy(&sb);
@@ -598,7 +603,7 @@ void anna_module_init()
 	anna_as_obj(
 	    anna_stack_get(
 		stack_global, L"parser")));
-
+    
     anna_object_t *g_obj = anna_stack_wrap(stack_global);
     anna_stack_declare(
 	stack_global,
@@ -646,7 +651,7 @@ void anna_module_init()
     /*
       Load all non-native libraries
     */
-    anna_module_init_recursive(L"lib", stack_global);
+    anna_module_init_recursive(ANNA_BOOTSTRAP_DIR, stack_global);
     
 }
 
@@ -968,7 +973,7 @@ anna_object_t *anna_module_load(wchar_t *module_name)
 	}
 	else
 	{
-	    debug(D_CRITICAL, L"Failed to find module %ls\n", module_name);
+	    anna_error(0, L"Failed to find module named «%ls»", module_name);
 	}
     }
     
@@ -994,8 +999,7 @@ anna_function_t *anna_module_function(
 	flags, native,
 	return_type, 
 	argc, argv, argn, 0,
-	stack);
-    
+	stack);    
     anna_stack_declare(
 	stack,
 	name,
@@ -1004,10 +1008,7 @@ anna_function_t *anna_module_function(
 	ANNA_STACK_READONLY);
     if(doc)
     {
-	anna_function_document(
-	    f,
-	    anna_intern_static(
-		doc));
+	anna_function_document(f,anna_intern_static(doc));
     }
     return f;
 }
