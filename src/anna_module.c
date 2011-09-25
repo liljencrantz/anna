@@ -45,18 +45,19 @@ array_list_t anna_module_default_macros = AL_STATIC;
 static wchar_t *anna_module_search(
     anna_stack_template_t *parent, wchar_t *name)
 {
+//    wprintf(L"Search for %ls\n", name);
     
     FIXME("library search path is hardcoded")
     string_buffer_t sb;
     struct stat buf;
     sb_init(&sb);
-    sb_printf(&sb, L"lib/%ls.anna", name);
+    sb_printf(&sb, L"%ls/%ls.anna", ANNA_LIB_DIR, name);
     if(!wstat(sb_content(&sb), &buf))
     {
 	return sb_content(&sb);
     }
     sb_clear(&sb);
-    sb_printf(&sb, L"lib/%ls.so", name);
+    sb_printf(&sb, L"%ls/%ls.so", ANNA_LIB_DIR, name);
     
     if(!wstat(sb_content(&sb), &buf))
     {
@@ -178,6 +179,7 @@ static void anna_module_init_recursive(
 	anna_error(0, L"Failed to initialize library directory «%ls»\n", dname);
 	return;
     }
+
     struct wdirent *ent;
     string_buffer_t fn;
     sb_init(&fn);
@@ -217,7 +219,7 @@ static void anna_module_init_recursive(
 	if((wcscmp(suffix, L".anna") == 0) || (wcscmp(suffix, L".so") == 0))
 	{
 	    *suffix=0;
-	    
+
 	    anna_module_load_i(
 		anna_module(parent, d_name, sb_content(&fn)));
 	}
@@ -651,7 +653,7 @@ void anna_module_init()
     /*
       Load all non-native libraries
     */
-    anna_module_init_recursive(ANNA_BOOTSTRAP_DIR, stack_global);
+    anna_module_init_recursive(ANNA_LIB_DIR, stack_global);
     
 }
 

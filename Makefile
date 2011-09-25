@@ -162,7 +162,7 @@ check: test
 documentation: bin/anna util/document.anna util/document/*.html
 	./bin/anna util/document
 
-test: bin/anna
+test: 
 	time ./bin/anna_tests.sh
 .PHONY: test
 

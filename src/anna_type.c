@@ -854,8 +854,6 @@ static anna_node_t *anna_type_setup_interface_internal(
 	{
 	    if(!memb->type)
 	    {
-		debug(D_CRITICAL, L"Ooops %ls.%ls has no type\n", type->name, memb->name);
-		
 		if(type->stack)
 		{
 		    memb->type = anna_stack_get_type(type->stack, memb->name);
@@ -863,10 +861,8 @@ static anna_node_t *anna_type_setup_interface_internal(
 		    if(!memb->type)
 		    {
 		        anna_node_declare_t *decl = anna_stack_get_declaration(type->stack, memb->name);
-			debug(D_CRITICAL, L"Has stack\n");
 			if(decl)
 			{
-			    debug(D_CRITICAL, L"Has decl\n");
 			    anna_node_calculate_type((anna_node_t *)decl);
 			    memb->type = decl->return_type;			
 			}
