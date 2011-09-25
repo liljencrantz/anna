@@ -1,12 +1,12 @@
-use(test);
 
 def main()
 {
+    use(unix.io);
     fs := FdSet();
     fs2 := FdSet();
     fs3 := FdSet();
     fdZero(fs);
-      fdZero(fs2);
+    fdZero(fs2);
     fdZero(fs3);
     //[].each(idx){fdSet(idx, fs)}
     //  (0..10).each(idx){print("Fd %: %\n" % [ idx, fdIsSet(idx, fs)])}
