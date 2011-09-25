@@ -110,18 +110,18 @@ static void anna_main_run(anna_stack_template_t *module)
     if(!main_wrapper)
     {
 	debug(D_CRITICAL,L"No main method defined.\n");
-	exit(1);	
+	exit(ANNA_STATUS_MODULE_SETUP_ERROR);
     }
     anna_function_t *main_fun = anna_function_unwrap(main_wrapper);
     if(!main_fun)
     {
 	debug(D_CRITICAL,L"«main» is not a function.\n");
-	exit(1);	
+	exit(ANNA_STATUS_MODULE_SETUP_ERROR);	
     }    
     if(main_fun->input_count)
     {
 	debug(D_CRITICAL,L"«main» function must take zero arguments but takes %d.\n", main_fun->input_count);
-	exit(1);	
+	exit(ANNA_STATUS_MODULE_SETUP_ERROR);
     }
     
     debug(D_SPAM,L"Program fully loaded and ready to be executed\n");    

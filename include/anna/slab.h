@@ -49,7 +49,7 @@ static inline void anna_slab_free(void *ptr, size_t sz)
 /**
    Print some statistics about slab allocations
  */
-void anna_slab_print();
+void anna_slab_print(void);
 
 
 #endif

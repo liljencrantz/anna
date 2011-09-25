@@ -252,7 +252,7 @@ void anna_vm_destroy(void)
 }
 #endif
 
-anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
+anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 {
     static void * jump_label[] = 
 	{
@@ -352,7 +352,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv)
     anna_context_push_object(stack, entry);
     for(i=0; i<argc; i++)
     {
-	anna_context_push_object(stack, argv[i]);
+	anna_context_push_entry(stack, argv[i]);
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
     stack->function_object = entry;

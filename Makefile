@@ -70,7 +70,7 @@ bindings: $(ANNA_EXTERNAL_BINDINGS)
 .PHONY: bindings
 
 lib/%.c: bindings/%.bind
-	anna util/bind bindings/$*.bind  > $@ || rm $@
+	util/annabind.anna bindings/$*.bind  > $@ || rm $@
 
 #########################################################
 #            BEGIN DEPENDENCY TRACKING                  #
@@ -123,7 +123,7 @@ uninstall:
 .PHONY: uninstall
 
 %.so: %.c
-	$(CC) -fPIC -c $*.c -o $*.o $(CFLAGS) && $(CC) -shared $*.o -o $@ $(LDFLAGS) 
+	$(CC) -fPIC -c $*.c -o $*.o $(CFLAGS_NOWARN) && $(CC) -shared $*.o -o $@ $(LDFLAGS) 
 
 bin/anna: $(ANNA_OBJS) $(ANNA_INTERNAL_BINDINGS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
@@ -171,7 +171,7 @@ check: test
 .PHONY: check
 
 documentation:
-	anna util/annadoc.anna
+	util/annadoc.anna
 
 test: 
 	time ./bin/anna_tests.sh
@@ -179,6 +179,6 @@ test:
 
 clean:
 	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out lib/*.so lib/*.o 
-	if test -d documentation; then rm -r documentation; fi
+	-rm -r documentation
 .PHONY: clean
 

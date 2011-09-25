@@ -108,7 +108,7 @@ static anna_node_t *anna_node_macro_expand_each(
 		f->body->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
 		f->body = node_cast_call(
 		    anna_node_macro_expand(
-			f->body, stack));
+			(anna_node_t *)f->body, stack));
 		
 		if(!f->return_type)
 		{

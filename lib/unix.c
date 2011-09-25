@@ -2290,7 +2290,6 @@ void anna_env_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_clearenv_argv[] = {};
     wchar_t *unix_i_clearenv_argn[] = {};
     anna_module_function(stack, L"clearenv", 0, &unix_i_clearenv, int_type, 0, unix_i_clearenv_argv, unix_i_clearenv_argn, L"");
-    anna_module_const_int(stack, L"environ", environ, L"");
 
      anna_type_data_register(anna_env_type_data, stack);
 }

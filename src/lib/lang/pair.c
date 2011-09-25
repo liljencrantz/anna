@@ -4,7 +4,7 @@ static array_list_t anna_pair_additional_methods = AL_STATIC;
 
 static void add_pair_method(void *key, void *value, void *aux)
 {
-    anna_type_t *pair = (anna_type_t **)value;
+    anna_type_t *pair = (anna_type_t *)value;
     anna_function_t *fun = (anna_function_t *)aux;
     anna_member_create_method(pair, anna_mid_get(fun->name), fun);
 }

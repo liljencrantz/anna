@@ -343,7 +343,7 @@ void anna_vm_compile(
 __cold void anna_bc_print(char *code);
 
 __cold void anna_vm_init(void);
-__hot anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_object_t **argv);
+__hot anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv);
 
 //void anna_vm_call_loop(anna_vm_callback_t callback, void *aux, anna_object_t *entry, int argc);
 

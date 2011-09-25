@@ -11,7 +11,7 @@
 #include "anna/tt.h"
 #include "anna/util.h"
 #include "anna/vm.h"
-#include "anna/util.h"
+#include "anna/misc.h"
 #include "anna/common.h"
 #include "anna/intern.h"
 #include "anna/node.h"
