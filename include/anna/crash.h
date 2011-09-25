@@ -1,7 +1,7 @@
 #ifndef ANNA_CRASH_H
 #define ANNA_CRASH_H
 
-#include "anna_checks.h"
+#include "anna/checks.h"
 
 #ifdef ANNA_CRASH_ON_CRITICAL_ENABLED
 #define CRASH					\

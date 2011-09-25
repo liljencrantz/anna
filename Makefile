@@ -36,7 +36,7 @@ PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
 # code and code from external sources.
 CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1			\
 -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500	\
--D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I src -I . -DANNA_BOOTSTRAP_DIR=L\"$(datadir)/anna/bootstrap\" -DANNA_LIB_DIR=L\"$(datadir)/anna/lib\"
+-D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I include -I . -DANNA_BOOTSTRAP_DIR=L\"$(datadir)/anna/bootstrap\" -DANNA_LIB_DIR=L\"$(datadir)/anna/lib\"
 
 WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 -Wmissing-prototypes
@@ -45,11 +45,11 @@ WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 # Full cflags, including warnings 
 CFLAGS := $(CFLAGS_NOWARN) $(WARN)
 
-ANNA_CLIB_OBJS := src/clib/lang.o src/clib/reflection.o			\
-src/clib/parser.o src/clib/math.o src/clib/cerror.o src/clib/ctime.o
+ANNA_LIB_OBJS := src/lib/lang.o src/lib/reflection.o			\
+src/lib/parser.o src/lib/math.o src/lib/cerror.o src/lib/ctime.o
 
 # All object files used by the main anna binary
-ANNA_OBJS := $(ANNA_CLIB_OBJS) src/dtoa.o src/anna.o src/util.o		\
+ANNA_OBJS := $(ANNA_LIB_OBJS) src/dtoa.o src/anna.o src/util.o		\
 src/anna_node.o src/anna_macro.o src/anna_stack.o autogen/anna_lex.o	\
 autogen/anna_yacc.o src/anna_type.o src/anna_function.o			\
 src/util/util.o src/anna_module.o src/anna_vm.o src/anna_alloc.o	\
@@ -79,9 +79,9 @@ lib/%.c: bindings/%.bind
 #          explanation of how this code works.          #
 #########################################################
 %.d: %.c
-	@echo -n $@ " " >$@; $(CC) -I src -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
+	@echo -n $@ " " >$@; $(CC) -I include -I . -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
 ifneq "$(MAKECMDGOALS)" "clean"
--include $(ANNA_OBJS:.o=.d)
+include $(ANNA_OBJS:.o=.d)
 endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #

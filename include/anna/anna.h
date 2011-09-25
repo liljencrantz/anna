@@ -2,9 +2,9 @@
 #define ANNA_H
 
 #include "util.h"
-#include "anna_checks.h"
-#include "anna_crash.h"
-#include "anna_preproc.h"
+#include "anna/checks.h"
+#include "anna/crash.h"
+#include "anna/preproc.h"
 
 struct anna_node;
 struct anna_type;

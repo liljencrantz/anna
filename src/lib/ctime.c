@@ -5,20 +5,20 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "util.h"
 #include "wutil.h"
 #include "anna.h"
-#include "anna_module.h"
-#include "anna_module_data.h"
-#include "anna_vm.h"
-#include "anna_member.h"
-#include "anna_mid.h"
-#include "anna_type.h"
+#include "anna/module.h"
+#include "anna/module_data.h"
+#include "anna/vm.h"
+#include "anna/member.h"
+#include "anna/mid.h"
+#include "anna/type.h"
 
-#include "clib/lang/list.h"
-#include "clib/lang/string.h"
-#include "clib/clib.h"
+#include "anna/lib/lang/list.h"
+#include "anna/lib/lang/string.h"
+#include "anna/lib/clib.h"
 
 #define CTIME_BUFF_SZ 512
 

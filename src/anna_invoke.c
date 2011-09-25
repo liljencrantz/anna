@@ -5,13 +5,13 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
-#include "util.h"
-#include "anna.h"
-#include "anna_node.h"
-#include "anna_node_create.h"
-#include "clib/parser.h"
-#include "anna_vm.h"
+#include "anna/common.h"
+#include "anna/util.h"
+#include "anna/anna.h"
+#include "anna/node.h"
+#include "anna/node_create.h"
+#include "anna/lib/parser.h"
+#include "anna/vm.h"
 
 struct anna_node *anna_macro_invoke(
     anna_function_t *macro, 

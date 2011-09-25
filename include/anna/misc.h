@@ -1,7 +1,7 @@
 #ifndef ANNA_UTIL_H
 #define ANNA_UTIL_H
 
-#include "anna_node.h"
+#include "anna/node.h"
 
 /**
    Generate a unique variable name. The name will start with a '@'

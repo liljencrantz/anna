@@ -5,11 +5,11 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "util.h"
 #include "anna.h"
-#include "anna_attribute.h"
-#include "anna_node.h"
+#include "anna/attribute.h"
+#include "anna/node.h"
 
 static int anna_attribute_has_alias_internal(
     anna_node_call_t *attribute, wchar_t *attr_name, wchar_t *name)

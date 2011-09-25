@@ -3,8 +3,8 @@
 
 #include "util.h"
 #include "anna.h"
-#include "anna_node.h"
-#include "anna_slab.h"
+#include "anna/node.h"
+#include "anna/slab.h"
 
 extern array_list_t anna_alloc;
 /*

@@ -8,17 +8,17 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "util.h"
 #include "wutil.h"
 #include "anna.h"
-#include "anna_module.h"
-#include "anna_vm.h"
-#include "anna_member.h"
-#include "anna_mid.h"
+#include "anna/module.h"
+#include "anna/vm.h"
+#include "anna/member.h"
+#include "anna/mid.h"
 
-#include "clib/lang/string.h"
-#include "clib/clib.h"
+#include "anna/lib/lang/string.h"
+#include "anna/lib/clib.h"
 
 ANNA_VM_NATIVE(anna_cerror_strerror, 1)
 {

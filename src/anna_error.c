@@ -5,10 +5,10 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "util.h"
 #include "anna.h"
-#include "anna_node.h"
+#include "anna/node.h"
 
 int anna_error_count=0;
 

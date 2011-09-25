@@ -26,7 +26,7 @@
 #include "util.h"
 
 #include "anna.h"
-#include "common.h"
+#include "anna/common.h"
 #include "wutil.h"
 
 /**

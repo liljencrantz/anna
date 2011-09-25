@@ -168,9 +168,9 @@ static void anna_member_type_create()
 	L"The value of the specified member in the specified object.");
 }
 
-#include "clib/reflection/method.c"
-#include "clib/reflection/property.c"
-#include "clib/reflection/variable.c"
+#include "anna/lib/reflection/method.c"
+#include "anna/lib/reflection/property.c"
+#include "anna/lib/reflection/variable.c"
 
 void anna_member_load(anna_stack_template_t *stack)
 {

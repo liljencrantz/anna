@@ -1,8 +1,8 @@
 #ifndef ANNA_VM_INTERNAL_H
 #define ANNA_VM_INTERNAL_H
 
-#include "anna_function.h"
-#include "anna_alloc.h"
+#include "anna/function.h"
+#include "anna/alloc.h"
 
 /**
    The Anna bytecode format is the simplest, stupidest byte code

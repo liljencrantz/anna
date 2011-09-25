@@ -6,19 +6,19 @@
 #include <wchar.h>
 
 #include "util.h"
-#include "common.h"
-#include "anna_node.h"
-#include "anna_use.h"
-#include "anna_stack.h"
-#include "anna_node_create.h"
-#include "anna_type.h"
-#include "anna_function.h"
-#include "anna_util.h"
-#include "anna_member.h"
-#include "anna_alloc.h"
-#include "anna_intern.h"
-#include "anna_vm.h"
-#include "anna_mid.h"
+#include "anna/common.h"
+#include "anna/node.h"
+#include "anna/use.h"
+#include "anna/stack.h"
+#include "anna/node_create.h"
+#include "anna/type.h"
+#include "anna/function.h"
+#include "anna/util.h"
+#include "anna/member.h"
+#include "anna/alloc.h"
+#include "anna/intern.h"
+#include "anna/vm.h"
+#include "anna/mid.h"
 
 typedef struct
 {

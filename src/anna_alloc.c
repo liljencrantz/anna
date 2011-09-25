@@ -5,23 +5,23 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "anna.h"
-#include "anna_alloc.h"
-#include "anna_vm.h"
-#include "anna_function.h"
-#include "clib/anna_function_type.h"
-#include "anna_member.h"
-#include "clib/lang/int.h"
-#include "clib/lang/list.h"
-#include "clib/lang/hash.h"
-#include "clib/lang/string.h"
-#include "clib/parser.h"
-#include "anna_mid.h"
-#include "anna_type.h"
-#include "anna_use.h"
+#include "anna/alloc.h"
+#include "anna/vm.h"
+#include "anna/function.h"
+#include "anna/lib/anna_function_type.h"
+#include "anna/member.h"
+#include "anna/lib/lang/int.h"
+#include "anna/lib/lang/list.h"
+#include "anna/lib/lang/hash.h"
+#include "anna/lib/lang/string.h"
+#include "anna/lib/parser.h"
+#include "anna/mid.h"
+#include "anna/type.h"
+#include "anna/use.h"
 
-#include "anna_slab.c"
+#include "anna/slab.c"
 
 array_list_t anna_alloc = AL_STATIC;
 int anna_alloc_tot=0;

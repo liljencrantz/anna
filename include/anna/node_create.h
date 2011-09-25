@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "anna.h"
-#include "anna_node.h"
+#include "anna/node.h"
 
 anna_node_dummy_t *anna_node_create_dummy(
     anna_location_t *loc, 

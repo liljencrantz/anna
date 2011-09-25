@@ -5,12 +5,12 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "util.h"
 #include "anna.h"
-#include "anna_alloc.h"
-#include "anna_vm.h"
-#include "anna_mid.h"
+#include "anna/alloc.h"
+#include "anna/vm.h"
+#include "anna/mid.h"
 
 static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
 {

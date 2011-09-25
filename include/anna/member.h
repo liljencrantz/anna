@@ -2,7 +2,7 @@
 #define ANNA_MEMBER_H
 
 #include "anna.h"
-#include "anna_node.h"
+#include "anna/node.h"
 
 #define ANNA_MEMBER_STATIC 1
 #define ANNA_MEMBER_VIRTUAL 2

@@ -7,9 +7,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "wutil.h"
-#include "anna_node.h"
+#include "anna/node.h"
 
 #include "autogen/anna_yacc.h"
 #include "autogen/anna_lex.h"

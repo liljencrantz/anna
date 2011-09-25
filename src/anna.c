@@ -8,21 +8,21 @@
 #include <sys/prctl.h>
 #include <time.h>
 
-#include "common.h"
+#include "anna/common.h"
 #include "util.h"
-#include "anna_function.h"
+#include "anna/function.h"
 #include "anna.h"
-#include "anna_module.h"
-#include "clib/lang/int.h"
-#include "clib/anna_function_type.h"
-#include "anna_type.h"
-#include "anna_member.h"
-#include "anna_status.h"
-#include "anna_vm.h"
-#include "anna_tt.h"
-#include "anna_alloc.h"
-#include "anna_slab.h"
-#include "anna_mid.h"
+#include "anna/module.h"
+#include "anna/lib/lang/int.h"
+#include "anna/lib/anna_function_type.h"
+#include "anna/type.h"
+#include "anna/member.h"
+#include "anna/status.h"
+#include "anna/vm.h"
+#include "anna/tt.h"
+#include "anna/alloc.h"
+#include "anna/slab.h"
+#include "anna/mid.h"
 
 #define PRCTL_MAX_LENGTH 15
 

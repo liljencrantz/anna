@@ -2,8 +2,8 @@
 #define ANNA_NODE_CHECK_H
 
 #include "anna.h"
-#include "anna_node.h"
-#include "anna_stack.h"
+#include "anna/node.h"
+#include "anna/stack.h"
 
 
 /**

@@ -1,7 +1,7 @@
 #ifndef ANNA_STRING_INTERNAL_H
 #define ANNA_STRING_INTERNAL_H
 
-#include "anna_checks.h"
+#include "anna/checks.h"
 
 #define ANNA_STRING_INTERNAL 8
 

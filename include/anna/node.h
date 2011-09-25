@@ -5,7 +5,7 @@
 #include <gmp.h>
 
 #include "anna.h"
-#include "anna_stack.h"
+#include "anna/stack.h"
 
 enum anna_node_enum
 {

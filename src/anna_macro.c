@@ -6,18 +6,18 @@
 #include <string.h>
 
 #include "util.h"
-#include "common.h"
+#include "anna/common.h"
 #include "anna.h"
-#include "anna_node.h"
-#include "clib/parser.h"
-#include "anna_macro.h"
-#include "anna_type.h"
-#include "anna_util.h"
-#include "anna_function.h"
-#include "anna_node_check.h"
-#include "anna_node_create.h"
-#include "anna_vm.h"
-#include "anna_mid.h"
+#include "anna/node.h"
+#include "anna/lib/parser.h"
+#include "anna/macro.h"
+#include "anna/type.h"
+#include "anna/util.h"
+#include "anna/function.h"
+#include "anna/node_check.h"
+#include "anna/node_create.h"
+#include "anna/vm.h"
+#include "anna/mid.h"
 
 static anna_node_t *anna_macro_attribute_expand(anna_node_call_t *node, anna_node_call_t *attr)
 {
@@ -278,8 +278,8 @@ ANNA_VM_MACRO(anna_macro_use)
 	ANNA_NODE_USE);
 }
 
-#include "anna_macro_conditional.c"
-#include "anna_macro_operator.c"
+#include "anna/macro_conditional.c"
+#include "anna/macro_operator.c"
 
 static void anna_macro_add(
     anna_stack_template_t *stack, 

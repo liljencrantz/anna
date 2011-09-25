@@ -3,8 +3,8 @@
 
 #include <complex.h>
 #include <stdint.h>
-#include "anna_alloc.h"
-#include "clib/lang/int.h"
+#include "anna/alloc.h"
+#include "anna/lib/lang/int.h"
 
 double anna_float_get(anna_object_t *this);
 wchar_t anna_char_get(anna_object_t *this);

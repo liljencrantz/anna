@@ -6,21 +6,21 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common.h"
-#include "anna_function.h"
-#include "anna_type.h"
-#include "anna_macro.h"
-#include "clib/parser.h"
-#include "anna_node_create.h"
-#include "anna_node_check.h"
-#include "anna_util.h"
-#include "anna_alloc.h"
-#include "anna_vm.h"
-#include "clib/anna_function_type.h"
-#include "anna_intern.h"
-#include "anna_attribute.h"
-#include "clib/lang/list.h"
-#include "anna_use.h"
+#include "anna/common.h"
+#include "anna/function.h"
+#include "anna/type.h"
+#include "anna/macro.h"
+#include "anna/lib/parser.h"
+#include "anna/node_create.h"
+#include "anna/node_check.h"
+#include "anna/util.h"
+#include "anna/alloc.h"
+#include "anna/vm.h"
+#include "anna/lib/anna_function_type.h"
+#include "anna/intern.h"
+#include "anna/attribute.h"
+#include "anna/lib/lang/list.h"
+#include "anna/use.h"
 
 __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 {
