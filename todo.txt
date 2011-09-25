@@ -1,5 +1,6 @@
 1.0 RELEASE CRITERIA:
-* Working raise/collect functions for error handling
+* Working error handling
+  - option to catch only some error types
 * Documentation coverage of standard API functions and types should be at least 95 %.
 * HTML api documentation extractor
   - Hide internal elements by default
@@ -10,9 +11,11 @@
   - Only static members can be accessed statically
   - Can't assign to constants
   - Check argument types to function calls better...
-* Fix if/else snafu. What is the best solution?
 
 1.0 RELEASE CRITERIA (Done):
+* Working error handling
+  - raise function
+  - collect function
 * List.sort
   - Basic sort function in place
   - Sort function
@@ -40,8 +43,11 @@
 * Usable Date type
 * Access attributes of variables and properties
 * Rename vmstack to context
+* Fix if/else snafu. Current solution is hardly elegant, but it works. Hopefully, we can come up with something better...
 
 2.0 RELEASE CRITERIA:
+* Working error handling
+  - catch function?
 * Documentation coverage of standard API functions and types should be 100 %.
 * Constructors and inheritance _fully_ working
 * Add memory overhead of Hashes, Buffers and Lists to GC estimates

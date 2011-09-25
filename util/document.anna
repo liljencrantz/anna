@@ -5,11 +5,33 @@ expand(template);
 
 var io.File baseDir;
 
-type DocumentationData
+def main()
+(  
+    doc("This it the documentation extractor for the anna language.",
+	"It works by iterating over all loaded modules and extracting the doc attribute from all functions, types and members, and formatting them into html documents.",
+	"Future work should include prettier styling, search functionality, handling of internal members including the option to hide internal members."))
 {
-    var Type object;
-    var DocumentationData parent;
-    var Int done;
+    baseDir = io.File("documentation");
+    doc := DocumentationExtractor();
+    doc.document(global);
+    File("documentation/js").makeDirectory();
+    File("util/document(jquery.js").copyTo(File("documentation/js/jquery.js"));
+    print(
+	"Documented % namespaces with % members, out of which % (% %%) where documented\n" % [
+	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 
+	    Int::convert(100 * (1 -(Float::convert(doc.memberMissing) / doc.memberTot)))]);  
+}
+
+
+type DocumentationData
+(doc("Data about a specific type that should be documented."))
+{
+    // The type to document
+    var Type object; 
+    // The parent item of this item
+    var DocumentationData parent; 
+    // Set to true once documentation for this item has been written to disk
+    var Int done; 
 
     def __init__(Type object, DocumentationData parent)
     {
@@ -18,7 +40,8 @@ type DocumentationData
 	done = ?;
     }
 
-    def String link(DocumentationData from)
+    def String link(DocumentationData from) 
+    (doc("Create a link suitable for a html anchor tag from some other document to the document for this type"))
     {
 	if(!from)
 	{
@@ -30,6 +53,7 @@ type DocumentationData
     }
 
     def String linkPath(DocumentationData from = ?)
+    (doc("Create a html anchor from some other document to this document"))
     {
         prev := (parent.linkPath(from or this) ~ ".") or "";
 	return prev ~ if(from) {
@@ -40,33 +64,31 @@ type DocumentationData
     }
 
     def String path()
+	(doc("The search path for this document"))
     {
 	return ((parent.path() ~ "/") or "") ~ object.name;
     }
 
-    def File fileGetter()
+    def File file() (property)
     {
 	directory ~ (object.name ~ ".html");
     }
-    var File file (property(fileGetter));
 
-    def File directoryGetter()
+    def File directory() (property)
     {
 	if(parent) {parent.directory ~ parent.object.name} else {baseDir}
     }
-    var File directory (property(directoryGetter));
     
-    def Int stepsGetter()
+    def Int steps() (property)
     {
 	return (parent.steps + 1) or 0;
     }
-    var Int steps (property(stepsGetter));
     
 }
 
 type DocumentationExtractor
 (
-    document("
+    doc("
 A tool for extracting the documentation from modules and generating an
 HTML manual based on it. Currently very incomplete, and needs
 significant additions to the reflection API before it can be
@@ -231,15 +253,3 @@ often used code paths, which makes it useful for regression testing.")
     }
 }
 
-def main()
-{
-    baseDir = io.File("documentation");
-    doc := DocumentationExtractor();
-    doc.document(global);
-    File("documentation/js").makeDirectory();
-    File("util/document(jquery.js").copyTo(File("documentation/js/jquery.js"));
-    print(
-	"Documented % namespaces with % members, out of which % (% %%) where documented\n" % [
-	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 
-	    Int::convert(100 * (1 -(Float::convert(doc.memberMissing) / doc.memberTot)))]);  
-}

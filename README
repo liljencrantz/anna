@@ -1,10 +1,8 @@
 This is an interpreter for the Anna language. Anna is a computer
 language with a C-like syntax, structural typing and LISP-style
-macros. Anna allows the creation of new features like using-blocks,
-with-blocks and exceptions with the block syntax you'd expect from a
-C-like language, simply by defining your own macros.
+macros. 
 
 The Anna interpreter is working and only has a small number of glaring
 functionality holes, but the standard library is still a barren
-wasteland. Check out the various example files in util, perf ans tests
-to get a feel for how the language looks.
+wasteland. Check out the various example files in util, perf and tests
+to get a feel for how the language works.
