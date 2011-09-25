@@ -19,6 +19,7 @@ bindir = ${exec_prefix}/bin
 mandir = ${prefix}/share/man
 docdir = ${prefix}/share/doc/anna
 localedir = ${prefix}/share/locale
+incdir = ${prefix}/include
 
 # Uncomment to get output suitable for gcov
 COV_FLAGS := #--coverage
@@ -96,18 +97,29 @@ install: all $(ANNA_EXTERNAL_BINDINGS)
 	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/anna/bootstrap
 	$(INSTALL) -m 644 lib/*.anna lib/*.so $(DESTDIR)$(datadir)/anna/lib
 	$(INSTALL) -m 644 bootstrap/*.anna $(DESTDIR)$(datadir)/anna/bootstrap
+	for i in `find include -type d`; do\
+		echo $$i;\
+		$(INSTALL) -m 755 -d $(DESTDIR)$(prefix)/$$i; \
+	done;
+	for i in `find include -name '*.h'`; do\
+		$(INSTALL) -m 644 $$i $(DESTDIR)$(prefix)/$$i; \
+	done;
+
 .PHONY: install
 
 uninstall: 
 	-for i in $(PROGRAMS); do \
-		rm -f $(DESTDIR)$(bindir)/$$i; \
+		rm -f $(DESTDIR)$(prefix)/$$i; \
 	done;
-	rm $(DESTDIR)$(datadir)/anna/lib/*
+	-rm $(DESTDIR)$(bindir)/annabind
+	-rm $(DESTDIR)$(bindir)/annadoc
+	-rm $(DESTDIR)$(datadir)/anna/lib/*
 	-rmdir $(DESTDIR)$(datadir)/anna/lib/
-	rm $(DESTDIR)$(datadir)/anna/bootstrap/*
+	-rm $(DESTDIR)$(datadir)/anna/bootstrap/*
 	-rmdir $(DESTDIR)$(datadir)/anna/bootstrap
 	-rmdir $(DESTDIR)$(datadir)/anna/
 	-rmdir $(DESTDIR)$(bindir)
+	-rm -rf $(DESTDIR)$(prefix)/include/anna/
 .PHONY: uninstall
 
 %.so: %.c

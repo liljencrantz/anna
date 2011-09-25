@@ -449,7 +449,7 @@ static void anna_module_doc()
 	{L"__sign__", L"Return the sign of the number."},
 	{0, 0}
     };
-
+    
     wchar_t *data_numerical_with_alias[][2] = {
 	{L"__add__", L"Add two numbers together."},
 	{L"__sub__", L"Subtract two numbers from each other."},
