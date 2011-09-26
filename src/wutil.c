@@ -525,31 +525,31 @@ const wchar_t *wgettext( const wchar_t *in )
 	return wres;
 }
 */
-/*
-wchar_t *wgetenv( const wchar_t *name )
+
+wchar_t *wgetenv(const wchar_t *name)
 {
-	char *name_narrow =wutil_wcs2str(name);
-	char *res_narrow = getenv( name_narrow );
-	static string_buffer_t *out = 0;
-
-	if( !res_narrow )
-		return 0;
-	
-	if( !out )
-	{
-		out = sb_halloc( global_context );
-	}
-	else
-	{
-		sb_clear( out );
-	}
-
-	sb_printf( out, L"%s", res_narrow );
-	
-	return (wchar_t *)out->buff;
-	
+    char *name_narrow =wutil_wcs2str(name);
+    char *res_narrow = getenv( name_narrow );
+    static string_buffer_t *out = 0;
+    
+    if( !res_narrow )
+	return 0;
+    
+    if( !out )
+    {
+	out = malloc(sizeof(string_buffer_t));
+	sb_init(out);
+    }
+    else
+    {
+	sb_clear( out );
+    }
+    
+    sb_printf( out, L"%s", res_narrow );
+    
+    return (wchar_t *)out->buff;	
 }
-*/
+
 int wmkdir( const wchar_t *name, int mode )
 {
 	char *name_narrow =wutil_wcs2str(name);

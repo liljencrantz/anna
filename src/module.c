@@ -42,28 +42,87 @@ static void anna_module_load_i(anna_stack_template_t *module);
 
 array_list_t anna_module_default_macros = AL_STATIC;
 
+static wchar_t *anna_module_bootstrap_directory()
+{
+    wchar_t *env = wgetenv(L"ANNA_BOOTSTRAP_DIRECTORY");
+    return env ? env : ANNA_BOOTSTRAP_DIR;
+}
+
+static void anna_module_path(array_list_t *list)
+{
+    wchar_t *env = wgetenv(L"ANNA_PATH");
+    if(env)
+    {
+	wchar_t *base = env;
+	wchar_t *ptr = env;
+	while(*ptr)
+	{
+	    if(*ptr == L':')
+	    {
+		*ptr = 0;
+		if(wcslen(base))
+		{
+		    al_push(list, anna_intern(base));
+		}
+		base = ptr+1;
+	    }
+	    ptr++;
+	}
+    }
+    else
+    {
+	al_push(list, L"./lib");
+	al_push(list, ANNA_LIB_DIR);
+    }
+}
+
+static wchar_t *anna_module_search_suffix(wchar_t *path)
+{
+    int i;
+    static string_buffer_t *fn = 0;
+    struct stat buf;
+    if(!fn)
+    {
+	fn = malloc(sizeof(string_buffer_t));
+	sb_init(fn);
+    }
+    
+    static const wchar_t *suff[] = {L"", L".anna", L".so"};
+    
+    for(i=0; i<sizeof(suff)/sizeof(suff[0]); i++)
+    {
+	sb_clear(fn);
+	sb_printf(fn, L"%ls%ls", path, suff[i]);    
+	if(!wstat(sb_content(fn), &buf))
+	{
+	    return sb_content(fn);
+	}
+    }
+    return 0;
+}
+
+
 static wchar_t *anna_module_search(
     anna_stack_template_t *parent, wchar_t *name)
 {
-//    wprintf(L"Search for %ls\n", name);
-    
-    FIXME("library search path is hardcoded")
     string_buffer_t sb;
-    struct stat buf;
     sb_init(&sb);
-    sb_printf(&sb, L"%ls/%ls.anna", ANNA_LIB_DIR, name);
-    if(!wstat(sb_content(&sb), &buf))
+    int i;
+    array_list_t path = AL_STATIC;
+    anna_module_path(&path);
+    wchar_t *res = 0;
+    for(i=0; i<al_get_count(&path); i++)
     {
-	return sb_content(&sb);
+	sb_clear(&sb);
+	sb_printf(&sb, L"%ls/%ls", al_get(&path, i), name);
+	if(res = anna_module_search_suffix(sb_content(&sb)))
+	{
+	    break;
+	}
     }
-    sb_clear(&sb);
-    sb_printf(&sb, L"%ls/%ls.so", ANNA_LIB_DIR, name);
-    
-    if(!wstat(sb_content(&sb), &buf))
-    {
-	return sb_content(&sb);
-    }
-    return 0;
+    al_destroy(&path);
+    sb_destroy(&sb);
+    return res;
 }
 
 static anna_stack_template_t *anna_module(
@@ -87,7 +146,7 @@ static anna_stack_template_t *anna_module(
 	    {
 		if(res->filename && wcscmp(res->filename, filename) != 0)
 		{
-		    debug(D_CRITICAL, L"Multiple definitions for module %ls\n", name);
+		    debug(D_CRITICAL, L"Multiple locations for module %ls: %ls and %ls\n", name, res->filename, filename);
 		    CRASH;		
 		}
 		res->filename = wcsdup(filename);
@@ -110,7 +169,8 @@ static anna_stack_template_t *anna_module(
     }
     else
     {
-	res->filename = anna_module_search(parent, name);
+	wchar_t *p = anna_module_search(parent, name);
+	res->filename = p?wcsdup(p):0;
     }
 
     if(!res->filename)
@@ -163,8 +223,6 @@ void anna_module_check(
     wchar_t *path = anna_module_search(parent, name);
     if(path)
     {
-	free(path);
-	
 	anna_module_load_i(
 	    anna_module(parent, name, 0));
     }
@@ -206,6 +264,11 @@ static void anna_module_init_recursive(
 	
 	if(S_ISDIR(statbuf.st_mode))
 	{
+	    if(anna_stack_get(parent, d_name))
+	    {
+		goto CLEANUP;
+	    }
+
 	    anna_module_init_recursive(sb_content(&fn), anna_module(parent, d_name, 0));
 	    goto CLEANUP;
 	}
@@ -219,7 +282,12 @@ static void anna_module_init_recursive(
 	if((wcscmp(suffix, L".anna") == 0) || (wcscmp(suffix, L".so") == 0))
 	{
 	    *suffix=0;
-
+	    
+	    if(anna_stack_get(parent, d_name))
+	    {
+		goto CLEANUP;
+	    }
+	
 	    anna_module_load_i(
 		anna_module(parent, d_name, sb_content(&fn)));
 	}
@@ -234,7 +302,7 @@ static void anna_module_bootstrap_macro(wchar_t *name)
 {
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"%ls/%ls.anna", ANNA_BOOTSTRAP_DIR, name);
+    sb_printf(&sb, L"%ls/%ls.anna", anna_module_bootstrap_directory(), name);
     wchar_t *path = sb_content(&sb);
 
     anna_stack_template_t *mm = anna_module(stack_global, name, path);
@@ -653,8 +721,15 @@ void anna_module_init()
     /*
       Load all non-native libraries
     */
-    anna_module_init_recursive(ANNA_LIB_DIR, stack_global);
-    
+
+    int i;
+    array_list_t path = AL_STATIC;
+    anna_module_path(&path);
+    for(i=0; i<al_get_count(&path); i++)
+    {
+	anna_module_init_recursive((wchar_t *)al_get(&path, i), stack_global);
+    }
+    al_destroy(&path);
 }
 
 static void import_parse(anna_node_t *node, array_list_t *list)
@@ -952,35 +1027,18 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 
 anna_object_t *anna_module_load(wchar_t *module_name)
 {
-    string_buffer_t fn;
-    sb_init(&fn);
-
-    static const wchar_t *suff[] = {L"", L".anna", L".so"};
-    int i;
     anna_stack_template_t *module=0;
-    struct stat buf;
-    int ok = 0;
-    
-    for(i=0; i<sizeof(suff)/sizeof(suff[0]); i++)
+    wchar_t *full_path = anna_module_search_suffix(module_name);
+    if(full_path)
     {
-	sb_clear(&fn);
-	sb_printf(&fn, L"%ls%ls", module_name, suff[i]);    
-	if(!wstat(sb_content(&fn), &buf))
-	{
-	    module = anna_module(
-		stack_global, 0, sb_content(&fn));
-	    anna_module_load_i(module);
-	    ok = 1;
-	    break;	    
-	}
+	module = anna_module(
+	    stack_global, 0, full_path);
+	anna_module_load_i(module);
     }
-    if(!ok)
+    else
     {
 	anna_error(0, L"Failed to find module named «%ls»", module_name);
     }
-    
-    sb_destroy(&fn);
-    
     return module?anna_stack_wrap(module):0;
 }
 

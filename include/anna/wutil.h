@@ -3,8 +3,8 @@
   Prototypes for wide character equivalents of various standard unix
   functions. 
 */
-#ifndef FISH_WUTIL_H
-#define FISH_WUTIL_H
+#ifndef ANNA_WUTIL_H
+#define ANNA_WUTIL_H
 
 #include <stdlib.h>
 #include <stdio.h>
