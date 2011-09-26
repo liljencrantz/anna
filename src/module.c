@@ -234,7 +234,6 @@ static void anna_module_init_recursive(
     DIR *dir = wopendir(dname);
     if(!dir)
     {
-	anna_error(0, L"Failed to initialize library directory «%ls»\n", dname);
 	return;
     }
 

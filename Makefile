@@ -20,6 +20,7 @@ mandir = ${prefix}/share/man
 docdir = ${prefix}/share/doc/anna
 localedir = ${prefix}/share/locale
 incdir = ${prefix}/include
+libdir = ${prefix}/lib/anna
 
 # Uncomment to get output suitable for gcov
 COV_FLAGS := #--coverage
@@ -37,7 +38,7 @@ PROF_FLAGS := -g -O #-flto -O3 -fuse-linker-plugin -fno-gcse
 # code and code from external sources.
 CFLAGS_NOWARN := -rdynamic -std=gnu99 -D_ISO99_SOURCE=1			\
 -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500	\
--D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I include -I . -DANNA_BOOTSTRAP_DIR=L\"$(datadir)/anna/bootstrap\" -DANNA_LIB_DIR=L\"$(datadir)/anna/lib\"
+-D_POSIX_C_SOURCE=199309L $(PROF_FLAGS) $(COV_FLAGS) -I include -I . -DANNA_BOOTSTRAP_DIR=L\"$(datadir)/anna/bootstrap\" -DANNA_LIB_DIR=L\"$(libdir)\"
 
 WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 -Wmissing-prototypes
@@ -93,12 +94,11 @@ install: all $(ANNA_EXTERNAL_BINDINGS)
 	done;
 	$(INSTALL) -m 755 util/annabind.anna $(DESTDIR)$(bindir)/annabind
 	$(INSTALL) -m 755 util/annadoc.anna $(DESTDIR)$(bindir)/annadoc
-	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/anna/lib
+	$(INSTALL) -m 755 -d $(DESTDIR)$(libdir)
 	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/anna/bootstrap
-	$(INSTALL) -m 644 lib/*.anna lib/*.so $(DESTDIR)$(datadir)/anna/lib
+	$(INSTALL) -m 644 lib/*.anna lib/*.so $(DESTDIR)$(libdir)
 	$(INSTALL) -m 644 bootstrap/*.anna $(DESTDIR)$(datadir)/anna/bootstrap
 	for i in `find include -type d`; do\
-		echo $$i;\
 		$(INSTALL) -m 755 -d $(DESTDIR)$(prefix)/$$i; \
 	done;
 	for i in `find include -name '*.h'`; do\
@@ -113,8 +113,8 @@ uninstall:
 	done;
 	-rm $(DESTDIR)$(bindir)/annabind
 	-rm $(DESTDIR)$(bindir)/annadoc
-	-rm $(DESTDIR)$(datadir)/anna/lib/*
-	-rmdir $(DESTDIR)$(datadir)/anna/lib/
+	-rm $(DESTDIR)$(libdir)/*
+	-rmdir $(DESTDIR)$(libdir)
 	-rm $(DESTDIR)$(datadir)/anna/bootstrap/*
 	-rmdir $(DESTDIR)$(datadir)/anna/bootstrap
 	-rmdir $(DESTDIR)$(datadir)/anna/
