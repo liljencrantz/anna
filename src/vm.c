@@ -24,16 +24,16 @@
 #include "anna/alloc.h"
 #include "anna/mid.h"
 
-#define OP_LEAVE(stack) goto *jump_label[(int)*(stack)->frame->code] 
+#define OP_LEAVE(context) goto *jump_label[(int)*(context)->frame->code] 
 
-#define OP_ENTER(stack) 
-//wprintf(L"Weee, instruction %d at offset %d\n", *stack->frame->code, stack->frame->code - stack->frame->function->code)
+#define OP_ENTER(context) 
+//wprintf(L"Weee, instruction %d at offset %d\n", *context->frame->code, context->frame->code - context->frame->function->code)
 
 char *anna_context_static_ptr;
 char anna_context_static_data[ANNA_CONTEXT_SZ];
 anna_function_t *anna_vm_run_fun;
 
-__attr_unused __cold static void anna_context_print_parent(anna_context_t *stack);
+__attr_unused __cold static void anna_context_print_parent(anna_context_t *context);
 
 static inline void anna_frame_return(anna_activation_frame_t *frame)
 {
@@ -44,14 +44,14 @@ static inline void anna_frame_return(anna_activation_frame_t *frame)
     }
 }
 
-static inline void anna_stack_frame_return(anna_context_t *stack)
+static inline void anna_context_frame_return(anna_context_t *stack)
 {
     stack->top = stack->frame->return_stack_top;
     anna_frame_return(stack->frame);
     stack->frame = stack->frame->dynamic_frame;
 }
 
-static inline void anna_stack_frame_return_static(anna_context_t *stack)
+static inline void anna_context_frame_return_static(anna_context_t *stack)
 {
     anna_frame_return(stack->frame);
     stack->frame = stack->frame->static_frame;
@@ -470,7 +470,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     {
 	OP_ENTER(stack);	
 	anna_entry_t *val = anna_context_peek_entry(stack, 0);
-	anna_stack_frame_return(stack);
+	anna_context_frame_return(stack);
 	anna_context_push_entry(stack, val);
 //		wprintf(L"Pop frame\n");
 	OP_LEAVE(stack);	
@@ -485,9 +485,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		
 	for(i=0; i<cb->param; i++)
 	{
-	    anna_stack_frame_return_static(stack);
+	    anna_context_frame_return_static(stack);
 	}
-	anna_stack_frame_return(stack);
+	anna_context_frame_return(stack);
 	anna_context_push_entry(stack, val);
 	OP_LEAVE(stack);	
     }
@@ -501,9 +501,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		
 	for(i=0; i<cb->param; i++)
 	{
-	    anna_stack_frame_return_static(stack);
+	    anna_context_frame_return_static(stack);
 	}
-	anna_stack_frame_return(stack);
+	anna_context_frame_return(stack);
 	anna_context_push_entry(stack, val);
 	stack->frame->flags |= ANNA_ACTIVATION_FRAME_BREAK;
 	OP_LEAVE(stack);	
@@ -538,7 +538,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 //		wprintf(L"Pop last frame\n");
 	anna_object_t *val = anna_context_peek_object(stack, 0);
 //	free(stack->frame->code);
-	anna_stack_frame_return(stack);
+	anna_context_frame_return(stack);
 //	stack = stack->caller;
 	return val;
     }
