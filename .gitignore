@@ -10,7 +10,7 @@ autogen/*.output
 *.gcda
 *.gcno
 *.err
-anna
+bin/anna
 mandel
 autogen/*.c
 autogen/*.h
