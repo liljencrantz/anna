@@ -603,28 +603,44 @@ static __pure inline anna_entry_t *anna_entry_get_static(
     return type->static_member[m->offset];
 }
 
+/**
+   Returns non-zero if the specified contender implements all the members of role_model, e.g. if it can be used in place of role_model using structural typing.
+ */
 int anna_abides(
     anna_type_t *contender, anna_type_t *role_model);
 
+/**
+   Like anna_abised, except it counts the number of members that are
+   not implemented. Useful when wanting to find out how far away from
+   fully implementing an interface a given type is.
+ */
 int anna_abides_fault_count(
     anna_type_t *contender, anna_type_t *role_model);
+/**
+   Init function for the abides lib. 
+ */
 void anna_abides_init(void);
 
-__cold anna_type_t *anna_type_intersect(
-    anna_type_t *t1, anna_type_t *t2);
-
-__cold void anna_type_intersect_into(
-    anna_type_t *dest, 
-    anna_type_t *t1, anna_type_t *t2);
-
+/**
+   Print the specified error message and increase the error counter. 
+ */
 void anna_error(
     struct anna_node *node, wchar_t *msg, ...);
 
+/**
+   Create and return a new object of the specified type.
+ */
 __hot __malloc anna_object_t *anna_object_create(
     anna_type_t *type);
+/**
+   Same as anna_object_create, but the members of the object are not assigned null values,
+ */
 __hot __malloc anna_object_t *anna_object_create_raw(
     size_t sz);
 
+/**
+   Print a description of the specified object
+ */
 __cold void anna_object_print(
     anna_object_t *obj);
 

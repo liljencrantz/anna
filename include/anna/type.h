@@ -106,5 +106,19 @@ int anna_type_mid_internal(mid_t mid);
 
 void anna_type_finalizer_add(anna_type_t *type, anna_finalizer_t finalizer);
 
+/**
+   Returns the members common to two types. If both types share a
+   member name but of different types, the intersection of those types
+   will be used.
+ */
+__cold anna_type_t *anna_type_intersect(
+    anna_type_t *t1, anna_type_t *t2);
+/**
+   Like anna_type_intersect, but the result is added to the specified type
+ */
+__cold void anna_type_intersect_into(
+    anna_type_t *dest, 
+    anna_type_t *t1, anna_type_t *t2);
+
 
 #endif
