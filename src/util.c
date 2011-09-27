@@ -434,14 +434,27 @@ int hash_ptr_func( void *data )
     return (int)(long) data;
 }
 
-/**
-   Hash comparison function suitable for direct pointer comparison
-*/
 int hash_ptr_cmp( 
     void *a,
     void *b )
 {
     return a == b;
+}
+
+int hash_str_cmp( void *a, void *b )
+{
+        return strcmp((char *)a,(char *)b) == 0;
+}
+
+int hash_str_func( void *data )
+{
+        int res = 0x67452301u;
+        const char *str = data; 
+
+        while( *str )
+	    res = (18499*(res<<5)) + res ^ *str++;
+        
+        return res;
 }
 
 array_list_t *al_new()

@@ -1,6 +1,6 @@
 1.0 RELEASE CRITERIA:
 * anna-game as a proof that the language works for solving reasonably complex problems
-* Documentation coverage of standard API functions and types should be at least 95 %.
+* Documentation coverage of standard API functions and types should be at least 90 %.
 * HTML api documentation extractor
   - Hide internal elements by default
   - Better module templates (pretty)
@@ -10,10 +10,6 @@
   - Only static members can be accessed statically
   - Can't assign to constants
   - Check argument types to function calls better...
-* getopt replacement
-  - basic design
-  - implementation
-  - use it in annabind and annadoc  
 
 1.0 RELEASE CRITERIA (Done):
 * Working error handling
@@ -49,6 +45,12 @@
 * Fix if/else snafu. Current solution is hardly elegant and it fails in some edge cases. Hopefully, we can come up with something significantly better...
 
 2.0 RELEASE CRITERIA:
+* During startup, cache contents of all directories in ANNA_PATH so that we don't have to do crazy numbers of stat calls
+* getopt replacement
+  - basic design
+  - implementation
+  - use it in annabind and annadoc  
+* anna should use getopt to provide switches for setting the path, making dry runs, controlling the GC, etc.
 * Working error handling
   - option to catch only some error types
 * Working error handling

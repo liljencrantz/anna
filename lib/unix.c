@@ -2293,6 +2293,49 @@ void anna_env_load(anna_stack_template_t *stack)
 
      anna_type_data_register(anna_env_type_data, stack);
 }
+const static anna_type_data_t anna_sleep_type_data[] = 
+{
+};
+
+ANNA_VM_NATIVE(unix_i_sleep, 1)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    int native_param_seconds = anna_as_int(param[0]);
+
+    // Validate parameters
+
+    // Call the function
+    anna_entry_t *result = anna_from_int(sleep(native_param_seconds));
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+void anna_sleep_create(anna_stack_template_t *stack);
+void anna_sleep_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_sleep_type_data, stack);        
+}
+void anna_sleep_load(anna_stack_template_t *stack);
+void anna_sleep_load(anna_stack_template_t *stack)
+{
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+
+    anna_type_t *unix_i_sleep_argv[] = {int_type};
+    wchar_t *unix_i_sleep_argn[] = {L"seconds"};
+    anna_module_function(stack, L"sleep", 0, &unix_i_sleep, int_type, 1, unix_i_sleep_argv, unix_i_sleep_argn, L"");
+
+     anna_type_data_register(anna_sleep_type_data, stack);
+}
 
 
 // This function is called to create all types defined in this module
@@ -2316,6 +2359,7 @@ void anna_unix_load(anna_stack_template_t *stack)
             { L"user", anna_user_create, anna_user_load},
             { L"rLimit", anna_r_limit_create, anna_r_limit_load},
             { L"env", anna_env_create, anna_env_load},
+            { L"sleep", anna_sleep_create, anna_sleep_load},
         };
     anna_module_data_create(modules, stack);
 

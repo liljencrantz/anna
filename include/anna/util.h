@@ -8,8 +8,8 @@
 	notion of doing as much lazy initalization as possible.
 */
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef ANNA_UTIL_H
+#define ANNA_UTIL_H
 
 #include <wchar.h>
 #include <stdarg.h>
@@ -323,6 +323,15 @@ int hash_ptr_func( void *data );
 */
 int hash_ptr_cmp( void *a,
                   void *b );
+
+/**
+   Hash function suitable for character strings. 
+*/
+int hash_str_func( void *data );
+/**
+   Hash comparison function suitable for character strings
+*/
+int hash_str_cmp( void *a, void *b );
 
 
 /**

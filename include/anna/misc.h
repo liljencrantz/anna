@@ -1,5 +1,5 @@
-#ifndef ANNA_UTIL_H
-#define ANNA_UTIL_H
+#ifndef ANNA_MISC_H
+#define ANNA_MISC_H
 
 #include "anna/node.h"
 

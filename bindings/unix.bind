@@ -241,3 +241,8 @@ env
       
      */
 }
+
+sleep
+{
+    def Int sleep(Int seconds);
+}
