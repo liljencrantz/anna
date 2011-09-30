@@ -178,11 +178,14 @@ mid_t anna_member_create_blob(
     sb_init(&sb);
     
 //    wprintf( L"Allocate blob of size %d, uses %d slots\n", sz, (((sz-1)/sizeof(anna_entry_t *))+1));
+    sb_printf(&sb, L"%ls", name);
+    int len = sb_length(&sb);
     
     for(i=1; i<(((sz-1)/sizeof(anna_entry_t *))+1);i++)
     {
-	sb_clear(&sb);
-	sb_printf(&sb, L"%ls%d", name, i+1);
+	sb_truncate(&sb, len);
+	sb_printf(&sb, L"%d", i);
+	
 	anna_member_create(type, anna_mid_get(sb_content(&sb)),
                            storage & ANNA_MEMBER_STATIC, null_type);
     }

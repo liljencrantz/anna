@@ -41,6 +41,7 @@ anna_type_data_t;
 	    {								\
 		anna_type_copy_object(*type_data[i].addr);		\
 	    }								\
+	    anna_type_close(*type_data[i].addr);			\
 	    anna_stack_declare(						\
 		module, (*type_data[i].addr)->name,			\
 		type_type, anna_from_obj(anna_type_wrap(*type_data[i].addr)), ANNA_STACK_READONLY); \

@@ -1184,6 +1184,7 @@ static void anna_hash_type_create_internal(
 	L"Remove the specified key from the hash");
     
     anna_hash_add_all_extra_methods(type);
+    anna_type_close(type);    
     
 }
 

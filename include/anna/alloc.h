@@ -114,9 +114,26 @@ static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
  */
 __hot void anna_alloc_mark(void *obj);
 __hot void anna_alloc_mark_entry(anna_entry_t *obj);
-__hot void anna_alloc_mark_object(anna_object_t *obj);
+
+__hot static inline void anna_alloc_mark_object(anna_object_t *obj)
+{
+    if( obj->flags & ANNA_USED)
+	return;
+    obj->flags |= ANNA_USED;
+    if(!obj->type->mark)
+    {
+	wprintf(L"No mark function in type %ls\n", obj->type->name);
+	CRASH;
+    }
+    
+    obj->type->mark(obj);
+}
+
 __hot void anna_alloc_mark_type(anna_type_t *obj);
 __hot void anna_alloc_mark_stack_template(anna_stack_template_t *o);
+__hot void anna_alloc_mark_function(anna_function_t *o);
+__hot void anna_alloc_mark_node(anna_node_t *o);
+
 
 __hot void anna_alloc_gc_block(void);
 __hot void anna_alloc_gc_unblock(void);

@@ -11,6 +11,7 @@
 #define ANNA_TYPE_COMPILED 4096
 #define ANNA_TYPE_SPECIALIZED 8192
 #define ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS (8192*2)
+#define ANNA_TYPE_CLOSED (8192*4)
 
 /**
   Return the anna_type_t contained in the specified anna_type_t.wrapper
@@ -120,5 +121,6 @@ __cold void anna_type_intersect_into(
     anna_type_t *dest, 
     anna_type_t *t1, anna_type_t *t2);
 
+__cold void anna_type_close(anna_type_t *this);
 
 #endif

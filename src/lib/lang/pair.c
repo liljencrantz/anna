@@ -137,6 +137,7 @@ static void anna_pair_type_create_internal(
 	&anna_pair_get_second_i,
 	&anna_pair_set_second_i, 0);
     anna_pair_add_all_extra_methods(type);
+    anna_type_close(type);    
 }
 
 static inline void anna_pair_internal_init()

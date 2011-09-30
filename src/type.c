@@ -9,6 +9,7 @@
 #include "anna/common.h"
 #include "anna/util.h"
 #include "anna/type.h"
+#include "anna/lib/parser.h"
 #include "anna/node_create.h"
 #include "anna/macro.h"
 #include "anna/function.h"
@@ -942,6 +943,7 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
 void anna_type_setup_interface(anna_type_t *type)
 {
     anna_type_setup_interface_internal(type);
+    anna_type_close(type);
 }
 
 anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
@@ -1407,6 +1409,7 @@ anna_type_t *anna_type_for_function(
 	sb_destroy(&sb);
 	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_function_type_create(new_key, res);
+	anna_type_close(res);
     }
     
     anna_function_type_t *ggg = anna_function_type_unwrap(res);
@@ -1454,4 +1457,87 @@ void anna_type_finalizer_add(anna_type_t *type, anna_finalizer_t finalizer)
     }
     type->finalizer = realloc(type->finalizer, sizeof(anna_finalizer_t) * (type->finalizer_count+1));
     type->finalizer[type->finalizer_count++] = finalizer;
+}
+
+__pure static inline int anna_object_member_is_blob(anna_type_t *type, size_t off)
+{
+    return type->member_blob[off];    
+}
+
+__pure static inline int anna_object_member_is_alloc(anna_type_t *type, size_t off)
+{
+    return type->member_blob[off] == ANNA_GC_ALLOC;    
+}
+
+static void anna_type_object_mark_basic(anna_object_t *this)
+{
+        if(this == null_object)
+	return;
+    size_t i;
+    if(this->type == string_type)
+    {
+	return;
+    }
+
+    if(this->flags & ANNA_OBJECT_LIST)
+    {
+	/* This object is a list. Mark all list items */
+	size_t sz = anna_list_get_count(this);
+	anna_entry_t **data = anna_list_get_payload(this);
+	
+	for(i=0; i<sz; i++)
+	{
+	    anna_alloc_mark_entry(data[i]);
+	}
+    }
+    
+    if(this->flags & ANNA_OBJECT_HASH)
+    {
+	anna_hash_mark(this);
+    }    
+    
+    anna_type_t *t = this->type;
+    for(i=0; i<t->member_count; i++)
+    {
+	if(anna_object_member_is_blob(t, i))
+	{
+	    if(anna_object_member_is_alloc(t, i) && this->member[i])
+	    {
+//		wprintf(L"FASFDSA %ls.%ls\n", t->name, L"FAS");
+		
+		anna_alloc_mark(this->member[i]);
+	    }
+	}
+	else
+	{
+	    anna_alloc_mark_entry(this->member[i]);
+	}
+    }
+    anna_alloc_mark_type(this->type);
+    anna_function_t *f = anna_function_unwrap(this);
+    if(f){
+//	anna_object_print(this);
+	anna_alloc_mark_function(f);
+    }
+    anna_type_t *wt = anna_type_unwrap(this);
+    if(wt){
+	anna_alloc_mark_type(wt);
+    }
+    anna_node_t *nn = anna_node_unwrap(this);
+    if(nn)
+    {
+	anna_alloc_mark_node(nn);
+    }
+}
+
+void anna_type_close(anna_type_t *this)
+{
+    if(this->flags & ANNA_TYPE_CLOSED)
+    {
+	return;
+    }
+    this->flags |= ANNA_TYPE_CLOSED;
+    
+    this->mark = anna_type_object_mark_basic;
+
 }

@@ -630,7 +630,6 @@ static void anna_vm_compile_i(
 		    ctx, 
 		    ANNA_INSTR_STATIC_MEMBER_GET,
 		    node2->mid);
-		wprintf(L"FDSAFADSFSAD %ls\n", anna_mid_get_reverse(node2->mid));
 	    }
 	    else
 	    {

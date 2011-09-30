@@ -17,6 +17,7 @@ struct anna_context;
 
 typedef void (*anna_native_t)( struct anna_context *stack);
 typedef void (*anna_finalizer_t)( struct anna_object *victim);
+typedef void (*anna_mark_t)( struct anna_object *this);
 typedef int mid_t;
 
 /*
@@ -243,6 +244,9 @@ struct anna_type
     array_list_t member_list;
     size_t finalizer_count;
     anna_finalizer_t *finalizer;
+    anna_mark_t mark;
+    int *mark_offset;
+    int mark_offset_count;
 };
 
 struct anna_member

@@ -1083,6 +1083,9 @@ static void anna_list_type_create_internal(
 	type, anna_mid_get(L"thaw"),
 	mutable_type, mutable ? &anna_util_noop : &anna_list_i_copy_mutable, 0,
 	L"A mutable copy of this List, or the List itself if it is already mutable.");
+
+    anna_type_close(type);
+    
 }
 
 static inline void anna_list_internal_init()
@@ -1134,7 +1137,6 @@ void anna_list_type_create()
     anna_type_document(
 	imutable_list_type,
 	L"The ImutableList type is type representing an imutable (unchanging) list of objects.");
-
 }
 
 static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)

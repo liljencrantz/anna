@@ -1022,6 +1022,8 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
     anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
+
+
 }
 
 anna_object_t *anna_module_load(wchar_t *module_name)

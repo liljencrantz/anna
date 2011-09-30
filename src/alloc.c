@@ -35,16 +35,6 @@ static void anna_alloc_unmark(void *obj)
     *((int *)obj) &= (~ANNA_USED);
 }
 
-__pure static inline int anna_object_member_is_blob(anna_type_t *type, size_t off)
-{
-    return type->member_blob[off];    
-}
-
-__pure static inline int anna_object_member_is_alloc(anna_type_t *type, size_t off)
-{
-    return type->member_blob[off] == ANNA_GC_ALLOC;    
-}
-
 __pure static inline int anna_type_member_is_blob(anna_type_t *type, size_t off)
 {
     return type->static_member_blob[off];
@@ -56,9 +46,8 @@ __pure static inline int anna_type_member_is_alloc(anna_type_t *type, size_t off
 }
 
 void anna_alloc_mark_type(anna_type_t *type);
-static void anna_alloc_mark_node(anna_node_t *o);
 
-static void anna_alloc_mark_function(anna_function_t *o)
+void anna_alloc_mark_function(anna_function_t *o)
 {
     if( o->flags & ANNA_USED)
 	return;
@@ -125,7 +114,7 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
     }
 }
 
-static void anna_alloc_mark_node(anna_node_t *o)
+void anna_alloc_mark_node(anna_node_t *o)
 {
     if( o->flags & ANNA_USED)
 	return;
@@ -403,72 +392,6 @@ void anna_alloc_mark_entry(anna_entry_t *e)
     anna_alloc_mark_object(obj);
 }
 
-void anna_alloc_mark_object(anna_object_t *obj)
-{
-    if( obj->flags & ANNA_USED)
-	return;
-    obj->flags |= ANNA_USED;
-    
-    if(obj == null_object)
-	return;
-    
-    size_t i;
-    if(obj->type == string_type)
-    {
-	return;
-    }
-
-    if(obj->flags & ANNA_OBJECT_LIST)
-    {
-	/* This object is a list. Mark all list items */
-	size_t sz = anna_list_get_count(obj);
-	anna_entry_t **data = anna_list_get_payload(obj);
-	
-	for(i=0; i<sz; i++)
-	{
-	    anna_alloc_mark_entry(data[i]);
-	}
-    }
-    
-    if(obj->flags & ANNA_OBJECT_HASH)
-    {
-	anna_hash_mark(obj);
-    }    
-    
-    anna_type_t *t = obj->type;
-    for(i=0; i<t->member_count; i++)
-    {
-	if(anna_object_member_is_blob(t, i))
-	{
-	    if(anna_object_member_is_alloc(t, i) && obj->member[i])
-	    {
-//		wprintf(L"FASFDSA %ls.%ls\n", t->name, L"FAS");
-		
-		anna_alloc_mark(obj->member[i]);
-	    }
-	}
-	else
-	{
-	    anna_alloc_mark_entry(obj->member[i]);
-	}
-    }
-    anna_alloc_mark_type(obj->type);
-    anna_function_t *f = anna_function_unwrap(obj);
-    if(f){
-//	anna_object_print(obj);
-	anna_alloc_mark_function(f);
-    }
-    anna_type_t *wt = anna_type_unwrap(obj);
-    if(wt){
-	anna_alloc_mark_type(wt);
-    }
-    anna_node_t *nn = anna_node_unwrap(obj);
-    if(nn)
-    {
-	anna_alloc_mark_node(nn);
-    }
-}
-
 static void anna_alloc_mark_activation_frame(anna_activation_frame_t *frame)
 {
     if( frame->flags & ANNA_USED)
@@ -703,7 +626,10 @@ void anna_alloc_gc_unblock()
 void anna_gc(anna_context_t *context)
 {
     if(anna_alloc_gc_block_counter)
+    {
+	anna_alloc_count = 0;
 	return;
+    }
     
     anna_alloc_gc_block();
     size_t i;
