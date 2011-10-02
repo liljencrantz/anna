@@ -377,7 +377,7 @@ void anna_type_intersect_into(
 	anna_abides_fault_count_internal(t2, res, D_CRITICAL);
 	CRASH;
     }
-    
+    anna_type_close(res);
 
 }
 

@@ -345,14 +345,7 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
     {
 	size_t new_sz = maxi(8, 2*type->static_member_capacity);
 	type->static_member = realloc(type->static_member, new_sz*sizeof(anna_object_t *));
-	type->static_member_blob = realloc(
-	    type->static_member_blob, 
-	    new_sz * sizeof(int));
 	int i;
-	for(i=type->static_member_count; i < new_sz; i++)
-	{
-	    type->static_member_blob[i] = 69;
-	}
 
 	if(!type->static_member)
 	{
@@ -1409,7 +1402,6 @@ anna_type_t *anna_type_for_function(
 	sb_destroy(&sb);
 	hash_put(&anna_type_for_function_identifier, new_key, res);
 	anna_function_type_create(new_key, res);
-	anna_type_close(res);
     }
     
     anna_function_type_t *ggg = anna_function_type_unwrap(res);
@@ -1459,26 +1451,14 @@ void anna_type_finalizer_add(anna_type_t *type, anna_finalizer_t finalizer)
     type->finalizer[type->finalizer_count++] = finalizer;
 }
 
-__pure static inline int anna_object_member_is_blob(anna_type_t *type, size_t off)
+static void anna_type_object_mark_noop(anna_object_t *this)
 {
-    return type->member_blob[off];    
 }
 
-__pure static inline int anna_object_member_is_alloc(anna_type_t *type, size_t off)
+static void anna_type_object_mark_empty(anna_object_t *this)
 {
-    return type->member_blob[off] == ANNA_GC_ALLOC;    
-}
-
-static void anna_type_object_mark_basic(anna_object_t *this)
-{
-        if(this == null_object)
-	return;
     size_t i;
-    if(this->type == string_type)
-    {
-	return;
-    }
-
+    
     if(this->flags & ANNA_OBJECT_LIST)
     {
 	/* This object is a list. Mark all list items */
@@ -1495,24 +1475,7 @@ static void anna_type_object_mark_basic(anna_object_t *this)
     {
 	anna_hash_mark(this);
     }    
-    
-    anna_type_t *t = this->type;
-    for(i=0; i<t->member_count; i++)
-    {
-	if(anna_object_member_is_blob(t, i))
-	{
-	    if(anna_object_member_is_alloc(t, i) && this->member[i])
-	    {
-//		wprintf(L"FASFDSA %ls.%ls\n", t->name, L"FAS");
-		
-		anna_alloc_mark(this->member[i]);
-	    }
-	}
-	else
-	{
-	    anna_alloc_mark_entry(this->member[i]);
-	}
-    }
+
     anna_alloc_mark_type(this->type);
     anna_function_t *f = anna_function_unwrap(this);
     if(f){
@@ -1528,6 +1491,112 @@ static void anna_type_object_mark_basic(anna_object_t *this)
     {
 	anna_alloc_mark_node(nn);
     }
+    
+}
+
+static void anna_type_object_mark_all(anna_object_t *this)
+{
+    size_t i;
+
+    anna_type_t *t = this->type;
+    
+    for(i=0; i<t->member_count; i++)
+    {
+	anna_alloc_mark_entry(this->member[i]);
+    }
+    
+    anna_type_object_mark_empty(this);
+}
+
+static void anna_type_object_mark_basic(anna_object_t *this)
+{
+    size_t i;
+    
+    anna_type_t *t = this->type;
+    for(i=0; i<t->mark_entry_count; i++)
+    {
+	anna_alloc_mark_entry(this->member[t->mark_entry[i]]);
+    }
+/*
+    if(t->mark_blob_count)
+    {
+	wprintf(L"Mark blobs in object of type:\n");
+	anna_type_print(t);
+    }
+*/  
+    for(i=0; i<t->mark_blob_count; i++)
+    {
+//	wprintf(L"Mark member at offset %d of object %d of type %ls\n", t->mark_blob[i], this, t->name);
+	if(this->member[t->mark_blob[i]])
+	{
+	    anna_alloc_mark(this->member[t->mark_blob[i]]);
+	}
+    }
+        
+    anna_type_object_mark_empty(this);
+}
+
+static void anna_type_mark(anna_type_t *type)
+{
+    size_t i;
+
+    if(type == null_type)
+    {
+	anna_alloc_mark_entry(type->static_member[0]);
+	return;
+    }
+
+    if(type->wrapper)
+    {
+	anna_alloc_mark_object(type->wrapper);
+    }
+    
+    for(i=0; i<type->static_mark_entry_count; i++)
+    {
+	anna_alloc_mark_entry(type->static_member[type->static_mark_entry[i]]);
+    }
+    for(i=0; i<type->static_mark_blob_count; i++)
+    {
+	anna_alloc_mark(type->static_member[type->static_mark_blob[i]]);
+    }
+
+    int steps = al_get_count(&type->member_list);
+    
+//    wprintf(L"Mark members of type %ls\n", type->name);
+    for(i=0; i<steps; i++)
+    {
+        anna_member_t *memb = al_get_fast(&type->member_list, i);
+
+#ifdef ANNA_CHECK_GC
+	if(!memb->type)
+	{
+	    debug(D_CRITICAL, L"%ls.%ls has no type\n", type->name, memb->name);
+	    CRASH;
+	}
+#endif
+
+	anna_alloc_mark_type(memb->type);
+	if(memb->attribute)
+	{
+	    anna_alloc_mark_node((anna_node_t *)memb->attribute);
+	}
+	
+	if(memb->wrapper)
+	    anna_alloc_mark_object(memb->wrapper);
+    }
+
+    if(type->stack_macro)
+    {
+	anna_alloc_mark_stack_template(type->stack_macro);
+    }
+    if(type->stack)
+    {
+	anna_alloc_mark_stack_template(type->stack);
+    }
+    if(type->attribute)
+    {
+      	anna_alloc_mark_node((anna_node_t *)type->attribute);
+    }
 }
 
 void anna_type_close(anna_type_t *this)
@@ -1537,7 +1606,151 @@ void anna_type_close(anna_type_t *this)
 	return;
     }
     this->flags |= ANNA_TYPE_CLOSED;
-    
-    this->mark = anna_type_object_mark_basic;
 
+    int entry_count = 0;
+    int alloc_blob_count = 0;
+    int i;
+    for(i=0; i<al_get_count(&this->member_list); i++)
+    {
+	anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
+	if(memb->is_static)
+	{
+	    continue;
+	}
+	if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	{
+	    continue;
+	}
+	
+	if(memb->type == null_type)
+	{
+	    if((memb->storage&ANNA_MEMBER_ALLOC))
+	    {
+		alloc_blob_count++;
+	    }    
+	}
+	else
+	{
+	    entry_count++;	    
+	}
+    }
+
+    if((this == null_type))
+    {
+	this->mark_object = anna_type_object_mark_noop;	
+    }
+    else if((entry_count == 0) && (alloc_blob_count == 0))
+    {
+	this->mark_object = anna_type_object_mark_empty;
+    }
+    else if(entry_count == this->member_count)
+    {
+	assert(!alloc_blob_count);
+	this->mark_object = anna_type_object_mark_all;
+    }
+    else
+    {
+	this->mark_entry = malloc(sizeof(int)*(entry_count));
+	this->mark_blob = malloc(sizeof(int)*(alloc_blob_count));
+	this->mark_entry_count = entry_count;
+	this->mark_blob_count = alloc_blob_count;
+	int eidx=0;
+	int bidx=0;
+	for(i=0; i<al_get_count(&this->member_list); i++)
+	{
+	    anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
+	    if(memb->is_static)
+	    {
+		continue;
+	    }
+	    if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	    {
+		continue;
+	    }
+	    
+	    if(memb->type == null_type)
+	    {
+		if((memb->storage&ANNA_MEMBER_ALLOC))
+		{
+		    this->mark_blob[bidx++] = memb->offset;
+		}
+	    }
+	    else
+	    {
+		this->mark_entry[eidx++] = memb->offset;
+	    }
+	}	    
+	
+//	wprintf(L"Wee %ls uses fallback mark\n", this->name);
+	this->mark_object = anna_type_object_mark_basic;
+    }
+
+    anna_type_reseal(this);
 }
+
+void anna_type_reseal(anna_type_t *this)
+{
+
+    int static_entry_count = 0;
+    int static_alloc_blob_count = 0;
+    int i;
+    for(i=0; i<al_get_count(&this->member_list); i++)
+    {
+	anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
+	if(!memb->is_static)
+	{
+	    continue;
+	}
+	if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	{
+	    continue;
+	}
+	
+	if(memb->type == null_type)
+	{
+	    if((memb->storage&ANNA_MEMBER_ALLOC))
+	    {
+		static_alloc_blob_count++;
+	    }    
+	}
+	else
+	{
+	    static_entry_count++;
+	}
+    }	    
+
+    this->static_mark_entry = realloc(this->static_mark_entry, sizeof(int)*(static_entry_count));
+    this->static_mark_blob = realloc(this->static_mark_blob, sizeof(int)*(static_alloc_blob_count));
+    this->static_mark_entry_count = static_entry_count;
+    this->static_mark_blob_count = static_alloc_blob_count;
+
+    int eidx=0;
+    int bidx=0;
+    for(i=0; i<al_get_count(&this->member_list); i++)
+    {
+	anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
+	if(!memb->is_static)
+	{
+	    continue;
+	}
+	if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	{
+	    continue;
+	}
+    
+	if(memb->type == null_type)
+	{
+	    if((memb->storage&ANNA_MEMBER_ALLOC))
+	    {
+		this->static_mark_blob[bidx++] = memb->offset;
+	    }
+	}
+	else
+	{
+	    this->static_mark_entry[eidx++] = memb->offset;
+	}
+    }	    
+    
+    this->mark_type = anna_type_mark;    
+}
+

@@ -47,16 +47,6 @@ void anna_member_type_set(
     anna_member_t *memb = type->mid_identifier[mid];
     assert(memb);
     memb->type = member_type;
-
-    if(memb->is_static)
-    {
-	type->static_member_blob[memb->offset] = (member_type == null_type);
-    }
-    else
-    {
-	type->member_blob[memb->offset] = (member_type == null_type);	
-    }
-    
 }
 
 mid_t anna_member_create(
@@ -73,6 +63,12 @@ mid_t anna_member_create(
     }
 */
     //wprintf(L"Create member %ls in type %ls at mid %d\n", name, type->name, mid);
+
+    if((type->flags & ANNA_TYPE_CLOSED) && !(storage & ANNA_MEMBER_STATIC) && !(storage & ANNA_MEMBER_VIRTUAL))
+    {
+	debug(D_CRITICAL, L"Added additional non-static member %ls after closing type %ls\n", anna_mid_get_reverse(mid), type->name);
+	CRASH;
+    }    
 
     wchar_t *name = anna_mid_get_reverse(mid);
     
@@ -115,6 +111,7 @@ mid_t anna_member_create(
     
     member->type = member_type;
     member->is_static = !!(storage & ANNA_MEMBER_STATIC);
+    member->storage = storage;
     if(storage & ANNA_MEMBER_VIRTUAL)
     {
 	member->offset = -1;
@@ -123,15 +120,9 @@ mid_t anna_member_create(
     {
 	if(member->is_static) {
 	    member->offset = anna_type_static_member_allocate(type);
-	    type->static_member_blob[member->offset] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
-	    assert(member->offset == (type->static_member_count-1));
 	    type->static_member[type->static_member_count-1] = null_entry;
 	} else {
 	    member->offset = type->member_count++;
-	    type->member_blob = realloc(
-		type->member_blob, 
-		sizeof(int)*(type->member_count));
-	    type->member_blob[member->offset] = (storage&ANNA_MEMBER_ALLOC)?ANNA_GC_ALLOC:(member_type == null_type);
 	}
     }
     
@@ -157,6 +148,12 @@ mid_t anna_member_create(
 	type->flags &= ~ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
     }
     al_push(&type->member_list, member);
+
+    if(type->flags & ANNA_TYPE_CLOSED)
+    {
+	anna_type_reseal(type);
+    }
+    
     return mid;
 }
 

@@ -28,7 +28,6 @@ typedef struct
     anna_stack_template_t *module;
 } anna_module_data_t;
 
-
 /**
    Create all the specified submodules in the specified parent module
  */

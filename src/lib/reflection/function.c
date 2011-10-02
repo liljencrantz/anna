@@ -431,14 +431,12 @@ void anna_function_type_create(
     
     if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
     {
-	anna_member_create(res, ANNA_MID_THIS, ANNA_MEMBER_ALLOC, null_type);anna_member_create(res,
-                                                                                                ANNA_MID_METHOD,
-                                                                                                ANNA_MEMBER_ALLOC,
-                                                                                                null_type);
+	anna_member_create(res, ANNA_MID_THIS, ANNA_MEMBER_ALLOC, null_type);
+	anna_member_create(res, ANNA_MID_METHOD, ANNA_MEMBER_ALLOC, null_type);
     }
     
     *anna_entry_get_addr_static(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD) = (anna_entry_t *)key;
-
+    anna_type_close(res);
     return;
 }
 

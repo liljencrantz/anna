@@ -1185,7 +1185,6 @@ static void anna_hash_type_create_internal(
     
     anna_hash_add_all_extra_methods(type);
     anna_type_close(type);    
-    
 }
 
 static inline void anna_hash_internal_init()

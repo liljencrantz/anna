@@ -35,18 +35,6 @@ static void anna_alloc_unmark(void *obj)
     *((int *)obj) &= (~ANNA_USED);
 }
 
-__pure static inline int anna_type_member_is_blob(anna_type_t *type, size_t off)
-{
-    return type->static_member_blob[off];
-}
-
-__pure static inline int anna_type_member_is_alloc(anna_type_t *type, size_t off)
-{
-    return type->static_member_blob[off] == ANNA_GC_ALLOC;
-}
-
-void anna_alloc_mark_type(anna_type_t *type);
-
 void anna_alloc_mark_function(anna_function_t *o)
 {
     if( o->flags & ANNA_USED)
@@ -68,6 +56,8 @@ void anna_alloc_mark_function(anna_function_t *o)
     }
     
     anna_alloc_mark_node((anna_node_t *)o->attribute);
+//    wprintf(L"WEE %ls\n", o->return_type->name);
+    
     anna_alloc_mark_type(o->return_type);
     anna_alloc_mark_object(o->wrapper);
     if(o->this)
@@ -280,93 +270,6 @@ void anna_alloc_mark_node(anna_node_t *o)
     }
 }
 
-void anna_alloc_mark_type(anna_type_t *type)
-{
-    if( type->flags & ANNA_USED)
-	return;
-//    wprintf(L"Mark type %ls %d\n", type->name, type);
-    
-    type->flags |= ANNA_USED;
-    size_t i;
-
-    if(type == null_type)
-    {
-	anna_alloc_mark_entry(type->static_member[0]);
-	return;
-    }
-    if(type->wrapper)
-    {
-	anna_alloc_mark_object(type->wrapper);
-    }
-    
-    for(i=0; i<type->static_member_count; i++)
-    {
-#ifdef ANNA_CHECK_GC
-	if(!type->static_member[i])
-	{
-	    wprintf(
-		L"Error, static member at offet %d in type %ls is invalid\n",
-		i, type->name);
-	    
-	    CRASH;
-	}
-	
-	if(type->static_member_blob[i] == 69)
-	{
-	    wprintf(
-		L"Error, static member at offet %d in type %ls has invalid blob status\n",
-		i, type->name);
-	    
-	    CRASH;	    
-	}
-#endif
-	if(anna_type_member_is_blob(type, i))
-	{
-	    if(anna_type_member_is_alloc(type, i) && type->static_member[i])
-		anna_alloc_mark(type->static_member[i]);
-	}
-	else
-	{
-	    anna_alloc_mark_entry(type->static_member[i]);
-	}
-    }
-    int steps = al_get_count(&type->member_list);
-    
-    for(i=0; i<steps; i++)
-    {
-        anna_member_t *memb = al_get_fast(&type->member_list, i);
-
-#ifdef ANNA_CHECK_GC
-	if(!memb->type)
-	{
-	    debug(D_CRITICAL, L"%ls.%ls has no type\n", type->name, memb->name);
-	    CRASH;
-	}
-#endif
-
-	anna_alloc_mark_type(memb->type);
-	if(memb->attribute)
-	{
-	    anna_alloc_mark_node((anna_node_t *)memb->attribute);
-	}
-	
-	if(memb->wrapper)
-	    anna_alloc_mark_object(memb->wrapper);
-    }
-
-    if(type->stack_macro)
-    {
-	anna_alloc_mark_stack_template(type->stack_macro);
-    }
-    if(type->stack)
-    {
-	anna_alloc_mark_stack_template(type->stack);
-    }
-    if(type->attribute)
-    {
-      	anna_alloc_mark_node((anna_node_t *)type->attribute);
-    }
-}
 
 static void anna_alloc_mark_blob(void *mem)
 {
@@ -510,10 +413,8 @@ static void anna_alloc_free(void *obj)
 		}
 	    }
 	    
-	    free(o->member_blob);
 	    if(o->static_member_count)
 	    {
-		free(o->static_member_blob);
 		free(o->static_member);
 	    }
 	    
@@ -541,7 +442,7 @@ static void anna_alloc_free(void *obj)
 	case ANNA_FUNCTION:
 	{
 	    anna_function_t *o = (anna_function_t *)obj;
-//	    wprintf(L"FREE FUNCTION %ls %d\n", o->name, o);
+	    //wprintf(L"FREE FUNCTION %ls %d\n", o->name, o);
 	    
 	    free(o->code);
 	    free(o->input_type);

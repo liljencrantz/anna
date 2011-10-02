@@ -352,9 +352,9 @@ void anna_parser_load(anna_stack_template_t *stack)
 	    continue;
 	anna_type_copy(types[i], node_type);
 	anna_type_copy_object(types[i]);
+	anna_type_close(types[i]);
 	/* Declare all types in our namespace.  Don't redeclare types
 	   that are used for more than one mapping */
-	anna_type_close(types[i]);
 	if(!anna_stack_template_get(stack, types[i]->name))
 	{
 	    anna_stack_declare(

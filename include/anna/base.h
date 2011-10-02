@@ -17,7 +17,8 @@ struct anna_context;
 
 typedef void (*anna_native_t)( struct anna_context *stack);
 typedef void (*anna_finalizer_t)( struct anna_object *victim);
-typedef void (*anna_mark_t)( struct anna_object *this);
+typedef void (*anna_mark_entry_t)( struct anna_object *this);
+typedef void (*anna_mark_type_t)( struct anna_type *this);
 typedef int mid_t;
 
 /*
@@ -164,9 +165,6 @@ struct anna_type
     */
     int flags;
     
-    int *member_blob;
-    int *static_member_blob;
-
     size_t object_size;
     /**
        The number of non-static members in an object of this type.
@@ -244,9 +242,18 @@ struct anna_type
     array_list_t member_list;
     size_t finalizer_count;
     anna_finalizer_t *finalizer;
-    anna_mark_t mark;
-    int *mark_offset;
-    int mark_offset_count;
+    anna_mark_entry_t mark_object;
+    anna_mark_type_t mark_type;
+
+    int *mark_entry;
+    int mark_entry_count;
+    int *mark_blob;
+    int mark_blob_count;
+
+    int *static_mark_entry;
+    int static_mark_entry_count;
+    int *static_mark_blob;
+    int static_mark_blob_count;
 };
 
 struct anna_member
@@ -265,8 +272,15 @@ struct anna_member
        If true, this member is static, i.e. shared between all objects
        of this type. If so, it is stored in the type object's
        static_member array instead of in the objects member array.
+
+       This value is redundant, since it is already defined by the
+       storage flag.
     */
     int is_static;
+    /**
+       The storage flag for this member
+     */
+    int storage;
     /**
        If true, this member is a property, i.e. a getter and/or setter
        method that act as a regular variable.

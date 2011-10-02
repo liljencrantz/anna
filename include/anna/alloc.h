@@ -120,16 +120,24 @@ __hot static inline void anna_alloc_mark_object(anna_object_t *obj)
     if( obj->flags & ANNA_USED)
 	return;
     obj->flags |= ANNA_USED;
-    if(!obj->type->mark)
+#ifdef ANNA_CHECK_GC
+    if(!obj->type->mark_object)
     {
 	wprintf(L"No mark function in type %ls\n", obj->type->name);
 	CRASH;
     }
-    
-    obj->type->mark(obj);
+#endif
+    obj->type->mark_object(obj);
 }
 
-__hot void anna_alloc_mark_type(anna_type_t *obj);
+__hot static inline void anna_alloc_mark_type(anna_type_t *type)
+{
+    if( type->flags & ANNA_USED)
+	return;
+    type->flags |= ANNA_USED;
+    type->mark_type(type);
+}
+
 __hot void anna_alloc_mark_stack_template(anna_stack_template_t *o);
 __hot void anna_alloc_mark_function(anna_function_t *o);
 __hot void anna_alloc_mark_node(anna_node_t *o);

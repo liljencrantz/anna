@@ -121,6 +121,15 @@ __cold void anna_type_intersect_into(
     anna_type_t *dest, 
     anna_type_t *t1, anna_type_t *t2);
 
+/**
+   This function must be called on a type before it is actually put in
+   use. It sets up the GC mark code.
+ */
 __cold void anna_type_close(anna_type_t *this);
+
+/**
+   Call this function on a type that has been closed after monkeypatching in an additional static member
+ */
+__cold void anna_type_reseal(anna_type_t *this);
 
 #endif
