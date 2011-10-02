@@ -450,7 +450,9 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     int steps = al_get_count(&orig->member_list);
     int *copied = calloc(sizeof(int), steps);
     int copy_property = 0;
-    
+
+    FIXME("anna_type_copy does not copy gaps between members, causing crashes when we extend types that contain gaps");
+
     for(i=0; i<steps; i++)
     {
         anna_member_t *memb = al_get_fast(&orig->member_list, i);
@@ -1240,7 +1242,7 @@ void anna_type_calculate_size(anna_type_t *this)
 {
     this->object_size = 
 	anna_align(
-	    sizeof(anna_object_t)+sizeof(anna_object_t *)*this->member_count);
+	    sizeof(anna_object_t)+sizeof(anna_entry_t *)*this->member_count);
 }
 
 static int hash_function_type_func(void *a)

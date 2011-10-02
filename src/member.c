@@ -55,15 +55,6 @@ mid_t anna_member_create(
     int storage,
     anna_type_t *member_type)
 {
-/*
-    if(!member_type)
-    {
-	wprintf(L"Critical: Create a member with unspecified type\n");
-	CRASH;
-    }
-*/
-    //wprintf(L"Create member %ls in type %ls at mid %d\n", name, type->name, mid);
-
     if((type->flags & ANNA_TYPE_CLOSED) && !(storage & ANNA_MEMBER_STATIC) && !(storage & ANNA_MEMBER_VIRTUAL))
     {
 	debug(D_CRITICAL, L"Added additional non-static member %ls after closing type %ls\n", anna_mid_get_reverse(mid), type->name);
@@ -130,7 +121,6 @@ mid_t anna_member_create(
     hash_put(&type->name_identifier, member->name, member);
     
 //    wprintf(L"Create member named %ls to type %ls\n", name, type->name);
-
         
     anna_type_calculate_size(type);
 
@@ -167,27 +157,20 @@ mid_t anna_member_create_blob(
 	type,
 	mid,
 	storage,
-	null_type);
-    
+	null_type);    
     wchar_t *name = anna_mid_get_reverse(mid);
     int i;
-    string_buffer_t sb;
-    sb_init(&sb);
     
-//    wprintf( L"Allocate blob of size %d, uses %d slots\n", sz, (((sz-1)/sizeof(anna_entry_t *))+1));
-    sb_printf(&sb, L"%ls", name);
-    int len = sb_length(&sb);
-    
-    for(i=1; i<(((sz-1)/sizeof(anna_entry_t *))+1);i++)
+    if(storage & ANNA_MEMBER_STATIC)
     {
-	sb_truncate(&sb, len);
-	sb_printf(&sb, L"%d", i);
-	
-	anna_member_create(type, anna_mid_get(sb_content(&sb)),
-                           storage & ANNA_MEMBER_STATIC, null_type);
+	anna_type_static_member_allocate(type);
     }
-    sb_destroy(&sb);
-    
+    else
+    {
+	type->member_count+= ((sz-1)/sizeof(anna_entry_t *));
+	anna_type_calculate_size(type);
+    }
+
     return res;
 }
 
