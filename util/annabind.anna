@@ -538,16 +538,27 @@ type BindingGenerator
 	return "native_param_" ~originalName;
     }
     
-    def generateFunctionCode(Call decl)
+    def generateFunctionCode(Call decl, BindingType methodFor = ?)
     {
+        paramNames := «String»[];
         init := "".thaw;
         validate := "".thaw;
         cleanup := "".thaw;
         code := "".thaw;
         inp := decl[2] as Call;
+
+	if(methodFor)
+	{
+            npn := getNativeParamName("this");
+	    init ~= "    if(param[0] == null_entry){return null_entry;}\n";
+	    init ~= "    " ~ methodFor.convertToC(decl[1], decl[3], npn, "param[0]") ~ "\n";
+	    validate ~= methodFor.validateToC(decl[1], decl[3], npn, "param[0]");
+	    cleanup ~= ("    " ~ methodFor.cleanupToC(decl[1], decl[3], npn, "param[0]") ~ "\n") or "";
+	    paramNames.push(npn);
+	}
 	
-        paramNames := «String»[];
-	inp.each(idx, inp){
+	inp.each(oIdx, inp){
+	  idx := oIdx + if(methodFor){1} else {0};
 	    inpDecl := inp as Call;
 	    inpBindingType := getBindingType(inpDecl[1]);
             npn := getNativeParamName((inpDecl[0] as Identifier).name);
@@ -624,6 +635,60 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
 	    return struct(load:load, code:code);
     }
+
+
+    def generateMethod(BindingType type, String name, Call decl)
+    {
+        mangled := mangleFunctionName(name);
+        returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3]);
+        inputTypeVar := mangled ~ "_argv";
+        inputNameVar := mangled ~ "_argn";
+
+        inputTypeData := [type.annaCType(decl[1], decl[3])];
+        inputNameData := ["L\"this\""];
+
+	(decl[2] as Call).each(inp){
+  	    inpCall := inp as Call;
+	    inputTypeData.push(getBindingType(inpCall[1]).annaCType(inpCall[1], inpCall[3]));
+	    inputNameData.push("L\"" ~ ((inp as Call)[0] as Identifier).name ~"\"");
+	}
+        inputCount := inputTypeData.count;
+	
+        doc := "";
+	
+        data := 
+	    [
+		"type": type.annaCType(decl[1], decl[3]),
+		"functionName": name, 
+		"mangledName": mangled,
+		"returnType": returnType,
+		"inputCount": inputCount,
+		"inputTypeVar": inputTypeVar,
+		"inputTypeData": ", ".join(inputTypeData),
+		"inputNameVar": inputNameVar,
+		"inputNameData": ", ".join(inputNameData),
+		"doc": "L\"" ~ doc ~ "\"",
+		"codeInternal": generateFunctionCode(decl, type),
+	    ];
+
+        load := "
+    anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
+    wchar_t *%(inputNameVar)[] = {%(inputNameData)};
+    anna_member_create_native_method(
+        %(type), anna_mid_get(L\"%(functionName)\"), 0, 
+        &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
+" % data;
+  
+        code := "
+ANNA_VM_NATIVE(%(mangledName), %(inputCount))
+{
+%(codeInternal)
+}
+" % data;
+
+	    return struct(load:load, code:code);
+    }
+
 
     def mangleName(String name)
     {
@@ -734,8 +799,8 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         initName := mangleMethodName(structName, "init");
 	
         isStruct := decl.isCallTo("cStruct");
-	bindingType[decl[0]] = CStructBindingType(nativeStructName, typeName, isStruct);
-      commonData := ["typeName": typeName, "nativeStructName": nativeStructName, "initName": initName, "structName": nativeStructName, "structText": if(isStruct){"struct "}else{""}];
+	bindingType[decl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct));
+        commonData := ["typeName": typeName, "nativeStructName": nativeStructName, "initName": initName, "structName": nativeStructName, "structText": if(isStruct){"struct "}else{""}];
 
 	load ~= "
     anna_member_create_blob(%(typeName), ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(%(structText)%(nativeStructName)));
@@ -760,17 +825,25 @@ ANNA_VM_NATIVE(%(initName), 1)
 	    if(node.isCallTo("__const__") or node.isCallTo("__var__"))
 	    {
 		isVar := node.isCallTo("__var__");
-
 	        it := node as Call;
 	        fieldName := (it[0] as Identifier).name;
+
+		if(!isVar and (((it[2] as Call).function as Identifier).name == "__def__"))
+		{
+  		    methOut := generateMethod(myBinding, fieldName, it[2] as Call);
+		    load~= methOut.load;
+		    code ~= methOut.code;
+		    continue;
+		}
+
 	        nativeFieldName := findAttr(it[3], "name")[0] or fieldName;
 		
   	        bindingType := getBindingType(it[1]);
   	        getterName := mangleGetterName(structName, fieldName);
 
   	        setterName := if(isVar){mangleSetterName(structName, fieldName);}else{"0"}
-	      getterCode := generateCStructGetterCode(nativeStructName, nativeFieldName, bindingType, it[1], it[3], isStruct);
-	      setterCode := generateCStructSetterCode(nativeStructName, nativeFieldName, bindingType, it[1], it[3], isStruct);
+	        getterCode := generateCStructGetterCode(nativeStructName, nativeFieldName, bindingType, it[1], it[3], isStruct);
+	        setterCode := generateCStructSetterCode(nativeStructName, nativeFieldName, bindingType, it[1], it[3], isStruct);
 
   	        data := [
 		    "name": fieldName,
@@ -792,7 +865,6 @@ ANNA_VM_NATIVE(%(setterName), 2)
 {%(setterCode)}
 " % data;
 		}
-                
 
 		load ~= "
     anna_member_create_native_property(
@@ -956,8 +1028,10 @@ ANNA_VM_NATIVE(%(setterName), 2)
 	    }
 	}
 	
-	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load, customInclude: customInclude, moduleData: moduleData);
-
+	return struct(
+            code: code, typeData: typeData, typeDecl: typeDecl, 
+            load: load, customInclude: customInclude, 
+            moduleData: moduleData);
     }
     
     def generate()
@@ -971,7 +1045,6 @@ ANNA_VM_NATIVE(%(setterName), 2)
 	
         text := File(path).readFile();
         nodes := parse(text);
-	
         out := generateModule(nodes);
 
         load ~= out.load;
