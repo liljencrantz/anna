@@ -158,9 +158,7 @@ mid_t anna_member_create_blob(
 	mid,
 	storage,
 	null_type);    
-    wchar_t *name = anna_mid_get_reverse(mid);
-    int i;
-    
+
     if(storage & ANNA_MEMBER_STATIC)
     {
 	anna_type_static_member_allocate(type);

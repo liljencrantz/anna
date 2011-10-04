@@ -200,6 +200,11 @@ struct anna_type
        A stack template view of this type
     */
     struct anna_stack_template *stack;
+    /**
+      The stack used for macro expansion in this type. Can be
+      different from the regular stack because of use vs. expand
+      calls.
+    */
     struct anna_stack_template *stack_macro;
     /**
        An array containing all member structs. The offset is a mid.
@@ -239,20 +244,65 @@ struct anna_type
        A hash of all template specializations of this type.
     */
     hash_table_t specializations;
+    /**
+       An array list containing all anna_member_t structs of this
+       type. Contains exactly the same information as the
+       mid_identifier array, but without any gaps, so iterating over
+       this list is quicker.
+    */
     array_list_t member_list;
+    /**
+       The number of finalizers for this type.
+     */
     size_t finalizer_count;
+    /**
+       A list of all finalizers to run when deallocating objects of
+       this type.
+     */
     anna_finalizer_t *finalizer;
+    /**
+       The function to run in order to mark objects of this type as in
+       use during the mark phase of the GC.
+    */
     anna_mark_entry_t mark_object;
+    /**
+       The function to run in order to mark this type as in use during
+       the mark phase of the GC.
+    */
     anna_mark_type_t mark_type;
 
+    /**
+       Internal variable that may be used by the mark_object function
+    */
     int *mark_entry;
+    /**
+       Internal variable that may be used by the mark_object function
+    */
     int mark_entry_count;
+    /**
+       Internal variable that may be used by the mark_object function
+    */
     int *mark_blob;
+    /**
+       Internal variable that may be used by the mark_object function
+    */
     int mark_blob_count;
 
+    /**
+       Internal variable that may be used by the mark_type function
+    */
     int *static_mark_entry;
+    /**
+       Internal variable that may be used by the mark_type function
+    */
     int static_mark_entry_count;
+    /**
+       Internal variable that may be used by the mark_type function
+    */
     int *static_mark_blob;
+    /**
+       Internal variable that may be used by the mark_type function
+    */
     int static_mark_blob_count;
 };
 
@@ -324,22 +374,33 @@ struct anna_member
  */
 struct anna_object
 {
+    /**
+       Various bit flags for this object. The first 16 bits of this
+       flag are reserved by the memory allocator and should not be
+       touched.
+    */
     int flags;
     /**
        The type of this object
      */
     struct anna_type *type;
     /**
-       The array of members. To decode what member lives at what
-       offset, use the information stored in the type object.
-     */
+       All the non-static member values of this object. To decode what
+       member lives at what offset, use the information stored in the
+       type object.
+    */
     anna_entry_t *member[];
 };
 
+/**
+   Line pairs are pairs of integers used to represent a code
+   offset. These are used in order to provide the user with source
+   code lines in stack traces.
+ */
 struct anna_line_pair
 {
-    int offset;
     int line;
+    int offset;
 };
 
 struct anna_function
@@ -447,43 +508,62 @@ struct anna_activation_frame
        used when returning to a calling frame.
      */
     struct anna_activation_frame *dynamic_frame;
-
+    
+    /**
+       The function this frame is executing
+     */
     struct anna_function *function;
+    /**
+       The current code position
+     */
     char *code;
+    /**
+       The top element of the temp stack at the time this frame was
+       created. It should be restored upon return.
+     */
     anna_entry_t **return_stack_top;
-    char *return_address;
+
+    /**
+       Slots for all input parameters and member variables.
+     */
     anna_entry_t *slot[];
 };
 
 /**
-   An execution context for an Anna thread.
+   An execution context for an Anna thread. It couintains a pointer to
+   the current activation frame, a stack used as a temporary scratch
+   area for incomplete function parameter lists and a few bookkeeping
+   members.
  */
 struct anna_context
 {
     int flags;
+    /**
+      The amount of memory used by this object
+    */
     size_t size;
     
-    /*
+    /**
       The activation frame holds the values of all variables of the
       currently executing function, as well as a pointer to the
       current position in the source code.
      */
     struct anna_activation_frame *frame;
-    /*
+    /**
       function_object is the anna object representing the function
       currently being executed. Use anna_function_unwrap to unwrap it
       and access the actual anna_function_t. This value is rarely useful.
      */
     struct anna_object *function_object;
 
-    /*
+    /**
       The top of the scratch stack. The scratch stack in anna is never used
       for passing parameters, it is used purely as a scratch space for
       storing output of function calls that will in turn be used as
       input to future function calls.
      */
     anna_entry_t **top;
-    /*
+    /**
       The base of the scratch stack.
      */
     anna_entry_t *stack[];

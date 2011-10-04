@@ -35,16 +35,16 @@
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/hash.h"
 
-#include "node/specialize.c"
-#include "node/macro_expand.c"
-#include "node/merge.c"
-#include "node/prepare.c"
-#include "node/validate.c"
-#include "node/each.c"
-#include "node/hash.c"
-#include "node/create.c"
-#include "node/print.c"
-#include "node/check.c"
+#include "specialize.c"
+#include "macro_expand.c"
+#include "merge.c"
+#include "prepare.c"
+#include "validate.c"
+#include "each.c"
+#include "hash.c"
+#include "create.c"
+#include "print.c"
+#include "check.c"
 
 anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node)
 {

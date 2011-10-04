@@ -45,7 +45,7 @@ array_list_t anna_module_default_macros = AL_STATIC;
 static wchar_t *anna_module_bootstrap_directory()
 {
     wchar_t *env = wgetenv(L"ANNA_BOOTSTRAP_DIRECTORY");
-    return env ? env : ANNA_BOOTSTRAP_DIR;
+    return env ? env : ANNA_BOOTSTRAP_DIRECTORY;
 }
 
 static void anna_module_path(array_list_t *list)
@@ -68,12 +68,14 @@ static void anna_module_path(array_list_t *list)
 	    }
 	    ptr++;
 	}
+	if(wcslen(base))
+	{
+	    al_push(list, anna_intern(base));
+	}
     }
-    else
-    {
-	al_push(list, L"./lib");
-	al_push(list, ANNA_LIB_DIR);
-    }
+    
+    al_push(list, L"./lib");
+    al_push(list, ANNA_LIB_DIR);
 }
 
 static wchar_t *anna_module_search_suffix(wchar_t *path)
@@ -389,7 +391,7 @@ static void anna_module_bootstrap_monkeypatch(
 {
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"%ls/%ls.anna", ANNA_BOOTSTRAP_DIR, name);
+    sb_printf(&sb, L"%ls/%ls.anna", anna_module_bootstrap_directory(), name);
     wchar_t *path = sb_content(&sb);    
     anna_stack_template_t *int_mod = anna_module(stack_global, name, path);
     sb_destroy(&sb);

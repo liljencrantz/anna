@@ -345,7 +345,6 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
     {
 	size_t new_sz = maxi(8, 2*type->static_member_capacity);
 	type->static_member = realloc(type->static_member, new_sz*sizeof(anna_object_t *));
-	int i;
 
 	if(!type->static_member)
 	{
