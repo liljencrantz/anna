@@ -6,7 +6,8 @@
 #include "anna/node.h"
 #include "anna/slab.h"
 
-extern array_list_t anna_alloc;
+extern array_list_t anna_alloc[ANNA_ALLOC_TYPE_COUNT];
+
 /*
   The total amount of memory allocated at the last time the garbage
   collector was run
@@ -36,7 +37,7 @@ static inline __malloc anna_context_t *anna_alloc_context(size_t sz)
 {
     anna_context_t *res = anna_slab_alloc(sz);
     res->flags = ANNA_CONTEXT;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_CONTEXT], res);
     anna_alloc_count+=sz;
     res->size = sz;
     return res;
@@ -46,7 +47,7 @@ static inline __malloc anna_activation_frame_t *anna_alloc_activation_frame(size
 {
     anna_activation_frame_t *res = anna_slab_alloc(sz);
     res->flags = ANNA_ACTIVATION_FRAME;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_ACTIVATION_FRAME], res);
     anna_alloc_count+=sz;
     return res;
 }
@@ -58,7 +59,7 @@ static inline __malloc void *anna_alloc_blob(size_t sz)
 //    wprintf(L"Alloc %d (%d)=> %d (%d)\n", sz, sz+ sizeof(long long), res, (long)res & 7);
     res[0] = ANNA_BLOB;
     res[1] = sz;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_BLOB], res);
     anna_alloc_count+=sz;
     return (void *)&res[2];
 }
@@ -67,7 +68,7 @@ static inline __malloc anna_object_t *anna_alloc_object(size_t sz)
 {
     anna_object_t *res = anna_slab_alloc(sz);
     res->flags = ANNA_OBJECT;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_OBJECT], res);
     anna_alloc_count+=sz;
     return res;
 }
@@ -78,7 +79,7 @@ static inline __malloc anna_type_t *anna_alloc_type()
 //    wprintf(L"Alloc type @ %d\n", res);
     memset(res, 0, sizeof(anna_type_t));
     res->flags = ANNA_TYPE;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_TYPE], res);
     return res;
 }
 
@@ -87,7 +88,7 @@ static inline __malloc anna_function_t *anna_alloc_function()
     anna_function_t *res = anna_slab_alloc(sizeof(anna_function_t));
     memset(res, 0, sizeof(anna_function_t));
     res->flags = ANNA_FUNCTION;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_FUNCTION], res);
     return res;
 }
 
@@ -95,7 +96,7 @@ static inline __malloc void *anna_alloc_node(size_t sz)
 {
     anna_node_t *res = calloc(1, sz);
     res->flags = ANNA_NODE;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_NODE], res);
     return res;
 }
 
@@ -104,7 +105,7 @@ static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
     anna_stack_template_t *res = anna_slab_alloc(sizeof(anna_stack_template_t));
     memset(res, 0, sizeof(anna_stack_template_t));
     res->flags = ANNA_STACK_TEMPLATE;
-    al_push(&anna_alloc, res);
+    al_push(&anna_alloc[ANNA_STACK_TEMPLATE], res);
     return res;
 }
 

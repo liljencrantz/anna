@@ -58,8 +58,6 @@ anna_object_t *anna_char_create(wchar_t val);
 #define ANNA_STACK_ENTRY_INT 3l
 #define ANNA_STACK_ENTRY_FLOAT 4l
 
-extern anna_function_t *anna_vm_run_fun;
-
 /*  
                   /   \
 

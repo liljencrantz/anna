@@ -20,10 +20,22 @@
 #include "anna/mid.h"
 #include "anna/type.h"
 #include "anna/use.h"
+#include "anna/slab.h"
 
 #include "src/slab.c"
 
-array_list_t anna_alloc = AL_STATIC;
+array_list_t anna_alloc[ANNA_ALLOC_TYPE_COUNT] = {
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC
+}
+    ;
+
 int anna_alloc_tot=0;
 int anna_alloc_count=0;
 int anna_alloc_count_next_gc=1024*1024;
@@ -436,6 +448,8 @@ static void anna_alloc_free(void *obj)
 	{
 	    anna_activation_frame_t *o = (anna_activation_frame_t *)obj;
 	    anna_alloc_count -= o->function->frame_size;
+//	    wprintf(L"FRAMED %ls\n", o->function->name);
+	    
 	    anna_slab_free(o, o->function->frame_size);
 	    break;
 	}
@@ -533,18 +547,24 @@ void anna_gc(anna_context_t *context)
     }
     
     anna_alloc_gc_block();
-    size_t i;
+    size_t j, i;
     
 #ifdef ANNA_CHECK_GC_LEAKS
     int old_anna_alloc_count = anna_alloc_count;
     int s_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
-    for(i=0; i<al_get_count(&anna_alloc); i++)
+    size_t start_count = 0;
+    
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	void *obj = al_get_fast(&anna_alloc, i);
-	s_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
+	for(i=0; i<al_get_count(&anna_alloc); i++)
+	{
+	    void *obj = al_get_fast(&anna_alloc[j], i);
+	    s_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
+	}
+	start_count += al_get_count(&anna_alloc[j]);
     }
+    
 
-    size_t start_count = al_get_count(&anna_alloc);
 #endif
     
     anna_activation_frame_t *f = context->frame;
@@ -555,7 +575,6 @@ void anna_gc(anna_context_t *context)
     }
     
     anna_alloc_mark_context(context);	
-    anna_alloc_mark_function(anna_vm_run_fun);
     anna_type_mark_static();    
     anna_alloc_mark_object(null_object);
     anna_alloc_mark(anna_stack_wrap(stack_global));
@@ -563,54 +582,18 @@ void anna_gc(anna_context_t *context)
     int freed = 0;
     static int gc_first = 1;
 
-    if(gc_first)
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	gc_first=0;
-	
-	for(i=0; i<al_get_count(&anna_alloc); i++)
+	for(i=0; i<al_get_count(&anna_alloc[j]); i++)
 	{
-	    void *el = al_get_fast(&anna_alloc, i);
-	    int flags = *((int *)el);
-	    int alloc = (flags & ANNA_ALLOC_MASK);	
-	    if(!(flags & ANNA_USED) && ((alloc == ANNA_OBJECT) || (alloc == ANNA_BLOB) || (alloc == ANNA_CONTEXT)))
-	    {
-		freed++;
-		anna_alloc_free(el);
-		al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
-		al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
-		i--;
-	    }
-	}
-	
-	for(i=0; i<al_get_count(&anna_alloc); i++)
-	{
-	    void *el = al_get_fast(&anna_alloc, i);
-	    if(!(*((int *)el) & ANNA_USED))
-	    {
-		freed++;
-		anna_alloc_free(el);
-		al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
-		al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
-		i--;
-	    }
-	    else{
-		anna_alloc_unmark(al_get_fast(&anna_alloc, i));
-	    }
-	}
-    }
-    else
-    {
-
-	for(i=0; i<al_get_count(&anna_alloc); i++)
-	{
-	    void *el = al_get_fast(&anna_alloc, i);
+	    void *el = al_get_fast(&anna_alloc[j], i);
 	    int flags = *((int *)el);
 	    if(!(flags & ANNA_USED))
 	    {
 		freed++;
 		anna_alloc_free(el);
-		al_set_fast(&anna_alloc, i, al_get_fast(&anna_alloc, al_get_count(&anna_alloc)-1));
-		al_truncate(&anna_alloc, al_get_count(&anna_alloc)-1);
+		al_set_fast(&anna_alloc[j], i, al_get_fast(&anna_alloc[j], al_get_count(&anna_alloc[j])-1));
+		al_truncate(&anna_alloc[j], al_get_count(&anna_alloc[j])-1);
 		i--;
 	    }
 	    else
@@ -618,6 +601,7 @@ void anna_gc(anna_context_t *context)
 		anna_alloc_unmark(el);	    
 	    }
 	}
+    }
 
 /*
 	stack_ptr = stack;
@@ -648,16 +632,21 @@ void anna_gc(anna_context_t *context)
 	
 	}
 */	
+
+#ifdef ANNA_CHECK_GC_LEAKS
+    size_t end_count = 0;
+    int o_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+    {
+	
+	end_count += al_get_count(&anna_alloc[j]);
+	for(i=0; i<al_get_count(&anna_alloc[j]); i++)
+	{
+	    void *obj = al_get_fast(&anna_alloc[j], i);
+	    o_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
+	}
     }
     
-#ifdef ANNA_CHECK_GC_LEAKS
-    size_t end_count = al_get_count(&anna_alloc);
-    int o_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
-    for(i=0; i<al_get_count(&anna_alloc); i++)
-    {
-	void *obj = al_get_fast(&anna_alloc, i);
-	o_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
-    }
     wchar_t *name[]=
 	{
 	    L"type", L"object", L"stack template", L"AST node", L"runtime stack", L"function", L"blob"
@@ -698,6 +687,6 @@ void anna_gc_destroy(void)
 {
     anna_alloc_run_finalizers=0;
     anna_gc();
-    al_destroy(&anna_alloc);
+    al_destroy(&anna_alloc[j]);
 }
 #endif

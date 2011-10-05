@@ -27,11 +27,11 @@
 #define OP_LEAVE(context) goto *jump_label[(int)*(context)->frame->code] 
 
 #define OP_ENTER(context) 
+
 //wprintf(L"Weee, instruction %d at offset %d\n", *context->frame->code, context->frame->code - context->frame->function->code)
 
 char *anna_context_static_ptr;
 char anna_context_static_data[ANNA_CONTEXT_SZ];
-anna_function_t *anna_vm_run_fun;
 
 __attr_unused __cold static void anna_context_print_parent(anna_context_t *context);
 
@@ -237,12 +237,7 @@ __attr_unused __cold static void anna_context_print_parent(anna_context_t *stack
 __cold void anna_vm_init()
 {
     anna_context_static_ptr = &anna_context_static_data[0];
-    anna_vm_run_fun = anna_alloc_function();
-    anna_vm_run_fun->code = malloc(1);
-    *(anna_vm_run_fun->code) = ANNA_INSTR_STOP;
-    anna_vm_run_fun->frame_size = sizeof(anna_activation_frame_t);
-    anna_vm_run_fun->input_count = 0;
-    anna_vm_run_fun->variable_count = 0;
+
 }
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN
@@ -336,13 +331,20 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     size_t ss = 8192;//(argc+1)*sizeof(anna_object_t *) + sizeof(anna_context_t);
     size_t afs = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_activation_frame_t);
     stack = anna_alloc_context(ss);
-
+    
     stack->frame = anna_alloc_activation_frame(afs);
     stack->frame->dynamic_frame = 0;
     
     stack->frame->static_frame = *(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
-    stack->frame->function = anna_vm_run_fun;
+    anna_function_t *fun = anna_alloc_function();
+    fun->code = malloc(1);
+    *(fun->code) = ANNA_INSTR_STOP;
+    fun->frame_size = afs;
+    fun->input_count = argc;
+    fun->variable_count = 0;
+
+    stack->frame->function = fun;
     stack->top = &stack->stack[0];
     stack->frame->code = stack->frame->function->code;
     stack->frame->return_stack_top = stack->top;

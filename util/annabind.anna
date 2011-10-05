@@ -502,7 +502,6 @@ type CStructBindingType
 
     def String convertToC(Node decl, Node attr, String dest, String source)
     {
-	"char *%(dest) = anna_string_payload_narrow(anna_as_obj(%(source)));";
 	"%(structText)%(structName) *%(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % ["structName": structName, "dest": dest, "source": source, "structText": structText];
     }
 

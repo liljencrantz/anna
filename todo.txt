@@ -104,6 +104,7 @@ Multiple inheritance clashes aren't handled sanely
 A bunch of AST node types are missing equality comparison, etc.
 If explicit function return type exists, return type of return expressions aren't abides checked against it
 Default argument values and static calls to bound members seem to cause a crash
+If you call an input parameter of a type method 'this', the interpreter will crash.
 
 LANGUAGE FEATURES:
 Function templates

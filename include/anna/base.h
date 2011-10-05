@@ -27,14 +27,16 @@ typedef int mid_t;
   pointer points to. The memory allocator reserves the first 8 bits of every allocation.
  */
 
-#define ANNA_TYPE 0
-#define ANNA_OBJECT 1
-#define ANNA_STACK_TEMPLATE 2
-#define ANNA_NODE 3
-#define ANNA_CONTEXT 4
-#define ANNA_FUNCTION 5
-#define ANNA_BLOB 6
-#define ANNA_ACTIVATION_FRAME 7 
+#define ANNA_OBJECT 0
+#define ANNA_ACTIVATION_FRAME 1
+#define ANNA_TYPE 2
+#define ANNA_STACK_TEMPLATE 3
+#define ANNA_NODE 4
+#define ANNA_CONTEXT 5
+#define ANNA_FUNCTION 6
+#define ANNA_BLOB 7
+#define ANNA_ALLOC_TYPE_COUNT 8 
+
 #define ANNA_ALLOC_FLAGS_SIZE 4
 #define ANNA_ALLOC_MASK 15
 #define ANNA_MOVE 16
@@ -520,9 +522,9 @@ struct anna_activation_frame
     /**
        The top element of the temp stack at the time this frame was
        created. It should be restored upon return.
-     */
+    */
     anna_entry_t **return_stack_top;
-
+    
     /**
        Slots for all input parameters and member variables.
      */
