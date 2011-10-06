@@ -117,7 +117,7 @@ static wchar_t *anna_module_search(
     {
 	sb_clear(&sb);
 	sb_printf(&sb, L"%ls/%ls", al_get(&path, i), name);
-	if(res = anna_module_search_suffix(sb_content(&sb)))
+	if((res = anna_module_search_suffix(sb_content(&sb))))
 	{
 	    break;
 	}

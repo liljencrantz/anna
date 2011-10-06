@@ -330,7 +330,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
-	    anna_node_specialize(call, stack);	    
+	    this = anna_node_specialize(call, stack);	    
 	    break;
 	}
 		
@@ -612,6 +612,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    else
 	    {
 //		debug(D_ERROR, L"Declaration %ls has explicit type\n", d->name);
+  	        d->type = anna_node_calculate_type(d->type);
 		d->return_type = anna_node_resolve_to_type(
 		    d->type,
 		    stack);

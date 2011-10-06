@@ -580,8 +580,7 @@ void anna_gc(anna_context_t *context)
     anna_alloc_mark(anna_stack_wrap(stack_global));
     
     int freed = 0;
-    static int gc_first = 1;
-
+    
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
 	for(i=0; i<al_get_count(&anna_alloc[j]); i++)
@@ -687,6 +686,5 @@ void anna_gc_destroy(void)
 {
     anna_alloc_run_finalizers=0;
     anna_gc();
-    al_destroy(&anna_alloc[j]);
 }
 #endif

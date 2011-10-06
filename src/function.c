@@ -162,6 +162,7 @@ static anna_node_t *anna_function_setup_arguments(
 
 	    argn[i] = anna_intern(name->name);		
 
+	    decl->child[1] = anna_node_calculate_type(decl->child[1]);
 	    anna_node_t *type_node = decl->child[1];
 	    anna_node_t *val_node = decl->child[2];
 	    int is_variadic=0;
@@ -417,13 +418,13 @@ void anna_function_setup_interface(
     
     if(!f->return_type)
     {	
-	anna_node_t *return_type_node = f->return_type_node;
-	if(!return_type_node)
+      	if(!f->return_type_node)
 	{
 	    debug(D_CRITICAL, L"Internal error: Function %ls has invalid return type node\n", f->name);
 	    
 	    CRASH;
 	}
+	anna_node_t *return_type_node = anna_node_calculate_type(f->return_type_node);
 	
 	if(return_type_node->node_type == ANNA_NODE_NULL)
 	{

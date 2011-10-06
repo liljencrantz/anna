@@ -372,8 +372,18 @@ struct anna_member
 };
 
 /**
-   The struct that represents any Anna object
- */
+   The struct that represents any Anna object.
+
+   If we really want to conserve memory, we could probably turn the
+   flags variable into a short and store a short int offset into an
+   array of types instead of an actual type pointer. Should save us
+   one word of space per allocated object at the cost of an ever so
+   slightly more expensive object type lookup, a maximum of 65000
+   types and only sixteen possible flag values.
+
+   Given that both int:s and floats are usually in their native
+   non-object forms, this shouldn't be that meaningful.
+*/
 struct anna_object
 {
     /**
@@ -401,8 +411,14 @@ struct anna_object
  */
 struct anna_line_pair
 {
-    int line;
+  /**
+     The code offset
+   */
     int offset;
+  /**
+     The line number 
+   */
+    int line;
 };
 
 struct anna_function
@@ -479,15 +495,34 @@ struct anna_function
        The type of each input argument
      */
     struct anna_type **input_type;    
+    /**
+      The default value (if any) for each input argument
+    */
     struct anna_node **input_default;
     /**
        Bytecode
      */
     char *code;
+    /**
+       The memory size required to hold an activation frame for
+       executing this function
+     */
     size_t frame_size;
+    /**
+       The number of variables this function has, including input parameters
+     */
     size_t variable_count;
+    /**
+       Number of elements in the line_offset array
+     */
     size_t line_offset_count;
+    /**
+      A mapping from code offsets to line numbers
+    */
     struct anna_line_pair *line_offset;
+    /**
+       The file in which this function was definied
+     */
     wchar_t *filename;
 };
 
@@ -501,13 +536,15 @@ struct anna_activation_frame
 {
     int flags;
     /**
-       The static context of this frame is the frame that should be
-       used when using scope lookup.
+       The static context of this frame is the frame holds the parent
+       scope of this frame. It is used for variable lookup. (lexical
+       scoping)
      */
     struct anna_activation_frame *static_frame;
     /**
-       The dynamic context of this frame is the frame that should be
-       used when returning to a calling frame.
+       The dynamic context of this frame is the frame that
+       called/created this frame. It is used when returning from
+       a function call.
      */
     struct anna_activation_frame *dynamic_frame;
     
@@ -532,16 +569,19 @@ struct anna_activation_frame
 };
 
 /**
-   An execution context for an Anna thread. It couintains a pointer to
+   An execution context for an Anna thread. It contains a pointer to
    the current activation frame, a stack used as a temporary scratch
    area for incomplete function parameter lists and a few bookkeeping
    members.
  */
 struct anna_context
 {
+    /**
+       Used by the GC
+    */
     int flags;
     /**
-      The amount of memory used by this object
+      The total amount of memory used by this object
     */
     size_t size;
     
@@ -549,13 +589,13 @@ struct anna_context
       The activation frame holds the values of all variables of the
       currently executing function, as well as a pointer to the
       current position in the source code.
-     */
+    */
     struct anna_activation_frame *frame;
     /**
       function_object is the anna object representing the function
       currently being executed. Use anna_function_unwrap to unwrap it
       and access the actual anna_function_t. This value is rarely useful.
-     */
+    */
     struct anna_object *function_object;
 
     /**
@@ -563,11 +603,11 @@ struct anna_context
       for passing parameters, it is used purely as a scratch space for
       storing output of function calls that will in turn be used as
       input to future function calls.
-     */
+    */
     anna_entry_t **top;
     /**
       The base of the scratch stack.
-     */
+    */
     anna_entry_t *stack[];
 };
 
@@ -579,6 +619,11 @@ typedef struct anna_object anna_object_t;
 typedef struct anna_function anna_function_t;
 typedef struct anna_line_pair anna_line_pair_t;
 
+/**
+  This struct describes the signature of a function, which includes
+  the return type, the number and types of inputs and any default
+  parameter values.
+*/
 typedef struct 
 {
     int flags;
@@ -589,18 +634,38 @@ typedef struct
     anna_type_t *input_type[];
 } anna_function_type_t;
 
+/**
+   A bunch of internal types. Might be better to move these to lib.h or something?
+*/
 extern anna_type_t *type_type, *object_type, *int_type, *string_type, 
     *mutable_string_type, *imutable_string_type, *char_type, *null_type,
     *string_type, *char_type, *float_type, *member_type, *range_type, 
     *complex_type, *hash_type, *pair_type, *buffer_type, 
     *function_type_base, *continuation_type;
 extern anna_object_t *null_object, *anna_wrap_method;
+/**
+   Error counter. Every time the parser or compiler detects a
+   non-critical error, this counter is increased.
+ */
 extern int anna_error_count;
+/**
+   The global namespace
+ */
 extern struct anna_stack_template *stack_global;
 
+/**
+   The number of arguments given to the anna process
+ */
 extern int anna_argc;
+
+/**
+   The arguments given to the anna process
+ */
 extern char **anna_argv;
 
+/**
+   Round the size up to the nearest even 8 bytes
+ */
 static inline size_t anna_align(size_t sz)
 {
     return (((sz-1)/8)+1)*8;
@@ -620,6 +685,9 @@ __cold struct anna_node *anna_macro_invoke(
     anna_function_t *macro,
     struct anna_node_call *node);
 
+/**
+   Prints a description of the specified function type on standard out
+ */
 __cold void anna_function_type_print(
     anna_function_type_t *k);
 
@@ -646,6 +714,13 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
     }
 }
 
+/**
+   Assigne the specified value to the member with the specified mid in
+   the specified object.
+
+   No error checking performed; this will cause a crash if no such
+   member exist.
+ */
 static inline void anna_entry_set(
     anna_object_t *obj, mid_t mid, anna_entry_t *value)
 {

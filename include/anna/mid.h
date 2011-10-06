@@ -6,7 +6,7 @@ void anna_mid_destroy(void);
 
 /**
    Returns the mid (i.e. the offset in the type vtable) of the
-   specified name. If there is no mid yet, create one.
+   specified name. If there is no mid for the specified name yet, create one.
 */
 size_t anna_mid_get(wchar_t *name);
 /**

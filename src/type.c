@@ -170,7 +170,7 @@ static void anna_type_mangle_methods(
     }
 }
 
-static anna_node_t *anna_node_specialize(anna_node_t *code, array_list_t *spec)
+static anna_node_t *anna_type_node_specialize(anna_node_t *code, array_list_t *spec)
 {
     int i;
     for(i=0; i<al_get_count(spec); i++)
@@ -213,7 +213,7 @@ static anna_type_t *anna_type_create_internal(
 	result->attribute = node_cast_call(definition->child[1]);
 	anna_attribute_call_all(result->attribute, L"template", &al);
 	result->body = node_cast_call(
-	    anna_node_specialize(
+	    anna_type_node_specialize(
 		anna_node_clone_deep(definition->child[2]),
 		&al));
 	
@@ -696,7 +696,7 @@ static void anna_type_extend(
     for(i=al_get_count(&parents)-1; i>=0; i--)
     {
 	anna_node_t *c = (anna_node_t *)al_get(&parents, i);
-	anna_node_calculate_type(c);
+	c = anna_node_calculate_type(c);
 	if(c->return_type != type_type)
 	{
 	    anna_error(c, L"Invalid parent type");
@@ -814,6 +814,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 		    L"Only declarations are allowed directly inside class definitions\n");
 		continue;
 	    }
+	    node->child[i] = anna_node_calculate_type(node->child[i]);
 	    anna_type_prepare_member_internal(
 		type,
 		(anna_node_declare_t *)node->child[i],

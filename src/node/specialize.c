@@ -1,5 +1,5 @@
 
-static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *stack)
+static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *stack)
 {
     anna_node_calculate_type(call->function);
     
@@ -15,6 +15,7 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
     }
     else if(type == mutable_list_type && call->child_count==1)
     {
+        call->child[0] = anna_node_calculate_type(call->child[0]);
 	anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
 	
 	if(spec)
@@ -77,11 +78,9 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
 	{
 	    anna_error((anna_node_t *)call, L"Pair specializations can not be resolved into types");
 	}
-		
     }
     else
-    {
-	
+    {	
 	res = hash_get(&type->specializations, call);
 	if(!res)
 	{
@@ -96,14 +95,13 @@ static void anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *
     
     if(res)
     {
-	
-	FIXME("Changing a node into a new one of a different type- Very, very ugly. Do something prettier, please?")
-
-	anna_node_dummy_t *new_res = (anna_node_dummy_t *)call;
-	new_res->node_type = ANNA_NODE_DUMMY;
-	new_res->payload = anna_type_wrap(res);
-	new_res->return_type = type_type;
+        anna_node_dummy_t *out = anna_node_create_dummy(
+	    &call->location,
+	    anna_type_wrap(res));
+	out->return_type = type_type;
+	out->stack = call->stack;
+	return (anna_node_t *)out;
     }
     
-	    
+    return (anna_node_t *)call;	    
 }
