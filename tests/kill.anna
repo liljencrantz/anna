@@ -1,0 +1,19 @@
+use(unix);
+
+def main()
+    (doc("Test the kill command"))
+{
+    fd := [0,0];
+    io.pipe(fd);
+    parent := proc.getpid();
+    if(pid := proc.fork() == 0)
+    {
+	proc.kill(parent, proc.signal.kill);
+	print("You should see this\n");
+    }
+    else
+    {
+	sleep.sleep(5);
+	print("You should not see this\n");
+    }
+}

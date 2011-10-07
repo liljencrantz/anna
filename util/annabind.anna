@@ -483,12 +483,12 @@ type CStructBindingType
     var String structName;
     var String typeName;
     var String structText;
+    var Int isPointer;
 
     def __init__(
-	String structName, String typeName, Int isStruct=1)
+	String structName, String typeName, Int isStruct=1, Int isPointer=?)
     {
-	this.structName = structName;
-	this.typeName = typeName;
+	expandCode(this.%name = %name, name: [structName, typeName, isPointer]);
 	structText = if(isStruct){"struct "}else{""}
     }
     
@@ -502,7 +502,37 @@ type CStructBindingType
 
     def String convertToC(Node decl, Node attr, String dest, String source)
     {
-	"%(structText)%(structName) *%(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % ["structName": structName, "dest": dest, "source": source, "structText": structText];
+        param := [
+	    "structName": structName,
+	    "dest": dest, 
+	    "source": source, 
+	    "structText": structText,
+	    ];
+	if(isPointer)
+	{
+	    return "%(structText)%(structName) *%(dest) = *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	}
+	else
+	{
+	    return "%(structText)%(structName) *%(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	}
+    }
+
+    def String convertToAnna(Node decl, Node attr, String dest, String source)
+    {
+	if(isPointer)
+	{
+	    param := [
+		"structName": structName,
+		"structText": structText,
+		"dest": dest,
+		"source": source,
+		"annaCType": annaCType(decl, attr),
+	    	];
+	    return "anna_entry_t *%(dest) = anna_object_create(%(annaCType));
+    *((%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(dest)), ANNA_MID_CSTRUCT_PAYLOAD)) = %(source);" % param;
+	}
+	return ?;
     }
 
 }
@@ -797,27 +827,23 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         nativeStructName := findAttr(decl[1], "name")[0] or structName;
         initName := mangleMethodName(structName, "init");
 	
-        isStruct := decl.isCallTo("cStruct");
-	bindingType[decl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct));
-        commonData := ["typeName": typeName, "nativeStructName": nativeStructName, "initName": initName, "structName": nativeStructName, "structText": if(isStruct){"struct "}else{""}];
+        isStruct := !decl.isCallTo("cType");
+        isPointer := decl.isCallTo("cStructPointer");
+	bindingType[decl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct, isPointer));
+        commonData := [
+	    "typeName": typeName,
+	    "nativeStructName": nativeStructName, 
+	    "initName": initName,
+	    "structName": nativeStructName, 
+	    "structText": if(isStruct){"struct "}else{""}, 
+	    "structPointer": if(isPointer){" *"} else {""},
+	    "initParam": myBinding.convertToC(?,?, "data", "param[0]")
+	    ];
 
 	load ~= "
-    anna_member_create_blob(%(typeName), ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(%(structText)%(nativeStructName)));
-
-    anna_member_create_native_method(
-	%(typeName), anna_mid_get(L\"__init__\"), 0,
-	&%(initName), object_type, 1, &%(typeName), this_argn, 0, 0);    
-" % commonData;
-
-	code ~= "
-ANNA_VM_NATIVE(%(initName), 1)
-{
-    %(structText)%(structName) *data = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    memset(data, 0, sizeof(%(structText)%(structName)));
-    return param[0];
-}
-" % commonData;
-
+    anna_member_create_blob(%(typeName), ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(%(structText)%(nativeStructName)%(structPointer)));
+";
+        hadInit := ? as Int;
 
 	(decl[2] as Call).each(node)
 	{
@@ -826,6 +852,8 @@ ANNA_VM_NATIVE(%(initName), 1)
 		isVar := node.isCallTo("__var__");
 	        it := node as Call;
 	        fieldName := (it[0] as Identifier).name;
+
+		hadInit = hadInit or ()fieldName == "__init__";
 
 		if(!isVar and (((it[2] as Call).function as Identifier).name == "__def__"))
 		{
@@ -878,6 +906,24 @@ ANNA_VM_NATIVE(%(setterName), 2)
 
 	}
 
+	if(!hadInit)
+	{
+	    load ~= "    anna_member_create_native_method(
+	%(typeName), anna_mid_get(L\"__init__\"), 0,
+	&%(initName), object_type, 1, &%(typeName), this_argn, 0, 0);    
+" % commonData;
+
+	    code ~= "
+ANNA_VM_NATIVE(%(initName), 1)
+{
+    %(initParam)
+    memset(data, 0, sizeof(%(structText)%(structName)));
+    return param[0];
+}
+" % commonData;
+
+	}
+
 	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load);
     }
 
@@ -923,7 +969,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 				    code ~= out.code;
 				}
 				
-				case("cType", "cStruct")
+				case("cType", "cStruct", "cStructPointer")
 				{
   				    out := generateCStruct(name, decl[2] as Call);
 				    load ~= out.load;
@@ -931,7 +977,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 				    typeDecl ~= out.typeDecl;
 				    typeData ~= out.typeData;
 				}
-				
+
 				default
 				{
 				    print(decl);
@@ -998,6 +1044,15 @@ ANNA_VM_NATIVE(%(setterName), 2)
 		    }
 		}
 
+                case("verbatim")
+		{
+		//		    print("VERB"decl);
+		    decl.each(inc)
+		    {
+			code ~= (inc as StringLiteral).payload;
+		    }
+		}
+				
 		default
 		{
                     if(decl.count == 1 and decl[0].isCallTo("__block__"))

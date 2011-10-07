@@ -992,11 +992,85 @@ ANNA_VM_NATIVE(unix_i_umask, 1)
     return result;
 }
 
+#define ANNA_FD_CLR(set, fd) FD_CLR(fd, set)
+#define ANNA_FD_ISSET(set, fd) FD_ISSET(fd, set)
+#define ANNA_FD_SET(set, fd) FD_SET(fd, set)
+
 ANNA_VM_NATIVE(unix_i_fd_set_init, 1)
 {
     fd_set *data = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     memset(data, 0, sizeof(fd_set));
     return param[0];
+}
+
+ANNA_VM_NATIVE(unix_i_clear, 2)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    fd_set *native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    if(param[1] == null_entry){return null_entry;}
+    int native_param_fd = anna_as_int(param[1]);
+
+    // Validate parameters
+
+    // Call the function
+    ANNA_FD_CLR(native_param_this, native_param_fd); anna_entry_t *result = null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_is_set, 2)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    fd_set *native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    if(param[1] == null_entry){return null_entry;}
+    int native_param_fd = anna_as_int(param[1]);
+
+    // Validate parameters
+
+    // Call the function
+    anna_entry_t *result = anna_from_int(ANNA_FD_ISSET(native_param_this, native_param_fd));
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_set, 2)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    fd_set *native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    if(param[1] == null_entry){return null_entry;}
+    int native_param_fd = anna_as_int(param[1]);
+
+    // Validate parameters
+
+    // Call the function
+    ANNA_FD_SET(native_param_this, native_param_fd); anna_entry_t *result = null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_zero, 1)
+{
+    // Mangle input parameters
+    if(param[0] == null_entry){return null_entry;}
+    fd_set *native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+
+    // Call the function
+    FD_ZERO(native_param_this); anna_entry_t *result = null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
 }
 
 ANNA_VM_NATIVE(unix_i_time_val_init, 1)
@@ -1034,76 +1108,6 @@ ANNA_VM_NATIVE(unix_i_time_val_usec_setter, 2)
     int tmp = anna_as_int(param[1]);
     data->tv_usec = tmp;
     return param[1];
-}
-
-ANNA_VM_NATIVE(unix_i_fd_clear, 2)
-{
-    // Mangle input parameters
-    if(param[0] == null_entry){return null_entry;}
-    int native_param_fd = anna_as_int(param[0]);
-    if(param[1] == null_entry){return null_entry;}
-    fd_set *native_param_set = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
-
-    // Validate parameters
-
-    // Call the function
-    FD_CLR(native_param_fd, native_param_set); anna_entry_t *result = null_entry;
-    // Perform cleanup
-
-    // Return result
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_fd_is_set, 2)
-{
-    // Mangle input parameters
-    if(param[0] == null_entry){return null_entry;}
-    int native_param_fd = anna_as_int(param[0]);
-    if(param[1] == null_entry){return null_entry;}
-    fd_set *native_param_set = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
-
-    // Validate parameters
-
-    // Call the function
-    anna_entry_t *result = anna_from_int(FD_ISSET(native_param_fd, native_param_set));
-    // Perform cleanup
-
-    // Return result
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_fd_set, 2)
-{
-    // Mangle input parameters
-    if(param[0] == null_entry){return null_entry;}
-    int native_param_fd = anna_as_int(param[0]);
-    if(param[1] == null_entry){return null_entry;}
-    fd_set *native_param_set = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
-
-    // Validate parameters
-
-    // Call the function
-    FD_SET(native_param_fd, native_param_set); anna_entry_t *result = null_entry;
-    // Perform cleanup
-
-    // Return result
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_fd_zero, 1)
-{
-    // Mangle input parameters
-    if(param[0] == null_entry){return null_entry;}
-    fd_set *native_param_set = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-
-    // Validate parameters
-
-    // Call the function
-    FD_ZERO(native_param_set); anna_entry_t *result = null_entry;
-    // Perform cleanup
-
-    // Return result
-    return result;
 }
 
 ANNA_VM_NATIVE(unix_i_select, 5)
@@ -1376,6 +1380,30 @@ void anna_io_load(anna_stack_template_t *stack)
 	unix_fd_set_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_fd_set_init, object_type, 1, &unix_fd_set_type, this_argn, 0, 0);    
 
+    anna_type_t *unix_i_clear_argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_clear_argn[] = {L"this", L"fd"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"clear"), 0, 
+        &unix_i_clear, object_type, 2, unix_i_clear_argv, unix_i_clear_argn, 0, L"");
+
+    anna_type_t *unix_i_is_set_argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_is_set_argn[] = {L"this", L"fd"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"isSet"), 0, 
+        &unix_i_is_set, int_type, 2, unix_i_is_set_argv, unix_i_is_set_argn, 0, L"");
+
+    anna_type_t *unix_i_set_argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_set_argn[] = {L"this", L"fd"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"set"), 0, 
+        &unix_i_set, object_type, 2, unix_i_set_argv, unix_i_set_argn, 0, L"");
+
+    anna_type_t *unix_i_zero_argv[] = {unix_fd_set_type};
+    wchar_t *unix_i_zero_argn[] = {L"this"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"zero"), 0, 
+        &unix_i_zero, object_type, 1, unix_i_zero_argv, unix_i_zero_argn, 0, L"");
+
     anna_member_create_blob(unix_time_val_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timeval));
 
     anna_member_create_native_method(
@@ -1390,22 +1418,6 @@ void anna_io_load(anna_stack_template_t *stack)
         unix_time_val_type, anna_mid_get(L"usec"),
         int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, 0);
 
-    anna_type_t *unix_i_fd_clear_argv[] = {int_type, unix_fd_set_type};
-    wchar_t *unix_i_fd_clear_argn[] = {L"fd", L"set"};
-    anna_module_function(stack, L"fdClear", 0, &unix_i_fd_clear, object_type, 2, unix_i_fd_clear_argv, unix_i_fd_clear_argn, L"");
-
-    anna_type_t *unix_i_fd_is_set_argv[] = {int_type, unix_fd_set_type};
-    wchar_t *unix_i_fd_is_set_argn[] = {L"fd", L"set"};
-    anna_module_function(stack, L"fdIsSet", 0, &unix_i_fd_is_set, int_type, 2, unix_i_fd_is_set_argv, unix_i_fd_is_set_argn, L"");
-
-    anna_type_t *unix_i_fd_set_argv[] = {int_type, unix_fd_set_type};
-    wchar_t *unix_i_fd_set_argn[] = {L"fd", L"set"};
-    anna_module_function(stack, L"fdSet", 0, &unix_i_fd_set, object_type, 2, unix_i_fd_set_argv, unix_i_fd_set_argn, L"");
-
-    anna_type_t *unix_i_fd_zero_argv[] = {unix_fd_set_type};
-    wchar_t *unix_i_fd_zero_argn[] = {L"set"};
-    anna_module_function(stack, L"fdZero", 0, &unix_i_fd_zero, object_type, 1, unix_i_fd_zero_argv, unix_i_fd_zero_argn, L"");
-
     anna_type_t *unix_i_select_argv[] = {int_type, unix_fd_set_type, unix_fd_set_type, unix_fd_set_type, unix_time_val_type};
     wchar_t *unix_i_select_argn[] = {L"nfds", L"readfds", L"writefds", L"exceptfds", L"timeout"};
     anna_module_function(stack, L"select", 0, &unix_i_select, int_type, 5, unix_i_select_argv, unix_i_select_argn, L"");
@@ -1415,6 +1427,64 @@ void anna_io_load(anna_stack_template_t *stack)
 const static anna_type_data_t anna_proc_type_data[] = 
 {
 };
+const static anna_type_data_t anna_signal_type_data[] = 
+{
+};
+
+void anna_signal_create(anna_stack_template_t *stack);
+void anna_signal_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_signal_type_data, stack);        
+}
+void anna_signal_load(anna_stack_template_t *stack);
+void anna_signal_load(anna_stack_template_t *stack)
+{
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+    anna_module_const_int(stack, L"hup", SIGHUP, L"");
+    anna_module_const_int(stack, L"int", SIGINT, L"");
+    anna_module_const_int(stack, L"quit", SIGQUIT, L"");
+    anna_module_const_int(stack, L"ill", SIGILL, L"");
+    anna_module_const_int(stack, L"abrt", SIGABRT, L"");
+    anna_module_const_int(stack, L"fpe", SIGFPE, L"");
+    anna_module_const_int(stack, L"kill", SIGKILL, L"");
+    anna_module_const_int(stack, L"segv", SIGSEGV, L"");
+    anna_module_const_int(stack, L"pipe", SIGPIPE, L"");
+    anna_module_const_int(stack, L"alrm", SIGALRM, L"");
+    anna_module_const_int(stack, L"term", SIGTERM, L"");
+    anna_module_const_int(stack, L"usr1", SIGUSR1, L"");
+    anna_module_const_int(stack, L"usr2", SIGUSR2, L"");
+    anna_module_const_int(stack, L"chld", SIGCHLD, L"");
+    anna_module_const_int(stack, L"cont", SIGCONT, L"");
+    anna_module_const_int(stack, L"stop", SIGSTOP, L"");
+    anna_module_const_int(stack, L"tstp", SIGTSTP, L"");
+    anna_module_const_int(stack, L"ttin", SIGTTIN, L"");
+    anna_module_const_int(stack, L"ttou", SIGTTOU, L"");
+    anna_module_const_int(stack, L"bus", SIGBUS, L"");
+    anna_module_const_int(stack, L"poll", SIGPOLL, L"");
+    anna_module_const_int(stack, L"prof", SIGPROF, L"");
+    anna_module_const_int(stack, L"sys", SIGSYS, L"");
+    anna_module_const_int(stack, L"trap", SIGTRAP, L"");
+    anna_module_const_int(stack, L"urg", SIGURG, L"");
+    anna_module_const_int(stack, L"vtalrm", SIGVTALRM, L"");
+    anna_module_const_int(stack, L"xcpu", SIGXCPU, L"");
+    anna_module_const_int(stack, L"xfsz", SIGXFSZ, L"");
+    anna_module_const_int(stack, L"iot", SIGIOT, L"");
+    anna_module_const_int(stack, L"stkflt", SIGSTKFLT, L"");
+    anna_module_const_int(stack, L"io", SIGIO, L"");
+    anna_module_const_int(stack, L"cld", SIGCLD, L"");
+    anna_module_const_int(stack, L"pwr", SIGPWR, L"");
+    anna_module_const_int(stack, L"winch", SIGWINCH, L"");
+    anna_module_const_int(stack, L"unused", SIGUNUSED, L"");
+
+     anna_type_data_register(anna_signal_type_data, stack);
+}
 
 ANNA_VM_NATIVE(unix_i_exec, 3)
 {
@@ -1682,6 +1752,7 @@ void anna_proc_load(anna_stack_template_t *stack)
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
+            { L"signal", anna_signal_create, anna_signal_load},
         };
     anna_module_data_create(modules, stack);
 
@@ -2081,6 +2152,14 @@ void anna_r_limit_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"data", RLIMIT_DATA, L"");
     anna_module_const_int(stack, L"fsize", RLIMIT_FSIZE, L"");
     anna_module_const_int(stack, L"memlock", RLIMIT_MEMLOCK, L"");
+    anna_module_const_int(stack, L"msgqueue", RLIMIT_MSGQUEUE, L"");
+    anna_module_const_int(stack, L"nice", RLIMIT_NICE, L"");
+    anna_module_const_int(stack, L"nofile", RLIMIT_NOFILE, L"");
+    anna_module_const_int(stack, L"nproc", RLIMIT_NPROC, L"");
+    anna_module_const_int(stack, L"rss", RLIMIT_RSS, L"");
+    anna_module_const_int(stack, L"rtprio", RLIMIT_RTPRIO, L"");
+    anna_module_const_int(stack, L"sigpending", RLIMIT_SIGPENDING, L"");
+    anna_module_const_int(stack, L"stack", RLIMIT_STACK, L"");
 
      anna_type_data_register(anna_r_limit_mode_type_data, stack);
 }

@@ -1,0 +1,8 @@
+
+def main()
+{
+    print("You should see this\n");
+    unix.proc.exit(7);
+    print("But not this\n");
+}
+

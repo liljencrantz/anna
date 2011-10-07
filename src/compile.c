@@ -690,6 +690,8 @@ static void anna_vm_compile_i(
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *node2 = (anna_node_closure_t *)node;
+	    assert(node2->payload);
+	    assert(anna_function_wrap(node2->payload));
 	    anna_vm_const(
 		ctx,
 		anna_from_obj(anna_function_wrap(node2->payload)));

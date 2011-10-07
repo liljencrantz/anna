@@ -1,5 +1,8 @@
 
-include("<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>", "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>");
+include(
+    "<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>",
+    "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", 
+    "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>");
 
 io
 {
@@ -146,8 +149,18 @@ io
 
     def Int umask(Int mask);    
 
+    verbatim("
+#define ANNA_FD_CLR(set, fd) FD_CLR(fd, set)
+#define ANNA_FD_ISSET(set, fd) FD_ISSET(fd, set)
+#define ANNA_FD_SET(set, fd) FD_SET(fd, set)
+");
+
     cType FdSet (name(fd_set))
     {
+	def Void clear(Int fd) (name(ANNA_FD_CLR));
+	def Int isSet(Int fd) (name(ANNA_FD_ISSET));
+	def Void set(Int fd) (name(ANNA_FD_SET));
+	def Void zero() (name(FD_ZERO));
     }
     
     cStruct TimeVal (name(timeval))
@@ -155,18 +168,54 @@ io
 	var Int sec (name(tv_sec));
 	var Int usec (name(tv_usec));
     }
-    
-    def Void fdClear(Int fd, FdSet set) (name(FD_CLR));
-    def Int fdIsSet(Int fd, FdSet set) (name(FD_ISSET));
-    def Void fdSet(Int fd, FdSet set) (name(FD_SET));
-    def Void fdZero(FdSet set) (name(FD_ZERO));
-    
+
     def Int select(Int nfds, FdSet readfds, FdSet writefds, FdSet exceptfds, TimeVal timeout);
     
 }
 
 proc
 {
+    signal
+    {
+	const Int hup (name(SIGHUP), doc("The HUP signal"));
+	const Int int (name(SIGINT), doc("The INT signal"));
+	const Int quit (name(SIGQUIT), doc("The QUIT signal"));
+	const Int ill (name(SIGILL), doc("The ILL signal"));
+	const Int abrt (name(SIGABRT), doc("The ABRT signal"));
+	const Int fpe (name(SIGFPE), doc("The FPE signal"));
+	const Int kill (name(SIGKILL), doc("The KILL signal"));
+	const Int segv (name(SIGSEGV), doc("The SEGV signal"));
+	const Int pipe (name(SIGPIPE), doc("The PIPE signal"));
+	const Int alrm (name(SIGALRM), doc("The ALRM signal"));
+	const Int term (name(SIGTERM), doc("The TERM signal"));
+	const Int usr1 (name(SIGUSR1), doc("The USR1 signal"));
+	const Int usr2 (name(SIGUSR2), doc("The USR2 signal"));
+	const Int chld (name(SIGCHLD), doc("The CHLD signal"));
+	const Int cont (name(SIGCONT), doc("The CONT signal"));
+	const Int stop (name(SIGSTOP), doc("The STOP signal"));
+	const Int tstp (name(SIGTSTP), doc("The TSTP signal"));
+	const Int ttin (name(SIGTTIN), doc("The TTIN signal"));
+	const Int ttou (name(SIGTTOU), doc("The TTOU signal"));
+	const Int bus (name(SIGBUS), doc("The BUS signal"));
+	const Int poll (name(SIGPOLL), doc("The POLL signal"));
+	const Int prof (name(SIGPROF), doc("The PROF signal"));
+	const Int sys (name(SIGSYS), doc("The SYS signal"));
+	const Int trap (name(SIGTRAP), doc("The TRAP signal"));
+	const Int urg (name(SIGURG), doc("The URG signal"));
+	const Int vtalrm (name(SIGVTALRM), doc("The VTALRM signal"));
+	const Int xcpu (name(SIGXCPU), doc("The XCPU signal"));
+	const Int xfsz (name(SIGXFSZ), doc("The XFSZ signal"));
+	const Int iot (name(SIGIOT), doc("The IOT signal"));
+//	const Int emt (name(SIGEMT), doc("The EMT signal"));
+	const Int stkflt (name(SIGSTKFLT), doc("The STKFLT signal"));
+	const Int io (name(SIGIO), doc("The IO signal"));
+	const Int cld (name(SIGCLD), doc("The CLD signal"));
+	const Int pwr (name(SIGPWR), doc("The PWR signal"));
+//	const Int info (name(SIGINFO), doc("The INFO signal"));
+//	const Int lost (name(SIGLOST), doc("The LOST signal"));
+	const Int winch (name(SIGWINCH), doc("The WINCH signal"));
+	const Int unused (name(SIGUNUSED), doc("The UNUSED signal"));
+    }
 
     def Int exec(String filename, List«String» argv, List«String» envp) (name(execve));
     def Void exit(Int status);
@@ -208,13 +257,21 @@ rLimit
     
     rLimitMode
     {
-	const Int as (name(RLIMIT_AS));
-	const Int core (name(RLIMIT_CORE));
-	const Int cpu (name(RLIMIT_CPU));
-	const Int data (name(RLIMIT_DATA));
-	const Int fsize (name(RLIMIT_FSIZE));
-	const Int memlock (name(RLIMIT_MEMLOCK));
-	// ...
+	const Int as (name(RLIMIT_AS), doc("The AS limit"));
+	const Int core (name(RLIMIT_CORE), doc("The CORE limit"));
+	const Int cpu (name(RLIMIT_CPU), doc("The CPU limit"));
+	const Int data (name(RLIMIT_DATA), doc("The DATA limit"));
+	const Int fsize (name(RLIMIT_FSIZE), doc("The FSIZE limit"));
+	const Int memlock (name(RLIMIT_MEMLOCK), doc("The MEMLOCK limit"));
+	const Int msgqueue (name(RLIMIT_MSGQUEUE), doc("The MSGQUEUE limit"));
+	const Int nice (name(RLIMIT_NICE), doc("The NICE limit"));
+	const Int nofile (name(RLIMIT_NOFILE), doc("The NOFILE limit"));
+	const Int nproc (name(RLIMIT_NPROC), doc("The NPROC limit"));
+	const Int rss (name(RLIMIT_RSS), doc("The RSS limit"));
+	const Int rtprio (name(RLIMIT_RTPRIO), doc("The RTPRIO limit"));
+//	const Int rttime (name(RLIMIT_RTTIME), doc("The RTTIME limit"));
+	const Int sigpending (name(RLIMIT_SIGPENDING),doc("The SIGPENDING limit"));
+	const Int stack (name(RLIMIT_STACK), doc("The STACK limit"));
     }
 
     cStruct RLimit (name(rlimit))

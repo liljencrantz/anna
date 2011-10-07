@@ -1,0 +1,23 @@
+use(unix);
+
+def main()
+    (doc("Test for pipe, fork, and a few other asic unix calls"))
+{
+    fd := [0,0];
+    io.pipe(fd);
+    if(pid := proc.fork() == 0)
+    {
+        buf := Buffer();
+        msg := "Hello\n";
+	buf.decode(msg);
+	io.write(fd[1], buf, buf.count);
+    }
+    else
+    {
+        buf := Buffer();
+	io.read(fd[0], buf, 1024);
+        msg := buf.encode();
+	print(msg);
+    }
+    
+}
