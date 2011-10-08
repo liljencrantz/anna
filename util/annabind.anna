@@ -552,9 +552,9 @@ type BindingGenerator
 	this.name = name.split('/')[-1].split('.')[0];
     }
     
-    def mangleFunctionName(String name)
+    def mangleFunctionName(String name, List«String» path = ?)
     {
-	this.name ~ "_i_" ~mangleName(name);
+	this.name ~ "_i_" ~ (("_".join(path.__map__(mangleName)) ~ "_") or "") ~ mangleName(name);
     }
 
     def getFunctionNativeName(Call decl)
@@ -622,9 +622,9 @@ type BindingGenerator
 
     }
 
-    def generateFunction(String name, Call decl)
+    def generateFunction(String name, Call decl, List«String» path=?)
     {
-        mangled := mangleFunctionName(name);
+        mangled := mangleFunctionName(name, path: path);
         returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3]);
         inputTypeVar := mangled ~ "_argv";
         inputNameVar := mangled ~ "_argn";
@@ -729,13 +729,10 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     def mangleName(String name)
     {
+	name = name.filter(ch){ch != '_'};
         res := "".thaw ~ name[0].lower;
 	name[1...].each(ch)
 	{
-	    if(ch == '_')
-	    {
-		continue;
-	    }
 	    if(ch.lower != ch){
 		res ~= "_";
 	    }
@@ -939,7 +936,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load);
     }
 
-    def generateModule(Node nodes)
+    def generateModule(Node nodes, List«String» path)
     {
         code := "".thaw;
         load := "".thaw;
@@ -976,7 +973,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 			    {
 				case("__def__")
 				{
-				  out := generateFunction(name, decl[2] as Call);
+				  out := generateFunction(name, decl[2] as Call, path);
 				    load ~= out.load;
 				    code ~= out.code;
 				}
@@ -1069,11 +1066,12 @@ ANNA_VM_NATIVE(%(setterName), 2)
 		{
                     if(decl.count == 1 and decl[0].isCallTo("__block__"))
                     {
-  		        mangledName := mangleName(String::convert(decl.function));
+			subName := String::convert(decl.function);
+  		        mangledName := mangleName(subName);
   		        loadName := "anna_" ~ mangledName~"_load";
   		        createName := "anna_" ~ mangledName~"_create";
 
-		        out := generateModule(decl[0]);
+		        out := generateModule(decl[0], [subName]);
 			code ~= "const static anna_type_data_t anna_%(moduleName)_type_data[] = 
 {
 %(typeData)};
@@ -1111,7 +1109,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 	
         text := File(path).readFile();
         nodes := parse(text);
-        out := generateModule(nodes);
+        out := generateModule(nodes, «String»[]);
 
         load ~= out.load;
         code ~= out.code;
