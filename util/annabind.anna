@@ -567,7 +567,7 @@ type BindingGenerator
 	return "native_param_" ~originalName;
     }
     
-    def generateFunctionCode(Call decl, BindingType methodFor = ?)
+    def generateFunctionCode(Call decl, BindingType methodFor = ?, Int isInit = ? )
     {
         paramNames := «String»[];
         init := "".thaw;
@@ -603,7 +603,13 @@ type BindingGenerator
         args := ", ".join(paramNames);
 	code ~= "    " ~ responseType.convertToAnna(decl[1], decl[3], "result", nname ~"(" ~args~")");
 
-	"    // Mangle input parameters
+        param := [
+	    "init": init, "validate": validate, 
+	    "code": code, "cleanup": cleanup, 
+	    "retValue": if(isInit){"param[0]"} else {"result"},
+	    ];
+
+	return "    // Mangle input parameters
 %(init)
     // Validate parameters
 %(validate)
@@ -612,7 +618,7 @@ type BindingGenerator
     // Perform cleanup
 %(cleanup)
     // Return result
-    return result;" % ["init": init, "validate": validate, "code": code, "cleanup": cleanup];
+    return %(retValue);" % param
 
     }
 
@@ -676,6 +682,8 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         inputTypeData := [type.annaCType(decl[1], decl[3])];
         inputNameData := ["L\"this\""];
 
+        isInit := name == "__init__";
+
 	(decl[2] as Call).each(inp){
   	    inpCall := inp as Call;
 	    inputTypeData.push(getBindingType(inpCall[1]).annaCType(inpCall[1], inpCall[3]));
@@ -697,7 +705,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 		"inputNameVar": inputNameVar,
 		"inputNameData": ", ".join(inputNameData),
 		"doc": "L\"" ~ doc ~ "\"",
-		"codeInternal": generateFunctionCode(decl, type),
+		"codeInternal": generateFunctionCode(decl, type, isInit),
 	    ];
 
         load := "
@@ -724,6 +732,10 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         res := "".thaw ~ name[0].lower;
 	name[1...].each(ch)
 	{
+	    if(ch == '_')
+	    {
+		continue;
+	    }
 	    if(ch.lower != ch){
 		res ~= "_";
 	    }
@@ -842,7 +854,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
 	load ~= "
     anna_member_create_blob(%(typeName), ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(%(structText)%(nativeStructName)%(structPointer)));
-";
+" % commonData;
         hadInit := ? as Int;
 
 	(decl[2] as Call).each(node)
@@ -853,7 +865,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	        it := node as Call;
 	        fieldName := (it[0] as Identifier).name;
 
-		hadInit = hadInit or ()fieldName == "__init__";
+		hadInit = hadInit or (fieldName == "__init__");
 
 		if(!isVar and (((it[2] as Call).function as Identifier).name == "__def__"))
 		{
