@@ -44,38 +44,54 @@ macro expandCode(node)
     count := ? as Int;
     code := node[0];
     param := «HashMap«String, Node»»[];
-    (1..node.count).each(idx)	
+    codeNode := «Node»[];
+    valNode := «Node»[];
+
+    node.each(chld)	
     {
-        chld := node[idx];
-	checkNodeCallTo(chld, "__mapping__");
-        call := chld as Call;
-	checkCallCount(call, 2);
-	checkNodeType(call[0], InternalIdentifier);
-        name := (call[0] as InternalIdentifier).name;
-	checkNodeCallTo(call[1], "MutableList");
-        lst := call[1] as Call;
-	if(count)
+	if(chld.isCallTo("__mapping__"))
 	{
-	    if(count != lst.count)
-	    {
-		lst.error("Wrong number of parameters in list");
-		return ?;
-	    }
-	    lst.each(idx, val)
-	    {
-		param[idx][name] = val;
-	    }
-	} 
-        else
+	    valNode.push(chld);
+	}
+	else
 	{
-	    count = lst.count;
-	    lst.each(val)
+	    codeNode.push(chld);
+	}
+    }
+
+    codeNode.each(code)
+    {
+	valNode.each(chld)
+	{
+  	    call := chld as Call;
+	    checkCallCount(call, 2);
+	    checkNodeType(call[0], InternalIdentifier);
+	    name := (call[0] as InternalIdentifier).name;
+	    checkNodeCallTo(call[1], "MutableList");
+	    lst := call[1] as Call;
+	    if(count)
 	    {
-		param ~= [[name: val]];
+		if(count != lst.count)
+		{
+		    lst.error("Wrong number of parameters in list");
+		    return ?;
+		}
+		lst.each(idx, val)
+		{
+		    param[idx][name] = val;
+		}
+	    } 
+	    else
+	    {
+		count = lst.count;
+		lst.each(val)
+		{
+		    param ~= [[name: val]];
+		}
 	    }
 	}
     }
-    
+
     res := Call(node, Identifier(node, "nothing"));
 
     res ~= param.map(p){ code % p };
