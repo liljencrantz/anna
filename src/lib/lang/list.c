@@ -1198,3 +1198,17 @@ anna_type_t *anna_list_type_get_any(anna_type_t *subtype)
 {
     return anna_list_type_get_internal(subtype)[ANY_OFF];
 }
+
+static void add_list_mark_method(void *key, void *value)
+{
+    anna_type_t **list = (anna_type_t **)value;
+    anna_alloc_mark_type(list[0]);
+    anna_alloc_mark_type(list[1]);
+    anna_alloc_mark_type(list[2]);
+}
+
+void anna_list_mark_static(void)
+{
+    hash_foreach(&anna_list_specialization, &add_list_mark_method);
+}
+

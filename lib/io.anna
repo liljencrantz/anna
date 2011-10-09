@@ -124,7 +124,7 @@ type File
 	    0o666)) or (return ?); 
         buff := Buffer();
         ok := buff.decode(data) and unix.io.write(fd, buff, buff.count);
-	return unix.io.close(fd) and ok;
+	return !unix.io.close(fd) and ok;
     }
     
     def open()
@@ -164,13 +164,13 @@ type File
     def Object exists() (property, doc("This value is non-null if the file pointed to by this object currently exists."),)
     {
         buf := unix.io.Stat();
-	return unix.io.stat(this.filename, buf) == 0;
+	return !unix.io.stat(this.filename, buf);
     }
     
     def Object isFile() (property, doc("This value is non-null if the file pointed to by this object is a regular file"))
     {
         buf := unix.io.Stat();
-	return if(unix.io.stat(this.filename, buf) == 0)
+	return if(!unix.io.stat(this.filename, buf))
 	{
 	    buf.mode ^bitand unix.io.statMode.regular != 0;
 	} else {
@@ -185,7 +185,7 @@ type File
 )
     {
         buf := unix.io.Stat();
-	return if(unix.io.stat(this.filename, buf) == 0)
+	return if(!unix.io.stat(this.filename, buf))
 	{
 	    buf.mode ^bitand unix.io.statMode.directory != 0;
 	} else {
@@ -202,7 +202,7 @@ type File
 	{
 	    name := "" ~ separator ~ String::convert(separator).join(this.path[0..last+1]);
 	    
-	    if((unix.io.mkdir(name, 0o777)!= 0) and !(cerror.errno in [cerror.exist]))
+	    if((!unix.io.mkdir(name, 0o777)) and !(cerror.errno in [cerror.exist]))
 	    {
 		print(cerror.errorString(cerror.errno), "\n");
 		return ?;

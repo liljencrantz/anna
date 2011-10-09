@@ -95,9 +95,15 @@ def init()
 	    cleanupToC: "free(%(dest));"),
 	ast(Int): BasicBindingType(
 	    "int",
-	    "int_type", 
+	    "int_type",
 	    "int %(dest) = anna_as_int(%(source));",
 	    "anna_entry_t *%(dest) = anna_from_int(%(source));"),
+	ast(Bool): BasicBindingType(
+	    "int",
+	    "object_type", 
+	    "int %(dest) = %(source) != null_entry;",
+	    "anna_entry_t *%(dest) = (%(source))?anna_from_int(1):null_entry;",
+	    preValidateToC: ""),
 	ast(UInt64): BasicBindingType(
 	    "unsigned int64_t",
 	    "int_type", 
@@ -186,13 +192,23 @@ type BindingType
     (doc(""))
     {}
     
-    def String validateToC(Node decl, Node attr, String dest, String source)
+    def String preValidateToC(Node decl, Node attr, String dest, String source)
     (doc("Perform validation of the specified conversion to C."))
-    {}
+    {
+	"if(% == null_entry){return null_entry;}" % [source];
+    }
     
-    def String validateToAnna(Node decl, Node attr, String dest, String source)
+    def String postValidateToC(Node decl, Node attr, String dest, String source)
+    (doc("Perform validation of the specified conversion to C."))
+    {""}
+    
+    def String preValidateToAnna(Node decl, Node attr, String dest, String source)
     (doc("Perform validation of the specified conversion to anna."))
-    {}
+    {""}
+
+    def String postValidateToAnna(Node decl, Node attr, String dest, String source)
+    (doc("Perform validation of the specified conversion to anna."))
+    {""}
 }
 
 type ListBindingType 
@@ -261,13 +277,6 @@ type ListBindingType
 
     def String cleanupToAnna(Node decl, Node attr, String dest, String source){	
 
-    }
-
-    def String validateToC(Node decl, Node attr, String dest, String source){	
-	"";
-    }
-    def String validateToAnna(Node decl, Node attr, String dest, String source){
-	"";
     }
 
 }
@@ -377,13 +386,6 @@ type MutableListBindingType
 
     }
 
-    def String validateToC(Node decl, Node attr, String dest, String source){	
-	"";
-    }
-    def String validateToAnna(Node decl, Node attr, String dest, String source){
-	"";
-    }
-
 }
 
 def List«Node» findAttr(Call attr, String name)
@@ -409,18 +411,20 @@ type BasicBindingType
     var String cleanupToCStr;
     var String cleanupToAnnaStr;
     var String capacityCheck;
+    var String preValidateToCStr;
     
     def __init__(
 	String annaNativeType, String annaCType, String convertToC, String convertToAnna,
-	String capacityCheck = ?, String cleanupToC = ?, String cleanupToAnna= ?)
+	String capacityCheck = ?, String cleanupToC = ?, String cleanupToAnna= ?, String preValidateToC = ?)
     {
-	this.annaNativeTypeStr = annaNativeType;
-	this.annaCTypeStr = annaCType;
-	this.convertToCStr = convertToC;
-	this.convertToAnnaStr = convertToAnna;
+	annaNativeTypeStr = annaNativeType;
+	annaCTypeStr = annaCType;
+	convertToCStr = convertToC;
+	convertToAnnaStr = convertToAnna;
 	this.capacityCheck = capacityCheck;
-	this.cleanupToCStr = cleanupToC;
-	this.cleanupToAnnaStr = cleanupToAnna;
+	cleanupToCStr = cleanupToC;
+	cleanupToAnnaStr = cleanupToAnna;
+	preValidateToCStr = preValidateToC;
     }
     
     def String annaNativeType(Node decl, Node attr){
@@ -436,7 +440,19 @@ type BasicBindingType
         return convertToCStr % ["dest": dest, "source": source];
     }
 
-    def String validateToC(Node decl, Node attr, String dest, String source)
+    def String preValidateToC(Node decl, Node attr, String dest, String source)
+    {
+	if(preValidateToCStr)
+	{
+	    return preValidateToCStr % ["dest": dest, "source": source];
+	}
+	else
+	{
+	    return BindingType::preValidateToC(this, decl, attr, dest, source);
+	}
+    }
+
+    def String postValidateToC(Node decl, Node attr, String dest, String source)
     {
         res := "".thaw;
         findAttr(attr, "ensureCapacity").each(cap)
@@ -452,7 +468,7 @@ type BasicBindingType
 		    String::convert(capNum.payload);
 		}
 	    }
-	    res ~= "    " ~ capacityCheck % ["dest": dest, "source": source, "capacity": capStr] ~ "\n";
+	    res ~= capacityCheck % ["dest": dest, "source": source, "capacity": capStr]
 	}
 	res;
     }
@@ -571,7 +587,8 @@ type BindingGenerator
     {
         paramNames := «String»[];
         init := "".thaw;
-        validate := "".thaw;
+        preValidate := "".thaw;
+        postValidate := "".thaw;
         cleanup := "".thaw;
         code := "".thaw;
         inp := decl[2] as Call;
@@ -579,9 +596,9 @@ type BindingGenerator
 	if(methodFor)
 	{
             npn := getNativeParamName("this");
-	    init ~= "    if(param[0] == null_entry){return null_entry;}\n";
 	    init ~= "    " ~ methodFor.convertToC(decl[1], decl[3], npn, "param[0]") ~ "\n";
-	    validate ~= methodFor.validateToC(decl[1], decl[3], npn, "param[0]");
+	    preValidate ~= methodFor.preValidateToC(decl[1], decl[3], npn, "param[0]");
+	    postValidate ~= methodFor.postValidateToC(decl[1], decl[3], npn, "param[0]");
 	    cleanup ~= ("    " ~ methodFor.cleanupToC(decl[1], decl[3], npn, "param[0]") ~ "\n") or "";
 	    paramNames.push(npn);
 	}
@@ -592,9 +609,9 @@ type BindingGenerator
 	    inpBindingType := getBindingType(inpDecl[1]);
             npn := getNativeParamName((inpDecl[0] as Identifier).name);
 	    paramNames.push(npn);
-	    init ~= "    if(param[%] == null_entry){return null_entry;}\n" % [idx];
 	    init ~= "    " ~ inpBindingType.convertToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n";
-	    validate ~= inpBindingType.validateToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]);
+	    preValidate ~= ("    " ~ inpBindingType.preValidateToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n") or "";
+	    postValidate ~= ("    " ~ inpBindingType.postValidateToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n") or "";
 	    cleanup ~= ("    " ~ inpBindingType.cleanupToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n") or "";
 	}
 	
@@ -604,22 +621,24 @@ type BindingGenerator
 	code ~= "    " ~ responseType.convertToAnna(decl[1], decl[3], "result", nname ~"(" ~args~")");
 
         param := [
-	    "init": init, "validate": validate, 
+	    "init": init, "preValidate": preValidate, "postValidate": postValidate, 
 	    "code": code, "cleanup": cleanup, 
 	    "retValue": if(isInit){"param[0]"} else {"result"},
 	    ];
-
-	return "    // Mangle input parameters
+	
+	return "    // Validate parameters
+%(preValidate)
+    // Mangle input parameters
 %(init)
     // Validate parameters
-%(validate)
+%(postValidate)
     // Call the function
 %(code)
     // Perform cleanup
 %(cleanup)
     // Return result
     return %(retValue);" % param
-
+	    
     }
 
     def generateFunction(String name, Call decl, List«String» path=?)

@@ -271,35 +271,41 @@ void hash_remove( hash_table_t *h,
 /**
    Checks whether the specified key is in the hash table
 */
-int hash_contains( hash_table_t *h, 
-				   const void *key );
+int hash_contains( 
+    hash_table_t *h, 
+    const void *key );
 
 /**
    Appends all keys in the table to the specified list
 */
-void hash_get_keys( hash_table_t *h,
-					array_list_t *arr );
+void hash_get_keys( 
+    hash_table_t *h,
+    array_list_t *arr );
 
 /**
    Appends all data elements in the table to the specified list
 */
-void hash_get_data( hash_table_t *h,
-					array_list_t *arr );
+void hash_get_data( 
+    hash_table_t *h,
+    array_list_t *arr );
 
 /**
    Call the function func for each key/data pair in the table
 */
-void hash_foreach( hash_table_t *h, 
-				   void (*func)( void *, void * ) );
+void hash_foreach(
+    hash_table_t *h, 
+    void (*func)( void *, void * ) );
 
 /**
    Same as hash_foreach, but the function func takes an additional
    argument, which is provided by the caller in the variable aux 
 */
-void hash_foreach2( hash_table_t *h, void (*func)( void *, 
-												   void *, 
-												   void *), 
-					void *aux );
+void hash_foreach2(
+    hash_table_t *h, void (*func)( 
+	void *, 
+	void *, 
+	void *), 
+    void *aux );
 
 /**
    Hash function suitable for wide character strings. 

@@ -1243,3 +1243,14 @@ void anna_hash_mark(anna_object_t *obj)
     }
 }
 
+static void add_hash_mark_method(void *key, void *value)
+{
+    anna_type_t *hash = (anna_type_t *)value;
+    anna_alloc_mark_type(hash);
+}
+
+void anna_hash_mark_static(void)
+{
+    hash_foreach(&anna_hash_specialization, &add_hash_mark_method);
+}
+

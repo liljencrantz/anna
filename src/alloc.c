@@ -412,8 +412,8 @@ static void anna_alloc_free(void *obj)
 	    int i;
 	    anna_type_t *o = (anna_type_t *)obj;
 	    
-	    //wprintf(L"Discarding unused type %ls %d\n", o->name, o);
-	    	    
+//	    wprintf(L"Discarding unused type %ls %d\n", o->name, o);
+	    
 	    if(obj != null_type)
 	    {
 		for(i=0; i<anna_mid_max_get(); i++)
@@ -576,6 +576,8 @@ void anna_gc(anna_context_t *context)
     
     anna_alloc_mark_context(context);	
     anna_type_mark_static();    
+    anna_list_mark_static();    
+    anna_hash_mark_static();    
     anna_alloc_mark_object(null_object);
     anna_alloc_mark(anna_stack_wrap(stack_global));
     

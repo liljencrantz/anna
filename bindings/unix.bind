@@ -63,7 +63,7 @@ io
     def Int creat(String name, Int mode) (doc("Open a file descriptor. Equivalent to the C creat function."), alias(create));
     def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
     def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
-    def Int close(Int fd);
+    def Bool close(Int fd);
 
     cStruct Stat (name(stat))
     {
@@ -82,19 +82,19 @@ io
 	const Int ctime (name(st_ctime), doc("Time of latest change."));
     }
 
-    def Int stat(String path, Stat buf);
-    def Int lstat(String path, Stat buf);
-    def Int fstat(Int fd, Stat buf);
+    def Bool stat(String path, Stat buf);
+    def Bool lstat(String path, Stat buf);
+    def Bool fstat(Int fd, Stat buf);
 
-    def Int mkdir(String path, Int mode);
+    def Bool mkdir(String path, Int mode);
 
     standardInput :== 0;
     standardOutput :== 1;
     const standardError(doc("File descriptor for error output")) = 2;
 
-    def Int getcwd(Buffer buf(ensureCapacity(size)), Int size);
-    def Int chdir(String path);
-    def Int fchdir(Int fd);
+    def Bool getcwd(Buffer buf(ensureCapacity(size)), Int size);
+    def Bool chdir(String path);
+    def Bool fchdir(Int fd);
 
     cStruct FLock (name(flock))
     {
