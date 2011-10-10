@@ -303,3 +303,19 @@ sleep
 {
     def Int sleep(Int seconds);
 }
+
+time
+{
+    cStruct Timeval (name(timeval))
+    {
+	var Int sec (name(tv_sec));
+	var Int usec (name(tv_usec));
+    }
+    
+    cStruct Timezone (name(timezone))
+    {
+    }
+    
+    def Bool gettimeofday(Timeval tv, Timezone tz);
+}
+

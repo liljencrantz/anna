@@ -42,6 +42,8 @@ anna_type_t *unix_f_lock_type;
 anna_type_t *unix_fd_set_type;
 anna_type_t *unix_time_val_type;
 anna_type_t *unix_r_limit_type;
+anna_type_t *unix_timeval_type;
+anna_type_t *unix_timezone_type;
 
 
 // Data used to initialize all types defined in this module
@@ -2640,6 +2642,119 @@ void anna_sleep_load(anna_stack_template_t *stack)
 
      anna_type_data_register(anna_sleep_type_data, stack);
 }
+const static anna_type_data_t anna_time_type_data[] = 
+{
+    { &unix_timeval_type, L"Timeval" },
+    { &unix_timezone_type, L"Timezone" },
+};
+
+ANNA_VM_NATIVE(unix_i_timeval_sec_getter, 1)
+{
+    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->tv_sec);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_timeval_sec_setter, 2)
+{
+    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->tv_sec = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_timeval_usec_getter, 1)
+{
+    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->tv_usec);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_timeval_usec_setter, 2)
+{
+    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->tv_usec = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_timeval_init, 1)
+{
+    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    memset(data, 0, sizeof(struct timeval));
+    return param[0];
+}
+
+ANNA_VM_NATIVE(unix_i_timezone_init, 1)
+{
+    struct timezone *data = (struct timezone *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    memset(data, 0, sizeof(struct timezone));
+    return param[0];
+}
+
+ANNA_VM_NATIVE(unix_i_time_gettimeofday, 2)
+{
+    // Validate parameters
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+
+    // Mangle input parameters
+    struct timeval *native_param_tv = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    struct timezone *native_param_tz = (struct timezone *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+    
+    
+
+    // Call the function
+    anna_entry_t *result = (gettimeofday(native_param_tv, native_param_tz))?anna_from_int(1):null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+void anna_time_create(anna_stack_template_t *stack);
+void anna_time_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_time_type_data, stack);        
+}
+void anna_time_load(anna_stack_template_t *stack);
+void anna_time_load(anna_stack_template_t *stack)
+{
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+
+    anna_member_create_blob(unix_timeval_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timeval));
+
+    anna_member_create_native_property(
+        unix_timeval_type, anna_mid_get(L"sec"),
+        int_type, unix_i_timeval_sec_getter, unix_i_timeval_sec_setter, 0);
+
+    anna_member_create_native_property(
+        unix_timeval_type, anna_mid_get(L"usec"),
+        int_type, unix_i_timeval_usec_getter, unix_i_timeval_usec_setter, 0);
+    anna_member_create_native_method(
+	unix_timeval_type, anna_mid_get(L"__init__"), 0,
+	&unix_i_timeval_init, object_type, 1, &unix_timeval_type, this_argn, 0, 0);    
+
+    anna_member_create_blob(unix_timezone_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timezone));
+    anna_member_create_native_method(
+	unix_timezone_type, anna_mid_get(L"__init__"), 0,
+	&unix_i_timezone_init, object_type, 1, &unix_timezone_type, this_argn, 0, 0);    
+
+    anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_timeval_type, unix_timezone_type};
+    wchar_t *unix_i_time_gettimeofday_argn[] = {L"tv", L"tz"};
+    anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, L"");
+
+     anna_type_data_register(anna_time_type_data, stack);
+}
 
 
 // This function is called to create all types defined in this module
@@ -2664,6 +2779,7 @@ void anna_unix_load(anna_stack_template_t *stack)
             { L"rLimit", anna_r_limit_create, anna_r_limit_load},
             { L"env", anna_env_create, anna_env_load},
             { L"sleep", anna_sleep_create, anna_sleep_load},
+            { L"time", anna_time_create, anna_time_load},
         };
     anna_module_data_create(modules, stack);
 
