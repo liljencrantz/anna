@@ -573,9 +573,9 @@ type BindingGenerator
 	this.name ~ "_i_" ~ (("_".join(path.__map__(mangleName)) ~ "_") or "") ~ mangleName(name);
     }
 
-    def getFunctionNativeName(Call decl)
+    def String getFunctionNativeName(Call decl)
     {
-	String::convert(findAttr(decl[3], "name")[0]) or (decl[0] as Identifier).name;
+	nameToStr(decl[0], decl[3]);
     }
 
     def getNativeParamName(String originalName) (static)
@@ -845,6 +845,23 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	return "%_i_%_%" % [this.name, mangleName(typeName), mangleName(methodName)];
     }
 
+    def String nameToStr(Node name, Node attr)
+    {
+        use(parser);
+        val := findAttr(attr, "name")[0] or name;
+        switch(val)
+        {
+            case(lit as StringLiteral)
+            {
+                return lit.payload;
+            }
+            default
+            {
+                return String::convert(val);
+            }
+        }
+    }
+
     def generateCStruct(String structName, Call decl)
     {
         typeName := mangleTypeName(structName);
@@ -852,7 +869,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	typeDecl := "anna_type_t *%;\n".thaw %[typeName];
         typeData := "    { &%, L\"%\" },\n".thaw % [typeName, structName];
         load := "".thaw;
-        nativeStructName := findAttr(decl[1], "name")[0] or structName;
+        nativeStructName := nameToStr(parser.Identifier(?, structName), decl[1]);
         initName := mangleMethodName(structName, "init");
 	
         isStruct := !decl.isCallTo("cType");
@@ -891,7 +908,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 		    continue;
 		}
 
-	        nativeFieldName := findAttr(it[3], "name")[0] or fieldName;
+	        nativeFieldName := nameToStr(it[0], it[3]);
 		
   	        bindingType := getBindingType(it[1]);
   	        getterName := mangleGetterName(structName, fieldName);
@@ -1016,7 +1033,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 			default
 			{
 
- 			    nativeName := findAttr(decl[3], "name")[0] or name;
+			    nativeName := nameToStr(decl[0], decl[3]);
 			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), L\"%(doc)\");
 " % 
 				[
@@ -1032,7 +1049,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 		case("__var__")
 		{
 		    name := (decl[0] as Identifier).name;
-		    nativeName := findAttr(decl[3], "name")[0] or name;
+		    nativeName := nameToStr(decl[0], decl[3]);
 
   	            bindingType := getBindingType(decl[1]);
 
