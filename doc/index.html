@@ -75,7 +75,7 @@ def main()
 }
     </pre>
     <p>
-      The above code is a program that calcualtes and prints the 20:th
+      The above code is a program that calculates and prints the 20:th
       Fibonacci number. It demonstrates a few features of the Anna
       syntax. The first line tells us how to declare a new function:
     </p>
@@ -96,8 +96,7 @@ def Int fibonacci(Int n) {
 	can be omitted. The fibonacci function is recursive, which makes
 	this difficult, so we need to help the compiler. If you don't
 	provide the return type, and the compiler can't calculate it
-	either, the compiler will let you know. Usually by randomly
-	crashing.
+	either, the compiler will let you know. Usually by crashing.
       </li>
       <li>
 	The function name can be omitted if desired. If you omit it, you
@@ -190,6 +189,10 @@ pi :== 4.0;
     <pre>
 // Prints 1307674368000. Integers in Anna are arbitrary precision, so there are no overflows
 print(1*2*3*4*5*6*7*8*9*10*11*12*13*14*15, "\n");
+// Underscores in numeric literals are ignored
+print(100_000_000, "\n");
+// Hexadecimal, binary and octal integer literals
+print(0xdeadbeef, 0b010101, 0o777, "\n");
 // Prints 3.5. The output type of Int/Float algebra is always a Float. 
 print(1 + 2.5);
     </pre>
@@ -225,14 +228,21 @@ print(hash["third"], "\n");
       values 0 to 10 in Anna, do the following:
     </p>
     <pre>
-(0..11).each(i){print(i)}
+(0..11).each(ii){print(ii)}
     </pre>
     <p>
-      <tt>0..11</tt> is a Range object, spanning from 0
-      (inclusive) to 11 (exclusive). All collection type objects, such
-      as maps, lists and ranges provide an each method. It can be used
-      with a single argument, such as above, or it can be used with
-      two arguments, like this:
+      <tt>0..11</tt> is a Range object, spanning from 0 (inclusive) to
+      11 (exclusive). The <code>each(ii)</code> part means we want to
+      call the each method, which loops over the range, and that we
+      want the loop variable to be named <code>ii</code>. Anna will
+      automatically determine the correct type for the <code>ii</code>
+      variable. The code block supplied after the parentesis will be
+      called once for every value in the range, with the
+      variable <code>ii</code> set to each value. All collection type
+      objects, such as maps, lists and ranges provide an each
+      method. It can be used with a single argument, such as above, or
+      it can be used with two arguments, in which case the first
+      argument is the index/key and the second is the value:
     </p>
     <pre>
 var temperatures = ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
@@ -253,6 +263,92 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
     </pre>
 
 
+    <h3><a name="examples-truth">Truth</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+if(0)
+{
+  // This will get executed
+}
+
+if([])
+{
+  // So will this
+}
+
+if(false)
+{
+  // This is likely a syntax error -there is no 'false' constant defined in Anna
+}
+
+if(?)
+{
+  // Null is the only false value in Anna.
+}
+
+    </pre>
+
+
+    <h3><a name="examples-andor">and/or</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+TODO
+    </pre>
+
+    <h3><a name="examples-continuations">Continuations</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+TODO
+    </pre>
+
+
+    <h3><a name="examples-expandCode">The expandCode macro</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+TODO
+    </pre>
+
+    <h3><a name="examples-switch">The switch macro</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+TODO
+    </pre>
+
+    <h3><a name="examples-struct">The struct macro</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+TODO
+    </pre>
+
+
+    <h3><a name="examples-macros">Defining your own macros</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+TODO
+    </pre>
+
+    <h3><a name="examples-errors">Error handling</a></h3>
+    <p>
+      
+    </p>
+    <pre>
+TODO
+    </pre>
+
    
     <h2><a name="intro_short">Anna in a single sentence</a></h2>
     <div class='subheading'>Wherein the author demonstrates his his mastery of commatation</div>
@@ -261,7 +357,7 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
       supports LISP style macros, functions and types as first class
       citizens, closures and continuations; it has a C-style syntax
       and its aim is to combine the expressiveness and power of LISP
-      with the type safety and control of Java.
+      with the type safety, familarity and control of Java.
     </p>
     <p>
       Note the use of a semicolon to combine two separate sentences into
@@ -275,7 +371,7 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
       <li><a href='#examples'>Examples - learning by doing</a></li>
       <li><a href='#structural_typing'>Structural typing - duck typing rethought</a></li>
       <li><a href='#macros'>Macros - redefining the problem to fit the solution</a></li>
-      <li><a href='#misc'>An odd number of legs for a horse to have</a></li>
+      <li><a href='#misc'>An odd number of legs for a horse to have</a>, various oddities about Anna.</li>
       <li><a href='#continuations'>Enough interruptions, let's continuate!</a></li>
     </ul>
     
@@ -384,20 +480,29 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
       new.</div>
     
     <p>
-      Anna is a statically typed (somewhat) LISP-like language with a
-      front end that allows you to write your code with a
-      C-like structure, e.g. using infix operators, and braces. The Anna
-      type system supports duck typing, meaning that if the type of
-      variable B contains all members of the type A, with compatible type
-      signatures, then B can be freely cast into a variable of type A. It
-      supports LISP style macros, continuations and closures.
+      Anna is a statically typed language with a front end that allows
+      you to write your code with a C-like structure, e.g. using infix
+      operators, braces and brackets. What sets Anna apart from other
+      such languages is it's support for LSIP-features such as
+      LISP-style macros, closures, anonymous functions and
+      continuations.  The Anna type system sis static, but it supports
+      structural typing, meaning that if the type of variable B
+      contains all members of the type A, with compatible type
+      signatures, then B can be freely cast into a variable of type
+      A. 
     </p>
     <p>
       In order to learn more about Anna, check out the following sections:
     </p>
     <ul>
-      <li>Sugar and spice - How the front end sugar works and what Anna looks like without makeup.</li>
-      <li></li>
+      <li>
+	<a href="#sugar">Sugar and spice</a> - How the front end sugar works and what Anna looks like without makeup.
+      </li>
+      <li>
+	<a href='#examples'>Anna by examples.</a> If you just want to
+	dig in to the syntax.
+      </li>
+
     </ul>
     
     <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
@@ -765,43 +870,44 @@ map := ["Mon":0.0,"Tue":1.1];
       bugs. In its stead, Anna allows you to record all errors that
       occured during the execution of a function, and deal with them
       where convenient. Instead of the classic try/except block of
-      other languages, Anna has a collect/handle block that in many
+      other languages, Anna has a collect block that in many
       ways behaves the same, but with an important difference. This is
-      how a collect/handle block will usually look like:
+      how a collect block will usually look like:
     </p>
-<code>
+<pre>
 collect
 {
     /* Some code that may cause various error conditions */
     ...
+}.each(err){
+    switch(err)
+    {
+	case IOError{
+	    /* If we encounter an IO error, ignore the rest of the error 
+	     * list, but continue running the program */
+	    print("There was an IO problem. Details:\n", err.message);
+	    break; 
+	}
+	case PermissionError{
+	    /* If we encounter a permission error, exit the program */
+	    print("Access denied! Shutting down\n");
+	    exit(1);
+	}
+	default {
+	    /* If we encounter any other error,  continue processing the 
+	     * error list */
+	    print("Unknown error. Details:\n", err.message);
+	}
+    }
 }
-handle(err){
-    case IOError{
-	/* If we encounter an IO error, ignore the rest of the error 
-	 * list, but continue running the program */
-	print("There was an IO problem. Details:\n", err.message);
-	break; 
-    }
-    case PermissionError{
-	/* If we encounter a permission error, exit the program */
-	print("Access denied! Shutting down\n");
-	exit(1);
-    }
-    default {
-	/* If we encounter any other error,  continue processing the 
-	 * error list */
-	print("Unknown error. Details:\n", err.message);
-    }
-}
-</code>
+</pre>
     <p>
       The <code>collect</code> call will save any errors that occur
       while executing its body, including any errors occusing in
       functions called by the body at any level of nesting, into a
       list of errors. Once the code has finished, the list of errors
-      is iterated over and handled by the <code>handle</code>
-      call. Note that handle is a loop, it is executed once for every
-      error that occured in the code.
+      is iterated over and handled by the <code>each</code>
+      loop. 
     </p>
     <p>
       How is this different from exceptions? Exceptions can skip over
@@ -809,7 +915,7 @@ handle(err){
       allocate some form of resource, you need to use try/finally to
       make sure it's released, which is very error prone. When an
       error happens in Anna, it is recorded, but the code will keep in
-      running. In Anna, you don't need to code defiensively around the
+      running. In Anna, you don't need to code defensively around the
       possibility that some code you called might throw an
       exception. You do't need to be afraid thet there is an
       undocumented exception that might be thrown by some library code
@@ -1013,15 +1119,15 @@ var then = Date(2009-1-1, 12:30);
 // Move ahead x years and one hour 
 date += x-0-0, 1:00;
     </code>
-    <h1>Sugar and spice - How the front end sugar works and what Anna looks like without makeup</h1>
+    <h1><a name="sugar">Sugar and spice - How the front end sugar works and what Anna looks like without makeup</a></h1>
     <p>
       The real syntax for Anna is painfully simple. There Anna AST
       contains only three types of nodes:
     </p>
     <ol>
       <li>
-	Constant literals, such as <code>3</code>, <code>1.0</code>
-	or <code>"foo"</code>.
+	Literals, such as <code>?</code>, <code>3</code>, <code>1.0</code>
+	or <code>"foo"</code>. 
       </li>
       <li>
 	Identifiers, such as <code>foo</code> or <code>String</code>. 
@@ -1030,7 +1136,7 @@ date += x-0-0, 1:00;
 	Function calls, such as <code>X(Y,Z)</code>, where <code>X</code>, <code>Y</code>
 	and <code>Z</code> are arbitrary other AST nodes. In the above
 	example, the AST node <code>X</code> is invoked
-	with <code>Y</code> and <code>Z</code> as its parameters.
+	with <code>Y</code> and <code>Z</code> as input parameters.
       </li>
     </ol>
     <p>
@@ -1048,8 +1154,25 @@ date += x-0-0, 1:00;
       dot operator is used for setting and getting member values, we
       have arithmetic operators with the usual precedence, we have
       special language constructs to allow us to define types,
-      functions and variables with a little less verbosity, etc..
+      functions and variables with a little less verbosity, etc.  All
+      of this syntactic sugar is stripped away by the front end of the
+      compiler, and is converted into the basic AST node types
+      mentioned above. Below are some examples of these transformations.
     </p>
-    
+<pre>
+{foo} => __block__(foo)
+
+lst.count => __memberGet__(foo, count)
+
+lst[4] => __memberGet__(lst, __get__)(4)
+
+1+2 => __memberGet__(1, __add__)(2)
+
+foo := 3 => __var__(foo, ?, 3, __block__())
+
+def foo(){1} => __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __block__(1)))
+
+</pre>    
+
   </body>
 </html>
