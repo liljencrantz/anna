@@ -522,19 +522,26 @@ var birthday = Date(1978-05-20, 12:34:00);
     </p>
     <h3>Continuations, continued</h3>
     <p>
-      This paragraph is for C (and possible C++) coders that know what
-      a longjmp is. If you don't, feel free to skip this
-      paragraph. So, you know what a longjmp is. Well, a continuation
-      is exactly like a longjmp, except that a few of the restrictions
-      placed on longjmps are removed. Specifically, longjmp:s only
-      allow you to «rewind» the stack and continue execution further
-      down on the function stack, whereas continuations allow you to
-      jump up, down or sideways into a whole other branch ot the
-      stack. That's it. Nothing more. Simple. Feel free to skip to the
-      example.
+      This paragraph is for C and C++ coders that know what a longjmp
+      is. If you don't, feel free to skip this paragraph. So, you know
+      what a longjmp is. Cogratulations! A continuation is exactly
+      like a longjmp, except that the restrictions placed on
+      longjmps are removed. Specifically, longjmp:s only allow you to
+      «rewind» the stack and continue execution further down on the
+      function stack, whereas continuations allow you to jump up, down
+      or sideways into a whole other branch of the stack. That's
+      it. Nothing more. Simple. Feel free to skip the next paragraph.
     </p>
     <p>
-      
+      Continuations are a way to explicitly control the location that
+      a function will return to when it finishes. Continuations are an
+      extremely powerful language feature that can be used to
+      implement exception handling, green threads and a multitude of
+      other features.
+    </p>
+    <p>
+      To learn more about continuations,
+      click <a href="#continuations">here</a>.
     </p>
 
     <h2><a name="intro_script">Anna for Python and Ruby programmers</a></h2>
@@ -542,47 +549,48 @@ var birthday = Date(1978-05-20, 12:34:00);
     
     <p>
       In daily use, Python and Ruby are probably the languages that
-      most resemble Anna.  Anna code looks a bit like C, which means
-      the code may not look like Python or Ruby, and you have to do
-      slightly more typing in Anna sometimes, but the way you go about
-      writing your programs is very similar.
+      most resemble Anna. Anna code looks a bit like C, which means
+      the code may not look like Python or Ruby, but once you've
+      gotten used to it, the way the language feels and works should
+      be very familiar.
     </p>
     <p>
-      Unlike Python, Anna does not have statements, only
-      expressions. A function declaration is an expression that
+      Like Ruby, but unlike Python, Anna does not have statements,
+      only expressions. A function declaration is an expression that
       returns a function. Thus, you do not need the silly and
       contrived lambda expression to create anonymous functions:
     </p>
-    <code>
+    <pre>
 FIXME! Add an anonymous function example here
-    </code>
+    </pre>
     <p>
       Much like in Ruby, there is a very simple shortcut for throwing
       in a block of code as an additional parameter in Anna. If you
       simply append a code block afer a function call, Anna will
       interpret it as a function parameter:
     </p>
-    <code>
+    <pre>
 FIXME! Add code block example here
-    </code>
+    </pre>
     <p>
       Another way in which Anna is like Python and Ruby is the convenient support for functional programming. Say we haxe EXAMPLE FIXME LALALA.
     </p>
-    <code>
+    <pre>
 FIXME! Functional programming example here
-    </code>
+    </pre>
     <p>
       Blocks of code, by the way, are anonymous functions that take 0
-      parameters and return the last expression in the block.
+      parameters.
     </p>
     <h3>Static typing!!!</h3>
     <p>
       So. Enough dodging, lets address what is likely to be the major
       cause of concern for Ruby- and Python lovers. Static typing. In
       Anna, you will sometimes have to do slightly more typing. It's
-      true. Anna does its best to figure out types for you, and when
-      it can, you don't have to tell her, but there are still
-      situations where you have to talk about types. Lets break it down:
+      true. Anna does its best to figure out types for you using type
+      inference, and when it can, you don't have to tell her, but
+      there are still situations where you have to talk about
+      types. Lets break it down:
     </p>
     <ul>
       <li>
@@ -591,22 +599,13 @@ FIXME! Functional programming example here
 	you'll have to give the type.
       </li>
       <li>
-      <li>
-	When defining a function for the first time, you will have to
-	supply the type of each input parameter and sometimes alse the
-	return type. When overriding a method in a subclass, you don't
-	have to supply any type information at all. You don't even
-	have to give the input parameter names.
-      </li>
-      <li>
-	When performing a cast (I know, I know), if you are assigning
-	the value of the cast to a variable, you do not have to tell
-	Anna what you're casting to. The rest of the time, you do.
+	When defining a function, you will have to supply the type of
+	each input parameter and sometimes alse the return type.
       </li>
     </ul>
     <p>
       The upshoot of this is that you have to do significantly less
-      type checking when validating your input rguments (and you do
+      type checking when validating your input arguments (and you do
       validate your input arguments, don't you?), regaining you some
       of those lost key strokes. You also get much better ahead of
       time code checking - some silly mistakes can be caught earlier
@@ -622,9 +621,7 @@ FIXME! Functional programming example here
       tolerable amount of typing than in other statically typed
       languages.
     </p>
-
-
-
+    
     <h1><a name="structural_typing">Structural typing</a></h1>
     <p>
       Most languages, including Python and Java, have operations that
