@@ -1,22 +1,35 @@
 <html>
   <head>
+    <meta charset="UTF-8">
   </head>
   <body>
     
-    <h1>Introducing Anna</h1>
-    <div class='subheading'>Start here</div>
+    <h1>A brief introduction to Anna</h1>
+    <pre>
+def main()
+{
+    print("Hello, World!\n");
+}
+    </pre>
     <p>
-      Who is Anna? Who are you? You can't properly explain something
-      like Anna with knowing who you're talking to. Read through the
-      list below, and pick the link that suits you best.
+      This is a brief introduction to the Anna programming language,
+      written in the form of a «Choose your own adventure»-style
+      gamebook. 
     </p>
-    
+    <p>
+      Let's get started:
+    </p>
     <ul>
       
       <li>
-	<a href='#intro_short'>Anna in a single sentence.</a> Click
-	here if you already know everything there is to know about
-	other programming languages.
+	<a href='#examples'>Anna by examples.</a> If you just want to
+	dig in to the syntax.
+      </li>
+
+      <li>
+	<a href='#intro_short'>Anna in a single sentence.</a> Pick
+	this option if you already know everything there is to know
+	about other programming languages.
       </li>
       
       <li>
@@ -28,19 +41,13 @@
       <li>
 	<a href='#intro_c'>Anna for Java, C, C++, Go and D
 	  programmers</a>. Do you enjoy the pleasures of static
-	  typing?  Curly braces? Yes? Then this is the link for you.
+	  typing? Curly braces? Yes? Then this is the link for you.
       </li>
       
       <li>
 	<a href='#intro_script'>Anna for Python and Ruby programmers.</a>
 	Do you feel most at home when writing code in a modern,
 	dynamically typed scripting language?
-      </li>
-      
-      <li>
-	<a href='#intro_nemerle'>Anna for Nemerle programmers.</a>  Do
-	you feel Ged was unfairly given too much time in the books of
-	Earth sea?
       </li>
       
       <li>
@@ -53,14 +60,208 @@
       
     </ul>
     
-    <h2>Anna in a single sentence</h2>
+    <h2><a name="examples">Anna by examples</a></h2>
+    <div class='subheading'>Because time is too precious to actually learn anything.</div>
+
+    <h3><a name="examples-functions">Defining and calling functions</a></h3>
+    <pre>
+def Int fibonacci(Int n) {
+    return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
+}
+
+def main()
+{
+    print(fibonacci(20), "\n");
+}
+    </pre>
+    <p>
+      The above code is a program that calcualtes and prints the 20:th
+      Fibonacci number. It demonstrates a few features of the Anna
+      syntax. The first line tells us how to declare a new function:
+    </p>
+    <pre>
+def Int fibonacci(Int n) {
+    </pre>
+    <p>
+      The <tt>def</tt> keyword means that we're defining a function. Then
+      a return type and the name of the function we're defining. After
+      that follows a list of all input parameteres the function accepts
+      and their types. A few things should be noted:
+    </p>
+    <ul>
+      <li>
+	The function return type can usually be omitted, as it is for the
+	main function below. Specifically, if the compiler can calculate
+	the return type by looking at all the return statments, then it
+	can be omitted. The fibonacci function is recursive, which makes
+	this difficult, so we need to help the compiler. If you don't
+	provide the return type, and the compiler can't calculate it
+	either, the compiler will let you know. Usually by randomly
+	crashing.
+      </li>
+      <li>
+	The function name can be omitted if desired. If you omit it, you
+	will have created an anonymous function. These can be used e.g. as
+	input paramters to other functions that accept a function as an
+	argument.
+      </li>
+    </ul>
+    <p>
+      If you want to know more about type
+      inference, <a href="#type-inference">click here</a>. Otherwise,
+      continue reading. The next line of interest is this:
+    </p>
+    <pre>
+return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
+    </pre>
+    <p>
+      This line tells us a few important things about Anna:
+    </p>
+    <ul>
+      <li>
+	To call a function, like e.g. the <tt>fibonacci</tt> function,
+	just write the function name followed by it's input parameters
+	in parenthesis.
+      </li>
+      <li>
+	The <tt>if</tt> clause in Anna returns a value. In computer words,
+	it is an expression, not a statement. It returns the last value of
+	the block which was executes. In fact, there are no statements in
+	Anna - everything is an expression,
+      </li>
+      <li>
+	The bullet point above implies that the 'return' keyword in the
+	code above was superflous - since the if expression was the last
+	expression in the fibonacci function, it would have been returned
+	as the function output regardless. This is correct. The return
+	keyword was only used to make the intent of the code more clear.
+      </li>
+    </ul>
+
+    <h3><a name="examples-variables">Variables</a></h3>
+    <p>
+      That wasn't very hard. It's going to stay pretty easy for a
+      while longer.
+    </p>
+    <pre>
+def main()  
+{
+    foo := 3;
+    print(foo, "\n"); // Prints 3
+}
+    </pre>
+    <p>
+      Wow. That one may have been even easier than the first one. To declare a variable, write the variable name, followed by <tt>:=</tt> and the initial value for the varialbe. 
+    </p>
+    <p>
+	Anna is a so called statically typed language, that mean that
+	Anna will have an idea of the type of every variable at
+	compile time. Anna does this by checking the type of the
+	initial value. If we don't want the variable to have the type
+	of the initial value, we'll use the cast operator. In anna,
+	the cast operator is called <tt>as</tt>. It is used like this:
+    </p>
+    <pre>
+foo := 3 as Object;
+      </pre>
+    <p>
+      The above code will declare the variable foo, which will be of
+      type Object. Object is the root of the Anna type tree, which
+      means that objects of any type can be cast to an Object. The
+      initial value of the foo variable is the integer 3.
+    </p>
+    <p>
+      Anna also has constants. Constants are like variables, except
+      after the initial assignment, they can never be reassigned. This
+      is how you declare a constant:
+    </p>
+    <pre>
+pi :== 4.0;
+    </pre>
+    <p>
+      It should be noted that the previous paragraph is a lie. The
+      Anna compiler still doesn't check to make sure constants can't
+      be assigned to. If you try to, you might succeed. Or, more
+      likely, Anna will crash. If we can all pretend that you can't
+      assign to constants, everybody will be much happier.
+    </p>
+
+    <h3><a name="examples-numbers">Numbers</a></h3>
+    <pre>
+// Prints 1307674368000. Integers in Anna are arbitrary precision, so there are no overflows
+print(1*2*3*4*5*6*7*8*9*10*11*12*13*14*15, "\n");
+// Prints 3.5. The output type of Int/Float algebra is always a Float. 
+print(1 + 2.5);
+    </pre>
+
+    <h3><a name="examples-lists">Lists</a></h3>
+    <pre>
+// lst is a list with four members
+lst := ["first", "second", "third", "fourth"]
+// Print the number of members. In this case, that is '4'
+print(lst.count, "\n");
+// Create a new list, which contains the members of the original list 
+// in the range of 1 (inclusive) to 3 (exclusive)
+lst2 := lst[1..3]
+// Print the number of members. In this case, that is '2'
+print(lst2.count, "\n");
+// Prints the first member of lst2, which is "second"
+print(lst2[0], "\n");
+    </pre>
+
+    <h3><a name="examples-maps">Maps</a></h3>
+    <pre>
+// hash is a HashMap with four mappings
+hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
+// Print the number of members. In this case, that is '4'
+print(hash.count, "\n");
+// Prints the value associated with the key "third", which is "C":
+print(hash["third"], "\n");
+    </pre>
+
+    <h3><a name="examples-looping">Looping</a></h3>
+    <p>
+      Anna does not have a traditional for loop syntax. To print the
+      values 0 to 10 in Anna, do the following:
+    </p>
+    <pre>
+(0..11).each(i){print(i)}
+    </pre>
+    <p>
+      <tt>0..11</tt> is a Range object, spanning from 0
+      (inclusive) to 11 (exclusive). All collection type objects, such
+      as maps, lists and ranges provide an each method. It can be used
+      with a single argument, such as above, or it can be used with
+      two arguments, like this:
+    </p>
+    <pre>
+var temperatures = ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
+temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")}
+    </pre>
+    </p>
+
+    <h3><a name="examples-blocks">Blocks</a></h3>
+    <p>
+      In addition to an each method, collection tpyes offer a wide
+      variety of functional programming methods, like map and filter.
+    </p>
+    <pre>
+// Prints 2, 3 and 4, on separate lines
+[1, 2, 3].map(i){i+1}.each(i){print(i,'\n')}
+// Filters out the even numbers for the list
+[1, 2, 3, 4].filter(i){i ^mod 2 == 0}
+    </pre>
+
+
+   
+    <h2><a name="intro_short">Anna in a single sentence</a></h2>
     <div class='subheading'>Wherein the author demonstrates his his mastery of commatation</div>
     <p>
-      Anna is a statically duck typed computer language that supports
-      LISP style macros, functions and types as first class citizens,
-      closures and continuations; it has a C-style syntax and it's aim
-      is to combine the expressiveness and power of LISP and Ruby with
-      the type safety and control of Java.
+      Anna is a statically, structurally typed computer language that
+      supports LISP style macros, functions and types as first class
+      citizens, closures and continuations; it has a C-style syntax
+      and its aim is to combine the expressiveness and power of LISP
+      with the type safety and control of Java.
     </p>
     <p>
       Note the use of a semicolon to combine two separate sentences into
@@ -68,23 +269,25 @@
       still manages to be perfectly readable. That is the essence of Anna.
     </p>
     <p>
-      To learn more about Anna, check out the following sections:
+      Sounds good? To learn more about Anna, check out the following sections:
     </p>
     <ul>
-      <li><a href='#duck_typing'>Duck typing and Anna</a></li>
-      <li><a href='#macros'>Macros redefine our world</a></li>
+      <li><a href='#examples'>Examples - learning by doing</a></li>
+      <li><a href='#structural_typing'>Structural typing - duck typing rethought</a></li>
+      <li><a href='#macros'>Macros - redefining the problem to fit the solution</a></li>
       <li><a href='#misc'>An odd number of legs for a horse to have</a></li>
       <li><a href='#continuations'>Enough interruptions, let's continuate!</a></li>
     </ul>
     
-    <h2>Gentle Anna</h2>
+    <h2><a name="intro_long">Gentle Anna</a></h2>
     <div class='subheading'>Wherein strategic use of mood lighting makes
-      our lady seem less intimadating.</div>
+      Anna seem less intimadating.</div>
     <p>
       Anna is a computer programming language. That is, it is a
-      language designed to be written and read by humans, and executed
-      by computers. There are many programming languages, all with
-      their own strengths and weaknesses.
+      language designed to be written and read by humans, but which
+      contains a series of instructions designed to be executed by
+      computers. There are many programming languages, all with their
+      own strengths and weaknesses.
     </p>
     <ul>
       <li>
@@ -170,9 +373,13 @@
       links below.
     </p>
     <ul>
-      <li></li>
+      <li>
+	<a href='#examples'>Anna by examples.</a> If you want to see
+	thery turned into practice.
+      </li>
+
     </ul>
-    <h2>Anna for LISP programmers</h2>
+    <h2><a name="intro_lisp">Anna for LISP programmers</a></h2>
     <div class='subheading'>Wherein it is explained that old is the new
       new.</div>
     
@@ -193,7 +400,7 @@
       <li></li>
     </ul>
     
-    <h2>Anna for Java, C, C++, Go and D programmers</h2>
+    <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
     <div class='subheading'>Wherein a prisoner is offered a golden cage.</div>
     <p>
       Anna is a C-like language with garbage collection and a powerful
@@ -251,17 +458,14 @@
     <p>
       Pretty much all compilers will read a source file into some kind
       of tree of nodes called an abstract syntax tree, or AST for
-      short. The AST for a simple code snippet
-      like <code>print(3)</code> will likely looks something like
-      this:
+      short. 
     </p>
-    <img src=''>
     <p>
       Every node in the AST tree above is at some point a regular Anna
       object, and the compiler can alter these nodes as it sees
       fit. That's pretty nifty, but how does that tie in with us? Anna
       has two keywords for defining a function,
-      namely <code>function</code> and <code>macro</code>. They work
+      namely <code>def</code> and <code>macro</code>. They work
       pretty much the same, they both let you define a pice of code
       with a few input parameters and a few output parameters. There
       are two differences between the two, firstly that macros are run
@@ -333,7 +537,7 @@ var birthday = Date(1978-05-20, 12:34:00);
       
     </p>
 
-    <h2>Anna for Python and Ruby programmers</h2>
+    <h2><a name="intro_script">Anna for Python and Ruby programmers</a></h2>
     <div class='subheading'>Wherein...</div>
     
     <p>
@@ -418,29 +622,10 @@ FIXME! Functional programming example here
       tolerable amount of typing than in other statically typed
       languages.
     </p>
-    <h2>Anna for Nemerle programmers</h2>
-    <div class='subheading'>Wherein...</div>
-    
-    <p>
-      Nemerle and Anna are similar languages. Both aim to create a
-      language that looks C-like on the surface, but let you fundamentally
-      redesign the language through macros. Some of the major differences
-      between Anna and Nemerle:
-    </p>
-    <ul>
-      <li>Duck typing</li>
-      <li>
-	Anna has a Ruby-inspired block syntax allows you greater language flexibility
-      </li>
-      <li>Null handling</li>
-      <li>
-	Nemerle is a .Net language, meaning it has a vast array of
-	.Net libraries available, but this also means that Nemrle has
-	a standard library that has not been designed to make the best
-	use of the languages most exciting features.
-      </li>
-    </ul>
-    <h1>Duck typing and Anna</h1>
+
+
+
+    <h1><a name="structural_typing">Structural typing</a></h1>
     <p>
       Most languages, including Python and Java, have operations that
       let you check if an object explicitly states that it implements
@@ -502,7 +687,7 @@ var baz = foo or bar;
     </p>
     
     
-    <h1>Minimum impact variable declarations</h1>
+    <h1><a name="type-inference">Minimum impact static typing through type inference</a></h1>
     <p>
       Anna is a statically typed language. That means that before a block
       of Anna code is executed by the computer, every variable declaration
@@ -522,22 +707,21 @@ var baz = foo or bar;
       epress the above. You see, the numeric literal <code>7</code> is
       known by the interpreter to be of the type Int. The interpreter can
       use this information to guess the type of the variable
-      declaration. Therefore, we can simply omit the variable type, and
-      write the following:
+      declaration. Therefore, Anna has an alternative, simpler syntax:
     </p>
     
-    <code>var i = 7;</code>
+    <code>i := 7;</code>
     
     <p>
-      This only saves you four key strokes in the example above, but
+      This only saves you seven key strokes in the example above, but
       consider for example templated types, such as a map with String keys
       and Double values:
     </p>
 
-<code>
+<pre>
 var Map&lt;String,Double&gt; map = ["Mon":0.0,"Tue":1.1;
-var map = ["Mon":0.0,"Tue":1.1];
-</code>
+map := ["Mon":0.0,"Tue":1.1];
+</pre>
 
     <p>
       Suddenly, we've cut the number of key strokes nearly in half!
@@ -545,11 +729,10 @@ var map = ["Mon":0.0,"Tue":1.1];
     
     <p>
       Variable declarations aren't the only place where the interpreter
-      can figure out the variable type for you, some more examples follow
-      below.
+      can figure out the variable type for you:
     </p>
     
-    <code>
+    <pre>
   /*
    * Function with return type implied by the type of value it is returning
    */
@@ -558,37 +741,9 @@ var map = ["Mon":0.0,"Tue":1.1];
       return in+1;
   }
 
-  /*
-   * When overriding a method in a subclass, the entire method signature is 
-   * implicit from its name
-   */
-  class A
-  {
-      def foo(Int in)
-      {
-          print in;
-      }
-  }
+    </pre>
 
-  class b extends A
-  {
-      foo
-      {
-          print in+1;
-      }
-  }
-
-
-  /*
-   * The result of the cast is assigned to a variable of type Int, 
-   * so we can assume we're casting to Int
-   */
-  var Object foo = someFunction();
-  var Int bar;
-  bar = cast(foo);
-  
-    </code>
-    <h1>Macros redefine our world</h1>
+    <h1><a name="macros">Macros redefine our world</a></h1>
     <p>
       Anna, much like LISP, allows you to define functions that accept a
       tree of nodes representing a program code snippet as an input, and
@@ -695,21 +850,22 @@ f.close();
     <h2>What is null? Baby don't hurt me!</h2>
     <p>
       The null object in Anna, which can be accessed through
-      the <code>null</code> keyword, is a very odd object. It abides
+      the <code>?</code> keyword, is a very odd object. It abides
       to every interface, and calling any method on it will without
       exception have no side effects and will return a null object. In
-      other words, it is perfectly ok to call <code>2 + null</code>,
+      other words, it is perfectly ok to call <code>2 + ?</code>,
       it will not crash or throw an exception, and the result will be
       null.
     </p>
     <h2>Truth is lie</h2>
     <p>
       There is no separate Boolean type in Anna. There is exactly one
-      object that takes on the responsibility of representing the false
-      state, and that is the null object. Any other object, including the
-      empty list, the number zero and the text string "null" all count as
-      true in the eyes of if statements and any other statement that
-      expects a yes/no answer. Null is the new no.
+      object that takes on the responsibility of representing the
+      false state, and that is the null object. Any other object,
+      including the empty list, the number zero and the text strings
+      "null", "?" and "0" all count as true in the eyes of if
+      expressions, while loops and any other statement that expects a
+      yes/no answer. Null is the new no.
     </p>
     <h2>I'll be your operator, baby</h2>
     <p>
@@ -727,12 +883,12 @@ f.close();
     <p>
       In addition to overloading +, - and various other operators,
       Anna also allows you define you own generic operators. These
-      operators all start with the «@» symbol, followed by an identifier:
+      operators all start with the «^» symbol, followed by an identifier:
     </p>
     <code>
 var a = 4;
 var b = 7;
-print(a @bitand b);
+print(a ^bitand b);
     </code>
     <p>
       The above example shows usage of the @bitand generic operator of
@@ -751,41 +907,24 @@ class Color
 }
 
 var col = Color();
-col @blend 0.1;
+col ^blend 0.1;
     </code>
     <p>
       
     </p>
     <h2>No reservations? No problem!</h2>
     <p>
-      The Suger layer has a small number of such words, including
-      'function', 'var' and 'return'. But the basic Anna language does not
-      have any reserved words. But because macros can never be redefined,
-      macros more or less take the place of reserved words. It may seem
-      scary that modules you import can add reserved words to the language
-      - what if a module you rely on suddenly adds a macro named 'pie'?
-      Suddenly, you'll have to edit all your source code to remove any
-      variables and functions named pie. And given how delicious pie is,
-      that is bound to take an insurmountable amount of time.
-    </p>
-    <p>
-      Clearly, allowing a module to add key words without your say so
-      is a terrible idea. Anna avoids this disaster in them making
-      simply by making the import of macros an explicit act. Macro
-      names are never imported automatically when you import a
-      module. If the module 'it.is.delicious' contains a macro named
-      'pie', it will not be imported by the statement 'import
-      it.is.delicious'. You need to write 'import
-      it.is.delicious.pie'. That way, every single non-builtin macro
-      that you import is explicitly listed at the top of every source
-      code file.
-    </p>
-    <p>
-      Of course, given that macros work the way they do, it is
-      possible to write a macro that will import additinal macros into
-      your namespace, but aside from that being exceptionally bad
-      form, you will at least have that single macro import statement
-      to investigate.
+      The Sugar layer has a small number of reserved words, including
+      'def', 'var' and 'return'. Because macros can never be
+      redefined, the builtin collection of macros more or less count
+      as additional reserved words. It may seem scary that modules you
+      import can add reserved words to the language - what if a module
+      you rely on suddenly adds a macro named 'pie'?  Suddenly, you'll
+      have to edit all your source code to remove any variables and
+      functions named pie. And given how delicious pie is, that is
+      bound to take an insurmountable amount of time.
+      For this reason, great care must be taken when using
+      the <tt>expand</tt> expression to import macros.
     </p>
     <h2>Comments nest</h2>
     <p>
@@ -848,24 +987,6 @@ function mandelbrot(Complex p0, Int maxStep)
       reading the comments and check that you understand what the code
       does. There are a few things that are different from many other
       languages in the code above. We'll comment on them below.
-    </p>
-    <h2>Looping</h2>
-    <p>
-      Anna does not have a traditional for loop syntax. To print the
-      values 0 to 10 in Anna, do the following:
-    </p>
-<code>
-(0..10).each(i){print(i)}
-</code>
-    <p>
-      All collection type objects, such as maps, lists and ranges
-      provide an each method. It can be used with a single argument,
-      such as above, or it can be used with two arguments, like this:
-      </p>
-<code>
-var temperatures = ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
-temperatures.each(day:value){print("Day: ", day, ", temperature: ", value, "\n")}
-</code>
     </p>
     <h1>Microformats</h1>
     <p>
