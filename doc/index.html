@@ -145,23 +145,38 @@ return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
     <pre>
 def main()  
 {
-    foo := 3;
-    print(foo, "\n"); // Prints 3
+    foo := 3;         // Declare foo as 3
+    print(foo, "\n"); // Print 3
+    foo = 5;          // Assign 5 to foo
+    print(foo, "\n"); // Print 5
 }
     </pre>
     <p>
-      Wow. That one may have been even easier than the first one. To declare a variable, write the variable name, followed by <tt>:=</tt> and the initial value for the varialbe. 
+      Wow. That one may have been even easier than the first one.
     </p>
+    <ul>
+      <li>
+	To declare a variable, write the variable name, followed
+	by <tt>:=</tt> and the initial value for the varialbe.
+      </li>
+      <li>
+	To assign a new value to an existing variable, write the
+	variable name, followed by <tt>=</tt> and the new value for
+	the varialbe.
+      </li>
+      
+    </ul>
     <p>
-	Anna is a so called statically typed language, that mean that
-	Anna will have an idea of the type of every variable at
-	compile time. Anna does this by checking the type of the
-	initial value. If we don't want the variable to have the type
-	of the initial value, we'll use the cast operator. In anna,
-	the cast operator is called <tt>as</tt>. It is used like this:
+      Anna is a so called statically typed language, that means that
+      she insists that she must have an idea of the type of every
+      variable at compile time. Anna does this by checking the type of
+      the initial value. This is called type inference. If we don't
+      want the variable to have the type of the initial value, we'll
+      use the cast operator. In Anna, the cast operator is
+      called <tt>as</tt>. It is used like this:
     </p>
     <pre>
-foo := 3 as Object;
+foo := 3 as Object;  // Declare foo as a variable of type Object
       </pre>
     <p>
       The above code will declare the variable foo, which will be of
@@ -175,7 +190,7 @@ foo := 3 as Object;
       is how you declare a constant:
     </p>
     <pre>
-pi :== 4.0;
+pi :== 4.0;    // Declare pi as a constant with value 4.0
     </pre>
     <p>
       It should be noted that the previous paragraph is a lie. The
@@ -184,7 +199,11 @@ pi :== 4.0;
       likely, Anna will crash. If we can all pretend that you can't
       assign to constants, everybody will be much happier.
     </p>
-
+    <p>
+      To learn more about type inference,
+      click <a href="#type-inference">here</a>, otherwise, continue
+      reading.
+    </p>
     <h3><a name="examples-numbers">Numbers</a></h3>
     <pre>
 // Prints 1307674368000. Integers in Anna are arbitrary precision, so there are no overflows
