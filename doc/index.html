@@ -407,17 +407,21 @@ TODO
     <ul>
       <li>
 	Some languages are low level, meaning they force you to go
-	into great detail about how you want to perform the actions,
+	into great detail about how you want to perform any actions,
 	whereas other are high level, meaning they skim the details
-	and force the computer to figure out more by itself. High
-	level languages are usually slower, and they almost always
-	require much more memory, but they are also usually much
-	easier for the programmer to write. Anna is a high level
-	language. It is designed in a way that should make it possible
-	to make Anna programs significantly faster than most high
-	level languages, most programs written in Anna are unlikely to
-	match the speed of a well written progrm in a low level
-	language.
+	and force the computer to figure out more by itself. As
+	computers grow faster and programmers grow lazier, the
+	definition of what constitutes a high level language is
+	shifting. What was a high level language 30 years ago is
+	considered a low level language today. High level languages
+	are usually slower, and they almost always require much more
+	memory, but they are also easier for the
+	programmer to write, and usually less error prone. Anna is a
+	high level language. It is designed in a way that should make
+	it possible to make Anna programs significantly faster than
+	most high level languages, though most programs written in Anna are
+	unlikely to match the speed of a well written program in a low
+	level language.
       </li>
       <li>
 	Some languages are statically typed, meaning the programmer
@@ -495,8 +499,7 @@ TODO
 
     </ul>
     <h2><a name="intro_lisp">Anna for LISP programmers</a></h2>
-    <div class='subheading'>Wherein it is explained that old is the new
-      new.</div>
+    <div class='subheading'>Old is the new new.</div>
     
     <p>
       Anna is a statically typed language with a front end that allows
@@ -525,7 +528,7 @@ TODO
     </ul>
     
     <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
-    <div class='subheading'>Wherein a prisoner is offered a golden cage.</div>
+    <div class='subheading'>Confusingly familiar.</div>
     <p>
       Anna is a C-like language with garbage collection and a powerful
       object system. At first glance, Anna feels very familiar to Java
@@ -558,6 +561,15 @@ TODO
 	including a quick and easy way to create whole families of
 	related functions at runtime in a very simple way.
       </li>
+      <li>
+	There are no statements in Anna, oly expressions. The if
+	expression, for example, returns the output of the conditional
+	block that was executed. So the Anna equivalent of the ternary
+	operator becomes <code>foo = if (a>3) {3} else {a}</code>. If
+	a function reaches the end of it's block without encountering
+	a return statement, the output from the last expression of the
+	function is returned.
+      </li>
     </ul>
     <p>
       But what really sets Anna apart is the level of metaprogramming
@@ -565,8 +577,8 @@ TODO
       of the language. Use/with statements, exceptions and loop
       constructs can all be created or altered in order to extend the
       language in any way you choose. Even better, such extensions are
-      written in the language itself, no arcane template
-      metaprogramming is needed.
+      written in the language itself, no C++-style separate template
+      metaprogramming language is needed.
     </p>
     <p>
       There are two basic building blocks of Anna that allow you to
@@ -598,7 +610,7 @@ TODO
       at once, so we'll consider a few examples. First, look at the
       code snippet below:
     </p>
-    <code>
+    <pre>
 macro replaceObjectWithInt(ast)
 {
 	ast.replaceChildren(child)
@@ -608,11 +620,11 @@ macro replaceObjectWithInt(ast)
 		{
 			return Identifier(id, "Int");
 		}
-		return child;
+		child;
 	}
 	return ast;
 }
-</code>
+</pre>
     <p>
       What does the above code do? If you can't guess, the correct
       answer is that it walks the entire AST and replaces all
@@ -974,7 +986,7 @@ f.close();
       The null object in Anna, which can be accessed through
       the <code>?</code> keyword, is a very odd object. It abides
       to every interface, and calling any method on it will without
-      exception have no side effects and will return a null object. In
+      exception have no side effects and will return the null object. In
       other words, it is perfectly ok to call <code>2 + ?</code>,
       it will not crash or throw an exception, and the result will be
       null.
