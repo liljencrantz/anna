@@ -197,7 +197,7 @@ pi :== 4.0;    // Declare pi as a constant with value 4.0
     </pre>
     <p>
       It should be noted that the previous paragraph is a lie. The
-      Anna compiler still doesn't check to make sure constants can't
+      Anna compiler doesn't always check to make sure constants can't
       be assigned to. If you try to, you might succeed. Or, more
       likely, Anna will crash. If we can all pretend that you can't
       assign to constants, everybody will be much happier.
@@ -443,13 +443,13 @@ TODO
 
     <h3><a name="examples-switch">The switch macro</a></h3>
     <p>
-      The Anna version of the classical Cswitch statement contains some changes:
+      The Anna version of the classical C switch statement contains some changes:
       </p>
     <ul>
       <li>The syntax is slightly altered to follow how all Anna code is structured.</li>
       <li>
-	No break is needed at the end of a case - execution never
-	continues into an alternative case.
+	No <code>break</code> keyword is needed at the end of a case -
+	execution never continues into an alternative case.
       </li>
 
       <li>Any types of values can be switched on, not just integers.</li>
@@ -1215,7 +1215,8 @@ f.close();
       code will handle any error without forcing you to write any
       error handling code.
     </p>
-    <h1>An odd number of legs for a horse to have</h1>
+
+    <h1><a name="misc">An odd number of legs for a horse to have</a></h1>
     <p>
       This section gives an overview of the various Anna features that,
       while important, did not warrant an entire section of their own.
@@ -1258,11 +1259,11 @@ f.close();
       Anna also allows you define you own generic operators. These
       operators all start with the «^» symbol, followed by an identifier:
     </p>
-    <code>
+    <pre>
 var a = 4;
 var b = 7;
 print(a ^bitand b);
-    </code>
+    </pre>
     <p>
       The above example shows usage of the @bitand generic operator of
       the Int class, which will perform a bitwise and operation. To
@@ -1270,7 +1271,7 @@ print(a ^bitand b);
       like the operator, but enclosed within double underscores. An
       example:
     </p>
-    <code>
+    <pre>
 class Color
 {
     function __blend__(Float alpha)
@@ -1281,7 +1282,7 @@ class Color
 
 var col = Color();
 col ^blend 0.1;
-    </code>
+    </pre>
     <p>
       
     </p>
@@ -1363,32 +1364,35 @@ function mandelbrot(Complex p0, Int maxStep)
     </p>
     <h1>Microformats</h1>
     <p>
-      The Anna parser is written to be as accepting as possible of weird
-      elements, and instead offloads as much of the code validation as
-      possible to macros. This allows you to write microformat macros. These
-      are macros that take an AST subtree and transform then into another
-      subtree in order to allow you to define your own compact data formats.
-      For example, JSON is a valid subset of Anna, and there is a JSON
-      microformat macro to transform an AST containing JSON into the Anna
-      equivalent, meaning you can insert JSON data verbatim into the code,
-      and make sure the JSON macro parses it to correct Anna code:
+      The Anna parser is written to be as accepting as possible of
+      weird elements, and instead offloads as much of the code
+      validation as possible to macros. This allows you to write
+      microformat macros. These are macros that take an AST subtree
+      and transform then into another subtree in order to allow you to
+      define your own compact data formats.  For example, JSON is a
+      valid subset of Anna, so one could write a JSON microformat
+      macro to transform an AST containing JSON into the Anna
+      equivalent, meaning one could insert JSON data verbatim into the
+      code, and make sure the JSON macro parses it to correct Anna
+      code:
     </p> 
-<code>
+<pre>
 Map m = JSON({data:[1,2,3,7], unit:"seconds", caption:null});
-</code>
+</pre>
     <p>
+      Note: This macro has yet to be written. 
       Another very practical use of this feature is date handling. There are
       macros that make sure anything you send to the Date constructor, or
       anything you add or remove from a date, is parsed using the standard
-      ISO date format:
+      ISO date format: 
     </p>
-    <code>
+    <pre>
 // Create a new date from a specified date 
 var then = Date(2009-1-1, 12:30);
 
 // Move ahead x years and one hour 
 date += x-0-0, 1:00;
-    </code>
+    </pre>
     <h1><a name="sugar">Sugar and spice - How the front end sugar works and what Anna looks like without makeup</a></h1>
     <p>
       The real syntax for Anna is painfully simple. There Anna AST
@@ -1446,9 +1450,71 @@ def foo(){1} => __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __bl
 
     <h1><a name="design">Design choices</a></h1>
     <p>
-      TODO
+      The design goals of Anna include:
     </p>
-    
+    <ul>
+      <li>
+	An open ended language. Anna should provide the tools needed
+	to extend the language in new ways, and a syntax that makes
+	such extensions readable. 
+      </li>
+      <li>
+	A C-like syntax. This brings instant familiarity to a majority
+	of the worlds programmers, allowing them to pick up the basics
+	of the language in a matter of minutes, and can then
+	concentrate on learning and understanding the intricacies of
+	macros, continuations and other higher level features. If a
+	basic C-like syntax strikes a good balance between readbility,
+	terseness and expressiveness is subjective, but the author of
+	this text certainly feels so, and the prevalence of C-like
+	syntaxes, including most modern computer languages as well as
+	an array of computer formats like CSS and JSON certainly
+	suggest that many others agree.
+      </li>
+      <li>
+	Easy (for a compiler) to parse. Anna source code should be
+	parsable by a traditional lexical analyzer plus LALR parser
+	combo. This has many advantages, it makes it easier to
+	standardize and define the language. It makes the
+	implementation of the language easier and perhaps most
+	importantly, it removes vast amounts of grey zones where it is
+	not clear what a piece of code should actually do.
+      </li>
+      <li>
+	Focus more on expressivness, but don't forget
+	efficency. Continuations, automatic garbage collection and
+	«everyting is an object» are all language choices that make
+	the langauge extremely expressive, but they come with severe
+	performance implications. A lot of the time, the performance
+	loss can be avoided through the use of clever compiler
+	tricks. So far, Anna includes no such tricks, and is decidedly
+	slow. That said, Anna is, when possible with only a minimal
+	cost to expressiveness, designed to make it _possible_ to
+	write a speedy compiler.
+      </li>
+    </ul>
+    <p>
+      The «Easy to parse» requirement has unfortunatly led to a
+      significant number of exceptions to the «C-like syntax»
+      rule. For example, Anna templates use either
+      the <code>«Foo»</code> or <code>&lt;&lt;Foo&gt;&gt;</code> for
+      template specialization, instead of <code>&lt;Foo&gt;</code>,
+      which is familiar from C++, Java and C#. The reason is simple:
+      It is impossible to write a general parser that
+      uses <code><></code> both for comparisons and for template
+      specializations without making very specific exceptions in the
+      parser. Such exceptions would also severly restrict what code
+      can be placed inside of a template specialization. In Anna,
+      templates can be used to insert any expression into a code
+      template, not just a Type.
+    </p>
+    <p>
+      One significant kludge in the Anna syntax is the expression
+      merge pase of compilation. It is used to move expressions into
+      the expression preceeding them, and is useful in situations like
+      the if/else expression pair. TODO: Explain how it works, and how
+      it can be used.
+    </p>
     <h1><a name="implementation">Implementation details</a></h1>
 
     <h2><a name="implementation-numbers">Numbers</a></h2>
