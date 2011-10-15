@@ -52,7 +52,7 @@ enum TypeName
     );
 
     valueProperty := ast(
-	var Int __value (static, property(%valueGetter));
+	var Int __value (property(%valueGetter));
     );
 
     cmpFun := ast(

@@ -559,7 +559,7 @@ expression4 :
 	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__range__");
 	    $$ = (anna_node_t *)anna_node_create_call2(
-		&@$, op, $1, anna_node_create_null(&@$));	    
+		&@$, op, $1, anna_node_create_null(&@$));
 	}
 	|
 	expression5;

@@ -60,6 +60,12 @@ int foo(int x, char *y);",
   Constants:",
 	"
   TODO",
+"
+   Code-wise, this is a mess. It's a quick and dirty proof of concept
+   that has grown into a semi-complicated application with very little
+   in the way of refactoring. The code needs to be split into multiple
+   phases (parsing and templating) and moved into multiple files.
+",
 
 ));
 
