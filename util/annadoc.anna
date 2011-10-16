@@ -12,11 +12,9 @@ def main()
 	"It works by iterating over all loaded modules and extracting the doc attribute from all functions, types and members, and formatting them into html documents.",
 	"Future work should include prettier styling, search functionality, handling of internal members including the option to hide internal members."))
 {
-    baseDir = io.File("documentation");
+    baseDir = io.File("documentation/api");
     doc := DocumentationExtractor();
     doc.document(global);
-    File("documentation/js").makeDirectory();
-    File("util/document(jquery.js").copyTo(File("documentation/js/jquery.js"));
     print(
 	"Documented % namespaces with % members, out of which % (% %%) where documented\n" % [
 	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 

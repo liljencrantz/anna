@@ -159,8 +159,11 @@ autogen/lex.o: autogen/lex.c
 check: test
 .PHONY: check
 
-documentation:
+documentation: documentation/api
+
+documentation/api:
 	util/annadoc.anna
+.PHONY: documentation/api
 
 test: all
 	time ./bin/anna_tests.sh

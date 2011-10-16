@@ -14,4 +14,4 @@ bin/anna
 mandel
 autogen/*.c
 autogen/*.h
-documentation
+documentation/api

@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="css/anna.css" type="text/css" />
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/anna.js"></script>
-
+    <title>Anna - A brief introduction</title>
   </head>
   <body>
 
@@ -47,7 +47,7 @@ def main()
       </li>
       
       <li>
-	<a href='#intro_c'>Anna for Java, C, C++, Go and D
+	<a href='#intro_c'>Anna for  C, C++, Java, C#, Go and D
 	  programmers</a>. Do you enjoy the pleasures of static
 	  typing? Curly braces? Yes? Then this is the link for you.
       </li>
@@ -758,16 +758,26 @@ TODO
       object system. At first glance, Anna feels very familiar to Java
       and C# programmers, and coders of C, C++ and other C-like
       languages should pick up the changes relatively quickly as
-      well. But once you look underneath the hood, Anna has some nifty
-      features to reduce the number of keypresses you need, including:
+      well. Anna does have a few nifty short cuts to save a few
+      keypresses, including:
     </p>
     <ul>
       <li>
+	There are no statements in Anna, only expressions. The if
+	expression, for example, returns the output of the conditional
+	block that was executed. So the Anna equivalent of the ternary
+	operator becomes <code>foo = if (a>3) {3} else {a}</code>. If
+	a function reaches the end of it's block without encountering
+	a return statement, the output from the last expression of the
+	function is returned.
+      </li>
+      <li>
 	Say you've written a class A, and it implements all of the
 	members of an interface/class B. You do not need to explicitly
-	_say_ that A is a B, the interpreter figures out for itself that
-	the class A abides by the interface provided by class B. This is
-	called duck typing.
+	_say_ that A is a B, the interpreter figures out for itself
+	that the class A abides by the interface provided by class
+	B. This is called structural typing. Go programmers should
+	recognise this feature.
       </li>
       <li>
 	There are lots of situations in statically typed languages
@@ -776,43 +786,29 @@ TODO
 	out what type an expression should have, and not force you to
 	write it out multiple times. Most variable declarations and
 	cast operations for example do not require you to write out
-	the type.
-      </li>
-      <li>
-	You can specify a function inside of another function in Anna,
-	and the inner function will have full read and write access to
-	the variable scope of the outer function. This has many uses,
-	including a quick and easy way to create whole families of
-	related functions at runtime in a very simple way.
-      </li>
-      <li>
-	There are no statements in Anna, oly expressions. The if
-	expression, for example, returns the output of the conditional
-	block that was executed. So the Anna equivalent of the ternary
-	operator becomes <code>foo = if (a>3) {3} else {a}</code>. If
-	a function reaches the end of it's block without encountering
-	a return statement, the output from the last expression of the
-	function is returned.
+	the type. Go and C# programmers should recognise this feature.
       </li>
     </ul>
     <p>
-      But what really sets Anna apart is the level of metaprogramming
-      it allows. Anna allows you to redefine the very building blocks
-      of the language. Use/with statements, exceptions and loop
-      constructs can all be created or altered in order to extend the
-      language in any way you choose. Even better, such extensions are
-      written in the language itself, no C++-style separate template
-      metaprogramming language is needed.
+      This is all fine and good, but hardly something that makes it
+      worth ones time to switch to a whole other programming
+      language. What really sets Anna apart is the level of
+      metaprogramming it allows. Anna allows you to redefine the very
+      building blocks of the language. Use/with statements, exceptions
+      and loop constructs can all be created or altered in order to
+      extend the language in any way you choose. Even better, such
+      extensions are written in the language itself, no C++-style
+      separate template metaprogramming language is needed.
     </p>
     <p>
       There are two basic building blocks of Anna that allow you to
       redefine the language. They are macros and continuations. We'll
       explan them brifely. C and C++ coders may think to themselves
-      that they know about macros, and that they really aren't that
-      great, and in one sense they'd be correct, because C-style
-      macros really aren't that great. Ignore C macros, lets instead
-      talk about Anna style macros, because they're actually pretty
-      neat. But first, just a little bit of background. 
+      that they know macros, and they really aren't that great. In one
+      sense they'd be correct, because C-style macros really aren't
+      that great. Ignore C macros, lets instead talk about Anna style
+      macros, because they're actually pretty neat. But first, just a
+      little bit of background.
     </p>
     <h3><a name="intro-c-macros">Macros, redefined</a></h3>
     <p>
@@ -853,12 +849,11 @@ macro replaceObjectWithInt(ast)
       What does the above code do? If you can't guess, the correct
       answer is that it walks the entire AST and replaces all
       identifiers that have the value <code>Object</code> with a new
-      identifier with the value <code>Int</code>. Instant
-      templating! Of course, the Anna standard library
-      already <em>has</em> a very nice templating system, which is (of
-      course) implemented using macros, so there is no need to write
-      your own, but the possibility to make that type of additions to
-      the language is in your hands.
+      identifier with the value <code>Int</code>. Instant templating!
+      Of course, the Anna standard library already <em>has</em> a very
+      nice templating system, so there is no need to write your own,
+      but the possibility to make that type of additions to the
+      language is in your hands.
     </p>
     <p>
       The most common reason for using macros is to construct
@@ -867,15 +862,15 @@ macro replaceObjectWithInt(ast)
       pretty much anything that can be reasonably parsed into an AST
       is allowed. That opens up the possibility to create macros that
       parse things using a completely different syntax. For example,
-      there is a macro that allows you to create date objects using
+      one could write a macro that allows you to create date objects using
       the standard ISO data format:
     </p>
 <code>
-birthday := Date(1978-05-20, 12:34:00);
+birthday := IsoDate(1978-05-20, 12:34:00);
 </code>
     <p>
       It is possible to create a list search interface like LINQ in
-      Anna, but unlike LINQ, it is not a one time thing, crafted into
+      Anna, but unlike LINQ, it is not a one time thing, grafted onto
       the compiler. Anna provides a general purpose framework that
       allows you to create libraries that do the same thing LINQ does,
       but better. 
