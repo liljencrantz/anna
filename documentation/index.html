@@ -102,7 +102,7 @@ def main()
 def Int fibonacci(Int n)
 	  </pre>
 	  <p>
-	    The <tt>def</tt> keyword means that we're defining a function. Then
+	    The <code class="anna-code">def</code> keyword means that we're defining a function. Then
 	    a return type and the name of the function we're defining. After
 	    that follows a list of all input parameteres the function accepts
 	    and their types. A few things should be noted:
@@ -137,19 +137,19 @@ return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
 	  </p>
 	  <ul>
 	    <li>
-	      To call a function, like e.g. the <tt>fibonacci</tt> function,
+	      To call a function, like e.g. the <code class="anna-code">fibonacci</code> function,
 	      just write the function name followed by it's input parameters
 	      in parenthesis, like in any C-like language. 
 	    </li>
 	    <li>
-	      The <tt>if</tt> clause in Anna returns a value. In computer
+	      The <code class="anna-code">if</code> clause in Anna returns a value. In computer
 	      words, it is an expression, not a statement. Specifically, it
 	      returns the last value of the block which was executes. In
 	      fact, there are no statements in Anna - everything is an
 	      expression,
 	    </li>
 	    <li>
-	      The bullet point above implies that the <code>return</code>
+	      The bullet point above implies that the <code class="anna-code">return</code>
 	      keyword in the code above was superflous - since the if
 	      expression was the last expression in the fibonacci function,
 	      it would have been returned as the function output
@@ -178,11 +178,11 @@ def main()
 	  <ul>
 	    <li>
 	      To declare a variable, write the variable name, followed
-	      by <code>:=</code> and the initial value for the varialbe.
+	      by <code class="anna-code">:=</code> and the initial value for the varialbe.
 	    </li>
 	    <li>
 	      To assign a new value to an existing variable, write the
-	      variable name, followed by <tt>=</tt> and the new value for
+	      variable name, followed by <code class="anna-code">=</code> and the new value for
 	      the varialbe.
 	    </li>
 	    
@@ -194,7 +194,7 @@ def main()
 	    the initial value. This is called type inference. If we don't
 	    want the variable to have the type of the initial value, we'll
 	    use the cast operator. In Anna, the cast operator is
-	    called <tt>as</tt>. It is used like this:
+	    called <code class="anna-code">as</code>. It is used like this:
 	  </p>
 	  <pre class="anna-code">
 foo := 3 as Object;  // Declare foo as a variable of type Object
@@ -368,14 +368,14 @@ while(1)
 (0..11).each(ii){print(ii)}
 	  </pre>
 	  <p>
-	    <tt>0..11</tt> is a Range object, spanning from 0 (inclusive) to
-	    11 (exclusive). The <code>each(ii)</code> part means we want to
+	    <code class="anna-code">0..11</code> is a Range object, spanning from 0 (inclusive) to
+	    11 (exclusive). The <code class="anna-code">each(ii)</code> part means we want to
 	    call the each method, which loops over the range, and that we
-	    want the loop variable to be named <code>ii</code>. Anna will
-	    automatically determine the correct type for the <code>ii</code>
+	    want the loop variable to be named <code class="anna-code">ii</code>. Anna will
+	    automatically determine the correct type for the <code class="anna-code">ii</code>
 	    variable. The code block supplied after the parentesis will be
 	    called once for every value in the range, with the
-	    variable <code>ii</code> set to each value. All collection type
+	    variable <code class="anna-code">ii</code> set to each value. All collection type
 	    objects, such as maps, lists and ranges provide an each
 	    method. It can be used with a single argument, such as above, or
 	    it can be used with two arguments, in which case the first
@@ -465,7 +465,7 @@ TODO
 	  <ul>
 	    <li>The syntax is slightly altered to follow how all Anna code is structured.</li>
 	    <li>
-	      No <code>break</code> keyword is needed at the end of a case -
+	      No <code class="anna-code">break</code> keyword is needed at the end of a case -
 	      execution never continues into an alternative case.
 	    </li>
 
@@ -564,7 +564,7 @@ TODO
 }
 	  </pre>
 	  <p>
-	    <code>switch</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/switch.anna">bootstrap/switch.anna</a> file.
+	    <code class="anna-code">switch</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/switch.anna">bootstrap/switch.anna</a> file.
 	  </p>
 
 
@@ -583,7 +583,7 @@ myVar := struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
 print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
 	  </pre>
 	  <p>
-	    <code>struct</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/struct.anna">bootstrap/struct.anna</a> file.
+	    <code class="anna-code">struct</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/struct.anna">bootstrap/struct.anna</a> file.
 	  </p>
 	  
 	  <h3><a name="examples-macros">Defining your own macros</a></h3>
@@ -776,7 +776,7 @@ TODO
 	      There are no statements in Anna, only expressions. The if
 	      expression, for example, returns the output of the conditional
 	      block that was executed. So the Anna equivalent of the ternary
-	      operator becomes <code>foo = if (a>3) {3} else {a}</code>. If
+	      operator becomes <code class="anna-code">foo = if (a>3) {3} else {a}</code>. If
 	      a function reaches the end of it's block without encountering
 	      a return statement, the output from the last expression of the
 	      function is returned.
@@ -831,7 +831,7 @@ TODO
 	    object, and the compiler can alter these nodes as it sees
 	    fit. That's pretty nifty, but how does that tie in with us? Anna
 	    has two keywords for defining a function,
-	    namely <code>def</code> and <code>macro</code>. They work
+	    namely <code class="anna-code">def</code> and <code class="anna-code">macro</code>. They work
 	    pretty much the same, they both let you define a pice of code
 	    with a few input parameters and a few output parameters. There
 	    are two differences between the two, firstly that macros are run
@@ -858,8 +858,8 @@ macro replaceObjectWithInt(ast)
 	  <p>
 	    What does the above code do? If you can't guess, the correct
 	    answer is that it walks the entire AST and replaces all
-	    identifiers that have the value <code>Object</code> with a new
-	    identifier with the value <code>Int</code>. Instant templating!
+	    identifiers that have the value <code class="anna-code">Object</code> with a new
+	    identifier with the value <code class="anna-code">Int</code>. Instant templating!
 	    Of course, the Anna standard library already <em>has</em> a very
 	    nice templating system, so there is no need to write your own,
 	    but the possibility to make that type of additions to the
@@ -1005,11 +1005,11 @@ FIXME! Functional programming example here
 	  </p>
 	  <p>
 	    Structural typing means that if a function expects a parameter
-	    of type <code>A</code>, and type <code>B</code> contains all the
+	    of type <code class="anna-code">A</code>, and type <code class="anna-code">B</code> contains all the
 	    same members as A, and all the members have compatible
 	    signatures, then type B can be used as input to the function,
-	    regardless of if <code>B</code> actually inherits from
-	    type <code>A</code> or not.
+	    regardless of if <code class="anna-code">B</code> actually inherits from
+	    type <code class="anna-code">A</code> or not.
 	  </p>
     
 	  <h1><a name="structural_typing">Structural typing</a></h1>
@@ -1017,13 +1017,13 @@ FIXME! Functional programming example here
 	    Most languages, including Python and Java, have operations that
 	    let you check if an object explicitly states that it implements
 	    some interface. You have, for example,
-	    the <code>Comparable</code> interface in Java, which defines a
+	    the <code class="anna-code">Comparable</code> interface in Java, which defines a
 	    set of methods that allow you to compare one object to
 	    another. The realization that it doesn't, or at least shouldn't,
 	    matter if an object explicitly states that it implements a
 	    specific interface, so long as it actually does implement it,
 	    has struck a great number of people over the ages. In python, it
-	    has become popular to avoid the <code>is</code> operator to
+	    has become popular to avoid the <code class="anna-code">is</code> operator to
 	    perform type checking, and instead simply check if the relevant
 	    fields and methods are present in an object. This idea is called
 	    duck typing, and while the idea and its usage predates Python,
@@ -1034,12 +1034,12 @@ FIXME! Functional programming example here
 	    Anna takes the concept of duck typing and runs with it. It is
 	    not possible in Anna to check if an object inherits from a
 	    specific type. There is simply no inheritance information
-	    available. You can _only_ check if an object <code>A</code> is
-	    compatible with a type <code>B</code> using duck typing. It is
+	    available. You can _only_ check if an object <code class="anna-code">A</code> is
+	    compatible with a type <code class="anna-code">B</code> using duck typing. It is
 	    also trivial to perform operations on types in order to type
 	    templates dynamically. For example, say you want to test if the
-	    object <code>someObject</code> has all the members common to
-	    both the <code>String</code> and <code>Int</code> types. That is
+	    object <code class="anna-code">someObject</code> has all the members common to
+	    both the <code class="anna-code">String</code> and <code class="anna-code">Int</code> types. That is
 	    easily done using this code:
 	  </p>
 	  
@@ -1057,7 +1057,7 @@ if(someObject is String.intersect(Int))
 	  <p>
 	    In order for duck typing to be viable in a statically typed
 	    language, it must be easy to create new types on the spot. A very
-	    simple example of this is the <code>or</code> macro. Take the
+	    simple example of this is the <code class="anna-code">or</code> macro. Take the
 	    following snippet of Anna code:
 	  </p>
 	  <pre>
@@ -1068,9 +1068,9 @@ var baz = foo or bar;
 	  <p>
 	    The or operator in Anna will return the first value (foo) if it is
 	    true, otherwise, bar will be returned. This means that the return
-	    type of <code>foo or bar</code> is the intersection of the types of
+	    type of <code class="anna-code">foo or bar</code> is the intersection of the types of
 	    the respective arguments, in this case, the intersection of the
-	    types <code>Foo</code> and <code>Bar</code>.
+	    types <code class="anna-code">Foo</code> and <code class="anna-code">Bar</code>.
 	  </p>
 	  
 	  <h1>
@@ -1095,11 +1095,11 @@ var Int i = 7;
 	  </pre>
 	  <p>
 	    The above is an Anna style variable declaration, the
-	    variable <code>i</code> is declared to be of
-	    type <code>Int</code>, and is given the initial value of
+	    variable <code class="anna-code">i</code> is declared to be of
+	    type <code class="anna-code">Int</code>, and is given the initial value of
 	    7. Now, the above is a perfectly valid Anna expression,
 	    but it is not the simplest way possible to epress the
-	    above. You see, the numeric literal <code>7</code> is
+	    above. You see, the numeric literal <code class="anna-code">7</code> is
 	    known by the interpreter to be of the type Int. The
 	    interpreter can use this information to guess the type of
 	    the variable declaration. Therefore, Anna also has an
@@ -1196,11 +1196,11 @@ collect
 }
 	  </pre>
 	  <p>
-	    The <code>collect</code> call will save any errors that occur
+	    The <code class="anna-code">collect</code> call will save any errors that occur
 	    while executing its body, including any errors occusing in
 	    functions called by the body at any level of nesting, into a
 	    list of errors. Once the code has finished, the list of errors
-	    is iterated over and handled by the <code>each</code>
+	    is iterated over and handled by the <code class="anna-code">each</code>
 	    loop. 
 	  </p>
 	  <p>
@@ -1248,10 +1248,10 @@ f.close();
 	  <h2><a name="null">The talented mister null</a></h2>
 	  <p>
 	    The null object in Anna, which can be accessed through
-	    the <code>?</code> keyword, is a very odd object. It abides
+	    the <code class="anna-code">?</code> keyword, is a very odd object. It abides
 	    to every interface, and calling any method on it will without
 	    exception have no side effects and will return the null object. In
-	    other words, it is perfectly ok to call <code>2 + ?</code>,
+	    other words, it is perfectly ok to call <code class="anna-code">2 + ?</code>,
 	    it will not crash or throw an exception, and the result will be
 	    null.
 	  </p>
@@ -1322,7 +1322,7 @@ col ^blend 0.1;
 	    functions named pie. And given how delicious pie is, that is
 	    bound to take an insurmountable amount of time.
 	    For this reason, great care must be taken when using
-	    the <tt>expand</tt> expression to import macros.
+	    the <code class="anna-code">expand</code> expression to import macros.
 	  </p>
 	  <h2><a name="comments">Comments nest</a></h2>
 	  <p>
@@ -1336,11 +1336,11 @@ col ^blend 0.1;
     <h1>A simple, annotated example</h1>
     <p>
       Ok, let's start putting Anna through her paces! Fire up the
-      interactive Anna console by typing <code>anna</code> in your
+      interactive Anna console by typing <code class="anna-code">anna</code> in your
       terminal and pressing enter. This is a minimal Anna program that
       you can then cut and paste into the interpreter:
     </p>
-    <code>
+    <code class="anna-code">
 /*
 	Declare a function called mandelbrot, it accepts a complex number 
 	(the coordinate) amd a maximum iteration count.
@@ -1425,17 +1425,17 @@ date += x-0-0, 1:00;
 	  </p>
 	  <ol>
 	    <li>
-	      Literals, such as <code>?</code>, <code>3</code>, <code>1.0</code>
-	      or <code>"foo"</code>. 
+	      Literals, such as <code class="anna-code">?</code>, <code class="anna-code">3</code>, <code class="anna-code">1.0</code>
+	      or <code class="anna-code">"foo"</code>. 
 	    </li>
 	    <li>
-	      Identifiers, such as <code>foo</code> or <code>String</code>. 
+	      Identifiers, such as <code class="anna-code">foo</code> or <code class="anna-code">String</code>. 
 	    </li>
 	    <li>
-	      Function calls, such as <code>X(Y,Z)</code>, where <code>X</code>, <code>Y</code>
-	      and <code>Z</code> are arbitrary other AST nodes. In the above
-	      example, the AST node <code>X</code> is invoked
-	      with <code>Y</code> and <code>Z</code> as input parameters.
+	      Function calls, such as <code class="anna-code">X(Y,Z)</code>, where <code class="anna-code">X</code>, <code class="anna-code">Y</code>
+	      and <code class="anna-code">Z</code> are arbitrary other AST nodes. In the above
+	      example, the AST node <code class="anna-code">X</code> is invoked
+	      with <code class="anna-code">Y</code> and <code class="anna-code">Z</code> as input parameters.
 	    </li>
 	  </ol>
 	  <p>
@@ -1522,11 +1522,11 @@ def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), _
 	    The «Easy to parse» requirement has unfortunatly led to a
 	    significant number of exceptions to the «C-like syntax»
 	    rule. For example, Anna templates use either
-	    the <code>«Foo»</code> or <code>&lt;&lt;Foo&gt;&gt;</code> for
-	    template specialization, instead of <code>&lt;Foo&gt;</code>,
+	    the <code class="anna-code">«Foo»</code> or <code class="anna-code">&lt;&lt;Foo&gt;&gt;</code> for
+	    template specialization, instead of <code class="anna-code">&lt;Foo&gt;</code>,
 	    which is familiar from C++, Java and C#. The reason is simple:
 	    It is impossible to write a general parser that
-	    uses <code><></code> both for comparisons and for template
+	    uses <code class="anna-code">&lt;&gt;</code> both for comparisons and for template
 	    specializations without making very specific exceptions in the
 	    parser. Such exceptions would also severly restrict what code
 	    can be placed inside of a template specialization. In Anna,
