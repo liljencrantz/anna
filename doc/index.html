@@ -67,7 +67,7 @@ def main()
       </li>  
       
     </ul>
-    
+      
     <h2><a name="examples">Anna by examples</a></h2>
     <div class='subheading'>Because time is too precious to actually learn anything.</div>
 
@@ -372,7 +372,7 @@ while(1)
       argument is the index/key and the second is the value:
     </p>
     <pre class="anna-code">
-var temperatures = ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
+temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
 temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")}
     </pre>
     </p>
@@ -814,7 +814,7 @@ TODO
       talk about Anna style macros, because they're actually pretty
       neat. But first, just a little bit of background. 
     </p>
-    <h3>Macros, redefined</h3>
+    <h3><a name="intro-c-macros">Macros, redefined</a></h3>
     <p>
       Pretty much all compilers will read a source file into some kind
       of tree of nodes called an abstract syntax tree, or AST for
@@ -839,7 +839,7 @@ macro replaceObjectWithInt(ast)
 {
 	ast.replaceChildren(child)
 	{
-		var id = cast(child,Identifier);
+		id := child as Identifier;
 		if(id and id.name=="Object")
 		{
 			return Identifier(id, "Int");
@@ -871,7 +871,7 @@ macro replaceObjectWithInt(ast)
       the standard ISO data format:
     </p>
 <code>
-var birthday = Date(1978-05-20, 12:34:00);
+birthday := Date(1978-05-20, 12:34:00);
 </code>
     <p>
       It is possible to create a list search interface like LINQ in
@@ -880,7 +880,7 @@ var birthday = Date(1978-05-20, 12:34:00);
       allows you to create libraries that do the same thing LINQ does,
       but better. 
     </p>
-    <h3>Continuations, continued</h3>
+    <h3><a name="intro-c-continuations">Continuations, continued</a></h3>
     <p>
       This paragraph is for C and C++ coders that know what a longjmp
       is. If you don't, feel free to skip this paragraph. So, you know
@@ -1054,8 +1054,8 @@ if(someObject is String.intersect(Int))
       following snippet of Anna code:
     </p>
     <code>
-var Foo foo=getFoo();
-var Bar bar=getBar();
+var Foo foo = getFoo();
+var Bar bar = getBar();
 var baz = foo or bar;
     </code>
     <p>
@@ -1066,8 +1066,11 @@ var baz = foo or bar;
       types <code>Foo</code> and <code>Bar</code>.
     </p>
     
-    
-    <h1><a name="type-inference">Minimum impact static typing through type inference</a></h1>
+    <h1>
+      <a name="type-inference"> 	
+	Type inference - painless static static typing
+      </a>
+    </h1>
     <p>
       Anna is a statically typed language. That means that before a block
       of Anna code is executed by the computer, every variable declaration
@@ -1137,7 +1140,7 @@ map := ["Mon":0.0,"Tue":1.1];
     </code>
     
     
-    <h1>No exceptions</h1>
+    <h1><a name="exceptions">No exceptions</a></h1>
     <p>
       Anna does not have exceptions. It would be easy to implement
       exceptions using continuations, but they are considered bad
@@ -1229,7 +1232,7 @@ f.close();
       This section gives an overview of the various Anna features that,
       while important, did not warrant an entire section of their own.
     </p>
-    <h2>What is null? Baby don't hurt me!</h2>
+    <h2><a name="null">The talented mister null</a></h2>
     <p>
       The null object in Anna, which can be accessed through
       the <code>?</code> keyword, is a very odd object. It abides
@@ -1239,7 +1242,7 @@ f.close();
       it will not crash or throw an exception, and the result will be
       null.
     </p>
-    <h2>Truth is lie</h2>
+    <h2><a name="booleans">Truth is lie</a></h2>
     <p>
       There is no separate Boolean type in Anna. There is exactly one
       object that takes on the responsibility of representing the
@@ -1249,7 +1252,7 @@ f.close();
       expressions, while loops and any other statement that expects a
       yes/no answer. Null is the new no.
     </p>
-    <h2>I'll be your operator, baby</h2>
+    <h2><a name="operator-overloading">I'll be your operator, baby</a></h2>
     <p>
       Anna has a small number of special operators that allow you to
       implement some of the most common language operations with a
@@ -1294,7 +1297,7 @@ col ^blend 0.1;
     <p>
       
     </p>
-    <h2>No reservations? No problem!</h2>
+    <h2><a name="reserved-words">No reservations? No problem!</a></h2>
     <p>
       The Sugar layer has a small number of reserved words, including
       'def', 'var' and 'return'. Because macros can never be
@@ -1308,7 +1311,7 @@ col ^blend 0.1;
       For this reason, great care must be taken when using
       the <tt>expand</tt> expression to import macros.
     </p>
-    <h2>Comments nest</h2>
+    <h2><a name="comments">Comments nest</a></h2>
     <p>
       Like C and friends Anna uses /* to start a multiline comment,
       and */ to end it. But unlike C and friends, comments can be
@@ -1316,7 +1319,7 @@ col ^blend 0.1;
       large chunk of code, even if it happens to contain multiline
       comments.
     </p>
-    
+<!--    
     <h1>A simple, annotated example</h1>
     <p>
       Ok, let's start putting Anna through her paces! Fire up the
@@ -1370,7 +1373,8 @@ function mandelbrot(Complex p0, Int maxStep)
       does. There are a few things that are different from many other
       languages in the code above. We'll comment on them below.
     </p>
-    <h1>Microformats</h1>
+-->
+    <h1><a name="miroformats">Microformats</a></h1>
     <p>
       The Anna parser is written to be as accepting as possible of
       weird elements, and instead offloads as much of the code
