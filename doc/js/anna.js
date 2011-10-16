@@ -10,7 +10,7 @@ var anna = {
      */
     makeToc: function (){
 	var toc = $(".toc");
-	$(".anna-main").find("h1, h2, h3").each(
+	$(".anna-main").find("h1, h2").each(
 	    function(idx, el)
 	    {
 		var text = el.textContent;
