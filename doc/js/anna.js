@@ -35,11 +35,19 @@ var anna = {
      */
     syntaxHighlight: function()
     {
+
+	var pattern = [];
+
+	$.each(["def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default"], function (key, value) {
+	    pattern.push({re: new RegExp("([^a-zA-Z0-9_]|^)(" + value + ")([^a-zA-Z0-9_]|$)", "g"), repl: "$1<span class='anna-keyword'>$2</span>$3"});
+	});
+	pattern.push({re: new RegExp("([^a-zA-Z0-9_]|^)([A-Z][a-z0-9A-Z_]*)([^a-zA-Z0-9_]|$)", "g"), repl: "$1<span class='anna-type'>$2</span>$3"});
+
 	$(".anna-code").each(
 	    function(idx, el)
 	    {
 		var html = "";
-		var txt = el.textContent;
+		var txt = el.textContent.replace("<", "&lt;").replace(">", "&gt;");
 		var mode = "base";
 		var comment_nest= 0;
 		for(var i=0; i<txt.length; i++)
@@ -100,7 +108,7 @@ var anna = {
 		    case "string":
 			if(txt[i] == '\\')
 			{
-			    html[i] += txt[i];
+			    html += txt[i];
 			    i++;
 			}
 			else if(txt[i] == '"')
@@ -118,7 +126,10 @@ var anna = {
 			html += txt[i];
 		    }
 		}
-		console.log(html);
+		$.each(pattern, function (key, repl) {
+		    html = html.replace(repl.re, repl.repl);
+		});
+		
 		$(el).html(html);
 	    }
 	);

@@ -1095,11 +1095,11 @@ var baz = foo or bar;
     <p>
       This only saves you seven key strokes in the example above, but
       consider for example templated types, such as a map with String keys
-      and Double values:
+      and Float values:
     </p>
 
 <pre class="anna-code">
-var Map&lt;String,Double&gt; map = ["Mon":0.0,"Tue":1.1;
+var Map«String,Float» map = ["Mon":0.0,"Tue":1.1;
 map := ["Mon":0.0,"Tue":1.1];
 </pre>
 
@@ -1205,14 +1205,14 @@ collect
       errors without even trying. For example, look at this trivial
       example:
     </p>
-<code>
+<pre class="anna-code">
 var f = File("foo.txt").open();
 while(f.readLine())
 {
     ...
 }
 f.close();
-</code>
+</pre>
     <p>
       If the file can not be read, either because it doesn't exist or
       because you lack the permissions, the open call will fail and
@@ -1268,8 +1268,8 @@ f.close();
       operators all start with the «^» symbol, followed by an identifier:
     </p>
     <pre class="anna-code">
-var a = 4;
-var b = 7;
+a := 4;
+b := 7;
 print(a ^bitand b);
     </pre>
     <p>
@@ -1280,7 +1280,7 @@ print(a ^bitand b);
       example:
     </p>
     <pre class="anna-code">
-class Color
+type Color
 {
     function __blend__(Float alpha)
     {

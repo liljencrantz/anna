@@ -79,12 +79,26 @@ a:visited
     color: #532;
 }
 
-.anna-string-literal
+.anna-string-literal,
+.anna-string-literal .anna-keyword,
+.anna-string-literal .anna-type
 {
     color: #852;
 }
 
-.anna-comment
+.anna-comment,
+.anna-comment .anna-keyword,
+.anna-comment .anna-type
 {
     color: #944;
+}
+
+.anna-keyword
+{
+    color: #499;
+}
+
+.anna-type
+{
+    color: #494;
 }
