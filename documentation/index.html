@@ -1425,17 +1425,25 @@ date += x-0-0, 1:00;
 	  </p>
 	  <ol>
 	    <li>
-	      Literals, such as <code class="anna-code">?</code>, <code class="anna-code">3</code>, <code class="anna-code">1.0</code>
-	      or <code class="anna-code">"foo"</code>. 
+	      Literals, such
+	      as <code class="anna-code">?</code>, <code class="anna-code">3</code>, 
+	      <code class="anna-code">1.0</code>
+	      or <code class="anna-code">"foo"</code>.
 	    </li>
 	    <li>
-	      Identifiers, such as <code class="anna-code">foo</code> or <code class="anna-code">String</code>. 
+	      Identifiers, such as <code class="anna-code">foo</code>
+	      or <code class="anna-code">String</code>.
 	    </li>
 	    <li>
-	      Function calls, such as <code class="anna-code">X(Y,Z)</code>, where <code class="anna-code">X</code>, <code class="anna-code">Y</code>
-	      and <code class="anna-code">Z</code> are arbitrary other AST nodes. In the above
-	      example, the AST node <code class="anna-code">X</code> is invoked
-	      with <code class="anna-code">Y</code> and <code class="anna-code">Z</code> as input parameters.
+	      Function calls, such
+	      as <code class="anna-code">X(Y,Z)</code>,
+	      where <code class="anna-code">X</code>, <code class="anna-code">Y</code>
+	      and <code class="anna-code">Z</code> are arbitrary other
+	      AST nodes. In the above example, the AST
+	      node <code class="anna-code">X</code> is invoked
+	      with <code class="anna-code">Y</code>
+	      and <code class="anna-code">Z</code> as input
+	      parameters.
 	    </li>
 	  </ol>
 	  <p>
@@ -1551,8 +1559,8 @@ def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), _
 	  </p>
 	  <ul>
 	    <li>
-	      Most integers (those whose abolute value is less than or eqaul
-	      to 2^29) are normally stored straight in the call stack (or straight
+	      Most integers (those whose abolute value is less than or equal
+	      to 2<sup>29</sup>) are normally stored straight in the call stack (or straight
 	      inside any object it is a member of).
 	    </li>
 	    <li>
@@ -1575,10 +1583,11 @@ def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), _
 	    object.
 	  </p>
 	  <p>
-	    Aside from the performance increase, there is no way to tell
-	    that this is happening behind the scenes. This is possible
-	    because the above data types are all imutable and no memory
-	    location pointer can be obtained for an object.
+	    Aside from the performance increase and memory usage
+	    reduction, there is no way to tell that this is happening
+	    behind the scenes. This is possible because the above data
+	    types are all imutable and no memory location pointer can
+	    be obtained for an object.
 	  </p>
 	</div>
       </div>
