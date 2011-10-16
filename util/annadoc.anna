@@ -236,9 +236,9 @@ often used code paths, which makes it useful for regression testing.")
 	    val := mem.value(?);
 	    mem.isStatic and (!(val.__type__.isModule) and !(val as Type) and (mem.type != Null));
 	}
-
+        basePath := "/".join((0..data.steps+1).map(i){".."}) ~ "/";
 	data.file.writeFile(template("util/document/module.html"));
-
+	
 	submodule.each(mem)
 	{
 	    val := mem.value(?);

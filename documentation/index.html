@@ -10,69 +10,74 @@
 
 
     <div class="anna-content">
-    <div class="anna-main">
-    <div class="anna-main-inner">
-      <h1>A brief introduction to Anna</h1>
-      <pre class="anna-code">
+      <div class="anna-main">
+	<div class="anna-main-inner">
+	  <h1>A brief introduction to Anna</h1>
+	  <pre class="anna-code">
 def main()
 {
     print("Hello, World!\n");
 }
-      </pre>
-      <p>
-	This is a brief introduction to the Anna programming language,
-	written in the form of a «Choose your own adventure»-style
-	gamebook. 
-      </p>
-      <p>
-	Let's get started:
-      </p>
-      <ul>
-	
-	<li>
-	  <a href='#examples'>Anna by examples.</a> If you just want to
-	  dig in to the syntax.
-	</li>
-	
-	<li>
-	  <a href='#intro_short'>Anna in a single sentence.</a> Pick
-	  this option if you already know everything there is to know
-	  about other programming languages.
-	</li>
+	  </pre>
+	  <p>
+	    This is a brief introduction to the Anna programming language,
+	    written in the form of a «Choose your own adventure»-style
+	    gamebook. 
+	  </p>
+	  <p>
+	    Let's get started:
+	  </p>
+	  <ul>
+	    
+	    <li>
+	      <a href='#examples'>Anna by examples.</a> If you just want to
+	      dig in to the syntax.
+	    </li>
+	    
+	    <li>
+	      <a href='#intro_short'>Anna in a single sentence.</a> Pick
+	      this option if you already know everything there is to know
+	      about other programming languages.
+	    </li>
+	    
+	    <li>
+	      <a href='#intro_lisp'>Anna for LISP programmers.</a>
+	      Recommended if you are thouroghly familiar with LISP or a LISP
+	      like language, like Scheme.
+	    </li>
+	    
+	    <li>
+	      <a href='#intro_c'>Anna for  C, C++, Java, C#, Go and D
+		programmers</a>. Do you enjoy the pleasures of static
+	      typing? Curly braces? Yes? Then this is the link for you.
+	    </li>
+	    
+	    <li>
+	      <a href='#intro_script'>Anna for Python and Ruby programmers.</a>
+	      Do you feel most at home when writing code in a modern,
+	      dynamically typed scripting language?
+	    </li>
+	    
+	    <li>
+	      <a href='api/global.html'>API documentation.</a> The Anna
+	      standard library API documentation.
+	    </li>  
+	    
+	    <li>
+	      <a href='#intro_long'>Gentle Anna.</a> If you're a programmer,
+	      but unsure which of the above categories your language of
+	      choice falls into, or if you are not entirely familiar with
+	      programming computers, but curious about what makes Anna
+	      different, then this is the link for you.
+	    </li>  
+	    
+	  </ul>
       
-      <li>
-	<a href='#intro_lisp'>Anna for LISP programmers.</a>
-	Recommended if you are thouroghly familiar with LISP or a LISP
-	like language, like Scheme.
-      </li>
-      
-      <li>
-	<a href='#intro_c'>Anna for  C, C++, Java, C#, Go and D
-	  programmers</a>. Do you enjoy the pleasures of static
-	  typing? Curly braces? Yes? Then this is the link for you.
-      </li>
-      
-      <li>
-	<a href='#intro_script'>Anna for Python and Ruby programmers.</a>
-	Do you feel most at home when writing code in a modern,
-	dynamically typed scripting language?
-      </li>
-      
-      <li>
-	<a href='#intro_long'>Gentle Anna.</a> If you're a programmer,
-	but unsure which of the above categories your language of
-	choice falls into, or if you are not entirely familiar with
-	programming computers, but curious about what makes Anna
-	different, then this is the link for you.
-      </li>  
-      
-    </ul>
-      
-    <h2><a name="examples">Anna by examples</a></h2>
-    <div class='subheading'>Because time is too precious to actually learn anything.</div>
+	  <h2><a name="examples">Anna by examples</a></h2>
+	  <div class='subheading'>Because time is too precious to actually learn anything.</div>
 
-    <h3><a name="examples-functions">Defining and calling functions</a></h3>
-    <pre class="anna-code">
+	  <h3><a name="examples-functions">Defining and calling functions</a></h3>
+	  <pre class="anna-code">
 def Int fibonacci(Int n) 
 {
     return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
@@ -82,78 +87,78 @@ def main()
 {
     print(fibonacci(20), "\n");
 }
-    </pre>
-    <p>
-      The above code is a program that calculates and prints the 20:th
-      Fibonacci number. It demonstrates a few features of the Anna
-      syntax. The first line tells us how to declare a new function:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    The above code is a program that calculates and prints the 20:th
+	    Fibonacci number. It demonstrates a few features of the Anna
+	    syntax. The first line tells us how to declare a new function:
+	  </p>
+	  <pre class="anna-code">
 def Int fibonacci(Int n)
-    </pre>
-    <p>
-      The <tt>def</tt> keyword means that we're defining a function. Then
-      a return type and the name of the function we're defining. After
-      that follows a list of all input parameteres the function accepts
-      and their types. A few things should be noted:
-    </p>
-    <ul>
-      <li>
-	The function return type can usually be omitted, as it is for the
-	main function below. Specifically, if the compiler can calculate
-	the return type by looking at all the return statments, then it
-	can be omitted. The fibonacci function is recursive, which makes
-	this difficult, so we need to help the compiler. If you don't
-	provide the return type, and the compiler can't calculate it
-	either, the compiler will let you know. Usually by crashing.
-      </li>
-      <li>
-	The function name can be omitted if desired. If you omit it, you
-	will have created an anonymous function. These can be used e.g. as
-	input paramters to other functions that accept a function as an
-	argument.
-      </li>
-    </ul>
-    <p>
-      If you want to know more about type
-      inference, <a href="#type-inference">click here</a>. Otherwise,
-      continue reading. The next line of interest is this:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    The <tt>def</tt> keyword means that we're defining a function. Then
+	    a return type and the name of the function we're defining. After
+	    that follows a list of all input parameteres the function accepts
+	    and their types. A few things should be noted:
+	  </p>
+	  <ul>
+	    <li>
+	      The function return type can usually be omitted, as it is for the
+	      main function below. Specifically, if the compiler can calculate
+	      the return type by looking at all the return statments, then it
+	      can be omitted. The fibonacci function is recursive, which makes
+	      this difficult, so we need to help the compiler. If you don't
+	      provide the return type, and the compiler can't calculate it
+	      either, the compiler will let you know. Usually by crashing.
+	    </li>
+	    <li>
+	      The function name can be omitted if desired. If you omit it, you
+	      will have created an anonymous function. These can be used e.g. as
+	      input paramters to other functions that accept a function as an
+	      argument.
+	    </li>
+	  </ul>
+	  <p>
+	    If you want to know more about type
+	    inference, <a href="#type-inference">click here</a>. Otherwise,
+	    continue reading. The next line of interest is this:
+	  </p>
+	  <pre class="anna-code">
 return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
-    </pre>
-    <p>
-      This line tells us a few important things about Anna:
-    </p>
-    <ul>
-      <li>
-	To call a function, like e.g. the <tt>fibonacci</tt> function,
-	just write the function name followed by it's input parameters
-	in parenthesis, like in any C-like language. 
-      </li>
-      <li>
-	The <tt>if</tt> clause in Anna returns a value. In computer
-	words, it is an expression, not a statement. Specifically, it
-	returns the last value of the block which was executes. In
-	fact, there are no statements in Anna - everything is an
-	expression,
-      </li>
-      <li>
-	The bullet point above implies that the <code>return</code>
-	keyword in the code above was superflous - since the if
-	expression was the last expression in the fibonacci function,
-	it would have been returned as the function output
-	regardless. This is in fact correct - the return keyword was
-	only used to make the intent of the code more clear.
-      </li>
-    </ul>
-
-    <h3><a name="examples-variables">Variables</a></h3>
-    <p>
-      That wasn't very hard. It's going to stay pretty easy for a
-      while longer.
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    This line tells us a few important things about Anna:
+	  </p>
+	  <ul>
+	    <li>
+	      To call a function, like e.g. the <tt>fibonacci</tt> function,
+	      just write the function name followed by it's input parameters
+	      in parenthesis, like in any C-like language. 
+	    </li>
+	    <li>
+	      The <tt>if</tt> clause in Anna returns a value. In computer
+	      words, it is an expression, not a statement. Specifically, it
+	      returns the last value of the block which was executes. In
+	      fact, there are no statements in Anna - everything is an
+	      expression,
+	    </li>
+	    <li>
+	      The bullet point above implies that the <code>return</code>
+	      keyword in the code above was superflous - since the if
+	      expression was the last expression in the fibonacci function,
+	      it would have been returned as the function output
+	      regardless. This is in fact correct - the return keyword was
+	      only used to make the intent of the code more clear.
+	    </li>
+	  </ul>
+	  
+	  <h3><a name="examples-variables">Variables</a></h3>
+	  <p>
+	    That wasn't very hard. It's going to stay pretty easy for a
+	    while longer.
+	  </p>
+	  <pre class="anna-code">
 def main()  
 {
     foo := 3;         // Declare foo as 3
@@ -161,62 +166,62 @@ def main()
     foo = 5;          // Assign 5 to foo
     print(foo, "\n"); // Print 5
 }
-    </pre>
-    <p>
-      Wow. That one may have been even easier than the first one.
-    </p>
-    <ul>
-      <li>
-	To declare a variable, write the variable name, followed
-	by <tt>:=</tt> and the initial value for the varialbe.
-      </li>
-      <li>
-	To assign a new value to an existing variable, write the
-	variable name, followed by <tt>=</tt> and the new value for
-	the varialbe.
-      </li>
-      
-    </ul>
-    <p>
-      Anna is a so called statically typed language, that means that
-      she insists that she must have an idea of the type of every
-      variable at compile time. Anna does this by checking the type of
-      the initial value. This is called type inference. If we don't
-      want the variable to have the type of the initial value, we'll
-      use the cast operator. In Anna, the cast operator is
-      called <tt>as</tt>. It is used like this:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    Wow. That one may have been even easier than the first one.
+	  </p>
+	  <ul>
+	    <li>
+	      To declare a variable, write the variable name, followed
+	      by <code>:=</code> and the initial value for the varialbe.
+	    </li>
+	    <li>
+	      To assign a new value to an existing variable, write the
+	      variable name, followed by <tt>=</tt> and the new value for
+	      the varialbe.
+	    </li>
+	    
+	  </ul>
+	  <p>
+	    Anna is a so called statically typed language, that means that
+	    she insists that she must have an idea of the type of every
+	    variable at compile time. Anna does this by checking the type of
+	    the initial value. This is called type inference. If we don't
+	    want the variable to have the type of the initial value, we'll
+	    use the cast operator. In Anna, the cast operator is
+	    called <tt>as</tt>. It is used like this:
+	  </p>
+	  <pre class="anna-code">
 foo := 3 as Object;  // Declare foo as a variable of type Object
-      </pre>
-    <p>
-      The above code will declare the variable foo, which will be of
-      type Object. Object is the root of the Anna type tree, which
-      means that objects of any type can be cast to an Object. The
-      initial value of the foo variable is the integer 3.
-    </p>
-    <p>
-      Anna also has constants. Constants are like variables, except
-      after the initial assignment, they can never be reassigned. This
-      is how you declare a constant:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    The above code will declare the variable foo, which will be of
+	    type Object. Object is the root of the Anna type tree, which
+	    means that objects of any type can be cast to an Object. The
+	    initial value of the foo variable is the integer 3.
+	  </p>
+	  <p>
+	    Anna also has constants. Constants are like variables, except
+	    after the initial assignment, they can never be reassigned. This
+	    is how you declare a constant:
+	  </p>
+	  <pre class="anna-code">
 pi :== 4.0;    // Declare pi as a constant with value 4.0
-    </pre>
-    <p>
-      It should be noted that the previous paragraph is a lie. The
-      Anna compiler doesn't always check to make sure constants can't
-      be assigned to. If you try to, you might succeed. Or, more
-      likely, Anna will crash. If we can all pretend that you can't
-      assign to constants, everybody will be much happier.
-    </p>
-    <p>
-      To learn more about type inference,
-      click <a href="#type-inference">here</a>, otherwise, continue
-      reading.
-    </p>
-    <h3><a name="examples-numbers">Numbers</a></h3>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    It should be noted that the previous paragraph is a lie. The
+	    Anna compiler doesn't always check to make sure constants can't
+	    be assigned to. If you try to, you might succeed. Or, more
+	    likely, Anna will crash. If we can all pretend that you can't
+	    assign to constants, everybody will be much happier.
+	  </p>
+	  <p>
+	    To learn more about type inference,
+	    click <a href="#type-inference">here</a>, otherwise, continue
+	    reading.
+	  </p>
+	  <h3><a name="examples-numbers">Numbers</a></h3>
+	  <pre class="anna-code">
 /*
   Prints 1307674368000. Integers in Anna are arbitrary precision, so there are 
   no overflows
@@ -242,14 +247,14 @@ print(1_000.0e-3);
 print( 0. );
 print( .5 );
 
-    </pre>
-    <p>
-      To learn more about how Anna stores numbers efficiently,
-      click <a href="#implementation-numbers">here</a>, otherwise,
-      keep reading.
-    </p>
-    <h3><a name="examples-lists">Lists</a></h3>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    To learn more about how Anna stores numbers efficiently,
+	    click <a href="#implementation-numbers">here</a>, otherwise,
+	    keep reading.
+	  </p>
+	  <h3><a name="examples-lists">Lists</a></h3>
+	  <pre class="anna-code">
 // lst is a list with four members
 lst := ["first", "second", "third", "fourth"]
 
@@ -288,10 +293,10 @@ lst3 := ["Spoon", "Banana"] ~ lst2;
 
 // This is a compile time error - lst2 is a list of strings, not a list of integers
 lst3.push(5)
-    </pre>
-
-    <h3><a name="examples-maps">Maps</a></h3>
-    <pre class="anna-code">
+	  </pre>
+	  
+	  <h3><a name="examples-maps">Maps</a></h3>
+	  <pre class="anna-code">
 // hash is a HashMap with four mappings
 hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
 
@@ -300,10 +305,10 @@ print(hash.count, "\n");
 
 // Prints the value associated with the key "third", which is "C":
 print(hash["third"], "\n");
-    </pre>
-
-    <h3><a name="examples-ranges">Ranges</a></h3>
-    <pre class="anna-code">
+	  </pre>
+	  
+	  <h3><a name="examples-ranges">Ranges</a></h3>
+	  <pre class="anna-code">
 // r is a range from 6 (inclusive) to 10 (exclusive)
 r := 6..10
 
@@ -337,64 +342,63 @@ print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...], "\n")
 
 // This outputs «banana»
 print("abrainbadnoah\n"[1|2...]);
-    </pre>
-
-    <h3><a name="examples-looping">Looping</a></h3>
-    <p>
-      The while loop looks like in any other C-like language
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  
+	  <h3><a name="examples-looping">Looping</a></h3>
+	  <p>
+	    The while loop looks like in any other C-like language
+	  </p>
+	  <pre class="anna-code">
 while(1)
 {
     print("Are we having fun yet?\n");
 }
-    </pre>
-    <p>
-      Anna does not have a traditional C-like for loop syntax,
-      instead, the each method should be used. To print the values 0
-      to 10 in Anna, do the following:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    Anna does not have a traditional C-like for loop syntax,
+	    instead, the each method should be used. To print the values 0
+	    to 10 in Anna, do the following:
+	  </p>
+	  <pre class="anna-code">
 (0..11).each(ii){print(ii)}
-    </pre>
-    <p>
-      <tt>0..11</tt> is a Range object, spanning from 0 (inclusive) to
-      11 (exclusive). The <code>each(ii)</code> part means we want to
-      call the each method, which loops over the range, and that we
-      want the loop variable to be named <code>ii</code>. Anna will
-      automatically determine the correct type for the <code>ii</code>
-      variable. The code block supplied after the parentesis will be
-      called once for every value in the range, with the
-      variable <code>ii</code> set to each value. All collection type
-      objects, such as maps, lists and ranges provide an each
-      method. It can be used with a single argument, such as above, or
-      it can be used with two arguments, in which case the first
-      argument is the index/key and the second is the value:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    <tt>0..11</tt> is a Range object, spanning from 0 (inclusive) to
+	    11 (exclusive). The <code>each(ii)</code> part means we want to
+	    call the each method, which loops over the range, and that we
+	    want the loop variable to be named <code>ii</code>. Anna will
+	    automatically determine the correct type for the <code>ii</code>
+	    variable. The code block supplied after the parentesis will be
+	    called once for every value in the range, with the
+	    variable <code>ii</code> set to each value. All collection type
+	    objects, such as maps, lists and ranges provide an each
+	    method. It can be used with a single argument, such as above, or
+	    it can be used with two arguments, in which case the first
+	    argument is the index/key and the second is the value:
+	  </p>
+	  <pre class="anna-code">
 temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
 temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")}
-    </pre>
-    </p>
+	  </pre>
 
-    <h3><a name="examples-blocks">Blocks</a></h3>
-    <p>
-      In addition to an each method, collection types offer a wide
-      variety of functional programming methods, like map and filter.
-    </p>
-    <pre class="anna-code">
+	  <h3><a name="examples-blocks">Blocks</a></h3>
+	  <p>
+	    In addition to an each method, collection types offer a wide
+	    variety of functional programming methods, like map and filter.
+	  </p>
+	  <pre class="anna-code">
 // Prints 2, 3 and 4, on separate lines
 [1, 2, 3].map(i){i+1}.each(i){print(i,'\n')}
 // Filters out the even numbers for the list
 [1, 2, 3, 4].filter(i){i ^mod 2 == 0}
-    </pre>
+	  </pre>
 
 
-    <h3><a name="examples-truth">Truth</a></h3>
-    <p>
-      
-    </p>
-    <pre class="anna-code">
+	  <h3><a name="examples-truth">Truth</a></h3>
+	  <p>
+	    
+	  </p>
+	  <pre class="anna-code">
 if(0)
 {
   // This will get executed
@@ -415,14 +419,14 @@ if(?)
   // Null is the only false value in Anna.
 }
 
-    </pre>
-
-
-    <h3><a name="examples-andor">and/or</a></h3>
-    <p>
-      
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  
+	  
+	  <h3><a name="examples-andor">and/or</a></h3>
+	  <p>
+	    
+	  </p>
+	  <pre class="anna-code">
 /* 
   The above tries to interpret the first command line argument 
   of the program as an integer and assign it to the laps variable.
@@ -430,46 +434,46 @@ if(?)
 */
 laps := Int::convert(system.argument[1]) or 5;
 
-    </pre>
-
-    <h3><a name="examples-continuations">Continuations</a></h3>
-    <p>
-      
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  
+	  <h3><a name="examples-continuations">Continuations</a></h3>
+	  <p>
+	    
+	  </p>
+	  <pre class="anna-code">
 TODO
-    </pre>
+	  </pre>
 
 
-    <h3><a name="examples-expandCode">The expandCode macro</a></h3>
-    <p>
+	  <h3><a name="examples-expandCode">The expandCode macro</a></h3>
+	  <p>
       
-    </p>
-    <pre class="anna-code">
+	  </p>
+	  <pre class="anna-code">
 TODO
-    </pre>
+	  </pre>
 
-    <h3><a name="examples-switch">The switch macro</a></h3>
-    <p>
-      The Anna version of the classical C switch statement contains some changes:
-      </p>
-    <ul>
-      <li>The syntax is slightly altered to follow how all Anna code is structured.</li>
-      <li>
-	No <code>break</code> keyword is needed at the end of a case -
-	execution never continues into an alternative case.
-      </li>
+	  <h3><a name="examples-switch">The switch macro</a></h3>
+	  <p>
+	    The Anna version of the classical C switch statement contains some changes:
+	  </p>
+	  <ul>
+	    <li>The syntax is slightly altered to follow how all Anna code is structured.</li>
+	    <li>
+	      No <code>break</code> keyword is needed at the end of a case -
+	      execution never continues into an alternative case.
+	    </li>
 
-      <li>Any types of values can be switched on, not just integers.</li>
+	    <li>Any types of values can be switched on, not just integers.</li>
 
-      <li>
-	Aside from checking for equality, the switch statement can
-	also be used to check if a value is contained in a specified
-	collection or if it can be cast to a specified type.
-      </li>
-    </ul>
+	    <li>
+	      Aside from checking for equality, the switch statement can
+	      also be used to check if a value is contained in a specified
+	      collection or if it can be cast to a specified type.
+	    </li>
+	  </ul>
       
-    <pre class="anna-code">
+	  <pre class="anna-code">
     /*
       Switch containing Int:s
      */
@@ -553,17 +557,17 @@ TODO
 	    }
 	}
     }
-    </pre>
-    <p>
-      <code>switch</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/switch.anna">bootstrap/switch.anna</a> file.
-    </p>
+	  </pre>
+	  <p>
+	    <code>switch</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/switch.anna">bootstrap/switch.anna</a> file.
+	  </p>
 
 
-    <h3><a name="examples-struct">The struct macro</a></h3>
-    <p>
+	  <h3><a name="examples-struct">The struct macro</a></h3>
+	  <p>
       
-    </p>
-    <pre class="anna-code">
+	  </p>
+	  <pre class="anna-code">
 /*
   The struct macro is used to easily create an object to store a 
   specific list of fields in. All fields are typed based on the 
@@ -572,265 +576,266 @@ TODO
 myVar := struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
 // Prints «10helloworld2»
 print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
-    </pre>
-    <p>
-      <code>struct</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/struct.anna">bootstrap/struct.anna</a> file.
-    </p>
-
-    <h3><a name="examples-macros">Defining your own macros</a></h3>
-    <p>
-      
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    <code>struct</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/struct.anna">bootstrap/struct.anna</a> file.
+	  </p>
+	  
+	  <h3><a name="examples-macros">Defining your own macros</a></h3>
+	  <p>
+	    
+	  </p>
+	  <pre class="anna-code">
 TODO
-    </pre>
-
-    <h3><a name="examples-errors">Error handling</a></h3>
-    <p>
-      
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  
+	  <h3><a name="examples-errors">Error handling</a></h3>
+	  <p>
+	    
+	  </p>
+	  <pre class="anna-code">
 TODO
-    </pre>
+	  </pre>
    
-    <h2><a name="intro_short">Anna in a single sentence</a></h2>
-    <div class='subheading'>Wherein the author demonstrates his his mastery of commatation</div>
-    <p>
-      Anna is a statically, structurally typed computer language that
-      supports LISP style macros, functions and types as first class
-      citizens, closures and continuations; it has a C-style syntax
-      and its aim is to combine the expressiveness and power of LISP
-      with the type safety, familarity and control of Java.
-    </p>
-    <p>
-      Note the use of a semicolon to combine two separate sentences into
-      something that works around the originally stated limitations and
-      still manages to be perfectly readable. That is the essence of Anna.
-    </p>
-    <p>
-      Sounds good? To learn more about Anna, check out the following sections:
-    </p>
-    <ul>
-      <li><a href='#examples'>Examples - learning by doing</a></li>
-      <li><a href='#structural_typing'>Structural typing - duck typing rethought</a></li>
-      <li><a href='#macros'>Macros - redefining the problem to fit the solution</a></li>
-      <li><a href='#misc'>An odd number of legs for a horse to have</a>, various oddities about Anna.</li>
-      <li><a href='#continuations'>Enough interruptions, let's continuate!</a></li>
-    </ul>
+	  <h2><a name="intro_short">Anna in a single sentence</a></h2>
+	  <div class='subheading'>Wherein the author demonstrates his his mastery of commatation</div>
+	  <p>
+	    Anna is a statically, structurally typed computer language that
+	    supports LISP style macros, functions and types as first class
+	    citizens, closures and continuations; it has a C-style syntax
+	    and its aim is to combine the expressiveness and power of LISP
+	    with the type safety, familarity and control of Java.
+	  </p>
+	  <p>
+	    Note the use of a semicolon to combine two separate sentences into
+	    something that works around the originally stated limitations and
+	    still manages to be perfectly readable. That is the essence of Anna.
+	  </p>
+	  <p>
+	    Sounds good? To learn more about Anna, check out the following sections:
+	  </p>
+	  <ul>
+	    <li><a href='#examples'>Examples - learning by doing</a></li>
+	    <li><a href='#structural_typing'>Structural typing - duck typing rethought</a></li>
+	    <li><a href='#macros'>Macros - redefining the problem to fit the solution</a></li>
+	    <li><a href='#misc'>An odd number of legs for a horse to have</a>, various oddities about Anna.</li>
+	    <li><a href='#continuations'>Enough interruptions, let's continuate!</a></li>
+	  </ul>
     
-    <h2><a name="intro_long">Gentle Anna</a></h2>
-    <div class='subheading'>Wherein strategic use of mood lighting makes
-      Anna seem less intimadating.</div>
-    <p>
-      Anna is a computer programming language. That is, it is a
-      language designed to be written and read by humans, but which
-      contains a series of instructions designed to be executed by
-      computers. There are many programming languages, all with their
-      own strengths and weaknesses.
-    </p>
-    <ul>
-      <li>
-	Some languages are low level, meaning they force you to go
-	into great detail about how you want to perform any actions,
-	whereas other are high level, meaning they skim the details
-	and force the computer to figure out more by itself. As
-	computers grow faster and programmers grow lazier, the
-	definition of what constitutes a high level language is
-	shifting. What was a high level language 30 years ago is
-	considered a low level language today. High level languages
-	are usually slower, and they almost always require much more
-	memory, but they are also easier for the
-	programmer to write, and usually less error prone. Anna is a
-	high level language. It is designed in a way that should make
-	it possible to make Anna programs significantly faster than
-	most high level languages, though most programs written in Anna are
-	unlikely to match the speed of a well written program in a low
-	level language.
-      </li>
-      <li>
-	Some languages are statically typed, meaning the programmer
-	has to tell the computer what type of data is being processed
-	at every step of a program, other are dynamically typed,
-	meaning the programmer only tells the computer what steps to
-	take, and the computer will find out what type of data to
-	operate on when the program is run. Statically typed languages
-	avoid some types of bugs because it can figure out that some
-	operations won't work on the specific type of data you're
-	operating on, and will warn you in advance that your code is
-	broken, but dynamically typed languages require less verbosity
-	from the programmer. Statically typed languages are usually
-	also slightly faster than dynamically typed languages. Anna
-	tries to find a middle ground between these two by being
-	statically typed, but making the computer figure out the
-	actual type for you when possible.
-      </li>
-      <li>
-	Pretty much all computer languages allow you to extend the
-	language to new domains. The way this is usually done is
-	through software libraries. If we make an analogy to regular
-	human languages, like english, a software library is like a
-	set of new words. We can add new words to most languages that
-	allow us to discuss new subjects, such as the sending of
-	emails. What most computer languages do not allow, however, is
-	for us to redefine the grammar of the language; that is, the
-	basic structure of the language is constant. The LISP
-	language, invented over 50 years ago, actually provided a
-	means to redefine some parts of the grammar of the
-	language. This feature is extremely powerful, and it has
-	allowed LISP to stay relevant even today. Many people rever
-	LISP as some kind of divine and perfect ideal of a language,
-	though few of them actually use it much. The downside of LISP
-	is that the most basic level of underlying structure of the
-	language - the part of the grammar that can not be changed, is
-	extremely simple. LISP code is always a nested list of lists,
-	something which is not very easy to read or understand for
-	humans. No matter how much you redefine the high level grammar
-	of LISP, it will always keep that basic structure of lists of
-	lists, and humans tend to find that hard to handle. Anna is
-	different from LISP in this regard. To the computer, Anna
-	looks like a list of lists, much like LISP, but when writing
-	programs for Anna, there is a special translation layer called
-	the sugar, that allows you to write your code in a way that is
-	much more intuitive (and familiar) to human beings. This way,
-	Anna gives you the power to grow and redefine the language,
-	just like in LISP, but still lets you keep the intuitive and
-	readable syntax of less powerful languages.
-      </li>
-      <li>
-	There are many styles of programming. These include Object
-	oriented programming, imperative programming, generic
-	programming and functional programming. Some program problems
-	are solved better with one approach, others with another, but
-	no single approach is optimal for all types of
-	problems. Pretty much all languages support all these styles
-	to some degree; they rely more on a way of thinking than on
-	any specific language feature. However, Anna contains many
-	features to make all these styles pleasant to use. Thus you
-	can be reasonably confident that no matter what the problem
-	is, Anna provides you with the tools to solve it efficiently.
-      </li>
-    </ul>
-    <p>
-      That should give you an idea about Anna. If you want more in
-      depth information about some aspect of Anna, follow one of the
-      links below.
-    </p>
-    <ul>
-      <li>
-	<a href='#examples'>Anna by examples.</a> If you want to see
-	thery turned into practice.
-      </li>
+	  <h2><a name="intro_long">Gentle Anna</a></h2>
+	  <div class='subheading'>Wherein strategic use of mood lighting makes
+	    Anna seem less intimadating.</div>
+	  <p>
+	    Anna is a computer programming language. That is, it is a
+	    language designed to be written and read by humans, but which
+	    contains a series of instructions designed to be executed by
+	    computers. There are many programming languages, all with their
+	    own strengths and weaknesses.
+	  </p>
+	  <ul>
+	    <li>
+	      Some languages are low level, meaning they force you to go
+	      into great detail about how you want to perform any actions,
+	      whereas other are high level, meaning they skim the details
+	      and force the computer to figure out more by itself. As
+	      computers grow faster and programmers grow lazier, the
+	      definition of what constitutes a high level language is
+	      shifting. What was a high level language 30 years ago is
+	      considered a low level language today. High level languages
+	      are usually slower, and they almost always require much more
+	      memory, but they are also easier for the
+	      programmer to write, and usually less error prone. Anna is a
+	      high level language. It is designed in a way that should make
+	      it possible to make Anna programs significantly faster than
+	      most high level languages, though most programs written in Anna are
+	      unlikely to match the speed of a well written program in a low
+	      level language.
+	    </li>
+	    <li>
+	      Some languages are statically typed, meaning the programmer
+	      has to tell the computer what type of data is being processed
+	      at every step of a program, other are dynamically typed,
+	      meaning the programmer only tells the computer what steps to
+	      take, and the computer will find out what type of data to
+	      operate on when the program is run. Statically typed languages
+	      avoid some types of bugs because it can figure out that some
+	      operations won't work on the specific type of data you're
+	      operating on, and will warn you in advance that your code is
+	      broken, but dynamically typed languages require less verbosity
+	      from the programmer. Statically typed languages are usually
+	      also slightly faster than dynamically typed languages. Anna
+	      tries to find a middle ground between these two by being
+	      statically typed, but making the computer figure out the
+	      actual type for you when possible.
+	    </li>
+	    <li>
+	      Pretty much all computer languages allow you to extend the
+	      language to new domains. The way this is usually done is
+	      through software libraries. If we make an analogy to regular
+	      human languages, like english, a software library is like a
+	      set of new words. We can add new words to most languages that
+	      allow us to discuss new subjects, such as the sending of
+	      emails. What most computer languages do not allow, however, is
+	      for us to redefine the grammar of the language; that is, the
+	      basic structure of the language is constant. The LISP
+	      language, invented over 50 years ago, actually provided a
+	      means to redefine some parts of the grammar of the
+	      language. This feature is extremely powerful, and it has
+	      allowed LISP to stay relevant even today. Many people rever
+	      LISP as some kind of divine and perfect ideal of a language,
+	      though few of them actually use it much. The downside of LISP
+	      is that the most basic level of underlying structure of the
+	      language - the part of the grammar that can not be changed, is
+	      extremely simple. LISP code is always a nested list of lists,
+	      something which is not very easy to read or understand for
+	      humans. No matter how much you redefine the high level grammar
+	      of LISP, it will always keep that basic structure of lists of
+	      lists, and humans tend to find that hard to handle. Anna is
+	      different from LISP in this regard. To the computer, Anna
+	      looks like a list of lists, much like LISP, but when writing
+	      programs for Anna, there is a special translation layer called
+	      the sugar, that allows you to write your code in a way that is
+	      much more intuitive (and familiar) to human beings. This way,
+	      Anna gives you the power to grow and redefine the language,
+	      just like in LISP, but still lets you keep the intuitive and
+	      readable syntax of less powerful languages.
+	    </li>
+	    <li>
+	      There are many styles of programming. These include Object
+	      oriented programming, imperative programming, generic
+	      programming and functional programming. Some program problems
+	      are solved better with one approach, others with another, but
+	      no single approach is optimal for all types of
+	      problems. Pretty much all languages support all these styles
+	      to some degree; they rely more on a way of thinking than on
+	      any specific language feature. However, Anna contains many
+	      features to make all these styles pleasant to use. Thus you
+	      can be reasonably confident that no matter what the problem
+	      is, Anna provides you with the tools to solve it efficiently.
+	    </li>
+	  </ul>
+	  <p>
+	    That should give you an idea about Anna. If you want more in
+	    depth information about some aspect of Anna, follow one of the
+	    links below.
+	  </p>
+	  <ul>
+	    <li>
+	      <a href='#examples'>Anna by examples.</a> If you want to see
+	      thery turned into practice.
+	    </li>
 
-    </ul>
-    <h2><a name="intro_lisp">Anna for LISP programmers</a></h2>
-    <div class='subheading'>Old is the new new.</div>
+	  </ul>
+	  <h2><a name="intro_lisp">Anna for LISP programmers</a></h2>
+	  <div class='subheading'>Old is the new new.</div>
     
-    <p>
-      Anna is a statically typed language with a front end that allows
-      you to write your code with a C-like structure, e.g. using infix
-      operators, braces and brackets. What sets Anna apart from other
-      such languages is it's support for LSIP-features such as
-      LISP-style macros, closures, anonymous functions and
-      continuations.  The Anna type system sis static, but it supports
-      structural typing, meaning that if the type of variable B
-      contains all members of the type A, with compatible type
-      signatures, then B can be freely cast into a variable of type
-      A. 
-    </p>
-    <p>
-      In order to learn more about Anna, check out the following sections:
-    </p>
-    <ul>
-      <li>
-	<a href="#sugar">Sugar and spice</a> - How the front end sugar works and what Anna looks like without makeup.
-      </li>
-      <li>
-	<a href='#examples'>Anna by examples.</a> If you just want to
-	dig in to the syntax.
-      </li>
+	  <p>
+	    Anna is a statically typed language with a front end that allows
+	    you to write your code with a C-like structure, e.g. using infix
+	    operators, braces and brackets. What sets Anna apart from other
+	    such languages is it's support for LSIP-features such as
+	    LISP-style macros, closures, anonymous functions and
+	    continuations.  The Anna type system sis static, but it supports
+	    structural typing, meaning that if the type of variable B
+	    contains all members of the type A, with compatible type
+	    signatures, then B can be freely cast into a variable of type
+	    A. 
+	  </p>
+	  <p>
+	    In order to learn more about Anna, check out the following sections:
+	  </p>
+	  <ul>
+	    <li>
+	      <a href="#sugar">Sugar and spice</a> - How the front end
+	      sugar works and what Anna looks like without makeup.
+	    </li>
+	    <li>
+	      <a href='#examples'>Anna by examples.</a> If you just want to
+	      dig in to the syntax.
+	    </li>
 
-    </ul>
+	  </ul>
     
-    <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
-    <div class='subheading'>Confusingly familiar.</div>
-    <p>
-      Anna is a C-like language with garbage collection and a powerful
-      object system. At first glance, Anna feels very familiar to Java
-      and C# programmers, and coders of C, C++ and other C-like
-      languages should pick up the changes relatively quickly as
-      well. Anna does have a few nifty short cuts to save a few
-      keypresses, including:
-    </p>
-    <ul>
-      <li>
-	There are no statements in Anna, only expressions. The if
-	expression, for example, returns the output of the conditional
-	block that was executed. So the Anna equivalent of the ternary
-	operator becomes <code>foo = if (a>3) {3} else {a}</code>. If
-	a function reaches the end of it's block without encountering
-	a return statement, the output from the last expression of the
-	function is returned.
-      </li>
-      <li>
-	Say you've written a class A, and it implements all of the
-	members of an interface/class B. You do not need to explicitly
-	_say_ that A is a B, the interpreter figures out for itself
-	that the class A abides by the interface provided by class
-	B. This is called structural typing. Go programmers should
-	recognise this feature.
-      </li>
-      <li>
-	There are lots of situations in statically typed languages
-	where you need to repeat the type of a specific expression
-	over and over and over. Anna is pretty clever about figuring
-	out what type an expression should have, and not force you to
-	write it out multiple times. Most variable declarations and
-	cast operations for example do not require you to write out
-	the type. Go and C# programmers should recognise this feature.
-      </li>
-    </ul>
-    <p>
-      This is all fine and good, but hardly something that makes it
-      worth ones time to switch to a whole other programming
-      language. What really sets Anna apart is the level of
-      metaprogramming it allows. Anna allows you to redefine the very
-      building blocks of the language. Use/with statements, exceptions
-      and loop constructs can all be created or altered in order to
-      extend the language in any way you choose. Even better, such
-      extensions are written in the language itself, no C++-style
-      separate template metaprogramming language is needed.
-    </p>
-    <p>
-      There are two basic building blocks of Anna that allow you to
-      redefine the language. They are macros and continuations. We'll
-      explan them brifely. C and C++ coders may think to themselves
-      that they know macros, and they really aren't that great. In one
-      sense they'd be correct, because C-style macros really aren't
-      that great. Ignore C macros, lets instead talk about Anna style
-      macros, because they're actually pretty neat. But first, just a
-      little bit of background.
-    </p>
-    <h3><a name="intro-c-macros">Macros, redefined</a></h3>
-    <p>
-      Pretty much all compilers will read a source file into some kind
-      of tree of nodes called an abstract syntax tree, or AST for
-      short. 
-    </p>
-    <p>
-      Every node in the AST tree above is at some point a regular Anna
-      object, and the compiler can alter these nodes as it sees
-      fit. That's pretty nifty, but how does that tie in with us? Anna
-      has two keywords for defining a function,
-      namely <code>def</code> and <code>macro</code>. They work
-      pretty much the same, they both let you define a pice of code
-      with a few input parameters and a few output parameters. There
-      are two differences between the two, firstly that macros are run
-      at compile time, and secondly that the input and output of the
-      macros is an AST. The implications of this may not be obvious
-      at once, so we'll consider a few examples. First, look at the
-      code snippet below:
-    </p>
-    <pre class="anna-code">
+	  <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
+	  <div class='subheading'>Confusingly familiar.</div>
+	  <p>
+	    Anna is a C-like language with garbage collection and a powerful
+	    object system. At first glance, Anna feels very familiar to Java
+	    and C# programmers, and coders of C, C++ and other C-like
+	    languages should pick up the changes relatively quickly as
+	    well. Anna does have a few nifty short cuts to save a few
+	    keypresses, including:
+	  </p>
+	  <ul>
+	    <li>
+	      There are no statements in Anna, only expressions. The if
+	      expression, for example, returns the output of the conditional
+	      block that was executed. So the Anna equivalent of the ternary
+	      operator becomes <code>foo = if (a>3) {3} else {a}</code>. If
+	      a function reaches the end of it's block without encountering
+	      a return statement, the output from the last expression of the
+	      function is returned.
+	    </li>
+	    <li>
+	      Say you've written a class A, and it implements all of the
+	      members of an interface/class B. You do not need to explicitly
+	      _say_ that A is a B, the interpreter figures out for itself
+	      that the class A abides by the interface provided by class
+	      B. This is called structural typing. Go programmers should
+	      recognise this feature.
+	    </li>
+	    <li>
+	      There are lots of situations in statically typed languages
+	      where you need to repeat the type of a specific expression
+	      over and over and over. Anna is pretty clever about figuring
+	      out what type an expression should have, and not force you to
+	      write it out multiple times. Most variable declarations and
+	      cast operations for example do not require you to write out
+	      the type. Go and C# programmers should recognise this feature.
+	    </li>
+	  </ul>
+	  <p>
+	    This is all fine and good, but hardly something that makes it
+	    worth ones time to switch to a whole other programming
+	    language. What really sets Anna apart is the level of
+	    metaprogramming it allows. Anna allows you to redefine the very
+	    building blocks of the language. Use/with statements, exceptions
+	    and loop constructs can all be created or altered in order to
+	    extend the language in any way you choose. Even better, such
+	    extensions are written in the language itself, no C++-style
+	    separate template metaprogramming language is needed.
+	  </p>
+	  <p>
+	    There are two basic building blocks of Anna that allow you to
+	    redefine the language. They are macros and continuations. We'll
+	    explan them brifely. C and C++ coders may think to themselves
+	    that they know macros, and they really aren't that great. In one
+	    sense they'd be correct, because C-style macros really aren't
+	    that great. Ignore C macros, lets instead talk about Anna style
+	    macros, because they're actually pretty neat. But first, just a
+	    little bit of background.
+	  </p>
+	  <h3><a name="intro-c-macros">Macros, redefined</a></h3>
+	  <p>
+	    Pretty much all compilers will read a source file into some kind
+	    of tree of nodes called an abstract syntax tree, or AST for
+	    short. 
+	  </p>
+	  <p>
+	    Every node in the AST tree above is at some point a regular Anna
+	    object, and the compiler can alter these nodes as it sees
+	    fit. That's pretty nifty, but how does that tie in with us? Anna
+	    has two keywords for defining a function,
+	    namely <code>def</code> and <code>macro</code>. They work
+	    pretty much the same, they both let you define a pice of code
+	    with a few input parameters and a few output parameters. There
+	    are two differences between the two, firstly that macros are run
+	    at compile time, and secondly that the input and output of the
+	    macros is an AST. The implications of this may not be obvious
+	    at once, so we'll consider a few examples. First, look at the
+	    code snippet below:
+	  </p>
+	  <pre class="anna-code">
 macro replaceObjectWithInt(ast)
 {
 	ast.replaceChildren(child)
@@ -844,273 +849,282 @@ macro replaceObjectWithInt(ast)
 	}
 	return ast;
 }
-</pre>
-    <p>
-      What does the above code do? If you can't guess, the correct
-      answer is that it walks the entire AST and replaces all
-      identifiers that have the value <code>Object</code> with a new
-      identifier with the value <code>Int</code>. Instant templating!
-      Of course, the Anna standard library already <em>has</em> a very
-      nice templating system, so there is no need to write your own,
-      but the possibility to make that type of additions to the
-      language is in your hands.
-    </p>
-    <p>
-      The most common reason for using macros is to construct
-      sublanguages, also called domain specific languages. The Anna
-      front end is pretty loose about what input it will accept -
-      pretty much anything that can be reasonably parsed into an AST
-      is allowed. That opens up the possibility to create macros that
-      parse things using a completely different syntax. For example,
-      one could write a macro that allows you to create date objects using
-      the standard ISO data format:
-    </p>
-<code>
+	  </pre>
+	  <p>
+	    What does the above code do? If you can't guess, the correct
+	    answer is that it walks the entire AST and replaces all
+	    identifiers that have the value <code>Object</code> with a new
+	    identifier with the value <code>Int</code>. Instant templating!
+	    Of course, the Anna standard library already <em>has</em> a very
+	    nice templating system, so there is no need to write your own,
+	    but the possibility to make that type of additions to the
+	    language is in your hands.
+	  </p>
+	  <p>
+	    The most common reason for using macros is to construct
+	    sublanguages, also called domain specific languages. The Anna
+	    front end is pretty loose about what input it will accept -
+	    pretty much anything that can be reasonably parsed into an AST
+	    is allowed. That opens up the possibility to create macros that
+	    parse things using a completely different syntax. For example,
+	    one could write a macro that allows you to create date objects using
+	    the standard ISO data format:
+	  </p>
+	  <pre>
 birthday := IsoDate(1978-05-20, 12:34:00);
-</code>
-    <p>
-      It is possible to create a list search interface like LINQ in
-      Anna, but unlike LINQ, it is not a one time thing, grafted onto
-      the compiler. Anna provides a general purpose framework that
-      allows you to create libraries that do the same thing LINQ does,
-      but better. 
-    </p>
-    <h3><a name="intro-c-continuations">Continuations, continued</a></h3>
-    <p>
-      This paragraph is for C and C++ coders that know what a longjmp
-      is. If you don't, feel free to skip this paragraph. So, you know
-      what a longjmp is. Cogratulations! A continuation is exactly
-      like a longjmp, except that the restrictions placed on
-      longjmps are removed. Specifically, longjmp:s only allow you to
-      «rewind» the stack and continue execution further down on the
-      function stack, whereas continuations allow you to jump up, down
-      or sideways into a whole other branch of the stack. That's
-      it. Nothing more. Simple. Feel free to skip the next paragraph.
-    </p>
-    <p>
-      Continuations are a way to explicitly control the location that
-      a function will return to when it finishes. Continuations are an
-      extremely powerful language feature that can be used to
-      implement exception handling, green threads and a multitude of
-      other features.
-    </p>
-    <p>
-      To learn more about continuations,
-      click <a href="#continuations">here</a>.
-    </p>
-
-    <h2><a name="intro_script">Anna for Python and Ruby programmers</a></h2>
-    <div class='subheading'>Wherein...</div>
-    
-    <p>
-      In daily use, Python and Ruby are probably the languages that
-      most resemble Anna. Anna code looks a bit like C, which means
-      the code may not look like Python or Ruby, but once you've
-      gotten used to it, the way the language feels and works should
-      be very familiar.
-    </p>
-    <p>
-      Like Ruby, but unlike Python, Anna does not have statements,
-      only expressions. A function declaration is an expression that
-      returns a function. Thus, you do not need the silly and
-      contrived lambda expression to create anonymous functions:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    It is possible to create a list search interface like LINQ in
+	    Anna, but unlike LINQ, it is not a one time thing, grafted onto
+	    the compiler. Anna provides a general purpose framework that
+	    allows you to create libraries that do the same thing LINQ does,
+	    but better. 
+	  </p>
+	  <h3><a name="intro-c-continuations">Continuations, continued</a></h3>
+	  <p>
+	    This paragraph is for C and C++ coders that know what a longjmp
+	    is. If you don't, feel free to skip this paragraph. So, you know
+	    what a longjmp is. Cogratulations! A continuation is exactly
+	    like a longjmp, except that the restrictions placed on
+	    longjmps are removed. Specifically, longjmp:s only allow you to
+	    «rewind» the stack and continue execution further down on the
+	    function stack, whereas continuations allow you to jump up, down
+	    or sideways into a whole other branch of the stack. That's
+	    it. Nothing more. Simple. Feel free to skip the next paragraph.
+	  </p>
+	  <p>
+	    Continuations are a way to explicitly control the location that
+	    a function will return to when it finishes. Continuations are an
+	    extremely powerful language feature that can be used to
+	    implement exception handling, green threads and a multitude of
+	    other features.
+	  </p>
+	  <p>
+	    To learn more about continuations,
+	    click <a href="#continuations">here</a>.
+	  </p>
+	  
+	  <h2><a name="intro_script">Anna for Python and Ruby programmers</a></h2>
+	  <div class='subheading'>Wherein...</div>
+	  
+	  <p>
+	    In daily use, Python and Ruby are probably the languages that
+	    most resemble Anna. Anna code looks a bit like C, which means
+	    the code may not look like Python or Ruby, but once you've
+	    gotten used to it, the way the language feels and works should
+	    be very familiar.
+	  </p>
+	  <p>
+	    Like Ruby, but unlike Python, Anna does not have statements,
+	    only expressions. A function declaration is an expression that
+	    returns a function. Thus, you do not need the silly and
+	    contrived lambda expression to create anonymous functions:
+	  </p>
+	  <pre class="anna-code">
 FIXME! Add an anonymous function example here
-    </pre>
-    <p>
-      Much like in Ruby, there is a very simple shortcut for throwing
-      in a block of code as an additional parameter in Anna. If you
-      simply append a code block afer a function call, Anna will
-      interpret it as a function parameter:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    Much like in Ruby, there is a very simple shortcut for throwing
+	    in a block of code as an additional parameter in Anna. If you
+	    simply append a code block afer a function call, Anna will
+	    interpret it as a function parameter:
+	  </p>
+	  <pre class="anna-code">
 FIXME! Add code block example here
-    </pre>
-    <p>
-      Another way in which Anna is like Python and Ruby is the convenient support for functional programming. Say we haxe EXAMPLE FIXME LALALA.
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    Another way in which Anna is like Python and Ruby is the
+	    convenient support for functional programming. Say we haxe
+	    EXAMPLE FIXME LALALA.
+	  </p>
+	  <pre class="anna-code">
 FIXME! Functional programming example here
-    </pre>
-    <p>
-      Blocks of code, by the way, are anonymous functions that take 0
-      parameters.
-    </p>
-    <h3>Static typing, but not as bad as it seems</h3>
-    <p>
-      So. Enough dodging, lets address what is likely to be the major
-      cause of concern for Ruby- and Python lovers. Static typing. In
-      Anna, you will sometimes have to do slightly more typing. It's
-      true. Anna does its best to figure out types for you using type
-      inference, and when it can, you don't have to tell her, but
-      there are still situations where you have to talk about
-      types. Lets break it down:
-    </p>
-    <ul>
-      <li>
-	When declaring a variable, if you supply an initializer, the
-	variable will take the type of the initializer. If you don't
-	you'll have to give the type.
-      </li>
-      <li>
-	When defining a function, you will have to supply the type of
-	each input parameter and in rare cases also the return
-	type. (Most of the time, Anna can figure out the return type
-	by examining the function body)
-      </li>
-    </ul>
-    <p>
-      The upshoot of this is that you have to do significantly less
-      type checking when validating your input arguments (and you do
-      validate your input arguments, don't you?), regaining you some
-      of those lost key strokes. You also get much better ahead of
-      time code checking - some silly mistakes can be caught earlier
-      in the development process in Anna.
-    </p>
-    <p>
-      Static typing does catch some bugs at compile time that aren't
-      tiggered until you happen to run a specific function with a
-      specific combination of parameters in dynamic languages. That is
-      a fact. Static typing also involves more typing. Another
-      fact. It is hoped that the «smart» static typing of Anna is the
-      optimal tradeoff - you get most of the safety and a more
-      tolerable amount of typing than in other statically typed
-      languages.
-    </p>
-    <h3>Duck typing</h3>
-    <p>
-      The practice of duck typing, e.g. not checking for specific
-      function types when validating the type of an input parameter,
-      but only checking that the required members are present, is
-      increasingly popular in modern dynamically typed programming
-      languages. This technique makes code significantly more
-      reusable, and can also to a degree decouple modules from each
-      other. On the surface, duck typing seems to be an idea that can
-      only work in dynamically typed languages, but statically typed
-      languages like Anna can actually implement a close equivalnt,
-      something called structural typing.
-    </p>
-    <p>
-      Structural typing means that if a function expects a parameter
-      of type <code>A</code>, and type <code>B</code> contains all the
-      same members as A, and all the members have compatible
-      signatures, then type B can be used as input to the function,
-      regardless of if <code>B</code> actually inherits from
-      type <code>A</code> or not.
-    </p>
+	  </pre>
+	  <p>
+	    Blocks of code, by the way, are anonymous functions that take 0
+	    parameters.
+	  </p>
+	  <h3>Static typing, but not as bad as it seems</h3>
+	  <p>
+	    So. Enough dodging, lets address what is likely to be the major
+	    cause of concern for Ruby- and Python lovers. Static typing. In
+	    Anna, you will sometimes have to do slightly more typing. It's
+	    true. Anna does its best to figure out types for you using type
+	    inference, and when it can, you don't have to tell her, but
+	    there are still situations where you have to talk about
+	    types. Lets break it down:
+	  </p>
+	  <ul>
+	    <li>
+	      When declaring a variable, if you supply an initializer, the
+	      variable will take the type of the initializer. If you don't
+	      you'll have to give the type.
+	    </li>
+	    <li>
+	      When defining a function, you will have to supply the type of
+	      each input parameter and in rare cases also the return
+	      type. (Most of the time, Anna can figure out the return type
+	      by examining the function body)
+	    </li>
+	  </ul>
+	  <p>
+	    The upshoot of this is that you have to do significantly less
+	    type checking when validating your input arguments (and you do
+	    validate your input arguments, don't you?), regaining you some
+	    of those lost key strokes. You also get much better ahead of
+	    time code checking - some silly mistakes can be caught earlier
+	    in the development process in Anna.
+	  </p>
+	  <p>
+	    Static typing does catch some bugs at compile time that aren't
+	    tiggered until you happen to run a specific function with a
+	    specific combination of parameters in dynamic languages. That is
+	    a fact. Static typing also involves more typing. Another
+	    fact. It is hoped that the «smart» static typing of Anna is the
+	    optimal tradeoff - you get most of the safety and a more
+	    tolerable amount of typing than in other statically typed
+	    languages.
+	  </p>
+	  <h3>Duck typing</h3>
+	  <p>
+	    The practice of duck typing, e.g. not checking for specific
+	    function types when validating the type of an input parameter,
+	    but only checking that the required members are present, is
+	    increasingly popular in modern dynamically typed programming
+	    languages. This technique makes code significantly more
+	    reusable, and can also to a degree decouple modules from each
+	    other. On the surface, duck typing seems to be an idea that can
+	    only work in dynamically typed languages, but statically typed
+	    languages like Anna can actually implement a close equivalnt,
+	    something called structural typing.
+	  </p>
+	  <p>
+	    Structural typing means that if a function expects a parameter
+	    of type <code>A</code>, and type <code>B</code> contains all the
+	    same members as A, and all the members have compatible
+	    signatures, then type B can be used as input to the function,
+	    regardless of if <code>B</code> actually inherits from
+	    type <code>A</code> or not.
+	  </p>
     
-    <h1><a name="structural_typing">Structural typing</a></h1>
-    <p>
-      Most languages, including Python and Java, have operations that
-      let you check if an object explicitly states that it implements
-      some interface. You have, for example,
-      the <code>Comparable</code> interface in Java, which defines a
-      set of methods that allow you to compare one object to
-      another. The realization that it doesn't, or at least shouldn't,
-      matter if an object explicitly states that it implements a
-      specific interface, so long as it actually does implement it,
-      has struck a great number of people over the ages. In python, it
-      has become popular to avoid the <code>is</code> operator to
-      perform type checking, and instead simply check if the relevant
-      fields and methods are present in an object. This idea is called
-      duck typing, and while the idea and its usage predates Python,
-      the concept of duck typing has been popularized by the Python
-      community.
-    </p> 
-    <p>
-      Anna takes the concept of duck typing and runs with it. It is
-      not possible in Anna to check if an object inherits from a
-      specific type. There is simply no inheritance information
-      available. You can _only_ check if an object <code>A</code> is
-      compatible with a type <code>B</code> using duck typing. It is
-      also trivial to perform operations on types in order to type
-      templates dynamically. For example, say you want to test if the
-      object <code>someObject</code> has all the members common to
-      both the <code>String</code> and <code>Int</code> types. That is
-      easily done using this code:
-    </p>
-    
-<code>
+	  <h1><a name="structural_typing">Structural typing</a></h1>
+	  <p>
+	    Most languages, including Python and Java, have operations that
+	    let you check if an object explicitly states that it implements
+	    some interface. You have, for example,
+	    the <code>Comparable</code> interface in Java, which defines a
+	    set of methods that allow you to compare one object to
+	    another. The realization that it doesn't, or at least shouldn't,
+	    matter if an object explicitly states that it implements a
+	    specific interface, so long as it actually does implement it,
+	    has struck a great number of people over the ages. In python, it
+	    has become popular to avoid the <code>is</code> operator to
+	    perform type checking, and instead simply check if the relevant
+	    fields and methods are present in an object. This idea is called
+	    duck typing, and while the idea and its usage predates Python,
+	    the concept of duck typing has been popularized by the Python
+	    community.
+	  </p> 
+	  <p>
+	    Anna takes the concept of duck typing and runs with it. It is
+	    not possible in Anna to check if an object inherits from a
+	    specific type. There is simply no inheritance information
+	    available. You can _only_ check if an object <code>A</code> is
+	    compatible with a type <code>B</code> using duck typing. It is
+	    also trivial to perform operations on types in order to type
+	    templates dynamically. For example, say you want to test if the
+	    object <code>someObject</code> has all the members common to
+	    both the <code>String</code> and <code>Int</code> types. That is
+	    easily done using this code:
+	  </p>
+	  
+<pre>
 if(someObject is String.intersect(Int)) 
 {
     ...
 }
-</code>
-    <p>
-      Anna makes it similarly easy to filter out a subset of members from
-      a type, create the union of two types, etc.
-    </p>
-    <h2>Dynamic type creation</h2>
-    <p>
-      In order for duck typing to be viable in a statically typed
-      language, it must be easy to create new types on the spot. A very
-      simple example of this is the <code>or</code> macro. Take the
-      following snippet of Anna code:
-    </p>
-    <code>
+</pre>
+	  <p>
+	    Anna makes it similarly easy to filter out a subset of members from
+	    a type, create the union of two types, etc.
+	  </p>
+	  <h2>Dynamic type creation</h2>
+	  <p>
+	    In order for duck typing to be viable in a statically typed
+	    language, it must be easy to create new types on the spot. A very
+	    simple example of this is the <code>or</code> macro. Take the
+	    following snippet of Anna code:
+	  </p>
+	  <pre>
 var Foo foo = getFoo();
 var Bar bar = getBar();
 var baz = foo or bar;
-    </code>
-    <p>
-      The or operator in Anna will return the first value (foo) if it is
-      true, otherwise, bar will be returned. This means that the return
-      type of <code>foo or bar</code> is the intersection of the types of
-      the respective arguments, in this case, the intersection of the
-      types <code>Foo</code> and <code>Bar</code>.
-    </p>
-    
-    <h1>
-      <a name="type-inference"> 	
-	Type inference - painless static static typing
-      </a>
-    </h1>
-    <p>
-      Anna is a statically typed language. That means that before a block
-      of Anna code is executed by the computer, every variable declaration
-      and every object member will have a known type associated with
-      it. This does not, however, mean that you as a programmer must tell
-      the interpreter about all of those types. Anna goes out of her way
-      to find situations where there is no ambiguity as to the type of a
-      variable, and to relieve you of the burden of explicit typing in
-      such situations. Consider this trivial example:
-    </p>
-    <code>var Int i = 7;</code>
-    <p>
-      The above is an Anna style variable declaration, the
-      variable <code>i</code> is declared to be of type <code>Int</code>,
-      and is given the initial value of 7. Now, the above is a perfectly
-      valid Anna expression, but it is not the simplest way possible to
-      epress the above. You see, the numeric literal <code>7</code> is
-      known by the interpreter to be of the type Int. The interpreter can
-      use this information to guess the type of the variable
-      declaration. Therefore, Anna has an alternative, simpler syntax:
-    </p>
-    
-    <code>i := 7;</code>
-    
-    <p>
-      This only saves you seven key strokes in the example above, but
-      consider for example templated types, such as a map with String keys
-      and Float values:
-    </p>
+	  </pre>
+	  <p>
+	    The or operator in Anna will return the first value (foo) if it is
+	    true, otherwise, bar will be returned. This means that the return
+	    type of <code>foo or bar</code> is the intersection of the types of
+	    the respective arguments, in this case, the intersection of the
+	    types <code>Foo</code> and <code>Bar</code>.
+	  </p>
+	  
+	  <h1>
+	    <a name="type-inference"> 	
+	      Type inference - painless static static typing
+	    </a>
+	  </h1>
+	  <p>
+	    Anna is a statically typed language. That means that
+	    before a block of Anna code is executed by the computer,
+	    every variable declaration and every object member will
+	    have a known type associated with it. This does not,
+	    however, mean that you as a programmer must tell the
+	    interpreter about all of those types. Anna goes out of her
+	    way to find situations where there is no ambiguity as to
+	    the type of a variable, and to relieve you of the burden
+	    of explicit typing in such situations. Consider this
+	    trivial example:
+	  </p>
+	  <pre>
+var Int i = 7;
+	  </pre>
+	  <p>
+	    The above is an Anna style variable declaration, the
+	    variable <code>i</code> is declared to be of
+	    type <code>Int</code>, and is given the initial value of
+	    7. Now, the above is a perfectly valid Anna expression,
+	    but it is not the simplest way possible to epress the
+	    above. You see, the numeric literal <code>7</code> is
+	    known by the interpreter to be of the type Int. The
+	    interpreter can use this information to guess the type of
+	    the variable declaration. Therefore, Anna also has an
+	    alternative, simpler syntax:
+	  </p>
+	  <pre>
+i := 7;
+	  </pre>
+	  
+	  <p>
+	    This only saves you seven key strokes in the example above, but
+	    consider for example templated types, such as a map with String keys
+	    and Float values:
+	  </p>
 
-<pre class="anna-code">
+	  <pre class="anna-code">
 var Map«String,Float» map = ["Mon":0.0,"Tue":1.1;
 map := ["Mon":0.0,"Tue":1.1];
-</pre>
+	  </pre>
 
-    <p>
-      Suddenly, we've cut the number of key strokes nearly in half!
-    </p>
-    
-    <p>
-      Variable declarations aren't the only place where the interpreter
-      can figure out the variable type for you:
-    </p>
-    
-    <pre class="anna-code">
+	  <p>
+	    Suddenly, we've cut the number of key strokes nearly in half!
+	  </p>
+	  
+	  <p>
+	    Variable declarations aren't the only place where the interpreter
+	    can figure out the variable type for you:
+	  </p>
+	  
+	  <pre class="anna-code">
   /*
    * Function with return type implied by the type of value it is returning
    */
@@ -1118,39 +1132,38 @@ map := ["Mon":0.0,"Tue":1.1];
   {
       return in+1;
   }
+	  </pre>
 
-    </pre>
-
-    <h1><a name="macros">Macros redefine our world</a></h1>
-    <p>
-      Anna, much like LISP, allows you to define functions that accept a
-      tree of nodes representing a program code snippet as an input, and
-      returning another code snippet as its output. This is in stark
-      contrast to regular functions, that accept the
-      evaluated <em>results</em> of a code snippet as its input and
-      output. For example, consider the following snippet:
-    </p>
-    <code>
-      foo = ...;
-    </code>
-    
-    
-    <h1><a name="exceptions">No exceptions</a></h1>
-    <p>
-      Anna does not have exceptions. It would be easy to implement
-      exceptions using continuations, but they are considered bad
-      coding style in Anna. The perception is that exceptions make
-      your programs unpredictable and often causes error handling,
-      which is the least well tested part of most application, to use
-      completely different code paths that often result in unintended
-      bugs. In its stead, Anna allows you to record all errors that
-      occured during the execution of a function, and deal with them
-      where convenient. Instead of the classic try/except block of
-      other languages, Anna has a collect block that in many
-      ways behaves the same, but with an important difference. This is
-      how a collect block will usually look like:
-    </p>
-<pre class="anna-code">
+	  <h1><a name="macros">Macros redefine our world</a></h1>
+	  <p>
+	    Anna, much like LISP, allows you to define functions that accept a
+	    tree of nodes representing a program code snippet as an input, and
+	    returning another code snippet as its output. This is in stark
+	    contrast to regular functions, that accept the
+	    evaluated <em>results</em> of a code snippet as its input and
+	    output. For example, consider the following snippet:
+	  </p>
+	  <pre>
+TODO
+	  </pre>
+	  
+	  
+	  <h1><a name="exceptions">No exceptions</a></h1>
+	  <p>
+	    Anna does not have exceptions. It would be easy to implement
+	    exceptions using continuations, but they are considered bad
+	    coding style in Anna. The perception is that exceptions make
+	    your programs unpredictable and often causes error handling,
+	    which is the least well tested part of most application, to use
+	    completely different code paths that often result in unintended
+	    bugs. In its stead, Anna allows you to record all errors that
+	    occured during the execution of a function, and deal with them
+	    where convenient. Instead of the classic try/except block of
+	    other languages, Anna has a collect block that in many
+	    ways behaves the same, but with an important difference. This is
+	    how a collect block will usually look like:
+	  </p>
+	  <pre class="anna-code">
 collect
 {
     /* Some code that may cause various error conditions */
@@ -1176,108 +1189,108 @@ collect
 	}
     }
 }
-</pre>
-    <p>
-      The <code>collect</code> call will save any errors that occur
-      while executing its body, including any errors occusing in
-      functions called by the body at any level of nesting, into a
-      list of errors. Once the code has finished, the list of errors
-      is iterated over and handled by the <code>each</code>
-      loop. 
-    </p>
-    <p>
-      How is this different from exceptions? Exceptions can skip over
-      parts of your code in very unpredictable ways. Whenever you
-      allocate some form of resource, you need to use try/finally to
-      make sure it's released, which is very error prone. When an
-      error happens in Anna, it is recorded, but the code will keep in
-      running. In Anna, you don't need to code defensively around the
-      possibility that some code you called might throw an
-      exception. You do't need to be afraid thet there is an
-      undocumented exception that might be thrown by some library code
-      you're using causing a program flow that you hadn't thought of
-      and results in rare and unpredictable bugs. Instead, code that
-      errors out be recorded, and will then usually simply return
-      null. And because using null objects does nothing in Anna, you
-      can usually make your code exit cleanly and automatically on
-      errors without even trying. For example, look at this trivial
-      example:
-    </p>
-<pre class="anna-code">
+	  </pre>
+	  <p>
+	    The <code>collect</code> call will save any errors that occur
+	    while executing its body, including any errors occusing in
+	    functions called by the body at any level of nesting, into a
+	    list of errors. Once the code has finished, the list of errors
+	    is iterated over and handled by the <code>each</code>
+	    loop. 
+	  </p>
+	  <p>
+	    How is this different from exceptions? Exceptions can skip over
+	    parts of your code in very unpredictable ways. Whenever you
+	    allocate some form of resource, you need to use try/finally to
+	    make sure it's released, which is very error prone. When an
+	    error happens in Anna, it is recorded, but the code will keep in
+	    running. In Anna, you don't need to code defensively around the
+	    possibility that some code you called might throw an
+	    exception. You do't need to be afraid thet there is an
+	    undocumented exception that might be thrown by some library code
+	    you're using causing a program flow that you hadn't thought of
+	    and results in rare and unpredictable bugs. Instead, code that
+	    errors out be recorded, and will then usually simply return
+	    null. And because using null objects does nothing in Anna, you
+	    can usually make your code exit cleanly and automatically on
+	    errors without even trying. For example, look at this trivial
+	    example:
+	  </p>
+	  <pre class="anna-code">
 var f = File("foo.txt").open();
 while(f.readLine())
 {
     ...
 }
 f.close();
-</pre>
-    <p>
-      If the file can not be read, either because it doesn't exist or
-      because you lack the permissions, the open call will fail and
-      return null, and f will be assigned null. Calling readLine on
-      the null object will again return null, ending the loop at
-      once. Calling close on the null object will also have no
-      effect. So because of how null handling works in Anna, the above
-      code will handle any error without forcing you to write any
-      error handling code.
-    </p>
+	  </pre>
+	  <p>
+	    If the file can not be read, either because it doesn't exist or
+	    because you lack the permissions, the open call will fail and
+	    return null, and f will be assigned null. Calling readLine on
+	    the null object will again return null, ending the loop at
+	    once. Calling close on the null object will also have no
+	    effect. So because of how null handling works in Anna, the above
+	    code will handle any error without forcing you to write any
+	    error handling code.
+	  </p>
 
-    <h1><a name="misc">An odd number of legs for a horse to have</a></h1>
-    <p>
-      This section gives an overview of the various Anna features that,
-      while important, did not warrant an entire section of their own.
-    </p>
-    <h2><a name="null">The talented mister null</a></h2>
-    <p>
-      The null object in Anna, which can be accessed through
-      the <code>?</code> keyword, is a very odd object. It abides
-      to every interface, and calling any method on it will without
-      exception have no side effects and will return the null object. In
-      other words, it is perfectly ok to call <code>2 + ?</code>,
-      it will not crash or throw an exception, and the result will be
-      null.
-    </p>
-    <h2><a name="booleans">Truth is lie</a></h2>
-    <p>
-      There is no separate Boolean type in Anna. There is exactly one
-      object that takes on the responsibility of representing the
-      false state, and that is the null object. Any other object,
-      including the empty list, the number zero and the text strings
-      "null", "?" and "0" all count as true in the eyes of if
-      expressions, while loops and any other statement that expects a
-      yes/no answer. Null is the new no.
-    </p>
-    <h2><a name="operator-overloading">I'll be your operator, baby</a></h2>
-    <p>
-      Anna has a small number of special operators that allow you to
-      implement some of the most common language operations with a
-      slightly terser syntax that most people find easier to parse. These
-      operators include comparison, assigment, basic aritmetic, string
-      formating, list slicing and a few more. The complete table of
-      operators and their precedence is listed in the table below. Most of
-      these operators are overloadable. The exceptions are the '!' not
-      operator, the '.' member access operator and a few more. The rest
-      can be overloaded by defining methods with special names. For
-      example, when the '+' operator is used...
-    </p>
-    <p>
-      In addition to overloading +, - and various other operators,
-      Anna also allows you define you own generic operators. These
-      operators all start with the «^» symbol, followed by an identifier:
-    </p>
-    <pre class="anna-code">
+	  <h1><a name="misc">An odd number of legs for a horse to have</a></h1>
+	  <p>
+	    This section gives an overview of the various Anna features that,
+	    while important, did not warrant an entire section of their own.
+	  </p>
+	  <h2><a name="null">The talented mister null</a></h2>
+	  <p>
+	    The null object in Anna, which can be accessed through
+	    the <code>?</code> keyword, is a very odd object. It abides
+	    to every interface, and calling any method on it will without
+	    exception have no side effects and will return the null object. In
+	    other words, it is perfectly ok to call <code>2 + ?</code>,
+	    it will not crash or throw an exception, and the result will be
+	    null.
+	  </p>
+	  <h2><a name="booleans">Truth is lie</a></h2>
+	  <p>
+	    There is no separate Boolean type in Anna. There is exactly one
+	    object that takes on the responsibility of representing the
+	    false state, and that is the null object. Any other object,
+	    including the empty list, the number zero and the text strings
+	    "null", "?" and "0" all count as true in the eyes of if
+	    expressions, while loops and any other statement that expects a
+	    yes/no answer. Null is the new no.
+	  </p>
+	  <h2><a name="operator-overloading">I'll be your operator, baby</a></h2>
+	  <p>
+	    Anna has a small number of special operators that allow you to
+	    implement some of the most common language operations with a
+	    slightly terser syntax that most people find easier to parse. These
+	    operators include comparison, assigment, basic aritmetic, string
+	    formating, list slicing and a few more. The complete table of
+	    operators and their precedence is listed in the table below. Most of
+	    these operators are overloadable. The exceptions are the '!' not
+	    operator, the '.' member access operator and a few more. The rest
+	    can be overloaded by defining methods with special names. For
+	    example, when the '+' operator is used...
+	  </p>
+	  <p>
+	    In addition to overloading +, - and various other operators,
+	    Anna also allows you define you own generic operators. These
+	    operators all start with the «^» symbol, followed by an identifier:
+	  </p>
+	  <pre class="anna-code">
 a := 4;
 b := 7;
 print(a ^bitand b);
-    </pre>
-    <p>
-      The above example shows usage of the @bitand generic operator of
-      the Int class, which will perform a bitwise and operation. To
-      define your own generic operator, simply define a method named
-      like the operator, but enclosed within double underscores. An
-      example:
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    The above example shows usage of the @bitand generic operator of
+	    the Int class, which will perform a bitwise and operation. To
+	    define your own generic operator, simply define a method named
+	    like the operator, but enclosed within double underscores. An
+	    example:
+	  </p>
+	  <pre class="anna-code">
 type Color
 {
     function __blend__(Float alpha)
@@ -1288,32 +1301,32 @@ type Color
 
 var col = Color();
 col ^blend 0.1;
-    </pre>
-    <p>
-      
-    </p>
-    <h2><a name="reserved-words">No reservations? No problem!</a></h2>
-    <p>
-      The Sugar layer has a small number of reserved words, including
-      'def', 'var' and 'return'. Because macros can never be
-      redefined, the builtin collection of macros more or less count
-      as additional reserved words. It may seem scary that modules you
-      import can add reserved words to the language - what if a module
-      you rely on suddenly adds a macro named 'pie'?  Suddenly, you'll
-      have to edit all your source code to remove any variables and
-      functions named pie. And given how delicious pie is, that is
-      bound to take an insurmountable amount of time.
-      For this reason, great care must be taken when using
-      the <tt>expand</tt> expression to import macros.
-    </p>
-    <h2><a name="comments">Comments nest</a></h2>
-    <p>
-      Like C and friends Anna uses /* to start a multiline comment,
-      and */ to end it. But unlike C and friends, comments can be
-      nested inside each other. This makes it trivial to comment out a
-      large chunk of code, even if it happens to contain multiline
-      comments.
-    </p>
+	  </pre>
+	  <p>
+	    
+	  </p>
+	  <h2><a name="reserved-words">No reservations? No problem!</a></h2>
+	  <p>
+	    The Sugar layer has a small number of reserved words, including
+	    'def', 'var' and 'return'. Because macros can never be
+	    redefined, the builtin collection of macros more or less count
+	    as additional reserved words. It may seem scary that modules you
+	    import can add reserved words to the language - what if a module
+	    you rely on suddenly adds a macro named 'pie'?  Suddenly, you'll
+	    have to edit all your source code to remove any variables and
+	    functions named pie. And given how delicious pie is, that is
+	    bound to take an insurmountable amount of time.
+	    For this reason, great care must be taken when using
+	    the <tt>expand</tt> expression to import macros.
+	  </p>
+	  <h2><a name="comments">Comments nest</a></h2>
+	  <p>
+	    Like C and friends Anna uses /* to start a multiline comment,
+	    and */ to end it. But unlike C and friends, comments can be
+	    nested inside each other. This makes it trivial to comment out a
+	    large chunk of code, even if it happens to contain multiline
+	    comments.
+	  </p>
 <!--    
     <h1>A simple, annotated example</h1>
     <p>
@@ -1369,212 +1382,211 @@ function mandelbrot(Complex p0, Int maxStep)
       languages in the code above. We'll comment on them below.
     </p>
 -->
-    <h1><a name="miroformats">Microformats</a></h1>
-    <p>
-      The Anna parser is written to be as accepting as possible of
-      weird elements, and instead offloads as much of the code
-      validation as possible to macros. This allows you to write
-      microformat macros. These are macros that take an AST subtree
-      and transform then into another subtree in order to allow you to
-      define your own compact data formats.  For example, JSON is a
-      valid subset of Anna, so one could write a JSON microformat
-      macro to transform an AST containing JSON into the Anna
-      equivalent, meaning one could insert JSON data verbatim into the
-      code, and make sure the JSON macro parses it to correct Anna
-      code:
-    </p> 
-<pre class="anna-code">
+<h1><a name="miroformats">Microformats</a></h1>
+	  <p>
+	    The Anna parser is written to be as accepting as possible of
+	    weird elements, and instead offloads as much of the code
+	    validation as possible to macros. This allows you to write
+	    microformat macros. These are macros that take an AST subtree
+	    and transform then into another subtree in order to allow you to
+	    define your own compact data formats.  For example, JSON is a
+	    valid subset of Anna, so one could write a JSON microformat
+	    macro to transform an AST containing JSON into the Anna
+	    equivalent, meaning one could insert JSON data verbatim into the
+	    code, and make sure the JSON macro parses it to correct Anna
+	    code:
+	  </p> 
+	  <pre class="anna-code">
 Map m = JSON({data:[1,2,3,7], unit:"seconds", caption:null});
-</pre>
-    <p>
-      Note: This macro has yet to be written. 
-      Another very practical use of this feature is date handling. There are
-      macros that make sure anything you send to the Date constructor, or
-      anything you add or remove from a date, is parsed using the standard
-      ISO date format: 
-    </p>
-    <pre class="anna-code">
+	  </pre>
+	  <p>
+	    Note: This macro has yet to be written. 
+	    Another very practical use of this feature is date handling. There are
+	    macros that make sure anything you send to the Date constructor, or
+	    anything you add or remove from a date, is parsed using the standard
+	    ISO date format: 
+	  </p>
+	  <pre class="anna-code">
 // Create a new date from a specified date 
 var then = Date(2009-1-1, 12:30);
 
 // Move ahead x years and one hour 
 date += x-0-0, 1:00;
-    </pre>
-    <h1><a name="sugar">Sugar and spice - How the front end sugar works and what Anna looks like without makeup</a></h1>
-    <p>
-      The real syntax for Anna is painfully simple. There Anna AST
-      contains only three types of nodes:
-    </p>
-    <ol>
-      <li>
-	Literals, such as <code>?</code>, <code>3</code>, <code>1.0</code>
-	or <code>"foo"</code>. 
-      </li>
-      <li>
-	Identifiers, such as <code>foo</code> or <code>String</code>. 
-      </li>
-      <li>
-	Function calls, such as <code>X(Y,Z)</code>, where <code>X</code>, <code>Y</code>
-	and <code>Z</code> are arbitrary other AST nodes. In the above
-	example, the AST node <code>X</code> is invoked
-	with <code>Y</code> and <code>Z</code> as input parameters.
-      </li>
-    </ol>
-    <p>
-      That's it. Those are the only things needed to write Anna
-      programs. For somebody coming from a C background, that might seem
-      anemic for a programming language. Where are the code blocks?  Where
-      are the if/while/whenever statements? Function definitions?
-      Meanwhile, anybody with a LISP background will start twiddling their
-      beards in boredom. They <em>know</em>.
-    </p>
-    <p>
-      The sugar front end of Anna is a simple language front end that
-      has a few keywords and special constructs such as operator
-      overloading that allow you to use a terser, C-like syntax. The
-      dot operator is used for setting and getting member values, we
-      have arithmetic operators with the usual precedence, we have
-      special language constructs to allow us to define types,
-      functions and variables with a little less verbosity, etc.  All
-      of this syntactic sugar is stripped away by the front end of the
-      compiler, and is converted into the basic AST node types
-      mentioned above. Below are some examples of these transformations.
-    </p>
-    <pre class="anna-code">
-{foo} => __block__(foo)
+	  </pre>
+	  <h1><a name="sugar">Sugar and spice - How the front end sugar works and what Anna looks like without makeup</a></h1>
+	  <p>
+	    The real syntax for Anna is painfully simple. There Anna AST
+	    contains only three types of nodes:
+	  </p>
+	  <ol>
+	    <li>
+	      Literals, such as <code>?</code>, <code>3</code>, <code>1.0</code>
+	      or <code>"foo"</code>. 
+	    </li>
+	    <li>
+	      Identifiers, such as <code>foo</code> or <code>String</code>. 
+	    </li>
+	    <li>
+	      Function calls, such as <code>X(Y,Z)</code>, where <code>X</code>, <code>Y</code>
+	      and <code>Z</code> are arbitrary other AST nodes. In the above
+	      example, the AST node <code>X</code> is invoked
+	      with <code>Y</code> and <code>Z</code> as input parameters.
+	    </li>
+	  </ol>
+	  <p>
+	    That's it. Those are the only things needed to write Anna
+	    programs. For somebody coming from a C background, that might seem
+	    anemic for a programming language. Where are the code blocks?  Where
+	    are the if/while/whenever statements? Function definitions?
+	    Meanwhile, anybody with a LISP background will start twiddling their
+	    beards in boredom. They <em>know</em>.
+	  </p>
+	  <p>
+	    The sugar front end of Anna is a simple language front end that
+	    has a few keywords and special constructs such as operator
+	    overloading that allow you to use a terser, C-like syntax. The
+	    dot operator is used for setting and getting member values, we
+	    have arithmetic operators with the usual precedence, we have
+	    special language constructs to allow us to define types,
+	    functions and variables with a little less verbosity, etc.  All
+	    of this syntactic sugar is stripped away by the front end of the
+	    compiler, and is converted into the basic AST node types
+	    mentioned above. Below are some examples of these transformations.
+	  </p>
+	  <pre class="anna-code">
+{foo} =&gt; __block__(foo)
 
-lst.count => __memberGet__(foo, count)
+lst.count =&gt; __memberGet__(foo, count)
 
-lst[4] => __memberGet__(lst, __get__)(4)
+lst[4] =&gt; __memberGet__(lst, __get__)(4)
 
-1+2 => __memberGet__(1, __add__)(2)
+1+2 =&gt; __memberGet__(1, __add__)(2)
 
-foo := 3 => __var__(foo, ?, 3, __block__())
+foo := 3 =&gt; __var__(foo, ?, 3, __block__())
 
-def foo(){1} => __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __block__(1)))
+def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __block__(1)))
 
-    </pre>    
+	  </pre>    
 
-    <h1><a name="design">Design choices</a></h1>
-    <p>
-      The design goals of Anna include:
-    </p>
-    <ul>
-      <li>
-	An open ended language. Anna should provide the tools needed
-	to extend the language in new ways, and a syntax that makes
-	such extensions readable. 
-      </li>
-      <li>
-	A C-like syntax. This brings instant familiarity to a majority
-	of the worlds programmers, allowing them to pick up the basics
-	of the language in a matter of minutes, and can then
-	concentrate on learning and understanding the intricacies of
-	macros, continuations and other higher level features. If a
-	basic C-like syntax strikes a good balance between readbility,
-	terseness and expressiveness is subjective, but the author of
-	this text certainly feels so, and the prevalence of C-like
-	syntaxes, including most modern computer languages as well as
-	an array of computer formats like CSS and JSON certainly
-	suggest that many others agree.
-      </li>
-      <li>
-	Easy (for a compiler) to parse. Anna source code should be
-	parsable by a traditional lexical analyzer plus LALR parser
-	combo. This has many advantages, it makes it easier to
-	standardize and define the language. It makes the
-	implementation of the language easier and perhaps most
-	importantly, it removes vast amounts of grey zones where it is
-	not clear what a piece of code should actually do.
-      </li>
-      <li>
-	Focus more on expressivness, but don't forget
-	efficency. Continuations, automatic garbage collection and
-	«everyting is an object» are all language choices that make
-	the langauge extremely expressive, but they come with severe
-	performance implications. A lot of the time, the performance
-	loss can be avoided through the use of clever compiler
-	tricks. So far, Anna includes no such tricks, and is decidedly
-	slow. That said, Anna is, when possible with only a minimal
-	cost to expressiveness, designed to make it _possible_ to
-	write a speedy compiler.
-      </li>
-    </ul>
-    <p>
-      The «Easy to parse» requirement has unfortunatly led to a
-      significant number of exceptions to the «C-like syntax»
-      rule. For example, Anna templates use either
-      the <code>«Foo»</code> or <code>&lt;&lt;Foo&gt;&gt;</code> for
-      template specialization, instead of <code>&lt;Foo&gt;</code>,
-      which is familiar from C++, Java and C#. The reason is simple:
-      It is impossible to write a general parser that
-      uses <code><></code> both for comparisons and for template
-      specializations without making very specific exceptions in the
-      parser. Such exceptions would also severly restrict what code
-      can be placed inside of a template specialization. In Anna,
-      templates can be used to insert any expression into a code
-      template, not just a Type.
-    </p>
-    <p>
-      One significant kludge in the Anna syntax is the expression
-      merge pase of compilation. It is used to move expressions into
-      the expression preceeding them, and is useful in situations like
-      the if/else expression pair. TODO: Explain how it works, and how
-      it can be used.
-    </p>
-    <h1><a name="implementation">Implementation details</a></h1>
+	  <h1><a name="design">Design choices</a></h1>
+	  <p>
+	    The design goals of Anna include:
+	  </p>
+	  <ul>
+	    <li>
+	      An open ended language. Anna should provide the tools needed
+	      to extend the language in new ways, and a syntax that makes
+	      such extensions readable. 
+	    </li>
+	    <li>
+	      A C-like syntax. This brings instant familiarity to a majority
+	      of the worlds programmers, allowing them to pick up the basics
+	      of the language in a matter of minutes, and can then
+	      concentrate on learning and understanding the intricacies of
+	      macros, continuations and other higher level features. If a
+	      basic C-like syntax strikes a good balance between readbility,
+	      terseness and expressiveness is subjective, but the author of
+	      this text certainly feels so, and the prevalence of C-like
+	      syntaxes, including most modern computer languages as well as
+	      an array of computer formats like CSS and JSON certainly
+	      suggest that many others agree.
+	    </li>
+	    <li>
+	      Easy (for a compiler) to parse. Anna source code should be
+	      parsable by a traditional lexical analyzer plus LALR parser
+	      combo. This has many advantages, it makes it easier to
+	      standardize and define the language. It makes the
+	      implementation of the language easier and perhaps most
+	      importantly, it removes vast amounts of grey zones where it is
+	      not clear what a piece of code should actually do.
+	    </li>
+	    <li>
+	      Focus more on expressivness, but don't forget
+	      efficency. Continuations, automatic garbage collection and
+	      «everyting is an object» are all language choices that make
+	      the langauge extremely expressive, but they come with severe
+	      performance implications. A lot of the time, the performance
+	      loss can be avoided through the use of clever compiler
+	      tricks. So far, Anna includes no such tricks, and is decidedly
+	      slow. That said, Anna is, when possible with only a minimal
+	      cost to expressiveness, designed to make it _possible_ to
+	      write a speedy compiler.
+	    </li>
+	  </ul>
+	  <p>
+	    The «Easy to parse» requirement has unfortunatly led to a
+	    significant number of exceptions to the «C-like syntax»
+	    rule. For example, Anna templates use either
+	    the <code>«Foo»</code> or <code>&lt;&lt;Foo&gt;&gt;</code> for
+	    template specialization, instead of <code>&lt;Foo&gt;</code>,
+	    which is familiar from C++, Java and C#. The reason is simple:
+	    It is impossible to write a general parser that
+	    uses <code><></code> both for comparisons and for template
+	    specializations without making very specific exceptions in the
+	    parser. Such exceptions would also severly restrict what code
+	    can be placed inside of a template specialization. In Anna,
+	    templates can be used to insert any expression into a code
+	    template, not just a Type.
+	  </p>
+	  <p>
+	    One significant kludge in the Anna syntax is the expression
+	    merge pase of compilation. It is used to move expressions into
+	    the expression preceeding them, and is useful in situations like
+	    the if/else expression pair. TODO: Explain how it works, and how
+	    it can be used.
+	  </p>
+	  <h1><a name="implementation">Implementation details</a></h1>
 
-    <h2><a name="implementation-numbers">Numbers</a></h2>
-    <p>
-      At the language level, everything is an Object. Types and
-      functions are objects. There are also no primitive data types,
-      integers, characaters and floats are also objects. This is not
-      true at the implementation level, though:
-    </p>
-    <ul>
-      <li>
-	Most integers (those whose abolute value is less than or eqaul
-	to 2^29) are normally stored straight in the call stack (or straight
-	inside any object it is a member of).
-      </li>
-      <li>
-	Characters are also normally stored straight in the call stack (or
-	straight inside any object it is a member of).
-      </li>
-      <li>
-	Floating point numbers use a separate memory allocation, but
-	still uses some optimizations to increase evaluation speed. A
-	future version of Anna will hopefully be able to store floats
-	without allocating any heap memory by creating holes in the stack.
-      </li>
-    </ul>
-    <p>
-      The above holds true for as long as only «regular operations»,
-      such as adding, subtracting, etc. are performed on the
-      values. If e.g. reflection is employed or any other operation
-      that requires access to the object type, then any object stored
-      directly in the stack is silently converted into a full fledged
-      object.
-    </p>
-    <p>
-      Aside from the performance increase, there is no way to tell
-      that this is happening behind the scenes. This is possible
-      because the above data types are all imutable and no memory
-      location pointer can be obtained for an object.
-    </p>
-    </div>
-    </div>
-    <div class="anna-left-menu">
-      <div class="anna-left-menu-inner">
-	
-	<div>
-	  <h2>Table of content</h2>
-	  <div class="toc"></div>
+	  <h2><a name="implementation-numbers">Numbers</a></h2>
+	  <p>
+	    At the language level, everything is an Object. Types and
+	    functions are objects. There are also no primitive data types,
+	    integers, characaters and floats are also objects. This is not
+	    true at the implementation level, though:
+	  </p>
+	  <ul>
+	    <li>
+	      Most integers (those whose abolute value is less than or eqaul
+	      to 2^29) are normally stored straight in the call stack (or straight
+	      inside any object it is a member of).
+	    </li>
+	    <li>
+	      Characters are also normally stored straight in the call stack (or
+	      straight inside any object it is a member of).
+	    </li>
+	    <li>
+	      Floating point numbers use a separate memory allocation, but
+	      still uses some optimizations to increase evaluation speed. A
+	      future version of Anna will hopefully be able to store floats
+	      without allocating any heap memory by creating holes in the stack.
+	    </li>
+	  </ul>
+	  <p>
+	    The above holds true for as long as only «regular operations»,
+	    such as adding, subtracting, etc. are performed on the
+	    values. If e.g. reflection is employed or any other operation
+	    that requires access to the object type, then any object stored
+	    directly in the stack is silently converted into a full fledged
+	    object.
+	  </p>
+	  <p>
+	    Aside from the performance increase, there is no way to tell
+	    that this is happening behind the scenes. This is possible
+	    because the above data types are all imutable and no memory
+	    location pointer can be obtained for an object.
+	  </p>
+	</div>
+      </div>
+      <div class="anna-left-menu">
+	<div class="anna-left-menu-inner">
 	  
+	  <div>
+	    <h2>Table of content</h2>
+	    <div class="toc"></div>
+	    
+	  </div>
 	</div>
       </div>
     </div>
-    </div>
-    
   </body>
 </html>

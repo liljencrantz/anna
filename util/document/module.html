@@ -2,9 +2,17 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Anna - documentation for namespace <%= module.name %></title>
+    
+    <link rel="stylesheet" href="<%= basePath %>css/anna.css" type="text/css" />
+    <script type="text/javascript" src="<%= basePath %>js/jquery.js"></script>
+    <script type="text/javascript" src="<%= basePath %>js/anna.js"></script>
+
   </head>
   <body>
     
+    <div class="anna-content">
+      <div class="anna-main">
+	<div class="anna-main-inner">
     <h1>Namespace <%! data.linkPath() %></h1>
 
     <%! extractDocumentation(module.attribute) or ""%>
@@ -71,5 +79,18 @@
     <%! documentMember(mem) %>
     <% } %>
 
+	</div>
+      </div>
+      <div class="anna-left-menu">
+	<div class="anna-left-menu-inner">
+	  
+	  <div>
+	    <h2>Table of content</h2>
+	    <div class="toc"></div>
+	    
+	  </div>
+	</div>
+      </div>
+    </div>
   </body>
 </html>
