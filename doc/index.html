@@ -1,36 +1,44 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/anna.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/anna.js"></script>
+
   </head>
   <body>
-    
-    <h1>A brief introduction to Anna</h1>
-    <pre>
+
+
+    <div class="anna-content">
+    <div class="anna-main">
+    <div class="anna-main-inner">
+      <h1>A brief introduction to Anna</h1>
+      <pre class="anna-code">
 def main()
 {
     print("Hello, World!\n");
 }
-    </pre>
-    <p>
-      This is a brief introduction to the Anna programming language,
-      written in the form of a «Choose your own adventure»-style
-      gamebook. 
-    </p>
-    <p>
-      Let's get started:
-    </p>
-    <ul>
-      
-      <li>
-	<a href='#examples'>Anna by examples.</a> If you just want to
-	dig in to the syntax.
-      </li>
-
-      <li>
-	<a href='#intro_short'>Anna in a single sentence.</a> Pick
-	this option if you already know everything there is to know
-	about other programming languages.
-      </li>
+      </pre>
+      <p>
+	This is a brief introduction to the Anna programming language,
+	written in the form of a «Choose your own adventure»-style
+	gamebook. 
+      </p>
+      <p>
+	Let's get started:
+      </p>
+      <ul>
+	
+	<li>
+	  <a href='#examples'>Anna by examples.</a> If you just want to
+	  dig in to the syntax.
+	</li>
+	
+	<li>
+	  <a href='#intro_short'>Anna in a single sentence.</a> Pick
+	  this option if you already know everything there is to know
+	  about other programming languages.
+	</li>
       
       <li>
 	<a href='#intro_lisp'>Anna for LISP programmers.</a>
@@ -64,7 +72,7 @@ def main()
     <div class='subheading'>Because time is too precious to actually learn anything.</div>
 
     <h3><a name="examples-functions">Defining and calling functions</a></h3>
-    <pre>
+    <pre class="anna-code">
 def Int fibonacci(Int n) 
 {
     return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
@@ -80,7 +88,7 @@ def main()
       Fibonacci number. It demonstrates a few features of the Anna
       syntax. The first line tells us how to declare a new function:
     </p>
-    <pre>
+    <pre class="anna-code">
 def Int fibonacci(Int n)
     </pre>
     <p>
@@ -111,7 +119,7 @@ def Int fibonacci(Int n)
       inference, <a href="#type-inference">click here</a>. Otherwise,
       continue reading. The next line of interest is this:
     </p>
-    <pre>
+    <pre class="anna-code">
 return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
     </pre>
     <p>
@@ -145,7 +153,7 @@ return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
       That wasn't very hard. It's going to stay pretty easy for a
       while longer.
     </p>
-    <pre>
+    <pre class="anna-code">
 def main()  
 {
     foo := 3;         // Declare foo as 3
@@ -178,7 +186,7 @@ def main()
       use the cast operator. In Anna, the cast operator is
       called <tt>as</tt>. It is used like this:
     </p>
-    <pre>
+    <pre class="anna-code">
 foo := 3 as Object;  // Declare foo as a variable of type Object
       </pre>
     <p>
@@ -192,7 +200,7 @@ foo := 3 as Object;  // Declare foo as a variable of type Object
       after the initial assignment, they can never be reassigned. This
       is how you declare a constant:
     </p>
-    <pre>
+    <pre class="anna-code">
 pi :== 4.0;    // Declare pi as a constant with value 4.0
     </pre>
     <p>
@@ -208,7 +216,7 @@ pi :== 4.0;    // Declare pi as a constant with value 4.0
       reading.
     </p>
     <h3><a name="examples-numbers">Numbers</a></h3>
-    <pre>
+    <pre class="anna-code">
 /*
   Prints 1307674368000. Integers in Anna are arbitrary precision, so there are 
   no overflows
@@ -241,7 +249,7 @@ print( .5 );
       keep reading.
     </p>
     <h3><a name="examples-lists">Lists</a></h3>
-    <pre>
+    <pre class="anna-code">
 // lst is a list with four members
 lst := ["first", "second", "third", "fourth"]
 
@@ -283,7 +291,7 @@ lst3.push(5)
     </pre>
 
     <h3><a name="examples-maps">Maps</a></h3>
-    <pre>
+    <pre class="anna-code">
 // hash is a HashMap with four mappings
 hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
 
@@ -295,7 +303,7 @@ print(hash["third"], "\n");
     </pre>
 
     <h3><a name="examples-ranges">Ranges</a></h3>
-    <pre>
+    <pre class="anna-code">
 // r is a range from 6 (inclusive) to 10 (exclusive)
 r := 6..10
 
@@ -335,7 +343,7 @@ print("abrainbadnoah\n"[1|2...]);
     <p>
       The while loop looks like in any other C-like language
     </p>
-    <pre>
+    <pre class="anna-code">
 while(1)
 {
     print("Are we having fun yet?\n");
@@ -346,7 +354,7 @@ while(1)
       instead, the each method should be used. To print the values 0
       to 10 in Anna, do the following:
     </p>
-    <pre>
+    <pre class="anna-code">
 (0..11).each(ii){print(ii)}
     </pre>
     <p>
@@ -363,7 +371,7 @@ while(1)
       it can be used with two arguments, in which case the first
       argument is the index/key and the second is the value:
     </p>
-    <pre>
+    <pre class="anna-code">
 var temperatures = ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
 temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")}
     </pre>
@@ -374,7 +382,7 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
       In addition to an each method, collection types offer a wide
       variety of functional programming methods, like map and filter.
     </p>
-    <pre>
+    <pre class="anna-code">
 // Prints 2, 3 and 4, on separate lines
 [1, 2, 3].map(i){i+1}.each(i){print(i,'\n')}
 // Filters out the even numbers for the list
@@ -386,7 +394,7 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
     <p>
       
     </p>
-    <pre>
+    <pre class="anna-code">
 if(0)
 {
   // This will get executed
@@ -414,7 +422,7 @@ if(?)
     <p>
       
     </p>
-    <pre>
+    <pre class="anna-code">
 /* 
   The above tries to interpret the first command line argument 
   of the program as an integer and assign it to the laps variable.
@@ -428,7 +436,7 @@ laps := Int::convert(system.argument[1]) or 5;
     <p>
       
     </p>
-    <pre>
+    <pre class="anna-code">
 TODO
     </pre>
 
@@ -437,7 +445,7 @@ TODO
     <p>
       
     </p>
-    <pre>
+    <pre class="anna-code">
 TODO
     </pre>
 
@@ -461,7 +469,7 @@ TODO
       </li>
     </ul>
       
-    <pre>
+    <pre class="anna-code">
     /*
       Switch containing Int:s
      */
@@ -555,7 +563,7 @@ TODO
     <p>
       
     </p>
-    <pre>
+    <pre class="anna-code">
 /*
   The struct macro is used to easily create an object to store a 
   specific list of fields in. All fields are typed based on the 
@@ -573,7 +581,7 @@ print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
     <p>
       
     </p>
-    <pre>
+    <pre class="anna-code">
 TODO
     </pre>
 
@@ -581,7 +589,7 @@ TODO
     <p>
       
     </p>
-    <pre>
+    <pre class="anna-code">
 TODO
     </pre>
    
@@ -826,7 +834,7 @@ TODO
       at once, so we'll consider a few examples. First, look at the
       code snippet below:
     </p>
-    <pre>
+    <pre class="anna-code">
 macro replaceObjectWithInt(ast)
 {
 	ast.replaceChildren(child)
@@ -912,7 +920,7 @@ var birthday = Date(1978-05-20, 12:34:00);
       returns a function. Thus, you do not need the silly and
       contrived lambda expression to create anonymous functions:
     </p>
-    <pre>
+    <pre class="anna-code">
 FIXME! Add an anonymous function example here
     </pre>
     <p>
@@ -921,13 +929,13 @@ FIXME! Add an anonymous function example here
       simply append a code block afer a function call, Anna will
       interpret it as a function parameter:
     </p>
-    <pre>
+    <pre class="anna-code">
 FIXME! Add code block example here
     </pre>
     <p>
       Another way in which Anna is like Python and Ruby is the convenient support for functional programming. Say we haxe EXAMPLE FIXME LALALA.
     </p>
-    <pre>
+    <pre class="anna-code">
 FIXME! Functional programming example here
     </pre>
     <p>
@@ -1090,7 +1098,7 @@ var baz = foo or bar;
       and Double values:
     </p>
 
-<pre>
+<pre class="anna-code">
 var Map&lt;String,Double&gt; map = ["Mon":0.0,"Tue":1.1;
 map := ["Mon":0.0,"Tue":1.1];
 </pre>
@@ -1104,7 +1112,7 @@ map := ["Mon":0.0,"Tue":1.1];
       can figure out the variable type for you:
     </p>
     
-    <pre>
+    <pre class="anna-code">
   /*
    * Function with return type implied by the type of value it is returning
    */
@@ -1144,7 +1152,7 @@ map := ["Mon":0.0,"Tue":1.1];
       ways behaves the same, but with an important difference. This is
       how a collect block will usually look like:
     </p>
-<pre>
+<pre class="anna-code">
 collect
 {
     /* Some code that may cause various error conditions */
@@ -1259,7 +1267,7 @@ f.close();
       Anna also allows you define you own generic operators. These
       operators all start with the «^» symbol, followed by an identifier:
     </p>
-    <pre>
+    <pre class="anna-code">
 var a = 4;
 var b = 7;
 print(a ^bitand b);
@@ -1271,7 +1279,7 @@ print(a ^bitand b);
       like the operator, but enclosed within double underscores. An
       example:
     </p>
-    <pre>
+    <pre class="anna-code">
 class Color
 {
     function __blend__(Float alpha)
@@ -1376,7 +1384,7 @@ function mandelbrot(Complex p0, Int maxStep)
       code, and make sure the JSON macro parses it to correct Anna
       code:
     </p> 
-<pre>
+<pre class="anna-code">
 Map m = JSON({data:[1,2,3,7], unit:"seconds", caption:null});
 </pre>
     <p>
@@ -1386,7 +1394,7 @@ Map m = JSON({data:[1,2,3,7], unit:"seconds", caption:null});
       anything you add or remove from a date, is parsed using the standard
       ISO date format: 
     </p>
-    <pre>
+    <pre class="anna-code">
 // Create a new date from a specified date 
 var then = Date(2009-1-1, 12:30);
 
@@ -1433,7 +1441,7 @@ date += x-0-0, 1:00;
       compiler, and is converted into the basic AST node types
       mentioned above. Below are some examples of these transformations.
     </p>
-    <pre>
+    <pre class="anna-code">
 {foo} => __block__(foo)
 
 lst.count => __memberGet__(foo, count)
@@ -1555,5 +1563,19 @@ def foo(){1} => __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __bl
       because the above data types are all imutable and no memory
       location pointer can be obtained for an object.
     </p>
+    </div>
+    </div>
+    <div class="anna-left-menu">
+      <div class="anna-left-menu-inner">
+	
+	<div>
+	  <h2>Table of content</h2>
+	  <div class="toc"></div>
+	  
+	</div>
+      </div>
+    </div>
+    </div>
+    
   </body>
 </html>
