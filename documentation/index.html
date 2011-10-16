@@ -251,7 +251,6 @@ print(1_000.0e-3);
 */
 print( 0. );
 print( .5 );
-
 	  </pre>
 	  <p>
 	    To learn more about how Anna stores numbers efficiently,
@@ -441,6 +440,18 @@ laps := Int::convert(system.argument[1]) or 5;
 
 	  </pre>
 	  
+	  <h3><a name="examples-null">Null</a></h3>
+	  <p>
+	    The null ovject has all members, and their value is
+	    null. Calling any method on the null object will return
+	    null. Many functions in the Anna standard library also
+	    return null when given a null argument.
+	  </p>
+	  <pre class="anna-code">
+// This will print «nullnullnullnullnull»
+print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
+	  </pre>
+
 	  <h3><a name="examples-continuations">Continuations</a></h3>
 	  <p>
 	    
@@ -564,7 +575,10 @@ TODO
 }
 	  </pre>
 	  <p>
-	    <code class="anna-code">switch</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/switch.anna">bootstrap/switch.anna</a> file.
+	    <code class="anna-code">switch</code> is just a regular
+	    Anna macro. You can check out the source code for it in
+	    the <a href="../bootstrap/switch.anna">bootstrap/switch.anna</a>
+	    file.
 	  </p>
 
 
@@ -583,7 +597,10 @@ myVar := struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
 print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
 	  </pre>
 	  <p>
-	    <code class="anna-code">struct</code> is just a regular Anna macro. You can check out the source code for it in the <a href="../bootstrap/struct.anna">bootstrap/struct.anna</a> file.
+	    <code class="anna-code">struct</code> is just a regular
+	    Anna macro. You can check out the source code for it in
+	    the <a href="../bootstrap/struct.anna">bootstrap/struct.anna</a>
+	    file.
 	  </p>
 	  
 	  <h3><a name="examples-macros">Defining your own macros</a></h3>
