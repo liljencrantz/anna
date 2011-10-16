@@ -39,9 +39,9 @@ var anna = {
 	var pattern = [];
 
 	$.each(["def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default"], function (key, value) {
-	    pattern.push({re: new RegExp("([^a-zA-Z0-9_]|^)(" + value + ")([^a-zA-Z0-9_]|$)", "g"), repl: "$1<span class='anna-keyword'>$2</span>$3"});
+	    pattern.push({re: new RegExp("\\b(" + value + ")\\b", "g"), repl: "<span class='anna-keyword'>$1</span>"});
 	});
-	pattern.push({re: new RegExp("([^a-zA-Z0-9_]|^)([A-Z][a-z0-9A-Z_]*)([^a-zA-Z0-9_]|$)", "g"), repl: "$1<span class='anna-type'>$2</span>$3"});
+	pattern.push({re: new RegExp("\\b([A-Z][a-z0-9A-Z_]*)\\b", "g"), repl: "<span class='anna-type'>$1</span>"});
 
 	$(".anna-code").each(
 	    function(idx, el)
