@@ -3,8 +3,6 @@
 * Documentation coverage of standard API functions and types should be at least 90 %.
 * HTML api documentation extractor
   - Hide internal elements by default
-  - Better module templates (pretty)
-* Introductory segment in the documentation
 * Check that node compare supports all ast node types
 * More validation:
   - Only static members can be accessed statically
@@ -12,6 +10,7 @@
   - Check argument types to function calls better...
 
 1.0 RELEASE CRITERIA (Done):
+* Introductory segment in the documentation
 * Working error handling
   - raise function
   - collect function
@@ -31,6 +30,7 @@
   - Inherit documentation attribute from base classes
   - Handle regular module functions
   - Sort members
+  - Better module templates (pretty)
 * Inheritance and method overloading fully working
 * Static member access fully working 
 * Add memory overhead of Ints and Floats to GC estimates
@@ -86,15 +86,14 @@ When no method alias matches a call, output a clearer and more helpful error mes
 What should be the return value for iterator methods like map and filter when given a null value as a function body?
 An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that the «this» object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
 Make api more consistent. Make naming of wrapper types consistent. Make naming of native type methods consistent.
+Go over list of built in functions and methods and mark the right ones as pure
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge numbers of switch statements. One possibility would be to add function pointers to the node types.
-Static expression support, e.g. 4*3 should be possible to evaluate at compile time. 
-Should finalizers be dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit, and we'd have to use the GC for a bunch of extra stuff, like list payloads
+Should finalizers be completely dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit, and we'd have to use the GC for a bunch of extra stuff, like list payloads
 Should print work like python print, e.g. autoinsert newlines and spaces?
 It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
 Should Range really be mutable?
 How should the argument list for inherited constructors be handled?
 It should be possible to declare type members with initial values. 
-Can we drop the Pair type?
 We need reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
 Type member setup needs some dependency resolution in order for type calculations to work properly.
 
@@ -149,7 +148,6 @@ UNUSED OPERATORS:
 Currently, the @ symbol is unused. 
 
 PLANS FOR APPS WRITTEN IN ANNA:
-Switch the Anna dungeon crawler to use Anna instead of Lua as it's scripting language.
 live: Debug a running application using command line or web browser.
-Compiler front end.
+Compiler front end rewritten in Anna.
 
