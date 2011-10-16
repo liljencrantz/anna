@@ -161,7 +161,7 @@ check: test
 
 documentation: documentation/api
 
-documentation/api:
+documentation/api: all
 	util/annadoc.anna
 .PHONY: documentation/api
 
