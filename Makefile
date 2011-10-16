@@ -66,7 +66,7 @@ PROGRAMS := bin/anna
 ANNA_INTERNAL_BINDINGS := lib/unix.so
 ANNA_EXTERNAL_BINDINGS := 
 
-all: $(PROGRAMS)
+all: $(PROGRAMS) documentation
 .PHONY: all
 
 bindings: $(ANNA_EXTERNAL_BINDINGS)
@@ -91,7 +91,7 @@ endif
 #             END DEPENDENCY TRACKING                   #
 #########################################################
 
-install: all $(ANNA_EXTERNAL_BINDINGS)
+install: all $(ANNA_EXTERNAL_BINDINGS) documentation
 	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
 	for i in $(PROGRAMS); do\
 		$(INSTALL) -m 755 $$i $(DESTDIR)$(bindir) ; \
@@ -107,6 +107,9 @@ install: all $(ANNA_EXTERNAL_BINDINGS)
 	done;
 	for i in `find include -name '*.h'`; do\
 		$(INSTALL) -m 644 $$i $(DESTDIR)$(prefix)/$$i; \
+	done;
+	for i in `cd documentation; find . -name '*.html' -o -name '*.js' -o -name '*.css'`; do\
+		$(INSTALL) -D -m 644 documentation/$$i $(DESTDIR)$(docdir)/$$i; \
 	done;
 
 .PHONY: install
@@ -124,6 +127,7 @@ uninstall:
 	-rmdir $(DESTDIR)$(datadir)/anna/
 	-rmdir $(DESTDIR)$(bindir)
 	-rm -rf $(DESTDIR)$(prefix)/include/anna/
+	-rm -rf $(DESTDIR)$(docdir)/
 .PHONY: uninstall
 
 lib/%.o: lib/%.c
@@ -161,9 +165,8 @@ check: test
 
 documentation: documentation/api
 
-documentation/api: all
-	util/annadoc.anna
-.PHONY: documentation/api
+documentation/api: bin/anna 
+	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna
 
 test: all
 	time ./bin/anna_tests.sh
@@ -171,6 +174,6 @@ test: all
 
 clean:
 	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out lib/*.so lib/*.o lib/*.d lib/*.o
-	-rm -r documentation
+	-rm -r documentation/api
 .PHONY: clean
 
