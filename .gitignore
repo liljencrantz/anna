@@ -15,3 +15,4 @@ mandel
 autogen/*.c
 autogen/*.h
 documentation/api
+documentation/index.html

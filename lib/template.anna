@@ -115,6 +115,10 @@ the properly typed parameters.")
 		    {
 			transformed ~= "\\";
 		    }
+		    if(ch == '\\')
+		    {
+			transformed ~= "\\";
+		    }
 		    transformed ~= ch;
 		}
 	    }

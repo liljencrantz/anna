@@ -576,11 +576,13 @@ TODO
 	  </pre>
 	  <p>
 	    <code class="anna-code">switch</code> is just a regular
-	    Anna macro. You can check out the source code for it in
-	    the <a href="../bootstrap/switch.anna">bootstrap/switch.anna</a>
+	    Anna macro. You can <a href="javascript: void(0);" onclick="javascript:$('#anna-switch-toggle').toggle()">check out the source code</a>.
 	    file.
 	  </p>
 
+	  <span id="anna-switch-toggle" hidden=1>
+	  <%! showCode("bootstrap/switch.anna") %>
+	  </span>
 
 	  <h3><a name="examples-struct">The struct macro</a></h3>
 	  <p>
@@ -598,10 +600,13 @@ print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
 	  </pre>
 	  <p>
 	    <code class="anna-code">struct</code> is just a regular
-	    Anna macro. You can check out the source code for it in
-	    the <a href="../bootstrap/struct.anna">bootstrap/struct.anna</a>
+	    Anna macro. You can <a href="javascript: void(0);" onclick="javascript:$('#anna-struct-toggle').toggle()">check out the source code</a>.
 	    file.
 	  </p>
+
+	  <span id="anna-struct-toggle" hidden=1>
+	  <%! showCode("bootstrap/struct.anna") %>
+	  </span>
 	  
 	  <h3><a name="examples-macros">Defining your own macros</a></h3>
 	  <p>

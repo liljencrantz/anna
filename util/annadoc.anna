@@ -13,14 +13,20 @@ def main()
 	"Future work should include prettier styling, search functionality, handling of internal members including the option to hide internal members."))
 {
     baseDir = io.File("documentation/api");
+
     doc := DocumentationExtractor();
     doc.document(global);
     print(
 	"Documented % namespaces with % members, out of which % (% %%) where documented\n" % [
 	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 
 	    Int::convert(100 * (1 -(Float::convert(doc.memberMissing) / doc.memberTot)))]);  
+    io.File("documentation/index.html").writeFile(template("util/document/index.html"));
 }
 
+def showCode(String name)
+{
+    return "<pre class='anna-code'>%</pre>" % [html.escape(File(name).readFile())];
+}
 
 type DocumentationData
 (doc("Data about a specific type that should be documented."))
