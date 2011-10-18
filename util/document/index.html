@@ -1162,7 +1162,7 @@ var baz = foo or bar;
 	  
 	  <h1>
 	    <a name="type-inference"> 	
-	      Type inference - painless static static typing
+	      Type inference - static static typing without the pain
 	    </a>
 	  </h1>
 	  <p>
@@ -1586,7 +1586,8 @@ lst[4] =&gt; __memberGet__(lst, __get__)(4)
 
 foo := 3 =&gt; __var__(foo, ?, 3, __block__())
 
-def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __block__(1)))
+def foo(){1} =&gt; __const__(
+    foo, ?, __def__(foo, ?, __block__(), __block__(), __block__(1)))
 
 	  </pre>    
 
@@ -1601,17 +1602,19 @@ def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), _
 	      such extensions readable. 
 	    </li>
 	    <li>
-	      A C-like syntax. This brings instant familiarity to a majority
-	      of the worlds programmers, allowing them to pick up the basics
-	      of the language in a matter of minutes, and can then
-	      concentrate on learning and understanding the intricacies of
-	      macros, continuations and other higher level features. If a
-	      basic C-like syntax strikes a good balance between readbility,
-	      terseness and expressiveness is subjective, but the author of
-	      this text certainly feels so, and the prevalence of C-like
-	      syntaxes, including most modern computer languages as well as
-	      an array of computer formats like CSS and JSON certainly
-	      suggest that many others agree.
+	      A mostly C-like syntax. This brings instant familiarity
+	      to a majority of the worlds programmers, allowing them
+	      to pick up the basics of the language in a matter of
+	      minutes, and can then concentrate on learning and
+	      understanding the intricacies of macros, continuations
+	      and other higher level features. If a basic C-like
+	      syntax strikes a good balance between readbility,
+	      terseness and expressiveness is subjective, but the
+	      author of this text certainly feels so, and the
+	      prevalence of C-like syntaxes, including most modern
+	      computer languages as well as an array of computer
+	      formats like CSS and JSON certainly suggest that many
+	      others agree.
 	    </li>
 	    <li>
 	      Easy (for a compiler) to parse. Anna source code should be
@@ -1624,35 +1627,124 @@ def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), _
 	    </li>
 	    <li>
 	      Focus more on expressivness, but don't forget
-	      efficency. Continuations, automatic garbage collection and
-	      «everyting is an object» are all language choices that make
-	      the langauge extremely expressive, but they come with severe
-	      performance implications. A lot of the time, the performance
-	      loss can be avoided through the use of clever compiler
-	      tricks. So far, Anna includes no such tricks, and is decidedly
-	      slow. That said, Anna is, when possible with only a minimal
-	      cost to expressiveness, designed to make it _possible_ to
+	      efficency. Continuations, automatic garbage collection
+	      and «everyting is an object» are all language choices
+	      that make the langauge extremely expressive, but they
+	      come with severe performance implications. A lot of the
+	      time, the performance loss can be avoided through the
+	      use of clever compiler tricks. So far, Anna includes no
+	      such tricks, and is decidedly slow. That said, Anna is,
+	      when possible with only a minimal cost to
+	      expressiveness, designed to make it <em>possible</em> to
 	      write a speedy compiler.
 	    </li>
 	  </ul>
+
+	  <h2><a name="design-separators">Commas, semicolons and separating expressions</a></h2>
 	  <p>
-	    The «Easy to parse» requirement has unfortunatly led to a
-	    significant number of exceptions to the «C-like syntax»
-	    rule. For example, Anna templates use either
-	    the <code class="anna-code">«Foo»</code> or <code class="anna-code">&lt;&lt;Foo&gt;&gt;</code> for
-	    template specialization, instead of <code class="anna-code">&lt;Foo&gt;</code>,
-	    which is familiar from C++, Java and C#. The reason is simple:
-	    It is impossible to write a general parser that
-	    uses <code class="anna-code">&lt;&gt;</code> both for comparisons and for template
-	    specializations without making very specific exceptions in the
-	    parser. Such exceptions would also severly restrict what code
-	    can be placed inside of a template specialization. In Anna,
+	    At the parser level, Anna is designed to be able to handle
+	    as much imput as possible in order to make it easier to
+	    create microformats that feel natural to work with. Some
+	    of the results of this are:
+	  </p>
+	  <ul>
+	    <li>
+	      Anna uses two
+	      separators, <code class="anna-code">,</code> (comma)
+	      and <code class="anna-code">;</code> (semicolon). The
+	      parser sees these two as exactly the same token. 
+	    </li>
+	    <li>
+	      Multiple commas or semicolons in a row are treated as a
+	      single separator.
+	    </li>
+	    <li>
+	      Expressions are actually <em>separated</em> by
+	      separators, not terminated by them - so a trailing
+	      semicolon after the last expression in a block is not
+	      needed. But it is allowed.
+	    </li>
+	    <li>
+	      All the above rules apply to code blocks, the parameter list
+	      of a function call and the members in a collection
+	      literal. They are all parsed in exactly the same way.
+	    </li>
+	  </ul>
+	  <p>
+	    As you can see, Anna leaves you with a lot of options when
+	    it comes to separators. There are however very specific
+	    codig conventions:
+	  </p>
+	  <pre class="anna-code">
+/*
+   Multiple-line expression groups should always have a trailing
+   separator. The reason for that is to make it easier to cut and
+   paste entire lines without having to worry about trailing
+   separators.
+
+   For code blocks, that separator should be a semicolon, for
+   collection literals and function calls, it should be a comma. The
+   reason for this is historical - that's how code has traditionally
+   been written in C-like languages.
+*/
+default
+{
+    foo;
+    bar;
+    baz;
+}
+
+someFunctionCall(
+    arg1,
+    arg2,
+    arg3,
+    );
+
+literal := [
+    "first",
+    "second",
+    "third",
+    ];
+
+/*
+   The only exceptions to this rule is that it is ok to group together
+   multiple variable declarations with commas.  
+*/
+
+foo := 1, bar := 2, baz := 3;
+
+/*
+   Single-line expression groups should never have a trailing
+   separator. The reason is to keep down the amount of clutter.
+*/
+default { foo; bar }
+
+someFunctionCall(arg1, arg2);
+
+literal := ["first", "second"];
+	  </pre>
+	  <h2><a name="design-caveats">Caveats - no language is perfect</a></h2>
+	  <p>
+	    The «Easy to parse» design constraint has unfortunatly led
+	    to a significant number of exceptions to the «C-like
+	    syntax» rule. For example, Anna templates use either
+	    <code class="anna-code">«Foo»</code>
+	    or <code class="anna-code">&lt;&lt;Foo&gt;&gt;</code> for
+	    template specialization, instead
+	    of <code class="anna-code">&lt;Foo&gt;</code>, which is
+	    familiar from C++, Java and C#. The reason is simple: It
+	    is impossible to write a general parser that
+	    uses <code class="anna-code">&lt;&gt;</code> both for
+	    comparisons and for template specializations without
+	    making very specific exceptions in the parser. Such
+	    exceptions would also severly restrict what code can be
+	    placed inside of a template specialization. In Anna,
 	    templates can be used to insert any expression into a code
 	    template, not just a Type.
 	  </p>
 	  <p>
 	    One significant kludge in the Anna syntax is the expression
-	    merge pase of compilation. It is used to move expressions into
+	    merge pass of compilation. It is used to move expressions into
 	    the expression preceeding them, and is useful in situations like
 	    the if/else expression pair. TODO: Explain how it works, and how
 	    it can be used.
@@ -1668,9 +1760,10 @@ def foo(){1} =&gt; __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), _
 	  </p>
 	  <ul>
 	    <li>
-	      Most integers (those whose abolute value is less than or equal
-	      to 2<sup>29</sup>) are normally stored straight in the call stack (or straight
-	      inside any object it is a member of).
+	      Most integers (those whose abolute value is less than or
+	      equal to 2<sup>29</sup>) are normally stored straight in
+	      the call stack (or straight inside any object it is a
+	      member of).
 	    </li>
 	    <li>
 	      Characters are also normally stored straight in the call stack (or
