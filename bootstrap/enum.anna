@@ -2,7 +2,7 @@
 macro enum(definition)
 (
     doc("
-The enum macro is used to define enumerations types. Te basic syntax is:
+The enum macro is used to define enumerations types. The basic syntax is:
 
 enum TypeName
 {

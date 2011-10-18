@@ -32,17 +32,32 @@ switch(someVariable)
 
 }
 
-The above code demonstrates the three types of conditional blocks permitted in a switch statement. 
+The above code demonstrates the three types of conditional blocks
+permitted in a switch statement.
 
-* The first one is the simple case expression, consisting of a series of permitted values and a block. If calling equals on the value supplied to switch returns true for any of the given values, the corresponding block will be run.
+* The first one is the simple case expression, consisting of a series
+  of permitted values and a block. If calling equals on the value
+  supplied to switch returns true for any of the given values, the
+  corresponding block will be run.
 
-* The second one is the cases expression, which takes any kind of collection as its value. If the value supplied to switch is contained in the set (checked using the in operator), then the corresponing block will be run.
+* The second one is the cases expression, which takes any kind of
+  collection as its value. If the value supplied to switch is
+  contained in the set (checked using the in operator), then the
+  corresponing block will be run.
 
-* The third one is a cast case. If the supplied value can be cast to the specified type (in the example above, an Int), then the block wil be run, and the value will available inside the block using the name specified. (In the example above, the variable foo will hold the value of someVariable cast to an Int)
+* The third one is a cast case.  If the supplied value can be cast to
+  the specified type (in the example above, an Int), then the block
+  wil be run, and the value will available inside the block using the
+  name specified. (In the example above, the variable foo will hold
+  the value of someVariable cast to an Int)
 
-* The last one is the default block. If none of the previous blocks match, the default block, if supplied, will be run. There can only be one default block in a switch expression, and it must be the last block.
+* The last one is the default block. If none of the previous blocks match, 
+  the default block, if supplied, will be run. There can only be one 
+  default block in a switch expression, and it must be the last block.
 
-Note that at most, one of the switch blocks are run, namely the first block to match. Also note that any type of values can be used in switch expressions, not just Int values.
+Note that at most, one of the switch blocks are run, namely the first 
+block to match. Also note that any type of values can be used in switch 
+expressions, not just Int values.
 
 ")
 )
@@ -70,7 +85,9 @@ Note that at most, one of the switch blocks are run, namely the first block to m
 	{
 	    if(caseCall.count < 2)
 	    {
-		caseCall.error("Call has " ~ caseCall.count ~ " paramters, expected at least 2");
+		caseCall.error(
+                    "Call has " ~ caseCall.count ~ 
+                    " paramters, expected at least 2");
 		return NullLiteral(caseCall);
 		
 	    }
@@ -90,12 +107,9 @@ Note that at most, one of the switch blocks are run, namely the first block to m
                                 "type": caseCast[1],
                                 "varName": caseCast[0],
                                 ]) as Call;
-//print(next);
 	    } 
             else
 	    {
-		
-//	print(caseCall[1]);
 	        cond := makeCond(caseCall[0]);
 		(1..(caseCall.count-1)).each(idx)
 		{
