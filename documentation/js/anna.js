@@ -1,5 +1,6 @@
 
 var anna = {
+
     init: function(){
 	anna.makeToc();
 	anna.syntaxHighlight();
@@ -23,16 +24,10 @@ var anna = {
 		$(evt.target.parentNode.parentNode).hide();
 	    }
 	);
-	$(document).click(
-	    function()
-	    {
-//		$(".anna-code-popup").hide();
-	    }
-	);
     },
 
     /*
-      Create a toc based on the actual headers of the ain document
+      Create a toc based on the actual headers of the main document
      */
     makeToc: function (){
 	var toc = $(".toc");
@@ -53,11 +48,12 @@ var anna = {
     },
 
     /*
-      Very simple state-machine based syntax highlighter. Detexts
-      string literals and comments and adds html markup for
-      them. Nothing else.
+      Very simple syntax highlighter. Uses a state-machine to detect
+      string literals and comments and uses regexps to detect keywords
+      and types.
 
-      Will throw an exception on invalid code.
+      Very little error handling, aything might happen on invalid
+      input.
      */
     syntaxHighlight: function()
     {
@@ -161,6 +157,5 @@ var anna = {
 	);
     }
 };
-
 
 $(document).ready(anna.init);
