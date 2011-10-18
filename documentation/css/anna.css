@@ -83,22 +83,38 @@ a:visited
 .anna-string-literal .anna-keyword,
 .anna-string-literal .anna-type
 {
-    color: #852;
+    color: #741;
 }
 
 .anna-comment,
-.anna-comment .anna-keyword,
+.anna-comment .anna-keyword,o
 .anna-comment .anna-type
 {
-    color: #944;
+    color: #711;
 }
 
 .anna-keyword
 {
-    color: #499;
+    color: #177;
 }
 
 .anna-type
 {
-    color: #494;
+    color: #171
+}
+
+.anna-code-popup
+{
+    position: relative;
+}
+
+.anna-code-popup-inner
+{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background: white;
+    border: 1px solid #aaa;
+    padding: 1em;
+    width: 100%;
 }

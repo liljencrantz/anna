@@ -23,9 +23,16 @@ def main()
     io.File("documentation/index.html").writeFile(template("util/document/index.html"));
 }
 
-def showCode(String name)
+def showCode(String name, String filename)
 {
-    return "<pre class='anna-code'>%</pre>" % [html.escape(File(name).readFile())];
+    return "
+	  <div class='anna-code-popup' id='anna-%-toggle' hidden='1'>
+	    <div class='anna-code-popup-inner'>
+	      <pre class='anna-code'>%</pre>
+	    </div>
+	  </div>
+" % [name, html.escape(File(filename).readFile())];
+
 }
 
 type DocumentationData

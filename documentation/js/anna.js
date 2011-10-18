@@ -3,6 +3,16 @@ var anna = {
     init: function(){
 	anna.makeToc();
 	anna.syntaxHighlight();
+
+	$(document).keypress(
+	    function (evt)
+	    {
+		if(evt.keyCode == 27)
+		{
+		    $(".anna-code-popup").hide();
+		}
+	    }
+	);
     },
 
     /*
@@ -38,7 +48,7 @@ var anna = {
 
 	var pattern = [];
 
-	$.each(["def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default"], function (key, value) {
+	$.each(["def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default", "macro"], function (key, value) {
 	    pattern.push({re: new RegExp("\\b(" + value + ")\\b", "g"), repl: "<span class='anna-keyword'>$1</span>"});
 	});
 	pattern.push({re: new RegExp("\\b([A-Z][a-z0-9A-Z_]*)\\b", "g"), repl: "<span class='anna-type'>$1</span>"});
@@ -138,4 +148,3 @@ var anna = {
 
 
 $(document).ready(anna.init);
-
