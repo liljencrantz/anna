@@ -3,7 +3,11 @@ var anna = {
     init: function(){
 	anna.makeToc();
 	anna.syntaxHighlight();
+	anna.initCodePopup();
+    },
 
+    initCodePopup: function()
+    {
 	$(document).keypress(
 	    function (evt)
 	    {
@@ -11,6 +15,18 @@ var anna = {
 		{
 		    $(".anna-code-popup").hide();
 		}
+	    }
+	);
+	$(".anna-code-popup-close").click(
+	    function (evt)
+	    {
+		$(evt.target.parentNode.parentNode).hide();
+	    }
+	);
+	$(document).click(
+	    function()
+	    {
+//		$(".anna-code-popup").hide();
 	    }
 	);
     },

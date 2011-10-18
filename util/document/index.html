@@ -471,21 +471,45 @@ TODO
 
 	  <h3><a name="examples-switch">The switch macro</a></h3>
 	  <p>
-	    The Anna version of the classical C switch statement contains some changes:
+	    The Anna version of the classical C switch statement
+	    contains some changes:
 	  </p>
 	  <ul>
-	    <li>The syntax is slightly altered to follow how all Anna code is structured.</li>
 	    <li>
-	      No <code class="anna-code">break</code> keyword is needed at the end of a case -
-	      execution never continues into an alternative case.
+	      The syntax is slightly altered to follow how all Anna
+	      code is structured.
+	    </li>
+	    <li>
+	      No <code class="anna-code">break</code> keyword is
+	      needed at the end of a case - execution never continues
+	      into an alternative case.
 	    </li>
 
-	    <li>Any types of values can be switched on, not just integers.</li>
-
 	    <li>
-	      Aside from checking for equality, the switch statement can
-	      also be used to check if a value is contained in a specified
-	      collection or if it can be cast to a specified type.
+	      Any types of values can be switched on, not just
+	      integers.
+	    </li>
+	    
+	    <li>
+	      Aside from checking for equality, the switch statement
+	      can also be used to check if a value is contained in a
+	      specified collection by using code
+	      like <code class="anna-code">cases(someCollection)</code>
+	      keyword.
+	    </li>
+	    <li>
+	      It is also possible to check if the given value can
+	      masque as another type. This is done by
+	      writing <code class="anna-code">case(varName as
+	      SomeType)</code>,
+	      where <code class="anna-code">SomeType</code> is the
+	      name of the type you want to test for,
+	      and <code class="anna-code">varName</code> is a variable
+	      name. If the test succeeds, the
+	      variable <code class="anna-code">varName</code> will be
+	      declared to be of
+	      type <code class="anna-code">SomeType</code> and hold
+	      the value from the original switch condition.
 	    </li>
 	  </ul>
       
@@ -548,6 +572,7 @@ TODO
     }
 }
 
+// Loop over a series of items and classify them using their type
 [3, 4.0, "foo", 'g'].each(item)
 {
     switch(item)
@@ -576,11 +601,10 @@ TODO
 	  </pre>
 	  <p>
 	    <code class="anna-code">switch</code> is just a regular
-	    Anna macro. You can <a href="javascript: void(0);" onclick="javascript:$('#anna-switch-toggle').toggle()">check out the source code</a>.
-	    file.
+	    Anna macro. You can <%! toggleCodePopup("switch", "check out the source code") %>.
 	  </p>
 
-          <%! showCode("switch", "bootstrap/switch.anna") %>
+          <%! codePopup("switch", "bootstrap/switch.anna") %>
   
 	  <h3><a name="examples-struct">The struct macro</a></h3>
 	  <p>
@@ -602,7 +626,7 @@ print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
 	    file.
 	  </p>
 
-	  <%! showCode("struct", "bootstrap/struct.anna") %>
+	  <%! codePopup("struct", "bootstrap/struct.anna") %>
 	  
 	  <h3><a name="examples-macros">Defining your own macros</a></h3>
 	  <p>
@@ -859,18 +883,18 @@ TODO
 	    code snippet below:
 	  </p>
 	  <pre class="anna-code">
-macro replaceObjectWithInt(ast)
+macro replaceObjectWithInt(node)
 {
-	ast.replaceChildren(child)
+    node.replaceChildren(child)
+    {
+        id := child as Identifier;
+	if(id and id.name=="Object")
 	{
-		id := child as Identifier;
-		if(id and id.name=="Object")
-		{
-			return Identifier(id, "Int");
-		}
-		child;
+	    return Identifier(id, "Int");
 	}
-	return ast;
+	child;
+    }
+    return node;
 }
 	  </pre>
 	  <p>
@@ -1171,7 +1195,7 @@ TODO
 	  </pre>
 	  
 	  
-	  <h1><a name="exceptions">No exceptions</a></h1>
+	  <h1><a name="errors">Handling errors with no exceptions</a></h1>
 	  <p>
 	    Anna does not have exceptions. It would be easy to implement
 	    exceptions using continuations, but they are considered bad
@@ -1194,18 +1218,21 @@ collect
 }.each(err){
     switch(err)
     {
-	case IOError{
+	case(ioErr as IOError)
+        {
 	    /* If we encounter an IO error, ignore the rest of the error 
 	     * list, but continue running the program */
 	    print("There was an IO problem. Details:\n", err.message);
 	    break; 
 	}
-	case PermissionError{
+	case (pErr as PermissionError)
+        {
 	    /* If we encounter a permission error, exit the program */
 	    print("Access denied! Shutting down\n");
 	    exit(1);
 	}
-	default {
+	default 
+        {
 	    /* If we encounter any other error,  continue processing the 
 	     * error list */
 	    print("Unknown error. Details:\n", err.message);
@@ -1214,12 +1241,19 @@ collect
 }
 	  </pre>
 	  <p>
-	    The <code class="anna-code">collect</code> call will save any errors that occur
-	    while executing its body, including any errors occusing in
-	    functions called by the body at any level of nesting, into a
-	    list of errors. Once the code has finished, the list of errors
-	    is iterated over and handled by the <code class="anna-code">each</code>
-	    loop. 
+	    The <code class="anna-code">collect</code> call will save
+	    any errors that occur while executing its body, including
+	    any errors occusing in functions called by the body at any
+	    level of nesting, into a list of errors. Once the code has
+	    finished, the list of errors is iterated over and handled
+	    by the <code class="anna-code">each</code> loop.
+	  </p>
+	  <p>
+	    Curious about the switch expression, and how it was used
+	    for trying to cast a value to different types in the above
+	    code? You might want to read up on
+	    the <a href="#examples-switch">switch statement
+	    examples</a>.
 	  </p>
 	  <p>
 	    How is this different from exceptions? Exceptions can skip over
@@ -1266,13 +1300,21 @@ f.close();
 	  <h2><a name="null">The talented mister null</a></h2>
 	  <p>
 	    The null object in Anna, which can be accessed through
-	    the <code class="anna-code">?</code> keyword, is a very odd object. It abides
-	    to every interface, and calling any method on it will without
-	    exception have no side effects and will return the null object. In
-	    other words, it is perfectly ok to call <code class="anna-code">2 + ?</code>,
-	    it will not crash or throw an exception, and the result will be
-	    null.
+	    the <code class="anna-code">?</code> keyword, is a very
+	    odd object. It abides to every interface, and calling any
+	    method on it will without exception have no side effects
+	    and will return the null object. In other words, it is
+	    perfectly ok to call <code class="anna-code">2 + ?</code>,
+	    it will not crash or throw an exception, and the result
+	    will be null. 
 	  </p>
+	  <p>
+	    For more information about error handling in Anna, and how
+	    the null object ties in with it, read the section
+	    titled <a href="#errors">Handling errors with no
+	    exceptions</a>.
+	  </p>
+
 	  <h2><a name="booleans">Truth is lie</a></h2>
 	  <p>
 	    There is no separate Boolean type in Anna. There is exactly one
@@ -1283,6 +1325,7 @@ f.close();
 	    expressions, while loops and any other statement that expects a
 	    yes/no answer. Null is the new no.
 	  </p>
+
 	  <h2><a name="operator-overloading">I'll be your operator, baby</a></h2>
 	  <p>
 	    Anna has a small number of special operators that allow you to
@@ -1328,6 +1371,7 @@ col ^blend 0.1;
 	  <p>
 	    
 	  </p>
+
 	  <h2><a name="reserved-words">No reservations? No problem!</a></h2>
 	  <p>
 	    The Sugar layer has a small number of reserved words, including
@@ -1342,6 +1386,7 @@ col ^blend 0.1;
 	    For this reason, great care must be taken when using
 	    the <code class="anna-code">expand</code> expression to import macros.
 	  </p>
+
 	  <h2><a name="comments">Comments nest</a></h2>
 	  <p>
 	    Like C and friends Anna uses /* to start a multiline comment,
@@ -1405,6 +1450,7 @@ function mandelbrot(Complex p0, Int maxStep)
       languages in the code above. We'll comment on them below.
     </p>
 -->
+
 <h1><a name="miroformats">Microformats</a></h1>
 	  <p>
 	    The Anna parser is written to be as accepting as possible of

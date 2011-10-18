@@ -23,15 +23,22 @@ def main()
     io.File("documentation/index.html").writeFile(template("util/document/index.html"));
 }
 
-def showCode(String name, String filename)
+def toggleCodePopup(String name, String text )
+{
+    return "<a href='javascript: void(0);' onclick='javascript:$(\"#anna-%-toggle\").toggle()'>%</a>" % [name, text];
+}
+
+def codePopup(String name, String filename)
 {
     return "
-	  <div class='anna-code-popup' id='anna-%-toggle' hidden='1'>
+	  <div class='anna-code-popup' id='anna-%-toggle' style='display: none;'>
 	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+              <h3>Source code for %</h3>
 	      <pre class='anna-code'>%</pre>
 	    </div>
 	  </div>
-" % [name, html.escape(File(filename).readFile())];
+" % [name, filename, html.escape(File(filename).readFile())];
 
 }
 

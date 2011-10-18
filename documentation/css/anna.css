@@ -87,7 +87,7 @@ a:visited
 }
 
 .anna-comment,
-.anna-comment .anna-keyword,o
+.anna-comment .anna-keyword,
 .anna-comment .anna-type
 {
     color: #711;
@@ -117,4 +117,17 @@ a:visited
     border: 1px solid #aaa;
     padding: 1em;
     width: 100%;
+}
+
+.anna-code-popup-close
+{
+    float: right;
+    display: block;
+    padding: 0.5em;
+}
+
+.anna-code-popup-close:hover
+{
+    background-color: #eee;
+    cursor: pointer;
 }
