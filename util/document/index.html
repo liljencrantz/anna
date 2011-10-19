@@ -78,7 +78,7 @@ def main()
 	  </ul>
       
 	  <h2><a name="examples">Anna by examples</a></h2>
-	  <div class='subheading'>Because time is too precious to actually learn anything.</div>
+	  <div class='anna-subheading'>Because time is too precious to actually learn anything.</div>
 
 	  <h3><a name="examples-functions">Defining and calling functions</a></h3>
 	  <pre class="anna-code">
@@ -684,7 +684,7 @@ TODO
 	  </pre>
    
 	  <h2><a name="intro_short">Anna in a single sentence</a></h2>
-	  <div class='subheading'>Wherein the author demonstrates his his mastery of commatation</div>
+	  <div class='anna-subheading'>Wherein the author demonstrates his his mastery of commatation</div>
 	  <p>
 	    Anna is a statically, structurally typed computer language that
 	    supports LISP style macros, functions and types as first class
@@ -709,7 +709,7 @@ TODO
 	  </ul>
     
 	  <h2><a name="intro_long">Gentle Anna</a></h2>
-	  <div class='subheading'>Wherein strategic use of mood lighting makes
+	  <div class='anna-subheading'>Wherein strategic use of mood lighting makes
 	    Anna seem less intimadating.</div>
 	  <p>
 	    Anna is a computer programming language. That is, it is a
@@ -813,7 +813,7 @@ TODO
 
 	  </ul>
 	  <h2><a name="intro_lisp">Anna for LISP programmers</a></h2>
-	  <div class='subheading'>Old is the new new.</div>
+	  <div class='anna-subheading'>Old is the new new.</div>
     
 	  <p>
 	    Anna is a statically typed language with a front end that allows
@@ -843,7 +843,7 @@ TODO
 	  </ul>
     
 	  <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
-	  <div class='subheading'>Confusingly familiar.</div>
+	  <div class='anna-subheading'>Confusingly familiar.</div>
 	  <p>
 	    Anna is a C-like language with garbage collection and a powerful
 	    object system. At first glance, Anna feels very familiar to Java
@@ -997,7 +997,7 @@ birthday := IsoDate(1978-05-20, 12:34:00);
 	  </p>
 	  
 	  <h2><a name="intro_script">Anna for Python and Ruby programmers</a></h2>
-	  <div class='subheading'>Wherein...</div>
+	  <div class='anna-subheading'>Wherein...</div>
 	  
 	  <p>
 	    In daily use, Python and Ruby are probably the languages that
@@ -1140,24 +1140,27 @@ if(someObject is String.intersect(Int))
 	    Anna makes it similarly easy to filter out a subset of members from
 	    a type, create the union of two types, etc.
 	  </p>
-	  <h2>Dynamic type creation</h2>
+	  <h2><a name="structural-typing-dynamic-type-creation">Dynamic type creation</a></h2>
+	  
 	  <p>
-	    In order for duck typing to be viable in a statically typed
+	    In order for structural typing to be viable in a statically typed
 	    language, it must be easy to create new types on the spot. A very
 	    simple example of this is the <code class="anna-code">or</code> macro. Take the
 	    following snippet of Anna code:
 	  </p>
-	  <pre>
-var Foo foo = getFoo();
-var Bar bar = getBar();
+	  <pre class="anna-code">
+foo := 1;
+bar := "1";
 var baz = foo or bar;
 	  </pre>
 	  <p>
-	    The or operator in Anna will return the first value (foo) if it is
-	    true, otherwise, bar will be returned. This means that the return
-	    type of <code class="anna-code">foo or bar</code> is the intersection of the types of
-	    the respective arguments, in this case, the intersection of the
-	    types <code class="anna-code">Foo</code> and <code class="anna-code">Bar</code>.
+	    The or operator in Anna will return the first value (foo)
+	    if it is true, otherwise, bar will be returned. This means
+	    that the return type of <code class="anna-code">foo or
+	    bar</code> is the intersection of the types of the
+	    respective arguments, in this case, the intersection of
+	    the types <code class="anna-code">Int</code>
+	    and <code class="anna-code">ImutableString</code>.
 	  </p>
 	  
 	  <h1>
@@ -1238,7 +1241,6 @@ def next(Int in)
 	  <pre>
 TODO
 	  </pre>
-	  
 	  
 	  <h1><a name="errors">Handling errors with no exceptions</a></h1>
 	  <p>
@@ -1371,7 +1373,7 @@ f.close();
 	    yes/no answer. Null is the new no.
 	  </p>
 
-	  <h2><a name="operator-overloading">I'll be your operator, baby</a></h2>
+	  <h2><a name="operator-overloading">I'll be your operator</a></h2>
 	  <p>
 	    Anna has a small number of special operators that allow you to
 	    implement some of the most common language operations with a
@@ -1395,11 +1397,12 @@ b := 7;
 print(a ^bitand b);
 	  </pre>
 	  <p>
-	    The above example shows usage of the @bitand generic operator of
-	    the Int class, which will perform a bitwise and operation. To
-	    define your own generic operator, simply define a method named
-	    like the operator, but enclosed within double underscores. An
-	    example:
+	    The above example shows usage of
+	    the <code class="anna-code">^bitand</code> generic
+	    operator of the Int class, which will perform a bitwise
+	    and operation. To define your own generic operator, simply
+	    define a method named like the operator, but enclosed
+	    within double underscores. An example:
 	  </p>
 	  <pre class="anna-code">
 type Color
@@ -1413,10 +1416,156 @@ type Color
 var col = Color();
 col ^blend 0.1;
 	  </pre>
-	  <p>
-	    
-	  </p>
 
+	  <table>
+	    <caption>
+	      Operator precedence, higher to lower.
+	    </caption>
+	    <thead>
+	      <tr>
+		<th>
+		  Operator symbols
+		</th>
+		<th>
+		  Operator method names
+		</th>
+		<th>
+		  Notes
+		</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    ++, --
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __next__, __prev__
+		  </code>
+		</td>
+		<td>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    *, /, % 
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __mul__, __div__, __format__
+		  </code>
+		</td>
+		<td>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    +, -, ~
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __add__, __sub__, __join__
+		  </code>
+		</td>
+		<td>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    |
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __pair__
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">__pair__</code> can not be overloaded.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    ^xxx
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __xxx__
+		  </code>
+		</td>
+		<td>
+		  any identifier can be used as an operator using the
+		  generic operator syntax.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    <, >, ==, !=, <=, >=, in
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __lt__, __gt__, __eq__, __neq__, __lte__, __gte__, __in__
+		  </code>
+		</td>
+		<td>
+		  While all of these operators can be overloaded, it
+		  is strongly discouraged to overload any except
+		  for <code class="anna-code">in</code>. Instead,
+		  override the __cmp__ method, used to compare two
+		  objects and return a negative Int, zero or a
+		  positive Int depending on if the first number is
+		  smaller, equal to, or greater than the second one,
+		  respecitvely.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    or, and
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __or__, __and__
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">__or__</code> and <code class="anna-code">__and__</code> can not be overloaded.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    =, ~=, +=, -=, :
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    __assign__, __append__, __increase__, __decrease__, __mapping__
+		  </code>
+		</td>
+		<td>
+		  
+		  <code class="anna-code">__assign__</code>
+		  and <code class="anna-code">__mapping__</code> can
+		  not be overloaded.
+		</td>
+	      </tr>
+	    </tbody>
+	    
+	  </table>
 	  <h2><a name="reserved-words">No reservations? No problem!</a></h2>
 	  <p>
 	    The Sugar layer has a small number of reserved words, including
@@ -1434,11 +1583,11 @@ col ^blend 0.1;
 
 	  <h2><a name="comments">Comments nest</a></h2>
 	  <p>
-	    Like C and friends Anna uses /* to start a multiline comment,
-	    and */ to end it. But unlike C and friends, comments can be
-	    nested inside each other. This makes it trivial to comment out a
-	    large chunk of code, even if it happens to contain multiline
-	    comments.
+	    Like C and friends Anna uses /* to start a multiline
+	    comment, and */ to end it. But unlike C and friends,
+	    comments can be nested inside each other. This makes it
+	    trivial to comment out a large chunk of code, even if it
+	    happens to contain multiline comments.
 	  </p>
 <!--    
     <h1>A simple, annotated example</h1>
@@ -1511,7 +1660,7 @@ function mandelbrot(Complex p0, Int maxStep)
 	    code:
 	  </p> 
 	  <pre class="anna-code">
-Map m = JSON({data:[1,2,3,7], unit:"seconds", caption:null});
+m := JSON({data:[1,2,3,7], unit:"seconds", caption:null});
 	  </pre>
 	  <p>
 	    Note: This macro has yet to be written. 
@@ -1522,10 +1671,10 @@ Map m = JSON({data:[1,2,3,7], unit:"seconds", caption:null});
 	  </p>
 	  <pre class="anna-code">
 // Create a new date from a specified date 
-var then = Date(2009-1-1, 12:30);
+var then = isoDate(2009-1-1, 12:30);
 
 // Move ahead x years and one hour 
-date += x-0-0, 1:00;
+date += isoDateDelta(x-0-0, 1:00);
 	  </pre>
 	  <h1><a name="sugar">Sugar and spice - How the front end sugar works and what Anna looks like without makeup</a></h1>
 	  <p>

@@ -60,10 +60,11 @@ var anna = {
 
 	var pattern = [];
 
-	$.each(["def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default", "macro"], function (key, value) {
+	$.each(["type", "error", "enum", "var", "const", "def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default", "macro", "or", "and"], function (key, value) {
 	    pattern.push({re: new RegExp("\\b(" + value + ")\\b", "g"), repl: "<span class='anna-keyword'>$1</span>"});
 	});
 	pattern.push({re: new RegExp("\\b([A-Z][a-z0-9A-Z_]*)\\b", "g"), repl: "<span class='anna-type'>$1</span>"});
+	pattern.push({re: new RegExp("(\\^[a-z0-9A-Z_]*)\\b", "g"), repl: "<span class='anna-keyword'>$1</span>"});
 
 	$(".anna-code").each(
 	    function(idx, el)
@@ -81,6 +82,11 @@ var anna = {
 			if(txt[i] == '"')
 			{
 			    mode = "string"
+			    html += "<span class='anna-string-literal'>";
+			}
+			else if(txt[i] == "'")
+			{
+			    mode = "char"
 			    html += "<span class='anna-string-literal'>";
 			}
 			else if(txt[i] == '/')
@@ -134,6 +140,21 @@ var anna = {
 			    i++;
 			}
 			else if(txt[i] == '"')
+			{
+			    mode = "base"
+			    html += txt[i];
+			    html += "</span>";
+			    add = false;
+			}
+			break;
+			
+		    case "char":
+			if(txt[i] == '\\')
+			{
+			    html += txt[i];
+			    i++;
+			}
+			else if(txt[i] == "'")
 			{
 			    mode = "base"
 			    html += txt[i];

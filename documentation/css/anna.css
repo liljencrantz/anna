@@ -83,14 +83,14 @@ a:visited
 .anna-string-literal .anna-keyword,
 .anna-string-literal .anna-type
 {
-    color: #741;
+    color: #651;
 }
 
 .anna-comment,
 .anna-comment .anna-keyword,
 .anna-comment .anna-type
 {
-    color: #711;
+    color: #700;
 }
 
 .anna-keyword
@@ -131,3 +131,16 @@ a:visited
     background-color: #eee;
     cursor: pointer;
 }
+
+.anna-subheading
+{
+    font-style: italic;
+    margin-top: -1em;
+    margin-bottom: 1.5em;
+}
+
+caption
+{
+    font-style: italic;
+}
+
