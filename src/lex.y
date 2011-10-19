@@ -124,7 +124,7 @@ in return IN;
 \.\.\. return ELLIPSIS;
 \.\. return RANGE;
 \. return '.';
-'([^\\]|\\.)' return LITERAL_CHAR;
+'([^\'\\]|\\.)*' return LITERAL_CHAR;
 « return SPECIALIZATION_BEGIN;
 » return SPECIALIZATION_END;
 \<\< return SPECIALIZATION_BEGIN2;

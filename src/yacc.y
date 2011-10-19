@@ -167,7 +167,16 @@ static anna_node_t *anna_text_as_id(anna_location_t *loc, yyscan_t *scanner)
 }
 
 
-static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *str)
+enum 
+{
+    ANNA_LIT_BASE,
+    ANNA_LIT_BACKSLASH,
+    ANNA_LIT_HEX
+};
+
+
+
+static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_t *count)
 {
     str++;
     str[strlen(str)-1]=0;
@@ -175,20 +184,51 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
     wchar_t *str3 = malloc(sizeof(wchar_t)*(wcslen(str2)));
     wchar_t *ptr_in;
     wchar_t *ptr_out = str3;
+    int mode = ANNA_LIT_BASE;
+    int chars_left=0;
+    int hex_val=0;
     
     for(ptr_in=str2; 
 	*ptr_in; 
 	ptr_in++)
     {
-
-	FIXME("Hex escape sequences are still not handled")
-
-	switch(*ptr_in)
+	switch(mode)
 	{
-	    case L'\\':
-		ptr_in++;
+	    case ANNA_LIT_BASE:
+		
+		if(*ptr_in == L'\\')
+		{
+		    mode = ANNA_LIT_BACKSLASH;
+		}
+		else
+		{
+		    *ptr_out++ = *ptr_in;
+		}
+		break;
+		
+	    case ANNA_LIT_BACKSLASH:
+		mode = ANNA_LIT_BASE;
+		
 		switch(*ptr_in)
 		{
+		    case L'x':
+			mode = ANNA_LIT_HEX;
+			chars_left = 2;
+			hex_val = 0;
+			break;
+
+		    case L'u':
+			mode = ANNA_LIT_HEX;
+			chars_left = 4;
+			hex_val = 0;
+			break;
+
+		    case L'U':
+			mode = ANNA_LIT_HEX;
+			chars_left = 8;
+			hex_val = 0;
+			break;
+
 		    case L'n':
 			*ptr_out++ = L'\n';
 			break;
@@ -209,87 +249,93 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 			*ptr_out++ = L'\0';
 			break;
 			
-		    case L'\0':
-			wprintf(L"Error in string.");
-			exit(1);
-			break;
-			
 		    default:
 			*ptr_out++ = *ptr_in;
 			break;
 		}
 		break;
+
+	    case ANNA_LIT_HEX:
+	    {
+		int digit;
 		
-	    default:
-		*ptr_out++ = *ptr_in;
-		break;		
+		if(*ptr_in >= L'0' && *ptr_in <= L'9')
+		{
+		    digit = *ptr_in - L'0';
+		}
+		else if(*ptr_in >= L'a' && *ptr_in <= L'f')
+		{
+		    digit = *ptr_in - L'a'+10;
+		}
+		else if(*ptr_in >= L'A' && *ptr_in <= L'F')
+		{
+		    digit = *ptr_in - L'A'+10;
+		}
+		else
+		{
+		    anna_error(
+			(anna_node_t *)anna_node_create_dummy(loc, 0),
+			L"Invalid hex sequence");
+		    return 0;
+		}
+		
+		hex_val = hex_val*16 + digit;
+		chars_left--;
+		if(chars_left == 0)
+		{
+		    mode = ANNA_LIT_BASE;
+		    *ptr_out++ = hex_val;
+		}
+	    }
 	}
     }
-    
     free(str2);
+    if(mode != ANNA_LIT_BASE)
+    {
+	anna_error(
+	    (anna_node_t *)anna_node_create_dummy(loc, 0),
+	    L"Invalid hex sequence");
+	return 0;
+    }
     
-    return (anna_node_t *)anna_node_create_string_literal(loc, ptr_out-str3, str3);
+    *count = ptr_out - str3;
+    return str3;
 }
+
+static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *str)
+{
+    size_t count;
+    wchar_t *wstr = anna_yacc_string_unescape(loc, str, &count);
+    if(!wstr)
+    {
+	return anna_node_create_null(loc);
+    }
+    
+    return (anna_node_t *)anna_node_create_string_literal(loc, count, wstr);
+}
+
 
  
 static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *str)
 {
-    str++;
-    str[strlen(str)-1]=0;
-    wchar_t *str2 = str2wcs(str);
-    wchar_t *str3 = str2;
-    wchar_t chr;
+    size_t count;
+    wchar_t *wstr = anna_yacc_string_unescape(loc, str, &count);
 
-    switch(*str3)
+    if(!wstr)
     {
-	case L'\\':
-	    str3++;
-	    switch(*str3)
-	    {
-		case L'n':
-		    chr= L'\n';
-		    break;
-		    
-		case L'r':
-		    chr = L'\r';
-		    break;
-		    
-		case L'e':
-		    chr = L'\x1b';
-		    break;
-		    
-		case L't':
-		    chr = L'\t';
-		    break;
-			
-		case L'0':
-		    chr = L'\0';
-		    break;
-			
-		case L'\0':
-		    wprintf(L"Error in string.");
-		    exit(1);
-		    break;
-			
-		default:
-		    chr = *str3;
-		    break;
-	    }
-	    break;
-	    
-	default:
-	    chr = *str3;
-	    break;
+	return anna_node_create_null(loc);
     }
 
-    if(*(str3+1)){
+    if(count != 1){
 	anna_error(
 	    (anna_node_t *)anna_node_create_dummy(loc, 0),
 	    L"Invalid character literal");
+	return anna_node_create_null(loc);
     }
-    free(str2);
-    
-    return (anna_node_t *)anna_node_create_char_literal(loc, chr);
+
+    anna_node_t *res = (anna_node_t *)anna_node_create_char_literal(loc, *wstr);
+    free(wstr);
+    return res;
 }
 
  
