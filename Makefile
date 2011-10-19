@@ -166,7 +166,7 @@ check: test
 documentation: documentation/api
 .PHONY: documentation
 
-documentation/api: 
+documentation/api: bin/anna 
 	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna
 
 test: all
