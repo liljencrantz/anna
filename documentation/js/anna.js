@@ -49,10 +49,10 @@ var anna = {
 
     /*
       Very simple syntax highlighter. Uses a state-machine to detect
-      string literals and comments and uses regexps to detect keywords
-      and types.
+      string literals and comments, and uses regexps to detect
+      keywords and types.
 
-      Very little error handling, aything might happen on invalid
+      Very little error handling, anything might happen on invalid
       input.
      */
     syntaxHighlight: function()
@@ -61,16 +61,16 @@ var anna = {
 	var pattern = [];
 
 	$.each(["type", "error", "enum", "var", "const", "def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default", "macro", "or", "and"], function (key, value) {
-	    pattern.push({re: new RegExp("\\b(" + value + ")\\b", "g"), repl: "<span class='anna-keyword'>$1</span>"});
+	    pattern.push({regExp: new RegExp("\\b(" + value + ")\\b", "g"), replacement: "<span class='anna-keyword'>$1</span>"});
 	});
-	pattern.push({re: new RegExp("\\b([A-Z][a-z0-9A-Z_]*)\\b", "g"), repl: "<span class='anna-type'>$1</span>"});
-	pattern.push({re: new RegExp("(\\^[a-z0-9A-Z_]*)\\b", "g"), repl: "<span class='anna-keyword'>$1</span>"});
+	pattern.push({regExp: new RegExp("\\b([A-Z][a-z0-9A-Z_]*)\\b", "g"), replacement: "<span class='anna-type'>$1</span>"});
+	pattern.push({regExp: new RegExp("(\\^[a-z0-9A-Z_]*)\\b", "g"), replacement: "<span class='anna-keyword'>$1</span>"});
 
 	$(".anna-code").each(
 	    function(idx, el)
 	    {
 		var html = "";
-		var txt = el.textContent.replace("<", "&lt;").replace(">", "&gt;");
+		var txt = el.textContent.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
 		var mode = "base";
 		var comment_nest= 0;
 		for(var i=0; i<txt.length; i++)
@@ -91,33 +91,56 @@ var anna = {
 			}
 			else if(txt[i] == '/')
 			{
-			    if(txt[i+1] == '/')
-			    {
-				mode = "comment";
-				html += "<span class='anna-comment'>";
-			    }
-			    else if(txt[i+1] == '*')
-			    {
-				mode = "multi-comment";
-				html += "<span class='anna-comment'>";
-				comment_nest = 1;
-			    }
+			    add = false;
+			    mode = "base-slash";
+			}
+			break;
+
+		    case "base-slash":
+			if(txt[i] == '/')
+			{
+			    mode = "comment";
+			    html += "<span class='anna-comment'>/";
+			}
+			else if(txt[i] == '*')
+			{
+			    mode = "multi-comment";
+			    html += "<span class='anna-comment'>/";
+			    comment_nest = 1;
+			}
+			else
+			{
+			    mode = "base";
 			}
 			break;
 
 		    case "multi-comment":
-			if((txt[i] == '/') &&(txt[i+1] == '*'))
+			if(txt[i] == '/')
+			{
+			    mode = "multi-comment-slash";
+			}
+			else if(txt[i] == '*') 
+			{
+			    mode = "multi-comment-star";
+			}
+			break;
+
+		    case "multi-comment-slash":
+			if(txt[i] == '*')
 			{
 			    comment_nest++;
 			}
-			else if((txt[i] == '*') &&(txt[i+1] == '/'))
+			mode = "multi-comment";
+			break;
+
+		    case "multi-comment-star":
+			mode = "multi-comment";
+			if(txt[i] == '/')
 			{
 			    comment_nest--;
 			    if(comment_nest == 0)
 			    {
-				html += txt[i];
-				html += txt[i+1];
-				i++;
+				html += "/";
 				mode = "base";
 				html += "</span>";
 				add = false;
@@ -170,7 +193,7 @@ var anna = {
 		    }
 		}
 		$.each(pattern, function (key, repl) {
-		    html = html.replace(repl.re, repl.repl);
+		    html = html.replace(repl.regExp, repl.replacement);
 		});
 		
 		$(el).html(html);
