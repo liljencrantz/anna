@@ -451,6 +451,77 @@ laps := Int::convert(system.argument[1]) or 5;
 print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
 	  </pre>
 
+	  <h3><a name="examples-specialization">Template specialization</a></h3>
+	  <p>
+	    
+	  </p>
+	  <pre class="anna-code">
+/*
+  Templates are specialized using «». This creates an empty list of Int items.
+*/
+lst := MutableList«Int»()
+
+/* 
+  Explicitly specializing a template is superflous when all template
+  parameter types can be calculated from the constructor call. This
+  will also create a list of Int items.
+*/
+lst2 := MutableList(5,6,7);
+
+/*
+  The specialization of collection literals can be specified
+*/
+
+// Empty list of integers
+lst3 := «Int»[];
+
+// Empty HashMap of String to Char
+hash := «String, Char»[];
+
+/*
+  A simple example of how to create your own template type.
+
+  Foo uses Int as the default type for the %A template parameter.
+*/
+type Foo (template(%A:Int)) {
+
+    def %A bar(%A a, %A b){
+        a+b;
+    }
+
+}
+
+/*
+  Template specialization parameters aren't restricted to being
+  types. In this example, we specify which member method should be
+  called by using a template.  
+*/
+type Foo (template(%op:__add__)) 
+{
+
+    def Int bar(Int a, Int b)
+    {
+        a.%op(b);
+    }
+
+}
+
+def Int main()
+{
+    foo := Foo();
+    print(foo.bar(3,4),"\n");
+    boo := Foo«__sub__»();
+    print(boo.bar(3,4),"\n");
+}
+
+def Int main()
+{
+    foo := Foo«Float»();
+    print(foo.bar(3.0,4.0));
+}
+
+	  </pre>
+
 	  <h3><a name="examples-continuations">Continuations</a></h3>
 	  <p>
 	    
@@ -1801,7 +1872,7 @@ def foo(){1} =&gt; __const__(
 	  <h2><a name="design-separators">Commas, semicolons and separating expressions</a></h2>
 	  <p>
 	    At the parser level, Anna is designed to be able to handle
-	    as much imput as possible in order to make it easier to
+	    as much input as possible in order to make it easier to
 	    create microformats that feel natural to work with. Some
 	    of the results of this are:
 	  </p>
@@ -1809,41 +1880,43 @@ def foo(){1} =&gt; __const__(
 	    <li>
 	      Anna uses two
 	      separators, <code class="anna-code">,</code> (comma)
-	      and <code class="anna-code">;</code> (semicolon). The
-	      parser sees these two as exactly the same token. 
+	      and <code class="anna-code">;</code> (semicolon). These
+	      can be used interchangeably.
 	    </li>
 	    <li>
-	      Multiple commas or semicolons in a row are treated as a
-	      single separator.
+	      Multiple commas or semicolons separated by only
+	      whitespace are treated as a single separator.
 	    </li>
 	    <li>
 	      Expressions are actually <em>separated</em> by
 	      separators, not terminated by them - so a trailing
 	      semicolon after the last expression in a block is not
-	      needed. But it is allowed.
+	      actually needed. But it is allowed.
 	    </li>
 	    <li>
-	      All the above rules apply to code blocks, the parameter list
-	      of a function call and the members in a collection
-	      literal. They are all parsed in exactly the same way.
+	      All the above rules apply to code blocks, the parameter
+	      list of a function call and the members in a collection
+	      literal. In fact, exactly the same piece of code in the
+	      Anna parser is responsible for parsing all these types
+	      of code.
 	    </li>
 	  </ul>
 	  <p>
 	    As you can see, Anna leaves you with a lot of options when
 	    it comes to separators. There are however very specific
-	    codig conventions:
+	    coding conventions:
 	  </p>
 	  <pre class="anna-code">
 /*
    Multiple-line expression groups should always have a trailing
-   separator. The reason for that is to make it easier to cut and
-   paste entire lines without having to worry about trailing
+   separator. The reason for that is to make it easier to comment or
+   cut and paste lines without having to worry about trailing
    separators.
 
-   For code blocks, that separator should be a semicolon, for
-   collection literals and function calls, it should be a comma. The
-   reason for this is historical - that's how code has traditionally
-   been written in C-like languages.
+   For code blocks, only use the semicolon as a separator, for
+   collection literals and function calls, only comma. The reason for
+   this is historical - that's how code has traditionally been written
+   in C-like languages.
 */
 default
 {
@@ -1866,7 +1939,7 @@ literal := [
 
 /*
    The only exceptions to this rule is that it is ok to group together
-   multiple variable declarations with commas.  
+   multiple variable declarations o a single line with commas.  
 */
 
 foo := 1, bar := 2, baz := 3;
@@ -1885,13 +1958,13 @@ literal := ["first", "second"];
 	  <p>
 	    The «Easy to parse» design constraint has unfortunatly led
 	    to a significant number of exceptions to the «C-like
-	    syntax» rule. For example, Anna templates use either
-	    <code class="anna-code">«Foo»</code>
-	    or <code class="anna-code">&lt;&lt;Foo&gt;&gt;</code> for
-	    template specialization, instead
-	    of <code class="anna-code">&lt;Foo&gt;</code>, which is
-	    familiar from C++, Java and C#. The reason is simple: It
-	    is impossible to write a general parser that
+	    syntax» rule. For example, Anna uses either
+	    <code class="anna-code">List«Int»</code>
+	    or <code class="anna-code">List&lt;&lt;Int&gt;&gt;</code> to
+	    specialize a template, instead
+	    of <code class="anna-code">List&lt;Int&gt;</code>, which is
+	    used in C++, Java and C#. The reason is simple: It is
+	    impossible to write a general parser that
 	    uses <code class="anna-code">&lt;&gt;</code> both for
 	    comparisons and for template specializations without
 	    making very specific exceptions in the parser. Such
@@ -1899,6 +1972,41 @@ literal := ["first", "second"];
 	    placed inside of a template specialization. In Anna,
 	    templates can be used to insert any expression into a code
 	    template, not just a Type.
+	  </p>
+	  <pre class="anna-code">
+/*
+  A small sample program using a template specialization
+  that would be impossible to parse unambiguably if &lt;&gt; 
+  was used for template specialization.
+*/
+type Foo (template(%op:?)) {
+
+    def bar(Int a, Int b)
+    {
+        %op;
+    }
+
+}
+
+def Int main()
+{
+    boo := Foo«a &gt; b»();
+    print(boo.bar(3,4),"\n");
+}
+	  </pre>
+	  <p>
+	    It should be noted that the creators of D, another C-like
+	    language which tries to be easier to parse than e.g. C++,
+	    ran into the same problem with template
+	    specialization. They chose instead to
+	    use <code>List!(Int)</code> as the template specialization
+	    syntax. Unfortunatly, that would be impossible in Anna,
+	    since Anna is less picky with what can be specialized,
+	    leading to syntactic ambiguity. On the other hand, D
+	    uses <code>&lt;&lt;</code> and <code>&gt;&gt;</code> for
+	    bitshifting, just like C, meaning these symbols where not
+	    available for template specialization. The solution that
+	    works for one language does not always work for another.
 	  </p>
 	  <p>
 	    One significant kludge in the Anna syntax is the expression

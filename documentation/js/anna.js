@@ -70,7 +70,7 @@ var anna = {
 	    function(idx, el)
 	    {
 		var html = "";
-		var txt = el.textContent.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
+		var txt = el.textContent.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
 		var mode = "base";
 		var comment_nest= 0;
 		for(var i=0; i<txt.length; i++)
