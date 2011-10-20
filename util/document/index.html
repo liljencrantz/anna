@@ -491,6 +491,12 @@ type Foo (template(%A:Int)) {
 
 }
 
+def Int main()
+{
+    foo := Foo«Float»();
+    print(foo.bar(3.0,4.0));
+}
+
 /*
   Template specialization parameters aren't restricted to being
   types. In this example, we specify which member method should be
@@ -513,13 +519,6 @@ def Int main()
     boo := Foo«__sub__»();
     print(boo.bar(3,4),"\n");
 }
-
-def Int main()
-{
-    foo := Foo«Float»();
-    print(foo.bar(3.0,4.0));
-}
-
 	  </pre>
 
 	  <h3><a name="examples-continuations">Continuations</a></h3>
