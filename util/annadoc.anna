@@ -5,6 +5,7 @@ use(reflection);
 expand(template);
 
 var io.File baseDir;
+var Int verbose;
 
 def main()
 (  
@@ -13,7 +14,7 @@ def main()
 	"Future work should include prettier styling, search functionality, handling of internal members including the option to hide internal members."))
 {
     baseDir = io.File("documentation/api");
-
+    verbose = system.argument[1] == "-v";
     doc := DocumentationExtractor();
     doc.document(global);
     print(
@@ -179,7 +180,7 @@ often used code paths, which makes it useful for regression testing.")
         doc := extractDocumentation(mem.attribute) or extractDocumentation((mem.value(?) as Function).attribute) or "";
 	if(doc == "")
 	{
-	    print("Missing documentation for member %.%\n" % [mem.memberOf.name, mem.name]);
+	    verbose and print("Missing documentation for member %.%\n" % [mem.memberOf.name, mem.name]);
 	    memberMissing++;
 	}
 

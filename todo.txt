@@ -5,6 +5,7 @@
   - Split into multiple files
   - Make code links actually work
   - Check for dead links
+  - binding generator doesn't pass on doc attribute
 * HTML api documentation extractor
   - Hide internal elements by default
 * Check that node compare supports all ast node types

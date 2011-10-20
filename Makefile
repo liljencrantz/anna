@@ -157,17 +157,16 @@ autogen/%.c: bin/make_%.sh
 src/dtoa.o: src/dtoa.c
 	$(CC) $(CFLAGS_NOWARN) -c src/dtoa.c -o src/dtoa.o -DIEEE_8087 -DLong=int
 
-autogen/lex.o: autogen/lex.c
+autogen/lex.o: autogen/lex.c 
 	$(CC) $(CFLAGS_NOWARN) -c autogen/lex.c -o autogen/lex.o
 
 check: test
 .PHONY: check
 
 documentation: documentation/api
-.PHONY: documentation
 
-documentation/api: bin/anna 
-	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna
+documentation/api: bin/anna lib/*.anna $(ANNA_INTERNAL_BINDINGS)
+	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna && touch documentation/api
 
 test: bin/anna
 	time ./bin/anna_tests.sh
