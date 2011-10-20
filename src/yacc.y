@@ -57,16 +57,6 @@ static string_buffer_t anna_yacc_str_buff;
     }									\
     while (0)
 
-static wchar_t *enclose(wchar_t *in)
-{
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_append(&sb,L"__");
-    sb_append(&sb,in);
-    sb_append(&sb,L"__");
-    return sb_content(&sb);
-}
-
 static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
 {
     mpz_t res;
@@ -579,17 +569,13 @@ expression3 :
 expression4 :
 	expression4 op4 expression5
 	{
-	    anna_node_t *enc = (anna_node_t *)anna_node_create_identifier(
-		&$2->location, 
-		enclose(((anna_node_identifier_t *)$2)->name));
-	    
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
 		    anna_node_create_call2(
 			&@$, 
 			anna_node_create_identifier(&@$, L"__memberGet__"),
-			$1, enc),
+			$1, $2),
 		    $3);
 	}
         | 
@@ -659,15 +645,13 @@ expression8:
 	|
 	'^' identifier expression9
 	{
-	    anna_node_identifier_t *id = (anna_node_identifier_t *)$2;
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
 		    &@$, 
 		    anna_node_create_call2(
 			&@$, 
 			anna_node_create_identifier(&@2, L"__memberGet__"),
-			$3, 
-			anna_node_create_identifier(&id->location,enclose(id->name))));
+			$3, $2));
 	}
 	| 
 	expression9 post_op8

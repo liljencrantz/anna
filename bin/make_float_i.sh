@@ -42,37 +42,38 @@ init="
 init="$init
 "
 
-for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1 - v2" "mul v1 * v2" "div v1 / v2" "exp pow(v1, v2)"; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
+for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__decreaseAssign__ v1 - v2" "__mul__ v1 * v2" "__div__ v1 / v2" "exp pow(v1, v2)"; do
+    external_name=$(echo "$i"|cut -f 1 -d ' ')
+    name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     mmid = anna_member_create_native_method(
-	float_type, anna_mid_get(L\"__${name}__Float__\"), 0,
+	float_type, anna_mid_get(L\"${external_name}Float__\"), 0,
 	&anna_float_i_${name}, 
 	float_type,
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"__${name}__\");
+    anna_function_alias_add(fun, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
-        float_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
+        float_type, anna_mid_get(L\"${external_name}Int__\"), 0, 
 	&anna_float_i_int_${name}, 
 	float_type,
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"__${name}__\");
+    anna_function_alias_add(fun, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
-	float_type, anna_mid_get(L\"__${name}__IntReverse__\"), 0, 
+	float_type, anna_mid_get(L\"${external_name}IntReverse__\"), 0, 
 	&anna_float_i_int_reverse_${name}, 
 	float_type,
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(float_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_reverse_add(fun, L\"__${name}__\");
+    anna_function_alias_reverse_add(fun, L\"${external_name}\");
 
 "
 
@@ -117,13 +118,14 @@ done
 init="$init
 "
 
-for i in "abs fabs(v)" "neg -v" "sign (v==0.0?0.0:(v>0?1.0:-1.0))"; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
+for i in "abs fabs(v)" "__neg__ -v" "sign (v==0.0?0.0:(v>0?1.0:-1.0))"; do
+    external_name=$(echo "$i"|cut -f 1 -d ' ')
+    name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     mmid = anna_member_create_native_method(
-	float_type, anna_mid_get(L\"__${name}__\"), 0, 
+	float_type, anna_mid_get(L\"${external_name}\"), 0, 
 	&anna_float_i_${name}, 
 	float_type,
 	1, argv, argn, 0, 0);

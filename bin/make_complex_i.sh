@@ -56,56 +56,57 @@ init="
 init="$init
 "
 
-for i in "add v1 + v2" "increaseAssign v1 + v2" "sub v1 - v2" "decreaseAssign v1 - v2" "mul v1 * v2" "div v1 / v2" "exp cpow(v1, v2)"; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
+for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__decreaseAssign__ v1 - v2" "__mul__ v1 * v2" "__div__ v1 / v2" "exp cpow(v1, v2)"; do
+    external_name=$(echo "$i"|cut -f 1 -d ' ')
+    name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
 
     mmid = anna_member_create_native_method(
-	complex_type, anna_mid_get(L\"__${name}__Complex__\"), 0,
+	complex_type, anna_mid_get(L\"${external_name}Complex__\"), 0,
 	&anna_complex_i_${name}, 
 	complex_type,
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"__${name}__\");
+    anna_function_alias_add(fun, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
-        complex_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
+        complex_type, anna_mid_get(L\"${external_name}Int__\"), 0, 
 	&anna_complex_i_int_${name}, 
 	complex_type,
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"__${name}__\");
+    anna_function_alias_add(fun, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
-	complex_type, anna_mid_get(L\"__${name}__Float__\"), 0, 
+	complex_type, anna_mid_get(L\"${external_name}Float__\"), 0, 
 	&anna_complex_i_float_${name}, 
 	complex_type,
 	2, f_argv, f_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"__${name}__\");
+    anna_function_alias_add(fun, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
-        complex_type, anna_mid_get(L\"__${name}__IntReverse__\"), 0, 
+        complex_type, anna_mid_get(L\"${external_name}IntReverse__\"), 0, 
 	&anna_complex_i_int_reverse_${name}, 
 	complex_type,
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_reverse_add(fun, L\"__${name}__\");
+    anna_function_alias_reverse_add(fun, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
-	complex_type, anna_mid_get(L\"__${name}__FloatReverse__\"), 0, 
+	complex_type, anna_mid_get(L\"${external_name}FloatReverse__\"), 0, 
 	&anna_complex_i_float_reverse_${name}, 
 	complex_type,
 	2, f_argv, f_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_reverse_add(fun, L\"__${name}__\");
+    anna_function_alias_reverse_add(fun, L\"${external_name}\");
 
 "
 
@@ -177,13 +178,14 @@ done
 init="$init
 "
 
-for i in "neg -v" "sqrt csqrt(v)" "tan ctan(v)" "atan catan(v)" "sin csin(v)" "cos ccos(v)" "ln clog(v)" ; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
+for i in "__neg__ -v" "sqrt csqrt(v)" "tan ctan(v)" "atan catan(v)" "sin csin(v)" "cos ccos(v)" "ln clog(v)" ; do
+    external_name=$(echo "$i"|cut -f 1 -d ' ')
+    name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     mmid = anna_member_create_native_method(
-	complex_type, anna_mid_get(L\"__${name}__\"), 0, 
+	complex_type, anna_mid_get(L\"${external_name}\"), 0, 
 	&anna_complex_i_${name}, 
 	complex_type,
 	1, argv, argn, 0, 0);
@@ -201,12 +203,13 @@ ANNA_VM_NATIVE(anna_complex_i_$name, 1)
 done
 
 for i in "abs cabs(v)" ; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
+    external_name=$(echo "$i"|cut -f 1 -d ' ')
+    name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     mmid = anna_member_create_native_method(
-	complex_type, anna_mid_get(L\"__${name}__\"), 0, 
+	complex_type, anna_mid_get(L\"${external_name}\"), 0, 
 	&anna_complex_i_${name}, 
 	float_type,
 	1, argv, argn, 0, 0);

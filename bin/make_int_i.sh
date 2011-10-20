@@ -25,19 +25,20 @@ init="
     anna_function_t *fun;
 "
 
-for i in "add mpz_add(res, *v1, *v2)" "increaseAssign mpz_add(res, *v1, *v2)" "sub mpz_sub(res, *v1, *v2)" "decreaseAssign mpz_sub(res, *v1, *v2)" "mul mpz_mul(res, *v1, *v2)"  "div mpz_fdiv_q(res, *v1, *v2)" "mod mpz_mod(res, *v1, *v2)" "bitand mpz_and(res, *v1, *v2)" "bitor mpz_ior(res, *v1, *v2)" "bitxor mpz_xor(res, *v1, *v2)" "exp mpz_pow_ui(res, *v1, mpz_get_si(*v2))" "shl long bits = mpz_get_si(*v2); if(bits > 0) mpz_mul_2exp(res, *v1, bits); else mpz_tdiv_q_2exp(res, *v1, -bits)" "shr long bits = mpz_get_si(*v2); if(bits > 0) mpz_tdiv_q_2exp(res, *v1, bits); else mpz_mul_2exp(res, *v1, -bits)" ; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
+for i in "__add__ mpz_add(res, *v1, *v2)" "__increaseAssign__ mpz_add(res, *v1, *v2)" "__sub__ mpz_sub(res, *v1, *v2)" "__decreaseAssign__ mpz_sub(res, *v1, *v2)" "__mul__ mpz_mul(res, *v1, *v2)"  "__div__ mpz_fdiv_q(res, *v1, *v2)" "mod mpz_mod(res, *v1, *v2)" "bitand mpz_and(res, *v1, *v2)" "bitor mpz_ior(res, *v1, *v2)" "bitxor mpz_xor(res, *v1, *v2)" "exp mpz_pow_ui(res, *v1, mpz_get_si(*v2))" "shl long bits = mpz_get_si(*v2); if(bits > 0) mpz_mul_2exp(res, *v1, bits); else mpz_tdiv_q_2exp(res, *v1, -bits)" "shr long bits = mpz_get_si(*v2); if(bits > 0) mpz_tdiv_q_2exp(res, *v1, bits); else mpz_mul_2exp(res, *v1, -bits)" ; do
+    external_name=$(echo "$i"|cut -f 1 -d ' ')
+    name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     mmid = anna_member_create_native_method(
-	int_type, anna_mid_get(L\"__${name}__Int__\"), 0, 
+	int_type, anna_mid_get(L\"${external_name}Int\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
-    anna_function_alias_add(fun, L\"__${name}__\");
     fun->flags |= ANNA_FUNCTION_PURE;
+    anna_function_alias_add(fun, L\"${external_name}\");
 "
 
     echo "
@@ -102,13 +103,14 @@ done
 
 init="$init
 "
-for i in "abs mpz_abs(res, *v1)" "neg mpz_neg(res, *v1)" "sign mpz_set_si(res, mpz_sgn(*v1))" ; do
-    name=$(echo "$i"|cut -f 1 -d ' ')
+for i in "abs mpz_abs(res, *v1)" "__neg__ mpz_neg(res, *v1)" "sign mpz_set_si(res, mpz_sgn(*v1))" ; do
+    external_name=$(echo "$i"|cut -f 1 -d ' ')
+    name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
     
     init="$init
     mmid = anna_member_create_native_method(
-	int_type, anna_mid_get(L\"__${name}__\"), 0, 
+	int_type, anna_mid_get(L\"${external_name}\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	1, argv, argn, 0, 0);

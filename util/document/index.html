@@ -1471,14 +1471,15 @@ print(a ^bitand b);
 	    The above example shows usage of
 	    the <code class="anna-code">^bitand</code> generic
 	    operator of the Int class, which will perform a bitwise
-	    and operation. To define your own generic operator, simply
-	    define a method named like the operator, but enclosed
-	    within double underscores. An example:
+	    and operation. These «generic operators» are actually just
+	    a different syntax for calling a method with one
+	    parameter.  To define your own generic operator, simply
+	    define a method named like the operator. An example:
 	  </p>
 	  <pre class="anna-code">
 type Color
 {
-    function __blend__(Float alpha)
+    function blend(Float alpha)
     {
 	...
     }
@@ -1571,7 +1572,7 @@ col ^blend 0.1;
 		</td>
 		<td>
 		  <code class="anna-code">
-		    __xxx__
+		    xxx
 		  </code>
 		</td>
 		<td>
@@ -1954,6 +1955,69 @@ someFunctionCall(arg1, arg2);
 
 literal := ["first", "second"];
 	  </pre>
+	  
+	  <h2><a name="design-naming">Naming of variables and types</a></h2>
+	  <p>
+	    Anna names may only contain the latin letters a-z in lower
+	    and upper case as well as underscores and numbers.
+	  </p>
+	  <p>
+	    Variable and constant names <em>must</em> have a lower
+	    case letter as the first non-underscore letter,
+	    like <code class="anna-code">desertSpoon</code>
+	    or <code class="anna-code">_giantBanana</code>. Type names
+	    <em>must</em> have an upper case letter as the first
+	    non-underscore letter,
+	    like <code class="anna-code">CrispyBacon</code>
+	    or <code class="anna-code">_VeganApplePie</code>. The
+	    reason for enforcing this is that it makes it
+	    significantly easier to write an Anna parser.
+	  </p>
+	  <p>
+	    In addition, the following conventions exist in regards to
+	    naming:
+	  </p>
+	  <ul>
+	    <li>
+	      All names, both type names, variable names, module names
+	      and constants should use CamelCase. Underscore should
+	      never be used to separate words.
+	    </li>
+	    <li>
+	      Neither constants nor private members have special
+	      naming conventions.
+	    </li>
+	    <li>
+	      Names beginning and ending with a double underscore,
+	      like <code class="anna-code">__someName__</code>, are
+	      reserved by the implementation. You can override these
+	      where it makes sense, e.g. implementing a new type that
+	      has an <code class="anna-code">__add__</code> member in
+	      order to allow the use of
+	      the <code class="anna-code">+</code> operator, but you
+	      should never make up new names in this namespace.
+	    </li>
+	    <li>
+	      Variables used in larger pieces of code should have
+	      clear, descriptive names, preferably without
+	      abbreviations,
+	      like <code class="anna-code">documentationFragment</code>, <code class="anna-code">callingFunction</code>
+	      or <code class="anna-code">memberAttribute</code>.
+	    </li>
+	    <li>
+	      Variables local to a specific function, especially if
+	      their useage is reasonably clear, should have short
+	      names
+	      like <code class="anna-code">doc</code>, <code class="anna-code">fun</code>
+	      or <code class="anna-code">attr</code>.
+	    </li>
+	    <li>
+	      Avoid using single letter names for anything other than
+	      loop variables. (The <code class="anna-code">e</code>
+	      constant in the <code class="anna-code">math</code>
+	      module is an exception to this rule)
+	    </li>
+	  </ul>
 	  <h2><a name="design-caveats">Caveats - no language is perfect</a></h2>
 	  <p>
 	    The «Easy to parse» design constraint has unfortunatly led

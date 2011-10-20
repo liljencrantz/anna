@@ -169,7 +169,7 @@ documentation: documentation/api
 documentation/api: bin/anna 
 	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna
 
-test: all
+test: bin/anna
 	time ./bin/anna_tests.sh
 .PHONY: test
 
