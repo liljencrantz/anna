@@ -16,6 +16,9 @@ Installing on Debian-like systems, including Ubuntu
 sudo apt-get install gcc bison flex libgmp3-dev make
 make -s && sudo make install
 
+This will install the anna binary in /usr/local/bin, and the
+documentation in /usr/local/share/doc/anna/index.html.
+
 Installing on RedHat-like systems, including Fedora
 
 TODO

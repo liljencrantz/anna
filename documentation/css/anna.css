@@ -121,9 +121,10 @@ a:visited
 
 .anna-code-popup-close
 {
+    margin: -1em;
     float: right;
     display: block;
-    padding: 0.5em;
+    padding: 0.7em 0.95em;
 }
 
 .anna-code-popup-close:hover
