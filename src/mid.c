@@ -24,11 +24,6 @@ size_t anna_mid_max_get()
     return anna_type_mid_max;
 }
 
-anna_member_t **anna_mid_identifier_create()
-{
-    return calloc(1,anna_type_mid_max*sizeof(anna_member_t *) );
-}
-
 void anna_mid_init()
 {
     al_init(&anna_mid_identifier_reverse);
@@ -145,10 +140,10 @@ static void anna_mid_put(wchar_t *name, mid_t mid)
     al_set(&anna_mid_identifier_reverse, mid, name);
 }
 
-size_t anna_mid_get_count()
-{
-    return anna_type_mid_max;
-}
+//size_t anna_mid_get_count()
+//{
+//  return anna_type_mid_max;
+//}
 
 
 size_t anna_mid_get(wchar_t *name)
@@ -158,11 +153,11 @@ size_t anna_mid_get(wchar_t *name)
     {      
 
 	size_t gg = mid_pos++;
-	if( mid_pos >= anna_type_mid_max)
+/*	if( mid_pos >= anna_type_mid_max)
 	{
 	    anna_type_mid_max += 128;
 	    anna_type_reallocade_mid_lookup(anna_type_mid_max-128,anna_type_mid_max);
-	}
+	    }*/
 	anna_mid_put(name, gg);
 	return gg;
     }

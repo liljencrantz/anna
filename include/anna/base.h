@@ -209,6 +209,10 @@ struct anna_type
     */
     struct anna_stack_template *stack_macro;
     /**
+       The maximum offset in the mid_identifier array
+     */
+    size_t mid_count;
+    /**
        An array containing all member structs. The offset is a mid.
     */
     struct anna_member **mid_identifier;
@@ -368,7 +372,7 @@ struct anna_member
     /**
        The name of this member.
     */
-    wchar_t name[];
+    wchar_t *name;
 };
 
 /**
@@ -699,14 +703,18 @@ __cold void anna_function_type_print(
 static __pure inline anna_entry_t **anna_entry_get_addr(
     anna_object_t *obj, mid_t mid)
 {
-    
-    anna_member_t *m = obj->type->mid_identifier[mid];
-//    wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
-    
-    if(unlikely(!m)) 
+    if(mid >= obj->type->mid_count)
     {
 	return 0;
     }
+    anna_member_t *m = obj->type->mid_identifier[mid];
+    if(!m)
+    {
+	return 0;
+    }
+
+//    wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
+    
     if(m->is_static) {
 	return &obj->type->static_member[m->offset];
     } else {
@@ -752,8 +760,12 @@ static __pure inline anna_entry_t *anna_entry_get(
 static __pure inline anna_entry_t **anna_entry_get_addr_static(
     anna_type_t *type, mid_t mid)
 {
+    if(mid >= type->mid_count)
+    {
+	return 0;
+    }
     anna_member_t *m = type->mid_identifier[mid];
-    if(unlikely(!m)) 
+    if(!m)
     {
 	return 0;
     }

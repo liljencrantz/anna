@@ -106,14 +106,13 @@ static int hash_null_cmp( void *a, void *b )
 static void anna_null_type_create()
 {
     int i;
-    wchar_t *member_name = L"!null_member";
     anna_member_t *null_member;
-    null_member = calloc(1,sizeof(anna_member_t)+(sizeof(wchar_t*)*(1+wcslen(member_name))));
+    null_member = calloc(1,sizeof(anna_member_t));
     null_member->type = null_type;
     null_member->offset=0;
     null_member->is_static=1;
     null_member->is_property=1;
-    wcscpy(null_member->name, member_name);
+    null_member->name = anna_intern_static(L"!null_member");
     
     anna_type_t *argv[]={null_type};
     wchar_t *argn[]={L"this"};
@@ -131,7 +130,7 @@ static void anna_null_type_create()
     hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
     hash_put(&null_type->name_identifier, L"!null_member", null_member);
     
-    for(i=0; i<anna_mid_get_count();i++) {
+    for(i=0; i<null_type->mid_count;i++) {
 	null_type->mid_identifier[i] = null_member;
     }
     assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    

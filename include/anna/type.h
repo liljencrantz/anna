@@ -132,4 +132,10 @@ __cold void anna_type_close(anna_type_t *this);
  */
 __cold void anna_type_reseal(anna_type_t *this);
 
+/**
+   Ensure that the specified type has a mid_identifier table large
+   enough to store a member with the specified mid.
+ */
+void anna_type_ensure_mid(anna_type_t *type, mid_t mid);
+
 #endif

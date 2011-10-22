@@ -201,7 +201,9 @@ static anna_type_t *anna_type_create_internal(
 {
     anna_type_t *result = anna_alloc_type();
     hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
-    result->mid_identifier = anna_mid_identifier_create();
+    result->mid_identifier = calloc(1,ANNA_MID_FIRST_UNRESERVED*sizeof(anna_member_t *) );
+    result->mid_count = ANNA_MID_FIRST_UNRESERVED;
+    
     result->name = anna_intern(name);
     result->definition = definition;
     
@@ -439,6 +441,9 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     {
 	anna_type_copy_object(res);
     }
+    
+    anna_type_ensure_mid(res, orig->mid_count-1);
+        
     //wprintf(L"Copy type %ls into type %ls\n", orig->name, res->name);
     //anna_type_print(res);
     
@@ -831,7 +836,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     }
     anna_type_extend(type);    
     int i;
-    for(i=0; i<anna_mid_max_get(); i++)
+    for(i=0; i< type->mid_count; i++)
     {
 	anna_member_t *memb = type->mid_identifier[i];
 	if(memb && memb->is_static && memb->type != null_type)
@@ -1756,3 +1761,31 @@ void anna_type_reseal(anna_type_t *this)
     this->mark_type = anna_type_mark;    
 }
 
+void anna_type_ensure_mid(anna_type_t *type, mid_t mid)
+{
+    
+    if(type->mid_count <= mid)
+    {
+	size_t old_sz = type->mid_count;
+	size_t new_sz = ((mid/16)+2)*16;
+	type->mid_identifier = realloc(type->mid_identifier, new_sz* sizeof(anna_member_t *));
+	size_t i;
+	for(i=old_sz; i<new_sz; i++)
+	{
+	    type->mid_identifier[i] = 0;
+	}	
+	type->mid_count = new_sz;
+
+	if(null_type->mid_count <= mid)
+	{
+	    old_sz = null_type->mid_count;
+	    null_type->mid_identifier = realloc(null_type->mid_identifier, new_sz*sizeof(anna_member_t *));
+	    for(i=old_sz; i<new_sz; i++)
+	    {
+		null_type->mid_identifier[i] = null_type->mid_identifier[0];
+	    }
+	    null_type->mid_count = new_sz;
+	}
+    }
+    
+}

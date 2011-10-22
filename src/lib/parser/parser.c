@@ -57,11 +57,16 @@ void anna_node_wrapper_add_method(anna_function_t *fun)
     for(i=0; i<ANNA_NODE_TYPE_COUNT; i++)
     {
 	anna_type_t *type = anna_node_type_mapping[i];
-
-	if(type && !type->mid_identifier[mid])
+	
+	if(type)
 	{
-	    anna_member_create_method(type, anna_mid_get(fun->name), fun);
+	    anna_type_ensure_mid(type, mid);
+	    if(!type->mid_identifier[mid])
+	    {
+		anna_member_create_method(type, anna_mid_get(fun->name), fun);
+	    }
 	}
+	
     }
 
     anna_member_create_method(node_type, anna_mid_get(fun->name), fun);

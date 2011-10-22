@@ -416,7 +416,7 @@ static void anna_alloc_free(void *obj)
 	    
 	    if(obj != null_type)
 	    {
-		for(i=0; i<anna_mid_max_get(); i++)
+		for(i=0; i<o->mid_count; i++)
 		{
 		    anna_member_t *memb = o->mid_identifier[i];
 		    if(!memb)

@@ -82,23 +82,13 @@ mid_t anna_member_create(
 		name, type->name);
 	CRASH;
     }
+
+    anna_type_ensure_mid(type, mid);
     
-    anna_member_t * member = calloc(1,sizeof(anna_member_t) + sizeof(wchar_t) * (wcslen(name)+1));
     
-    wcscpy(member->name, name);
-    if (mid == -1) {
-	mid = anna_mid_get(name);
-    }
-    else 
-    {
-	if(mid != anna_mid_get(name))
-	{
-	    wprintf(
-		L"Critical: Multiple mids for name %ls: %d and %d\n", 
-		name, mid, anna_mid_get(name));
-	    CRASH;
-	}
-    }
+    anna_member_t * member = calloc(1,sizeof(anna_member_t));
+    
+    member->name = anna_intern(name);
     
     member->type = member_type;
     member->is_static = !!(storage & ANNA_MEMBER_STATIC);
@@ -175,6 +165,11 @@ mid_t anna_member_create_blob(
 
 anna_member_t *anna_member_get(anna_type_t *type, mid_t mid)
 {
+    if(mid >= type->mid_count)
+    {
+	return 0;
+    }
+    
     return type->mid_identifier[mid];
 }
 

@@ -13,8 +13,5 @@ size_t anna_mid_get(wchar_t *name);
    Returns the name associated with the specified mid value.
  */
 wchar_t *anna_mid_get_reverse(mid_t mid);
-size_t anna_mid_max_get(void);
-anna_member_t **anna_mid_identifier_create(void);
-size_t anna_mid_get_count(void);
 
 #endif

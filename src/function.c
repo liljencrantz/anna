@@ -36,7 +36,11 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 	    L"Critical: Tried to unwrap object with no type\n");
 	CRASH;
     }
-
+    if(obj->type->mid_count <= ANNA_MID_FUNCTION_WRAPPER_PAYLOAD)
+    {
+	return 0;
+    }
+    
     anna_member_t *m = obj->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];
     if(unlikely(!(long)m))
     {
