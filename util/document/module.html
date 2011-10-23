@@ -13,7 +13,7 @@
     <div class="anna-content">
       <div class="anna-main">
 	<div class="anna-main-inner">
-    <h1>Namespace <%! data.linkPath() %></h1>
+    <h1><a name="api-overview">Namespace <%! data.linkPath() %></a></h1>
 
     <%! extractDocumentation(module.attribute) or ""%>
     
@@ -21,7 +21,7 @@
        if(submodule.count > 0)
        {
     %>
-    <h2>Submodules</h2>
+    <h2><a name="api-submodules">Submodules</a></h2>
     <ul>
     <% 
        submodule.each(mem)
@@ -39,7 +39,7 @@
        if(subtype.count > 0)
        {
     %>
-    <h2>Types</h2>
+    <h2><a name="api-types">Types</a></h2>
     <ul>
     <% 
         subtype.each(mem)
@@ -58,7 +58,7 @@
        if(subother.count > 0)
        {
     %>
-    <h2>Other members</h2>
+    <h2><a name="api-other">Other members</a></h2>
     <ul>
     <% 
        subother.each(mem)
