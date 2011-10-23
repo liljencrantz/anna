@@ -93,16 +93,6 @@ const static anna_type_data_t anna_lang_type_data[] =
     { &buffer_type, L"Buffer" },
 };
 
-static int hash_null_func( void *data )
-{
-    return 0;
-}
-
-static int hash_null_cmp( void *a, void *b )
-{
-    return 1;
-}
-
 static void anna_null_type_create()
 {
     int i;
@@ -127,8 +117,6 @@ static void anna_null_type_create()
 		&anna_vm_null_function, 
 		null_type, 1, argv, argn, 0, 0));
     null_type->static_member[0]= (anna_entry_t *)null_function;
-    hash_init(&null_type->name_identifier, &hash_null_func, &hash_null_cmp);
-    hash_put(&null_type->name_identifier, L"!null_member", null_member);
     
     for(i=0; i<null_type->mid_count;i++) {
 	null_type->mid_identifier[i] = null_member;

@@ -24,20 +24,15 @@ ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 	return anna_from_obj(lst);
     }
     
-    wchar_t **member_name = malloc(sizeof(wchar_t *)*hash_get_count(&type->name_identifier));
-    anna_type_get_member_names(type, member_name);
-    for(i=0;i<hash_get_count(&type->name_identifier); i++)
+    for(i=0;i<anna_type_get_member_count(type); i++)
     {
 	anna_object_t *memb_obj = anna_member_wrap(
 		type,
-		anna_type_member_info_get(
-		    type,
-		    member_name[i]));	
+		anna_type_get_member_idx(type, i));
 	
 	anna_list_add(
 	    lst,
 	    anna_from_obj(memb_obj));
-	
     }
     
     return anna_from_obj(lst);

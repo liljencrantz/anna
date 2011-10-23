@@ -430,7 +430,6 @@ static void anna_alloc_free(void *obj)
 		free(o->static_member);
 	    }
 	    
-	    hash_destroy(&o->name_identifier);
 	    free(o->mid_identifier);
 	    
 	    anna_alloc_count -= sizeof(anna_type_t);

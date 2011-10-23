@@ -126,20 +126,18 @@ static int anna_abides_fault_count_internal(
     */
     //debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
     //debug(D_ERROR,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
-    wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&role_model->name_identifier));
-    anna_type_get_member_names(role_model, members);    
-    
-    for(i=0; i<hash_get_count(&role_model->name_identifier); i++)
+        
+    for(i=0; i<anna_type_get_member_count(role_model); i++)
     {
-	assert(members[i]);
-	if(wcscmp(members[i], L"__init__") == 0)
+	anna_member_t *r_memb = anna_type_get_member_idx(
+	    role_model, 
+	    i);
+	if(wcscmp(r_memb->name, L"__init__") == 0)
 	    continue;
+
 	anna_member_t *c_memb = anna_member_get(
 	    contender, 
-	    anna_mid_get(members[i]));	
-	anna_member_t *r_memb = anna_member_get(
-	    role_model, 
-	    anna_mid_get(members[i]));
+	    anna_mid_get(r_memb->name));	
 	int ok=1;
 	if(!c_memb)
 	{
@@ -148,7 +146,7 @@ static int anna_abides_fault_count_internal(
 */
 //	    if(verbose)
 	    if(verbose)
-		debug(verbose, L"No member named %ls\n", members[i]);
+		debug(verbose, L"No member named %ls\n", r_memb->name);
 	}
 	else if(r_memb->is_bound_method != c_memb->is_bound_method)
 	{
@@ -157,12 +155,12 @@ static int anna_abides_fault_count_internal(
 */
 //	    if(verbose)
 	    if(verbose)
-		debug(verbose, L"Miss on %ls because of one is a method and not the other\n", members[i]);
+		debug(verbose, L"Miss on %ls because of one is a method and not the other\n", r_memb->name);
 	}
 	else if(r_memb->is_static != c_memb->is_static)
 	{
 	    if(verbose)
-		debug(verbose, L"Miss on %ls because of one is static and not the other\n", members[i]);
+		debug(verbose, L"Miss on %ls because of one is static and not the other\n", r_memb->name);
 	    ok=0;
 	}
 	else if(r_memb->is_bound_method)
@@ -178,7 +176,7 @@ static int anna_abides_fault_count_internal(
 */
 //	    if(verbose)
 	    if(!ok && verbose)
-		debug(verbose, L"Miss on %ls because of method signature mismatch\n", members[i]);
+		debug(verbose, L"Miss on %ls because of method signature mismatch\n", r_memb->name);
 	}
 	else
 	{
@@ -188,12 +186,11 @@ static int anna_abides_fault_count_internal(
 */
 //	    if(verbose)
 	    if(!ok && verbose)
-		debug(verbose, L"Miss on %ls because of %ls\n", members[i], c_memb->type?L"incompatibility":L"missing member");
+		debug(verbose, L"Miss on %ls because of %ls\n", r_memb->name, c_memb->type?L"incompatibility":L"missing member");
 	}
 
 	res += !ok;
     }
-    free(members);
 /*
     if(level==1)
 	wprintf(L"%ls abides to %ls: %ls\n", contender->name, role_model->name, res==0?L"true": L"false");
@@ -235,20 +232,19 @@ void anna_type_intersect_into(
     
     hash_put(&anna_intersect_cache, tt, res);
     
-    wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&t2->name_identifier));
-    anna_type_get_member_names(t2, members);    
-    
-    for(i=0; i<hash_get_count(&t2->name_identifier); i++)
+    for(i=0; i<anna_type_get_member_count(t2); i++)
     {
-	if(wcscmp(members[i], L"__init__") == 0)
+
+	anna_member_t *memb2 = anna_type_get_member_idx(
+	    t2, 
+	    i);
+	int mid = anna_mid_get(memb2->name);
+	if(wcscmp(memb2->name, L"__init__") == 0)
 	    continue;
 
 	anna_member_t *memb1 = anna_member_get(
 	    t1, 
-	    anna_mid_get(members[i]));	
-	anna_member_t *memb2 = anna_member_get(
-	    t2, 
-	    anna_mid_get(members[i]));
+	    mid);
 	if(!memb1)
 	{
 //	    wprintf(L"Skip %ls\n", members[i]);
@@ -355,7 +351,6 @@ void anna_type_intersect_into(
 	    }
 	}
     }
-    free(members);    
 
     if(!anna_abides(t1, res))
     {

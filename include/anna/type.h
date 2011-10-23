@@ -13,6 +13,7 @@
 #define ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS (8192*2)
 #define ANNA_TYPE_CLOSED (8192*4)
 
+
 /**
   Return the anna_type_t contained in the specified anna_type_t.wrapper
  */
@@ -30,11 +31,21 @@ anna_type_t *anna_type_stack_create(wchar_t *name, anna_stack_template_t *stack)
 
 void anna_type_copy(anna_type_t *dst, anna_type_t *src);
 
-void anna_type_get_member_names(anna_type_t *type, wchar_t **dest);
+static inline size_t anna_type_get_member_count(anna_type_t *type)
+{
+    return al_get_count(&type->member_list);
+}
+
+static inline anna_member_t *anna_type_get_member_idx(anna_type_t *type, int idx)
+{
+    return al_get(&type->member_list, idx);
+}
 
 void anna_type_print(anna_type_t *type);
 
 anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name);
+
+int anna_type_member_idx(anna_type_t *type, wchar_t *name);
 
 size_t anna_type_member_count(anna_type_t *type);
 

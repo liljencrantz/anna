@@ -11,25 +11,22 @@
 #include "anna/alloc.h"
 #include "anna/vm.h"
 #include "anna/mid.h"
-
-static void anna_object_print_member(void *key_ptr,void *val_ptr, void *aux_ptr)
-{
-    wchar_t *key = (wchar_t *)key_ptr;
-    anna_member_t *member = (anna_member_t *)val_ptr;
-    //anna_object_t *obj = (anna_object_t *)aux_ptr;
-    //anna_object_t *value = member->is_static?obj->type->static_member[member->offset]:obj->member[member->offset];
-    wprintf(
-	L"  mid %d, name %ls: Type, %ls. %ls.\n", 
-	anna_mid_get(key),
-	key, 
-	member->type?member->type->name:L"?",
-	member->is_static?L"Static":L"Not static");
-}
+#include "anna/type.h"
 
 void anna_object_print(anna_object_t *obj)
 {
     wprintf(L"%ls:\n", obj->type->name);
-    hash_foreach2(&obj->type->name_identifier, &anna_object_print_member, obj);
+    int i;
+    for(i=0; i<anna_type_get_member_count(obj->type); i++)
+    {
+	anna_member_t *member = anna_type_get_member_idx(obj->type, i);
+	wprintf(
+	    L"  mid %d, name %ls: Type, %ls. %ls.\n", 
+	    anna_mid_get(member->name),
+	    member->name, 
+	    member->type?member->type->name:L"?",
+	    member->is_static?L"Static":L"Not static");	
+    }
 }
 
 anna_object_t *anna_object_create(anna_type_t *type) {

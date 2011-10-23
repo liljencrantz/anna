@@ -200,7 +200,6 @@ static anna_type_t *anna_type_create_internal(
     wchar_t *name, anna_node_call_t *definition)
 {
     anna_type_t *result = anna_alloc_type();
-    hash_init(&result->name_identifier, &hash_wcs_func, &hash_wcs_cmp);
     result->mid_identifier = calloc(1,ANNA_MID_FIRST_UNRESERVED*sizeof(anna_member_t *) );
     result->mid_count = ANNA_MID_FIRST_UNRESERVED;
     
@@ -264,27 +263,20 @@ static void add_member(void *key, void *value, void *aux)
     (*dest)++;
 }
 
-void anna_type_get_member_names(anna_type_t *type, wchar_t **dest)
-{
-    hash_foreach2(&type->name_identifier, &add_member, &dest);
-}
-
 void anna_type_print(anna_type_t *type)
 {
     int i;
     wprintf(L"Type %ls:\n", type->name);
-    wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&type->name_identifier));
-    anna_type_get_member_names(type, members);    
-    for(i=0; i< hash_get_count(&type->name_identifier); i++)
+
+    for(i=0; i< anna_type_get_member_count(type); i++)
     {
-	assert(members[i]);
-	anna_member_t *member = anna_type_member_info_get(type, members[i]);
+	anna_member_t *member = anna_type_get_member_idx(type, i);
 	assert(member);
 	if(member->is_property)
 	{
 	    wprintf(
 		L"\tproperty %ls %ls setter: %d, getter: %d\n",
-		member->type->name, members[i], 
+		member->type->name, member->name, 
 		member->setter_offset,
 		member->getter_offset);
 	}
@@ -292,7 +284,7 @@ void anna_type_print(anna_type_t *type)
 	{
 	    wprintf(
 		L"\tmethod %ls: type: %ls, static: %ls, property: %ls, offset: %d\n",
-		members[i], member->type->name, 
+		member->name, member->type->name, 
 		member->is_static?L"true":L"false",
 		member->is_property?L"true":L"false",
 		member->offset);
@@ -301,18 +293,16 @@ void anna_type_print(anna_type_t *type)
 	{
 	    wprintf(
 		L"\tvar %ls %ls, static: %ls, offset: %d\n",
-		member->type->name, members[i], 
+		member->type->name, member->name, 
 		member->is_static?L"true":L"false",
 		member->offset);
 	}
     }
-
-    free(members);
 }
 
 anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name)
 {
-    return (anna_member_t *)hash_get(&(type->name_identifier), name);
+    return anna_member_get(type, anna_mid_get(name));
 }
 
 size_t anna_type_member_count(anna_type_t *type)
@@ -356,23 +346,6 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
 	type->static_member_capacity = new_sz;
     }
     return type->static_member_count++;    
-}
-
-anna_type_t *anna_type_member_type_get(anna_type_t *type, wchar_t *name)
-{
-
-    assert(type);
-    assert(name);
-    
-    anna_member_t *m = (anna_member_t *)hash_get(&type->name_identifier, name);
-    if(!m)
-    {
-	return 0;
-    }
-    
-    assert(m->type);
-    
-    return m->type;
 }
 
 int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
@@ -537,9 +510,9 @@ static void anna_type_prepare_member_internal(
     anna_node_declare_t *decl,
     anna_stack_template_t *stack)
 {
-    if(hash_contains(
-	   &type->name_identifier,
-	   decl->name))
+    if(anna_member_get(
+	   type,
+	   anna_mid_get(decl->name)))
     {
 //	wprintf(L"Skip %ls\n", decl->name);
 	return;
@@ -613,9 +586,9 @@ static void anna_type_prepare_property(
 	return;
     }
     
-    if(hash_contains(
-	   &type->name_identifier,
-	   decl->name))
+    if(anna_member_get(
+	   type,
+	   anna_mid_get(decl->name)))
     {
 	return;
     }

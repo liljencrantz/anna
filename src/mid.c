@@ -19,11 +19,6 @@ void anna_mid_destroy(void)
     hash_destroy(&anna_mid_identifier);
 }
 
-size_t anna_mid_max_get()
-{
-    return anna_type_mid_max;
-}
-
 void anna_mid_init()
 {
     al_init(&anna_mid_identifier_reverse);
@@ -139,12 +134,6 @@ static void anna_mid_put(wchar_t *name, mid_t mid)
     hash_put(&anna_mid_identifier, name, offset_ptr);   
     al_set(&anna_mid_identifier_reverse, mid, name);
 }
-
-//size_t anna_mid_get_count()
-//{
-//  return anna_type_mid_max;
-//}
-
 
 size_t anna_mid_get(wchar_t *name)
 {

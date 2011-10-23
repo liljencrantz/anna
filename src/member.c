@@ -63,7 +63,7 @@ mid_t anna_member_create(
 
     wchar_t *name = anna_mid_get_reverse(mid);
     
-    if(hash_get(&type->name_identifier, name))
+    if(anna_member_get(type, mid))
     {
 	if(type == type_type && wcscmp(name, L"!typeWrapperPayload")==0)
 	    return mid;
@@ -84,8 +84,7 @@ mid_t anna_member_create(
     }
 
     anna_type_ensure_mid(type, mid);
-    
-    
+        
     anna_member_t * member = calloc(1,sizeof(anna_member_t));
     
     member->name = anna_intern(name);
@@ -108,8 +107,6 @@ mid_t anna_member_create(
     }
     
     type->mid_identifier[mid] = member;
-    hash_put(&type->name_identifier, member->name, member);
-    
 //    wprintf(L"Create member named %ls to type %ls\n", name, type->name);
         
     anna_type_calculate_size(type);
@@ -181,15 +178,15 @@ anna_member_t *anna_member_method_search(
 {
     debug(D_SPAM, L"SEARCH for match to %ls in type %ls\n", anna_mid_get_reverse(mid), type->name);
     int i;
-    wchar_t **members = calloc(sizeof(wchar_t *), hash_get_count(&type->name_identifier));
+
     wchar_t *alias_name = anna_mid_get_reverse(mid);
-    anna_type_get_member_names(type, members);    
+    
     wchar_t *match=0;
     int fault_count=0;
 
-    for(i=0; i<hash_get_count(&type->name_identifier); i++)
+    for(i=0; i<anna_type_get_member_count(type); i++)
     {
-	anna_member_t *member = anna_member_get(type, anna_mid_get(members[i]));
+	anna_member_t *member = anna_type_get_member_idx(type, i);
 //	debug(D_ERROR, L"Check %ls %d %d %ls\n", members[i],
 //	      member->is_static, member->offset, member->type->name);
 	if(member->is_static && member->offset>=0 && member->type != null_type)
@@ -206,7 +203,7 @@ anna_member_t *anna_member_method_search(
 		member->type);
 	    
 	    int has_alias = is_reverse ? anna_function_has_alias_reverse(mem_fun, alias_name):anna_function_has_alias(mem_fun, alias_name);
-	    has_alias |= (!is_reverse && wcscmp(members[i], alias_name)==0);
+	    has_alias |= (!is_reverse && wcscmp(member->name, alias_name)==0);
 	    
 	    if(has_alias)
 	    {
@@ -250,7 +247,7 @@ anna_member_t *anna_member_method_search(
 		    
 		    if(!match || my_fault_count < fault_count)
 		    {
-			match = members[i];
+			match = member->name;
 			fault_count = my_fault_count;
 		    }
 		}
@@ -266,7 +263,6 @@ anna_member_t *anna_member_method_search(
     {
 	debug(D_SPAM, L"Match: %ls\n", match);
     }
-    free(members);
     
     return match ? anna_member_get(type, anna_mid_get(match)):0;
     
@@ -395,19 +391,13 @@ mid_t anna_member_create_method(
     mid_t mid,
     anna_function_t *method)
 {
-    wchar_t *name = anna_mid_get_reverse(mid);
-    if(hash_get(&type->name_identifier, name))
+    if(!anna_member_get(type, mid))
     {
-	mid = anna_mid_get(name);
-    }
-    else
-    {
-	mid = 
-	    anna_member_create(
-		type,
-		mid,
-		1,
-		anna_function_wrap(method)->type);
+	anna_member_create(
+	    type,
+	    mid,
+	    1,
+	    anna_function_wrap(method)->type);
     }
     
     anna_member_t *m = type->mid_identifier[mid];
@@ -539,6 +529,7 @@ void anna_member_document(
     mid_t mid,
     wchar_t *doc)
 {
+
     anna_entry_t ** e = anna_entry_get_addr_static(type, mid);
     if(e)
     {
@@ -549,18 +540,22 @@ void anna_member_document(
 	    return;
 	}
     }
-    
+
     anna_member_t *memb = anna_member_get(type, mid);
+ 
     if(memb)
     {
 	anna_node_call_t *attr = anna_node_create_call2(
 	    0,
 	    anna_node_create_identifier(0, L"doc"),
 	    anna_node_create_string_literal(0, wcslen(doc), doc));
-	if(!memb->attribute)
-	{
-	    memb->attribute = anna_node_create_block2(0);
-	}
-	anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+       if(!memb->attribute)
+       {
+           memb->attribute = anna_node_create_block2(0);
+       }
+       anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+       
+//	al_push(&memb->doc, doc);
     }
+    
 }

@@ -187,11 +187,6 @@ struct anna_type
     */
     size_t static_member_capacity;
     /**
-       A mapping from a variable name to a anna_member struct
-       containing information on a specific member.
-    */
-    hash_table_t name_identifier;
-    /**
        A name for this type. A type does not inherently have one
        specific name, it can be renamed and copied just like any other
        variable. This name is here in order to provide better
@@ -373,6 +368,10 @@ struct anna_member
        The name of this member.
     */
     wchar_t *name;
+    /**
+       All documentation strings for this member 
+     */
+//    array_list_t doc;
 };
 
 /**
