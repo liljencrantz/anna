@@ -107,7 +107,9 @@ static int anna_abides_fault_count_internal(
 
     level++;
 
-    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), (void *)(long)ABIDES_IN_TRANSIT);
+    anna_tt_t *key = anna_tt_make(contender, role_model);
+    
+    hash_put(&anna_abides_cache, key, (void *)(long)ABIDES_IN_TRANSIT);
     
     size_t i;
     int res = 0;    
@@ -195,7 +197,7 @@ static int anna_abides_fault_count_internal(
     if(level==1)
 	wprintf(L"%ls abides to %ls: %ls\n", contender->name, role_model->name, res==0?L"true": L"false");
 */  
-    hash_put(&anna_abides_cache, anna_tt_make(contender, role_model), (void *)(long)(res+1));
+    hash_put(&anna_abides_cache, key, (void *)(long)(res+1));
     level--;
     
 
@@ -304,7 +306,14 @@ void anna_type_intersect_into(
 				res, 
 				anna_mid_get(
 				    memb2->name))));
-		
+/*		wprintf(
+		    L"FDASFDSA %ls.%ls %d\n",
+		    t1->name, memb2->name,
+		    anna_entry_get_static(
+			t1, 
+			anna_mid_get(
+			    memb2->name)));
+*/		
 		anna_function_t *ff1 = 
 		    anna_function_unwrap(
 			anna_as_obj_fast(
@@ -338,6 +347,8 @@ void anna_type_intersect_into(
 		    }
 		    
 		}
+		al_destroy(&alias);
+		
 	    }
 	}
 	else

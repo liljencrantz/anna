@@ -13,6 +13,7 @@
 #define ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS (8192*2)
 #define ANNA_TYPE_CLOSED (8192*4)
 
+extern int anna_type_object_created;
 
 /**
   Return the anna_type_t contained in the specified anna_type_t.wrapper

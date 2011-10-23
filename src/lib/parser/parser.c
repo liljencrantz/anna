@@ -107,7 +107,9 @@ ANNA_VM_NATIVE(anna_generate_identifier, 1)
 	free(ss);
     }
     
-    return anna_from_obj(anna_string_create(wcslen(nam), nam));
+    anna_entry_t *res = anna_from_obj(anna_string_create(wcslen(nam), nam));
+    free(nam);
+    return res;
 }
 
 ANNA_VM_NATIVE(anna_parse_i, 1)

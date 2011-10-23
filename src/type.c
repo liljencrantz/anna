@@ -36,7 +36,7 @@
 #include "src/mid.c"
 
 static array_list_t  anna_type_list = AL_STATIC;
-static int anna_type_object_created = 0;
+int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
 static hash_table_t anna_type_for_function_identifier;
 

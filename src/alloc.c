@@ -18,6 +18,7 @@
 #include "anna/lib/lang/string.h"
 #include "anna/lib/parser.h"
 #include "anna/mid.h"
+#include "anna/lib/reflection.h"
 #include "anna/type.h"
 #include "anna/use.h"
 #include "anna/slab.h"
@@ -482,6 +483,11 @@ static void anna_alloc_free(void *obj)
 		    free(n->child);
 		    break;
 		}
+		case ANNA_NODE_INT_LITERAL:
+		{
+		    anna_node_int_literal_t *n = (anna_node_int_literal_t *)o;
+		    mpz_clear(n->payload);
+		}
 	    }
 	    free(obj);
 	    break;
@@ -574,6 +580,7 @@ void anna_gc(anna_context_t *context)
     
     anna_alloc_mark_context(context);	
     anna_type_mark_static();    
+    anna_reflection_mark_static();    
     anna_list_mark_static();    
     anna_hash_mark_static();    
     anna_alloc_mark_object(null_object);

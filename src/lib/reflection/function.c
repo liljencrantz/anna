@@ -233,6 +233,8 @@ ANNA_VM_NATIVE(anna_function_type_i_static, 1)
     return null_entry;
 }
 
+static anna_type_t *anna_function_type_boring;
+
 static void anna_function_load(anna_stack_template_t *stack)
 {
     anna_type_t *res = function_type_base;
@@ -313,125 +315,186 @@ static void anna_function_load(anna_stack_template_t *stack)
 
 }
 
+static array_list_t anna_function_cloned = AL_STATIC;
+
+void anna_reflection_mark_static(void)
+{
+    int i;
+    for(i=0; i<al_get_count(&anna_function_cloned); i++)
+    {
+	anna_type_t *type = (anna_type_t *)al_get(&anna_function_cloned, i);
+	type->flags |= ANNA_USED;
+	if(type->wrapper)
+	{
+	    anna_alloc_mark_object(type->wrapper);
+	}
+	
+	if(type->attribute)
+	{
+	    anna_alloc_mark_node((anna_node_t *)type->attribute);
+	}
+    }
+}
+
+
 void anna_function_type_create(
     anna_function_type_t *key, 
     anna_type_t *res)
 {
     //anna_function_type_print(key);
+    int is_boring = !(key->flags & ANNA_FUNCTION_CONTINUATION) && !(key->flags & ANNA_FUNCTION_BOUND_METHOD);
     
-    if(base_constructed)
-	anna_type_copy(res, function_type_base);
+    if(is_boring && anna_function_type_boring)
+    {
+	anna_type_t *bbb = anna_function_type_boring;
+	res->object_size = bbb->object_size;	
+	res->member_count = bbb->member_count;
+	res->property_count = bbb->property_count;
+	res->static_member_count = bbb->static_member_count;
+	res->static_member_capacity = bbb->static_member_count;
+	res->static_member =
+	    realloc(
+		res->static_member, 
+		sizeof(anna_entry_t *)*res->static_member_capacity);
+	memcpy(
+	    res->static_member,
+	    bbb->static_member,
+	    sizeof(anna_entry_t *)*res->static_member_capacity);
+	res->stack = bbb->stack;
+	res->stack_macro = bbb->stack_macro;
+	res->mid_count = bbb->mid_count;
+	res->attribute = bbb->attribute;
+	free(res->mid_identifier);
+	res->mid_identifier =  bbb->mid_identifier;
+	res->member_list.arr = bbb->member_list.arr;
+	res->member_list.pos = bbb->member_list.pos;
+	res->member_list.size = bbb->member_list.size;
+	al_push(&anna_function_cloned, (void *)res);
+    }
     else
-	al_push(&types, res);
-    
-    anna_type_copy_object(res);
-    
-    anna_member_create(
-	res, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD,
-	ANNA_MEMBER_ALLOC, null_type);
-
-    anna_member_create(
-	res,
-	ANNA_MID_FUNCTION_WRAPPER_STACK,
-	ANNA_MEMBER_ALLOC,
-	null_type);
-    
-    anna_member_create(
-	res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD,
-	ANNA_MEMBER_STATIC, null_type);
-
-    if(key->flags & ANNA_FUNCTION_CONTINUATION)
     {
+	if(base_constructed)
+	    anna_type_copy(res, function_type_base);
+	else
+	    al_push(&types, res);
+	
+	anna_type_copy_object(res);
+	
 	anna_member_create(
-	    res, ANNA_MID_CONTINUATION_STACK,
+	    res, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD,
 	    ANNA_MEMBER_ALLOC, null_type);
 	
 	anna_member_create(
-	    res, ANNA_MID_CONTINUATION_STACK_COUNT,
-	    0, null_type);
+	    res,
+	    ANNA_MID_FUNCTION_WRAPPER_STACK,
+	    ANNA_MEMBER_ALLOC,
+	    null_type);
 	
 	anna_member_create(
-	    res, ANNA_MID_CONTINUATION_ACTIVATION_FRAME,
-	    ANNA_MEMBER_ALLOC, null_type);
+	    res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD,
+	    ANNA_MEMBER_STATIC, null_type);
 	
-	anna_member_create(
-	    res, ANNA_MID_CONTINUATION_CODE_POS,
-	    0, null_type);
-	
-	anna_member_create(
-	    res, ANNA_MID_CONTINUATION_CALL_COUNT,
-	    0, null_type);
-	
-	anna_member_create_native_property(
-	    res, anna_mid_get(L"callCount"),
-	    int_type,
-	    &anna_function_type_i_call_count,
-	    0,
-	    L"The number of times this continuation has been called.");
-
-	anna_type_t *v_argv[] = 
-	    {
-		res,
+	if(key->flags & ANNA_FUNCTION_CONTINUATION)
+	{
+	    anna_member_create(
+		res, ANNA_MID_CONTINUATION_STACK,
+		ANNA_MEMBER_ALLOC, null_type);
+	    
+	    anna_member_create(
+		res, ANNA_MID_CONTINUATION_STACK_COUNT,
+		0, null_type);
+	    
+	    anna_member_create(
+		res, ANNA_MID_CONTINUATION_ACTIVATION_FRAME,
+		ANNA_MEMBER_ALLOC, null_type);
+	    
+	    anna_member_create(
+		res, ANNA_MID_CONTINUATION_CODE_POS,
+		0, null_type);
+	    
+	    anna_member_create(
+		res, ANNA_MID_CONTINUATION_CALL_COUNT,
+		0, null_type);
+	    
+	    anna_member_create_native_property(
+		res, anna_mid_get(L"callCount"),
+		int_type,
+		&anna_function_type_i_call_count,
+		0,
+		L"The number of times this continuation has been called.");
+	    
+	    anna_type_t *v_argv[] = 
+		{
+		    res,
+		    string_type,
+		    object_type
+		}
+	    ;
+	    
+	    wchar_t *v_argn[]=
+		{
+		    L"this", L"key", L"value"
+		}
+	    ;
+	    
+	    anna_member_create_native_property(
+		res, anna_mid_get(L"trace"), 
 		string_type,
-		object_type
-	    }
-	;
-    
-	wchar_t *v_argn[]=
-	    {
-		L"this", L"key", L"value"
-	    }
-	;
-
-	anna_member_create_native_property(
-	    res, anna_mid_get(L"trace"), 
-	    string_type,
-	    &anna_function_type_trace,
-	    0, 0);
-
-	anna_member_create_native_method(
-	    res, anna_mid_get(L"__get__"), 0,
-	    &anna_function_type_i_get, object_type, 2, v_argv, v_argn, 0, 
-	    L"Returns the value of the local variable with the specified name.");
+		&anna_function_type_trace,
+		0, 0);
+	    
+	    anna_member_create_native_method(
+		res, anna_mid_get(L"__get__"), 0,
+		&anna_function_type_i_get, object_type, 2, v_argv, v_argn, 0, 
+		L"Returns the value of the local variable with the specified name.");
+	    
+	    anna_member_create_native_property(
+		res, anna_mid_get(L"dynamicFrame"),
+		res,
+		&anna_function_type_i_dynamic,
+		0,
+		L"The continuation of the dynamic scope (the caller) of this continuation.");
+	    
+	    anna_member_create_native_property(
+		res, anna_mid_get(L"staticFrame"),
+		res,
+		&anna_function_type_i_static,
+		0,
+		L"The continuation of the static scope of this continuation.");
+	    
+	    anna_member_create_native_property(
+		res, anna_mid_get(L"filename"),
+		imutable_string_type,
+		&anna_continuation_type_i_get_filename,
+		0,
+		L"The name of the file in which the function that this continuation points into was defined in.");
+	    
+	    anna_member_create_native_property(
+		res, anna_mid_get(L"line"),
+		int_type,
+		&anna_continuation_type_i_get_line,
+		0,
+		L"The line number of the code offset of the function that this continuation points into.");
+	    
+	}
 	
-	anna_member_create_native_property(
-	    res, anna_mid_get(L"dynamicFrame"),
-	    res,
-	    &anna_function_type_i_dynamic,
-	    0,
-	    L"The continuation of the dynamic scope (the caller) of this continuation.");
-
-	anna_member_create_native_property(
-	    res, anna_mid_get(L"staticFrame"),
-	    res,
-	    &anna_function_type_i_static,
-	    0,
-	    L"The continuation of the static scope of this continuation.");
+	if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
+	{
+	    anna_member_create(res, ANNA_MID_THIS, ANNA_MEMBER_ALLOC, null_type);
+	    anna_member_create(res, ANNA_MID_METHOD, ANNA_MEMBER_ALLOC, null_type);
+	}
 	
-	anna_member_create_native_property(
-	    res, anna_mid_get(L"filename"),
-	    imutable_string_type,
-	    &anna_continuation_type_i_get_filename,
-	    0,
-	    L"The name of the file in which the function that this continuation points into was defined in.");
-
-	anna_member_create_native_property(
-	    res, anna_mid_get(L"line"),
-	    int_type,
-	    &anna_continuation_type_i_get_line,
-	    0,
-	    L"The line number of the code offset of the function that this continuation points into.");
-
+	if(is_boring && base_constructed && anna_type_object_created)
+	{
+	    anna_function_type_boring = res;
+//	    wprintf(L"Woot, found a boring function\n");
+	}
     }
-    
-    if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
-    {
-	anna_member_create(res, ANNA_MID_THIS, ANNA_MEMBER_ALLOC, null_type);
-	anna_member_create(res, ANNA_MID_METHOD, ANNA_MEMBER_ALLOC, null_type);
-    }
-    
+
+        
     *anna_entry_get_addr_static(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD) = (anna_entry_t *)key;
     anna_type_close(res);
+
     return;
 }
 
