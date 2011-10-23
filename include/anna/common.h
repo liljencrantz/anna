@@ -98,7 +98,7 @@ extern wchar_t *program_name;
 #define DIE_MEM()							\
     {									\
 	fwprintf( stderr,						\
-		  L"anna: Out of memory on line %d of file %s, shutting down fish\n", \
+		  L"anna: Out of memory on line %d of file %s, shutting down.\n", \
 		  __LINE__,						\
 		  __FILE__ );						\
 	FATAL_EXIT();							\

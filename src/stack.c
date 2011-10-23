@@ -535,9 +535,7 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *res = anna_type_stack_create(
 	stack->name ? stack->name: 
-	anna_util_identifier_generate(
-	    L"StackType",
-	    stack->function?&(stack->function->definition->location):0),
+	L"AnonymousStackType",
 	stack);
     anna_member_create(res, ANNA_MID_STACK_PAYLOAD, 0, null_type);
     anna_member_create(
