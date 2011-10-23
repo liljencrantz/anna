@@ -75,8 +75,26 @@ ANNA_VM_NATIVE(anna_member_i_get_attributes, 1)
 {
     anna_object_t *memb_obj = anna_as_obj_fast(param[0]);
     anna_member_t *memb = anna_member_unwrap(memb_obj);
+    
+    if(!memb->attribute && !memb->doc)
+    {
+	return null_entry;
+    }
+    
     if(!memb->attribute)
-       return null_entry;
+    {
+	memb->attribute = anna_node_create_block2(0);
+    }
+    if(memb->doc)
+    {
+	anna_node_call_t *attr = anna_node_create_call2(
+	    0,
+	    anna_node_create_identifier(0, L"doc"),
+	    anna_node_create_string_literal(0, wcslen(memb->doc), memb->doc));
+	anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+    	memb->doc = 0;
+    }
+    
     return anna_from_obj(anna_node_wrap((anna_node_t *)memb->attribute));
 }
 

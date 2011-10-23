@@ -455,7 +455,8 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
         {
 	    copy->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)memb->attribute);
 	}
-       
+	copy->doc = memb->doc;
+	
 	if(memb->is_static)
         {
 	    if(memb->offset != -1)
@@ -463,7 +464,6 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	}
 	copy_property |= memb->is_property;
     }
-
     
     /*
       Finally, for every copied property, find the offset of the getter and setter

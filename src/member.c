@@ -529,7 +529,7 @@ void anna_member_document(
     mid_t mid,
     wchar_t *doc)
 {
-
+    /*
     anna_entry_t ** e = anna_entry_get_addr_static(type, mid);
     if(e)
     {
@@ -540,11 +540,11 @@ void anna_member_document(
 	    return;
 	}
     }
-
-    anna_member_t *memb = anna_member_get(type, mid);
- 
+    */
+    anna_member_t *memb = anna_member_get(type, mid); 
     if(memb)
     {
+/*
 	anna_node_call_t *attr = anna_node_create_call2(
 	    0,
 	    anna_node_create_identifier(0, L"doc"),
@@ -554,8 +554,7 @@ void anna_member_document(
            memb->attribute = anna_node_create_block2(0);
        }
        anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
-       
-//	al_push(&memb->doc, doc);
+*/
+	memb->doc = doc;
     }
-    
 }

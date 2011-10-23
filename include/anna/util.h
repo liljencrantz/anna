@@ -104,24 +104,24 @@ typedef struct hash_table
 */
 typedef struct array_list
 {
-	/** 
-		Array containing the data
-	*/
-	void * *arr;
-	
-	/** 
-		Internal cursor position of the array_list_t. This is the
-		position to append elements at. This is also what the
-		array_list_t considers to be its true size, as reported by
-		al_get_count(), etc. Calls to e.g. al_insert will preserve the
-		values of all elements up to pos.
-	*/
-	size_t pos;
-
-	/** 
-		Amount of memory allocated in arr, expressed in number of elements.
-	*/
-	size_t size;
+    /** 
+	Array containing the data
+    */
+    void **arr;
+    
+    /** 
+	Internal cursor position of the array_list_t. This is the
+	position to append elements at. This is also what the
+	array_list_t considers to be its true size, as reported by
+	al_get_count(), etc. Calls to e.g. al_insert will preserve the
+	values of all elements up to pos.
+    */
+    size_t pos;
+    
+    /** 
+	Amount of memory allocated in arr, expressed in number of elements.
+    */
+    size_t size;
 }
 array_list_t;
 
@@ -468,6 +468,11 @@ void al_foreach( array_list_t *l, void (*func)( void * ));
 */
 void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux);
 
+/**
+   Check if the lst has significant amounts of unused space. If so,
+   resize it.
+ */
+void al_resize(array_list_t *l);
 
 /*
   String buffer functions

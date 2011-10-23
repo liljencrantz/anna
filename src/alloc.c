@@ -601,6 +601,7 @@ void anna_gc(anna_context_t *context)
 		anna_alloc_unmark(el);	    
 	    }
 	}
+	al_resize(&anna_alloc[j]);
     }
 
 /*

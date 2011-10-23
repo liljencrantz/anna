@@ -371,7 +371,7 @@ struct anna_member
     /**
        All documentation strings for this member 
      */
-//    array_list_t doc;
+    wchar_t *doc;
 };
 
 /**

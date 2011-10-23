@@ -657,6 +657,17 @@ void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
 	func( l->arr[i], aux );
 }
 
+void al_resize(array_list_t *l)
+{
+    VERIFY( l, );
+    if(l->pos*8 < l->size && l->size > MIN_SIZE)
+    {
+	size_t new_sz = maxi(MIN_SIZE, 2*l->pos);
+	l->arr = realloc(l->arr, new_sz * sizeof(void *));
+	l->size = new_sz;
+    }    
+}
+
 void sb_init( string_buffer_t * b)
 {
     wchar_t c=0;
