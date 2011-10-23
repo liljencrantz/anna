@@ -254,47 +254,47 @@ static void anna_function_load(anna_stack_template_t *stack)
 	string_type, 1, argv, argn, 0, 0);
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"name"), string_type,
+	res, ANNA_MID_NAME, string_type,
 	&anna_function_type_i_get_name, 0,
 	L"The name of this function.");
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"outputType"),
+	res, ANNA_MID_OUTPUT_TYPE,
 	type_type,
 	&anna_function_type_i_get_output,
 	0,
 	L"The return type of this function.");
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"inputType"),
+	res, ANNA_MID_INPUT_TYPE,
 	anna_list_type_get_imutable(type_type),
 	&anna_function_type_i_get_input_type,
 	0,
 	L"A list of the input types of this function.");
     
     anna_member_create_native_property(
-	res, anna_mid_get(L"inputName"),
+	res, ANNA_MID_INPUT_NAME,
 	anna_list_type_get_imutable(string_type),
 	&anna_function_type_i_get_input_name,
 	0,
 	L"A list of the input names of this function.");
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"defaultValue"),
+	res, ANNA_MID_DEFAULT_VALUE,
 	anna_list_type_get_imutable(node_type),
 	&anna_function_type_i_get_default_value,
 	0,
 	L"A list of the default values for the input parameters of this function. Null means no default value exists.");
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"attribute"),
+	res, ANNA_MID_ATTRIBUTE,
 	node_call_type,
 	&anna_function_type_i_get_attributes,
 	0,
 	L"All attributes specified for this function.");
 
     anna_member_create_native_property(
-	res, anna_mid_get(L"filename"),
+	res, ANNA_MID_FILENAME,
 	imutable_string_type,
 	&anna_function_type_i_get_filename,
 	0,
@@ -326,25 +326,20 @@ void anna_function_type_create(
     
     anna_type_copy_object(res);
     
-    /*
-      Non-static member variables
-    */
     anna_member_create(
 	res, ANNA_MID_FUNCTION_WRAPPER_PAYLOAD,
 	ANNA_MEMBER_ALLOC, null_type);
+
     anna_member_create(
 	res,
 	ANNA_MID_FUNCTION_WRAPPER_STACK,
 	ANNA_MEMBER_ALLOC,
 	null_type);
     
-    /*
-      Static member variables
-    */
     anna_member_create(
 	res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD,
 	ANNA_MEMBER_STATIC, null_type);
-    
+
     if(key->flags & ANNA_FUNCTION_CONTINUATION)
     {
 	anna_member_create(

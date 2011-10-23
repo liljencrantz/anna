@@ -103,6 +103,26 @@ static void anna_function_handle_use(anna_node_call_t *body)
     anna_node_resolve_identifiers((anna_node_t *)body);
 }
 
+static void anna_function_alloc_input(anna_function_t *this, int argc)
+{
+    if(argc)
+    {
+	size_t it = sizeof(anna_type_t *)*argc;
+	size_t in = sizeof(wchar_t *)*argc;
+	size_t id = sizeof(anna_node_t *)*argc;
+	char *res = calloc(1, it+in+id);
+	this->input_type = res;
+	this->input_name = res+it;
+	this->input_default = res+it+in;
+    }
+    else
+    {
+	this->input_type = 0;
+	this->input_name = 0;
+	this->input_default = 0;
+    }
+}
+
 void anna_function_argument_hint(
     anna_function_t *f,
     int argument,
@@ -141,17 +161,7 @@ static anna_node_t *anna_function_setup_arguments(
     f->input_count = declarations->child_count;
         
     int argc = declarations->child_count;
-//    wprintf(L"Setup input arguments for function %ls with %d argument(s)\n", f->name, argc);
-    anna_type_t **argv=0;
-    wchar_t **argn=0;
-    anna_node_t **argd=0;
-
-    if(argc)
-    {
-	argv = f->input_type = malloc(sizeof(anna_type_t *)*argc);
-	argn = f->input_name = malloc(sizeof(wchar_t *)*argc);
-	argd = f->input_default = calloc(1, sizeof(anna_node_t *)*argc);
-    }
+    anna_function_alloc_input(f, argc);
     
     for(i=0; i<argc; i++)
     {
@@ -170,7 +180,7 @@ static anna_node_t *anna_function_setup_arguments(
 		node_cast_identifier(
 		    decl->child[0]);
 
-	    argn[i] = anna_intern(name->name);		
+	    f->input_name[i] = anna_intern(name->name);		
 
 	    decl->child[1] = anna_node_calculate_type(decl->child[1]);
 	    anna_node_t *type_node = decl->child[1];
@@ -183,7 +193,7 @@ static anna_node_t *anna_function_setup_arguments(
 		anna_type_t *d_val = anna_node_resolve_to_type(val_node, f->stack_template);
 		if(d_val)
 		{
-		    argv[i] = d_val;		    
+		    f->input_type[i] = d_val;		    
 		}
 		else
 		{
@@ -201,10 +211,10 @@ static anna_node_t *anna_function_setup_arguments(
 		}
 		else
 		{
-		    argv[i] = d_type;
+		    f->input_type[i] = d_type;
 		}
 	    }
-	    argd[i] = anna_attribute_call(
+	    f->input_default[i] = anna_attribute_call(
 		(anna_node_call_t *)decl->child[3], L"default");
 	    
 	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
@@ -213,16 +223,16 @@ static anna_node_t *anna_function_setup_arguments(
 		f->flags |= ANNA_FUNCTION_VARIADIC;
 	    }
 
-	    anna_type_t *t = argv[i];
+	    anna_type_t *t = f->input_type[i];
 	    if(is_variadic)
 	    {
 		t = anna_list_type_get_imutable(t);
 	    }
-//	    wprintf(L"Declare %ls as %ls in %ls\n", argn[i], t->name, f->name);
+//	    wprintf(L"Declare %ls as %ls in %ls\n", f->input_name[i], t->name, f->name);
 	    
 	    anna_stack_declare(
 		f->stack_template, 
-		argn[i],
+		f->input_name[i],
 		t,
 		null_entry,
 		0);
@@ -685,14 +695,10 @@ anna_function_t *anna_macro_create(
     result->flags |= ANNA_FUNCTION_MACRO;
     result->input_count=1;
     
-    result->input_default = calloc(1, sizeof(anna_node_t *));
-    result->input_name = calloc(sizeof(wchar_t *), 1);
+    anna_function_alloc_input(result, 1);
     result->input_name[0] = anna_intern(arg_name);
-    
-    result->input_type = calloc(sizeof(anna_type_t *), 1);
     result->input_type[0] = node_call_type;
 
-//    anna_function_setup_wrapper(result);
     return result;
 }
 
@@ -764,13 +770,8 @@ anna_function_t *anna_native_create(
   
     anna_function_t *result = anna_alloc_function();
     anna_function_attribute_empty(result);    
-    if(argc)
-    {
-	result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
-	result->input_name = calloc(1, sizeof(wchar_t *)*argc);
-	result->input_default = calloc(1, sizeof(anna_node_t *)*argc);
-    }
-    
+    anna_function_alloc_input(result, argc);
+        
     result->flags |= flags;
     result->native = native;
     result->name = anna_intern(name);
@@ -881,9 +882,8 @@ anna_function_t *anna_method_bind(
     result->input_count=argc;
     result->variable_count = argc;
     
-    result->input_type = malloc(sizeof(anna_type_t *)*argc);
-    result->input_name = malloc(sizeof(wchar_t *)*argc);
-    result->input_default = calloc(1, sizeof(anna_node_t *)*argc);
+    anna_function_alloc_input(result, argc);
+    
     int i;
     for(i=0; i<argc;i++)
     {

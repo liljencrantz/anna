@@ -15,6 +15,7 @@
 #include "anna/member.h"
 #include "anna/mid.h"
 #include "anna/type.h"
+#include "anna/intern.h"
 
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/string.h"

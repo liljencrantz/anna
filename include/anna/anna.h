@@ -12,4 +12,5 @@
 #include "anna/lib/lang/buffer.h"
 #include "anna/member.h"
 #include "anna/module_data.h"
+#include "anna/intern.h"
 

@@ -108,6 +108,13 @@ void anna_mid_init()
 	    L"!continuationCallCount",
 	    L"!continuationStackCount",
 	    L"!continuationActivationFrame",
+	    L"name",
+	    L"outputType",
+	    L"inputType",
+	    L"inputName",
+	    L"defaultValue",
+	    L"attribute",
+	    L"filename",
 
 	};
     

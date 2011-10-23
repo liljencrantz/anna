@@ -459,7 +459,6 @@ static void anna_alloc_free(void *obj)
 	    
 	    free(o->code);
 	    free(o->input_type);
-	    free(o->input_name);
 	    
 	    anna_alloc_count -= sizeof(anna_function_t);
 	    anna_slab_free(obj, sizeof(anna_function_t));

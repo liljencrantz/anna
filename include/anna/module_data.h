@@ -37,7 +37,7 @@ typedef struct
 	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)	\
 	{								\
 	    module_data[i].module = anna_stack_create(parent);		\
-	    anna_stack_name(module_data[i].module, module_data[i].name); \
+	    anna_stack_name(module_data[i].module, anna_intern_static(module_data[i].name)); \
 	    module_data[i].module->flags |= ANNA_STACK_NAMESPACE;	\
 	}								\
 	for(i=0; i<sizeof(module_data)/sizeof(*module_data); i++)	\
