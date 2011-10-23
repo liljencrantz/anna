@@ -417,20 +417,15 @@ static void anna_alloc_free(void *obj)
 	    
 	    if(obj != null_type)
 	    {
-		for(i=0; i<o->mid_count; i++)
+		for(i=0; i<anna_type_get_member_count(o); i++)
 		{
-		    anna_member_t *memb = o->mid_identifier[i];
-		    if(!memb)
-			continue;
-		    free(memb);
+		    anna_slab_free(
+			anna_type_get_member_idx(o, i),
+			sizeof(anna_member_t));
 		}
 	    }
 	    
-	    if(o->static_member_count)
-	    {
-		free(o->static_member);
-	    }
-	    
+	    free(o->static_member);
 	    free(o->mid_identifier);
 	    
 	    anna_alloc_count -= sizeof(anna_type_t);

@@ -85,7 +85,8 @@ mid_t anna_member_create(
 
     anna_type_ensure_mid(type, mid);
         
-    anna_member_t * member = calloc(1,sizeof(anna_member_t));
+    anna_member_t * member = anna_slab_alloc(sizeof(anna_member_t));
+    memset(member, 0, sizeof(anna_member_t));
     
     member->name = anna_intern(name);
     

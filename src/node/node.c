@@ -150,7 +150,7 @@ void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
 {
     if(call->child_capacity == call->child_count) 
     {
-	size_t new_capacity = call->child_capacity < 4 ? 8 : call->child_capacity*2;
+	size_t new_capacity = call->child_capacity < 4 ? 4 : call->child_capacity*2;
 	call->child = realloc(call->child, new_capacity*sizeof(anna_node_t *));
 	if(!call->child) 
 	{
