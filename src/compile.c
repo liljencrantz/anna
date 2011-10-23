@@ -40,6 +40,13 @@ typedef struct
 
 static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node);
 
+static void anna_compile_context_destroy(anna_compile_context_t *ctx)
+{
+    al_destroy(&ctx->line);
+    al_destroy(&ctx->offset);
+    al_destroy(&ctx->node);    
+}
+
 static inline anna_activation_frame_t *anna_frame_get_static(size_t sz)
 {
     anna_activation_frame_t *res = (anna_activation_frame_t *)anna_context_static_ptr;
@@ -849,6 +856,7 @@ static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node)
     
     anna_vm_compile_i(
 	&ctx, fun, node, 0);
+    anna_compile_context_destroy(&ctx);
     return ptr - ((char *)0);
 }
 
@@ -960,6 +968,7 @@ void anna_vm_compile(
 	fun->line_offset[i].line = line;
 	fun->line_offset[i].offset = off;
     }
+    anna_compile_context_destroy(&ctx);
 
 #if 0
     if(wcscmp(fun->name, L"main")==0)
@@ -1014,6 +1023,7 @@ void anna_vm_callback_native(
     stack->top += argc;
 
     stack->frame = frame;
+    anna_compile_context_destroy(&ctx);
 //    wprintf(L"CALLBACK\n");
 }
 
@@ -1056,6 +1066,7 @@ void anna_vm_callback(
     stack->top += argc;
     
     stack->frame = frame;
+    anna_compile_context_destroy(&ctx);
 }
 
 void anna_vm_callback_reset(

@@ -237,7 +237,7 @@ anna_node_call_t *anna_node_create_call(
     anna_location_t *loc, anna_node_t *function, size_t argc, anna_node_t **argv)
 {
     anna_node_call_t *result = anna_alloc_node(sizeof(anna_node_call_t));
-    result->child = calloc(1,sizeof(anna_node_t *)*(argc));
+    result->child = argc?calloc(1,sizeof(anna_node_t *)*(argc)):0;
     result->node_type = ANNA_NODE_CALL;
     anna_node_set_location((anna_node_t *)result,loc);
     result->function = function;
@@ -278,7 +278,7 @@ anna_node_call_t *anna_node_create_call_internal(
     }
     
     result->child_capacity = result->child_count;
-    result->child = calloc(1,sizeof(anna_node_t *)*(result->child_count));
+    result->child = result->child_count?calloc(1,sizeof(anna_node_t *)*(result->child_count)):0;
 
     int i=0;
 
@@ -309,7 +309,7 @@ anna_node_call_t *anna_node_create_member_call(
     anna_node_t **argv)
 {
     anna_node_call_t *result = anna_alloc_node(sizeof(anna_node_call_t));
-    result->child = calloc(1,sizeof(anna_node_t *)*(argc));
+    result->child = argc?calloc(1,sizeof(anna_node_t *)*(argc)):0;
     result->node_type = type;
     anna_node_set_location((anna_node_t *)result,loc);
     result->object = object;

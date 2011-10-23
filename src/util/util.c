@@ -660,9 +660,9 @@ void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
 void al_resize(array_list_t *l)
 {
     VERIFY( l, );
-    if(l->pos*8 < l->size && l->size > MIN_SIZE)
+    if(l->pos*4 < l->size && l->size > MIN_SIZE)
     {
-	size_t new_sz = maxi(MIN_SIZE, 2*l->pos);
+	size_t new_sz = maxi(MIN_SIZE, 3*l->pos/2);
 	l->arr = realloc(l->arr, new_sz * sizeof(void *));
 	l->size = new_sz;
     }    

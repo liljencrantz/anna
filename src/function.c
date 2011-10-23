@@ -142,10 +142,16 @@ static anna_node_t *anna_function_setup_arguments(
         
     int argc = declarations->child_count;
 //    wprintf(L"Setup input arguments for function %ls with %d argument(s)\n", f->name, argc);
-    
-    anna_type_t **argv = f->input_type = malloc(sizeof(anna_type_t *)*argc);
-    wchar_t **argn = f->input_name = malloc(sizeof(wchar_t *)*argc);
-    anna_node_t **argd = f->input_default = calloc(1, sizeof(anna_node_t *)*argc);
+    anna_type_t **argv=0;
+    wchar_t **argn=0;
+    anna_node_t **argd=0;
+
+    if(argc)
+    {
+	argv = f->input_type = malloc(sizeof(anna_type_t *)*argc);
+	argn = f->input_name = malloc(sizeof(wchar_t *)*argc);
+	argd = f->input_default = calloc(1, sizeof(anna_node_t *)*argc);
+    }
     
     for(i=0; i<argc; i++)
     {
@@ -758,10 +764,13 @@ anna_function_t *anna_native_create(
   
     anna_function_t *result = anna_alloc_function();
     anna_function_attribute_empty(result);    
-    result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
-    result->input_name = calloc(1, sizeof(wchar_t *)*argc);
-    result->input_default = calloc(1, sizeof(anna_node_t *)*argc);
-
+    if(argc)
+    {
+	result->input_type = calloc(1, sizeof(anna_type_t *)*argc);
+	result->input_name = calloc(1, sizeof(wchar_t *)*argc);
+	result->input_default = calloc(1, sizeof(anna_node_t *)*argc);
+    }
+    
     result->flags |= flags;
     result->native = native;
     result->name = anna_intern(name);

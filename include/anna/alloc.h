@@ -56,7 +56,6 @@ static inline __malloc void *anna_alloc_blob(size_t sz)
 {
     sz += 2*sizeof(int);
     int *res = anna_slab_alloc(sz);
-//    wprintf(L"Alloc %d (%d)=> %d (%d)\n", sz, sz+ sizeof(long long), res, (long)res & 7);
     res[0] = ANNA_BLOB;
     res[1] = sz;
     al_push(&anna_alloc[ANNA_BLOB], res);
@@ -76,7 +75,6 @@ static inline __malloc anna_object_t *anna_alloc_object(size_t sz)
 static inline __malloc anna_type_t *anna_alloc_type()
 {
     anna_type_t *res = anna_slab_alloc(sizeof(anna_type_t));
-//    wprintf(L"Alloc type @ %d\n", res);
     memset(res, 0, sizeof(anna_type_t));
     res->flags = ANNA_TYPE;
     al_push(&anna_alloc[ANNA_TYPE], res);
@@ -111,7 +109,7 @@ static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
 
 /**
    Mark an arbitrary memory allocation as used, and traverse and mark
-   al allocations it references.
+   all allocations it references.
  */
 __hot void anna_alloc_mark(void *obj);
 __hot void anna_alloc_mark_entry(anna_entry_t *obj);

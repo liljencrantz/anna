@@ -271,10 +271,3 @@ void debug( int level, const wchar_t *msg, ... )
 }
 
 
-void bugreport()
-{
-	debug( 1,
-	       _( L"This is a bug. "
-		  L"If you can reproduce it, please send a bug report." ));
-}
-

@@ -454,7 +454,7 @@ static size_t anna_node_size(anna_node_t *n)
 
 static void anna_node_call_dealias(anna_node_call_t *dest, anna_node_call_t *src)
 {
-    dest->child = malloc(sizeof(anna_node_t *)*src->child_count);
+    dest->child = src->child_count?malloc(sizeof(anna_node_t *)*src->child_count):0;
     dest->child_capacity = dest->child_count;
     memcpy(dest->child, src->child, sizeof(anna_node_t *)*dest->child_count);
 }

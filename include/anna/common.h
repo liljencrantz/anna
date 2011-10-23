@@ -1,5 +1,5 @@
 /** \file common.h
-	Prototypes for various functions, mostly string utilities, that are used by most parts of fish.
+	Prototypes for various functions, mostly string utilities, that are used by most parts of anna.
 */
 
 #ifndef ANNA_COMMON_H
@@ -20,11 +20,6 @@
 #define MAX_UTF8_BYTES 6
 
 /**
-   This is in the unicode private use area.
-*/
-#define ENCODE_DIRECT_BASE 0xf100
-
-/**
   Highest legal ascii value
 */
 #define ASCII_MAX 127u
@@ -38,25 +33,6 @@
   Highest legal byte value
 */
 #define BYTE_MAX 0xffu
-
-/**
-  Escape special fish syntax characters like the semicolon
- */
-#define UNESCAPE_SPECIAL 1
-
-/**
-  Allow incomplete escape sequences
- */
-#define UNESCAPE_INCOMPLETE 2
-
-/**
-   Escape all characters, including magic characters like the semicolon
- */
-#define ESCAPE_ALL 1
-/**
-   Do not try to use 'simplified' quoted escapes, and do not use empty quotes as the empty string
- */
-#define ESCAPE_NO_QUOTED 2
 
 /**
    Information that is likely to be of little use except in debugging
@@ -100,17 +76,16 @@ extern wchar_t *program_name;
    failiure, the current function is ended at once. The second
    parameter is the return value of the current function on failiure.
 */
-#define VERIFY( arg, retval )											\
-	if( !(arg) )														\
-	{																	\
-		debug( 0,														\
-			   _( L"function %s called with null value for argument %s. " ), \
-			   __func__,												\
-			   #arg );													\
-		bugreport();													\
-		show_stackframe();												\
-		return retval;													\
-	}
+#define VERIFY( arg, retval )						\
+    if( !(arg) )							\
+    {									\
+	debug( 0,							\
+	        L"function %s called with null value for argument %s. " , \
+	       __func__,						\
+	       #arg );							\
+	show_stackframe();						\
+	return retval;							\
+    }
 
 /**
    Pause for input, then exit the program. If supported, print a backtrace first.
@@ -120,34 +95,14 @@ extern wchar_t *program_name;
 /**
    Exit program at once, leaving an error message about running out of memory.
 */
-#define DIE_MEM()														\
-	{																	\
-		fwprintf( stderr,												\
-				  L"fish: Out of memory on line %d of file %s, shutting down fish\n", \
-				  __LINE__,												\
-				  __FILE__ );											\
-		FATAL_EXIT();														\
-	}
-
-/**
-   Shorthand for wgettext call
-*/
-#define _(wstr) wstr
-
-/**
-   Noop, used to tell xgettext that a string should be translated,
-   even though it is not directly sent to wgettext. 
-*/
-#define N_(wstr) wstr
-
-/**
-   Check if the specified stringelement is a part of the specified string list
- */
-#define contains( str,... ) contains_internal( str, __VA_ARGS__, (void *)0 )
-/**
-   Concatenate all the specified strings into a single newly allocated one
- */
-#define wcsdupcat( str,... ) wcsdupcat_internal( str, __VA_ARGS__, (void *)0 )
+#define DIE_MEM()							\
+    {									\
+	fwprintf( stderr,						\
+		  L"anna: Out of memory on line %d of file %s, shutting down fish\n", \
+		  __LINE__,						\
+		  __FILE__ );						\
+	FATAL_EXIT();							\
+    }
 
 /**
   Print a stack trace to stderr
@@ -214,27 +169,8 @@ const wchar_t *wsetlocale( int category, const wchar_t *locale );
    Issue a debug message with printf-style string formating and
    automatic line breaking. The string will begin with the string \c
    program_name, followed by a colon and a whitespace.
-
-   Because debug is often called to tell the user about an error,
-   before using wperror to give a specific error message, debug will
-   never ever modify the value of errno.
-   
-   \param level the priority of the message. Lower number means higher priority. Messages with a priority_number higher than \c debug_level will be ignored..
-   \param msg the message format string. 
-
-   Example:
-
-   <code>debug( 1, L"Pi = %.3f", M_PI );</code>
-
-   will print the string 'fish: Pi = 3.141', given that debug_level is 1 or higher, and that program_name is 'fish'.
 */
 void debug( int level, const wchar_t *msg, ... );
-
-/**
-   Print a short message about how to file a bug report to stderr
-*/
-void bugreport(void);
-
 
 #endif
 

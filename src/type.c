@@ -1339,11 +1339,11 @@ anna_type_t *anna_type_for_function(
     {
 	anna_function_type_t *new_key = malloc(new_key_sz);
 	memcpy(new_key, key, new_key_sz);	
-	new_key->input_name = malloc(sizeof(wchar_t *)*argc);
-	new_key->input_default = malloc(sizeof(anna_node_t *)*argc);
+	new_key->input_name = argc?malloc(sizeof(wchar_t *)*argc):0;
+	new_key->input_default = argc?malloc(sizeof(anna_node_t *)*argc):0;
 	for(i=0; i<argc;i++)
 	{
-	    new_key->input_name[i]=wcsdup(argn[i]);
+	    new_key->input_name[i]=anna_intern(argn[i]);
 	    new_key->input_default[i]= (argd && argd[i]) ? anna_node_clone_deep(argd[i]) : 0;
 	}
 	static int num=0;
@@ -1625,8 +1625,8 @@ void anna_type_close(anna_type_t *this)
     }
     else
     {
-	this->mark_entry = malloc(sizeof(int)*(entry_count));
-	this->mark_blob = malloc(sizeof(int)*(alloc_blob_count));
+	this->mark_entry = entry_count?malloc(sizeof(int)*(entry_count)):0;
+	this->mark_blob = alloc_blob_count?malloc(sizeof(int)*(alloc_blob_count)):0;
 	this->mark_entry_count = entry_count;
 	this->mark_blob_count = alloc_blob_count;
 	int eidx=0;
@@ -1694,11 +1694,12 @@ void anna_type_reseal(anna_type_t *this)
 	}
     }	    
 
-    this->static_mark_entry = realloc(this->static_mark_entry, sizeof(int)*(static_entry_count));
-    this->static_mark_blob = realloc(this->static_mark_blob, sizeof(int)*(static_alloc_blob_count));
+    this->static_mark_entry = static_entry_count?realloc(this->static_mark_entry, sizeof(int)*(static_entry_count)):0;
     this->static_mark_entry_count = static_entry_count;
+        
+    this->static_mark_blob = static_alloc_blob_count ? realloc(this->static_mark_blob, sizeof(int)*(static_alloc_blob_count)):0;
     this->static_mark_blob_count = static_alloc_blob_count;
-
+        
     int eidx=0;
     int bidx=0;
     for(i=0; i<al_get_count(&this->member_list); i++)

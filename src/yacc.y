@@ -147,7 +147,7 @@ static wchar_t *anna_yacc_string(char *in)
 {
     sb_clear(&anna_yacc_str_buff);
     sb_printf(&anna_yacc_str_buff, L"%s", in);
-    return sb_content(&anna_yacc_str_buff);    
+    return sb_content(&anna_yacc_str_buff);
 }
 
 static anna_node_t *anna_text_as_id(anna_location_t *loc, yyscan_t *scanner)
