@@ -347,7 +347,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	L"nothing", 
 	ANNA_FUNCTION_VARIADIC, 
 	&anna_i_nothing, 
-	imutable_list_type, 1, &object_type, 
+	object_type, 1, &object_type, 
 	p_argn, 
 	L"Returns the last argument in the parameter list, or null");
     
