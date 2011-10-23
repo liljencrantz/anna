@@ -305,11 +305,6 @@ anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name)
     return anna_member_get(type, anna_mid_get(name));
 }
 
-size_t anna_type_member_count(anna_type_t *type)
-{
-    return type->member_count + type->static_member_count+type->property_count;
-}
-
 anna_object_t *anna_type_wrap(anna_type_t *result)
 {
     if(likely((long)result->wrapper))

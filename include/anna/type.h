@@ -47,8 +47,6 @@ anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name);
 
 int anna_type_member_idx(anna_type_t *type, wchar_t *name);
 
-size_t anna_type_member_count(anna_type_t *type);
-
 anna_type_t *anna_type_unwrap(anna_object_t *wrapper);
 
 anna_object_t *anna_type_wrap(anna_type_t *result);
