@@ -48,6 +48,16 @@ typedef int mid_t;
 #define ANNA_ACTIVATION_FRAME_STATIC 512
 #define ANNA_ACTIVATION_FRAME_BREAK 1024
 
+#define ANNA_MEMBER_STATIC 1
+#define ANNA_MEMBER_VIRTUAL 2
+#define ANNA_MEMBER_ALLOC 4
+/**
+   If set, this member is a bound method. 
+*/
+
+#define ANNA_MEMBER_BOUND 8
+#define ANNA_MEMBER_PROPERTY 16
+
 /*
   The preallocated MIDs
 */
@@ -327,27 +337,10 @@ struct anna_member
     */
     ssize_t offset;
     /**
-       If true, this member is static, i.e. shared between all objects
-       of this type. If so, it is stored in the type object's
-       static_member array instead of in the objects member array.
-
-       This value is redundant, since it is already defined by the
-       storage flag.
-    */
-    int is_static;
-    /**
        The storage flag for this member
      */
     int storage;
-    /**
-       If true, this member is a property, i.e. a getter and/or setter
-       method that act as a regular variable.
-    */
-    int is_property;
-    /**
-       If true, this member is a bound method. 
-    */
-    int is_bound_method;
+    
     /**
        Only used if the member is a property. Gives the offset of the
        setter method. Note that all non-static variables are
@@ -376,8 +369,11 @@ struct anna_member
     */
     wchar_t *name;
     /**
-       All documentation strings for this member 
-     */
+       A (possible) documentation strings for this member. If only one
+       documentation string is present, we add it here and don't
+       create a real attribute AST, which saves us a fair bit of
+       memory.
+    */
     wchar_t *doc;
 };
 
@@ -673,6 +669,11 @@ extern int anna_argc;
  */
 extern char **anna_argv;
 
+static inline int anna_member_is_static(anna_member_t *member)
+{
+    return !!(member->storage & ANNA_MEMBER_STATIC);
+}
+
 /**
    Round the size up to the nearest even 8 bytes
  */
@@ -721,7 +722,7 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
 
 //    wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
     
-    if(m->is_static) {
+    if(anna_member_is_static(m)) {
 	return &obj->type->static_member[m->offset];
     } else {
 	return &(obj->member[m->offset]);
@@ -751,7 +752,7 @@ static __pure inline anna_entry_t *anna_entry_get(
     anna_object_t *obj, mid_t mid)
 {
     anna_member_t *m = obj->type->mid_identifier[mid];
-    if(m->is_static) {
+    if(anna_member_is_static(m)) {
 	return obj->type->static_member[m->offset];
     } else {
 	return (obj->member[m->offset]);
@@ -776,7 +777,7 @@ static __pure inline anna_entry_t **anna_entry_get_addr_static(
 	return 0;
     }
 
-    if(m->is_static) {
+    if(anna_member_is_static(m)) {
 	return &type->static_member[m->offset];
     } else {
 	return 0;

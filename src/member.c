@@ -6,11 +6,11 @@ anna_object_t *anna_member_wrap(anna_type_t *type, anna_member_t *result)
 	return result->wrapper;
     
     anna_type_t * m_type;
-    if(result->is_bound_method)
+    if(anna_member_is_bound(result))
     {
 	m_type = member_method_type;
     }
-    else if(result->is_property)
+    else if(anna_member_is_property(result))
     {
 	m_type = member_property_type;
     }
@@ -91,7 +91,7 @@ mid_t anna_member_create(
     member->name = anna_intern(name);
     
     member->type = member_type;
-    member->is_static = !!(storage & ANNA_MEMBER_STATIC);
+    anna_member_set_static(member, !!(storage & ANNA_MEMBER_STATIC));
     member->storage = storage;
     if(storage & ANNA_MEMBER_VIRTUAL)
     {
@@ -99,7 +99,7 @@ mid_t anna_member_create(
     }
     else
     {
-	if(member->is_static) {
+	if(anna_member_is_static(member)) {
 	    member->offset = anna_type_static_member_allocate(type);
 	    type->static_member[type->static_member_count-1] = null_entry;
 	} else {
@@ -189,8 +189,8 @@ anna_member_t *anna_member_method_search(
     {
 	anna_member_t *member = anna_type_get_member_idx(type, i);
 //	debug(D_ERROR, L"Check %ls %d %d %ls\n", members[i],
-//	      member->is_static, member->offset, member->type->name);
-	if(member->is_static && member->offset>=0 && member->type != null_type)
+//	      anna_member_is_static(member), member->offset, member->type->name);
+	if(anna_member_is_static(member) && member->offset>=0 && member->type != null_type)
 	{
 	    anna_object_t *mem_val = anna_as_obj(type->static_member[member->offset]);
 	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
@@ -209,7 +209,7 @@ anna_member_t *anna_member_method_search(
 	    if(has_alias)
 	    {
 		int j;
-		int off = !!member->is_bound_method && !(call->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER);
+		int off = anna_member_is_bound(member) && !(call->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER);
 		
 		if(mem_fun->input_count != call->child_count+off)
 		    continue;	    
@@ -283,7 +283,7 @@ size_t anna_member_create_property(
 	property_type);
     anna_member_t *memb = anna_member_get(type, mid);
     
-    memb->is_property=1;
+    anna_member_set_property(memb,1);
     memb->getter_offset = getter_offset;
     memb->setter_offset = setter_offset;
     return mid;
@@ -403,7 +403,7 @@ mid_t anna_member_create_method(
     
     anna_member_t *m = type->mid_identifier[mid];
     
-    m->is_bound_method=1;
+    anna_member_set_bound(m, 1);
     type->static_member[m->offset] = 
 	anna_from_obj(
 	    anna_function_wrap(
@@ -455,7 +455,7 @@ size_t anna_member_create_native_method(
 	    flags));
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
-    m->is_bound_method=1;
+    anna_member_set_bound(m, 1);
     type->static_member[m->offset] = 
 	anna_from_obj(
 	    anna_function_wrap(
@@ -511,7 +511,6 @@ size_t anna_member_create_native_type_method(
 	    flags));
     anna_member_t *m = type->mid_identifier[mid];
     //debug(D_SPAM,L"Create method named %ls with offset %d on type %d\n", m->name, m->offset, type);
-    m->is_bound_method=0;
     type->static_member[m->offset] = 
 	anna_from_obj(
 	    anna_function_wrap(

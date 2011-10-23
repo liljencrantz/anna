@@ -301,7 +301,7 @@ anna_entry_t *anna_node_static_invoke_try(
 		    return 0;
 		}
 		
-		if(memb->is_property)
+		if(anna_member_is_property(memb))
 		{
 		    return 0;
 		}
@@ -320,7 +320,7 @@ anna_entry_t *anna_node_static_invoke_try(
 	    if(obj)
 	    {
 		anna_member_t *memb = anna_member_get(obj->type, this2->mid);
-		if((!memb) || (!memb->is_bound_method))
+		if((!memb) || (!anna_member_is_bound(memb)))
 		{
 		    break;
 		}

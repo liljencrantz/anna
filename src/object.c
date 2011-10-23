@@ -25,7 +25,7 @@ void anna_object_print(anna_object_t *obj)
 	    anna_mid_get(member->name),
 	    member->name, 
 	    member->type?member->type->name:L"?",
-	    member->is_static?L"Static":L"Not static");	
+	    anna_member_is_static(member)?L"Static":L"Not static");	
     }
 }
 

@@ -286,8 +286,8 @@ static void anna_vm_compile_mid_lookup(
     anna_member_t *m = type->mid_identifier[mid];
     int instr;
     
-    instr = m->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
-    if(m->is_static)
+    instr = anna_member_is_static(m)?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
+    if(anna_member_is_static(m))
     {
 	anna_vm_null(ctx, ANNA_INSTR_TYPE_OF);	
     }
@@ -584,7 +584,7 @@ static void anna_vm_compile_i(
 	    {
 		anna_type_t *obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
 		anna_member_t *mem = anna_member_get(obj_type, node2->mid);
-		if(mem->is_property)
+		if(anna_member_is_property(mem))
 		{
 		    anna_vm_const(ctx, obj_type->static_member[mem->getter_offset]);
 //		    anna_vm_const(ctx, anna_type_wrap(obj_type));
@@ -630,7 +630,7 @@ static void anna_vm_compile_i(
 	    anna_type_t *type = node2->object->return_type;
 	    anna_member_t *m = type->mid_identifier[node2->mid];
 	    
-	    if(!m->is_bound_method)
+	    if(!anna_member_is_bound(m))
 	    {
 		anna_vm_compile_i(ctx, fun, node2->object, 0);
 		anna_vm_member(
@@ -671,7 +671,7 @@ static void anna_vm_compile_i(
 	    {
 		anna_type_t *obj_type = anna_node_resolve_to_type(node2->object, node2->stack);
 		anna_member_t *mem = anna_member_get(obj_type, node2->mid);
-		if(mem->is_property)
+		if(anna_member_is_property(mem))
 		{
 		    anna_vm_const(ctx, obj_type->static_member[mem->setter_offset]);
 		    anna_vm_const(ctx, anna_from_obj(anna_type_wrap(obj_type)));
@@ -753,10 +753,10 @@ static void anna_vm_compile_i(
 	    {
 		anna_vm_const(ctx, obj_type->static_member[mem->offset]);
 	    }
-	    else if(const_obj && (!mem->is_bound_method || const_obj2))
+	    else if(const_obj && (!anna_member_is_bound(mem) || const_obj2))
 	    {
 		anna_vm_const(ctx, const_obj);
-		if(mem->is_bound_method)
+		if(anna_member_is_bound(mem))
 		{
 		    anna_vm_const(ctx, const_obj2);		    
 		}
@@ -766,19 +766,19 @@ static void anna_vm_compile_i(
 		int instr;
 
 		anna_vm_compile_i(ctx, fun, node2->object, 0);
-
-		if(mem->is_bound_method)
+		
+		if(anna_member_is_bound(mem))
 		{
 		    instr = ANNA_INSTR_MEMBER_GET_THIS;
 		}
-		else if(mem->is_static)
+		else if(anna_member_is_static(mem))
 		{
 		    anna_vm_null(ctx, ANNA_INSTR_TYPE_OF);	
 		    instr = ANNA_INSTR_STATIC_MEMBER_GET;
 		}
 		else
 		{
-		    instr = mem->is_static?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
+		    instr = anna_member_is_static(mem)?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
 		}
 		anna_vm_member(ctx, instr, node2->mid);
 	    }
@@ -790,7 +790,7 @@ static void anna_vm_compile_i(
 	    
 	    int ra = template->input_count;
 
-	    if(mem->is_bound_method && !(node2->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER))
+	    if(anna_member_is_bound(mem) && !(node2->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER))
 	    {
 		ra--;
 	    }

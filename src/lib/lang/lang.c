@@ -100,8 +100,8 @@ static void anna_null_type_create()
     null_member = calloc(1,sizeof(anna_member_t));
     null_member->type = null_type;
     null_member->offset=0;
-    null_member->is_static=1;
-    null_member->is_property=1;
+    anna_member_set_static(null_member,1);
+    anna_member_set_property(null_member,1);
     null_member->name = anna_intern_static(L"!null_member");
     
     anna_type_t *argv[]={null_type};

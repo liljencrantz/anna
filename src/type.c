@@ -272,7 +272,7 @@ void anna_type_print(anna_type_t *type)
     {
 	anna_member_t *member = anna_type_get_member_idx(type, i);
 	assert(member);
-	if(member->is_property)
+	if(anna_member_is_property(member))
 	{
 	    wprintf(
 		L"\tproperty %ls %ls setter: %d, getter: %d\n",
@@ -280,13 +280,13 @@ void anna_type_print(anna_type_t *type)
 		member->setter_offset,
 		member->getter_offset);
 	}
-	else if(member->is_bound_method)
+	else if(anna_member_is_bound(member))
 	{
 	    wprintf(
 		L"\tmethod %ls: type: %ls, static: %ls, property: %ls, offset: %d\n",
 		member->name, member->type->name, 
-		member->is_static?L"true":L"false",
-		member->is_property?L"true":L"false",
+		anna_member_is_static(member)?L"true":L"false",
+		anna_member_is_property(member)?L"true":L"false",
 		member->offset);
 	}
 	else
@@ -294,7 +294,7 @@ void anna_type_print(anna_type_t *type)
 	    wprintf(
 		L"\tvar %ls %ls, static: %ls, offset: %d\n",
 		member->type->name, member->name, 
-		member->is_static?L"true":L"false",
+		anna_member_is_static(member)?L"true":L"false",
 		member->offset);
 	}
     }
@@ -346,7 +346,7 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
 int anna_type_member_is_method(anna_type_t *type, wchar_t *name)
 {
     anna_member_t *memb = anna_type_member_info_get(type, name);
-    return memb->is_bound_method;
+    return anna_member_is_bound(memb);
     
 /*anna_type_t *member_type = anna_type_member_type_get(type, name);
   return !!anna_entry_get_addr_static(member_type, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);   */
@@ -359,7 +359,7 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
     for(i=0; i<=steps; i++)
     {
         anna_member_t *memb = al_get_fast(&orig->member_list, i);
-	if(!memb->is_static)
+	if(!anna_member_is_static(memb))
 	    continue;
 	
 	if(memb->offset == off)
@@ -439,7 +439,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        
 	copied[i] = 1;
        
-	int storage = (memb->is_static?ANNA_MEMBER_STATIC:0)|((memb->offset==-1)?ANNA_MEMBER_VIRTUAL:0);
+	int storage = (anna_member_is_static(memb)?ANNA_MEMBER_STATIC:0)|((memb->offset==-1)?ANNA_MEMBER_VIRTUAL:0);
        
 	anna_member_t *copy = anna_member_get(
             res,
@@ -447,8 +447,9 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
                 res,
                 mid,
 	        storage, memb->type));
-	copy->is_bound_method = memb->is_bound_method;
-	copy->is_property = memb->is_property;
+	
+	anna_member_set_bound(copy, anna_member_is_bound(memb));
+	anna_member_set_property(copy, anna_member_is_property(memb));
 	copy->getter_offset = -1;
 	copy->setter_offset = -1;
 	if(memb->attribute)
@@ -457,12 +458,12 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	}
 	copy->doc = memb->doc;
 	
-	if(memb->is_static)
+	if(anna_member_is_static(memb))
         {
 	    if(memb->offset != -1)
 	        res->static_member[copy->offset]=orig->static_member[memb->offset];
 	}
-	copy_property |= memb->is_property;
+	copy_property |= anna_member_is_property(memb);
     }
     
     /*
@@ -476,7 +477,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	    if(!copied[i])
 		continue;
 	    
-	    if(!memb->is_property)
+	    if(!anna_member_is_property(memb))
 		continue;
 	    
 	    mid_t mid = anna_mid_get(memb->name);
@@ -556,7 +557,7 @@ static void anna_type_prepare_member_internal(
     if(is_method)
     {
 	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
-	member->is_bound_method = is_bound;
+	anna_member_set_bound(member, is_bound);
 	*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
 	anna_function_set_stack(clo->payload, stack);
 	anna_function_setup_interface(clo->payload);
@@ -807,7 +808,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     for(i=0; i< type->mid_count; i++)
     {
 	anna_member_t *memb = type->mid_identifier[i];
-	if(memb && memb->is_static && memb->type != null_type)
+	if(memb && anna_member_is_static(memb) && memb->type != null_type)
 	{
 	    anna_entry_t *val = *anna_entry_get_addr_static(type, i);
 	    if(!anna_entry_null(val))
@@ -1588,7 +1589,7 @@ void anna_type_close(anna_type_t *this)
     for(i=0; i<al_get_count(&this->member_list); i++)
     {
 	anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
-	if(memb->is_static)
+	if(anna_member_is_static(memb))
 	{
 	    continue;
 	}
@@ -1634,7 +1635,7 @@ void anna_type_close(anna_type_t *this)
 	for(i=0; i<al_get_count(&this->member_list); i++)
 	{
 	    anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
-	    if(memb->is_static)
+	    if(anna_member_is_static(memb))
 	    {
 		continue;
 	    }
@@ -1672,7 +1673,7 @@ void anna_type_reseal(anna_type_t *this)
     for(i=0; i<al_get_count(&this->member_list); i++)
     {
 	anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
-	if(!memb->is_static)
+	if(!anna_member_is_static(memb))
 	{
 	    continue;
 	}
@@ -1705,7 +1706,7 @@ void anna_type_reseal(anna_type_t *this)
     for(i=0; i<al_get_count(&this->member_list); i++)
     {
 	anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
-	if(!memb->is_static)
+	if(!anna_member_is_static(memb))
 	{
 	    continue;
 	}

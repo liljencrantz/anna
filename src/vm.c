@@ -631,7 +631,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    CRASH;
 	}
 #endif 
-	if(m->is_property)
+	if(anna_member_is_property(m))
 	{
 	    if(unlikely(obj == null_object))
 	    {
@@ -828,7 +828,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	}
 #endif
 
-	if(m->is_property)
+	if(anna_member_is_property(m))
 	{
 	    anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->setter_offset]);
 	    anna_function_t *fun = anna_function_unwrap(method);
@@ -844,7 +844,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	}
 	else
 	{
-	    if(m->is_static) {
+	    if(anna_member_is_static(m)) {
 		obj->type->static_member[m->offset] = value;
 	    } else {
 		obj->member[m->offset] = value;
@@ -875,7 +875,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    CRASH;
 	}
 
-	if(m->is_property)
+	if(anna_member_is_property(m))
 	{
 	    debug(
 		D_CRITICAL,

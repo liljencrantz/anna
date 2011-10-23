@@ -15,21 +15,21 @@ ANNA_VM_NATIVE(anna_member_i_get_static, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return m->is_static?anna_from_int(1):null_entry;
+    return anna_member_is_static(m)?anna_from_int(1):null_entry;
 }
 
 ANNA_VM_NATIVE(anna_member_i_get_method, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return m->is_bound_method?anna_from_int(1):null_entry;
+    return anna_member_is_bound(m)?anna_from_int(1):null_entry;
 }
 
 ANNA_VM_NATIVE(anna_member_i_get_property, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_member_t *m = anna_member_unwrap(this);
-    return m->is_property?anna_from_int(1):null_entry;
+    return anna_member_is_property(m)?anna_from_int(1):null_entry;
 }
 
 ANNA_VM_NATIVE(anna_member_i_get_type, 1)
@@ -57,7 +57,7 @@ ANNA_VM_NATIVE(anna_member_i_value, 2)
 	return null_entry;
     }
         
-    if(memb->is_static)
+    if(anna_member_is_static(memb))
     {
 	return type->static_member[memb->offset];
     }

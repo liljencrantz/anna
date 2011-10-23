@@ -180,7 +180,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    
     if(member)
     {
-	if(member->type == type_type && member->is_static)
+	if(member->type == type_type && anna_member_is_static(member))
 	{
 //		    debug(4,L"Hmmm, node is of type type...");
 //		    anna_node_print(4, n);
@@ -222,14 +222,14 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		
 	if(!anna_node_validate_call_parameters(
 	       n, fun,
-	       member->is_bound_method && !(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER),
+	       anna_member_is_bound(member) && !(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER),
 	       1))
 	{
 	    member = 0;
 	}
 	else
 	{
-	    anna_node_call_map(n, fun, member->is_bound_method);
+	    anna_node_call_map(n, fun, anna_member_is_bound(member));
 	}
     }
     else
@@ -558,7 +558,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    if((c->node_type == ANNA_NODE_MEMBER_GET) || 
 	       (c->node_type == ANNA_NODE_STATIC_MEMBER_GET))
 	    {
-		if( (member->is_bound_method) && 
+		if( (anna_member_is_bound(member)) && 
 		    (c->node_type == ANNA_NODE_MEMBER_GET) )
 
 		{

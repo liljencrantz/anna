@@ -150,7 +150,7 @@ static int anna_abides_fault_count_internal(
 	    if(verbose)
 		debug(verbose, L"No member named %ls\n", r_memb->name);
 	}
-	else if(r_memb->is_bound_method != c_memb->is_bound_method)
+	else if(anna_member_is_bound(r_memb) != anna_member_is_bound(c_memb))
 	{
 	    ok=0;
 /*	    if(!ok && level==1)
@@ -159,13 +159,13 @@ static int anna_abides_fault_count_internal(
 	    if(verbose)
 		debug(verbose, L"Miss on %ls because of one is a method and not the other\n", r_memb->name);
 	}
-	else if(r_memb->is_static != c_memb->is_static)
+	else if(anna_member_is_static(r_memb) != anna_member_is_static(c_memb))
 	{
 	    if(verbose)
 		debug(verbose, L"Miss on %ls because of one is static and not the other\n", r_memb->name);
 	    ok=0;
 	}
-	else if(r_memb->is_bound_method)
+	else if(anna_member_is_bound(r_memb))
 	{
 	    ok = anna_abides_function(
 		anna_function_type_unwrap(c_memb->type),
@@ -252,17 +252,17 @@ void anna_type_intersect_into(
 //	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(memb1->is_bound_method != memb2->is_bound_method)
+	else if(anna_member_is_bound(memb1) != anna_member_is_bound(memb2))
 	{
 //	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(memb1->is_static != memb2->is_static)
+	else if(anna_member_is_static(memb1) != anna_member_is_static(memb2))
 	{
 //	    wprintf(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(memb2->is_bound_method)
+	else if(anna_member_is_bound(memb2))
 	{
 	    anna_function_type_t *ft1 = anna_function_type_unwrap(memb1->type);
 	    anna_function_type_t *ft2 = anna_function_type_unwrap(memb2->type);
@@ -358,7 +358,7 @@ void anna_type_intersect_into(
 	    {
 		anna_member_create(
 		    res, anna_mid_get(memb2->name),
-		    memb2->is_static, memb2->type);
+		    anna_member_is_static(memb2), memb2->type);
 	    }
 	}
     }

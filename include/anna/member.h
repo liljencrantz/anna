@@ -4,10 +4,6 @@
 #include "anna/base.h"
 #include "anna/node.h"
 
-#define ANNA_MEMBER_STATIC 1
-#define ANNA_MEMBER_VIRTUAL 2
-#define ANNA_MEMBER_ALLOC 4
-
 extern anna_type_t *member_method_type, *member_property_type, *member_variable_type;
 
 anna_member_t *anna_member_unwrap(anna_object_t *obj);
@@ -92,6 +88,52 @@ void anna_member_document(
     anna_type_t *type,
     mid_t mid,
     wchar_t *doc);
+
+static inline int anna_member_is_bound(anna_member_t *member)
+{
+    return !!(member->storage & ANNA_MEMBER_BOUND);
+}
+
+static inline void anna_member_set_bound(anna_member_t *member, int value)
+{
+    if(value)
+    {
+	member->storage |= ANNA_MEMBER_BOUND;
+    }
+    else
+    {
+	member->storage = (member->storage & ~ANNA_MEMBER_BOUND);
+    }
+}
+
+static inline void anna_member_set_static(anna_member_t *member, int value)
+{
+    if(value)
+    {
+	member->storage |= ANNA_MEMBER_STATIC;
+    }
+    else
+    {
+	member->storage = (member->storage & ~ANNA_MEMBER_STATIC);
+    }
+}
+
+static inline int anna_member_is_property(anna_member_t *member)
+{
+    return !!(member->storage & ANNA_MEMBER_PROPERTY);
+}
+
+static inline void anna_member_set_property(anna_member_t *member, int value)
+{
+    if(value)
+    {
+	member->storage |= ANNA_MEMBER_PROPERTY;
+    }
+    else
+    {
+	member->storage = (member->storage & ~ANNA_MEMBER_PROPERTY);
+    }
+}
 
 
 #endif

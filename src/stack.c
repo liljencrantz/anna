@@ -277,7 +277,7 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *v
     if(use)
     {
 	anna_member_t *memb = anna_type_member_info_get(use->type, name);
-	if(memb->is_static)
+	if(anna_member_is_static(memb))
 	{
 	    use->type->static_member[memb->offset] = value;
 	}
@@ -305,7 +305,7 @@ anna_entry_t *anna_stack_get(anna_stack_template_t *stack, wchar_t *name)
     if(use)
     {
 	anna_member_t *memb = anna_type_member_info_get(use->type, name);
-	if(memb->is_static)
+	if(anna_member_is_static(memb))
 	{
 	    return use->type->static_member[memb->offset];
 	}
