@@ -78,6 +78,7 @@ static inline __malloc anna_type_t *anna_alloc_type()
     memset(res, 0, sizeof(anna_type_t));
     res->flags = ANNA_TYPE;
     al_push(&anna_alloc[ANNA_TYPE], res);
+    anna_alloc_count+=sizeof(anna_type_t);
     return res;
 }
 
@@ -87,6 +88,7 @@ static inline __malloc anna_function_t *anna_alloc_function()
     memset(res, 0, sizeof(anna_function_t));
     res->flags = ANNA_FUNCTION;
     al_push(&anna_alloc[ANNA_FUNCTION], res);
+    anna_alloc_count+=sizeof(anna_function_t);
     return res;
 }
 
@@ -104,6 +106,7 @@ static inline __malloc  anna_stack_template_t *anna_alloc_stack_template()
     memset(res, 0, sizeof(anna_stack_template_t));
     res->flags = ANNA_STACK_TEMPLATE;
     al_push(&anna_alloc[ANNA_STACK_TEMPLATE], res);
+    anna_alloc_count+=sizeof(anna_stack_template_t);
     return res;
 }
 

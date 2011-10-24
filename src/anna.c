@@ -197,6 +197,7 @@ int main(int argc, char **argv)
     
     anna_alloc_gc_unblock();
     anna_main_run(module);
+
     anna_shutdown();
     
     return ANNA_STATUS_OK;

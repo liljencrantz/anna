@@ -541,6 +541,7 @@ void anna_gc(anna_context_t *context)
 {
     if(anna_alloc_gc_block_counter)
     {
+	anna_alloc_tot += anna_alloc_count;
 	anna_alloc_count = 0;
 	return;
     }
@@ -555,11 +556,7 @@ void anna_gc(anna_context_t *context)
     
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	for(i=0; i<al_get_count(&anna_alloc); i++)
-	{
-	    void *obj = al_get_fast(&anna_alloc[j], i);
-	    s_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
-	}
+	s_count[j] = al_get_count(&anna_alloc[j]);
 	start_count += al_get_count(&anna_alloc[j]);
     }
     
@@ -640,23 +637,19 @@ void anna_gc(anna_context_t *context)
     int o_count[]={0,0,0,0,0,0,0,0,0,0,0,0,0};
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	
+	o_count[j] = al_get_count(&anna_alloc[j]);
 	end_count += al_get_count(&anna_alloc[j]);
-	for(i=0; i<al_get_count(&anna_alloc[j]); i++)
-	{
-	    void *obj = al_get_fast(&anna_alloc[j], i);
-	    o_count[(*((int *)obj) & ANNA_ALLOC_MASK)]++;
-	}
     }
     
     wchar_t *name[]=
 	{
-	    L"type", L"object", L"stack template", L"AST node", L"runtime stack", L"function", L"blob"
+	    L"object", L"activation frame", L"type", L"stack template", 
+	    L"AST node", L"execution context", L"function", L"blob"
 	}
     ;
 
     wprintf(L"Collected %d elements\n", start_count-end_count);
-    for(i=0; i<7; i++)
+    for(i=0; i<ANNA_ALLOC_TYPE_COUNT; i++)
     {
 	wprintf(L"Collected %d elements of type %ls, after gc, %d elements remain\n", s_count[i] - o_count[i] , name[i], o_count[i]);
     }
@@ -667,7 +660,7 @@ void anna_gc(anna_context_t *context)
     
     anna_alloc_tot += anna_alloc_count;
     anna_alloc_count = 0;
-    anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 1, 1024*1024*8);
+    anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 1, GC_FREQ);
     
 #ifdef ANNA_CHECK_GC_LEAKS
     wprintf(
