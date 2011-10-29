@@ -8,6 +8,8 @@
   - binding generator doesn't pass on doc attribute
 * HTML api documentation extractor
   - Hide internal elements by default
+  - variadic arguments aren't shown as such
+  - argument default values aren't shown
 * Check that node compare supports all ast node types
 * More validation:
   - Only static members can be accessed statically

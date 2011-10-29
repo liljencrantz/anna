@@ -35,7 +35,6 @@
 #include "src/abides.c"
 #include "src/mid.c"
 
-static array_list_t  anna_type_list = AL_STATIC;
 int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
 static hash_table_t anna_type_for_function_identifier;
@@ -74,30 +73,6 @@ void anna_type_object_is_created()
 	anna_type_copy(t, object_type);
     }
     al_destroy(&anna_type_uninherited);
-}
-
-void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz)
-{
-    int i;
-    
-    for(i=0;i<al_get_count(&anna_type_list); i++)
-    {
-	anna_type_t *type = (anna_type_t *)al_get_fast(&anna_type_list, i);
-	type->mid_identifier = realloc(type->mid_identifier, sz*sizeof(anna_member_t *));
-	if(type == null_type)
-	{
-	    int j;
-	    for(j=old_sz; j<sz; j++)
-	    {
-		type->mid_identifier[j] = type->mid_identifier[0];
-//		wprintf(L"Setting mid %d of null type to point to null member %d\n", j, type->mid_identifier[0]);
-	    }
-	}
-	else
-	{
-	    memset(&type->mid_identifier[old_sz], 0, (sz-old_sz)*sizeof(anna_member_t *));
-	}
-    }
 }
 
 FIXME("anna_type_mangle_methods is horrible and should be rewriten as an anna macro")
@@ -220,7 +195,6 @@ static anna_type_t *anna_type_create_internal(
 	
 	anna_type_mangle_methods(result);
     }
-    al_push(&anna_type_list, result);
     hash_init(&result->specializations, anna_node_hash_func, anna_node_hash_cmp);
 
     anna_type_calculate_size(result);
@@ -1759,3 +1733,4 @@ void anna_type_ensure_mid(anna_type_t *type, mid_t mid)
     }
     
 }
+

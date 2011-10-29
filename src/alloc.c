@@ -32,7 +32,6 @@ array_list_t anna_alloc[ANNA_ALLOC_TYPE_COUNT] = {
     AL_STATIC,
     AL_STATIC,
     AL_STATIC,
-    AL_STATIC,
     AL_STATIC
 }
     ;
@@ -327,10 +326,6 @@ static void anna_alloc_mark_activation_frame(anna_activation_frame_t *frame)
 
 static void anna_alloc_mark_context(anna_context_t *context)
 {
-    if( context->flags & ANNA_USED)
-	return;
-    context->flags |= ANNA_USED;    
-
     anna_entry_t **obj;
     for(obj = &context->stack[0]; obj < context->top; obj++)
     {	
@@ -351,11 +346,6 @@ void anna_alloc_mark(void *obj)
 	case ANNA_TYPE:
 	{
 	    anna_alloc_mark_type((anna_type_t *)obj);
-	    break;
-	}
-	case ANNA_CONTEXT:
-	{
-	    anna_alloc_mark_context((anna_context_t *)obj);
 	    break;
 	}
 	case ANNA_FUNCTION:
@@ -430,13 +420,6 @@ static void anna_alloc_free(void *obj)
 	    
 	    anna_alloc_count -= sizeof(anna_type_t);
 	    anna_slab_free(obj, sizeof(anna_type_t));
-	    break;
-	}
-	case ANNA_CONTEXT:
-	{
-	    anna_context_t *o = (anna_context_t *)obj;
-	    anna_alloc_count -= o->size;
-	    anna_slab_free(o, o->size);
 	    break;
 	}
 	case ANNA_ACTIVATION_FRAME:

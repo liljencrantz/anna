@@ -328,9 +328,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     int is_root = vm_count==0;
     
     anna_context_t *stack;  
-    size_t ss = 8192;//(argc+1)*sizeof(anna_object_t *) + sizeof(anna_context_t);
+    size_t ss = 4096 * sizeof(anna_entry_t *);
     size_t afs = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_activation_frame_t);
-    stack = anna_alloc_context(ss);
+    stack = anna_slab_alloc(ss);
+    stack->size = ss;
     
     stack->frame = anna_alloc_activation_frame(afs);
     stack->frame->dynamic_frame = 0;
@@ -542,6 +543,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 //	free(stack->frame->code);
 	anna_context_frame_return(stack);
 //	stack = stack->caller;
+	anna_slab_free(stack, stack->size);
 	return val;
     }
 	    

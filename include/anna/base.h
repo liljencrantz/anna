@@ -32,10 +32,9 @@ typedef int mid_t;
 #define ANNA_TYPE 2
 #define ANNA_STACK_TEMPLATE 3
 #define ANNA_NODE 4
-#define ANNA_CONTEXT 5
-#define ANNA_FUNCTION 6
-#define ANNA_BLOB 7
-#define ANNA_ALLOC_TYPE_COUNT 8 
+#define ANNA_FUNCTION 5
+#define ANNA_BLOB 6
+#define ANNA_ALLOC_TYPE_COUNT 7
 
 #define ANNA_ALLOC_FLAGS_SIZE 4
 #define ANNA_ALLOC_MASK 15
@@ -582,10 +581,6 @@ struct anna_activation_frame
  */
 struct anna_context
 {
-    /**
-       Used by the GC
-    */
-    int flags;
     /**
       The total amount of memory used by this object
     */

@@ -33,16 +33,6 @@ static inline void anna_alloc_check_gc(anna_context_t *context)
     }
 }
 
-static inline __malloc anna_context_t *anna_alloc_context(size_t sz)
-{
-    anna_context_t *res = anna_slab_alloc(sz);
-    res->flags = ANNA_CONTEXT;
-    al_push(&anna_alloc[ANNA_CONTEXT], res);
-    anna_alloc_count+=sz;
-    res->size = sz;
-    return res;
-}
-
 static inline __malloc anna_activation_frame_t *anna_alloc_activation_frame(size_t sz)
 {
     anna_activation_frame_t *res = anna_slab_alloc(sz);
