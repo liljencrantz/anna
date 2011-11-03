@@ -165,7 +165,7 @@ check: test
 
 documentation: documentation/api
 
-documentation/api: bin/anna lib/*.anna $(ANNA_INTERNAL_BINDINGS)
+documentation/api: bin/anna lib/*.anna $(ANNA_INTERNAL_BINDINGS) util/document/*.html
 	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna && touch documentation/api
 
 test: bin/anna

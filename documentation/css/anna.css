@@ -2,6 +2,7 @@
 body
 {
     background-color: #eee;
+    background-image: url('../img/xv.png'); 
     margin: 0;
     padding: 0;
     font-family: sans-serif;
@@ -117,6 +118,9 @@ a:visited
     border: 1px solid #aaa;
     padding: 1em;
     width: 100%;
+    box-shadow: 5px 5px 10px 10px #aaa;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
 }
 
 .anna-code-popup-close
@@ -125,6 +129,7 @@ a:visited
     float: right;
     display: block;
     padding: 0.7em 0.95em;
+    border-top-right-radius: 4px;
 }
 
 .anna-code-popup-close:hover

@@ -1,4 +1,6 @@
-
+/*
+  Put all code in the anna namespace to avoid namespace pollution
+*/
 var anna = {
 
     init: function(){
@@ -7,6 +9,9 @@ var anna = {
 	anna.initCodePopup();
     },
 
+    /*
+      Handle code popups correctly
+     */
     initCodePopup: function()
     {
 	$(document).keypress(
@@ -28,7 +33,7 @@ var anna = {
 
     /*
       Create a toc based on the actual headers of the main document
-     */
+    */
     makeToc: function (){
 	var toc = $(".toc");
 	$(".anna-main").find("h1, h2").each(
@@ -50,11 +55,11 @@ var anna = {
     /*
       Very simple syntax highlighter. Uses a state-machine to detect
       string literals and comments, and uses regexps to detect
-      keywords and types.
+      keywords, types and generic operators.
 
       Very little error handling, anything might happen on invalid
       input.
-     */
+    */
     syntaxHighlight: function()
     {
 

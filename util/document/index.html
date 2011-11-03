@@ -12,7 +12,7 @@
     <div class="anna-content">
       <div class="anna-main">
 	<div class="anna-main-inner">
-	  <h1>A brief introduction to Anna</h1>
+	  <h1><a name='root'>A brief introduction to Anna</a></h1>
 	  <pre class="anna-code">
 def main()
 {
@@ -221,7 +221,7 @@ pi :== 4.0;    // Declare pi as a constant with value 4.0
 	  </p>
 	  <p>
 	    To learn more about type inference,
-	    click <a href="#type-inference">here</a>, otherwise, continue
+	    click <a href="#type-inference">here</a>. Otherwise, continue
 	    reading.
 	  </p>
 	  <h3><a name="examples-numbers">Numbers</a></h3>
@@ -253,10 +253,15 @@ print( .5 );
 	  </pre>
 	  <p>
 	    To learn more about how Anna stores numbers efficiently,
-	    click <a href="#implementation-numbers">here</a>, otherwise,
+	    click <a href="#implementation-numbers">here</a>. Otherwise,
 	    keep reading.
 	  </p>
+
+
 	  <h3><a name="examples-lists">Lists</a></h3>
+	  <p>
+	    Lists are collections that store values at a specific integer offset.
+	  </p>
 	  <pre class="anna-code">
 // lst is a list with four members
 lst := ["first", "second", "third", "fourth"]
@@ -285,22 +290,55 @@ print(lst2.count, "\n");
 // Prints the first member of lst2, which is "second"
 print(lst2[0], "\n");
 
+/*
+  Lists have the push, pop and empty operations, making them suitable as stacks.
+*/
+
 // Push an element to the end of a list
 lst2.push("last");
 
 // Remove and return the last element of a list
 print(lst2.pop());
 
+// The empty property is 1 if the list is empty, and null otherwise
+print(lst.empty)
+
 // Join two lists together
 lst3 := ["Spoon", "Banana"] ~ lst2;
 
-// This is a compile time error - lst2 is a list of strings, not a list of integers
-lst3.push(5)
+/*
+  Lists know the type of object they store, e.g. String or Int.
+
+  This is a compile time error - lst3 is a list of strings, not a list of integers
+*/
+lst3.push(5);
+
+/*
+  When creting a list using a collection literal, Anna automatically
+  calculates the type objects that van be stored in a list as the
+  intersection of all types specified. In this case, the type is the
+  intersection of the Int, String and Float types.
+*/
+weirdList := [1, "foo", 6.666]
+
+/*
+  Use template specialization if you want to manually specify the type
+  of object to store in a list. This is a list of objects.
+*/
+objList := «Object»[1,3,5, "foo", 6.666]
 	  </pre>
+
 	  
 	  <h3><a name="examples-maps">Maps</a></h3>
+	  <p>
+	    Maps are collections that map from one object to
+	    another. The default Anna map is the HashMap.
+	  </p>
 	  <pre class="anna-code">
-// hash is a HashMap with four mappings
+/*
+  hash is a HashMap thet maps from one String to another String. It
+  has four mappings
+*/
 hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
 
 // Print the number of members. In this case, that is '4'
@@ -308,6 +346,9 @@ print(hash.count, "\n");
 
 // Prints the value associated with the key "third", which is "C":
 print(hash["third"], "\n");
+
+// Add another mapping
+hash["other"] = "unknown";
 	  </pre>
 	  
 	  <h3><a name="examples-ranges">Ranges</a></h3>
@@ -346,7 +387,6 @@ print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...], "\n")
 // This outputs «banana»
 print("abrainbadnoah\n"[1|2...]);
 	  </pre>
-	  
 	  <h3><a name="examples-looping">Looping</a></h3>
 	  <p>
 	    The while loop looks like in any other C-like language
@@ -451,6 +491,66 @@ laps := Int::convert(system.argument[1]) or 5;
 print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
 	  </pre>
 
+	  <h3><a name="examples-mutable">Mutable and imutable objects</a></h3>
+	  <p>
+	    Some objects in Anna are mutable, i.e. they can be changed
+	    after they where created. It sometimes makes sense to
+	    provide both a mutable and an imutable version of the same
+	    type. In these cases, the Anna convention is that both
+	    types of objects have two fields,
+	    named <code class="anna-code">freeze</code>
+	    and <code class="anna-code">thaw</code>, that can be used
+	    to obtain a mutable or imutable object with the same
+	    content.
+	  </p>
+	  <pre class="anna-code">
+/*
+  The String literal is of the ImutableString type, which is
+  imutable. This is a syntax error
+*/
+imutableString :="foo";
+imutableString[0] = 'F';
+
+/*
+  Use the thaw property to get a mutable version of the String
+*/
+mutableString :="foo".thaw;
+mutableString[0] = 'F';
+
+/*
+  You can use the ~= append operator both on mutable and imutable
+  strings. When used on imutable strings, every call to ~= will create
+  a new ImutableString. When this happens in e.g. a loop, it can
+  become very slow. I such situations, you can speed up the program by
+  making sure the String you're appending to is mutable:
+*/
+result := "".thaw;
+someCollection.each(item){ result ~= doSomeProccessing(item) }
+
+/*
+  The List collection literal is mutable, so this is ok.
+*/
+mutableList := [1,2,3];
+mutableList[0] = 0;
+
+/*
+  freeze returns an ImutableList, so this is a compile time error
+*/
+imutableList := [1,2,3].freeze;
+imutableList[0] = 0;
+
+/*
+  The thaw property of a mutable object returns itself, as does the
+  freeze property of an imutable object.
+*/
+useless := "useless".freeze;
+alsoUseless := ["useless"].thaw;
+	  </pre>
+	  <p>
+	    For more information on mutability in Anna, see
+	    the <a href='#mutability'>Mutable</a> section of the
+	    manual.
+	  </p>
 	  <h3><a name="examples-specialization">Template specialization</a></h3>
 	  <p>
 	    
@@ -475,13 +575,16 @@ lst2 := MutableList(5,6,7);
 // Empty list of integers
 lst3 := «Int»[];
 
-// Empty HashMap of String to Char
+// Empty HashMap mapping from String to Char
 hash := «String, Char»[];
 
 /*
   A simple example of how to create your own template type.
 
   Foo uses Int as the default type for the %A template parameter.
+
+  All templated arguments must be prefixed with a '%' symbol. Template
+  arguments that are type names must begin with an upper case letter.
 */
 type Foo (template(%A:Int)) {
 
@@ -692,8 +795,6 @@ print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
 	  <p>
 	    <code class="anna-code">struct</code> is just a regular
 	    Anna macro. You can <%! toggleCodePopup("struct", "check out the source code") %>.
-
-	    file.
 	  </p>
 
 	  <%! codePopup("struct", "bootstrap/struct.anna") %>
@@ -733,7 +834,6 @@ def main()
 	  <p>
 	    <code class="anna-code">enum</code> is just a regular
 	    Anna macro. You can <%! toggleCodePopup("enum", "check out the source code") %>.
-	    file.
 	  </p>
 
 	  <%! codePopup("enum", "bootstrap/enum.anna") %>
@@ -775,7 +875,7 @@ TODO
 	    <li><a href='#structural_typing'>Structural typing - duck typing rethought</a></li>
 	    <li><a href='#macros'>Macros - redefining the problem to fit the solution</a></li>
 	    <li><a href='#misc'>An odd number of legs for a horse to have</a>, various oddities about Anna.</li>
-	    <li><a href='#continuations'>Enough interruptions, let's continuate!</a></li>
+	    <li><a href='#continuations'>Continuations</a>, the power to shoot yourself in the foot an infinite number of times.</li>
 	  </ul>
     
 	  <h2><a name="intro_long">Gentle Anna</a></h2>
@@ -808,21 +908,24 @@ TODO
 	      level language.
 	    </li>
 	    <li>
-	      Some languages are statically typed, meaning the programmer
-	      has to tell the computer what type of data is being processed
-	      at every step of a program, other are dynamically typed,
-	      meaning the programmer only tells the computer what steps to
-	      take, and the computer will find out what type of data to
-	      operate on when the program is run. Statically typed languages
-	      avoid some types of bugs because it can figure out that some
-	      operations won't work on the specific type of data you're
-	      operating on, and will warn you in advance that your code is
-	      broken, but dynamically typed languages require less verbosity
-	      from the programmer. Statically typed languages are usually
-	      also slightly faster than dynamically typed languages. Anna
-	      tries to find a middle ground between these two by being
-	      statically typed, but making the computer figure out the
-	      actual type for you when possible.
+	      Some languages are statically typed, meaning the
+	      programmer has to tell the computer what type of data is
+	      being processed at every step of a program, other are
+	      dynamically typed, meaning the programmer only tells the
+	      computer what steps to take, and the computer will find
+	      out what type of data to operate on when the program is
+	      run. Statically typed languages avoid some types of bugs
+	      because it can figure out that some operations won't
+	      work on the specific type of data you're operating on,
+	      and will warn you in advance that your code is broken,
+	      but dynamically typed languages require less verbosity
+	      from the programmer. Statically typed languages are
+	      usually also slightly faster than dynamically typed
+	      languages. Anna tries to find a middle ground between
+	      these two by being statically typed, but making the
+	      computer figure out the actual type for you when
+	      possible, so that you don't need to repeat yourself
+	      needlessly.
 	    </li>
 	    <li>
 	      Pretty much all computer languages allow you to extend the
@@ -870,6 +973,7 @@ TODO
 	      is, Anna provides you with the tools to solve it efficiently.
 	    </li>
 	  </ul>
+	  <h3>Moving on</h3>
 	  <p>
 	    That should give you an idea about Anna. If you want more in
 	    depth information about some aspect of Anna, follow one of the
@@ -878,8 +982,13 @@ TODO
 	  <ul>
 	    <li>
 	      <a href='#examples'>Anna by examples.</a> If you want to see
-	      thery turned into practice.
+	      theory turned into practice.
 	    </li>
+	    <li>
+	      <a href='#macros'>Macros - redefining the problem to fit
+		the solution</a>
+	    </li>
+	    <li><a href='#misc'>An odd number of legs for a horse to have</a>, various oddities about Anna.</li>
 
 	  </ul>
 	  <h2><a name="intro_lisp">Anna for LISP programmers</a></h2>
@@ -889,9 +998,9 @@ TODO
 	    Anna is a statically typed language with a front end that allows
 	    you to write your code with a C-like structure, e.g. using infix
 	    operators, braces and brackets. What sets Anna apart from other
-	    such languages is it's support for LSIP-features such as
+	    such languages is it's support for LISP-features such as
 	    LISP-style macros, closures, anonymous functions and
-	    continuations.  The Anna type system sis static, but it supports
+	    continuations.  The Anna type system is static, but it supports
 	    structural typing, meaning that if the type of variable B
 	    contains all members of the type A, with compatible type
 	    signatures, then B can be freely cast into a variable of type
@@ -902,13 +1011,14 @@ TODO
 	  </p>
 	  <ul>
 	    <li>
-	      <a href="#sugar">Sugar and spice</a> - How the front end
-	      sugar works and what Anna looks like without makeup.
-	    </li>
-	    <li>
 	      <a href='#examples'>Anna by examples.</a> If you just want to
 	      dig in to the syntax.
 	    </li>
+	    <li>
+	      <a href="#sugar">Sugar and spice</a> - How the front end
+	      sugar works and what Anna looks like without makeup.
+	    </li>
+	    <li><a href='#structural_typing'>Structural typing - duck typing rethought</a></li>
 
 	  </ul>
     
@@ -923,16 +1033,6 @@ TODO
 	    keypresses, including:
 	  </p>
 	  <ul>
-	    <li>
-	      There are no statements in Anna, only expressions. The
-	      if expression, for example, returns the output of the
-	      conditional block that was executed. The Anna equivalent
-	      of the C ternary operator
-	      becomes <code class="anna-code">foo = if (a>3) {3} else
-	      {a}</code>. If a function reaches the end of it's block
-	      without encountering a return statement, the output from
-	      the last expression of the function is returned.
-	    </li>
 	    <li>
 	      Say you've written a class A, and it implements all of
 	      the members of an interface/class B. You do not need to
@@ -949,6 +1049,16 @@ TODO
 	      write it out multiple times. Most variable declarations and
 	      cast operations for example do not require you to write out
 	      the type. Go and C# programmers should recognise this feature.
+	    </li>
+	    <li>
+	      There are no statements in Anna, only expressions. The
+	      if expression, for example, returns the output of the
+	      conditional block that was executed. The Anna equivalent
+	      of the C ternary operator
+	      becomes <code class="anna-code">foo = if (a>3) {3} else
+	      {a}</code>. If a function reaches the end of it's block
+	      without encountering a return statement, the output from
+	      the last expression of the function is returned.
 	    </li>
 	  </ul>
 	  <p>
@@ -984,7 +1094,7 @@ TODO
 	    fit. That's pretty nifty, but how does that tie in with us? Anna
 	    has two keywords for defining a function,
 	    namely <code class="anna-code">def</code> and <code class="anna-code">macro</code>. They work
-	    pretty much the same, they both let you define a pice of code
+	    pretty much the same, they both let you define a piece of code
 	    with a few input parameters and a few output parameters. There
 	    are two differences between the two, firstly that macros are run
 	    at compile time, and secondly that the input and output of the
@@ -1028,7 +1138,7 @@ macro replaceObjectWithInt(node)
 	    the standard ISO data format:
 	  </p>
 	  <pre>
-birthday := IsoDate(1978-05-20, 12:34:00);
+birthday := isoDate(1978-05-20, 12:34:00);
 	  </pre>
 	  <p>
 	    It is possible to create a list search interface like LINQ in
@@ -1046,7 +1156,7 @@ birthday := IsoDate(1978-05-20, 12:34:00);
 	  <p>
 	    This paragraph is for C and C++ coders that know what a longjmp
 	    is. If you don't, feel free to skip this paragraph. So, you know
-	    what a longjmp is. Cogratulations! A continuation is exactly
+	    what a longjmp is. Congratulations! A continuation is exactly
 	    like a longjmp, except that the restrictions placed on
 	    longjmps are removed. Specifically, longjmp:s only allow you to
 	    «rewind» the stack and continue execution further down on the
@@ -1061,10 +1171,29 @@ birthday := IsoDate(1978-05-20, 12:34:00);
 	    implement exception handling, green threads and a multitude of
 	    other features.
 	  </p>
+	  <h3>Moving on</h3>
 	  <p>
-	    To learn more about continuations,
-	    click <a href="#continuations">here</a>.
+	    This concludes the Anna overview for people familiar with
+	    the C class of languages. You now need to decide where to
+	    go next:
 	  </p>
+	  <ul>
+	    <li>
+	      To learn more about continuations,
+	      click <a href="#continuations">here</a>.
+	    </li>
+
+	    <li>
+	      Read <a href='#examples'>Anna by examples</a> if you
+	      feel ready to see some code.
+	    </li>
+	    
+	    <li>
+	      Or you can read a discussion on the
+	      various <a href='#design'>Design choices</a> in Anna.
+	    </li>
+	    
+	  </ul>
 	  
 	  <h2><a name="intro_script">Anna for Python and Ruby programmers</a></h2>
 	  <div class='anna-subheading'>Wherein...</div>
@@ -1169,6 +1298,27 @@ FIXME! Functional programming example here
 	    type <code class="anna-code">A</code> or not.
 	  </p>
     
+	  
+	  <h3>Moving on</h3>
+	  <p>
+	    This concludes the Anna overview for people familiar with
+	    scripting languages. You now need to decide where to
+	    go next:
+	  </p>
+	  <ul>
+	    <li>
+	      Read <a href='#examples'>Anna by examples</a> if you
+	      feel ready to see some code.
+	    </li>
+	    
+	    <li>
+	      Or you can read a discussion on the
+	      various <a href='#design'>Design choices</a> in Anna.
+	    </li>
+	    
+	  </ul>
+	  
+
 	  <h1><a name="structural_typing">Structural typing</a></h1>
 	  <p>
 	    Most languages, including Python and Java, have operations that
@@ -1669,6 +1819,86 @@ col ^blend 0.1;
 */
 thisIsCode();
 	  </pre>
+
+	  <h2><a name="mutability">Mutability</a></h2>
+	  <p>
+	    Some objects in Anna are mutable, i.e. they can be changed
+	    after they where created.  Mutable objects are sometimes
+	    significantly easier to work with, but the fact that an
+	    imutable object can't change unexpectedly has some
+	    important code safety implications. Imutable objects also
+	    offer important opportunities for optimizations.
+	  </p>
+	  <p>
+	    Anna has both mutable and imutable versions of several
+	    basic types. The table below shows these types.  Anna also
+	    has an intersection of these types, which is suitable to
+	    use when you're taking a value as input into a function
+	    and don't care if you're getting the mutable or the
+	    imutable version of the object. All types that exist in
+	    Mutable and Imutable form are listed in the table below.
+	  </p>
+	  <table>
+	    <caption>
+	      The anna types that exist in both a mutable and an imutable version.
+	    </caption>
+	    <thead>
+	      <tr>
+		<th>
+		  Mutable version
+		</th>
+		<th>
+		  Imutable version
+		</th>
+		<th>
+		  Intersection
+		</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    MutableList
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    ImutableList
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    List
+		  </code>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    MutableString
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    ImutableString
+		  </code>
+		</td>
+		<td>
+		  <code class="anna-code">
+		    String
+		  </code>
+		</td>
+	      </tr>
+	    </tbody>
+	  </table>
+
+	  <p>
+	    For a few additional examples on how to use mutable
+	    objects in Anna, see the
+	    the <a href='#examples-mutable'>Mutable examples</a>.
+	  </p>
+
 <!--    
     <h1>A simple, annotated example</h1>
     <p>
@@ -1740,7 +1970,7 @@ function mandelbrot(Complex p0, Int maxStep)
 	    code:
 	  </p> 
 	  <pre class="anna-code">
-m := JSON({data:[1,2,3,7], unit:"seconds", caption:null});
+m := json({data:[1,2,3,7], unit:"seconds", caption:null});
 	  </pre>
 	  <p>
 	    Note: This macro has yet to be written. 
