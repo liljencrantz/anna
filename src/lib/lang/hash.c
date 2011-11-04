@@ -40,6 +40,7 @@ typedef struct {
     size_t fill;
     size_t used;
     size_t mask;
+    anna_entry_t *default_value;
     anna_hash_entry_t *table;
     anna_hash_entry_t small_table[ANNA_HASH_MINSIZE];
 } anna_hash_t;
@@ -197,6 +198,7 @@ static inline void ahi_init(anna_hash_t *this)
     this->mask = ANNA_HASH_MINSIZE-1;
     this->table = &this->small_table[0];
     memset(&this->small_table[0], 0, sizeof(anna_hash_entry_t) * ANNA_HASH_MINSIZE);
+    this->default_value = null_entry;
 }
 
 static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
@@ -777,7 +779,7 @@ static __attribute__((aligned(8))) void anna_hash_get_callback(
 {
     if(!hash_entry_is_used(hash_entry))
     {
-	anna_context_push_object(stack, null_object);	
+	anna_context_push_object(stack, ahi_unwrap(hash)->default_value);	
     }
     else
     {
@@ -899,8 +901,23 @@ static inline void anna_hash_remove(anna_context_t *stack)
 
 ANNA_VM_NATIVE(anna_hash_get_count_method, 1)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(param[0]));
     return anna_from_int(this->used);
+}
+
+ANNA_VM_NATIVE(anna_hash_get_default, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(param[0]));
+    return this->default_value;
+}
+
+ANNA_VM_NATIVE(anna_hash_set_default, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(param[0]));
+    return this->default_value = param[1];
 }
 
 /**
@@ -947,8 +964,15 @@ static void anna_hash_each(anna_context_t *stack)
     anna_object_t *body = anna_context_pop_object(stack);
     anna_object_t *hash = anna_context_pop_object(stack);
     anna_context_pop_entry(stack);
+    
+    if(hash == null_object)
+    {
+	anna_context_push_object(stack, null_object);
+	return;
+    }
+    
     size_t sz = anna_hash_get_count(hash);
-
+    
     if(sz > 0)
     {
 	int next_idx = anna_hash_get_next_idx(hash, 0);
@@ -1017,7 +1041,7 @@ static void anna_hash_map(anna_context_t *stack)
     anna_object_t *body = anna_context_pop_object(stack);
     anna_object_t *hash = anna_context_pop_object(stack);
     anna_context_pop_entry(stack);
-    if(body == null_object)
+    if(hash == null_object || body == null_object)
     {
 	anna_context_push_object(stack, null_object);
     }
@@ -1122,7 +1146,7 @@ static void anna_hash_type_create_internal(
 	    L"this", L"value"
 	}
     ;
-
+    
     anna_member_create_native_method(
 	type, anna_mid_get(L"__init__"),
 	ANNA_FUNCTION_VARIADIC, &anna_hash_init,
@@ -1131,6 +1155,11 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
 	&anna_hash_get_count_method, 0,
+	L"The number of elements in this Map.");
+
+    anna_member_create_native_property(
+	type, anna_mid_get(L"default"), spec2,
+	&anna_hash_get_default, &anna_hash_set_default,
 	L"The number of elements in this Map.");
 
     anna_type_t *fun_type = anna_function_type_each_create(

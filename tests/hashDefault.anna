@@ -1,0 +1,11 @@
+
+
+def main()
+{
+    hash := [5: 'b', 7: 'a'];
+    print(hash[5], hash[7], hash[8], hash[7], hash[8], hash[7], "\n");
+    print(hash.default, "\n");
+    hash.default = 'n';
+    print(hash.default, "\n");
+    print(hash[5], hash[7], hash[8], hash[7], hash[8], hash[7], "\n");
+}
