@@ -26,7 +26,7 @@ def main()
 
 def toggleCodePopup(String name, String text )
 {
-    return "<a href='javascript: void(0);' onclick='javascript:$(\"#anna-%-toggle\").toggle()'>%</a>" % [name, text];
+    return "<a href='javascript: void(0);' onclick='javascript:anna.togglePopup(\"#anna-%-toggle\");'>%</a>" % [name, text];
 }
 
 def codePopup(String name, String filename)

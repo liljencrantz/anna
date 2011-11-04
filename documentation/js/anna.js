@@ -3,12 +3,19 @@
 */
 var anna = {
 
+    currentPopup: null,
     init: function(){
 	anna.makeToc();
 	anna.syntaxHighlight();
 	anna.initCodePopup();
+	anna.initTables();
     },
 
+    initTables: function()
+    {
+	$(".anna-table tr:odd").addClass("anna-table-odd");
+    },
+    
     /*
       Handle code popups correctly
      */
@@ -20,6 +27,7 @@ var anna = {
 		if(evt.keyCode == 27)
 		{
 		    $(".anna-code-popup").hide();
+		    anna.currentPopup = null;
 		}
 	    }
 	);
@@ -27,8 +35,32 @@ var anna = {
 	    function (evt)
 	    {
 		$(evt.target.parentNode.parentNode).hide();
+		anna.currentPopup = null;
 	    }
 	);
+    },
+
+    /*
+      Fade popup in or out.
+    */
+    togglePopup: function (selector)
+    {
+	var it = $(selector);
+	if(anna.currentPopup)
+	{
+	    if(it[0] == anna.currentPopup)
+	    {
+		$(anna.currentPopup).fadeOut('fast');
+		anna.currentPopup = null;
+		return;
+	    }
+
+	    $(anna.currentPopup).hide();
+	    anna.currentPopup = null;
+	}
+
+	it.fadeIn('fast');
+	anna.currentPopup = it[0];
     },
 
     /*
@@ -40,8 +72,8 @@ var anna = {
 	    function(idx, el)
 	    {
 		var text = el.textContent;
-		
 		var link = null;
+		
 		if(el.childNodes.length && el.childNodes[0].name)
 		{
 		    link = "#" + el.childNodes[0].name;

@@ -150,3 +150,21 @@ caption
     font-style: italic;
 }
 
+.anna-table tr.anna-table-odd
+{
+    background-color: #eee;
+}
+
+.anna-table
+{
+    border-collapse: collapse;
+}
+
+.anna-table th,
+.anna-table td
+{
+    padding-left: 10pt;
+    padding-right: 10pt;
+}
+
+

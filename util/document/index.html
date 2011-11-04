@@ -30,6 +30,11 @@ def main()
 	  <ul>
 	    
 	    <li>
+	      <a href='#download'>Try it out!</a> Anna is open source
+	      and available on the net.
+	    </li>
+
+	    <li>
 	      Read <a href='#examples'>Anna by examples</a> if you
 	      just want to dig in to the syntax.
 	    </li>
@@ -306,6 +311,9 @@ print(lst.empty)
 // Join two lists together
 lst3 := ["Spoon", "Banana"] ~ lst2;
 
+// Append one list to another
+lst ~= ["Cheese", "Eggs"];
+
 /*
   Lists know the type of object they store, e.g. String or Int.
 
@@ -439,7 +447,9 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
 
 	  <h3><a name="examples-truth">Truth</a></h3>
 	  <p>
-	    
+	    Anna does not have so called type coercison. There is only
+	    one value in Anna which is considered to be false, and
+	    that is the null object.
 	  </p>
 	  <pre class="anna-code">
 if(0)
@@ -1638,7 +1648,7 @@ var col = Color();
 col ^blend 0.1;
 	  </pre>
 
-	  <table>
+	  <table class='anna-table'>
 	    <caption>
 	      Operator precedence, higher to lower.
 	    </caption>
@@ -1838,7 +1848,7 @@ thisIsCode();
 	    imutable version of the object. All types that exist in
 	    Mutable and Imutable form are listed in the table below.
 	  </p>
-	  <table>
+	  <table class='anna-table'>
 	    <caption>
 	      The anna types that exist in both a mutable and an imutable version.
 	    </caption>
@@ -2349,6 +2359,13 @@ def Int main()
 	    behind the scenes. This is possible because the above data
 	    types are all imutable and no memory location pointer can
 	    be obtained for an object.
+	  </p>
+
+	  <h1><a name="download">Getting Anna</a></h1>
+	  <p>
+	    Anna is open source and can be downloaded online. There is
+	    still no actual Anna release, the source code is avaiable
+	    <a href="http://www.github.com/liljencrantz/anna">on Github</a>.
 	  </p>
 	</div>
       </div>
