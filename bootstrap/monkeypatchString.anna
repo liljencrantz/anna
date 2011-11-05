@@ -37,7 +37,7 @@ def String __format__List__(
             } 
 	    else 
 	    {
-                res ~= data[listIdx];
+                res ~= (data[listIdx] or "");
                 listIdx++;
             }
         } 
