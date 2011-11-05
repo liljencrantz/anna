@@ -76,6 +76,30 @@ ANNA_VM_NATIVE(anna_char_i_$name, 2)
 "
 done
 
+
+for i in "alpha True for alphabetical characters." "alnum True for alphanumerical characters." "blank True for blank characters" "digit True for digits" "cntrl True for control characters" "lower True for lower case characters." "upper True for upper case characters." "graph True for any printable character except space" "print True for any printable character including space" "punct True for any printable character which is not alphanumeric." "space True for white space characters." "xdigit True for hexadecimal digits."; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    desc=$(echo "$i"|cut -f 2- -d ' ')
+
+    init="$init
+    anna_member_create_native_property(
+	char_type,
+	anna_mid_get(L\"${name}?\"),
+	int_type,
+	&anna_char_i_q_$name,
+	0,
+	L\"${desc}\");
+"
+    echo "
+ANNA_VM_NATIVE(anna_char_i_q_$name, 1)
+{
+    wchar_t v = anna_as_char(param[0]);
+    return iswctype(v, wctype(\"$name\")) ? anna_from_int(1): null_entry;
+}
+"
+done
+
+
 echo "
 static void anna_char_type_i_create()
 {
