@@ -10,20 +10,24 @@ body
 
 .anna-content
 {
-    width: 80%;
-    margin-left: 10%;
+    width: 85%;
+    margin-left: 7.5%;
     float: left;
 }
 
 .anna-left-menu
 {
     float: left;
-    width: 30%;
+    width: 27%;
+    background-color: white;
+    border-bottom-right-radius: 1.5em;
+    border-bottom-left-radius: 1.5em;
+    box-shadow: 0px 0px 10px 10px #fff; 
 }
 
 .anna-left-menu-inner
 {
-    padding: 2em;
+    padding: 1.5em;
 }
 
 .anna-left-menu h2
@@ -35,7 +39,10 @@ body
 {
     float:left;
     width: 70%;
+    margin-right: 3%;
     background-color: white;
+    box-shadow: 0px 0px 10px 10px #888;
+    padding-bottom: 6em;
 }
 
 .anna-main-inner
@@ -52,6 +59,7 @@ body
 
 .anna-toc-h1
 {
+    margin-top: 0.7em;
     padding-left: 0em;
 }
 
@@ -118,7 +126,7 @@ a:visited
     border: 1px solid #aaa;
     padding: 1em;
     width: 100%;
-    box-shadow: 5px 5px 10px 10px #aaa;
+    box-shadow: 5px 5px 10px 10px #888;
     border-radius: 4px;
     -moz-border-radius: 4px;
 }
@@ -145,7 +153,7 @@ a:visited
     margin-bottom: 1.5em;
 }
 
-caption
+table caption
 {
     font-style: italic;
 }
