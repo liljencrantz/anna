@@ -801,9 +801,18 @@ expression10:
 	|
 	any_identifier
 	| 
-	'(' expression ')'
+	'(' expression_list ')'
 	{
-	    $$ = $2;
+	    if($2->child_count == 1)
+	    {
+		$$ = $2->child[0];
+	    }
+	    else
+	    {
+		$2->function = anna_node_create_identifier(&@2, L"nothing");
+		$$ = $2;
+	    }
+	    
 	}
 	|
 	NULL_SYM
@@ -885,7 +894,7 @@ op3:
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__in__");
 	};
 
-op4: 
+op4:
 	'^' identifier
 	{
 	    $$ = $2
