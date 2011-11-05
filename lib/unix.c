@@ -1144,7 +1144,7 @@ if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){ret
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_is_set, 2)
+ANNA_VM_NATIVE(unix_i_set_check_, 2)
 {
     // Validate parameters
 if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
@@ -1522,11 +1522,11 @@ void anna_io_load(anna_stack_template_t *stack)
         unix_fd_set_type, anna_mid_get(L"clear"), 0, 
         &unix_i_clear, object_type, 2, unix_i_clear_argv, unix_i_clear_argn, 0, L"");
 
-    anna_type_t *unix_i_is_set_argv[] = {unix_fd_set_type, int_type};
-    wchar_t *unix_i_is_set_argn[] = {L"this", L"fd"};
+    anna_type_t *unix_i_set_check__argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_set_check__argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
-        unix_fd_set_type, anna_mid_get(L"isSet"), 0, 
-        &unix_i_is_set, int_type, 2, unix_i_is_set_argv, unix_i_is_set_argn, 0, L"");
+        unix_fd_set_type, anna_mid_get(L"set?"), 0, 
+        &unix_i_set_check_, int_type, 2, unix_i_set_check__argv, unix_i_set_check__argn, 0, L"");
 
     anna_type_t *unix_i_set_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_set_argn[] = {L"this", L"fd"};

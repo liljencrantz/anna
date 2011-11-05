@@ -158,7 +158,7 @@ io
     cType FdSet (name(fd_set))
     {
 	def Void clear(Int fd) (name(ANNA_FD_CLR));
-	def Int isSet(Int fd) (name(ANNA_FD_ISSET));
+	def Int set?(Int fd) (name(ANNA_FD_ISSET));
 	def Void set(Int fd) (name(ANNA_FD_SET));
 	def Void zero() (name(FD_ZERO));
     }

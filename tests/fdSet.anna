@@ -13,6 +13,6 @@ def main()
     fs3.zero();
 
     [3,5,8].each(idx){fs.set(idx)}
-    (0..10).each(idx){print("Fd %: %\n" % [ idx, fs.isSet(idx)])}
+    (0..10).each(idx){print("Fd %: %\n" % [ idx, fs.set?(idx)])}
 }
 

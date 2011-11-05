@@ -75,7 +75,7 @@ def main()
     
     system.argument[1...].each(binding)
     {
-	if(!File(binding).exists)
+	if(!File(binding).exists?)
 	{
 	    print("Error: File «%» does not exist\n" % [binding]);
 	    unix.proc.exit(1);

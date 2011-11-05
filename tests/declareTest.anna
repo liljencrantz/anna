@@ -1,0 +1,13 @@
+def main()
+{
+    a := b:= c:= d:= 1*1;
+    print(a+b+c+d, "\n");
+    aa :== bb:= cc:= dd:= 1;
+    print(aa+bb+cc+dd, "\n");
+
+    aaa := a = 1+1;
+    print(aaa+a, "\n");
+
+    b = bbb := 1+1;
+    print(b+bbb, "\n");
+}

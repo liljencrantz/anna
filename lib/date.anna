@@ -77,7 +77,7 @@ type Date
 
         lst := [year, month, day, hour, minute, second, microsecond];
 
-	if(!lst.all())
+	if(!lst.all?())
 	{
 	    tm := ctime.getTimeOfDay();
   	    brk := ctime.breakTime(tm[0], timezone.name);

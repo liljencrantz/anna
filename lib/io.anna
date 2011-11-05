@@ -6,7 +6,7 @@ type IOError (extends(error.Error))
 {    
 }
 
-def isRelative(String filename)
+def relative?(String filename)
 {
     return filename[0] != separator;
 }
@@ -70,7 +70,7 @@ type File
 	doc("Create a new file object.")
     )
     {
-	if(isRelative(filename))
+	if(relative?(filename))
 	{
 	    path = getCwd().split(separator, ?);
 	    path ~= filename.split(separator, ?);
@@ -161,13 +161,13 @@ type File
 	}
     }
   
-    def Object exists() (property, doc("This value is non-null if the file pointed to by this object currently exists."),)
+    def Object exists?() (property, doc("This value is non-null if the file pointed to by this object currently exists."),)
     {
         buf := unix.io.Stat();
 	return !unix.io.stat(this.filename, buf);
     }
     
-    def Object isFile() (property, doc("This value is non-null if the file pointed to by this object is a regular file"))
+    def Object file?() (property, doc("This value is non-null if the file pointed to by this object is a regular file"))
     {
         buf := unix.io.Stat();
 	return if(!unix.io.stat(this.filename, buf))
@@ -178,7 +178,7 @@ type File
 	}
     }
 
-    def Object isDirectory() 
+    def Object directory?() 
     (
 	property, 
 	doc("This value is non-null if the file pointed to by this object is a directory."),

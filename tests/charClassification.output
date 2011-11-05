@@ -1,0 +1,9 @@
+Character a, ordinal: 97, alpha: 1, alpnum: 1, blank: , digit: , cntrl: , lower: 1, upper: , graph: 1, print: 1, punct: , space: , xdigit: 1
+Character A, ordinal: 65, alpha: 1, alpnum: 1, blank: , digit: , cntrl: , lower: , upper: 1, graph: 1, print: 1, punct: , space: , xdigit: 1
+Character ., ordinal: 46, alpha: , alpnum: , blank: , digit: , cntrl: , lower: , upper: , graph: 1, print: 1, punct: 1, space: , xdigit: 
+Character 9, ordinal: 57, alpha: , alpnum: 1, blank: , digit: 1, cntrl: , lower: , upper: , graph: 1, print: 1, punct: , space: , xdigit: 1
+Character z, ordinal: 122, alpha: 1, alpnum: 1, blank: , digit: , cntrl: , lower: 1, upper: , graph: 1, print: 1, punct: , space: , xdigit: 
+Character Z, ordinal: 90, alpha: 1, alpnum: 1, blank: , digit: , cntrl: , lower: , upper: 1, graph: 1, print: 1, punct: , space: , xdigit: 
+Character  , ordinal: 32, alpha: , alpnum: , blank: 1, digit: , cntrl: , lower: , upper: , graph: , print: 1, punct: , space: 1, xdigit: 
+Character 	, ordinal: 9, alpha: , alpnum: , blank: 1, digit: , cntrl: 1, lower: , upper: , graph: , print: , punct: , space: 1, xdigit: 
+Character !, ordinal: 33, alpha: , alpnum: , blank: , digit: , cntrl: , lower: , upper: , graph: 1, print: 1, punct: 1, space: , xdigit: 
