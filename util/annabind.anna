@@ -758,10 +758,28 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         res := "".thaw ~ name[0].lower;
 	name[1...].each(ch)
 	{
-	    if(ch.lower != ch){
-		res ~= "_";
+	    switch(ch.lower)
+	    {
+   	        case('?')
+		{
+		    res ~= "_check";
+		}
+
+		case('!')
+		{
+		    res ~= "_destructive";
+		}
+		    
+		case(ch)
+		{
+		    res ~= ch;
+		}
+
+		default
+		{
+		    res ~= "_" ~ ch.lower;
+		}
 	    }
-	    res ~= ch.lower;
 	}
 	res;
     }
