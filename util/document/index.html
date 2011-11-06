@@ -357,6 +357,17 @@ print(hash["third"], "\n");
 
 // Add another mapping
 hash["other"] = "unknown";
+
+// "unknown" is not in the hash, so this returns null
+print(hash["unknown"]);
+
+// Set the default value to "I don't know"
+hash.default = "I don't know";
+
+// "unknown" is not in the hash, but this time we have set
+// a default value for the hash, namely "I don't know"
+print(hash["unknown"]);
+
 	  </pre>
 	  
 	  <h3><a name="examples-ranges">Ranges</a></h3>
@@ -864,7 +875,7 @@ TODO
 	  </pre>
    
 	  <h2><a name="intro_short">Anna in a single sentence</a></h2>
-	  <div class='anna-subheading'>Wherein the author demonstrates his his mastery of commatation</div>
+	  <div class='anna-subheading'>Wherein the author demonstrates his mastery of commatation</div>
 	  <p>
 	    Anna is a statically, structurally typed computer language that
 	    supports LISP style macros, functions and types as first class
@@ -1395,7 +1406,7 @@ var baz = foo or bar;
 	  
 	  <h1>
 	    <a name="type-inference"> 	
-	      Type inference - static static typing without the pain
+	      Type inference - painless static typing
 	    </a>
 	  </h1>
 	  <p>
@@ -2198,7 +2209,8 @@ literal := ["first", "second"];
 	  <h2><a name="design-naming">Naming of variables and types</a></h2>
 	  <p>
 	    Anna names may only contain the latin letters a-z in lower
-	    and upper case as well as underscores and numbers.
+	    and upper case as well as underscores, numbers and the ?
+	    and ! characters.
 	  </p>
 	  <p>
 	    Variable and constant names <em>must</em> have a lower
@@ -2235,6 +2247,12 @@ literal := ["first", "second"];
 	      order to allow the use of
 	      the <code class="anna-code">+</code> operator, but you
 	      should never make up new names in this namespace.
+	    </li>
+	    <li>
+	      Names of things that hold yes/no values should end in a
+	      question mark. For example, Range objects have
+	      the <code class="anna-code">Range.open?</code> property,
+	      which is non-null only for semi-infinite ranges.
 	    </li>
 	    <li>
 	      Variables used in larger pieces of code should have
