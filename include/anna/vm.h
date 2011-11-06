@@ -228,7 +228,7 @@ static inline long anna_as_int(anna_entry_t *entry)
 	res >>= 2;
 	return res;
     }
-    return anna_int_get((anna_object_t *)entry);
+    return anna_int_get(anna_as_obj_fast(entry));
 }
 
 static inline long anna_as_int_unsafe(anna_entry_t *entry)

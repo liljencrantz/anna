@@ -104,7 +104,7 @@ void anna_char_type_create()
 	char_type,
 	&anna_char_i_get_upper,
 	0,
-	L"The upper case equivalent of this Char");
+	L"The upper case equivalent of this Char.");
 
     anna_member_create_native_property(
 	char_type,
@@ -112,7 +112,9 @@ void anna_char_type_create()
 	char_type,
 	&anna_char_i_get_lower,
 	0,
-	L"The lower case eqivalent of this Char");
+	L"The lower case eqivalent of this Char.");
+
+
     mid_t mmid;
     anna_function_t *fun;
 

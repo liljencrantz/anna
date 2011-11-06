@@ -103,6 +103,7 @@ How should the argument list for inherited constructors be handled?
 It should be possible to declare type members with initial values. 
 We need reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
 Type member setup needs some dependency resolution in order for type calculations to work properly.
+The GC uses recursion, we should switch to a stack instead in order to not smash the call stack on e.g. a huge linked list.
 
 KNOWN BUGS:
 List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
