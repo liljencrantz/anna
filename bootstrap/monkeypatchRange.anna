@@ -45,7 +45,7 @@ def rangeToString(Range this)
 )
 {
     use(this);
-    if(isOpen)
+    if(open?)
     {
 	return "[" ~ from ~", "~ (from+step)~", "~ (from+step+step)~"...]";
     }

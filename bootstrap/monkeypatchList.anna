@@ -8,7 +8,7 @@ def listToString(List this)
     return "[" ~ ", ".join(this.map(value){String::convert(value) or "null";}) ~ "]";
 }
 
-def all(List this)
+def all?(List this)
 (
     target(List),
     doc("Returns true if all members of this list are non-Null."),
