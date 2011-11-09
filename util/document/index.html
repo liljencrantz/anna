@@ -370,6 +370,81 @@ print(hash["unknown"]);
 
 	  </pre>
 	  
+	  <h3><a name="examples-more-calls">More on function calls</a></h3>
+	  <p>
+	    Function calls in Anna have a few additional options
+	  </p>
+	  <pre class="anna-code">
+/*
+  In addtion to using only ordering to determine input parameters in a
+  function call, Anna supports mapping parameters by name as well.
+*/
+math.sin(value: 1.0);
+
+/*
+  Named parameters in function calls can significantly increase code
+  readability for calls to function that accept many parameters.
+*/
+
+def myFun(Int intVal, Float floatVal, String stringVal, Char charVal)
+{
+    return intVal+floatVal+stringVal.count+ charVal.ordinal;
+}
+
+// The following two calls are equivalent
+myFun(1, 2.0, "abc", 'g');
+myFun(floatVal:2.0, stringVal:"abc", charVal:'g', intVal:1);
+
+// Functions can also have a default value. 
+
+def myFun(Int intVal, Float floatVal, String stringVal = "", Char charVal = 'a')
+{
+    return intVal+floatVal+stringVal.count+ charVal.ordinal;
+}
+
+// The following three calls are equivalent
+myFun(1, 2.0);
+myFun(floatVal:2.0, intVal: 1);
+myFun(1, 2.0, "", 'a');
+	  </pre>
+
+	  <h3><a name="examples-looping">Looping</a></h3>
+	  <p>
+	    The while loop looks like in any other C-like language
+	  </p>
+	  <pre class="anna-code">
+while(1)
+{
+    print("Are we having fun yet?\n");
+}
+	  </pre>
+	  <p>
+	    Anna does not have a traditional C-like for loop syntax,
+	    instead, the each method should be used. To print the values 5
+	    to 10 in Anna, do the following:
+	  </p>
+	  <pre class="anna-code">
+(5..11).each(ii){print(ii)}
+	  </pre>
+	  <p>
+	    <code class="anna-code">0..11</code> is a Range object, spanning from 0 (inclusive) to
+	    11 (exclusive). The <code class="anna-code">each(ii)</code> part means we want to
+	    call the each method, which loops over the range, and that we
+	    want the loop variable to be named <code class="anna-code">ii</code>. Anna will
+	    automatically determine the correct type for the <code class="anna-code">ii</code>
+	    variable. The code block supplied after the parentesis will be
+	    called once for every value in the range, with the
+	    variable <code class="anna-code">ii</code> set to each value. All collection type
+	    objects, such as maps, lists and ranges provide an each
+	    method. It can be used with a single argument, such as above, or
+	    it can be used with two arguments, in which case the first
+	    argument is the index/key and the second is the value:
+	  </p>
+	  <pre class="anna-code">
+temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
+temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")}
+	  </pre>
+
 	  <h3><a name="examples-ranges">Ranges</a></h3>
 	  <pre class="anna-code">
 // r is a range from 6 (inclusive) to 10 (exclusive)
@@ -406,42 +481,6 @@ print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...], "\n")
 // This outputs «banana»
 print("abrainbadnoah\n"[1|2...]);
 	  </pre>
-	  <h3><a name="examples-looping">Looping</a></h3>
-	  <p>
-	    The while loop looks like in any other C-like language
-	  </p>
-	  <pre class="anna-code">
-while(1)
-{
-    print("Are we having fun yet?\n");
-}
-	  </pre>
-	  <p>
-	    Anna does not have a traditional C-like for loop syntax,
-	    instead, the each method should be used. To print the values 0
-	    to 10 in Anna, do the following:
-	  </p>
-	  <pre class="anna-code">
-(0..11).each(ii){print(ii)}
-	  </pre>
-	  <p>
-	    <code class="anna-code">0..11</code> is a Range object, spanning from 0 (inclusive) to
-	    11 (exclusive). The <code class="anna-code">each(ii)</code> part means we want to
-	    call the each method, which loops over the range, and that we
-	    want the loop variable to be named <code class="anna-code">ii</code>. Anna will
-	    automatically determine the correct type for the <code class="anna-code">ii</code>
-	    variable. The code block supplied after the parentesis will be
-	    called once for every value in the range, with the
-	    variable <code class="anna-code">ii</code> set to each value. All collection type
-	    objects, such as maps, lists and ranges provide an each
-	    method. It can be used with a single argument, such as above, or
-	    it can be used with two arguments, in which case the first
-	    argument is the index/key and the second is the value:
-	  </p>
-	  <pre class="anna-code">
-temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
-temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")}
-	  </pre>
 
 	  <h3><a name="examples-blocks">Blocks</a></h3>
 	  <p>
@@ -463,24 +502,28 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
 	    that is the null object.
 	  </p>
 	  <pre class="anna-code">
+if(?)
+{
+  // Null is the only false value in Anna.
+  // This will _not_ get executed
+}
+
 if(0)
 {
-  // This will get executed
+  // The number 0 is an Int objects, and all Int objects are considered
+  // to be true, so this will get executed
 }
 
 if([])
 {
-  // So will this
+  // En empty list is also true, so this will also get executed
 }
 
 if(false)
 {
-  // This is likely a syntax error -there is no 'false' constant defined in Anna
-}
-
-if(?)
-{
-  // Null is the only false value in Anna.
+  // This is likely a syntax error -there is no 'true' or 'false' constant 
+  // defined in Anna. '?' is used in stead for false, and by convention '1'
+  // is used for truth
 }
 
 	  </pre>
@@ -495,6 +538,10 @@ if(?)
   The above tries to interpret the first command line argument 
   of the program as an integer and assign it to the laps variable.
   If that fails, laps is instead assigned a default value of 5.
+
+  Note that the type of an or expression is the intersection of the two types
+  that are checked, in this case Int and Int. In other words, the laps variable
+  will have the type Int.
 */
 laps := Int::convert(system.argument[1]) or 5;
 
