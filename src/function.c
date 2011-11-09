@@ -189,11 +189,10 @@ static anna_node_t *anna_function_setup_arguments(
 	    
 	    if(type_node->node_type == ANNA_NODE_NULL)
 	    {
-		
 		anna_type_t *d_val = anna_node_resolve_to_type(val_node, f->stack_template);
 		if(d_val)
 		{
-		    f->input_type[i] = d_val;		    
+		    f->input_type[i] = d_val;
 		}
 		else
 		{
@@ -207,7 +206,6 @@ static anna_node_t *anna_function_setup_arguments(
 		if(!d_type || d_type == null_type)
 		{
 		    anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
-		    CRASH;
 		}
 		else
 		{

@@ -59,43 +59,43 @@ macro expandCode(node)
 	}
     }
 
-    codeNode.each(code)
+    valNode.each(chld)
     {
-	valNode.each(chld)
+        call := chld as Call;
+	checkCallCount(call, 2);
+	checkNodeType(call[0], InternalIdentifier);
+        name := (call[0] as InternalIdentifier).name;
+	checkNodeCallTo(call[1], "MutableList");
+        lst := call[1] as Call;
+	if(count)
 	{
-  	    call := chld as Call;
-	    checkCallCount(call, 2);
-	    checkNodeType(call[0], InternalIdentifier);
-	    name := (call[0] as InternalIdentifier).name;
-	    checkNodeCallTo(call[1], "MutableList");
-	    lst := call[1] as Call;
-	    if(count)
+	    if(count != lst.count)
 	    {
-		if(count != lst.count)
-		{
-		    lst.error("Wrong number of parameters in list");
-		    return ?;
-		}
-		lst.each(idx, val)
-		{
-		    param[idx][name] = val;
-		}
-	    } 
-	    else
+		lst.error("Wrong number of parameters in list");
+		return ?;
+	    }
+	    lst.each(idx, val)
 	    {
-		count = lst.count;
-		lst.each(val)
-		{
-		    param ~= [[name: val]];
+		param[idx][name] = val;
 		}
+	}
+	else
+	{
+	    count = lst.count;
+	    lst.each(val)
+	    {
+		param ~= [[name: val]];
 	    }
 	}
     }
 
     res := Call(node, Identifier(node, "nothing"));
+    codeNode.each(code)
+    {
+	res ~= param.map(p){ code % p };
+    }
 
-    res ~= param.map(p){ code % p };
-    //print(res, "\n");
+//    print(res, "\n");
     return res;
 }
 

@@ -58,6 +58,10 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
        (node->node_type == ANNA_NODE_INPUT_TYPE_OF) )
     {
 	anna_node_calculate_type(node);
+	if(node->return_type == null_type)
+	{
+	    return object_type;
+	}
 	return node->return_type;
     }    
     
@@ -67,7 +71,15 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
     if(eres)
     {
 	anna_object_t *res = anna_as_obj(eres);
-	return (res->type == type_type) ? anna_type_unwrap(res) : res->type;
+	if(res->type == null_type)
+	{
+	    return object_type;
+	}
+	if(res->type == type_type)
+	{
+	    return anna_type_unwrap(res);
+	}
+	return res->type;
     }
     return 0;
 }
@@ -270,7 +282,7 @@ anna_entry_t *anna_node_static_invoke_try(
 	    
 	case ANNA_NODE_CHAR_LITERAL:
 	    return anna_from_obj(anna_char_create(((anna_node_char_literal_t *)this)->payload));
-
+	    
 	case ANNA_NODE_NULL:
 	    return null_entry;
 

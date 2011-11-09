@@ -1,0 +1,5 @@
+def main()
+{
+    ggg := struct(foo: ?);
+    print(ggg.__type__.member.find(m){m.name == "foo"}.type, "\n");
+}
