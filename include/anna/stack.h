@@ -46,15 +46,30 @@ struct anna_stack_template
     int stop;
     anna_function_t *function;
     /**
-       An object representing this stack frame
+       An Anna object representing this entire stack frame
     */
     struct anna_object *wrapper;
+    /**
+       The AST node (if any) used to declare each declaration in this
+       stack frame.
+     */
     struct anna_node_declare **member_declare_node;  
+    /**
+       One integer representing the flags for each declaration in this
+       stack frame . Currently, the only available flag is
+       ANNA_STACK_READONLY, which is used for constants.
+     */
     int *member_flags;
+    /**
+       List of all modules to use for implicit namespace lookups
+     */
     array_list_t import;
+    /**
+       List of all modules to use for macro expansion
+     */
     array_list_t expand;
     /**
-       Only used by modules. Module name.
+       Only used by modules. The name of the module.
      */
     wchar_t *name;
     /**
