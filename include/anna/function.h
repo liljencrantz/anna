@@ -51,6 +51,11 @@
 */
 #define ANNA_FUNCTION_PURE (8192*16)
 
+/**
+   This function has been validated.
+*/
+#define ANNA_FUNCTION_VALIDATED (8192*32)
+
 extern array_list_t anna_function_list;
 
 /**

@@ -133,6 +133,12 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 
 static void anna_node_validate_function(anna_function_t *f)
 {
+    if(f->flags & ANNA_FUNCTION_VALIDATED)
+    {
+	return;
+    }
+    f->flags |= ANNA_FUNCTION_VALIDATED;
+
     if(f->body)
     {
 	int i;
@@ -161,8 +167,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    {
 		anna_error(this, L"No setter for property %ls", anna_mid_get_reverse(c->mid));
 		break;		
-	    }
-	    
+	    }	    
 	    break;
 	}
 	
@@ -198,6 +203,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	{
 	    anna_node_assign_t *d = (anna_node_assign_t *)this;
 	    anna_type_t *param = d->value->return_type;
+	    
 	    anna_type_t *templ = anna_stack_get_type(stack, d->name);
 	    if(!templ)
 	    {
@@ -207,13 +213,25 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    d->name);
 //		    anna_node_print(D_ERROR,this);
 	    }
-	    else if(!anna_abides(param, templ))
-	    {
-		anna_error(
-		    this,
-		    L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.", 
-		    templ->name, param->name);
+	    else{
+		int is_const  = anna_stack_get_flag(stack, d->name) & ANNA_STACK_READONLY;
+		if(is_const)
+		{
+		    anna_error(
+			this,
+			L"Can't assign to a constant: %ls",
+			d->name);
+//		    anna_node_print(D_ERROR,this);		
+		}
+
+		if(!anna_abides(param, templ))
+		{
+		    anna_error(
+			this,
+			L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.", 
+			templ->name, param->name);
 //		    anna_node_print(D_ERROR,this);
+		}
 	    }
 	    
 	    break;	    
@@ -229,6 +247,9 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 
 	case ANNA_NODE_TYPE:
 	{
+	    /*
+	      It's a type. Validate all it's functions
+	    */
 	    anna_node_type_t *c = (anna_node_type_t *)this;
 	    anna_type_t *t = c->payload;
 	    if(t->flags & ANNA_TYPE_VALIDATED)
@@ -241,6 +262,11 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    for(i=0;i<al_get_count(&t->member_list); i++)
 	    {
 		anna_member_t *memb = al_get(&t->member_list, i);
+		/*
+		  Check for static members that have storage and
+		  aren't of the null type.  (null type means that the
+		  member isn't of any type, usually it's binary data)
+		*/
 		if((memb->storage & ANNA_MEMBER_STATIC) &&
 		   !(memb->storage & ANNA_MEMBER_VIRTUAL) &&
 		   (memb->type != null_type))
@@ -253,7 +279,6 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    }
 		}
 	    }
-	    
 
 	    break;
 	}	

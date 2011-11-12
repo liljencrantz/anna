@@ -1,0 +1,10 @@
+
+def main()
+(
+    doc("Check that constants can't be assigned to")
+)
+{
+    someConst :== 7;
+    someConst = 8;
+    print(someConst, "\n");
+}
