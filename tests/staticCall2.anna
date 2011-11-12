@@ -2,7 +2,7 @@
 type MyType
 {
 
-    def staticMethod(String in) (static)
+    def staticMethod(Int idx, String in) (static)
     {
 	print("Run method with arg ", in, "\n" );
 	return "" ~in[0];
@@ -10,7 +10,7 @@ type MyType
     
     def yay()
     {
-	print(["a","b", "c", "d", "e"].__map__(staticMethod));
+	print(["aa","bb", "cc", "dd", "ee"].__map__(staticMethod));
     }
     
 }
