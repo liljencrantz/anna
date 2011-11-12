@@ -1,18 +1,17 @@
-
-
 type MyType
 {
 
     def staticMethod(String in) (static)
     {
+	print("Run method with arg ", in, "\n" );
 	return "" ~in[0];
     }
-
+    
     def yay()
     {
 	print(["a","b", "c", "d", "e"].__map__(staticMethod));
     }
-
+    
 }
 
 def main()

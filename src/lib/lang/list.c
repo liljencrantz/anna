@@ -341,11 +341,13 @@ static void anna_list_each(anna_context_t *stack)
 
 static void anna_list_map_callback(anna_context_t *stack)
 {
+    
     anna_entry_t *value = anna_context_pop_entry(stack);
-
+    
     anna_entry_t **param = stack->top - 4;
     anna_object_t *list = anna_as_obj_fast(param[0]);
     anna_object_t *body = anna_as_obj_fast(param[1]);
+
     int idx = anna_as_int(param[2]);
     anna_object_t *res = anna_as_obj_fast(param[3]);
     size_t sz = anna_list_get_count(list);

@@ -20,6 +20,7 @@ static int anna_abides_function(
     int verbose)
 {
     int i;
+
     if(contender->input_count != role_model->input_count)
     {
 	if(verbose)
@@ -42,6 +43,7 @@ static int anna_abides_function(
 	    }
 	}
     }
+/*
     for(i=!!is_method; i<contender->input_count; i++)
     {
 	if(wcscmp(contender->input_name[i], role_model->input_name[i]) != 0)
@@ -52,7 +54,7 @@ static int anna_abides_function(
 	    return 0;
 	}
     }
-    
+*/  
     if(check_type)
     {
 	if(!anna_abides(contender->return_type, role_model->return_type))
@@ -123,6 +125,22 @@ static int anna_abides_fault_count_internal(
     {
 	CRASH;
     }
+
+    anna_function_type_t *c_fun_type = anna_function_type_unwrap(contender);
+    anna_function_type_t *r_fun_type = anna_function_type_unwrap(role_model);
+    
+    if(r_fun_type)
+    {
+	if(c_fun_type)
+	{
+	    res += !anna_abides_function(c_fun_type, r_fun_type, 0, 1, 0);
+	}
+	else
+	{
+	    res ++;
+	}
+    }
+
     /*  
     if(level==1)
     */

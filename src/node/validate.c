@@ -131,6 +131,17 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
     }
 }
 
+static void anna_node_validate_function(anna_function_t *f)
+{
+    if(f->body)
+    {
+	int i;
+	for(i=0;i<f->body->child_count; i++)
+	{
+	    anna_node_each(f->body->child[i], (anna_node_function_t)&anna_node_validate, f->stack_template);
+	}
+    }
+}
 
 void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 {
@@ -169,7 +180,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    if(anna_member_is_property(memb) && memb->getter_offset == -1)
 	    {
 		anna_error(this, L"No getter for property %ls", anna_mid_get_reverse(c->mid));
-		break;		
+		break;
 	    }
 	    
 	    break;
@@ -211,17 +222,42 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)this;
-	    anna_function_t *f = c->payload;
-	    if(f->body)
-	    {
-		int i;
-		for(i=0;i<f->body->child_count; i++)
-		{
-		    anna_node_each(f->body->child[i], (anna_node_function_t)&anna_node_validate, f->stack_template);
-		}
-	    }
+	    anna_node_validate_function(c->payload);
+	    
 	    break;
 	}	
+
+	case ANNA_NODE_TYPE:
+	{
+	    anna_node_type_t *c = (anna_node_type_t *)this;
+	    anna_type_t *t = c->payload;
+	    if(t->flags & ANNA_TYPE_VALIDATED)
+	    {
+		break;
+	    }
+	    t->flags |= ANNA_TYPE_VALIDATED;
+	    
+	    int i;
+	    for(i=0;i<al_get_count(&t->member_list); i++)
+	    {
+		anna_member_t *memb = al_get(&t->member_list, i);
+		if((memb->storage & ANNA_MEMBER_STATIC) &&
+		   !(memb->storage & ANNA_MEMBER_VIRTUAL) &&
+		   (memb->type != null_type))
+		{
+		    anna_object_t *obj = anna_as_obj(t->static_member[memb->offset]);
+		    anna_function_t *f = anna_function_unwrap(obj);
+		    if(f)
+		    {
+			anna_node_validate_function(f);
+		    }
+		}
+	    }
+	    
+
+	    break;
+	}	
+
     }    
 }
 

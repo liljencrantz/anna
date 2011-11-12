@@ -198,7 +198,7 @@ often used code paths, which makes it useful for regression testing.")
 	this.writeFile(module.__type__);
     }
 
-    def lookup(Type module, Object parent)
+    def lookup(Type module, Type parent)
     {
 	if(module in path)
 	{

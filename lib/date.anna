@@ -70,11 +70,11 @@ type Date
 	Int hour=?, Int minute=?, Int second=?, 
 	Int microsecond=?, Timezone timezone=?)
     {
-	if(!timezone)
+/*	if(!timezone)
 	{
 	    timezone = Timezone(ctime.timezoneName);
 	}
-
+*/
         lst := [year, month, day, hour, minute, second, microsecond];
 
 	if(!lst.all?())

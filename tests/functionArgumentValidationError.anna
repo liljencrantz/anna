@@ -1,0 +1,9 @@
+def foo(def Int bar(Int i))
+{
+    print(bar(7));
+}
+
+def main()
+{
+    foo {"hello"};
+}
