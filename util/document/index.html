@@ -1661,6 +1661,109 @@ f.close();
 	    yes/no answer. Null is the new no.
 	  </p>
 
+	  <h2><a name="blocks">Blocks, lambdas, procedures and functions</a></h2>
+	  <p>
+	    In Anna, if you enclose a list of expressions within curly
+	    brackets, you will define a block.
+	  </p>
+	  <pre class="anna-code">
+// Define a block
+{
+    print("This is a block, and it will not get run\n");
+}
+	  </pre>
+	  <p>
+	    Unlike other C-based languages, the block does not by
+	    default get run, so the code above does not actually print
+	    anything. Instead, an anonymous function is returned by
+	    the block expression, that can then be further
+	    manipulated:
+	  </p>
+	  <pre class="anna-code">
+// Define a block and explicitly call it
+{
+    print("This block will be run because it is explicitly called\n");
+}();
+
+// Define a block and assign it to the variable myBlock
+myBlock := 
+{
+    print("This is yet another block\n");
+};
+myBlock();
+
+	  </pre>
+	  <p>
+	    If you've read the section about functions in Anna, you
+	    may be wondering what the difference between a function
+	    and a block is. The code above could just as well be
+	    written using functions:
+	  </p>
+	  <pre class="anna-code">
+// Define an anonymous function and explicitly call it
+def ()
+{
+    print("This function will be run because it is explicitly called\n");
+}()
+
+// Define a named function
+def myFun()
+{
+    print("This is yet another function\n");
+}
+myFun();
+	  </pre>
+	  <p>
+	    The answer is that blocks are just syntactic sugar for defining extremely simple functions, and internally, they are exactly the same thing.
+	  </p>
+	  <pre class="anna-code">
+// These two lines are exactly equivalent, but less writing is required 
+// when using the block syntax
+{print("hi")}
+def () (block){print("hi")}
+	  </pre>
+	  <p>
+	    You may have noticed that the function definition that is
+	    equivalent to the block definition snuck in an attribute
+	    in the function definition,
+	    namely <code class="anna-code">block</code>. So what does
+	    the <code class="anna-code">block</code> attribute do? The
+	    answer is that the <code class="anna-code">return</code>
+	    expression will return from the innermost non-block
+	    function.
+	  </p>
+	  <p>
+	    So there you go. Anna has two different syntaxes for
+	    defining callable sequences of code, called blocks and
+	    functions. Blocks use a slightly terser syntax, but
+	    functions are a lot more expressive in that you can pass
+	    parameters to them, you can control how
+	    the <code class="anna-code">return</code> expression
+	    works, you can give them a name, etc. Underneath, they are
+	    completely equivalent and rely on the same implementation,
+	    and functions are in fact a strict superset of the
+	    functionality of blocks.
+	  </p>
+	  <p>
+	    There is one more thing that one should know about
+	    blocks. When calling a function, a code block coming right after the parameter list is interpreted as an argument to that function:
+	  </p>
+	  <pre class="anna-code">
+// These two lines are completely equivalent
+someFunction(1,2,3, {1+1});
+someFunction(1,2,3) {1+1};
+
+// These two lines are also completely equivalent
+someOtherFunction({1+1});
+someOtherFunction{1+1};
+	  </pre>
+	  <p>
+	    What is the point of this alternative syntax? 
+	  </p>
+	  <pre class="anna-code">
+
+	  </pre>
+
 	  <h2><a name="operator-overloading">I'll be your operator</a></h2>
 	  <p>
 	    Anna has a small number of special operators that allow you to
