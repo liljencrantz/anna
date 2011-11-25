@@ -2,7 +2,7 @@
 type MyType
 {
 
-    def staticMethod(String in) (static)
+    def staticMethod(Int idx, String in) (static)
     {
 	print("Run method with arg ", in, "\n" );
 	return "" ~in[0];

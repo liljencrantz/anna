@@ -799,6 +799,18 @@ int anna_abides(
     anna_type_t *contender, anna_type_t *role_model);
 
 /**
+  Search the specified list of function types and return the index of
+  a function matching the specified call parameter list. If there are
+  multiple matches, the match that has smallest difference in number
+  of non-matching members. If there are no matching members, -1 is
+  returned.
+*/
+int anna_abides_search(
+    struct anna_node_call *call,
+    anna_function_type_t **function,
+    size_t function_count);
+
+/**
    Like anna_abised, except it counts the number of members that are
    not implemented. Useful when wanting to find out how far away from
    fully implementing an interface a given type is.

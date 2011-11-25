@@ -1,0 +1,21 @@
+
+type MyType
+{
+
+    def wrongMethod() (static)
+    {
+    }
+    
+    def yay()
+    {
+	print(["a","b", "c", "d", "e"].__map__(wrongMethod));
+    }
+    
+}
+
+def main()
+{
+    mm := MyType();
+    mm.yay();
+}
+

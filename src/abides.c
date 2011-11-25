@@ -446,72 +446,66 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
     
     return res;
 }
-/*
+
 int anna_abides_search(
     anna_node_call_t *call,
     anna_function_type_t **function,
     size_t function_count)
 {
-    int i;
+    int i, j;
     int match = -1;
     int fault_count=0;
 
     for(i=0; i<function_count; i++)
     {
 	anna_function_type_t *ft = function[i];
-	
-	debug(D_SPAM, L"Check %ls against %ls\n",call->child[0]->return_type->name, mem_fun->input_type[off]->name);
-	int my_fault_count = 0;
-	int ok1 = anna_node_validate_call_parameters(
-	    call, mem_fun_type, off, 0);
-	int ok2 = 1;
-		
-	if(ok1)
+	/*
+	debug(
+	    D_SPAM, L"Check %ls against %ls\n",
+	    call->child[0]->return_type->name, 
+	    mem_fun->input_type[off]->name);
+	*/
+	if(anna_node_validate_call_parameters(
+	       call, ft, 0, 0))
 	{
+	    int ok = 1;
+	    int my_fault_count = 0;
 	    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
-	    anna_node_call_map(call_copy, mem_fun_type, off);
-		    
+	    anna_node_call_map(call_copy, ft, 0);
+	    
 	    for(j=0; j<call->child_count; j++)
 	    {
-		if(anna_abides(call_copy->child[j]->return_type, mem_fun->input_type[j+off]))
+		if(anna_abides(
+		       call_copy->child[j]->return_type, 
+		       ft->input_type[j]))
 		{
 		    my_fault_count += 
-			anna_abides_fault_count(mem_fun->input_type[j+off], call_copy->child[j]->return_type);
+			anna_abides_fault_count(
+			    ft->input_type[j], 
+			    call_copy->child[j]->return_type);
 		}
-			else
-			{
-			    ok2=0;
-			    debug(D_SPAM, L"Argument %d, %ls does not match %ls!\n", j, 
-				  call_copy->child[j]->return_type->name, mem_fun->input_type[j+off]->name);
-			}
-			
-		    }
+		else
+		{
+		    ok=0;
+		    debug(
+			D_SPAM, L"Argument %d, %ls does not match %ls!\n", 
+			j, call_copy->child[j]->return_type->name, 
+			ft->input_type[j]->name);
 		}
+	    }
+	    
+	    if(ok){
+		debug(D_SPAM, L"Match!\n");
 		
-		if(ok1 && ok2){
-		    debug(D_SPAM, L"Match!\n");
-		    
-		    if(!match || my_fault_count < fault_count)
-		    {
-			match = member->name;
-			fault_count = my_fault_count;
-		    }
+		if((match != -1) || my_fault_count < fault_count)
+		{
+		    match = i;
+		    fault_count = my_fault_count;
 		}
 	    }
 	}
-	else
-	{
-	    debug(D_SPAM, L"Not a function\n");
-	}	
     }
-    
-    if(match)
-    {
-	debug(D_SPAM, L"Match: %ls\n", match);
-    }
-    
-    return match ? anna_member_get(type, anna_mid_get(match)):0;
-    
+    return match;
 }
 
-*/
+
