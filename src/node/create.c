@@ -223,13 +223,14 @@ anna_node_char_literal_t *anna_node_create_char_literal(
 }
 
 anna_node_string_literal_t *anna_node_create_string_literal(
-    anna_location_t *loc, size_t sz, wchar_t *str)
+    anna_location_t *loc, size_t sz, wchar_t *str, int free)
 {
     anna_node_string_literal_t *result = anna_alloc_node(sizeof(anna_node_string_literal_t));
     result->node_type = ANNA_NODE_STRING_LITERAL;
     anna_node_set_location((anna_node_t *)result,loc);
     result->payload = str;
     result->payload_size = sz;
+    result->free = free;
     return result;
 }
 

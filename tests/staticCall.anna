@@ -3,7 +3,7 @@
 type MyType
 {
 
-    def staticMethod(String in) (static)
+    def staticMethod(Int idx, String in) (static)
     {
 	return "" ~in[0];
     }

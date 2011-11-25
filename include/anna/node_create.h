@@ -52,7 +52,8 @@ anna_node_char_literal_t *anna_node_create_char_literal(
 anna_node_string_literal_t *anna_node_create_string_literal(
     anna_location_t *loc, 
     size_t sz, 
-    wchar_t *str);
+    wchar_t *str,
+    int free);
 
 anna_node_call_t *anna_node_create_call(
     anna_location_t *loc, 

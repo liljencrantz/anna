@@ -515,6 +515,26 @@ ANNA_VM_NATIVE(unix_i_io_chdir, 1)
     return result;
 }
 
+ANNA_VM_NATIVE(unix_i_io_chroot, 1)
+{
+    // Validate parameters
+    if(param[0] == null_entry){return null_entry;}
+
+    // Mangle input parameters
+    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+
+    // Validate parameters
+    
+
+    // Call the function
+    anna_entry_t *result = (chroot(native_param_path))?anna_from_int(1):null_entry;
+    // Perform cleanup
+    free(native_param_path);
+
+    // Return result
+    return result;
+}
+
 ANNA_VM_NATIVE(unix_i_io_fchdir, 1)
 {
     // Validate parameters
@@ -1400,6 +1420,10 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_io_chdir_argv[] = {string_type};
     wchar_t *unix_i_io_chdir_argn[] = {L"path"};
     anna_module_function(stack, L"chdir", 0, &unix_i_io_chdir, object_type, 1, unix_i_io_chdir_argv, unix_i_io_chdir_argn, L"");
+
+    anna_type_t *unix_i_io_chroot_argv[] = {string_type};
+    wchar_t *unix_i_io_chroot_argn[] = {L"path"};
+    anna_module_function(stack, L"chroot", 0, &unix_i_io_chroot, object_type, 1, unix_i_io_chroot_argv, unix_i_io_chroot_argn, L"");
 
     anna_type_t *unix_i_io_fchdir_argv[] = {int_type};
     wchar_t *unix_i_io_fchdir_argn[] = {L"fd"};
