@@ -1365,7 +1365,7 @@ void anna_type_document(anna_type_t *type, wchar_t *doc)
     anna_node_call_t *attr = anna_node_create_call2(
 	0,
 	anna_node_create_identifier(0, L"doc"),
-	anna_node_create_string_literal(0, wcslen(doc), doc));
+	anna_node_create_string_literal(0, wcslen(doc), doc, 0));
     
     if(!type->attribute)
     {

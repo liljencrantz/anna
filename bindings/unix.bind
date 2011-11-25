@@ -94,6 +94,7 @@ io
 
     def Bool getcwd(Buffer buf(ensureCapacity(size)), Int size);
     def Bool chdir(String path);
+    def Bool chroot(String path);
     def Bool fchdir(Int fd);
 
     cStruct FLock (name(flock))

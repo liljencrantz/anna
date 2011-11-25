@@ -213,6 +213,7 @@ struct anna_node_string_literal
 
     size_t payload_size;
     wchar_t *payload;
+    int free;
 };
 
 struct anna_node_char_literal

@@ -465,6 +465,16 @@ static void anna_alloc_free(void *obj)
 		{
 		    anna_node_int_literal_t *n = (anna_node_int_literal_t *)o;
 		    mpz_clear(n->payload);
+		    break;
+		}
+		case ANNA_NODE_STRING_LITERAL:
+		{
+		    anna_node_string_literal_t *n = (anna_node_string_literal_t *)o;
+		    if(n->free)
+		    {
+		        free(n->payload);
+		    }
+		    break;
 		}
 	    }
 	    free(obj);

@@ -15,7 +15,8 @@ ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_init, 3)
 	(anna_node_t *)anna_node_create_string_literal(
 	    source?&source->location:0,
 	    anna_string_get_count(anna_as_obj(param[2])),
-	    anna_intern_or_free(anna_string_payload(anna_as_obj(param[2]))));
+	    anna_intern_or_free(anna_string_payload(anna_as_obj(param[2]))),
+            0);
     return param[0];
 }
 

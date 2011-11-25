@@ -18,6 +18,7 @@
 #include "anna/node_create.h"
 #include "autogen/yacc.h"
 #include "autogen/lex.h"
+#include "anna/intern.h"
 
 void anna_yacc_error(YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr, char *s);
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
@@ -156,7 +157,6 @@ static anna_node_t *anna_text_as_id(anna_location_t *loc, yyscan_t *scanner)
 	loc,anna_yacc_string(anna_lex_get_text(scanner)));
 }
 
-
 enum 
 {
     ANNA_LIT_BASE,
@@ -164,23 +164,26 @@ enum
     ANNA_LIT_HEX
 };
 
+/*
+  Remove quote characters and unescape backslash escapes in a string
+  literal. (Works with either double or single quotes, e.g. also for
+  char literals)
 
-
+  Returns a newly malloc-ed string
+ */
 static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_t *count)
 {
     str++;
     str[strlen(str)-1]=0;
     wchar_t *str2 = str2wcs(str);
-    wchar_t *str3 = malloc(sizeof(wchar_t)*(wcslen(str2)));
+    wchar_t *str3 = malloc(sizeof(wchar_t)*(wcslen(str2)+1));
     wchar_t *ptr_in;
     wchar_t *ptr_out = str3;
     int mode = ANNA_LIT_BASE;
     int chars_left=0;
     int hex_val=0;
     
-    for(ptr_in=str2; 
-	*ptr_in; 
-	ptr_in++)
+    for(ptr_in=str2; *ptr_in; ptr_in++)
     {
 	switch(mode)
 	{
@@ -248,7 +251,6 @@ static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_
 	    case ANNA_LIT_HEX:
 	    {
 		int digit;
-		
 		if(*ptr_in >= L'0' && *ptr_in <= L'9')
 		{
 		    digit = *ptr_in - L'0';
@@ -270,8 +272,7 @@ static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_
 		}
 		
 		hex_val = hex_val*16 + digit;
-		chars_left--;
-		if(chars_left == 0)
+		if(--chars_left == 0)
 		{
 		    mode = ANNA_LIT_BASE;
 		    *ptr_out++ = hex_val;
@@ -287,7 +288,7 @@ static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_
 	    L"Invalid hex sequence");
 	return 0;
     }
-    
+    *ptr_out = 0;
     *count = ptr_out - str3;
     return str3;
 }
@@ -300,11 +301,15 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
     {
 	return anna_node_create_null(loc);
     }
-    
-    return (anna_node_t *)anna_node_create_string_literal(loc, count, wstr);
+    int free = 1;
+
+    if(count < 8 && wcslen(wstr) == count)
+    {
+	wstr = anna_intern_or_free(wstr);
+	free = 0;
+    }
+    return (anna_node_t *)anna_node_create_string_literal(loc, count, wstr, free);
 }
-
-
  
 static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *str)
 {
@@ -409,8 +414,6 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %type <call_val> specialization opt_specialization
 %type <call_val> opt_type_and_opt_name type_and_name
 %type <node_val> jump
-
-%right '='
 
 %pure-parser
 
