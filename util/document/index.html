@@ -1729,8 +1729,8 @@ def () (block){print("hi")}
 	    namely <code class="anna-code">block</code>. So what does
 	    the <code class="anna-code">block</code> attribute do? The
 	    answer is that the <code class="anna-code">return</code>
-	    expression will return from the innermost non-block
-	    function.
+	    expression will return from the innermost function<em>that
+	    is not a block</em>.
 	  </p>
 	  <p>
 	    So there you go. Anna has two different syntaxes for
@@ -1744,9 +1744,12 @@ def () (block){print("hi")}
 	    and functions are in fact a strict superset of the
 	    functionality of blocks.
 	  </p>
+	  <h3><a name="blocks-param">Sending a block as an input parameter to a function call</a></h2>
 	  <p>
 	    There is one more thing that one should know about
-	    blocks. When calling a function, a code block coming right after the parameter list is interpreted as an argument to that function:
+	    blocks. When calling a function, a code block coming right
+	    after the parameter list is interpreted as an argument to
+	    that function:
 	  </p>
 	  <pre class="anna-code">
 // These two lines are completely equivalent
@@ -1758,13 +1761,76 @@ someOtherFunction({1+1});
 someOtherFunction{1+1};
 	  </pre>
 	  <p>
-	    What is the point of this alternative syntax? 
+	    What is the point of this alternative syntax? Here are some examples of it in use:
 	  </p>
 	  <pre class="anna-code">
+if(someCheck())
+{
+    doSomething();
+}
 
+while(someCondition())
+{
+    doSomething();
+}
+
+switch(x)
+{
+    case(0)
+    {
+        ...
+    }
+    ...
+}
+
+(0..10).map(idx){0.0+x}.each(val){print(idx,"\n")}
 	  </pre>
+	  <p>
+	    As you can see, this syntax (which has been borrowed from
+	    Ruby), allows you to pass on a piece of code to another
+	    function using a rather terse syntax.
+	  </p>
+	  <p>
+	    The main benefit of this type of code is how easily it
+	    allows you to extend and repurpose Anna for new problem
+	    domains. Imagine that you're writing a database API. You
+	    might want a simple way to define database
+	    transactions. Consider the following piece of code:
+	  </p>
+	  <pre class="anna-code">
+type Database
+{	    
 
-	  <h2><a name="operator-overloading">I'll be your operator</a></h2>
+    ...
+
+    def transaction( def Object code())
+    {
+        connection.beginTransaction();
+        code();
+        connection.commit();
+    }
+}
+	  </pre>
+	  <p>
+	    The above code would allow you to use the following simple
+	    syntax for performing a group of queries witin a
+	    transaction like this:
+	  </p>
+	  <pre class="anna-code">
+// Connect to the database
+db := Database(...);
+
+// Start a transaction
+db.transaction
+{
+    // Perform a bunch of queries. These are all part of the same transaction
+    db.query(...);
+    db.query(...);
+    db.query(...);
+}
+	  </pre>
+	  <h2><a name="operator-overloading">I'll be your
+	  operator</a></h2>
 	  <p>
 	    Anna has a small number of special operators that allow you to
 	    implement some of the most common language operations with a
