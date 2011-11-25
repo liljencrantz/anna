@@ -820,12 +820,12 @@ int anna_abides_fault_count(
 /**
    Init function for the abides lib. 
  */
-void anna_abides_init(void);
+__cold void anna_abides_init(void);
 
 /**
    Print the specified error message and increase the error counter. 
  */
-void anna_error(
+__cold void anna_error(
     struct anna_node *node, wchar_t *msg, ...);
 
 /**

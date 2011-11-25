@@ -23,15 +23,15 @@ macro expandCode(node)
 	name: [year, ..., microsecond]);",
     
         "
-    During the compilation pass the expandCode will expand the above
-    code into statements identical to the ones given above. Using
-    expandCode not only allows you to write less code, because you're
-    not repeating yourself, you can quickly change the code in a
-    single place.",
+    During the compilation pass the expandCode macro will expand the
+    above code into statements identical to the ones given
+    above. Using expandCode not only allows you to write less code,
+    because you're not repeating yourself, you can quickly change the
+    code in a single place.",
 
         "
     Code equivalent to code written using expandCode can usually be
-    created using the reflection api, but such cde offers no compile time type
+    created using the reflection api, but such code offers no compile time type
     safety and is significantly more verbose.
 ")
 )

@@ -627,13 +627,27 @@ myInstance.myMember = 9;
 myInstance.myMethod();
 	  </pre>
 	  
+	  <h3><a name="examples-properties">Properties</a></h3>
+	  <pre class="anna-code">
+TODO
+	  </pre>
+
+	  <h3><a name="examples-static">Static members</a></h3>
+	  <pre class="anna-code">
+TODO
+	  </pre>
+
 	  <h3><a name="examples-mutable">Mutable and imutable objects</a></h3>
 	  <p>
 	    Some objects in Anna are mutable, i.e. they can be changed
-	    after they where created. It sometimes makes sense to
-	    provide both a mutable and an imutable version of the same
-	    type. In these cases, the Anna convention is that both
-	    types of objects have two fields,
+	    after they where created. Others are imutable. It
+	    sometimes makes sense to provide both a mutable and an
+	    imutable version of the same basic type. Anna does not
+	    currently support automatically stripping mutating methods
+	    from a mutable type to create an imutable version,
+	    instead, two separate types must be created. When creating
+	    such a pair of types, the Anna convention is that both
+	    types of objects should have two properties,
 	    named <code class="anna-code">freeze</code>
 	    and <code class="anna-code">thaw</code>, that can be used
 	    to obtain a mutable or imutable object with the same
@@ -772,6 +786,10 @@ def Int main()
     boo := Foo«__sub__»();
     print(boo.bar(3,4),"\n");
 }
+
+// If you're not using a unicode character set, «» may not be available to you. 
+// As a fallback, Anna supports using <<>> instead.
+<<Int>>[];
 	  </pre>
 
 	  <h3><a name="examples-continuations">Continuations</a></h3>
@@ -785,11 +803,30 @@ TODO
 
 	  <h3><a name="examples-expandCode">The expandCode macro</a></h3>
 	  <p>
-      
+	    Sometimes, one has to write a large bulk of nearly
+	    identical code expressions. I these cases, it is often
+	    possible to use the expandCode macro to reduce the amount
+	    of repetition.
 	  </p>
 	  <pre class="anna-code">
-TODO
+// This is a boring piece of code
+first := getNextValue(someValue, someOtherValue);
+second := getNextValue(someValue, someOtherValue);
+third := getNextValue(someValue, someOtherValue);
+fourth := getNextValue(someValue, someOtherValue);
+fifth := getNextValue(someValue, someOtherValue);
+
+// This is exactly equivalant to the above, but less redundant
+expandCode(
+    %var := getNextValue(someValue, someOtherValue),
+    var: [first, second, third, fourth, fifth]);    
 	  </pre>
+	  <p>
+	    <code class="anna-code">expandCode</code> is just a regular
+	    Anna macro. You can <%! toggleCodePopup("expandCode", "check out the source code") %>.
+	  </p>
+
+          <%! codePopup("expandCode", "bootstrap/expandCode.anna") %>
 
 	  <h3><a name="examples-switch">The switch macro</a></h3>
 	  <p>
@@ -2718,18 +2755,20 @@ def Int main()
 	    use <code>List!(Int)</code> as the template specialization
 	    syntax. Unfortunatly, that would be impossible in Anna,
 	    since Anna is less picky with what can be specialized,
-	    leading to syntactic ambiguity. On the other hand, D
+	    leading (again) to syntactic ambiguity. On the other hand, D
 	    uses <code>&lt;&lt;</code> and <code>&gt;&gt;</code> for
 	    bitshifting, just like C, meaning these symbols where not
 	    available for template specialization. The solution that
 	    works for one language does not always work for another.
 	  </p>
 	  <p>
-	    One significant kludge in the Anna syntax is the expression
-	    merge pass of compilation. It is used to move expressions into
-	    the expression preceeding them, and is useful in situations like
-	    the if/else expression pair. TODO: Explain how it works, and how
-	    it can be used.
+	    One significant kludge in the Anna syntax is the
+	    expression merge pass of compilation. It is used to move
+	    expressions into the expression preceeding them, and is
+	    useful in situations like the if/else expression
+	    pair. While useful, it is definitely a rather large
+	    syntactic wart. TODO: Explain more precisely how it works,
+	    and how it can be used.
 	  </p>
 	  <h1><a name="implementation">Implementation details</a></h1>
 
@@ -2771,7 +2810,8 @@ def Int main()
 	    reduction, there is no way to tell that this is happening
 	    behind the scenes. This is possible because the above data
 	    types are all imutable and no memory location pointer can
-	    be obtained for an object.
+	    be obtained for an object. It is impossible to tell
+	    e.g. two integers with the same value apart.
 	  </p>
 
 	  <h1><a name="download">Getting Anna</a></h1>
