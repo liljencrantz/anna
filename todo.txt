@@ -125,7 +125,9 @@ hashCode function for Pair
 List.milter 
 Range.milter
 Hash.milter
-List and Hash should be made fail fast
+List and Hash types should be made fail fast
+
+Partial application and saner function argument handling, e.g. it should be possible to write (0..5).map(Int::__add__, 4), which is equivalent to (0..5).map(val){4+val}
 
 RELIABILITY:
 Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not)

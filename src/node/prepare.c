@@ -133,13 +133,10 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     
     anna_type_prepare_member(type, n->mid, stack);	    
     anna_member_t *member = anna_member_get(type, n->mid);
-	    
+    
     if(!member)
-    {
-		
-	int ok = anna_node_calculate_type_direct_children(n, stack);
-		
-	if(ok)
+    {		
+	if(anna_node_calculate_type_direct_children(n, stack))
 	{
 	    member = anna_member_method_search(
 		type, n->mid, n, 0);
@@ -157,7 +154,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		    anna_node_t *tmp = n2->object;
 		    n2->object = n2->child[0];
 		    n2->child[0] = tmp;
-			    
+		    
 		    member = anna_member_method_search(
 			n->child[0]->return_type, n->mid, n2, 1);
 		    if(member)
@@ -250,6 +247,15 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     return (anna_node_t *)n;
 }
 
+static wchar_t *anna_function_search(
+    anna_stack_template_t *stack, wchar_t *alias, anna_node_call_t *call)
+{
+    
+    return 0;
+}
+
+
+
 static anna_node_t *anna_node_calculate_type_internal(
     anna_node_t *this)
 {
@@ -298,6 +304,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    
 	    if(!t)
 	    {
+		anna_node_identifier_t *id = (anna_node_identifier_t *)this;
 		anna_node_declare_t *decl = anna_stack_get_declaration(stack, id->name);
 		if(decl)
 		{
@@ -337,8 +344,40 @@ static anna_node_t *anna_node_calculate_type_internal(
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
+	    
+	    /*
+	      Do a simple check to see if the specified identifier
+	      exists, if it does use regular type calculations. If it
+	      doesn't, check aliases.
+	    */
+	    if(call->function->node_type == ANNA_NODE_IDENTIFIER)
+	    {
+		anna_node_identifier_t *id = 
+		    (anna_node_identifier_t *)call->function;
+		anna_type_t *fun_type_simple = 
+		    anna_stack_get_type(stack, id->name);
+		anna_node_declare_t *fun_decl_simple = 
+		    anna_stack_get_declaration(stack, id->name);
+		if(!(fun_type_simple || fun_decl_simple))
+		{
+		    if(anna_node_calculate_type_direct_children(call, stack))
+		    {
+			wchar_t *unaliased_name = anna_function_search(
+			    this->stack, id->name, call);
+			
+			if(unaliased_name)
+			{
+			    call->function = anna_node_create_identifier(
+				&id->location,
+				unaliased_name);
+			    call->function->stack = id->stack;
+			}
+		    }
+		}
+	    }
 
 	    call->function = anna_node_calculate_type(call->function);
+	    	    
 	    anna_type_t *fun_type = call->function->return_type;
 
 	    int is_method = 0;

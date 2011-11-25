@@ -177,9 +177,12 @@ anna_member_t *anna_member_method_search(
     anna_node_call_t *call,
     int is_reverse)
 {
+//    debug_level = 0;
     debug(D_SPAM, L"SEARCH for match to %ls in type %ls\n", anna_mid_get_reverse(mid), type->name);
     int i;
 
+    
+    
     wchar_t *alias_name = anna_mid_get_reverse(mid);
     
     wchar_t *match=0;
@@ -188,10 +191,8 @@ anna_member_t *anna_member_method_search(
     for(i=0; i<anna_type_get_member_count(type); i++)
     {
 	anna_member_t *member = anna_type_get_member_idx(type, i);
-//	debug(D_ERROR, L"Check %ls %d %d %ls\n", members[i],
-//	      anna_member_is_static(member), member->offset, member->type->name);
 	if(anna_member_is_static(member) && member->offset>=0 && member->type != null_type)
-	{
+	{	    
 	    anna_object_t *mem_val = anna_as_obj(type->static_member[member->offset]);
 	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
 	    
@@ -210,11 +211,6 @@ anna_member_t *anna_member_method_search(
 	    {
 		int j;
 		int off = anna_member_is_bound(member) && !(call->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER);
-		
-		if(mem_fun->input_count != call->child_count+off)
-		    continue;	    
-		//debug(D_SPAM, L"YAY, right number of arguments (%d)\n", argc);
-		
 		debug(D_SPAM, L"Check %ls against %ls\n",call->child[0]->return_type->name, mem_fun->input_type[off]->name);
 		int my_fault_count = 0;
 		int ok1 = anna_node_validate_call_parameters(
