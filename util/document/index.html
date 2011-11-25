@@ -218,11 +218,12 @@ foo := 3 as Object;  // Declare foo as a variable of type Object
 pi :== 4.0;    // Declare pi as a constant with value 4.0
 	  </pre>
 	  <p>
-	    It should be noted that the previous paragraph is a lie. The
-	    Anna compiler doesn't always check to make sure constants can't
-	    be assigned to. If you try to, you might succeed. Or, more
-	    likely, Anna will crash. If we can all pretend that you can't
-	    assign to constants, everybody will be much happier.
+	    It should be noted that the previous paragraph is quite
+	    possibly a lie. The Anna compiler doesn't currently always
+	    check to make sure constants can't be assigned to. If you
+	    try to, you might succeed. Or, more likely, Anna will
+	    crash. If we can all pretend that you can't assign to
+	    constants, everybody will be much happier. 
 	  </p>
 	  <p>
 	    To learn more about type inference,
@@ -242,6 +243,9 @@ print(100_000_000, "\n");
 
 // Hexadecimal, binary and octal integer literals
 print(0xdeadbeef, 0b010101, 0o777, "\n");
+
+// This is a decimal integer literal, not an octal one. Use the 0o
+prefix to // specify octal integer literals print(0777, "\n");
 
 // Prints 3.5. The output type of Int/Float algebra is always a Float. 
 print(1 + 2.5);
@@ -334,6 +338,13 @@ weirdList := [1, "foo", 6.666]
   of object to store in a list. This is a list of objects.
 */
 objList := «Object»[1,3,5, "foo", 6.666]
+
+/* 
+  The in operator checks if the specified value exists in the list. 
+  It returns null if not, and the integer offset of the item if true.
+  In this case, «3» will be printed.
+*/
+print("foo" in objList, "\n");
 	  </pre>
 
 	  
@@ -344,8 +355,8 @@ objList := «Object»[1,3,5, "foo", 6.666]
 	  </p>
 	  <pre class="anna-code">
 /*
-  hash is a HashMap thet maps from one String to another String. It
-  has four mappings
+  hash is a HashMap that maps from one String to another String. It
+  has four such mappings
 */
 hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
 
@@ -368,6 +379,14 @@ hash.default = "I don't know";
 // a default value for the hash, namely "I don't know"
 print(hash["unknown"]);
 
+/* 
+  The in operator checks if the specified key exists in the map. 
+  Note that this is different from the in operator of the List 
+  type, which searches the values. It returns null if not, and 
+  non-null otherwise.
+  In this case, «?» will be printed.
+*/
+print("unknown" in hash, "\n");
 	  </pre>
 	  
 	  <h3><a name="examples-more-calls">More on function calls</a></h3>
@@ -535,8 +554,8 @@ if(false)
 	  </p>
 	  <pre class="anna-code">
 /* 
-  The above tries to interpret the first command line argument 
-  of the program as an integer and assign it to the laps variable.
+  The code below tries to convert the first command line argument 
+  of the program to an integer and assign it to the laps variable.
   If that fails, laps is instead assigned a default value of 5.
 
   Note that the type of an or expression is the intersection of the two types
@@ -549,7 +568,7 @@ laps := Int::convert(system.argument[1]) or 5;
 	  
 	  <h3><a name="examples-null">Null</a></h3>
 	  <p>
-	    The null ovject has all members, and their value is
+	    The null object has all members, and their value is
 	    null. Calling any method on the null object will return
 	    null. Many functions in the Anna standard library also
 	    return null when given a null argument.
@@ -559,6 +578,55 @@ laps := Int::convert(system.argument[1]) or 5;
 print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
 	  </pre>
 
+	  <h3><a name="examples-objects">Defining and creating objects</a></h3>
+	  <pre class="anna-code">
+/*
+  Use the type keyword todefine your own types
+*/
+type MyType
+{
+    // This declares that the type has a member of type Int with the 
+    // name myMember.
+    var Int myMember;
+
+    // This declares that the type has a method named myMethod
+    def myMethod()
+    {
+        // If an identifier can't be found in the scope of the local 
+        // function, the object scope is automatically checked.
+        print(myMember, "\n");
+
+        // The identifier «this» automatically exists and points to
+        // the current object
+        print(this.__type__.name, "\n");
+    }
+
+    // The constructor needs to be named __init__
+
+    def __init__()
+    {
+        myMember = 7;
+    }   
+
+}
+
+/*
+  Call a type in order to create a new object instance of that type.
+  This calls the constructor, which sets the value of myMember to 7.
+*/
+myInstance := MyType();
+
+// This will print «7» and «MyType».
+myInstance.myMethod();
+
+// Member variables are public by default.
+// For now, there is no support for non-public members.
+myInstance.myMember = 9;
+
+// This will print «9» and «MyType».
+myInstance.myMethod();
+	  </pre>
+	  
 	  <h3><a name="examples-mutable">Mutable and imutable objects</a></h3>
 	  <p>
 	    Some objects in Anna are mutable, i.e. they can be changed
@@ -574,13 +642,15 @@ print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
 	  <pre class="anna-code">
 /*
   The String literal is of the ImutableString type, which is
-  imutable. This is a syntax error
+  imutable. This is a compile time error, because ImutableString 
+  does not have a __set__ function.
 */
 imutableString :="foo";
 imutableString[0] = 'F';
 
 /*
-  Use the thaw property to get a mutable version of the String
+  Use the thaw property to get a mutable version of the String.
+  This will work as expected.
 */
 mutableString :="foo".thaw;
 mutableString[0] = 'F';
@@ -589,8 +659,9 @@ mutableString[0] = 'F';
   You can use the ~= append operator both on mutable and imutable
   strings. When used on imutable strings, every call to ~= will create
   a new ImutableString. When this happens in e.g. a loop, it can
-  become very slow. I such situations, you can speed up the program by
-  making sure the String you're appending to is mutable:
+  lead to a lot of copying, which can make your code slow. In such 
+  situations, you can speed up the program by making sure the String 
+  you're appending to is mutable:
 */
 result := "".thaw;
 someCollection.each(item){ result ~= doSomeProccessing(item) }
@@ -602,7 +673,7 @@ mutableList := [1,2,3];
 mutableList[0] = 0;
 
 /*
-  freeze returns an ImutableList, so this is a compile time error
+  MutableList.freeze returns an ImutableList, so this is a compile time error.
 */
 imutableList := [1,2,3].freeze;
 imutableList[0] = 0;
@@ -613,6 +684,17 @@ imutableList[0] = 0;
 */
 useless := "useless".freeze;
 alsoUseless := ["useless"].thaw;
+/* 
+  Note that when thawing an already mutable object, the convention is
+  to return the object itself, not a copy.
+
+  This will print «I'm a little teapot»
+*/
+
+  thing := "tea";
+  thing2 := thing.thaw;
+  thing2 ~= "pot";
+  print("I'm a little %\n" % [thing]);
 	  </pre>
 	  <p>
 	    For more information on mutability in Anna, see
@@ -2136,6 +2218,103 @@ thisIsCode();
 	    the <a href='#examples-mutable'>Mutable examples</a>.
 	  </p>
 
+	  <h2><a name="aliases">Method resolution</a></h2>
+	  <p>
+	    Many statically typed computer languages allow you to
+	    define multiple methods with the same name but different
+	    argument lists. The compiler will at compile time figure
+	    out the most suitable version of the function and make
+	    sure that version is called. The benefit of this is
+	    obvious, functions that perform the same operation using
+	    slightly different inputs can be named the same thing,
+	    which avoids having to come up with arbitrary minor
+	    differences in function names. There is however a drawback
+	    as well, in that various other operations become harder:
+	  </p>
+	  <ul>
+	    <li>
+	      If there are e.g. multiple functions
+	      named <code class="anna-code">clyde</code>, then code
+	      like <code class="anna-code">myVar := clyde</code>
+	      becomes ambigous.
+	    </li>
+	    <li>
+	      It would not be possible to use named based value lookup
+	      from a continuation.
+	    </li>
+	    <li>
+	      Sometimes it is deirable to make explicit which version
+	      of a function should be called. This can be done by
+	      casting all function parameters to the correct type, but
+	      it is a clymsy method.
+	    </li>
+	  </ul>
+	  <p>
+	    Anna works around these issues by introducing a second
+	    type of name for a function. All functions have an actual
+	    variable name, which is unique within a specific
+	    namespace, but functions can also have an arbitrary number
+	    of aliases, specified using the alias attribute in the
+	    function declaration. If an identifier is used to find the
+	    function for a function call, and there is no function of
+	    that name, then all relevant namespaces are checked for
+	    functions with a matching alias. If one or more is found,
+	    the most suitable one is chosen.
+	  </p>
+	  <p>
+	    Note:
+	  </p>
+	  <ul>
+	    <li>
+	      If a function exists with a given name, any functions
+	      with a matching alias are completely ignored. Alias
+	      based function lookup only takes place if regular
+	      lookup failed.
+	    </li>
+	    <li>
+	      There is now shadowing when performing alias based
+	      function lookup. If two functions have exactly the same
+	      name and alias, and the outer one has a more suitable
+	      argument list, that's the version of the function that
+	      will get called.
+	    </li>
+	    <li>
+	      Aliases are only used when resolving an identifier for a
+	      function call. The alias attribute is ignored when not
+	      searching for a function to use in a function call.
+	    </li>
+	  </ul>
+	  <pre class="anna-code">
+def outerFunction(Int value)
+(
+    alias(myAlias)
+)
+{
+    print("outer %\n" % [value]);
+}	    
+
+{
+    def innerFunction(Object value)
+    (
+        alias(myAlias)
+    )
+    {
+        print("inner %\n" % [value]);
+    }	    
+
+    /*
+      This will call outerFunction, which will
+      print 'outer 7'
+    */
+    myAlias(7);
+
+    /*
+      This is an error - aliases can only be used when calling 
+      a function
+    */
+    print(myAlias, "\n");
+}()
+	  </pre>
 <!--    
     <h1>A simple, annotated example</h1>
     <p>
