@@ -1,0 +1,20 @@
+type MyType
+{
+
+    def f1 (Int val, String msg = "bla bla bla") (alias(talk))
+    {
+	print(msg, ' ', val, '\n');
+    }
+
+    def f2 (Object obj) (alias(talk))
+    {
+	print(obj, '\n');
+    }
+
+}
+
+def main()
+{
+    tt := MyType();
+    tt.talk(7);
+}
