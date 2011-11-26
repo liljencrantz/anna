@@ -1,0 +1,31 @@
+def shadow(Int param)
+(
+    alias(myFunction)
+)
+{
+    print("This will not get printed\n");
+}
+
+def main()
+{
+
+    def shadow(Float param)
+    (
+	alias(myFunction)
+    )
+    {
+	print("This function shadows the above one, even when using aliases\n");
+    }
+
+
+    def noShadow(Object param)
+    (
+	alias(myFunction)
+    )
+    {
+	print("This will get printed\n");
+    }
+
+    myFunction(1);
+    
+}

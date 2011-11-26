@@ -25,6 +25,7 @@
 #include "anna/node_hash.h"
 #include "anna/node_check.h"
 #include "anna/module.h"
+#include "anna/attribute.h"
 
 #include "anna/lib/lang/int.h"
 #include "anna/lib/lang/float.h"
@@ -216,11 +217,6 @@ static anna_entry_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stac
 	anna_stack_set(stack, this->name, result);
     }
     return result;
-}
-
-anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t *stack)
-{
-    return 0;
 }
 
 anna_entry_t *anna_node_static_invoke_try(

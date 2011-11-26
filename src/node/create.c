@@ -328,6 +328,9 @@ anna_node_identifier_t *anna_node_create_identifier(anna_location_t *loc, wchar_
     result->node_type = ANNA_NODE_IDENTIFIER;
     anna_node_set_location((anna_node_t *)result,loc);
     result->name = anna_intern(name);
+    result->sid.frame = -1;
+    result->sid.offset = -1;
+
     return result;
 }
 

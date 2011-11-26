@@ -459,15 +459,17 @@ int anna_abides_search(
     for(i=0; i<function_count; i++)
     {
 	anna_function_type_t *ft = function[i];
-	/*
+	
 	debug(
-	    D_SPAM, L"Check %ls against %ls\n",
-	    call->child[0]->return_type->name, 
-	    mem_fun->input_type[off]->name);
-	*/
-	if(anna_node_validate_call_parameters(
+	    D_SPAM, L"Check %ls against\n",
+	    call->child[0]->return_type->name);
+	
+
+ 	if(anna_node_validate_call_parameters(
 	       call, ft, 0, 0))
 	{
+	    debug(
+		D_SPAM, L"Params match");
 	    int ok = 1;
 	    int my_fault_count = 0;
 	    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
@@ -495,9 +497,9 @@ int anna_abides_search(
 	    }
 	    
 	    if(ok){
-		debug(D_SPAM, L"Match!\n");
+		debug(D_SPAM, L"Match %d!\n", i);
 		
-		if((match != -1) || my_fault_count < fault_count)
+		if((match == -1) || my_fault_count < fault_count)
 		{
 		    match = i;
 		    fault_count = my_fault_count;
@@ -505,6 +507,7 @@ int anna_abides_search(
 	    }
 	}
     }
+    
     return match;
 }
 

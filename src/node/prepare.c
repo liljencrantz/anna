@@ -247,14 +247,124 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     return (anna_node_t *)n;
 }
 
+static void anna_function_search_internal(
+    anna_stack_template_t *stack, wchar_t *alias, array_list_t *stack_decl, array_list_t *use)
+{
+    if(!stack)
+    {
+	return;
+    }
+    
+    int i, j;
+    for(i=0; i<stack->count; i++)
+    {
+	anna_node_declare_t *decl = stack->member_declare_node[i];
+	if(
+	    decl && 
+	    decl->attribute && 
+	    anna_attribute_has_alias(
+		decl->attribute,
+		alias))
+	{
+	    
+	    stack->member_declare_node[i] = decl = 
+		(anna_node_declare_t *)anna_node_calculate_type(
+		    (anna_node_t *)decl);
+	    if(decl->return_type && (decl->return_type != ANNA_NODE_TYPE_IN_TRANSIT))
+	    {
+		if(anna_function_type_unwrap(decl->return_type))
+		{
+		    al_push(stack_decl, decl);
+		}
+	    }
+	}
+    }
+
+    anna_function_search_internal(
+	stack->parent, alias, stack_decl, use);
+/*
+    for(j=0; j<al_get_count(&stack->import); j++)
+    {
+	anna_use_t *use = al_get(&stack->import, j);
+	
+	
+	array_list_t *memb_list = &use->type->member_list;
+	for(i=0; i<al_get_count(memb_list); i++)
+	{
+	    anna_member_t *memb = al_get(memb_list, i);
+	    if(anna_member_is_static(memb) && memb->offset>=0 && memb->type != null_type)
+	    {	    
+		anna_object_t *memb_val = anna_as_obj(use->type->static_member[memb->offset]);
+		anna_function_t *memb_fun = anna_function_unwrap(memb_val);
+	    
+		if(wcscmp(memb->name, L"__get__Int__") == 0)
+		{
+		    wprintf(L"FTEWAFEF %d\n", memb_fun->attribute);
+		    anna_node_print(0,memb->attribute);
+		}
+		
+		if(
+		    memb_fun->attribute && 
+		    anna_attribute_has_alias(
+			memb_fun->attribute,
+			alias))
+		{
+
+		    wprintf(L"PIM POM %ls\n", memb->name);
+		}
+		
+	    }
+	}
+    }
+*/    
+}
+
 static wchar_t *anna_function_search(
     anna_stack_template_t *stack, wchar_t *alias, anna_node_call_t *call)
 {
+    wchar_t *res = 0;
+    array_list_t stack_decl = AL_STATIC;
+    array_list_t use = AL_STATIC;
+    anna_function_search_internal(
+	stack, alias, &stack_decl, &use);
+    int i;
+    size_t count=0;
     
-    return 0;
+    if(al_get_count(&stack_decl) || al_get_count(&use))
+    {
+	anna_function_type_t **ft = 
+	    malloc(sizeof(anna_function_type_t *)*(al_get_count(&stack_decl) + al_get_count(&use)));
+	wchar_t **name = 
+	    malloc(sizeof(wchar_t *)*(al_get_count(&stack_decl)+al_get_count(&use)));
+	
+	for(i=0; i<al_get_count(&stack_decl); i++)
+	{
+	    anna_node_declare_t *decl = (anna_node_declare_t *)al_get(&stack_decl, i);
+	    if(anna_stack_get_declaration(stack, decl->name) == decl)
+	    {
+		name[count] = decl->name;
+		ft[count++] = anna_function_type_unwrap(decl->return_type);
+	    }
+	}
+	
+	if(count)
+	{
+	    int idx = anna_abides_search(
+		call, ft, count);
+	    if(idx != -1)
+	    {
+		res = name[idx];
+	    }
+	}
+	
+	free(ft);
+	free(name);	
+    }
+    
+    al_destroy(&stack_decl);
+    al_destroy(&use);
+    return res;
 }
-
-
 
 static anna_node_t *anna_node_calculate_type_internal(
     anna_node_t *this)
@@ -314,7 +424,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 			anna_stack_set_type(stack, id->name, decl->return_type);
 			t = decl->return_type;
 		    }
-		}
+		}		
 	    }
 	    if(t == null_type)
 	    {
@@ -937,10 +1047,13 @@ static anna_node_t *resolve_identifiers_each(
     
     if(use)
     {
+	anna_node_t *src_node = anna_node_clone_deep(use->node);
+	src_node->stack = this->stack;
+	src_node = anna_node_calculate_type(src_node);
 	anna_node_t *res = (anna_node_t *)anna_node_create_member_get(
 	    &id->location,
 	    ANNA_NODE_MEMBER_GET,
-	    use->node,
+	    src_node,
 	    anna_mid_get(id->name));
 	anna_node_set_stack(res, id->stack);
 	return res;

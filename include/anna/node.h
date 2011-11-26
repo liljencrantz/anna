@@ -401,16 +401,11 @@ anna_node_t *anna_node_calculate_type(
 void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack);
 
 /**
-   Returns the return type of the specified AST node
- */
-anna_type_t *anna_node_get_return_type(anna_node_t *this, anna_stack_template_t *stack);
-
-/**
    Prints a simple textual representation of the specified AST
    tree. For an unprepared AST tree, the output should be readily
    rereadable by the parser, and can hence be used as a serialization
    format. This is not the case for a prepared AST tree.
- */
+*/
 void anna_node_print(int level, anna_node_t *this);
 
 /**
