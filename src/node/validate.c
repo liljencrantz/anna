@@ -176,11 +176,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
 	    anna_type_t * type = 
 		c->object->return_type;
-	    if(c->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER)
-	    {
-		type = anna_node_resolve_to_type(c->object, stack);
-	    }
-
+	    
 	    anna_member_t *memb = anna_member_get(type, c->mid);
 	    if(anna_member_is_property(memb) && memb->getter_offset == -1)
 	    {
@@ -188,6 +184,21 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		break;
 	    }
 	    
+	    break;
+	}
+	
+	case ANNA_NODE_STATIC_MEMBER_GET:
+	{
+	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
+	    anna_type_t * type = 
+		anna_node_resolve_to_type(c->object, stack);
+	    
+	    anna_member_t *memb = anna_member_get(type, c->mid);
+
+	    if(!(memb->storage & ANNA_MEMBER_STATIC))
+	    {
+		anna_error(this, L"Tried to access non-static member statically");
+	    }
 	    break;
 	}
 	

@@ -3,7 +3,6 @@
 * Documentation coverage of standard API functions and types should be at least 90 %.
 * Base documentation:
   - Split into multiple files
-  - Make code links actually work
   - Check for dead links
   - binding generator doesn't pass on doc attribute
 * HTML api documentation extractor
@@ -13,10 +12,11 @@
 * Check that node compare supports all ast node types
 * More validation:
   - Only static members can be accessed statically
-  - Can't assign to constants
   - Check argument types to function calls better...
 
 1.0 RELEASE CRITERIA (Done):
+* More validation:
+  - Can't assign to constants
 * Introductory segment in the documentation
 * Working error handling
   - raise function
@@ -24,6 +24,8 @@
 * List.sort
   - Basic sort function in place
   - Sort function
+* Base documentation:
+  - Make code links actually work
 * HTML api documentation extractor
   - document attribute for modules
   - document attribute for properties
