@@ -554,3 +554,24 @@ void anna_member_document(
 	memb->doc = doc;
     }
 }
+
+anna_function_type_t *anna_member_bound_function_type(anna_member_t *member)
+{
+    anna_function_type_t *base = anna_function_type_unwrap(member->type);
+    if(!base)
+    {
+	return 0;
+    }
+    if(!anna_member_is_bound(member))
+    {
+	return base;
+    }
+
+    return anna_function_type_unwrap(anna_type_for_function(
+	base->return_type,
+	base->input_count-1,
+	&base->input_type[1],
+	&base->input_name[1],
+	&base->input_default[1],
+	base->flags));
+}

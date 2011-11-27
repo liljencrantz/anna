@@ -10,7 +10,7 @@
 #include "anna/alloc.h"
 #include "anna/vm.h"
 #include "anna/function.h"
-#include "anna/lib/function_type.h"
+#include "anna/function_type.h"
 #include "anna/member.h"
 #include "anna/lib/lang/int.h"
 #include "anna/lib/lang/list.h"

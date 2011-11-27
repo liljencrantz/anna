@@ -16,11 +16,14 @@
 #include "anna/util.h"
 #include "anna/alloc.h"
 #include "anna/vm.h"
-#include "anna/lib/function_type.h"
+#include "anna/function_type.h"
 #include "anna/intern.h"
 #include "anna/attribute.h"
 #include "anna/lib/lang/list.h"
 #include "anna/use.h"
+#include "anna/lib/reflection.h"
+
+#include "function_type.c"
 
 __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 {

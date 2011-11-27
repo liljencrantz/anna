@@ -26,13 +26,13 @@
 #include "anna/node_check.h"
 #include "anna/module.h"
 #include "anna/attribute.h"
+#include "anna/function_type.h"
 
 #include "anna/lib/lang/int.h"
 #include "anna/lib/lang/float.h"
 #include "anna/lib/lang/string.h"
 #include "anna/lib/lang/char.h"
 #include "anna/lib/lang/pair.h"
-#include "anna/lib/function_type.h"
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/hash.h"
 

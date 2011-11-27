@@ -14,7 +14,7 @@
 #include "anna/base.h"
 #include "anna/module.h"
 #include "anna/lib/lang/int.h"
-#include "anna/lib/function_type.h"
+#include "anna/function_type.h"
 #include "anna/type.h"
 #include "anna/member.h"
 #include "anna/status.h"

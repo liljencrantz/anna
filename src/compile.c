@@ -17,11 +17,11 @@
 #include "anna/lib/lang/string.h"
 #include "anna/lib/lang/char.h"
 #include "anna/stack.h"
-#include "anna/lib/function_type.h"
 #include "anna/member.h"
 #include "anna/type.h"
 #include "anna/alloc.h"
 #include "anna/mid.h"
+#include "anna/function_type.h"
 
 #define ANNA_COMPILE_SIZE 1
 #define ANNA_COMPILE_LINE 2

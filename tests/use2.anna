@@ -14,5 +14,5 @@ def main()
     push(2);
     push(3);
     
-    print(__get__(1), ' ', __get__(0..1), '\n');
+    print(__get__(1), ' ', __get__(0..2), '\n');
 }

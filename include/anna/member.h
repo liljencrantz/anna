@@ -135,5 +135,13 @@ static inline void anna_member_set_property(anna_member_t *member, int value)
     }
 }
 
+/**
+   Returns the user visible function type of this member, that is, the
+   function type without the implicit this parameter.
+
+   If the member is not of a function type, null is returned.
+ */
+anna_function_type_t *anna_member_bound_function_type(anna_member_t *member);
+
 
 #endif

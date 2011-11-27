@@ -26,7 +26,8 @@
 #include "anna/lib/lang/pair.h"
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/hash.h"
-#include "anna/lib/function_type.h"
+#include "anna/lib/reflection.h"
+#include "anna/function_type.h"
 #include "anna/mid.h"
 #include "anna/tt.h"
 #include "anna/misc.h"
@@ -1351,11 +1352,8 @@ anna_type_t *anna_type_for_function(
 	res = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);
 	hash_put(&anna_type_for_function_identifier, new_key, res);
-	anna_function_type_create(new_key, res);
+	anna_reflection_type_for_function_create(new_key, res);
     }
-    
-    anna_function_type_t *ggg = anna_function_type_unwrap(res);
-    assert(ggg->input_count == argc);
     
     return res;
 }

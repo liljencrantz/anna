@@ -1,3 +1,5 @@
+static anna_node_t *resolve_identifiers_each(
+    anna_node_t *this, void *aux);
 
 static anna_type_t *anna_method_curry(anna_function_type_t *fun)
 {
@@ -248,7 +250,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 }
 
 static void anna_function_search_internal(
-    anna_stack_template_t *stack, wchar_t *alias, array_list_t *stack_decl, array_list_t *use)
+    anna_stack_template_t *stack, wchar_t *alias, array_list_t *stack_decl, array_list_t *use_memb)
 {
     if(!stack)
     {
@@ -281,8 +283,8 @@ static void anna_function_search_internal(
     }
 
     anna_function_search_internal(
-	stack->parent, alias, stack_decl, use);
-/*
+	stack->parent, alias, stack_decl, use_memb);
+
     for(j=0; j<al_get_count(&stack->import); j++)
     {
 	anna_use_t *use = al_get(&stack->import, j);
@@ -297,26 +299,20 @@ static void anna_function_search_internal(
 		anna_object_t *memb_val = anna_as_obj(use->type->static_member[memb->offset]);
 		anna_function_t *memb_fun = anna_function_unwrap(memb_val);
 	    
-		if(wcscmp(memb->name, L"__get__Int__") == 0)
-		{
-		    wprintf(L"FTEWAFEF %d\n", memb_fun->attribute);
-		    anna_node_print(0,memb->attribute);
-		}
-		
 		if(
+		    memb_fun &&
 		    memb_fun->attribute && 
 		    anna_attribute_has_alias(
 			memb_fun->attribute,
 			alias))
 		{
-
-		    wprintf(L"PIM POM %ls\n", memb->name);
+		    al_push(use_memb, use);
+		    al_push(use_memb, memb);
 		}
-		
 	    }
 	}
     }
-*/    
+    
 }
 
 static wchar_t *anna_function_search(
@@ -324,18 +320,18 @@ static wchar_t *anna_function_search(
 {
     wchar_t *res = 0;
     array_list_t stack_decl = AL_STATIC;
-    array_list_t use = AL_STATIC;
+    array_list_t use_memb = AL_STATIC;
     anna_function_search_internal(
-	stack, alias, &stack_decl, &use);
+	stack, alias, &stack_decl, &use_memb);
     int i;
     size_t count=0;
     
-    if(al_get_count(&stack_decl) || al_get_count(&use))
+    if(al_get_count(&stack_decl) || al_get_count(&use_memb))
     {
 	anna_function_type_t **ft = 
-	    malloc(sizeof(anna_function_type_t *)*(al_get_count(&stack_decl) + al_get_count(&use)));
+	    malloc(sizeof(anna_function_type_t *)*(al_get_count(&stack_decl) + al_get_count(&use_memb)));
 	wchar_t **name = 
-	    malloc(sizeof(wchar_t *)*(al_get_count(&stack_decl)+al_get_count(&use)));
+	    malloc(sizeof(wchar_t *)*(al_get_count(&stack_decl)+al_get_count(&use_memb)));
 	
 	for(i=0; i<al_get_count(&stack_decl); i++)
 	{
@@ -346,6 +342,18 @@ static wchar_t *anna_function_search(
 		ft[count++] = anna_function_type_unwrap(decl->return_type);
 	    }
 	}
+	while(al_get_count(&use_memb))
+	{
+	    anna_member_t *memb = (anna_member_t *)al_pop(&use_memb);
+	    anna_use_t *use = (anna_member_t *)al_pop(&use_memb);
+	    
+	    if(anna_stack_search_use(stack, memb->name) == use)
+	    {
+		name[count] = memb->name;
+		ft[count++] = anna_member_bound_function_type(memb);
+	    }
+	}
+	
 	
 	if(count)
 	{
@@ -362,7 +370,7 @@ static wchar_t *anna_function_search(
     }
     
     al_destroy(&stack_decl);
-    al_destroy(&use);
+    al_destroy(&use_memb);
     return res;
 }
 
@@ -477,19 +485,21 @@ static anna_node_t *anna_node_calculate_type_internal(
 			
 			if(unaliased_name)
 			{
-			    call->function = anna_node_create_identifier(
+			    call->function = (anna_node_t *)anna_node_create_identifier(
 				&id->location,
 				unaliased_name);
 			    call->function->stack = id->stack;
+			    call->function = resolve_identifiers_each(
+				call->function, 0);
 			}
 		    }
 		}
 	    }
 
 	    call->function = anna_node_calculate_type(call->function);
-	    	    
+	    
 	    anna_type_t *fun_type = call->function->return_type;
-
+	    
 	    int is_method = 0;
 	    
 	    if(fun_type == type_type)
@@ -541,18 +551,10 @@ static anna_node_t *anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    if(funt->flags & ANNA_FUNCTION_MACRO)
-	    {
-		anna_error(call->function, L"Found unexpanded macro call while calculating function return type");
-		
-		break;
-	    }
-	    
 	    if(anna_node_validate_call_parameters(call, funt, is_method, 1))
 	    {
 		anna_node_call_map(call, funt, is_method);
 	    }
-
 	    
 	    if(!is_method)
 		call->return_type = funt->return_type;

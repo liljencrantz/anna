@@ -17,7 +17,7 @@
 #include "anna/function.h"
 #include "anna/stack.h"
 
-#include "anna/lib/function_type.h"
+#include "anna/function_type.h"
 #include "anna/type.h"
 #include "anna/macro.h"
 #include "anna/member.h"

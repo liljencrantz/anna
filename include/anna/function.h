@@ -77,11 +77,6 @@ __pure static inline int anna_function_is_variadic(anna_function_t *f)
     return !!(f->flags & ANNA_FUNCTION_VARIADIC);
 }
 
-__pure static inline int anna_function_type_is_variadic(anna_function_type_t *f)
-{
-    return !!(f->flags & ANNA_FUNCTION_VARIADIC);
-}
-
 __pure anna_object_t *anna_function_wrap(anna_function_t *fun);
 
 __cold int anna_function_prepared(anna_function_t *t);
