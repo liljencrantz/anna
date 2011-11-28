@@ -1,0 +1,18 @@
+
+type MyType
+{
+    var String myStaticMember (static);
+    
+    def myStaticMethod() (static)
+    {
+	myStaticMember = "some value";
+    }
+}
+
+def main()
+{
+    print(MyType::myStaticMember, "\n");
+    MyType::myStaticMethod();
+    print(MyType::myStaticMember, "\n");
+}
+

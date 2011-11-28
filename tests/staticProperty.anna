@@ -1,0 +1,26 @@
+
+type MyType
+{
+    var String myPropertyInternal (static);
+
+    var String myProperty 
+	(static, property(myPropertyGetter, myPropertySetter));
+
+    def myPropertyGetter() (static)
+    {
+	return MyType::myPropertyInternal;
+    }
+	
+    def myPropertySetter(String newValue) (static)
+    {
+	MyType::myPropertyInternal = newValue;
+    }
+	
+}
+
+def main()
+{
+    print(MyType::myProperty, "\n");
+    MyType::myProperty = "hello";
+    print(MyType::myProperty, "\n");    
+}

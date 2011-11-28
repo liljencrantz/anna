@@ -1,0 +1,9 @@
+type MyType
+{
+    var Int myMember;
+}
+
+def main()
+{
+    MyType::myMember = 7;
+}
