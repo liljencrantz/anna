@@ -40,6 +40,8 @@ int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
 static hash_table_t anna_type_get_function_identifier;
 
+static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off);
+
 static void anna_type_mark_static_iter(void *key_ptr,void *val_ptr)
 {
     anna_alloc_mark_type(val_ptr);
@@ -241,7 +243,7 @@ static void add_member(void *key, void *value, void *aux)
 void anna_type_print(anna_type_t *type)
 {
     int i;
-    wprintf(L"Type %ls:\n", type->name);
+    wprintf(L"type %ls\n{\n", type->name);
 
     for(i=0; i< anna_type_get_member_count(type); i++)
     {
@@ -249,30 +251,50 @@ void anna_type_print(anna_type_t *type)
 	assert(member);
 	if(anna_member_is_property(member))
 	{
+	    anna_member_t *getter=0;
+	    if(member->getter_offset >= 0)
+	    {
+		getter = anna_member_get(
+		    type,
+		    anna_type_mid_at_static_offset(
+			type, member->getter_offset));
+	    }
+	    
+	    anna_member_t *setter=0;
+	    if(member->setter_offset >= 0)
+	    {
+		setter = anna_member_get(
+		    type,
+		    anna_type_mid_at_static_offset(
+			type, member->setter_offset));
+	    }
+	    
 	    wprintf(
-		L"\tproperty %ls %ls setter: %d, getter: %d\n",
+		L"    var %ls %ls (property(%ls, %ls)%ls);  offsets: %d, %d\n",
 		member->type->name, member->name, 
-		member->setter_offset,
-		member->getter_offset);
+		getter ? getter->name: L"?",
+		setter ? setter->name: L"?",
+		member->storage & ANNA_MEMBER_STATIC ? L", static":L"",
+		member->getter_offset,
+		member->setter_offset);
 	}
 	else if(anna_member_is_bound(member))
 	{
 	    wprintf(
-		L"\tmethod %ls: type: %ls, static: %ls, property: %ls, offset: %d\n",
-		member->name, member->type->name, 
-		anna_member_is_static(member)?L"true":L"false",
-		anna_member_is_property(member)?L"true":L"false",
+		L"    def %ls %ls(...); // offset: %d\n",
+		member->type->name, member->name, 
 		member->offset);
 	}
 	else
 	{
 	    wprintf(
-		L"\tvar %ls %ls, static: %ls, offset: %d\n",
+		L"    var %ls %ls (%ls); // offset: %d\n",
 		member->type->name, member->name, 
-		anna_member_is_static(member)?L"true":L"false",
+		anna_member_is_static(member)?L"static":L"",
 		member->offset);
 	}
     }
+    wprintf(L"}\n");
 }
 
 anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name)
