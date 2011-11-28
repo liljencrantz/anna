@@ -1,0 +1,18 @@
+
+type MyType {
+
+    var Int prop (property(myGetter, whoLikesPie));
+
+    def myGetter()
+    {
+        return 7;
+    }
+
+
+}
+
+def main(){
+    g := MyType();
+    print(g.prop, "\n");
+}
+
