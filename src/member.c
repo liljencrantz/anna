@@ -268,6 +268,7 @@ anna_member_t *anna_member_method_search(
 size_t anna_member_create_property(
     anna_type_t *type,
     mid_t mid,
+    int storage,
     anna_type_t *property_type,
     ssize_t getter_offset,
     ssize_t setter_offset)
@@ -275,7 +276,7 @@ size_t anna_member_create_property(
     mid = anna_member_create(
 	type,
 	mid,
-	ANNA_MEMBER_VIRTUAL,
+	storage | ANNA_MEMBER_VIRTUAL,
 	property_type);
     anna_member_t *memb = anna_member_get(type, mid);
     
@@ -370,7 +371,7 @@ size_t anna_member_create_native_property(
     sb_destroy(&sb_doc);
     
     mid = anna_member_create_property(
-	type, mid, property_type, 
+	type, mid, 0, property_type, 
 	getter_offset, setter_offset);
     
     if(doc)

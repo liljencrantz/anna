@@ -48,6 +48,7 @@ size_t anna_member_create_native_property(
 size_t anna_member_create_property(
     anna_type_t *type,
     mid_t mid,
+    int storage,
     anna_type_t *property_type,
     ssize_t getter_offset,
     ssize_t setter_offset);

@@ -605,6 +605,13 @@ static void anna_type_prepare_property(
 	anna_node_t *g_node = (anna_node_t *)al_get(&etter, 0);
 	wchar_t *getter=0, *setter=0;
 	ssize_t getter_offset=-1, setter_offset=-1;
+	int storage = 0;
+
+	if(anna_attribute_flag(decl->attribute, L"static"))
+	{
+	    storage = ANNA_MEMBER_STATIC;
+	}
+	
 
 	if(g_node->node_type != ANNA_NODE_NULL)
 	{
@@ -642,9 +649,9 @@ static void anna_type_prepare_property(
 	    }
 	    setter_offset = s_memb->offset;
 	}
-
+	
 	anna_member_create_property(
-	    type, anna_mid_get(decl->name),
+	    type, anna_mid_get(decl->name), storage,
 	    decl->return_type, getter_offset, setter_offset);
 	anna_member_t *member = anna_member_get(type, anna_mid_get(decl->name));
 	member->attribute = 
@@ -805,7 +812,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     for(i=0; i< type->mid_count; i++)
     {
 	anna_member_t *memb = type->mid_identifier[i];
-	if(memb && anna_member_is_static(memb) && memb->type != null_type)
+	if(memb && anna_member_is_static(memb) && memb->type != null_type && !anna_member_is_property(memb))
 	{
 	    anna_entry_t *val = *anna_entry_get_addr_static(type, i);
 	    if(!anna_entry_null(val))
