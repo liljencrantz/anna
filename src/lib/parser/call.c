@@ -254,7 +254,7 @@ static void anna_node_create_call_type(
 	object_type,
 	4, argv, argn, 0, 0);
     
-    anna_type_t *fun_type = anna_function_type_each_create(
+    anna_type_t *fun_type = anna_type_get_iterator(
 	L"!CallIterFunction", int_type, node_type);
 
     anna_type_t *e_argv[] = 

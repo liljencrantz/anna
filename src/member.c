@@ -442,7 +442,7 @@ size_t anna_member_create_native_method(
 	type,
 	mid,
 	1,
-	anna_type_for_function(
+	anna_type_get_function(
 	    result, 
 	    argc, 
 	    argv,
@@ -498,7 +498,7 @@ size_t anna_member_create_native_type_method(
 	type,
 	mid,
 	1,
-	anna_type_for_function(
+	anna_type_get_function(
 	    result, 
 	    argc, 
 	    argv,
@@ -567,7 +567,7 @@ anna_function_type_t *anna_member_bound_function_type(anna_member_t *member)
 	return base;
     }
 
-    return anna_function_type_unwrap(anna_type_for_function(
+    return anna_function_type_unwrap(anna_type_get_function(
 	base->return_type,
 	base->input_count-1,
 	&base->input_type[1],

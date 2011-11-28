@@ -697,7 +697,7 @@ void anna_range_type_create()
 	&anna_range_get_last_i,
 	0, L"The last element of this Range.");
     
-    anna_type_t *fun_type = anna_function_type_each_create(
+    anna_type_t *fun_type = anna_type_get_iterator(
 	L"!RangeIterFunction", int_type, int_type);
 
     anna_type_t *e_argv[] = 

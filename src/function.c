@@ -253,7 +253,7 @@ static void anna_function_setup_wrapper(
 {    
     if(!f->wrapper){
 	anna_type_t *ft = 
-	    anna_type_for_function(
+	    anna_type_get_function(
 		f->return_type,
 		f->input_count,
 		f->input_type,

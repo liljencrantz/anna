@@ -73,7 +73,7 @@ static void anna_i_cc(anna_context_t *stack)
 
 void anna_reflection_load(anna_stack_template_t *stack)
 {
-    continuation_type = anna_type_for_function(
+    continuation_type = anna_type_get_function(
 	object_type,
 	0, 0, 0,
 	0,

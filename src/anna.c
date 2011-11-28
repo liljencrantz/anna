@@ -96,8 +96,8 @@ static void anna_shutdown()
     anna_gc_destroy();
     anna_vm_destroy();
     anna_mid_destroy();
-    hash_foreach(&anna_type_for_function_identifier, fun_key_free);
-    hash_destroy(&anna_type_for_function_identifier);
+    hash_foreach(&anna_type_get_function_identifier, fun_key_free);
+    hash_destroy(&anna_type_get_function_identifier);
 #endif
 }
 

@@ -38,23 +38,3 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
     FIXME("Missing validity checking")
 }
 
-anna_type_t *anna_function_type_each_create(
-    wchar_t *name, 
-    anna_type_t *key_type,
-    anna_type_t *value_type)
-{
-    anna_function_type_t *each_key = malloc(sizeof(anna_function_type_t) + 2*sizeof(anna_type_t *));
-    each_key->return_type = object_type;
-    each_key->input_count = 2;
-    each_key->flags = 0;
-
-    each_key->input_name = malloc(sizeof(wchar_t *)*2);
-    each_key->input_name[0] = L"key";
-    each_key->input_name[1] = L"value";
-
-    each_key->input_type[0] = key_type;
-    each_key->input_type[1] = value_type;    
-    anna_type_t *fun_type = anna_type_native_create(name, stack_global);
-    anna_reflection_type_for_function_create(each_key, fun_type);
-    return fun_type;
-}

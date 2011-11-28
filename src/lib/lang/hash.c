@@ -1162,7 +1162,7 @@ static void anna_hash_type_create_internal(
 	&anna_hash_get_default, &anna_hash_set_default,
 	L"The number of elements in this Map.");
 
-    anna_type_t *fun_type = anna_function_type_each_create(
+    anna_type_t *fun_type = anna_type_get_iterator(
 	L"!MapIterFunction", spec1, spec2);
 
     anna_type_t *e_argv[] = 

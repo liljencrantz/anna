@@ -38,7 +38,7 @@
 
 int anna_type_object_created = 0;
 static array_list_t anna_type_uninherited = AL_STATIC;
-static hash_table_t anna_type_for_function_identifier;
+static hash_table_t anna_type_get_function_identifier;
 
 static void anna_type_mark_static_iter(void *key_ptr,void *val_ptr)
 {
@@ -48,7 +48,7 @@ static void anna_type_mark_static_iter(void *key_ptr,void *val_ptr)
 void anna_type_mark_static()
 {
     hash_foreach(
-	&anna_type_for_function_identifier,
+	&anna_type_get_function_identifier,
 	anna_type_mark_static_iter);
 }
 
@@ -1258,12 +1258,12 @@ static int hash_function_type_comp(void *a, void *b)
 void anna_type_init()
 {
     hash_init(
-	&anna_type_for_function_identifier,
+	&anna_type_get_function_identifier,
 	&hash_function_type_func,
 	&hash_function_type_comp);
 }
 
-anna_type_t *anna_type_for_function(
+anna_type_t *anna_type_get_function(
     anna_type_t *result, 
     size_t argc, 
     anna_type_t **argv, 
@@ -1310,7 +1310,7 @@ anna_type_t *anna_type_for_function(
 	key->input_default[i]=argd ? argd[i] : 0;
     }
 
-    anna_type_t *res = hash_get(&anna_type_for_function_identifier, key);
+    anna_type_t *res = hash_get(&anna_type_get_function_identifier, key);
     if(!res)
     {
 	anna_function_type_t *new_key = malloc(new_key_sz);
@@ -1351,11 +1351,32 @@ anna_type_t *anna_type_for_function(
 	
 	res = anna_type_native_create(sb_content(&sb), stack_global);
 	sb_destroy(&sb);
-	hash_put(&anna_type_for_function_identifier, new_key, res);
+	hash_put(&anna_type_get_function_identifier, new_key, res);
 	anna_reflection_type_for_function_create(new_key, res);
     }
     
     return res;
+}
+
+anna_type_t *anna_type_get_iterator(
+    wchar_t *name, 
+    anna_type_t *key_type,
+    anna_type_t *value_type)
+{
+    anna_function_type_t *each_key = malloc(sizeof(anna_function_type_t) + 2*sizeof(anna_type_t *));
+    each_key->return_type = object_type;
+    each_key->input_count = 2;
+    each_key->flags = 0;
+
+    each_key->input_name = malloc(sizeof(wchar_t *)*2);
+    each_key->input_name[0] = L"key";
+    each_key->input_name[1] = L"value";
+
+    each_key->input_type[0] = key_type;
+    each_key->input_type[1] = value_type;    
+    anna_type_t *fun_type = anna_type_native_create(name, stack_global);
+    anna_reflection_type_for_function_create(each_key, fun_type);
+    return fun_type;
 }
 
 void anna_type_document(anna_type_t *type, wchar_t *doc)
