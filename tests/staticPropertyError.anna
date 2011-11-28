@@ -1,0 +1,24 @@
+
+type MyType
+{
+    var String myPropertyInternal;
+
+    /*
+      This is an error - we have a static property, but its getter 
+      method is not static. This should result in a compile time error.
+     */
+    var String myProperty 
+	(static, property(myPropertyGetter));
+
+    def myPropertyGetter()
+    {
+	return myPropertyInternal;
+    }
+
+}
+
+def main()
+{
+    print(MyType::myProperty, "\n");
+}
+
