@@ -93,11 +93,14 @@ static void anna_function_handle_use(anna_node_call_t *body)
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)body->child[i];
 	    c->payload = anna_node_calculate_type(c->payload);
 	    c->return_type = c->payload->return_type;
-	    al_push(
-		&c->stack->import, 
-		anna_use_create_node(
-		    c->payload,
-		    c->return_type));	    
+	    if(c->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		al_push(
+		    &c->stack->import, 
+		    anna_use_create_node(
+			c->payload,
+			c->return_type));
+	    }
 //	    wprintf(L"Hmm, add use thingie\n");
 //	    anna_node_print(5, c->payload);
 //	    anna_type_print(c->return_type);

@@ -1,4 +1,7 @@
 def main() {
     foo := 3;
+    /* 
+       Type error - foo is an Int 
+    */
     foo = "";
 }

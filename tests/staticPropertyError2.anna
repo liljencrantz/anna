@@ -1,0 +1,27 @@
+
+type MyType
+{
+    /*
+      This is an error - we have a static property, but its getter 
+      method is not static. This should result in a compile time error.
+     */
+    var String myProperty 
+	(static, property(myPropertyGetter, myPropertySetter));
+
+    def myPropertyGetter() (static)
+    {
+	return "Hello";
+    }
+
+    def myPropertySetter(String value)
+    {
+    }
+
+}
+
+def main()
+{
+    MyType::myProperty = "abc";
+    print(MyType::myProperty, "\n");
+}
+

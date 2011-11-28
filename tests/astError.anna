@@ -1,4 +1,7 @@
 def main()
 {
+    /*
+      ast macro expects one argument
+     */
     print(ast(1,1), "\n");
 }

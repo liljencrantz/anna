@@ -605,13 +605,7 @@ static void anna_type_prepare_property(
 	anna_node_t *g_node = (anna_node_t *)al_get(&etter, 0);
 	wchar_t *getter=0, *setter=0;
 	ssize_t getter_offset=-1, setter_offset=-1;
-	int storage = 0;
-
-	if(anna_attribute_flag(decl->attribute, L"static"))
-	{
-	    storage = ANNA_MEMBER_STATIC;
-	}
-	
+	int storage = anna_attribute_flag(decl->attribute, L"static") ? ANNA_MEMBER_STATIC : 0;
 
 	if(g_node->node_type != ANNA_NODE_NULL)
 	{
@@ -623,14 +617,22 @@ static void anna_type_prepare_property(
 	    getter = ((anna_node_identifier_t *)g_node)->name;
 	    
 	    anna_member_t *g_memb = anna_member_get(type, anna_mid_get(getter));
+
 	    if(!g_memb)
 	    {
 		anna_error(g_node, L"Unknown method");
 		goto END;
 	    }
+	    
+	    if(!!storage != !anna_member_is_bound(g_memb))
+	    {
+		anna_error(g_node, L"Invalid static flag on property");
+		goto END;		
+	    }
+	    
 	    getter_offset = g_memb->offset;
-	}
-	
+	}	
+
 	if(has_setter)
 	{
 	    anna_node_t *s_node = al_get(&etter, 1);
@@ -647,6 +649,12 @@ static void anna_type_prepare_property(
 		anna_error(s_node, L"Unknown method");
 		goto END;
 	    }
+	    if(!!storage != !anna_member_is_bound(s_memb))
+	    {
+		anna_error(s_node, L"Invalid static flag on property");
+		goto END;		
+	    }
+	    
 	    setter_offset = s_memb->offset;
 	}
 	

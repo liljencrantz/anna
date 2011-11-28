@@ -995,7 +995,7 @@ anna_node_t *anna_node_calculate_type(
 	
 	this->return_type = ANNA_NODE_TYPE_IN_TRANSIT;
 	anna_node_t *transformed = anna_node_calculate_type_internal(this);
-	assert(transformed);
+
 	if(!this->transformed)
 	    this->transformed = transformed;
 	
