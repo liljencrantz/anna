@@ -397,6 +397,24 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 {
     int i;
 
+    hash_table_t except;
+    hash_init(&except, &hash_wcs_func, &hash_wcs_cmp);
+
+    if(res->definition)
+    {
+	anna_node_call_t *node = res->body;
+	for(i=0; i<node->child_count; i++)
+	{
+	    anna_node_t *decl = node->child[i];
+	    if((decl->node_type != ANNA_NODE_DECLARE) && 
+	       (decl->node_type != ANNA_NODE_CONST))
+	    {
+		continue;
+	    }
+	    hash_put(&except, ((anna_node_declare_t *)node->child[i])->name, node->child[i]);
+	}
+    }
+    
     for(i=0; i<orig->finalizer_count; i++)
     {
 	anna_type_finalizer_add(res, orig->finalizer[i]);
@@ -433,6 +451,11 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	    anna_type_copy_check_interface(res->mid_identifier[mid], memb);
 	    continue;
         }
+	if(hash_get(&except, memb->name))
+	{
+	    continue;
+	}
+	
        
 	copied[i] = 1;
        
@@ -458,7 +481,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	if(anna_member_is_static(memb))
         {
 	    if(memb->offset != -1)
-	        res->static_member[copy->offset]=orig->static_member[memb->offset];
+	        res->static_member[copy->offset] = orig->static_member[memb->offset];
 	}
 	copy_property |= anna_member_is_property(memb);
     }
@@ -484,18 +507,21 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	    
 	    if(memb->getter_offset != -1)
 	    {
-		mid_t getter = anna_type_mid_at_static_offset(orig, memb->getter_offset);
+		mid_t getter = anna_type_mid_at_static_offset(
+		    orig, memb->getter_offset);
 		copy->getter_offset = anna_member_get(res, getter)->offset;
 	    }
 	    if(memb->setter_offset != -1)
 	    {
-		mid_t setter = anna_type_mid_at_static_offset(orig, memb->setter_offset);
+		mid_t setter = anna_type_mid_at_static_offset(
+		    orig, memb->setter_offset);
 		copy->setter_offset = anna_member_get(res, setter)->offset;
 	    }
 	}
     }
     
     free(copied);
+    hash_destroy(&except);
 }
 
 static void anna_type_prepare_member_internal(
@@ -679,7 +705,7 @@ static void anna_type_extend(
     anna_attribute_call_all(type->attribute, L"extends", &parents);
     
     int i;
-    for(i=al_get_count(&parents)-1; i>=0; i--)
+    for(i=al_get_count(&parents)-1; i >= 0; i--)
     {
 	anna_node_t *c = (anna_node_t *)al_get(&parents, i);
 	c = anna_node_calculate_type(c);
@@ -762,6 +788,7 @@ static void anna_type_def_flatten(anna_type_t *type)
 static anna_node_t *anna_type_setup_interface_internal(
     anna_type_t *type)
 {
+    int i;
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
 	return 0;
     
@@ -769,6 +796,8 @@ static anna_node_t *anna_type_setup_interface_internal(
 
     //wprintf(L"Set up interface for type %ls\n", type->name);
     //anna_node_print(4, type->definition);    
+
+    anna_type_extend(type);    
 
     if(type->definition)
     {
@@ -787,8 +816,6 @@ static anna_node_t *anna_type_setup_interface_internal(
 //	    (anna_node_call_t *)type->definition->child[2];
 	
 	anna_node_call_t *node = type->body;
-	size_t i;
-
 	for(i=0; i<node->child_count; i++)
 	{
 	    anna_node_t *decl = node->child[i];
@@ -815,8 +842,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 		type->stack);
 	}
     }
-    anna_type_extend(type);    
-    int i;
+
     for(i=0; i< type->mid_count; i++)
     {
 	anna_member_t *memb = type->mid_identifier[i];

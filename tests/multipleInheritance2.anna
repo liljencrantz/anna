@@ -1,0 +1,34 @@
+
+type Base1
+{
+    def foo()
+    {
+	print("Base1::foo\n");
+    }
+
+}
+
+type Base2
+{
+    def foo()
+    {
+	print("Base2::foo\n");
+    }
+}
+
+type Derived1
+(extends(Base1, Base2))
+{
+}
+
+type Derived2
+(extends(Base1, Base2))
+{
+}
+
+def main()
+{
+    expandCode(
+	%Type().foo(),
+	Type: [Base1, Base2, Derived1, Derived2]);
+}
