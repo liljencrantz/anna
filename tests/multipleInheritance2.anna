@@ -9,7 +9,6 @@ type Base1
     {
 	print("Base1::foo\n");
     }
-
 }
 
 type Base2

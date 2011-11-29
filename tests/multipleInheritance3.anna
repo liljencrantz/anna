@@ -9,7 +9,6 @@ type Base1
     {
 	print("intFoo\n");
     }
-
 }
 
 type Base2
