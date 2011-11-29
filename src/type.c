@@ -862,9 +862,8 @@ static anna_node_t *anna_type_setup_interface_internal(
 	
     }
 
-    if(!anna_member_get(type, anna_mid_get(L"__init__"))){
-
-//	    wprintf(L"Internal noop init in %ls\n", type->name);
+    if(!anna_member_get(type, anna_mid_get(L"__init__")))
+    {
 	wchar_t *argn[] = 
 	    {
 		L"this"
@@ -879,11 +878,6 @@ static anna_node_t *anna_type_setup_interface_internal(
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"__init__"), 0,
 	    &anna_util_noop, type, 1, argv, argn, 0, 0);
-/*
-  anna_object_t **cp = anna_entry_get_addr_static(
-  type,
-  ANNA_MID_INIT_PAYLOAD);
-*/
     }
 
     return 0;
@@ -1030,10 +1024,8 @@ static anna_node_call_t *get_constructor_input_list(anna_node_call_t *def)
 	}
     }
     
-    return 0;
-    
+    return 0;    
 }
-
 
 anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call)
 {
@@ -1253,8 +1245,6 @@ static int hash_function_type_comp(void *a, void *b)
     anna_function_type_t *key1 = (anna_function_type_t *)a;
     anna_function_type_t *key2 = (anna_function_type_t *)b;
 
-    //debug(D_SPAM,L"Compare type for function %ls %d and %ls %d\n", key1->result->name, hash_function_type_func(key1), key2->result->name, hash_function_type_func(key2));
-
     if(key1->return_type != key2->return_type)
 	return 0;
     if(key1->input_count != key2->input_count)
@@ -1308,9 +1298,6 @@ anna_type_t *anna_type_get_function(
     anna_node_t **argd, 
     int flags)
 {
-
-    //static int count=0;
-    //if((count++)==10) {CRASH};
     flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION | ANNA_FUNCTION_BOUND_METHOD);
     size_t i;
     static anna_function_type_t *key = 0;
@@ -1325,7 +1312,10 @@ anna_type_t *anna_type_get_function(
     }
     
     if(argc)
+    {
 	assert(argv);
+	assert(argn);
+    }
     
     if(new_key_sz>key_sz)
     {
@@ -1400,20 +1390,18 @@ anna_type_t *anna_type_get_iterator(
     anna_type_t *key_type,
     anna_type_t *value_type)
 {
-    anna_function_type_t *each_key = malloc(sizeof(anna_function_type_t) + 2*sizeof(anna_type_t *));
-    each_key->return_type = object_type;
-    each_key->input_count = 2;
-    each_key->flags = 0;
-
-    each_key->input_name = malloc(sizeof(wchar_t *)*2);
-    each_key->input_name[0] = L"key";
-    each_key->input_name[1] = L"value";
-
-    each_key->input_type[0] = key_type;
-    each_key->input_type[1] = value_type;    
-    anna_type_t *fun_type = anna_type_native_create(name, stack_global);
-    anna_reflection_type_for_function_create(each_key, fun_type);
-    return fun_type;
+    anna_type_t *argv[] = 
+	{
+	    key_type, value_type
+	};
+    wchar_t *argn[] = 
+	{
+	    L"key", L"value"
+	};
+    return anna_type_get_function(
+	object_type,
+	2, argv, argn, 0, 0);
+  
 }
 
 void anna_type_document(anna_type_t *type, wchar_t *doc)
@@ -1453,7 +1441,10 @@ void anna_type_finalizer_add(anna_type_t *type, anna_finalizer_t finalizer)
 	if(type->finalizer[i] == finalizer)
 	    return;
     }
-    type->finalizer = realloc(type->finalizer, sizeof(anna_finalizer_t) * (type->finalizer_count+1));
+    type->finalizer = 
+	realloc(
+	    type->finalizer,
+	    sizeof(anna_finalizer_t) * (type->finalizer_count+1));
     type->finalizer[type->finalizer_count++] = finalizer;
 }
 
@@ -1509,30 +1500,22 @@ static void anna_type_object_mark_all(anna_object_t *this)
     for(i=0; i<t->member_count; i++)
     {
 	anna_alloc_mark_entry(this->member[i]);
-    }
-    
+    }    
     anna_type_object_mark_empty(this);
 }
 
 static void anna_type_object_mark_basic(anna_object_t *this)
 {
     size_t i;
-    
     anna_type_t *t = this->type;
+
     for(i=0; i<t->mark_entry_count; i++)
     {
 	anna_alloc_mark_entry(this->member[t->mark_entry[i]]);
     }
-/*
-    if(t->mark_blob_count)
-    {
-	wprintf(L"Mark blobs in object of type:\n");
-	anna_type_print(t);
-    }
-*/  
+
     for(i=0; i<t->mark_blob_count; i++)
     {
-//	wprintf(L"Mark member at offset %d of object %d of type %ls\n", t->mark_blob[i], this, t->name);
 	if(this->member[t->mark_blob[i]])
 	{
 	    anna_alloc_mark(this->member[t->mark_blob[i]]);
@@ -1725,14 +1708,21 @@ void anna_type_reseal(anna_type_t *this)
 	}
     }	    
 
-    this->static_mark_entry = static_entry_count?realloc(this->static_mark_entry, sizeof(int)*(static_entry_count)):0;
+    this->static_mark_entry = 
+	static_entry_count ? realloc(
+	    this->static_mark_entry, 
+	    sizeof(int)*(static_entry_count)):0;
     this->static_mark_entry_count = static_entry_count;
         
-    this->static_mark_blob = static_alloc_blob_count ? realloc(this->static_mark_blob, sizeof(int)*(static_alloc_blob_count)):0;
+    this->static_mark_blob = 
+	static_alloc_blob_count ? realloc(
+	    this->static_mark_blob, 
+	    sizeof(int)*(static_alloc_blob_count)):0;
     this->static_mark_blob_count = static_alloc_blob_count;
         
     int eidx=0;
     int bidx=0;
+
     for(i=0; i<al_get_count(&this->member_list); i++)
     {
 	anna_member_t *memb = (anna_member_t *)al_get(&this->member_list, i);
@@ -1763,12 +1753,14 @@ void anna_type_reseal(anna_type_t *this)
 
 void anna_type_ensure_mid(anna_type_t *type, mid_t mid)
 {
-    
     if(type->mid_count <= mid)
     {
 	size_t old_sz = type->mid_count;
 	size_t new_sz = ((mid/16)+2)*16;
-	type->mid_identifier = realloc(type->mid_identifier, new_sz* sizeof(anna_member_t *));
+	type->mid_identifier = 
+	    realloc(
+		type->mid_identifier, 
+		new_sz* sizeof(anna_member_t *));
 	size_t i;
 	for(i=old_sz; i<new_sz; i++)
 	{
@@ -1779,7 +1771,8 @@ void anna_type_ensure_mid(anna_type_t *type, mid_t mid)
 	if(null_type->mid_count <= mid)
 	{
 	    old_sz = null_type->mid_count;
-	    null_type->mid_identifier = realloc(null_type->mid_identifier, new_sz*sizeof(anna_member_t *));
+	    null_type->mid_identifier = 
+		realloc(null_type->mid_identifier, new_sz*sizeof(anna_member_t *));
 	    for(i=old_sz; i<new_sz; i++)
 	    {
 		null_type->mid_identifier[i] = null_type->mid_identifier[0];
@@ -1787,6 +1780,5 @@ void anna_type_ensure_mid(anna_type_t *type, mid_t mid)
 	    null_type->mid_count = new_sz;
 	}
     }
-    
 }
 

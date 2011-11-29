@@ -7,7 +7,7 @@ type MyType
     {
 	/*
 	  An implicit use on the type might be nice in static methods.
-	 */
+	*/
 	myStaticMember = "some value";
     }
 }
