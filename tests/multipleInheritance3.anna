@@ -1,0 +1,40 @@
+/*
+  Check that alias lookup works when resolving methods derived from
+  different base classes.
+ */
+
+type Base1
+{
+    def intFoo(Int p) (alias(foo))
+    {
+	print("intFoo\n");
+    }
+
+}
+
+type Base2
+{
+    def stringFoo(String p) (alias(foo))
+    {
+	print("stringFoo\n");
+    }
+}
+
+type Derived1
+(extends(Base1, Base2))
+{
+}
+
+type Derived2
+(extends(Base1, Base2))
+{
+}
+
+def main()
+{
+    expandCode(
+	%Type().foo(%val),
+	Type: [Derived1, Derived1, Derived2, Derived2],
+	val: ["", 1, "", 1]);
+}
+
