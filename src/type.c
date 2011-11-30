@@ -438,8 +438,6 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     int *copied = calloc(sizeof(int), steps);
     int copy_property = 0;
 
-    FIXME("anna_type_copy does not copy gaps between members, causing crashes when we extend types that contain gaps");
-
     for(i=0; i<steps; i++)
     {
         anna_member_t *memb = al_get_fast(&orig->member_list, i);
@@ -459,14 +457,12 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
        
 	copied[i] = 1;
        
-	int storage = (anna_member_is_static(memb)?ANNA_MEMBER_STATIC:0)|((memb->offset==-1)?ANNA_MEMBER_VIRTUAL:0);
-       
 	anna_member_t *copy = anna_member_get(
             res,
             anna_member_create(
                 res,
                 mid,
-	        storage, memb->type));
+	        memb->storage, memb->type));
 	
 	anna_member_set_bound(copy, anna_member_is_bound(memb));
 	anna_member_set_property(copy, anna_member_is_property(memb));
@@ -484,6 +480,22 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	        res->static_member[copy->offset] = orig->static_member[memb->offset];
 	}
 	copy_property |= anna_member_is_property(memb);
+	if(memb->storage & 0xffff0000)
+	{
+	    size_t sz = (memb->storage >> 16);
+	    if(sz > 1)
+	    {
+		if(memb->storage & ANNA_MEMBER_STATIC)
+		{
+		    CRASH;
+		}
+		else
+		{
+		    res->member_count+= ((sz-1)/sizeof(anna_entry_t *));
+		    anna_type_calculate_size(res);
+		}
+	    }
+	}
     }
     
     /*

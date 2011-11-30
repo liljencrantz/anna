@@ -144,7 +144,7 @@ mid_t anna_member_create_blob(
     mid_t res = anna_member_create(
 	type,
 	mid,
-	storage,
+	storage | (sz << 16),
 	null_type);    
 
     if(storage & ANNA_MEMBER_STATIC)
