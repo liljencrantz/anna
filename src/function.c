@@ -177,7 +177,8 @@ static anna_node_t *anna_function_setup_arguments(
 		}
 		else
 		{
-		    anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
+		    anna_error(decl->child[1],  L"Could not determine type of input paramater «%ls» in function %ls.", name->name, f->name);
+		    return anna_node_create_null(0);
 		}
 	    }
 	    else
@@ -186,7 +187,8 @@ static anna_node_t *anna_function_setup_arguments(
 		
 		if(!d_type || d_type == null_type)
 		{
-		    anna_error(decl->child[1],  L"Could not determine argument type of %ls in function %ls", name->name, f->name);
+		    anna_error(decl->child[1],  L"Could not determine type of input parameter «%ls» in function %ls.", name->name, f->name);
+		    return anna_node_create_null(0);
 		}
 		else
 		{
@@ -207,7 +209,7 @@ static anna_node_t *anna_function_setup_arguments(
 	    {
 		t = anna_list_type_get_imutable(t);
 	    }
-//	    wprintf(L"Declare %ls as %ls in %ls\n", f->input_name[i], t->name, f->name);
+//	    wprintf(L"Declare %ls as %ls in %ls\n", f->input_name[i], t->name, f->name)
 	    
 	    anna_stack_declare(
 		f->stack_template, 
@@ -218,8 +220,10 @@ static anna_node_t *anna_function_setup_arguments(
 	}
 	else
 	{
-	    wprintf(L"Expected declaration: %ls\n", fun->name);
-	    CRASH;
+	    anna_error(
+		fun, 
+		L"Expected declaration.");
+	    return anna_node_create_null(0);
 	}
     }
     return 0;
@@ -401,7 +405,10 @@ void anna_function_setup_interface(
 				L"parser")))));
 	}
 		
-	anna_function_setup_arguments(f, f->stack_template->parent);
+	if(anna_function_setup_arguments(f, f->stack_template->parent))
+	{
+	    f->input_count = 0;
+	}
 	
 	anna_node_register_declarations(
 	    (anna_node_t *)f->body,

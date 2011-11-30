@@ -121,7 +121,9 @@ ANNA_VM_MACRO(anna_macro_def)
 {
     CHECK_CHILD_COUNT(node, L"__def__", 5);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
-    CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
+    CHECK_NODE_BLOCK(node->child[2]);
+    CHECK_NODE_BLOCK(node->child[3]);
+    CHECK_NODE_BLOCK(node->child[4]);
 
     anna_node_call_t *attr = (anna_node_call_t *)node->child[3];
     
@@ -169,7 +171,7 @@ ANNA_VM_MACRO(anna_macro_var)
 {
     CHECK_CHILD_COUNT(node, L"variable declaration", 4);
     CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
-    CHECK_NODE_TYPE(node->child[3], ANNA_NODE_CALL);
+    CHECK_NODE_BLOCK(node->child[3]);
 
     anna_node_call_t *attr = (anna_node_call_t *)node->child[3];
     

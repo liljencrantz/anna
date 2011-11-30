@@ -12,7 +12,6 @@ int check_node_identifier_name(anna_node_t *n,
     return 0;
 }
 
-
 int check_node_block(anna_node_t *n)
 {
     if(anna_node_is_call_to(n, L"__block__"))
@@ -23,6 +22,5 @@ int check_node_block(anna_node_t *n)
 	n,
 	L"Unexpected argument type. Expected a block definition, got a node of type %d.", 
 	n->node_type);
-    CRASH;
     return 0;
 }

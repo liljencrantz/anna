@@ -55,8 +55,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
 			anna_entry_t *initial_value,
 			int flags)
 {
-    if(!name)
-	CRASH;
+    assert(name);
     
     if(stack->flags & ANNA_STACK_DECLARE)
     {
@@ -64,8 +63,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
     }
 
     if(name[0]==L'!' && (wcscmp(name, L"!unused")!=0))
-	return;
-    
+	return;    
     
     if(!initial_value)
     {
@@ -75,7 +73,6 @@ void anna_stack_declare(anna_stack_template_t *stack,
 	CRASH;
     }
 
-//    assert(name);
     assert(type);
     assert(stack);
     //wprintf(L"Declare %ls to be of type %ls\n", name, type->name);

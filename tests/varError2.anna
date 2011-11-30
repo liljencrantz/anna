@@ -1,0 +1,9 @@
+
+__var__(
+    hej, ?, 5,
+    hello());
+
+def main()
+{
+    print(hej);
+}

@@ -1,0 +1,15 @@
+
+__var__(
+    hej, ?, 
+    __def__(
+	hej,
+	Object, 
+	__block__(__var__(input, Mint, ?, __block__())), 
+	__block__(), 
+	__block__(print(input, "\n"))),
+	    __block__());
+
+def main()
+{
+    hej(7);
+}
