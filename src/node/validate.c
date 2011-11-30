@@ -1,3 +1,4 @@
+
 static int anna_node_f_get_index(anna_function_type_t *f, int is_method, wchar_t *name)
 {
     int i;

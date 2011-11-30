@@ -59,28 +59,6 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
     anna_function_t *fun = (anna_function_t *)obj->member[m->offset];
 
     return fun;
-    /*
-
-    if(likely((long)fun)) 
-    {
-	//wprintf(L"Got object of type %ls with native method payload\n", obj->type->name);
-	return fun;
-    }
-    else 
-    {
-	anna_object_t **function_wrapper_ptr =
-	    anna_entry_get_addr_static(
-		obj->type, 
-		ANNA_MID_CALL_PAYLOAD);
-	if(function_wrapper_ptr)
-	{
-	    //wprintf(L"Got object with __call__ member\n");
-	    return anna_function_unwrap(
-		*function_wrapper_ptr);	    
-	}
-	return 0;	
-    }
-    */
 }
 
 static void anna_function_handle_use(anna_node_call_t *body)
@@ -101,10 +79,6 @@ static void anna_function_handle_use(anna_node_call_t *body)
 			c->payload,
 			c->return_type));
 	    }
-//	    wprintf(L"Hmm, add use thingie\n");
-//	    anna_node_print(5, c->payload);
-//	    anna_type_print(c->return_type);
-	    
 	}
     }
     anna_node_resolve_identifiers((anna_node_t *)body);
@@ -118,9 +92,9 @@ static void anna_function_alloc_input(anna_function_t *this, int argc)
 	size_t in = sizeof(wchar_t *)*argc;
 	size_t id = sizeof(anna_node_t *)*argc;
 	char *res = calloc(1, it+in+id);
-	this->input_type = res;
-	this->input_name = res+it;
-	this->input_default = res+it+in;
+	this->input_type = (anna_type_t **)res;
+	this->input_name = (wchar_t **)(res+it);
+	this->input_default = (anna_node_t **)(res+it+in);
     }
     else
     {

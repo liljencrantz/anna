@@ -812,10 +812,9 @@ expression10:
 	    }
 	    else
 	    {
-		$2->function = anna_node_create_identifier(&@2, L"nothing");
-		$$ = $2;
+		$2->function = (anna_node_t *)anna_node_create_identifier(&@2, L"nothing");
+		$$ = (anna_node_t *)$2;
 	    }
-	    
 	}
 	|
 	NULL_SYM

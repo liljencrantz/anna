@@ -779,7 +779,9 @@ static __attribute__((aligned(8))) void anna_hash_get_callback(
 {
     if(!hash_entry_is_used(hash_entry))
     {
-	anna_context_push_object(stack, ahi_unwrap(hash)->default_value);	
+	anna_context_push_object(
+	    stack,
+	    anna_as_obj(ahi_unwrap(anna_as_obj_fast(hash))->default_value));	
     }
     else
     {

@@ -345,7 +345,7 @@ static wchar_t *anna_function_search(
 	while(al_get_count(&use_memb))
 	{
 	    anna_member_t *memb = (anna_member_t *)al_pop(&use_memb);
-	    anna_use_t *use = (anna_member_t *)al_pop(&use_memb);
+	    anna_use_t *use = (anna_use_t *)al_pop(&use_memb);
 	    
 	    if(anna_stack_search_use(stack, memb->name) == use)
 	    {

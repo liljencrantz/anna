@@ -5,18 +5,18 @@
   - Split into multiple files
   - Check for dead links
   - binding generator doesn't pass on doc attribute
+  - By default, attributes should be dropped to conserve memory. Add special switch to retain it for the annadoc program.
 * HTML api documentation extractor
   - Hide internal elements by default
   - variadic arguments aren't shown as such
   - argument default values aren't shown
 * Check that node compare supports all ast node types
-* More validation:
-  - Only static members can be accessed statically
-  - Check argument types to function calls better...
 
 1.0 RELEASE CRITERIA (Done):
 * More validation:
   - Can't assign to constants
+  - Only static members can be accessed statically
+  - Check argument types to function calls better...
 * Introductory segment in the documentation
 * Working error handling
   - raise function
@@ -53,7 +53,7 @@
 * Rename vmstack to context
 * Fix if/else snafu. Current solution is hardly elegant and it fails in some edge cases. Hopefully, we can come up with something significantly better...
 
-2.0 RELEASE CRITERIA:
+1.1 RELEASE CRITERIA:
 * During startup, cache contents of all directories in ANNA_PATH so that we don't have to do crazy numbers of stat calls
 * getopt replacement
   - basic design
@@ -66,7 +66,13 @@
   - catch function?
 * Documentation coverage of standard API functions and types should be 100 %.
 * Constructors and inheritance _fully_ working
+  - multiple constructors through aliases
 * Add memory overhead of Hashes, Buffers and Lists to GC estimates
+* Function for obtaining the amount of memory used by an object
+* Proper iterators? Possibly rethink how map/filter and friends are implemented
+* Protected members
+
+1.2 RELEASE CRITERIA:
 * HTML api documentation extractor
   - Search functionality
   - Show/hide different elements
@@ -76,13 +82,10 @@
 * Query library (SQL Alchemy/Linq/etc. replacement)
 * Live debugger library
 * Multithreading support using message passing and a common frozen object store
-* Cache for mpz_t numbers
-* Proper iterators? Possibly rethink how map/filter and friends are implemented
-* Protected members
+* Cache for mpz_t numbers? Is this meaningful?
 * Set type
 * Faster imutable lists/strings, supporting zero copy slicing, substringing, etc.
 * Imutable Map/Set? Maybe...
-* make anna_node_print print out ast nodes with some syntax sugar support
 * List.sort
   - List specialization
   - Return ImutableList when calling ImutableList.sort
@@ -99,7 +102,7 @@ Go over list of built in functions and methods and mark the right ones as pure
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge numbers of switch statements. One possibility would be to add function pointers to the node types.
 Should finalizers be completely dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit, and we'd have to use the GC for a bunch of extra stuff, like list payloads
 Should print work like python print, e.g. autoinsert newlines and spaces?
-It would be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
+It might be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
 Should Range really be mutable?
 How should the argument list for inherited constructors be handled?
 It should be possible to declare type members with initial values. 

@@ -233,13 +233,6 @@ anna_type_t *anna_type_stack_create(wchar_t *name, anna_stack_template_t *stack)
     return result;
 }
 
-static void add_member(void *key, void *value, void *aux)
-{
-    wchar_t ***dest = (wchar_t ***)aux;
-    **dest = key;
-    (*dest)++;
-}
-
 void anna_type_print(anna_type_t *type)
 {
     int i;

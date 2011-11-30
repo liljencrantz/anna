@@ -2,7 +2,6 @@
 static hash_table_t anna_mid_identifier;
 static array_list_t anna_mid_identifier_reverse;
 static mid_t mid_pos = ANNA_MID_FIRST_UNRESERVED;
-static size_t anna_type_mid_max = 768;
 
 static void anna_mid_put(wchar_t *name, mid_t mid);
 
@@ -149,11 +148,6 @@ size_t anna_mid_get(wchar_t *name)
     {      
 
 	size_t gg = mid_pos++;
-/*	if( mid_pos >= anna_type_mid_max)
-	{
-	    anna_type_mid_max += 128;
-	    anna_type_reallocade_mid_lookup(anna_type_mid_max-128,anna_type_mid_max);
-	    }*/
 	anna_mid_put(name, gg);
 	return gg;
     }

@@ -494,8 +494,8 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     }
     else if(n->node_type == ANNA_NODE_STRING_LITERAL)
     {
-	anna_node_string_literal_t *r2 = (anna_node_int_literal_t *)r;
-	anna_node_string_literal_t *n2 = (anna_node_int_literal_t *)n;
+	anna_node_string_literal_t *r2 = (anna_node_string_literal_t *)r;
+	anna_node_string_literal_t *n2 = (anna_node_string_literal_t *)n;
 	if(n2->free)
 	{
 	  r2->payload = malloc(sizeof(wchar_t) * r2->payload_size);
