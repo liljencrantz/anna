@@ -376,14 +376,8 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token BREAK
 %token CONTINUE
 %token SEPARATOR
-%token SIGN
 %token IGNORE
 %token LINE_BREAK
-%token BITAND
-%token BITOR
-%token XOR
-%token BITNOT
-%token MODULO
 %token AS
 %token IN
 %token ELLIPSIS
@@ -395,7 +389,6 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token SPECIALIZATION_END
 %token SPECIALIZATION_BEGIN2
 %token SPECIALIZATION_END2
-%token TYPE
 %token STATIC_MEMBER_GET
 
 %type <call_val> block opt_expression_list expression_list
