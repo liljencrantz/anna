@@ -1,0 +1,14 @@
+
+__const__(
+    Hej, ?, 
+    type(
+	Hej,
+	__block__(),
+	__block__(), 
+	1),
+    __block__());
+
+def main()
+{
+    print(Hej());
+}

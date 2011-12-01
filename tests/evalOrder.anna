@@ -1,0 +1,25 @@
+def getFun()
+{
+    print("getFun();\n");
+    return def (String param1, String param2) {
+	print("fun(%, %);\n" % [param1, param2]); "result";
+    }
+}
+
+def getParam1()
+{
+    print("getParam1();\n");
+    "param1";
+}
+
+def getParam2()
+{
+    print("getParam2();\n");
+    "param2";
+}
+
+def main()
+{
+    print( getFun()(getParam1(), getParam2()), "\n");
+}
+

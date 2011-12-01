@@ -1,0 +1,4 @@
+def main()
+{
+    __memberGet__(7, "__type__");
+}
