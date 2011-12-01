@@ -418,8 +418,7 @@ module: opt_expression_list
 		(anna_node_t *)anna_node_create_identifier(
 		    &@$,L"__module__");
 	    *parse_tree_ptr = (anna_node_t *)$$;
-	}
-	|
+	} |
 	error separators
 	{
 	    yyerrok;
@@ -437,8 +436,7 @@ opt_expression_list :
 	opt_separator
 	{
 	    $$ = anna_node_create_block2(&@$);
-	}
-	| 
+	} |
 	opt_separator expression_list opt_separator
 	{
 	    $$ = $2;
@@ -453,8 +451,7 @@ expression_list :
 		anna_node_call_add_child($1,$3);
 		anna_node_set_location((anna_node_t *)$$, &@$);
 	    }
-	}
-	| 
+	} |
 	expression
 	{
 	    $$ = anna_node_create_block2(&@$, $1);
@@ -464,8 +461,8 @@ opt_declaration_init :
 	'=' expression
 	{
 	    $$ = $2;
-	}
-	|
+	} |
+	/* Empty */
 	{
 	    $$ = 0;
 	};
@@ -477,26 +474,25 @@ expression:
 		&@$,
 		(anna_node_t *)anna_node_create_identifier(&@$,L"__assign__"),
 		$1, $3);
-	}
-	|
+	} |
 	expression2 op expression
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		$2,
 		$1, $3);
-	}
-        | expression2
-	| declaration_expression 
-	| type_definition
-	| jump expression
+	} | 
+	expression2 | 
+	declaration_expression |
+	type_definition |
+	jump expression
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		$1,
 		$2);
-	}
-	| jump
+	} |
+	jump
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 	      &@$, 
@@ -508,18 +504,15 @@ jump:
 	RETURN
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@1,L"return");
-	}
-	|
+	} |
 	CONTINUE
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@1,L"continue");
-	}
-	|
+	} |
 	BREAK
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@1,L"break");
-	}
-;
+	};
 
 expression2 :
 	expression2 op2 expression3
@@ -528,11 +521,10 @@ expression2 :
 		&@$,
 		$2,
 		$1, $3);
-	}
-        | 
+	} |
 	expression3;
 
-opt_separator: /* Empty */| separators;
+opt_separator: /* Empty */ | separators;
 
 expression3 :
 	expression3 op3 expression4
@@ -558,8 +550,7 @@ expression3 :
 			    $1, $2),
 			$3);
 	    }	    
-	}
-        |
+	} |
 	expression4;
 
 expression4 :
@@ -573,31 +564,27 @@ expression4 :
 			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, $2),
 		    $3);
-	}
-        | 
+	} |
 	expression4 RANGE expression5
 	{
 	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__range__");
 	    $$ = (anna_node_t *)anna_node_create_call2(&@$, op, $1, $3);
-	}
-	|
+	} |
 	expression4 ELLIPSIS
 	{
 	    anna_node_t *op = (anna_node_t *)anna_node_create_identifier(
 		&@$,L"__range__");
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, op, $1, anna_node_create_null(&@$));
-	}
-	|
+	} |
 	expression5;
 
 expression5 :
 	expression5 op5 expression6
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(&@$, $2, $1, $3);
-	}
-        | 
+	} |
 	expression6;
 
 expression6 :
@@ -611,8 +598,7 @@ expression6 :
 			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, $2),
 		    $3);
-	}
-        | 
+	} |
 	expression7;
 
 expression7:
@@ -626,8 +612,7 @@ expression7:
 			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, $2),
 		    $3);
-	}
-        | 
+	} |
 	expression8;
 
 expression8:
@@ -637,8 +622,7 @@ expression8:
 		&@$,
 		anna_node_create_identifier(&@$,L"__not__"), 
 		$2);
-	}
-	|
+	} |
 	'^' identifier expression9
 	{
 	    $$ = (anna_node_t *)
@@ -648,8 +632,7 @@ expression8:
 			&@$, 
 			anna_node_create_identifier(&@2, L"__memberGet__"),
 			$3, $2));
-	}
-	| 
+	} |
 	expression9 post_op8
 	{
 	  $$ = (anna_node_t *)
@@ -657,10 +640,8 @@ expression8:
 		  &@$, 
 		  $2,
 		  $1);
-	}
-	| 
-	expression9
-	|
+	} |
+	expression9 |
 	expression8 AS expression9
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
@@ -679,8 +660,7 @@ expression9 :
 	    anna_node_set_location($$, &@$);
 	    if ($5) 
 		anna_node_call_add_child($3, (anna_node_t *)$5);
-	}
-	|
+	} |
 	'-' expression10
 	{
 	    if($2->node_type == ANNA_NODE_INT_LITERAL)
@@ -706,13 +686,11 @@ expression9 :
 			    anna_node_create_identifier(&@2, L"__memberGet__"),
 			    $2, op));
 	    }
-	}
-	| 
+	} |
 	expression10 block
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(&@$, $1, $2);
-	}
-	| 
+	} |
 	expression9 '[' expression ']'
 	{
 	    $$ = (anna_node_t *)
@@ -724,10 +702,8 @@ expression9 :
 			$1, 
 			anna_node_create_identifier(&@$, L"__get__")),
 		    $3);
-	}
-	|
-	expression10
-	|
+	} |
+	expression10 |
 	opt_specialization '[' opt_expression_list ']'
 	{
 	    $$ = (anna_node_t *)$3;
@@ -766,37 +742,31 @@ expression9 :
 	    anna_node_call_set_function(
 		$3,
 		fun);
-	}
-	|
+	} |
 	expression9 '.' expression10
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@2, L"__memberGet__"), 
 		$1, $3);
-	}
-	|
+	} |
 	expression9 STATIC_MEMBER_GET expression10
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@2, L"__staticMemberGet__"), 
 		$1, $3);
-	}
-	|
+	} |
 	expression9 specialization
 	{
 		$$ = (anna_node_t *)anna_node_create_call2(
 		    &@$, anna_node_create_identifier(&@$, L"__specialize__"), 
 		    $1, $2);		
-	}
-;
+	};
 
 expression10:
-	literal
-	|
-	any_identifier
-	| 
+	literal |
+	any_identifier |
 	'(' expression_list ')'
 	{
 	    if($2->child_count == 1)
@@ -808,35 +778,30 @@ expression10:
 		$2->function = (anna_node_t *)anna_node_create_identifier(&@2, L"nothing");
 		$$ = (anna_node_t *)$2;
 	    }
-	}
-	|
+	} |
 	NULL_SYM
 	{
 	    $$ = anna_node_create_null(&@$);
-	}
-	| block 
+	} |
+	block 
 	{
 	    $$ = (anna_node_t *)$1; 
-	}
-;
+	};
 
 
 op:
 	APPEND
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__append__");
-	}
-	|
+	} |
 	INCREASE
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__increase__");
-	}
-	|
+	} |
 	DECREASE
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__decrease__");
-	}
-	|
+	} |
 	TO
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__mapping__");
@@ -846,8 +811,7 @@ op2:
 	AND
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__and__");
-	}
-	|
+	} |
 	OR
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__or__");
@@ -857,33 +821,27 @@ op3:
 	'<'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__lt__");
-	}
-	|
+	} |
 	'>'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__gt__");
-	}
-	|
+	} |
 	EQUAL
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__eq__");
-	}
-	|
+	} |
 	NOT_EQUAL
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__neq__");
-	}
-	|
+	} |
 	LESS_OR_EQUAL
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__lte__");
-	}
-	|
+	} |
 	GREATER_OR_EQUAL
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__gte__");
-	}
-        |
+	} |
 	IN
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__in__");
@@ -905,13 +863,11 @@ op6:
 	'+'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__add__");
-	}
-	|
+	} |
 	'-'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__sub__");
-	}
-	|
+	} |
 	'~'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__join__");
@@ -921,13 +877,11 @@ op7:
 	'*'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__mul__");
-	}
-	|
+	} |
 	'/'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__div__");
-	}
-	|
+	} |
 	'%'
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__format__");
@@ -937,24 +891,21 @@ post_op8:
 	NEXT
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__next__")
-	}
-	|
+	} |
 	PREV
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__prev__")
 	};
 
 opt_identifier:
-	identifier
-	|
+	identifier |
+	/* Empty */
 	{
 	    $$ = 0;
 	};
 
 type_identifier:
-	type_identifier2
-
-	|
+	type_identifier2 |
 	'%' type_identifier2
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
@@ -970,8 +921,7 @@ type_identifier2:
 	};
 
 identifier:
-	identifier2
-	|
+	identifier2 |
 	'%' identifier2
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
@@ -984,23 +934,19 @@ identifier2:
 	IDENTIFIER
 	{
 	    $$ = anna_text_as_id(&@$, scanner);
-	}
-	|
+	} |
 	IN
 	{
 	    $$ = anna_text_as_id(&@$, scanner);
-	}
-	|
+	} |
 	AS
 	{
 	    $$ = anna_text_as_id(&@$, scanner);
-	}
-	|
+	} |
 	AND
 	{
 	    $$ = anna_text_as_id(&@$, scanner);
-	}
-	|
+	} |
 	OR
 	{
 	    $$ = anna_text_as_id(&@$, scanner);
@@ -1012,33 +958,27 @@ literal:
 	LITERAL_INTEGER_BASE_10
 	{
 	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner), 10);
-	}
-	| 
+	} | 
 	LITERAL_INTEGER_BASE_16
 	{
 	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner)+2, 16);
-	}
-	| 
+	} | 
 	LITERAL_INTEGER_BASE_8
 	{
 	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner)+2, 8);
-	}
-	| 
+	} | 
 	LITERAL_INTEGER_BASE_2
 	{
 	    $$ = anna_atoi(&@$, anna_lex_get_text(scanner)+2, 2);
-	}
-	| 
+	} | 
 	LITERAL_FLOAT
 	{
 	    $$ = anna_atof(&@$, anna_lex_get_text(scanner));
-	}
-	| 
+	} | 
 	LITERAL_CHAR
 	{
 	    $$ = anna_yacc_char_literal_create(&@$, anna_lex_get_text(scanner));
-	}
-	| 
+	} | 
 	LITERAL_STRING
 	{
 	    $$ = (anna_node_t *)anna_yacc_string_literal_create(
@@ -1118,22 +1058,19 @@ opt_type_and_opt_name:
 	$$ = anna_node_create_block2(
 	    &@$, 
 	    type, $5?$5:(anna_node_t *)anna_node_create_null(&@$));
-    }
-    |
+    } |
     function_signature opt_identifier
     {	
 	$$ = anna_node_create_block2(
 	    &@$, 
 	    $1, $2?$2:anna_node_create_null(&@$));
-    }
-    |
+    } |
     identifier
     {
 	$$ = anna_node_create_block2(
 	    &@$, 
 	    anna_node_create_null(&@$), $1);
-    }
-    |
+    } |
     type_identifier opt_specialization opt_identifier
     {
 	anna_node_t *t = $1;
@@ -1147,27 +1084,24 @@ opt_type_and_opt_name:
 	$$ = anna_node_create_block2(
 	    &@$, 
 	    t, $3?$3:anna_node_create_null(&@$));
-    }
-    |
+    } |
+    /* Empty */
     {
 	$$ = anna_node_create_block2(
 	    &@$, 
 	    anna_node_create_null(&@$), 
 	    anna_node_create_null(&@$));
-    }
-    ;
+    };
 
 type_remainder:
-    any_identifier
-    |
+    any_identifier |
     type_remainder '.' any_identifier
     {
 	$$ = (anna_node_t *)anna_node_create_call2(
 	    &@$,
 	    anna_node_create_identifier(&@2, L"__memberGet__"), 
 	    $1, $3);
-    }
-    ;
+    };
 
 
 function_definition: 
@@ -1192,8 +1126,7 @@ function_definition:
 	    {
 		$$ = def;
 	    }
-	}
-	|
+	} |
 	MACRO identifier '(' identifier ')' attribute_list block
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
@@ -1205,8 +1138,7 @@ declaration_list :
 	'(' opt_separator ')'
 	{
 	    $$ = anna_node_create_block2(&@$);
-	}
-	|
+	} |
 	'(' declaration_list2 opt_separator ')'
 	{
 	    $$ = $2;
@@ -1217,8 +1149,7 @@ declaration_list2 :
 	{
 	    $$ = anna_node_create_block2(&@$);
 	    anna_node_call_add_child($$,$1);
-	}
-	| 
+	} | 
 	declaration_list2 separators declaration_list_item
 	{
 	    $$ = $1;
@@ -1229,8 +1160,7 @@ var_or_const:
 	VAR
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"__var__");
-	}
-	|
+	} |
 	CONST
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"__const__");
@@ -1246,17 +1176,14 @@ declaration_expression:
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, $1,
 		$2->child[1], $2->child[0], $4?$4:anna_node_create_null(&@$), $3);
-	}
-	|
-	function_definition
-	|
+	} |
+	function_definition |
 	identifier DECLARE_VAR expression
         {
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, anna_node_create_identifier(&@$, L"__var__"),
 		$1, anna_node_create_null(&@$), $3, anna_node_create_block2(&@$));
-        }
-	|
+        } |
 	identifier DECLARE_CONST expression
         {
 	    $$ = (anna_node_t *)anna_node_create_call2(
@@ -1268,13 +1195,11 @@ opt_ellipsis:
 	/* Empty */
 	{
 	    $$=0;
-	}
-	|
+	} |
 	ELLIPSIS
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadic");
-	}
-	|
+	} |
 	TO
 	{
 	    $$ = (anna_node_t *)anna_node_create_identifier(&@$, L"variadicNamed");
@@ -1295,8 +1220,7 @@ type_and_name:
 	$$ = anna_node_create_block2(
 	    &@$, 
 	    type, $3);
-    }
-    |
+    } |
     function_signature identifier
     {
 	$$ = anna_node_create_block2(
@@ -1337,15 +1261,14 @@ declaration_list_item:
 opt_specialization:
 	{
 	    $$=0;
-	}
-	| specialization;
+	} | 
+	specialization;
 
 specialization:
 	SPECIALIZATION_BEGIN2 expression_list opt_separator SPECIALIZATION_END2
 	{
 	    $$ = $2;
-	}
-	|
+	} |
 	SPECIALIZATION_BEGIN expression_list opt_separator SPECIALIZATION_END
 	{
 	    $$ = $2;
@@ -1380,8 +1303,7 @@ attribute_list:
 	/* Empty */
 	{
 	    $$ = anna_node_create_block2(&@$);
-	}
-	| 
+	} | 
 	'(' opt_expression_list ')'
 	{
 	    $$ = $2;
