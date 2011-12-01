@@ -307,6 +307,16 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    break;
 	}	
 
+	case ANNA_NODE_RETURN:
+	{
+	    anna_function_t *f = this->stack->function;
+	    if( !anna_abides(this->return_type, f->return_type))
+	    {
+		anna_error(this, L"Invalid return type, type %ls can not masque as a %ls.", this->return_type->name, f->return_type->name);
+	    }
+	    
+	}
+	
     }    
 }
 

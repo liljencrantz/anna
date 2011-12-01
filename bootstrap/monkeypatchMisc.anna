@@ -88,7 +88,7 @@ def Int pairCmp(Pair this, Object other)
     }    
 }
 
-def String hashMapSetAll(HashMap this, Pair value...)
+def HashMap hashMapSetAll(HashMap this, Pair value...)
 (
     name(__setAll__), 
     target(HashMap), 

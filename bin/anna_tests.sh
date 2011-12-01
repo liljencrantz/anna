@@ -25,7 +25,7 @@ for i in tests/*.anna; do
     fi
 
     if test "$status" != "$status_correct"; then
-	echo -e "\n\nError in exit status for test $i." $status_correct != $status
+	echo -e "\n\nError in exit status for test $i. Expected exit status ${status_correct}, found $status"
 	error=1
     else
 	if test -f $out_correct; then
