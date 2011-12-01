@@ -1,0 +1,9 @@
+def String foo()
+{
+    return 7;
+}
+
+def main()
+{
+    print(foo() ~ "bar", "\n");
+}

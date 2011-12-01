@@ -1,0 +1,12 @@
+type MyType
+{
+    def sillyMethod(String this, String that)
+    {
+	return this ~ that;
+    }
+}
+
+def main()
+{
+    print(MyType().sillyMethod("", ""), "\n");
+}

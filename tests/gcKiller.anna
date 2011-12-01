@@ -1,0 +1,20 @@
+
+type Node
+{
+    var Node next;
+    
+    def __init__(Node next)
+    {
+	this.next = next; 
+    }
+}
+
+def main()
+{
+    n := Node(?);
+    (0..1_000_000).each(idx)
+    {
+	n = Node(n);
+    }
+}
+

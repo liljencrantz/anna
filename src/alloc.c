@@ -41,6 +41,7 @@ int anna_alloc_count=0;
 int anna_alloc_count_next_gc=1024*1024;
 int anna_alloc_gc_block_counter;
 int anna_alloc_run_finalizers=1;
+array_list_t anna_alloc_todo = AL_STATIC;
 
 static void anna_alloc_unmark(void *obj)
 {
@@ -532,6 +533,8 @@ void anna_alloc_gc_unblock()
 
 void anna_gc(anna_context_t *context)
 {
+    al_truncate(&anna_alloc_todo, 0);
+    
     if(anna_alloc_gc_block_counter)
     {
 	anna_alloc_tot += anna_alloc_count;
@@ -570,6 +573,11 @@ void anna_gc(anna_context_t *context)
     anna_hash_mark_static();    
     anna_alloc_mark_object(null_object);
     anna_alloc_mark(anna_stack_wrap(stack_global));
+    while(al_get_count(&anna_alloc_todo))
+    {
+	anna_object_t *obj = (anna_object_t *)al_pop(&anna_alloc_todo);
+	obj->type->mark_object(obj);
+    }
     
     int freed = 0;
     

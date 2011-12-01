@@ -4,13 +4,16 @@
 * Base documentation:
   - Split into multiple files
   - Check for dead links
-  - binding generator doesn't pass on doc attribute
+  - binding generator doesn't pass on the doc attribute
   - By default, attributes should be dropped to conserve memory. Add special switch to retain it for the annadoc program.
 * HTML api documentation extractor
   - Hide internal elements by default
   - variadic arguments aren't shown as such
   - argument default values aren't shown
 * Check that node compare supports all ast node types
+* If explicit function return type exists, return type of return expressions aren't abides checked against it
+* Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
+* When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 
 1.0 RELEASE CRITERIA (Done):
 * More validation:
@@ -54,6 +57,7 @@
 * Fix if/else snafu. Current solution is hardly elegant and it fails in some edge cases. Hopefully, we can come up with something significantly better...
 
 1.1 RELEASE CRITERIA:
+* The GC uses recursion, we should switch to a stack instead in order to not smash the call stack on e.g. a huge linked list.
 * During startup, cache contents of all directories in ANNA_PATH so that we don't have to do crazy numbers of stat calls
 * getopt replacement
   - basic design
@@ -71,6 +75,7 @@
 * Function for obtaining the amount of memory used by an object
 * Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
+* Multiple inheritance clashes aren't handled sanely
 
 1.2 RELEASE CRITERIA:
 * HTML api documentation extractor
@@ -93,8 +98,6 @@
   - Sort structure member
 
 MISC:
-Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
-When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 What should be the return value for iterator methods like map and filter when given a null value as a function body?
 An error injection tool that randomly turns stack values into null objects would be cool. Need to make sure that the «this» object of method calls aren't flipped, though, which means we must do something clever in order to make it work.
 Make api more consistent. Make naming of wrapper types consistent. Make naming of native type methods consistent.
@@ -106,17 +109,9 @@ It might be useful to have a function to construct an instance of a specific lis
 Should Range really be mutable?
 How should the argument list for inherited constructors be handled?
 It should be possible to declare type members with initial values. 
-We need reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
+We may want reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
 Type member setup needs some dependency resolution in order for type calculations to work properly.
-The GC uses recursion, we should switch to a stack instead in order to not smash the call stack on e.g. a huge linked list.
 
-KNOWN BUGS:
-List, Pair and Hash types are still included in their specialization list even if GC:ed. This should never ever trigger a bug, since if the type has been GC:ed it can't ever be used again, but it does seem unsightly...
-Multiple inheritance clashes aren't handled sanely
-A bunch of AST node types are missing equality comparison, etc.
-If explicit function return type exists, return type of return expressions aren't abides checked against it
-Default argument values and static calls to bound members seem to cause a crash
-If you call an input parameter of a type method 'this', the interpreter will crash.
 
 LANGUAGE FEATURES:
 Function templates
@@ -126,7 +121,6 @@ Return value type for continuations
 STDLIB FEATURES:
 The rest of the hashtable functions (filter, find, properties for key and value lists, etc.)
 Set type
-hashCode function for Pair
 List.milter 
 Range.milter
 Hash.milter
@@ -156,7 +150,7 @@ Optimization idea: Avoid creating trampolines when possible - push other stack o
 Add profiling information to the VM
 Make a version of the fold op that takes a count parameter
 Lazy loading of modules
-Instead of a static using flag in the GC, the value should switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
+Instead of a static «in use» flag for the mark phase of the GC, the value should switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
 Make Char and Float fast when used as HashMap keys
 
 UNUSED OPERATORS:

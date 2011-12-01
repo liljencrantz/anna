@@ -101,4 +101,3 @@ def String hashMapSetAll(HashMap this, Pair value...)
     return this;
 }
 
-

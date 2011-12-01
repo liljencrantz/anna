@@ -7,6 +7,7 @@
 #include "anna/slab.h"
 
 extern array_list_t anna_alloc[ANNA_ALLOC_TYPE_COUNT];
+extern array_list_t anna_alloc_todo;
 
 /*
   The total amount of memory allocated at the last time the garbage
@@ -119,7 +120,7 @@ __hot static inline void anna_alloc_mark_object(anna_object_t *obj)
 	CRASH;
     }
 #endif
-    obj->type->mark_object(obj);
+    al_push(&anna_alloc_todo, obj);
 }
 
 __hot static inline void anna_alloc_mark_type(anna_type_t *type)

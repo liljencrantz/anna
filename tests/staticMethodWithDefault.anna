@@ -1,0 +1,23 @@
+/*
+  Check for an earlier crash bug when calling static methods with
+  default values
+*/
+
+type MyType
+{
+
+    def staticMethod(Int param = 0) (static)
+    {
+	print(param, "\n");
+    }
+
+}
+
+def main()
+{
+    MyType::staticMethod(1);
+    MyType::staticMethod();
+    m := MyType();
+    m.staticMethod(1);
+    m.staticMethod();
+}
