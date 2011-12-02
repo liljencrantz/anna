@@ -136,7 +136,12 @@ ANNA_VM_NATIVE(anna_string_i_get_range, 2)
     {
 	to = step>0?anna_string_get_count(this):-1;
     }
-    
+
+    if((to > from) != (step > 0))
+    {
+	step = -step;
+    }
+
     anna_object_t *res = anna_object_create(imutable_string_type);
     asi_init(as_unwrap(res));
     if(step == 1)
