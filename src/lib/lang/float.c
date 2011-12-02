@@ -148,6 +148,42 @@ ANNA_VM_NATIVE(anna_float_max_exponent, 1)
     return anna_from_int(DBL_MAX_EXP);
 }
 
+char *dtoa(
+    double d, int mode, int ndigits,
+    int *decpt, int *sign, char **rve);
+void freedtoa(char *s);
+
+
+ANNA_VM_NATIVE(anna_float_format, 2)
+{
+    double val = anna_as_float(param[0]);
+    int mode = 0;
+    int ndigits = 0;
+
+    if(param[1] != null_entry)
+    {
+	ndigits = anna_as_int(param[1]);
+	mode = 3;
+    }
+    
+    int decpt;
+    int sign;
+    char *rve = 0;
+    char *res = dtoa(val, mode, ndigits, &decpt, &sign, &rve);
+    anna_object_t *str = anna_string_create_narrow(decpt, res);
+    if(strlen(res+decpt))
+    {
+	anna_string_append_cstring(str, 1, L".");
+	wchar_t *wide = str2wcs(res+decpt);
+	anna_string_append_cstring(str, wcslen(wide), wide);
+	free(wide);
+    }
+    
+    freedtoa(res);
+    
+    return anna_from_obj(str);
+}
+
 void anna_float_type_create()
 {
     anna_type_t *argv[] = 
@@ -192,11 +228,27 @@ void anna_float_type_create()
 	argv,
 	argn, 0, 0);
 
-/*
+
+    anna_type_t *format_argv[] = 
+	{
+	    float_type, int_type
+	}
+    ;
+    wchar_t *format_argn[]=
+	{
+	    L"this", L"digits"
+	}
+    ;
+    anna_node_t *format_argd[] = 
+	{
+	    0, (anna_node_t *)anna_node_create_null(0)
+	}
+    ;
+
     anna_member_create_native_method(
 	float_type, anna_mid_get(L"format"), 0,
-	&anna_float_format, string_type, 2, argv, argn);    
-*/
+	&anna_float_format, string_type, 2, format_argv, format_argn, format_argd, L"Convert this floating point number to a string");
+
     
     wchar_t *conv_argn[]=
 	{
