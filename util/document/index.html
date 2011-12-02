@@ -1025,13 +1025,70 @@ def main()
 
 	  <%! codePopup("enum", "bootstrap/enum.anna") %>
 	  <h3><a name="examples-macros">Defining your own macros</a></h3>
+	  <pre class="anna-code">
+/*
+  A simple macro that takes a string literal and reverses the order of the 
+  characters in it
+*/
+macro reverseStringLiteral(node)
+{
+    /*
+      Check that we have exactly one argument to the macro, otherwise set the 
+      error flag, print an error messagge and return a null literal. 
+    */
+    checkCallCount(node, 1);
+    /*
+      Check that node[0] is a StringLiteral ast symbol, otherwise set the 
+      error flag, print an error messagge and return a null literal. 
+    */
+    checkNodeType(node[0], StringLiteral);
+    /*
+      Return a new StringLiteral, that is the reverse of the original literal
+    */
+    return StringLiteral(node, (node[0] as StringLiteral).payload[-1|-1...]);
+}
+
+/*
+  If the above macro was defined in the file myStringMacro.anna, then it could
+  be used like this in another file:
+*/
+expand(myStringMacro);
+
+def main()
+{
+    // Prints olleH
+    print(reverseStringLiteral("Hello"));
+}
+	  </pre>
 	  <p>
-	    
+	    The macro call is just a wrapper around the def call to
+	    shorten the code a bit. We could have written the above
+	    macro using the following def syntax:
 	  </p>
 	  <pre class="anna-code">
-TODO
+def parser.Node reverseStringLiteral(parser.Call node)
+{
+    use(parser);
+    ...
+}
 	  </pre>
-	  
+	  <ul>
+	    <li>
+	      As can be seen in the code above, there are several
+	      convenience macros that are used for performing error
+	      checks in macros. If you want to learn more about these
+	      macros, see the documentation for
+	      the <a href="api/global/macroUtil.html">macroUtil
+	      library</a>.
+	    </li>
+
+	    <li>
+	      Macros deal with AST nodes. If you want to learn more
+	      about these, see the documentation for
+	      the <a href="api/global/parser.html">parser library</a>.
+	    </li>
+
+	  </ul>
 	  <h3><a name="examples-errors">Error handling</a></h3>
 	  <p>
 	    
