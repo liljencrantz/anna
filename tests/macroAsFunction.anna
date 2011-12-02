@@ -1,0 +1,8 @@
+def main()
+{
+    f := ast.ast;
+    print(f(parser.Call(
+		?,
+		parser.Identifier(?, "ast"),
+		parser.Identifier(?, "hopp"))), "\n");
+}

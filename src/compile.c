@@ -16,6 +16,7 @@
 #include "anna/lib/lang/float.h"
 #include "anna/lib/lang/string.h"
 #include "anna/lib/lang/char.h"
+#include "anna/lib/parser.h"
 #include "anna/stack.h"
 #include "anna/member.h"
 #include "anna/type.h"
@@ -39,6 +40,27 @@ typedef struct
     anna_compile_context_t;
 
 static size_t anna_vm_size(anna_function_t *fun, anna_node_t *node);
+
+static void anna_vm_compile_check_macro(anna_function_t *fun)
+{
+    if(fun->flags & ANNA_FUNCTION_MACRO)
+    {
+	return;
+    }
+    if(fun->input_count != 1)
+    {
+	return;
+    }
+    if(!anna_abides(fun->return_type, node_type))
+    {
+	return;
+    }
+    if(!anna_abides(node_call_type, fun->input_type[0]))
+    {
+	return;
+    }
+    fun->flags |= ANNA_FUNCTION_MACRO;
+}
 
 static void anna_compile_context_destroy(anna_compile_context_t *ctx)
 {
@@ -986,6 +1008,8 @@ void anna_vm_compile(
 	fun->line_offset[i].offset = off;
     }
     anna_compile_context_destroy(&ctx);
+
+    anna_vm_compile_check_macro(fun);
 
 #if 0
     if(wcscmp(fun->name, L"main")==0)
