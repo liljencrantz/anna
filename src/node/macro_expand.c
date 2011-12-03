@@ -115,7 +115,6 @@ static anna_node_t *anna_node_macro_expand_each(
 	{
 	    anna_node_type_t *c = (anna_node_type_t *)this;
 	    anna_type_t *f = c->payload;
-	    
 	    anna_type_macro_expand(f, stack);
 	    break;
 	}

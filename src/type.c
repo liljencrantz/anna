@@ -774,8 +774,7 @@ static void anna_type_def_flatten(anna_type_t *type)
 		skip = 1;		
 		for(j=0; j<c->child_count; j++)
 		{
-		    anna_node_call_add_child(ndef, c->child[j]);
-		    
+		    anna_node_call_add_child(ndef, c->child[j]);    
 		}
 	    }
 	}
@@ -1220,7 +1219,6 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	}
 	type = anna_type_specialize(type, spec_call);
     }
-    
     free(type_spec);
     
     return type;
@@ -1236,15 +1234,20 @@ void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack)
 	
 	int i;
 	for(i=0;i<body->child_count; i++)
+	{
 	    body->child[i] = anna_node_macro_expand(body->child[i], stack);
+	}
     }
+
     if(f->attribute)
     {
 	int i;
 	for(i=0;i<f->attribute->child_count; i++)
-	    f->attribute->child[i] = anna_node_macro_expand(f->attribute->child[i], stack);
+	{
+	    f->attribute->child[i] = anna_node_macro_expand(
+		f->attribute->child[i], stack);
+	}
     }
-    
 }
 
 void anna_type_calculate_size(anna_type_t *this)

@@ -779,13 +779,15 @@ static anna_node_t *anna_node_calculate_type_internal(
 		if(do_decl)
 		{
 		    //debug(D_ERROR, L"Declaration %ls is a constant\n", d->name);
-		    anna_entry_t *value = anna_node_static_invoke(
+		    anna_entry_t *value = anna_node_static_invoke_try(
 			d->value, stack);
-
-		    anna_stack_set(
-			stack,
-			d->name,
-			value);
+		    if(value)
+		    {
+			anna_stack_set(
+			    stack,
+			    d->name,
+			    value);
+		    }
 		    anna_stack_set_flag(
 			stack,
 			d->name,
