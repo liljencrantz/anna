@@ -1,0 +1,11 @@
+def someFunction()
+{
+    return 7;
+}
+
+def main()
+{
+    myConst :== someFunction();
+    print(myConst, "\n");
+}
+
