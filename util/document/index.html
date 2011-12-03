@@ -192,7 +192,7 @@ def main()
 	    
 	  </ul>
 	  <p>
-	    Anna is a so called statically typed language, that means that
+	    Anna is a so called statically typed language. That means that
 	    she insists that she must have an idea of the type of every
 	    variable at compile time. Anna does this by checking the type of
 	    the initial value. This is called type inference. If we don't
@@ -218,14 +218,6 @@ foo := 3 as Object;  // Declare foo as a variable of type Object
 pi :== 4.0;    // Declare pi as a constant with value 4.0
 	  </pre>
 	  <p>
-	    It should be noted that the previous paragraph is quite
-	    possibly a lie. The Anna compiler doesn't currently always
-	    check to make sure constants can't be assigned to. If you
-	    try to, you might succeed. Or, more likely, Anna will
-	    crash. If we can all pretend that you can't assign to
-	    constants, everybody will be much happier. 
-	  </p>
-	  <p>
 	    To learn more about type inference,
 	    click <a href="#type-inference">here</a>. Otherwise, continue
 	    reading.
@@ -244,8 +236,9 @@ print(100_000_000, "\n");
 // Hexadecimal, binary and octal integer literals
 print(0xdeadbeef, 0b010101, 0o777, "\n");
 
-// This is a decimal integer literal, not an octal one. Use the 0o
-prefix to // specify octal integer literals print(0777, "\n");
+// This is a decimal integer literal, not an octal one. Use the 0o prefix to 
+// specify octal integer literals 
+print(0777, "\n");
 
 // Prints 3.5. The output type of Int/Float algebra is always a Float. 
 print(1 + 2.5);
@@ -265,7 +258,6 @@ print( .5 );
 	    click <a href="#implementation-numbers">here</a>. Otherwise,
 	    keep reading.
 	  </p>
-
 
 	  <h3><a name="examples-lists">Lists</a></h3>
 	  <p>
@@ -289,6 +281,13 @@ print(lst[0], lst[-1]);
 // Print the number of members. In this case, that is '4'
 print(lst.count, "\n");
 
+// Truncate the list to three elements
+lst.count = 3;
+
+// Increase the list length to 15. The new elements will have null as their 
+// initial value.
+lst.count = 15;
+
 // Create a new list, which contains the members of the original list 
 // in the range of 1 (inclusive) to 3 (exclusive)
 lst2 := lst[1..3]
@@ -300,7 +299,8 @@ print(lst2.count, "\n");
 print(lst2[0], "\n");
 
 /*
-  Lists have the push, pop and empty operations, making them suitable as stacks.
+  Lists have the push, pop and empty operations, making them suitable for use 
+  as stacks.
 */
 
 // Push an element to the end of a list
@@ -310,7 +310,7 @@ lst2.push("last");
 print(lst2.pop());
 
 // The empty property is 1 if the list is empty, and null otherwise
-print(lst.empty)
+print(lst.empty, "\n")
 
 // Join two lists together
 lst3 := ["Spoon", "Banana"] ~ lst2;
@@ -326,8 +326,8 @@ lst ~= ["Cheese", "Eggs"];
 lst3.push(5);
 
 /*
-  When creting a list using a collection literal, Anna automatically
-  calculates the type objects that van be stored in a list as the
+  When creating a list using a collection literal, Anna automatically
+  calculates the type objects that can be stored in a list as the
   intersection of all types specified. In this case, the type is the
   intersection of the Int, String and Float types.
 */
@@ -337,7 +337,7 @@ weirdList := [1, "foo", 6.666]
   Use template specialization if you want to manually specify the type
   of object to store in a list. This is a list of objects.
 */
-objList := «Object»[1,3,5, "foo", 6.666]
+objList := «Object»[1, 3, 5, "foo", 6.666]
 
 /* 
   The in operator checks if the specified value exists in the list. 
@@ -346,7 +346,6 @@ objList := «Object»[1,3,5, "foo", 6.666]
 */
 print("foo" in objList, "\n");
 	  </pre>
-
 	  
 	  <h3><a name="examples-maps">Maps</a></h3>
 	  <p>
@@ -363,6 +362,11 @@ hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
 // Print the number of members. In this case, that is '4'
 print(hash.count, "\n");
 
+// Hashes are not ordered, so there is no well defined way to truncate them.
+// For that reason, the count property for hashes is read only, making this a 
+// syntax error.
+hash.count = 3;
+
 // Prints the value associated with the key "third", which is "C":
 print(hash["third"], "\n");
 
@@ -376,7 +380,7 @@ print(hash["unknown"]);
 hash.default = "I don't know";
 
 // "unknown" is not in the hash, but this time we have set
-// a default value for the hash, namely "I don't know"
+// a default value for the hash, namely "I don't know".
 print(hash["unknown"]);
 
 /* 
@@ -407,18 +411,18 @@ math.sin(value: 1.0);
 
 def myFun(Int intVal, Float floatVal, String stringVal, Char charVal)
 {
-    return intVal+floatVal+stringVal.count+ charVal.ordinal;
+    return intVal + floatVal + stringVal.count + charVal.ordinal;
 }
 
 // The following two calls are equivalent
 myFun(1, 2.0, "abc", 'g');
 myFun(floatVal:2.0, stringVal:"abc", charVal:'g', intVal:1);
 
-// Functions can also have a default value. 
+// Function parameters can also have a default value. 
 
 def myFun(Int intVal, Float floatVal, String stringVal = "", Char charVal = 'a')
 {
-    return intVal+floatVal+stringVal.count+ charVal.ordinal;
+    return intVal + floatVal + stringVal.count + charVal.ordinal;
 }
 
 // The following three calls are equivalent
@@ -446,18 +450,25 @@ while(1)
 (5..11).each(ii){print(ii)}
 	  </pre>
 	  <p>
-	    <code class="anna-code">0..11</code> is a Range object, spanning from 0 (inclusive) to
-	    11 (exclusive). The <code class="anna-code">each(ii)</code> part means we want to
-	    call the each method, which loops over the range, and that we
-	    want the loop variable to be named <code class="anna-code">ii</code>. Anna will
-	    automatically determine the correct type for the <code class="anna-code">ii</code>
-	    variable. The code block supplied after the parentesis will be
-	    called once for every value in the range, with the
-	    variable <code class="anna-code">ii</code> set to each value. All collection type
-	    objects, such as maps, lists and ranges provide an each
-	    method. It can be used with a single argument, such as above, or
-	    it can be used with two arguments, in which case the first
-	    argument is the index/key and the second is the value:
+	    <code class="anna-code">5..11</code> is a Range object,
+	    spanning from 5 (inclusive) to 11
+	    (exclusive). The <code class="anna-code">each(ii){...}</code>
+	    part is a bit of syntactic suger. A macro will translate
+	    it into the equivalent of the following code:
+	  </p>
+	  <pre class="anna-code">
+(5..11).__each__(def (Int !unused, Int idx){print(ii)});
+	  </pre>
+	  <p>
+	    <code class="anna-code">__each__</code> is a method that
+	    will execute the supplied block once for each member in
+	    the collection. Anna will automatically determine the
+	    correct type for the <code class="anna-code">ii</code>
+	    variable. All collection type objects, such as maps, lists
+	    and ranges provide an each method. It can be used with a
+	    single argument, such as above, or it can be used with two
+	    arguments, in which case the first argument is the
+	    index/key and the second is the value:
 	  </p>
 	  <pre class="anna-code">
 temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
@@ -465,13 +476,17 @@ temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")
 	  </pre>
 
 	  <h3><a name="examples-ranges">Ranges</a></h3>
+	  <p>
+	    Ranges are objects that represent a finite or semi-finite
+	    collection of evenly spaced integers.
+	  </p>
 	  <pre class="anna-code">
 // r is a range from 6 (inclusive) to 10 (exclusive)
 r := 6..10
 
 /*
-  We can specify a step on a range. This range contains the numbers
-  5, 11 and 17
+  We can specify a step on a range. The step on this range is 6,
+  making the numbers it contains 5, 11 and 17
 */
 print(5..20|6);
 
@@ -494,7 +509,7 @@ print(5..20|6);
   The most common use for ranges is to slice lists and strings
 */
 
-// This outputs 2,8,6,1,1,4
+// This outputs [2, 8, 6, 1, 1, 4]
 print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...], "\n") 
 
 // This outputs «banana»
@@ -516,9 +531,9 @@ print("abrainbadnoah\n"[1|2...]);
 
 	  <h3><a name="examples-truth">Truth</a></h3>
 	  <p>
-	    Anna does not have so called type coercison. There is only
-	    one value in Anna which is considered to be false, and
-	    that is the null object.
+	    Anna does not have so called type coercison. There is
+	    exactly one value in the Anna language which is considered
+	    to be false, and that is the null object.
 	  </p>
 	  <pre class="anna-code">
 if(?)
@@ -541,12 +556,10 @@ if([])
 if(false)
 {
   // This is likely a syntax error -there is no 'true' or 'false' constant 
-  // defined in Anna. '?' is used in stead for false, and by convention '1'
-  // is used for truth
+  // defined in Anna. 
 }
 
-	  </pre>
-	  
+	  </pre>	  
 	  
 	  <h3><a name="examples-andor">and/or</a></h3>
 	  <p>
@@ -564,14 +577,28 @@ if(false)
 */
 laps := Int::convert(system.argument[1]) or 5;
 
+/*
+  The code below checks if the first command line argument is
+  '--level', and if so, sets the variable 'level' to the second
+  command line argument. 
+
+  The return type of an and expression is the type of the second
+  argument, in this case Int.
+
+  If no level is set or if the conversion fails, an additional or
+  expression sets the default to 2.
+*/
+level := (system.argument[1] == "--level") and Int::convert(system.argument[2]) or 2;
 	  </pre>
 	  
 	  <h3><a name="examples-null">Null</a></h3>
 	  <p>
 	    The null object has all members, and their value is
 	    null. Calling any method on the null object will return
-	    null. Many functions in the Anna standard library also
-	    return null when given a null argument.
+	    null. Calling a method or accessing a member on the null
+	    object is not an error. Many functions in the Anna
+	    standard library also return null when given a null
+	    argument.
 	  </p>
 	  <pre class="anna-code">
 // This will print «nullnullnullnullnull»
@@ -581,7 +608,7 @@ print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
 	  <h3><a name="examples-objects">Defining and creating objects</a></h3>
 	  <pre class="anna-code">
 /*
-  Use the type keyword todefine your own types
+  Use the type keyword to define your own types
 */
 type MyType
 {
@@ -1049,6 +1076,9 @@ macro reverseStringLiteral(node)
 }
 
 /*
+  Use the expand call to tell the Anna interpreter that you wish to
+  use the macros of a library for macro expansion.
+
   If the above macro was defined in the file myStringMacro.anna, then it could
   be used like this in another file:
 */
@@ -1134,22 +1164,25 @@ TODO
 	  </p>
 	  <ul>
 	    <li>
-	      Some languages are low level, meaning they force you to go
-	      into great detail about how you want to perform any actions,
-	      whereas other are high level, meaning they skim the details
-	      and force the computer to figure out more by itself. As
-	      computers grow faster and programmers grow lazier, the
-	      definition of what constitutes a high level language is
-	      shifting. What was a high level language 30 years ago is
-	      considered a low level language today. High level languages
-	      are usually slower, and they almost always require much more
-	      memory, but they are also easier for the
-	      programmer to write, and usually less error prone. Anna is a
-	      high level language. It is designed in a way that should make
-	      it possible to make Anna programs significantly faster than
-	      most high level languages, though most programs written in Anna are
-	      unlikely to match the speed of a well written program in a low
-	      level language.
+	      Some languages are low level, meaning they force you to
+	      go into great detail about how you want to perform any
+	      actions, whereas other are high level, meaning they skim
+	      the details and force the computer to figure out more by
+	      itself. As computers grow faster and programmers grow
+	      lazier, the definition of what constitutes a high level
+	      language is shifting. What was a high level language 30
+	      years ago is considered a very low level language
+	      today. High level languages are usually slower, and they
+	      almost always require much more memory, but they are
+	      also easier for the programmer to write, and usually
+	      less error prone. Anna is a high level language. It is
+	      designed in a way that should make it possible to make
+	      Anna programs significantly faster than many high level
+	      languages, though the current interpreter does not do
+	      so. Even given a significantly better compiler, many
+	      type of programs written in Anna are unlikely to match
+	      the speed of a well written program in a low level
+	      language.
 	    </li>
 	    <li>
 	      Some languages are statically typed, meaning the
@@ -1164,44 +1197,48 @@ TODO
 	      and will warn you in advance that your code is broken,
 	      but dynamically typed languages require less verbosity
 	      from the programmer. Statically typed languages are
-	      usually also slightly faster than dynamically typed
+	      usually also faster than dynamically typed
 	      languages. Anna tries to find a middle ground between
 	      these two by being statically typed, but making the
 	      computer figure out the actual type for you when
-	      possible, so that you don't need to repeat yourself
-	      needlessly.
+	      possible using a process known as type inference, so
+	      that you don't need to repeat yourself needlessly.
 	    </li>
 	    <li>
-	      Pretty much all computer languages allow you to extend the
-	      language to new domains. The way this is usually done is
-	      through software libraries. If we make an analogy to regular
-	      human languages, like english, a software library is like a
-	      set of new words. We can add new words to most languages that
-	      allow us to discuss new subjects, such as the sending of
-	      emails. What most computer languages do not allow, however, is
-	      for us to redefine the grammar of the language; that is, the
-	      basic structure of the language is constant. The LISP
-	      language, invented over 50 years ago, actually provided a
-	      means to redefine some parts of the grammar of the
+	      Pretty much all computer languages allow you to extend
+	      the language to new domains. The way this is usually
+	      done is through software libraries. If we make an
+	      analogy to regular human languages, like english, a
+	      software library is like a set of new words. We can add
+	      new words to most languages that allow us to discuss new
+	      subjects, such as the sending of emails. What most
+	      computer languages do not allow, however, is for us to
+	      redefine the grammar of the language; that is, the basic
+	      structure of the language is constant. The LISP
+	      language, invented over 50 years ago, actually provided
+	      a means to redefine some parts of the grammar of the
 	      language. This feature is extremely powerful, and it has
-	      allowed LISP to stay relevant even today. Many people rever
-	      LISP as some kind of divine and perfect ideal of a language,
-	      though few of them actually use it much. The downside of LISP
-	      is that the most basic level of underlying structure of the
-	      language - the part of the grammar that can not be changed, is
-	      extremely simple. LISP code is always a nested list of lists,
-	      something which is not very easy to read or understand for
-	      humans. No matter how much you redefine the high level grammar
-	      of LISP, it will always keep that basic structure of lists of
-	      lists, and humans tend to find that hard to handle. Anna is
-	      different from LISP in this regard. To the computer, Anna
-	      looks like a list of lists, much like LISP, but when writing
-	      programs for Anna, there is a special translation layer called
-	      the sugar, that allows you to write your code in a way that is
-	      much more intuitive (and familiar) to human beings. This way,
-	      Anna gives you the power to grow and redefine the language,
-	      just like in LISP, but still lets you keep the intuitive and
-	      readable syntax of less powerful languages.
+	      allowed LISP to stay relevant even today. Many people
+	      rever LISP as some kind of divine and perfect ideal of a
+	      language, though precious few of them actually use it
+	      much. The downside of LISP is that the most basic level
+	      of underlying structure of the language - the part of
+	      the grammar that can not be changed, is extremely
+	      simple. LISP code is always a nested list of lists,
+	      something which is not very easy to read or understand
+	      for humans. No matter how much you redefine the high
+	      level grammar of LISP, it will always keep that basic
+	      structure of lists of lists, and humans tend to find
+	      that hard to handle. Anna is different from LISP in this
+	      regard. To the computer, Anna looks like a list of
+	      lists, very much like LISP, but when writing programs
+	      for Anna, there is a special translation layer called
+	      the sugar, that allows you to write your code in a way
+	      that is much more intuitive (and familiar) to human
+	      beings. This way, Anna gives you the power to grow and
+	      redefine the language, just like in LISP, but still lets
+	      you use a syntax that most people find more intuitive
+	      and readable.
 	    </li>
 	    <li>
 	      There are many styles of programming. These include Object
@@ -1232,7 +1269,10 @@ TODO
 	      <a href='#macros'>Macros - redefining the problem to fit
 		the solution</a>
 	    </li>
-	    <li><a href='#misc'>An odd number of legs for a horse to have</a>, various oddities about Anna.</li>
+	    <li>
+	      <a href='#misc'>An odd number of legs for a horse to
+		have</a>, various oddities about Anna.
+	    </li>
 
 	  </ul>
 	  <h2><a name="intro_lisp">Anna for LISP programmers</a></h2>
@@ -1333,18 +1373,20 @@ TODO
 	    short. 
 	  </p>
 	  <p>
-	    Every node in the AST tree above is at some point a regular Anna
-	    object, and the compiler can alter these nodes as it sees
-	    fit. That's pretty nifty, but how does that tie in with us? Anna
-	    has two keywords for defining a function,
-	    namely <code class="anna-code">def</code> and <code class="anna-code">macro</code>. They work
-	    pretty much the same, they both let you define a piece of code
-	    with a few input parameters and a few output parameters. There
-	    are two differences between the two, firstly that macros are run
-	    at compile time, and secondly that the input and output of the
-	    macros is an AST. The implications of this may not be obvious
-	    at once, so we'll consider a few examples. First, look at the
-	    code snippet below:
+	    Every node in the AST tree above is at some point a
+	    regular Anna object, and the compiler can alter these
+	    nodes as it sees fit. That's pretty nifty, but how does
+	    that tie in with us? Anna has two keywords for defining a
+	    function, namely <code class="anna-code">def</code>
+	    and <code class="anna-code">macro</code>. They work pretty
+	    much the same, they both let you define a piece of code
+	    with a few input parameters and a few output
+	    parameters. There are two differences between the two,
+	    firstly that macros are run at compile time, and secondly
+	    that the input and output of the macros is an AST. The
+	    implications of this may not be obvious at once, so we'll
+	    consider a few examples. First, look at the code snippet
+	    below:
 	  </p>
 	  <pre class="anna-code">
 macro replaceObjectWithInt(node)
@@ -1369,7 +1411,7 @@ macro replaceObjectWithInt(node)
 	    Of course, the Anna standard library already <em>has</em> a very
 	    nice templating system, so there is no need to write your own,
 	    but the possibility to make that type of additions to the
-	    language is in your hands.
+	    language is actually in your hands.
 	  </p>
 	  <p>
 	    The most common reason for using macros is to construct
@@ -1385,11 +1427,11 @@ macro replaceObjectWithInt(node)
 birthday := isoDate(1978-05-20, 12:34:00);
 	  </pre>
 	  <p>
-	    It is possible to create a list search interface like LINQ in
-	    Anna, but unlike LINQ, it is not a one time thing, grafted onto
-	    the compiler. Anna provides a general purpose framework that
-	    allows you to create libraries that do the same thing LINQ does,
-	    but better. 
+	    It is possible to create a list search interface like LINQ
+	    in Anna, but unlike LINQ, it is not a one time thing,
+	    grafted onto the compiler. Anna provides a general purpose
+	    framework that allows anyone proficiant in Anna to create
+	    libraries that do the same thing LINQ does, but better.
 	  </p>
 	  <p>
 	    Various parts of Anna, including
@@ -1398,15 +1440,22 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	  </p>
 	  <h3><a name="intro-c-continuations">Continuations, continued</a></h3>
 	  <p>
-	    This paragraph is for C and C++ coders that know what a longjmp
-	    is. If you don't, feel free to skip this paragraph. So, you know
-	    what a longjmp is. Congratulations! A continuation is exactly
-	    like a longjmp, except that the restrictions placed on
-	    longjmps are removed. Specifically, longjmp:s only allow you to
-	    «rewind» the stack and continue execution further down on the
-	    function stack, whereas continuations allow you to jump up, down
-	    or sideways into a whole other branch of the stack. That's
-	    it. Nothing more. Simple. Feel free to skip the next paragraph.
+	    This paragraph is for C and C++ coders that know what a
+	    longjmp is. If you don't, feel free to skip this
+	    paragraph. So, you know what a longjmp
+	    is? Congratulations! A continuation is exactly like a
+	    longjmp, except that the restrictions placed on longjmps
+	    are removed. Specifically, longjmp:s only allow you to
+	    «rewind» the stack and continue execution further down on
+	    the function stack, whereas continuations allow you to
+	    jump up, down or sideways into a whole other branch of the
+	    stack - as many times as you like. That's it. Nothing
+	    more. Simple.  Because continuations can more or less
+	    arbitrarily control program flow, they can be used to
+	    easily implement various high level features like
+	    exception handling and green threads.  Feel free to skip
+	    the next paragraph, which says the same thing with
+	    smaller words..
 	  </p>
 	  <p>
 	    Continuations are a way to explicitly control the location that
@@ -1423,13 +1472,13 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	  </p>
 	  <ul>
 	    <li>
-	      To learn more about continuations,
-	      click <a href="#continuations">here</a>.
+	      Read <a href='#examples'>Anna by examples</a> if you
+	      feel ready to see some code.
 	    </li>
 
 	    <li>
-	      Read <a href='#examples'>Anna by examples</a> if you
-	      feel ready to see some code.
+	      To learn more about continuations,
+	      click <a href="#continuations">here</a>.
 	    </li>
 	    
 	    <li>
@@ -1443,29 +1492,43 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	  <div class='anna-subheading'>Wherein...</div>
 	  
 	  <p>
-	    In daily use, Python and Ruby are probably the languages that
-	    most resemble Anna. Anna code looks a bit like C, which means
-	    the code may not look like Python or Ruby, but once you've
-	    gotten used to it, the way the language feels and works should
-	    be very familiar.
-	  </p>
-	  <p>
-	    Like Ruby, but unlike Python, Anna does not have statements,
-	    only expressions. A function declaration is an expression that
-	    returns a function. Thus, you do not need the silly and
-	    contrived lambda expression to create anonymous functions:
+	    In daily use, Python and Ruby are probably the languages
+	    that most resemble Anna. Anna code looks a fair bit like
+	    C, which means the code may not look like Python or Ruby,
+	    but once you've gotten used to it, the way the language
+	    feels and works should be very familiar.
 	  </p>
 	  <pre class="anna-code">
-FIXME! Add an anonymous function example here
+def Int fibonacci(Int n) 
+{
+    return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
+}
+
+def main()
+{
+    print(fibonacci(20), "\n");
+}
 	  </pre>
 	  <p>
-	    Much like in Ruby, there is a very simple shortcut for throwing
-	    in a block of code as an additional parameter in Anna. If you
-	    simply append a code block afer a function call, Anna will
-	    interpret it as a function parameter:
+	    Like Ruby, but unlike Python, Anna does not have
+	    statements, only expressions. A function declaration is an
+	    expression that returns a function. Thus, you do not need
+	    Pythons's rather limited lambda expression to create anonymous
+	    functions:
 	  </p>
 	  <pre class="anna-code">
-FIXME! Add code block example here
+functionExpectingAFunctionAsAParameter(def (){print("I am happy\n")});
+	  </pre>
+	  <p>
+	    Much like in Ruby, there is a very simple shortcut for
+	    throwing in a block of code as an additional parameter in
+	    Anna. If you simply append a code block afer a function
+	    call, Anna will interpret it as a function parameter. The
+	    above code example could just as well have been written
+	    like this:
+	  </p>
+	  <pre class="anna-code">
+functionExpectingAFunctionAsAParameter {print("I am happy\n")};
 	  </pre>
 	  <p>
 	    Another way in which Anna is like Python and Ruby is the
@@ -1491,9 +1554,9 @@ FIXME! Functional programming example here
 	  </p>
 	  <ul>
 	    <li>
-	      When declaring a variable, if you supply an initializer, the
-	      variable will take the type of the initializer. If you don't
-	      you'll have to give the type.
+	      When declaring a variable, if you supply an initial
+	      value, the variable will take the type of that value. If
+	      you don't you'll have to give the type. 
 	    </li>
 	    <li>
 	      When defining a function, you will have to supply the type of
@@ -2337,28 +2400,31 @@ thisIsCode();
 	      If there are e.g. multiple functions
 	      named <code class="anna-code">clyde</code>, then code
 	      like <code class="anna-code">myVar := clyde</code>
-	      becomes ambigous.
+	      becomes ambigous. We'd need a parameter list in order to
+	      determine which version
+	      of <code class="anna-code">clyde</code> we want to use.
 	    </li>
 	    <li>
 	      It would not be possible to use named based value lookup
 	      from a continuation.
 	    </li>
 	    <li>
-	      Sometimes it is deirable to make explicit which version
+	      Sometimes it is desirable to make explicit which version
 	      of a function should be called. This can be done by
 	      casting all function parameters to the correct type, but
-	      it is a clymsy method.
+	      it is a clumsy and error prone method.
 	    </li>
 	  </ul>
 	  <p>
 	    Anna works around these issues by introducing a second
-	    type of name for a function. All functions have an actual
-	    variable name, which is unique within a specific
-	    namespace, but functions can also have an arbitrary number
-	    of aliases, specified using the alias attribute in the
-	    function declaration. If an identifier is used to find the
-	    function for a function call, and there is no function of
-	    that name, then all relevant namespaces are checked for
+	    type of name for a function. All stack values, including
+	    functions, have a single variable name, which is unique
+	    within a specific namespace. This is the «true» name of
+	    the function. But functions can also have an arbitrary
+	    number of aliases, specified using the alias attribute in
+	    the function declaration. If an identifier is used to find
+	    the function for a function call, and there is no function
+	    of that name, then all relevant namespaces are checked for
 	    functions with a matching alias. If one or more is found,
 	    the most suitable one is chosen.
 	  </p>
@@ -2414,7 +2480,38 @@ def outerFunction(Int value)
     print(myAlias, "\n");
 }()
 	  </pre>
-<!--    
+
+	  <h2><a name="comments">Casting and converting</a></h2>
+	  <p>
+	    In most C-like languages, the operation of casting a value
+	    to a new type (an operation which does not create a new
+	    object) and the operation of converting a value to a
+	    different type (an operation which
+	    <em>does</em> create a new object of a different type) use
+	    the same syntax, even though they are fundamentally
+	    different operations. This is not so in Anna.
+	  </p>
+	  <p>
+	    The casting operator <code>as</code> can never create a
+	    new object. It simply either returns exactly the same
+	    object cast to a different type, or, if the specified
+	    object can not be cast to that type, null is returned. For
+	    example, to cast the value <code>7</code> to
+	    a <code class="anna-code">Float</code>,
+	    write <code class="anna-code">7 as Float</code>. This will
+	    result in a null value, because Int objects do not have
+	    all the members of a Float and can therefore not be cast
+	    to Float.
+	  </p>
+	  <p>
+	    Converting values is done using the
+	    static <code>convert</code> methods. For example, to
+	    convert a Float object to an Int, one would
+	    write <code class="anna-code">Int::convert(7.1)</code>. This
+	    will create a new Int object holding the closest integer
+	    representation of the floating point number 7.1, which is 7.
+	  </p>
+<!--
     <h1>A simple, annotated example</h1>
     <p>
       Ok, let's start putting Anna through her paces! Fire up the
@@ -2470,7 +2567,7 @@ function mandelbrot(Complex p0, Int maxStep)
     </p>
 -->
 
-          <h1><a name="miroformats">Microformats</a></h1>
+          <h1><a name="microformats">Microformats</a></h1>
 	  <p>
 	    The Anna parser is written to be as accepting as possible of
 	    weird elements, and instead offloads as much of the code
@@ -2514,8 +2611,8 @@ date += isoDateDelta(x-0-0, 1:00);
 	      or <code class="anna-code">"foo"</code>.
 	    </li>
 	    <li>
-	      Identifiers, such as <code class="anna-code">foo</code>
-	      or <code class="anna-code">String</code>.
+	      Identifiers, such as <code class="anna-code">foo</code>,
+	      <code class="anna-code">String</code> or <code class="anna-code">%bar</code>.
 	    </li>
 	    <li>
 	      Function calls, such
@@ -2534,7 +2631,7 @@ date += isoDateDelta(x-0-0, 1:00);
 	    programs. For somebody coming from a C background, that might seem
 	    anemic for a programming language. Where are the code blocks?  Where
 	    are the if/while/whenever statements? Function definitions?
-	    Meanwhile, anybody with a LISP background will start twiddling their
+	    Meanwhile, anybody with a LISP background will twiddle their
 	    beards in boredom. They <em>know</em>.
 	  </p>
 	  <p>
@@ -2887,8 +2984,8 @@ literal := ["first", "second"];
 	      never be used to separate words.
 	    </li>
 	    <li>
-	      Neither constants nor private members have special
-	      naming conventions.
+	      Neither constants nor private members have different
+	      naming conventions from regular members or variables.
 	    </li>
 	    <li>
 	      Names beginning and ending with a double underscore,
@@ -2910,14 +3007,15 @@ literal := ["first", "second"];
 	      Variables used in larger pieces of code should have
 	      clear, descriptive names, preferably without
 	      abbreviations,
-	      like <code class="anna-code">documentationFragment</code>, <code class="anna-code">callingFunction</code>
+	      like <code class="anna-code">documentationFragment</code>,
+	      <code class="anna-code">callingFunction</code>
 	      or <code class="anna-code">memberAttribute</code>.
 	    </li>
 	    <li>
 	      Variables local to a specific function, especially if
 	      their useage is reasonably clear, should have short
-	      names
-	      like <code class="anna-code">doc</code>, <code class="anna-code">fun</code>
+	      names like <code class="anna-code">doc</code>, 
+	      <code class="anna-code">fun</code>
 	      or <code class="anna-code">attr</code>.
 	    </li>
 	    <li>
@@ -2969,7 +3067,7 @@ def Int main()
 	  </pre>
 	  <p>
 	    It should be noted that the creators of D, another C-like
-	    language which tries to be easier to parse than e.g. C++,
+	    language which aims to be easier to parse than e.g. C++,
 	    ran into the same problem with template
 	    specialization. They chose instead to
 	    use <code>List!(Int)</code> as the template specialization
