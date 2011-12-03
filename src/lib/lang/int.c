@@ -296,7 +296,7 @@ void anna_int_type_create()
 
     anna_type_document(
 	int_type,
-	L"Anna Int objects are imutable, meaning their value never changes.");
+	L"Anna Int objects are imutable, meaning their value never changes. Integers can be used as hash keys and implement basic operations like addition, multiplication, etc. Dividing two integers will result in new Int object, which is the truncated value of the division. Convert one of the numbers to a Float if a floating point result is desired.");
 
     anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     

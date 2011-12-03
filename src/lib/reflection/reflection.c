@@ -39,7 +39,8 @@ anna_type_t *type_type=0,
     *member_method_type = 0, 
     *member_property_type = 0, 
     *member_variable_type = 0,
-    *continuation_type = 0;
+    *continuation_type = 0,
+    *block_type = 0;
 
 static anna_type_data_t anna_member_type_data[] = 
 {
@@ -79,6 +80,11 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	0, 0, 0,
 	0,
 	ANNA_FUNCTION_CONTINUATION);
+    block_type = anna_type_get_function(
+	object_type,
+	0, 0, 0,
+	0,
+	0);
 
     anna_type_load();    
     anna_member_load(stack);
@@ -88,6 +94,9 @@ void anna_reflection_load(anna_stack_template_t *stack)
     anna_stack_declare(
 	stack, continuation_type->name,
 	type_type, anna_from_obj(anna_type_wrap(continuation_type)), ANNA_STACK_READONLY);
+    anna_stack_declare(
+	stack, L"Block",
+	type_type, anna_from_obj(anna_type_wrap(block_type)), ANNA_STACK_READONLY);
     
     anna_type_t *type = anna_stack_wrap(stack)->type;
     anna_member_create_native_property(

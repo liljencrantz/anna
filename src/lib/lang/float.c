@@ -178,7 +178,6 @@ ANNA_VM_NATIVE(anna_float_format, 2)
 	anna_string_append_cstring(str, wcslen(wide), wide);
 	free(wide);
     }
-    
     freedtoa(res);
     
     return anna_from_obj(str);
@@ -203,7 +202,7 @@ void anna_float_type_create()
     
     anna_type_document(
 	float_type,
-	L"Float objects are imutable, can be used as hash keys and implement the basic arithmetic operations like addition, multiplication, etc.");
+	L"Float objects are imutable, can be used as hash keys and implement the basic arithmetic operations like addition, multiplication, etc. Arithmetic operations on combinations of Floats and Ints result in a Float object. Arithmetic operations on Floats ad Complex numbers result in a Complex object.");
     
     
     anna_member_create_blob(

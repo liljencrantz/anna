@@ -11,12 +11,12 @@
   - variadic arguments aren't shown as such
   - argument default values aren't shown
 * Check that node compare supports all ast node types
-* If explicit function return type exists, return type of return expressions aren't abides checked against it
-* Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
 * When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 
 1.0 RELEASE CRITERIA (Done):
+* Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
 * More validation:
+  - If explicit function return type exists, return type of return expressions aren't abides checked against it
   - Can't assign to constants
   - Only static members can be accessed statically
   - Check argument types to function calls better...
