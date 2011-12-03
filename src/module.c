@@ -986,13 +986,11 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     }
     debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
 
-    for(i=0; i<module_node->child_count; i++)
-    {
-	anna_node_each(
-	    module_node->child[i], 
-	    (anna_node_function_t)&anna_node_validate, 
-	    module_stack);
-    }
+    anna_node_each(
+	(anna_node_t *)module_node, 
+	(anna_node_function_t)&anna_node_validate, 
+	module_stack);
+    
     if(anna_error_count)
     {
 	debug(
@@ -1024,8 +1022,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
     anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
-
-
 }
 
 anna_object_t *anna_module_load(wchar_t *module_name)

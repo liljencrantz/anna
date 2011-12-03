@@ -143,10 +143,9 @@ static void anna_node_validate_function(anna_function_t *f)
     if(f->body)
     {
 	int i;
-	for(i=0;i<f->body->child_count; i++)
-	{
-	    anna_node_each(f->body->child[i], (anna_node_function_t)&anna_node_validate, f->stack_template);
-	}
+	anna_node_each(
+	    (anna_node_t *)f->body, (anna_node_function_t)&anna_node_validate, 
+	    f->stack_template);
     }
 }
 
@@ -235,17 +234,15 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    this,
 		    L"Unknown identifier: %ls",
 		    d->name);
-//		    anna_node_print(D_ERROR,this);
 	    }
 	    else{
-		int is_const  = anna_stack_get_flag(stack, d->name) & ANNA_STACK_READONLY;
+		int is_const = anna_stack_get_flag(stack, d->name) & ANNA_STACK_READONLY;
 		if(is_const)
 		{
 		    anna_error(
 			this,
 			L"Can't assign to a constant: %ls",
 			d->name);
-//		    anna_node_print(D_ERROR,this);		
 		}
 
 		if(!anna_abides(param, templ))
@@ -254,7 +251,6 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 			this,
 			L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.", 
 			templ->name, param->name);
-//		    anna_node_print(D_ERROR,this);
 		}
 	    }
 	    
@@ -312,12 +308,13 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    anna_function_t *f = this->stack->function;
 	    if( !anna_abides(this->return_type, f->return_type))
 	    {
-		anna_error(this, L"Invalid return type, type %ls can not masque as a %ls.", this->return_type->name, f->return_type->name);
+		anna_error(
+		    this, 
+		    L"Invalid return type, type %ls can not masque as a %ls.",
+		    this->return_type->name, f->return_type->name);
 	    }
-	    
 	}
-	
-    }    
+    }
 }
 
 int anna_node_validate_call_parameters(
@@ -410,16 +407,10 @@ int anna_node_validate_call_parameters(
 	{
 	    if(print_error)
 	    {
-		anna_error((anna_node_t *)call, L"No value was provided for argument %d, %ls, in function call.", i+1, param_name[i]);
-		CRASH;
-/*
-		for(i=0; i<param_count; i++)
-		{
-		    wprintf(
-			L"Default value for arg %d %ls: %ls\n",
-			i, target->input_name[i], param_default[i]? L"yes":L"no");
-			}
-*/
+		anna_error(
+		    (anna_node_t *)call, 
+		    L"No value was provided for argument %d, %ls, in function call.",
+		    i+1, param_name[i]);
 	    }
 	    goto END;	    
 	}
@@ -495,7 +486,7 @@ void anna_node_call_map(
 	      We're grafting a new piece of code into the already
 	      existing AST tree. We need to manually do all the
 	      missing AST compilation passes in the right
-	      order. Fragila and ugly. A better solution would be to
+	      order. Fragile and ugly. A better solution would be to
 	      evaluate the AST nodes once during preparation of the
 	      actual function, and then just store the actual
 	      values. This means all function default values would
