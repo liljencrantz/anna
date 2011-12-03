@@ -246,6 +246,7 @@ ANNA_VM_NATIVE(anna_buffer_decode, 2)
 	}
 	
     }
+    free(src);
     *(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE) = off;
     return anna_from_obj(this);
 }

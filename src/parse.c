@@ -20,7 +20,7 @@ void anna_yacc_init();
 anna_node_t *anna_parse(wchar_t *filename) 
 {
   yyscan_t scanner;
-
+  
   FILE *file = wfopen(filename, "r");
   anna_node_t *parse_tree;
   if(!file)
@@ -54,6 +54,7 @@ anna_node_t *anna_parse_string(wchar_t *str)
   
   anna_yacc_parse( scanner, L"<internal>", &parse_tree );
   anna_lex_lex_destroy(scanner);
-  
+  free(mbstr);
+
   return anna_yacc_error_count?0:parse_tree;
 }

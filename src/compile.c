@@ -27,6 +27,8 @@
 #define ANNA_COMPILE_SIZE 1
 #define ANNA_COMPILE_LINE 2
 
+#define ANNA_FUNCTION_CALLBACK_CODE_SIZE (sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t)+1)
+
 typedef struct
 {
     int flags;
@@ -1024,20 +1026,15 @@ void anna_vm_callback_native(
 {
     stack->frame = anna_frame_to_heap(stack->frame);
     size_t ss = sizeof(anna_activation_frame_t);
-    size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_native_call_t) + sizeof(anna_op_null_t)+1;
+
     size_t tot_sz = ss;
-    anna_activation_frame_t *frame = anna_alloc_activation_frame(tot_sz);
+    anna_activation_frame_t *frame = 
+	anna_alloc_callback_activation_frame(tot_sz, ANNA_FUNCTION_CALLBACK_CODE_SIZE);
     frame->dynamic_frame = stack->frame;
-    
-    frame->static_frame = *(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
-    frame->code = calloc(1,cs);
-//    wprintf(L"AAA %d %d\n", frame, frame->flags);
-    
-    frame->function = anna_alloc_function();
+    frame->static_frame = 
+	*(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     frame->function->wrapper=0;
-    frame->function->code = frame->code;
     frame->function->variable_count = 0;
-    frame->function->frame_size = tot_sz;
     frame->function->name = L"!callbackHandler";
     frame->return_stack_top = stack->top;
     
@@ -1065,7 +1062,6 @@ void anna_vm_callback_native(
 
     stack->frame = frame;
     anna_compile_context_destroy(&ctx);
-//    wprintf(L"CALLBACK\n");
 }
 
 void anna_vm_callback(

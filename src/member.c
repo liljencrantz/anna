@@ -132,6 +132,9 @@ mid_t anna_member_create(
 	anna_type_reseal(type);
     }
     
+    member->getter_offset = -1;
+    member->setter_offset = -1;
+    
     return mid;
 }
 

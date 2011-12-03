@@ -121,6 +121,7 @@ ANNA_VM_NATIVE(anna_parse_i, 1)
     
     wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
     anna_node_t *res = anna_parse_string(str);
+    free(str);
     if(res)
     {
 	return anna_from_obj(anna_node_wrap(res));

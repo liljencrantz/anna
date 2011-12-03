@@ -1314,7 +1314,12 @@ attribute_list:
 void anna_yacc_init()
 {
     anna_yacc_do_init = 1;    
-    sb_init(&anna_yacc_str_buff);
+    static int first_init = 1;
+    if(first_init)
+    {
+	first_init = 0;
+	sb_init(&anna_yacc_str_buff);
+    }
 }
 
 /**

@@ -83,6 +83,25 @@ static inline __malloc anna_function_t *anna_alloc_function()
     return res;
 }
 
+static inline __malloc anna_activation_frame_t *anna_alloc_callback_activation_frame(size_t frame_sz, size_t code_sz)
+{
+    size_t sz = frame_sz + sizeof(anna_function_t)+ code_sz;
+    anna_activation_frame_t *res = anna_slab_alloc(sz);
+    res->flags = ANNA_ACTIVATION_FRAME;
+    al_push(&anna_alloc[ANNA_ACTIVATION_FRAME], res);
+    anna_alloc_count+=sz;
+    char *ptr = (char *)res;
+    anna_function_t *fun = (anna_function_t *)(ptr + frame_sz);
+
+    memset(fun, 0, sizeof(anna_function_t)+code_sz);
+    fun->flags = ANNA_FUNCTION;
+    fun->code = (char *)&fun[1];
+    res->code = fun->code;
+    fun->frame_size = sz;
+    res->function = fun;
+    return res;
+}
+
 static inline __malloc void *anna_alloc_node(size_t sz)
 {
     anna_node_t *res = calloc(1, sz);

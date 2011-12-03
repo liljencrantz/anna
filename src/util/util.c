@@ -854,8 +854,7 @@ void sb_truncate( string_buffer_t *b, int chars_left )
 ssize_t sb_length( string_buffer_t *b )
 {
     VERIFY( b, -1 );
-    return (b->used)/sizeof( wchar_t);
-	
+    return (b->used)/sizeof( wchar_t);	
 }
 
 wchar_t *sb_content(string_buffer_t *b )

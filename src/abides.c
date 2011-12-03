@@ -305,6 +305,7 @@ void anna_type_intersect_into(
 		    defaults,
 		    0);
 		free(types);
+		free(defaults);
 		
 		anna_function_t *new_fun = 
 		    anna_function_unwrap(

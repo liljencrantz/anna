@@ -447,20 +447,16 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	    continue;
 	}
 	
-       
 	copied[i] = 1;
-       
+	
 	anna_member_t *copy = anna_member_get(
             res,
             anna_member_create(
                 res,
                 mid,
 	        memb->storage, memb->type));
+	copy->storage = memb->storage;
 	
-	anna_member_set_bound(copy, anna_member_is_bound(memb));
-	anna_member_set_property(copy, anna_member_is_property(memb));
-	copy->getter_offset = -1;
-	copy->setter_offset = -1;
 	if(memb->attribute)
         {
 	    copy->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)memb->attribute);
@@ -470,8 +466,11 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	if(anna_member_is_static(memb))
         {
 	    if(memb->offset != -1)
-	        res->static_member[copy->offset] = orig->static_member[memb->offset];
+	    {
+		res->static_member[copy->offset] = orig->static_member[memb->offset];
+	    }
 	}
+	
 	copy_property |= anna_member_is_property(memb);
 	if(memb->storage & 0xffff0000)
 	{
@@ -516,6 +515,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 		    orig, memb->getter_offset);
 		copy->getter_offset = anna_member_get(res, getter)->offset;
 	    }
+	    
 	    if(memb->setter_offset != -1)
 	    {
 		mid_t setter = anna_type_mid_at_static_offset(

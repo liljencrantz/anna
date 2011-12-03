@@ -16,4 +16,4 @@ autogen/*.c
 autogen/*.h
 documentation/api
 documentation/index.html
-leaks
+leaks*

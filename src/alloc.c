@@ -435,11 +435,8 @@ static void anna_alloc_free(void *obj)
 	case ANNA_FUNCTION:
 	{
 	    anna_function_t *o = (anna_function_t *)obj;
-	    //wprintf(L"FREE FUNCTION %ls %d\n", o->name, o);
-	    
 	    free(o->code);
 	    free(o->input_type);
-	    
 	    anna_alloc_count -= sizeof(anna_function_t);
 	    anna_slab_free(obj, sizeof(anna_function_t));
 	    break;
