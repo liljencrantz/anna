@@ -703,7 +703,6 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    anna_mid_get_reverse(c->mid),
 		    type->name);
 		break;
-		
 	    }
 
 	    if((c->node_type == ANNA_NODE_MEMBER_GET) || 
@@ -1018,19 +1017,11 @@ static anna_node_t *anna_node_calculate_type_fun(
     return anna_node_calculate_type(this);
 }
 
-void anna_node_calculate_type_children(anna_node_call_t *node)
+void anna_node_calculate_type_children(anna_node_t *node)
 {
-    int i;
-    for(i=0; i<node->child_count; i++)
-    {
-	node->child[i] = anna_node_each_replace(node->child[i], &anna_node_calculate_type_fun, 0);
-	if(anna_error_count)
-	{
-	    return;
-	}
-    }
+    node = anna_node_each_replace(node, &anna_node_calculate_type_fun, 0);
     anna_node_each(
-	(anna_node_t *)node, 
+	node, 
 	&anna_node_prepare_body, 0);
 }
 

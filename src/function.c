@@ -197,6 +197,12 @@ static anna_node_t *anna_function_setup_arguments(
 	    }
 	    f->input_default[i] = anna_attribute_call(
 		(anna_node_call_t *)decl->child[3], L"default");
+	    if(f->input_default[i])
+	    {
+		f->input_default[i] = anna_node_macro_expand(
+		    f->input_default[i], f->stack_template);
+	    }
+	    
 	    
 	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
 	    {

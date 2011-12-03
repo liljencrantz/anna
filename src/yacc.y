@@ -416,7 +416,7 @@ module: opt_expression_list
 	{
 	    $$->function = 
 		(anna_node_t *)anna_node_create_identifier(
-		    &@$,L"__module__");
+		    &@$,L"nothing");
 	    *parse_tree_ptr = (anna_node_t *)$$;
 	} |
 	error separators

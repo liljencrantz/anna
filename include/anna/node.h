@@ -481,7 +481,7 @@ anna_entry_t *anna_node_static_invoke(
     anna_stack_template_t *stack);
 
 void anna_node_calculate_type_children(
-    anna_node_call_t *node);
+    anna_node_t *node);
 
 int anna_node_validate_call_parameters(
     anna_node_call_t *call, 

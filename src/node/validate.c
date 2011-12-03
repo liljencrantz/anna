@@ -491,8 +491,21 @@ void anna_node_call_map(
     {
 	if(!order[i])
 	{
+	    /*
+	      We're grafting a new piece of code into the already
+	      existing AST tree. We need to manually do all the
+	      missing AST compilation passes in the right
+	      order. Fragila and ugly. A better solution would be to
+	      evaluate the AST nodes once during preparation of the
+	      actual function, and then just store the actual
+	      values. This means all function default values would
+	      have to be statically evaluatable, which might actually
+	      be a _good_ thing.
+	    */
 	    order[i] = anna_node_clone_deep(param_default[i]);
 	    anna_node_set_stack(order[i], call->stack);
+	    anna_node_resolve_identifiers(order[i]);
+	    anna_node_calculate_type_children(order[i]);
 	    count = maxi(count, i+1);
 	}
     }

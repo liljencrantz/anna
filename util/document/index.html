@@ -2684,7 +2684,20 @@ date += isoDateDelta(x-0-0, 1:00);
 		</td>
 		<td>
 		  <code class='anna-code'>
-		    __memberGet__(foo, count)
+		    __memberGet__(lst, count)
+		  </code>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class='anna-code'>
+		    lst.count = 3
+		  </code>
+		</td>
+		<td>
+		  <code class='anna-code'>
+		    __assign__(__memberGet__(lst, count), 3)
 		  </code>
 		</td>
 	      </tr>
@@ -2698,7 +2711,7 @@ date += isoDateDelta(x-0-0, 1:00);
 		</td>
 		<td>
 		  <code class='anna-code'>
-		    __memberGet__(foo, push)(1)
+		    __memberGet__(lst, push)(1)
 		  </code>
 		</td>
 	      </tr>
@@ -2726,7 +2739,7 @@ date += isoDateDelta(x-0-0, 1:00);
 		</td>
 		<td>
 		  <code class='anna-code'>
-		    __memberGet__(lst, __set__)(4, 'X')
+		    __assign__(__memberGet__(lst, __get__)(4), 'X')
 		  </code>
 		</td>
 	      </tr>
@@ -2745,7 +2758,6 @@ date += isoDateDelta(x-0-0, 1:00);
 		</td>
 	      </tr>
 
-
 	      <tr>
 		<td>
 		  <code class='anna-code'>
@@ -2759,7 +2771,6 @@ date += isoDateDelta(x-0-0, 1:00);
 		</td>
 	      </tr>
 
-
 	      <tr>
 		<td>
 		  <code class='anna-code'>
@@ -2772,7 +2783,6 @@ date += isoDateDelta(x-0-0, 1:00);
 		  </code>
 		</td>
 	      </tr>
-
 
 	      <tr>
 		<td>
@@ -2939,7 +2949,7 @@ literal := [
 
 /*
    The only exceptions to this rule is that it is ok to group together
-   multiple variable declarations o a single line with commas.  
+   multiple variable declarations on a single line with commas.  
 */
 
 foo := 1, bar := 2, baz := 3;
