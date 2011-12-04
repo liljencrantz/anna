@@ -79,25 +79,28 @@ static inline anna_activation_frame_t *anna_frame_get_static(size_t sz)
     return res;
 }
 
-static void anna_frame_push(anna_context_t *stack) {
-    anna_object_t *wfun = stack->function_object;
+static void anna_frame_push(anna_context_t *context) 
+{
+    anna_object_t *wfun = context->function_object;
     size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
     anna_activation_frame_t *static_frame = *(anna_activation_frame_t **)&wfun->member[stack_offset];
     anna_function_t *fun = anna_function_unwrap_fast(wfun);
     anna_activation_frame_t *res = anna_frame_get_static(fun->frame_size);
     
     res->static_frame = static_frame;
-    res->dynamic_frame = stack->frame;
+    res->dynamic_frame = context->frame;
     res->function = fun;
     res->code = fun->code;
-    stack->top -= (fun->input_count+1);
-    res->return_stack_top = stack->top;
-    memcpy(&res->slot[0], stack->top+1,
+    context->top -= (fun->input_count+1);
+    res->return_stack_top = context->top;
+    /* Copy over input parameter values */
+    memcpy(&res->slot[0], context->top+1,
 	   sizeof(anna_object_t *)*fun->input_count);
+    /* Set initial value of all variables to null */
     int i;
     for(i=fun->input_count; i<fun->variable_count;i++)
 	res->slot[i] = null_entry;
-    stack->frame = res;
+    context->frame = res;
 }
 
 static anna_entry_t *anna_static_invoke_as_access(

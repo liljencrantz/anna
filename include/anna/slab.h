@@ -5,7 +5,12 @@
 
 #include "anna/base.h"
 
-#define SLAB_MAX 256
+/*
+  The maximum size of memory allocations where we will use the Anna
+  «slab memory allocator». For larger sizes, simply fall back to
+  malloc/free.
+*/
+#define SLAB_MAX 64
 
 struct slab
 {
@@ -72,8 +77,7 @@ static inline void anna_slab_free(void *ptr, size_t sz)
 
 /**
    Print some statistics about slab allocations
- */
+*/
 void anna_slab_print(void);
-
 
 #endif

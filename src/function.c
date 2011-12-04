@@ -523,10 +523,8 @@ void anna_function_setup_body(
 	    if(!fptr)
 	    {
 		loop_step_count = -1;
-//		wprintf(L"TROLOLOL\n");
 		break;
 	    }
-	    
 	}
 
 	for(i=0; i<al_get_count(&ret); i++)

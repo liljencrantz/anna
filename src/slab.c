@@ -1,10 +1,10 @@
-#define SLAB_SZ 128
+#define SLAB_SZ 512
 
 slab_t **slab_list;
 
 void anna_slab_init()
 {
-    slab_list = calloc(SLAB_MAX * sizeof(slab_t *), 1);
+    slab_list = calloc(SLAB_MAX,sizeof(slab_t *));
 }
 
 void anna_slab_alloc_batch(size_t sz)

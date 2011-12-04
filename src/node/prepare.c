@@ -667,10 +667,8 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
 
 	    int is_static = (this->node_type == ANNA_NODE_STATIC_MEMBER_GET) || 
-		(this->node_type == ANNA_NODE_STATIC_MEMBER_SET);
+		(this->node_type == ANNA_NODE_STATIC_MEMBER_SET);	    
 	    
-	    
-
 	    c->object = anna_node_calculate_type(c->object);
 	    anna_type_t *type = c->object->return_type;
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)
@@ -692,7 +690,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    break;
 		}
 	    }
-
+	    
 	    anna_type_prepare_member(type, c->mid, stack);
 	    anna_member_t *member = anna_member_get(type, c->mid);
 	    if(!member)

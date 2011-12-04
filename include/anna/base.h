@@ -441,7 +441,7 @@ struct anna_function
      */
     wchar_t *name;
     /**
-       The body of this function.
+       The body of this function. Only used during compilation.
      */
     struct anna_node_call *body;  
     /**
@@ -453,27 +453,29 @@ struct anna_function
      */
     struct anna_node_call *input_type_node;  
     /**
-       The mid this method has in the type it is a member of
+       If this function is a method, the mid this method has in the
+       type it is a member of
      */
     mid_t mid;
     /**
        The full AST that originally defined this function. Not macro
-       expanded. Needed for template specialization.
+       expanded. Needed for template specialization. Only used during
+       compilation.
     */
     struct anna_node_call *definition;
     /**
        The attribute list for this function
-     */
+    */
     struct anna_node_call *attribute;
     /**
        If this is a native function, this union will contain the
        function pointer used for invocation. Otherwise, this will be a
        null function pointer.
-     */
+    */
     anna_native_t native;
     /**
        The return type of this function.
-     */
+    */
     struct anna_type *return_type;
     /**
        Points to the anna_object that can be used to introspect this
@@ -600,7 +602,7 @@ struct anna_context
     struct anna_object *function_object;
 
     /**
-      The top of the scratch stack. The scratch stack in anna is never used
+      The top of the scratch stack. The scratch stack in anna is not used
       for passing parameters, it is used purely as a scratch space for
       storing output of function calls that will in turn be used as
       input to future function calls.

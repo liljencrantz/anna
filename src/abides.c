@@ -4,8 +4,6 @@
 static hash_table_t anna_abides_cache;
 static hash_table_t anna_intersect_cache;
 
-static int anna_abides_verbose=0;
-
 void anna_abides_init()
 {
     hash_init(&anna_abides_cache, hash_tt_func, hash_tt_cmp);
@@ -23,8 +21,7 @@ static int anna_abides_function(
 
     if(contender->input_count != role_model->input_count)
     {
-	if(verbose)
-	    debug(verbose, L"Input count mismatch\n");
+	debug(verbose, L"Input count mismatch\n");
 	return 0;
     }
     
@@ -34,11 +31,11 @@ static int anna_abides_function(
 	{
 	    if(!anna_abides(contender->input_type[i], role_model->input_type[i]))
 	    {
-		if(verbose)
-		    debug(verbose, L"Input %d mismatches, %ls does not abide to %ls\n", 
-			  i,
-			  contender->input_type[i]->name,
-			  role_model->input_type[i]->name );
+		debug(
+		    verbose, 
+		    L"Input %d mismatches, %ls does not abide to %ls\n", 
+		    i, contender->input_type[i]->name,
+		    role_model->input_type[i]->name );
 		return 0;
 	    }
 	}
@@ -48,11 +45,10 @@ static int anna_abides_function(
     {
 	if(!anna_abides(contender->return_type, role_model->return_type))
 	{
-	    if(verbose)
-		debug(
-		    verbose,
-		    L"Return type mismatch. %ls does not abide by %ls\n",
-		    contender->return_type->name, role_model->return_type->name);
+	    debug(
+		verbose,
+		L"Return type mismatch. %ls does not abide by %ls\n",
+		contender->return_type->name, role_model->return_type->name);
 	    return 0;
 	}
     }
@@ -65,56 +61,34 @@ static int anna_abides_fault_count_internal(
     anna_type_t *role_model, 
     int verbose)
 {
-    if(anna_abides_verbose)
-	debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
     
     if(contender == role_model || contender == null_type)
     {
 	return 0;
     }
-
+    
     anna_tt_t tt = 
 	{
 	    contender, role_model
-	}
-    ;
+	};    
     
-    if(!verbose)
+    long count = (long)hash_get(&anna_abides_cache, &tt);
+    if(count == ABIDES_IN_TRANSIT)
     {
-	long count = (long)hash_get(&anna_abides_cache, &tt);
-	if(count == ABIDES_IN_TRANSIT)
-	{
-	    //wprintf(L"Check %ls as %ls, in transit\n", contender->name, role_model->name);
-	    return 0;
-	}
-	else if(count != 0)
-	{
-	    //   wprintf(L"Check %ls as %ls, %d fauls\n", contender->name, role_model->name, count - 1);
-	    return count - 1;
-	}
+	return 0;
+    }
+    else if(count != 0)
+    {
+	return count - 1;
     }
     
-    static int level = 0;
-
-    level++;
-
     anna_tt_t *key = anna_tt_make(contender, role_model);
     
     hash_put(&anna_abides_cache, key, (void *)(long)ABIDES_IN_TRANSIT);
     
     size_t i;
     int res = 0;    
-
-    if(!contender)
-    {
-	CRASH;
-    }
     
-    if(!role_model)
-    {
-	CRASH;
-    }
-
     anna_function_type_t *c_fun_type = anna_function_type_unwrap(contender);
     anna_function_type_t *r_fun_type = anna_function_type_unwrap(role_model);
     
@@ -122,28 +96,24 @@ static int anna_abides_fault_count_internal(
     {
 	if(c_fun_type)
 	{
-	    res += !anna_abides_function(c_fun_type, r_fun_type, 0, 1, 0);
+	    res += !anna_abides_function(c_fun_type, r_fun_type, 0, 1, verbose);
 	}
 	else
 	{
-	    res ++;
+	    res++;
 	}
     }
 
-    /*  
-    if(level==1)
-    */
-    //debug(D_ERROR,L"Check if type %ls abides to %ls\n", contender->name, role_model->name);
-    //debug(D_ERROR,L"Role model %ls has %d members\n", role_model->name, role_model->member_count+role_model->static_member_count);
-        
     for(i=0; i<anna_type_get_member_count(role_model); i++)
     {
 	anna_member_t *r_memb = anna_type_get_member_idx(
 	    role_model, 
 	    i);
 	if(wcscmp(r_memb->name, L"__init__") == 0)
+	{
 	    continue;
-
+	}
+	
 	anna_member_t *c_memb = anna_member_get(
 	    contender, 
 	    anna_mid_get(r_memb->name));	
@@ -151,25 +121,23 @@ static int anna_abides_fault_count_internal(
 	if(!c_memb)
 	{
 	    ok=0;
-/*	    if(!ok && level==1)
-*/
-//	    if(verbose)
-	    if(verbose)
-		debug(verbose, L"No member named %ls\n", r_memb->name);
+	    debug(verbose, L"No member named %ls\n", r_memb->name);
 	}
 	else if(anna_member_is_bound(r_memb) != anna_member_is_bound(c_memb))
 	{
 	    ok=0;
-/*	    if(!ok && level==1)
-*/
-//	    if(verbose)
-	    if(verbose)
-		debug(verbose, L"Miss on %ls because of one is a method and not the other\n", r_memb->name);
+	    debug(
+		verbose,
+		L"Miss on %ls because of one is a method and not the other\n", 
+		r_memb->name);
+
 	}
 	else if(anna_member_is_static(r_memb) != anna_member_is_static(c_memb))
 	{
-	    if(verbose)
-		debug(verbose, L"Miss on %ls because of one is static and not the other\n", r_memb->name);
+	    debug(
+		verbose,
+		L"Miss on %ls because of one is static and not the other\n",
+		r_memb->name);
 	    ok=0;
 	}
 	else if(anna_member_is_bound(r_memb))
@@ -177,37 +145,28 @@ static int anna_abides_fault_count_internal(
 	    ok = anna_abides_function(
 		anna_function_type_unwrap(c_memb->type),
 		anna_function_type_unwrap(r_memb->type),
-		1,
-		1,
-		verbose);
-/*
-	    if(!ok && level==1)
-*/
-//	    if(verbose)
-	    if(!ok && verbose)
+		1, 1, verbose);
+	    if(!ok)
+	    {
 		debug(verbose, L"Miss on %ls because of method signature mismatch\n", r_memb->name);
+	    }
 	}
 	else
 	{
 	    ok = anna_abides(c_memb->type, r_memb->type);
-/*	    
-	    if(!ok && level==1)
-*/
-//	    if(verbose)
-	    if(!ok && verbose)
-		debug(verbose, L"Miss on %ls because of %ls\n", r_memb->name, c_memb->type?L"incompatibility":L"missing member");
+	    if(!ok)
+	    {
+		debug(
+		    verbose, L"Miss on %ls because of %ls\n",
+		    r_memb->name, 
+		    c_memb->type?L"incompatibility":L"missing member");
+	    }
 	}
-
 	res += !ok;
     }
-/*
-    if(level==1)
-	wprintf(L"%ls abides to %ls: %ls\n", contender->name, role_model->name, res==0?L"true": L"false");
-*/  
-    hash_put(&anna_abides_cache, key, (void *)(long)(res+1));
-    level--;
     
-
+    hash_put(&anna_abides_cache, key, (void *)(long)(res+1));
+    
     return res;
 }
 
@@ -225,9 +184,8 @@ void anna_type_intersect_into(
     anna_type_t *res, anna_type_t *t1, anna_type_t *t2)
 {
     int i;
-
     anna_tt_t *tt = malloc(sizeof(anna_tt_t));
-
+    
     if(t1 < t2)
     {
 	tt->type1 = t1;
@@ -278,8 +236,10 @@ void anna_type_intersect_into(
 		anna_abides_function(
 		    ft1, ft2, 1, 0, 0)) 
 	    {
-		anna_type_t **types = malloc(sizeof(anna_type_t *)*ft2->input_count);
-		anna_node_t **defaults = calloc(1,sizeof(anna_node_t *)*ft2->input_count);
+		anna_type_t **types = 
+		    malloc(sizeof(anna_type_t *)*ft2->input_count);
+		anna_node_t **defaults = 
+		    calloc(1,sizeof(anna_node_t *)*ft2->input_count);
 		int i;
 		for(i=0; i<ft2->input_count; i++)
 		{
@@ -361,7 +321,6 @@ void anna_type_intersect_into(
 	}
 	else
 	{
-//	    wprintf(L"Memb %ls\n", members[i]);
 	    if(anna_abides(memb1->type, memb2->type) && anna_abides(memb2->type, memb1->type))
 	    {
 		anna_member_create(
@@ -375,10 +334,10 @@ void anna_type_intersect_into(
     {
 	debug(
 	    D_CRITICAL, 
-	    L"Intersected type %ls is not subset of it's defining types, %ls\n", res->name, t1->name);
+	    L"Intersected type %ls is not subset of it's defining types, %ls\n",
+	    res->name, t1->name);
 
 	hash_remove(&anna_abides_cache, anna_tt_make(t1, res), 0, 0);
-	
 	anna_abides_fault_count_internal(t1, res, D_CRITICAL);
 	CRASH;
     }
@@ -387,17 +346,19 @@ void anna_type_intersect_into(
     {
 	debug(
 	    D_CRITICAL, 
-	    L"Intersected type %ls is not subset it's defining types, %ls\n", res->name, t2->name);
+	    L"Intersected type %ls is not subset it's defining types, %ls\n",
+	    res->name, t2->name);
+
+	hash_remove(&anna_abides_cache, anna_tt_make(t2, res), 0, 0);
 	anna_abides_fault_count_internal(t2, res, D_CRITICAL);
 	CRASH;
     }
+    
     anna_type_close(res);
-
 }
 
 anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 {
-//    wprintf(L"\n\n\nSTART %ls vs %ls\n\n\n\n", t1->name, t2->name);
     if(t2 == null_type)
     {
 	return t1;
@@ -415,12 +376,10 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
 	return t1;
     }
 
-
     anna_tt_t tt = 
 	{
 	    (t1<t2)?t1:t2,(t1<t2)?t2:t1,
-	}
-    ;
+	};
     
     anna_type_t *res = hash_get(&anna_intersect_cache, &tt);
     if(res)
