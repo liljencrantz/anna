@@ -1,0 +1,6 @@
+posix :== unix;
+
+def main()
+{
+    print(posix.io.chmod.name, "\n");
+}
