@@ -1977,13 +1977,13 @@ def () (block){print("hi")}
 	    namely <code class="anna-code">block</code>. So what does
 	    the <code class="anna-code">block</code> attribute do? The
 	    answer is that the <code class="anna-code">return</code>
-	    expression will return from the innermost function<em>that
-	    is not a block</em>.
+	    expression will return from the innermost
+	    function <em>that is not a block</em>.
 	  </p>
 	  <p>
 	    So there you go. Anna has two different syntaxes for
 	    defining callable sequences of code, called blocks and
-	    functions. Blocks use a slightly terser syntax, but
+	    functions. Blocks use a very terse syntax, but
 	    functions are a lot more expressive in that you can pass
 	    parameters to them, you can control how
 	    the <code class="anna-code">return</code> expression
@@ -2034,7 +2034,7 @@ switch(x)
 (0..10).map(idx){0.0+x}.each(val){print(idx,"\n")}
 	  </pre>
 	  <p>
-	    As you can see, this syntax (which has been borrowed from
+	    As you can see, this syntax (which has been adapted from
 	    Ruby), allows you to pass on a piece of code to another
 	    function using a rather terse syntax.
 	  </p>
@@ -2408,7 +2408,8 @@ thisIsCode();
 	    </li>
 	    <li>
 	      It would not be possible to use named based value lookup
-	      from a continuation.
+	      when examining the contents of the call stack using a
+	      continuation.
 	    </li>
 	    <li>
 	      Sometimes it is desirable to make explicit which version
@@ -2494,11 +2495,11 @@ def outerFunction(Int value)
 	    different operations. This is not so in Anna.
 	  </p>
 	  <p>
-	    The casting operator <code>as</code> can never create a
-	    new object. It simply either returns exactly the same
-	    object cast to a different type, or, if the specified
-	    object can not be cast to that type, null is returned. For
-	    example, to cast the value <code>7</code> to
+	    The casting operator <code class="anna-code">as</code> can
+	    never create a new object. It simply either returns
+	    exactly the same object cast to a different type, or, if
+	    the specified object can not be cast to that type, null is
+	    returned. For example, to cast the value <code>7</code> to
 	    a <code class="anna-code">Float</code>,
 	    write <code class="anna-code">7 as Float</code>. This will
 	    result in a null value, because Int objects do not have
@@ -2568,7 +2569,6 @@ function mandelbrot(Complex p0, Int maxStep)
       languages in the code above. We'll comment on them below.
     </p>
 -->
-
           <h1><a name="microformats">Microformats</a></h1>
 	  <p>
 	    The Anna parser is written to be as accepting as possible of
