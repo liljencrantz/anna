@@ -815,8 +815,8 @@ def Int main()
 }
 
 // If you're not using a unicode character set, «» may not be available to you. 
-// As a fallback, Anna supports using <<>> instead.
-<<Int>>[];
+// As a fallback, Anna supports using &lt;&lt;&gt;&gt; instead.
+&lt;&lt;Int&gt;&gt;[];
 	  </pre>
 
 	  <h3><a name="examples-continuations">Continuations</a></h3>
@@ -898,7 +898,7 @@ expandCode(
 	      the value from the original switch condition.
 	    </li>
 	  </ul>
-      
+	  
 	  <pre class="anna-code">
 /*
   Switch containing Int:s
@@ -1126,7 +1126,7 @@ def parser.Node reverseStringLiteral(parser.Call node)
 	  <pre class="anna-code">
 TODO
 	  </pre>
-   
+
 	  <h2><a name="intro_short">Anna in a single sentence</a></h2>
 	  <div class='anna-subheading'>Wherein the author demonstrates his mastery of commatation</div>
 	  <p>
@@ -1960,7 +1960,9 @@ def myFun()
 myFun();
 	  </pre>
 	  <p>
-	    The answer is that blocks are just syntactic sugar for defining extremely simple functions, and internally, they are exactly the same thing.
+	    The answer is that blocks are just syntactic sugar for
+	    defining extremely simple functions, and internally, they
+	    are exactly the same thing.
 	  </p>
 	  <pre class="anna-code">
 // These two lines are exactly equivalent, but less writing is required 
@@ -1990,7 +1992,7 @@ def () (block){print("hi")}
 	    and functions are in fact a strict superset of the
 	    functionality of blocks.
 	  </p>
-	  <h3><a name="blocks-param">Sending a block as an input parameter to a function call</a></h2>
+	  <h3><a name="blocks-param">Sending a block as an input parameter to a function call</a></h3>
 	  <p>
 	    There is one more thing that one should know about
 	    blocks. When calling a function, a code block coming right
@@ -3142,6 +3144,50 @@ def Int main()
 	    e.g. two integers with the same value apart.
 	  </p>
 
+	  <h1><a name="limitations">Known limitations</a></h1>
+	  <p>
+	    Anna is still a work in progress. As such, there are
+	    various known issues with the current
+	    implementation. These include:
+	  </p>
+	  <ul>
+	    
+	    <li>
+	      It is currently impossible to make subclasses of the
+	      unspecialized types
+	      <code class="anna-code">MutableList</code>, 
+	      <code class="anna-code">ImutableList</code>, 
+	      <code class="anna-code">Pair</code>
+	      or <code class="anna-code">HashMap</code>.  Making
+	      subclasses of specialized versions of these types,
+	      e.g. <code class="anna-code">HashMap«Int, Char»</code>
+	      works fine.
+	    </li>
+	    
+	    <li>
+	      Anna is currently very slow. Usually about 50 % slower
+	      than Python.
+	    </li>
+	    
+	    <li>
+	      The Anna compiler is fairly slow and memory hungry. It
+	      will usually eat around ten megabytes of memory during
+	      startup and will take around 0.1 seconds on a reasonably
+	      modern processor. Part of this is because every
+	      available Anna module is currently parsed and compiled
+	      at startup, regardless of if it is used or not.
+	    </li>
+	    
+	    <li>
+	      For small memory allocations, once allocated, the
+	      current Anna memory allocator never returns the memory
+	      to the operating system. By setting the constant
+	      SLAB_MAX in the file include/anna/slab.h to 0, this can
+	      be avoided, but at the cost of a performance decrease of
+	      up to 50 %.
+	    </li>
+	    
+	  </ul>
 	  <h1><a name="download">Getting Anna</a></h1>
 	  <p>
 	    Anna is open source and can be downloaded online. There is
