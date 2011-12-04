@@ -1,0 +1,4 @@
+def main()
+{
+    print((? as Object).__type__, "\n");
+}

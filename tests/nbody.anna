@@ -1,9 +1,9 @@
 def main() {
     n := Int::convert(system.argument[1]) or 50_000;
     bodies := NBodySystem();
-    print(bodies.energy(), '\n');
+    print(bodies.energy().format(digits:9), '\n');
     bodies.advance(n, 0.01);
-    print(bodies.energy(), '\n');
+    print(bodies.energy().format(digits:9), '\n');
 }
 
 type NBodySystem {
