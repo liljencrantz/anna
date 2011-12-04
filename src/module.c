@@ -466,7 +466,7 @@ ANNA_VM_NATIVE(anna_system_get_argument, 1)
     {
 	res = anna_list_create_imutable(string_type);
 	int i;
-	for(i=1; i<anna_argc; i++)
+	for(i=0; i<anna_argc; i++)
 	{
 	    wchar_t *data = str2wcs(anna_argv[i]);
 	    anna_object_t *arg = anna_string_create(wcslen(data), data);

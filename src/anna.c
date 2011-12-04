@@ -7,6 +7,7 @@
 #include <locale.h>
 #include <sys/prctl.h>
 #include <time.h>
+#include <getopt.h>
 
 #include "anna/common.h"
 #include "anna/util.h"
@@ -40,6 +41,11 @@ int anna_argc;
    All arguments given to the program
 */
 char **anna_argv;
+
+/**
+   Name of the file to run
+*/
+static wchar_t *anna_module_name;
 
 /**
    Init the interpreter. 
@@ -87,6 +93,97 @@ static void anna_set_program_name(char *arg)
     }    
 }
 
+static void anna_print_help()
+{
+    wprintf(
+	L"Usage: anna [option] file [arg..]\n"
+	L"Run the interpreter for the Anna programming language\n\n"
+	L"  -h, --help     Print this help message and exit\n"
+	L"  -v, --verbose  Increase verbosity level\n"
+	L"  -V, --version  Print version number and exit\n"
+        L"  file           File name of the program (optionally omitting the .anna suffix)\n"
+	L"  arg ...        Arguments passed to program\n");
+}
+
+static void anna_print_version()
+{
+    wprintf(L"0.0\n");
+}
+
+/**
+   Parse command line options. 
+ */
+static void anna_opt_parse(int argc, char **argv)
+{
+    int c;
+    
+    while (1) 
+    {
+	int option_index = 0;
+	static struct option long_options[] = 
+	    {
+		{"verbose", 0, 0, 'v'},
+		{"help",    0, 0, 'h'},
+		{"version", 0, 0, 'V'},
+		{0,         0, 0, 0  }
+	    };
+	
+	c = getopt_long(
+	    argc, argv, "+hvV",
+	    long_options, &option_index);
+	if(c == -1)
+	{
+	    break;
+	}
+
+	switch(c) 
+	{
+	    case 'v':
+	    {
+		debug_level--;
+		break;
+	    }
+	    
+	    case 'h':
+	    {
+		anna_print_help();
+		exit(0);
+		break;
+	    }
+	    
+	    case 'V':
+	    {
+		anna_print_version();
+		exit(0);
+		break;
+	    }
+	    
+	    case '?':
+	    {
+		anna_print_help();
+		exit(ANNA_STATUS_ARGUMENT_ERROR);
+		break;
+	    }
+	}
+    }
+    
+    if(optind == argc) 
+    {
+	debug(D_CRITICAL, L"No program to run.\n");
+	exit(ANNA_STATUS_ARGUMENT_ERROR);
+    }
+    
+    anna_argc = argc-optind;
+    anna_argv = &argv[optind];
+    
+    anna_module_name = str2wcs(argv[optind]);
+    size_t mlen = wcslen(anna_module_name);
+    if(mlen > 5 && wcscmp(&anna_module_name[mlen-5], L".anna") == 0)
+    {
+	anna_module_name[mlen-5] = 0;
+    }
+}
+
 /**
    Perform shutdown operations
 */
@@ -106,6 +203,7 @@ static void anna_shutdown()
 */
 static void anna_main_run(anna_stack_template_t *module)
 {
+    debug(D_INFO,L"Finished parsing program, staring main eval loop.\n");    
     anna_object_t *main_wrapper = anna_as_obj(anna_stack_get(module, L"main"));
 
     if(!main_wrapper)
@@ -130,28 +228,6 @@ static void anna_main_run(anna_stack_template_t *module)
 }
 
 /**
-   Figure out the name of the module we want to run based on the
-   command line arguments
- */
-static wchar_t *anna_module_name_extract(int argc, char **argv)
-{
-    if(argc < 2)
-    {
-	debug(D_CRITICAL,L"Error: Expected at least one argument, a name of a file to run.\n");
-	exit(ANNA_STATUS_ARGUMENT_ERROR);
-    }
-
-    wchar_t *module_name = str2wcs(argv[1]);
-    size_t mlen = wcslen(module_name);
-    if(mlen > 5 && wcscmp(&module_name[mlen-5], L".anna") == 0)
-    {
-	module_name[mlen-5] = 0;
-    }
-    
-    return module_name;
-}
-
-/**
    Main program entry point.
 
    Save the argument list, initialize the interpreter, parse the
@@ -163,14 +239,11 @@ int main(int argc, char **argv)
     wsetlocale(LC_ALL, L"");
     tzset();
     
-    anna_argc= argc;
-    anna_argv = argv;
-    
-    wchar_t *module_name = anna_module_name_extract(argc, argv);
+    anna_opt_parse(argc, argv);
     
     anna_set_program_name(argv[1]);
     
-    debug(D_SPAM,L"Initializing interpreter...\n");    
+    debug(D_INFO,L"Initializing interpreter...\n");    
     anna_alloc_gc_block();
     anna_init();
     
@@ -183,8 +256,8 @@ int main(int argc, char **argv)
 	exit(ANNA_STATUS_INTERNAL_ERROR);
     }
     
-    anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(module_name));
-    free(module_name);
+    anna_stack_template_t *module = anna_stack_unwrap(anna_module_load(anna_module_name));
+    free(anna_module_name);
     
     if(anna_error_count)
     {
@@ -200,5 +273,6 @@ int main(int argc, char **argv)
 
     anna_shutdown();
     
+    debug(D_INFO,L"Program ended. Exiting.\n");    
     return ANNA_STATUS_OK;
 }
