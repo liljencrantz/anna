@@ -311,9 +311,9 @@ type MutableListBindingType
         subBinding := getBindingType(subType);
         subTypeNative := subBinding.annaNativeType(subType, ?);
 	
-      res := "".thaw;
+        res := "".thaw;
 
-        findAttr(attr, "ensureCapacity").each(cap)
+        findAttr(attr as Call, "ensureCapacity").each(cap)
 	{
 	    capStr := switch(cap)
 	    {
@@ -461,7 +461,7 @@ type BasicBindingType
     def String postValidateToC(Node decl, Node attr, String dest, String source)
     {
         res := "".thaw;
-        findAttr(attr, "ensureCapacity").each(cap)
+        findAttr(attr as Call, "ensureCapacity").each(cap)
 	{
 	  capStr := switch(cap)
 	    {
@@ -576,7 +576,7 @@ type BindingGenerator
     
     def mangleFunctionName(String name, List«String» path = ?)
     {
-	this.name ~ "_i_" ~ (("_".join(path.__map__(mangleName)) ~ "_") or "") ~ mangleName(name);
+	this.name ~ "_i_" ~ (("_".join(path.map(el){mangleName(el)}) ~ "_") or "") ~ mangleName(name);
     }
 
     def String getFunctionNativeName(Call decl)
@@ -872,7 +872,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
     def String nameToStr(Node name, Node attr)
     {
         use(parser);
-        val := findAttr(attr, "name")[0] or name;
+        val := findAttr(attr as Call, "name")[0] or name;
         switch(val)
         {
             case(lit as StringLiteral)
