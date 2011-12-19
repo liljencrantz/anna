@@ -12,6 +12,8 @@
   - argument default values aren't shown
 * Check that node compare supports all ast node types
 * When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
+* Function specialization
+* Handle C type wrappers in other namespaces when compiling bindings
 
 1.0 RELEASE CRITERIA (Done):
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

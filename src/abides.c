@@ -21,7 +21,9 @@ static int anna_abides_function(
 
     if(contender->input_count != role_model->input_count)
     {
-	debug(verbose, L"Input count mismatch\n");
+	debug(
+	    verbose, L"Input count mismatch, should be %d, is %d.\n", 
+	    role_model->input_count, contender->input_count);
 	return 0;
     }
     
@@ -101,6 +103,7 @@ static int anna_abides_fault_count_internal(
 	else
 	{
 	    res++;
+	    debug(verbose, L"Template is callable.\n");
 	}
     }
 
@@ -198,13 +201,18 @@ void anna_type_intersect_into(
     }    
     
     hash_put(&anna_intersect_cache, tt, res);
+
+    anna_function_type_t *ft1 = anna_function_type_unwrap(t1);
+    anna_function_type_t *ft2 = anna_function_type_unwrap(t2);
+    if(ft1 && ft2)
+    {
+	FIXME("Intersections of callable types don't intersect the call");
+	
+    }
     
     for(i=0; i<anna_type_get_member_count(t2); i++)
     {
-
-	anna_member_t *memb2 = anna_type_get_member_idx(
-	    t2, 
-	    i);
+	anna_member_t *memb2 = anna_type_get_member_idx(t2, i);
 	int mid = anna_mid_get(memb2->name);
 	if(wcscmp(memb2->name, L"__init__") == 0)
 	    continue;
@@ -389,7 +397,7 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
     
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb,L"!intersection(%ls,%ls)", t1->name, t2->name);
+    sb_printf(&sb,L"!intersection(%ls, %ls)", t1->name, t2->name);
     res = anna_type_create(sb_content(&sb), 0);
     sb_destroy(&sb);
     

@@ -85,6 +85,13 @@ static anna_node_t *anna_node_macro_expand_each(
 	    if(f->body)
 	    {
 		int i;
+		array_list_t al = AL_STATIC;
+		anna_attribute_call_all(f->attribute, L"template", &al);
+
+		f->body = anna_node_definition_specialize(
+		    f->body, &al);
+	
+
 		f->body->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
 		f->body = node_cast_call(
 		    anna_node_macro_expand(
@@ -99,7 +106,9 @@ static anna_node_t *anna_node_macro_expand_each(
 		if(!f->input_type)
 		{
 		    f->input_type_node = node_cast_call(
-			anna_node_clone_deep(f->definition->child[2]));
+			anna_node_definition_specialize(
+			    anna_node_clone_deep(f->definition->child[2]),
+			    &al));
 		    for(i=0;i<f->input_type_node->child_count; i++)
 		    {
 			anna_node_call_t *decl = node_cast_call(f->input_type_node->child[i]);
@@ -107,6 +116,7 @@ static anna_node_t *anna_node_macro_expand_each(
 			decl->child[2] = anna_node_macro_expand(decl->child[2], stack);
 		    }
 		}
+		al_destroy(&al);
 	    }
 	    break;
 	}

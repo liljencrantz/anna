@@ -164,13 +164,7 @@ io
 	def Void zero() (name(FD_ZERO));
     }
     
-    cStruct TimeVal (name(timeval))
-    {
-	var Int sec (name(tv_sec));
-	var Int usec (name(tv_usec));
-    }
-
-    def Int select(Int nfds, FdSet readfds, FdSet writefds, FdSet exceptfds, TimeVal timeout);
+//    def Int select(Int nfds, FdSet readfds, FdSet writefds, FdSet exceptfds, TimeVal timeout);
     
 }
 
@@ -307,16 +301,16 @@ sleep
 
 time
 {
-    cStruct Timeval (name(timeval))
+    cStruct TimeVal (name(timeval))
     {
 	var Int sec (name(tv_sec));
 	var Int usec (name(tv_usec));
     }
     
-    cStruct Timezone (name(timezone))
+    cStruct TimeZone (name(timezone))
     {
     }
     
-    def Bool gettimeofday(Timeval tv, Timezone tz);
+    def Bool gettimeofday(TimeVal tv, TimeZone tz);
 }
 

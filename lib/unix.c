@@ -40,10 +40,9 @@
 anna_type_t *unix_stat_type;
 anna_type_t *unix_f_lock_type;
 anna_type_t *unix_fd_set_type;
-anna_type_t *unix_time_val_type;
 anna_type_t *unix_r_limit_type;
-anna_type_t *unix_timeval_type;
-anna_type_t *unix_timezone_type;
+anna_type_t *unix_time_val_type;
+anna_type_t *unix_time_zone_type;
 
 
 // Data used to initialize all types defined in this module
@@ -57,7 +56,6 @@ const static anna_type_data_t anna_io_type_data[] =
     { &unix_stat_type, L"Stat" },
     { &unix_f_lock_type, L"FLock" },
     { &unix_fd_set_type, L"FdSet" },
-    { &unix_time_val_type, L"TimeVal" },
 };
 const static anna_type_data_t anna_open_mode_type_data[] = 
 {
@@ -1228,74 +1226,6 @@ ANNA_VM_NATIVE(unix_i_fd_set_init, 1)
     return param[0];
 }
 
-ANNA_VM_NATIVE(unix_i_time_val_sec_getter, 1)
-{
-    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    anna_entry_t *result = anna_from_int(data->tv_sec);
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_sec_setter, 2)
-{
-    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    int tmp = anna_as_int(param[1]);
-    data->tv_sec = tmp;
-    return param[1];
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_usec_getter, 1)
-{
-    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    anna_entry_t *result = anna_from_int(data->tv_usec);
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_usec_setter, 2)
-{
-    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    int tmp = anna_as_int(param[1]);
-    data->tv_usec = tmp;
-    return param[1];
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_init, 1)
-{
-    struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    memset(data, 0, sizeof(struct timeval));
-    return param[0];
-}
-
-ANNA_VM_NATIVE(unix_i_io_select, 5)
-{
-    // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
-    if(param[3] == null_entry){return null_entry;}
-    if(param[4] == null_entry){return null_entry;}
-
-    // Mangle input parameters
-    int native_param_nfds = anna_as_int(param[0]);
-    fd_set *native_param_readfds = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
-    fd_set *native_param_writefds = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);
-    fd_set *native_param_exceptfds = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[3]), ANNA_MID_CSTRUCT_PAYLOAD);
-    struct timeval *native_param_timeout = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[4]), ANNA_MID_CSTRUCT_PAYLOAD);
-
-    // Validate parameters
-    
-    
-    
-    
-    
-
-    // Call the function
-    anna_entry_t *result = anna_from_int(select(native_param_nfds, native_param_readfds, native_param_writefds, native_param_exceptfds, native_param_timeout));
-    // Perform cleanup
-
-    // Return result
-    return result;
-}
-
 void anna_io_create(anna_stack_template_t *stack);
 void anna_io_create(anna_stack_template_t *stack)
 {
@@ -1566,23 +1496,6 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	unix_fd_set_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_fd_set_init, object_type, 1, &unix_fd_set_type, this_argn, 0, 0);    
-
-    anna_member_create_blob(unix_time_val_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timeval));
-
-    anna_member_create_native_property(
-        unix_time_val_type, anna_mid_get(L"sec"),
-        int_type, unix_i_time_val_sec_getter, unix_i_time_val_sec_setter, 0);
-
-    anna_member_create_native_property(
-        unix_time_val_type, anna_mid_get(L"usec"),
-        int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, 0);
-    anna_member_create_native_method(
-	unix_time_val_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_time_val_init, object_type, 1, &unix_time_val_type, this_argn, 0, 0);    
-
-    anna_type_t *unix_i_io_select_argv[] = {int_type, unix_fd_set_type, unix_fd_set_type, unix_fd_set_type, unix_time_val_type};
-    wchar_t *unix_i_io_select_argn[] = {L"nfds", L"readfds", L"writefds", L"exceptfds", L"timeout"};
-    anna_module_function(stack, L"select", 0, &unix_i_io_select, int_type, 5, unix_i_io_select_argv, unix_i_io_select_argn, L"");
 
      anna_type_data_register(anna_io_type_data, stack);
 }
@@ -2668,18 +2581,18 @@ void anna_sleep_load(anna_stack_template_t *stack)
 }
 const static anna_type_data_t anna_time_type_data[] = 
 {
-    { &unix_timeval_type, L"Timeval" },
-    { &unix_timezone_type, L"Timezone" },
+    { &unix_time_val_type, L"TimeVal" },
+    { &unix_time_zone_type, L"TimeZone" },
 };
 
-ANNA_VM_NATIVE(unix_i_timeval_sec_getter, 1)
+ANNA_VM_NATIVE(unix_i_time_val_sec_getter, 1)
 {
     struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     anna_entry_t *result = anna_from_int(data->tv_sec);
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_timeval_sec_setter, 2)
+ANNA_VM_NATIVE(unix_i_time_val_sec_setter, 2)
 {
     struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     int tmp = anna_as_int(param[1]);
@@ -2687,14 +2600,14 @@ ANNA_VM_NATIVE(unix_i_timeval_sec_setter, 2)
     return param[1];
 }
 
-ANNA_VM_NATIVE(unix_i_timeval_usec_getter, 1)
+ANNA_VM_NATIVE(unix_i_time_val_usec_getter, 1)
 {
     struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     anna_entry_t *result = anna_from_int(data->tv_usec);
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_timeval_usec_setter, 2)
+ANNA_VM_NATIVE(unix_i_time_val_usec_setter, 2)
 {
     struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     int tmp = anna_as_int(param[1]);
@@ -2702,14 +2615,14 @@ ANNA_VM_NATIVE(unix_i_timeval_usec_setter, 2)
     return param[1];
 }
 
-ANNA_VM_NATIVE(unix_i_timeval_init, 1)
+ANNA_VM_NATIVE(unix_i_time_val_init, 1)
 {
     struct timeval *data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     memset(data, 0, sizeof(struct timeval));
     return param[0];
 }
 
-ANNA_VM_NATIVE(unix_i_timezone_init, 1)
+ANNA_VM_NATIVE(unix_i_time_zone_init, 1)
 {
     struct timezone *data = (struct timezone *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     memset(data, 0, sizeof(struct timezone));
@@ -2755,25 +2668,25 @@ void anna_time_load(anna_stack_template_t *stack)
     wchar_t *this_argn[] = {L"this"};
 
 
-    anna_member_create_blob(unix_timeval_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timeval));
+    anna_member_create_blob(unix_time_val_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timeval));
 
     anna_member_create_native_property(
-        unix_timeval_type, anna_mid_get(L"sec"),
-        int_type, unix_i_timeval_sec_getter, unix_i_timeval_sec_setter, 0);
+        unix_time_val_type, anna_mid_get(L"sec"),
+        int_type, unix_i_time_val_sec_getter, unix_i_time_val_sec_setter, 0);
 
     anna_member_create_native_property(
-        unix_timeval_type, anna_mid_get(L"usec"),
-        int_type, unix_i_timeval_usec_getter, unix_i_timeval_usec_setter, 0);
+        unix_time_val_type, anna_mid_get(L"usec"),
+        int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, 0);
     anna_member_create_native_method(
-	unix_timeval_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_timeval_init, object_type, 1, &unix_timeval_type, this_argn, 0, 0);    
+	unix_time_val_type, anna_mid_get(L"__init__"), 0,
+	&unix_i_time_val_init, object_type, 1, &unix_time_val_type, this_argn, 0, 0);    
 
-    anna_member_create_blob(unix_timezone_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timezone));
+    anna_member_create_blob(unix_time_zone_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timezone));
     anna_member_create_native_method(
-	unix_timezone_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_timezone_init, object_type, 1, &unix_timezone_type, this_argn, 0, 0);    
+	unix_time_zone_type, anna_mid_get(L"__init__"), 0,
+	&unix_i_time_zone_init, object_type, 1, &unix_time_zone_type, this_argn, 0, 0);    
 
-    anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_timeval_type, unix_timezone_type};
+    anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_time_val_type, unix_time_zone_type};
     wchar_t *unix_i_time_gettimeofday_argn[] = {L"tv", L"tz"};
     anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, L"");
 

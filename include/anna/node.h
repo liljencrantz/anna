@@ -499,5 +499,10 @@ anna_type_t *anna_node_resolve_to_type(
 
 anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node);
 
+/**
+   Replace any matching internal identifier with the specified replacement
+ */
+anna_node_t *anna_node_definition_specialize(anna_node_t *code, array_list_t *spec);
+
 #endif
 

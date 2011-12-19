@@ -54,15 +54,14 @@ var anna = {
 		anna.currentPopup = null;
 		return;
 	    }
-
+	    
 	    $(anna.currentPopup).hide();
-	    anna.currentPopup = null;
 	}
-
+	
 	it.fadeIn('fast');
 	anna.currentPopup = it[0];
     },
-
+    
     /*
       Create a toc based on the actual headers of the main document
     */
@@ -87,7 +86,7 @@ var anna = {
     /*
       Very simple syntax highlighter. Uses a state-machine to detect
       string literals and comments, and uses regexps to detect
-      keywords, types and generic operators.
+      keywords, types and generic operators. 
 
       Very little error handling, anything might happen on invalid
       input.

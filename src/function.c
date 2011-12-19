@@ -643,7 +643,9 @@ anna_function_t *anna_function_create_from_definition(
     }
     else
     {
-	result->body = node_cast_call(result->definition->child[4]);
+	result->body = node_cast_call(
+	    result->definition->child[4]);
+	
     }
     
     if(anna_attribute_flag(result->attribute, L"block"))

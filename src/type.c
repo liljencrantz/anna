@@ -148,31 +148,6 @@ static void anna_type_mangle_methods(
     }
 }
 
-static anna_node_t *anna_type_node_specialize(anna_node_t *code, array_list_t *spec)
-{
-    int i;
-    for(i=0; i<al_get_count(spec); i++)
-    {
-	anna_node_t *node = (anna_node_t *)al_get(spec, i);
-	if(node->node_type == ANNA_NODE_CALL)
-	{
-	    anna_node_call_t *call = (anna_node_call_t *)node;
-	    CHECK_CHILD_COUNT(call, L"Template specialization", 2);
-	    CHECK_NODE_TYPE(call->child[0], ANNA_NODE_INTERNAL_IDENTIFIER);
-	    code = anna_node_replace(code, (anna_node_identifier_t *)call->child[0], call->child[1]);
-	}
-	else
-	{
-	    CHECK_NODE_TYPE(node, ANNA_NODE_MAPPING);
-	    anna_node_cond_t *call = (anna_node_cond_t *)node;
-	    CHECK_NODE_TYPE(call->arg1, ANNA_NODE_INTERNAL_IDENTIFIER);
-	    code = anna_node_replace(code, (anna_node_identifier_t *)call->arg1, call->arg2);
-	}
-    }
-    
-    return code;    
-}
-
 
 static anna_type_t *anna_type_create_internal(
     wchar_t *name, anna_node_call_t *definition)
@@ -192,10 +167,10 @@ static anna_type_t *anna_type_create_internal(
 	result->attribute = node_cast_call(definition->child[1]);
 	anna_attribute_call_all(result->attribute, L"template", &al);
 	result->body = node_cast_call(
-	    anna_type_node_specialize(
+	    anna_node_definition_specialize(
 		anna_node_clone_deep(definition->child[2]),
-		&al));
-	
+		&al));	
+	al_destroy(&al);
 	anna_type_mangle_methods(result);
     }
     hash_init(&result->specializations, anna_node_hash_func, anna_node_hash_cmp);
