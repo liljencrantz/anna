@@ -33,12 +33,12 @@
 anna_stack_template_t *stack_global;
 
 /**
-   Number of arguments given to the program
+   Number of arguments given to the program (excluding those given to the interpreter)
 */
 int anna_argc;
 
 /**
-   All arguments given to the program
+   All arguments given to the program (excluding those given to the interpreter)
 */
 char **anna_argv;
 
@@ -117,7 +117,7 @@ static void anna_opt_parse(int argc, char **argv)
 {
     int c;
     
-    while (1) 
+    while(1) 
     {
 	int option_index = 0;
 	static struct option long_options[] = 
@@ -276,3 +276,4 @@ int main(int argc, char **argv)
     debug(D_INFO,L"Program ended. Exiting.\n");    
     return ANNA_STATUS_OK;
 }
+

@@ -24,8 +24,9 @@ typedef int mid_t;
 /*
   These values are used by the flags param of the various GC:ed memory
   allocation types in order to determine what type of allocation a
-  pointer points to. The memory allocator reserves the first 8 bits of every allocation.
- */
+  pointer points to. The memory allocator reserves the first 8 bits of
+  every allocation.
+*/
 
 #define ANNA_OBJECT 0
 #define ANNA_ACTIVATION_FRAME 1
@@ -175,7 +176,7 @@ typedef struct {} anna_entry_t;
 
 /**
    The struct representing an object type. 
- */
+*/
 struct anna_type
 {
     /**
@@ -392,7 +393,7 @@ struct anna_member
 struct anna_object
 {
     /**
-       Various bit flags for this object. The first 16 bits of this
+       Various bit flags for this object. The first 8 bits of this
        flag are reserved by the memory allocator and should not be
        touched.
     */
@@ -416,13 +417,13 @@ struct anna_object
  */
 struct anna_line_pair
 {
-  /**
-     The code offset
-   */
+    /**
+       The code offset
+    */
     int offset;
-  /**
-     The line number 
-   */
+    /**
+       The line number 
+    */
     int line;
 };
 
@@ -438,24 +439,24 @@ struct anna_function
        one specific name, it can be renamed and copied just like any
        other variable. This name is here in order to provide better
        introspection ability for humans.
-     */
+    */
     wchar_t *name;
     /**
        The body of this function. Only used during compilation.
-     */
+    */
     struct anna_node_call *body;  
     /**
        Node describing the return type of this function. Only used during compilation.
-     */
+    */
     struct anna_node *return_type_node;  
     /**
        Node describing the input types of this function. Only used during compilation.
-     */
+    */
     struct anna_node_call *input_type_node;  
     /**
        If this function is a method, the mid this method has in the
        type it is a member of
-     */
+    */
     mid_t mid;
     /**
        The full AST that originally defined this function. Not macro
@@ -492,15 +493,15 @@ struct anna_function
     struct anna_stack_template *stack_template;
     /**
        The number of input arguments to this function.
-     */
+    */
     size_t input_count;
     /**
        The name of each input argument
-     */
+    */
     wchar_t **input_name;
     /**
        The type of each input argument
-     */
+    */
     struct anna_type **input_type;    
     /**
       The default value (if any) for each input argument
@@ -508,20 +509,20 @@ struct anna_function
     struct anna_node **input_default;
     /**
        Bytecode
-     */
+    */
     char *code;
     /**
        The memory size required to hold an activation frame for
        executing this function
-     */
+    */
     size_t frame_size;
     /**
        The number of variables this function has, including input parameters
-     */
+    */
     size_t variable_count;
     /**
        Number of elements in the line_offset array
-     */
+    */
     size_t line_offset_count;
     /**
       A mapping from code offsets to line numbers
@@ -529,7 +530,7 @@ struct anna_function
     struct anna_line_pair *line_offset;
     /**
        The file in which this function was definied
-     */
+    */
     wchar_t *filename;
 };
 
@@ -546,22 +547,22 @@ struct anna_activation_frame
        The static context of this frame is the frame holds the parent
        scope of this frame. It is used for variable lookup. (lexical
        scoping)
-     */
+    */
     struct anna_activation_frame *static_frame;
     /**
        The dynamic context of this frame is the frame that
        called/created this frame. It is used when returning from
        a function call.
-     */
+    */
     struct anna_activation_frame *dynamic_frame;
     
     /**
        The function this frame is executing
-     */
+    */
     struct anna_function *function;
     /**
        The current code position
-     */
+    */
     char *code;
     /**
        The top element of the temp stack at the time this frame was
@@ -571,7 +572,7 @@ struct anna_activation_frame
     
     /**
        Slots for all input parameters and member variables.
-     */
+    */
     anna_entry_t *slot[];
 };
 

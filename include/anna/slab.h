@@ -80,4 +80,7 @@ static inline void anna_slab_free(void *ptr, size_t sz)
 */
 void anna_slab_print(void);
 
+void anna_slab_reclaim(void);
+
+
 #endif

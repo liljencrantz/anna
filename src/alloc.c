@@ -629,6 +629,8 @@ void anna_gc(anna_context_t *context)
 	
 	}
 */	
+    anna_slab_reclaim();
+//    wprintf(L"GC\n");
 
 #ifdef ANNA_CHECK_GC_LEAKS
     size_t end_count = 0;
