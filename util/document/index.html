@@ -1740,17 +1740,18 @@ i := 7;
 	  </p>
 
 	  <pre class="anna-code">
-var Map«String,Float» map = ["Mon":0.0,"Tue":1.1;
-map := ["Mon":0.0,"Tue":1.1];
+var Map«String,Float» map = ["Mon":0.0, "Tue":1.1];
+map := ["Mon":0.0, "Tue":1.1];
 	  </pre>
 
 	  <p>
-	    Suddenly, we've cut the number of key strokes nearly in half!
+	    Suddenly, we've cut the number of key strokes nearly in
+	    half, without sacrificing readability or type safety.
 	  </p>
 	  
 	  <p>
-	    Variable declarations aren't the only place where the interpreter
-	    can figure out the variable type for you:
+	    Variable declarations aren't the only place where the
+	    interpreter can figure out the variable type for you:
 	  </p>
 	  
 	  <pre class="anna-code">
@@ -3101,13 +3102,21 @@ def Int main()
 	    and how it can be used.
 	  </p>
 	  <h1><a name="implementation">Implementation details</a></h1>
+	  <p>
+	    This section gives an overview of the Anna interpreter
+	    implementation. It is not important to read or understand
+	    this section in order to begin programming in Anna. It is
+	    intended as a starting point for those who wish to dig
+	    into the source code.
+	  </p>
 
 	  <h2><a name="implementation-numbers">Numbers</a></h2>
 	  <p>
-	    At the language level, everything is an Object. Types and
-	    functions are objects. There are also no primitive data types,
-	    integers, characaters and floats are also objects. This is not
-	    true at the implementation level, though:
+	    At the language level, everything in Anna is an
+	    Object. Types and functions are objects. There are also no
+	    primitive data types, integers, characaters and floats are
+	    also objects. This is not true at the implementation
+	    level, though:
 	  </p>
 	  <ul>
 	    <li>
@@ -3128,7 +3137,7 @@ def Int main()
 	    </li>
 	  </ul>
 	  <p>
-	    The above holds true for as long as only «regular operations»,
+	    The above holds true for as long as only common operations,
 	    such as adding, subtracting, etc. are performed on the
 	    values. If e.g. reflection is employed or any other operation
 	    that requires access to the object type, then any object stored
@@ -3140,9 +3149,139 @@ def Int main()
 	    reduction, there is no way to tell that this is happening
 	    behind the scenes. This is possible because the above data
 	    types are all imutable and no memory location pointer can
-	    be obtained for an object. It is impossible to tell
+	    be obtained for an object. It is simply impossible to tell
 	    e.g. two integers with the same value apart.
 	  </p>
+
+	  <h2><a name="implementation-object-model">The Anna object struct</a></h2>
+	  <p>
+	    The Anna implementation uses a very simplistic object
+	    model. Objects in Anna are represented by a struct looking
+	    like this:
+	  </p>
+	  <pre>
+struct anna_object
+{
+    /**
+       Various bit flags for this object. The first 8 bits of this
+       flag are reserved by the memory allocator and should not be
+       touched.
+    */
+    int flags;
+    /**
+       The type of this object
+    */
+    struct anna_type *type;
+    /**
+       All the non-static member values of this object. To decode what
+       member lives at what offset, use the information stored in the
+       type object.
+    */
+    anna_entry_t *member[];
+};
+	  </pre>
+	  <p>
+	    The memory overhead of an object (including the memory
+	    overhead of the memory allocator and the garbage
+	    collector, is one word (the flags) and one memory
+	    address(the object type).
+	  </p>
+	  <ul>
+	    <li>
+	      Each <code>anna_entry_t</code> represents one non-static
+	      member value of the object.
+	    </li>
+	    <li>
+	      The member count of an object is stored in the object
+	      type.
+	    </li>
+	    <li>
+	      The lower bits of an anna_entry_t pointer can be used to
+	      determine what type of entry is currently stored as the
+	      current member value. The possible values are described
+	      in the table below.
+	    </li>
+	  </ul>
+	  
+	  <table class='anna-table'>
+	    <caption>
+	      The possible values of the lower bits of an anna_entry_t pointer.
+	    </caption>
+	    <thead>
+	      <tr>
+		<th>
+		  Bit pattern
+		</th>
+		<th>
+		  Meaning
+		</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr>
+		<td>
+		  *000
+		</td>
+		<td>
+		  This entry is used to store a pointer to a
+		  anna_object struct, which lives at the address
+		  pointed to by this pointer.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  *01
+		</td>
+		<td>
+		  This entry is used to store a Char object. To get
+		  the value of the object, right shift the entry two
+		  bits.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  *10
+		</td>
+		<td>
+		  This entry is used to store a piece of memory that
+		  should be garbage collected, but is not an
+		  anna_object struct. The address of the object can be
+		  found by stripping the last bit from the pointer.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  *11
+		</td>
+		<td>
+		  This entry is used to store an Int object. To get
+		  the value of the object, right shift the entry two
+		  bits.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  *100
+		</td>
+		<td>
+		  This entry is used to store a pointer to a floating
+		  point number. It should be garbage collected. The
+		  address of the floating point number can be found by
+		  stripping the last three bits from the pointer.
+		</td>
+	      </tr>
+	    </tbody>
+	  </table>
+
+	  <h2><a name="implementation-type-model">The Anna type struct</a></h2>
+	  <p>
+	    The type struct used to store information about a specific
+	    type in Anna is rather complicated. In addition to storing
+	    static member data, the type struct also stores data that
+	    allows for introspection, efficient garbage collection,
+	    etc.
+	  </p>
+
 
 	  <h1><a name="limitations">Known limitations</a></h1>
 	  <p>
@@ -3179,12 +3318,8 @@ def Int main()
 	    </li>
 	    
 	    <li>
-	      For small memory allocations, once allocated, the
-	      current Anna memory allocator never returns the memory
-	      to the operating system. By setting the constant
-	      SLAB_MAX in the file include/anna/slab.h to 0, this can
-	      be avoided, but at the cost of a performance decrease of
-	      up to 50 %.
+	      The current garbage collection algorithm is rather
+	      simplistic and slow.
 	    </li>
 	    
 	  </ul>
@@ -3194,6 +3329,7 @@ def Int main()
 	    still no actual Anna release, the source code is avaiable
 	    <a href="http://www.github.com/liljencrantz/anna">on Github</a>.
 	  </p>
+
 	</div>
       </div>
       <div class="anna-left-menu">
