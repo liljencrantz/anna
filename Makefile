@@ -109,11 +109,13 @@ install: all $(ANNA_EXTERNAL_BINDINGS) documentation
 		$(INSTALL) -m 644 $$i $(DESTDIR)$(prefix)/$$i; \
 	done;
 	for i in `cd documentation; find . -name '*.html' -o -name '*.js' -o -name '*.css'`; do\
-		$(INSTALL) -D -m 644 documentation/$$i $(DESTDIR)$(docdir)/$$i; \
+		if test -f "documentation/$$i"; then $(INSTALL) -D -m 644 "documentation/$$i" $(DESTDIR)$(docdir)/$$i; fi; \
 	done;
 
 .PHONY: install
 
+# make uninstall doesn't currently try to not uninstall any Anna
+# libraries that have been installed by third parties.
 uninstall: 
 	-for i in $(PROGRAMS); do \
 		rm -f $(DESTDIR)$(prefix)/$$i; \
