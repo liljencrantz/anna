@@ -298,9 +298,11 @@ print(lst2.count, "\n");
 // Prints the first member of lst2, which is "second"
 print(lst2[0], "\n");
 
-/*
-  Lists have the push, pop and empty operations, making them suitable for use 
-  as stacks.
+/* 
+  Lists are suitable for use as stacks. Use the push and pop methods
+  to add an element to the end and remove the last element,
+  respectively, and use the empty? property to check if the stack is
+  empty.  
 */
 
 // Push an element to the end of a list
@@ -310,7 +312,7 @@ lst2.push("last");
 print(lst2.pop());
 
 // The empty property is 1 if the list is empty, and null otherwise
-print(lst.empty, "\n")
+print(lst.empty?, "\n")
 
 // Join two lists together
 lst3 := ["Spoon", "Banana"] ~ lst2;
@@ -367,7 +369,7 @@ print(hash.count, "\n");
 // syntax error.
 hash.count = 3;
 
-// Prints the value associated with the key "third", which is "C":
+// Prints the value associated with the key "third", which is "C".
 print(hash["third"], "\n");
 
 // Add another mapping
@@ -384,11 +386,10 @@ hash.default = "I don't know";
 print(hash["unknown"]);
 
 /* 
-  The in operator checks if the specified key exists in the map. 
-  Note that this is different from the in operator of the List 
-  type, which searches the values. It returns null if not, and 
-  non-null otherwise.
-  In this case, «?» will be printed.
+  The in operator checks if the specified key exists in the map. Note that this 
+  is different from the in operator of the List type, which searches the values,
+  not the keys. It returns null if not, and non-null otherwise. In this case, 
+  «?» will be printed.
 */
 print("unknown" in hash, "\n");
 	  </pre>
@@ -778,11 +779,9 @@ hash := «String, Char»[];
   arguments that are type names must begin with an upper case letter.
 */
 type Foo (template(%A:Int)) {
-
     def %A bar(%A a, %A b){
         a+b;
     }
-
 }
 
 def Int main()
@@ -814,11 +813,20 @@ def Int main()
     print(boo.bar(3,4),"\n");
 }
 
-// If you're not using a unicode character set, «» may not be available to you. 
-// As a fallback, Anna supports using &lt;&lt;&gt;&gt; instead.
+// On some keyboard layouts, «» may not be easily accessible. And If you're
+// not using a unicode character set, «» may not even be available to you. 
+// As a fallback, Anna also supports using &lt;&lt;&gt;&gt; instead.
 &lt;&lt;Int&gt;&gt;[];
 	  </pre>
-
+	  <ul>
+	    <li>
+	      Templated identifiers in a template definition all need
+	      to start with a % symbol. This makes them into internal
+	      identifiers. You
+	      can <a href="#misc-internal-identifiers">read up on
+	      internal identifiers here</a>.
+	    </li>
+	  </ul>
 	  <h3><a name="examples-continuations">Continuations</a></h3>
 	  <p>
 	    
@@ -848,12 +856,20 @@ expandCode(
     %var := getNextValue(someValue, someOtherValue),
     var: [first, second, third, fourth, fifth]);    
 	  </pre>
-	  <p>
-	    <code class="anna-code">expandCode</code> is just a regular
-	    Anna macro. You can <%! toggleCodePopup("expandCode", "check out the source code") %>.
-	  </p>
-
-          <%! codePopup("expandCode", "bootstrap/expandCode.anna") %>
+	  <ul>
+	    <li>
+	      <code class="anna-code">expandCode</code> is just a regular
+	      Anna macro. You can <%! toggleCodePopup("expandCode", "check out the source code") %>.
+	    </li>
+            <%! codePopup("expandCode", "bootstrap/expandCode.anna") %>
+	    <li>
+	      The placeholders in the template code all need to start
+	      with a % symbol. This makes them into internal
+	      identifiers. You
+	      can <a href="#misc-internal-identifiers">read up on
+	      internal identifiers here</a>.
+	    </li>
+	  </ul>
 
 	  <h3><a name="examples-switch">The switch macro</a></h3>
 	  <p>
@@ -1061,7 +1077,7 @@ macro reverseStringLiteral(node)
 {
     /*
       Check that we have exactly one argument to the macro, otherwise set the 
-      error flag, print an error messagge and return a null literal. 
+      error flag, print an error message and return a null literal. 
     */
     checkCallCount(node, 1);
     /*
@@ -2515,6 +2531,74 @@ def outerFunction(Int value)
 	    will create a new Int object holding the closest integer
 	    representation of the floating point number 7.1, which is 7.
 	  </p>
+	  <h2><a name="misc-internal-identifiers">Internal identifiers</a></h2>
+	  <p>
+	    There are various situations when writing Anna code where
+	    one wishes to insert placeholders into the code that will
+	    later on be replaced with something else, usually through
+	    macros. In these situations, Anna uses so called internal
+	    identifiers to make it more clear what parts wil be
+	    replaced. An internal identifier is any regular
+	    identifier, prefixed with a % symbol. Some examples:
+	  </p>
+	  <pre class="anna-code">
+
+/*
+  %A will get substituted with the relevant template type here.
+*/
+type Foo (template(%A:Int)) {
+    def %A bar(%A a, %A b){
+        a+b;
+    }
+}
+
+/*
+  The code in the first param will get generated once for each item in the 
+  second parameter, substituting %var with a different item from the collection
+  each time.
+*/
+expandCode(
+    %var := getNextValue(someValue, someOtherValue),
+    var: [first, second, third, fourth, fifth]);    
+
+/**
+  This (rather meaningless) macro turns a call like 
+
+  setFooToValue(7)
+
+  into
+
+  foo = 7;
+
+  It uses an internal identifier inside the ast macro to specify what piece of 
+  code to replace.
+*/
+macro setFooToValue(call)
+{
+    return ast(foo = %value) % ["value": call[0]];
+}
+	  </pre>
+	  <ul>
+	    <li>
+	      Just like with regular identifiers, Anna differentiates
+	      between type identifiers and regular identifiers - the
+	      first non-underscore character of an internal type
+	      identifier needs to be upper case.
+	    </li>
+	    <li>
+	      Not replacing an internal identifier with something else
+	      will result in a compilation error.
+	    </li>
+	  </ul>
+	  <p>
+	    It should be noted that there are no technical reasons why
+	    internal identifiers are actually needed in Anna, the
+	    language would work just as well without them. The reason
+	    why Anna requires the use of internal identifiers is for
+	    clarity - it makes it obvious which parts of the code are
+	    simply placeholders that are to be substituted with
+	    something else.
+	  </p>
 <!--
     <h1>A simple, annotated example</h1>
     <p>
@@ -3293,21 +3377,21 @@ struct anna_object
 	    
 	    <li>
 	      It is currently impossible to make subclasses of the
-	      unspecialized types
+	      following unspecialized types:
 	      <code class="anna-code">MutableList</code>, 
 	      <code class="anna-code">ImutableList</code>, 
 	      <code class="anna-code">Pair</code>
-	      or <code class="anna-code">HashMap</code>.  Making
+	      and <code class="anna-code">HashMap</code>. Making
 	      subclasses of specialized versions of these types,
 	      e.g. <code class="anna-code">HashMap«Int, Char»</code>
-	      works fine.
+	      works fine, as does subclassing any other unspecialized
+	      types. 
 	    </li>
 	    
 	    <li>
-	      Anna is currently very slow. Usually about 50 % slower
-	      than Python.
+	      Anna is currently very slow. Usually roughly 50 % slower
+	      than an equivalet prgoram written in Python.
 	    </li>
-	    
 	    <li>
 	      The Anna compiler is fairly slow and memory hungry. It
 	      will usually eat around ten megabytes of memory during
