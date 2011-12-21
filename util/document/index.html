@@ -3122,6 +3122,15 @@ literal := ["first", "second"];
 	      module is an exception to this rule)
 	    </li>
 	  </ul>
+	  <h2><a name="design-guidelines">Other coding conventions</a></h2>
+	  <ul>
+	    <li>
+	      In multi-line function definitions,
+	      the <code class="anna-code">return</code> expression
+	      should be used to make it explicit what is returned -
+	      unless the return value truly doesn't matter.
+	    </li>
+	  </ul>
 	  <h2><a name="design-caveats">Caveats - no language is perfect</a></h2>
 	  <p>
 	    The «Easy to parse» design constraint has unfortunatly led
@@ -3406,6 +3415,13 @@ struct anna_object
 	      simplistic and slow.
 	    </li>
 	    
+	    <li>
+	      Calling of parent constructors in extended type is
+	      currently poorly implemented. No parameter mangling or
+	      calling of the correct constructors is done
+	      automatically, meaning that handling of e.g. inheritance
+	      diamonds must be done explicitly by the coder.
+	    </li>
 	  </ul>
 	  <h1><a name="download">Getting Anna</a></h1>
 	  <p>
