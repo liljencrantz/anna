@@ -41,10 +41,10 @@ def Int partition(MutableList list, Int from, Int to, def Int fun(Object first, 
     return store;
 }
 
-def Int sortSub(MutableList list, Int from, Int to, def Int fun(Object first, Object second) = ?)
+def Object sortSub(MutableList list, Int from, Int to, def Int fun(Object first, Object second) = ?)
 {
     /* Fixme: Pick random pivot */
-  pivotIdx := partition(list, from, to, fun);
+    pivotIdx := partition(list, from, to, fun);
     if(from != pivotIdx)
     {
 	sortSub(list, from, pivotIdx, fun);
@@ -53,7 +53,6 @@ def Int sortSub(MutableList list, Int from, Int to, def Int fun(Object first, Ob
     {
         sortSub(list, pivotIdx+1, to, fun);    
     }
-    ?;
 }
 
 def List sort(List this, def Int fun(Object first, Object second) = ?)
@@ -63,16 +62,8 @@ def List sort(List this, def Int fun(Object first, Object second) = ?)
 	"Sort the list. If the original list is mutable, it is sorted inplace, otherwise a new list is returned")
 )
 {
-    if(!fun)
-    {
-	fun = def Int(Object first, Object second){first.__cmp__(second)}
-    }
-    if(this.count == 0)
-    {
-	return this;
-    }
+    this.empty? and (return this);
     list := this.thaw;
-
-    sortSub(list, 0, list.count, fun);
-    list;
+    sortSub(list, 0, list.count, fun or (def Int(Object first, Object second){first.__cmp__(second)}));
+    return list;
 }
