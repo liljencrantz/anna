@@ -222,6 +222,11 @@ ANNA_VM_NATIVE(anna_list_get_count_method, 1)
     return anna_from_int(anna_list_get_count(anna_as_obj(param[0])));
 }
 
+ANNA_VM_NATIVE(anna_list_empty, 1)
+{
+    return anna_list_get_count(anna_as_obj(param[0])) ? null_entry : anna_from_int(1);
+}
+
 ANNA_VM_NATIVE(anna_list_get_first, 1)
 {
     return anna_list_get(anna_as_obj(param[0]), 0);
@@ -935,6 +940,12 @@ static void anna_list_type_create_internal(
 	&anna_list_get_count_method,
 	mutable ? &anna_list_set_count_method : 0,
 	L"The number of elements in this list.");
+
+    anna_member_create_native_property(
+	type, anna_mid_get(L"empty?"), int_type,
+	&anna_list_empty,
+	0,
+	L"True if the list is empty, false otherwise.");
 
     anna_member_create_native_property(
 	type,

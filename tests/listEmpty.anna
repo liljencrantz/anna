@@ -1,0 +1,4 @@
+def main()
+{
+    print([].empty?, ' ', [1].empty?, "\n");
+}

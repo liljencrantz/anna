@@ -600,37 +600,7 @@ void anna_gc(anna_context_t *context)
 	al_resize(&anna_alloc[j]);
     }
 
-/*
-	stack_ptr = stack;
-	while(stack_ptr)
-	{
-	    wprintf(L"\n\n\nFASDFADS %ls\n", stack_ptr->function ? stack_ptr->function->name : L"ANON");
-	anna_entry_t **obj;
-	//wprintf(L"FASFAS %d %d\n", stack_ptr->top - &stack_ptr->base[0], stack_ptr->function->input_count);
-
-	for(obj = &stack_ptr->base[0]; obj < stack_ptr->top; obj++)
-	{	
-	    wprintf(L"Pos %d\n", obj - stack_ptr->base);
-	    if(!*obj)
-	    {
-		wprintf(L"Pos %d is C null pointer\n");		
-	    }
-	    else if(anna_is_obj(*obj))
-	    {
-		anna_object_print(anna_as_obj(*obj));
-	    }
-	    else
-	    {
-		wprintf(L"Pos %d is not an object\n", obj - stack_ptr->base);
-	    }
-	    fflush(stdout);	    
-	}
-	stack_ptr = stack_ptr->caller;
-	
-	}
-*/	
     anna_slab_reclaim();
-//    wprintf(L"GC\n");
 
 #ifdef ANNA_CHECK_GC_LEAKS
     size_t end_count = 0;
@@ -672,8 +642,6 @@ void anna_gc(anna_context_t *context)
     
 //    wprintf(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
     anna_alloc_gc_unblock();
-//    wprintf(L"After GC. We have %d allocated objects\n", al_get_count(&anna_alloc));
-//    anna_slab_print();
     
 }
 
