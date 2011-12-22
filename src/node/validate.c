@@ -142,7 +142,6 @@ static void anna_node_validate_function(anna_function_t *f)
 
     if(f->body)
     {
-	int i;
 	anna_node_each(
 	    (anna_node_t *)f->body, (anna_node_function_t)&anna_node_validate, 
 	    f->stack_template);

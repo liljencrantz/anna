@@ -227,7 +227,7 @@ static anna_node_t *anna_function_setup_arguments(
 	else
 	{
 	    anna_error(
-		fun, 
+		(anna_node_t *)fun, 
 		L"Expected declaration.");
 	    return anna_node_create_null(0);
 	}
@@ -496,7 +496,7 @@ void anna_function_setup_body(
 
 	anna_function_handle_use(f->body);
 	
-	anna_node_calculate_type_children( f->body );
+	anna_node_calculate_type_children( (anna_node_t *)f->body );
 
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_RETURN, &ret);	
 	int step_count = 0;

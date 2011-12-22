@@ -1,0 +1,14 @@
+type MyType
+{
+
+    def Object staticMeth() (static)
+    {
+	print(this, " ", this::staticMeth, "\n");
+    }
+
+}
+
+def main()
+{
+    MyType::staticMeth();
+}

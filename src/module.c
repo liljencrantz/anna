@@ -975,7 +975,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	L"Dependencies imported in module %ls\n", 
 	module_stack->filename);
     
-    anna_node_calculate_type_children(module_node);
+    anna_node_calculate_type_children((anna_node_t *)module_node);
     if(anna_error_count)
     {
 	debug(

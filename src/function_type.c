@@ -28,7 +28,7 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 	    type,
 	    ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
 
-    if(function_ptr && *function_ptr != null_entry) 
+    if(function_ptr && *function_ptr != (anna_function_type_t *)null_entry) 
     {
 	return *function_ptr;
     }

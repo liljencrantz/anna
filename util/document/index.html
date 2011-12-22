@@ -662,7 +662,53 @@ TODO
 
 	  <h3><a name="examples-static">Static members</a></h3>
 	  <pre class="anna-code">
-TODO
+// When defining a type, members can be set as static using the 
+// static attribute
+
+type MyType
+{
+    var Int staticVar (static);
+}
+
+// Static variables are shared between all instances of an object,
+// so this will print '7'
+mt1 := MyType(), mt2 := MyType();
+mt1.staticVar = 7;
+print(mt2.staticVar);
+
+// Static members can be accessed by using the :: operator
+MyType::staticVar = 9;
+
+// If a method is accessed using the static member access operator, the unbound
+// version of the method is returned. The unbound method does not have an 
+// implicit «this», so it needs an additional input parameter, which is the
+// first parameter in the list.
+myList := [];
+
+// This is identical to myList.push(7)
+MutableList::push(myList, 7);
+
+// Methods can be defined as static, just like variables
+type MyType
+{
+
+    def Object staticMeth() (static)
+    {
+        // In static methods, this does not point to the current 
+        // object instance (there is none), instead this points
+        // to the type. 
+
+        // This might seem meaningless, but can actually be quite useful 
+        // in static methods of subclassed types.
+	print(this, " ", this::staticMeth, "\n");
+    }
+
+}
+
+def main()
+{
+    MyType::staticMeth();
+}
 	  </pre>
 
 	  <h3><a name="examples-mutable">Mutable and imutable objects</a></h3>
@@ -730,7 +776,7 @@ alsoUseless := ["useless"].thaw;
   Note that when thawing an already mutable object, the convention is
   to return the object itself, not a copy.
 
-  This will print «I'm a little teapot»
+  This will print «I'm a little tea»
 */
 
   thing := "tea";
@@ -740,7 +786,7 @@ alsoUseless := ["useless"].thaw;
 	  </pre>
 	  <p>
 	    For more information on mutability in Anna, see
-	    the <a href='#mutability'>Mutable</a> section of the
+	    the <a href='#misc-mutability'>Mutable</a> section of the
 	    manual.
 	  </p>
 	  <h3><a name="examples-specialization">Template specialization</a></h3>
@@ -2289,7 +2335,7 @@ col ^blend 0.1;
 	    </tbody>
 	    
 	  </table>
-	  <h2><a name="reserved-words">No reservations? No problem!</a></h2>
+	  <h2><a name="misc-reserved-words">No reservations? No problem!</a></h2>
 	  <p>
 	    The Sugar layer has a small number of reserved words, including
 	    'def', 'var' and 'return'. Because macros can never be
@@ -2304,7 +2350,7 @@ col ^blend 0.1;
 	    the <code class="anna-code">expand</code> expression to import macros.
 	  </p>
 
-	  <h2><a name="comments">Comments nest</a></h2>
+	  <h2><a name="misc-comments">Comments nest</a></h2>
 	  <p>
 	    Like C and friends Anna uses /* to start a multiline
 	    comment, and */ to end it. But unlike C and friends,
@@ -2322,7 +2368,7 @@ col ^blend 0.1;
 thisIsCode();
 	  </pre>
 
-	  <h2><a name="mutability">Mutability</a></h2>
+	  <h2><a name="misc-mutability">Mutability</a></h2>
 	  <p>
 	    Some objects in Anna are mutable, i.e. they can be changed
 	    after they where created.  Mutable objects are sometimes
@@ -2395,13 +2441,70 @@ thisIsCode();
 	    </tbody>
 	  </table>
 
+	  <h3><a name="mutability-vs-const">Mutability and constants</a></h3>
 	  <p>
-	    For a few additional examples on how to use mutable
-	    objects in Anna, see the
-	    the <a href='#examples-mutable'>Mutable examples</a>.
+	    It is sometimes easy to confuse the concepts of mutability
+	    and of constants in Anna. They might on the surface seem
+	    to be more or less the same, but in actuality, they are
+	    different concepts that complete each other. 
 	  </p>
+	  <ul>
+	    <li>
+	      Imutable objects are objects that can't change over
+	      time. Imutability is a property of a specific object
+	      type. There is no way in Anna to enforce imutability -
+	      any object whose value never changes after construction
+	      is said to be imutable.
+	    </li>
+	    <li>
+	      Constants are fields (like variables) whose value can
+	      not change after their initial assignment. Const:ness is
+	      a property of a specific field in the stack (or a
+	      specific member field). Const:ness is enforced by the
+	      language and can not be overridden. 
+	    </li>
+	  </ul>
+	  <p>
+	    So what does this mean in practice?
+	  </p>
+	  <ul>
+	    <li>
+	      A constant pointing to an imutable object truly is
+	      unchanging during the entire run of the program. The
+	      math.pi constant is such a value, it
+	      will <em>always</em> return the floating point number
+	      that most closely aproximates the mathematical constant
+	      pi.
+	    </li>
+	    <li>
+	      A constant pointing to a mutable object will always
+	      evaluate to the same object. But by e.g. pushing and
+	      popping values from a mutable list the actual content of
+	      the list may change - regardless of if we're accessin
+	      the object through a constant.
+	    </li>
+	    <li>
+	      A variable pointing to an imutable list may evaluate to
+	      different lists at different points in time. But if you
+	      take the value of the variable at one point in time, you
+	      can be sure that that specific list object will not
+	      change during the execution of a program.
+	    </li>
+	  </ul>
 
-	  <h2><a name="aliases">Method resolution</a></h2>
+	  <h3><a name="mutability-next">Moving on</a></h3>
+	  <ul>
+	    <li>
+	      For a few additional examples on how to use mutable
+	      objects in Anna, see the
+	      the <a href='#examples-mutable'>Mutable examples</a>.
+	    </li>
+	    <li>
+	      For a few examples on how to define variables and constants, see the
+	      the <a href='#examples-variables'>Variables examples</a>.
+	    </li>
+	  </ul>
+	  <h2><a name="misc-aliases">Method resolution</a></h2>
 	  <p>
 	    Many statically typed computer languages allow you to
 	    define multiple methods with the same name but different
@@ -2411,22 +2514,23 @@ thisIsCode();
 	    obvious, functions that perform the same operation using
 	    slightly different inputs can be named the same thing,
 	    which avoids having to come up with arbitrary minor
-	    differences in function names. There is however a drawback
-	    as well, in that various other operations become harder:
+	    differences in function names. There are drawbacks with
+	    allowin overloadin of method names, though:
 	  </p>
 	  <ul>
 	    <li>
 	      If there are e.g. multiple functions
 	      named <code class="anna-code">clyde</code>, then code
 	      like <code class="anna-code">myVar := clyde</code>
-	      becomes ambigous. We'd need a parameter list in order to
-	      determine which version
-	      of <code class="anna-code">clyde</code> we want to use.
+	      becomes ambigous. We need a parameter list in order to
+	      unambiously determine which 
+	      <code class="anna-code">clyde</code> function we want.
 	    </li>
 	    <li>
-	      It would not be possible to use named based value lookup
-	      when examining the contents of the call stack using a
-	      continuation.
+	      It becomes impossible to use name based value lookup
+	      when examining the contents of either the call stack or
+	      a type with reflection. Any such reflection operations
+	      become significantly more complex and bug prone.
 	    </li>
 	    <li>
 	      Sometimes it is desirable to make explicit which version
@@ -2439,14 +2543,17 @@ thisIsCode();
 	    Anna works around these issues by introducing a second
 	    type of name for a function. All stack values, including
 	    functions, have a single variable name, which is unique
-	    within a specific namespace. This is the «true» name of
-	    the function. But functions can also have an arbitrary
-	    number of aliases, specified using the alias attribute in
-	    the function declaration. If an identifier is used to find
-	    the function for a function call, and there is no function
-	    of that name, then all relevant namespaces are checked for
-	    functions with a matching alias. If one or more is found,
-	    the most suitable one is chosen.
+	    within a specific namespace (that is, the name is unique
+	    with that stack frame or type). This is the «true» name of
+	    the function and can be used in any situation where an
+	    unambigous name is desired. But functions can also have an
+	    arbitrary number of aliases, specified using the alias
+	    attribute in the function declaration. If an identifier is
+	    used to find the function for a function call, and there
+	    is no function of that name, then all relevant namespaces
+	    are checked for functions with a matching alias. If one or
+	    more such functions is found, the most suitable one is
+	    chosen.
 	  </p>
 	  <p>
 	    Note:
@@ -2467,6 +2574,13 @@ thisIsCode();
 	      Aliases are only used when resolving an identifier for a
 	      function call. The alias attribute is ignored when
 	      performing regular variable lookup.
+	    </li>
+	    <li>
+	      If more than one function has a specified alias and a
+	      compatible function signature, then the most suitable
+	      function is determined by picking the function with the
+	      smallest number of non-matching members in the
+	      interface.
 	    </li>
 	  </ul>
 	  <pre class="anna-code">
@@ -2495,13 +2609,13 @@ def outerFunction(Int value)
 
     /*
       This is an error - aliases can only be used when calling a function. 
-      They are ignored when performing variable lookup.
+      They are ignored when performing regular variable lookup.
     */
     print(myAlias, "\n");
 }()
 	  </pre>
 
-	  <h2><a name="comments">Casting and converting</a></h2>
+	  <h2><a name="misc-casting-vs-converting">Casting and converting</a></h2>
 	  <p>
 	    In most C-like languages, the operation of casting a value
 	    to a new type (an operation which does not create a new
@@ -2531,6 +2645,13 @@ def outerFunction(Int value)
 	    will create a new Int object holding the closest integer
 	    representation of the floating point number 7.1, which is 7.
 	  </p>
+	  <p>
+	    Note that there is nothing magical about
+	    a <code>convert</code> method. It is simply a naming
+	    convention.
+	  </p>
+
+
 	  <h2><a name="misc-internal-identifiers">Internal identifiers</a></h2>
 	  <p>
 	    There are various situations when writing Anna code where
@@ -2975,7 +3096,7 @@ date += isoDateDelta(x-0-0, 1:00);
 	  </p>
 	  <ul>
 	    <li>
-	      Anna uses two
+	      Anna uses two different
 	      separators, <code class="anna-code">,</code> (comma)
 	      and <code class="anna-code">;</code> (semicolon). These
 	      can be used interchangeably.

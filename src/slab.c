@@ -9,9 +9,9 @@ void anna_slab_init()
     slab_alloc = calloc(SLAB_MAX,sizeof(array_list_t));
 }
 
-static anna_ptr_in_chunk(size_t sz, char *chunk, void *ptr)
+static int anna_ptr_in_chunk(size_t sz, char *chunk, void *ptr)
 {
-    return (chunk < ptr) && ((chunk + sz*SLAB_SZ + sizeof(size_t)) > ptr);
+    return (chunk < (char *)ptr) && ((chunk + sz*SLAB_SZ + sizeof(size_t)) > (char *)ptr);
 }
 
 static size_t *anna_slab_counter(size_t sz, void *slab)
@@ -73,7 +73,7 @@ static void anna_slab_reclaim_sz(size_t sz)
 	{
 	    //wprintf(L"YAY, FREEING AN ENTIRE CHUNK OF SIZE %d, WOOT!!!!\n", sz);
 
-	    anna_slab_remove_chunk_from_pool(sz, chunk);
+	    anna_slab_remove_chunk_from_pool(sz, (char *)chunk);
 	    free(chunk);
 	    al_set_fast(&slab_alloc[sz], i, al_get_fast(&slab_alloc[sz], al_get_count(&slab_alloc[sz])-1));
 	    al_truncate(&slab_alloc[sz], al_get_count(&slab_alloc[sz])-1);

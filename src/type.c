@@ -118,7 +118,20 @@ static void anna_type_mangle_methods(
 			    //wprintf(L"Add this-argument to method %ls in %ls\n", name->name, type->name);
 			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
 			    anna_node_call_t *attr =(anna_node_call_t *)def->child[3];
-			    if(!anna_attribute_flag(attr, L"static"))
+			    if(anna_attribute_flag(attr, L"static"))
+			    {
+				anna_node_call_prepend_child(
+				    (anna_node_call_t *)def->child[4],
+				    (anna_node_t *)anna_node_create_call2(
+					0,
+					anna_node_create_identifier(0,L"__const__"),
+					anna_node_create_identifier(0, L"this"), 
+					anna_node_create_null(0),
+					anna_node_create_dummy(0, anna_type_wrap(type)), 
+					anna_node_create_block2(0)
+					));				
+			    }
+			    else
 			    {
 				anna_node_call_t *this_decl = anna_node_create_call2(
 				    0,
