@@ -207,6 +207,15 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		is_constructor = 1;
 	    }
 	}
+	if(member->type == ANNA_NODE_TYPE_IN_TRANSIT)
+	{
+	    anna_error(
+		(anna_node_t *)n,
+		L"Member %ls is not a function\n",
+		anna_mid_get_reverse(n->mid),
+		type->name);
+	    return (anna_node_t *)n;	
+	}
 	
 	anna_function_type_t *fun = anna_function_type_unwrap(member->type);
 	if(!fun)
