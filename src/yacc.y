@@ -910,9 +910,10 @@ type_identifier:
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
 	    ii->node_type = ANNA_NODE_INTERNAL_IDENTIFIER;
+	    ii->location.first_line = @1.first_line;
+	    ii->location.first_column = @1.first_column;
 	    $$ = $2;
-	}
-
+	};
 
 type_identifier2:
 	TYPE_IDENTIFIER
@@ -926,9 +927,10 @@ identifier:
 	{
 	    anna_node_identifier_t *ii = (anna_node_identifier_t *)$2;
 	    ii->node_type = ANNA_NODE_INTERNAL_IDENTIFIER;
+	    ii->location.first_line = @1.first_line;
+	    ii->location.first_column = @1.first_column;
 	    $$ = $2;
-	}
-
+	};
 
 identifier2:
 	IDENTIFIER
