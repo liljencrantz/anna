@@ -25,8 +25,17 @@ Struct values can be any Anna expression, including another struct.
     {
 	checkNodeCallTo(item, "__mapping__");
         mapping := item as Call;
-	typeBlock ~= [ast(__var__(%name, __staticTypeOf__(%value), ?, {}))
-		      % ["name": mapping[0], "value": mapping[1]]];
+        varType := 
+	    if(mapping[1].__type__ != NullLiteral)
+	    {
+		ast(__staticTypeOf__(%value)) % ["value": mapping[1]];
+	    }
+	    else
+	    {
+		ast(Object);
+	    }
+	typeBlock ~= [ast(__var__(%name, %type, ?, {}))
+		      % ["name": mapping[0], "type": varType]];
         callParam ~= [mapping[1]];
 	initBlock ~= [ast(this.%name = %name) % ["name": mapping[0]]];
     }
