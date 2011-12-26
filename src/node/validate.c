@@ -112,6 +112,8 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 		this,
 		L"Wrong number of parameters to function call. Expected %d, got %d\n", 
 		tmpl_count, this2->child_count);
+	    anna_function_type_print(ftk);
+	    
 	    anna_node_print(D_ERROR, this);
 	    return;
 	}
@@ -210,7 +212,6 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
 	    anna_type_t * type = 
 		anna_node_resolve_to_type(c->object, stack);
-	    
 	    if(type == null_type)
 	    {
 		anna_error(this, L"Null doesn't have explicit members");

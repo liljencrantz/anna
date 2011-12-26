@@ -140,4 +140,18 @@ int anna_function_line(
     anna_function_t *fun,
     int offset);
 
+/**
+   Specialize the specified function with the specified template
+   specialization arguments
+ */
+anna_function_t *anna_function_create_specialization(
+    anna_function_t *base, anna_node_call_t *spec);
+
+void anna_function_specialize_body(
+    anna_function_t *f);
+
+void anna_function_macro_expand(
+    anna_function_t *f, anna_stack_template_t *stack);
+
+
 #endif

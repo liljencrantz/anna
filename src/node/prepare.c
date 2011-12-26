@@ -303,11 +303,14 @@ static void anna_function_search_internal(
 	for(i=0; i<al_get_count(memb_list); i++)
 	{
 	    anna_member_t *memb = al_get(memb_list, i);
-	    if(anna_member_is_static(memb) && memb->offset>=0 && memb->type != null_type)
+	    if(
+		anna_member_is_static(memb) && memb->offset>=0 && 
+		memb->type != null_type)
 	    {	    
-		anna_object_t *memb_val = anna_as_obj(use->type->static_member[memb->offset]);
+		anna_object_t *memb_val =
+		    anna_as_obj(use->type->static_member[memb->offset]);
 		anna_function_t *memb_fun = anna_function_unwrap(memb_val);
-	    
+		
 		if(
 		    memb_fun &&
 		    memb_fun->attribute && 
@@ -321,7 +324,6 @@ static void anna_function_search_internal(
 	    }
 	}
     }
-    
 }
 
 static wchar_t *anna_function_search(

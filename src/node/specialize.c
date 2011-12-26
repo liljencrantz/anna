@@ -8,7 +8,8 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
         
     anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
     anna_type_t *res = 0;
-
+    anna_function_t *spec_fun = 0;
+	    
     if(!type)
     {
 	anna_error((anna_node_t *)call, L"Invalid template type");
@@ -81,11 +82,34 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     }
     else
     {	
-	res = hash_get(&type->specializations, call);
-	if(!res)
+
+	anna_entry_t *val = anna_node_static_invoke_try(call->function, call->function->stack);
+	anna_function_t *fun;	
+	if(val && (fun=anna_function_unwrap(anna_as_obj(val))))
 	{
-	    res = anna_type_specialize(type, call);
+	    spec_fun = hash_get(&fun->specialization, call);
 	    
+	    if(!spec_fun)
+	    {
+		spec_fun = anna_function_create_specialization(fun, call);
+		if(spec_fun)
+		{
+		    hash_put(&fun->specialization, call, spec_fun);
+		}
+	    }
+	    
+	}
+	else
+	{
+	    res = hash_get(&type->specialization, call);
+	    if(!res)
+	    {
+		res = anna_type_specialize(type, call);
+		if(res)
+		{
+		    hash_put(&type->specialization, call, res);
+		}
+	    }
 	    if(!res)
 	    {
 		anna_error((anna_node_t *)call, L"Failed to specialize type %ls.", type->name);
@@ -93,7 +117,15 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
 	}
     }
     
-    if(res)
+    if(spec_fun)
+    {
+	res = anna_function_wrap(spec_fun)->type;
+	anna_node_dummy_t *out = anna_node_create_closure(&call->location, spec_fun);
+	out->return_type = res;
+	out->stack = call->stack;
+	return (anna_node_t *)out;
+    }	    
+    else if(res)
     {
         anna_node_dummy_t *out = anna_node_create_dummy(
 	    &call->location,

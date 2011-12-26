@@ -261,7 +261,7 @@ struct anna_type
     /**
        A hash of all template specializations of this type.
     */
-    hash_table_t specializations;
+    hash_table_t specialization;
     /**
        An array list containing all anna_member_t structs of this
        type. Contains exactly the same information as the
@@ -532,6 +532,10 @@ struct anna_function
        The file in which this function was definied
     */
     wchar_t *filename;
+    /**
+       A hash of all template specializations of this function.
+    */
+    hash_table_t specialization;
 };
 
 /**

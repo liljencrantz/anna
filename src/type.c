@@ -186,7 +186,7 @@ static anna_type_t *anna_type_create_internal(
 	al_destroy(&al);
 	anna_type_mangle_methods(result);
     }
-    hash_init(&result->specializations, anna_node_hash_func, anna_node_hash_cmp);
+    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
 
     anna_type_calculate_size(result);
     return result;
@@ -801,7 +801,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	}	
 
 	CHECK_NODE_TYPE(type->definition->child[0], ANNA_NODE_IDENTIFIER);
-	CHECK_NODE_BLOCK(type->definition->child[1]);
+	CHECK_NODE_TYPE(type->definition->child[1], ANNA_NODE_CALL);
 	CHECK_NODE_BLOCK(type->definition->child[2]);
 	
 //	anna_node_call_t *attribute_list = 
@@ -1229,12 +1229,9 @@ void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack)
 
     if(f->attribute)
     {
-	int i;
-	for(i=0;i<f->attribute->child_count; i++)
-	{
-	    f->attribute->child[i] = anna_node_macro_expand(
-		f->attribute->child[i], stack);
-	}
+	f->attribute->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
+	f->attribute = (anna_node_call_t *)anna_node_macro_expand(
+	    (anna_node_t *)f->attribute, stack);
     }
 }
 

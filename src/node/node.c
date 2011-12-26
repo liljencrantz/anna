@@ -59,12 +59,17 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
        (node->node_type == ANNA_NODE_INPUT_TYPE_OF) )
     {
 	anna_node_calculate_type(node);
+	/* This is a special kludge put in place so that
+	 __staticTypeOf__(?) will return Object, which is what we want
+	 in the struct macro. It is rather unsightly and should be
+	 replaced by something better - probably a workaround in the
+	 struct macro itself... */
 	if(node->return_type == null_type)
 	{
 	    return object_type;
 	}
 	return node->return_type;
-    }    
+    }
     
     anna_entry_t *eres = anna_node_static_invoke_try(
 	node, stack);
@@ -72,10 +77,6 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
     if(eres)
     {
 	anna_object_t *res = anna_as_obj(eres);
-	if(res->type == null_type)
-	{
-	    return object_type;
-	}
 	if(res->type == type_type)
 	{
 	    return anna_type_unwrap(res);

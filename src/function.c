@@ -21,6 +21,7 @@
 #include "anna/attribute.h"
 #include "anna/lib/lang/list.h"
 #include "anna/use.h"
+#include "anna/node_hash.h"
 #include "anna/lib/reflection.h"
 
 #include "function_type.c"
@@ -61,6 +62,13 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
     return fun;
 }
 
+/**
+   Locate all use expressions in the specified function and add them
+   to the stack template object.
+
+   Then call anna_node_resolve_identifiers in order to perform
+   identifier lookup on all identifiers.
+ */
 static void anna_function_handle_use(anna_node_call_t *body)
 {
     int i;
@@ -84,6 +92,11 @@ static void anna_function_handle_use(anna_node_call_t *body)
     anna_node_resolve_identifiers((anna_node_t *)body);
 }
 
+/**
+   Allocate enough memory for the input_type, input_name and
+   input_default arrays to store the specified number of input
+   parameters.
+ */
 static void anna_function_alloc_input(anna_function_t *this, int argc)
 {
     if(argc)
@@ -104,6 +117,10 @@ static void anna_function_alloc_input(anna_function_t *this, int argc)
     }
 }
 
+/**
+   If the specified argument to this function is of unknown type, set
+   it to the specified type instead.
+ */
 void anna_function_argument_hint(
     anna_function_t *f,
     int argument,
@@ -118,6 +135,10 @@ void anna_function_argument_hint(
     }
 }
 
+/**
+   Process the ast describing thin input parameter list for this
+   function.
+ */
 static anna_node_t *anna_function_setup_arguments(
     anna_function_t *f,
     anna_stack_template_t *parent_stack)
@@ -139,6 +160,7 @@ static anna_node_t *anna_function_setup_arguments(
 
     anna_node_call_t *declarations = f->input_type_node;
     int i;
+    
     f->input_count = declarations->child_count;
         
     int argc = declarations->child_count;
@@ -170,14 +192,18 @@ static anna_node_t *anna_function_setup_arguments(
 	    
 	    if(type_node->node_type == ANNA_NODE_NULL)
 	    {
-		anna_type_t *d_val = anna_node_resolve_to_type(val_node, f->stack_template);
+		anna_type_t *d_val =
+		    anna_node_resolve_to_type(val_node, f->stack_template);
 		if(d_val)
 		{
 		    f->input_type[i] = d_val;
 		}
 		else
 		{
-		    anna_error(decl->child[1],  L"Could not determine type of input paramater «%ls» in function %ls.", name->name, f->name);
+		    anna_error(
+			decl->child[1],
+			L"Could not determine type of input paramater «%ls» in function %ls.",
+			name->name, f->name);
 		    return anna_node_create_null(0);
 		}
 	    }
@@ -187,7 +213,10 @@ static anna_node_t *anna_function_setup_arguments(
 		
 		if(!d_type || d_type == null_type)
 		{
-		    anna_error(decl->child[1],  L"Could not determine type of input parameter «%ls» in function %ls.", name->name, f->name);
+		    anna_error(
+			decl->child[1],
+			L"Could not determine type of input parameter «%ls» in function %ls.", 
+			name->name, f->name);
 		    return anna_node_create_null(0);
 		}
 		else
@@ -197,12 +226,6 @@ static anna_node_t *anna_function_setup_arguments(
 	    }
 	    f->input_default[i] = anna_attribute_call(
 		(anna_node_call_t *)decl->child[3], L"default");
-	    if(f->input_default[i])
-	    {
-		f->input_default[i] = anna_node_macro_expand(
-		    f->input_default[i], f->stack_template);
-	    }
-	    
 	    
 	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
 	    {
@@ -235,6 +258,9 @@ static anna_node_t *anna_function_setup_arguments(
     return 0;
 }
 
+/**
+   Create the wrapper object for this function
+*/
 static void anna_function_setup_wrapper(
     anna_function_t *f)
 {    
@@ -265,9 +291,12 @@ static void anna_function_setup_wrapper(
     }
 }    
 
+/**
+   Gos over all expressions in the specified function and returns true
+   if any of them are explicit returns for this function.
+ */
 static int anna_has_returns(anna_function_t *fun)
 {
-
     array_list_t returns = AL_STATIC;    
     array_list_t closures = AL_STATIC;
     anna_node_find((anna_node_t *)fun->body, ANNA_NODE_RETURN, &returns);	    
@@ -299,7 +328,12 @@ static int anna_has_returns(anna_function_t *fun)
     return res;
 }
 
-
+/**
+  Locate all return expressions inside closures cotained in blocks in
+  this function. Such return calls will return this function. Return
+  the intersection of the type of all these return expressions and the
+  initial type given as an input parameter.
+*/
 static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *initial)
 {
 
@@ -346,10 +380,9 @@ static anna_type_t *handle_closure_return(anna_function_t *fun, anna_type_t *ini
   CLEANUP:
 
     al_destroy(&closures);
-	    al_destroy(&my_returns);
-  
-    return res;
+    al_destroy(&my_returns);
     
+    return res;    
 }
 
 void anna_function_set_stack(
@@ -396,8 +429,6 @@ void anna_function_setup_interface(
     
     if(f->body)
     {
-//	wprintf(L"We have such a nice body\n");
-//	wprintf(L"Our stack is %d\n", f->stack_template);
 
 	if(f->flags & ANNA_FUNCTION_MACRO)
 	{
@@ -420,12 +451,6 @@ void anna_function_setup_interface(
 	    (anna_node_t *)f->body,
 	    f->stack_template);
 
-/*
-	wprintf(
-	    L"Function's internal declarations registered (%d)\n",
-	    f->stack_template->count);
-	anna_node_print(0, f->body);
-*/	
     }
     
     if(!f->return_type)
@@ -440,8 +465,13 @@ void anna_function_setup_interface(
 	
 	if(return_type_node->node_type == ANNA_NODE_NULL)
 	{
-//	    wprintf(L"Function %ls has unspecified return type, we need to investigate\n", f->name);
-	    
+	    /* 
+	      The function signature of this function definition
+	      skipped the return type. We need to look into the
+	      function body and locate all return calls for this
+	      functio (and the last expresion) in order to calculate
+	      the return type.
+	    */
 	    if(f->body->child_count == 0)
 	    {
 		f->return_type = null_type;
@@ -621,9 +651,10 @@ anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition)
 {
     anna_function_t *result = anna_alloc_function();
+    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
     
     result->definition = definition;
-    result->attribute = (anna_node_call_t *)definition->child[3];
+    result->attribute = (anna_node_call_t *)anna_node_clone_deep(definition->child[3]);
 
     wchar_t *name=0;
     if (definition->child[0]->node_type == ANNA_NODE_IDENTIFIER) 
@@ -644,7 +675,7 @@ anna_function_t *anna_function_create_from_definition(
     else
     {
 	result->body = node_cast_call(
-	    result->definition->child[4]);
+	    anna_node_clone_deep(result->definition->child[4]));
 	
     }
     
@@ -677,6 +708,7 @@ anna_function_t *anna_macro_create(
     assert(arg_name);
     
     anna_function_t *result = anna_alloc_function();
+    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
     result->attribute = (anna_node_call_t *)definition->child[2];
     
     result->definition = definition;
@@ -761,6 +793,7 @@ anna_function_t *anna_native_create(
     }
   
     anna_function_t *result = anna_alloc_function();
+    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
     anna_function_attribute_empty(result);    
     anna_function_alloc_input(result, argc);
         
@@ -821,6 +854,7 @@ anna_function_t *anna_continuation_create(
     int copy)
 {
     anna_function_t *result = anna_alloc_function();
+    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
     result->flags |= ANNA_FUNCTION_CONTINUATION;
     anna_function_attribute_empty(result);    
     result->input_type = 0;
@@ -861,6 +895,7 @@ anna_function_t *anna_method_bind(
     anna_function_t *method)
 {
     anna_function_t *result = anna_alloc_function();
+    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
     result->flags |= ANNA_FUNCTION_BOUND_METHOD;
     anna_function_attribute_empty(result);
     result->input_type = 0;
@@ -924,4 +959,127 @@ int anna_function_line(
 	line = fun->line_offset[i].line;
     }
     return line;
+}
+
+anna_function_t *anna_function_create_specialization(
+    anna_function_t *base, anna_node_call_t *spec)
+{
+    if(!base->definition)
+    {
+	anna_error(
+	    (anna_node_t *)spec, 
+	    L"Invalid specialization for function %ls\n",
+	    base->name);
+	return base;
+    }
+    
+    anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)base->definition);
+    anna_node_call_t *attr = node_cast_call(def->child[3]);
+    int i;
+
+    array_list_t al = AL_STATIC;
+    anna_attribute_call_all(attr, L"template", &al);
+
+    for(i=0; i<attr->child_count;i++)
+    {
+	anna_node_call_t *tm = node_cast_call((anna_node_t *)al_get(&al, i));
+	tm->child[1] = spec->child[i];
+    }
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"%ls«", base->name);
+
+    sb_printf(&sb, L"»");
+    anna_function_t *res = anna_function_create_from_definition(def);
+    anna_function_specialize_body(
+	res);
+    anna_function_macro_expand(
+	res, base->stack_template);
+    anna_function_set_stack(
+	res, 
+	base->stack_template);
+    
+    if(base->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
+    {
+	anna_function_setup_interface(res);
+	if(base->flags & ANNA_FUNCTION_PREPARED_BODY)
+	{
+	    anna_function_setup_body(res);
+	}
+    }
+    sb_destroy(&sb);
+    return res;
+}
+
+void anna_function_specialize_body(
+    anna_function_t *f)
+{
+    if(f->body)
+    {
+	array_list_t al = AL_STATIC;
+
+	anna_attribute_call_all(f->attribute, L"template", &al);
+
+	f->body = (anna_node_call_t *)anna_node_definition_specialize(
+	    (anna_node_t *)f->body, &al);
+	
+	if(!f->return_type)
+	{
+	    f->return_type_node = anna_node_definition_specialize(
+		anna_node_clone_deep(f->definition->child[1]),
+		&al);
+	}
+	
+	if(!f->input_type)
+	{
+	    f->input_type_node = node_cast_call(
+		anna_node_definition_specialize(
+		    anna_node_clone_deep(f->definition->child[2]),
+		    &al));
+	}
+	al_destroy(&al);
+    }
+}
+
+void anna_function_macro_expand(
+    anna_function_t *f, anna_stack_template_t *stack)
+{
+    if(f->body)
+    {
+	int i;
+	
+	f->body->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
+	f->body = (anna_node_call_t *)anna_node_macro_expand(
+	    (anna_node_t *)f->body, stack);
+	
+	if(f->return_type_node)
+	{
+	    f->return_type_node = anna_node_macro_expand(
+		f->return_type_node, stack);
+	}
+	
+	if(f->input_type_node)
+	{
+	    for(i=0;i<f->input_type_node->child_count; i++)
+	    {
+		anna_node_call_t *decl = node_cast_call(f->input_type_node->child[i]);
+		if(decl->child_count != 4)
+		{
+		    continue;
+		}
+		
+		decl->child[1] = anna_node_macro_expand(decl->child[1], stack);
+		decl->child[2] = anna_node_macro_expand(decl->child[2], stack);
+		if(decl->child[3]->node_type != ANNA_NODE_CALL)
+		{
+		    anna_error(decl->child[3], L"Invalid attribute list");
+		}
+		else
+		{
+		    ((anna_node_call_t *)decl->child[3])->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
+		    decl->child[3] = anna_node_macro_expand(decl->child[3], stack);
+		}
+	    }
+	}
+    }
 }

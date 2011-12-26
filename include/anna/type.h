@@ -78,10 +78,12 @@ void anna_type_reallocade_mid_lookup(size_t old_sz, size_t sz);
 void anna_type_set_stack(anna_type_t *type, anna_stack_template_t *parent);
 void anna_type_setup_interface(anna_type_t *type);
 
-void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_t *stack);
+void anna_type_prepare_member(
+    anna_type_t *type, mid_t mid, anna_stack_template_t *stack);
 
 /**
-   Specialize the specified type with the specified temaplte specialization arguments
+   Specialize the specified type with the specified template
+   specialization arguments
  */
 anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec);
 
@@ -90,7 +92,8 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec);
    so, use the specified constructor arguments to locate the most
    suitable template specialization
  */
-anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *call);
+anna_type_t *anna_type_implicit_specialize(
+    anna_type_t *type, anna_node_call_t *call);
 
 void anna_type_object_is_created(void);
 

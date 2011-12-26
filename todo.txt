@@ -114,6 +114,7 @@ How should the argument list for inherited constructors be handled?
 It should be possible to declare type members with initial values. 
 We may want reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
 Type member setup needs some dependency resolution in order for type calculations to work properly.
+Functional programming util library functions, e.g. sum, prod, reduce, 
 
 
 LANGUAGE FEATURES:
@@ -132,7 +133,7 @@ List and Hash types should be made fail fast
 Partial application and saner function argument handling, e.g. it should be possible to write (0..5).map(Int::__add__, 4), which is equivalent to (0..5).map(val){4+val}
 
 RELIABILITY:
-Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not)
+Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not even close)
 Test suite should be at lest 10 % of total code in project. (Currently ~ 8 %)
 More tests for complex math
 More tests for floating point math
