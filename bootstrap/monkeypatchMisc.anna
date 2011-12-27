@@ -21,10 +21,11 @@ def String intFormat(Int this, Int base=10)
 {
     var digits = "0123456789abcdefghijklmnopqrstuvwxyz";
 
-    if(base > 36)
+    if((base > 36) or (base < 2))
     {
 	return ?;
     }
+
     var res = "";
     var neg = "";
     if(this < 0)
