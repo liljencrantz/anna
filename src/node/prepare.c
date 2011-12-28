@@ -474,39 +474,60 @@ static anna_node_t *anna_node_calculate_type_internal(
 	{
 	    anna_node_call_t *call = (anna_node_call_t *)this;
 	    
-	    /*
-	      Do a simple check to see if the specified identifier
-	      exists, if it does use regular type calculations. If it
-	      doesn't, check aliases.
-	    */
-	    if(call->function->node_type == ANNA_NODE_IDENTIFIER)
+	    anna_entry_t *fun_obj = anna_node_static_invoke_try(call->function, call->stack);
+	    if(fun_obj)
 	    {
-		anna_node_identifier_t *id = 
-		    (anna_node_identifier_t *)call->function;
-		anna_type_t *fun_type_simple = 
-		    anna_stack_get_type(stack, id->name);
-		anna_node_declare_t *fun_decl_simple = 
-		    anna_stack_get_declaration(stack, id->name);
-		if(!(fun_type_simple || fun_decl_simple))
+		anna_function_t *fun = anna_function_unwrap(anna_as_obj(fun_obj));
+		if(fun)
 		{
-		    if(anna_node_calculate_type_direct_children(call, stack))
+		    anna_function_t *fun_spec = anna_function_implicit_specialize(fun, call);
+		    if(fun_spec != fun)
 		    {
-			wchar_t *unaliased_name = anna_function_search(
-			    this->stack, id->name, call);
-			
-			if(unaliased_name)
+			call->function =
+			    anna_node_create_closure(
+				&call->function->location, 
+				fun_spec);			    
+			call->function->stack = call->stack;
+			call->function->return_type = anna_function_wrap(fun_spec)->type;
+		    }
+		}
+	    }
+	    else
+	    {
+		/*
+		  Do a simple check to see if the specified identifier
+		  exists, if it does use regular type calculations. If it
+		  doesn't, check aliases.
+		*/
+		if(call->function->node_type == ANNA_NODE_IDENTIFIER)
+		{
+		    anna_node_identifier_t *id = 
+			(anna_node_identifier_t *)call->function;
+		    anna_type_t *fun_type_simple = 
+			anna_stack_get_type(stack, id->name);
+		    anna_node_declare_t *fun_decl_simple = 
+			anna_stack_get_declaration(stack, id->name);
+		    if(!(fun_type_simple || fun_decl_simple))
+		    {
+			if(anna_node_calculate_type_direct_children(call, stack))
 			{
-			    call->function = (anna_node_t *)anna_node_create_identifier(
-				&id->location,
-				unaliased_name);
-			    call->function->stack = id->stack;
-			    call->function = resolve_identifiers_each(
-				call->function, 0);
+			    wchar_t *unaliased_name = anna_function_search(
+				this->stack, id->name, call);
+			    
+			    if(unaliased_name)
+			    {
+				call->function = (anna_node_t *)anna_node_create_identifier(
+				    &id->location,
+				    unaliased_name);
+				call->function->stack = id->stack;
+				call->function = resolve_identifiers_each(
+				    call->function, 0);
+			    }
 			}
 		    }
 		}
 	    }
-
+	    
 	    call->function = anna_node_calculate_type(call->function);
 	    
 	    anna_type_t *fun_type = call->function->return_type;

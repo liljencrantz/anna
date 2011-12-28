@@ -1,0 +1,20 @@
+/*
+  This should result in a compile time error. myFunTemplate is a
+  variable, not a constant, se we don't know at compile time what
+  function it points to, and we only perform template specialization
+  at compile time. Therefore, this code will fail.
+
+  It would be possible to implement run time specialization, but it is
+  felt that the drawbacks of masking various bugs is larger than the
+  benefit of making run time creation of new function types easier.
+*/
+
+myFunTemplate := def (%T a, %T b) (template(%T: Int))
+{
+    a+b;
+}
+
+def main()
+{
+    print(myFunTemplate«Float»(3.0, 4.0), "\n");
+}

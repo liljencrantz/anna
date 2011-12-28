@@ -976,44 +976,6 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     return res;
 }
 
-static int attr_idx(anna_node_call_t *attr, wchar_t *name)
-{
-    int i;
-//    anna_node_print(5, attr);
-    int idx=0;
-    for(i=0; i<attr->child_count; i++)
-    {
-	if (anna_node_is_call_to(attr->child[i], L"template"))
-	{
-	    anna_node_call_t *tmpl = (anna_node_call_t *)attr->child[i];
-	    if(tmpl->child_count == 1)
-	    {
-		if (anna_node_is_call_to(tmpl->child[i], L"__mapping__"))
-		{
-		    anna_node_call_t *pair = (anna_node_call_t *)tmpl->child[0];
-		    if(pair->child_count == 2)
-		    {
-			if( anna_node_is_named(pair->child[0], name))
-			{
-			    return idx;
-			}
-		    }
-		}
-		else if(tmpl->child[i]->node_type == ANNA_NODE_MAPPING)
-		{
-		    anna_node_cond_t *pair = (anna_node_cond_t *)tmpl->child[0];
-		    if( anna_node_is_named(pair->arg1, name))
-		    {
-			return idx;
-		    }
-		}
-	    }
-	    idx++;
-	}
-    }
-    return -1;
-}
-
 static anna_node_call_t *get_constructor_input_list(anna_node_call_t *def)
 {
     int i;
@@ -1135,9 +1097,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	return type;
     }
     
-    anna_node_call_t *def = (anna_node_call_t *)
-	anna_node_clone_deep((anna_node_t *)type->definition);
-    anna_node_call_t *attr = node_cast_call(def->child[1]);
+    anna_node_call_t *attr = node_cast_call(type->definition->child[1]);
     
     array_list_t al = AL_STATIC;
     anna_attribute_call_all(attr, L"template", &al);
@@ -1147,6 +1107,9 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	return type;
     }    
     
+    anna_node_call_t *def = (anna_node_call_t *)
+	anna_node_clone_deep((anna_node_t *)type->definition);
+
     int i;
     
     anna_object_t *constructor_obj = anna_as_obj_fast(
@@ -1176,7 +1139,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
 
 	    //wprintf(L"Check if %ls is a template param\n", id->name);
-	    int templ_idx = attr_idx(attr, id->name);
+	    int templ_idx = anna_attribute_template_idx(attr, id->name);
 	    if(templ_idx >= 0)
 	    {
 		if(!type_spec[templ_idx])
@@ -1229,7 +1192,8 @@ void anna_type_macro_expand(anna_type_t *f, anna_stack_template_t *stack)
 
     if(f->attribute)
     {
-	f->attribute->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
+	f->attribute->function = (anna_node_t *)anna_node_create_identifier(
+	    0, L"nothing");
 	f->attribute = (anna_node_call_t *)anna_node_macro_expand(
 	    (anna_node_t *)f->attribute, stack);
     }

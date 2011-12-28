@@ -14,7 +14,9 @@
 * When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 * Function specialization
 * Handle C type wrappers in other namespaces when compiling bindings
-* Move most of gc to separate thread
+* Remove code duplication for alias matching in methods
+* Reconsider making function aliases have equal priority to function names when performing calls
+* Remove code duplication between types and functions when performing templatization
 
 1.0 RELEASE CRITERIA (Done):
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
@@ -58,9 +60,10 @@
 * Access attributes of variables and properties
 * Rename vmstack to context
 * Fix if/else snafu. Current solution is hardly elegant and it fails in some edge cases. Hopefully, we can come up with something significantly better...
+* The GC uses recursion, we should switch to a stack instead in order to not smash the call stack on e.g. a huge linked list.
 
 1.1 RELEASE CRITERIA:
-* The GC uses recursion, we should switch to a stack instead in order to not smash the call stack on e.g. a huge linked list.
+* Move most of gc to separate thread
 * During startup, cache contents of all directories in ANNA_PATH so that we don't have to do crazy numbers of stat calls
 * getopt replacement
   - basic design

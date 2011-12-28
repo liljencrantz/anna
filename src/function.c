@@ -991,6 +991,8 @@ anna_function_t *anna_function_create_specialization(
 
     sb_printf(&sb, L"»");
     anna_function_t *res = anna_function_create_from_definition(def);
+    res->flags = res->flags | ANNA_FUNCTION_SPECIALIZED;
+
     anna_function_specialize_body(
 	res);
     anna_function_macro_expand(
@@ -1083,3 +1085,92 @@ void anna_function_macro_expand(
 	}
     }
 }
+
+anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_node_call_t *call)
+{
+    if((call->child_count < 1) || (base->flags & ANNA_FUNCTION_SPECIALIZED))
+    {
+	return base;
+    }
+
+    if(!base->definition)
+    {
+	return base;
+    }
+
+    if(base->flags & ANNA_FUNCTION_MACRO)
+    {
+	return base;
+    }
+    
+    anna_node_call_t *attr = node_cast_call(base->definition->child[3]);
+    
+    array_list_t al = AL_STATIC;
+    anna_attribute_call_all(attr, L"template", &al);
+    
+    if(al_get_count(&al) == 0)    
+    {
+	return base;
+    }    
+    
+    if(call->child_count > base->input_count)
+    {
+	return base;
+    }
+
+    anna_node_call_t *def = (anna_node_call_t *)
+	anna_node_clone_deep((anna_node_t *)base->definition);
+    
+    int i;
+    
+    anna_node_call_t *input_node = node_cast_call(base->definition->child[2]);
+    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), attr->child_count);
+    int spec_count=0;
+    if(input_node)
+    {
+	for(i=0; i<input_node->child_count; i++)
+	{
+	    anna_node_call_t *decl = node_cast_call(input_node->child[i]);
+	    if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
+	    {
+		anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
+		
+		int templ_idx = anna_attribute_template_idx(attr, id->name);
+		if(templ_idx >= 0)
+		{
+		    call->child[i] = anna_node_calculate_type(call->child[i]);
+		    if( call->child[i]->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+		    {
+			if(!type_spec[templ_idx])
+			{
+			    type_spec[templ_idx] = call->child[i]->return_type;
+			    spec_count++;
+			}
+			else
+			{
+			    type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
+			}
+		    }
+		}
+	    }
+	}
+    }
+    
+    if(spec_count == attr->child_count)
+    {
+	anna_node_call_t *spec_call = anna_node_create_block2(0);
+	for(i=0; i<attr->child_count; i++)
+	{
+	    anna_node_call_add_child(
+		spec_call, 
+		(anna_node_t *)anna_node_create_dummy(
+		    0,
+		    anna_type_wrap(type_spec[i])));
+	}
+	base = anna_function_create_specialization(base, spec_call);
+    }
+    free(type_spec);
+    
+    return base;
+}
+

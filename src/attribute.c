@@ -91,3 +91,41 @@ void anna_attribute_call_all(anna_node_call_t *attribute, wchar_t *name, array_l
     return;
 }
 
+int anna_attribute_template_idx(anna_node_call_t *attr, wchar_t *name)
+{
+    int i;
+//    anna_node_print(5, attr);
+    int idx=0;
+    for(i=0; i<attr->child_count; i++)
+    {
+	if (anna_node_is_call_to(attr->child[i], L"template"))
+	{
+	    anna_node_call_t *tmpl = (anna_node_call_t *)attr->child[i];
+	    if(tmpl->child_count == 1)
+	    {
+		if (anna_node_is_call_to(tmpl->child[i], L"__mapping__"))
+		{
+		    anna_node_call_t *pair = (anna_node_call_t *)tmpl->child[0];
+		    if(pair->child_count == 2)
+		    {
+			if( anna_node_is_named(pair->child[0], name))
+			{
+			    return idx;
+			}
+		    }
+		}
+		else if(tmpl->child[i]->node_type == ANNA_NODE_MAPPING)
+		{
+		    anna_node_cond_t *pair = (anna_node_cond_t *)tmpl->child[0];
+		    if( anna_node_is_named(pair->arg1, name))
+		    {
+			return idx;
+		    }
+		}
+	    }
+	    idx++;
+	}
+    }
+    return -1;
+}
+

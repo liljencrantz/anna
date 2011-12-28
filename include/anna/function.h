@@ -56,6 +56,11 @@
 */
 #define ANNA_FUNCTION_VALIDATED (8192*32)
 
+/**
+   This function template has been specialized.
+*/
+#define ANNA_FUNCTION_SPECIALIZED (8192*64)
+
 extern array_list_t anna_function_list;
 
 /**
@@ -149,6 +154,18 @@ anna_function_t *anna_function_create_specialization(
 
 void anna_function_specialize_body(
     anna_function_t *f);
+
+/**
+   If the base function is a function template, try to perform template specialization
+   based on the input parameters given in the call parameter. 
+
+   This function call will either return a specialized version of the
+   base function, or if that fails, the base function itself will be
+   returned. It is not an error if template specialization can not be
+   performed (for any reason).
+*/
+anna_function_t *anna_function_implicit_specialize(
+    anna_function_t *base, anna_node_call_t *call);
 
 void anna_function_macro_expand(
     anna_function_t *f, anna_stack_template_t *stack);
