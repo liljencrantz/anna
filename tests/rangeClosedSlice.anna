@@ -1,0 +1,30 @@
+/*
+  Lots and lots and lots of tests for different slicing operations
+  on a closed range
+*/
+def main()
+{
+    // The closed range we're operating on looks like this:
+    // 0  1  2  3  4  5  6  7  8  9    Index
+    // 1  3  5  7  9 11 13 15 17 19    Value
+    
+    print((1..20|2)[0...], "\n");
+    print((1..20|2)[1...], "\n");
+    print((1..20|2)[0|3...], "\n");
+    print((1..20|2)[1|3...], "\n");
+
+    print((1..20|2)[1..-1], "\n");
+    print((1..20|2)[1..9], "\n");
+
+    print((1..20|2)[1..-3], "\n");
+    print((1..20|2)[1..-100], "\n");
+    print((1..20|2)[-1...], "\n");
+    print((1..20|2)[-2...], "\n");
+
+    print((0..10)[0..10], "\n");
+    print((0..10)[0..11], "\n");
+
+    print((0..10)[1..10], "\n");
+    print((0..10)[1..11], "\n");
+    
+}

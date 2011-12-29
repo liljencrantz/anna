@@ -1,3 +1,18 @@
+static anna_object_t *anna_range_create(
+    int from,
+    int to,
+    int step,
+    int open)
+{
+    anna_object_t *range = anna_object_create(range_type);
+
+    anna_range_set_from(range, from);
+    anna_range_set_to(range, to);
+    anna_range_set_step(range, step);
+    anna_range_set_open(range, open);
+    return range;
+}
+
 
 ssize_t anna_range_get_from(anna_object_t *obj)
 {
@@ -178,6 +193,95 @@ ANNA_VM_NATIVE(anna_range_get_int, 2)
 	if(likely(idx >= 0)){
 	    return anna_from_int(from + step*idx);
 	}
+    }
+    return null_entry;
+}
+
+ANNA_VM_NATIVE(anna_range_get_range, 2)
+{  
+    anna_object_t *range = anna_as_obj_fast(param[0]);
+    ssize_t from = anna_range_get_from(range);
+    ssize_t to = anna_range_get_to(range);
+    ssize_t step = anna_range_get_step(range);
+    int open = anna_range_get_open(range);
+
+    anna_object_t *idx = anna_as_obj(param[1]);
+    
+    ssize_t idx_from = anna_range_get_from(idx);
+    ssize_t idx_to = anna_range_get_to(idx);
+    ssize_t idx_step = anna_range_get_step(idx);
+    int idx_open = anna_range_get_open(idx);
+
+    if(open)
+    {
+	if(idx_from < 0 || idx_to < 0)
+	{
+	    return null_entry;
+	}
+	
+	if(idx_open)
+	{	    
+	    if(idx_step < 0)
+	    {
+		return anna_from_obj(anna_range_create(
+					 from + step*idx_from,
+					 from + sign(step)*sign(idx_step),
+					 step*idx_step,
+					 0));
+	    }
+	    return anna_from_obj(anna_range_create(
+		from + step*idx_from,
+		0,
+		step*idx_step,
+		1));
+	}
+	else
+	{
+	    return anna_from_obj(anna_range_create(
+		from + step*idx_from,
+		from + step*idx_to,
+		step*idx_step,
+		0));
+	}
+    }
+    else
+    {
+	idx_from = anna_list_calc_offset(idx_from, anna_range_get_count(range));
+	if(idx_from < 0)
+	{
+	    return null_entry;
+	}
+	
+	if(idx_open)
+	{
+	    return anna_range_create(
+		from + step*idx_from,
+		to,
+		step*idx_step,
+		0);
+	}
+	else
+	{
+	    idx_to = anna_list_calc_offset(idx_to, anna_range_get_count(range));
+	    if(idx_to < 0)
+	    {
+		return null_entry;
+	    }
+	    idx_step = (idx_to > idx_from ? 1 : -1) * abs(idx_step);	
+
+	    if(idx_to > to)
+	    {
+		return null_entry;
+	    }
+	    
+	    
+	    return anna_range_create(
+		from + step*idx_from,
+		from + step*idx_step*idx_to,
+		step*idx_step,
+		0);	    
+	}
+
     }
     return null_entry;
 }
@@ -656,6 +760,27 @@ void anna_range_type_create()
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(range_type, mmid)));
     anna_function_alias_add(fun, L"__get__");
     
+    anna_type_t *range_argv[] = 
+	{
+	    range_type,
+	    range_type
+	}
+    ;
+
+    wchar_t *range_argn[]=
+	{
+	    L"this", L"index"
+	}
+    ;
+
+    mmid = anna_member_create_native_method(
+	range_type,
+	anna_mid_get(L"__get__Range__"), 0,
+	&anna_range_get_range, range_type, 2,
+	range_argv, range_argn, 0, 0);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(range_type, mmid)));
+    anna_function_alias_add(fun, L"__get__");
+
     anna_member_create_native_property(
 	range_type, anna_mid_get(L"count"), int_type,
 	&anna_range_get_count_i, 0, L"The number of elements in this Range.");

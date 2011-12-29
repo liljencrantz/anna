@@ -1,0 +1,29 @@
+/*
+  Lots and lots and lots of tests for different slicing operations
+  on an open range
+*/
+def main()
+{
+    // The open range we're operating on looks like this:
+    // 0  1  2  3  4  5  6  7  8  9 ...    Index
+    // 1  3  5  7  9 11 13 15 17 19 ...    Value
+    
+    print((1|2...)[1|3...], "\n");
+    print((1|2...)[1..7], "\n");
+    
+    // The parameter we're sending to __get__ looks like this:
+    // 0  1  2    Index
+    // 1  3  5    Value
+    // 3  7  11    Result
+    print((1|2...)[1..7|2], "\n");
+
+    print((1|2...)[9..5], "\n");
+    print((1|2...)[9|-1...], "\n");
+    print((0|-1...)[9|-1...], "\n");
+    print((0|-1...)[9|-2...], "\n");
+    print((0|-1...)[8|-2...], "\n");
+
+    print((0|-1...)[-1..3], "\n");
+    print((0|-1...)[5..-1], "\n");
+
+}
