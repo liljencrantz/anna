@@ -107,7 +107,7 @@ static void anna_print_help()
 
 static void anna_print_version()
 {
-    wprintf(L"0.0\n");
+    wprintf(L"0.0.0 (unreleased)\n");
 }
 
 /**
@@ -122,14 +122,14 @@ static void anna_opt_parse(int argc, char **argv)
 	int option_index = 0;
 	static struct option long_options[] = 
 	    {
-		{"verbose", 0, 0, 'v'},
 		{"help",    0, 0, 'h'},
+		{"verbose", 0, 0, 'v'},
 		{"version", 0, 0, 'V'},
 		{0,         0, 0, 0  }
 	    };
 	
 	c = getopt_long(
-	    argc, argv, "+hvV",
+	    argc, argv, "+hvVa",
 	    long_options, &option_index);
 	if(c == -1)
 	{
@@ -138,16 +138,16 @@ static void anna_opt_parse(int argc, char **argv)
 
 	switch(c) 
 	{
-	    case 'v':
-	    {
-		debug_level--;
-		break;
-	    }
-	    
 	    case 'h':
 	    {
 		anna_print_help();
 		exit(0);
+		break;
+	    }
+	    
+	    case 'v':
+	    {
+		debug_level--;
 		break;
 	    }
 	    

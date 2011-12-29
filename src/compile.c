@@ -23,6 +23,7 @@
 #include "anna/alloc.h"
 #include "anna/mid.h"
 #include "anna/function_type.h"
+#include "anna/attribute.h"
 
 #define ANNA_COMPILE_SIZE 1
 #define ANNA_COMPILE_LINE 2
@@ -1000,7 +1001,19 @@ void anna_vm_compile(
     *code_ptr = 0;
     */
     fun->frame_size = sizeof(anna_activation_frame_t) + sizeof(anna_entry_t *)*fun->variable_count;
-//    fun->definition = fun->body = 0;
+    
+
+    array_list_t al = AL_STATIC;
+    anna_attribute_call_all(
+	(anna_node_call_t *)fun->definition->child[3],
+	L"template", &al);
+    
+    if(al_get_count(&al) == 0)    
+    {
+	fun->definition = fun->body = 0;
+    }
+    al_destroy(&al);
+    
     fun->native = anna_frame_push;
     
     fun->line_offset_count = al_get_count(&ctx.line);

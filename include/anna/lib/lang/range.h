@@ -4,8 +4,6 @@
 
 struct anna_stack_template;
 
-anna_object_t *anna_range_create(ssize_t from, ssize_t step, ssize_t to);
-
 ssize_t anna_range_get_from(anna_object_t *this);
 ssize_t anna_range_get_step(anna_object_t *this);
 ssize_t anna_range_get_to(anna_object_t *this);
