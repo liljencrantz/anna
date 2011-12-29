@@ -1,0 +1,33 @@
+
+def %Res reduce(
+    %Coll collection,
+    %Res initial, 
+    def %Res function(%Res first, %Res second)) 
+(
+    template(%Coll: List, %Res: Object)
+)
+{
+    res := initial;
+    collection.each(val){res = function(res, val);}
+    return res;
+}
+
+def sum(%T collection) 
+(
+    template(%T: List«Int»)
+)
+{
+    res := collection[0];
+    collection[1...].each(val){res += val}
+    return res;
+}
+
+def prod(%T collection) 
+(
+    template(%T: List«Int»)
+)
+{
+    res := collection[0];
+    collection[1...].each(val){res = res*val}
+    return res;
+}

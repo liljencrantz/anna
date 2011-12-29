@@ -1,0 +1,11 @@
+
+def main()
+{
+    use(functional);
+    print(sum([1,2,3,4]), "\n");
+    print(reduce([1,2,3,4], 0, Int::__add__Int), "\n");
+    print(reduce([1,2,3,4], 0, def (Int a, Int b){a+b}), "\n");
+    print(sum([1.0,2.0,3.0,4.5]), "\n");
+    print(prod(1..11), "\n");
+    print(prod([1.0, 2.0, 3.0]), "\n");
+}

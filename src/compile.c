@@ -1000,7 +1000,7 @@ void anna_vm_compile(
     *code_ptr = 0;
     */
     fun->frame_size = sizeof(anna_activation_frame_t) + sizeof(anna_entry_t *)*fun->variable_count;
-    fun->definition = fun->body = 0;
+//    fun->definition = fun->body = 0;
     fun->native = anna_frame_push;
     
     fun->line_offset_count = al_get_count(&ctx.line);
