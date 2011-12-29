@@ -251,6 +251,10 @@ ANNA_VM_NATIVE(anna_range_get_range, 2)
 	{
 	    return null_entry;
 	}
+	if(idx_from >= to)
+	{
+	    return null_entry;
+	}
 	
 	if(idx_open)
 	{
@@ -273,7 +277,6 @@ ANNA_VM_NATIVE(anna_range_get_range, 2)
 	    {
 		return null_entry;
 	    }
-	    
 	    
 	    return anna_range_create(
 		from + step*idx_from,
