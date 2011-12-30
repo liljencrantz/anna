@@ -99,7 +99,7 @@ ANNA_VM_NATIVE(anna_complex_to_string, 1)
     complex double val = anna_as_complex(param[0]);
     string_buffer_t sb;
     sb_init(&sb);
-    sb_printf(&sb, L"%f + i%f", creal(val), cimag(val));
+    sb_printf(&sb, L"%f %ls i%f", creal(val), cimag(val)<0.0 ? L"-":L"+", fabs(cimag(val)));
 
     wchar_t *buff = sb_content(&sb);
     wchar_t *comma = wcschr(buff, ',');
@@ -122,6 +122,35 @@ ANNA_VM_NATIVE(anna_complex_hash, 1)
     int res = anna_hash((int *)&cmp, sizeof(complex double) / sizeof(int));
     return anna_from_int(res);
 }
+
+ANNA_VM_NATIVE(anna_complex_convert_int, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    
+    mpz_t *int_val = anna_int_unwrap(anna_as_obj(param[0]));
+    double res = mpz_get_d(*int_val);
+    return anna_from_obj(anna_complex_create((complex double) res));
+}
+
+ANNA_VM_NATIVE(anna_complex_convert_float, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    
+    double res  = anna_as_float(param[0]);
+    return anna_from_obj(anna_complex_create((complex double) res));
+}
+
+ANNA_VM_NATIVE(anna_complex_convert_complex, 1)
+{
+    return param[0];
+}
+
 
 void anna_complex_type_create()
 {
@@ -189,6 +218,52 @@ void anna_complex_type_create()
 	0,
 	&anna_complex_hash, 
 	int_type, 1, argv, argn, 0, 0);
+
+    wchar_t *conv_argn[]=
+	{
+	    L"value"
+	}
+    ;
+    mid_t mmid;
+    anna_function_t *fun;
+
+    mmid = anna_member_create_native_type_method(
+	complex_type, anna_mid_get(L"convertInt"),
+	0, &anna_complex_convert_int,
+	complex_type, 1, &int_type, conv_argn, 0,
+	L"Convert the specified Integer value to a complex number.");
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+/*    
+    mmid = anna_member_create_native_type_method(
+	complex_type, anna_mid_get(L"convertString"),
+	0, &anna_complex_convert_string,
+	complex_type, 1, &string_type, conv_argn, 0,
+	L"Convert the specified character String to a complex number.");
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+*/
+    mmid = anna_member_create_native_type_method(
+	complex_type, anna_mid_get(L"convertFloat"),
+	0, &anna_complex_convert_float,
+	complex_type, 1, &float_type, conv_argn, 0,
+	L"Convert the specified floating point number to a complex number. (This is a no-op.)");
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+
+    mmid = anna_member_create_native_type_method(
+	complex_type, anna_mid_get(L"convertComplex"),
+	0, &anna_complex_convert_complex,
+	complex_type, 1, &complex_type, conv_argn, 0,
+	L"Convert the specified complex number to a complex number. (This is a no-op.)");
+    fun = anna_function_unwrap(
+	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
+    anna_function_alias_add(fun, L"convert");
+
+
 
     anna_complex_type_i_create();
 }
