@@ -929,15 +929,19 @@ void anna_function_print(anna_function_t *function)
 {
     if(function->flags & ANNA_FUNCTION_MACRO)
     {
-	wprintf(L"macro %ls(...)", function->name);	
+	wprintf(L"macro %ls(%ls)", function->name, function->input_name[0]);	
     }
     else
     {
-	wprintf(L"function %ls %ls(", function->return_type->name, function->name);
+	wprintf(L"def %ls %ls(", function->return_type->name, function->name);
 	int i;
 	for(i=0;i<function->input_count; i++)
 	{
-	    wprintf(L"%ls %ls;", function->input_type[i]->name, function->input_name[i]);
+	    if(i != 0)
+	    {
+		wprintf(L", ");
+	    }
+	    wprintf(L"%ls %ls", function->input_type[i]->name, function->input_name[i]);
 	}
 	wprintf(L")\n");
     }   
@@ -980,16 +984,32 @@ anna_function_t *anna_function_create_specialization(
     array_list_t al = AL_STATIC;
     anna_attribute_call_all(attr, L"template", &al);
 
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"%ls«", base->name);
     for(i=0; i<attr->child_count;i++)
     {
 	anna_node_call_t *tm = node_cast_call((anna_node_t *)al_get(&al, i));
 	tm->child[1] = spec->child[i];
+
+	wchar_t *item_txt = L"?";
+	if(spec->child[i]->node_type == ANNA_NODE_DUMMY)
+	{
+	    anna_object_t *obj = ((anna_node_dummy_t *)spec->child[i])->payload;
+	    anna_type_t *spec_type = anna_type_unwrap(obj);
+	    if(spec_type)
+	    {
+		item_txt = spec_type->name;
+	    }
+	    
+	}
+	sb_printf(&sb, L"%ls", item_txt);
+	
     }
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_printf(&sb, L"%ls«", base->name);
 
     sb_printf(&sb, L"»");
+    def->child[0] = (anna_node_t *)anna_node_create_identifier(0, sb_content(&sb));
+    
     anna_function_t *res = anna_function_create_from_definition(def);
     res->flags = res->flags | ANNA_FUNCTION_SPECIALIZED;
 
@@ -1010,6 +1030,7 @@ anna_function_t *anna_function_create_specialization(
 	}
     }
     sb_destroy(&sb);
+        
     return res;
 }
 
