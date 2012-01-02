@@ -1,15 +1,32 @@
-def main() {
-    n := Int::convert(system.argument[1]) or 50_000;
-    bodies := NBodySystem();
-    print(bodies.energy().format(digits:9), '\n');
-    bodies.advance(n, 0.01);
-    print(bodies.energy().format(digits:9), '\n');
+def combinations(%Collection item) (template(%Collection: List))
+{
+    result :== «Pair«__staticTypeOf__(item[0]),__staticTypeOf__(item[0])»»[];
+    item.each(idx, it)
+    {
+	item[idx+1...].each(idx2, it2)
+	{
+	    result.push( it|it2)
+	}
+    }
+    return result;
 }
 
-type NBodySystem {
+def main() 
+{
+    n :== Int::convert(system.argument[1]) or 50_000;
+    nbod :== NBodySystem();
+    print(nbod.energy().format(digits:9), '\n');
+    nbod.advance(n, 0.01);
+    print(nbod.energy().format(digits:9), '\n');
+}
+
+type NBodySystem 
+{
     var List«Body» bodies;
+    var List«Pair«Body,Body»» pairs;
     
-    def __init__(){
+    def __init__()
+    {
 	bodies = [
             sun(),
             jupiter(),
@@ -17,7 +34,8 @@ type NBodySystem {
             uranus(),
             neptune()
 	    ];
-	
+	pairs = combinations(bodies);
+
         px := 0.0, py := 0.0, pz := 0.0;
 	bodies.each(body)
 	{
@@ -28,30 +46,33 @@ type NBodySystem {
 	bodies[0].offsetMomentum(px,py,pz);
     }
     
-    def advance(Int n, Float dt) {	
-	(0..n).each(nn){ 
-	    bodies.each(i, iBody){
-		(i+1..bodies.count).each(j)
-		{
-		    jBody := bodies[j];
-		    dx := iBody.x - jBody.x;
-		    dy := iBody.y - jBody.y;
-		    dz := iBody.z - jBody.z;
-		    
-		    mag := dt * ((dx * dx + dy * dy + dz * dz) ^exp -1.5);
-		    jm := jBody.mass * mag;
-		    im := iBody.mass * mag;
-		    iBody.vx -= dx * jm;
-		    iBody.vy -= dy * jm;
-		    iBody.vz -= dz * jm;
-		    
-		    jBody.vx += dx * im;
-		    jBody.vy += dy * im;
-		    jBody.vz += dz * im;
-		}
+    def advance(Int n, Float dt) 
+    {
+	(0..n).each(nn)
+	{ 
+	    pairs.each(p)
+	    {
+  	        iBody :== p.first;
+	        jBody :== p.second;
+	        dx :== iBody.x - jBody.x;
+	        dy :== iBody.y - jBody.y;
+	        dz :== iBody.z - jBody.z;
+		
+	        mag :== dt * ((dx * dx + dy * dy + dz * dz) ^exp -1.5);
+	        jm :== jBody.mass * mag;
+	        im :== iBody.mass * mag;
+		
+		iBody.vx -= dx * jm;
+		iBody.vy -= dy * jm;
+		iBody.vz -= dz * jm;
+		
+		jBody.vx += dx * im;
+		jBody.vy += dy * im;
+		jBody.vz += dz * im;
 	    }
 	    
-	    bodies.each(body){
+	    bodies.each(body)
+	    {
 		body.x += dt * body.vx;
 		body.y += dt * body.vy;
 		body.z += dt * body.vz;
@@ -59,34 +80,37 @@ type NBodySystem {
 	}
     }
     
-    def energy(){
+    def energy()
+    {
 	e := 0.0;
 	
-	bodies.each(i, iBody){
-	    e += 0.5 * iBody.mass *
-		( iBody.vx * iBody.vx
-		  + iBody.vy * iBody.vy
-		  + iBody.vz * iBody.vz );
-	    
-	    (i+1..bodies.count).each(j){
-		jBody := bodies[j];
-		dx := iBody.x - jBody.x;
-		dy := iBody.y - jBody.y;
-		dz := iBody.z - jBody.z;
-		distance := math.sqrt(dx*dx + dy*dy + dz*dz);
-		e -= (iBody.mass * jBody.mass) / distance;
-	    }
+	bodies.each(body)
+	{
+	    e += 0.5 * body.mass *
+		( body.vx * body.vx
+		  + body.vy * body.vy
+		  + body.vz * body.vz );
+	}
+	pairs.each(p)
+	{
+	    iBody :== p.first;
+	    jBody :== p.second;
+	    dx :== iBody.x - jBody.x;
+	    dy :== iBody.y - jBody.y;
+	    dz :== iBody.z - jBody.z;
+	    distance :== math.sqrt(dx*dx + dy*dy + dz*dz);
+	    e -= (iBody.mass * jBody.mass) / distance;
 	}
 	return e;
     }
 }
 
-const pi = 3.141592653589793;
-const solarMass = 39.478417604357428;
-const daysPerYear = 365.24;
+solarMass :== 4 * math.pi * math.pi;
+daysPerYear :== 365.24;
 
-def jupiter(){
-    p := Body();
+def jupiter()
+{
+    p :== Body();
     p.x = 4.84143144246472090;
     p.y = -1.16032004402742839;
     p.z = -0.103622044471123109;
@@ -97,8 +121,9 @@ def jupiter(){
     p;
 }
 
-def saturn(){
-    p := Body();
+def saturn()
+{
+    p :== Body();
     p.x = 8.34336671824457987;
     p.y = 4.12479856412430479;
     p.z = -0.403523417114321381;
@@ -109,8 +134,9 @@ def saturn(){
     p;
 }
 
-def uranus(){
-    p := Body();
+def uranus()
+{
+    p :== Body();
     p.x = 12.8943695621391310;
     p.y = -15.1111514016986312;
     p.z = -0.223307578892655734;
@@ -121,8 +147,9 @@ def uranus(){
     p;
 }
 
-def neptune(){
-    p := Body();
+def neptune()
+{
+    p :== Body();
     p.x = 15.3796971148509165;
     p.y = -25.9193146099879641;
     p.z = 0.179258772950371181;
@@ -133,8 +160,9 @@ def neptune(){
     p;
 }
 
-def sun(){
-    p := Body();
+def sun()
+{
+    p :== Body();
     p.mass = solarMass;
     p;
 }
@@ -149,12 +177,12 @@ type Body {
 	expandCode(
 	    this.%name = 0.0,
 	    name: [x, y, z, vx, vy, vz, mass]);
-   }
+    }
 
-   def offsetMomentum(Float px, Float py, Float pz){
-      vx = -px / solarMass;
-      vy = -py / solarMass;
-      vz = -pz / solarMass;
-      this;
-   }
+    def offsetMomentum(Float px, Float py, Float pz){
+	vx = -px / solarMass;
+	vy = -py / solarMass;
+	vz = -pz / solarMass;
+	this;
+    }
 }
