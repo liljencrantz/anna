@@ -341,7 +341,13 @@ int anna_node_validate_call_parameters(
     anna_node_t **param_default = target->input_default;
     int param_count = target->input_count;    
     int res=0;
-    
+
+    if((target->flags & ANNA_ALLOC_MASK) != ANNA_FUNCTION_TYPE)
+    {
+	anna_error(call, L"Invalid function");
+	goto END;
+    }
+  
     if(is_method)
     {
 	param++;

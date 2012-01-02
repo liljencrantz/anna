@@ -17,6 +17,10 @@
 * Remove code duplication for alias matching in methods
 * Reconsider making function aliases have equal priority to function names when performing calls
 * Remove code duplication between types and functions when performing templatization
+* List.__get__(List«Int» index)
+* List.first
+* Range.rest
+* List.rest
 
 1.0 RELEASE CRITERIA (Done):
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

@@ -957,7 +957,7 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     array_list_t al = AL_STATIC;
     anna_attribute_call_all(attr, L"template", &al);
     
-    for(i=0; i<attr->child_count;i++)
+    for(i=0; i<al_get_count(&al);i++)
     {
 	anna_node_cond_t *tm = node_cast_mapping((anna_node_t *)al_get(&al, i));
 	tm->arg2 = spec->child[i];
@@ -1126,41 +1126,40 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 //    wprintf(L"Looking ok for implicit spec\n");
     
     anna_node_call_t *input_node = get_constructor_input_list(type->definition);
-    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), attr->child_count);
+    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
     int spec_count=0;
     if(input_node)
     {
 	for(i=0; i<input_node->child_count; i++)
 	{	
-	anna_node_call_t *decl = node_cast_call(input_node->child[i]);
-//	anna_node_print(4, decl);
-	if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
-	{
-	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
-
-	    //wprintf(L"Check if %ls is a template param\n", id->name);
-	    int templ_idx = anna_attribute_template_idx(attr, id->name);
-	    if(templ_idx >= 0)
+	    anna_node_call_t *decl = node_cast_call(input_node->child[i]);
+//	    anna_node_print(4, decl);
+	    if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
 	    {
-		if(!type_spec[templ_idx])
+		anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
+		
+		//wprintf(L"Check if %ls is a template param\n", id->name);
+		int templ_idx = anna_attribute_template_idx(attr, id->name);
+		if(templ_idx >= 0)
 		{
-		    type_spec[templ_idx] = call->child[i]->return_type;
-		    spec_count++;
-		}
-		else
-		{
-		    type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
+		    if(!type_spec[templ_idx])
+		    {
+			type_spec[templ_idx] = call->child[i]->return_type;
+			spec_count++;
+		    }
+		    else
+		    {
+			type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
+		    }
 		}
 	    }
 	}
     }
-    }
     
-
-    if(spec_count ==attr->child_count)
+    if(spec_count == al_get_count(&al))
     {
 	anna_node_call_t *spec_call = anna_node_create_block2(0);
-	for(i=0; i<attr->child_count; i++)
+	for(i=0; i< al_get_count(&al); i++)
 	{
 	    anna_node_call_add_child(
 		spec_call, 
@@ -1281,7 +1280,8 @@ anna_type_t *anna_type_get_function(
     anna_node_t **argd, 
     int flags)
 {
-    flags = flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION | ANNA_FUNCTION_BOUND_METHOD);
+    flags = (flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION | ANNA_FUNCTION_BOUND_METHOD)) | ANNA_FUNCTION_TYPE;
+    
     size_t i;
     static anna_function_type_t *key = 0;
     static size_t key_sz = 0;
@@ -1364,7 +1364,7 @@ anna_type_t *anna_type_get_function(
 	hash_put(&anna_type_get_function_identifier, new_key, res);
 	anna_reflection_type_for_function_create(new_key, res);
     }
-    
+    assert(anna_function_type_unwrap(res)->input_count < 1024);
     return res;
 }
 

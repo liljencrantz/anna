@@ -376,8 +376,13 @@ void anna_alloc_mark(void *obj)
 	    anna_alloc_mark_activation_frame((anna_activation_frame_t *)obj);
 	    break;
 	}
+	case ANNA_FUNCTION_TYPE:
+	{
+	    break;
+	}
 	default:
 	{
+	    anna_error(0, L"Tried to mark unknown memory region in GC. Type: %d\n", (*((int *)obj) & ANNA_ALLOC_MASK));	    
 	    CRASH;
 	}
     }

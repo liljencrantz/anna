@@ -4,7 +4,8 @@ def %Res reduce(
     %Res initial, 
     def %Res function(%Res first, %Res second)) 
 (
-    template(%Coll: List, %Res: Object)
+    template(%Coll: List, %Res: Object),
+    doc("Perform the reduce operation on the collection. FIXME: Elaborate...")
 )
 {
     res := initial;
@@ -14,20 +15,22 @@ def %Res reduce(
 
 def sum(%T collection) 
 (
-    template(%T: List«Int»)
+    template(%T: List«Int»),
+    doc("Calculate the sum of all the elements in the specified collection"),
 )
 {
-    res := collection[0];
-    collection[1...].each(val){res += val}
+    res := __staticTypeOf__(collection[0])::convert(0);
+    collection.each(val){res += val}
     return res;
 }
 
 def prod(%T collection) 
 (
-    template(%T: List«Int»)
+    template(%T: List«Int»),
+    doc("Calculate the product of all the elements in the specified collection"),
 )
 {
-    res := collection[0];
-    collection[1...].each(val){res = res*val}
+    res := __staticTypeOf__(collection[0])::convert(1);
+    collection.each(val){res = res*val}
     return res;
 }

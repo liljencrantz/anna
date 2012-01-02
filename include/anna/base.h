@@ -36,6 +36,7 @@ typedef int mid_t;
 #define ANNA_FUNCTION 5
 #define ANNA_BLOB 6
 #define ANNA_ALLOC_TYPE_COUNT 7
+#define ANNA_FUNCTION_TYPE 8
 
 #define ANNA_ALLOC_FLAGS_SIZE 4
 #define ANNA_ALLOC_MASK 15

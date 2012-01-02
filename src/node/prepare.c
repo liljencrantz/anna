@@ -574,7 +574,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    {
 		break;
 	    }
-
+	    
 	    anna_function_type_t *funt = anna_function_type_unwrap(fun_type);
 	    if(!funt)
 	    {

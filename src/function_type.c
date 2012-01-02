@@ -23,6 +23,11 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 	CRASH;
     }
     
+    if(type == null_type)
+    {
+	return 0;
+    }
+    
     anna_function_type_t **function_ptr = 
 	(anna_function_type_t **)anna_entry_get_addr_static(
 	    type,

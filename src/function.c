@@ -797,7 +797,7 @@ anna_function_t *anna_native_create(
     anna_function_attribute_empty(result);    
     anna_function_alloc_input(result, argc);
         
-    result->flags |= flags;
+    result->flags |= flags & ~ANNA_ALLOC_MASK;
     result->native = native;
     result->name = anna_intern(name);
     result->return_type=return_type;
@@ -987,7 +987,7 @@ anna_function_t *anna_function_create_specialization(
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"%ls«", base->name);
-    for(i=0; i<attr->child_count;i++)
+    for(i=0; i<al_get_count(&al);i++)
     {
 	anna_node_call_t *tm = node_cast_call((anna_node_t *)al_get(&al, i));
 	tm->child[1] = spec->child[i];
@@ -1134,21 +1134,17 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
 	return base;
     }    
     
-    if(call->child_count > base->input_count)
-    {
-	return base;
-    }
-
     anna_node_call_t *def = (anna_node_call_t *)
 	anna_node_clone_deep((anna_node_t *)base->definition);
     
     int i;
     
     anna_node_call_t *input_node = node_cast_call(base->definition->child[2]);
-    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), attr->child_count);
+    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
     int spec_count=0;
     if(input_node)
     {
+//	wprintf(L"FDSAFASD3a %d %d\n", input_node->child_count, attr->);
 	for(i=0; i<input_node->child_count; i++)
 	{
 	    anna_node_call_t *decl = node_cast_call(input_node->child[i]);
@@ -1177,10 +1173,10 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
 	}
     }
     
-    if(spec_count == attr->child_count)
+    if(spec_count == al_get_count(&al))
     {
 	anna_node_call_t *spec_call = anna_node_create_block2(0);
-	for(i=0; i<attr->child_count; i++)
+	for(i=0; i<al_get_count(&al); i++)
 	{
 	    anna_node_call_add_child(
 		spec_call, 
@@ -1190,6 +1186,7 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
 	}
 	base = anna_function_create_specialization(base, spec_call);
     }
+    al_destroy(&al);
     free(type_spec);
     
     return base;

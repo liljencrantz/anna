@@ -8,4 +8,5 @@ def main()
     print(sum([1.0,2.0,3.0,4.5]), "\n");
     print(prod(1..11), "\n");
     print(prod([1.0, 2.0, 3.0]), "\n");
+    print(prod([Complex(0.0, 1.0), Complex(0.0, 1.0)]), "\n");
 }
