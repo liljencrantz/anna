@@ -1,7 +1,5 @@
-/*
-  Naive implementation of the
-  Sieve of Eratosthenes
-*/
+// Naive implementation of the
+// Sieve of Eratosthenes
 
 def main()
 {
@@ -9,15 +7,14 @@ def main()
     sieve := Buffer();
     sieve.count = end;
     count := 0;
+
     (2..end).each(i)
     {
         if(sieve[i] != 1)
         {
-	    ((2*i)..end|i).each(j){
-                sieve[j] = 1;
-            }
+	    ((2*i)..end|i).each(j){ sieve[j] = 1 }
             count++;
-        }    
+        }
     }
     print("There are ", count, " prime numbers under ", end, "\n");
 }

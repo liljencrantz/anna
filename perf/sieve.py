@@ -1,6 +1,10 @@
+# Naive implementation of the
+# Sieve of Eratosthenes
+
 end = 1000000;
 sieve = [None] * end;
 count = 0;
+
 for i in xrange(2, end):
     if sieve[i] is None:
 	for j in xrange(2*i, end, i):
