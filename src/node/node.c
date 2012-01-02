@@ -568,16 +568,20 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
     switch(node1->node_type)
     {
 
+	case ANNA_NODE_SPECIALIZE:
 	case ANNA_NODE_CALL:
 	{
 	    anna_node_call_t *n1 = (anna_node_call_t *)node1;
 	    anna_node_call_t *n2 = (anna_node_call_t *)node2;
 	    if(n1->child_count != n2->child_count)
 		return n1->child_count - n2->child_count;
-	    int ff = anna_node_compare(n1->function, n2->function);
+	    if(node1->node_type != ANNA_NODE_SPECIALIZE)
+	    {
+		int ff = anna_node_compare(n1->function, n2->function);
 	    
-	    if(ff)
-		return ff;
+		if(ff)
+		    return ff;
+	    }
 	    
 	    int i;
 	    for(i=0; i<n1->child_count;i++)
@@ -659,14 +663,34 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 		return n;
 	    return anna_node_compare(n1->value, n2->value);
 	}
-/*	
+
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_MEMBER_BIND:
 	case ANNA_NODE_MEMBER_SET:
 	{
+	    anna_node_member_access_t *n1 =(anna_node_member_access_t *)node1;
+	    anna_node_member_access_t *n2 =(anna_node_member_access_t *)node2;
+
+	    if( n1->access_type != n2->access_type)
+	    {
+		return n1->access_type - n2->access_type;
+	    }	    
+
+	    int ff = anna_node_compare(n1->object, n2->object);
 	    
+	    if(ff)
+		return ff;
+
+	    if(node1->node_type == ANNA_NODE_MEMBER_SET)
+	    {
+		int val = anna_node_compare(n1->value, n2->value);
+		if(val)
+		    return val;
+	    }
+
+	    return n1->mid - n2->mid;
 	}
-*/
+
 	case ANNA_NODE_RETURN:
 	{
 	    anna_node_wrapper_t *this1 =(anna_node_wrapper_t *)node1;

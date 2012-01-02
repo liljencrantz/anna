@@ -62,13 +62,12 @@ type NBodySystem
 	        jm :== jBody.mass * mag;
 	        im :== iBody.mass * mag;
 		
-		iBody.vx -= dx * jm;
-		iBody.vy -= dy * jm;
-		iBody.vz -= dz * jm;
-		
-		jBody.vx += dx * im;
-		jBody.vy += dy * im;
-		jBody.vz += dz * im;
+		expandCode(
+		    %body.%field += %delta * %mass,
+		    body: [iBody, iBody, iBody, jBody, jBody, jBody],
+		    field: [vx, vy, vz, vx, vy, vz],
+		    delta: [dx, dy, dz, dx, dy, dz],
+		    mass: [jm,jm,jm, im, im, im]);
 	    }
 	    
 	    bodies.each(body)
@@ -173,13 +172,15 @@ type Body {
 	var Float %name,
 	name: [x, y, z, vx, vy, vz, mass]);
 
-    def __init__(){
+    def __init__()
+    {
 	expandCode(
 	    this.%name = 0.0,
 	    name: [x, y, z, vx, vy, vz, mass]);
     }
 
-    def offsetMomentum(Float px, Float py, Float pz){
+    def offsetMomentum(Float px, Float py, Float pz)
+    {
 	vx = -px / solarMass;
 	vy = -py / solarMass;
 	vz = -pz / solarMass;
