@@ -74,6 +74,7 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
 	}
 	return res->type;
     }
+    
     return 0;
 }
 
@@ -257,7 +258,6 @@ anna_entry_t *anna_node_static_invoke_try(
 	    {
 		return anna_from_obj(anna_int_create_mp(((anna_node_int_literal_t *)this)->payload));
 	    }
-	    
 	}
 	
 	case ANNA_NODE_FLOAT_LITERAL:
@@ -284,6 +284,16 @@ anna_entry_t *anna_node_static_invoke_try(
 	    return anna_stack_get_try(
 		stack,
 		this2->name);
+	}
+	
+	case ANNA_NODE_SPECIALIZE:
+	{
+	    anna_node_t *n = anna_node_calculate_type(this);
+	    if(n->node_type != ANNA_NODE_SPECIALIZE && n->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		return anna_node_static_invoke_try(n, stack);
+	    }
+	    break;
 	}
 	
 	case ANNA_NODE_MEMBER_GET:
