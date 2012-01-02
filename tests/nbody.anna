@@ -1,6 +1,6 @@
 def combinations(%Collection item) (template(%Collection: List))
 {
-    result :== «Pair«__staticTypeOf__(item[0]),__staticTypeOf__(item[0])»»[];
+    result :== «Pair«__staticTypeOf__(item.first),__staticTypeOf__(item.first)»»[];
     item.each(idx, it)
     {
 	item[idx+1...].each(idx2, it2)
@@ -61,13 +61,14 @@ type NBodySystem
 	        mag :== dt * ((dx * dx + dy * dy + dz * dz) ^exp -1.5);
 	        jm :== jBody.mass * mag;
 	        im :== iBody.mass * mag;
+
+		iBody.vx -= dx * jm;
+		iBody.vy -= dy * jm;
+		iBody.vz -= dz * jm;
 		
-		expandCode(
-		    %body.%field += %delta * %mass,
-		    body: [iBody, iBody, iBody, jBody, jBody, jBody],
-		    field: [vx, vy, vz, vx, vy, vz],
-		    delta: [dx, dy, dz, dx, dy, dz],
-		    mass: [jm,jm,jm, im, im, im]);
+		jBody.vx += dx * im;
+		jBody.vy += dy * im;
+		jBody.vz += dz * im;
 	    }
 	    
 	    bodies.each(body)
