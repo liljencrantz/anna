@@ -1134,9 +1134,6 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
 	return base;
     }    
     
-    anna_node_call_t *def = (anna_node_call_t *)
-	anna_node_clone_deep((anna_node_t *)base->definition);
-    
     int i;
     
     anna_node_call_t *input_node = node_cast_call(base->definition->child[2]);

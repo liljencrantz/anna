@@ -153,6 +153,11 @@ mid_t anna_member_create_blob(
     if(storage & ANNA_MEMBER_STATIC)
     {
 	anna_type_static_member_allocate(type);
+	if(sz > sizeof(void *))
+	{
+	    debug(D_CRITICAL, L"Static blobs of size larger than a single pointer is currently not implemented.\n");
+	    CRASH;
+	}
     }
     else
     {

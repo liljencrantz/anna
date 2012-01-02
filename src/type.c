@@ -1106,9 +1106,6 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     {
 	return type;
     }    
-    
-    anna_node_call_t *def = (anna_node_call_t *)
-	anna_node_clone_deep((anna_node_t *)type->definition);
 
     int i;
     
