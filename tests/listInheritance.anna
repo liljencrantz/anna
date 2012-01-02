@@ -24,4 +24,9 @@ def main()
     vv2[3] = 7;
     print(vv2, '\n');
 
+    vv3 := Derived«String»();
+    vv3[3] = "s";
+    vv3[0] = vv3[3] ~ "1";
+    print(vv3, '\n');
+
 }
