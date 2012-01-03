@@ -117,10 +117,16 @@ ANNA_VM_NATIVE(anna_float_convert_string, 1)
     /* Convert to narrow string and send if to strtod */
     char *nstr = wcs2str(str);
     char *end=0;
-    errno=0;
-    
+
+    int olderr = errno;
+    errno=0;    
     double res = strtod(nstr, &end);
-    if(errno || *end != 0)
+    int newerr = errno;
+    errno=olderr;
+
+    free(str); 
+    free(nstr);
+    if(newerr || *end != 0)
     {
 	return null_entry;
     }

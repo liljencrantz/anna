@@ -151,6 +151,84 @@ ANNA_VM_NATIVE(anna_complex_convert_complex, 1)
     return param[0];
 }
 
+ANNA_VM_NATIVE(anna_complex_convert_string, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
+    if(wcslen(str) != anna_string_get_count(anna_as_obj(param[0])))
+    {
+	return null_entry;	
+    }
+    
+    /* Strip any underscores from the string */
+    wchar_t *in = str;
+    wchar_t *out = str;
+    while(*in)
+    {
+	if(*in == L'_')
+	{
+	    in++;
+	}
+	else
+	{
+	    *out++ = *in++;
+	}
+    }
+    *out = 0;
+    
+    /* Convert to narrow string and send if to strtod */
+    char *nstr = wcs2str(str);
+    char *end=0;
+    char *end2=0;
+
+    char *nstr2 = nstr;
+
+    double i_sign = 1.0;
+    int newerr = 0;
+    double real = 0.0;
+    double imag = 0.0;
+    while(*nstr2 && *nstr2 != ' ')
+	nstr2++;
+    if(*nstr)
+    {
+	*nstr2 = 0;
+	nstr2++;
+	if(strncmp(nstr2, "+ i", 3) == 0)
+	{
+	    nstr2 += 3;
+	}
+	else if(strncmp(nstr2, "- i", 3) == 0)
+	{
+	    nstr2 += 3;
+	    i_sign = -1.0;
+	}
+	else
+	{
+	    goto CLEANUP;
+	}	
+    }
+    
+    int olderr = errno;
+    errno=0;
+    real = strtod(nstr, &end);
+    imag = strtod(nstr2, &end2);
+    newerr = errno;
+    errno=olderr;
+    
+  CLEANUP:
+    free(str);
+    free(nstr);
+    
+    if(newerr || end == 0 || *end != 0)
+    {
+	return null_entry;
+    }
+    
+    return anna_from_obj(anna_complex_create((complex double)real + I * i_sign*imag));
+}
 
 void anna_complex_type_create()
 {
@@ -235,16 +313,16 @@ void anna_complex_type_create()
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-/*    
+
     mmid = anna_member_create_native_type_method(
 	complex_type, anna_mid_get(L"convertString"),
 	0, &anna_complex_convert_string,
 	complex_type, 1, &string_type, conv_argn, 0,
-	L"Convert the specified character String to a complex number.");
+	L"Convert the specified character String to a complex number. The string needs to be in the form «A + iB» or «A - iB», where A and B represent valid floating point numbers as accepted by Float::convert().");
     fun = anna_function_unwrap(
 	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     anna_function_alias_add(fun, L"convert");
-*/
+
     mmid = anna_member_create_native_type_method(
 	complex_type, anna_mid_get(L"convertFloat"),
 	0, &anna_complex_convert_float,
