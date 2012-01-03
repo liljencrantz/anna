@@ -6,4 +6,13 @@ def main()
     b := Complex(0.0, 1.0);
     c := a-b;
     print(Complex::convert(c), "\n");
+    print(Complex::convert("4.0 + i4.0"), "\n");
+    print(Complex::convert("4__.0 + i4.0___0"), "\n");
+    print(Complex::convert("4.0 - i4.0"), "\n");
+    print(Complex::convert("4.0 + I4.0"), "\n");
+    print(Complex::convert("4.0 + j4.0"), "\n");
+    print(Complex::convert("i4.0 + 4.0"), "\n");
+    expandCode(
+	print(%val == Complex::convert(%val.toString()), "\n"),
+	val: [a, b, c]);
 }
