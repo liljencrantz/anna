@@ -161,8 +161,7 @@ static void anna_type_mangle_methods(
     }
 }
 
-
-static anna_type_t *anna_type_create_internal(
+anna_type_t *anna_type_create(
     wchar_t *name, anna_node_call_t *definition)
 {
     anna_type_t *result = anna_alloc_type();
@@ -192,33 +191,9 @@ static anna_type_t *anna_type_create_internal(
     return result;
 }
 
-anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition)
-{
-    anna_type_t *result = anna_type_create_internal(name, definition);
-    return result;    
-}
-
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type)
 {
     return (anna_node_call_t *)type->definition->child[2];
-}
-
-anna_node_call_t *anna_type_definition_get(anna_type_t *type)
-{
-    return (anna_node_call_t *)type->definition->child[3];
-}
-
-anna_type_t *anna_type_native_create(wchar_t *name, anna_stack_template_t *stack)
-{
-    anna_type_t *result = anna_type_create_internal(name, 0);    
-    return result;
-}
-
-anna_type_t *anna_type_stack_create(wchar_t *name, anna_stack_template_t *stack)
-{    
-    anna_type_t *result = anna_type_create_internal(name, 0);
-    result->stack = stack;
-    return result;
 }
 
 void anna_type_print(anna_type_t *type)
@@ -1356,7 +1331,7 @@ anna_type_t *anna_type_get_function(
 	    sb_printf(&sb, L")%d", num++);
 	}
 	
-	res = anna_type_native_create(sb_content(&sb), stack_global);
+	res = anna_type_create(sb_content(&sb), 0);
 	sb_destroy(&sb);
 	hash_put(&anna_type_get_function_identifier, new_key, res);
 	anna_reflection_type_for_function_create(new_key, res);

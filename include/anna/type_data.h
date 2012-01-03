@@ -21,7 +21,7 @@ anna_type_data_t;
 	int i;								\
 	for(i=0; i<(sizeof(type_data)/sizeof(*type_data)); i++)		\
 	{								\
-	    *(type_data[i].addr) = anna_type_native_create(anna_intern_static(type_data[i].name), module); \
+	    *(type_data[i].addr) = anna_type_create(anna_intern_static(type_data[i].name), 0); \
 	}								\
     }
 

@@ -1249,7 +1249,7 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 	string_buffer_t sb;
 	sb_init(&sb);
 	sb_printf(&sb, L"HashMap«%ls,%ls»", subtype1->name, subtype2->name);
-	spec = anna_type_native_create(sb_content(&sb), 0);
+	spec = anna_type_create(sb_content(&sb), 0);
 	sb_destroy(&sb);
 	hash_put(&anna_hash_specialization, anna_tt_make(subtype1, subtype2), spec);
 	anna_hash_type_create_internal(spec, subtype1, subtype2);

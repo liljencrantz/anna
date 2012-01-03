@@ -18,7 +18,7 @@ ANNA_VM_NATIVE(anna_node_char_literal_wrapper_i_init, 3)
 
 static anna_type_t *anna_node_create_char_literal_type(anna_stack_template_t *stack)
 {
-    anna_type_t *type = anna_type_native_create(L"CharLiteral", stack);
+    anna_type_t *type = anna_type_create(L"CharLiteral", 0);
     
     wchar_t *argn[] =
 	{

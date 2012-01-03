@@ -22,7 +22,7 @@ ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_init, 3)
 
 static anna_type_t *anna_node_create_string_literal_type(anna_stack_template_t *stack)
 {
-    anna_type_t *node_string_literal_type = anna_type_native_create(L"StringLiteral", stack);
+    anna_type_t *node_string_literal_type = anna_type_create(L"StringLiteral", 0);
     anna_type_t *argv[] = 
 	{
 	    node_string_literal_type,

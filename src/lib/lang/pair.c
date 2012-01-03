@@ -171,7 +171,7 @@ anna_type_t *anna_pair_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 	string_buffer_t sb;
 	sb_init(&sb);
 	sb_printf(&sb, L"Pair«%ls,%ls»", subtype1->name, subtype2->name);
-	spec = anna_type_native_create(sb_content(&sb), stack_global);
+	spec = anna_type_create(sb_content(&sb), 0);
 	sb_destroy(&sb);
 	hash_put(&anna_pair_specialization, anna_tt_make(subtype1, subtype2), spec);
 	anna_pair_type_create_internal(spec, subtype1, subtype2);

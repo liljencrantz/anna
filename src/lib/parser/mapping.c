@@ -27,8 +27,8 @@ ANNA_VM_NATIVE(anna_node_mapping_wrapper_i_init, 4)
 static anna_type_t *anna_node_create_mapping_type(
     anna_stack_template_t *stack)
 {
-    anna_type_t *type = anna_type_native_create(
-	L"Mapping", stack);
+    anna_type_t *type = anna_type_create(
+	L"Mapping", 0);
     
     wchar_t *argn[] =
 	{

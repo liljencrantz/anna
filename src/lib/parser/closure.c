@@ -19,8 +19,8 @@ ANNA_VM_NATIVE(anna_node_closure_wrapper_i_init, 3)
 static anna_type_t *anna_node_create_closure_type(
     anna_stack_template_t *stack)
 {
-    anna_type_t *type = anna_type_native_create(
-	L"Closure", stack);
+    anna_type_t *type = anna_type_create(
+	L"Closure", 0);
     
     wchar_t *argn[] =
 	{

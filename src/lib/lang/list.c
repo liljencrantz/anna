@@ -1163,16 +1163,16 @@ static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)
 	sb_init(&sb);
 
 	sb_printf(&sb, L"MutableList«%ls»", subtype->name);
-	anna_type_t *mutable = anna_type_native_create(sb_content(&sb), 0);
+	anna_type_t *mutable = anna_type_create(sb_content(&sb), 0);
 
 	sb_truncate(&sb, 0);
 	sb_printf(&sb, L"ImutableList«%ls»", subtype->name);
-	anna_type_t *imutable = anna_type_native_create(
+	anna_type_t *imutable = anna_type_create(
 	    sb_content(&sb), 0);
 	
 	sb_truncate(&sb, 0);
 	sb_printf(&sb, L"List«%ls»", subtype->name);
-	anna_type_t *any = anna_type_native_create(
+	anna_type_t *any = anna_type_create(
 	    sb_content(&sb), 0);
 	
 	sb_destroy(&sb);

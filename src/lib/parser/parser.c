@@ -300,7 +300,7 @@ void anna_parser_load(anna_stack_template_t *stack)
     int i;
     stack->flags |= ANNA_STACK_NAMESPACE;
         
-    anna_type_t *mapping_id_type = anna_type_native_create(L"InternalIdentifier", stack);
+    anna_type_t *mapping_id_type = anna_type_create(L"InternalIdentifier", 0);
     anna_node_basic_create_type(stack);
     anna_node_create_identifier_type(stack, node_identifier_type, 0);
     anna_node_create_identifier_type(stack, mapping_id_type, 1);
