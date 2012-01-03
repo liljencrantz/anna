@@ -1,6 +1,8 @@
 /*
-  The list constructor isn't expliucitly called - it should be implicitly called 
- */
+  The list constructor isn't explicitly called - so it should be
+  implicitly called. Not doing so will likely result in a crash,
+  because the list data fields will contain invalid data.  
+*/
 
 type MyType (extends(MutableList«Int»))
 {

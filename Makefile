@@ -114,8 +114,9 @@ install: all $(ANNA_EXTERNAL_BINDINGS) documentation
 
 .PHONY: install
 
-# make uninstall doesn't currently try to not uninstall any Anna
-# libraries that have been installed by third parties.
+# make uninstall removes any anna-related directories.  It doesn't try to not
+# uninstall any Anna libraries that have been installed by third parties.
+# If you want proper uninstall support, better use a real package manager. 
 uninstall: 
 	-for i in $(PROGRAMS); do \
 		rm -f $(DESTDIR)$(prefix)/$$i; \
@@ -175,7 +176,7 @@ test: bin/anna
 .PHONY: test
 
 clean:
-	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out lib/*.so lib/*.o lib/*.d lib/*.o
+	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out lib/*.so lib/*.o lib/*.d lib/*.o documentation/index.html
 	-rm -r documentation/api
 .PHONY: clean
 
