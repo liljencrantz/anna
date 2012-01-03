@@ -341,10 +341,11 @@ int anna_node_validate_call_parameters(
     anna_node_t **param_default = target->input_default;
     int param_count = target->input_count;    
     int res=0;
+    int *set = 0;
 
     if((target->flags & ANNA_ALLOC_MASK) != ANNA_FUNCTION_TYPE)
     {
-	anna_error(call, L"Invalid function");
+	anna_error((anna_node_t *)call, L"Invalid function");
 	goto END;
     }
   
@@ -362,7 +363,7 @@ int anna_node_validate_call_parameters(
     }
     
     int i;
-    int *set = calloc(sizeof(int), param_count + call->child_count);
+    set = calloc(sizeof(int), param_count + call->child_count);
 
     int unnamed_idx = 0;
     
@@ -438,7 +439,10 @@ int anna_node_validate_call_parameters(
     res = 1;
 
   END:
-    free(set);
+    if(set)
+    {
+	free(set);
+    }
     return res;
 }
 

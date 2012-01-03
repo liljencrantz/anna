@@ -484,7 +484,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    if(fun_spec != fun)
 		    {
 			call->function =
-			    anna_node_create_closure(
+			    (anna_node_t *)anna_node_create_closure(
 				&call->function->location, 
 				fun_spec);			    
 			call->function->stack = call->stack;

@@ -258,11 +258,12 @@ ANNA_VM_NATIVE(anna_range_get_range, 2)
 	
 	if(idx_open)
 	{
-	    return anna_range_create(
-		from + step*idx_from,
-		to,
-		step*idx_step,
-		0);
+	    return anna_from_obj(
+		anna_range_create(
+		    from + step*idx_from,
+		    to,
+		    step*idx_step,
+		    0));
 	}
 	else
 	{
@@ -278,11 +279,12 @@ ANNA_VM_NATIVE(anna_range_get_range, 2)
 		return null_entry;
 	    }
 	    
-	    return anna_range_create(
-		from + step*idx_from,
-		from + step*idx_step*idx_to,
-		step*idx_step,
-		0);	    
+	    return anna_from_obj(
+		anna_range_create(
+		    from + step*idx_from,
+		    from + step*idx_step*idx_to,
+		    step*idx_step,
+		    0));
 	}
 
     }

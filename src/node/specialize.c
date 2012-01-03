@@ -120,10 +120,10 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     if(spec_fun)
     {
 	res = anna_function_wrap(spec_fun)->type;
-	anna_node_dummy_t *out = anna_node_create_closure(&call->location, spec_fun);
+	anna_node_t *out = (anna_node_t *)anna_node_create_closure(&call->location, spec_fun);
 	out->return_type = res;
 	out->stack = call->stack;
-	return (anna_node_t *)out;
+	return out;
     }	    
     else if(res)
     {
