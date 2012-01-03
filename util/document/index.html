@@ -3038,6 +3038,48 @@ date += isoDateDelta(x-0-0, 1:00);
 	    </tbody>
 	  </table>
 
+	  <h1><a name="libraries">Extending Anna through libraries</a></h1>
+	  <p>
+	    Anna has very simple library handling.  There is no
+	    special language construct needed for using a library. If
+	    a library named <code class="anna-code">fooBar</code>
+	    exists, and has a member
+	    named <code class="anna-code">baz</code>, simply
+	    write <code class="anna-code">fooBar.baz</code> anywhere
+	    in your code in order to access that member. If you want
+	    to use the <code class="anna-code">baz</code> member
+	    often, and don't want to use the full path of the member,
+	    use the <code class="anna-code">use</code> expression,
+	    e.g. <code class="anna-code">use(fooBar);</code> - you can
+	    then access the member simply through the
+	    name <code class="anna-code">baz</code>. The
+	    <code class="anna-code">use</code> expression can be used
+	    globally for a whole module, or it can be used locally
+	    inside a single function block. For readability, it is
+	    highly reccomended to use as few
+	    global <code class="anna-code">use</code> expressions as
+	    possible.
+	  </p>
+	  <h1><a name="libraries-intrspection">Library introspection</a></h1>
+	  <p>
+	    
+	  </p>
+	  <p>
+	    Writing you own Anna library is extremely
+	    simple. Libraries are nothing but regular Anna files.
+	    When
+	    loading a library, the colon-separated directories listed
+	    in the ANNA_PATH environment variable is prepended to a
+	    list containing ./lib and a compile time defined install
+	    directory for the Anna standard library, usually
+	    /usr/local/lib/anna. When searching for a library, the
+	    above list is searched in order until a file with the same
+	    name as the library is found, with either the .anna suffix
+	    or the .so suffix. Files ending in .anna are assumed to be
+	    source code library files, and are interpreted by the Anna
+	    interpreter and loaded.
+	  </p>
+
 	  <h1><a name="design">Design choices</a></h1>
 	  <p>
 	    The design goals of Anna include:
@@ -3519,7 +3561,7 @@ struct anna_object
 	    </li>
 	    
 	    <li>
-	      Anna is currently very slow. Usually roughly 50 % slower
+	      Anna is currently very slow; usually roughly 50 % slower
 	      than an equivalet program written in Python.
 	    </li>
 	    <li>
@@ -3537,7 +3579,7 @@ struct anna_object
 	    </li>
 	    
 	    <li>
-	      Calling of parent constructors in extended type is
+	      Calling of parent constructors in extended types is
 	      currently poorly implemented. No parameter mangling or
 	      calling of the correct constructors is done
 	      automatically, meaning that handling of e.g. inheritance

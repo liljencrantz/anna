@@ -17,10 +17,7 @@
 * Remove code duplication for alias matching in methods
 * Reconsider making function aliases have equal priority to function names when performing calls
 * Remove code duplication between types and functions when performing templatization
-* List.__get__(List«Int» index)
-* List.first
-* Range.rest
-* List.rest
+* Write a 'class' macro that performs some of the code transforms currently done by the anna_type_mangle_methods c function, and use pure types for slightly less magical type definitions
 
 1.0 RELEASE CRITERIA (Done):
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
@@ -67,6 +64,7 @@
 * The GC uses recursion, we should switch to a stack instead in order to not smash the call stack on e.g. a huge linked list.
 
 1.1 RELEASE CRITERIA:
+* Update the 'struct' macro so that it can be used to easily define types geared towards data storage. 
 * Move most of gc to separate thread
 * During startup, cache contents of all directories in ANNA_PATH so that we don't have to do crazy numbers of stat calls
 * getopt replacement
@@ -86,6 +84,9 @@
 * Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
 * Multiple inheritance clashes aren't handled sanely
+* List.__get__(List«Int» index)
+* Range.rest
+* List.rest
 
 1.2 RELEASE CRITERIA:
 * HTML api documentation extractor
@@ -122,7 +123,6 @@ It should be possible to declare type members with initial values.
 We may want reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
 Type member setup needs some dependency resolution in order for type calculations to work properly.
 Functional programming util library functions, e.g. sum, prod, reduce, 
-
 
 LANGUAGE FEATURES:
 Function templates
@@ -163,6 +163,7 @@ Make a version of the fold op that takes a count parameter
 Lazy loading of modules
 Instead of a static «in use» flag for the mark phase of the GC, the value should switch back and forth. That way, we don't need to touch all objects a second time when iterating. Also opens up to the possibility of not bothering to check old objects for GC:ing on every GC run.
 Make Char and Float fast when used as HashMap keys
+Store floats directly on stack
 
 UNUSED OPERATORS:
 Currently, the @ symbol is unused. 

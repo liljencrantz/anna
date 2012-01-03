@@ -17,14 +17,11 @@ required in order to get C header files to behave well enough in
 order to let them be parsed. It should also be noted that aside from
 the obvious problems with finding a good strategy for mixing GC:ed
 and non-GC:ed objects, there is very little to prevent this strategy
-from working beutifully with C++ bindings as well.",
+from working beuatifully with C++ bindings as well.",
 	"
-The bind utility simply outputs a C file that when compiled into a
-library can be linked into Anna at runtime in order to provide the
-runtime with an additional library.  It would be nice if the whole
-build chain could be moved into Anna, but that would require that
-Anna has access to a C compiler. Using exec(\"cc\", ...) should be
-enough. This might happen later on.",
+The bind utility simply outputs a C file that should be compiled into a
+dynamic library and placed in the Anna library search path. On startup,
+Anna will automatically locate the library and load it as needed.",
 	"
 Basic function declarations look like this:",
 	"
