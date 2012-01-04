@@ -1,4 +1,4 @@
-type MyType
+class MyType
 {
     var Int myMember;
 }

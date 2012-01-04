@@ -1,1 +1,1 @@
-MyType def Object staticMeth ()
+MyDerived staticMeth

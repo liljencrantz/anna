@@ -86,6 +86,35 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_list, 2)
     return anna_from_obj(anna_node_wrap((anna_node_t *)dst));
 }
 
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_call, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+    
+    anna_node_call_t *lst1 = 
+	(anna_node_call_t *)anna_node_unwrap(
+	    anna_as_obj(param[0]));
+
+    anna_node_call_t *lst2 = 
+	(anna_node_call_t *)anna_node_unwrap(
+	    anna_as_obj(param[1]));
+
+    anna_node_call_t *dst = 
+	anna_node_create_call(
+	    &lst1->location,
+	    lst1->function,
+	    lst1->child_count,
+	    lst1->child);
+    int i;
+    for(i=0;i<lst2->child_count; i++)
+    {
+	anna_node_call_add_child(
+	    dst,
+	    lst2->child[i]);
+    }
+    return anna_from_obj(anna_node_wrap((anna_node_t *)dst));
+}
+
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -324,10 +353,17 @@ static void anna_node_create_call_type(
 	&anna_node_call_wrapper_i_set_function,
 	L"The function node of this call.");
     
-    anna_type_t *j_argv[] = 
+    anna_type_t *jl_argv[] = 
 	{
 	    type,
 	    anna_list_type_get_any(node_type)
+	}
+    ;
+    
+    anna_type_t *jc_argv[] = 
+	{
+	    type,
+	    type
 	}
     ;
     
@@ -344,7 +380,19 @@ static void anna_node_create_call_type(
 	&anna_node_call_wrapper_i_join_list,
 	type,
 	2,
-	j_argv,
+	jl_argv,
+	j_argn, 0, 0);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+    anna_function_alias_add(fun, L"__join__");
+
+    mmid = anna_member_create_native_method(
+	type,
+	anna_mid_get(L"__join__Call__"),
+	0,
+	&anna_node_call_wrapper_i_join_call,
+	type,
+	2,
+	jc_argv,
 	j_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__join__");
@@ -355,7 +403,7 @@ static void anna_node_create_call_type(
 	&anna_node_call_wrapper_append,
 	type,
 	2,
-	j_argv,
+	jl_argv,
 	j_argn, 0, 0);
     
 }

@@ -1,5 +1,5 @@
 
-type Foo (template(%T:Object))
+class Foo (template(%T:Object))
 {
     var %T val;
 
@@ -12,8 +12,8 @@ type Foo (template(%T:Object))
 def main()  
 {
     /*
-      The type should be implicitly specialized to Foo«Int» because
-      the constructor argument is of type Int.
+      The type of the variable f should be implicitly specialized to
+      Foo«Int» because the constructor argument is of type Int.
     */
     f := Foo(7);
     print(f.val +1, "\n");

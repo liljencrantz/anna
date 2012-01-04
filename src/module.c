@@ -715,6 +715,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"errorMacros");
     anna_module_bootstrap_macro(L"expandCode");
     anna_module_bootstrap_macro(L"propertyAttribute");
+    anna_module_bootstrap_macro(L"class");
 
     /* Load additional binary modules */
     //anna_module_load_dynamic(L"unix", stack_global);

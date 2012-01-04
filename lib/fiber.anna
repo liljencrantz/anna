@@ -5,7 +5,7 @@ var Int fiberIndex (internal) = 0;
 
 var reflection.Continuation entry;
 
-type Fiber
+class Fiber
 (
     doc("A simple cooperative thread implementation")
 )

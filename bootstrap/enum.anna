@@ -13,7 +13,7 @@ enum TypeName
 )
 {
     body := definition[2] as Call;
-    definition.function = ast(type);
+    definition.function = ast(class);
     
     newBody := ast(
 	{
@@ -81,7 +81,7 @@ enum TypeName
 	{
 	    id = el as Identifier;
 	}
-	if(el.isCallTo("__assign__"))
+	if(el.callTo?("__assign__"))
 	{
   	    ass := el as Call;
 	    checkCallCount(ass, 2);

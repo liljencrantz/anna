@@ -1,4 +1,4 @@
-type SomeType
+class SomeType
 {
     var Int foo (static);
 }

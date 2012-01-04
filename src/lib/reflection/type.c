@@ -6,6 +6,23 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
     return anna_from_obj(anna_string_create(wcslen(type->name), type->name));
 }
 
+ANNA_VM_NATIVE(anna_type_filename, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_type_t *type = anna_type_unwrap(this);
+    wchar_t *nam = 0;
+    anna_stack_template_t **stack_ptr = anna_entry_get_addr_static(type, ANNA_MID_STACK_TYPE_PAYLOAD);
+    if(stack_ptr && *stack_ptr)
+    {
+	nam = (*stack_ptr)->filename;
+    }
+    else if(type->definition && type->definition->location.filename)
+    {
+	nam = type->definition->location.filename;
+    }
+    return nam ? anna_from_obj(anna_string_create(wcslen(nam), nam)): null_entry;
+}
+
 ANNA_VM_NATIVE(anna_type_is_module, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -90,6 +107,9 @@ static void anna_type_load()
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"name"),
 	string_type, &anna_type_to_string, 0, L"The name of this type.");
+    anna_member_create_native_property(
+	type_type, anna_mid_get(L"filename"),
+	string_type, &anna_type_filename, 0, L"The name of the file in which this type was defined, if any.");
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"isModule"),
 	int_type, &anna_type_is_module, 0, L"Is true if this type represents a module.");

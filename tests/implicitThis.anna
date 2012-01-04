@@ -1,4 +1,4 @@
-type Tp
+class Tp
 {
     var Int memb;
     def meth()

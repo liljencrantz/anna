@@ -3,7 +3,7 @@ use(parser);
 def Call getAttributePayload(Call c)
 {
     expandCode(
-	if(c.isCallTo(%name)) { return c },
+	if(c.callTo?(%name)) { return c },
 	name: ["__constInternal__", "__varInternal__", "__typeInternal__", "__defInternal"]);
     if(c.count == 1 and c[0] as Call)
     {
@@ -15,10 +15,10 @@ def Call getAttributePayload(Call c)
 macro propertyAttribute(node)
 {
     payload := getAttributePayload(node);
-    if(payload.isCallTo("__constInternal__"))
+    if(payload.callTo?("__constInternal__"))
     {
         decl := payload as Call;
-	if(decl[2].isCallTo("__def__"))
+	if(decl[2].callTo?("__def__"))
 	{
 	   
 	    getter := decl[2] as Call;

@@ -3,7 +3,7 @@
   different base classes.
  */
 
-type Base1
+class Base1
 {
     def intFoo(Int p) (alias(foo))
     {
@@ -11,7 +11,7 @@ type Base1
     }
 }
 
-type Base2
+class Base2
 {
     def stringFoo(String p) (alias(foo))
     {
@@ -19,12 +19,12 @@ type Base2
     }
 }
 
-type Derived1
+class Derived1
 (extends(Base1, Base2))
 {
 }
 
-type Derived2
+class Derived2
 (extends(Base1, Base2))
 {
 }

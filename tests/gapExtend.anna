@@ -3,12 +3,12 @@
   members, can be extended correctly.
 */
 
-type MidHash
+class MidHash
 (extends(HashMap«Int, Int»))
 {
 }
 
-type MyHash
+class MyHash
 (extends(MidHash))
 {
     var Int foo;

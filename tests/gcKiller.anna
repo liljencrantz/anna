@@ -1,5 +1,5 @@
 
-type Node
+class Node
 {
     var Node next;
     

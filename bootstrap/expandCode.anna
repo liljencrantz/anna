@@ -49,7 +49,7 @@ macro expandCode(node)
 
     node.each(chld)	
     {
-	if(chld.isCallTo("__mapping__"))
+	if(chld.callTo?("__mapping__"))
 	{
 	    valNode.push(chld);
 	}

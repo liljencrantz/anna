@@ -6,7 +6,7 @@
   The workaround is to define the return type of such members
   explicitly.
 */
-type T
+class T
 {
     def toString()
     {

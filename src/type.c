@@ -78,89 +78,6 @@ void anna_type_object_is_created()
     al_destroy(&anna_type_uninherited);
 }
 
-FIXME("anna_type_mangle_methods is horrible and should be rewriten as an anna macro")
-
-static void anna_type_mangle_methods(
-    anna_type_t *type)
-{
-    size_t i;
-    anna_node_call_t *body= type->body;
-//    wprintf(L"Mangle methods in %ls\n", type->name);
-    
-    for(i=0; i<body->child_count; i++)
-    {
-	if(anna_node_is_call_to(body->child[i], L"__const__"))
-	{
-	    anna_node_call_t *decl =(anna_node_call_t *)body->child[i];
-	    if(decl->child_count >= 3)
-	    {
-		if(anna_node_is_call_to(decl->child[2], L"__def__"))
-		{
-		    anna_node_call_t *def =(anna_node_call_t *)decl->child[2];
-		    if(def->child_count >= 5)
-		    {
-			//anna_node_identifier_t *name = (anna_node_identifier_t *)def->child[0];
-			if(anna_node_is_named(def->child[0], L"__init__"))
-			{
-			    if(anna_node_is_call_to(def->child[4], L"__block__"))
-			    {
-				//wprintf(L"Found init of type %ls\n", type->name);
-				anna_node_call_t *body = (anna_node_call_t *)def->child[4];
-				anna_node_call_add_child(
-				    body, (anna_node_t *)anna_node_create_identifier(0, L"this"));
-			    }
-			}
-			
-			if(anna_node_is_call_to(def->child[2], L"__block__") && 
-			   anna_node_is_call_to(def->child[3], L"__block__"))
-			{
-
-			    //wprintf(L"Add this-argument to method %ls in %ls\n", name->name, type->name);
-			    anna_node_call_t *def_decl =(anna_node_call_t *)def->child[2];
-			    anna_node_call_t *attr =(anna_node_call_t *)def->child[3];
-			    if(anna_attribute_flag(attr, L"static"))
-			    {
-				anna_node_call_prepend_child(
-				    (anna_node_call_t *)def->child[4],
-				    (anna_node_t *)anna_node_create_call2(
-					0,
-					anna_node_create_identifier(0,L"__const__"),
-					anna_node_create_identifier(0, L"this"), 
-					anna_node_create_null(0),
-					anna_node_create_dummy(0, anna_type_wrap(type)), 
-					anna_node_create_block2(0)
-					));				
-			    }
-			    else
-			    {
-				anna_node_call_t *this_decl = anna_node_create_call2(
-				    0,
-				    anna_node_create_identifier(0,L"__var__"),
-				    anna_node_create_identifier(0, L"this"), 
-				    anna_node_create_dummy(0, anna_type_wrap(type)), 
-				    anna_node_create_null(0),
-				    anna_node_create_block2(0)
-				    );
-				
-				anna_node_call_prepend_child(
-				    def_decl,
-				    (anna_node_t *)this_decl);
-				anna_node_call_prepend_child(
-				    (anna_node_call_t *)def->child[4],
-				    (anna_node_t *)anna_node_create_call2(
-					0,
-					anna_node_create_identifier(0,L"use"),
-					anna_node_create_identifier(0, L"this")));
-				
-			    }
-			}
-		    }	    
-		}
-	    }   
-	}
-    }
-}
-
 anna_type_t *anna_type_create(
     wchar_t *name, anna_node_call_t *definition)
 {
@@ -179,14 +96,16 @@ anna_type_t *anna_type_create(
 	result->attribute = node_cast_call(definition->child[1]);
 	anna_attribute_call_all(result->attribute, L"template", &al);
 	result->body = node_cast_call(
-	    anna_node_definition_specialize(
-		anna_node_clone_deep(definition->child[2]),
-		&al));	
+	    anna_node_replace(
+		anna_node_definition_specialize(
+		    anna_node_clone_deep(definition->child[2]),
+		    &al), 
+		anna_node_create_identifier(0, L"This"), 
+		(anna_node_t *)anna_node_create_dummy(0, anna_type_wrap(result))));	
 	al_destroy(&al);
-	anna_type_mangle_methods(result);
     }
     hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
-
+    
     anna_type_calculate_size(result);
     return result;
 }

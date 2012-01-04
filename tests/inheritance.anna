@@ -2,12 +2,12 @@
   Basic inheritance test
 */
 
-type Sub (extends(Parent))
+class Sub (extends(Parent))
 {
     def bar(){print("Sub.bar()\n")}
 }
 
-type Parent
+class Parent
 {
     def foo(){print("Parent.foo()\n")}
 }

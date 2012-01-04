@@ -1,4 +1,4 @@
-type Foo
+class Foo
 {
     var Int memb;
 }

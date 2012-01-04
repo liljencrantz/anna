@@ -1,5 +1,5 @@
 
-type MyType
+class MyType
 {
 
     def staticMethod(Int idx, String in) (static)

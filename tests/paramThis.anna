@@ -1,4 +1,4 @@
-type MyType
+class MyType
 {
     def sillyMethod(String this, String that)
     {

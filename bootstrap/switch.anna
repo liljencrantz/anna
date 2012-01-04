@@ -81,7 +81,7 @@ expressions, not just Int values.
         checkNodeType(caseNode, Call);
         caseCall := caseNode as Call;
         next := ? as Call;
-  	if(caseCall.isCallTo("case"))
+  	if(caseCall.callTo?("case"))
 	{
 	    if(caseCall.count < 2)
 	    {
@@ -92,7 +92,7 @@ expressions, not just Int values.
 		
 	    }
 	    checkNodeBlock(caseCall[-1]);
-            if(caseCall.count == 2 and caseCall[0].isCallTo( "cast"))
+            if(caseCall.count == 2 and caseCall[0].callTo?( "cast"))
             {
                 caseCast := caseCall[0] as Call;
 		checkCallCount(caseCast, 2);
@@ -130,7 +130,7 @@ expressions, not just Int values.
 	} 
         else
 	{
-	    if(caseCall.isCallTo("default"))
+	    if(caseCall.callTo?("default"))
 	    {
 		if(idx != switchBody.count-1)
 		{
@@ -143,7 +143,7 @@ expressions, not just Int values.
 	    } 
             else
 	    {
-		if(caseCall.isCallTo("cases"))
+		if(caseCall.callTo?("cases"))
 		{
 		    checkCallCount(caseCall, 2);
 		    checkNodeBlock(caseCall[-1]);
@@ -167,7 +167,7 @@ expressions, not just Int values.
 	}
 	if(lastIf)
 	{
-	    lastIf[2] = if(!next.isBlock())
+	    lastIf[2] = if(!next.block?())
 	    {
 		Call(node, Identifier(node, "__block__"), next);
 	    } 
@@ -178,7 +178,7 @@ expressions, not just Int values.
 	} 
         else
 	{
-	    if(next.isBlock())
+	    if(next.block?())
 	    {
 		next = Call(node, next);
 	    }

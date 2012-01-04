@@ -4,7 +4,7 @@
   because the list data fields will contain invalid data.  
 */
 
-type MyType (extends(MutableList«Int»))
+class MyType (extends(MutableList«Int»))
 {
     def __init__()
     {

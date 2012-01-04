@@ -2,7 +2,7 @@
   Check that user defined method aliases work
 */
 
-type Foo
+class Foo
 {
 
     def bar__String__(String first, String second, String third) (alias(bar))

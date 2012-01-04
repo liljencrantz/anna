@@ -1,5 +1,5 @@
 
-type MyType
+class MyType
 {
     var String myStaticMember (static);
     

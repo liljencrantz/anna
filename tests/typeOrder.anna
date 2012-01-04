@@ -3,12 +3,12 @@
   defined later in the same file.
 */
 
-type A
+class A
 {
     var B memb;
 }
 
-type B
+class B
 {
 }
 

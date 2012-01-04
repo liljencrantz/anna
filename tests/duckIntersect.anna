@@ -1,4 +1,4 @@
-type Foo
+class Foo
 {
 
     def fun()
@@ -8,7 +8,7 @@ type Foo
 
 }
 
-type Bar
+class Bar
 {
 
     def fun()

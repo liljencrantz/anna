@@ -3,7 +3,7 @@
   default values
 */
 
-type MyType
+class MyType
 {
 
     def staticMethod(Int param = 0) (static)

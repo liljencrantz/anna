@@ -1,10 +1,10 @@
 /*
   Test template specialization of function names in types
 */
-type Base
+class Base
 {}
 
-type Foo (template(%op:__add__), extends(Base), pie) 
+class Foo (template(%op:__add__), extends(Base), pie) 
 {
 
     def Int bar(Int a, Int b)

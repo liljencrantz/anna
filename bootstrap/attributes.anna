@@ -18,3 +18,4 @@ macro blockAttribute(node)
 {
     node[0];
 }
+

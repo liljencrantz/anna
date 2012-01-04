@@ -1,5 +1,5 @@
 
-type Timezone
+class Timezone
 (doc("A Timezone object"))
 {
     var String name (internal);
@@ -10,7 +10,7 @@ type Timezone
     }
 }
 
-type Delta
+class Delta
 (doc("An object representing a time delta, e.g. the difference between two points in time."))
 {
 
@@ -53,7 +53,7 @@ type Delta
     }
 }
 
-type Date
+class Date
 (
     doc(
 	"The Date object represents a point in time with microsecond precision. Dates object are always relative to a specific timezone.")

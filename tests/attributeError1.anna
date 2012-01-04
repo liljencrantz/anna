@@ -1,4 +1,4 @@
-type Foo (someNoneExistingAttribute)
+class Foo (someNoneExistingAttribute)
 {
 
 }

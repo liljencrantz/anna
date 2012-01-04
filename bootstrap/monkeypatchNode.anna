@@ -16,7 +16,7 @@ def Node __format__(
     return res;
 }
 
-def Int isCallTo(
+def Int callTo?(
     Node this,
     String name)
 (
@@ -27,7 +27,18 @@ def Int isCallTo(
     if(((this as Call).function as Identifier).name == name) { 1 } else { ? }
 }
 
-def Int isBlock(
+def Int named?(
+    Node this,
+    String name)
+(
+    target(Node),
+    doc("Returns true if the specified AST node is an identifier with the specified name."),
+)
+{
+    if((this as Identifier).name == name) { 1 } else { ? }
+}
+
+def Int block?(
     Node this)
 (
     target(Node),
@@ -36,3 +47,29 @@ def Int isBlock(
 {
     if(((this as Call).function as Identifier).name == "__block__") { 1 } else { ? }
 }
+
+def List«Call» filterByCall(Call this, String name)
+(
+    target(Call),
+)
+{
+    res := «Call»[];
+    this.each(chld)
+    {
+	if(callTo?(chld, name)){ res.push(chld as Call) }
+    }
+    return res;
+}
+
+def Int childNamed?(Call this, String name)
+(
+    target(Call),
+)
+{
+    this.each(chld)
+    {
+	if(named?(chld, name)){ return 1 }
+    }
+    return ?;
+}
+

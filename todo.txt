@@ -1,11 +1,12 @@
 1.0 RELEASE CRITERIA:
+* assign/declare list of variables, e.g. [foo, bar, baz] = qux(); or [foo, bar, baz] := qux();
 * anna-game as a proof that the language works for solving reasonably complex problems
 * Documentation coverage of standard API functions and types should be at least 90 %.
 * Base documentation:
   - Split into multiple files
   - Check for dead links
   - binding generator doesn't pass on the doc attribute
-  - By default, attributes should be dropped to conserve memory. Add special switch to retain it for the annadoc program.
+  - By default, maybe attributes should be dropped to conserve memory? Add special switch to retain it for the annadoc program.
 * HTML api documentation extractor
   - Hide internal elements by default
   - variadic arguments aren't shown as such

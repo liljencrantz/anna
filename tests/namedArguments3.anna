@@ -1,5 +1,5 @@
 
-type Foo
+class Foo
 {
 
     def barString(String first, String second, Char third) (alias(bar))
@@ -13,7 +13,7 @@ type Foo
     }
 }
 
-type Baz
+class Baz
 {
 
     def barFoo(Foo other) (aliasReverse(bar))

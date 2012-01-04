@@ -1,4 +1,4 @@
-type Derived1
+class Derived1
 (
     extends(Int, Range)
 )
@@ -10,7 +10,7 @@ type Derived1
     }
 }
 
-type Derived2
+class Derived2
 (
     extends(Range, Int)
 )

@@ -1,5 +1,5 @@
 
-type Error
+class Error
 {
     var reflection.Continuation source(internal);
     var String message;

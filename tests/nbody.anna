@@ -20,7 +20,7 @@ def main()
     print(nbod.energy().format(digits:9), '\n');
 }
 
-type NBodySystem 
+class NBodySystem 
 {
     var List«Body» bodies;
     var List«Pair«Body,Body»» pairs;
@@ -167,7 +167,7 @@ def sun()
     p;
 }
 
-type Body {
+class Body {
 
     expandCode(
 	var Float %name,

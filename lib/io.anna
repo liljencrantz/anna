@@ -2,7 +2,7 @@
 error IoError (Error) {}
 */
 
-type IOError (extends(error.Error))
+class IOError (extends(error.Error))
 {    
 }
 
@@ -55,7 +55,7 @@ def String readWholeFile(Int fd)
     }
 }
 
-type File
+class File
 (
     doc(
 	"A high level object respresenting a filesystem entry such as a file, a directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations. A File object represents a file system path; it does not always point to an actually existing file.")

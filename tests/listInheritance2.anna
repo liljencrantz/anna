@@ -2,7 +2,7 @@
   Check that extending a specialized template class works
 */
 
-type Derived
+class Derived
 (
     extends(MutableList«Int»)
 )

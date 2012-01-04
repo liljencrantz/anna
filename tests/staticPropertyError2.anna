@@ -1,5 +1,5 @@
 
-type MyType
+class MyType
 {
     /*
       This is an error - we have a static property, but its getter 

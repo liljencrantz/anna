@@ -396,7 +396,7 @@ def List«Node» findAttr(Call attr, String name)
     res := «Node»[];
     attr.each(at)
     {
-	(at.isCallTo(name)) and (at as Call).each(item){res.push(item)}
+	(at.callTo?(name)) and (at as Call).each(item){res.push(item)}
     }
     res;
 }
@@ -893,8 +893,8 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         nativeStructName := nameToStr(parser.Identifier(?, structName), decl[1]);
         initName := mangleMethodName(structName, "init");
 	
-        isStruct := !decl.isCallTo("cType");
-        isPointer := decl.isCallTo("cStructPointer");
+        isStruct := !decl.callTo?("cType");
+        isPointer := decl.callTo?("cStructPointer");
 	bindingType[decl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct, isPointer));
         commonData := [
 	    "typeName": typeName,
@@ -913,9 +913,9 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
 	(decl[2] as Call).each(node)
 	{
-	    if(node.isCallTo("__const__") or node.isCallTo("__var__"))
+	    if(node.callTo?("__const__") or node.isCallTo("__var__"))
 	    {
-		isVar := node.isCallTo("__var__");
+		isVar := node.callTo?("__var__");
 	        it := node as Call;
 	        fieldName := (it[0] as Identifier).name;
 
@@ -1121,7 +1121,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 				
 		default
 		{
-                    if(decl.count == 1 and decl[0].isCallTo("__block__"))
+                    if(decl.count == 1 and decl[0].callTo?("__block__"))
                     {
 			subName := String::convert(decl.function);
   		        mangledName := mangleName(subName);
