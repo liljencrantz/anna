@@ -9,9 +9,7 @@ def main()
       This gets transformed into something like
       nothing(tmp := fun(); foo := tmp[0], bar := tmp[1], baz := tmp[2]); 
     */
-    [foo, bar, baz] := fun();
-    [foo2, bar2, baz2] :== [1,2,3];
-    print( foo, ' ', bar, ' ', baz, '\n');
-    print( foo2 + bar2 + baz2, '\n');
+    [foo, bar, baz] :== fun();
+    foo = 5;
 }
 
