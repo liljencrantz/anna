@@ -43,7 +43,7 @@ def codePopup(String name, String filename)
 
 }
 
-type DocumentationData
+class DocumentationData
 (doc("Data about a specific type that should be documented."))
 {
     // The type to document
@@ -106,7 +106,7 @@ type DocumentationData
     
 }
 
-type DocumentationExtractor
+class DocumentationExtractor
 (
     doc("
 A tool for extracting the documentation from modules and generating an

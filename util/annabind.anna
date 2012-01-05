@@ -152,7 +152,7 @@ def getBindingType(Node node)
     return bindingType[node] or bindingType[(node as Call)[0]];
 }
 
-type ParseError (extends(error.Error))
+class ParseError (extends(error.Error))
 {
     var Node node;
     var String message;
@@ -165,7 +165,7 @@ type ParseError (extends(error.Error))
 
 }
 
-type BindingType 
+class BindingType 
 (
     doc("Base class for the types used in the bindings.",
 	"A BindingType is used to convert from data from Anna objects into C data and back. They also need to be able to validate the data and to cleanup any memory used in the conversion process.")
@@ -214,7 +214,7 @@ type BindingType
     {""}
 }
 
-type ListBindingType 
+class ListBindingType 
 (
     extends(BindingType), 
     doc("A BindingType implementation used for read-only lists"),)
@@ -284,7 +284,7 @@ type ListBindingType
 
 }
 
-type MutableListBindingType 
+class MutableListBindingType 
 (
     extends(BindingType), 
     doc("A BindingType used for mutable lists.")
@@ -401,7 +401,7 @@ def List«Node» findAttr(Call attr, String name)
     res;
 }
 
-type BasicBindingType 
+class BasicBindingType 
 (
     extends(BindingType), 
     doc("A very simple BindingType implementation that simply relies on string templates to perform its tasks. Works well for basic types like Int, String, etc."),
@@ -493,7 +493,7 @@ type BasicBindingType
 
 }
 
-type CStructBindingType 
+class CStructBindingType 
 (
     extends(BindingType), 
     doc("A BindingType used when passing cStruct objects as parameters.")
@@ -556,7 +556,7 @@ type CStructBindingType
 
 }
 
-type BindingGenerator
+class BindingGenerator
 (
     doc("The main object of the binding generator. Iterates over the parse tree in the binding file and generates C code based on the prototypes found there."),
 )
