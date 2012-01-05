@@ -1,0 +1,37 @@
+/*
+  Macros used for transforming stuff like 
+
+  [foo, bar, baz] = ggg();
+
+  into
+
+  nothing(tmp = ggg(), foo = tmp[0], bar = tmp[1], baz = tmp[2]);
+
+*/
+
+def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNode)
+{
+    use(parser);
+    res := (ast(nothing(%tmp :== %val)) % ["val": valNode]) as Call;
+    list.each(idx, item)
+    {
+	res ~= [assignNode % ["dec": item, "idx": IntLiteral(item, idx)]];
+    }
+//    print(res);
+    return res % ["tmp": Identifier(valNode, identifier("temp"))];
+} 
+
+macro __varList__(node)
+{
+    return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp[%idx]));
+}
+
+macro __constList__(node)
+{
+    return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp[%idx]));
+}
+
+macro __assignList__(node)
+{
+    return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]));
+}

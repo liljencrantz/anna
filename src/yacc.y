@@ -1180,13 +1180,13 @@ declaration_expression:
 		$2->child[1], $2->child[0], $4?$4:anna_node_create_null(&@$), $3);
 	} |
 	function_definition |
-	identifier DECLARE_VAR expression
+	expression2 DECLARE_VAR expression
         {
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, anna_node_create_identifier(&@$, L"__var__"),
 		$1, anna_node_create_null(&@$), $3, anna_node_create_block2(&@$));
         } |
-	identifier DECLARE_CONST expression
+	expression2 DECLARE_CONST expression
         {
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, anna_node_create_identifier(&@$, L"__const__"),

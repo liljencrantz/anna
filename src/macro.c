@@ -170,8 +170,16 @@ ANNA_VM_MACRO(anna_macro_block)
 ANNA_VM_MACRO(anna_macro_var)
 {
     CHECK_CHILD_COUNT(node, L"variable declaration", 4);
-    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
     CHECK_NODE_BLOCK(node->child[3]);
+    if(anna_node_is_call_to(node->child[0], L"MutableList"))
+    {
+	node->function = anna_node_create_identifier(
+	    &node->child[0]->location, 
+	    anna_node_is_named(node->function, L"__const__")?L"__constList__":L"__varList__");
+	return (anna_node_t *)node;
+    }
+    
+    CHECK_NODE_TYPE(node->child[0], ANNA_NODE_IDENTIFIER);
 
     anna_node_call_t *attr = (anna_node_call_t *)node->child[3];
     
