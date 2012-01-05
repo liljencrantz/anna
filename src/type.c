@@ -1021,10 +1021,27 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     int spec_count=0;
     if(input_node)
     {
-	for(i=0; i<input_node->child_count; i++)
-	{	
-	    anna_node_call_t *decl = node_cast_call(input_node->child[i]);
-//	    anna_node_print(4, decl);
+	for(i=0; i<call->child_count; i++)
+	{
+	    if(call->child[i]->node_type == ANNA_NODE_MAPPING)
+	    {
+		anna_error(call->child[i], L"Implicit template specialization can not be performed on calls with named arguments.\n");
+		break;
+	    }
+	    /*
+	      If we have multiple variadic arguments, we only inspect
+	      the first one. We're also completely ignoring named
+	      arguments.
+	    */
+	    if((i+1) >= input_node->child_count)
+	    {
+		break;
+	    }
+	    
+
+	    
+	    anna_node_call_t *decl = node_cast_call(input_node->child[i+1]);
+	    
 	    if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
 	    {
 		anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];

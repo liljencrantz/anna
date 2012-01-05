@@ -5,5 +5,5 @@ def myFunTemplate(%T a, %T b) (template(%T: Int))
 
 def main()
 {
-    print(myFunTemplate(3.0, 4.0), "\n");
+    print(myFunTemplate(a:3.0, 4.0), "\n");
 }

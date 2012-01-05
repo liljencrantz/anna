@@ -1,0 +1,20 @@
+
+class Foo (template(%T:Object))
+{
+    var %T val;
+
+    def __init__(%T val)
+    {
+        this.val = val;
+    }
+}
+
+def main()  
+{
+    /*
+      The type of the variable f should be implicitly specialized to
+      Foo«Int» because the constructor argument is of type Int.
+    */
+    f := Foo(val: 7);
+    print(f.val +1, "\n");
+}

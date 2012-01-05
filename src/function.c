@@ -1142,8 +1142,23 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
     if(input_node)
     {
 //	wprintf(L"FDSAFASD3a %d %d\n", input_node->child_count, attr->);
-	for(i=0; i<input_node->child_count; i++)
+	for(i=0; i<call->child_count; i++)
 	{
+	    if(call->child[i]->node_type == ANNA_NODE_MAPPING)
+	    {
+		anna_error(call->child[i], L"Implicit template specialization can not be performed on calls with named arguments.\n");
+		break;
+	    }
+	    /*
+	      If we have multiple variadic arguments, we only inspect
+	      the first one. We're also completely ignoring named
+	      arguments.
+	    */
+	    if(i >= input_node->child_count)
+	    {
+		break;
+	    }
+	    
 	    anna_node_call_t *decl = node_cast_call(input_node->child[i]);
 	    if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
 	    {
