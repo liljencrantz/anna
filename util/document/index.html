@@ -187,7 +187,7 @@ def main()
 	    <li>
 	      To assign a new value to an existing variable, write the
 	      variable name, followed by <code class="anna-code">=</code> and the new value for
-	      the varialbe.
+	      the variable.
 	    </li>
 	    
 	  </ul>
@@ -348,7 +348,31 @@ objList := «Object»[1, 3, 5, "foo", 6.666]
 */
 print("foo" in objList, "\n");
 	  </pre>
-	  
+
+	  <h3><a name="examples-list-assign">Assigning to lists of variables</a></h3>
+	  <p>
+	    Anna also has a convenient short hand syntax for when you
+	    want to assign the values of the individual items in a list
+	    to different variables.
+	  </p>
+	  <pre class="anna-code">
+/*
+  This declares that foo, bar, and baz are integer variables with the values
+  of 1, 2 and 3, respectively.
+
+  Note the use of ':=', making this a variable declaration, not a simple 
+  assignment. ':==' would also have worked, and would have declared foo, bar 
+  and baz as constants.
+*/
+[foo, bar, baz] := [1, 2, 3];
+
+/*
+  This will also work as expected, though someFancyFunction must of course 
+  return a collection of Ints, or there will be a compile time type checking
+  error.
+*/
+[foo, bar, baz] = someFancyFunction();
+	  </pre>
 	  <h3><a name="examples-maps">Maps</a></h3>
 	  <p>
 	    Maps are collections that map from one object to
@@ -1065,7 +1089,7 @@ expandCode(
   input provided to the struct macro.
 */
 myVar := struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
-// Prints «10helloworld2»
+// Prints «10 helloworld 2»
 print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
 	  </pre>
 	  <p>

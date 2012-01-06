@@ -60,7 +60,6 @@ static anna_node_t *anna_node_macro_expand_each(
     {
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_CAST:
-	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
 	    

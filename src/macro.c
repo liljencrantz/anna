@@ -171,7 +171,7 @@ ANNA_VM_MACRO(anna_macro_var)
 {
     CHECK_CHILD_COUNT(node, L"variable declaration", 4);
     CHECK_NODE_BLOCK(node->child[3]);
-    if(anna_node_is_call_to(node->child[0], L"MutableList"))
+    if(anna_node_is_call_to(node->child[0], L"__collection__"))
     {
 	node->function = anna_node_create_identifier(
 	    &node->child[0]->location, 

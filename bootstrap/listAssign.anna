@@ -13,13 +13,13 @@ def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNod
 {
     use(parser);
     res := (ast(nothing(%tmp :== %val)) % ["val": valNode]) as Call;
-    list.each(idx, item)
+    list[1...].each(idx, item)
     {
 	res ~= [assignNode % ["dec": item, "idx": IntLiteral(item, idx)]];
     }
 //    print(res);
     return res % ["tmp": Identifier(valNode, identifier("temp"))];
-} 
+}
 
 macro __varList__(node)
 {

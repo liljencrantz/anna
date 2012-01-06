@@ -65,7 +65,7 @@ macro expandCode(node)
 	checkCallCount(call, 2);
 	checkNodeType(call[0], InternalIdentifier);
         name := (call[0] as InternalIdentifier).name;
-	checkNodeCallTo(call[1], "MutableList");
+	checkNodeCallTo(call[1], "__collection__");
         lst := call[1] as Call;
 	if(count)
 	{
@@ -74,15 +74,15 @@ macro expandCode(node)
 		lst.error("Wrong number of parameters in list");
 		return ?;
 	    }
-	    lst.each(idx, val)
+	    lst[1...].each(idx, val)
 	    {
 		param[idx][name] = val;
-		}
+	    }
 	}
 	else
 	{
 	    count = lst.count;
-	    lst.each(val)
+	    lst[1...].each(val)
 	    {
 		param ~= [[name: val]];
 	    }

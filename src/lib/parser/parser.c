@@ -13,6 +13,7 @@
 #include "anna/lib/lang/string.h"
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/int.h"
+#include "anna/lib/lang/range.h"
 #include "anna/member.h"
 #include "anna/function.h"
 #include "anna/function_type.h"

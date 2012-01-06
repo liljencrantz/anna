@@ -47,7 +47,7 @@ __memberSet__( OBJ, KEY, VAL)
 			node->child[1]);
 		    return (anna_node_t *)call;
 		}	    
-		else if(anna_node_is_call_to(node->child[0], L"MutableList"))
+		else if(anna_node_is_call_to(node->child[0], L"__collection__"))
 		{
 		    node->function = anna_node_create_identifier(
 			&node->child[0]->location, 

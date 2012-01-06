@@ -18,6 +18,36 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_int, 2)
     return anna_from_obj(anna_node_wrap(node->child[idx]));
 }
 
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_range, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+
+    anna_object_t *range = anna_as_obj(param[1]);
+    int from = anna_range_get_from(range);
+    int step = anna_range_get_step(range);
+    int to = anna_range_get_to(range);
+    int i;
+
+    if(anna_range_get_open(range))
+    {
+	to = step>0?node->child_count:-1;
+    }
+    
+    anna_object_t *res = 
+	anna_list_create_imutable(node_type);
+
+    for(i=from;(step>0)? i<to : i>to; i+=step)
+    {
+	anna_list_add(
+	    res, 
+	    anna_node_wrap(node->child[i]));
+    }
+    return anna_from_obj(res);
+}
+
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_int, 3)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -326,12 +356,34 @@ static void anna_node_create_call_type(
 	}
     ;
     
+    anna_type_t *range_argv[] = 
+	{
+	    type,
+	    range_type
+	}
+    ;
+
+    wchar_t *range_argn[] =
+	{
+	    L"this", L"range"
+	}
+    ;
+
     mmid = anna_member_create_native_method(
 	type,
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_node_call_wrapper_i_get_int,
 	node_type,
 	2, i_argv, i_argn, 0, 0);
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+    anna_function_alias_add(fun, L"__get__");
+
+    mmid = anna_member_create_native_method(
+	type,
+	anna_mid_get(L"__get__Range__"), 0,
+	&anna_node_call_wrapper_i_get_range, 
+	anna_list_type_get_imutable(node_type), 
+	2, range_argv, range_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__get__");
 
