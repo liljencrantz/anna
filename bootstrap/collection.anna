@@ -1,33 +1,43 @@
 
 macro __collection__(node)
+(
+    doc("
+Handle a collection literal and turn it into a call to either
+MutableList or HashMap. If the collection arguments are mappings, the
+collection becomes a HashMap. If there is a template specialization
+with two arguments, the collection becomes a HashMap. Otherwise, it
+becomes a MutableList.")
+)
 {
-//    print("YAY ", node, "\n");
     res := Call(node, ?);
     spec := node[0] as Call;
-    if((!spec and node.count > 1 and ((node[1] as Call).function as Identifier).name == "__mapping__") or spec.count > 1)
+    if(
+	(!spec and node.count > 1 and 
+	    ((node[1] as Call).function as Identifier).name == "__mapping__") or 
+	spec.count == 2)
     {
 	res.function = Dummy(node, HashMap);
-	node[Range(1, ?, 1)].each(ch)
+	node[Range(1, ?, 1)].each(childNode)
 	{
-	    if(((ch as Call).function as Identifier).name != "__mapping__")
+  	    childCall := childNode as Call;
+	    if(!((childCall.function as Identifier).name == "__mapping__"))
 	    {
-		ch.error("Not a key/value pair");
+		childNode.error("Not a key/value pair");
 		return NullLiteral(node);
 	    }
-	    (ch as Call).function = Dummy(ch, Pair);
-	    res ~= MutableList«Node»(ch);
+	    childCall.function = Dummy(childNode, Pair);
 	}
-    } 
+    }
     else
     {
 	res.function = Dummy(node, MutableList);
-	node[Range(1, ?, 1)].each(ch){res ~= MutableList«Node»(ch)}
     }
+    res ~= node[Range(1, ?, 1)];
+    
     if(spec)
     {
 	res.function = Call(node, Identifier(node[0], "__specialize__"), res.function, spec);
     }
-//    print("W0T ", res, "\n");
     return res;
 }
 

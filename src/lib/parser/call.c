@@ -43,7 +43,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_range, 2)
     {
 	anna_list_add(
 	    res, 
-	    anna_node_wrap(node->child[i]));
+	    anna_from_obj(anna_node_wrap(node->child[i])));
     }
     return anna_from_obj(res);
 }
@@ -114,6 +114,19 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_list, 2)
 	    anna_node_unwrap(anna_as_obj(n)));
     }
     return anna_from_obj(anna_node_wrap((anna_node_t *)dst));
+}
+
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_push, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+    anna_node_call_t *this = 
+	(anna_node_call_t *)anna_node_unwrap(anna_as_obj_fast(param[0]));
+    anna_node_t *value = anna_node_unwrap(anna_as_obj_fast(param[1]));
+    anna_node_call_add_child(
+	this,
+	value);
+    return param[0];
 }
 
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_call, 2)
@@ -448,6 +461,21 @@ static void anna_node_create_call_type(
 	j_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_function_alias_add(fun, L"__join__");
+
+    wchar_t *push_argn[] = 
+	{
+	    L"this",
+	    L"value"
+	};
+
+    anna_member_create_native_method(
+	type,
+	anna_mid_get(L"push"),
+	0,
+	&anna_node_call_wrapper_i_push,
+	type,
+	2, argv, push_argn, 
+	0, 0);
 
     anna_member_create_native_method(
 	type,

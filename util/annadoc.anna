@@ -166,7 +166,7 @@ often used code paths, which makes it useful for regression testing.")
 	  argv := ", ".join(
 	      fun.inputType.map(idx, t)
 	      {
-		  "%(type) %(name)%(default)" % ["type": getLink(mem.memberOf, t), "name": fun.inputName[idx], "default": if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""}]
+		  "%(type) %(name)%(default)" % ["type": getLink(mem.memberOf, t), "name": fun.inputName[idx], "default": (if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""})]
 	      });
 	    "def % <em>%</em> (%);" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
 	} else {
