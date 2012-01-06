@@ -2,15 +2,7 @@
 def main()
 {
     digits := Int::convert(system.argument[1]) or 1000;
-    i := 0;
-    k := 0;
-    ns := 0;
-    k1 := 1;
-    n := 1;
-    a := 0;
-    d := 1;
-    t := 0;
-    u:=0;
+    [i, k, ns, k1, n, a, d, t, u] := [0, 0, 0, 1, 1, 0, 1, 0, 0];
 
     while(1)
     {
