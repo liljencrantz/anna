@@ -633,9 +633,9 @@ print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
 	  <h3><a name="examples-objects">Defining and creating objects</a></h3>
 	  <pre class="anna-code">
 /*
-  Use the type keyword to define your own types
+  Use the class keyword to define your own types
 */
-type MyType
+class MyType
 {
     // This declares that the type has a member of type Int with the 
     // name myMember.
@@ -689,7 +689,7 @@ TODO
 // When defining a type, members can be set as static using the 
 // static attribute
 
-type MyType
+class MyType
 {
     var Int staticVar (static);
 }
@@ -713,7 +713,7 @@ myList := [];
 MutableList::push(myList, 7);
 
 // Methods can be defined as static, just like variables
-type MyType
+class MyType
 {
 
     def Object staticMeth() (static)
@@ -733,6 +733,26 @@ def main()
 {
     MyType::staticMeth();
 }
+	  </pre>
+
+	  <h3><a name="examples-convert">Converting and formating</a></h3>
+	  <p>
+	    Converting is the act of taking a piece of data
+	    represented as one type of object and creating a new object
+	    of a different type that represents the same piece of
+	    data. Conversion can be lossless (such as when converting
+	    an Int to a String) or lossy (such as when converting a
+	    Float to an Int). 
+	  </p>
+	  <pre class="anna-code">
+/* 
+  All conversions in Anna are by convention doneusing the static
+  convert method.
+*/
+sevenString := String::convert(7);
+sevenFloat := Float::convert(sevenString);
+sevenComplex := Complex::convert(sevenFloat);
+
 	  </pre>
 
 	  <h3><a name="examples-mutable">Mutable and imutable objects</a></h3>
@@ -848,7 +868,7 @@ hash := «String, Char»[];
   All templated arguments must be prefixed with a '%' symbol. Template
   arguments that are type names must begin with an upper case letter.
 */
-type Foo (template(%A:Int)) {
+class Foo (template(%A:Int)) {
     def %A bar(%A a, %A b){
         a+b;
     }
@@ -865,7 +885,7 @@ def Int main()
   types. In this example, we specify which member method should be
   called by using a template.  
 */
-type Foo (template(%op:__add__)) 
+class Foo (template(%op:__add__)) 
 {
 
     def Int bar(Int a, Int b)
@@ -1404,21 +1424,35 @@ TODO
 	  </p>
 	  <ul>
 	    <li>
-	      Say you've written a class A, and it implements all of
-	      the members of an interface/class B. You do not need to
-	      explicitly say that A <em>is</em> a B, the interpreter figures
-	      out for itself that the class A can masque as B. This is
-	      called structural typing. Go programmers should
-	      recognise this feature.
+	      There are lots of situations in statically typed
+	      languages where you need to repeat the type of a
+	      specific expression over and over and over. Anna is
+	      pretty clever about figuring out what type an expression
+	      should have, and not force you to write it out multiple
+	      times. Variables in Anna are usually declared by writing
+	      something like <code class="anna-code">foo :=
+	      bar();</code>. Note the use of := instead of plain old
+	      =. This makes the above expressioin into a variable
+	      declaration, not an assignment. The correct type for the
+	      foo variable in the code above is determined at compile
+	      time by inspecting the return type of the foo
+	      function. In much the same way, Anna can usually
+	      determine the return type of functions. Go and C#
+	      programmers should recognise this feature.
 	    </li>
 	    <li>
-	      There are lots of situations in statically typed languages
-	      where you need to repeat the type of a specific expression
-	      over and over and over. Anna is pretty clever about figuring
-	      out what type an expression should have, and not force you to
-	      write it out multiple times. Most variable declarations and
-	      cast operations for example do not require you to write out
-	      the type. Go and C# programmers should recognise this feature.
+	      Say you've written a class A, and it implements all of
+	      the members of an interface/class B. You do not need to
+	      explicitly say that A <em>is</em> a B, the interpreter
+	      figures out for itself that the class A can masque as
+	      B. This is called structural typing. The benefits of
+	      structural typing may not be obvious at once, but it
+	      makes it easier to write unit tests and makes code
+	      easier to adapt to new uses. The same basic ideas have
+	      been popularized in dynamically typed langauges like
+	      Python in recent years, where it is usually referred to
+	      as duck typing. Go programmers should recognise this
+	      feature.
 	    </li>
 	    <li>
 	      There are no statements in Anna, only expressions. The
@@ -1490,14 +1524,17 @@ macro replaceObjectWithInt(node)
 }
 	  </pre>
 	  <p>
-	    What does the above code do? If you can't guess, the correct
-	    answer is that it walks the entire AST and replaces all
-	    identifiers that have the value <code class="anna-code">Object</code> with a new
-	    identifier with the value <code class="anna-code">Int</code>. Instant templating!
-	    Of course, the Anna standard library already <em>has</em> a very
-	    nice templating system, so there is no need to write your own,
-	    but the possibility to make that type of additions to the
-	    language is actually in your hands.
+	    What does the above code do? If you can't guess, the
+	    correct answer is that it walks the entire AST and
+	    replaces all identifiers that have the
+	    value <code class="anna-code">Object</code> with a new
+	    identifier with the
+	    value <code class="anna-code">Int</code>. Instant
+	    templating!  Of course, the Anna standard library
+	    already <em>has</em> a very nice templating system, so
+	    there is no need to write your own, but the possibility to
+	    make that type of additions to the language is actually in
+	    your hands.
 	  </p>
 	  <p>
 	    The most common reason for using macros is to construct
@@ -1514,8 +1551,8 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	  </pre>
 	  <p>
 	    It is possible to create a list search interface like LINQ
-	    in Anna, but unlike LINQ, it is not a one time thing,
-	    grafted onto the compiler. Anna provides a general purpose
+	    in Anna, but unlike LINQ, it is not a special case grafted
+	    onto the compiler. Anna provides a general purpose
 	    framework that allows anyone proficiant in Anna to create
 	    libraries that do the same thing LINQ does, but better.
 	  </p>
@@ -1536,12 +1573,12 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    the function stack, whereas continuations allow you to
 	    jump up, down or sideways into a whole other branch of the
 	    stack - as many times as you like. That's it. Nothing
-	    more. Simple.  Because continuations can more or less
+	    more. Simple. Because continuations can more or less
 	    arbitrarily control program flow, they can be used to
 	    easily implement various high level features like
-	    exception handling and green threads.  Feel free to skip
+	    exception handling and green threads. Feel free to skip
 	    the next paragraph, which says the same thing with
-	    smaller words..
+	    smaller words.
 	  </p>
 	  <p>
 	    Continuations are a way to explicitly control the location that
@@ -1551,6 +1588,16 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    other features.
 	  </p>
 	  <h3>Moving on</h3>
+	  <p>
+	    Very few Anna programmers will directly use continuations
+	    on a regular basis. Most will stay away from writing their
+	    own macros as well. What makes these features exciting is
+	    that they allow other programmers to evolve the
+	    languages. Changes that traditionally require a deep
+	    understanding of the compiler and that can only be
+	    implemented by a small handful of people are suddenly
+	    within the grasp of any language guru. (Not that there are many Anna gurus around at the moment...)
+	  </p>
 	  <p>
 	    This concludes the Anna overview for people familiar with
 	    the C class of languages. You now need to decide where to
@@ -2133,7 +2180,7 @@ switch(x)
 	    transactions. Consider the following piece of code:
 	  </p>
 	  <pre class="anna-code">
-type Database
+class Database
 {	    
 
     ...
@@ -2198,7 +2245,7 @@ print(a ^bitand b);
 	    define a method named like the operator. An example:
 	  </p>
 	  <pre class="anna-code">
-type Color
+class Color
 {
     function blend(Float alpha)
     {
@@ -2674,7 +2721,7 @@ def outerFunction(Int value)
 	    a <code>convert</code> method. It is simply a naming
 	    convention.
 	  </p>
-
+	  
 
 	  <h2><a name="misc-internal-identifiers">Internal identifiers</a></h2>
 	  <p>
@@ -2691,7 +2738,7 @@ def outerFunction(Int value)
 /*
   %A will get substituted with the relevant template type here.
 */
-type Foo (template(%A:Int)) {
+class Foo (template(%A:Int)) {
     def %A bar(%A a, %A b){
         a+b;
     }
@@ -3039,7 +3086,58 @@ date += isoDateDelta(x-0-0, 1:00);
 		<td>
 		  <code class='anna-code'>
 		    __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __block__(1)))
+		  </code>
+		</td>
+	      </tr>
 
+	      <tr>
+		<td>
+		  <code class='anna-code'>
+		    someCall(paramName: value)
+		  </code>
+		</td>
+		<td>
+		  <code class='anna-code'>
+		    someCall(__mapping__(paramName, value))
+		  </code>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class='anna-code'>
+		    «Object»[1, 2, 3]
+		  </code>
+		</td>
+		<td>
+		  <code class='anna-code'>
+		    __collection__(Object, 1, 2, 3)
+		  </code>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class='anna-code'>
+		    [1, 2, 3]
+		  </code>
+		</td>
+		<td>
+		  <code class='anna-code'>
+		    __collection__(?, 1, 2, 3)
+		  </code>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class='anna-code'>
+		    ["a":1, "b":2]
+		  </code>
+		</td>
+		<td>
+		  <code class='anna-code'>
+		    __collection__(?, __mapping__("a", 1), __mapping__("b", 2))
 		  </code>
 		</td>
 	      </tr>
@@ -3070,13 +3168,15 @@ date += isoDateDelta(x-0-0, 1:00);
 	    exists, and has a member
 	    named <code class="anna-code">baz</code>, simply
 	    write <code class="anna-code">fooBar.baz</code> anywhere
-	    in your code in order to access that member. If you want
-	    to use the <code class="anna-code">baz</code> member
-	    often, and don't want to use the full path of the member,
-	    use the <code class="anna-code">use</code> expression,
-	    e.g. <code class="anna-code">use(fooBar);</code> - you can
-	    then access the member simply through the
-	    name <code class="anna-code">baz</code>. The
+	    in your code in order to access that member - the library
+	    will be loaded as needed. If you want to use
+	    the <code class="anna-code">baz</code> member often, and
+	    don't want to use the full path of the member, use
+	    the <code class="anna-code">use</code> expression,
+	    e.g. <code class="anna-code">use(fooBar);</code>. In any
+	    scope where a use expressioin is visible, the members of
+	    the library can be used directly, e.g.  by
+	    writing <code class="anna-code">baz</code>. The
 	    <code class="anna-code">use</code> expression can be used
 	    globally for a whole module, or it can be used locally
 	    inside a single function block. For readability, it is
@@ -3084,7 +3184,21 @@ date += isoDateDelta(x-0-0, 1:00);
 	    global <code class="anna-code">use</code> expressions as
 	    possible.
 	  </p>
-	  <h1><a name="libraries-intrspection">Library introspection</a></h1>
+	  <pre class="anna-code">
+def someFunction()
+{
+    use(math);
+    // Because of the use expression, pi in the expression below will be
+    // resolved to math.pi, e.g. the constant pi in the math library.
+    print(pi, "\n");
+}
+	  </pre>
+	  <ul>
+	    <li>The <code class="anna-code">use</code> expression is more general than simply a short cut for libraries. If you want to find out more about it, read the <a href="#use">documentation on the use expression</a>.</li>
+	    <li>If you want to find out more about how Anna locates the right library to load, continue reading.
+	  </ul>
+
+	  <h2><a name="libraries-loading">Loading a library</a></h2>
 	  <p>
 	    
 	  </p>
@@ -3103,6 +3217,23 @@ date += isoDateDelta(x-0-0, 1:00);
 	    source code library files, and are interpreted by the Anna
 	    interpreter and loaded.
 	  </p>
+
+	  <h1><a name="use">The use expression</a></h1>
+	  <p>
+
+	  </p>
+
+	  <pre class="anna-code">
+    /*
+      The use expression can be used for oth
+    */
+    lst := [];
+    use(lst);
+    push(1);
+    push(2);
+    push(3);
+    print(pop(), ' ', pop(), ' ', pop(), '\n');
+	  </pre>
 
 	  <h1><a name="design">Design choices</a></h1>
 	  <p>
@@ -3343,7 +3474,7 @@ literal := ["first", "second"];
   that would be impossible to parse unambiguably if &lt;&gt; 
   was used for template specialization.
 */
-type Foo (template(%op:?)) {
+class Foo (template(%op:?)) {
 
     def bar(Int a, Int b)
     {
