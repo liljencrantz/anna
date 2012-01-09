@@ -1091,7 +1091,7 @@ type_remainder:
 
 
 function_definition: 
-	DEF opt_type_and_opt_name declaration_list attribute_list opt_block
+	DEF opt_type_and_opt_name declaration_list attribute_list opt_block opt_declaration_init
 	{
 	    int anon = $2->child[1]->node_type == ANNA_NODE_NULL;
 	    anna_node_t *def = (anna_node_t *)anna_node_create_call2(
@@ -1099,8 +1099,13 @@ function_definition:
 		anna_node_create_identifier(&@1,L"__def__"), 
 		anon?(anna_node_t *)anna_node_create_identifier(&@$,L"!anonymous"):$2->child[1],
 		$2->child[0],
-		$3, $4, $5?$5:anna_node_create_block2(&@$));
+		$3, $4, $5?$5:($6?$6:anna_node_create_block2(&@$)));
 	    
+	    if($5 && $6)
+	    {
+		anna_error((anna_node_t *)$6, L"Can't assign to a constant.");
+	    }
+	        
 	    if(anon)
 	    {
 		$$ = def;		
@@ -1114,8 +1119,15 @@ function_definition:
 			$2->child[1], anna_node_create_null(&@$), 
 			def, anna_node_clone_deep((anna_node_t *)$4));
 		}
+		else if($6)
+		{
+		    $$ = (anna_node_t *)anna_node_create_call2(
+			&@$, anna_node_create_identifier(&@1,L"__var__"),
+			$2->child[1], anna_node_create_null(&@$), 
+			def, anna_node_clone_deep((anna_node_t *)$4));
+		}
 		else
-		{		    
+		{
 		    $$ = (anna_node_t *)anna_node_create_call2(
 			&@$, anna_node_create_identifier(&@1,L"__var__"),
 			$2->child[1], 

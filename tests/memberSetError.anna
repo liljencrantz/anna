@@ -1,0 +1,15 @@
+class MyClass
+{
+    var Int counter;
+
+    def __init__()
+    {
+	counter = "hello";
+    }
+
+}
+
+def main()
+{
+    print(MyClass().counter, "\n");
+}

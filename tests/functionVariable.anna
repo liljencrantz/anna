@@ -1,0 +1,12 @@
+def main()
+{
+    def Int fun() = {-1}
+    print(fun(), ' ', fun(), ' ', fun(), "\n");
+
+    loop := 0;
+    fun = {loop++}
+    print(fun(), ' ', fun(), ' ', fun(), "\n");
+
+    fun = ?;
+    print(fun(), ' ', fun(), ' ', fun(), "\n");
+}
