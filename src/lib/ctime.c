@@ -340,7 +340,7 @@ void anna_ctime_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"timezoneName"),
-	anna_list_type_get_imutable(string_type), 
+	string_type, 
 	&anna_ctime_get_timezone_name,
 	&anna_ctime_set_timezone_name,
 	L"The name of the currently configured timezone.");
