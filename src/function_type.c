@@ -22,7 +22,6 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 	wprintf(L"Critical: Tried to get function from non-existing type\n");
 	CRASH;
     }
-    
     if(type == null_type)
     {
 	return 0;

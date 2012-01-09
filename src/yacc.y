@@ -995,13 +995,19 @@ function_declaration:
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$,
 		anna_node_create_identifier(&@1,L"__var__"),
-		$2->child[1], anna_node_create_null(&@$), 
+		$2->child[1],
 		anna_node_create_call2(
 		    &@$,
-		    anna_node_create_identifier(&@1,L"__def__"),
-		    $2->child[1], $2->child[0],
-		    $3, anna_node_create_block2(&@$),
-		    anna_node_create_block2(&@$)), 
+		    anna_node_create_identifier(
+			&@$,
+			L"__staticTypeOf__"),
+		    anna_node_create_call2(
+			&@$,
+			anna_node_create_identifier(&@1,L"__def__"),
+			$2->child[1], $2->child[0],
+			$3, anna_node_create_block2(&@$),
+			anna_node_create_block2(&@$))), 
+		anna_node_create_null(&@$), 
 		attr);
 	};
 
@@ -1095,16 +1101,33 @@ function_definition:
 		$2->child[0],
 		$3, $4, $5?$5:anna_node_create_block2(&@$));
 	    
-	    if(!anon)
+	    if(anon)
 	    {
-		$$ = (anna_node_t *)anna_node_create_call2(
-		    &@$, anna_node_create_identifier(&@1,L"__const__"),
-		    $2->child[1], anna_node_create_null(&@$), 
-		    def, anna_node_clone_deep((anna_node_t *)$4));
+		$$ = def;		
 	    }
 	    else
 	    {
-		$$ = def;
+		if($5)
+		{
+		    $$ = (anna_node_t *)anna_node_create_call2(
+			&@$, anna_node_create_identifier(&@1,L"__const__"),
+			$2->child[1], anna_node_create_null(&@$), 
+			def, anna_node_clone_deep((anna_node_t *)$4));
+		}
+		else
+		{		    
+		    $$ = (anna_node_t *)anna_node_create_call2(
+			&@$, anna_node_create_identifier(&@1,L"__var__"),
+			$2->child[1], 
+			anna_node_create_call2(
+			    &@$,
+			    anna_node_create_identifier(
+				&@$,
+				L"__staticTypeOf__"),
+			    def),
+			anna_node_create_null(&@$),
+			anna_node_clone_deep((anna_node_t *)$4));
+		}
 	    }
 	} |
 	MACRO identifier '(' identifier ')' attribute_list block

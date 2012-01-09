@@ -31,9 +31,10 @@ the magical this parameter to methods and so on.")
 		    // the value they're constructing. Blergh.
 		    funBody ~= [ast(this)];
 		}
-
 		if(!attr.childNamed?("static"))
 		{
+		    attr.push(ast(bound));
+		    (decl[3] as Call).push(ast(bound));
 		    /* 
 		       For non-static methods, prepend a variable
 		       declaration to the argument lost of the
@@ -57,6 +58,7 @@ the magical this parameter to methods and so on.")
 			funBody,
 			funBody.function,
 			ast(use(this))) ~ funBody;
+	
 		}
 	    }
 	}

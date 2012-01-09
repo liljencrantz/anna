@@ -416,41 +416,57 @@ static void anna_type_prepare_member_internal(
     anna_node_declare_t *decl,
     anna_stack_template_t *stack)
 {
+    if(decl->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
+    {
+	return;
+    }
+    
     if(anna_member_get(
 	   type,
 	   anna_mid_get(decl->name)))
     {
-//	wprintf(L"Skip %ls\n", decl->name);
 	return;
     }
     
     int is_static = 0;
-    int is_method = 0;
+    int is_function = 0;
     int is_bound = 0;
 //    wprintf(L"Register %ls\n", decl->name);
     
-    if(decl->value->node_type == ANNA_NODE_CLOSURE)
+    if(anna_function_type_unwrap(decl->return_type))
     {
-	is_static = 1;
-	is_method = 1;
-	is_bound = !anna_attribute_flag(decl->attribute, L"static");
+	is_static = anna_attribute_flag(decl->attribute, L"static");
+	is_function = 1;
+	is_bound = anna_attribute_flag(decl->attribute, L"bound");
+	if(is_static && is_bound)
+	{
+	    anna_error((anna_node_t *)decl, L"Static methods can't be bound");
+	    return;
+	}
+	/*
+	  Bound methods are stored statically and bound dynamically when needed.
+	*/
+	if(is_bound)
+	{
+	    is_static = 1;
+	}
     }
     
     anna_node_calculate_type(
 	(anna_node_t *)decl);
     
-    if(!is_method)
+    if(!is_function)
     {
 	is_static = anna_attribute_flag(decl->attribute, L"static");
+    }
+    
+    array_list_t etter = AL_STATIC;
+    anna_attribute_call_all(decl->attribute, L"property", &etter);
 	
-	array_list_t etter = AL_STATIC;
-	anna_attribute_call_all(decl->attribute, L"property", &etter);
-	
-	if(al_get_count(&etter))
-	{
-	    al_destroy(&etter);
-	    return;
-	}
+    if(al_get_count(&etter))
+    {
+	al_destroy(&etter);
+	return;
     }
         
     mid_t mid = anna_member_create(
@@ -464,13 +480,20 @@ static void anna_type_prepare_member_internal(
 	type, mid);
     member->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)decl->attribute);
     
-    if(is_method)
+    if(is_function)
     {
-	anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
 	anna_member_set_bound(member, is_bound);
-	*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
-	anna_function_set_stack(clo->payload, stack);
-	anna_function_setup_interface(clo->payload);
+	if(decl->value && decl->value->node_type == ANNA_NODE_CLOSURE)
+	{
+	    anna_node_closure_t  *clo = (anna_node_closure_t *)decl->value;
+
+	    if(is_static)
+	    {
+		*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
+	    }
+	    anna_function_set_stack(clo->payload, stack);
+	    anna_function_setup_interface(clo->payload);
+	}
 	//anna_function_setup_body(clo->payload);
     }
     if(is_static)
@@ -495,11 +518,6 @@ static void anna_type_prepare_property(
     if(anna_member_get(
 	   type,
 	   anna_mid_get(decl->name)))
-    {
-	return;
-    }
-    
-    if(decl->value->node_type == ANNA_NODE_CLOSURE)
     {
 	return;
     }

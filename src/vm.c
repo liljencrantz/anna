@@ -419,7 +419,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 
 	if(unlikely(wrapped == null_object))
 	{
-	    wprintf(L"null\n");
 	    stack->frame->code += sizeof(*op);
 	    anna_context_drop(stack, param);
 	}

@@ -14,13 +14,21 @@ class Foo
 def main()
 {
     foo := Foo();
-    /* Every time we access foo.num, a new closure is created, with a new counter. All these calls should therefore return 1 */
+    /*
+      Every time we access foo.num, numGetter is called, and a new
+      closure is created, with a new counter. All these calls should
+      therefore return 1 
+    */
     print(foo.num(), "\n");
     print(foo.num(), "\n");
     print(foo.num(), "\n");
 
     bar := foo.num;
-    /* Every time we access bar, the same closure is used, with the same counter. These calls will therefore count up. */
+    /* 
+      We only call numGetter once when setting up bar. Every time we
+      access bar, the same closure is used, with the same
+      counter. These calls will therefore count up.
+    */
     print(bar(), "\n");
     print(bar(), "\n");
     print(bar(), "\n");

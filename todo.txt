@@ -17,9 +17,9 @@
 * Remove code duplication for alias matching in methods
 * Reconsider making function aliases have equal priority to function names when performing calls
 * Remove code duplication between types and functions when performing templatization
-* Write a 'class' macro that performs some of the code transforms currently done by the anna_type_mangle_methods c function, and use pure types for slightly less magical type definitions
 
 1.0 RELEASE CRITERIA (Done):
+* Write a 'class' macro that performs some of the code transforms currently done by the anna_type_mangle_methods c function, and use pure types for slightly less magical type definitions
 * assign/declare list of variables, e.g. [foo, bar, baz] = qux(); or [foo, bar, baz] := qux();
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
 * More validation:

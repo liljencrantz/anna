@@ -1,0 +1,49 @@
+/*
+  Various tests related to using the type macro directly, e.g. not
+  through the class macro.
+*/
+
+type Foo
+{
+    def someBoundMethod(Foo this, Int ggg) (bound)
+    {
+	print("method ", this, ' ', ggg, '\n');
+    }
+
+    def someBoundInstanceMethod(Foo this, Int ggg) (bound);
+    def someBoundInstanceMethod2(Foo this, Int ggg) (bound);
+
+    def someStaticFunction(Foo this, Int ggg) (static)
+    {
+	print("function ", this, ' ', ggg, '\n');
+    }
+
+    def someInstanceFunction(Foo this, Int ggg);
+    def someInstanceFunction2(Foo this, Int ggg);
+
+    def __init__(Foo this) (bound)
+    {
+	this.someInstanceFunction = def (Foo this, Int ggg)
+	    {
+		print("function ", this, ' ', ggg, '\n');
+	    }
+	this.someBoundInstanceMethod = def (Foo this, Int ggg)
+	    {
+		print("function ", this, ' ', ggg, '\n');
+	    }
+	return this;
+    }
+}
+
+def main()
+{
+    foo := Foo();
+    foo.someBoundMethod(1);
+    foo.someStaticFunction(foo, 2);
+    foo.someInstanceFunction(foo, 3);
+    foo.someInstanceFunction2(foo, 4);
+    foo.someBoundInstanceMethod(5);
+    foo.someBoundInstanceMethod2(6);
+    print(foo.someInstanceFunction2, "\n");
+    print(foo.someBoundInstanceMethod2, "\n");
+}

@@ -303,12 +303,21 @@ static void anna_i_wrap_method(anna_context_t *stack)
     anna_entry_t *obj = anna_context_pop_entry(stack);
     anna_context_pop_object(stack);
     
-    anna_object_t *res = anna_method_bind(
-	stack,
-	anna_function_unwrap(anna_as_obj(meth)))->wrapper;
-    *anna_entry_get_addr(res, ANNA_MID_THIS) = obj;
-    *anna_entry_get_addr(res, ANNA_MID_METHOD) = meth;
-    anna_context_push_object(stack, res);
+    anna_function_t *fun = anna_function_unwrap(anna_as_obj(meth));
+    if(fun)
+    {
+	anna_object_t *res = anna_method_bind(
+	    stack,
+	    fun)->wrapper;
+	*anna_entry_get_addr(res, ANNA_MID_THIS) = obj;
+	*anna_entry_get_addr(res, ANNA_MID_METHOD) = meth;
+	anna_context_push_object(stack, res);
+    }
+    else
+    {
+	anna_context_push_object(stack, null_object);	
+    }
+    
 }
 
 void anna_lang_create_types(anna_stack_template_t *stack_lang)

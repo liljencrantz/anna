@@ -19,3 +19,8 @@ macro blockAttribute(node)
     node[0];
 }
 
+macro boundAttribute(node)
+{
+    node[0];
+}
+
