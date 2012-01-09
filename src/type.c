@@ -416,7 +416,7 @@ static void anna_type_prepare_member_internal(
     anna_node_declare_t *decl,
     anna_stack_template_t *stack)
 {
-    if(decl->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
+    if((decl->return_type == ANNA_NODE_TYPE_IN_TRANSIT) || (!decl->return_type))
     {
 	return;
     }
@@ -837,9 +837,10 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
 	anna_node_declare_t *decl2 = (anna_node_declare_t *)node->child[i];
 	if( wcscmp(decl2->name, name) == 0)
 	{
+	    node->child[i] = anna_node_calculate_type(node->child[i]);
 	    anna_type_prepare_member_internal(
 		type,
-		decl2,
+		(anna_node_declare_t *)node->child[i],
 		type->stack);
 	}
     }    

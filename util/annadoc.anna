@@ -126,7 +126,7 @@ often used code paths, which makes it useful for regression testing.")
     def __init__()
     {
 	baseDir.makeDirectory();
-	path = HashMap«Type, String»();
+	path = HashMap«Type, DocumentationData»();
 	memberMissing = memberTot = moduleMissing = moduleTot = 0;
     }
     
