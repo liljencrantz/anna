@@ -261,7 +261,9 @@ print( .5 );
 
 	  <h3><a name="examples-lists">Lists</a></h3>
 	  <p>
-	    Lists are collections that store values at a specific integer offset.
+	    Anna has several collection types, types that represent a
+	    series of elements. The most basic of these is the List,
+	    a collection which stores values at unique integer offsets.
 	  </p>
 	  <pre class="anna-code">
 // lst is a list with four members
@@ -311,7 +313,7 @@ lst2.push("last");
 // Remove and return the last element of a list
 print(lst2.pop());
 
-// The empty property is 1 if the list is empty, and null otherwise
+// The «empty?» property is 1 if the list is empty, and null otherwise
 print(lst.empty?, "\n")
 
 // Join two lists together
@@ -348,7 +350,18 @@ objList := «Object»[1, 3, 5, "foo", 6.666]
 */
 print("foo" in objList, "\n");
 	  </pre>
-
+	  <ul>
+	    <li>
+	      To learn more about the various collection types in Anna, see the section<a href="#collections">More about collections</a>.
+	    </li>
+	    <li>Notice how there is a property
+	    called <code>empty?</code> in Anna? Question marks are
+	    valid as part of variable names in Anna, so long as
+	    they're not the first character. To learn more about legal
+	    Anna variable names an it's naming convensions, read the
+	    section <a href="#design-naming">Naming of variables and
+	    types</a>.</li>
+	  </ul>
 	  <h3><a name="examples-list-assign">Assigning to lists of variables</a></h3>
 	  <p>
 	    Anna also has a convenient short hand syntax for when you
@@ -417,7 +430,11 @@ print(hash["unknown"]);
 */
 print("unknown" in hash, "\n");
 	  </pre>
-	  
+	  <ul>
+	    <li>
+	      To learn more about the various collection types in Anna, see the section<a href="#collections">More about collections</a>.
+	    </li>
+	  </ul>
 	  <h3><a name="examples-more-calls">More on function calls</a></h3>
 	  <p>
 	    Function calls in Anna have a few additional options
@@ -540,7 +557,11 @@ print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...], "\n")
 // This outputs «banana»
 print("abrainbadnoah\n"[1|2...]);
 	  </pre>
-
+	  <ul>
+	    <li>
+	      To learn more about the various collection types in Anna, see the section<a href="#collections">More about collections</a>.
+	    </li>
+	  </ul>
 	  <h3><a name="examples-blocks">Blocks</a></h3>
 	  <p>
 	    In addition to an each method, collection types offer a wide
@@ -630,6 +651,58 @@ level := (system.argument[1] == "--level") and Int::convert(system.argument[2]) 
 print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
 	  </pre>
 
+
+	  <h3><a name="examples-functions-more">More on defining functions</a></h3>
+	  <pre  class="anna-code">
+/*
+  Previous examples have shown us that this is the standard way to define 
+  a function
+*/
+def myFunctionDecl(Int arg)
+{
+    return arg+1;
+}
+
+/*
+  By skipping the name of the function, we can create an anonymous function,
+  that is, a function not bound to a constant name. We can do this when we 
+  simply want to send a function as a parameter to another function call:
+*/
+print(functional.reduce([1,2,3,4], 0, def (Int a, Int b){a+b}), "\n");
+
+/*
+  Creating a named function is really just a short hand for doing two
+  things, namely creating an anonymous function and binding it to a
+  constant. We can do the two things separatly with identical meaning,
+  like this:
+*/
+
+myFunctionConst :== def (Int arg)
+{
+    return arg+1;
+}
+
+/*
+  Sometimes, it is useful to bind a function to a variable instead of a 
+  constant:
+*/
+myFunctionVar := def (Int arg){ arg+1 }
+
+/*
+  It (obviously) doesn't matter if you're calling a function variable or a 
+  function constant. This will print 8.
+*/
+print(myFunctionVar(7), "\n");
+
+/*
+  But a variable can be reassigned. This will print 7, because the function 
+  variable has been reassigned.
+*/
+myFunctionVar = def (Int arg){ arg }
+print(myFunctionVar(7), "\n");
+	  </pre>
+	  
+
 	  <h3><a name="examples-objects">Defining and creating objects</a></h3>
 	  <pre class="anna-code">
 /*
@@ -681,7 +754,60 @@ myInstance.myMethod();
 	  
 	  <h3><a name="examples-properties">Properties</a></h3>
 	  <pre class="anna-code">
-TODO
+/*
+  Properties are method calls that look like member variables. For example, the
+  count property of the List type returns the number of elements in the list.
+*/
+myList := [1, 2, 3];
+print(myList.count, "\n"); // This prints 3
+myList.push(0);
+print(myList.count, "\n"); // This prints 4
+
+/*
+  Some properties are read only, like List::empty?, but others can be written to
+  as well as read. MutableList::count can be written to.
+*/
+myList.count = 2; // This truncates the list
+print(myList, ' ', myList.count, "\n"); // This prints [1, 2] 2
+myList.count = 5; // This will null-pad the list to five elements.
+print(myList.count, "\n"); // This prints 5
+
+/*
+  Defining you own properties is straight forward. Define a getter and
+  optionally a setter method, both with suitable parameter lists. Then
+  declare a member variable and add a property attribute to it, giving
+  the name of the getter/setter as parameters.
+*/
+class PropertyExample 
+{
+    var Int propValue;
+
+    def myGetter()
+    {
+        propValue;
+    }
+
+    def mySetter(Int val)
+    {
+        print("Setting myProperty to %\n" % [val]);
+        propValue = val;
+    }
+
+    var Int myProperty (property(myGetter, mySetter));
+}
+
+/*
+  For read only properties, there is a slightly less verbose short
+  hand. Simply define a suitable getter method and add the property
+  attribute directly to the getter method like this:
+*/
+class PropertyExample2
+{
+    def myProperty() (property)
+    {
+        3;
+    }
+}
 	  </pre>
 
 	  <h3><a name="examples-static">Static members</a></h3>
@@ -2877,6 +3003,44 @@ var then = isoDate(2009-1-1, 12:30);
 // Move ahead x years and one hour 
 date += isoDateDelta(x-0-0, 1:00);
 	  </pre>
+	  
+	  <h1><a name="collections">More about collections</a></h1>
+	  <p>
+	    The Anna standard library comes with three different collections built in,
+	  </p>
+	  <ul>
+	    <li>
+	      <code class="anna-code">List</code>, an ordered
+	      collection using positive integer indices as keys, and
+	      which comes in both
+	      a <code class="anna-code">MutableList</code> and
+	      an <code class="anna-code">ImutableList</code> flavor,
+	      both of which are templates that can be specialized to
+	      store any type.
+	    </li>
+	    <li><code class="anna-code">HashMap</code>, an unordered collection using arbitrary objects as keys, and is a template that can be specialized to store any key/value type pair.</li>
+	    <li><code class="anna-code">Range</code>, which defines a (possible infinite) sequence of equally spaced integer values.</li>
+	  </ul>
+	  <p>
+	    Anna list objects use zero based offsets, and use a
+	    dynamically allocated array tyo store it's values
+	    internally, meaning that accessing any element in the
+	    array by index will always be a fast operation. This also
+	    means that if there are large gaps in the List, it will
+	    take up more memory than it needs, and that inserting new
+	    elements anywhere that is not near the end of the list is
+	    an inherently slow operation.
+	  </p>
+	  <p>
+	    Anna hashmap objects are one-to-one mappings that use
+	    the <code>hashCode</code> and <code>__eq__</code> methods
+	    of the key object to find the corresponding
+	    value. Hashmaps are unordered. That is, when iterating
+	    over them, the elements may be presented in any order.
+	  </p>
+          <p>
+
+	  </p>
 	  <h1><a name="sugar">Sugar and spice - How the front end sugar works and what Anna looks like without makeup</a></h1>
 	  <p>
 	    The real syntax for Anna is painfully simple. There Anna AST
