@@ -2,7 +2,7 @@
 class A
 {
 
-    def Int myProp() (property)
+    def myProp() (property)
     {
 	return 7;
     }

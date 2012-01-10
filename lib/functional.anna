@@ -19,7 +19,7 @@ def sum(%T collection)
     doc("Calculate the sum of all the elements in the specified collection"),
 )
 {
-    res := __staticTypeOf__(collection[0])::convert(0);
+    res := __staticTypeOf__(collection.first)::convert(0);
     collection.each(val){res += val}
     return res;
 }
@@ -30,7 +30,7 @@ def prod(%T collection)
     doc("Calculate the product of all the elements in the specified collection"),
 )
 {
-    res := __staticTypeOf__(collection[0])::convert(1);
+    res := __staticTypeOf__(collection.first)::convert(1);
     collection.each(val){res = res*val}
     return res;
 }

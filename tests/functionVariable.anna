@@ -1,6 +1,6 @@
 def main()
 {
-    def Int fun() = {-1}
+    fun := def Int () {-1}
     print(fun(), ' ', fun(), ' ', fun(), "\n");
 
     loop := 0;

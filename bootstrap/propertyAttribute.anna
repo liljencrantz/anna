@@ -20,9 +20,8 @@ macro propertyAttribute(node)
         decl := payload as Call;
 	if(decl[2].callTo?("__def__"))
 	{
-	   
 	    getter := decl[2] as Call;
-  	    propType := getter[1];
+	    propType := if(getter[1].__type__ != NullLiteral){getter[1]} else {ast(__staticReturnTypeOf__(%fun)) % ["fun": decl[2]];}
 	    propName := (decl[0] as Identifier).name;
             getterName := "!" ~ propName ~ "Getter";
 	    getter[0] = Identifier(getter[0], getterName);
@@ -36,7 +35,7 @@ macro propertyAttribute(node)
 	    res := ast(nothing(%property, %getter)) % [
 		"property": propDecl,
 		"getter": node[0] ];
-//	    print(res);
+//	    print(res, "\n");
 	    return res;
 	}
     }
