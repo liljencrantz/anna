@@ -47,7 +47,8 @@
 #define ANNA_FUNCTION_LOOP (8192*8)
 
 /**
-   This function is pure (has no side effects).
+  This function is pure (has no side effects). Pure functions with
+  only known input parameters are often executed at compile time.
 */
 #define ANNA_FUNCTION_PURE (8192*16)
 

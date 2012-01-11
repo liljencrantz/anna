@@ -48,15 +48,15 @@ def Int block?(
     if(((this as Call).function as Identifier).name == "__block__") { 1 } else { ? }
 }
 
-def List«Call» filterByCall(Call this, String name)
+def List«Node» filterByCall(Call this, String name)
 (
     target(Call),
 )
 {
-    res := «Call»[];
+    res := «Node»[];
     this.each(chld)
     {
-	if(callTo?(chld, name)){ res.push(chld as Call) }
+	if(callTo?(chld, name)){ (chld as Call).each(param){res.push(param)} }
     }
     return res;
 }

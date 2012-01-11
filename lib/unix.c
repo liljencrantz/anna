@@ -77,23 +77,23 @@ void anna_open_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"readOnly", O_RDONLY, L"");
-    anna_module_const_int(stack, L"writeOnly", O_WRONLY, L"");
-    anna_module_const_int(stack, L"readWrite", O_RDWR, L"");
-    anna_module_const_int(stack, L"append", O_APPEND, L"");
-    anna_module_const_int(stack, L"async", O_ASYNC, L"");
-    anna_module_const_int(stack, L"create", O_CREAT, L"");
-    anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC, L"");
-    anna_module_const_int(stack, L"direct", O_DIRECT, L"");
-    anna_module_const_int(stack, L"directory", O_DIRECTORY, L"");
-    anna_module_const_int(stack, L"exclusive", O_EXCL, L"");
-    anna_module_const_int(stack, L"largeFile", O_LARGEFILE, L"");
-    anna_module_const_int(stack, L"noAccessTime", O_NOATIME, L"");
-    anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY, L"");
-    anna_module_const_int(stack, L"noFollow", O_NOFOLLOW, L"");
-    anna_module_const_int(stack, L"nonBlock", O_NONBLOCK, L"");
-    anna_module_const_int(stack, L"synchronous", O_SYNC, L"");
-    anna_module_const_int(stack, L"truncate", O_TRUNC, L"");
+    anna_module_const_int(stack, L"readOnly", O_RDONLY, L"Open file in read-only mode.");
+    anna_module_const_int(stack, L"writeOnly", O_WRONLY, L"Open file in write-only mode.");
+    anna_module_const_int(stack, L"readWrite", O_RDWR, L"Open file in read-write mode.");
+    anna_module_const_int(stack, L"append", O_APPEND, L"The file is opened in append mode.");
+    anna_module_const_int(stack, L"async", O_ASYNC, L"Enable signal-driven I/O.");
+    anna_module_const_int(stack, L"create", O_CREAT, L"If the file does not exist it will be created.");
+    anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC, L"Enable the close-on-exec flag for the new file descriptor.");
+    anna_module_const_int(stack, L"direct", O_DIRECT, L"Try to minimize cache effects of the I/O to and from this file.");
+    anna_module_const_int(stack, L"directory", O_DIRECTORY, L"If pathname is not a directory, cause the open to fail.");
+    anna_module_const_int(stack, L"exclusive", O_EXCL, L"Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail.");
+    anna_module_const_int(stack, L"largeFile", O_LARGEFILE, L"(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened.");
+    anna_module_const_int(stack, L"noAccessTime", O_NOATIME, L"Do not update the file last access time (st_atime in the inode) when the file is read().");
+    anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY, L"If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one.");
+    anna_module_const_int(stack, L"noFollow", O_NOFOLLOW, L"If pathname is a symbolic link, then the open fails.");
+    anna_module_const_int(stack, L"nonBlock", O_NONBLOCK, L"When possible, the file is opened in nonblocking mode.");
+    anna_module_const_int(stack, L"synchronous", O_SYNC, L"The file is opened for synchronous I/O.");
+    anna_module_const_int(stack, L"truncate", O_TRUNC, L"f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0.");
 
      anna_type_data_register(anna_open_mode_type_data, stack);
 }
@@ -117,28 +117,28 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"regular", S_IFREG, L"");
-    anna_module_const_int(stack, L"socket", S_IFSOCK, L"");
-    anna_module_const_int(stack, L"link", S_IFLNK, L"");
-    anna_module_const_int(stack, L"block", S_IFBLK, L"");
-    anna_module_const_int(stack, L"directory", S_IFDIR, L"");
-    anna_module_const_int(stack, L"character", S_IFCHR, L"");
-    anna_module_const_int(stack, L"fifo", S_IFIFO, L"");
-    anna_module_const_int(stack, L"suid", S_ISUID, L"");
-    anna_module_const_int(stack, L"sgid", S_ISGID, L"");
-    anna_module_const_int(stack, L"sticky", S_ISVTX, L"");
-    anna_module_const_int(stack, L"userAll", S_IRWXU, L"");
-    anna_module_const_int(stack, L"userRead", S_IRUSR, L"");
-    anna_module_const_int(stack, L"userwrite", S_IWUSR, L"");
-    anna_module_const_int(stack, L"userExecute", S_IXUSR, L"");
-    anna_module_const_int(stack, L"groupAll", S_IRWXG, L"");
-    anna_module_const_int(stack, L"groupRead", S_IRGRP, L"");
-    anna_module_const_int(stack, L"groupwrite", S_IWGRP, L"");
-    anna_module_const_int(stack, L"groupExecute", S_IXGRP, L"");
-    anna_module_const_int(stack, L"otherAll", S_IRWXO, L"");
-    anna_module_const_int(stack, L"otherRead", S_IROTH, L"");
-    anna_module_const_int(stack, L"otherwrite", S_IWOTH, L"");
-    anna_module_const_int(stack, L"otherExecute", S_IXOTH, L"");
+    anna_module_const_int(stack, L"regular", S_IFREG, L"Regular file");
+    anna_module_const_int(stack, L"socket", S_IFSOCK, L"Socket");
+    anna_module_const_int(stack, L"link", S_IFLNK, L"Symbolic link.");
+    anna_module_const_int(stack, L"block", S_IFBLK, L"Block device.");
+    anna_module_const_int(stack, L"directory", S_IFDIR, L"Directory.");
+    anna_module_const_int(stack, L"character", S_IFCHR, L"Character device.");
+    anna_module_const_int(stack, L"fifo", S_IFIFO, L"FIFO.");
+    anna_module_const_int(stack, L"suid", S_ISUID, L"Set UID bit.");
+    anna_module_const_int(stack, L"sgid", S_ISGID, L"Set-group-ID bit.");
+    anna_module_const_int(stack, L"sticky", S_ISVTX, L"Sticky bit.");
+    anna_module_const_int(stack, L"userAll", S_IRWXU, L"Mask for all file owner permissions.");
+    anna_module_const_int(stack, L"userRead", S_IRUSR, L"File owner read permission.");
+    anna_module_const_int(stack, L"userwrite", S_IWUSR, L"File owner write permission.");
+    anna_module_const_int(stack, L"userExecute", S_IXUSR, L"File owner execute permission.");
+    anna_module_const_int(stack, L"groupAll", S_IRWXG, L"Mask for all group permissions.");
+    anna_module_const_int(stack, L"groupRead", S_IRGRP, L"Group has read permission.");
+    anna_module_const_int(stack, L"groupwrite", S_IWGRP, L"Group has write permission.");
+    anna_module_const_int(stack, L"groupExecute", S_IXGRP, L"Group has execute permission.");
+    anna_module_const_int(stack, L"otherAll", S_IRWXO, L"Mask for permissions for others (not in group).");
+    anna_module_const_int(stack, L"otherRead", S_IROTH, L"Others have read permission.");
+    anna_module_const_int(stack, L"otherwrite", S_IWOTH, L"Others have write permission.");
+    anna_module_const_int(stack, L"otherExecute", S_IXOTH, L"Others have execute permission.");
 
      anna_type_data_register(anna_stat_mode_type_data, stack);
 }
@@ -613,7 +613,7 @@ void anna_fcntl_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"dupFd", F_DUPFD, L"");
+    anna_module_const_int(stack, L"dupFd", F_DUPFD, 0);
 
      anna_type_data_register(anna_fcntl_mode_type_data, stack);
 }
@@ -637,9 +637,9 @@ void anna_seek_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"set", SEEK_SET, L"");
-    anna_module_const_int(stack, L"cur", SEEK_CUR, L"");
-    anna_module_const_int(stack, L"end", SEEK_END, L"");
+    anna_module_const_int(stack, L"set", SEEK_SET, 0);
+    anna_module_const_int(stack, L"cur", SEEK_CUR, 0);
+    anna_module_const_int(stack, L"end", SEEK_END, 0);
 
      anna_type_data_register(anna_seek_mode_type_data, stack);
 }
@@ -1249,224 +1249,224 @@ void anna_io_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_io_open_argv[] = {string_type, int_type, int_type};
     wchar_t *unix_i_io_open_argn[] = {L"name", L"flags", L"mode"};
-    anna_module_function(stack, L"open", 0, &unix_i_io_open, int_type, 3, unix_i_io_open_argv, unix_i_io_open_argn, L"");
+    anna_module_function(stack, L"open", 0, &unix_i_io_open, int_type, 3, unix_i_io_open_argv, unix_i_io_open_argn, L"Open a file descriptor. Equivalent to the C open function.");
 
     anna_type_t *unix_i_io_creat_argv[] = {string_type, int_type};
     wchar_t *unix_i_io_creat_argn[] = {L"name", L"mode"};
-    anna_module_function(stack, L"creat", 0, &unix_i_io_creat, int_type, 2, unix_i_io_creat_argv, unix_i_io_creat_argn, L"");
+    anna_module_function(stack, L"creat", 0, &unix_i_io_creat, int_type, 2, unix_i_io_creat_argv, unix_i_io_creat_argn, L"Open a file descriptor. Equivalent to the C creat function.");
 
     anna_type_t *unix_i_io_read_argv[] = {int_type, buffer_type, int_type};
     wchar_t *unix_i_io_read_argn[] = {L"fd", L"buffer", L"count"};
-    anna_module_function(stack, L"read", 0, &unix_i_io_read, int_type, 3, unix_i_io_read_argv, unix_i_io_read_argn, L"");
+    anna_module_function(stack, L"read", 0, &unix_i_io_read, int_type, 3, unix_i_io_read_argv, unix_i_io_read_argn, L"Read from a file descriptor. Equivalent to the C read function.");
 
     anna_type_t *unix_i_io_write_argv[] = {int_type, buffer_type, int_type};
     wchar_t *unix_i_io_write_argn[] = {L"fd", L"buffer", L"count"};
-    anna_module_function(stack, L"write", 0, &unix_i_io_write, int_type, 3, unix_i_io_write_argv, unix_i_io_write_argn, L"");
+    anna_module_function(stack, L"write", 0, &unix_i_io_write, int_type, 3, unix_i_io_write_argv, unix_i_io_write_argn, L"Write to a file descriptor. Equivalent to the C write function.");
 
     anna_type_t *unix_i_io_close_argv[] = {int_type};
     wchar_t *unix_i_io_close_argn[] = {L"fd"};
-    anna_module_function(stack, L"close", 0, &unix_i_io_close, object_type, 1, unix_i_io_close_argv, unix_i_io_close_argn, L"");
+    anna_module_function(stack, L"close", 0, &unix_i_io_close, object_type, 1, unix_i_io_close_argv, unix_i_io_close_argn, L"Close a file descriptor. Equivalent to the C close function.");
 
     anna_member_create_blob(unix_stat_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct stat));
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"dev"),
-        int_type, unix_i_stat_dev_getter, 0, 0);
+        int_type, unix_i_stat_dev_getter, 0, L"ID of device containing file");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"ino"),
-        int_type, unix_i_stat_ino_getter, 0, 0);
+        int_type, unix_i_stat_ino_getter, 0, L"Inode number");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"mode"),
-        int_type, unix_i_stat_mode_getter, 0, 0);
+        int_type, unix_i_stat_mode_getter, 0, L"File protection mask");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"nlink"),
-        int_type, unix_i_stat_nlink_getter, 0, 0);
+        int_type, unix_i_stat_nlink_getter, 0, L"Number of hard links.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"uid"),
-        int_type, unix_i_stat_uid_getter, 0, 0);
+        int_type, unix_i_stat_uid_getter, 0, L"User ID of owner.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"gid"),
-        int_type, unix_i_stat_gid_getter, 0, 0);
+        int_type, unix_i_stat_gid_getter, 0, L"Group ID of owner.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"rdev"),
-        int_type, unix_i_stat_rdev_getter, 0, 0);
+        int_type, unix_i_stat_rdev_getter, 0, L"Device ID.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"size"),
-        int_type, unix_i_stat_size_getter, 0, 0);
+        int_type, unix_i_stat_size_getter, 0, L"Total size in bytes.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"blksize"),
-        int_type, unix_i_stat_blksize_getter, 0, 0);
+        int_type, unix_i_stat_blksize_getter, 0, L"Block size for file system IO.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"blocks"),
-        int_type, unix_i_stat_blocks_getter, 0, 0);
+        int_type, unix_i_stat_blocks_getter, 0, L"Number of 512 byte blocks allocated.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"atime"),
-        int_type, unix_i_stat_atime_getter, 0, 0);
+        int_type, unix_i_stat_atime_getter, 0, L"Time of latest acccess.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"mtime"),
-        int_type, unix_i_stat_mtime_getter, 0, 0);
+        int_type, unix_i_stat_mtime_getter, 0, L"Time of latest modification.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"ctime"),
-        int_type, unix_i_stat_ctime_getter, 0, 0);
+        int_type, unix_i_stat_ctime_getter, 0, L"Time of latest change.");
     anna_member_create_native_method(
 	unix_stat_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_stat_init, object_type, 1, &unix_stat_type, this_argn, 0, 0);    
 
     anna_type_t *unix_i_io_stat_argv[] = {string_type, unix_stat_type};
     wchar_t *unix_i_io_stat_argn[] = {L"path", L"buf"};
-    anna_module_function(stack, L"stat", 0, &unix_i_io_stat, object_type, 2, unix_i_io_stat_argv, unix_i_io_stat_argn, L"");
+    anna_module_function(stack, L"stat", 0, &unix_i_io_stat, object_type, 2, unix_i_io_stat_argv, unix_i_io_stat_argn, L"Check the status of file with the specified path. Equivalanet to the C stat function.");
 
     anna_type_t *unix_i_io_lstat_argv[] = {string_type, unix_stat_type};
     wchar_t *unix_i_io_lstat_argn[] = {L"path", L"buf"};
-    anna_module_function(stack, L"lstat", 0, &unix_i_io_lstat, object_type, 2, unix_i_io_lstat_argv, unix_i_io_lstat_argn, L"");
+    anna_module_function(stack, L"lstat", 0, &unix_i_io_lstat, object_type, 2, unix_i_io_lstat_argv, unix_i_io_lstat_argn, L"Check the status of file with the specified path, without following symlinks. Equivalanet to the C lstat function.");
 
     anna_type_t *unix_i_io_fstat_argv[] = {int_type, unix_stat_type};
     wchar_t *unix_i_io_fstat_argn[] = {L"fd", L"buf"};
-    anna_module_function(stack, L"fstat", 0, &unix_i_io_fstat, object_type, 2, unix_i_io_fstat_argv, unix_i_io_fstat_argn, L"");
+    anna_module_function(stack, L"fstat", 0, &unix_i_io_fstat, object_type, 2, unix_i_io_fstat_argv, unix_i_io_fstat_argn, L"Check the status of file with the specified file descriptor. Equivalanet to the C fstat function.");
 
     anna_type_t *unix_i_io_mkdir_argv[] = {string_type, int_type};
     wchar_t *unix_i_io_mkdir_argn[] = {L"path", L"mode"};
-    anna_module_function(stack, L"mkdir", 0, &unix_i_io_mkdir, object_type, 2, unix_i_io_mkdir_argv, unix_i_io_mkdir_argn, L"");
-    anna_module_const_int(stack, L"standardInput", 0, L"");
-    anna_module_const_int(stack, L"standardOutput", 1, L"");
-    anna_module_const_int(stack, L"standardError", 2, L"");
+    anna_module_function(stack, L"mkdir", 0, &unix_i_io_mkdir, object_type, 2, unix_i_io_mkdir_argv, unix_i_io_mkdir_argn, L"Create a new driectory with the specified path. Equivalanet to the C mkdir function.");
+    anna_module_const_int(stack, L"standardInput", 0, L"File descriptor for standard input.");
+    anna_module_const_int(stack, L"standardOutput", 1, L"File descriptor for standard output.");
+    anna_module_const_int(stack, L"standardError", 2, L"File descriptor for error output");
 
     anna_type_t *unix_i_io_getcwd_argv[] = {buffer_type, int_type};
     wchar_t *unix_i_io_getcwd_argn[] = {L"buf", L"size"};
-    anna_module_function(stack, L"getcwd", 0, &unix_i_io_getcwd, object_type, 2, unix_i_io_getcwd_argv, unix_i_io_getcwd_argn, L"");
+    anna_module_function(stack, L"getcwd", 0, &unix_i_io_getcwd, object_type, 2, unix_i_io_getcwd_argv, unix_i_io_getcwd_argn, 0);
 
     anna_type_t *unix_i_io_chdir_argv[] = {string_type};
     wchar_t *unix_i_io_chdir_argn[] = {L"path"};
-    anna_module_function(stack, L"chdir", 0, &unix_i_io_chdir, object_type, 1, unix_i_io_chdir_argv, unix_i_io_chdir_argn, L"");
+    anna_module_function(stack, L"chdir", 0, &unix_i_io_chdir, object_type, 1, unix_i_io_chdir_argv, unix_i_io_chdir_argn, 0);
 
     anna_type_t *unix_i_io_chroot_argv[] = {string_type};
     wchar_t *unix_i_io_chroot_argn[] = {L"path"};
-    anna_module_function(stack, L"chroot", 0, &unix_i_io_chroot, object_type, 1, unix_i_io_chroot_argv, unix_i_io_chroot_argn, L"");
+    anna_module_function(stack, L"chroot", 0, &unix_i_io_chroot, object_type, 1, unix_i_io_chroot_argv, unix_i_io_chroot_argn, 0);
 
     anna_type_t *unix_i_io_fchdir_argv[] = {int_type};
     wchar_t *unix_i_io_fchdir_argn[] = {L"fd"};
-    anna_module_function(stack, L"fchdir", 0, &unix_i_io_fchdir, object_type, 1, unix_i_io_fchdir_argv, unix_i_io_fchdir_argn, L"");
+    anna_module_function(stack, L"fchdir", 0, &unix_i_io_fchdir, object_type, 1, unix_i_io_fchdir_argv, unix_i_io_fchdir_argn, 0);
 
     anna_member_create_blob(unix_f_lock_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct flock));
 
     anna_member_create_native_property(
         unix_f_lock_type, anna_mid_get(L"type"),
-        int_type, unix_i_f_lock_type_getter, 0, 0);
+        int_type, unix_i_f_lock_type_getter, 0, L"Type of lock: F_RDLCK, F_WRLCK, F_UNLCK.");
 
     anna_member_create_native_property(
         unix_f_lock_type, anna_mid_get(L"whence"),
-        int_type, unix_i_f_lock_whence_getter, 0, 0);
+        int_type, unix_i_f_lock_whence_getter, 0, L"How to interpret l_start: SEEK_SET, SEEK_CUR, SEEK_END.");
 
     anna_member_create_native_property(
         unix_f_lock_type, anna_mid_get(L"start"),
-        int_type, unix_i_f_lock_start_getter, 0, 0);
+        int_type, unix_i_f_lock_start_getter, 0, L"Starting offset for lock");
 
     anna_member_create_native_property(
         unix_f_lock_type, anna_mid_get(L"len"),
-        int_type, unix_i_f_lock_len_getter, 0, 0);
+        int_type, unix_i_f_lock_len_getter, 0, L"Number of bytes to lock");
 
     anna_member_create_native_property(
         unix_f_lock_type, anna_mid_get(L"pid"),
-        int_type, unix_i_f_lock_pid_getter, 0, 0);
+        int_type, unix_i_f_lock_pid_getter, 0, L"PID of process blocking our lock (F_GETLK only)");
     anna_member_create_native_method(
 	unix_f_lock_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_f_lock_init, object_type, 1, &unix_f_lock_type, this_argn, 0, 0);    
 
     anna_type_t *unix_i_io_fcntl_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_fcntl_argn[] = {L"fd", L"cmd"};
-    anna_module_function(stack, L"fcntl", 0, &unix_i_io_fcntl, int_type, 2, unix_i_io_fcntl_argv, unix_i_io_fcntl_argn, L"");
+    anna_module_function(stack, L"fcntl", 0, &unix_i_io_fcntl, int_type, 2, unix_i_io_fcntl_argv, unix_i_io_fcntl_argn, 0);
 
     anna_type_t *unix_i_io_fcntl_int_argv[] = {int_type, int_type, int_type};
     wchar_t *unix_i_io_fcntl_int_argn[] = {L"fd", L"cmd", L"arg"};
-    anna_module_function(stack, L"fcntlInt", 0, &unix_i_io_fcntl_int, int_type, 3, unix_i_io_fcntl_int_argv, unix_i_io_fcntl_int_argn, L"");
+    anna_module_function(stack, L"fcntlInt", 0, &unix_i_io_fcntl_int, int_type, 3, unix_i_io_fcntl_int_argv, unix_i_io_fcntl_int_argn, 0);
 
     anna_type_t *unix_i_io_fcntl_f_lock_argv[] = {int_type, int_type, unix_f_lock_type};
     wchar_t *unix_i_io_fcntl_f_lock_argn[] = {L"fd", L"cmd", L"arg"};
-    anna_module_function(stack, L"fcntlFLock", 0, &unix_i_io_fcntl_f_lock, int_type, 3, unix_i_io_fcntl_f_lock_argv, unix_i_io_fcntl_f_lock_argn, L"");
+    anna_module_function(stack, L"fcntlFLock", 0, &unix_i_io_fcntl_f_lock, int_type, 3, unix_i_io_fcntl_f_lock_argv, unix_i_io_fcntl_f_lock_argn, 0);
 
     anna_type_t *unix_i_io_dup_argv[] = {int_type};
     wchar_t *unix_i_io_dup_argn[] = {L"fd"};
-    anna_module_function(stack, L"dup", 0, &unix_i_io_dup, int_type, 1, unix_i_io_dup_argv, unix_i_io_dup_argn, L"");
+    anna_module_function(stack, L"dup", 0, &unix_i_io_dup, int_type, 1, unix_i_io_dup_argv, unix_i_io_dup_argn, 0);
 
     anna_type_t *unix_i_io_dup2_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_dup2_argn[] = {L"oldfd", L"newfd"};
-    anna_module_function(stack, L"dup2", 0, &unix_i_io_dup2, int_type, 2, unix_i_io_dup2_argv, unix_i_io_dup2_argn, L"");
+    anna_module_function(stack, L"dup2", 0, &unix_i_io_dup2, int_type, 2, unix_i_io_dup2_argv, unix_i_io_dup2_argn, 0);
 
     anna_type_t *unix_i_io_chown_argv[] = {string_type, int_type, int_type};
     wchar_t *unix_i_io_chown_argn[] = {L"path", L"owner", L"group"};
-    anna_module_function(stack, L"chown", 0, &unix_i_io_chown, int_type, 3, unix_i_io_chown_argv, unix_i_io_chown_argn, L"");
+    anna_module_function(stack, L"chown", 0, &unix_i_io_chown, int_type, 3, unix_i_io_chown_argv, unix_i_io_chown_argn, 0);
 
     anna_type_t *unix_i_io_fchown_argv[] = {int_type, int_type, int_type};
     wchar_t *unix_i_io_fchown_argn[] = {L"fd", L"owner", L"group"};
-    anna_module_function(stack, L"fchown", 0, &unix_i_io_fchown, int_type, 3, unix_i_io_fchown_argv, unix_i_io_fchown_argn, L"");
+    anna_module_function(stack, L"fchown", 0, &unix_i_io_fchown, int_type, 3, unix_i_io_fchown_argv, unix_i_io_fchown_argn, 0);
 
     anna_type_t *unix_i_io_lchown_argv[] = {string_type, int_type, int_type};
     wchar_t *unix_i_io_lchown_argn[] = {L"path", L"owner", L"group"};
-    anna_module_function(stack, L"lchown", 0, &unix_i_io_lchown, int_type, 3, unix_i_io_lchown_argv, unix_i_io_lchown_argn, L"");
+    anna_module_function(stack, L"lchown", 0, &unix_i_io_lchown, int_type, 3, unix_i_io_lchown_argv, unix_i_io_lchown_argn, 0);
 
     anna_type_t *unix_i_io_chmod_argv[] = {string_type, int_type};
     wchar_t *unix_i_io_chmod_argn[] = {L"path", L"mode"};
-    anna_module_function(stack, L"chmod", 0, &unix_i_io_chmod, int_type, 2, unix_i_io_chmod_argv, unix_i_io_chmod_argn, L"");
+    anna_module_function(stack, L"chmod", 0, &unix_i_io_chmod, int_type, 2, unix_i_io_chmod_argv, unix_i_io_chmod_argn, 0);
 
     anna_type_t *unix_i_io_fchmod_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_fchmod_argn[] = {L"fd", L"mode"};
-    anna_module_function(stack, L"fchmod", 0, &unix_i_io_fchmod, int_type, 2, unix_i_io_fchmod_argv, unix_i_io_fchmod_argn, L"");
+    anna_module_function(stack, L"fchmod", 0, &unix_i_io_fchmod, int_type, 2, unix_i_io_fchmod_argv, unix_i_io_fchmod_argn, 0);
 
     anna_type_t *unix_i_io_symlink_argv[] = {string_type, string_type};
     wchar_t *unix_i_io_symlink_argn[] = {L"oldpath", L"newpath"};
-    anna_module_function(stack, L"symlink", 0, &unix_i_io_symlink, int_type, 2, unix_i_io_symlink_argv, unix_i_io_symlink_argn, L"");
+    anna_module_function(stack, L"symlink", 0, &unix_i_io_symlink, int_type, 2, unix_i_io_symlink_argv, unix_i_io_symlink_argn, 0);
 
     anna_type_t *unix_i_io_link_argv[] = {string_type, string_type};
     wchar_t *unix_i_io_link_argn[] = {L"oldpath", L"newpath"};
-    anna_module_function(stack, L"link", 0, &unix_i_io_link, int_type, 2, unix_i_io_link_argv, unix_i_io_link_argn, L"");
+    anna_module_function(stack, L"link", 0, &unix_i_io_link, int_type, 2, unix_i_io_link_argv, unix_i_io_link_argn, 0);
 
     anna_type_t *unix_i_io_unlink_argv[] = {string_type};
     wchar_t *unix_i_io_unlink_argn[] = {L"path"};
-    anna_module_function(stack, L"unlink", 0, &unix_i_io_unlink, int_type, 1, unix_i_io_unlink_argv, unix_i_io_unlink_argn, L"");
+    anna_module_function(stack, L"unlink", 0, &unix_i_io_unlink, int_type, 1, unix_i_io_unlink_argv, unix_i_io_unlink_argn, 0);
 
     anna_type_t *unix_i_io_rmdir_argv[] = {string_type};
     wchar_t *unix_i_io_rmdir_argn[] = {L"path"};
-    anna_module_function(stack, L"rmdir", 0, &unix_i_io_rmdir, int_type, 1, unix_i_io_rmdir_argv, unix_i_io_rmdir_argn, L"");
+    anna_module_function(stack, L"rmdir", 0, &unix_i_io_rmdir, int_type, 1, unix_i_io_rmdir_argv, unix_i_io_rmdir_argn, 0);
 
     anna_type_t *unix_i_io_rename_argv[] = {string_type, string_type};
     wchar_t *unix_i_io_rename_argn[] = {L"oldpath", L"newpath"};
-    anna_module_function(stack, L"rename", 0, &unix_i_io_rename, int_type, 2, unix_i_io_rename_argv, unix_i_io_rename_argn, L"");
+    anna_module_function(stack, L"rename", 0, &unix_i_io_rename, int_type, 2, unix_i_io_rename_argv, unix_i_io_rename_argn, 0);
 
     anna_type_t *unix_i_io_pipe_argv[] = {anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_io_pipe_argn[] = {L"fd"};
-    anna_module_function(stack, L"pipe", 0, &unix_i_io_pipe, int_type, 1, unix_i_io_pipe_argv, unix_i_io_pipe_argn, L"");
+    anna_module_function(stack, L"pipe", 0, &unix_i_io_pipe, int_type, 1, unix_i_io_pipe_argv, unix_i_io_pipe_argn, 0);
 
     anna_type_t *unix_i_io_lseek_argv[] = {int_type, int_type, int_type};
     wchar_t *unix_i_io_lseek_argn[] = {L"fd", L"offset", L"whence"};
-    anna_module_function(stack, L"lseek", 0, &unix_i_io_lseek, int_type, 3, unix_i_io_lseek_argv, unix_i_io_lseek_argn, L"");
+    anna_module_function(stack, L"lseek", 0, &unix_i_io_lseek, int_type, 3, unix_i_io_lseek_argv, unix_i_io_lseek_argn, 0);
 
     anna_type_t *unix_i_io_sync_argv[] = {};
     wchar_t *unix_i_io_sync_argn[] = {};
-    anna_module_function(stack, L"sync", 0, &unix_i_io_sync, object_type, 0, unix_i_io_sync_argv, unix_i_io_sync_argn, L"");
+    anna_module_function(stack, L"sync", 0, &unix_i_io_sync, object_type, 0, unix_i_io_sync_argv, unix_i_io_sync_argn, 0);
 
     anna_type_t *unix_i_io_fsync_argv[] = {int_type};
     wchar_t *unix_i_io_fsync_argn[] = {L"fd"};
-    anna_module_function(stack, L"fsync", 0, &unix_i_io_fsync, int_type, 1, unix_i_io_fsync_argv, unix_i_io_fsync_argn, L"");
+    anna_module_function(stack, L"fsync", 0, &unix_i_io_fsync, int_type, 1, unix_i_io_fsync_argv, unix_i_io_fsync_argn, 0);
 
     anna_type_t *unix_i_io_fdatasync_argv[] = {int_type};
     wchar_t *unix_i_io_fdatasync_argn[] = {L"fd"};
-    anna_module_function(stack, L"fdatasync", 0, &unix_i_io_fdatasync, int_type, 1, unix_i_io_fdatasync_argv, unix_i_io_fdatasync_argn, L"");
+    anna_module_function(stack, L"fdatasync", 0, &unix_i_io_fdatasync, int_type, 1, unix_i_io_fdatasync_argv, unix_i_io_fdatasync_argn, 0);
 
     anna_type_t *unix_i_io_umask_argv[] = {int_type};
     wchar_t *unix_i_io_umask_argn[] = {L"mask"};
-    anna_module_function(stack, L"umask", 0, &unix_i_io_umask, int_type, 1, unix_i_io_umask_argv, unix_i_io_umask_argn, L"");
+    anna_module_function(stack, L"umask", 0, &unix_i_io_umask, int_type, 1, unix_i_io_umask_argv, unix_i_io_umask_argn, 0);
 
     anna_member_create_blob(unix_fd_set_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(fd_set));
 
@@ -1474,25 +1474,25 @@ void anna_io_load(anna_stack_template_t *stack)
     wchar_t *unix_i_clear_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"clear"), 0, 
-        &unix_i_clear, object_type, 2, unix_i_clear_argv, unix_i_clear_argn, 0, L"");
+        &unix_i_clear, object_type, 2, unix_i_clear_argv, unix_i_clear_argn, 0, 0);
 
     anna_type_t *unix_i_set_check_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_set_check_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"set?"), 0, 
-        &unix_i_set_check, int_type, 2, unix_i_set_check_argv, unix_i_set_check_argn, 0, L"");
+        &unix_i_set_check, int_type, 2, unix_i_set_check_argv, unix_i_set_check_argn, 0, 0);
 
     anna_type_t *unix_i_set_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_set_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"set"), 0, 
-        &unix_i_set, object_type, 2, unix_i_set_argv, unix_i_set_argn, 0, L"");
+        &unix_i_set, object_type, 2, unix_i_set_argv, unix_i_set_argn, 0, 0);
 
     anna_type_t *unix_i_zero_argv[] = {unix_fd_set_type};
     wchar_t *unix_i_zero_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"zero"), 0, 
-        &unix_i_zero, object_type, 1, unix_i_zero_argv, unix_i_zero_argn, 0, L"");
+        &unix_i_zero, object_type, 1, unix_i_zero_argv, unix_i_zero_argn, 0, 0);
     anna_member_create_native_method(
 	unix_fd_set_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_fd_set_init, object_type, 1, &unix_fd_set_type, this_argn, 0, 0);    
@@ -1522,41 +1522,41 @@ void anna_signal_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"hup", SIGHUP, L"");
-    anna_module_const_int(stack, L"int", SIGINT, L"");
-    anna_module_const_int(stack, L"quit", SIGQUIT, L"");
-    anna_module_const_int(stack, L"ill", SIGILL, L"");
-    anna_module_const_int(stack, L"abrt", SIGABRT, L"");
-    anna_module_const_int(stack, L"fpe", SIGFPE, L"");
-    anna_module_const_int(stack, L"kill", SIGKILL, L"");
-    anna_module_const_int(stack, L"segv", SIGSEGV, L"");
-    anna_module_const_int(stack, L"pipe", SIGPIPE, L"");
-    anna_module_const_int(stack, L"alrm", SIGALRM, L"");
-    anna_module_const_int(stack, L"term", SIGTERM, L"");
-    anna_module_const_int(stack, L"usr1", SIGUSR1, L"");
-    anna_module_const_int(stack, L"usr2", SIGUSR2, L"");
-    anna_module_const_int(stack, L"chld", SIGCHLD, L"");
-    anna_module_const_int(stack, L"cont", SIGCONT, L"");
-    anna_module_const_int(stack, L"stop", SIGSTOP, L"");
-    anna_module_const_int(stack, L"tstp", SIGTSTP, L"");
-    anna_module_const_int(stack, L"ttin", SIGTTIN, L"");
-    anna_module_const_int(stack, L"ttou", SIGTTOU, L"");
-    anna_module_const_int(stack, L"bus", SIGBUS, L"");
-    anna_module_const_int(stack, L"poll", SIGPOLL, L"");
-    anna_module_const_int(stack, L"prof", SIGPROF, L"");
-    anna_module_const_int(stack, L"sys", SIGSYS, L"");
-    anna_module_const_int(stack, L"trap", SIGTRAP, L"");
-    anna_module_const_int(stack, L"urg", SIGURG, L"");
-    anna_module_const_int(stack, L"vtalrm", SIGVTALRM, L"");
-    anna_module_const_int(stack, L"xcpu", SIGXCPU, L"");
-    anna_module_const_int(stack, L"xfsz", SIGXFSZ, L"");
-    anna_module_const_int(stack, L"iot", SIGIOT, L"");
-    anna_module_const_int(stack, L"stkflt", SIGSTKFLT, L"");
-    anna_module_const_int(stack, L"io", SIGIO, L"");
-    anna_module_const_int(stack, L"cld", SIGCLD, L"");
-    anna_module_const_int(stack, L"pwr", SIGPWR, L"");
-    anna_module_const_int(stack, L"winch", SIGWINCH, L"");
-    anna_module_const_int(stack, L"unused", SIGUNUSED, L"");
+    anna_module_const_int(stack, L"hup", SIGHUP, L"The HUP signal");
+    anna_module_const_int(stack, L"int", SIGINT, L"The INT signal");
+    anna_module_const_int(stack, L"quit", SIGQUIT, L"The QUIT signal");
+    anna_module_const_int(stack, L"ill", SIGILL, L"The ILL signal");
+    anna_module_const_int(stack, L"abrt", SIGABRT, L"The ABRT signal");
+    anna_module_const_int(stack, L"fpe", SIGFPE, L"The FPE signal");
+    anna_module_const_int(stack, L"kill", SIGKILL, L"The KILL signal");
+    anna_module_const_int(stack, L"segv", SIGSEGV, L"The SEGV signal");
+    anna_module_const_int(stack, L"pipe", SIGPIPE, L"The PIPE signal");
+    anna_module_const_int(stack, L"alrm", SIGALRM, L"The ALRM signal");
+    anna_module_const_int(stack, L"term", SIGTERM, L"The TERM signal");
+    anna_module_const_int(stack, L"usr1", SIGUSR1, L"The USR1 signal");
+    anna_module_const_int(stack, L"usr2", SIGUSR2, L"The USR2 signal");
+    anna_module_const_int(stack, L"chld", SIGCHLD, L"The CHLD signal");
+    anna_module_const_int(stack, L"cont", SIGCONT, L"The CONT signal");
+    anna_module_const_int(stack, L"stop", SIGSTOP, L"The STOP signal");
+    anna_module_const_int(stack, L"tstp", SIGTSTP, L"The TSTP signal");
+    anna_module_const_int(stack, L"ttin", SIGTTIN, L"The TTIN signal");
+    anna_module_const_int(stack, L"ttou", SIGTTOU, L"The TTOU signal");
+    anna_module_const_int(stack, L"bus", SIGBUS, L"The BUS signal");
+    anna_module_const_int(stack, L"poll", SIGPOLL, L"The POLL signal");
+    anna_module_const_int(stack, L"prof", SIGPROF, L"The PROF signal");
+    anna_module_const_int(stack, L"sys", SIGSYS, L"The SYS signal");
+    anna_module_const_int(stack, L"trap", SIGTRAP, L"The TRAP signal");
+    anna_module_const_int(stack, L"urg", SIGURG, L"The URG signal");
+    anna_module_const_int(stack, L"vtalrm", SIGVTALRM, L"The VTALRM signal");
+    anna_module_const_int(stack, L"xcpu", SIGXCPU, L"The XCPU signal");
+    anna_module_const_int(stack, L"xfsz", SIGXFSZ, L"The XFSZ signal");
+    anna_module_const_int(stack, L"iot", SIGIOT, L"The IOT signal");
+    anna_module_const_int(stack, L"stkflt", SIGSTKFLT, L"The STKFLT signal");
+    anna_module_const_int(stack, L"io", SIGIO, L"The IO signal");
+    anna_module_const_int(stack, L"cld", SIGCLD, L"The CLD signal");
+    anna_module_const_int(stack, L"pwr", SIGPWR, L"The PWR signal");
+    anna_module_const_int(stack, L"winch", SIGWINCH, L"The WINCH signal");
+    anna_module_const_int(stack, L"unused", SIGUNUSED, L"The UNUSED signal");
 
      anna_type_data_register(anna_signal_type_data, stack);
 }
@@ -1867,43 +1867,43 @@ void anna_proc_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_proc_exec_argv[] = {string_type, anna_list_type_get_any(string_type), anna_list_type_get_any(string_type)};
     wchar_t *unix_i_proc_exec_argn[] = {L"filename", L"argv", L"envp"};
-    anna_module_function(stack, L"exec", 0, &unix_i_proc_exec, int_type, 3, unix_i_proc_exec_argv, unix_i_proc_exec_argn, L"");
+    anna_module_function(stack, L"exec", 0, &unix_i_proc_exec, int_type, 3, unix_i_proc_exec_argv, unix_i_proc_exec_argn, 0);
 
     anna_type_t *unix_i_proc_exit_argv[] = {int_type};
     wchar_t *unix_i_proc_exit_argn[] = {L"status"};
-    anna_module_function(stack, L"exit", 0, &unix_i_proc_exit, object_type, 1, unix_i_proc_exit_argv, unix_i_proc_exit_argn, L"");
+    anna_module_function(stack, L"exit", 0, &unix_i_proc_exit, object_type, 1, unix_i_proc_exit_argv, unix_i_proc_exit_argn, 0);
 
     anna_type_t *unix_i_proc_fork_argv[] = {};
     wchar_t *unix_i_proc_fork_argn[] = {};
-    anna_module_function(stack, L"fork", 0, &unix_i_proc_fork, int_type, 0, unix_i_proc_fork_argv, unix_i_proc_fork_argn, L"");
+    anna_module_function(stack, L"fork", 0, &unix_i_proc_fork, int_type, 0, unix_i_proc_fork_argv, unix_i_proc_fork_argn, 0);
 
     anna_type_t *unix_i_proc_kill_argv[] = {int_type, int_type};
     wchar_t *unix_i_proc_kill_argn[] = {L"pid", L"sig"};
-    anna_module_function(stack, L"kill", 0, &unix_i_proc_kill, int_type, 2, unix_i_proc_kill_argv, unix_i_proc_kill_argn, L"");
+    anna_module_function(stack, L"kill", 0, &unix_i_proc_kill, int_type, 2, unix_i_proc_kill_argv, unix_i_proc_kill_argn, 0);
 
     anna_type_t *unix_i_proc_getsid_argv[] = {int_type};
     wchar_t *unix_i_proc_getsid_argn[] = {L"pid"};
-    anna_module_function(stack, L"getsid", 0, &unix_i_proc_getsid, int_type, 1, unix_i_proc_getsid_argv, unix_i_proc_getsid_argn, L"");
+    anna_module_function(stack, L"getsid", 0, &unix_i_proc_getsid, int_type, 1, unix_i_proc_getsid_argv, unix_i_proc_getsid_argn, 0);
 
     anna_type_t *unix_i_proc_setsid_argv[] = {};
     wchar_t *unix_i_proc_setsid_argn[] = {};
-    anna_module_function(stack, L"setsid", 0, &unix_i_proc_setsid, int_type, 0, unix_i_proc_setsid_argv, unix_i_proc_setsid_argn, L"");
+    anna_module_function(stack, L"setsid", 0, &unix_i_proc_setsid, int_type, 0, unix_i_proc_setsid_argv, unix_i_proc_setsid_argn, 0);
 
     anna_type_t *unix_i_proc_getpid_argv[] = {};
     wchar_t *unix_i_proc_getpid_argn[] = {};
-    anna_module_function(stack, L"getpid", 0, &unix_i_proc_getpid, int_type, 0, unix_i_proc_getpid_argv, unix_i_proc_getpid_argn, L"");
+    anna_module_function(stack, L"getpid", 0, &unix_i_proc_getpid, int_type, 0, unix_i_proc_getpid_argv, unix_i_proc_getpid_argn, 0);
 
     anna_type_t *unix_i_proc_getppid_argv[] = {};
     wchar_t *unix_i_proc_getppid_argn[] = {};
-    anna_module_function(stack, L"getppid", 0, &unix_i_proc_getppid, int_type, 0, unix_i_proc_getppid_argv, unix_i_proc_getppid_argn, L"");
+    anna_module_function(stack, L"getppid", 0, &unix_i_proc_getppid, int_type, 0, unix_i_proc_getppid_argv, unix_i_proc_getppid_argn, 0);
 
     anna_type_t *unix_i_proc_wait_argv[] = {anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_proc_wait_argn[] = {L"status"};
-    anna_module_function(stack, L"wait", 0, &unix_i_proc_wait, int_type, 1, unix_i_proc_wait_argv, unix_i_proc_wait_argn, L"");
+    anna_module_function(stack, L"wait", 0, &unix_i_proc_wait, int_type, 1, unix_i_proc_wait_argv, unix_i_proc_wait_argn, 0);
 
     anna_type_t *unix_i_proc_waitpid_argv[] = {int_type, anna_list_type_get_mutable(int_type), int_type};
     wchar_t *unix_i_proc_waitpid_argn[] = {L"pid", L"status", L"options"};
-    anna_module_function(stack, L"waitpid", 0, &unix_i_proc_waitpid, int_type, 3, unix_i_proc_waitpid_argv, unix_i_proc_waitpid_argn, L"");
+    anna_module_function(stack, L"waitpid", 0, &unix_i_proc_waitpid, int_type, 3, unix_i_proc_waitpid_argv, unix_i_proc_waitpid_argn, 0);
 
      anna_type_data_register(anna_proc_type_data, stack);
 }
@@ -2215,51 +2215,51 @@ void anna_user_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_user_getuid_argv[] = {};
     wchar_t *unix_i_user_getuid_argn[] = {};
-    anna_module_function(stack, L"getuid", 0, &unix_i_user_getuid, int_type, 0, unix_i_user_getuid_argv, unix_i_user_getuid_argn, L"");
+    anna_module_function(stack, L"getuid", 0, &unix_i_user_getuid, int_type, 0, unix_i_user_getuid_argv, unix_i_user_getuid_argn, 0);
 
     anna_type_t *unix_i_user_geteuid_argv[] = {};
     wchar_t *unix_i_user_geteuid_argn[] = {};
-    anna_module_function(stack, L"geteuid", 0, &unix_i_user_geteuid, int_type, 0, unix_i_user_geteuid_argv, unix_i_user_geteuid_argn, L"");
+    anna_module_function(stack, L"geteuid", 0, &unix_i_user_geteuid, int_type, 0, unix_i_user_geteuid_argv, unix_i_user_geteuid_argn, 0);
 
     anna_type_t *unix_i_user_getgid_argv[] = {};
     wchar_t *unix_i_user_getgid_argn[] = {};
-    anna_module_function(stack, L"getgid", 0, &unix_i_user_getgid, int_type, 0, unix_i_user_getgid_argv, unix_i_user_getgid_argn, L"");
+    anna_module_function(stack, L"getgid", 0, &unix_i_user_getgid, int_type, 0, unix_i_user_getgid_argv, unix_i_user_getgid_argn, 0);
 
     anna_type_t *unix_i_user_getegid_argv[] = {};
     wchar_t *unix_i_user_getegid_argn[] = {};
-    anna_module_function(stack, L"getegid", 0, &unix_i_user_getegid, int_type, 0, unix_i_user_getegid_argv, unix_i_user_getegid_argn, L"");
+    anna_module_function(stack, L"getegid", 0, &unix_i_user_getegid, int_type, 0, unix_i_user_getegid_argv, unix_i_user_getegid_argn, 0);
 
     anna_type_t *unix_i_user_setuid_argv[] = {int_type};
     wchar_t *unix_i_user_setuid_argn[] = {L"uid"};
-    anna_module_function(stack, L"setuid", 0, &unix_i_user_setuid, int_type, 1, unix_i_user_setuid_argv, unix_i_user_setuid_argn, L"");
+    anna_module_function(stack, L"setuid", 0, &unix_i_user_setuid, int_type, 1, unix_i_user_setuid_argv, unix_i_user_setuid_argn, 0);
 
     anna_type_t *unix_i_user_seteuid_argv[] = {int_type};
     wchar_t *unix_i_user_seteuid_argn[] = {L"uid"};
-    anna_module_function(stack, L"seteuid", 0, &unix_i_user_seteuid, int_type, 1, unix_i_user_seteuid_argv, unix_i_user_seteuid_argn, L"");
+    anna_module_function(stack, L"seteuid", 0, &unix_i_user_seteuid, int_type, 1, unix_i_user_seteuid_argv, unix_i_user_seteuid_argn, 0);
 
     anna_type_t *unix_i_user_setegid_argv[] = {int_type};
     wchar_t *unix_i_user_setegid_argn[] = {L"uid"};
-    anna_module_function(stack, L"setegid", 0, &unix_i_user_setegid, int_type, 1, unix_i_user_setegid_argv, unix_i_user_setegid_argn, L"");
+    anna_module_function(stack, L"setegid", 0, &unix_i_user_setegid, int_type, 1, unix_i_user_setegid_argv, unix_i_user_setegid_argn, 0);
 
     anna_type_t *unix_i_user_setgid_argv[] = {int_type};
     wchar_t *unix_i_user_setgid_argn[] = {L"uid"};
-    anna_module_function(stack, L"setgid", 0, &unix_i_user_setgid, int_type, 1, unix_i_user_setgid_argv, unix_i_user_setgid_argn, L"");
+    anna_module_function(stack, L"setgid", 0, &unix_i_user_setgid, int_type, 1, unix_i_user_setgid_argv, unix_i_user_setgid_argn, 0);
 
     anna_type_t *unix_i_user_setpgid_argv[] = {int_type, int_type};
     wchar_t *unix_i_user_setpgid_argn[] = {L"pid", L"pgid"};
-    anna_module_function(stack, L"setpgid", 0, &unix_i_user_setpgid, int_type, 2, unix_i_user_setpgid_argv, unix_i_user_setpgid_argn, L"");
+    anna_module_function(stack, L"setpgid", 0, &unix_i_user_setpgid, int_type, 2, unix_i_user_setpgid_argv, unix_i_user_setpgid_argn, 0);
 
     anna_type_t *unix_i_user_getpgid_argv[] = {int_type};
     wchar_t *unix_i_user_getpgid_argn[] = {L"pid"};
-    anna_module_function(stack, L"getpgid", 0, &unix_i_user_getpgid, int_type, 1, unix_i_user_getpgid_argv, unix_i_user_getpgid_argn, L"");
+    anna_module_function(stack, L"getpgid", 0, &unix_i_user_getpgid, int_type, 1, unix_i_user_getpgid_argv, unix_i_user_getpgid_argn, 0);
 
     anna_type_t *unix_i_user_getgroups_argv[] = {int_type, anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_user_getgroups_argn[] = {L"size", L"list"};
-    anna_module_function(stack, L"getgroups", 0, &unix_i_user_getgroups, int_type, 2, unix_i_user_getgroups_argv, unix_i_user_getgroups_argn, L"");
+    anna_module_function(stack, L"getgroups", 0, &unix_i_user_getgroups, int_type, 2, unix_i_user_getgroups_argv, unix_i_user_getgroups_argn, 0);
 
     anna_type_t *unix_i_user_setgroups_argv[] = {int_type, anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_user_setgroups_argn[] = {L"size", L"list"};
-    anna_module_function(stack, L"setgroups", 0, &unix_i_user_setgroups, int_type, 2, unix_i_user_setgroups_argv, unix_i_user_setgroups_argn, L"");
+    anna_module_function(stack, L"setgroups", 0, &unix_i_user_setgroups, int_type, 2, unix_i_user_setgroups_argv, unix_i_user_setgroups_argn, 0);
 
      anna_type_data_register(anna_user_type_data, stack);
 }
@@ -2287,20 +2287,20 @@ void anna_r_limit_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"as", RLIMIT_AS, L"");
-    anna_module_const_int(stack, L"core", RLIMIT_CORE, L"");
-    anna_module_const_int(stack, L"cpu", RLIMIT_CPU, L"");
-    anna_module_const_int(stack, L"data", RLIMIT_DATA, L"");
-    anna_module_const_int(stack, L"fsize", RLIMIT_FSIZE, L"");
-    anna_module_const_int(stack, L"memlock", RLIMIT_MEMLOCK, L"");
-    anna_module_const_int(stack, L"msgqueue", RLIMIT_MSGQUEUE, L"");
-    anna_module_const_int(stack, L"nice", RLIMIT_NICE, L"");
-    anna_module_const_int(stack, L"nofile", RLIMIT_NOFILE, L"");
-    anna_module_const_int(stack, L"nproc", RLIMIT_NPROC, L"");
-    anna_module_const_int(stack, L"rss", RLIMIT_RSS, L"");
-    anna_module_const_int(stack, L"rtprio", RLIMIT_RTPRIO, L"");
-    anna_module_const_int(stack, L"sigpending", RLIMIT_SIGPENDING, L"");
-    anna_module_const_int(stack, L"stack", RLIMIT_STACK, L"");
+    anna_module_const_int(stack, L"as", RLIMIT_AS, L"The AS limit");
+    anna_module_const_int(stack, L"core", RLIMIT_CORE, L"The CORE limit");
+    anna_module_const_int(stack, L"cpu", RLIMIT_CPU, L"The CPU limit");
+    anna_module_const_int(stack, L"data", RLIMIT_DATA, L"The DATA limit");
+    anna_module_const_int(stack, L"fsize", RLIMIT_FSIZE, L"The FSIZE limit");
+    anna_module_const_int(stack, L"memlock", RLIMIT_MEMLOCK, L"The MEMLOCK limit");
+    anna_module_const_int(stack, L"msgqueue", RLIMIT_MSGQUEUE, L"The MSGQUEUE limit");
+    anna_module_const_int(stack, L"nice", RLIMIT_NICE, L"The NICE limit");
+    anna_module_const_int(stack, L"nofile", RLIMIT_NOFILE, L"The NOFILE limit");
+    anna_module_const_int(stack, L"nproc", RLIMIT_NPROC, L"The NPROC limit");
+    anna_module_const_int(stack, L"rss", RLIMIT_RSS, L"The RSS limit");
+    anna_module_const_int(stack, L"rtprio", RLIMIT_RTPRIO, L"The RTPRIO limit");
+    anna_module_const_int(stack, L"sigpending", RLIMIT_SIGPENDING, L"The SIGPENDING limit");
+    anna_module_const_int(stack, L"stack", RLIMIT_STACK, L"The STACK limit");
 
      anna_type_data_register(anna_r_limit_mode_type_data, stack);
 }
@@ -2392,22 +2392,24 @@ void anna_r_limit_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
         unix_r_limit_type, anna_mid_get(L"cur"),
-        int_type, unix_i_r_limit_cur_getter, 0, 0);
+        int_type, unix_i_r_limit_cur_getter, 0, L"Currently enforced limit (soft limit)");
 
     anna_member_create_native_property(
         unix_r_limit_type, anna_mid_get(L"max"),
-        int_type, unix_i_r_limit_max_getter, 0, 0);
+        int_type, unix_i_r_limit_max_getter, 0, L"Maximum value of limit (hard limit)");
     anna_member_create_native_method(
 	unix_r_limit_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_r_limit_init, object_type, 1, &unix_r_limit_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_r_limit_type, L"A structure representing the current and maximum value of a system resource usage limit.");
 
     anna_type_t *unix_i_r_limit_get_r_limit_argv[] = {int_type, unix_r_limit_type};
     wchar_t *unix_i_r_limit_get_r_limit_argn[] = {L"resource", L"rlim"};
-    anna_module_function(stack, L"getRLimit", 0, &unix_i_r_limit_get_r_limit, int_type, 2, unix_i_r_limit_get_r_limit_argv, unix_i_r_limit_get_r_limit_argn, L"");
+    anna_module_function(stack, L"getRLimit", 0, &unix_i_r_limit_get_r_limit, int_type, 2, unix_i_r_limit_get_r_limit_argv, unix_i_r_limit_get_r_limit_argn, 0);
 
     anna_type_t *unix_i_r_limit_set_r_limit_argv[] = {int_type, unix_r_limit_type};
     wchar_t *unix_i_r_limit_set_r_limit_argn[] = {L"resource", L"rlim"};
-    anna_module_function(stack, L"setRLimit", 0, &unix_i_r_limit_set_r_limit, int_type, 2, unix_i_r_limit_set_r_limit_argv, unix_i_r_limit_set_r_limit_argn, L"");
+    anna_module_function(stack, L"setRLimit", 0, &unix_i_r_limit_set_r_limit, int_type, 2, unix_i_r_limit_set_r_limit_argv, unix_i_r_limit_set_r_limit_argn, 0);
 
      anna_type_data_register(anna_r_limit_type_data, stack);
 }
@@ -2517,19 +2519,19 @@ void anna_env_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_env_getenv_argv[] = {string_type};
     wchar_t *unix_i_env_getenv_argn[] = {L"name"};
-    anna_module_function(stack, L"getenv", 0, &unix_i_env_getenv, string_type, 1, unix_i_env_getenv_argv, unix_i_env_getenv_argn, L"");
+    anna_module_function(stack, L"getenv", 0, &unix_i_env_getenv, string_type, 1, unix_i_env_getenv_argv, unix_i_env_getenv_argn, L"Return the current value of the given environment variable. Equivalanet to the C getenv function.");
 
     anna_type_t *unix_i_env_setenv_argv[] = {string_type, string_type, int_type};
     wchar_t *unix_i_env_setenv_argn[] = {L"name", L"value", L"overwrite"};
-    anna_module_function(stack, L"setenv", 0, &unix_i_env_setenv, int_type, 3, unix_i_env_setenv_argv, unix_i_env_setenv_argn, L"");
+    anna_module_function(stack, L"setenv", 0, &unix_i_env_setenv, int_type, 3, unix_i_env_setenv_argv, unix_i_env_setenv_argn, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
 
     anna_type_t *unix_i_env_unsetenv_argv[] = {string_type};
     wchar_t *unix_i_env_unsetenv_argn[] = {L"name"};
-    anna_module_function(stack, L"unsetenv", 0, &unix_i_env_unsetenv, int_type, 1, unix_i_env_unsetenv_argv, unix_i_env_unsetenv_argn, L"");
+    anna_module_function(stack, L"unsetenv", 0, &unix_i_env_unsetenv, int_type, 1, unix_i_env_unsetenv_argv, unix_i_env_unsetenv_argn, L"Delete the specified environment variable. Equivalanet to the C unsetenv function.");
 
     anna_type_t *unix_i_env_clearenv_argv[] = {};
     wchar_t *unix_i_env_clearenv_argn[] = {};
-    anna_module_function(stack, L"clearenv", 0, &unix_i_env_clearenv, int_type, 0, unix_i_env_clearenv_argv, unix_i_env_clearenv_argn, L"");
+    anna_module_function(stack, L"clearenv", 0, &unix_i_env_clearenv, int_type, 0, unix_i_env_clearenv_argv, unix_i_env_clearenv_argn, L"Removes all environemnt variables. Equivalanet to the C clearenv function.");
 
      anna_type_data_register(anna_env_type_data, stack);
 }
@@ -2575,7 +2577,7 @@ void anna_sleep_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_sleep_sleep_argv[] = {int_type};
     wchar_t *unix_i_sleep_sleep_argn[] = {L"seconds"};
-    anna_module_function(stack, L"sleep", 0, &unix_i_sleep_sleep, int_type, 1, unix_i_sleep_sleep_argv, unix_i_sleep_sleep_argn, L"");
+    anna_module_function(stack, L"sleep", 0, &unix_i_sleep_sleep, int_type, 1, unix_i_sleep_sleep_argv, unix_i_sleep_sleep_argn, L"Sleep for the specified number of seconds");
 
      anna_type_data_register(anna_sleep_type_data, stack);
 }
@@ -2672,23 +2674,27 @@ void anna_time_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
         unix_time_val_type, anna_mid_get(L"sec"),
-        int_type, unix_i_time_val_sec_getter, unix_i_time_val_sec_setter, 0);
+        int_type, unix_i_time_val_sec_getter, unix_i_time_val_sec_setter, L"Seconds");
 
     anna_member_create_native_property(
         unix_time_val_type, anna_mid_get(L"usec"),
-        int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, 0);
+        int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, L"Microseconds.");
     anna_member_create_native_method(
 	unix_time_val_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_time_val_init, object_type, 1, &unix_time_val_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_time_val_type, L"A data structure representing a point in time as the amount of time that has elapsed since the epoch.");
 
     anna_member_create_blob(unix_time_zone_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timezone));
     anna_member_create_native_method(
 	unix_time_zone_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_time_zone_init, object_type, 1, &unix_time_zone_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_time_zone_type, L"A deprecated data structure that used to be used for representing a time zone.");
 
     anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_time_val_type, unix_time_zone_type};
     wchar_t *unix_i_time_gettimeofday_argn[] = {L"tv", L"tz"};
-    anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, L"");
+    anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, L"Gets the current system time. Equivalanet to the C gettimeofday function.");
 
      anna_type_data_register(anna_time_type_data, stack);
 }

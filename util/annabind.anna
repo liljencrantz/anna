@@ -81,6 +81,45 @@ def main()
     }    
 }
 
+def cEscape(String in)
+{
+    in or (return "0");
+  res := "L\"".thaw;
+    in.each(ch)
+    {
+	switch(ch.ordinal)
+	{
+	    case('\n'.ordinal)
+	    {
+		res ~= "\\n";
+	    }
+	    case('"'.ordinal)
+	    {
+		res ~= "\\\"";
+	    }
+	    cases(0..32)
+	    {
+		res ~= "\\x" ~ ch.ordinal.format(16).lpad(count: 2, char: '0');
+	    }
+	    cases(128...)
+	    {
+		res ~= "\\u" ~ ch.ordinal.format(16).lpad(count: 4, char: '0');
+	    }
+	    default
+	    {
+		res ~= ch;
+	    }
+	}
+    }
+    res ~= "\"";
+    return res;
+}
+
+def extractDoc(Call attr)
+{
+    cEscape((attr.filterByCall("doc")[0] as StringLiteral).payload);
+}
+
 def init()
 {
     bindingType = [
@@ -626,7 +665,7 @@ class BindingGenerator
         param := [
 	    "init": init, "preValidate": preValidate, "postValidate": postValidate, 
 	    "code": code, "cleanup": cleanup, 
-	    "retValue": if(isInit){"param[0]"} else {"result"},
+	    "retValue": (if(isInit){"param[0]"} else {"result"}),
 	    ];
 	
 	return "    // Validate parameters
@@ -646,6 +685,7 @@ class BindingGenerator
 
     def generateFunction(String name, Call decl, List«String» path=?)
     {
+        attr := decl[3] as Call;
         mangled := mangleFunctionName(name, path: path);
         returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3]);
         inputTypeVar := mangled ~ "_argv";
@@ -660,9 +700,6 @@ class BindingGenerator
 	    inputNameData.push("L\"" ~ ((inp as Call)[0] as Identifier).name ~"\"");
 	}
         inputCount := inputTypeData.count;
-	
-        doc := "";
-	
         data := 
 	    [
 		"functionName": name, 
@@ -673,7 +710,7 @@ class BindingGenerator
 		"inputTypeData": ", ".join(inputTypeData),
 		"inputNameVar": inputNameVar,
 		"inputNameData": ", ".join(inputNameData),
-		"doc": "L\"" ~ doc ~ "\"",
+		"doc": extractDoc(attr),
 		"codeInternal": generateFunctionCode(decl),
 	    ];
 
@@ -696,6 +733,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     def generateMethod(BindingType type, String name, Call decl)
     {
+        attr := decl[3] as Call;
         mangled := mangleFunctionName(name);
         returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3]);
         inputTypeVar := mangled ~ "_argv";
@@ -713,8 +751,6 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	}
         inputCount := inputTypeData.count;
 	
-        doc := "";
-	
         data := 
 	    [
 		"type": type.annaCType(decl[1], decl[3]),
@@ -726,7 +762,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 		"inputTypeData": ", ".join(inputTypeData),
 		"inputNameVar": inputNameVar,
 		"inputNameData": ", ".join(inputNameData),
-		"doc": "L\"" ~ doc ~ "\"",
+		"doc": extractDoc(attr),
 		"codeInternal": generateFunctionCode(decl, type, isInit),
 	    ];
 
@@ -798,7 +834,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	    [
 		"structName": structName,
 		"wrapData": bindingType.convertToAnna(decl, attr, "result", "data->"~fieldName),
-		"structText": if(isStruct){"struct "}else{""},
+		"structText": (if(isStruct){"struct "}else{""}),
 		];
     }
 
@@ -815,7 +851,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	    [
 		"structName": structName,
 		"wrapData": bindingType.convertToC(decl, attr, "tmp", "param[1]"),
-		"structText": if(isStruct){"struct "}else{""},
+		"structText": (if(isStruct){"struct "}else{""}),
 		"fieldName": fieldName,
 		];
     }
@@ -883,27 +919,29 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         }
     }
 
-    def generateCStruct(String structName, Call decl)
+    def generateCStruct(String structName, Call cstructDecl)
     {
         typeName := mangleTypeName(structName);
         code := "".thaw;
+        cstructAttr := cstructDecl[1] as Call;
 	typeDecl := "anna_type_t *%;\n".thaw %[typeName];
         typeData := "    { &%, L\"%\" },\n".thaw % [typeName, structName];
         load := "".thaw;
-        nativeStructName := nameToStr(parser.Identifier(?, structName), decl[1]);
+        nativeStructName := nameToStr(parser.Identifier(?, structName), cstructDecl[1]);
         initName := mangleMethodName(structName, "init");
 	
-        isStruct := !decl.callTo?("cType");
-        isPointer := decl.callTo?("cStructPointer");
-	bindingType[decl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct, isPointer));
+        isStruct := !cstructDecl.callTo?("cType");
+        isPointer := cstructDecl.callTo?("cStructPointer");
+	bindingType[cstructDecl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct, isPointer));
         commonData := [
 	    "typeName": typeName,
 	    "nativeStructName": nativeStructName, 
 	    "initName": initName,
 	    "structName": nativeStructName, 
-	    "structText": if(isStruct){"struct "}else{""}, 
-	    "structPointer": if(isPointer){" *"} else {""},
-	    "initParam": myBinding.convertToC(?,?, "data", "param[0]")
+	    "structText": (if(isStruct){"struct "}else{""}), 
+	    "structPointer": (if(isPointer){" *"} else {""}),
+	    "initParam": myBinding.convertToC(?,?, "data", "param[0]"),
+	    "doc": extractDoc(cstructAttr),
 	    ];
 
 	load ~= "
@@ -911,41 +949,43 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 " % commonData;
         hadInit := ? as Int;
 
-	(decl[2] as Call).each(node)
+	(cstructDecl[2] as Call).each(node)
 	{
-	    if(node.callTo?("__const__") or node.isCallTo("__var__"))
+	    if(node.callTo?("__const__") or node.callTo?("__var__"))
 	    {
+                decl := node as Call;
+                attr := decl[3] as Call;
 		isVar := node.callTo?("__var__");
-	        it := node as Call;
-	        fieldName := (it[0] as Identifier).name;
-
+	        fieldName := (decl[0] as Identifier).name;
+ 	        fieldType := decl[1];
 		hadInit = hadInit or (fieldName == "__init__");
 
-		if(!isVar and (((it[2] as Call).function as Identifier).name == "__def__"))
+		if(fieldType.callTo?("__staticTypeOf__") and (fieldType as Call)[0].callTo?("__def__"))
 		{
-  		    methOut := generateMethod(myBinding, fieldName, it[2] as Call);
+  		    methOut := generateMethod(myBinding, fieldName, (fieldType as Call)[0] as Call);
 		    load~= methOut.load;
 		    code ~= methOut.code;
 		    continue;
 		}
 
-	        nativeFieldName := nameToStr(it[0], it[3]);
+	        nativeFieldName := nameToStr(decl[0], attr);
 		
-  	        bindingType := getBindingType(it[1]);
+  	        bindingType := getBindingType(decl[1]);
   	        getterName := mangleGetterName(structName, fieldName);
 
   	        setterName := if(isVar){mangleSetterName(structName, fieldName);}else{"0"}
-	        getterCode := generateCStructGetterCode(nativeStructName, nativeFieldName, bindingType, it[1], it[3], isStruct);
-	        setterCode := generateCStructSetterCode(nativeStructName, nativeFieldName, bindingType, it[1], it[3], isStruct);
+	        getterCode := generateCStructGetterCode(nativeStructName, nativeFieldName, bindingType, decl[1], attr, isStruct);
+	        setterCode := generateCStructSetterCode(nativeStructName, nativeFieldName, bindingType, decl[1], attr, isStruct);
 
   	        data := [
 		    "name": fieldName,
 		    "typeName": typeName,
-		    "returnType": bindingType.annaCType(it[1], it[3]),
+		    "returnType": bindingType.annaCType(decl[1], attr),
 		    "getterName": getterName,
 		    "setterName": setterName,
 		    "getterCode": getterCode,
 		    "setterCode": setterCode,
+                    "doc": extractDoc(attr),
 		    ];
 		code ~= "
 ANNA_VM_NATIVE(%(getterName), 1)
@@ -962,7 +1002,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 		load ~= "
     anna_member_create_native_property(
         %(typeName), anna_mid_get(L\"%(name)\"),
-        %(returnType), %(getterName), %(setterName), 0);
+        %(returnType), %(getterName), %(setterName), %(doc));
 " % data;
 
 	    } else
@@ -990,6 +1030,13 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 	}
 
+	if(commonData["doc"] != "0")
+	{
+	    load ~= "    anna_type_document(
+            %(typeName), %(doc));
+" % commonData;
+	}
+
 	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load);
     }
 
@@ -1011,16 +1058,30 @@ ANNA_VM_NATIVE(%(initName), 1)
 		case("__const__")
 		{
 		    name := (decl[0] as Identifier).name;
-		    
-		    switch(decl[2])
+  		    attr := decl[3] as Call;
+		    declType := decl[1];
+		    declVal := decl[2];
+		    if(declType.callTo?("__staticTypeOf__"))
+		    {
+		        typeExpr := (declType as Call)[0] as Call;
+			if(typeExpr.callTo?("__def__"))
+			{
+			    out := generateFunction(name, typeExpr, path);
+			    load ~= out.load;
+			    code ~= out.code;
+			}
+		    }
+		    else
+		    {
+		    switch(declVal)
 		    {
 			case (intVal as IntLiteral)
 			{
-			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), L\"%(doc)\");\n" % 
+			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));\n" % 
 				[
 				    "name": name,
 				    "value": intVal.payload,
-				    "doc": "",
+				    "doc": extractDoc(attr),
 				    ];
 			}
 
@@ -1053,16 +1114,16 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 			default
 			{
-
 			    nativeName := nameToStr(decl[0], decl[3]);
-			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), L\"%(doc)\");
+			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));
 " % 
 				[
 				    "name": name,
 				    "value": nativeName,
-				    "doc": "",
-				    ];
+				    "doc": extractDoc(attr),
+				];
 			}	
+		    }
 		    }	
 		}
 		
@@ -1070,6 +1131,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 		case("__var__")
 		{
 		    name := (decl[0] as Identifier).name;
+		    attr := decl[3] as Call;
 		    nativeName := nameToStr(decl[0], decl[3]);
 
   	            bindingType := getBindingType(decl[1]);
@@ -1077,7 +1139,7 @@ ANNA_VM_NATIVE(%(initName), 1)
                     returnType := bindingType.annaCType(decl[1], decl[3]),;
                     getterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_getter";
                     setterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_setter";
-
+		    
 		    data :=
 			[
 			    "name": name,
@@ -1086,6 +1148,7 @@ ANNA_VM_NATIVE(%(initName), 1)
                             "setterName": setterName,
 			    "getterCode": generateVarGetterCode(nativeName, bindingType, decl[1], decl[3]),
 			    "setterCode": generateVarSetterCode(nativeName, bindingType, decl[1], decl[3]),
+			    "doc": extractDoc(attr)
 			    ];
 
 		    code ~= "
@@ -1098,7 +1161,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 
 		    load ~= "    anna_member_create_native_property(
         stack_type, anna_mid_get(L\"%(name)\"),
-        %(returnType), %(getterName), %(setterName), 0);
+        %(returnType), %(getterName), %(setterName), %(doc));
 " % data;
 		}
 		
@@ -1258,7 +1321,12 @@ void anna_%(moduleName)_load(anna_stack_template_t *stack)
 %(load)
      anna_type_data_register(anna_%(moduleName)_type_data, stack);
 }
-" % ["moduleName": moduleName, "moduleData": moduleData, "load": load, "register": if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"}else{""}]
+" % [
+            "moduleName": moduleName, 
+            "moduleData": moduleData,
+            "load": load,
+            "register": (if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"}else{""})
+        ]
     }
 
 }
