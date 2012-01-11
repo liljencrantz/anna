@@ -61,9 +61,9 @@ io
 
     def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor. Equivalent to the C open function."));
     def Int creat(String name, Int mode) (doc("Open a file descriptor. Equivalent to the C creat function."), alias(create));
-    def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
-    def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count);
-    def Bool close(Int fd);
+    def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Read from a file descriptor. Equivalent to the C read function."));
+    def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Write to a file descriptor. Equivalent to the C write function."));
+    def Bool close(Int fd) (doc("Close a file descriptor. Equivalent to the C close function."));
 
     cStruct Stat (name(stat))
     {
@@ -82,14 +82,14 @@ io
 	const Int ctime (name(st_ctime), doc("Time of latest change."));
     }
 
-    def Bool stat(String path, Stat buf);
-    def Bool lstat(String path, Stat buf);
-    def Bool fstat(Int fd, Stat buf);
+    def Bool stat(String path, Stat buf) (doc("Check the status of file with the specified path. Equivalanet to the C stat function."));
+    def Bool lstat(String path, Stat buf) (doc("Check the status of file with the specified path, without following symlinks. Equivalanet to the C lstat function."));
+    def Bool fstat(Int fd, Stat buf) (doc("Check the status of file with the specified file descriptor. Equivalanet to the C fstat function."));
 
-    def Bool mkdir(String path, Int mode);
+    def Bool mkdir(String path, Int mode) (doc("Create a new driectory with the specified path. Equivalanet to the C mkdir function."));
 
-    standardInput :== 0;
-    standardOutput :== 1;
+    const standardInput (doc("File descriptor for standard input.")) = 0;
+    const standardOutput (doc("File descriptor for standard output.")) = 1;
     const standardError(doc("File descriptor for error output")) = 2;
 
     def Bool getcwd(Buffer buf(ensureCapacity(size)), Int size);
@@ -269,10 +269,10 @@ rLimit
 	const Int stack (name(RLIMIT_STACK), doc("The STACK limit"));
     }
 
-    cStruct RLimit (name(rlimit))
+    cStruct RLimit (name(rlimit), doc("A structure representing the current and maximum value of a system resource usage limit."))
     {
-	const Int cur (name(rlim_cur));
-	const Int max (name(rlim_max));
+	const Int cur (name(rlim_cur), doc("Currently enforced limit (soft limit)"));
+	const Int max (name(rlim_max), doc("Maximum value of limit (hard limit)"));
     }
 
     def Int getRLimit(Int resource, RLimit rlim) (name(getrlimit));
@@ -282,10 +282,10 @@ rLimit
 
 env
 {
-    def String getenv(String name);
-    def Int setenv(String name, String value, Int overwrite);
-    def Int unsetenv(String name);
-    def Int clearenv();
+    def String getenv(String name) (doc("Return the current value of the given environment variable. Equivalanet to the C getenv function."));
+    def Int setenv(String name, String value, Int overwrite) (doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
+    def Int unsetenv(String name) (doc("Delete the specified environment variable. Equivalanet to the C unsetenv function."));
+    def Int clearenv() (doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
     /*
       Todo:
 
@@ -296,21 +296,21 @@ env
 
 sleep
 {
-    def Int sleep(Int seconds);
+    def Int sleep(Int seconds) (doc("Sleep for the specified number of seconds"));
 }
 
 time
 {
-    cStruct TimeVal (name(timeval))
+    cStruct TimeVal (name(timeval), doc("A data structure representing a point in time as the amount of time that has elapsed since the epoch."))
     {
-	var Int sec (name(tv_sec));
-	var Int usec (name(tv_usec));
+	var Int sec (name(tv_sec), doc("Seconds"));
+	var Int usec (name(tv_usec), doc("Microseconds."));
     }
     
-    cStruct TimeZone (name(timezone))
+    cStruct TimeZone (name(timezone), doc("A deprecated data structure that used to be used for representing a time zone."))
     {
     }
     
-    def Bool gettimeofday(TimeVal tv, TimeZone tz);
+    def Bool gettimeofday(TimeVal tv, TimeZone tz)  (doc("Gets the current system time. Equivalanet to the C gettimeofday function."));
 }
 
