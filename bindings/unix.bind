@@ -119,36 +119,36 @@ io
 	const Int end (name(SEEK_END));
     }
 
-    def Int fcntl(Int fd, Int cmd);
-    def Int fcntlInt(Int fd, Int cmd, Int arg) (name(fcntl), alias(fcntl));
-    def Int fcntlFLock(Int fd, Int cmd, FLock arg) (name(fcntl), alias(fcntl));
+    def Int fcntlVoid(Int fd, Int cmd) (name(fcntl), alias(fcntl), doc("Manipulate file descriptor."));
+    def Int fcntlInt(Int fd, Int cmd, Int arg) (name(fcntl), alias(fcntl), doc("Manipulate file descriptor."));
+    def Int fcntlFLock(Int fd, Int cmd, FLock arg) (name(fcntl), alias(fcntl), doc("Manipulate file descriptor."));
 
-    def Int dup(Int fd);
-    def Int dup2(Int oldfd, Int newfd) (alias(dup));
+    def Int dup(Int fd) (doc("Duplicate a file descriptor."));
+    def Int dup2(Int oldfd, Int newfd) (alias(dup), doc("Duplicate a file descriptor."));
 
-    def Int chown(String path, Int owner, Int group);
-    def Int fchown(Int fd, Int owner, Int group);
-    def Int lchown(String path, Int owner, Int group);
+    def Int chown(String path, Int owner, Int group) (doc("Change file owner and group."));
+    def Int fchown(Int fd, Int owner, Int group) (doc("Change file owner and group."));
+    def Int lchown(String path, Int owner, Int group) (doc("Change file owner and group."));
 
-    def Int chmod(String path, Int mode);
-    def Int fchmod(Int fd, Int mode);
+    def Int chmod(String path, Int mode) (doc("Change permissions of a file."));
+    def Int fchmod(Int fd, Int mode) (doc("Change permissions of a file."));
 
-    def Int symlink(String oldpath, String newpath);
-    def Int link(String oldpath, String newpath);
-    def Int unlink(String path);
-    def Int rmdir(String path);    
+    def Int symlink(String oldpath, String newpath) (doc("Create a symbolic link to a file."));
+    def Int link(String oldpath, String newpath) (doc("Create anew name for a file."));
+    def Int unlink(String path) (doc("Remove a name and possibly a file."));
+    def Int rmdir(String path) (doc("Remove a directory."));
 
-    def Int rename(String oldpath, String newpath);
+    def Int rename(String oldpath, String newpath) (doc("Rename a file."));
 
-    def Int pipe(MutableList«Int» fd (ensureCapacity(2)));
+    def Int pipe(MutableList«Int» fd (ensureCapacity(2))) (doc("Create a pipe."));
 
-    def UInt64 lseek(Int fd, UInt64 offset, Int whence); 
+    def UInt64 lseek(Int fd, UInt64 offset, Int whence) (doc("Reposition read/write file offset.")); 
 
-    def Void sync();
-    def Int fsync(Int fd);
-    def Int fdatasync(Int fd);
+    def Void sync() (doc("Flush file system buffers."));
+    def Int fsync(Int fd) (doc("Synchronize a file's in-core state with storage device."));
+    def Int fdatasync(Int fd) (doc("Synchronize a file's in-core state with storage device."));
 
-    def Int umask(Int mask);    
+    def Int umask(Int mask) (doc("Set a new value for file mode creation mask and return the old value."));    
 
     verbatim("
 #define ANNA_FD_CLR(set, fd) FD_CLR(fd, set)
@@ -158,10 +158,10 @@ io
 
     cType FdSet (name(fd_set))
     {
-	def Void clear(Int fd) (name(ANNA_FD_CLR));
-	def Int set?(Int fd) (name(ANNA_FD_ISSET));
-	def Void set(Int fd) (name(ANNA_FD_SET));
-	def Void zero() (name(FD_ZERO));
+	def Void clear(Int fd) (name(ANNA_FD_CLR), doc("Remove the specified file descriptor from this set."));
+	def Int set?(Int fd) (name(ANNA_FD_ISSET), doc("Returns non-null if the specified file descriptor is in the set."));
+	def Void set(Int fd) (name(ANNA_FD_SET), doc("Make the specified file descriptor part of the set."));
+	def Void zero() (name(FD_ZERO), doc("Clear all file descriptors in this set."));
     }
     
 //    def Int select(Int nfds, FdSet readfds, FdSet writefds, FdSet exceptfds, TimeVal timeout);
@@ -212,39 +212,39 @@ proc
 	const Int unused (name(SIGUNUSED), doc("The UNUSED signal"));
     }
 
-    def Int exec(String filename, List«String» argv, List«String» envp) (name(execve));
-    def Void exit(Int status);
-    def Int fork();
-    def Int kill(Int pid, Int sig);
+    def Int exec(String filename, List«String» argv, List«String» envp) (name(execve), doc("Execute the specified program."));
+    def Void exit(Int status), (doc("Terminate the calling process."));
+    def Int fork() (doc("Create a child process."));
+    def Int kill(Int pid, Int sig) (doc("Send a signal to a process."));
 
-    def Int getsid(Int pid);
-    def Int setsid();
+    def Int getsid(Int pid) (doc("Get session ID."));
+    def Int setsid() (doc("Set session ID."));
 
-    def Int getpid();
-    def Int getppid();
+    def Int getpid() (doc("Get process ID."));
+    def Int getppid() (doc("Get parent process ID."));
 
-    def Int wait(MutableList«Int» status (ensureCapacity(1))); 
-    def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options);
+    def Int wait(MutableList«Int» status (ensureCapacity(1))) (doc("Wait for a process to change state.")); 
+    def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options), (doc("Wait for a process to change state."));
 
 }
 
 user
 {
-    def Int getuid();
-    def Int geteuid();
-    def Int getgid();
-    def Int getegid();
+    def Int getuid() (doc("Get the real user ID of the calling process."));
+    def Int geteuid() (doc("Get the effective user ID of the calling process."));
+    def Int getgid() (doc("Get the real group ID of the calling process."));
+    def Int getegid() (doc("Get the effective group ID of the calling process."));
 
-    def Int setuid(Int uid);
-    def Int seteuid(Int uid);
-    def Int setegid(Int uid);
-    def Int setgid(Int uid);
+    def Int setuid(Int uid) (doc("Set the effective user ID of the calling process. If the calling user is root, the real user ID is also set."));
+    def Int seteuid(Int uid) (doc("Set the effective user ID of the calling process."));
+    def Int setegid(Int uid) (doc("Set the effective group ID of the calling process."));
+    def Int setgid(Int uid) (doc("Set the effective group ID of the calling process. If the calling user is root, the real group ID is also set."));
 
-    def Int setpgid(Int pid, Int pgid);
-    def Int getpgid(Int pid);
+    def Int setpgid(Int pid, Int pgid) (doc("Set process group."));
+    def Int getpgid(Int pid) (doc("Get process group."));
 
-    def Int getgroups(Int size, MutableList«Int» list (ensureCapacity(size)));
-    def Int setgroups(Int size, MutableList«Int» list (ensureCapacity(size)));
+    def Int getgroups(Int size, MutableList«Int» list (ensureCapacity(size))) (doc("Get list of supplamentary group IDs."));
+    def Int setgroups(Int size, MutableList«Int» list (ensureCapacity(size))) (doc("Set list of supplamentary group IDs."));
 }
 
 rLimit
@@ -274,9 +274,9 @@ rLimit
 	const Int cur (name(rlim_cur), doc("Currently enforced limit (soft limit)"));
 	const Int max (name(rlim_max), doc("Maximum value of limit (hard limit)"));
     }
-
-    def Int getRLimit(Int resource, RLimit rlim) (name(getrlimit));
-    def Int setRLimit(Int resource, RLimit rlim) (name(setrlimit));
+    
+    def Int getRLimit(Int resource, RLimit rlim) (name(getrlimit), doc("Get resource limit."));
+    def Int setRLimit(Int resource, RLimit rlim) (name(setrlimit), doc("Set resource limit."));
 
 }
 
