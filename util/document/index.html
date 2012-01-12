@@ -1515,17 +1515,26 @@ TODO
 	    you to write your code with a C-like structure, e.g. using infix
 	    operators, braces and brackets. What sets Anna apart from other
 	    such languages is it's support for LISP-features such as
-	    LISP-style macros, closures, anonymous functions and
-	    continuations.  The Anna type system is static, but it supports
-	    structural typing, meaning that if the type of variable B
-	    contains all members of the type A, with compatible type
-	    signatures, then B can be freely cast into a variable of type
-	    A. 
-	  </p>
-	  <p>
-	    In order to learn more about Anna, check out the following sections:
+	    LISP-style macros, continuations, closures and anonymous functions.  
 	  </p>
 	  <ul>
+	    <li>
+	      Instead of the backtick operator of LISP, Anna uses
+	      named substitutions. This involves slightly more
+	      typing, but often makes the intention of the code
+	      clearer. See the section <a href="#misc-format">The %
+	      (format) operator</a> for more information.
+	    </li>
+	    <li>
+	      The Anna type system is static, but it uses structural
+	      typing, not inheritance, to determine if two types are
+	      compatible. Structural typing means that if the type of
+	      variable B contains all members of the type A, with
+	      compatible type signatures, then B can be freely cast
+	      into a variable of type A. For more information, see the
+	      section titled <a href='#structural_typing'>Structural
+	      typing</a>.
+	    </li>
 	    <li>
 	      <a href='#examples'>Anna by examples.</a> If you just want to
 	      dig in to the syntax.
@@ -1534,8 +1543,6 @@ TODO
 	      <a href="#sugar">Sugar and spice</a> - How the front end
 	      sugar works and what Anna looks like without makeup.
 	    </li>
-	    <li><a href='#structural_typing'>Structural typing - duck typing rethought</a></li>
-
 	  </ul>
     
 	  <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
@@ -2917,6 +2924,36 @@ macro setFooToValue(call)
 	    simply placeholders that are to be substituted with
 	    something else.
 	  </p>
+	  <p>
+	    The percent symbol, when not used as a prefix for an
+	    identifier, is an operator called the format operator. You
+	    can read more about the format operator in the following
+	    section.
+	  </p>
+
+	  <h2><a name="misc-format">The % (format) operator</a></h2>
+	  <p>
+	    Various Anna types implement the <code>%</code> operator,
+	    also called <code>__format__</code>. This operator should
+	    be used for interpolating a collection of values into a
+	    template containing placeholders. Some examples:
+	  </p>
+	  <pre class="anna-code">
+// Prints «This string is used as a template»
+print("This string is used as a %\n" % ["template"]);
+// Prints «A fancy string uses fancy named placeholders»
+print(
+    "A %(quality) string uses %(quality) named placeholders\n"
+     % ["quality": "fancy"]);
+
+/*
+  AST nodes also have a format operator, it works much the same way 
+  as named placeholders in strings
+
+  This will print «print(7)»
+*/
+print(ast(%someFunction(7)) % ["someVar": parser.identifier(?, "print")]);
+	  </pre>
 <!--
     <h1>A simple, annotated example</h1>
     <p>
