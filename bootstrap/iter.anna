@@ -1,12 +1,16 @@
 use(parser);
 
-def Node iterDeclare(Node id, Node nodeType)
-{
-    ast(__var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
-}
-
 def Node __iter__(Call node)
+(
+    doc("Internal helper method for each, map, and friends")
+)
 {
+    def Node iterDeclare(Node id, Node nodeType)
+    {
+	ast(
+	    __var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
+    }
+
     checkNodeType(node.function, Call);
 
     n := MutableList«Node»();  
@@ -90,11 +94,10 @@ def Node __iter__(Call node)
     res = res.replace(ast(body) , Identifier(?, identifier("body")))
 	.replace(ast(list), Identifier(?, identifier("list"))) as Call;
 //    print("Iteration body:\n", res, "\n");
-
     return res;
 }
 
-macro each(node){__iter__(node)}
-macro filter(node){__iter__(node)}
-macro find(node){__iter__(node)}
-macro map(node){__iter__(node)}
+macro each(node)(doc("A macro adding a bit of syntactic sugar for each loops.")){__iter__(node)}
+macro filter(node)(doc("A macro adding a bit of syntactic sugar for filter loops.")){__iter__(node)}
+macro find(node)(doc("A macro adding a bit of syntactic sugar for find loops.")){__iter__(node)}
+macro map(node)(doc("A macro adding a bit of syntactic sugar for map loops.")){__iter__(node)}

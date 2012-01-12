@@ -26,19 +26,21 @@ macro propertyAttribute(node)
             getterName := "!" ~ propName ~ "Getter";
 	    getter[0] = Identifier(getter[0], getterName);
 	    decl[0] = Identifier(decl[0], getterName);
-	    propDecl := ast(var %Type %name (property(%getterName))) % [
+	    attr := decl[3] as Call;
+  	    doc := (attr.filterByCall("doc")[0] as StringLiteral).payload or "";
+	    decl[3] = ast({bound, doc(%doc)}) % ["doc": StringLiteral(attr, "Automatically generated getter method for the % property. For internal use only." % [propName])];
+	    propDecl := ast(var %Type %name (property(%getterName), doc(%doc))) % [
 		"Type": propType,
 		"name": Identifier(node, propName),
-		"getterName": Identifier(node, getterName)
+		"getterName": Identifier(node, getterName),
+		"doc": StringLiteral(attr, doc),
 		];
 
 	    res := ast(nothing(%property, %getter)) % [
 		"property": propDecl,
 		"getter": node[0] ];
-//	    print(res, "\n");
 	    return res;
 	}
     }
     return node[0];
 }
-

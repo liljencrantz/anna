@@ -1,5 +1,5 @@
 
-macro __range__(node)
+macro __range__(node) (doc("Syntactic sugar for creating Range objects."))
 {
     checkCallCount(node, 2);
     node.function = Identifier(node, "Range");

@@ -913,18 +913,9 @@ void anna_string_type_create()
     ;
     
     anna_member_create_native_type_method(
-	mutable_string_type, anna_mid_get(L"convert"),
-	0, &anna_string_convert, string_type,
-	1, &object_type, conv_argn, 0, 0);
-    anna_member_create_native_type_method(
-	imutable_string_type, anna_mid_get(L"convert"),
-	0, &anna_string_convert, string_type,
-	1, &object_type, conv_argn, 0, 0);
-    anna_member_create_native_type_method(
 	string_type, anna_mid_get(L"convert"),
 	0, &anna_string_convert, string_type,
-	1, &object_type, conv_argn, 0, 0);
-
+	1, &object_type, conv_argn, 0, L"Convert any object into a String. This is done by calling the toString method of the Object.");
 
     anna_type_document(
 	string_type,

@@ -1,6 +1,5 @@
 1.0 RELEASE CRITERIA:
 * anna-game as a proof that the language works for solving reasonably complex problems
-* Documentation coverage of standard API functions and types should be at least 90 %.
 * Base documentation:
   - Split into multiple files
   - Check for dead links
@@ -19,6 +18,7 @@
 * Remove code duplication between types and functions when performing templatization
 
 1.0 RELEASE CRITERIA (Done):
+* Documentation coverage of standard API functions and types should be at least 90 %.
 * Write a 'class' macro that performs some of the code transforms currently done by the anna_type_mangle_methods c function, and use pure types for slightly less magical type definitions
 * assign/declare list of variables, e.g. [foo, bar, baz] = qux(); or [foo, bar, baz] := qux();
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

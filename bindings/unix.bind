@@ -92,10 +92,10 @@ io
     const standardOutput (doc("File descriptor for standard output.")) = 1;
     const standardError(doc("File descriptor for error output")) = 2;
 
-    def Bool getcwd(Buffer buf(ensureCapacity(size)), Int size);
-    def Bool chdir(String path);
-    def Bool chroot(String path);
-    def Bool fchdir(Int fd);
+    def Bool getcwd(Buffer buf(ensureCapacity(size)), Int size) (doc("Get current working directory."));
+    def Bool chdir(String path) (doc("Change working directory."));
+    def Bool chroot(String path) (doc("Change root directory."));
+    def Bool fchdir(Int fd) (doc("Change working directory."));
 
     cStruct FLock (name(flock))
     {
@@ -108,15 +108,15 @@ io
 
     fcntlMode
     {
-	const Int dupFd (name(F_DUPFD));
+	const Int dupFd (name(F_DUPFD), doc("Duplicate file descriptor."));
 	// ...
     }
 
     seekMode
     {
-	const Int set (name(SEEK_SET));
-	const Int cur (name(SEEK_CUR));
-	const Int end (name(SEEK_END));
+	const Int set (name(SEEK_SET), doc("Seek to absolute file offset."));
+	const Int cur (name(SEEK_CUR), doc("Seek to file offset relative current position."));
+	const Int end (name(SEEK_END), doc("Seek to file offset relative to end of file."));
     }
 
     def Int fcntlVoid(Int fd, Int cmd) (name(fcntl), alias(fcntl), doc("Manipulate file descriptor."));

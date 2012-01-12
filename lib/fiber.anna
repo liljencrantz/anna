@@ -1,7 +1,7 @@
 
-var MutableList«Fiber» fibers (internal);
-var Fiber current (internal);
-var Int fiberIndex (internal) = 0;
+var MutableList«Fiber» fibers (internal, doc("A list of all created fibers."));
+var Fiber current (internal, doc("The currently running Fiber, if any."));
+var Int fiberIndex (internal, doc("The integer offset in the fibers list of the currently running Fiber")) = 0;
 
 var reflection.Continuation entry;
 
@@ -10,8 +10,8 @@ class Fiber
     doc("A simple cooperative thread implementation")
 )
 {
-    var reflection.Continuation continuation (internal);
-    var Int idx (internal);
+    var reflection.Continuation continuation (internal, doc("The continuation to call to continue executing this fiber."));
+    var Int idx (internal, doc("The integer index of this Fiber in the global fibers list"));
 
     def __init__()
     (doc("Create a new Fiber"))
@@ -19,7 +19,7 @@ class Fiber
 	enable();
     }
 
-    def Object enable()
+    def Object enable() (doc("Call Fiber.enable in order to make this Fiber runnable. This is done autmoatically at Fiber creation."))
     {
 	if(!fibers)
 	{
@@ -36,7 +36,7 @@ class Fiber
 	}
     }
 
-    def disable()
+    def disable() (doc("Make it no longer possible to run the specified fiber."))
     {
 	fibers[idx] = fibers[-1];
 	fibers.count--;
@@ -48,7 +48,7 @@ class Fiber
     {
     }
 
-    def yield()(static)
+    def yield()(static, doc("Yield the currently running Fiber and pick a new fiber to run."))
     {
 	if(current)
 	{

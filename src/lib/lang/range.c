@@ -741,8 +741,7 @@ void anna_range_type_create()
     anna_member_create_native_method(
 	range_type, anna_mid_get(L"__init__"),
 	0, &anna_range_init, range_type, 4,
-	c_argv, c_argn, 0, 0);
-    
+	c_argv, c_argn, 0, L"Constructs a Range object with the specified parameters,");    
 
     anna_type_t *i_argv[] = 
 	{
@@ -886,7 +885,7 @@ void anna_range_type_create()
 	int_type,
 	2,
 	a_argv,
-	a_argn, 0, 0);
+	a_argn, 0, L"Checks whether the specified number is contained in this range.");
     anna_member_create_native_method(
 	range_type,
 	anna_mid_get(L"__map__"),

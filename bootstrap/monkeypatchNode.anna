@@ -51,6 +51,7 @@ def Int block?(
 def List«Node» filterByCall(Call this, String name)
 (
     target(Call),
+    doc("Filters the call list for direct children that are calls to the specified function. For each found child, every parameter in it's parameter list is inserted into the resulting list of Node objects. This function is often useful when checking attribute lists."),
 )
 {
     res := «Node»[];
@@ -64,6 +65,7 @@ def List«Node» filterByCall(Call this, String name)
 def Int childNamed?(Call this, String name)
 (
     target(Call),
+    doc("Returns true if this call has a parameter which is an identifier with the specified name.")
 )
 {
     this.each(chld)

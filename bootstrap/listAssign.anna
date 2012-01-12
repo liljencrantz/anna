@@ -10,6 +10,9 @@
 */
 
 def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNode)
+(
+    doc("Internal helper method for __varList__ and friends.")
+)
 {
     use(parser);
     res := (ast(nothing(%tmp :== %val)) % ["val": valNode]) as Call;
@@ -21,17 +24,17 @@ def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNod
     return res % ["tmp": Identifier(valNode, identifier("temp"))];
 }
 
-macro __varList__(node)
+macro __varList__(node) (doc("Syntactic sugar for declaring multiple variables in a single expression."))
 {
     return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp[%idx]));
 }
 
-macro __constList__(node)
+macro __constList__(node) (doc("Syntactic sugar for declaring multiple constants in a single expression."))
 {
     return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp[%idx]));
 }
 
-macro __assignList__(node)
+macro __assignList__(node) (doc("Syntactic sugar for assigning multiple variables in a single expression."))
 {
     return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]));
 }

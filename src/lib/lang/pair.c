@@ -129,13 +129,13 @@ static void anna_pair_type_create_internal(
     anna_member_create_native_property(
 	type, anna_mid_get(L"first"), spec1,
 	&anna_pair_get_first_i,
-	&anna_pair_set_first_i, 0);
+	&anna_pair_set_first_i, L"The first value of the pair.");
     anna_member_create_native_property(
 	type,
 	anna_mid_get(L"second"),
 	spec2,
 	&anna_pair_get_second_i,
-	&anna_pair_set_second_i, 0);
+	&anna_pair_set_second_i, L"The second value of the pair.");
     anna_pair_add_all_extra_methods(type);
     anna_type_close(type);    
 }

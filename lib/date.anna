@@ -1,31 +1,48 @@
 
 class Timezone
-(doc("A Timezone object"))
+(doc("A Timezone object. This object is currently mostly a placeholder, it's functionality is yet to be implemented."))
 {
-    var String name (internal);
+    var String name (internal, doc("The name of this time zone"));
 
-    def __init__(String name)(doc("Create a new Timezone object with the specified name"))
+    def __init__(String name)(doc("Construct a new Timezone object with the specified name"))
     {
 	this.name = name;
     }
 }
 
 class Delta
-(doc("An object representing a time delta, e.g. the difference between two points in time."))
+(doc("
+An object representing a time delta, e.g. the difference between two
+points in time.
+", "
+A time delta stores year, menth, day, hour, minute, second and
+microsecond components independently. This is because the different
+components do not always have the same size. For example, depending on
+what Date it is applied to a delta of one month might translate to a
+difference of 28, 29, 30 or 31 actual days. Keep these kinds of issues
+in mind when creating delta objects. It is entirely possible to create
+some very confusing time deltas. For example a time delta constructed
+by calling Delta(month:1,day:-30) might, when applied to a Date
+object, result in a Date one day later, the same day, or one or two
+days earlier than the original Date, depending on the number of days
+in the month the object was applied to.
+"))
 {
 
-    var Int year (internal); 
-    var Int month (internal); 
-    var Int day (internal); 
-    var Int hour (internal);
-    var Int minute (internal);
-    var Int second (internal);
-    var Int microsecond (internal);
-
+    var Int year (internal, doc("The year component of the time delta.")); 
+    var Int month (internal, doc("The month component of the time delta.")); 
+    var Int day (internal, doc("The day component of the time delta.")); 
+    var Int hour (internal, doc("The hour component of the time delta."));
+    var Int minute (internal, doc("The minute component of the time delta."));
+    var Int second (internal, doc("The second component of the time delta."));
+    var Int microsecond (internal, doc("The microsecond component of the time delta."));
     def __init__(
 	Int year=0, Int month=0, Int day=0, 
 	Int hour=0, Int minute=0, Int second=0, 
 	Int microsecond=0)
+(
+    doc("Construct a new Delta object with the specified time delta components.")
+)
     {
 	expandCode(
 	    this.%name = %name,
@@ -33,14 +50,28 @@ class Delta
     }
 
     def __add__(Delta other)
+(
+    doc("Create a new Delta object, which is the sum of the two time deltas.")
+)
     {
-        res := Delta(
+        Delta(
 	    year+other.year, month + other.month, day+other.day, 
 	    hour+other.hour, minute+ other.minute, second+other.second, 
 	    microsecond+other.microsecond);
     }
 
-    def toString()
+    def __sug__(Delta other)
+(
+    doc("Create a new Delta object, which is the difference between the two time deltas.")
+)
+    {
+        Delta(
+	    year-other.year, month - other.month, day-other.day, 
+	    hour-other.hour, minute- other.minute, second-other.second, 
+	    microsecond-other.microsecond);
+    }
+
+    def toString() (doc("Return a string representation of this time delta object"))
     {
         res := «String»[];
 
@@ -59,16 +90,17 @@ class Date
 	"The Date object represents a point in time with microsecond precision. Dates object are always relative to a specific timezone.")
 )
 {
-    var Int timestamp (internal);
-    var Int microsecond (internal);
-    var Timezone timezone (internal);
+    var Int timestamp (internal, doc("This date represented as a Unix timestamp, that is, the nmber of seconds since the epoch."));
+    var Int microsecondVal (internal, doc("The number of microseconds past the last second of this date."));
+    var Timezone timezone (internal, doc("The timezone of this Date object"));
 
-    var List«Int» broken (internal);
+    var List«Int» broken (internal, doc("This date represented as broken down time. See the documentation for the C mktime function for more information."));
 
     def __init__(
 	Int year=?, Int month=?, Int day=?, 
 	Int hour=?, Int minute=?, Int second=?, 
 	Int microsecond=?, Timezone timezone=?)
+	(doc("Construct a new Date object representing the specified point in time"))
     {
 /*	if(!timezone)
 	{
@@ -95,95 +127,86 @@ class Date
 	}
 	
 	timestamp = ctime.mkTime(second, minute, hour, day, month-1, year-1900, ?, timezone.name);
-	this.microsecond = microsecond;
+	this.microsecondVal = microsecond;
 	this.timezone = timezone;
 	broken = ctime.breakTime(timestamp, timezone.name);
     }
 
     def Date __add__(Delta other)
+    (
+	doc("Returns a new date that is the specified time delta past the date represented by this object.")
+    )
     {
         Date(
 	    year+other.year, month + other.month, day+other.day, 
 	    hour+other.hour, minute+ other.minute, second+other.second, 
-	    microsecond+other.microsecond,
+	    microsecondVal+other.microsecond,
 	    timezone);
     }    
     
     def Delta __sub__(Date other)
+    (
+	doc("Returns a new date that is the specified time delta before the date represented by this object.")
+    )
     {
-	other = other.toTimezone(timezone);
+//	other = other.toTimezone(timezone);
         Delta(
 	    year - other.year, month - other.month, day - other.day, 
 	    hour - other.hour, minute - other.minute, second - other.second, 
-	    microsecond - other.microsecond);
-    }
-    
-    def Date toTimezone(Timezone timezone)
-    {
-	this;
+	    microsecondVal - other.microsecondVal);
     }
 
-    var Int year (property(yearGetter));
-    def yearGetter() (internal)
+    def year() (property, doc("The year of this date."))
     {
 	broken[ctime.broken.year]+1900;
     }
 
-    var Int month (property(monthGetter));
-    def monthGetter() (internal)
+    def month() (property, doc("The month of this date."))
     {
 	broken[ctime.broken.month]+1;
     }
 
-    var Int day (property(dayGetter));
-    def dayGetter() (internal)
+    def day() (property, doc("The day of the current month of this date."))
     {
 	broken[ctime.broken.dayOfMonth];
     }
 
-    var Int hour (property(hourGetter));
-    def hourGetter() (internal)
+    def hour() (property, doc("The number of hours past midnight of this date."))
     {
 	broken[ctime.broken.hour];
     }
 
-    var Int minute (property(minuteGetter));
-    def minuteGetter() (internal)
+    def minute() (property, doc("The number of minutes past the hour of this date."))
     {
 	broken[ctime.broken.minute];
     }
 
-    var Int second (property(secondGetter));
-    def secondGetter() (internal)
+    def second() (property, doc("The number of seconds past the minute of this date."))
     {
 	broken[ctime.broken.second];
     }
 
-    var Int microsecond (property(microsecondGetter));
-    def microsecondGetter() (internal)
+    def microsecond() (property, doc("The number of microseconds past the second of this date."))
     {
-	microsecond;
+	microsecondVal;
     }
     
-    var Int isDaylightSaving (property(isDaylightSavingGetter));
-    def isDaylightSavingGetter() (internal)
+    def daylightSaving?() (property, doc("Whether this date (in this time zone) is using daylight saving time."))
     {
-	broken[ctime.broken.isDaylightSaving];
+	broken[ctime.broken.daylightSaving?];
     }
- 
-    var Int dayOfWeek (property(dayOfWeekGetter));
-    def dayOfWeekGetter() (internal)
+
+    def dayOfWeek() (property, doc("The number of days since the last sunday."))
     {
 	broken[ctime.broken.dayOfWeek];	
     }
     
-    var Int dayOfYear (property(dayOfYearGetter));
-    def dayOfYearGetter() (internal)
+    def dayOfYear() (property, doc("The number of days since January 1st."))
     {
 	broken[ctime.broken.dayOfYear];	
     }
 
-    def toString()
+    def toString() (doc("Return a string representation of this date object"))
     {
 	return "%-%-% %:%:% (%)" % 
 	    [
@@ -196,5 +219,4 @@ class Date
 		timezone.name
 	    ];
     }
-
 }

@@ -228,7 +228,7 @@ static void anna_ctime_broken_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"year", 5, L"Number of years since 1900.");
     anna_module_const_int(stack, L"dayOfWeek", 6, L"Day of week, Sunday is 0.");
     anna_module_const_int(stack, L"dayOfYear", 7, L"Number of days since January 1:st.");
-    anna_module_const_int(stack, L"isDaylightSaving", 8, L"If non-null, daylight savings time is in effect");
+    anna_module_const_int(stack, L"daylightSaving?", 8, L"If non-null, daylight savings time is in effect");
 }
 
 void anna_ctime_load(anna_stack_template_t *stack)
@@ -300,7 +300,7 @@ void anna_ctime_load(anna_stack_template_t *stack)
 	{
 	    L"sec", L"min", L"hour", 
 	    L"mday", L"month", L"year", 
-	    L"isDaylightSaving", L"timezone"
+	    L"daylightSaving?", L"timezone"
 	}
     ;
 

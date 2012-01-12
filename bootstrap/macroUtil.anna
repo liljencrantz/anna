@@ -14,7 +14,7 @@ macro checkNodeType(node)
 	}).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
 }
 
-macro checkNodeCallTo(node)
+macro checkNodeCallTo(node) (doc("Inserts a run time check that the specified AST node is a Call node. If it is not, an error message is printed and the calling function returns an AST null literal."))
 {
     return ast(
 	{
@@ -32,7 +32,7 @@ macro checkNodeCallTo(node)
 	).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
 }
 
-macro checkNodeBlock(node)
+macro checkNodeBlock(node) (doc("Inserts a run time check that the specified AST node is a call to the __block__ function. If it is not, an error message is printed and the calling function returns an AST null literal."))
 {
     return ast(
 	if(! (((%x as Call).function as Identifier).name == "__block__"))
@@ -42,7 +42,7 @@ macro checkNodeBlock(node)
 	}).replace(ast(%x), node[0]);
 }
 
-macro checkCallCount(node)
+macro checkCallCount(node) (doc("Inserts a run time check that the AST Call node specified in the first argument has the number of arguments specified in the second argument. If it does not, an error message is printed and the calling function returns an AST null literal."))
 {
     return ast(
 	if(%node.count != %count)

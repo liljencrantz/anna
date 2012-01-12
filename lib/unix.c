@@ -613,7 +613,7 @@ void anna_fcntl_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"dupFd", F_DUPFD, 0);
+    anna_module_const_int(stack, L"dupFd", F_DUPFD, L"Duplicate file descriptor.");
 
      anna_type_data_register(anna_fcntl_mode_type_data, stack);
 }
@@ -637,14 +637,14 @@ void anna_seek_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"set", SEEK_SET, 0);
-    anna_module_const_int(stack, L"cur", SEEK_CUR, 0);
-    anna_module_const_int(stack, L"end", SEEK_END, 0);
+    anna_module_const_int(stack, L"set", SEEK_SET, L"Seek to absolute file offset.");
+    anna_module_const_int(stack, L"cur", SEEK_CUR, L"Seek to file offset relative current position.");
+    anna_module_const_int(stack, L"end", SEEK_END, L"Seek to file offset relative to end of file.");
 
      anna_type_data_register(anna_seek_mode_type_data, stack);
 }
 
-ANNA_VM_NATIVE(unix_i_io_fcntl, 2)
+ANNA_VM_NATIVE(unix_i_io_fcntl_void, 2)
 {
     // Validate parameters
     if(param[0] == null_entry){return null_entry;}
@@ -1345,19 +1345,19 @@ void anna_io_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_io_getcwd_argv[] = {buffer_type, int_type};
     wchar_t *unix_i_io_getcwd_argn[] = {L"buf", L"size"};
-    anna_module_function(stack, L"getcwd", 0, &unix_i_io_getcwd, object_type, 2, unix_i_io_getcwd_argv, unix_i_io_getcwd_argn, 0);
+    anna_module_function(stack, L"getcwd", 0, &unix_i_io_getcwd, object_type, 2, unix_i_io_getcwd_argv, unix_i_io_getcwd_argn, L"Get current working directory.");
 
     anna_type_t *unix_i_io_chdir_argv[] = {string_type};
     wchar_t *unix_i_io_chdir_argn[] = {L"path"};
-    anna_module_function(stack, L"chdir", 0, &unix_i_io_chdir, object_type, 1, unix_i_io_chdir_argv, unix_i_io_chdir_argn, 0);
+    anna_module_function(stack, L"chdir", 0, &unix_i_io_chdir, object_type, 1, unix_i_io_chdir_argv, unix_i_io_chdir_argn, L"Change working directory.");
 
     anna_type_t *unix_i_io_chroot_argv[] = {string_type};
     wchar_t *unix_i_io_chroot_argn[] = {L"path"};
-    anna_module_function(stack, L"chroot", 0, &unix_i_io_chroot, object_type, 1, unix_i_io_chroot_argv, unix_i_io_chroot_argn, 0);
+    anna_module_function(stack, L"chroot", 0, &unix_i_io_chroot, object_type, 1, unix_i_io_chroot_argv, unix_i_io_chroot_argn, L"Change root directory.");
 
     anna_type_t *unix_i_io_fchdir_argv[] = {int_type};
     wchar_t *unix_i_io_fchdir_argn[] = {L"fd"};
-    anna_module_function(stack, L"fchdir", 0, &unix_i_io_fchdir, object_type, 1, unix_i_io_fchdir_argv, unix_i_io_fchdir_argn, 0);
+    anna_module_function(stack, L"fchdir", 0, &unix_i_io_fchdir, object_type, 1, unix_i_io_fchdir_argv, unix_i_io_fchdir_argn, L"Change working directory.");
 
     anna_member_create_blob(unix_f_lock_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct flock));
 
@@ -1384,89 +1384,89 @@ void anna_io_load(anna_stack_template_t *stack)
 	unix_f_lock_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_f_lock_init, object_type, 1, &unix_f_lock_type, this_argn, 0, 0);    
 
-    anna_type_t *unix_i_io_fcntl_argv[] = {int_type, int_type};
-    wchar_t *unix_i_io_fcntl_argn[] = {L"fd", L"cmd"};
-    anna_module_function(stack, L"fcntl", 0, &unix_i_io_fcntl, int_type, 2, unix_i_io_fcntl_argv, unix_i_io_fcntl_argn, 0);
+    anna_type_t *unix_i_io_fcntl_void_argv[] = {int_type, int_type};
+    wchar_t *unix_i_io_fcntl_void_argn[] = {L"fd", L"cmd"};
+    anna_module_function(stack, L"fcntlVoid", 0, &unix_i_io_fcntl_void, int_type, 2, unix_i_io_fcntl_void_argv, unix_i_io_fcntl_void_argn, L"Manipulate file descriptor.");
 
     anna_type_t *unix_i_io_fcntl_int_argv[] = {int_type, int_type, int_type};
     wchar_t *unix_i_io_fcntl_int_argn[] = {L"fd", L"cmd", L"arg"};
-    anna_module_function(stack, L"fcntlInt", 0, &unix_i_io_fcntl_int, int_type, 3, unix_i_io_fcntl_int_argv, unix_i_io_fcntl_int_argn, 0);
+    anna_module_function(stack, L"fcntlInt", 0, &unix_i_io_fcntl_int, int_type, 3, unix_i_io_fcntl_int_argv, unix_i_io_fcntl_int_argn, L"Manipulate file descriptor.");
 
     anna_type_t *unix_i_io_fcntl_f_lock_argv[] = {int_type, int_type, unix_f_lock_type};
     wchar_t *unix_i_io_fcntl_f_lock_argn[] = {L"fd", L"cmd", L"arg"};
-    anna_module_function(stack, L"fcntlFLock", 0, &unix_i_io_fcntl_f_lock, int_type, 3, unix_i_io_fcntl_f_lock_argv, unix_i_io_fcntl_f_lock_argn, 0);
+    anna_module_function(stack, L"fcntlFLock", 0, &unix_i_io_fcntl_f_lock, int_type, 3, unix_i_io_fcntl_f_lock_argv, unix_i_io_fcntl_f_lock_argn, L"Manipulate file descriptor.");
 
     anna_type_t *unix_i_io_dup_argv[] = {int_type};
     wchar_t *unix_i_io_dup_argn[] = {L"fd"};
-    anna_module_function(stack, L"dup", 0, &unix_i_io_dup, int_type, 1, unix_i_io_dup_argv, unix_i_io_dup_argn, 0);
+    anna_module_function(stack, L"dup", 0, &unix_i_io_dup, int_type, 1, unix_i_io_dup_argv, unix_i_io_dup_argn, L"Duplicate a file descriptor.");
 
     anna_type_t *unix_i_io_dup2_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_dup2_argn[] = {L"oldfd", L"newfd"};
-    anna_module_function(stack, L"dup2", 0, &unix_i_io_dup2, int_type, 2, unix_i_io_dup2_argv, unix_i_io_dup2_argn, 0);
+    anna_module_function(stack, L"dup2", 0, &unix_i_io_dup2, int_type, 2, unix_i_io_dup2_argv, unix_i_io_dup2_argn, L"Duplicate a file descriptor.");
 
     anna_type_t *unix_i_io_chown_argv[] = {string_type, int_type, int_type};
     wchar_t *unix_i_io_chown_argn[] = {L"path", L"owner", L"group"};
-    anna_module_function(stack, L"chown", 0, &unix_i_io_chown, int_type, 3, unix_i_io_chown_argv, unix_i_io_chown_argn, 0);
+    anna_module_function(stack, L"chown", 0, &unix_i_io_chown, int_type, 3, unix_i_io_chown_argv, unix_i_io_chown_argn, L"Change file owner and group.");
 
     anna_type_t *unix_i_io_fchown_argv[] = {int_type, int_type, int_type};
     wchar_t *unix_i_io_fchown_argn[] = {L"fd", L"owner", L"group"};
-    anna_module_function(stack, L"fchown", 0, &unix_i_io_fchown, int_type, 3, unix_i_io_fchown_argv, unix_i_io_fchown_argn, 0);
+    anna_module_function(stack, L"fchown", 0, &unix_i_io_fchown, int_type, 3, unix_i_io_fchown_argv, unix_i_io_fchown_argn, L"Change file owner and group.");
 
     anna_type_t *unix_i_io_lchown_argv[] = {string_type, int_type, int_type};
     wchar_t *unix_i_io_lchown_argn[] = {L"path", L"owner", L"group"};
-    anna_module_function(stack, L"lchown", 0, &unix_i_io_lchown, int_type, 3, unix_i_io_lchown_argv, unix_i_io_lchown_argn, 0);
+    anna_module_function(stack, L"lchown", 0, &unix_i_io_lchown, int_type, 3, unix_i_io_lchown_argv, unix_i_io_lchown_argn, L"Change file owner and group.");
 
     anna_type_t *unix_i_io_chmod_argv[] = {string_type, int_type};
     wchar_t *unix_i_io_chmod_argn[] = {L"path", L"mode"};
-    anna_module_function(stack, L"chmod", 0, &unix_i_io_chmod, int_type, 2, unix_i_io_chmod_argv, unix_i_io_chmod_argn, 0);
+    anna_module_function(stack, L"chmod", 0, &unix_i_io_chmod, int_type, 2, unix_i_io_chmod_argv, unix_i_io_chmod_argn, L"Change permissions of a file.");
 
     anna_type_t *unix_i_io_fchmod_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_fchmod_argn[] = {L"fd", L"mode"};
-    anna_module_function(stack, L"fchmod", 0, &unix_i_io_fchmod, int_type, 2, unix_i_io_fchmod_argv, unix_i_io_fchmod_argn, 0);
+    anna_module_function(stack, L"fchmod", 0, &unix_i_io_fchmod, int_type, 2, unix_i_io_fchmod_argv, unix_i_io_fchmod_argn, L"Change permissions of a file.");
 
     anna_type_t *unix_i_io_symlink_argv[] = {string_type, string_type};
     wchar_t *unix_i_io_symlink_argn[] = {L"oldpath", L"newpath"};
-    anna_module_function(stack, L"symlink", 0, &unix_i_io_symlink, int_type, 2, unix_i_io_symlink_argv, unix_i_io_symlink_argn, 0);
+    anna_module_function(stack, L"symlink", 0, &unix_i_io_symlink, int_type, 2, unix_i_io_symlink_argv, unix_i_io_symlink_argn, L"Create a symbolic link to a file.");
 
     anna_type_t *unix_i_io_link_argv[] = {string_type, string_type};
     wchar_t *unix_i_io_link_argn[] = {L"oldpath", L"newpath"};
-    anna_module_function(stack, L"link", 0, &unix_i_io_link, int_type, 2, unix_i_io_link_argv, unix_i_io_link_argn, 0);
+    anna_module_function(stack, L"link", 0, &unix_i_io_link, int_type, 2, unix_i_io_link_argv, unix_i_io_link_argn, L"Create anew name for a file.");
 
     anna_type_t *unix_i_io_unlink_argv[] = {string_type};
     wchar_t *unix_i_io_unlink_argn[] = {L"path"};
-    anna_module_function(stack, L"unlink", 0, &unix_i_io_unlink, int_type, 1, unix_i_io_unlink_argv, unix_i_io_unlink_argn, 0);
+    anna_module_function(stack, L"unlink", 0, &unix_i_io_unlink, int_type, 1, unix_i_io_unlink_argv, unix_i_io_unlink_argn, L"Remove a name and possibly a file.");
 
     anna_type_t *unix_i_io_rmdir_argv[] = {string_type};
     wchar_t *unix_i_io_rmdir_argn[] = {L"path"};
-    anna_module_function(stack, L"rmdir", 0, &unix_i_io_rmdir, int_type, 1, unix_i_io_rmdir_argv, unix_i_io_rmdir_argn, 0);
+    anna_module_function(stack, L"rmdir", 0, &unix_i_io_rmdir, int_type, 1, unix_i_io_rmdir_argv, unix_i_io_rmdir_argn, L"Remove a directory.");
 
     anna_type_t *unix_i_io_rename_argv[] = {string_type, string_type};
     wchar_t *unix_i_io_rename_argn[] = {L"oldpath", L"newpath"};
-    anna_module_function(stack, L"rename", 0, &unix_i_io_rename, int_type, 2, unix_i_io_rename_argv, unix_i_io_rename_argn, 0);
+    anna_module_function(stack, L"rename", 0, &unix_i_io_rename, int_type, 2, unix_i_io_rename_argv, unix_i_io_rename_argn, L"Rename a file.");
 
     anna_type_t *unix_i_io_pipe_argv[] = {anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_io_pipe_argn[] = {L"fd"};
-    anna_module_function(stack, L"pipe", 0, &unix_i_io_pipe, int_type, 1, unix_i_io_pipe_argv, unix_i_io_pipe_argn, 0);
+    anna_module_function(stack, L"pipe", 0, &unix_i_io_pipe, int_type, 1, unix_i_io_pipe_argv, unix_i_io_pipe_argn, L"Create a pipe.");
 
     anna_type_t *unix_i_io_lseek_argv[] = {int_type, int_type, int_type};
     wchar_t *unix_i_io_lseek_argn[] = {L"fd", L"offset", L"whence"};
-    anna_module_function(stack, L"lseek", 0, &unix_i_io_lseek, int_type, 3, unix_i_io_lseek_argv, unix_i_io_lseek_argn, 0);
+    anna_module_function(stack, L"lseek", 0, &unix_i_io_lseek, int_type, 3, unix_i_io_lseek_argv, unix_i_io_lseek_argn, L"Reposition read/write file offset.");
 
     anna_type_t *unix_i_io_sync_argv[] = {};
     wchar_t *unix_i_io_sync_argn[] = {};
-    anna_module_function(stack, L"sync", 0, &unix_i_io_sync, object_type, 0, unix_i_io_sync_argv, unix_i_io_sync_argn, 0);
+    anna_module_function(stack, L"sync", 0, &unix_i_io_sync, object_type, 0, unix_i_io_sync_argv, unix_i_io_sync_argn, L"Flush file system buffers.");
 
     anna_type_t *unix_i_io_fsync_argv[] = {int_type};
     wchar_t *unix_i_io_fsync_argn[] = {L"fd"};
-    anna_module_function(stack, L"fsync", 0, &unix_i_io_fsync, int_type, 1, unix_i_io_fsync_argv, unix_i_io_fsync_argn, 0);
+    anna_module_function(stack, L"fsync", 0, &unix_i_io_fsync, int_type, 1, unix_i_io_fsync_argv, unix_i_io_fsync_argn, L"Synchronize a file's in-core state with storage device.");
 
     anna_type_t *unix_i_io_fdatasync_argv[] = {int_type};
     wchar_t *unix_i_io_fdatasync_argn[] = {L"fd"};
-    anna_module_function(stack, L"fdatasync", 0, &unix_i_io_fdatasync, int_type, 1, unix_i_io_fdatasync_argv, unix_i_io_fdatasync_argn, 0);
+    anna_module_function(stack, L"fdatasync", 0, &unix_i_io_fdatasync, int_type, 1, unix_i_io_fdatasync_argv, unix_i_io_fdatasync_argn, L"Synchronize a file's in-core state with storage device.");
 
     anna_type_t *unix_i_io_umask_argv[] = {int_type};
     wchar_t *unix_i_io_umask_argn[] = {L"mask"};
-    anna_module_function(stack, L"umask", 0, &unix_i_io_umask, int_type, 1, unix_i_io_umask_argv, unix_i_io_umask_argn, 0);
+    anna_module_function(stack, L"umask", 0, &unix_i_io_umask, int_type, 1, unix_i_io_umask_argv, unix_i_io_umask_argn, L"Set a new value for file mode creation mask and return the old value.");
 
     anna_member_create_blob(unix_fd_set_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(fd_set));
 
@@ -1474,25 +1474,25 @@ void anna_io_load(anna_stack_template_t *stack)
     wchar_t *unix_i_clear_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"clear"), 0, 
-        &unix_i_clear, object_type, 2, unix_i_clear_argv, unix_i_clear_argn, 0, 0);
+        &unix_i_clear, object_type, 2, unix_i_clear_argv, unix_i_clear_argn, 0, L"Remove the specified file descriptor from this set.");
 
     anna_type_t *unix_i_set_check_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_set_check_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"set?"), 0, 
-        &unix_i_set_check, int_type, 2, unix_i_set_check_argv, unix_i_set_check_argn, 0, 0);
+        &unix_i_set_check, int_type, 2, unix_i_set_check_argv, unix_i_set_check_argn, 0, L"Returns non-null if the specified file descriptor is in the set.");
 
     anna_type_t *unix_i_set_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_set_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"set"), 0, 
-        &unix_i_set, object_type, 2, unix_i_set_argv, unix_i_set_argn, 0, 0);
+        &unix_i_set, object_type, 2, unix_i_set_argv, unix_i_set_argn, 0, L"Make the specified file descriptor part of the set.");
 
     anna_type_t *unix_i_zero_argv[] = {unix_fd_set_type};
     wchar_t *unix_i_zero_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"zero"), 0, 
-        &unix_i_zero, object_type, 1, unix_i_zero_argv, unix_i_zero_argn, 0, 0);
+        &unix_i_zero, object_type, 1, unix_i_zero_argv, unix_i_zero_argn, 0, L"Clear all file descriptors in this set.");
     anna_member_create_native_method(
 	unix_fd_set_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_fd_set_init, object_type, 1, &unix_fd_set_type, this_argn, 0, 0);    
@@ -1867,7 +1867,7 @@ void anna_proc_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_proc_exec_argv[] = {string_type, anna_list_type_get_any(string_type), anna_list_type_get_any(string_type)};
     wchar_t *unix_i_proc_exec_argn[] = {L"filename", L"argv", L"envp"};
-    anna_module_function(stack, L"exec", 0, &unix_i_proc_exec, int_type, 3, unix_i_proc_exec_argv, unix_i_proc_exec_argn, 0);
+    anna_module_function(stack, L"exec", 0, &unix_i_proc_exec, int_type, 3, unix_i_proc_exec_argv, unix_i_proc_exec_argn, L"Execute the specified program.");
 
     anna_type_t *unix_i_proc_exit_argv[] = {int_type};
     wchar_t *unix_i_proc_exit_argn[] = {L"status"};
@@ -1875,31 +1875,31 @@ void anna_proc_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_proc_fork_argv[] = {};
     wchar_t *unix_i_proc_fork_argn[] = {};
-    anna_module_function(stack, L"fork", 0, &unix_i_proc_fork, int_type, 0, unix_i_proc_fork_argv, unix_i_proc_fork_argn, 0);
+    anna_module_function(stack, L"fork", 0, &unix_i_proc_fork, int_type, 0, unix_i_proc_fork_argv, unix_i_proc_fork_argn, L"Create a child process.");
 
     anna_type_t *unix_i_proc_kill_argv[] = {int_type, int_type};
     wchar_t *unix_i_proc_kill_argn[] = {L"pid", L"sig"};
-    anna_module_function(stack, L"kill", 0, &unix_i_proc_kill, int_type, 2, unix_i_proc_kill_argv, unix_i_proc_kill_argn, 0);
+    anna_module_function(stack, L"kill", 0, &unix_i_proc_kill, int_type, 2, unix_i_proc_kill_argv, unix_i_proc_kill_argn, L"Send a signal to a process.");
 
     anna_type_t *unix_i_proc_getsid_argv[] = {int_type};
     wchar_t *unix_i_proc_getsid_argn[] = {L"pid"};
-    anna_module_function(stack, L"getsid", 0, &unix_i_proc_getsid, int_type, 1, unix_i_proc_getsid_argv, unix_i_proc_getsid_argn, 0);
+    anna_module_function(stack, L"getsid", 0, &unix_i_proc_getsid, int_type, 1, unix_i_proc_getsid_argv, unix_i_proc_getsid_argn, L"Get session ID.");
 
     anna_type_t *unix_i_proc_setsid_argv[] = {};
     wchar_t *unix_i_proc_setsid_argn[] = {};
-    anna_module_function(stack, L"setsid", 0, &unix_i_proc_setsid, int_type, 0, unix_i_proc_setsid_argv, unix_i_proc_setsid_argn, 0);
+    anna_module_function(stack, L"setsid", 0, &unix_i_proc_setsid, int_type, 0, unix_i_proc_setsid_argv, unix_i_proc_setsid_argn, L"Set session ID.");
 
     anna_type_t *unix_i_proc_getpid_argv[] = {};
     wchar_t *unix_i_proc_getpid_argn[] = {};
-    anna_module_function(stack, L"getpid", 0, &unix_i_proc_getpid, int_type, 0, unix_i_proc_getpid_argv, unix_i_proc_getpid_argn, 0);
+    anna_module_function(stack, L"getpid", 0, &unix_i_proc_getpid, int_type, 0, unix_i_proc_getpid_argv, unix_i_proc_getpid_argn, L"Get process ID.");
 
     anna_type_t *unix_i_proc_getppid_argv[] = {};
     wchar_t *unix_i_proc_getppid_argn[] = {};
-    anna_module_function(stack, L"getppid", 0, &unix_i_proc_getppid, int_type, 0, unix_i_proc_getppid_argv, unix_i_proc_getppid_argn, 0);
+    anna_module_function(stack, L"getppid", 0, &unix_i_proc_getppid, int_type, 0, unix_i_proc_getppid_argv, unix_i_proc_getppid_argn, L"Get parent process ID.");
 
     anna_type_t *unix_i_proc_wait_argv[] = {anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_proc_wait_argn[] = {L"status"};
-    anna_module_function(stack, L"wait", 0, &unix_i_proc_wait, int_type, 1, unix_i_proc_wait_argv, unix_i_proc_wait_argn, 0);
+    anna_module_function(stack, L"wait", 0, &unix_i_proc_wait, int_type, 1, unix_i_proc_wait_argv, unix_i_proc_wait_argn, L"Wait for a process to change state.");
 
     anna_type_t *unix_i_proc_waitpid_argv[] = {int_type, anna_list_type_get_mutable(int_type), int_type};
     wchar_t *unix_i_proc_waitpid_argn[] = {L"pid", L"status", L"options"};
@@ -2215,51 +2215,51 @@ void anna_user_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_user_getuid_argv[] = {};
     wchar_t *unix_i_user_getuid_argn[] = {};
-    anna_module_function(stack, L"getuid", 0, &unix_i_user_getuid, int_type, 0, unix_i_user_getuid_argv, unix_i_user_getuid_argn, 0);
+    anna_module_function(stack, L"getuid", 0, &unix_i_user_getuid, int_type, 0, unix_i_user_getuid_argv, unix_i_user_getuid_argn, L"Get the real user ID of the calling process.");
 
     anna_type_t *unix_i_user_geteuid_argv[] = {};
     wchar_t *unix_i_user_geteuid_argn[] = {};
-    anna_module_function(stack, L"geteuid", 0, &unix_i_user_geteuid, int_type, 0, unix_i_user_geteuid_argv, unix_i_user_geteuid_argn, 0);
+    anna_module_function(stack, L"geteuid", 0, &unix_i_user_geteuid, int_type, 0, unix_i_user_geteuid_argv, unix_i_user_geteuid_argn, L"Get the effective user ID of the calling process.");
 
     anna_type_t *unix_i_user_getgid_argv[] = {};
     wchar_t *unix_i_user_getgid_argn[] = {};
-    anna_module_function(stack, L"getgid", 0, &unix_i_user_getgid, int_type, 0, unix_i_user_getgid_argv, unix_i_user_getgid_argn, 0);
+    anna_module_function(stack, L"getgid", 0, &unix_i_user_getgid, int_type, 0, unix_i_user_getgid_argv, unix_i_user_getgid_argn, L"Get the real group ID of the calling process.");
 
     anna_type_t *unix_i_user_getegid_argv[] = {};
     wchar_t *unix_i_user_getegid_argn[] = {};
-    anna_module_function(stack, L"getegid", 0, &unix_i_user_getegid, int_type, 0, unix_i_user_getegid_argv, unix_i_user_getegid_argn, 0);
+    anna_module_function(stack, L"getegid", 0, &unix_i_user_getegid, int_type, 0, unix_i_user_getegid_argv, unix_i_user_getegid_argn, L"Get the effective group ID of the calling process.");
 
     anna_type_t *unix_i_user_setuid_argv[] = {int_type};
     wchar_t *unix_i_user_setuid_argn[] = {L"uid"};
-    anna_module_function(stack, L"setuid", 0, &unix_i_user_setuid, int_type, 1, unix_i_user_setuid_argv, unix_i_user_setuid_argn, 0);
+    anna_module_function(stack, L"setuid", 0, &unix_i_user_setuid, int_type, 1, unix_i_user_setuid_argv, unix_i_user_setuid_argn, L"Set the effective user ID of the calling process. If the calling user is root, the real user ID is also set.");
 
     anna_type_t *unix_i_user_seteuid_argv[] = {int_type};
     wchar_t *unix_i_user_seteuid_argn[] = {L"uid"};
-    anna_module_function(stack, L"seteuid", 0, &unix_i_user_seteuid, int_type, 1, unix_i_user_seteuid_argv, unix_i_user_seteuid_argn, 0);
+    anna_module_function(stack, L"seteuid", 0, &unix_i_user_seteuid, int_type, 1, unix_i_user_seteuid_argv, unix_i_user_seteuid_argn, L"Set the effective user ID of the calling process.");
 
     anna_type_t *unix_i_user_setegid_argv[] = {int_type};
     wchar_t *unix_i_user_setegid_argn[] = {L"uid"};
-    anna_module_function(stack, L"setegid", 0, &unix_i_user_setegid, int_type, 1, unix_i_user_setegid_argv, unix_i_user_setegid_argn, 0);
+    anna_module_function(stack, L"setegid", 0, &unix_i_user_setegid, int_type, 1, unix_i_user_setegid_argv, unix_i_user_setegid_argn, L"Set the effective group ID of the calling process.");
 
     anna_type_t *unix_i_user_setgid_argv[] = {int_type};
     wchar_t *unix_i_user_setgid_argn[] = {L"uid"};
-    anna_module_function(stack, L"setgid", 0, &unix_i_user_setgid, int_type, 1, unix_i_user_setgid_argv, unix_i_user_setgid_argn, 0);
+    anna_module_function(stack, L"setgid", 0, &unix_i_user_setgid, int_type, 1, unix_i_user_setgid_argv, unix_i_user_setgid_argn, L"Set the effective group ID of the calling process. If the calling user is root, the real group ID is also set.");
 
     anna_type_t *unix_i_user_setpgid_argv[] = {int_type, int_type};
     wchar_t *unix_i_user_setpgid_argn[] = {L"pid", L"pgid"};
-    anna_module_function(stack, L"setpgid", 0, &unix_i_user_setpgid, int_type, 2, unix_i_user_setpgid_argv, unix_i_user_setpgid_argn, 0);
+    anna_module_function(stack, L"setpgid", 0, &unix_i_user_setpgid, int_type, 2, unix_i_user_setpgid_argv, unix_i_user_setpgid_argn, L"Set process group.");
 
     anna_type_t *unix_i_user_getpgid_argv[] = {int_type};
     wchar_t *unix_i_user_getpgid_argn[] = {L"pid"};
-    anna_module_function(stack, L"getpgid", 0, &unix_i_user_getpgid, int_type, 1, unix_i_user_getpgid_argv, unix_i_user_getpgid_argn, 0);
+    anna_module_function(stack, L"getpgid", 0, &unix_i_user_getpgid, int_type, 1, unix_i_user_getpgid_argv, unix_i_user_getpgid_argn, L"Get process group.");
 
     anna_type_t *unix_i_user_getgroups_argv[] = {int_type, anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_user_getgroups_argn[] = {L"size", L"list"};
-    anna_module_function(stack, L"getgroups", 0, &unix_i_user_getgroups, int_type, 2, unix_i_user_getgroups_argv, unix_i_user_getgroups_argn, 0);
+    anna_module_function(stack, L"getgroups", 0, &unix_i_user_getgroups, int_type, 2, unix_i_user_getgroups_argv, unix_i_user_getgroups_argn, L"Get list of supplamentary group IDs.");
 
     anna_type_t *unix_i_user_setgroups_argv[] = {int_type, anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_user_setgroups_argn[] = {L"size", L"list"};
-    anna_module_function(stack, L"setgroups", 0, &unix_i_user_setgroups, int_type, 2, unix_i_user_setgroups_argv, unix_i_user_setgroups_argn, 0);
+    anna_module_function(stack, L"setgroups", 0, &unix_i_user_setgroups, int_type, 2, unix_i_user_setgroups_argv, unix_i_user_setgroups_argn, L"Set list of supplamentary group IDs.");
 
      anna_type_data_register(anna_user_type_data, stack);
 }
@@ -2405,11 +2405,11 @@ void anna_r_limit_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_r_limit_get_r_limit_argv[] = {int_type, unix_r_limit_type};
     wchar_t *unix_i_r_limit_get_r_limit_argn[] = {L"resource", L"rlim"};
-    anna_module_function(stack, L"getRLimit", 0, &unix_i_r_limit_get_r_limit, int_type, 2, unix_i_r_limit_get_r_limit_argv, unix_i_r_limit_get_r_limit_argn, 0);
+    anna_module_function(stack, L"getRLimit", 0, &unix_i_r_limit_get_r_limit, int_type, 2, unix_i_r_limit_get_r_limit_argv, unix_i_r_limit_get_r_limit_argn, L"Get resource limit.");
 
     anna_type_t *unix_i_r_limit_set_r_limit_argv[] = {int_type, unix_r_limit_type};
     wchar_t *unix_i_r_limit_set_r_limit_argn[] = {L"resource", L"rlim"};
-    anna_module_function(stack, L"setRLimit", 0, &unix_i_r_limit_set_r_limit, int_type, 2, unix_i_r_limit_set_r_limit_argv, unix_i_r_limit_set_r_limit_argn, 0);
+    anna_module_function(stack, L"setRLimit", 0, &unix_i_r_limit_set_r_limit, int_type, 2, unix_i_r_limit_set_r_limit_argv, unix_i_r_limit_set_r_limit_argn, L"Set resource limit.");
 
      anna_type_data_register(anna_r_limit_type_data, stack);
 }
