@@ -18,7 +18,7 @@ def main()
     doc := DocumentationExtractor();
     doc.document(global);
     print(
-	"Documented % namespaces with % members, out of which % (% %%) where documented\n" % [
+	"Documented % namespaces with % members, out of which % (% %%) were documented\n" % [
 	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 
 	    Int::convert(100 * (1 -(Float::convert(doc.memberMissing) / doc.memberTot)))]);  
     io.File("documentation/index.html").writeFile(template("util/document/index.html"));
