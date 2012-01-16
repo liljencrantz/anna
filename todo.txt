@@ -9,15 +9,15 @@
   - variadic arguments aren't shown as such
   - argument default values aren't shown
 * Check that node compare supports all ast node types
-* When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
-* Function specialization
 * Handle C type wrappers in other namespaces when compiling bindings
-* Remove code duplication for alias matching in methods
-* Reconsider making function aliases have equal priority to function names when performing calls
 * Remove code duplication between types and functions when performing templatization
 
 1.0 RELEASE CRITERIA (Done):
+* When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
+* Reconsider making function aliases have equal priority to function names when performing calls
+* Remove code duplication for alias matching in methods
 * Documentation coverage of standard API functions and types should be at least 90 %.
+* Function specialization
 * Write a 'class' macro that performs some of the code transforms currently done by the anna_type_mangle_methods c function, and use pure types for slightly less magical type definitions
 * assign/declare list of variables, e.g. [foo, bar, baz] = qux(); or [foo, bar, baz] := qux();
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 

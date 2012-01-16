@@ -170,6 +170,7 @@ static anna_member_t *anna_node_calc_type_call_helper(
     anna_member_t *member = 0;
     anna_node_call_t *n2=0;
     array_list_t memb_list_reverse = AL_STATIC;
+    int i;
     
     if(!anna_node_calculate_type_direct_children(*node_ptr, (*node_ptr)->stack))
     {
@@ -221,7 +222,6 @@ static anna_member_t *anna_node_calc_type_call_helper(
 //	    if(anna_node_calculate_type_direct_children(*node_ptr, (*node_ptr)->stack))
 	    if(al_get_count(memb_list))
 	    {
-		int i;
 		anna_function_type_t **ft = 
 		    malloc(sizeof(anna_function_type_t *)*(al_get_count(memb_list)));
 		size_t count = 0;
@@ -243,7 +243,6 @@ static anna_member_t *anna_node_calc_type_call_helper(
 	    }
 	    if(!member && al_get_count(&memb_list_reverse))
 	    {
-		int i;
 		anna_function_type_t **ft = 
 		    malloc(sizeof(anna_function_type_t *)*(al_get_count(&memb_list_reverse)));
 		size_t count = 0;
@@ -264,7 +263,23 @@ static anna_member_t *anna_node_calc_type_call_helper(
 		    (*node_ptr)->mid = anna_mid_get(member->name);
 		}		
 	    }
-	    	    
+	    if(!member)
+	    {
+		anna_error((anna_node_t *)*node_ptr, L"No matching candidates for method call %ls, candidate signatures are:", anna_mid_get_reverse((*node_ptr)->mid));
+		for(i=0; i<al_get_count(memb_list); i++)
+		{
+		    anna_member_t *memb = (anna_member_t *)al_get(memb_list, i);
+		    anna_function_type_print(anna_member_bound_function_type(memb));
+		}
+		for(i=0; i<al_get_count(&memb_list_reverse); i++)
+		{
+		    anna_member_t *memb = (anna_member_t *)al_get(&memb_list_reverse, i);
+		    anna_function_type_print(anna_member_bound_function_type(memb));
+		}
+		fwprintf(stderr, L"\n");
+		
+	    }
+	    
 	    break;
 	}
     }
