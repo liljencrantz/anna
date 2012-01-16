@@ -70,7 +70,7 @@ for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__dec
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"${external_name}\");
+    anna_member_alias(complex_type, mmid, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
         complex_type, anna_mid_get(L\"${external_name}Int__\"), 0, 
@@ -79,7 +79,7 @@ for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__dec
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"${external_name}\");
+    anna_member_alias(complex_type, mmid, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
 	complex_type, anna_mid_get(L\"${external_name}Float__\"), 0, 
@@ -88,7 +88,7 @@ for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__dec
 	2, f_argv, f_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"${external_name}\");
+    anna_member_alias(complex_type, mmid, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
         complex_type, anna_mid_get(L\"${external_name}IntReverse__\"), 0, 
@@ -97,7 +97,7 @@ for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__dec
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_reverse_add(fun, L\"${external_name}\");
+    anna_member_alias_reverse(complex_type, mmid, L\"${external_name}\");
 
     mmid = anna_member_create_native_method(
 	complex_type, anna_mid_get(L\"${external_name}FloatReverse__\"), 0, 
@@ -106,7 +106,7 @@ for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__dec
 	2, f_argv, f_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_reverse_add(fun, L\"${external_name}\");
+    anna_member_alias_reverse(complex_type, mmid, L\"${external_name}\");
 
 "
 

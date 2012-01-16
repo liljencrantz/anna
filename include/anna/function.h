@@ -127,9 +127,6 @@ int anna_function_has_alias(anna_function_t *fun, wchar_t *name);
 int anna_function_has_alias_reverse(anna_function_t *fun, wchar_t *name);
 int anna_function_has_alias_reverse_static(anna_function_t *fun, wchar_t *name, anna_type_t *type);
 
-void anna_function_alias_add(anna_function_t *fun, wchar_t *name);
-void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name);
-
 void anna_function_document(anna_function_t *fun, wchar_t *documentation);
 
 anna_function_t *anna_continuation_create(

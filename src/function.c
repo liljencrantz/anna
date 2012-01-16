@@ -620,15 +620,6 @@ int anna_function_has_alias_reverse(anna_function_t *fun, wchar_t *name)
 	name);
 }
 
-void anna_function_alias_add(anna_function_t *fun, wchar_t *name)
-{
-    anna_node_call_t *attr = anna_node_create_call2(
-	0,
-	anna_node_create_identifier(0, L"alias"),
-	anna_node_create_identifier(0, name));
-    anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
-}
-
 void anna_function_document(anna_function_t *fun, wchar_t *doc)
 {
     anna_node_call_t *attr = anna_node_create_call2(
@@ -638,14 +629,6 @@ void anna_function_document(anna_function_t *fun, wchar_t *doc)
     anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
 }
 
-void anna_function_alias_reverse_add(anna_function_t *fun, wchar_t *name)
-{
-    anna_node_call_t *attr = anna_node_create_call2(
-	0,
-	anna_node_create_identifier(0, L"aliasReverse"),
-	anna_node_create_identifier(0, name));
-    anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
-}
 
 anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition)

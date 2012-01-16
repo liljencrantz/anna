@@ -11,7 +11,7 @@ ANNA_VM_NATIVE(anna_type_filename, 1)
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type = anna_type_unwrap(this);
     wchar_t *nam = 0;
-    anna_stack_template_t **stack_ptr = anna_entry_get_addr_static(type, ANNA_MID_STACK_TYPE_PAYLOAD);
+    anna_stack_template_t **stack_ptr = (anna_stack_template_t **)anna_entry_get_addr_static(type, ANNA_MID_STACK_TYPE_PAYLOAD);
     if(stack_ptr && *stack_ptr)
     {
 	nam = (*stack_ptr)->filename;

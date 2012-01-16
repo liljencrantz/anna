@@ -116,8 +116,6 @@ void anna_char_type_create()
 
 
     mid_t mmid;
-    anna_function_t *fun;
-
     wchar_t *conv_argn[]=
 	{
 	    L"value"
@@ -157,8 +155,7 @@ void anna_char_type_create()
 
     mmid = anna_member_create_native_method(
 	char_type, anna_mid_get(L"__sub__Char__"), 0, &anna_char_sub_char, int_type, 2, sub_argv, sub_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(char_type, mmid)));
-    anna_function_alias_add(fun, L"__sub__");
+    anna_member_alias(char_type, mmid, L"__sub__");
 
     anna_char_type_i_create();
 }

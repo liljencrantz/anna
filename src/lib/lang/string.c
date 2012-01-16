@@ -724,9 +724,8 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	char_type,
 	2, i_argv, i_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
-
-
+    anna_member_alias(type, mmid, L"__get__");
+    
     wchar_t *join_argn[] =
 	{
 	    L"this", L"other"
@@ -842,7 +841,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	range_argv,
 	range_argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(type, mmid, L"__get__");
     
     anna_member_create_native_method(
 	type, ANNA_MID_TO_STRING, 0,
@@ -860,7 +859,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	    i_argv,
 	    i_argn, 0, 0);
 	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-	anna_function_alias_add(fun, L"__set__");
+	anna_member_alias(type, mmid, L"__set__");
 	
 	mmid = anna_member_create_native_method(
 	    type,
@@ -872,7 +871,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	    range_argv,
 	    range_argn, 0, 0);
 	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-	anna_function_alias_add(fun, L"__set__");
+	anna_member_alias(type, mmid, L"__set__");
     }
     else
     {

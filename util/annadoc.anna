@@ -198,7 +198,7 @@ often used code paths, which makes it useful for regression testing.")
 	this.writeFile(module.__type__);
     }
 
-    def lookup(Type module, Type parent)
+    def Object lookup(Type module, Type parent)
     {
 	if(module in path)
 	{
@@ -226,7 +226,7 @@ often used code paths, which makes it useful for regression testing.")
 	}
     }
 
-    def writeFile(Type module)
+    def Object writeFile(Type module)
     {
 	moduleTot++;
 	if(!(module in path)){ return }

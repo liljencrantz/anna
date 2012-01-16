@@ -254,10 +254,7 @@ ANNA_VM_NATIVE(anna_buffer_decode, 2)
 void anna_buffer_type_create()
 {
     anna_type_t *type = buffer_type;
-
     mid_t mmid;
-    anna_function_t *fun;
-
 
     anna_type_document(
 	type,
@@ -317,8 +314,7 @@ void anna_buffer_type_create()
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_buffer_get_int, int_type, 2,
 	i_argv, i_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(type, mmid, L"__get__");
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
@@ -346,8 +342,7 @@ void anna_buffer_type_create()
 	anna_mid_get(L"__set__Int__"), 0,
 	&anna_buffer_set_int, int_type, 3,
 	i_argv, i_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__set__");
+    anna_member_alias(type, mmid, L"__set__");
 
     anna_type_t *e_argv[] = 
 	{

@@ -303,43 +303,34 @@ void anna_complex_type_create()
 	}
     ;
     mid_t mmid;
-    anna_function_t *fun;
 
     mmid = anna_member_create_native_type_method(
 	complex_type, anna_mid_get(L"convertInt"),
 	0, &anna_complex_convert_int,
 	complex_type, 1, &int_type, conv_argn, 0,
 	L"Convert the specified Integer value to a complex number.");
-    fun = anna_function_unwrap(
-	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
-    anna_function_alias_add(fun, L"convert");
+    anna_member_alias(complex_type, mmid, L"convert");
 
     mmid = anna_member_create_native_type_method(
 	complex_type, anna_mid_get(L"convertString"),
 	0, &anna_complex_convert_string,
 	complex_type, 1, &string_type, conv_argn, 0,
 	L"Convert the specified character String to a complex number. The string needs to be in the form «A + iB» or «A - iB», where A and B represent valid floating point numbers as accepted by Float::convert().");
-    fun = anna_function_unwrap(
-	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
-    anna_function_alias_add(fun, L"convert");
+    anna_member_alias(complex_type, mmid, L"convert");
 
     mmid = anna_member_create_native_type_method(
 	complex_type, anna_mid_get(L"convertFloat"),
 	0, &anna_complex_convert_float,
 	complex_type, 1, &float_type, conv_argn, 0,
 	L"Convert the specified floating point number to a complex number. (This is a no-op.)");
-    fun = anna_function_unwrap(
-	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
-    anna_function_alias_add(fun, L"convert");
+    anna_member_alias(complex_type, mmid, L"convert");
 
     mmid = anna_member_create_native_type_method(
 	complex_type, anna_mid_get(L"convertComplex"),
 	0, &anna_complex_convert_complex,
 	complex_type, 1, &complex_type, conv_argn, 0,
 	L"Convert the specified complex number to a complex number. (This is a no-op.)");
-    fun = anna_function_unwrap(
-	anna_as_obj_fast(anna_entry_get_static(complex_type, mmid)));
-    anna_function_alias_add(fun, L"convert");
+    anna_member_alias(complex_type, mmid, L"convert");
 
 
 

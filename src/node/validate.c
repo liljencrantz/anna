@@ -55,8 +55,13 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	}
 	    
 	anna_member_t *memb = anna_member_get(type, this2->mid);
+	if(!memb)
+	{
+	    anna_error(this, L"Invalid member access: %ls::%ls", type->name, anna_mid_get_reverse(this2->mid));
+	    return;
+	}
+	
 	anna_type_t *ft = memb->type;
-		
 	ftk = anna_function_type_unwrap(ft);	    
 		
 	if(ftk)
@@ -380,6 +385,17 @@ int anna_node_validate_call_parameters(
     if(anna_function_type_is_variadic(target))
     {
 	param_count--;
+    }
+    else
+    {
+	if(call->child_count > param_count)
+	{
+	    if(print_error)
+	    {
+		anna_error((anna_node_t *)call, L"Too many parameters to function call.\n");
+	    }
+	    goto END;
+	}	
     }
     
     int i;

@@ -15,10 +15,6 @@ void anna_member_load(anna_stack_template_t *stack);
 
 
 anna_member_t *anna_member_get(anna_type_t *type, mid_t mid);
-anna_member_t *anna_member_method_search(
-    anna_type_t *type, mid_t mid, 
-    anna_node_call_t *call, 
-    int is_reverse);
 
 mid_t anna_member_create(
     anna_type_t *type,
@@ -144,5 +140,7 @@ static inline void anna_member_set_property(anna_member_t *member, int value)
  */
 anna_function_type_t *anna_member_bound_function_type(anna_member_t *member);
 
+void anna_member_alias(anna_type_t *type, int mid, wchar_t *alias);
+void anna_member_alias_reverse(anna_type_t *type, int mid, wchar_t *alias);
 
 #endif

@@ -855,7 +855,6 @@ static void anna_list_type_create_internal(
     int mutable)
 {
     mid_t mmid;
-    anna_function_t *fun;
 
     anna_member_create(
 	type, ANNA_MID_LIST_PAYLOAD, 0, null_type);
@@ -932,8 +931,7 @@ static void anna_list_type_create_internal(
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_list_get_int, spec, 2,
 	i_argv, i_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(type, mmid, L"__get__");
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"count"), int_type,
@@ -1048,8 +1046,7 @@ static void anna_list_type_create_internal(
 	anna_mid_get(L"__get__Range__"), 0,
 	&anna_list_i_get_range, type, 2,
 	range_argv, range_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(type, mmid, L"__get__");
 
     anna_list_add_all_extra_methods(type);
 
@@ -1061,7 +1058,7 @@ static void anna_list_type_create_internal(
 	    anna_mid_get(L"__set__Int__"), 0,
 	    &anna_list_set_int, spec, 3,
 	    i_argv, i_argn, 0, 0);
-	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));	anna_function_alias_add(fun, L"__set__");
+	anna_member_alias(type, mmid, L"__set__");
 
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"push"),
@@ -1082,7 +1079,7 @@ static void anna_list_type_create_internal(
 	    anna_mid_get(L"__set__Range__"), 0,
 	    &anna_list_i_set_range, type, 3,
 	    range_argv, range_argn, 0, 0);
-	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));	anna_function_alias_add(fun, L"__set__");
+	anna_member_alias(type, mmid, L"__set__");
 
     }
 

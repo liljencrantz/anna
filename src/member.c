@@ -179,100 +179,6 @@ anna_member_t *anna_member_get(anna_type_t *type, mid_t mid)
     return type->mid_identifier[mid];
 }
 
-anna_member_t *anna_member_method_search(
-    anna_type_t *type,
-    mid_t mid, 
-    anna_node_call_t *call,
-    int is_reverse)
-{
-//    debug_level = 0;
-    debug(D_SPAM, L"SEARCH for match to %ls in type %ls\n", anna_mid_get_reverse(mid), type->name);
-    int i;
-
-    
-    
-    wchar_t *alias_name = anna_mid_get_reverse(mid);
-    
-    wchar_t *match=0;
-    int fault_count=0;
-
-    for(i=0; i<anna_type_get_member_count(type); i++)
-    {
-	anna_member_t *member = anna_type_get_member_idx(type, i);
-	if(anna_member_is_static(member) && member->offset>=0 && member->type != null_type)
-	{	    
-	    anna_object_t *mem_val = anna_as_obj(type->static_member[member->offset]);
-	    anna_function_t *mem_fun = anna_function_unwrap(mem_val);
-	    
-	    if(!mem_fun)
-	    {
-		continue;
-	    }
-	    
-	    anna_function_type_t *mem_fun_type = anna_function_type_unwrap(
-		member->type);
-	    
-	    int has_alias = is_reverse ? anna_function_has_alias_reverse(mem_fun, alias_name):anna_function_has_alias(mem_fun, alias_name);
-	    has_alias |= (!is_reverse && wcscmp(member->name, alias_name)==0);
-	    
-	    if(has_alias)
-	    {
-		int j;
-		int off = anna_member_is_bound(member) && !(call->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER);
-		debug(D_SPAM, L"Check %ls against %ls\n",call->child[0]->return_type->name, mem_fun->input_type[off]->name);
-		int my_fault_count = 0;
-		int ok1 = anna_node_validate_call_parameters(
-		    call, mem_fun_type, off, 0);
-		int ok2 = 1;
-		
-		if(ok1)
-		{
-		    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
-		    anna_node_call_map(call_copy, mem_fun_type, off);
-		    
-		    for(j=0; j<call->child_count; j++)
-		    {
-			if(anna_abides(call_copy->child[j]->return_type, mem_fun->input_type[j+off]))
-			{
-			    my_fault_count += 
-				anna_abides_fault_count(mem_fun->input_type[j+off], call_copy->child[j]->return_type);
-			}
-			else
-			{
-			    ok2=0;
-			    debug(D_SPAM, L"Argument %d, %ls does not match %ls!\n", j, 
-				  call_copy->child[j]->return_type->name, mem_fun->input_type[j+off]->name);
-			}
-			
-		    }
-		}
-		
-		if(ok1 && ok2){
-		    debug(D_SPAM, L"Match!\n");
-		    
-		    if(!match || my_fault_count < fault_count)
-		    {
-			match = member->name;
-			fault_count = my_fault_count;
-		    }
-		}
-	    }
-	}
-	else
-	{
-	    debug(D_SPAM, L"Not a function\n");
-	}	
-    }
-    
-    if(match)
-    {
-	debug(D_SPAM, L"Match: %ls\n", match);
-    }
-    
-    return match ? anna_member_get(type, anna_mid_get(match)):0;
-    
-}
-
 size_t anna_member_create_property(
     anna_type_t *type,
     mid_t mid,
@@ -584,3 +490,38 @@ anna_function_type_t *anna_member_bound_function_type(anna_member_t *member)
 	&base->input_default[1],
 	base->flags));
 }
+
+void anna_member_alias(anna_type_t *type, int mid, wchar_t *name)
+{
+    anna_node_call_t *attr = anna_node_create_call2(
+	0,
+	anna_node_create_identifier(0, L"alias"),
+	anna_node_create_identifier(0, name));
+    anna_member_t *memb = anna_member_get(type, mid);
+    if(!memb->attribute)
+    {
+	memb->attribute = anna_node_create_call2(
+	    0,
+	    anna_node_create_identifier(0, L"__block__"));
+    }
+    
+    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+}
+
+void anna_member_alias_reverse(anna_type_t *type, int mid, wchar_t *name)
+{
+    anna_node_call_t *attr = anna_node_create_call2(
+	0,
+	anna_node_create_identifier(0, L"aliasReverse"),
+	anna_node_create_identifier(0, name));
+    anna_member_t *memb = anna_member_get(type, mid);
+    if(!memb->attribute)
+    {
+	memb->attribute = anna_node_create_call2(
+	    0,
+	    anna_node_create_identifier(0, L"__block__"));
+    }
+    
+    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+}
+

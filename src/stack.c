@@ -138,8 +138,10 @@ void anna_stack_declare2(anna_stack_template_t *stack,
 
     anna_type_t *res = anna_stack_wrap(stack)->type;
     stack->flags |= ANNA_STACK_DECLARE;
-    anna_member_create(res, anna_mid_get(declare_node->name), 1, 0);
+    int mid = anna_member_create(res, anna_mid_get(declare_node->name), 1, 0);
     stack->flags = stack->flags & ~ANNA_STACK_DECLARE;
+    anna_member_t *memb = anna_member_get(res, mid);
+    memb->attribute = anna_node_clone_deep(declare_node->attribute);
 }
 
 anna_stack_template_t *anna_stack_template_search(

@@ -38,7 +38,7 @@ for i in "__add__ mpz_add(res, *v1, *v2)" "__increaseAssign__ mpz_add(res, *v1, 
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_function_alias_add(fun, L\"${external_name}\");
+    anna_member_alias(int_type, mmid, L\"${external_name}\");
 "
 
     echo "

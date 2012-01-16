@@ -299,7 +299,6 @@ static void anna_node_create_call_type(
     anna_type_t *type)
 {
     mid_t mmid;
-    anna_function_t *fun;
 
     anna_type_copy(type, node_type);
 
@@ -388,8 +387,7 @@ static void anna_node_create_call_type(
 	&anna_node_call_wrapper_i_get_int,
 	node_type,
 	2, i_argv, i_argn, 0, L"Returns the child node at the specified offset.");
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(type, mmid, L"__get__");
 
     mmid = anna_member_create_native_method(
 	type,
@@ -397,8 +395,7 @@ static void anna_node_create_call_type(
 	&anna_node_call_wrapper_i_get_range, 
 	anna_list_type_get_imutable(node_type), 
 	2, range_argv, range_argn, 0, L"Returns the list of nodes in the specified Range.");
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(type, mmid, L"__get__");
 
     mmid = anna_member_create_native_method(
 	type,
@@ -408,8 +405,7 @@ static void anna_node_create_call_type(
 	3,
 	i_argv,
 	i_argn, 0, L"Set the child node at the specified offset to the specified value.");
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__set__");
+    anna_member_alias(type, mmid, L"__set__");
 
     anna_member_create_native_property(
 	type,
@@ -447,8 +443,7 @@ static void anna_node_create_call_type(
 	2,
 	jl_argv,
 	j_argn, 0, L"Create a new Call node, with the function node of this Call node and all the child nodes of both this Call node and the specified List");
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__join__");
+    anna_member_alias(type, mmid, L"__join__");
 
     mmid = anna_member_create_native_method(
 	type,
@@ -459,8 +454,7 @@ static void anna_node_create_call_type(
 	2,
 	jc_argv,
 	j_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
-    anna_function_alias_add(fun, L"__join__");
+    anna_member_alias(type, mmid, L"__join__");
 
     wchar_t *push_argn[] = 
 	{

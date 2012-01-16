@@ -703,7 +703,6 @@ static void anna_range_map(anna_context_t *stack)
 void anna_range_type_create()
 {
     mid_t mmid;
-    anna_function_t *fun;
 
     anna_member_create(range_type, ANNA_MID_RANGE_FROM, 0, null_type);
     anna_member_create(
@@ -761,8 +760,7 @@ void anna_range_type_create()
 	anna_mid_get(L"__get__Int__"), 0,
 	&anna_range_get_int, int_type, 2,
 	i_argv, i_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(range_type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(range_type, mmid, L"__get__");
     
     anna_type_t *range_argv[] = 
 	{
@@ -782,8 +780,7 @@ void anna_range_type_create()
 	anna_mid_get(L"__get__Range__"), 0,
 	&anna_range_get_range, range_type, 2,
 	range_argv, range_argn, 0, 0);
-    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(range_type, mmid)));
-    anna_function_alias_add(fun, L"__get__");
+    anna_member_alias(range_type, mmid, L"__get__");
 
     anna_member_create_native_property(
 	range_type, anna_mid_get(L"count"), int_type,

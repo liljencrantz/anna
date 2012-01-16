@@ -3,7 +3,6 @@
 * Base documentation:
   - Split into multiple files
   - Check for dead links
-  - binding generator doesn't pass on the doc attribute
   - By default, maybe attributes should be dropped to conserve memory? If so, add special switch to retain it for the annadoc program.
 * HTML api documentation extractor
   - Hide internal elements by default
@@ -36,6 +35,7 @@
   - Sort function
 * Base documentation:
   - Make code links actually work
+  - binding generator doesn't pass on the doc attribute
 * HTML api documentation extractor
   - document attribute for modules
   - document attribute for properties

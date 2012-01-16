@@ -3,9 +3,6 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
 {
     anna_node_calculate_type(call->function);
     
-//    wprintf(L"Weee, specializing\n");
-//    anna_node_print(4, call);
-        
     anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
     anna_type_t *res = 0;
     anna_function_t *spec_fun = 0;
@@ -16,9 +13,9 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     }
     else if(type == mutable_list_type && call->child_count==1)
     {
-        call->child[0] = anna_node_calculate_type(call->child[0]);
+        call->child[0] = anna_node_calculate_type(call->child[0]);	
 	anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
-	
+
 	if(spec)
 	{
 	    res = anna_list_type_get_mutable(spec);
@@ -71,6 +68,7 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     {
 	anna_type_t *spec1 = anna_node_resolve_to_type(call->child[0], stack);
 	anna_type_t *spec2 = anna_node_resolve_to_type(call->child[1], stack);
+
 	if(spec1 && spec2)
 	{
 	    res = anna_pair_type_get(spec1, spec2);

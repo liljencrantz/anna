@@ -221,7 +221,7 @@ anna_entry_t *anna_node_static_invoke_try(
 	wprintf(L"Critical: Invoke null node\n");
 	CRASH;
     }
-    
+
     switch(this->node_type)
     {
 	case ANNA_NODE_DUMMY:
@@ -236,7 +236,7 @@ anna_entry_t *anna_node_static_invoke_try(
 	    anna_node_calculate_type(this);
 	    if(node->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		return anna_from_obj(node->payload->wrapper);
-	    break;
+	    return 0;
 	}
 	
 	case ANNA_NODE_TYPE:
@@ -274,28 +274,6 @@ anna_entry_t *anna_node_static_invoke_try(
 	case ANNA_NODE_NULL:
 	    return null_entry;
 
-	case ANNA_NODE_CONST:
-	case ANNA_NODE_DECLARE:
-	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
-
-	case ANNA_NODE_IDENTIFIER:
-	{
-	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
-	    return anna_stack_get_try(
-		stack,
-		this2->name);
-	}
-	
-	case ANNA_NODE_SPECIALIZE:
-	{
-	    anna_node_t *n = anna_node_calculate_type(this);
-	    if(n->node_type != ANNA_NODE_SPECIALIZE && n->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    {
-		return anna_node_static_invoke_try(n, stack);
-	    }
-	    break;
-	}
-	
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
@@ -318,8 +296,49 @@ anna_entry_t *anna_node_static_invoke_try(
 		
 		return *anna_entry_get_addr(obj, this2->mid);
 	    }
+	    return 0;
+
 	}
 
+	case ANNA_NODE_SPECIALIZE:
+	{
+	    anna_node_t *this2 = anna_node_calculate_type(this);
+	    if(this2->return_type == 0 || this2->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		return 0;
+	    }
+	    if(this2->node_type != ANNA_NODE_SPECIALIZE)
+	    {
+		return anna_node_static_invoke_try(this2, stack);
+	    }
+	    return 0;
+	}
+
+	case ANNA_NODE_CALL:
+	{
+	    return 0;
+	}
+    }
+    this = anna_node_calculate_type(this);
+    if(this->return_type == 0 || this->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
+    {
+	return 0;
+    }
+    
+    switch(this->node_type)
+    {
+	case ANNA_NODE_CONST:
+	case ANNA_NODE_DECLARE:
+	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
+
+	case ANNA_NODE_IDENTIFIER:
+	{
+	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;
+	    return anna_stack_get_try(
+		stack,
+		this2->name);
+	}
+	
 	case ANNA_NODE_MEMBER_CALL:
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;

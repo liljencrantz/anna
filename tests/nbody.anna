@@ -3,10 +3,7 @@ def combinations(%Collection item) (template(%Collection: List))
     result :== «Pair«__staticTypeOf__(item.first),__staticTypeOf__(item.first)»»[];
     item.each(idx, it)
     {
-	item[idx+1...].each(idx2, it2)
-	{
-	    result.push( it|it2)
-	}
+	item[idx+1...].each(idx2, it2) { result.push( it|it2) }
     }
     return result;
 }

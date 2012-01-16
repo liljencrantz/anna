@@ -275,13 +275,6 @@ void anna_type_intersect_into(
 		free(types);
 		free(defaults);
 		
-		anna_function_t *new_fun = 
-		    anna_function_unwrap(
-			anna_as_obj_fast(
-			    anna_entry_get_static(
-				res, 
-				anna_mid_get(
-				    memb2->name))));
 /*		wprintf(
 		    L"FDASFDSA %ls.%ls %d\n",
 		    t1->name, memb2->name,
@@ -290,38 +283,21 @@ void anna_type_intersect_into(
 			anna_mid_get(
 			    memb2->name)));
 */		
-		anna_function_t *ff1 = 
-		    anna_function_unwrap(
-			anna_as_obj_fast(
-			    anna_entry_get_static(
-				t1, 
-				anna_mid_get(
-				    memb2->name))));
-		
-		anna_function_t *ff2 = 
-		    anna_function_unwrap(
-			anna_as_obj_fast(
-			    anna_entry_get_static(
-				t2, 
-				anna_mid_get(
-				    memb2->name))));
-		
 		array_list_t alias = AL_STATIC;
-		anna_attribute_call_all(ff1->attribute, L"alias", &alias);
+		anna_attribute_call_all(memb1->attribute, L"alias", &alias);
 		
 		for(i=0; i<al_get_count(&alias); i++)
 		{
 		    anna_node_t *al = al_get(&alias, i);
-
+		    
 		    if(al->node_type == ANNA_NODE_IDENTIFIER)
 		    {
 			anna_node_identifier_t *nam = (anna_node_identifier_t *)al;
-			if(anna_attribute_has_alias(ff2->attribute, nam->name))
+			if(anna_attribute_has_alias(memb2->attribute, nam->name))
 			{
-			    anna_function_alias_add(new_fun, nam->name);
+			    anna_member_alias(res, mid, nam->name);
 			}
-		    }
-		    
+		    }		    
 		}
 		al_destroy(&alias);
 		
@@ -424,9 +400,23 @@ int anna_abides_search(
     int match = -1;
     int fault_count=0;
 
+    if(call->child_count == 0)
+    {
+	if(function_count == 1)
+	{
+	    return 0;
+	}
+	else
+	{
+	    anna_error((anna_node_t *)call, L"Multiple function aliases exists, but no parameters to differentiate\n");
+	    return -1;
+	}    
+    }
+    
+
     for(i=0; i<function_count; i++)
     {
-	anna_function_type_t *ft = function[i];
+	anna_function_type_t *ft = function[i];	
 	
 	debug(
 	    D_SPAM, L"Check %ls against\n",
@@ -443,28 +433,33 @@ int anna_abides_search(
 	    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
 	    anna_node_call_map(call_copy, ft, 0);
 	    
-	    for(j=0; j<call->child_count; j++)
+	    if(ok)
 	    {
-		if(anna_abides(
-		       call_copy->child[j]->return_type, 
-		       ft->input_type[j]))
+		for(j=0; j<call->child_count; j++)
 		{
-		    my_fault_count += 
-			anna_abides_fault_count(
-			    ft->input_type[j], 
-			    call_copy->child[j]->return_type);
-		}
-		else
-		{
-		    ok=0;
-		    debug(
-			D_SPAM, L"Argument %d, %ls does not match %ls!\n", 
-			j, call_copy->child[j]->return_type->name, 
-			ft->input_type[j]->name);
+		    int ft_idx = mini(j, ft->input_count-1);
+		    if(anna_abides(
+			   call_copy->child[j]->return_type, 
+			   ft->input_type[ft_idx]))
+		    {
+			my_fault_count += 
+			    anna_abides_fault_count(
+				ft->input_type[ft_idx], 
+				call_copy->child[j]->return_type);
+		    }
+		    else
+		    {
+			ok=0;
+			debug(
+			    D_SPAM, L"Argument %d, %ls does not match %ls!\n", 
+			    j, call_copy->child[j]->return_type->name, 
+			    ft->input_type[ft_idx]->name);
+		    }
 		}
 	    }
 	    
-	    if(ok){
+	    if(ok)
+	    {
 		debug(D_SPAM, L"Match %d!\n", i);
 		
 		if((match == -1) || my_fault_count < fault_count)
