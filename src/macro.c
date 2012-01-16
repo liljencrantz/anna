@@ -173,7 +173,7 @@ ANNA_VM_MACRO(anna_macro_var)
     CHECK_NODE_BLOCK(node->child[3]);
     if(anna_node_is_call_to(node->child[0], L"__collection__"))
     {
-	node->function = anna_node_create_identifier(
+	node->function = (anna_node_t *)anna_node_create_identifier(
 	    &node->child[0]->location, 
 	    anna_node_is_named(node->function, L"__const__")?L"__constList__":L"__varList__");
 	return (anna_node_t *)node;
@@ -339,7 +339,7 @@ __memberSet__( OBJ, KEY, VAL)
 		}	    
 		else if(anna_node_is_call_to(node->child[0], L"__collection__"))
 		{
-		    node->function = anna_node_create_identifier(
+		    node->function = (anna_node_t *)anna_node_create_identifier(
 			&node->child[0]->location, 
 			L"__assignList__");
 		    return (anna_node_t *)node;

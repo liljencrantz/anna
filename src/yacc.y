@@ -707,7 +707,7 @@ expression9 :
 	opt_specialization '[' opt_expression_list ']'
 	{
 	    $$ = (anna_node_t *)$3;
-	    anna_node_t *spec = $1;
+	    anna_node_t *spec = (anna_node_t *)$1;
 	    
 	    if(!spec)
 	    {

@@ -170,7 +170,6 @@ static anna_member_t *anna_node_calc_type_call_helper(
     anna_member_t *member = 0;
     anna_node_call_t *n2=0;
     array_list_t memb_list_reverse = AL_STATIC;
-    int omid = (*node_ptr)->mid;
     
     if(!anna_node_calculate_type_direct_children(*node_ptr, (*node_ptr)->stack))
     {
@@ -195,7 +194,7 @@ static anna_member_t *anna_node_calc_type_call_helper(
     {
 	case 0:
 	{
-	    anna_error(*node_ptr, L"No candidates for method call %ls\n", anna_mid_get_reverse((*node_ptr)->mid));
+	    anna_error((anna_node_t *)*node_ptr, L"No candidates for method call %ls\n", anna_mid_get_reverse((*node_ptr)->mid));
 	    	    
 	    break;
 	}
