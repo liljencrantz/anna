@@ -587,7 +587,9 @@ static anna_node_t *anna_node_calculate_type_internal(
 		if(decl)
 		{
 		    anna_node_calculate_type((anna_node_t *)decl);
-		    if(decl->return_type && decl->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+		    if(
+			decl->return_type && 
+			decl->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		    {
 			anna_stack_set_type(stack, id->name, decl->return_type);
 			t = decl->return_type;

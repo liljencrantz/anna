@@ -1186,4 +1186,3 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
     
     return base;
 }
-

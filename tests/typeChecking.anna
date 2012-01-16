@@ -1,0 +1,18 @@
+
+class MyClass
+{
+    def outer()
+    {
+	inner();
+    }
+    
+    def inner()
+    {
+	"ok\n";
+    }
+}
+
+def main()
+{
+    print(MyClass().outer());
+}

@@ -168,5 +168,4 @@ anna_function_t *anna_function_implicit_specialize(
 void anna_function_macro_expand(
     anna_function_t *f, anna_stack_template_t *stack);
 
-
 #endif
