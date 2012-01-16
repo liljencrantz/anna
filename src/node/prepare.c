@@ -140,7 +140,7 @@ static void anna_method_search(
 	    }
 	    else
 	    {
-		if(!memb->type)
+		if(!memb->type || memb->type == ANNA_NODE_TYPE_IN_TRANSIT)
 		{
 		    anna_error(0, L"Circular type checking dependency on member %ls::%ls\n", type->name, memb->name);
 		    continue;

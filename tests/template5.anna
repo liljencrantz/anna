@@ -1,10 +1,10 @@
 /*
-  Test template specialization of function names in types
+  Test templates with invalid attribute (there is no spoon)
 */
 class Base
 {}
 
-class Foo (template(%op:__add__), extends(Base), pie) 
+class Foo (template(%op:__add__), extends(Base), spoon) 
 {
 
     def Int bar(Int a, Int b)
