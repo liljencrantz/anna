@@ -857,9 +857,14 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid)
 	    continue;
 	}
 	anna_node_declare_t *decl2 = (anna_node_declare_t *)node->child[i];
-	if( wcscmp(decl2->name, name) == 0)
+	int match = ( wcscmp(decl2->name, name) == 0);
+	if(!match && decl2->value->node_type == ANNA_NODE_CLOSURE)
 	{
-	    
+	    match = anna_attribute_has_alias(decl2->attribute, name);
+	}
+	
+	if( match )
+	{
 	    node->child[i] = anna_node_calculate_type(node->child[i]);
 	    anna_type_prepare_member_internal(
 		type,

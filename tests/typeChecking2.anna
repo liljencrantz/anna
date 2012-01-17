@@ -2,9 +2,8 @@
   Test that type calculation handles automatic ordering of method preparation.
 
   In order to calculate the return type of the outer method, the
-  inner method must already be prepared.
+  someFunction method must already be prepared.
  */
-
 
 class MyClass
 {
@@ -13,7 +12,7 @@ class MyClass
 	inner();
     }
     
-    def inner()
+    def someFunction() (alias(inner))
     {
 	"ok\n";
     }
