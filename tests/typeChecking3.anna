@@ -1,0 +1,22 @@
+/*
+  This test should result in a compile time failiure, since the return
+  types of infinity and beyond depend on each other.
+ */
+
+class MyClass
+{
+    def infinity()
+    {
+	beyond();
+    }
+    
+    def beyond()
+    {
+	infinity();
+    }
+}
+
+def main()
+{
+    print(MyClass().infinity());
+}
