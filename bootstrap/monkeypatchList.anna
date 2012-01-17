@@ -19,6 +19,17 @@ def all?(List this)
     return res;
 }
 
+def none?(List this)
+(
+    target(List),
+    doc("Returns true if none of the members of this list are non-Null."),
+)
+{
+    res := 1 as Object;
+    this.each(i){ res = res and !i }
+    return res;
+}
+
 def Int partition(
     MutableList list, Int from, Int to, 
     def Int fun(Object first, Object second))
@@ -47,7 +58,6 @@ def Object sortSub(
     MutableList list, Int from, Int to, 
     def Int fun(Object first, Object second))
 {
-    /* Fixme: Pick random pivot */
     pivotIdx := partition(list, from, to, fun);
     if(from != pivotIdx)
     {
@@ -64,7 +74,15 @@ def MutableList sort(List this, def Int fun(Object first, Object second) = ?)
     target(List),
     doc("
 Sort the list. If the original list is mutable, it is sorted inplace, otherwise
-a new list is returned")
+a new list is returned.",
+
+	"
+The current implementation is just a placeholder. It is a standard
+Quicksort with a non-random pivot, meaning it does not provide a
+stable sort, and it is easy to trigger O(N^2) worst case behavior by
+choosing the right input. Also, the current implementation does not 
+support templating, so the returned, sorted list is simply a list of 
+objects.")
 )
 {
     list := this.thaw;
