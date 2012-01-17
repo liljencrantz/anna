@@ -132,7 +132,7 @@ static void anna_method_search(
 	{
 	    int callable = 0;
 	    
-	    anna_type_prepare_member(type, anna_mid_get(memb->name), type->stack);
+	    anna_type_prepare_member(type, anna_mid_get(memb->name));
 
 	    if(memb->type == type_type)
 	    {
@@ -322,7 +322,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	}
     }
     
-    anna_type_prepare_member(type, n->mid, stack);	    
+    anna_type_prepare_member(type, n->mid);
     /*
     anna_function_search_internal(
 	type->GGG, name, candidates, 0, 0);
@@ -861,7 +861,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		}
 	    }
 	    
-	    anna_type_prepare_member(type, c->mid, stack);
+	    anna_type_prepare_member(type, c->mid);
 	    anna_member_t *member = anna_member_get(type, c->mid);
 	    if(!member)
 	    {

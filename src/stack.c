@@ -216,7 +216,7 @@ struct anna_use *anna_stack_search_use(
 	{
 	    anna_use_t *use = al_get(&stack->import, i);
 //	    wprintf(L"Check for %ls in %ls\n", name, use->type->name);
-	    anna_type_prepare_member(use->type, anna_mid_get(name), use->type->stack);
+	    anna_type_prepare_member(use->type, anna_mid_get(name));
 	    if(anna_type_member_info_get(use->type, name))
 	    {
 		return use;

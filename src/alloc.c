@@ -100,7 +100,7 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
     if( o->flags & ANNA_USED)
 	return;
     o->flags |= ANNA_USED;
-    
+
     if(o->parent)
 	anna_alloc_mark_stack_template(o->parent);
     if(o->function)
@@ -115,6 +115,7 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *o)
 	    anna_alloc_mark_node((anna_node_t *)o->member_declare_node[i]);
 	}
     }
+
 }
 
 void anna_alloc_mark_node(anna_node_t *o)

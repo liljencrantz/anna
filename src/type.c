@@ -44,9 +44,7 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off);
 
 static void anna_type_prepare_property(
     anna_type_t *type,
-    anna_node_declare_t *decl,
-    anna_stack_template_t *stack);
-
+    anna_node_declare_t *decl);
 
 static void anna_type_mark_static_iter(void *key_ptr,void *val_ptr)
 {
@@ -419,8 +417,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 
 static void anna_type_prepare_member_internal(
     anna_type_t *type,
-    anna_node_declare_t *decl,
-    anna_stack_template_t *stack)
+    anna_node_declare_t *decl)
 {
     if((decl->return_type == ANNA_NODE_TYPE_IN_TRANSIT) || (!decl->return_type))
     {
@@ -484,14 +481,12 @@ static void anna_type_prepare_member_internal(
 	    wchar_t *name = ((anna_node_identifier_t *)al_get(&etter, i))->name;
 	    anna_type_prepare_member(
 		type,
-		anna_mid_get(name),
-		stack);
+		anna_mid_get(name));
 	}	
 	
 	anna_type_prepare_property(
 	    type,
-	    decl,
-	    stack);
+	    decl);
 	al_destroy(&etter);
 	return;
     }
@@ -518,7 +513,7 @@ static void anna_type_prepare_member_internal(
 	    {
 		*anna_entry_get_addr_static(type, mid) = anna_from_obj(anna_function_wrap(clo->payload));
 	    }
-	    anna_function_set_stack(clo->payload, stack);
+	    anna_function_set_stack(clo->payload, type->stack);
 	    anna_function_setup_interface(clo->payload);
 	}
 	//anna_function_setup_body(clo->payload);
@@ -533,8 +528,7 @@ static void anna_type_prepare_member_internal(
 
 static void anna_type_prepare_property(
     anna_type_t *type,
-    anna_node_declare_t *decl,
-    anna_stack_template_t *stack)
+    anna_node_declare_t *decl)
 {
     if(!decl->name)
     {
@@ -661,8 +655,10 @@ void anna_type_set_stack(
     anna_type_t *t,
     anna_stack_template_t *parent_stack)
 {
-    if(t->body && t->body->stack)
+    if(t->stack == parent_stack)
+    {
 	return;
+    }
     
     t->stack = parent_stack;
     
@@ -759,8 +755,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	    node->child[i] = anna_node_calculate_type(node->child[i]);
 	    anna_type_prepare_member_internal(
 		type,
-		(anna_node_declare_t *)node->child[i],
-		type->stack);
+		(anna_node_declare_t *)node->child[i]);
 	}
     }
 
@@ -830,7 +825,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     return 0;
 }
 
-void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_t *stack) 
+void anna_type_prepare_member(anna_type_t *type, mid_t mid) 
 {
     if(!type->definition)
     {
@@ -852,8 +847,6 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
     anna_node_call_t *node = type->body;
     size_t i;
     wchar_t *name = anna_mid_get_reverse(mid);
-    assert(type->stack);
-    type->stack = stack;
     
     for(i=0; i<node->child_count; i++)
     {
@@ -870,8 +863,7 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid, anna_stack_template_
 	    node->child[i] = anna_node_calculate_type(node->child[i]);
 	    anna_type_prepare_member_internal(
 		type,
-		(anna_node_declare_t *)node->child[i],
-		type->stack);
+		(anna_node_declare_t *)node->child[i]);
 	}
     }    
 }

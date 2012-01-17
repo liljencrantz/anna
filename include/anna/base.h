@@ -212,7 +212,8 @@ struct anna_type
     */
     wchar_t *name;
     /**
-       A stack template view of this type
+       The parent stack of this type, usually the module it was
+       defined in.
     */
     struct anna_stack_template *stack;
     /**
