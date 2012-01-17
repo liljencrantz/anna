@@ -2719,7 +2719,7 @@ thisIsCode();
 	    slightly different inputs can be named the same thing,
 	    which avoids having to come up with arbitrary minor
 	    differences in function names. There are drawbacks with
-	    allowin overloadin of method names, though:
+	    allowing overloading of method names, though:
 	  </p>
 	  <ul>
 	    <li>
@@ -2745,34 +2745,29 @@ thisIsCode();
 	  </ul>
 	  <p>
 	    Anna works around these issues by introducing a second
-	    type of name for a function. All stack values, including
-	    functions, have a single variable name, which is unique
-	    within a specific namespace (that is, the name is unique
-	    with that stack frame or type). This is the «true» name of
-	    the function and can be used in any situation where an
-	    unambigous name is desired. But functions can also have an
+	    type of name for a function. All type members and stack
+	    values, including functions and methods, have exactly one
+	    canonical name, which is unique within a specific
+	    namespace (that is, the name is unique with that stack
+	    frame or type). This is the «true» name of the function
+	    and must be used in any situation where an unambigous name
+	    is needed. But functions and methods can also have an
 	    arbitrary number of aliases, specified using the alias
-	    attribute in the function declaration. If an identifier is
-	    used to find the function for a function call, and there
-	    is no function of that name, then all relevant namespaces
-	    are checked for functions with a matching alias. If one or
-	    more such functions is found, the most suitable one is
-	    chosen.
+	    attribute in the function declaration. Such aliases are
+	    also searched when performing lookup for function and
+	    method calls. If multiple function matches are found, the
+	    function with the most compatible type signature is
+	    chosen. Aliases are only used when calling a function or
+	    method.
 	  </p>
 	  <p>
 	    Note:
 	  </p>
 	  <ul>
 	    <li>
-	      If a matching function name exists within the relevant
-	      scope, any functions with a matching alias are
-	      completely ignored. Alias based function lookup only
-	      takes place if regular lookup failed.
-	    </li>
-	    <li>
 	      If a function definition is shadowed by another function
-	      of the same name, that function will not be considered
-	      for aliasing. This may be changed in a future Anna version.
+	      with the same canonical name, that function will not be
+	      considered even if it has a matching alias.
 	    </li>
 	    <li>
 	      Aliases are only used when resolving an identifier for a
