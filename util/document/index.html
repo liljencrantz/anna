@@ -3416,21 +3416,24 @@ def someFunction()
 
 	  <h1><a name="use">The use expression</a></h1>
 	  <p>
-
+	    The use expression is a short hand convenience - any use:d
+	    expressions are considered in scope and considered when
+	    performing identifier lookup.
 	  </p>
 
 	  <pre class="anna-code">
     /*
-      The use expression can be used for oth
+      The use expression can be used for other things than just importing a 
+      library.
     */
     lst := [];
     use(lst);
+    /* These calls resolve to lst.push, because lst us use:d */
     push(1);
     push(2);
     push(3);
     print(pop(), ' ', pop(), ' ', pop(), '\n');
 	  </pre>
-
 	  <h1><a name="design">Design choices</a></h1>
 	  <p>
 	    The design goals of Anna include:
@@ -3888,8 +3891,47 @@ struct anna_object
 	    allows for introspection, efficient garbage collection,
 	    etc.
 	  </p>
-
-
+	  
+	  <h1><a name="tests">The Anna test suite</a></h1>
+	  <p>
+	    Anna ships with a test suite consisting of a series of
+	    small Anna programs and their expected output and exit
+	    status. Currently, the tests suite consists of ~250 tests
+	    taking up over 4000 lines of code, which is about 9 % of
+	    the total source code in the Anna distribution.
+	  </p>
+	  <p>
+	    To run the Anna test suite, simply type <code>make
+	    test</code> at the command line prompt. Don't be surprised
+	    if a few tests fail, Anna is currently not 100 % finished.
+	  </p>
+	  <p>
+	    The test suite has multiple goals, the most important of which are:
+	  </p>
+	  <ul>
+	    <li>
+	      Regression testing for old bugs. This is the most
+	      central task for the test suite. Every major bug
+	      discovered in anna should be turned into an Anna test,
+	      so that if the same bug resurfaces, it can be quickly
+	      fixed.
+	    </li>
+	    <li>
+	      Coverage testing. Ideally, the test suite should cover
+	      every single line of Anna code. That is nowhere near true
+	      as of today.
+	    </li>
+	    <li>
+	      Overall sanity checking. A small number of test programs
+	      are computational programs that calculate e.g. the
+	      mangelbrot set, digits of Pi, perform N-body
+	      simulations, etc. The point of these programs is to
+	      check that Anna runs well on slightly larger problem
+	      sets, e.g. that the garbage collector isn't leaking too
+	      much memory. They can also provide some small degree of
+	      sanity checking on performance changes.
+	    </li>
+	  </ul>
 	  <h1><a name="limitations">Known limitations</a></h1>
 	  <p>
 	    Anna is still a work in progress. As such, there are

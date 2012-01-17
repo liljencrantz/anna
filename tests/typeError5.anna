@@ -1,7 +1,7 @@
 
 __const__(
     Hej, ?, 
-    type(
+    typeType(
 	Hej,
 	__block__()),
     __block__());

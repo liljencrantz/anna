@@ -48,7 +48,7 @@ Struct values can be any Anna expression, including another struct.
 	]
     ];
 
-    fullType := ast(class(Anon, {}, %body)) % ["body": typeBlock];
+    fullType := ast(classType(Anon, {}, %body)) % ["body": typeBlock];
     call := Call(node, fullType);
     call ~= callParam;
 //    print(fullType);

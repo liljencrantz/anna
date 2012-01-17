@@ -15,14 +15,29 @@ class Error
     }
 }
 
-def raise(Error error)
+def raiseError(Error error)
 {
     def Object funEach(reflection.Continuation item)
     {
 	if(coll := (item["!collect"] as MutableList))
 	{
-	    coll ~= [error];
-	    return;
+	    
+	    if(tp := (item["!collectType"] as List«reflection.Type»))
+	    {
+		tp.each(collType)
+		{
+		    if(error.__type__.abides(collType))
+		    {
+			coll ~= [error];
+			return;
+		    }
+		}
+	    }
+	    else
+	    {
+		coll ~= [error];
+		return;
+	    }
 	} 
 
 	if(item.dynamicFrame)
@@ -36,4 +51,5 @@ def raise(Error error)
     
     funEach(reflection.currentContinuation);
 }
+
 

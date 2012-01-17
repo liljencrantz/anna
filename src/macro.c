@@ -572,7 +572,7 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"__assign__", &anna_macro_assign);
     anna_macro_add(stack, L"__macro__", &anna_macro_macro);
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
-    anna_macro_add(stack, L"type", &anna_macro_type);
+    anna_macro_add(stack, L"typeType", &anna_macro_type);
     anna_macro_add(stack, L"__typeInternal__", &anna_macro_type_internal);
     anna_macro_add(stack, L"return", &anna_macro_return);
     anna_macro_add(stack, L"__staticTypeOf__", &anna_macro_type_of);

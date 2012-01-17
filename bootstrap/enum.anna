@@ -1,5 +1,5 @@
 
-macro enum(definition)
+macro enumType(definition)
 (
     doc("
 The enum macro is used to define enumerations types. The basic syntax is:
@@ -13,7 +13,7 @@ enum TypeName
 )
 {
     body := definition[2] as Call;
-    definition.function = ast(class);
+    definition.function = ast(classType);
     
     newBody := ast(
 	{

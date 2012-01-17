@@ -2,7 +2,7 @@
 error IoError (Error) {}
 */
 
-class IOError (extends(error.Error))
+error IOError
 {    
 }
 
@@ -102,7 +102,7 @@ class File
       fd := unix.io.open(this.filename, unix.io.openMode.readOnly, 0);
 	if(!fd)
 	{
-	    error.raise(IOError("Failed to open file"));
+	    raise(IOError("Failed to open file"));
 	    return ?;
 	}
         res := readWholeFile(fd);

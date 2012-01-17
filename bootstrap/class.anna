@@ -1,5 +1,5 @@
 
-macro class(node)
+macro classType(node)
 (
     doc("
 A macro that performs a bunch of macro magic that makes types behave
@@ -10,7 +10,7 @@ the magical this parameter to methods and so on.")
 //    print(node, "\n");
     className := node[0] as Identifier;
     body := node[2] as Call;
-    node.function = ast(type);
+    node.function = ast(typeType);
     body.each(idx,chld)
     {
 	if(chld.callTo?("__const__"))

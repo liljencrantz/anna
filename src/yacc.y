@@ -333,6 +333,16 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
     return res;
 }
 
+static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identifier_t *node, wchar_t *post)
+{
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"%ls%ls%ls", pre, node->name, post);
+    anna_node_identifier_t *res = anna_node_create_identifier(&node->location, sb_content(&sb));
+    sb_destroy(&sb);
+    return res;
+}
+
  
 %}
 
@@ -373,6 +383,7 @@ static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *st
 %token VAR
 %token CONST
 %token RETURN
+%token RAISE
 %token BREAK
 %token CONTINUE
 %token SEPARATOR
@@ -1280,6 +1291,7 @@ specialization:
 type_definition:
 	identifier type_identifier2 attribute_list block 
 	{
+	    $1 = identifier_enclose(L"", $1, L"Type");
 	    
 	  anna_node_t *type  = (anna_node_t *)anna_node_create_call2(
 	      &@$,

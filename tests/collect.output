@@ -1,2 +1,5 @@
-2
-test
+Errors in block 1: 2
+Errors in block 2: 2
+Errors in block 3: 3
+Errors in block 4: 1
+Global errors: 4

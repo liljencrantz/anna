@@ -1,12 +1,51 @@
 
+macro raise(node)
+{
+    return ast(error.raiseError(%err)) % ["err": node[0]]
+}
+
+macro errorType (node)
+{
+    node.function = ast(classType);
+    (node[1] as Call).push(ast(extends(error.Error)));
+    (node[2] as Call).push(ast(var Object %name (static)) % ["name": Identifier(node, identifier("errorType"))]);
+    return node;
+}
+
 macro collect(definition)
 {
-    ast(
-      (
-          {
-   	      %collect := «error.Error»[]; 
-	      %code(); 
-	      %collect;
-	  }()
-	  )) % ["collect": Identifier(definition, "!collect"), "code": definition[0]];
+    switch(definition.count)
+    {
+	case(0)
+	{
+	    definition.error("Expected at least one argument.\n");
+	}
+	case(1)
+	{
+	    return ast(
+		(
+		    {
+			%collect := «error.Error»[];
+			%code(); 
+			%collect;
+		    }()
+		    )) % ["collect": Identifier(definition, "!collect"), "code": definition[0]];
+	}
+	default
+	{
+  	    collectType := ast([]);
+	    definition[0..-1].each(tp){ collectType.push(tp) }
+	    res := ast(
+		(
+		    {
+			%collectType :== %collectValue.freeze;
+			%collect :== «error.Error»[];
+			%code();
+			%collect;
+ 		    }()
+		    )) % ["collect": Identifier(definition, "!collect"), "code": definition[-1], "collectType": Identifier(definition, "!collectType"), "collectValue": collectType];
+
+	    return res;
+	}
+    }
 }

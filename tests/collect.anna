@@ -1,19 +1,46 @@
+error MyError
+{}
+
+error MyIOError (extends(io.IOError, MyError))
+{}
 
 def main()
 {
-    collect
+    use(io);
+    errGlobal := collect
     {
-      err := collect(IOError)
+        err1 := collect(IOError)
 	{
-	    File("/").makeDirectory();
-	    MyError("")
+	    raise(IOError(""));
+	    raise(MyIOError(""));
+	    raise(MyError(""));
 	}
-	print(err.count, "\n");
-	
-	err ~= collect(MyError)
+	print("Errors in block 1: ", err1.count, "\n");
+
+        err2 := collect(MyError)
 	    {
-		MyError("test");
+		raise(IOError(""));
+		raise(MyIOError(""));
+		raise(MyError(""));
 	    }
-	print(err[1].message, "\n");
+	print("Errors in block 2: ", err2.count, "\n");
+
+        err3 := collect
+	    {
+		raise(IOError(""));
+		raise(MyIOError(""));
+		raise(MyError(""));
+	    }
+	print("Errors in block 3: ", err3.count, "\n");
+
+        err4 := collect(MyIOError)
+	    {
+		raise(IOError(""));
+		raise(MyIOError(""));
+		raise(MyError(""));
+	    }
+	print("Errors in block 4: ", err4.count, "\n");
+
     }
+    print("Global errors: ", errGlobal.count, "\n");
 }
