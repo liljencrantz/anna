@@ -153,6 +153,7 @@ ANNA_VM_NATIVE(anna_complex_convert_complex, 1)
 
 ANNA_VM_NATIVE(anna_complex_convert_string, 1)
 {
+    int ok = 1;
     if(anna_entry_null(param[0]))
     {
 	return null_entry;
@@ -219,15 +220,15 @@ ANNA_VM_NATIVE(anna_complex_convert_string, 1)
     errno=olderr;
     
   CLEANUP:
+    if( (newerr) || ( end == 0 ) || ( *end != 0 )|| ( end2 == 0 ) || ( *end2 != 0 ))
+    {
+	ok = 0;
+    }
+    
     free(str);
     free(nstr);
     
-    if(newerr || end == 0 || *end != 0)
-    {
-	return null_entry;
-    }
-    
-    return anna_from_obj(anna_complex_create((complex double)real + I * i_sign*imag));
+    return ok ? anna_from_obj(anna_complex_create((complex double)real + I * i_sign*imag)) : null_entry;
 }
 
 void anna_complex_type_create()
