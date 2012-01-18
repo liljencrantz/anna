@@ -1,0 +1,83 @@
+Constructors are problematic:
+
+* All parent constructors must have been called before a child construtor is called. (Some native objects have binary blobs set up by the constructor. Not calling it will cause crashes.)
+* It would be nice to be able to alter the parameter list sent to the parent constructor in the subtype constructor
+* If a child does not specify how to call the parent constructor, it should be done behind the scenes. How is the argument list determined in this case?
+* If a subtype does not specify any constructor, the parent's constructor should be available. How do we insert all the cool custom assignment stuff then?
+
+We probably need to do some weird magic at the type level in order to
+work this stuff out - the classType macro doesn't have access to the
+ast of the parent types, meaning it can't really do all the stuff
+required.
+
+How things might ideally work:
+
+class Base
+{
+
+    def __init__(Int aaa)
+    {
+        print("Base %\n" % [aaa]);
+    }
+
+}
+
+/*
+  This subtype specifies that the aaa value should always be 0
+*/
+class Derived (extends(Base))
+{
+    def __init__(String bbb)
+    (super(aaa:0))
+    {        
+        print("Derived %\n" % [bbb]);
+    }    
+}
+
+/*
+  This subtype passes on the value of aaa to the parent constructor
+*/
+class Derived (extends(Base))
+{
+    def __init__(Int aaa, String bbb)
+    {        
+        print("Derived %\n" % [bbb]);
+    }    
+}
+
+/*
+  This subtype is an error - the type of aaa is incompatible with the type of
+  aaa in the base class
+*/
+class Derived (extends(Base))
+{
+    def __init__(Float aaa, String bbb)
+    {        
+        print("Derived %\n" % [bbb]);
+    }
+}
+
+/*
+  This subtype is an error - no value is provided for aaa
+*/
+class Derived (extends(Base))
+{
+    def __init__(String bbb)
+    {
+        print("Derived %\n" % [bbb]);
+    }    
+}
+
+/*
+  This subtype has no explicit constructor. Implicitly, a constructor with 
+  the same signature as the parent is created.
+*/
+class Derived (extends(Base))
+{
+}
+
+Implementation plan:
+
+One probably workable method is to leave the constructors as they are and create a special function that does all the parameter mangling and other constructing, including calling the right constructors in the right order. 
+
+
