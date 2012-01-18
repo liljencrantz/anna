@@ -708,11 +708,11 @@ print(myFunctionVar(7), "\n");
 /*
   Use the class keyword to define your own types
 */
-class MyType
+class MyClass
 {
     // This declares that the type has a member of type Int with the 
-    // name myMember.
-    var Int myMember;
+    // name myMember and the initial value 7.
+    myMember := 7;
 
     // This declares that the type has a method named myMethod
     def myMethod()
@@ -726,29 +726,22 @@ class MyType
         print(this.__type__.name, "\n");
     }
 
-    // The constructor needs to be named __init__
-
-    def __init__()
-    {
-        myMember = 7;
-    }   
-
 }
 
 /*
   Call a type in order to create a new object instance of that type.
   This calls the constructor, which sets the value of myMember to 7.
 */
-myInstance := MyType();
+myInstance := MyClass();
 
-// This will print «7» and «MyType».
+// This will print «7» and «MyClass».
 myInstance.myMethod();
 
 // Member variables are public by default.
 // For now, there is no support for non-public members.
 myInstance.myMember = 9;
 
-// This will print «9» and «MyType».
+// This will print «9» and «MyClass».
 myInstance.myMethod();
 	  </pre>
 	  
@@ -780,7 +773,7 @@ print(myList.count, "\n"); // This prints 5
 */
 class PropertyExample 
 {
-    var Int propValue;
+    propValue := 0;
 
     def myGetter()
     {
@@ -815,19 +808,19 @@ class PropertyExample2
 // When defining a type, members can be set as static using the 
 // static attribute
 
-class MyType
+class MyClass
 {
     var Int staticVar (static);
 }
 
 // Static variables are shared between all instances of an object,
 // so this will print '7'
-mt1 := MyType(), mt2 := MyType();
+mt1 := MyClass(), mt2 := MyClass();
 mt1.staticVar = 7;
 print(mt2.staticVar);
 
 // Static members can be accessed by using the :: operator
-MyType::staticVar = 9;
+MyClass::staticVar = 9;
 
 // If a method is accessed using the static member access operator, the unbound
 // version of the method is returned. The unbound method does not have an 
@@ -839,7 +832,7 @@ myList := [];
 MutableList::push(myList, 7);
 
 // Methods can be defined as static, just like variables
-class MyType
+class MyClass
 {
 
     def Object staticMeth() (static)
@@ -857,7 +850,7 @@ class MyType
 
 def main()
 {
-    MyType::staticMeth();
+    MyClass::staticMeth();
 }
 	  </pre>
 
@@ -3030,7 +3023,7 @@ m := json({data:[1,2,3,7], unit:"seconds", caption:null});
 	  </p>
 	  <pre class="anna-code">
 // Create a new date from a specified date 
-var then = isoDate(2009-1-1, 12:30);
+then := isoDate(2009-1-1, 12:30);
 
 // Move ahead x years and one hour 
 date += isoDateDelta(x-0-0, 1:00);

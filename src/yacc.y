@@ -89,6 +89,11 @@ static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
 	{
 	    val = ch - 'A' + 10;
 	}
+	else if( ch == L'K')
+	{
+	    mpz_mul_si(res, res, 1024);
+	    break;
+	}
 	else
 	{
 	    break;
@@ -103,7 +108,6 @@ static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
 	mpz_mul(res, mpbase, res);
 	mpz_add(res, res, mpval);
     }
-
 
 //    wprintf(L"Parse int literal %s\n", mpz_get_str(0, 10, res));
     anna_node_t *node = (anna_node_t *)anna_node_create_int_literal(llocp, res);

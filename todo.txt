@@ -13,6 +13,7 @@
 * Remove code duplication between types and functions when performing templatization
 
 1.0 RELEASE CRITERIA (Done):
+* Simplified member declaration
 * When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 * Reconsider making function aliases have equal priority to function names when performing calls
 * Remove code duplication for alias matching in methods
