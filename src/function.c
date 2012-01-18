@@ -819,9 +819,9 @@ static void anna_function_continuation(anna_context_t *stack)
     int cc = 1 + ((cce == null_entry)?0:anna_as_int(cce));
     anna_entry_set(cont, ANNA_MID_CONTINUATION_CALL_COUNT, anna_from_int(cc));
     
-    anna_entry_t **mem = (anna_entry_t **)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
+    void *mem_blob = (void *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
     size_t sz = *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT);
-    memcpy(&stack->stack[0], mem, sz*sizeof(anna_entry_t *));
+    memcpy(&stack->stack[0], anna_blob_payload(mem_blob), sz*sizeof(anna_entry_t *));
     stack->top = &stack->stack[sz];
 
     stack->frame = (anna_activation_frame_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
@@ -853,19 +853,19 @@ anna_function_t *anna_continuation_create(
     anna_vm_compile(result);
     
 //    size_t sz = stack->top - &stack->stack[0];
-    anna_entry_t **mem;
+    void *mem_blob;
     if(copy)
     {
-	mem = anna_alloc_blob(stack_sz*sizeof(anna_entry_t *));
-	memcpy(mem, stack_ptr, stack_sz*sizeof(anna_entry_t *));
+	mem_blob = anna_alloc_blob(stack_sz*sizeof(anna_entry_t *));
+	memcpy(anna_blob_payload(mem_blob), stack_ptr, stack_sz*sizeof(anna_entry_t *));
     }
     else
     {
-	mem = stack_ptr;
+	mem_blob = anna_blob_from_payload(stack_ptr);
     }
     
     anna_object_t *cont = result->wrapper;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)mem;
+    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)mem_blob;
     *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT) = stack_sz;
     *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME) = (anna_entry_t *)frame;
     *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)frame->code;

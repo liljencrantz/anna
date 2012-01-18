@@ -1498,3 +1498,32 @@ void anna_vm_null_function(anna_context_t *stack)
     }
     anna_context_push_object(stack, null_object);
 }
+
+anna_object_t *anna_as_obj(anna_entry_t *entry)
+{
+    ANNA_ENTRY_JMP_TABLE;
+    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
+    goto *jmp_table[type];
+  LAB_ENTRY_OBJ:
+    return (anna_object_t *)entry;
+  LAB_ENTRY_CHAR:
+    {
+	long res = (long)entry;
+	res >>= 2;
+	return anna_char_create((int)res);
+    }
+  LAB_ENTRY_FLOAT:
+    {
+	double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
+	return anna_float_create(*res);
+    }
+  LAB_ENTRY_INT:
+    {
+	long res = (long)entry;
+	res >>= 2;
+	return anna_int_create(res);
+    }
+  LAB_ENTRY_BLOB:
+    CRASH;
+}
+

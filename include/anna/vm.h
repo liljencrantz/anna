@@ -141,7 +141,7 @@ static inline anna_entry_t *anna_from_uint64(uint64_t val)
 
 static inline anna_entry_t *anna_from_float(double val)
 {
-    double *res = anna_alloc_blob(sizeof(double));
+    double *res = anna_blob_payload(anna_alloc_blob(sizeof(double)));
     *res = val;
     res  = (double *)((long)res | ANNA_STACK_ENTRY_FLOAT);
     return (anna_entry_t *)res;
@@ -177,39 +177,13 @@ static inline anna_entry_t *anna_from_obj(anna_object_t *val)
     return (anna_entry_t *)val;
 }
 
-static inline anna_object_t *anna_as_obj(anna_entry_t *entry)
-{
-    ANNA_ENTRY_JMP_TABLE;
-    long type = ((long)entry) & ANNA_STACK_ENTRY_FILTER;
-    goto *jmp_table[type];
-  LAB_ENTRY_OBJ:
-    return (anna_object_t *)entry;
-  LAB_ENTRY_CHAR:
-    {
-	long res = (long)entry;
-	res >>= 2;
-	return anna_char_create((int)res);
-    }
-  LAB_ENTRY_FLOAT:
-    {
-	double *res = (double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
-	return anna_float_create(*res);
-    }
-  LAB_ENTRY_INT:
-    {
-	long res = (long)entry;
-	res >>= 2;
-	return anna_int_create(res);
-    }
-  LAB_ENTRY_BLOB:
-    CRASH;
-}
+
+__hot anna_object_t *anna_as_obj(anna_entry_t *entry);
 
 static inline anna_object_t *anna_as_obj_fast(anna_entry_t *entry)
 {
     return (anna_object_t *)entry;
 }
-
 
 static inline long anna_as_int(anna_entry_t *entry)
 {

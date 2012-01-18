@@ -1291,27 +1291,26 @@ specialization:
 type_definition:
 	identifier type_identifier2 attribute_list block 
 	{
-	    $1 = identifier_enclose(L"", $1, L"Type");
+	    $1 = (anna_node_t *)identifier_enclose(L"", (anna_node_identifier_t *)$1, L"Type");
 	    
-	  anna_node_t *type  = (anna_node_t *)anna_node_create_call2(
-	      &@$,
-	      $1,
-	      $2?$2:(anna_node_t *)anna_node_create_identifier(&@$, L"!anonymous"),
-	      $3,$4);
-	  
-	  if($2)
-	  {
-	      $$ = (anna_node_t *)anna_node_create_call2(
-		  &@$, anna_node_create_identifier(&@1,L"__const__"),
-		  $2?$2:(anna_node_t *)anna_node_create_identifier(&@$, L"!anonymous"),
-		  anna_node_create_null(&@$), type, 
-		  anna_node_clone_deep((anna_node_t *)$3));
-	  }
-	  else
-	  {
-	      $$ = (anna_node_t *)type;
-	  }
-	  
+	    anna_node_t *type  = (anna_node_t *)anna_node_create_call2(
+		&@$,
+		$1,
+		$2?$2:(anna_node_t *)anna_node_create_identifier(&@$, L"!anonymous"),
+		$3,$4);
+	    
+	    if($2)
+	    {
+		$$ = (anna_node_t *)anna_node_create_call2(
+		    &@$, anna_node_create_identifier(&@1,L"__const__"),
+		    $2?$2:(anna_node_t *)anna_node_create_identifier(&@$, L"!anonymous"),
+		    anna_node_create_null(&@$), type, 
+		    anna_node_clone_deep((anna_node_t *)$3));
+	    }
+	    else
+	    {
+		$$ = (anna_node_t *)type;
+	    }
 	};
 
 attribute_list:

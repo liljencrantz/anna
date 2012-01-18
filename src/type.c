@@ -244,7 +244,23 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
     }
     CRASH;
 }
-
+/*
+static mid_t anna_type_mid_at_offset(anna_type_t *orig, size_t off)
+{
+    int i;
+    int steps = al_get_count(&orig->member_list);
+    for(i=0; i<=steps; i++)
+    {
+        anna_member_t *memb = al_get_fast(&orig->member_list, i);
+	if(anna_member_is_static(memb))
+	    continue;
+	
+	if(memb->offset == off)
+  	    return anna_mid_get(memb->name);
+    }
+    CRASH;
+}
+*/
 static void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *orig)
 {
     anna_node_t *doc = anna_attribute_call(res->attribute, L"doc");

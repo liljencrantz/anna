@@ -51,7 +51,19 @@ static inline __malloc void *anna_alloc_blob(size_t sz)
     res[1] = sz;
     al_push(&anna_alloc[ANNA_BLOB], res);
     anna_alloc_count+=sz;
+    return (void *)res;
+}
+
+static inline void *anna_blob_payload(void *blob)
+{
+    int *res = (int *)blob;
     return (void *)&res[2];
+}
+
+static inline void *anna_blob_from_payload(void *blob)
+{
+    int *res = (int *)blob;
+    return (void *)&res[-2];
 }
 
 static inline __malloc anna_object_t *anna_alloc_object(size_t sz)

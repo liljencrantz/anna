@@ -194,7 +194,7 @@ ANNA_VM_NATIVE(anna_function_type_i_dynamic, 1)
     if(frame->dynamic_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    (anna_entry_t **)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK),
+	    (anna_entry_t **)anna_blob_payload(*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK)),
 	    (size_t)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK_COUNT),
 	    frame->dynamic_frame, 0)->wrapper;
 	return anna_from_obj(cont);
@@ -205,12 +205,16 @@ ANNA_VM_NATIVE(anna_function_type_i_dynamic, 1)
 ANNA_VM_NATIVE(anna_function_type_i_static, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+// Old version of the above line. Surely it must be a bug?
+/*
     anna_context_t *c_stack = (anna_context_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
     anna_activation_frame_t *frame = c_stack->frame;
+*/
     if(frame->static_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    (anna_entry_t **)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK),
+	    (anna_entry_t **)anna_blob_payload(*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK)),
 	    (size_t)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK_COUNT),
 	    frame->static_frame, 0)->wrapper;
 	return anna_from_obj(cont);
