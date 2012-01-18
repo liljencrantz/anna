@@ -1,0 +1,23 @@
+struct Foo
+{
+    var Int some;
+    var String other;
+}
+
+def main()
+{
+    ggg := Foo(3, "abc");
+    ggg2 := Foo(3, "abc");
+    ggg3 := Foo(3, "zzz");
+    ggg4 := Foo(2, "abc");
+    print(ggg.some, "\n");
+    print(ggg, "\n");
+    print(Foo(other: "aaa", some: ?), "\n");
+    print(ggg == ggg2, ' ', ggg == ggg3, ' ', ggg == ggg4, '\n');
+
+    hash := [ggg: "ggg", ggg2:"ggg2", ggg3:"ggg3", ggg4:"ggg4"];
+    print( hash[ggg], "\n");
+    print( hash[ggg2], "\n");
+    print( hash[ggg3], "\n");
+    print( hash[ggg4], "\n");
+}

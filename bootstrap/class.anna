@@ -7,10 +7,12 @@ more like traditional classes in languages like Java and C#, e.g. adds
 the magical this parameter to methods and so on.")
 )
 {
-//    print(node, "\n");
     className := node[0] as Identifier;
     body := node[2] as Call;
     node.function = ast(typeType);
+
+    constructor := ? as Call;
+    initExtra := «Pair«Node, Node»»[];
     body.each(idx,chld)
     {
 	if(chld.callTo?("__const__"))
@@ -30,6 +32,7 @@ the magical this parameter to methods and so on.")
 		    // Append a 'this' to the end of the constructor, since we need construcgtors to return
 		    // the value they're constructing. Blergh.
 		    funBody ~= [ast(this)];
+		    constructor = funDef;
 		}
 		if(!attr.childNamed?("static"))
 		{
@@ -62,9 +65,43 @@ the magical this parameter to methods and so on.")
 		}
 	    }
 	}
+	/*
+	  Find any member declarations with an initial value given in the declaration
+	 */
+	if(chld.callTo?("__const__") or chld.callTo?("__var__"))
+	{
+	    decl := chld as Call;
+	    if(!decl[2].callTo?("__def__"))
+	    {
+		if(decl[1].__type__ == NullLiteral and decl[2].__type__ != NullLiteral)
+		{
+		    //	    print("ABC ", decl, "\n");
+		    initExtra.push(decl[0]|decl[2]);
+		    decl[1] = ast(__staticTypeOf__(%init)) % ["init": decl[2]];
+		    decl[2] = NullLiteral(decl[2]);
+		}
+	    }	    
+	}
     }
+    /*
+      If we have have members with initial values given in the declaration, 
+      move these into the constructor.
+    */
+    if(!initExtra.empty?)
+    {
+	if(!constructor)
+	{
+	  constructorDecl := ast(def __init__(%This this)(bound){use(this); this;});
+	    body.push(constructorDecl);
+	    constructor = constructorDecl[2] as Call;
+	}
 
-//    print(node, "\n");
+        newBody := ast({use(this)}) ~ initExtra.map(extra)
+	{
+	    ast(this.%name = %value) % ["name": extra.first, "value": extra.second];
+	} ~ (constructor[4] as Call)[1...];
+	constructor[4] = newBody;
+    }
     node;
 }
 

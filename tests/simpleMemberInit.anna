@@ -1,0 +1,42 @@
+/*
+  Simple test to make sure that the simplified member declarations,
+  e.g. using := and :==, work as expected.
+
+  These are implemented in the classType macro.
+ */
+
+class MyClass
+{
+    foo := 3;
+    bar := 4;
+    baz := "hello";
+
+    def blorp()
+    {
+	print(foo, ' ', bar, ' ', baz, '\n');
+    }
+
+    def __init__()
+    {
+	print("MyClass::__init__\n");
+    }
+
+}
+
+class MyClass2
+{
+    foo := 1.5;
+    bar := 'g';
+    baz := [9];
+
+    def blorp()
+    {
+	print(foo, ' ', bar, ' ', baz, '\n');
+    }
+}
+
+def main()
+{
+    MyClass().blorp();
+    MyClass2().blorp();
+}

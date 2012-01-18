@@ -617,7 +617,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	anna_object_t *obj = anna_context_pop_object(stack);
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
-//#ifdef ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!m)
 	{
 	    debug(
@@ -631,7 +631,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    
 	    CRASH;
 	}
-//#endif 
+#endif 
+	
 	if(anna_member_is_property(m))
 	{
 	    if(unlikely(obj == null_object))

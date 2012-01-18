@@ -1,4 +1,75 @@
 
+macro structType(node)
+(
+    doc("
+The struct type macro is used for creating simple classes aimed for data storage.
+Basically, a struct type behaves exactly like a regular class, except it has these additional abilities:
+
+<ul>
+  <li>A suitable constructor is automatically created, that accepts one argument for each member of the struct.</li>
+  <li>__cmp__, hashCode and toString methods are all created, doing what you would expect them to.</li>
+</ul>
+<p>
+Usage example:
+</p>
+<pre class=\"anna-code\">
+struct MyStruct
+{
+    var Int some;
+    var String other;
+}
+
+...
+// A constructor is implicitly created for struct:s.
+vv := MyStruct(some: 3, other: \"abc\");
+vv2 := MyStruct(5, \"\");
+
+// This prints MyStruct(some: 5, other:);
+print(vv2);
+</pre>
+<p>
+Because structs implement the __cmp__ and toString methods, they can be used as 
+keys in dictionaries.
+</p>
+")
+)
+{
+    node.function = ast(classType);
+    structName := node[0] as Identifier;
+    body := node[2] as Call;
+    constructorParam := ast({});
+    constructorBody := ast({});
+    toStringBody := (ast({res := %resStart.thaw;}) % ["resStart": StringLiteral(node, structName.name ~ "(")]) as Call;
+    cmpBody := ast({otherStruct := other as %This; otherStruct or (return ?); tmp := 0;});
+  hashCodeBody := ast({res := 0;});
+    body.each(idx, el)
+    {
+        decl := el as Call;
+        name := (decl[0] as Identifier);
+        if(name.name in ["__init__", "__cmp__", "toString"])
+        {
+            name.error("Invalid field name in struct.");
+            return NullLiteral(node);
+        }
+	constructorParam.push(decl.copy());
+	constructorBody.push(ast(this.%val = %val) % ["val": name.copy()]);
+	toStringBody.push(ast(res ~= %name) % ["name": StringLiteral(decl, "" ~ (if(idx != 0){ ", " } else { "" }) ~ name.name ~ ": ")]);
+	toStringBody.push(ast(res ~= this.%value) % ["value": name.copy()]);
+	cmpBody.push(ast((tmp = this.%value.__cmp__(otherStruct.%value) == 0) or (return tmp)) % ["value": name.copy()]);
+	hashCodeBody.push(ast(res = res ^bitxor this.%value.hashCode()) % ["value": name.copy()]);
+    }
+    toStringBody.push(ast(res ~= ")"));
+    toStringBody.push(ast(res));
+    body.push(ast(__const__(__init__, ?, __def__(__init__, ?, %param, {}, %body), {})) % ["param": constructorParam, "body": constructorBody]);
+    cmpBody.push(ast(return 0));
+    hashCodeBody.push(ast(return res));
+
+    body.push(ast(__const__(toString, ?, __def__(toString, ?, {}, {}, %body), {})) % ["body": toStringBody]);
+    body.push(ast(__const__(__cmp__, ?, __def__(__cmp__, ?, {var Object other}, {}, %body), {})) % ["body": cmpBody]);
+    body.push(ast(__const__(hashCode, ?, __def__(hashCode, ?, {}, {}, %body), {})) % ["body": hashCodeBody]);
+    return node;
+}
+
 macro struct(node)
 (
     doc("

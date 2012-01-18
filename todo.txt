@@ -142,7 +142,7 @@ Partial application and saner function argument handling, e.g. it should be poss
 
 RELIABILITY:
 Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not even close)
-Test suite should be at lest 10 % of total code in project. (Currently ~ 8 %)
+Test suite should be at lest 10 % of total code in project. (Currently ~ 9 %)
 More tests for complex math
 More tests for floating point math
 More tests for type checking on invalid specialization
