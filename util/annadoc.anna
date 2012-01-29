@@ -144,8 +144,7 @@ often used code paths, which makes it useful for regression testing.")
 		{
 		    case(str as parser.StringLiteral)
 		    {
-			res ~= str.payload;
-			res ~= "<p>";
+			res ~= "<p>%</p>\n\n" % [str.payload];
 		    }
 		}
 	    }
@@ -180,7 +179,7 @@ often used code paths, which makes it useful for regression testing.")
 	}
 	
 	res.empty? and (return "");
-	return "(" ~ ", ".join(res) ~ ")";
+	return " (" ~ ", ".join(res) ~ ")";
     }
 
     def String getSignature(reflection.Member mem)
@@ -208,13 +207,15 @@ often used code paths, which makes it useful for regression testing.")
 	    verbose and print("Missing documentation for member %.%\n" % [mem.memberOf.name, mem.name]);
 	    memberMissing++;
 	}
-
+        htmlClass := if(mem.internal?){"class='anna-internal'"} else {""};
 	"
+<span %>
+<hr>
 <a name='%'>%</a>
 <br>
 %
-
-" % [mem.name, getSignature(mem), doc];
+</span>
+" % [htmlClass, mem.name, getSignature(mem), doc];
     }
     
     def document(Object module)
@@ -280,8 +281,9 @@ often used code paths, which makes it useful for regression testing.")
         subother := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    mem.static? and (!(val.__type__.isModule) and !(val as Type) and (mem.type != Null));
+	    !(val.__type__.isModule) and !(val as Type) and (mem.type != Null);
 	}
+
         basePath := "/".join((0..data.steps+1).map(i){".."}) ~ "/";
 	data.file.writeFile(template("util/document/module.html"));
 	

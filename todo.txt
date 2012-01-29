@@ -5,9 +5,10 @@
   - Check for dead links
   - By default, maybe attributes should be dropped to conserve memory? If so, add special switch to retain it for the annadoc program.
 * HTML api documentation extractor
-  - Hide internal elements by default
   - variadic arguments aren't shown as such
   - argument default values aren't shown
+  - Use local storage for storing internal member visibility attribute
+  - Prettier sinature for function parameters that are functions
 * Check that node compare supports all ast node types
 * Handle C type wrappers in other namespaces when compiling bindings
 * Remove code duplication between types and functions when performing templatization
@@ -38,6 +39,7 @@
   - Make code links actually work
   - binding generator doesn't pass on the doc attribute
 * HTML api documentation extractor
+  - Hide internal elements by default
   - document attribute for modules
   - document attribute for properties
   - Basic iteration working

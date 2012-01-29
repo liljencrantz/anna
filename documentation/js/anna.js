@@ -9,6 +9,40 @@ var anna = {
 	anna.syntaxHighlight();
 	anna.initCodePopup();
 	anna.initTables();
+	anna.initInternal();
+    },
+
+    initInternal: function()
+    {
+	var toggle = $("#anna-internal-toggle");
+	if(toggle.length > 0)
+	{
+	    var settings = {};
+	    if('localStorage' in window)
+	    {	
+		settings = localStorage;
+	    }
+	    
+	    var handler = function(){
+		if(toggle[0].checked)
+		{
+		    $(".anna-internal").show();
+		}
+		else
+		{
+		    $(".anna-internal").hide();
+		}
+		settings.annaShowInternal = toggle[0].checked;
+	    }
+
+	    if('annaShowInternal' in settings)
+	    {
+		toggle[0].checked = settings.annaShowInternal == "true";
+	    }
+
+	    toggle.change(handler);
+	    handler();
+	}
     },
 
     initTables: function()

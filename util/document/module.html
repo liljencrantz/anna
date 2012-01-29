@@ -61,11 +61,12 @@
     <h2><a name="api-other">Other members</a></h2>
     <ul>
     <% 
+smemb.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type) and mem.type != Null}
        subother.each(mem)
        {
            val := mem.value(?);
        %>
-      <li><a href="#<%= mem.name  %>"><%= mem.name %></a></li>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>><a href="#<%= mem.name  %>"><%= mem.name %></a></li>
 <%
 	}
     %>
@@ -74,8 +75,7 @@
        }
     %>
 
-    <% smemb.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type) and mem.type != Null}.each(mem){ %>    
-    <hr>
+    <% subother.each(mem){ %>    
     <%! documentMember(mem) %>
     <% } %>
 
@@ -83,7 +83,10 @@
       </div>
       <div class="anna-left-menu">
 	<div class="anna-left-menu-inner">
-	  
+
+	  <div>
+	    <input type="checkbox" id="anna-internal-toggle"><label for="anna-internal-toggle">Show internal members</label>
+	  </div>
 	  <div>
 	    <h2>Table of content</h2>
 	    <div class="toc"></div>
