@@ -357,6 +357,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		    ctype);
 		n->function->stack = n->stack;
 		n->return_type = ctype;
+		n->flags |= ANNA_NODE_TYPE_FULL;
 		
 		member = anna_member_get(ctype, anna_mid_get(L"__init__"));
 		is_constructor = 1;
@@ -696,6 +697,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 			type);
 		    call->function->stack = call->stack;
 		    call->return_type = type;
+		    call->flags |= ANNA_NODE_TYPE_FULL;
 		    anna_member_t *member = anna_member_get(type, anna_mid_get(L"__init__"));
 		    if(!member)
 		    {
@@ -962,6 +964,10 @@ static anna_node_t *anna_node_calculate_type_internal(
 			ANNA_STACK_READONLY);
 		}
 	    }
+	    if(anna_attribute_flag(d->attribute, L"full"))
+	    {
+		this->flags |= ANNA_NODE_TYPE_FULL;
+	    }
 	    
 //	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);
 	    break;
@@ -981,7 +987,8 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    d->return_type = anna_type_intersect(
 		d->arg1->return_type,
 		d->arg2->return_type);
-	    
+	    d->flags |= (d->arg1->flags & ANNA_NODE_TYPE_FULL) &
+		(d->arg2->flags & ANNA_NODE_TYPE_FULL);
 	    break;   
 	}
 
@@ -992,6 +999,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    d->arg1 = anna_node_calculate_type(d->arg1);
 	    d->arg2 = anna_node_calculate_type(d->arg2);
 	    d->return_type = d->arg2->return_type;
+	    d->flags |= (d->arg2->flags & ANNA_NODE_TYPE_FULL);
 	    break;
 	}
 	
@@ -1053,6 +1061,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	{
 	    anna_node_dummy_t *d = (anna_node_dummy_t *)this;
 	    d->return_type = d->payload->type;
+	    d->flags |= ANNA_NODE_TYPE_FULL;
 	    break;   
 	}
 	
@@ -1063,6 +1072,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)this;
 	    c->payload = anna_node_calculate_type(c->payload);
 	    c->return_type = c->payload->return_type;
+	    c->flags |= (c->payload->flags & ANNA_NODE_TYPE_FULL);
 	    break;
 	}
 
@@ -1085,7 +1095,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    
 	    n->payload = anna_node_calculate_type(n->payload);
-
+	    
 	    if(n->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		anna_function_type_t *fun = anna_function_type_unwrap(

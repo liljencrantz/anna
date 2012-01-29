@@ -32,6 +32,20 @@ ANNA_VM_NATIVE(anna_member_i_get_property, 1)
     return anna_member_is_property(m)?anna_from_int(1):null_entry;
 }
 
+ANNA_VM_NATIVE(anna_member_i_get_internal, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    return anna_member_is_internal(m)?anna_from_int(1):null_entry;
+}
+
+ANNA_VM_NATIVE(anna_member_i_get_bound, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    return anna_member_is_bound(m)?anna_from_int(1):null_entry;
+}
+
 ANNA_VM_NATIVE(anna_member_i_get_type, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -117,7 +131,7 @@ static void anna_member_type_create()
 
     anna_member_create_native_property(
 	member_type,
-	anna_mid_get(L"isStatic"),
+	anna_mid_get(L"static?"),
 	int_type,
 	&anna_member_i_get_static,
 	0,
@@ -125,7 +139,7 @@ static void anna_member_type_create()
 
     anna_member_create_native_property(
 	member_type,
-	anna_mid_get(L"isMethod"),
+	anna_mid_get(L"method?"),
 	int_type,
 	&anna_member_i_get_method,
 	0,
@@ -133,11 +147,27 @@ static void anna_member_type_create()
 
     anna_member_create_native_property(
 	member_type,
-	anna_mid_get(L"isProperty"),
+	anna_mid_get(L"property?"),
 	int_type,
 	&anna_member_i_get_property,
 	0,
 	L"Is this member a property?");
+
+    anna_member_create_native_property(
+	member_type,
+	anna_mid_get(L"internal?"),
+	int_type,
+	&anna_member_i_get_internal,
+	0,
+	L"Is this member internal?");
+
+    anna_member_create_native_property(
+	member_type,
+	anna_mid_get(L"bound?"),
+	int_type,
+	&anna_member_i_get_bound,
+	0,
+	L"Is this member bound to its object?");
 
     anna_member_create_native_property(
 	member_type,

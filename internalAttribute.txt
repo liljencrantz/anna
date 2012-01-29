@@ -1,0 +1,81 @@
+The internal attribute should be handled as such:
+
+* Any internal attribute is not considered when performing abides-checking.
+* Internal attributes are not displayed by default in the documentation, but there is a checkbox to show them.
+* Internal attributes can not be accecced from variables of that type.
+
+So far, so good. Moving on, option 1 is:
+
+* Variables and members can be tagged to be exact.
+* A variable of an exact type must be of _exactly_ that type, not one that abides to it, and not null.
+* When using a variable of an exact type, internal members can be accessed.
+* A function defined to have an exact type performs parameter check during the call, and if the checks fail, the rest of the function is not executed, instead, an error is raised and null is returned.
+
+Option 2 is similar:
+
+* Variables and members can be tagged to be full.
+* A variable of a full type must abide to the full interface of another type, includig internal members.
+* When using a variable of a full type, internal members can be accessed.
+
+If we want to make a variable exact, there are many ways we might do so. Which ones are the best?
+
+<pre class="anna-code">
+myExact := 3 as @Int;
+var Int myExact (exact);
+myExact @= 3;
+def foo(@Int fullParam);
+</pre>
+
+Similar syntax possibilites if we go for «full» types instead of exact types:
+
+<pre class="anna-code">
+myFull := 3 as @Int;
+var Int myFull (full);
+myFull @= 3;
+myFullConst @== 3;
+def foo(@Int fullParam);
+</pre>
+
+The exact-proposal:
+
+* Can be used as a simplistic validation mechanism in some cases
+* We can slightly improve performance in some situations, because we know the exact type of parameters. Is it really worth the effort? Anna will never be lightning fast..
+* Breaks structural typing
+* It is unclear how exact parameters should interact with abides checking of function signatures.
+
+The advantages of the full-proposal:
+
+* Potentially more flexible, since we can demand access to a variables internal members without knowing if it is related to the actual type we're talking about. Can we find any use-cases for this?
+* Arguably more consistent mental model. A full type is simply a type checked type where the abides-checking doesn't ignore the internal properties. 
+* Doesn't break structural typing.
+
+Both proposals have advantages. It definitely seems like these two
+ideas are far too similar to have room for both. It might seem like
+there are some unfurtunate edge cases with the «exact» proposition,
+and it does break the concept of structural typing to some extent, so
+«full» might seem like the better choice, in spite of some performance
+implications.
+
+As for the syntax, this will only ever be used if the syntax is
+terse. There should definitely be a sugar short-hand. Using @ makes a
+lot of sense since the symbol is unused. Using '!' looks nicer, but
+e.g. declaring a full variable would clash with the != operator. Are
+there any other symbol options that wouldn't clash? Perhaps ~ or #?
+
+
+Implementation:
+
+Internal members using the «full» option should not require any
+changes at the bytecode level - only the compiler needs to change.
+
+One implementation strategy:
+
+* All AST nodes get a new flag: full.
+* The flag is automatically set by:
+  # Constructors
+  # Declarations that have the «full»-attribute
+* The flag is propagated as you'd exact through the AST tree
+* The «full»-flag is taken into account when performing abides checks
+* When calling a function that takes a «full» parameter, the supplied parameter needs to fully match at compile time, usually meaning that the variable is full.
+* Implicit this parameters for bound methods automatically match.
+

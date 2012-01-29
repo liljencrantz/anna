@@ -147,8 +147,8 @@ mid_t anna_member_create_blob(
     mid_t res = anna_member_create(
 	type,
 	mid,
-	storage | (sz << 16),
-	null_type);    
+	storage | (sz << 16) | ANNA_MEMBER_INTERNAL,
+	null_type);
 
     if(storage & ANNA_MEMBER_STATIC)
     {
@@ -248,7 +248,7 @@ size_t anna_member_create_native_property(
 	    0, 0);
 	anna_member_t *gm = anna_member_get(type, getter_mid);
 	getter_offset = gm->offset;
-
+	gm->storage |= ANNA_MEMBER_INTERNAL;
 	sb_printf(&sb_doc, L"Getter function for the %ls property.", name);
 	
 	anna_member_document(
@@ -271,6 +271,7 @@ size_t anna_member_create_native_property(
 	    argv,
 	    argn, 0, 0);
 	anna_member_t *sm = anna_member_get(type, setter_mid);
+	sm->storage |= ANNA_MEMBER_INTERNAL;
 	setter_offset = sm->offset;
 
 	sb_clear(&sb_doc);

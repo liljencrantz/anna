@@ -158,20 +158,45 @@ often used code paths, which makes it useful for regression testing.")
        "<a href='%'>%</a>" % [path[to].link(path[from]), to.name];
     }
 
+    def String getAttribute(reflection.Member mem)
+    {
+        res := [];
+
+	if(mem.internal?)
+	{
+	    res.push("internal");
+	}
+
+	if(mem.bound?)
+	{
+	    res.push("bound");
+	}
+	else
+	{
+	    if(mem.static?)
+	    {
+		res.push("static");
+	    }
+	}
+	
+	res.empty? and (return "");
+	return "(" ~ ", ".join(res) ~ ")";
+    }
+
     def String getSignature(reflection.Member mem)
     {
         fun := mem.value(?) as Function;
-	if(fun)
+	"" ~ (if(fun)
 	{
 	  argv := ", ".join(
 	      fun.inputType.map(idx, t)
 	      {
 		  "%(type) %(name)%(default)" % ["type": getLink(mem.memberOf, t), "name": fun.inputName[idx], "default": (if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""})]
 	      });
-	    "def % <em>%</em> (%);" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
+	    "def % <em>%</em> (%)" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
 	} else {
-	    "var % <em>%</em>;" % [getLink(mem.memberOf, mem.type), mem.name];
-	}
+	    "var % <em>%</em>" % [getLink(mem.memberOf, mem.type), mem.name];
+	}) ~ getAttribute(mem) ~ ";"
     }
 
     def documentMember(reflection.Member mem)
@@ -211,7 +236,7 @@ often used code paths, which makes it useful for regression testing.")
 
 	module.member.each(mem)
 	{
-	    if(mem.isStatic)
+	    if(mem.static?)
 	    {
   	        val := mem.value(?);
 		if(val.__type__.isModule)
@@ -245,17 +270,17 @@ often used code paths, which makes it useful for regression testing.")
         submodule := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    mem.isStatic and val.__type__.isModule;
+	    mem.static? and val.__type__.isModule;
 	}
         subtype := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    mem.isStatic and (val as Type);
+	    mem.static? and (val as Type);
 	}
         subother := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    mem.isStatic and (!(val.__type__.isModule) and !(val as Type) and (mem.type != Null));
+	    mem.static? and (!(val.__type__.isModule) and !(val as Type) and (mem.type != Null));
 	}
         basePath := "/".join((0..data.steps+1).map(i){".."}) ~ "/";
 	data.file.writeFile(template("util/document/module.html"));

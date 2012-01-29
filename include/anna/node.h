@@ -56,10 +56,12 @@ enum anna_node_enum
 
 #define ANNA_NODE_DONT_EXPAND 512
 #define ANNA_NODE_MERGE 1024
+#define ANNA_NODE_TYPE_FULL 2048
 
 #define ANNA_NODE_TYPE_IN_TRANSIT ((anna_type_t *)1)
 
 #define ANNA_NODE_ACCESS_STATIC_MEMBER 1
+
 
 struct YYLTYPE
 {

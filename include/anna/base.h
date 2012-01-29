@@ -58,6 +58,7 @@ typedef int mid_t;
 
 #define ANNA_MEMBER_BOUND 8
 #define ANNA_MEMBER_PROPERTY 16
+#define ANNA_MEMBER_INTERNAL 32
 
 /*
   The preallocated MIDs
@@ -802,7 +803,9 @@ static __pure inline anna_entry_t *anna_entry_get_static(
 }
 
 /**
-   Returns non-zero if the specified contender implements all the members of role_model, e.g. if it can be used in place of role_model using structural typing.
+   Returns non-zero if the specified contender implements all the
+   members of role_model, e.g. if it can be used in place of
+   role_model using structural typing.
  */
 int anna_abides(
     anna_type_t *contender, anna_type_t *role_model);
