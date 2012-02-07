@@ -3043,12 +3043,22 @@ date += isoDateDelta(x-0-0, 1:00);
 	      both of which are templates that can be specialized to
 	      store any type.
 	    </li>
-	    <li><code class="anna-code">HashMap</code>, an unordered collection using arbitrary objects as keys, and is a template that can be specialized to store any key/value type pair.</li>
-	    <li><code class="anna-code">Range</code>, which defines a (possible infinite) sequence of equally spaced integer values.</li>
+	    <li>
+	      <code class="anna-code">HashMap</code>, an unordered
+	      collection using arbitrary objects as keys, and is a
+	      template that can be specialized to store any key/value
+	      type pair.
+	    </li>
+	    <li>
+	      <code class="anna-code">Range</code>, which defines a
+	      (possible infinite) sequence of equally spaced integer
+	      values.
+	    </li>
 	  </ul>
+	  <h2><a name="collections-list">Lists</a></h1>
 	  <p>
 	    Anna list objects use zero based offsets, and use a
-	    dynamically allocated array tyo store it's values
+	    dynamically allocated array to store it's values
 	    internally, meaning that accessing any element in the
 	    array by index will always be a fast operation. This also
 	    means that if there are large gaps in the List, it will
@@ -3056,6 +3066,24 @@ date += isoDateDelta(x-0-0, 1:00);
 	    elements anywhere that is not near the end of the list is
 	    an inherently slow operation.
 	  </p>
+	  <p>
+	    Lists can be used as stacks by employing
+	    the <code class="anna-code">push</code>
+	    and <code class="anna-code">pop</code> methods and
+	    checking the <code class="anna-code">empty?</code>
+	    attribute.
+	  </p>
+	  <p>
+	    When assigning beyond the last index of a list, it is
+	    dynamically resized. All previously unassigned slots are
+	    given the null value. Code
+	    like <code class="anna-code">silly=[];silly[99999999999999999]=?;</code>
+	    is an excellent way to run out of memory.
+	  </p>
+	  <p>
+	    
+	  </p>
+	  <h2><a name="collections-hashmap">HashMaps</a></h1>
 	  <p>
 	    Anna hashmap objects are one-to-one mappings that use
 	    the <code>hashCode</code> and <code>__eq__</code> methods
@@ -3739,6 +3767,13 @@ def Int main()
 	      without allocating any heap memory by creating holes in the stack.
 	    </li>
 	  </ul>
+	  <p>
+	    For a more complete description of the pointer magic used
+	    to avoid memory allocations for integers and characters,
+	    see for
+	    example <a href="http://nikic.github.com/2012/02/02/Pointer-magic-for-efficient-dynamic-value-representations.html">this
+	    article</a>.
+	  </p>
 	  <p>
 	    The above holds true for as long as only common operations,
 	    such as adding, subtracting, etc. are performed on the
