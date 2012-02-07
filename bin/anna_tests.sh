@@ -16,18 +16,24 @@ for i in tests/*.anna; do
     ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna tests/$(basename $i .anna) >anna_tests.out 2>/dev/null
     status=$?
     out_correct=tests/$(basename $i .anna).output
-    status_correct_file=tests/$(basename $i .anna).status
+    status_error_file=tests/$(basename $i .anna).error
     status_correct=0
     error=0
 
-    if test -f $status_correct_file; then
-	status_correct=$(cat $status_correct_file)
+    if test -f $status_error_file; then
+
+	if test "$status" -lt 1 -o "$status" -gt 127; then
+	    echo -e "\n\nError in exit status for test $i. Expected non-zero, non-signal exit status, found $status"
+	    error=1
+	fi
+    else
+	if test "$status" -gt 0; then
+	    echo -e "\n\nError in exit status for test $i. Expected zero exit status found $status"
+	    error=1
+	fi
     fi
 
-    if test "$status" != "$status_correct"; then
-	echo -e "\n\nError in exit status for test $i. Expected exit status ${status_correct}, found $status"
-	error=1
-    else
+    if test "$error" -eq 0; then
 	if test -f $out_correct; then
 	    if diff anna_tests.out $out_correct >/dev/null; then
 		true
