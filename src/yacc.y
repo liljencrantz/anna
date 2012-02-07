@@ -148,10 +148,23 @@ static anna_node_t *anna_atof(YYLTYPE *llocp, char *c)
     return (anna_node_t *)anna_node_create_float_literal(llocp, res);
 }
 
-static wchar_t *anna_yacc_string(char *in)
+#define anna_yacc_string( ... ) anna_yacc_string_internal( __VA_ARGS__, (char *)0 )
+__sentinel static wchar_t *anna_yacc_string_internal(char *in, ...)
+
 {
+    va_list va;
+    char *arg;
+    
+    va_start( va, in );
     sb_clear(&anna_yacc_str_buff);
     sb_printf(&anna_yacc_str_buff, L"%s", in);
+    
+    while( (arg=va_arg(va, char *) )!= 0 ) 
+    {
+	sb_printf(&anna_yacc_str_buff, L"%s", arg);
+    }
+    va_end( va );
+
     return sb_content(&anna_yacc_str_buff);
 }
 
@@ -300,7 +313,8 @@ static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_
 static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *str)
 {
     size_t count;
-    wchar_t *wstr = anna_yacc_string_unescape(loc, str, &count);
+    char *str_start = strchr(str, '"');
+    wchar_t *wstr = anna_yacc_string_unescape(loc, str_start, &count);
     if(!wstr)
     {
 	return anna_node_create_null(loc);
@@ -312,7 +326,18 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 	wstr = anna_intern_or_free(wstr);
 	free = 0;
     }
-    return (anna_node_t *)anna_node_create_string_literal(loc, count, wstr, free);
+    anna_node_t *res = (anna_node_t *)anna_node_create_string_literal(loc, count, wstr, free);
+    if(str_start != str)
+    {
+	*str_start = 0;
+	res = (anna_node_t *)anna_node_create_call2(
+	    loc,
+	    anna_node_create_identifier(
+		loc,anna_yacc_string(str, "Literal")),
+	    res);
+    }
+    
+    return res;
 }
  
 static anna_node_t *anna_yacc_char_literal_create(anna_location_t *loc, char *str)
@@ -1042,7 +1067,7 @@ function_signature:
 	};
 
 opt_type_and_opt_name: 
-    any_identifier '.' type_remainder opt_specialization opt_identifier
+    type_remainder '.' any_identifier opt_specialization opt_identifier
     {
 	anna_node_t *type=(anna_node_t *)anna_node_create_call2(
 	    &@$,
