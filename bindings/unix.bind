@@ -313,4 +313,42 @@ time
     
     def Bool gettimeofday(TimeVal tv, TimeZone tz)  (doc("Gets the current system time. Equivalanet to the C gettimeofday function."));
 }
+/*
+net
+{
 
+    verbatim("
+static struct addrinfo *anna_getaddrinfo(const char *node, const char *service, struct addrinfo *hints)
+{
+    struct addrinfo = 
+    int res = 
+}
+
+static void anna_addrinfo_del(anna_object_t *victim)
+{
+    freeaddrinfo(anna_entry_get(victim, ANNA_MID_CSTRUCT_PAYLOAD));
+}
+");
+        
+    AddressInfoFlags
+    {
+	var Int v4Mapped (name(AI_V4MAPPED));
+	var Int addressConfig (name(AI_ADDRCONFIG));
+    }
+
+    cStructPointer AddressInfo (name(addrinfo), finalizer(anna_addrinfo_del))
+    {
+	var Int flags (name(ai_flags), doc("Bitwise or of flags from AddressInfoFlags."));
+	var Int family (name(ai_family), doc("The desired address family for the returned addresses."));
+	var Int socktype (name(ai_socktype), doc("The preferred socket type, for example SOCK_STREAM or SOCK_DGRAM."));
+	var Int protocol (name(ai_protocol), doc("The protocol for the returned socket addresses."));
+	var Int addrlen (name(ai_addrlen), doc("Length of the socket address"));
+//	var SockAddr addr (name(ai_addr), doc(""));
+	var String canonname (name(ai_canonname), doc("The official name of the host."));
+//	var AddrInfo next (name(ai_next), doc(""));
+    }
+
+    def AddressInfo getAddressInfo(String node, String service, AddressInfo hints);
+
+}
+*/

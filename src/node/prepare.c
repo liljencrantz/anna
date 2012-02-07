@@ -307,7 +307,6 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	return (anna_node_t *)n;
     }
 	    
-    anna_type_set_stack(type, n->stack);
     anna_type_setup_interface(type);
 
     if(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL)
@@ -1218,8 +1217,8 @@ static anna_node_t *resolve_identifiers_each(
     {
 	return this;
     }
-    
     anna_node_identifier_t *id = (anna_node_identifier_t *)this;
+    
     anna_use_t *use = anna_stack_search_use(
 	id->stack,
 	id->name);

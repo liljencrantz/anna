@@ -41,6 +41,7 @@
 static void anna_module_load_i(anna_stack_template_t *module);
 
 array_list_t anna_module_default_macros = AL_STATIC;
+array_list_t anna_module_in_transit = AL_STATIC;
 
 static wchar_t *anna_module_bootstrap_directory()
 {
@@ -404,7 +405,7 @@ static void anna_module_bootstrap_monkeypatch(
     {
 	anna_object_t *fun_obj = anna_as_obj(int_mod_type->static_member[i]);
 	anna_function_t *fun = anna_function_unwrap(fun_obj);
-	
+
 	anna_node_t *target_node = anna_attribute_call(fun->attribute, L"target");
 	anna_node_t *name_node = anna_attribute_call(fun->attribute, L"name");
 	
@@ -825,10 +826,78 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 }
 
 /**
+   Internal helper function for anna_module_load_i
+ */
+static void anna_module_load2()
+{
+    int i, j;
+    
+    for(j=0; j<al_get_count(&anna_module_in_transit); j+= 2)
+    {
+	anna_stack_template_t *module_stack = al_get(&anna_module_in_transit, j);
+	anna_node_t *node = al_get(&anna_module_in_transit, j+1);
+	anna_node_call_t *module_node = node_cast_call(node);
+	    
+	anna_node_resolve_identifiers(node);
+	debug(
+	    D_SPAM,
+	    L"Identifiers resolved in module %ls\n", 
+	    module_stack->filename);	    
+	
+	anna_node_calculate_type_children((anna_node_t *)module_node);
+	if(anna_error_count)
+	{
+	    debug(
+		4,
+		L"Found %d error(s) during module loading\n",
+		anna_error_count);
+	    exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
+	}
+	debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
+	
+    }
+    for(j=0; j<al_get_count(&anna_module_in_transit); j+= 2)
+    {
+	anna_stack_template_t *module_stack = al_get(&anna_module_in_transit, j);
+	anna_node_t *node = al_get(&anna_module_in_transit, j+1);
+	anna_node_call_t *module_node = node_cast_call(node);
+
+	anna_node_each(
+	    (anna_node_t *)module_node, 
+	    (anna_node_function_t)&anna_node_validate, 
+	    module_stack);
+	
+	if(anna_error_count)
+	{
+	    debug(
+		D_CRITICAL,
+		L"Found %d error(s) during module loading\n",
+		anna_error_count);
+	    exit(
+		ANNA_STATUS_VALIDATION_ERROR);
+	}
+	
+	debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);
+	anna_node_each((anna_node_t *)module_node, &anna_module_compile, 0);
+	
+	debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
+	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
+
+    }
+    
+
+    al_truncate(&anna_module_in_transit, 0);
+}
+
+
+
+/**
    Actually perform the loading of a module
  */
 static void anna_module_load_i(anna_stack_template_t *module_stack)
 {
+    static int recursion_count = 0;
+
     if(!module_stack->filename)
     {
         return;
@@ -843,6 +912,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     wchar_t *suffix = wcsrchr(module_stack->filename, L'.');
     if(suffix && wcscmp(suffix, L".so")==0)
     {
+	debug(D_SPAM,L"Load native library %ls...\n", module_stack->filename);    
 	anna_module_load_native(module_stack);
 	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
 	return;	
@@ -850,7 +920,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     
     int i;
 
-    debug(D_SPAM,L"Parsing file %ls...\n", module_stack->filename);    
+    debug(D_SPAM, L"Parsing file %ls...\n", module_stack->filename);    
     anna_node_t *program = anna_parse(module_stack->filename);
     
     if(!program || anna_error_count) 
@@ -942,6 +1012,14 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	L"Declarations registered in module %ls\n", 
 	module_stack->filename);
     
+    anna_node_set_stack(node, module_stack);
+    debug(
+	D_SPAM,
+	L"Stack set in module %ls\n", 
+	module_stack->filename);
+    
+    recursion_count++;
+    
     for(i=0; i<al_get_count(&module_stack->import); i++ )
     {
 	array_list_t *el_list = (array_list_t *)al_get(&module_stack->import, i);
@@ -958,73 +1036,43 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	
 	if(anna_error_count || !mod)
 	{
-	    return;
+	    exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
 	}
 	al_set(&module_stack->import, i, anna_use_create_stack(mod));
     }
-    al_push(&module_stack->import, anna_use_create_stack(module_stack));
+    al_push(&module_stack->import, anna_use_create_stack(module_stack));    
     
-    anna_node_set_stack(node, module_stack);
-    anna_node_resolve_identifiers(node);
+    al_push(&anna_module_in_transit, module_stack);    
+    al_push(&anna_module_in_transit, node);    
     
-    debug(
-	D_SPAM,
-	L"Stack set in module %ls\n", 
-	module_stack->filename);
-    
-    module_node = node_cast_call(node);
-    debug(
-	D_SPAM,
-	L"Dependencies imported in module %ls\n", 
-	module_stack->filename);
-    
-    anna_node_calculate_type_children((anna_node_t *)module_node);
-    if(anna_error_count)
-    {
-	debug(
-	    4,
-	    L"Found %d error(s) during module loading\n",
-	    anna_error_count);
-	exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
-    }
-    debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
-
-    anna_node_each(
-	(anna_node_t *)module_node, 
-	(anna_node_function_t)&anna_node_validate, 
-	module_stack);
-    
-    if(anna_error_count)
-    {
-	debug(
-	    D_CRITICAL,
-	    L"Found %d error(s) during module loading\n",
-		anna_error_count);
-	exit(
-	    ANNA_STATUS_VALIDATION_ERROR);
-    }
-    
-    debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);	
-	
-    for(i=0; i<module_node->child_count; i++)
-    {
-	anna_node_static_invoke(module_node->child[i], module_stack);
-	if(anna_error_count)
+	for(i=0; i<module_node->child_count; i++)
 	{
-	    debug(
-		D_CRITICAL,
-		L"Found %d error(s) during module loading\n",
-		anna_error_count);
-	    exit(
-		ANNA_STATUS_MODULE_SETUP_ERROR);
+	    anna_node_static_invoke(module_node->child[i], module_stack);
+	    if(anna_error_count)
+	    {
+		debug(
+		    D_CRITICAL,
+		    L"Found %d error(s) during module loading\n",
+		    anna_error_count);
+		exit(
+		    ANNA_STATUS_MODULE_SETUP_ERROR);
+	    }
 	}
+
+	
+	debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
+    if(recursion_count > 1)
+    {
+	debug(
+	    D_SPAM,
+	    L"Postponing recursive load of %ls\n", 
+	    module_stack->filename);
     }
-    
-    debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
-    anna_node_each((anna_node_t *)module_node, &anna_module_compile, 0);
-    
-    debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
-    anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
+    else
+    {
+	anna_module_load2();	
+    }
+    recursion_count--;    
 }
 
 anna_object_t *anna_module_load(wchar_t *module_name)

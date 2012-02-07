@@ -1,0 +1,6 @@
+expand(i18n);
+
+def main()
+{
+    print(t"Hello, world!\n");
+}

@@ -675,7 +675,6 @@ void anna_type_set_stack(
     {
 	return;
     }
-    
     t->stack = parent_stack;
     
     if(t->body)
@@ -683,7 +682,6 @@ void anna_type_set_stack(
 	anna_node_set_stack(
 	    (anna_node_t *)t->body,
 	    t->stack);
-	anna_node_resolve_identifiers((anna_node_t *)t->body);
 	anna_node_set_stack(
 	    (anna_node_t *)t->attribute,
 	    t->stack);
@@ -732,7 +730,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     int i;
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
 	return 0;
-    
+
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
     //wprintf(L"Set up interface for type %ls\n", type->name);
@@ -742,6 +740,8 @@ static anna_node_t *anna_type_setup_interface_internal(
 
     if(type->definition)
     {
+	anna_node_resolve_identifiers((anna_node_t *)type->body);
+    
 	anna_type_def_flatten(type);
 	
 	if(type->definition->child[0]->node_type != ANNA_NODE_IDENTIFIER)
