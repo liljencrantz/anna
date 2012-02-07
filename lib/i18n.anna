@@ -1,0 +1,5 @@
+macro tLiteral(node)
+{
+    return node[0];	
+}
+

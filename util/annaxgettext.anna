@@ -1,0 +1,24 @@
+
+
+def main()
+{
+    use(io);
+
+    def translate(parser.StringLiteral lit)
+    {
+	print("msgid \"%\"\nmsgstr \"\"\n\n" % [lit.payload]);
+    }
+
+    system.argument[1...].each(filename)
+    {
+	if(!(file := File(filename)).exists?)
+	{
+	    print("Error: File «%» does not exist\n" % [filename]);
+	    unix.proc.exit(1);
+	}
+	
+        myAst := parser.parse(file.readFile());
+	myAst.allChildren.filter(chld){chld.callTo?("tLiteral")}.each(trans){translate((trans as Call)[0] as StringLiteral)}
+    }    
+
+}
