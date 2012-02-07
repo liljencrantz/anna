@@ -41,7 +41,7 @@ int foo(int x, char *y);",
   * List«X»: Maps to a list of items. X needs to be another basic type, potentially including another list. When a List is given as an output type, it will need annotations to inform the binder of the vector size, see below.
   * MutableList«X»: Maps to a list of items. X needs to be another basic type, potentially including another list. When a List is given as an output type, it will need annotations to inform the binder of the vector size, see below. The values of the MutableList type can be changed by the call, but the list length must not be changed.
   * cStructs from the same module (including other submodules in the same module) are usable as types
-",
+  * Bool: maps to the regular Anna Int. Should be used in situations where the return value is either 0, which will map to the Anna null value, or non-zero, which will map to the integer 1",
 	"
   The following additional types are planned:",
 	"
@@ -143,7 +143,7 @@ def init()
 	ast(Bool): BasicBindingType(
 	    "int",
 	    "object_type", 
-	    "int %(dest) = %(source) != null_entry;",
+	    "int %(dest) = (%(source) != null_entry);",
 	    "anna_entry_t *%(dest) = (%(source))?anna_from_int(1):null_entry;",
 	    preValidateToC: ""),
 	ast(UInt64): BasicBindingType(
@@ -191,7 +191,7 @@ def getBindingType(Node node)
     return bindingType[node] or bindingType[(node as Call)[0]];
 }
 
-class ParseError (extends(error.Error))
+error ParseError
 {
     var Node node;
     var String message;
@@ -930,8 +930,8 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         nativeStructName := nameToStr(parser.Identifier(?, structName), cstructDecl[1]);
         initName := mangleMethodName(structName, "init");
 	
-        isStruct := !cstructDecl.callTo?("cType");
-        isPointer := cstructDecl.callTo?("cStructPointer");
+        isStruct := !cstructDecl.callTo?("cTypeType");
+        isPointer := cstructDecl.callTo?("cStructPointerType");
 	bindingType[cstructDecl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct, isPointer));
         commonData := [
 	    "typeName": typeName,
@@ -1096,7 +1096,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 				    code ~= out.code;
 				}
 				
-				case("cType", "cStruct", "cStructPointer")
+				case("cTypeType", "cStructType", "cStructPointerType")
 				{
   				    out := generateCStruct(name, decl[2] as Call);
 				    load ~= out.load;
@@ -1107,7 +1107,9 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 				default
 				{
+				    print("Unknown declaration:\n");
 				    print(decl);
+                                    unix.proc.exit(1);
 				}	
 			    }
 			}
