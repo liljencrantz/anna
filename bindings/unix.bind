@@ -289,8 +289,8 @@ env
     def Int clearenv() (doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
     /*
       Todo:
-
-    const List«String» environ;
+      
+      const List«String» environ;
       
      */
 }
@@ -328,15 +328,41 @@ locale
 	const Int time (name(LC_TIME), doc("Date and time formating."));
     }
     def String setLocale(Int cateory, String locale) (name(setlocale));
-
+    
     cStructPointer LocaleConv (name(lconv))
     {
-	var String decimal_point;
-//	var Char fracDigits (name(frac_digits));
+	const String decimalPoint (name(decimal_point), doc("Decimal-point separator used for non-monetary quantities."));
+	const String thousandsSeparator (name(thousands_sep), doc("Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities."));	
+	const Int intFracDigits (name(int_frac_digits), doc("International fractional digits."));
+	const Int fracDigits (name(frac_digits), doc("Local fractional digits."));
+	const Bool positiveCurrencySymbolPrecedes (name(p_cs_precedes), doc("1 if currencySymbol precedes a positive value, null if succeeds."));
+	const Bool negativeCurrencySymbolPrecedes (name(n_cs_precedes), doc("1 if currencySymbol precedes a negative value, null if succeeds."));
+	const Bool positiveSeparateBySpace (name(p_sep_by_space), doc("1 if a space separates currency_symbol from a positive value, null otherwise."));
+	const Bool negativeSeparateBySpace (name(n_sep_by_space), doc("1 if a space separates currency_symbol from a negative value, null otherwise."));
+	const Int positiveSignPosition (name(p_sign_posn), doc("
+Positive and negative sign positions:
+<ul>
+<li>0: Parentheses surround the quantity and currency_symbol.</li>
+<li>1: The sign string precedes the quantity and currency_symbol.</li>
+<li>2: The sign string succeeds the quantity and currency_symbol.</li>
+<li>3: The sign string immediately precedes the currency_symbol.</li>
+<li>4: The sign string immediately succeeds the currency_symbol.</li>
+</ul>
+"));
+	const Int negativeSignPosition (name(n_sign_posn), doc("
+Positive and negative sign positions:
+<ul>
+<li>0: Parentheses surround the quantity and currency_symbol.</li>
+<li>1: The sign string precedes the quantity and currency_symbol.</li>
+<li>2: The sign string succeeds the quantity and currency_symbol.</li>
+<li>3: The sign string immediately precedes the currency_symbol.</li>
+<li>4: The sign string immediately succeeds the currency_symbol.</li>
+</ul>
+"));
     }
-
-    def LocaleConv localeConv() (name(localeconv));
-
+    
+    def LocaleConv localeConv() (name(localeconv), doc("Get current numeric formatting information."));
+    
 }
 
 /*

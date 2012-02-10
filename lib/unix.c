@@ -2758,19 +2758,74 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_locale_conv_decimalpoint_getter, 1)
+ANNA_VM_NATIVE(unix_i_locale_conv_decimal_point_getter, 1)
 {
-    struct lconv *data = (struct lconv *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     anna_entry_t *result = (data->decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->decimal_point), data->decimal_point)) : null_entry;
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_locale_conv_decimalpoint_setter, 2)
+ANNA_VM_NATIVE(unix_i_locale_conv_thousands_separator_getter, 1)
 {
-    struct lconv *data = (struct lconv *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    char *tmp = anna_string_payload_narrow(anna_as_obj(param[1]));
-    data->decimal_point = tmp;
-    return param[1];
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->thousands_sep), data->thousands_sep)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_int_frac_digits_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->int_frac_digits);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_frac_digits_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->frac_digits);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_positive_currency_symbol_precedes_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->p_cs_precedes)?anna_from_int(1):null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_negative_currency_symbol_precedes_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->n_cs_precedes)?anna_from_int(1):null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_positive_separate_by_space_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->p_sep_by_space)?anna_from_int(1):null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_negative_separate_by_space_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->n_sep_by_space)?anna_from_int(1):null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_position_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->p_sign_posn);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_position_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->n_sign_posn);
+    return result;
 }
 
 ANNA_VM_NATIVE(unix_i_locale_conv_init, 1)
@@ -2789,7 +2844,7 @@ ANNA_VM_NATIVE(unix_i_locale_locale_conv, 0)
     // Validate parameters
 
     // Call the function
-    anna_entry_t *result = anna_object_create(unix_locale_conv_type);
+    anna_entry_t *result = anna_from_obj(anna_object_create(unix_locale_conv_type));
     *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = localeconv();
     // Perform cleanup
 
@@ -2822,15 +2877,51 @@ void anna_locale_load(anna_stack_template_t *stack)
     anna_member_create_blob(unix_locale_conv_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct lconv *));
 
     anna_member_create_native_property(
-        unix_locale_conv_type, anna_mid_get(L"decimal_point"),
-        string_type, unix_i_locale_conv_decimalpoint_getter, unix_i_locale_conv_decimalpoint_setter, 0);
+        unix_locale_conv_type, anna_mid_get(L"decimalPoint"),
+        string_type, unix_i_locale_conv_decimal_point_getter, 0, L"Decimal-point separator used for non-monetary quantities.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"thousandsSeparator"),
+        string_type, unix_i_locale_conv_thousands_separator_getter, 0, L"Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"intFracDigits"),
+        int_type, unix_i_locale_conv_int_frac_digits_getter, 0, L"International fractional digits.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"fracDigits"),
+        int_type, unix_i_locale_conv_frac_digits_getter, 0, L"Local fractional digits.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"positiveCurrencySymbolPrecedes"),
+        object_type, unix_i_locale_conv_positive_currency_symbol_precedes_getter, 0, L"1 if currencySymbol precedes a positive value, null if succeeds.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"negativeCurrencySymbolPrecedes"),
+        object_type, unix_i_locale_conv_negative_currency_symbol_precedes_getter, 0, L"1 if currencySymbol precedes a negative value, null if succeeds.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"positiveSeparateBySpace"),
+        object_type, unix_i_locale_conv_positive_separate_by_space_getter, 0, L"1 if a space separates currency_symbol from a positive value, null otherwise.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"negativeSeparateBySpace"),
+        object_type, unix_i_locale_conv_negative_separate_by_space_getter, 0, L"1 if a space separates currency_symbol from a negative value, null otherwise.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"positiveSignPosition"),
+        int_type, unix_i_locale_conv_positive_sign_position_getter, 0, L"\nPositive and negative sign positions:\n<ul>\n<li>0 Parentheses surround the quantity and currency_symbol.</li>\n<li>1 The sign string precedes the quantity and currency_symbol.</li>\n<li>2 The sign string succeeds the quantity and currency_symbol.</li>\n<li>3 The sign string immediately precedes the currency_symbol.</li>\n<li>4 The sign string immediately succeeds the currency_symbol.</li>\n</ul>\n");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"negativeSignPosition"),
+        int_type, unix_i_locale_conv_negative_sign_position_getter, 0, L"\nPositive and negative sign positions:\n<ul>\n<li>0 Parentheses surround the quantity and currency_symbol.</li>\n<li>1 The sign string precedes the quantity and currency_symbol.</li>\n<li>2 The sign string succeeds the quantity and currency_symbol.</li>\n<li>3 The sign string immediately precedes the currency_symbol.</li>\n<li>4 The sign string immediately succeeds the currency_symbol.</li>\n</ul>\n");
     anna_member_create_native_method(
 	unix_locale_conv_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_locale_conv_init, object_type, 1, &unix_locale_conv_type, this_argn, 0, 0);    
 
     anna_type_t *unix_i_locale_locale_conv_argv[] = {};
     wchar_t *unix_i_locale_locale_conv_argn[] = {};
-    anna_module_function(stack, L"localeConv", 0, &unix_i_locale_locale_conv, unix_locale_conv_type, 0, unix_i_locale_locale_conv_argv, unix_i_locale_locale_conv_argn, 0, 0);
+    anna_module_function(stack, L"localeConv", 0, &unix_i_locale_locale_conv, unix_locale_conv_type, 0, unix_i_locale_locale_conv_argv, unix_i_locale_locale_conv_argn, 0, L"Get current numeric formatting information.");
 
      anna_type_data_register(anna_locale_type_data, stack);
 }
