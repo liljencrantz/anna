@@ -2,7 +2,8 @@
 include(
     "<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>",
     "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", 
-    "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>");
+    "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>"
+    );
 
 io
 {
@@ -313,6 +314,31 @@ time
     
     def Bool gettimeofday(TimeVal tv, TimeZone tz)  (doc("Gets the current system time. Equivalanet to the C gettimeofday function."));
 }
+
+locale
+{
+    localeMode
+    {
+	const Int all (name(LC_ALL), doc("All of the locale."));
+	const Int collate (name(LC_COLLATE), doc("Regular expression matching (it determines the meaning of range expressions and equivalence classes) and string collation."));
+	const Int cType (name(LC_CTYPE), doc("Regular expression matching, character classification, conversion, case-sensitive comparison, and wide character functions."));
+	const Int messages (name(LC_MESSAGES), doc("Localizable natural-language messages."));
+	const Int monetary (name(LC_MONETARY), doc("Monetary formating."));
+	const Int numeric (name(LC_NUMERIC), doc("Numeric formating, such as decimal point and thousands separator."));
+	const Int time (name(LC_TIME), doc("Date and time formating."));
+    }
+    def String setLocale(Int cateory, String locale) (name(setlocale));
+
+    cStructPointer LocaleConv (name(lconv))
+    {
+	var String decimal_point;
+//	var Char fracDigits (name(frac_digits));
+    }
+
+    def LocaleConv localeConv() (name(localeconv));
+
+}
+
 /*
 net
 {
