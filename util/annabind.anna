@@ -297,6 +297,7 @@ class ListBindingType
     def String convertToAnna(Node decl, Node attr, String dest, String source){
 	?
     }
+
     def String cleanupToC(Node decl, Node attr, String dest, String source)
     {	
         subType := ((decl as Call)[1] as Call)[0];
@@ -717,7 +718,7 @@ class BindingGenerator
         load := "
     anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
     wchar_t *%(inputNameVar)[] = {%(inputNameData)};
-    anna_module_function(stack, L\"%(functionName)\", 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), %(doc));
+    anna_module_function(stack, L\"%(functionName)\", 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
 " % data;
   
         code := "

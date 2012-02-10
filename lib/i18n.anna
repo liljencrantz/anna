@@ -1,5 +1,11 @@
-macro tLiteral(node)
+macro tStringLiteral(node) 
+(doc("
+The tStringLiteral function does two things. Firstly, they are used by
+the annaxgettext program to locate translatable strings in the source
+code. Secondly, at run time, Strings passed through tStringLiteral are
+translated using the gettext framework.
+"))
 {
-    return node[0];	
+    return ast(getText.getText(%literal)) % ["literal": node[0]];	
 }
 

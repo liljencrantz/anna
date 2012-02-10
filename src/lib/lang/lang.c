@@ -348,7 +348,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	ANNA_FUNCTION_VARIADIC, 
 	&anna_i_print, 
 	imutable_list_type, 1, &object_type, 
-	p_argn, 
+	p_argn, 0,
 	L"Print all the supplied arguments to standard output");
 
     anna_lang_nothing = anna_module_function(
@@ -357,7 +357,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	ANNA_FUNCTION_VARIADIC, 
 	&anna_i_nothing, 
 	object_type, 1, &object_type, 
-	p_argn, 
+	p_argn, 0,
 	L"Returns the last argument in the parameter list, or null");
     
     anna_module_function(
@@ -365,7 +365,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	L"__not__", 0, 
 	&anna_i_not, 
 	int_type, 
-	1, &object_type, p_argn, 
+	1, &object_type, p_argn, 0,
 	L"Negates the value. Returns 1 of the input is null, null otherwise.");
 
     anna_module_function(
@@ -373,7 +373,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	L"callCC", 0, 
 	&anna_i_callcc, 
 	object_type, 
-	1, &object_type, p_argn, 
+	1, &object_type, p_argn, 0,
 	L"Call with current continuation.");
     
     static wchar_t *wrap_argn[]={L"object",L"method"};

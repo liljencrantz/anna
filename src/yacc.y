@@ -333,7 +333,7 @@ static anna_node_t *anna_yacc_string_literal_create(anna_location_t *loc, char *
 	res = (anna_node_t *)anna_node_create_call2(
 	    loc,
 	    anna_node_create_identifier(
-		loc,anna_yacc_string(str, "Literal")),
+		loc,anna_yacc_string(str, "StringLiteral")),
 	    res);
     }
     
@@ -731,7 +731,7 @@ expression9 :
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(&@$, $1, $2);
 	} |
-	expression9 '[' expression ']'
+	expression9 '[' opt_expression_list ']'
 	{
 	    $$ = (anna_node_t *)
 		anna_node_create_call2(
@@ -740,8 +740,16 @@ expression9 :
 			&@$, 
 			anna_node_create_identifier(&@$, L"__memberGet__"),
 			$1, 
-			anna_node_create_identifier(&@$, L"__get__")),
-		    $3);
+			anna_node_create_identifier(&@$, L"__get__")));
+	    int i;
+	    if($3)
+	    {
+		for(i=0; i<$3->child_count; i++)
+		{
+		    anna_node_call_add_child((anna_node_call_t *)$$,$3->child[i]);
+		}
+	    }
+	    
 	} |
 	expression10 |
 	opt_specialization '[' opt_expression_list ']'

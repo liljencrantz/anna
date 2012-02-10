@@ -286,7 +286,7 @@ void anna_ctime_load(anna_stack_template_t *stack)
 	stack, L"getTimeOfDay", 
 	0, &anna_ctime_gettimeofday, 
 	anna_list_type_get_imutable(int_type), 
-	0, 0, 0,
+	0, 0, 0, 0,
 	L"Returns the current time of day as the number of seconds and microseconds since the Epoch (midnight, January 1, 1970, UTC). Wrapper for the C gettimeofday function, see man 2 gettimeofday. Because the timezone argument of gettimeofday doesn't reliably work, it's not supported. Use the timezoneName and timezoneOffset properties for working timezone information.");
     
     anna_type_t *mt_argv[] = 
@@ -308,7 +308,7 @@ void anna_ctime_load(anna_stack_template_t *stack)
 	stack, L"mkTime", 
 	0, &anna_ctime_mktime, 
 	int_type, 
-	8, mt_argv, mt_argn,
+	8, mt_argv, mt_argn, 0,
 	L"Convert a broken down time to a time stamp");
     
     anna_type_t *a_argv[] = 
@@ -326,7 +326,7 @@ void anna_ctime_load(anna_stack_template_t *stack)
 	stack, L"breakTime", 
 	0, &anna_ctime_break_time, 
 	anna_list_type_get_imutable(int_type), 
-	2, a_argv, a_argn,
+	2, a_argv, a_argn, 0,
 	L"Convert a time stamp to broken down time in the specified timezone. If no timezone is specified, this function is equivalent to the localtime C function.");
     
     anna_type_t *type = anna_stack_wrap(stack)->type;

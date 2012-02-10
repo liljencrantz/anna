@@ -64,7 +64,7 @@ LDFLAGS := -lm -lgmp -rdynamic -ll -ldl $(PROF_FLAGS) $(COV_FLAGS)
 PROGRAMS := bin/anna 
 
 ANNA_INTERNAL_BINDINGS := lib/unix.so
-ANNA_EXTERNAL_BINDINGS := 
+ANNA_EXTERNAL_BINDINGS := lib/getText.so
 
 all: $(PROGRAMS) documentation
 .PHONY: all

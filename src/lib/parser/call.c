@@ -6,6 +6,27 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_count, 1)
     return anna_from_int(node->child_count);
 }
 
+static void anna_node_call_wrapper_all_children_each(anna_node_t *node, void *aux)
+{
+    anna_object_t *list = (anna_object_t *)aux;
+    anna_list_add(
+	list, 
+	anna_from_obj(anna_node_wrap(node)));
+}
+
+ANNA_VM_NATIVE(anna_node_call_wrapper_i_all_children, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
+    anna_object_t *res = 
+	anna_list_create_imutable(node_type);
+    anna_node_each(
+	node,
+	anna_node_call_wrapper_all_children_each,
+	res);
+    return anna_from_obj(res);
+}
+
 ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_int, 2)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -354,6 +375,14 @@ static void anna_node_create_call_type(
 	&anna_node_call_wrapper_i_get_count, 0,
 	L"The number of argument nodes in this Call.");
   
+    anna_member_create_native_property(
+	type,
+	anna_mid_get(L"allChildren"), anna_list_type_get_imutable(node_type),
+	&anna_node_call_wrapper_i_all_children, 0,
+	L"All descendant nodes of this node, both direct and indirect.");
+  
+
+
     anna_type_t *i_argv[] = 
 	{
 	    type,

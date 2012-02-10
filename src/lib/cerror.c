@@ -55,7 +55,7 @@ void anna_cerror_load(anna_stack_template_t *stack)
 	stack, L"errorString", 
 	0, &anna_cerror_strerror, 
 	string_type, 
-	1, s_argv, s_argn, 
+	1, s_argv, s_argn, 0, 
 	L"Returns a string that describes the error code passed in the argument. Equivalent to the C strerror function.");
     
     anna_module_const_int(stack, L"tooBig", E2BIG, L"Argument list too long.");

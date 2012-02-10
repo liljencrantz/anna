@@ -867,6 +867,6 @@ __cold struct anna_node *anna_parse(wchar_t *filename);
    Parse the specified string and return an unprepared AST tree that
    represents the file content.
 */
-__cold struct anna_node *anna_parse_string(wchar_t *str);
+__cold struct anna_node *anna_parse_string(wchar_t *str, wchar_t *filename);
 
 #endif

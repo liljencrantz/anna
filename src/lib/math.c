@@ -79,70 +79,70 @@ void anna_math_load(anna_stack_template_t *stack)
 	stack, L"sin", 
 	0, &anna_math_sin, 
 	float_type, 
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The sin function computes the sine of value, where value is given in radians.");
     
     anna_module_function(
 	stack, L"cos", 
 	0, &anna_math_cos, 
 	float_type, 
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The cos function computes the cosine of value, where value is given in radians.");
     
     anna_module_function(
 	stack, L"tan", 
 	0, &anna_math_tan, 
 	float_type, 
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The tan function computes the tangent of value, where value is given in radians.");
     
     anna_module_function(
 	stack, L"asin", 
 	0, &anna_math_asin, 
 	float_type, 
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The tan function computes the arc sine of value.");
     
     anna_module_function(
 	stack, L"acos", 
 	0, &anna_math_acos, 
 	float_type, 
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The tan function computes the arc cosine of value.");
     
     anna_module_function(
 	stack, L"atan", 
 	0, &anna_math_atan, 
 	float_type,
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The atan function computes the arc tangent of value.");
     
     anna_module_function(
 	stack, L"log", 
 	0, &anna_math_log, 
 	float_type,
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The log function computes the natural logarithm of value.");
 
     anna_module_function(
 	stack, L"log2", 
 	0, &anna_math_log2, 
 	float_type,
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The log2 function computes the base 2 logarithm of value.");
 
     anna_module_function(
 	stack, L"log10", 
 	0, &anna_math_log10, 
 	float_type,
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The log10 function computes the base 10 logarithm of value.");
 
     anna_module_function(
 	stack, L"sqrt", 
 	0, &anna_math_sqrt, 
 	float_type,
-	1, f_argv, f_argn, 
+	1, f_argv, f_argn, 0,
 	L"The sqrt function computes the square root of value.");
 }
 

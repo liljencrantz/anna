@@ -3,6 +3,8 @@
 
 #include "anna/stack.h"
 
+struct anna_node;
+
 void anna_module_init(void);
 anna_object_t *anna_module_load(wchar_t *module_name);
 void anna_module_const_int(
@@ -36,6 +38,7 @@ anna_function_t *anna_module_function(
     size_t argc,
     anna_type_t **argv,
     wchar_t **argn,
+    struct anna_node **argd,
     wchar_t *documentation
     );
 

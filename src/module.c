@@ -826,8 +826,8 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 }
 
 /**
-   Internal helper function for anna_module_load_i
- */
+   Internal helper function for anna_module_load_i.
+*/
 static void anna_module_load2()
 {
     int i, j;
@@ -883,13 +883,10 @@ static void anna_module_load2()
 	debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
 	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
 
-    }
+    }    
     
-
     al_truncate(&anna_module_in_transit, 0);
 }
-
-
 
 /**
    Actually perform the loading of a module
@@ -1045,22 +1042,21 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     al_push(&anna_module_in_transit, module_stack);    
     al_push(&anna_module_in_transit, node);    
     
-	for(i=0; i<module_node->child_count; i++)
+    for(i=0; i<module_node->child_count; i++)
+    {
+	anna_node_static_invoke(module_node->child[i], module_stack);
+	if(anna_error_count)
 	{
-	    anna_node_static_invoke(module_node->child[i], module_stack);
-	    if(anna_error_count)
-	    {
-		debug(
-		    D_CRITICAL,
-		    L"Found %d error(s) during module loading\n",
-		    anna_error_count);
-		exit(
-		    ANNA_STATUS_MODULE_SETUP_ERROR);
-	    }
+	    debug(
+		D_CRITICAL,
+		L"Found %d error(s) during module loading\n",
+		anna_error_count);
+	    exit(
+		ANNA_STATUS_MODULE_SETUP_ERROR);
 	}
-
-	
-	debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
+    }    
+    
+    debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
     if(recursion_count > 1)
     {
 	debug(
@@ -1101,6 +1097,7 @@ anna_function_t *anna_module_function(
     size_t argc,
     anna_type_t **argv,
     wchar_t **argn,
+    anna_node_t **argd,
     wchar_t *doc
     )
 {
@@ -1108,7 +1105,7 @@ anna_function_t *anna_module_function(
 	name,
 	flags, native,
 	return_type, 
-	argc, argv, argn, 0,
+	argc, argv, argn, argd,
 	stack);    
     anna_stack_declare(
 	stack,
