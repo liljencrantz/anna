@@ -1,0 +1,41 @@
+class MyMatrix
+{
+    var MutableList«MutableList«Float»» arr;
+
+    def __init__()
+    {
+	arr = [[1.0, 0.0, 0.0],
+	       [0.0, 1.0, 0.0],
+	       [0.0, 0.0, 1.0]];
+    }
+
+    def __get__(Int idx1, Int idx2)
+    {
+	arr[idx1][idx2];
+    }
+
+
+    def __set__(Int idx1, Int idx2, Float value)
+    {
+	arr[idx1][idx2] = value;
+    }
+
+    def toString()
+    {
+	arr.toString();
+    }
+
+}
+
+def main()
+{
+  m := MyMatrix();
+
+    print(m, "\n");
+
+    print(m[0,0], "\n");
+    m[0,0] = 5.0;
+    print(m[0,0], "\n");
+
+
+}
