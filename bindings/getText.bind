@@ -1,0 +1,14 @@
+include(
+    "<libintl.h>");
+
+def String getText(String msgid) (name(gettext));
+def String dGetText(String domain, String msgid) (name(dgettext));
+def String dCGetText(String domain, String msgid, Int category) (name(dcgettext));
+
+def String nGetText(String msgid, String msgidPlural, Int count) (name(ngettext));
+def String dNGetText(String domain, String msgid, String msgidPlural, Int count) (name(dngettext));
+def String dCNGetText(String domain, String msgid, String msgidPlural, Int count, Int category) (name(dcngettext));
+
+def String textDomain(String domain) (name(textdomain));
+def String bindTextDomain(String domain, String dir) (name(bindtextdomain));
+
