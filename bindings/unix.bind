@@ -5,8 +5,12 @@ include(
     "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>"
     );
 
+attribute(doc("The unix module is the parent module for various low level wrappers for basic Unix functionality. Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages."));
+
 io
 {
+
+    attribute(doc("The unix.io module contains low level wrappers for basic unix functionality revolving around input and output."));
 
     openMode
     {
@@ -171,6 +175,9 @@ io
 
 proc
 {
+
+    attribute(doc("The unix.proc module contains low level wrappers for basic unix functionality revolving around processes and signals."));
+
     signal
     {
 	const Int hup (name(SIGHUP), doc("The HUP signal"));
@@ -231,6 +238,9 @@ proc
 
 user
 {
+
+    attribute(doc("The unix.user module contains low level wrappers for basic unix functionality revolving around users and groups."));
+
     def Int getuid() (doc("Get the real user ID of the calling process."));
     def Int geteuid() (doc("Get the effective user ID of the calling process."));
     def Int getgid() (doc("Get the real group ID of the calling process."));
@@ -251,6 +261,8 @@ user
 rLimit
 {
     
+    attribute(doc("The unix.rLimit module contains low level wrappers for basic unix functionality revolving around system resource limits."));
+
     rLimitMode
     {
 	const Int as (name(RLIMIT_AS), doc("The AS limit"));
@@ -283,6 +295,8 @@ rLimit
 
 env
 {
+    attribute(doc("The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables."));
+
     def String getenv(String name) (doc("Return the current value of the given environment variable. Equivalanet to the C getenv function."));
     def Int setenv(String name, String value, Int overwrite) (doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
     def Int unsetenv(String name) (doc("Delete the specified environment variable. Equivalanet to the C unsetenv function."));
@@ -297,11 +311,17 @@ env
 
 sleep
 {
+
+    attribute(doc("The unix.sleep module contains low level wrappers for basic unix functionality revolving around pausing the execution of processes."));
+
     def Int sleep(Int seconds) (doc("Sleep for the specified number of seconds"));
 }
 
 time
 {
+
+    attribute(doc("The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping."));
+
     cStruct TimeVal (name(timeval), doc("A data structure representing a point in time as the amount of time that has elapsed since the epoch."))
     {
 	var Int sec (name(tv_sec), doc("Seconds"));
@@ -317,6 +337,8 @@ time
 
 locale
 {
+    attribute(doc("The unix.locale module contains low level wrappers for basic unix functionality revolving around localization."));
+
     localeMode
     {
 	const Int all (name(LC_ALL), doc("All of the locale."));
@@ -333,7 +355,17 @@ locale
     {
 	const String decimalPoint (name(decimal_point), doc("Decimal-point separator used for non-monetary quantities."));
 	const String thousandsSeparator (name(thousands_sep), doc("Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities."));	
-	const Int intFracDigits (name(int_frac_digits), doc("International fractional digits."));
+	const String grouping (doc("The amount of digits that form each of the groups to be separated by thousandsSeparator separator for non-monetary quantities."));
+	const String internationalCurrencySymbol (name(int_curr_symbol), doc("International currency symbol."));
+	const String currencySymbol (name(currency_symbol), doc("Local currency symbol."));
+
+	const String monetaryDecimalPoint (name(mon_decimal_point), doc("Decimal-point separator used for monetary quantities."));
+	const String monetaryThousandsSeparator (name(mon_thousands_sep), doc("Separators used to delimit groups of digits to the left of the decimal point for monetary quantities."));
+	const String monetaryGrouping (name(mon_grouping), doc("The amount of digits that form each of the groups to be separated by monetaryThousandsSeparator separator for monetary quantities."));
+	const String positiveSign (name(positive_sign), doc("Sign for positive values"));
+	const String negativeSign (name(negative_sign), doc("Sign for negative values"));
+
+	const Int internationalFracDigits (name(int_frac_digits), doc("International fractional digits."));
 	const Int fracDigits (name(frac_digits), doc("Local fractional digits."));
 	const Bool positiveCurrencySymbolPrecedes (name(p_cs_precedes), doc("1 if currencySymbol precedes a positive value, null if succeeds."));
 	const Bool negativeCurrencySymbolPrecedes (name(n_cs_precedes), doc("1 if currencySymbol precedes a negative value, null if succeeds."));
@@ -368,6 +400,7 @@ Positive and negative sign positions:
 /*
 net
 {
+    attribute(doc("The unix.net module contains low level wrappers for basic unix functionality revolving around network communication."));
 
     verbatim("
 static struct addrinfo *anna_getaddrinfo(const char *node, const char *service, struct addrinfo *hints)
