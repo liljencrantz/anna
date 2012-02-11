@@ -7,7 +7,7 @@ attribute(
     doc(
 	"
 This is the Anna binding compiler. Unlike many other binding
-generators, this one doesn't parse headers in any way. Instead, the
+generators, this one doesn't parse C headers at all. Instead, the
 binding creator has to write headers that contain roughly the same
 information as traditional C headers, but expressed in a syntax that
 is very easy to parse. This is a pretty simple solution, and it
@@ -17,7 +17,7 @@ required in order to get C header files to behave well enough in
 order to let them be parsed. It should also be noted that aside from
 the obvious problems with finding a good strategy for mixing GC:ed
 and non-GC:ed objects, there is very little to prevent this strategy
-from working beuatifully with C++ bindings as well.",
+from working perfectly well with C++ bindings as well.",
 	"
 The bind utility simply outputs a C file that should be compiled into a
 dynamic library and placed in the Anna library search path. On startup,
@@ -58,10 +58,10 @@ int foo(int x, char *y);",
 	"
   TODO",
 "
-   Code-wise, this is a mess. It's a quick and dirty proof of concept
-   that has grown into a semi-complicated application with very little
-   in the way of refactoring. The code needs to be split into multiple
-   phases (parsing and templating) and moved into multiple files.
+   Code-wise, this program is a mess. It's a quick and dirty proof of
+   concept that has grown into a semi-complicated application with
+   very little in the way of refactoring. The code needs to be split
+   into multiple multiple files using a bit of templating.
 ",
 
 ));
@@ -1058,6 +1058,7 @@ ANNA_VM_NATIVE(%(initName), 1)
         typeData := "".thaw;
         moduleData := "".thaw;
         customInclude := "".thaw;
+        attr := ? as Call;
 
 	(nodes as Call).each(node)
 	{
@@ -1194,6 +1195,12 @@ ANNA_VM_NATIVE(%(setterName), 2)
 		    }
 		}
 				
+
+                case("attribute")
+                {
+                    attr = decl;
+                }
+
 		default
 		{
                     if(decl.count == 1 and decl[0].callTo?("__block__"))
@@ -1223,6 +1230,12 @@ ANNA_VM_NATIVE(%(setterName), 2)
 		}
 	    }
 	}
+
+        if(attr)
+        {
+            doc := extractDoc(attr);
+            load ~= "    anna_stack_document(stack, %);\n" % [doc];
+        }
 	
 	return struct(
             code: code, typeData: typeData, typeDecl: typeDecl, 
