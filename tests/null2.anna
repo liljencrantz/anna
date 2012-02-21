@@ -9,6 +9,6 @@ def main(){
     a.count=69;
     b := ? as Foo;
     b.memb = 12;
-    print(?, a, a.count, a[3], b, b.memb, '\n');
+    print(?, a, a.count, a[3], b, b.memb);
 }
 

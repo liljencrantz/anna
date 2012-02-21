@@ -9,12 +9,12 @@ def main()
     foo := struct(first:3, second:"aaa");
     foo.first += 7;
     foo.second ~= "a";
-    print(foo.first, " ", foo.second, "\n");
+    print(foo.first, foo.second);
 
     /*
       Test nested structs 
     */
     bar := struct(first:3, second:struct(first:1, second:'2', third:"3"));
-    print(bar.second.second.ordinal, '\n');
+    print(bar.second.second.ordinal);
     
 }

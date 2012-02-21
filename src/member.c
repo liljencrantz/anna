@@ -91,7 +91,6 @@ mid_t anna_member_create(
     member->name = anna_intern(name);
     
     member->type = member_type;
-    anna_member_set_static(member, !!(storage & ANNA_MEMBER_STATIC));
     member->storage = storage;
     if(storage & ANNA_MEMBER_VIRTUAL)
     {
@@ -108,10 +107,8 @@ mid_t anna_member_create(
     }
     
     type->mid_identifier[mid] = member;
-//    wprintf(L"Create member named %ls to type %ls\n", name, type->name);
-        
     anna_type_calculate_size(type);
-
+    
     if(!(storage & ANNA_MEMBER_VIRTUAL))
     {
 	type->flags |= ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
@@ -320,7 +317,7 @@ mid_t anna_member_create_method(
 	anna_from_obj(
 	    anna_function_wrap(
 		method));
-    
+    FIXME("Do we really need to clone these attributes here?");
     m->attribute = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)method->attribute);
     
     return mid;

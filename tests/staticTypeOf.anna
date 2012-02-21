@@ -5,7 +5,7 @@ class Foo
 
 def main()
 {
-  foo := Foo();
+    foo := Foo();
     foo.blaj = 5;
-    print(foo.blaj+2, "\n");
+    print(foo.blaj+2);
 }

@@ -2,7 +2,7 @@ def main()
 {
     foo := [Complex(1.0, 0.0): "one", Complex(3.5, 2.0): "two"];
     print(
-	foo[Complex(1.0, 0.0)], " ", 
-	foo[Complex(3.5, 2.0)], " ",
-	foo[Complex(0.0, 3.0)], "\n");
+	foo[Complex(1.0, 0.0)],
+	foo[Complex(3.5, 2.0)],
+	foo[Complex(0.0, 3.0)]);
 }

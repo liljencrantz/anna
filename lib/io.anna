@@ -6,7 +6,7 @@ error IOError
 {    
 }
 
-def relative?(String filename)
+def relative?(String filename) (internal)
 {
     return filename[0] != separator;
 }

@@ -11,9 +11,9 @@ def myFun2( Int a, Int b, def Int fun(Int a, Int b) = def (Int a, Int b){a+b})
 
 def main()
 {
-    print(myFun(1,2), "\n");
-    print(myFun(1,2, Int::__sub__Int), "\n");
+    print(myFun(1,2));
+    print(myFun(1,2, Int::__sub__Int));
 
-    print(myFun2(1,2), "\n");
-    print(myFun2(1,2, Int::__sub__Int), "\n");
+    print(myFun2(1,2));
+    print(myFun2(1,2, Int::__sub__Int));
 }

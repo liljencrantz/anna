@@ -17,5 +17,5 @@ def main()
 {
     vv := Derived();
     vv[3] = 7;
-    print(vv, '\n');
+    print(vv);
 }

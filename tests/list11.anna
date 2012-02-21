@@ -6,7 +6,7 @@ def main()
   list1 := [1, 1, 1, 1];
   list2 := [1, 1, ?, ?];
   list3 := [?, ?, ?, ?];
-    expandCode(print(%list.all?(), ' ', %list.none?(), '\n'),
+    expandCode(print(%list.all?(), %list.none?()),
 	       list: [list1, list2, list3]);
 }
 

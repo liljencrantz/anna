@@ -12,7 +12,7 @@ def main()
 	{
 	    break;
 	}
-	print(i, "\n");
+	print(i);
     }
 
     (0...).each(i)
@@ -21,40 +21,42 @@ def main()
 	{
 	    break;
 	}
-	print("infinite ", i, "\n");
+	print("infinite", i);
     }
 
-    print( (0..1000|5).map(i)
-    {
-	if(i < 50){
-	    continue i*2;
-	}
-	if(i ^mod 10 == 0)
+    print( 
+	(0..1000|5).map(i)
 	{
-	    continue i/10;
-	}
-	if(i > 100)
-	{
-	    break -1;
-	}
-	i;
-    }, "\n");
+	    if(i < 50){
+		continue i*2;
+	    }
+	    if(i ^mod 10 == 0)
+	    {
+		continue i/10;
+	    }
+	    if(i > 100)
+	    {
+		break -1;
+	    }
+	    i;
+	});
 
     lst := (0..1000|5).map(i){i};
-    print( lst.map(i)
-    {
-	if(i < 50){
-	    continue i*2;
-	}
-	if(i ^mod 10 == 0)
+    print(
+	lst.map(i)
 	{
-	    continue i/10;
-	}
-	if(i > 100)
-	{
-	    break -1;
-	}
-	i;
-    }, "\n");
+	    if(i < 50){
+		continue i*2;
+	    }
+	    if(i ^mod 10 == 0)
+	    {
+		continue i/10;
+	    }
+	    if(i > 100)
+	    {
+		break -1;
+	    }
+	    i;
+	});
     
 }

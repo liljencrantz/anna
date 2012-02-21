@@ -7,7 +7,7 @@ class Base1
 {
     def foo()
     {
-	print("Base1::foo\n");
+	print("Base1::foo");
     }
 }
 
@@ -15,7 +15,7 @@ class Base2
 {
     def foo()
     {
-	print("Base2::foo\n");
+	print("Base2::foo");
     }
 }
 

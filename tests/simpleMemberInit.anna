@@ -13,12 +13,12 @@ class MyClass
 
     def blorp()
     {
-	print(foo, ' ', bar, ' ', baz, '\n');
+	print(foo, bar, baz);
     }
 
     def __init__()
     {
-	print("MyClass::__init__\n");
+	print("MyClass::__init__");
     }
 
 }
@@ -31,7 +31,7 @@ class MyClass2
 
     def blorp()
     {
-	print(foo, ' ', bar, ' ', baz, '\n');
+	print(foo, bar, baz);
     }
 }
 

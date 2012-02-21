@@ -27,6 +27,6 @@ def main()
     }
 
     print(
-	"Maximum hailstone sequence under ", 
-	max, " is ", maxValue, '\n');
+	"Maximum hailstone sequence under", 
+	max, "is", maxValue);
 }

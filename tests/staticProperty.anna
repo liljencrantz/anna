@@ -20,8 +20,8 @@ class MyType
 
 def main()
 {
-    print(MyType::myProperty, "\n");
+    print(MyType::myProperty);
     MyType::myProperty = "hello";
-    print(MyType::myProperty, "\n");    
+    print(MyType::myProperty);
 }
 

@@ -17,7 +17,7 @@ def main()
         buf := Buffer();
 	io.read(fd[0], buf, 1024);
         msg := buf.encode();
-	print(msg);
+	print(msg, end:"", sep:"");
     }
     
 }

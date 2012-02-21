@@ -128,74 +128,12 @@ static void anna_null_type_create()
 
 anna_object_t *anna_wrap_method;
 
-static int print_direct(anna_entry_t *o)
+ANNA_VM_NATIVE(anna_i_print_internal, 1)
 {
-    if(anna_is_obj(o))
+    anna_object_t *value = anna_as_obj(param[0]);
+    if(value == null_object)
     {
-	anna_object_t *o2 = anna_as_obj(o);
-	if(o2->type == string_type)
-	{
-	    anna_string_print(o2);
-	    return 1;
-	}
-    }
-    else
-    {
-	if(anna_is_float(o))
-	{
-	    wchar_t buff[32];
-	    
-	    swprintf(buff, 32, L"%f", anna_as_float(o));
-	    wchar_t *comma = wcschr(buff, ',');
-	    if(comma)
-	    {
-		*comma = '.';
-	    }
-	    wprintf(L"%ls", buff);
-	}
-	else if(anna_is_char(o))
-	{
-	    wprintf(L"%lc", anna_as_char(o));
-	}
-	else if(anna_is_int_small(o))
-	{
-	    wprintf(L"%d", anna_as_int(o));
-	}
-	return 1;
-    }
-    
-    return 0;
-}
-
-static int print_direct_loop(anna_object_t *list, int idx)
-{
-    int ls = anna_list_get_count(list);
-    while(1)
-    {
-	if(ls == idx)
-	{
-	    break;
-	}
-	anna_entry_t *o = anna_list_get(list, idx);
-	if(!print_direct(o))
-	{
-	    break;
-	}
-	idx++;	
-    }
-    return idx;
-}
-
-static void anna_print_callback(anna_context_t *stack)
-{
-    anna_object_t *value = anna_context_pop_object(stack);
-    anna_entry_t **param = stack->top - 2;
-    anna_object_t *list = anna_as_obj_fast(param[0]);
-    int idx = anna_as_int(param[1]);
-    int ls = anna_list_get_count(list);
-    if(value == null_object) 
-    {
-	wprintf(L"null");
+	wprintf(L"null");	
     }
     else 
     {
@@ -207,54 +145,8 @@ static void anna_print_callback(anna_context_t *stack)
 	{
 	    wprintf(L"<invalid toString method>");
 	}
-    }    
-    
-    idx = print_direct_loop(list, idx);
-
-    if(ls > idx)
-    {
-	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
-	param[1] = anna_from_int(idx+1);
-	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
-	anna_vm_callback_reset(stack, meth, 1, (anna_entry_t **)&o);
     }
-    else
-    {
-	anna_context_drop(stack, 3);
-	anna_context_push_object(stack, list);
-    }
-}
-
-static void anna_i_print(anna_context_t *stack)
-{
-//    wprintf(L"whoa, print\n");
-
-    anna_object_t *list = anna_context_pop_object(stack);
-    anna_context_pop_object(stack);
-    int idx = print_direct_loop(list, 0);
-    if(anna_list_get_count(list) > idx)
-    {
-	anna_entry_t *callback_param[] = 
-	    {
-		anna_from_obj(list),
-		anna_from_int(idx+1)
-	    }
-	;
-	
-	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
-	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
-	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
-	anna_vm_callback_native(
-	    stack,
-	    anna_print_callback, 2, callback_param,
-	    meth, 1, (anna_entry_t **)&o
-	    );
-    }
-    else
-    {
-	anna_context_push_object(stack, list);
-    }
+    return null_entry;
 }
 
 ANNA_VM_NATIVE(anna_i_nothing, 1)
@@ -344,12 +236,12 @@ void anna_lang_load(anna_stack_template_t *stack)
 
     anna_module_function(
 	stack,
-	L"print", 
-	ANNA_FUNCTION_VARIADIC, 
-	&anna_i_print, 
-	imutable_list_type, 1, &object_type, 
+	L"printInternal", 
+	0, 
+	&anna_i_print_internal, 
+	object_type, 1, &string_type, 
 	p_argn, 0,
-	L"Print all the supplied arguments to standard output");
+	L"Print the specified String to standard output. This is a non-standard internal helper method, do not use it directly. Use the print function instead.");
 
     anna_lang_nothing = anna_module_function(
 	stack,
@@ -388,4 +280,6 @@ void anna_lang_load(anna_stack_template_t *stack)
     anna_wrap_method = wrap->wrapper;
 
     anna_type_data_register(anna_lang_type_data, stack);
+
+    anna_stack_document(stack, L"The lang module contains the low level language constructs of Anna. Basic types like numbers, character strings and data buffers live in the lang module.");
 }

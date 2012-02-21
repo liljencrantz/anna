@@ -24,6 +24,6 @@ def fun3(def Int f(Int a=1, Int b, Int c, Int res...))
 
 def main()
 {
-    print(fun2(fun), "\n");
-    print(fun3(fun), "\n");
+    print(fun2(fun));
+    print(fun3(fun));
 }

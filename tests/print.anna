@@ -1,6 +1,6 @@
 
 def main()
 {
-    print("a",'b',"c",'d',"e",'f',"g",'h',"\n");
-    print('a',"b",'c',"d",'e',"f",'g',"h",'\n');
+    print("a",'b',"c",'d',"e",'f',"g",'h');
+    print('a',"b",'c',"d",'e',"f",'g',"h");
 }

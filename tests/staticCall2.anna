@@ -4,7 +4,7 @@ class MyType
 
     def staticMethod(Int idx, String in) (static)
     {
-	print("Run method with arg ", in, "\n" );
+	print("Run method with arg", in);
 	return "" ~in[0];
     }
     
@@ -19,6 +19,5 @@ def main()
 {
     mm := MyType();
     mm.yay();
-    print("\n");
 }
 

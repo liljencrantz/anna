@@ -633,7 +633,10 @@ typedef struct anna_line_pair anna_line_pair_t;
 /**
   This struct describes the signature of a function, which includes
   the return type, the number and types of inputs and any default
-  parameter values.
+  parameter values. 
+
+  The flags variable tracks whether this function is variadic and whether
+  it can be used as a macro using the regular ANNA_FUNCTION_XXX constants.
 */
 typedef struct 
 {
@@ -646,7 +649,7 @@ typedef struct
 } anna_function_type_t;
 
 /**
-   A bunch of internal types. Might be better to move these to lib.h or something?
+   A bunch of internal types. Might be better to move these to e.g. lib/lang/lang.h.
 */
 extern anna_type_t *type_type, *object_type, *int_type, *string_type, 
     *mutable_string_type, *imutable_string_type, *char_type, *null_type,

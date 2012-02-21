@@ -2,5 +2,5 @@ use(unix.env);
 def main()
 {
     setenv("test", "testval", 1);
-    print(getenv("test"), "\n");
+    print(getenv("test"));
 }

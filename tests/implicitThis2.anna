@@ -17,7 +17,7 @@ class MyType {
 
     def print()
     {   
-	lang.print(prop, "\n");
+	lang.print(prop);
     }
 
 }

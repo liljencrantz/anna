@@ -3,7 +3,7 @@ def shadow(Int param)
     alias(myFunction)
 )
 {
-    print("This will not get printed\n");
+    print("This will not get printed");
 }
 
 def main()
@@ -14,7 +14,7 @@ def main()
 	alias(myFunction)
     )
     {
-	print("This function shadows the above one, even when using aliases\n");
+	print("This function shadows the above one, even when using aliases");
     }
 
 
@@ -23,7 +23,7 @@ def main()
 	alias(myFunction)
     )
     {
-	print("This will get printed\n");
+	print("This will get printed");
     }
 
     myFunction(1);

@@ -5,22 +5,22 @@ def main()
     l[-1] = 6;
     l[-20] = 69;
     l[8] = 96;
-    print(l, "\n");
-    print(l[? as Int], "\n");
-    print(l[? as Range], "\n");
+    print(l);
+    print(l[? as Int]);
+    print(l[? as Range]);
     l[? as Int]=69;
     l[? as Range]=[1,2,3];
     l[1..2]=?;
-    print(l, "\n");
+    print(l);
     l.count = ?;
-    print(l, "\n");
-    [].each(i){print("Fail\n")}
+    print(l);
+    [].each(i){print("Fail")}
 
-    print(l.find(i){i>3},"\n");
+    print(l.find(i){i>3});
 
-    print([].map(i){print("Fail\n")},"\n");
-    print([].filter(i){print("Fail\n");i>0},"\n");
-    print([].find(i){print("Fail\n");i>0},"\n");
+    print([].map(i){print("Fail")});
+    print([].filter(i){print("Fail");i>0});
+    print([].find(i){print("Fail");i>0});
 /*
     print(l.__map__(?),"\n");
     print(l.__filter__(?),"\n");

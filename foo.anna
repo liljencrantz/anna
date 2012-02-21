@@ -1,6 +1,15 @@
-expand(i18n);
-
+/*
+def myPrint(String keys:, String param...)
+{
+    end := keys["end"] or "\n";
+    sep := keys["sep"] or " ";
+    print(sep.join(param) ~ end);
+}
+*/
 def main()
 {
-    print(t"Hello, world!\n");
+    print("a", "b", "c");
+    print("a", "b", "c", sep: "SEP", end: "END\n");
+    lang.print(sep: "SEP", end: "END\n", "a", "b", "c");
 }
+

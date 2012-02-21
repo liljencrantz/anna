@@ -16,6 +16,6 @@ class T
 
 def main()
 {
-    print(T(), "\n");
+    print(T());
 }
 

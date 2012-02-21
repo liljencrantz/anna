@@ -3,7 +3,7 @@ def main()
 
     while(1)
     {
-	print("1\n");
+	print("1");
 	break;
     }
 
@@ -14,7 +14,7 @@ def main()
 	{
 	    continue;
 	}
-	print(i, '\n');
+	print(i);
 	if(i > 15)
 	{
 	    break;

@@ -3,5 +3,5 @@ def main(){
     /* Null keys should be ignored, the size of this hash should be two */
     hh := ["foo":3, "bar" : 7, ? : 69];
     hh[?] = 12;
-    print(hh.count, "\n", "foo" in hh, "\n", "hello" in hh, "\n",  ? in hh, "\n");
+    print(hh.count, "foo" in hh, "hello" in hh, ? in hh);
 }

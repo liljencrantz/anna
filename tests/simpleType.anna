@@ -7,7 +7,7 @@ type Foo
 {
     def someBoundMethod(Foo this, Int ggg) (bound)
     {
-	print("method ", this, ' ', ggg, '\n');
+	print("method", this, ggg);
     }
 
     def someBoundInstanceMethod(Foo this, Int ggg) (bound);
@@ -15,7 +15,7 @@ type Foo
 
     def someStaticFunction(Foo this, Int ggg) (static)
     {
-	print("function ", this, ' ', ggg, '\n');
+	print("function", this, ggg);
     }
 
     def someInstanceFunction(Foo this, Int ggg);
@@ -25,11 +25,11 @@ type Foo
     {
 	this.someInstanceFunction = def (Foo this, Int ggg)
 	    {
-		print("function ", this, ' ', ggg, '\n');
+		print("function", this, ggg);
 	    }
 	this.someBoundInstanceMethod = def (Foo this, Int ggg)
 	    {
-		print("function ", this, ' ', ggg, '\n');
+		print("function", this, ggg);
 	    }
 	return this;
     }
@@ -44,6 +44,6 @@ def main()
     foo.someInstanceFunction2(foo, 4);
     foo.someBoundInstanceMethod(5);
     foo.someBoundInstanceMethod2(6);
-    print(foo.someInstanceFunction2, "\n");
-    print(foo.someBoundInstanceMethod2, "\n");
+    print(foo.someInstanceFunction2);
+    print(foo.someBoundInstanceMethod2);
 }

@@ -3,6 +3,6 @@ def main()
     doc("Test the global variable, which is a pointer to the global namespace."),
 )
 {
-    print(global.global == global, "\n");
-    print(global.global.global.system.argument.count, "\n");
+    print(global.global == global);
+    print(global.global.global.system.argument.count);
 }

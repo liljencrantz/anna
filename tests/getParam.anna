@@ -29,13 +29,13 @@ class MyMatrix
 
 def main()
 {
-  m := MyMatrix();
+    m := MyMatrix();
 
-    print(m, "\n");
+    print(m);
 
-    print(m[0,0], "\n");
+    print(m[0,0]);
     m[0,0] = 5.0;
-    print(m[0,0], "\n");
+    print(m[0,0]);
 
 
 }

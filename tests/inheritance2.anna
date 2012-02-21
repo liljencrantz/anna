@@ -4,12 +4,12 @@
 
 class Sub (extends(Int))
 {
-    def bar(){print("Sub.bar()\n")}
+    def bar(){print("Sub.bar()")}
 }
 
 def main()
 {
     sub:=Sub(7);
     sub.bar();
-    print(sub; sub+1; "\n";); 
+    print(sub, sub+1); 
 }

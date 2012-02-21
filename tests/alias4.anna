@@ -3,12 +3,12 @@ class MyType
 
     def f1 (Int val, String msg = "bla bla bla") (alias(talk))
     {
-	print(msg, ' ', val, '\n');
+	print(msg, val);
     }
 
     def f2 (Object obj) (alias(talk))
     {
-	print(obj, '\n');
+	print(obj);
     }
 
 }

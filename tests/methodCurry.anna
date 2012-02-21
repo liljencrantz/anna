@@ -5,10 +5,10 @@ def main()
     l := [1,2,3];
     f1 := l.push;
     f2 := l.pop;
-    print(f2(), "\n");
-    print(f2(), "\n");
-    print(f2(), "\n");
-    print(f2(), "\n");
+    print(f2());
+    print(f2());
+    print(f2());
+    print(f2());
     f1(4);
-    print(f2()-4, "\n");
+    print(f2()-4);
 }

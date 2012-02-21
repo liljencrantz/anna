@@ -16,5 +16,5 @@ def main()
             count++;
         }
     }
-    print("There are ", count, " prime numbers under ", end, "\n");
+    print("There are", count, "prime numbers under", end);
 }

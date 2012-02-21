@@ -1,9 +1,9 @@
 def main()
 {
     foo := [1,2,3];
-    print(foo.count, "\n");
+    print(foo.count);
     foo.count = 5;
-    print(foo.count, "\n");
-    print(foo[4],"\n",foo[5], "\n");
+    print(foo.count);
+    print(foo[4],foo[5]);
 
 }

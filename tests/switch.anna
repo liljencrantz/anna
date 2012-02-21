@@ -12,22 +12,22 @@ def main()
 	{
 	    case(2,4,6,8)
 	    {
-		print("Even\n");
+		print("Even");
 	    }
 
 	    case(7)
 	    {
-		print("Seven\n");
+		print("Seven");
 	    }
 
 	    cases(1..5|2)
 	    {
-		print("Odd\n");
+		print("Odd");
 	    }
 	    
 	    default
 	    {
-		print("Whatever\n");
+		print("Whatever");
 	    }
 	}
     }
@@ -41,22 +41,22 @@ def main()
 	{
 	    case("abc")
 	    {
-		print("abc\n");
+		print("abc");
 	    }
 
 	    case("b", "bb", "bbb")
 	    {
-		print("Bunch of b:s\n");
+		print("Bunch of b:s");
 	    }
 	    
 	    cases(["a":?, "o":?, "u":?, "e":?, "i":?, "y":?])
 	    {
-		print("Vowel\n");
+		print("Vowel");
 	    }
 	    
 	    default
 	    {
-		print("Don't righly know\n");
+		print("Don't righly know");
 	    }
 	}
     }
@@ -67,22 +67,22 @@ def main()
 	{
 	    case(i as Int)
 	    {
-		print("It is an Int, its square is ", i*i, "\n");
+		print("It is an Int, its square is", i*i);
 	    }
 
 	    case(f as Float)
 	    {
-		print("It is a Float, its square root is ", math.sqrt(f), "\n");
+		print("It is a Float, its square root is", math.sqrt(f));
 	    }
 
 	    case(s as String)
 	    {
-		print("It is a String, its length is ", s.count, "\n");
+		print("It is a String, its length is", s.count);
 	    }
 	    
 	    default
 	    {
-		print("Don't know, don't care\n");
+		print("Don't know, don't care");
 	    }
 	}
     }

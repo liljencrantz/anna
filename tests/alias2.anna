@@ -24,10 +24,10 @@ def fun4(List in)
 
 def main()
 {
-    print(myFunction(0), "\n");
-    print(myFunction(""), "\n");
-    print(myFunction(0.0), "\n");
-    print(myFunction([]), "\n");
-    print(myFunction(? as Int), "\n");
-    print(myFunction(? as List), "\n");
+    print(myFunction(0));
+    print(myFunction(""));
+    print(myFunction(0.0));
+    print(myFunction([]));
+    print(myFunction(? as Int));
+    print(myFunction(? as List));
 }

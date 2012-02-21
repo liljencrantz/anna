@@ -1,7 +1,7 @@
 def plain()
 {
-    print(reflection.currentContinuation.filename, "\n");
-    print(reflection.currentContinuation.line, "\n");
+    print(reflection.currentContinuation.filename);
+    print(reflection.currentContinuation.line);
 }
 
 def main()

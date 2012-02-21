@@ -1,29 +1,29 @@
 def main() 
 {
     a := [1,2,3];
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
+    print(a.pop());
+    print(a.pop());
+    print(a.pop());
+    print(a.pop());
     a.push(4);
     a.push(5);
-    print(a.pop(),"\n");
+    print(a.pop());
     a.push(6);
     a.push(7);
     a.push(8);
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
+    print(a.pop());
+    print(a.pop());
     a.push(9);
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
+    print(a.pop());
+    print(a.pop());
+    print(a.pop());
+    print(a.pop());
     a.push(10);
     a[3] = 11;
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
-    print(a.pop(),"\n");
+    print(a.pop());
+    print(a.pop());
+    print(a.pop());
+    print(a.pop());
+    print(a.pop());
 
 }

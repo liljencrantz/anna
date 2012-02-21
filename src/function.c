@@ -20,6 +20,7 @@
 #include "anna/intern.h"
 #include "anna/attribute.h"
 #include "anna/lib/lang/list.h"
+#include "anna/lib/lang/hash.h"
 #include "anna/use.h"
 #include "anna/node_hash.h"
 #include "anna/lib/reflection.h"
@@ -188,7 +189,6 @@ static anna_node_t *anna_function_setup_arguments(
 	    decl->child[1] = anna_node_calculate_type(decl->child[1]);
 	    anna_node_t *type_node = decl->child[1];
 	    anna_node_t *val_node = decl->child[2];
-	    int is_variadic=0;
 	    
 	    if(type_node->node_type == ANNA_NODE_NULL)
 	    {
@@ -227,16 +227,18 @@ static anna_node_t *anna_function_setup_arguments(
 	    f->input_default[i] = anna_attribute_call(
 		(anna_node_call_t *)decl->child[3], L"default");
 	    
+	    anna_type_t *t = f->input_type[i];
+
 	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
 	    {
-		is_variadic=1;
+		t = anna_list_type_get_imutable(t);
 		f->flags |= ANNA_FUNCTION_VARIADIC;
 	    }
-
-	    anna_type_t *t = f->input_type[i];
-	    if(is_variadic)
+	    else if(i == (argc-2) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadicNamed"))
 	    {
-		t = anna_list_type_get_imutable(t);
+		t = anna_hash_type_get(imutable_string_type, t);
+		f->flags |= ANNA_FUNCTION_VARIADIC_NAMED;
+		f->input_type[i] = t;
 	    }
 //	    wprintf(L"Declare %ls as %ls in %ls\n", f->input_name[i], t->name, f->name)
 	    

@@ -398,6 +398,12 @@ int anna_node_validate_call_parameters(
 	}	
     }
     
+    int var_named = 0;    
+    if(anna_function_type_is_variadic_named(target))
+    {
+	var_named = 1;
+    }    
+    
     int i;
     set = calloc(sizeof(int), param_count + call->child_count);
 
@@ -421,13 +427,19 @@ int anna_node_validate_call_parameters(
 	    int idx = anna_node_f_get_index(target, is_method, name->name);
 	    if(idx < 0)
 	    {
-		if(print_error)
+		if(!var_named)
 		{
-		    anna_error(call->child[i], L"Invalid named parameter");
+		    if(print_error)
+		    {
+			anna_error(call->child[i], L"Invalid named parameter");
+		    }
+		    goto END;
 		}
-		goto END;
 	    }
-	    set[idx]++;
+	    else
+	    {
+		set[idx]++;
+	    }
 	}
     }
     
@@ -482,6 +494,14 @@ int anna_node_validate_call_parameters(
     return res;
 }
 
+static void anna_node_call_map_process_new_node(anna_node_t *node, anna_stack_template_t *stack)
+{
+    anna_node_set_stack(node, stack);
+    anna_node_resolve_identifiers(node);
+    anna_node_calculate_type_children(node);
+}
+
+
 void anna_node_call_map(
     anna_node_call_t *call, 
     anna_function_type_t *target, 
@@ -490,6 +510,7 @@ void anna_node_call_map(
     anna_type_t **param = target->input_type;
     int param_count = target->input_count;    
     anna_node_t **param_default = target->input_default;
+    anna_node_call_t *var_named_call = 0;
     
     if(is_method)
     {
@@ -503,15 +524,44 @@ void anna_node_call_map(
 	param_count--;
     }
         
-    int i;
-    
+    int var_named = 0;    
+    int var_named_idx = -1;
+
     anna_node_t **order = calloc(
 	sizeof(anna_node_t *),
 	param_count + call->child_count+1);
     
+    anna_type_t *var_named_pair_type = 0;
+    
+    if(anna_function_type_is_variadic_named(target))
+    {
+	var_named = 1;
+	var_named_idx = target->input_count-1;
+	if(anna_function_type_is_variadic(target))
+	{
+	    var_named_idx--;
+	}
+	var_named_call = anna_node_create_call2(
+	    &call->location, 
+	    anna_node_create_type(
+		&call->location, 
+		target->input_type[var_named_idx]));
+	var_named_pair_type = anna_pair_type_get(imutable_string_type, anna_hash_get_value_type(target->input_type[var_named_idx]));
+	//	anna_error(call, L"LALALA2.\n");
+	//CRASH;
+	order[var_named_idx] = (anna_node_t *)var_named_call;
+    }
+    
+    int i;
+    
     int unnamed_idx = 0;
     int count = 0;
 
+    /*
+      The first step is to iterate over all call parameters and locate
+      all the named parameters. These are then placed at the correct
+      position.
+     */
     for(i=0; i<call->child_count; i++)
     {
 	int is_named = call->child[i]->node_type == ANNA_NODE_MAPPING;
@@ -520,9 +570,29 @@ void anna_node_call_map(
 	    anna_node_cond_t *p = (anna_node_cond_t *)call->child[i];
 	    anna_node_identifier_t *name = (anna_node_identifier_t *)p->arg1;	    
 	    int idx = anna_node_f_get_index(target, is_method, name->name);
-	    order[idx] = p->arg2;
-	    count = maxi(count, idx+1);
-	}
+	    if(idx >= 0)
+	    {
+		order[idx] = p->arg2;
+		count = maxi(count, idx+1);
+	    }
+	    else
+	    {
+		anna_node_call_add_child(
+		    var_named_call,
+		    anna_node_create_call2(
+			&call->child[i]->location,
+			anna_node_create_type(
+			    &call->child[i]->location,
+			    var_named_pair_type),
+			anna_node_create_string_literal(
+			    &name->location,
+			    wcslen(name->name),
+			    anna_intern(name->name),
+			    0),
+			p->arg2));
+		
+	    }
+	}	
     }
 
     for(i=0; i<call->child_count; i++)
@@ -541,6 +611,15 @@ void anna_node_call_map(
     {
 	if(!order[i])
 	{
+	    if(var_named && (i == var_named_idx))
+	    {
+
+	    }
+	    else
+	    {
+		order[i] = anna_node_clone_deep(param_default[i]);
+	    }
+	    
 	    /*
 	      We're grafting a new piece of code into the already
 	      existing AST tree. We need to manually do all the
@@ -552,20 +631,22 @@ void anna_node_call_map(
 	      have to be statically evaluatable, which might actually
 	      be a _good_ thing.
 	    */
-	    order[i] = anna_node_clone_deep(param_default[i]);
-	    anna_node_set_stack(order[i], call->stack);
-	    anna_node_resolve_identifiers(order[i]);
-	    anna_node_calculate_type_children(order[i]);
+	    anna_node_call_map_process_new_node(order[i], call->stack);
 	    count = maxi(count, i+1);
 	}
     }
 
-    if(call->child_count != count)
+    if(call->child_count < count)
     {
-	call->child_count = count;	
 	call->child = realloc(call->child, sizeof(anna_node_t *)*count);
     }
+    call->child_count = count;	
     memcpy(call->child, order, sizeof(anna_node_t *)*count);
+    
+    if(anna_function_type_is_variadic_named(target))
+    {
+	anna_node_call_map_process_new_node(order[var_named_idx], call->stack);
+    }
 
     free(order);
     return;

@@ -6,6 +6,6 @@ Yet another comment
 */
 def main()
 {
-    print("ok\n");
+    print("ok");
 }
 

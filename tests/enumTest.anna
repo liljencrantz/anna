@@ -15,15 +15,15 @@ enum MyEnum2
 
 def main()  
 {
-    print(MyEnum::foo, ' ', MyEnum::bar, ' ', MyEnum::baz, "\n");
+    print(MyEnum::foo, MyEnum::bar, MyEnum::baz);
     myBaz := MyEnum::baz;
     print(
-	MyEnum::foo == MyEnum::foo, ' ', 
-	MyEnum::foo == MyEnum::bar, ' ', 
-	MyEnum::foo == 0, ' ', 
-	MyEnum::bar == 0, ' ', 
-	myBaz == 2, ' ', 
-	myBaz == 3, "\n");
+	MyEnum::foo == MyEnum::foo,
+	MyEnum::foo == MyEnum::bar,
+	MyEnum::foo == 0,
+	MyEnum::bar == 0,
+	myBaz == 2,
+	myBaz == 3);
 
     myFancyHash := [
 	MyEnum::foo: "FOO",
@@ -33,14 +33,14 @@ def main()
     myFancyHash[myBaz] = "MYBAZ";
 
     print(	
-	myFancyHash.count, ' ',
-	myFancyHash[MyEnum::foo], ' ',
-	myFancyHash[MyEnum::bar], ' ',
-	myFancyHash[MyEnum::baz], ' ',
-	myFancyHash[?], "\n");
+	myFancyHash.count,
+	myFancyHash[MyEnum::foo],
+	myFancyHash[MyEnum::bar],
+	myFancyHash[MyEnum::baz],
+	myFancyHash[?]);
 
-    print(MyEnum::foo.__value, ' ', MyEnum::bar.__value, ' ', MyEnum::baz.__value, "\n");
+    print(MyEnum::foo.__value, MyEnum::bar.__value, MyEnum::baz.__value);
 
-    print(MyEnum2::aaa.__value, ' ', MyEnum2::bbb.__value, ' ', MyEnum2::ccc.__value, "\n");
+    print(MyEnum2::aaa.__value, MyEnum2::bbb.__value, MyEnum2::ccc.__value);
 
 }

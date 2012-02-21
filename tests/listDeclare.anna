@@ -11,7 +11,7 @@ def main()
     */
     [foo, bar, baz] := fun();
     [foo2, bar2, baz2] :== [1,2,3];
-    print( foo, ' ', bar, ' ', baz, '\n');
-    print( foo2 + bar2 + baz2, '\n');
+    print( foo, bar, baz);
+    print( foo2 + bar2 + baz2);
 }
 

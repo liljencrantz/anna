@@ -14,8 +14,8 @@ class MyType
 
 def main()
 {
-    print(MyType::myStaticMember, "\n");
+    print(MyType::myStaticMember);
     MyType::myStaticMethod();
-    print(MyType::myStaticMember, "\n");
+    print(MyType::myStaticMember);
 }
 

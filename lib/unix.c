@@ -1498,6 +1498,7 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	unix_fd_set_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_fd_set_init, object_type, 1, &unix_fd_set_type, this_argn, 0, 0);    
+    anna_stack_document(stack, L"The unix.io module contains low level wrappers for basic unix functionality revolving around input and output.");
 
      anna_type_data_register(anna_io_type_data, stack);
 }
@@ -1906,6 +1907,7 @@ void anna_proc_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_proc_waitpid_argv[] = {int_type, anna_list_type_get_mutable(int_type), int_type};
     wchar_t *unix_i_proc_waitpid_argn[] = {L"pid", L"status", L"options"};
     anna_module_function(stack, L"waitpid", 0, &unix_i_proc_waitpid, int_type, 3, unix_i_proc_waitpid_argv, unix_i_proc_waitpid_argn, 0, 0);
+    anna_stack_document(stack, L"The unix.proc module contains low level wrappers for basic unix functionality revolving around processes and signals.");
 
      anna_type_data_register(anna_proc_type_data, stack);
 }
@@ -2262,6 +2264,7 @@ void anna_user_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_user_setgroups_argv[] = {int_type, anna_list_type_get_mutable(int_type)};
     wchar_t *unix_i_user_setgroups_argn[] = {L"size", L"list"};
     anna_module_function(stack, L"setgroups", 0, &unix_i_user_setgroups, int_type, 2, unix_i_user_setgroups_argv, unix_i_user_setgroups_argn, 0, L"Set list of supplamentary group IDs.");
+    anna_stack_document(stack, L"The unix.user module contains low level wrappers for basic unix functionality revolving around users and groups.");
 
      anna_type_data_register(anna_user_type_data, stack);
 }
@@ -2412,6 +2415,7 @@ void anna_r_limit_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_r_limit_set_r_limit_argv[] = {int_type, unix_r_limit_type};
     wchar_t *unix_i_r_limit_set_r_limit_argn[] = {L"resource", L"rlim"};
     anna_module_function(stack, L"setRLimit", 0, &unix_i_r_limit_set_r_limit, int_type, 2, unix_i_r_limit_set_r_limit_argv, unix_i_r_limit_set_r_limit_argn, 0, L"Set resource limit.");
+    anna_stack_document(stack, L"The unix.rLimit module contains low level wrappers for basic unix functionality revolving around system resource limits.");
 
      anna_type_data_register(anna_r_limit_type_data, stack);
 }
@@ -2534,6 +2538,7 @@ void anna_env_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_env_clearenv_argv[] = {};
     wchar_t *unix_i_env_clearenv_argn[] = {};
     anna_module_function(stack, L"clearenv", 0, &unix_i_env_clearenv, int_type, 0, unix_i_env_clearenv_argv, unix_i_env_clearenv_argn, 0, L"Removes all environemnt variables. Equivalanet to the C clearenv function.");
+    anna_stack_document(stack, L"The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables.");
 
      anna_type_data_register(anna_env_type_data, stack);
 }
@@ -2580,6 +2585,7 @@ void anna_sleep_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_sleep_sleep_argv[] = {int_type};
     wchar_t *unix_i_sleep_sleep_argn[] = {L"seconds"};
     anna_module_function(stack, L"sleep", 0, &unix_i_sleep_sleep, int_type, 1, unix_i_sleep_sleep_argv, unix_i_sleep_sleep_argn, 0, L"Sleep for the specified number of seconds");
+    anna_stack_document(stack, L"The unix.sleep module contains low level wrappers for basic unix functionality revolving around pausing the execution of processes.");
 
      anna_type_data_register(anna_sleep_type_data, stack);
 }
@@ -2697,6 +2703,7 @@ void anna_time_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_time_val_type, unix_time_zone_type};
     wchar_t *unix_i_time_gettimeofday_argn[] = {L"tv", L"tz"};
     anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, 0, L"Gets the current system time. Equivalanet to the C gettimeofday function.");
+    anna_stack_document(stack, L"The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping.");
 
      anna_type_data_register(anna_time_type_data, stack);
 }
@@ -2772,7 +2779,63 @@ ANNA_VM_NATIVE(unix_i_locale_conv_thousands_separator_getter, 1)
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_locale_conv_int_frac_digits_getter, 1)
+ANNA_VM_NATIVE(unix_i_locale_conv_grouping_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->grouping), data->grouping)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_international_currency_symbol_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->int_curr_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->int_curr_symbol), data->int_curr_symbol)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_currency_symbol_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->currency_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->currency_symbol), data->currency_symbol)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_monetary_decimal_point_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->mon_decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_decimal_point), data->mon_decimal_point)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_monetary_thousands_separator_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->mon_thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_thousands_sep), data->mon_thousands_sep)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_monetary_grouping_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->mon_grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_grouping), data->mon_grouping)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->positive_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->positive_sign), data->positive_sign)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_getter, 1)
+{
+    struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = (data->negative_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->negative_sign), data->negative_sign)) : null_entry;
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_locale_conv_international_frac_digits_getter, 1)
 {
     struct lconv *data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     anna_entry_t *result = anna_from_int(data->int_frac_digits);
@@ -2885,8 +2948,40 @@ void anna_locale_load(anna_stack_template_t *stack)
         string_type, unix_i_locale_conv_thousands_separator_getter, 0, L"Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities.");
 
     anna_member_create_native_property(
-        unix_locale_conv_type, anna_mid_get(L"intFracDigits"),
-        int_type, unix_i_locale_conv_int_frac_digits_getter, 0, L"International fractional digits.");
+        unix_locale_conv_type, anna_mid_get(L"grouping"),
+        string_type, unix_i_locale_conv_grouping_getter, 0, L"The amount of digits that form each of the groups to be separated by thousandsSeparator separator for non-monetary quantities.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"internationalCurrencySymbol"),
+        string_type, unix_i_locale_conv_international_currency_symbol_getter, 0, L"International currency symbol.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"currencySymbol"),
+        string_type, unix_i_locale_conv_currency_symbol_getter, 0, L"Local currency symbol.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"monetaryDecimalPoint"),
+        string_type, unix_i_locale_conv_monetary_decimal_point_getter, 0, L"Decimal-point separator used for monetary quantities.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"monetaryThousandsSeparator"),
+        string_type, unix_i_locale_conv_monetary_thousands_separator_getter, 0, L"Separators used to delimit groups of digits to the left of the decimal point for monetary quantities.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"monetaryGrouping"),
+        string_type, unix_i_locale_conv_monetary_grouping_getter, 0, L"The amount of digits that form each of the groups to be separated by monetaryThousandsSeparator separator for monetary quantities.");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"positiveSign"),
+        string_type, unix_i_locale_conv_positive_sign_getter, 0, L"Sign for positive values");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"negativeSign"),
+        string_type, unix_i_locale_conv_negative_sign_getter, 0, L"Sign for negative values");
+
+    anna_member_create_native_property(
+        unix_locale_conv_type, anna_mid_get(L"internationalFracDigits"),
+        int_type, unix_i_locale_conv_international_frac_digits_getter, 0, L"International fractional digits.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"fracDigits"),
@@ -2910,11 +3005,11 @@ void anna_locale_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"positiveSignPosition"),
-        int_type, unix_i_locale_conv_positive_sign_position_getter, 0, L"\nPositive and negative sign positions:\n<ul>\n<li>0 Parentheses surround the quantity and currency_symbol.</li>\n<li>1 The sign string precedes the quantity and currency_symbol.</li>\n<li>2 The sign string succeeds the quantity and currency_symbol.</li>\n<li>3 The sign string immediately precedes the currency_symbol.</li>\n<li>4 The sign string immediately succeeds the currency_symbol.</li>\n</ul>\n");
+        int_type, unix_i_locale_conv_positive_sign_position_getter, 0, L"\nPositive and negative sign positions:\n<ul>\n<li>0: Parentheses surround the quantity and currency_symbol.</li>\n<li>1: The sign string precedes the quantity and currency_symbol.</li>\n<li>2: The sign string succeeds the quantity and currency_symbol.</li>\n<li>3: The sign string immediately precedes the currency_symbol.</li>\n<li>4: The sign string immediately succeeds the currency_symbol.</li>\n</ul>\n");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"negativeSignPosition"),
-        int_type, unix_i_locale_conv_negative_sign_position_getter, 0, L"\nPositive and negative sign positions:\n<ul>\n<li>0 Parentheses surround the quantity and currency_symbol.</li>\n<li>1 The sign string precedes the quantity and currency_symbol.</li>\n<li>2 The sign string succeeds the quantity and currency_symbol.</li>\n<li>3 The sign string immediately precedes the currency_symbol.</li>\n<li>4 The sign string immediately succeeds the currency_symbol.</li>\n</ul>\n");
+        int_type, unix_i_locale_conv_negative_sign_position_getter, 0, L"\nPositive and negative sign positions:\n<ul>\n<li>0: Parentheses surround the quantity and currency_symbol.</li>\n<li>1: The sign string precedes the quantity and currency_symbol.</li>\n<li>2: The sign string succeeds the quantity and currency_symbol.</li>\n<li>3: The sign string immediately precedes the currency_symbol.</li>\n<li>4: The sign string immediately succeeds the currency_symbol.</li>\n</ul>\n");
     anna_member_create_native_method(
 	unix_locale_conv_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_locale_conv_init, object_type, 1, &unix_locale_conv_type, this_argn, 0, 0);    
@@ -2922,6 +3017,7 @@ void anna_locale_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_locale_locale_conv_argv[] = {};
     wchar_t *unix_i_locale_locale_conv_argn[] = {};
     anna_module_function(stack, L"localeConv", 0, &unix_i_locale_locale_conv, unix_locale_conv_type, 0, unix_i_locale_locale_conv_argv, unix_i_locale_locale_conv_argn, 0, L"Get current numeric formatting information.");
+    anna_stack_document(stack, L"The unix.locale module contains low level wrappers for basic unix functionality revolving around localization.");
 
      anna_type_data_register(anna_locale_type_data, stack);
 }
@@ -2956,6 +3052,7 @@ void anna_unix_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+    anna_stack_document(stack, L"The unix module is the parent module for various low level wrappers for basic Unix functionality. Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages.");
 
      anna_type_data_register(anna_unix_type_data, stack);
 }

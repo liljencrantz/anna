@@ -1,7 +1,7 @@
 def wee(Int in...)
 {
-    print("count: ", in.count, "\n");
-    in.each(i){print(i, "\n")}
+    print("count:", in.count);
+    in.each(i){print(i)}
 }
 
 def main()  

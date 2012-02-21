@@ -1,5 +1,5 @@
 def main()
 {
     /* Vowel stripping filter */
-    print("HEY baberiba!\n".filter(ch){!"aoueiy".search(ch.lower)});
+    print("HEY baberiba!".filter(ch){!"aoueiy".search(ch.lower)});
 }

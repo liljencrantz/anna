@@ -491,6 +491,14 @@ int anna_node_validate_call_parameters(
     int is_method, 
     int print_error);
 
+/**
+   Take the specified function call node (which must have already been
+   verified to be applicable using the
+   anna_node_validate_call_parameters function) and perform argument
+   remapping. This remapping is used to fold in default function
+   values, reorder named arguments, etc. in order to provide an
+   efficient simple call structure.
+*/
 void anna_node_call_map(
     anna_node_call_t *call, 
     anna_function_type_t *target, 

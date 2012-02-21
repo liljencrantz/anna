@@ -17,3 +17,4 @@ autogen/*.h
 documentation/api
 documentation/index.html
 leaks*
+*.mo

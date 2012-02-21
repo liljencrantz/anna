@@ -1250,7 +1250,7 @@ anna_type_t *anna_type_get_function(
     anna_node_t **argd, 
     int flags)
 {
-    flags = (flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION | ANNA_FUNCTION_BOUND_METHOD)) | ANNA_FUNCTION_TYPE;
+    flags = (flags & (ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_VARIADIC_NAMED | ANNA_FUNCTION_MACRO | ANNA_FUNCTION_CONTINUATION | ANNA_FUNCTION_BOUND_METHOD)) | ANNA_FUNCTION_TYPE;
     
     size_t i;
     static anna_function_type_t *key = 0;

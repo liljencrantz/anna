@@ -15,7 +15,7 @@ class SillyFiber (extends(Fiber))
     {
 	(0..10).each(idx)
 	{
-	    print(msg, '\n');
+	    print(msg);
 	    yield();
 	}
     }
@@ -26,8 +26,8 @@ def main()
 {
     f1 := SillyFiber("A");
     f2 := SillyFiber("B");
-    print("Fibers created\n");
+    print("Fibers created");
     Fiber::yield();
-    print("All fibers have finished\n");
+    print("All fibers have finished");
 }
 

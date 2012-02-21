@@ -1,6 +1,6 @@
 def main()
 {
     mm := [1 as Object : "ggg" as Object];
-    print(mm, '\n');
-    print([16 : "sweet"], '\n');
+    print(mm);
+    print([16 : "sweet"]);
 }

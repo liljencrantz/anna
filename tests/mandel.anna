@@ -18,10 +18,10 @@ def main()
 	x:=-2.0;
 	while(x<=1.3)
 	{
-	    print(" .::!!!ooooOOOOO################################################ "[mandelbrot(Complex(x,y),1024)/16]);
+	    print(" .::!!!ooooOOOOO################################################ "[mandelbrot(Complex(x,y),1024)/16], end:"");
 	    x += 0.025;
 	};
 	y += 0.05;
-	print("\n");
+	print("");
     }
 }

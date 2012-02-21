@@ -6,6 +6,6 @@ def someFunction()
 def main()
 {
     myConst :== someFunction();
-    print(myConst, "\n");
+    print(myConst);
 }
 

@@ -16,7 +16,7 @@ def main()
 {
     v := Tp();
     v.memb = 7;
-    print(v.meth(), "\n");
+    print(v.meth());
     v.setter();
-    print(v.meth(), "\n");
+    print(v.meth());
 }

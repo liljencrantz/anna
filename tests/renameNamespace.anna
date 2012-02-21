@@ -2,5 +2,5 @@ posix :== unix;
 
 def main()
 {
-    print(posix.io.chmod.name, "\n");
+    print(posix.io.chmod.name);
 }

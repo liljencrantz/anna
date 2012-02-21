@@ -2,7 +2,7 @@ def main()
 {
     ['a', 'A', '.', '9', 'z', 'Z', ' ', '\t', '!'].each(ch)
     {
-	print("Character %, ordinal: %, alpha: %, alpnum: %, blank: %, digit: %, cntrl: %, lower: %, upper: %, graph: %, print: %, punct: %, space: %, xdigit: %\n" % 
+	print("Character %, ordinal: %, alpha: %, alpnum: %, blank: %, digit: %, cntrl: %, lower: %, upper: %, graph: %, print: %, punct: %, space: %, xdigit: %" % 
 	      [
 		  ch, ch.ordinal, ch.alpha?, ch.alnum?,
 		  ch.blank?, ch.digit?, ch.cntrl?, ch.lower?,

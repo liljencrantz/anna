@@ -1,1 +1,1 @@
-def main () {print("ok\n")}
+def main () {print("ok")}

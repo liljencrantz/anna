@@ -1,6 +1,6 @@
 def fun(Object val)
 {
-    return if(val){"true\n"} else {"false\n"}
+    return if(val){"true"} else {"false"}
 }
 
 def main()
@@ -10,29 +10,29 @@ def main()
 {
     if(1)
     {
-	print("true\n");
+	print("true");
     }
     else
     {
-	print("false\n");
+	print("false");
     }
 
     if(?)
     {
-	print("true\n");
+	print("true");
     } else 
     {
-	print("false\n");
+	print("false");
     }
 
-    if(1){print("true\n");}else{print("false\n");}
+    if(1){print("true");}else{print("false");}
 
-    print(if(?){"true\n"}else{"false\n"});
+    print(if(?){"true"}else{"false"});
 
-    val := if(1){"true\n"}else{"false\n"}
+    val := if(1){"true"}else{"false"}
     print(val);
 
-    val = if(?){"true\n"}else{"false\n"}
+    val = if(?){"true"}else{"false"}
     print(val);
     
     print(fun(1));
@@ -41,7 +41,7 @@ def main()
     print(
 	while(1)
 	{
-	    break if(1){"true\n"} else {"false\n"};
+	    break if(1){"true"} else {"false"};
 	});
 
     done := ? as Object;
@@ -49,9 +49,9 @@ def main()
 	while(!done)
 	{
 	    done = 1;
-	    continue if(?){"true\n"} else {"false\n"};
+	    continue if(?){"true"} else {"false"};
 	});
 
-    print(3+if(?) { 1 } else { 2 },"\n");
+    print(3+if(?) { 1 } else { 2 });
 
 }

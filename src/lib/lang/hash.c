@@ -1095,6 +1095,16 @@ static void anna_hash_del(anna_object_t *victim)
     }
 }
 
+anna_type_t *anna_hash_get_key_type(anna_type_t *type)
+{
+    return (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION1));
+}
+
+anna_type_t *anna_hash_get_value_type(anna_type_t *type)
+{
+    return (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION2));
+}
+
 static void anna_hash_type_create_internal(
     anna_type_t *type, 
     anna_type_t *spec1,

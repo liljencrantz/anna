@@ -2,5 +2,5 @@
 def main()  
 {
     l := [1,2,3];
-    print(l.first, l.last, [].first, [].last, "\n");
+    print(l.first, l.last, [].first, [].last);
 }

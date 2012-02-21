@@ -1,9 +1,8 @@
 class Foo
 {
-
     def fun(String param)
     {
-        print(param, "\n");
+        print(param);
     }
 }
 
@@ -12,7 +11,7 @@ class Bar
 
     def fun(Int param)
     {
-        print(param, "\n");
+        print(param);
     }
 }
 

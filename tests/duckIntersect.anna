@@ -20,5 +20,5 @@ class Bar
 def main()
 {
     v := Foo() or Bar();
-    print(v.fun(),"\n");
+    print(v.fun());
 }

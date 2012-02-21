@@ -7,7 +7,7 @@ class Base1
 {
     def intFoo(Int p) (alias(foo))
     {
-	print("intFoo\n");
+	print("intFoo");
     }
 }
 
@@ -15,7 +15,7 @@ class Base2
 {
     def stringFoo(String p) (alias(foo))
     {
-	print("stringFoo\n");
+	print("stringFoo");
     }
 }
 

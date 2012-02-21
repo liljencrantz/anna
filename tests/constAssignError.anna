@@ -6,5 +6,5 @@ def main()
 {
     someConst :== 7;
     someConst = 8;
-    print(someConst, "\n");
+    print(someConst);
 }

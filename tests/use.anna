@@ -3,5 +3,5 @@ use(parser);
 def main()
 {
     n :=IntLiteral(?, 5);
-    print(n.payload, '\n');
+    print(n.payload);
 }

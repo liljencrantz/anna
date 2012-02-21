@@ -1,4 +1,4 @@
 def main()
 {
-    print(1K, "\n");
+    print(1K);
 }

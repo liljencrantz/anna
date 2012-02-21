@@ -1,0 +1,15 @@
+def print(String keys:, Object param...) (target(lang))
+{
+    end := keys["end"] or "\n";
+    sep := keys["sep"] or " ";
+    param.each(idx, val)
+    {   		    
+	if(idx != 0)
+	{
+	    printInternal(sep);
+	}
+	printInternal(val.toString());
+    }
+    printInternal(end);
+    param;
+}

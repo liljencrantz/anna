@@ -15,7 +15,7 @@ def main()
 	    raise(MyIOError(""));
 	    raise(MyError(""));
 	}
-	print("Errors in block 1: ", err1.count, "\n");
+	print("Errors in block 1:", err1.count);
 
         err2 := collect(MyError)
 	    {
@@ -23,7 +23,7 @@ def main()
 		raise(MyIOError(""));
 		raise(MyError(""));
 	    }
-	print("Errors in block 2: ", err2.count, "\n");
+	print("Errors in block 2:", err2.count);
 
         err3 := collect
 	    {
@@ -31,7 +31,7 @@ def main()
 		raise(MyIOError(""));
 		raise(MyError(""));
 	    }
-	print("Errors in block 3: ", err3.count, "\n");
+	print("Errors in block 3:", err3.count);
 
         err4 := collect(MyIOError)
 	    {
@@ -39,8 +39,9 @@ def main()
 		raise(MyIOError(""));
 		raise(MyError(""));
 	    }
-	print("Errors in block 4: ", err4.count, "\n");
+	print("Errors in block 4:", err4.count);
 
     }
-    print("Global errors: ", errGlobal.count, "\n");
+    print("Global errors:", errGlobal.count);
 }
+

@@ -23,34 +23,34 @@ def main()
     /*
       Print a few reasonably large numbers.
     */
-    print("A few large numbers:\n");
-    print(1_000_000_000_000, '\n');
+    print("A few large numbers:");
+    print(1_000_000_000_000);
     
-    print(1_000_000 * 1_000_000 / 2_000_000, '\n');
-    print(1_000_000 * 1_000_000, '\n');
+    print(1_000_000 * 1_000_000 / 2_000_000);
+    print(1_000_000 * 1_000_000);
     
     /*
       Do a few calculations on large numbers
     */
-    print("A few tests on large numbers:\n");
+    print("A few tests on large numbers:");
     
-    print(1_000_000 * 1_000_000 == 1_000_000_000_000, '\n');
-    print(1_000_000 * 1_000_000 < 1_000_000_000_001, '\n');
-    print(1_000_000 * 1_000_001 > 1_000_000_000_000, '\n');
-    print(1_000_000 * 1_000_001 > 1_000_000_000_001, '\n');
+    print(1_000_000 * 1_000_000 == 1_000_000_000_000);
+    print(1_000_000 * 1_000_000 < 1_000_000_000_001);
+    print(1_000_000 * 1_000_001 > 1_000_000_000_000);
+    print(1_000_000 * 1_000_001 > 1_000_000_000_001);
 
-    print(20 ^exp 25 == myExp(20, 25), '\n'); 
-    print(20 ^exp 10 == myExp(400, 5), '\n'); 
-    print(20 ^exp 10 != myExp(300, 6), '\n'); 
+    print(20 ^exp 25 == myExp(20, 25)); 
+    print(20 ^exp 10 == myExp(400, 5)); 
+    print(20 ^exp 10 != myExp(300, 6)); 
 
-    print((1234567*89101012) == 110001169081804, "\n");
-    print((1234567891011121314151617181920/987654321) == 1249999989633135330708, "\n");     print((123 ^exp 20) == 628206215175202159781085149496179361969201, "\n");
+    print((1234567*89101012) == 110001169081804);
+    print((1234567891011121314151617181920/987654321) == 1249999989633135330708);     print((123 ^exp 20) == 628206215175202159781085149496179361969201);
     
     /* 
       Print a few series of large numbers
     */
-    print("A few series of large nubers:\n");
-    (0..66).each(i){print(1 ^shl i,'\n')}
-    (0..66).each(i){print(fac(i),'\n')}
-    (0..66).each(i){print(i ^exp i,'\n')}
+    print("A few series of large nubers:");
+    (0..66).each(i){print(1 ^shl i)}
+    (0..66).each(i){print(fac(i))}
+    (0..66).each(i){print(i ^exp i)}
 }

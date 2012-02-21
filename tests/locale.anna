@@ -4,9 +4,9 @@ def main()
     ["C", "sv_SE.utf8"].each(localeName){
 	setLocale(localeMode.all, localeName);
         lc := localeConv();
-	print(lc.decimalPoint, "\n");
-	print(lc.fracDigits, "\n");
-	print(lc.negativeSign, "\n");
+	print(lc.decimalPoint);
+	print(lc.fracDigits);
+	print(lc.negativeSign);
     }
 }
 

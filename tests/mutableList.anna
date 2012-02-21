@@ -2,9 +2,9 @@
 def main()
 {
     im := [1,2,3].freeze;
-    print(im, ' ', im.__type__, '\n');
+    print(im, im.__type__);
     m := im.thaw;
     m[1] = 9;
-    print(im, ' ', m, ' ', m.__type__, '\n');
+    print(im, m, m.__type__);
 }
 

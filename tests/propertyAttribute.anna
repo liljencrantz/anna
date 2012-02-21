@@ -13,6 +13,6 @@ def main()
 (doc("Test that the property attribute works right on methods"))
 {
     a := A();
-    print(a.myProp, "\n");
+    print(a.myProp);
 }
 

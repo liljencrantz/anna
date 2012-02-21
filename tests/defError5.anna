@@ -6,7 +6,7 @@ __var__(
 	Object, 
 	__block__(__var__(input, Int, ?, __block__())), 
 	hello(), 
-	__block__(print(input, "\n"))),
+	__block__(print(input))),
     __block__());
 
 def main()

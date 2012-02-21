@@ -4,12 +4,12 @@ class Foo
 
     def barString(String first, String second, Char third) (alias(bar))
     {
-	print(first, second, third);
+	print(first, second, third, sep:"", end:"");
     }
 
     def barInt(Float first, Int second, Int third) (alias(bar))
     {
-	print((first + second + third)==0.0, "\n");
+	print((first + second + third)==0.0);
     }
 }
 
@@ -18,12 +18,12 @@ class Baz
 
     def barFoo(Foo other) (aliasReverse(bar))
     {
-	print("ok\n");
+	print("ok");
     }
 
     def barInt(Int other) (aliasReverse(bar))
     {
-	print("error\n");
+	print("error");
     }
 
 }

@@ -1,6 +1,6 @@
 
 def main(){
     a := 'a';
-    print(a, a.upper, a.lower, a.lower.upper, a.ordinal, a.upper.ordinal, '\n');
-    print('c' - 'a', 'a' + ('c' - 'a'), '\n');
+    print(a, a.upper, a.lower, a.lower.upper, a.ordinal, a.upper.ordinal);
+    print('c' - 'a', 'a' + ('c' - 'a'));
 }

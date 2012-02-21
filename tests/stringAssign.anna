@@ -3,6 +3,6 @@ def main(){
     foo ~= 3;
     foo ~= 'b';
     foo ~= "a";
-    print(foo ~ '1' ~ 7 ~ "\n");
+    print(foo ~ '1' ~ 7);
 }
 

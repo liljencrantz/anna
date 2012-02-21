@@ -1,5 +1,5 @@
 
 def main()  
 {
-    lang.print("ok\n");
+    lang.print("ok");
 }

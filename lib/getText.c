@@ -296,6 +296,7 @@ void anna_getText_load(anna_stack_template_t *stack)
     anna_type_t *getText_i__bind_text_domain_argv[] = {string_type, string_type};
     wchar_t *getText_i__bind_text_domain_argn[] = {L"domain", L"dir"};
     anna_module_function(stack, L"bindTextDomain", 0, &getText_i__bind_text_domain, string_type, 2, getText_i__bind_text_domain_argv, getText_i__bind_text_domain_argn, 0, L"Set directory containing message catalogs");
+    anna_stack_document(stack, L"The Anna getText module is a low level wrapper around the C gettext library. For a higher level solution, see the <a href='i18n.html'>i18n module</a>. For full documentation on this library, please see e.g. <a href='www.gnu.org/software/gettext/manual/gettext.html'>the GNU gettext documentation</a>.");
 
      anna_type_data_register(anna_getText_type_data, stack);
 }

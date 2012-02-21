@@ -9,5 +9,5 @@ def main()
     bar := 0;
     baz := 0;
     [foo, bar, baz] = fun();
-    print( foo, ' ', bar, ' ', baz, '\n');
+    print( foo, bar, baz);
 }

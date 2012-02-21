@@ -426,10 +426,19 @@ static void anna_module_bootstrap_monkeypatch(
 	    fun->name = name_id->name;
 	}
 	
-	anna_type_t * type = anna_type_unwrap(
+	anna_type_t *type = anna_type_unwrap(
 	    anna_as_obj(
-		anna_stack_get(
-		    lang, target_id->name)));
+		anna_stack_get(lang, target_id->name)));
+	anna_stack_template_t *module = 0;
+	if(!type)
+	{
+	    module = 
+		anna_stack_unwrap(
+		    anna_as_obj(
+			anna_stack_get(lang, target_id->name)));
+	    assert(module);
+	}
+	
 	
 	if(type == any_list_type)
 	{
@@ -455,7 +464,19 @@ static void anna_module_bootstrap_monkeypatch(
 	}
 	else
 	{
-	    anna_member_create_method(type, anna_mid_get(fun->name), fun);
+	    if(type)
+	    {
+		anna_member_create_method(type, anna_mid_get(fun->name), fun);
+	    }
+	    else
+	    {
+		anna_stack_declare(
+		    module,
+		    fun->name,
+		    anna_function_wrap(fun)->type,
+		    anna_from_obj(anna_function_wrap(fun)),
+		    ANNA_STACK_READONLY);
+	    }
 	}
     }
 }
@@ -706,6 +727,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"iter");
     anna_module_bootstrap_macro(L"collection");
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
+    anna_module_bootstrap_monkeypatch(stack_global, L"monkeypatchLang");
     anna_module_bootstrap_macro(L"range");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchList");
@@ -1119,3 +1141,4 @@ anna_function_t *anna_module_function(
     }
     return f;
 }
+

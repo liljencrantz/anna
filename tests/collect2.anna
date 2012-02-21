@@ -8,5 +8,5 @@ def main()
 	error.raise(error.Error());
     }
     
-    print("Errors: ", err, '\n');
+    print("Errors:", err);
 }

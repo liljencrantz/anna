@@ -8,7 +8,7 @@ class MyType
 
     def staticMethod(Int param = 0) (static)
     {
-	print(param, "\n");
+	print(param);
     }
 
 }

@@ -4,15 +4,15 @@ def main()
       This file contains a few tests for the in operator of arrays
     */
     foo := [1,2,3];
-    print(1 in foo,'\n');
-    print(3 in foo,'\n');
-    print(69 in foo,'\n');
-    print(5 in foo[0..0],'\n');
-    print(-12 in foo,'\n');
+    print(1 in foo);
+    print(3 in foo);
+    print(69 in foo);
+    print(5 in foo[0..0]);
+    print(-12 in foo);
 
     bar := ["aaa", "aaa", "ccc", "ddd", "abc"];
-    print("aaa" in bar, "\n");
-    print("bbb" in bar, "\n");
-    print("ccc" in bar, "\n");
+    print("aaa" in bar);
+    print("bbb" in bar);
+    print("ccc" in bar);
 
 }

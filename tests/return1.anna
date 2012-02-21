@@ -22,5 +22,5 @@ def ifTest()
 
 def Int main()
 {
-    print("A", sign(-4), sign(5), sign(0), "\n", ifTest(), "\n");
+    print("A", sign(-4), sign(5), sign(0), ifTest());
 }

@@ -14,12 +14,12 @@ def main()
     cl := Closure(?, def (Int in){in+3});
     mm := Mapping(?, ast(1), ast('d'));
 
-    print(f == i, ' ', i==i2, ' ', i2==i22, '\n');
+    print(f == i, i==i2, i2==i22);
 
     dict := [i as Node:1, i2:2];
     dict[i22] = -3;
     dict[i22] = 3;
-    print(dict[i2],'\n');
+    print(dict[i2]);
     
     dict[mm] = -9;
     dict[mm] = 4;
@@ -36,5 +36,5 @@ def main()
 
     sum := 0;
     dict.each(val){sum += val}
-    print("Sum: %\n" % [sum]);
+    print("Sum: %" % [sum]);
 }

@@ -1,8 +1,8 @@
 def sub( def Null ret(Object val))
 {
-    print("subPre\n");
-    ret("continuationResult\n");
-    print("subPost\n");
+    print("subPre");
+    ret("continuationResult");
+    print("subPost");
 }
 
 var Int i = 0;
@@ -15,9 +15,9 @@ def sub2(def Null ret(Object val))
 
 def Int main()
 {
-    print("mainPre\n");
+    print("mainPre");
     print(callCC(sub));
-    print("mainPost\n");
+    print("mainPost");
     print(callCC(sub2));
     print(callCC(sub2));
     print(callCC(sub2));

@@ -1,5 +1,5 @@
 def main()
 {
     /* Test the functional programming methods of the basic list type */
-    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){print(val,"\n")}
+    [11,2,353].filter(idx, val){idx != 1}.map(val){val+3}.each(val){print(val)}
 }

@@ -2,7 +2,7 @@
 class MyType {
     def meth()
     {
-	print("Foo.poo()\n");	
+	print("Foo.poo()");	
     }
     var Int mem;
 }
@@ -10,8 +10,8 @@ class MyType {
 def main(){
     g := MyType();
     g.meth();
-    print(g.mem, "\n");
+    print(g.mem);
     g.mem=5;
-    print(g.mem, "\n");
+    print(g.mem);
 }
 

@@ -1,8 +1,8 @@
 def main()
 {
-    print(""[? as Range], "\n");
-    print((? as String)[0..0], "\n");
-    print(String::__get__Range__(?,0..5), "\n");
-    print(String::__get__Range__("",?), "\n");
+    print(""[? as Range]);
+    print((? as String)[0..0]);
+    print(String::__get__Range__(?,0..5));
+    print(String::__get__Range__("",?));
 }
 

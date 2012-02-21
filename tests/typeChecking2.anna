@@ -14,7 +14,7 @@ class MyClass
     
     def someFunction() (alias(inner))
     {
-	"ok\n";
+	"ok";
     }
 }
 

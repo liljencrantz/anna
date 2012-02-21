@@ -5,8 +5,7 @@ def main()
     ll.push(1);
     ll.push(2);
     print(
-	ll.thaw.thaw[0] + ll.freeze.freeze[1], 
-	'\n');
+	ll.thaw.thaw[0] + ll.freeze.freeze[1]);
 
     mm := «Int, String»[];
     print(mm.__type__, mm.count);

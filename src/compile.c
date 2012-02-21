@@ -562,8 +562,7 @@ static void anna_vm_compile_i(
 		ra = template->input_count-1;
 	    }
 	    
-	    int i;
-	    
+	    int i;	    
 	    
 	    if(anna_function_type_is_variadic(template))
 	    {
@@ -587,7 +586,7 @@ static void anna_vm_compile_i(
 	    }
 	    
 	    anna_vm_call(ctx, ANNA_INSTR_CALL, template->input_count);
-
+	    
 	    break;
 	}
 

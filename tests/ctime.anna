@@ -4,12 +4,12 @@ def main()
 
     tz := timezoneName;
     timezoneName = "America/Toronto";
-    print(timezoneName, "\n");
+    print(timezoneName);
     timezoneName = ?;
-    print(tz == timezoneName, "\n");
+    print(tz == timezoneName);
 
-    print(breakTime(mkTime(0,1,2,3,4,100, ?, "America/Toronto"), "America/Toronto"), "\n");
-    print(breakTime(mkTime(0,1,2,3,4,100, ?, ?), ?)[0..8], "\n");
+    print(breakTime(mkTime(0,1,2,3,4,100, ?, "America/Toronto"), "America/Toronto"));
+    print(breakTime(mkTime(0,1,2,3,4,100, ?, ?), ?)[0..8]);
 
 }
 

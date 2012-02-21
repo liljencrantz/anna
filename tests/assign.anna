@@ -1,35 +1,35 @@
 
 def main(){
-    print("Int\n");
+    print("Int");
     i := 3;
     i++;
-    print(i, "\n");
-    print(i--, "\n");
+    print(i);
+    print(i--);
     i+= 3;
-    print(i, "\n");
+    print(i);
     i-= 1;
-    print(i, "\n");
+    print(i);
 
-    print("Float\n");
+    print("Float");
     f := 0.0;
     f += 5;
-    print(f, "\n");
+    print(f);
 
-    print("Char\n");
+    print("Char");
     c := 'a';
     c += 3;
-    print(c, "\n");
+    print(c);
 
-    print("List\n");
+    print("List");
     l := [1];
-    print(l.count, l[0], l[1], "\n");
+    print(l.count, l[0], l[1]);
     l ~= [5];
-    print(l.count, l[0], l[1], "\n");
+    print(l.count, l[0], l[1]);
 
-    print("String\n");
+    print("String");
     s := "aaa";
     s ~= "bbb";
     s ~= 'c';
-    print(s, "\n");
+    print(s);
 
 }

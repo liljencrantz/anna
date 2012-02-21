@@ -14,6 +14,10 @@
  */
 #define ANNA_FUNCTION_VARIADIC 512
 /**
+  Set to true for variadic functions.
+ */
+#define ANNA_FUNCTION_VARIADIC_NAMED (8192*16)
+/**
    This function can be used as a macro.
  */
 #define ANNA_FUNCTION_MACRO 1024
@@ -81,6 +85,11 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *wrapper);
 __pure static inline int anna_function_is_variadic(anna_function_t *f)
 {
     return !!(f->flags & ANNA_FUNCTION_VARIADIC);
+}
+
+__pure static inline int anna_function_is_variadic_named(anna_function_t *f)
+{
+    return !!(f->flags & ANNA_FUNCTION_VARIADIC_NAMED);
 }
 
 __pure anna_object_t *anna_function_wrap(anna_function_t *fun);

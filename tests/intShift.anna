@@ -1,11 +1,11 @@
 def main()
 {
-    print(1 ^shl 5, '\n');
-    print(1 ^shl 64, '\n');
-    print(1 ^shl 256, '\n');
-    print(8 ^shl -1, '\n');
-    print(8 ^shr 1, '\n');
-    print(8 ^shr 5, '\n');
-    print(8 ^shr -1, '\n');
-    print((1 ^shl 64) ^shr 32, '\n');
+    print(1 ^shl 5);
+    print(1 ^shl 64);
+    print(1 ^shl 256);
+    print(8 ^shl -1);
+    print(8 ^shr 1);
+    print(8 ^shr 5);
+    print(8 ^shr -1);
+    print((1 ^shl 64) ^shr 32);
 }
