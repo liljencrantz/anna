@@ -139,7 +139,7 @@ static int anna_abides_fault_count_internal(
 	{
 	    debug(
 		verbose,
-		L"Miss on %ls because of one is static and not the other\n",
+		L"Miss on %ls because one is static and not the other\n",
 		r_memb->name);
 	    ok=0;
 	}

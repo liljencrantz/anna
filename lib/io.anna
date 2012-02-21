@@ -24,22 +24,22 @@ def String readWholeFile(Int fd)
 {
     buf := Buffer();
     res := "".thaw;
-//    print("Read fd %\n" % [fd]);
+//    print("Read fd %" % [fd]);
     while(1)
     {
       count := unix.io.read(fd, buf, 4096);
-//	print("Read % chars\n" % [count]);
+//	print("Read % chars" % [count]);
 	switch(count)
 	{
 	    case(0)
 	    {
-//		print("OK '%' \n" % [res]);
+//		print("OK '%'" % [res]);
 		return res;
 	    }
 
 	    case(-1)
 	    {
-//		print("ERROR\n");
+//		print("ERROR");
 //		error.raise(IoError());
 		return ?;
 	    }
@@ -47,7 +47,7 @@ def String readWholeFile(Int fd)
 	    default
 	    {
 		buf.count = count;
-//		print("FADFA '%' \n" % [buf.encode()]);
+//		print("FADFA '%'" % [buf.encode()]);
 		res ~= buf.encode();
 	    }
 
@@ -204,7 +204,7 @@ class File
 	    
 	    if((!unix.io.mkdir(name, 0o777)) and !(cerror.errno in [cerror.exist]))
 	    {
-		print(cerror.errorString(cerror.errno), "\n");
+		print(cerror.errorString(cerror.errno));
 		return ?;
 	    }
 	}

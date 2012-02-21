@@ -46,7 +46,7 @@ def raiseError(Error error)
 	    return;
 	}
 
-	print("Uncaught error:\n", error, '\n');
+	print("Uncaught error:", error, sep:"");
     }
     
     funEach(reflection.currentContinuation);

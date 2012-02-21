@@ -98,9 +98,10 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	anna_error(this, L"Tried to call a non-function");
 	return;
     }
-    if(ftk->flags & ANNA_FUNCTION_VARIADIC)
+    if((ftk->flags & ANNA_FUNCTION_VARIADIC) || (ftk->flags & ANNA_FUNCTION_VARIADIC_NAMED))
     {
-	if( this2->child_count < tmpl_count-1)
+	int var_count = !!(ftk->flags & ANNA_FUNCTION_VARIADIC) + !!(ftk->flags & ANNA_FUNCTION_VARIADIC_NAMED);
+	if( this2->child_count < tmpl_count-var_count)
 	{
 	    anna_error(
 		this,
@@ -398,14 +399,23 @@ int anna_node_validate_call_parameters(
 	}	
     }
     
+    set = calloc(sizeof(int), param_count + call->child_count);
+
     int var_named = 0;    
+    int var_named_idx = -1;
+
     if(anna_function_type_is_variadic_named(target))
     {
 	var_named = 1;
+	var_named_idx = target->input_count-1;
+	if(anna_function_type_is_variadic(target))
+	{
+	    var_named_idx--;
+	}
+	set[var_named_idx] = 1;
     }    
     
     int i;
-    set = calloc(sizeof(int), param_count + call->child_count);
 
     int unnamed_idx = 0;
     
@@ -533,6 +543,7 @@ void anna_node_call_map(
     
     anna_type_t *var_named_pair_type = 0;
     
+    int count = 0;
     if(anna_function_type_is_variadic_named(target))
     {
 	var_named = 1;
@@ -550,12 +561,11 @@ void anna_node_call_map(
 	//	anna_error(call, L"LALALA2.\n");
 	//CRASH;
 	order[var_named_idx] = (anna_node_t *)var_named_call;
+	count = var_named_idx+1;
     }
     
-    int i;
-    
+    int i;    
     int unnamed_idx = 0;
-    int count = 0;
 
     /*
       The first step is to iterate over all call parameters and locate
@@ -646,6 +656,8 @@ void anna_node_call_map(
     if(anna_function_type_is_variadic_named(target))
     {
 	anna_node_call_map_process_new_node(order[var_named_idx], call->stack);
+//	anna_node_print(99,call);
+	
     }
 
     free(order);

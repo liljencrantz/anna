@@ -8,7 +8,7 @@ expand(i18n);
 
 def greet()
 {
-    print(t\"Hello, world!\\n\");
+    print(t\"Hello, world!\");
 }
 </pre>
 <p>
