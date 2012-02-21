@@ -123,10 +123,11 @@ ANNA_VM_NATIVE(anna_float_convert_string, 1)
     double res = strtod(nstr, &end);
     int newerr = errno;
     errno=olderr;
-
+    int end_not_reached = (*end != 0);
     free(str); 
     free(nstr);
-    if(newerr || *end != 0)
+
+    if(newerr || end_not_reached)
     {
 	return null_entry;
     }
