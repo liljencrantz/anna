@@ -1,0 +1,9 @@
+expand(i18n);
+
+def main()
+{
+    print(t"Hello, world!\n");
+    print(getText.bindTextDomain("i18nTest", "i18nTest"), "\n");
+    print(getText.textDomain("i18nTest"), "\n");
+    print(t"Hello, world!\n");
+}
