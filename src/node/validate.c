@@ -656,8 +656,7 @@ void anna_node_call_map(
     if(anna_function_type_is_variadic_named(target))
     {
 	anna_node_call_map_process_new_node(order[var_named_idx], call->stack);
-//	anna_node_print(99,call);
-	
+//	anna_node_print(99,call);	
     }
 
     free(order);

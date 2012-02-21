@@ -1,0 +1,7 @@
+def variadicFunction(String keys:, String keys2:)
+{
+}
+
+def main()
+{
+}

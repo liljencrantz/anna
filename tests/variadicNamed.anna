@@ -1,0 +1,9 @@
+def variadicFunction(String keys:)
+{
+    print(keys["aaa"] ~ "b");
+}
+
+def main()
+{
+     variadicFunction(aaa: "g");
+}
