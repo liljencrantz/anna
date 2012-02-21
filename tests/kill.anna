@@ -9,11 +9,11 @@ def main()
     if((child := proc.fork()) != 0)
     {
 	proc.kill(child, proc.signal.kill);
-	print("You should see this\n");
+	print("You should see this");
     }
     else
     {
 	sleep.sleep(5);
-	print("You should not see this\n");
+	print("You should not see this");
     }
 }
