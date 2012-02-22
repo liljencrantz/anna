@@ -39,7 +39,7 @@ def main()
     {
 	if(!(file := File(filename)).exists?)
 	{
-	    print("Error: File «%» does not exist\n" % [filename]);
+	    print("Error: File «%» does not exist" % [filename]);
 	    unix.proc.exit(1);
 	}
 	
@@ -55,16 +55,15 @@ def main()
 msgid \"\"
 msgstr \"\"
 \"Content-Type: text/plain; charset=UTF-8\\n\"
-
 " % [date.Date().year]);
 
     done.each(msgid, literals)
     {
 	literals.each(lit)
 	{
-	    print("#: %:%\n" % [lit.file, lit.line]);
+	    print("#: %:%" % [lit.file, lit.line]);
 	}
-	print("msgid \"%\"\nmsgstr \"\"\n\n" % [escape(msgid)]);
+	print("msgid \"%\"\nmsgstr \"\"\n" % [escape(msgid)]);
     }
 
 }

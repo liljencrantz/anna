@@ -74,7 +74,7 @@ def main()
     {
 	if(!File(binding).exists?)
 	{
-	    print("Error: File «%» does not exist\n" % [binding]);
+	    print("Error: File «%» does not exist" % [binding]);
 	    unix.proc.exit(1);
 	}
 	BindingGenerator(binding).generate();
@@ -1118,7 +1118,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 				default
 				{
-				    print("Unknown declaration:\n");
+				    print("Unknown declaration:");
 				    print(decl);
                                     unix.proc.exit(1);
 				}	
@@ -1263,7 +1263,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 	customInclude ~= out.customInclude;
 	moduleData ~= out.moduleData;
 
-	print( "
+	print( end: "", "
 /*
     DO NOT MANUALLY EDIT THIS FILE.
 

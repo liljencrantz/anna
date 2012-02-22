@@ -18,7 +18,7 @@ def main()
     doc := DocumentationExtractor();
     doc.document(global);
     print(
-	"Documented % namespaces with % members, out of which % (% %%) were documented\n" % [
+	"Documented % namespaces with % members, out of which % (% %%) were documented" % [
 	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 
 	    Int::convert(100 * (1 -(Float::convert(doc.memberMissing) / doc.memberTot)))]);  
     io.File("documentation/index.html").writeFile(template("util/document/index.html"));
@@ -204,7 +204,7 @@ often used code paths, which makes it useful for regression testing.")
         doc := extractDocumentation(mem.attribute) or extractDocumentation((mem.value(?) as Function).attribute) or "";
 	if(doc == "")
 	{
-	    verbose and print("Missing documentation for member %.%\n" % [mem.memberOf.name, mem.name]);
+	    verbose and print("Missing documentation for member %.%" % [mem.memberOf.name, mem.name]);
 	    memberMissing++;
 	}
         htmlClass := if(mem.internal?){"class='anna-internal'"} else {""};
