@@ -229,31 +229,44 @@ static anna_node_t *anna_function_setup_arguments(
 	    
 	    anna_type_t *t = f->input_type[i];
 
-	    if(i == (argc-1) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
+	    if(f->flags & ANNA_FUNCTION_VARIADIC)
 	    {
+		/*
+		  A variadic parameter can never be followed by
+		  another parameter
+		 */
+		anna_error(
+		    declarations->child[i-1],
+		    L"Invalid variadic parameter.");
+	    }
+	    else if(anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic"))
+	    {
+		/*
+		  This parameter is a variadic parameter
+		 */
 		t = anna_list_type_get_imutable(t);
 		f->flags |= ANNA_FUNCTION_VARIADIC;
 	    }
 	    else if(f->flags & ANNA_FUNCTION_VARIADIC_NAMED)
 	    {
+		/*
+		  A named variadic parameter can never be followed by
+		  another parameter (except for a regular variadoc
+		  parameter)
+		 */
 		anna_error(
 		    declarations->child[i-1],
 		    L"Invalid variadic parameter.");
 	    }
-	    else if(i >= (argc-2) && anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadicNamed"))
+	    else if(anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadicNamed"))
 	    {
+		/*
+		  This parameter is a named variadic parameter
+		 */
 		t = anna_hash_type_get(imutable_string_type, t);
 		f->flags |= ANNA_FUNCTION_VARIADIC_NAMED;
 		f->input_type[i] = t;
 	    }
-	    else if(anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadic") || anna_attribute_flag((anna_node_call_t *)decl->child[3], L"variadicNamed"))
-	    {
-		anna_error(
-		    declarations->child[i],
-		    L"Invalid variadic parameter.");
-	    }
-	    
-//	    wprintf(L"Declare %ls as %ls in %ls\n", f->input_name[i], t->name, f->name)
 	    
 	    anna_stack_declare(
 		f->stack_template, 
