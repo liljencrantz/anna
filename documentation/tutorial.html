@@ -1,0 +1,282 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/anna.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/anna.js"></script>
+    <title>Anna - A tuorial</title>
+  </head>
+  <body>
+
+    <div class="anna-content">
+      <div class="anna-main">
+	<div class="anna-main-inner">
+	  
+	  <h1><a name="install">Installing Anna</a></h1>
+	  
+	  <p>
+	    Step one in learning Anna is installing Anna on your computer:
+	  </p>
+	  <ul>
+	    <li>
+	      If you're running Ubuntu, click <a href='#install-ubuntu'>here</a>.
+	    </li>
+	    <li>
+	      If your operating system is not listed above, please
+	      follow thr <a href='#install-generic'>generic
+		guidlines</a>, making note of the exact steps you had
+	      to
+	      take. Please <a href='mailto:axel+anna@liljencrantz'>email
+		me</a> the steps you took to get Anna up and running.
+	    </li>
+	  </ul>
+	    
+	  <h2><a name="install-ubuntu">Installing Anna under Ubuntu</a></h2>
+	  <p>
+	    The first step of installing Anna is to install the various prerequisites. On the command line, enter the following command:
+	  </p>
+	  <pre>
+sudo apt-get install gcc bison flex libgmp3-dev make gettext git-core
+	  </pre>
+	  <p>
+	    The next step is to download the Anna source:
+	  </p>
+	  <pre>
+git clone git://github.com/liljencrantz/anna.git
+	  </pre>
+	  <p>
+	    After that, you'll need to compile Anna:
+	  </p>
+	  <pre>
+cd anna; make -s
+	  </pre>
+	  <p>
+	    If everything went well, you should now have compiled the
+	    Anna executable. To install it, type:
+	  </p>
+	  <pre>
+sudo make install
+	  </pre>
+	  <p>
+	    That should be everything you need to get Anna installed
+	    on your system. <a href='#hello'>Click here to proceed
+	    with the tutorial</a>.
+	  </p>
+
+
+	  <h2><a name="install-generic">Generic install instructions</a></h2>
+	  <p>
+	    The first step of installing Anna is to install the
+	    various prerequisites. Anna should compile using a
+	    resonably modern version of either GCC or LLVM, and
+	    requires Flex, Bison, GMP (the GNU Multiple Precision
+	    arithmetic library), GNU make and GNU gettext. The Anna
+	    source code is version controlled using git, so you will
+	    need that as well. Hos to install these prerequisites
+	    depends on what platform you're using, please consult you
+	    operating system documentation if you're unsure.
+	  </p>
+	  <p>
+	    The next step is to download the Anna source:
+	  </p>
+	  <pre>
+git clone git://github.com/liljencrantz/anna.git
+	  </pre>
+	  <p>
+	    After that, you'll need to compile Anna:
+	  </p>
+	  <pre>
+cd anna; make -s
+	  </pre>
+	  <p>
+	    If everything went well, you should now have compiled the
+	    Anna executable. To install it, run <code>make
+	    install</code> as root.
+	  </p>
+	  <p>
+	    That should be everything you need to get Anna installed
+	    on your system. <a href='#hello'>Click here to proceed
+	    with the tutorial</a>.
+	  </p>
+
+	  <h1><a name="hello">Hello world</a></h1>
+	  <p>
+	    The first Anna example will simply write the words «Hello
+	    world» on the screen:
+	  </p>
+	  <pre class="anna-code">
+def main()
+{
+    print("Hello, world!");
+}
+	  </pre>
+	  <p>
+	    Let's go over this example in detail.
+	  </p>
+	  <p>
+	    First of all, all Anna code consists of
+	    functions. Functions are self contained pieces of code. To
+	    define a function, you write something
+	    like <code class="anna-code">def
+	    functionName(){...}</code>.
+	  </p>
+	  <p>
+	    The second thing to learn is that when executing a
+	    program, the function named main will be executed.
+	  </p>
+	  <p>
+	    Finally, we've learned that there is a function
+	    named <code>print</code>, that will output its arguments
+	    to the screen.
+	  </p>
+	  <p>
+	    <em class="task">Exercise 1:</em> Save the example above
+	    in a file titles <code>hello.anna</code> and try running
+	    it by executing the command <code>anna hello</code> from
+	    the directory where you saved your file.
+	  </p>
+
+
+	  <h1><a name="variables">Numbers, variables and arithmetic</a></h1>
+	  <p>
+	    Our next example is a program that holds a simple conversation with the user:
+	  </p>
+	  <pre class="anna-code">
+def main()
+{
+    print("What is your name?");
+    // The io.readLine function reads one line of input from the keyboard and 
+    // returns it as a text String
+
+    // The := symbol declares a new variable.
+    userName := io.readLine();
+
+    // We can send multiple parameters to the print function, and they will all
+    // get printed with a space character separating them
+    print("Hello,", userName);
+    print("How old are you?");
+   
+    // The Int::convert function converts it's input into an integer number.
+    // What does the '::' thing mean? Don't worry about that right now, we'll 
+    // get to it later...
+    userAge := Int::convert(io.readLine());
+
+    print(
+        "Wow, that means you've been alive for more than", 
+        userAge*365*24*60*60, "seconds. That's a lot of time...");
+}
+	  </pre>
+	  <p>
+	    The <code>:=</code> operator is used to <em>declare</em> a
+	    new variable. A variable is a named thing that holds a
+	    value. Declaring a variables means that we create a new
+	    variable and assign it an initial value. Later on we can
+	    access the value of a variable by writing out it's
+	    name. For example, the
+	    line <code class="anna-code">userName :=
+	    io.readLine();</code> declares a new variable
+	    named <code>userName</code>, and assigns it an initial
+	    value by reading a line of input from the keyboard. A few
+	    lines later, the
+	    code <code class="anna-code">print("Hello,",
+	    userName);</code> will print whatever the user entered on
+	    the keyboard back onto the screen.
+	  </p>
+	  <p>
+	    <code>io</code> is an Anna module. A module is something
+	    that is used to group together related pieces of code,
+	    such as functions. The <code>io</code> module contains
+	    code that deals with Input and Output, that is, reading
+	    and writing stuff. Modules make life easier because we
+	    don't have to be afraid of naming clashes when two
+	    different pieces of code give different variables the same
+	    name.
+	  </p>
+	  <p>
+	    <em class="task">Exercise 2:</em> Write a program that
+	    asks the user what his/her favourite hobby is and tells
+	    them that it's boring.
+	  </p>
+
+
+	  <h1><a name="conditionals">if, while and each</a></h1>
+	  <p>
+	    Our next example shows you how to conditionally do things, as well as how to repeat stuff.
+	  </p>
+	  <pre class="anna-code">
+def main()
+{
+    print("What is your name?");
+    userName := io.readLine();
+    // Give a special greeting to people named Anna
+    if(userName == "Anna")
+    {
+        print("Wow, what a pretty name. Lovely to meet you, Anna!");
+    }
+    else
+    {
+        print("Hi,", userName);
+    }
+
+    print("Pick a number. Any number.");
+    // Repeat the same piece of code while a condition is met
+    // In this case, we read a new number from the keyboard until we encounter 
+    // the number seven.
+    while(Int::convert(io.readLine()) != 7)
+    {
+        print("Bad number. Pick something else.");
+    }
+    print("Seven! I knew it! I knew it all along!");
+
+    (99..0).each(bottles)
+    {
+        suffix := "";
+        if(bottles > 1)
+        {
+            print(bottles, "bottles of beer on the wall,", bottles, "bottles of beer.");            if(bottles > 2)
+            {
+                suffix = "" ~ (bottles-1) ~ " bottles of beer on the wall.";
+            }
+            else
+            {
+                suffix = "1 bottle of beer on the wall.";
+            }
+        }
+        else
+        {
+            print("1 bottle of beer on the wall, 1 bottle of beer.");
+            suffix = "no more beer on the wall!"
+        }
+        print("Take one down, pass it around,", suffix);
+        print("--")
+    }
+    print("No more bottles of beer on the wall, no more bottles of beer.
+Go to the store and buy some more, 99 bottles of beer on the wall.");
+}
+</pre>
+</pre>
+
+	  <h1><a name="lists">Lists</a></h1>
+	  <p>
+	    Our next example shows you how to create and use lists of other things.
+	  </p>
+	  <pre class="anna-code">
+def main()
+{
+    myList := [1, 2, 7];
+}
+</pre>
+
+	</div>
+      </div>
+      <div class="anna-left-menu">
+	<div class="anna-left-menu-inner">
+	  <div>
+	    <h2>Table of content</h2>
+	    <div class="toc"></div>  
+	  </div>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
