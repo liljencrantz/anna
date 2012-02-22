@@ -6,6 +6,43 @@ error IOError
 {    
 }
 
+def readLine() (doc("Read one line of text from the keyboard and return it as a text string"))
+{
+  rbuff := Buffer();
+  sbuff := Buffer();
+    res := "".thaw;
+    while(1)
+    {
+	switch(unix.io.read(unix.io.standardInput, rbuff, 1))
+	{
+	    case(0)
+	    {
+		return sbuff.encode();
+	    }
+	    
+	    case(1)
+	    {
+	      chr := rbuff.encode();
+		if(chr == "\n")
+		{
+		    return sbuff.encode();
+		}
+		sbuff[sbuff.count] = rbuff.last;
+	    }
+
+	    default
+	    {
+		if(cerror.errno != cerror.again)
+		{
+		    raise(IOError("Error while reading keyboard input"));
+		    return ?;
+		}
+	    }
+	}
+    }
+    return ?;
+}
+
 def relative?(String filename) (internal)
 {
     return filename[0] != separator;
