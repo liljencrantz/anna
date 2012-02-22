@@ -163,6 +163,29 @@ ANNA_VM_NATIVE(anna_string_i_get_range, 2)
     return anna_from_obj(res);
 }
 
+
+
+ANNA_VM_NATIVE(anna_string_i_mul, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+    
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    int times = anna_as_int(param[1]);
+    
+    anna_object_t *res = anna_object_create(this->type);
+    asi_init(as_unwrap(res));
+    int i;
+    size_t length = asi_get_count(as_unwrap(this));
+    for(i=0; i<times; i++)
+    {
+	asi_append(as_unwrap(res), as_unwrap(this), 0, length);
+    }
+    return anna_from_obj(res);
+}
+
+
+
 ANNA_VM_NATIVE(anna_string_i_set_range, 3)
 {
     anna_object_t *res = null_object;
@@ -843,6 +866,32 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
     anna_member_alias(type, mmid, L"__get__");
     
+    anna_type_t *mul_argv[] = 
+	{
+	    type,
+	    int_type
+	}
+    ;
+
+    wchar_t *mul_argn[] =
+	{
+	    L"this", L"times"
+	}
+    ;
+    
+    mmid = anna_member_create_native_method(
+	type,
+	anna_mid_get(L"__mul__"),
+	0,
+	&anna_string_i_mul,
+	type,
+	2,
+	mul_argv,
+	mul_argn, 0, L"Returns this string repeated the specified number of times.");
+    
+    fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
+    anna_member_alias_reverse(type, mmid, L"__mul__");
+
     anna_member_create_native_method(
 	type, ANNA_MID_TO_STRING, 0,
 	&anna_string_to_string, string_type, 1,
