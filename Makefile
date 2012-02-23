@@ -168,8 +168,8 @@ check: test
 
 documentation: documentation/api
 
-documentation/api: bin/anna lib/*.anna $(ANNA_INTERNAL_BINDINGS) util/document/*.html
-	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna && touch documentation/api
+documentation/api: bin/anna lib/*.anna $(ANNA_INTERNAL_BINDINGS) util/document/*.html bootstrap/*.anna util/annadoc.anna
+	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap time bin/anna util/annadoc.anna && touch documentation/api
 
 test: bin/anna
 	time ./bin/anna_tests.sh
