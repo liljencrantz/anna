@@ -3,6 +3,9 @@ void anna_function_type_print(anna_function_type_t *k)
 {
     wprintf(L"def %ls (", k->return_type?k->return_type->name:L"?");
     int i;
+    int variadic_idx = anna_function_type_is_variadic(k) ? k->input_count-1 : -1;
+    int variadic_named_idx = anna_function_type_is_variadic_named(k) ? k->input_count-1 - (!!anna_function_type_is_variadic(k)) : -1;
+    
     for(i=0;i<k->input_count; i++)
     {
 	if(i!=0)
@@ -11,6 +14,15 @@ void anna_function_type_print(anna_function_type_t *k)
 	    L"%ls %ls",
 	    (k->input_type && k->input_type[i])?k->input_type[i]->name:L"?",
 	    (k->input_name && k->input_name[i])?k->input_name[i]:L"");
+	if(i == variadic_idx)
+	{
+	    wprintf(L"...");
+	}
+	if(i == variadic_named_idx)
+	{
+	    wprintf(L":");
+	}
+	
     }
     wprintf(L");\n");
 }

@@ -589,7 +589,7 @@ void anna_node_call_map(
 	    {
 		anna_node_call_add_child(
 		    var_named_call,
-		    anna_node_create_call2(
+		    (anna_node_t *)anna_node_create_call2(
 			&call->child[i]->location,
 			anna_node_create_type(
 			    &call->child[i]->location,

@@ -1465,10 +1465,10 @@ void anna_vm_mark_code(anna_function_t *f)
    This method is the best ever! It does nothing and returns a null
    object. All method calls on the null object run this. 
 */
-void anna_vm_null_function(anna_context_t *stack)
+void anna_vm_null_function(anna_context_t *context)
 {
-    char *code = stack->frame->code;
-    /* We rewind the code pointr one function call to get to the
+    char *code = context->frame->code;
+    /* We rewind the code pointer one function call to get to the
      * instruction that called us. If the previous instruction was a
      * member access, this function call is in fact a getter/setter so
      * we pop the correct number of arguments for that. Otherwise, we
@@ -1481,22 +1481,22 @@ void anna_vm_null_function(anna_context_t *stack)
     switch(op->instruction)
     {
 	case ANNA_INSTR_CALL:
-	    anna_context_drop(stack,op->param+1);	
+	    anna_context_drop(context,op->param+1);	
 	    break;
 	    
 	case ANNA_INSTR_MEMBER_SET:
-	    anna_context_drop(stack,3);
+	    anna_context_drop(context,3);
 	    break;
 	    
 	case ANNA_INSTR_MEMBER_GET:
-	    anna_context_drop(stack,2);
+	    anna_context_drop(context,2);
 	    break;
 	    
 	default:
-	  wprintf(L"Unknown null fun opcode %d at byte offset %d (started rollback at offset %d)\n", op->instruction, code - stack->frame->function->code, stack->frame->code-stack->frame->function->code);
+	  wprintf(L"Unknown null fun opcode %d at byte offset %d (started rollback at offset %d)\n", op->instruction, code - context->frame->function->code, context->frame->code-context->frame->function->code);
 	    CRASH;
     }
-    anna_context_push_object(stack, null_object);
+    anna_context_push_object(context, null_object);
 }
 
 anna_object_t *anna_as_obj(anna_entry_t *entry)

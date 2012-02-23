@@ -170,7 +170,7 @@ Make Char and Float fast when used as HashMap keys
 Store floats directly on stack
 
 UNUSED OPERATORS:
-Currently, the @ symbol is unused. 
+Currently, the @, &, symbol is unused. 
 
 PLANS FOR APPS WRITTEN IN ANNA:
 live: Debug a running application using command line or web browser.

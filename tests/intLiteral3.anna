@@ -1,4 +1,6 @@
 def main()
 {
-    print(1K);
+    print(1k);
+    print(1m);
+    print(1g);
 }

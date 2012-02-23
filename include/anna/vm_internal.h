@@ -212,6 +212,9 @@
 #define ANNA_INSTR_GTE_FLOAT 92
 #define ANNA_INSTR_GT_FLOAT 93
 
+/**
+   Opcode structure for opcodes that don't have any additional parameters.
+*/
 typedef struct 
 {
     char instruction;
@@ -219,6 +222,9 @@ typedef struct
 }
     anna_op_null_t;
 
+/**
+   Opcode structure for opcodes that have a constant value as their parameter.
+*/
 typedef struct
 {
     char instruction;
@@ -226,6 +232,9 @@ typedef struct
 }
     anna_op_const_t;
 
+/**
+   Opcode structure for opcodes that have a type as their parameter.
+*/
 typedef struct
 {
     char instruction;
@@ -233,6 +242,11 @@ typedef struct
 }
     anna_op_type_t;
 
+/**
+   Opcode structure for opcodes that operate on a variable. Has a
+   frame count (number of stack frames away from current frame) and an
+   offset parameter (internal offset in the frame).x 
+*/
 typedef struct
 {
     char instruction;
@@ -241,20 +255,58 @@ typedef struct
 }
     anna_op_var_t;
 
+/**
+   Opcode structure for various opcodes that operate on a type
+   member. Has a mid that specifies what member to operate on.
+
+   Warning: For various technical reasons having to do with null
+   handling, the size of a anna_op_member_t instruction must be
+   exactly the same as the size of a anna_op_count_t instruction.
+
+   For more details, see the anna_vm_null_function function in
+   /src/vm.c,
+
+   The reason why this op has a return_type field is for validating
+   the return type when using the fallback member access
+   functionality. The performance and memory impact of adding this
+   additional information to the bytecode seems to be minimal. 
+*/
 typedef struct
 {
     char instruction;
     unsigned short mid;
+    anna_type_t *return_type;
 }
     anna_op_member_t;
 
+/**
+   Opcode structure for specifying a count. Usually used for calling a
+   function, in which case the param field will contain the number of
+   arguments to the function call.
+
+   Warning: For various technical reasons having to do with null
+   handling, the size of a anna_op_member_t instruction must be
+   exactly the same as the size of a anna_op_count_t instruction.
+
+   For more details, see the anna_vm_null_function function in
+   /src/vm.c,
+
+   The reason why this op has a return_type field is for validating
+   the return type when using the fallback member access
+   functionality. The performance and memory impact of adding this
+   additional information to the bytecode seems to be minimal. 
+*/
 typedef struct
 {
     char instruction;
     unsigned short param;
+    anna_type_t *return_type;
 }
     anna_op_count_t;
 
+/**
+   Opcode structure for opcodes that operate on a offset. 
+*/
 typedef struct
 {
     char instruction;
@@ -262,6 +314,9 @@ typedef struct
 }
     anna_op_off_t;
 
+/**
+   Opcode structure for opcodes that deal with a native callbacks.
+*/
 typedef struct
 {
     char instruction;

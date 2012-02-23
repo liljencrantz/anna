@@ -1,0 +1,5 @@
+def main()
+{
+    print(1.0i);
+    print(1.5 - 0.5i);
+}

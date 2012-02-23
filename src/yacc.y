@@ -58,6 +58,26 @@ static string_buffer_t anna_yacc_str_buff;
     }									\
     while (0)
 
+#define anna_yacc_string( ... ) anna_yacc_string_internal( __VA_ARGS__, (char *)0 )
+__sentinel static wchar_t *anna_yacc_string_internal(char *in, ...)
+
+{
+    va_list va;
+    char *arg;
+    
+    va_start( va, in );
+    sb_clear(&anna_yacc_str_buff);
+    sb_printf(&anna_yacc_str_buff, L"%s", in);
+    
+    while( (arg=va_arg(va, char *) )!= 0 ) 
+    {
+	sb_printf(&anna_yacc_str_buff, L"%s", arg);
+    }
+    va_end( va );
+
+    return sb_content(&anna_yacc_str_buff);
+}
+
 static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
 {
     mpz_t res;
@@ -89,11 +109,6 @@ static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
 	{
 	    val = ch - 'A' + 10;
 	}
-	else if( ch == L'K')
-	{
-	    mpz_mul_si(res, res, 1024);
-	    break;
-	}
 	else
 	{
 	    break;
@@ -109,11 +124,24 @@ static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
 	mpz_add(res, res, mpval);
     }
 
+
 //    wprintf(L"Parse int literal %s\n", mpz_get_str(0, 10, res));
     anna_node_t *node = (anna_node_t *)anna_node_create_int_literal(llocp, res);
     mpz_clear(res);
     mpz_clear(mpbase);
     mpz_clear(mpval);
+
+    if(*--c)
+    {
+	node = (anna_node_t *)
+	    anna_node_create_call2(
+		llocp,
+		(anna_node_t *)anna_node_create_identifier(
+		    llocp,
+		    anna_yacc_string(c, "IntLiteral")),
+		node);
+    }
+
     return node;
 }
 
@@ -133,7 +161,6 @@ static anna_node_t *anna_atof(YYLTYPE *llocp, char *c)
     int tmp = errno;
     errno = 0;
     double res = strtod(cpy, &end);
-    free(cpy);
     if(errno)
     {
 	fwprintf(stderr,L"Error in %ls, on line %d:\n", 
@@ -144,28 +171,24 @@ static anna_node_t *anna_atof(YYLTYPE *llocp, char *c)
 	fwprintf (stderr, L"Invalid value for Float literal\n");
 	anna_yacc_error_count++;
     }
+
     errno = tmp;
-    return (anna_node_t *)anna_node_create_float_literal(llocp, res);
-}
-
-#define anna_yacc_string( ... ) anna_yacc_string_internal( __VA_ARGS__, (char *)0 )
-__sentinel static wchar_t *anna_yacc_string_internal(char *in, ...)
-
-{
-    va_list va;
-    char *arg;
+    anna_node_t *node = (anna_node_t *)anna_node_create_float_literal(llocp, res);
     
-    va_start( va, in );
-    sb_clear(&anna_yacc_str_buff);
-    sb_printf(&anna_yacc_str_buff, L"%s", in);
-    
-    while( (arg=va_arg(va, char *) )!= 0 ) 
+    if(*end)
     {
-	sb_printf(&anna_yacc_str_buff, L"%s", arg);
+	node = (anna_node_t *)
+	    anna_node_create_call2(
+		llocp,
+		(anna_node_t *)anna_node_create_identifier(
+		    llocp,
+		    anna_yacc_string(end, "FloatLiteral")),
+		node);
     }
-    va_end( va );
+    
+    free(cpy);
 
-    return sb_content(&anna_yacc_str_buff);
+    return node;
 }
 
 static anna_node_t *anna_text_as_id(anna_location_t *loc, yyscan_t *scanner)

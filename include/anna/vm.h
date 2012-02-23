@@ -337,9 +337,15 @@ __hot void anna_vm_mark_code(anna_function_t *f);
 __cold void anna_vm_destroy(void);
 
 /**
-   This method is the best ever! All method calls on the null object run this
+   This method is the best ever! It does nothing and returns a null
+   object. All method calls on the null object run this. 
 */
 __hot void anna_vm_null_function(anna_context_t *stack);
+/**
+
+ */
+__hot void anna_vm_fallback_function(anna_context_t *stack);
+
 __hot void anna_vm_method_wrapper(anna_context_t *stack);
 
 static inline void anna_context_push_object(anna_context_t *stack, anna_object_t *val)

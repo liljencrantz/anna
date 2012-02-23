@@ -728,6 +728,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"collection");
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
     anna_module_bootstrap_monkeypatch(stack_global, L"monkeypatchLang");
+    anna_module_bootstrap_macro(L"macroMisc");
     anna_module_bootstrap_macro(L"range");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchList");
@@ -849,10 +850,22 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 
 /**
    Internal helper function for anna_module_load_i.
-*/
-static void anna_module_load2()
+
+   This function runs after anna_module_load_i has been run on a
+   module and (resursively) on all it's dependencies.
+
+   anna_module_load_i will by itself load the module file and parse it
+   enough so that it's public interface can be determined. After that,
+   right before the root call to anna_module_load_i finishes,
+   anna_module_load_i_phase_2 is called once, and it will finish
+   loading all such partially loaded modules, which involves resolving
+   all AST node types, validating all the source code, and finally
+   compiling it.
+
+ */
+static void anna_module_load_i_phase_2()
 {
-    int i, j;
+    int j;
     
     for(j=0; j<al_get_count(&anna_module_in_transit); j+= 2)
     {
@@ -911,10 +924,29 @@ static void anna_module_load2()
 }
 
 /**
-   Actually perform the loading of a module
- */
+   Actually perform the loading of a module.
+
+   Module loading happens in two phases. The first phase is handled
+   internally by anna_module_load_i, and involves reading files, and
+   performing macro expansion and enough parsing of the resulting AST
+   tree to generate a public interface for the module. During phase 1,
+   anna_module_load_i will recursively call itself in order to load
+   any additional modules used by the original module.
+   
+   Right before the original root call to anna_module_load_i returns,
+   it calls anna_module_load_i_phase_2 is called. This function will
+   take all the semi-compiled modules and finish compiling them. The
+   reason why this two-phase compilation is eeded is because modules
+   can have mutual interdependencies that mean that module A needs to
+   know the public interface of module B when compiling and vice
+   versa.
+*/
 static void anna_module_load_i(anna_stack_template_t *module_stack)
 {
+    /*
+      This variable is used to keep track of whether we are the root
+      call anna_module_load_i or not.
+     */
     static int recursion_count = 0;
 
     if(!module_stack->filename)
@@ -927,7 +959,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	return;
     }
     module_stack->flags |= ANNA_STACK_LOADED;
-
+    
     wchar_t *suffix = wcsrchr(module_stack->filename, L'.');
     if(suffix && wcscmp(suffix, L".so")==0)
     {
@@ -1088,7 +1120,7 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     }
     else
     {
-	anna_module_load2();	
+	anna_module_load_i_phase_2();	
     }
     recursion_count--;    
 }

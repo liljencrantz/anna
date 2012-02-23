@@ -21,7 +21,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_all_children, 1)
     anna_object_t *res = 
 	anna_list_create_imutable(node_type);
     anna_node_each(
-	node,
+	(anna_node_t *)node,
 	anna_node_call_wrapper_all_children_each,
 	res);
     return anna_from_obj(res);

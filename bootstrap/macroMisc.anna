@@ -1,0 +1,42 @@
+
+macro kIntLiteral(node)
+(
+    doc("
+The k integer literal suffix, used for multiplying the literal by 1 024, 
+e.g. the 1k integer literal evaluates to 1024."))
+{
+    numNode := node[0] as IntLiteral;
+    return IntLiteral(numNode, numNode.payload * 1024);
+}
+
+macro mIntLiteral(node)
+(
+    doc("
+The g integer literal suffix, used for multiplying the literal by 1 048 576, 
+e.g. the 1m integer literal evaluates to 1048576."))
+{
+    numNode := node[0] as IntLiteral;
+    return IntLiteral(numNode, numNode.payload * 1024 * 1024);
+}
+
+macro gIntLiteral(node)
+(
+    doc("
+The m integer literal suffix, used for multiplying the literal by 1073 741 824, 
+e.g. the 1g integer literal evaluates to 1073741824."))
+{
+    numNode := node[0] as IntLiteral;
+    return IntLiteral(numNode, numNode.payload * 1024 * 1024 * 1024);
+}
+
+macro iFloatLiteral(node)
+(
+    doc("
+The i floating point literal suffix, used for creating complex number 
+literals consisting of an imaginary part, e.g. 
+<code class='anna-code'>2.0i</code> is equivalent to 
+<code>Complex(0.0, 2.0)</code>."))
+{
+    numNode := node[0] as FloatLiteral;
+    return ast(Complex(0.0, %val)) % ["val": numNode];
+}
