@@ -837,11 +837,11 @@ anna_function_t *anna_native_create(
     return result;
 }
 
-static void anna_function_continuation(anna_context_t *stack)
+static void anna_function_continuation(anna_context_t *context)
 {
-    anna_object_t *cont = stack->function_object;
-    anna_object_t *res = anna_context_pop_object(stack);
-    anna_context_pop_object(stack);
+    anna_object_t *cont = context->function_object;
+    anna_object_t *res = anna_context_pop_object(context);
+    anna_context_pop_object(context);
 
     anna_entry_t *cce = anna_entry_get(cont, ANNA_MID_CONTINUATION_CALL_COUNT);
     int cc = 1 + ((cce == null_entry)?0:anna_as_int(cce));
@@ -849,13 +849,13 @@ static void anna_function_continuation(anna_context_t *stack)
     
     void *mem_blob = (void *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
     size_t sz = *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT);
-    memcpy(&stack->stack[0], anna_blob_payload(mem_blob), sz*sizeof(anna_entry_t *));
-    stack->top = &stack->stack[sz];
+    memcpy(&context->stack[0], anna_blob_payload(mem_blob), sz*sizeof(anna_entry_t *));
+    context->top = &context->stack[sz];
 
-    stack->frame = (anna_activation_frame_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
-    stack->frame->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
+    context->frame = (anna_activation_frame_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    context->frame->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
 
-    anna_context_push_object(stack, res);
+    anna_context_push_object(context, res);
 }
 
 anna_function_t *anna_continuation_create(
@@ -902,7 +902,7 @@ anna_function_t *anna_continuation_create(
 }
 
 anna_function_t *anna_method_bind(
-    anna_context_t *stack,
+    anna_context_t *context,
     anna_function_t *method)
 {
     anna_function_t *result = anna_alloc_function();

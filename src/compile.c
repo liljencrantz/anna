@@ -808,7 +808,7 @@ static void anna_vm_compile_i(
 	    else
 	    {
 		int instr;
-
+		
 		anna_vm_compile_i(ctx, fun, node2->object, 0);
 		
 		if(anna_member_is_bound(mem))
@@ -1035,23 +1035,23 @@ void anna_vm_compile(
 }
 
 void anna_vm_callback_native(
-    anna_context_t *stack, 
+    anna_context_t *context, 
     anna_native_t callback, int paramc, anna_entry_t **param,
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    stack->frame = anna_frame_to_heap(stack->frame);
+    context->frame = anna_frame_to_heap(context->frame);
     size_t ss = sizeof(anna_activation_frame_t);
 
     size_t tot_sz = ss;
     anna_activation_frame_t *frame = 
 	anna_alloc_callback_activation_frame(tot_sz, ANNA_FUNCTION_CALLBACK_CODE_SIZE);
-    frame->dynamic_frame = stack->frame;
+    frame->dynamic_frame = context->frame;
     frame->static_frame = 
 	*(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     frame->function->wrapper=0;
     frame->function->variable_count = 0;
     frame->function->name = L"!callbackHandler";
-    frame->return_stack_top = stack->top;
+    frame->return_stack_top = context->top;
     
     char *code = frame->code;
     anna_compile_context_t ctx = 
@@ -1067,28 +1067,28 @@ void anna_vm_callback_native(
     anna_vm_native_call(&ctx, ANNA_INSTR_NATIVE_CALL, callback);
     anna_vm_null(&ctx, ANNA_INSTR_RETURN);
     
-    memmove(stack->top+1, param, sizeof(anna_entry_t *)*paramc);
-    anna_context_push_object(stack, null_object);
-    stack->top += paramc;
+    memmove(context->top+1, param, sizeof(anna_entry_t *)*paramc);
+    anna_context_push_object(context, null_object);
+    context->top += paramc;
 
-    memmove(stack->top+1, argv, sizeof(anna_entry_t *)*argc);
-    anna_context_push_object(stack, entry);
-    stack->top += argc;
+    memmove(context->top+1, argv, sizeof(anna_entry_t *)*argc);
+    anna_context_push_object(context, entry);
+    context->top += argc;
 
-    stack->frame = frame;
+    context->frame = frame;
     anna_compile_context_destroy(&ctx);
 }
 
 void anna_vm_callback(
-    anna_context_t *stack, 
+    anna_context_t *context, 
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    stack->frame = anna_frame_to_heap(stack->frame);
+    context->frame = anna_frame_to_heap(context->frame);
     size_t ss = sizeof(anna_activation_frame_t);
     size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_null_t)+1;
     size_t tot_sz = ss;
     anna_activation_frame_t *frame = anna_alloc_activation_frame(tot_sz);
-    frame->dynamic_frame = stack->frame;
+    frame->dynamic_frame = context->frame;
     frame->static_frame = *(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     frame->function = anna_alloc_function();
@@ -1098,7 +1098,7 @@ void anna_vm_callback(
     frame->function->code = frame->code;
     frame->function->frame_size = tot_sz;
     frame->function->name = L"!callbackHandler";
-    frame->return_stack_top = stack->top;
+    frame->return_stack_top = context->top;
     
     char *code = frame->code;
     anna_compile_context_t ctx = 
@@ -1113,37 +1113,37 @@ void anna_vm_callback(
     anna_vm_call(&ctx, ANNA_INSTR_CALL, argc);
     anna_vm_null(&ctx, ANNA_INSTR_RETURN);
     
-    memmove(stack->top+1, argv, sizeof(anna_entry_t *)*argc);
-    anna_context_push_object(stack, entry);
-    stack->top += argc;
+    memmove(context->top+1, argv, sizeof(anna_entry_t *)*argc);
+    anna_context_push_object(context, entry);
+    context->top += argc;
     
-    stack->frame = frame;
+    context->frame = frame;
     anna_compile_context_destroy(&ctx);
 }
 
 void anna_vm_callback_reset(
-    anna_context_t *stack, 
+    anna_context_t *context, 
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    memmove(stack->top+1, argv, sizeof(anna_entry_t *)*argc);
-    anna_context_push_object(stack, entry);
-    stack->top += argc;
-    stack->frame->code -= (sizeof(anna_op_count_t)+sizeof(anna_op_native_call_t));	}
+    memmove(context->top+1, argv, sizeof(anna_entry_t *)*argc);
+    anna_context_push_object(context, entry);
+    context->top += argc;
+    context->frame->code -= (sizeof(anna_op_count_t)+sizeof(anna_op_native_call_t));	}
 
-void anna_vm_method_wrapper(anna_context_t *stack)
+void anna_vm_method_wrapper(anna_context_t *context)
 {
-    stack->frame = anna_frame_to_heap(stack->frame);
-    char *code = stack->frame->code;
+    context->frame = anna_frame_to_heap(context->frame);
+    char *code = context->frame->code;
     code -= sizeof(anna_op_count_t);
     anna_op_count_t *op = (anna_op_count_t *)code;
     int argc = op->param + 1;
-    anna_entry_t **argv = stack->top - argc;
-    anna_object_t *cont = stack->function_object;    
+    anna_entry_t **argv = context->top - argc;
+    anna_object_t *cont = context->function_object;    
     
     anna_object_t *object = anna_as_obj(*anna_entry_get_addr(cont, ANNA_MID_THIS));
     anna_object_t *method = anna_as_obj(*anna_entry_get_addr(cont, ANNA_MID_METHOD));
     argv[0] = anna_from_obj(object);
-    anna_context_drop(stack, argc);    
-    anna_vm_callback(stack, method, argc, argv);
+    anna_context_drop(context, argc);    
+    anna_vm_callback(context, method, argc, argv);
 }
 

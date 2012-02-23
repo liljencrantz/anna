@@ -165,49 +165,49 @@ ANNA_VM_NATIVE(anna_i_not, 1)
     return anna_entry_null(param[0])?anna_from_int(1):null_entry;
 }
 
-static void anna_i_callcc_callback(anna_context_t *stack)
+static void anna_i_callcc_callback(anna_context_t *context)
 {
-    anna_object_t *res = anna_context_pop_object(stack);
-    anna_context_pop_object(stack);
-    anna_context_push_object(stack, res);
+    anna_object_t *res = anna_context_pop_object(context);
+    anna_context_pop_object(context);
+    anna_context_push_object(context, res);
 }
 
-static void anna_i_callcc(anna_context_t *stack)
+static void anna_i_callcc(anna_context_t *context)
 {
-    stack->frame = anna_frame_to_heap(stack->frame);
+    context->frame = anna_frame_to_heap(context->frame);
     
-    anna_object_t *fun = anna_context_pop_object(stack);
-    anna_context_pop_object(stack);
+    anna_object_t *fun = anna_context_pop_object(context);
+    anna_context_pop_object(context);
     anna_object_t *cont = anna_continuation_create(
-	&stack->stack[0],
-	stack->top - &stack->stack[0],
-	stack->frame,
+	&context->stack[0],
+	context->top - &context->stack[0],
+	context->frame,
 	1)->wrapper;
     
     anna_vm_callback_native(
-	stack, &anna_i_callcc_callback, 0, 0, 
+	context, &anna_i_callcc_callback, 0, 0, 
 	fun, 1, (anna_entry_t **)&cont);    
 }
 
-static void anna_i_wrap_method(anna_context_t *stack)
+static void anna_i_wrap_method(anna_context_t *context)
 {
-    anna_entry_t *meth = anna_context_pop_entry(stack);
-    anna_entry_t *obj = anna_context_pop_entry(stack);
-    anna_context_pop_object(stack);
+    anna_entry_t *meth = anna_context_pop_entry(context);
+    anna_entry_t *obj = anna_context_pop_entry(context);
+    anna_context_pop_object(context);
     
     anna_function_t *fun = anna_function_unwrap(anna_as_obj(meth));
     if(fun)
     {
 	anna_object_t *res = anna_method_bind(
-	    stack,
+	    context,
 	    fun)->wrapper;
 	*anna_entry_get_addr(res, ANNA_MID_THIS) = obj;
 	*anna_entry_get_addr(res, ANNA_MID_METHOD) = meth;
-	anna_context_push_object(stack, res);
+	anna_context_push_object(context, res);
     }
     else
     {
-	anna_context_push_object(stack, null_object);	
+	anna_context_push_object(context, null_object);	
     }
     
 }

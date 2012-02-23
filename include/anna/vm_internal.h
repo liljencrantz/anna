@@ -265,17 +265,11 @@ typedef struct
 
    For more details, see the anna_vm_null_function function in
    /src/vm.c,
-
-   The reason why this op has a return_type field is for validating
-   the return type when using the fallback member access
-   functionality. The performance and memory impact of adding this
-   additional information to the bytecode seems to be minimal. 
 */
 typedef struct
 {
     char instruction;
     unsigned short mid;
-    anna_type_t *return_type;
 }
     anna_op_member_t;
 
@@ -290,17 +284,11 @@ typedef struct
 
    For more details, see the anna_vm_null_function function in
    /src/vm.c,
-
-   The reason why this op has a return_type field is for validating
-   the return type when using the fallback member access
-   functionality. The performance and memory impact of adding this
-   additional information to the bytecode seems to be minimal. 
 */
 typedef struct
 {
     char instruction;
     unsigned short param;
-    anna_type_t *return_type;
 }
     anna_op_count_t;
 

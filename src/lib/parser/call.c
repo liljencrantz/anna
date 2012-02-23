@@ -219,12 +219,12 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
    This is the bulk of the each method
  */
 static void anna_node_call_wrapper_each_callback(
-    anna_context_t *stack)
+    anna_context_t *context)
 {    
     // Discard the output of the previous method call
-    anna_context_pop_object(stack);
+    anna_context_pop_object(context);
     // Set up the param list. These are the values that aren't reallocated each lap
-    anna_entry_t **param = stack->top - 3;
+    anna_entry_t **param = context->top - 3;
     anna_object_t *this = anna_as_obj_fast(param[0]);
     // Unwrap and name the params to make things more explicit
     anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(this);
@@ -246,21 +246,21 @@ static void anna_node_call_wrapper_each_callback(
 	param[2] = anna_from_int(idx+1);
 	
 	// Finally, roll the code point back a bit and push new arguments
-	anna_vm_callback_reset(stack, body, 2, o_param);
+	anna_vm_callback_reset(context, body, 2, o_param);
     }
     else
     {
 	// Oops, we're done. Drop our internal param list and push the correct output
-	anna_context_drop(stack, 4);
-	anna_context_push_entry(stack, param[0]);
+	anna_context_drop(context, 4);
+	anna_context_push_entry(context, param[0]);
     }
 }
 
-static void anna_node_call_wrapper_each(anna_context_t *stack)
+static void anna_node_call_wrapper_each(anna_context_t *context)
 {
-    anna_entry_t *body = anna_context_pop_entry(stack);
-    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_context_pop_object(stack));
-    anna_context_pop_entry(stack);
+    anna_entry_t *body = anna_context_pop_entry(context);
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(anna_context_pop_object(context));
+    anna_context_pop_entry(context);
     size_t sz = call->child_count;
 
     if(sz > 0)
@@ -281,14 +281,14 @@ static void anna_node_call_wrapper_each(anna_context_t *stack)
 	;
 	
 	anna_vm_callback_native(
-	    stack,
+	    context,
 	    anna_node_call_wrapper_each_callback, 3, callback_param,
 	    anna_as_obj_fast(body), 2, o_param
 	    );
     }
     else
     {
-	anna_context_push_object(stack, anna_node_wrap((anna_node_t *)call));
+	anna_context_push_object(context, anna_node_wrap((anna_node_t *)call));
     }
 }
 

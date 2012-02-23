@@ -8,7 +8,7 @@
   - variadic arguments aren't shown as such
   - argument default values aren't shown
   - Use local storage for storing internal member visibility attribute
-  - Prettier sinature for function parameters that are functions
+  - Prettier signatures for function parameters that are functions
 * Check that node compare supports all ast node types
 * Handle C type wrappers in other namespaces when compiling bindings
 * Remove code duplication between types and functions when performing templatization
@@ -32,6 +32,7 @@
 * Working error handling
   - raise function
   - collect function
+  - option to catch only some error types
 * List.sort
   - Basic sort function in place
   - Sort function
@@ -74,16 +75,14 @@
 * getopt replacement
   - basic design
   - implementation
-  - use it in annabind and annadoc  
+  - use it in annabind, annaxgettext and annadoc  
 * anna should use getopt to provide switches for setting the path, making dry runs, controlling the GC, etc.
 * Working error handling
-  - option to catch only some error types
-* Working error handling
-  - catch function?
+  - catch function
 * Documentation coverage of standard API functions and types should be 100 %.
 * Constructors and inheritance _fully_ working
   - multiple constructors through aliases
-* Add memory overhead of Hashes, Buffers and Lists to GC estimates
+* Add internal memory usage of Hashes, Buffers and Lists to GC estimates
 * Function for obtaining the amount of memory used by an object
 * Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
@@ -170,7 +169,7 @@ Make Char and Float fast when used as HashMap keys
 Store floats directly on stack
 
 UNUSED OPERATORS:
-Currently, the @, &, symbol is unused. 
+Currently, the @, & and ` symbols are unused and # is only used at the start of a line.
 
 PLANS FOR APPS WRITTEN IN ANNA:
 live: Debug a running application using command line or web browser.

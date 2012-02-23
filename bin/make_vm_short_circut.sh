@@ -14,15 +14,15 @@ for i in "BITAND &" "BITOR |" "BITXOR ^"; do
 echo "    
   ANNA_LAB_${name}_INT:
     {
-        OP_ENTER(stack);
+        OP_ENTER(context);
 //            wprintf(L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(stack);
-	anna_entry_t *i1 = anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
+	anna_entry_t *i2 = anna_context_pop_entry(context);
+	anna_entry_t *i1 = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    int res = anna_as_int_unsafe(i1) $op anna_as_int_unsafe(i2);
-            anna_context_push_int(stack, (long)res);
+            anna_context_push_int(context, (long)res);
 	}
 	else
 	{
@@ -30,7 +30,7 @@ echo "
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -38,15 +38,15 @@ echo "
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		anna_context_push_entry(stack,i2);
-                stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-	OP_LEAVE(stack);
+	OP_LEAVE(context);
     }
 "
 done
@@ -58,11 +58,11 @@ for i in "ADD +" "SUB -" "INCREASE_ASSIGN +" "DECREASE_ASSIGN -"; do
 echo "    
   ANNA_LAB_${name}_INT:
     {
-        OP_ENTER(stack);
+        OP_ENTER(context);
 //            wprintf(L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(stack);
-	anna_entry_t *i1 = anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
+	anna_entry_t *i2 = anna_context_pop_entry(context);
+	anna_entry_t *i1 = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    int res = anna_as_int_unsafe(i1) $op anna_as_int_unsafe(i2);
@@ -70,11 +70,11 @@ echo "
 //            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
 
             if(likely(abs(res)<=ANNA_INT_FAST_MAX))
-  	        anna_context_push_int(stack, (long)res);
+  	        anna_context_push_int(context, (long)res);
             else
 	    {
                 //wprintf(L\"Moving to slow track with %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
-  	        anna_context_push_object(stack, anna_int_create(res));
+  	        anna_context_push_object(context, anna_int_create(res));
             }
 	}
 	else
@@ -83,7 +83,7 @@ echo "
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -91,15 +91,15 @@ echo "
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		anna_context_push_entry(stack,i2);
-                stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-	OP_LEAVE(stack);
+	OP_LEAVE(context);
     }
 "
 
@@ -113,16 +113,16 @@ for i in "EQ ==" "NEQ !=" "LT <" "LTE <=" "GT >" "GTE >="; do
 echo "    
   ANNA_LAB_${name}_INT:
     {
-        OP_ENTER(stack);
+        OP_ENTER(context);
 //            wprintf(L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(stack);
-	anna_entry_t *i1 = anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
+	anna_entry_t *i2 = anna_context_pop_entry(context);
+	anna_entry_t *i1 = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 //            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
 //anna_as_int(i1), anna_as_int(i2),(anna_as_int(i1) $op anna_as_int(i2)));
-            anna_context_push_entry(stack, (anna_as_int(i1) $op anna_as_int(i2))?anna_from_int(1):null_entry);
+            anna_context_push_entry(context, (anna_as_int(i1) $op anna_as_int(i2))?anna_from_int(1):null_entry);
 	}
 	else
 	{
@@ -130,7 +130,7 @@ echo "
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -139,30 +139,30 @@ echo "
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		anna_context_push_entry(stack,i2);
-                stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-//            wprintf(L\"Next instruction is %d!\n\", *stack->frame->code);
-	OP_LEAVE(stack);
+//            wprintf(L\"Next instruction is %d!\n\", *context->frame->code);
+	OP_LEAVE(context);
     }
 
   ANNA_LAB_${name}_FLOAT:
     {
-        OP_ENTER(stack);
+        OP_ENTER(context);
 //            wprintf(L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(stack);
-	anna_entry_t *i1 = anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
+	anna_entry_t *i2 = anna_context_pop_entry(context);
+	anna_entry_t *i1 = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
 //            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
 //anna_as_int(i1), anna_as_int(i2),(anna_as_int(i1) $op anna_as_int(i2)));
-            anna_context_push_entry(stack, (anna_as_float(i1) $op anna_as_float(i2))?anna_from_int(1):null_entry);
+            anna_context_push_entry(context, (anna_as_float(i1) $op anna_as_float(i2))?anna_from_int(1):null_entry);
 	}
 	else
 	{
@@ -170,7 +170,7 @@ echo "
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -179,16 +179,16 @@ echo "
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		anna_context_push_entry(stack,i2);
-                stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-//            wprintf(L\"Next instruction is %d!\n\", *stack->frame->code);
-	OP_LEAVE(stack);
+//            wprintf(L\"Next instruction is %d!\n\", *context->frame->code);
+	OP_LEAVE(context);
     }
 "
 
@@ -199,14 +199,14 @@ done
 echo "    
   ANNA_LAB_DIV_INT:
     {
-        OP_ENTER(stack);
-	anna_entry_t *i2 = anna_context_pop_entry(stack);
-	anna_entry_t *i1 = anna_context_pop_entry(stack);
+        OP_ENTER(context);
+	anna_entry_t *i2 = anna_context_pop_entry(context);
+	anna_entry_t *i1 = anna_context_pop_entry(context);
 //wprintf(L\"DIV\n\");
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    int res = anna_as_int_unsafe(i1) / anna_as_int_unsafe(i2);
-            anna_context_push_int(stack, (long)res);
+            anna_context_push_int(context, (long)res);
 	}
 	else
 	{
@@ -214,7 +214,7 @@ echo "
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -222,25 +222,25 @@ echo "
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_DIV_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		anna_context_push_entry(stack,i2);
-                stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-	stack->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(stack);
+	context->frame->code += sizeof(anna_op_null_t);
+	OP_LEAVE(context);
     }
 
   ANNA_LAB_MUL_INT:
     {
-        OP_ENTER(stack);
-	anna_entry_t *i2 = anna_context_pop_entry(stack);
-	anna_entry_t *i1 = anna_context_pop_entry(stack);
+        OP_ENTER(context);
+	anna_entry_t *i2 = anna_context_pop_entry(context);
+	anna_entry_t *i1 = anna_context_pop_entry(context);
 //wprintf(L\"MUL\n\");
-	stack->frame->code += sizeof(anna_op_null_t);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    long long res = (long long)anna_as_int_unsafe(i1) * anna_as_int_unsafe(i2);
@@ -249,7 +249,7 @@ echo "
             if(likely(llabs(res)<=ANNA_INT_FAST_MAX))
             {
 //assert(anna_as_int(anna_from_int(res)) == res);
-  	        anna_context_push_int(stack, (long)res);
+  	        anna_context_push_int(context, (long)res);
             }
             else
             {
@@ -265,7 +265,7 @@ echo "
                 
                 //wprintf(L\"Perform bignum op mul, %s mul %s = %s\n\", mpz_get_str(0, 10, m1), mpz_get_str(0, 10, m2),mpz_get_str(0, 10, res2));
 
-  	        anna_context_push_object(stack, anna_int_create_mp(res2));
+  	        anna_context_push_object(context, anna_int_create_mp(res2));
                 mpz_clear(m1);
                 mpz_clear(m2);
                 mpz_clear(res2);
@@ -277,7 +277,7 @@ echo "
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -285,15 +285,15 @@ echo "
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_MUL_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		anna_context_push_entry(stack,i2);
-                stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-	OP_LEAVE(stack);
+	OP_LEAVE(context);
     }
 "
 
@@ -305,15 +305,15 @@ for i in "ADD v1 + v2" "SUB v1 - v2" "INCREASE_ASSIGN v1 + v2" "DECREASE_ASSIGN 
 echo "    
   ANNA_LAB_${name}_FLOAT:
     {
-        OP_ENTER(stack);
-	anna_entry_t *i2 = anna_context_pop_entry(stack);
-	anna_entry_t *i1 = anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
+        OP_ENTER(context);
+	anna_entry_t *i2 = anna_context_pop_entry(context);
+	anna_entry_t *i1 = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
             double v1 = anna_as_float_unsafe(i1);
             double v2 = anna_as_float_unsafe(i2);
-	    anna_context_push_float(stack, $op);
+	    anna_context_push_float(context, $op);
 	}
 	else
 	{
@@ -321,7 +321,7 @@ echo "
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -329,15 +329,15 @@ echo "
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_FLOAT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		anna_context_push_entry(stack,i2);
-                stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-	OP_LEAVE(stack);
+	OP_LEAVE(context);
     }
 "
 done

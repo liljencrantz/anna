@@ -59,18 +59,18 @@ void anna_reflection_create_types(anna_stack_template_t *stack)
     anna_type_data_create(anna_member_type_data, stack);
 }
 
-static void anna_i_cc(anna_context_t *stack)
+static void anna_i_cc(anna_context_t *context)
 {
-    stack->frame = anna_frame_to_heap(stack->frame);
+    context->frame = anna_frame_to_heap(context->frame);
     
-    anna_context_pop_object(stack);
-    anna_context_pop_object(stack);
+    anna_context_pop_object(context);
+    anna_context_pop_object(context);
     anna_object_t *cont = anna_continuation_create(
-	&stack->stack[0],
-	stack->top - &stack->stack[0],
-	stack->frame,
+	&context->stack[0],
+	context->top - &context->stack[0],
+	context->frame,
 	1)->wrapper;
-    anna_context_push_object(stack, cont);
+    anna_context_push_object(context, cont);
 }
 
 void anna_reflection_load(anna_stack_template_t *stack)

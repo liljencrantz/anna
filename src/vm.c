@@ -44,22 +44,22 @@ static inline void anna_frame_return(anna_activation_frame_t *frame)
     }
 }
 
-static inline void anna_context_frame_return(anna_context_t *stack)
+static inline void anna_context_frame_return(anna_context_t *context)
 {
-    stack->top = stack->frame->return_stack_top;
-    anna_frame_return(stack->frame);
-    stack->frame = stack->frame->dynamic_frame;
+    context->top = context->frame->return_stack_top;
+    anna_frame_return(context->frame);
+    context->frame = context->frame->dynamic_frame;
 }
 
-static inline void anna_context_frame_return_static(anna_context_t *stack)
+static inline void anna_context_frame_return_static(anna_context_t *context)
 {
-    anna_frame_return(stack->frame);
-    stack->frame = stack->frame->static_frame;
+    anna_frame_return(context->frame);
+    context->frame = context->frame->static_frame;
 }
 
 static inline anna_object_t *anna_vm_trampoline(
     anna_function_t *fun,
-    anna_context_t *stack)
+    anna_context_t *context)
 {
     anna_object_t *orig = fun->wrapper;
     anna_object_t *res = anna_object_create(orig->type);
@@ -72,7 +72,7 @@ static inline anna_object_t *anna_vm_trampoline(
 	   &orig->member[payload_offset],
 	   sizeof(anna_function_t *));    
     memcpy(&res->member[stack_offset],
-	   &stack->frame,
+	   &context->frame,
 	   sizeof(anna_context_t *));
 
     return res;
@@ -97,10 +97,10 @@ __cold static int frame_checksum(anna_activation_frame_t *frame)
     return res;
 }
 
-__attr_unused __cold static void anna_stack_describe(anna_context_t *stack)
+__attr_unused __cold static void anna_stack_describe(anna_context_t *context)
 {
-    anna_entry_t **p = &stack->stack[0];
-    while(p<stack->top)
+    anna_entry_t **p = &context->stack[0];
+    while(p<context->top)
     {
 /*	if(anna_is_int(*p))
 	{
@@ -222,15 +222,15 @@ __attr_unused __cold static void anna_frame_print(anna_activation_frame_t *frame
 */
 }
 
-__attr_unused __cold static void anna_context_print_parent(anna_context_t *stack)
+__attr_unused __cold static void anna_context_print_parent(anna_context_t *context)
 {
-/*    if(!stack)
+/*    if(!context)
 	return;
-    anna_context_print_parent(stack->parent);
+    anna_context_print_parent(context->parent);
     wprintf(
 	L"Function %ls, offset %d\n", 
-	stack->function?stack->function->name:L"<null>", 
-	stack->function? (stack->code - stack->function->code): -1);
+	context->function?context->function->name:L"<null>", 
+	context->function? (context->code - context->function->code): -1);
 */
 }
 
@@ -327,16 +327,16 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     static int vm_count = 0;
     int is_root = vm_count==0;
     
-    anna_context_t *stack;  
+    anna_context_t *context;  
     size_t ss = 4096 * sizeof(anna_entry_t *);
     size_t afs = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_activation_frame_t);
-    stack = anna_slab_alloc(ss);
-    stack->size = ss;
+    context = anna_slab_alloc(ss);
+    context->size = ss;
     
-    stack->frame = anna_alloc_activation_frame(afs);
-    stack->frame->dynamic_frame = 0;
+    context->frame = anna_alloc_activation_frame(afs);
+    context->frame->dynamic_frame = 0;
     
-    stack->frame->static_frame = *(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    context->frame->static_frame = *(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
     
     anna_function_t *fun = anna_alloc_function();
     fun->code = malloc(1);
@@ -345,72 +345,72 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     fun->input_count = argc;
     fun->variable_count = 0;
 
-    stack->frame->function = fun;
-    stack->top = &stack->stack[0];
-    stack->frame->code = stack->frame->function->code;
-    stack->frame->return_stack_top = stack->top;
-//    *(stack->code) = ANNA_INSTR_STOP;
+    context->frame->function = fun;
+    context->top = &context->stack[0];
+    context->frame->code = context->frame->function->code;
+    context->frame->return_stack_top = context->top;
+//    *(context->code) = ANNA_INSTR_STOP;
     
     int i;
-    anna_context_push_object(stack, entry);
+    anna_context_push_object(context, entry);
     for(i=0; i<argc; i++)
     {
-	anna_context_push_entry(stack, argv[i]);
+	anna_context_push_entry(context, argv[i]);
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
-    stack->function_object = entry;
-    root_fun->native(stack);
+    context->function_object = entry;
+    root_fun->native(context);
 
 //    wprintf(L"Lalala, run function %ls\n", root_fun->name);
 //    if(root_fun->code)
 //	anna_bc_print(root_fun->code);
     
-    OP_LEAVE(stack);	
+    OP_LEAVE(context);	
 
   ANNA_LAB_CONSTANT:
     {
-	OP_ENTER(stack);	
+	OP_ENTER(context);	
 
-	anna_op_const_t *op = (anna_op_const_t *)stack->frame->code;
-	anna_context_push_entry(stack, op->value);
+	anna_op_const_t *op = (anna_op_const_t *)context->frame->code;
+	anna_context_push_entry(context, op->value);
 	
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);	
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);	
     }
     
   ANNA_LAB_CAST:	    
     {
-	OP_ENTER(stack);	
-	anna_op_type_t *op = (anna_op_type_t *)stack->frame->code;
-	if(!anna_abides(anna_context_peek_object(stack,0)->type, op->value))
+	OP_ENTER(context);	
+	anna_op_type_t *op = (anna_op_type_t *)context->frame->code;
+	if(!anna_abides(anna_context_peek_object(context,0)->type, op->value))
 	{
-	    anna_context_pop_object(stack);
-	    anna_context_push_object(stack, null_object);
+	    anna_context_pop_object(context);
+	    anna_context_push_object(context, null_object);
 	}
 	
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);	
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);	
     }
     
   ANNA_LAB_CALL:
     {
-	OP_ENTER(stack);	
+	OP_ENTER(context);	
 
 	if(is_root)
 	{
-	    anna_alloc_check_gc(stack);
+	    anna_alloc_check_gc(context);
 	}
 	
-	anna_op_count_t *op = (anna_op_count_t *)stack->frame->code;
+	anna_op_count_t *op = (anna_op_count_t *)context->frame->code;
 	size_t param = op->param;
-	anna_object_t *wrapped = anna_context_peek_object_fast(stack, param);
+	anna_object_t *wrapped = anna_context_peek_object_fast(context, param);
 
 #ifdef ANNA_CHECK_VM
 	if(!wrapped)
 	{
 	    wprintf(
 		L"Error: Tried to call null pointer at offset %d of function %ls\n", 
-		stack->frame->code - stack->frame->function->code, stack->frame->function->name);
+		context->frame->code - context->frame->function->code, context->frame->function->name);
 	    
 	    CRASH;
 	}
@@ -419,8 +419,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 
 	if(unlikely(wrapped == null_object))
 	{
-	    stack->frame->code += sizeof(*op);
-	    anna_context_drop(stack, param);
+	    context->frame->code += sizeof(*op);
+	    anna_context_drop(context, param);
 	}
 	else
 	{
@@ -431,29 +431,29 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 #ifdef ANNA_CHECK_VM
 	    if(!fun)
 	    {
-		debug(D_CRITICAL, L"In function %ls\n", stack->frame->function->name );
-		anna_bc_print(stack->frame->function->code);
-		debug(D_CRITICAL, L"Offset %d\n", stack->frame->code - stack->frame->function->code);
+		debug(D_CRITICAL, L"In function %ls\n", context->frame->function->name );
+		anna_bc_print(context->frame->function->code);
+		debug(D_CRITICAL, L"Offset %d\n", context->frame->code - context->frame->function->code);
 
 		debug(D_CRITICAL, L"Error: Tried to call something that is not a function with %d params. Stack contents:\n", param);
-		anna_frame_print(stack->frame);
+		anna_frame_print(context->frame);
 		CRASH;
 	    }
 #endif
 	    
-	    stack->frame->code += sizeof(*op);
-	    stack->function_object = wrapped;
-	    fun->native(stack);
+	    context->frame->code += sizeof(*op);
+	    context->function_object = wrapped;
+	    fun->native(context);
 	}
 
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
     
   ANNA_LAB_CONSTRUCT:
     {
-	OP_ENTER(stack);	
-	anna_op_null_t *op = (anna_op_null_t *)stack->frame->code;
-	anna_object_t *wrapped = anna_context_pop_object_fast(stack);
+	OP_ENTER(context);	
+	anna_op_null_t *op = (anna_op_null_t *)context->frame->code;
+	anna_object_t *wrapped = anna_context_pop_object_fast(context);
 	
 	anna_type_t *tp = anna_type_unwrap(wrapped);
 	
@@ -462,96 +462,96 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 	    tp,
 	    ANNA_MID_INIT_PAYLOAD);
-	anna_context_push_object(stack, anna_as_obj_fast(*constructor_ptr));
-	anna_context_push_object(stack, result);
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);	
+	anna_context_push_object(context, anna_as_obj_fast(*constructor_ptr));
+	anna_context_push_object(context, result);
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_RETURN:
     {
-	OP_ENTER(stack);	
-	anna_entry_t *val = anna_context_peek_entry(stack, 0);
-	anna_context_frame_return(stack);
-	anna_context_push_entry(stack, val);
+	OP_ENTER(context);	
+	anna_entry_t *val = anna_context_peek_entry(context, 0);
+	anna_context_frame_return(context);
+	anna_context_push_entry(context, val);
 //		wprintf(L"Pop frame\n");
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
     
     ANNA_LAB_RETURN_COUNT:
     {
-	OP_ENTER(stack);	
-	anna_op_count_t *cb = (anna_op_count_t *)stack->frame->code;
-	anna_entry_t *val = anna_context_peek_entry(stack, 0);
+	OP_ENTER(context);	
+	anna_op_count_t *cb = (anna_op_count_t *)context->frame->code;
+	anna_entry_t *val = anna_context_peek_entry(context, 0);
 	int i;
 		
 	for(i=0; i<cb->param; i++)
 	{
-	    anna_context_frame_return_static(stack);
+	    anna_context_frame_return_static(context);
 	}
-	anna_context_frame_return(stack);
-	anna_context_push_entry(stack, val);
-	OP_LEAVE(stack);	
+	anna_context_frame_return(context);
+	anna_context_push_entry(context, val);
+	OP_LEAVE(context);	
     }
 
     ANNA_LAB_RETURN_COUNT_BREAK:
     {
-	OP_ENTER(stack);	
-	anna_op_count_t *cb = (anna_op_count_t *)stack->frame->code;
-	anna_entry_t *val = anna_context_peek_entry(stack, 0);
+	OP_ENTER(context);	
+	anna_op_count_t *cb = (anna_op_count_t *)context->frame->code;
+	anna_entry_t *val = anna_context_peek_entry(context, 0);
 	int i;
 		
 	for(i=0; i<cb->param; i++)
 	{
-	    anna_context_frame_return_static(stack);
+	    anna_context_frame_return_static(context);
 	}
-	anna_context_frame_return(stack);
-	anna_context_push_entry(stack, val);
-	stack->frame->flags |= ANNA_ACTIVATION_FRAME_BREAK;
-	OP_LEAVE(stack);	
+	anna_context_frame_return(context);
+	anna_context_push_entry(context, val);
+	context->frame->flags |= ANNA_ACTIVATION_FRAME_BREAK;
+	OP_LEAVE(context);	
     }
 
     ANNA_LAB_CHECK_BREAK:
     {
-	OP_ENTER(stack);	
+	OP_ENTER(context);	
 	anna_context_push_entry( 
-	    stack, 
-	    stack->frame->flags & ANNA_ACTIVATION_FRAME_BREAK ? anna_from_int(1) : null_entry);
+	    context, 
+	    context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK ? anna_from_int(1) : null_entry);
 	// Clear the break flag on check
-	stack->frame->flags  = stack->frame->flags & ~ANNA_ACTIVATION_FRAME_BREAK;
-	stack->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(stack);	
+	context->frame->flags  = context->frame->flags & ~ANNA_ACTIVATION_FRAME_BREAK;
+	context->frame->code += sizeof(anna_op_null_t);
+	OP_LEAVE(context);	
     }
     
 
   ANNA_LAB_NATIVE_CALL:
     {
-	OP_ENTER(stack);	
-	anna_op_native_call_t *cb = (anna_op_native_call_t *)stack->frame->code;
-	stack->frame->code += sizeof(*cb);
+	OP_ENTER(context);	
+	anna_op_native_call_t *cb = (anna_op_native_call_t *)context->frame->code;
+	context->frame->code += sizeof(*cb);
 
-	cb->function(stack);
-	OP_LEAVE(stack);
+	cb->function(context);
+	OP_LEAVE(context);
     }
 
   ANNA_LAB_STOP:
     {
-	OP_ENTER(stack);	
+	OP_ENTER(context);	
 //		wprintf(L"Pop last frame\n");
-	anna_object_t *val = anna_context_peek_object(stack, 0);
-//	free(stack->frame->code);
-	anna_context_frame_return(stack);
-//	stack = stack->caller;
-	anna_slab_free(stack, stack->size);
+	anna_object_t *val = anna_context_peek_object(context, 0);
+//	free(context->frame->code);
+	anna_context_frame_return(context);
+//	context = context->caller;
+	anna_slab_free(context, context->size);
 	return val;
     }
 	    
   ANNA_LAB_VAR_GET:
     {
-	OP_ENTER(stack);	
-	anna_op_var_t *op = (anna_op_var_t *)stack->frame->code;
+	OP_ENTER(context);	
+	anna_op_var_t *op = (anna_op_var_t *)context->frame->code;
 	int i;
-	anna_activation_frame_t *s = stack->frame;
+	anna_activation_frame_t *s = context->frame;
 	for(i=0; i<op->frame_count; i++)
 	{
 	    s = s->static_frame;
@@ -561,9 +561,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		wprintf(
 		    L"Error: Var get op of to invalid stack frame: %d %d %ls\n",
 		    op->frame_count, op->offset,
-		    stack->frame->function->name);
-		anna_context_print_parent(stack);
-		anna_stack_describe(stack);
+		    context->frame->function->name);
+		anna_context_print_parent(context);
+		anna_stack_describe(context);
 		CRASH;
 	    }
 #endif
@@ -581,40 +581,40 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 /*
 	wprintf(
 	    L"Var get in function %ls, pos %d %d. Result: Object of type %ls\n",
-	    stack->frame->function->name,
+	    context->frame->function->name,
 	    op->frame_count, op->offset,
 	    anna_as_obj(s->base[op->offset])->type->name);
 */
-	anna_context_push_entry(stack, s->slot[op->offset]);
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);	
+	anna_context_push_entry(context, s->slot[op->offset]);
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_VAR_SET:
     {
-	OP_ENTER(stack);	
-	anna_op_var_t *op = (anna_op_var_t *)stack->frame->code;
+	OP_ENTER(context);	
+	anna_op_var_t *op = (anna_op_var_t *)context->frame->code;
 	int i;
-	anna_activation_frame_t *s = stack->frame;
+	anna_activation_frame_t *s = context->frame;
 	for(i=0; i<op->frame_count; i++)
 	    s = s->static_frame;
-	s->slot[op->offset] = anna_context_peek_entry(stack, 0);
+	s->slot[op->offset] = anna_context_peek_entry(context, 0);
 /*
 	wprintf(
 	    L"Var set in function %ls, pos %d %d. Value: Object of type %ls\n",
-	    stack->frame->function->name,
+	    context->frame->function->name,
 	    op->frame_count, op->offset,
 	    anna_as_obj(s->base[op->offset])->type->name);
 */
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);	
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_MEMBER_GET:
     {
-	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
-	anna_object_t *obj = anna_context_pop_object(stack);
+	OP_ENTER(context);	
+	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
+	anna_object_t *obj = anna_context_pop_object(context);
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
 #ifdef ANNA_CHECK_VM
@@ -623,11 +623,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    debug(
 		D_CRITICAL,
 		L"Error in function %ls, offset %d: Object of type %ls does not have a member of type %ls\n",
-		stack->frame->function->name,
-		stack->frame->code - stack->frame->function->code,
+		context->frame->function->name,
+		context->frame->code - context->frame->function->code,
 		obj->type->name,
 		anna_mid_get_reverse(op->mid));
-	    anna_context_print_parent(stack);
+	    anna_context_print_parent(context);
 	    
 	    CRASH;
 	}
@@ -637,43 +637,43 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	{
 	    if(unlikely(obj == null_object))
 	    {
-		anna_context_push_object(stack, null_object);	    
-		stack->frame->code += sizeof(*op);		    
+		anna_context_push_object(context, null_object);	    
+		context->frame->code += sizeof(*op);		    
 	    }
 	    else
 	    {
 		anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->getter_offset]);
 		anna_function_t *fun = anna_function_unwrap(method);
 		
-		anna_context_push_object(stack, method);
-		anna_context_push_object(stack, obj);
-		stack->frame->code += sizeof(*op);
-		stack->function_object = method;
-		fun->native(stack);
+		anna_context_push_object(context, method);
+		anna_context_push_object(context, obj);
+		context->frame->code += sizeof(*op);
+		context->function_object = method;
+		fun->native(context);
 	    }
 	}
 	else
 	{
 	    if(unlikely(obj == null_object))
 	    {
-		anna_context_push_object(stack, null_object);
+		anna_context_push_object(context, null_object);
 	    }
 	    else
 	    {
 		anna_entry_t *res = obj->member[m->offset];		    
-		anna_context_push_entry(stack, res);
+		anna_context_push_entry(context, res);
 	    }
-	    stack->frame->code += sizeof(*op);
+	    context->frame->code += sizeof(*op);
 	}
 	
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_STATIC_MEMBER_GET:
     {
-	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
-	anna_object_t *obj = anna_context_pop_object(stack);
+	OP_ENTER(context);	
+	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
+	anna_object_t *obj = anna_context_pop_object(context);
 	
 	anna_type_t *type = anna_type_unwrap(obj);
 	anna_member_t *m = type->mid_identifier[op->mid];
@@ -691,16 +691,16 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    CRASH;
 	}
 #endif 
-	anna_context_push_entry(stack, type->static_member[m->offset]);
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);	
+	anna_context_push_entry(context, type->static_member[m->offset]);
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_PROPERTY_GET:
     {
-	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
-	anna_object_t *obj = anna_context_pop_object(stack);
+	OP_ENTER(context);	
+	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
+	anna_object_t *obj = anna_context_pop_object(context);
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
 #ifdef ANNA_CHECK_VM
@@ -717,28 +717,28 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 
 	if(unlikely(obj == null_object))
 	{
-	    anna_context_push_object(stack, null_object);	    
-	    stack->frame->code += sizeof(*op);		    
+	    anna_context_push_object(context, null_object);	    
+	    context->frame->code += sizeof(*op);		    
 	}
 	else
 	{
 	    anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->getter_offset]);
 	    anna_function_t *fun = anna_function_unwrap(method);
 	    
-	    anna_context_push_object(stack, method);
-	    anna_context_push_object(stack, obj);
-	    stack->frame->code += sizeof(*op);		    
-	    stack->function_object = method;
-	    fun->native(stack);
+	    anna_context_push_object(context, method);
+	    anna_context_push_object(context, obj);
+	    context->frame->code += sizeof(*op);		    
+	    context->function_object = method;
+	    fun->native(context);
 	}
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_STATIC_PROPERTY_GET:
     {
-	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
-	anna_object_t *obj = anna_context_pop_object(stack);
+	OP_ENTER(context);	
+	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
+	anna_object_t *obj = anna_context_pop_object(context);
 
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -757,22 +757,22 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->getter_offset]);
 	anna_function_t *fun = anna_function_unwrap(method);
 	
-	anna_context_push_object(stack, method);
-	anna_context_push_object(stack, obj);
-	stack->frame->code += sizeof(*op);
-	stack->function_object = method;
-	fun->native(stack);
+	anna_context_push_object(context, method);
+	anna_context_push_object(context, obj);
+	context->frame->code += sizeof(*op);
+	context->function_object = method;
+	fun->native(context);
 
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_MEMBER_GET_THIS:
     {
-	OP_ENTER(stack);
+	OP_ENTER(context);
 
-	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
+	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
 //	wprintf(L"Get method member %d, %ls\n", op->mid, anna_mid_get_reverse(op->mid));
-	anna_object_t *obj = anna_context_pop_object(stack);
+	anna_object_t *obj = anna_context_pop_object(context);
 #ifdef ANNA_CHECK_VM
 	if(!obj){
 	    debug(
@@ -787,34 +787,34 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    debug(
 		D_CRITICAL,L"Object of type %ls does not have a member named %ls\n",
 		obj->type->name, anna_mid_get_reverse(op->mid));
-	    if(stack->frame->function)
+	    if(context->frame->function)
 	    {
 		
 		debug(
 		    D_CRITICAL,
 		    L"Function %ls\n",
-		    stack->frame->function->name);	
+		    context->frame->function->name);	
 	    }
-	    anna_frame_print(stack->frame);	    
+	    anna_frame_print(context->frame);	    
 	    CRASH;
 	}
 #endif 
 	anna_entry_t *res = obj->type->static_member[m->offset];
 	
-	anna_context_push_entry(stack, res);
-	anna_context_push_object(stack, obj);
+	anna_context_push_entry(context, res);
+	anna_context_push_object(context, obj);
 		
-	stack->frame->code += sizeof(*op);
+	context->frame->code += sizeof(*op);
 
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_MEMBER_SET:
     {
-	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
-	anna_object_t *obj = anna_context_pop_object(stack);
-	anna_entry_t *value = anna_context_peek_entry(stack, 0);
+	OP_ENTER(context);	
+	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
+	anna_object_t *obj = anna_context_pop_object(context);
+	anna_entry_t *value = anna_context_peek_entry(context, 0);
 	
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
 
@@ -835,14 +835,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->setter_offset]);
 	    anna_function_t *fun = anna_function_unwrap(method);
 	    
-	    anna_context_pop_object(stack);
-	    anna_context_push_object(stack, method);
-	    anna_context_push_object(stack, obj);
-	    anna_context_push_entry(stack, value);
+	    anna_context_pop_object(context);
+	    anna_context_push_object(context, method);
+	    anna_context_push_object(context, obj);
+	    anna_context_push_entry(context, value);
 
-	    stack->frame->code += sizeof(*op);
-	    stack->function_object = method;
-	    fun->native(stack);
+	    context->frame->code += sizeof(*op);
+	    context->function_object = method;
+	    fun->native(context);
 	}
 	else
 	{
@@ -852,17 +852,17 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		obj->member[m->offset] = value;
 	    }
 		    
-	    stack->frame->code += sizeof(*op);
+	    context->frame->code += sizeof(*op);
 	}
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 
   ANNA_LAB_STATIC_MEMBER_SET:
     {
-	OP_ENTER(stack);	
-	anna_op_member_t *op = (anna_op_member_t *)stack->frame->code;
-	anna_object_t *obj = anna_context_pop_object(stack);
-	anna_entry_t *value = anna_context_peek_entry(stack, 0);
+	OP_ENTER(context);	
+	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
+	anna_object_t *obj = anna_context_pop_object(context);
+	anna_entry_t *value = anna_context_peek_entry(context, 0);
 	anna_type_t * type = anna_type_unwrap(obj);
 	anna_member_t *m = type->mid_identifier[op->mid];
 
@@ -888,55 +888,55 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 #endif
 	
 	type->static_member[m->offset] = value;
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);	
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);	
     }
 
   ANNA_LAB_LIST:
     {
-	OP_ENTER(stack);	
-	anna_op_type_t *op = (anna_op_type_t *)stack->frame->code;
-	anna_context_push_object(stack, anna_list_create2(op->value));
-	stack->frame->code += sizeof(*op);
-	OP_LEAVE(stack);
+	OP_ENTER(context);	
+	anna_op_type_t *op = (anna_op_type_t *)context->frame->code;
+	anna_context_push_object(context, anna_list_create2(op->value));
+	context->frame->code += sizeof(*op);
+	OP_LEAVE(context);
     }
 
   ANNA_LAB_TYPE_OF:
     {
-	OP_ENTER(stack);	
-	anna_op_null_t *op = (anna_op_null_t *)stack->frame->code;
+	OP_ENTER(context);	
+	anna_op_null_t *op = (anna_op_null_t *)context->frame->code;
 	anna_context_push_object(
-	    stack,
+	    context,
 	    anna_type_wrap(
-		anna_context_pop_object(stack)->type)
+		anna_context_pop_object(context)->type)
 	    );
-	stack->frame->code += sizeof(*op);
+	context->frame->code += sizeof(*op);
 /*	    int i;
-	    wprintf(L"Type of stack content:\n");
-	    for(i=0; i < 3 && &stack->base[i] < stack->top; i++)
+	    wprintf(L"Type of context content:\n");
+	    for(i=0; i < 3 && &context->base[i] < context->top; i++)
 	    {
-		anna_entry_t *e = anna_context_peek_entry(stack, i);
-		wprintf(L"Object of type %ls\n", anna_is_obj(e)?(anna_context_peek_object(stack, i)->type->name): L"???");
+		anna_entry_t *e = anna_context_peek_entry(context, i);
+		wprintf(L"Object of type %ls\n", anna_is_obj(e)?(anna_context_peek_object(context, i)->type->name): L"???");
 		
 	    }
 	    wprintf(L"\n");
 */
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 
   ANNA_LAB_FOLD:
     {
-	OP_ENTER(stack);	
-	anna_entry_t *val = anna_context_pop_entry(stack);
+	OP_ENTER(context);	
+	anna_entry_t *val = anna_context_pop_entry(context);
 #ifdef ANNA_CHECK_VM
-	anna_object_t *lst = anna_context_peek_object(stack, 0);
+	anna_object_t *lst = anna_context_peek_object(context, 0);
 	if(lst->type->mid_identifier[ANNA_MID_LIST_PAYLOAD] == 0)
 	{
-	    if(stack->frame->function)
+	    if(context->frame->function)
 	    {
-		debug(D_CRITICAL, L"In function %ls\n", stack->frame->function->name );
-		anna_bc_print(stack->frame->function->code);
-		debug(D_CRITICAL, L"Offset %d\n", stack->frame->code - stack->frame->function->code);
+		debug(D_CRITICAL, L"In function %ls\n", context->frame->function->name );
+		anna_bc_print(context->frame->function->code);
+		debug(D_CRITICAL, L"Offset %d\n", context->frame->code - context->frame->function->code);
 	    }
 	    
 	    debug(
@@ -948,9 +948,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    
 	    int i;
 	    
-	    for(i=0; &stack->stack[i] < stack->top; i++)
+	    for(i=0; &context->stack[i] < context->top; i++)
 	    {
-		wprintf(L"Object of type %ls\n", anna_context_peek_object(stack, i)->type->name);		
+		wprintf(L"Object of type %ls\n", anna_context_peek_object(context, i)->type->name);		
 	    }
 	    
 /*
@@ -967,85 +967,85 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    CRASH;
 	}
 #endif	
-	anna_list_add(anna_context_peek_object(stack, 0), val);
-	stack->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(stack);	
+	anna_list_add(anna_context_peek_object(context, 0), val);
+	context->frame->code += sizeof(anna_op_null_t);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_POP:
     {
-	OP_ENTER(stack);	
-	anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(stack);	
+	OP_ENTER(context);	
+	anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_NOT:
     {
-	OP_ENTER(stack);	
-	*(stack->top-1) = anna_entry_null(*(stack->top-1))?anna_from_int(1):null_entry;
-	stack->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(stack);	
+	OP_ENTER(context);	
+	*(context->top-1) = anna_entry_null(*(context->top-1))?anna_from_int(1):null_entry;
+	context->frame->code += sizeof(anna_op_null_t);
+	OP_LEAVE(context);	
     }
 
   ANNA_LAB_DUP:
     {
-	OP_ENTER(stack);	
-	anna_context_push_entry(stack, anna_context_peek_entry(stack, 0));
-	stack->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(stack);	
+	OP_ENTER(context);	
+	anna_context_push_entry(context, anna_context_peek_entry(context, 0));
+	context->frame->code += sizeof(anna_op_null_t);
+	OP_LEAVE(context);	
     }
 
   ANNA_LAB_JMP:
     {
-	OP_ENTER(stack);	
-	anna_op_off_t *op = (anna_op_off_t *)stack->frame->code;
-	stack->frame->code += op->offset;
-	OP_LEAVE(stack);	
+	OP_ENTER(context);	
+	anna_op_off_t *op = (anna_op_off_t *)context->frame->code;
+	context->frame->code += op->offset;
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_COND_JMP:
     {
-	OP_ENTER(stack);	
-	anna_op_off_t *op = (anna_op_off_t *)stack->frame->code;
-	stack->frame->code += !anna_entry_null(anna_context_pop_entry(stack)) ? op->offset:sizeof(*op);
-	OP_LEAVE(stack);	
+	OP_ENTER(context);	
+	anna_op_off_t *op = (anna_op_off_t *)context->frame->code;
+	context->frame->code += !anna_entry_null(anna_context_pop_entry(context)) ? op->offset:sizeof(*op);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_NCOND_JMP:
     {
-	OP_ENTER(stack);	
-	anna_op_off_t *op = (anna_op_off_t *)stack->frame->code;
-	stack->frame->code += anna_entry_null(anna_context_pop_entry(stack)) ? op->offset:sizeof(*op);
-	OP_LEAVE(stack);	
+	OP_ENTER(context);	
+	anna_op_off_t *op = (anna_op_off_t *)context->frame->code;
+	context->frame->code += anna_entry_null(anna_context_pop_entry(context)) ? op->offset:sizeof(*op);
+	OP_LEAVE(context);	
     }
 	    
   ANNA_LAB_TRAMPOLENE:
     {
-	OP_ENTER(stack);	
-	stack->frame = anna_frame_to_heap(stack->frame);
-	anna_object_t *base = anna_context_pop_object_fast(stack);
-	anna_object_t *tramp = anna_vm_trampoline(anna_function_unwrap(base), stack);
-	anna_context_push_object(stack, tramp);
+	OP_ENTER(context);	
+	context->frame = anna_frame_to_heap(context->frame);
+	anna_object_t *base = anna_context_pop_object_fast(context);
+	anna_object_t *tramp = anna_vm_trampoline(anna_function_unwrap(base), context);
+	anna_context_push_object(context, tramp);
 	
-	stack->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(stack);	
+	context->frame->code += sizeof(anna_op_null_t);
+	OP_LEAVE(context);	
     }
 
   ANNA_LAB_NEXT_ASSIGN_INT:
     {
-	OP_ENTER(stack);	
-	anna_entry_t *iv = anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
+	OP_ENTER(context);	
+	anna_entry_t *iv = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(iv)))
 	{
 	    int res = anna_as_int(iv)+1;
 
             if(likely(abs(res)<=ANNA_INT_FAST_MAX))
-  	        anna_context_push_int(stack, (long)res);
+  	        anna_context_push_int(context, (long)res);
             else
 	    {
-  	        anna_context_push_object(stack, anna_int_create(res));
+  	        anna_context_push_object(context, anna_int_create(res));
             }
 	}
 	else
@@ -1054,7 +1054,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -1062,30 +1062,30 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_NEXT_ASSIGN_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}
 	
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 
   ANNA_LAB_PREV_ASSIGN_INT:
     {
-	OP_ENTER(stack);	
-	anna_entry_t *iv = anna_context_pop_entry(stack);
-	stack->frame->code += sizeof(anna_op_null_t);
+	OP_ENTER(context);	
+	anna_entry_t *iv = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(iv)))
 	{
 	    int res = anna_as_int(iv)-1;
 
             if(likely(abs(res)<=ANNA_INT_FAST_MAX))
-  	        anna_context_push_int(stack, (long)res);
+  	        anna_context_push_int(context, (long)res);
             else
 	    {
-  	        anna_context_push_object(stack, anna_int_create(res));
+  	        anna_context_push_object(context, anna_int_create(res));
             }
 	}
 	else
@@ -1094,7 +1094,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    
 	    if(o1 == null_object)
 	    {
-		anna_context_push_object(stack, null_object);		
+		anna_context_push_object(context, null_object);		
 	    }
 	    else
 	    {
@@ -1102,14 +1102,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_PREV_ASSIGN_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
-		anna_context_push_object(stack,wrapped);
-		anna_context_push_object(stack,o1);
-		stack->function_object = wrapped;
-		fun->native(stack);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o1);
+		context->function_object = wrapped;
+		fun->native(context);
 	    }
 	}	
 	
-	OP_LEAVE(stack);	
+	OP_LEAVE(context);	
     }
 
 #include "autogen/vm_short_circut.c"
