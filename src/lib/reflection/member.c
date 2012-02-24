@@ -183,7 +183,7 @@ static void anna_member_type_create()
 	type_type,
 	&anna_member_i_get_member_of,
 	0,
-	L"The type of this member.");
+	L"The type this member belongs to.");
     
     anna_member_create_native_property(
 	member_type, anna_mid_get(L"attribute"),

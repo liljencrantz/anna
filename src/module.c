@@ -923,6 +923,8 @@ static void anna_module_load_i_phase_2()
     al_truncate(&anna_module_in_transit, 0);
 }
 
+static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_t *program);
+
 /**
    Actually perform the loading of a module.
 
@@ -947,7 +949,6 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
       This variable is used to keep track of whether we are the root
       call anna_module_load_i or not.
      */
-    static int recursion_count = 0;
 
     if(!module_stack->filename)
     {
@@ -969,10 +970,16 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	return;	
     }
     
-    int i;
-
     debug(D_SPAM, L"Parsing file %ls...\n", module_stack->filename);    
+
     anna_node_t *program = anna_parse(module_stack->filename);
+    anna_module_load_ast(module_stack, program);
+}
+
+static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_t *program)
+{
+    int i;
+    static int recursion_count = 0;
     
     if(!program || anna_error_count) 
     {
@@ -1123,6 +1130,18 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	anna_module_load_i_phase_2();	
     }
     recursion_count--;    
+}
+
+anna_object_t *anna_module_create(
+    anna_node_t *node)
+{
+    anna_stack_template_t *module = 
+	anna_stack_create(stack_global);
+    anna_stack_name(module, L"!anonymous");
+    anna_module_load_ast(
+	module, node);
+    
+    return module?anna_stack_wrap(module):0;
 }
 
 anna_object_t *anna_module_load(wchar_t *module_name)

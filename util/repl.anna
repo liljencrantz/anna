@@ -1,0 +1,13 @@
+def main()
+{
+    while(1)
+    {
+        line := io.readLine();
+        ast := parser.parse(line);
+        moduleAst := ast(nothing(def %fun(){%ast})) % ["fun": parser.Identifier(?, "!fun"), "ast": ast];
+        code := parser.compile(moduleAst);
+        funMemb := code.__type__.member.find(memb){memb.name=="!fun"};
+        fun := funMemb.value(code);
+	print((fun as reflection.Block)());
+    }
+}

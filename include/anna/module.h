@@ -7,6 +7,11 @@ struct anna_node;
 
 void anna_module_init(void);
 anna_object_t *anna_module_load(wchar_t *module_name);
+/*
+  Create a new module by compiling the specified AST
+*/
+anna_object_t *anna_module_create(struct anna_node *node);
+
 void anna_module_const_int(
     anna_stack_template_t *stack,
     wchar_t *name,
