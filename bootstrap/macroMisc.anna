@@ -35,8 +35,21 @@ macro iFloatLiteral(node)
 The i floating point literal suffix, used for creating complex number 
 literals consisting of an imaginary part, e.g. 
 <code class='anna-code'>2.0i</code> is equivalent to 
-<code>Complex(0.0, 2.0)</code>."))
+<code>Complex(0.0, 2.0)</code>.  Note that <code class='anna-code'>2.0j</code>
+and <code class='anna-code'>2.0i</code> mean exactly the same thing."))
 {
     numNode := node[0] as FloatLiteral;
     return ast(Complex(0.0, %val)) % ["val": numNode];
+}
+
+macro jFloatLiteral(node)
+(
+    doc("
+The i floating point literal suffix, used for creating complex number 
+literals consisting of an imaginary part, e.g. 
+<code class='anna-code'>2.0j</code> is equivalent to 
+<code>Complex(0.0, 2.0)</code>. Note that <code class='anna-code'>2.0j</code>
+ and <code class='anna-code'>2.0i</code> mean exactly the same thing."))
+{
+    iFloatLiteral(node);
 }
