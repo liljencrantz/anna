@@ -37,7 +37,6 @@ for i in "add +" "sub -" "increaseAssign +" "decreaseAssign -"; do
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(char_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
     anna_member_alias(char_type, mmid, L\"__${name}__\");
-
 "
 
     echo "
@@ -77,7 +76,7 @@ ANNA_VM_NATIVE(anna_char_i_$name, 2)
 done
 
 
-for i in "alpha True for alphabetical characters." "alnum True for alphanumerical characters." "blank True for blank characters" "digit True for digits" "cntrl True for control characters" "lower True for lower case characters." "upper True for upper case characters." "graph True for any printable character except space" "print True for any printable character including space" "punct True for any printable character which is not alphanumeric." "space True for white space characters." "xdigit True for hexadecimal digits."; do
+for i in "alpha True for alphabetical characters." "alnum True for alphanumerical characters." "blank True for blank characters" "digit True for digits" "cntrl True for control characters" "lower True for lower case characters." "upper This property is non-null for upper case characters." "graph This property is non-null for printable characters except space" "print True for any printable character including space" "punct True for any printable character which is not alphanumeric." "space True for white space characters." "xdigit True for hexadecimal digits."; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     desc=$(echo "$i"|cut -f 2- -d ' ')
 
