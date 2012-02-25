@@ -192,7 +192,6 @@ static void anna_member_type_create()
 	0,
 	L"All attributes specified for this member.");
     
-    
     anna_type_t *v_argv[] = 
 	{
 	    member_type,
@@ -205,6 +204,16 @@ static void anna_member_type_create()
 	    L"this", L"object"
 	}
     ;
+    
+    anna_member_create_native_method(
+	member_type,
+	ANNA_MID_TO_STRING, 
+	0,
+	&anna_member_i_get_name, 
+	string_type, 
+	1, 
+	v_argv, v_argn, 0,
+	L"Returns a String representation of this member.");
     
     anna_member_create_native_method(
 	member_type, anna_mid_get(L"value"),
