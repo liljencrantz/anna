@@ -8,8 +8,8 @@ error IOError
 
 def readLine() (doc("Read one line of text from the keyboard and return it as a text string"))
 {
-  rbuff := Buffer();
-  sbuff := Buffer();
+    rbuff := Buffer();
+    sbuff := Buffer();
     res := "".thaw;
     while(1)
     {
@@ -22,7 +22,7 @@ def readLine() (doc("Read one line of text from the keyboard and return it as a 
 	    
 	    case(1)
 	    {
-	      chr := rbuff.encode();
+	        chr := rbuff.encode();
 		if(chr == "\n")
 		{
 		    return sbuff.encode();
@@ -278,7 +278,6 @@ class File
     def copyTo(File destination)
     {
 
-	
     }
 
 }

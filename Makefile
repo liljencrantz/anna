@@ -59,12 +59,12 @@ src/function.o src/util/util.o src/module.o src/vm.o src/alloc.o	\
 src/compile.o src/wutil.o src/common.o src/attribute.o src/object.o	\
 src/error.o src/parse.o src/invoke.o
 
-LDFLAGS := -lm -lgmp -rdynamic -ll -ldl $(PROF_FLAGS) $(COV_FLAGS)
+LDFLAGS := -lm -lgmp -rdynamic -ll -ldl -lncurses $(PROF_FLAGS) $(COV_FLAGS)
 
 PROGRAMS := bin/anna 
 
 ANNA_INTERNAL_BINDINGS := lib/unix.so
-ANNA_EXTERNAL_BINDINGS := lib/getText.so
+ANNA_EXTERNAL_BINDINGS := lib/getText.so lib/curses.so
 
 all: $(PROGRAMS) documentation
 .PHONY: all

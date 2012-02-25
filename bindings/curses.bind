@@ -1,0 +1,28 @@
+include("<curses.h>", "<term.h>");
+
+command
+{
+    var String enterBoldMode (name(enter_bold_mode));
+    var String enterUnderlineMode (name(enter_underline_mode));
+    var String exitAttributeMode (name(exit_attribute_mode));
+    var String setForeground (name(set_foreground));
+    var String setBackground (name(set_background));
+    var String setAForeground (name(set_a_foreground));
+    var String setABackground (name(set_a_background));
+    
+}
+
+key
+{
+    var String up (name(key_up));
+    var String down (name(key_down));
+    var String left (name(key_left));
+    var String right (name(key_right));
+}
+
+def Int setupterm(String term (nullable), Int fd, MutableList«Int» error (ensureCapacity(1), nullable));
+def Int setterm(String term);
+def String tparmVoid(String string) (alias(tparm), name(tparm));
+def String tparmInt(String string, Int param) (alias(tparm), name(tparm));
+def String tparmString(String string, String param) (alias(tparm), name(tparm));
+
