@@ -132,7 +132,7 @@ def init()
 	ast(String): BasicBindingType(
 	    "char *",
 	    "string_type", 
-	    "char *%(dest) = anna_string_payload_narrow(anna_as_obj(%(source)));",
+	    "char *%(dest) = (%(source) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(%(source)));",
 	    "anna_entry_t *%(dest) = (%(source)) ? anna_from_obj(anna_string_create_narrow(strlen(%(source)), %(source))) : null_entry;",
 	    cleanupToC: "free(%(dest));"),
 	ast(Int): BasicBindingType(
@@ -242,8 +242,12 @@ class BindingType
     def String preValidateToC(Node decl, Node attr, String dest, String source)
     (doc("Perform validation of the specified conversion to C."))
     {
-	"if(% == null_entry){return null_entry;}" % [source];
+	if(!(attr as Call).childNamed?("nullable"))
+	{
+	    "if(% == null_entry){return null_entry;}" % [source];
+	}
     }
+    
     
     def String postValidateToC(Node decl, Node attr, String dest, String source)
     (doc("Perform validation of the specified conversion to C."))
@@ -706,9 +710,18 @@ class BindingGenerator
 	    inputNameData.push("L\"" ~ ((inp as Call)[0] as Identifier).name ~"\"");
 	}
         inputCount := inputTypeData.count;
+
+      escapedName := cEscape(name);
+      aliasCode := "".thaw;
+      aliasList := findAttr(attr, "alias");
+	aliasList.each(alias)
+	{
+	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%), %);\n" % [escapedName, cEscape(alias.toString())];
+	}
+
         data := 
 	    [
-		"functionName": name, 
+		"functionName": escapedName, 
 		"mangledName": mangled,
 		"returnType": returnType,
 		"inputCount": inputCount,
@@ -718,13 +731,14 @@ class BindingGenerator
 		"inputNameData": ", ".join(inputNameData),
 		"doc": extractDoc(attr),
 		"codeInternal": generateFunctionCode(decl),
+		"aliasCode": aliasCode
 	    ];
-
+	    
         load := "
     anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
     wchar_t *%(inputNameVar)[] = {%(inputNameData)};
-    anna_module_function(stack, L\"%(functionName)\", 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
-" % data;
+    anna_module_function(stack, %(functionName), 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
+%(aliasCode)" % data;
   
         code := "
 ANNA_VM_NATIVE(%(mangledName), %(inputCount))
@@ -1084,6 +1098,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 		    }
 		    else
 		    {
+                    
 		    switch(declVal)
 		    {
 			case (intVal as IntLiteral)
@@ -1098,7 +1113,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 			case (callVal as Call)
 			{
-			    switch(((decl[2] as Call).function as Identifier).name)
+			    switch((callVal.function as Identifier).name)
 			    {
 				case("__def__")
 				{
@@ -1127,7 +1142,13 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 			default
 			{
+                            declTypeName := (declType as Identifier).name;
+                            switch(declTypeName)
+                            {
+                                case("Int")
+                                {
 			    nativeName := nameToStr(decl[0], decl[3]);
+
 			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));
 " % 
 				[
@@ -1135,6 +1156,14 @@ ANNA_VM_NATIVE(%(initName), 1)
 				    "value": nativeName,
 				    "doc": extractDoc(attr),
 				];
+                                }
+
+                                default
+                                {
+                                    print("Unknwon declaration type:", declTypeName);
+                                    unix.proc.exit(1);
+                                }
+                            }
 			}	
 		    }
 		    }	
@@ -1335,6 +1364,7 @@ void anna_%(moduleName)_create(anna_stack_template_t *stack)
 void anna_%(moduleName)_load(anna_stack_template_t *stack);
 void anna_%(moduleName)_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -1344,7 +1374,7 @@ void anna_%(moduleName)_load(anna_stack_template_t *stack)
     wchar_t *this_argn[] = {L\"this\"};
 
 %(load)
-     anna_type_data_register(anna_%(moduleName)_type_data, stack);
+    anna_type_data_register(anna_%(moduleName)_type_data, stack);
 }
 " % [
             "moduleName": moduleName, 
