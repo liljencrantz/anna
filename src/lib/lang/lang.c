@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <float.h>
 #include <wctype.h>
+#include <limits.h>
 
 #include "anna/common.h"
 #include "anna/util.h"
@@ -133,7 +134,7 @@ ANNA_VM_NATIVE(anna_i_print_internal, 1)
     anna_object_t *value = anna_as_obj(param[0]);
     if(value == null_object)
     {
-	wprintf(L"null");	
+	write(1, "null", 4);	
     }
     else 
     {

@@ -111,9 +111,45 @@ void asi_truncate(anna_string_t *dest, size_t length)
     dest->count = mini(length, dest->count);
 }
 
+static int asi_convert(wchar_t *src, size_t src_sz, char **dst, size_t *dst_sz)
+{
+    size_t i;
+    static char *res=0;
+    static size_t res_sz;
+    
+    size_t max_sz = (src_sz+2) * MB_LEN_MAX;
+    if(res_sz < max_sz)
+    {
+	res_sz = max_sz;
+	res = realloc(res, res_sz);
+    }
+
+    char *ptr = res;
+    for(i=0; i<src_sz; i++)
+    {
+	int steps = wctomb(ptr, src[i]);
+	if(steps == -1)
+	{
+	    return -1;
+	}
+	ptr += steps;
+    }
+    *dst = res;
+    *dst_sz = ptr-res;
+    return 0;
+}
+
+
 void asi_print_regular(anna_string_t *string)
 {
-    wprintf(L"%.*ls", string->count, string->str);
+    char *narrow;
+    size_t len;
+    if(asi_convert(string->str, string->count, &narrow, &len))
+    {
+	narrow = "Failed to convert wide character string\n";
+	len = strlen(narrow);
+    }
+    write(1, narrow, len);
 }
 
 void asi_print_debug(anna_string_t *string)
