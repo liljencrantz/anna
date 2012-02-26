@@ -2,7 +2,18 @@ def main()
 {
     while(1)
     {
-        line := io.readLine();
+        line := readLine.readLine("anna>");
+	if(!line)
+	{
+	    print();
+	    print("Bye!");
+	    unix.proc.exit(0);
+	}
+	if(line.count > 0)
+	{
+	    readLine.addHistory(line);
+	}
+	
         ast := parser.parse(line);
         moduleAst := ast(nothing(def %fun(){%ast})) % ["fun": parser.Identifier(?, "!fun"), "ast": ast];
         code := parser.compile(moduleAst);
