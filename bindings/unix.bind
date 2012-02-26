@@ -2,7 +2,7 @@
 include(
     "<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>",
     "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", 
-    "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>"
+    "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>", "<termios.h>"
     );
 
 attribute(doc("The unix module is the parent module for various low level wrappers for basic Unix functionality. Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages."));
@@ -395,6 +395,35 @@ Positive and negative sign positions:
     
     def LocaleConv localeConv() (name(localeconv), doc("Get current numeric formatting information."));
     
+}
+
+term
+{
+
+    flag
+    {
+	const Int canonical (name(ICANON));
+	const Int echo (name(ECHO));
+    }
+    
+    action
+    {
+	const Int now (name(TCSANOW));
+	const Int drain (name(TCSADRAIN));
+	const Int flush (name(TCSAFLUSH));
+    }
+
+    cStruct Termios (name(termios))
+    {
+	var Int iflag (name(c_iflag), doc("Input modes"));
+	var Int oflag (name(c_oflag), doc("Output modes"));
+	var Int cflag (name(c_cflag), doc("Control modes"));
+	var Int lflag (name(c_lflag), doc("Local modes"));
+    }
+
+    def Bool getAttr(Int fd, Termios ios) (name(tcgetattr));
+    def Bool setAttr(Int fd, Int actions, Termios ios) (name(tcsetattr));
+
 }
 
 /*

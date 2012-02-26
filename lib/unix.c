@@ -34,6 +34,7 @@
 #include <poll.h>
 #include <sys/select.h>
 #include <locale.h>
+#include <termios.h>
 
 #include "anna/anna.h"
 
@@ -45,6 +46,7 @@ anna_type_t *unix_r_limit_type;
 anna_type_t *unix_time_val_type;
 anna_type_t *unix_time_zone_type;
 anna_type_t *unix_locale_conv_type;
+anna_type_t *unix_termios_type;
 
 
 // Data used to initialize all types defined in this module
@@ -71,6 +73,7 @@ void anna_open_mode_create(anna_stack_template_t *stack)
 void anna_open_mode_load(anna_stack_template_t *stack);
 void anna_open_mode_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -97,7 +100,7 @@ void anna_open_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"synchronous", O_SYNC, L"The file is opened for synchronous I/O.");
     anna_module_const_int(stack, L"truncate", O_TRUNC, L"f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0.");
 
-     anna_type_data_register(anna_open_mode_type_data, stack);
+    anna_type_data_register(anna_open_mode_type_data, stack);
 }
 const static anna_type_data_t anna_stat_mode_type_data[] = 
 {
@@ -111,6 +114,7 @@ void anna_stat_mode_create(anna_stack_template_t *stack)
 void anna_stat_mode_load(anna_stack_template_t *stack);
 void anna_stat_mode_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -142,7 +146,7 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"otherwrite", S_IWOTH, L"Others have write permission.");
     anna_module_const_int(stack, L"otherExecute", S_IXOTH, L"Others have execute permission.");
 
-     anna_type_data_register(anna_stat_mode_type_data, stack);
+    anna_type_data_register(anna_stat_mode_type_data, stack);
 }
 
 ANNA_VM_NATIVE(unix_i_io_open, 3)
@@ -153,7 +157,7 @@ ANNA_VM_NATIVE(unix_i_io_open, 3)
     if(param[2] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_flags = anna_as_int(param[1]);
     int native_param_mode = anna_as_int(param[2]);
 
@@ -178,7 +182,7 @@ ANNA_VM_NATIVE(unix_i_io_creat, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_mode = anna_as_int(param[1]);
 
     // Validate parameters
@@ -382,7 +386,7 @@ ANNA_VM_NATIVE(unix_i_io_stat, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     struct stat *native_param_buf = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
 
     // Validate parameters
@@ -405,7 +409,7 @@ ANNA_VM_NATIVE(unix_i_io_lstat, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     struct stat *native_param_buf = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
 
     // Validate parameters
@@ -450,7 +454,7 @@ ANNA_VM_NATIVE(unix_i_io_mkdir, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_mode = anna_as_int(param[1]);
 
     // Validate parameters
@@ -501,7 +505,7 @@ ANNA_VM_NATIVE(unix_i_io_chdir, 1)
     if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
     
@@ -521,7 +525,7 @@ ANNA_VM_NATIVE(unix_i_io_chroot, 1)
     if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
     
@@ -607,6 +611,7 @@ void anna_fcntl_mode_create(anna_stack_template_t *stack)
 void anna_fcntl_mode_load(anna_stack_template_t *stack);
 void anna_fcntl_mode_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -617,7 +622,7 @@ void anna_fcntl_mode_load(anna_stack_template_t *stack)
 
     anna_module_const_int(stack, L"dupFd", F_DUPFD, L"Duplicate file descriptor.");
 
-     anna_type_data_register(anna_fcntl_mode_type_data, stack);
+    anna_type_data_register(anna_fcntl_mode_type_data, stack);
 }
 const static anna_type_data_t anna_seek_mode_type_data[] = 
 {
@@ -631,6 +636,7 @@ void anna_seek_mode_create(anna_stack_template_t *stack)
 void anna_seek_mode_load(anna_stack_template_t *stack);
 void anna_seek_mode_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -643,7 +649,7 @@ void anna_seek_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"cur", SEEK_CUR, L"Seek to file offset relative current position.");
     anna_module_const_int(stack, L"end", SEEK_END, L"Seek to file offset relative to end of file.");
 
-     anna_type_data_register(anna_seek_mode_type_data, stack);
+    anna_type_data_register(anna_seek_mode_type_data, stack);
 }
 
 ANNA_VM_NATIVE(unix_i_io_fcntl_void, 2)
@@ -767,7 +773,7 @@ ANNA_VM_NATIVE(unix_i_io_chown, 3)
     if(param[2] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_owner = anna_as_int(param[1]);
     int native_param_group = anna_as_int(param[2]);
 
@@ -818,7 +824,7 @@ ANNA_VM_NATIVE(unix_i_io_lchown, 3)
     if(param[2] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_owner = anna_as_int(param[1]);
     int native_param_group = anna_as_int(param[2]);
 
@@ -843,7 +849,7 @@ ANNA_VM_NATIVE(unix_i_io_chmod, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_mode = anna_as_int(param[1]);
 
     // Validate parameters
@@ -888,8 +894,8 @@ ANNA_VM_NATIVE(unix_i_io_symlink, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_oldpath = anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_newpath = anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_oldpath = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_newpath = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
     
@@ -912,8 +918,8 @@ ANNA_VM_NATIVE(unix_i_io_link, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_oldpath = anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_newpath = anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_oldpath = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_newpath = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
     
@@ -935,7 +941,7 @@ ANNA_VM_NATIVE(unix_i_io_unlink, 1)
     if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
     
@@ -955,7 +961,7 @@ ANNA_VM_NATIVE(unix_i_io_rmdir, 1)
     if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
     
@@ -976,8 +982,8 @@ ANNA_VM_NATIVE(unix_i_io_rename, 2)
     if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_oldpath = anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_newpath = anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_oldpath = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_newpath = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
     
@@ -1236,6 +1242,7 @@ void anna_io_create(anna_stack_template_t *stack)
 void anna_io_load(anna_stack_template_t *stack);
 void anna_io_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -1256,6 +1263,7 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_io_creat_argv[] = {string_type, int_type};
     wchar_t *unix_i_io_creat_argn[] = {L"name", L"mode"};
     anna_module_function(stack, L"creat", 0, &unix_i_io_creat, int_type, 2, unix_i_io_creat_argv, unix_i_io_creat_argn, 0, L"Open a file descriptor. Equivalent to the C creat function.");
+    anna_member_alias(stack_type, anna_mid_get(L"creat"), L"create");
 
     anna_type_t *unix_i_io_read_argv[] = {int_type, buffer_type, int_type};
     wchar_t *unix_i_io_read_argn[] = {L"fd", L"buffer", L"count"};
@@ -1389,14 +1397,17 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_io_fcntl_void_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_fcntl_void_argn[] = {L"fd", L"cmd"};
     anna_module_function(stack, L"fcntlVoid", 0, &unix_i_io_fcntl_void, int_type, 2, unix_i_io_fcntl_void_argv, unix_i_io_fcntl_void_argn, 0, L"Manipulate file descriptor.");
+    anna_member_alias(stack_type, anna_mid_get(L"fcntlVoid"), L"fcntl");
 
     anna_type_t *unix_i_io_fcntl_int_argv[] = {int_type, int_type, int_type};
     wchar_t *unix_i_io_fcntl_int_argn[] = {L"fd", L"cmd", L"arg"};
     anna_module_function(stack, L"fcntlInt", 0, &unix_i_io_fcntl_int, int_type, 3, unix_i_io_fcntl_int_argv, unix_i_io_fcntl_int_argn, 0, L"Manipulate file descriptor.");
+    anna_member_alias(stack_type, anna_mid_get(L"fcntlInt"), L"fcntl");
 
     anna_type_t *unix_i_io_fcntl_f_lock_argv[] = {int_type, int_type, unix_f_lock_type};
     wchar_t *unix_i_io_fcntl_f_lock_argn[] = {L"fd", L"cmd", L"arg"};
     anna_module_function(stack, L"fcntlFLock", 0, &unix_i_io_fcntl_f_lock, int_type, 3, unix_i_io_fcntl_f_lock_argv, unix_i_io_fcntl_f_lock_argn, 0, L"Manipulate file descriptor.");
+    anna_member_alias(stack_type, anna_mid_get(L"fcntlFLock"), L"fcntl");
 
     anna_type_t *unix_i_io_dup_argv[] = {int_type};
     wchar_t *unix_i_io_dup_argn[] = {L"fd"};
@@ -1405,6 +1416,7 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_io_dup2_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_dup2_argn[] = {L"oldfd", L"newfd"};
     anna_module_function(stack, L"dup2", 0, &unix_i_io_dup2, int_type, 2, unix_i_io_dup2_argv, unix_i_io_dup2_argn, 0, L"Duplicate a file descriptor.");
+    anna_member_alias(stack_type, anna_mid_get(L"dup2"), L"dup");
 
     anna_type_t *unix_i_io_chown_argv[] = {string_type, int_type, int_type};
     wchar_t *unix_i_io_chown_argn[] = {L"path", L"owner", L"group"};
@@ -1500,7 +1512,7 @@ void anna_io_load(anna_stack_template_t *stack)
 	&unix_i_fd_set_init, object_type, 1, &unix_fd_set_type, this_argn, 0, 0);    
     anna_stack_document(stack, L"The unix.io module contains low level wrappers for basic unix functionality revolving around input and output.");
 
-     anna_type_data_register(anna_io_type_data, stack);
+    anna_type_data_register(anna_io_type_data, stack);
 }
 const static anna_type_data_t anna_proc_type_data[] = 
 {
@@ -1517,6 +1529,7 @@ void anna_signal_create(anna_stack_template_t *stack)
 void anna_signal_load(anna_stack_template_t *stack);
 void anna_signal_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -1561,7 +1574,7 @@ void anna_signal_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"winch", SIGWINCH, L"The WINCH signal");
     anna_module_const_int(stack, L"unused", SIGUNUSED, L"The UNUSED signal");
 
-     anna_type_data_register(anna_signal_type_data, stack);
+    anna_type_data_register(anna_signal_type_data, stack);
 }
 
 ANNA_VM_NATIVE(unix_i_proc_exec, 3)
@@ -1572,14 +1585,14 @@ ANNA_VM_NATIVE(unix_i_proc_exec, 3)
     if(param[2] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_filename = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_filename = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     size_t native_param_argv_count = anna_list_get_count(anna_as_obj(param[1]));
     char ** native_param_argv = malloc(sizeof(char *) * native_param_argv_count);
     if(!native_param_argv){ return null_entry; }
     int native_param_argv_idx;
     for(native_param_argv_idx=0; native_param_argv_idx < native_param_argv_count; native_param_argv_idx++)
     {
-        char *native_param_argv_val = anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[1]), native_param_argv_idx)));
+        char *native_param_argv_val = (anna_list_get(anna_as_obj(param[1]), native_param_argv_idx) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[1]), native_param_argv_idx)));
         native_param_argv[native_param_argv_idx] = native_param_argv_val;
     }
 
@@ -1589,7 +1602,7 @@ ANNA_VM_NATIVE(unix_i_proc_exec, 3)
     int native_param_envp_idx;
     for(native_param_envp_idx=0; native_param_envp_idx < native_param_envp_count; native_param_envp_idx++)
     {
-        char *native_param_envp_val = anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[2]), native_param_envp_idx)));
+        char *native_param_envp_val = (anna_list_get(anna_as_obj(param[2]), native_param_envp_idx) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[2]), native_param_envp_idx)));
         native_param_envp[native_param_envp_idx] = native_param_envp_val;
     }
 
@@ -1858,6 +1871,7 @@ void anna_proc_create(anna_stack_template_t *stack)
 void anna_proc_load(anna_stack_template_t *stack);
 void anna_proc_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -1909,7 +1923,7 @@ void anna_proc_load(anna_stack_template_t *stack)
     anna_module_function(stack, L"waitpid", 0, &unix_i_proc_waitpid, int_type, 3, unix_i_proc_waitpid_argv, unix_i_proc_waitpid_argn, 0, 0);
     anna_stack_document(stack, L"The unix.proc module contains low level wrappers for basic unix functionality revolving around processes and signals.");
 
-     anna_type_data_register(anna_proc_type_data, stack);
+    anna_type_data_register(anna_proc_type_data, stack);
 }
 const static anna_type_data_t anna_user_type_data[] = 
 {
@@ -2208,6 +2222,7 @@ void anna_user_create(anna_stack_template_t *stack)
 void anna_user_load(anna_stack_template_t *stack);
 void anna_user_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -2266,7 +2281,7 @@ void anna_user_load(anna_stack_template_t *stack)
     anna_module_function(stack, L"setgroups", 0, &unix_i_user_setgroups, int_type, 2, unix_i_user_setgroups_argv, unix_i_user_setgroups_argn, 0, L"Set list of supplamentary group IDs.");
     anna_stack_document(stack, L"The unix.user module contains low level wrappers for basic unix functionality revolving around users and groups.");
 
-     anna_type_data_register(anna_user_type_data, stack);
+    anna_type_data_register(anna_user_type_data, stack);
 }
 const static anna_type_data_t anna_r_limit_type_data[] = 
 {
@@ -2284,6 +2299,7 @@ void anna_r_limit_mode_create(anna_stack_template_t *stack)
 void anna_r_limit_mode_load(anna_stack_template_t *stack);
 void anna_r_limit_mode_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -2307,7 +2323,7 @@ void anna_r_limit_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"sigpending", RLIMIT_SIGPENDING, L"The SIGPENDING limit");
     anna_module_const_int(stack, L"stack", RLIMIT_STACK, L"The STACK limit");
 
-     anna_type_data_register(anna_r_limit_mode_type_data, stack);
+    anna_type_data_register(anna_r_limit_mode_type_data, stack);
 }
 
 ANNA_VM_NATIVE(unix_i_r_limit_cur_getter, 1)
@@ -2383,6 +2399,7 @@ void anna_r_limit_create(anna_stack_template_t *stack)
 void anna_r_limit_load(anna_stack_template_t *stack);
 void anna_r_limit_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -2417,7 +2434,7 @@ void anna_r_limit_load(anna_stack_template_t *stack)
     anna_module_function(stack, L"setRLimit", 0, &unix_i_r_limit_set_r_limit, int_type, 2, unix_i_r_limit_set_r_limit_argv, unix_i_r_limit_set_r_limit_argn, 0, L"Set resource limit.");
     anna_stack_document(stack, L"The unix.rLimit module contains low level wrappers for basic unix functionality revolving around system resource limits.");
 
-     anna_type_data_register(anna_r_limit_type_data, stack);
+    anna_type_data_register(anna_r_limit_type_data, stack);
 }
 const static anna_type_data_t anna_env_type_data[] = 
 {
@@ -2429,7 +2446,7 @@ ANNA_VM_NATIVE(unix_i_env_getenv, 1)
     if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
     
@@ -2451,8 +2468,8 @@ ANNA_VM_NATIVE(unix_i_env_setenv, 3)
     if(param[2] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_value = anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_value = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
     int native_param_overwrite = anna_as_int(param[2]);
 
     // Validate parameters
@@ -2476,7 +2493,7 @@ ANNA_VM_NATIVE(unix_i_env_unsetenv, 1)
     if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
     
@@ -2514,6 +2531,7 @@ void anna_env_create(anna_stack_template_t *stack)
 void anna_env_load(anna_stack_template_t *stack);
 void anna_env_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -2540,7 +2558,7 @@ void anna_env_load(anna_stack_template_t *stack)
     anna_module_function(stack, L"clearenv", 0, &unix_i_env_clearenv, int_type, 0, unix_i_env_clearenv_argv, unix_i_env_clearenv_argn, 0, L"Removes all environemnt variables. Equivalanet to the C clearenv function.");
     anna_stack_document(stack, L"The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables.");
 
-     anna_type_data_register(anna_env_type_data, stack);
+    anna_type_data_register(anna_env_type_data, stack);
 }
 const static anna_type_data_t anna_sleep_type_data[] = 
 {
@@ -2573,6 +2591,7 @@ void anna_sleep_create(anna_stack_template_t *stack)
 void anna_sleep_load(anna_stack_template_t *stack);
 void anna_sleep_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -2587,7 +2606,7 @@ void anna_sleep_load(anna_stack_template_t *stack)
     anna_module_function(stack, L"sleep", 0, &unix_i_sleep_sleep, int_type, 1, unix_i_sleep_sleep_argv, unix_i_sleep_sleep_argn, 0, L"Sleep for the specified number of seconds");
     anna_stack_document(stack, L"The unix.sleep module contains low level wrappers for basic unix functionality revolving around pausing the execution of processes.");
 
-     anna_type_data_register(anna_sleep_type_data, stack);
+    anna_type_data_register(anna_sleep_type_data, stack);
 }
 const static anna_type_data_t anna_time_type_data[] = 
 {
@@ -2669,6 +2688,7 @@ void anna_time_create(anna_stack_template_t *stack)
 void anna_time_load(anna_stack_template_t *stack);
 void anna_time_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -2705,7 +2725,7 @@ void anna_time_load(anna_stack_template_t *stack)
     anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, 0, L"Gets the current system time. Equivalanet to the C gettimeofday function.");
     anna_stack_document(stack, L"The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping.");
 
-     anna_type_data_register(anna_time_type_data, stack);
+    anna_type_data_register(anna_time_type_data, stack);
 }
 const static anna_type_data_t anna_locale_type_data[] = 
 {
@@ -2723,6 +2743,7 @@ void anna_locale_mode_create(anna_stack_template_t *stack)
 void anna_locale_mode_load(anna_stack_template_t *stack);
 void anna_locale_mode_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -2739,7 +2760,7 @@ void anna_locale_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"numeric", LC_NUMERIC, L"Numeric formating, such as decimal point and thousands separator.");
     anna_module_const_int(stack, L"time", LC_TIME, L"Date and time formating.");
 
-     anna_type_data_register(anna_locale_mode_type_data, stack);
+    anna_type_data_register(anna_locale_mode_type_data, stack);
 }
 
 ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
@@ -2750,7 +2771,7 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
 
     // Mangle input parameters
     int native_param_cateory = anna_as_int(param[0]);
-    char *native_param_locale = anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_locale = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
     
@@ -2923,6 +2944,7 @@ void anna_locale_create(anna_stack_template_t *stack)
 void anna_locale_load(anna_stack_template_t *stack);
 void anna_locale_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -3019,7 +3041,230 @@ void anna_locale_load(anna_stack_template_t *stack)
     anna_module_function(stack, L"localeConv", 0, &unix_i_locale_locale_conv, unix_locale_conv_type, 0, unix_i_locale_locale_conv_argv, unix_i_locale_locale_conv_argn, 0, L"Get current numeric formatting information.");
     anna_stack_document(stack, L"The unix.locale module contains low level wrappers for basic unix functionality revolving around localization.");
 
-     anna_type_data_register(anna_locale_type_data, stack);
+    anna_type_data_register(anna_locale_type_data, stack);
+}
+const static anna_type_data_t anna_term_type_data[] = 
+{
+    { &unix_termios_type, L"Termios" },
+};
+const static anna_type_data_t anna_flag_type_data[] = 
+{
+};
+
+void anna_flag_create(anna_stack_template_t *stack);
+void anna_flag_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_flag_type_data, stack);        
+}
+void anna_flag_load(anna_stack_template_t *stack);
+void anna_flag_load(anna_stack_template_t *stack)
+{
+    mid_t mmid;    
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+    anna_module_const_int(stack, L"canonical", ICANON, 0);
+    anna_module_const_int(stack, L"echo", ECHO, 0);
+
+    anna_type_data_register(anna_flag_type_data, stack);
+}
+const static anna_type_data_t anna_action_type_data[] = 
+{
+};
+
+void anna_action_create(anna_stack_template_t *stack);
+void anna_action_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_action_type_data, stack);        
+}
+void anna_action_load(anna_stack_template_t *stack);
+void anna_action_load(anna_stack_template_t *stack)
+{
+    mid_t mmid;    
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+    anna_module_const_int(stack, L"now", TCSANOW, 0);
+    anna_module_const_int(stack, L"drain", TCSADRAIN, 0);
+    anna_module_const_int(stack, L"flush", TCSAFLUSH, 0);
+
+    anna_type_data_register(anna_action_type_data, stack);
+}
+
+ANNA_VM_NATIVE(unix_i_termios_iflag_getter, 1)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->c_iflag);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_termios_iflag_setter, 2)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->c_iflag = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_termios_oflag_getter, 1)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->c_oflag);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_termios_oflag_setter, 2)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->c_oflag = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_termios_cflag_getter, 1)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->c_cflag);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_termios_cflag_setter, 2)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->c_cflag = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_termios_lflag_getter, 1)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->c_lflag);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_termios_lflag_setter, 2)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->c_lflag = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_termios_init, 1)
+{
+    struct termios *data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    memset(data, 0, sizeof(struct termios));
+    return param[0];
+}
+
+ANNA_VM_NATIVE(unix_i_term_get_attr, 2)
+{
+    // Validate parameters
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+
+    // Mangle input parameters
+    int native_param_fd = anna_as_int(param[0]);
+    struct termios *native_param_ios = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+    
+    
+
+    // Call the function
+    anna_entry_t *result = (tcgetattr(native_param_fd, native_param_ios))?anna_from_int(1):null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_term_set_attr, 3)
+{
+    // Validate parameters
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+    if(param[2] == null_entry){return null_entry;}
+
+    // Mangle input parameters
+    int native_param_fd = anna_as_int(param[0]);
+    int native_param_actions = anna_as_int(param[1]);
+    struct termios *native_param_ios = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+    
+    
+    
+
+    // Call the function
+    anna_entry_t *result = (tcsetattr(native_param_fd, native_param_actions, native_param_ios))?anna_from_int(1):null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+void anna_term_create(anna_stack_template_t *stack);
+void anna_term_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_term_type_data, stack);        
+}
+void anna_term_load(anna_stack_template_t *stack);
+void anna_term_load(anna_stack_template_t *stack)
+{
+    mid_t mmid;    
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+            { L"flag", anna_flag_create, anna_flag_load},
+            { L"action", anna_action_create, anna_action_load},
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+
+    anna_member_create_blob(unix_termios_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct termios));
+
+    anna_member_create_native_property(
+        unix_termios_type, anna_mid_get(L"iflag"),
+        int_type, unix_i_termios_iflag_getter, unix_i_termios_iflag_setter, L"Input modes");
+
+    anna_member_create_native_property(
+        unix_termios_type, anna_mid_get(L"oflag"),
+        int_type, unix_i_termios_oflag_getter, unix_i_termios_oflag_setter, L"Output modes");
+
+    anna_member_create_native_property(
+        unix_termios_type, anna_mid_get(L"cflag"),
+        int_type, unix_i_termios_cflag_getter, unix_i_termios_cflag_setter, L"Control modes");
+
+    anna_member_create_native_property(
+        unix_termios_type, anna_mid_get(L"lflag"),
+        int_type, unix_i_termios_lflag_getter, unix_i_termios_lflag_setter, L"Local modes");
+    anna_member_create_native_method(
+	unix_termios_type, anna_mid_get(L"__init__"), 0,
+	&unix_i_termios_init, object_type, 1, &unix_termios_type, this_argn, 0, 0);    
+
+    anna_type_t *unix_i_term_get_attr_argv[] = {int_type, unix_termios_type};
+    wchar_t *unix_i_term_get_attr_argn[] = {L"fd", L"ios"};
+    anna_module_function(stack, L"getAttr", 0, &unix_i_term_get_attr, object_type, 2, unix_i_term_get_attr_argv, unix_i_term_get_attr_argn, 0, 0);
+
+    anna_type_t *unix_i_term_set_attr_argv[] = {int_type, int_type, unix_termios_type};
+    wchar_t *unix_i_term_set_attr_argn[] = {L"fd", L"actions", L"ios"};
+    anna_module_function(stack, L"setAttr", 0, &unix_i_term_set_attr, object_type, 3, unix_i_term_set_attr_argv, unix_i_term_set_attr_argn, 0, 0);
+
+    anna_type_data_register(anna_term_type_data, stack);
 }
 
 
@@ -3036,6 +3281,7 @@ void anna_unix_create(anna_stack_template_t *stack)
 void anna_unix_load(anna_stack_template_t *stack);
 void anna_unix_load(anna_stack_template_t *stack)
 {
+    mid_t mmid;    
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
@@ -3047,6 +3293,7 @@ void anna_unix_load(anna_stack_template_t *stack)
             { L"sleep", anna_sleep_create, anna_sleep_load},
             { L"time", anna_time_create, anna_time_load},
             { L"locale", anna_locale_create, anna_locale_load},
+            { L"term", anna_term_create, anna_term_load},
         };
     anna_module_data_create(modules, stack);
 
@@ -3054,6 +3301,6 @@ void anna_unix_load(anna_stack_template_t *stack)
 
     anna_stack_document(stack, L"The unix module is the parent module for various low level wrappers for basic Unix functionality. Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages.");
 
-     anna_type_data_register(anna_unix_type_data, stack);
+    anna_type_data_register(anna_unix_type_data, stack);
 }
 
