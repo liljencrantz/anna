@@ -115,6 +115,13 @@ def cEscape(String in)
     return res;
 }
 
+tempCounter := 0;
+def generateTempName()
+{
+    tempCounter++;
+    "tmp_var_" ~ tempCounter;
+}
+
 def extractDoc(Call attr)
 {
     cEscape((attr.filterByCall("doc")[0] as StringLiteral).payload);
@@ -124,7 +131,7 @@ def init()
 {
     bindingType = [
 	ast(Void): BasicBindingType(
-	    "int",
+	    ?,
 	    "object_type", 
 	    ?,
 	    "%(source); anna_entry_t *%(dest) = null_entry;",
@@ -670,8 +677,21 @@ class BindingGenerator
         nname := getFunctionNativeName(decl);
         responseType := getBindingType(decl[1]);
         args := ", ".join(paramNames);
-	code ~= "    " ~ responseType.convertToAnna(decl[1], decl[3], "result", nname ~"(" ~args~")");
-
+        varType := responseType.annaNativeType(decl[1], decl[3]);
+	if(varType)
+	{
+	  tempName := generateTempName();
+	
+	    code ~= "    %(varType) %(tempName) = %(call);\n" % [
+		"varType": varType,
+		"tempName": tempName, "call": nname ~"(" ~args~")"];
+	    code ~= "    " ~ responseType.convertToAnna(decl[1], decl[3], "result", tempName);
+	}
+	else
+	{
+	    code ~= "    %(functionName)(%(args));
+    anna_entry_t *result = null_entry;\n" % ["functionName": nname, "args": args];
+	}
         param := [
 	    "init": init, "preValidate": preValidate, "postValidate": postValidate, 
 	    "code": code, "cleanup": cleanup, 
