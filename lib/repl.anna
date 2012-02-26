@@ -1,5 +1,6 @@
 def main()
 {
+    print("Welcome to anna");
     while(1)
     {
         line := readLine.readLine("anna>");

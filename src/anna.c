@@ -169,19 +169,29 @@ static void anna_opt_parse(int argc, char **argv)
     
     if(optind == argc) 
     {
-	debug(D_CRITICAL, L"No program to run.\n");
-	exit(ANNA_STATUS_ARGUMENT_ERROR);
+	anna_module_name = wcsdup(ANNA_LIB_DIR L"/repl");
+	/*
+	string_buffer_t sb;
+	sb_init(&sb);
+	ab_printf(L"%ls/%ls", ANNA_LIB_
+	debug(999, L"AAA %ls\n", ANNA_LIB_DIR);
+	*/
+//	debug(D_CRITICAL, L"No program to run.\n");
+//	exit(ANNA_STATUS_ARGUMENT_ERROR);
+    }
+    else
+    {
+	anna_module_name = str2wcs(argv[optind]);
+	size_t mlen = wcslen(anna_module_name);
+	if(mlen > 5 && wcscmp(&anna_module_name[mlen-5], L".anna") == 0)
+	{
+	    anna_module_name[mlen-5] = 0;
+	}
     }
     
     anna_argc = argc-optind;
     anna_argv = &argv[optind];
     
-    anna_module_name = str2wcs(argv[optind]);
-    size_t mlen = wcslen(anna_module_name);
-    if(mlen > 5 && wcscmp(&anna_module_name[mlen-5], L".anna") == 0)
-    {
-	anna_module_name[mlen-5] = 0;
-    }
 }
 
 /**
@@ -240,8 +250,8 @@ int main(int argc, char **argv)
     tzset();
     
     anna_opt_parse(argc, argv);
-    
-    anna_set_program_name(argv[1]);
+
+//    anna_set_program_name(argv[1]);
     
     debug(D_INFO,L"Initializing interpreter...\n");    
     anna_alloc_gc_block();

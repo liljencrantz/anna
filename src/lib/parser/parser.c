@@ -228,9 +228,15 @@ ANNA_VM_NATIVE(anna_node_wrapper_copy, 1)
 ANNA_VM_NATIVE(anna_parser_i_compile, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
+    int anna_error_count_old = anna_error_count;
+    anna_error_count = 0;
+    
     anna_node_t *node = anna_node_unwrap(anna_as_obj_fast(param[0]));
     anna_object_t *module = anna_module_create(node);    
-    return module ? anna_from_obj(module) : null_entry;
+    
+    anna_entry_t *res =(module && !anna_error_count) ? anna_from_obj(module) : null_entry;
+    anna_error_count = anna_error_count_old;
+    return res;
 }
 
 static void anna_node_basic_create_type(anna_stack_template_t *stack)

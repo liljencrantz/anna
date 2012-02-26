@@ -886,7 +886,7 @@ static void anna_module_load_i_phase_2()
 		4,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
-	    exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
+	    return;
 	}
 	debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
 	
@@ -908,8 +908,7 @@ static void anna_module_load_i_phase_2()
 		D_CRITICAL,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
-	    exit(
-		ANNA_STATUS_VALIDATION_ERROR);
+	    return;
 	}
 	
 	debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);
@@ -984,7 +983,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     if(!program || anna_error_count) 
     {
 	debug(D_CRITICAL,L"Module %ls failed to parse correctly; exiting.\n", module_stack->filename);
-	exit(ANNA_STATUS_PARSE_ERROR);
+	return;
     }
     
     debug(D_SPAM,L"Parsed AST for module %ls:\n", module_stack->filename);    
@@ -1039,7 +1038,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     if(anna_error_count)
     {
 	debug(D_CRITICAL,L"Found %d error(s) during macro expansion phase\n", anna_error_count);
-	exit(ANNA_STATUS_MACRO_ERROR);
+	return;
     }
     
     anna_node_call_t *module_node = node_cast_call(node);
@@ -1063,7 +1062,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	    D_CRITICAL,
 	    L"Critical: Found %d error(s) during loading of module %ls\n", 
 	    anna_error_count, module_stack->filename);
-	exit(ANNA_STATUS_INTERFACE_ERROR);
+	return;
     }
     debug(
 	D_SPAM,
@@ -1094,7 +1093,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	
 	if(anna_error_count || !mod)
 	{
-	    exit(ANNA_STATUS_TYPE_CALCULATION_ERROR);
+	    return;
 	}
 	al_set(&module_stack->import, i, anna_use_create_stack(mod));
     }
@@ -1112,8 +1111,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 		D_CRITICAL,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
-	    exit(
-		ANNA_STATUS_MODULE_SETUP_ERROR);
+	    return;
 	}
     }    
     
