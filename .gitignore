@@ -21,3 +21,4 @@ leaks*
 junk
 lib/getText.c
 lib/curses.c
+lib/readLine.c

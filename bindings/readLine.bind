@@ -1,0 +1,4 @@
+include("<stdio.h>", "<readline/readline.h>", "<readline/history.h>");
+
+def String readLine(String prompt) (name(readline));
+def Void addHistory(String line) (name(add_history));
