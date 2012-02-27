@@ -15,7 +15,8 @@ def main()
     else
     {
         buf := Buffer();
-	io.read(fd[0], buf, 1024);
+	readCount := io.read(fd[0], buf, 1024);
+	buf.count = readCount;
         msg := buf.encode();
 	print(msg, end:"", sep:"");
     }
