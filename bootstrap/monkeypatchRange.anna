@@ -1,3 +1,5 @@
+attribute(internal, doc("Internally used module. Don't use directly."));
+
 def Int range__cmp__(Range this, Object other)
 (
     target(Range), 

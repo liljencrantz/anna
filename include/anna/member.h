@@ -125,6 +125,18 @@ static inline int anna_member_is_internal(anna_member_t *member)
     return !!(member->storage & ANNA_MEMBER_INTERNAL);
 }
 
+static inline void anna_member_set_internal(anna_member_t *member, int value)
+{
+    if(value)
+    {
+	member->storage |= ANNA_MEMBER_INTERNAL;
+    }
+    else
+    {
+	member->storage = (member->storage & ~ANNA_MEMBER_INTERNAL);
+    }
+}
+
 static inline void anna_member_set_property(anna_member_t *member, int value)
 {
     if(value)

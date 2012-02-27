@@ -977,13 +977,22 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
 	debug(D_SPAM,L"Load native library %ls...\n", module_stack->filename);    
 	anna_module_load_native(module_stack);
 	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
-	return;	
+    }
+    else
+    {
+	debug(D_SPAM, L"Parsing file %ls...\n", module_stack->filename);
+	anna_node_t *program = anna_parse(module_stack->filename);
+	anna_module_load_ast(module_stack, program);
     }
     
-    debug(D_SPAM, L"Parsing file %ls...\n", module_stack->filename);    
+    anna_type_t *module_type = anna_stack_wrap(module_stack)->type;
+    if(module_stack->name && anna_attribute_flag(module_type->attribute, L"internal"))
+    {
+	anna_type_t *parent_type = anna_stack_wrap(module_stack->parent)->type;
 
-    anna_node_t *program = anna_parse(module_stack->filename);
-    anna_module_load_ast(module_stack, program);
+	anna_member_t *module_member = anna_member_get(parent_type, anna_mid_get(module_stack->name));
+	anna_member_set_internal(module_member, 1);
+    }
 }
 
 static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_t *program)

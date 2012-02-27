@@ -1,3 +1,5 @@
+attribute(internal, doc("Internally used module. Don't use directly."));
+
 use(parser);
 
 def Node __format__(

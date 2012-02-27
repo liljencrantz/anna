@@ -27,7 +27,7 @@
        submodule.each(mem)
        {
            %>
-      <li><%! getLink(module, mem.value(?).__type__) %></li>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, mem.value(?).__type__) %></li>
 <%
 	}
     %>
@@ -46,7 +46,7 @@
         {
            val := mem.value(?);
            %>
-      <li><%! getLink(module, val as Type) %></li>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, val as Type) %></li>
       <%
 	}
       %>
