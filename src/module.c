@@ -886,7 +886,7 @@ static void anna_module_load_i_phase_2()
 		4,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
-	    return;
+	    goto CLEANUP;
 	}
 	debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
 	
@@ -908,7 +908,7 @@ static void anna_module_load_i_phase_2()
 		D_CRITICAL,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
-	    return;
+	    goto CLEANUP;
 	}
 	
 	debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);
@@ -918,7 +918,7 @@ static void anna_module_load_i_phase_2()
 	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);
 
     }    
-    
+  CLEANUP:
     al_truncate(&anna_module_in_transit, 0);
 }
 

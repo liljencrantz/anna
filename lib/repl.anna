@@ -1,9 +1,12 @@
+attribute(internal);
+
 def main()
+    (doc("This is the so called repl of anna. Repl is short for Read, Evaluate and Print-Loop, and is what implements the interactive prompt of a programming language. If Anna is called without specifying an application to run, this module get's run. It will show an interactive prompt using the readLine library, and will then compile that line into a function using the parser module, and will then execute that function."), internal)
 {
-    print("Welcome to anna");
+    print("Welcome to anna!");
     while(1)
     {
-        line := readLine.readLine("anna>");
+        line := readLine.readLine("anna> ");
 	if(!line)
 	{
 	    print();

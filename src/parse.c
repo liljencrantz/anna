@@ -43,6 +43,9 @@ anna_node_t *anna_parse(wchar_t *filename)
 
 anna_node_t *anna_parse_string(wchar_t *str, wchar_t *filename) 
 {
+    int anna_yacc_error_count_old = anna_yacc_error_count;
+    anna_yacc_error_count = 0;
+    
     yyscan_t scanner;
     
     char *mbstr = wcs2str(str);
@@ -56,5 +59,7 @@ anna_node_t *anna_parse_string(wchar_t *str, wchar_t *filename)
     anna_lex_lex_destroy(scanner);
     free(mbstr);
     
-    return anna_yacc_error_count?0:parse_tree;
+    parse_tree = anna_yacc_error_count?0:parse_tree;
+    anna_yacc_error_count = anna_yacc_error_count_old;
+    return parse_tree;
 }

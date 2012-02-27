@@ -129,6 +129,7 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
     {
 	anna_type_t *param = this2->child[i]->return_type;
 	anna_type_t *templ = tmpl[mini(i, tmpl_count-1)];
+	
 	if(!anna_abides(param, templ))
 	{
 	    anna_node_print(99, this);
