@@ -1,4 +1,23 @@
 include("<stdio.h>", "<readline/readline.h>", "<readline/history.h>");
 
-def String readLine(String prompt) (name(readline));
-def Void addHistory(String line) (name(add_history));
+verbatim("
+static char *anna_readline_wrapper(char *prompt)
+{
+    static char *prev = 0;
+    if(prev) 
+        free(prev);
+    return prev=readline(prompt);
+}
+");
+
+def String readLine(String prompt) (name(anna_readline_wrapper));
+
+history
+{
+    def Void add(String line) (name(add_history));
+    def Bool read(String filename (nullable)) (name(read_history));
+    def Bool readRange(String filename (nullable), Int from, Int to) (name(read_history_range), alias(read));
+    def Bool write(String filename (nullable)) (name(write_history));
+    def Bool append(Int count, String filename (nullable)) (name(append_history));
+    def Bool truncateFile(String filename, Int count) (name(history_truncate_file));
+}

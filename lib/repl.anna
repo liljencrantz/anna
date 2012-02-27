@@ -2,7 +2,14 @@ attribute(internal, doc("
 The anna repl implementation."));
 
 def main()
-    (doc("This is the so called repl of anna. Repl is short for Read, Evaluate and Print-Loop, and is what implements the interactive prompt of a programming language. If Anna is called without specifying an application to run, this module get's run. It will show an interactive prompt using the readLine library, and will then compile that line into a function using the parser module, and will then execute that function."), internal)
+    (doc("
+This is the so called repl of anna. Repl is short for Read, Evaluate
+and Print-Loop, and is what implements the interactive prompt of a
+programming language. If Anna is called without specifying an
+application to run, this module get's run. It will show an interactive
+prompt using the readLine library, and will then compile that line
+into a function using the parser module, and will then execute that
+function."), internal)
 {
     use(parser);
 
@@ -15,7 +22,10 @@ def main()
       them to the new function used to evaluate the next statement.
     */
     previousContinuation := ? as reflection.Continuation;
-
+    
+    historyFile :== unix.env.getenv("HOME") ~ "/.anna_history";
+    readLine.history.read(historyFile);
+    
     while(1)
     {
         line := readLine.readLine("anna> ");
@@ -23,11 +33,16 @@ def main()
 	{
 	    print();
 	    print("Bye!");
+	    if(readLine.history.write(historyFile))
+	    {
+		print("Failed to save history");
+		print(cerror.errorString(cerror.errno));
+	    }
 	    unix.proc.exit(0);
 	}
 	if(line.count > 0)
 	{
-	    readLine.addHistory(line);
+	    readLine.history.add(line);
 	}
 	
 	(parse(line) as Call).each(ast)
@@ -48,7 +63,7 @@ def main()
 		nothing(
 		    var reflection.Continuation %cont;
 		    def %fun(){%cont = reflection.currentContinuation; %variable; %ast};
-		    )) % ["fun": parser.Identifier(?, "!fun"), "ast": ast, "cont": parser.Identifier(?, "!cont"), "variable": variableDeclaration];
+		    )) % ["fun": Identifier(?, "!fun"), "ast": ast, "cont": Identifier(?, "!cont"), "variable": variableDeclaration];
 	    if(isGlobal)
 	    {
 		run = ?;
@@ -59,7 +74,7 @@ def main()
 		}
 //	    print(moduleAst);
 
-	    code := parser.compile(moduleAst);
+	    code := compile(moduleAst);
 	    if(code)
 	    {
 		if(isGlobal)
