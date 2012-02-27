@@ -66,6 +66,48 @@
 */
 #define ANNA_FUNCTION_SPECIALIZED (8192*64)
 
+#define ANNA_FUNCTION_PROTOTYPE(fn, sbuff)				\
+    if(fn->flags & ANNA_FUNCTION_CONTINUATION)				\
+    {									\
+	sb_printf(sbuff, L"Continuation");				\
+    }									\
+    else								\
+    {									\
+	int i;								\
+	wchar_t *def = (fn->flags & ANNA_FUNCTION_MACRO) ? L"macro": L"def"; \
+	sb_printf(sbuff, L"%ls %ls (", def, fn->return_type?fn->return_type->name:L"?"); \
+	int variadic = !!(fn->flags & ANNA_FUNCTION_VARIADIC);		\
+	int variadic_named = !!(fn->flags & ANNA_FUNCTION_VARIADIC_NAMED); \
+	int variadic_idx = variadic ? fn->input_count-1 : -1;		\
+	int variadic_named_idx = variadic_named ? fn->input_count-1-variadic : -1; \
+	for(i=0; i<fn->input_count;i++)					\
+	{								\
+	    if(i!=0)							\
+		sb_printf(sbuff, L", ");				\
+	    anna_type_t *type = (fn->input_type && fn->input_type[i])?fn->input_type[i]:0; \
+	    if(i==variadic_named_idx && type)				\
+	    {								\
+		type = anna_hash_get_value_type(type);			\
+	    }								\
+            sb_printf(							\
+		sbuff,							\
+		L"%ls %ls",						\
+		(type)?type->name:L"?",					\
+		(fn->input_name && fn->input_name[i])?fn->input_name[i]:L"?"); \
+	    if(i == variadic_idx)					\
+	    {								\
+		sb_printf(sbuff, L"...");				\
+	    }								\
+	    if(i == variadic_named_idx)					\
+	    {								\
+		sb_printf(sbuff, L":");					\
+	    }								\
+	    								\
+	}								\
+	sb_printf(sbuff, L")");						\
+    }
+
+
 extern array_list_t anna_function_list;
 
 /**

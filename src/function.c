@@ -938,25 +938,11 @@ anna_function_t *anna_method_bind(
 
 void anna_function_print(anna_function_t *function)
 {
-    if(function->flags & ANNA_FUNCTION_MACRO)
-    {
-	wprintf(L"macro %ls(%ls)", function->name, function->input_name[0]);	
-    }
-    else
-    {
-	wprintf(L"def %ls %ls(", function->return_type->name, function->name);
-	int i;
-	for(i=0;i<function->input_count; i++)
-	{
-	    if(i != 0)
-	    {
-		wprintf(L", ");
-	    }
-	    wprintf(L"%ls %ls", function->input_type[i]->name, function->input_name[i]);
-	}
-	wprintf(L")\n");
-    }   
-
+    string_buffer_t sb;
+    sb_init(&sb);
+    ANNA_FUNCTION_PROTOTYPE(function, &sb);
+    wprintf(L"%ls\n", sb_content(&sb));
+    sb_destroy(&sb);
 }
 
 int anna_function_line(

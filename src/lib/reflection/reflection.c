@@ -28,6 +28,7 @@
 #include "anna/lib/clib.h"
 #include "anna/lib/parser.h"
 #include "anna/lib/reflection.h"
+#include "anna/lib/lang/hash.h"
 
 #include "src/lib/reflection/function.c"
 #include "src/lib/reflection/type.c"

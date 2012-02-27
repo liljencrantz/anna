@@ -1307,28 +1307,10 @@ anna_type_t *anna_type_get_function(
 	string_buffer_t sb;
 	sb_init(&sb);
 
-	if(flags&ANNA_FUNCTION_CONTINUATION)
-	{
-	    sb_printf(&sb, L"Continuation");
-	}
-	else
-	{
-	    wchar_t *fn = L"def";
-	    
-	    if(flags & ANNA_FUNCTION_MACRO)
-	    { 
-		fn = L"macro";
-	    }
-	    
-	    sb_printf(&sb, L"!%ls %ls (", fn, result->name);
-	    for(i=0; i<argc;i++)
-	    {
-		wchar_t *dots = (i==argc-1) && (flags & ANNA_FUNCTION_VARIADIC)?L"...":L"";
-		sb_printf(&sb, L"%ls%ls %ls%ls", i==0?L"":L", ", argv[i]->name, dots, argn[i]);
-	    }
-	    sb_printf(&sb, L")%d", num++);
-	}
-	
+//	sb_printf(&sb, L"!");
+	ANNA_FUNCTION_PROTOTYPE(key, &sb);
+//	sb_printf(&sb, L"%d", num++);
+
 	res = anna_type_create(sb_content(&sb), 0);
 	sb_destroy(&sb);
 	hash_put(&anna_type_get_function_identifier, new_key, res);

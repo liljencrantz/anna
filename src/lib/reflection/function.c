@@ -113,13 +113,7 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
     string_buffer_t sb;
     sb_init(&sb);
     anna_function_t *fun = anna_function_unwrap(this);
-    sb_printf(&sb, L"def %ls %ls (", fun->return_type->name, fun->name);
-    int i;
-    for(i=0; i<fun->input_count; i++)
-    {
-	sb_printf(&sb, L"%ls%ls %ls", i>0?L", ":L"", fun->input_type[i]->name, fun->input_name[i]);
-    }
-    sb_printf(&sb, L")");
+    ANNA_FUNCTION_PROTOTYPE(fun, &sb);
     anna_entry_t *res = anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
