@@ -87,9 +87,8 @@ def Node __iter__(Call node)
  	        %list := %listValue;
 		%body := %bodyValue;
 	        %list.%fun(%body);
-	    }()).replace(ast(bodyValue) , func) 
-	    .replace(ast(fun) , fun[1])
-	    .replace(ast(listValue) , list) as Call;
+	    }()).replace(ast(fun) , fun[1])
+	    .replace(ast(listValue) , list).replace(ast(bodyValue) , func) as Call;
     }
     res = res.replace(ast(body) , Identifier(?, identifier("body")))
 	.replace(ast(list), Identifier(?, identifier("list"))) as Call;

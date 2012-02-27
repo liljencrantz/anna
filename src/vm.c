@@ -622,12 +622,13 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	{
 	    debug(
 		D_CRITICAL,
-		L"Error in function %ls, offset %d: Object of type %ls does not have a member of type %ls\n",
+		L"Error in function %ls, offset %d: Object of type %ls does not have a member named %ls\n",
 		context->frame->function->name,
 		context->frame->code - context->frame->function->code,
 		obj->type->name,
 		anna_mid_get_reverse(op->mid));
 	    anna_context_print_parent(context);
+	    anna_object_print(obj);
 	    
 	    CRASH;
 	}

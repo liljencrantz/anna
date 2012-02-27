@@ -866,6 +866,11 @@ static void anna_module_compile(anna_node_t *this, void *aux)
 static void anna_module_load_i_phase_2()
 {
     int j;
+    if(anna_error_count != 0)
+    {
+	goto CLEANUP;
+    }
+    
     
     for(j=0; j<al_get_count(&anna_module_in_transit); j+= 2)
     {
@@ -883,7 +888,7 @@ static void anna_module_load_i_phase_2()
 	if(anna_error_count)
 	{
 	    debug(
-		4,
+		D_ERROR,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
 	    goto CLEANUP;
@@ -905,7 +910,7 @@ static void anna_module_load_i_phase_2()
 	if(anna_error_count)
 	{
 	    debug(
-		D_CRITICAL,
+		D_ERROR,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
 	    goto CLEANUP;
@@ -1093,7 +1098,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	
 	if(anna_error_count || !mod)
 	{
-	    return;
+	    goto CLEANUP;
 	}
 	al_set(&module_stack->import, i, anna_use_create_stack(mod));
     }
@@ -1111,10 +1116,11 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 		D_CRITICAL,
 		L"Found %d error(s) during module loading\n",
 		anna_error_count);
-	    return;
+	    goto CLEANUP;
 	}
     }    
     
+  CLEANUP:
     debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
     if(recursion_count > 1)
     {
@@ -1127,6 +1133,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     {
 	anna_module_load_i_phase_2();	
     }
+    
     recursion_count--;    
 }
 

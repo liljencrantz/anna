@@ -3,7 +3,10 @@ attribute(internal);
 def main()
     (doc("This is the so called repl of anna. Repl is short for Read, Evaluate and Print-Loop, and is what implements the interactive prompt of a programming language. If Anna is called without specifying an application to run, this module get's run. It will show an interactive prompt using the readLine library, and will then compile that line into a function using the parser module, and will then execute that function."), internal)
 {
+    use(parser);
+
     print("Welcome to anna!");
+  globalClause := «Node»[];
     while(1)
     {
         line := readLine.readLine("anna> ");
@@ -18,11 +21,36 @@ def main()
 	    readLine.addHistory(line);
 	}
 	
-        ast := parser.parse(line);
-        moduleAst := ast(nothing(def %fun(){%ast})) % ["fun": parser.Identifier(?, "!fun"), "ast": ast];
-        code := parser.compile(moduleAst);
-        funMemb := code.__type__.member.find(memb){memb.name=="!fun"};
-        fun := funMemb.value(code);
-	print((fun as reflection.Block)());
+	(parser.parse(line) as Call).each(ast)
+	{	    
+	    run := 1;
+  	    isGlobal := (ast.callTo?("use") or ast.callTo?("expand"));
+	    
+  	    moduleAst := ast(nothing(def %fun(){%ast})) % ["fun": parser.Identifier(?, "!fun"), "ast": ast];
+	    if(isGlobal)
+	    {
+		run = ?;
+	        moduleAst = ast(nothing(%ast)) % ["ast": ast];
+	    }
+	    globalClause.each(node){
+		(moduleAst as Call).push(node);
+		}
+//	    print(moduleAst);
+	    code := parser.compile(moduleAst);
+	    if(code)
+	    {
+		if(isGlobal)
+		{
+		    globalClause.push(ast);
+		}
+		
+		if(run)
+		{
+		    funMemb := code.__type__.member.find(memb){memb.name=="!fun"};
+  		    fun := funMemb.value(code);
+		    print((fun as reflection.Block)());
+		}
+	    }
+	}
     }
 }

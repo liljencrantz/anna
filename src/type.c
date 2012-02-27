@@ -1302,13 +1302,11 @@ anna_type_t *anna_type_get_function(
 	    new_key->input_name[i]=anna_intern(argn[i]);
 	    new_key->input_default[i]= (argd && argd[i]) ? anna_node_clone_deep(argd[i]) : 0;
 	}
-	static int num=0;
-	
 	string_buffer_t sb;
 	sb_init(&sb);
-
 //	sb_printf(&sb, L"!");
 	ANNA_FUNCTION_PROTOTYPE(key, &sb);
+//	static int num=0;
 //	sb_printf(&sb, L"%d", num++);
 
 	res = anna_type_create(sb_content(&sb), 0);
