@@ -1,0 +1,14 @@
+use(reflection);
+
+def __each__(Continuation this, def Object block (String key, Object value))
+    (target(Continuation))
+{
+    this.variable.each(name){block(name, this[name])}
+}
+
+def __map__(Continuation this, def Object block (String key, Object value))
+    (target(Continuation))
+{
+    this.variable.map(name){block(name, this[name])}
+}
+

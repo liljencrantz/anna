@@ -216,6 +216,43 @@ ANNA_VM_NATIVE(anna_function_type_i_static, 1)
     return null_entry;
 }
 
+static void anna_function_type_i_variable_each(
+    void *key,
+    void *value,
+    void *aux)
+{
+    anna_object_t *res = (anna_object_t *)aux;
+    wchar_t *name = (wchar_t *)key;
+    anna_list_add(
+	res,
+	anna_string_create(wcslen(name), name));
+    
+}
+
+
+ANNA_VM_NATIVE(anna_function_type_i_variable, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_object_t *res = (anna_object_t *)*anna_entry_get_addr(this, anna_mid_get(L"!variablePayload"));
+    if(res == null_object)
+    {
+	res = anna_list_create_imutable(imutable_string_type);
+	anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+	anna_function_t *fun = frame->function;
+	anna_stack_template_t *var = fun->stack_template;
+	assert(fun);
+	assert(var);
+	
+	hash_foreach2(
+	    &var->member_string_identifier,
+	    anna_function_type_i_variable_each,
+	    res);
+		
+	*(anna_object_t **)anna_entry_get_addr(this, anna_mid_get(L"!variablePayload")) = res;
+    }
+    return res;
+}
+
 static anna_type_t *anna_function_type_boring;
 
 static void anna_function_load(anna_stack_template_t *stack)
@@ -375,7 +412,7 @@ void anna_reflection_type_for_function_create(
 	
 	anna_member_create(
 	    res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD,
-	    ANNA_MEMBER_STATIC, null_type);
+	    ANNA_MEMBER_STATIC, null_type);	
 	
 	if(key->flags & ANNA_FUNCTION_CONTINUATION)
 	{
@@ -458,7 +495,18 @@ void anna_reflection_type_for_function_create(
 		&anna_continuation_type_i_get_line,
 		0,
 		L"The line number of the code offset of the function that this continuation points into.");
-	    
+
+	    anna_member_create(
+		res, anna_mid_get(L"!variablePayload"),
+		ANNA_MEMBER_INTERNAL, anna_list_type_get_imutable(imutable_string_type));
+	
+	    anna_member_create_native_property(
+		res, anna_mid_get(L"variable"),
+		anna_list_type_get_imutable(imutable_string_type),
+		&anna_function_type_i_variable,
+		0,
+		L"A list of all variables in this function.");
+		    
 	}
 	
 	if(key->flags & ANNA_FUNCTION_BOUND_METHOD)

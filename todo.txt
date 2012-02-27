@@ -1,4 +1,5 @@
 1.0 RELEASE CRITERIA:
+* cerror should be generated through the bindings
 * anna-game as a proof that the language works for solving reasonably complex problems
 * Base documentation:
   - Split into multiple files

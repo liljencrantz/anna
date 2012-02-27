@@ -7,7 +7,15 @@ def main()
     use(parser);
 
     print("Welcome to anna!");
-  globalClause := «Node»[];
+    globalClause := «Node»[];
+
+    /*
+      We use a continuation of the previous function call in order to
+      sneak a peek of all the variables already declared and then add
+      them to the new function used to evaluate the next statement.
+    */
+    previousContinuation := ? as reflection.Continuation;
+
     while(1)
     {
         line := readLine.readLine("anna> ");
@@ -22,16 +30,25 @@ def main()
 	    readLine.addHistory(line);
 	}
 	
-	(parser.parse(line) as Call).each(ast)
+	(parse(line) as Call).each(ast)
 	{	    
 	    run := 1;
   	    isGlobal := (ast.callTo?("use") or ast.callTo?("expand"));
 	    
+	    variableDeclaration := ast(nothing());
+	    previousContinuation.each(name, value)
+	    {
+		variableDeclaration.push(
+		    ast(%name := %value) % [
+			"name": Identifier(?, name), 
+			"value": Dummy(?, value)]);
+	    };
+
   	    moduleAst := ast(
 		nothing(
 		    var reflection.Continuation %cont;
-		    def %fun(){%cont = reflection.currentContinuation;%ast};
-		    )) % ["fun": parser.Identifier(?, "!fun"), "ast": ast, "cont": parser.Identifier(?, "!cont")];
+		    def %fun(){%cont = reflection.currentContinuation; %variable; %ast};
+		    )) % ["fun": parser.Identifier(?, "!fun"), "ast": ast, "cont": parser.Identifier(?, "!cont"), "variable": variableDeclaration];
 	    if(isGlobal)
 	    {
 		run = ?;
@@ -55,10 +72,7 @@ def main()
 		    funMemb := code.__type__.member.find(memb){memb.name=="!fun"};
   		    fun := funMemb.value(code);
 		    print((fun as reflection.Block)());
-
-//		    cont := code.__type__.member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
-//		    print("Cont frame variable value", cont["a"]);
-		
+		    previousContinuation = code.__type__.member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
 		}
 	    }
 	}
