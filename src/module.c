@@ -1119,9 +1119,15 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	    goto CLEANUP;
 	}
     }    
+    debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
     
   CLEANUP:
-    debug(D_SPAM,L"Module stack object set up for %ls\n", module_stack->filename);
+
+    /*
+      Even on error, we need to call anna_module_load_i_phase_2,
+      because otherwise, the phase 2 work queue will not be
+      emptied. That's why this code lives in the cleanup section.
+     */
     if(recursion_count > 1)
     {
 	debug(

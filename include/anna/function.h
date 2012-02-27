@@ -66,6 +66,12 @@
 */
 #define ANNA_FUNCTION_SPECIALIZED (8192*64)
 
+/**
+   Write a nicely formated prototype for the specified function or
+   function type. This is implemented as a macro because it can
+   operate on either a function or a function type. Which makes it a
+   bit ugly, but there you go...
+ */
 #define ANNA_FUNCTION_PROTOTYPE(fn, sbuff)				\
     if(fn->flags & ANNA_FUNCTION_CONTINUATION)				\
     {									\
@@ -88,6 +94,10 @@
 	    if(i==variadic_named_idx && type)				\
 	    {								\
 		type = anna_hash_get_value_type(type);			\
+	    }								\
+	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)			\
+	    {								\
+		type = 0;						\
 	    }								\
             sb_printf(							\
 		sbuff,							\

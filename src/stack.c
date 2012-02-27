@@ -331,7 +331,23 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
     if(!f)
 	return 0;
     anna_type_t *res = anna_stack_wrap(f)->type;
-    return anna_member_get(res, anna_mid_get(name))->type;
+    anna_member_t *memb = anna_member_get(res, anna_mid_get(name));
+    if(!memb->type)
+    {
+	anna_node_declare_t *decl = anna_stack_get_declaration(f, name);
+	if(decl)
+	{
+	    anna_node_calculate_type((anna_node_t *)decl);
+	    if(
+		decl->return_type && 
+		decl->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	    {
+		anna_stack_set_type(f, name, decl->return_type);
+	    }
+	}
+    }
+    assert(memb->type);
+    return memb->type;
 }
 
 anna_entry_t *anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name)
