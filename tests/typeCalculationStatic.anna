@@ -1,0 +1,5 @@
+ggg := ? as Int;
+def main()
+{
+    print(ggg);
+}

@@ -331,6 +331,25 @@ anna_entry_t *anna_node_static_invoke_try(
 	case ANNA_NODE_DECLARE:
 	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
 
+	case ANNA_NODE_CAST:
+	{
+	    anna_node_call_t *this2 = (anna_node_call_t *)this;
+	    anna_entry_t *res = anna_node_static_invoke_try(
+		this2->child[0], stack);
+	    anna_entry_t *type_entry = anna_node_static_invoke_try(
+		this2->child[1], stack);
+	    if(res && type_entry)
+	    {
+		anna_type_t *type = anna_type_unwrap(anna_as_obj(type_entry));
+		if(type)
+		{
+		    anna_object_t *res_obj = anna_as_obj(res);
+		    return (anna_abides(res_obj->type, type)) ? res : null_entry;
+		}
+	    }
+	    return 0;
+	}	
+
 	case ANNA_NODE_IDENTIFIER:
 	{
 	    anna_node_identifier_t *this2 = (anna_node_identifier_t *)this;

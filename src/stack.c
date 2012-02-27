@@ -67,10 +67,11 @@ void anna_stack_declare(anna_stack_template_t *stack,
     
     if(!initial_value)
     {
-	wprintf(
-	    L"Critical: No initial value provided in declaration of %ls\n",
+	anna_error(
+	    (anna_node_t *)0,
+	    L"Tried to declare variable %ls with invalid initial value\n",
 	    name);
-	CRASH;
+	return;
     }
 
     assert(type);
@@ -80,12 +81,11 @@ void anna_stack_declare(anna_stack_template_t *stack,
     size_t *old_offset = hash_get(&stack->member_string_identifier, name);
     if(old_offset)
     {
-	return;
-	
-	wprintf(
-	    L"Critical: Tried to redeclare variable %ls\n",
+	anna_error(
+	    (anna_node_t *)0,
+	    L"Tried to redeclare variable %ls\n",
 	    name);
-	CRASH;
+	return;
     }
     anna_stack_ensure_capacity(stack, stack->count+1);
     
@@ -122,11 +122,11 @@ void anna_stack_declare2(anna_stack_template_t *stack,
     size_t *old_offset = hash_get(&stack->member_string_identifier, declare_node->name);
     if(old_offset)
     {
-	wprintf(
-	    L"Critical: Tried to redeclare variable %ls\n",
+	anna_error(
+	    (anna_node_t *)declare_node,
+	    L"Tried to redeclare variable %ls\n",
 	    declare_node->name);
-	
-	CRASH;
+	return;
     }
     anna_stack_ensure_capacity(stack, stack->count+1);
     
@@ -357,6 +357,10 @@ anna_entry_t *anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name)
 	wprintf(L"Critical: Null stack!\n");
 	CRASH;	
     }    
+    if(!name)
+    {
+	CRASH;
+    }
     
     assert(name);
     while(stack)

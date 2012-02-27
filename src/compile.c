@@ -870,10 +870,16 @@ static void anna_vm_compile_i(
 	    anna_vm_const(ctx, null_entry);
 	    break;
 	}
+
+	case ANNA_NODE_TYPE_OF:
+	{
+	    anna_vm_const(ctx, anna_type_wrap(node->return_type));
+	    break;
+	}
 	
 	default:
 	{
-	    wprintf(L"Unknown AST node %d\n", node->node_type);
+	    anna_error(node, L"Unknown AST node %d\n", node->node_type);
 	    CRASH;
 	}
     }
