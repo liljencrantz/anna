@@ -6,43 +6,6 @@ error IOError
 {    
 }
 
-def readLine() (doc("Read one line of text from the keyboard and return it as a text string"))
-{
-    rbuff := Buffer();
-    sbuff := Buffer();
-    res := "".thaw;
-    while(1)
-    {
-	switch(unix.io.read(unix.io.standardInput, rbuff, 1))
-	{
-	    case(0)
-	    {
-		return sbuff.encode();
-	    }
-	    
-	    case(1)
-	    {
-	        chr := rbuff.encode();
-		if(chr == "\n")
-		{
-		    return sbuff.encode();
-		}
-		sbuff[sbuff.count] = rbuff.last;
-	    }
-
-	    default
-	    {
-		if(cerror.errno != cerror.again)
-		{
-		    raise(IOError("Error while reading keyboard input"));
-		    return ?;
-		}
-	    }
-	}
-    }
-    return ?;
-}
-
 def relative?(String filename) (internal)
 {
     return filename[0] != separator;
@@ -50,14 +13,14 @@ def relative?(String filename) (internal)
 
 const separator (doc("The directory separator")) = '/';
 
-def getCwd()
+def getCwd() (internal, doc("Returns a string representing the current workin directory."))
 {
     b := Buffer();
     unix.io.getcwd(b, 4096);
     b.encode(nullTerminated:1);
 }
 
-def String readWholeFile(Int fd)
+def String readWholeFile(Int fd) (doc("Internal helper function: Read in the entire content of the specified file descriptor and return it as a string."), internal)
 {
     buf := Buffer();
     res := "".thaw;

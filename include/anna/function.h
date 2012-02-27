@@ -81,7 +81,7 @@
     {									\
 	int i;								\
 	wchar_t *def = (fn->flags & ANNA_FUNCTION_MACRO) ? L"macro": L"def"; \
-	sb_printf(sbuff, L"%ls %ls (", def, fn->return_type?fn->return_type->name:L"?"); \
+	sb_printf(sbuff, L"%ls %ls (", def, anna_type_ok(fn->return_type)?fn->return_type->name:L"?"); \
 	int variadic = !!(fn->flags & ANNA_FUNCTION_VARIADIC);		\
 	int variadic_named = !!(fn->flags & ANNA_FUNCTION_VARIADIC_NAMED); \
 	int variadic_idx = variadic ? fn->input_count-1 : -1;		\
@@ -91,13 +91,13 @@
 	    if(i!=0)							\
 		sb_printf(sbuff, L", ");				\
 	    anna_type_t *type = (fn->input_type && fn->input_type[i])?fn->input_type[i]:0; \
-	    if(i==variadic_named_idx && type)				\
-	    {								\
-		type = anna_hash_get_value_type(type);			\
-	    }								\
 	    if(type == ANNA_NODE_TYPE_IN_TRANSIT)			\
 	    {								\
 		type = 0;						\
+	    }								\
+	    if(i==variadic_named_idx && type)				\
+	    {								\
+		type = anna_hash_get_value_type(type);			\
 	    }								\
             sb_printf(							\
 		sbuff,							\

@@ -152,4 +152,9 @@ __cold void anna_type_reseal(anna_type_t *this);
  */
 void anna_type_ensure_mid(anna_type_t *type, mid_t mid);
 
+static inline int anna_type_ok(anna_type_t *type)
+{
+    return (type != 0) && (type != ANNA_NODE_TYPE_IN_TRANSIT);
+}
+
 #endif

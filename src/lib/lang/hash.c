@@ -141,7 +141,7 @@ __attr_unused static void anna_hash_print(anna_hash_t *this)
 		anna_object_t *o = anna_as_obj_fast(e);
 		if(o->type == string_type)
 		{
-		    wprintf(L":aaaaa %ls", anna_string_payload(o));		    
+		    wprintf(L": %ls", anna_string_payload(o));
 		}
 		else
 		{
@@ -1097,11 +1097,19 @@ static void anna_hash_del(anna_object_t *victim)
 
 anna_type_t *anna_hash_get_key_type(anna_type_t *type)
 {
+    if(!anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION1))
+    {
+	return 0;
+    }    
     return (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION1));
 }
 
 anna_type_t *anna_hash_get_value_type(anna_type_t *type)
 {
+    if(!anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION2))
+    {
+	return 0;
+    }
     return (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_HASH_SPECIALIZATION2));
 }
 
