@@ -101,8 +101,43 @@ cd anna; make -s
 
 	  <h1><a name="hello">Hello world</a></h1>
 	  <p>
-	    The first Anna example will simply write the words «Hello
-	    world» on the screen:
+	    Let's start out with an interactive Anna session. Just
+	    open a command line prompt and type <code>anna</code>, and
+	    Anna should start:
+	  </p>
+	  <pre>
+# anna
+Welcome to anna!
+
+Type «help» for more information.
+anna&gt;
+	  </pre>
+	  <p>
+	    Try to enter a few commands and see what happens:
+	  </p>
+	  <pre>
+anna&gt; 1
+1
+anna&gt; 1+1
+2
+anna&gt; "hello"
+hello
+anna&gt; "Hello, " ~ "world!"
+Hello, world!
+	  </pre>
+	  <p>
+	    As you can see, the Anna interpreter can be used as a
+	    calculator. Any code you enter is avaluated, and the
+	    result is printed to the screen.
+	  </p>
+	  <p>
+	    Ok, that's it for the interactive prompt for now. Exit by
+	    writing the word <code>exit</code> and pressing enter and
+	    open your favorite text editor.
+	  </p>
+	  <p>
+	    The first Anna program you will write will simply write
+	    the text «Hello, world!» on the screen:
 	  </p>
 	  <pre class="anna-code">
 def main()
@@ -122,7 +157,8 @@ def main()
 	  </p>
 	  <p>
 	    The second thing to learn is that when executing a
-	    program, the function named main will be executed.
+	    program, the function named main in the file that is to be
+	    executed will be called.
 	  </p>
 	  <p>
 	    Finally, we've learned that there is a function
@@ -130,12 +166,11 @@ def main()
 	    to the screen.
 	  </p>
 	  <p>
-	    <em class="task">Exercise 1:</em> Save the example above
-	    in a file titles <code>hello.anna</code> and try running
-	    it by executing the command <code>anna hello</code> from
-	    the directory where you saved your file.
+	    <em class="anna-task">Exercise 1:</em> Save the example above
+	    in a file titled <code>hello.anna</code> and try running
+	    it by executing the command <code>anna hello.anna</code>
+	    from the directory where you saved your file.
 	  </p>
-
 
 	  <h1><a name="variables">Numbers, variables and arithmetic</a></h1>
 	  <p>
@@ -145,21 +180,21 @@ def main()
 def main()
 {
     print("What is your name?");
-    // The io.readLine function reads one line of input from the keyboard and 
+    // The readLine.readLine function reads one line of input from the keyboard and 
     // returns it as a text String
 
-    // The := symbol declares a new variable.
-    userName := io.readLine();
+    // Use the := symbol to declare a new variable.
+    userName := readLine.readLine();
 
-    // We can send multiple parameters to the print function, and they will all
-    // get printed with a space character separating them
+    // And now that the userName variable has a value, we can use it. 
+    // For example, we can print it!
     print("Hello,", userName);
     print("How old are you?");
    
     // The Int::convert function converts it's input into an integer number.
     // What does the '::' thing mean? Don't worry about that right now, we'll 
     // get to it later...
-    userAge := Int::convert(io.readLine());
+    userAge := Int::convert(readLine.readLine());
 
     print(
         "Wow, that means you've been alive for more than", 
@@ -174,7 +209,7 @@ def main()
 	    access the value of a variable by writing out it's
 	    name. For example, the
 	    line <code class="anna-code">userName :=
-	    io.readLine();</code> declares a new variable
+	    readLine.readLine();</code> declares a new variable
 	    named <code>userName</code>, and assigns it an initial
 	    value by reading a line of input from the keyboard. A few
 	    lines later, the
@@ -183,17 +218,16 @@ def main()
 	    the keyboard back onto the screen.
 	  </p>
 	  <p>
-	    <code>io</code> is an Anna module. A module is something
-	    that is used to group together related pieces of code,
-	    such as functions. The <code>io</code> module contains
-	    code that deals with Input and Output, that is, reading
-	    and writing stuff. Modules make life easier because we
-	    don't have to be afraid of naming clashes when two
-	    different pieces of code give different variables the same
-	    name.
+	    <code>readLine</code> is an Anna module. A module is
+	    something that is used to group together related pieces of
+	    code, such as functions. The <code>readLine</code> module
+	    contains code that deals with reading input from the
+	    keayboard. Modules make life easier because we don't have
+	    to be afraid of naming clashes when two different pieces
+	    of code give different variables the same name.
 	  </p>
 	  <p>
-	    <em class="task">Exercise 2:</em> Write a program that
+	    <em class="anna-task">Exercise 2:</em> Write a program that
 	    asks the user what his/her favourite hobby is and tells
 	    them that it's boring.
 	  </p>
@@ -207,7 +241,7 @@ def main()
 def main()
 {
     print("What is your name?");
-    userName := io.readLine();
+    userName := readLine.readLine();
     // Give a special greeting to people named Anna
     if(userName == "Anna")
     {
@@ -222,18 +256,38 @@ def main()
     // Repeat the same piece of code while a condition is met
     // In this case, we read a new number from the keyboard until we encounter 
     // the number seven.
-    while(Int::convert(io.readLine()) != 7)
+    while(Int::convert(readLine.readLine()) != 7)
     {
         print("No no no. Bad number. Pick something else.");
     }
     print("Seven! I knew it! I knew it all along!");
 
+    (0..10).each(index)
+    {
+        print("This is number", index+1);
+    }
+}
+	  </pre>
+	  <p>
+	    <em class="anna-task">Exercise 3:</em> Write a program that prints the lyrics to the classic ballad «99 bottles of beer».
+	  </p><p>
+	    <em class="anna-hint">Hint:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-hint3-toggle");'>here</a>.
+	  </p>
+
+<div class='anna-code-popup' id='anna-hint3-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+              <h3>99 bottles of beer</h3>
+	  <pre class="anna-code">
+def main()
+{
     (99..0).each(bottles)
     {
         suffix := "";
         if(bottles > 1)
         {
-            print(bottles, "bottles of beer on the wall,", bottles, "bottles of beer.");            if(bottles > 2)
+            print(bottles, "bottles of beer on the wall,", bottles, "bottles of beer.");
+            if(bottles > 2)
             {
                 suffix = "" ~ (bottles-1) ~ " bottles of beer on the wall.";
             }
@@ -254,7 +308,9 @@ def main()
 Go to the store and buy some more, 99 bottles of beer on the wall.");
 }
 </pre>
-</pre>
+	    </div>
+	  </div>
+
 
 	  <h1><a name="lists">Lists</a></h1>
 	  <p>
@@ -264,11 +320,125 @@ Go to the store and buy some more, 99 bottles of beer on the wall.");
 def main()
 {
     myList := [1, 2, 7];
+    print(myList);
 }
 </pre>
+	<p>
+	  The output of that program is:
+	</p>
+	<pre>
+[1, 2, 7]
+	</pre>
+	<p>
+	  The variable <code>myList</code> in the code above
+	  references a <code>List</code>. There are many operations
+	  that can be performed on a List, here are a few of them:
+	</p>
 	
+	  <table class='anna-table'>
+	    <caption>
+	      A few common list operations
+	    </caption>
+	    <thead>
+	      <tr>
+		<th>
+		  Example
+		</th>
+		<th>
+		  Description
+		</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    myList[0];
+		  </code>
+		</td>
+		<td>
+		  Returns the first element in the list. Index 1 is the second element, and so on.
+		</td>
+		<td>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    myList[-1];
+		  </code>
+		</td>
+		<td>
+		  Returns the last element in the list. Index -2 is the second to last element, and so on.
+		</td>
+		<td>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    myList[0] = 7;
+		  </code>
+		</td>
+		<td>
+		  Reassigns the first element to hold the value 7
+		</td>
+		<td>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    myList.count;
+		  </code>
+		</td>
+		<td>
+		  Returns the number of elements in the list.
+		</td>
+		<td>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    myList.push(666);
+		  </code>
+		</td>
+		<td>
+		  Appends the value 666 to the end of the list.
+		</td>
+		<td>
+		</td>
+	      </tr>
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    myList.pop();
+		  </code>
+		</td>
+		<td>
+		  Removes the last element from the list and returns it.
+		</td>
+		<td>
+		</td>
+	      </tr>
+
+	    </tbody>
+	  </table>
+	  <p>
+	    You can learn more about lists by reading
+	    the <a href="api/global/lang/MutableList.html">Anna API
+	      documentation</a>.
+	  </p>
+	  
 	</div>
       </div>
+      
       <div class="anna-left-menu">
 	<div class="anna-left-menu-inner">
 	  <div>
