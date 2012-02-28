@@ -480,13 +480,14 @@ anna_function_type_t *anna_member_bound_function_type(anna_member_t *member)
 	return base;
     }
 
-    return anna_function_type_unwrap(anna_type_get_function(
-	base->return_type,
-	base->input_count-1,
-	&base->input_type[1],
-	&base->input_name[1],
-	&base->input_default[1],
-	base->flags));
+    return anna_function_type_unwrap(
+	anna_type_get_function(
+	    base->return_type,
+	    base->input_count-1,
+	    &base->input_type[1],
+	    &base->input_name[1],
+	    &base->input_default[1],
+	    base->flags));
 }
 
 void anna_member_alias(anna_type_t *type, int mid, wchar_t *name)

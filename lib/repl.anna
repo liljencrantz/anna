@@ -12,44 +12,129 @@ into a function using the parser module, and will then execute that
 function and print it's return value to screen."), internal)
 {
     use(parser);
-
+    
     print("Welcome to anna!");
+
+    /*
+      If the user writes e.g. a use clause or an extend clause, we
+      don't actually execute it, we instead save that clause away in
+      this list. On every subsequent call, we prepend these
+      expressions to the one the user wrote.
+     */
     globalClause := «Node»[];
+
+    /*
+      Function for controlled exit
+     */
+    die := {
+	print("Bye!");
+	if(readLine.history.write(historyFile))
+	{
+	    print("Failed to save history");
+	    print(cerror.errorString(cerror.errno));
+	}
+	unix.proc.exit(0);
+    }
 
     /*
       We use a continuation of the previous function call in order to
       sneak a peek of all the variables already declared and then add
       them to the new function used to evaluate the next statement.
     */
-    previousContinuation := ? as reflection.Continuation;
-    
+    previousContinuation := ? as reflection.Continuation;    
+
+    /*
+      Set up the history list
+    */
     historyFile :== unix.env.getenv("HOME") ~ "/.anna_history";
     readLine.history.read(historyFile);
+
+    /*
+      Set up the various short cut actions available, such as showing
+      a help text when the user writes «help».
+    */
+
+    helpText := "Welcome to Anna!
+
+If this is your first time using Anna, you might want to 
+check out the tutorial available at
+http://liljencrantz.github.com/anna/tutorial.html";
+
+    copyrightText := "Copyright(C) 2005-2012 Axel Liljencrantz
+All rights reserved.";
+    helloText:= "Hi!";
+    licenseText := copyrightText ~"
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met: 
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer. 
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
+
+    action := «Node, reflection.Block»[
+      ast(hello): {print(helloText)},
+      ast(help): {print(helpText)},
+      ast(copyright): {print(copyrightText)},
+      ast(license): {print(licenseText)},
+      ast(quit): die,
+      ast(exit): die,
+      ];
     
+    /*
+      Start the main repl loop
+     */
     while(1)
     {
         line := readLine.readLine("anna> ");
 	if(!line)
 	{
 	    print();
-	    print("Bye!");
-	    if(readLine.history.write(historyFile))
-	    {
-		print("Failed to save history");
-		print(cerror.errorString(cerror.errno));
-	    }
-	    unix.proc.exit(0);
+	    die();
 	}
 	if(line.count > 0)
 	{
 	    readLine.history.add(line);
 	}
 	
+	/*
+	  If the user entered multiple expressions on a single line,
+	  execute them one at a time.
+	 */
 	(parse(line) as Call).each(ast)
-	{	    
+	{
+	    /*
+	      Check if this is one of the short cut actions like
+	      «help», and if so, execute the corresponding action.
+	     */
+	    if(ast in action)
+	    {
+		action[ast]();
+		continue;
+	    }
+	    
 	    run := 1;
   	    isGlobal := (ast.callTo?("use") or ast.callTo?("expand"));
 	    
+	    /*
+	      Add all variables that have been previously declared by
+	      the user. We do this by inttrospecting a continuation of
+	      the previous function invocation and extracting all it's
+	      variable names and values.
+	     */
 	    variableDeclaration := ast(nothing());
 	    previousContinuation.each(name, value)
 	    {
@@ -59,6 +144,10 @@ function and print it's return value to screen."), internal)
 			"value": Dummy(?, value)]);
 	    };
 
+	    /*
+	      Make an ast representing an entire module with our fancy
+	      function in it.
+	     */
   	    moduleAst := ast(
 		nothing(
 		    var reflection.Continuation %cont;
@@ -69,14 +158,18 @@ function and print it's return value to screen."), internal)
 		run = ?;
 	        moduleAst = ast(nothing(%ast)) % ["ast": ast];
 	    }
+
+	    /*
+	      Add all use and extend clauses from previous function invocations
+	     */
 	    globalClause.each(node){
 		(moduleAst as Call).push(node);
-		}
-//	    print(moduleAst);
+	    }
 
 	    code := compile(moduleAst);
 	    if(code)
 	    {
+
 		if(isGlobal)
 		{
 		    globalClause.push(ast);
@@ -84,6 +177,12 @@ function and print it's return value to screen."), internal)
 		
 		if(run)
 		{
+		    /*
+		      Use reflection to find our function and run it,
+		      then use reflecation to find the continuation of
+		      the function invocation so we can introspect it
+		      in the next lap.
+		     */
 		    funMemb := code.__type__.member.find(memb){memb.name=="!fun"};
   		    fun := funMemb.value(code);
 		    print((fun as reflection.Block)());
