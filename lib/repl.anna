@@ -9,7 +9,7 @@ programming language. If Anna is called without specifying an
 application to run, this module get's run. It will show an interactive
 prompt using the readLine library, and will then compile that line
 into a function using the parser module, and will then execute that
-function."), internal)
+function and print it's return value to screen."), internal)
 {
     use(parser);
 

@@ -915,7 +915,7 @@ int b_append( buffer_t *b, const void *d, ssize_t len )
 	    d,
 	    len );
 
-//	fwprintf( stderr, L"Copy %s, new value %s\n", d, b->buff );
+//	fanna_message( stderr, L"Copy %s, new value %s\n", d, b->buff );
     b->used+=len;
 
     return 1;

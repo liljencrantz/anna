@@ -54,7 +54,7 @@ static void anna_slab_remove_chunk_from_pool(
 static void anna_slab_reclaim_sz(size_t sz)
 {
     int i;
-//    wprintf(L"WOOT RECLAIM SZ %d, %d chunks\n", sz, al_get_count(&slab_alloc[sz]));
+//    anna_message(L"WOOT RECLAIM SZ %d, %d chunks\n", sz, al_get_count(&slab_alloc[sz]));
     slab_t *slab = slab_list[sz];
 
     while(slab)
@@ -67,11 +67,11 @@ static void anna_slab_reclaim_sz(size_t sz)
     for(i=0; i<al_get_count(&slab_alloc[sz]);)
     {
 	size_t *chunk = al_get(&slab_alloc[sz], i);
-//	wprintf(L"AAAA %d %d\n", *chunk, SLAB_SZ);
+//	anna_message(L"AAAA %d %d\n", *chunk, SLAB_SZ);
 	
 	if(*chunk == SLAB_SZ)
 	{
-	    //wprintf(L"YAY, FREEING AN ENTIRE CHUNK OF SIZE %d, WOOT!!!!\n", sz);
+	    //anna_message(L"YAY, FREEING AN ENTIRE CHUNK OF SIZE %d, WOOT!!!!\n", sz);
 
 	    anna_slab_remove_chunk_from_pool(sz, (char *)chunk);
 	    free(chunk);
@@ -99,7 +99,7 @@ void anna_slab_reclaim()
 
 void anna_slab_alloc_batch(size_t sz)
 {
-//    wprintf(L"Allocate object batch of size %d. We have %d allocated items.\n", sz, anna_slab_alloc_count);
+//    anna_message(L"Allocate object batch of size %d. We have %d allocated items.\n", sz, anna_slab_alloc_count);
 
     char * mem = malloc(sz*SLAB_SZ + sizeof(double));
     al_push(&slab_alloc[sz], mem);
@@ -134,8 +134,8 @@ void anna_slab_print()
 		t = t->next;
 	    }
 	    tot += count*i;
-	    wprintf(L"%d free allocations of size %d use %d kB\n", count, i, count*i/1024);
+	    anna_message(L"%d free allocations of size %d use %d kB\n", count, i, count*i/1024);
 	}
     }
-    wprintf(L"In total, %d kB has been allocated but is unused\n", tot/1024);
+    anna_message(L"In total, %d kB has been allocated but is unused\n", tot/1024);
 }

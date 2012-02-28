@@ -54,13 +54,13 @@ static void add_hash_method(void *key, void *value, void *aux)
 {
     anna_type_t *hash = (anna_type_t *)value;
     anna_function_t *fun = (anna_function_t *)aux;
-//    wprintf(L"Add function %ls to type %ls\n", fun->name, hash->name);
+//    anna_message(L"Add function %ls to type %ls\n", fun->name, hash->name);
     anna_member_create_method(hash, anna_mid_get(fun->name), fun);
 }
 
 void anna_hash_add_method(anna_function_t *fun)
 {
-//    wprintf(L"Function %ls to all hash types\n", fun->name);
+//    anna_message(L"Function %ls to all hash types\n", fun->name);
     al_push(&anna_hash_additional_methods, fun);
     hash_foreach2(&anna_hash_specialization, &add_hash_method, fun);
 }
@@ -71,7 +71,7 @@ static void anna_hash_add_all_extra_methods(anna_type_t *hash)
     for(i=0; i<al_get_count(&anna_hash_additional_methods); i++)
     {
 	anna_function_t *fun = (anna_function_t *)al_get(&anna_hash_additional_methods, i);
-//	wprintf(L"Add function %ls to type %ls\n", fun->name, hash->name);
+//	anna_message(L"Add function %ls to type %ls\n", fun->name, hash->name);
 	anna_member_create_method(hash, anna_mid_get(fun->name), fun);
     }
 }
@@ -129,37 +129,37 @@ __attr_unused static void anna_hash_print(anna_hash_t *this)
     int i;
     for(i=0; i<=this->mask; i++)
     {
-	wprintf(L"%d:\t", i);
+	anna_message(L"%d:\t", i);
 	if(hash_entry_is_used(&this->table[i]))
 	{
-	    wprintf(L"%d", this->table[i].hash);	    
+	    anna_message(L"%d", this->table[i].hash);	    
 	    anna_entry_t *e = this->table[i].key;
 	    if(anna_is_int_small(e))
-		wprintf(L": %d", anna_as_int(e));	    
+		anna_message(L": %d", anna_as_int(e));	    
 	    else if(anna_is_obj(e))
 	    {
 		anna_object_t *o = anna_as_obj_fast(e);
 		if(o->type == string_type)
 		{
-		    wprintf(L": %ls", anna_string_payload(o));
+		    anna_message(L": %ls", anna_string_payload(o));
 		}
 		else
 		{
-		    wprintf(L": %ls", o->type->name);		    
+		    anna_message(L": %ls", o->type->name);		    
 		}
 	    }
 
 	}
 	else if(hash_entry_is_dummy(&this->table[i]))
 	{
-	    wprintf(L"dummy");	    
+	    anna_message(L"dummy");	    
 	}
 	else
 	{
-	    wprintf(L"empty");	    
+	    anna_message(L"empty");	    
 	}
 	
-	wprintf(L"\n");
+	anna_message(L"\n");
     }
     
 }
@@ -203,7 +203,7 @@ static inline void ahi_init(anna_hash_t *this)
 
 static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
 {
-//    wprintf(L"Weee, resize to %d\nBefore:\n", new_sz);
+//    anna_message(L"Weee, resize to %d\nBefore:\n", new_sz);
 //    anna_hash_print(this);
     
     size_t old_sz = this->mask+1;
@@ -244,7 +244,7 @@ static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
     }
     this->table = new_table;
     this->mask = new_mask;
-//    wprintf(L"After\n");
+//    anna_message(L"After\n");
 //    anna_hash_print(this);
 }
 
@@ -252,7 +252,7 @@ static void anna_hash_check_resize(anna_hash_t *this)
 {
     size_t old_sz = this->mask+1;
 //    if(old_sz <= 64)
-//	wprintf(L"%d: %f > %d?\n", old_sz, ANNA_HASH_USED_MIN*old_sz, this->used);
+//	anna_message(L"%d: %f > %d?\n", old_sz, ANNA_HASH_USED_MIN*old_sz, this->used);
     if(ANNA_HASH_USED_MAX*old_sz < this->used)
     {
 	size_t new_sz = ANNA_HASH_SIZE_STEP * old_sz;
@@ -402,11 +402,11 @@ static void ahi_search_callback2_internal(
 	int pos = anna_hash_get_next_non_dummy(anna_as_obj(hash_obj), hash+idx);
 	anna_hash_entry_t *e = &this->table[pos];
 	idx = pos-hash;
-	//wprintf(L"Position is non-empty, and keys are not equal. Check next position: %d (idx %d).\n", pos, idx);
+	//anna_message(L"Position is non-empty, and keys are not equal. Check next position: %d (idx %d).\n", pos, idx);
 	
 	if(hash_entry_is_used(e))
 	{
-	    //  wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
+	    //  anna_message(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
 	    ahi_search_callback2_next(
 		context, 
 		hash_obj,
@@ -420,14 +420,14 @@ static void ahi_search_callback2_internal(
 	}
 	else
 	{	    
-//	    wprintf(L"Position %d (idx %d) is empty. Yay, object does not exist\n", pos, idx);
+//	    anna_message(L"Position %d (idx %d) is empty. Yay, object does not exist\n", pos, idx);
 	    callback(context, key, hash, hash_obj, aux, &this->table[(dummy_idx != -1 )? dummy_idx:pos]);
 	}
     }
     else
     {
 	int pos = (hash+idx) & this->mask;
-//	wprintf(L"Position %d is non-empty, but keys are equal. Found match, run callback function!\n", pos);
+//	anna_message(L"Position %d is non-empty, but keys are equal. Found match, run callback function!\n", pos);
 	callback(context, key, hash, hash_obj, aux, &this->table[pos]);
     }
 }
@@ -476,7 +476,7 @@ static inline void ahi_search_callback_internal(
     anna_hash_entry_t *e = &this->table[pos];
     idx = pos-hash;
     
-    //wprintf(L"Calculated hash value %d, maps to position %d, first non-dummy is %d\n", hash, hash & this->mask, pos);
+    //anna_message(L"Calculated hash value %d, maps to position %d, first non-dummy is %d\n", hash, hash & this->mask, pos);
     if(hash_entry_is_used(e))
     {
 	int d_pos = hash & this->mask;
@@ -487,7 +487,7 @@ static inline void ahi_search_callback_internal(
 	    dummy_idx = d_pos;
 	}
 	
-//	wprintf(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
+//	anna_message(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
 	ahi_search_callback2_next(
 	    context, 
 	    hash_obj,
@@ -501,7 +501,7 @@ static inline void ahi_search_callback_internal(
     }
     else
     {
-//	wprintf(L"Position %d (idx %d) is empty\n", pos, idx);
+//	anna_message(L"Position %d (idx %d) is empty\n", pos, idx);
 	callback(context, key, hash, hash_obj, aux, &this->table[pos]);
     }
     
@@ -549,7 +549,7 @@ static inline void ahi_search(
     }
     else if(anna_is_int_small(key))
     {
-//	wprintf(L"Search for Int in hash table\n");
+//	anna_message(L"Search for Int in hash table\n");
 	ahi_search_callback_internal(
 	    context,
 	    hash,
@@ -570,7 +570,7 @@ static inline void ahi_search(
     ;
     
     anna_object_t *o = anna_as_obj(key);
-//    wprintf(L"Search for object of type %ls in hash table\n", o->type->name);
+//    anna_message(L"Search for object of type %ls in hash table\n", o->type->name);
     anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_HASH_CODE);
     anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
     
@@ -661,13 +661,13 @@ static __attribute__((aligned(8))) anna_context_t *anna_hash_init_callback(
     anna_object_t *list = anna_as_obj(anna_list_get(anna_as_obj_fast(data), 0));
     int idx = anna_as_int((anna_list_get(anna_as_obj_fast(data), 1)));
     
-//    wprintf(L"Init callback\n");
+//    anna_message(L"Init callback\n");
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
     
     anna_object_t *pair = anna_as_obj_fast(anna_list_get(list, idx));
     anna_hash_set_entry(this, hash_entry, hash_code, key, anna_pair_get_second(pair));
     
-//    wprintf(L"Hash table now has %d used slots and %d dummy slots\n", this->used, this->fill-this->used);    
+//    anna_message(L"Hash table now has %d used slots and %d dummy slots\n", this->used, this->fill-this->used);    
     
     size_t sz = anna_list_get_count(list);
     if(sz > idx)
@@ -855,7 +855,7 @@ static __attribute__((aligned(8))) void anna_hash_remove_callback(
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
 
-//    wprintf(L"Returned element %d\n", hash_entry - this->table);    
+//    anna_message(L"Returned element %d\n", hash_entry - this->table);    
     
     if(hash_entry_is_used(hash_entry))
     {
@@ -875,7 +875,7 @@ static __attribute__((aligned(8))) void anna_hash_remove_callback(
     }
     else
     {
-//	wprintf(L"Failed to remove element %ls with hash code %d (%d), which maps to pos %d\n", anna_string_payload(key), hash_code, anna_hash_mangle(anna_string_hash(key)), hash_code & this->mask);
+//	anna_message(L"Failed to remove element %ls with hash code %d (%d), which maps to pos %d\n", anna_string_payload(key), hash_code, anna_hash_mangle(anna_string_hash(key)), hash_code & this->mask);
 
 	anna_context_push_object(context, null_object);	
     }
@@ -1280,7 +1280,7 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 void anna_hash_mark(anna_object_t *obj)
 {
     anna_hash_t *this = ahi_unwrap(obj);
-//    wprintf(L"HASHMARK %ls %d %d %d %d\n", obj->type->name, obj, null_entry, this->mask, this->table);
+//    anna_message(L"HASHMARK %ls %d %d %d %d\n", obj->type->name, obj, null_entry, this->mask, this->table);
     int i;
     for(i=0; i<=this->mask; i++)
     {

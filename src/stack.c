@@ -76,7 +76,7 @@ void anna_stack_declare(anna_stack_template_t *stack,
 
     assert(type);
     assert(stack);
-    //wprintf(L"Declare %ls to be of type %ls\n", name, type->name);
+    //anna_message(L"Declare %ls to be of type %ls\n", name, type->name);
     
     size_t *old_offset = hash_get(&stack->member_string_identifier, name);
     if(old_offset)
@@ -117,7 +117,7 @@ void anna_stack_declare2(anna_stack_template_t *stack,
 	CRASH;
 
     assert(stack);
-    //wprintf(L"Declare %ls to be of type %ls\n", name, type->name);
+    //anna_message(L"Declare %ls to be of type %ls\n", name, type->name);
     
     size_t *old_offset = hash_get(&stack->member_string_identifier, declare_node->name);
     if(old_offset)
@@ -150,7 +150,7 @@ anna_stack_template_t *anna_stack_template_search(
 {
     if(!stack)
     {
-	wprintf(L"Critical: Null stack!\n");
+	anna_message(L"Critical: Null stack!\n");
 	CRASH;	
     }    
   
@@ -168,7 +168,7 @@ anna_stack_template_t *anna_stack_template_search(
 	{
 	    anna_use_t *use = al_get(&stack->import, i);
 	    
-//	    wprintf(L"LALALA %ls %ls\n", name, use->type->name);
+//	    anna_message(L"LALALA %ls %ls\n", name, use->type->name);
 	    
 	    anna_stack_template_t *import =
 		anna_stack_unwrap(
@@ -198,7 +198,7 @@ struct anna_use *anna_stack_search_use(
 {
     if(!stack)
     {
-	wprintf(L"Critical: Null stack!\n");
+	anna_message(L"Critical: Null stack!\n");
 	CRASH;	
     }    
   
@@ -232,7 +232,7 @@ anna_entry_t *anna_stack_macro_get(
 {
     if(!stack)
     {
-	wprintf(L"Critical: Null stack!\n");
+	anna_message(L"Critical: Null stack!\n");
 	CRASH;	
     }  
     assert(name);
@@ -287,7 +287,7 @@ void anna_stack_set(anna_stack_template_t *stack, wchar_t *name, anna_entry_t *v
 	return;
     }
     
-//    wprintf(L"Set %ls to %ls\n", name, value->type->name);
+//    anna_message(L"Set %ls to %ls\n", name, value->type->name);
     anna_stack_template_t *f = anna_stack_template_search(stack, name);
     if(!f)
 	return;
@@ -354,7 +354,7 @@ anna_entry_t *anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name)
 {
     if(!stack)
     {
-	wprintf(L"Critical: Null stack!\n");
+	anna_message(L"Critical: Null stack!\n");
 	CRASH;	
     }    
     if(!name)
@@ -482,7 +482,7 @@ anna_sid_t anna_stack_sid_create(anna_stack_template_t *stack, wchar_t *name)
     sid.offset=-1;
     return sid;
     /*
-      wprintf(L"Critical: Tried to create sid for unknown variable: %ls\n", name);
+      anna_message(L"Critical: Tried to create sid for unknown variable: %ls\n", name);
       CRASH;
     */
 }
@@ -493,7 +493,7 @@ static void anna_print_stack_member(void *key_ptr,void *val_ptr, void *aux_ptr)
     anna_stack_template_t *stack = (anna_stack_template_t *)aux_ptr;
     anna_type_t *res = anna_stack_wrap(stack)->type;
     anna_type_t *type = anna_member_get(res, anna_mid_get(name))->type;
-    wprintf(L"%ls %ls = %ls\n", type?type->name:L"<UNKNOWN>", name, L"...");
+    anna_message(L"%ls %ls = %ls\n", type?type->name:L"<UNKNOWN>", name, L"...");
 }
 
 void anna_stack_print(anna_stack_template_t *stack)
@@ -501,7 +501,7 @@ void anna_stack_print(anna_stack_template_t *stack)
     if(!stack)
 	return;
     
-    wprintf(
+    anna_message(
 	L"Stack frame with %d members belonging to function %ls:\n",
 	stack->count,
 	stack->function?stack->function->name:L"<null>");
@@ -511,7 +511,7 @@ void anna_stack_print(anna_stack_template_t *stack)
     for(i=0; i<al_get_count(&stack->import); i++)
     {
 	anna_use_t *use = al_get(&stack->import, i);
-	wprintf(L"    use %ls\n", use->type->name);
+	anna_message(L"    use %ls\n", use->type->name);
     }
     anna_stack_print(stack->parent);
 }
@@ -540,10 +540,10 @@ int anna_stack_depth(anna_stack_template_t *stack)
 
 void anna_stack_print_trace(anna_stack_template_t *stack)
 {
-    wprintf(L"Stack trace:\n");
+    anna_message(L"Stack trace:\n");
     while(stack)
     {
-	wprintf(
+	anna_message(
 	    L"Stack frame belonging to function %ls\n",
 	    stack->function?stack->function->name:L"<null>");
 	stack = stack->parent;

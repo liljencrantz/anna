@@ -178,7 +178,7 @@ static anna_stack_template_t *anna_module(
 
     if(!res->filename)
     {
-	wprintf(L"Oops %ls\n", res->name);
+	anna_message(L"Oops %ls\n", res->name);
 	
 	return 0;
     }

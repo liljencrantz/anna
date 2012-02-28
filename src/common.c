@@ -45,7 +45,7 @@ void show_stackframe()
 		debug( 0, L"Backtrace:" );
 		for( i=0; i<trace_size; i++ )
 		{
-			fwprintf( stderr, L"%s\n", messages[i]);
+			anna_message( L"%s\n", messages[i]);
 		}
 		free( messages );
 	}
@@ -263,7 +263,30 @@ void debug( int level, const wchar_t *msg, ... )
 	sb_vprintf( &sb, msg, va );
 	va_end( va );	
 
-	fwprintf( stderr, L"%ls", sb.buff );	
+	anna_print( 2, sb.buff, -1 );	
+
+	sb_destroy( &sb );	
+
+	errno = errno_old;
+}
+
+void anna_message(const wchar_t *msg, ... )
+{
+       
+	va_list va;
+
+	string_buffer_t sb;
+
+	int errno_old = errno;
+
+	VERIFY( msg, );
+		
+	sb_init( &sb );
+	va_start( va, msg );	
+	sb_vprintf( &sb, msg, va );
+	va_end( va );	
+
+	anna_print( 2, sb.buff, -1 );	
 
 	sb_destroy( &sb );	
 
@@ -271,3 +294,47 @@ void debug( int level, const wchar_t *msg, ... )
 }
 
 
+static int anna_print_convert(wchar_t *src, size_t src_sz, char **dst, size_t *dst_sz)
+{
+    size_t i;
+    static char *res=0;
+    static size_t res_sz;
+    
+    size_t max_sz = (src_sz+2) * MB_LEN_MAX;
+    if(res_sz < max_sz)
+    {
+	res_sz = max_sz;
+	res = realloc(res, res_sz);
+    }
+
+    char *ptr = res;
+    for(i=0; i<src_sz; i++)
+    {
+	int steps = wctomb(ptr, src[i]);
+	if(steps == -1)
+	{
+	    return -1;
+	}
+	ptr += steps;
+    }
+    *dst = res;
+    *dst_sz = ptr-res;
+    return 0;
+}
+
+void anna_print(int fd, wchar_t *str, ssize_t slen)
+{
+    if(slen == -1)
+    {
+	slen = wcslen(str);
+    }
+    
+    char *narrow;
+    size_t len;
+    if(anna_print_convert(str, slen, &narrow, &len))
+    {
+	narrow = "Failed to convert wide character string\n";
+	len = strlen(narrow);
+    }
+    write(fd, narrow, len);    
+}

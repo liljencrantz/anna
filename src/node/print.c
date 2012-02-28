@@ -513,7 +513,7 @@ void anna_node_print(int level, anna_node_t *this)
     string_buffer_t sb;
     sb_init(&sb);
     anna_node_print_internal(&sb, this, 0);
-    fwprintf(stderr,L"%ls\n", sb_content(&sb));
+    anna_message(L"%ls\n", sb_content(&sb));
     sb_destroy(&sb);
 }
 
@@ -542,7 +542,7 @@ void anna_node_print_code(anna_node_t *node)
     FILE *file = wfopen(node->location.filename, "r");
     if(!file)
     {
-	fwprintf(stderr, L"Error: %ls: Not found\n", node->location.filename);
+//	anna_message(L"Error: %ls: Not found\n", node->location.filename);
 	return;
     }    
     while(1)
@@ -553,7 +553,7 @@ void anna_node_print_code(anna_node_t *node)
 	    case WEOF:
 		if(is_marking)
 		{
-		    fwprintf(stderr, L"\x1b[0m");		
+		    anna_message(L"\x1b[0m");		
 		}
 		return;
 	}
@@ -567,10 +567,10 @@ void anna_node_print_code(anna_node_t *node)
 	{
 	    if(is_marking)
 	    {
-		fwprintf(stderr, L"\x1b[0m");		
+		anna_message(L"\x1b[0m");		
 	    }
 	    is_marking=0;
-	    fwprintf(stderr, L"%*d: ", 6, current_line);
+	    anna_message(L"%*d: ", 6, current_line);
 	    
 	}
 	
@@ -580,11 +580,11 @@ void anna_node_print_code(anna_node_t *node)
 	{
 	    if(mark)
 	    {
-		fwprintf(stderr, L"\x1b[31m");
+		anna_message(L"\x1b[31m");
 	    }
 	    else
 	    {
-		fwprintf(stderr, L"\x1b[0m");
+		anna_message(L"\x1b[0m");
 	    }
 	    
 	}

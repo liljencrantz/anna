@@ -518,7 +518,7 @@ void anna_reflection_type_for_function_create(
 	if(is_boring && base_constructed && anna_type_object_created)
 	{
 	    anna_function_type_boring = res;
-//	    wprintf(L"Woot, found a boring function\n");
+//	    anna_message(L"Woot, found a boring function\n");
 	}
     }
 

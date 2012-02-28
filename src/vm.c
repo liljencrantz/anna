@@ -28,7 +28,7 @@
 
 #define OP_ENTER(context) 
 
-//wprintf(L"Weee, instruction %d at offset %d\n", *context->frame->code, context->frame->code - context->frame->function->code)
+//anna_message(L"Weee, instruction %d at offset %d\n", *context->frame->code, context->frame->code - context->frame->function->code)
 
 char *anna_context_static_ptr;
 char anna_context_static_data[ANNA_CONTEXT_SZ];
@@ -97,29 +97,11 @@ __cold static int frame_checksum(anna_activation_frame_t *frame)
     return res;
 }
 
-__attr_unused __cold static void anna_stack_describe(anna_context_t *context)
-{
-    anna_entry_t **p = &context->stack[0];
-    while(p<context->top)
-    {
-/*	if(anna_is_int(*p))
-	{
-	    wprintf(L"Doo dee doo %d\n", anna_as_int(*p));
-	}
-	else*/
-	{
-	    wprintf(L"lalala %ls\n", anna_is_obj(*p)?anna_as_obj(*p)->type->name: L"?");
-	}
-	
-	p++;
-    }
-}
-
 __attr_unused __cold static void frame_describe(anna_activation_frame_t *frame)
 {
     if(frame)
     {
-	wprintf(
+	anna_message(
 	    L"Frame %d:\tParent: %d\tDynamic: %ls\tSize: %d\tUsed: %d \tAddress: %d\tChecksum: %d\tFunction: %ls\n",
 	    frame_idx(frame),
 	    frame_idx(frame->static_frame), 
@@ -155,7 +137,7 @@ anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *frame)
 	return ptr;
     }
 /*
-    wprintf(L"BEFORE:\n");
+    anna_message(L"BEFORE:\n");
     frame_describe(frame);
 */
     while(ptr && (ptr->flags & ANNA_ACTIVATION_FRAME_STATIC))
@@ -197,7 +179,7 @@ anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *frame)
     }
 
 /*
-    wprintf(L"\nAFTER:\n");
+    anna_message(L"\nAFTER:\n");
     frame_describe(first_copy);
 */
     return first_copy;
@@ -206,15 +188,15 @@ anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *frame)
 __attr_unused __cold static void anna_frame_print(anna_activation_frame_t *frame)
 {
 //    anna_entry_t **p = &stack->slot[0];
-    wprintf(L"\tFrame content (bottom to top):\n");
+    anna_message(L"\tFrame content (bottom to top):\n");
 /*    while(p!=stack->top)
     {
 	if(!*p){
-	    wprintf(L"\tError: Null slot\n");	    
+	    anna_message(L"\tError: Null slot\n");	    
 	}
 	else
 	{
-	    wprintf(L"\t%ls\n", anna_as_obj(*p)->type->name);
+	    anna_message(L"\t%ls\n", anna_as_obj(*p)->type->name);
 	}
 	
 	p++;
@@ -227,7 +209,7 @@ __attr_unused __cold static void anna_context_print_parent(anna_context_t *conte
 /*    if(!context)
 	return;
     anna_context_print_parent(context->parent);
-    wprintf(
+    anna_message(
 	L"Function %ls, offset %d\n", 
 	context->function?context->function->name:L"<null>", 
 	context->function? (context->code - context->function->code): -1);
@@ -361,7 +343,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     context->function_object = entry;
     root_fun->native(context);
 
-//    wprintf(L"Lalala, run function %ls\n", root_fun->name);
+//    anna_message(L"Lalala, run function %ls\n", root_fun->name);
 //    if(root_fun->code)
 //	anna_bc_print(root_fun->code);
     
@@ -408,7 +390,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 #ifdef ANNA_CHECK_VM
 	if(!wrapped)
 	{
-	    wprintf(
+	    anna_message(
 		L"Error: Tried to call null pointer at offset %d of function %ls\n", 
 		context->frame->code - context->frame->function->code, context->frame->function->name);
 	    
@@ -426,7 +408,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	{
 	    anna_function_t *fun = anna_function_unwrap_fast(wrapped);
 	    
-//	    wprintf(L"Call function %ls with %d params\n", fun->name, param);
+//	    anna_message(L"Call function %ls with %d params\n", fun->name, param);
 	    
 #ifdef ANNA_CHECK_VM
 	    if(!fun)
@@ -474,7 +456,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	anna_entry_t *val = anna_context_peek_entry(context, 0);
 	anna_context_frame_return(context);
 	anna_context_push_entry(context, val);
-//		wprintf(L"Pop frame\n");
+//		anna_message(L"Pop frame\n");
 	OP_LEAVE(context);	
     }
     
@@ -537,7 +519,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
   ANNA_LAB_STOP:
     {
 	OP_ENTER(context);	
-//		wprintf(L"Pop last frame\n");
+//		anna_message(L"Pop last frame\n");
 	anna_object_t *val = anna_context_peek_object(context, 0);
 //	free(context->frame->code);
 	anna_context_frame_return(context);
@@ -558,12 +540,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 #ifdef ANNA_CHECK_VM
 	    if(!s)
 	    {
-		wprintf(
+		anna_message(
 		    L"Error: Var get op of to invalid stack frame: %d %d %ls\n",
 		    op->frame_count, op->offset,
 		    context->frame->function->name);
 		anna_context_print_parent(context);
-		anna_stack_describe(context);
 		CRASH;
 	    }
 #endif
@@ -571,7 +552,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 #ifdef ANNA_CHECK_VM
 	if(!s->slot[op->offset])
 	{
-	    wprintf(
+	    anna_message(
 		L"Var get op on unassigned var: %d %d\n",
 		op->frame_count, op->offset);
 		    
@@ -579,7 +560,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	}
 #endif
 /*
-	wprintf(
+	anna_message(
 	    L"Var get in function %ls, pos %d %d. Result: Object of type %ls\n",
 	    context->frame->function->name,
 	    op->frame_count, op->offset,
@@ -600,7 +581,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    s = s->static_frame;
 	s->slot[op->offset] = anna_context_peek_entry(context, 0);
 /*
-	wprintf(
+	anna_message(
 	    L"Var set in function %ls, pos %d %d. Value: Object of type %ls\n",
 	    context->frame->function->name,
 	    op->frame_count, op->offset,
@@ -679,7 +660,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	anna_type_t *type = anna_type_unwrap(obj);
 	anna_member_t *m = type->mid_identifier[op->mid];
 
-	//wprintf(L"Static member get of %ls\n", anna_mid_get_reverse(op->mid));
+	//anna_message(L"Static member get of %ls\n", anna_mid_get_reverse(op->mid));
 	
 #ifdef ANNA_CHECK_VM
 	if(!m)
@@ -772,7 +753,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	OP_ENTER(context);
 
 	anna_op_member_t *op = (anna_op_member_t *)context->frame->code;
-//	wprintf(L"Get method member %d, %ls\n", op->mid, anna_mid_get_reverse(op->mid));
+//	anna_message(L"Get method member %d, %ls\n", op->mid, anna_mid_get_reverse(op->mid));
 	anna_object_t *obj = anna_context_pop_object(context);
 #ifdef ANNA_CHECK_VM
 	if(!obj){
@@ -913,14 +894,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    );
 	context->frame->code += sizeof(*op);
 /*	    int i;
-	    wprintf(L"Type of context content:\n");
+	    anna_message(L"Type of context content:\n");
 	    for(i=0; i < 3 && &context->base[i] < context->top; i++)
 	    {
 		anna_entry_t *e = anna_context_peek_entry(context, i);
-		wprintf(L"Object of type %ls\n", anna_is_obj(e)?(anna_context_peek_object(context, i)->type->name): L"???");
+		anna_message(L"Object of type %ls\n", anna_is_obj(e)?(anna_context_peek_object(context, i)->type->name): L"???");
 		
 	    }
-	    wprintf(L"\n");
+	    anna_message(L"\n");
 */
 	OP_LEAVE(context);	
     }
@@ -951,7 +932,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    
 	    for(i=0; &context->stack[i] < context->top; i++)
 	    {
-		wprintf(L"Object of type %ls\n", anna_context_peek_object(context, i)->type->name);		
+		anna_message(L"Object of type %ls\n", anna_context_peek_object(context, i)->type->name);		
 	    }
 	    
 /*
@@ -1059,7 +1040,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    }
 	    else
 	    {
-  //          wprintf(L\"Fallback for int $name \n\");
+  //          anna_message(L\"Fallback for int $name \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_NEXT_ASSIGN_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -1099,7 +1080,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    }
 	    else
 	    {
-  //          wprintf(L\"Fallback for int $name \n\");
+  //          anna_message(L\"Fallback for int $name \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_PREV_ASSIGN_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -1185,7 +1166,7 @@ size_t anna_bc_op_size(char instruction)
 		    
 	default:
 	{
-	    wprintf(L"Unknown opcode %d\n", instruction);
+	    anna_message(L"Unknown opcode %d\n", instruction);
 	    CRASH;
 	}
     }
@@ -1195,16 +1176,16 @@ size_t anna_bc_op_size(char instruction)
 
 void anna_bc_print(char *code)
 {
-    wprintf(L"Code:\n");
+    anna_message(L"Code:\n");
     char *base = code;
     while(1)
     {
-	wprintf(L"%d: ", code-base);
+	anna_message(L"%d: ", code-base);
 	char instruction = *code;
 
 	if(anna_instr_is_short_circut(instruction))
 	{
-	    wprintf(L"Short circut arithmetic operator %d\n\n", instruction);
+	    anna_message(L"Short circut arithmetic operator %d\n\n", instruction);
 	}
 	else
 	{
@@ -1214,26 +1195,26 @@ void anna_bc_print(char *code)
 		case ANNA_INSTR_CONSTANT:
 		{
 		    anna_op_const_t *op = (anna_op_const_t*)code;
-		    wprintf(L"Push constant of type %ls\n\n", 
+		    anna_message(L"Push constant of type %ls\n\n", 
 			    anna_as_obj(op->value)->type->name);
 		    break;
 		}
 	    
 		case ANNA_INSTR_LIST:
 		{
-		    wprintf(L"List creation\n\n");
+		    anna_message(L"List creation\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_CAST:
 		{
-		    wprintf(L"Type cast\n\n");
+		    anna_message(L"Type cast\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_FOLD:
 		{
-		    wprintf(L"List fold\n\n");
+		    anna_message(L"List fold\n\n");
 		    break;
 		}
 	    
@@ -1241,52 +1222,52 @@ void anna_bc_print(char *code)
 		{
 		    anna_op_count_t *op = (anna_op_count_t *)code;
 		    size_t param = op->param;
-		    wprintf(L"Call function with %d parameter(s)\n\n", param);
+		    anna_message(L"Call function with %d parameter(s)\n\n", param);
 		    break;
 		}
 	    
 		case ANNA_INSTR_CONSTRUCT:
 		{
-		    wprintf(L"Construct object\n\n");
+		    anna_message(L"Construct object\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_RETURN:
 		{
-		    wprintf(L"Return\n\n");
+		    anna_message(L"Return\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_RETURN_COUNT:
 		{
 		    anna_op_count_t *op = (anna_op_count_t *)code;
-		    wprintf(L"Pop value, pop %d call frames and push value\n\n", op->param);
+		    anna_message(L"Pop value, pop %d call frames and push value\n\n", op->param);
 		    break;
 		}
 	    
 		case ANNA_INSTR_STOP:
 		{
-		    wprintf(L"Stop\n\n");
+		    anna_message(L"Stop\n\n");
 		    return;
 		}
 	    
 		case ANNA_INSTR_TYPE_OF:
 		{
-		    wprintf(L"Type of object\n\n");
+		    anna_message(L"Type of object\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_VAR_GET:
 		{
 		    anna_op_var_t *op = (anna_op_var_t *)code;
-		    wprintf(L"Get var %d : %d\n\n", op->frame_count, op->offset);
+		    anna_message(L"Get var %d : %d\n\n", op->frame_count, op->offset);
 		    break;
 		}
 	    
 		case ANNA_INSTR_VAR_SET:
 		{
 		    anna_op_var_t *op = (anna_op_var_t *)code;
-		    wprintf(L"Set var %d : %d\n\n", op->frame_count, op->offset);
+		    anna_message(L"Set var %d : %d\n\n", op->frame_count, op->offset);
 		    break;
 		}
 	    
@@ -1294,7 +1275,7 @@ void anna_bc_print(char *code)
 		case ANNA_INSTR_STATIC_MEMBER_GET:
 		{
 		    anna_op_member_t *op = (anna_op_member_t *)code;
-		    wprintf(L"Get member %ls\n\n", anna_mid_get_reverse(op->mid));
+		    anna_message(L"Get member %ls\n\n", anna_mid_get_reverse(op->mid));
 		    break;
 		}
 	    
@@ -1302,85 +1283,85 @@ void anna_bc_print(char *code)
 		case ANNA_INSTR_STATIC_PROPERTY_GET:
 		{
 		    anna_op_member_t *op = (anna_op_member_t *)code;
-		    wprintf(L"Get property %ls\n\n", anna_mid_get_reverse(op->mid));
+		    anna_message(L"Get property %ls\n\n", anna_mid_get_reverse(op->mid));
 		    break;
 		}
 	    
 		case ANNA_INSTR_MEMBER_GET_THIS:
 		{
 		    anna_op_member_t *op = (anna_op_member_t *)code;
-		    wprintf(L"Get member %ls and push object as implicit this param\n\n", anna_mid_get_reverse(op->mid));
+		    anna_message(L"Get member %ls and push object as implicit this param\n\n", anna_mid_get_reverse(op->mid));
 		    break;
 		}
 	    
 		case ANNA_INSTR_MEMBER_SET:
 		{
 		    anna_op_member_t *op = (anna_op_member_t *)code;
-		    wprintf(L"Set member %ls\n\n", anna_mid_get_reverse(op->mid));
+		    anna_message(L"Set member %ls\n\n", anna_mid_get_reverse(op->mid));
 		    break;
 		}
 
 		case ANNA_INSTR_STATIC_MEMBER_SET:
 		{
 		    anna_op_member_t *op = (anna_op_member_t *)code;
-		    wprintf(L"Set static member %ls\n\n", anna_mid_get_reverse(op->mid));
+		    anna_message(L"Set static member %ls\n\n", anna_mid_get_reverse(op->mid));
 		    break;
 		}
 
 		case ANNA_INSTR_POP:
 		{
-		    wprintf(L"Pop stack\n\n");
+		    anna_message(L"Pop stack\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_NOT:
 		{
-		    wprintf(L"Invert stack top element\n\n");
+		    anna_message(L"Invert stack top element\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_DUP:
 		{
-		    wprintf(L"Duplicate stack top element\n\n");
+		    anna_message(L"Duplicate stack top element\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_JMP:
 		{
 		    anna_op_off_t *op = (anna_op_off_t *)code;
-		    wprintf(L"Jump %d bytes\n\n", op->offset);
+		    anna_message(L"Jump %d bytes\n\n", op->offset);
 		    break;
 		}
 	    
 		case ANNA_INSTR_COND_JMP:
 		{
 		    anna_op_off_t *op = (anna_op_off_t *)code;
-		    wprintf(L"Conditionally jump %d bytes\n\n", op->offset);
+		    anna_message(L"Conditionally jump %d bytes\n\n", op->offset);
 		    break;
 		}	    
 	    
 		case ANNA_INSTR_NCOND_JMP:
 		{
 		    anna_op_off_t *op = (anna_op_off_t *)code;
-		    wprintf(L"Conditionally not jump %d bytes\n\n", op->offset);
+		    anna_message(L"Conditionally not jump %d bytes\n\n", op->offset);
 		    break;
 		}
 	    
 		case ANNA_INSTR_TRAMPOLENE:
 		{
-		    wprintf(L"Create trampolene\n\n");
+		    anna_message(L"Create trampolene\n\n");
 		    break;
 		}
 	    
 		case ANNA_INSTR_CHECK_BREAK:
 		{
-		    wprintf(L"Check break flag to detect loop termination\n\n");
+		    anna_message(L"Check break flag to detect loop termination\n\n");
 		    break;
 		}
 	    
 		default:
 		{
-		    wprintf(L"Unknown opcode %d during print\n", instruction);
+		    anna_message(L"Unknown opcode %d during print\n", instruction);
 		    CRASH;
 		}
 	    }
@@ -1452,7 +1433,7 @@ void anna_vm_mark_code(anna_function_t *f)
 	    
 		default:
 		{
-		    wprintf(L"Unknown opcode %d during GC\n", instruction);
+		    anna_message(L"Unknown opcode %d during GC\n", instruction);
 		    CRASH;
 		}
 	    }
@@ -1494,7 +1475,7 @@ void anna_vm_null_function(anna_context_t *context)
 	    break;
 	    
 	default:
-	  wprintf(L"Unknown null fun opcode %d at byte offset %d (started rollback at offset %d)\n", op->instruction, code - context->frame->function->code, context->frame->code-context->frame->function->code);
+	  anna_message(L"Unknown null fun opcode %d at byte offset %d (started rollback at offset %d)\n", op->instruction, code - context->frame->function->code, context->frame->code-context->frame->function->code);
 	    CRASH;
     }
     anna_context_push_object(context, null_object);

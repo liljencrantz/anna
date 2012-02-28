@@ -222,17 +222,17 @@ void anna_type_intersect_into(
 	    mid);
 	if(!memb1)
 	{
-//	    wprintf(L"Skip %ls\n", members[i]);
+//	    anna_message(L"Skip %ls\n", members[i]);
 	    continue;
 	}
 	else if(anna_member_is_bound(memb1) != anna_member_is_bound(memb2))
 	{
-//	    wprintf(L"Skip %ls\n", members[i]);
+//	    anna_message(L"Skip %ls\n", members[i]);
 	    continue;
 	}
 	else if(anna_member_is_static(memb1) != anna_member_is_static(memb2))
 	{
-//	    wprintf(L"Skip %ls\n", members[i]);
+//	    anna_message(L"Skip %ls\n", members[i]);
 	    continue;
 	}
 	else if(anna_member_is_bound(memb2))
@@ -275,7 +275,7 @@ void anna_type_intersect_into(
 		free(types);
 		free(defaults);
 		
-/*		wprintf(
+/*		anna_message(
 		    L"FDASFDSA %ls.%ls %d\n",
 		    t1->name, memb2->name,
 		    anna_entry_get_static(

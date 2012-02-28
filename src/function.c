@@ -31,13 +31,13 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 {
     if(!obj)
     {
-	wprintf(
+	anna_message(
 	    L"Critical: Tried to unwrap null pointer as a function\n");
 	CRASH;
     }
     if(!obj->type)
     {
-	wprintf(
+	anna_message(
 	    L"Critical: Tried to unwrap object with no type\n");
 	CRASH;
     }
@@ -453,7 +453,7 @@ void anna_function_setup_interface(
     }    
     f->flags |= ANNA_FUNCTION_PREPARED_INTERFACE;
     
-//    wprintf(L"Set up interface for function/macro %ls at %d\n", f->name, f);
+//    anna_message(L"Set up interface for function/macro %ls at %d\n", f->name, f);
     
     if(f->body)
     {
@@ -546,7 +546,7 @@ void anna_function_setup_body(
     }
     f->flags |= ANNA_FUNCTION_PREPARED_BODY;
 
-//    wprintf(L"Setup body of %ls\n",f->name);
+//    anna_message(L"Setup body of %ls\n",f->name);
     if(f->body)
     {
 	array_list_t ret = AL_STATIC;
@@ -602,7 +602,7 @@ void anna_function_setup_body(
 	    {
 		anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
 		wr->steps = loop_step_count;
-		//wprintf(L"continue/break should jump %d steps\n", loop_step_count);
+		//anna_message(L"continue/break should jump %d steps\n", loop_step_count);
 	    }
 	}
 	
@@ -621,7 +621,7 @@ anna_object_t *anna_function_wrap(anna_function_t *result)
 #ifdef ANNA_WRAPPER_CHECK_ENABLED
     if(!result->wrapper)
     {
-	wprintf(
+	anna_message(
 	    L"Critical: Tried to wrap a function with no wrapper\n");
 	CRASH;
     }
@@ -697,7 +697,7 @@ anna_function_t *anna_function_create_from_definition(
 
     if(anna_attribute_flag(result->attribute, L"loop"))
     {
-//	wprintf(L"WEEEE %ls\n", result->name);
+//	anna_message(L"WEEEE %ls\n", result->name);
 	
 	result->flags |= ANNA_FUNCTION_LOOP;
     }
@@ -755,7 +755,7 @@ anna_function_t *anna_function_create_from_block(
     anna_node_call_t *attr = anna_node_create_block2(&body->location);
     if(anna_node_is_call_to((anna_node_t *)body, L"__loopBlock__"))
     {
-//	wprintf(L"Make block %ls into loop block\n", sb_content(&sb_name));
+//	anna_message(L"Make block %ls into loop block\n", sb_content(&sb_name));
 	
 	body->function = (anna_node_t *)anna_node_create_identifier(
 	    &body->function->location, L"__block__");
@@ -831,7 +831,7 @@ anna_function_t *anna_native_create(
     
     anna_function_set_stack(result, location);
     anna_function_setup_interface(result);
-    //wprintf(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
+    //anna_message(L"Creating function %ls @ %d with macro flag %d\n", result->name, result, result->flags);
     anna_vm_compile(result);
     
     return result;
@@ -941,7 +941,7 @@ void anna_function_print(anna_function_t *function)
     string_buffer_t sb;
     sb_init(&sb);
     ANNA_FUNCTION_PROTOTYPE(function, &sb);
-    wprintf(L"%ls\n", sb_content(&sb));
+    anna_message(L"%ls\n", sb_content(&sb));
     sb_destroy(&sb);
 }
 
@@ -1138,7 +1138,7 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
     int spec_count=0;
     if(input_node)
     {
-//	wprintf(L"FDSAFASD3a %d %d\n", input_node->child_count, attr->);
+//	anna_message(L"FDSAFASD3a %d %d\n", input_node->child_count, attr->);
 	for(i=0; i<call->child_count; i++)
 	{
 	    if(call->child[i]->node_type == ANNA_NODE_MAPPING)

@@ -140,7 +140,7 @@ anna_node_t *anna_node_each_replace(
 	}
 	
 	default:
-	    wprintf(
+	    anna_message(
 		L"OOPS! Unknown node type when iterating over AST: %d\n", 
 		this->node_type);
 	    CRASH;

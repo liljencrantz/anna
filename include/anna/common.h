@@ -171,6 +171,15 @@ const wchar_t *wsetlocale( int category, const wchar_t *locale );
    program_name, followed by a colon and a whitespace.
 */
 void debug( int level, const wchar_t *msg, ... );
+void anna_message(const wchar_t *msg, ... );
+
+/**
+   Low level printing function. Convert the specified string to a
+   narrow string and write it to the specified file descriptor. If len
+   is -1, the string is assumed to be null-terminated, otherwise, len
+   is used to determine its length.
+ */
+void anna_print(int fd, wchar_t *str, ssize_t len);
 
 #endif
 

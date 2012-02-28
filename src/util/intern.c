@@ -15,7 +15,7 @@ static size_t anna_intern_mem_avail = 0;
 
 static inline wchar_t *anna_intern_wcsdup(wchar_t *in)
 {
-    //wprintf(L"AFDS %ls\n", in);
+    //anna_message(L"AFDS %ls\n", in);
     
     size_t sz = sizeof(wchar_t)*(wcslen(in)+1);
     if(sz > anna_intern_mem_avail)

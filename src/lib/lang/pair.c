@@ -21,7 +21,7 @@ static void anna_pair_add_all_extra_methods(anna_type_t *pair)
     for(i=0; i<al_get_count(&anna_pair_additional_methods); i++)
     {
 	anna_function_t *fun = (anna_function_t *)al_get(&anna_pair_additional_methods, i);
-//	wprintf(L"Add function %ls to type %ls\n", fun->name, pair->name);
+//	anna_message(L"Add function %ls to type %ls\n", fun->name, pair->name);
 	anna_member_create_method(pair, anna_mid_get(fun->name), fun);
     }
 }

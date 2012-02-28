@@ -15,7 +15,7 @@ echo "
   ANNA_LAB_${name}_INT:
     {
         OP_ENTER(context);
-//            wprintf(L\"$name\n\");
+//            debug(D_SPAM, (L\"$name\n\");
 	anna_entry_t *i2 = anna_context_pop_entry(context);
 	anna_entry_t *i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
@@ -34,7 +34,7 @@ echo "
 	    }
 	    else
 	    {
-  //          wprintf(L\"Fallback for int $name \n\");
+  //          debug(D_SPAM, (L\"Fallback for int $name \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -59,7 +59,7 @@ echo "
   ANNA_LAB_${name}_INT:
     {
         OP_ENTER(context);
-//            wprintf(L\"$name\n\");
+//            debug(D_SPAM, (L\"$name\n\");
 	anna_entry_t *i2 = anna_context_pop_entry(context);
 	anna_entry_t *i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
@@ -67,13 +67,13 @@ echo "
 	{
 	    int res = anna_as_int_unsafe(i1) $op anna_as_int_unsafe(i2);
 
-//            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
+//            debug(D_SPAM, (L\"Fasttrack for int $name %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
 
             if(likely(abs(res)<=ANNA_INT_FAST_MAX))
   	        anna_context_push_int(context, (long)res);
             else
 	    {
-                //wprintf(L\"Moving to slow track with %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
+                //debug(D_SPAM, (L\"Moving to slow track with %d $op %d => %d\n\", anna_as_int(i1), anna_as_int(i2), res);
   	        anna_context_push_object(context, anna_int_create(res));
             }
 	}
@@ -87,7 +87,7 @@ echo "
 	    }
 	    else
 	    {
-  //          wprintf(L\"Fallback for int $name \n\");
+  //          debug(D_SPAM, (L\"Fallback for int $name \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -114,13 +114,13 @@ echo "
   ANNA_LAB_${name}_INT:
     {
         OP_ENTER(context);
-//            wprintf(L\"$name\n\");
+//            debug(D_SPAM, (L\"$name\n\");
 	anna_entry_t *i2 = anna_context_pop_entry(context);
 	anna_entry_t *i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
-//            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
+//            debug(D_SPAM, (L\"Fasttrack for int $name %d $op %d => %d\n\",
 //anna_as_int(i1), anna_as_int(i2),(anna_as_int(i1) $op anna_as_int(i2)));
             anna_context_push_entry(context, (anna_as_int(i1) $op anna_as_int(i2))?anna_from_int(1):null_entry);
 	}
@@ -134,8 +134,8 @@ echo "
 	    }
 	    else
 	    {
-//                wprintf(L\"Fallback for int $name \n\");
-//                wprintf(L\"%d %d %ls\n\", o1, anna_is_obj(i1), o1->type->name);
+//                debug(D_SPAM, (L\"Fallback for int $name \n\");
+//                debug(D_SPAM, (L\"%d %d %ls\n\", o1, anna_is_obj(i1), o1->type->name);
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -147,20 +147,20 @@ echo "
 	    }
 	}
 	
-//            wprintf(L\"Next instruction is %d!\n\", *context->frame->code);
+//            debug(D_SPAM, (L\"Next instruction is %d!\n\", *context->frame->code);
 	OP_LEAVE(context);
     }
 
   ANNA_LAB_${name}_FLOAT:
     {
         OP_ENTER(context);
-//            wprintf(L\"$name\n\");
+//            debug(D_SPAM, (L\"$name\n\");
 	anna_entry_t *i2 = anna_context_pop_entry(context);
 	anna_entry_t *i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
-//            wprintf(L\"Fasttrack for int $name %d $op %d => %d\n\",
+//            debug(D_SPAM, (L\"Fasttrack for int $name %d $op %d => %d\n\",
 //anna_as_int(i1), anna_as_int(i2),(anna_as_int(i1) $op anna_as_int(i2)));
             anna_context_push_entry(context, (anna_as_float(i1) $op anna_as_float(i2))?anna_from_int(1):null_entry);
 	}
@@ -174,8 +174,8 @@ echo "
 	    }
 	    else
 	    {
-//                wprintf(L\"Fallback for int $name \n\");
-//                wprintf(L\"%d %d %ls\n\", o1, anna_is_obj(i1), o1->type->name);
+//                debug(D_SPAM, (L\"Fallback for int $name \n\");
+//                debug(D_SPAM, (L\"%d %d %ls\n\", o1, anna_is_obj(i1), o1->type->name);
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -187,7 +187,7 @@ echo "
 	    }
 	}
 	
-//            wprintf(L\"Next instruction is %d!\n\", *context->frame->code);
+//            debug(D_SPAM, (L\"Next instruction is %d!\n\", *context->frame->code);
 	OP_LEAVE(context);
     }
 "
@@ -202,7 +202,7 @@ echo "
         OP_ENTER(context);
 	anna_entry_t *i2 = anna_context_pop_entry(context);
 	anna_entry_t *i1 = anna_context_pop_entry(context);
-//wprintf(L\"DIV\n\");
+//debug(D_SPAM, (L\"DIV\n\");
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    int res = anna_as_int_unsafe(i1) / anna_as_int_unsafe(i2);
@@ -218,7 +218,7 @@ echo "
 	    }
 	    else
 	    {
-          //  wprintf(L\"Fallback for int DIV \n\");
+          //  debug(D_SPAM, (L\"Fallback for int DIV \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_DIV_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -239,12 +239,12 @@ echo "
         OP_ENTER(context);
 	anna_entry_t *i2 = anna_context_pop_entry(context);
 	anna_entry_t *i1 = anna_context_pop_entry(context);
-//wprintf(L\"MUL\n\");
+//debug(D_SPAM, (L\"MUL\n\");
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
 	    long long res = (long long)anna_as_int_unsafe(i1) * anna_as_int_unsafe(i2);
-//wprintf(L\"FAST %d * %d = %lld, %d\n\", anna_as_int(i1), anna_as_int(i2), res, ANNA_INT_FAST_MAX);
+//debug(D_SPAM, (L\"FAST %d * %d = %lld, %d\n\", anna_as_int(i1), anna_as_int(i2), res, ANNA_INT_FAST_MAX);
 
             if(likely(llabs(res)<=ANNA_INT_FAST_MAX))
             {
@@ -253,7 +253,7 @@ echo "
             }
             else
             {
-//wprintf(L\"OVERFLOW\n\");
+//debug(D_SPAM, (L\"OVERFLOW\n\");
                 mpz_t m1, m2, res2;
                 mpz_init(m1);
                 mpz_init(m2);
@@ -263,7 +263,7 @@ echo "
     
                 mpz_mul(res2, m1, m2);
                 
-                //wprintf(L\"Perform bignum op mul, %s mul %s = %s\n\", mpz_get_str(0, 10, m1), mpz_get_str(0, 10, m2),mpz_get_str(0, 10, res2));
+                //debug(D_SPAM, (L\"Perform bignum op mul, %s mul %s = %s\n\", mpz_get_str(0, 10, m1), mpz_get_str(0, 10, m2),mpz_get_str(0, 10, res2));
 
   	        anna_context_push_object(context, anna_int_create_mp(res2));
                 mpz_clear(m1);
@@ -281,7 +281,7 @@ echo "
 	    }
 	    else
 	    {
-          //  wprintf(L\"Fallback for int MUL \n\");
+          //  debug(D_SPAM, (L\"Fallback for int MUL \n\");
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_MUL_INT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
@@ -325,7 +325,7 @@ echo "
 	    }
 	    else
 	    {
-//            wprintf(L\"Fallback for float $name %d %d %f %f\n\", anna_is_alloc(i1), anna_is_alloc(i2), anna_as_float(i1), anna_as_float(i2));
+//            debug(D_SPAM, (L\"Fallback for float $name %d %d %f %f\n\", anna_is_alloc(i1), anna_is_alloc(i2), anna_as_float(i1), anna_as_float(i2));
 		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_FLOAT];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);

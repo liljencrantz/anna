@@ -18,20 +18,21 @@ void anna_error(anna_node_t *node, wchar_t *msg, ...)
     va_start( va, msg );
     if(node && (node->location.filename))
     {
-	fwprintf(
-	    stderr,L"Error in file «%ls», on line %d:\n", 
+	anna_message(
+	    L"Error in file «%ls», on line %d:\n", 
 	    node->location.filename, node->location.first_line);
 	anna_node_print_code(node);
-	fwprintf(stderr,L"\n");
+	anna_message(L"\n");
     }
     else
     {
-	fwprintf(stderr,L"Error: ");
+	anna_message(L"Error: ");
     }
-    
-    vfwprintf(stderr, msg, va);
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_vprintf(&sb, msg, va);
     va_end( va );
-    fwprintf(stderr, L"\n\n");
+    anna_message(L"%ls\n\n", sb_content(&sb));
+    sb_destroy(&sb);
     anna_error_count++;
 }
-

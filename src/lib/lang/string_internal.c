@@ -39,11 +39,11 @@ void asi_destroy(anna_string_t *string)
 
 void asi_append(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
 {
-//    wprintf(L"\"%.*ls\" (%d) ~ \"%.*ls\" (%d)",dest->count, dest->str, dest->count, length, &src->str[offset], length);
+//    anna_message(L"\"%.*ls\" (%d) ~ \"%.*ls\" (%d)",dest->count, dest->str, dest->count, length, &src->str[offset], length);
     asi_ensure_capacity(dest, length+dest->count);
     memcpy(&dest->str[dest->count], &src->str[offset], sizeof(wchar_t)*length);  
     dest->count += length;
-//    wprintf(L" == \"%.*ls\" (%d)\n",dest->count, dest->str, dest->count);
+//    anna_message(L" == \"%.*ls\" (%d)\n",dest->count, dest->str, dest->count);
 }
 
 void asi_substring(anna_string_t *dest, anna_string_t *src, size_t offset, size_t length)
@@ -74,7 +74,7 @@ void asi_replace(
     size_t dest_offset,  size_t dest_length, 
     size_t src_offset,   size_t src_length)
 {
-//    wprintf(L"AAA %d %d\n", dest_length, src_length);
+//    anna_message(L"AAA %d %d\n", dest_length, src_length);
     if(dest_offset + src_length > dest->count)
     {
 	asi_ensure_capacity(dest, dest_offset + src_length);
@@ -111,50 +111,14 @@ void asi_truncate(anna_string_t *dest, size_t length)
     dest->count = mini(length, dest->count);
 }
 
-static int asi_convert(wchar_t *src, size_t src_sz, char **dst, size_t *dst_sz)
-{
-    size_t i;
-    static char *res=0;
-    static size_t res_sz;
-    
-    size_t max_sz = (src_sz+2) * MB_LEN_MAX;
-    if(res_sz < max_sz)
-    {
-	res_sz = max_sz;
-	res = realloc(res, res_sz);
-    }
-
-    char *ptr = res;
-    for(i=0; i<src_sz; i++)
-    {
-	int steps = wctomb(ptr, src[i]);
-	if(steps == -1)
-	{
-	    return -1;
-	}
-	ptr += steps;
-    }
-    *dst = res;
-    *dst_sz = ptr-res;
-    return 0;
-}
-
-
 void asi_print_regular(anna_string_t *string)
 {
-    char *narrow;
-    size_t len;
-    if(asi_convert(string->str, string->count, &narrow, &len))
-    {
-	narrow = "Failed to convert wide character string\n";
-	len = strlen(narrow);
-    }
-    write(1, narrow, len);
+    anna_print(1, string->str, string->count);
 }
 
 void asi_print_debug(anna_string_t *string)
 {
-    wprintf(L"%.*ls\n", string->count, string->str);
+    anna_message(L"%.*ls\n", string->count, string->str);
 }
 
 wchar_t *asi_cstring(anna_string_t *str)

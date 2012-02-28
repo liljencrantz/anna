@@ -78,7 +78,7 @@ mid_t anna_member_create(
 	{
 	    return anna_mid_get(name);
 	}
-	wprintf(L"Critical: Redeclaring member %ls of type %ls\n",
+	anna_message(L"Critical: Redeclaring member %ls of type %ls\n",
 		name, type->name);
 	CRASH;
     }

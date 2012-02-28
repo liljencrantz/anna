@@ -20,14 +20,14 @@ static anna_type_t *anna_method_curry(anna_function_type_t *fun)
 
 static void anna_node_set_stack_fun(anna_node_t *node, void *stack_ptr)
 {
-//    wprintf(L"Set stack %d for node %d of type %d\n", stack_ptr, node, node->node_type);
+//    anna_message(L"Set stack %d for node %d of type %d\n", stack_ptr, node, node->node_type);
     node->stack = (anna_stack_template_t *)stack_ptr;
     switch(node->node_type)
     {
 	case ANNA_NODE_CLOSURE:
 	{
 	    anna_node_closure_t *c = (anna_node_closure_t *)node;
-//	    wprintf(L"\nSet stack %d for closure %ls\n", stack_ptr, c->payload->name);
+//	    anna_message(L"\nSet stack %d for closure %ls\n", stack_ptr, c->payload->name);
 	    anna_function_set_stack(
 		c->payload,
 		(anna_stack_template_t *)stack_ptr);
@@ -37,7 +37,7 @@ static void anna_node_set_stack_fun(anna_node_t *node, void *stack_ptr)
 	case ANNA_NODE_TYPE:
 	{
 	    anna_node_type_t *c = (anna_node_type_t *)node;
-//	    wprintf(L"\nSet stack %d for type %ls\n", stack_ptr, c->payload->name);
+//	    anna_message(L"\nSet stack %d for type %ls\n", stack_ptr, c->payload->name);
 	    anna_type_set_stack(
 		c->payload,
 		(anna_stack_template_t *)stack_ptr);	    
@@ -276,8 +276,7 @@ static anna_member_t *anna_node_calc_type_call_helper(
 		    anna_member_t *memb = (anna_member_t *)al_get(&memb_list_reverse, i);
 		    anna_function_type_print(anna_member_bound_function_type(memb));
 		}
-		fwprintf(stderr, L"\n");
-		
+		anna_message(L"\n");		
 	    }
 	    
 	    break;

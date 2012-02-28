@@ -95,7 +95,7 @@ static void anna_set_program_name(char *arg)
 
 static void anna_print_help()
 {
-    wprintf(
+    anna_message(
 	L"Usage: anna [option] file [arg..]\n"
 	L"Run the interpreter for the Anna programming language\n\n"
 	L"  -h, --help     Print this help message and exit\n"
@@ -107,7 +107,7 @@ static void anna_print_help()
 
 static void anna_print_version()
 {
-    wprintf(L"0.0.0 (unreleased)\n");
+    anna_message(L"0.0.0 (unreleased)\n");
 }
 
 /**

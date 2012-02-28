@@ -69,7 +69,7 @@ void anna_alloc_mark_function(anna_function_t *o)
     }
     
     anna_alloc_mark_node((anna_node_t *)o->attribute);
-//    wprintf(L"WEE %ls\n", o->return_type->name);
+//    anna_message(L"WEE %ls\n", o->return_type->name);
     
     anna_alloc_mark_type(o->return_type);
     anna_alloc_mark_object(o->wrapper);
@@ -83,7 +83,7 @@ void anna_alloc_mark_function(anna_function_t *o)
 #ifdef ANNA_CHECK_GC
 	if(!o->input_type[i])
 	{
-	    wprintf(L"No type specified for input argument %d of function %ls\n", 
+	    anna_message(L"No type specified for input argument %d of function %ls\n", 
 		    i+1, o->name);
 	    CRASH;
 	}
@@ -422,7 +422,7 @@ static void anna_alloc_free(void *obj)
 	    int i;
 	    anna_type_t *o = (anna_type_t *)obj;
 	    
-//	    wprintf(L"Discarding unused type %ls %d\n", o->name, o);
+//	    anna_message(L"Discarding unused type %ls %d\n", o->name, o);
 	    
 	    if(obj != null_type)
 	    {
@@ -445,7 +445,7 @@ static void anna_alloc_free(void *obj)
 	{
 	    anna_activation_frame_t *o = (anna_activation_frame_t *)obj;
 	    anna_alloc_count -= o->function->frame_size;
-//	    wprintf(L"FRAMED %ls\n", o->function->name);
+//	    anna_message(L"FRAMED %ls\n", o->function->name);
 	    
 	    anna_slab_free(o, o->function->frame_size);
 	    break;
@@ -521,7 +521,7 @@ static void anna_alloc_free(void *obj)
 	}
 	case ANNA_BLOB:
 	{
-//	    wprintf(L"DA BLOB\n");
+//	    anna_message(L"DA BLOB\n");
 	    
 	    int *blob = (int *)obj;
 	    size_t sz = blob[1];
@@ -636,10 +636,10 @@ void anna_gc(anna_context_t *context)
 	}
     ;
 
-    wprintf(L"Collected %d elements\n", start_count-end_count);
+    anna_message(L"Collected %d elements\n", start_count-end_count);
     for(i=0; i<ANNA_ALLOC_TYPE_COUNT; i++)
     {
-	wprintf(L"Collected %d elements of type %ls, after gc, %d elements remain\n", s_count[i] - o_count[i] , name[i], o_count[i]);
+	anna_message(L"Collected %d elements of type %ls, after gc, %d elements remain\n", s_count[i] - o_count[i] , name[i], o_count[i]);
     }
 
     int old_anna_alloc_tot = anna_alloc_tot;
@@ -651,14 +651,14 @@ void anna_gc(anna_context_t *context)
     anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 1, GC_FREQ);
     
 #ifdef ANNA_CHECK_GC_LEAKS
-    wprintf(
+    anna_message(
 	L"Collected %d bytes. %d bytes currently in use. Next GC in %d bytes\n",
 	old_anna_alloc_tot + old_anna_alloc_count - anna_alloc_tot,
 	anna_alloc_tot, 
 	anna_alloc_count_next_gc);
 #endif
     
-//    wprintf(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
+//    anna_message(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
     anna_alloc_gc_unblock();
     
 }

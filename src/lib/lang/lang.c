@@ -144,7 +144,7 @@ ANNA_VM_NATIVE(anna_i_print_internal, 1)
 	}	
 	else
 	{
-	    wprintf(L"<invalid toString method>");
+	    anna_message(L"<invalid toString method>");
 	}
     }
     return null_entry;

@@ -124,7 +124,7 @@ static int anna_short_circut_instr_int_int(mid_t mid)
 
     if((mid >= ANNA_MID_EQ) && (mid <= ANNA_MID_GT))
     {
-//	wprintf(L"LALALALA %d => %d\n", mid, ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ);
+//	anna_message(L"LALALALA %d => %d\n", mid, ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ);
 	return ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ;
     }
     
@@ -328,7 +328,7 @@ static void anna_vm_compile_i(
     anna_function_t *fun, 
     anna_node_t *node, int drop_output)
 {
-//    wprintf(L"Compile AST node of type %d\n", node->node_type);
+//    anna_message(L"Compile AST node of type %d\n", node->node_type);
     al_push(&ctx->node, node);
 
     switch(node->node_type)
@@ -396,12 +396,6 @@ static void anna_vm_compile_i(
 	case ANNA_NODE_BREAK:
 	{
 	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)node;
-	    if(node2->steps < 0)
-	    {
-		anna_error(node, L"Invalid return expression - return %d steps", node2->steps);
-		CRASH;
-	    }
-	    
 	    anna_vm_compile_i(ctx, fun, node2->payload, 0);
 	    assert(node2->steps>=0);
 	    if(node->node_type == ANNA_NODE_BREAK)
@@ -508,7 +502,7 @@ static void anna_vm_compile_i(
 	    else
 	    {
 
-		wprintf(L"WAAAAAAAAAAAAAAH\n");
+		anna_message(L"WAAAAAAAAAAAAAAH\n");
 		anna_node_print(99, node);
 		anna_node_print(99, node->stack->function->body);
 		
@@ -619,7 +613,7 @@ static void anna_vm_compile_i(
 	case ANNA_NODE_MEMBER_GET:
 	case ANNA_NODE_STATIC_MEMBER_GET:
 	{
-//	    wprintf(L"MEMGET\n\n");
+//	    anna_message(L"MEMGET\n\n");
 	    anna_node_member_access_t *node2 = (anna_node_member_access_t *)node;
 	    anna_entry_t *const_obj = anna_node_static_invoke_try(
 		node, fun->stack_template);
@@ -746,7 +740,7 @@ static void anna_vm_compile_i(
 	    anna_vm_const(
 		ctx,
 		anna_from_obj(anna_function_wrap(node2->payload)));
-//	    wprintf(L"Compiling closure %ls @ %d\n", node2->payload->name, node2->payload);
+//	    anna_message(L"Compiling closure %ls @ %d\n", node2->payload->name, node2->payload);
 	    
 	    anna_vm_null(ctx, ANNA_INSTR_TRAMPOLENE);
 	    break;
@@ -931,7 +925,7 @@ void anna_vm_compile(
     if(wcscmp(fun->name, L"main")==0)
 	anna_node_print(5, fun->body);
 #endif
-//    wprintf(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
+//    anna_message(L"Compile really awesome function named %ls at addr %d\n", fun->name, fun);
     if(!fun->filename)
     {
 	fun->filename = fun->definition->location.filename;
@@ -967,7 +961,7 @@ void anna_vm_compile(
     }
     
     fun->code = calloc(sz, 1);
-    //wprintf(L"Allocate memory for code block of size %d\n", sz);
+    //anna_message(L"Allocate memory for code block of size %d\n", sz);
     char *code_ptr = fun->code;
     anna_compile_context_t ctx = 
 	{
@@ -997,10 +991,10 @@ void anna_vm_compile(
 	}
 	anna_vm_null(&ctx, ANNA_INSTR_RETURN);
     }
-/*    wprintf(L"Compiled code used %d bytes\n", code_ptr - fun->code);
+/*    anna_message(L"Compiled code used %d bytes\n", code_ptr - fun->code);
     if(code_ptr - fun->code == 16){
 	for(i=0; i<20; i++){
-	    wprintf( L"%d\t", fun->code[i]);
+	    anna_message( L"%d\t", fun->code[i]);
 	}
     }
     *code_ptr = 0;

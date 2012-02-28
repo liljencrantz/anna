@@ -4,14 +4,14 @@
 static anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_template_t *stack)
 {
 /*
-    wprintf(L"Checking for macros in node (%d)\n", node->function->node_type);
+    anna_message(L"Checking for macros in node (%d)\n", node->function->node_type);
     anna_node_print(0, node);
 */
     switch(node->node_type)
     {
 	case ANNA_NODE_IDENTIFIER:
 	{
-//	    wprintf(L"It's an identifier\n");
+//	    anna_message(L"It's an identifier\n");
 	    anna_node_identifier_t *name=(anna_node_identifier_t *)node;
 
 	    anna_object_t *obj = anna_as_obj(anna_stack_macro_get(stack, name->name));
@@ -19,7 +19,7 @@ static anna_function_t *anna_node_macro_get(anna_node_t *node, anna_stack_templa
 	    {
 		
 		anna_function_t *func=anna_function_unwrap(obj);
-		//wprintf(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
+		//anna_message(L"Tried to find object %ls on stack, got %d, revealing internal function ptr %d\n", name->name, obj, func);
 		
 		if(func && (func->flags & ANNA_FUNCTION_MACRO))
 		{

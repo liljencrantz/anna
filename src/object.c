@@ -15,12 +15,12 @@
 
 void anna_object_print(anna_object_t *obj)
 {
-    wprintf(L"%ls:\n", obj->type->name);
+    anna_message(L"%ls:\n", obj->type->name);
     int i;
     for(i=0; i<anna_type_get_member_count(obj->type); i++)
     {
 	anna_member_t *member = anna_type_get_member_idx(obj->type, i);
-	wprintf(
+	anna_message(
 	    L"  mid %d, name %ls: Type, %ls. %ls.\n", 
 	    anna_mid_get(member->name),
 	    member->name, 
@@ -39,7 +39,7 @@ anna_object_t *anna_object_create(anna_type_t *type) {
     {
 	result->member[i]=null_entry;
     }
-//    wprintf(L"%ls\n", type->name);
+//    anna_message(L"%ls\n", type->name);
     
     return result;
 }

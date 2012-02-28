@@ -122,7 +122,7 @@ anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type)
 void anna_type_print(anna_type_t *type)
 {
     int i;
-    wprintf(L"type %ls\n{\n", type->name);
+    anna_message(L"type %ls\n{\n", type->name);
 
     for(i=0; i< anna_type_get_member_count(type); i++)
     {
@@ -148,7 +148,7 @@ void anna_type_print(anna_type_t *type)
 			type, member->setter_offset));
 	    }
 	    
-	    wprintf(
+	    anna_message(
 		L"    var %ls %ls (property(%ls, %ls)%ls);  offsets: %d, %d\n",
 		member->type->name, member->name, 
 		getter ? getter->name: L"?",
@@ -159,21 +159,21 @@ void anna_type_print(anna_type_t *type)
 	}
 	else if(anna_member_is_bound(member))
 	{
-	    wprintf(
+	    anna_message(
 		L"    def %ls %ls(...); // offset: %d\n",
 		member->type->name, member->name, 
 		member->offset);
 	}
 	else
 	{
-	    wprintf(
+	    anna_message(
 		L"    var %ls %ls (%ls); // offset: %d\n",
 		member->type->name, member->name, 
 		anna_member_is_static(member)?L"static":L"",
 		member->offset);
 	}
     }
-    wprintf(L"}\n");
+    anna_message(L"}\n");
 }
 
 anna_member_t *anna_type_member_info_get(anna_type_t *type, wchar_t *name)
@@ -211,7 +211,7 @@ size_t anna_type_static_member_allocate(anna_type_t *type)
 
 	if(!type->static_member)
 	{
-	    wprintf(L"Out of memory");
+	    anna_message(L"Out of memory");
 	    CRASH;
 	}
 	type->static_member_capacity = new_sz;
@@ -322,7 +322,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
     
     anna_type_ensure_mid(res, orig->mid_count-1);
         
-    //wprintf(L"Copy type %ls into type %ls\n", orig->name, res->name);
+    //anna_message(L"Copy type %ls into type %ls\n", orig->name, res->name);
     //anna_type_print(res);
     
     /*
@@ -450,7 +450,7 @@ static void anna_type_prepare_member_internal(
     int is_static = 0;
     int is_function = 0;
     int is_bound = 0;
-//    wprintf(L"Register %ls\n", decl->name);
+//    anna_message(L"Register %ls\n", decl->name);
     
     if(anna_function_type_unwrap(decl->return_type))
     {
@@ -733,7 +733,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
-    //wprintf(L"Set up interface for type %ls\n", type->name);
+    //anna_message(L"Set up interface for type %ls\n", type->name);
     //anna_node_print(4, type->definition);    
 
     anna_type_extend(type);    
@@ -1076,7 +1076,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	return type;
     }
     
-//    wprintf(L"Looking ok for implicit spec\n");
+//    anna_message(L"Looking ok for implicit spec\n");
     
     anna_node_call_t *input_node = get_constructor_input_list(type->definition);
     anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
@@ -1108,7 +1108,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    {
 		anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
 		
-		//wprintf(L"Check if %ls is a template param\n", id->name);
+		//anna_message(L"Check if %ls is a template param\n", id->name);
 		int templ_idx = anna_attribute_template_idx(attr, id->name);
 		if(templ_idx >= 0)
 		{
@@ -1484,7 +1484,7 @@ static void anna_type_mark(anna_type_t *type)
 
     int steps = al_get_count(&type->member_list);
     
-//    wprintf(L"Mark members of type %ls\n", type->name);
+//    anna_message(L"Mark members of type %ls\n", type->name);
     for(i=0; i<steps; i++)
     {
         anna_member_t *memb = al_get_fast(&type->member_list, i);
@@ -1603,7 +1603,7 @@ void anna_type_close(anna_type_t *this)
 	    }
 	}	    
 	
-//	wprintf(L"Wee %ls uses fallback mark\n", this->name);
+//	anna_message(L"Wee %ls uses fallback mark\n", this->name);
 	this->mark_object = anna_type_object_mark_basic;
     }
 

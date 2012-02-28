@@ -12,7 +12,7 @@ void anna_buffer_set(struct anna_object *this, ssize_t offset, unsigned char val
 {
     size_t size = anna_buffer_get_count(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
-//    wprintf(L"Set el %d in buffer of %d elements\n", pos, size);
+//    anna_message(L"Set el %d in buffer of %d elements\n", pos, size);
     if(pos < 0)
     {
 	return;

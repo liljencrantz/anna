@@ -40,9 +40,9 @@ static anna_node_t *anna_macro_attribute_expand(anna_node_call_t *node, anna_nod
 		node);
 	    sb_destroy(&sb);
 /*
-	    wprintf(L"FADFADS\n");
+	    anna_message(L"FADFADS\n");
 	    anna_node_print(5, nam);
-	    wprintf(L"\n\n");
+	    anna_message(L"\n\n");
 */
 	}
 	

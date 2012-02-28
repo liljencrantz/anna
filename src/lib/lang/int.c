@@ -55,7 +55,7 @@ anna_object_t *anna_int_create_mp(mpz_t value)
     mpz_init(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD));
     mpz_set(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD), value);
 
-//    wprintf(L"Create bignum %s from bignum %s\n", mpz_get_str(0, 10, *(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD)), mpz_get_str(0, 10, value));
+//    anna_message(L"Create bignum %s from bignum %s\n", mpz_get_str(0, 10, *(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD)), mpz_get_str(0, 10, value));
     return obj;
 }
 
@@ -89,7 +89,7 @@ anna_entry_t *anna_int_entry(anna_object_t *this)
     mpz_t *me = anna_int_unwrap(this);
     if(mpz_sizeinbase(*me, 2)<=ANNA_SMALL_MAX_BIT)
     {
-//	wprintf(L"Weee, small int %d (%d bits)\n", anna_int_get(this), mpz_sizeinbase(*me, 2));
+//	anna_message(L"Weee, small int %d (%d bits)\n", anna_int_get(this), mpz_sizeinbase(*me, 2));
 	return anna_from_int(anna_int_get(this));
     }
     return anna_from_obj(this);

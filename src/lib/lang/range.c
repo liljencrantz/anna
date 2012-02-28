@@ -354,7 +354,7 @@ static void anna_range_each_callback_closed(anna_context_t *context)
     ssize_t from = anna_range_get_from(range);
     ssize_t step = anna_range_get_step(range);
 
-    //wprintf(L"BBB %d %d\n", context->frame, context->frame->flags);
+    //anna_message(L"BBB %d %d\n", context->frame, context->frame->flags);
     // Are we done or do we need another lap?
     if(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK)
     {

@@ -160,12 +160,12 @@ void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
 	call->child = realloc(call->child, new_capacity*sizeof(anna_node_t *));
 	if(!call->child) 
 	{
-	    wprintf(L"Out of memory\n");
+	    anna_message(L"Out of memory\n");
 	    CRASH;
 	}	
 	call->child_capacity = new_capacity;
     }
-//    wprintf(L"LALALA %d %d\n", call->child_capacity, call->child_count);
+//    anna_message(L"LALALA %d %d\n", call->child_capacity, call->child_count);
     
     call->child[call->child_count++] = child;
 }
@@ -186,7 +186,7 @@ void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child)
 	call->child = realloc(call->child, new_capacity*sizeof(anna_node_t *));
 	if(!call->child) 
 	{
-	    wprintf(L"Out of memory\n");
+	    anna_message(L"Out of memory\n");
 	    CRASH;
 	}	
 	call->child_capacity = new_capacity;
@@ -218,7 +218,7 @@ anna_entry_t *anna_node_static_invoke_try(
 {
     if(!this)
     {
-	wprintf(L"Critical: Invoke null node\n");
+	anna_message(L"Critical: Invoke null node\n");
 	CRASH;
     }
 
@@ -777,7 +777,7 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	}
 	
 	default:
-	    wprintf(L"OOPS! Unknown node type when comparing: %d\n", node1->node_type);
+	    anna_message(L"OOPS! Unknown node type when comparing: %d\n", node1->node_type);
 	    CRASH;
     }
 }

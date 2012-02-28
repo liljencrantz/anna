@@ -6,7 +6,7 @@ anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_obje
 /*
     if(!(val && val->type && val->type->name && wcslen(val->type->name)!=0))
     {
-	wprintf(L"Critical: Invalid dummy node\n");
+	anna_message(L"Critical: Invalid dummy node\n");
 	CRASH;
     }
 */  
@@ -197,7 +197,7 @@ anna_node_int_literal_t *anna_node_create_int_literal(
     
     mpz_init(result->payload);
     mpz_set(result->payload, val);
-//    wprintf(L"Created int literal %s\n", mpz_get_str(0, 10, result->payload));
+//    anna_message(L"Created int literal %s\n", mpz_get_str(0, 10, result->payload));
     
     return result;
 }

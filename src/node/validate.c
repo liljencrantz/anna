@@ -343,8 +343,16 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    break;
 	}	
 
+	case ANNA_NODE_CONTINUE:
+	case ANNA_NODE_BREAK:
 	case ANNA_NODE_RETURN:
 	{
+	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)this;
+	    if(node2->steps < 0)
+	    {
+		anna_error(this, L"Invalid return expression - return %d steps", node2->steps);
+	    }
+
 	    anna_function_t *f = this->stack->function;
 	    if( !anna_abides(this->return_type, f->return_type))
 	    {

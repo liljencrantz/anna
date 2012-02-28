@@ -13,7 +13,7 @@ static void add_list_method(void *key, void *value, void *aux)
 {
     anna_type_t **list = (anna_type_t **)value;
     anna_function_t *fun = (anna_function_t *)aux;
-//    wprintf(L"Add function %ls to type %ls\n", fun->name, list->name);
+//    anna_message(L"Add function %ls to type %ls\n", fun->name, list->name);
     anna_member_create_method(list[0], anna_mid_get(fun->name), fun);
     anna_member_create_method(list[1], anna_mid_get(fun->name), fun);
     anna_member_create_method(list[2], anna_mid_get(fun->name), fun);
@@ -21,7 +21,7 @@ static void add_list_method(void *key, void *value, void *aux)
 
 void anna_list_add_method(anna_function_t *fun)
 {
-//    wprintf(L"Function %ls to all list types\n", fun->name);
+//    anna_message(L"Function %ls to all list types\n", fun->name);
     al_push(&anna_list_additional_methods, fun);
     hash_foreach2(&anna_list_specialization, &add_list_method, fun);
 }
@@ -32,7 +32,7 @@ static void anna_list_add_all_extra_methods(anna_type_t *list)
     for(i=0; i<al_get_count(&anna_list_additional_methods); i++)
     {
 	anna_function_t *fun = (anna_function_t *)al_get(&anna_list_additional_methods, i);
-//	wprintf(L"Add function %ls to type %ls\n", fun->name, list->name);
+//	anna_message(L"Add function %ls to type %ls\n", fun->name, list->name);
 	anna_member_create_method(list, anna_mid_get(fun->name), fun);
     }
 }
@@ -84,7 +84,7 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t *value
 {
     size_t size = anna_list_get_count(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
-    //wprintf(L"Set el %d in list of %d elements\n", pos, size);
+    //anna_message(L"Set el %d in list of %d elements\n", pos, size);
     if(pos < 0)
     {
 	return;
@@ -625,7 +625,7 @@ ANNA_VM_NATIVE(anna_list_pop, 1)
 static void anna_list_in_callback(anna_context_t *context)
 {
     anna_entry_t *ret = anna_context_pop_entry(context);
-//    wprintf(L"Wee, in callback value: %ls\n", ret==null_object?L"null":L"not null");
+//    anna_message(L"Wee, in callback value: %ls\n", ret==null_object?L"null":L"not null");
     anna_entry_t **param = context->top - 3;
     anna_object_t *list = anna_as_obj_fast(param[0]);
     anna_object_t *value = anna_as_obj_fast(param[1]);

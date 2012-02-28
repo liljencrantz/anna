@@ -131,7 +131,7 @@ static void anna_mid_put(wchar_t *name, mid_t mid)
     size_t *offset_ptr = hash_get(&anna_mid_identifier, name);
     if(offset_ptr)
     {
-	wprintf(L"Tried to reassign mid!\n");
+	anna_message(L"Tried to reassign mid!\n");
 	exit(1);
     }
     name = anna_intern(name);

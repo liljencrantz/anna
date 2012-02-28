@@ -14,13 +14,16 @@
 * Handle C type wrappers in other namespaces when compiling bindings
 * Remove code duplication between types and functions when performing templatization
 * repl
-  - Capture variable declarations
+  - detect multi-line stuff
+  - completions
 
 1.0 RELEASE CRITERIA (Done):
 * repl
   - basic line editing
   - basic eval loop
   - sane handling of use/expand
+  - Capture variable declarations
+  - save history to file
 * Simplified member declaration
 * When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 * Reconsider making function aliases have equal priority to function names when performing calls

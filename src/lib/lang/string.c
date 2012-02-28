@@ -25,7 +25,7 @@ void anna_string_append_cstring(anna_object_t *this, size_t len, wchar_t *str)
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
     anna_object_t *obj= anna_object_create(imutable_string_type);
-    // wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    // anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init_from_ptr(as_unwrap(obj),  data, sz);
     return obj;
@@ -43,7 +43,7 @@ anna_object_t *anna_string_create_narrow(size_t sz, char *data)
     }
     
     anna_object_t *obj= anna_object_create(imutable_string_type);
-    // wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    // anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init_from_ptr(as_unwrap(obj),  wdata, wsz);
     return obj;
@@ -52,7 +52,7 @@ anna_object_t *anna_string_create_narrow(size_t sz, char *data)
 anna_object_t *anna_string_copy(anna_object_t *orig)
 {
     anna_object_t *obj= anna_object_create(imutable_string_type);
-    //  wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    //  anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init(as_unwrap(obj));
     anna_string_t *o = as_unwrap(orig);
@@ -63,7 +63,7 @@ anna_object_t *anna_string_copy(anna_object_t *orig)
 static anna_object_t *anna_mutable_string_copy(anna_object_t *orig)
 {
     anna_object_t *obj= anna_object_create(mutable_string_type);
-    //  wprintf(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
+    //  anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init(as_unwrap(obj));
     anna_string_t *o = as_unwrap(orig);
@@ -78,14 +78,14 @@ size_t anna_string_get_count(anna_object_t *this)
 
 wchar_t *anna_string_payload(anna_object_t *obj)
 {
-//    wprintf(L"Get payload from string at %d\n", obj);
+//    anna_message(L"Get payload from string at %d\n", obj);
     anna_string_t *str = as_unwrap(obj);
     return asi_cstring(str);
 }
 
 char *anna_string_payload_narrow(anna_object_t *obj)
 {
-//    wprintf(L"Get payload from string at %d\n", obj);
+//    anna_message(L"Get payload from string at %d\n", obj);
     anna_string_t *str = as_unwrap(obj);
     return asi_cstring_narrow(str);
 }
@@ -669,7 +669,7 @@ int anna_string_hash(anna_object_t *this)
 	wchar_t ch = asi_get_char(s, i);
 	hash = ((hash << 5) + hash) ^ ch; 
     }
-//    wprintf(L"%ls => %d\n", asi_cstring(s), hash);  
+//    anna_message(L"%ls => %d\n", asi_cstring(s), hash);  
     return hash;
 }
 
