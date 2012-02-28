@@ -47,6 +47,8 @@ char **anna_argv;
 */
 static wchar_t *anna_module_name;
 
+static char *anna_program_name = 0;
+
 /**
    Init the interpreter. 
 */
@@ -78,6 +80,9 @@ static void anna_init()
 */
 static void anna_set_program_name(char *arg)
 {    
+    if(!arg)
+	return;
+    
     char *name = strrchr(arg, '/');
 
     if(!name)
@@ -186,6 +191,7 @@ static void anna_opt_parse(int argc, char **argv)
     else
     {
 	anna_module_name = str2wcs(argv[optind]);
+	anna_program_name = argv[optind];
 	size_t mlen = wcslen(anna_module_name);
 	if(mlen > 5 && wcscmp(&anna_module_name[mlen-5], L".anna") == 0)
 	{
@@ -255,7 +261,7 @@ int main(int argc, char **argv)
     
     anna_opt_parse(argc, argv);
 
-//    anna_set_program_name(argv[1]);
+    anna_set_program_name(anna_program_name);
     
     debug(D_INFO,L"Initializing interpreter...\n");    
     anna_alloc_gc_block();
