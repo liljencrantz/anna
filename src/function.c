@@ -927,6 +927,7 @@ anna_function_t *anna_method_bind(
     {
 	result->input_type[i] = method->input_type[i+1];
 	result->input_name[i] = method->input_name[i+1];
+	result->input_default[i] = method->input_default[i+1];
     }
     
     anna_function_set_stack(result, stack_global);
