@@ -222,7 +222,7 @@ static void anna_member_type_create()
 	2,
 	v_argv,
 	v_argn, 0,
-	L"The value of the specified member in the specified object.");
+	L"The value of the specified member in the specified object. Note that this function does not currently support fetching the value of a property. This will be fixed in a future version.");
 }
 
 #include "src/lib/reflection/method.c"

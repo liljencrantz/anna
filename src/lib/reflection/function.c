@@ -225,8 +225,7 @@ static void anna_function_type_i_variable_each(
     wchar_t *name = (wchar_t *)key;
     anna_list_add(
 	res,
-	anna_string_create(wcslen(name), name));
-    
+	anna_from_obj(anna_string_create(wcslen(name), name)));
 }
 
 
@@ -250,7 +249,7 @@ ANNA_VM_NATIVE(anna_function_type_i_variable, 1)
 		
 	*(anna_object_t **)anna_entry_get_addr(this, anna_mid_get(L"!variablePayload")) = res;
     }
-    return res;
+    return anna_from_obj(res);
 }
 
 static anna_type_t *anna_function_type_boring;
