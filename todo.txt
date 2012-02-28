@@ -15,7 +15,9 @@
 * Remove code duplication between types and functions when performing templatization
 * repl
   - detect multi-line stuff
-  - completions
+  - tab completion
+* Nicer toString for modules
+* The Member.value() method can't currently handle properties.
 
 1.0 RELEASE CRITERIA (Done):
 * repl

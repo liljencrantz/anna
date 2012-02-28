@@ -242,7 +242,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	&anna_i_print_internal, 
 	object_type, 1, &string_type, 
 	p_argn, 0,
-	L"Print the specified String to standard output. This is a non-standard internal helper method, do not use it directly. Use the print function instead.");
+	L"Print the specified String to standard output. This is a non-standard internal helper function, do not use it directly. Use the print function instead.");
 
     anna_lang_nothing = anna_module_function(
 	stack,
@@ -251,7 +251,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	&anna_i_nothing, 
 	object_type, 1, &object_type, 
 	p_argn, 0,
-	L"Returns the last argument in the parameter list, or null");
+	L"The nothing function returns the last argument in the parameter list (Or null if given no arguments). This function is sometimes useful when performing meta-programming and wishing to do multiple things in a single expression.");
     
     anna_module_function(
 	stack,

@@ -366,7 +366,7 @@ class MutableListBindingType
 	
         res := "".thaw;
 
-        findAttr(attr as Call, "ensureCapacity").each(cap)
+        annaUtil.findAttribute(attr as Call, "ensureCapacity").each(cap)
 	{
 	    capStr := switch(cap)
 	    {
@@ -447,16 +447,6 @@ class MutableListBindingType
 
 }
 
-def List«Node» findAttr(Call attr, String name)
-{
-    res := «Node»[];
-    attr.each(at)
-    {
-	(at.callTo?(name)) and (at as Call).each(item){res.push(item)}
-    }
-    res;
-}
-
 class BasicBindingType 
 (
     extends(BindingType), 
@@ -514,7 +504,7 @@ class BasicBindingType
     def String postValidateToC(Node decl, Node attr, String dest, String source)
     {
         res := "".thaw;
-        findAttr(attr as Call, "ensureCapacity").each(cap)
+        annaUtil.findAttribute(attr as Call, "ensureCapacity").each(cap)
 	{
 	  capStr := switch(cap)
 	    {
@@ -733,7 +723,7 @@ class BindingGenerator
 
       escapedName := cEscape(name);
       aliasCode := "".thaw;
-      aliasList := findAttr(attr, "alias");
+      aliasList := annaUtil.findAttribute(attr, "alias");
 	aliasList.each(alias)
 	{
 	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%), %);\n" % [escapedName, cEscape(alias.toString())];
@@ -949,7 +939,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
     def String nameToStr(Node name, Node attr)
     {
         use(parser);
-        val := findAttr(attr as Call, "name")[0] or name;
+        val := annaUtil.findAttribute(attr as Call, "name")[0] or name;
         switch(val)
         {
             case(lit as StringLiteral)

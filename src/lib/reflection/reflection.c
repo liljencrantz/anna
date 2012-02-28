@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "anna/common.h"
 #include "anna/base.h"
 #include "anna/node.h"
 #include "anna/node_create.h"

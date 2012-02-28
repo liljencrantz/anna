@@ -240,11 +240,11 @@ often used code paths, which makes it useful for regression testing.")
 	    if(mem.static?)
 	    {
   	        val := mem.value(?);
-		if(val.__type__.isModule)
+		if(val.__type__.module?)
 		{
 		    lookup(module: val.__type__, parent: module);
 		}
-		if(val as Type and module.isModule)
+		if(val as Type and module.module?)
 		{
 		    lookup(module: val as Type, parent: module);
 		}
@@ -260,7 +260,7 @@ often used code paths, which makes it useful for regression testing.")
 	if(data.done){return}
 	data.done=1;
         memb := module.member;
-	if(module.isModule)
+	if(module.module?)
 	{
   	    objMemb := «String, Member»[];
 	    Object.member.each(mem){objMemb[mem.name] = mem}
@@ -271,7 +271,7 @@ often used code paths, which makes it useful for regression testing.")
         submodule := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    mem.static? and val.__type__.isModule;
+	    mem.static? and val.__type__.module?;
 	}
         subtype := smemb.filter(mem)
 	{
@@ -281,7 +281,7 @@ often used code paths, which makes it useful for regression testing.")
         subother := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    !(val.__type__.isModule) and !(val as Type) and (mem.type != Null);
+	    !(val.__type__.module?) and !(val as Type) and (mem.type != Null);
 	}
 
         basePath := "/".join((0..data.steps+1).map(i){".."}) ~ "/";

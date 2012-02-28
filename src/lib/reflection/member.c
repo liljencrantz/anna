@@ -66,11 +66,11 @@ ANNA_VM_NATIVE(anna_member_i_value, 2)
     anna_object_t *obj = anna_as_obj(param[1]);
     anna_member_t *memb = anna_member_unwrap(memb_obj);
     anna_type_t *type = anna_member_of(memb_obj);
-    if(memb->type == null_type)
+    if(memb->type == null_type || memb->offset==-1)
     {
 	return null_entry;
     }
-        
+    
     if(anna_member_is_static(memb))
     {
 	return type->static_member[memb->offset];

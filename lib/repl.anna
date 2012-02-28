@@ -13,7 +13,9 @@ function and print it's return value to screen."), internal)
 {
     use(parser);
     
-    print("Welcome to anna!");
+    print("Welcome to anna!
+
+Type «help» for more information.");
 
     /*
       If the user writes e.g. a use clause or an extend clause, we
@@ -21,7 +23,7 @@ function and print it's return value to screen."), internal)
       this list. On every subsequent call, we prepend these
       expressions to the one the user wrote.
      */
-    globalClause := «Node»[];
+    globalClause := «Node»[ast(use(replTool))];
 
     /*
       Function for controlled exit
@@ -58,7 +60,10 @@ function and print it's return value to screen."), internal)
 
 If this is your first time using Anna, you might want to 
 check out the tutorial available at
-http://liljencrantz.github.com/anna/tutorial.html";
+http://liljencrantz.github.com/anna/tutorial.html
+
+If you want to ask for help on a particular object directly from the
+interpreter, you can type «help(object)»";
 
     copyrightText := "Copyright(C) 2005-2012 Axel Liljencrantz
 All rights reserved.";

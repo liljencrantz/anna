@@ -61,7 +61,7 @@
     <h2><a name="api-other">Other members</a></h2>
     <ul>
     <% 
-smemb.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type) and mem.type != Null}
+smemb.filter(mem){val := mem.value(?); !val.__type__.module? and !(val as Type) and mem.type != Null}
        subother.each(mem)
        {
            val := mem.value(?);
@@ -97,3 +97,4 @@ smemb.filter(mem){val := mem.value(?); !val.__type__.isModule and !(val as Type)
     </div>
   </body>
 </html>
+b

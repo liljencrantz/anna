@@ -2,6 +2,8 @@
 error IoError (Error) {}
 */
 
+attribute(doc("The io module is a high level library for handling files. It is currently rather incomplete but contains the basics needed for reading, writing and checking the status of files."));
+
 error IOError
 {    
 }

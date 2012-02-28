@@ -90,7 +90,7 @@ static int anna_abides_fault_count_internal(
     
     size_t i;
     int res = 0;    
-    
+
     anna_function_type_t *c_fun_type = anna_function_type_unwrap(contender);
     anna_function_type_t *r_fun_type = anna_function_type_unwrap(role_model);
     

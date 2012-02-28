@@ -111,7 +111,7 @@ static void anna_type_load()
 	type_type, anna_mid_get(L"filename"),
 	string_type, &anna_type_filename, 0, L"The name of the file in which this type was defined, if any.");
     anna_member_create_native_property(
-	type_type, anna_mid_get(L"isModule"),
+	type_type, anna_mid_get(L"module?"),
 	int_type, &anna_type_is_module, 0, L"Is true if this type represents a module.");
     anna_member_create_native_property(
 	type_type,

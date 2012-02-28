@@ -1,0 +1,124 @@
+attribute(doc("Helper commands for the anna repl implementation. 
+This module is automatically used by the anna interactive prompt."));
+
+def formatList(List«Object» wordList) (internal)
+{
+  res := "".thaw;
+  col := 0;
+    wordList.each(wordObj)
+    {
+      word := wordObj.toString();
+	if(col == 0)
+	{
+	    res ~= word;
+	    col += word.count;
+	}
+	else
+	{
+	    if(col + word.count + 1 > 80)
+	    {
+		res ~= "\n";
+		res ~= word;
+		col = word.count;
+	    }
+	    else
+	    {
+		res ~= " ";
+		res ~= word;
+		col += word.count+1;
+	    }
+	}
+    }
+    return res;
+}
+
+
+
+def help(Object object)
+    (doc("This is the main help function of the interactive Anna command line. It takes any object as a parameter and uses introspection to provide as much help as possible for the user."))
+{
+    use(parser);
+    use(reflection);
+
+    res := "".thaw;
+
+    /*
+      Clever html to text formating code should go here...
+     */
+    def format(String in)
+    {
+        return in;	
+    }
+
+    /*
+      The attribute list to extract documentation from. First we check
+      if the object we want help on has it's own attribute list. If
+      so, we use it. Otherwise, we show help on it's type. That way,
+      we get the same help message for e.g. help(Int) and help(3),
+      which is usually what we want.
+    */
+    class WithAttribute
+    {
+	const Call attribute;
+    }
+    attribute := (object as WithAttribute).attribute or object.__type__.attribute;
+    doc := annaUtil.findAttribute(attribute, "doc");
+    if(doc.empty?)
+    {
+	res ~= "No documentation available for object of type " ~ (object.__type__.name or "Null");
+    }
+    else
+    {
+	res ~= "\n\n".join(
+	    doc.map(docFragment)
+	    {
+	      fragment := docFragment as StringLiteral;
+	      format(fragment.payload);
+	    });
+    }
+    if(object.__type__.module?)
+    {
+
+      smemb := object.__type__.member.filter(memb){!memb.internal?}.sort(def Int(Object first, Object second){(first as Member).name.__cmp__((second as Member).name)}).map(memb){memb as Member};
+
+
+//	print(o.__type__.member.filter(memb){!memb.internal?});
+
+        submodule := smemb.filter(mem)
+	{
+	    val := mem.value(?);
+	    mem.static? and val.__type__.module?;
+	}
+        subtype := smemb.filter(mem)
+	{
+	    val := mem.value(?);
+	    mem.static? and (val as Type);
+	}
+        subother := smemb.filter(mem)
+	{
+	    val := mem.value(?);
+	    !(val.__type__.module?) and !(val as Type) and (mem.type != Null);
+	}
+	
+	if(!submodule.empty?)
+	{
+	    res ~= "\n\nThis module has the following submodules:\n";
+	    res ~= formatList(submodule);
+	}
+
+	if(!subtype.empty?)
+	{
+	    res ~= "\n\nThis module contains the following types:\n";
+	    res ~= formatList(subtype);
+	}
+    }
+
+    return res;
+}
+
+def dir(Object object)
+    (doc("This is an additional help function for the interactive Anna command line. If takes any object as a parameter and lists all members of that type ina a format suitable for the screen. This is just a very thin wrapper around the member property of the Type type."))
+{
+    return formatList(object.__type__.member);
+}
+
