@@ -104,6 +104,12 @@
 		L"%ls %ls",						\
 		(type)?type->name:L"?",					\
 		(fn->input_name && fn->input_name[i])?fn->input_name[i]:L"?"); \
+	    if(fn->input_default && fn->input_default[i])		\
+	    {								\
+		wchar_t *val = anna_node_string(fn->input_default[i]);	\
+		sb_printf(sbuff, L" = %ls", val);			\
+		free(val);						\
+	    }								\
 	    if(i == variadic_idx)					\
 	    {								\
 		sb_printf(sbuff, L"...");				\
