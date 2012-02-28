@@ -125,7 +125,6 @@ static anna_node_t *anna_atoi(YYLTYPE *llocp, char *c, int base)
     }
 
 
-//    wprintf(L"Parse int literal %s\n", mpz_get_str(0, 10, res));
     anna_node_t *node = (anna_node_t *)anna_node_create_int_literal(llocp, res);
     mpz_clear(res);
     mpz_clear(mpbase);
@@ -163,12 +162,13 @@ static anna_node_t *anna_atof(YYLTYPE *llocp, char *c)
     double res = strtod(cpy, &end);
     if(errno)
     {
-	fwprintf(stderr,L"Error in %ls, on line %d:\n", 
-		 llocp->filename,
-		 llocp->first_line);
+	anna_message(
+	    L"Error in %ls, on line %d:\n", 
+	    llocp->filename,
+	    llocp->first_line);
 	anna_node_print_code((anna_node_t *)anna_node_create_dummy(llocp, 0));
 	
-	fwprintf (stderr, L"Invalid value for Float literal\n");
+	anna_message(L"Invalid value for Float literal\n");
 	anna_yacc_error_count++;
     }
 
@@ -1498,11 +1498,12 @@ void anna_yacc_error (
     YYLTYPE *llocp, yyscan_t scanner, 
     wchar_t *filename, anna_node_t **parse_tree_ptr, char *s) 
 {
-    fwprintf(stderr,L"Error in %ls, on line %d:\n", 
-	     llocp->filename,
-	     llocp->first_line);
+    anna_message(
+	L"Error in %ls, on line %d:\n", 
+	llocp->filename,
+	llocp->first_line);
     anna_node_print_code((anna_node_t *)anna_node_create_dummy(llocp, 0));
     
-    fwprintf (stderr, L"%s\n", s);
+    anna_message(L"%s\n", s);
     anna_yacc_error_count++;
 }

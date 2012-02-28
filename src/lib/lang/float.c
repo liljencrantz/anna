@@ -250,11 +250,10 @@ void anna_float_type_create()
 	    0, (anna_node_t *)anna_node_create_null(0)
 	}
     ;
-
+    
     anna_member_create_native_method(
 	float_type, anna_mid_get(L"format"), 0,
 	&anna_float_format, string_type, 2, format_argv, format_argn, format_argd, L"Convert this floating point number to a string");
-
     
     wchar_t *conv_argn[]=
 	{

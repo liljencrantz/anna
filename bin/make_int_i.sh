@@ -74,9 +74,6 @@ ANNA_VM_NATIVE(anna_int_i_$name, 2)
     mpz_t res;
     mpz_init(res);
     $op;
-
-//    wprintf(L\"Perform bignum op $name, %s $name %s = %s\n\", mpz_get_str(0, 10, *v1), mpz_get_str(0, 10, *v2),mpz_get_str(0, 10, res));
-
     anna_entry_t *res2;
     if(mpz_sizeinbase(res, 2)<= ANNA_SMALL_MAX_BIT)
     {

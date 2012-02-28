@@ -48,7 +48,7 @@ static int anna_lex_pop_state(yyscan_t yyscanner)
 
 static void anna_lex_unbalanced_comment()
 {
-    fwprintf(stderr, L"Error: Unbalanced comment at end of file.\n");
+    anna_message(L"Error: Unbalanced comment at end of file.\n");
     anna_error_count++;
 }
 
