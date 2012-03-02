@@ -11,6 +11,7 @@ int anna_lex_wrap(yyscan_t yyscanner)
 }
 
 static hash_table_t *anna_lex_nest=0;
+int anna_lex_error_count = 0;
 
 static void anna_lex_nest_init()
 {
@@ -49,8 +50,16 @@ static int anna_lex_pop_state(yyscan_t yyscanner)
 static void anna_lex_unbalanced_comment()
 {
     anna_message(L"Error: Unbalanced comment at end of file.\n");
-    anna_error_count++;
+    anna_lex_error_count++;
 }
+
+static void anna_lex_invalid_input()
+{
+    anna_message(L"Error: Invalid input.\n");
+    anna_lex_error_count++;
+}
+
+
 
 %}
 
@@ -139,4 +148,4 @@ _*[A-Z][a-zA-Z0-9_!?]* return TYPE_IDENTIFIER;
 >> return SPECIALIZATION_END2;
 [ \t] return IGNORE;
 [\n\r] return LINE_BREAK;
-. return 0;
+. anna_lex_invalid_input(); return 0;

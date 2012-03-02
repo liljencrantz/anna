@@ -9,6 +9,7 @@
 #include "anna/common.h"
 #include "anna/util.h"
 #include "anna/base.h"
+#include "anna/parse.h"
 #include "anna/module.h"
 #include "anna/module_data.h"
 #include "anna/node.h"

@@ -16,8 +16,9 @@
 * repl
   - detect multi-line stuff
   - tab completion
-* Nicer toString for modules
 * The Member.value() method can't currently handle properties.
+* Write a transform to make sure f"Hello, %(userName)" => F"Hello, %" % [userName]
+
 
 1.0 RELEASE CRITERIA (Done):
 * repl

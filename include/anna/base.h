@@ -860,16 +860,4 @@ __hot __malloc anna_object_t *anna_object_create_raw(
 __cold void anna_object_print(
     anna_object_t *obj);
 
-/**
-   Parse the specified file and return an unprepared AST tree that
-   represents the file content.
-*/
-__cold struct anna_node *anna_parse(wchar_t *filename);
-
-/**
-   Parse the specified string and return an unprepared AST tree that
-   represents the file content.
-*/
-__cold struct anna_node *anna_parse_string(wchar_t *str, wchar_t *filename);
-
 #endif

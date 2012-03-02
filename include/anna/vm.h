@@ -58,17 +58,17 @@ anna_object_t *anna_char_create(wchar_t val);
 #define ANNA_STACK_ENTRY_INT 3l
 #define ANNA_STACK_ENTRY_FLOAT 4l
 
-/*  
+/*
                   /   \
 
                 /       \
 
-              /           \             
+              /           \      
 
             0               1
  
           /   \           /   \
-     
+
         0       1       0       1
        / \     Blob    Char    Int
       0   1
@@ -331,6 +331,17 @@ __hot void anna_vm_callback_reset(
 __hot void anna_vm_callback(
     anna_context_t *parent, 
     anna_object_t *entry, int argc, anna_entry_t **argv);
+
+/**
+   This is a convenience wrapper around anna_vm_callback_native useful
+   when raising an error. It will basically set up a call to the
+   error.raise function with the specified message as the argument. If
+   error.raise returns, the return_value value is returned.
+ */
+__hot void anna_vm_raise(
+    anna_context_t *context,
+    anna_entry_t *message,
+    anna_entry_t *return_value);
 
 __hot anna_context_t *anna_vm_stack_get(void);
 __hot void anna_vm_mark_code(anna_function_t *f);

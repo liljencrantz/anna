@@ -98,28 +98,55 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
       ast(quit): die,
       ast(exit): die,
       ];
-    
+    [firstPrompt, secondPrompt] := ["anna> ", "    > "];
+
     /*
       Start the main repl loop
      */
     while(1)
     {
-        line := readLine.readLine("anna> ");
-	if(!line)
-	{
-	    print();
-	    die();
-	}
-	if(line.count > 0)
-	{
-	    readLine.history.add(line);
-	}
-	
+      line := "".thaw;
+      parsedAst := ? as Call;
+
+      prompt := firstPrompt;
+      
+      parseError := collect(error.ParseError)
+      {
+	  while(1)
+	  {
+	    lineElement := readLine.readLine(prompt);
+	    prompt = secondPrompt;
+	    if(!lineElement)
+	    {
+		print();
+		die();
+	    }
+
+	    line ~= lineElement;
+
+	      incompleteError := collect(error.IncompleteError){
+		  parsedAst = parse(line) as Call;
+	      }
+	      if(parsedAst or incompleteError.empty?)
+	      {
+		  break
+	      }
+	    line ~= "\n";
+	  }
+	  
+      }
+
+      if(line.count > 0)
+      {
+	  readLine.history.add(line);
+      }
+
+      
 	/*
 	  If the user entered multiple expressions on a single line,
 	  execute them one at a time.
 	 */
-	(parse(line) as Call).each(ast)
+	parsedAst.each(ast)
 	{
 	    /*
 	      Check if this is one of the short cut actions like

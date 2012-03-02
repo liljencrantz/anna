@@ -867,7 +867,7 @@ static void anna_vm_compile_i(
 
 	case ANNA_NODE_TYPE_OF:
 	{
-	    anna_vm_const(ctx, anna_type_wrap(node->return_type));
+	    anna_vm_const(ctx, anna_from_obj(anna_type_wrap(node->return_type)));
 	    break;
 	}
 	
@@ -1033,6 +1033,58 @@ void anna_vm_compile(
 	anna_bc_print(fun->code);
 #endif
 }
+
+static void anna_vm_raise_callback(anna_context_t *context)
+{
+    anna_entry_t *res = *(context->top - 2);
+    anna_object_print(anna_as_obj(res));
+    anna_context_drop(context, 3);
+    anna_context_push_entry(context, res);
+}
+
+
+
+void anna_vm_raise(
+    anna_context_t *context,
+    anna_entry_t *message,
+    anna_entry_t *return_value)
+{
+    static anna_object_t *raise_object = 0;
+    
+    if(!raise_object)
+    {
+	anna_object_t *error_module_obj = anna_as_obj(anna_stack_get(stack_global, L"error"));
+	if(!error_module_obj)
+	{
+	    goto ERROR;
+	}
+	
+	anna_stack_template_t *error_module = anna_stack_unwrap(error_module_obj);
+	if(!error_module)
+	{
+	    goto ERROR;
+	}
+	
+	raise_object = anna_as_obj(anna_stack_get(error_module, L"raiseError"));
+	
+	if(!anna_function_unwrap(raise_object))
+	{
+	    goto ERROR;
+	}	
+    }
+    
+    anna_vm_callback_native(
+	context,
+	anna_vm_raise_callback, 1, &return_value,
+	raise_object, 1, &message
+	);
+    return;
+    
+  ERROR:
+    anna_message(L"Critical: An error happened while trying to raise an error. Bailing out. Oops. :-(\n");
+    CRASH;
+}
+
 
 void anna_vm_callback_native(
     anna_context_t *context, 

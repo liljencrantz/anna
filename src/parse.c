@@ -10,9 +10,13 @@
 #include "anna/common.h"
 #include "anna/wutil.h"
 #include "anna/node.h"
+#include "anna/parse.h"
 
 #include "autogen/yacc.h"
 #include "autogen/lex.h"
+
+extern int anna_yacc_incomplete;
+extern int anna_lex_error_count;
 
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
 void anna_yacc_init();
@@ -41,10 +45,13 @@ anna_node_t *anna_parse(wchar_t *filename)
     return anna_yacc_error_count?0:parse_tree;
 }
 
-anna_node_t *anna_parse_string(wchar_t *str, wchar_t *filename) 
+anna_node_t *anna_parse_string(wchar_t *str, wchar_t *filename, int *error) 
 {
     int anna_yacc_error_count_old = anna_yacc_error_count;
     anna_yacc_error_count = 0;
+
+    int anna_lex_error_count_old = anna_lex_error_count;
+    anna_lex_error_count = 0;
     
     yyscan_t scanner;
     
@@ -59,7 +66,23 @@ anna_node_t *anna_parse_string(wchar_t *str, wchar_t *filename)
     anna_lex_lex_destroy(scanner);
     free(mbstr);
     
-    parse_tree = anna_yacc_error_count?0:parse_tree;
+    if(anna_lex_error_count)
+    {
+	if(error)
+	{
+	    *error =  ANNA_PARSE_ERROR_LEX;
+	}
+    }
+    else if(anna_yacc_error_count)
+    {
+	if(error)
+	{
+	    *error =  anna_yacc_incomplete ? ANNA_PARSE_ERROR_INCOMPLETE : ANNA_PARSE_ERROR_SYNTAX;
+	}
+    }
+
+    anna_node_t *res = (anna_yacc_error_count || anna_lex_error_count)?0:parse_tree;
     anna_yacc_error_count = anna_yacc_error_count_old;
-    return parse_tree;
+    anna_lex_error_count = anna_lex_error_count_old;
+    return res;
 }

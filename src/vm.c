@@ -364,12 +364,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     {
 	OP_ENTER(context);	
 	anna_op_type_t *op = (anna_op_type_t *)context->frame->code;
-	if(anna_context_peek_object(context,0)->type == 16)
-	{
-	    anna_message(L"AAA %d\n", anna_context_peek_object(context,0)->flags & ANNA_ALLOC_MASK);
-	    anna_type_print(anna_context_peek_object(context,0));
-	    CRASH;
-	}
 	
 	if(!anna_abides(anna_context_peek_object(context,0)->type, op->value))
 	{
@@ -413,6 +407,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	}
 	else
 	{
+//	    anna_message(L"FDASFDSAFSAD %d\n", wrapped);
 	    anna_function_t *fun = anna_function_unwrap_fast(wrapped);
 	    
 //	    anna_message(L"Call function %ls with %d params\n", fun->name, param);
@@ -429,7 +424,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		CRASH;
 	    }
 #endif
-	    
 	    context->frame->code += sizeof(*op);
 	    context->function_object = wrapped;
 	    fun->native(context);

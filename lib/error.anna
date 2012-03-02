@@ -15,6 +15,26 @@ class Error
     }
 }
 
+/*
+  These four errors should live in the parser module, but some monkey
+  patching is needed in order for that to happen.
+ */
+error CompilationError
+{
+}
+
+error ParseError (extends(CompilationError))
+{
+}
+
+error IncompleteError (extends(CompilationError))
+{
+}
+
+error LexError (extends(CompilationError))
+{
+}
+
 def raiseError(Error error)
 {
     def Object funEach(reflection.Continuation item)

@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "anna/base.h"
+#include "anna/parse.h"
 #include "anna/node.h"
 #include "anna/node_create.h"
 #include "anna/lib/parser.h"
@@ -113,33 +114,101 @@ ANNA_VM_NATIVE(anna_generate_identifier, 1)
     return res;
 }
 
-ANNA_VM_NATIVE(anna_parse_i, 2)
+static anna_type_t *anna_parse_get_type_in_module(wchar_t *module_name, wchar_t *type_name)
 {
-    if(anna_entry_null(param[0]))
+    anna_object_t *module_obj = anna_as_obj(anna_stack_get(stack_global, module_name));
+    if(!module_obj)
     {
-	return null_entry;
+	return 0;
+    }
+	
+    anna_stack_template_t *module = anna_stack_unwrap(module_obj);
+    if(!module)
+    {
+	return 0;
+    }
+	
+    anna_object_t *object = anna_as_obj(anna_stack_get(module, type_name));
+  
+    if(!object)
+    {
+	return 0;
+    }
+
+    return anna_type_unwrap(object);    
+}
+
+
+static void anna_parse_i(anna_context_t *context)
+{
+    anna_entry_t *filename_entry = anna_context_pop_entry(context);
+    anna_entry_t *str_entry = anna_context_pop_entry(context);
+    anna_context_pop_entry(context);
+
+    if(anna_entry_null(str_entry))
+    {
+	anna_context_push_entry(context, null_entry);
+	return;
     }
     
-    wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
+    wchar_t *str = anna_string_payload(anna_as_obj(str_entry));
     wchar_t *filename;
-    if(anna_entry_null(param[1]))
+    if(anna_entry_null(filename_entry))
     {
 	filename = L"<internal>";
     }
     else
     {
-	filename = anna_intern_or_free(anna_string_payload(anna_as_obj(param[1])));
+	filename = anna_intern_or_free(anna_string_payload(anna_as_obj(filename_entry)));
     }
 
-    anna_node_t *res = anna_parse_string(str, filename);
+    int error_status;
+    anna_node_t *res = anna_parse_string(str, filename, &error_status);
     free(str);
     if(res)
     {
-	return anna_from_obj(anna_node_wrap(res));
+	anna_context_push_entry(context, anna_from_obj(anna_node_wrap(res)));
+	return;
     }
-    return null_entry;
-}
+    
+    static anna_type_t *error_type[] = {0, 0, 0};
+    
+    if(!error_type[0])
+    {
+	anna_type_t *lex_error = 0;
+	anna_type_t *incomplete_error = 0;
+	anna_type_t *parse_error = 0;
 
+	lex_error = anna_parse_get_type_in_module(L"error", L"LexError");
+	incomplete_error = anna_parse_get_type_in_module(L"error", L"IncompleteError");
+	parse_error = anna_parse_get_type_in_module(L"error", L"ParseError");
+
+	error_type[ANNA_PARSE_ERROR_LEX] = lex_error;
+	error_type[ANNA_PARSE_ERROR_INCOMPLETE] = incomplete_error;
+	error_type[ANNA_PARSE_ERROR_SYNTAX] = parse_error;
+	
+    }
+
+    anna_object_t *error = anna_object_create(error_type[error_status]);
+    wchar_t *msg = L"Parse error";
+    anna_entry_set(
+	error, anna_mid_get(L"message"), 
+	anna_from_obj(anna_string_create(wcslen(msg), msg)));
+    anna_entry_set(
+	error, 
+	anna_mid_get(L"source"),
+	anna_from_obj(
+	    anna_continuation_create(
+		&context->stack[0],
+		context->top - &context->stack[0],
+		context->frame,
+		1)->wrapper));
+    
+    anna_vm_raise(
+	context,
+	anna_from_obj(error),
+	null_entry);
+}
 
 ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 {

@@ -171,12 +171,14 @@ ANNA_VM_NATIVE(anna_function_type_i_get, 2)
     anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_entry_t *res = null_entry;
     anna_function_t *fun = frame->function;
-    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
-    if(sid.frame == 0)
+    if(fun->stack_template)
     {
-	res = frame->slot[sid.offset];
+	anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
+	if(sid.frame == 0)
+	{
+	    res = frame->slot[sid.offset];
+	}
     }
-    
     free(name);
     return res;
 }

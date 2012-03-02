@@ -35,7 +35,8 @@ int anna_yacc_error_count=0;
 int anna_yacc_do_init = 0;
 
 static string_buffer_t anna_yacc_str_buff;
-
+static int anna_yacc_fully_read;
+int anna_yacc_incomplete = 0;
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
     do									\
@@ -1387,7 +1388,8 @@ attribute_list:
 
 void anna_yacc_init()
 {
-    anna_yacc_do_init = 1;    
+    anna_yacc_do_init = 1;
+    anna_yacc_incomplete = 0;
     static int first_init = 1;
     if(first_init)
     {
@@ -1435,7 +1437,8 @@ static int anna_yacc_lex_inner (
 	if(yylex_val != IGNORE)
 	    break;
     }
-    
+    anna_yacc_fully_read = (yylex_val == 0);
+
     return yylex_val;
 }
 
@@ -1498,6 +1501,11 @@ void anna_yacc_error (
     YYLTYPE *llocp, yyscan_t scanner, 
     wchar_t *filename, anna_node_t **parse_tree_ptr, char *s) 
 {
+    if(anna_yacc_error_count == 0 && anna_yacc_fully_read)
+    {
+	anna_yacc_incomplete = 1;
+    }
+    
     anna_message(
 	L"Error in %ls, on line %d:\n", 
 	llocp->filename,
