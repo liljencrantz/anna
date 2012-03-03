@@ -110,7 +110,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 
       prompt := firstPrompt;
       
-      parseError := collect(error.ParseError)
+      parseError := collect(error.CompilationError)
       {
 	  while(1)
 	  {
@@ -134,6 +134,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	    line ~= "\n";
 	  }
 	  
+      }
+      if(!parseError.empty?)
+      {
+	  print(parseError[0].message);
       }
 
       if(line.count > 0)
@@ -163,10 +167,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	    
 	    /*
 	      Add all variables that have been previously declared by
-	      the user. We do this by inttrospecting a continuation of
+	      the user. We do this by introspecting a continuation of
 	      the previous function invocation and extracting all it's
 	      variable names and values.
-	     */
+	    */
 	    variableDeclaration := ast(nothing());
 	    previousContinuation.each(name, value)
 	    {

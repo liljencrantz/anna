@@ -163,7 +163,8 @@ static void anna_parse_i(anna_context_t *context)
     }
 
     int error_status;
-    anna_node_t *res = anna_parse_string(str, filename, &error_status);
+    wchar_t *error_string;
+    anna_node_t *res = anna_parse_string(str, filename, &error_status, &error_string);
     free(str);
     if(res)
     {
@@ -182,15 +183,14 @@ static void anna_parse_i(anna_context_t *context)
 	lex_error = anna_parse_get_type_in_module(L"error", L"LexError");
 	incomplete_error = anna_parse_get_type_in_module(L"error", L"IncompleteError");
 	parse_error = anna_parse_get_type_in_module(L"error", L"ParseError");
-
+	
 	error_type[ANNA_PARSE_ERROR_LEX] = lex_error;
 	error_type[ANNA_PARSE_ERROR_INCOMPLETE] = incomplete_error;
-	error_type[ANNA_PARSE_ERROR_SYNTAX] = parse_error;
-	
+	error_type[ANNA_PARSE_ERROR_SYNTAX] = parse_error;	
     }
 
     anna_object_t *error = anna_object_create(error_type[error_status]);
-    wchar_t *msg = L"Parse error";
+    wchar_t *msg = error_string;
     anna_entry_set(
 	error, anna_mid_get(L"message"), 
 	anna_from_obj(anna_string_create(wcslen(msg), msg)));

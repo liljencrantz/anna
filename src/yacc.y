@@ -14,6 +14,7 @@
 #include <math.h>
 
 #include "anna/common.h"
+#include "anna/parse.h"
 #include "anna/node.h"
 #include "anna/node_create.h"
 #include "autogen/yacc.h"
@@ -163,13 +164,7 @@ static anna_node_t *anna_atof(YYLTYPE *llocp, char *c)
     double res = strtod(cpy, &end);
     if(errno)
     {
-	anna_message(
-	    L"Error in %ls, on line %d:\n", 
-	    llocp->filename,
-	    llocp->first_line);
-	anna_node_print_code((anna_node_t *)anna_node_create_dummy(llocp, 0));
-	
-	anna_message(L"Invalid value for Float literal\n");
+	anna_parse_error(llocp,L"Invalid value for Float literal.");
 	anna_yacc_error_count++;
     }
 
@@ -1505,13 +1500,6 @@ void anna_yacc_error (
     {
 	anna_yacc_incomplete = 1;
     }
-    
-    anna_message(
-	L"Error in %ls, on line %d:\n", 
-	llocp->filename,
-	llocp->first_line);
-    anna_node_print_code((anna_node_t *)anna_node_create_dummy(llocp, 0));
-    
-    anna_message(L"%s\n", s);
+    anna_parse_error(llocp,L"%s",s);    
     anna_yacc_error_count++;
 }

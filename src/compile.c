@@ -1037,7 +1037,6 @@ void anna_vm_compile(
 static void anna_vm_raise_callback(anna_context_t *context)
 {
     anna_entry_t *res = *(context->top - 2);
-    anna_object_print(anna_as_obj(res));
     anna_context_drop(context, 3);
     anna_context_push_entry(context, res);
 }

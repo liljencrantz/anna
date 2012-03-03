@@ -172,6 +172,7 @@ const wchar_t *wsetlocale( int category, const wchar_t *locale );
 */
 void debug( int level, const wchar_t *msg, ... );
 void anna_message(const wchar_t *msg, ... );
+void anna_message_set_buffer(string_buffer_t *message_buffer);
 
 /**
    Low level printing function. Convert the specified string to a

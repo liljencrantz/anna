@@ -421,8 +421,11 @@ anna_entry_t *anna_node_static_invoke(
     anna_entry_t *res = anna_node_static_invoke_try(this, stack);
     if(!res)
     {
-	anna_error(
-	    this,L"Code could not be invoked at compile time\n");
+	if(anna_error_count == 0)
+	{
+	    anna_error(
+		this,L"Code could not be invoked at compile time\n");
+	}
 	return null_entry;
     }
     return res;

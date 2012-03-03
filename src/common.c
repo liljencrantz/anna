@@ -270,27 +270,41 @@ void debug( int level, const wchar_t *msg, ... )
 	errno = errno_old;
 }
 
+static string_buffer_t *anna_message_buffer = 0;
+
+void anna_message_set_buffer(string_buffer_t *message_buffer)
+{
+    anna_message_buffer = message_buffer;
+}
+
 void anna_message(const wchar_t *msg, ... )
 {
-       
-	va_list va;
+    int errno_old = errno;
+    string_buffer_t sb_fallback;
 
-	string_buffer_t sb;
-
-	int errno_old = errno;
-
-	VERIFY( msg, );
-		
-	sb_init( &sb );
-	va_start( va, msg );	
-	sb_vprintf( &sb, msg, va );
-	va_end( va );	
-
-	anna_print( 2, sb.buff, -1 );	
-
-	sb_destroy( &sb );	
-
-	errno = errno_old;
+    string_buffer_t *buff = anna_message_buffer;
+    if(!buff)
+    {
+	buff = &sb_fallback;
+	sb_init( buff );
+    }
+        
+    va_list va;
+    
+    VERIFY( msg, );
+    
+    va_start( va, msg );	
+    sb_vprintf( buff, msg, va );
+    va_end( va );	
+    
+    
+    if(!anna_message_buffer)
+    {
+	anna_print( 2, buff->buff, -1 );
+	sb_destroy( buff );	
+    }
+    
+    errno = errno_old;
 }
 
 

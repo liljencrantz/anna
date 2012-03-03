@@ -72,4 +72,3 @@ def raiseError(Error error)
     funEach(reflection.currentContinuation);
 }
 
-

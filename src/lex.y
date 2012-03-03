@@ -4,6 +4,7 @@
 #include "anna/node.h"
 #include "autogen/yacc.h"
 #include "anna/util.h"
+#include "anna/parse.h"
 
 int anna_lex_wrap(yyscan_t yyscanner) 
 {
@@ -49,17 +50,15 @@ static int anna_lex_pop_state(yyscan_t yyscanner)
 
 static void anna_lex_unbalanced_comment()
 {
-    anna_message(L"Error: Unbalanced comment at end of file.\n");
+    anna_parse_error(0, L"Unbalanced comment.\n");
     anna_lex_error_count++;
 }
 
 static void anna_lex_invalid_input()
 {
-    anna_message(L"Error: Invalid input.\n");
+    anna_parse_error(0, L"Invalid input.\n");
     anna_lex_error_count++;
 }
-
-
 
 %}
 
