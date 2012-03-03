@@ -14,11 +14,9 @@
 * Handle C type wrappers in other namespaces when compiling bindings
 * Remove code duplication between types and functions when performing templatization
 * repl
-  - detect multi-line stuff
   - tab completion
 * The Member.value() method can't currently handle properties.
 * Write a transform to make sure f"Hello, %(userName)" => F"Hello, %" % [userName]
-
 
 1.0 RELEASE CRITERIA (Done):
 * repl
@@ -27,6 +25,7 @@
   - sane handling of use/expand
   - Capture variable declarations
   - save history to file
+  - detect multi-line stuff
 * Simplified member declaration
 * When no method alias matches a call, output a clearer and more helpful error message. including a list of all candidate methods.
 * Reconsider making function aliases have equal priority to function names when performing calls

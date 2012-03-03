@@ -1,0 +1,48 @@
+def main()
+{
+    use(unix.proc);
+
+    /*
+      Perform some testing for the SignalSet type
+     */
+    ss := SignalSet();
+    print(signal.int in ss);
+    print(signal.sys in ss);
+
+    ss.set(signal.int);
+    print(signal.int in ss);
+    print(signal.sys in ss);
+
+    ss.remove(signal.int);
+    print(signal.int in ss);
+    print(signal.sys in ss);
+
+    ss.setAll();
+    print(signal.int in ss);
+    print(signal.sys in ss);
+
+    ss.clear();
+    print(signal.int in ss);
+    print(signal.sys in ss);
+
+    /*
+      Set up signal handling using the signalfd call
+     */
+    ss.setAll();
+    signalFd := signalfd(-1, ss, 0);
+
+    sigInfo := SignalInfoFd();
+    sigprocmask(sigprocmaskFlag.block, ss, ?);
+
+    /*
+      Test that signals get delivered correctly
+     */
+    [signal.usr1, signal.hup, signal.fpe].each(sig)
+    {
+	kill(getpid(), sig);
+	readSignal(signalFd, sigInfo);
+	print("Ok?", sigInfo.signal == sig);
+    }
+    
+    unix.io.close(signalFd);
+}

@@ -387,7 +387,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	anna_op_count_t *op = (anna_op_count_t *)context->frame->code;
 	size_t param = op->param;
 	anna_object_t *wrapped = anna_context_peek_object_fast(context, param);
-
+	
 #ifdef ANNA_CHECK_VM
 	if(!wrapped)
 	{

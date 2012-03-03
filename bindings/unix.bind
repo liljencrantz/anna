@@ -2,7 +2,8 @@
 include(
     "<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>",
     "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", 
-    "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>", "<termios.h>"
+    "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>", 
+    "<termios.h>", "<sys/signalfd.h>"
     );
 
 attribute(doc("The unix module is the parent module for various low level wrappers for basic Unix functionality. Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages."));
@@ -234,6 +235,53 @@ proc
     def Int wait(MutableList«Int» status (ensureCapacity(1))) (doc("Wait for a process to change state.")); 
     def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options), (doc("Wait for a process to change state."));
 
+    cType SignalSet (name(sigset_t))
+    {
+	def Int __init__() (name(sigemptyset));
+	def Int clear() (name(sigemptyset));
+	def Int setAll() (name(sigfillset));
+	def Int set(Int signal) (name(sigaddset));
+	def Int remove(Int signal) (name(sigdelset));
+	def Bool __in__(Int signal) (name(sigismember));
+    }
+
+    def Int signalfd(Int fd, SignalSet mask, Int flags);
+
+    cStruct SignalInfoFd (name(signalfd_siginfo))
+    {
+	var Int signal (name(ssi_signo));
+	var Int code (name(ssi_code));
+	var Int pid (name(ssi_pid));
+	var Int uid (name(ssi_uid));
+	var Int fd (name(ssi_fd));
+	var Int tid (name(ssi_tid));
+	var Int band (name(ssi_band));
+    }
+ 
+    signalfdFlag
+    {
+	const Int nonBlock (name(SFD_NONBLOCK));
+	const Int closeOnExec (name(SFD_CLOEXEC));
+    }
+   
+    sigprocmaskFlag
+    {
+	const Int block (name(SIG_BLOCK));
+	const Int unblock (name(SIG_UNBLOCK));
+	const Int setMask (name(SIG_SETMASK));
+    }
+
+    def Int sigprocmask(Int how, SignalSet set (nullable), SignalSet old (nullable));
+
+    verbatim("
+int anna_read_signal(int fd, struct signalfd_siginfo *info)
+{
+    return read(fd, info, sizeof(struct signalfd_siginfo)) <= 0;
+}
+");
+
+    def Bool readSignal(Int fd, SignalInfoFd info) (name(anna_read_signal));
+    
 }
 
 user
