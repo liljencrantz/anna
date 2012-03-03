@@ -23,9 +23,9 @@ Type «help» for more information.");
       this list. On every subsequent call, we prepend these
       expressions to the one the user wrote.
      */
-    globalClause := «Node»[ast(use(replTool))];
+    globalClause :== «Node»[ast(use(replTool))];
     
-    saveHistory := {
+    saveHistory :== {
 	if(readLine.history.write(historyFile))
 	{
 	    print("Failed to save history");
@@ -36,7 +36,7 @@ Type «help» for more information.");
     /*
       Function for controlled exit
      */
-    die := {
+    die :== {
 	print("Bye!");
 	saveHistory();
 	unix.proc.exit(0);
@@ -60,7 +60,7 @@ Type «help» for more information.");
       a help text when the user writes «help».
     */
 
-    helpText := "Welcome to Anna!
+    helpText :== "Welcome to Anna!
 
 If this is your first time using Anna, you might want to 
 check out the tutorial available at
@@ -69,10 +69,10 @@ http://liljencrantz.github.com/anna/tutorial.html
 If you want to ask for help on a particular object directly from the
 interpreter, you can type «help(object)»";
 
-    copyrightText := "Copyright(C) 2005-2012 Axel Liljencrantz
+    copyrightText :== "Copyright(C) 2005-2012 Axel Liljencrantz
 All rights reserved.";
     helloText:= "Hi!";
-    licenseText := copyrightText ~"
+    licenseText :== copyrightText ~ "
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met: 
@@ -94,31 +94,31 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 
-    action := «Node, reflection.Block»[
-      ast(hello): {print(helloText)},
-      ast(help): {print(helpText)},
-      ast(copyright): {print(copyrightText)},
-      ast(license): {print(licenseText)},
-      ast(quit): die,
-      ast(exit): die,
-      ];
+    action :== «Node, reflection.Block»[
+	ast(hello): {print(helloText)},
+	ast(help): {print(helpText)},
+	ast(copyright): {print(copyrightText)},
+	ast(license): {print(licenseText)},
+	ast(quit): die,
+	ast(exit): die,
+	];
     [firstPrompt, secondPrompt] := ["anna> ", "    > "];
 
     /*
       Start the main repl loop
-     */
+    */
     while(1)
     {
         line := "".thaw;
         parsedAst := ? as Call;
-      
+	
         prompt := firstPrompt;
-      
-        parseError := collect(error.CompilationError)
+	
+        parseError :== collect(error.CompilationError)
 	{
 	    while(1)
 	    {
-	        lineElement := readLine.readLine(prompt);
+	        lineElement :== readLine.readLine(prompt);
 		prompt = secondPrompt;
 		if(!lineElement)
 		{
@@ -128,7 +128,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		
 		line ~= lineElement;
 		
-	        incompleteError := collect(error.IncompleteError){
+	        incompleteError :== collect(error.IncompleteError){
 		    parsedAst = parse(line) as Call;
 		}
 		if(parsedAst or incompleteError.empty?)
@@ -137,7 +137,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		}
 		line ~= "\n";
 	    }
-	  
 	}
 	parseError.each(error)
 	{
@@ -152,14 +151,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	      
 	/*
 	  If the user entered multiple expressions on a single line,
-	  execute them one at a time.
-	 */
+	  execute them one at a time. Stop the loop on error.
+	*/
 	parsedAst.each(ast)
 	{
 	    /*
 	      Check if this is one of the short cut actions like
 	      «help», and if so, execute the corresponding action.
-	     */
+	    */
 	    if(ast in action)
 	    {
 		action[ast]();
@@ -167,7 +166,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	    }
 	    
 	    run := 1;
-  	    isGlobal := (ast.callTo?("use") or ast.callTo?("expand"));
+  	    isGlobal :== (ast.callTo?("use") or ast.callTo?("expand"));
 	    
 	    /*
 	      Add all variables that have been previously declared by
@@ -175,7 +174,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	      the previous function invocation and extracting all it's
 	      variable names and values.
 	    */
-	    variableDeclaration := ast(nothing());
+	    variableDeclaration :== ast(nothing());
 	    previousContinuation.each(name, value)
 	    {
 		variableDeclaration.push(
@@ -183,22 +182,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 			"name": Identifier(?, name), 
 			"value": Dummy(?, value)]);
 	    };
-
+	    
 	    /*
 	      Make an ast representing an entire module with our fancy
 	      function in it.
-	     */
+	    */
   	    moduleAst := ast(
 		nothing(
 		    var reflection.Continuation %cont;
-		    def %fun(){%cont = reflection.currentContinuation; %variable; %ast};
-		    )) % ["fun": Identifier(?, "!fun"), "ast": ast, "cont": Identifier(?, "!cont"), "variable": variableDeclaration];
+		    def %fun()
+		    {
+			%cont = reflection.currentContinuation; 
+			%variable; 
+			%ast;
+		    })) % [
+			"fun": Identifier(?, "!fun"), 
+			"ast": ast, 
+			"cont": Identifier(?, "!cont"), 
+			"variable": variableDeclaration
+			];
 	    if(isGlobal)
 	    {
 		run = ?;
 	        moduleAst = ast(nothing(%ast)) % ["ast": ast];
 	    }
-
+	    
 	    /*
 	      Add all use and extend clauses from previous function invocations
 	    */
@@ -206,10 +214,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		(moduleAst as Call).push(node);
 	    }
 
-	    code := compile(moduleAst);
+	    code :== compile(moduleAst);
 	    if(code)
 	    {
-
 		if(isGlobal)
 		{
 		    globalClause.push(ast);
@@ -222,9 +229,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		      then use reflecation to find the continuation of
 		      the function invocation so we can introspect it
 		      in the next lap.
-		     */
-		    funMemb := code.__type__.member.find(memb){memb.name=="!fun"};
-  		    fun := funMemb.value(code);
+		    */
+		    funMemb :== code.__type__.member.find(memb){memb.name=="!fun"};
+  		    fun :== funMemb.value(code);
 		    print((fun as reflection.Block)());
 		    previousContinuation = code.__type__.member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
 		}
