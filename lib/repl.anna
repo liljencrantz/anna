@@ -24,17 +24,21 @@ Type «help» for more information.");
       expressions to the one the user wrote.
      */
     globalClause := «Node»[ast(use(replTool))];
+    
+    saveHistory := {
+	if(readLine.history.write(historyFile))
+	{
+	    print("Failed to save history");
+	    print(cerror.errorString(cerror.errno));
+	}
+    }
 
     /*
       Function for controlled exit
      */
     die := {
 	print("Bye!");
-	if(readLine.history.write(historyFile))
-	{
-	    print("Failed to save history");
-	    print(cerror.errorString(cerror.errno));
-	}
+	saveHistory();
 	unix.proc.exit(0);
     }
 
@@ -105,47 +109,47 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
      */
     while(1)
     {
-      line := "".thaw;
-      parsedAst := ? as Call;
-
-      prompt := firstPrompt;
+        line := "".thaw;
+        parsedAst := ? as Call;
       
-      parseError := collect(error.CompilationError)
-      {
-	  while(1)
-	  {
-	    lineElement := readLine.readLine(prompt);
-	    prompt = secondPrompt;
-	    if(!lineElement)
+        prompt := firstPrompt;
+      
+        parseError := collect(error.CompilationError)
+	{
+	    while(1)
 	    {
-		print();
-		die();
+	        lineElement := readLine.readLine(prompt);
+		prompt = secondPrompt;
+		if(!lineElement)
+		{
+		    print();
+		    die();
+		}
+		
+		line ~= lineElement;
+		
+	        incompleteError := collect(error.IncompleteError){
+		    parsedAst = parse(line) as Call;
+		}
+		if(parsedAst or incompleteError.empty?)
+		{
+		    break
+		}
+		line ~= "\n";
 	    }
-
-	    line ~= lineElement;
-
-	      incompleteError := collect(error.IncompleteError){
-		  parsedAst = parse(line) as Call;
-	      }
-	      if(parsedAst or incompleteError.empty?)
-	      {
-		  break
-	      }
-	    line ~= "\n";
-	  }
 	  
-      }
-      if(!parseError.empty?)
-      {
-	  print(parseError[0].message);
-      }
+	}
+	parseError.each(error)
+	{
+	    print(error.message);
+	}
 
-      if(line.count > 0)
-      {
-	  readLine.history.add(line);
-      }
-
-      
+	if(line.count > 0)
+	{
+	    readLine.history.add(line);
+	    saveHistory();
+	}
+	      
 	/*
 	  If the user entered multiple expressions on a single line,
 	  execute them one at a time.
@@ -197,7 +201,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 
 	    /*
 	      Add all use and extend clauses from previous function invocations
-	     */
+	    */
 	    globalClause.each(node){
 		(moduleAst as Call).push(node);
 	    }
@@ -224,6 +228,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		    print((fun as reflection.Block)());
 		    previousContinuation = code.__type__.member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
 		}
+	    }
+	    else
+	    {
+		/*
+		  If we encounter an error, stop executing the rest of
+		  the expressions on this line.
+		 */
+		break;
 	    }
 	}
     }
