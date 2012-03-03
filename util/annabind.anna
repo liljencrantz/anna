@@ -159,7 +159,7 @@ def init()
 	    "anna_entry_t *%(dest) = (%(source))?anna_from_int(1):null_entry;",
 	    preValidateToC: ""),
 	ast(UInt64): BasicBindingType(
-	    "unsigned int64_t",
+	    "uint64_t",
 	    "int_type", 
 	    "uint64_t %(dest) = anna_as_int(%(source));",
 	    "anna_entry_t *%(dest) = anna_from_uint64(%(source));"),
@@ -558,7 +558,7 @@ class CStructBindingType
     }
     
     def String annaNativeType(Node decl, Node attr){
-	return structText ~ structName
+	return structText ~ structName ~ " *";
     }
 
     def String annaCType(Node decl, Node attr){
@@ -573,14 +573,30 @@ class CStructBindingType
 	    "source": source, 
 	    "structText": structText,
 	    ];
+	code := "%(structText)%(structName) *%(dest);\n" % param;
 	if(isPointer)
 	{
-	    return "%(structText)%(structName) *%(dest) = *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	    if((attr as Call).childNamed?("nullable"))
+	    {
+		code ~= "    %(dest) = ((%(source)) == null_entry) ? 0 : *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	    }
+	    else
+	    {
+		code ~= "    %(dest) = *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	    }
 	}
 	else
 	{
-	    return "%(structText)%(structName) *%(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	    if((attr as Call).childNamed?("nullable"))
+	    {
+		code ~= "    %(dest) = ((%(source)) == null_entry) ? 0 : (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	    }
+	    else
+	    {
+		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+	    }
 	}
+	return code;
     }
 
     def String convertToAnna(Node decl, Node attr, String dest, String source)
@@ -670,7 +686,7 @@ class BindingGenerator
         varType := responseType.annaNativeType(decl[1], decl[3]);
 	if(varType)
 	{
-	  tempName := generateTempName();
+	    tempName := generateTempName();
 	
 	    code ~= "    %(varType) %(tempName) = %(call);\n" % [
 		"varType": varType,
@@ -761,10 +777,10 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
     }
 
 
-    def generateMethod(BindingType type, String name, Call decl)
+    def generateMethod(BindingType type, String name, Call decl, List«String» path = ?)
     {
         attr := decl[3] as Call;
-        mangled := mangleFunctionName(name);
+        mangled := mangleFunctionName(name, path);
         returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3]);
         inputTypeVar := mangled ~ "_argv";
         inputNameVar := mangled ~ "_argn";
@@ -996,7 +1012,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
 		if(fieldType.callTo?("__staticTypeOf__") and (fieldType as Call)[0].callTo?("__def__"))
 		{
-  		    methOut := generateMethod(myBinding, fieldName, (fieldType as Call)[0] as Call);
+		  methOut := generateMethod(myBinding, fieldName, (fieldType as Call)[0] as Call, [structName]);
 		    load~= methOut.load;
 		    code ~= methOut.code;
 		    continue;
