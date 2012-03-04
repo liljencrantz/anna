@@ -130,21 +130,28 @@ often used code paths, which makes it useful for regression testing.")
 	memberMissing = memberTot = moduleMissing = moduleTot = 0;
     }
     
-    def extractDocumentation(parser.Call attr)
+    def extractDocumentation(parser.Call attrList, Object brief = ?)
     (
 	internal
     )
     {
         res := "".thaw;
-	attr.each(at)
+	attrList.each(attr)
 	{
-	    if(at.callTo?("doc"))
+	    if(attr.callTo?("doc"))
 	    {
-		switch((at as parser.Call)[0])
+		(attr as parser.Call).each(docItem)
 		{
-		    case(str as parser.StringLiteral)
+		    switch(docItem)
 		    {
-			res ~= "<p>%</p>\n\n" % [str.payload];
+			case(str as parser.StringLiteral)
+			{
+			    if(brief)
+			    {
+				return str.payload;
+			    }
+			    res ~= "<p>%</p>\n\n" % [str.payload];
+			}
 		    }
 		}
 	    }

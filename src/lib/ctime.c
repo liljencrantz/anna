@@ -237,7 +237,11 @@ void anna_ctime_load(anna_stack_template_t *stack)
 	stack,
 	L"A simple, low level time API. Unlike most other c* api:s in "
 	L"Anna, this one doesn't closely mimic the underlying C "
-	L"functions. Specifically, it is rather different in how timezones "
+	L"functions.");
+
+    anna_stack_document(
+	stack,
+	L"Specifically, it is rather different in how timezones "
 	L"are handled, as a timezone name can be passed as an argument to "
 	L"various functions.");
     
@@ -247,8 +251,9 @@ void anna_ctime_load(anna_stack_template_t *stack)
 	L"hack: The TZ environment variable is set, and the tzset function "
 	L"is called. This temporarily changes the timezone information of "
 	L"the running application, something which is obviously not thread "
-	L"safe. Unfortunatly, this seems to be the only reliable way to "
-	L"perform timezone calculations using the C API.");
+	L"safe, reliable or good practice. Unfortunatly, this seems to be the "
+	L"only reliable way to perform timezone calculations using the "
+	L"standard C API.");
       
     anna_stack_document(
 	stack,

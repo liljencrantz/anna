@@ -1,3 +1,4 @@
+attribute(internal, doc("Internal module for the __collcetion__ macro."));
 
 macro __collection__(node)
 (

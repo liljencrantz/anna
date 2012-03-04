@@ -27,7 +27,9 @@
        submodule.each(mem)
        {
            %>
-      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, mem.value(?).__type__) %></li>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, mem.value(?).__type__) %> - 
+    <%! extractDocumentation(mem.value(?).__type__.attribute, 1) or ""%>
+</li>
 <%
 	}
     %>

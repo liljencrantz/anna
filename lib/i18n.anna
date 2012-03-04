@@ -1,7 +1,5 @@
 attribute(doc("
-The anna i18n module (i18n is short for internationalization) is a simple high level module for making an Anna program available in different languages. To use the i18n module, the follow the steps outlined below:
-</p>
-<p>
+The anna i18n module (i18n is short for internationalization) is a simple high level module for making an Anna program available in different languages.","To use the i18n module, the follow the steps outlined below:","
 First, annotate any strings in your program that you want to be translatable, by prefixing them with the letter 't'. You will also need to macro-expand using the i18n module. A simple file might look like this:
 <pre class='anna-code'>
 expand(i18n);

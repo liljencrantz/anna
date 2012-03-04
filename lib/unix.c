@@ -1212,7 +1212,40 @@ ANNA_VM_NATIVE(unix_i_io_umask, 1)
 #define ANNA_FD_ISSET(set, fd) FD_ISSET(fd, set)
 #define ANNA_FD_SET(set, fd) FD_SET(fd, set)
 
-ANNA_VM_NATIVE(unix_i_fd_set_clear, 2)
+static int anna_fd_set_value(fd_set *set, int fd, int val)
+{
+    if(val)
+    {
+        FD_SET(fd, set);
+    }
+    else
+    {
+        FD_CLR(fd, set);
+    }
+    return val;
+}
+
+ANNA_VM_NATIVE(unix_i_fd_set_init, 1)
+{
+    // Validate parameters
+if(param[0] == null_entry){return null_entry;}
+    // Mangle input parameters
+    fd_set *native_param_this;
+    native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+
+    // Call the function
+    FD_ZERO(native_param_this);
+    anna_entry_t *result = null_entry;
+
+    // Perform cleanup
+
+    // Return result
+    return param[0];
+}
+
+ANNA_VM_NATIVE(unix_i_fd_set_remove, 2)
 {
     // Validate parameters
 if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
@@ -1235,7 +1268,7 @@ if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){ret
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_fd_set_set_check, 2)
+ANNA_VM_NATIVE(unix_i_fd_set_in, 2)
 {
     // Validate parameters
 if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
@@ -1257,7 +1290,54 @@ if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){ret
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_fd_set_set, 2)
+ANNA_VM_NATIVE(unix_i_fd_set_get, 2)
+{
+    // Validate parameters
+if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
+
+    // Mangle input parameters
+    fd_set *native_param_this;
+    native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int native_param_fd = anna_as_int(param[1]);
+
+    // Validate parameters
+    
+
+    // Call the function
+    int tmp_var_35 = ANNA_FD_ISSET(native_param_this, native_param_fd);
+    anna_entry_t *result = anna_from_int(tmp_var_35);
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_fd_set_set, 3)
+{
+    // Validate parameters
+if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
+    
+
+    // Mangle input parameters
+    fd_set *native_param_this;
+    native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int native_param_fd = anna_as_int(param[1]);
+    int native_param_value = (param[2] != null_entry);
+
+    // Validate parameters
+    
+    
+
+    // Call the function
+    int tmp_var_36 = anna_fd_set_value(native_param_this, native_param_fd, native_param_value);
+    anna_entry_t *result = (tmp_var_36)?anna_from_int(1):null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_fd_set_add, 2)
 {
     // Validate parameters
 if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
@@ -1280,7 +1360,7 @@ if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){ret
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_fd_set_zero, 1)
+ANNA_VM_NATIVE(unix_i_fd_set_clear, 1)
 {
     // Validate parameters
 if(param[0] == null_entry){return null_entry;}
@@ -1298,14 +1378,6 @@ if(param[0] == null_entry){return null_entry;}
 
     // Return result
     return result;
-}
-
-ANNA_VM_NATIVE(unix_i_fd_set_init, 1)
-{
-    fd_set *data;
-    data = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    memset(data, 0, sizeof(fd_set));
-    return param[0];
 }
 
 void anna_io_create(anna_stack_template_t *stack);
@@ -1558,32 +1630,47 @@ void anna_io_load(anna_stack_template_t *stack)
 
     anna_member_create_blob(unix_fd_set_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(fd_set));
 
-    anna_type_t *unix_i_fd_set_clear_argv[] = {unix_fd_set_type, int_type};
-    wchar_t *unix_i_fd_set_clear_argn[] = {L"this", L"fd"};
+    anna_type_t *unix_i_fd_set_init_argv[] = {unix_fd_set_type};
+    wchar_t *unix_i_fd_set_init_argn[] = {L"this"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"__init__"), 0, 
+        &unix_i_fd_set_init, object_type, 1, unix_i_fd_set_init_argv, unix_i_fd_set_init_argn, 0, L"Create an empty new file descriptor set.");
+
+    anna_type_t *unix_i_fd_set_remove_argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_fd_set_remove_argn[] = {L"this", L"fd"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"remove"), 0, 
+        &unix_i_fd_set_remove, object_type, 2, unix_i_fd_set_remove_argv, unix_i_fd_set_remove_argn, 0, L"Remove the specified file descriptor from the set.");
+
+    anna_type_t *unix_i_fd_set_in_argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_fd_set_in_argn[] = {L"this", L"fd"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"__in__"), 0, 
+        &unix_i_fd_set_in, int_type, 2, unix_i_fd_set_in_argv, unix_i_fd_set_in_argn, 0, L"Check if the specified file descriptor is in the set.");
+
+    anna_type_t *unix_i_fd_set_get_argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_fd_set_get_argn[] = {L"this", L"fd"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"__get__"), 0, 
+        &unix_i_fd_set_get, int_type, 2, unix_i_fd_set_get_argv, unix_i_fd_set_get_argn, 0, L"Check if the specified file descriptor is in the set.");
+
+    anna_type_t *unix_i_fd_set_set_argv[] = {unix_fd_set_type, int_type, object_type};
+    wchar_t *unix_i_fd_set_set_argn[] = {L"this", L"fd", L"value"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"__set__"), 0, 
+        &unix_i_fd_set_set, object_type, 3, unix_i_fd_set_set_argv, unix_i_fd_set_set_argn, 0, L"If value is non-null, add the specified file descriptor to the set. Otherwise, remove it.");
+
+    anna_type_t *unix_i_fd_set_add_argv[] = {unix_fd_set_type, int_type};
+    wchar_t *unix_i_fd_set_add_argn[] = {L"this", L"fd"};
+    anna_member_create_native_method(
+        unix_fd_set_type, anna_mid_get(L"add"), 0, 
+        &unix_i_fd_set_add, object_type, 2, unix_i_fd_set_add_argv, unix_i_fd_set_add_argn, 0, L"Add the specified file descriptor to the set.");
+
+    anna_type_t *unix_i_fd_set_clear_argv[] = {unix_fd_set_type};
+    wchar_t *unix_i_fd_set_clear_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"clear"), 0, 
-        &unix_i_fd_set_clear, object_type, 2, unix_i_fd_set_clear_argv, unix_i_fd_set_clear_argn, 0, L"Remove the specified file descriptor from this set.");
-
-    anna_type_t *unix_i_fd_set_set_check_argv[] = {unix_fd_set_type, int_type};
-    wchar_t *unix_i_fd_set_set_check_argn[] = {L"this", L"fd"};
-    anna_member_create_native_method(
-        unix_fd_set_type, anna_mid_get(L"set?"), 0, 
-        &unix_i_fd_set_set_check, int_type, 2, unix_i_fd_set_set_check_argv, unix_i_fd_set_set_check_argn, 0, L"Returns non-null if the specified file descriptor is in the set.");
-
-    anna_type_t *unix_i_fd_set_set_argv[] = {unix_fd_set_type, int_type};
-    wchar_t *unix_i_fd_set_set_argn[] = {L"this", L"fd"};
-    anna_member_create_native_method(
-        unix_fd_set_type, anna_mid_get(L"set"), 0, 
-        &unix_i_fd_set_set, object_type, 2, unix_i_fd_set_set_argv, unix_i_fd_set_set_argn, 0, L"Make the specified file descriptor part of the set.");
-
-    anna_type_t *unix_i_fd_set_zero_argv[] = {unix_fd_set_type};
-    wchar_t *unix_i_fd_set_zero_argn[] = {L"this"};
-    anna_member_create_native_method(
-        unix_fd_set_type, anna_mid_get(L"zero"), 0, 
-        &unix_i_fd_set_zero, object_type, 1, unix_i_fd_set_zero_argv, unix_i_fd_set_zero_argn, 0, L"Clear all file descriptors in this set.");
-    anna_member_create_native_method(
-	unix_fd_set_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_fd_set_init, object_type, 1, &unix_fd_set_type, this_argn, 0, 0);    
+        &unix_i_fd_set_clear, object_type, 1, unix_i_fd_set_clear_argv, unix_i_fd_set_clear_argn, 0, L"Remove all file descriptors from this set.");
     anna_stack_document(stack, L"The unix.io module contains low level wrappers for basic unix functionality revolving around input and output.");
 
     anna_type_data_register(anna_io_type_data, stack);
@@ -1689,8 +1776,8 @@ ANNA_VM_NATIVE(unix_i_proc_exec, 3)
     
 
     // Call the function
-    int tmp_var_35 = execve(native_param_filename, native_param_argv, native_param_envp);
-    anna_entry_t *result = anna_from_int(tmp_var_35);
+    int tmp_var_37 = execve(native_param_filename, native_param_argv, native_param_envp);
+    anna_entry_t *result = anna_from_int(tmp_var_37);
     // Perform cleanup
     free(native_param_filename);
     
@@ -1742,8 +1829,8 @@ ANNA_VM_NATIVE(unix_i_proc_fork, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_36 = fork();
-    anna_entry_t *result = anna_from_int(tmp_var_36);
+    int tmp_var_38 = fork();
+    anna_entry_t *result = anna_from_int(tmp_var_38);
     // Perform cleanup
 
     // Return result
@@ -1765,8 +1852,8 @@ ANNA_VM_NATIVE(unix_i_proc_kill, 2)
     
 
     // Call the function
-    int tmp_var_37 = kill(native_param_pid, native_param_sig);
-    anna_entry_t *result = anna_from_int(tmp_var_37);
+    int tmp_var_39 = kill(native_param_pid, native_param_sig);
+    anna_entry_t *result = anna_from_int(tmp_var_39);
     // Perform cleanup
 
     // Return result
@@ -1785,8 +1872,8 @@ ANNA_VM_NATIVE(unix_i_proc_getsid, 1)
     
 
     // Call the function
-    int tmp_var_38 = getsid(native_param_pid);
-    anna_entry_t *result = anna_from_int(tmp_var_38);
+    int tmp_var_40 = getsid(native_param_pid);
+    anna_entry_t *result = anna_from_int(tmp_var_40);
     // Perform cleanup
 
     // Return result
@@ -1802,8 +1889,8 @@ ANNA_VM_NATIVE(unix_i_proc_setsid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_39 = setsid();
-    anna_entry_t *result = anna_from_int(tmp_var_39);
+    int tmp_var_41 = setsid();
+    anna_entry_t *result = anna_from_int(tmp_var_41);
     // Perform cleanup
 
     // Return result
@@ -1819,8 +1906,8 @@ ANNA_VM_NATIVE(unix_i_proc_getpid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_40 = getpid();
-    anna_entry_t *result = anna_from_int(tmp_var_40);
+    int tmp_var_42 = getpid();
+    anna_entry_t *result = anna_from_int(tmp_var_42);
     // Perform cleanup
 
     // Return result
@@ -1836,8 +1923,8 @@ ANNA_VM_NATIVE(unix_i_proc_getppid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_41 = getppid();
-    anna_entry_t *result = anna_from_int(tmp_var_41);
+    int tmp_var_43 = getppid();
+    anna_entry_t *result = anna_from_int(tmp_var_43);
     // Perform cleanup
 
     // Return result
@@ -1877,8 +1964,8 @@ ANNA_VM_NATIVE(unix_i_proc_wait, 1)
     
 
     // Call the function
-    int tmp_var_42 = wait(native_param_status);
-    anna_entry_t *result = anna_from_int(tmp_var_42);
+    int tmp_var_44 = wait(native_param_status);
+    anna_entry_t *result = anna_from_int(tmp_var_44);
     // Perform cleanup
     
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
@@ -1933,8 +2020,8 @@ ANNA_VM_NATIVE(unix_i_proc_waitpid, 3)
     
 
     // Call the function
-    int tmp_var_43 = waitpid(native_param_pid, native_param_status, native_param_options);
-    anna_entry_t *result = anna_from_int(tmp_var_43);
+    int tmp_var_45 = waitpid(native_param_pid, native_param_status, native_param_options);
+    anna_entry_t *result = anna_from_int(tmp_var_45);
     // Perform cleanup
     
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
@@ -1950,6 +2037,19 @@ ANNA_VM_NATIVE(unix_i_proc_waitpid, 3)
     return result;
 }
 
+static int anna_signalset_set(sigset_t *set, int signal, int value)
+{
+    if(value)
+    {
+        sigaddset(set, signal);
+    }
+    else
+    {
+        sigdelset(set, signal);
+    }
+    return value;
+}
+
 ANNA_VM_NATIVE(unix_i_signal_set_init, 1)
 {
     // Validate parameters
@@ -1961,8 +2061,9 @@ if(param[0] == null_entry){return null_entry;}
     // Validate parameters
 
     // Call the function
-    int tmp_var_44 = sigemptyset(native_param_this);
-    anna_entry_t *result = anna_from_int(tmp_var_44);
+    sigemptyset(native_param_this);
+    anna_entry_t *result = null_entry;
+
     // Perform cleanup
 
     // Return result
@@ -1980,15 +2081,15 @@ if(param[0] == null_entry){return null_entry;}
     // Validate parameters
 
     // Call the function
-    int tmp_var_45 = sigemptyset(native_param_this);
-    anna_entry_t *result = anna_from_int(tmp_var_45);
+    int tmp_var_46 = sigemptyset(native_param_this);
+    anna_entry_t *result = anna_from_int(tmp_var_46);
     // Perform cleanup
 
     // Return result
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_signal_set_set_all, 1)
+ANNA_VM_NATIVE(unix_i_signal_set_all, 1)
 {
     // Validate parameters
 if(param[0] == null_entry){return null_entry;}
@@ -1999,15 +2100,15 @@ if(param[0] == null_entry){return null_entry;}
     // Validate parameters
 
     // Call the function
-    int tmp_var_46 = sigfillset(native_param_this);
-    anna_entry_t *result = anna_from_int(tmp_var_46);
+    int tmp_var_47 = sigfillset(native_param_this);
+    anna_entry_t *result = anna_from_int(tmp_var_47);
     // Perform cleanup
 
     // Return result
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_signal_set_set, 2)
+ANNA_VM_NATIVE(unix_i_signal_set_add, 2)
 {
     // Validate parameters
 if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
@@ -2021,8 +2122,8 @@ if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){ret
     
 
     // Call the function
-    int tmp_var_47 = sigaddset(native_param_this, native_param_signal);
-    anna_entry_t *result = anna_from_int(tmp_var_47);
+    int tmp_var_48 = sigaddset(native_param_this, native_param_signal);
+    anna_entry_t *result = anna_from_int(tmp_var_48);
     // Perform cleanup
 
     // Return result
@@ -2043,8 +2144,8 @@ if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){ret
     
 
     // Call the function
-    int tmp_var_48 = sigdelset(native_param_this, native_param_signal);
-    anna_entry_t *result = anna_from_int(tmp_var_48);
+    int tmp_var_49 = sigdelset(native_param_this, native_param_signal);
+    anna_entry_t *result = anna_from_int(tmp_var_49);
     // Perform cleanup
 
     // Return result
@@ -2065,8 +2166,55 @@ if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){ret
     
 
     // Call the function
-    int tmp_var_49 = sigismember(native_param_this, native_param_signal);
-    anna_entry_t *result = (tmp_var_49)?anna_from_int(1):null_entry;
+    int tmp_var_50 = sigismember(native_param_this, native_param_signal);
+    anna_entry_t *result = (tmp_var_50)?anna_from_int(1):null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_signal_set_get, 2)
+{
+    // Validate parameters
+if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
+
+    // Mangle input parameters
+    sigset_t *native_param_this;
+    native_param_this = (sigset_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int native_param_signal = anna_as_int(param[1]);
+
+    // Validate parameters
+    
+
+    // Call the function
+    int tmp_var_51 = sigismember(native_param_this, native_param_signal);
+    anna_entry_t *result = (tmp_var_51)?anna_from_int(1):null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_signal_set_set, 3)
+{
+    // Validate parameters
+if(param[0] == null_entry){return null_entry;}    if(param[1] == null_entry){return null_entry;}
+    
+
+    // Mangle input parameters
+    sigset_t *native_param_this;
+    native_param_this = (sigset_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int native_param_signal = anna_as_int(param[1]);
+    int native_param_value = (param[2] != null_entry);
+
+    // Validate parameters
+    
+    
+
+    // Call the function
+    int tmp_var_52 = anna_signalset_set(native_param_this, native_param_signal, native_param_value);
+    anna_entry_t *result = (tmp_var_52)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -2092,8 +2240,8 @@ ANNA_VM_NATIVE(unix_i_proc_signalfd, 3)
     
 
     // Call the function
-    int tmp_var_50 = signalfd(native_param_fd, native_param_mask, native_param_flags);
-    anna_entry_t *result = anna_from_int(tmp_var_50);
+    int tmp_var_53 = signalfd(native_param_fd, native_param_mask, native_param_flags);
+    anna_entry_t *result = anna_from_int(tmp_var_53);
     // Perform cleanup
 
     // Return result
@@ -2298,8 +2446,8 @@ ANNA_VM_NATIVE(unix_i_proc_sigprocmask, 3)
     
 
     // Call the function
-    int tmp_var_51 = sigprocmask(native_param_how, native_param_set, native_param_old);
-    anna_entry_t *result = anna_from_int(tmp_var_51);
+    int tmp_var_54 = sigprocmask(native_param_how, native_param_set, native_param_old);
+    anna_entry_t *result = anna_from_int(tmp_var_54);
     // Perform cleanup
 
     // Return result
@@ -2327,8 +2475,8 @@ ANNA_VM_NATIVE(unix_i_proc_read_signal, 2)
     
 
     // Call the function
-    int tmp_var_52 = anna_read_signal(native_param_fd, native_param_info);
-    anna_entry_t *result = (tmp_var_52)?anna_from_int(1):null_entry;
+    int tmp_var_55 = anna_read_signal(native_param_fd, native_param_info);
+    anna_entry_t *result = (tmp_var_55)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -2402,37 +2550,49 @@ void anna_proc_load(anna_stack_template_t *stack)
     wchar_t *unix_i_signal_set_init_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"__init__"), 0, 
-        &unix_i_signal_set_init, int_type, 1, unix_i_signal_set_init_argv, unix_i_signal_set_init_argn, 0, 0);
+        &unix_i_signal_set_init, object_type, 1, unix_i_signal_set_init_argv, unix_i_signal_set_init_argn, 0, L"Create an empty new set");
 
     anna_type_t *unix_i_signal_set_clear_argv[] = {unix_signal_set_type};
     wchar_t *unix_i_signal_set_clear_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"clear"), 0, 
-        &unix_i_signal_set_clear, int_type, 1, unix_i_signal_set_clear_argv, unix_i_signal_set_clear_argn, 0, 0);
+        &unix_i_signal_set_clear, int_type, 1, unix_i_signal_set_clear_argv, unix_i_signal_set_clear_argn, 0, L"Remove all signals from the set");
 
-    anna_type_t *unix_i_signal_set_set_all_argv[] = {unix_signal_set_type};
-    wchar_t *unix_i_signal_set_set_all_argn[] = {L"this"};
+    anna_type_t *unix_i_signal_set_all_argv[] = {unix_signal_set_type};
+    wchar_t *unix_i_signal_set_all_argn[] = {L"this"};
     anna_member_create_native_method(
-        unix_signal_set_type, anna_mid_get(L"setAll"), 0, 
-        &unix_i_signal_set_set_all, int_type, 1, unix_i_signal_set_set_all_argv, unix_i_signal_set_set_all_argn, 0, 0);
+        unix_signal_set_type, anna_mid_get(L"all"), 0, 
+        &unix_i_signal_set_all, int_type, 1, unix_i_signal_set_all_argv, unix_i_signal_set_all_argn, 0, L"Add all signals to the set");
 
-    anna_type_t *unix_i_signal_set_set_argv[] = {unix_signal_set_type, int_type};
-    wchar_t *unix_i_signal_set_set_argn[] = {L"this", L"signal"};
+    anna_type_t *unix_i_signal_set_add_argv[] = {unix_signal_set_type, int_type};
+    wchar_t *unix_i_signal_set_add_argn[] = {L"this", L"signal"};
     anna_member_create_native_method(
-        unix_signal_set_type, anna_mid_get(L"set"), 0, 
-        &unix_i_signal_set_set, int_type, 2, unix_i_signal_set_set_argv, unix_i_signal_set_set_argn, 0, 0);
+        unix_signal_set_type, anna_mid_get(L"add"), 0, 
+        &unix_i_signal_set_add, int_type, 2, unix_i_signal_set_add_argv, unix_i_signal_set_add_argn, 0, L"Add the specified signal to the set");
 
     anna_type_t *unix_i_signal_set_remove_argv[] = {unix_signal_set_type, int_type};
     wchar_t *unix_i_signal_set_remove_argn[] = {L"this", L"signal"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"remove"), 0, 
-        &unix_i_signal_set_remove, int_type, 2, unix_i_signal_set_remove_argv, unix_i_signal_set_remove_argn, 0, 0);
+        &unix_i_signal_set_remove, int_type, 2, unix_i_signal_set_remove_argv, unix_i_signal_set_remove_argn, 0, L"Remove the specified signal from the set.");
 
     anna_type_t *unix_i_signal_set_in_argv[] = {unix_signal_set_type, int_type};
     wchar_t *unix_i_signal_set_in_argn[] = {L"this", L"signal"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"__in__"), 0, 
-        &unix_i_signal_set_in, object_type, 2, unix_i_signal_set_in_argv, unix_i_signal_set_in_argn, 0, 0);
+        &unix_i_signal_set_in, object_type, 2, unix_i_signal_set_in_argv, unix_i_signal_set_in_argn, 0, L"Check if the specified signal is in the set");
+
+    anna_type_t *unix_i_signal_set_get_argv[] = {unix_signal_set_type, int_type};
+    wchar_t *unix_i_signal_set_get_argn[] = {L"this", L"signal"};
+    anna_member_create_native_method(
+        unix_signal_set_type, anna_mid_get(L"__get__"), 0, 
+        &unix_i_signal_set_get, object_type, 2, unix_i_signal_set_get_argv, unix_i_signal_set_get_argn, 0, L"Check if the specified signal is in the set");
+
+    anna_type_t *unix_i_signal_set_set_argv[] = {unix_signal_set_type, int_type, object_type};
+    wchar_t *unix_i_signal_set_set_argn[] = {L"this", L"signal", L"value"};
+    anna_member_create_native_method(
+        unix_signal_set_type, anna_mid_get(L"__set__"), 0, 
+        &unix_i_signal_set_set, object_type, 3, unix_i_signal_set_set_argv, unix_i_signal_set_set_argn, 0, L"If value is non-null, add the specified signal to the set. Otherwise, remove it.");
 
     anna_type_t *unix_i_proc_signalfd_argv[] = {int_type, unix_signal_set_type, int_type};
     wchar_t *unix_i_proc_signalfd_argn[] = {L"fd", L"mask", L"flags"};
@@ -2495,8 +2655,8 @@ ANNA_VM_NATIVE(unix_i_user_getuid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_53 = getuid();
-    anna_entry_t *result = anna_from_int(tmp_var_53);
+    int tmp_var_56 = getuid();
+    anna_entry_t *result = anna_from_int(tmp_var_56);
     // Perform cleanup
 
     // Return result
@@ -2512,8 +2672,8 @@ ANNA_VM_NATIVE(unix_i_user_geteuid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_54 = geteuid();
-    anna_entry_t *result = anna_from_int(tmp_var_54);
+    int tmp_var_57 = geteuid();
+    anna_entry_t *result = anna_from_int(tmp_var_57);
     // Perform cleanup
 
     // Return result
@@ -2529,8 +2689,8 @@ ANNA_VM_NATIVE(unix_i_user_getgid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_55 = getgid();
-    anna_entry_t *result = anna_from_int(tmp_var_55);
+    int tmp_var_58 = getgid();
+    anna_entry_t *result = anna_from_int(tmp_var_58);
     // Perform cleanup
 
     // Return result
@@ -2546,8 +2706,8 @@ ANNA_VM_NATIVE(unix_i_user_getegid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_56 = getegid();
-    anna_entry_t *result = anna_from_int(tmp_var_56);
+    int tmp_var_59 = getegid();
+    anna_entry_t *result = anna_from_int(tmp_var_59);
     // Perform cleanup
 
     // Return result
@@ -2566,8 +2726,8 @@ ANNA_VM_NATIVE(unix_i_user_setuid, 1)
     
 
     // Call the function
-    int tmp_var_57 = setuid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_57);
+    int tmp_var_60 = setuid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_60);
     // Perform cleanup
 
     // Return result
@@ -2586,8 +2746,8 @@ ANNA_VM_NATIVE(unix_i_user_seteuid, 1)
     
 
     // Call the function
-    int tmp_var_58 = seteuid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_58);
+    int tmp_var_61 = seteuid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_61);
     // Perform cleanup
 
     // Return result
@@ -2606,8 +2766,8 @@ ANNA_VM_NATIVE(unix_i_user_setegid, 1)
     
 
     // Call the function
-    int tmp_var_59 = setegid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_59);
+    int tmp_var_62 = setegid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_62);
     // Perform cleanup
 
     // Return result
@@ -2626,8 +2786,8 @@ ANNA_VM_NATIVE(unix_i_user_setgid, 1)
     
 
     // Call the function
-    int tmp_var_60 = setgid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_60);
+    int tmp_var_63 = setgid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_63);
     // Perform cleanup
 
     // Return result
@@ -2649,8 +2809,8 @@ ANNA_VM_NATIVE(unix_i_user_setpgid, 2)
     
 
     // Call the function
-    int tmp_var_61 = setpgid(native_param_pid, native_param_pgid);
-    anna_entry_t *result = anna_from_int(tmp_var_61);
+    int tmp_var_64 = setpgid(native_param_pid, native_param_pgid);
+    anna_entry_t *result = anna_from_int(tmp_var_64);
     // Perform cleanup
 
     // Return result
@@ -2669,8 +2829,8 @@ ANNA_VM_NATIVE(unix_i_user_getpgid, 1)
     
 
     // Call the function
-    int tmp_var_62 = getpgid(native_param_pid);
-    anna_entry_t *result = anna_from_int(tmp_var_62);
+    int tmp_var_65 = getpgid(native_param_pid);
+    anna_entry_t *result = anna_from_int(tmp_var_65);
     // Perform cleanup
 
     // Return result
@@ -2713,8 +2873,8 @@ ANNA_VM_NATIVE(unix_i_user_getgroups, 2)
     
 
     // Call the function
-    int tmp_var_63 = getgroups(native_param_size, native_param_list);
-    anna_entry_t *result = anna_from_int(tmp_var_63);
+    int tmp_var_66 = getgroups(native_param_size, native_param_list);
+    anna_entry_t *result = anna_from_int(tmp_var_66);
     // Perform cleanup
     
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
@@ -2766,8 +2926,8 @@ ANNA_VM_NATIVE(unix_i_user_setgroups, 2)
     
 
     // Call the function
-    int tmp_var_64 = setgroups(native_param_size, native_param_list);
-    anna_entry_t *result = anna_from_int(tmp_var_64);
+    int tmp_var_67 = setgroups(native_param_size, native_param_list);
+    anna_entry_t *result = anna_from_int(tmp_var_67);
     // Perform cleanup
     
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
@@ -2935,8 +3095,8 @@ ANNA_VM_NATIVE(unix_i_r_limit_get_r_limit, 2)
     
 
     // Call the function
-    int tmp_var_65 = getrlimit(native_param_resource, native_param_rlim);
-    anna_entry_t *result = anna_from_int(tmp_var_65);
+    int tmp_var_68 = getrlimit(native_param_resource, native_param_rlim);
+    anna_entry_t *result = anna_from_int(tmp_var_68);
     // Perform cleanup
 
     // Return result
@@ -2959,8 +3119,8 @@ ANNA_VM_NATIVE(unix_i_r_limit_set_r_limit, 2)
     
 
     // Call the function
-    int tmp_var_66 = setrlimit(native_param_resource, native_param_rlim);
-    anna_entry_t *result = anna_from_int(tmp_var_66);
+    int tmp_var_69 = setrlimit(native_param_resource, native_param_rlim);
+    anna_entry_t *result = anna_from_int(tmp_var_69);
     // Perform cleanup
 
     // Return result
@@ -3028,8 +3188,8 @@ ANNA_VM_NATIVE(unix_i_env_getenv, 1)
     
 
     // Call the function
-    char * tmp_var_67 = getenv(native_param_name);
-    anna_entry_t *result = (tmp_var_67) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_67), tmp_var_67)) : null_entry;
+    char * tmp_var_70 = getenv(native_param_name);
+    anna_entry_t *result = (tmp_var_70) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_70), tmp_var_70)) : null_entry;
     // Perform cleanup
     free(native_param_name);
 
@@ -3055,8 +3215,8 @@ ANNA_VM_NATIVE(unix_i_env_setenv, 3)
     
 
     // Call the function
-    int tmp_var_68 = setenv(native_param_name, native_param_value, native_param_overwrite);
-    anna_entry_t *result = anna_from_int(tmp_var_68);
+    int tmp_var_71 = setenv(native_param_name, native_param_value, native_param_overwrite);
+    anna_entry_t *result = anna_from_int(tmp_var_71);
     // Perform cleanup
     free(native_param_name);
     free(native_param_value);
@@ -3077,8 +3237,8 @@ ANNA_VM_NATIVE(unix_i_env_unsetenv, 1)
     
 
     // Call the function
-    int tmp_var_69 = unsetenv(native_param_name);
-    anna_entry_t *result = anna_from_int(tmp_var_69);
+    int tmp_var_72 = unsetenv(native_param_name);
+    anna_entry_t *result = anna_from_int(tmp_var_72);
     // Perform cleanup
     free(native_param_name);
 
@@ -3095,8 +3255,8 @@ ANNA_VM_NATIVE(unix_i_env_clearenv, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_70 = clearenv();
-    anna_entry_t *result = anna_from_int(tmp_var_70);
+    int tmp_var_73 = clearenv();
+    anna_entry_t *result = anna_from_int(tmp_var_73);
     // Perform cleanup
 
     // Return result
@@ -3156,8 +3316,8 @@ ANNA_VM_NATIVE(unix_i_sleep_sleep, 1)
     
 
     // Call the function
-    int tmp_var_71 = sleep(native_param_seconds);
-    anna_entry_t *result = anna_from_int(tmp_var_71);
+    int tmp_var_74 = sleep(native_param_seconds);
+    anna_entry_t *result = anna_from_int(tmp_var_74);
     // Perform cleanup
 
     // Return result
@@ -3262,8 +3422,8 @@ ANNA_VM_NATIVE(unix_i_time_gettimeofday, 2)
     
 
     // Call the function
-    int tmp_var_72 = gettimeofday(native_param_tv, native_param_tz);
-    anna_entry_t *result = (tmp_var_72)?anna_from_int(1):null_entry;
+    int tmp_var_75 = gettimeofday(native_param_tv, native_param_tz);
+    anna_entry_t *result = (tmp_var_75)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -3368,8 +3528,8 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
     
 
     // Call the function
-    char * tmp_var_73 = setlocale(native_param_cateory, native_param_locale);
-    anna_entry_t *result = (tmp_var_73) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_73), tmp_var_73)) : null_entry;
+    char * tmp_var_76 = setlocale(native_param_cateory, native_param_locale);
+    anna_entry_t *result = (tmp_var_76) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_76), tmp_var_76)) : null_entry;
     // Perform cleanup
     free(native_param_locale);
 
@@ -3538,9 +3698,9 @@ ANNA_VM_NATIVE(unix_i_locale_locale_conv, 0)
     // Validate parameters
 
     // Call the function
-    struct lconv * tmp_var_74 = localeconv();
+    struct lconv * tmp_var_77 = localeconv();
     anna_entry_t *result = anna_from_obj(anna_object_create(unix_locale_conv_type));
-    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_74;
+    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_77;
     // Perform cleanup
 
     // Return result
@@ -3804,8 +3964,8 @@ ANNA_VM_NATIVE(unix_i_term_get_attr, 2)
     
 
     // Call the function
-    int tmp_var_75 = tcgetattr(native_param_fd, native_param_ios);
-    anna_entry_t *result = (tmp_var_75)?anna_from_int(1):null_entry;
+    int tmp_var_78 = tcgetattr(native_param_fd, native_param_ios);
+    anna_entry_t *result = (tmp_var_78)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -3831,8 +3991,8 @@ ANNA_VM_NATIVE(unix_i_term_set_attr, 3)
     
 
     // Call the function
-    int tmp_var_76 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
-    anna_entry_t *result = (tmp_var_76)?anna_from_int(1):null_entry;
+    int tmp_var_79 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
+    anna_entry_t *result = (tmp_var_79)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -3887,6 +4047,7 @@ void anna_term_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_term_set_attr_argv[] = {int_type, int_type, unix_termios_type};
     wchar_t *unix_i_term_set_attr_argn[] = {L"fd", L"actions", L"ios"};
     anna_module_function(stack, L"setAttr", 0, &unix_i_term_set_attr, object_type, 3, unix_i_term_set_attr_argv, unix_i_term_set_attr_argn, 0, 0);
+    anna_stack_document(stack, L"The unix.term module contains low level wrappers for basic unix functionality revolving around terminal handling.");
 
     anna_type_data_register(anna_term_type_data, stack);
 }

@@ -1,3 +1,4 @@
+attribute(internal, doc("Internal module for the classType macro."));
 
 macro classType(node)
 (

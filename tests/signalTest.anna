@@ -6,29 +6,40 @@ def main()
       Perform some testing for the SignalSet type
      */
     ss := SignalSet();
-    print(signal.int in ss);
-    print(signal.sys in ss);
+    print(?, signal.int in ss);
+    print(?, signal.sys in ss);
 
-    ss.set(signal.int);
-    print(signal.int in ss);
-    print(signal.sys in ss);
+    ss.add(signal.int);
+    print(1, signal.int in ss);
+    print(?, signal.sys in ss);
+
+    print(1, ss[signal.int]);
+    print(?, ss[signal.sys]);
+
+    ss[signal.sys] = 1;
+    print(1, ss[signal.int]);
+    print(1, ss[signal.sys]);
+
+    ss[signal.sys] = ?;
+    print(1, ss[signal.int]);
+    print(?, ss[signal.sys]);
 
     ss.remove(signal.int);
-    print(signal.int in ss);
-    print(signal.sys in ss);
+    print(?, signal.int in ss);
+    print(?, signal.sys in ss);
 
-    ss.setAll();
-    print(signal.int in ss);
-    print(signal.sys in ss);
+    ss.all();
+    print(1, signal.int in ss);
+    print(1, signal.sys in ss);
 
     ss.clear();
-    print(signal.int in ss);
-    print(signal.sys in ss);
+    print(?, signal.int in ss);
+    print(?, signal.sys in ss);
 
     /*
       Set up signal handling using the signalfd call
      */
-    ss.setAll();
+    ss.all();
     signalFd := signalfd(-1, ss, 0);
 
     sigInfo := SignalInfoFd();

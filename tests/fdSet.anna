@@ -8,11 +8,7 @@ def main()
     fs2 := FdSet();
     fs3 := FdSet();
 
-    fs.zero();
-    fs2.zero();
-    fs3.zero();
-
-    [3,5,8].each(idx){fs.set(idx)}
-    (0..10).each(idx){print("Fd %: %" % [ idx, fs.set?(idx)])}
+    [3,5,8].each(idx){fs.add(idx)}
+    (0..10).each(idx){print("Fd %: %" % [ idx, fs[idx]])}
 }
 

@@ -160,14 +160,30 @@ io
 #define ANNA_FD_CLR(set, fd) FD_CLR(fd, set)
 #define ANNA_FD_ISSET(set, fd) FD_ISSET(fd, set)
 #define ANNA_FD_SET(set, fd) FD_SET(fd, set)
+
+static int anna_fd_set_value(fd_set *set, int fd, int val)
+{
+    if(val)
+    {
+        FD_SET(fd, set);
+    }
+    else
+    {
+        FD_CLR(fd, set);
+    }
+    return val;
+}
 ");
 
     cType FdSet (name(fd_set))
     {
-	def Void clear(Int fd) (name(ANNA_FD_CLR), doc("Remove the specified file descriptor from this set."));
-	def Int set?(Int fd) (name(ANNA_FD_ISSET), doc("Returns non-null if the specified file descriptor is in the set."));
-	def Void set(Int fd) (name(ANNA_FD_SET), doc("Make the specified file descriptor part of the set."));
-	def Void zero() (name(FD_ZERO), doc("Clear all file descriptors in this set."));
+	def Void __init__() (name(FD_ZERO), doc("Create an empty new file descriptor set."));
+	def Void remove(Int fd) (name(ANNA_FD_CLR), doc("Remove the specified file descriptor from the set."));
+	def Int __in__(Int fd) (name(ANNA_FD_ISSET), doc("Check if the specified file descriptor is in the set."));
+	def Int __get__(Int fd) (name(ANNA_FD_ISSET), doc("Check if the specified file descriptor is in the set."));
+	def Bool __set__(Int fd, Bool value (nullable)) (name(anna_fd_set_value), doc("If value is non-null, add the specified file descriptor to the set. Otherwise, remove it."));
+	def Void add(Int fd) (name(ANNA_FD_SET), doc("Add the specified file descriptor to the set."));
+	def Void clear() (name(FD_ZERO), doc("Remove all file descriptors from this set."));
     }
     
 //    def Int select(Int nfds, FdSet readfds, FdSet writefds, FdSet exceptfds, TimeVal timeout);
@@ -235,14 +251,31 @@ proc
     def Int wait(MutableList«Int» status (ensureCapacity(1))) (doc("Wait for a process to change state.")); 
     def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options), (doc("Wait for a process to change state."));
 
+    verbatim("
+static int anna_signalset_set(sigset_t *set, int signal, int value)
+{
+    if(value)
+    {
+        sigaddset(set, signal);
+    }
+    else
+    {
+        sigdelset(set, signal);
+    }
+    return value;
+}
+");
+
     cType SignalSet (name(sigset_t))
     {
-	def Int __init__() (name(sigemptyset));
-	def Int clear() (name(sigemptyset));
-	def Int setAll() (name(sigfillset));
-	def Int set(Int signal) (name(sigaddset));
-	def Int remove(Int signal) (name(sigdelset));
-	def Bool __in__(Int signal) (name(sigismember));
+	def Void __init__() (name(sigemptyset), doc("Create an empty new set"));
+	def Int clear() (name(sigemptyset), doc("Remove all signals from the set"));
+	def Int all() (name(sigfillset), doc("Add all signals to the set"));
+	def Int add(Int signal) (name(sigaddset), doc("Add the specified signal to the set"));
+	def Int remove(Int signal) (name(sigdelset), doc("Remove the specified signal from the set."));
+	def Bool __in__(Int signal) (name(sigismember), doc("Check if the specified signal is in the set"));
+	def Bool __get__(Int signal) (name(sigismember), doc("Check if the specified signal is in the set"));
+	def Bool __set__(Int signal, Bool value (nullable)) (name(anna_signalset_set), doc("If value is non-null, add the specified signal to the set. Otherwise, remove it."));
     }
 
     def Int signalfd(Int fd, SignalSet mask, Int flags);
@@ -270,7 +303,7 @@ proc
 	const Int unblock (name(SIG_UNBLOCK));
 	const Int setMask (name(SIG_SETMASK));
     }
-
+    
     def Int sigprocmask(Int how, SignalSet set (nullable), SignalSet old (nullable));
 
     verbatim("
@@ -280,13 +313,11 @@ int anna_read_signal(int fd, struct signalfd_siginfo *info)
 }
 ");
 
-    def Bool readSignal(Int fd, SignalInfoFd info) (name(anna_read_signal));
-    
+    def Bool readSignal(Int fd, SignalInfoFd info) (name(anna_read_signal));    
 }
 
 user
 {
-
     attribute(doc("The unix.user module contains low level wrappers for basic unix functionality revolving around users and groups."));
 
     def Int getuid() (doc("Get the real user ID of the calling process."));
@@ -447,6 +478,7 @@ Positive and negative sign positions:
 
 term
 {
+    attribute(doc("The unix.term module contains low level wrappers for basic unix functionality revolving around terminal handling."));
 
     flag
     {
