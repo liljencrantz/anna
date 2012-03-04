@@ -1,3 +1,5 @@
+attribute(internal, doc("Internal module for macros related to declaring or assigning to multiple variables in a single expression."));
+
 /*
   Macros used for transforming stuff like 
 

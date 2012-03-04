@@ -509,6 +509,7 @@ static void anna_system_load(anna_stack_template_t *stack)
 	&anna_system_get_argument,
 	0,
 	L"The arguments that where given to the program at launch.");
+    anna_stack_document(stack, L"The system module contains information and functionality on the currently running system.");
 }
 
 static void anna_module_doc_item(

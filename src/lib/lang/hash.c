@@ -1180,7 +1180,7 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_property(
 	type, anna_mid_get(L"default"), spec2,
 	&anna_hash_get_default, &anna_hash_set_default,
-	L"The number of elements in this Map.");
+	L"The default value returned by this map if the specified key does not exist.");
 
     anna_type_t *fun_type = anna_type_get_iterator(
 	L"!MapIterFunction", spec1, spec2);

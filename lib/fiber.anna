@@ -1,3 +1,4 @@
+attribute(doc("A simple cooperative threading library"));
 
 var MutableList«Fiber» fibers (internal, doc("A list of all created fibers."));
 var Fiber current (internal, doc("The currently running Fiber, if any."));

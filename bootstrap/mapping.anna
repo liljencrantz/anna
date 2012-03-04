@@ -1,3 +1,4 @@
+attribute(internal, doc("Internal module for the __mapping__ macro."));
 
 macro __mapping__(node)
 (

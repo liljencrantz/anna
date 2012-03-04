@@ -102,6 +102,7 @@ void anna_open_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"nonBlock", O_NONBLOCK, L"When possible, the file is opened in nonblocking mode.");
     anna_module_const_int(stack, L"synchronous", O_SYNC, L"The file is opened for synchronous I/O.");
     anna_module_const_int(stack, L"truncate", O_TRUNC, L"f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0.");
+    anna_stack_document(stack, L"Flags determining the mode for unix.io.open");
 
     anna_type_data_register(anna_open_mode_type_data, stack);
 }
@@ -148,6 +149,7 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"otherRead", S_IROTH, L"Others have read permission.");
     anna_module_const_int(stack, L"otherwrite", S_IWOTH, L"Others have write permission.");
     anna_module_const_int(stack, L"otherExecute", S_IXOTH, L"Others have execute permission.");
+    anna_stack_document(stack, L"Flags used for identifying file status together with a unix.io.Stat object.");
 
     anna_type_data_register(anna_stat_mode_type_data, stack);
 }
@@ -660,6 +662,7 @@ void anna_fcntl_mode_load(anna_stack_template_t *stack)
     wchar_t *this_argn[] = {L"this"};
 
     anna_module_const_int(stack, L"dupFd", F_DUPFD, L"Duplicate file descriptor.");
+    anna_stack_document(stack, L"Flags specifying file descriptor manipulations for unix.io.fcntl");
 
     anna_type_data_register(anna_fcntl_mode_type_data, stack);
 }
@@ -687,6 +690,7 @@ void anna_seek_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"set", SEEK_SET, L"Seek to absolute file offset.");
     anna_module_const_int(stack, L"cur", SEEK_CUR, L"Seek to file offset relative current position.");
     anna_module_const_int(stack, L"end", SEEK_END, L"Seek to file offset relative to end of file.");
+    anna_stack_document(stack, L"Different seek modes for use with the unix.io.seek function");
 
     anna_type_data_register(anna_seek_mode_type_data, stack);
 }
@@ -1479,6 +1483,8 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	unix_stat_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_stat_init, object_type, 1, &unix_stat_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_stat_type, L"A structure representing the status of a file");
 
     anna_type_t *unix_i_io_stat_argv[] = {string_type, unix_stat_type};
     wchar_t *unix_i_io_stat_argn[] = {L"path", L"buf"};
@@ -1539,6 +1545,8 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	unix_f_lock_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_f_lock_init, object_type, 1, &unix_f_lock_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_f_lock_type, L"File lock information");
 
     anna_type_t *unix_i_io_fcntl_void_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_fcntl_void_argn[] = {L"fd", L"cmd"};
@@ -1671,6 +1679,8 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"clear"), 0, 
         &unix_i_fd_set_clear, object_type, 1, unix_i_fd_set_clear_argv, unix_i_fd_set_clear_argn, 0, L"Remove all file descriptors from this set.");
+    anna_type_document(
+            unix_fd_set_type, L"A set of file descriptors. Used by unix.io.select.");
     anna_stack_document(stack, L"The unix.io module contains low level wrappers for basic unix functionality revolving around input and output.");
 
     anna_type_data_register(anna_io_type_data, stack);
@@ -1736,6 +1746,7 @@ void anna_signal_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"pwr", SIGPWR, L"The PWR signal");
     anna_module_const_int(stack, L"winch", SIGWINCH, L"The WINCH signal");
     anna_module_const_int(stack, L"unused", SIGUNUSED, L"The UNUSED signal");
+    anna_stack_document(stack, L"All known signals");
 
     anna_type_data_register(anna_signal_type_data, stack);
 }
@@ -2397,6 +2408,7 @@ void anna_signalfd_flag_load(anna_stack_template_t *stack)
 
     anna_module_const_int(stack, L"nonBlock", SFD_NONBLOCK, 0);
     anna_module_const_int(stack, L"closeOnExec", SFD_CLOEXEC, 0);
+    anna_stack_document(stack, L"Flags determining the mode for unix.proc.signalfd");
 
     anna_type_data_register(anna_signalfd_flag_type_data, stack);
 }
@@ -2424,6 +2436,7 @@ void anna_sigprocmask_flag_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"block", SIG_BLOCK, 0);
     anna_module_const_int(stack, L"unblock", SIG_UNBLOCK, 0);
     anna_module_const_int(stack, L"setMask", SIG_SETMASK, 0);
+    anna_stack_document(stack, L"Flags determining the mode for unix.iosigprocmask");
 
     anna_type_data_register(anna_sigprocmask_flag_type_data, stack);
 }
@@ -2593,10 +2606,12 @@ void anna_proc_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"__set__"), 0, 
         &unix_i_signal_set_set, object_type, 3, unix_i_signal_set_set_argv, unix_i_signal_set_set_argn, 0, L"If value is non-null, add the specified signal to the set. Otherwise, remove it.");
+    anna_type_document(
+            unix_signal_set_type, L"A set of signals. Used by the unix.proc.signalfd and unix.proc.sigprocmask functions.");
 
     anna_type_t *unix_i_proc_signalfd_argv[] = {int_type, unix_signal_set_type, int_type};
     wchar_t *unix_i_proc_signalfd_argn[] = {L"fd", L"mask", L"flags"};
-    anna_module_function(stack, L"signalfd", 0, &unix_i_proc_signalfd, int_type, 3, unix_i_proc_signalfd_argv, unix_i_proc_signalfd_argn, 0, 0);
+    anna_module_function(stack, L"signalfd", 0, &unix_i_proc_signalfd, int_type, 3, unix_i_proc_signalfd_argv, unix_i_proc_signalfd_argn, 0, L"Create a file descriptor for accepting signals.");
 
     anna_member_create_blob(unix_signal_info_fd_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct signalfd_siginfo));
 
@@ -2630,14 +2645,16 @@ void anna_proc_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	unix_signal_info_fd_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_signal_info_fd_init, object_type, 1, &unix_signal_info_fd_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_signal_info_fd_type, L"A structure describing a recieved signal.");
 
     anna_type_t *unix_i_proc_sigprocmask_argv[] = {int_type, unix_signal_set_type, unix_signal_set_type};
     wchar_t *unix_i_proc_sigprocmask_argn[] = {L"how", L"set", L"old"};
-    anna_module_function(stack, L"sigprocmask", 0, &unix_i_proc_sigprocmask, int_type, 3, unix_i_proc_sigprocmask_argv, unix_i_proc_sigprocmask_argn, 0, 0);
+    anna_module_function(stack, L"sigprocmask", 0, &unix_i_proc_sigprocmask, int_type, 3, unix_i_proc_sigprocmask_argv, unix_i_proc_sigprocmask_argn, 0, L"Examine and change what signals are currently blocked by this process.");
 
     anna_type_t *unix_i_proc_read_signal_argv[] = {int_type, unix_signal_info_fd_type};
     wchar_t *unix_i_proc_read_signal_argn[] = {L"fd", L"info"};
-    anna_module_function(stack, L"readSignal", 0, &unix_i_proc_read_signal, object_type, 2, unix_i_proc_read_signal_argv, unix_i_proc_read_signal_argn, 0, 0);
+    anna_module_function(stack, L"readSignal", 0, &unix_i_proc_read_signal, object_type, 2, unix_i_proc_read_signal_argv, unix_i_proc_read_signal_argn, 0, L"Read one signal information structure form the specified file descriptor.");
     anna_stack_document(stack, L"The unix.proc module contains low level wrappers for basic unix functionality revolving around processes and signals.");
 
     anna_type_data_register(anna_proc_type_data, stack);
@@ -3509,6 +3526,7 @@ void anna_locale_mode_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"monetary", LC_MONETARY, L"Monetary formating.");
     anna_module_const_int(stack, L"numeric", LC_NUMERIC, L"Numeric formating, such as decimal point and thousands separator.");
     anna_module_const_int(stack, L"time", LC_TIME, L"Date and time formating.");
+    anna_stack_document(stack, L"Different locale parts.");
 
     anna_type_data_register(anna_locale_mode_type_data, stack);
 }
@@ -3517,7 +3535,6 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
 {
     // Validate parameters
     if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
     int native_param_cateory = anna_as_int(param[0]);
@@ -3728,7 +3745,7 @@ void anna_locale_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_locale_set_locale_argv[] = {int_type, string_type};
     wchar_t *unix_i_locale_set_locale_argn[] = {L"cateory", L"locale"};
-    anna_module_function(stack, L"setLocale", 0, &unix_i_locale_set_locale, string_type, 2, unix_i_locale_set_locale_argv, unix_i_locale_set_locale_argn, 0, 0);
+    anna_module_function(stack, L"setLocale", 0, &unix_i_locale_set_locale, string_type, 2, unix_i_locale_set_locale_argv, unix_i_locale_set_locale_argn, 0, L"Set the specified local category to the specified value");
 
     anna_member_create_blob(unix_locale_conv_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct lconv *));
 
@@ -3806,6 +3823,8 @@ void anna_locale_load(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	unix_locale_conv_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_locale_conv_init, object_type, 1, &unix_locale_conv_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_locale_conv_type, L"Detailed local information regarding numeric formating.");
 
     anna_type_t *unix_i_locale_locale_conv_argv[] = {};
     wchar_t *unix_i_locale_locale_conv_argn[] = {};
@@ -4084,7 +4103,7 @@ void anna_unix_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_stack_document(stack, L"The unix module is the parent module for various low level wrappers for basic Unix functionality. Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages.");
+    anna_stack_document(stack, L"The unix module is the parent module for various low level wrappers for basic Unix functionality.");
 
     anna_type_data_register(anna_unix_type_data, stack);
 }

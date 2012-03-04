@@ -1,3 +1,4 @@
+attribute(internal, doc("Internal module for macros related to rasing errors."));
 
 macro raise(node)
 {

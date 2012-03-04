@@ -90,6 +90,20 @@ ANNA_VM_NATIVE(anna_function_type_i_get_filename, 1)
     return f->filename?anna_from_obj(anna_string_create(wcslen(f->filename), f->filename)):null_entry;
 }
 
+ANNA_VM_NATIVE(anna_function_type_i_get_variadic, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_function_t *f = anna_function_unwrap(this);
+    return anna_function_is_variadic(f) ? anna_from_int(1) : null_entry;
+}
+
+ANNA_VM_NATIVE(anna_function_type_i_get_variadic_named, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_function_t *f = anna_function_unwrap(this);
+    return anna_function_is_variadic_named(f) ? anna_from_int(1) : null_entry;
+}
+
 ANNA_VM_NATIVE(anna_continuation_type_i_get_filename, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -322,6 +336,20 @@ static void anna_function_load(anna_stack_template_t *stack)
 	&anna_function_type_i_get_filename,
 	0,
 	L"The name of the file in which this function was defined.");
+
+    anna_member_create_native_property(
+	res, anna_mid_get(L"variadic?"),
+	int_type,
+	&anna_function_type_i_get_variadic,
+	0,
+	L"True if this function accepts unnamed variadic arguments.");
+
+    anna_member_create_native_property(
+	res, anna_mid_get(L"variadicNamed?"),
+	int_type,
+	&anna_function_type_i_get_variadic_named,
+	0,
+	L"True if this function accepts variadic named arguments.");
 
     anna_type_copy_object(res);
 

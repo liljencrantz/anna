@@ -14,7 +14,6 @@
   - Split out functions in header
   - Vararg support in function prototype
   - Nicer prototype for function arguments that are functions
-  - Default arguments in function prototypes
   - Split into multiple files
   - Check for dead links
   - By default, maybe attributes should be dropped to conserve memory? If so, add special switch to retain it for the annadoc program.

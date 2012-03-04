@@ -1,3 +1,4 @@
+attribute(doc("Various tools for functional programming."));
 
 def %Res reduce(
     %Coll collection,

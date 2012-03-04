@@ -1,3 +1,4 @@
+attribute(internal, doc("Internal module for the __range__ macro."));
 
 macro __range__(node) (doc("Syntactic sugar for creating Range objects."))
 {

@@ -3,18 +3,28 @@ include(
     "<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>",
     "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", 
     "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>", 
-    "<termios.h>", "<sys/signalfd.h>"
+    "<termios.h>", "<sys/signalfd.h>",
     );
 
-attribute(doc("The unix module is the parent module for various low level wrappers for basic Unix functionality. Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages."));
+attribute(
+    doc(
+	"The unix module is the parent module for various low level wrappers for basic Unix functionality.", 
+	"Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages.", 
+	"The unix module is still rater incomplete. There are many, many functiions that are currently missing. The ones that are there have inconsistent naming policies with regard to capitalization, abbreviations, etc. The exact policy for naming, etc. in this module will evolve over time, which can result in future incompatibilities.",
+	));
 
 io
 {
 
-    attribute(doc("The unix.io module contains low level wrappers for basic unix functionality revolving around input and output."));
+    attribute(
+	doc(
+	    "The unix.io module contains low level wrappers for basic unix functionality revolving around input and output.", 
+	    "Unix input/output centers around file descriptors. File descriptors are small, positive integers that can represent open files, directories, pipes or even network sockets.",
+	    ));
 
     openMode
     {
+	attribute(doc("Flags determining the mode for unix.io.open"));
 	const Int readOnly (name(O_RDONLY), doc("Open file in read-only mode."));
 	const Int writeOnly (name(O_WRONLY), doc("Open file in write-only mode."));
 	const Int readWrite (name(O_RDWR), doc("Open file in read-write mode."));
@@ -37,6 +47,7 @@ io
 
     statMode
     {
+	attribute(doc("Flags used for identifying file status together with a unix.io.Stat object."));
 	const Int regular (name(S_IFREG), doc("Regular file"));
 	const Int socket (name(S_IFSOCK), doc("Socket"));
 	const Int link (name(S_IFLNK), doc("Symbolic link."));
@@ -71,7 +82,7 @@ io
     def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Write to a file descriptor. Equivalent to the C write function."));
     def Bool close(Int fd) (doc("Close a file descriptor. Equivalent to the C close function."));
 
-    cStruct Stat (name(stat))
+    cStruct Stat (name(stat), doc("A structure representing the status of a file"))
     {
 	const Int dev (name(st_dev), doc("ID of device containing file"));
 	const Int ino (name(st_ino), doc("Inode number"));
@@ -103,7 +114,7 @@ io
     def Bool chroot(String path) (doc("Change root directory."));
     def Bool fchdir(Int fd) (doc("Change working directory."));
 
-    cStruct FLock (name(flock))
+    cStruct FLock (name(flock), doc("File lock information"))
     {
 	const Int type (name(l_type), doc("Type of lock: F_RDLCK, F_WRLCK, F_UNLCK."));
 	const Int whence (name(l_whence), doc("How to interpret l_start: SEEK_SET, SEEK_CUR, SEEK_END."));
@@ -114,12 +125,15 @@ io
 
     fcntlMode
     {
+	attribute(doc("Flags specifying file descriptor manipulations for unix.io.fcntl"));
 	const Int dupFd (name(F_DUPFD), doc("Duplicate file descriptor."));
 	// ...
     }
 
     seekMode
     {
+	attribute(doc("Different seek modes for use with the unix.io.seek function"));
+
 	const Int set (name(SEEK_SET), doc("Seek to absolute file offset."));
 	const Int cur (name(SEEK_CUR), doc("Seek to file offset relative current position."));
 	const Int end (name(SEEK_END), doc("Seek to file offset relative to end of file."));
@@ -175,7 +189,7 @@ static int anna_fd_set_value(fd_set *set, int fd, int val)
 }
 ");
 
-    cType FdSet (name(fd_set))
+    cType FdSet (name(fd_set), doc("A set of file descriptors. Used by unix.io.select."))
     {
 	def Void __init__() (name(FD_ZERO), doc("Create an empty new file descriptor set."));
 	def Void remove(Int fd) (name(ANNA_FD_CLR), doc("Remove the specified file descriptor from the set."));
@@ -197,6 +211,8 @@ proc
 
     signal
     {
+	attribute(doc("All known signals"));
+
 	const Int hup (name(SIGHUP), doc("The HUP signal"));
 	const Int int (name(SIGINT), doc("The INT signal"));
 	const Int quit (name(SIGQUIT), doc("The QUIT signal"));
@@ -266,7 +282,7 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 }
 ");
 
-    cType SignalSet (name(sigset_t))
+    cType SignalSet (name(sigset_t), doc("A set of signals. Used by the unix.proc.signalfd and unix.proc.sigprocmask functions."))
     {
 	def Void __init__() (name(sigemptyset), doc("Create an empty new set"));
 	def Int clear() (name(sigemptyset), doc("Remove all signals from the set"));
@@ -278,9 +294,9 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 	def Bool __set__(Int signal, Bool value (nullable)) (name(anna_signalset_set), doc("If value is non-null, add the specified signal to the set. Otherwise, remove it."));
     }
 
-    def Int signalfd(Int fd, SignalSet mask, Int flags);
+    def Int signalfd(Int fd, SignalSet mask, Int flags) (doc("Create a file descriptor for accepting signals."));
 
-    cStruct SignalInfoFd (name(signalfd_siginfo))
+    cStruct SignalInfoFd (name(signalfd_siginfo), doc("A structure describing a recieved signal."))
     {
 	var Int signal (name(ssi_signo));
 	var Int code (name(ssi_code));
@@ -293,18 +309,22 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
  
     signalfdFlag
     {
+	attribute(doc("Flags determining the mode for unix.proc.signalfd"));
+
 	const Int nonBlock (name(SFD_NONBLOCK));
 	const Int closeOnExec (name(SFD_CLOEXEC));
     }
    
     sigprocmaskFlag
     {
+	attribute(doc("Flags determining the mode for unix.iosigprocmask"));
+
 	const Int block (name(SIG_BLOCK));
 	const Int unblock (name(SIG_UNBLOCK));
 	const Int setMask (name(SIG_SETMASK));
     }
     
-    def Int sigprocmask(Int how, SignalSet set (nullable), SignalSet old (nullable));
+    def Int sigprocmask(Int how, SignalSet set (nullable), SignalSet old (nullable)) (doc("Examine and change what signals are currently blocked by this process."));
 
     verbatim("
 int anna_read_signal(int fd, struct signalfd_siginfo *info)
@@ -313,7 +333,7 @@ int anna_read_signal(int fd, struct signalfd_siginfo *info)
 }
 ");
 
-    def Bool readSignal(Int fd, SignalInfoFd info) (name(anna_read_signal));    
+    def Bool readSignal(Int fd, SignalInfoFd info) (name(anna_read_signal), doc("Read one signal information structure form the specified file descriptor."));    
 }
 
 user
@@ -420,6 +440,8 @@ locale
 
     localeMode
     {
+	attribute(doc("Different locale parts."));
+
 	const Int all (name(LC_ALL), doc("All of the locale."));
 	const Int collate (name(LC_COLLATE), doc("Regular expression matching (it determines the meaning of range expressions and equivalence classes) and string collation."));
 	const Int cType (name(LC_CTYPE), doc("Regular expression matching, character classification, conversion, case-sensitive comparison, and wide character functions."));
@@ -428,9 +450,9 @@ locale
 	const Int numeric (name(LC_NUMERIC), doc("Numeric formating, such as decimal point and thousands separator."));
 	const Int time (name(LC_TIME), doc("Date and time formating."));
     }
-    def String setLocale(Int cateory, String locale) (name(setlocale));
+    def String setLocale(Int cateory, String locale (nullable)) (name(setlocale), doc("Set the specified local category to the specified value"));
     
-    cStructPointer LocaleConv (name(lconv))
+    cStructPointer LocaleConv (name(lconv), doc("Detailed local information regarding numeric formating."))
     {
 	const String decimalPoint (name(decimal_point), doc("Decimal-point separator used for non-monetary quantities."));
 	const String thousandsSeparator (name(thousands_sep), doc("Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities."));	

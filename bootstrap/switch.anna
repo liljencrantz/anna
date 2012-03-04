@@ -1,3 +1,5 @@
+attribute(internal, doc("Internal module for the switch macro."));
+
 macro switch(node) 
 (
     doc("

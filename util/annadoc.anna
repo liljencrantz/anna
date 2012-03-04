@@ -6,6 +6,7 @@ expand(template);
 
 var io.File baseDir;
 var Int verbose;
+var HashMap«String, Operator» operatorLookup;
 
 def main()
 (  
@@ -13,6 +14,17 @@ def main()
 	"It works by iterating over all loaded modules and extracting the doc attribute from all functions, types and members, and formatting them into html documents.",
 	"Future work should include prettier styling, search functionality, handling of internal members including the option to hide internal members."))
 {
+    operatorLookup := [
+	"__get__": Operator("[]"); 
+	"__set__": Operator("[]"); 
+	"__add__": Operator("+");
+	"__sub__": Operator("-");
+	"__mul__": Operator("*");
+	"__div__": Operator("/");
+	"__in__": Operator("in");
+	"__join__": Operator("~");
+	"__append__": Operator("~=");
+	];
     baseDir = io.File("documentation/api");
     verbose = system.argument[1] == "-v";
     doc := DocumentationExtractor();
@@ -106,6 +118,18 @@ class DocumentationData
     
 }
 
+struct Operator
+{
+
+    var String operatorName;
+
+    def document(reflection.Member mem)
+    {
+	return "";
+    }
+    
+}
+
 class DocumentationExtractor
 (
     doc("
@@ -194,15 +218,54 @@ often used code paths, which makes it useful for regression testing.")
         fun := mem.value(?) as Function;
 	"" ~ (if(fun)
 	{
-	  argv := ", ".join(
-	      fun.inputType.map(idx, t)
-	      {
-		  "%(type) %(name)%(default)" % ["type": getLink(mem.memberOf, t), "name": fun.inputName[idx], "default": (if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""})]
-	      });
+	    variadicIndex := fun.variadic? and fun.inputType.count-1;
+	    variadicNamedIndex := fun.variadicNamed? and fun.inputType.count-1;
+	    if(variadicIndex)
+	    {
+		variadicNamedIndex--;
+	    }
+	    argv := ", ".join(
+		fun.inputType.map(idx, t)
+		{
+		    variadicStr := "";
+		    if(idx == variadicIndex)
+		    {
+			variadicStr ~= "...";
+		    }		    
+		    if(idx == variadicNamedIndex)
+		    {
+			getMemb := t.member.find(memb){memb.name=="__get__"} as Method;
+			t = getMemb.function.outputType;
+			variadicStr ~= ":";
+		    }
+		    
+		    "%(type) %(name)%(variadic)%(default)" % 
+		    [
+			"type": getLink(mem.memberOf, t), 
+			"name": fun.inputName[idx],
+			"default": (if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""}),
+			"variadic": variadicStr,
+			];
+		});
 	    "def % <em>%</em> (%)" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
 	} else {
 	    "var % <em>%</em>" % [getLink(mem.memberOf, mem.type), mem.name];
 	}) ~ getAttribute(mem) ~ ";"
+    }
+
+    def headerForModule(Object module)
+    {
+	return (" - " ~ (extractDocumentation(module.__type__.attribute, 1))) or "";
+    }
+
+    def headerForType(Type type)
+    {
+	return (" - " ~ (extractDocumentation(type.attribute, 1))) or "";
+    }
+
+    def headerForMember(reflection.Member mem)
+    {
+	return (" - " ~ (extractDocumentation(mem.attribute, 1) or extractDocumentation((mem.value(?) as Function).attribute, 1))) or "";
     }
 
     def documentMember(reflection.Member mem)
@@ -285,10 +348,17 @@ often used code paths, which makes it useful for regression testing.")
 	    val := mem.value(?);
 	    mem.static? and (val as Type);
 	}
+
+	subfun := smemb.filter(mem)
+	{
+	    val := mem.value(?);
+	    (mem as Method) or (val as Function);
+	}
+
         subother := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    !(val.__type__.module?) and !(val as Type) and (mem.type != Null);
+	    !(val.__type__.module?) and !(val as Type) and (mem.type != Null) and !(mem as Method) and !(val as Function);
 	}
 
         basePath := "/".join((0..data.steps+1).map(i){".."}) ~ "/";

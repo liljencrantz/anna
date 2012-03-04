@@ -1,3 +1,5 @@
+attribute(internal, doc("Internal module for macros related to iteration."));
+
 use(parser);
 
 def Node __iter__(Call node)

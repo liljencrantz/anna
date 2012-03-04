@@ -1,6 +1,5 @@
 attribute(internal, doc("Internal module for various attribute macros."));
 
-
 macro loopAttribute(node)
     (doc("The loop attribute. Used to tell the compiler that break and continue expressions should target this function. This macro is a no-op, the compiler will automatically check for the presence of this attribute and adjust accordingly."))
 {

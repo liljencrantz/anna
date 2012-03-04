@@ -1,3 +1,5 @@
+attribute(internal, doc("Internal module for the propertyAttribute macro."));
+
 use(parser);
 
 def Call getAttributePayload(Call c)

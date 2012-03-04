@@ -3,7 +3,8 @@ attribute(internal, doc("Internally used module. Don't use directly."));
 def print(String keys:, Object param...) 
 (
     target(lang),
-    doc("Print all the unnamed arguments to the function. The print function understands two named arguments:
+    doc("Print all the unnamed arguments to the function.",
+	"The print function understands two named arguments:
 <ul>
 <li><code>sep</code>, which is the separator to print between the unnamed arguments (default is the space character).</li>
 <li><code>end</code>, which is the character to print after the last argument (default is the newline character)</li>

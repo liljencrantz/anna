@@ -13,7 +13,7 @@
     <div class="anna-content">
       <div class="anna-main">
 	<div class="anna-main-inner">
-    <h1><a name="api-overview">Namespace <%! data.linkPath() %></a></h1>
+    <h1><a name="api-overview"><%= if(module.module?){"Namespace"} else {"Type"} %> <%! data.linkPath() %></a></h1>
 
     <%! extractDocumentation(module.attribute) or ""%>
     
@@ -27,8 +27,8 @@
        submodule.each(mem)
        {
            %>
-      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, mem.value(?).__type__) %> - 
-    <%! extractDocumentation(mem.value(?).__type__.attribute, 1) or ""%>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, mem.value(?).__type__) %> 
+	<%! headerForModule(mem.value(?))%>
 </li>
 <%
 	}
@@ -48,7 +48,9 @@
         {
            val := mem.value(?);
            %>
-      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, val as Type) %></li>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>><%! getLink(module, val as Type) %>
+    <%! headerForType(val as Type) %>
+      </li>
       <%
 	}
       %>
@@ -56,19 +58,50 @@
     <% 
        }
     %>
+
+
+
     <% 
        if(subother.count > 0)
        {
     %>
-    <h2><a name="api-other">Other members</a></h2>
+    <h2><a name="api-other">Constants, variables and properties</a></h2>
     <ul>
     <% 
-smemb.filter(mem){val := mem.value(?); !val.__type__.module? and !(val as Type) and mem.type != Null}
        subother.each(mem)
        {
            val := mem.value(?);
        %>
-      <li <%! if(mem.internal?){"class='anna-internal'"} %>><a href="#<%= mem.name  %>"><%= mem.name %></a></li>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>>
+	<a href="#<%= mem.name  %>"><%= mem.name %></a> 
+	<%! headerForMember(mem)%></li>
+      </li>
+<%
+	}
+    %>
+    </ul>
+    <% 
+       }
+    %>
+
+
+
+
+    <% 
+       if(subfun.count > 0)
+       {
+    %>
+    <h2><a name="api-function">Methods and functions</a></h2>
+    <ul>
+    <% 
+       subfun.each(mem)
+       {
+           val := mem.value(?);
+       %>
+      <li <%! if(mem.internal?){"class='anna-internal'"} %>>
+	<a href="#<%= mem.name  %>"><%= mem.name %></a> 
+	<%! headerForMember(mem)%>
+      </li>
 <%
 	}
     %>
@@ -80,6 +113,12 @@ smemb.filter(mem){val := mem.value(?); !val.__type__.module? and !(val as Type) 
     <% subother.each(mem){ %>    
     <%! documentMember(mem) %>
     <% } %>
+
+
+    <% subfun.each(mem){ %>    
+    <%! documentMember(mem) %>
+    <% } %>
+
 
 	</div>
       </div>

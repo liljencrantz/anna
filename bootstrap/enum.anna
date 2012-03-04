@@ -1,3 +1,4 @@
+attribute(internal, doc("Internal module for the enumType macro."));
 
 macro enumType(definition)
 (

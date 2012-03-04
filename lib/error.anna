@@ -1,5 +1,6 @@
+attribute(doc("Simple high level error handling."));
 
-class Error
+class Error (doc("The base class of any error"))
 {
     var reflection.Continuation source(internal);
     var String message;
@@ -19,23 +20,23 @@ class Error
   These four errors should live in the parser module, but some monkey
   patching is needed in order for that to happen.
  */
-error CompilationError
+error CompilationError (doc("The base class of any errors related to dynamically compiling a piece of code."))
 {
 }
 
-error ParseError (extends(CompilationError))
+error ParseError (extends(CompilationError), doc("A class representing an error occuring in the parser phase"))
 {
 }
 
-error IncompleteError (extends(CompilationError))
+error IncompleteError (extends(CompilationError), doc("A class representing an error occuring because of of premature termination of the input, i.e. an incomplete program."))
 {
 }
 
-error LexError (extends(CompilationError))
+error LexError (extends(CompilationError), doc("A class reresenting an error in the lexer, i.e.  in the compiler phase that deals with turning the input stream into a series of tokens."))
 {
 }
 
-def raiseError(Error error)
+def raiseError(Error error) (doc("Search the stack for a suitable handler for the specified error. If there is no such error handler, print the error and return."))
 {
     def Object funEach(reflection.Continuation item)
     {

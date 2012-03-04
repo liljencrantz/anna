@@ -1,9 +1,10 @@
+attribute(internal, doc("Internal module for the struct macro."));
 
 macro structType(node)
 (
     doc("
 The struct type macro is used for creating simple classes aimed for data storage.
-Basically, a struct type behaves exactly like a regular class, except it has these additional abilities:
+Basically, a struct type behaves exactly like a regular class, but with a few additional abilities.", "These are:
 
 <ul>
   <li>A suitable constructor is automatically created, that accepts one argument for each member of the struct.</li>
@@ -28,7 +29,7 @@ vv2 := MyStruct(5, \"\");
 print(vv2);
 </pre>
 <p>
-Because structs implement the __cmp__ and toString methods, they can be used as 
+Because structs implement the __cmp__ and hashCode methods, they can be used as 
 keys in dictionaries.
 </p>
 ")
@@ -41,7 +42,7 @@ keys in dictionaries.
     constructorBody := ast({});
     toStringBody := (ast({res := %resStart.thaw;}) % ["resStart": StringLiteral(node, structName.name ~ "(")]) as Call;
     cmpBody := ast({otherStruct := other as %This; otherStruct or (return ?); tmp := 0;});
-  hashCodeBody := ast({res := 0;});
+    hashCodeBody := ast({res := 0;});
     body.each(idx, el)
     {
         decl := el as Call;
@@ -50,6 +51,11 @@ keys in dictionaries.
         {
             name.error("Invalid field name in struct.");
             return NullLiteral(node);
+        }
+  
+        if(decl.function.named?("__const__") and decl[2].callTo?("__def__"))
+        {
+            continue;
         }
 	constructorParam.push(decl.copy());
 	constructorBody.push(ast(this.%val = %val) % ["val": name.copy()]);

@@ -251,7 +251,7 @@ class BindingType
     {
 	if(!(attr as Call).childNamed?("nullable"))
 	{
-	    "if(% == null_entry){return null_entry;}" % [source];
+	    "    if(% == null_entry){return null_entry;}\n" % [source];
 	}
     }
     

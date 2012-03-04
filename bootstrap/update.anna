@@ -1,3 +1,5 @@
+attribute(internal, doc("Internal module for the macros related to uodating a variable in-place."));
+
 use(parser);
 
 def Node __update__(Call node)
