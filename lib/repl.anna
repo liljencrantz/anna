@@ -29,7 +29,7 @@ Type «help» for more information.");
 	if(readLine.history.write(historyFile))
 	{
 	    print("Failed to save history");
-	    print(cerror.errorString(cerror.errno));
+	    print(unix.error.errorString(unix.error.errno));
 	}
     }
 

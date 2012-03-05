@@ -4239,6 +4239,219 @@ void anna_term_load(anna_stack_template_t *stack)
 
     anna_type_data_register(anna_term_type_data, stack);
 }
+const static anna_type_data_t anna_error_type_data[] = 
+{
+};
+
+ANNA_VM_NATIVE(unix_i_error_error_string, 1)
+{
+    // Validate parameters
+        if(param[0] == null_entry){return null_entry;}
+
+
+    // Mangle input parameters
+    int native_param_error = anna_as_int(param[0]);
+
+    // Validate parameters
+    
+
+    // Call the function
+    char * tmp_var_80 = strerror(native_param_error);
+    anna_entry_t *result = (tmp_var_80) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_80), tmp_var_80)) : null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(anna_unix_errno_getter, 1)
+{
+    anna_entry_t *result = anna_from_int(errno);
+    return result;
+}
+
+ANNA_VM_NATIVE(anna_unix_errno_setter, 2)
+{
+    if(param[1] != null_entry)
+    {
+        int value = anna_as_int(param[1]);
+        errno = value;
+    }
+    return param[1];
+}
+const static anna_type_data_t anna_status_type_data[] = 
+{
+};
+
+void anna_status_create(anna_stack_template_t *stack);
+void anna_status_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_status_type_data, stack);        
+}
+void anna_status_load(anna_stack_template_t *stack);
+void anna_status_load(anna_stack_template_t *stack)
+{
+    mid_t latest_mid;    
+    anna_function_t *latest_function;
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+    anna_module_const_int(stack, L"tooBig", E2BIG, L"Argument list too long.");
+    anna_module_const_int(stack, L"access", EACCES, L"Permission denied.");
+    anna_module_const_int(stack, L"addressInUse", EADDRINUSE, L"Address already in use.");
+    anna_module_const_int(stack, L"addressNotAvailable", EADDRNOTAVAIL, L"Address not available.");
+    anna_module_const_int(stack, L"addressFamilyNotSupported", EAFNOSUPPORT, L"Address family not supported.");
+    anna_module_const_int(stack, L"again", EAGAIN, L"Resource temporarily unavailable (may be the same value as wouldBlock).");
+    anna_module_const_int(stack, L"alreadyInProgress", EALREADY, L"Connection already in progress.");
+    anna_module_const_int(stack, L"badExchange", EBADE, L"Invalid exchange.");
+    anna_module_const_int(stack, L"badFileDescriptor", EBADF, L"Bad file descriptor.");
+    anna_module_const_int(stack, L"badFileDescriptorState", EBADFD, L"File descriptor in bad state.");
+    anna_module_const_int(stack, L"badRequest", EBADR, L"Invalid request descriptor.");
+    anna_module_const_int(stack, L"badRequestCode", EBADRQC, L"Invalid request code.");
+    anna_module_const_int(stack, L"badSlot", EBADSLT, L"Invalid slot.");
+    anna_module_const_int(stack, L"deviceBusy", EBUSY, L"Device or resource busy.");
+    anna_module_const_int(stack, L"canceled", ECANCELED, L"Operation canceled.");
+    anna_module_const_int(stack, L"noChild", ECHILD, L"No child processes.");
+    anna_module_const_int(stack, L"channelRange", ECHRNG, L"Channel number out of range.");
+    anna_module_const_int(stack, L"communicationError", ECOMM, L"Communication error on send.");
+    anna_module_const_int(stack, L"connectionAborted", ECONNABORTED, L"Connection aborted.");
+    anna_module_const_int(stack, L"connectionRefused", ECONNREFUSED, L"Connection refused.");
+    anna_module_const_int(stack, L"connectionReset", ECONNRESET, L"Connection reset.");
+    anna_module_const_int(stack, L"deadlock", EDEADLK, L"Resource deadlock avoided.");
+    anna_module_const_int(stack, L"destinationRequired", EDESTADDRREQ, L"Destination address required.");
+    anna_module_const_int(stack, L"domain", EDOM, L"Mathematics argument out of domain of function.");
+    anna_module_const_int(stack, L"diskQuota", EDQUOT, L"Disk quota exceeded.");
+    anna_module_const_int(stack, L"exist", EEXIST, L"File exists.");
+    anna_module_const_int(stack, L"fault", EFAULT, L"Bad address.");
+    anna_module_const_int(stack, L"fileTooBig", EFBIG, L"File too large.");
+    anna_module_const_int(stack, L"hostDown", EHOSTDOWN, L"Host is down.");
+    anna_module_const_int(stack, L"hostUnreachable", EHOSTUNREACH, L"Host is unreachable.");
+    anna_module_const_int(stack, L"identifierRemoved", EIDRM, L"Identifier removed.");
+    anna_module_const_int(stack, L"illegalByteSequence", EILSEQ, L"Illegal byte sequence.");
+    anna_module_const_int(stack, L"inProgress", EINPROGRESS, L"Operation in progress.");
+    anna_module_const_int(stack, L"interrupted", EINTR, L"Interrupted function call.");
+    anna_module_const_int(stack, L"invalid", EINVAL, L"Invalid argument.");
+    anna_module_const_int(stack, L"ioError", EIO, L"Input/output error.");
+    anna_module_const_int(stack, L"isConencted", EISCONN, L"Socket is connected.");
+    anna_module_const_int(stack, L"isDirectory", EISDIR, L"Is a directory.");
+    anna_module_const_int(stack, L"isNamed", EISNAM, L"Is a named type file.");
+    anna_module_const_int(stack, L"keyExpired", EKEYEXPIRED, L"Key has expired.");
+    anna_module_const_int(stack, L"keyRejected", EKEYREJECTED, L"Key was rejected by service.");
+    anna_module_const_int(stack, L"keyRevoked", EKEYREVOKED, L"Key has been revoked.");
+    anna_module_const_int(stack, L"level2Halted", EL2HLT, L"Level 2 halted.");
+    anna_module_const_int(stack, L"level2NotSynced", EL2NSYNC, L"Level 2 not synchronized.");
+    anna_module_const_int(stack, L"level3Halted", EL3HLT, L"Level 3 halted.");
+    anna_module_const_int(stack, L"level3Reset", EL3RST, L"Level 3 reset.");
+    anna_module_const_int(stack, L"libraryAccess", ELIBACC, L"Cannot access a needed shared library.");
+    anna_module_const_int(stack, L"libraryBad", ELIBBAD, L"Accessing a corrupted shared library.");
+    anna_module_const_int(stack, L"libraryMax", ELIBMAX, L"Attempting to link in too many shared libraries.");
+    anna_module_const_int(stack, L"libraryCorrupt", ELIBSCN, L"lib section in a.out corrupted.");
+    anna_module_const_int(stack, L"libraryExec", ELIBEXEC, L"Cannot exec a shared library directly.");
+    anna_module_const_int(stack, L"loop", ELOOP, L"Too many levels of symbolic links");
+    anna_module_const_int(stack, L"mediumType", EMEDIUMTYPE, L"Wrong medium type.");
+    anna_module_const_int(stack, L"maxFile", EMFILE, L"Too many open files.");
+    anna_module_const_int(stack, L"maxLink", EMLINK, L"Too many links.");
+    anna_module_const_int(stack, L"messageSize", EMSGSIZE, L"Message too long.");
+    anna_module_const_int(stack, L"multihop", EMULTIHOP, L"Multihop attempted.");
+    anna_module_const_int(stack, L"nameTooLong", ENAMETOOLONG, L"Filename too long.");
+    anna_module_const_int(stack, L"netDown", ENETDOWN, L"Network is down.");
+    anna_module_const_int(stack, L"netReset", ENETRESET, L"Connection aborted by network.");
+    anna_module_const_int(stack, L"netUnreachable", ENETUNREACH, L"Network unreachable.");
+    anna_module_const_int(stack, L"maxFileInSystem", ENFILE, L"Too many open files in system.");
+    anna_module_const_int(stack, L"noBufferSpace", ENOBUFS, L"No buffer space available.");
+    anna_module_const_int(stack, L"noData", ENODATA, L"No message is available on the STREAM head read queue.");
+    anna_module_const_int(stack, L"noDevice", ENODEV, L"No such device.");
+    anna_module_const_int(stack, L"noEntry", ENOENT, L"No such file or directory.");
+    anna_module_const_int(stack, L"noExec", ENOEXEC, L"Exec format error.");
+    anna_module_const_int(stack, L"noKey", ENOKEY, L"Required key not available.");
+    anna_module_const_int(stack, L"noLock", ENOLCK, L"No locks available.");
+    anna_module_const_int(stack, L"noLink", ENOLINK, L"Link has been severed.");
+    anna_module_const_int(stack, L"noMedium", ENOMEDIUM, L"No medium found.");
+    anna_module_const_int(stack, L"noMemory", ENOMEM, L"Not enough space.");
+    anna_module_const_int(stack, L"noMessage", ENOMSG, L"No message of the desired type.");
+    anna_module_const_int(stack, L"noNet", ENONET, L"Machine is not on the network.");
+    anna_module_const_int(stack, L"noPackage", ENOPKG, L"Package not installed.");
+    anna_module_const_int(stack, L"noProtocol", ENOPROTOOPT, L"Protocol not available.");
+    anna_module_const_int(stack, L"noSpace", ENOSPC, L"No space left on device.");
+    anna_module_const_int(stack, L"noStream", ENOSR, L"No STREAM resources.");
+    anna_module_const_int(stack, L"notStream", ENOSTR, L"Not a STREAM.");
+    anna_module_const_int(stack, L"notImplemented", ENOSYS, L"Function not implemented.");
+    anna_module_const_int(stack, L"notBlock", ENOTBLK, L"Block device required.");
+    anna_module_const_int(stack, L"notConnected", ENOTCONN, L"The socket is not connected.");
+    anna_module_const_int(stack, L"notDirectory", ENOTDIR, L"Not a directory.");
+    anna_module_const_int(stack, L"notEmpty", ENOTEMPTY, L"Directory not empty.");
+    anna_module_const_int(stack, L"notSocket", ENOTSOCK, L"Not a socket.");
+    anna_module_const_int(stack, L"notSupported", ENOTSUP, L"Operation not supported.");
+    anna_module_const_int(stack, L"notTty", ENOTTY, L"Inappropriate I/O control operation.");
+    anna_module_const_int(stack, L"notUnique", ENOTUNIQ, L"Name not unique on network.");
+    anna_module_const_int(stack, L"noDeviceOrAddress", ENXIO, L"No such device or address.");
+    anna_module_const_int(stack, L"operationNotSupported", EOPNOTSUPP, L"Operation not supported on socket.");
+    anna_module_const_int(stack, L"overflow", EOVERFLOW, L"Value too large to be stored in data type.");
+    anna_module_const_int(stack, L"permission", EPERM, L"Operation not permitted.");
+    anna_module_const_int(stack, L"protocolFamilyNotSupported", EPFNOSUPPORT, L"Protocol family not supported.");
+    anna_module_const_int(stack, L"pipe", EPIPE, L"Broken pipe.");
+    anna_module_const_int(stack, L"protocolError", EPROTO, L"Protocol error.");
+    anna_module_const_int(stack, L"protocolNotSupported", EPROTONOSUPPORT, L"Protocol not supported.");
+    anna_module_const_int(stack, L"protocolType", EPROTOTYPE, L"Protocol wrong type for socket.");
+    anna_module_const_int(stack, L"range", ERANGE, L"Result too large.");
+    anna_module_const_int(stack, L"remoteAddressChanged", EREMCHG, L"Remote address changed.");
+    anna_module_const_int(stack, L"remote", EREMOTE, L"Object is remote.");
+    anna_module_const_int(stack, L"remoteIo", EREMOTEIO, L"Remote I/O error.");
+    anna_module_const_int(stack, L"restart", ERESTART, L"Interrupted system call should be restarted.");
+    anna_module_const_int(stack, L"readOnly", EROFS, L"Read-only file system.");
+    anna_module_const_int(stack, L"shutdown", ESHUTDOWN, L"Cannot send after transport endpoint shutdown.");
+    anna_module_const_int(stack, L"seekPipe", ESPIPE, L"Invalid seek.");
+    anna_module_const_int(stack, L"socketNotSupported", ESOCKTNOSUPPORT, L"Socket type not supported.");
+    anna_module_const_int(stack, L"noSuchProcess", ESRCH, L"No such process.");
+    anna_module_const_int(stack, L"stale", ESTALE, L"Stale file handle. This error can occur for NFS and for other file systems.");
+    anna_module_const_int(stack, L"streamPipe", ESTRPIPE, L"Streams pipe error.");
+    anna_module_const_int(stack, L"timer", ETIME, L"Timer expired.");
+    anna_module_const_int(stack, L"timeout", ETIMEDOUT, L"Connection timed out.");
+    anna_module_const_int(stack, L"textBusy", ETXTBSY, L"Text file busy.");
+    anna_module_const_int(stack, L"unclean", EUCLEAN, L"Structure needs cleaning.");
+    anna_module_const_int(stack, L"unattached", EUNATCH, L"Protocol driver not attached.");
+    anna_module_const_int(stack, L"users", EUSERS, L"Too many users.");
+    anna_module_const_int(stack, L"wouldBlock", EWOULDBLOCK, L"Operation would block (may be same value as again).");
+    anna_module_const_int(stack, L"improperLink", EXDEV, L"Improper link.");
+    anna_module_const_int(stack, L"exchangeFull", EXFULL, L"Exchange full.");
+
+    anna_type_data_register(anna_status_type_data, stack);
+}
+
+void anna_error_create(anna_stack_template_t *stack);
+void anna_error_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_error_type_data, stack);        
+}
+void anna_error_load(anna_stack_template_t *stack);
+void anna_error_load(anna_stack_template_t *stack)
+{
+    mid_t latest_mid;    
+    anna_function_t *latest_function;
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+            { L"status", anna_status_create, anna_status_load},
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+
+    anna_type_t *unix_i_error_error_string_argv[] = {int_type};
+    wchar_t *unix_i_error_error_string_argn[] = {L"error"};
+    latest_function = anna_module_function(stack, L"errorString", 0, &unix_i_error_error_string, string_type, 1, unix_i_error_error_string_argv, unix_i_error_error_string_argn, 0, L"Returns a string that describes the error code passed in the argument. Equivalent to the C strerror function.");
+    anna_member_create_native_property(
+        stack_type, anna_mid_get(L"errno"),
+        int_type, anna_unix_errno_getter, anna_unix_errno_setter, L"The latest C library error to occur");
+
+    anna_type_data_register(anna_error_type_data, stack);
+}
 
 
 // This function is called to create all types defined in this module
@@ -4268,6 +4481,7 @@ void anna_unix_load(anna_stack_template_t *stack)
             { L"time", anna_time_create, anna_time_load},
             { L"locale", anna_locale_create, anna_locale_load},
             { L"term", anna_term_create, anna_term_load},
+            { L"error", anna_error_create, anna_error_load},
         };
     anna_module_data_create(modules, stack);
 

@@ -204,9 +204,9 @@ class File
 	{
 	    name := "" ~ separator ~ String::convert(separator).join(this.path[0..last+1]);
 	    
-	    if((!unix.io.mkdir(name, 0o777)) and !(cerror.errno in [cerror.exist]))
+	    if((!unix.io.mkdir(name, 0o777)) and !(unix.error.errno in [unix.error.status.exist]))
 	    {
-		print(cerror.errorString(cerror.errno));
+		print(unix.error.errorString(unix.error.errno));
 		return ?;
 	    }
 	}

@@ -531,6 +531,134 @@ term
 
 }
 
+error
+{
+    def String errorString(Int error) (name(strerror), doc("Returns a string that describes the error code passed in the argument. Equivalent to the C strerror function."));
+    var Int errno (doc("The latest C library error to occur"));
+
+    status
+    {
+	const Int tooBig (name(E2BIG), doc("Argument list too long."));
+	const Int access (name(EACCES), doc("Permission denied."));
+	const Int addressInUse (name(EADDRINUSE), doc("Address already in use."));
+	const Int addressNotAvailable (name(EADDRNOTAVAIL), doc("Address not available."));
+	const Int addressFamilyNotSupported (name(EAFNOSUPPORT), doc("Address family not supported."));
+	const Int again (name(EAGAIN), doc("Resource temporarily unavailable (may be the same value as wouldBlock)."));
+	const Int alreadyInProgress (name(EALREADY), doc("Connection already in progress."));
+	const Int badExchange (name(EBADE), doc("Invalid exchange."));
+	const Int badFileDescriptor (name(EBADF), doc("Bad file descriptor."));
+	const Int badFileDescriptorState (name(EBADFD), doc("File descriptor in bad state."));    
+	const Int badRequest (name(EBADR), doc("Invalid request descriptor."));
+	const Int badRequestCode (name(EBADRQC), doc("Invalid request code."));
+	const Int badSlot (name(EBADSLT), doc("Invalid slot."));
+	const Int deviceBusy (name(EBUSY), doc("Device or resource busy."));
+	const Int canceled (name(ECANCELED), doc("Operation canceled."));
+	const Int noChild (name(ECHILD), doc("No child processes."));
+	const Int channelRange (name(ECHRNG), doc("Channel number out of range."));
+	const Int communicationError (name(ECOMM), doc("Communication error on send."));
+	const Int connectionAborted (name(ECONNABORTED), doc("Connection aborted."));
+	const Int connectionRefused (name(ECONNREFUSED), doc("Connection refused."));
+	const Int connectionReset (name(ECONNRESET), doc("Connection reset."));
+	const Int deadlock (name(EDEADLK), doc("Resource deadlock avoided."));
+	const Int destinationRequired (name(EDESTADDRREQ), doc("Destination address required."));
+	const Int domain (name(EDOM), doc("Mathematics argument out of domain of function."));
+	const Int diskQuota (name(EDQUOT), doc("Disk quota exceeded."));
+	const Int exist (name(EEXIST), doc("File exists."));
+	const Int fault (name(EFAULT), doc("Bad address."));
+	const Int fileTooBig (name(EFBIG), doc("File too large."));
+	const Int hostDown (name(EHOSTDOWN), doc("Host is down."));
+	const Int hostUnreachable (name(EHOSTUNREACH), doc("Host is unreachable."));
+	const Int identifierRemoved (name(EIDRM), doc("Identifier removed."));
+	const Int illegalByteSequence (name(EILSEQ), doc("Illegal byte sequence."));
+	const Int inProgress (name(EINPROGRESS), doc("Operation in progress."));
+	const Int interrupted (name(EINTR), doc("Interrupted function call."));
+	const Int invalid (name(EINVAL), doc("Invalid argument."));
+	const Int ioError (name(EIO), doc("Input/output error."));
+	const Int isConencted (name(EISCONN), doc("Socket is connected."));
+	const Int isDirectory (name(EISDIR), doc("Is a directory."));
+	const Int isNamed (name(EISNAM), doc("Is a named type file."));
+	const Int keyExpired (name(EKEYEXPIRED), doc("Key has expired."));
+	const Int keyRejected (name(EKEYREJECTED), doc("Key was rejected by service."));
+	const Int keyRevoked (name(EKEYREVOKED), doc("Key has been revoked."));
+	const Int level2Halted (name(EL2HLT), doc("Level 2 halted."));
+	const Int level2NotSynced (name(EL2NSYNC), doc("Level 2 not synchronized."));
+	const Int level3Halted (name(EL3HLT), doc("Level 3 halted."));
+	const Int level3Reset (name(EL3RST), doc("Level 3 reset."));
+	const Int libraryAccess (name(ELIBACC), doc("Cannot access a needed shared library."));
+	const Int libraryBad (name(ELIBBAD), doc("Accessing a corrupted shared library."));
+	const Int libraryMax (name(ELIBMAX), doc("Attempting to link in too many shared libraries."));
+	const Int libraryCorrupt (name(ELIBSCN), doc("lib section in a.out corrupted."));
+	const Int libraryExec (name(ELIBEXEC), doc("Cannot exec a shared library directly."));
+	const Int loop (name(ELOOP), doc("Too many levels of symbolic links"));
+	const Int mediumType (name(EMEDIUMTYPE), doc("Wrong medium type."));
+	const Int maxFile (name(EMFILE), doc("Too many open files."));
+	const Int maxLink (name(EMLINK), doc("Too many links."));
+	const Int messageSize (name(EMSGSIZE), doc("Message too long."));
+	const Int multihop (name(EMULTIHOP), doc("Multihop attempted."));
+	const Int nameTooLong (name(ENAMETOOLONG), doc("Filename too long."));
+	const Int netDown (name(ENETDOWN), doc("Network is down."));
+	const Int netReset (name(ENETRESET), doc("Connection aborted by network."));
+	const Int netUnreachable (name(ENETUNREACH), doc("Network unreachable."));
+	const Int maxFileInSystem (name(ENFILE), doc("Too many open files in system."));
+	const Int noBufferSpace (name(ENOBUFS), doc("No buffer space available."));
+	const Int noData (name(ENODATA), doc("No message is available on the STREAM head read queue."));
+	const Int noDevice (name(ENODEV), doc("No such device."));
+	const Int noEntry (name(ENOENT), doc("No such file or directory."));
+	const Int noExec (name(ENOEXEC), doc("Exec format error."));
+	const Int noKey (name(ENOKEY), doc("Required key not available."));
+	const Int noLock (name(ENOLCK), doc("No locks available."));
+	const Int noLink (name(ENOLINK), doc("Link has been severed."));
+	const Int noMedium (name(ENOMEDIUM), doc("No medium found."));
+	const Int noMemory (name(ENOMEM), doc("Not enough space."));
+	const Int noMessage (name(ENOMSG), doc("No message of the desired type."));
+	const Int noNet (name(ENONET), doc("Machine is not on the network."));
+	const Int noPackage (name(ENOPKG), doc("Package not installed."));
+	const Int noProtocol (name(ENOPROTOOPT), doc("Protocol not available."));
+	const Int noSpace (name(ENOSPC), doc("No space left on device."));
+	const Int noStream (name(ENOSR), doc("No STREAM resources."));
+	const Int notStream (name(ENOSTR), doc("Not a STREAM."));
+	const Int notImplemented (name(ENOSYS), doc("Function not implemented."));
+	const Int notBlock (name(ENOTBLK), doc("Block device required."));
+	const Int notConnected (name(ENOTCONN), doc("The socket is not connected."));
+	const Int notDirectory (name(ENOTDIR), doc("Not a directory."));
+	const Int notEmpty (name(ENOTEMPTY), doc("Directory not empty."));
+	const Int notSocket (name(ENOTSOCK), doc("Not a socket."));
+	const Int notSupported (name(ENOTSUP), doc("Operation not supported."));
+	const Int notTty (name(ENOTTY), doc("Inappropriate I/O control operation."));
+	const Int notUnique (name(ENOTUNIQ), doc("Name not unique on network."));
+	const Int noDeviceOrAddress (name(ENXIO), doc("No such device or address."));
+	const Int operationNotSupported (name(EOPNOTSUPP), doc("Operation not supported on socket."));
+	const Int overflow (name(EOVERFLOW), doc("Value too large to be stored in data type."));
+	const Int permission (name(EPERM), doc("Operation not permitted."));
+	const Int protocolFamilyNotSupported (name(EPFNOSUPPORT), doc("Protocol family not supported."));
+	const Int pipe (name(EPIPE), doc("Broken pipe."));
+	const Int protocolError (name(EPROTO), doc("Protocol error."));
+	const Int protocolNotSupported (name(EPROTONOSUPPORT), doc("Protocol not supported."));
+	const Int protocolType (name(EPROTOTYPE), doc("Protocol wrong type for socket."));
+	const Int range (name(ERANGE), doc("Result too large."));
+	const Int remoteAddressChanged (name(EREMCHG), doc("Remote address changed."));
+	const Int remote (name(EREMOTE), doc("Object is remote."));
+	const Int remoteIo (name(EREMOTEIO), doc("Remote I/O error."));
+	const Int restart (name(ERESTART), doc("Interrupted system call should be restarted."));
+	const Int readOnly (name(EROFS), doc("Read-only file system."));
+	const Int shutdown (name(ESHUTDOWN), doc("Cannot send after transport endpoint shutdown."));
+	const Int seekPipe (name(ESPIPE), doc("Invalid seek."));
+	const Int socketNotSupported (name(ESOCKTNOSUPPORT), doc("Socket type not supported.")); 
+	const Int noSuchProcess (name(ESRCH), doc("No such process."));
+	const Int stale (name(ESTALE), doc("Stale file handle. This error can occur for NFS and for other file systems."));
+	const Int streamPipe (name(ESTRPIPE), doc("Streams pipe error."));
+	const Int timer (name(ETIME), doc("Timer expired."));
+	const Int timeout (name(ETIMEDOUT), doc("Connection timed out."));
+	const Int textBusy (name(ETXTBSY), doc("Text file busy."));
+	const Int unclean (name(EUCLEAN), doc("Structure needs cleaning."));
+	const Int unattached (name(EUNATCH), doc("Protocol driver not attached."));
+	const Int users (name(EUSERS), doc("Too many users."));
+	const Int wouldBlock (name(EWOULDBLOCK), doc("Operation would block (may be same value as again)."));
+	const Int improperLink (name(EXDEV), doc("Improper link."));
+	const Int exchangeFull (name(EXFULL), doc("Exchange full."));
+    }
+}
+
 /*
 net
 {
