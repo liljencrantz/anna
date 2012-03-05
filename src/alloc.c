@@ -43,6 +43,13 @@ int anna_alloc_gc_block_counter;
 int anna_alloc_run_finalizers=1;
 array_list_t anna_alloc_todo = AL_STATIC;
 
+array_list_t anna_alloc_permanent = AL_STATIC;
+
+void anna_alloc_mark_permanent(void *alloc)
+{
+    al_push(&anna_alloc_permanent, alloc);
+}
+
 static void anna_alloc_unmark(void *obj)
 {
     *((int *)obj) &= (~ANNA_USED);
@@ -592,6 +599,11 @@ void anna_gc(anna_context_t *context)
     {
 	anna_object_t *obj = (anna_object_t *)al_pop(&anna_alloc_todo);
 	obj->type->mark_object(obj);
+    }
+    
+    for(i=0; i<al_get_count(&anna_alloc_permanent); i++)
+    {
+	anna_alloc_mark(al_get(&anna_alloc_permanent, i));
     }
     
     int freed = 0;

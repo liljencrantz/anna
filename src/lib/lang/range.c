@@ -893,4 +893,14 @@ void anna_range_type_create()
 	e_argv,
 	e_argn, 0, 0);
     
+    anna_type_document(
+	range_type,
+	L"A Range represents a sequence of equally spaced integers.");
+
+    anna_type_document(
+	range_type,
+	L"Ranges are usually created using the .. and ... operators, such as <code>0..5</code> or <code>14...</code>.");
+
+
+
 }

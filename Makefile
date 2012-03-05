@@ -6,7 +6,8 @@
 # Choose the compiler. Probably has to be a modern GCC version, since
 # Anna uses a few GCC extensions.
 CC := gcc
-ANNABIND := annabind
+ANNABIND := bin/anna util/annabind.anna
+ANNADOC := bin/anna util/annadoc.anna
 INSTALL:=install
 
 #
@@ -169,7 +170,7 @@ check: test
 documentation: documentation/api
 
 documentation/api: bin/anna lib/*.anna $(ANNA_INTERNAL_BINDINGS) util/document/*.html bootstrap/*.anna util/annadoc.anna
-	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap time bin/anna util/annadoc.anna && touch documentation/api
+	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap time $(ANNADOC) && touch documentation/api
 
 test: bin/anna
 	time ./bin/anna_tests.sh

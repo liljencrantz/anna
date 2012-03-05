@@ -124,6 +124,14 @@ static void anna_null_type_create()
     }
     assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    
     null_object->type = null_type;
+
+    anna_type_document(
+	null_type,
+	L"The Null type is the type of the null object.");  
+
+    anna_type_document(
+	null_type,
+	L"All members of the Null type point hold the value null. Calling a null value as a function will return null. The null object can be cast as any Object.");  
 }
 
 

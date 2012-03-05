@@ -171,5 +171,7 @@ __hot void anna_alloc_mark_node(anna_node_t *o);
 
 __hot void anna_alloc_gc_block(void);
 __hot void anna_alloc_gc_unblock(void);
+__cold void anna_alloc_mark_permanent(void *alloc);
+
 
 #endif

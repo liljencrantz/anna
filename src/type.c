@@ -1300,8 +1300,18 @@ anna_type_t *anna_type_get_function(
 	for(i=0; i<argc;i++)
 	{
 	    new_key->input_name[i]=anna_intern(argn[i]);
-	    new_key->input_default[i]= (argd && argd[i]) ? anna_node_clone_deep(argd[i]) : 0;
+	    if(argd && argd[i])
+	    {
+		new_key->input_default[i]= anna_node_clone_deep(argd[i]);
+		anna_alloc_mark_permanent(new_key->input_default[i]);
+	    }
+	    else
+	    {
+		new_key->input_default[i] = 0;
+	    }
+	    
 	}
+	
 	string_buffer_t sb;
 	sb_init(&sb);
 //	sb_printf(&sb, L"!");
@@ -1348,13 +1358,9 @@ void anna_type_document(anna_type_t *type, wchar_t *doc)
     {
 	type->attribute = anna_node_create_call2(
 	    0,
-	    anna_node_create_identifier(0, L"__call__"),
-	    attr);
+	    anna_node_create_identifier(0, L"__call__"));
     }
-    else
-    {
-	anna_node_call_add_child(type->attribute, (anna_node_t *)attr);    
-    }
+    anna_node_call_add_child(type->attribute, (anna_node_t *)attr);    
 }
 
 int anna_type_mid_internal(mid_t mid)
@@ -1462,6 +1468,10 @@ static void anna_type_mark(anna_type_t *type)
 {
     size_t i;
 
+    if(type->attribute)
+    {
+      	anna_alloc_mark_node((anna_node_t *)type->attribute);
+    }
     if(type == null_type)
     {
 	anna_alloc_mark_entry(type->static_member[0]);
@@ -1514,10 +1524,6 @@ static void anna_type_mark(anna_type_t *type)
     if(type->stack)
     {
 	anna_alloc_mark_stack_template(type->stack);
-    }
-    if(type->attribute)
-    {
-      	anna_alloc_mark_node((anna_node_t *)type->attribute);
     }
 }
 

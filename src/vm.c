@@ -782,6 +782,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    CRASH;
 	}
 #endif 
+	
 	anna_entry_t *res = obj->type->static_member[m->offset];
 	
 	anna_context_push_entry(context, res);
