@@ -290,5 +290,6 @@ void anna_lang_load(anna_stack_template_t *stack)
 
     anna_type_data_register(anna_lang_type_data, stack);
 
-    anna_stack_document(stack, L"The lang module contains the low level language constructs of Anna. Basic types like numbers, character strings and data buffers live in the lang module.");
+    anna_stack_document(stack, L"The lang module contains the basic language constructs of Anna.");
+    anna_stack_document(stack, L"Basic types like numbers, character strings and data buffers live in the lang module, as do a few nearly universally used functions, like print.");
 }

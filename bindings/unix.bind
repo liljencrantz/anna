@@ -10,7 +10,7 @@ attribute(
     doc(
 	"The unix module is the parent module for various low level wrappers for basic Unix functionality.", 
 	"Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages.", 
-	"The unix module is still rater incomplete. There are many, many functiions that are currently missing. The ones that are there have inconsistent naming policies with regard to capitalization, abbreviations, etc. The exact policy for naming, etc. in this module will evolve over time, which can result in future incompatibilities.",
+	"The unix module is still rater incomplete. There are many, many functions that are currently missing. The ones that are there have inconsistent naming policies with regard to capitalization, abbreviations, etc. The exact policy for naming, etc. in this module will evolve over time, which can result in future incompatibilities.",
 	));
 
 io
@@ -76,13 +76,13 @@ io
 	const Int otherExecute (name(S_IXOTH), doc("Others have execute permission."));
     }
 
-    def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor. Equivalent to the C open function."));
-    def Int creat(String name, Int mode) (doc("Open a file descriptor. Equivalent to the C creat function."), alias(create));
-    def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Read from a file descriptor. Equivalent to the C read function."));
-    def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Write to a file descriptor. Equivalent to the C write function."));
-    def Bool close(Int fd) (doc("Close a file descriptor. Equivalent to the C close function."));
+    def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor.", "Equivalent to the C open function."));
+    def Int creat(String name, Int mode) (doc("Open a file descriptor.", "Equivalent to the C creat function."), alias(create));
+    def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Read from a file descriptor.", "Equivalent to the C read function."));
+    def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Write to a file descriptor.", "Equivalent to the C write function."));
+    def Bool close(Int fd) (doc("Close a file descriptor.", "Equivalent to the C close function."));
 
-    cStruct Stat (name(stat), doc("A structure representing the status of a file"))
+    cStruct Stat (name(stat), doc("A structure representing the status of a file.", "This is a straight conversion of the C struct stat."))
     {
 	const Int dev (name(st_dev), doc("ID of device containing file"));
 	const Int ino (name(st_ino), doc("Inode number"));
@@ -160,7 +160,7 @@ io
 
     def Int rename(String oldpath, String newpath) (doc("Rename a file."));
 
-    def Int pipe(MutableList«Int» fd (ensureCapacity(2))) (doc("Create a pipe."));
+    def Int pipe(MutableList«Int» fd (ensureCapacity(2))) (doc("Create a pipe.", "The input and output ends of the pipe are stored in the first two elements of the list fd. If fd is not large enough to hold two elements, it will be enlarged."));
 
     def UInt64 lseek(Int fd, UInt64 offset, Int whence) (doc("Reposition read/write file offset.")); 
 
@@ -254,7 +254,7 @@ proc
     }
 
     def Int exec(String filename, List«String» argv, List«String» envp) (name(execve), doc("Execute the specified program."));
-    def Void exit(Int status), (doc("Terminate the calling process."));
+    def Void exit(Int status) (doc("Terminate the calling process."));
     def Int fork() (doc("Create a child process."));
     def Int kill(Int pid, Int sig) (doc("Send a signal to a process."));
 
@@ -265,7 +265,7 @@ proc
     def Int getppid() (doc("Get parent process ID."));
 
     def Int wait(MutableList«Int» status (ensureCapacity(1))) (doc("Wait for a process to change state.")); 
-    def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options), (doc("Wait for a process to change state."));
+    def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options) (doc("Wait for a process to change state."));
 
     verbatim("
 static int anna_signalset_set(sigset_t *set, int signal, int value)
@@ -364,6 +364,7 @@ rLimit
 
     rLimitMode
     {
+        attribute(doc("The different limits that can be queried with getRLimit and stRLimit."));
 	const Int as (name(RLIMIT_AS), doc("The AS limit"));
 	const Int core (name(RLIMIT_CORE), doc("The CORE limit"));
 	const Int cpu (name(RLIMIT_CPU), doc("The CPU limit"));
@@ -504,18 +505,20 @@ term
 
     flag
     {
+        attribute(doc("The different modes of a Termios structure."));
 	const Int canonical (name(ICANON));
 	const Int echo (name(ECHO));
     }
     
     action
     {
+        attribute(doc("The different action modes used by unix.term.setAttr."));
 	const Int now (name(TCSANOW));
 	const Int drain (name(TCSADRAIN));
 	const Int flush (name(TCSAFLUSH));
     }
 
-    cStruct Termios (name(termios))
+    cStruct Termios (name(termios), doc("A structure representing the state of a terminal."))
     {
 	var Int iflag (name(c_iflag), doc("Input modes"));
 	var Int oflag (name(c_oflag), doc("Output modes"));
@@ -523,8 +526,8 @@ term
 	var Int lflag (name(c_lflag), doc("Local modes"));
     }
 
-    def Bool getAttr(Int fd, Termios ios) (name(tcgetattr));
-    def Bool setAttr(Int fd, Int actions, Termios ios) (name(tcsetattr));
+    def Bool getAttr(Int fd, Termios ios) (name(tcgetattr), doc("Get the current state of a terminal."));
+    def Bool setAttr(Int fd, Int actions, Termios ios) (name(tcsetattr), doc("Set the current state of the terminal."));
 
 }
 

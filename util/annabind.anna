@@ -127,6 +127,11 @@ def extractDoc(Call attr)
     cEscape((attr.filterByCall("doc")[0] as StringLiteral).payload);
 }
 
+def extractDocAll(Call attr)
+{
+    attr.filterByCall("doc").map(el){cEscape((el as StringLiteral).payload)}
+}
+
 def init()
 {
     bindingType = [
@@ -737,13 +742,15 @@ class BindingGenerator
 	}
         inputCount := inputTypeData.count;
 
-      escapedName := cEscape(name);
-      aliasCode := "".thaw;
-      aliasList := annaUtil.findAttribute(attr, "alias");
+	escapedName := cEscape(name);
+	aliasCode := "".thaw;
+	aliasList := annaUtil.findAttribute(attr, "alias");
 	aliasList.each(alias)
 	{
 	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%), %);\n" % [escapedName, cEscape(alias.toString())];
 	}
+
+	allDoc := extractDocAll(attr);
 
         data := 
 	    [
@@ -755,7 +762,7 @@ class BindingGenerator
 		"inputTypeData": ", ".join(inputTypeData),
 		"inputNameVar": inputNameVar,
 		"inputNameData": ", ".join(inputNameData),
-		"doc": extractDoc(attr),
+		"doc": allDoc[0] or "0",
 		"codeInternal": generateFunctionCode(decl),
 		"aliasCode": aliasCode
 	    ];
@@ -763,9 +770,14 @@ class BindingGenerator
         load := "
     anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
     wchar_t *%(inputNameVar)[] = {%(inputNameData)};
-    anna_module_function(stack, %(functionName), 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
+    latest_function = anna_module_function(stack, %(functionName), 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
 %(aliasCode)" % data;
   
+	    allDoc[1...].each(doc)
+	    {
+		load ~= "   anna_function_document(latest_function,anna_intern_static(%));\n" % [doc];
+	    }
+
         code := "
 ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 {
@@ -983,6 +995,9 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         isStruct := !cstructDecl.callTo?("cTypeType");
         isPointer := cstructDecl.callTo?("cStructPointerType");
 	bindingType[cstructDecl[0]] = (myBinding := CStructBindingType(nativeStructName, typeName, isStruct, isPointer));
+
+        cstructDoc := extractDocAll(cstructAttr);
+
         commonData := [
 	    "typeName": typeName,
 	    "nativeStructName": nativeStructName, 
@@ -991,7 +1006,6 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	    "structText": (if(isStruct){"struct "}else{""}), 
 	    "structPointer": (if(isPointer){" *"} else {""}),
 	    "initParam": myBinding.convertToC(?,?, "data", "param[0]"),
-	    "doc": extractDoc(cstructAttr),
 	    ];
 
 	load ~= "
@@ -1026,6 +1040,8 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
   	        setterName := if(isVar){mangleSetterName(structName, fieldName);}else{"0"}
 	        getterCode := generateCStructGetterCode(nativeStructName, nativeFieldName, myBinding, memberBinding, decl[1], attr, isStruct);
 	        setterCode := generateCStructSetterCode(nativeStructName, nativeFieldName, myBinding, memberBinding, decl[1], attr, isStruct);
+
+
 
   	        data := [
 		    "name": fieldName,
@@ -1080,8 +1096,9 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 	}
 
-	if(commonData["doc"] != "0")
-	{
+	cstructDoc.each(doc)
+        {
+            commonData["doc"] = doc;
 	    load ~= "    anna_type_document(
             %(typeName), %(doc));
 " % commonData;
@@ -1288,8 +1305,10 @@ ANNA_VM_NATIVE(%(setterName), 2)
 
         if(attr)
         {
-            doc := extractDoc(attr);
-            load ~= "    anna_stack_document(stack, %);\n" % [doc];
+            extractDocAll(attr).each(doc)
+            {
+                load ~= "    anna_stack_document(stack, %);\n" % [doc];
+            }
         }
 	
 	return struct(
@@ -1390,7 +1409,8 @@ void anna_%(moduleName)_create(anna_stack_template_t *stack)
 void anna_%(moduleName)_load(anna_stack_template_t *stack);
 void anna_%(moduleName)_load(anna_stack_template_t *stack)
 {
-    mid_t mmid;    
+    mid_t latest_mid;    
+    anna_function_t *latest_function;
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {

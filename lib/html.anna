@@ -1,3 +1,6 @@
+attribute(
+    doc(
+	"HTML tools and utilities"));
 
 def escape(String str...)
 (

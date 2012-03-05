@@ -1,5 +1,10 @@
 include("<stdio.h>", "<readline/readline.h>", "<readline/history.h>");
 
+attribute(
+    doc(
+	"A wrapper for the GNU readline library.",
+	"Currently rather incomplete, only the more basic functions are supported"));
+
 verbatim("
 static char *anna_readline_wrapper(char *prompt)
 {

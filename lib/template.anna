@@ -1,5 +1,10 @@
 use(io);
 
+attribute(
+    doc(
+	"A simple templating library", 
+	));
+
 macro template(node)
 (
     document("

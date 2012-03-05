@@ -517,4 +517,7 @@ void anna_parser_load(anna_stack_template_t *stack)
 	node_type, 2, p_argv, p_argn, p_argd,
 	L"Parse the specified string and return an AST tree representing it");
     
+    anna_stack_document(stack, L"The parser module contains tools related to compilation of Anna code.");
+    anna_stack_document(stack, L"The basic types used when representing the source code as an AST tree, as well as tools for parsing and compiling a piece of code into a module live in this module.");
+
 }

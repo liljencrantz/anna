@@ -1,7 +1,10 @@
 include(
     "<libintl.h>");
 
-attribute(doc("The Anna getText module is a low level wrapper around the C gettext library. For a higher level solution, see the <a href='i18n.html'>i18n module</a>. For full documentation on this library, please see e.g. <a href='www.gnu.org/software/gettext/manual/gettext.html'>the GNU gettext documentation</a>."));
+attribute(
+    doc(
+	"The Anna getText module is a low level wrapper around the C gettext localization library.",
+	"For a higher level solution, see the <a href='i18n.html'>i18n module</a>. For full documentation on this library, please see e.g. <a href='www.gnu.org/software/gettext/manual/gettext.html'>the GNU gettext documentation</a>."));
 
 def String getText(String msgid) (name(gettext), doc("Translate message"));
 def String dGetText(String domain, String msgid) (name(dgettext), doc("Translate message"));

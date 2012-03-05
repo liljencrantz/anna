@@ -107,4 +107,7 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	&anna_i_cc,
 	0,
 	L"A continuation of the current execution point.");
+
+    anna_stack_document(stack, L"The reflection module contains tools used for run time introspection of functions and types.");
+
 }
