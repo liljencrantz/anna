@@ -1201,9 +1201,22 @@ ANNA_VM_NATIVE(%(initName), 1)
 				];
                                 }
 
+                                case("Double")
+                                {
+			            nativeName := nameToStr(decl[0], decl[3]);
+
+			            load ~= "    anna_module_const_float(stack, L\"%(name)\", %(value), %(doc));
+" % 
+				        [
+				        "name": name,
+				        "value": nativeName,
+				        "doc": extractDoc(attr),
+				    ];
+                                }
+
                                 default
                                 {
-                                    print("Unknwon declaration type:", declTypeName);
+                                    print("Unknon declaration type:", declTypeName);
                                     unix.proc.exit(1);
                                 }
                             }

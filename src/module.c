@@ -677,7 +677,6 @@ void anna_module_init()
 	    { L"lang", anna_lang_create_types, anna_lang_load },
 	    { L"parser", anna_parser_create_types, anna_parser_load },
 	    { L"system", 0, anna_system_load },
-	    { L"math", 0, anna_math_load },
 	    { L"cerror", 0, anna_cerror_load },
 	    { L"ctime", 0, anna_ctime_load },
 	};

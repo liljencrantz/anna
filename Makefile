@@ -50,8 +50,7 @@ WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 CFLAGS := $(CFLAGS_NOWARN) $(WARN)
 
 ANNA_LIB_OBJS := src/lib/lang/lang.o src/lib/reflection/reflection.o	\
-src/lib/parser/parser.o src/lib/math.o src/lib/cerror.o			\
-src/lib/ctime.o
+src/lib/parser/parser.o src/lib/cerror.o src/lib/ctime.o
 
 # All object files used by the main anna binary
 ANNA_OBJS := $(ANNA_LIB_OBJS) src/dtoa.o src/anna.o src/node/node.o	\
@@ -65,7 +64,7 @@ LDFLAGS := -lm -lgmp -rdynamic -ll -ldl -lncurses -lreadline $(PROF_FLAGS) $(COV
 PROGRAMS := bin/anna 
 
 ANNA_INTERNAL_BINDINGS := lib/unix.so
-ANNA_EXTERNAL_BINDINGS := lib/getText.so lib/curses.so lib/readLine.so
+ANNA_EXTERNAL_BINDINGS := lib/getText.so lib/curses.so lib/readLine.so lib/math.so
 
 all: $(PROGRAMS) documentation
 .PHONY: all
