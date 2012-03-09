@@ -14,17 +14,21 @@ def main()
 	"It works by iterating over all loaded modules and extracting the doc attribute from all functions, types and members, and formatting them into html documents.",
 	"Future work should include prettier styling, search functionality, handling of internal members including the option to hide internal members."))
 {
-    operatorLookup := [
-	"__get__": Operator("[]"); 
-	"__set__": Operator("[]"); 
-	"__add__": Operator("+");
-	"__sub__": Operator("-");
-	"__mul__": Operator("*");
-	"__div__": Operator("/");
-	"__in__": Operator("in");
-	"__join__": Operator("~");
-	"__append__": Operator("~=");
+    operatorLookup = [
+	"__get__": Operator("[]", "", "print(someCollection[key]);"),
+	"__set__": Operator("[]", "", "someCollection[myKey] = myValue;"),
+	"__add__": Operator("+", "", "1 + 1"),
+	"__sub__": Operator("-", "", "2 - 1"),
+	"__mul__": Operator("*", "", "5 * 5"),
+	"__div__": Operator("/", "", "3 / 7"),
+	"__neg__": Operator("-", "", "-7"),
+	"__format__": Operator("%", "", "\"Hello, %. I am %!\" % [userName, computerName]"),
+	"__in__": Operator("in", "", "if(myKey in someCollection)\n{\n    ...\n}"),
+	"__join__": Operator("~", "It is used to join multiple collections into a single newly created one.", ""),
+	"__appendAssign__": Operator("~=", "It is used to append one collect into another.", "someString ~= \"foo\""),
+	"__not__": Operator("!", "", "!someValue"),
 	];
+    
     baseDir = io.File("documentation/api");
     verbose = system.argument[1] == "-v";
     doc := DocumentationExtractor();
@@ -122,10 +126,13 @@ struct Operator
 {
 
     var String operatorName;
+    var String operatorUsage;
+    var String example;
 
-    def document(reflection.Member mem)
+    def documentMember(reflection.Member mem)
     {
-	return "";
+	exampleStr := if(example){"Example usage:<pre class='anna-code'>\n%</pre>" % [example]} else {""}
+	return "This method can be called using the % operator. % %" % [operatorName, operatorUsage, exampleStr];
     }
     
 }
@@ -219,7 +226,7 @@ often used code paths, which makes it useful for regression testing.")
 	"" ~ (if(fun)
 	{
 	    variadicIndex := fun.variadic? and fun.inputType.count-1;
-	    variadicNamedIndex := fun.variadicNamed? and fun.inputType.count-1;
+	    variadicNamedIndex := fun.variadicNamed? and (fun.inputType.count-1);
 	    if(variadicIndex)
 	    {
 		variadicNamedIndex--;
@@ -286,6 +293,50 @@ often used code paths, which makes it useful for regression testing.")
 %
 </span>
 " % [htmlClass, mem.name, getSignature(mem), doc];
+    }
+    
+    def documentFunction(reflection.Member mem)
+    {
+	memberTot++;
+
+	        doc := extractDocumentation(mem.attribute) or extractDocumentation((mem.value(?) as Function).attribute) or "";
+
+	opDoc := "".thaw;
+	alias := annaUtil.findAttribute(
+	    mem.attribute or (mem.value(?) as Function).attribute, "alias");
+
+	nameList := alias.map(a){a.toString()}.thaw;
+	nameList.push(mem.name);
+
+	nameList.each(name){
+	    if(name in operatorLookup)
+	    {
+		opDoc ~= "<p>";
+		opDoc ~= operatorLookup[name].documentMember(mem);
+		opDoc ~= "</p>";
+	    }
+	    
+	}
+	if(mem.name == "__add__Int")
+	{
+	    print(nameList, opDoc);
+	}
+
+	if(doc == "")
+	{
+	    verbose and print("Missing documentation for member %.%" % [mem.memberOf.name, mem.name]);
+	    memberMissing++;
+	}
+        htmlClass := if(mem.internal?){"class='anna-internal'"} else {""};
+	"
+<span %>
+<hr>
+<a name='%'>%</a>
+<br>
+%
+%
+</span>
+" % «String»[htmlClass, mem.name, getSignature(mem), opDoc, doc];
     }
     
     def document(Object module)
