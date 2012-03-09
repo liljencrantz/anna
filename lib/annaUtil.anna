@@ -4,7 +4,7 @@ use(parser);
 
 def List«Node» findAttribute(Call attr, String name)
 {			
-  res := «Node»[];
+    res := «Node»[];
     attr.each(at)
     {
 	(at.callTo?(name)) and (at as Call).each(item){res.push(item)}

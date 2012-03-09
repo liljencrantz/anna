@@ -276,11 +276,20 @@ static inline double anna_as_float_unsafe(anna_entry_t *entry)
     return *(double *)((long)entry & ~ANNA_STACK_ENTRY_FILTER);
 }
 
+/*
+  Return the blob allocation pointer of a blob entry. 
+ */
 static inline void *anna_as_blob(anna_entry_t *entry)
 {
     return (void *)(((long)entry) & ~ANNA_STACK_ENTRY_SUBFILTER);
 }
 
+/*
+  Return the blob allocation pointer of a float entry. The float entry
+  points directly to the actual float, so this function subtracts the
+  size of two int:s from the pointer in order to point at the
+  allocation header.
+ */
 static inline void *anna_as_float_payload(anna_entry_t *entry)
 {
     return (void *)(&((int *)(((long)entry) & ~ANNA_STACK_ENTRY_FILTER))[-2]);

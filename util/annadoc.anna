@@ -16,12 +16,12 @@ def main()
 {
     operatorLookup = [
 	"__get__": Operator("[]", "", "print(someCollection[key]);"),
-	"__set__": Operator("[]", "", "someCollection[myKey] = myValue;"),
+	"__set__": Operator("[] assignment", "", "someCollection[myKey] = myValue;"),
 	"__add__": Operator("+", "", "1 + 1"),
-	"__sub__": Operator("-", "", "2 - 1"),
+	"__sub__": Operator("binary -", "", "2 - 1"),
 	"__mul__": Operator("*", "", "5 * 5"),
 	"__div__": Operator("/", "", "3 / 7"),
-	"__neg__": Operator("-", "", "-7"),
+	"__neg__": Operator("unary -", "", "-7"),
 	"__format__": Operator("%", "", "\"Hello, %. I am %!\" % [userName, computerName]"),
 	"__in__": Operator("in", "", "if(myKey in someCollection)\n{\n    ...\n}"),
 	"__join__": Operator("~", "It is used to join multiple collections into a single newly created one.", ""),
@@ -317,10 +317,6 @@ often used code paths, which makes it useful for regression testing.")
 	    }
 	    
 	}
-	if(mem.name == "__add__Int")
-	{
-	    print(nameList, opDoc);
-	}
 
 	if(doc == "")
 	{
@@ -406,11 +402,38 @@ often used code paths, which makes it useful for regression testing.")
 	    (mem as Method) or (val as Function);
 	}
 
+	opMap := «String, MutableList«Member»»[];
+	subfun.each(mem)
+	{
+	    val := mem.value(?);
+
+	    alias := annaUtil.findAttribute(
+		((mem as Method) or (val as Function)).attribute,
+		"alias");
+	    nameList := alias.map(a){a.toString()}.thaw;
+	    nameList.push(mem.name);
+	    nameList.each(name){
+		if(name in operatorLookup)
+		{
+		    if(!(name in opMap)){
+			opMap[name] = [mem];
+		    }
+		    else
+		    {
+			opMap[name].push(mem);
+		    }
+		}
+	    }
+	}
+	subop := opMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair).first.__cmp__((second as Pair).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
+
         subother := smemb.filter(mem)
 	{
 	    val := mem.value(?);
 	    !(val.__type__.module?) and !(val as Type) and (mem.type != Null) and !(mem as Method) and !(val as Function);
 	}
+
+	
 
         basePath := "/".join((0..data.steps+1).map(i){".."}) ~ "/";
 	data.file.writeFile(template("util/document/module.html"));

@@ -18,6 +18,8 @@
 * List::removeValue?
 * List::indexOf
 * List::clear
+* List::__join__
+* List::flatten or some other method for flattening lists?
 * HashMap::clear
 * The Member.value() method can't currently handle properties.
 * Write macros to transform f"Hello, %(userName)" => "Hello, %" % [userName] and tf"Hello, %(userName)" => t"Hello, %" % [userName]

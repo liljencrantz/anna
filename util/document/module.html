@@ -88,6 +88,40 @@
 
 
     <% 
+       if(subop.count > 0)
+       {
+    %>
+    <h2><a name="api-function">Operators</a></h2>
+    <ul>
+    <% 
+       subop.each(opData)
+       {
+       opName := opData.first;
+       memList := opData.second;
+%>
+      <li>
+	<%= operatorLookup[opName].operatorName %> operator:
+	<%
+	   memList.each(mem)
+	   {
+	   %><a href="#<%= mem.name  %>"><%= mem.name %></a> <%
+
+	   }
+	   %>
+      </li>
+      <%
+	}
+    %>
+    </ul>
+    <% 
+       }
+    %>
+
+
+
+
+
+    <% 
        if(subfun.count > 0)
        {
     %>
@@ -109,6 +143,13 @@
     <% 
        }
     %>
+
+
+
+
+
+
+
 
     <% subother.each(mem){ %>    
     <%! documentMember(mem) %>
