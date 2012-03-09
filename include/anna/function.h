@@ -16,7 +16,7 @@
 /**
   Set to true for variadic functions.
  */
-#define ANNA_FUNCTION_VARIADIC_NAMED (8192*16)
+#define ANNA_FUNCTION_VARIADIC_NAMED (8192*128)
 /**
    This function can be used as a macro.
  */
