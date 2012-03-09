@@ -49,6 +49,8 @@ static wchar_t *anna_module_name;
 
 static char *anna_program_name = 0;
 
+void anna_type_mark_info(anna_type_t *type);
+
 /**
    Init the interpreter. 
 */
@@ -69,7 +71,7 @@ static void anna_init()
     null_object = anna_object_create_raw(anna_align(sizeof(anna_object_t)));
     anna_module_init();
     anna_type_close(stack_global->wrapper->type);
-
+//    anna_type_mark_info(stack_global->wrapper->type);
     anna_stack_document(
 	stack_global,
 	L"This is the root of the entire anna namespace.");

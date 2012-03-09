@@ -102,25 +102,37 @@ void anna_alloc_mark_function(anna_function_t *o)
 	anna_vm_mark_code(o);
 }
 
-void anna_alloc_mark_stack_template(anna_stack_template_t *o)
+void anna_alloc_mark_stack_template(anna_stack_template_t *stack)
 {
-    if( o->flags & ANNA_USED)
+    if( stack->flags & ANNA_USED)
 	return;
-    o->flags |= ANNA_USED;
+    stack->flags |= ANNA_USED;
 
-    if(o->parent)
-	anna_alloc_mark_stack_template(o->parent);
-    if(o->function)
-	anna_alloc_mark_function(o->function);
-    if(o->wrapper)
-	anna_alloc_mark_object(o->wrapper);
+    if(stack->parent)
+	anna_alloc_mark_stack_template(stack->parent);
+    if(stack->function)
+	anna_alloc_mark_function(stack->function);
+    if(stack->wrapper)
+	anna_alloc_mark_object(stack->wrapper);
     int i;
-    for(i=0; i<o->count; i++)
+    for(i=0; i<stack->count; i++)
     {
-	if(o->member_declare_node[i])
+	if(stack->member_declare_node[i])
 	{
-	    anna_alloc_mark_node((anna_node_t *)o->member_declare_node[i]);
+	    anna_alloc_mark_node((anna_node_t *)stack->member_declare_node[i]);
 	}
+    }
+    for(i=0; i<al_get_count(&stack->expand); i++)
+    {
+	anna_use_t *use = al_get(&stack->expand, i);
+	anna_alloc_mark_node(use->node);
+	anna_alloc_mark_type(use->type);
+    }
+    for(i=0; i<al_get_count(&stack->import); i++)
+    {
+	anna_use_t *use = al_get(&stack->import, i);
+	anna_alloc_mark_node(use->node);
+	anna_alloc_mark_type(use->type);
     }
 
 }
@@ -302,7 +314,7 @@ void anna_alloc_mark_node(anna_node_t *o)
 static void anna_alloc_mark_blob(void *mem)
 {
     int *mem2 = (int *)mem;
-    mem2[-2] |= ANNA_USED;
+    *mem2 |= ANNA_USED;
 }
 
 void anna_alloc_mark_entry(anna_entry_t *e)
@@ -470,6 +482,7 @@ static void anna_alloc_free(void *obj)
 	case ANNA_NODE:
 	{
 	    anna_node_t *o = (anna_node_t *)obj;
+//	    o->flags |= ANNA_NODE_FREED;
 	    
 	    switch(o->node_type)
 	    {
@@ -495,7 +508,7 @@ static void anna_alloc_free(void *obj)
 		    anna_node_string_literal_t *n = (anna_node_string_literal_t *)o;
 		    if(n->free)
 		    {
-		        free(n->payload);
+			free(n->payload);
 		    }
 		    break;
 		}
@@ -589,10 +602,7 @@ void anna_gc(anna_context_t *context)
     }
     
     anna_alloc_mark_context(context);	
-    anna_type_mark_static();    
     anna_reflection_mark_static();    
-    anna_list_mark_static();    
-    anna_hash_mark_static();    
     anna_alloc_mark_object(null_object);
     anna_alloc_mark(anna_stack_wrap(stack_global));
     while(al_get_count(&anna_alloc_todo))

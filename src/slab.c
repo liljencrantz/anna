@@ -89,6 +89,11 @@ static void anna_slab_reclaim_sz(size_t sz)
 void anna_slab_reclaim()
 {    
     int i;
+    if(SLAB_MAX == 0)
+    {
+	return;
+    }
+    
     for(i=0; i<4; i++)
     {
 	static size_t tjoho = 0;

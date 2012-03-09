@@ -192,12 +192,12 @@ static anna_stack_template_t *anna_module_recursive(
     anna_stack_template_t *parent, array_list_t *path, int offset)
 {
     wchar_t *el = (wchar_t *)al_get(path, offset);
+    
     anna_stack_template_t *mod = anna_module(parent, el, 0);
     if(!mod)
     {
 	return 0;
     }
-    
     anna_module_load_i(mod);
     if(al_get_count(path) > (offset+1))
     {
@@ -958,8 +958,8 @@ static void anna_module_load_i(anna_stack_template_t *module_stack)
     /*
       This variable is used to keep track of whether we are the root
       call anna_module_load_i or not.
-     */
-
+    */
+    
     if(!module_stack->filename)
     {
         return;

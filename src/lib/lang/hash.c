@@ -4,8 +4,9 @@
   of continuations, this code is very hard to read or maintain. 
 
   The basic algorithm and implementation strategy is borrowed from
-  Python's dict implementation.
- */
+  Python's dict implementation, but because of the above mentioned
+  continuation support, the code is custom written.
+*/
 
 /**
    The size of the builtin table used for very small hashes to avoid a memory allocation.
@@ -18,13 +19,18 @@
 #define ANNA_HASH_SIZE_STEP 2
 
 /**
-   The maximum allowed fill rate of the hash when inserting
- */
+   The maximum allowed fill rate of the hash when inserting. Once this
+   is reached, the hash is resized.
+*/
 #define ANNA_HASH_USED_MAX 0.7
 
 /**
-   The minimum allowed fill rate of the hash when inserting
- */
+   The minimum allowed fill rate of the hash when inserting. If this
+   is reached during insertion, the hash is resized. Note that resizes
+   only happen on insertions. This makes sure tat if we remove most
+   keys from a hash, one at a time, it won't resize until all keys are
+   removed and we start inserting again.
+*/
 #define ANNA_HASH_USED_MIN 0.2
 
 
@@ -75,8 +81,6 @@ static void anna_hash_add_all_extra_methods(anna_type_t *hash)
 	anna_member_create_method(hash, anna_mid_get(fun->name), fun);
     }
 }
-
-
 
 static inline int hash_entry_is_used(anna_hash_entry_t *e)
 {
@@ -617,73 +621,7 @@ static inline void anna_hash_set_entry(anna_hash_t *this, anna_hash_entry_t *has
     hash_entry->key = key;
     hash_entry->value = value;
 }
-/*
-static __attribute__((aligned(8))) anna_context_t *anna_hash_init_callback(
-    anna_context_t *context, 
-    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
-    anna_hash_entry_t *hash_entry);
 
-static inline anna_context_t *anna_hash_init_search_pair(
-    anna_context_t *context, anna_entry_t *this,  
-    anna_object_t *list, 
-    int start_offset, size_t sz,
-    anna_entry_t * data )
-{    
-    int i;
-
-    for(i=start_offset; i<sz; i++)
-    {
-	anna_object_t *pair = anna_as_obj_fast(anna_list_get(list, i));
-	if(likely(pair != null_object))
-	{
-	    anna_entry_t *key = anna_pair_get_first(pair);
-	    if(!anna_entry_null(key))
-	    {
-		anna_list_set(anna_as_obj_fast(data), 1, anna_from_int(i));
-		return ahi_search(
-		    context,
-		    key,
-		    this,
-		    anna_hash_init_callback,
-		    data);
-	    }
-	}
-    }
-
-    return 0;	
-}
-
-static __attribute__((aligned(8))) anna_context_t *anna_hash_init_callback(
-    anna_context_t *context, 
-    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *data, 
-    anna_hash_entry_t *hash_entry)
-{
-    anna_object_t *list = anna_as_obj(anna_list_get(anna_as_obj_fast(data), 0));
-    int idx = anna_as_int((anna_list_get(anna_as_obj_fast(data), 1)));
-    
-//    anna_message(L"Init callback\n");
-    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
-    
-    anna_object_t *pair = anna_as_obj_fast(anna_list_get(list, idx));
-    anna_hash_set_entry(this, hash_entry, hash_code, key, anna_pair_get_second(pair));
-    
-//    anna_message(L"Hash table now has %d used slots and %d dummy slots\n", this->used, this->fill-this->used);    
-    
-    size_t sz = anna_list_get_count(list);
-    if(sz > idx)
-    {	
-	anna_context_t *new_context = anna_hash_init_search_pair(
-	    context, hash, list, idx + 1, sz, data);
-	if(new_context)
-	{
-	    return new_context;
-	}
-    }
-    
-    anna_context_push_entry(context, hash);
-    return context;
-}
-*/
 static void anna_hash_init(anna_context_t *context)
 {
     anna_object_t *list = anna_context_pop_object(context);
@@ -705,34 +643,6 @@ static void anna_hash_init(anna_context_t *context)
 	    context,
 	    anna_as_obj(fun), 2, argv);
 	return;
-/*
-	size_t sz = anna_list_get_count(list);
-	if(sz > 0)
-	{
-	    if(ANNA_HASH_USED_MAX * ANNA_HASH_MINSIZE < sz)
-	    {		
-		size_t new_sz = ANNA_HASH_MINSIZE;
-		do
-		{
-		    new_sz *= ANNA_HASH_SIZE_STEP;
-		}
-		while(ANNA_HASH_USED_MAX * new_sz < sz);
-		anna_hash_resize(ahi_unwrap(this), new_sz);
-	    }
-	    
-	    anna_entry_t * data = anna_from_obj(anna_list_create_mutable(object_type));
-	    anna_list_set(anna_as_obj_fast(data), 0, anna_from_obj(list));
-	    
-	    anna_context_t *new_context = anna_hash_init_search_pair(
-		context, anna_from_obj(this),
-		list, 0, sz, data);
-	    
-	    if(new_context)
-	    {
-		return new_context;
-	    }
-	}
-*/
     }
     anna_context_push_object(context, this);
 }
@@ -743,9 +653,7 @@ static __attribute__((aligned(8))) void anna_hash_set_callback(
     anna_hash_entry_t *hash_entry)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
-
-    anna_hash_set_entry(this, hash_entry, hash_code, key, aux);
-    
+    anna_hash_set_entry(this, hash_entry, hash_code, key, aux);    
     anna_context_push_entry(context, aux);
 }
 
@@ -1230,13 +1138,21 @@ static void anna_hash_type_create_internal(
 	2,
 	kv_argv,
 	kv_argn, 0,
-	L"Remove the specified key from the hash");
+	L"Remove the mapping with the specified key from the map");
     
     anna_hash_add_all_extra_methods(type);
 
     anna_type_document(
 	type,
 	L"A HashMap represents a set of mappings from keys to values.");
+    
+    anna_type_document(
+	type,
+	L"Internally, the HashMap type is implemented as a Hash table. Every key must implement the equality comapison method and the hashCode method.");
+    
+    anna_type_document(
+	type,
+	L"Setting new mappings and getting the corresponding value for a specified key both have an O(1) amortized time, provided that the keys correctly implement the hashCode method.");
 
     anna_type_close(type);    
 }
@@ -1254,6 +1170,7 @@ void anna_hash_type_create()
 {
     anna_hash_internal_init();
     hash_put(&anna_hash_specialization, anna_tt_make(object_type, object_type), hash_type);
+    anna_alloc_mark_permanent(hash_type);    
     anna_hash_type_create_internal(hash_type, object_type, object_type);
 }
 
@@ -1275,6 +1192,7 @@ anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
 	spec = anna_type_create(sb_content(&sb), 0);
 	sb_destroy(&sb);
 	hash_put(&anna_hash_specialization, anna_tt_make(subtype1, subtype2), spec);
+	anna_alloc_mark_permanent(spec);
 	anna_hash_type_create_internal(spec, subtype1, subtype2);
 	spec->flags |= ANNA_TYPE_SPECIALIZED;
 	anna_type_copy_object(spec);
@@ -1295,16 +1213,5 @@ void anna_hash_mark(anna_object_t *obj)
 	    anna_alloc_mark_entry(this->table[i].value);
 	}
     }
-}
-
-static void add_hash_mark_method(void *key, void *value)
-{
-    anna_type_t *hash = (anna_type_t *)value;
-    anna_alloc_mark_type(hash);
-}
-
-void anna_hash_mark_static(void)
-{
-    hash_foreach(&anna_hash_specialization, &add_hash_mark_method);
 }
 

@@ -113,8 +113,6 @@ anna_type_t *anna_type_get_function(
 anna_type_t *anna_type_get_iterator(
     wchar_t *name, anna_type_t *key_type, anna_type_t *value_type);
 
-void anna_type_mark_static(void);
-
 void anna_type_document(anna_type_t *type, wchar_t *documentation);
 
 int anna_type_mid_internal(mid_t mid);

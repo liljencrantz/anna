@@ -171,7 +171,13 @@ __hot void anna_alloc_mark_node(anna_node_t *o);
 
 __hot void anna_alloc_gc_block(void);
 __hot void anna_alloc_gc_unblock(void);
-__cold void anna_alloc_mark_permanent(void *alloc);
 
+/**
+   Tell Anna that the specified allocation (and all allocations it
+   points to) should never ever be garbage collected, even if it
+   appears to be unused. Use this function with great care, or memory
+   leaks will result.
+ */
+__cold void anna_alloc_mark_permanent(void *alloc);
 
 #endif

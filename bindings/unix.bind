@@ -1,3 +1,19 @@
+/*
+  This is the binding file for the unix module and all of it's
+  sub-modules. This is a large and complicated binding with hundreds
+  of functions, variables and constants from the basic Unix/C api
+  wrapped into Anna equivalents.
+
+  The Anna binding generator is written in Anna and uses many of the
+  functions of the unix module, which creates a chicken-and-egg
+  problem.
+
+  This is solved by using an older version of the unix module to run
+  the binding generator, though this can sometimes lead to a wedged
+  build if the compiler fails while trying to build a new unix.so.  If
+  that happens, try running «git checkout lib/unix.c; make
+  lib/unix.so».
+ */
 
 include(
     "<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>",

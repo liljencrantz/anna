@@ -109,6 +109,7 @@ static anna_entry_t *anna_static_invoke_as_access(
     anna_stack_template_t *stack)
 {
     anna_node_member_access_t fake;
+    fake.flags = ANNA_NODE;
     fake.mid=node->mid;
     fake.object = node->object;
     fake.node_type = ANNA_NODE_MEMBER_GET;

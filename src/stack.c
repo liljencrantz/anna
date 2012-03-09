@@ -589,7 +589,7 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
     anna_member_create(
 	res,
 	ANNA_MID_STACK_TYPE_PAYLOAD,
-	1,
+	ANNA_MEMBER_STATIC | ANNA_MEMBER_ALLOC,
 	null_type);
     *(anna_entry_get_addr_static(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_entry_t *)stack;
 
@@ -604,7 +604,7 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 	&anna_stack_to_string, string_type, 1,
 	&res, argn, 0, 0);
     
-
+    anna_type_close(res);
     return res;
 }
 

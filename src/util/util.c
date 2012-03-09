@@ -788,7 +788,7 @@ int sb_vprintf( string_buffer_t *buffer, const wchar_t *format, va_list va_orig 
 	    buffer->used+= res*sizeof(wchar_t);
 	    break;
 	}
-
+	
 	/*
 	  As far as I know, there is no way to check if a
 	  vswprintf-call failed because of a badly formated string

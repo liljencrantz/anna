@@ -301,7 +301,10 @@ ANNA_VM_NATIVE(anna_parser_i_compile, 1)
     anna_error_count = 0;
     
     anna_node_t *node = anna_node_unwrap(anna_as_obj_fast(param[0]));
+
+    anna_alloc_gc_block();
     anna_object_t *module = anna_module_create(node);    
+    anna_alloc_gc_unblock();
     
     anna_entry_t *res =(module && !anna_error_count) ? anna_from_obj(module) : null_entry;
     anna_error_count = anna_error_count_old;

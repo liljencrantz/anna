@@ -16,6 +16,17 @@ class Error (doc("The base class of any error"))
     }
 }
 
+error CError (doc("An error with an associated C error number"))
+{
+    var Int errno;
+
+    def __init__(Int errno)
+    {
+	this.errno = errno;
+	Error::__init__(this, unix.error.errorString(errno));
+    }
+}
+
 /*
   These four errors should live in the parser module, but some monkey
   patching is needed in order for that to happen.

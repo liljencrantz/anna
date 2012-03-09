@@ -283,7 +283,7 @@ static inline void *anna_as_blob(anna_entry_t *entry)
 
 static inline void *anna_as_float_payload(anna_entry_t *entry)
 {
-    return (void *)(((long)entry) & ~ANNA_STACK_ENTRY_FILTER);
+    return (void *)(&((int *)(((long)entry) & ~ANNA_STACK_ENTRY_FILTER))[-2]);
 }
 
 static inline complex double anna_as_complex(anna_entry_t *entry)

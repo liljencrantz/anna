@@ -17,7 +17,6 @@ void anna_hash_type_create(void);
 anna_type_t *anna_hash_type_get(anna_type_t *, anna_type_t *);
 void anna_hash_mark(anna_object_t *obj);
 void anna_hash_add_method(anna_function_t *fun);
-void anna_hash_mark_static(void);
 
 /*
   Returns the key type specialization of the specified hash type
