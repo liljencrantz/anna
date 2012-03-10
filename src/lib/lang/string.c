@@ -766,7 +766,14 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	type,
 	anna_mid_get(L"__join__"), 0,
 	&anna_string_i_join, type,
-	2, join_argv, join_argn, 0, 0);
+	2, join_argv, join_argn, 0, L"The join operator is used to create a new string that is the concatenation of the first string and the string representation of the other object");
+    anna_member_document(
+	type, mmid,
+	L"The join operator can be used like this:");
+    anna_member_document_example(
+	type, mmid, 
+	L"myString := \"Hello, \" ~ userName;");
+
     if(!mutable)
     {
 	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));

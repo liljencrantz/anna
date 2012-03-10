@@ -733,7 +733,7 @@ void anna_range_type_create()
     
     wchar_t *c_argn[]=
 	{
-	    L"this", L"from", L"to", L"step", L"isOpen"
+	    L"this", L"from", L"to", L"step", L"open?"
 	}
     ;
 

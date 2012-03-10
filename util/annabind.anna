@@ -653,7 +653,7 @@ class BindingGenerator
 	return "native_param_" ~originalName;
     }
     
-    def generateFunctionCode(Call decl, BindingType methodFor = ?, Int isInit = ? )
+    def generateFunctionCode(Call decl, BindingType methodFor = ?, Int init? = ? )
     {
         paramNames := «String»[];
         init := "".thaw;
@@ -706,7 +706,7 @@ class BindingGenerator
         param := [
 	    "init": init, "preValidate": preValidate, "postValidate": postValidate, 
 	    "code": code, "cleanup": cleanup, 
-	    "retValue": (if(isInit){"param[0]"} else {"result"}),
+	    "retValue": (if(init?){"param[0]"} else {"result"}),
 	    ];
 	
 	return "    // Validate parameters
@@ -800,7 +800,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         inputTypeData := [type.annaCType(decl[1], decl[3])];
         inputNameData := ["L\"this\""];
 
-        isInit := name == "__init__";
+        init? := name == "__init__";
 
 	(decl[2] as Call).each(inp){
   	    inpCall := inp as Call;
@@ -821,7 +821,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 		"inputNameVar": inputNameVar,
 		"inputNameData": ", ".join(inputNameData),
 		"doc": extractDoc(attr),
-		"codeInternal": generateFunctionCode(decl, type, isInit),
+		"codeInternal": generateFunctionCode(decl, type, init?),
 	    ];
 
         load := "

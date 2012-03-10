@@ -568,7 +568,6 @@ static void anna_module_doc()
 	{L"__set__Int__", L"Set the item at the specified offset to the specified value."},
 	{L"__set__Range__", L"Set all of the items in the specified Range to the items in the specified list."},
 	{L"__find__", L"Exacute the specified function once for each element until the function returns a non-null value, then return the corresponding element. Returns null if no element matched."},
-	{L"__join__", L"Join the two collections into one."},
 	{0, 0}
     };
     

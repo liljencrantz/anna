@@ -433,6 +433,18 @@ size_t anna_member_create_native_type_method(
     return (size_t)mid;
 }
 
+void anna_member_document_example(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *doc)
+{
+    string_buffer_t sb;
+    sb_init(&sb);
+    sb_printf(&sb, L"<pre class='anna-code'>\n%ls\n</pre>", doc);
+    wchar_t *pdoc = anna_intern_or_free(sb_content(&sb));
+    anna_member_document(type, mid, pdoc);
+}
+
 void anna_member_document(
     anna_type_t *type,
     mid_t mid,
@@ -453,18 +465,24 @@ void anna_member_document(
     anna_member_t *memb = anna_member_get(type, mid); 
     if(memb)
     {
-/*
-	anna_node_call_t *attr = anna_node_create_call2(
-	    0,
-	    anna_node_create_identifier(0, L"doc"),
-	    anna_node_create_string_literal(0, wcslen(doc), doc));
-       if(!memb->attribute)
-       {
-           memb->attribute = anna_node_create_block2(0);
-       }
-       anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
-*/
-	memb->doc = doc;
+	if(!memb->doc)
+	{
+	    memb->doc = doc;
+	}
+	else
+	{
+	    anna_node_call_t *attr = anna_node_create_call2(
+		0,
+		anna_node_create_identifier(0, L"doc"),
+		anna_node_create_string_literal(0, wcslen(memb->doc), memb->doc, 0),
+		anna_node_create_string_literal(0, wcslen(doc), doc, 0));
+	    if(!memb->attribute)
+	    {
+		memb->attribute = anna_node_create_block2(0);
+	    }
+	    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+	    memb->doc = 0;
+	}
     }
 }
 
