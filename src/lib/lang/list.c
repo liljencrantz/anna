@@ -846,6 +846,32 @@ ANNA_VM_NATIVE(anna_list_i_copy_mutable, 1)
     return anna_from_obj(that);
 }
 
+ANNA_VM_NATIVE(anna_list_i_join, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+    anna_object_t *this = anna_as_obj(param[0]);
+    anna_object_t *other = anna_as_obj(param[1]);
+    anna_object_t *res = anna_list_create2(this->type);
+    size_t c1 = anna_list_get_count(this);
+    size_t c2 = anna_list_get_count(other);
+    anna_list_set_capacity(res, c1+c2);
+    int i;
+    
+    for(i=0; i<c1; i++)
+    {
+	anna_list_set(res, i, anna_list_get(this, i));
+    }
+    
+    for(i=0; i<c2; i++)
+    {
+	anna_list_set(res, i+c1, anna_list_get(other, i));
+    }
+    
+    return anna_from_obj(res);
+    
+}
+
 static void anna_list_type_create_internal(
     anna_type_t *type, 
     anna_type_t *spec,
@@ -944,6 +970,34 @@ static void anna_list_type_create_internal(
 	&anna_list_empty,
 	0,
 	L"True if the list is empty, false otherwise.");
+
+    wchar_t *join_argn[] =
+	{
+	    L"this", L"other"
+	}
+    ;
+    
+    anna_type_t *join_argv[] = 
+	{
+	    type,
+	    intersection_type
+	}
+    ;
+
+    mmid = anna_member_create_native_method(
+	type, anna_mid_get(L"__join__"), 0,
+	&anna_list_i_join, type,
+	2, join_argv, join_argn, 0, L"The join operator is used to create a new list that contains all the elements of both the original lists.");
+    anna_member_document(
+	type, mmid,
+	L"The join operator can be used like this:");
+    anna_member_document_example(
+	type, mmid, 
+	L"combinedCollection := firstCollection ~ secondCollection;");
+    anna_member_document(
+	type, mmid,
+	L"Note that the join operator joins two collections. If all you want to do is add one element to an existing collection, use the <a href='#push'>push method</a>.");
+  
 
     anna_member_create_native_property(
 	type,
