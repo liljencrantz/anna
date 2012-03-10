@@ -81,7 +81,30 @@ size_t anna_member_create_native_type_method(
     anna_node_t **argd,
     wchar_t *doc);
 
+/**
+   Document the member of type type with the mid mid with the
+   specified documentation string.
+
+   The string will not be copied so it should be a string that is not
+   free'd during the life of this program. The reason for this is that
+   this function is almost always called with a string literal as it's
+   argument. If it isn't, consider using the intern library.
+  */
 void anna_member_document(
+    anna_type_t *type,
+    mid_t mid,
+    wchar_t *doc);
+
+/**
+   Document the member of type type with the mid mid with the
+   specified documentation string, which is a code example. This
+   function will wrap the documentation string in suitable markup and
+   call anna_member_document.
+
+   The string will not be copied so it should be a string that is not
+   free'd during the life of this program. 
+*/
+void anna_member_document_example(
     anna_type_t *type,
     mid_t mid,
     wchar_t *doc);
