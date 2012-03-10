@@ -19,5 +19,5 @@ documentation/index.html
 leaks*
 *.mo
 junk
-lib/getText.c
 lib/curses.c
+lib/math.c

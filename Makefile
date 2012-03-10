@@ -8,7 +8,7 @@
 CC := gcc
 ANNABIND := bin/anna util/annabind.anna
 ANNADOC := bin/anna util/annadoc.anna
-INSTALL:=install
+INSTALL := install
 
 #
 # Installation directories
@@ -63,16 +63,20 @@ LDFLAGS := -lm -lgmp -rdynamic -ll -ldl -lncurses -lreadline $(PROF_FLAGS) $(COV
 
 PROGRAMS := bin/anna 
 
-ANNA_INTERNAL_BINDINGS := lib/unix.so
-ANNA_EXTERNAL_BINDINGS := lib/getText.so lib/curses.so lib/readLine.so lib/math.so
+ANNA_INTERNAL_BINDINGS := lib/unix.so lib/getText.so lib/readLine.so
+ANNA_EXTERNAL_BINDINGS := lib/curses.so lib/math.so
 
-all: $(PROGRAMS) documentation
+all: $(PROGRAMS) bindings documentation 
 .PHONY: all
 
-bindings: $(ANNA_EXTERNAL_BINDINGS)
+bindings: $(ANNA_EXTERNAL_BINDINGS) 
 .PHONY: bindings
 
-lib/%.c: bindings/%.bind
+internal_bindings: bin/anna
+	make $(ANNA_INTERNAL_BINDINGS)
+.PHONY: internal_bindings
+
+lib/%.c: bindings/%.bind bin/anna
 	$(ANNABIND) bindings/$*.bind  > $@ || rm $@
 
 #########################################################
@@ -139,7 +143,7 @@ lib/%.o: lib/%.c
 %.so: %.o
 	$(CC) -shared $*.o -o $@ $(LDFLAGS) 
 
-bin/anna: $(ANNA_OBJS) $(ANNA_INTERNAL_BINDINGS)
+bin/anna: $(ANNA_OBJS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 autogen/lex.c: src/lex.y 
@@ -168,7 +172,7 @@ check: test
 
 documentation: documentation/api
 
-documentation/api: bin/anna lib/*.anna $(ANNA_INTERNAL_BINDINGS) util/document/*.html bootstrap/*.anna util/annadoc.anna
+documentation/api: bin/anna lib/*.anna $(ANNA_EXTERNAL_BINDINGS) util/document/*.html bootstrap/*.anna util/annadoc.anna
 	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap time $(ANNADOC) && touch documentation/api
 
 test: bin/anna
@@ -176,7 +180,7 @@ test: bin/anna
 .PHONY: test
 
 clean:
-	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out lib/*.so lib/*.o lib/*.d lib/*.o documentation/index.html
+	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out lib/*.so lib/*.o lib/*.d lib/*.o documentation/index.html $(ANNA_EXTERNAL_BINDINGS:.so=.c)
 	-rm -r documentation/api
 .PHONY: clean
 
