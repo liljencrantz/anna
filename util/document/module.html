@@ -100,7 +100,9 @@
        memList := opData.second;
 %>
       <li>
-	<%= operatorLookup[opName].operatorName %> operator:
+	<%= operatorLookup[opName].name
+ %> 
+<%= if(operatorLookup[opName].description){"(" ~ operatorLookup[opName].description ~ ")" } %>
 	<%
 	   memList.each(mem)
 	   {

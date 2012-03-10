@@ -15,18 +15,22 @@ def main()
 	"Future work should include prettier styling, search functionality, handling of internal members including the option to hide internal members."))
 {
     operatorLookup = [
-	"__get__": Operator("[]", "", "print(someCollection[key]);"),
-	"__set__": Operator("[] assignment", "", "someCollection[myKey] = myValue;"),
-	"__add__": Operator("+", "", "1 + 1"),
-	"__sub__": Operator("binary -", "", "2 - 1"),
-	"__mul__": Operator("*", "", "5 * 5"),
-	"__div__": Operator("/", "", "3 / 7"),
-	"__neg__": Operator("unary -", "", "-7"),
-	"__format__": Operator("%", "", "\"Hello, %. I am %!\" % [userName, computerName]"),
-	"__in__": Operator("in", "", "if(myKey in someCollection)\n{\n    ...\n}"),
-	"__join__": Operator("~", "It is used to join multiple collections into a single newly created one.", ""),
-	"__appendAssign__": Operator("~=", "It is used to append one collect into another.", "someString ~= \"foo\""),
-	"__not__": Operator("!", "", "!someValue"),
+	"__get__": Operator("[]", "Get elements of collection"),
+	"__set__": Operator("[]", "Set elements of collection"),
+	"__add__": Operator("+", "Addition"),
+	"__sub__": Operator("-", "Subtraction"),
+	"__mul__": Operator("*", "Multiplication"),
+	"__div__": Operator("/", "Division"),
+	"__neg__": Operator("-", "Negation"),
+	"__format__": Operator("%", "Formating"),
+	"__in__": Operator("in", "Check if element is in collection"),
+	"__join__": Operator("~", "Join two collections into one"),
+	"__appendAssign__": Operator("~=", "Append one collection into another"),
+	"__increaseAssign__": Operator("+=", "Increase"),
+	"__decreaseAssign__": Operator("-=", "Decrease"),
+	"__nextAssign__": Operator("++", "Move to next element"),
+	"__prevAssign__": Operator("--", "Move to previous element"),
+	"__not__": Operator("!", "Boolean negation"),
 	];
     
     baseDir = io.File("documentation/api");
@@ -125,14 +129,12 @@ class DocumentationData
 struct Operator
 {
 
-    var String operatorName;
-    var String operatorUsage;
-    var String example;
+    var String name;
+    var String description;
 
     def documentMember(reflection.Member mem)
     {
-	exampleStr := if(example){"Example usage:<pre class='anna-code'>\n%</pre>" % [example]} else {""}
-	return "This method can be called using the % operator. % %" % [operatorName, operatorUsage, exampleStr];
+	return "This method is usually called as the % operator." % [name];
     }
     
 }
@@ -305,17 +307,14 @@ often used code paths, which makes it useful for regression testing.")
 	alias := annaUtil.findAttribute(
 	    mem.attribute or (mem.value(?) as Function).attribute, "alias");
 
-	nameList := alias.map(a){a.toString()}.thaw;
-	nameList.push(mem.name);
-
-	nameList.each(name){
+	(alias.map(a){a.toString()}.thaw ~ [mem.name]).each(name)
+	{
 	    if(name in operatorLookup)
 	    {
 		opDoc ~= "<p>";
 		opDoc ~= operatorLookup[name].documentMember(mem);
 		opDoc ~= "</p>";
-	    }
-	    
+	    }	    
 	}
 
 	if(doc == "")
@@ -410,9 +409,8 @@ often used code paths, which makes it useful for regression testing.")
 	    alias := annaUtil.findAttribute(
 		((mem as Method) or (val as Function)).attribute,
 		"alias");
-	    nameList := alias.map(a){a.toString()}.thaw;
-	    nameList.push(mem.name);
-	    nameList.each(name){
+	    (alias.map(a){a.toString()}.thaw ~ [mem.name]).each(name)
+	    {
 		if(name in operatorLookup)
 		{
 		    if(!(name in opMap)){
