@@ -4337,9 +4337,9 @@ void anna_status_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"interrupted", EINTR, L"Interrupted function call.");
     anna_module_const_int(stack, L"invalid", EINVAL, L"Invalid argument.");
     anna_module_const_int(stack, L"ioError", EIO, L"Input/output error.");
-    anna_module_const_int(stack, L"isConencted", EISCONN, L"Socket is connected.");
-    anna_module_const_int(stack, L"isDirectory", EISDIR, L"Is a directory.");
-    anna_module_const_int(stack, L"isNamed", EISNAM, L"Is a named type file.");
+    anna_module_const_int(stack, L"connected?", EISCONN, L"Socket is connected.");
+    anna_module_const_int(stack, L"directory?", EISDIR, L"Is a directory.");
+    anna_module_const_int(stack, L"named?", EISNAM, L"Is a named type file.");
     anna_module_const_int(stack, L"keyExpired", EKEYEXPIRED, L"Key has expired.");
     anna_module_const_int(stack, L"keyRejected", EKEYREJECTED, L"Key was rejected by service.");
     anna_module_const_int(stack, L"keyRevoked", EKEYREVOKED, L"Key has been revoked.");

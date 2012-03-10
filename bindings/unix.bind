@@ -590,9 +590,9 @@ error
 	const Int interrupted (name(EINTR), doc("Interrupted function call."));
 	const Int invalid (name(EINVAL), doc("Invalid argument."));
 	const Int ioError (name(EIO), doc("Input/output error."));
-	const Int isConencted (name(EISCONN), doc("Socket is connected."));
-	const Int isDirectory (name(EISDIR), doc("Is a directory."));
-	const Int isNamed (name(EISNAM), doc("Is a named type file."));
+	const Int connected? (name(EISCONN), doc("Socket is connected."));
+	const Int directory? (name(EISDIR), doc("Is a directory."));
+	const Int named? (name(EISNAM), doc("Is a named type file."));
 	const Int keyExpired (name(EKEYEXPIRED), doc("Key has expired."));
 	const Int keyRejected (name(EKEYREJECTED), doc("Key was rejected by service."));
 	const Int keyRevoked (name(EKEYREVOKED), doc("Key has been revoked."));
