@@ -184,7 +184,7 @@ def main()
     // returns it as a text String
 
     // Use the := symbol to declare a new variable.
-    userName := readLine.readLine();
+    userName := readLine.readLine("> ");
 
     // And now that the userName variable has a value, we can use it. 
     // For example, we can print it!
@@ -194,7 +194,7 @@ def main()
     // The Int::convert function converts it's input into an integer number.
     // What does the '::' thing mean? Don't worry about that right now, we'll 
     // get to it later...
-    userAge := Int::convert(readLine.readLine());
+    userAge := Int::convert(readLine.readLine("> "));
 
     print(
         "Wow, that means you've been alive for more than", 
@@ -209,7 +209,7 @@ def main()
 	    access the value of a variable by writing out it's
 	    name. For example, the
 	    line <code class="anna-code">userName :=
-	    readLine.readLine();</code> declares a new variable
+	    readLine.readLine("> ");</code> declares a new variable
 	    named <code>userName</code>, and assigns it an initial
 	    value by reading a line of input from the keyboard. A few
 	    lines later, the
@@ -241,7 +241,7 @@ def main()
 def main()
 {
     print("What is your name?");
-    userName := readLine.readLine();
+    userName := readLine.readLine("> ");
     // Give a special greeting to people named Anna
     if(userName == "Anna")
     {
@@ -256,7 +256,7 @@ def main()
     // Repeat the same piece of code while a condition is met
     // In this case, we read a new number from the keyboard until we encounter 
     // the number seven.
-    while(Int::convert(readLine.readLine()) != 7)
+    while(Int::convert(readLine.readLine("> ")) != 7)
     {
         print("No no no. Bad number. Pick something else.");
     }
@@ -274,7 +274,7 @@ def main()
 	    <em class="anna-hint">Hint:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-hint3-toggle");'>here</a>.
 	  </p>
 
-<div class='anna-code-popup' id='anna-hint3-toggle' style='display: none;'>
+	  <div class='anna-code-popup' id='anna-hint3-toggle' style='display: none;'>
 	    <div class='anna-code-popup-inner'>
               <span class='anna-code-popup-close'>X</span>
               <h3>99 bottles of beer</h3>
@@ -435,7 +435,44 @@ def main()
 	    the <a href="api/global/lang/MutableList.html">Anna API
 	      documentation</a>.
 	  </p>
+
+	  <p>
+	    <em class="anna-task">Exercise 4:</em> Browse the API documentation linked in the paragraph above and find out how to check if a list is empty.
+	  </p><p>
+	    <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer4-toggle");'>Click here for the answer</a>.
+	  </p>
+
+	  <div class='anna-code-popup' id='anna-answer4-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+	      <h3>Answer for exercise 4</h3>
+	      The <code>someList.empty?</code> property is the easiest way, but you can also check if the item count is zero using <code>someList.count == 0</code>.
+	    </div>
+	  </div>
 	  
+	  <h1><a name="modules">More on modules and the use expression</a></h1>
+	  <p>
+	    We already mentioned modules in a previous section. This
+	    section will talk more about modules and how to work
+	    efficiently with them.
+	  </p>
+	  <p>
+	    Like was said before, modules group related code into
+	    chunks. For example, there is a module named date, which
+	    contains functions relating to dates, time, time zones and
+	    so on. <a href="api/global/date/index.html">This is the
+	    documentation for the date module</a>. For a list of more
+	    modules, see the <a href="api/global/index.html">global
+	    API index</a>.
+	  </p>
+	  <p>
+	    
+	  </p>
+
+
+
+
+
 	</div>
       </div>
       
