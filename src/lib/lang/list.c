@@ -954,7 +954,7 @@ static void anna_list_type_create_internal(
 
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__get__Int__"), 0,
+	anna_mid_get(L"getIndex"), 0,
 	&anna_list_get_int, spec, 2,
 	i_argv, i_argn, 0, 0);
     anna_member_alias(type, mmid, L"__get__");
@@ -969,7 +969,7 @@ static void anna_list_type_create_internal(
 	type, anna_mid_get(L"empty?"), int_type,
 	&anna_list_empty,
 	0,
-	L"True if the list is empty, false otherwise.");
+	L"This property is true (non-null) if the list is empty, null otherwise.");
 
     wchar_t *join_argn[] =
 	{
@@ -1097,9 +1097,10 @@ static void anna_list_type_create_internal(
 
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__get__Range__"), 0,
+	anna_mid_get(L"getRange"), 0,
 	&anna_list_i_get_range, type, 2,
 	range_argv, range_argn, 0, 0);
+    anna_member_document_example(type, mmid, L"myList := [1,2,3,4,5,6];\nprint(myList[1|2...]); // This will print [2, 4, 6]");
     anna_member_alias(type, mmid, L"__get__");
 
     anna_list_add_all_extra_methods(type);
@@ -1109,7 +1110,7 @@ static void anna_list_type_create_internal(
 	
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"__set__Int__"), 0,
+	    anna_mid_get(L"setIndex"), 0,
 	    &anna_list_set_int, spec, 3,
 	    i_argv, i_argn, 0, 0);
 	anna_member_alias(type, mmid, L"__set__");
@@ -1130,7 +1131,7 @@ static void anna_list_type_create_internal(
 	
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"__set__Range__"), 0,
+	    anna_mid_get(L"setRange"), 0,
 	    &anna_list_i_set_range, type, 3,
 	    range_argv, range_argn, 0, 0);
 	anna_member_alias(type, mmid, L"__set__");
