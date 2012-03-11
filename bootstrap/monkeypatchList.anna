@@ -32,6 +32,15 @@ def none?(List this)
     return res;
 }
 
+def any?(List this)
+(
+    target(List),
+    doc("Returns true if any of the members of this list are non-Null."),
+)
+{
+    return !none?(this);
+}
+
 def Int partition(
     MutableList list, Int from, Int to, 
     def Int fun(Object first, Object second))
