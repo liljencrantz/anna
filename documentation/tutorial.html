@@ -99,7 +99,7 @@ cd anna; make -s
 	    with the tutorial</a>.
 	  </p>
 
-	  <h1><a name="hello">Hello world</a></h1>
+	  <h1><a name="hello">Lesson 1: Hello world</a></h1>
 	  <p>
 	    Let's start out with an interactive Anna session. Just
 	    open a command line prompt and type <code>anna</code>, and
@@ -127,8 +127,9 @@ Hello, world!
 	  </pre>
 	  <p>
 	    As you can see, the Anna interpreter can be used as a
-	    calculator. Any code you enter is avaluated, and the
-	    result is printed to the screen.
+	    calculator. Any code you enter is evaluated, and the
+	    result is printed to the screen. Play around for a bit and
+	    see what you can find out.
 	  </p>
 	  <p>
 	    Ok, that's it for the interactive prompt for now. Exit by
@@ -172,7 +173,7 @@ def main()
 	    from the directory where you saved your file.
 	  </p>
 
-	  <h1><a name="variables">Numbers, variables and arithmetic</a></h1>
+	  <h1><a name="variables">Lesson 2: Numbers, variables and arithmetic</a></h1>
 	  <p>
 	    Our next example is a program that holds a simple conversation with the user:
 	  </p>
@@ -266,7 +267,7 @@ def main()
 	    </div>
 	  </div>
 	  
-	  <h1><a name="conditionals">if, while and each</a></h1>
+	  <h1><a name="conditionals">Lesso 3: if, while and each</a></h1>
 	  <p>
 	    Our next example shows you how to conditionally do things, as well as how to repeat stuff.
 	  </p>
@@ -354,7 +355,7 @@ Go to the store and buy some more, 99 bottles of beer on the wall.");
 	  </div>
 
 
-	  <h1><a name="lists">Lists</a></h1>
+	  <h1><a name="lists">Lesson 4: Lists</a></h1>
 	  <p>
 	    Our next example shows you how to create and use lists of other things.
 	  </p>
@@ -501,7 +502,7 @@ def main()
 	    </div>
 	  </div>
 	  
-	  <h1><a name="modules">More on modules and the use expression</a></h1>
+	  <h1><a name="modules">Lesson 5: More on modules and the use expression</a></h1>
 	  <p>
 	    We already mentioned modules in a previous section. This
 	    section will talk more about modules and how to work
@@ -535,8 +536,8 @@ help(1) // Like the above, this will also show a help text on how to use the Int
 	  
 	  <p>
 	    <em class="anna-task">Exercise 5 a:</em> Use the command
-	    line to try and find out if there is a method for removing
-	    the last element from a list.
+	    line to try and find out if there is a method for sorting
+	    a list.
 	  </p>
 
 	  <p>
@@ -549,8 +550,7 @@ help(1) // Like the above, this will also show a help text on how to use the Int
 	    <div class='anna-code-popup-inner'>
               <span class='anna-code-popup-close'>X</span>
 	      <h3>Answer for exercise 5</h3>
-	      The <code>op</code> method removes the last element from
-	      a list and returns it.
+	      The <code>sort</code> method returns fits the bill.
 	    </div>
 	  </div>
 	  
@@ -566,7 +566,7 @@ help(1) // Like the above, this will also show a help text on how to use the Int
 	  <p>
 	    One thing about having modules, though, is that the typing
 	    might get boring.If we're going to use a bunch of
-	    different calls from the <code>unix.user</code> module, we
+	    different calls from e.g. the <code>unix.user</code> module, we
 	    can end up with code that looks like this:
 	  </p>
 	  
@@ -594,7 +594,8 @@ if(myGroupId in listOfReallyCoolGroups)
 	    That's a lot less to type. The <code>use</code> expression
 	    can really save your fingers, but be careful!
 	    Overusing <code>use</code> will turn your code into an
-	    unmaintainable mess. 
+	    unmaintainable mess as it becomes trickier to figure out
+	    where a specific function comes from.
 	  </p>
 	  <p>
 	    Remember how we said before that modules are just plain
@@ -623,8 +624,8 @@ print(count);  // Prints the count of elements in the list, which is 3
 	    compiles.
 	  </p>
 
-
-	  <h1><a name="assigning">Assigning new values to variables</a></h1>
+	  <h1><a name="assigning">Lesson 6: Assigning new values to
+	  variables</a></h1>
 	  <p>
 	    We saw before that we can declare a new variable using the
 	    declaration operator, <code>:=</code>. To declare a new
@@ -639,7 +640,7 @@ print(count);  // Prints the count of elements in the list, which is 3
 	    Anna also supports the notion of constants. Constants work
 	    exactly like variables, except the assignment operator
 	    (<code>=</code>) doesn't work on them. Once you're created
-	    a constant, it's initial value ever changes. To create a
+	    a constant, it's initial value never changes. To create a
 	    new constant, use the <code>:==</code> operator, for
 	    example, <code>seasons :== 4</code>.
 	  </p>
@@ -655,13 +656,21 @@ print(count);  // Prints the count of elements in the list, which is 3
 [someVariable, anotherVariable] = [anotherVariable, someVariable];
 	  </pre>
 
+	  <p>
+	    <em class="anna-task">Exercise 6:</em> TODO!
+	  </p>
 
-	  <h1><a name="iterating">Iterating</a></h1>
+
+
+	  <h1><a name="iterating">Lesson 7: Iterating</a></h1>
 	  <p>
 	    We've mentioned Lists and Strings in previous
 	    sections. These are two examples of so called
-	    collections. Collection types support various ways to
-	    apply an operation to all of their elements:
+	    collections. Collections are types of object that contain
+	    arbitrarily many objects of the same type. A string is a
+	    collection of characters, for example. Collection types
+	    support various ways to apply an operation to all of their
+	    elements:
 	  </p>
 	  <pre class="anna-code">
 myList := [1, 5, 7]
@@ -670,9 +679,9 @@ myList := [1, 5, 7]
   We've already seen the each method in action in section 3. The each method 
   calls the block supplied to it once for each element in the collection.
 
-  This will print "Value 1", "Value 5" and "Value 7" on separate lines.
+  This will print "Value: 1", "Value: 5" and "Value: 7" on separate lines.
 */
-myList.each(value){ print("Value", value) }
+myList.each(value){ print("Value:", value) }
 
 /*
   In the above example, we supplied one name within parentesis. If we
@@ -738,6 +747,9 @@ anna&gt; 5|2...
 [5, 7, 9...]
 	  </pre>
 	  <p>
+	    One very useful thing that we can do with ranges is to create slices of lists and strings. For example, <code class="anna-code">"Hello"[1...]</code> will return <code class="anna-code">"ello"</code>.
+	  </p>
+	  <p>
 	    <em class="anna-task">Exercise 7:</em> Write a program
 	    that implements
 	    the <a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve
@@ -774,7 +786,7 @@ def main()
 	    </div>
 	  </div>
 	  
-	  <h1><a name="functions">Defining your own functions and dealing with types</a></h1>
+	  <h1><a name="functions">Lesson 8: Defining your own functions and dealing with types</a></h1>
 	  <p>
 	    Let's look a bit closer at functions! We have already
 	    called several functions with parameters, such as
@@ -972,7 +984,125 @@ def lower(String in)
 	      </pre>
 	    </div>
 	  </div>
+
+
+	  <h2><a name="functions-default">Functions with default arguments</a></h2>
+	  <p>
+	    It is sometimes useful to specify a default value for one
+	    or more arguments. This creates a function that can be
+	    called with fewer arguments than it is defined to
+	    allow. For example:
+	  </p>
+	  <pre class="anna-code">
+def askOk(String prompt, Int retries=4, String complaint='Yes or no, please!')
+{
+    while(1)
+    {
+        ok := rreadLine.readLine(prompt);
+        if(ok in ["y", "ye", "yes"])
+        {
+            return 1;
+        }
+        if(ok in ["n", "no", "nop", "nope"])
+        {
+            return ?;
+        }
+        retries = retries - 1;
+        if(retries &lt; 0)
+	{
+            raise(error.Error('Uncooperative user');
+        }
+        print(complaint);
+    }
+}
+	  </pre>
 	  
+	  <p>
+	    This function can be called in several ways:
+	  </p>
+	  <ul>
+	    <li>
+	      giving only the mandatory argument: <code class="anna-code">askOk("Do you really want to quit?")</code>
+	    </li>
+	    <li>
+	      giving one of the optional arguments: <code class="anna-code">askOk("OK to overwrite the file?", 2)</code>
+	    </li>
+	    <li>
+	      or even giving all arguments: <code class="anna-code">askOk("OK to overwrite the file?", 2, "Come on, only yes or no!")</code>
+	    </li>
+	  </ul>
+
+	  This example also introduces the in keyword. This tests
+	  whether or not a sequence contains a certain value.
+
+	  <h2><a name="functions-kw">Function calls with keyword arguments</a></h2>
+	  <p>
+	    Functions can also be called using keyword arguments of
+	    the form <code>kwarg:value</code>. For instance, the above
+	    askOk function call definied in the previous section can
+	    be called in any of the following ways:
+	  </p>
+	  <pre class="anna-code">
+askOk("Do you want to quit?");
+askOk(prompt: "Do you want to quit?");
+askOk(prompt: "Do you want to quit?", complaint: "What do you mean? Answer yes or no, please!");
+askOk("Do you want to quit?", retries: 1);
+askOk(retries: 1, "Quit?");
+	  </pre>
+	  <p>
+	    But none of the following are valid:
+	  </p>
+	  <pre class="anna-code">
+askOk();                   // Required argument missing
+askOk(greeting: "Hello");  // Unknown keyword argument
+	  </pre>
+	  <p>
+	    Keyword arguments and non-keyword arguments can be given
+	    in any order. The compiler will first go over all keyword
+	    arguemtns and map them to the corresponding argument
+	    position, and after that, all positional arguments are
+	    mapped to the first free argument.
+	  </p>
+
+	  <h2><a name="functions-vararg">Functions with arbitrary argument lists</a></h2>
+	  <p>
+	    Finally, it is possible to specify that a function can be
+	    called with an arbitrary number of arguments. These
+	    arguments will be wrapped up in a list. Before the
+	    variable number of arguments, zero or more normal
+	    arguments may occur.
+	  </p>
+	  <pre class="anna-code">
+def writeMultipleItems(io.File file, String separator, Object args...)
+{
+    file.writeFile(separator.join(args));
+}
+	  </pre>
+	  <p>
+	    In the same fashion, dictionaries can deliver keyword arguments with the :-operator:
+	  </p>
+	  <pre class="anna-code">
+def writeMapping(Object: arbitraryMapping)
+{
+    arbitraryMapping.each(key, value)
+    {
+        print(key, "=&gt;", value);
+    }
+}
+
+writeMapping(foo: 1, bar: "Hello", baz: 0..5);
+	  </pre>
+	  <p>
+	    You may have already suspected as much, but the print function accepts arbitrary arguments. All non-mapping arguments are printed. You can specify the separator between arguments with the named argument <code>sep</code>, and the last thing to print with the named argument <code>end</code>. The default value for sep is a space, and for end a newline character.
+	  </p>
+	  <pre>
+anna&gt; print
+def ImutableList (String keys:, Object param...)
+anna&gt; print(1,2,3, sep:"a", end:"b")
+1a2a3b[1, 2, 3]
+	  </pre>
+
+
 	</div> <!-- End of anna-main-inner -->
       </div> <!-- End of anna-main -->
       <div class="anna-left-menu">
