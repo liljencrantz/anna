@@ -119,6 +119,6 @@ def help(Object object)
 def dir(Object object)
     (doc("This is an additional help function for the interactive Anna command line. If takes any object as a parameter and lists all members of that type ina a format suitable for the screen. This is just a very thin wrapper around the member property of the Type type."))
 {
-    return formatList(object.__type__.member);
+    return formatList(((object as reflection.Type) or object.__type__).member);
 }
 
