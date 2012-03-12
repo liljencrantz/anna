@@ -263,7 +263,7 @@ void debug( int level, const wchar_t *msg, ... )
 	sb_vprintf( &sb, msg, va );
 	va_end( va );	
 
-	anna_print( 2, sb.buff, -1 );	
+	anna_print( 2, sb_content(&sb), -1 );	
 
 	sb_destroy( &sb );	
 
@@ -300,7 +300,7 @@ void anna_message(const wchar_t *msg, ... )
     
     if(!anna_message_buffer)
     {
-	anna_print( 2, buff->buff, -1 );
+	anna_print( 2, sb_content(buff), -1 );
 	sb_destroy( buff );	
     }
     
@@ -350,5 +350,25 @@ void anna_print(int fd, wchar_t *str, ssize_t slen)
 	narrow = "Failed to convert wide character string\n";
 	len = strlen(narrow);
     }
-    write(fd, narrow, len);    
+    while(1)
+    {
+	int res = write(fd, narrow, len);    
+	if(res != -1)
+	{
+	    // Ok
+	    break;
+	}
+	
+	// Error!
+	if(errno != EAGAIN)
+	{
+	    /* 
+	       Output error. Exit. Little point in writing an error
+	       message, since, that's basically exactly what this
+	       function is used for, and it just failed. So we die,
+	       quitely. Alone.
+	    */
+	    exit(1);
+	}	
+    }    
 }
