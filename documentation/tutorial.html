@@ -26,7 +26,7 @@
 	      follow thr <a href='#install-generic'>generic
 		guidlines</a>, making note of the exact steps you had
 	      to
-	      take. Please <a href='mailto:axel+anna@liljencrantz'>email
+	      take. Please <a href='mailto:axel@liljencrantz'>email
 		me</a> the steps you took to get Anna up and running.
 	    </li>
 	  </ul>
@@ -227,12 +227,45 @@ def main()
 	    of code give different variables the same name.
 	  </p>
 	  <p>
-	    <em class="anna-task">Exercise 2:</em> Write a program that
+	    <em class="anna-task">Exercise 2 a:</em> Write a program that
 	    asks the user what his/her favourite hobby is and tells
 	    them that it's boring.
 	  </p>
 
+	  <p>
+	    <em class="anna-task">Exercise 2 b:</em> Write a program that
+	    asks the user their weight in kilograms and outputs it in pounds.
+	  </p>
 
+	  <p>
+	    Hint for Exercise 2: In the example above, we used the
+	    function <code>Int::convert</code> to convert a text
+	    string into an integer (whole) number. If you want to
+	    convert a string into a decimal number, the corresponding
+	    function is named <code>Float::convert</code>.
+	  </p>
+
+	  <p>
+	    Click <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer2b-toggle");'>here for a suggested solution to exercise 2 b</a>.
+	  </p>
+
+	  <div class='anna-code-popup' id='anna-answer2b-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+	      <h3>Suggested answer for exercise 2 b</h3>
+
+	      <pre class="anna-code">
+def main()
+{
+    print("Hello, how much do you weigh in kilograms?");
+    weight := Float::convert(readLine.readLine("Weight: "));
+    print("Thanks. Did you know that's", weight / 0.4535, "pounds?");
+}
+	      </pre>
+
+	    </div>
+	  </div>
+	  
 	  <h1><a name="conditionals">if, while and each</a></h1>
 	  <p>
 	    Our next example shows you how to conditionally do things, as well as how to repeat stuff.
@@ -242,7 +275,7 @@ def main()
 {
     print("What is your name?");
     userName := readLine.readLine("> ");
-    // Give a special greeting to people named Anna
+    // Give a special greeting to people with lovely names
     if(userName == "Anna")
     {
         print("Wow, what a pretty name. Lovely to meet you, Anna!");
@@ -262,6 +295,7 @@ def main()
     }
     print("Seven! I knew it! I knew it all along!");
 
+    // Loop over the vakues 0 (inclusive) to 10 (exclusive)
     (0..10).each(index)
     {
         print("This is number", index+1);
@@ -269,7 +303,15 @@ def main()
 }
 	  </pre>
 	  <p>
-	    <em class="anna-task">Exercise 3:</em> Write a program that prints the lyrics to the classic ballad «99 bottles of beer».
+	    In the above code snipet, we compare two numbers with the
+	    operator <code>!=</code>, which returns true if two
+	    objects are different. The other comparison operators
+	    are <code>==</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>&lt;</code>. They
+	    are used for testing equality, greater than, greater than
+	    or equal, les than or equal and less than, respectively.
+	  </p>
+	  <p>
+	    <em class="anna-task">Exercise 3:</em> Write a program that prints all the lyrics to the classic ballad «99 bottles of beer».
 	  </p><p>
 	    <em class="anna-hint">Hint:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-hint3-toggle");'>here</a>.
 	  </p>
@@ -284,10 +326,10 @@ def main()
     (99..0).each(bottles)
     {
         suffix := "";
-        if(bottles > 1)
+        if(bottles &gt; 1)
         {
             print(bottles, "bottles of beer on the wall,", bottles, "bottles of beer.");
-            if(bottles > 2)
+            if(bottles &gt; 2)
             {
                 suffix = "" ~ (bottles-1) ~ " bottles of beer on the wall.";
             }
@@ -437,16 +479,25 @@ def main()
 	  </p>
 
 	  <p>
-	    <em class="anna-task">Exercise 4:</em> Browse the API documentation linked in the paragraph above and find out how to check if a list is empty.
-	  </p><p>
-	    <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer4-toggle");'>Click here for the answer</a>.
+	    <em class="anna-task">Exercise 4:</em> Browse the API
+	    documentation linked in the paragraph above and find out
+	    how to check if a list is empty.
+	  </p>
+
+	  <p>
+	    <a href='javascript: void(0);'
+	    onclick='javascript:anna.togglePopup("#anna-answer4-toggle");'>Click
+	    here for the answer</a>.
 	  </p>
 
 	  <div class='anna-code-popup' id='anna-answer4-toggle' style='display: none;'>
 	    <div class='anna-code-popup-inner'>
               <span class='anna-code-popup-close'>X</span>
 	      <h3>Answer for exercise 4</h3>
-	      The <code>someList.empty?</code> property is the easiest way, but you can also check if the item count is zero using <code>someList.count == 0</code>.
+
+	      The <code>someList.empty?</code> property is the easiest
+	      way, but you can also check if the item count is zero
+	      using <code>someList.count == 0</code>.
 	    </div>
 	  </div>
 	  
@@ -466,16 +517,464 @@ def main()
 	    API index</a>.
 	  </p>
 	  <p>
-	    
+	    Browsing the API documentation can be a useful way to get
+	    to know the tools you have to work with. But sometimes it
+	    is easier to explore the modules interactively. Start the
+	    interactive Anna prompt by typing <code>anna</code> at the
+	    command line prompt. Then try out the following:
+	  </p>
+	  <pre>
+help(lang) // This will show a short help text on the «lang» module
+
+dir(lang) // This will list all the members of the lang module
+
+help(Int) // This will show a help text on how to use the Int, the integer number type.
+
+help(1) // Like the above, this will also show a help text on how to use the Int.
+	  </pre>
+	  
+	  <p>
+	    <em class="anna-task">Exercise 5 a:</em> Use the command
+	    line to try and find out if there is a method for removing
+	    the last element from a list.
+	  </p>
+
+	  <p>
+	    <a href='javascript: void(0);'
+	    onclick='javascript:anna.togglePopup("#anna-answer5a-toggle");'>Click
+	    here for the answer</a>.
+	  </p>
+
+	  <div class='anna-code-popup' id='anna-answer5a-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+	      <h3>Answer for exercise 5</h3>
+	      The <code>op</code> method removes the last element from
+	      a list and returns it.
+	    </div>
+	  </div>
+	  
+	  <p>
+	    One thing you may have noted above is that a module
+	    behaves mostly like any other object in Anna. For example,
+	    we can send a module into the <code>help</code>
+	    or <code>dir</code> functions to obtain information on
+	    them. In fact, an Anna module is nothing other than a
+	    plain old object that you can do everything with that you
+	    can do with other objects.
+	  </p>
+	  <p>
+	    One thing about having modules, though, is that the typing
+	    might get boring.If we're going to use a bunch of
+	    different calls from the <code>unix.user</code> module, we
+	    can end up with code that looks like this:
+	  </p>
+	  
+	  <pre class="anna-code">
+myUserId := unix.user.getuid();
+myGroupId := unix.user.getgid();
+if(myGroupId in listOfReallyCoolGroups)
+{
+    unix.user.setuid(reallyCoolUser);
+}
+	  </pre>
+	  <p>
+	    Note how many times we had to type unix.user in the above code. We can do better:
+	  </p>
+	  <pre class="anna-code">
+use(unix.user);
+myUserId := getuid();
+myGroupId := getgid();
+if(myGroupId in listOfReallyCoolGroups)
+{
+    setuid(reallyCoolUser);
+}
+	  </pre>
+	  <p>
+	    That's a lot less to type. The <code>use</code> expression
+	    can really save your fingers, but be careful!
+	    Overusing <code>use</code> will turn your code into an
+	    unmaintainable mess. 
+	  </p>
+	  <p>
+	    Remember how we said before that modules are just plain
+	    old objects. If that was true, we should be able to
+	    use <code>use</code> expressions for other things than
+	    modules. Let's try!
+	  </p>
+	  <pre class="anna-code">
+use([1, 2, 3]);
+print(count);  // Prints the count of elements in the list, which is 3
+	  </pre>
+	  <p>
+	    Yes! We can use the <code>use</code> clause to save
+	    ourself the typing of any long paths, not just modules.
+	  </p>
+	  <p>
+	    When exploring Anna, you may have noticed that there is a
+	    module named lang, and that it's content may sem
+	    familiar. The lang module contains the print function, the
+	    Int type and a bunch of other stuff that we've used a
+	    bunch of times without having to write out
+	    e.g. <code>lang.print</code>. How come? You may already
+	    suspect the answer - a use clause. This is correct. The
+	    Anna compiler will implicitly insert
+	    <code>use(lang);</code> at the top of every module it
+	    compiles.
+	  </p>
+
+
+	  <h1><a name="assigning">Assigning new values to variables</a></h1>
+	  <p>
+	    We saw before that we can declare a new variable using the
+	    declaration operator, <code>:=</code>. To declare a new
+	    variable called seasons, and give it the value 4, we
+	    write <code>seasons := 4</code>. If, down the line, we
+	    want to change the value of an already existing variable,
+	    we use the assignment operator, <code>=</code>. For
+	    example, to reassign the value 2 to the variable seasons,
+	    write <code>seasons = 2</code>. 
+	  </p>
+	  <p>
+	    Anna also supports the notion of constants. Constants work
+	    exactly like variables, except the assignment operator
+	    (<code>=</code>) doesn't work on them. Once you're created
+	    a constant, it's initial value ever changes. To create a
+	    new constant, use the <code>:==</code> operator, for
+	    example, <code>seasons :== 4</code>.
+	  </p>
+	  <p>
+	    It is possible in Anna to declare or assign to multiple values in the same expression, simply use code like this:
+	  </p>
+	  <pre class="anna-code">
+// Declare two variables, someVariable and anotherVariable, to hold the values 
+// 1 and 2, respectively.
+[someVariable, anotherVariable] := [1, 2];
+
+// This code switches places between the two variables
+[someVariable, anotherVariable] = [anotherVariable, someVariable];
+	  </pre>
+
+
+	  <h1><a name="iterating">Iterating</a></h1>
+	  <p>
+	    We've mentioned Lists and Strings in previous
+	    sections. These are two examples of so called
+	    collections. Collection types support various ways to
+	    apply an operation to all of their elements:
+	  </p>
+	  <pre class="anna-code">
+myList := [1, 5, 7]
+
+/*
+  We've already seen the each method in action in section 3. The each method 
+  calls the block supplied to it once for each element in the collection.
+
+  This will print "Value 1", "Value 5" and "Value 7" on separate lines.
+*/
+myList.each(value){ print("Value", value) }
+
+/*
+  In the above example, we supplied one name within parentesis. If we
+  do so, that will be the name of the value supplied to the block. We
+  can also call each with two arguments, in which case the first one
+  is the index, and the second one is the value.
+
+  This will print "0 =&gt; 1", "1 =&gt; 5" and "2 =&gt; 7" on separate lines.
+*/
+myList.each(key, value){ print(key, "=&gt;", value) }
+
+/*
+  There are many other usefil iteration functions that work the same way, but
+  return new collections based on the return value of the block.
+  
+  The map method creates a new collection with the values returned by the 
+  block.
+
+  This prints [2, 6, 8]
+*/
+print(myList.map(value){ value+1 }
+
+
+/*
+  The filter method returns all values of the original collection where the block
+  returns true
+
+  This prints [2, 5]
+*/
+print(myList.filter(value){ value &lt; 6 }
+
+/*
+  The find method returns the first value of the original collection where the block
+  returns true
+
+  This prints 2
+*/
+print(myList.find(value){ value &lt; 6 }
+
+	  </pre>
+	  <p>
+	    Back in section 3, when we first mentioned the each method, we used the following code snippet:
+	  </p>
+	  <pre class="anna-code">
+    (0..10).each(index)
+    {
+        print("This is number", index+1);
+    }
+	  </pre>
+	  <p>
+	    What exactly is the <code>0..10</code> part? The answer is that it is a Range. Ranges, like lists and strings, are a collection, and ranges support map, each, filter and all the other collection iteration methods. A Range is a collection of equally spaced integers. Here are some more examples of Range objects:
+	  </p>
+	  <pre>
+anna&gt; 0..5; 
+[0, 1, 2, 3, 4}
+anna&gt; 5..0;
+[5 ,4 ,3 ,2 ,1]
+anna&gt; 0..10|3 
+[0, 3, 6, 9]
+anna&gt; 5...   // This Range has no end. Careful about using it in an iterator!
+[5, 6, 7...]
+anna&gt; 5|2...
+[5, 7, 9...]
+	  </pre>
+	  <p>
+	    <em class="anna-task">Exercise 7:</em> Write a program
+	    that implements
+	    the <a href="http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes">Sieve
+	    of Eratosthenes and uses it to calculate the number of
+	    prime numbers below 1000</a>.
+	  </p>
+	  <p>
+	    <em class="anna-hint">Hint:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer7-toggle");'>here</a>.
+	  </p>
+
+	  <div class='anna-code-popup' id='anna-answer7-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+              <h3>Sieve of Eratosthenes</h3>
+	      <pre class="anna-code">
+
+def main()
+{
+    end :== 1000; // The number of items to check
+    sieve :== [];
+    count := 0;
+
+    (2..end).each(i)
+    {
+        if(sieve[i] != 1)
+        {
+	    ((2*i)..end|i).each(j){ sieve[j] = 1 }
+            count++;
+        }
+    }
+    print("There are", count, "prime numbers under", end);
+}
+	      </pre>
+	    </div>
+	  </div>
+	  
+	  <h1><a name="functions">Defining your own functions and dealing with types</a></h1>
+	  <p>
+	    Let's look a bit closer at functions! We have already
+	    called several functions with parameters, such as
+	    the <code>print</code> function. Here is our own function
+	    definition which accepts an argument:
+	  </p>
+	  <pre class="anna-code">
+// Print all elements of the Fibonacci sequence up to the secified number
+def fibonacci(Int end){ 
+    [first, second] := [0, 1];
+    while(first <= end)
+    {
+        print(first, end: " ");
+        [first, second] = [second, first+second];
+    }
+    print();
+}
+fibonacci(100); // Prints «0 1 1 2 3 5 8 13 21 34 55 89»
+	  </pre>
+	  <p>
+	    The first new thing in the above function is the argument
+	    part to the function header, <code>(Int
+	    end)</code>. Hopefully, you figured out that this means
+	    that the fibonacci function expects exactly one argument,
+	    and it must be of the type Int. This is the first real
+	    encounter with typing we've encountered in Anna, but if
+	    you've played around a bit during the exercises, you've
+	    probably bumped into types of variables on you own. Much
+	    like function arguments, variables are type checked:
+	  </p>
+	  <pre>
+anna &gt; myVariable := 1+2;
+3
+anna &gt; myVariable = "Hello"
+Error in file «<internal>», on line 1:
+
+Invalid type in assignment. Expected argument of type Int, but supplied value of type ImutableString does not qualify.
+
+Error: Found 1 error(s) during module loading
+	  </pre>
+	  <p>
+	    What this means is that when we first create the variable
+	    myVariable, Anna checks what the type of the
+	    expression <code>1+2</code> is, and
+	    makes <code>myVariable</code> into a variable of that
+	    type. Any future assignments must also be to variables of
+	    that type.
+	  </p>
+	  <p>
+	    For every expersion in the Anna source code, the compiler
+	    will always obtain some notion of the type of the
+	    output. Languages that do this are called «statically
+	    typed». We will get back to this concept later on in the
+	    tutorial, but for now, let's just mention a few types that
+	    might be useful to know about.
+	  </p>
+
+	  <table class='anna-table'>
+	    <caption>
+	      A few common Anna types
+	    </caption>
+	    <thead>
+	      <tr>
+		<th>
+		  Type
+		</th>
+		<th>
+		  Description
+		</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    Int
+		  </code>
+		</td>
+		<td>
+		  Any integer, i.e. any whole number.
+		</td>
+	      </tr>
+
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    Float
+		  </code>
+		</td>
+		<td>
+		  A floating point number. That is, a number
+		  represented approximately to a fixed number of
+		  significant digits and scaled using an exponent. For
+		  more information on floating point numbers,
+		  see <a href="http://en.wikipedia.org/wiki/Floating-point">this
+		  Wikipedia article</a>.
+		</td>
+	      </tr>
+
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    String
+		  </code>
+		</td>
+		<td>
+		  A string of text characters.
+		</td>
+	      </tr>
+
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    Char
+		  </code>
+		</td>
+		<td>
+		  A single character. Each element of a String object
+		  is a character.
+		</td>
+	      </tr>
+
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    List
+		  </code>
+		</td>
+		<td>
+		  A list of any items.
+		</td>
+	      </tr>
+
+
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    List«Int»
+		  </code>
+		</td>
+		<td>
+		  A list where every item of the list is an Int object.
+		</td>
+	      </tr>
+
+	    </tbody>
+	  </table>
+	  <p>
+	    Anna contains many more types, you can browse
+	    the <a href="api/global.html">API documentation</a> for
+	    more information.
 	  </p>
 
 
 
+	  <p>
+	    <em class="anna-task">Exercise 8:</em> Write a function
+	    lower that takes a string as it's argument and returns the
+	    same string in lower case.
+	  </p>
 
+	  <p>
+	    Hint for Exercise 8: The Char type has a member called lower, which is the lower case version of that character.
+	  </p>
 
-	</div>
-      </div>
-      
+	  <p>
+	    Click <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer8-toggle");'>here for a suggested solution to exercise 8</a>.
+	  </p>
+
+	  <div class='anna-code-popup' id='anna-answer8-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+	      <h3>Suggested answer for exercise 7</h3>
+	      <p>
+		There are many possible solutions to this exercise. Some of them are presented below.
+	      </p>
+
+	      <pre class="anna-code">
+def lower(String in)
+{
+    "".join(in.map(chr){chr.lower})
+}
+
+def lower(String in)
+{
+    result := "";
+    in.each(ch){ result ~= chr.lower }
+    return result;
+}
+	      </pre>
+	    </div>
+	  </div>
+	  
+	</div> <!-- End of anna-main-inner -->
+      </div> <!-- End of anna-main -->
       <div class="anna-left-menu">
 	<div class="anna-left-menu-inner">
 	  <div>
