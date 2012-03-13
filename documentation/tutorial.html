@@ -691,7 +691,7 @@ myList := [1, 5, 7]
 
 /*
   We've already seen the each method in action in section 3. The each method 
-  calls the block supplied to it once for each element in the collection.
+  calls the code block supplied to it once for each element in the collection.
 
   This will print "Value: 1", "Value: 5" and "Value: 7" on separate lines.
 */
@@ -1146,15 +1146,89 @@ anna&gt; print(1,2,3, sep:"a", end:"b")
 	    the compiler will figure out the correct return type for
 	    you. But in some situations, the compiler will fail, and
 	    you will have to explicitly tell the compiler the function
-	    return type:
+	    return type by squeezing it in between
+	    the <code>def</code> keyword and the function name:
 	  </p>
 	  <pre class="anna-code">
 def Int factorial(Int in)
 {
     return if(in < 2){1} else {in * factorial(in-1)}    
 }
+	  </pre>	  
+
+	  <h2><a name="functions-blocks">Blocks</a></h2>
+	  <p>
+	    The term «block» has occured several times in this
+	    tutorial without any real explanation. We've seen code like this:
+	  </p>
+	  <pre class="anna-code">
+if(someCondition)
+{
+    print("Condition was met.");
+}
 	  </pre>
-	  
+	  <p>
+	    The code chunk enclosed within curly bracers ({}) in the
+	    code above is called a block, and it is simply an ever so
+	    slightly special function:
+	  </p>
+	  <pre class="anna-code">
+/* This defines the myBlock variable to point to the specified block of code */
+myBlock := {
+    print("Execute the block.");
+}
+
+/* Execute the myBlock block twice */
+myBlock();
+myBlock();
+	  </pre>
+	  <p>
+	    As you can see, a block can be used exactly like any other function. So what are the differences?
+	  </p>
+	  <ul>
+	    <li>
+	      Blocks are always defined inside another function. Functions can also be defined inside other functions, but they don't have to.
+	    </li>
+	    <li>
+	      A call to return inside of a block will not just return
+	      from the block, it will return from the enclosing
+	      function.
+	    </li>
+	    <li>
+	      A block does not accept any input parameters.
+	    </li>
+	  </ul>
+	  <p>
+	    It is possible to write a function that behaves as a block when returning like this:
+	  </p>
+	  <pre class="anna-code">
+/* This defines the myBlock variable to point to the specified block of code */
+def myBlockFun() (block)
+{
+    print("Execute the block.");
+}
+	  </pre>
+	  <p>
+	    In fact, the block syntax is just a wrapper around code
+	    like the above example. Blocks are, in other words, a
+	    short hand syntax for a special type of functions. There is one more thing to note about blocks, and that is that when calling a function that takes a block as the last argument, that block can be written <em>after</em> the parameter list:
+	  </p>
+	  <pre class="anna-code">
+// Give the following function
+def myIf(Object condition, Block block)
+{
+    if(condition){block()}
+}
+
+// The following two expressions are completely equivalent:
+
+myIf(1+1 == 2, {print("Math is fun")});
+
+myIf(1+1 == 2)
+{
+    print("Math is fun");
+}
+	  </pre>
 
 	  <p>
 	    <em class="anna-task">Exercise 8 a:</em> Write a function
@@ -1165,12 +1239,13 @@ def Int factorial(Int in)
 	    <em class="anna-hint">Hint:</em> One way to check if a
 	    number is even is to check the remainder of integer
 	    division with two, which can be done using code
-	    like <code>someInteger.mod(2)</code>. Use the command line
-	    to figure out the details!
+	    like <code>someInteger.mod(2)</code>
+	    or <code>someInteger.bitAnd(1)</code>. Use the command
+	    line to figure out the details!
 	  </p>
-
+	  
 	  <p>
-	    <em class="anna-hint">Hint:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer8a-toggle");'>here</a>.
+	    <em class="anna-hint">Answer:</em> If you get stuck, <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer8a-toggle");'>this is one possible solution</a>.
 	  </p>
 	  
 	  <div class='anna-code-popup' id='anna-answer8a-toggle' style='display: none;'>
@@ -1186,7 +1261,7 @@ def evenHalf(Int number...)
 	    </div>
 	  </div>
 
-	  <h1><a name="hello">Lesson 9: HashMap</a></h1>
+	  <h1><a name="hashmap">Lesson 9: HashMap</a></h1>
 	  <p>
 	    We've already discussed several collection types,
 	    including lists, ranges and strings. It's time to add
@@ -1233,8 +1308,52 @@ print(nickMap["Ronnie"]);
 	    use a bit more memory than plain lists. Neither of these
 	    should be a major factor.
 	  </p>
+	  
 
+	  <p>
+	    <em class="anna-task">Exercise 9:</em> Write a program takes string as input, separates it into separate words, and then counts the number of occurances of each word.
+	  </p>
+	  
+	  <p>
+	    <em class="anna-hint">Hint:</em> If you're having troupble
+	    splitting the string into separate words, you might want
+	    to check out the split function in the String type.
+	  </p>
 
+	  <p>
+	    <em class="anna-hint">Hint:</em> A HashMap might be
+	    suitable for storing the word counts.
+	  </p>
+
+	  <p>
+	    <em class="anna-hint">Answer:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer9-toggle");'>here</a>.
+	  </p>
+
+	  <div class='anna-code-popup' id='anna-answer9-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+              <h3>Word counter</h3>
+	      <pre class="anna-code">
+def wordCount(String input)
+{
+    wordList := input.split(charList:" .,?!", allowEmpty:?);
+    res := «String, Int»[];
+    wordList.each(word)
+    {
+        if(word in res)
+        {
+            res[word]++;
+        }
+        else
+        {
+            res[word] = 1;
+        }
+    }
+    print(res);
+}
+	      </pre>
+	    </div>
+	  </div>
 
 	</div> <!-- End of anna-main-inner -->
       </div> <!-- End of anna-main -->
