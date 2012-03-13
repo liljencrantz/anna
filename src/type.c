@@ -1462,6 +1462,14 @@ static void anna_type_mark(anna_type_t *type)
     {
       	anna_alloc_mark_node((anna_node_t *)type->attribute);
     }
+    if(type->definition)
+    {
+      	anna_alloc_mark_node((anna_node_t *)type->definition);
+    }
+    if(type->body)
+    {
+      	anna_alloc_mark_node((anna_node_t *)type->body);
+    }
     if(type == null_type)
     {
 	anna_alloc_mark_entry(type->static_member[0]);
