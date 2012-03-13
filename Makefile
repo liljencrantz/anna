@@ -6,8 +6,8 @@
 # Choose the compiler. Probably has to be a modern GCC version, since
 # Anna uses a few GCC extensions.
 CC := gcc
-ANNABIND := bin/anna util/annabind.anna
-ANNADOC := bin/anna util/annadoc.anna
+ANNABIND := ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annabind.anna
+ANNADOC := ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna
 INSTALL := install
 
 #
@@ -66,14 +66,14 @@ PROGRAMS := bin/anna
 ANNA_INTERNAL_BINDINGS := lib/unix.so lib/getText.so lib/readLine.so
 ANNA_EXTERNAL_BINDINGS := lib/curses.so lib/math.so
 
-all: $(PROGRAMS) bindings documentation 
+all: $(PROGRAMS) bindings documentation $(ANNA_EXTERNAL_BINDINGS)
 .PHONY: all
 
 bindings: $(ANNA_EXTERNAL_BINDINGS) 
 .PHONY: bindings
 
-internal_bindings: bin/anna
-	make $(ANNA_INTERNAL_BINDINGS)
+internal_bindings:
+	for i in internalBindings/*.bind; do $(ANNABIND) $$i > lib/$$(basename $$i .bind).c; done
 .PHONY: internal_bindings
 
 lib/%.c: bindings/%.bind bin/anna
@@ -89,13 +89,12 @@ lib/%.c: bindings/%.bind bin/anna
 
 ifneq "$(MAKECMDGOALS)" "clean"
 -include $(ANNA_OBJS:.o=.d)
--include $(ANNA_INTERNAL_BINDINGS:.so=.d)
 endif
 #########################################################
 #             END DEPENDENCY TRACKING                   #
 #########################################################
 
-install: all $(ANNA_EXTERNAL_BINDINGS) documentation
+install: all documentation
 	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
 	for i in $(PROGRAMS); do\
 		$(INSTALL) -m 755 $$i $(DESTDIR)$(bindir) ; \
@@ -143,7 +142,7 @@ lib/%.o: lib/%.c
 %.so: %.o
 	$(CC) -shared $*.o -o $@ $(LDFLAGS) 
 
-bin/anna: $(ANNA_OBJS)
+bin/anna: $(ANNA_OBJS) $(ANNA_INTERNAL_BINDINGS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 autogen/lex.c: src/lex.y 
@@ -173,7 +172,7 @@ check: test
 documentation: documentation/api
 
 documentation/api: bin/anna lib/*.anna $(ANNA_EXTERNAL_BINDINGS) util/document/*.html bootstrap/*.anna util/annadoc.anna
-	ANNA_BOOTSTRAP_DIRECTORY=./bootstrap time $(ANNADOC) && touch documentation/api
+	$(ANNADOC) && touch documentation/api
 
 test: bin/anna
 	time ./bin/anna_tests.sh
