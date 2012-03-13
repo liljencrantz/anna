@@ -36,7 +36,7 @@
 	    The first step of installing Anna is to install the various prerequisites. On the command line, enter the following command:
 	  </p>
 	  <pre>
-sudo apt-get install gcc bison flex libgmp3-dev make gettext git-core
+sudo apt-get install gcc bison flex libgmp3-dev make gettext git-core libncurses5-dev libreadline6-dev
 	  </pre>
 	  <p>
 	    The next step is to download the Anna source:
@@ -72,7 +72,7 @@ sudo make install
 	    requires Flex, Bison, GMP (the GNU Multiple Precision
 	    arithmetic library), GNU make and GNU gettext. The Anna
 	    source code is version controlled using git, so you will
-	    need that as well. Hos to install these prerequisites
+	    need that as well. How to install these prerequisites
 	    depends on what platform you're using, please consult you
 	    operating system documentation if you're unsure.
 	  </p>
@@ -565,7 +565,7 @@ help(1) // Like the above, this will also show a help text on how to use the Int
 	  </p>
 	  <p>
 	    One thing about having modules, though, is that the typing
-	    might get boring.If we're going to use a bunch of
+	    might get boring. If we're going to use a bunch of
 	    different calls from e.g. the <code>unix.user</code> module, we
 	    can end up with code that looks like this:
 	  </p>
@@ -613,15 +613,29 @@ print(count);  // Prints the count of elements in the list, which is 3
 	  </p>
 	  <p>
 	    When exploring Anna, you may have noticed that there is a
-	    module named lang, and that it's content may sem
-	    familiar. The lang module contains the print function, the
+	    module named lang, and that it's content may seem
+	    familiar:
+	  </p>
+	  <pre>
+anna&gt; dir(lang)
+!stackPayload !stackTypePayload toString printInternal nothing __not__ callCC
+Object Null Int List ImutableList MutableList String ImutableString
+MutableString Float Complex Char Range HashMap Pair Buffer __init__ hashCode
+__cmp__ !__type__Getter __type__ __eq__ __gt__ __lt__ __gte__ __lte__ __neq__
+print
+	  </pre>
+	  <p>
+	    The lang module contains the print function, the
 	    Int type and a bunch of other stuff that we've used a
 	    bunch of times without having to write out
 	    e.g. <code>lang.print</code>. How come? You may already
 	    suspect the answer - a use clause. This is correct. The
 	    Anna compiler will implicitly insert
 	    <code>use(lang);</code> at the top of every module it
-	    compiles.
+	    compiles. When using the interactive command line, the
+	    replTool module is also
+	    automatically <code>use</code>:ed. This module is where
+	    the <code>help</code> and<code>dir</code> functions are defined.
 	  </p>
 
 	  <h1><a name="assigning">Lesson 6: Assigning new values to
@@ -749,6 +763,7 @@ anna&gt; 5|2...
 	  <p>
 	    One very useful thing that we can do with ranges is to create slices of lists and strings. For example, <code class="anna-code">"Hello"[1...]</code> will return <code class="anna-code">"ello"</code>.
 	  </p>
+
 	  <p>
 	    <em class="anna-task">Exercise 7:</em> Write a program
 	    that implements
@@ -1038,9 +1053,9 @@ def askOk(String prompt, Int retries=4, String complaint='Yes or no, please!')
 	  <h2><a name="functions-kw">Function calls with keyword arguments</a></h2>
 	  <p>
 	    Functions can also be called using keyword arguments of
-	    the form <code>kwarg:value</code>. For instance, the above
-	    askOk function call definied in the previous section can
-	    be called in any of the following ways:
+	    the form <code>kwarg:value</code>. For instance, the askOk
+	    function definied in the previous section can be called in
+	    any of the following ways:
 	  </p>
 	  <pre class="anna-code">
 askOk("Do you want to quit?");
@@ -1053,15 +1068,19 @@ askOk(retries: 1, "Quit?");
 	    But none of the following are valid:
 	  </p>
 	  <pre class="anna-code">
-askOk();                   // Required argument missing
-askOk(greeting: "Hello");  // Unknown keyword argument
+askOk();                       // Required argument missing
+askOk(greeting: "Hello");      // Unknown keyword argument
+askOk("Quit?", retries: 2.0);  // Wrong type on argument «retries»
 	  </pre>
 	  <p>
 	    Keyword arguments and non-keyword arguments can be given
 	    in any order. The compiler will first go over all keyword
-	    arguemtns and map them to the corresponding argument
+	    arguments and map them to the corresponding argument
 	    position, and after that, all positional arguments are
-	    mapped to the first free argument.
+	    mapped to the first argument that has yet to be given a
+	    value. Finally, the default values are used for all
+	    arguments that had neither a keyword argument or a
+	    positional argument.
 	  </p>
 
 	  <h2><a name="functions-vararg">Functions with arbitrary argument lists</a></h2>
@@ -1079,10 +1098,10 @@ def writeMultipleItems(io.File file, String separator, Object args...)
 }
 	  </pre>
 	  <p>
-	    In the same fashion, dictionaries can deliver keyword arguments with the :-operator:
+	    In the same fashion, dictionaries can deliver keyword arguments with the <code>:</code> operator:
 	  </p>
 	  <pre class="anna-code">
-def writeMapping(Object: arbitraryMapping)
+def writeMapping(Object arbitraryMapping:)
 {
     arbitraryMapping.each(key, value)
     {
@@ -1090,10 +1109,25 @@ def writeMapping(Object: arbitraryMapping)
     }
 }
 
+/*
+  The output will contain the following lines in an arbitrary order:
+
+foo => 1
+bar => Hello
+baz => [0, 1, 2, 3, 4]
+
+*/
 writeMapping(foo: 1, bar: "Hello", baz: 0..5);
+
 	  </pre>
 	  <p>
-	    You may have already suspected as much, but the print function accepts arbitrary arguments. All non-mapping arguments are printed. You can specify the separator between arguments with the named argument <code>sep</code>, and the last thing to print with the named argument <code>end</code>. The default value for sep is a space, and for end a newline character.
+	    You may have already suspected as much, but the print
+	    function accepts arbitrary arguments. All non-mapping
+	    arguments are printed. You can specify the separator
+	    between arguments with the named
+	    argument <code>sep</code>, and the last thing to print
+	    with the named argument <code>end</code>. The default
+	    value for sep is a space, and for end a newline character.
 	  </p>
 	  <pre>
 anna&gt; print
@@ -1101,6 +1135,105 @@ def ImutableList (String keys:, Object param...)
 anna&gt; print(1,2,3, sep:"a", end:"b")
 1a2a3b[1, 2, 3]
 	  </pre>
+
+	  <h2><a name="functions-return">Function return type</a></h2>
+	  <p>
+	    As has been previously mentioned, Anna is a statically
+	    typed language, meaning that Anna must have some notion of
+	    what the return type of every expression is. This includes
+	    the return type of every function. Usually, it is not
+	    necessary to give the function return type explicitly, as
+	    the compiler will figure out the correct return type for
+	    you. But in some situations, the compiler will fail, and
+	    you will have to explicitly tell the compiler the function
+	    return type:
+	  </p>
+	  <pre class="anna-code">
+def Int factorial(Int in)
+{
+    return if(in < 2){1} else {in * factorial(in-1)}    
+}
+	  </pre>
+	  
+
+	  <p>
+	    <em class="anna-task">Exercise 8 a:</em> Write a function
+	    that takes arbitrarily many numbers and returns only the
+	    even ones, divided by two.
+	  </p>
+	  <p>
+	    <em class="anna-hint">Hint:</em> One way to check if a
+	    number is even is to check the remainder of integer
+	    division with two, which can be done using code
+	    like <code>someInteger.mod(2)</code>. Use the command line
+	    to figure out the details!
+	  </p>
+
+	  <p>
+	    <em class="anna-hint">Hint:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer8a-toggle");'>here</a>.
+	  </p>
+	  
+	  <div class='anna-code-popup' id='anna-answer8a-toggle' style='display: none;'>
+	    <div class='anna-code-popup-inner'>
+              <span class='anna-code-popup-close'>X</span>
+              <h3>Even numbers</h3>
+	      <pre class="anna-code">
+def evenHalf(Int number...)
+{
+    number.filter(num){num.mod(2)==0}.map(num){num/2}
+}
+	      </pre>
+	    </div>
+	  </div>
+
+	  <h1><a name="hello">Lesson 9: HashMap</a></h1>
+	  <p>
+	    We've already discussed several collection types,
+	    including lists, ranges and strings. It's time to add
+	    another one to the collection, the HashMap. The simplest
+	    way to thing about the HashMap is to start by discussing
+	    the List type. A list associates an integer key (usually
+	    called the index or the offset) with an arbitrary value.
+	    The list <code class="anna-code">["a", "b", "c"]</code>
+	    associates the index 0 with the value
+	    <code class="anna-code">"a"</code>, the index 1 with the
+	    value <code class="anna-code">"b"</code>, and so on. Lists
+	    are often very useful, but sometimes, you want to make
+	    this type of associations where the key isn't an integer
+	    number. Suppose you want to create a mapping from nick
+	    names to real names, for example. Enter the HashMap:
+	  
+	  </p>
+	  <pre class="anna-code">
+// Create a new HashMap with the specified mappings
+nickMap := ["Dick": "Richard", "Ronnie": "Ronald", "Frannie": "Francine"];
+
+// Add another mapping
+nickMap["Eddie"] = "Edward";
+
+// Get a mapping value of the key "Ronnie" and print it
+print(nickMap["Ronnie"]);
+
+	  </pre>
+	  <p>
+	    HashMaps support the same iteration methods that other
+	    collections do, such as each and map. Check out
+	    the <a href="#api/lang/HashMap.html">HashMap API
+	    documentation</a> for a full reference.
+	  </p>
+	  <p>
+	    Given all the above, why does the List type even exist?
+	    Obviously, HashMaps must have some limitations that the
+	    List does not. The most important limitation of the
+	    HashMap is probably that it is unordered, that is, when
+	    iterating over a HashMap, there is no guarantee that
+	    iteration will be done in any particular order. This makes
+	    the HashMap unsuitable for any type of sequential data.
+	    Another drawback is that HashMaps are slightly slower and
+	    use a bit more memory than plain lists. Neither of these
+	    should be a major factor.
+	  </p>
+
 
 
 	</div> <!-- End of anna-main-inner -->
