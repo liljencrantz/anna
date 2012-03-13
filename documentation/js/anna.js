@@ -180,6 +180,7 @@ var anna = {
 			}
 			else
 			{
+			    html += "/";
 			    mode = "base";
 			}
 			break;
