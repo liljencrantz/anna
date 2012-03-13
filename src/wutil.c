@@ -347,38 +347,7 @@ void wperror(const wchar_t *s)
 	}
 	anna_message( L"%s\n", strerror( e ) );
 }
-/*
-#ifdef HAVE_REALPATH_NULL
 
-wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
-{
-	char *tmp = wutil_wcs2str(pathname);
-	char *narrow_res = realpath( tmp, 0 );	
-	wchar_t *res;	
-
-	if( !narrow_res )
-		return 0;
-		
-	if( resolved_path )
-	{
-		wchar_t *tmp2 = str2wcs( narrow_res );
-		wcslcpy( resolved_path, tmp2, PATH_MAX );
-		free( tmp2 );
-		res = resolved_path;		
-	}
-	else
-	{
-		res = str2wcs( narrow_res );
-	}
-
-    free( narrow_res );
-
-	return res;
-}
-
-#else
-*/
- /*
 wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
 {
 	char *tmp = wutil_wcs2str(pathname);
@@ -392,9 +361,14 @@ wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
 	if( resolved_path )
 	{
 		wchar_t *tmp2 = str2wcs( narrow_res );
-		wcslcpy( resolved_path, tmp2, PATH_MAX );
+		if(wcslen(tmp2) >= PATH_MAX)
+		{
+		    errno = ENAMETOOLONG;
+		    return 0;
+		}
+		wcsncpy( resolved_path, tmp2, PATH_MAX );
 		free( tmp2 );
-		res = resolved_path;		
+		res = resolved_path;
 	}
 	else
 	{
@@ -403,8 +377,6 @@ wchar_t *wrealpath(const wchar_t *pathname, wchar_t *resolved_path)
 	return res;
 }
 
-#endif
- */
 /*
 wchar_t *wdirname( wchar_t *path )
 {

@@ -153,7 +153,7 @@ static anna_stack_template_t *anna_module(
 		    debug(D_CRITICAL, L"Multiple locations for module %ls: %ls and %ls\n", name, res->filename, filename);
 		    CRASH;		
 		}
-		res->filename = wcsdup(filename);
+		res->filename = wrealpath(filename,0);
 	    }
 	    return res;
 	}
@@ -169,12 +169,12 @@ static anna_stack_template_t *anna_module(
     }
     if(filename)
     {
-	res->filename = wcsdup(filename);
+	res->filename = wrealpath(filename,0);
     }
     else
     {
 	wchar_t *p = anna_module_search(parent, name);
-	res->filename = p?wcsdup(p):0;
+	res->filename = p?wrealpath(p, 0):0;
     }
 
     if(!res->filename)
