@@ -163,13 +163,28 @@ def String rpad(
     return res;
 }
 
+def Int __in__(String this, Char char)
+    (
+	target(String)
+	)
+{
+    this.each(idx, ch)
+    {
+	if(char == ch)
+	{
+	    return idx;
+	}
+    }
+    return ?;
+}
+
 def MutableList«String» split(
     String this,
-    Char char,
+    String charList,
     Object allowEmpty = 1)
 (
     target(String),
-    doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
 )
 {
     res := «String»[];
@@ -177,7 +192,7 @@ def MutableList«String» split(
     stop := 0;
     while(stop <= this.count)
     {
-	while(stop < this.count and this[stop] != char)
+	while(stop < this.count and !(__in__(charList, this[stop])))
 	{
 	    stop++;
 	}
@@ -190,3 +205,28 @@ def MutableList«String» split(
     return res;
 }
 
+def MutableList«String» splitChar(
+    String this,
+    Char char,
+    Object allowEmpty = 1)
+(
+    target(String),
+    alias(split),
+    doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+)
+{
+    return split(this, char.toString(), allowEmpty);
+}
+
+def MutableList«String» splitList(
+    String this,
+    List«Char» charList,
+    Object allowEmpty = 1)
+(
+    target(String),
+    alias(split),
+    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+)
+{
+    return split(this, "".join(charList), allowEmpty);
+}
