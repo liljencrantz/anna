@@ -398,7 +398,7 @@ int anna_node_validate_call_parameters(
     }
     else
     {
-	if(call->child_count > param_count)
+	if((call->child_count > param_count) && !(anna_function_type_is_variadic_named(target)))
 	{
 	    if(print_error)
 	    {
