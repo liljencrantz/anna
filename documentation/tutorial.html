@@ -952,6 +952,17 @@ Error: Found 1 error(s) during module loading
 		</td>
 	      </tr>
 
+	      <tr>
+		<td>
+		  <code class="anna-code">
+		    List«List«Int»»
+		  </code>
+		</td>
+		<td>
+		  A list where every item of the list is a list of Int object.
+		</td>
+	      </tr>
+
 	    </tbody>
 	  </table>
 	  <p>
@@ -1009,11 +1020,11 @@ def lower(String in)
 	    allow. For example:
 	  </p>
 	  <pre class="anna-code">
-def askOk(String prompt, Int retries=4, String complaint='Yes or no, please!')
+def askOk(String prompt, Int retries=4, String complaint="Answer yes or no, please!")
 {
     while(1)
     {
-        ok := rreadLine.readLine(prompt);
+        ok :== readLine.readLine(prompt);
         if(ok in ["y", "ye", "yes"])
         {
             return 1;
@@ -1025,7 +1036,7 @@ def askOk(String prompt, Int retries=4, String complaint='Yes or no, please!')
         retries = retries - 1;
         if(retries &lt; 0)
 	{
-            raise(error.Error('Uncooperative user');
+            raise(error.Error("Uncooperative user"));
         }
         print(complaint);
     }
@@ -1289,6 +1300,13 @@ nickMap["Eddie"] = "Edward";
 // Get a mapping value of the key "Ronnie" and print it
 print(nickMap["Ronnie"]);
 
+/*
+  When declaring an empty HashMap, we have to specifically tell Anna what the key
+  and value types are. This is how you create an empty HashMap that maps from
+  Char to a list of Int.
+*/
+myMap := «Char, List«Int»»[]
+
 	  </pre>
 	  <p>
 	    HashMaps support the same iteration methods that other
@@ -1300,22 +1318,27 @@ print(nickMap["Ronnie"]);
 	    Given all the above, why does the List type even exist?
 	    Obviously, HashMaps must have some limitations that the
 	    List does not. The most important limitation of the
-	    HashMap is probably that it is unordered, that is, when
-	    iterating over a HashMap, there is no guarantee that
-	    iteration will be done in any particular order. This makes
-	    the HashMap unsuitable for any type of sequential data.
-	    Another drawback is that HashMaps are slightly slower and
-	    use a bit more memory than plain lists. Neither of these
-	    should be a major factor.
+	    HashMap is that it is unordered, that is, when iterating
+	    over a HashMap, there is no guarantee that iteration will
+	    be done in any particular order. Inserting or removing
+	    elements can completely change the order of the elements.
+	    This makes the HashMap unsuitable for any type of
+	    sequential data.  Another drawback is that HashMaps are
+	    slightly slower and use a bit more memory than plain
+	    lists. Neither of these should be a major factor.
 	  </p>
 	  
 
 	  <p>
-	    <em class="anna-task">Exercise 9:</em> Write a program takes string as input, separates it into separate words, and then counts the number of occurances of each word.
+	    <em class="anna-task">Exercise 9:</em> Write a program
+	    takes string as input, separates it into separate words,
+	    and then counts the number of occurances of each word. For
+	    bonus points, see if you can get the function to strip
+	    away punctuation marks like periods and commas as well!
 	  </p>
 	  
 	  <p>
-	    <em class="anna-hint">Hint:</em> If you're having troupble
+	    <em class="anna-hint">Hint:</em> If you're having trouble
 	    splitting the string into separate words, you might want
 	    to check out the split function in the String type.
 	  </p>
@@ -1326,7 +1349,11 @@ print(nickMap["Ronnie"]);
 	  </p>
 
 	  <p>
-	    <em class="anna-hint">Answer:</em> If you get stuck, one possible solution is <a href='javascript: void(0);' onclick='javascript:anna.togglePopup("#anna-answer9-toggle");'>here</a>.
+	    <em class="anna-hint">Answer:</em> If you get stuck, here are 
+	    <a href='javascript: void(0);'
+	    onclick='javascript:anna.togglePopup("#anna-answer9-toggle");'>a
+	    few possible solutions
+	    </a>.
 	  </p>
 
 	  <div class='anna-code-popup' id='anna-answer9-toggle' style='display: none;'>
@@ -1334,10 +1361,11 @@ print(nickMap["Ronnie"]);
               <span class='anna-code-popup-close'>X</span>
               <h3>Word counter</h3>
 	      <pre class="anna-code">
+/* A simple and straightforward solution */
 def wordCount(String input)
 {
-    wordList := input.split(charList:" .,?!", allowEmpty:?);
-    res := «String, Int»[];
+    wordList :== input.split(charList:" .,?!", allowEmpty:?);
+    res :== «String, Int»[];
     wordList.each(word)
     {
         if(word in res)
@@ -1351,9 +1379,67 @@ def wordCount(String input)
     }
     print(res);
 }
+
+/* 
+  Alternative version, uses the default value of HashMap.
+  Also demonstrates a slightly terser coding style.
+*/
+def wordCount(String input)
+{
+    res :== «String, Int»[];
+    res.default = 0;
+    input.split(" .,?!", ?).each(word){ res[word]++ }
+    print(res);
+}
 	      </pre>
 	    </div>
 	  </div>
+
+	  <h1><a name="truth">Lesson 10: True, false and null</a></h1>
+	  <p>
+	    Todo. 
+	  </p>
+
+	  <h1><a name="mutability">Lesson 11: What does mutable mean?</a></h1>
+	  <p>
+	    Todo. 
+	  </p>
+
+	  <h1><a name="macros">Lesson 12: Some useful predefined macros</a></h1>
+	  <p>
+	    Todo. expandCode, kStringLiteral, switch...
+	  </p>
+
+	  <h1><a name="macros-custom">Lesson 13: Writing your own macors</a></h1>
+	  <p>
+	    Todo.
+	  </p>
+
+	  <h1><a name="types">Lesson 14: Defining your own types</a></h1>
+	  <p>
+	    Todo.
+	  </p>
+
+	  <h1><a name="proerties">Lesson 15: Properties</a></h1>
+	  <p>
+	    Todo.
+	  </p>
+
+	  <h1><a name="errors">Lesson 16: Error handing</a></h1>
+	  <p>
+	    Todo.
+	  </p>
+
+	  <h1><a name="templates">Lesson 17: Templates</a></h1>
+	  <p>
+	    Todo.
+	  </p>
+
+	  <h1><a name="templates">Lesson 18: Continuations</a></h1>
+	  <p>
+	    Todo.
+	  </p>
+
 
 	</div> <!-- End of anna-main-inner -->
       </div> <!-- End of anna-main -->
