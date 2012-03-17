@@ -306,7 +306,6 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	return (anna_node_t *)n;
     }
 	    
-    anna_type_setup_interface(type);
 
     if(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL)
     {
@@ -319,8 +318,10 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    return (anna_node_t *)n;
 	}
     }
-    
+
+    anna_type_setup_interface(type);    
     anna_type_prepare_member(type, n->mid);
+
     /*
     anna_function_search_internal(
 	type->GGG, name, candidates, 0, 0);
@@ -921,10 +922,16 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    d->return_type = d->value->return_type;
 		}
 		
-		if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+		if(do_decl)
 		{
-		    if(do_decl)
+		    if(d->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+		    {
 			anna_stack_set_type(stack, d->name, d->return_type);
+		    }
+		    else
+		    {
+			anna_stack_set_type(stack, d->name, null_type);
+		    }
 		}
 	    }
 	    else
