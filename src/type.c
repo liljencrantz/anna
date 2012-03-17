@@ -645,6 +645,7 @@ static void anna_type_extend(
 	    continue;
 	}	
 	anna_type_t *par = anna_node_resolve_to_type(c, type->stack);
+
 	if(!par)
 	{
 	    anna_error(c, L"Could not find specified type");
@@ -719,7 +720,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     int i;
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
 	return 0;
-
+    
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
     //anna_message(L"Set up interface for type %ls\n", type->name);
@@ -1497,15 +1498,11 @@ static void anna_type_mark(anna_type_t *type)
     {
         anna_member_t *memb = al_get_fast(&type->member_list, i);
 
-#ifdef ANNA_CHECK_GC
-	if(!memb->type)
-	{
-	    debug(D_CRITICAL, L"%ls.%ls has no type\n", type->name, memb->name);
-	    CRASH;
-	}
-#endif
 
-	anna_alloc_mark_type(memb->type);
+	if(memb->type)
+	{
+	    anna_alloc_mark_type(memb->type);
+	}
 	if(memb->attribute)
 	{
 	    anna_alloc_mark_node((anna_node_t *)memb->attribute);
