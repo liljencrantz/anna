@@ -850,15 +850,13 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	    step=1;
 	}
 	
-
 	int old_size = anna_list_get_count(list);
 
 	/* If we're assigning past the end of the array, just silently
 	 * take the whole array and go on */
-	count = mini(count, old_size - from);	
-	int new_size = maxi(old_size - count + count2, to);
+	count = mini(count, old_size - from);
+	int new_size = old_size - count + count2;
 	anna_entry_t **arr;
-	anna_message(L"New size is %d\n", new_size);
 	if(new_size > anna_list_get_capacity(list))
 	{
 	    anna_list_set_capacity(list, new_size);
@@ -873,7 +871,6 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 
 	/* Set new size - don't call anna_list_set_count, since that might truncate the list if we're shrinking */
 	*(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
-	anna_message(L"Move to %d, from %d, %d bytes\n", mini(from,to)+count2, mini(from,to)+count, sizeof(anna_object_t *)*abs(old_size - mini(from,to) - count ));
 	/* Move the old data */
 	memmove(&arr[mini(from,to)+count2], &arr[mini(from,to)+count], sizeof(anna_object_t *)*abs(old_size - mini(from,to) - count ));
 
@@ -881,7 +878,6 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	int offset = (step > 0) ? (from) : (from+count2-count);
 	for(i=0;i<count2;i++)
 	{
-	    anna_message(L"Set element %d\n", offset+step*i/*+count2-count*/);
 	    arr[offset+step*i/*+count2-count*/] = 
 		anna_list_get(
 		    replacement,
