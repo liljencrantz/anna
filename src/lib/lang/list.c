@@ -811,13 +811,29 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	  we remove all the elements in the specified slice from the
 	  list.
 	 */
+
+	if(to > from);
+	{
+	    /*
+	      If this is a decreasing range, reverse it. It's easier to
+	      deal with just one direction.
+	      
+	      Note that the -1 in the first line here comes from the fact
+	      that the first item of a range is inclusive and the last one
+	      is exclusive.
+	    */
+	    from = from + step*(count-1);
+	    step = -step;
+	    to = from + step*count;
+	}
+	
 	int out = from;
 	anna_entry_t **arr = anna_list_get_payload(list);
 	int in;
 	int old_size = anna_list_get_count(list);
 	int new_size = old_size - count;
 
-	if(to!=old_size || step!=1)
+	if(from!=old_size || step!=1)
 	{
 	    for(in=from; in < old_size; in++)
 	    {
