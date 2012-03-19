@@ -700,14 +700,41 @@ ANNA_VM_NATIVE(anna_list_i_get_range, 2)
     ANNA_ENTRY_NULL_CHECK(param[1]);
     anna_object_t *list = anna_as_obj(param[0]);
     anna_object_t *range = anna_as_obj(param[1]);
-    int from = anna_range_get_from(range);
+    size_t size = anna_list_get_count(list);
+    int from_orig = anna_range_get_from(range);
+    int to_orig = anna_range_get_to(range);
+    int from = anna_list_calc_offset(from_orig, size);
     int step = anna_range_get_step(range);
-    int to = anna_range_get_to(range);
+    int to = anna_list_calc_offset(to_orig, size);
     int i;
+
+    if(from < 0)
+    {
+	return null_entry;
+    }    
 
     if(anna_range_get_open(range))
     {
 	to = step>0?anna_list_get_count(list):-1;
+    }
+    else
+    {
+	if(from_orig < 0 || to_orig < 0)
+	{
+	    if((to > from) != (step > 0))
+	    {
+		step = -step;
+	    }
+	}
+    }
+
+    if(to < -1)
+    {
+	return null_entry;
+    }
+    if((to > from) != (step > 0))
+    {
+	return null_entry;
     }
     
     anna_object_t *res = anna_list_is_mutable(list)?
@@ -731,88 +758,151 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
     
-    anna_object_t *repl;
-    anna_object_t *list = anna_as_obj(param[0]);
+    anna_object_t *replacement;
     anna_object_t *range = anna_as_obj(param[1]);
+    anna_object_t *list = anna_as_obj(param[0]);
     
     if(anna_entry_null(param[2]))
-	repl = anna_list_create_mutable(object_type);
+	replacement = anna_list_create_mutable(object_type);
     else
-	repl = anna_as_obj(param[2]);
+	replacement = anna_as_obj(param[2]);
     
-    int from = anna_range_get_from(range);
+    size_t size = anna_list_get_count(list);
+    int from_orig = anna_range_get_from(range);
+    int to_orig = anna_range_get_to(range);
+
+    int from = anna_list_calc_offset(from_orig, size);
     int step = anna_range_get_step(range);
-    int to = anna_range_get_to(range);
-    int count = anna_range_get_count(range);
+    
+    int to = anna_list_calc_offset(to_orig, size);
+    int count;
     int i;
+
+    if(from < 0)
+    {
+	return null_entry;
+    }    
 
     if(anna_range_get_open(anna_as_obj_fast(param[1])))
     {
 	to = step>0?anna_list_get_count(list):-1;
     }
+    else
+    {
+	if(from_orig < 0 || to_orig < 0)
+	{
+	    if((to > from) != (step > 0))
+	    {
+		step = -step;
+	    }
+	}
+    }
     
     count = (1+(to-from-sign(step))/step);
     
-    int count2 = anna_list_get_count(repl);
+    int count2 = anna_list_get_count(replacement);
 
-    if(count != count2)
+    if(count2 == 0)
     {
-	if(step != 1)
+	/*
+	  Erase mode.
+
+	  The replacement list is either empty or null. In this case,
+	  we remove all the elements in the specified slice from the
+	  list.
+	 */
+	int out = from;
+	anna_entry_t **arr = anna_list_get_payload(list);
+	int in;
+	int old_size = anna_list_get_count(list);
+	int new_size = old_size - count;
+
+	if(to!=old_size || step!=1)
+	{
+	    for(in=from; in < old_size; in++)
+	    {
+		if((in >= to) || (in-from)%step != 0)
+		{
+		    arr[out++] = arr[in];
+		}
+	    }
+	}
+	
+	*(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
+	
+    }
+    else if(count != count2)
+    {
+	/*
+	  Complex replace mode. 
+
+	  In this mode, we're replacing a slice with a replacement
+	  list of a different length. This mode will only work if the
+	  slice has a step of +-1.
+
+	 */
+	if(step*step != 1 && count != 0)
 	{
 	    return null_entry;
 	}
+	if(count == 0)
+	{
+	    step=1;
+	}
+	
 
 	int old_size = anna_list_get_count(list);
 
 	/* If we're assigning past the end of the array, just silently
 	 * take the whole array and go on */
 	count = mini(count, old_size - from);	
-	int new_size = old_size - count + count2;
+	int new_size = maxi(old_size - count + count2, to);
 	anna_entry_t **arr;
-	if(to > new_size)
+	anna_message(L"New size is %d\n", new_size);
+	if(new_size > anna_list_get_capacity(list))
 	{
-	    anna_list_set_capacity(list, to);
-	    for(i=old_size; i<new_size; i++)
-	    {
-		anna_list_set(
-		    list, i, null_entry);		
-	    }
-	    *(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
-	    arr = anna_list_get_payload(list);
+	    anna_list_set_capacity(list, new_size);
 	}
-	else
-	{
-	    if(new_size > anna_list_get_capacity(list))
-	    {
-		anna_list_set_capacity(list, new_size);
-	    }
-	    
-	    *(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
-	    arr = anna_list_get_payload(list);
-	    memmove(&arr[from+count2], &arr[from+count], sizeof(anna_object_t *)*abs(old_size - from - count ));
-	}
-	
-	/* Set new size - don't call anna_list_set_count, since that might truncate the list if we're shrinking */
 
+	arr = anna_list_get_payload(list);
+
+	for(i=old_size; i<new_size; i++)
+	{
+	    arr[i] = null_entry;
+	}
+
+	/* Set new size - don't call anna_list_set_count, since that might truncate the list if we're shrinking */
+	*(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
+	anna_message(L"Move to %d, from %d, %d bytes\n", mini(from,to)+count2, mini(from,to)+count, sizeof(anna_object_t *)*abs(old_size - mini(from,to) - count ));
 	/* Move the old data */
+	memmove(&arr[mini(from,to)+count2], &arr[mini(from,to)+count], sizeof(anna_object_t *)*abs(old_size - mini(from,to) - count ));
 
 	/* Copy in the new data */
+	int offset = (step > 0) ? (from) : (from+count2-count);
 	for(i=0;i<count2;i++)
 	{
-	    arr[from+i] = 
+	    anna_message(L"Set element %d\n", offset+step*i/*+count2-count*/);
+	    arr[offset+step*i/*+count2-count*/] = 
 		anna_list_get(
-		    repl,
+		    replacement,
 		    i);
 	}
     }
     else
     {
+	/*
+	  Simple replace mode. This only works if the number of items
+	  in the slice and replacement are equal. In the simple mode,
+	  we can simply iterate over the indices in the slice and
+	  replace them with the corresponding item from the
+	  replacement.
+	*/
 	for(i=0;i<count;i++)
 	{
 	    anna_list_set(
 		list, from + step*i, 
 		anna_list_get(
-		    repl,
+		    replacement,
 		    i));
 	}
     }
@@ -1133,9 +1223,55 @@ static void anna_list_type_create_internal(
 	    type,
 	    anna_mid_get(L"setRange"), 0,
 	    &anna_list_i_set_range, type, 3,
-	    range_argv, range_argn, 0, 0);
-	anna_member_alias(type, mmid, L"__set__");
+	    range_argv, range_argn, 0, L"Assign new values to a range of items");
 
+	anna_member_document(
+	    type, mmid,
+	    L"This method can operate in three distinct modes:");
+	
+	anna_member_document(
+	    type, mmid,
+	    L"The first mode, simple mode, is when the slice to replace and the supplied replacement have the same number of items. In this case, the slice operation will simply replace the old values with the new ones in place and the list will be otherwise unchanged. Some examples of simple mode usage:");
+	
+	anna_member_document_example(
+	    type, mmid,
+	    L"// Simple replacement\n"
+	    L"[1,2,3,4,5][1..2] = [22, 33]; // Result: [1, 22, 33, 4, 5]\n"
+	    L"// In simple mode, it is allowed to use any step in the range. This\n// will replace the even items\n"
+	    L"[1,2,3,4,5][1|2..4] = [22, 44]; // Result: [1, 22, 3, 44, 5]\n"
+	    L"// We can use open ranges, and the end of the range will simply be\n// the list boundary. This will replace the even items.\n"
+	    L"[1,2,3,4,5][1|2...] = [22, 44]; // Result: [1, 22, 3, 44, 5]\n"
+	    );
+
+	anna_member_document(
+	    type, mmid,
+	    L"The second mode, complex mode, is when the slice to replace and the supplied replacement have different lengths. In complex mode, the step of the slice range must always be ±1. In this case, the slice operation will remove the old range and replace them with new values, which result in a list with a different length.");
+	anna_member_document_example(
+	    type, mmid,
+	    L"// Complex replacement, change the list length\n"
+	    L"[1,2,3,4,5][1..2] = [11, 22, 33, 44]; // Result: [1, 11, 22, 33, 44, 4, 5]\n"
+	    L"// In complex mode, it is not allowed to use any step in the range.\n"
+	    L"[1,2,3,4,5][1|2..4] = [11, 22, 33, 44]; // This will result in an error\n"
+	    L"// We can use open ranges, and the end of the range will simply be\n// the list boundary. This will replace the last element with the new list.\n"
+	    L"[1,2,3,4,5][-1...] = [11,22,33,44]; // Result: [1, 2, 3, 4, 11, 22, 33, 44]\n"
+	    );
+
+	anna_member_document(
+	    type, mmid,
+	    L"The final mode, erase mode, is when the supplied replacement has a length of zero. In this case, all those elements will be removed from the list, and the list will thus be shortened."
+	    );
+	anna_member_document_example(
+	    type, mmid,
+	    L"// Erase mode, change the list length\n"
+	    L"[1,2,3,4,5][1..2] = «Int»[]; // Result: [1, 4, 5]\n"
+	    L"// Erase mode, we can use any step in erase mode\n"
+	    L"[1,2,3,4,5][1|2..5] = «Int»[]; // Result: [1, 3, 5]\n"
+	    L"// Erase mode, open ranges work as exected\n"
+	    L"[1,2,3,4,5][1|2...] = «Int»[]; // Result: [1, 3, 5]\n"
+	    );
+	
+
+	anna_member_alias(type, mmid, L"__set__");
     }
 
     anna_member_create_native_property(
