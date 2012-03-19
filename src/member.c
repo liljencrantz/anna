@@ -433,18 +433,6 @@ size_t anna_member_create_native_type_method(
     return (size_t)mid;
 }
 
-void anna_member_document_example(
-    anna_type_t *type,
-    mid_t mid,
-    wchar_t *doc)
-{
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_printf(&sb, L"<pre class='anna-code'>\n%ls\n</pre>", doc);
-    wchar_t *pdoc = anna_intern_or_free(sb_content(&sb));
-    anna_member_document(type, mid, pdoc);
-}
-
 void anna_member_document(
     anna_type_t *type,
     mid_t mid,

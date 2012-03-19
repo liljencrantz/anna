@@ -104,10 +104,7 @@ void anna_member_document(
    The string will not be copied so it should be a string that is not
    free'd during the life of this program. 
 */
-void anna_member_document_example(
-    anna_type_t *type,
-    mid_t mid,
-    wchar_t *doc);
+#define anna_member_document_example(type, mid, doc) anna_member_document(type, mid, L"<pre class='anna-code'>" doc L"</pre>")
 
 static inline int anna_member_is_bound(anna_member_t *member)
 {
