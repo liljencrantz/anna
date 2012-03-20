@@ -1,0 +1,15 @@
+def main()
+{
+    print("12345".thaw[2..1] = "abc");
+    print("12345".thaw[2..2] = "abc");
+    print("12345".thaw[2..5] = "abc");
+    print("12345".thaw[4..7] = "abc");
+    print("12345".thaw[3|2..9] = "abc");
+    print("12345".thaw[1...] = "abc");
+    print("12345".thaw[0|2...] = "abc");
+    print("12345".thaw[0|2...] = "");
+    print("12345".thaw[0...] = "");
+    print("12345".thaw[2...] = "");
+    print("12345".thaw[-1|-2...] = "");
+    print("12345".thaw[-1|-2...] = "abc");
+}

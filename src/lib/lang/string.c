@@ -188,8 +188,6 @@ ANNA_VM_NATIVE(anna_string_i_mul, 2)
 
 ANNA_VM_NATIVE(anna_string_i_set_range, 3)
 {
-    anna_object_t *res = null_object;
-
     if(likely(!anna_entry_null(param[1]) && !anna_entry_null(param[2])))
     {
 	anna_object_t *this = anna_as_obj(param[0]);
@@ -236,7 +234,7 @@ ANNA_VM_NATIVE(anna_string_i_set_range, 3)
 	    }
 	}
     }
-    return anna_from_obj(res);
+    return param[0];
 }
 
 ANNA_VM_NATIVE(anna_string_i_copy, 1)
