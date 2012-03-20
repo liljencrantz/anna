@@ -103,3 +103,19 @@ objects.")
 	fun or (def Int(Object first, Object second){first.__cmp__(second)}));
     return list;
 }
+
+def indexOf(List this, Object value)
+(
+    target(List),
+    doc("Returns the index of the first location of the specified item in the list.")
+)
+{
+    this.each(idx, el)
+    {
+	if(el == value)
+	{
+	    return idx;
+	}
+    }
+    return ?;
+}
