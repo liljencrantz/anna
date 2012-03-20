@@ -812,7 +812,7 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	  list.
 	 */
 
-	if(to > from);
+	if(to < from)
 	{
 	    /*
 	      If this is a decreasing range, reverse it. It's easier to
@@ -831,9 +831,9 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	anna_entry_t **arr = anna_list_get_payload(list);
 	int in;
 	int old_size = anna_list_get_count(list);
-	int new_size = old_size - count;
+	int new_size = maxi(0, old_size - count);
 
-	if(from!=old_size || step!=1)
+	if(to!=old_size || step!=1)
 	{
 	    for(in=from; in < old_size; in++)
 	    {
@@ -842,9 +842,12 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 		    arr[out++] = arr[in];
 		}
 	    }
+	    *(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = out;
 	}
-	
-	*(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
+	else
+	{
+	    *(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
+	}
 	
     }
     else if(count != count2)
