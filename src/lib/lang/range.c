@@ -757,7 +757,7 @@ void anna_range_type_create()
 
     mmid = anna_member_create_native_method(
 	range_type,
-	anna_mid_get(L"__get__Int__"), 0,
+	anna_mid_get(L"get"), 0,
 	&anna_range_get_int, int_type, 2,
 	i_argv, i_argn, 0, 0);
     anna_member_alias(range_type, mmid, L"__get__");
@@ -777,7 +777,7 @@ void anna_range_type_create()
 
     mmid = anna_member_create_native_method(
 	range_type,
-	anna_mid_get(L"__get__Range__"), 0,
+	anna_mid_get(L"getRange"), 0,
 	&anna_range_get_range, range_type, 2,
 	range_argv, range_argn, 0, 0);
     anna_member_alias(range_type, mmid, L"__get__");

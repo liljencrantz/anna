@@ -756,6 +756,7 @@ ANNA_VM_NATIVE(anna_list_i_get_range, 2)
 
 ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     ANNA_ENTRY_NULL_CHECK(param[1]);
     
     anna_object_t *replacement;
@@ -800,9 +801,9 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
     
     count = (1+(to-from-sign(step))/step);
     
-    int count2 = anna_list_get_count(replacement);
+    int count_replacement = anna_list_get_count(replacement);
 
-    if(count2 == 0)
+    if(count_replacement == 0)
     {
 	/*
 	  Erase mode.
@@ -850,7 +851,7 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	}
 	
     }
-    else if(count != count2)
+    else if(count != count_replacement)
     {
 	/*
 	  Complex replace mode. 
@@ -874,7 +875,7 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	/* If we're assigning past the end of the array, just silently
 	 * take the whole array and go on */
 	count = mini(count, old_size - from);
-	int new_size = old_size - count + count2;
+	int new_size = old_size - count + count_replacement;
 	anna_entry_t **arr;
 	if(new_size > anna_list_get_capacity(list))
 	{
@@ -891,13 +892,13 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
 	/* Set new size - don't call anna_list_set_count, since that might truncate the list if we're shrinking */
 	*(size_t *)anna_entry_get_addr(list,ANNA_MID_LIST_SIZE) = new_size;
 	/* Move the old data */
-	memmove(&arr[mini(from,to)+count2], &arr[mini(from,to)+count], sizeof(anna_object_t *)*abs(old_size - mini(from,to) - count ));
+	memmove(&arr[mini(from,to)+count_replacement], &arr[mini(from,to)+count], sizeof(anna_object_t *)*abs(old_size - mini(from,to) - count ));
 
 	/* Copy in the new data */
-	int offset = (step > 0) ? (from) : (from+count2-count);
-	for(i=0;i<count2;i++)
+	int offset = (step > 0) ? (from) : (from+count_replacement-count);
+	for(i=0;i<count_replacement;i++)
 	{
-	    arr[offset+step*i/*+count2-count*/] = 
+	    arr[offset+step*i/*+count_replacement-count*/] = 
 		anna_list_get(
 		    replacement,
 		    i);
@@ -1059,7 +1060,7 @@ static void anna_list_type_create_internal(
 
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"getIndex"), 0,
+	anna_mid_get(L"get"), 0,
 	&anna_list_get_int, spec, 2,
 	i_argv, i_argn, 0, 0);
     anna_member_alias(type, mmid, L"__get__");
@@ -1215,7 +1216,7 @@ static void anna_list_type_create_internal(
 	
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"setIndex"), 0,
+	    anna_mid_get(L"set"), 0,
 	    &anna_list_set_int, spec, 3,
 	    i_argv, i_argn, 0, 0);
 	anna_member_alias(type, mmid, L"__set__");

@@ -188,52 +188,176 @@ ANNA_VM_NATIVE(anna_string_i_mul, 2)
 
 ANNA_VM_NATIVE(anna_string_i_set_range, 3)
 {
-    if(likely(!anna_entry_null(param[1]) && !anna_entry_null(param[2])))
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+	
+    anna_object_t *this_obj = anna_as_obj(param[0]);
+    anna_object_t *range = anna_as_obj(param[1]);
+    anna_object_t *replacement_obj;
+    
+    if(anna_entry_null(param[2]))
     {
-	anna_object_t *this = anna_as_obj(param[0]);
-	anna_object_t *range = anna_as_obj(param[1]);
-	anna_object_t *val = anna_as_obj(param[2]);
-	
-	ssize_t from = anna_string_idx_wrap(this, anna_range_get_from(range));
-	ssize_t to = anna_string_idx_wrap(this, anna_range_get_to(range));
-	ssize_t step = anna_range_get_step(range);
-	if(anna_range_get_open(range))
+	replacement_obj = anna_string_create(0, L"");
+    }
+    else
+    {
+	replacement_obj = anna_as_obj(param[2]);
+    }
+    
+    ssize_t from_orig = anna_range_get_from(range);
+    ssize_t to_orig = anna_range_get_to(range);
+    ssize_t from = anna_string_idx_wrap(this_obj, from_orig);
+    ssize_t to = anna_string_idx_wrap(this_obj, to_orig);
+    ssize_t step = anna_range_get_step(range);
+    ssize_t count;
+    
+    if(from < 0)
+    {
+	return null_entry;
+    }    
+    
+    anna_string_t *this = as_unwrap(this_obj);
+    size_t count_this = asi_get_count(this);
+    anna_string_t *replacement = as_unwrap(replacement_obj);
+    size_t count_replacement = asi_get_count(replacement);
+
+    if(anna_range_get_open(anna_as_obj_fast(param[1])))
+    {
+	to = step>0?count_this:-1;
+    }
+    else
+    {
+	if(from_orig < 0 || to_orig < 0)
 	{
-	    to = step>0?anna_string_get_count(this):-1;
-	}
-	
-	ssize_t count = (1+(to-from-sign(step))/step);
-	
-	anna_string_t *str1 = as_unwrap(this);
-	anna_string_t *str2 = as_unwrap(val);
-	ssize_t i;
-	
-	if(step==1)
-	{
-	    asi_replace(
-		str1,
-		str2,
-		from,
-		to-from,
-		0,
-		asi_get_count(as_unwrap(val)));
-	}
-	else
-	{
-	    if(count == asi_get_count(str2))
+	    if((to > from) != (step > 0))
 	    {
-		for(i=0; i<count;i++)
-		{
-		    asi_set_char(
-			str1,
-			from + step*i,
-			asi_get_char(
-			    str2,
-			    i));
-		}   
+		step = -step;
 	    }
 	}
     }
+	
+    count = (1+(to-from-sign(step))/step);
+	
+    ssize_t i;
+	
+    if(count_replacement == 0)
+    {
+	/*
+	  Erase mode.
+
+	  The replacement string is either empty or null. In this
+	  case, we remove all the elements in the specified slice from
+	  the string.
+	 */
+
+	if(to < from)
+	{
+	    /*
+	      If this is a decreasing range, reverse it. It's easier to
+	      deal with just one direction.
+	      
+	      Note that the -1 in the first line here comes from the fact
+	      that the first item of a range is inclusive and the last one
+	      is exclusive.
+	    */
+	    from = from + step*(count-1);
+	    step = -step;
+	    to = from + step*count;
+	}
+	
+	int old_size = count_this;
+	int new_size = maxi(0, old_size - count);
+
+	if(to!=old_size || step!=1)
+	{
+	    int out = from;
+	    int in;
+	    for(in=from; in < old_size; in++)
+	    {
+		if((in >= to) || (in-from)%step != 0)
+		{
+		    asi_set_char(this, out++, asi_get_char(this, in));
+		}
+	    }
+	    asi_truncate(this, out);
+	}
+	else
+	{
+	    asi_truncate(this, new_size);
+	}
+	
+    }
+    else if(step==1)
+    {
+	/*
+	  Short cut for the common case
+	*/
+	asi_replace(
+	    this,
+	    replacement,
+	    from,
+	    to-from,
+	    0,
+	    count_replacement);
+    }    
+    else if(count == count_replacement)
+    {
+	for(i=0; i<count;i++)
+	{
+	    asi_set_char(
+		this,
+		from + step*i,
+		asi_get_char(
+		    replacement,
+		    i));
+	}   
+    }
+    else
+    {
+	if(count == 0)
+	{
+	    step=1;
+	}
+	
+	if(abs(step) != 1)
+	{
+	    return null_entry;
+	}
+	
+	int old_size = count_this;
+
+	count = mini(count, old_size - from);
+	int new_size = old_size - count + count_replacement;
+
+	if(new_size > old_size)
+	{
+	    asi_set_char(this, new_size-1, 0);
+	}
+	else
+	{
+	    asi_truncate(this, new_size);
+	}
+	
+	/* Move the old data */
+	FIXME("The internal string implementation isn't treated as an opaque datatype here.");
+	
+	memmove(
+	    &this->str[mini(from,to)+count_replacement], 
+	    &this->str[mini(from,to)+count], 
+	    sizeof(wchar_t)*abs(old_size - mini(from,to) - count ));
+
+	/* Copy in the new data */
+	int offset = (step > 0) ? (from) : (from+count_replacement-count);
+	for(i=0;i<count_replacement;i++)
+	{
+	    asi_set_char(
+		this, offset+step*i,
+		asi_get_char(
+		    replacement,
+		    i));
+	}	
+    }
+    
     return param[0];
 }
 
@@ -832,7 +956,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__get__Int__"), 0,
+	anna_mid_get(L"get"), 0,
 	&anna_string_i_get_int,
 	char_type,
 	2, i_argv, i_argn, 0, 0);
@@ -963,7 +1087,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__get__Range__"),
+	anna_mid_get(L"getRange"),
 	0,
 	&anna_string_i_get_range,
 	type,
@@ -1008,7 +1132,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     {
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"__set__Int__"), 0,
+	    anna_mid_get(L"set"), 0,
 	    &anna_string_i_set_int,
 	    char_type,
 	    3,
@@ -1019,7 +1143,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"__set__Range__"),
+	    anna_mid_get(L"setRange"),
 	    0,
 	    &anna_string_i_set_range,
 	    type,
