@@ -67,11 +67,17 @@ var anna = {
 	    var arr = path.split("/");
 	    module = arr[arr.length-1];
 	    arr[arr.length-1] = module.split(".")[0];
-	    arr.splice(0,1);
-	    return arr.join(".") + "::" + module.split("#")[1];
+	    var path = "";
+	    if(arr.length != 1)
+	    {
+		// Remove the 'global' element, unless that's the entire path...
+		arr.splice(0,1);
+		path = arr.join(".") + "::";
+	    }
+	    return path + module.split("#")[1];
 	}
 
-	$(".anna-search").html("<em>Search:</em> <form><input class='anna-search'></input name='search'></form>");
+	$(".anna-search").html("<em>Search the API documentation:</em> <form><input class='anna-search'></input name='search'></form>");
 	$(".anna-search form").submit(
 	    function(event)
 	    {
