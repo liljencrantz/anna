@@ -314,30 +314,30 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 
     cStruct SignalInfoFd (name(signalfd_siginfo), doc("A structure describing a recieved signal."))
     {
-	var Int signal (name(ssi_signo));
-	var Int code (name(ssi_code));
-	var Int pid (name(ssi_pid));
-	var Int uid (name(ssi_uid));
-	var Int fd (name(ssi_fd));
-	var Int tid (name(ssi_tid));
-	var Int band (name(ssi_band));
+	var Int signal (name(ssi_signo), doc("Signal number."));
+	var Int code (name(ssi_code), doc("Signal code."));
+	var Int pid (name(ssi_pid), doc("PID of sender"));
+	var Int uid (name(ssi_uid), doc("Real UID of sender"));
+	var Int fd (name(ssi_fd), doc("File descriptor for io signal."));
+	var Int tid (name(ssi_tid), doc("Kernel timer id for signals relating to Posix timers"));
+	var Int band (name(ssi_band), doc("Band event for io signal"));
     }
  
     signalfdFlag
     {
 	attribute(doc("Flags determining the mode for unix.proc.signalfd"));
 
-	const Int nonBlock (name(SFD_NONBLOCK));
-	const Int closeOnExec (name(SFD_CLOEXEC));
+	const Int nonBlock (name(SFD_NONBLOCK), doc("The resulting file descriptor is non-blocking"));
+	const Int closeOnExec (name(SFD_CLOEXEC, doc("Close the resulting file descriptor on exec")));
     }
    
     sigprocmaskFlag
     {
 	attribute(doc("Flags determining the mode for unix.iosigprocmask"));
 
-	const Int block (name(SIG_BLOCK));
-	const Int unblock (name(SIG_UNBLOCK));
-	const Int setMask (name(SIG_SETMASK));
+	const Int block (name(SIG_BLOCK), doc("Block all the specified signals in addition to signals currently blocked."));
+	const Int unblock (name(SIG_UNBLOCK), doc("Stop blocking the specified signals."));
+	const Int setMask (name(SIG_SETMASK), doc("Set the exact new signal block mask."));
     }
     
     def Int sigprocmask(Int how, SignalSet set (nullable), SignalSet old (nullable)) (doc("Examine and change what signals are currently blocked by this process."));
@@ -522,16 +522,16 @@ term
     flag
     {
         attribute(doc("The different modes of a Termios structure."));
-	const Int canonical (name(ICANON));
-	const Int echo (name(ECHO));
+	const Int canonical (name(ICANON), doc("Read one character at a time."));
+	const Int echo (name(ECHO), doc("Echo characters to the screen."));
     }
     
     action
     {
         attribute(doc("The different action modes used by unix.term.setAttr."));
-	const Int now (name(TCSANOW));
-	const Int drain (name(TCSADRAIN));
-	const Int flush (name(TCSAFLUSH));
+	const Int now (name(TCSANOW), doc("Take the specified action now,"));
+	const Int drain (name(TCSADRAIN), doc("Empty output buffer and apply specified action."));
+	const Int flush (name(TCSAFLUSH), doc("Apply specified action once outout in buffer has been written."));
     }
 
     cStruct Termios (name(termios), doc("A structure representing the state of a terminal."))
@@ -549,11 +549,13 @@ term
 
 error
 {
+    attribute(doc("The unix.error module contains low level wrappers around C functions that revolve around error handling."));
     def String errorString(Int error) (name(strerror), doc("Returns a string that describes the error code passed in the argument. Equivalent to the C strerror function."));
     var Int errno (doc("The latest C library error to occur"));
 
     status
     {
+	attribute(doc("All known error statuses"));
 	const Int tooBig (name(E2BIG), doc("Argument list too long."));
 	const Int access (name(EACCES), doc("Permission denied."));
 	const Int addressInUse (name(EADDRINUSE), doc("Address already in use."));

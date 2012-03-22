@@ -2,15 +2,21 @@ attribute(doc("Simple high level error handling."));
 
 class Error (doc("The base class of any error"))
 {
-    var reflection.Continuation source(internal);
-    var String message;
+    var reflection.Continuation source(internal, doc("The continuation that triggered this error."));
+    var String message (doc("The error message"));
     def __init__(String message=?)
+    (
+	doc("Create a new error with the specified error message."),
+    )
     {
 	this.message = message;
 	source = reflection.currentContinuation;
     }
     
     def String toString()
+    (
+	doc("A string representation of this Error."),
+    )
     {
 	this.__type__.name;
     }
@@ -18,9 +24,12 @@ class Error (doc("The base class of any error"))
 
 error CError (doc("An error with an associated C error number"))
 {
-    var Int errno;
+    var Int errno (doc("The C error number"));
 
     def __init__(Int errno)
+    (
+	doc("Create a new error with the specified c error number."),
+    )
     {
 	this.errno = errno;
 	Error::__init__(this, unix.error.errorString(errno));
@@ -47,7 +56,16 @@ error LexError (extends(CompilationError), doc("A class reresenting an error in 
 {
 }
 
-def raiseError(Error error) (doc("Search the stack for a suitable handler for the specified error. If there is no such error handler, print the error and return."))
+def raiseError(Error error) 
+(
+    doc(
+	"Search the stack for a suitable handler for the specified error. If there is no such error handler, print the error and return.",
+	"The raiseError function is usually called through the raise macro like this:",
+	"<pre class='anna-code'>
+raise(SomeError(\"Something went wrong...\"));
+</pre>",
+	)
+)
 {
     def Object funEach(reflection.Continuation item)
     {

@@ -2525,7 +2525,7 @@ void anna_signalfd_flag_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"nonBlock", SFD_NONBLOCK, 0);
+    anna_module_const_int(stack, L"nonBlock", SFD_NONBLOCK, L"The resulting file descriptor is non-blocking");
     anna_module_const_int(stack, L"closeOnExec", SFD_CLOEXEC, 0);
     anna_stack_document(stack, L"Flags determining the mode for unix.proc.signalfd");
 
@@ -2553,9 +2553,9 @@ void anna_sigprocmask_flag_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"block", SIG_BLOCK, 0);
-    anna_module_const_int(stack, L"unblock", SIG_UNBLOCK, 0);
-    anna_module_const_int(stack, L"setMask", SIG_SETMASK, 0);
+    anna_module_const_int(stack, L"block", SIG_BLOCK, L"Block all the specified signals in addition to signals currently blocked.");
+    anna_module_const_int(stack, L"unblock", SIG_UNBLOCK, L"Stop blocking the specified signals.");
+    anna_module_const_int(stack, L"setMask", SIG_SETMASK, L"Set the exact new signal block mask.");
     anna_stack_document(stack, L"Flags determining the mode for unix.iosigprocmask");
 
     anna_type_data_register(anna_sigprocmask_flag_type_data, stack);
@@ -2741,31 +2741,31 @@ void anna_proc_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
         unix_signal_info_fd_type, anna_mid_get(L"signal"),
-        int_type, unix_i_signal_info_fd_signal_getter, unix_i_signal_info_fd_signal_setter, 0);
+        int_type, unix_i_signal_info_fd_signal_getter, unix_i_signal_info_fd_signal_setter, L"Signal number.");
 
     anna_member_create_native_property(
         unix_signal_info_fd_type, anna_mid_get(L"code"),
-        int_type, unix_i_signal_info_fd_code_getter, unix_i_signal_info_fd_code_setter, 0);
+        int_type, unix_i_signal_info_fd_code_getter, unix_i_signal_info_fd_code_setter, L"Signal code.");
 
     anna_member_create_native_property(
         unix_signal_info_fd_type, anna_mid_get(L"pid"),
-        int_type, unix_i_signal_info_fd_pid_getter, unix_i_signal_info_fd_pid_setter, 0);
+        int_type, unix_i_signal_info_fd_pid_getter, unix_i_signal_info_fd_pid_setter, L"PID of sender");
 
     anna_member_create_native_property(
         unix_signal_info_fd_type, anna_mid_get(L"uid"),
-        int_type, unix_i_signal_info_fd_uid_getter, unix_i_signal_info_fd_uid_setter, 0);
+        int_type, unix_i_signal_info_fd_uid_getter, unix_i_signal_info_fd_uid_setter, L"Real UID of sender");
 
     anna_member_create_native_property(
         unix_signal_info_fd_type, anna_mid_get(L"fd"),
-        int_type, unix_i_signal_info_fd_fd_getter, unix_i_signal_info_fd_fd_setter, 0);
+        int_type, unix_i_signal_info_fd_fd_getter, unix_i_signal_info_fd_fd_setter, L"File descriptor for io signal.");
 
     anna_member_create_native_property(
         unix_signal_info_fd_type, anna_mid_get(L"tid"),
-        int_type, unix_i_signal_info_fd_tid_getter, unix_i_signal_info_fd_tid_setter, 0);
+        int_type, unix_i_signal_info_fd_tid_getter, unix_i_signal_info_fd_tid_setter, L"Kernel timer id for signals relating to Posix timers");
 
     anna_member_create_native_property(
         unix_signal_info_fd_type, anna_mid_get(L"band"),
-        int_type, unix_i_signal_info_fd_band_getter, unix_i_signal_info_fd_band_setter, 0);
+        int_type, unix_i_signal_info_fd_band_getter, unix_i_signal_info_fd_band_setter, L"Band event for io signal");
     anna_member_create_native_method(
 	unix_signal_info_fd_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_signal_info_fd_init, object_type, 1, &unix_signal_info_fd_type, this_argn, 0, 0);    
@@ -4016,8 +4016,8 @@ void anna_flag_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"canonical", ICANON, 0);
-    anna_module_const_int(stack, L"echo", ECHO, 0);
+    anna_module_const_int(stack, L"canonical", ICANON, L"Read one character at a time.");
+    anna_module_const_int(stack, L"echo", ECHO, L"Echo characters to the screen.");
     anna_stack_document(stack, L"The different modes of a Termios structure.");
 
     anna_type_data_register(anna_flag_type_data, stack);
@@ -4044,9 +4044,9 @@ void anna_action_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
-    anna_module_const_int(stack, L"now", TCSANOW, 0);
-    anna_module_const_int(stack, L"drain", TCSADRAIN, 0);
-    anna_module_const_int(stack, L"flush", TCSAFLUSH, 0);
+    anna_module_const_int(stack, L"now", TCSANOW, L"Take the specified action now,");
+    anna_module_const_int(stack, L"drain", TCSADRAIN, L"Empty output buffer and apply specified action.");
+    anna_module_const_int(stack, L"flush", TCSAFLUSH, L"Apply specified action once outout in buffer has been written.");
     anna_stack_document(stack, L"The different action modes used by unix.term.setAttr.");
 
     anna_type_data_register(anna_action_type_data, stack);
@@ -4419,6 +4419,7 @@ void anna_status_load(anna_stack_template_t *stack)
     anna_module_const_int(stack, L"wouldBlock", EWOULDBLOCK, L"Operation would block (may be same value as again).");
     anna_module_const_int(stack, L"improperLink", EXDEV, L"Improper link.");
     anna_module_const_int(stack, L"exchangeFull", EXFULL, L"Exchange full.");
+    anna_stack_document(stack, L"All known error statuses");
 
     anna_type_data_register(anna_status_type_data, stack);
 }
@@ -4449,6 +4450,7 @@ void anna_error_load(anna_stack_template_t *stack)
     anna_member_create_native_property(
         stack_type, anna_mid_get(L"errno"),
         int_type, anna_unix_errno_getter, anna_unix_errno_setter, L"The latest C library error to occur");
+    anna_stack_document(stack, L"The unix.error module contains low level wrappers around C functions that revolve around error handling.");
 
     anna_type_data_register(anna_error_type_data, stack);
 }

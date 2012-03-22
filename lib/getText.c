@@ -9,7 +9,7 @@
     bind utility or update the binding source, which is located in the
     file:
 
-    bindings/getText.bind
+    internalBindings/getText.bind
 
  */
 

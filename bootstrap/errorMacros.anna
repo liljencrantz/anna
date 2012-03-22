@@ -6,6 +6,9 @@ macro raise(node)
 }
 
 macro errorType (node)
+(
+    doc("A type suitable for defining error types")
+)
 {
     node.function = ast(classType);
     (node[1] as Call).push(ast(extends(error.Error)));
@@ -14,6 +17,9 @@ macro errorType (node)
 }
 
 macro collect(definition)
+(
+    doc("Collect errors in the specified code blocks."),
+)
 {
     switch(definition.count)
     {
@@ -21,6 +27,7 @@ macro collect(definition)
 	{
 	    definition.error("Expected at least one argument.\n");
 	}
+
 	case(1)
 	{
 	    return ast(
@@ -32,6 +39,7 @@ macro collect(definition)
 		    }()
 		    )) % ["collect": Identifier(definition, "!collect"), "code": definition[0]];
 	}
+
 	default
 	{
   	    collectType := ast([]);
