@@ -7,6 +7,7 @@ expand(template);
 var io.File baseDir;
 var Int verbose;
 var HashMap«String, Operator» operatorLookup;
+var HashMap«String, MutableList«String»» keywordLookup;
 
 def main()
 (  
@@ -32,6 +33,8 @@ def main()
 	"__prevAssign__": Operator("--", "Move to previous element"),
 	"__not__": Operator("!", "Boolean negation"),
 	];
+
+    keywordLookup = «String, MutableList«String»»[];
     
     baseDir = io.File("documentation/api");
     verbose = system.argument[1] == "-v";
@@ -42,6 +45,7 @@ def main()
 	    doc.moduleTot, doc.memberTot, doc.memberTot-doc.memberMissing, 
 	    Int::convert(100 * (1 -(Float::convert(doc.memberMissing) / doc.memberTot)))]);  
     io.File("documentation/index.html").writeFile(template("util/document/index.html"));
+    io.File("documentation/js/keywordList.js").writeFile("anna.keywordList = ".thaw ~ json.to(keywordLookup) ~ ";\n");
 }
 
 def toggleCodePopup(String name, String text )
@@ -353,6 +357,17 @@ often used code paths, which makes it useful for regression testing.")
 
 	module.member.each(mem)
 	{
+	  alias := annaUtil.findAttribute(
+	      mem.attribute or (mem.value(?) as Function).attribute, "alias");
+	    (alias.map(a){a.toString()}.thaw ~ [mem.name]).each(name)
+	    {
+		if(!(name in keywordLookup))
+		{
+		    keywordLookup[name] = «String»[];
+		}
+		keywordLookup[name].push(path[module].link(path[global.__type__]) ~ "#" ~ mem.name);
+	    }
+	    
 	    if(mem.static?)
 	    {
   	        val := mem.value(?);

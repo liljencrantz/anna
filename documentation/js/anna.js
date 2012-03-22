@@ -7,9 +7,106 @@ var anna = {
     init: function(){
 	anna.makeToc();
 	anna.syntaxHighlight();
+	anna.initSearch();
 	anna.initCodePopup();
 	anna.initTables();
 	anna.initInternal();
+    },
+
+    /**
+      Search the api documentation index for the specified keyword,
+      and returns a dict with three items:
+
+      match: A list of all modules/types with a member that is an exact match
+
+      prefix: A list of all modules with a member that the given search term is a prefix for
+
+      partial: A list of all modules with a member that the given search term is a substring of
+     */
+    search: function(keyword)
+    {
+	var match = [];
+	var prefix = [];
+	var partial = [];
+	$.each(
+	    anna.keywordList, 
+	    function(key, value) {
+		var list = null;
+		if(key == keyword)
+		{
+		    list = match;
+		}
+		else {
+		    switch(key.indexOf(keyword))
+		    {
+		    case -1:
+			break;
+			
+		    case 0:
+			list = prefix;
+			break;
+			
+		    default:
+			list = partial;
+			break;
+		    }
+		}
+		if(list)
+		{
+		    list.push.apply(list, value);
+		}
+	    });
+	return {match: match, prefix: prefix, partial: partial};
+    },
+
+    /*
+      Set up the search box, if it exists
+    */
+    initSearch: function (){
+	function formatName(path) {
+	    var arr = path.split("/");
+	    module = arr[arr.length-1];
+	    arr[arr.length-1] = module.split(".")[0];
+	    arr.splice(0,1);
+	    return arr.join(".") + "::" + module.split("#")[1];
+	}
+
+	$(".anna-search").html("<em>Search:</em> <form><input class='anna-search'></input name='search'></form>");
+	$(".anna-search form").submit(
+	    function(event)
+	    {
+		var keyword =event.target[0].value;
+		var result = anna.search(keyword);
+		var out = $(".anna-search-result");
+		var count = 0;
+		out.children().remove();
+		$.each(
+		    [result.match, result.prefix, result.partial],
+		    function(idx, list)
+		    {
+			count += list.length;
+			$.each(
+			    list,
+			    function (idx, value)
+			    {
+				out.append($("<li>").append($("<a>").text(formatName(value)).attr("href", anna.basePath + "api/" + value)));
+			    });
+		    });
+		$(".anna-search-message").text(count==0?"No matches found for search term «" + keyword + "».": "Found " + count + " matches for keyword «" + keyword + "»:");
+		anna.showPopup("#anna-search-toggle");
+		return false;
+	    });
+
+	$(
+"	  <div class='anna-code-popup' id='anna-search-toggle' style='display: none;'>\n" +
+"	    <div class='anna-code-popup-inner'>\n" +
+"              <span class='anna-code-popup-close'>X</span>\n"+
+"              <h3>Search results</h3>\n" +
+"	      <div class='anna-search-message'></div>\n"+
+"	      <ul class='anna-search-result'></ul>\n"+
+"	    </div>\n"+
+"	  </div>\n"
+).prependTo(".anna-main-inner");
     },
 
     initInternal: function()
@@ -94,6 +191,15 @@ var anna = {
 	
 	it.fadeIn('fast');
 	anna.currentPopup = it[0];
+    },
+
+    showPopup: function (selector)
+    {
+	var it = $(selector);
+	if(it[0] != anna.currentPopup)
+	{
+	    anna.togglePopup(selector);
+	}
     },
     
     /*

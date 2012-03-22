@@ -1,0 +1,68 @@
+attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been written. Since Anna has no boolean type, true/false varluse currently aren't handled."));
+
+def String to(Object o) (doc("Serialize the specified object into JSON"))
+{
+    if(!o)
+    {
+	return "null";
+    }
+    
+    switch(o)
+    {
+	case(str as String)
+	{
+	    res := "\"".thaw;
+	    str.each(ch)
+	    {
+		switch(ch.ordinal)
+		{
+		    case('\n'.ordinal)
+		    {
+			res ~= "\\n";
+		    }
+		    case('"'.ordinal)
+		    {
+			res ~= "\\\"";
+		    }
+		    cases(0..32)
+		    {
+			res ~= "\\x" ~ ch.ordinal.format(16).lpad(count: 2, char: '0');
+		    }
+		    cases(128...)
+		    {
+			res ~= "\\u" ~ ch.ordinal.format(16).lpad(count: 4, char: '0');
+		    }
+		    default
+		    {
+			res ~= ch;
+		    }
+		}
+	    }
+	    res ~= "\"";
+	    return res;
+	}
+	
+	case(val as Int)
+	{
+	    return String::convert(val);
+	}
+
+	case(val as Float)
+	{
+	    return String::convert(val);
+	}
+
+	case(lst as List)
+	{
+	    return "[" ~ ", ".join(lst.map(el){to(el)}) ~ "]";
+	}
+
+	case(hmap as HashMap)
+	{
+	    return "{" ~ ", ".join(hmap.map(key, el){to(key) ~ ": " ~ to(el)}) ~ "}";
+	}
+
+    }
+    return ?;
+}
+

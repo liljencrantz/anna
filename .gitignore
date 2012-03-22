@@ -21,3 +21,4 @@ leaks*
 junk
 lib/curses.c
 lib/math.c
+documentation/js/keywordList.js

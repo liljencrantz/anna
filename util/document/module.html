@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="<%= basePath %>css/anna.css" type="text/css" />
     <script type="text/javascript" src="<%= basePath %>js/jquery.js"></script>
     <script type="text/javascript" src="<%= basePath %>js/anna.js"></script>
+    <script type="text/javascript" src="<%= basePath %>js/keywordList.js"></script>
+    <script type="text/javascript">
+      anna.basePath = <%= json.to(basePath) %>;
+    </script>
 
   </head>
   <body>
@@ -172,6 +176,9 @@
 	    <input type="checkbox" id="anna-internal-toggle"><label for="anna-internal-toggle">Show internal members</label>
 	  </div>
 	  <div>
+	    <div class="anna-search">
+	    </div>
+
 	    <h2>Table of content</h2>
 	    <div class="toc"></div>
 	    
