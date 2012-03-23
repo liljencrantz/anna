@@ -1,7 +1,9 @@
-attribute(doc("Helper commands for the anna repl implementation. 
-This module is automatically used by the anna interactive prompt."));
+attribute(doc("
+Helper commands for the anna repl (interactive prompt) implementation.
+This module is automatically used by the anna interactive prompt, and
+there is very rarely any reason to use it manually."));
 
-def formatList(List«Object» wordList) (internal)
+def formatList(List«Object» wordList) (internal, doc("Internal helper method for dir and help, used to line break a list of strings."))
 {
   res := "".thaw;
   col := 0;
@@ -35,7 +37,9 @@ def formatList(List«Object» wordList) (internal)
 
 
 def help(Object object)
-    (doc("This is the main help function of the interactive Anna command line. It takes any object as a parameter and uses introspection to provide as much help as possible for the user."))
+    (doc(
+	"This is the main help function of the interactive Anna command line. It takes any object as a parameter and uses introspection to provide as much help as possible about that object to the user.",
+	"If the object is a Type"))
 {
     use(parser);
     use(reflection);

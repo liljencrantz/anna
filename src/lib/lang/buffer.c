@@ -258,7 +258,15 @@ void anna_buffer_type_create()
 
     anna_type_document(
 	type,
-	L"The buffer type represents a byte oriented mutable array of binary data. It is primarily used for reading and writing from file descriptors.");  
+	L"The buffer type represents a byte oriented mutable array of binary data. It is primarily used for reading and writing from file descriptors, but can also be used to encode text strings to a specific encoding and various other low level tasks.");  
+
+    anna_type_document(
+	type,
+	L"Buffers are in many ways similar to a list of Int objects, except that the values have a range of 0 to 255 and can not be null. These differences make it possible to make the Buffer type significantly more efficient than a List, in addition to making them suitable for low level calls like unix.io.read and unix.io.write.");  
+
+    anna_type_document(
+	type,
+	L"All buffers are read-write, though it is possible that a future Anna version will provide read only buffers.");  
 
     anna_member_create(
 	type, ANNA_MID_BUFFER_PAYLOAD, 0, null_type);
