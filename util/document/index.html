@@ -16,7 +16,7 @@
 	  <pre class="anna-code">
 def main()
 {
-    print("Hello, World!\n");
+    print("Hello, World!");
 }
 	  </pre>
 	  <p>
@@ -101,7 +101,7 @@ def Int fibonacci(Int n)
 
 def main()
 {
-    print(fibonacci(20), "\n");
+    print(fibonacci(20));
 }
 	  </pre>
 	  <p>
@@ -177,10 +177,10 @@ return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
 	  <pre class="anna-code">
 def main()  
 {
-    foo := 3;         // Declare foo as 3
-    print(foo, "\n"); // Print 3
-    foo = 5;          // Assign 5 to foo
-    print(foo, "\n"); // Print 5
+    foo := 3;      // Declare foo as 3
+    print(foo);	   // Print 3
+    foo = 5;       // Assign 5 to foo
+    print(foo);    // Print 5
 }
 	  </pre>
 	  <p>
@@ -189,7 +189,7 @@ def main()
 	  <ul>
 	    <li>
 	      To declare a variable, write the variable name, followed
-	      by <code class="anna-code">:=</code> and the initial value for the varialbe.
+	      by <code class="anna-code">:=</code> and the initial value for the variable.
 	    </li>
 	    <li>
 	      To assign a new value to an existing variable, write the
@@ -214,7 +214,28 @@ foo := 3 as Object;  // Declare foo as a variable of type Object
 	    The above code will declare the variable foo, which will be of
 	    type Object. Object is the root of the Anna type tree, which
 	    means that objects of any type can be cast to an Object. The
-	    initial value of the foo variable is the integer 3.
+	    initial value of the foo variable is the integer 3. 
+	  </p>
+	  <p>
+	    So what happens if we try to perform an invalid cast? Let's find out!
+	  </p>
+	  <pre class="anna-code">
+print(3 as String);  // Invalid cast, returns null
+	  </pre>
+	  <p>
+	    When we try to perform an invalid cast, the null value
+	    will be returned instead. That's easy enough.
+	    </p>
+	  <p>
+	    One important difference between Anna and other C-like
+	    languages should be noted here, namely that Anna does not
+	    consider conversion and casting to be the same thing.  In
+	    In Anna, converting an object to a different type is done
+	    using code
+	    like <code class='anna-code'>Float::convert(someInt)</code>.
+	    To learn more about converting, see the manual
+	    section <a href='#misc-casting-vs-converting'>Casting and
+	    converting</a>.
 	  </p>
 	  <p>
 	    Anna also has constants. Constants are like variables, except
@@ -229,23 +250,24 @@ pi :== 4.0;    // Declare pi as a constant with value 4.0
 	    click <a href="#type-inference">here</a>. Otherwise, continue
 	    reading.
 	  </p>
+	  
 	  <h3><a name="examples-numbers">Numbers</a></h3>
 	  <pre class="anna-code">
 /*
   Prints 1307674368000. Integers in Anna are arbitrary precision, so there are 
   no overflows
 */
-print(1*2*3*4*5*6*7*8*9*10*11*12*13*14*15, "\n");
+print(1*2*3*4*5*6*7*8*9*10*11*12*13*14*15);
 
 // Underscores in numeric literals are ignored
-print(100_000_000, "\n");
+print(100_000_000);
 
 // Hexadecimal, binary and octal integer literals
-print(0xdeadbeef, 0b010101, 0o777, "\n");
+print(0xdeadbeef, 0b010101, 0o777);
 
 // This is a decimal integer literal, not an octal one. Use the 0o prefix to 
 // specify octal integer literals 
-print(0777, "\n");
+print(0777);
 
 // Prints 3.5. The output type of Int/Float algebra is always a Float. 
 print(1 + 2.5);
@@ -288,7 +310,7 @@ lst := ["first", "second", "third", "fourth"]
 print(lst[0], lst[-1]);
 
 // Print the number of members. In this case, that is '4'
-print(lst.count, "\n");
+print(lst.count);
 
 // Truncate the list to three elements
 lst.count = 3;
@@ -302,10 +324,10 @@ lst.count = 15;
 lst2 := lst[1..3]
 
 // Print the number of members. In this case, that is '2'
-print(lst2.count, "\n");
+print(lst2.count);
 
 // Prints the first member of lst2, which is "second"
-print(lst2[0], "\n");
+print(lst2[0]);
 
 /* 
   Lists are suitable for use as stacks. Use the push and pop methods
@@ -321,7 +343,7 @@ lst2.push("last");
 print(lst2.pop());
 
 // The «empty?» property is 1 if the list is empty, and null otherwise
-print(lst.empty?, "\n")
+print(lst.empty?)
 
 // Join two lists together
 lst3 := ["Spoon", "Banana"] ~ lst2;
@@ -355,7 +377,7 @@ objList := «Object»[1, 3, 5, "foo", 6.666]
   It returns null if not, and the integer offset of the item if true.
   In this case, «3» will be printed.
 */
-print("foo" in objList, "\n");
+print("foo" in objList);
 	  </pre>
 	  <ul>
 	    <li>
@@ -406,7 +428,7 @@ print("foo" in objList, "\n");
 hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
 
 // Print the number of members. In this case, that is '4'
-print(hash.count, "\n");
+print(hash.count);
 
 // Hashes are not ordered, so there is no well defined way to truncate them.
 // For that reason, the count property for hashes is read only, making this a 
@@ -414,7 +436,7 @@ print(hash.count, "\n");
 hash.count = 3;
 
 // Prints the value associated with the key "third", which is "C".
-print(hash["third"], "\n");
+print(hash["third"]);
 
 // Add another mapping
 hash["other"] = "unknown";
@@ -435,7 +457,7 @@ print(hash["unknown"]);
   not the keys. It returns null if not, and non-null otherwise. In this case, 
   «?» will be printed.
 */
-print("unknown" in hash, "\n");
+print("unknown" in hash);
 	  </pre>
 	  <ul>
 	    <li>
@@ -487,7 +509,7 @@ myFun(1, 2.0, "", 'a');
 	  <pre class="anna-code">
 while(1)
 {
-    print("Are we having fun yet?\n");
+    print("Are we having fun yet?");
 }
 	  </pre>
 	  <p>
@@ -521,7 +543,7 @@ while(1)
 	  </p>
 	  <pre class="anna-code">
 temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
-temperatures.each(day,value){print("Day: ", day, ", temperature: ", value, "\n")}
+temperatures.each(day,value){print("Day: ", day, ", temperature: ", value)}
 	  </pre>
 
 	  <h3><a name="examples-ranges">Ranges</a></h3>
@@ -559,10 +581,10 @@ print(5..20|6);
 */
 
 // This outputs [2, 8, 6, 1, 1, 4]
-print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...], "\n") 
+print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...]) 
 
 // This outputs «banana»
-print("abrainbadnoah\n"[1|2...]);
+print("abrainbadnoah"[1|2...]);
 	  </pre>
 	  <ul>
 	    <li>
@@ -576,7 +598,7 @@ print("abrainbadnoah\n"[1|2...]);
 	  </p>
 	  <pre class="anna-code">
 // Prints 2, 3 and 4, on separate lines
-[1, 2, 3].map(i){i+1}.each(i){print(i,'\n')}
+[1, 2, 3].map(i){i+1}.each(i){print(i)}
 // Filters out the even numbers for the list
 [1, 2, 3, 4].filter(i){i ^mod 2 == 0}
 	  </pre>
@@ -646,12 +668,12 @@ level := (system.argument[1] == "--level") and Int::convert(system.argument[2]) 
 	  
 	  <h3><a name="examples-null">Null</a></h3>
 	  <p>
-	    The null object has all members, and their value is
-	    null. Calling any method on the null object will return
-	    null. Calling a method or accessing a member on the null
-	    object is not an error. Many functions in the Anna
-	    standard library also return null when given a null
-	    argument.
+	    The null object (which is written <code>?</code>) has all
+	    members, and their value is null. Calling any method on
+	    the null object will return null. Calling a method or
+	    accessing a member on the null object is not an
+	    error. Many functions in the Anna standard library also
+	    return null when given a null argument.
 	  </p>
 	  <pre class="anna-code">
 // This will print «nullnullnullnullnull»
@@ -675,7 +697,7 @@ def myFunctionDecl(Int arg)
   that is, a function not bound to a constant name. We can do this when we 
   simply want to send a function as a parameter to another function call:
 */
-print(functional.reduce([1,2,3,4], 0, def (Int a, Int b){a+b}), "\n");
+print(functional.reduce([1,2,3,4], 0, def (Int a, Int b){a+b}));
 
 /*
   Creating a named function is really just a short hand for doing two
@@ -699,14 +721,14 @@ myFunctionVar := def (Int arg){ arg+1 }
   It (obviously) doesn't matter if you're calling a function variable or a 
   function constant. This will print 8.
 */
-print(myFunctionVar(7), "\n");
+print(myFunctionVar(7));
 
 /*
   But a variable can be reassigned. This will print 7, because the function 
   variable has been reassigned.
 */
 myFunctionVar = def (Int arg){ arg }
-print(myFunctionVar(7), "\n");
+print(myFunctionVar(7));
 	  </pre>
 	  
 
@@ -726,11 +748,11 @@ class MyClass
     {
         // If an identifier can't be found in the scope of the local 
         // function, the object scope is automatically checked.
-        print(myMember, "\n");
+        print(myMember);
 
         // The identifier «this» automatically exists and points to
         // the current object
-        print(this.__type__.name, "\n");
+        print(this.__type__.name);
     }
 
 }
@@ -759,18 +781,18 @@ myInstance.myMethod();
   count property of the List type returns the number of elements in the list.
 */
 myList := [1, 2, 3];
-print(myList.count, "\n"); // This prints 3
+print(myList.count); // This prints 3
 myList.push(0);
-print(myList.count, "\n"); // This prints 4
+print(myList.count); // This prints 4
 
 /*
   Some properties are read only, like List::empty?, but others can be written to
   as well as read. MutableList::count can be written to.
 */
 myList.count = 2; // This truncates the list
-print(myList, ' ', myList.count, "\n"); // This prints [1, 2] 2
+print(myList, myList.count); // This prints [1, 2] 2
 myList.count = 5; // This will null-pad the list to five elements.
-print(myList.count, "\n"); // This prints 5
+print(myList.count); // This prints 5
 
 /*
   Defining you own properties is straight forward. Define a getter and
@@ -789,7 +811,7 @@ class PropertyExample
 
     def mySetter(Int val)
     {
-        print("Setting myProperty to %\n" % [val]);
+        print("Setting myProperty to %" % [val]);
         propValue = val;
     }
 
@@ -850,7 +872,7 @@ class MyClass
 
         // This might seem meaningless, but can actually be quite useful 
         // in static methods of subclassed types.
-	print(this, " ", this::staticMeth, "\n");
+	print(this, this::staticMeth);
     }
 
 }
@@ -952,7 +974,7 @@ alsoUseless := ["useless"].thaw;
   thing := "tea";
   thing2 := thing.thaw;
   thing2 ~= "pot";
-  print("I'm a little %\n" % [thing]);
+  print("I'm a little %" % [thing]);
 	  </pre>
 	  <p>
 	    For more information on mutability in Anna, see
@@ -1024,9 +1046,9 @@ class Foo (template(%op:__add__))
 def Int main()
 {
     foo := Foo();
-    print(foo.bar(3,4),"\n");
+    print(foo.bar(3,4));
     boo := Foo«__sub__»();
-    print(boo.bar(3,4),"\n");
+    print(boo.bar(3,4));
 }
 
 // On some keyboard layouts, «» may not be easily accessible. And If you're
@@ -1141,22 +1163,22 @@ expandCode(
     {
 	case(2,4,6,8)
 	{
-	    print("Even\n");
+	    print("Even");
 	}
 
 	case(7)
 	{
-	    print("Seven\n");
+	    print("Seven");
 	}
 
 	cases(1..5|2)
 	{
-	    print("Odd\n");
+	    print("Odd");
 	}
 
 	default
 	{
-	    print("Whatever\n");
+	    print("Whatever");
 	}
     }
 }
@@ -1170,22 +1192,22 @@ expandCode(
     {
 	case("abc")
 	{
-	    print("abc\n");
+	    print("abc");
 	}
 
 	case("b", "bb", "bbb")
 	{
-	    print("Bunch of b:s\n");
+	    print("Bunch of b:s");
 	}
 
 	cases(["a":?, "o":?, "u":?, "e":?, "i":?, "y":?])
 	{
-	    print("Vowel\n");
+	    print("Vowel");
 	}
 
 	default
 	{
-	    print("Don't righly know\n");
+	    print("Don't righly know!");
 	}
     }
 }
@@ -1197,22 +1219,22 @@ expandCode(
     {
 	case(i as Int)
 	{
-	    print("It is an Int, its square is ", i*i, "\n");
+	    print("It is an Int, its square is ", i*i);
 	}
 
 	case(f as Float)
 	{
-	    print("It is a Float, its square root is ", math.sqrt(f), "\n");
+	    print("It is a Float, its square root is ", math.sqrt(f));
 	}
 
 	case(s as String)
 	{
-	    print("It is a String, its length is ", s.count, "\n");
+	    print("It is a String, its length is ", s.count);
 	}
 
 	default
 	{
-	    print("Don't know, don't care\n");
+	    print("Don't know, don't care");
 	}
     }
 }
@@ -1236,7 +1258,7 @@ expandCode(
 */
 myVar := struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
 // Prints «10 helloworld 2»
-print(myVar.someNumber + 3, ' ', myVar.someString ~ "world", myVar.someList[1]);
+print(myVar.someNumber + 3, myVar.someString ~ "world", myVar.someList[1]);
 	  </pre>
 	  <p>
 	    <code class="anna-code">struct</code> is just a regular
@@ -1267,13 +1289,13 @@ enum MyEnum2
 def main()  
 {
     // This will print the names of these three enum values, namely «foo bar baz»
-    print(MyEnum::foo, ' ', MyEnum::bar, ' ', MyEnum::baz, "\n");
+    print(MyEnum::foo, MyEnum::bar, MyEnum::baz);
     // This will print the actual integer value, which is 0
-    print(MyEnum::foo.__value, "\n");
+    print(MyEnum::foo.__value);
     // MyEnum2 starts at offset -7, so this will print «-7 -6 -5»
     print(
-        MyEnum2::aaa.__value, ' ', MyEnum2::bbb.__value, ' ', 
-        MyEnum2::ccc.__value, "\n");
+        MyEnum2::aaa.__value, MyEnum2::bbb.__value, 
+        MyEnum2::ccc.__value);
 }
 	  </pre>
 
@@ -1565,7 +1587,7 @@ TODO
 	      times. Variables in Anna are usually declared by writing
 	      something like <code class="anna-code">foo :=
 	      bar();</code>. Note the use of := instead of plain old
-	      =. This makes the above expressioin into a variable
+	      =. This makes the above expression into a variable
 	      declaration, not an assignment. The correct type for the
 	      foo variable in the code above is determined at compile
 	      time by inspecting the return type of the foo
@@ -1577,7 +1599,7 @@ TODO
 	      Say you've written a class A, and it implements all of
 	      the members of an interface/class B. You do not need to
 	      explicitly say that A <em>is</em> a B, the interpreter
-	      figures out for itself that the class A can masque as
+	      figures out for itself that the class A can mask as
 	      B. This is called structural typing. The benefits of
 	      structural typing may not be obvious at once, but it
 	      makes it easier to write unit tests and makes code
@@ -1589,9 +1611,9 @@ TODO
 	    </li>
 	    <li>
 	      There are no statements in Anna, only expressions. The
-	      if expression, for example, returns the output of the
-	      conditional block that was executed. The Anna equivalent
-	      of the C ternary operator
+	      if expression, for example, returns the output of
+	      whichever conditional block was executed. The Anna
+	      equivalent of the C ternary operator
 	      becomes <code class="anna-code">foo = if (a>3) {3} else
 	      {a}</code>. If a function reaches the end of it's block
 	      without encountering a return statement, the output from
@@ -1610,14 +1632,15 @@ TODO
 	    separate template metaprogramming language is needed.
 	  </p>
 	  <p>
-	    There are two basic building blocks of Anna that allow you to
-	    redefine the language. They are macros and continuations. We'll
-	    explan them brifely. C and C++ coders may think to themselves
-	    that they know macros, and they really aren't that great. In one
-	    sense they'd be correct, because C-style macros really aren't
-	    that great. Ignore C macros, lets instead talk about Anna style
-	    macros, because they're actually pretty neat. But first, just a
-	    little bit of background.
+	    There are two fundamental building blocks in Anna that
+	    allow you to redefine the language. They are macros and
+	    continuations. We'll explain both brifely. C and C++
+	    coders may think to themselves that they know macros, and
+	    they really aren't that great. In one sense they'd be
+	    correct, because C-style macros really aren't that
+	    great. Ignore C macros, lets instead talk about Anna style
+	    macros, because they're actually pretty neat. But first,
+	    just a little bit of background.
 	  </p>
 	  <h3><a name="intro-c-macros">Macros, redefined</a></h3>
 	  <p>
@@ -1626,11 +1649,11 @@ TODO
 	    short. 
 	  </p>
 	  <p>
-	    Every node in the AST tree above is at some point a
-	    regular Anna object, and the compiler can alter these
-	    nodes as it sees fit. That's pretty nifty, but how does
-	    that tie in with us? Anna has two keywords for defining a
-	    function, namely <code class="anna-code">def</code>
+	    Every node in an AST is a regular Anna object, and the
+	    compiler can alter these nodes as it sees fit. That's
+	    pretty nifty, but how does that tie in with us? Anna has
+	    two keywords for defining a function,
+	    namely <code class="anna-code">def</code>
 	    and <code class="anna-code">macro</code>. They work pretty
 	    much the same, they both let you define a piece of code
 	    with a few input parameters and a few output
@@ -1690,9 +1713,8 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    libraries that do the same thing LINQ does, but better.
 	  </p>
 	  <p>
-	    Various parts of Anna, including
-	    the <a href="#examples-switch">switch expression</a> and
-	    the <a href="#examples-enum">enum type</a> are actually implemented using macros.
+	    But enough talk about what could theoretically be done with macros - it turns out that pretty large parts of Anna already are implemented that way. <a href="#examples-switch">Switch expression</a> and
+	    the <a href="#examples-enum">enum type</a> are macros. As is <a href="#examples-expandCode">expandCode</a>.
 	  </p>
 	  <h3><a name="intro-c-continuations">Continuations, continued</a></h3>
 	  <p>
@@ -1772,7 +1794,7 @@ def Int fibonacci(Int n)
 
 def main()
 {
-    print(fibonacci(20), "\n");
+    print(fibonacci(20));
 }
 	  </pre>
 	  <p>
@@ -1783,7 +1805,7 @@ def main()
 	    functions:
 	  </p>
 	  <pre class="anna-code">
-functionExpectingAFunctionAsAParameter(def (){print("I am happy\n")});
+functionExpectingAFunctionAsAParameter(def (){print("I am happy")});
 	  </pre>
 	  <p>
 	    Much like in Ruby, there is a very simple shortcut for
@@ -1794,7 +1816,7 @@ functionExpectingAFunctionAsAParameter(def (){print("I am happy\n")});
 	    like this:
 	  </p>
 	  <pre class="anna-code">
-functionExpectingAFunctionAsAParameter {print("I am happy\n")};
+functionExpectingAFunctionAsAParameter {print("I am happy")};
 	  </pre>
 	  <p>
 	    Another way in which Anna is like Python and Ruby is the
@@ -2076,7 +2098,7 @@ collect
 	case (pErr as PermissionError)
         {
 	    /* If we encounter a permission error, exit the program */
-	    print("Access denied! Shutting down\n");
+	    print("Access denied! Shutting down");
 	    exit(1);
 	}
 	default 
@@ -2182,7 +2204,7 @@ f.close();
 	  <pre class="anna-code">
 // Define a block
 {
-    print("This is a block, and it will not get run\n");
+    print("This is a block, and it will not get run");
 }
 	  </pre>
 	  <p>
@@ -2195,13 +2217,13 @@ f.close();
 	  <pre class="anna-code">
 // Define a block and explicitly call it
 {
-    print("This block will be run because it is explicitly called\n");
+    print("This block will be run because it is explicitly called");
 }();
 
 // Define a block and assign it to the variable myBlock
 myBlock := 
 {
-    print("This is yet another block\n");
+    print("This is yet another block");
 };
 myBlock();
 
@@ -2216,13 +2238,13 @@ myBlock();
 // Define an anonymous function and explicitly call it
 def ()
 {
-    print("This function will be run because it is explicitly called\n");
+    print("This function will be run because it is explicitly called");
 }()
 
 // Define a named function
 def myFun()
 {
-    print("This is yet another function\n");
+    print("This is yet another function");
 }
 myFun();
 	  </pre>
@@ -2298,7 +2320,7 @@ switch(x)
     ...
 }
 
-(0..10).map(idx){0.0+x}.each(val){print(idx,"\n")}
+(0..10).map(idx){0.0+x}.each(val){print(idx)}
 	  </pre>
 	  <p>
 	    As you can see, this syntax (which has been adapted from
@@ -2788,7 +2810,7 @@ def outerFunction(Int value)
     alias(myAlias)
 )
 {
-    print("outer %\n" % [value]);
+    print("outer %" % [value]);
 }	    
 
 {
@@ -2797,7 +2819,7 @@ def outerFunction(Int value)
         alias(myAlias)
     )
     {
-        print("inner %\n" % [value]);
+        print("inner %" % [value]);
     }	    
 
     /*
@@ -2810,7 +2832,7 @@ def outerFunction(Int value)
       This is an error - aliases can only be used when calling a function. 
       They are ignored when performing regular variable lookup.
     */
-    print(myAlias, "\n");
+    print(myAlias);
 }()
 	  </pre>
 
@@ -2819,13 +2841,19 @@ def outerFunction(Int value)
 	    In most C-like languages, the operation of casting a value
 	    to a new type (an operation which does not create a new
 	    object) and the operation of converting a value to a
-	    different type (an operation which
-	    <em>does</em> create a new object of a different type) use
-	    the same syntax, even though they are fundamentally
-	    different operations. This is not so in Anna.
+	    different type (an operation which creates a new object of
+	    a different type, which should approximate the original
+	    object in some way) use the same syntax, even though they
+	    are fundamentally very different operations. For example,
+	    in C# or Java, one casts an object <code>someObject</code>
+	    to the type <code>SomeType</code> using code
+	    like <code>(SomeType)someObject</code>, and similarly,
+	    converting the integer <code>someInt</code> to the
+	    type <code>double</code> is done
+	    using <code>(float)someInt</code>. This is not so in Anna.
 	  </p>
 	  <p>
-	    The casting operator <code class="anna-code">as</code> can
+	    The casting operator <code class="anna-code">as</code> will
 	    never create a new object. It simply either returns
 	    exactly the same object cast to a different type, or, if
 	    the specified object can not be cast to that type, null is
@@ -2847,7 +2875,8 @@ def outerFunction(Int value)
 	  <p>
 	    Note that there is nothing magical about
 	    a <code>convert</code> method. It is simply a naming
-	    convention.
+	    convention, and it is the responsibility of every type
+	    author to create suitable convert methods for their types.
 	  </p>
 	  
 
@@ -2906,8 +2935,8 @@ macro setFooToValue(call)
 	      identifier needs to be upper case.
 	    </li>
 	    <li>
-	      Not replacing an internal identifier with something else
-	      will result in a compilation error.
+	      If any internal identifiers remain at the end of the
+	      macro expansion phase, a compiler error wll result.
 	    </li>
 	  </ul>
 	  <p>
@@ -2935,10 +2964,10 @@ macro setFooToValue(call)
 	  </p>
 	  <pre class="anna-code">
 // Prints «This string is used as a template»
-print("This string is used as a %\n" % ["template"]);
+print("This string is used as a %" % ["template"]);
 // Prints «A fancy string uses fancy named placeholders»
 print(
-    "A %(quality) string uses %(quality) named placeholders\n"
+    "A %(quality) string uses %(quality) named placeholders"
      % ["quality": "fancy"]);
 
 /*
@@ -3048,13 +3077,13 @@ date += isoDateDelta(x-0-0, 1:00);
 	      a <code class="anna-code">MutableList</code> and
 	      an <code class="anna-code">ImutableList</code> flavor,
 	      both of which are templates that can be specialized to
-	      store any type.
+	      store any type, e.g. <code class='anna-code'>MutableList«Int»</code>.
 	    </li>
 	    <li>
 	      <code class="anna-code">HashMap</code>, an unordered
 	      collection using arbitrary objects as keys, and is a
 	      template that can be specialized to store any key/value
-	      type pair.
+	      type pair, e.g. <code class='anna-code'>HashMap«String, List«Pair«Int, Float»»»</code>.
 	    </li>
 	    <li>
 	      <code class="anna-code">Range</code>, which defines a
@@ -3414,7 +3443,7 @@ def someFunction()
     use(math);
     // Because of the use expression, pi in the expression below will be
     // resolved to math.pi, e.g. the constant pi in the math library.
-    print(pi, "\n");
+    print(pi);
 }
 	  </pre>
 	  <ul>
@@ -3460,7 +3489,7 @@ def someFunction()
     push(1);
     push(2);
     push(3);
-    print(pop(), ' ', pop(), ' ', pop(), '\n');
+    print(pop(), pop(), pop());
 	  </pre>
 	  <h1><a name="design">Design choices</a></h1>
 	  <p>
@@ -3713,7 +3742,7 @@ class Foo (template(%op:?)) {
 def Int main()
 {
     boo := Foo«a &gt; b»();
-    print(boo.bar(3,4),"\n");
+    print(boo.bar(3,4));
 }
 	  </pre>
 	  <p>
