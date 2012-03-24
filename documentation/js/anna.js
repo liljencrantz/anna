@@ -242,7 +242,7 @@ var anna = {
 
 	var pattern = [];
 
-	$.each(["type", "error", "enum", "var", "const", "def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default", "macro", "or", "and"], function (key, value) {
+	$.each(["type", "error", "enum", "var", "const", "def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default", "macro", "or", "and", "in"], function (key, value) {
 	    pattern.push({regExp: new RegExp("\\b(" + value + ")\\b", "g"), replacement: "<span class='anna-keyword'>$1</span>"});
 	});
 	pattern.push({regExp: new RegExp("\\b(_*[A-Z][a-z0-9A-Z_]*)\\b", "g"), replacement: "<span class='anna-type'>$1</span>"});
