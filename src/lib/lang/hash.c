@@ -847,6 +847,52 @@ ANNA_VM_NATIVE(anna_hash_set_default, 2)
     return this->default_value = param[1];
 }
 
+ANNA_VM_NATIVE(anna_hash_get_keys, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *this_obj = anna_as_obj_fast(param[0]);
+    anna_hash_t *this = ahi_unwrap(this_obj);
+    anna_object_t *res = anna_list_create_mutable(
+	anna_hash_get_key_type(this_obj->type));
+    int i;
+    size_t sz = this->mask+1;
+    
+    for(i=0; i<sz; i++){
+	anna_hash_entry_t *e = &this->table[i];
+	if(hash_entry_is_used(e))
+	{
+	    anna_list_add(
+		res,
+		e->key);
+	}
+    }
+    return anna_from_obj(res);
+}
+
+ANNA_VM_NATIVE(anna_hash_get_values, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *this_obj = anna_as_obj_fast(param[0]);
+    anna_hash_t *this = ahi_unwrap(this_obj);
+    anna_object_t *res = anna_list_create_mutable(
+	anna_hash_get_value_type(this_obj->type));
+    int i;
+    size_t sz = this->mask+1;
+    
+    for(i=0; i<sz; i++){
+	anna_hash_entry_t *e = &this->table[i];
+	if(hash_entry_is_used(e))
+	{
+	    anna_list_add(
+		res,
+		e->value);
+	}
+    }
+    return anna_from_obj(res);
+}
+
+
+
 /**
    This is the bulk of the each method
  */
@@ -1112,6 +1158,16 @@ static void anna_hash_type_create_internal(
 	type, anna_mid_get(L"default"), spec2,
 	&anna_hash_get_default, &anna_hash_set_default,
 	L"The default value returned by this map if the specified key does not exist.");
+
+    anna_member_create_native_property(
+	type, anna_mid_get(L"keys"), anna_list_type_get_mutable(spec1),
+	&anna_hash_get_keys, 0,
+	L"Returns a list containing all the keys of this HashMap.");
+
+    anna_member_create_native_property(
+	type, anna_mid_get(L"values"), anna_list_type_get_mutable(spec2),
+	&anna_hash_get_values, 0,
+	L"Returns a list containing all the values of this HashMap.");
 
     anna_type_t *fun_type = anna_type_get_iterator(
 	L"!MapIterFunction", spec1, spec2);
