@@ -152,12 +152,17 @@ static void anna_int_del(anna_object_t *victim)
     mpz_clear(*anna_int_unwrap(victim));
 }
 
-ANNA_VM_NATIVE(anna_int_convert_string, 1)
+ANNA_VM_NATIVE(anna_int_convert_string, 2)
 {
-    if(anna_entry_null(param[0]))
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+
+    int base = anna_as_int(param[1]);
+    if(base < 2 || base > 36)
     {
 	return null_entry;
     }
+
     wchar_t *str = anna_string_payload(anna_as_obj(param[0]));
     if(wcslen(str) != anna_string_get_count(anna_as_obj(param[0])))
     {
@@ -171,8 +176,7 @@ ANNA_VM_NATIVE(anna_int_convert_string, 1)
     {
 	c++;
 	sign = -1;
-    }
-    
+    }    
     
     mpz_t res;
     mpz_t mpval;
@@ -181,7 +185,7 @@ ANNA_VM_NATIVE(anna_int_convert_string, 1)
     mpz_init(mpval);
     mpz_init(mpbase);
     mpz_set_si(res, 0);
-    mpz_set_si(mpbase, 10);
+    mpz_set_si(mpbase, base);
     wchar_t ch;
     
     while(1)
@@ -196,11 +200,24 @@ ANNA_VM_NATIVE(anna_int_convert_string, 1)
 	{
 	    val = ch - '0';
 	}
+	else if( (ch >= 'a') && (ch <= 'z'))
+	{
+	    val = ch - 'a' + 10;
+	}
+	else if( (ch >= 'A') && (ch <= 'Z'))
+	{
+	    val = ch - 'A' + 10;
+	}	
 	else
 	{
 	    break;
 	}
 
+	if(val >= base)
+	{
+	    return null_entry;
+	}
+	
 	mpz_set_si(mpval, val);
 
 	mpz_mul(res, mpbase, res);
@@ -276,12 +293,29 @@ void anna_int_type_create()
 	}
     ;
     
-    wchar_t *conv_argn[]=
+    anna_type_t *conv_argv[] = 
 	{
-	    L"value"
+	    string_type, int_type
 	}
     ;
 
+    wchar_t *conv_argn[]=
+	{
+	    L"value", L"base"
+	}
+    ;
+
+    mpz_t mp;
+    mpz_init(mp);
+    mpz_set_si(mp, 10);
+    
+    anna_node_t *conv_argd[]=
+	{
+	    0, anna_node_create_int_literal(0, mp)
+	}
+    ;
+    mpz_clear(mp);
+    
     mid_t mmid;
 
     anna_type_document(
@@ -290,11 +324,15 @@ void anna_int_type_create()
     
     anna_type_document(
 	int_type,
-	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, numbers that use 29 bits or less to represent (excluding the sign bit, so 30 bits total of data) can be stored directly on the stack and use no heap memory at all. Larger integers are implemented using a multiple precision library such as GNU MP.");    
-
+	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, numbers that use 29 bits or less to represent (excluding the sign bit, so 30 bits total of data) can be stored directly on the stack and use no heap memory at all. Larger integers are implemented using a multiple precision library such as GNU MP.");
+    
     anna_type_document(
 	int_type,
-	L"Anna Int objects are imutable, meaning their value never changes. Integers can be used as hash keys and implement basic operations like addition, multiplication, etc. Dividing two integers will result in new Int object, which is the truncated value of the division. Convert one of the numbers to a Float if a floating point result is desired.");
+	L"Anna Int objects are imutable, meaning their value never changes. Integers can be used as hash keys and implement basic operations like addition, multiplication, etc.");
+    
+    anna_type_document(
+	int_type,
+	L"Any arithmetic operation involving only Int objects will result in a new Int. Specifically, dividing one Int with another will result in a new Int object, which is the truncated value of the division. Convert one of the numbers to a Float if a floating point result is desired.");
 
     anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     
@@ -331,8 +369,8 @@ void anna_int_type_create()
     mmid = anna_member_create_native_type_method(
 	int_type, anna_mid_get(L"convertString"),
 	0, &anna_int_convert_string, int_type,
-	1, &string_type, conv_argn, 0, 
-	L"Convert a String to an Int. The String must be in decimal and the entire string (not just a prefix of it) must be a legal number.");
+	2, conv_argv, conv_argn, conv_argd, 
+	L"Convert a String to an Int. The String must be in the specified base (10 by default) and the entire string (not just a prefix of it) must be a legal number.");
     anna_member_alias(int_type, mmid, L"convert");
     
     mmid = anna_member_create_native_type_method(
