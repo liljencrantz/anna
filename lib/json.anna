@@ -1,7 +1,49 @@
-attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been written. Since Anna has no boolean type, true/false varluse currently aren't handled."));
+attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been written."));
 
-def String to(Object o) (doc("Serialize the specified object into JSON"))
+def String to(Object o) 
+(
+    doc(
+	"Serialize the specified object into JSON. Since Anna has no boolean type, true/false values currently aren't handled.",
+	"Usage:",
+	"<pre class='anna-code'>
+json.to([\"key\": [1,2,?]}])
+// Result: \"{\"key\": [1, 2, null]}\"
+</pre>",
+    )
+)
 {
+    def escapeChar(Char ch)
+    {
+	switch(ch.ordinal)
+	{
+	    case('\n'.ordinal)
+	    {
+		return "\\n";
+	    }
+
+	    case('"'.ordinal)
+	    {
+		return "\\\"";
+	    }
+
+	    cases(0..32)
+	    {
+		return "\\x" ~ ch.ordinal.format(16).lpad(count: 2, char: '0');
+	    }
+
+	    cases(128...)
+	    {
+		return "\\u" ~ ch.ordinal.format(16).lpad(count: 4, char: '0');
+	    }
+
+	    default
+	    {
+		return ch.toString();
+	    }
+	}
+	return ?;
+    }
+
     if(!o)
     {
 	return "null";
@@ -14,32 +56,15 @@ def String to(Object o) (doc("Serialize the specified object into JSON"))
 	    res := "\"".thaw;
 	    str.each(ch)
 	    {
-		switch(ch.ordinal)
-		{
-		    case('\n'.ordinal)
-		    {
-			res ~= "\\n";
-		    }
-		    case('"'.ordinal)
-		    {
-			res ~= "\\\"";
-		    }
-		    cases(0..32)
-		    {
-			res ~= "\\x" ~ ch.ordinal.format(16).lpad(count: 2, char: '0');
-		    }
-		    cases(128...)
-		    {
-			res ~= "\\u" ~ ch.ordinal.format(16).lpad(count: 4, char: '0');
-		    }
-		    default
-		    {
-			res ~= ch;
-		    }
-		}
+		res ~= escapeChar(ch);
 	    }
 	    res ~= "\"";
 	    return res;
+	}
+
+	case(ch as Char)
+	{
+	    return "'" ~ escapeChar(ch) ~ "'";
 	}
 	
 	case(val as Int)
