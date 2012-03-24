@@ -7,11 +7,57 @@ attribute(
 
 macro template(node)
 (
-    document("
-A simple proof of concept HTML templating engine. Uses a templating
+    doc(
+    "A simple proof of concept HTML templating engine. Uses a templating
 system very similar to e.g, Ruby on Rails, but the template is
 compiled into the calling code, in order to provide the template with
-the properly typed parameters.")
+the properly typed parameters.",
+    "The template macro must be given exactly one input argument, namely the file name (as a String literal) of the template file.",
+    "A simple usage example, consists of two files, the first one called myTemplate.html:",
+    "<pre>
+Greetings, &lt;%= userName %&gt;
+
+&lt;%
+hobbyList.each(hobby)
+{
+%&gt;
+You enjoy &lt;%= hobby %&gt;, don't you?
+&lt;%
+}
+%&gt;
+</pre>",
+    "The second file, called myTemplateExample.anna:",
+    "<pre class='anna-code'>
+expand(template);
+def main()
+{
+    userName := \"Benjamin\";
+    hobbyList := [\"Cooking\", \"Meeting friends\", \"Long walks on the beach\"];
+    print(template(\"myTemplate.html\"));
+}
+</pre>",
+    "The output of running myTemplateExample.anna will be:",
+    "<pre>
+Greetings, Benjamin
+
+
+You enjoy Cooking, don't you?
+
+You enjoy Meeting friends, don't you?
+
+You enjoy Long walks on the beach, don't you?
+
+</pre>"
+    "Note that all variables that are visible where the template macro is called in myTemplateExample.anna are available in the template file, and the type of each variable is known.",
+    "There are three types of tags in the template library:
+
+<ul>
+    <li>&lt;% code... %&gt;: The specified code will be executed.</li>
+    <li>&lt;%= code... %&gt;: The specified code will be executed and it's output will be html escaped and printed.</li>
+    <li>&lt;%! code... %&gt;: The specified code will be executed and it's output will be printed.</li>
+</ul>
+",
+    "This template library is merely a proof of concept. The most important limitation is that it doesn't track the original source line of any generated code, which means that any code positions given in error messages are meaningless.")
 )
 {
     tmplText := File((node[0] as StringLiteral).payload).readFile();
