@@ -882,7 +882,10 @@ Error: Found 1 error(s) during module loading
 		  </code>
 		</td>
 		<td>
-		  Any integer, i.e. any whole number.
+		  An integer, i.e. a whole number. Anna uses arbitrary
+		  precision integers, meaning that any number that
+		  will fit into your computers memory can be
+		  represented.
 		</td>
 	      </tr>
 
@@ -1057,10 +1060,23 @@ def askOk(String prompt, Int retries=4, String complaint="Answer yes or no, plea
 	      or even giving all arguments: <code class="anna-code">askOk("OK to overwrite the file?", 2, "Come on, only yes or no!")</code>
 	    </li>
 	  </ul>
-
-	  This example also introduces the in keyword. This tests
-	  whether or not a sequence contains a certain value.
-
+	  <p>
+	    This example also introduces
+	    the <code class='anna-code'>in</code> keyword. This tests
+	    whether or not a sequence contains a certain
+	    value. <code class='anna-code'>foo in bar</code> will be
+	    false if the collection <code class='anna-code'>bar</code>
+	    does not contain an
+	    element <code class='anna-code'>foo</code>, and true
+	    otherwise.
+	  </p>
+	  <p>
+	    The
+	    line <code class='anna-code'>raise(error.Error("Uncooperative
+	    user"));</code> raises an error condition. How to deal
+	    with error conditions will be explained
+	    in <a href="#errors">Lesson 16: Error handing</a>.
+	  </p>
 	  <h2><a name="functions-kw">Function calls with keyword arguments</a></h2>
 	  <p>
 	    Functions can also be called using keyword arguments of
@@ -1085,14 +1101,28 @@ askOk("Quit?", retries: 2.0);  // Wrong type on argument «retries»
 	  </pre>
 	  <p>
 	    Keyword arguments and non-keyword arguments can be given
-	    in any order. The compiler will first go over all keyword
-	    arguments and map them to the corresponding argument
-	    position, and after that, all positional arguments are
-	    mapped to the first argument that has yet to be given a
-	    value. Finally, the default values are used for all
-	    arguments that had neither a keyword argument or a
-	    positional argument.
+	    in any order. This is how the compiler maps given arguments to their correct location:
 	  </p>
+	  <ul>
+	    <li>
+	      The compiler will first go over the call argument list
+	      and assign all named arguments to their correct position
+	      in the function argument list.
+	    </li>
+	    <li>
+	      After that, the compiler will go over the call argument
+	      list again and assign all unnamed (positional) arguments
+	      to the first function argument that has not already been
+	      assigned.
+	    </li>
+	    <li>
+	      After that, the compiler will go over the function
+	      argument list. If it finds any arguments that have not
+	      yet been assigned a value, it checks if that parameter
+	      has a default value. If it does, that value will be
+	      used. Otherwise, a compilation error is emitted.
+	    </li>
+	  </ul>
 
 	  <h2><a name="functions-vararg">Functions with arbitrary argument lists</a></h2>
 	  <p>
