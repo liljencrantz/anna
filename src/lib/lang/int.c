@@ -176,7 +176,7 @@ ANNA_VM_NATIVE(anna_int_convert_string, 2)
     {
 	c++;
 	sign = -1;
-    }    
+    }
     
     mpz_t res;
     mpz_t mpval;
@@ -311,7 +311,7 @@ void anna_int_type_create()
     
     anna_node_t *conv_argd[]=
 	{
-	    0, anna_node_create_int_literal(0, mp)
+	    0, (anna_node_t *)anna_node_create_int_literal(0, mp)
 	}
     ;
     mpz_clear(mp);

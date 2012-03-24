@@ -27,7 +27,7 @@
 /**
    The minimum allowed fill rate of the hash when inserting. If this
    is reached during insertion, the hash is resized. Note that resizes
-   only happen on insertions. This makes sure tat if we remove most
+   only happen on insertions. This makes sure that if we remove most
    keys from a hash, one at a time, it won't resize until all keys are
    removed and we start inserting again.
 */
