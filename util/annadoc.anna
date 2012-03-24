@@ -198,7 +198,14 @@ often used code paths, which makes it useful for regression testing.")
     
     def String getLink(Type from, Type to)
     {
-       "<a href='%'>%</a>" % [path[to].link(path[from]), to.name];
+	href := path[to].link(path[from]);
+	return if(href) {
+	    "<a href='%'>%</a>" % [path[to].link(path[from]), html.escape(to.name)];
+	}
+	else
+	{
+	    html.escape(to.name);
+	}
     }
 
     def String getAttribute(reflection.Member mem)
@@ -294,7 +301,7 @@ often used code paths, which makes it useful for regression testing.")
 	"
 <span %>
 <hr>
-<a name='%'>%</a>
+<a name='%'></a>%
 <br>
 %
 </span>
@@ -326,16 +333,24 @@ often used code paths, which makes it useful for regression testing.")
 	    verbose and print("Missing documentation for member %.%" % [mem.memberOf.name, mem.name]);
 	    memberMissing++;
 	}
+
+	aliasDoc := "";
+	if(!alias.empty?)
+	{
+	    aliasDoc = "<code>%</code> can also be called using any of the following aliases: %." % [mem.name, ", ".join(alias.map(a){"<code>" ~ a.toString() ~ "</code>"})];
+	}
+
         htmlClass := if(mem.internal?){"class='anna-internal'"} else {""};
 	"
 <span %>
 <hr>
-<a name='%'>%</a>
-<br>
+<a name='%'></a>%
+<p>
+%
 %
 %
 </span>
-" % «String»[htmlClass, mem.name, getSignature(mem), opDoc, doc];
+" % «String»[htmlClass, mem.name, getSignature(mem), aliasDoc, opDoc, doc];
     }
     
     def document(Object module)
