@@ -1,4 +1,4 @@
-attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been written."));
+attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been implemented."));
 
 def String to(Object o) 
 (
@@ -84,7 +84,7 @@ json.to([\"key\": [1,2,?]}])
 
 	case(hmap as HashMap)
 	{
-	    return "{" ~ ", ".join(hmap.map(key, el){to(key) ~ ": " ~ to(el)}) ~ "}";
+	    return "{" ~ ", ".join(hmap.map(key, el){to(key.toString()) ~ ": " ~ to(el)}) ~ "}";
 	}
 
     }
