@@ -245,6 +245,13 @@ ANNA_VM_NATIVE(anna_list_set_count_method, 2)
     return param[1];
 }
 
+ANNA_VM_NATIVE(anna_list_clear, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_list_set_count(anna_as_obj(param[0]), 0);
+    return param[0];
+}
+
 ANNA_VM_NATIVE(anna_list_append, 2)
 {
     size_t i;
@@ -605,10 +612,20 @@ static void anna_list_del(anna_object_t *victim)
 
 ANNA_VM_NATIVE(anna_list_push, 2)
 {
-    anna_list_set(
-	anna_as_obj_fast(param[0]), 
-	(*(size_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]),ANNA_MID_LIST_SIZE)),
-	param[1]);
+    int i;
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_object_t *that = anna_as_obj_fast(param[1]);
+    size_t that_sz = anna_list_get_count(that);
+    size_t this_sz = anna_list_get_count(this);
+    
+    for(i=0; i<that_sz; i++)
+    {
+	anna_list_set(
+	    this,
+	    this_sz+i,
+	    anna_list_get(that, i));
+    }
+    
     return param[0];
 }
 
@@ -1223,13 +1240,19 @@ static void anna_list_type_create_internal(
 
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"push"),
-	    0, &anna_list_push,
+	    ANNA_FUNCTION_VARIADIC, &anna_list_push,
 	    type,
 	    2,
 	    a_argv,
 	    a_argn, 0, 
 	    L"Adds the specified element to the end of the list. Returns the mutated list.");
 	
+	mmid = anna_member_create_native_method(
+	    type,
+	    anna_mid_get(L"clear"), 0,
+	    &anna_list_clear, type, 1,
+	    i_argv, i_argn, 0, L"Clear the List, removing all entries from it. The result is an empty List.");
+
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"pop"), 0,
 	    &anna_list_pop, spec, 1, a_argv, a_argn, 0, 

@@ -196,14 +196,18 @@ static inline ssize_t anna_hash_get_next_non_dummy(anna_object_t *this, ssize_t 
     }
 }
 
-static inline void ahi_init(anna_hash_t *this)
+static inline void ahi_init(anna_hash_t *this, int set_default)
 {
     this->fill = this->used = 0;
     this->mask = ANNA_HASH_MINSIZE-1;
     this->table = &this->small_table[0];
     memset(&this->small_table[0], 0, sizeof(anna_hash_entry_t) * ANNA_HASH_MINSIZE);
-    this->default_value = null_entry;
+    if(set_default)
+    {
+	this->default_value = null_entry;
+    }
 }
+
 
 static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
 {
@@ -594,7 +598,7 @@ static inline hash_table_t *h_unwrap(anna_object_t *obj)
 anna_object_t *anna_hash_create(anna_type_t *spec1, anna_type_t *spec2)
 {
     anna_object_t *obj= anna_object_create(anna_hash_type_get(spec1, spec2));
-    ahi_init(ahi_unwrap(obj));    
+    ahi_init(ahi_unwrap(obj), 1);
     obj->flags |= ANNA_OBJECT_HASH;
     return obj;
 }
@@ -602,7 +606,7 @@ anna_object_t *anna_hash_create(anna_type_t *spec1, anna_type_t *spec2)
 anna_object_t *anna_hash_create2(anna_type_t *hash_type)
 {
     anna_object_t *obj= anna_object_create(hash_type);
-    ahi_init(ahi_unwrap(obj));    
+    ahi_init(ahi_unwrap(obj), 1);
     obj->flags |= ANNA_OBJECT_HASH;
     return obj;
 }
@@ -627,7 +631,7 @@ static void anna_hash_init(anna_context_t *context)
     anna_object_t *list = anna_context_pop_object(context);
     anna_object_t *this = anna_context_pop_object(context);
     anna_context_pop_entry(context);
-    ahi_init(ahi_unwrap(this));
+    ahi_init(ahi_unwrap(this), 1);
     this->flags |= ANNA_OBJECT_HASH;
     
     if(likely(list != null_object))
@@ -814,6 +818,19 @@ ANNA_VM_NATIVE(anna_hash_get_count_method, 1)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(param[0]));
     return anna_from_int(this->used);
+}
+
+ANNA_VM_NATIVE(anna_hash_clear, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(param[0]));
+    if(this->table != &this->small_table[0])
+    {
+	free(this->table);
+    }
+    ahi_init(this, 0);
+    
+    return param[0];
 }
 
 ANNA_VM_NATIVE(anna_hash_get_default, 1)
@@ -1055,6 +1072,12 @@ static void anna_hash_type_create_internal(
 	0, &anna_hash_set, spec2, 
 	3, kv_argv, kv_argn, 0,
 	L"Assigns the specified value to the specified key.");
+
+    anna_member_create_native_method(
+	type, anna_mid_get(L"clear"), 
+	0, &anna_hash_clear, type, 
+	1, kv_argv, kv_argn, 0,
+	L"Clear the HashMap, removing all mappings from it. The result is an empty HashMap.");
 
     anna_member_create_native_method(
 	type, anna_mid_get(L"__get__"),
