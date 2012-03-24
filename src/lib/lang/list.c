@@ -610,25 +610,6 @@ static void anna_list_del(anna_object_t *victim)
     (*(size_t *)anna_entry_get_addr(victim,ANNA_MID_LIST_SIZE)) = 0;
 }
 
-ANNA_VM_NATIVE(anna_list_push, 2)
-{
-    int i;
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_object_t *that = anna_as_obj_fast(param[1]);
-    size_t that_sz = anna_list_get_count(that);
-    size_t this_sz = anna_list_get_count(this);
-    
-    for(i=0; i<that_sz; i++)
-    {
-	anna_list_set(
-	    this,
-	    this_sz+i,
-	    anna_list_get(that, i));
-    }
-    
-    return param[0];
-}
-
 ANNA_VM_NATIVE(anna_list_pop, 1)
 {
     
@@ -1043,7 +1024,7 @@ static void anna_list_type_create_internal(
     anna_type_t *l_argv[] = 
 	{
 	    type,
-	    type
+	    intersection_type
 	}
     ;
     
@@ -1227,10 +1208,9 @@ static void anna_list_type_create_internal(
     anna_member_alias(type, mmid, L"__get__");
 
     anna_list_add_all_extra_methods(type);
-
+    
     if(mutable)
-    {
-	
+    {	
 	mmid = anna_member_create_native_method(
 	    type,
 	    anna_mid_get(L"set"), 0,
@@ -1240,7 +1220,7 @@ static void anna_list_type_create_internal(
 
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"push"),
-	    ANNA_FUNCTION_VARIADIC, &anna_list_push,
+	    ANNA_FUNCTION_VARIADIC, &anna_list_append,
 	    type,
 	    2,
 	    a_argv,

@@ -347,7 +347,12 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
 	    }
 	}
     }
-    assert(memb->type);
+    if(!memb->type)
+    {
+	anna_message(L"Critical: Null member %ls!\n", name);
+	CRASH;
+    }
+    
     return memb->type;
 }
 
