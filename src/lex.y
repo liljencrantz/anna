@@ -85,8 +85,8 @@ static void anna_lex_invalid_input()
 0[bB][0-1][0-1_]* return LITERAL_INTEGER_BASE_2;
 0[xX][0-9a-fA-F][0-9a-fA-F_]*_*[a-z][a-zA-Z0-9_!?]* return LITERAL_INTEGER_BASE_16;
 0[xX][0-9a-fA-F][0-9a-fA-F_]* return LITERAL_INTEGER_BASE_16;
-[0-9][0-9_]*\.[0-9_]*[0-9]+[0-9_]*([eE]-?[0-9_]+)?_*[a-z][a-zA-Z0-9_!?]* return LITERAL_FLOAT;
-[0-9][0-9_]*\.[0-9_]*[0-9]+[0-9_]*([eE]-?[0-9_]+)? return LITERAL_FLOAT;
+[0-9][0-9_]*\.[0-9_]*[0-9]+[0-9_]*([eE][-+]?[0-9_]+)?_*[a-z][a-zA-Z0-9_!?]* return LITERAL_FLOAT;
+[0-9][0-9_]*\.[0-9_]*[0-9]+[0-9_]*([eE][-+]?[0-9_]+)? return LITERAL_FLOAT;
 0 return LITERAL_INTEGER_BASE_10;
 \( return '(';
 \) return ')';
