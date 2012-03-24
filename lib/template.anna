@@ -47,7 +47,7 @@ You enjoy Meeting friends, don't you?
 
 You enjoy Long walks on the beach, don't you?
 
-</pre>"
+</pre>",
     "Note that all variables that are visible where the template macro is called in myTemplateExample.anna are available in the template file, and the type of each variable is known.",
     "There are three types of tags in the template library:
 
