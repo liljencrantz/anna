@@ -54,7 +54,7 @@ body
 
 .anna-main-inner 
 {
-    text-align: justify;
+    text-align: left;
 }
 
 .anna-toc-h1
@@ -81,6 +81,28 @@ body
 a
 {
     color: #975;
+}
+
+.anna-compat a
+{
+    color: #aaa;
+    font-size: small;
+}
+
+.anna-compat a:visited
+{
+    color: #888;
+}
+
+.anna-compat a.anna-link-main
+{
+    color: #975;
+    font-size: medium;
+}
+
+.anna-compat a.anna-link-main:visited
+{
+    color: #532;
 }
 
 a:visited

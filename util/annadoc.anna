@@ -96,14 +96,15 @@ class DocumentationData
 	return res ~ path() ~ ".html";
     }
 
-    def String linkPath(DocumentationData from = ?)
+    def String linkPath(DocumentationData from = ?, Int last = 1)
     (doc("Create a html anchor from some other document to this document"))
     {
-        prev := (parent.linkPath(from or this) ~ ".") or "";
+        prev := (parent.linkPath(from or this, ?) ~ ".") or "";
+	classString := if(last){" class='anna-link-main'"} else {""}
 	return prev ~ if(from) {
-	    "<a href='%'>%</a>" % [link(from), object.name];
+	    "<a href='%'%>%</a>" % [link(from), classString, object.name];
 	} else {
-	    "<em>%</em>" % [object.name]
+	    "<em%>%</em>" % [classString, object.name]
 	}
     }
 
@@ -126,6 +127,11 @@ class DocumentationData
     def Int steps() (property)
     {
 	return (parent.steps + 1) or 0;
+    }
+
+    def __cmp__(Object other)
+    {
+	return object.name.__cmp__((other as DocumentationData).object.name);
     }
     
 }
@@ -406,12 +412,38 @@ often used code paths, which makes it useful for regression testing.")
 	if(data.done){return}
 	data.done=1;
         memb := module.member;
+
+	compat := "";
 	if(module.module?)
 	{
   	    objMemb := «String, Member»[];
 	    Object.member.each(mem){objMemb[mem.name] = mem}
 	    memb = memb.filter(mem){!(mem.name in objMemb)}
 	}
+	else
+	{
+	    def formatCompatList(List«DocumentationData» compat)
+	    {
+		sorted := compat.sort() as List«DocumentationData»;
+		return "<span class='anna-compat'>%</span>" % [", ".join(sorted.map(dd){dd.linkPath(data)})];
+	    }
+	    
+	    sub := path.map(dd){dd}.filter(dd){dd.object.abides(module) and !(dd.object in [Null, module])}
+	    paren := path.map(dd){dd}.filter(dd){module.abides(dd.object) and !(dd.object in [Null, module])}
+	    if(!sub.empty?)
+	    {
+		
+		compat ~= "<h3><a name='module-child'>Types that can mask as this type</a></h3>\n";
+		compat ~= formatCompatList(sub);
+	    }
+	    if(!paren.empty?)
+	    {
+		
+		compat ~= "<h3><a name='module-child'>Types that this module can mask as</a></h3>\n";
+		compat ~= formatCompatList(paren);
+	    }
+	}
+
         smemb := memb.sort(def Int(Object first, Object second){(first as Member).name.__cmp__((second as Member).name)}).map(memb){memb as Member};
 	
         submodule := smemb.filter(mem)
