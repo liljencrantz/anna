@@ -29,6 +29,24 @@ attribute(
 	"The unix module is still rater incomplete. There are many, many functions that are currently missing. The ones that are there have inconsistent naming policies with regard to capitalization, abbreviations, etc. The exact policy for naming, etc. in this module will evolve over time, which can result in future incompatibilities.",
 	));
 
+time
+{
+
+    attribute(doc("The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping."));
+
+    cStruct TimeVal (name(timeval), doc("A data structure representing a point in time as the amount of time that has elapsed since the epoch."))
+    {
+	var Int sec (name(tv_sec), doc("Seconds"));
+	var Int usec (name(tv_usec), doc("Microseconds."));
+    }
+    
+    cStruct TimeZone (name(timezone), doc("A deprecated data structure that used to be used for representing a time zone."))
+    {
+    }
+    
+    def Bool gettimeofday(TimeVal tv, TimeZone tz)  (doc("Gets the current system time. Equivalanet to the C gettimeofday function."));
+}
+
 io
 {
 
@@ -211,12 +229,23 @@ static int anna_fd_set_value(fd_set *set, int fd, int val)
 	def Void remove(Int fd) (name(ANNA_FD_CLR), doc("Remove the specified file descriptor from the set."));
 	def Int __in__(Int fd) (name(ANNA_FD_ISSET), doc("Check if the specified file descriptor is in the set."));
 	def Int __get__(Int fd) (name(ANNA_FD_ISSET), doc("Check if the specified file descriptor is in the set."));
-	def Bool __set__(Int fd, Bool value (nullable)) (name(anna_fd_set_value), doc("If value is non-null, add the specified file descriptor to the set. Otherwise, remove it."));
+	def Bool __set__(Int fd, Bool value (nullable)) 
+	(
+	    name(anna_fd_set_value), 
+	    doc("If value is non-null, add the specified file descriptor to the set. Otherwise, remove it."));
 	def Void add(Int fd) (name(ANNA_FD_SET), doc("Add the specified file descriptor to the set."));
 	def Void clear() (name(FD_ZERO), doc("Remove all file descriptors from this set."));
     }
     
-//    def Int select(Int nfds, FdSet readfds, FdSet writefds, FdSet exceptfds, TimeVal timeout);
+    def Int select(
+	Int nfds, FdSet readfds (nullable), FdSet writefds (nullable), 
+	FdSet exceptfds (nullable), TimeVal timeout (nullable)) 
+    (
+	doc(
+	    "Select allows a program to monitor multiple file descriptors", 
+	    "Calling select will cause the process to wait until one 
+or more of the file descriptors become ready for some class of I/O operation, 
+or optionally, until the specified amount of time has passed."));
     
 }
 
@@ -433,23 +462,6 @@ sleep
     def Int sleep(Int seconds) (doc("Sleep for the specified number of seconds"));
 }
 
-time
-{
-
-    attribute(doc("The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping."));
-
-    cStruct TimeVal (name(timeval), doc("A data structure representing a point in time as the amount of time that has elapsed since the epoch."))
-    {
-	var Int sec (name(tv_sec), doc("Seconds"));
-	var Int usec (name(tv_usec), doc("Microseconds."));
-    }
-    
-    cStruct TimeZone (name(timezone), doc("A deprecated data structure that used to be used for representing a time zone."))
-    {
-    }
-    
-    def Bool gettimeofday(TimeVal tv, TimeZone tz)  (doc("Gets the current system time. Equivalanet to the C gettimeofday function."));
-}
 
 locale
 {

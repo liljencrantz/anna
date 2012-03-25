@@ -40,14 +40,14 @@
 #include "anna/anna.h"
 
 // Declare internal variables for all types defined in this module
+anna_type_t *unix_time_val_type;
+anna_type_t *unix_time_zone_type;
 anna_type_t *unix_stat_type;
 anna_type_t *unix_f_lock_type;
 anna_type_t *unix_fd_set_type;
 anna_type_t *unix_signal_set_type;
 anna_type_t *unix_signal_info_fd_type;
 anna_type_t *unix_r_limit_type;
-anna_type_t *unix_time_val_type;
-anna_type_t *unix_time_zone_type;
 anna_type_t *unix_locale_conv_type;
 anna_type_t *unix_termios_type;
 
@@ -58,6 +58,137 @@ const static anna_type_data_t anna_unix_type_data[] =
 };
 
 // This is the source code of the various wrapper functions
+const static anna_type_data_t anna_time_type_data[] = 
+{
+    { &unix_time_val_type, L"TimeVal" },
+    { &unix_time_zone_type, L"TimeZone" },
+};
+
+ANNA_VM_NATIVE(unix_i_time_val_sec_getter, 1)
+{
+    struct timeval *data;
+    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->tv_sec);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_time_val_sec_setter, 2)
+{
+    struct timeval *data;
+    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->tv_sec = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_time_val_usec_getter, 1)
+{
+    struct timeval *data;
+    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    anna_entry_t *result = anna_from_int(data->tv_usec);
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_time_val_usec_setter, 2)
+{
+    struct timeval *data;
+    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    int tmp = anna_as_int(param[1]);
+    data->tv_usec = tmp;
+    return param[1];
+}
+
+ANNA_VM_NATIVE(unix_i_time_val_init, 1)
+{
+    struct timeval *data;
+    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    memset(data, 0, sizeof(struct timeval));
+    return param[0];
+}
+
+ANNA_VM_NATIVE(unix_i_time_zone_init, 1)
+{
+    struct timezone *data;
+    data = (struct timezone *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    memset(data, 0, sizeof(struct timezone));
+    return param[0];
+}
+
+ANNA_VM_NATIVE(unix_i_time_gettimeofday, 2)
+{
+    // Validate parameters
+        if(param[0] == null_entry){return null_entry;}
+
+        if(param[1] == null_entry){return null_entry;}
+
+
+    // Mangle input parameters
+    struct timeval *native_param_tv;
+    native_param_tv = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    struct timezone *native_param_tz;
+    native_param_tz = (struct timezone *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+    
+    
+
+    // Call the function
+    int tmp_var_1 = gettimeofday(native_param_tv, native_param_tz);
+    anna_entry_t *result = (tmp_var_1)?anna_from_int(1):null_entry;
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+void anna_time_create(anna_stack_template_t *stack);
+void anna_time_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_time_type_data, stack);        
+}
+void anna_time_load(anna_stack_template_t *stack);
+void anna_time_load(anna_stack_template_t *stack)
+{
+    mid_t latest_mid;    
+    anna_function_t *latest_function;
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+
+    anna_member_create_blob(unix_time_val_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timeval));
+
+    anna_member_create_native_property(
+        unix_time_val_type, anna_mid_get(L"sec"),
+        int_type, unix_i_time_val_sec_getter, unix_i_time_val_sec_setter, L"Seconds");
+
+    anna_member_create_native_property(
+        unix_time_val_type, anna_mid_get(L"usec"),
+        int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, L"Microseconds.");
+    anna_member_create_native_method(
+	unix_time_val_type, anna_mid_get(L"__init__"), 0,
+	&unix_i_time_val_init, object_type, 1, &unix_time_val_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_time_val_type, L"A data structure representing a point in time as the amount of time that has elapsed since the epoch.");
+
+    anna_member_create_blob(unix_time_zone_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timezone));
+    anna_member_create_native_method(
+	unix_time_zone_type, anna_mid_get(L"__init__"), 0,
+	&unix_i_time_zone_init, object_type, 1, &unix_time_zone_type, this_argn, 0, 0);    
+    anna_type_document(
+            unix_time_zone_type, L"A deprecated data structure that used to be used for representing a time zone.");
+
+    anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_time_val_type, unix_time_zone_type};
+    wchar_t *unix_i_time_gettimeofday_argn[] = {L"tv", L"tz"};
+    latest_function = anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, 0, L"Gets the current system time. Equivalanet to the C gettimeofday function.");
+    anna_stack_document(stack, L"The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping.");
+
+    anna_type_data_register(anna_time_type_data, stack);
+}
 const static anna_type_data_t anna_io_type_data[] = 
 {
     { &unix_stat_type, L"Stat" },
@@ -177,8 +308,8 @@ ANNA_VM_NATIVE(unix_i_io_open, 3)
     
 
     // Call the function
-    int tmp_var_1 = open(native_param_name, native_param_flags, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_1);
+    int tmp_var_2 = open(native_param_name, native_param_flags, native_param_mode);
+    anna_entry_t *result = anna_from_int(tmp_var_2);
     // Perform cleanup
     free(native_param_name);
 
@@ -203,8 +334,8 @@ ANNA_VM_NATIVE(unix_i_io_creat, 2)
     
 
     // Call the function
-    int tmp_var_2 = creat(native_param_name, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_2);
+    int tmp_var_3 = creat(native_param_name, native_param_mode);
+    anna_entry_t *result = anna_from_int(tmp_var_3);
     // Perform cleanup
     free(native_param_name);
 
@@ -240,8 +371,8 @@ ANNA_VM_NATIVE(unix_i_io_read, 3)
     
 
     // Call the function
-    int tmp_var_3 = read(native_param_fd, native_param_buffer, native_param_count);
-    anna_entry_t *result = anna_from_int(tmp_var_3);
+    int tmp_var_4 = read(native_param_fd, native_param_buffer, native_param_count);
+    anna_entry_t *result = anna_from_int(tmp_var_4);
     // Perform cleanup
 
     // Return result
@@ -276,8 +407,8 @@ ANNA_VM_NATIVE(unix_i_io_write, 3)
     
 
     // Call the function
-    int tmp_var_4 = write(native_param_fd, native_param_buffer, native_param_count);
-    anna_entry_t *result = anna_from_int(tmp_var_4);
+    int tmp_var_5 = write(native_param_fd, native_param_buffer, native_param_count);
+    anna_entry_t *result = anna_from_int(tmp_var_5);
     // Perform cleanup
 
     // Return result
@@ -297,8 +428,8 @@ ANNA_VM_NATIVE(unix_i_io_close, 1)
     
 
     // Call the function
-    int tmp_var_5 = close(native_param_fd);
-    anna_entry_t *result = (tmp_var_5)?anna_from_int(1):null_entry;
+    int tmp_var_6 = close(native_param_fd);
+    anna_entry_t *result = (tmp_var_6)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -435,8 +566,8 @@ ANNA_VM_NATIVE(unix_i_io_stat, 2)
     
 
     // Call the function
-    int tmp_var_6 = stat(native_param_path, native_param_buf);
-    anna_entry_t *result = (tmp_var_6)?anna_from_int(1):null_entry;
+    int tmp_var_7 = stat(native_param_path, native_param_buf);
+    anna_entry_t *result = (tmp_var_7)?anna_from_int(1):null_entry;
     // Perform cleanup
     free(native_param_path);
 
@@ -462,8 +593,8 @@ ANNA_VM_NATIVE(unix_i_io_lstat, 2)
     
 
     // Call the function
-    int tmp_var_7 = lstat(native_param_path, native_param_buf);
-    anna_entry_t *result = (tmp_var_7)?anna_from_int(1):null_entry;
+    int tmp_var_8 = lstat(native_param_path, native_param_buf);
+    anna_entry_t *result = (tmp_var_8)?anna_from_int(1):null_entry;
     // Perform cleanup
     free(native_param_path);
 
@@ -489,8 +620,8 @@ ANNA_VM_NATIVE(unix_i_io_fstat, 2)
     
 
     // Call the function
-    int tmp_var_8 = fstat(native_param_fd, native_param_buf);
-    anna_entry_t *result = (tmp_var_8)?anna_from_int(1):null_entry;
+    int tmp_var_9 = fstat(native_param_fd, native_param_buf);
+    anna_entry_t *result = (tmp_var_9)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -514,8 +645,8 @@ ANNA_VM_NATIVE(unix_i_io_mkdir, 2)
     
 
     // Call the function
-    int tmp_var_9 = mkdir(native_param_path, native_param_mode);
-    anna_entry_t *result = (tmp_var_9)?anna_from_int(1):null_entry;
+    int tmp_var_10 = mkdir(native_param_path, native_param_mode);
+    anna_entry_t *result = (tmp_var_10)?anna_from_int(1):null_entry;
     // Perform cleanup
     free(native_param_path);
 
@@ -547,8 +678,8 @@ ANNA_VM_NATIVE(unix_i_io_getcwd, 2)
     
 
     // Call the function
-    int tmp_var_10 = getcwd(native_param_buf, native_param_size);
-    anna_entry_t *result = (tmp_var_10)?anna_from_int(1):null_entry;
+    int tmp_var_11 = getcwd(native_param_buf, native_param_size);
+    anna_entry_t *result = (tmp_var_11)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -568,8 +699,8 @@ ANNA_VM_NATIVE(unix_i_io_chdir, 1)
     
 
     // Call the function
-    int tmp_var_11 = chdir(native_param_path);
-    anna_entry_t *result = (tmp_var_11)?anna_from_int(1):null_entry;
+    int tmp_var_12 = chdir(native_param_path);
+    anna_entry_t *result = (tmp_var_12)?anna_from_int(1):null_entry;
     // Perform cleanup
     free(native_param_path);
 
@@ -590,8 +721,8 @@ ANNA_VM_NATIVE(unix_i_io_chroot, 1)
     
 
     // Call the function
-    int tmp_var_12 = chroot(native_param_path);
-    anna_entry_t *result = (tmp_var_12)?anna_from_int(1):null_entry;
+    int tmp_var_13 = chroot(native_param_path);
+    anna_entry_t *result = (tmp_var_13)?anna_from_int(1):null_entry;
     // Perform cleanup
     free(native_param_path);
 
@@ -612,8 +743,8 @@ ANNA_VM_NATIVE(unix_i_io_fchdir, 1)
     
 
     // Call the function
-    int tmp_var_13 = fchdir(native_param_fd);
-    anna_entry_t *result = (tmp_var_13)?anna_from_int(1):null_entry;
+    int tmp_var_14 = fchdir(native_param_fd);
+    anna_entry_t *result = (tmp_var_14)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -741,8 +872,8 @@ ANNA_VM_NATIVE(unix_i_io_fcntl_void, 2)
     
 
     // Call the function
-    int tmp_var_14 = fcntl(native_param_fd, native_param_cmd);
-    anna_entry_t *result = anna_from_int(tmp_var_14);
+    int tmp_var_15 = fcntl(native_param_fd, native_param_cmd);
+    anna_entry_t *result = anna_from_int(tmp_var_15);
     // Perform cleanup
 
     // Return result
@@ -770,8 +901,8 @@ ANNA_VM_NATIVE(unix_i_io_fcntl_int, 3)
     
 
     // Call the function
-    int tmp_var_15 = fcntl(native_param_fd, native_param_cmd, native_param_arg);
-    anna_entry_t *result = anna_from_int(tmp_var_15);
+    int tmp_var_16 = fcntl(native_param_fd, native_param_cmd, native_param_arg);
+    anna_entry_t *result = anna_from_int(tmp_var_16);
     // Perform cleanup
 
     // Return result
@@ -800,8 +931,8 @@ ANNA_VM_NATIVE(unix_i_io_fcntl_f_lock, 3)
     
 
     // Call the function
-    int tmp_var_16 = fcntl(native_param_fd, native_param_cmd, native_param_arg);
-    anna_entry_t *result = anna_from_int(tmp_var_16);
+    int tmp_var_17 = fcntl(native_param_fd, native_param_cmd, native_param_arg);
+    anna_entry_t *result = anna_from_int(tmp_var_17);
     // Perform cleanup
 
     // Return result
@@ -821,8 +952,8 @@ ANNA_VM_NATIVE(unix_i_io_dup, 1)
     
 
     // Call the function
-    int tmp_var_17 = dup(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_17);
+    int tmp_var_18 = dup(native_param_fd);
+    anna_entry_t *result = anna_from_int(tmp_var_18);
     // Perform cleanup
 
     // Return result
@@ -846,8 +977,8 @@ ANNA_VM_NATIVE(unix_i_io_dup2, 2)
     
 
     // Call the function
-    int tmp_var_18 = dup2(native_param_oldfd, native_param_newfd);
-    anna_entry_t *result = anna_from_int(tmp_var_18);
+    int tmp_var_19 = dup2(native_param_oldfd, native_param_newfd);
+    anna_entry_t *result = anna_from_int(tmp_var_19);
     // Perform cleanup
 
     // Return result
@@ -875,8 +1006,8 @@ ANNA_VM_NATIVE(unix_i_io_chown, 3)
     
 
     // Call the function
-    int tmp_var_19 = chown(native_param_path, native_param_owner, native_param_group);
-    anna_entry_t *result = anna_from_int(tmp_var_19);
+    int tmp_var_20 = chown(native_param_path, native_param_owner, native_param_group);
+    anna_entry_t *result = anna_from_int(tmp_var_20);
     // Perform cleanup
     free(native_param_path);
 
@@ -905,8 +1036,8 @@ ANNA_VM_NATIVE(unix_i_io_fchown, 3)
     
 
     // Call the function
-    int tmp_var_20 = fchown(native_param_fd, native_param_owner, native_param_group);
-    anna_entry_t *result = anna_from_int(tmp_var_20);
+    int tmp_var_21 = fchown(native_param_fd, native_param_owner, native_param_group);
+    anna_entry_t *result = anna_from_int(tmp_var_21);
     // Perform cleanup
 
     // Return result
@@ -934,8 +1065,8 @@ ANNA_VM_NATIVE(unix_i_io_lchown, 3)
     
 
     // Call the function
-    int tmp_var_21 = lchown(native_param_path, native_param_owner, native_param_group);
-    anna_entry_t *result = anna_from_int(tmp_var_21);
+    int tmp_var_22 = lchown(native_param_path, native_param_owner, native_param_group);
+    anna_entry_t *result = anna_from_int(tmp_var_22);
     // Perform cleanup
     free(native_param_path);
 
@@ -960,8 +1091,8 @@ ANNA_VM_NATIVE(unix_i_io_chmod, 2)
     
 
     // Call the function
-    int tmp_var_22 = chmod(native_param_path, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_22);
+    int tmp_var_23 = chmod(native_param_path, native_param_mode);
+    anna_entry_t *result = anna_from_int(tmp_var_23);
     // Perform cleanup
     free(native_param_path);
 
@@ -986,8 +1117,8 @@ ANNA_VM_NATIVE(unix_i_io_fchmod, 2)
     
 
     // Call the function
-    int tmp_var_23 = fchmod(native_param_fd, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_23);
+    int tmp_var_24 = fchmod(native_param_fd, native_param_mode);
+    anna_entry_t *result = anna_from_int(tmp_var_24);
     // Perform cleanup
 
     // Return result
@@ -1011,8 +1142,8 @@ ANNA_VM_NATIVE(unix_i_io_symlink, 2)
     
 
     // Call the function
-    int tmp_var_24 = symlink(native_param_oldpath, native_param_newpath);
-    anna_entry_t *result = anna_from_int(tmp_var_24);
+    int tmp_var_25 = symlink(native_param_oldpath, native_param_newpath);
+    anna_entry_t *result = anna_from_int(tmp_var_25);
     // Perform cleanup
     free(native_param_oldpath);
     free(native_param_newpath);
@@ -1038,8 +1169,8 @@ ANNA_VM_NATIVE(unix_i_io_link, 2)
     
 
     // Call the function
-    int tmp_var_25 = link(native_param_oldpath, native_param_newpath);
-    anna_entry_t *result = anna_from_int(tmp_var_25);
+    int tmp_var_26 = link(native_param_oldpath, native_param_newpath);
+    anna_entry_t *result = anna_from_int(tmp_var_26);
     // Perform cleanup
     free(native_param_oldpath);
     free(native_param_newpath);
@@ -1061,8 +1192,8 @@ ANNA_VM_NATIVE(unix_i_io_unlink, 1)
     
 
     // Call the function
-    int tmp_var_26 = unlink(native_param_path);
-    anna_entry_t *result = anna_from_int(tmp_var_26);
+    int tmp_var_27 = unlink(native_param_path);
+    anna_entry_t *result = anna_from_int(tmp_var_27);
     // Perform cleanup
     free(native_param_path);
 
@@ -1083,8 +1214,8 @@ ANNA_VM_NATIVE(unix_i_io_rmdir, 1)
     
 
     // Call the function
-    int tmp_var_27 = rmdir(native_param_path);
-    anna_entry_t *result = anna_from_int(tmp_var_27);
+    int tmp_var_28 = rmdir(native_param_path);
+    anna_entry_t *result = anna_from_int(tmp_var_28);
     // Perform cleanup
     free(native_param_path);
 
@@ -1109,8 +1240,8 @@ ANNA_VM_NATIVE(unix_i_io_rename, 2)
     
 
     // Call the function
-    int tmp_var_28 = rename(native_param_oldpath, native_param_newpath);
-    anna_entry_t *result = anna_from_int(tmp_var_28);
+    int tmp_var_29 = rename(native_param_oldpath, native_param_newpath);
+    anna_entry_t *result = anna_from_int(tmp_var_29);
     // Perform cleanup
     free(native_param_oldpath);
     free(native_param_newpath);
@@ -1153,8 +1284,8 @@ ANNA_VM_NATIVE(unix_i_io_pipe, 1)
     
 
     // Call the function
-    int tmp_var_29 = pipe(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_29);
+    int tmp_var_30 = pipe(native_param_fd);
+    anna_entry_t *result = anna_from_int(tmp_var_30);
     // Perform cleanup
     
     for(native_param_fd_idx=0; native_param_fd_idx < native_param_fd_count; native_param_fd_idx++)
@@ -1191,8 +1322,8 @@ ANNA_VM_NATIVE(unix_i_io_lseek, 3)
     
 
     // Call the function
-    uint64_t tmp_var_30 = lseek(native_param_fd, native_param_offset, native_param_whence);
-    anna_entry_t *result = anna_from_uint64(tmp_var_30);
+    uint64_t tmp_var_31 = lseek(native_param_fd, native_param_offset, native_param_whence);
+    anna_entry_t *result = anna_from_uint64(tmp_var_31);
     // Perform cleanup
 
     // Return result
@@ -1230,8 +1361,8 @@ ANNA_VM_NATIVE(unix_i_io_fsync, 1)
     
 
     // Call the function
-    int tmp_var_31 = fsync(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_31);
+    int tmp_var_32 = fsync(native_param_fd);
+    anna_entry_t *result = anna_from_int(tmp_var_32);
     // Perform cleanup
 
     // Return result
@@ -1251,8 +1382,8 @@ ANNA_VM_NATIVE(unix_i_io_fdatasync, 1)
     
 
     // Call the function
-    int tmp_var_32 = fdatasync(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_32);
+    int tmp_var_33 = fdatasync(native_param_fd);
+    anna_entry_t *result = anna_from_int(tmp_var_33);
     // Perform cleanup
 
     // Return result
@@ -1272,8 +1403,8 @@ ANNA_VM_NATIVE(unix_i_io_umask, 1)
     
 
     // Call the function
-    int tmp_var_33 = umask(native_param_mask);
-    anna_entry_t *result = anna_from_int(tmp_var_33);
+    int tmp_var_34 = umask(native_param_mask);
+    anna_entry_t *result = anna_from_int(tmp_var_34);
     // Perform cleanup
 
     // Return result
@@ -1359,8 +1490,8 @@ ANNA_VM_NATIVE(unix_i_fd_set_in, 2)
     
 
     // Call the function
-    int tmp_var_34 = ANNA_FD_ISSET(native_param_this, native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_34);
+    int tmp_var_35 = ANNA_FD_ISSET(native_param_this, native_param_fd);
+    anna_entry_t *result = anna_from_int(tmp_var_35);
     // Perform cleanup
 
     // Return result
@@ -1383,8 +1514,8 @@ ANNA_VM_NATIVE(unix_i_fd_set_get, 2)
     
 
     // Call the function
-    int tmp_var_35 = ANNA_FD_ISSET(native_param_this, native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_35);
+    int tmp_var_36 = ANNA_FD_ISSET(native_param_this, native_param_fd);
+    anna_entry_t *result = anna_from_int(tmp_var_36);
     // Perform cleanup
 
     // Return result
@@ -1410,8 +1541,8 @@ ANNA_VM_NATIVE(unix_i_fd_set_set, 3)
     
 
     // Call the function
-    int tmp_var_36 = anna_fd_set_value(native_param_this, native_param_fd, native_param_value);
-    anna_entry_t *result = (tmp_var_36)?anna_from_int(1):null_entry;
+    int tmp_var_37 = anna_fd_set_value(native_param_this, native_param_fd, native_param_value);
+    anna_entry_t *result = (tmp_var_37)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -1458,6 +1589,39 @@ ANNA_VM_NATIVE(unix_i_fd_set_clear, 1)
     FD_ZERO(native_param_this);
     anna_entry_t *result = null_entry;
 
+    // Perform cleanup
+
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_io_select, 5)
+{
+    // Validate parameters
+        if(param[0] == null_entry){return null_entry;}
+
+
+    // Mangle input parameters
+    int native_param_nfds = anna_as_int(param[0]);
+    fd_set *native_param_readfds;
+    native_param_readfds = ((param[1]) == null_entry) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
+    fd_set *native_param_writefds;
+    native_param_writefds = ((param[2]) == null_entry) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);
+    fd_set *native_param_exceptfds;
+    native_param_exceptfds = ((param[3]) == null_entry) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[3]), ANNA_MID_CSTRUCT_PAYLOAD);
+    struct timeval *native_param_timeout;
+    native_param_timeout = ((param[4]) == null_entry) ? 0 : (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[4]), ANNA_MID_CSTRUCT_PAYLOAD);
+
+    // Validate parameters
+    
+    
+    
+    
+    
+
+    // Call the function
+    int tmp_var_38 = select(native_param_nfds, native_param_readfds, native_param_writefds, native_param_exceptfds, native_param_timeout);
+    anna_entry_t *result = anna_from_int(tmp_var_38);
     // Perform cleanup
 
     // Return result
@@ -1770,6 +1934,11 @@ void anna_io_load(anna_stack_template_t *stack)
         &unix_i_fd_set_clear, object_type, 1, unix_i_fd_set_clear_argv, unix_i_fd_set_clear_argn, 0, L"Remove all file descriptors from this set.");
     anna_type_document(
             unix_fd_set_type, L"A set of file descriptors. Used by unix.io.select.");
+
+    anna_type_t *unix_i_io_select_argv[] = {int_type, unix_fd_set_type, unix_fd_set_type, unix_fd_set_type, unix_time_val_type};
+    wchar_t *unix_i_io_select_argn[] = {L"nfds", L"readfds", L"writefds", L"exceptfds", L"timeout"};
+    latest_function = anna_module_function(stack, L"select", 0, &unix_i_io_select, int_type, 5, unix_i_io_select_argv, unix_i_io_select_argn, 0, L"Select allows a program to monitor multiple file descriptors");
+   anna_function_document(latest_function,anna_intern_static(L"Calling select will cause the process to wait until one \nor more of the file descriptors become ready for some class of I/O operation, \nor optionally, until the specified amount of time has passed."));
     anna_stack_document(stack, L"The unix.io module contains low level wrappers for basic unix functionality revolving around input and output.");
     anna_stack_document(stack, L"Unix input/output centers around file descriptors. File descriptors are small, positive integers that can represent open files, directories, pipes or even network sockets.");
 
@@ -1881,8 +2050,8 @@ ANNA_VM_NATIVE(unix_i_proc_exec, 3)
     
 
     // Call the function
-    int tmp_var_37 = execve(native_param_filename, native_param_argv, native_param_envp);
-    anna_entry_t *result = anna_from_int(tmp_var_37);
+    int tmp_var_39 = execve(native_param_filename, native_param_argv, native_param_envp);
+    anna_entry_t *result = anna_from_int(tmp_var_39);
     // Perform cleanup
     free(native_param_filename);
     
@@ -1935,8 +2104,8 @@ ANNA_VM_NATIVE(unix_i_proc_fork, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_38 = fork();
-    anna_entry_t *result = anna_from_int(tmp_var_38);
+    int tmp_var_40 = fork();
+    anna_entry_t *result = anna_from_int(tmp_var_40);
     // Perform cleanup
 
     // Return result
@@ -1960,8 +2129,8 @@ ANNA_VM_NATIVE(unix_i_proc_kill, 2)
     
 
     // Call the function
-    int tmp_var_39 = kill(native_param_pid, native_param_sig);
-    anna_entry_t *result = anna_from_int(tmp_var_39);
+    int tmp_var_41 = kill(native_param_pid, native_param_sig);
+    anna_entry_t *result = anna_from_int(tmp_var_41);
     // Perform cleanup
 
     // Return result
@@ -1981,8 +2150,8 @@ ANNA_VM_NATIVE(unix_i_proc_getsid, 1)
     
 
     // Call the function
-    int tmp_var_40 = getsid(native_param_pid);
-    anna_entry_t *result = anna_from_int(tmp_var_40);
+    int tmp_var_42 = getsid(native_param_pid);
+    anna_entry_t *result = anna_from_int(tmp_var_42);
     // Perform cleanup
 
     // Return result
@@ -1998,8 +2167,8 @@ ANNA_VM_NATIVE(unix_i_proc_setsid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_41 = setsid();
-    anna_entry_t *result = anna_from_int(tmp_var_41);
+    int tmp_var_43 = setsid();
+    anna_entry_t *result = anna_from_int(tmp_var_43);
     // Perform cleanup
 
     // Return result
@@ -2015,8 +2184,8 @@ ANNA_VM_NATIVE(unix_i_proc_getpid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_42 = getpid();
-    anna_entry_t *result = anna_from_int(tmp_var_42);
+    int tmp_var_44 = getpid();
+    anna_entry_t *result = anna_from_int(tmp_var_44);
     // Perform cleanup
 
     // Return result
@@ -2032,8 +2201,8 @@ ANNA_VM_NATIVE(unix_i_proc_getppid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_43 = getppid();
-    anna_entry_t *result = anna_from_int(tmp_var_43);
+    int tmp_var_45 = getppid();
+    anna_entry_t *result = anna_from_int(tmp_var_45);
     // Perform cleanup
 
     // Return result
@@ -2074,8 +2243,8 @@ ANNA_VM_NATIVE(unix_i_proc_wait, 1)
     
 
     // Call the function
-    int tmp_var_44 = wait(native_param_status);
-    anna_entry_t *result = anna_from_int(tmp_var_44);
+    int tmp_var_46 = wait(native_param_status);
+    anna_entry_t *result = anna_from_int(tmp_var_46);
     // Perform cleanup
     
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
@@ -2133,8 +2302,8 @@ ANNA_VM_NATIVE(unix_i_proc_waitpid, 3)
     
 
     // Call the function
-    int tmp_var_45 = waitpid(native_param_pid, native_param_status, native_param_options);
-    anna_entry_t *result = anna_from_int(tmp_var_45);
+    int tmp_var_47 = waitpid(native_param_pid, native_param_status, native_param_options);
+    anna_entry_t *result = anna_from_int(tmp_var_47);
     // Perform cleanup
     
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
@@ -2196,8 +2365,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_clear, 1)
     // Validate parameters
 
     // Call the function
-    int tmp_var_46 = sigemptyset(native_param_this);
-    anna_entry_t *result = anna_from_int(tmp_var_46);
+    int tmp_var_48 = sigemptyset(native_param_this);
+    anna_entry_t *result = anna_from_int(tmp_var_48);
     // Perform cleanup
 
     // Return result
@@ -2216,8 +2385,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_all, 1)
     // Validate parameters
 
     // Call the function
-    int tmp_var_47 = sigfillset(native_param_this);
-    anna_entry_t *result = anna_from_int(tmp_var_47);
+    int tmp_var_49 = sigfillset(native_param_this);
+    anna_entry_t *result = anna_from_int(tmp_var_49);
     // Perform cleanup
 
     // Return result
@@ -2240,8 +2409,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_add, 2)
     
 
     // Call the function
-    int tmp_var_48 = sigaddset(native_param_this, native_param_signal);
-    anna_entry_t *result = anna_from_int(tmp_var_48);
+    int tmp_var_50 = sigaddset(native_param_this, native_param_signal);
+    anna_entry_t *result = anna_from_int(tmp_var_50);
     // Perform cleanup
 
     // Return result
@@ -2264,8 +2433,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_remove, 2)
     
 
     // Call the function
-    int tmp_var_49 = sigdelset(native_param_this, native_param_signal);
-    anna_entry_t *result = anna_from_int(tmp_var_49);
+    int tmp_var_51 = sigdelset(native_param_this, native_param_signal);
+    anna_entry_t *result = anna_from_int(tmp_var_51);
     // Perform cleanup
 
     // Return result
@@ -2288,8 +2457,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_in, 2)
     
 
     // Call the function
-    int tmp_var_50 = sigismember(native_param_this, native_param_signal);
-    anna_entry_t *result = (tmp_var_50)?anna_from_int(1):null_entry;
+    int tmp_var_52 = sigismember(native_param_this, native_param_signal);
+    anna_entry_t *result = (tmp_var_52)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -2312,8 +2481,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_get, 2)
     
 
     // Call the function
-    int tmp_var_51 = sigismember(native_param_this, native_param_signal);
-    anna_entry_t *result = (tmp_var_51)?anna_from_int(1):null_entry;
+    int tmp_var_53 = sigismember(native_param_this, native_param_signal);
+    anna_entry_t *result = (tmp_var_53)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -2339,8 +2508,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_set, 3)
     
 
     // Call the function
-    int tmp_var_52 = anna_signalset_set(native_param_this, native_param_signal, native_param_value);
-    anna_entry_t *result = (tmp_var_52)?anna_from_int(1):null_entry;
+    int tmp_var_54 = anna_signalset_set(native_param_this, native_param_signal, native_param_value);
+    anna_entry_t *result = (tmp_var_54)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -2369,8 +2538,8 @@ ANNA_VM_NATIVE(unix_i_proc_signalfd, 3)
     
 
     // Call the function
-    int tmp_var_53 = signalfd(native_param_fd, native_param_mask, native_param_flags);
-    anna_entry_t *result = anna_from_int(tmp_var_53);
+    int tmp_var_55 = signalfd(native_param_fd, native_param_mask, native_param_flags);
+    anna_entry_t *result = anna_from_int(tmp_var_55);
     // Perform cleanup
 
     // Return result
@@ -2580,8 +2749,8 @@ ANNA_VM_NATIVE(unix_i_proc_sigprocmask, 3)
     
 
     // Call the function
-    int tmp_var_54 = sigprocmask(native_param_how, native_param_set, native_param_old);
-    anna_entry_t *result = anna_from_int(tmp_var_54);
+    int tmp_var_56 = sigprocmask(native_param_how, native_param_set, native_param_old);
+    anna_entry_t *result = anna_from_int(tmp_var_56);
     // Perform cleanup
 
     // Return result
@@ -2611,8 +2780,8 @@ ANNA_VM_NATIVE(unix_i_proc_read_signal, 2)
     
 
     // Call the function
-    int tmp_var_55 = anna_read_signal(native_param_fd, native_param_info);
-    anna_entry_t *result = (tmp_var_55)?anna_from_int(1):null_entry;
+    int tmp_var_57 = anna_read_signal(native_param_fd, native_param_info);
+    anna_entry_t *result = (tmp_var_57)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -2796,8 +2965,8 @@ ANNA_VM_NATIVE(unix_i_user_getuid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_56 = getuid();
-    anna_entry_t *result = anna_from_int(tmp_var_56);
+    int tmp_var_58 = getuid();
+    anna_entry_t *result = anna_from_int(tmp_var_58);
     // Perform cleanup
 
     // Return result
@@ -2813,8 +2982,8 @@ ANNA_VM_NATIVE(unix_i_user_geteuid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_57 = geteuid();
-    anna_entry_t *result = anna_from_int(tmp_var_57);
+    int tmp_var_59 = geteuid();
+    anna_entry_t *result = anna_from_int(tmp_var_59);
     // Perform cleanup
 
     // Return result
@@ -2830,8 +2999,8 @@ ANNA_VM_NATIVE(unix_i_user_getgid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_58 = getgid();
-    anna_entry_t *result = anna_from_int(tmp_var_58);
+    int tmp_var_60 = getgid();
+    anna_entry_t *result = anna_from_int(tmp_var_60);
     // Perform cleanup
 
     // Return result
@@ -2847,8 +3016,8 @@ ANNA_VM_NATIVE(unix_i_user_getegid, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_59 = getegid();
-    anna_entry_t *result = anna_from_int(tmp_var_59);
+    int tmp_var_61 = getegid();
+    anna_entry_t *result = anna_from_int(tmp_var_61);
     // Perform cleanup
 
     // Return result
@@ -2868,8 +3037,8 @@ ANNA_VM_NATIVE(unix_i_user_setuid, 1)
     
 
     // Call the function
-    int tmp_var_60 = setuid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_60);
+    int tmp_var_62 = setuid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_62);
     // Perform cleanup
 
     // Return result
@@ -2889,8 +3058,8 @@ ANNA_VM_NATIVE(unix_i_user_seteuid, 1)
     
 
     // Call the function
-    int tmp_var_61 = seteuid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_61);
+    int tmp_var_63 = seteuid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_63);
     // Perform cleanup
 
     // Return result
@@ -2910,8 +3079,8 @@ ANNA_VM_NATIVE(unix_i_user_setegid, 1)
     
 
     // Call the function
-    int tmp_var_62 = setegid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_62);
+    int tmp_var_64 = setegid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_64);
     // Perform cleanup
 
     // Return result
@@ -2931,8 +3100,8 @@ ANNA_VM_NATIVE(unix_i_user_setgid, 1)
     
 
     // Call the function
-    int tmp_var_63 = setgid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_63);
+    int tmp_var_65 = setgid(native_param_uid);
+    anna_entry_t *result = anna_from_int(tmp_var_65);
     // Perform cleanup
 
     // Return result
@@ -2956,8 +3125,8 @@ ANNA_VM_NATIVE(unix_i_user_setpgid, 2)
     
 
     // Call the function
-    int tmp_var_64 = setpgid(native_param_pid, native_param_pgid);
-    anna_entry_t *result = anna_from_int(tmp_var_64);
+    int tmp_var_66 = setpgid(native_param_pid, native_param_pgid);
+    anna_entry_t *result = anna_from_int(tmp_var_66);
     // Perform cleanup
 
     // Return result
@@ -2977,8 +3146,8 @@ ANNA_VM_NATIVE(unix_i_user_getpgid, 1)
     
 
     // Call the function
-    int tmp_var_65 = getpgid(native_param_pid);
-    anna_entry_t *result = anna_from_int(tmp_var_65);
+    int tmp_var_67 = getpgid(native_param_pid);
+    anna_entry_t *result = anna_from_int(tmp_var_67);
     // Perform cleanup
 
     // Return result
@@ -3023,8 +3192,8 @@ ANNA_VM_NATIVE(unix_i_user_getgroups, 2)
     
 
     // Call the function
-    int tmp_var_66 = getgroups(native_param_size, native_param_list);
-    anna_entry_t *result = anna_from_int(tmp_var_66);
+    int tmp_var_68 = getgroups(native_param_size, native_param_list);
+    anna_entry_t *result = anna_from_int(tmp_var_68);
     // Perform cleanup
     
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
@@ -3078,8 +3247,8 @@ ANNA_VM_NATIVE(unix_i_user_setgroups, 2)
     
 
     // Call the function
-    int tmp_var_67 = setgroups(native_param_size, native_param_list);
-    anna_entry_t *result = anna_from_int(tmp_var_67);
+    int tmp_var_69 = setgroups(native_param_size, native_param_list);
+    anna_entry_t *result = anna_from_int(tmp_var_69);
     // Perform cleanup
     
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
@@ -3252,8 +3421,8 @@ ANNA_VM_NATIVE(unix_i_r_limit_get_r_limit, 2)
     
 
     // Call the function
-    int tmp_var_68 = getrlimit(native_param_resource, native_param_rlim);
-    anna_entry_t *result = anna_from_int(tmp_var_68);
+    int tmp_var_70 = getrlimit(native_param_resource, native_param_rlim);
+    anna_entry_t *result = anna_from_int(tmp_var_70);
     // Perform cleanup
 
     // Return result
@@ -3278,8 +3447,8 @@ ANNA_VM_NATIVE(unix_i_r_limit_set_r_limit, 2)
     
 
     // Call the function
-    int tmp_var_69 = setrlimit(native_param_resource, native_param_rlim);
-    anna_entry_t *result = anna_from_int(tmp_var_69);
+    int tmp_var_71 = setrlimit(native_param_resource, native_param_rlim);
+    anna_entry_t *result = anna_from_int(tmp_var_71);
     // Perform cleanup
 
     // Return result
@@ -3349,8 +3518,8 @@ ANNA_VM_NATIVE(unix_i_env_getenv, 1)
     
 
     // Call the function
-    char * tmp_var_70 = getenv(native_param_name);
-    anna_entry_t *result = (tmp_var_70) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_70), tmp_var_70)) : null_entry;
+    char * tmp_var_72 = getenv(native_param_name);
+    anna_entry_t *result = (tmp_var_72) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_72), tmp_var_72)) : null_entry;
     // Perform cleanup
     free(native_param_name);
 
@@ -3379,8 +3548,8 @@ ANNA_VM_NATIVE(unix_i_env_setenv, 3)
     
 
     // Call the function
-    int tmp_var_71 = setenv(native_param_name, native_param_value, native_param_overwrite);
-    anna_entry_t *result = anna_from_int(tmp_var_71);
+    int tmp_var_73 = setenv(native_param_name, native_param_value, native_param_overwrite);
+    anna_entry_t *result = anna_from_int(tmp_var_73);
     // Perform cleanup
     free(native_param_name);
     free(native_param_value);
@@ -3402,8 +3571,8 @@ ANNA_VM_NATIVE(unix_i_env_unsetenv, 1)
     
 
     // Call the function
-    int tmp_var_72 = unsetenv(native_param_name);
-    anna_entry_t *result = anna_from_int(tmp_var_72);
+    int tmp_var_74 = unsetenv(native_param_name);
+    anna_entry_t *result = anna_from_int(tmp_var_74);
     // Perform cleanup
     free(native_param_name);
 
@@ -3420,8 +3589,8 @@ ANNA_VM_NATIVE(unix_i_env_clearenv, 0)
     // Validate parameters
 
     // Call the function
-    int tmp_var_73 = clearenv();
-    anna_entry_t *result = anna_from_int(tmp_var_73);
+    int tmp_var_75 = clearenv();
+    anna_entry_t *result = anna_from_int(tmp_var_75);
     // Perform cleanup
 
     // Return result
@@ -3483,8 +3652,8 @@ ANNA_VM_NATIVE(unix_i_sleep_sleep, 1)
     
 
     // Call the function
-    int tmp_var_74 = sleep(native_param_seconds);
-    anna_entry_t *result = anna_from_int(tmp_var_74);
+    int tmp_var_76 = sleep(native_param_seconds);
+    anna_entry_t *result = anna_from_int(tmp_var_76);
     // Perform cleanup
 
     // Return result
@@ -3516,137 +3685,6 @@ void anna_sleep_load(anna_stack_template_t *stack)
     anna_stack_document(stack, L"The unix.sleep module contains low level wrappers for basic unix functionality revolving around pausing the execution of processes.");
 
     anna_type_data_register(anna_sleep_type_data, stack);
-}
-const static anna_type_data_t anna_time_type_data[] = 
-{
-    { &unix_time_val_type, L"TimeVal" },
-    { &unix_time_zone_type, L"TimeZone" },
-};
-
-ANNA_VM_NATIVE(unix_i_time_val_sec_getter, 1)
-{
-    struct timeval *data;
-    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    anna_entry_t *result = anna_from_int(data->tv_sec);
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_sec_setter, 2)
-{
-    struct timeval *data;
-    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    int tmp = anna_as_int(param[1]);
-    data->tv_sec = tmp;
-    return param[1];
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_usec_getter, 1)
-{
-    struct timeval *data;
-    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    anna_entry_t *result = anna_from_int(data->tv_usec);
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_usec_setter, 2)
-{
-    struct timeval *data;
-    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    int tmp = anna_as_int(param[1]);
-    data->tv_usec = tmp;
-    return param[1];
-}
-
-ANNA_VM_NATIVE(unix_i_time_val_init, 1)
-{
-    struct timeval *data;
-    data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    memset(data, 0, sizeof(struct timeval));
-    return param[0];
-}
-
-ANNA_VM_NATIVE(unix_i_time_zone_init, 1)
-{
-    struct timezone *data;
-    data = (struct timezone *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    memset(data, 0, sizeof(struct timezone));
-    return param[0];
-}
-
-ANNA_VM_NATIVE(unix_i_time_gettimeofday, 2)
-{
-    // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
-        if(param[1] == null_entry){return null_entry;}
-
-
-    // Mangle input parameters
-    struct timeval *native_param_tv;
-    native_param_tv = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-    struct timezone *native_param_tz;
-    native_param_tz = (struct timezone *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
-
-    // Validate parameters
-    
-    
-
-    // Call the function
-    int tmp_var_75 = gettimeofday(native_param_tv, native_param_tz);
-    anna_entry_t *result = (tmp_var_75)?anna_from_int(1):null_entry;
-    // Perform cleanup
-
-    // Return result
-    return result;
-}
-
-void anna_time_create(anna_stack_template_t *stack);
-void anna_time_create(anna_stack_template_t *stack)
-{
-    anna_type_data_create(anna_time_type_data, stack);        
-}
-void anna_time_load(anna_stack_template_t *stack);
-void anna_time_load(anna_stack_template_t *stack)
-{
-    mid_t latest_mid;    
-    anna_function_t *latest_function;
-    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
-    anna_module_data_t modules[] =
-        {
-        };
-    anna_module_data_create(modules, stack);
-
-    wchar_t *this_argn[] = {L"this"};
-
-
-    anna_member_create_blob(unix_time_val_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timeval));
-
-    anna_member_create_native_property(
-        unix_time_val_type, anna_mid_get(L"sec"),
-        int_type, unix_i_time_val_sec_getter, unix_i_time_val_sec_setter, L"Seconds");
-
-    anna_member_create_native_property(
-        unix_time_val_type, anna_mid_get(L"usec"),
-        int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, L"Microseconds.");
-    anna_member_create_native_method(
-	unix_time_val_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_time_val_init, object_type, 1, &unix_time_val_type, this_argn, 0, 0);    
-    anna_type_document(
-            unix_time_val_type, L"A data structure representing a point in time as the amount of time that has elapsed since the epoch.");
-
-    anna_member_create_blob(unix_time_zone_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timezone));
-    anna_member_create_native_method(
-	unix_time_zone_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_time_zone_init, object_type, 1, &unix_time_zone_type, this_argn, 0, 0);    
-    anna_type_document(
-            unix_time_zone_type, L"A deprecated data structure that used to be used for representing a time zone.");
-
-    anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_time_val_type, unix_time_zone_type};
-    wchar_t *unix_i_time_gettimeofday_argn[] = {L"tv", L"tz"};
-    latest_function = anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, 0, L"Gets the current system time. Equivalanet to the C gettimeofday function.");
-    anna_stack_document(stack, L"The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping.");
-
-    anna_type_data_register(anna_time_type_data, stack);
 }
 const static anna_type_data_t anna_locale_type_data[] = 
 {
@@ -3701,8 +3739,8 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
     
 
     // Call the function
-    char * tmp_var_76 = setlocale(native_param_cateory, native_param_locale);
-    anna_entry_t *result = (tmp_var_76) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_76), tmp_var_76)) : null_entry;
+    char * tmp_var_77 = setlocale(native_param_cateory, native_param_locale);
+    anna_entry_t *result = (tmp_var_77) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_77), tmp_var_77)) : null_entry;
     // Perform cleanup
     free(native_param_locale);
 
@@ -3871,9 +3909,9 @@ ANNA_VM_NATIVE(unix_i_locale_locale_conv, 0)
     // Validate parameters
 
     // Call the function
-    struct lconv * tmp_var_77 = localeconv();
+    struct lconv * tmp_var_78 = localeconv();
     anna_entry_t *result = anna_from_obj(anna_object_create(unix_locale_conv_type));
-    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_77;
+    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_78;
     // Perform cleanup
 
     // Return result
@@ -4146,8 +4184,8 @@ ANNA_VM_NATIVE(unix_i_term_get_attr, 2)
     
 
     // Call the function
-    int tmp_var_78 = tcgetattr(native_param_fd, native_param_ios);
-    anna_entry_t *result = (tmp_var_78)?anna_from_int(1):null_entry;
+    int tmp_var_79 = tcgetattr(native_param_fd, native_param_ios);
+    anna_entry_t *result = (tmp_var_79)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -4176,8 +4214,8 @@ ANNA_VM_NATIVE(unix_i_term_set_attr, 3)
     
 
     // Call the function
-    int tmp_var_79 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
-    anna_entry_t *result = (tmp_var_79)?anna_from_int(1):null_entry;
+    int tmp_var_80 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
+    anna_entry_t *result = (tmp_var_80)?anna_from_int(1):null_entry;
     // Perform cleanup
 
     // Return result
@@ -4256,8 +4294,8 @@ ANNA_VM_NATIVE(unix_i_error_error_string, 1)
     
 
     // Call the function
-    char * tmp_var_80 = strerror(native_param_error);
-    anna_entry_t *result = (tmp_var_80) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_80), tmp_var_80)) : null_entry;
+    char * tmp_var_81 = strerror(native_param_error);
+    anna_entry_t *result = (tmp_var_81) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_81), tmp_var_81)) : null_entry;
     // Perform cleanup
 
     // Return result
@@ -4474,13 +4512,13 @@ void anna_unix_load(anna_stack_template_t *stack)
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] =
         {
+            { L"time", anna_time_create, anna_time_load},
             { L"io", anna_io_create, anna_io_load},
             { L"proc", anna_proc_create, anna_proc_load},
             { L"user", anna_user_create, anna_user_load},
             { L"rLimit", anna_r_limit_create, anna_r_limit_load},
             { L"env", anna_env_create, anna_env_load},
             { L"sleep", anna_sleep_create, anna_sleep_load},
-            { L"time", anna_time_create, anna_time_load},
             { L"locale", anna_locale_create, anna_locale_load},
             { L"term", anna_term_create, anna_term_load},
             { L"error", anna_error_create, anna_error_load},
