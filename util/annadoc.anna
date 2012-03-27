@@ -464,13 +464,15 @@ often used code paths, which makes it useful for regression testing.")
 	}
 
 	opMap := «String, MutableList«Member»»[];
+	funMap := «String, MutableList«Member»»[];
 	subfun.each(mem)
 	{
 	    val := mem.value(?);
 
 	    alias := annaUtil.findAttribute(
-		((mem as Method) or (val as Function)).attribute,
-		"alias");
+		mem.attribute or (mem.value(?) as Function).attribute, "alias");
+
+
 	    (alias.map(a){a.toString()}.thaw ~ [mem.name]).each(name)
 	    {
 		if(name in operatorLookup)
@@ -483,9 +485,19 @@ often used code paths, which makes it useful for regression testing.")
 			opMap[name].push(mem);
 		    }
 		}
+		
+		if(!(name in funMap)){
+		    funMap[name] = [mem];
+		}
+		else
+		{
+		    funMap[name].push(mem);
+		}
 	    }
 	}
 	subop := opMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair).first.__cmp__((second as Pair).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
+
+	subfun2 := funMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair).first.__cmp__((second as Pair).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
 
         subother := smemb.filter(mem)
 	{

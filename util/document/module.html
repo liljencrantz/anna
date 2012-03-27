@@ -125,26 +125,50 @@
        }
     %>
 
-
-
-
-
     <% 
-       if(subfun.count > 0)
+       if(subfun2.count > 0)
        {
     %>
     <h2><a name="api-function">Methods and functions</a></h2>
     <ul>
     <% 
-       subfun.each(mem)
+       subfun2.each(memPair)
        {
-           val := mem.value(?);
+           if(memPair.second.count == 1)
+           {
+	       mem := memPair.second[0];
+               val := mem.value(?);
        %>
-      <li <%! if(mem.internal?){"class='anna-internal'"} %>>
+        <li <%! if(mem.internal?){"class='anna-internal'"} %>>
 	<a href="#<%= mem.name  %>"><%= mem.name %></a> 
 	<%! headerForMember(mem)%>
-      </li>
-<%
+	</li>
+	<%
+           }
+           else
+           {
+       %>
+	<li>
+	  <%= memPair.first %>:
+	<ul>
+	<%
+	       memPair.second.each(mem)
+               {
+                   val := mem.value(?);
+       %>
+        <li <%! if(mem.internal?){"class='anna-internal'"} %>>
+	<a href="#<%= mem.name  %>"><%= mem.name %></a> 
+	<%! headerForMember(mem)%>
+	</li>
+	<%
+             }
+       %>
+	</ul>
+	</li>
+	<%            
+            }
+   %>
+      <%
 	}
     %>
     </ul>
