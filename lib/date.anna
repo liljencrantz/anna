@@ -1,7 +1,12 @@
-attribute(doc("The date module is a high level library for handling dates and time. It currently suffers from the limitation that it can only correctly handle dates within the range of a Unix timestamp. On most 32-bit platforms, this means dates from 1902 to 2038 are correctly handled."));
+attribute(
+    doc(
+	"The date module is a high level library for handling dates and time.",
+	"This module currently suffers from the limitation that it can only correctly handle dates within the range of a Unix timestamp. On most 32-bit platforms, this means dates from 1902 to 2038 are correctly handled."));
 
 class Timezone
-(doc("A Timezone object. This object is currently mostly a placeholder, it's functionality is yet to be implemented."))
+(
+    doc(
+	"A Timezone object. This object is currently mostly a placeholder, it's functionality is yet to be implemented."))
 {
     var String name (internal, doc("The name of this time zone"));
 
@@ -12,7 +17,8 @@ class Timezone
 }
 
 class Delta
-(doc("
+(
+    doc("
 An object representing a time delta, e.g. the difference between two
 points in time.
 ", "
