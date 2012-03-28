@@ -134,7 +134,7 @@
     <% 
        subfun2.each(memPair)
        {
-           if(memPair.second.count == 1)
+           if(memPair.second.count == 1 and (memPair.first == memPair.second.first.name))
            {
 	       mem := memPair.second[0];
                val := mem.value(?);
