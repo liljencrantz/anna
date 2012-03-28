@@ -32,13 +32,13 @@ for i in "__add__ mpz_add(res, *v1, *v2)" "__increaseAssign__ mpz_add(res, *v1, 
     
     init="$init
     mmid = anna_member_create_native_method(
-	int_type, anna_mid_get(L\"${external_name}Int\"), 0, 
+	int_type, anna_mid_get(L\"${external_name}\"), 0, 
 	&anna_int_i_${name}, 
 	int_type,
 	2, argv, argn, 0, 0);
     fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(int_type, mmid)));
     fun->flags |= ANNA_FUNCTION_PURE;
-    anna_member_alias(int_type, mmid, L\"${external_name}\");
+//    anna_member_alias(int_type, mmid, L\"${external_name}\");
 "
 
     echo "

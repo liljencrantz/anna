@@ -339,7 +339,7 @@ void anna_int_type_create()
     anna_member_create_native_method(
 	int_type, anna_mid_get(L"__init__"), 0,
 	&anna_int_init_i, object_type, 2, ii_argv,
-	ii_argn, 0, 0);
+	ii_argn, 0, L"Create a new Int object with the same value as the specified Int object.");
     
     anna_member_create_native_method(
 	int_type,
@@ -349,7 +349,8 @@ void anna_int_type_create()
 	int_type,
 	2,
 	i_argv,
-	i_argn, 0, 0);
+	i_argn, 0, 
+	L"Compare this Int to another object. Returns null if the other object is not an Int. Return a negative number, zero or a positive number if the other Int is smaller than, equal to or greater than this Int, respectively.");
     
     anna_member_create_native_method(
 	int_type, ANNA_MID_HASH_CODE, 0,
@@ -398,4 +399,50 @@ void anna_int_type_create()
 	int_type, anna_int_del);
 
     anna_int_type_i_create();
+
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"mod"),
+	L"Calculate the modulus of the two numbers.");
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"shl"),
+	L"Left shift the binary representation of this integer the specified number of steps.");
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"shr"),
+	L"Right shift the binary representation of this integer the specified number of steps.");
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"sign"),
+	L"Return -1, 0 or 1 if this integer is negative, zero or positive, respectively.");
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"exp"),
+	L"Raise the integer to the specified power.");
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"bitand"),
+	L"Returns the bitwise and of the two numbers.");
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"bitor"),
+	L"Returns the bitwise or of the two numbers.");
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"bitxor"),
+	L"Returns the bitwise xor of the two numbers.");
+
+    anna_member_document(
+	int_type,
+	anna_mid_get(L"abs"),
+	L"Returns the absolute value value of this Integer.");
+
 }
