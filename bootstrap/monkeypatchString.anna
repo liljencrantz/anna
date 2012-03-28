@@ -1,14 +1,31 @@
 attribute(internal, doc("Internally used module. Don't use directly."));
 
-def Int search__Char__(
-    String this, Char ch)
+def Int searchChar(
+    String this, Char ch, Int from=0)
 (
     alias(search),
     target(String),
-    doc("Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise."),
+    doc(
+	"Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
+	"This method is currently rather inefficient.",
+	),
 )
 {
-    this.each(idx, i){if(i == ch){return idx}}
+    this[from...].each(idx, i){if(i == ch){return idx}}
+    return ?;
+}
+
+def Int searchString(
+    String this, String string, Int from = 0)
+(
+    alias(search),
+    target(String),
+    doc("Search for the specified Substring in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
+	"This method is currently rather inefficient.",
+	),
+)
+{
+    (from..this.count).each(idx){if(this[idx..(idx+string.count)] == string){return idx}}
     return ?;
 }
 
@@ -80,7 +97,7 @@ def String __format__Map__(
 		if(this[i] == '(')
 		{
 		    i++;
-		    end := search__Char__(this[i...], ')');
+		    end := searchChar(this[i...], ')');
 		    if(end)
 		    {
 		        name := this[i..(i+end)];
@@ -230,3 +247,54 @@ def MutableList«String» splitList(
 {
     return split(this, "".join(charList), allowEmpty);
 }
+
+def String replace(
+    String this,
+    String original,
+    String replacement)
+(
+    target(String),
+    doc(
+	"Replace all occurances in this string of the specified original with the specified replacement.", 
+	"This method is currently rather inefficient.",
+	),
+)
+{
+    start := 0;
+    res := "".thaw;
+    while(1)
+    {
+	end := searchString(this, original, start);
+	if(end)
+	{
+	    res ~= this[start..end];
+	    res ~= replacement;
+	    start = end + original.count;
+	}
+	else
+	{
+	    res ~= this[start...];
+	    return res;
+	}
+    }
+    return ?;
+}
+
+def String __mul__(
+    String this,
+    Int count)
+(
+    target(String),
+    aliasReverse(__mul__),
+    doc("Returns a copy of this string, repeated the specified number of times")
+)
+{
+    if(count < 0)
+    {
+	return ?;
+    }
+    res := "".thaw;
+    (0..count).each(i){res ~= this}
+    return res;
+}
+
