@@ -1,0 +1,30 @@
+
+//use(regexp);
+
+class PreProcessor
+{
+
+}
+
+
+class Markdown
+{
+    
+    def convert(String source)
+    {
+	source = source.replace("\r\n", "\n");
+	//source = source.replace(re"\n\s+\n", "\n\n");
+	source = source.replace("\t", " "*8);
+	lines := source.split("\n");
+	print(lines);
+	
+    }
+
+}
+
+def markdown(String text)
+{
+    md := Markdown();
+    md.convert(text);
+}
+

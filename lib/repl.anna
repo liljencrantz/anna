@@ -103,7 +103,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	ast(exit): die,
 	];
     [firstPrompt, secondPrompt] := ["anna> ", "    > "];
-
+    prev := ? as Object;
     /*
       Start the main repl loop
     */
@@ -177,11 +177,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	    variableDeclaration :== ast(nothing());
 	    previousContinuation.each(name, value)
 	    {
-		variableDeclaration.push(
-		    ast(%name := %value) % [
-			"name": Identifier(?, name), 
-			"value": Dummy(?, value)]);
-	    };
+		if(name != "ans")
+		{
+		    variableDeclaration.push(
+			ast(%name := %value) % [
+			    "name": Identifier(?, name), 
+			    "value": Dummy(?, value)]);
+		}
+	    }
 	    
 	    /*
 	      Make an ast representing an entire module with our fancy
@@ -194,12 +197,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		    {
 			%cont = reflection.currentContinuation; 
 			%variable; 
+			ans := %ans;
 			%ast;
 		    })) % [
 			"fun": Identifier(?, "!fun"), 
 			"ast": ast, 
 			"cont": Identifier(?, "!cont"), 
-			"variable": variableDeclaration
+			"variable": variableDeclaration,
+			"ans": (if(prev){Dummy(?, prev)}else{ast(? as Object)}) as Node,
 			];
 	    if(isGlobal)
 	    {
@@ -232,7 +237,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		    */
 		    funMemb :== code.__type__.member.find(memb){memb.name=="!fun"};
   		    fun :== funMemb.value(code);
-		    print((fun as reflection.Block)());
+		    print(prev = (fun as reflection.Block)());
 		    previousContinuation = code.__type__.member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
 		}
 	    }
