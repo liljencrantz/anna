@@ -182,7 +182,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		    variableDeclaration.push(
 			ast(%name := %value) % [
 			    "name": Identifier(?, name), 
-			    "value": Dummy(?, value)]);
+			    "value": (if(value){Dummy(?, value)}else{ast(? as Object)}) as Node,
+			    ]
+			);
 		}
 	    }
 	    
@@ -237,7 +239,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		    */
 		    funMemb :== code.__type__.member.find(memb){memb.name=="!fun"};
   		    fun :== funMemb.value(code);
-		    print(prev = (fun as reflection.Block)());
+		    prev = (fun as reflection.Block)();
+		    prev and print(prev);
 		    previousContinuation = code.__type__.member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
 		}
 	    }
