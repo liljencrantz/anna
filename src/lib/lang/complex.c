@@ -323,7 +323,7 @@ void anna_complex_type_create()
 	complex_type, anna_mid_get(L"convertFloat"),
 	0, &anna_complex_convert_float,
 	complex_type, 1, &float_type, conv_argn, 0,
-	L"Convert the specified floating point number to a complex number. (This is a no-op.)");
+	L"Convert the specified floating point number to a complex number.");
     anna_member_alias(complex_type, mmid, L"convert");
 
     mmid = anna_member_create_native_type_method(
