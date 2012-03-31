@@ -175,14 +175,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	      variable names and values.
 	    */
 	    variableDeclaration :== ast(nothing());
-	    previousContinuation.each(name, value)
+	    previousContinuation.variable.each(memb)
 	    {
-		if(name != "ans")
+		if(memb.name != "ans")
 		{
 		    variableDeclaration.push(
-			ast(%name := %value) % [
-			    "name": Identifier(?, name), 
-			    "value": (if(value){Dummy(?, value)}else{ast(? as Object)}) as Node,
+			ast(%name := %value as %Type) % [
+			    "name": Identifier(?, memb.name), 
+			    "value": (if(memb.value){Dummy(?, memb.value)}else{ast(? as Object)}) as Node,
+			    "Type": Dummy(?, memb.type),
 			    ]
 			);
 		}
@@ -237,6 +238,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		      the function invocation so we can introspect it
 		      in the next lap.
 		    */
+//		    print(moduleAst);
 		    funMemb :== code.__type__.member.find(memb){memb.name=="!fun"};
   		    fun :== funMemb.value(code);
 		    prev = (fun as reflection.Block)();
@@ -249,7 +251,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		/*
 		  If we encounter an error, stop executing the rest of
 		  the expressions on this line.
-		 */
+		*/
 		break;
 	    }
 	}

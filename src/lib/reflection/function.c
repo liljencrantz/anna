@@ -232,41 +232,57 @@ ANNA_VM_NATIVE(anna_function_type_i_static, 1)
     return null_entry;
 }
 
-static void anna_function_type_i_variable_each(
+
+static void anna_function_type_i_member_each(
     void *key,
     void *value,
     void *aux)
 {
-    anna_object_t *res = (anna_object_t *)aux;
+    anna_object_t *this = (anna_object_t *)aux;
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_function_t *fun = frame->function;
+    anna_object_t *res = (anna_object_t *)*anna_entry_get_addr(this, anna_mid_get(L"!variablePayload"));
     wchar_t *name = (wchar_t *)key;
+    
+    anna_object_t *el = anna_object_create(continuation_variable_type);
+    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
+    
+    anna_entry_set(
+	el, ANNA_MID_CONTINUATION_VARIABLE_OFFSET, anna_from_int(sid.offset));
+    
+    anna_entry_set(
+	el, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION, anna_from_obj(this));
+    
     anna_list_add(
 	res,
-	anna_from_obj(anna_string_create(wcslen(name), name)));
+	anna_from_obj(el));
 }
 
-
-ANNA_VM_NATIVE(anna_function_type_i_variable, 1)
+ANNA_VM_NATIVE(anna_function_type_i_member, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *res = (anna_object_t *)*anna_entry_get_addr(this, anna_mid_get(L"!variablePayload"));
     if(res == null_object)
     {
-	res = anna_list_create_imutable(imutable_string_type);
+	res = anna_list_create_imutable(continuation_variable_type);
 	anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
 	anna_function_t *fun = frame->function;
 	anna_stack_template_t *var = fun->stack_template;
 	assert(fun);
 	assert(var);
 	
+	*(anna_object_t **)anna_entry_get_addr(this, anna_mid_get(L"!variablePayload")) = res;
 	hash_foreach2(
 	    &var->member_string_identifier,
-	    anna_function_type_i_variable_each,
-	    res);
+	    anna_function_type_i_member_each,
+	    this);
 		
-	*(anna_object_t **)anna_entry_get_addr(this, anna_mid_get(L"!variablePayload")) = res;
     }
     return anna_from_obj(res);
 }
+
+
+
 
 static anna_type_t *anna_function_type_boring;
 
@@ -384,7 +400,6 @@ void anna_reflection_mark_static(void)
 	}
     }
 }
-
 
 void anna_reflection_type_for_function_create(
     anna_function_type_t *key, 
@@ -527,15 +542,15 @@ void anna_reflection_type_for_function_create(
 
 	    anna_member_create(
 		res, anna_mid_get(L"!variablePayload"),
-		ANNA_MEMBER_INTERNAL, anna_list_type_get_imutable(imutable_string_type));
+		ANNA_MEMBER_INTERNAL, 
+		anna_list_type_get_imutable(continuation_variable_type));
 	
 	    anna_member_create_native_property(
 		res, anna_mid_get(L"variable"),
-		anna_list_type_get_imutable(imutable_string_type),
-		&anna_function_type_i_variable,
+		anna_list_type_get_imutable(continuation_variable_type),
+		&anna_function_type_i_member,
 		0,
 		L"A list of all variables in this function.");
-		    
 	}
 	
 	if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
