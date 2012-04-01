@@ -4,7 +4,9 @@ attribute(
 
 def escape(String str...)
 (
-    doc("Perform HTML escaping of the specified string.")
+    doc("Perform HTML escaping of the specified string. This function will replace the following characters with their respective html escape sequence: &gt;, &lt;, &amp;, &quot; and &#39;. No other characters will be modified.",
+	"The escape function is useful when inserting plain text as HTML text elements and when inserting plain text into an html attribute. The escape function is <em>not</em> useful for inserting plain text into inline CSS (Inline CSS has different escaping rules than plain html), nor is it useful for inserting text into various JavaScript contexts, suck as a string literal inside a &lt;script&gt; block or inside an HTML attribute.",
+	"Dynamically gernrating inline CSS or inline JavaScript is <em>stronly</em> discouraged, as doing so will cause you to decend into an endless quagmire of double escaping and other head aches. Use separate CSS files and separate JavaScript files, both for static CSS/JavaScript and for dynamically generated CSS/JavaScript. As of today, the html module does not support the various additional escaping modes that are required to do so.")
 )
 {
     res := "".thaw;
@@ -24,7 +26,7 @@ def escape(String str...)
 	    {
 		"&gt;";
 	    }
-	    case('&')
+	    case('"')
 	    {
 		"&quot;";
 	    }
