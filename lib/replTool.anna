@@ -3,14 +3,197 @@ Helper commands for the anna repl (interactive prompt) implementation.
 This module is automatically used by the anna interactive prompt, and
 there is very rarely any reason to use it manually."));
 
-def formatList(List«Object» wordList) (internal, doc("Internal helper method for dir and help, used to line break a list of strings."))
+enum HtmlMode{
+    text, textSpace, tagName, tagContent, pre, li
+}
+
+def formatHtml(String input)
+    (doc("Format the spcified HTML snippet into something suitable for printing in a terminal."), internal)
 {
-  res := "".thaw;
-  col := 0;
-    wordList.each(wordObj)
+    
+    mode := [HtmlMode::text];
+    
+    res := "".thaw;
+    currentParagraph := "".thaw;
+    currentTag := "".thaw;
+
+    def handleTag(String currentTag)
     {
-      word := wordObj.toString();
-	if(col == 0)
+	switch(currentTag)
+	{
+	    case("p")
+	    {
+		mode[-1] = HtmlMode::text;
+		
+		res ~= linebreak(currentParagraph.split(" ", ?));
+		res ~= "\n";
+		currentParagraph.count=0;
+	    }
+
+	    case("li")
+	    {
+		mode.push(HtmlMode::li);
+		
+		res ~= linebreak(currentParagraph.split(" ", ?));
+		res ~= "\n";
+		currentParagraph.count=0;
+	    }
+
+	    case("/li")
+	    {
+		mode.pop();
+		res ~= linebreak(currentParagraph.split(" ", ?), firstPrefix: " * ", prefix: "   ");
+		currentParagraph.count=0;
+	    }
+
+	    case("pre")
+	    {
+		mode.push(HtmlMode::pre);		
+		res ~= linebreak(currentParagraph.split(" ", ?));
+		res ~= "\n";
+		currentParagraph.count=0;
+	    }
+
+	    case("/pre")
+	    {
+		mode.pop();
+		res ~= currentParagraph;
+		currentParagraph.count=0;
+	    }
+
+	    default
+	    {
+
+	    }
+
+	}
+	currentTag.count=0;
+    }
+
+    input.each(idx, ch)
+    {
+	switch(mode[-1])
+	{
+	    case(HtmlMode::text, HtmlMode::li)
+	    {
+		switch(ch)
+		{
+		    case('<')
+		    {
+			mode.push(HtmlMode::tagName);
+		    }
+
+		    case('\n', '\t', '\r')
+		    {
+			mode.push(HtmlMode::textSpace);
+			currentParagraph ~= ' ';
+		    }
+
+		    default
+		    {
+			currentParagraph ~= ch;
+		    }
+		}
+	    }
+
+	    case(HtmlMode::pre)
+	    {
+		switch(ch)
+		{
+		    case('<')
+		    {
+			mode.push(HtmlMode::tagName);
+		    }
+
+
+		    default
+		    {
+			currentParagraph ~= ch;
+		    }
+		}
+		
+	    }
+
+	    case(HtmlMode::textSpace)
+	    {
+		switch(ch)
+		{
+		    case('<')
+		    {
+			mode[-1] = HtmlMode::tagName;
+		    }
+
+		    case('\n', '\t', '\r')
+		    {
+		    }
+
+		    default
+		    {
+			mode.pop();
+			currentParagraph ~= ch;
+		    }
+		}		
+	    }
+
+	    case(HtmlMode::tagName)
+	    {
+		switch(ch)
+		{
+		    case(' ')
+		    {
+			mode[-1] = HtmlMode::tagContent;
+		    }
+
+		    case('>')
+		    {
+			mode.pop();
+			handleTag(currentTag);
+		    }
+
+		    default
+		    {
+			currentTag ~= ch;
+		    }
+		}
+	    }
+
+	    case(HtmlMode::tagContent)
+	    {
+		switch(ch)
+		{
+		    case('>')
+		    {
+			mode.pop();
+			handleTag(currentTag);
+		    }
+
+		    default
+		    {
+			
+		    }
+		}
+
+	    }
+
+	}
+
+    }
+
+    res ~= "\n\n";
+    res ~= linebreak(currentParagraph.split(" ", ?));
+
+    return res;
+}
+
+def linebreak(List«Object» wordList, String prefix = "", String firstPrefix = "") 
+(internal, doc("Internal helper method for dir and help, used to line break a list of strings."))
+{    
+    res := firstPrefix.thaw;
+    col := res.count;        
+    wordList.each(idx, wordObj)
+    {
+	word := wordObj.toString();
+	if(idx == 0)
 	{
 	    res ~= word;
 	    col += word.count;
@@ -20,8 +203,9 @@ def formatList(List«Object» wordList) (internal, doc("Internal helper method f
 	    if(col + word.count + 1 > 80)
 	    {
 		res ~= "\n";
+		res ~= prefix;
 		res ~= word;
-		col = word.count;
+		col = word.count + prefix.count;
 	    }
 	    else
 	    {
@@ -47,14 +231,6 @@ def help(Object object)
     res := "".thaw;
 
     /*
-      Clever html to text formating code should go here...
-     */
-    def format(String in)
-    {
-        return in;	
-    }
-
-    /*
       The attribute list to extract documentation from. First we check
       if the object we want help on has it's own attribute list. If
       so, we use it. Otherwise, we show help on it's type. That way,
@@ -73,11 +249,11 @@ def help(Object object)
     }
     else
     {
-	res ~= "\n\n".join(
+	res ~= "".join(
 	    doc.map(docFragment)
 	    {
 	      fragment := docFragment as StringLiteral;
-	      format(fragment.payload);
+	      formatHtml(fragment.payload);
 	    });
     }
     if(object.__type__.module?)
@@ -107,13 +283,13 @@ def help(Object object)
 	if(!submodule.empty?)
 	{
 	    res ~= "\n\nThis module has the following submodules:\n";
-	    res ~= formatList(submodule);
+	    res ~= linebreak(submodule);
 	}
 
 	if(!subtype.empty?)
 	{
 	    res ~= "\n\nThis module contains the following types:\n";
-	    res ~= formatList(subtype);
+	    res ~= linebreak(subtype);
 	}
     }
 
@@ -123,6 +299,6 @@ def help(Object object)
 def dir(Object object)
     (doc("This is an additional help function for the interactive Anna command line. If takes any object as a parameter and lists all members of that type ina a format suitable for the screen. This is just a very thin wrapper around the member property of the Type type."))
 {
-    return formatList(((object as reflection.Type) or object.__type__).member);
+    return linebreak(((object as reflection.Type) or object.__type__).member);
 }
 
