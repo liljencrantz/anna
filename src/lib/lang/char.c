@@ -52,6 +52,7 @@ ANNA_VM_NATIVE(anna_char_to_string, 1)
 
 ANNA_VM_NATIVE(anna_char_convert, 1)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     int ch = anna_as_int(param[0]);
     return anna_from_obj(anna_char_create(ch));
 }
