@@ -24,6 +24,14 @@ def escape(String str...)
 	    {
 		"&gt;";
 	    }
+	    case('&')
+	    {
+		"&quot;";
+	    }
+	    case('\'')
+	    {
+		"&#39;";
+	    }
 	    default
 	    {
 		ch;
