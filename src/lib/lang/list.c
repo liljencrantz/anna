@@ -1203,7 +1203,7 @@ static void anna_list_type_create_internal(
 	type,
 	anna_mid_get(L"getRange"), 0,
 	&anna_list_i_get_range, type, 2,
-	range_argv, range_argn, 0, 0);
+	range_argv, range_argn, 0, L"Returns a newly created List containing all the elements in the specified Range.");
     anna_member_document_example(type, mmid, L"myList := [1,2,3,4,5,6];\nprint(myList[1|2...]); // This will print [2, 4, 6]");
     anna_member_alias(type, mmid, L"__get__");
 
