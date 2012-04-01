@@ -3,19 +3,42 @@ Helper commands for the anna repl (interactive prompt) implementation.
 This module is automatically used by the anna interactive prompt, and
 there is very rarely any reason to use it manually."));
 
-enum HtmlMode{
-    text, textSpace, tagName, tagContent, pre, li
+enum HtmlState
+(
+    doc("Different states for the Html parsing state machine.")
+)
+{
+    text, textSpace, tagName, tagContent, pre, li, escape
 }
 
 def formatHtml(String input)
-    (doc("Format the spcified HTML snippet into something suitable for printing in a terminal."), internal)
+(
+    doc(
+	"
+Format the specified HTML snippet into something suitable for printing in a 
+terminal. This function does not correctly handle arbitrary HTML. The following
+ is a short rundown of what is supported:
+
+<ul>
+<li>&lt;li&gt; elements are converted into bullet points. Ordered lists are not handled differently and are also converted into bullets.</li>
+<li>&lt;p&gt; tags are rendered as double line breaks.</li>
+<li>&lt;pre&gt; content is rendered verbatim</li> 
+<li>All other tags are removed and ignored</li>
+<li>Numbered html escapes as well as the &amp;gt;, &amp;lt;, &amp;amp; and &amp;quot; html escapes are unescaped.</li>
+<li>Text is line breaked to 80 columns.</li>
+</ul>
+
+"),
+    internal
+)
 {
     
-    mode := [HtmlMode::text];
+    mode := [HtmlState::text];
     
     res := "".thaw;
     currentParagraph := "".thaw;
     currentTag := "".thaw;
+    currentEscape := "".thaw;
 
     def handleTag(String currentTag)
     {
@@ -23,16 +46,15 @@ def formatHtml(String input)
 	{
 	    case("p")
 	    {
-		mode[-1] = HtmlMode::text;
-		
 		res ~= linebreak(currentParagraph.split(" ", ?));
+		res ~= "\n";
 		res ~= "\n";
 		currentParagraph.count=0;
 	    }
 
 	    case("li")
 	    {
-		mode.push(HtmlMode::li);
+		mode.push(HtmlState::li);
 		
 		res ~= linebreak(currentParagraph.split(" ", ?));
 		res ~= "\n";
@@ -48,8 +70,9 @@ def formatHtml(String input)
 
 	    case("pre")
 	    {
-		mode.push(HtmlMode::pre);		
+		mode.push(HtmlState::pre);		
 		res ~= linebreak(currentParagraph.split(" ", ?));
+		res ~= "\n";
 		res ~= "\n";
 		currentParagraph.count=0;
 	    }
@@ -70,22 +93,78 @@ def formatHtml(String input)
 	currentTag.count=0;
     }
 
+    def handleEscape(String escape)
+    {
+	ch := switch(escape[0])
+	{
+	    case('#')
+	    {
+		if(escape[1].lower == 'x')
+		{
+		    String::convert(Char::convert(Int::convert(escape[2...], base:16)));
+		}
+		else
+		{
+		    String::convert(Char::convert(Int::convert(escape[1...])));
+		}
+	    }
+
+	    default
+	    {
+		switch(escape)
+		{
+		    case("lt"){"<"}
+		    case("gt"){">"}
+		    case("amp"){"&"}
+		    case("quot"){"\""}
+		    case("apos"){"'"}
+		    default{?}
+		}
+	    }
+	}
+	if(!ch)
+	{
+	    raise(error.ParseError("Unknown or invalid escape sequence: " ~ escape));
+	    ch = "";
+	}
+	mode.pop();
+
+	switch(mode[-1])
+	{
+	    case(HtmlState::text, HtmlState::li, HtmlState::pre)
+	    {
+		currentParagraph ~= ch;
+	    }
+
+	    case(HtmlState::tagName)
+	    {
+		currentTag ~= ch;
+	    }
+	}
+
+    }
+
     input.each(idx, ch)
     {
 	switch(mode[-1])
 	{
-	    case(HtmlMode::text, HtmlMode::li)
+	    case(HtmlState::text, HtmlState::li)
 	    {
 		switch(ch)
 		{
 		    case('<')
 		    {
-			mode.push(HtmlMode::tagName);
+			mode.push(HtmlState::tagName);
+		    }
+
+		    case('&')
+		    {
+			mode.push(HtmlState::escape);
 		    }
 
 		    case('\n', '\t', '\r')
 		    {
-			mode.push(HtmlMode::textSpace);
+			mode.push(HtmlState::textSpace);
 			currentParagraph ~= ' ';
 		    }
 
@@ -96,15 +175,19 @@ def formatHtml(String input)
 		}
 	    }
 
-	    case(HtmlMode::pre)
+	    case(HtmlState::pre)
 	    {
 		switch(ch)
 		{
 		    case('<')
 		    {
-			mode.push(HtmlMode::tagName);
+			mode.push(HtmlState::tagName);
 		    }
 
+		    case('&')
+		    {
+			mode.push(HtmlState::escape);
+		    }
 
 		    default
 		    {
@@ -114,13 +197,19 @@ def formatHtml(String input)
 		
 	    }
 
-	    case(HtmlMode::textSpace)
+	    case(HtmlState::textSpace)
 	    {
 		switch(ch)
 		{
 		    case('<')
 		    {
-			mode[-1] = HtmlMode::tagName;
+			mode[-1] = HtmlState::tagName;
+		    }
+
+		    case('&')
+		    {
+			mode.pop();
+			mode.push(HtmlState::escape);
 		    }
 
 		    case('\n', '\t', '\r')
@@ -135,13 +224,18 @@ def formatHtml(String input)
 		}		
 	    }
 
-	    case(HtmlMode::tagName)
+	    case(HtmlState::tagName)
 	    {
 		switch(ch)
 		{
 		    case(' ')
 		    {
-			mode[-1] = HtmlMode::tagContent;
+			mode[-1] = HtmlState::tagContent;
+		    }
+
+		    case('&')
+		    {
+			mode.push(HtmlState::escape);
 		    }
 
 		    case('>')
@@ -157,10 +251,16 @@ def formatHtml(String input)
 		}
 	    }
 
-	    case(HtmlMode::tagContent)
+	    case(HtmlState::tagContent)
 	    {
 		switch(ch)
 		{
+
+		    case('&')
+		    {
+			mode.push(HtmlState::escape);
+		    }
+
 		    case('>')
 		    {
 			mode.pop();
@@ -173,6 +273,24 @@ def formatHtml(String input)
 		    }
 		}
 
+	    }
+
+	    case(HtmlState::escape)
+	    {
+		switch(ch)
+		{
+
+		    case(';')
+		    {
+			handleEscape(currentEscape);
+			currentEscape.count = 0;
+		    }
+
+		    default
+		    {
+			currentEscape ~= ch;
+		    }
+		}
 	    }
 
 	}
