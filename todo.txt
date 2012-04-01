@@ -17,9 +17,10 @@
 * Write macros to transform f"Hello, %(userName)" => "Hello, %" % [userName] and tf"Hello, %(userName)" => t"Hello, %" % [userName]
 * ImutableHashMap
 * All cStructs should have a static convert method that takes a lang.Buffer containing bitwise data.
-* Revise api of Continuation. We want a way to tell the static type of every variable in the frame.
+* Constant members - members that can only be assigned to inside the constructor.
 
 1.0 RELEASE CRITERIA (Done):
+* Revise api of Continuation. We want a way to tell the static type of every variable in the frame.
 * HashMap::clear
 * List::clear
 * List::push should accept a variadic list of items to push

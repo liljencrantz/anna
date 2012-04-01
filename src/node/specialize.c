@@ -80,11 +80,12 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     }
     else
     {	
-
 	anna_entry_t *val = anna_node_static_invoke_try(call->function, call->function->stack);
 	anna_function_t *fun;	
 	if(val && (fun=anna_function_unwrap(anna_as_obj(val))))
 	{
+	    anna_message(L"LALALA\n");
+	    anna_node_print(99, call);
 	    spec_fun = hash_get(&fun->specialization, call);
 	    
 	    if(!spec_fun)

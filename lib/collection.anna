@@ -1,0 +1,41 @@
+attribute(doc("Various functions that can be used to transform collections such as Lists and HashMaps"));
+
+use(functional);
+
+def flatten(%T input) 
+(
+    template(%T:List«List»),
+    doc("Return a MutableList containing all the elements of the List of Lists given as input.")
+)
+{
+    res := «__staticTypeOf__(input[0][0])»[];
+    input.each(el){res ~= el}
+    return res;
+}
+
+def zip(%T input...) 
+(
+    template(%T:List«Object»),
+    doc("Return a MutableList of ImutableList objeects, where each ImutableList
+contains the i-th element from each of the argument lists. The
+returned list is truncated in length to the length of the shortest
+argument sequence. The specialization of the ImutableList is the
+intersection of the static types of all the argument lists.")
+)
+{
+    res := «ImutableList«__staticTypeOf__(input[0][0])»»[];
+    
+    (0..input[0].count).each(idx){
+	list := «__staticTypeOf__(input[0][0])»[];
+	input.each(coll){
+	    if(coll.count <= idx)
+	    {
+		return res;
+	    }
+	    list.push(coll[idx]);
+	}	
+	res.push(list.freeze);
+    }
+    return res;
+}
+

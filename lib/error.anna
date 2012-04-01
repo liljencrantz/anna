@@ -39,7 +39,7 @@ error CError (doc("An error with an associated C error number"))
 /*
   These four errors should live in the parser module, but some monkey
   patching is needed in order for that to happen.
- */
+*/
 error CompilationError (doc("The base class of any errors related to dynamically compiling a piece of code."))
 {
 }

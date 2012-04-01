@@ -974,7 +974,7 @@ anna_function_t *anna_function_create_specialization(
 	    base->name);
 	return base;
     }
-    
+
     anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)base->definition);
     anna_node_call_t *attr = node_cast_call(def->child[3]);
     int i;
@@ -1107,6 +1107,7 @@ void anna_function_macro_expand(
 
 anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_node_call_t *call)
 {
+    
     if((call->child_count < 1) || (base->flags & ANNA_FUNCTION_SPECIALIZED))
     {
 	return base;
@@ -1126,12 +1127,13 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
     
     array_list_t al = AL_STATIC;
     anna_attribute_call_all(attr, L"template", &al);
+
     
     if(al_get_count(&al) == 0)    
     {
 	return base;
     }    
-    
+
     int i;
     
     anna_node_call_t *input_node = node_cast_call(base->definition->child[2]);
@@ -1147,17 +1149,10 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
 		anna_error(call->child[i], L"Implicit template specialization can not be performed on calls with named arguments.\n");
 		break;
 	    }
-	    /*
-	      If we have multiple variadic arguments, we only inspect
-	      the first one. We're also completely ignoring named
-	      arguments.
-	    */
-	    if(i >= input_node->child_count)
-	    {
-		break;
-	    }
+
+	    int input_idx = mini(i, base->input_count-1);	    
 	    
-	    anna_node_call_t *decl = node_cast_call(input_node->child[i]);
+	    anna_node_call_t *decl = node_cast_call(input_node->child[input_idx]);
 	    if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
 	    {
 		anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];

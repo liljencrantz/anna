@@ -729,7 +729,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"update");
     anna_module_bootstrap_macro(L"attributes");
     anna_module_bootstrap_macro(L"iter");
-    anna_module_bootstrap_macro(L"collection");
+    anna_module_bootstrap_macro(L"collectionMacro");
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
     anna_module_bootstrap_monkeypatch(stack_global, L"monkeypatchLang");
     anna_module_bootstrap_macro(L"macroMisc");

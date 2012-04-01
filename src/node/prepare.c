@@ -304,9 +304,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     {
 	anna_error(n->object, L"Invalid type for object in call");
 	return (anna_node_t *)n;
-    }
-	    
-
+    }	    
+    
     if(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL)
     {
 	type = anna_node_resolve_to_type(n->object, stack);
@@ -331,7 +330,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     anna_member_t *member = 0;
     
     anna_method_search(type, anna_mid_get_reverse(n->mid), &memb_list, 0);
-
+    
     member = anna_node_calc_type_call_helper(type, &n, &memb_list, 0);
     
     if(member)
@@ -372,8 +371,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    return (anna_node_t *)n;	
 	}
 	
-	anna_function_type_t *fun = anna_function_type_unwrap(member->type);
-	if(!fun)
+	anna_function_type_t *fun_type = anna_function_type_unwrap(member->type);
+	if(!fun_type)
 	{
 	    anna_error(
 		(anna_node_t *)n,
@@ -382,9 +381,48 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		type->name);
 	    return (anna_node_t *)n;
 	}
+
+	anna_node_t *memb_get = (anna_node_t *)
+	    anna_node_create_member_get(
+		0,
+		(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL) ? ANNA_NODE_STATIC_MEMBER_GET: ANNA_NODE_MEMBER_GET,
+		n->object, n->mid);
+	memb_get->stack = n->stack;
+	anna_entry_t *fun_entry = anna_node_static_invoke_try(memb_get, n->stack);
+	if(fun_entry)
+	{
+	    
+	    anna_function_t *fun = anna_function_unwrap(anna_as_obj(fun_entry));
 		
+	    if(fun)
+	    {
+		
+		anna_function_t *fun_spec = anna_function_implicit_specialize(fun, n);
+		if(fun_spec != fun)
+		{
+		    anna_node_call_t *call = anna_node_create_call(
+			&n->location,
+			(anna_node_t *)anna_node_create_closure(
+			    &n->location, 
+			    fun_spec),
+			0, 0);
+		    int i;
+		    for(i=0; i<n->child_count; i++)
+		    {
+			anna_node_call_add_child(
+			    call,
+			    n->child[i]);
+		    }
+		    call->function->stack = call->stack = n->stack;
+		    call->function->return_type = anna_function_wrap(fun_spec)->type;
+		    return anna_node_calculate_type(call);
+			
+		}
+	    }
+	}
+	
 	if(!anna_node_validate_call_parameters(
-	       n, fun,
+	       n, fun_type,
 	       anna_member_is_bound(member) && !(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER),
 	       1))
 	{
@@ -392,7 +430,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	}
 	else
 	{
-	    anna_node_call_map(n, fun, anna_member_is_bound(member));
+	    anna_node_call_map(n, fun_type, anna_member_is_bound(member));
 	}
     }
     else
@@ -1165,6 +1203,7 @@ anna_node_t *anna_node_calculate_type(
     if(!this->stack)
     {
 	anna_error(this,L"Invalid stack value while determining types\n");
+	CRASH;
 	return this;
     }
     

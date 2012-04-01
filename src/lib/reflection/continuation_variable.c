@@ -126,13 +126,21 @@ static void anna_continuation_variable_load(anna_stack_template_t *stack)
     anna_member_create(
 	continuation_variable_type, 
 	ANNA_MID_CONTINUATION_VARIABLE_OFFSET, 
-	0, int_type);
- 
+	ANNA_MEMBER_INTERNAL, int_type);
+    anna_member_document(
+	continuation_variable_type, 
+	ANNA_MID_CONTINUATION_VARIABLE_OFFSET, 
+	L"The offset in the activation frame of this variable.");
+    
     anna_member_create(
 	continuation_variable_type,
 	ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION,
 	0,
 	continuation_type);
+    anna_member_document(
+	continuation_variable_type, 
+	ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION, 
+	L"The continuation that this ContinuationVariable is a variable in.");
 
     anna_member_create_native_property(
 	continuation_variable_type, anna_mid_get(L"value"),

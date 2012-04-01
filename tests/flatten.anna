@@ -1,0 +1,10 @@
+
+def main()
+{
+    foo := [[1,2,3],[2],[5,6,1]];
+    print(collection.flatten(foo));
+    print(collection.flatten([1: ["a","b"], 2: ["a", "b"]]));
+    print(collection.zip([1,2,3], ["a", "b", "c"], [0.0, 1.1, 2.2]));
+    print(collection.zip(0..3, ["a", "b", "c"], [0.0, 1.1, 2.2]));
+}
+
