@@ -67,7 +67,11 @@ check out the tutorial available at
 http://liljencrantz.github.com/anna/tutorial.html
 
 If you want to ask for help on a particular object directly from the
-interpreter, you can type «help(object)»";
+interpreter, you can type «help(OBJECT)». For example, to show help on
+the lang module, type «help(lang)». 
+
+If you want to list the contents of an object, type «dir(OBJECT)». For
+example, to show the contents of the Int type, type «dir(Int)».";
 
     copyrightText :== "Copyright(C) 2005-2012 Axel Liljencrantz
 All rights reserved.";

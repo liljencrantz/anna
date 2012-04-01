@@ -74,7 +74,7 @@ static void anna_init()
 //    anna_type_mark_info(stack_global->wrapper->type);
     anna_stack_document(
 	stack_global,
-	L"This is the root of the entire anna namespace.");
+	L"The global module is the root of the entire anna namespace.");
 }
 
 /**

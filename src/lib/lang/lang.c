@@ -127,11 +127,11 @@ static void anna_null_type_create()
 
     anna_type_document(
 	null_type,
-	L"The Null type is the type of the null object.");  
+	L"The Null type is the type of the null object. There is only one instance of the null object, and it can be accessed through the <code class='anna-code'>?</code> literal.");  
 
     anna_type_document(
 	null_type,
-	L"All members of the Null type point hold the value null. Calling a null value as a function will return null. The null object can be cast as any Object.");  
+	L"The null object is a special object. It can be cast to any other type. All members hold the value null. Calling a null value as a function will return null. The null object can be cast as any Object.");  
 }
 
 

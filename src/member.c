@@ -438,7 +438,6 @@ void anna_member_document(
     mid_t mid,
     wchar_t *doc)
 {
-    /*
     anna_entry_t ** e = anna_entry_get_addr_static(type, mid);
     if(e)
     {
@@ -449,7 +448,6 @@ void anna_member_document(
 	    return;
 	}
     }
-    */
     anna_member_t *memb = anna_member_get(type, mid); 
     if(memb)
     {
