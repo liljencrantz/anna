@@ -1126,9 +1126,13 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    n->payload = anna_node_calculate_type(n->payload);
 	    if(n->payload->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
-		this->return_type = n->payload->return_type;
-		n->payload = anna_node_create_null(0);
-		n->payload->stack = n->stack;
+		anna_node_t *res = 
+		    (anna_node_t *)anna_node_create_dummy(
+			&n->location, 
+			anna_type_wrap(n->payload->return_type));
+		res->return_type = type_type;
+		res->stack = n->stack;
+		return res;
 	    }
 	    break;
 	}
