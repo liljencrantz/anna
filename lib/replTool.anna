@@ -71,9 +71,12 @@ is a short rundown of the currently supported HTML subset:
 	    case("pre")
 	    {
 		mode.push(HtmlState::pre);		
-		res ~= linebreak(currentParagraph.split(" ", ?));
-		res ~= "\n\n";
-		currentParagraph.count=0;
+		if(currentParagraph.count != 0)
+		{
+		    res ~= linebreak(currentParagraph.split(" ", ?));
+		    res ~= "\n\n";
+		    currentParagraph.count=0;
+		}
 	    }
 
 	    case("/pre")
@@ -391,8 +394,11 @@ the doc attribute of declarations."))
 
 	smemb := object.__type__.member.filter(memb){
 	    !memb.internal?
-	}.sort(def Int(Object first, Object second){(first as Member).name.__cmp__((second as Member).name)})
-	    .map(memb){memb as Member};
+	}.sort(
+	    def Int(Object first, Object second){
+		(first as Member).name.__cmp__((second as Member).name);
+	    }
+	).map(memb){memb as Member};
 
 //	print(o.__type__.member.filter(memb){!memb.internal?});
 
@@ -436,6 +442,14 @@ takes any object as a parameter and lists all members of that type ina a format
 suitable for the screen. This is just a very thin wrapper around the member 
 property of the Type type."))
 {
-    return linebreak(((object as reflection.Type) or object.__type__).member);
+    use(reflection);
+    return linebreak(
+        ((object as reflection.Type) or object.__type__).member.sort(
+	    def Int(Object first, Object second)
+	    {
+		(first as Member).name.__cmp__((second as Member).name);
+	    }
+	)
+    );
 }
 
