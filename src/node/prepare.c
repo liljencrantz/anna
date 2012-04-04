@@ -349,6 +349,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		}
 
 		ctype = anna_type_implicit_specialize(ctype, n);
+
 		n->node_type = ANNA_NODE_CONSTRUCT;
 		n->function = (anna_node_t *)anna_node_create_type(
 		    &n->object->location,
@@ -357,7 +358,18 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		n->return_type = ctype;
 		n->flags |= ANNA_NODE_TYPE_FULL;
 		
+		anna_type_prepare_member(ctype, anna_mid_get(L"__init__"));
 		member = anna_member_get(ctype, anna_mid_get(L"__init__"));
+
+		if(!member)
+		{
+		    anna_node_print(99, ctype->definition);
+		    
+		    anna_error(
+			n, L"No constructor for type %ls could be found\n", ctype->name);
+		    CRASH;
+		}
+		
 		is_constructor = 1;
 	    }
 	}

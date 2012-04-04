@@ -13,6 +13,7 @@
 #define ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS (8192*2)
 #define ANNA_TYPE_CLOSED (8192*4)
 #define ANNA_TYPE_VALIDATED (8192*8)
+#define ANNA_TYPE_PREPARED_EXTEND (8192*16)
 
 extern int anna_type_object_created;
 

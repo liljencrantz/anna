@@ -631,6 +631,10 @@ static void anna_type_prepare_property(
 static void anna_type_extend(
     anna_type_t *type)
 {
+    if( type->flags & ANNA_TYPE_PREPARED_EXTEND)
+	return 0;
+    type->flags |= ANNA_TYPE_PREPARED_EXTEND;
+
     array_list_t parents=AL_STATIC;
     anna_attribute_call_all(type->attribute, L"extends", &parents);
     
@@ -833,6 +837,8 @@ static anna_node_t *anna_type_setup_interface_internal(
 
 void anna_type_prepare_member(anna_type_t *type, mid_t mid) 
 {
+    anna_type_extend(type);    
+
     if(!type->definition)
     {
 	anna_member_t *memb = anna_member_get(type, mid);
