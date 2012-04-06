@@ -49,16 +49,34 @@ typedef int mid_t;
 #define ANNA_ACTIVATION_FRAME_STATIC 512
 #define ANNA_ACTIVATION_FRAME_BREAK 1024
 
+/**
+  If set, this is a static member.
+*/
 #define ANNA_MEMBER_STATIC 1
-#define ANNA_MEMBER_VIRTUAL 2
+
+/**
+  If set, this member has no in-memory representation, i.e. it is a
+  property.  
+*/
+#define ANNA_MEMBER_PROPERTY 2
+
+/**
+  If this bit is set, this member points to a data blob that has been
+  allocated usin garbage collected memory, and must be marked by the
+  appropriate function call during garbage collection.
+ */
 #define ANNA_MEMBER_ALLOC 4
+
 /**
    If set, this member is a bound method. 
 */
-
 #define ANNA_MEMBER_BOUND 8
-#define ANNA_MEMBER_PROPERTY 16
-#define ANNA_MEMBER_INTERNAL 32
+
+/**
+   If set, this member is internal
+ */
+#define ANNA_MEMBER_INTERNAL 16
+
 
 /*
   The preallocated MIDs

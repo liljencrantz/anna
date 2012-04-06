@@ -1546,7 +1546,7 @@ void anna_type_close(anna_type_t *this)
 	{
 	    continue;
 	}
-	if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	if(anna_member_is_property(memb))
 	{
 	    continue;
 	}
@@ -1592,7 +1592,7 @@ void anna_type_close(anna_type_t *this)
 	    {
 		continue;
 	    }
-	    if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	    if(anna_member_is_property(memb))
 	    {
 		continue;
 	    }
@@ -1694,7 +1694,7 @@ void anna_type_reseal(anna_type_t *this)
 	{
 	    continue;
 	}
-	if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	if(anna_member_is_property(memb))
 	{
 	    continue;
 	}
@@ -1734,7 +1734,7 @@ void anna_type_reseal(anna_type_t *this)
 	{
 	    continue;
 	}
-	if(memb->storage & ANNA_MEMBER_VIRTUAL)
+	if(anna_member_is_property(memb))
 	{
 	    continue;
 	}

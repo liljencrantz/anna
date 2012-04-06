@@ -55,7 +55,7 @@ mid_t anna_member_create(
     int storage,
     anna_type_t *member_type)
 {
-    if((type->flags & ANNA_TYPE_CLOSED) && !(storage & ANNA_MEMBER_STATIC) && !(storage & ANNA_MEMBER_VIRTUAL))
+    if((type->flags & ANNA_TYPE_CLOSED) && !(storage & ANNA_MEMBER_STATIC) && !(storage & ANNA_MEMBER_PROPERTY))
     {
 	debug(D_CRITICAL, L"Added additional non-static member %ls after closing type %ls\n", anna_mid_get_reverse(mid), type->name);
 	CRASH;
@@ -92,7 +92,7 @@ mid_t anna_member_create(
     
     member->type = member_type;
     member->storage = storage;
-    if(storage & ANNA_MEMBER_VIRTUAL)
+    if(storage & ANNA_MEMBER_PROPERTY)
     {
 	member->offset = -1;
     }
@@ -109,7 +109,7 @@ mid_t anna_member_create(
     type->mid_identifier[mid] = member;
     anna_type_calculate_size(type);
     
-    if(!(storage & ANNA_MEMBER_VIRTUAL))
+    if(!(storage & ANNA_MEMBER_PROPERTY))
     {
 	type->flags |= ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS;
 /*
@@ -187,11 +187,10 @@ size_t anna_member_create_property(
     mid = anna_member_create(
 	type,
 	mid,
-	storage | ANNA_MEMBER_VIRTUAL,
+	storage | ANNA_MEMBER_PROPERTY,
 	property_type);
     anna_member_t *memb = anna_member_get(type, mid);
     
-    anna_member_set_property(memb,1);
     memb->getter_offset = getter_offset;
     memb->setter_offset = setter_offset;
     return mid;

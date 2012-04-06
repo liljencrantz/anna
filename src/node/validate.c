@@ -328,7 +328,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		  member isn't of any type, usually it's binary data)
 		*/
 		if((memb->storage & ANNA_MEMBER_STATIC) &&
-		   !(memb->storage & ANNA_MEMBER_VIRTUAL) &&
+		   !(anna_member_is_property(memb)) &&
 		   (memb->type != null_type))
 		{
 		    anna_object_t *obj = anna_as_obj(t->static_member[memb->offset]);
