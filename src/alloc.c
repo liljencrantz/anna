@@ -4,6 +4,8 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <pthread.h>
+#include <sys/prctl.h>
 
 #include "anna/common.h"
 #include "anna/base.h"
@@ -42,8 +44,19 @@ int anna_alloc_count_next_gc=1024*1024;
 int anna_alloc_gc_block_counter;
 int anna_alloc_run_finalizers=1;
 array_list_t anna_alloc_todo = AL_STATIC;
-
 array_list_t anna_alloc_permanent = AL_STATIC;
+pthread_t anna_alloc_gc_thread;
+
+static pthread_mutex_t anna_alloc_mutex_gc = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t anna_alloc_cond_gc = PTHREAD_COND_INITIALIZER;
+static int anna_alloc_flag_gc = 0;
+
+static pthread_mutex_t anna_alloc_mutex_work = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t anna_alloc_cond_work = PTHREAD_COND_INITIALIZER;
+static int anna_alloc_flag_work = 1;
+
+static anna_context_t *anna_alloc_gc_context;
+
 
 void anna_alloc_mark_permanent(void *alloc)
 {
@@ -566,19 +579,101 @@ void anna_alloc_gc_unblock()
     anna_alloc_gc_block_counter--;
 }
 
+static void anna_gc_main(void);
+
+void anna_gc_init()
+{
+    //  anna_message(L"Init of GC.\n");
+    pthread_create(
+	&anna_alloc_gc_thread,
+	0, &anna_gc_main,
+	0);
+//    anna_message(L"Main thread has returned from GC thread creation.\n");
+}
+
+
+
 void anna_gc(anna_context_t *context)
 {
-    al_truncate(&anna_alloc_todo, 0);
+    anna_alloc_gc_context = context;
+
+
+    pthread_mutex_lock(&anna_alloc_mutex_work);
+    anna_alloc_flag_work = 0;
+    pthread_mutex_unlock(&anna_alloc_mutex_work);
     
+    pthread_mutex_lock(&anna_alloc_mutex_gc);
+    anna_alloc_flag_gc = 1;
+    pthread_cond_signal(&anna_alloc_cond_gc);    
+    pthread_mutex_unlock(&anna_alloc_mutex_gc);
+    
+    pthread_mutex_lock(&anna_alloc_mutex_work);
+    while(1)
+    {
+	if(anna_alloc_flag_work == 1)
+	{
+	    pthread_mutex_unlock(&anna_alloc_mutex_work);
+	    break;
+	}
+	pthread_cond_wait(&anna_alloc_cond_work, &anna_alloc_mutex_work);    
+    }
+}
+
+static void anna_gc_main()
+{
+    prctl(PR_SET_NAME,"anna/gc",0,0,0);
+
+    array_list_t anna_alloc_internal[ANNA_ALLOC_TYPE_COUNT] = {
+	AL_STATIC,
+	AL_STATIC,
+	AL_STATIC,
+	AL_STATIC,
+	AL_STATIC,
+	AL_STATIC,
+	AL_STATIC
+    }
+    ;
+    size_t anna_alloc_stop[ANNA_ALLOC_TYPE_COUNT] = {0,0,0,0,0,0,0};
+
+
+    while(1)
+    {
+
+	pthread_mutex_lock(&anna_alloc_mutex_gc);
+	while(1)
+	{
+	    if(anna_alloc_flag_gc == 1)
+	    {
+		anna_alloc_flag_gc = 0;		
+		pthread_mutex_unlock(&anna_alloc_mutex_gc);
+		break;
+	    }
+	    pthread_cond_wait(&anna_alloc_cond_gc, &anna_alloc_mutex_gc);    
+	}
+        
+	anna_context_t *context = anna_alloc_gc_context;
+
+	al_truncate(&anna_alloc_todo, 0);
+    
+	
     if(anna_alloc_gc_block_counter)
     {
+//	anna_message(L"Oops, GC is not allowed to run right now. Come back later.\n");
 	anna_alloc_tot += anna_alloc_count;
 	anna_alloc_count = 0;
-	return;
+
+	pthread_mutex_lock(&anna_alloc_mutex_work);
+	anna_alloc_flag_work = 1;
+	pthread_cond_signal(&anna_alloc_cond_work);    
+	pthread_mutex_unlock(&anna_alloc_mutex_work);
+
+	continue;
+	
     }
     
     anna_alloc_gc_block();
     size_t j, i;
+//	anna_message(L"B.\n");
     
 #ifdef ANNA_CHECK_GC_LEAKS
     int old_anna_alloc_count = anna_alloc_count;
@@ -593,43 +688,82 @@ void anna_gc(anna_context_t *context)
     
 
 #endif
-    
+//    	anna_message(L"C.\n");
+
     anna_activation_frame_t *f = context->frame;
     while(f)
     {
 	anna_alloc_unmark(f);
 	f = f->dynamic_frame;
     }
+//    anna_message(L"Unmarked frames.\n");
     
     anna_alloc_mark_context(context);	
     anna_reflection_mark_static();    
     anna_alloc_mark_object(null_object);
     anna_alloc_mark(anna_stack_wrap(stack_global));
+//	anna_message(L"Marked stuff.\n");
     while(al_get_count(&anna_alloc_todo))
     {
 	anna_object_t *obj = (anna_object_t *)al_pop(&anna_alloc_todo);
 	obj->type->mark_object(obj);
     }
+//	anna_message(L"Marked objects.\n");
     
     for(i=0; i<al_get_count(&anna_alloc_permanent); i++)
     {
 	anna_alloc_mark(al_get(&anna_alloc_permanent, i));
     }
+//    anna_message(L"Marked permanent stuff.\n");
     
     int freed = 0;
     
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	for(i=0; i<al_get_count(&anna_alloc[j]); i++)
+	if(anna_alloc_stop[j])
 	{
-	    void *el = al_get_fast(&anna_alloc[j], i);
+	    array_list_t *al = &anna_alloc[j];
+	    if(anna_alloc_stop[j] != al_get_count(al))
+	    {
+		size_t sz = (al->pos - anna_alloc_stop[j]);
+//		anna_message(L"Move %d elements from position %d to begining of array\n",
+//			     sz, anna_alloc_stop[j]);
+		memmove(
+		    &al->arr[0],
+		    &al->arr[anna_alloc_stop[j]],
+		    sizeof(void *) * sz);
+		
+		al->pos = sz;
+	    }
+	    else
+	    {
+		al->pos = 0;
+	    }
+	}
+    }
+
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+    {
+	anna_alloc_stop[j] = al_get_count(&anna_alloc[j]);
+    }
+
+    pthread_mutex_lock(&anna_alloc_mutex_work);
+    anna_alloc_flag_work = 1;
+    pthread_cond_signal(&anna_alloc_cond_work);    
+    pthread_mutex_unlock(&anna_alloc_mutex_work);
+    
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+    {
+	for(i=0; i<al_get_count(&anna_alloc_internal[j]); i++)
+	{
+	    void *el = al_get_fast(&anna_alloc_internal[j], i);
 	    int flags = *((int *)el);
 	    if(!(flags & ANNA_USED))
 	    {
 		freed++;
 		anna_alloc_free(el);
-		al_set_fast(&anna_alloc[j], i, al_get_fast(&anna_alloc[j], al_get_count(&anna_alloc[j])-1));
-		al_truncate(&anna_alloc[j], al_get_count(&anna_alloc[j])-1);
+		al_set_fast(&anna_alloc_internal[j], i, al_get_fast(&anna_alloc_internal[j], al_get_count(&anna_alloc_internal[j])-1));
+		al_truncate(&anna_alloc_internal[j], al_get_count(&anna_alloc_internal[j])-1);
 		i--;
 	    }
 	    else
@@ -637,10 +771,31 @@ void anna_gc(anna_context_t *context)
 		anna_alloc_unmark(el);	    
 	    }
 	}
-	al_resize(&anna_alloc[j]);
+	al_resize(&anna_alloc_internal[j]);
     }
 
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+    {
+	for(i=0; i<anna_alloc_stop[j]; i++)
+	{
+	    void *el = al_get_fast(&anna_alloc[j], i);
+	    int flags = *((int *)el);
+	    if(!(flags & ANNA_USED))
+	    {
+		freed++;
+		anna_alloc_free(el);
+	    }
+	    else
+	    {
+		al_push(&anna_alloc_internal[j], el);
+		anna_alloc_unmark(el);	    
+	    }
+	}
+    }
+//    anna_message(L"Freed memory.\n");
+    
     anna_slab_reclaim();
+//	anna_message(L"Reclaimed pools.\n");
 
 #ifdef ANNA_CHECK_GC_LEAKS
     size_t end_count = 0;
@@ -682,6 +837,10 @@ void anna_gc(anna_context_t *context)
     
 //    anna_message(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
     anna_alloc_gc_unblock();
+
+
+    }
+    
     
 }
 

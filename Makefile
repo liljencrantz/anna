@@ -59,7 +59,7 @@ src/function.o src/util/util.o src/module.o src/vm.o src/alloc.o	\
 src/compile.o src/wutil.o src/common.o src/attribute.o src/object.o	\
 src/error.o src/parse.o src/invoke.o
 
-LDFLAGS := -lm -lgmp -rdynamic -ll -ldl -lncurses -lreadline $(PROF_FLAGS) $(COV_FLAGS)
+LDFLAGS := -lm -lgmp -lpthread -rdynamic -ll -ldl -lncurses -lreadline $(PROF_FLAGS) $(COV_FLAGS)
 
 PROGRAMS := bin/anna 
 

@@ -21,6 +21,8 @@ extern int anna_alloc_tot;
 extern int anna_alloc_count;
 extern int anna_alloc_obj_count;
 extern int anna_alloc_count_next_gc;
+
+__cold void anna_gc_init(void);
 __hot void anna_gc(anna_context_t *stack);
 __cold void anna_gc_destroy(void);
 

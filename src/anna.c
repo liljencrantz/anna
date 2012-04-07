@@ -62,11 +62,12 @@ static void anna_init()
     anna_mid_init();
     anna_slab_init();
     anna_vm_init();
-
+    anna_gc_init();
+    
     stack_global = anna_stack_create(0);
     anna_stack_name(stack_global, L"global");
     stack_global->flags |= ANNA_STACK_NAMESPACE;
-
+    
     anna_abides_init();
     null_object = anna_object_create_raw(anna_align(sizeof(anna_object_t)));
     anna_module_init();
@@ -75,6 +76,9 @@ static void anna_init()
     anna_stack_document(
 	stack_global,
 	L"The global module is the root of the entire anna namespace.");
+    anna_stack_document(
+	stack_global,
+	L"All top level modules are descendants of the global module.");
 }
 
 /**
