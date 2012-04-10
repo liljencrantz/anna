@@ -6,6 +6,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <sys/prctl.h>
+#include <sys/time.h>
 
 #include "anna/common.h"
 #include "anna/base.h"
@@ -57,6 +58,45 @@ static int anna_alloc_flag_work = 1;
 
 static anna_context_t *anna_alloc_gc_context;
 
+static array_list_t anna_alloc_internal[ANNA_ALLOC_TYPE_COUNT] = {
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC,
+    AL_STATIC
+}
+    ;
+
+static size_t anna_alloc_stop[ANNA_ALLOC_TYPE_COUNT] = {0,0,0,0,0,0,0};
+
+#ifdef ANNA_CHECK_GC_TIMING
+
+static long long anna_alloc_time_collect = 0;
+static long long anna_alloc_time_free = 0;
+static long long anna_alloc_time_reclaim = 0;
+static long long anna_alloc_time_start;
+
+static long long anna_alloc_time()
+{
+    struct timeval tv;
+    gettimeofday(&tv, 0);
+    return 1000000ll * tv.tv_sec + tv.tv_usec;
+}
+
+
+static void anna_alloc_timer_start()
+{
+    anna_alloc_time_start = anna_alloc_time();
+}
+
+#define anna_alloc_timer_stop(name) name += anna_alloc_time() - anna_alloc_time_start
+
+#else
+#define anna_alloc_timer_start()
+#define anna_alloc_timer_stop(name)
+#endif
 
 void anna_alloc_mark_permanent(void *alloc)
 {
@@ -591,12 +631,9 @@ void anna_gc_init()
 //    anna_message(L"Main thread has returned from GC thread creation.\n");
 }
 
-
-
 void anna_gc(anna_context_t *context)
 {
     anna_alloc_gc_context = context;
-
 
     pthread_mutex_lock(&anna_alloc_mutex_work);
     anna_alloc_flag_work = 0;
@@ -619,58 +656,19 @@ void anna_gc(anna_context_t *context)
     }
 }
 
-static void anna_gc_main()
+static void anna_alloc_gc_collect()
 {
-    prctl(PR_SET_NAME,"anna/gc",0,0,0);
 
-    array_list_t anna_alloc_internal[ANNA_ALLOC_TYPE_COUNT] = {
-	AL_STATIC,
-	AL_STATIC,
-	AL_STATIC,
-	AL_STATIC,
-	AL_STATIC,
-	AL_STATIC,
-	AL_STATIC
-    }
-    ;
-    size_t anna_alloc_stop[ANNA_ALLOC_TYPE_COUNT] = {0,0,0,0,0,0,0};
-
-
-    while(1)
-    {
-
-	pthread_mutex_lock(&anna_alloc_mutex_gc);
-	while(1)
-	{
-	    if(anna_alloc_flag_gc == 1)
-	    {
-		anna_alloc_flag_gc = 0;		
-		pthread_mutex_unlock(&anna_alloc_mutex_gc);
-		break;
-	    }
-	    pthread_cond_wait(&anna_alloc_cond_gc, &anna_alloc_mutex_gc);    
-	}
-        
-	anna_context_t *context = anna_alloc_gc_context;
-
-	al_truncate(&anna_alloc_todo, 0);
+    anna_alloc_timer_start();
+    anna_slab_free_return();
+    //anna_slab_reclaim();
+    anna_alloc_timer_stop(anna_alloc_time_reclaim);
     
-	
-    if(anna_alloc_gc_block_counter)
-    {
-//	anna_message(L"Oops, GC is not allowed to run right now. Come back later.\n");
-	anna_alloc_tot += anna_alloc_count;
-	anna_alloc_count = 0;
-
-	pthread_mutex_lock(&anna_alloc_mutex_work);
-	anna_alloc_flag_work = 1;
-	pthread_cond_signal(&anna_alloc_cond_work);    
-	pthread_mutex_unlock(&anna_alloc_mutex_work);
-
-	continue;
-	
-    }
+    anna_alloc_timer_start();
     
+    anna_context_t *context = anna_alloc_gc_context;
+    al_truncate(&anna_alloc_todo, 0);
+	
     anna_alloc_gc_block();
     size_t j, i;
 //	anna_message(L"B.\n");
@@ -716,7 +714,6 @@ static void anna_gc_main()
     }
 //    anna_message(L"Marked permanent stuff.\n");
     
-    int freed = 0;
     
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
@@ -746,12 +743,15 @@ static void anna_gc_main()
     {
 	anna_alloc_stop[j] = al_get_count(&anna_alloc[j]);
     }
+    anna_alloc_timer_stop(anna_alloc_time_collect);
+}
 
-    pthread_mutex_lock(&anna_alloc_mutex_work);
-    anna_alloc_flag_work = 1;
-    pthread_cond_signal(&anna_alloc_cond_work);    
-    pthread_mutex_unlock(&anna_alloc_mutex_work);
-    
+static void anna_alloc_gc_free()
+{
+    anna_alloc_timer_start();
+    int i, j;
+    int freed = 0;
+
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
 	for(i=0; i<al_get_count(&anna_alloc_internal[j]); i++)
@@ -792,9 +792,11 @@ static void anna_gc_main()
 	    }
 	}
     }
+
+    anna_alloc_timer_stop(anna_alloc_time_free);
+
 //    anna_message(L"Freed memory.\n");
     
-    anna_slab_reclaim();
 //	anna_message(L"Reclaimed pools.\n");
 
 #ifdef ANNA_CHECK_GC_LEAKS
@@ -823,10 +825,6 @@ static void anna_gc_main()
     
 #endif
     
-    anna_alloc_tot += anna_alloc_count;
-    anna_alloc_count = 0;
-    anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 1, GC_FREQ);
-    
 #ifdef ANNA_CHECK_GC_LEAKS
     anna_message(
 	L"Collected %d bytes. %d bytes currently in use. Next GC in %d bytes\n",
@@ -835,19 +833,70 @@ static void anna_gc_main()
 	anna_alloc_count_next_gc);
 #endif
     
-//    anna_message(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
     anna_alloc_gc_unblock();
-
-
-    }
-    
-    
+//    anna_message(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
 }
 
-#ifdef ANNA_FULL_GC_ON_SHUTDOWN
+static void anna_alloc_gc_start_work_thread()
+{
+    anna_alloc_tot += anna_alloc_count;
+    anna_alloc_count = 0;
+    anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 1, GC_FREQ);
+    
+    pthread_mutex_lock(&anna_alloc_mutex_work);
+    anna_alloc_flag_work = 1;
+    pthread_cond_signal(&anna_alloc_cond_work);    
+    pthread_mutex_unlock(&anna_alloc_mutex_work);    
+}
+
+static void anna_alloc_gc_wait_for_work_thread()
+{
+    pthread_mutex_lock(&anna_alloc_mutex_gc);
+    while(1)
+    {
+	if(anna_alloc_flag_gc == 1)
+	{
+	    anna_alloc_flag_gc = 0;		
+	    pthread_mutex_unlock(&anna_alloc_mutex_gc);
+	    break;
+	}
+	pthread_cond_wait(&anna_alloc_cond_gc, &anna_alloc_mutex_gc);    
+    }
+}
+
+static void anna_gc_main()
+{
+    prctl(PR_SET_NAME,"anna/gc",0,0,0);
+    
+    while(1)
+    {
+	anna_alloc_gc_wait_for_work_thread();
+	
+	if(anna_alloc_gc_block_counter)
+	{
+	    anna_alloc_gc_start_work_thread();
+	    
+	    continue;    
+	}
+	
+	anna_alloc_gc_collect();
+	anna_alloc_gc_start_work_thread();
+	anna_alloc_gc_free();
+    }    
+}
+
 void anna_gc_destroy(void)
 {
+#ifdef ANNA_FULL_GC_ON_SHUTDOWN
     anna_alloc_run_finalizers=0;
     anna_gc();
-}
 #endif
+
+#ifdef ANNA_CHECK_GC_TIMING
+    anna_message(
+	L"GC TIMING\nCollecting: %lld\nFree:ing %lld\nReclaiming: %lld\n",
+	anna_alloc_time_collect/1000, anna_alloc_time_free/1000, anna_alloc_time_reclaim/1000);
+    
+#endif
+
+}

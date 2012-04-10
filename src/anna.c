@@ -215,8 +215,8 @@ static void anna_opt_parse(int argc, char **argv)
 */
 static void anna_shutdown()
 {
-#ifdef ANNA_FULL_GC_ON_SHUTDOWN
     anna_gc_destroy();
+#ifdef ANNA_FULL_GC_ON_SHUTDOWN
     anna_vm_destroy();
     anna_mid_destroy();
     hash_foreach(&anna_type_get_function_identifier, fun_key_free);

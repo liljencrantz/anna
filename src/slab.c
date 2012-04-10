@@ -1,11 +1,19 @@
 #define SLAB_SZ 4096
 
 slab_t **slab_list;
+slab_t **slab_list_free;
+slab_t **slab_list_tail;
 static array_list_t *slab_alloc;
 
 void anna_slab_init()
 {
-    slab_list = calloc(SLAB_MAX,sizeof(slab_t *));
+    slab_list = calloc(1, 4096);
+    slab_list_free = calloc(1, 4096);
+    slab_list_tail = calloc(1, 4096);
+/*    slab_list = calloc(SLAB_MAX,sizeof(slab_t *));
+    slab_list_free = calloc(SLAB_MAX,sizeof(slab_t *));
+    slab_list_tail = calloc(SLAB_MAX,sizeof(slab_t *));
+*/
     slab_alloc = calloc(SLAB_MAX,sizeof(array_list_t));
 }
 
@@ -25,20 +33,38 @@ static size_t *anna_slab_counter(size_t sz, void *slab)
 	    return (size_t *)chunk;
 	}
     }
-    CRASH;
     return 0;
 }
 
+/*
+  Remove all slabs in slab_list[sz] that are part of the specified chunk
+ */
 static void anna_slab_remove_chunk_from_pool(
     size_t sz, char *chunk)
 {
     slab_t *slab = slab_list[sz];
-    while(anna_ptr_in_chunk(sz, chunk, slab))
+    /*
+      First, make the slab variable point to the first slab that
+      should not be removed.
+     */
+    while(slab && anna_ptr_in_chunk(sz, chunk, slab))
     {
 	slab = slab->next;
     }
+    /*
+      Make slab_list point to the first slab that should not be removed
+     */
     slab_list[sz] = slab;
     slab_t *prev = slab;
+
+    /*
+      Loop while slab is not null:
+      
+      1. Make prev the old value for slab.
+      2. Make slab into the next slab that should not be removed
+      3. Make prev->next point to slab
+
+     */
     while(slab)
     {
 	slab = slab->next;
@@ -59,9 +85,10 @@ static void anna_slab_reclaim_sz(size_t sz)
 
     while(slab)
     {
-	size_t *chunk_sz = anna_slab_counter(sz, slab);
+	size_t *chunk_sz = anna_slab_counter(sz, slab);	
 	(*chunk_sz)++;
 	slab = slab->next;
+//	anna_message(L"bbbb %d\n", slab);
     }
 
     for(i=0; i<al_get_count(&slab_alloc[sz]);)
@@ -86,9 +113,25 @@ static void anna_slab_reclaim_sz(size_t sz)
     }    
 }
 
+void anna_slab_free_return()
+{
+    int i;
+    
+    for(i=0; i<SLAB_MAX; i++)
+    {
+	if(slab_list_free[i])
+	{
+	    slab_list_tail[i]->next = slab_list[i];
+	    slab_list[i] = slab_list_free[i];
+	    slab_list_free[i] = slab_list_tail[i] = 0;
+	}
+    }
+}
+
 void anna_slab_reclaim()
 {    
     int i;
+    
     if(SLAB_MAX == 0)
     {
 	return;

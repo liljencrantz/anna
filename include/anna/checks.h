@@ -57,4 +57,9 @@
  */
 //#define ANNA_CHECK_GC_LEAKS
 
+/**
+   If enabled, the GC will print timing informationbefore quitting
+ */
+//#define ANNA_CHECK_GC_TIMING
+
 #endif

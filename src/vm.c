@@ -312,7 +312,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     anna_context_t *context;  
     size_t ss = 4096 * sizeof(anna_entry_t *);
     size_t afs = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_activation_frame_t);
-    context = anna_slab_alloc(ss);
+    context = malloc(ss);
     context->size = ss;
     
     context->frame = anna_alloc_activation_frame(afs);
@@ -525,7 +525,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 //	free(context->frame->code);
 	anna_context_frame_return(context);
 //	context = context->caller;
-	anna_slab_free(context, context->size);
+	free(context);
 	return val;
     }
 	    
