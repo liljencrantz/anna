@@ -12,6 +12,7 @@
 #include <wchar.h>
 #include <string.h>
 #include <math.h>
+#include <iconv.h>
 
 #include "anna/common.h"
 #include "anna/parse.h"
@@ -200,6 +201,43 @@ enum
     ANNA_LIT_HEX
 };
 
+
+wchar_t *utf82wcs(char *in)
+{
+    size_t inlen = strlen(in);
+    size_t outlen = sizeof(wchar_t) * (1+inlen);
+    
+    wchar_t *res = malloc(outlen);
+    wchar_t *out = res;
+    
+    iconv_t cd = iconv_open ("WCHAR_T", "UTF8");
+    if (cd == (iconv_t) -1)
+    {
+	anna_message(L"Couldn't set up character set conversion");
+	CRASH;
+    }
+
+    size_t sz =iconv(cd, &in, &inlen, (char **)&out, &outlen);
+
+    if(sz == (size_t)-1)
+    {
+	anna_message(L"Invalid input string");
+	CRASH;
+    }
+    *out = 0;
+    
+    
+    if (iconv_close (cd) != 0)
+    {
+	anna_message(L"Couldn't tear down character set conversion");
+	CRASH;
+    }
+
+    return res;
+}
+
+
+
 /*
   Remove quote characters and unescape backslash escapes in a string
   literal. (Works with either double or single quotes, e.g. also for
@@ -211,7 +249,7 @@ static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_
 {
     str++;
     str[strlen(str)-1]=0;
-    wchar_t *str2 = str2wcs(str);
+    wchar_t *str2 = utf82wcs(str);
     wchar_t *str3 = malloc(sizeof(wchar_t)*(wcslen(str2)+1));
     wchar_t *ptr_in;
     wchar_t *ptr_out = str3;
