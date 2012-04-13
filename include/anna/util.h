@@ -474,6 +474,40 @@ void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux);
  */
 void al_resize(array_list_t *l);
 
+/**
+   This function is inlined in order to give the compiler a chance to
+   inline the compar functin into the sorter, thereby greatly
+   increasing performance in many cases.
+*/
+static inline void al_sort(array_list_t *l, int(*compar)(const void *, const void *))
+{
+    qsort(l->arr, l->pos, sizeof(void *), compar);
+}
+
+static inline int al_bsearch(array_list_t *l, void *key, int(*compar)(const void *, const void *))
+{
+    int imax = l->pos;
+    int imin = 0;
+    while (imax > imin)
+    {
+	int imid = (imin + imax) / 2;
+	int comp = compar(&l->arr[imid], &key);
+	if(comp == 0)
+	{
+	    return imid;
+	}
+	else if (comp < 0)
+	{
+	    imin = imid + 1;
+	}
+	else
+	{
+	    imax = imid;
+	}
+    }
+    return imin;
+}
+
 /*
   String buffer functions
 */

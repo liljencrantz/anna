@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <sys/prctl.h>
 #include <sys/time.h>
+#include <stddef.h>
 
 #include "anna/common.h"
 #include "anna/base.h"
@@ -39,6 +40,8 @@ array_list_t anna_alloc[ANNA_ALLOC_TYPE_COUNT] = {
 }
     ;
 
+static array_list_t anna_alloc_tmp[ANNA_ALLOC_TYPE_COUNT];
+
 int anna_alloc_tot=0;
 int anna_alloc_count=0;
 int anna_alloc_count_next_gc=1024*1024;
@@ -68,8 +71,6 @@ static array_list_t anna_alloc_internal[ANNA_ALLOC_TYPE_COUNT] = {
     AL_STATIC
 }
     ;
-
-static size_t anna_alloc_stop[ANNA_ALLOC_TYPE_COUNT] = {0,0,0,0,0,0,0};
 
 #ifdef ANNA_CHECK_GC_TIMING
 
@@ -484,7 +485,7 @@ static void anna_alloc_free(void *obj)
 	    {
 		o->type->finalizer[i](o);
 	    }
-	    anna_alloc_count -= o->type->object_size;
+	    anna_alloc_tot -= o->type->object_size;
 	    anna_slab_free(obj, o->type->object_size);
 
 	    break;
@@ -509,14 +510,14 @@ static void anna_alloc_free(void *obj)
 	    free(o->static_member);
 	    free(o->mid_identifier);
 	    
-	    anna_alloc_count -= sizeof(anna_type_t);
+	    anna_alloc_tot -= sizeof(anna_type_t);
 	    anna_slab_free(obj, sizeof(anna_type_t));
 	    break;
 	}
 	case ANNA_ACTIVATION_FRAME:
 	{
 	    anna_activation_frame_t *o = (anna_activation_frame_t *)obj;
-	    anna_alloc_count -= o->function->frame_size;
+	    anna_alloc_tot -= o->function->frame_size;
 //	    anna_message(L"FRAMED %ls\n", o->function->name);
 	    
 	    anna_slab_free(o, o->function->frame_size);
@@ -527,7 +528,7 @@ static void anna_alloc_free(void *obj)
 	    anna_function_t *o = (anna_function_t *)obj;
 	    free(o->code);
 	    free(o->input_type);
-	    anna_alloc_count -= sizeof(anna_function_t);
+	    anna_alloc_tot -= sizeof(anna_function_t);
 	    anna_slab_free(obj, sizeof(anna_function_t));
 	    break;
 	}
@@ -588,7 +589,7 @@ static void anna_alloc_free(void *obj)
 	    al_destroy(&o->expand);
 	    hash_foreach(&o->member_string_identifier, free_val);
 	    hash_destroy(&o->member_string_identifier);
-	    anna_alloc_count -= sizeof(anna_stack_template_t);
+//	    anna_alloc_count -= sizeof(anna_stack_template_t);
 	    anna_slab_free(obj, sizeof(anna_stack_template_t));
 	    break;
 	}
@@ -598,7 +599,7 @@ static void anna_alloc_free(void *obj)
 	    
 	    int *blob = (int *)obj;
 	    size_t sz = blob[1];
-	    anna_alloc_count -= sz;
+	    anna_alloc_tot -= sz;
 	    anna_slab_free(obj, sz);
 	    break;
 	}
@@ -620,6 +621,33 @@ void anna_alloc_gc_unblock()
 }
 
 static void anna_gc_main(void);
+
+static void anna_alloc_gc_start_work_thread()
+{
+    anna_alloc_tot += anna_alloc_count;
+    anna_alloc_count = 0;
+    anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 2, GC_FREQ);
+    
+    pthread_mutex_lock(&anna_alloc_mutex_work);
+    anna_alloc_flag_work = 1;
+    pthread_cond_signal(&anna_alloc_cond_work);    
+    pthread_mutex_unlock(&anna_alloc_mutex_work);    
+}
+
+static void anna_alloc_gc_wait_for_work_thread()
+{
+    pthread_mutex_lock(&anna_alloc_mutex_gc);
+    while(1)
+    {
+	if(anna_alloc_flag_gc == 1)
+	{
+	    anna_alloc_flag_gc = 0;		
+	    pthread_mutex_unlock(&anna_alloc_mutex_gc);
+	    break;
+	}
+	pthread_cond_wait(&anna_alloc_cond_gc, &anna_alloc_mutex_gc);    
+    }
+}
 
 void anna_gc_init()
 {
@@ -658,10 +686,36 @@ void anna_gc(anna_context_t *context)
 
 static void anna_alloc_gc_collect()
 {
-
+    size_t j, i;
+    
     anna_alloc_timer_start();
     anna_slab_free_return();
-    //anna_slab_reclaim();
+    anna_slab_reclaim();
+/*
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+    {
+	if(anna_alloc_stop[j])
+	{
+	    array_list_t *al = &anna_alloc[j];
+	    if(anna_alloc_stop[j] != al_get_count(al))
+	    {
+		size_t sz = (al->pos - anna_alloc_stop[j]);
+//		anna_message(L"Move %d elements from position %d to begining of array\n",
+//			     sz, anna_alloc_stop[j]);
+		memmove(
+		    &al->arr[0],
+		    &al->arr[anna_alloc_stop[j]],
+		    sizeof(void *) * sz);
+		
+		al->pos = sz;
+	    }
+	    else
+	    {
+		al->pos = 0;
+	    }
+	}
+    }
+*/
     anna_alloc_timer_stop(anna_alloc_time_reclaim);
     
     anna_alloc_timer_start();
@@ -670,7 +724,6 @@ static void anna_alloc_gc_collect()
     al_truncate(&anna_alloc_todo, 0);
 	
     anna_alloc_gc_block();
-    size_t j, i;
 //	anna_message(L"B.\n");
     
 #ifdef ANNA_CHECK_GC_LEAKS
@@ -713,36 +766,14 @@ static void anna_alloc_gc_collect()
 	anna_alloc_mark(al_get(&anna_alloc_permanent, i));
     }
 //    anna_message(L"Marked permanent stuff.\n");
-    
+
+    memcpy(&anna_alloc_tmp, &anna_alloc, sizeof(anna_alloc_tmp));
     
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	if(anna_alloc_stop[j])
-	{
-	    array_list_t *al = &anna_alloc[j];
-	    if(anna_alloc_stop[j] != al_get_count(al))
-	    {
-		size_t sz = (al->pos - anna_alloc_stop[j]);
-//		anna_message(L"Move %d elements from position %d to begining of array\n",
-//			     sz, anna_alloc_stop[j]);
-		memmove(
-		    &al->arr[0],
-		    &al->arr[anna_alloc_stop[j]],
-		    sizeof(void *) * sz);
-		
-		al->pos = sz;
-	    }
-	    else
-	    {
-		al->pos = 0;
-	    }
-	}
+	al_init(&anna_alloc[j]);
     }
 
-    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
-    {
-	anna_alloc_stop[j] = al_get_count(&anna_alloc[j]);
-    }
     anna_alloc_timer_stop(anna_alloc_time_collect);
 }
 
@@ -754,7 +785,7 @@ static void anna_alloc_gc_free()
 
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	for(i=0; i<al_get_count(&anna_alloc_internal[j]); i++)
+	for(i=0; i<al_get_count(&anna_alloc_internal[j]);)
 	{
 	    void *el = al_get_fast(&anna_alloc_internal[j], i);
 	    int flags = *((int *)el);
@@ -764,11 +795,11 @@ static void anna_alloc_gc_free()
 		anna_alloc_free(el);
 		al_set_fast(&anna_alloc_internal[j], i, al_get_fast(&anna_alloc_internal[j], al_get_count(&anna_alloc_internal[j])-1));
 		al_truncate(&anna_alloc_internal[j], al_get_count(&anna_alloc_internal[j])-1);
-		i--;
 	    }
 	    else
 	    {
 		anna_alloc_unmark(el);	    
+		i++;
 	    }
 	}
 	al_resize(&anna_alloc_internal[j]);
@@ -776,9 +807,9 @@ static void anna_alloc_gc_free()
 
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
     {
-	for(i=0; i<anna_alloc_stop[j]; i++)
+	for(i=0; i<al_get_count(&anna_alloc_tmp[j]); i++)
 	{
-	    void *el = al_get_fast(&anna_alloc[j], i);
+	    void *el = al_get_fast(&anna_alloc_tmp[j], i);
 	    int flags = *((int *)el);
 	    if(!(flags & ANNA_USED))
 	    {
@@ -791,6 +822,7 @@ static void anna_alloc_gc_free()
 		anna_alloc_unmark(el);	    
 	    }
 	}
+	al_destroy(&anna_alloc_tmp[j]);
     }
 
     anna_alloc_timer_stop(anna_alloc_time_free);
@@ -837,33 +869,6 @@ static void anna_alloc_gc_free()
 //    anna_message(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
 }
 
-static void anna_alloc_gc_start_work_thread()
-{
-    anna_alloc_tot += anna_alloc_count;
-    anna_alloc_count = 0;
-    anna_alloc_count_next_gc = maxi(anna_alloc_tot >> 1, GC_FREQ);
-    
-    pthread_mutex_lock(&anna_alloc_mutex_work);
-    anna_alloc_flag_work = 1;
-    pthread_cond_signal(&anna_alloc_cond_work);    
-    pthread_mutex_unlock(&anna_alloc_mutex_work);    
-}
-
-static void anna_alloc_gc_wait_for_work_thread()
-{
-    pthread_mutex_lock(&anna_alloc_mutex_gc);
-    while(1)
-    {
-	if(anna_alloc_flag_gc == 1)
-	{
-	    anna_alloc_flag_gc = 0;		
-	    pthread_mutex_unlock(&anna_alloc_mutex_gc);
-	    break;
-	}
-	pthread_cond_wait(&anna_alloc_cond_gc, &anna_alloc_mutex_gc);    
-    }
-}
-
 static void anna_gc_main()
 {
     prctl(PR_SET_NAME,"anna/gc",0,0,0);
@@ -874,9 +879,8 @@ static void anna_gc_main()
 	
 	if(anna_alloc_gc_block_counter)
 	{
-	    anna_alloc_gc_start_work_thread();
-	    
-	    continue;    
+	    anna_alloc_gc_start_work_thread();    
+	    continue;
 	}
 	
 	anna_alloc_gc_collect();
@@ -894,7 +898,7 @@ void anna_gc_destroy(void)
 
 #ifdef ANNA_CHECK_GC_TIMING
     anna_message(
-	L"GC TIMING\nCollecting: %lld\nFree:ing %lld\nReclaiming: %lld\n",
+	L"The GC spend the following amount of time in these phases:\nCollecting: %lld ms (This pauses other threads)\nFree:ing %lld ms (This runs concurrently)\nReclaiming: %lld ms (This pauses other threads)\n",
 	anna_alloc_time_collect/1000, anna_alloc_time_free/1000, anna_alloc_time_reclaim/1000);
     
 #endif

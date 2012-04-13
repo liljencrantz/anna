@@ -22,14 +22,46 @@ static int anna_ptr_in_chunk(size_t sz, char *chunk, void *ptr)
     return (chunk < (char *)ptr) && ((chunk + sz*SLAB_SZ + sizeof(size_t)) > (char *)ptr);
 }
 
+static int cmpptr(const void *p1, const void *p2)
+{
+    ptrdiff_t diff = *(void **)p1-*(void **)p2;
+    return diff == 0 ? 0 : (diff > 0 ? 1 : -1);
+}
+
 static size_t *anna_slab_counter(size_t sz, void *slab)
 {
     int i;
+
+    int idx = al_bsearch(&slab_alloc[sz], slab, cmpptr)-1;
+    
+    assert(idx >= 0);
+    //  anna_message(L"FASFDSA %d %d\n", idx, al_get_count(&slab_alloc[sz]));
+    assert(idx < al_get_count(&slab_alloc[sz]));
+/*
+    for(i=0; i<al_get_count(&slab_alloc[sz]); i++)
+    {
+	anna_message(L"%d:%d  ", i, al_get(&slab_alloc[sz], i));
+    }
+    anna_message(L"\n");
+*/
+    
+    void *ptr = al_get(&slab_alloc[sz], idx);
+    assert(ptr);
+    //anna_message(L"BBB %d %d\n", ptr, slab);
+    assert(ptr <= slab);
+    //  anna_message(L"AAA %d %d %d %d\n", ptr, slab, slab-ptr, sz*SLAB_SZ);
+    
+    assert((slab-ptr) <= (sz*SLAB_SZ));
+    return ptr;
+    
+    
     for(i=0; i<al_get_count(&slab_alloc[sz]); i++)
     {
 	char *chunk = al_get(&slab_alloc[sz], i);
 	if(anna_ptr_in_chunk(sz, chunk, slab))
 	{
+	    assert(chunk == ptr);
+	    
 	    return (size_t *)chunk;
 	}
     }
@@ -80,26 +112,23 @@ static void anna_slab_remove_chunk_from_pool(
 static void anna_slab_reclaim_sz(size_t sz)
 {
     int i;
-//    anna_message(L"WOOT RECLAIM SZ %d, %d chunks\n", sz, al_get_count(&slab_alloc[sz]));
     slab_t *slab = slab_list[sz];
-
+    
+    al_sort(&slab_alloc[sz], &cmpptr);
+    
     while(slab)
     {
 	size_t *chunk_sz = anna_slab_counter(sz, slab);	
 	(*chunk_sz)++;
 	slab = slab->next;
-//	anna_message(L"bbbb %d\n", slab);
     }
-
+    
     for(i=0; i<al_get_count(&slab_alloc[sz]);)
     {
 	size_t *chunk = al_get(&slab_alloc[sz], i);
-//	anna_message(L"AAAA %d %d\n", *chunk, SLAB_SZ);
 	
 	if(*chunk == SLAB_SZ)
 	{
-	    //anna_message(L"YAY, FREEING AN ENTIRE CHUNK OF SIZE %d, WOOT!!!!\n", sz);
-
 	    anna_slab_remove_chunk_from_pool(sz, (char *)chunk);
 	    free(chunk);
 	    al_set_fast(&slab_alloc[sz], i, al_get_fast(&slab_alloc[sz], al_get_count(&slab_alloc[sz])-1));
@@ -110,7 +139,7 @@ static void anna_slab_reclaim_sz(size_t sz)
 	    *chunk = 0;
 	    i++;
 	}
-    }    
+    }
 }
 
 void anna_slab_free_return()

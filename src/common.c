@@ -347,7 +347,7 @@ void anna_print(int fd, wchar_t *str, ssize_t slen)
     size_t len;
     if(anna_print_convert(str, slen, &narrow, &len))
     {
-	narrow = "Failed to convert wide character string\n";
+	narrow = "Failed to convert wide character string to narrow character string for printing.\n";
 	len = strlen(narrow);
     }
     while(1)
