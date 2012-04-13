@@ -7,14 +7,17 @@ static array_list_t *slab_alloc;
 
 void anna_slab_init()
 {
-    slab_list = calloc(1, 4096);
-    slab_list_free = calloc(1, 4096);
-    slab_list_tail = calloc(1, 4096);
-/*    slab_list = calloc(SLAB_MAX,sizeof(slab_t *));
-    slab_list_free = calloc(SLAB_MAX,sizeof(slab_t *));
-    slab_list_tail = calloc(SLAB_MAX,sizeof(slab_t *));
-*/
-    slab_alloc = calloc(SLAB_MAX,sizeof(array_list_t));
+    /*
+      Allocate at least one page for each allocation, to decrease odds
+      of cache line bouncing.
+      
+      (list_free and list_tail are used by the gc thread while slab_list and
+      slab_alloc are used by work thread)
+     */
+    slab_list = calloc(1, maxi(4096, SLAB_MAX * sizeof(slab_t *)));
+    slab_list_free = calloc(1, maxi(4096, SLAB_MAX * sizeof(slab_t *)));
+    slab_list_tail = calloc(1, maxi(4096, SLAB_MAX * sizeof(slab_t *)));
+    slab_alloc = calloc(1, maxi(4096,SLAB_MAX*sizeof(array_list_t)));
 }
 
 static int anna_ptr_in_chunk(size_t sz, char *chunk, void *ptr)
@@ -30,42 +33,9 @@ static int cmpptr(const void *p1, const void *p2)
 
 static size_t *anna_slab_counter(size_t sz, void *slab)
 {
-    int i;
-
     int idx = al_bsearch(&slab_alloc[sz], slab, cmpptr)-1;
-    
-    assert(idx >= 0);
-    //  anna_message(L"FASFDSA %d %d\n", idx, al_get_count(&slab_alloc[sz]));
-    assert(idx < al_get_count(&slab_alloc[sz]));
-/*
-    for(i=0; i<al_get_count(&slab_alloc[sz]); i++)
-    {
-	anna_message(L"%d:%d  ", i, al_get(&slab_alloc[sz], i));
-    }
-    anna_message(L"\n");
-*/
-    
     void *ptr = al_get(&slab_alloc[sz], idx);
-    assert(ptr);
-    //anna_message(L"BBB %d %d\n", ptr, slab);
-    assert(ptr <= slab);
-    //  anna_message(L"AAA %d %d %d %d\n", ptr, slab, slab-ptr, sz*SLAB_SZ);
-    
-    assert((slab-ptr) <= (sz*SLAB_SZ));
     return ptr;
-    
-    
-    for(i=0; i<al_get_count(&slab_alloc[sz]); i++)
-    {
-	char *chunk = al_get(&slab_alloc[sz], i);
-	if(anna_ptr_in_chunk(sz, chunk, slab))
-	{
-	    assert(chunk == ptr);
-	    
-	    return (size_t *)chunk;
-	}
-    }
-    return 0;
 }
 
 /*
@@ -96,7 +66,7 @@ static void anna_slab_remove_chunk_from_pool(
       2. Make slab into the next slab that should not be removed
       3. Make prev->next point to slab
 
-     */
+    */
     while(slab)
     {
 	slab = slab->next;
@@ -112,7 +82,7 @@ static void anna_slab_remove_chunk_from_pool(
 static void anna_slab_reclaim_sz(size_t sz)
 {
     int i;
-    slab_t *slab = slab_list[sz];
+    slab_t *prev=0, *slab = slab_list[sz];
     
     al_sort(&slab_alloc[sz], &cmpptr);
     
@@ -122,6 +92,8 @@ static void anna_slab_reclaim_sz(size_t sz)
 	(*chunk_sz)++;
 	slab = slab->next;
     }
+
+    slab = slab_list[sz];
     
     for(i=0; i<al_get_count(&slab_alloc[sz]);)
     {
@@ -166,12 +138,9 @@ void anna_slab_reclaim()
 	return;
     }
     
-    for(i=0; i<4; i++)
-    {
-	static size_t tjoho = 0;
-	anna_slab_reclaim_sz(tjoho);
-	tjoho = (tjoho+4) % SLAB_MAX;
-    }
+    static size_t tjoho = 0;
+    anna_slab_reclaim_sz(tjoho);
+    tjoho = (tjoho+4) % SLAB_MAX;
 }
 
 void anna_slab_alloc_batch(size_t sz)
