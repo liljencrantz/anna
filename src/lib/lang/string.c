@@ -1,5 +1,7 @@
 #include "src/lib/lang/string_internal.c"
 
+static int anna_string_seed;
+
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
     return (anna_string_t *)anna_entry_get_addr(obj,ANNA_MID_STRING_PAYLOAD);
@@ -877,7 +879,7 @@ int anna_string_hash(anna_object_t *this)
     anna_string_t *s = as_unwrap(this);
     size_t l = asi_get_count(s);
     size_t i;
-    unsigned hash = 5381;
+    unsigned hash = 5381 ^ anna_string_seed;
     
     for(i=0; i<l; i++){
 	wchar_t ch = asi_get_char(s, i);
@@ -1180,6 +1182,8 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 
 void anna_string_type_create()
 {
+    anna_string_seed = time(0);
+    
     anna_string_type_create_internal(imutable_string_type, 0);
     anna_string_type_create_internal(mutable_string_type, 1);
     anna_type_intersect_into(
