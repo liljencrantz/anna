@@ -635,28 +635,6 @@ int al_empty( array_list_t *l )
     return l->pos == 0;
 }
 
-void al_foreach( array_list_t *l, void (*func)( void * ))
-{
-    int i;
-
-    VERIFY( l, );
-    VERIFY( func, );
-
-    for( i=0; i<l->pos; i++ )
-	func( l->arr[i] );
-}
-
-void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux)
-{
-    int i;
-
-    VERIFY( l, );
-    VERIFY( func, );
-	
-    for( i=0; i<l->pos; i++ )
-	func( l->arr[i], aux );
-}
-
 void al_resize(array_list_t *l)
 {
     VERIFY( l, );

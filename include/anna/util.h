@@ -187,6 +187,9 @@ static inline int mini( int a, int b )
     return a<b?a:b;
 }
 
+/**
+   Returns -1, 0 or 1 for negative numbers, zero and positive numbers, respectively.
+ */
 static inline ssize_t sign(ssize_t v){
     if(v>0)
 	return 1;
@@ -387,7 +390,8 @@ static inline int al_push( array_list_t *l, void *o )
 int al_push_all( array_list_t *a, array_list_t *b );
 
 /**
-   Insert the specified number of new empty positions at the specified position in the list.
+   Insert the specified number of new empty positions at the specified
+   position in the list.
  */
 int al_insert( array_list_t *a, int pos, int count );
 
@@ -411,7 +415,10 @@ void *al_get( array_list_t *l, int pos );
 
 /**
    Same as al_get, but no bounds checking, hence ever so slightly faster
- */
+   You can call this function if you're using an array list in
+   a performance sensitive loop and you have moved the bounds checking
+   outside of the loop.
+*/
 static inline void *al_get_fast( array_list_t *l, int pos )
 {
     return l->arr[pos];
@@ -426,9 +433,11 @@ static inline int al_get_count( array_list_t *l )
 }
 
 /**
-   Same as al_set, but no bounds checking, hence ever so slightly faster
+   Same as al_set, but no bounds checking, hence ever so slightly
+   faster. You can call this function if you're using an array list in
+   a performance sensitive loop and you have moved the bounds checking
+   outside of the loop.
  */
-
 static inline void al_set_fast( array_list_t *l, int pos, void *v )
 {
     l->arr[pos] = v;
@@ -457,34 +466,48 @@ void *al_peek( array_list_t *l );
 */
 int al_empty( array_list_t *l);
 
-/** 
-	Call the function func for each entry in the list
-*/
-void al_foreach( array_list_t *l, void (*func)( void * ));
-
-/** 
-	Same as al_foreach, but the function func takes an additional
-	argument, which is provided by the caller in the variable aux
-*/
-void al_foreach2( array_list_t *l, void (*func)( void *, void *), void *aux);
-
 /**
    Check if the lst has significant amounts of unused space. If so,
    resize it.
- */
+*/
 void al_resize(array_list_t *l);
 
 /**
-   This function is inlined in order to give the compiler a chance to
-   inline the compar functin into the sorter, thereby greatly
-   increasing performance in many cases.
-*/
-static inline void al_sort(array_list_t *l, int(*compar)(const void *, const void *))
+   Sort the array.
+
+   This function is static inline in order to give the compiler a chance to
+   inline the compar function into the sorter, thereby greatly
+   increasing performance in some cases.
+
+   It is a thin wrapper around the standard library qsort
+   function. Please remember that the comparison function is called
+   with a pointer to a pointer to the correct place in the array. In
+   other words, your comparison function must do one more array
+   dereferencing than what is intuitve.
+ */
+static inline void al_sort(
+    array_list_t *l, int(*compar)(const void *, const void *))
 {
     qsort(l->arr, l->pos, sizeof(void *), compar);
 }
 
-static inline int al_bsearch(array_list_t *l, void *key, int(*compar)(const void *, const void *))
+/**
+   Perform a binary search, looking for the element key in the sorted
+   array. If key is found, it's index is returned. Otherwise, the
+   index of the first element that is larger than key is returned.
+
+   This function is static inline in order to give the compiler a chance to
+   inline the compar function into the search, thereby greatly
+   increasing performance in some cases.
+
+   This function can use the same comparison function as the al_sort
+   function. In other words, you must remember that the comparison
+   function is called with a pointer to a pointer to the correct place
+   in the array. In other words, your comparison function must do one
+   more array dereferencing than what is intuitve.  
+*/
+static inline int al_bsearch(
+    array_list_t *l, void *key, int(*compar)(const void *, const void *))
 {
     int imax = l->pos;
     int imin = 0;
