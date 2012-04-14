@@ -9,6 +9,7 @@
 #include <float.h>
 #include <wctype.h>
 #include <limits.h>
+#include <time.h>
 
 #include "anna/common.h"
 #include "anna/util.h"

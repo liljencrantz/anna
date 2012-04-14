@@ -14,4 +14,7 @@ void anna_parser_load(anna_stack_template_t *stack);
 void anna_reflection_create_types(anna_stack_template_t *stack);
 void anna_reflection_load(anna_stack_template_t *stack);
 
+void anna_debug_create_types(anna_stack_template_t *stack);
+void anna_debug_load(anna_stack_template_t *stack);
+
 #endif

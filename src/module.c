@@ -677,6 +677,7 @@ void anna_module_init()
 	    { L"parser", anna_parser_create_types, anna_parser_load },
 	    { L"system", 0, anna_system_load },
 	    { L"ctime", 0, anna_ctime_load },
+	    { L"debug", anna_debug_create_types, anna_debug_load },
 	};
 
     anna_module_data_create(modules, stack_global);

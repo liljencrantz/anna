@@ -1,6 +1,13 @@
 attribute(internal, doc("
 The anna repl implementation."));
 
+def debugRepl()
+{
+    debugFrame := reflection.currentContinuation.dynamicFrame.dynamicFrame;
+    
+    main();
+}
+
 def main()
     (doc("
 This is the so called repl of anna. Repl is short for Read, Evaluate

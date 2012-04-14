@@ -97,6 +97,58 @@ __cold static int frame_checksum(anna_activation_frame_t *frame)
     return res;
 }
 
+static void anna_vm_debugger_callback2(anna_context_t *context)
+{
+}
+
+
+static void anna_vm_debugger_callback(anna_context_t *context)
+{
+    anna_entry_t *value = anna_context_pop_entry(context);
+    int param_count = anna_as_int(anna_context_peek_entry(context, 0));
+    anna_entry_t **param = context->top - param_count-1;
+    anna_context_drop(context, param_count+1);
+        
+    anna_vm_callback_native(
+	context,
+	anna_vm_debugger_callback2, 0, 0,
+	anna_as_obj(param[0]), param_count-1, &param[1]
+	);
+}
+
+static void anna_vm_debugger(anna_context_t *context)
+{
+    int i;
+
+    anna_op_count_t *op = (anna_op_count_t *)context->frame->code;
+    size_t el_count = op->param+1;
+    
+    anna_entry_t **callback_param = alloca(sizeof(anna_entry_t *)* (el_count+1));
+    callback_param[el_count] = anna_from_int(el_count);
+    for(i=0; i<el_count; i++)
+    {
+	callback_param[i] = anna_context_peek_entry(context, el_count -i -1);
+    }
+    
+    anna_stack_template_t *repl = anna_stack_unwrap(
+	anna_as_obj(
+	    anna_stack_get(
+		stack_global, L"repl")));    
+
+    anna_object_t *debugger_body = anna_as_obj(
+	anna_stack_get(
+	    repl, L"debugRepl"));
+    
+    context->frame->code += sizeof(*op);
+    anna_context_drop(context, el_count);    
+    
+    anna_vm_callback_native(
+	context,
+	anna_vm_debugger_callback, el_count+1, callback_param,
+	debugger_body, 0, 0
+	);
+}
+
 __attr_unused __cold static void frame_describe(anna_activation_frame_t *frame)
 {
     if(frame)
@@ -263,8 +315,9 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    &&ANNA_LAB_CHECK_BREAK, //27
 	    &&ANNA_LAB_STATIC_MEMBER_SET, // 28
 	    &&ANNA_LAB_TYPE_OF, // 29
-
-	    0, 0, 0, //32
+	    &&ANNA_LAB_BREAKPOINT, // 30
+	    
+	    0, 0, //32
 	    0, 0, 0, 0, 0, 0, 0, 0, //40
 	    0, 0, 0, 0, 0, 0, 0, 0, //48
 	    0, 0, 0, 0, 0, 0, 0, 0, //56
@@ -305,9 +358,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 
 	}
     ;
-    
-    static int vm_count = 0;
-    int is_root = vm_count==0;
     
     anna_context_t *context;  
     size_t ss = 4096 * sizeof(anna_entry_t *);
@@ -379,11 +429,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     {
 	OP_ENTER(context);	
 
-	if(is_root)
-	{
-	    anna_alloc_check_gc(context);
-	}
-	
+	anna_alloc_check_gc(context);
+		
 	anna_op_count_t *op = (anna_op_count_t *)context->frame->code;
 	size_t param = op->param;
 	anna_object_t *wrapped = anna_context_peek_object_fast(context, param);
@@ -1095,6 +1142,14 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	
 	OP_LEAVE(context);	
     }
+
+  ANNA_LAB_BREAKPOINT:
+    {
+	OP_ENTER(context);	
+	anna_vm_debugger(context);
+	OP_LEAVE(context);	
+    }
+
 
 #include "autogen/vm_short_circut.c"
 

@@ -173,6 +173,11 @@
  */
 #define ANNA_INSTR_TYPE_OF 29
 
+/**
+   Pops a value from the stack and pushes the type of the popped value
+ */
+#define ANNA_INSTR_BREAKPOINT 30
+
 /*
   Here comes a bunch of short circuted operatiosn for e.g. adding two
   integers. Their meaning should be pretty self explanatory.
