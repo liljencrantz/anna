@@ -25,7 +25,7 @@ class Base
 /*
   This subtype specifies that the aaa value should always be 0
 */
-class Derived (extends(Base))
+class Derived1 (extends(Base))
 {
     def __init__(String bbb)
     (super(aaa:0))
@@ -35,9 +35,9 @@ class Derived (extends(Base))
 }
 
 /*
-  This subtype passes on the value of aaa to the parent constructor
+  This subtype implicitly passes on the value of aaa to the parent constructor
 */
-class Derived (extends(Base))
+class Derived2 (extends(Base))
 {
     def __init__(Int aaa, String bbb)
     {        
@@ -49,7 +49,7 @@ class Derived (extends(Base))
   This subtype is an error - the type of aaa is incompatible with the type of
   aaa in the base class
 */
-class Derived (extends(Base))
+class Derived3 (extends(Base))
 {
     def __init__(Float aaa, String bbb)
     {        
@@ -60,7 +60,7 @@ class Derived (extends(Base))
 /*
   This subtype is an error - no value is provided for aaa
 */
-class Derived (extends(Base))
+class Derived4 (extends(Base))
 {
     def __init__(String bbb)
     {
@@ -72,7 +72,7 @@ class Derived (extends(Base))
   This subtype has no explicit constructor. Implicitly, a constructor with 
   the same signature as the parent is created.
 */
-class Derived (extends(Base))
+class Derived5 (extends(Base))
 {
 }
 
@@ -81,3 +81,19 @@ Implementation plan:
 One probably workable method is to leave the constructors as they are and create a special function that does all the parameter mangling and other constructing, including calling the right constructors in the right order. 
 
 
+
+
+Type constants and constructors:
+
+Types should have constant members, which can only be assigned to early on in the construction process, before the constructor is run. Syntax proposal:
+
+class MyClass
+{
+    const Int myFirstConst;
+
+    def __init__(Int someValue) (myConst = arbitraryLibrary.someFunction(someValue+1))
+    {
+
+    }
+
+}
