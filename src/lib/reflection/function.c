@@ -269,14 +269,14 @@ ANNA_VM_NATIVE(anna_function_type_i_member, 1)
 	anna_function_t *fun = frame->function;
 	anna_stack_template_t *var = fun->stack_template;
 	assert(fun);
-	assert(var);
-	
 	*(anna_object_t **)anna_entry_get_addr(this, anna_mid_get(L"!variablePayload")) = res;
-	hash_foreach2(
-	    &var->member_string_identifier,
-	    anna_function_type_i_member_each,
-	    this);
-		
+	if(var)
+	{
+	    hash_foreach2(
+		&var->member_string_identifier,
+		anna_function_type_i_member_each,
+		this);
+	}
     }
     return anna_from_obj(res);
 }
