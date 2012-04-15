@@ -1,24 +1,21 @@
 attribute(internal, doc("
 The anna repl implementation."));
 
-def debugRepl()
-{
-    debugFrame := reflection.currentContinuation.dynamicFrame.dynamicFrame;
-    
-    main();
-}
-
-def main()
+def repl(reflection.Continuation debugFrame = ?)
     (doc("
 This is the so called repl of anna. Repl is short for Read, Evaluate
 and Print-Loop, and is what implements the interactive prompt of a
 programming language. If Anna is called without specifying an
-application to run, this module get's run. It will show an interactive
+application to run, a repl is invoked. It will show an interactive
 prompt using the readLine library, and will then compile that line
 into a function using the parser module, and will then execute that
-function and print it's return value to screen."), internal)
+function and print it's return value to screen.",
+	 "If the repl is provided with a Continuation as a perameter, the repl
+will include tools for debugging that frame."), internal)
 {
     use(parser);
+
+    doLoop := 1;
     
     print("Welcome to anna!
 
@@ -31,6 +28,7 @@ Type «help» for more information.");
       expressions to the one the user wrote.
      */
     globalClause :== «Node»[ast(use(replTool))];
+    localClause :== «Node»[];
     
     saveHistory :== {
 	if(readLine.history.write(historyFile))
@@ -46,7 +44,7 @@ Type «help» for more information.");
     die :== {
 	print("Bye!");
 	saveHistory();
-	unix.proc.exit(0);
+	doLoop = ?;
     }
 
     /*
@@ -69,7 +67,7 @@ Type «help» for more information.");
 
     helpText :== "Welcome to Anna!
 
-If this is your first time using Anna, you might want to 
+If this is your first time using Anna, you might want to
 check out the tutorial available at
 http://liljencrantz.github.com/anna/tutorial.html
 
@@ -113,12 +111,45 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	ast(quit): die,
 	ast(exit): die,
 	];
+
+    actionMapping :== «String, def Node (parser.Call input)»[];
+
+    if(debugFrame)
+    {
+	action[ast(continue)] = die;
+	actionMapping["break"] = def (parser.Call input){
+	    use(parser);
+	    if( input.count != 1 or !(input[0].callTo?("__mapping__")))
+	    {
+		print("Invalid breakpoint");
+		return ?;
+	    }
+	    mapping := input[0] as Call;
+	    ast(debug.breakpoint(%fun, %line)) % [
+		"fun": mapping[0],
+		"line": mapping[1],
+		];
+	}
+
+	globalClause.push(ast(frame :== %frame) % ["frame": parser.Dummy(?, debugFrame)]);
+	varStruct :== ast(struct());
+	debugFrame.variable.each(val)
+	{
+	    el := ast(%name: %value) % [
+		"name": Identifier(?, val.name),
+		"value": (if(val.value){Dummy(?, val.value)} else {NullLiteral(?)}) as Node];
+	    varStruct.push(el);
+	}
+	localClause.push(ast(use(%varStruct)) % ["varStruct": varStruct]);
+    }
+    
     [firstPrompt, secondPrompt] := ["anna> ", "    > "];
+
     prev := ? as Object;
     /*
       Start the main repl loop
     */
-    while(1)
+    while(doLoop)
     {
         line := "".thaw;
         parsedAst := ? as Call;
@@ -175,6 +206,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		action[ast]();
 		continue;
 	    }
+
+	    actionMapping.each(name, call){
+		if(ast.callTo?(name))
+		{
+		    ast = call(ast as parser.Call);
+		    print("LALALA", ast);
+		}
+	    }
 	    
 	    run := 1;
   	    isGlobal :== (ast.callTo?("use") or ast.callTo?("expand"));
@@ -185,7 +224,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	      the previous function invocation and extracting all it's
 	      variable names and values.
 	    */
-	    variableDeclaration :== ast(nothing());
+	    variableDeclaration := ast(nothing());
 	    previousContinuation.variable.each(memb)
 	    {
 		if(memb.name != "ans")
@@ -199,7 +238,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 			);
 		}
 	    }
-	    
+	    variableDeclaration ~= localClause;
 	    /*
 	      Make an ast representing an entire module with our fancy
 	      function in it.
@@ -267,4 +306,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	    }
 	}
     }
+}
+
+def debugRepl() 
+(
+    doc("
+Don't use this function. It is used internally by the breakpoint bytecode in 
+the VM."),
+    internal)
+{
+    debugFrame := reflection.currentContinuation.dynamicFrame.dynamicFrame;    
+    repl(debugFrame);
+}
+
+def main() (doc("Calls the repl function"), internal)
+{
+    repl();
 }

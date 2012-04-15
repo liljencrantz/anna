@@ -50,7 +50,7 @@ WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 CFLAGS := $(CFLAGS_NOWARN) $(WARN)
 
 ANNA_LIB_OBJS := src/lib/lang/lang.o src/lib/reflection/reflection.o	\
-src/lib/parser/parser.o src/lib/ctime.o
+src/lib/parser/parser.o src/lib/ctime.o src/lib/debug/debug.o
 
 # All object files used by the main anna binary
 ANNA_OBJS := $(ANNA_LIB_OBJS) src/dtoa.o src/anna.o src/node/node.o	\

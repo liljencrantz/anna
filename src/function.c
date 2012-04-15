@@ -63,6 +63,24 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
     return fun;
 }
 
+static void anna_function_handle_use_each(anna_node_t *node, void *aux)
+{
+    if(node->node_type == ANNA_NODE_USE && !node->return_type)
+    {
+	anna_node_wrapper_t *c = (anna_node_wrapper_t *)node;
+	c->payload = anna_node_calculate_type(c->payload);
+	c->return_type = c->payload->return_type;
+	if(c->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+	{
+	    al_push(
+		&c->stack->import,
+		anna_use_create_node(
+		    c->payload,
+		    c->return_type));
+	}
+    }
+}
+
 /**
    Locate all use expressions in the specified function and add them
    to the stack template object.
@@ -72,24 +90,8 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
  */
 static void anna_function_handle_use(anna_node_call_t *body)
 {
-    int i;
-    for(i=0; i<body->child_count; i++)
-    {
-	if(body->child[i]->node_type == ANNA_NODE_USE && !body->child[i]->return_type)
-	{
-	    anna_node_wrapper_t *c = (anna_node_wrapper_t *)body->child[i];
-	    c->payload = anna_node_calculate_type(c->payload);
-	    c->return_type = c->payload->return_type;
-	    if(c->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-	    {
-		al_push(
-		    &c->stack->import, 
-		    anna_use_create_node(
-			c->payload,
-			c->return_type));
-	    }
-	}
-    }
+    anna_node_each(
+	(anna_node_t *)body, anna_function_handle_use_each, 0);
     anna_node_resolve_identifiers((anna_node_t *)body);
 }
 
