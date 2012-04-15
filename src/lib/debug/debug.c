@@ -16,7 +16,61 @@
 #include "anna/vm_internal.h"
 #include "anna/module.h"
 
-static array_list_t anna_debug_current_breakpoint = AL_STATIC;
+typedef struct 
+{
+    anna_function_t *fun;
+    int line;
+    char *code;
+}
+    anna_breakpoint_t;
+
+static array_list_t anna_breakpoint_list = AL_STATIC;
+
+static int anna_breakpoint_create(
+    anna_function_t *fun,
+    int line,
+    char *code)
+{
+    anna_breakpoint_t *bp = malloc(sizeof(anna_breakpoint_t));
+    bp->fun = fun;
+    bp->line = line;
+    bp->code = code;
+    
+    int i;
+    for(i=0; i<al_get_count(&anna_breakpoint_list); i++)
+    {
+	if(!al_get(&anna_breakpoint_list, i))
+	{
+	    break;
+	}
+    }
+    al_set(&anna_breakpoint_list, i, bp);
+    return i;
+}
+
+static anna_breakpoint_t *anna_breakpoint_get(int bpid)
+{
+    if(bpid < 0 || bpid >= al_get_count(&anna_breakpoint_list))
+	return 0;
+    
+    return al_get(&anna_breakpoint_list, bpid);
+}
+
+static int anna_breakpoint_destroy(int bpid)
+{
+    if(bpid < 0 || bpid >= al_get_count(&anna_breakpoint_list))
+	return 0;
+
+    anna_breakpoint_t *bp;
+    if((bp = al_get(&anna_breakpoint_list, bpid)))
+    {
+	free(bp);
+	al_set(&anna_breakpoint_list, bpid, 0);
+	return 1;
+    }
+    return 0;
+}
+    
 
 static char *anna_debug_brakepoint_search(anna_function_t *fun, int bp_line)
 {
@@ -71,18 +125,65 @@ ANNA_VM_NATIVE(anna_debug_breakpoint, 2)
     char *bp = anna_debug_brakepoint_search(fun, line);
     if(bp)
     {
-	anna_message(
-	    L"Insert breakpoint on line %d of %ls.\n", 
-	    line, fun->name);
-	al_push(&anna_debug_current_breakpoint, bp);
+	int bp_id = anna_breakpoint_create(fun, line, bp);
 	*bp = ANNA_INSTR_BREAKPOINT;
-	return anna_from_int(1);
+	anna_message(
+	    L"Breakpoint %d inserted on line %d of %ls.\n", 
+	    bp_id, line, fun->name);
+
+	return anna_from_int(bp_id);
     }
     else
     {
 	anna_message(
 	    L"Failed to insert breakpoint on line %d of %ls.\n", 
 	    line, fun->name);
+    }
+    return null_entry;
+}
+
+ANNA_VM_NATIVE(anna_debug_clear, 1)
+{
+    if(param[0] == null_entry)
+    {
+	int cleared;
+	int i;
+	for(i=0; i<al_get_count(&anna_breakpoint_list); i++)
+	{
+	    cleared += anna_breakpoint_destroy(i);
+	}
+	anna_message(L"Cleared %d breakpoints\n", cleared);
+	return cleared ? anna_from_int(cleared): null_entry;
+    }
+    else
+    {
+	int cleared = anna_breakpoint_destroy(anna_as_int(param[0]));
+	if(cleared)
+	{
+	    anna_message(L"Cleared breakpoint %d\n", anna_as_int(param[0]));
+	    return anna_from_int(1);
+	}
+	else
+	{
+	    anna_message(L"No suach breakpoint: %d\n", anna_as_int(param[0]));
+	    return null_entry;
+	}
+    }
+}
+
+ANNA_VM_NATIVE(anna_debug_list, 0)
+{
+    int i;
+    anna_message(L"Id\tLine\tFunction name\n");
+    for(i=0; i<al_get_count(&anna_breakpoint_list); i++)
+    {
+	anna_breakpoint_t *bp;
+	if((bp = al_get(&anna_breakpoint_list, i)))
+	{
+	    anna_message(
+		L"%d\t%d\t%ls\n",
+		i, bp->line, bp->fun->name);
+	}
     }
     return null_entry;
 }
@@ -103,4 +204,23 @@ void anna_debug_load(anna_stack_template_t *stack)
 	object_type, 
 	2, bp_argv, bp_argn, 0,
 	L"Create a debugger breakpoint at the specified line number of the specified function.");
+
+    static wchar_t *cl_argn[]={L"breakpoint_id"};
+    anna_type_t *cl_argv[]={int_type};
+
+    anna_module_function(
+	stack,
+	L"clear", 0, 
+	&anna_debug_clear, 
+	object_type, 
+	1, cl_argv, cl_argn, 0,
+	L"Clear the breakpoint with the specified breakpoint id.");
+
+    anna_module_function(
+	stack,
+	L"list", 0, 
+	&anna_debug_list, 
+	object_type, 
+	0,0,0,0,
+	L"Write out a list of all current breakpoints to the screen.");
 }

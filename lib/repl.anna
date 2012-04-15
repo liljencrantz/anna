@@ -114,9 +114,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 
     actionMapping :== «String, def Node (parser.Call input)»[];
 
+    firstPrompt := "anna> ";
+
     if(debugFrame)
     {
+	/*
+	  Add some additional functionality for debugger prompts
+	 */
+
+	// continue exits the debugger
 	action[ast(continue)] = die;
+
+	// break someFunction:someLineNumber inserts a breakpoint
 	actionMapping["break"] = def (parser.Call input){
 	    use(parser);
 	    if( input.count != 1 or !(input[0].callTo?("__mapping__")))
@@ -131,7 +140,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		];
 	}
 
+	// Add a frame variable to the global scope, pointing to the current continuation frame
 	globalClause.push(ast(frame :== %frame) % ["frame": parser.Dummy(?, debugFrame)]);
+
+	// Create a struct of all the variables in the current continuation frame, 
+	// and add that into a use clause in the function
 	varStruct :== ast(struct());
 	debugFrame.variable.each(val)
 	{
@@ -141,9 +154,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	    varStruct.push(el);
 	}
 	localClause.push(ast(use(%varStruct)) % ["varStruct": varStruct]);
+
+	firstPrompt = "debug> ";
     }
     
-    [firstPrompt, secondPrompt] := ["anna> ", "    > "];
+    secondPrompt := " " * firstPrompt.count;
 
     prev := ? as Object;
     /*
