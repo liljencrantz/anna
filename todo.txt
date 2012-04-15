@@ -17,19 +17,21 @@
 * There should be a type flag «const», that is used to tell the world that a specified type only has constant members, and that all member values are also have the const attribute.
 * There should be a goroutine-like concurrency framework where messages can be sent through sockets. The only message requirement is that anything sent through the socket must be const. This can be implemented using threads at a very high efficiency level without introducing any hard lock problems. (This is reasonably close to what Erlang does, too)
 * Interactive debugger
-  - debug.break() function call that launches the debugger in the current location
+  - Better breakpoint insertion that can reach inside sub-blocks of functions
   - break someModule:330
   - next
   - bt (Alias for frame.trace)
-  - Function.source property to show the source code of non-native function definitions.  - variable access in the debugger repl
- Function.toString() could show the source code with line numbers, in order to make break easier to work with?
+  - clear function for clearing a breakpoint
+  - Function.source property to show the source code of non-native function definitions. Function.toString() could show the source code with line numbers, in order to make break easier to work with?
 
 1.0 RELEASE CRITERIA (Done):
 * Interactive debugger
+  - debug.here() function call that launches the debugger in the current location
   - breakpoint bytecode launches the interactive debugger
   - debug.breakpoint function to insert a breakpoint
   - continue
   - break someFunction:330 
+  - variable access in the debugger repl
 * Revise api of Continuation. We want a way to tell the static type of every variable in the frame.
 * HashMap::clear
 * List::clear

@@ -702,6 +702,11 @@ void anna_module_init()
 	    anna_stack_get(
 		stack_global, anna_intern_static(L"reflection"))));
     
+    anna_stack_template_t *stack_debug = anna_stack_unwrap(
+	anna_as_obj(
+	    anna_stack_get(
+		stack_global, anna_intern_static(L"debug"))));
+    
     anna_object_t *g_obj = anna_stack_wrap(stack_global);
     anna_stack_declare(
 	stack_global,
@@ -747,6 +752,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"propertyAttribute");
     anna_module_bootstrap_macro(L"class");
     anna_module_bootstrap_macro(L"listAssign");
+    anna_module_bootstrap_monkeypatch(stack_debug, L"monkeypatchDebug");
 
     /* Load additional binary modules */
     //anna_module_load_dynamic(L"unix", stack_global);
