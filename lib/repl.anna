@@ -155,6 +155,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	}
 	localClause.push(ast(use(%varStruct)) % ["varStruct": varStruct]);
 
+	globalClause.push(ast(use(debug)));
+
 	firstPrompt = "debug> ";
     }
     

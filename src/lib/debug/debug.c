@@ -15,6 +15,8 @@
 #include "anna/type_data.h"
 #include "anna/vm_internal.h"
 #include "anna/module.h"
+#include "anna/member.h"
+#include "anna/lib/lang/string.h"
 
 typedef struct 
 {
@@ -146,10 +148,11 @@ ANNA_VM_NATIVE(anna_debug_clear, 1)
 {
     if(param[0] == null_entry)
     {
-	int cleared;
+	int cleared=0;
 	int i;
 	for(i=0; i<al_get_count(&anna_breakpoint_list); i++)
 	{
+
 	    cleared += anna_breakpoint_destroy(i);
 	}
 	anna_message(L"Cleared %d breakpoints\n", cleared);
@@ -174,18 +177,34 @@ ANNA_VM_NATIVE(anna_debug_clear, 1)
 ANNA_VM_NATIVE(anna_debug_list, 0)
 {
     int i;
-    anna_message(L"Id\tLine\tFunction name\n");
+    int found = 0;
+    string_buffer_t sb;
+    sb_init(&sb);
+    
     for(i=0; i<al_get_count(&anna_breakpoint_list); i++)
     {
 	anna_breakpoint_t *bp;
 	if((bp = al_get(&anna_breakpoint_list, i)))
 	{
-	    anna_message(
+	    if(!found)
+	    {
+		sb_printf(&sb, L"Id\tLine\tFunction name\n");
+		found = 1;
+	    }
+	    sb_printf(&sb,
 		L"%d\t%d\t%ls\n",
 		i, bp->line, bp->fun->name);
 	}
     }
-    return null_entry;
+    
+    if(!found)
+    {
+	sb_printf(&sb, L"No breakpoints currently defined!\n");
+    }
+
+    anna_object_t *res = anna_string_create(wcslen(sb_content(&sb)),sb_content(&sb));
+    sb_destroy(&sb);
+    return anna_from_obj(res);
 }
 
 void anna_debug_create_types(anna_stack_template_t *stack)
@@ -205,7 +224,7 @@ void anna_debug_load(anna_stack_template_t *stack)
 	2, bp_argv, bp_argn, 0,
 	L"Create a debugger breakpoint at the specified line number of the specified function.");
 
-    static wchar_t *cl_argn[]={L"breakpoint_id"};
+    static wchar_t *cl_argn[]={L"id"};
     anna_type_t *cl_argv[]={int_type};
 
     anna_module_function(
@@ -216,11 +235,11 @@ void anna_debug_load(anna_stack_template_t *stack)
 	1, cl_argv, cl_argn, 0,
 	L"Clear the breakpoint with the specified breakpoint id.");
 
-    anna_module_function(
-	stack,
-	L"list", 0, 
-	&anna_debug_list, 
-	object_type, 
-	0,0,0,0,
-	L"Write out a list of all current breakpoints to the screen.");
+    anna_type_t *type = anna_stack_wrap(stack)->type;
+    anna_member_create_native_property(
+	type, anna_mid_get(L"list"),
+	imutable_string_type,
+	&anna_debug_list,
+	0,
+	L"A text list of all current breakpoints.");
 }
