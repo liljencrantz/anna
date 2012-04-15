@@ -1190,6 +1190,7 @@ size_t anna_bc_op_size(char instruction)
 	}
 	
 	case ANNA_INSTR_CALL:
+	case ANNA_INSTR_BREAKPOINT:
 	case ANNA_INSTR_RETURN_COUNT:
 	case ANNA_INSTR_RETURN_COUNT_BREAK:
 	{
@@ -1275,6 +1276,7 @@ void anna_bc_print(char *code)
 		    break;
 		}
 	    
+		case ANNA_INSTR_BREAKPOINT:
 		case ANNA_INSTR_CALL:
 		{
 		    anna_op_count_t *op = (anna_op_count_t *)code;
@@ -1466,6 +1468,7 @@ void anna_vm_mark_code(anna_function_t *f)
 		case ANNA_INSTR_NATIVE_CALL:
 		case ANNA_INSTR_FOLD:
 		case ANNA_INSTR_CALL:
+		case ANNA_INSTR_BREAKPOINT:
 		case ANNA_INSTR_CONSTRUCT:
 		case ANNA_INSTR_VAR_GET:
 		case ANNA_INSTR_VAR_SET:
