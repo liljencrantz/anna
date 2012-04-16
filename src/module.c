@@ -753,6 +753,7 @@ void anna_module_init()
     anna_module_bootstrap_macro(L"class");
     anna_module_bootstrap_macro(L"listAssign");
     anna_module_bootstrap_monkeypatch(stack_debug, L"monkeypatchDebug");
+    anna_module_bootstrap_monkeypatch(stack_reflection, L"monkeypatchContinuation");
 
     /* Load additional binary modules */
     //anna_module_load_dynamic(L"unix", stack_global);

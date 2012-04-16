@@ -1,0 +1,10 @@
+use(reflection);
+
+def continuationToString(Continuation this)
+(
+    target(Continuation),
+    name(toString),
+)
+{
+    "Continuation:\n" ~ this.trace
+}
