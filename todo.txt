@@ -14,8 +14,8 @@
 * Write macros to transform f"Hello, %(userName)" => "Hello, %" % [userName] and tf"Hello, %(userName)" => t"Hello, %" % [userName]
 * Types should have constant members. They should only be assignable using some kind of funky attribute syntax, which will not allow any kind of member access.
 * Maybe List["getRange"] should return the getRange member object? If so, it would probably make a lot more sense for Continuation["foo"] to return the ContinuationVariable object, and not the actual value. If we go down this route, then ContinuationVariable should be renamed ContiuationMember, jsut to make the parallel clearer.
-* There should be a type flag «const», that is used to tell the world that a specified type only has constant members, and that all member values are also have the const attribute.
-* There should be a goroutine-like concurrency framework where messages can be sent through sockets. The only message requirement is that anything sent through the socket must be const. This can be implemented using threads at a very high efficiency level without introducing any hard lock problems. (This is reasonably close to what Erlang does, too)
+* There should be a type flag «sendable», that is used to tell the world that a specified type only has imutable members, and in addition, that all member values are also have the sendable attribute.
+* There should be a goroutine-like concurrency framework where messages can be sent through sockets. The only message requirement is that anything sent through the socket must be sendable (see previous bullet). This can be implemented using threads at a very high efficiency level without introducing any hard lock problems. (This is reasonably close to what Erlang does, too)
 * Interactive debugger
   - Better breakpoint insertion that can reach inside sub-blocks of functions
   - break someModule:330
@@ -23,6 +23,8 @@
   - bt (Alias for frame.trace)
   - clear function for clearing a breakpoint
   - Function.source property to show the source code of non-native function definitions. Function.toString() could show the source code with line numbers, in order to make break easier to work with?
+  - Breakpoint insertion at start of any native method
+  - variable write access in debugger? 
 
 1.0 RELEASE CRITERIA (Done):
 * Interactive debugger
