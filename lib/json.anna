@@ -1,5 +1,10 @@
 attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been implemented."));
 
+class JsonSerializable (doc("Types that can mask as a JsonSerializable can be converted to Json by the json.to function."))
+{
+    def String toJson() {?}
+}
+
 def String to(Object o) 
 (
     doc(
@@ -9,6 +14,7 @@ def String to(Object o)
 json.to([\"key\": [1,2,?]}])
 // Result: \"{\"key\": [1, 2, null]}\"
 </pre>",
+	"This function internally handles Int, Float, String, List and HashMap types. If you want your own custom class to be supported, simply add a toJson method that returns a String."
     )
 )
 {
@@ -87,6 +93,16 @@ json.to([\"key\": [1,2,?]}])
 	    return "{" ~ ", ".join(hmap.map(key, el){to(key.toString()) ~ ": " ~ to(el)}) ~ "}";
 	}
 
+	case(ss as JsonSerializable)
+	{
+	    return ss.toJson();
+	}
+
+	default
+	{
+	    raise(error.ParseError("Can't json encode object of type " ~ o.__type__.name));
+	    return ?;
+	}
     }
     return ?;
 }
