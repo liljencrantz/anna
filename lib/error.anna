@@ -96,7 +96,7 @@ raise(SomeError(\"Something went wrong...\"));
 	    return;
 	}
 
-	print("Uncaught error:", error, sep:"");
+	print("Uncaught %: %" %[error, error.message]);
     }
     
     funEach(reflection.currentContinuation);
