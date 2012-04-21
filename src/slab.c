@@ -82,7 +82,7 @@ static void anna_slab_remove_chunk_from_pool(
 static void anna_slab_reclaim_sz(size_t sz)
 {
     int i;
-    slab_t *prev=0, *slab = slab_list[sz];
+    slab_t *slab = slab_list[sz];
     
     al_sort(&slab_alloc[sz], &cmpptr);
     
@@ -131,16 +131,14 @@ void anna_slab_free_return()
 
 void anna_slab_reclaim()
 {    
-    int i;
-    
     if(SLAB_MAX == 0)
     {
 	return;
     }
     
-    static size_t tjoho = 0;
-    anna_slab_reclaim_sz(tjoho);
-    tjoho = (tjoho+4) % SLAB_MAX;
+    static size_t sz = 0;
+    anna_slab_reclaim_sz(sz);
+    sz = (sz+4) % SLAB_MAX;
 }
 
 void anna_slab_alloc_batch(size_t sz)

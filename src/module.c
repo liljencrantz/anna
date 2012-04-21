@@ -440,7 +440,6 @@ static void anna_module_bootstrap_monkeypatch(
 	    assert(module);
 	}
 	
-	
 	if(type == any_list_type)
 	{
 	    anna_list_add_method(fun);
@@ -678,6 +677,7 @@ void anna_module_init()
 	    { L"system", 0, anna_system_load },
 	    { L"ctime", 0, anna_ctime_load },
 	    { L"debug", anna_debug_create_types, anna_debug_load },
+	    { L"mp", anna_mp_create_types, anna_mp_load },
 	};
 
     anna_module_data_create(modules, stack_global);

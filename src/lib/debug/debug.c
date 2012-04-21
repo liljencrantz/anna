@@ -17,6 +17,7 @@
 #include "anna/module.h"
 #include "anna/member.h"
 #include "anna/lib/lang/string.h"
+#include "anna/lib/clib.h"
 
 typedef struct 
 {
@@ -49,7 +50,7 @@ static int anna_breakpoint_create(
     al_set(&anna_breakpoint_list, i, bp);
     return i;
 }
-
+/*
 static anna_breakpoint_t *anna_breakpoint_get(int bpid)
 {
     if(bpid < 0 || bpid >= al_get_count(&anna_breakpoint_list))
@@ -57,7 +58,7 @@ static anna_breakpoint_t *anna_breakpoint_get(int bpid)
     
     return al_get(&anna_breakpoint_list, bpid);
 }
-
+*/
 static int anna_breakpoint_destroy(int bpid)
 {
     if(bpid < 0 || bpid >= al_get_count(&anna_breakpoint_list))

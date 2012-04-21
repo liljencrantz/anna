@@ -264,6 +264,8 @@ void anna_complex_type_create()
 	}
     ;
     
+    anna_type_make_sendable(complex_type);
+
     anna_type_document(
 	complex_type,
 	L"The Complex type is the basic complex floating point number type of the Anna language.");

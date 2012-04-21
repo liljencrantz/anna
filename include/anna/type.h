@@ -14,6 +14,7 @@
 #define ANNA_TYPE_CLOSED (8192*4)
 #define ANNA_TYPE_VALIDATED (8192*8)
 #define ANNA_TYPE_PREPARED_EXTEND (8192*16)
+#define ANNA_TYPE_SENDABLE (8192*32)
 
 extern int anna_type_object_created;
 
@@ -154,6 +155,16 @@ void anna_type_ensure_mid(anna_type_t *type, mid_t mid);
 static inline int anna_type_ok(anna_type_t *type)
 {
     return (type != 0) && (type != ANNA_NODE_TYPE_IN_TRANSIT);
+}
+
+static inline int anna_type_sendable(anna_type_t *type)
+{
+    return !!(type->flags & ANNA_TYPE_SENDABLE);
+}
+
+static inline void anna_type_make_sendable(anna_type_t *type)
+{
+    type->flags |= ANNA_TYPE_SENDABLE;
 }
 
 #endif

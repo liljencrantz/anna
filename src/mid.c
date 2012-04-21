@@ -117,6 +117,9 @@ void anna_mid_init()
 
 	    L"offset",
 	    L"continuation",
+	    L"!channelRead",
+	    L"!channelWrite",
+	    L"!channelSync",
 	};
     
     int i;

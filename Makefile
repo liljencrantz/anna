@@ -33,7 +33,7 @@ COV_FLAGS := #--coverage
 # optimization increases overall performance slightly. Unfortunatly,
 # with lto, there does not seem to be any way to drop this flag only
 # for one function or one compilation unit.
-PROF_FLAGS := -g -O2 #-flto -O3 -fuse-linker-plugin -fno-gcse
+PROF_FLAGS := -g  #-flto -O3 -fuse-linker-plugin -fno-gcse
 
 # CFLAGS_NOWARN consists of all cflags not related to warnings. Used
 # for compiling some code that we can't easily fix minor problems in,
@@ -50,7 +50,7 @@ WARN := -Wall -Werror=implicit-function-declaration -Wmissing-braces	\
 CFLAGS := $(CFLAGS_NOWARN) $(WARN)
 
 ANNA_LIB_OBJS := src/lib/lang/lang.o src/lib/reflection/reflection.o	\
-src/lib/parser/parser.o src/lib/ctime.o src/lib/debug/debug.o
+src/lib/parser/parser.o src/lib/ctime.o src/lib/debug/debug.o src/lib/mp/mp.o
 
 # All object files used by the main anna binary
 ANNA_OBJS := $(ANNA_LIB_OBJS) src/dtoa.o src/anna.o src/node/node.o	\

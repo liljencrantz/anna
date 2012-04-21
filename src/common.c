@@ -17,6 +17,7 @@ parts of fish.
 #include <stdarg.h>		
 #include <locale.h>
 #include <execinfo.h>
+#include <pthread.h>
 
 #include "anna/fallback.h"
 #include "anna/util.h"
@@ -271,6 +272,7 @@ void debug( int level, const wchar_t *msg, ... )
 }
 
 static string_buffer_t *anna_message_buffer = 0;
+static pthread_mutex_t anna_common_message_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void anna_message_set_buffer(string_buffer_t *message_buffer)
 {
@@ -283,6 +285,9 @@ void anna_message(const wchar_t *msg, ... )
     string_buffer_t sb_fallback;
 
     string_buffer_t *buff = anna_message_buffer;
+
+    pthread_mutex_lock(&anna_common_message_mutex);
+
     if(!buff)
     {
 	buff = &sb_fallback;
@@ -297,6 +302,7 @@ void anna_message(const wchar_t *msg, ... )
     sb_vprintf( buff, msg, va );
     va_end( va );	
     
+    pthread_mutex_unlock(&anna_common_message_mutex);
     
     if(!anna_message_buffer)
     {
@@ -336,6 +342,8 @@ static int anna_print_convert(wchar_t *src, size_t src_sz, char **dst, size_t *d
     return 0;
 }
 
+static pthread_mutex_t anna_common_print_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 void anna_print(int fd, wchar_t *str, ssize_t slen)
 {
     if(slen == -1)
@@ -345,6 +353,9 @@ void anna_print(int fd, wchar_t *str, ssize_t slen)
     
     char *narrow;
     size_t len;
+
+    pthread_mutex_lock(&anna_common_print_mutex);
+
     if(anna_print_convert(str, slen, &narrow, &len))
     {
 	narrow = "Failed to convert wide character string to narrow character string for printing.\n";
@@ -371,4 +382,5 @@ void anna_print(int fd, wchar_t *str, ssize_t slen)
 	    exit(1);
 	}	
     }    
+    pthread_mutex_unlock(&anna_common_print_mutex);
 }

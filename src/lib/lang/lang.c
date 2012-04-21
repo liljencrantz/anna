@@ -153,7 +153,9 @@ ANNA_VM_NATIVE(anna_i_print_internal, 1)
 	}	
 	else
 	{
-	    anna_message(L"<invalid toString method>");
+	    char *msg = "<invalid toString method>";
+	    
+	    write(1, msg, strlen(msg));
 	}
     }
     return null_entry;
@@ -184,7 +186,7 @@ static void anna_i_callcc_callback(anna_context_t *context)
 
 static void anna_i_callcc(anna_context_t *context)
 {
-    context->frame = anna_frame_to_heap(context->frame);
+    context->frame = anna_frame_to_heap(context);
     
     anna_object_t *fun = anna_context_pop_object(context);
     anna_context_pop_object(context);

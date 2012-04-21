@@ -72,10 +72,11 @@ static void anna_compile_context_destroy(anna_compile_context_t *ctx)
     al_destroy(&ctx->node);    
 }
 
-static inline anna_activation_frame_t *anna_frame_get_static(size_t sz)
+static inline anna_activation_frame_t *anna_frame_get_static(anna_context_t *context, size_t sz)
 {
-    anna_activation_frame_t *res = (anna_activation_frame_t *)anna_context_static_ptr;
-    anna_context_static_ptr += sz; 
+    anna_activation_frame_t *res = (anna_activation_frame_t *)
+	context->static_frame_ptr;
+    context->static_frame_ptr += sz; 
     res->flags = ANNA_ACTIVATION_FRAME | ANNA_ACTIVATION_FRAME_STATIC;
     return res;
 }
@@ -86,7 +87,7 @@ static void anna_frame_push(anna_context_t *context)
     size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
     anna_activation_frame_t *static_frame = *(anna_activation_frame_t **)&wfun->member[stack_offset];
     anna_function_t *fun = anna_function_unwrap_fast(wfun);
-    anna_activation_frame_t *res = anna_frame_get_static(fun->frame_size);
+    anna_activation_frame_t *res = anna_frame_get_static(context, fun->frame_size);
     
     res->static_frame = static_frame;
     res->dynamic_frame = context->frame;
@@ -1085,7 +1086,7 @@ void anna_vm_callback_native(
     anna_native_t callback, int paramc, anna_entry_t **param,
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    context->frame = anna_frame_to_heap(context->frame);
+    context->frame = anna_frame_to_heap(context);
     size_t ss = sizeof(anna_activation_frame_t);
 
     size_t tot_sz = ss;
@@ -1129,7 +1130,7 @@ void anna_vm_callback(
     anna_context_t *context, 
     anna_object_t *entry, int argc, anna_entry_t **argv)
 {
-    context->frame = anna_frame_to_heap(context->frame);
+    context->frame = anna_frame_to_heap(context);
     size_t ss = sizeof(anna_activation_frame_t);
     size_t cs = sizeof(anna_op_count_t) + sizeof(anna_op_null_t)+1;
     size_t tot_sz = ss;
@@ -1178,7 +1179,7 @@ void anna_vm_callback_reset(
 
 void anna_vm_method_wrapper(anna_context_t *context)
 {
-    context->frame = anna_frame_to_heap(context->frame);
+    context->frame = anna_frame_to_heap(context);
     char *code = context->frame->code;
     code -= sizeof(anna_op_count_t);
     anna_op_count_t *op = (anna_op_count_t *)code;

@@ -1380,6 +1380,11 @@ static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)
 	anna_type_t *imutable = anna_type_create(
 	    sb_content(&sb), 0);
 	
+	if(anna_type_sendable(subtype))
+	{
+	    anna_type_make_sendable(imutable);
+	}
+	
 	sb_truncate(&sb, 0);
 	sb_printf(&sb, L"List«%ls»", subtype->name);
 	anna_type_t *any = anna_type_create(

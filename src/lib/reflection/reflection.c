@@ -66,7 +66,7 @@ void anna_reflection_create_types(anna_stack_template_t *stack)
 
 static void anna_i_cc(anna_context_t *context)
 {
-    context->frame = anna_frame_to_heap(context->frame);
+    context->frame = anna_frame_to_heap(context);
     
     anna_context_pop_object(context);
     anna_context_pop_object(context);

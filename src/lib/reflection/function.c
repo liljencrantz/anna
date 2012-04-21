@@ -552,6 +552,10 @@ void anna_reflection_type_for_function_create(
 		0,
 		L"A list of all variables in this function.");
 	}
+	else
+	{
+	    anna_type_make_sendable(res);
+	}
 	
 	if(key->flags & ANNA_FUNCTION_BOUND_METHOD)
 	{

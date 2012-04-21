@@ -77,6 +77,12 @@ typedef int mid_t;
  */
 #define ANNA_MEMBER_INTERNAL 16
 
+/**
+   Size of the statically allocated chunk of memory used for
+   activation records before they are referenced and need to move to
+   the heap.
+*/
+#define ANNA_CONTEXT_STATIC_SZ (8192*32)
 
 /*
   The preallocated MIDs
@@ -173,6 +179,9 @@ enum anna_mid_enum
 
     ANNA_MID_CONTINUATION_VARIABLE_OFFSET,
     ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION,
+    ANNA_MID_CHANNEL_READ,
+    ANNA_MID_CHANNEL_WRITE,
+    ANNA_MID_CHANNEL_SYNC,
 
     ANNA_MID_FIRST_UNRESERVED,
 };
@@ -630,6 +639,9 @@ struct anna_context
     */
     struct anna_object *function_object;
 
+    char *static_frame_ptr;
+    char static_frame_data[ANNA_CONTEXT_STATIC_SZ];
+    
     /**
       The top of the scratch stack. The scratch stack in anna is not used
       for passing parameters, it is used purely as a scratch space for

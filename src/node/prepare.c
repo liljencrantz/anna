@@ -427,7 +427,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		    }
 		    call->function->stack = call->stack = n->stack;
 		    call->function->return_type = anna_function_wrap(fun_spec)->type;
-		    return anna_node_calculate_type(call);
+		    return anna_node_calculate_type((anna_node_t *)call);
 			
 		}
 	    }

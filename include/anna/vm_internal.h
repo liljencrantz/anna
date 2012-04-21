@@ -32,13 +32,6 @@
 */
 
 /**
-   Size of the statically allocated chunk of memory used for
-   activation records before they are referenced and need to move to
-   the heap.
-*/
-#define ANNA_CONTEXT_SZ (8192*32)
-
-/**
    Stop bytecode execution and return.
 */
 #define ANNA_INSTR_STOP 0
@@ -319,10 +312,7 @@ typedef struct
 
 size_t anna_bc_op_size(char instruction);
 
-extern char *anna_context_static_ptr;
-extern char anna_context_static_data[ANNA_CONTEXT_SZ];
-
-anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *stack);
+anna_activation_frame_t *anna_frame_to_heap(anna_context_t *context);
 
 static inline int anna_instr_is_short_circut(char instr)
 {

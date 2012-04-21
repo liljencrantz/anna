@@ -29,17 +29,17 @@
 #define OP_ENTER(context) 
 
 //anna_message(L"Weee, instruction %d at offset %d\n", *context->frame->code, context->frame->code - context->frame->function->code)
-
+/*
 char *anna_context_static_ptr;
 char anna_context_static_data[ANNA_CONTEXT_SZ];
-
+*/
 __attr_unused __cold static void anna_context_print_parent(anna_context_t *context);
 
-static inline void anna_frame_return(anna_activation_frame_t *frame)
+static inline void anna_frame_return(anna_context_t *context, anna_activation_frame_t *frame)
 {
     if(frame->flags & ANNA_ACTIVATION_FRAME_STATIC)
     {
-	anna_context_static_ptr -= frame->function->frame_size;
+	context->static_frame_ptr -= frame->function->frame_size;
 //	assert(stack == anna_context_static_ptr);
     }
 }
@@ -47,13 +47,13 @@ static inline void anna_frame_return(anna_activation_frame_t *frame)
 static inline void anna_context_frame_return(anna_context_t *context)
 {
     context->top = context->frame->return_stack_top;
-    anna_frame_return(context->frame);
+    anna_frame_return(context, context->frame);
     context->frame = context->frame->dynamic_frame;
 }
 
 static inline void anna_context_frame_return_static(anna_context_t *context)
 {
-    anna_frame_return(context->frame);
+    anna_frame_return(context, context->frame);
     context->frame = context->frame->static_frame;
 }
 
@@ -168,8 +168,9 @@ __attr_unused __cold static void frame_describe(anna_activation_frame_t *frame)
     }
 }
 
-anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *frame)
+anna_activation_frame_t *anna_frame_to_heap(anna_context_t *context)
 {
+    anna_activation_frame_t *frame = context->frame;
     /*
       Move an activation record from the stack to the heap. A heap
       allocated frame may never point to a statically allocated frame,
@@ -202,7 +203,7 @@ anna_activation_frame_t *anna_frame_to_heap(anna_activation_frame_t *frame)
 	    prev->dynamic_frame = copy;
 	}
 	
-	anna_frame_return(ptr);
+	anna_frame_return(context, ptr);
 	memcpy(copy, ptr, ptr->function->frame_size);
 	/* 
 	   Save a pointer to the new heap allocated frame inside the
@@ -270,8 +271,6 @@ __attr_unused __cold static void anna_context_print_parent(anna_context_t *conte
 
 __cold void anna_vm_init()
 {
-    anna_context_static_ptr = &anna_context_static_data[0];
-
 }
 
 #ifdef ANNA_FULL_GC_ON_SHUTDOWN
@@ -360,7 +359,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     ;
     
     anna_context_t *context;  
-    size_t ss = 4096 * sizeof(anna_entry_t *);
+    size_t ss = 4096 * sizeof(anna_entry_t *) + sizeof(anna_context_t);
     size_t afs = (argc+1)*sizeof(anna_entry_t *) + sizeof(anna_activation_frame_t);
     context = malloc(ss);
     context->size = ss;
@@ -369,6 +368,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
     context->frame->dynamic_frame = 0;
     
     context->frame->static_frame = *(anna_activation_frame_t **)anna_entry_get_addr(entry,ANNA_MID_FUNCTION_WRAPPER_STACK);
+    context->static_frame_ptr = &context->static_frame_data[0];
     
     anna_function_t *fun = anna_alloc_function();
     fun->code = malloc(1);
@@ -1054,7 +1054,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
   ANNA_LAB_TRAMPOLENE:
     {
 	OP_ENTER(context);	
-	context->frame = anna_frame_to_heap(context->frame);
+	context->frame = anna_frame_to_heap(context);
 	anna_object_t *base = anna_context_pop_object_fast(context);
 	anna_object_t *tramp = anna_vm_trampoline(anna_function_unwrap(base), context);
 	anna_context_push_object(context, tramp);

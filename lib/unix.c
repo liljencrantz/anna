@@ -661,7 +661,6 @@ ANNA_VM_NATIVE(unix_i_io_getcwd, 2)
 
         if(param[1] == null_entry){return null_entry;}
 
-
     // Mangle input parameters
     unsigned char *native_param_buf = anna_buffer_get_payload(anna_as_obj(param[0]));
     int native_param_size = anna_as_int(param[1]);

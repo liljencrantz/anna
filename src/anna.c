@@ -8,6 +8,7 @@
 #include <sys/prctl.h>
 #include <time.h>
 #include <getopt.h>
+#include <pthread.h>
 
 #include "anna/common.h"
 #include "anna/util.h"
@@ -24,6 +25,7 @@
 #include "anna/alloc.h"
 #include "anna/slab.h"
 #include "anna/mid.h"
+#include "anna/lib/clib.h"
 
 #define PRCTL_MAX_LENGTH 15
 
@@ -300,6 +302,8 @@ int main(int argc, char **argv)
     anna_shutdown();
     
     debug(D_INFO,L"Program ended. Exiting.\n");    
-    return ANNA_STATUS_OK;
+    anna_mp_join();
+    
+//    pthread_exit(0);
 }
 

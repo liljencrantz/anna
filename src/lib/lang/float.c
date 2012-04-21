@@ -203,6 +203,8 @@ void anna_float_type_create()
 	}
     ;
 
+    anna_type_make_sendable(float_type);
+
     anna_type_document(
 	float_type,
 	L"The float Type represents a double precision floating point number.");

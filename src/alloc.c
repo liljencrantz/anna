@@ -620,7 +620,7 @@ void anna_alloc_gc_unblock()
     anna_alloc_gc_block_counter--;
 }
 
-static void anna_gc_main(void);
+static void *anna_gc_main(void *);
 
 static void anna_alloc_gc_start_work_thread()
 {
@@ -649,8 +649,18 @@ static void anna_alloc_gc_wait_for_work_thread()
     }
 }
 
+
+void anna_alloc_init_thread()
+{
+    pthread_setspecific(anna_alloc_key, calloc(sizeof(anna_alloc_t), 1));
+}
+
+
 void anna_gc_init()
 {
+    pthread_key_create(&anna_alloc_key, &free);
+    anna_alloc_init_thread();
+    
     //  anna_message(L"Init of GC.\n");
     pthread_create(
 	&anna_alloc_gc_thread,
@@ -661,6 +671,8 @@ void anna_gc_init()
 
 void anna_gc(anna_context_t *context)
 {
+    return;
+    
     anna_alloc_gc_context = context;
 
     pthread_mutex_lock(&anna_alloc_mutex_work);
@@ -869,7 +881,7 @@ static void anna_alloc_gc_free()
 //    anna_message(L"GC cycle performed, %d allocations freed, %d remain\n", freed, al_get_count(&anna_alloc));
 }
 
-static void anna_gc_main()
+static void *anna_gc_main(void *aux)
 {
     prctl(PR_SET_NAME,"anna/gc",0,0,0);
     
@@ -887,6 +899,7 @@ static void anna_gc_main()
 	anna_alloc_gc_start_work_thread();
 	anna_alloc_gc_free();
     }    
+    return 0;
 }
 
 void anna_gc_destroy(void)

@@ -99,7 +99,9 @@ static void anna_type_load()
 	    L"this", L"other"
 	}
     ;
-
+    
+    anna_type_make_sendable(type_type);
+    
     anna_type_document(
 	type_type,
 	L"The Type type represents an Anna Type. It is mostly used for object introspection.");

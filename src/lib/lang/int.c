@@ -3,20 +3,20 @@
 
 static void *anna_int_alloc(size_t sz)
 {
-    anna_alloc_count += sz;
+    anna_alloc_data()->count += sz;
     return malloc(sz);
 }
 
 static void *anna_int_realloc(void *ptr, size_t osz, size_t nsz)
 {
-    anna_alloc_count += nsz;
-    anna_alloc_count -= osz;
+    anna_alloc_data()->count += nsz;
+    anna_alloc_data()->count -= osz;
     return realloc(ptr, nsz);
 }
 
 static void anna_int_free(void *ptr, size_t sz)
 {
-    anna_alloc_count -= sz;
+    anna_alloc_data()->count -= sz;
     free(ptr);
 }
 
@@ -317,6 +317,8 @@ void anna_int_type_create()
     mpz_clear(mp);
     
     mid_t mmid;
+
+    anna_type_make_sendable(int_type);
 
     anna_type_document(
 	int_type,
