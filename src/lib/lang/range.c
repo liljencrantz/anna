@@ -117,39 +117,6 @@ ANNA_VM_NATIVE(anna_range_get_open_i, 1)
     return anna_range_get_open(r)?anna_from_int(1):null_entry;
 }
 
-ANNA_VM_NATIVE(anna_range_set_from_i, 2)
-{
-    anna_object_t *range = anna_as_obj_fast(param[0]);
-    if(param[1] == null_entry)
-    {
-	return null_entry;
-    }
-    anna_range_set_from(range, anna_as_int(param[1]));
-    return param[1];
-}
-
-ANNA_VM_NATIVE(anna_range_set_to_i, 2)
-{
-    anna_object_t *range = anna_as_obj_fast(param[0]);
-    if(anna_entry_null(param[1]))
-    {
-	anna_range_set_open(range, 1);
-    }
-    else
-    {
-	anna_range_set_open(range, 0);
-	anna_range_set_to(range, anna_as_int(param[1]));
-    }
-    return param[1];
-}
-
-ANNA_VM_NATIVE(anna_range_set_step_i, 2)
-{
-    anna_object_t *range = anna_as_obj_fast(param[0]);
-    anna_range_set_step(range, anna_as_int(param[1]));
-    return param[1];
-}
-
 ANNA_VM_NATIVE(anna_range_init, 4)
 {
     anna_object_t *range = anna_as_obj_fast(param[0]);
@@ -704,6 +671,8 @@ void anna_range_type_create()
 {
     mid_t mmid;
 
+    anna_type_make_sendable(range_type);
+
     anna_member_create(range_type, ANNA_MID_RANGE_FROM, 0, null_type);
     anna_member_create(
 	range_type,
@@ -790,19 +759,19 @@ void anna_range_type_create()
 	anna_mid_get(L"from"),
 	int_type,
 	&anna_range_get_from_i,
-	&anna_range_set_from_i, L"The first element in this Range.");
+	0, L"The first element in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"to"),
 	int_type,
 	&anna_range_get_to_i,
-	&anna_range_set_to_i, L"The last element in this Range.");
+	0, L"The last element in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"step"),
 	int_type,
 	&anna_range_get_step_i,
-	&anna_range_set_step_i, L"The distance between elements in this Range.");
+	0, L"The distance between elements in this Range.");
     anna_member_create_native_property(
 	range_type,
 	anna_mid_get(L"open?"),
