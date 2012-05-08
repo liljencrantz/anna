@@ -177,10 +177,10 @@ return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
 	  <pre class="anna-code">
 def main()  
 {
-    foo := 3;      // Declare foo as 3
-    print(foo);	   // Print 3
-    foo = 5;       // Assign 5 to foo
-    print(foo);    // Print 5
+    doggie := "woof";   // Declare dogie as a variable holding the value woof
+    print(doggie);	// Print woof
+    foo = "mooo";       // Assign mooo to doggie
+    print(foo);         // Print mooo
 }
 	  </pre>
 	  <p>
@@ -208,19 +208,19 @@ def main()
 	    called <code class="anna-code">as</code>. It is used like this:
 	  </p>
 	  <pre class="anna-code">
-foo := 3 as Object;  // Declare foo as a variable of type Object
+cat := "meow" as Object;  // Declare foo as a variable of type Object
 	  </pre>
 	  <p>
-	    The above code will declare the variable foo, which will be of
+	    The above code will declare the variable cat, which will be of
 	    type Object. Object is the root of the Anna type tree, which
 	    means that objects of any type can be cast to an Object. The
-	    initial value of the foo variable is the integer 3. 
+	    initial value of the foo variable is the string meow. 
 	  </p>
 	  <p>
 	    So what happens if we try to perform an invalid cast? Let's find out!
 	  </p>
 	  <pre class="anna-code">
-print(3 as String);  // Invalid cast, returns null
+print(1337 as String);  // Invalid cast, returns null
 	  </pre>
 	  <p>
 	    When we try to perform an invalid cast, the null value
@@ -364,20 +364,20 @@ lst3.push(5);
   intersection of all types specified. In this case, the type is the
   intersection of the Int, String and Float types.
 */
-weirdList := [1, "foo", 6.666]
+weirdList := [1, "hello", 6.666]
 
 /*
   Use template specialization if you want to manually specify the type
   of object to store in a list. This is a list of objects.
 */
-objList := «Object»[1, 3, 5, "foo", 6.666]
+objList := «Object»[1, 3, 5, "hello", 6.666]
 
 /* 
   The in operator checks if the specified value exists in the list. 
   It returns null if not, and the integer offset of the item if true.
   In this case, «3» will be printed.
 */
-print("foo" in objList);
+print("hello" in objList);
 	  </pre>
 	  <ul>
 	    <li>
