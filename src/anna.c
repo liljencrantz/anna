@@ -300,7 +300,6 @@ int main(int argc, char **argv)
     anna_main_run(module);
 
     anna_shutdown();
-    
     debug(D_INFO,L"Program ended. Exiting.\n");    
     anna_mp_join();
     

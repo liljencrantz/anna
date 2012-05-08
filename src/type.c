@@ -632,7 +632,7 @@ static void anna_type_extend(
     anna_type_t *type)
 {
     if( type->flags & ANNA_TYPE_PREPARED_EXTEND)
-	return 0;
+	return;
     type->flags |= ANNA_TYPE_PREPARED_EXTEND;
 
     array_list_t parents=AL_STATIC;

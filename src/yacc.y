@@ -250,7 +250,7 @@ static wchar_t *anna_yacc_string_unescape(anna_location_t *loc, char *str, size_
     str++;
     str[strlen(str)-1]=0;
     wchar_t *str2 = utf82wcs(str);
-    wchar_t *str3 = malloc(sizeof(wchar_t)*(wcslen(str2)+1));
+    wchar_t *str3 = calloc(sizeof(wchar_t),(wcslen(str2)+1));
     wchar_t *ptr_in;
     wchar_t *ptr_out = str3;
     int mode = ANNA_LIT_BASE;

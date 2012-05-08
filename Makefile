@@ -55,7 +55,7 @@ src/lib/parser/parser.o src/lib/ctime.o src/lib/debug/debug.o src/lib/mp/mp.o
 # All object files used by the main anna binary
 ANNA_OBJS := $(ANNA_LIB_OBJS) src/dtoa.o src/anna.o src/node/node.o	\
 src/macro.o src/stack.o autogen/lex.o autogen/yacc.o src/type.o		\
-src/function.o src/util/util.o src/module.o src/vm.o src/alloc.o	\
+src/function.o src/util/util.o src/module.o src/vm.o src/alloc/alloc.o	\
 src/compile.o src/wutil.o src/common.o src/attribute.o src/object.o	\
 src/error.o src/parse.o src/invoke.o
 

@@ -21,7 +21,7 @@ static inline wchar_t *anna_intern_wcsdup(wchar_t *in)
     if(sz > anna_intern_mem_avail)
     {
 	anna_intern_mem_avail = ANNA_INTERN_BLOCK_SZ + sz;
-	anna_intern_mem = malloc(anna_intern_mem_avail);
+	anna_intern_mem = calloc(1,anna_intern_mem_avail);
     }
     wcscpy(anna_intern_mem, in);
     anna_intern_mem_avail -= sz;

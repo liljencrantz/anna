@@ -54,69 +54,81 @@ void show_stackframe()
 
 wchar_t *str2wcs( const char *in )
 {
-	wchar_t *out;
-	size_t len = strlen(in);
-	
-	out = malloc( sizeof(wchar_t)*(len+1) );
-
-	if( !out )
-	{
-		DIE_MEM();
-	}
-
-	if(!str2wcs_internal( in, out ))
-	{
-	    free(out);
-	    return(0);
-	}
-	return out;
+    wchar_t *out;
+    if(!in)
+    {
+	return 0;
+    }
+    size_t len = mbstowcs(0,in,0)+1;
+    out = calloc(sizeof(wchar_t),(len));
+    
+    if( !out )
+    {
+	DIE_MEM();
+    }
+    if(mbstowcs(out, in, len) == (size_t)-1)
+    {
+	free(out);
+	return 0;
+    }
+    anna_message(L"", wcslen(out));
+    
+/*    
+    if(!str2wcs_internal( in, out ))
+    {
+	free(out);
+	return(0);
+	}*/
+    return out;
 	
 }
 
 wchar_t *str2wcs_internal( const char *in, wchar_t *out )
 {
-	size_t res=0;
-	int in_pos=0;
-	int out_pos = 0;
-	mbstate_t state;
-	size_t len;
-
-	VERIFY( in, 0 );
-	VERIFY( out, 0 );
-		
-	len = strlen(in);
-
-	memset( &state, 0, sizeof(state) );
-
-	while( in[in_pos] )
-	{
-		res = mbrtowc( &out[out_pos], &in[in_pos], len-in_pos, &state );
-
-		switch( res )
-		{
-				case (size_t)(-2):
-				case (size_t)(-1):
-				{
-				    return 0;
-				}
-				
-				case 0:
-				{
-					return out;
-				}
-		
-				default:
-				{
-					in_pos += res;
-					break;
-				}
-		}
-		out_pos++;
-				
-	}
-	out[out_pos] = 0;
+    size_t res=0;
+    int in_pos=0;
+    int out_pos = 0;
+    mbstate_t state;
+    size_t len;
+    
+    VERIFY( in, 0 );
+    VERIFY( out, 0 );
+    
+    len = strlen(in);
+    
+    memset( &state, 0, sizeof(state) );
+    
+    while( in[in_pos] )
+    {
+	res = mbrtowc( &out[out_pos], &in[in_pos], len-in_pos, &state );
 	
-	return out;	
+	switch( res )
+	{
+	    case (size_t)(-2):
+	    case (size_t)(-1):
+	    {
+		free(out);
+		return 0;
+	    }
+	    
+	    case 0:
+	    {
+		out[out_pos] = 0;
+		anna_message(L"", wcslen(out));
+		return out;
+	    }
+	    
+	    default:
+	    {
+		in_pos += res;
+		break;
+	    }
+	}
+	out_pos++;
+    }
+    out[out_pos] = 0;
+    anna_message(L"", wcslen(out));
+    return out;	
 }
 
 char *wcs2str( const wchar_t *in )

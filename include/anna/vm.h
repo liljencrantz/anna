@@ -23,23 +23,23 @@ anna_object_t *anna_char_create(wchar_t val);
    callbacks that allow you to call non-native code from inside of
    your native function.
  */
-#define ANNA_VM_NATIVE(name,param_count) \
+#define ANNA_VM_NATIVE(name, param_count) \
     static inline anna_entry_t *name ## _i(anna_entry_t **param);	\
-    static __hot void name(anna_context_t *stack) \
+    static __hot void name(anna_context_t *context) \
     {									\
-	anna_entry_t *res = name ## _i(stack->top-param_count);		\
-	anna_context_drop(stack, param_count+1);			\
-	anna_context_push_entry(stack, res);				\
+	anna_entry_t *res = name ## _i(context->top-param_count);		\
+	anna_context_drop(context, param_count+1);			\
+	anna_context_push_entry(context, res);				\
     }									\
     static inline anna_entry_t *name ## _i(anna_entry_t **param)
 
 #define ANNA_VM_MACRO(name)						\
     static inline anna_node_t *name ## _i(anna_node_call_t *node);	\
-    static __cold void name(anna_context_t *stack) \
+    static __cold void name(anna_context_t *context) \
     {									\
-	anna_node_t *res = name ## _i((anna_node_call_t *)anna_node_unwrap(anna_as_obj(*(stack->top-1)))); \
-	anna_context_drop(stack, 2);					\
-	anna_context_push_object(stack, anna_node_wrap(res));		\
+	anna_node_t *res = name ## _i((anna_node_call_t *)anna_node_unwrap(anna_as_obj(*(context->top-1)))); \
+	anna_context_drop(context, 2);					\
+	anna_context_push_object(context, anna_node_wrap(res));		\
     }									\
     static inline anna_node_t *name ## _i(anna_node_call_t *node)
 

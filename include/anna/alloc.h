@@ -10,12 +10,20 @@
 
 static pthread_key_t anna_alloc_key;
 extern array_list_t anna_alloc_todo;
+
 typedef struct
 {
     array_list_t alloc[ANNA_ALLOC_TYPE_COUNT];
     int count;
     int obj_count;
     int count_next_gc;
+    anna_context_t *context;
+    pthread_cond_t *cond;
+    pthread_mutex_t *mutex;
+    int sleep;
+    int idx;
+    /* This flag is true if this thread is/should be working, and 0 if it is awaiting GC */
+    int work;
 }
     anna_alloc_t;
 
@@ -29,27 +37,34 @@ static inline anna_alloc_t *anna_alloc_data()
   collector was run
  */
 extern int anna_alloc_tot;
+
+/**
+   Should we be running the GC
+ */
+extern int anna_alloc_flag_gc;
+
 /*
   The total amount of memory allocated after the last time the garbage
   collector was run
  */
-
 __cold void anna_gc_init(void);
 __hot void anna_gc(anna_context_t *stack);
 __cold void anna_gc_destroy(void);
 
-#define GC_FREQ (1024*1024*4)
+#define GC_FREQ (1024*1024*2)
 
 /*
   Perform thread specific initialization for setting up the meory allocator.
 
   This function must be called by every worker thread.
  */
+void anna_alloc_add_thread(void);
 void anna_alloc_init_thread(void);
+void anna_alloc_destroy_thread(void);
 
 static inline void anna_alloc_check_gc(anna_context_t *context)
 {
-    if(unlikely(anna_alloc_data()->count >= anna_alloc_data()->count_next_gc))
+    if(anna_alloc_flag_gc || (anna_alloc_data()->count >= anna_alloc_data()->count_next_gc))
     {
 	anna_gc(context);
     }
@@ -79,6 +94,16 @@ static inline void *anna_blob_payload(void *blob)
 {
     int *res = (int *)blob;
     return (void *)&res[2];
+}
+
+static inline void anna_blob_set(void *blob, void *value)
+{
+    *(void **)anna_blob_payload(blob) = value;
+}
+
+static inline void *anna_blob_get(void *blob)
+{
+    return *(void **)anna_blob_payload(blob);
 }
 
 static inline void *anna_blob_from_payload(void *blob)
@@ -173,6 +198,11 @@ __hot static inline void anna_alloc_mark_object(anna_object_t *obj)
 	CRASH;
     }
 #endif
+    if(obj->type < (anna_type_t *)0xff)
+    {
+	CRASH;
+    }
+    
     al_push(&anna_alloc_todo, obj);
 }
 
@@ -200,5 +230,8 @@ __hot void anna_alloc_gc_unblock(void);
    leaks will result.
  */
 __cold void anna_alloc_mark_permanent(void *alloc);
+
+void anna_alloc_unpause_worker(void);
+void anna_alloc_pause_worker(anna_context_t *context, pthread_cond_t *cond, pthread_mutex_t *mutex);
 
 #endif
