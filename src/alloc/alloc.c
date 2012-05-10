@@ -199,15 +199,11 @@ void anna_alloc_pause_worker(anna_context_t *context, pthread_cond_t *cond, pthr
     pthread_mutex_lock(&anna_alloc_mutex_gc);
     if(anna_alloc_flag_gc)
     {
-	// What doies this do?
-	pthread_cond_signal(cond);
-	pthread_mutex_unlock(mutex);
-	pthread_mutex_unlock(&anna_alloc_mutex_gc);    
+	pthread_mutex_unlock(&anna_alloc_mutex_gc); 
 //	anna_message(L"Paused thread %d starting GC\n", anna_alloc_data()->idx);
 	anna_gc(context);
 //	anna_message(L"Paused thread %d going back to waiting\n", anna_alloc_data()->idx);
 
-	pthread_mutex_lock(mutex);
 	pthread_mutex_lock(&anna_alloc_mutex_gc);
 	anna_alloc_data()->context = context;
 	anna_alloc_data()->cond = cond;
@@ -223,8 +219,6 @@ void anna_alloc_pause_worker(anna_context_t *context, pthread_cond_t *cond, pthr
 	anna_alloc_data()->sleep = 1;
 	pthread_mutex_unlock(&anna_alloc_mutex_gc);
     }
-    
-
 }
 
 void anna_alloc_unpause_worker()
@@ -248,19 +242,22 @@ void anna_gc(anna_context_t *context)
     pthread_mutex_lock(&anna_alloc_mutex_gc);
     
     anna_alloc_data()->work = 0;
-    
+
+    /*
+      Find all threads that are waiting for something non-gc related and wake them up.
+    */
     for(i=0; i<al_get_count(&anna_alloc_alloc); i++)
     {
 	anna_alloc_t *alloc = (anna_alloc_t *)al_get(&anna_alloc_alloc, i);
-//	alloc->work = 0;
 	if(alloc->sleep)
 	{
-	    alloc->sleep = 0;
 //	    anna_message(L"Wake up thread %d!\n", alloc->idx);
 	    pthread_mutex_unlock(&anna_alloc_mutex_gc);
-	    pthread_mutex_lock(alloc->mutex);
-	    pthread_cond_signal(alloc->cond);
-	    pthread_mutex_unlock(alloc->mutex);	    
+	    if(alloc->sleep)
+	    {
+		alloc->sleep = 0;
+		pthread_cond_signal(alloc->cond);
+	    }
 	    pthread_mutex_lock(&anna_alloc_mutex_gc);
 //	    anna_message(L"Thread %d sent signal!\n", alloc->idx);    
 	}
@@ -275,6 +272,10 @@ void anna_gc(anna_context_t *context)
 
     anna_alloc_flag_gc = 1;
     al_push(&anna_alloc_gc_context, context);
+
+    /*
+      If we're the last work thread to report in, wake up the GC thread
+    */
     if(do_signal)
     {
 	if(pthread_cond_signal(&anna_alloc_cond_gc))
@@ -284,7 +285,10 @@ void anna_gc(anna_context_t *context)
 	}	
 //	anna_message(L"Worker %d: Send wake up signal to GC thread\n", anna_alloc_data()->idx);
     }
-    
+
+    /*
+      Wait for GC thread to finish
+    */
     while(1)
     {
 	if(anna_alloc_data()->work)

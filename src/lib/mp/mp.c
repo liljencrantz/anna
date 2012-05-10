@@ -148,7 +148,10 @@ static void anna_mp_channel_read(anna_context_t *context)
 //	anna_message(L"Channel::read start\n");
 	while(!*data)
 	{
+	    pthread_mutex_unlock(&cond->mutex);
 	    anna_alloc_pause_worker(context, &cond->cond, &cond->mutex);
+	    pthread_mutex_lock(&cond->mutex);
+
 	    if(*data)
 	    {
 		break;
@@ -190,11 +193,14 @@ static void anna_mp_channel_write(anna_context_t *context)
 //	anna_message(L"Channel::write start\n");
 	while(*data)
 	{
+	    pthread_mutex_unlock(&cond->mutex);
 	    anna_alloc_pause_worker(context, &cond->cond, &cond->mutex);
+	    pthread_mutex_lock(&cond->mutex);
 	    if(!*data)
 	    {
 		break;
 	    }
+
 //	    anna_message(L"Pause thread %d in Channel::write\n", anna_alloc_data()->idx);
 	    pthread_cond_wait(&cond->cond, &cond->mutex);	
 //	    anna_message(L"Paused thread %d awoken in Channel::write\n", anna_alloc_data()->idx);
