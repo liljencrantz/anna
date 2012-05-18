@@ -967,7 +967,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
     def String nameToStr(Node name, Node attr)
     {
         use(parser);
-        val := annaUtil.findAttribute(attr as Call, "name")[0] or name;
+        val := annaUtil.findAttribute(attr as Call, "define")[0] or annaUtil.findAttribute(attr as Call, "name")[0] or name;
         switch(val)
         {
             case(lit as StringLiteral)
@@ -1190,17 +1190,35 @@ ANNA_VM_NATIVE(%(initName), 1)
                             {
                                 case("Int")
                                 {
-			    nativeName := nameToStr(decl[0], decl[3]);
+				    nativeName := nameToStr(decl[0], decl[3]);
+				    
+				    define? := annaUtil.findAttribute(attr as Call, "define")[0];
 
-			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));
-" % 
-				[
-				    "name": name,
-				    "value": nativeName,
-				    "doc": extractDoc(attr),
-				];
+				    params :=
+					[
+					    "name": name,
+					    "value": nativeName,
+					    "doc": extractDoc(attr),
+					    ];
+				    
+				    definition := "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));
+" % params;
+				    if(define?)
+				    {
+					params["definition"] = definition;
+					load ~= "#ifdef %(value)
+%(definition)#else
+    anna_module_const(stack, L\"%(name)\", int_type, null_entry, %(doc));
+#endif
+
+" % params;
+				    }
+				    else
+				    {
+					load ~= definition;
+				    }
                                 }
-
+				
                                 case("Double")
                                 {
 			            nativeName := nameToStr(decl[0], decl[3]);

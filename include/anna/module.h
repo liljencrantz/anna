@@ -12,6 +12,14 @@ anna_object_t *anna_module_load(wchar_t *module_name);
 */
 anna_object_t *anna_module_create(struct anna_node *node);
 
+void anna_module_const(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    anna_type_t *type,
+    anna_entry_t *value,
+    wchar_t *documentation
+    );
+
 void anna_module_const_int(
     anna_stack_template_t *stack,
     wchar_t *name,

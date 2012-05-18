@@ -59,55 +59,55 @@ io
     openMode
     {
 	attribute(doc("Flags determining the mode for unix.io.open"));
-	const Int readOnly (name(O_RDONLY), doc("Open file in read-only mode."));
-	const Int writeOnly (name(O_WRONLY), doc("Open file in write-only mode."));
-	const Int readWrite (name(O_RDWR), doc("Open file in read-write mode."));
+	const Int readOnly (define(O_RDONLY), doc("Open file in read-only mode."));
+	const Int writeOnly (define(O_WRONLY), doc("Open file in write-only mode."));
+	const Int readWrite (define(O_RDWR), doc("Open file in read-write mode."));
 
-	const Int append (name(O_APPEND), doc("The file is opened in append mode."));
-	const Int async (name(O_ASYNC), doc("Enable signal-driven I/O."));
-	const Int create (name(O_CREAT), doc("If the file does not exist it will be created."));
-	const Int closeOnExec (name(O_CLOEXEC), doc("Enable the close-on-exec flag for the new file descriptor."));
-	const Int direct (name(O_DIRECT), doc("Try to minimize cache effects of the I/O to and from this file."));
-	const Int directory (name(O_DIRECTORY), doc("If pathname is not a directory, cause the open to fail."));
-	const Int exclusive (name(O_EXCL), doc("Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail."));
-	const Int largeFile (name(O_LARGEFILE), doc("(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened."));
-	const Int noAccessTime (name(O_NOATIME), doc("Do not update the file last access time (st_atime in the inode) when the file is read()."));
-	const Int noControllingTTY (name(O_NOCTTY), doc("If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one."));
-	const Int noFollow (name(O_NOFOLLOW), doc("If pathname is a symbolic link, then the open fails."));
-	const Int nonBlock (name(O_NONBLOCK), doc("When possible, the file is opened in nonblocking mode."));
-	const Int synchronous (name(O_SYNC), doc("The file is opened for synchronous I/O."));
-	const Int truncate (name(O_TRUNC), doc("f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0."));
+	const Int append (define(O_APPEND), doc("The file is opened in append mode."));
+	const Int async (define(O_ASYNC), doc("Enable signal-driven I/O."));
+	const Int create (define(O_CREAT), doc("If the file does not exist it will be created."));
+	const Int closeOnExec (define(O_CLOEXEC), doc("Enable the close-on-exec flag for the new file descriptor."));
+	const Int direct (define(O_DIRECT), doc("Try to minimize cache effects of the I/O to and from this file."));
+	const Int directory (define(O_DIRECTORY), doc("If pathname is not a directory, cause the open to fail."));
+	const Int exclusive (define(O_EXCL), doc("Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail."));
+	const Int largeFile (define(O_LARGEFILE), doc("(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened."));
+	const Int noAccessTime (define(O_NOATIME), doc("Do not update the file last access time (st_atime in the inode) when the file is read()."));
+	const Int noControllingTTY (define(O_NOCTTY), doc("If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one."));
+	const Int noFollow (define(O_NOFOLLOW), doc("If pathname is a symbolic link, then the open fails."));
+	const Int nonBlock (define(O_NONBLOCK), doc("When possible, the file is opened in nonblocking mode."));
+	const Int synchronous (define(O_SYNC), doc("The file is opened for synchronous I/O."));
+	const Int truncate (define(O_TRUNC), doc("f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0."));
     }
 
     statMode
     {
 	attribute(doc("Flags used for identifying file status together with a unix.io.Stat object."));
-	const Int regular (name(S_IFREG), doc("Regular file"));
-	const Int socket (name(S_IFSOCK), doc("Socket"));
-	const Int link (name(S_IFLNK), doc("Symbolic link."));
-	const Int block (name(S_IFBLK), doc("Block device."));
-	const Int directory (name(S_IFDIR), doc("Directory."));
-	const Int character (name(S_IFCHR), doc("Character device."));
-	const Int fifo (name(S_IFIFO), doc("FIFO."));
+	const Int regular (define(S_IFREG), doc("Regular file"));
+	const Int socket (define(S_IFSOCK), doc("Socket"));
+	const Int link (define(S_IFLNK), doc("Symbolic link."));
+	const Int block (define(S_IFBLK), doc("Block device."));
+	const Int directory (define(S_IFDIR), doc("Directory."));
+	const Int character (define(S_IFCHR), doc("Character device."));
+	const Int fifo (define(S_IFIFO), doc("FIFO."));
     
-	const Int suid (name(S_ISUID), doc("Set UID bit."));
-	const Int sgid (name(S_ISGID), doc("Set-group-ID bit."));
-	const Int sticky (name(S_ISVTX), doc("Sticky bit."));
+	const Int suid (define(S_ISUID), doc("Set UID bit."));
+	const Int sgid (define(S_ISGID), doc("Set-group-ID bit."));
+	const Int sticky (define(S_ISVTX), doc("Sticky bit."));
     
-	const Int userAll (name(S_IRWXU), doc("Mask for all file owner permissions."));
-	const Int userRead (name(S_IRUSR), doc("File owner read permission."));
-	const Int userwrite (name(S_IWUSR), doc("File owner write permission."));
-	const Int userExecute (name(S_IXUSR), doc("File owner execute permission."));
+	const Int userAll (define(S_IRWXU), doc("Mask for all file owner permissions."));
+	const Int userRead (define(S_IRUSR), doc("File owner read permission."));
+	const Int userwrite (define(S_IWUSR), doc("File owner write permission."));
+	const Int userExecute (define(S_IXUSR), doc("File owner execute permission."));
     
-	const Int groupAll (name(S_IRWXG), doc("Mask for all group permissions."));
-	const Int groupRead (name(S_IRGRP), doc("Group has read permission."));
-	const Int groupwrite (name(S_IWGRP), doc("Group has write permission."));
-	const Int groupExecute (name(S_IXGRP), doc("Group has execute permission."));
+	const Int groupAll (define(S_IRWXG), doc("Mask for all group permissions."));
+	const Int groupRead (define(S_IRGRP), doc("Group has read permission."));
+	const Int groupwrite (define(S_IWGRP), doc("Group has write permission."));
+	const Int groupExecute (define(S_IXGRP), doc("Group has execute permission."));
     
-	const Int otherAll (name(S_IRWXO), doc("Mask for permissions for others (not in group)."));
-	const Int otherRead (name(S_IROTH), doc("Others have read permission."));
-	const Int otherwrite (name(S_IWOTH), doc("Others have write permission."));
-	const Int otherExecute (name(S_IXOTH), doc("Others have execute permission."));
+	const Int otherAll (define(S_IRWXO), doc("Mask for permissions for others (not in group)."));
+	const Int otherRead (define(S_IROTH), doc("Others have read permission."));
+	const Int otherwrite (define(S_IWOTH), doc("Others have write permission."));
+	const Int otherExecute (define(S_IXOTH), doc("Others have execute permission."));
     }
 
     def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor.", "Equivalent to the C open function."));
@@ -168,9 +168,9 @@ io
     {
 	attribute(doc("Different seek modes for use with the unix.io.seek function"));
 
-	const Int set (name(SEEK_SET), doc("Seek to absolute file offset."));
-	const Int cur (name(SEEK_CUR), doc("Seek to file offset relative current position."));
-	const Int end (name(SEEK_END), doc("Seek to file offset relative to end of file."));
+	const Int set (define(SEEK_SET), doc("Seek to absolute file offset."));
+	const Int cur (define(SEEK_CUR), doc("Seek to file offset relative current position."));
+	const Int end (define(SEEK_END), doc("Seek to file offset relative to end of file."));
     }
 
     def Int fcntlVoid(Int fd, Int cmd) (name(fcntl), alias(fcntl), doc("Manipulate file descriptor."));
@@ -258,44 +258,44 @@ proc
     {
 	attribute(doc("All known signals"));
 
-	const Int hup (name(SIGHUP), doc("The HUP signal"));
-	const Int int (name(SIGINT), doc("The INT signal"));
-	const Int quit (name(SIGQUIT), doc("The QUIT signal"));
-	const Int ill (name(SIGILL), doc("The ILL signal"));
-	const Int abrt (name(SIGABRT), doc("The ABRT signal"));
-	const Int fpe (name(SIGFPE), doc("The FPE signal"));
-	const Int kill (name(SIGKILL), doc("The KILL signal"));
-	const Int segv (name(SIGSEGV), doc("The SEGV signal"));
-	const Int pipe (name(SIGPIPE), doc("The PIPE signal"));
-	const Int alrm (name(SIGALRM), doc("The ALRM signal"));
-	const Int term (name(SIGTERM), doc("The TERM signal"));
-	const Int usr1 (name(SIGUSR1), doc("The USR1 signal"));
-	const Int usr2 (name(SIGUSR2), doc("The USR2 signal"));
-	const Int chld (name(SIGCHLD), doc("The CHLD signal"));
-	const Int cont (name(SIGCONT), doc("The CONT signal"));
-	const Int stop (name(SIGSTOP), doc("The STOP signal"));
-	const Int tstp (name(SIGTSTP), doc("The TSTP signal"));
-	const Int ttin (name(SIGTTIN), doc("The TTIN signal"));
-	const Int ttou (name(SIGTTOU), doc("The TTOU signal"));
-	const Int bus (name(SIGBUS), doc("The BUS signal"));
-	const Int poll (name(SIGPOLL), doc("The POLL signal"));
-	const Int prof (name(SIGPROF), doc("The PROF signal"));
-	const Int sys (name(SIGSYS), doc("The SYS signal"));
-	const Int trap (name(SIGTRAP), doc("The TRAP signal"));
-	const Int urg (name(SIGURG), doc("The URG signal"));
-	const Int vtalrm (name(SIGVTALRM), doc("The VTALRM signal"));
-	const Int xcpu (name(SIGXCPU), doc("The XCPU signal"));
-	const Int xfsz (name(SIGXFSZ), doc("The XFSZ signal"));
-	const Int iot (name(SIGIOT), doc("The IOT signal"));
-//	const Int emt (name(SIGEMT), doc("The EMT signal"));
-	const Int stkflt (name(SIGSTKFLT), doc("The STKFLT signal"));
-	const Int io (name(SIGIO), doc("The IO signal"));
-	const Int cld (name(SIGCLD), doc("The CLD signal"));
-	const Int pwr (name(SIGPWR), doc("The PWR signal"));
-//	const Int info (name(SIGINFO), doc("The INFO signal"));
-//	const Int lost (name(SIGLOST), doc("The LOST signal"));
-	const Int winch (name(SIGWINCH), doc("The WINCH signal"));
-	const Int unused (name(SIGUNUSED), doc("The UNUSED signal"));
+	const Int hup (define(SIGHUP), doc("The HUP signal"));
+	const Int int (define(SIGINT), doc("The INT signal"));
+	const Int quit (define(SIGQUIT), doc("The QUIT signal"));
+	const Int ill (define(SIGILL), doc("The ILL signal"));
+	const Int abrt (define(SIGABRT), doc("The ABRT signal"));
+	const Int fpe (define(SIGFPE), doc("The FPE signal"));
+	const Int kill (define(SIGKILL), doc("The KILL signal"));
+	const Int segv (define(SIGSEGV), doc("The SEGV signal"));
+	const Int pipe (define(SIGPIPE), doc("The PIPE signal"));
+	const Int alrm (define(SIGALRM), doc("The ALRM signal"));
+	const Int term (define(SIGTERM), doc("The TERM signal"));
+	const Int usr1 (define(SIGUSR1), doc("The USR1 signal"));
+	const Int usr2 (define(SIGUSR2), doc("The USR2 signal"));
+	const Int chld (define(SIGCHLD), doc("The CHLD signal"));
+	const Int cont (define(SIGCONT), doc("The CONT signal"));
+	const Int stop (define(SIGSTOP), doc("The STOP signal"));
+	const Int tstp (define(SIGTSTP), doc("The TSTP signal"));
+	const Int ttin (define(SIGTTIN), doc("The TTIN signal"));
+	const Int ttou (define(SIGTTOU), doc("The TTOU signal"));
+	const Int bus (define(SIGBUS), doc("The BUS signal"));
+	const Int poll (define(SIGPOLL), doc("The POLL signal"));
+	const Int prof (define(SIGPROF), doc("The PROF signal"));
+	const Int sys (define(SIGSYS), doc("The SYS signal"));
+	const Int trap (define(SIGTRAP), doc("The TRAP signal"));
+	const Int urg (define(SIGURG), doc("The URG signal"));
+	const Int vtalrm (define(SIGVTALRM), doc("The VTALRM signal"));
+	const Int xcpu (define(SIGXCPU), doc("The XCPU signal"));
+	const Int xfsz (define(SIGXFSZ), doc("The XFSZ signal"));
+	const Int iot (define(SIGIOT), doc("The IOT signal"));
+	const Int emt (define(SIGEMT), doc("The EMT signal"));
+	const Int stkflt (define(SIGSTKFLT), doc("The STKFLT signal"));
+	const Int io (define(SIGIO), doc("The IO signal"));
+	const Int cld (define(SIGCLD), doc("The CLD signal"));
+	const Int pwr (define(SIGPWR), doc("The PWR signal"));
+	const Int info (define(SIGINFO), doc("The INFO signal"));
+	const Int lost (define(SIGLOST), doc("The LOST signal"));
+	const Int winch (define(SIGWINCH), doc("The WINCH signal"));
+	const Int unused (define(SIGUNUSED), doc("The UNUSED signal"));
     }
 
     def Int exec(String filename, List«String» argv, List«String» envp) (name(execve), doc("Execute the specified program."));
@@ -356,17 +356,17 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
     {
 	attribute(doc("Flags determining the mode for unix.proc.signalfd"));
 
-	const Int nonBlock (name(SFD_NONBLOCK), doc("The resulting file descriptor is non-blocking"));
-	const Int closeOnExec (name(SFD_CLOEXEC, doc("Close the resulting file descriptor on exec")));
+	const Int nonBlock (define(SFD_NONBLOCK), doc("The resulting file descriptor is non-blocking"));
+	const Int closeOnExec (define(SFD_CLOEXEC, doc("Close the resulting file descriptor on exec")));
     }
    
     sigprocmaskFlag
     {
 	attribute(doc("Flags determining the mode for unix.iosigprocmask"));
 
-	const Int block (name(SIG_BLOCK), doc("Block all the specified signals in addition to signals currently blocked."));
-	const Int unblock (name(SIG_UNBLOCK), doc("Stop blocking the specified signals."));
-	const Int setMask (name(SIG_SETMASK), doc("Set the exact new signal block mask."));
+	const Int block (define(SIG_BLOCK), doc("Block all the specified signals in addition to signals currently blocked."));
+	const Int unblock (define(SIG_UNBLOCK), doc("Stop blocking the specified signals."));
+	const Int setMask (define(SIG_SETMASK), doc("Set the exact new signal block mask."));
     }
     
     def Int sigprocmask(Int how, SignalSet set (nullable), SignalSet old (nullable)) (doc("Examine and change what signals are currently blocked by this process."));
@@ -410,21 +410,21 @@ rLimit
     rLimitMode
     {
         attribute(doc("The different limits that can be queried with getRLimit and stRLimit."));
-	const Int as (name(RLIMIT_AS), doc("The AS limit"));
-	const Int core (name(RLIMIT_CORE), doc("The CORE limit"));
-	const Int cpu (name(RLIMIT_CPU), doc("The CPU limit"));
-	const Int data (name(RLIMIT_DATA), doc("The DATA limit"));
-	const Int fsize (name(RLIMIT_FSIZE), doc("The FSIZE limit"));
-	const Int memlock (name(RLIMIT_MEMLOCK), doc("The MEMLOCK limit"));
-	const Int msgqueue (name(RLIMIT_MSGQUEUE), doc("The MSGQUEUE limit"));
-	const Int nice (name(RLIMIT_NICE), doc("The NICE limit"));
-	const Int nofile (name(RLIMIT_NOFILE), doc("The NOFILE limit"));
-	const Int nproc (name(RLIMIT_NPROC), doc("The NPROC limit"));
-	const Int rss (name(RLIMIT_RSS), doc("The RSS limit"));
-	const Int rtprio (name(RLIMIT_RTPRIO), doc("The RTPRIO limit"));
-//	const Int rttime (name(RLIMIT_RTTIME), doc("The RTTIME limit"));
-	const Int sigpending (name(RLIMIT_SIGPENDING),doc("The SIGPENDING limit"));
-	const Int stack (name(RLIMIT_STACK), doc("The STACK limit"));
+	const Int as (define(RLIMIT_AS), doc("The AS limit"));
+	const Int core (define(RLIMIT_CORE), doc("The CORE limit"));
+	const Int cpu (define(RLIMIT_CPU), doc("The CPU limit"));
+	const Int data (define(RLIMIT_DATA), doc("The DATA limit"));
+	const Int fsize (define(RLIMIT_FSIZE), doc("The FSIZE limit"));
+	const Int memlock (define(RLIMIT_MEMLOCK), doc("The MEMLOCK limit"));
+	const Int msgqueue (define(RLIMIT_MSGQUEUE), doc("The MSGQUEUE limit"));
+	const Int nice (define(RLIMIT_NICE), doc("The NICE limit"));
+	const Int nofile (define(RLIMIT_NOFILE), doc("The NOFILE limit"));
+	const Int nproc (define(RLIMIT_NPROC), doc("The NPROC limit"));
+	const Int rss (define(RLIMIT_RSS), doc("The RSS limit"));
+	const Int rtprio (define(RLIMIT_RTPRIO), doc("The RTPRIO limit"));
+	const Int rttime (define(RLIMIT_RTTIME), doc("The RTTIME limit"));
+	const Int sigpending (define(RLIMIT_SIGPENDING),doc("The SIGPENDING limit"));
+	const Int stack (define(RLIMIT_STACK), doc("The STACK limit"));
     }
 
     cStruct RLimit (name(rlimit), doc("A structure representing the current and maximum value of a system resource usage limit."))
@@ -471,13 +471,13 @@ locale
     {
 	attribute(doc("Different locale parts."));
 
-	const Int all (name(LC_ALL), doc("All of the locale."));
-	const Int collate (name(LC_COLLATE), doc("Regular expression matching (it determines the meaning of range expressions and equivalence classes) and string collation."));
-	const Int cType (name(LC_CTYPE), doc("Regular expression matching, character classification, conversion, case-sensitive comparison, and wide character functions."));
-	const Int messages (name(LC_MESSAGES), doc("Localizable natural-language messages."));
-	const Int monetary (name(LC_MONETARY), doc("Monetary formating."));
-	const Int numeric (name(LC_NUMERIC), doc("Numeric formating, such as decimal point and thousands separator."));
-	const Int time (name(LC_TIME), doc("Date and time formating."));
+	const Int all (define(LC_ALL), doc("All of the locale."));
+	const Int collate (define(LC_COLLATE), doc("Regular expression matching (it determines the meaning of range expressions and equivalence classes) and string collation."));
+	const Int cType (define(LC_CTYPE), doc("Regular expression matching, character classification, conversion, case-sensitive comparison, and wide character functions."));
+	const Int messages (define(LC_MESSAGES), doc("Localizable natural-language messages."));
+	const Int monetary (define(LC_MONETARY), doc("Monetary formating."));
+	const Int numeric (define(LC_NUMERIC), doc("Numeric formating, such as decimal point and thousands separator."));
+	const Int time (define(LC_TIME), doc("Date and time formating."));
     }
     def String setLocale(Int cateory, String locale (nullable)) (name(setlocale), doc("Set the specified local category to the specified value"));
     
@@ -534,16 +534,16 @@ term
     flag
     {
         attribute(doc("The different modes of a Termios structure."));
-	const Int canonical (name(ICANON), doc("Read one character at a time."));
-	const Int echo (name(ECHO), doc("Echo characters to the screen."));
+	const Int canonical (define(ICANON), doc("Read one character at a time."));
+	const Int echo (define(ECHO), doc("Echo characters to the screen."));
     }
     
     action
     {
         attribute(doc("The different action modes used by unix.term.setAttr."));
-	const Int now (name(TCSANOW), doc("Take the specified action now,"));
-	const Int drain (name(TCSADRAIN), doc("Empty output buffer and apply specified action."));
-	const Int flush (name(TCSAFLUSH), doc("Apply specified action once outout in buffer has been written."));
+	const Int now (define(TCSANOW), doc("Take the specified action now,"));
+	const Int drain (define(TCSADRAIN), doc("Empty output buffer and apply specified action."));
+	const Int flush (define(TCSAFLUSH), doc("Apply specified action once outout in buffer has been written."));
     }
 
     cStruct Termios (name(termios), doc("A structure representing the state of a terminal."))
@@ -568,124 +568,124 @@ error
     status
     {
 	attribute(doc("All known error statuses"));
-	const Int tooBig (name(E2BIG), doc("Argument list too long."));
-	const Int access (name(EACCES), doc("Permission denied."));
-	const Int addressInUse (name(EADDRINUSE), doc("Address already in use."));
-	const Int addressNotAvailable (name(EADDRNOTAVAIL), doc("Address not available."));
-	const Int addressFamilyNotSupported (name(EAFNOSUPPORT), doc("Address family not supported."));
-	const Int again (name(EAGAIN), doc("Resource temporarily unavailable (may be the same value as wouldBlock)."));
-	const Int alreadyInProgress (name(EALREADY), doc("Connection already in progress."));
-	const Int badExchange (name(EBADE), doc("Invalid exchange."));
-	const Int badFileDescriptor (name(EBADF), doc("Bad file descriptor."));
-	const Int badFileDescriptorState (name(EBADFD), doc("File descriptor in bad state."));    
-	const Int badRequest (name(EBADR), doc("Invalid request descriptor."));
-	const Int badRequestCode (name(EBADRQC), doc("Invalid request code."));
-	const Int badSlot (name(EBADSLT), doc("Invalid slot."));
-	const Int deviceBusy (name(EBUSY), doc("Device or resource busy."));
-	const Int canceled (name(ECANCELED), doc("Operation canceled."));
-	const Int noChild (name(ECHILD), doc("No child processes."));
-	const Int channelRange (name(ECHRNG), doc("Channel number out of range."));
-	const Int communicationError (name(ECOMM), doc("Communication error on send."));
-	const Int connectionAborted (name(ECONNABORTED), doc("Connection aborted."));
-	const Int connectionRefused (name(ECONNREFUSED), doc("Connection refused."));
-	const Int connectionReset (name(ECONNRESET), doc("Connection reset."));
-	const Int deadlock (name(EDEADLK), doc("Resource deadlock avoided."));
-	const Int destinationRequired (name(EDESTADDRREQ), doc("Destination address required."));
-	const Int domain (name(EDOM), doc("Mathematics argument out of domain of function."));
-	const Int diskQuota (name(EDQUOT), doc("Disk quota exceeded."));
-	const Int exist (name(EEXIST), doc("File exists."));
-	const Int fault (name(EFAULT), doc("Bad address."));
-	const Int fileTooBig (name(EFBIG), doc("File too large."));
-	const Int hostDown (name(EHOSTDOWN), doc("Host is down."));
-	const Int hostUnreachable (name(EHOSTUNREACH), doc("Host is unreachable."));
-	const Int identifierRemoved (name(EIDRM), doc("Identifier removed."));
-	const Int illegalByteSequence (name(EILSEQ), doc("Illegal byte sequence."));
-	const Int inProgress (name(EINPROGRESS), doc("Operation in progress."));
-	const Int interrupted (name(EINTR), doc("Interrupted function call."));
-	const Int invalid (name(EINVAL), doc("Invalid argument."));
-	const Int ioError (name(EIO), doc("Input/output error."));
-	const Int connected? (name(EISCONN), doc("Socket is connected."));
-	const Int directory? (name(EISDIR), doc("Is a directory."));
-	const Int named? (name(EISNAM), doc("Is a named type file."));
-	const Int keyExpired (name(EKEYEXPIRED), doc("Key has expired."));
-	const Int keyRejected (name(EKEYREJECTED), doc("Key was rejected by service."));
-	const Int keyRevoked (name(EKEYREVOKED), doc("Key has been revoked."));
-	const Int level2Halted (name(EL2HLT), doc("Level 2 halted."));
-	const Int level2NotSynced (name(EL2NSYNC), doc("Level 2 not synchronized."));
-	const Int level3Halted (name(EL3HLT), doc("Level 3 halted."));
-	const Int level3Reset (name(EL3RST), doc("Level 3 reset."));
-	const Int libraryAccess (name(ELIBACC), doc("Cannot access a needed shared library."));
-	const Int libraryBad (name(ELIBBAD), doc("Accessing a corrupted shared library."));
-	const Int libraryMax (name(ELIBMAX), doc("Attempting to link in too many shared libraries."));
-	const Int libraryCorrupt (name(ELIBSCN), doc("lib section in a.out corrupted."));
-	const Int libraryExec (name(ELIBEXEC), doc("Cannot exec a shared library directly."));
-	const Int loop (name(ELOOP), doc("Too many levels of symbolic links"));
-	const Int mediumType (name(EMEDIUMTYPE), doc("Wrong medium type."));
-	const Int maxFile (name(EMFILE), doc("Too many open files."));
-	const Int maxLink (name(EMLINK), doc("Too many links."));
-	const Int messageSize (name(EMSGSIZE), doc("Message too long."));
-	const Int multihop (name(EMULTIHOP), doc("Multihop attempted."));
-	const Int nameTooLong (name(ENAMETOOLONG), doc("Filename too long."));
-	const Int netDown (name(ENETDOWN), doc("Network is down."));
-	const Int netReset (name(ENETRESET), doc("Connection aborted by network."));
-	const Int netUnreachable (name(ENETUNREACH), doc("Network unreachable."));
-	const Int maxFileInSystem (name(ENFILE), doc("Too many open files in system."));
-	const Int noBufferSpace (name(ENOBUFS), doc("No buffer space available."));
-	const Int noData (name(ENODATA), doc("No message is available on the STREAM head read queue."));
-	const Int noDevice (name(ENODEV), doc("No such device."));
-	const Int noEntry (name(ENOENT), doc("No such file or directory."));
-	const Int noExec (name(ENOEXEC), doc("Exec format error."));
-	const Int noKey (name(ENOKEY), doc("Required key not available."));
-	const Int noLock (name(ENOLCK), doc("No locks available."));
-	const Int noLink (name(ENOLINK), doc("Link has been severed."));
-	const Int noMedium (name(ENOMEDIUM), doc("No medium found."));
-	const Int noMemory (name(ENOMEM), doc("Not enough space."));
-	const Int noMessage (name(ENOMSG), doc("No message of the desired type."));
-	const Int noNet (name(ENONET), doc("Machine is not on the network."));
-	const Int noPackage (name(ENOPKG), doc("Package not installed."));
-	const Int noProtocol (name(ENOPROTOOPT), doc("Protocol not available."));
-	const Int noSpace (name(ENOSPC), doc("No space left on device."));
-	const Int noStream (name(ENOSR), doc("No STREAM resources."));
-	const Int notStream (name(ENOSTR), doc("Not a STREAM."));
-	const Int notImplemented (name(ENOSYS), doc("Function not implemented."));
-	const Int notBlock (name(ENOTBLK), doc("Block device required."));
-	const Int notConnected (name(ENOTCONN), doc("The socket is not connected."));
-	const Int notDirectory (name(ENOTDIR), doc("Not a directory."));
-	const Int notEmpty (name(ENOTEMPTY), doc("Directory not empty."));
-	const Int notSocket (name(ENOTSOCK), doc("Not a socket."));
-	const Int notSupported (name(ENOTSUP), doc("Operation not supported."));
-	const Int notTty (name(ENOTTY), doc("Inappropriate I/O control operation."));
-	const Int notUnique (name(ENOTUNIQ), doc("Name not unique on network."));
-	const Int noDeviceOrAddress (name(ENXIO), doc("No such device or address."));
-	const Int operationNotSupported (name(EOPNOTSUPP), doc("Operation not supported on socket."));
-	const Int overflow (name(EOVERFLOW), doc("Value too large to be stored in data type."));
-	const Int permission (name(EPERM), doc("Operation not permitted."));
-	const Int protocolFamilyNotSupported (name(EPFNOSUPPORT), doc("Protocol family not supported."));
-	const Int pipe (name(EPIPE), doc("Broken pipe."));
-	const Int protocolError (name(EPROTO), doc("Protocol error."));
-	const Int protocolNotSupported (name(EPROTONOSUPPORT), doc("Protocol not supported."));
-	const Int protocolType (name(EPROTOTYPE), doc("Protocol wrong type for socket."));
-	const Int range (name(ERANGE), doc("Result too large."));
-	const Int remoteAddressChanged (name(EREMCHG), doc("Remote address changed."));
-	const Int remote (name(EREMOTE), doc("Object is remote."));
-	const Int remoteIo (name(EREMOTEIO), doc("Remote I/O error."));
-	const Int restart (name(ERESTART), doc("Interrupted system call should be restarted."));
-	const Int readOnly (name(EROFS), doc("Read-only file system."));
-	const Int shutdown (name(ESHUTDOWN), doc("Cannot send after transport endpoint shutdown."));
-	const Int seekPipe (name(ESPIPE), doc("Invalid seek."));
-	const Int socketNotSupported (name(ESOCKTNOSUPPORT), doc("Socket type not supported.")); 
-	const Int noSuchProcess (name(ESRCH), doc("No such process."));
-	const Int stale (name(ESTALE), doc("Stale file handle. This error can occur for NFS and for other file systems."));
-	const Int streamPipe (name(ESTRPIPE), doc("Streams pipe error."));
-	const Int timer (name(ETIME), doc("Timer expired."));
-	const Int timeout (name(ETIMEDOUT), doc("Connection timed out."));
-	const Int textBusy (name(ETXTBSY), doc("Text file busy."));
-	const Int unclean (name(EUCLEAN), doc("Structure needs cleaning."));
-	const Int unattached (name(EUNATCH), doc("Protocol driver not attached."));
-	const Int users (name(EUSERS), doc("Too many users."));
-	const Int wouldBlock (name(EWOULDBLOCK), doc("Operation would block (may be same value as again)."));
-	const Int improperLink (name(EXDEV), doc("Improper link."));
-	const Int exchangeFull (name(EXFULL), doc("Exchange full."));
+	const Int tooBig (define(E2BIG), doc("Argument list too long."));
+	const Int access (define(EACCES), doc("Permission denied."));
+	const Int addressInUse (define(EADDRINUSE), doc("Address already in use."));
+	const Int addressNotAvailable (define(EADDRNOTAVAIL), doc("Address not available."));
+	const Int addressFamilyNotSupported (define(EAFNOSUPPORT), doc("Address family not supported."));
+	const Int again (define(EAGAIN), doc("Resource temporarily unavailable (may be the same value as wouldBlock)."));
+	const Int alreadyInProgress (define(EALREADY), doc("Connection already in progress."));
+	const Int badExchange (define(EBADE), doc("Invalid exchange."));
+	const Int badFileDescriptor (define(EBADF), doc("Bad file descriptor."));
+	const Int badFileDescriptorState (define(EBADFD), doc("File descriptor in bad state."));    
+	const Int badRequest (define(EBADR), doc("Invalid request descriptor."));
+	const Int badRequestCode (define(EBADRQC), doc("Invalid request code."));
+	const Int badSlot (define(EBADSLT), doc("Invalid slot."));
+	const Int deviceBusy (define(EBUSY), doc("Device or resource busy."));
+	const Int canceled (define(ECANCELED), doc("Operation canceled."));
+	const Int noChild (define(ECHILD), doc("No child processes."));
+	const Int channelRange (define(ECHRNG), doc("Channel number out of range."));
+	const Int communicationError (define(ECOMM), doc("Communication error on send."));
+	const Int connectionAborted (define(ECONNABORTED), doc("Connection aborted."));
+	const Int connectionRefused (define(ECONNREFUSED), doc("Connection refused."));
+	const Int connectionReset (define(ECONNRESET), doc("Connection reset."));
+	const Int deadlock (define(EDEADLK), doc("Resource deadlock avoided."));
+	const Int destinationRequired (define(EDESTADDRREQ), doc("Destination address required."));
+	const Int domain (define(EDOM), doc("Mathematics argument out of domain of function."));
+	const Int diskQuota (define(EDQUOT), doc("Disk quota exceeded."));
+	const Int exist (define(EEXIST), doc("File exists."));
+	const Int fault (define(EFAULT), doc("Bad address."));
+	const Int fileTooBig (define(EFBIG), doc("File too large."));
+	const Int hostDown (define(EHOSTDOWN), doc("Host is down."));
+	const Int hostUnreachable (define(EHOSTUNREACH), doc("Host is unreachable."));
+	const Int identifierRemoved (define(EIDRM), doc("Identifier removed."));
+	const Int illegalByteSequence (define(EILSEQ), doc("Illegal byte sequence."));
+	const Int inProgress (define(EINPROGRESS), doc("Operation in progress."));
+	const Int interrupted (define(EINTR), doc("Interrupted function call."));
+	const Int invalid (define(EINVAL), doc("Invalid argument."));
+	const Int ioError (define(EIO), doc("Input/output error."));
+	const Int connected? (define(EISCONN), doc("Socket is connected."));
+	const Int directory? (define(EISDIR), doc("Is a directory."));
+	const Int named? (define(EISNAM), doc("Is a named type file."));
+	const Int keyExpired (define(EKEYEXPIRED), doc("Key has expired."));
+	const Int keyRejected (define(EKEYREJECTED), doc("Key was rejected by service."));
+	const Int keyRevoked (define(EKEYREVOKED), doc("Key has been revoked."));
+	const Int level2Halted (define(EL2HLT), doc("Level 2 halted."));
+	const Int level2NotSynced (define(EL2NSYNC), doc("Level 2 not synchronized."));
+	const Int level3Halted (define(EL3HLT), doc("Level 3 halted."));
+	const Int level3Reset (define(EL3RST), doc("Level 3 reset."));
+	const Int libraryAccess (define(ELIBACC), doc("Cannot access a needed shared library."));
+	const Int libraryBad (define(ELIBBAD), doc("Accessing a corrupted shared library."));
+	const Int libraryMax (define(ELIBMAX), doc("Attempting to link in too many shared libraries."));
+	const Int libraryCorrupt (define(ELIBSCN), doc("lib section in a.out corrupted."));
+	const Int libraryExec (define(ELIBEXEC), doc("Cannot exec a shared library directly."));
+	const Int loop (define(ELOOP), doc("Too many levels of symbolic links"));
+	const Int mediumType (define(EMEDIUMTYPE), doc("Wrong medium type."));
+	const Int maxFile (define(EMFILE), doc("Too many open files."));
+	const Int maxLink (define(EMLINK), doc("Too many links."));
+	const Int messageSize (define(EMSGSIZE), doc("Message too long."));
+	const Int multihop (define(EMULTIHOP), doc("Multihop attempted."));
+	const Int nameTooLong (define(ENAMETOOLONG), doc("Filename too long."));
+	const Int netDown (define(ENETDOWN), doc("Network is down."));
+	const Int netReset (define(ENETRESET), doc("Connection aborted by network."));
+	const Int netUnreachable (define(ENETUNREACH), doc("Network unreachable."));
+	const Int maxFileInSystem (define(ENFILE), doc("Too many open files in system."));
+	const Int noBufferSpace (define(ENOBUFS), doc("No buffer space available."));
+	const Int noData (define(ENODATA), doc("No message is available on the STREAM head read queue."));
+	const Int noDevice (define(ENODEV), doc("No such device."));
+	const Int noEntry (define(ENOENT), doc("No such file or directory."));
+	const Int noExec (define(ENOEXEC), doc("Exec format error."));
+	const Int noKey (define(ENOKEY), doc("Required key not available."));
+	const Int noLock (define(ENOLCK), doc("No locks available."));
+	const Int noLink (define(ENOLINK), doc("Link has been severed."));
+	const Int noMedium (define(ENOMEDIUM), doc("No medium found."));
+	const Int noMemory (define(ENOMEM), doc("Not enough space."));
+	const Int noMessage (define(ENOMSG), doc("No message of the desired type."));
+	const Int noNet (define(ENONET), doc("Machine is not on the network."));
+	const Int noPackage (define(ENOPKG), doc("Package not installed."));
+	const Int noProtocol (define(ENOPROTOOPT), doc("Protocol not available."));
+	const Int noSpace (define(ENOSPC), doc("No space left on device."));
+	const Int noStream (define(ENOSR), doc("No STREAM resources."));
+	const Int notStream (define(ENOSTR), doc("Not a STREAM."));
+	const Int notImplemented (define(ENOSYS), doc("Function not implemented."));
+	const Int notBlock (define(ENOTBLK), doc("Block device required."));
+	const Int notConnected (define(ENOTCONN), doc("The socket is not connected."));
+	const Int notDirectory (define(ENOTDIR), doc("Not a directory."));
+	const Int notEmpty (define(ENOTEMPTY), doc("Directory not empty."));
+	const Int notSocket (define(ENOTSOCK), doc("Not a socket."));
+	const Int notSupported (define(ENOTSUP), doc("Operation not supported."));
+	const Int notTty (define(ENOTTY), doc("Inappropriate I/O control operation."));
+	const Int notUnique (define(ENOTUNIQ), doc("Name not unique on network."));
+	const Int noDeviceOrAddress (define(ENXIO), doc("No such device or address."));
+	const Int operationNotSupported (define(EOPNOTSUPP), doc("Operation not supported on socket."));
+	const Int overflow (define(EOVERFLOW), doc("Value too large to be stored in data type."));
+	const Int permission (define(EPERM), doc("Operation not permitted."));
+	const Int protocolFamilyNotSupported (define(EPFNOSUPPORT), doc("Protocol family not supported."));
+	const Int pipe (define(EPIPE), doc("Broken pipe."));
+	const Int protocolError (define(EPROTO), doc("Protocol error."));
+	const Int protocolNotSupported (define(EPROTONOSUPPORT), doc("Protocol not supported."));
+	const Int protocolType (define(EPROTOTYPE), doc("Protocol wrong type for socket."));
+	const Int range (define(ERANGE), doc("Result too large."));
+	const Int remoteAddressChanged (define(EREMCHG), doc("Remote address changed."));
+	const Int remote (define(EREMOTE), doc("Object is remote."));
+	const Int remoteIo (define(EREMOTEIO), doc("Remote I/O error."));
+	const Int restart (define(ERESTART), doc("Interrupted system call should be restarted."));
+	const Int readOnly (define(EROFS), doc("Read-only file system."));
+	const Int shutdown (define(ESHUTDOWN), doc("Cannot send after transport endpoint shutdown."));
+	const Int seekPipe (define(ESPIPE), doc("Invalid seek."));
+	const Int socketNotSupported (define(ESOCKTNOSUPPORT), doc("Socket type not supported.")); 
+	const Int noSuchProcess (define(ESRCH), doc("No such process."));
+	const Int stale (define(ESTALE), doc("Stale file handle. This error can occur for NFS and for other file systems."));
+	const Int streamPipe (define(ESTRPIPE), doc("Streams pipe error."));
+	const Int timer (define(ETIME), doc("Timer expired."));
+	const Int timeout (define(ETIMEDOUT), doc("Connection timed out."));
+	const Int textBusy (define(ETXTBSY), doc("Text file busy."));
+	const Int unclean (define(EUCLEAN), doc("Structure needs cleaning."));
+	const Int unattached (define(EUNATCH), doc("Protocol driver not attached."));
+	const Int users (define(EUSERS), doc("Too many users."));
+	const Int wouldBlock (define(EWOULDBLOCK), doc("Operation would block (may be same value as again)."));
+	const Int improperLink (define(EXDEV), doc("Improper link."));
+	const Int exchangeFull (define(EXFULL), doc("Exchange full."));
     }
 }
 
@@ -709,8 +709,8 @@ static void anna_addrinfo_del(anna_object_t *victim)
         
     AddressInfoFlags
     {
-	var Int v4Mapped (name(AI_V4MAPPED));
-	var Int addressConfig (name(AI_ADDRCONFIG));
+	var Int v4Mapped (define(AI_V4MAPPED));
+	var Int addressConfig (define(AI_ADDRCONFIG));
     }
 
     cStructPointer AddressInfo (name(addrinfo), finalizer(anna_addrinfo_del))

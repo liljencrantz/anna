@@ -339,6 +339,31 @@ void anna_module_const_int(
     }
 }
 
+void anna_module_const(
+    anna_stack_template_t *stack,
+    wchar_t *name,
+    anna_type_t *type,
+    anna_entry_t *value,
+    wchar_t *documentation
+    )
+{
+    anna_stack_declare(
+	stack,
+	name,
+	type,
+	value,
+	ANNA_STACK_READONLY);
+    if(documentation)
+    {
+	anna_type_t *type = 
+	    anna_stack_wrap(stack)->type;
+	anna_member_document(
+	    type,
+	    anna_mid_get(name),
+	    documentation);
+    }
+}
+
 
 void anna_module_const_char(
     anna_stack_template_t *stack,

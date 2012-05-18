@@ -217,23 +217,108 @@ void anna_open_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef O_RDONLY
     anna_module_const_int(stack, L"readOnly", O_RDONLY, L"Open file in read-only mode.");
+#else
+    anna_module_const(stack, L"readOnly", int_type, null_entry, L"Open file in read-only mode.");
+#endif
+
+#ifdef O_WRONLY
     anna_module_const_int(stack, L"writeOnly", O_WRONLY, L"Open file in write-only mode.");
+#else
+    anna_module_const(stack, L"writeOnly", int_type, null_entry, L"Open file in write-only mode.");
+#endif
+
+#ifdef O_RDWR
     anna_module_const_int(stack, L"readWrite", O_RDWR, L"Open file in read-write mode.");
+#else
+    anna_module_const(stack, L"readWrite", int_type, null_entry, L"Open file in read-write mode.");
+#endif
+
+#ifdef O_APPEND
     anna_module_const_int(stack, L"append", O_APPEND, L"The file is opened in append mode.");
+#else
+    anna_module_const(stack, L"append", int_type, null_entry, L"The file is opened in append mode.");
+#endif
+
+#ifdef O_ASYNC
     anna_module_const_int(stack, L"async", O_ASYNC, L"Enable signal-driven I/O.");
+#else
+    anna_module_const(stack, L"async", int_type, null_entry, L"Enable signal-driven I/O.");
+#endif
+
+#ifdef O_CREAT
     anna_module_const_int(stack, L"create", O_CREAT, L"If the file does not exist it will be created.");
+#else
+    anna_module_const(stack, L"create", int_type, null_entry, L"If the file does not exist it will be created.");
+#endif
+
+#ifdef O_CLOEXEC
     anna_module_const_int(stack, L"closeOnExec", O_CLOEXEC, L"Enable the close-on-exec flag for the new file descriptor.");
+#else
+    anna_module_const(stack, L"closeOnExec", int_type, null_entry, L"Enable the close-on-exec flag for the new file descriptor.");
+#endif
+
+#ifdef O_DIRECT
     anna_module_const_int(stack, L"direct", O_DIRECT, L"Try to minimize cache effects of the I/O to and from this file.");
+#else
+    anna_module_const(stack, L"direct", int_type, null_entry, L"Try to minimize cache effects of the I/O to and from this file.");
+#endif
+
+#ifdef O_DIRECTORY
     anna_module_const_int(stack, L"directory", O_DIRECTORY, L"If pathname is not a directory, cause the open to fail.");
+#else
+    anna_module_const(stack, L"directory", int_type, null_entry, L"If pathname is not a directory, cause the open to fail.");
+#endif
+
+#ifdef O_EXCL
     anna_module_const_int(stack, L"exclusive", O_EXCL, L"Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail.");
+#else
+    anna_module_const(stack, L"exclusive", int_type, null_entry, L"Ensure that this call creates the file: if this flag is specified in conjunction with O_CREAT, and pathname already exists, then open() will fail.");
+#endif
+
+#ifdef O_LARGEFILE
     anna_module_const_int(stack, L"largeFile", O_LARGEFILE, L"(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened.");
+#else
+    anna_module_const(stack, L"largeFile", int_type, null_entry, L"(LFS) Allow files whose sizes cannot be represented in an off_t (but can be represented in an off64_t) to be opened.");
+#endif
+
+#ifdef O_NOATIME
     anna_module_const_int(stack, L"noAccessTime", O_NOATIME, L"Do not update the file last access time (st_atime in the inode) when the file is read().");
+#else
+    anna_module_const(stack, L"noAccessTime", int_type, null_entry, L"Do not update the file last access time (st_atime in the inode) when the file is read().");
+#endif
+
+#ifdef O_NOCTTY
     anna_module_const_int(stack, L"noControllingTTY", O_NOCTTY, L"If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one.");
+#else
+    anna_module_const(stack, L"noControllingTTY", int_type, null_entry, L"If pathname refers to a terminal device - it will not become the process's controlling terminal even if the process does not have one.");
+#endif
+
+#ifdef O_NOFOLLOW
     anna_module_const_int(stack, L"noFollow", O_NOFOLLOW, L"If pathname is a symbolic link, then the open fails.");
+#else
+    anna_module_const(stack, L"noFollow", int_type, null_entry, L"If pathname is a symbolic link, then the open fails.");
+#endif
+
+#ifdef O_NONBLOCK
     anna_module_const_int(stack, L"nonBlock", O_NONBLOCK, L"When possible, the file is opened in nonblocking mode.");
+#else
+    anna_module_const(stack, L"nonBlock", int_type, null_entry, L"When possible, the file is opened in nonblocking mode.");
+#endif
+
+#ifdef O_SYNC
     anna_module_const_int(stack, L"synchronous", O_SYNC, L"The file is opened for synchronous I/O.");
+#else
+    anna_module_const(stack, L"synchronous", int_type, null_entry, L"The file is opened for synchronous I/O.");
+#endif
+
+#ifdef O_TRUNC
     anna_module_const_int(stack, L"truncate", O_TRUNC, L"f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0.");
+#else
+    anna_module_const(stack, L"truncate", int_type, null_entry, L"f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0.");
+#endif
+
     anna_stack_document(stack, L"Flags determining the mode for unix.io.open");
 
     anna_type_data_register(anna_open_mode_type_data, stack);
@@ -260,28 +345,138 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef S_IFREG
     anna_module_const_int(stack, L"regular", S_IFREG, L"Regular file");
+#else
+    anna_module_const(stack, L"regular", int_type, null_entry, L"Regular file");
+#endif
+
+#ifdef S_IFSOCK
     anna_module_const_int(stack, L"socket", S_IFSOCK, L"Socket");
+#else
+    anna_module_const(stack, L"socket", int_type, null_entry, L"Socket");
+#endif
+
+#ifdef S_IFLNK
     anna_module_const_int(stack, L"link", S_IFLNK, L"Symbolic link.");
+#else
+    anna_module_const(stack, L"link", int_type, null_entry, L"Symbolic link.");
+#endif
+
+#ifdef S_IFBLK
     anna_module_const_int(stack, L"block", S_IFBLK, L"Block device.");
+#else
+    anna_module_const(stack, L"block", int_type, null_entry, L"Block device.");
+#endif
+
+#ifdef S_IFDIR
     anna_module_const_int(stack, L"directory", S_IFDIR, L"Directory.");
+#else
+    anna_module_const(stack, L"directory", int_type, null_entry, L"Directory.");
+#endif
+
+#ifdef S_IFCHR
     anna_module_const_int(stack, L"character", S_IFCHR, L"Character device.");
+#else
+    anna_module_const(stack, L"character", int_type, null_entry, L"Character device.");
+#endif
+
+#ifdef S_IFIFO
     anna_module_const_int(stack, L"fifo", S_IFIFO, L"FIFO.");
+#else
+    anna_module_const(stack, L"fifo", int_type, null_entry, L"FIFO.");
+#endif
+
+#ifdef S_ISUID
     anna_module_const_int(stack, L"suid", S_ISUID, L"Set UID bit.");
+#else
+    anna_module_const(stack, L"suid", int_type, null_entry, L"Set UID bit.");
+#endif
+
+#ifdef S_ISGID
     anna_module_const_int(stack, L"sgid", S_ISGID, L"Set-group-ID bit.");
+#else
+    anna_module_const(stack, L"sgid", int_type, null_entry, L"Set-group-ID bit.");
+#endif
+
+#ifdef S_ISVTX
     anna_module_const_int(stack, L"sticky", S_ISVTX, L"Sticky bit.");
+#else
+    anna_module_const(stack, L"sticky", int_type, null_entry, L"Sticky bit.");
+#endif
+
+#ifdef S_IRWXU
     anna_module_const_int(stack, L"userAll", S_IRWXU, L"Mask for all file owner permissions.");
+#else
+    anna_module_const(stack, L"userAll", int_type, null_entry, L"Mask for all file owner permissions.");
+#endif
+
+#ifdef S_IRUSR
     anna_module_const_int(stack, L"userRead", S_IRUSR, L"File owner read permission.");
+#else
+    anna_module_const(stack, L"userRead", int_type, null_entry, L"File owner read permission.");
+#endif
+
+#ifdef S_IWUSR
     anna_module_const_int(stack, L"userwrite", S_IWUSR, L"File owner write permission.");
+#else
+    anna_module_const(stack, L"userwrite", int_type, null_entry, L"File owner write permission.");
+#endif
+
+#ifdef S_IXUSR
     anna_module_const_int(stack, L"userExecute", S_IXUSR, L"File owner execute permission.");
+#else
+    anna_module_const(stack, L"userExecute", int_type, null_entry, L"File owner execute permission.");
+#endif
+
+#ifdef S_IRWXG
     anna_module_const_int(stack, L"groupAll", S_IRWXG, L"Mask for all group permissions.");
+#else
+    anna_module_const(stack, L"groupAll", int_type, null_entry, L"Mask for all group permissions.");
+#endif
+
+#ifdef S_IRGRP
     anna_module_const_int(stack, L"groupRead", S_IRGRP, L"Group has read permission.");
+#else
+    anna_module_const(stack, L"groupRead", int_type, null_entry, L"Group has read permission.");
+#endif
+
+#ifdef S_IWGRP
     anna_module_const_int(stack, L"groupwrite", S_IWGRP, L"Group has write permission.");
+#else
+    anna_module_const(stack, L"groupwrite", int_type, null_entry, L"Group has write permission.");
+#endif
+
+#ifdef S_IXGRP
     anna_module_const_int(stack, L"groupExecute", S_IXGRP, L"Group has execute permission.");
+#else
+    anna_module_const(stack, L"groupExecute", int_type, null_entry, L"Group has execute permission.");
+#endif
+
+#ifdef S_IRWXO
     anna_module_const_int(stack, L"otherAll", S_IRWXO, L"Mask for permissions for others (not in group).");
+#else
+    anna_module_const(stack, L"otherAll", int_type, null_entry, L"Mask for permissions for others (not in group).");
+#endif
+
+#ifdef S_IROTH
     anna_module_const_int(stack, L"otherRead", S_IROTH, L"Others have read permission.");
+#else
+    anna_module_const(stack, L"otherRead", int_type, null_entry, L"Others have read permission.");
+#endif
+
+#ifdef S_IWOTH
     anna_module_const_int(stack, L"otherwrite", S_IWOTH, L"Others have write permission.");
+#else
+    anna_module_const(stack, L"otherwrite", int_type, null_entry, L"Others have write permission.");
+#endif
+
+#ifdef S_IXOTH
     anna_module_const_int(stack, L"otherExecute", S_IXOTH, L"Others have execute permission.");
+#else
+    anna_module_const(stack, L"otherExecute", int_type, null_entry, L"Others have execute permission.");
+#endif
+
     anna_stack_document(stack, L"Flags used for identifying file status together with a unix.io.Stat object.");
 
     anna_type_data_register(anna_stat_mode_type_data, stack);
@@ -661,6 +856,7 @@ ANNA_VM_NATIVE(unix_i_io_getcwd, 2)
 
         if(param[1] == null_entry){return null_entry;}
 
+
     // Mangle input parameters
     unsigned char *native_param_buf = anna_buffer_get_payload(anna_as_obj(param[0]));
     int native_param_size = anna_as_int(param[1]);
@@ -846,9 +1042,24 @@ void anna_seek_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef SEEK_SET
     anna_module_const_int(stack, L"set", SEEK_SET, L"Seek to absolute file offset.");
+#else
+    anna_module_const(stack, L"set", int_type, null_entry, L"Seek to absolute file offset.");
+#endif
+
+#ifdef SEEK_CUR
     anna_module_const_int(stack, L"cur", SEEK_CUR, L"Seek to file offset relative current position.");
+#else
+    anna_module_const(stack, L"cur", int_type, null_entry, L"Seek to file offset relative current position.");
+#endif
+
+#ifdef SEEK_END
     anna_module_const_int(stack, L"end", SEEK_END, L"Seek to file offset relative to end of file.");
+#else
+    anna_module_const(stack, L"end", int_type, null_entry, L"Seek to file offset relative to end of file.");
+#endif
+
     anna_stack_document(stack, L"Different seek modes for use with the unix.io.seek function");
 
     anna_type_data_register(anna_seek_mode_type_data, stack);
@@ -1970,41 +2181,234 @@ void anna_signal_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef SIGHUP
     anna_module_const_int(stack, L"hup", SIGHUP, L"The HUP signal");
+#else
+    anna_module_const(stack, L"hup", int_type, null_entry, L"The HUP signal");
+#endif
+
+#ifdef SIGINT
     anna_module_const_int(stack, L"int", SIGINT, L"The INT signal");
+#else
+    anna_module_const(stack, L"int", int_type, null_entry, L"The INT signal");
+#endif
+
+#ifdef SIGQUIT
     anna_module_const_int(stack, L"quit", SIGQUIT, L"The QUIT signal");
+#else
+    anna_module_const(stack, L"quit", int_type, null_entry, L"The QUIT signal");
+#endif
+
+#ifdef SIGILL
     anna_module_const_int(stack, L"ill", SIGILL, L"The ILL signal");
+#else
+    anna_module_const(stack, L"ill", int_type, null_entry, L"The ILL signal");
+#endif
+
+#ifdef SIGABRT
     anna_module_const_int(stack, L"abrt", SIGABRT, L"The ABRT signal");
+#else
+    anna_module_const(stack, L"abrt", int_type, null_entry, L"The ABRT signal");
+#endif
+
+#ifdef SIGFPE
     anna_module_const_int(stack, L"fpe", SIGFPE, L"The FPE signal");
+#else
+    anna_module_const(stack, L"fpe", int_type, null_entry, L"The FPE signal");
+#endif
+
+#ifdef SIGKILL
     anna_module_const_int(stack, L"kill", SIGKILL, L"The KILL signal");
+#else
+    anna_module_const(stack, L"kill", int_type, null_entry, L"The KILL signal");
+#endif
+
+#ifdef SIGSEGV
     anna_module_const_int(stack, L"segv", SIGSEGV, L"The SEGV signal");
+#else
+    anna_module_const(stack, L"segv", int_type, null_entry, L"The SEGV signal");
+#endif
+
+#ifdef SIGPIPE
     anna_module_const_int(stack, L"pipe", SIGPIPE, L"The PIPE signal");
+#else
+    anna_module_const(stack, L"pipe", int_type, null_entry, L"The PIPE signal");
+#endif
+
+#ifdef SIGALRM
     anna_module_const_int(stack, L"alrm", SIGALRM, L"The ALRM signal");
+#else
+    anna_module_const(stack, L"alrm", int_type, null_entry, L"The ALRM signal");
+#endif
+
+#ifdef SIGTERM
     anna_module_const_int(stack, L"term", SIGTERM, L"The TERM signal");
+#else
+    anna_module_const(stack, L"term", int_type, null_entry, L"The TERM signal");
+#endif
+
+#ifdef SIGUSR1
     anna_module_const_int(stack, L"usr1", SIGUSR1, L"The USR1 signal");
+#else
+    anna_module_const(stack, L"usr1", int_type, null_entry, L"The USR1 signal");
+#endif
+
+#ifdef SIGUSR2
     anna_module_const_int(stack, L"usr2", SIGUSR2, L"The USR2 signal");
+#else
+    anna_module_const(stack, L"usr2", int_type, null_entry, L"The USR2 signal");
+#endif
+
+#ifdef SIGCHLD
     anna_module_const_int(stack, L"chld", SIGCHLD, L"The CHLD signal");
+#else
+    anna_module_const(stack, L"chld", int_type, null_entry, L"The CHLD signal");
+#endif
+
+#ifdef SIGCONT
     anna_module_const_int(stack, L"cont", SIGCONT, L"The CONT signal");
+#else
+    anna_module_const(stack, L"cont", int_type, null_entry, L"The CONT signal");
+#endif
+
+#ifdef SIGSTOP
     anna_module_const_int(stack, L"stop", SIGSTOP, L"The STOP signal");
+#else
+    anna_module_const(stack, L"stop", int_type, null_entry, L"The STOP signal");
+#endif
+
+#ifdef SIGTSTP
     anna_module_const_int(stack, L"tstp", SIGTSTP, L"The TSTP signal");
+#else
+    anna_module_const(stack, L"tstp", int_type, null_entry, L"The TSTP signal");
+#endif
+
+#ifdef SIGTTIN
     anna_module_const_int(stack, L"ttin", SIGTTIN, L"The TTIN signal");
+#else
+    anna_module_const(stack, L"ttin", int_type, null_entry, L"The TTIN signal");
+#endif
+
+#ifdef SIGTTOU
     anna_module_const_int(stack, L"ttou", SIGTTOU, L"The TTOU signal");
+#else
+    anna_module_const(stack, L"ttou", int_type, null_entry, L"The TTOU signal");
+#endif
+
+#ifdef SIGBUS
     anna_module_const_int(stack, L"bus", SIGBUS, L"The BUS signal");
+#else
+    anna_module_const(stack, L"bus", int_type, null_entry, L"The BUS signal");
+#endif
+
+#ifdef SIGPOLL
     anna_module_const_int(stack, L"poll", SIGPOLL, L"The POLL signal");
+#else
+    anna_module_const(stack, L"poll", int_type, null_entry, L"The POLL signal");
+#endif
+
+#ifdef SIGPROF
     anna_module_const_int(stack, L"prof", SIGPROF, L"The PROF signal");
+#else
+    anna_module_const(stack, L"prof", int_type, null_entry, L"The PROF signal");
+#endif
+
+#ifdef SIGSYS
     anna_module_const_int(stack, L"sys", SIGSYS, L"The SYS signal");
+#else
+    anna_module_const(stack, L"sys", int_type, null_entry, L"The SYS signal");
+#endif
+
+#ifdef SIGTRAP
     anna_module_const_int(stack, L"trap", SIGTRAP, L"The TRAP signal");
+#else
+    anna_module_const(stack, L"trap", int_type, null_entry, L"The TRAP signal");
+#endif
+
+#ifdef SIGURG
     anna_module_const_int(stack, L"urg", SIGURG, L"The URG signal");
+#else
+    anna_module_const(stack, L"urg", int_type, null_entry, L"The URG signal");
+#endif
+
+#ifdef SIGVTALRM
     anna_module_const_int(stack, L"vtalrm", SIGVTALRM, L"The VTALRM signal");
+#else
+    anna_module_const(stack, L"vtalrm", int_type, null_entry, L"The VTALRM signal");
+#endif
+
+#ifdef SIGXCPU
     anna_module_const_int(stack, L"xcpu", SIGXCPU, L"The XCPU signal");
+#else
+    anna_module_const(stack, L"xcpu", int_type, null_entry, L"The XCPU signal");
+#endif
+
+#ifdef SIGXFSZ
     anna_module_const_int(stack, L"xfsz", SIGXFSZ, L"The XFSZ signal");
+#else
+    anna_module_const(stack, L"xfsz", int_type, null_entry, L"The XFSZ signal");
+#endif
+
+#ifdef SIGIOT
     anna_module_const_int(stack, L"iot", SIGIOT, L"The IOT signal");
+#else
+    anna_module_const(stack, L"iot", int_type, null_entry, L"The IOT signal");
+#endif
+
+#ifdef SIGEMT
+    anna_module_const_int(stack, L"emt", SIGEMT, L"The EMT signal");
+#else
+    anna_module_const(stack, L"emt", int_type, null_entry, L"The EMT signal");
+#endif
+
+#ifdef SIGSTKFLT
     anna_module_const_int(stack, L"stkflt", SIGSTKFLT, L"The STKFLT signal");
+#else
+    anna_module_const(stack, L"stkflt", int_type, null_entry, L"The STKFLT signal");
+#endif
+
+#ifdef SIGIO
     anna_module_const_int(stack, L"io", SIGIO, L"The IO signal");
+#else
+    anna_module_const(stack, L"io", int_type, null_entry, L"The IO signal");
+#endif
+
+#ifdef SIGCLD
     anna_module_const_int(stack, L"cld", SIGCLD, L"The CLD signal");
+#else
+    anna_module_const(stack, L"cld", int_type, null_entry, L"The CLD signal");
+#endif
+
+#ifdef SIGPWR
     anna_module_const_int(stack, L"pwr", SIGPWR, L"The PWR signal");
+#else
+    anna_module_const(stack, L"pwr", int_type, null_entry, L"The PWR signal");
+#endif
+
+#ifdef SIGINFO
+    anna_module_const_int(stack, L"info", SIGINFO, L"The INFO signal");
+#else
+    anna_module_const(stack, L"info", int_type, null_entry, L"The INFO signal");
+#endif
+
+#ifdef SIGLOST
+    anna_module_const_int(stack, L"lost", SIGLOST, L"The LOST signal");
+#else
+    anna_module_const(stack, L"lost", int_type, null_entry, L"The LOST signal");
+#endif
+
+#ifdef SIGWINCH
     anna_module_const_int(stack, L"winch", SIGWINCH, L"The WINCH signal");
+#else
+    anna_module_const(stack, L"winch", int_type, null_entry, L"The WINCH signal");
+#endif
+
+#ifdef SIGUNUSED
     anna_module_const_int(stack, L"unused", SIGUNUSED, L"The UNUSED signal");
+#else
+    anna_module_const(stack, L"unused", int_type, null_entry, L"The UNUSED signal");
+#endif
+
     anna_stack_document(stack, L"All known signals");
 
     anna_type_data_register(anna_signal_type_data, stack);
@@ -2693,8 +3097,18 @@ void anna_signalfd_flag_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef SFD_NONBLOCK
     anna_module_const_int(stack, L"nonBlock", SFD_NONBLOCK, L"The resulting file descriptor is non-blocking");
+#else
+    anna_module_const(stack, L"nonBlock", int_type, null_entry, L"The resulting file descriptor is non-blocking");
+#endif
+
+#ifdef SFD_CLOEXEC
     anna_module_const_int(stack, L"closeOnExec", SFD_CLOEXEC, 0);
+#else
+    anna_module_const(stack, L"closeOnExec", int_type, null_entry, 0);
+#endif
+
     anna_stack_document(stack, L"Flags determining the mode for unix.proc.signalfd");
 
     anna_type_data_register(anna_signalfd_flag_type_data, stack);
@@ -2721,9 +3135,24 @@ void anna_sigprocmask_flag_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef SIG_BLOCK
     anna_module_const_int(stack, L"block", SIG_BLOCK, L"Block all the specified signals in addition to signals currently blocked.");
+#else
+    anna_module_const(stack, L"block", int_type, null_entry, L"Block all the specified signals in addition to signals currently blocked.");
+#endif
+
+#ifdef SIG_UNBLOCK
     anna_module_const_int(stack, L"unblock", SIG_UNBLOCK, L"Stop blocking the specified signals.");
+#else
+    anna_module_const(stack, L"unblock", int_type, null_entry, L"Stop blocking the specified signals.");
+#endif
+
+#ifdef SIG_SETMASK
     anna_module_const_int(stack, L"setMask", SIG_SETMASK, L"Set the exact new signal block mask.");
+#else
+    anna_module_const(stack, L"setMask", int_type, null_entry, L"Set the exact new signal block mask.");
+#endif
+
     anna_stack_document(stack, L"Flags determining the mode for unix.iosigprocmask");
 
     anna_type_data_register(anna_sigprocmask_flag_type_data, stack);
@@ -3359,20 +3788,96 @@ void anna_r_limit_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef RLIMIT_AS
     anna_module_const_int(stack, L"as", RLIMIT_AS, L"The AS limit");
+#else
+    anna_module_const(stack, L"as", int_type, null_entry, L"The AS limit");
+#endif
+
+#ifdef RLIMIT_CORE
     anna_module_const_int(stack, L"core", RLIMIT_CORE, L"The CORE limit");
+#else
+    anna_module_const(stack, L"core", int_type, null_entry, L"The CORE limit");
+#endif
+
+#ifdef RLIMIT_CPU
     anna_module_const_int(stack, L"cpu", RLIMIT_CPU, L"The CPU limit");
+#else
+    anna_module_const(stack, L"cpu", int_type, null_entry, L"The CPU limit");
+#endif
+
+#ifdef RLIMIT_DATA
     anna_module_const_int(stack, L"data", RLIMIT_DATA, L"The DATA limit");
+#else
+    anna_module_const(stack, L"data", int_type, null_entry, L"The DATA limit");
+#endif
+
+#ifdef RLIMIT_FSIZE
     anna_module_const_int(stack, L"fsize", RLIMIT_FSIZE, L"The FSIZE limit");
+#else
+    anna_module_const(stack, L"fsize", int_type, null_entry, L"The FSIZE limit");
+#endif
+
+#ifdef RLIMIT_MEMLOCK
     anna_module_const_int(stack, L"memlock", RLIMIT_MEMLOCK, L"The MEMLOCK limit");
+#else
+    anna_module_const(stack, L"memlock", int_type, null_entry, L"The MEMLOCK limit");
+#endif
+
+#ifdef RLIMIT_MSGQUEUE
     anna_module_const_int(stack, L"msgqueue", RLIMIT_MSGQUEUE, L"The MSGQUEUE limit");
+#else
+    anna_module_const(stack, L"msgqueue", int_type, null_entry, L"The MSGQUEUE limit");
+#endif
+
+#ifdef RLIMIT_NICE
     anna_module_const_int(stack, L"nice", RLIMIT_NICE, L"The NICE limit");
+#else
+    anna_module_const(stack, L"nice", int_type, null_entry, L"The NICE limit");
+#endif
+
+#ifdef RLIMIT_NOFILE
     anna_module_const_int(stack, L"nofile", RLIMIT_NOFILE, L"The NOFILE limit");
+#else
+    anna_module_const(stack, L"nofile", int_type, null_entry, L"The NOFILE limit");
+#endif
+
+#ifdef RLIMIT_NPROC
     anna_module_const_int(stack, L"nproc", RLIMIT_NPROC, L"The NPROC limit");
+#else
+    anna_module_const(stack, L"nproc", int_type, null_entry, L"The NPROC limit");
+#endif
+
+#ifdef RLIMIT_RSS
     anna_module_const_int(stack, L"rss", RLIMIT_RSS, L"The RSS limit");
+#else
+    anna_module_const(stack, L"rss", int_type, null_entry, L"The RSS limit");
+#endif
+
+#ifdef RLIMIT_RTPRIO
     anna_module_const_int(stack, L"rtprio", RLIMIT_RTPRIO, L"The RTPRIO limit");
+#else
+    anna_module_const(stack, L"rtprio", int_type, null_entry, L"The RTPRIO limit");
+#endif
+
+#ifdef RLIMIT_RTTIME
+    anna_module_const_int(stack, L"rttime", RLIMIT_RTTIME, L"The RTTIME limit");
+#else
+    anna_module_const(stack, L"rttime", int_type, null_entry, L"The RTTIME limit");
+#endif
+
+#ifdef RLIMIT_SIGPENDING
     anna_module_const_int(stack, L"sigpending", RLIMIT_SIGPENDING, L"The SIGPENDING limit");
+#else
+    anna_module_const(stack, L"sigpending", int_type, null_entry, L"The SIGPENDING limit");
+#endif
+
+#ifdef RLIMIT_STACK
     anna_module_const_int(stack, L"stack", RLIMIT_STACK, L"The STACK limit");
+#else
+    anna_module_const(stack, L"stack", int_type, null_entry, L"The STACK limit");
+#endif
+
     anna_stack_document(stack, L"The different limits that can be queried with getRLimit and stRLimit.");
 
     anna_type_data_register(anna_r_limit_mode_type_data, stack);
@@ -3711,13 +4216,48 @@ void anna_locale_mode_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef LC_ALL
     anna_module_const_int(stack, L"all", LC_ALL, L"All of the locale.");
+#else
+    anna_module_const(stack, L"all", int_type, null_entry, L"All of the locale.");
+#endif
+
+#ifdef LC_COLLATE
     anna_module_const_int(stack, L"collate", LC_COLLATE, L"Regular expression matching (it determines the meaning of range expressions and equivalence classes) and string collation.");
+#else
+    anna_module_const(stack, L"collate", int_type, null_entry, L"Regular expression matching (it determines the meaning of range expressions and equivalence classes) and string collation.");
+#endif
+
+#ifdef LC_CTYPE
     anna_module_const_int(stack, L"cType", LC_CTYPE, L"Regular expression matching, character classification, conversion, case-sensitive comparison, and wide character functions.");
+#else
+    anna_module_const(stack, L"cType", int_type, null_entry, L"Regular expression matching, character classification, conversion, case-sensitive comparison, and wide character functions.");
+#endif
+
+#ifdef LC_MESSAGES
     anna_module_const_int(stack, L"messages", LC_MESSAGES, L"Localizable natural-language messages.");
+#else
+    anna_module_const(stack, L"messages", int_type, null_entry, L"Localizable natural-language messages.");
+#endif
+
+#ifdef LC_MONETARY
     anna_module_const_int(stack, L"monetary", LC_MONETARY, L"Monetary formating.");
+#else
+    anna_module_const(stack, L"monetary", int_type, null_entry, L"Monetary formating.");
+#endif
+
+#ifdef LC_NUMERIC
     anna_module_const_int(stack, L"numeric", LC_NUMERIC, L"Numeric formating, such as decimal point and thousands separator.");
+#else
+    anna_module_const(stack, L"numeric", int_type, null_entry, L"Numeric formating, such as decimal point and thousands separator.");
+#endif
+
+#ifdef LC_TIME
     anna_module_const_int(stack, L"time", LC_TIME, L"Date and time formating.");
+#else
+    anna_module_const(stack, L"time", int_type, null_entry, L"Date and time formating.");
+#endif
+
     anna_stack_document(stack, L"Different locale parts.");
 
     anna_type_data_register(anna_locale_mode_type_data, stack);
@@ -4053,8 +4593,18 @@ void anna_flag_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef ICANON
     anna_module_const_int(stack, L"canonical", ICANON, L"Read one character at a time.");
+#else
+    anna_module_const(stack, L"canonical", int_type, null_entry, L"Read one character at a time.");
+#endif
+
+#ifdef ECHO
     anna_module_const_int(stack, L"echo", ECHO, L"Echo characters to the screen.");
+#else
+    anna_module_const(stack, L"echo", int_type, null_entry, L"Echo characters to the screen.");
+#endif
+
     anna_stack_document(stack, L"The different modes of a Termios structure.");
 
     anna_type_data_register(anna_flag_type_data, stack);
@@ -4081,9 +4631,24 @@ void anna_action_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef TCSANOW
     anna_module_const_int(stack, L"now", TCSANOW, L"Take the specified action now,");
+#else
+    anna_module_const(stack, L"now", int_type, null_entry, L"Take the specified action now,");
+#endif
+
+#ifdef TCSADRAIN
     anna_module_const_int(stack, L"drain", TCSADRAIN, L"Empty output buffer and apply specified action.");
+#else
+    anna_module_const(stack, L"drain", int_type, null_entry, L"Empty output buffer and apply specified action.");
+#endif
+
+#ifdef TCSAFLUSH
     anna_module_const_int(stack, L"flush", TCSAFLUSH, L"Apply specified action once outout in buffer has been written.");
+#else
+    anna_module_const(stack, L"flush", int_type, null_entry, L"Apply specified action once outout in buffer has been written.");
+#endif
+
     anna_stack_document(stack, L"The different action modes used by unix.term.setAttr.");
 
     anna_type_data_register(anna_action_type_data, stack);
@@ -4338,124 +4903,714 @@ void anna_status_load(anna_stack_template_t *stack)
 
     wchar_t *this_argn[] = {L"this"};
 
+#ifdef E2BIG
     anna_module_const_int(stack, L"tooBig", E2BIG, L"Argument list too long.");
+#else
+    anna_module_const(stack, L"tooBig", int_type, null_entry, L"Argument list too long.");
+#endif
+
+#ifdef EACCES
     anna_module_const_int(stack, L"access", EACCES, L"Permission denied.");
+#else
+    anna_module_const(stack, L"access", int_type, null_entry, L"Permission denied.");
+#endif
+
+#ifdef EADDRINUSE
     anna_module_const_int(stack, L"addressInUse", EADDRINUSE, L"Address already in use.");
+#else
+    anna_module_const(stack, L"addressInUse", int_type, null_entry, L"Address already in use.");
+#endif
+
+#ifdef EADDRNOTAVAIL
     anna_module_const_int(stack, L"addressNotAvailable", EADDRNOTAVAIL, L"Address not available.");
+#else
+    anna_module_const(stack, L"addressNotAvailable", int_type, null_entry, L"Address not available.");
+#endif
+
+#ifdef EAFNOSUPPORT
     anna_module_const_int(stack, L"addressFamilyNotSupported", EAFNOSUPPORT, L"Address family not supported.");
+#else
+    anna_module_const(stack, L"addressFamilyNotSupported", int_type, null_entry, L"Address family not supported.");
+#endif
+
+#ifdef EAGAIN
     anna_module_const_int(stack, L"again", EAGAIN, L"Resource temporarily unavailable (may be the same value as wouldBlock).");
+#else
+    anna_module_const(stack, L"again", int_type, null_entry, L"Resource temporarily unavailable (may be the same value as wouldBlock).");
+#endif
+
+#ifdef EALREADY
     anna_module_const_int(stack, L"alreadyInProgress", EALREADY, L"Connection already in progress.");
+#else
+    anna_module_const(stack, L"alreadyInProgress", int_type, null_entry, L"Connection already in progress.");
+#endif
+
+#ifdef EBADE
     anna_module_const_int(stack, L"badExchange", EBADE, L"Invalid exchange.");
+#else
+    anna_module_const(stack, L"badExchange", int_type, null_entry, L"Invalid exchange.");
+#endif
+
+#ifdef EBADF
     anna_module_const_int(stack, L"badFileDescriptor", EBADF, L"Bad file descriptor.");
+#else
+    anna_module_const(stack, L"badFileDescriptor", int_type, null_entry, L"Bad file descriptor.");
+#endif
+
+#ifdef EBADFD
     anna_module_const_int(stack, L"badFileDescriptorState", EBADFD, L"File descriptor in bad state.");
+#else
+    anna_module_const(stack, L"badFileDescriptorState", int_type, null_entry, L"File descriptor in bad state.");
+#endif
+
+#ifdef EBADR
     anna_module_const_int(stack, L"badRequest", EBADR, L"Invalid request descriptor.");
+#else
+    anna_module_const(stack, L"badRequest", int_type, null_entry, L"Invalid request descriptor.");
+#endif
+
+#ifdef EBADRQC
     anna_module_const_int(stack, L"badRequestCode", EBADRQC, L"Invalid request code.");
+#else
+    anna_module_const(stack, L"badRequestCode", int_type, null_entry, L"Invalid request code.");
+#endif
+
+#ifdef EBADSLT
     anna_module_const_int(stack, L"badSlot", EBADSLT, L"Invalid slot.");
+#else
+    anna_module_const(stack, L"badSlot", int_type, null_entry, L"Invalid slot.");
+#endif
+
+#ifdef EBUSY
     anna_module_const_int(stack, L"deviceBusy", EBUSY, L"Device or resource busy.");
+#else
+    anna_module_const(stack, L"deviceBusy", int_type, null_entry, L"Device or resource busy.");
+#endif
+
+#ifdef ECANCELED
     anna_module_const_int(stack, L"canceled", ECANCELED, L"Operation canceled.");
+#else
+    anna_module_const(stack, L"canceled", int_type, null_entry, L"Operation canceled.");
+#endif
+
+#ifdef ECHILD
     anna_module_const_int(stack, L"noChild", ECHILD, L"No child processes.");
+#else
+    anna_module_const(stack, L"noChild", int_type, null_entry, L"No child processes.");
+#endif
+
+#ifdef ECHRNG
     anna_module_const_int(stack, L"channelRange", ECHRNG, L"Channel number out of range.");
+#else
+    anna_module_const(stack, L"channelRange", int_type, null_entry, L"Channel number out of range.");
+#endif
+
+#ifdef ECOMM
     anna_module_const_int(stack, L"communicationError", ECOMM, L"Communication error on send.");
+#else
+    anna_module_const(stack, L"communicationError", int_type, null_entry, L"Communication error on send.");
+#endif
+
+#ifdef ECONNABORTED
     anna_module_const_int(stack, L"connectionAborted", ECONNABORTED, L"Connection aborted.");
+#else
+    anna_module_const(stack, L"connectionAborted", int_type, null_entry, L"Connection aborted.");
+#endif
+
+#ifdef ECONNREFUSED
     anna_module_const_int(stack, L"connectionRefused", ECONNREFUSED, L"Connection refused.");
+#else
+    anna_module_const(stack, L"connectionRefused", int_type, null_entry, L"Connection refused.");
+#endif
+
+#ifdef ECONNRESET
     anna_module_const_int(stack, L"connectionReset", ECONNRESET, L"Connection reset.");
+#else
+    anna_module_const(stack, L"connectionReset", int_type, null_entry, L"Connection reset.");
+#endif
+
+#ifdef EDEADLK
     anna_module_const_int(stack, L"deadlock", EDEADLK, L"Resource deadlock avoided.");
+#else
+    anna_module_const(stack, L"deadlock", int_type, null_entry, L"Resource deadlock avoided.");
+#endif
+
+#ifdef EDESTADDRREQ
     anna_module_const_int(stack, L"destinationRequired", EDESTADDRREQ, L"Destination address required.");
+#else
+    anna_module_const(stack, L"destinationRequired", int_type, null_entry, L"Destination address required.");
+#endif
+
+#ifdef EDOM
     anna_module_const_int(stack, L"domain", EDOM, L"Mathematics argument out of domain of function.");
+#else
+    anna_module_const(stack, L"domain", int_type, null_entry, L"Mathematics argument out of domain of function.");
+#endif
+
+#ifdef EDQUOT
     anna_module_const_int(stack, L"diskQuota", EDQUOT, L"Disk quota exceeded.");
+#else
+    anna_module_const(stack, L"diskQuota", int_type, null_entry, L"Disk quota exceeded.");
+#endif
+
+#ifdef EEXIST
     anna_module_const_int(stack, L"exist", EEXIST, L"File exists.");
+#else
+    anna_module_const(stack, L"exist", int_type, null_entry, L"File exists.");
+#endif
+
+#ifdef EFAULT
     anna_module_const_int(stack, L"fault", EFAULT, L"Bad address.");
+#else
+    anna_module_const(stack, L"fault", int_type, null_entry, L"Bad address.");
+#endif
+
+#ifdef EFBIG
     anna_module_const_int(stack, L"fileTooBig", EFBIG, L"File too large.");
+#else
+    anna_module_const(stack, L"fileTooBig", int_type, null_entry, L"File too large.");
+#endif
+
+#ifdef EHOSTDOWN
     anna_module_const_int(stack, L"hostDown", EHOSTDOWN, L"Host is down.");
+#else
+    anna_module_const(stack, L"hostDown", int_type, null_entry, L"Host is down.");
+#endif
+
+#ifdef EHOSTUNREACH
     anna_module_const_int(stack, L"hostUnreachable", EHOSTUNREACH, L"Host is unreachable.");
+#else
+    anna_module_const(stack, L"hostUnreachable", int_type, null_entry, L"Host is unreachable.");
+#endif
+
+#ifdef EIDRM
     anna_module_const_int(stack, L"identifierRemoved", EIDRM, L"Identifier removed.");
+#else
+    anna_module_const(stack, L"identifierRemoved", int_type, null_entry, L"Identifier removed.");
+#endif
+
+#ifdef EILSEQ
     anna_module_const_int(stack, L"illegalByteSequence", EILSEQ, L"Illegal byte sequence.");
+#else
+    anna_module_const(stack, L"illegalByteSequence", int_type, null_entry, L"Illegal byte sequence.");
+#endif
+
+#ifdef EINPROGRESS
     anna_module_const_int(stack, L"inProgress", EINPROGRESS, L"Operation in progress.");
+#else
+    anna_module_const(stack, L"inProgress", int_type, null_entry, L"Operation in progress.");
+#endif
+
+#ifdef EINTR
     anna_module_const_int(stack, L"interrupted", EINTR, L"Interrupted function call.");
+#else
+    anna_module_const(stack, L"interrupted", int_type, null_entry, L"Interrupted function call.");
+#endif
+
+#ifdef EINVAL
     anna_module_const_int(stack, L"invalid", EINVAL, L"Invalid argument.");
+#else
+    anna_module_const(stack, L"invalid", int_type, null_entry, L"Invalid argument.");
+#endif
+
+#ifdef EIO
     anna_module_const_int(stack, L"ioError", EIO, L"Input/output error.");
+#else
+    anna_module_const(stack, L"ioError", int_type, null_entry, L"Input/output error.");
+#endif
+
+#ifdef EISCONN
     anna_module_const_int(stack, L"connected?", EISCONN, L"Socket is connected.");
+#else
+    anna_module_const(stack, L"connected?", int_type, null_entry, L"Socket is connected.");
+#endif
+
+#ifdef EISDIR
     anna_module_const_int(stack, L"directory?", EISDIR, L"Is a directory.");
+#else
+    anna_module_const(stack, L"directory?", int_type, null_entry, L"Is a directory.");
+#endif
+
+#ifdef EISNAM
     anna_module_const_int(stack, L"named?", EISNAM, L"Is a named type file.");
+#else
+    anna_module_const(stack, L"named?", int_type, null_entry, L"Is a named type file.");
+#endif
+
+#ifdef EKEYEXPIRED
     anna_module_const_int(stack, L"keyExpired", EKEYEXPIRED, L"Key has expired.");
+#else
+    anna_module_const(stack, L"keyExpired", int_type, null_entry, L"Key has expired.");
+#endif
+
+#ifdef EKEYREJECTED
     anna_module_const_int(stack, L"keyRejected", EKEYREJECTED, L"Key was rejected by service.");
+#else
+    anna_module_const(stack, L"keyRejected", int_type, null_entry, L"Key was rejected by service.");
+#endif
+
+#ifdef EKEYREVOKED
     anna_module_const_int(stack, L"keyRevoked", EKEYREVOKED, L"Key has been revoked.");
+#else
+    anna_module_const(stack, L"keyRevoked", int_type, null_entry, L"Key has been revoked.");
+#endif
+
+#ifdef EL2HLT
     anna_module_const_int(stack, L"level2Halted", EL2HLT, L"Level 2 halted.");
+#else
+    anna_module_const(stack, L"level2Halted", int_type, null_entry, L"Level 2 halted.");
+#endif
+
+#ifdef EL2NSYNC
     anna_module_const_int(stack, L"level2NotSynced", EL2NSYNC, L"Level 2 not synchronized.");
+#else
+    anna_module_const(stack, L"level2NotSynced", int_type, null_entry, L"Level 2 not synchronized.");
+#endif
+
+#ifdef EL3HLT
     anna_module_const_int(stack, L"level3Halted", EL3HLT, L"Level 3 halted.");
+#else
+    anna_module_const(stack, L"level3Halted", int_type, null_entry, L"Level 3 halted.");
+#endif
+
+#ifdef EL3RST
     anna_module_const_int(stack, L"level3Reset", EL3RST, L"Level 3 reset.");
+#else
+    anna_module_const(stack, L"level3Reset", int_type, null_entry, L"Level 3 reset.");
+#endif
+
+#ifdef ELIBACC
     anna_module_const_int(stack, L"libraryAccess", ELIBACC, L"Cannot access a needed shared library.");
+#else
+    anna_module_const(stack, L"libraryAccess", int_type, null_entry, L"Cannot access a needed shared library.");
+#endif
+
+#ifdef ELIBBAD
     anna_module_const_int(stack, L"libraryBad", ELIBBAD, L"Accessing a corrupted shared library.");
+#else
+    anna_module_const(stack, L"libraryBad", int_type, null_entry, L"Accessing a corrupted shared library.");
+#endif
+
+#ifdef ELIBMAX
     anna_module_const_int(stack, L"libraryMax", ELIBMAX, L"Attempting to link in too many shared libraries.");
+#else
+    anna_module_const(stack, L"libraryMax", int_type, null_entry, L"Attempting to link in too many shared libraries.");
+#endif
+
+#ifdef ELIBSCN
     anna_module_const_int(stack, L"libraryCorrupt", ELIBSCN, L"lib section in a.out corrupted.");
+#else
+    anna_module_const(stack, L"libraryCorrupt", int_type, null_entry, L"lib section in a.out corrupted.");
+#endif
+
+#ifdef ELIBEXEC
     anna_module_const_int(stack, L"libraryExec", ELIBEXEC, L"Cannot exec a shared library directly.");
+#else
+    anna_module_const(stack, L"libraryExec", int_type, null_entry, L"Cannot exec a shared library directly.");
+#endif
+
+#ifdef ELOOP
     anna_module_const_int(stack, L"loop", ELOOP, L"Too many levels of symbolic links");
+#else
+    anna_module_const(stack, L"loop", int_type, null_entry, L"Too many levels of symbolic links");
+#endif
+
+#ifdef EMEDIUMTYPE
     anna_module_const_int(stack, L"mediumType", EMEDIUMTYPE, L"Wrong medium type.");
+#else
+    anna_module_const(stack, L"mediumType", int_type, null_entry, L"Wrong medium type.");
+#endif
+
+#ifdef EMFILE
     anna_module_const_int(stack, L"maxFile", EMFILE, L"Too many open files.");
+#else
+    anna_module_const(stack, L"maxFile", int_type, null_entry, L"Too many open files.");
+#endif
+
+#ifdef EMLINK
     anna_module_const_int(stack, L"maxLink", EMLINK, L"Too many links.");
+#else
+    anna_module_const(stack, L"maxLink", int_type, null_entry, L"Too many links.");
+#endif
+
+#ifdef EMSGSIZE
     anna_module_const_int(stack, L"messageSize", EMSGSIZE, L"Message too long.");
+#else
+    anna_module_const(stack, L"messageSize", int_type, null_entry, L"Message too long.");
+#endif
+
+#ifdef EMULTIHOP
     anna_module_const_int(stack, L"multihop", EMULTIHOP, L"Multihop attempted.");
+#else
+    anna_module_const(stack, L"multihop", int_type, null_entry, L"Multihop attempted.");
+#endif
+
+#ifdef ENAMETOOLONG
     anna_module_const_int(stack, L"nameTooLong", ENAMETOOLONG, L"Filename too long.");
+#else
+    anna_module_const(stack, L"nameTooLong", int_type, null_entry, L"Filename too long.");
+#endif
+
+#ifdef ENETDOWN
     anna_module_const_int(stack, L"netDown", ENETDOWN, L"Network is down.");
+#else
+    anna_module_const(stack, L"netDown", int_type, null_entry, L"Network is down.");
+#endif
+
+#ifdef ENETRESET
     anna_module_const_int(stack, L"netReset", ENETRESET, L"Connection aborted by network.");
+#else
+    anna_module_const(stack, L"netReset", int_type, null_entry, L"Connection aborted by network.");
+#endif
+
+#ifdef ENETUNREACH
     anna_module_const_int(stack, L"netUnreachable", ENETUNREACH, L"Network unreachable.");
+#else
+    anna_module_const(stack, L"netUnreachable", int_type, null_entry, L"Network unreachable.");
+#endif
+
+#ifdef ENFILE
     anna_module_const_int(stack, L"maxFileInSystem", ENFILE, L"Too many open files in system.");
+#else
+    anna_module_const(stack, L"maxFileInSystem", int_type, null_entry, L"Too many open files in system.");
+#endif
+
+#ifdef ENOBUFS
     anna_module_const_int(stack, L"noBufferSpace", ENOBUFS, L"No buffer space available.");
+#else
+    anna_module_const(stack, L"noBufferSpace", int_type, null_entry, L"No buffer space available.");
+#endif
+
+#ifdef ENODATA
     anna_module_const_int(stack, L"noData", ENODATA, L"No message is available on the STREAM head read queue.");
+#else
+    anna_module_const(stack, L"noData", int_type, null_entry, L"No message is available on the STREAM head read queue.");
+#endif
+
+#ifdef ENODEV
     anna_module_const_int(stack, L"noDevice", ENODEV, L"No such device.");
+#else
+    anna_module_const(stack, L"noDevice", int_type, null_entry, L"No such device.");
+#endif
+
+#ifdef ENOENT
     anna_module_const_int(stack, L"noEntry", ENOENT, L"No such file or directory.");
+#else
+    anna_module_const(stack, L"noEntry", int_type, null_entry, L"No such file or directory.");
+#endif
+
+#ifdef ENOEXEC
     anna_module_const_int(stack, L"noExec", ENOEXEC, L"Exec format error.");
+#else
+    anna_module_const(stack, L"noExec", int_type, null_entry, L"Exec format error.");
+#endif
+
+#ifdef ENOKEY
     anna_module_const_int(stack, L"noKey", ENOKEY, L"Required key not available.");
+#else
+    anna_module_const(stack, L"noKey", int_type, null_entry, L"Required key not available.");
+#endif
+
+#ifdef ENOLCK
     anna_module_const_int(stack, L"noLock", ENOLCK, L"No locks available.");
+#else
+    anna_module_const(stack, L"noLock", int_type, null_entry, L"No locks available.");
+#endif
+
+#ifdef ENOLINK
     anna_module_const_int(stack, L"noLink", ENOLINK, L"Link has been severed.");
+#else
+    anna_module_const(stack, L"noLink", int_type, null_entry, L"Link has been severed.");
+#endif
+
+#ifdef ENOMEDIUM
     anna_module_const_int(stack, L"noMedium", ENOMEDIUM, L"No medium found.");
+#else
+    anna_module_const(stack, L"noMedium", int_type, null_entry, L"No medium found.");
+#endif
+
+#ifdef ENOMEM
     anna_module_const_int(stack, L"noMemory", ENOMEM, L"Not enough space.");
+#else
+    anna_module_const(stack, L"noMemory", int_type, null_entry, L"Not enough space.");
+#endif
+
+#ifdef ENOMSG
     anna_module_const_int(stack, L"noMessage", ENOMSG, L"No message of the desired type.");
+#else
+    anna_module_const(stack, L"noMessage", int_type, null_entry, L"No message of the desired type.");
+#endif
+
+#ifdef ENONET
     anna_module_const_int(stack, L"noNet", ENONET, L"Machine is not on the network.");
+#else
+    anna_module_const(stack, L"noNet", int_type, null_entry, L"Machine is not on the network.");
+#endif
+
+#ifdef ENOPKG
     anna_module_const_int(stack, L"noPackage", ENOPKG, L"Package not installed.");
+#else
+    anna_module_const(stack, L"noPackage", int_type, null_entry, L"Package not installed.");
+#endif
+
+#ifdef ENOPROTOOPT
     anna_module_const_int(stack, L"noProtocol", ENOPROTOOPT, L"Protocol not available.");
+#else
+    anna_module_const(stack, L"noProtocol", int_type, null_entry, L"Protocol not available.");
+#endif
+
+#ifdef ENOSPC
     anna_module_const_int(stack, L"noSpace", ENOSPC, L"No space left on device.");
+#else
+    anna_module_const(stack, L"noSpace", int_type, null_entry, L"No space left on device.");
+#endif
+
+#ifdef ENOSR
     anna_module_const_int(stack, L"noStream", ENOSR, L"No STREAM resources.");
+#else
+    anna_module_const(stack, L"noStream", int_type, null_entry, L"No STREAM resources.");
+#endif
+
+#ifdef ENOSTR
     anna_module_const_int(stack, L"notStream", ENOSTR, L"Not a STREAM.");
+#else
+    anna_module_const(stack, L"notStream", int_type, null_entry, L"Not a STREAM.");
+#endif
+
+#ifdef ENOSYS
     anna_module_const_int(stack, L"notImplemented", ENOSYS, L"Function not implemented.");
+#else
+    anna_module_const(stack, L"notImplemented", int_type, null_entry, L"Function not implemented.");
+#endif
+
+#ifdef ENOTBLK
     anna_module_const_int(stack, L"notBlock", ENOTBLK, L"Block device required.");
+#else
+    anna_module_const(stack, L"notBlock", int_type, null_entry, L"Block device required.");
+#endif
+
+#ifdef ENOTCONN
     anna_module_const_int(stack, L"notConnected", ENOTCONN, L"The socket is not connected.");
+#else
+    anna_module_const(stack, L"notConnected", int_type, null_entry, L"The socket is not connected.");
+#endif
+
+#ifdef ENOTDIR
     anna_module_const_int(stack, L"notDirectory", ENOTDIR, L"Not a directory.");
+#else
+    anna_module_const(stack, L"notDirectory", int_type, null_entry, L"Not a directory.");
+#endif
+
+#ifdef ENOTEMPTY
     anna_module_const_int(stack, L"notEmpty", ENOTEMPTY, L"Directory not empty.");
+#else
+    anna_module_const(stack, L"notEmpty", int_type, null_entry, L"Directory not empty.");
+#endif
+
+#ifdef ENOTSOCK
     anna_module_const_int(stack, L"notSocket", ENOTSOCK, L"Not a socket.");
+#else
+    anna_module_const(stack, L"notSocket", int_type, null_entry, L"Not a socket.");
+#endif
+
+#ifdef ENOTSUP
     anna_module_const_int(stack, L"notSupported", ENOTSUP, L"Operation not supported.");
+#else
+    anna_module_const(stack, L"notSupported", int_type, null_entry, L"Operation not supported.");
+#endif
+
+#ifdef ENOTTY
     anna_module_const_int(stack, L"notTty", ENOTTY, L"Inappropriate I/O control operation.");
+#else
+    anna_module_const(stack, L"notTty", int_type, null_entry, L"Inappropriate I/O control operation.");
+#endif
+
+#ifdef ENOTUNIQ
     anna_module_const_int(stack, L"notUnique", ENOTUNIQ, L"Name not unique on network.");
+#else
+    anna_module_const(stack, L"notUnique", int_type, null_entry, L"Name not unique on network.");
+#endif
+
+#ifdef ENXIO
     anna_module_const_int(stack, L"noDeviceOrAddress", ENXIO, L"No such device or address.");
+#else
+    anna_module_const(stack, L"noDeviceOrAddress", int_type, null_entry, L"No such device or address.");
+#endif
+
+#ifdef EOPNOTSUPP
     anna_module_const_int(stack, L"operationNotSupported", EOPNOTSUPP, L"Operation not supported on socket.");
+#else
+    anna_module_const(stack, L"operationNotSupported", int_type, null_entry, L"Operation not supported on socket.");
+#endif
+
+#ifdef EOVERFLOW
     anna_module_const_int(stack, L"overflow", EOVERFLOW, L"Value too large to be stored in data type.");
+#else
+    anna_module_const(stack, L"overflow", int_type, null_entry, L"Value too large to be stored in data type.");
+#endif
+
+#ifdef EPERM
     anna_module_const_int(stack, L"permission", EPERM, L"Operation not permitted.");
+#else
+    anna_module_const(stack, L"permission", int_type, null_entry, L"Operation not permitted.");
+#endif
+
+#ifdef EPFNOSUPPORT
     anna_module_const_int(stack, L"protocolFamilyNotSupported", EPFNOSUPPORT, L"Protocol family not supported.");
+#else
+    anna_module_const(stack, L"protocolFamilyNotSupported", int_type, null_entry, L"Protocol family not supported.");
+#endif
+
+#ifdef EPIPE
     anna_module_const_int(stack, L"pipe", EPIPE, L"Broken pipe.");
+#else
+    anna_module_const(stack, L"pipe", int_type, null_entry, L"Broken pipe.");
+#endif
+
+#ifdef EPROTO
     anna_module_const_int(stack, L"protocolError", EPROTO, L"Protocol error.");
+#else
+    anna_module_const(stack, L"protocolError", int_type, null_entry, L"Protocol error.");
+#endif
+
+#ifdef EPROTONOSUPPORT
     anna_module_const_int(stack, L"protocolNotSupported", EPROTONOSUPPORT, L"Protocol not supported.");
+#else
+    anna_module_const(stack, L"protocolNotSupported", int_type, null_entry, L"Protocol not supported.");
+#endif
+
+#ifdef EPROTOTYPE
     anna_module_const_int(stack, L"protocolType", EPROTOTYPE, L"Protocol wrong type for socket.");
+#else
+    anna_module_const(stack, L"protocolType", int_type, null_entry, L"Protocol wrong type for socket.");
+#endif
+
+#ifdef ERANGE
     anna_module_const_int(stack, L"range", ERANGE, L"Result too large.");
+#else
+    anna_module_const(stack, L"range", int_type, null_entry, L"Result too large.");
+#endif
+
+#ifdef EREMCHG
     anna_module_const_int(stack, L"remoteAddressChanged", EREMCHG, L"Remote address changed.");
+#else
+    anna_module_const(stack, L"remoteAddressChanged", int_type, null_entry, L"Remote address changed.");
+#endif
+
+#ifdef EREMOTE
     anna_module_const_int(stack, L"remote", EREMOTE, L"Object is remote.");
+#else
+    anna_module_const(stack, L"remote", int_type, null_entry, L"Object is remote.");
+#endif
+
+#ifdef EREMOTEIO
     anna_module_const_int(stack, L"remoteIo", EREMOTEIO, L"Remote I/O error.");
+#else
+    anna_module_const(stack, L"remoteIo", int_type, null_entry, L"Remote I/O error.");
+#endif
+
+#ifdef ERESTART
     anna_module_const_int(stack, L"restart", ERESTART, L"Interrupted system call should be restarted.");
+#else
+    anna_module_const(stack, L"restart", int_type, null_entry, L"Interrupted system call should be restarted.");
+#endif
+
+#ifdef EROFS
     anna_module_const_int(stack, L"readOnly", EROFS, L"Read-only file system.");
+#else
+    anna_module_const(stack, L"readOnly", int_type, null_entry, L"Read-only file system.");
+#endif
+
+#ifdef ESHUTDOWN
     anna_module_const_int(stack, L"shutdown", ESHUTDOWN, L"Cannot send after transport endpoint shutdown.");
+#else
+    anna_module_const(stack, L"shutdown", int_type, null_entry, L"Cannot send after transport endpoint shutdown.");
+#endif
+
+#ifdef ESPIPE
     anna_module_const_int(stack, L"seekPipe", ESPIPE, L"Invalid seek.");
+#else
+    anna_module_const(stack, L"seekPipe", int_type, null_entry, L"Invalid seek.");
+#endif
+
+#ifdef ESOCKTNOSUPPORT
     anna_module_const_int(stack, L"socketNotSupported", ESOCKTNOSUPPORT, L"Socket type not supported.");
+#else
+    anna_module_const(stack, L"socketNotSupported", int_type, null_entry, L"Socket type not supported.");
+#endif
+
+#ifdef ESRCH
     anna_module_const_int(stack, L"noSuchProcess", ESRCH, L"No such process.");
+#else
+    anna_module_const(stack, L"noSuchProcess", int_type, null_entry, L"No such process.");
+#endif
+
+#ifdef ESTALE
     anna_module_const_int(stack, L"stale", ESTALE, L"Stale file handle. This error can occur for NFS and for other file systems.");
+#else
+    anna_module_const(stack, L"stale", int_type, null_entry, L"Stale file handle. This error can occur for NFS and for other file systems.");
+#endif
+
+#ifdef ESTRPIPE
     anna_module_const_int(stack, L"streamPipe", ESTRPIPE, L"Streams pipe error.");
+#else
+    anna_module_const(stack, L"streamPipe", int_type, null_entry, L"Streams pipe error.");
+#endif
+
+#ifdef ETIME
     anna_module_const_int(stack, L"timer", ETIME, L"Timer expired.");
+#else
+    anna_module_const(stack, L"timer", int_type, null_entry, L"Timer expired.");
+#endif
+
+#ifdef ETIMEDOUT
     anna_module_const_int(stack, L"timeout", ETIMEDOUT, L"Connection timed out.");
+#else
+    anna_module_const(stack, L"timeout", int_type, null_entry, L"Connection timed out.");
+#endif
+
+#ifdef ETXTBSY
     anna_module_const_int(stack, L"textBusy", ETXTBSY, L"Text file busy.");
+#else
+    anna_module_const(stack, L"textBusy", int_type, null_entry, L"Text file busy.");
+#endif
+
+#ifdef EUCLEAN
     anna_module_const_int(stack, L"unclean", EUCLEAN, L"Structure needs cleaning.");
+#else
+    anna_module_const(stack, L"unclean", int_type, null_entry, L"Structure needs cleaning.");
+#endif
+
+#ifdef EUNATCH
     anna_module_const_int(stack, L"unattached", EUNATCH, L"Protocol driver not attached.");
+#else
+    anna_module_const(stack, L"unattached", int_type, null_entry, L"Protocol driver not attached.");
+#endif
+
+#ifdef EUSERS
     anna_module_const_int(stack, L"users", EUSERS, L"Too many users.");
+#else
+    anna_module_const(stack, L"users", int_type, null_entry, L"Too many users.");
+#endif
+
+#ifdef EWOULDBLOCK
     anna_module_const_int(stack, L"wouldBlock", EWOULDBLOCK, L"Operation would block (may be same value as again).");
+#else
+    anna_module_const(stack, L"wouldBlock", int_type, null_entry, L"Operation would block (may be same value as again).");
+#endif
+
+#ifdef EXDEV
     anna_module_const_int(stack, L"improperLink", EXDEV, L"Improper link.");
+#else
+    anna_module_const(stack, L"improperLink", int_type, null_entry, L"Improper link.");
+#endif
+
+#ifdef EXFULL
     anna_module_const_int(stack, L"exchangeFull", EXFULL, L"Exchange full.");
+#else
+    anna_module_const(stack, L"exchangeFull", int_type, null_entry, L"Exchange full.");
+#endif
+
     anna_stack_document(stack, L"All known error statuses");
 
     anna_type_data_register(anna_status_type_data, stack);
