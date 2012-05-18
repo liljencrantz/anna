@@ -81,7 +81,7 @@ lib/%.c: bindings/%.bind bin/anna
 #          explanation of how this code works.          #
 #########################################################
 %.d: %.c
-	@echo -n $@ " " >$@; $(CC) -I include -I . -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
+	@printf "%s" $@ " " >$@; $(CC) -I include -I . -MT $(@:.d=.o)  -MM -MG $*.c >> $@ || rm $@ 
 
 ifneq "$(MAKECMDGOALS)" "clean"
 -include $(ANNA_OBJS:.o=.d)
