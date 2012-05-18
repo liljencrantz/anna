@@ -6,7 +6,9 @@
 #include <assert.h>
 #include <string.h>
 #include <pthread.h>
+#ifdef HAVE_SYS_PRCTL_H
 #include <sys/prctl.h>
+#endif
 #include <sys/time.h>
 #include <stddef.h>
 

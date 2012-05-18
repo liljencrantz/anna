@@ -124,3 +124,10 @@ long wcstol(const wchar_t *nptr,
 }
 
 #endif
+
+#ifndef HAVE_PRCTL
+static inline int prctl(
+    int option, unsigned long arg2, unsigned long arg3, unsigned long arg4, unsigned long arg5)
+{
+}
+#endif

@@ -263,12 +263,13 @@ AC_SEARCH_LIBS( nan, [m], , [AC_MSG_ERROR([Could not find a math library impleme
 AC_SEARCH_LIBS( pthread_create, [pthread], , [AC_MSG_ERROR([Could not find a posix thread library implementation.])] )
 AC_SEARCH_LIBS( dlopen, [dl], , [AC_MSG_ERROR([Could not find a dl library implementation.])] )
 AC_SEARCH_LIBS( readline, [readline], , [AC_MSG_ERROR([Could not find a readline library implementation.])] )
+AC_SEARCH_LIBS( yywrap, [l], , [AC_MSG_ERROR([Could not find a l library implementation.])] )
 
 #
 # Check presense of various header files
 #
 
-AC_CHECK_HEADERS([getopt.h termio.h sys/resource.h term.h ncurses/term.h ncurses.h curses.h stropts.h siginfo.h sys/select.h sys/ioctl.h sys/termios.h libintl.h execinfo.h])
+AC_CHECK_HEADERS([getopt.h termio.h sys/resource.h term.h ncurses/term.h ncurses.h curses.h stropts.h siginfo.h sys/select.h sys/ioctl.h sys/termios.h libintl.h execinfo.h sys/prctl.h])
 
 #
 # On some platforms (Solaris 10) adding -std=c99 in turn requires that
@@ -397,7 +398,7 @@ fi
 #
 
 AC_CHECK_FUNCS( wcsdup wcslen swprintf vswprintf )
-AC_CHECK_FUNCS( fputwc fgetwc wcstol )
+AC_CHECK_FUNCS( fputwc fgetwc wcstol prctl )
 
 
 # Tell the world what we know

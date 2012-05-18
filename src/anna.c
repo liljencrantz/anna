@@ -6,7 +6,11 @@
 #include <assert.h>
 #include <string.h>
 #include <locale.h>
+
+#ifdef HAVE_SYS_PRCTL_H
 #include <sys/prctl.h>
+#endif
+
 #include <time.h>
 #include <getopt.h>
 #include <pthread.h>
