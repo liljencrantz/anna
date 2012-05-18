@@ -312,21 +312,6 @@ proc
     def Int wait(MutableList«Int» status (ensureCapacity(1))) (doc("Wait for a process to change state.")); 
     def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options) (doc("Wait for a process to change state."));
 
-    verbatim("
-static int anna_signalset_set(sigset_t *set, int signal, int value)
-{
-    if(value)
-    {
-        sigaddset(set, signal);
-    }
-    else
-    {
-        sigdelset(set, signal);
-    }
-    return value;
-}
-");
-
     cType SignalSet (name(sigset_t), doc("A set of signals. Used by the unix.proc.signalfd and unix.proc.sigprocmask functions."))
     {
 	def Void __init__() (name(sigemptyset), doc("Create an empty new set"));
@@ -339,27 +324,6 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 	def Bool __set__(Int signal, Bool value (nullable)) (name(anna_signalset_set), doc("If value is non-null, add the specified signal to the set. Otherwise, remove it."));
     }
 
-    def Int signalfd(Int fd, SignalSet mask, Int flags) (doc("Create a file descriptor for accepting signals."));
-
-    cStruct SignalInfoFd (name(signalfd_siginfo), doc("A structure describing a recieved signal."))
-    {
-	var Int signal (name(ssi_signo), doc("Signal number."));
-	var Int code (name(ssi_code), doc("Signal code."));
-	var Int pid (name(ssi_pid), doc("PID of sender"));
-	var Int uid (name(ssi_uid), doc("Real UID of sender"));
-	var Int fd (name(ssi_fd), doc("File descriptor for io signal."));
-	var Int tid (name(ssi_tid), doc("Kernel timer id for signals relating to Posix timers"));
-	var Int band (name(ssi_band), doc("Band event for io signal"));
-    }
- 
-    signalfdFlag
-    {
-	attribute(doc("Flags determining the mode for unix.proc.signalfd"));
-
-	const Int nonBlock (define(SFD_NONBLOCK), doc("The resulting file descriptor is non-blocking"));
-	const Int closeOnExec (define(SFD_CLOEXEC, doc("Close the resulting file descriptor on exec")));
-    }
-   
     sigprocmaskFlag
     {
 	attribute(doc("Flags determining the mode for unix.iosigprocmask"));
@@ -378,7 +342,6 @@ int anna_read_signal(int fd, struct signalfd_siginfo *info)
 }
 ");
 
-    def Bool readSignal(Int fd, SignalInfoFd info) (name(anna_read_signal), doc("Read one signal information structure form the specified file descriptor."));    
 }
 
 user
