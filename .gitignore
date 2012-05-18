@@ -22,3 +22,10 @@ junk
 lib/curses.c
 lib/math.c
 documentation/js/keywordList.js
+autom4te.cache
+Makefile
+config.*
+configure
+configure.lineno
+include/anna/config.h.in
+include/anna/config.h

@@ -1382,8 +1382,8 @@ ANNA_VM_NATIVE(%(setterName), 2)
     %(source)
 
  */
+#include \"anna/config.h\"
 
-#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>

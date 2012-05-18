@@ -1,4 +1,5 @@
-#define _GNU_SOURCE
+#include "anna/config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -6,6 +7,7 @@
 #include <string.h>
 #include <dlfcn.h>
 
+#include "anna/fallback.h"
 #include "anna/common.h"
 #include "anna/util.h"
 #include "anna/base.h"

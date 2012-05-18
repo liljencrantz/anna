@@ -1,10 +1,12 @@
-#define _GNU_SOURCE
+#include "anna/config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
 
+#include "anna/fallback.h"
 #include "anna/common.h"
 #include "anna/util.h"
 #include "anna/wutil.h"

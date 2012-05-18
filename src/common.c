@@ -3,7 +3,6 @@
 Various functions, mostly string utilities, that are used by most
 parts of fish.
 */
-#define _GNU_SOURCE
 #include "anna/config.h"
 
 #include <stdlib.h>

@@ -933,7 +933,7 @@ op3:
 op4:
 	'^' identifier
 	{
-	    $$ = $2
+	    $$ = $2;
 	};
 
 op5:
@@ -973,11 +973,11 @@ op7:
 post_op8:
 	NEXT
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__next__")
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__next__");
 	} |
 	PREV
 	{
-	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__prev__")
+	    $$ = (anna_node_t *)anna_node_create_identifier(&@$,L"__prev__");
 	};
 
 opt_identifier:

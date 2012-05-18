@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 /** \file util.c
     Generic utilities library.
 

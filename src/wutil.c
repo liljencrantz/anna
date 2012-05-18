@@ -29,10 +29,7 @@
 
 #include "anna/common.h"
 #include "anna/wutil.h"
-/*
-#include "halloc.h"
-#include "halloc_util.h"
-*/
+
 /**
    Minimum length of the internal covnersion buffers
 */
