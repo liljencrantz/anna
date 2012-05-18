@@ -1170,7 +1170,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"freeze"),
-	string_type, mutable ? &anna_string_i_copy : &anna_util_noop,
+	imutable_string_type, mutable ? &anna_string_i_copy : &anna_util_noop,
 	0,
     	L"An imutable copy of this String, or the String itself if it is already imutable.");
     anna_member_create_native_property(

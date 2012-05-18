@@ -69,7 +69,8 @@ anna_type_t *object_type=0,
     *complex_type=0,
     *hash_type=0,
     *pair_type=0,
-    *buffer_type=0
+    *buffer_type=0,
+    *sendable_type=0
     ;
 
 anna_object_t *null_object=0;
@@ -93,6 +94,7 @@ const static anna_type_data_t anna_lang_type_data[] =
     { &hash_type, L"HashMap" },
     { &pair_type, L"Pair" },
     { &buffer_type, L"Buffer" },
+    { &sendable_type, L"Sendable" },
 };
 
 static void anna_null_type_create()
@@ -243,6 +245,7 @@ void anna_lang_load(anna_stack_template_t *stack)
     anna_pair_type_create();
     anna_hash_type_create();
     anna_buffer_type_create();
+    anna_type_make_sendable(sendable_type);
     
     static wchar_t *p_argn[]={L"object"};
 

@@ -434,6 +434,7 @@ void anna_reflection_type_for_function_create(
 	res->member_list.pos = bbb->member_list.pos;
 	res->member_list.size = bbb->member_list.size;
 	al_push(&anna_function_cloned, (void *)res);
+	anna_type_make_sendable(res);
     }
     else
     {

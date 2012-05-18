@@ -250,7 +250,7 @@ void anna_mp_load(anna_stack_template_t *stack)
     anna_type_t *write_argv[] = 
 	{
 	    channel_type,
-	    object_type
+	    sendable_type
 	}
     ;
 
@@ -273,7 +273,7 @@ void anna_mp_load(anna_stack_template_t *stack)
 	channel_type,
 	anna_mid_get(L"read"), 0,
 	&anna_mp_channel_read, 
-	object_type, 
+	sendable_type, 
 	1,
 	write_argv, write_argn, 0, L"Read the next message from the channel");
 

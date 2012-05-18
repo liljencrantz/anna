@@ -1021,6 +1021,13 @@ static void anna_list_type_create_internal(
 	}
     ;
 
+    anna_type_t *o_argv[] = 
+	{
+	    type,
+	    object_type
+	}
+    ;
+
     anna_type_t *l_argv[] = 
 	{
 	    type,
@@ -1181,7 +1188,7 @@ static void anna_list_type_create_internal(
 	&anna_list_in,
 	int_type,
 	2,
-	a_argv,
+	o_argv,
 	a_argn, 0, 
 	L"If the specified value exists in the list, the first index where it can be found is returned, otherwise, null is returned.");
     

@@ -456,12 +456,6 @@ static void anna_module_bootstrap_monkeypatch(
 	{
 	    anna_node_wrapper_add_method(fun);
 	}
-	else if(type == string_type)
-	{
-	    anna_member_create_method(string_type, anna_mid_get(fun->name), fun);
-	    anna_member_create_method(mutable_string_type, anna_mid_get(fun->name), fun);
-	    anna_member_create_method(imutable_string_type, anna_mid_get(fun->name), fun);
-	}
 	else
 	{
 	    if(type)

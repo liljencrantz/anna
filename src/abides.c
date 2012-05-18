@@ -107,6 +107,11 @@ static int anna_abides_fault_count_internal(
 	}
     }
 
+    if(anna_type_sendable(role_model) && !anna_type_sendable(contender))
+    {
+	res++;
+    }
+    
     for(i=0; i<anna_type_get_member_count(role_model); i++)
     {
 	anna_member_t *r_memb = anna_type_get_member_idx(
