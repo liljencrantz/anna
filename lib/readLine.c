@@ -12,8 +12,8 @@
     internalBindings/readLine.bind
 
  */
+#include "anna/config.h"
 
-#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <wchar.h>

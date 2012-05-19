@@ -363,10 +363,10 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 
 		if(!member)
 		{
-		    anna_node_print(99, ctype->definition);
+		    anna_node_print(99, (anna_node_t *)ctype->definition);
 		    
 		    anna_error(
-			n, L"No constructor for type %ls could be found\n", ctype->name);
+			(anna_node_t *)n, L"No constructor for type %ls could be found\n", ctype->name);
 		    CRASH;
 		}
 		

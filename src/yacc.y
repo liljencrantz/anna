@@ -22,7 +22,7 @@
 #include "autogen/lex.h"
 #include "anna/intern.h"
 
-void anna_yacc_error(YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr, char *s);
+void anna_yacc_error(YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr, const char *s);
 int anna_yacc_parse(yyscan_t scanner, wchar_t *filename, anna_node_t **parse_tree_ptr);
 int anna_yacc_lex (YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename);
 int was_end_brace=0;
@@ -202,7 +202,7 @@ enum
 };
 
 
-wchar_t *utf82wcs(char *in)
+static wchar_t *utf82wcs(char *in)
 {
     size_t inlen = strlen(in);
     size_t outlen = sizeof(wchar_t) * (1+inlen);
@@ -1532,7 +1532,7 @@ int anna_yacc_lex (
 
 void anna_yacc_error (
     YYLTYPE *llocp, yyscan_t scanner, 
-    wchar_t *filename, anna_node_t **parse_tree_ptr, char *s) 
+    wchar_t *filename, anna_node_t **parse_tree_ptr, const char *s) 
 {
     if(anna_yacc_error_count == 0 && anna_yacc_fully_read)
     {

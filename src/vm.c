@@ -106,7 +106,7 @@ static void anna_vm_debugger_callback2(anna_context_t *context)
 
 static void anna_vm_debugger_callback(anna_context_t *context)
 {
-    anna_entry_t *value = anna_context_pop_entry(context);
+    anna_context_pop_entry(context);
     int param_count = anna_as_int(anna_context_peek_entry(context, 0));
     anna_entry_t **param = context->top - param_count-1;
     anna_context_drop(context, param_count+1);

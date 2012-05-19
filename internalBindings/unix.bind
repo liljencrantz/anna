@@ -312,6 +312,21 @@ proc
     def Int wait(MutableList«Int» status (ensureCapacity(1))) (doc("Wait for a process to change state.")); 
     def Int waitpid(Int pid, MutableList«Int» status (ensureCapacity(1)), Int options) (doc("Wait for a process to change state."));
 
+    verbatim("
+static int anna_signalset_set(sigset_t *set, int signal, int value)
+{
+    if(value)
+    {
+        sigaddset(set, signal);
+    }
+    else
+    {
+        sigdelset(set, signal);
+    }
+    return value;
+}
+");
+
     cType SignalSet (name(sigset_t), doc("A set of signals. Used by the unix.proc.signalfd and unix.proc.sigprocmask functions."))
     {
 	def Void __init__() (name(sigemptyset), doc("Create an empty new set"));

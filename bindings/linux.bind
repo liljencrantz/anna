@@ -7,20 +7,6 @@ include(
 
 signal
 {
-    verbatim("
-static int anna_signalset_set(sigset_t *set, int signal, int value)
-{
-    if(value)
-    {
-        sigaddset(set, signal);
-    }
-    else
-    {
-        sigdelset(set, signal);
-    }
-    return value;
-}
-");
 
     def Int signalfd(Int fd, SignalSet mask, Int flags) (doc("Create a file descriptor for accepting signals."));
 

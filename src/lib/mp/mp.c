@@ -183,8 +183,6 @@ static void anna_mp_channel_write(anna_context_t *context)
 
     if(param[0] != null_entry)
     {
-	ANNA_ENTRY_NULL_CHECK(param[0]);
-	
 	anna_object_t *chan = anna_as_obj(param[0]);
 	
 	anna_channel_sync_t *cond = (anna_channel_sync_t *)anna_blob_payload(anna_entry_get(chan, ANNA_MID_CHANNEL_SYNC));

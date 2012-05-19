@@ -31,7 +31,7 @@
 #include "anna/use.h"
 #include "anna/slab.h"
 
-#include "src/slab.c"
+#include "alloc/slab.c"
 
 array_list_t anna_alloc[ANNA_ALLOC_TYPE_COUNT] = {
     AL_STATIC,
@@ -233,8 +233,6 @@ void anna_alloc_unpause_worker()
     pthread_mutex_unlock(&anna_alloc_mutex_gc);
 }
 
-static void anna_gc_common(anna_context_t *context, int do_signal);
-
 void anna_gc(anna_context_t *context)
 {
     if(anna_alloc_gc_block_counter)
@@ -404,13 +402,6 @@ static void anna_alloc_gc_collect()
     while(al_get_count(&anna_alloc_todo))
     {
 	anna_object_t *obj = (anna_object_t *)al_pop(&anna_alloc_todo);
-	assert(obj);
-	assert((obj->flags & ANNA_ALLOC_TYPE_COUNT) == ANNA_OBJECT);
-	assert(obj->type);
-	assert(obj->type > 0xff);
-	assert((obj->type->flags & ANNA_ALLOC_TYPE_COUNT) == ANNA_TYPE);
-	assert(obj->type->mark_object);
-	
 	obj->type->mark_object(obj);
     }
 //	anna_message(L"Marked objects.\n");

@@ -125,20 +125,6 @@ AC_CONFIG_HEADERS(include/anna/config.h)
 
 
 #
-# This adds markup to the code that results in a few extra compile
-# time checks on recent GCC versions. It helps stop a few common bugs.
-#
-
-AH_BOTTOM([#if __GNUC__ >= 3
-#define __warn_unused __attribute__ ((warn_unused_result))
-#define __sentinel __attribute__ ((sentinel))
-#else
-#define __warn_unused 
-#define __sentinel 
-#endif])
-
-
-#
 # Set up various programs needed for install
 #
 
@@ -248,7 +234,7 @@ if test "$glibc" = yes; then
 	# This gives us access to prototypes for gnu extensions and C99
 	# functions if we are compiling agains glibc. All GNU extensions
 	# that are used must have a fallback implementation available in
-	# fallback.h, in order to keep fish working on non-gnu platforms.
+	# fallback.h, in order to keep anna working on non-gnu platforms.
 	#
 
 	CFLAGS="$CFLAGS -D_GNU_SOURCE=1 -D_ISO99_SOURCE=1"
@@ -384,8 +370,7 @@ done
 
 #
 # We didn't find any combination of switches that worked - revert to
-# no switches and hope that the fallbacks work.  A warning will be
-# printed at the end of the configure script.
+# no switches and hope that the fallbacks work.
 #
 
 if test ! x$local_found_posix_switch = xyes; then
@@ -394,7 +379,7 @@ fi
 
 
 #
-# Check for presense of various functions used by fish
+# Check for presense of various functions used by anna
 #
 
 AC_CHECK_FUNCS( wcsdup wcslen swprintf vswprintf )
