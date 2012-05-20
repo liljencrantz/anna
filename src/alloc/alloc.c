@@ -31,7 +31,7 @@
 #include "anna/use.h"
 #include "anna/slab.h"
 
-#include "alloc/slab.c"
+#include "src/alloc/slab.c"
 
 array_list_t anna_alloc[ANNA_ALLOC_TYPE_COUNT] = {
     AL_STATIC,
