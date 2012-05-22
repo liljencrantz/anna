@@ -1,6 +1,6 @@
 def plain()
 {
-    print(reflection.currentContinuation.filename);
+    print(reflection.currentContinuation.filename.split("/")[-1]);
     print(reflection.currentContinuation.line);
 }
 
