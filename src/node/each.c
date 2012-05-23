@@ -36,6 +36,7 @@ anna_node_t *anna_node_each_replace(
     switch(this->node_type)
     {
 
+	case ANNA_NODE_NOTHING:
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_SPECIALIZE:
 	case ANNA_NODE_CONSTRUCT:
@@ -44,7 +45,10 @@ anna_node_t *anna_node_each_replace(
 	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
-	    n->function = anna_node_each_replace(n->function, fun, aux);
+	    if(this->node_type != ANNA_NODE_NOTHING)
+	    {
+		n->function = anna_node_each_replace(n->function, fun, aux);
+	    }
 	    int i;
 	    for(i=0; i<n->child_count; i++)
 	    {

@@ -196,7 +196,6 @@ static anna_member_t *anna_node_calc_type_call_helper(
 	case 0:
 	{
 	    anna_error((anna_node_t *)*node_ptr, L"No candidates for method call %ls\n", anna_mid_get_reverse((*node_ptr)->mid));
-	    	    
 	    break;
 	}
 
@@ -1104,11 +1103,10 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    }
 	    anna_node_closure_t *b1 = (anna_node_closure_t *)d->block1;
 	    anna_node_closure_t *b2 = (anna_node_closure_t *)d->block2;
-	    
+
 	    d->return_type = anna_type_intersect(
 		b1->payload->return_type,
 		b2->payload->return_type);
-	    
 	    break;
 	}	
 	
@@ -1118,6 +1116,22 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    d->return_type = d->payload->type;
 	    d->flags |= ANNA_NODE_TYPE_FULL;
 	    break;   
+	}
+	
+	case ANNA_NODE_NOTHING:
+	{
+	    anna_node_call_t *n = (anna_node_call_t *)this;
+	    if(n->child_count == 0)
+	    {
+		n->return_type = object_type;
+	    }
+	    else
+	    {
+		n->child[n->child_count-1] = anna_node_calculate_type(n->child[n->child_count-1]);	    
+		n->return_type = n->child[n->child_count-1]->return_type;
+		n->flags |= (n->child[n->child_count-1]->flags & ANNA_NODE_TYPE_FULL);
+	    }
+	    break;
 	}
 	
 	case ANNA_NODE_RETURN:

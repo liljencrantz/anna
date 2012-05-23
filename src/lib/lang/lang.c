@@ -76,7 +76,6 @@ anna_type_t *object_type=0,
     ;
 
 anna_object_t *null_object=0;
-anna_function_t *anna_lang_nothing;
 
 const static anna_type_data_t anna_lang_type_data[] = 
 {
@@ -165,17 +164,6 @@ ANNA_VM_NATIVE(anna_i_print_internal, 1)
     return null_entry;
 }
 
-ANNA_VM_NATIVE(anna_i_nothing, 1)
-{
-    anna_object_t *list = anna_as_obj(param[0]);
-    size_t count = anna_list_get_count(list);
-    if(count)
-    {
-	return anna_list_get(list, count-1);
-    }
-    return null_entry;
-}
-
 ANNA_VM_NATIVE(anna_i_not, 1)
 {
     return anna_entry_null(param[0])?anna_from_int(1):null_entry;
@@ -260,15 +248,6 @@ void anna_lang_load(anna_stack_template_t *stack)
 	p_argn, 0,
 	L"Print the specified String to standard output. This is a non-standard internal helper function, do not use it directly. Use the print function instead.");
 
-    anna_lang_nothing = anna_module_function(
-	stack,
-	L"nothing", 
-	ANNA_FUNCTION_VARIADIC, 
-	&anna_i_nothing, 
-	object_type, 1, &object_type, 
-	p_argn, 0,
-	L"The nothing function returns the last argument in the parameter list (Or null if given no arguments). This function is sometimes useful when performing meta-programming and wishing to do multiple things in a single expression.");
-    
     anna_module_function(
 	stack,
 	L"__not__", 0, 

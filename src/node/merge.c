@@ -2,6 +2,7 @@ static int is_call(anna_node_t *node)
 {
     switch(node->node_type)
     {
+	case ANNA_NODE_NOTHING:
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_STATIC_MEMBER_CALL:

@@ -588,6 +588,31 @@ static void anna_vm_compile_i(
 	    break;
 	}
 
+	case ANNA_NODE_NOTHING:
+	{
+	    anna_node_call_t *node2 = (anna_node_call_t *)node;
+	    int i;
+	    
+	    if(node2->child_count == 0)
+	    {
+		anna_vm_const(ctx, null_entry);
+	    }
+	    else
+	    {
+		for(i=0; i<node2->child_count; i++)
+		{
+		    if(i != 0)
+		    {
+			anna_vm_null(ctx, ANNA_INSTR_POP);
+		    }
+		    anna_vm_compile_i(ctx, fun, node2->child[i], 0);		
+		}
+	    }
+	    
+	    
+	    break;
+	}
+
 	case ANNA_NODE_ASSIGN:
 	{
 	    anna_node_assign_t *node2 = (anna_node_assign_t *)node;

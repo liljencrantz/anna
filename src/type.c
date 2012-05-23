@@ -696,18 +696,13 @@ static void anna_type_def_flatten(anna_type_t *type)
 	anna_node_t *next = type->body->child[i];
 	int skip = 0;
 	
-	if(next->node_type == ANNA_NODE_CALL)
+	if(next->node_type == ANNA_NODE_NOTHING)
 	{
 	    anna_node_call_t *c = (anna_node_call_t *)next;
-	    anna_entry_t *val = anna_node_static_invoke_try(c->function, type->stack);
-	    
-	    if(val && anna_function_unwrap(anna_as_obj(val)) == anna_lang_nothing)
+	    skip = 1;		
+	    for(j=0; j<c->child_count; j++)
 	    {
-		skip = 1;		
-		for(j=0; j<c->child_count; j++)
-		{
-		    anna_node_call_add_child(ndef, c->child[j]);    
-		}
+		anna_node_call_add_child(ndef, c->child[j]);    
 	    }
 	}
 	if(!skip)
@@ -746,7 +741,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	}	
 
 	CHECK_NODE_TYPE(type->definition->child[0], ANNA_NODE_IDENTIFIER);
-	CHECK_NODE_TYPE(type->definition->child[1], ANNA_NODE_CALL);
+	CHECK_NODE_TYPE(type->definition->child[1], ANNA_NODE_NOTHING);
 	CHECK_NODE_BLOCK(type->definition->child[2]);
 	
 //	anna_node_call_t *attribute_list = 

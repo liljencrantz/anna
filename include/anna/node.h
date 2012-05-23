@@ -49,6 +49,7 @@ enum anna_node_enum
     ANNA_NODE_STATIC_MEMBER_GET,
     ANNA_NODE_STATIC_MEMBER_SET,
     ANNA_NODE_STATIC_MEMBER_CALL,
+    ANNA_NODE_NOTHING,
 
     /* This needs to be the last element of the enum! */
     ANNA_NODE_TYPE_COUNT
@@ -56,6 +57,9 @@ enum anna_node_enum
 
 #define ANNA_NODE_DONT_EXPAND 512
 #define ANNA_NODE_MERGE 1024
+/*
+  A full node is a node that can be used to access the internal members of a type.
+ */
 #define ANNA_NODE_TYPE_FULL 2048
 #define ANNA_NODE_FREED 4096
 

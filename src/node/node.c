@@ -112,7 +112,8 @@ void anna_node_set_location(anna_node_t *node, anna_location_t *l)
 
 anna_node_call_t *node_cast_call(anna_node_t *node) 
 {
-    if(node->node_type!=ANNA_NODE_CALL)
+    if((node->node_type!=ANNA_NODE_CALL) &&
+       (node->node_type!=ANNA_NODE_NOTHING))
     {
 	anna_error(node, L"Expected a call node, got node of type %d", node->node_type);
 	CRASH;
@@ -437,6 +438,7 @@ static size_t anna_node_size(anna_node_t *n)
 {
     switch(n->node_type)
     {
+	case ANNA_NODE_NOTHING:
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_STATIC_MEMBER_CALL:
@@ -520,6 +522,7 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     r->wrapper=0;
     
     if( (n->node_type == ANNA_NODE_CALL) || 
+	(n->node_type == ANNA_NODE_NOTHING) || 
 	(n->node_type == ANNA_NODE_CONSTRUCT) || 
 	(n->node_type == ANNA_NODE_MEMBER_CALL) ||
 	(n->node_type == ANNA_NODE_SPECIALIZE) ||
@@ -610,6 +613,7 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
     switch(node1->node_type)
     {
 
+	case ANNA_NODE_NOTHING:
 	case ANNA_NODE_SPECIALIZE:
 	case ANNA_NODE_CALL:
 	{
@@ -617,7 +621,7 @@ int anna_node_compare(anna_node_t *node1, anna_node_t *node2)
 	    anna_node_call_t *n2 = (anna_node_call_t *)node2;
 	    if(n1->child_count != n2->child_count)
 		return n1->child_count - n2->child_count;
-	    if(node1->node_type != ANNA_NODE_SPECIALIZE)
+	    if(node1->node_type == ANNA_NODE_CALL)
 	    {
 		int ff = anna_node_compare(n1->function, n2->function);
 	    

@@ -525,6 +525,13 @@ ANNA_VM_MACRO(anna_macro_while)
 	    node->child[1]);
 }
 
+ANNA_VM_MACRO(anna_macro_nothing)
+{
+    node->node_type = ANNA_NODE_NOTHING;
+    node->object = 0;
+    return (anna_node_t *)node;
+}
+
 static void anna_macro_add(
     anna_stack_template_t *stack, 
     wchar_t *name,
@@ -584,4 +591,5 @@ void anna_macro_init(anna_stack_template_t *stack)
     anna_macro_add(stack, L"break", &anna_macro_break);
     anna_macro_add(stack, L"continue", &anna_macro_continue);
     anna_macro_add(stack, L"use", &anna_macro_use);
+    anna_macro_add(stack, L"nothing", &anna_macro_nothing);
 }

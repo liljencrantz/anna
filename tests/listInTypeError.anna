@@ -1,8 +1,0 @@
-/*
-  This should result in a compile time error, as we're trying to find
-  a String in a List of Ints.
-*/
-
-def main() {
-    print("hej hopp" in [1,2,3]);
-}

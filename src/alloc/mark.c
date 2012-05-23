@@ -139,6 +139,7 @@ void anna_alloc_mark_node(anna_node_t *o)
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
 	case ANNA_NODE_SPECIALIZE:
+	case ANNA_NODE_NOTHING:
 	{	    
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    int i;
@@ -150,7 +151,8 @@ void anna_alloc_mark_node(anna_node_t *o)
 		CRASH;
 	    }
 #endif
-	    anna_alloc_mark_node(n->function);
+	    if(n->function)
+		anna_alloc_mark_node(n->function);
 	    for(i=0; i<n->child_count; i++)
 	    {
 		anna_alloc_mark_node(n->child[i]);

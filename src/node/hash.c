@@ -10,6 +10,8 @@ static void anna_node_hash_func_step(
     switch(this->node_type)
     {
 	case ANNA_NODE_CALL:
+	case ANNA_NODE_NOTHING:
+	case ANNA_NODE_SPECIALIZE:
 	{
 	    anna_node_call_t *i = (anna_node_call_t *)this;
 	    contrib = anna_hash((int *)&i->child_count, 1);
@@ -102,5 +104,3 @@ int anna_node_hash_cmp(
     anna_node_t *nb = (anna_node_t *)b;
     return anna_node_compare(na, nb) == 0;
 }
-
-

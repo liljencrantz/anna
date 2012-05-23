@@ -1029,7 +1029,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     
     if(!program || anna_error_count) 
     {
-	debug(D_ERROR,L"Module %ls failed to parse correctly; exiting.\n", module_stack->filename);
+	debug(D_ERROR,L"Module %ls failed to parse correctly; exiting %d.\n", module_stack->filename);
 	return;
     }
     
