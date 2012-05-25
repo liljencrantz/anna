@@ -374,8 +374,51 @@ the doc attribute of declarations."))
     {
 	const Call attribute;
     }
+
+    def signature(Function fun)
+    {
+	res := "".thaw ~ fun.outputType ~ " ";
+	res ~= fun.name ~ " ";
+	res ~= '(';
+        variadicIdxNamed := fun.variadicNamed? and fun.inputType.count - 1;
+        variadicIdx := ? as Int;
+	if(fun.variadic?) {
+	    variadicIdxNamed--;
+	    variadicIdx = fun.inputType.count - 1;
+	}
+	res ~= ", ".join(fun.inputName.map(idx, name)
+	{
+  	    type := fun.inputType[idx];
+	    /*
+	     This rather ugly piece of code extracts the value
+	     specialization of a HashMap type.  Need to figure out a
+	     nicer way to do so...
+	     */
+	    if(idx == variadicIdxNamed) 
+	    {
+		type = (type.member.find(memb){memb.name=="__get__"}.value(?) as reflection.Function).outputType;
+	    }
+	    res := "" ~ type ~ " " ~ name;
+	    res ~= (idx == variadicIdx) and "..." or "";
+	    res ~= (idx == variadicIdxNamed) and ":" or "";
+	    if(fun.defaultValue[idx])
+	    {
+		res ~= " = " ~ fun.defaultValue[idx];
+	    }
+	    res;
+	});
+	
+	res ~= ')';
+	return res;
+    }
+
     attribute := (object as WithAttribute).attribute or object.__type__.attribute;
     doc := annaUtil.findAttribute(attribute, "doc");
+    if(fun := object as Function)
+    {
+	res ~= signature(fun);
+	res ~= "\n\n";
+    }
     if(doc.empty?)
     {
 	res ~= "No documentation available for object of type " ~ (object.__type__.name or "Null");
