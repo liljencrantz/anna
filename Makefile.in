@@ -9,7 +9,7 @@ CC := @CC@
 ANNABIND := ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annabind.anna
 ANNADOC := ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna util/annadoc.anna
 INSTALL := @INSTALL@
-
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
 
 #
 # Installation directories
