@@ -1,9 +1,4 @@
 /*
-  This is the binding file for the unix module and all of it's
-  sub-modules. This is a large and complicated binding with hundreds
-  of functions, variables and constants from the basic Unix/C api
-  wrapped into Anna equivalents.
-
   The Anna binding generator is written in Anna and uses many of the
   functions of the unix module, which creates a chicken-and-egg
   problem.
@@ -24,9 +19,19 @@ include(
 
 attribute(
     doc(
-	"The unix module is the parent module for various low level wrappers for basic Unix functionality.", 
-	"Anna currently has a very sparse standard library, which often necessitates the use of these low level libraries, but when available, a more programmer friendly high level library should be used. The documentation for these modules is very sparse - the same documentation is also available e.g. as Unix man pages.", 
-	"The unix module is still rater incomplete. There are many, many functions that are currently missing. The ones that are there have inconsistent naming policies with regard to capitalization, abbreviations, etc. The exact policy for naming, etc. in this module will evolve over time, which can result in future incompatibilities.",
+	"The unix module is the parent module for various low level wrappers
+for basic Unix functionality.", 
+	"Anna currently has a very sparse standard library, which often
+necessitates the use of these low level libraries, but when available,
+a more programmer friendly high level library should be used. In
+addition, the documentation for these modules is rather sparse - for a
+full reference of the various members of the unix.* submodules, read
+the original man pages.", 
+	"The unix.* submodules are still rater incomplete. There are many, many
+functions that are currently missing. The ones that are there have
+inconsistent naming policies with regard to capitalization,
+abbreviations, etc. The exact policy for naming, etc. in this module
+will evolve over time, which can result in future incompatibilities.",
 	));
 
 time

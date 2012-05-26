@@ -375,6 +375,9 @@ the doc attribute of declarations."))
 	const Call attribute;
     }
 
+    objType := (object as Type) or object.__type__;
+    description := objType.toString() ~ " type";
+
     def signature(Function fun)
     {
 	res := "".thaw ~ fun.outputType ~ " ";
@@ -418,7 +421,8 @@ the doc attribute of declarations."))
     {
 	res ~= signature(fun);
 	res ~= "\n\n";
-    }
+	description = fun.name ~ " function";
+  }
     if(doc.empty?)
     {
 	res ~= "No documentation available for object of type " ~ (object.__type__.name or "Null");
@@ -432,18 +436,21 @@ the doc attribute of declarations."))
 	      formatHtml(fragment.payload);
 	    });
     }
+
+    def members(Type tp)
+    {
+	tp.member.filter(memb){
+	    !memb.internal?
+		}.sort(
+		    def Int(Object first, Object second){
+			(first as Member).name.__cmp__((second as Member).name);
+		    }
+		    ).map(memb){memb as Member};
+    }
+
     if(object.__type__.module?)
     {
-
-	smemb := object.__type__.member.filter(memb){
-	    !memb.internal?
-	}.sort(
-	    def Int(Object first, Object second){
-		(first as Member).name.__cmp__((second as Member).name);
-	    }
-	).map(memb){memb as Member};
-
-//	print(o.__type__.member.filter(memb){!memb.internal?});
+	smemb := members(object.__type__);
 
         submodule := smemb.filter(mem)
 	{
@@ -472,6 +479,12 @@ the doc attribute of declarations."))
 	    res ~= "\n\nThe % module contains the following types:\n" % [object.__type__.name];
 	    res ~= linebreak(subtype);
 	}
+    }
+    else
+    {
+	smemb := members(objType);
+	res ~= "\n\nThe % has the following members:\n" % [description];
+	res ~= linebreak(smemb);	    
     }
 
     return res;
