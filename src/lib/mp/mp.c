@@ -309,4 +309,7 @@ void anna_mp_load(anna_stack_template_t *stack)
 
     anna_type_data_register(
 	anna_mp_type_data, stack);
+
+    anna_stack_document(stack, L"Multiprocessing tools.");
+
 }

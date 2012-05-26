@@ -1,3 +1,4 @@
+attribute(internal, doc("Internally used module. Don't use directly."));
 
 def here() 
 (

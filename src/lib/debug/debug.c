@@ -245,4 +245,6 @@ void anna_debug_load(anna_stack_template_t *stack)
 	&anna_debug_list,
 	0,
 	L"A text list of all current breakpoints.");
+
+    anna_stack_document(stack, L"Command line tools for the interactive debugger.");
 }

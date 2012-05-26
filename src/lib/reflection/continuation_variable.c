@@ -180,5 +180,7 @@ static void anna_continuation_variable_load(anna_stack_template_t *stack)
 	v_argv, v_argn, 0,
 	L"Returns a String representation of this member.");
 
+    anna_type_document(
+	continuation_variable_type,
+	L"The ContinuationVariable type represents a live variable inside a Continuation. It is useful for introspecting the current value of a variable while the function it is defined in is being executed.");
 }
-
