@@ -223,6 +223,12 @@ static void anna_member_type_create()
 	v_argv,
 	v_argn, 0,
 	L"The value of the specified member in the specified object. Note that this function does not currently support fetching the value of a property. This will be fixed in a future version.");
+
+    anna_type_document(
+	member_type,
+	L"The Member type represents any member of a type. It is useful for introspecting type member properties such as member type, whether the member is static and whether the member is publically visible.");
+    
+
 }
 
 #include "src/lib/reflection/method.c"

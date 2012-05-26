@@ -378,6 +378,9 @@ static void anna_function_load(anna_stack_template_t *stack)
     al_destroy(&types);
     base_constructed = 1;
 
+    anna_type_document(
+	res,
+	L"A function represents a piece of Anna program code.");    
 }
 
 static array_list_t anna_function_cloned = AL_STATIC;
