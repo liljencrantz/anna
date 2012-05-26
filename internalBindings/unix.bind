@@ -29,8 +29,8 @@ full reference of the various members of the unix.* submodules, read
 the original man pages.", 
 	"The unix.* submodules are still rater incomplete. There are many, many
 functions that are currently missing. The ones that are there have
-inconsistent naming policies with regard to capitalization,
-abbreviations, etc. The exact policy for naming, etc. in this module
+inconsistent naming conventions with regard to capitalization,
+abbreviations, etc. The convention for naming, etc. in this module
 will evolve over time, which can result in future incompatibilities.",
 	));
 
@@ -425,10 +425,10 @@ env
 {
     attribute(doc("The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables."));
 
-    def String getenv(String name) (doc("Return the current value of the given environment variable. Equivalanet to the C getenv function."));
-    def Int setenv(String name, String value, Int overwrite) (doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
-    def Int unsetenv(String name) (doc("Delete the specified environment variable. Equivalanet to the C unsetenv function."));
-    def Int clearenv() (doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
+    def String getenv(String name) (lock, doc("Return the current value of the given environment variable. Equivalanet to the C getenv function."));
+    def Int setenv(String name, String value, Bool overwrite) (lock, doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
+    def Int unsetenv(String name) (lock, doc("Delete the specified environment variable. Equivalanet to the C unsetenv function."));
+    def Int clearenv() (lock, doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
     /*
       Todo:
       
@@ -462,7 +462,7 @@ locale
 	const Int numeric (define(LC_NUMERIC), doc("Numeric formating, such as decimal point and thousands separator."));
 	const Int time (define(LC_TIME), doc("Date and time formating."));
     }
-    def String setLocale(Int cateory, String locale (nullable)) (name(setlocale), doc("Set the specified local category to the specified value"));
+    def String setLocale(Int cateory, String locale (nullable)) (lock, name(setlocale), doc("Set the specified local category to the specified value"));
     
     cStructPointer LocaleConv (name(lconv), doc("Detailed local information regarding numeric formating."))
     {

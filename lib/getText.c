@@ -20,6 +20,7 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#include <pthread.h>
 
 #include <libintl.h>
 
@@ -38,18 +39,17 @@ const static anna_type_data_t anna_getText_type_data[] =
 ANNA_VM_NATIVE(getText_i__get_text, 1)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_msgid = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
-    
 
     // Call the function
     char * tmp_var_1 = gettext(native_param_msgid);
     anna_entry_t *result = (tmp_var_1) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_1), tmp_var_1)) : null_entry;
+
     // Perform cleanup
     free(native_param_msgid);
 
@@ -60,22 +60,19 @@ ANNA_VM_NATIVE(getText_i__get_text, 1)
 ANNA_VM_NATIVE(getText_i__d_get_text, 2)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
-        if(param[1] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_domain = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     char *native_param_msgid = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
-    
-    
 
     // Call the function
     char * tmp_var_2 = dgettext(native_param_domain, native_param_msgid);
     anna_entry_t *result = (tmp_var_2) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_2), tmp_var_2)) : null_entry;
+
     // Perform cleanup
     free(native_param_domain);
     free(native_param_msgid);
@@ -87,12 +84,9 @@ ANNA_VM_NATIVE(getText_i__d_get_text, 2)
 ANNA_VM_NATIVE(getText_i__d_c_get_text, 3)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
-        if(param[1] == null_entry){return null_entry;}
-
-        if(param[2] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+    if(param[2] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_domain = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
@@ -100,13 +94,11 @@ ANNA_VM_NATIVE(getText_i__d_c_get_text, 3)
     int native_param_category = anna_as_int(param[2]);
 
     // Validate parameters
-    
-    
-    
 
     // Call the function
     char * tmp_var_3 = dcgettext(native_param_domain, native_param_msgid, native_param_category);
     anna_entry_t *result = (tmp_var_3) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_3), tmp_var_3)) : null_entry;
+
     // Perform cleanup
     free(native_param_domain);
     free(native_param_msgid);
@@ -118,12 +110,9 @@ ANNA_VM_NATIVE(getText_i__d_c_get_text, 3)
 ANNA_VM_NATIVE(getText_i__n_get_text, 3)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
-        if(param[1] == null_entry){return null_entry;}
-
-        if(param[2] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+    if(param[2] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_msgid = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
@@ -131,13 +120,11 @@ ANNA_VM_NATIVE(getText_i__n_get_text, 3)
     int native_param_count = anna_as_int(param[2]);
 
     // Validate parameters
-    
-    
-    
 
     // Call the function
     char * tmp_var_4 = ngettext(native_param_msgid, native_param_msgidPlural, native_param_count);
     anna_entry_t *result = (tmp_var_4) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_4), tmp_var_4)) : null_entry;
+
     // Perform cleanup
     free(native_param_msgid);
     free(native_param_msgidPlural);
@@ -149,14 +136,10 @@ ANNA_VM_NATIVE(getText_i__n_get_text, 3)
 ANNA_VM_NATIVE(getText_i__d_n_get_text, 4)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
-        if(param[1] == null_entry){return null_entry;}
-
-        if(param[2] == null_entry){return null_entry;}
-
-        if(param[3] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+    if(param[2] == null_entry){return null_entry;}
+    if(param[3] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_domain = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
@@ -165,14 +148,11 @@ ANNA_VM_NATIVE(getText_i__d_n_get_text, 4)
     int native_param_count = anna_as_int(param[3]);
 
     // Validate parameters
-    
-    
-    
-    
 
     // Call the function
     char * tmp_var_5 = dngettext(native_param_domain, native_param_msgid, native_param_msgidPlural, native_param_count);
     anna_entry_t *result = (tmp_var_5) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_5), tmp_var_5)) : null_entry;
+
     // Perform cleanup
     free(native_param_domain);
     free(native_param_msgid);
@@ -185,16 +165,11 @@ ANNA_VM_NATIVE(getText_i__d_n_get_text, 4)
 ANNA_VM_NATIVE(getText_i__d_c_n_get_text, 5)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
-        if(param[1] == null_entry){return null_entry;}
-
-        if(param[2] == null_entry){return null_entry;}
-
-        if(param[3] == null_entry){return null_entry;}
-
-        if(param[4] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+    if(param[2] == null_entry){return null_entry;}
+    if(param[3] == null_entry){return null_entry;}
+    if(param[4] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_domain = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
@@ -204,15 +179,11 @@ ANNA_VM_NATIVE(getText_i__d_c_n_get_text, 5)
     int native_param_category = anna_as_int(param[4]);
 
     // Validate parameters
-    
-    
-    
-    
-    
 
     // Call the function
     char * tmp_var_6 = dcngettext(native_param_domain, native_param_msgid, native_param_msgidPlural, native_param_count, native_param_category);
     anna_entry_t *result = (tmp_var_6) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_6), tmp_var_6)) : null_entry;
+
     // Perform cleanup
     free(native_param_domain);
     free(native_param_msgid);
@@ -225,18 +196,17 @@ ANNA_VM_NATIVE(getText_i__d_c_n_get_text, 5)
 ANNA_VM_NATIVE(getText_i__text_domain, 1)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_domain = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
-    
 
     // Call the function
     char * tmp_var_7 = textdomain(native_param_domain);
     anna_entry_t *result = (tmp_var_7) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_7), tmp_var_7)) : null_entry;
+
     // Perform cleanup
     free(native_param_domain);
 
@@ -247,22 +217,19 @@ ANNA_VM_NATIVE(getText_i__text_domain, 1)
 ANNA_VM_NATIVE(getText_i__bind_text_domain, 2)
 {
     // Validate parameters
-        if(param[0] == null_entry){return null_entry;}
-
-        if(param[1] == null_entry){return null_entry;}
-
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
 
     // Mangle input parameters
     char *native_param_domain = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     char *native_param_dir = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
-    
-    
 
     // Call the function
     char * tmp_var_8 = bindtextdomain(native_param_domain, native_param_dir);
     anna_entry_t *result = (tmp_var_8) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_8), tmp_var_8)) : null_entry;
+
     // Perform cleanup
     free(native_param_domain);
     free(native_param_dir);

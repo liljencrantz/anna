@@ -139,45 +139,45 @@ def init()
 	    ?,
 	    "object_type", 
 	    ?,
-	    "%(source); anna_entry_t *%(dest) = null_entry;",
+	    "    %(source);\n    anna_entry_t *%(dest) = null_entry;\n",
 	    ),
 	ast(String): BasicBindingType(
 	    "char *",
 	    "string_type", 
-	    "char *%(dest) = (%(source) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(%(source)));",
-	    "anna_entry_t *%(dest) = (%(source)) ? anna_from_obj(anna_string_create_narrow(strlen(%(source)), %(source))) : null_entry;",
-	    cleanupToC: "free(%(dest));"),
+	    "    char *%(dest) = (%(source) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(%(source)));\n",
+	    "    anna_entry_t *%(dest) = (%(source)) ? anna_from_obj(anna_string_create_narrow(strlen(%(source)), %(source))) : null_entry;\n",
+	    cleanupToC: "    free(%(dest));\n"),
 	ast(Int): BasicBindingType(
 	    "int",
 	    "int_type",
-	    "int %(dest) = anna_as_int(%(source));",
-	    "anna_entry_t *%(dest) = anna_from_int(%(source));"),
+	    "    int %(dest) = anna_as_int(%(source));\n",
+	    "    anna_entry_t *%(dest) = anna_from_int(%(source));\n"),
 	ast(Char): BasicBindingType(
 	    "char",
 	    "char_type",
-	    "char %(dest) = wctob(anna_as_char(%(source)));",
-	    "anna_entry_t *%(dest) = anna_from_char(btowc(%(source)));"),
+	    "    char %(dest) = wctob(anna_as_char(%(source)));\n",
+	    "    anna_entry_t *%(dest) = anna_from_char(btowc(%(source)));\n"),
 	ast(Bool): BasicBindingType(
 	    "int",
 	    "object_type", 
-	    "int %(dest) = (%(source) != null_entry);",
-	    "anna_entry_t *%(dest) = (%(source))?anna_from_int(1):null_entry;",
+	    "    int %(dest) = (%(source) != null_entry);\n",
+	    "    anna_entry_t *%(dest) = (%(source))?anna_from_int(1):null_entry;\n",
 	    preValidateToC: ""),
 	ast(UInt64): BasicBindingType(
 	    "uint64_t",
 	    "int_type", 
-	    "uint64_t %(dest) = anna_as_int(%(source));",
-	    "anna_entry_t *%(dest) = anna_from_uint64(%(source));"),
+	    "    uint64_t %(dest) = anna_as_int(%(source));\n",
+	    "    anna_entry_t *%(dest) = anna_from_uint64(%(source));\n"),
 	ast(Float): BasicBindingType(
 	    "float",
 	    "float_type", 
-	    "float %(dest) = (float)anna_as_float(%(source));",
-	    "anna_entry_t *%(dest) = anna_from_float((double)%(source));"),
+	    "    float %(dest) = (float)anna_as_float(%(source));\n",
+	    "    anna_entry_t *%(dest) = anna_from_float((double)%(source));\n"),
 	ast(Double): BasicBindingType(
 	    "double",
 	    "float_type", 
-	    "double %(dest) = anna_as_float(%(source));",
-	    "anna_entry_t *%(dest) = anna_from_float(%(source));"),
+	    "    double %(dest) = anna_as_float(%(source));\n",
+	    "    anna_entry_t *%(dest) = anna_from_float(%(source));\n"),
 	/*  ast(Pointer): BasicBindingType(
 	    "void *",
 	    "pointer_type", 
@@ -186,16 +186,16 @@ def init()
 	ast(Buffer): BasicBindingType(
 	    "unsigned char *",
 	    "buffer_type", 
-	    "unsigned char *%(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));",
+	    "    unsigned char *%(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));\n",
 	    ?,
-	    capacityCheck: "if(anna_buffer_ensure_capacity(anna_as_obj(%(source)), %(capacity))) 
+	    capacityCheck: "    if(anna_buffer_ensure_capacity(anna_as_obj(%(source)), %(capacity))) 
     {
         return null_entry;
     }
     else
     {
         %(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));
-    }"),
+    }\n"),
 	ast(List): ListBindingType(),
 	ast(MutableList): MutableListBindingType(),
 	];
@@ -297,7 +297,7 @@ class ListBindingType
         subBinding := getBindingType(subType);
         subTypeNative := subBinding.annaNativeType(subType, ?);
 	
-	return "size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
+	return "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
     %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
     if(!%(dest)){ return null_entry; }
     int %(dest)_idx;
@@ -305,8 +305,7 @@ class ListBindingType
     {
         %(conversion)
         %(dest)[%(dest)_idx] = %(dest)_val;
-    }
-" % [
+    }\n" % [
 	    "subTypeNative": subTypeNative,
 	    "dest": dest,
 	    "source": source,
@@ -324,13 +323,11 @@ class ListBindingType
         subType := ((decl as Call)[1] as Call)[0];
         subBinding := getBindingType(subType);
         subTypeNative := subBinding.annaNativeType(subType, ?);
-	return "
-    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
     {
         %(subCleanup)
     }
-    free(%(dest));
-" % [
+    free(%(dest));\n" % [
 	    "subTypeNative": subTypeNative,
 	    "dest": dest,
 	    "source": source,
@@ -384,13 +381,13 @@ class MutableListBindingType
 		    String::convert(capNum.payload);
 		}
 	    }
-	    res ~= "if(anna_list_ensure_capacity(anna_as_obj(%(source)), %(capacity)))
+	    res ~= "    if(anna_list_ensure_capacity(anna_as_obj(%(source)), %(capacity)))
     {
         return null_entry;
-    }\n    " % ["source": source, "capacity": capStr];
+    }\n" % ["source": source, "capacity": capStr];
 	}
 
-	res ~= "size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
+	res ~= "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
     %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
     if(!%(dest)){ return null_entry; }
     int %(dest)_idx;
@@ -406,8 +403,7 @@ class MutableListBindingType
             %(conversion)
             %(dest)[%(dest)_idx] = %(dest)_val;
         }
-    }
-" % [
+    }\n" % [
 	    "subTypeNative": subTypeNative,
 	    "dest": dest,
 	    "source": source,
@@ -428,15 +424,13 @@ class MutableListBindingType
         subType := ((decl as Call)[1] as Call)[0];
         subBinding := getBindingType(subType);
         subTypeNative := subBinding.annaNativeType(subType, ?);
-	return "
-    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
     {
         %(value)
         anna_list_set(anna_as_obj(%(source)), %(dest)_idx, tmp);
         %(subCleanup)
     }
-    free(%(dest));
-" % [
+    free(%(dest));\n" % [
 	    "subTypeNative": subTypeNative,
 	    "dest": dest,
 	    "source": source,
@@ -655,6 +649,9 @@ class BindingGenerator
     
     def generateFunctionCode(Call decl, BindingType methodFor = ?, Int init? = ? )
     {
+        attr := decl[3] as Call;
+
+	lock? := attr.childNamed?("lock");
         paramNames := «String»[];
         init := "".thaw;
         preValidate := "".thaw;
@@ -679,10 +676,11 @@ class BindingGenerator
 	    inpBindingType := getBindingType(inpDecl[1]);
             npn := getNativeParamName((inpDecl[0] as Identifier).name);
 	    paramNames.push(npn);
-	    init ~= "    " ~ inpBindingType.convertToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n";
-	    preValidate ~= ("    " ~ inpBindingType.preValidateToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n") or "";
-	    postValidate ~= ("    " ~ inpBindingType.postValidateToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n") or "";
-	    cleanup ~= ("    " ~ inpBindingType.cleanupToC(inpDecl[1], inpDecl[3], npn, "param[%]" % [idx]) ~ "\n") or "";
+	    varName := "param[%]" % [idx];
+	    init ~= inpBindingType.convertToC(inpDecl[1], inpDecl[3], npn, varName);
+	    preValidate ~= inpBindingType.preValidateToC(inpDecl[1], inpDecl[3], npn, varName) or "";
+	    postValidate ~= inpBindingType.postValidateToC(inpDecl[1], inpDecl[3], npn, varName) or "";
+	    cleanup ~= inpBindingType.cleanupToC(inpDecl[1], inpDecl[3], npn, varName) or "";
 	}
 	
         nname := getFunctionNativeName(decl);
@@ -696,7 +694,7 @@ class BindingGenerator
 	    code ~= "    %(varType) %(tempName) = %(call);\n" % [
 		"varType": varType,
 		"tempName": tempName, "call": nname ~"(" ~args~")"];
-	    code ~= "    " ~ responseType.convertToAnna(decl[1], decl[3], "result", tempName);
+	    code ~= responseType.convertToAnna(decl[1], decl[3], "result", tempName);
 	}
 	else
 	{
@@ -708,17 +706,25 @@ class BindingGenerator
 	    "code": code, "cleanup": cleanup, 
 	    "retValue": (if(init?){"param[0]"} else {"result"}),
 	    ];
+	if(lock?)
+	{
+	    param["lock"] = "
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&lock);";
+	    param["unlock"] = "
+    pthread_mutex_unlock(&lock);";
+	}
 	
 	return "    // Validate parameters
 %(preValidate)
     // Mangle input parameters
 %(init)
     // Validate parameters
-%(postValidate)
+%(postValidate)%(lock)
     // Call the function
 %(code)
     // Perform cleanup
-%(cleanup)
+%(cleanup)%(unlock)
     // Return result
     return %(retValue);" % param
 	    
@@ -1390,6 +1396,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#include <pthread.h>
 
 %(customInclude)
 #include \"anna/anna.h\"

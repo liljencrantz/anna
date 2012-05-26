@@ -146,6 +146,43 @@ void anna_alloc_add_thread()
     pthread_mutex_unlock(&anna_alloc_mutex_gc);
 }
 
+void anna_alloc_destroy_main_thread()
+{
+    pthread_mutex_lock(&anna_alloc_mutex_gc);
+    anna_alloc_work_count--;
+    anna_alloc_work_count_tot--;
+
+    anna_alloc_t *alloc = anna_alloc_data();
+    if(al_get_count(&anna_alloc_alloc)>1)
+    {
+	anna_alloc_t *other_thread_alloc = al_get(
+	    &anna_alloc_alloc,
+	    al_get_count(&anna_alloc_alloc)-1);
+	other_thread_alloc->idx = alloc->idx;
+	al_set(
+	    &anna_alloc_alloc, 
+	    alloc->idx, 
+	    other_thread_alloc);
+    }
+    al_truncate(
+	&anna_alloc_alloc,
+	al_get_count(&anna_alloc_alloc)-1);
+//    anna_message(L"Destroy thread %d - we have %d work threads running.\n", alloc->idx, anna_alloc_work_count_tot);
+
+    if(anna_alloc_flag_gc && anna_alloc_work_count==0)
+    {
+	if(pthread_cond_signal(&anna_alloc_cond_gc))
+	{
+	    anna_message(L"Failed to signal GC thread\n");
+	    CRASH;
+	}	
+//	anna_message(L"Worker %d: Send wake up signal to GC thread\n", anna_alloc_data()->idx);
+    }
+      
+    pthread_mutex_unlock(&anna_alloc_mutex_gc);
+}
+
+
 void anna_alloc_destroy_thread()
 {
     pthread_mutex_lock(&anna_alloc_mutex_gc);
