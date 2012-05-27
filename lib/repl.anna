@@ -57,7 +57,7 @@ Type «help» for more information.");
     /*
       Set up the history list
     */
-    historyFile :== unix.env.getenv("HOME") ~ "/.anna_history";
+    historyFile :== unix.env["HOME"] ~ "/.anna_history";
     readLine.history.read(historyFile);
 
     /*

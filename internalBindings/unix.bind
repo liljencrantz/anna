@@ -423,12 +423,16 @@ rLimit
 
 env
 {
+    verbatim("
+#define ANNA_SETENV(name, value) setenv(name, value, 1)
+");
     attribute(doc("The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables."));
 
-    def String getenv(String name) (lock, doc("Return the current value of the given environment variable. Equivalanet to the C getenv function."));
-    def Int setenv(String name, String value, Bool overwrite) (lock, doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
-    def Int unsetenv(String name) (lock, doc("Delete the specified environment variable. Equivalanet to the C unsetenv function."));
-    def Int clearenv() (lock, doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
+    def String __get__(String name) (name(getenv), lock, doc("Return the current value of the given environment variable. Equivalanet to the C getenv function."));
+    def Int set2(String name, String value, Bool overwrite) (name(setenv), lock, doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
+    def Int __set__(String name, String value) (name(ANNA_SETENV), lock, doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
+    def Int remove(String name) (name(unsetenv), lock, doc("Clear the specified environment variable. Equivalanet to the C unsetenv function."));
+    def Int clear() (name(clearenv), lock, doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
     /*
       Todo:
       

@@ -1,6 +1,6 @@
-use(unix.env);
+use(unix);
 def main()
 {
-    setenv("test", "testval", 1);
-    print(getenv("test"));
+    env["test"] = "testval";
+    print(env["test"]);
 }

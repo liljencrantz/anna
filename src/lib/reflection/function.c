@@ -555,6 +555,14 @@ void anna_reflection_type_for_function_create(
 		&anna_function_type_i_member,
 		0,
 		L"A list of all variables in this function.");
+
+	    anna_type_document(
+		res,
+		L"A Continuation represents the state of a function invocation.");
+
+	    anna_type_document(
+		res,
+		L"Continuations can be used to alter the flow of a program in arbitrary ways, which allows the implementation of various high level programming concepts like green threads and exceptions. Continuations also allow the introspection of the values of variables during execution of a function. This is useful when debugging a program.");
 	}
 	else
 	{

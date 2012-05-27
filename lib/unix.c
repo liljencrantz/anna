@@ -3600,7 +3600,9 @@ const static anna_type_data_t anna_env_type_data[] =
 {
 };
 
-ANNA_VM_NATIVE(unix_i_env_getenv, 1)
+#define ANNA_SETENV(name, value) setenv(name, value, 1)
+
+ANNA_VM_NATIVE(unix_i_env_get, 1)
 {
     // Validate parameters
     if(param[0] == null_entry){return null_entry;}
@@ -3624,7 +3626,7 @@ ANNA_VM_NATIVE(unix_i_env_getenv, 1)
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_env_setenv, 3)
+ANNA_VM_NATIVE(unix_i_env_set2, 3)
 {
     // Validate parameters
     if(param[0] == null_entry){return null_entry;}
@@ -3652,7 +3654,34 @@ ANNA_VM_NATIVE(unix_i_env_setenv, 3)
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_env_unsetenv, 1)
+ANNA_VM_NATIVE(unix_i_env_set, 2)
+{
+    // Validate parameters
+    if(param[0] == null_entry){return null_entry;}
+    if(param[1] == null_entry){return null_entry;}
+
+    // Mangle input parameters
+    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_value = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
+
+    // Validate parameters
+
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&lock);
+    // Call the function
+    int tmp_var_72 = ANNA_SETENV(native_param_name, native_param_value);
+    anna_entry_t *result = anna_from_int(tmp_var_72);
+
+    // Perform cleanup
+    free(native_param_name);
+    free(native_param_value);
+
+    pthread_mutex_unlock(&lock);
+    // Return result
+    return result;
+}
+
+ANNA_VM_NATIVE(unix_i_env_remove, 1)
 {
     // Validate parameters
     if(param[0] == null_entry){return null_entry;}
@@ -3665,8 +3694,8 @@ ANNA_VM_NATIVE(unix_i_env_unsetenv, 1)
     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&lock);
     // Call the function
-    int tmp_var_72 = unsetenv(native_param_name);
-    anna_entry_t *result = anna_from_int(tmp_var_72);
+    int tmp_var_73 = unsetenv(native_param_name);
+    anna_entry_t *result = anna_from_int(tmp_var_73);
 
     // Perform cleanup
     free(native_param_name);
@@ -3676,7 +3705,7 @@ ANNA_VM_NATIVE(unix_i_env_unsetenv, 1)
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_env_clearenv, 0)
+ANNA_VM_NATIVE(unix_i_env_clear, 0)
 {
     // Validate parameters
 
@@ -3687,8 +3716,8 @@ ANNA_VM_NATIVE(unix_i_env_clearenv, 0)
     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&lock);
     // Call the function
-    int tmp_var_73 = clearenv();
-    anna_entry_t *result = anna_from_int(tmp_var_73);
+    int tmp_var_74 = clearenv();
+    anna_entry_t *result = anna_from_int(tmp_var_74);
 
     // Perform cleanup
 
@@ -3716,21 +3745,25 @@ void anna_env_load(anna_stack_template_t *stack)
     wchar_t *this_argn[] = {L"this"};
 
 
-    anna_type_t *unix_i_env_getenv_argv[] = {string_type};
-    wchar_t *unix_i_env_getenv_argn[] = {L"name"};
-    latest_function = anna_module_function(stack, L"getenv", 0, &unix_i_env_getenv, string_type, 1, unix_i_env_getenv_argv, unix_i_env_getenv_argn, 0, L"Return the current value of the given environment variable. Equivalanet to the C getenv function.");
+    anna_type_t *unix_i_env_get_argv[] = {string_type};
+    wchar_t *unix_i_env_get_argn[] = {L"name"};
+    latest_function = anna_module_function(stack, L"__get__", 0, &unix_i_env_get, string_type, 1, unix_i_env_get_argv, unix_i_env_get_argn, 0, L"Return the current value of the given environment variable. Equivalanet to the C getenv function.");
 
-    anna_type_t *unix_i_env_setenv_argv[] = {string_type, string_type, object_type};
-    wchar_t *unix_i_env_setenv_argn[] = {L"name", L"value", L"overwrite"};
-    latest_function = anna_module_function(stack, L"setenv", 0, &unix_i_env_setenv, int_type, 3, unix_i_env_setenv_argv, unix_i_env_setenv_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
+    anna_type_t *unix_i_env_set2_argv[] = {string_type, string_type, object_type};
+    wchar_t *unix_i_env_set2_argn[] = {L"name", L"value", L"overwrite"};
+    latest_function = anna_module_function(stack, L"set2", 0, &unix_i_env_set2, int_type, 3, unix_i_env_set2_argv, unix_i_env_set2_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
 
-    anna_type_t *unix_i_env_unsetenv_argv[] = {string_type};
-    wchar_t *unix_i_env_unsetenv_argn[] = {L"name"};
-    latest_function = anna_module_function(stack, L"unsetenv", 0, &unix_i_env_unsetenv, int_type, 1, unix_i_env_unsetenv_argv, unix_i_env_unsetenv_argn, 0, L"Delete the specified environment variable. Equivalanet to the C unsetenv function.");
+    anna_type_t *unix_i_env_set_argv[] = {string_type, string_type};
+    wchar_t *unix_i_env_set_argn[] = {L"name", L"value"};
+    latest_function = anna_module_function(stack, L"__set__", 0, &unix_i_env_set, int_type, 2, unix_i_env_set_argv, unix_i_env_set_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
 
-    anna_type_t *unix_i_env_clearenv_argv[] = {};
-    wchar_t *unix_i_env_clearenv_argn[] = {};
-    latest_function = anna_module_function(stack, L"clearenv", 0, &unix_i_env_clearenv, int_type, 0, unix_i_env_clearenv_argv, unix_i_env_clearenv_argn, 0, L"Removes all environemnt variables. Equivalanet to the C clearenv function.");
+    anna_type_t *unix_i_env_remove_argv[] = {string_type};
+    wchar_t *unix_i_env_remove_argn[] = {L"name"};
+    latest_function = anna_module_function(stack, L"remove", 0, &unix_i_env_remove, int_type, 1, unix_i_env_remove_argv, unix_i_env_remove_argn, 0, L"Clear the specified environment variable. Equivalanet to the C unsetenv function.");
+
+    anna_type_t *unix_i_env_clear_argv[] = {};
+    wchar_t *unix_i_env_clear_argn[] = {};
+    latest_function = anna_module_function(stack, L"clear", 0, &unix_i_env_clear, int_type, 0, unix_i_env_clear_argv, unix_i_env_clear_argn, 0, L"Removes all environemnt variables. Equivalanet to the C clearenv function.");
     anna_stack_document(stack, L"The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables.");
 
     anna_type_data_register(anna_env_type_data, stack);
@@ -3750,8 +3783,8 @@ ANNA_VM_NATIVE(unix_i_sleep_sleep, 1)
     // Validate parameters
 
     // Call the function
-    int tmp_var_74 = sleep(native_param_seconds);
-    anna_entry_t *result = anna_from_int(tmp_var_74);
+    int tmp_var_75 = sleep(native_param_seconds);
+    anna_entry_t *result = anna_from_int(tmp_var_75);
 
     // Perform cleanup
 
@@ -3872,8 +3905,8 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&lock);
     // Call the function
-    char * tmp_var_75 = setlocale(native_param_cateory, native_param_locale);
-    anna_entry_t *result = (tmp_var_75) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_75), tmp_var_75)) : null_entry;
+    char * tmp_var_76 = setlocale(native_param_cateory, native_param_locale);
+    anna_entry_t *result = (tmp_var_76) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_76), tmp_var_76)) : null_entry;
 
     // Perform cleanup
     free(native_param_locale);
@@ -4062,9 +4095,9 @@ ANNA_VM_NATIVE(unix_i_locale_locale_conv, 0)
     // Validate parameters
 
     // Call the function
-    struct lconv * tmp_var_76 = localeconv();
+    struct lconv * tmp_var_77 = localeconv();
 anna_entry_t *result = anna_from_obj(anna_object_create(unix_locale_conv_type));
-    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_76;
+    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_77;
     // Perform cleanup
 
     // Return result
@@ -4365,8 +4398,8 @@ struct termios *native_param_ios;
     // Validate parameters
 
     // Call the function
-    int tmp_var_77 = tcgetattr(native_param_fd, native_param_ios);
-    anna_entry_t *result = (tmp_var_77)?anna_from_int(1):null_entry;
+    int tmp_var_78 = tcgetattr(native_param_fd, native_param_ios);
+    anna_entry_t *result = (tmp_var_78)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -4389,8 +4422,8 @@ struct termios *native_param_ios;
     // Validate parameters
 
     // Call the function
-    int tmp_var_78 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
-    anna_entry_t *result = (tmp_var_78)?anna_from_int(1):null_entry;
+    int tmp_var_79 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
+    anna_entry_t *result = (tmp_var_79)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -4468,8 +4501,8 @@ ANNA_VM_NATIVE(unix_i_error_error_string, 1)
     // Validate parameters
 
     // Call the function
-    char * tmp_var_79 = strerror(native_param_error);
-    anna_entry_t *result = (tmp_var_79) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_79), tmp_var_79)) : null_entry;
+    char * tmp_var_80 = strerror(native_param_error);
+    anna_entry_t *result = (tmp_var_80) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_80), tmp_var_80)) : null_entry;
 
     // Perform cleanup
 

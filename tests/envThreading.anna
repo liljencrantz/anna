@@ -3,8 +3,8 @@ def task(mp.Channel serverChannel)
     val := serverChannel.read() as ImutableString;
     (0..10000).each(i)
     {
-	unix.env.setenv("foo", val, 1);
-        curr := unix.env.getenv("foo");
+	unix.env["foo"] = val;
+        curr := unix.env["foo"];
 	if(!(curr in ["foo0", "foo1", "foo2", "foo3", "foo4", "foo5"]))
 	{
 	    print("Bad value", curr);
