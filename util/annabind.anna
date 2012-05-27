@@ -758,6 +758,7 @@ class BindingGenerator
 
 	allDoc := extractDocAll(attr);
 
+
         data := 
 	    [
 		"functionName": escapedName, 
@@ -773,6 +774,23 @@ class BindingGenerator
 		"aliasCode": aliasCode
 	    ];
 	    
+
+        native := annaUtil.findAttribute(attr, "native");
+        code := "";
+	if(!native.empty?)
+	{
+	    data["mangledName"] = native[0].toString();
+	}
+	else
+	{
+            code = "
+ANNA_VM_NATIVE(%(mangledName), %(inputCount))
+{
+%(codeInternal)
+}
+" % data;
+	}
+
         load := "
     anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
     wchar_t *%(inputNameVar)[] = {%(inputNameData)};
@@ -783,15 +801,9 @@ class BindingGenerator
 	    {
 		load ~= "   anna_function_document(latest_function,anna_intern_static(%));\n" % [doc];
 	    }
+	    
 
-        code := "
-ANNA_VM_NATIVE(%(mangledName), %(inputCount))
-{
-%(codeInternal)
-}
-" % data;
-
-	    return struct(load:load, code:code);
+	return struct(load:load, code:code);
     }
 
 

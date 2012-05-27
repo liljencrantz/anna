@@ -3602,6 +3602,18 @@ const static anna_type_data_t anna_env_type_data[] =
 
 #define ANNA_SETENV(name, value) setenv(name, value, 1)
 
+ANNA_VM_NATIVE(anna_environ, 0)
+{
+    anna_object_t *res = anna_list_create_imutable(imutable_string_type);
+    int i;
+    for(i=0; environ[i]; i++)
+    {
+        anna_list_add(res, anna_string_create_narrow(strlen(environ[i]), environ[i]));
+    }
+
+    return anna_from_obj(res);
+}
+
 ANNA_VM_NATIVE(unix_i_env_get, 1)
 {
     // Validate parameters
@@ -3764,6 +3776,10 @@ void anna_env_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_env_clear_argv[] = {};
     wchar_t *unix_i_env_clear_argn[] = {};
     latest_function = anna_module_function(stack, L"clear", 0, &unix_i_env_clear, int_type, 0, unix_i_env_clear_argv, unix_i_env_clear_argn, 0, L"Removes all environemnt variables. Equivalanet to the C clearenv function.");
+
+    anna_type_t *unix_i_env_environ_argv[] = {};
+    wchar_t *unix_i_env_environ_argn[] = {};
+    latest_function = anna_module_function(stack, L"environ", 0, &anna_environ, anna_list_type_get_any(string_type), 0, unix_i_env_environ_argv, unix_i_env_environ_argn, 0, 0);
     anna_stack_document(stack, L"The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables.");
 
     anna_type_data_register(anna_env_type_data, stack);
@@ -3783,8 +3799,8 @@ ANNA_VM_NATIVE(unix_i_sleep_sleep, 1)
     // Validate parameters
 
     // Call the function
-    int tmp_var_75 = sleep(native_param_seconds);
-    anna_entry_t *result = anna_from_int(tmp_var_75);
+    int tmp_var_76 = sleep(native_param_seconds);
+    anna_entry_t *result = anna_from_int(tmp_var_76);
 
     // Perform cleanup
 
@@ -3905,8 +3921,8 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&lock);
     // Call the function
-    char * tmp_var_76 = setlocale(native_param_cateory, native_param_locale);
-    anna_entry_t *result = (tmp_var_76) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_76), tmp_var_76)) : null_entry;
+    char * tmp_var_77 = setlocale(native_param_cateory, native_param_locale);
+    anna_entry_t *result = (tmp_var_77) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_77), tmp_var_77)) : null_entry;
 
     // Perform cleanup
     free(native_param_locale);
@@ -4095,9 +4111,9 @@ ANNA_VM_NATIVE(unix_i_locale_locale_conv, 0)
     // Validate parameters
 
     // Call the function
-    struct lconv * tmp_var_77 = localeconv();
+    struct lconv * tmp_var_78 = localeconv();
 anna_entry_t *result = anna_from_obj(anna_object_create(unix_locale_conv_type));
-    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_77;
+    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_78;
     // Perform cleanup
 
     // Return result
@@ -4398,8 +4414,8 @@ struct termios *native_param_ios;
     // Validate parameters
 
     // Call the function
-    int tmp_var_78 = tcgetattr(native_param_fd, native_param_ios);
-    anna_entry_t *result = (tmp_var_78)?anna_from_int(1):null_entry;
+    int tmp_var_79 = tcgetattr(native_param_fd, native_param_ios);
+    anna_entry_t *result = (tmp_var_79)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -4422,8 +4438,8 @@ struct termios *native_param_ios;
     // Validate parameters
 
     // Call the function
-    int tmp_var_79 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
-    anna_entry_t *result = (tmp_var_79)?anna_from_int(1):null_entry;
+    int tmp_var_80 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
+    anna_entry_t *result = (tmp_var_80)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -4501,8 +4517,8 @@ ANNA_VM_NATIVE(unix_i_error_error_string, 1)
     // Validate parameters
 
     // Call the function
-    char * tmp_var_80 = strerror(native_param_error);
-    anna_entry_t *result = (tmp_var_80) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_80), tmp_var_80)) : null_entry;
+    char * tmp_var_81 = strerror(native_param_error);
+    anna_entry_t *result = (tmp_var_81) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_81), tmp_var_81)) : null_entry;
 
     // Perform cleanup
 
