@@ -643,7 +643,11 @@ static anna_node_t *anna_node_calculate_type_internal(
 			anna_stack_set_type(stack, id->name, decl->return_type);
 			t = decl->return_type;
 		    }
-		}		
+		    else
+		    {
+			anna_stack_set_type(stack, id->name, null_type);
+		    }
+		}
 	    }
 
 	    if(t == null_type)

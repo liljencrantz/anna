@@ -366,7 +366,6 @@ void anna_module_const(
     }
 }
 
-
 void anna_module_const_char(
     anna_stack_template_t *stack,
     wchar_t *name,
@@ -685,7 +684,7 @@ static void anna_module_load_native(
     sb_destroy(&sb);
 }
 
-void anna_module_init()
+void anna_module_init(wchar_t *name)
 {
     /*
       Set up all native modules
@@ -735,6 +734,14 @@ void anna_module_init()
 	g_obj->type,
 	anna_from_obj(g_obj),
 	ANNA_STACK_READONLY);
+
+    anna_stack_declare(
+	stack_global,
+	anna_intern_static(L"__name__"),
+	imutable_string_type,
+	anna_from_obj(anna_string_create(wcslen(name), name)),
+	ANNA_STACK_READONLY);
+
     anna_type_setup_interface(g_obj->type);
     
     /*
@@ -1102,6 +1109,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     
     anna_node_print(D_SPAM, node);
     anna_node_register_declarations(node, module_stack);
+    
     module_stack->flags |= ANNA_STACK_NAMESPACE;
     if(anna_error_count)
     {

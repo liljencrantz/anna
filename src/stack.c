@@ -351,8 +351,7 @@ anna_type_t *anna_stack_get_type(anna_stack_template_t *stack, wchar_t *name)
     }
     if(!memb->type)
     {
-	anna_message(L"Critical: Null member %ls!\n", name);
-	CRASH;
+	return 0;
     }
     
     return memb->type;

@@ -78,7 +78,16 @@ static void anna_init()
     
     anna_abides_init();
     null_object = anna_object_create_raw(anna_align(sizeof(anna_object_t)));
-    anna_module_init();
+    wchar_t *name_with_dots = wcsdup(anna_module_name);
+    wchar_t *ptr = wcschr(name_with_dots, L'/');
+    while(ptr)
+    {
+	*ptr = L'.';
+	ptr = wcschr(name_with_dots, L'/');
+    }
+    
+    anna_module_init(name_with_dots);
+    free(name_with_dots);
     anna_type_close(stack_global->wrapper->type);
 //    anna_type_mark_info(stack_global->wrapper->type);
     anna_stack_document(

@@ -445,7 +445,7 @@ ANNA_VM_NATIVE(anna_environ, 0)
     def Int __set__(String name, String value) (name(ANNA_SETENV), lock, doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
     def Int remove(String name) (name(unsetenv), lock, doc("Clear the specified environment variable. Equivalanet to the C unsetenv function."));
     def Int clear() (name(clearenv), lock, doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
-    def List«String» environ() (native(anna_environ));
+    def List«String» environ() (native(anna_environ), doc("Returns a list of all environement variables."));
 }
 
 sleep

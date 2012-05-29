@@ -5,7 +5,7 @@
 
 struct anna_node;
 
-void anna_module_init(void);
+void anna_module_init(wchar_t *name);
 anna_object_t *anna_module_load(wchar_t *module_name);
 /*
   Create a new module by compiling the specified AST
