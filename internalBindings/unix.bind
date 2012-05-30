@@ -424,7 +424,27 @@ rLimit
 env
 {
     verbatim("
-#define ANNA_SETENV(name, value) setenv(name, value, 1)
+ANNA_VM_NATIVE(anna_setenv, 2)
+{
+    if(param[0] == null_entry) { return param[1]; }
+    if(param[1] == null_entry) { return param[1]; }
+
+    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_value = anna_string_payload_narrow(anna_as_obj(param[1]));
+
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&lock);
+    // Call the function
+    setenv(native_param_name, native_param_value, 1);
+
+    // Perform cleanup
+    free(native_param_name);
+    free(native_param_value);
+
+    pthread_mutex_unlock(&lock);
+    // Return result
+    return param[1];
+}
 
 ANNA_VM_NATIVE(anna_environ, 0)
 {
@@ -440,12 +460,31 @@ ANNA_VM_NATIVE(anna_environ, 0)
 ");
     attribute(doc("The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables."));
 
-    def String __get__(String name) (name(getenv), lock, doc("Return the current value of the given environment variable. Equivalanet to the C getenv function."));
-    def Int set2(String name, String value, Bool overwrite) (name(setenv), lock, doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
-    def Int __set__(String name, String value) (name(ANNA_SETENV), lock, doc("Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function."));
+    def String __get__(String name) 
+    (
+	name(getenv), lock, 
+	doc(
+	    "Return the current value of the given environment variable. Equivalanet to the C getenv function.",
+	    "Usage example:",
+	    "<pre class='anna-code'>if(unix.env[\"USER\"] == \"root\"){ ... }</pre>",
+	));
+    def Int setenv(String name, String value, Bool overwrite) 
+    (
+	name(setenv), lock, 
+	doc(
+	    "Assign a new value to the environment variable with the given name. Equivalent to the C setenv function.", 
+	));
+    def String __set__(String name, String value) 
+    (
+	native(anna_setenv),
+	doc(
+	    "Assign a new value to the environment variable with the given name. Equivalent to calling the C setenv function with overwrite set to true.",
+	    "Usage example:",
+	    "<pre class='anna-code'>unix.env[\"MAKEFLAGS\"] = \"-j 4\";</pre>",
+	));
     def Int remove(String name) (name(unsetenv), lock, doc("Clear the specified environment variable. Equivalanet to the C unsetenv function."));
     def Int clear() (name(clearenv), lock, doc("Removes all environemnt variables. Equivalanet to the C clearenv function."));
-    def List«String» environ() (native(anna_environ), doc("Returns a list of all environement variables."));
+    def List«String» environ() (native(anna_environ), doc("Returns a list containing all all environement variables. Every item in the list is a key-value pair separated by a '=' character."));
 }
 
 sleep

@@ -3600,7 +3600,29 @@ const static anna_type_data_t anna_env_type_data[] =
 {
 };
 
-#define ANNA_SETENV(name, value) setenv(name, value, 1)
+#define ANNA_SETENV(name, value) setenv(name, value, 1), value;
+
+ANNA_VM_NATIVE(anna_setenv, 2)
+{
+    if(param[0] == null_entry) { return param[1]; }
+    if(param[1] == null_entry) { return param[1]; }
+
+    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_value = anna_string_payload_narrow(anna_as_obj(param[1]));
+
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&lock);
+    // Call the function
+    setenv(native_param_name, native_param_value, 1);
+
+    // Perform cleanup
+    free(native_param_name);
+    free(native_param_value);
+
+    pthread_mutex_unlock(&lock);
+    // Return result
+    return param[1];
+}
 
 ANNA_VM_NATIVE(anna_environ, 0)
 {
@@ -3656,33 +3678,6 @@ ANNA_VM_NATIVE(unix_i_env_set2, 3)
     // Call the function
     int tmp_var_71 = setenv(native_param_name, native_param_value, native_param_overwrite);
     anna_entry_t *result = anna_from_int(tmp_var_71);
-
-    // Perform cleanup
-    free(native_param_name);
-    free(native_param_value);
-
-    pthread_mutex_unlock(&lock);
-    // Return result
-    return result;
-}
-
-ANNA_VM_NATIVE(unix_i_env_set, 2)
-{
-    // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-
-    // Mangle input parameters
-    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_value = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
-
-    // Validate parameters
-
-    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-    pthread_mutex_lock(&lock);
-    // Call the function
-    int tmp_var_72 = ANNA_SETENV(native_param_name, native_param_value);
-    anna_entry_t *result = anna_from_int(tmp_var_72);
 
     // Perform cleanup
     free(native_param_name);
@@ -3760,6 +3755,8 @@ void anna_env_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_env_get_argv[] = {string_type};
     wchar_t *unix_i_env_get_argn[] = {L"name"};
     latest_function = anna_module_function(stack, L"__get__", 0, &unix_i_env_get, string_type, 1, unix_i_env_get_argv, unix_i_env_get_argn, 0, L"Return the current value of the given environment variable. Equivalanet to the C getenv function.");
+   anna_function_document(latest_function,anna_intern_static(L"Usage example:"));
+   anna_function_document(latest_function,anna_intern_static(L"<pre class='anna-code'>if(unix.env[\"USER\"] == \"root\"){ ... }</pre>"));
 
     anna_type_t *unix_i_env_set2_argv[] = {string_type, string_type, object_type};
     wchar_t *unix_i_env_set2_argn[] = {L"name", L"value", L"overwrite"};
@@ -3767,7 +3764,9 @@ void anna_env_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_env_set_argv[] = {string_type, string_type};
     wchar_t *unix_i_env_set_argn[] = {L"name", L"value"};
-    latest_function = anna_module_function(stack, L"__set__", 0, &unix_i_env_set, int_type, 2, unix_i_env_set_argv, unix_i_env_set_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
+    latest_function = anna_module_function(stack, L"__set__", 0, &anna_setenv, string_type, 2, unix_i_env_set_argv, unix_i_env_set_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
+   anna_function_document(latest_function,anna_intern_static(L"Usage example:"));
+   anna_function_document(latest_function,anna_intern_static(L"<pre class='anna-code'>unix.env[\"MAKEFLAGS\"] = \"-j 4\";</pre>"));
 
     anna_type_t *unix_i_env_remove_argv[] = {string_type};
     wchar_t *unix_i_env_remove_argn[] = {L"name"};
@@ -3779,7 +3778,7 @@ void anna_env_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_env_environ_argv[] = {};
     wchar_t *unix_i_env_environ_argn[] = {};
-    latest_function = anna_module_function(stack, L"environ", 0, &anna_environ, anna_list_type_get_any(string_type), 0, unix_i_env_environ_argv, unix_i_env_environ_argn, 0, 0);
+    latest_function = anna_module_function(stack, L"environ", 0, &anna_environ, anna_list_type_get_any(string_type), 0, unix_i_env_environ_argv, unix_i_env_environ_argn, 0, L"Returns a list of all environement variables.");
     anna_stack_document(stack, L"The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables.");
 
     anna_type_data_register(anna_env_type_data, stack);
