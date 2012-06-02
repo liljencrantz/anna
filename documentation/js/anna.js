@@ -11,6 +11,26 @@ var anna = {
 	anna.initCodePopup();
 	anna.initTables();
 	anna.initInternal();
+	anna.pathLink();
+    },
+
+    /**
+       
+     */
+    pathLink: function()
+    {
+	$("[path]").each(
+	    function(idx, el)
+	    {
+		console.log($(el).attr("path"));		
+		var location = "";
+		if($(el).attr("member"))
+		    location = "#" + $(el).attr("member");
+
+		$(el).attr("href", anna.basePath + "api/global/" + $(el).attr("path").replace(/\./g, "/") + ".html" + location);
+		console.log(el);
+	    });
+	
     },
 
     /**

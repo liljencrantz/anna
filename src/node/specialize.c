@@ -8,7 +8,7 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     anna_function_t *spec_fun = 0;
 	    
     	    
-    if(!type)
+    if(!type || type == ANNA_NODE_TYPE_IN_TRANSIT)
     {
 	anna_error((anna_node_t *)call, L"Invalid template type");
     }

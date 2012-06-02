@@ -432,7 +432,12 @@ static void anna_module_bootstrap_monkeypatch(
     {
 	anna_object_t *fun_obj = anna_as_obj(int_mod_type->static_member[i]);
 	anna_function_t *fun = anna_function_unwrap(fun_obj);
-
+	if(!fun)
+	{
+	    anna_message(L"Invalid monkeypatch in file %ls\n", name);
+	    continue;
+	}
+	
 	anna_node_t *target_node = anna_attribute_call(fun->attribute, L"target");
 	anna_node_t *name_node = anna_attribute_call(fun->attribute, L"name");
 	

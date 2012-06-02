@@ -318,7 +318,7 @@ often used code paths, which makes it useful for regression testing.")
     {
 	memberTot++;
 
-	        doc := extractDocumentation(mem.attribute) or extractDocumentation((mem.value(?) as Function).attribute) or "";
+        doc := extractDocumentation(mem.attribute) or extractDocumentation((mem.value(?) as Function).attribute) or "";
 
 	opDoc := "".thaw;
 	alias := annaUtil.findAttribute(
@@ -333,7 +333,6 @@ often used code paths, which makes it useful for regression testing.")
 		opDoc ~= "</p>";
 	    }	    
 	}
-
 	if(doc == "")
 	{
 	    verbose and print("Missing documentation for member %.%" % [mem.memberOf.name, mem.name]);
@@ -343,7 +342,7 @@ often used code paths, which makes it useful for regression testing.")
 	aliasDoc := "";
 	if(!alias.empty?)
 	{
-	    aliasDoc = "<code>%</code> can also be called using any of the following aliases: %." % [mem.name, ", ".join(alias.map(a){"<code>" ~ a.toString() ~ "</code>"})];
+	    aliasDoc = "<code>%</code> can also be called using any of the following aliases: %." % [mem.name, ", ".join(alias.map(a){"<code>" ~ a ~ "</code>"})];
 	}
 
         htmlClass := if(mem.internal?){"class='anna-internal'"} else {""};

@@ -63,7 +63,8 @@ io
 
     openMode
     {
-	attribute(doc("Flags determining the mode for unix.io.open"));
+	attribute(doc("Flags determining the open mode for <a path='unix.io' member='open'>unix.io.open()</a>"));
+
 	const Int readOnly (define(O_RDONLY), doc("Open file in read-only mode."));
 	const Int writeOnly (define(O_WRONLY), doc("Open file in write-only mode."));
 	const Int readWrite (define(O_RDWR), doc("Open file in read-write mode."));
@@ -86,7 +87,8 @@ io
 
     statMode
     {
-	attribute(doc("Flags used for identifying file status together with a unix.io.Stat object."));
+	attribute(doc("Flags used for identifying file status together with a <a path='unix.io.Stat' member='mode'>unix.io.Stat</a> object."));
+
 	const Int regular (define(S_IFREG), doc("Regular file"));
 	const Int socket (define(S_IFSOCK), doc("Socket"));
 	const Int link (define(S_IFLNK), doc("Symbolic link."));
@@ -115,7 +117,7 @@ io
 	const Int otherExecute (define(S_IXOTH), doc("Others have execute permission."));
     }
 
-    def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor.", "Equivalent to the C open function."));
+    def Int open(String name, Int flags, Int mode) (doc("Open a file descriptor.", "The mode argument must be a combination of the values defined in <a path='unix.io.openMode'>unix.io.openMode</a>", "Equivalent to the C open function."));
     def Int creat(String name, Int mode) (doc("Open a file descriptor.", "Equivalent to the C creat function."), alias(create));
     def Int read(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Read from a file descriptor.", "Equivalent to the C read function."));
     def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Write to a file descriptor.", "Equivalent to the C write function."));
@@ -125,7 +127,7 @@ io
     {
 	const Int dev (name(st_dev), doc("ID of device containing file"));
 	const Int ino (name(st_ino), doc("Inode number"));
-	const Int mode (name(st_mode), doc("File protection mask"));
+	const Int mode (name(st_mode), doc("File protection mask. Use the flags defined in <a path='unix.io.statMode'>unix.io.statMode</a>."));
 	const Int nlink (name(st_nlink), doc("Number of hard links."));
 	const Int uid (name(st_uid), doc("User ID of owner."));
 	const Int gid (name(st_gid), doc("Group ID of owner."));
@@ -153,7 +155,7 @@ io
     def Bool chroot(String path) (doc("Change root directory."));
     def Bool fchdir(Int fd) (doc("Change working directory."));
 
-    cStruct FLock (name(flock), doc("File lock information"))
+    cStruct FLock (name(flock), doc("File lock information. Used by the <a path='unix.io' member='fcntlFLock'>unix.io.fcntl()</a> call."))
     {
 	const Int type (name(l_type), doc("Type of lock: F_RDLCK, F_WRLCK, F_UNLCK."));
 	const Int whence (name(l_whence), doc("How to interpret l_start: SEEK_SET, SEEK_CUR, SEEK_END."));
@@ -489,12 +491,10 @@ ANNA_VM_NATIVE(anna_environ, 0)
 
 sleep
 {
-
     attribute(doc("The unix.sleep module contains low level wrappers for basic unix functionality revolving around pausing the execution of processes."));
 
     def Int sleep(Int seconds) (doc("Sleep for the specified number of seconds"));
 }
-
 
 locale
 {
@@ -502,7 +502,7 @@ locale
 
     localeMode
     {
-	attribute(doc("Different locale parts."));
+	attribute(doc("Different locale parts, used by <a path='unix.locale' member='setLocale'>unix.locale.setLocale()</a>."));
 
 	const Int all (define(LC_ALL), doc("All of the locale."));
 	const Int collate (define(LC_COLLATE), doc("Regular expression matching (it determines the meaning of range expressions and equivalence classes) and string collation."));
@@ -512,7 +512,7 @@ locale
 	const Int numeric (define(LC_NUMERIC), doc("Numeric formating, such as decimal point and thousands separator."));
 	const Int time (define(LC_TIME), doc("Date and time formating."));
     }
-    def String setLocale(Int cateory, String locale (nullable)) (lock, name(setlocale), doc("Set the specified local category to the specified value"));
+    def String setLocale(Int cateory, String locale (nullable)) (lock, name(setlocale), doc("Set the specified local category to the specified value. category must be one of the members of <a path='unix.locale.localeMode'>unix.locale.localeMode</a>."));
     
     cStructPointer LocaleConv (name(lconv), doc("Detailed local information regarding numeric formating."))
     {
@@ -530,10 +530,10 @@ locale
 
 	const Int internationalFracDigits (name(int_frac_digits), doc("International fractional digits."));
 	const Int fracDigits (name(frac_digits), doc("Local fractional digits."));
-	const Bool positiveCurrencySymbolPrecedes (name(p_cs_precedes), doc("1 if currencySymbol precedes a positive value, null if succeeds."));
-	const Bool negativeCurrencySymbolPrecedes (name(n_cs_precedes), doc("1 if currencySymbol precedes a negative value, null if succeeds."));
-	const Bool positiveSeparateBySpace (name(p_sep_by_space), doc("1 if a space separates currency_symbol from a positive value, null otherwise."));
-	const Bool negativeSeparateBySpace (name(n_sep_by_space), doc("1 if a space separates currency_symbol from a negative value, null otherwise."));
+	const Bool positiveCurrencySymbolPrecedes (name(p_cs_precedes), doc("Non-null if currencySymbol precedes a positive value, null if succeeds."));
+	const Bool negativeCurrencySymbolPrecedes (name(n_cs_precedes), doc("Non-null if currencySymbol precedes a negative value, null if succeeds."));
+	const Bool positiveSeparateBySpace (name(p_sep_by_space), doc("Non-null if a space separates currency_symbol from a positive value, null otherwise."));
+	const Bool negativeSeparateBySpace (name(n_sep_by_space), doc("Non-null if a space separates currency_symbol from a negative value, null otherwise."));
 	const Int positiveSignPosition (name(p_sign_posn), doc("
 Positive and negative sign positions:
 <ul>
@@ -555,9 +555,8 @@ Positive and negative sign positions:
 </ul>
 "));
     }
-    
+
     def LocaleConv localeConv() (name(localeconv), doc("Get current numeric formatting information."));
-    
 }
 
 term
@@ -595,12 +594,14 @@ term
 error
 {
     attribute(doc("The unix.error module contains low level wrappers around C functions that revolve around error handling."));
+
     def String errorString(Int error) (name(strerror), doc("Returns a string that describes the error code passed in the argument. Equivalent to the C strerror function."));
     var Int errno (doc("The latest C library error to occur"));
 
     status
     {
 	attribute(doc("All known error statuses"));
+
 	const Int tooBig (define(E2BIG), doc("Argument list too long."));
 	const Int access (define(EACCES), doc("Permission denied."));
 	const Int addressInUse (define(EADDRINUSE), doc("Address already in use."));

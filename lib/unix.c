@@ -318,7 +318,7 @@ void anna_open_mode_load(anna_stack_template_t *stack)
     anna_module_const(stack, L"truncate", int_type, null_entry, L"f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0.");
 #endif
 
-    anna_stack_document(stack, L"Flags determining the mode for unix.io.open");
+    anna_stack_document(stack, L"Flags determining the open mode for <a path='unix.io' member='open'>unix.io.open()</a>");
 
     anna_type_data_register(anna_open_mode_type_data, stack);
 }
@@ -476,7 +476,7 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
     anna_module_const(stack, L"otherExecute", int_type, null_entry, L"Others have execute permission.");
 #endif
 
-    anna_stack_document(stack, L"Flags used for identifying file status together with a unix.io.Stat object.");
+    anna_stack_document(stack, L"Flags used for identifying file status together with a <a path='unix.io.Stat' member='mode'>unix.io.Stat</a> object.");
 
     anna_type_data_register(anna_stat_mode_type_data, stack);
 }
@@ -1766,6 +1766,7 @@ void anna_io_load(anna_stack_template_t *stack)
     anna_type_t *unix_i_io_open_argv[] = {string_type, int_type, int_type};
     wchar_t *unix_i_io_open_argn[] = {L"name", L"flags", L"mode"};
     latest_function = anna_module_function(stack, L"open", 0, &unix_i_io_open, int_type, 3, unix_i_io_open_argv, unix_i_io_open_argn, 0, L"Open a file descriptor.");
+   anna_function_document(latest_function,anna_intern_static(L"The mode argument must be a combination of the values defined in <a path='unix.io.openMode'>unix.io.openMode</a>"));
    anna_function_document(latest_function,anna_intern_static(L"Equivalent to the C open function."));
 
     anna_type_t *unix_i_io_creat_argv[] = {string_type, int_type};
@@ -1801,7 +1802,7 @@ void anna_io_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"mode"),
-        int_type, unix_i_stat_mode_getter, 0, L"File protection mask");
+        int_type, unix_i_stat_mode_getter, 0, L"File protection mask. Use the flags defined in <a path='unix.io.statMode'>unix.io.statMode</a>.");
 
     anna_member_create_native_property(
         unix_stat_type, anna_mid_get(L"nlink"),
@@ -1910,7 +1911,7 @@ void anna_io_load(anna_stack_template_t *stack)
 	unix_f_lock_type, anna_mid_get(L"__init__"), 0,
 	&unix_i_f_lock_init, object_type, 1, &unix_f_lock_type, this_argn, 0, 0);    
     anna_type_document(
-            unix_f_lock_type, L"File lock information");
+            unix_f_lock_type, L"File lock information. Used by the <a path='unix.io' member='fcntlFLock'>unix.io.fcntl()</a> call.");
 
     anna_type_t *unix_i_io_fcntl_void_argv[] = {int_type, int_type};
     wchar_t *unix_i_io_fcntl_void_argn[] = {L"fd", L"cmd"};
@@ -3600,8 +3601,6 @@ const static anna_type_data_t anna_env_type_data[] =
 {
 };
 
-#define ANNA_SETENV(name, value) setenv(name, value, 1), value;
-
 ANNA_VM_NATIVE(anna_setenv, 2)
 {
     if(param[0] == null_entry) { return param[1]; }
@@ -3660,7 +3659,7 @@ ANNA_VM_NATIVE(unix_i_env_get, 1)
     return result;
 }
 
-ANNA_VM_NATIVE(unix_i_env_set2, 3)
+ANNA_VM_NATIVE(unix_i_env_setenv, 3)
 {
     // Validate parameters
     if(param[0] == null_entry){return null_entry;}
@@ -3758,13 +3757,13 @@ void anna_env_load(anna_stack_template_t *stack)
    anna_function_document(latest_function,anna_intern_static(L"Usage example:"));
    anna_function_document(latest_function,anna_intern_static(L"<pre class='anna-code'>if(unix.env[\"USER\"] == \"root\"){ ... }</pre>"));
 
-    anna_type_t *unix_i_env_set2_argv[] = {string_type, string_type, object_type};
-    wchar_t *unix_i_env_set2_argn[] = {L"name", L"value", L"overwrite"};
-    latest_function = anna_module_function(stack, L"set2", 0, &unix_i_env_set2, int_type, 3, unix_i_env_set2_argv, unix_i_env_set2_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
+    anna_type_t *unix_i_env_setenv_argv[] = {string_type, string_type, object_type};
+    wchar_t *unix_i_env_setenv_argn[] = {L"name", L"value", L"overwrite"};
+    latest_function = anna_module_function(stack, L"setenv", 0, &unix_i_env_setenv, int_type, 3, unix_i_env_setenv_argv, unix_i_env_setenv_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalent to the C setenv function.");
 
     anna_type_t *unix_i_env_set_argv[] = {string_type, string_type};
     wchar_t *unix_i_env_set_argn[] = {L"name", L"value"};
-    latest_function = anna_module_function(stack, L"__set__", 0, &anna_setenv, string_type, 2, unix_i_env_set_argv, unix_i_env_set_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalanet to the C setenv function.");
+    latest_function = anna_module_function(stack, L"__set__", 0, &anna_setenv, string_type, 2, unix_i_env_set_argv, unix_i_env_set_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalent to calling the C setenv function with overwrite set to true.");
    anna_function_document(latest_function,anna_intern_static(L"Usage example:"));
    anna_function_document(latest_function,anna_intern_static(L"<pre class='anna-code'>unix.env[\"MAKEFLAGS\"] = \"-j 4\";</pre>"));
 
@@ -3778,7 +3777,7 @@ void anna_env_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_env_environ_argv[] = {};
     wchar_t *unix_i_env_environ_argn[] = {};
-    latest_function = anna_module_function(stack, L"environ", 0, &anna_environ, anna_list_type_get_any(string_type), 0, unix_i_env_environ_argv, unix_i_env_environ_argn, 0, L"Returns a list of all environement variables.");
+    latest_function = anna_module_function(stack, L"environ", 0, &anna_environ, anna_list_type_get_any(string_type), 0, unix_i_env_environ_argv, unix_i_env_environ_argn, 0, L"Returns a list containing all all environement variables. Every item in the list is a key-value pair separated by a '=' character.");
     anna_stack_document(stack, L"The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables.");
 
     anna_type_data_register(anna_env_type_data, stack);
@@ -3901,7 +3900,7 @@ void anna_locale_mode_load(anna_stack_template_t *stack)
     anna_module_const(stack, L"time", int_type, null_entry, L"Date and time formating.");
 #endif
 
-    anna_stack_document(stack, L"Different locale parts.");
+    anna_stack_document(stack, L"Different locale parts, used by <a path='unix.locale' member='setLocale'>unix.locale.setLocale()</a>.");
 
     anna_type_data_register(anna_locale_mode_type_data, stack);
 }
@@ -4141,7 +4140,7 @@ void anna_locale_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_locale_set_locale_argv[] = {int_type, string_type};
     wchar_t *unix_i_locale_set_locale_argn[] = {L"cateory", L"locale"};
-    latest_function = anna_module_function(stack, L"setLocale", 0, &unix_i_locale_set_locale, string_type, 2, unix_i_locale_set_locale_argv, unix_i_locale_set_locale_argn, 0, L"Set the specified local category to the specified value");
+    latest_function = anna_module_function(stack, L"setLocale", 0, &unix_i_locale_set_locale, string_type, 2, unix_i_locale_set_locale_argv, unix_i_locale_set_locale_argn, 0, L"Set the specified local category to the specified value. category must be one of the members of <a path='unix.locale.localeMode'>unix.locale.localeMode</a>.");
 
     anna_member_create_blob(unix_locale_conv_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct lconv *));
 
@@ -4195,19 +4194,19 @@ void anna_locale_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"positiveCurrencySymbolPrecedes"),
-        object_type, unix_i_locale_conv_positive_currency_symbol_precedes_getter, 0, L"1 if currencySymbol precedes a positive value, null if succeeds.");
+        object_type, unix_i_locale_conv_positive_currency_symbol_precedes_getter, 0, L"Non-null if currencySymbol precedes a positive value, null if succeeds.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"negativeCurrencySymbolPrecedes"),
-        object_type, unix_i_locale_conv_negative_currency_symbol_precedes_getter, 0, L"1 if currencySymbol precedes a negative value, null if succeeds.");
+        object_type, unix_i_locale_conv_negative_currency_symbol_precedes_getter, 0, L"Non-null if currencySymbol precedes a negative value, null if succeeds.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"positiveSeparateBySpace"),
-        object_type, unix_i_locale_conv_positive_separate_by_space_getter, 0, L"1 if a space separates currency_symbol from a positive value, null otherwise.");
+        object_type, unix_i_locale_conv_positive_separate_by_space_getter, 0, L"Non-null if a space separates currency_symbol from a positive value, null otherwise.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"negativeSeparateBySpace"),
-        object_type, unix_i_locale_conv_negative_separate_by_space_getter, 0, L"1 if a space separates currency_symbol from a negative value, null otherwise.");
+        object_type, unix_i_locale_conv_negative_separate_by_space_getter, 0, L"Non-null if a space separates currency_symbol from a negative value, null otherwise.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"positiveSignPosition"),

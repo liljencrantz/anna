@@ -398,12 +398,11 @@ static void anna_list_map(anna_context_t *context)
     {
 	anna_function_t *fun = anna_function_unwrap(body);
 		
-	anna_object_t *res = anna_list_is_mutable(list)?
-	    anna_list_create_mutable(fun->return_type):
-	    anna_list_create_imutable(fun->return_type);
+	anna_object_t *res = 
+	    anna_list_create_mutable(fun->return_type);
 	
 	size_t sz = anna_list_get_count(list);
-	
+
 	if(sz > 0)
 	{
 	    anna_entry_t *callback_param[] = 
@@ -1154,7 +1153,7 @@ static void anna_list_type_create_internal(
 	type,
 	anna_mid_get(L"__filter__"),
 	0,
-	&anna_list_filter,
+	&anna_list_filter,	
 	mutable?mutable_type:imutable_type,
 	2,
 	e_argv,
@@ -1176,7 +1175,7 @@ static void anna_list_type_create_internal(
 	anna_mid_get(L"__map__"),
 	0,
 	&anna_list_map,
-	mutable?mutable_list_type:imutable_list_type,
+	mutable_list_type,
 	2,
 	e_argv,
 	e_argn, 0, 0);
