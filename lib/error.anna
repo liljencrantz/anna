@@ -1,3 +1,5 @@
+expand(stringCode);
+
 attribute(doc("Simple high level error handling."));
 
 class Error (doc("The base class of any error"))
@@ -61,9 +63,7 @@ def raiseError(Error error)
     doc(
 	"Search the stack for a suitable handler for the specified error. If there is no such error handler, print the error and return.",
 	"The raiseError function is usually called through the raise macro like this:",
-	"<pre class='anna-code'>
-raise(SomeError(\"Something went wrong...\"));
-</pre>",
+	docEx"raise(SomeError(\"Something went wrong...\"));",
 	)
 )
 {

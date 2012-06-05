@@ -121,19 +121,12 @@ void anna_alloc_mark_node(anna_node_t *o)
 	case ANNA_NODE_TYPE_OF:
 	case ANNA_NODE_INPUT_TYPE_OF:
 	case ANNA_NODE_RETURN_TYPE_OF:
+	case ANNA_NODE_USE:
 	{
 	    anna_node_wrapper_t *n = (anna_node_wrapper_t *)this;
 	    anna_alloc_mark_node(n->payload);
 	    break;
-	}
-	
-	case ANNA_NODE_USE:
-	{
-	    anna_error(this, L"Unimplemented node type %d during gc. Come back tomorrow.", 
-		this->node_type);
-	    CRASH;
-	    break;
-	}		
+	}	
 	
 	case ANNA_NODE_CAST:
 	case ANNA_NODE_CONSTRUCT:

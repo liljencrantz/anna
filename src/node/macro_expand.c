@@ -94,6 +94,22 @@ static anna_node_t *anna_node_macro_expand_each(
 	    anna_type_macro_expand(f, stack);
 	    break;
 	}
+
+	case ANNA_NODE_DECLARE:
+	case ANNA_NODE_CONST:
+	{
+	    int i;
+	    anna_node_declare_t *c = (anna_node_declare_t *)this;
+	    for(i=0;i<c->attribute->child_count; i++)
+	    {
+//		anna_node_print(999, f->attribute->child[i]);
+		
+		c->attribute->child[i] = anna_node_macro_expand(
+		    c->attribute->child[i], stack);
+	    }
+	}
+	
+
     }
     return this;
 }

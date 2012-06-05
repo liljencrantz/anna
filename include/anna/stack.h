@@ -7,6 +7,7 @@
 struct anna_stack_template;
 struct anna_node_declare;
 struct anna_node;
+struct anna_node_call;
 struct anna_type;
 struct anna_use;
 
@@ -44,6 +45,8 @@ struct anna_stack_template
     size_t capacity;
     hash_table_t member_string_identifier;
     int stop;
+    struct anna_node_call *definition;
+    
     anna_function_t *function;
     /**
        An Anna object representing this entire stack frame

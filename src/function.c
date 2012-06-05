@@ -723,7 +723,7 @@ anna_function_t *anna_macro_create(
     
     anna_function_t *result = anna_alloc_function();
     hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
-    result->attribute = (anna_node_call_t *)definition->child[2];
+    result->attribute = (anna_node_call_t *)anna_node_clone_deep(definition->child[2]);
     
     result->definition = definition;
     result->body = (anna_node_call_t *)definition->child[3];
@@ -1105,6 +1105,18 @@ void anna_function_macro_expand(
 		}
 	    }
 	}
+
+	if(f->attribute)
+	{
+	    for(i=0;i<f->attribute->child_count; i++)
+	    {
+//		anna_node_print(999, f->attribute->child[i]);
+		
+		f->attribute->child[i] = anna_node_macro_expand(
+		    f->attribute->child[i], stack);
+	    }
+	}
+    
     }
 }
 

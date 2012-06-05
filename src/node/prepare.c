@@ -753,8 +753,8 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    anna_member_t *member = anna_member_get(type, anna_mid_get(L"__init__"));
 		    if(!member)
 		    {
+			anna_error(this, L"Tried to create object without constructor.");
 			anna_type_print(type);
-			CRASH;
 		    }
 		    
 		    fun_type = member->type;

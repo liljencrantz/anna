@@ -1,3 +1,4 @@
+expand(stringCode);
 use(io);
 
 attribute(
@@ -27,15 +28,13 @@ You enjoy &lt;%= hobby %&gt;, don't you?
 %&gt;
 </pre>",
     "The second file, called myTemplateExample.anna:",
-    "<pre class='anna-code'>
-expand(template);
+    docEx"expand(template);
 def main()
 {
     userName := \"Benjamin\";
     hobbyList := [\"Cooking\", \"Meeting friends\", \"Long walks on the beach\"];
     print(template(\"myTemplate.html\"));
-}
-</pre>",
+}",
     "The output of running myTemplateExample.anna will be:",
     "<pre>
 Greetings, Benjamin

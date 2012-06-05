@@ -392,6 +392,21 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	anna_context_push_entry(context, argv[i]);
     }
     anna_function_t *root_fun = anna_function_unwrap(entry);
+    if(!root_fun)
+    {
+	anna_message(
+	    L"Tried to execute non-function object of type %ls.\n",
+	    entry->type->name);	
+	CRASH;	
+    }
+    if(!root_fun->native)
+    {
+	anna_message(
+	    L"Tried to execute %ls before it was compiled.\n",
+	    root_fun->name);	
+	CRASH;
+    }
+    
     context->function_object = entry;
     root_fun->native(context);
 

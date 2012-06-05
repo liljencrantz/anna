@@ -1,0 +1,183 @@
+attribute(doc("This macro module contains various prefixes for string literals to allow for string formatting."));
+
+
+macro fStringLiteral(node)
+(
+    doc("Seamlessly mix program code with text.",
+	      "Example:",
+"<pre class='anna-code'>
+expand(stringCode);
+
+def main()
+{
+    myVar := 123;
+    print(f\"foo %(\\\"a\\\" ~ 4 ~ 'f') bar %(myVar) baz\");
+}
+
+</pre>",
+"The above code will output <code>foo a4f bar 123 baz</code>."
+    )
+)
+{
+    use(parser);
+    if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload))
+    {
+	node.error("Invalid formated string");
+    }
+
+    res := "".thaw;
+    codeItem := "".thaw;
+    code := ast([]);
+    paranCount := 0;
+
+    enum State{
+	text, percent, code, charLiteral, stringLiteral, charLiteralBackslash, stringLiteralBackslash
+    }
+
+    state := State::text;
+    keyIdx := 0;
+
+    lit.each(ch)
+    {
+	switch(state)
+	{
+
+	    case(State::text)
+	    {
+		if(ch == '%')
+		{
+		    state = State::percent;
+		}
+		else
+		{
+		    res ~= ch;
+		}
+	    }
+
+	    case(State::percent)
+	    {
+		if(ch == '(')
+		{
+		    state = State::code;
+		}
+		else
+		{
+		    state = State::text;
+		    res ~= '%';
+		    res ~= ch;
+		}
+	    }
+
+	    case(State::code)
+	    {
+		switch(ch)
+		{
+		    case('(')
+		    {
+			paranCount++;
+			codeItem ~= ch;
+		    }
+
+		    case('"')
+		    {
+			state = State::stringLiteral;
+			codeItem ~= ch;
+		    }
+
+		    case('"')
+		    {
+			state = State::charLiteral;
+			codeItem ~= ch;
+		    }
+
+		    case(')')
+		    {
+			if(paranCount == 0)
+			{
+			  keyName := "key" ~ keyIdx;
+			    keyIdx++;
+			    res ~= "%(" ~ keyName ~")";
+
+			    parsed := parse(codeItem);
+			    if(!parsed)
+			    {
+//				print(codeItem);
+				node.error("Invalid code");
+				return ?;
+			    }
+			    code.push(ast(%key : %value) % ["key": StringLiteral(node, keyName), "value": parsed]);
+			    codeItem.count=0;
+			    state = State::text;
+			}
+			else
+			{
+			    codeItem ~= ch;
+			    paranCount--;
+			}
+
+		    }
+
+		    default
+		    {
+			codeItem ~= ch;
+		    }	
+		}
+	    }
+
+	    case(State::charLiteral)
+	    {
+		codeItem ~= ch;
+	        charLiteralMapping := ['\'': State::code, '\\': State::charLiteralBackslash];
+		charLiteralMapping.default = State::charLiteral;
+		state = charLiteralMapping[ch];
+	    }
+
+	    case(State::stringLiteral)
+	    {
+		codeItem ~= ch;
+	        charLiteralMapping := ['"': State::code, '\\': State::stringLiteralBackslash];
+		charLiteralMapping.default = State::stringLiteral;
+		state = charLiteralMapping[ch];
+	    }
+
+
+	    case(State::charLiteralBackslash)
+	    {
+		codeItem ~= ch;
+		state = State::charLiteral;
+	    }
+
+	    case(State::stringLiteralBackslash)
+	    {
+		codeItem ~= ch;
+		state = State::stringLiteral;
+	    }
+
+
+	}
+    }
+
+    if (state != State::text)
+    {
+	node.error("Invalid format string" ~ paranCount);
+	return ?;
+    }
+
+    out := ast(%string % %code) % ["string": StringLiteral(node, res), "code": code];
+//    print (out);
+    return out;
+}
+
+macro docExStringLiteral(node)
+(
+    doc("Mark a documentation string as a code example.",
+    )
+)
+{
+    if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload))
+    {
+	node.error("Invalid example");
+    }
+
+    return StringLiteral(node, "<pre class='anna-code'>" ~ lit ~ "</pre>");
+}

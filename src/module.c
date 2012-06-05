@@ -181,7 +181,7 @@ static anna_stack_template_t *anna_module(
 
     if(!res->filename)
     {
-	anna_message(L"Oops %ls\n", res->name);
+	anna_message(L"Failed to locate module %ls in filesystem.\n", res->name);
 	
 	return 0;
     }
@@ -312,9 +312,11 @@ static void anna_module_bootstrap_macro(wchar_t *name)
 
     anna_stack_template_t *mm = anna_module(stack_global, name, path);
     sb_destroy(&sb);
-
-    anna_module_load_i(mm);
-    al_push(&anna_module_default_macros, mm);
+    if(mm)
+    {
+	anna_module_load_i(mm);
+	al_push(&anna_module_default_macros, mm);
+    }
 }
 
 void anna_module_const_int(
@@ -424,6 +426,11 @@ static void anna_module_bootstrap_monkeypatch(
     anna_stack_template_t *int_mod = anna_module(stack_global, name, path);
     sb_destroy(&sb);
 
+    if(!int_mod)
+    {
+	return;
+    }
+    
     anna_module_load_i(int_mod);
     
     int i;
@@ -908,7 +915,7 @@ static void anna_module_compile(anna_node_t *this, void *aux)
    compiling it.
 
  */
-static void anna_module_load_i_phase_2()
+static void anna_module_load_i_phase_2(array_list_t *module_list)
 {
     int j;
     if(anna_error_count != 0)
@@ -917,13 +924,12 @@ static void anna_module_load_i_phase_2()
     }
     
     
-    for(j=0; j<al_get_count(&anna_module_in_transit); j+= 2)
+    for(j=0; j<al_get_count(module_list); j++)
     {
-	anna_stack_template_t *module_stack = al_get(&anna_module_in_transit, j);
-	anna_node_t *node = al_get(&anna_module_in_transit, j+1);
-	anna_node_call_t *module_node = node_cast_call(node);
-	    
-	anna_node_resolve_identifiers(node);
+	anna_stack_template_t *module_stack = al_get(module_list, j);
+	anna_node_call_t *module_node = module_stack->definition;
+	
+	anna_node_resolve_identifiers((anna_node_t *)module_node);
 	debug(
 	    D_SPAM,
 	    L"Identifiers resolved in module %ls\n", 
@@ -941,12 +947,11 @@ static void anna_module_load_i_phase_2()
 	debug(D_SPAM,L"Return types set up for module %ls\n", module_stack->filename);
 	
     }
-    for(j=0; j<al_get_count(&anna_module_in_transit); j+= 2)
+    for(j=0; j<al_get_count(module_list); j++)
     {
-	anna_stack_template_t *module_stack = al_get(&anna_module_in_transit, j);
-	anna_node_t *node = al_get(&anna_module_in_transit, j+1);
-	anna_node_call_t *module_node = node_cast_call(node);
-
+	anna_stack_template_t *module_stack = al_get(module_list, j);
+	anna_node_call_t *module_node = module_stack->definition;
+	
 	anna_node_each(
 	    (anna_node_t *)module_node, 
 	    (anna_node_function_t)&anna_node_validate, 
@@ -969,7 +974,7 @@ static void anna_module_load_i_phase_2()
 
     }    
   CLEANUP:
-    al_truncate(&anna_module_in_transit, 0);
+    al_truncate(module_list, 0);
 }
 
 static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_t *program);
@@ -1044,6 +1049,8 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	debug(D_ERROR,L"Module %ls failed to parse correctly; exiting %d.\n", module_stack->filename);
 	return;
     }
+
+    module_stack->definition = program;
     
     debug(D_SPAM,L"Parsed AST for module %ls:\n", module_stack->filename);    
     anna_node_print(D_SPAM, program);    
@@ -1059,6 +1066,8 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     
     anna_module_find_expand(program, &module_stack->expand);    
     anna_module_find_import(program, &module_stack->import);
+
+    array_list_t load_list = AL_STATIC;
     
     for(i=0; i<al_get_count(&module_stack->expand); i++ )
     {
@@ -1079,7 +1088,15 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	    return;
 	}
 	al_set(&module_stack->expand, i, anna_use_create_stack(mod));
+	al_push(&load_list, mod);
     }
+    
+    /*
+      Fully load and compile all libraries containing macros expanded
+      in this module.
+     */
+    anna_module_load_i_phase_2(&load_list);
+    al_destroy(&load_list);
     
     for(i=0; i<al_get_count(&anna_module_default_macros); i++ )
     {
@@ -1160,7 +1177,6 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     al_push(&module_stack->import, anna_use_create_stack(module_stack));    
     
     al_push(&anna_module_in_transit, module_stack);    
-    al_push(&anna_module_in_transit, node);    
     
     for(i=0; i<module_node->child_count; i++)
     {
@@ -1192,7 +1208,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     }
     else
     {
-	anna_module_load_i_phase_2();	
+	anna_module_load_i_phase_2(&anna_module_in_transit);	
     }
     
     recursion_count--;    
