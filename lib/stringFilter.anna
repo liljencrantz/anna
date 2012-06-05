@@ -1,12 +1,11 @@
 attribute(doc("This macro module contains various prefixes for string literals to allow for string formatting."));
 
-
 macro fStringLiteral(node)
 (
     doc("Seamlessly mix program code with text.",
-	      "Example:",
+	"Example:",
 "<pre class='anna-code'>
-expand(stringCode);
+expand(stringFilter);
 
 def main()
 {
@@ -29,9 +28,12 @@ def main()
     codeItem := "".thaw;
     code := ast([]);
     paranCount := 0;
+    commentCount := 0;
 
     enum State{
-	text, percent, code, charLiteral, stringLiteral, charLiteralBackslash, stringLiteralBackslash
+	text, percent, code, charLiteral, stringLiteral, charLiteralBackslash,
+        stringLiteralBackslash, codeSlash, singleLineComment, multiLineComment,
+        multiLineCommentStar, multiLineCommentSlash
     }
 
     state := State::text;
@@ -84,9 +86,15 @@ def main()
 			codeItem ~= ch;
 		    }
 
-		    case('"')
+		    case('\'')
 		    {
 			state = State::charLiteral;
+			codeItem ~= ch;
+		    }
+
+		    case('/')
+		    {
+			state = State::codeSlash;
 			codeItem ~= ch;
 		    }
 
@@ -94,14 +102,13 @@ def main()
 		    {
 			if(paranCount == 0)
 			{
-			  keyName := "key" ~ keyIdx;
+			    keyName := "key" ~ keyIdx;
 			    keyIdx++;
 			    res ~= "%(" ~ keyName ~")";
 
 			    parsed := parse(codeItem);
 			    if(!parsed)
 			    {
-//				print(codeItem);
 				node.error("Invalid code");
 				return ?;
 			    }
@@ -121,6 +128,85 @@ def main()
 		    {
 			codeItem ~= ch;
 		    }	
+		}
+	    }
+
+	    case(State::codeSlash)
+	    {
+		codeItem ~= ch;
+	        slashMapping := ['*': State::multiLineComment, '/': State::singleLineComment];
+		slashMapping.default = State::code;
+		state = slashMapping[ch];
+		if(state == State::multiLineComment)
+		{
+		    commentCount++;
+		}
+	    }
+
+	    case(State::multiLineComment)
+	    {
+		codeItem ~= ch;
+		switch(ch)
+		{
+		    case('/')
+		    {
+			state = State::multiLineCommentSlash;
+		    }
+
+		    case('*')
+		    {
+			state = State::multiLineCommentStar;
+		    }
+
+		}
+	    }
+
+	    case(State::multiLineCommentStar)
+	    {
+		codeItem ~= ch;
+		switch(ch)
+		{
+		    case('/')
+		    {
+			commentCount--;
+			if(commentCount == 0)
+			{
+			    state = State::code;
+			}
+		    }
+
+		    default
+		    {
+			state = State::multiLineComment;
+		    }
+
+		}
+	    }
+
+	    case(State::multiLineCommentSlash)
+	    {
+		codeItem ~= ch;
+		switch(ch)
+		{
+		    case('*')
+		    {
+			commentCount++;
+		    }
+
+		    default
+		    {
+			state = State::multiLineComment;
+		    }
+
+		}
+	    }
+
+	    case(State::singleLineComment)
+	    {
+		codeItem ~= ch;
+		if(ch == '\n')
+		{
+		    state = State::code;
 		}
 	    }
 
@@ -168,7 +254,7 @@ def main()
     return out;
 }
 
-macro docExStringLiteral(node)
+macro exampleStringLiteral(node)
 (
     doc("Mark a documentation string as a code example.",
     )

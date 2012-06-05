@@ -1,4 +1,4 @@
-expand(stringCode);
+expand(stringFilter);
 
 attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been implemented."));
 
@@ -12,7 +12,7 @@ def String to(Object o)
     doc(
 	"Serialize the specified object into JSON. Since Anna has no boolean type, true/false values currently aren't handled.",
 	"Usage:",
-	docEx"json.to([\"key\": [1,2,?]}])
+	example"json.to([\"key\": [1,2,?]}])
 // Result: \"{\"key\": [1, 2, null]}\"",
 	"This function internally handles Int, Float, String, List and HashMap types. If you want your own custom class to be supported, simply add a toJson method that returns a String."
     )

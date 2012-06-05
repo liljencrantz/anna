@@ -1,0 +1,15 @@
+expand(stringFilter);
+
+def main()
+{
+    blaj := 123;
+    print(f"foo %((\"a\" ~ 4) ~ 'f') bar %(blaj) baz %( 1 / 1 // This is a comment inside a code block inside a literal
++1   // This is not a multiline comment, because it is a single line comment: /*
+) qux %(2 * /* multiline comment
+/*
+ * With nessted comment inside it
+*/
+*/
+2)");
+}
+

@@ -1,4 +1,4 @@
-expand(stringCode);
+expand(stringFilter);
 use(io);
 
 attribute(
@@ -28,7 +28,7 @@ You enjoy &lt;%= hobby %&gt;, don't you?
 %&gt;
 </pre>",
     "The second file, called myTemplateExample.anna:",
-    docEx"expand(template);
+    example"expand(template);
 def main()
 {
     userName := \"Benjamin\";
