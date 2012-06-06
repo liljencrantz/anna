@@ -22,13 +22,11 @@ var anna = {
 	$("[path]").each(
 	    function(idx, el)
 	    {
-		console.log($(el).attr("path"));		
 		var location = "";
 		if($(el).attr("member"))
 		    location = "#" + $(el).attr("member");
 
 		$(el).attr("href", anna.basePath + "api/global/" + $(el).attr("path").replace(/\./g, "/") + ".html" + location);
-		console.log(el);
 	    });
 	
     },
@@ -90,7 +88,7 @@ var anna = {
 	    var path = "";
 	    if(arr.length != 1)
 	    {
-		// Remove the 'global' element, unless that's the entire path...
+		// Remove the 'global' element, unless that's the entire path. It just takes up space.
 		arr.splice(0,1);
 		path = arr.join(".") + "::";
 	    }
@@ -259,7 +257,6 @@ var anna = {
     */
     syntaxHighlight: function()
     {
-
 	var pattern = [];
 
 	$.each(["type", "error", "enum", "var", "const", "def", "return", "if", "else", "while", "as", "switch", "case", "cases", "default", "macro", "or", "and", "in"], function (key, value) {

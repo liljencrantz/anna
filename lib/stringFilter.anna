@@ -2,8 +2,11 @@ attribute(doc("This macro module contains various prefixes for string literals t
 
 macro fStringLiteral(node)
 (
-    doc("Seamlessly mix program code with text.",
-	"Example:",
+    doc("Seamlessly mix program code with text. This macro allows the placement
+of arbitrary pieces of Anna code inside a String literal. The code
+will be evaluated at runtime and inserted into the string. Any such
+code snippets must be enclosed within %(), like in the following
+example:",
 "<pre class='anna-code'>
 expand(stringFilter);
 
@@ -12,7 +15,6 @@ def main()
     myVar := 123;
     print(f\"foo %(\\\"a\\\" ~ 4 ~ 'f') bar %(myVar) baz\");
 }
-
 </pre>",
 "The above code will output <code>foo a4f bar 123 baz</code>."
     )
@@ -256,8 +258,32 @@ def main()
 
 macro exampleStringLiteral(node)
 (
-    doc("Mark a documentation string as a code example.",
+    doc(
+        "Mark a documentation string as a code example.",
+	"All this macro really does is enclose the string literal in a &lt;pre
+class='anna-code'&gt; tag. This is detected during page rendering by a
+javascript that will perform syntax highlighting. For example, this is
+the signature of the <a path='json' member='to'>json.to</a> function:",
+	"<pre class='anna-code'>
+def String to(Object o) 
+(
+    doc(
+	\"
+Serialize the specified object into JSON. Since Anna has 
+no boolean type, true/false values currently aren't handled.\",
+	\"Usage:\",
+	example\"json.to([\\\"key\\\": [1,2,?]}])
+// Result: \\\"{\\\"key\\\": [1, 2, null]}\\\"\",
+	\"This function internally handles Int, Float, String, 
+List and HashMap types. If you want your own custom class to be 
+supported, simply add a toJson method that returns a String.\"
     )
+)
+{
+    ...
+}
+</pre>",
+)
 )
 {
     if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload))
