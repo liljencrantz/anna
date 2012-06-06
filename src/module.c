@@ -590,15 +590,15 @@ static void anna_module_doc()
     };
 
     wchar_t *data_iter[][2] = {
-	{L"__map__", L"Exacute the specified function once for each element and return a list containing the output of each function call."},
-	{L"__each__", L"Execute the specified function once for each element."},
-	{L"__filter__", L"Execute the specified function once for each element and return a new object of the same type, containing the elements for which the function returned non-null."},
+	{L"map", L"Exacute the specified function once for each element and return a list containing the output of each function call."},
+	{L"each", L"Execute the specified function once for each element."},
+	{L"filter", L"Execute the specified function once for each element and return a new object of the same type, containing the elements for which the function returned non-null."},
+	{L"find", L"Execute the specified function once for each element until the function returns a non-null value, then return the corresponding element. Returns null if no element matched."},
 	{L"__appendAssign__", L"Append the specified items to this collection."},
 	{L"get", L"Return the item at the specified offset."},
 	{L"getRange", L"Return the items in the specified range."},
 	{L"set", L"Set the item at the specified offset to the specified value."},
 	{L"setRange", L"Set all of the items in the specified Range to the items in the specified list."},
-	{L"__find__", L"Execute the specified function once for each element until the function returns a non-null value, then return the corresponding element. Returns null if no element matched."},
 	{0, 0}
     };
     

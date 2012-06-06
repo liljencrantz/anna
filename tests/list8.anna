@@ -22,8 +22,8 @@ def main()
     print([].filter(i){print("Fail");i>0});
     print([].find(i){print("Fail");i>0});
 /*
-    print(l.__map__(?),"\n");
-    print(l.__filter__(?),"\n");
-    print(l.__find__(?),"\n");    
+    print(l.map(?),"\n");
+    print(l.filter(?),"\n");
+    print(l.find(?),"\n");    
 */
 }

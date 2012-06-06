@@ -13,36 +13,37 @@ def Node __iter__(Call node)
 	    __var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
     }
 
-    checkNodeType(node.function, Call);
+    def isBlock(Node n) { (((n as Call).function as Identifier).name == "__block__") }
+	    
+    node.expand? = ?;
+
+    if( !(node.count in Range(2, 4, 1)) or !(node.function as Call) or !(node[0] as Identifier) or !(isBlock(node[-1])))
+    {
+	return node;
+    }
 
     n := MutableList«Node»();  
-    if(node.count < 2 or node.count > 3)
-    {
-	node.error("Invalid arguments for iteration");
-    }
     
-    checkNodeType(node[0], Identifier);
-    checkNodeBlock(node[-1]);
     body := node[-1];
 
     if(node.count == 2)
     {
 	n[0] = iterDeclare(
 	    Identifier(body, "!unused"), 
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0),0)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0),0)));
 	n[1] = iterDeclare(
 	    node[0],
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0), 1)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0), 1)));
     } 
     else
     {
 	checkNodeType(node[1], Identifier);
 	n[0] = iterDeclare(
 	    node[0],
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0),0)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0),0)));
 	n[1] = iterDeclare(
 	    node[1],
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.__each__, 0), 1)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0), 1)));
     }
     
     attr := ast({block, loop});
@@ -51,7 +52,7 @@ def Node __iter__(Call node)
     fun := node.function as Call;
     origName := fun[1] as Identifier;  
 
-    fun[1] = Identifier(fun[1], "__" ~ origName.name ~ "__");
+    fun[1] = origName;
 
     func := Call(
 	body, 
@@ -67,6 +68,7 @@ def Node __iter__(Call node)
 	fun,  
 	func);
     list := (fun as Call)[0];
+    res.expand? = ?;
     if(origName.name == "map")
     {
 //	print(list, "\n\n");
@@ -74,13 +76,13 @@ def Node __iter__(Call node)
 	    {
 		%body := %bodyValue;
 	        %list := %listValue;
-	        __res := %list.__map__(%body);
+	        __res := %list.map(%body);
 		__res as %nodeType;
 	    }()).replace(ast(%bodyValue) , func) 
 	    .replace(ast(listValue) , list) 
 	    .replace(
 		ast(nodeType) , 
-		Call(?, ast(__specialize__), ast(__staticReturnTypeOf__(%list.__map__)), ast({__staticReturnTypeOf__(%body)}))) as Call;
+		Call(?, ast(__specialize__), ast(__staticReturnTypeOf__(%list.map)), ast({__staticReturnTypeOf__(%body)}))) as Call;
     }
     else
     {
@@ -94,7 +96,6 @@ def Node __iter__(Call node)
     }
     res = res.replace(ast(body) , Identifier(?, identifier("body")))
 	.replace(ast(list), Identifier(?, identifier("list"))) as Call;
-//    print("Iteration body:\n", res, "\n");
     return res;
 }
 

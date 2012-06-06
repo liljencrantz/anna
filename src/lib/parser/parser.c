@@ -79,10 +79,8 @@ void anna_node_wrapper_add_method(anna_function_t *fun)
 
 ANNA_VM_NATIVE(anna_node_wrapper_i_replace, 3)
 {
-    if((param[1] == null_entry) || (param[2] == null_entry))
-    {
-	return null_entry;
-    }
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+    ANNA_ENTRY_NULL_CHECK(param[2]);
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_node_t *tree = anna_node_unwrap(this);
     anna_node_identifier_t *old = (anna_node_identifier_t *)anna_node_unwrap(anna_as_obj(param[1]));    
@@ -214,6 +212,7 @@ static void anna_parse_i(anna_context_t *context)
 
 ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_node_t *this = anna_node_unwrap(anna_as_obj_fast(param[0]));
     wchar_t *msg;
     if(anna_entry_null(param[1]))
@@ -232,6 +231,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_error, 2)
 
 ANNA_VM_NATIVE(anna_node_wrapper_i_to_string, 1)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *thiso = anna_as_obj_fast(param[0]);
     anna_node_t *this = anna_node_unwrap(thiso);
     wchar_t *str = anna_node_string(this);
@@ -243,6 +243,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_to_string, 1)
 
 ANNA_VM_NATIVE(anna_node_wrapper_i_get_file, 1)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *thiso = anna_as_obj_fast(param[0]);
     anna_node_t *this = anna_node_unwrap(thiso);
     wchar_t *str = this->location.filename;
@@ -251,8 +252,26 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_get_file, 1)
     return anna_from_obj(res);
 }
 
+ANNA_VM_NATIVE(anna_node_wrapper_i_get_expand, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *thiso = anna_as_obj_fast(param[0]);
+    anna_node_t *this = anna_node_unwrap(thiso);
+    return this->flags & ANNA_NODE_DONT_EXPAND ? null_entry : anna_from_int(1);
+}
+
+ANNA_VM_NATIVE(anna_node_wrapper_i_set_expand, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *thiso = anna_as_obj_fast(param[0]);
+    anna_node_t *this = anna_node_unwrap(thiso);
+    this->flags  = (this->flags & ~ANNA_NODE_DONT_EXPAND) | (param[1] != null_entry ? 0:ANNA_NODE_DONT_EXPAND);
+    return param[1];
+}
+
 ANNA_VM_NATIVE(anna_node_wrapper_i_get_line, 1)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *thiso = anna_as_obj_fast(param[0]);
     anna_node_t *this = anna_node_unwrap(thiso);
     wchar_t *str = this->location.filename;
@@ -261,10 +280,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_get_line, 1)
 
 ANNA_VM_NATIVE(anna_node_wrapper_cmp, 2)
 {
-    if(anna_entry_null(param[1]))
-    {
-	return null_entry;
-    }
+    ANNA_ENTRY_NULL_CHECK(param[1]);
 
     anna_node_t *o = anna_node_unwrap(anna_as_obj(param[1])); 
     if(!o)
@@ -279,6 +295,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_cmp, 2)
 
 ANNA_VM_NATIVE(anna_node_wrapper_hash, 1)
 {
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     return anna_from_int(
 	anna_node_hash_func(
 	    anna_node_unwrap(
@@ -366,6 +383,12 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 	anna_mid_get(L"file"), string_type,
 	&anna_node_wrapper_i_get_file, 0,
 	L"The name of the file where this AST node was defined.");
+  
+    anna_member_create_native_property(
+	node_type,
+	anna_mid_get(L"expand?"), object_type,
+	&anna_node_wrapper_i_get_expand, &anna_node_wrapper_i_set_expand, 
+	L"If this property is non-null, it will not be considered for macro expansion.");
   
     anna_member_create_native_property(
 	node_type,

@@ -8,7 +8,7 @@ class MyType
     
     def yay()
     {
-	print(["a","b", "c", "d", "e"].__map__(wrongMethod));
+	print(["a","b", "c", "d", "e"].map(wrongMethod));
     }
     
 }

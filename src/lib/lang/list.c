@@ -1146,12 +1146,12 @@ static void anna_list_type_create_internal(
     ;    
     
     anna_member_create_native_method(
-	type, anna_mid_get(L"__each__"), 0,
+	type, anna_mid_get(L"each"), 0,
 	&anna_list_each, type, 2, e_argv, e_argn, 0, 0);
     
     anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__filter__"),
+	anna_mid_get(L"filter"),
 	0,
 	&anna_list_filter,	
 	mutable?mutable_type:imutable_type,
@@ -1162,7 +1162,7 @@ static void anna_list_type_create_internal(
 
     anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__find__"),
+	anna_mid_get(L"find"),
 	0,
 	&anna_list_find,
 	spec,
@@ -1172,7 +1172,7 @@ static void anna_list_type_create_internal(
     
     anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__map__"),
+	anna_mid_get(L"map"),
 	0,
 	&anna_list_map,
 	mutable_list_type,

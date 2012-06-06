@@ -1186,12 +1186,12 @@ static void anna_hash_type_create_internal(
     ;    
     
     anna_member_create_native_method(
-	type, anna_mid_get(L"__each__"), 0,
+	type, anna_mid_get(L"each"), 0,
 	&anna_hash_each, type, 2, e_argv, e_argn, 0, 0);
 
     anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__map__"),
+	anna_mid_get(L"map"),
 	0,
 	&anna_hash_map,
 	mutable_list_type,

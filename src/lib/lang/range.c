@@ -822,12 +822,12 @@ void anna_range_type_create()
     ;
 
     anna_member_create_native_method(
-	range_type, anna_mid_get(L"__each__"),
+	range_type, anna_mid_get(L"each"),
 	0, &anna_range_each, range_type, 2,
 	e_argv, e_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
-	anna_mid_get(L"__filter__"),
+	anna_mid_get(L"filter"),
 	0,
 	&anna_range_filter,
 	anna_list_type_get_mutable(int_type),
@@ -836,7 +836,7 @@ void anna_range_type_create()
 	e_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
-	anna_mid_get(L"__find__"),
+	anna_mid_get(L"find"),
 	0,
 	&anna_range_find,
 	int_type,
@@ -854,7 +854,7 @@ void anna_range_type_create()
 	a_argn, 0, L"Checks whether the specified number is contained in this range.");
     anna_member_create_native_method(
 	range_type,
-	anna_mid_get(L"__map__"),
+	anna_mid_get(L"map"),
 	0,
 	&anna_range_map,
 	mutable_list_type,

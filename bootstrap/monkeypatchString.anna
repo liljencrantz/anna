@@ -245,31 +245,31 @@ def String formatMap(
     return res;
 }
 
-def MutableString __filter__Mutable(
+def MutableString filterMutable(
     MutableString this, 
     def Object body(Int idx, Char value) )
 (
     target(MutableString), 
-    name(__filter__),
+    name(filter),
     doc("Runs the specified test on each character in the string, and return a new string with the characters for which the test returned null removed."),
 )
 {
-    return __filter__(this, body).thaw;
+    return filter(this, body).thaw;
 }
 
-def ImutableString __filter__Imutable(
+def ImutableString filterImutable(
     ImutableString this, 
     def Object body(Int idx, Char value) )
 (
     target(ImutableString), 
-    name(__filter__),
+    name(filter),
     doc("Runs the specified test on each character in the string, and return a new string with the characters for which the test returned null removed."),
 )
 {
-    return __filter__(this, body).freeze;
+    return filter(this, body).freeze;
 }
 
-def String __filter__(
+def String filter(
     String this, 
     def Object body(Int idx, Char value) )
 (

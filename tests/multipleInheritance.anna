@@ -29,7 +29,7 @@ def main()
     // Int.__add__
     print(vv + 5);
 
-    // Range.__each__
+    // Range.each
     vv.each(i){print(i)}
 
     // Range.toString
@@ -40,7 +40,7 @@ def main()
     // Int.__add__
     print(vv2 + 5);
 
-    // Range.__each__
+    // Range.each
     vv2.each(i){print(i)}
 
     // Range.toString

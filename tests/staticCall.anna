@@ -10,7 +10,7 @@ class MyType
     
     def yay()
     {
-	print(["a","b", "c", "d", "e"].__map__(staticMethod));
+	print(["a","b", "c", "d", "e"].map(staticMethod));
     }
     
 }

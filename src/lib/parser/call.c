@@ -364,7 +364,7 @@ static void anna_node_create_call_type(
     
     anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__each__"), 0,
+	anna_mid_get(L"each"), 0,
 	&anna_node_call_wrapper_each,
 	type,
 	2, e_argv, e_argn, 0, 0);
