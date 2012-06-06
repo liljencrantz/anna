@@ -569,8 +569,8 @@ static void anna_module_doc()
 {
     wchar_t *data_numerical[][2] = {
 	{L"__neg__", L"Negate the number."},
-	{L"__abs__", L"The absolute value of the number."},
-	{L"__sign__", L"Return the sign of the number."},
+	{L"abs", L"The absolute value of the number."},
+	{L"sign", L"Return the sign of the number."},
 	{0, 0}
     };
     
@@ -579,13 +579,13 @@ static void anna_module_doc()
 	{L"__sub__", L"Subtract two numbers from each other."},
 	{L"__mul__", L"Multiply two numbers with each other."},
 	{L"__div__", L"Divide one number with another."},
-	{L"__exp__", L"Raise one number to the power of another."},
+	{L"exp", L"Raise one number to the power of another."},
 	{L"__increaseAssign__", L"Increase a number by the specified amount."},
 	{L"__decreaseAssign__", L"Decrease a number by the specified amount."},
 	{L"__nextAssign__", L"Increase a number by one step."},
 	{L"__prevAssign__", L"Decrease a number by one step."},
-	{L"__shl__", L"Shift the bit pattern representing this number the specified number of bits left."},
-	{L"__shr__", L"Shift the bit pattern representing this number the specified number of bits right."},
+	{L"shl", L"Shift the bit pattern representing this number the specified number of bits left."},
+	{L"shr", L"Shift the bit pattern representing this number the specified number of bits right."},
 	{0, 0}
     };
 
@@ -594,11 +594,11 @@ static void anna_module_doc()
 	{L"__each__", L"Execute the specified function once for each element."},
 	{L"__filter__", L"Execute the specified function once for each element and return a new object of the same type, containing the elements for which the function returned non-null."},
 	{L"__appendAssign__", L"Append the specified items to this collection."},
-	{L"__get__Int__", L"Return the item at the specified offset."},
-	{L"__get__Range__", L"Return the items in the specified range."},
-	{L"__set__Int__", L"Set the item at the specified offset to the specified value."},
-	{L"__set__Range__", L"Set all of the items in the specified Range to the items in the specified list."},
-	{L"__find__", L"Exacute the specified function once for each element until the function returns a non-null value, then return the corresponding element. Returns null if no element matched."},
+	{L"get", L"Return the item at the specified offset."},
+	{L"getRange", L"Return the items in the specified range."},
+	{L"set", L"Set the item at the specified offset to the specified value."},
+	{L"setRange", L"Set all of the items in the specified Range to the items in the specified list."},
+	{L"__find__", L"Execute the specified function once for each element until the function returns a non-null value, then return the corresponding element. Returns null if no element matched."},
 	{0, 0}
     };
     
