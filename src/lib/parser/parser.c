@@ -535,7 +535,7 @@ void anna_parser_load(anna_stack_template_t *stack)
     anna_module_function(
 	stack, L"compile", 0, anna_parser_i_compile,
 	object_type, 1, &node_type, compile_argn, 0,
-	L"Send the specified AST to the compiler and return the resulting code. The AST must specify a valid function definition. <em>Warning:</em> Error recovery in the compiler is currently rudementary. Any compilation errors are liable to put the entire interpreter into an invalid state, resulting in a forced exit.");
+	L"Compiles an AST representing an Anna module into a new module object. <em>Warning:</em> Error recovery in the compiler is currently incomplete. Compilation errors might put the interpreter into an invalid state, resulting in a forced exit.");
     
     anna_type_t *p_argv[]={string_type, string_type};
     wchar_t *p_argn[]={L"input", L"file"};

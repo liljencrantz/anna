@@ -13,16 +13,12 @@ def greet()
     print(t\"Hello, world!\");
 }",
 
-"<p>
-The next step is to run the annaxgettext application on your source files. Use a command like this:
-</p>
-<pre>
+	"The next step is to run the annaxgettext application on your source files. Use a command like this:",
+	"<pre>
 annaxgettext myApplication.anna >messages.pot
-</pre>
-<p>
-The above command will create a file named messages.pot, looking something like this:
-</p>
-<pre>
+</pre>",
+	"The above command will create a file named messages.pot, looking something like this:",
+	"<pre>
 # Copyright (C) 2012 
 # 
 msgid \"\"
@@ -30,12 +26,14 @@ msgstr \"\"
 \"Content-Type: text/plain; charset=UTF-8\\n\"
 
 #: myApplication.anna:4
-msgid \"Hello, world!\\x0a\"
-msgstr \"\"
-</pre>
-<p>
-To be continued...
-</p>
+msgid \"Hello, world!\"
+msgstr \"\"</pre>",
+	"For instructions on how to create a .mo file from this .pot file, the
+specific details of how the format works, and how to use <a
+path='readline' member='bindText'>readline.bindText</a> to configure
+translations, see the <a
+href='http://www.gnu.org/software/gettext/'>GNU gettex
+documentation</a>.
 "));
 
 macro tStringLiteral(node) 

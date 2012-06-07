@@ -4,16 +4,16 @@ macro structType(node)
 (
     doc("
 The struct type macro is used for creating simple classes aimed for data storage.
-Basically, a struct type behaves exactly like a regular class, but with a few additional abilities.", "These are:
+Basically, a struct type behaves exactly like a regular class, but with a few additional features.", 
+
+"These features are:
 
 <ul>
-  <li>A suitable constructor is automatically created, that accepts one argument for each member of the struct.</li>
-  <li>__cmp__, hashCode and toString methods are all created, doing what you would expect them to.</li>
-</ul>
-<p>
-Usage example:
-</p>
-<pre class=\"anna-code\">
+  <li>A suitable constructor is automatically created, that accepts one argument for each member of the struct. The arguments are ordered and named the same way as the members of the struct.</li>
+  <li>The __cmp__, hashCode and toString methods are all created, doing what you would expect them to.</li>
+</ul>",
+	"Usage example:",
+"<pre class='anna-code'>
 struct MyStruct
 {
     var Int some;
@@ -27,11 +27,9 @@ vv2 := MyStruct(5, \"\");
 
 // This prints MyStruct(some: 5, other:);
 print(vv2);
-</pre>
-<p>
-Because structs implement the __cmp__ and hashCode methods, they can be used as 
+</pre>",
+"Because structs implement the __cmp__ and hashCode methods, they can be used as 
 keys in dictionaries.
-</p>
 ")
 )
 {
@@ -85,21 +83,21 @@ keys in dictionaries.
 
 macro struct(node)
 (
-    doc("
-The struct macro is used as a short hand for defining objects used
+    doc(
+"The struct macro is used as a short hand for defining struct-type objects used
 exclusively for quick access to it's members. It is used by passing a
-set of name/value mappings like so:
-
-foo := struct(something: 3, other: getMeSomeOtherObject());
-
-The above code will make foo into an object of a type with two
+set of name/value mappings like so:",
+"<pre class='anna-code'>foo := struct(something: 3, other: getMeSomeOtherObject());</pre>",
+"The above code will make foo into an object of a type with two
 members. The first member will be of type Int and the second will be
 of the return type of the getMeSomeOtherObject function. The something
 member will have an initial value of 3, and the other member will have
-the return value of getMeSomeOtherObject as its value.
+the return value of getMeSomeOtherObject as its value.",
+"Struct values can be any Anna expression, including another
+struct. The only restriction is that there may not be any circular
+dependencies between member types."
 
-Struct values can be any Anna expression, including another struct. 
-")
+)
 )
 {
     initBlock := Call(node, Identifier(node, "__block__"));
@@ -124,15 +122,7 @@ Struct values can be any Anna expression, including another struct.
 	initBlock ~= [ast(this.%name = %name) % ["name": mapping[0]]];
     }
     initParam := typeBlock.copy() as Call;
-    typeBlock ~= [
-	ast(__const__(__init__, ?, __def__(__init__, Object, %initParam, {}, %initBlock), {})) %
-	[
-	    "initParam": initParam,
-	    "initBlock": initBlock
-	]
-    ];
-
-    fullType := ast(classType(Anon, {}, %body)) % ["body": typeBlock];
+    fullType := ast(structType(AnonymousStruct, {}, %body)) % ["body": typeBlock];
     call := Call(node, fullType);
     call ~= callParam;
 //    print(fullType);

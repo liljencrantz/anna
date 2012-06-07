@@ -400,6 +400,7 @@ var anna = {
 	    }
 	);
     }
+
 };
 
 $(document).ready(anna.init);

@@ -2,16 +2,27 @@ attribute(internal, doc("
 The anna repl implementation."));
 
 def repl(reflection.Continuation debugFrame = ?)
-    (doc("
-This is the so called repl of anna. Repl is short for Read, Evaluate
+    (doc(
+	"This is the so called repl of anna. Repl is short for Read, Evaluate
 and Print-Loop, and is what implements the interactive prompt of a
-programming language. If Anna is called without specifying an
-application to run, a repl is invoked. It will show an interactive
-prompt using the readLine library, and will then compile that line
-into a function using the parser module, and will then execute that
-function and print it's return value to screen.",
-	 "If the repl is provided with a Continuation as a perameter, the repl
-will include tools for debugging that frame."), internal)
+programming language.",
+	"The Anna repl is used internally in two situations. Firstly, if Anna
+is called without specifying an application to run, the repl is
+invoked. Secondly, the interactive Anna debugger is simply a repl
+prompt with some additional debugging functions enabled. The debugging
+functions are enabled by sending in a non-null value for the
+debugFrame parameter.",
+	"The prompt is implemented using the readLine library, and supports any
+keybindings supported by readLine. The history is also saved on exit,
+so commands from previous Anna sessions can be reused using the
+standard readline history functionality. The string that is returned
+from the call to readline is converted into an AST using <a
+path='parser' member='parse'>parser.parse</a> function, inserted into
+a larger AST representing an entire module, and is finally compiled
+using the <a path='parser' member='compile'>parser.compile</a>
+function. The resulting function is then executed and the output is
+then printed to the screen.",
+	), internal)
 {
     use(parser);
 
@@ -328,15 +339,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 def debugRepl() 
 (
     doc("
-Don't use this function. It is used internally by the breakpoint bytecode in 
-the VM."),
+Don't use this function or rely on its existence. It is used internally by the breakpoint
+bytecode in the VM."),
     internal)
 {
     debugFrame := reflection.currentContinuation.dynamicFrame.dynamicFrame;    
     repl(debugFrame);
 }
 
-def main() (doc("Calls the repl function"), internal)
+def main() 
+(
+    doc("
+Calls the repl.repl function and then exits. This is the
+main()-function that is called when no other main function is given on
+the command line."), internal)
 {
     repl();
 }
