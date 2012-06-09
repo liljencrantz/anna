@@ -213,6 +213,7 @@ ANNA_VM_NATIVE(anna_list_set_int, 3)
 
 ANNA_VM_NATIVE(anna_list_get_int, 2)
 { 
+    ANNA_ENTRY_NULL_CHECK(param[0]);
     ANNA_ENTRY_NULL_CHECK(param[1]);
     return anna_list_get(anna_as_obj(param[0]), anna_as_int(param[1]));
 }
@@ -220,6 +221,17 @@ ANNA_VM_NATIVE(anna_list_get_int, 2)
 ANNA_VM_NATIVE(anna_list_get_count_method, 1)
 {
     return anna_from_int(anna_list_get_count(anna_as_obj(param[0])));
+}
+
+ANNA_VM_NATIVE(anna_list_get_iterator_method, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *list = anna_as_obj(param[0]);
+    anna_object_t *iter = anna_object_create(
+	anna_type_unwrap((anna_object_t *)anna_entry_get_static(list->type,ANNA_MID_ITERATOR_TYPE)));
+    *anna_entry_get_addr(iter, ANNA_MID_LIST) = param[0];
+    *anna_entry_get_addr(iter, ANNA_MID_OFFSET) = anna_from_int(0);    
+    return anna_from_obj(iter);
 }
 
 ANNA_VM_NATIVE(anna_list_empty, 1)
@@ -986,6 +998,23 @@ static void anna_list_type_create_internal(
     mid_t mmid;
 
     anna_member_create(
+	type,
+	ANNA_MID_ITERATOR_TYPE,
+	ANNA_MEMBER_STATIC,
+	type_type);
+
+    anna_type_t *iter = anna_type_create(L"Iterator", 0);
+    (*(anna_type_t **)anna_entry_get_addr_static(type, ANNA_MID_ITERATOR_TYPE)) =
+	anna_type_wrap(iter);
+    anna_member_create(
+	iter, ANNA_MID_LIST, 0, type);    
+    anna_member_create(
+	iter, ANNA_MID_OFFSET, 0, int_type);    
+    anna_type_copy_object(iter);
+
+
+    
+    anna_member_create(
 	type, ANNA_MID_LIST_PAYLOAD, 0, null_type);
 
     anna_member_create(
@@ -1003,7 +1032,7 @@ static void anna_list_type_create_internal(
     anna_member_create(
 	type,
 	ANNA_MID_LIST_SPECIALIZATION,
-	1,
+	ANNA_MEMBER_STATIC,
 	null_type);
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
     
@@ -1074,6 +1103,11 @@ static void anna_list_type_create_internal(
 	&anna_list_get_count_method,
 	mutable ? &anna_list_set_count_method : 0,
 	L"The number of elements in this list.");
+
+    anna_member_create_native_property(
+	type, ANNA_MID_ITERATOR, iter,
+	&anna_list_get_iterator_method, 0,
+	L"Returns an Iterator for this collections.");
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"empty?"), int_type,
@@ -1311,6 +1345,7 @@ static void anna_list_type_create_internal(
 	L"A mutable copy of this List, or the List itself if it is already mutable.");
 
     anna_type_close(type);
+    anna_type_close(iter);
     
 }
 
@@ -1385,7 +1420,7 @@ static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)
 	sb_printf(&sb, L"ImutableList«%ls»", subtype->name);
 	anna_type_t *imutable = anna_type_create(
 	    sb_content(&sb), 0);
-	
+
 	if(anna_type_sendable(subtype))
 	{
 	    anna_type_make_sendable(imutable);

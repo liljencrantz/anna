@@ -5,14 +5,13 @@
 * Documentation:
   - Split base documentation into multiple files
   - Check for dead links
-  - By default, maybe attributes should be dropped to conserve memory? If so, add special switch to retain it for the repl and the annadoc program.
 * Check that node compare supports all ast node types
 * Remove code duplication between types and functions when performing templatization
 * MutableList::removeValue might be useful?
 * The Member.value() method can't currently handle properties.
 * Write macros to transform f"Hello, %(userName)" => "Hello, %" % [userName] and tf"Hello, %(userName)" => t"Hello, %" % [userName]
 * Types should have constant members. They should only be assignable using some kind of funky attribute syntax, which will not allow any kind of member access.
-* Maybe List["getRange"] should return the getRange member object? If so, it would probably make a lot more sense for Continuation["foo"] to return the ContinuationVariable object, and not the actual value. If we go down this route, then ContinuationVariable should be renamed ContiuationMember, jsut to make the parallel clearer.
+* Maybe List["getRange"] should return the getRange member object? If so, it would probably make a lot more sense for Continuation["foo"] to return the ContinuationVariable object, and not the actual value. If we go down this route, then ContinuationVariable should be renamed ContiuationMember, just to make the parallel clearer.
 * There should be a type flag «sendable», that is used to tell the world that a specified type only has imutable members, and in addition, that all member values are also have the sendable attribute.
 * There should be a goroutine-like concurrency framework where messages can be sent through sockets. The only message requirement is that anything sent through the socket must be sendable (see previous bullet). This can be implemented using threads at a very high efficiency level without introducing any hard lock problems. (This is reasonably close to what Erlang does, too)
 * Interactive debugger

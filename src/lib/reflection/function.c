@@ -248,7 +248,7 @@ static void anna_function_type_i_member_each(
     anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
     
     anna_entry_set(
-	el, ANNA_MID_CONTINUATION_VARIABLE_OFFSET, anna_from_int(sid.offset));
+	el, ANNA_MID_OFFSET, anna_from_int(sid.offset));
     
     anna_entry_set(
 	el, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION, anna_from_obj(this));

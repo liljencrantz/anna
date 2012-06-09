@@ -1107,7 +1107,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    else
 	    {
   //          anna_message(L\"Fallback for int $name \n\");
-		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_NEXT_ASSIGN_INT];
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_NEXT_ASSIGN];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_context_push_object(context,wrapped);
@@ -1147,7 +1147,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    else
 	    {
   //          anna_message(L\"Fallback for int $name \n\");
-		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_PREV_ASSIGN_INT];
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_PREV_ASSIGN];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_context_push_object(context,wrapped);

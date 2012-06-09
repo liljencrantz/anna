@@ -236,6 +236,9 @@ void anna_lang_load(anna_stack_template_t *stack)
     anna_hash_type_create();
     anna_buffer_type_create();
     anna_type_make_sendable(sendable_type);
+    anna_type_document(
+	sendable_type,
+	L"A type that can be sent through a <a path='mp.Channel'>mp.Channel</a>. Sendable types can not be concurrently mutated - they are either immutable or wrap or mutating operations in some kind of locking.");
     
     static wchar_t *p_argn[]={L"object"};
 

@@ -115,11 +115,14 @@ void anna_mid_init()
 	    L"attribute",
 	    L"filename",
 
-	    L"offset",
 	    L"continuation",
 	    L"!channelRead",
 	    L"!channelWrite",
 	    L"!channelSync",
+	    L"Iterator",
+	    L"iterator",
+	    L"list",
+	    L"offset",
 	};
     
     int i;

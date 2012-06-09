@@ -8,7 +8,7 @@ ANNA_VM_NATIVE(anna_continuation_variable_i_get_name, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     int offset = anna_as_int(
-	anna_entry_get(this, ANNA_MID_CONTINUATION_VARIABLE_OFFSET));
+	anna_entry_get(this, ANNA_MID_OFFSET));
     anna_function_t *continuation = anna_function_unwrap(
 	anna_entry_get(this, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION));
     return anna_from_obj( anna_string_create(wcslen(m->name), m->name));
@@ -57,7 +57,7 @@ ANNA_VM_NATIVE(anna_continuation_variable_i_get_name, 1)
 
     int offset = anna_as_int(
 	anna_entry_get(
-	    this, ANNA_MID_CONTINUATION_VARIABLE_OFFSET));
+	    this, ANNA_MID_OFFSET));
 
     anna_object_t *cont = anna_as_obj(
 	anna_entry_get(
@@ -83,7 +83,7 @@ ANNA_VM_NATIVE(anna_continuation_variable_i_get_type, 1)
 
     int offset = anna_as_int(
 	anna_entry_get(
-	    this, ANNA_MID_CONTINUATION_VARIABLE_OFFSET));
+	    this, ANNA_MID_OFFSET));
 
     anna_object_t *cont = anna_as_obj(
 	anna_entry_get(
@@ -112,7 +112,7 @@ ANNA_VM_NATIVE(anna_continuation_variable_i_get_value, 1)
 
     int offset = anna_as_int(
 	anna_entry_get(
-	    this, ANNA_MID_CONTINUATION_VARIABLE_OFFSET));
+	    this, ANNA_MID_OFFSET));
     
     anna_object_t *cont = anna_as_obj(
 	anna_entry_get(
@@ -126,11 +126,11 @@ static void anna_continuation_variable_load(anna_stack_template_t *stack)
 {
     anna_member_create(
 	continuation_variable_type, 
-	ANNA_MID_CONTINUATION_VARIABLE_OFFSET, 
+	ANNA_MID_OFFSET, 
 	ANNA_MEMBER_INTERNAL, int_type);
     anna_member_document(
 	continuation_variable_type, 
-	ANNA_MID_CONTINUATION_VARIABLE_OFFSET, 
+	ANNA_MID_OFFSET, 
 	L"The offset in the activation frame of this variable.");
     
     anna_member_create(

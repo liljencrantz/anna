@@ -82,6 +82,7 @@ static void anna_i_cc(anna_context_t *context)
 
 void anna_reflection_load(anna_stack_template_t *stack)
 {
+    anna_type_load();    
     continuation_type = anna_type_get_function(
 	object_type,
 	0, 0, 0,
@@ -97,7 +98,6 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	block_type,
 	L"A Block is a Anna function that accepts no parameters.");
 
-    anna_type_load();    
     anna_member_load(stack);
     anna_function_load(stack);
     anna_continuation_variable_load(stack);
