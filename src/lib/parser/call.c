@@ -371,7 +371,7 @@ static void anna_node_create_call_type(
 
     anna_member_create_native_property(
 	type,
-	anna_mid_get(L"count"), int_type,
+	ANNA_MID_COUNT, int_type,
 	&anna_node_call_wrapper_i_get_count, 0,
 	L"The number of argument nodes in this Call.");
   

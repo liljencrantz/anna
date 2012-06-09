@@ -121,13 +121,15 @@ void anna_mid_init()
 	    L"!channelSync",
 	    L"Iterator",
 	    L"iterator",
-	    L"list",
+	    L"collection",
 	    L"key",
 	    L"value",
 	    L"empty?",
 
 	    L"offset",
-	    L"range",
+	    L"versionId",
+	    L"count",
+	    L"position",
 	};
     
     int i;

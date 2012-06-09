@@ -55,16 +55,16 @@ typedef int mid_t;
 #define ANNA_MEMBER_STATIC 1
 
 /**
-  If set, this member has no in-memory representation, i.e. it is a
+   If set, this member has no in-memory representation, i.e. it is a
   property.  
 */
 #define ANNA_MEMBER_PROPERTY 2
 
 /**
   If this bit is set, this member points to a data blob that has been
-  allocated usin garbage collected memory, and must be marked by the
+  allocated using garbage collected memory, and must be marked by the
   appropriate function call during garbage collection.
- */
+*/
 #define ANNA_MEMBER_ALLOC 4
 
 /**
@@ -76,6 +76,11 @@ typedef int mid_t;
    If set, this member is internal
  */
 #define ANNA_MEMBER_INTERNAL 16
+
+/**
+   If set, this member is read only
+*/
+#define ANNA_MEMBER_CONST 32
 
 /**
    Size of the statically allocated chunk of memory used for
@@ -183,13 +188,15 @@ enum anna_mid_enum
     ANNA_MID_CHANNEL_SYNC,
     ANNA_MID_ITERATOR_TYPE,
     ANNA_MID_ITERATOR,
-    ANNA_MID_LIST,
+    ANNA_MID_COLLECTION,
     ANNA_MID_KEY,
     ANNA_MID_VALUE,
     ANNA_MID_EMPTY,
 
     ANNA_MID_OFFSET,
-    ANNA_MID_RANGE,
+    ANNA_MID_VERSION_ID,
+    ANNA_MID_COUNT,
+    ANNA_MID_POSITION,
 
     ANNA_MID_FIRST_UNRESERVED,
 };

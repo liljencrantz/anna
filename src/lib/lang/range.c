@@ -673,7 +673,7 @@ static void anna_range_iter_update(anna_object_t *iter, int idx)
 {
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(idx));
 
-    anna_object_t *range = anna_as_obj(anna_entry_get(iter, ANNA_MID_RANGE));
+    anna_object_t *range = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     ssize_t from = anna_range_get_from(range);
     ssize_t step = anna_range_get_step(range);
     int open = anna_range_get_open(range);
@@ -714,7 +714,7 @@ ANNA_VM_NATIVE(anna_range_get_iterator, 1)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_object_create(
 	anna_range_iterator_type);
-    *anna_entry_get_addr(iter, ANNA_MID_RANGE) = param[0];
+    *anna_entry_get_addr(iter, ANNA_MID_COLLECTION) = param[0];
     anna_range_iter_update(iter, 0);
     return anna_from_obj(iter);
 }
@@ -777,7 +777,7 @@ void anna_range_type_create()
     anna_type_t *iter = anna_range_iterator_type = anna_type_create(L"Iterator", 0);
     anna_entry_set_static(range_type, ANNA_MID_ITERATOR_TYPE, anna_from_obj(anna_type_wrap(iter)));
     anna_member_create(
-	iter, ANNA_MID_RANGE, 0, range_type);
+	iter, ANNA_MID_COLLECTION, 0, range_type);
     anna_member_create(
 	iter, ANNA_MID_KEY, 0, int_type);
     anna_member_create(
@@ -846,7 +846,7 @@ void anna_range_type_create()
     anna_member_alias(range_type, mmid, L"__get__");
 
     anna_member_create_native_property(
-	range_type, anna_mid_get(L"count"), int_type,
+	range_type, ANNA_MID_COUNT, int_type,
 	&anna_range_get_count_i, 0, L"The number of elements in this Range.");
     anna_member_create_native_property(
 	range_type,

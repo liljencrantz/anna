@@ -229,7 +229,7 @@ ANNA_VM_NATIVE(anna_list_get_iterator_method, 1)
     anna_object_t *list = anna_as_obj(param[0]);
     anna_object_t *iter = anna_object_create(
 	anna_type_unwrap((anna_object_t *)anna_entry_get_static(list->type,ANNA_MID_ITERATOR_TYPE)));
-    *anna_entry_get_addr(iter, ANNA_MID_LIST) = param[0];
+    *anna_entry_get_addr(iter, ANNA_MID_COLLECTION) = param[0];
     *anna_entry_get_addr(iter, ANNA_MID_KEY) = anna_from_int(0);    
     return anna_from_obj(iter);
 }
@@ -991,7 +991,7 @@ ANNA_VM_NATIVE(anna_list_iterator_value, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
-    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_LIST));
+    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
     return anna_list_get(list, offset);
 }
@@ -1007,7 +1007,7 @@ ANNA_VM_NATIVE(anna_list_iterator_empty, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
-    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_LIST));
+    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
     return (offset >= 0  && offset < anna_list_get_count(list)) ? null_entry : anna_from_int(1);
 }
@@ -1074,7 +1074,7 @@ static void anna_list_type_create_internal(
     (*(anna_object_t **)anna_entry_get_addr_static(type, ANNA_MID_ITERATOR_TYPE)) =
 	anna_type_wrap(iter);
     anna_member_create(
-	iter, ANNA_MID_LIST, 0, type);    
+	iter, ANNA_MID_COLLECTION, 0, type);
     anna_member_create(
 	iter, ANNA_MID_KEY, 0, int_type);    
     anna_type_copy_object(iter);
@@ -1155,7 +1155,7 @@ static void anna_list_type_create_internal(
     anna_member_alias(type, mmid, L"__get__");
 
     anna_member_create_native_property(
-	type, anna_mid_get(L"count"), int_type,
+	type, ANNA_MID_COUNT, int_type,
 	&anna_list_get_count_method,
 	mutable ? &anna_list_set_count_method : 0,
 	L"The number of elements in this list.");
