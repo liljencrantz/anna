@@ -1,3 +1,5 @@
+static anna_type_t *anna_range_iterator_type;
+
 static anna_object_t *anna_range_create(
     int from,
     int to,
@@ -667,11 +669,87 @@ static void anna_range_map(anna_context_t *context)
     }
 }
 
+static void anna_range_iter_update(anna_object_t *iter, int idx)
+{
+    anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(idx));
+
+    anna_object_t *range = anna_as_obj(anna_entry_get(iter, ANNA_MID_RANGE));
+    ssize_t from = anna_range_get_from(range);
+    ssize_t step = anna_range_get_step(range);
+    int open = anna_range_get_open(range);
+    
+    if(open)
+    {
+	if(idx >= 0)
+	{
+	    anna_entry_set(iter, ANNA_MID_VALUE, anna_from_int(from + step*idx));
+	    anna_entry_set(iter, ANNA_MID_EMPTY, null_entry);
+	}
+	else
+	{
+	    anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
+	    anna_entry_set(iter, ANNA_MID_EMPTY, anna_from_int(1));
+	}
+    }
+    else
+    {
+	size_t count = anna_range_get_count(range);
+	idx = anna_list_calc_offset(idx, count);
+	if((idx >= 0) && (idx < count))
+	{
+	    anna_entry_set(iter, ANNA_MID_VALUE, anna_from_int(from + step*idx));
+	    anna_entry_set(iter, ANNA_MID_EMPTY, null_entry);
+	}
+	else
+	{
+	    anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
+	    anna_entry_set(iter, ANNA_MID_EMPTY, anna_from_int(1));
+	}
+    }
+}
+
+
+ANNA_VM_NATIVE(anna_range_get_iterator, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_object_create(
+	anna_range_iterator_type);
+    *anna_entry_get_addr(iter, ANNA_MID_RANGE) = param[0];
+    anna_range_iter_update(iter, 0);
+    return anna_from_obj(iter);
+}
+
+
+ANNA_VM_NATIVE(anna_range_iterator_next, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_range_iter_update(iter, 1+anna_as_int(anna_entry_get(iter, ANNA_MID_KEY)));
+    return param[0];
+}
+
 void anna_range_type_create()
 {
     mid_t mmid;
 
     anna_type_make_sendable(range_type);
+
+    anna_type_t *c_argv[] = 
+	{
+	    range_type,
+	    int_type,
+	    int_type,
+	    int_type,
+	    object_type
+	}
+    ;
+    
+    wchar_t *c_argn[]=
+	{
+	    L"this", L"from", L"to", L"step", L"open?"
+	}
+    ;
+
 
     anna_member_create(range_type, ANNA_MID_RANGE_FROM, 0, null_type);
     anna_member_create(
@@ -690,22 +768,38 @@ void anna_range_type_create()
 	0,
 	null_type);    
     
-    anna_type_t *c_argv[] = 
+    anna_member_create(
+	range_type,
+	ANNA_MID_ITERATOR_TYPE,
+	ANNA_MEMBER_STATIC,
+	type_type);
+
+    anna_type_t *iter = anna_range_iterator_type = anna_type_create(L"Iterator", 0);
+    anna_entry_set_static(range_type, ANNA_MID_ITERATOR_TYPE, anna_from_obj(anna_type_wrap(iter)));
+    anna_member_create(
+	iter, ANNA_MID_RANGE, 0, range_type);
+    anna_member_create(
+	iter, ANNA_MID_KEY, 0, int_type);
+    anna_member_create(
+	iter, ANNA_MID_VALUE, 0, int_type);
+    anna_member_create(
+	iter, ANNA_MID_EMPTY, 0, object_type);
+    anna_type_copy_object(iter);
+    
+    anna_type_t *iter_argv[] = 
 	{
-	    range_type,
-	    int_type,
-	    int_type,
-	    int_type,
-	    object_type
+	    iter
 	}
     ;
     
-    wchar_t *c_argn[]=
-	{
-	    L"this", L"from", L"to", L"step", L"open?"
-	}
-    ;
+    anna_member_create_native_method(
+	iter,
+	ANNA_MID_NEXT_ASSIGN, 0,
+	&anna_range_iterator_next, iter, 1,
+	iter_argv, c_argn, 0, L"Move this iterator to the next position in the sequence");
 
+    anna_type_close(iter);
+    
     anna_member_create_native_method(
 	range_type, anna_mid_get(L"__init__"),
 	0, &anna_range_init, range_type, 4,
@@ -791,6 +885,10 @@ void anna_range_type_create()
 	int_type,
 	&anna_range_get_last_i,
 	0, L"The last element of this Range.");
+    anna_member_create_native_property(
+	range_type, ANNA_MID_ITERATOR, iter,
+	&anna_range_get_iterator, 0,
+	L"Returns an Iterator for this collections.");
     
     anna_type_t *fun_type = anna_type_get_iterator(
 	L"!RangeIterFunction", int_type, int_type);

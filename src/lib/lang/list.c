@@ -230,7 +230,7 @@ ANNA_VM_NATIVE(anna_list_get_iterator_method, 1)
     anna_object_t *iter = anna_object_create(
 	anna_type_unwrap((anna_object_t *)anna_entry_get_static(list->type,ANNA_MID_ITERATOR_TYPE)));
     *anna_entry_get_addr(iter, ANNA_MID_LIST) = param[0];
-    *anna_entry_get_addr(iter, ANNA_MID_OFFSET) = anna_from_int(0);    
+    *anna_entry_get_addr(iter, ANNA_MID_KEY) = anna_from_int(0);    
     return anna_from_obj(iter);
 }
 
@@ -987,6 +987,40 @@ ANNA_VM_NATIVE(anna_list_i_join, 2)
     
 }
 
+ANNA_VM_NATIVE(anna_list_iterator_value, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_LIST));
+    int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+    return anna_list_get(list, offset);
+}
+
+ANNA_VM_NATIVE(anna_list_iterator_key, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    return anna_entry_get(iter, ANNA_MID_KEY);
+}
+
+ANNA_VM_NATIVE(anna_list_iterator_empty, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_LIST));
+    int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+    return (offset >= 0  && offset < anna_list_get_count(list)) ? null_entry : anna_from_int(1);
+}
+
+ANNA_VM_NATIVE(anna_list_iterator_next, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(1+anna_as_int(anna_entry_get(iter, ANNA_MID_KEY))));
+    
+    return param[0];
+}
+
 static void anna_list_type_create_internal(
     anna_type_t *type, 
     anna_type_t *spec,
@@ -997,45 +1031,6 @@ static void anna_list_type_create_internal(
 {
     mid_t mmid;
 
-    anna_member_create(
-	type,
-	ANNA_MID_ITERATOR_TYPE,
-	ANNA_MEMBER_STATIC,
-	type_type);
-
-    anna_type_t *iter = anna_type_create(L"Iterator", 0);
-    (*(anna_type_t **)anna_entry_get_addr_static(type, ANNA_MID_ITERATOR_TYPE)) =
-	anna_type_wrap(iter);
-    anna_member_create(
-	iter, ANNA_MID_LIST, 0, type);    
-    anna_member_create(
-	iter, ANNA_MID_OFFSET, 0, int_type);    
-    anna_type_copy_object(iter);
-
-
-    
-    anna_member_create(
-	type, ANNA_MID_LIST_PAYLOAD, 0, null_type);
-
-    anna_member_create(
-	type,
-	ANNA_MID_LIST_SIZE,
-	0,
-	null_type);
-
-    anna_member_create(
-	type,
-	ANNA_MID_LIST_CAPACITY,
-	0,
-	null_type);
-
-    anna_member_create(
-	type,
-	ANNA_MID_LIST_SPECIALIZATION,
-	ANNA_MEMBER_STATIC,
-	null_type);
-    (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
-    
     anna_type_t *a_argv[] = 
 	{
 	    type,
@@ -1069,6 +1064,67 @@ static void anna_list_type_create_internal(
 	}
     ;
 
+    anna_member_create(
+	type,
+	ANNA_MID_ITERATOR_TYPE,
+	ANNA_MEMBER_STATIC,
+	type_type);
+
+    anna_type_t *iter = anna_type_create(L"Iterator", 0);
+    (*(anna_object_t **)anna_entry_get_addr_static(type, ANNA_MID_ITERATOR_TYPE)) =
+	anna_type_wrap(iter);
+    anna_member_create(
+	iter, ANNA_MID_LIST, 0, type);    
+    anna_member_create(
+	iter, ANNA_MID_KEY, 0, int_type);    
+    anna_type_copy_object(iter);
+
+    anna_member_create_native_property(
+	iter, ANNA_MID_VALUE, spec,
+	&anna_list_iterator_value,
+	0,
+	L"The value currently pointed to by this iterator.");
+    anna_member_create_native_property(
+	iter, ANNA_MID_EMPTY, object_type,
+	&anna_list_iterator_empty,
+	0,
+	L"This property is non-null if this iterator has a value at its current location.");
+
+    anna_type_t *iter_argv[] = 
+	{
+	    iter
+	}
+    ;
+    
+    anna_member_create_native_method(
+	iter,
+	ANNA_MID_NEXT_ASSIGN, 0,
+	&anna_list_iterator_next, iter, 1,
+	iter_argv, a_argn, 0, L"Move this iterator to the next position in the sequence");
+
+    
+    anna_member_create(
+	type, ANNA_MID_LIST_PAYLOAD, 0, null_type);
+
+    anna_member_create(
+	type,
+	ANNA_MID_LIST_SIZE,
+	0,
+	null_type);
+
+    anna_member_create(
+	type,
+	ANNA_MID_LIST_CAPACITY,
+	0,
+	null_type);
+
+    anna_member_create(
+	type,
+	ANNA_MID_LIST_SPECIALIZATION,
+	ANNA_MEMBER_STATIC,
+	null_type);
+    (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
+    
     anna_member_create_native_method(
 	type, anna_mid_get(L"__init__"),
 	ANNA_FUNCTION_VARIADIC, &anna_list_init,
@@ -1110,7 +1166,7 @@ static void anna_list_type_create_internal(
 	L"Returns an Iterator for this collections.");
 
     anna_member_create_native_property(
-	type, anna_mid_get(L"empty?"), int_type,
+	type, ANNA_MID_EMPTY, int_type,
 	&anna_list_empty,
 	0,
 	L"This property is true (non-null) if the list is empty, null otherwise.");

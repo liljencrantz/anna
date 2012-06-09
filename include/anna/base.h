@@ -184,7 +184,12 @@ enum anna_mid_enum
     ANNA_MID_ITERATOR_TYPE,
     ANNA_MID_ITERATOR,
     ANNA_MID_LIST,
+    ANNA_MID_KEY,
+    ANNA_MID_VALUE,
+    ANNA_MID_EMPTY,
+
     ANNA_MID_OFFSET,
+    ANNA_MID_RANGE,
 
     ANNA_MID_FIRST_UNRESERVED,
 };
@@ -774,7 +779,7 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
 }
 
 /**
-   Assigne the specified value to the member with the specified mid in
+   Assign the specified value to the member with the specified mid in
    the specified object.
 
    No error checking performed; this will cause a crash if no such
@@ -839,6 +844,19 @@ static __pure inline anna_entry_t *anna_entry_get_static(
 {
     anna_member_t *m = type->mid_identifier[mid];
     return type->static_member[m->offset];
+}
+
+/**
+   Assign the specified value to the member with the specified mid in
+   the specified object.
+
+   No error checking performed; this will cause a crash if no such
+   member exist.
+ */
+static inline void anna_entry_set_static(
+    anna_type_t *obj, mid_t mid, anna_entry_t *value)
+{
+    *anna_entry_get_addr_static(obj, mid) = value;
 }
 
 /**

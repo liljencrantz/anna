@@ -122,7 +122,12 @@ void anna_mid_init()
 	    L"Iterator",
 	    L"iterator",
 	    L"list",
+	    L"key",
+	    L"value",
+	    L"empty?",
+
 	    L"offset",
+	    L"range",
 	};
     
     int i;

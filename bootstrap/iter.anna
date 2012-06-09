@@ -2,6 +2,60 @@ attribute(internal, doc("Internal module for macros related to iteration."));
 
 use(parser);
 
+def isBlock(Node n) { (((n as Call).function as Identifier).name == "__block__") }
+
+def Call mangleIterator(Call node)
+{
+    def Node iterDeclare(Node id, Node nodeType)
+    {
+	ast(
+	    __var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
+    }
+	    
+    if( !(node.count in Range(2, 4, 1)) or !(node.function as Call) or !(node[0] as Identifier) or !(isBlock(node[-1])))
+    {
+	return node;
+    }
+
+    n := MutableList«Node»();  
+    
+    body := node[-1];
+
+    if(node.count == 2)
+    {
+	n[0] = iterDeclare(
+	    Identifier(body, "!unused"), 
+	    ast(__staticTypeOf__(%iter.key)));
+	n[1] = iterDeclare(
+	    node[0],
+	    ast(__staticTypeOf__(%iter.value)));
+    } 
+    else
+    {
+	checkNodeType(node[1], Identifier);
+	n[0] = iterDeclare(
+	    node[0],
+	    ast(__staticTypeOf__(%iter.key)));
+	n[1] = iterDeclare(
+	    node[1],
+	    ast(__staticTypeOf__(%iter.value)));
+    }
+    
+    res := Call(
+	node, 
+	node.function,  
+	Call(
+	    body, 
+	    Identifier(body, "__def__"),
+	    Identifier(body, "!iterator"), 
+	    NullLiteral(body),
+	    Call(body, Identifier(body, "__block__"), n[0], n[1]),
+	    ast({block, loop}), 
+	    body););
+    
+    return res as Call;
+}
+
 def Node __iter__(Call node)
 (
     doc("Internal helper method for each, map, and friends")
@@ -12,8 +66,6 @@ def Node __iter__(Call node)
 	ast(
 	    __var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
     }
-
-    def isBlock(Node n) { (((n as Call).function as Identifier).name == "__block__") }
 	    
     node.expand? = ?;
 
@@ -103,3 +155,32 @@ macro each(node)(doc("A macro adding a bit of syntactic sugar for each loops."))
 macro filter(node)(doc("A macro adding a bit of syntactic sugar for filter loops.")){__iter__(node)}
 macro find(node)(doc("A macro adding a bit of syntactic sugar for find loops.")){__iter__(node)}
 macro map(node)(doc("A macro adding a bit of syntactic sugar for map loops.")){__iter__(node)}
+
+macro ieach(node)
+{
+    node = mangleIterator(node) as Call;
+//    printInternal(node.toString());
+    coll := (node.function as Call)[0];
+    body := node[0];    
+
+    res := ast(
+	nothing(
+	    %collVar := %coll;
+	    %iter := %collVar.iterator,
+	    %bodyVar := %body;
+	    while(!%iter.empty?)
+	    {
+		%bodyVar(%iter.key, %iter.value);
+		%iter++;
+	    },
+	    %collVar
+	    );
+	)
+	.replace(ast(coll), coll)
+	.replace(ast(body), body)
+	.replace(ast(bodyVar), Identifier(?, parser.identifier("body")))
+	.replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	.replace(ast(collVar), Identifier(?, parser.identifier("collection")));
+//    printInternal(res.toString());
+    return res;
+}
