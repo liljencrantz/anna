@@ -9,7 +9,6 @@
 * Remove code duplication between types and functions when performing templatization
 * MutableList::removeValue might be useful?
 * The Member.value() method can't currently handle properties.
-* Write macros to transform f"Hello, %(userName)" => "Hello, %" % [userName] and tf"Hello, %(userName)" => t"Hello, %" % [userName]
 * Types should have constant members. They should only be assignable using some kind of funky attribute syntax, which will not allow any kind of member access.
 * Maybe List["getRange"] should return the getRange member object? If so, it would probably make a lot more sense for Continuation["foo"] to return the ContinuationVariable object, and not the actual value. If we go down this route, then ContinuationVariable should be renamed ContiuationMember, just to make the parallel clearer.
 * There should be a type flag «sendable», that is used to tell the world that a specified type only has imutable members, and in addition, that all member values are also have the sendable attribute.
@@ -25,6 +24,9 @@
   - variable write access in debugger? 
 
 1.0 RELEASE CRITERIA (Done):
+* Iterators for all collection types
+* Switch each, map and friends over to using iterators
+* Write macros to transform f"Hello, %(userName)" => "Hello, %" % [userName]
 * Interactive debugger
   - debug.here() function call that launches the debugger in the current location
   - breakpoint bytecode launches the interactive debugger
@@ -128,7 +130,6 @@
   - multiple constructors through aliases
 * Add internal memory usage of Hashes, Buffers and Lists to GC estimates
 * Function for obtaining the amount of memory used by an object
-* Proper iterators? Possibly rethink how map/filter and friends are implemented
 * Protected members
 * Multiple inheritance clashes aren't handled sanely
 * List.__get__(List«Int» index)

@@ -1,18 +1,35 @@
-attribute(internal, doc("Internal module for macros related to iteration."));
+attribute(
+    doc(
+	"Macros related to iterating over a collection,
+such as each, map, find and filter.",
+	"The only prerequesite to use a collection type with this macros is
+that they implement the iterator pattern. <a path='lang.List'>List</a>,
+<a path='lang.HashMap'>HashMap</a>, <a path='lang.Range'>Range</a>, <a
+path='lang.String'>String</a> and <a path='parser.Call'>Call</a> can
+all be used with any of the functions in this module.
+"));
 
 use(parser);
 
-def isBlock(Node n) { (((n as Call).function as Identifier).name == "__block__") }
+def block?(Node n) (internal, doc("Returns non-null if the specified node is a block"))
+{
+    return (((n as Call).function as Identifier).name == "__block__") 
+}
+
+def Node iterDeclare(Node id, Node nodeType) (internal, doc("Creates a variable declaration AST node with the specified name and type"))
+{
+    ast(
+	__var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
+}
 
 def Call mangleIterator(Call node)
+(
+    internal,
+    doc("Internal helper function for the various iteration macros. It is used to mangle the argument list into a valid function.")
+)
 {
-    def Node iterDeclare(Node id, Node nodeType)
-    {
-	ast(
-	    __var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
-    }
-	    
-    if( !(node.count in Range(2, 4, 1)) or !(node.function as Call) or !(node[0] as Identifier) or !(isBlock(node[-1])))
+    
+    if( !(node.count in Range(2, 4, 1)) or !(node.function as Call) or !(node[0] as Identifier) or !(block?(node[-1])))
     {
 	return node;
     }
@@ -57,8 +74,36 @@ def Call mangleIterator(Call node)
 }
 
 macro each(node)
+(
+    doc(
+	"Iterate over an arbitrary collection.",
+	"The supplied function or code block will we called exactly once for
+each element in the collection, and after that, the original
+collection is returned. The only restriction on the supplied
+collection is that it must implement the iterator interface.",
+	"Usage examples:",
+	"<pre class='anna-code'>
+[1,3,5,9].each(idx, value){ print(idx, value) }
+// Iterate over all items in the List and print their index and value
+
+// The index name may optionally be omitted
+(10..-1).each(value){ print(value) }
+// Iterate over all items in the List and print their value
+
+// It is also possible to simply supply the <code>each</code>-macro with the name of a function to call
+// for each element. The function must accept exactly two arguments, and of the 
+// correct type.
+def doPrint(String key, String value)
 {
-    node = mangleIterator(node) as Call;
+    print(value);
+}
+[\"se\": \"Sweden\", \"nl\": \"Netherlands\"].each(doPrint);
+// Iterate over all items in the HashMap and print their value
+</pre>"
+	)
+)
+{
+    node = mangleIterator(node);
     
     if( (node.count != 1) or !(node.function as Call))
     {
@@ -125,8 +170,21 @@ macro each(node)
 }
 
 macro filter(node)
+(
+    doc("Filter a collection, returning a List containing a subset of the elements of the supplied collection.",
+        "The supplied function is called once for every element in the collection, and if it returns non-null, that element is added to the resulting list. The list will be specialized to the same type as the elements in the supplied collection.",
+"<pre class='anna-code'>
+\"Hello\".filter(ch){ch.lower?}
+// Returns [e, l, l, o]
+// The return value is of type MutableList«Char». If a string is desired, use code like this:
+\"\".join(\"Hello\".filter(ch){ch.lower?})
+// Returns \"ello\"
+</pre>",
+"<code>filter</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
+)
+)
 {
-    node = mangleIterator(node) as Call;
+    node = mangleIterator(node);
     
     if( (node.count != 1) or !(node.function as Call))
     {
@@ -193,8 +251,22 @@ macro filter(node)
 }
 
 macro map(node)
+(
+    doc("Create a new collection from an old collection by applying a transformation function once to every element in the old collection.",
+"<pre class='anna-code'>
+\"abc123\".map(ch){ch+1}
+// Returns [b, c, d, 2, 3, 4]
+
+// The return value of the above code is of type MutableList«Char».
+// If a string is desired, use code like this:
+\"\".join(\"abc123\".map(ch){ch+1})
+// Returns \"bcd234\"
+</pre>",
+"<code>map</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
+)
+)
 {
-    node = mangleIterator(node) as Call;
+    node = mangleIterator(node);
     
     if( (node.count != 1) or !(node.function as Call))
     {
@@ -209,7 +281,7 @@ macro map(node)
 
     if((iterFun.function as Identifier).name == "__def__")
     {
-      body := iterFun[4].copy() as Call;
+        body := iterFun[4].copy() as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
 
@@ -262,8 +334,18 @@ macro map(node)
 }
 
 macro find(node)
+(
+    doc("Find an element in a collection that matches a speciefic criteria.",
+        "The supplied function is called once for every element in the collection until it returns non-null. The element for which the function returned non-null is then returned. If the function never returns non-null, null is returned.",
+"<pre class='anna-code'>
+\"Hello\".find(ch){ch.lower?}
+// Returns 'e'
+</pre>",
+"<code>find</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
+)
+)
 {
-    node = mangleIterator(node) as Call;
+    node = mangleIterator(node);
     
     if( (node.count != 1) or !(node.function as Call))
     {
@@ -325,6 +407,133 @@ macro find(node)
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")))
 	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+    }
+    return res;
+}
+
+def Call mangleReduceIterator(Call node)
+(
+    internal,
+    doc("Internal helper function for the reduce macro. It is used to mangle the argument list into a valid function.")
+)
+{
+    if( (node.count != 4) or 
+	!(node.function as Call) or 
+	!(node[1] as Identifier) or 
+	!(node[2] as Identifier) or
+	!(block?(node[-1])))
+    {
+	return node;
+    }
+
+    n := MutableList«Node»();  
+    
+    body := node[-1];
+
+    checkNodeType(node[1], Identifier);
+
+    n[0] = iterDeclare(
+	node[1],
+	ast(%ReturnType));
+    n[1] = iterDeclare(
+	node[2],
+	ast(__staticTypeOf__(%iter.value)));
+    
+    res := Call(
+	node, 
+	node.function,  
+	node[0],
+	Call(
+	    body, 
+	    Identifier(body, "__def__"),
+	    Identifier(body, parser.identifier("iterator")), 
+	    NullLiteral(body),
+	    Call(body, Identifier(body, "__block__"), n[0], n[1]),
+	    ast(nothing(block)), 
+	    body););
+    
+    return res as Call;
+}
+
+macro reduce(node)
+(
+    doc("Reduce the specified collection into a single value by repeatedly using the supplied reduction function to combine the values of two items into a single net value.",
+        "The supplied function is called once for every element in the collection, with the first argument being the result of the previous computation (or the initial value if no previous computation has taken place), and the second argument being the ccurrent value. The output of the final reduction call is then returned.",
+"<pre class='anna-code'>
+ [1,2,3,4].reduce(0, prev, val){prev+val}
+// Sums the elements of the supplied collection. Returns 10.
+ [1,2,3,4].reduce(1, Int::__mul__)
+// Multiplies the supplied collection. Returns 24.
+</pre>",
+)
+)
+{
+    node = mangleReduceIterator(node);
+    
+    if( (node.count != 2) or !(node.function as Call))
+    {
+	node.expand? = ?;
+	return node;
+    }
+    
+    coll := (node.function as Call)[0];
+    
+    iterFun := node[1] as Call;
+    res := ? as Node;
+ 
+    initial := node[0];
+    if((iterFun.function as Identifier).name == "__def__")
+    {
+        body := iterFun[4] as Call;
+        decl := iterFun[2] as Call;
+	body.function = ast(nothing);
+	
+	res = ast(
+	    nothing(
+		%iter := %coll.iterator,
+		%res := %initial as %ReturnType;
+		while(%iter.valid?)
+		{
+		    %valueVar := %iter.value as %ValueType;
+		    %prevVar := %res as %ReturnType;
+		    %iter++;
+		    %res = %body;
+		},
+		%res;
+		);
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(ReturnType), ast(__staticTypeOf__(%initial)))
+	    .replace(ast(body), body)
+	    .replace(ast(prevVar), (decl[0] as Call)[0])
+	    .replace(ast(valueVar), (decl[1] as Call)[0])
+	    .replace(ast(ValueType), (decl[1] as Call)[1])
+	    .replace(ast(res), Identifier(?, parser.identifier("res")))
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter"))) 
+	    .replace(ast(initial), initial);
+    }
+    else
+    {
+	res = ast(
+	    nothing(
+		%iter := %coll.iterator,
+		%res := %initial as %ReturnType;
+		%funVar := %fun;
+		while(%iter.valid?)
+		{
+		    %res = %funVar(%res, %iter.value);
+		    %iter++;
+		},
+		%res;
+		)
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(ReturnType), ast(__staticTypeOf__(%initial)))
+	    .replace(ast(fun), node[1])
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")))
+	    .replace(ast(res), Identifier(?, parser.identifier("res")))
+	    .replace(ast(initial), initial);
     }
     return res;
 }

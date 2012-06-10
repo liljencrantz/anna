@@ -590,10 +590,8 @@ static void anna_module_doc()
     };
 
     wchar_t *data_iter[][2] = {
-	{L"map", L"Exacute the specified function once for each element and return a list containing the output of each function call."},
-	{L"each", L"Execute the specified function once for each element."},
-	{L"filter", L"Execute the specified function once for each element and return a new object of the same type, containing the elements for which the function returned non-null."},
-	{L"find", L"Execute the specified function once for each element until the function returns a non-null value, then return the corresponding element. Returns null if no element matched."},
+	{L"Iterator", L"An instance of this type is returned by the <a href='#iterator'>property</a>. It can be used to iterate over the collection."},
+	{L"iterator", L"Returns an iterator for this collection. This is used by macros such as <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> and <a path='iter' member='find'>find</a>."},
 	{L"__appendAssign__", L"Append the specified items to this collection."},
 	{L"get", L"Return the item at the specified offset."},
 	{L"getRange", L"Return the items in the specified range."},
