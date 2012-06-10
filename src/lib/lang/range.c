@@ -888,7 +888,7 @@ void anna_range_type_create()
     anna_member_create_native_property(
 	range_type, ANNA_MID_ITERATOR, iter,
 	&anna_range_get_iterator, 0,
-	L"Returns an Iterator for this collections.");
+	L"Returns an Iterator for this collection.");
     
     anna_type_t *fun_type = anna_type_get_iterator(
 	L"!RangeIterFunction", int_type, int_type);

@@ -1097,23 +1097,22 @@ static void anna_hash_iterator_update(anna_object_t *iter)
 {
     anna_object_t *hash_obj = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     anna_hash_t *hash = ahi_unwrap(hash_obj);
-    int current_idx = anna_as_int(anna_entry_get(iter, ANNA_MID_POSITION));
+    int current_idx = anna_as_int(anna_entry_get(iter, ANNA_MID_OFFSET));
     current_idx = anna_hash_get_next_idx(hash_obj, current_idx);
     
     if(current_idx == -1)
     {
 	anna_entry_set(iter, ANNA_MID_KEY, null_entry);
 	anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
-	anna_entry_set(iter, ANNA_MID_POSITION, current_idx);
+	anna_entry_set(iter, ANNA_MID_OFFSET, current_idx);
     }
     else
     {
 	anna_entry_set(iter, ANNA_MID_KEY, hash->table[current_idx].key);
 	anna_entry_set(iter, ANNA_MID_VALUE, hash->table[current_idx].value);
-	anna_entry_set(iter, ANNA_MID_POSITION, anna_from_int(current_idx+1));
+	anna_entry_set(iter, ANNA_MID_OFFSET, anna_from_int(current_idx+1));
     }
 }
-
 
 ANNA_VM_NATIVE(anna_hash_get_iterator, 1)
 {
@@ -1124,7 +1123,7 @@ ANNA_VM_NATIVE(anna_hash_get_iterator, 1)
     anna_entry_set(iter, ANNA_MID_COLLECTION, param[0]);
     anna_entry_set(iter, ANNA_MID_VERSION_ID, anna_from_int(anna_hash_get_version(hash)));
     
-    anna_entry_set(iter, ANNA_MID_POSITION, anna_from_int(0));
+    anna_entry_set(iter, ANNA_MID_OFFSET, anna_from_int(0));
     anna_hash_iterator_update(iter);
     return anna_from_obj(iter);
 }
@@ -1141,7 +1140,7 @@ ANNA_VM_NATIVE(anna_hash_iterator_empty, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
-    int current_idx = anna_as_int(anna_entry_get(iter, ANNA_MID_POSITION));
+    int current_idx = anna_as_int(anna_entry_get(iter, ANNA_MID_OFFSET));
     return (current_idx == -1) ? anna_from_int(1) : null_entry;
 }
 
@@ -1153,8 +1152,6 @@ static anna_type_t *anna_hash_iterator_create(
 {
     
     anna_type_t *iter = anna_type_create(L"Iterator", 0);
-    (*(anna_object_t **)anna_entry_get_addr_static(type, ANNA_MID_ITERATOR_TYPE)) =
-	anna_type_wrap(iter);
     anna_member_create(
 	iter, ANNA_MID_COLLECTION, 0, type);    
     anna_member_create(
@@ -1164,7 +1161,7 @@ static anna_type_t *anna_hash_iterator_create(
     anna_member_create(
 	iter, ANNA_MID_VERSION_ID, 0, int_type);    
     anna_member_create(
-	iter, ANNA_MID_POSITION, 0, int_type);    
+	iter, ANNA_MID_OFFSET, 0, int_type);    
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(
@@ -1225,7 +1222,7 @@ static void anna_hash_type_create_internal(
     anna_member_create_native_property(
 	type, ANNA_MID_ITERATOR, iter,
 	&anna_hash_get_iterator, 0,
-	L"Returns an Iterator for this collections.");
+	L"Returns an Iterator for this collection.");
 
     anna_type_t *kv_argv[] = 
 	{

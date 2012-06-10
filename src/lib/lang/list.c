@@ -1163,7 +1163,7 @@ static void anna_list_type_create_internal(
     anna_member_create_native_property(
 	type, ANNA_MID_ITERATOR, iter,
 	&anna_list_get_iterator_method, 0,
-	L"Returns an Iterator for this collections.");
+	L"Returns an Iterator for this collection.");
 
     anna_member_create_native_property(
 	type, ANNA_MID_EMPTY, int_type,
