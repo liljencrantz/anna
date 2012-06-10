@@ -245,43 +245,6 @@ def String formatMap(
     return res;
 }
 
-def MutableString filterMutable(
-    MutableString this, 
-    def Object body(Int idx, Char value) )
-(
-    target(MutableString), 
-    name(filter),
-    doc("Runs the specified test on each character in the string, and return a new string with the characters for which the test returned null removed."),
-)
-{
-    return filter(this, body).thaw;
-}
-
-def ImutableString filterImutable(
-    ImutableString this, 
-    def Object body(Int idx, Char value) )
-(
-    target(ImutableString), 
-    name(filter),
-    doc("Runs the specified test on each character in the string, and return a new string with the characters for which the test returned null removed."),
-)
-{
-    return filter(this, body).freeze;
-}
-
-def String filter(
-    String this, 
-    def Object body(Int idx, Char value) )
-(
-    target(String), 
-    doc("Runs the specified test on each character in the string, and return a new string with the characters for which the test returned null removed."),
-)
-{
-    res := "";
-    this.each(key, value){if(body(key, value)){res ~= value;}}
-    return res;
-}
-
 def MutableString lpadMutable(
     MutableString this,
     Int count,

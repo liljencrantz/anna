@@ -310,82 +310,6 @@ static inline anna_entry_t *anna_range_get(anna_object_t *this, ssize_t idx)
     return anna_from_int(anna_range_get_from(this) + idx * anna_range_get_step(this));
 }
 
-static void anna_range_filter_callback(anna_context_t *context)
-{
-    anna_entry_t *value = anna_context_pop_entry(context);
-
-    anna_entry_t **param = context->top - 4;
-    anna_object_t *range = anna_as_obj_fast(param[0]);
-    anna_object_t *body =  anna_as_obj_fast(param[1]);
-    int idx = anna_as_int(param[2]);
-    anna_object_t *res = anna_as_obj_fast(param[3]);
-    size_t sz = anna_range_get_count(range);
-    int open = anna_range_get_open(range);
-    
-    if(!anna_entry_null(value))
-    {
-	anna_list_add(res, anna_range_get(range, idx-1));
-    }
-    
-    if( ((sz > idx) || open) && (!(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK)))
-    {
-	anna_entry_t *o_param[] =
-	    {
-		param[2],
-		anna_range_get(range, idx)
-	    }
-	;
-	
-	param[2] = anna_from_int(idx+1);
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	anna_context_drop(context, 5);
-	anna_context_push_object(context, res);
-    }    
-}
-
-static void anna_range_filter(anna_context_t *context)
-{
-    anna_object_t *res = anna_list_create_mutable(int_type);
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *range = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    
-    size_t sz = anna_range_get_count(range);
-    int open = anna_range_get_open(range);
-    
-    if(sz > 0 || open)
-    {
-	anna_entry_t *callback_param[] = 
-	    {
-		anna_from_obj(range),
-		anna_from_obj(body),
-		anna_from_int(1),
-		anna_from_obj(res)
-	    }
-	;
-	
-	anna_entry_t *o_param[] =
-	    {
-		anna_from_int(0),
-		anna_from_int(anna_range_get_from(range))
-	    }
-	;
-	
-	anna_vm_callback_native(
-	    context,
-	    anna_range_filter_callback, 4, callback_param,
-	    body, 2, o_param
-	    );
-    }
-    else
-    {
-	anna_context_push_object(context, res);
-    }
-}
-
 static void anna_range_find_callback(anna_context_t *context)
 {
     anna_entry_t *value = anna_context_pop_entry(context);
@@ -790,15 +714,6 @@ void anna_range_type_create()
 	}
     ;
 
-    anna_member_create_native_method(
-	range_type,
-	anna_mid_get(L"filter"),
-	0,
-	&anna_range_filter,
-	anna_list_type_get_mutable(int_type),
-	2,
-	e_argv,
-	e_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
 	anna_mid_get(L"find"),

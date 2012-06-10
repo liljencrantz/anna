@@ -863,7 +863,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     def mangleName(String name)
     {
-	name = name.filter(ch){ch != '_'};
+	name = "".join(name.filter(ch){ch != '_'});
         res := "".thaw ~ name[0].lower;
 	name[1...].each(ch)
 	{
