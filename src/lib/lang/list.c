@@ -288,89 +288,6 @@ ANNA_VM_NATIVE(anna_list_append, 2)
     return param[0];
 }
 
-static void anna_list_map_callback(anna_context_t *context)
-{
-    
-    anna_entry_t *value = anna_context_pop_entry(context);
-    
-    anna_entry_t **param = context->top - 4;
-    anna_object_t *list = anna_as_obj_fast(param[0]);
-    anna_object_t *body = anna_as_obj_fast(param[1]);
-
-    int idx = anna_as_int(param[2]);
-    anna_object_t *res = anna_as_obj_fast(param[3]);
-    size_t sz = anna_list_get_count(list);
-
-    anna_list_set(res, idx-1, value);
-
-    if( (sz > idx) && !(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
-    {
-	anna_entry_t *o_param[] =
-	    {
-		param[2],
-		anna_list_get(list, idx)
-	    }
-	;
-	
-	param[2] = anna_from_int(idx+1);
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	anna_context_drop(context, 5);
-	anna_context_push_object(context, res);
-    }    
-}
-
-static void anna_list_map(anna_context_t *context)
-{
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *list = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    if(body == null_object)
-    {
-	anna_context_push_object(context, null_object);
-    }
-    else
-    {
-	anna_function_t *fun = anna_function_unwrap(body);
-		
-	anna_object_t *res = 
-	    anna_list_create_mutable(fun->return_type);
-	
-	size_t sz = anna_list_get_count(list);
-
-	if(sz > 0)
-	{
-	    anna_entry_t *callback_param[] = 
-		{
-		    anna_from_obj(list),
-		    anna_from_obj(body),
-		    anna_from_int(1),
-		    anna_from_obj(res)
-		}
-	    ;
-	    
-	    anna_entry_t *o_param[] =
-		{
-		    anna_from_int(0),
-		    anna_list_get(list, 0)
-		}
-	    ;
-	    
-	    anna_vm_callback_native(
-		context,
-		anna_list_map_callback, 4, callback_param,
-		body, 2, o_param
-		);
-	}
-	else
-	{
-	    anna_context_push_object(context, res);
-	}
-    }
-}
-
 static void anna_list_find_callback(anna_context_t *context)
 {
     anna_entry_t *value = anna_context_pop_entry(context);
@@ -1092,16 +1009,6 @@ static void anna_list_type_create_internal(
 	0,
 	&anna_list_find,
 	spec,
-	2,
-	e_argv,
-	e_argn, 0, 0);
-    
-    anna_member_create_native_method(
-	type,
-	anna_mid_get(L"map"),
-	0,
-	&anna_list_map,
-	mutable_list_type,
 	2,
 	e_argv,
 	e_argn, 0, 0);

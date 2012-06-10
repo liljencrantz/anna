@@ -900,86 +900,6 @@ ANNA_VM_NATIVE(anna_hash_get_values, 1)
     return anna_from_obj(res);
 }
 
-static void anna_hash_map_callback(anna_context_t *context)
-{
-    anna_entry_t *value = anna_context_pop_entry(context);
-    
-    anna_entry_t **param = context->top - 4;
-    anna_object_t *hash = anna_as_obj_fast(param[0]);
-    anna_object_t *body = anna_as_obj_fast(param[1]);
-    int idx = anna_as_int(param[2]);
-    anna_object_t *res = anna_as_obj_fast(param[3]);
-    
-    anna_list_add(res, value);
-    int next_idx = anna_hash_get_next_idx(hash, idx);
-    
-    if((next_idx >= 0) && !(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
-    {
-	anna_entry_t *o_param[] =
-	    {
-		anna_hash_get_key_from_idx(hash, next_idx),
-		anna_hash_get_value_from_idx(hash, next_idx)
-	    }
-	;
-	
-	param[2] = anna_from_int(next_idx+1);
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	anna_context_drop(context, 5);
-	anna_context_push_object(context, res);
-    }    
-}
-
-static void anna_hash_map(anna_context_t *context)
-{
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *hash = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    if(hash == null_object || body == null_object)
-    {
-	anna_context_push_object(context, null_object);
-    }
-    else
-    {
-	anna_function_t *fun = anna_function_unwrap(body);
-	anna_object_t *res = anna_list_create_mutable(fun->return_type);
-	
-	size_t sz = anna_hash_get_count(hash);
-	
-	if(sz > 0)
-	{
-	    int next_idx = anna_hash_get_next_idx(hash, 0);
-	    anna_entry_t *callback_param[] = 
-		{
-		    anna_from_obj(hash),
-		    anna_from_obj(body),
-		    anna_from_int(next_idx+1),
-		    anna_from_obj(res)
-		}
-	    ;
-	    
-	    anna_entry_t *o_param[] =
-		{
-		    anna_hash_get_key_from_idx(hash, next_idx),
-		    anna_hash_get_value_from_idx(hash, next_idx)
-		}
-	    ;
-	    
-	    anna_vm_callback_native(
-		context,
-		anna_hash_map_callback, 4, callback_param,
-		body, 2, o_param
-		);
-	}
-	else
-	{
-	    anna_context_push_object(context, res);
-	}
-    }
-}
-
 static void anna_hash_del(anna_object_t *victim)
 {
     anna_hash_t *this = ahi_unwrap(victim);
@@ -1223,16 +1143,6 @@ static void anna_hash_type_create_internal(
 	    L"this", L"block"
 	}
     ;    
-    
-    anna_member_create_native_method(
-	type,
-	anna_mid_get(L"map"),
-	0,
-	&anna_hash_map,
-	mutable_list_type,
-	2,
-	e_argv,
-	e_argn, 0, 0);
     
     anna_type_finalizer_add(
 	type, anna_hash_del);

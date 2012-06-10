@@ -661,95 +661,6 @@ static void anna_string_i_append(anna_context_t *context)
     }
 }
 
-static void anna_string_i_map_callback(anna_context_t *context)
-{
-    anna_entry_t *value = anna_context_pop_entry(context);
-    
-    anna_entry_t **param = context->top - 4;
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_object_t *body = anna_as_obj_fast(param[1]);
-    
-    int idx = anna_as_int(param[2]);
-    anna_object_t *res = anna_as_obj_fast(param[3]);
-    size_t sz = anna_string_get_count(this);
-    
-    anna_list_set(res, idx-1, value);
-    
-    if( (sz > idx) && !(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
-    {
-	anna_entry_t *o_param[] =
-	    {
-		param[2],
-		anna_from_char(asi_get_char(as_unwrap(this), idx))
-	    }
-	;
-	
-	param[2] = anna_from_int(idx+1);
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	anna_context_drop(context, 5);
-	anna_context_push_object(context, res);
-    }    
-}
-
-static void anna_string_i_map(anna_context_t *context)
-{
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *this = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    if(body == null_object)
-    {
-	anna_context_push_object(context, null_object);
-    }
-    else
-    {
-	anna_function_t *fun = anna_function_unwrap(body);
-		
-	anna_object_t *res = this->type == mutable_string_type?
-	    anna_list_create_mutable(fun->return_type):
-	    anna_list_create_imutable(fun->return_type);
-	
-	size_t sz = anna_string_get_count(this);
-	
-	if(sz > 0)
-	{
-	    anna_entry_t *callback_param[] = 
-		{
-		    anna_from_obj(this),
-		    anna_from_obj(body),
-		    anna_from_int(1),
-		    anna_from_obj(res)
-		}
-	    ;
-	    
-	    anna_entry_t *o_param[] =
-		{
-		    anna_from_int(0),
-		    anna_from_char(asi_get_char(as_unwrap(this), 0))
-		}
-	    ;
-	    
-	    anna_vm_callback_native(
-		context,
-		anna_string_i_map_callback, 4, callback_param,
-		body, 2, o_param
-		);
-	}
-	else
-	{
-	    anna_context_push_object(context, res);
-	}
-    }
-}
-
-
-
-
-
-
-
 static void anna_string_del(anna_object_t *victim)
 {
     asi_destroy(as_unwrap(victim));
@@ -1078,16 +989,6 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	    L"this", L"block"
 	}
     ;    
-    
-    anna_member_create_native_method(
-	type,
-	anna_mid_get(L"map"),
-	0,
-	&anna_string_i_map,
-	mutable?mutable_list_type:imutable_list_type,
-	2,
-	e_argv,
-	e_argn, 0, 0);
     
     anna_type_t *range_argv[] = 
 	{
