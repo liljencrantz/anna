@@ -974,22 +974,6 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	mutable?&anna_string_i_set_count:0,
 	L"The number of characters in this String.");
 
-    anna_type_t *fun_type = anna_type_get_iterator(
-	L"!StringIterFunction", int_type, char_type);
-
-    anna_type_t *e_argv[] = 
-	{
-	    type,
-	    fun_type
-	}
-    ;
-    
-    wchar_t *e_argn[]=
-	{
-	    L"this", L"block"
-	}
-    ;    
-    
     anna_type_t *range_argv[] = 
 	{
 	    type,

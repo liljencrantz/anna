@@ -310,79 +310,6 @@ static inline anna_entry_t *anna_range_get(anna_object_t *this, ssize_t idx)
     return anna_from_int(anna_range_get_from(this) + idx * anna_range_get_step(this));
 }
 
-static void anna_range_find_callback(anna_context_t *context)
-{
-    anna_entry_t *value = anna_context_pop_entry(context);
-    
-    anna_entry_t **param = context->top - 3;
-    anna_object_t *range = anna_as_obj_fast(param[0]);
-    anna_object_t *body = anna_as_obj_fast(param[1]);
-    int idx = anna_as_int(param[2]);
-    size_t sz = anna_range_get_count(range);
-    int open = anna_range_get_open(range);
-    
-    if(!anna_entry_null(value))
-    {
-	anna_context_drop(context, 4);
-	anna_context_push_entry(context, anna_range_get(range, idx-1));	
-    }
-    else if((sz > idx || open) && !(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
-    {
-	anna_entry_t *o_param[] =
-	    {
-		param[2],
-		anna_range_get(range, idx)
-	    }
-	;
-	
-	param[2] = anna_from_int(idx+1);
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	anna_context_drop(context, 4);
-	anna_context_push_object(context, null_object);
-    }    
-}
-
-static void anna_range_find(anna_context_t *context)
-{
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *range = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    
-    size_t sz = anna_range_get_count(range);
-    int open = anna_range_get_open(range);
-    
-    if(sz > 0 || open)
-    {
-	anna_entry_t *callback_param[] = 
-	    {
-		anna_from_obj(range),
-		anna_from_obj(body),
-		anna_from_int(1),
-	    }
-	;
-	
-	anna_entry_t *o_param[] =
-	    {
-		anna_from_int(0),
-		anna_from_int(anna_range_get_from(range))
-	    }
-	;
-	
-	anna_vm_callback_native(
-	    context,
-	    anna_range_find_callback, 3, callback_param,
-	    body, 2, o_param
-	    );
-    }
-    else
-    {
-	anna_context_push_object(context, null_object);
-    }
-}
-
 static void anna_range_iter_update(anna_object_t *iter, int idx)
 {
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(idx));
@@ -604,22 +531,6 @@ void anna_range_type_create()
 	&anna_range_get_iterator, 0,
 	L"Returns an Iterator for this collection.");
     
-    anna_type_t *fun_type = anna_type_get_iterator(
-	L"!RangeIterFunction", int_type, int_type);
-
-    anna_type_t *e_argv[] = 
-	{
-	    range_type,
-	    fun_type
-	}
-    ;
-    
-    wchar_t *e_argn[]=
-	{
-	    L"this", L"block"
-	}
-    ;    
-    
     anna_type_t *a_argv[] = 
 	{
 	    range_type,
@@ -633,15 +544,6 @@ void anna_range_type_create()
 	}
     ;
 
-    anna_member_create_native_method(
-	range_type,
-	anna_mid_get(L"find"),
-	0,
-	&anna_range_find,
-	int_type,
-	2,
-	e_argv,
-	e_argn, 0, 0);
     anna_member_create_native_method(
 	range_type,
 	anna_mid_get(L"__in__"),

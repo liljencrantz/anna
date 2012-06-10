@@ -288,78 +288,6 @@ ANNA_VM_NATIVE(anna_list_append, 2)
     return param[0];
 }
 
-static void anna_list_find_callback(anna_context_t *context)
-{
-    anna_entry_t *value = anna_context_pop_entry(context);
-
-    anna_entry_t **param = context->top - 3;
-    anna_object_t *list = anna_as_obj_fast(param[0]);
-    anna_object_t *body = anna_as_obj_fast(param[1]);
-    int idx = anna_as_int(param[2]);
-    size_t sz = anna_list_get_count(list);
-
-    if(!anna_entry_null(value))
-    {
-	anna_context_drop(context, 4);
-	anna_context_push_entry(context, anna_list_get(list, idx-1));
-    }
-    else if( (sz > idx) && !(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
-    {
-	anna_entry_t *o_param[] =
-	    {
-		param[2],
-		anna_list_get(list, idx)
-	    }
-	;
-	
-	param[2] = anna_from_int(idx+1);
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	anna_context_drop(context, 4);
-	anna_context_push_object(context, null_object);
-    }
-}
-
-static void anna_list_find(anna_context_t *context)
-{
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *list = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    
-    size_t sz = anna_list_get_count(list);
-    
-    if(sz > 0)
-    {
-	anna_entry_t *callback_param[] = 
-	    {
-		anna_from_obj(list),
-		anna_from_obj(body),
-		anna_from_int(1),
-	    }
-	;
-	
-	anna_entry_t *o_param[] =
-	    {
-		anna_from_int(0),
-		anna_list_get(list, 0)
-	    }
-	;
-	
-	anna_vm_callback_native(
-	    context,
-	    anna_list_find_callback, 3, callback_param,
-	    body, 2, o_param
-	    );
-    }
-    else
-    {
-	anna_context_push_object(context, null_object);
-    }
-}
-
-
 ANNA_VM_NATIVE(anna_list_init, 2)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -782,10 +710,7 @@ ANNA_VM_NATIVE(anna_list_iterator_next, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
-//    anna_message(L"AFDAFDS1 %d\n", anna_as_int(anna_entry_get(iter, ANNA_MID_KEY)));
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(1+anna_as_int(anna_entry_get(iter, ANNA_MID_KEY))));
-    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
-//    anna_message(L"AFDAFDS2 %d/%d %d %ls\n", anna_as_int(anna_entry_get(iter, ANNA_MID_KEY)), anna_list_get_count(list), iter, list->type->name);
     return param[0];
 }
 
@@ -987,32 +912,6 @@ static void anna_list_type_create_internal(
 	0, &anna_list_append, type, 2, l_argv,
 	l_argn, 0, 0);
 
-    anna_type_t *fun_type = anna_type_get_iterator(
-	L"!ListIterFunction", int_type, spec);
-
-    anna_type_t *e_argv[] = 
-	{
-	    type,
-	    fun_type
-	}
-    ;
-    
-    wchar_t *e_argn[]=
-	{
-	    L"this", L"block"
-	}
-    ;    
-    
-    anna_member_create_native_method(
-	type,
-	anna_mid_get(L"find"),
-	0,
-	&anna_list_find,
-	spec,
-	2,
-	e_argv,
-	e_argn, 0, 0);
-    
     anna_member_create_native_method(
 	type,
 	anna_mid_get(L"__in__"),

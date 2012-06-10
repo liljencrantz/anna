@@ -938,7 +938,7 @@ static void anna_hash_iterator_update(anna_object_t *iter)
     {
 	anna_entry_set(iter, ANNA_MID_KEY, null_entry);
 	anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
-	anna_entry_set(iter, ANNA_MID_OFFSET, current_idx);
+	anna_entry_set(iter, ANNA_MID_OFFSET, anna_from_int(current_idx));
     }
     else
     {
@@ -1128,22 +1128,6 @@ static void anna_hash_type_create_internal(
 	&anna_hash_get_values, 0,
 	L"Returns a list containing all the values of this HashMap.");
 
-    anna_type_t *fun_type = anna_type_get_iterator(
-	L"!MapIterFunction", spec1, spec2);
-
-    anna_type_t *e_argv[] = 
-	{
-	    type,
-	    fun_type
-	}
-    ;
-    
-    wchar_t *e_argn[]=
-	{
-	    L"this", L"block"
-	}
-    ;    
-    
     anna_type_finalizer_add(
 	type, anna_hash_del);
 
