@@ -129,6 +129,7 @@ void anna_mid_init()
 	    L"offset",
 	    L"versionId",
 	    L"count",
+	    L"valid?",
 	};
     
     int i;

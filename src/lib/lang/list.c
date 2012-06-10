@@ -290,7 +290,7 @@ ANNA_VM_NATIVE(anna_list_append, 2)
 
 /**
    This is the bulk of the each method
- */
+*/
 static void anna_list_each_callback(anna_context_t *context)
 {
     // Discard the output of the previous method call
@@ -1003,21 +1003,23 @@ ANNA_VM_NATIVE(anna_list_iterator_key, 1)
     return anna_entry_get(iter, ANNA_MID_KEY);
 }
 
-ANNA_VM_NATIVE(anna_list_iterator_empty, 1)
+ANNA_VM_NATIVE(anna_list_iterator_valid, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
     anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
-    return (offset >= 0  && offset < anna_list_get_count(list)) ? null_entry : anna_from_int(1);
+    return (offset >= 0 && offset < anna_list_get_count(list)) ? anna_from_int(1) : null_entry;
 }
 
 ANNA_VM_NATIVE(anna_list_iterator_next, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
+//    anna_message(L"AFDAFDS1 %d\n", anna_as_int(anna_entry_get(iter, ANNA_MID_KEY)));
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(1+anna_as_int(anna_entry_get(iter, ANNA_MID_KEY))));
-    
+    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+//    anna_message(L"AFDAFDS2 %d/%d %d %ls\n", anna_as_int(anna_entry_get(iter, ANNA_MID_KEY)), anna_list_get_count(list), iter, list->type->name);
     return param[0];
 }
 
@@ -1085,8 +1087,8 @@ static void anna_list_type_create_internal(
 	0,
 	L"The value currently pointed to by this iterator.");
     anna_member_create_native_property(
-	iter, ANNA_MID_EMPTY, object_type,
-	&anna_list_iterator_empty,
+	iter, ANNA_MID_VALID, object_type,
+	&anna_list_iterator_valid,
 	0,
 	L"This property is non-null if this iterator has a value at its current location.");
 

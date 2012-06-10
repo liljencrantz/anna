@@ -672,7 +672,7 @@ static void anna_range_map(anna_context_t *context)
 static void anna_range_iter_update(anna_object_t *iter, int idx)
 {
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(idx));
-
+    	
     anna_object_t *range = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     ssize_t from = anna_range_get_from(range);
     ssize_t step = anna_range_get_step(range);
@@ -683,27 +683,27 @@ static void anna_range_iter_update(anna_object_t *iter, int idx)
 	if(idx >= 0)
 	{
 	    anna_entry_set(iter, ANNA_MID_VALUE, anna_from_int(from + step*idx));
-	    anna_entry_set(iter, ANNA_MID_EMPTY, null_entry);
+	    anna_entry_set(iter, ANNA_MID_VALID, anna_from_int(1));
 	}
 	else
 	{
 	    anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
-	    anna_entry_set(iter, ANNA_MID_EMPTY, anna_from_int(1));
+	    anna_entry_set(iter, ANNA_MID_VALID, null_entry);
 	}
     }
     else
     {
-	size_t count = anna_range_get_count(range);
-	idx = anna_list_calc_offset(idx, count);
+	ssize_t count = anna_range_get_count(range);
+	
 	if((idx >= 0) && (idx < count))
 	{
 	    anna_entry_set(iter, ANNA_MID_VALUE, anna_from_int(from + step*idx));
-	    anna_entry_set(iter, ANNA_MID_EMPTY, null_entry);
+	    anna_entry_set(iter, ANNA_MID_VALID, anna_from_int(1));
 	}
 	else
 	{
 	    anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
-	    anna_entry_set(iter, ANNA_MID_EMPTY, anna_from_int(1));
+	    anna_entry_set(iter, ANNA_MID_VALID, null_entry);
 	}
     }
 }
@@ -783,7 +783,7 @@ void anna_range_type_create()
     anna_member_create(
 	iter, ANNA_MID_VALUE, 0, int_type);
     anna_member_create(
-	iter, ANNA_MID_EMPTY, 0, object_type);
+	iter, ANNA_MID_VALID, 0, object_type);
     anna_type_copy_object(iter);
     
     anna_type_t *iter_argv[] = 

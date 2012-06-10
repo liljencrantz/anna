@@ -196,6 +196,7 @@ enum anna_mid_enum
     ANNA_MID_OFFSET,
     ANNA_MID_VERSION_ID,
     ANNA_MID_COUNT,
+    ANNA_MID_VALID,
 
     ANNA_MID_FIRST_UNRESERVED,
 };

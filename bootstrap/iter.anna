@@ -47,10 +47,10 @@ def Call mangleIterator(Call node)
 	Call(
 	    body, 
 	    Identifier(body, "__def__"),
-	    Identifier(body, "!iterator"), 
+	    Identifier(body, parser.identifier("iterator")), 
 	    NullLiteral(body),
 	    Call(body, Identifier(body, "__block__"), n[0], n[1]),
-	    ast({block, loop}), 
+	    ast(nothing(block)), 
 	    body););
     
     return res as Call;
@@ -151,36 +151,72 @@ def Node __iter__(Call node)
     return res;
 }
 
-macro each(node)(doc("A macro adding a bit of syntactic sugar for each loops.")){__iter__(node)}
 macro filter(node)(doc("A macro adding a bit of syntactic sugar for filter loops.")){__iter__(node)}
 macro find(node)(doc("A macro adding a bit of syntactic sugar for find loops.")){__iter__(node)}
 macro map(node)(doc("A macro adding a bit of syntactic sugar for map loops.")){__iter__(node)}
 
-macro ieach(node)
+macro each(node)
 {
     node = mangleIterator(node) as Call;
-//    printInternal(node.toString());
+    
+    if( (node.count != 1) or !(node.function as Call))
+    {
+	node.expand? = ?;
+	return node;
+    }
+    
     coll := (node.function as Call)[0];
-    body := node[0];    
+    
+    iterFun := node[0] as Call;
+    res := ? as Node;
 
-    res := ast(
-	nothing(
-	    %collVar := %coll;
-	    %iter := %collVar.iterator,
-	    %bodyVar := %body;
-	    while(!%iter.empty?)
-	    {
-		%bodyVar(%iter.key, %iter.value);
-		%iter++;
-	    },
-	    %collVar
-	    );
-	)
-	.replace(ast(coll), coll)
-	.replace(ast(body), body)
-	.replace(ast(bodyVar), Identifier(?, parser.identifier("body")))
-	.replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	.replace(ast(collVar), Identifier(?, parser.identifier("collection")));
-//    printInternal(res.toString());
+    if((iterFun.function as Identifier).name == "__def__")
+    {
+        body := iterFun[4] as Call;
+        decl := iterFun[2] as Call;
+	body.function = ast(nothing);
+
+	res = ast(
+	    nothing(
+		%collVar := %coll;
+		%iter := %collVar.iterator,
+		while(%iter.valid?)
+		{
+		    %keyVar := %iter.key as %keyType;
+		    %valueVar := %iter.value as %valueType;
+		    %iter++;
+		    %body;
+		},
+		%collVar
+		);
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(body), body)
+	    .replace(ast(keyVar), (decl[0] as Call)[0])
+	    .replace(ast(valueVar), (decl[1] as Call)[0])
+	    .replace(ast(keyType), (decl[0] as Call)[1])
+	    .replace(ast(valueType), (decl[1] as Call)[1])
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	    .replace(ast(collVar), Identifier(?, parser.identifier("collection")));
+    }
+    else
+    {
+	res = ast(
+	    nothing(
+		%collVar := %coll;
+		%iter := %collVar.iterator,
+		while(%iter.valid?)
+		{
+		    %fun(%iter.key, %iter.value);
+		    %iter++;
+		},
+		%collVar
+		)
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(fun), node[0])
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	    .replace(ast(collVar), Identifier(?, parser.identifier("collection")));
+    }
     return res;
 }

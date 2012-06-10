@@ -211,8 +211,7 @@ void anna_type_intersect_into(
     anna_function_type_t *ft2 = anna_function_type_unwrap(t2);
     if(ft1 && ft2)
     {
-	FIXME("Intersections of callable types don't intersect the call");
-	
+	FIXME("Intersections of callable types don't intersect the call");	
     }
     
     for(i=0; i<anna_type_get_member_count(t2); i++)
@@ -315,6 +314,12 @@ void anna_type_intersect_into(
 		anna_member_create(
 		    res, anna_mid_get(memb2->name),
 		    anna_member_is_static(memb2), memb2->type);
+	    }
+	    else
+	    {
+		anna_member_create(
+		    res, anna_mid_get(memb2->name),
+		    anna_member_is_static(memb2), anna_type_intersect(memb1->type, memb2->type));		
 	    }
 	}
     }

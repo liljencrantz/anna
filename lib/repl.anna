@@ -159,7 +159,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 	varStruct :== ast(struct());
 	debugFrame.variable.each(val)
 	{
-	    el := ast(%name: %value) % [
+	  el := ast(%name: %value) % [
 		"name": Identifier(?, val.name),
 		"value": (if(val.value){Dummy(?, val.value)} else {NullLiteral(?)}) as Node];
 	    varStruct.push(el);
@@ -239,7 +239,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		if(ast.callTo?(name))
 		{
 		    ast = call(ast as parser.Call);
-		    print("LALALA", ast);
 		}
 	    }
 	    

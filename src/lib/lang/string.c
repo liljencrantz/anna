@@ -928,13 +928,13 @@ ANNA_VM_NATIVE(anna_string_iterator_next, 1)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_string_iterator_empty, 1)
+ANNA_VM_NATIVE(anna_string_iterator_valid, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
     anna_object_t *string = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
-    return (offset >= 0  && offset < anna_string_get_count(string)) ? null_entry : anna_from_int(1);
+    return (offset >= 0  && offset < anna_string_get_count(string)) ? anna_from_int(1) : null_entry;
 }
 
 
@@ -952,8 +952,8 @@ static anna_type_t *anna_string_iterator_create(
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(
-	iter, ANNA_MID_EMPTY, object_type,
-	&anna_string_iterator_empty,
+	iter, ANNA_MID_VALID, object_type,
+	&anna_string_iterator_valid,
 	0,
 	L"This property is non-null if this iterator has a value at its current location.");
 

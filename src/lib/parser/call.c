@@ -315,6 +315,97 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
     return param[0];
 }
 
+
+static void anna_call_iterator_update(anna_object_t *iter, int off)
+{
+    anna_object_t *this = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(this);
+    
+    if((off >= 0) && (off < call->child_count))
+    {
+	anna_entry_set(iter, ANNA_MID_VALUE, anna_from_obj(anna_node_wrap(call->child[off])));
+    }
+    else
+    {
+	anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
+    }
+    anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(off));
+}
+
+ANNA_VM_NATIVE(anna_call_get_iterator, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *this = anna_as_obj(param[0]);
+    anna_object_t *iter = anna_object_create(
+	anna_type_unwrap((anna_object_t *)anna_entry_get_static(this->type, ANNA_MID_ITERATOR_TYPE)));
+    anna_entry_set(iter, ANNA_MID_COLLECTION, param[0]);
+    anna_call_iterator_update(iter, 0);
+    return anna_from_obj(iter);
+}
+
+ANNA_VM_NATIVE(anna_call_iterator_next, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_call_iterator_update(iter, anna_as_int(anna_entry_get(iter, ANNA_MID_KEY))+1);
+    return param[0];
+}
+
+ANNA_VM_NATIVE(anna_call_iterator_valid, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *this = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(this);
+    int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+    return (offset >= 0  && offset < call->child_count) ? anna_from_int(1) : null_entry;
+}
+
+
+static anna_type_t *anna_call_iterator_create(
+    anna_type_t *type)
+{
+    anna_type_t *iter = anna_type_create(L"Iterator", 0);
+    anna_member_create(
+	iter, ANNA_MID_COLLECTION, 0, type);
+    anna_member_create(
+	iter, ANNA_MID_KEY, 0, int_type);
+    anna_member_create(
+	iter, ANNA_MID_VALUE, 0, node_type);
+    anna_type_copy_object(iter);
+    
+    anna_member_create_native_property(
+	iter, ANNA_MID_VALID, object_type,
+	&anna_call_iterator_valid,
+	0,
+	L"This property is non-null if this iterator has a value at its current location.");
+
+    anna_type_t *iter_argv[] = 
+	{
+	    iter
+	}
+    ;
+    
+    wchar_t *iter_argn[]=
+	{
+	    L"this"
+	}
+    ;
+
+    anna_member_create_native_method(
+	iter,
+	ANNA_MID_NEXT_ASSIGN, 0,
+	&anna_call_iterator_next, iter, 1,
+	iter_argv, iter_argn, 0, L"Move this iterator to the next position in the sequence");
+
+    anna_type_close(iter);
+    
+    return iter;
+}
+
+
+
+
 static void anna_node_create_call_type(
     anna_stack_template_t *stack, 
     anna_type_t *type)
@@ -322,6 +413,20 @@ static void anna_node_create_call_type(
     mid_t mmid;
 
     anna_type_copy(type, node_type);
+
+    anna_member_create(
+	type,
+	ANNA_MID_ITERATOR_TYPE,
+	ANNA_MEMBER_STATIC,
+	type_type);
+    anna_type_t *iter = anna_call_iterator_create(type);
+    anna_entry_set_static(
+	type, ANNA_MID_ITERATOR_TYPE, 
+	anna_from_obj(anna_type_wrap(iter)));
+    anna_member_create_native_property(
+	type, ANNA_MID_ITERATOR, iter,
+	&anna_call_get_iterator, 0,
+	L"Returns an Iterator for all the arguments to this call.");
 
     anna_type_t *argv[] = 
 	{
