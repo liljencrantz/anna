@@ -16,6 +16,13 @@ ANNA_VM_NATIVE(anna_function_type_i_get_output, 1)
     return anna_from_obj( anna_type_wrap(f->return_type));
 }
 
+ANNA_VM_NATIVE(anna_function_type_i_get_macro, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_function_t *f = anna_function_unwrap(this);
+    return f->flags & ANNA_FUNCTION_MACRO ? anna_from_int(1) : null_entry;
+}
+
 ANNA_VM_NATIVE(anna_function_type_i_get_input_type, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -366,6 +373,13 @@ static void anna_function_load(anna_stack_template_t *stack)
 	&anna_function_type_i_get_variadic_named,
 	0,
 	L"True if this function accepts variadic named arguments.");
+
+    anna_member_create_native_property(
+	res, anna_mid_get(L"macro?"),
+	int_type,
+	&anna_function_type_i_get_macro,
+	0,
+	L"True if this function can be used as a macro.");
 
     anna_type_copy_object(res);
 
