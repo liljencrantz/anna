@@ -900,92 +900,6 @@ ANNA_VM_NATIVE(anna_hash_get_values, 1)
     return anna_from_obj(res);
 }
 
-
-
-/**
-   This is the bulk of the each method
- */
-static void anna_hash_each_callback(anna_context_t *context)
-{    
-    // Discard the output of the previous method call
-    anna_context_pop_entry(context);
-    // Set up the param list. These are the values that aren't reallocated each lap
-    anna_entry_t **param = context->top - 3;
-    // Unwrap and name the params to make things more explicit
-    anna_object_t *hash = anna_as_obj(param[0]);
-    anna_object_t *body = anna_as_obj(param[1]);
-    int idx = anna_as_int(param[2]);
-    
-    int next_idx = anna_hash_get_next_idx(hash, idx);
-    
-    if((next_idx >= 0) && !(context->frame->flags & ANNA_ACTIVATION_FRAME_BREAK))
-    {
-	// Set up params for the next lap of the each body function
-	anna_entry_t *o_param[] =
-	    {
-		anna_hash_get_key_from_idx(hash, next_idx),
-		anna_hash_get_value_from_idx(hash, next_idx),
-	    }
-	;
-	// Then update our internal lap counter
-	param[2] = anna_from_int(next_idx+1);
-	
-	// Finally, roll the code point back a bit and push new arguments
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	// Oops, we're done. Drop our internal param list and push the correct output
-	anna_context_drop(context, 4);
-	anna_context_push_object(context, hash);
-    }
-}
-
-static void anna_hash_each(anna_context_t *context)
-{
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *hash = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    
-    if(hash == null_object)
-    {
-	anna_context_push_object(context, null_object);
-	return;
-    }
-    
-    size_t sz = anna_hash_get_count(hash);
-    
-    if(sz > 0)
-    {
-	int next_idx = anna_hash_get_next_idx(hash, 0);
-	anna_entry_t *callback_param[] = 
-	    {
-		anna_from_obj(hash),
-		anna_from_obj(body),
-		anna_from_int(next_idx+1)
-	    }
-	;
-	
-	anna_entry_t *o_param[] =
-	    {
-		anna_hash_get_key_from_idx(hash, next_idx),
-		anna_hash_get_value_from_idx(hash, next_idx),
-	    }
-	;
-	
-	anna_vm_callback_native(
-	    context,
-	    anna_hash_each_callback, 3, callback_param,
-	    body, 2, o_param
-	    );
-    }
-    else
-    {
-	anna_context_push_object(context, hash);
-    }
-}
-
-
 static void anna_hash_map_callback(anna_context_t *context)
 {
     anna_entry_t *value = anna_context_pop_entry(context);
@@ -1310,10 +1224,6 @@ static void anna_hash_type_create_internal(
 	}
     ;    
     
-    anna_member_create_native_method(
-	type, anna_mid_get(L"each"), 0,
-	&anna_hash_each, type, 2, e_argv, e_argn, 0, 0);
-
     anna_member_create_native_method(
 	type,
 	anna_mid_get(L"map"),

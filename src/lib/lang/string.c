@@ -661,86 +661,6 @@ static void anna_string_i_append(anna_context_t *context)
     }
 }
 
-/**
-   This is the bulk of the each method
- */
-static void anna_string_each_callback(anna_context_t *context)
-{
-    // Discard the output of the previous method call
-    anna_context_pop_entry(context);
-    // Set up the param list. These are the values that aren't reallocated each lap
-    anna_entry_t **param = context->top - 3;
-    // Unwrap and name the params to make things more explicit
-    anna_object_t *str_obj = anna_as_obj_fast(param[0]);
-    anna_object_t *body = anna_as_obj_fast(param[1]);
-    anna_string_t *str = as_unwrap(str_obj);
-    int idx = anna_as_int(param[2]);
-    size_t sz = asi_get_count(str);
-    
-    // Are we done or do we need another lap?
-    if(idx < sz)
-    {
-	// Set up params for the next lap of the each body function
-	anna_entry_t *o_param[] =
-	    {
-		param[2],
-		anna_from_char(asi_get_char(str, idx))
-	    }
-	;
-	// Then update our internal lap counter
-	param[2] = anna_from_int(idx+1);
-	
-	// Finally, roll the code point back a bit and push new arguments
-	anna_vm_callback_reset(context, body, 2, o_param);
-    }
-    else
-    {
-	// Oops, we're done. Drop our internal param list and push the correct output
-	anna_context_drop(context, 4);
-	anna_context_push_object(context, str_obj);
-    }
-}
-
-static void anna_string_i_each(anna_context_t *context)
-{
-    anna_object_t *body = anna_context_pop_object(context);
-    anna_object_t *str_obj = anna_context_pop_object(context);
-    anna_context_pop_entry(context);
-    anna_string_t *str = as_unwrap(str_obj);    
-    size_t sz = asi_get_count(str);
-
-    if(sz > 0)
-    {
-	anna_entry_t *callback_param[] = 
-	    {
-		anna_from_obj(str_obj),
-		anna_from_obj(body),
-		anna_from_int(1)
-	    }
-	;
-	
-	anna_entry_t *o_param[] =
-	    {
-		anna_from_int(0),
-		anna_from_char(asi_get_char(str, 0))
-	    }
-	;
-	
-	anna_vm_callback_native(
-	    context,
-	    anna_string_each_callback, 3, callback_param,
-	    body, 2, o_param
-	    );
-    }
-    else
-    {
-	anna_context_push_object(context, str_obj);
-    }
-}
-
-
-
-
 static void anna_string_i_map_callback(anna_context_t *context)
 {
     anna_entry_t *value = anna_context_pop_entry(context);
@@ -1159,11 +1079,6 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	}
     ;    
     
-    anna_member_create_native_method(
-	type, anna_mid_get(L"each"),
-	0, &anna_string_i_each, type, 2,
-	e_argv, e_argn, 0, 0);
-
     anna_member_create_native_method(
 	type,
 	anna_mid_get(L"map"),

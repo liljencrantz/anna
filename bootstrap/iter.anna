@@ -82,20 +82,20 @@ def Node __iter__(Call node)
     {
 	n[0] = iterDeclare(
 	    Identifier(body, "!unused"), 
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0),0)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.map, 0),0)));
 	n[1] = iterDeclare(
 	    node[0],
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0), 1)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.map, 0), 1)));
     } 
     else
     {
 	checkNodeType(node[1], Identifier);
 	n[0] = iterDeclare(
 	    node[0],
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0),0)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.map, 0),0)));
 	n[1] = iterDeclare(
 	    node[1],
-	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.each, 0), 1)));
+	    ast(__staticInputTypeOf__(__staticInputTypeOf__(%list.map, 0), 1)));
     }
     
     attr := ast({block, loop});
