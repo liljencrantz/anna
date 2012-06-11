@@ -770,14 +770,13 @@ static void anna_list_type_create_internal(
     anna_member_create_native_property(
 	iter, ANNA_MID_VALUE, spec,
 	&anna_list_iterator_value,
-	0,
-	L"The value currently pointed to by this iterator.");
+	0, 0);
+
     anna_member_create_native_property(
 	iter, ANNA_MID_VALID, object_type,
 	&anna_list_iterator_valid,
-	0,
-	L"This property is non-null if this iterator has a value at its current location.");
-
+	0, 0);
+    
     anna_type_t *iter_argv[] = 
 	{
 	    iter
@@ -788,8 +787,7 @@ static void anna_list_type_create_internal(
 	iter,
 	ANNA_MID_NEXT_ASSIGN, 0,
 	&anna_list_iterator_next, iter, 1,
-	iter_argv, a_argn, 0, L"Move this iterator to the next position in the sequence");
-
+	iter_argv, a_argn, 0, 0);
     
     anna_member_create(
 	type, ANNA_MID_LIST_PAYLOAD, 0, null_type);

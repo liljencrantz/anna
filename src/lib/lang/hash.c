@@ -1001,8 +1001,7 @@ static anna_type_t *anna_hash_iterator_create(
     anna_member_create_native_property(
 	iter, ANNA_MID_VALID, object_type,
 	&anna_hash_iterator_valid,
-	0,
-	L"This property is non-null if this iterator has a value at its current location.");
+	0, 0);
 
     anna_type_t *iter_argv[] = 
 	{
@@ -1020,7 +1019,7 @@ static anna_type_t *anna_hash_iterator_create(
 	iter,
 	ANNA_MID_NEXT_ASSIGN, 0,
 	&anna_hash_iterator_next, iter, 1,
-	iter_argv, iter_argn, 0, L"Move this iterator to the next position in the sequence");
+	iter_argv, iter_argn, 0, 0);
 
     anna_type_close(iter);
     

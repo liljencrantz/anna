@@ -317,7 +317,7 @@ static anna_type_t *anna_buffer_iterator_create(
 	iter,
 	ANNA_MID_NEXT_ASSIGN, 0,
 	&anna_buffer_iterator_next, iter, 1,
-	iter_argv, iter_argn, 0, L"Move this iterator to the next position in the sequence");
+	iter_argv, iter_argn, 0, 0);
 
     anna_type_close(iter);
 
@@ -369,8 +369,7 @@ void anna_buffer_type_create()
 	anna_from_obj(anna_type_wrap(iter)));
     anna_member_create_native_property(
 	type, ANNA_MID_ITERATOR, iter,
-	&anna_buffer_get_iterator, 0,
-	L"Returns an Iterator for this collection.");
+	&anna_buffer_get_iterator, 0, 0);
 
     anna_type_t *a_argv[] = 
 	{

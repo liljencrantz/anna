@@ -437,14 +437,14 @@ void anna_range_type_create()
 	iter,
 	ANNA_MID_NEXT_ASSIGN, 0,
 	&anna_range_iterator_next, iter, 1,
-	iter_argv, c_argn, 0, L"Move this iterator to the next position in the sequence");
+	iter_argv, c_argn, 0, 0);
 
     anna_type_close(iter);
     
     anna_member_create_native_method(
 	range_type, anna_mid_get(L"__init__"),
 	0, &anna_range_init, range_type, 4,
-	c_argv, c_argn, 0, L"Constructs a Range object with the specified parameters,");    
+	c_argv, c_argn, 0, 0);
 
     anna_type_t *i_argv[] = 
 	{
@@ -528,8 +528,7 @@ void anna_range_type_create()
 	0, L"The last element of this Range.");
     anna_member_create_native_property(
 	range_type, ANNA_MID_ITERATOR, iter,
-	&anna_range_get_iterator, 0,
-	L"Returns an Iterator for this collection.");
+	&anna_range_get_iterator, 0, 0);
     
     anna_type_t *a_argv[] = 
 	{

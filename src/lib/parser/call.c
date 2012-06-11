@@ -300,9 +300,8 @@ static anna_type_t *anna_call_iterator_create(
     anna_member_create_native_property(
 	iter, ANNA_MID_VALID, object_type,
 	&anna_call_iterator_valid,
-	0,
-	L"This property is non-null if this iterator has a value at its current location.");
-
+	0, 0);
+    
     anna_type_t *iter_argv[] = 
 	{
 	    iter
@@ -319,7 +318,7 @@ static anna_type_t *anna_call_iterator_create(
 	iter,
 	ANNA_MID_NEXT_ASSIGN, 0,
 	&anna_call_iterator_next, iter, 1,
-	iter_argv, iter_argn, 0, L"Move this iterator to the next position in the sequence");
+	iter_argv, iter_argn, 0, 0);
 
     anna_type_close(iter);
     
@@ -348,9 +347,8 @@ static void anna_node_create_call_type(
 	anna_from_obj(anna_type_wrap(iter)));
     anna_member_create_native_property(
 	type, ANNA_MID_ITERATOR, iter,
-	&anna_call_get_iterator, 0,
-	L"Returns an Iterator for all the arguments to this call.");
-
+	&anna_call_get_iterator, 0, 0);
+    
     anna_type_t *argv[] = 
 	{
 	    type,
