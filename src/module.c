@@ -567,6 +567,23 @@ static void anna_module_doc_item(
 
 static void anna_module_doc()
 {
+    struct member_doc
+    {
+	mid_t mid;
+	wchar_t *doc;
+    };
+    
+    struct member_doc doc_iter[] = 
+	{
+	    {ANNA_MID_VALUE, L"The current value of the iterator."},
+	    {ANNA_MID_KEY, L"The current key of the iterator."},
+	    {ANNA_MID_VALID, L"Whether the current iterator position points to a valid key/value pair."},
+	    {ANNA_MID_NEXT_ASSIGN, L"Move to the next element in the collection."},
+	    {0,0},
+	}
+    ;
+    
+
     wchar_t *data_numerical[][2] = {
 	{L"__neg__", L"Negate the number."},
 	{L"abs", L"The absolute value of the number."},
@@ -589,19 +606,21 @@ static void anna_module_doc()
 	{0, 0}
     };
 
-    wchar_t *data_iter[][2] = {
-	{L"Iterator", L"An instance of this type is returned by the <a href='#iterator'>property</a>. It can be used to iterate over the collection."},
-	{L"iterator", L"Returns an iterator for this collection. This is used by macros such as <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> and <a path='iter' member='find'>find</a>."},
-	{L"__appendAssign__", L"Append the specified items to this collection."},
-	{L"get", L"Return the item at the specified offset."},
-	{L"getRange", L"Return the items in the specified range."},
-	{L"set", L"Set the item at the specified offset to the specified value."},
-	{L"setRange", L"Set all of the items in the specified Range to the items in the specified list."},
+    struct member_doc doc_coll[] = {
+	{ANNA_MID_ITERATOR_TYPE, L"An instance of this type is returned by the <a href='#iterator'>property</a>. It can be used to iterate over the collection."},
+	{ANNA_MID_ITERATOR, L"Returns an iterator for this collection. This is used by macros such as <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> and <a path='iter' member='find'>find</a>."},
+	{ANNA_MID_APPEND_ASSIGN, L"Append the specified items to this collection."},
+	{ANNA_MID_GET, L"Return the item at the specified offset."},
+	{ANNA_MID_GET_RANGE, L"Return the items in the specified range."},
+	{ANNA_MID_SET, L"Set the item at the specified offset to the specified value."},
+	{ANNA_MID_SET_RANGE, L"Set all of the items in the specified Range to the items in the specified list."},
 	{0, 0}
     };
     
     wchar_t *collection_desc = 
 	L"This type implements the Collection interface, meaning it can be used by the functional programming tools in the <a path='iter'>iter</a>-module, such as the <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> or <a path='iter' member='filter'>filter</a> macros.";
+    wchar_t *iterator_desc = 
+	L"Iterators are used step over the elements in a collection. They are the low level building block used to implement the functional programming tools in the <a path='iter'>iter</a>-module, such as the <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> and <a path='iter' member='filter'>filter</a>.";
 
     anna_type_t *iter_type[] = 
 	{
@@ -648,23 +667,44 @@ static void anna_module_doc()
 	anna_module_doc_item(complex_type, data_numerical_with_alias[i][0], L"Complex__", data_numerical_with_alias[i][1]);
     }
 
-    for(i=0; data_iter[i][0]; i++)
+    for(i=0;iter_type[i]; i++)
     {
-	for(j=0;iter_type[j]; j++)
+	for(j=0; doc_coll[j].doc; j++)
 	{
 	    anna_member_document(
-		iter_type[j],
-		anna_mid_get(data_iter[i][0]),
-		data_iter[i][1]);
+		iter_type[i],
+		doc_coll[j].mid,
+		doc_coll[j].doc);
 	}
-    }
-    
-    for(i=0; iter_type[i]; i++)
-    {
+
 	anna_type_document(
 	    iter_type[i],
 	    collection_desc
 	    );
+	anna_entry_t *iter_entry = 
+	    anna_entry_get_static(
+		iter_type[i],
+		ANNA_MID_ITERATOR_TYPE);
+
+	if(iter_entry != null_entry)
+	{
+	    anna_type_t *iter = 
+		anna_type_unwrap(
+		    (anna_object_t *)iter_entry);
+	    //anna_message(L"BABERIBA %ls::%ls\n", iter_type[i]->name, iter->name);
+	    anna_type_document(
+		iter,
+		iterator_desc
+		);
+	    for(j=0; doc_iter[j].doc; j++)
+	    {
+		anna_member_document(
+		    iter,
+		    doc_iter[j].mid,
+		    doc_iter[j].doc);
+	    }
+
+	}
     }
 }
 

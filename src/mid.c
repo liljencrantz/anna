@@ -130,6 +130,12 @@ void anna_mid_init()
 	    L"versionId",
 	    L"count",
 	    L"valid?",
+	    L"__appendAssign__",
+	    L"get",
+	    L"getRange",
+	    L"set",
+	    L"setRange",
+	    L"__join__",
 	};
     
     int i;

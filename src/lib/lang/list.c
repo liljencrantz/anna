@@ -690,13 +690,6 @@ ANNA_VM_NATIVE(anna_list_iterator_value, 1)
     return anna_list_get(list, offset);
 }
 
-ANNA_VM_NATIVE(anna_list_iterator_key, 1)
-{
-    ANNA_ENTRY_NULL_CHECK(param[0]);
-    anna_object_t *iter = anna_as_obj(param[0]);
-    return anna_entry_get(iter, ANNA_MID_KEY);
-}
-
 ANNA_VM_NATIVE(anna_list_iterator_valid, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
@@ -821,7 +814,7 @@ static void anna_list_type_create_internal(
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
     
     anna_member_create_native_method(
-	type, anna_mid_get(L"__init__"),
+	type, ANNA_MID_INIT_PAYLOAD,
 	ANNA_FUNCTION_VARIADIC, &anna_list_init,
 	type, 2, a_argv, a_argn, 0, 0);
     
@@ -842,12 +835,12 @@ static void anna_list_type_create_internal(
 	}
     ;
 
-    mmid = anna_member_create_native_method(
+    anna_member_create_native_method(
 	type,
-	anna_mid_get(L"get"), 0,
+	ANNA_MID_GET, 0,
 	&anna_list_get_int, spec, 2,
 	i_argv, i_argn, 0, 0);
-    anna_member_alias(type, mmid, L"__get__");
+    anna_member_alias(type, ANNA_MID_GET, L"__get__");
 
     anna_member_create_native_property(
 	type, ANNA_MID_COUNT, int_type,
@@ -879,18 +872,18 @@ static void anna_list_type_create_internal(
 	}
     ;
 
-    mmid = anna_member_create_native_method(
-	type, anna_mid_get(L"__join__"), 0,
+    anna_member_create_native_method(
+	type, ANNA_MID_JOIN_OP, 0,
 	&anna_list_i_join, type,
 	2, join_argv, join_argn, 0, L"The join operator is used to create a new list that contains all the elements of both the original lists.");
     anna_member_document(
-	type, mmid,
+	type, ANNA_MID_JOIN_OP,
 	L"The join operator can be used like this:");
     anna_member_document_example(
-	type, mmid, 
+	type, ANNA_MID_JOIN_OP, 
 	L"combinedCollection := firstCollection ~ secondCollection;");
     anna_member_document(
-	type, mmid,
+	type, ANNA_MID_JOIN_OP,
 	L"Note that the join operator joins two collections. If all you want to do is add one element to an existing collection, use the <a href='#push'>push method</a>.");
   
 
@@ -939,24 +932,24 @@ static void anna_list_type_create_internal(
 	}
     ;
 
-    mmid = anna_member_create_native_method(
+    anna_member_create_native_method(
 	type,
-	anna_mid_get(L"getRange"), 0,
+	ANNA_MID_GET_RANGE, 0,
 	&anna_list_i_get_range, type, 2,
 	range_argv, range_argn, 0, L"Returns a newly created List containing all the elements in the specified Range.");
-    anna_member_document_example(type, mmid, L"myList := [1,2,3,4,5,6];\nprint(myList[1|2...]); // This will print [2, 4, 6]");
-    anna_member_alias(type, mmid, L"__get__");
+    anna_member_document_example(type, ANNA_MID_GET_RANGE, L"myList := [1,2,3,4,5,6];\nprint(myList[1|2...]); // This will print [2, 4, 6]");
+    anna_member_alias(type, ANNA_MID_GET_RANGE, L"__get__");
 
     anna_list_add_all_extra_methods(type);
     
     if(mutable)
     {	
-	mmid = anna_member_create_native_method(
+	anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"set"), 0,
+	    ANNA_MID_SET, 0,
 	    &anna_list_set_int, spec, 3,
 	    i_argv, i_argn, 0, 0);
-	anna_member_alias(type, mmid, L"__set__");
+	anna_member_alias(type, ANNA_MID_SET, L"__set__");
 
 	anna_member_create_native_method(
 	    type, anna_mid_get(L"push"),
@@ -978,22 +971,22 @@ static void anna_list_type_create_internal(
 	    &anna_list_pop, spec, 1, a_argv, a_argn, 0, 
 	    L"Removes the last element from the list and returns it. Returns null if the list is already empty.");
 	
-	mmid = anna_member_create_native_method(
+	anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"setRange"), 0,
+	    ANNA_MID_SET_RANGE, 0,
 	    &anna_list_i_set_range, type, 3,
-	    range_argv, range_argn, 0, L"Assign new values to a range of items");
-
+	    range_argv, range_argn, 0, L"Assign new values to a range of items.");
+	
 	anna_member_document(
-	    type, mmid,
+	    type, ANNA_MID_SET_RANGE,
 	    L"This method can operate in three distinct modes:");
 	
 	anna_member_document(
-	    type, mmid,
-	    L"The first mode, simple mode, is when the slice to replace and the supplied replacement have the same number of items. In this case, the slice operation will simply replace the old values with the new ones in place and the list will be otherwise unchanged. Some examples of simple mode usage:");
+	    type, ANNA_MID_SET_RANGE,
+	    L"The first mode, replacement mode, is when the slice to replace and the supplied replacement have the same number of items. In this case, the slice operation will simply replace the old values with the new ones in place and the list will be otherwise unchanged. Some examples of simple mode usage:");
 	
 	anna_member_document_example(
-	    type, mmid,
+	    type, ANNA_MID_SET_RANGE,
 	    L"// Simple replacement\n"
 	    L"[1,2,3,4,5][1..2] = [22, 33]; // Result: [1, 22, 33, 4, 5]\n"
 	    L"// In simple mode, it is allowed to use any step in the range. This\n// will replace the even items\n"
@@ -1003,10 +996,10 @@ static void anna_list_type_create_internal(
 	    );
 
 	anna_member_document(
-	    type, mmid,
-	    L"The second mode, complex mode, is when the slice to replace and the supplied replacement have different lengths. In complex mode, the step of the slice range must always be ±1. In this case, the slice operation will remove the old range and replace them with new values, which result in a list with a different length.");
+	    type, ANNA_MID_SET_RANGE,
+	    L"The second mode, splice mode, is when the slice to replace and the supplied replacement have different lengths. In complex mode, the step of the slice range must always be ±1. In this case, the slice operation will remove the old range and replace them with new values, which results in a list with a different length.");
 	anna_member_document_example(
-	    type, mmid,
+	    type, ANNA_MID_SET_RANGE,
 	    L"// Complex replacement, change the list length\n"
 	    L"[1,2,3,4,5][1..2] = [11, 22, 33, 44]; // Result: [1, 11, 22, 33, 44, 4, 5]\n"
 	    L"// In complex mode, it is not allowed to use any step in the range.\n"
@@ -1016,21 +1009,22 @@ static void anna_list_type_create_internal(
 	    );
 
 	anna_member_document(
-	    type, mmid,
-	    L"The final mode, erase mode, is when the supplied replacement has a length of zero. In this case, all those elements will be removed from the list, and the list will thus be shortened."
+	    type, ANNA_MID_SET_RANGE,
+	    L"The final mode, erase mode, is when the supplied replacement is null or has a length of zero. In this case, all those elements will be removed from the list, and the list will thus be shortened."
 	    );
 	anna_member_document_example(
-	    type, mmid,
+	    type, ANNA_MID_SET_RANGE,
 	    L"// Erase mode, change the list length\n"
-	    L"[1,2,3,4,5][1..2] = «Int»[]; // Result: [1, 4, 5]\n"
+	    L"[1,2,3,4,5][1..2] = «Int»[]; // Result: [1, 3, 4, 5]\n"
+	    L"// Same as above, but using a null value instead of an empty list\n"	    
+	    L"[1,2,3,4,5][1..2] = ?; // Result: [1, 3, 4, 5]\n"
 	    L"// Erase mode, we can use any step in erase mode\n"
 	    L"[1,2,3,4,5][1|2..5] = «Int»[]; // Result: [1, 3, 5]\n"
 	    L"// Erase mode, open ranges work as exected\n"
 	    L"[1,2,3,4,5][1|2...] = «Int»[]; // Result: [1, 3, 5]\n"
 	    );
-	
 
-	anna_member_alias(type, mmid, L"__set__");
+	anna_member_alias(type, ANNA_MID_SET_RANGE, L"__set__");
     }
 
     anna_member_create_native_property(
