@@ -96,10 +96,16 @@ class DocumentationData
 	return res ~ path() ~ ".html";
     }
 
+    def String linkConnector()
+    {
+	if(object.module?) {"."} else { "::" }
+    }
+
     def String linkPath(DocumentationData from = ?, Int last = 1)
     (doc("Create a html anchor from some other document to this document"))
     {
-        prev := (parent.linkPath(from or this, ?) ~ ".") or "";
+
+        prev := (parent.linkPath(from or this, ?) ~ parent.linkConnector()) or "";
 	classString := if(last){" class='anna-link-main'"} else {""}
 	return prev ~ if(from) {
 	    "<a href='%'%>%</a>" % [link(from), classString, object.name];
