@@ -263,7 +263,7 @@ struct anna_type
     */
     struct anna_stack_template *stack;
     /**
-      The stack used for macro expansion in this type. Can be
+      The stack used for macro expansion in this type. Is
       different from the regular stack because of use vs. expand
       calls.
     */
@@ -703,7 +703,9 @@ extern anna_type_t *type_type, *object_type, *int_type, *string_type,
     *mutable_string_type, *imutable_string_type, *char_type, *null_type,
     *string_type, *char_type, *float_type, *member_type, *range_type, 
     *complex_type, *hash_type, *pair_type, *buffer_type, 
-    *function_type_base, *continuation_type, *continuation_variable_type, *sendable_type;
+    *function_type_base, *continuation_type, *continuation_variable_type,
+    *sendable_type;
+
 extern anna_object_t *null_object, *anna_wrap_method;
 /**
    Error counter. Every time the parser or compiler detects a
@@ -776,8 +778,6 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
 	return 0;
     }
 
-//    wprintf(L"Get member %ls in object of type %ls\n", anna_mid_get_reverse(mid), obj->type->name);
-    
     if(anna_member_is_static(m)) {
 	return &obj->type->static_member[m->offset];
     } else {

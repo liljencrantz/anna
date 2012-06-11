@@ -377,8 +377,8 @@ often used code paths, which makes it useful for regression testing.")
 
 	module.member.each(mem)
 	{
-	  alias := annaUtil.findAttribute(
-	      mem.attribute or (mem.value(?) as Function).attribute, "alias");
+	    alias := annaUtil.findAttribute(
+		mem.attribute or (mem.value(?) as Function).attribute, "alias");
 	    (alias.map(a){a.toString()}.thaw ~ [mem.name]).each(name)
 	    {
 		if(!(name in keywordLookup))
@@ -395,7 +395,7 @@ often used code paths, which makes it useful for regression testing.")
 		{
 		    lookup(module: val.__type__, parent: module);
 		}
-		if(val as Type and module.module?)
+		if(val as Type)
 		{
 		    lookup(module: val as Type, parent: module);
 		}

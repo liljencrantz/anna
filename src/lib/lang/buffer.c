@@ -361,7 +361,9 @@ void anna_buffer_type_create()
 	ANNA_MID_ITERATOR_TYPE,
 	ANNA_MEMBER_STATIC,
 	type_type);
+
     anna_type_t *iter = anna_buffer_iterator_create(type);
+
     anna_entry_set_static(
 	type, ANNA_MID_ITERATOR_TYPE, 
 	anna_from_obj(anna_type_wrap(iter)));

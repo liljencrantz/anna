@@ -764,8 +764,10 @@ static void anna_list_type_create_internal(
 	type_type);
 
     anna_type_t *iter = anna_type_create(L"Iterator", 0);
-    (*(anna_object_t **)anna_entry_get_addr_static(type, ANNA_MID_ITERATOR_TYPE)) =
-	anna_type_wrap(iter);
+    anna_entry_set_static(
+	 type, ANNA_MID_ITERATOR_TYPE,
+	 anna_from_obj(anna_type_wrap(iter)));
+
     anna_member_create(
 	iter, ANNA_MID_COLLECTION, 0, type);
     anna_member_create(
