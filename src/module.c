@@ -600,6 +600,9 @@ static void anna_module_doc()
 	{0, 0}
     };
     
+    wchar_t *collection_desc = 
+	L"This type implements the Collection interface, meaning it can be used by the functional programming tools in the <a path='iter'>iter</a>-module, such as the <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> or <a path='iter' member='filter'>filter</a> macros.";
+
     anna_type_t *iter_type[] = 
 	{
 	    string_type, mutable_string_type, imutable_string_type, 
@@ -654,6 +657,14 @@ static void anna_module_doc()
 		anna_mid_get(data_iter[i][0]),
 		data_iter[i][1]);
 	}
+    }
+    
+    for(i=0; iter_type[i]; i++)
+    {
+	anna_type_document(
+	    iter_type[i],
+	    collection_desc
+	    );
     }
 }
 
