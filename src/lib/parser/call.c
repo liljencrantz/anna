@@ -290,11 +290,11 @@ static anna_type_t *anna_call_iterator_create(
 {
     anna_type_t *iter = anna_type_create(L"Iterator", 0);
     anna_member_create(
-	iter, ANNA_MID_COLLECTION, 0, type);
+	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, type);
     anna_member_create(
-	iter, ANNA_MID_KEY, 0, int_type);
+	iter, ANNA_MID_KEY, ANNA_MEMBER_IMUTABLE, int_type);
     anna_member_create(
-	iter, ANNA_MID_VALUE, 0, node_type);
+	iter, ANNA_MID_VALUE, ANNA_MEMBER_IMUTABLE, node_type);
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(
@@ -371,22 +371,6 @@ static void anna_node_create_call_type(
 	&anna_node_call_wrapper_i_init,
 	object_type,
 	4, argv, argn, 0, 0);
-    
-    anna_type_t *fun_type = anna_type_get_iterator(
-	L"!CallIterFunction", int_type, node_type);
-
-    anna_type_t *e_argv[] = 
-	{
-	    type,
-	    fun_type
-	}
-    ;
-
-    wchar_t *e_argn[]=
-	{
-	    L"this", L"block"
-	}
-    ;
     
     anna_member_create_native_property(
 	type,

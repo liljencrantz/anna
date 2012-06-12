@@ -725,9 +725,9 @@ static anna_type_t *anna_list_iterator_create(
     anna_type_t *iter = anna_type_create(L"Iterator", 0);
 
     anna_member_create(
-	iter, ANNA_MID_COLLECTION, 0, type);
+	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, type);
     anna_member_create(
-	iter, ANNA_MID_KEY, 0, int_type);    
+	iter, ANNA_MID_KEY, ANNA_MEMBER_IMUTABLE, int_type);    
     anna_type_copy_object(iter);
 
     anna_member_create_native_property(

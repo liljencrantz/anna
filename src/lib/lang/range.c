@@ -418,11 +418,11 @@ void anna_range_type_create()
     anna_type_t *iter = anna_range_iterator_type = anna_type_create(L"Iterator", 0);
     anna_entry_set_static(range_type, ANNA_MID_ITERATOR_TYPE, anna_from_obj(anna_type_wrap(iter)));
     anna_member_create(
-	iter, ANNA_MID_COLLECTION, 0, range_type);
+	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, range_type);
     anna_member_create(
-	iter, ANNA_MID_KEY, 0, int_type);
+	iter, ANNA_MID_KEY, ANNA_MEMBER_IMUTABLE, int_type);
     anna_member_create(
-	iter, ANNA_MID_VALUE, 0, int_type);
+	iter, ANNA_MID_VALUE, ANNA_MEMBER_IMUTABLE, int_type);
     anna_member_create(
 	iter, ANNA_MID_VALID, 0, object_type);
     anna_type_copy_object(iter);

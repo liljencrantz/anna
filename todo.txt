@@ -1,4 +1,6 @@
 1.0 RELEASE CRITERIA:
+* Buffer::Iterator.value writable
+* Call::Iterator.value writable
 * Bindings
   - ctime should be generated through the bindings
 * anna-game as a proof that the language works for solving reasonably complex problems

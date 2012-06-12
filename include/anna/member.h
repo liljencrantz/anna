@@ -145,6 +145,11 @@ static inline int anna_member_is_internal(anna_member_t *member)
     return !!(member->storage & ANNA_MEMBER_INTERNAL);
 }
 
+static inline int anna_member_is_imutable(anna_member_t *member)
+{
+    return !!(member->storage & ANNA_MEMBER_IMUTABLE);
+}
+
 static inline void anna_member_set_internal(anna_member_t *member, int value)
 {
     if(value)

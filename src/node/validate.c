@@ -176,6 +176,12 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.", 
 		    templ->name, param->name);
 	    }
+
+	    if(anna_member_is_imutable(memb))
+	    {
+		anna_error(this, L"Member %ls is imutable", anna_mid_get_reverse(c->mid));
+		break;		
+	    }
 	    
 	    if(anna_member_is_property(memb) && memb->setter_offset == -1)
 	    {

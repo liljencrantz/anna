@@ -1019,9 +1019,9 @@ static anna_type_t *anna_hash_iterator_create(
     
     anna_type_t *iter = anna_type_create(L"Iterator", 0);
     anna_member_create(
-	iter, ANNA_MID_COLLECTION, 0, type);    
+	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, type);    
     anna_member_create(
-	iter, ANNA_MID_KEY, 0, spec1);    
+	iter, ANNA_MID_KEY, ANNA_MEMBER_IMUTABLE, spec1);
 
     anna_member_create_native_property(
 	iter, ANNA_MID_VALUE, spec2,
@@ -1029,9 +1029,9 @@ static anna_type_t *anna_hash_iterator_create(
 	&anna_hash_iterator_set_value, 0);
     
     anna_member_create(
-	iter, ANNA_MID_VERSION_ID, 0, int_type);    
+	iter, ANNA_MID_VERSION_ID, ANNA_MEMBER_IMUTABLE, int_type);    
     anna_member_create(
-	iter, ANNA_MID_OFFSET, 0, int_type);    
+	iter, ANNA_MID_OFFSET, ANNA_MEMBER_IMUTABLE | ANNA_MEMBER_INTERNAL, int_type);    
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(

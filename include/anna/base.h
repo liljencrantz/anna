@@ -80,7 +80,7 @@ typedef int mid_t;
 /**
    If set, this member is read only
 */
-#define ANNA_MEMBER_CONST 32
+#define ANNA_MEMBER_IMUTABLE 32
 
 /**
    Size of the statically allocated chunk of memory used for
