@@ -937,13 +937,11 @@ static void anna_hash_iterator_update(anna_object_t *iter)
     if(current_idx == -1)
     {
 	anna_entry_set(iter, ANNA_MID_KEY, null_entry);
-	anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
 	anna_entry_set(iter, ANNA_MID_OFFSET, anna_from_int(current_idx));
     }
     else
     {
 	anna_entry_set(iter, ANNA_MID_KEY, hash->table[current_idx].key);
-	anna_entry_set(iter, ANNA_MID_VALUE, hash->table[current_idx].value);
 	anna_entry_set(iter, ANNA_MID_OFFSET, anna_from_int(current_idx+1));
     }
 }
@@ -970,6 +968,40 @@ ANNA_VM_NATIVE(anna_hash_iterator_next, 1)
     return param[0];
 }
 
+ANNA_VM_NATIVE(anna_hash_iterator_get_value, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *hash_obj = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    anna_hash_t *hash = ahi_unwrap(hash_obj);
+    int current_idx = anna_as_int(anna_entry_get(iter, ANNA_MID_OFFSET))-1;
+    
+    if(current_idx == -1)
+    {
+	return null_entry;
+    }
+    else
+    {
+	return hash->table[current_idx].value;
+    }
+}
+
+ANNA_VM_NATIVE(anna_hash_iterator_set_value, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *hash_obj = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    anna_hash_t *hash = ahi_unwrap(hash_obj);
+    int current_idx = anna_as_int(anna_entry_get(iter, ANNA_MID_OFFSET))-1;
+    
+    if(current_idx != -1)
+    {
+	hash->table[current_idx].value = param[1];
+    }
+
+    return param[1];
+}
+
 ANNA_VM_NATIVE(anna_hash_iterator_valid, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
@@ -990,8 +1022,12 @@ static anna_type_t *anna_hash_iterator_create(
 	iter, ANNA_MID_COLLECTION, 0, type);    
     anna_member_create(
 	iter, ANNA_MID_KEY, 0, spec1);    
-    anna_member_create(
-	iter, ANNA_MID_VALUE, 0, spec2);    
+
+    anna_member_create_native_property(
+	iter, ANNA_MID_VALUE, spec2,
+	&anna_hash_iterator_get_value,
+	&anna_hash_iterator_set_value, 0);
+    
     anna_member_create(
 	iter, ANNA_MID_VERSION_ID, 0, int_type);    
     anna_member_create(

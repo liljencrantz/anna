@@ -752,7 +752,6 @@ static anna_type_t *anna_list_iterator_create(
 	}
     ;
     
-
     anna_member_create_native_method(
 	iter,
 	ANNA_MID_NEXT_ASSIGN, 0,
