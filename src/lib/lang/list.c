@@ -681,13 +681,23 @@ ANNA_VM_NATIVE(anna_list_i_join, 2)
     
 }
 
-ANNA_VM_NATIVE(anna_list_iterator_value, 1)
+ANNA_VM_NATIVE(anna_list_iterator_get_value, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
     anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
     return anna_list_get(list, offset);
+}
+
+ANNA_VM_NATIVE(anna_list_iterator_set_value, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *list = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    int offset = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+    anna_list_set(list, offset, param[1]);
+    return param[1];
 }
 
 ANNA_VM_NATIVE(anna_list_iterator_valid, 1)
@@ -705,6 +715,52 @@ ANNA_VM_NATIVE(anna_list_iterator_next, 1)
     anna_object_t *iter = anna_as_obj(param[0]);
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(1+anna_as_int(anna_entry_get(iter, ANNA_MID_KEY))));
     return param[0];
+}
+
+static anna_type_t *anna_list_iterator_create(
+    anna_type_t *type,
+    anna_type_t *spec,
+    int mutable)
+{
+    anna_type_t *iter = anna_type_create(L"Iterator", 0);
+
+    anna_member_create(
+	iter, ANNA_MID_COLLECTION, 0, type);
+    anna_member_create(
+	iter, ANNA_MID_KEY, 0, int_type);    
+    anna_type_copy_object(iter);
+
+    anna_member_create_native_property(
+	iter, ANNA_MID_VALUE, spec,
+	&anna_list_iterator_get_value,
+	mutable ? &anna_list_iterator_set_value:0, 0);
+
+    anna_member_create_native_property(
+	iter, ANNA_MID_VALID, object_type,
+	&anna_list_iterator_valid,
+	0, 0);
+    
+    anna_type_t *iter_argv[] = 
+	{
+	    iter
+	}
+    ;
+    
+    wchar_t *iter_argn[] = 
+	{
+	    L"this"
+	}
+    ;
+    
+
+    anna_member_create_native_method(
+	iter,
+	ANNA_MID_NEXT_ASSIGN, 0,
+	&anna_list_iterator_next, iter, 1,
+	iter_argv, iter_argn, 0, 0);
+    
+    anna_type_close(iter);
+    return iter;
 }
 
 static void anna_list_type_create_internal(
@@ -756,39 +812,15 @@ static void anna_list_type_create_internal(
 	ANNA_MEMBER_STATIC,
 	type_type);
 
-    anna_type_t *iter = anna_type_create(L"Iterator", 0);
+    anna_type_t *iter = anna_list_iterator_create(
+	type,
+	spec,
+	mutable);
+    
     anna_entry_set_static(
 	 type, ANNA_MID_ITERATOR_TYPE,
 	 anna_from_obj(anna_type_wrap(iter)));
 
-    anna_member_create(
-	iter, ANNA_MID_COLLECTION, 0, type);
-    anna_member_create(
-	iter, ANNA_MID_KEY, 0, int_type);    
-    anna_type_copy_object(iter);
-
-    anna_member_create_native_property(
-	iter, ANNA_MID_VALUE, spec,
-	&anna_list_iterator_value,
-	0, 0);
-
-    anna_member_create_native_property(
-	iter, ANNA_MID_VALID, object_type,
-	&anna_list_iterator_valid,
-	0, 0);
-    
-    anna_type_t *iter_argv[] = 
-	{
-	    iter
-	}
-    ;
-    
-    anna_member_create_native_method(
-	iter,
-	ANNA_MID_NEXT_ASSIGN, 0,
-	&anna_list_iterator_next, iter, 1,
-	iter_argv, a_argn, 0, 0);
-    
     anna_member_create(
 	type, ANNA_MID_LIST_PAYLOAD, 0, null_type);
 
@@ -1037,7 +1069,6 @@ static void anna_list_type_create_internal(
 	L"A mutable copy of this List, or the List itself if it is already mutable.");
 
     anna_type_close(type);
-    anna_type_close(iter);
     
 }
 

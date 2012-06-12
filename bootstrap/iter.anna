@@ -333,6 +333,86 @@ macro map(node)
     return res;
 }
 
+macro milter(node)
+(
+    doc("Create a new collection from an old collection by applying a transformation function once to every element in the old collection and removing null return values. This is identical to calling the map macro and then removing any null-elements.",
+"<pre class='anna-code'>
+\"ABCabc123\".milter(ch){!ch.upper? and ch+1}
+// Returns [b, c, d, 2, 3, 4]
+</pre>",
+"<code>milter</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
+)
+)
+{
+    node = mangleIterator(node);
+    
+    if( (node.count != 1) or !(node.function as Call))
+    {
+	node.expand? = ?;
+	return node;
+    }
+    
+    coll := (node.function as Call)[0];
+    
+    iterFun := node[0] as Call;
+    res := ? as Node;
+
+    if((iterFun.function as Identifier).name == "__def__")
+    {
+        body := iterFun[4].copy() as Call;
+        decl := iterFun[2] as Call;
+	body.function = ast(nothing);
+
+	res = ast(
+	    nothing(
+		%iter := %coll.iterator,
+		%res := «__staticReturnTypeOf__(%iterFun)»[];
+		while(%iter.valid?)
+		{
+		    %keyVar := %iter.key as %keyType;
+		    %valueVar := %iter.value as %valueType;
+		    %iter++;
+		    (%it := %body) and %res.push(%it);
+		},
+		%res;
+		);
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(body), body)
+	    .replace(ast(keyVar), (decl[0] as Call)[0])
+	    .replace(ast(valueVar), (decl[1] as Call)[0])
+	    .replace(ast(keyType), (decl[0] as Call)[1])
+	    .replace(ast(valueType), (decl[1] as Call)[1])
+	    .replace(ast(iterFun), iterFun)
+	    .replace(ast(it), Identifier(?, parser.identifier("item")))
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+    }
+    else
+    {
+	res = ast(
+	    nothing(
+		%iter := %coll.iterator,
+		%iterFunVar := %iterFun;
+		%res := «__staticReturnTypeOf__(%iterFunVar)»[];
+		while(%iter.valid?)
+		{
+		    (%it := %iterFunVar(%iter.key, %iter.value)) and %res.push(%it);
+		    %iter++;
+		},
+		%res;
+		);
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(iterFun), node[0])
+	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
+	    .replace(ast(it), Identifier(?, parser.identifier("item")))
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+    }
+    return res;
+}
+
 macro find(node)
 (
     doc("Find an element in a collection that matches a speciefic criteria.",
@@ -406,6 +486,88 @@ macro find(node)
 	    .replace(ast(fun), node[0])
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")))
+	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+    }
+    return res;
+}
+
+macro update(node)
+(
+    doc("Update the values of a collection in place by applying a
+transformation function once to every element in the old
+collection. <code class='anna-code'>update</code> can only be used on
+collections that provide read-write iterators.",
+"<pre class='anna-code'>
+\"abc123\".update(ch){ch+1}
+// Returns \"bcd234\"
+</pre>",
+"<code>update</code> accepts iterator functions in the same way that <a
+href='#each'>each</a> does"
+)
+)
+{
+    node = mangleIterator(node);
+    
+    if( (node.count != 1) or !(node.function as Call))
+    {
+	node.expand? = ?;
+	return node;
+    }
+    
+    coll := (node.function as Call)[0];
+    
+    iterFun := node[0] as Call;
+    res := ? as Node;
+
+    if((iterFun.function as Identifier).name == "__def__")
+    {
+        body := iterFun[4].copy() as Call;
+        decl := iterFun[2] as Call;
+	body.function = ast(nothing);
+
+	res = ast(
+	    nothing(
+		%res := %coll;
+		%iter := %res.iterator,
+		while(%iter.valid?)
+		{
+		    %keyVar := %iter.key as %keyType;
+		    %valueVar := %iter.value as %valueType;
+		    %iter.value = %body;
+		    %iter++;
+		},
+		%res;
+		);
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(body), body)
+	    .replace(ast(keyVar), (decl[0] as Call)[0])
+	    .replace(ast(valueVar), (decl[1] as Call)[0])
+	    .replace(ast(keyType), (decl[0] as Call)[1])
+	    .replace(ast(valueType), (decl[1] as Call)[1])
+	    .replace(ast(iterFun), iterFun)
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+    }
+    else
+    {
+	res = ast(
+	    nothing(
+		%res := %coll;
+		%iter := %res;
+		%iterFunVar := %iterFun;
+		while(%iter.valid?)
+		{
+		    %iter.value = %iterFunVar(%iter.key, %iter.value);
+		    %iter++;
+		},
+		%res;
+		);
+	    )
+	    .replace(ast(coll), coll)
+	    .replace(ast(iterFun), node[0])
+	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     return res;
