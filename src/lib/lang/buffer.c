@@ -251,6 +251,25 @@ ANNA_VM_NATIVE(anna_buffer_decode, 2)
     return anna_from_obj(this);
 }
 
+ANNA_VM_NATIVE(anna_buffer_to_string, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *buffer = anna_as_obj(param[0]);
+    anna_object_t *res = anna_string_create(0, L"");
+    size_t sz =  anna_buffer_get_count(buffer);
+    unsigned char *ptr = anna_buffer_get_payload(buffer);
+    size_t i;
+    wchar_t *hex = L"0123456789abcdef";
+    
+    for(i=0; i<sz; i++)
+    {
+	char ch = ptr[i];
+	anna_string_append_cstring(res, 1, &hex[ch /16]);
+	anna_string_append_cstring(res, 1, &hex[ch % 16]);
+    }
+    return anna_from_obj(res);
+}
+
 static void anna_buffer_iterator_update(anna_object_t *iter, int off)
 {
     anna_object_t *buffer = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
@@ -287,6 +306,41 @@ ANNA_VM_NATIVE(anna_buffer_iterator_next, 1)
     return param[0];
 }
 
+ANNA_VM_NATIVE(anna_buffer_iterator_get_value, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *buffer = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    int off = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+    
+    if((off >= 0) && (off < anna_buffer_get_count(buffer)))
+    {
+	unsigned char *ptr = anna_buffer_get_payload(buffer);
+	return anna_from_int(ptr[off]);
+    }
+    else
+    {
+	return null_entry;
+    }
+}
+
+ANNA_VM_NATIVE(anna_buffer_iterator_set_value, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *buffer = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    int off = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+
+    if((off >= 0) && (off < anna_buffer_get_count(buffer)))
+    {
+	unsigned char *ptr = anna_buffer_get_payload(buffer);
+	ptr[off] = anna_as_int(param[1]);
+    }
+    return param[1];
+}
+
 static anna_type_t *anna_buffer_iterator_create(
     anna_type_t *type)
 {
@@ -295,8 +349,13 @@ static anna_type_t *anna_buffer_iterator_create(
 	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, type);    
     anna_member_create(
 	iter, ANNA_MID_KEY, ANNA_MEMBER_IMUTABLE, int_type);
-    anna_member_create(
-	iter, ANNA_MID_VALUE, ANNA_MEMBER_IMUTABLE, int_type);
+
+    anna_member_create_native_property(
+	iter, ANNA_MID_VALUE, int_type,
+	&anna_buffer_iterator_get_value,
+	&anna_buffer_iterator_set_value,
+	0);
+    
     anna_member_create(
 	iter, ANNA_MID_VALID, ANNA_MEMBER_IMUTABLE, object_type);
     anna_type_copy_object(iter);
@@ -483,6 +542,11 @@ void anna_buffer_type_create()
 	type, anna_mid_get(L"decode"), 0,
 	&anna_buffer_decode, type, 2,
 	d_argv, d_argn, 0, L"Decode the String into a byte array using the default encoding of the locale.");
+
+    anna_member_create_native_method(
+	type, ANNA_MID_TO_STRING, 0,
+	&anna_buffer_to_string, string_type, 1,
+	i_argv, i_argn, 0, L"Returns a hexadecimal string representation of the contents of this buffer.");    
     
 }
 
