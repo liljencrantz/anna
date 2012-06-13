@@ -728,15 +728,6 @@ ANNA_VM_NATIVE(anna_string_hash_i, 1)
 static void anna_string_iterator_update(anna_object_t *iter, int off)
 {
     anna_object_t *string = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
-    
-    if((off >= 0) && (off < anna_string_get_count(string)))
-    {
-	anna_entry_set(iter, ANNA_MID_VALUE, anna_from_char(asi_get_char(as_unwrap(string), off)));
-    }
-    else
-    {
-	anna_entry_set(iter, ANNA_MID_VALUE, null_entry);
-    }
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(off));
 }
 
@@ -769,23 +760,57 @@ ANNA_VM_NATIVE(anna_string_iterator_valid, 1)
 }
 
 
+ANNA_VM_NATIVE(anna_string_iterator_get_value, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *string = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    int off = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+
+    if((off >= 0) && (off < anna_string_get_count(string)))
+    {
+	return anna_from_char(asi_get_char(as_unwrap(string), off));
+    }
+    else
+    {
+	return null_entry;
+    }
+}
+
+ANNA_VM_NATIVE(anna_string_iterator_set_value, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+
+    anna_object_t *iter = anna_as_obj(param[0]);
+    anna_object_t *string = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    int off = anna_as_int(anna_entry_get(iter, ANNA_MID_KEY));
+
+    asi_set_char(as_unwrap(string), off, anna_as_char(param[1]));
+    return param[1];
+}
 
 static anna_type_t *anna_string_iterator_create(
-    anna_type_t *type)
+    anna_type_t *type,
+    int mutable)
 {
     anna_type_t *iter = anna_type_create(L"Iterator", 0);
     anna_member_create(
 	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, type);
     anna_member_create(
 	iter, ANNA_MID_KEY, ANNA_MEMBER_IMUTABLE, int_type);
-    anna_member_create(
-	iter, ANNA_MID_VALUE, ANNA_MEMBER_IMUTABLE, char_type);
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(
 	iter, ANNA_MID_VALID, object_type,
 	&anna_string_iterator_valid,
 	0, 0);
+    
+    anna_member_create_native_property(
+	iter, ANNA_MID_VALUE, char_type,
+	&anna_string_iterator_get_value,
+	mutable ? &anna_string_iterator_set_value : 0,
+	0);
     
     anna_type_t *iter_argv[] = 
 	{
@@ -815,7 +840,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 {
     mid_t mmid;
     anna_function_t *fun;
-
+    
     anna_member_create_blob(
 	type, ANNA_MID_STRING_PAYLOAD, 0,
 	sizeof(anna_string_t));
@@ -825,7 +850,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	ANNA_MID_ITERATOR_TYPE,
 	ANNA_MEMBER_STATIC,
 	type_type);
-    anna_type_t *iter = anna_string_iterator_create(type);
+    anna_type_t *iter = anna_string_iterator_create(type, mutable);
     anna_entry_set_static(
 	type, ANNA_MID_ITERATOR_TYPE, 
 	anna_from_obj(anna_type_wrap(iter)));
