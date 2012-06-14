@@ -204,6 +204,8 @@ enum anna_mid_enum
     ANNA_MID_SET_RANGE,
     ANNA_MID_JOIN_OP,
 
+    ANNA_MID_REVERSE,
+
     ANNA_MID_FIRST_UNRESERVED,
 };
 

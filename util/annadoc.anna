@@ -279,7 +279,14 @@ often used code paths, which makes it useful for regression testing.")
 			"variadic": variadicStr,
 			];
 		});
-	    "def % <em>%</em> (%)" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
+	    if(fun.macro?)
+	    {
+		"macro % <em>%</em> (%)" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
+	    }
+	    else
+	    {
+		"def % <em>%</em> (%)" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
+	    }
 	} else {
 	    "var % <em>%</em>" % [getLink(mem.memberOf, mem.type), mem.name];
 	}) ~ getAttribute(mem) ~ ";"

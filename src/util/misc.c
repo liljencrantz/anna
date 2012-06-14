@@ -55,3 +55,15 @@ void anna_util_noop(anna_context_t *context)
     anna_context_drop(context, 2);
     anna_context_push_object(context, this);
 }
+
+ANNA_VM_NATIVE(anna_util_self, 1)
+{
+    return param[0];
+}
+
+void anna_util_iterator_iterator(anna_type_t *iter)
+{
+    anna_member_create_native_property(
+	iter, ANNA_MID_ITERATOR, iter,
+	&anna_util_self, 0, 0);
+}

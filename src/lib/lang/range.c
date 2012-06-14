@@ -426,6 +426,7 @@ void anna_range_type_create()
     anna_member_create(
 	iter, ANNA_MID_VALID, 0, object_type);
     anna_type_copy_object(iter);
+    anna_util_iterator_iterator(iter);        
     
     anna_type_t *iter_argv[] = 
 	{

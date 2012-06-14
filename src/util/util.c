@@ -35,6 +35,7 @@
 #include "anna/node_create.h"
 #include "anna/stack.h"
 #include "anna/use.h"
+#include "anna/member.h"
 
 #include "intern.c"
 #include "tt.c"

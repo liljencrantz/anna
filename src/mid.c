@@ -136,6 +136,8 @@ void anna_mid_init()
 	    L"set",
 	    L"setRange",
 	    L"__join__",
+
+	    L"reverse",
 	};
     
     int i;

@@ -26,4 +26,6 @@ int anna_hash(int *data, size_t count);
  */
 void anna_util_noop(anna_context_t *stack);
 
+void anna_util_iterator_iterator(anna_type_t *iter);
+
 #endif

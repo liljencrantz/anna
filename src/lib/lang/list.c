@@ -223,7 +223,7 @@ ANNA_VM_NATIVE(anna_list_get_count_method, 1)
     return anna_from_int(anna_list_get_count(anna_as_obj(param[0])));
 }
 
-ANNA_VM_NATIVE(anna_list_get_iterator_method, 1)
+ANNA_VM_NATIVE(anna_list_get_iterator, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *list = anna_as_obj(param[0]);
@@ -231,6 +231,19 @@ ANNA_VM_NATIVE(anna_list_get_iterator_method, 1)
 	anna_type_unwrap((anna_object_t *)anna_entry_get_static(list->type,ANNA_MID_ITERATOR_TYPE)));
     *anna_entry_get_addr(iter, ANNA_MID_COLLECTION) = param[0];
     *anna_entry_get_addr(iter, ANNA_MID_KEY) = anna_from_int(0);    
+    *anna_entry_get_addr(iter, ANNA_MID_STEP) = anna_from_int(1);    
+    return anna_from_obj(iter);
+}
+
+ANNA_VM_NATIVE(anna_list_get_iterator_reverse, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    anna_object_t *list = anna_as_obj(param[0]);
+    anna_object_t *iter = anna_object_create(
+	anna_type_unwrap((anna_object_t *)anna_entry_get_static(list->type,ANNA_MID_ITERATOR_TYPE)));
+    *anna_entry_get_addr(iter, ANNA_MID_COLLECTION) = param[0];
+    *anna_entry_get_addr(iter, ANNA_MID_KEY) = anna_from_int(anna_list_get_count(list)-1);
+    *anna_entry_get_addr(iter, ANNA_MID_STEP) = anna_from_int(-1);
     return anna_from_obj(iter);
 }
 
@@ -713,7 +726,7 @@ ANNA_VM_NATIVE(anna_list_iterator_next, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_as_obj(param[0]);
-    anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(1+anna_as_int(anna_entry_get(iter, ANNA_MID_KEY))));
+    anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(anna_as_int(anna_entry_get(iter, ANNA_MID_STEP))+anna_as_int(anna_entry_get(iter, ANNA_MID_KEY))));
     return param[0];
 }
 
@@ -728,6 +741,8 @@ static anna_type_t *anna_list_iterator_create(
 	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, type);
     anna_member_create(
 	iter, ANNA_MID_KEY, ANNA_MEMBER_IMUTABLE, int_type);    
+    anna_member_create(
+	iter, ANNA_MID_STEP, ANNA_MEMBER_IMUTABLE, int_type);
     anna_type_copy_object(iter);
 
     anna_member_create_native_property(
@@ -757,7 +772,9 @@ static anna_type_t *anna_list_iterator_create(
 	ANNA_MID_NEXT_ASSIGN, 0,
 	&anna_list_iterator_next, iter, 1,
 	iter_argv, iter_argn, 0, 0);
-    
+
+    anna_util_iterator_iterator(iter);
+        
     anna_type_close(iter);
     return iter;
 }
@@ -879,8 +896,13 @@ static void anna_list_type_create_internal(
 
     anna_member_create_native_property(
 	type, ANNA_MID_ITERATOR, iter,
-	&anna_list_get_iterator_method, 0,
+	&anna_list_get_iterator, 0,
 	L"Returns an Iterator for this collection.");
+
+    anna_member_create_native_property(
+	type, ANNA_MID_REVERSE, iter,
+	&anna_list_get_iterator_reverse, 0,
+	L"Returns an Iterator for this collection that will iterate over the element from the end of the list and forward.");
 
     anna_member_create_native_property(
 	type, ANNA_MID_EMPTY, int_type,

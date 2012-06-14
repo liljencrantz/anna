@@ -830,6 +830,8 @@ static anna_type_t *anna_string_iterator_create(
 	&anna_string_iterator_next, iter, 1,
 	iter_argv, iter_argn, 0, 0);
 
+    anna_util_iterator_iterator(iter);
+        
     anna_type_close(iter);
     
     return iter;
