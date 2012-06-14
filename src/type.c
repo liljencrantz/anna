@@ -1061,7 +1061,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     anna_object_t *constructor_obj = anna_as_obj_fast(
 	anna_entry_get_static(
 	    type,
-	    ANNA_MID_INIT_PAYLOAD));
+	    ANNA_MID_INIT));
     anna_function_t *constr = anna_function_unwrap(constructor_obj);
 
     if(call->child_count > constr->input_count)

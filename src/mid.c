@@ -138,6 +138,17 @@ void anna_mid_init()
 	    L"__join__",
 
 	    L"reverse",
+	    L"push",
+	    L"pop",
+	    L"clear",
+	    L"__in__",
+	    L"first",
+	    L"last",
+	    L"freeze",
+	    L"thaw",
+	    L"__get__",
+
+	    L"__set__",
 	};
     
     int i;

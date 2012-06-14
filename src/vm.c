@@ -508,7 +508,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	
 	anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 	    tp,
-	    ANNA_MID_INIT_PAYLOAD);
+	    ANNA_MID_INIT);
 	anna_context_push_object(context, anna_as_obj_fast(*constructor_ptr));
 	anna_context_push_object(context, result);
 	context->frame->code += sizeof(*op);

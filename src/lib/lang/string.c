@@ -902,7 +902,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     ;
     
     anna_member_create_native_method(
-	type, anna_mid_get(L"__init__"),
+	type, ANNA_MID_INIT,
 	0, &anna_util_noop, type, 1,
 	o_argv, o_argn, 0, 0);
     
@@ -910,13 +910,13 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	type, anna_string_del);
     
     anna_member_create_native_method(
-	type, anna_mid_get(L"__cmp__"),
+	type, ANNA_MID_CMP,
 	0, &anna_string_cmp_i, int_type, 2,
 	c_argv, c_argn, 0, 0);
     
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"get"), 0,
+	ANNA_MID_GET, 0,
 	&anna_string_i_get_int,
 	char_type,
 	2, i_argv, i_argn, 0, 0);
@@ -995,7 +995,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     ;
 */
     anna_member_create_native_property(
-	type, anna_mid_get(L"count"),
+	type, ANNA_MID_COUNT,
 	int_type, &anna_string_i_get_count,
 	mutable?&anna_string_i_set_count:0,
 	L"The number of characters in this String.");
@@ -1016,7 +1016,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     mmid = anna_member_create_native_method(
 	type,
-	anna_mid_get(L"getRange"),
+	ANNA_MID_GET_RANGE,
 	0,
 	&anna_string_i_get_range,
 	type,
@@ -1061,7 +1061,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     {
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"set"), 0,
+	    ANNA_MID_SET, 0,
 	    &anna_string_i_set_int,
 	    char_type,
 	    3,
@@ -1072,7 +1072,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"setRange"),
+	    ANNA_MID_SET_RANGE,
 	    0,
 	    &anna_string_i_set_range,
 	    type,
@@ -1096,12 +1096,12 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     }
     
     anna_member_create_native_property(
-	type, anna_mid_get(L"freeze"),
+	type, ANNA_MID_FREEZE,
 	imutable_string_type, mutable ? &anna_string_i_copy : &anna_util_noop,
 	0,
     	L"An imutable copy of this String, or the String itself if it is already imutable.");
     anna_member_create_native_property(
-	type, anna_mid_get(L"thaw"),
+	type, ANNA_MID_THAW,
 	mutable_string_type, mutable ? &anna_util_noop : &anna_mutable_string_i_copy,
 	0,
 	L"A mutable copy of this String, or the String itself if it is already mutable.");

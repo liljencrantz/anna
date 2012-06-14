@@ -860,7 +860,7 @@ static void anna_list_type_create_internal(
     (*(anna_type_t **)anna_entry_get_addr_static(type,ANNA_MID_LIST_SPECIALIZATION)) = spec;
     
     anna_member_create_native_method(
-	type, ANNA_MID_INIT_PAYLOAD,
+	type, ANNA_MID_INIT,
 	ANNA_FUNCTION_VARIADIC, &anna_list_init,
 	type, 2, a_argv, a_argn, 0, 0);
     
@@ -940,14 +940,14 @@ static void anna_list_type_create_internal(
 
     anna_member_create_native_property(
 	type,
-	anna_mid_get(L"first"),
+	ANNA_MID_FIRST,
 	spec,
 	&anna_list_get_first, 0,
 	L"The first element of this list.");
 
     anna_member_create_native_property(
 	type,
-	anna_mid_get(L"last"),
+	ANNA_MID_LAST,
 	spec,
 	&anna_list_get_last,
 	0,
@@ -960,7 +960,7 @@ static void anna_list_type_create_internal(
 
     anna_member_create_native_method(
 	type,
-	anna_mid_get(L"__in__"),
+	ANNA_MID_IN,
 	0,
 	&anna_list_in,
 	int_type,
@@ -1003,7 +1003,7 @@ static void anna_list_type_create_internal(
 	anna_member_alias(type, ANNA_MID_SET, L"__set__");
 
 	anna_member_create_native_method(
-	    type, anna_mid_get(L"push"),
+	    type, ANNA_MID_PUSH,
 	    ANNA_FUNCTION_VARIADIC, &anna_list_append,
 	    type,
 	    2,
@@ -1013,12 +1013,12 @@ static void anna_list_type_create_internal(
 	
 	mmid = anna_member_create_native_method(
 	    type,
-	    anna_mid_get(L"clear"), 0,
+	    ANNA_MID_CLEAR, 0,
 	    &anna_list_clear, type, 1,
 	    i_argv, i_argn, 0, L"Clear the List, removing all entries from it. The result is an empty List.");
 
 	anna_member_create_native_method(
-	    type, anna_mid_get(L"pop"), 0,
+	    type, ANNA_MID_POP, 0,
 	    &anna_list_pop, spec, 1, a_argv, a_argn, 0, 
 	    L"Removes the last element from the list and returns it. Returns null if the list is already empty.");
 	
@@ -1079,13 +1079,13 @@ static void anna_list_type_create_internal(
     }
 
     anna_member_create_native_property(
-	type, anna_mid_get(L"freeze"),
+	type, ANNA_MID_FREEZE,
 	imutable_type, mutable ? &anna_list_i_copy_imutable : &anna_util_noop,
 	0,
 	L"An imutable copy of this List, or the List itself if it is already imutable.");
     
     anna_member_create_native_property(
-	type, anna_mid_get(L"thaw"),
+	type, ANNA_MID_THAW,
 	mutable_type, mutable ? &anna_util_noop : &anna_list_i_copy_mutable, 0,
 	L"A mutable copy of this List, or the List itself if it is already mutable.");
 

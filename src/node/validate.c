@@ -33,7 +33,7 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 		
 	anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 	    tn->payload,
-	    ANNA_MID_INIT_PAYLOAD);
+	    ANNA_MID_INIT);
 	assert(constructor_ptr);
 	ftk = anna_function_type_unwrap(
 	    anna_as_obj(*constructor_ptr)->type);

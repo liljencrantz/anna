@@ -552,7 +552,7 @@ static void anna_vm_compile_i(
 		
 		anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
 		    tn->payload,
-		    ANNA_MID_INIT_PAYLOAD);
+		    ANNA_MID_INIT);
 		assert(constructor_ptr);
 		template = anna_function_type_unwrap(
 		    anna_as_obj(*constructor_ptr)->type);

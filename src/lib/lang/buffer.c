@@ -445,7 +445,7 @@ void anna_buffer_type_create()
     ;
 
     anna_member_create_native_method(
-	type, ANNA_MID_INIT_PAYLOAD,
+	type, ANNA_MID_INIT,
 	0, &anna_buffer_init,
 	type, 1, a_argv, a_argn, 0, 0);
     

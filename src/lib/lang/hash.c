@@ -1110,19 +1110,19 @@ static void anna_hash_type_create_internal(
     ;
 
     anna_member_create_native_method(
-	type, anna_mid_get(L"__set__"), 
+	type, ANNA_MID_SET_OP, 
 	0, &anna_hash_set, spec2, 
 	3, kv_argv, kv_argn, 0,
 	L"Assigns the specified value to the specified key.");
 
     anna_member_create_native_method(
-	type, anna_mid_get(L"clear"), 
+	type, ANNA_MID_CLEAR, 
 	0, &anna_hash_clear, type, 
 	1, kv_argv, kv_argn, 0,
 	L"Clear the HashMap, removing all mappings from it. The result is an empty HashMap.");
 
     anna_member_create_native_method(
-	type, anna_mid_get(L"__get__"),
+	type, ANNA_MID_GET_OP,
 	0, &anna_hash_get,
 	spec2, 2, kv_argv, kv_argn, 0,
 	L"Returns the value associated with the specified key.");
@@ -1141,7 +1141,7 @@ static void anna_hash_type_create_internal(
     ;
     
     anna_member_create_native_method(
-	type, anna_mid_get(L"__init__"),
+	type, ANNA_MID_INIT,
 	ANNA_FUNCTION_VARIADIC, &anna_hash_init,
 	type, 2, i_argv, i_argn, 0, 0);
 
@@ -1169,7 +1169,7 @@ static void anna_hash_type_create_internal(
 	type, anna_hash_del);
 
     anna_member_create_native_method(
-	type, anna_mid_get(L"__in__"), 0,
+	type, ANNA_MID_IN, 0,
 	&anna_hash_in, spec1, 2, kv_argv,
 	kv_argn, 0, 
 	L"Returns true if the specified key exists in the Hash");
