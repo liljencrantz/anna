@@ -1,8 +1,15 @@
 1.0 RELEASE CRITERIA:
-* Buffer::Iterator.value writable
-* Call::Iterator.value writable
+* Iterator.iterator
+* List.reverse
+* List::convert(Iterator iter)
+* List.iterator--
+* List.iterator += x;
+* List.iterator -= x;
+* Type::Iterator
+* Continuation/Function::Iterator
+* struct Iterator
 * Bindings
-  - ctime should be generated through the bindings
+  - ctime should be generated through the binding generator
 * anna-game as a proof that the language works for solving reasonably complex problems
 * Documentation:
   - Split base documentation into multiple files
@@ -61,8 +68,8 @@
 * Don't differentiate between macros and functions anymore. How a function/macro should be invoked only depends on how it is imported, so there really is no point in differentiating between them. 
 * More validation:
   - If explicit function return type exists, return type of return expressions aren't abides checked against it
-  - Can't assign to constants
-  - Only static members can be accessed statically
+  - Can't assign to constants 
+ - Only static members can be accessed statically
   - Check argument types to function calls better...
 * Introductory segment in the documentation
 * Working error handling
@@ -187,7 +194,7 @@ Range.milter
 Hash.milter
 List and Hash types should be made fail fast
 
-Partial application and saner function argument handling, e.g. it should be possible to write (0..5).map(Int::__add__, 4), which is equivalent to (0..5).map(val){4+val}
+Partial application and saner function argument handling, e.g. it should be possible to write (0..5).map(apply(Int::__add__, 4)), which is equivalent to (0..5).map(val){4+val}
 
 RELIABILITY:
 Use gcov to make sure the test/regression suite is reasonably close to complete (It's currently not even close)

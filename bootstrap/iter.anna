@@ -619,8 +619,8 @@ def Call mangleReduceIterator(Call node)
 
 macro reduce(node)
 (
-    doc("Reduce the specified collection into a single value by repeatedly using the supplied reduction function to combine the values of two items into a single net value.",
-        "The supplied function is called once for every element in the collection, with the first argument being the result of the previous computation (or the initial value if no previous computation has taken place), and the second argument being the ccurrent value. The output of the final reduction call is then returned.",
+    doc("Reduce the specified collection into a single value by repeatedly using the supplied reduction function to combine the values of two items into a single new value.",
+        "The supplied function is called once for every element in the collection, with the first argument being the result of the previous computation (or the initial value if no previous computation has taken place), and the second argument being the current value. The output of the final reduction call is then returned.",
 "<pre class='anna-code'>
  [1,2,3,4].reduce(0, prev, val){prev+val}
 // Sums the elements of the supplied collection. Returns 10.

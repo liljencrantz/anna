@@ -1,11 +1,10 @@
-attribute(internal, doc("Internal module for the macros related to uodating a variable in-place."));
+attribute(internal, doc("Internal module for the macros related to updating a variable in-place."));
 
 use(parser);
 
 def Node __update__(Call node)
 (
-    doc("
-*The common function used by __append__ and friends to implement in-place updating.")
+    doc("The common function used by __append__ and friends to implement in-place updating.")
 )
 {
     checkNodeType(node.function, Identifier);
