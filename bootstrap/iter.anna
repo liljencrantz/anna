@@ -11,6 +11,51 @@ all be used with any of the functions in this module.
 
 use(parser);
 
+macro __collection__(node)
+(
+    doc("
+Handle a collection literal and turn it into a call to either
+MutableList or HashMap. If the collection arguments are mappings, the
+collection becomes a HashMap. If there is a template specialization
+with two arguments, the collection becomes a HashMap. Otherwise, it
+becomes a MutableList.")
+)
+{
+    res := Call(node, ?);
+    spec := node[0] as Call;
+    if(
+	(!spec and node.count > 1 and 
+	    ((node[1] as Call).function as Identifier).name == "__mapping__") or 
+	spec.count == 2)
+    {
+	res.function = Dummy(node, HashMap);
+        i := node.iterator;
+	i++;
+	while(i.valid?)
+	{
+  	    childCall := i.value as Call;
+	    if(!((childCall.function as Identifier).name == "__mapping__"))
+	    {
+		childCall.error("Not a key/value pair");
+		return NullLiteral(node);
+	    }
+	    childCall.function = Dummy(childCall, Pair);
+	    i++;
+	}
+    }
+    else
+    {
+	res.function = Dummy(node, MutableList);
+    }
+    res ~= node[Range(1, ?, 1)];
+    
+    if(spec)
+    {
+	res.function = Call(node, Identifier(node[0], "__specialize__"), res.function, spec);
+    }
+    return res;
+}
+
 def block?(Node n) (internal, doc("Returns non-null if the specified node is a block"))
 {
     return (((n as Call).function as Identifier).name == "__block__") 

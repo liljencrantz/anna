@@ -1,6 +1,25 @@
-attribute(internal, doc("Internal module for the macros related to updating a variable in-place."));
+attribute(internal, doc("Internal module for the macros related to updating a variable in-place and paramater mappings."));
 
 use(parser);
+
+macro __mapping__(node)
+(
+    doc("
+Internal utility macro. Makes sure that identifiers in mapping are internal identifiers, not regular identifiers.")
+)
+{ 
+    a1 := if(node[0] as Identifier)
+    {
+	InternalIdentifier(node[0], (node[0] as Identifier).name);
+    }
+    else
+    {
+	node[0];
+    }
+
+    return Mapping(node, a1, node[1]);
+}
+
 
 def Node __update__(Call node)
 (

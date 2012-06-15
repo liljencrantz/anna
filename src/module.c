@@ -820,11 +820,9 @@ void anna_module_init(wchar_t *name)
 
     anna_module_bootstrap_macro(L"ast");
     anna_module_bootstrap_macro(L"macroUtil");
-    anna_module_bootstrap_macro(L"mapping");
     anna_module_bootstrap_macro(L"update");
     anna_module_bootstrap_macro(L"attributes");
     anna_module_bootstrap_macro(L"iter");
-    anna_module_bootstrap_macro(L"collectionMacro");
     anna_module_bootstrap_monkeypatch(stack_parser, L"monkeypatchNode");
     anna_module_bootstrap_monkeypatch(stack_global, L"monkeypatchLang");
     anna_module_bootstrap_macro(L"macroMisc");
