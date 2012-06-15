@@ -155,11 +155,11 @@ void anna_alloc_destroy_main_thread()
     anna_alloc_t *alloc = anna_alloc_data();
     if(al_get_count(&anna_alloc_alloc)>1)
     {
-	anna_alloc_t *other_thread_alloc = al_get(
+	anna_alloc_t *other_thread_alloc = al_get_fast(
 	    &anna_alloc_alloc,
 	    al_get_count(&anna_alloc_alloc)-1);
 	other_thread_alloc->idx = alloc->idx;
-	al_set(
+	al_set_fast(
 	    &anna_alloc_alloc, 
 	    alloc->idx, 
 	    other_thread_alloc);
@@ -192,11 +192,11 @@ void anna_alloc_destroy_thread()
     anna_alloc_t *alloc = anna_alloc_data();
     if(al_get_count(&anna_alloc_alloc)>1)
     {
-	anna_alloc_t *other_thread_alloc = al_get(
+	anna_alloc_t *other_thread_alloc = al_get_fast(
 	    &anna_alloc_alloc,
 	    al_get_count(&anna_alloc_alloc)-1);
 	other_thread_alloc->idx = alloc->idx;
-	al_set(
+	al_set_fast(
 	    &anna_alloc_alloc, 
 	    alloc->idx, 
 	    other_thread_alloc);
@@ -287,7 +287,7 @@ void anna_gc(anna_context_t *context)
     */
     for(i=0; i<al_get_count(&anna_alloc_alloc); i++)
     {
-	anna_alloc_t *alloc = (anna_alloc_t *)al_get(&anna_alloc_alloc, i);
+	anna_alloc_t *alloc = (anna_alloc_t *)al_get_fast(&anna_alloc_alloc, i);
 	if(alloc->sleep)
 	{
 //	    anna_message(L"Wake up thread %d!\n", alloc->idx);
@@ -379,7 +379,7 @@ static void anna_alloc_gc_start_work_thread()
     al_truncate(&anna_alloc_gc_context, 0);
     for(i=0; i<al_get_count(&anna_alloc_alloc); i++)
     {
-	anna_alloc_t *alloc = (anna_alloc_t *)al_get(&anna_alloc_alloc, i);
+	anna_alloc_t *alloc = (anna_alloc_t *)al_get_fast(&anna_alloc_alloc, i);
 //	anna_message(L"GC: Wake thread %d @ %d!\n", alloc->idx, alloc);
 	alloc->count = 0;
 	alloc->count_next_gc = GC_FREQ;
@@ -420,7 +420,7 @@ static void anna_alloc_gc_collect()
     assert(al_get_count(&anna_alloc_gc_context) == anna_alloc_work_count_tot);
     for(i=0; i<al_get_count(&anna_alloc_gc_context); i++)
     {
-	anna_context_t *context = al_get(&anna_alloc_gc_context, i);
+	anna_context_t *context = al_get_fast(&anna_alloc_gc_context, i);
 
 	anna_activation_frame_t *f = context->frame;
 	while(f)
@@ -445,7 +445,7 @@ static void anna_alloc_gc_collect()
     
     for(i=0; i<al_get_count(&anna_alloc_permanent); i++)
     {
-	anna_alloc_mark(al_get(&anna_alloc_permanent, i));
+	anna_alloc_mark(al_get_fast(&anna_alloc_permanent, i));
     }
 //    anna_message(L"Marked permanent stuff.\n");
 

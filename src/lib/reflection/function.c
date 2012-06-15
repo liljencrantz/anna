@@ -404,7 +404,7 @@ void anna_reflection_mark_static(void)
     int i;
     for(i=0; i<al_get_count(&anna_function_cloned); i++)
     {
-	anna_type_t *type = (anna_type_t *)al_get(&anna_function_cloned, i);
+	anna_type_t *type = (anna_type_t *)al_get_fast(&anna_function_cloned, i);
 	type->flags |= ANNA_USED;
 	if(type->wrapper)
 	{

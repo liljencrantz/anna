@@ -109,7 +109,7 @@ static void anna_method_search(
     array_list_t *memb_list = &type->member_list;
     for(i=0; i<al_get_count(memb_list); i++)
     {
-	anna_member_t *memb = al_get(memb_list, i);
+	anna_member_t *memb = al_get_fast(memb_list, i);
 	int is_candidate = !reverse && (wcscmp(memb->name, alias) == 0);
 
 	if(!is_candidate && memb->attribute)

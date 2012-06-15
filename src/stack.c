@@ -245,7 +245,7 @@ anna_entry_t *anna_stack_macro_get(
 	int i;
 	for(i=0; i<al_get_count(&stack->expand); i++)
 	{
-	    anna_use_t *use = al_get(&stack->expand, i);
+	    anna_use_t *use = al_get_fast(&stack->expand, i);
 	    anna_stack_template_t *exp = 
 		anna_stack_unwrap(
 		    anna_as_obj(anna_node_static_invoke_try(use->node, use->node->stack)));
