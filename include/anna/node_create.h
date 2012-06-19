@@ -41,6 +41,10 @@ anna_node_int_literal_t *anna_node_create_int_literal(
     anna_location_t *loc, 
     mpz_t val);
 
+anna_node_int_literal_t *anna_node_create_int_literal2(
+    anna_location_t *loc, 
+    int val);
+
 anna_node_float_literal_t *anna_node_create_float_literal(
     anna_location_t *loc,
     double val);

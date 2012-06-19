@@ -487,6 +487,11 @@ static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identi
 %token SPECIALIZATION_BEGIN2
 %token SPECIALIZATION_END2
 %token STATIC_MEMBER_GET
+%token RULE_BEGIN
+%token RULE_CHAR
+%token RULE_ESCAPED_CHAR
+%token RULE_CHAR_CLASS
+%token RULE_LITERAL
 
 %type <call_val> block opt_expression_list expression_list
 %type <call_val> module
@@ -503,7 +508,8 @@ static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identi
 %type <call_val> opt_block
 %type <call_val> specialization opt_specialization
 %type <call_val> opt_type_and_opt_name type_and_name
-%type <node_val> jump
+%type <call_val> rule_block opt_rule_list rule_list rule_sub_list
+%type <node_val> rule rule_item opt_rule_count jump
 
 %pure-parser
 
@@ -869,7 +875,129 @@ expression10:
 	block 
 	{
 	    $$ = (anna_node_t *)$1; 
+	} |
+	rule_block 
+	{
+	    $$ = (anna_node_t *)$1;
 	};
+
+rule_block:
+    RULE_BEGIN opt_rule_list '}'
+    {
+	$$ = $2;
+    }
+    ;
+
+opt_rule_list :
+	{
+	    $$ = anna_node_create_call2(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"rule"));
+	}
+	|
+	rule_list;
+
+
+rule_list:
+    rule
+    {
+	$$ = anna_node_create_call2(
+	    &@$,
+	    (anna_node_t *)anna_node_create_identifier(
+		&@$,
+		L"rule"),
+	    $1);
+    }
+    | rule_list rule
+    {
+	anna_node_call_add_child($1,$2);
+    };
+
+rule:
+	'{' opt_expression_list '}'
+	{
+	    $$ = (anna_node_t *)$2;	    
+	}
+	|
+	rule_item opt_rule_count
+	{
+	    $$ = (anna_node_t *)anna_node_create_call2( &@$, anna_node_create_identifier(&@$, L"rule"), $1, $2);
+	}
+;
+
+
+rule_item: 
+	RULE_CHAR_CLASS
+	{
+	    char *class_name = anna_lex_get_text(scanner);
+	    class_name += 2;
+	    class_name[strlen(class_name)-2] = 0;
+	    
+	    $$ = (anna_node_t *)anna_node_create_call2(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"characterClass"),
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    anna_yacc_string(class_name)));
+	}
+	|
+	'(' rule_sub_list ')'
+	{
+	    $$ = (anna_node_t *)$2;
+	}
+|
+RULE_CHAR
+{$$=0;}
+|
+RULE_ESCAPED_CHAR
+{$$=0;}
+;
+
+rule_sub_list:
+	rule
+	{
+	    $$ = anna_node_create_call2(
+		&@$,
+		(anna_node_t *)anna_node_create_identifier(
+		    &@$,
+		    L"capture"),
+		$1);
+	}
+	|
+	rule_sub_list '|' rule
+	{
+	    anna_node_call_add_child($1,$3);
+	}
+	;
+
+
+opt_rule_count:
+	{
+	    $$=(anna_node_t *)anna_node_create_block2( &@$, anna_node_create_int_literal2(&@$, 1), anna_node_create_int_literal2(&@$, 1));
+	}
+	|
+	'?'
+	{
+	    $$=(anna_node_t *)anna_node_create_block2( &@$, anna_node_create_int_literal2(&@$, 0), anna_node_create_int_literal2(&@$, 1));
+	}
+	|
+	'+'
+	{
+	    $$=(anna_node_t *)anna_node_create_block2( &@$, anna_node_create_int_literal2(&@$, 1), anna_node_create_null(&@$));
+	}
+	|
+	'*'
+	{
+	    $$=(anna_node_t *)anna_node_create_block2( &@$, anna_node_create_int_literal2(&@$, 0), anna_node_create_null(&@$));
+	}
+//	|
+//	RULE_COUNT_RANGE LITERAL_INTEGER_BASE_10 ELLIPSIS LITERAL_INTEGER_BASE_10
+	;
+
 
 
 op:

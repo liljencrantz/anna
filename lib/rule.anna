@@ -1,0 +1,6 @@
+
+macro rule(node)
+{
+	return Dummy(node, node);
+}
+

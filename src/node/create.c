@@ -202,6 +202,22 @@ anna_node_int_literal_t *anna_node_create_int_literal(
     return result;
 }
 
+anna_node_int_literal_t *anna_node_create_int_literal2(
+    anna_location_t *loc, 
+    int val)
+{
+    anna_node_int_literal_t *result = 
+	anna_alloc_node(sizeof(anna_node_int_literal_t));
+    result->node_type = ANNA_NODE_INT_LITERAL;
+    anna_node_set_location((anna_node_t *)result,loc);
+    
+    mpz_init(result->payload);
+    mpz_set_si(result->payload, val);
+
+    return result;
+}
+
+
 anna_node_float_literal_t *anna_node_create_float_literal(
     anna_location_t *loc, double val)
 {
