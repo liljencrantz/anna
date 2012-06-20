@@ -80,10 +80,11 @@ static void anna_lex_invalid_input()
 %x COMMENT
 
 %x RULE
+%x RULE_CHAR_CLASS
+%x RULE_CHAR_CLASS_SET
 
 %%
 
-\/\* anna_lex_push_state(yyscanner, COMMENT); return IGNORE;
 <COMMENT><<EOF>> anna_lex_unbalanced_comment();return 0;
 <COMMENT>\/\* anna_lex_push_state(yyscanner, COMMENT); return IGNORE;
 <COMMENT>\*\/ anna_lex_pop_state(yyscanner); return IGNORE;
@@ -91,24 +92,37 @@ static void anna_lex_invalid_input()
 <COMMENT>[ \t\n]  return IGNORE;
 
 @\{ anna_lex_push_state(yyscanner, RULE); return RULE_BEGIN;
-<RULE>\/\* BEGIN(COMMENT); anna_lex_push_state(yyscanner, COMMENT); return IGNORE;
+<RULE>\/\* anna_lex_push_state(yyscanner, COMMENT); return IGNORE;
 <RULE>\( return '(';
 <RULE>\) return ')';
 <RULE>\| return '|';
 <RULE>\. return '.';
 <RULE>\+ return '+';
+<RULE>\*\*[ \t\n\r](0+|[1-9][0-9_]*)([ \t\n\r]\.\.[ \t\n\r](0+|[1-9][0-9_]*))? return 0;
 <RULE>\* return '*';
 <RULE>\? return '?';
 <RULE>\/\/[^\n]*\n  return IGNORE;
-<RULE>\[=[a-z]*=\] return RULE_CHAR_CLASS;
-<RULE>\. return RULE_LITERAL;
+<RULE>\< anna_lex_push_state(yyscanner, RULE_CHAR_CLASS); return RULE_CHAR_CLASS_BEGIN;
 <RULE>\{ anna_lex_push_state(yyscanner, INITIAL); return '{';
 <RULE>\} anna_lex_pop_state(yyscanner); return '}';
 <RULE>[ \r\n\t] return IGNORE;
 <RULE>\\. return RULE_ESCAPED_CHAR;
 <RULE>. return RULE_CHAR;
-	 
 
+<RULE_CHAR_CLASS>\> anna_lex_pop_state(yyscanner); return RULE_CHAR_CLASS_END;
+<RULE_CHAR_CLASS>\[ anna_lex_push_state(yyscanner, RULE_CHAR_CLASS_SET); return '[';
+<RULE_CHAR_CLASS>- return '-';
+<RULE_CHAR_CLASS>\+ return '+';
+<RULE_CHAR_CLASS>[ \t\n\r] return IGNORE;
+<RULE_CHAR_CLASS>. anna_lex_invalid_input(); return 0;
+
+<RULE_CHAR_CLASS_SET>\\. return RULE_ESCAPED_CHAR;
+<RULE_CHAR_CLASS_SET>\] anna_lex_pop_state(yyscanner); return ']';	
+<RULE_CHAR_CLASS_SET>[ \t\n\r] return IGNORE;
+<RULE_CHAR_CLASS_SET>\.\. return ELLIPSIS;
+<RULE_CHAR_CLASS_SET>. return RULE_CHAR;
+ 
+\/\* anna_lex_push_state(yyscanner, COMMENT); return IGNORE;
 \/\/[^\n]*\n  return IGNORE;
 ^#[^\n]*\n  return IGNORE;
 [1-9][0-9_]*_*[a-z][a-zA-Z0-9_!?]* return LITERAL_INTEGER_BASE_10;
@@ -121,7 +135,7 @@ static void anna_lex_invalid_input()
 0[xX][0-9a-fA-F][0-9a-fA-F_]* return LITERAL_INTEGER_BASE_16;
 [0-9][0-9_]*\.[0-9_]*[0-9]+[0-9_]*([eE][-+]?[0-9_]+)?_*[a-z][a-zA-Z0-9_!?]* return LITERAL_FLOAT;
 [0-9][0-9_]*\.[0-9_]*[0-9]+[0-9_]*([eE][-+]?[0-9_]+)? return LITERAL_FLOAT;
-0 return LITERAL_INTEGER_BASE_10;
+0+ return LITERAL_INTEGER_BASE_10;
 \( return '(';
 \) return ')';
 \[ return '[';
