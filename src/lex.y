@@ -98,7 +98,7 @@ static void anna_lex_invalid_input()
 <RULE>\| return '|';
 <RULE>\. return '.';
 <RULE>\+ return '+';
-<RULE>\*\*[ \t\n\r](0+|[1-9][0-9_]*)([ \t\n\r]\.\.[ \t\n\r](0+|[1-9][0-9_]*))? return 0;
+<RULE>\*\*[ \t\n\r]*(0+|[1-9][0-9_]*)([ \t\n\r]*\.\.[ \t\n\r]*(0+|[1-9][0-9_]*))? return RULE_COUNT_RANGE;
 <RULE>\* return '*';
 <RULE>\? return '?';
 <RULE>\/\/[^\n]*\n  return IGNORE;
