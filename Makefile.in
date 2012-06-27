@@ -36,7 +36,7 @@ COV_FLAGS := #--coverage
 # optimization increases overall performance slightly. Unfortunatly,
 # with lto, there does not seem to be any way to drop this flag only
 # for one function or one compilation unit.
-PROF_FLAGS := -g  #-flto -O3 -fuse-linker-plugin -fno-gcse
+PROF_FLAGS := -g # -flto -O3 -fuse-linker-plugin -fno-gcse
 
 # CFLAGS_NOWARN consists of all cflags not related to warnings. Used
 # for compiling some code that we can't easily fix minor problems in,
@@ -55,7 +55,7 @@ ANNA_OBJS := $(ANNA_LIB_OBJS) src/dtoa.o src/anna.o src/node/node.o	\
 src/macro.o src/stack.o autogen/lex.o autogen/yacc.o src/type.o		\
 src/function.o src/util/util.o src/module.o src/vm.o src/alloc/alloc.o	\
 src/compile.o src/wutil.o src/common.o src/attribute.o src/object.o	\
-src/error.o src/parse.o src/invoke.o src/fallback.o
+src/error.o src/parse.o src/invoke.o src/fallback.o src/compile_native.o
 
 LDFLAGS := @LIBS@ @LDFLAGS@ -rdynamic $(PROF_FLAGS) $(COV_FLAGS)
 

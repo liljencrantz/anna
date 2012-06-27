@@ -947,6 +947,9 @@ static void anna_module_compile(anna_node_t *this, void *aux)
     }
 }
 
+void anna_compile_module_native(anna_stack_template_t *module_stack);
+
+
 /**
    Internal helper function for anna_module_load_i.
 
@@ -1013,6 +1016,7 @@ static void anna_module_load_i_phase_2(array_list_t *module_list)
 	    goto CLEANUP;
 	}
 	
+	anna_compile_module_native(module_stack);
 	debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);
 	anna_node_each((anna_node_t *)module_node, &anna_module_compile, 0);
 	
