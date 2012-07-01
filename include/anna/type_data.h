@@ -10,8 +10,13 @@ typedef struct
 {
     anna_type_t **addr;
     wchar_t *name;
+    wchar_t *c_declaration;
+    wchar_t *c_name;
 }
 anna_type_data_t;
+
+#define anna_type_data_make(variable, name) {&variable, name, L"extern anna_type_t *" # variable ";", L"" # variable  }
+
 
 /**
    Create all the specified types in the specified module 
@@ -22,6 +27,8 @@ anna_type_data_t;
 	for(i=0; i<(sizeof(type_data)/sizeof(*type_data)); i++)		\
 	{								\
 	    *(type_data[i].addr) = anna_type_create(anna_intern_static(type_data[i].name), 0); \
+	    (*type_data[i].addr)->c_name = type_data[i].c_name;		\
+	    (*type_data[i].addr)->c_declaration = type_data[i].c_declaration; \
 	}								\
     }
 

@@ -69,7 +69,7 @@ struct anna_stack_template
     array_list_t import;
     /**
        List of all modules to use for macro expansion
-     */
+    */
     array_list_t expand;
     /**
        Only used by modules. The name of the module.

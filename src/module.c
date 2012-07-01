@@ -93,7 +93,7 @@ static wchar_t *anna_module_search_suffix(wchar_t *path)
 	sb_init(fn);
     }
     
-    static const wchar_t *suff[] = {L"", L".anna", L".so"};
+    static const wchar_t *suff[] = {L"", L".so", L".anna"};
     
     for(i=0; i<sizeof(suff)/sizeof(suff[0]); i++)
     {
@@ -284,7 +284,7 @@ static void anna_module_init_recursive(
 	    goto CLEANUP;
 	}
 
-	if((wcscmp(suffix, L".anna") == 0) || (wcscmp(suffix, L".so") == 0))
+	if(wcscmp(suffix, L".so") == 0)
 	{
 	    *suffix=0;
 	    
@@ -292,11 +292,63 @@ static void anna_module_init_recursive(
 	    {
 		goto CLEANUP;
 	    }
-	
+	    
 	    anna_module_load_i(
 		anna_module(parent, d_name, sb_content(&fn)));
 	}
       CLEANUP:
+	free(d_name);
+    }
+    rewinddir(dir);
+    while((ent=wreaddir(dir)))
+    {
+	sb_truncate(&fn, len);
+	sb_append(&fn, ent->d_name);
+	struct stat statbuf;
+	
+	wchar_t *d_name = wcsdup(ent->d_name);
+
+	if(ent->d_name[0] == L'.')
+	{
+	    goto CLEANUP2;
+	}	
+	
+	if(wstat(sb_content(&fn), &statbuf))
+	{
+	    debug(D_ERROR, L"Failed to stat file %ls\n", sb_content(&fn));
+	    goto CLEANUP2;
+	}
+	
+	if(S_ISDIR(statbuf.st_mode))
+	{
+	    if(anna_stack_get(parent, d_name))
+	    {
+		goto CLEANUP2;
+	    }
+
+	    anna_module_init_recursive(sb_content(&fn), anna_module(parent, d_name, 0));
+	    goto CLEANUP2;
+	}
+	
+	wchar_t *suffix = wcsrchr(d_name, L'.');
+	if(!suffix)
+	{
+	    goto CLEANUP2;
+	}
+	
+	if(wcscmp(suffix, L".anna") == 0)
+	{
+	    *suffix=0;
+	    
+	    if(anna_stack_get(parent, d_name))
+	    {
+		goto CLEANUP2;
+	    }
+	    
+	    anna_module_load_i(
+		anna_module(parent, d_name, sb_content(&fn)));
+	}
+      CLEANUP2:
 	free(d_name);
     }
     closedir(dir);
@@ -1016,7 +1068,11 @@ static void anna_module_load_i_phase_2(array_list_t *module_list)
 	    goto CLEANUP;
 	}
 	
-	anna_compile_module_native(module_stack);
+	if(wcscmp(anna_stack_wrap(module_stack)->type->name,L"nativeTest") == 0)
+	{
+	    anna_compile_module_native(module_stack);
+	}
+	
 	debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);
 	anna_node_each((anna_node_t *)module_node, &anna_module_compile, 0);
 	

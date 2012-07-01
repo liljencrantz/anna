@@ -83,7 +83,7 @@ static inline anna_activation_frame_t *anna_frame_get_static(anna_context_t *con
     return res;
 }
 
-static void anna_frame_push(anna_context_t *context) 
+static inline void anna_frame_push(anna_context_t *context) 
 {
     anna_object_t *wfun = context->function_object;
     size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;

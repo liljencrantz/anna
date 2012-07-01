@@ -389,6 +389,8 @@ struct anna_type
        Internal variable that may be used by the mark_type function
     */
     int static_mark_blob_count;
+    wchar_t *c_declaration;
+    wchar_t *c_name;
 };
 
 struct anna_member

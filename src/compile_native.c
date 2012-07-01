@@ -5,6 +5,9 @@
 #include <wchar.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 
 #include "anna/fallback.h"
 #include "anna/common.h"
@@ -26,9 +29,12 @@
 #include "anna/mid.h"
 #include "anna/function_type.h"
 #include "anna/attribute.h"
+#include "anna/wutil.h"
 
 #define ANNA_COMPILE_SIZE 1
 #define ANNA_COMPILE_LINE 2
+
+#define ANNA_C_COMPILER "/usr/bin/gcc"
 
 typedef struct
 {
@@ -68,36 +74,6 @@ static inline anna_activation_frame_t *anna_frame_get_static(anna_context_t *con
     context->static_frame_ptr += sz; 
     res->flags = ANNA_ACTIVATION_FRAME | ANNA_ACTIVATION_FRAME_STATIC;
     return res;
-}
-
-static void anna_type_c_name(anna_compile_context_t *ctx, anna_type_t *type)
-{
-    sb_printf(&ctx->declaration, L"%ls", type->c_declaration);
-    sb_printf(&ctx->code, L"%ls\n", type->c_name);    
-}
-
-static void anna_frame_push(anna_context_t *context) 
-{
-    anna_object_t *wfun = context->function_object;
-    size_t stack_offset = wfun->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_STACK]->offset;
-    anna_activation_frame_t *static_frame = *(anna_activation_frame_t **)&wfun->member[stack_offset];
-    anna_function_t *fun = anna_function_unwrap_fast(wfun);
-    anna_activation_frame_t *res = anna_frame_get_static(context, fun->frame_size);
-    
-    res->static_frame = static_frame;
-    res->dynamic_frame = context->frame;
-    res->function = fun;
-    res->code = fun->code;
-    context->top -= (fun->input_count+1);
-    res->return_stack_top = context->top;
-    /* Copy over input parameter values */
-    memcpy(&res->slot[0], context->top+1,
-	   sizeof(anna_object_t *)*fun->input_count);
-    /* Set initial value of all variables to null */
-    int i;
-    for(i=fun->input_count; i<fun->variable_count;i++)
-	res->slot[i] = null_entry;
-    context->frame = res;
 }
 
 static anna_entry_t *anna_static_invoke_as_access(
@@ -172,10 +148,11 @@ static void anna_vm_serialize(
     }
     else if(anna_is_float(entry))
     {
-	wchar_t *decl = anna_vm_declaration(ctx, node, L"anna_entry_t *", L"float_constant");
-	anna_vm_setup(ctx, node, L"%ls = anna_from_float(%f);", decl, anna_as_float(entry));
-	anna_vm_setup(ctx, node, L"anna_alloc_mark_permanent(%ls);", decl);
-	anna_vm_code(ctx, node, L"anna_context_push_entry(context, %ls);", decl);
+//	wchar_t *decl = anna_vm_declaration(ctx, node, L"anna_entry_t *", L"float_constant");
+//	anna_vm_setup(ctx, node, L"%ls = anna_from_float(%f);", decl, anna_as_float(entry));
+//	anna_vm_setup(ctx, node, L"anna_alloc_mark_permanent(%ls);", decl);
+//	anna_vm_code(ctx, node, L"anna_context_push_entry(context, %ls);", decl);
+	anna_vm_code(ctx, node, L"anna_context_push_entry(context, anna_from_float(%f));", anna_as_float(entry));
     }
     else
     {
@@ -812,6 +789,8 @@ void anna_compile_function_native(
     
     sb_printf(&ctx->code, L"static void anna_native_%ls_%d(anna_context_t *context)\n{\n", fun->name, fun_count);
     
+    anna_vm_code(
+	ctx, fun->body, L"anna_frame_push(context);");
     
     if(is_empty)
     {
@@ -825,6 +804,14 @@ void anna_compile_function_native(
 	{
 	    anna_vm_compile_i(ctx, fun, fun->body->child[i], i != (fun->body->child_count-1));
 	}
+
+	anna_vm_code(
+	    ctx, fun->body, L"anna_entry_t *val = anna_context_peek_entry(context, 0);");
+	anna_vm_code(
+	    ctx, fun->body, L"anna_context_frame_return(context);");
+	anna_vm_code(
+	    ctx, fun->body, L"anna_context_push_entry(context, val);");
+	
 //	anna_vm_null(&ctx, ANNA_INSTR_RETURN);
     }
 /*    anna_message(L"Compiled code used %d bytes\n", code_ptr - fun->code);
@@ -840,18 +827,42 @@ void anna_compile_function_native(
     anna_vm_compile_check_macro(fun);
 
     sb_printf(&ctx->code, L"}\n\n");
+    string_buffer_t t_buf;
+    sb_init(&t_buf);
+    string_buffer_t n_buf;
+    sb_init(&n_buf);
+    
+    for(i=0; i<fun->input_count; i++)
+    {
+	if(i != 0)
+	{
+	    sb_printf( &t_buf, L", ");
+	    sb_printf( &n_buf, L", ");
+	}
+	sb_printf( &t_buf, L"%ls", fun->input_type[i]->c_name);
+	sb_printf( &n_buf, L"L\"%ls\"", fun->input_name[i]);
+    }
+    
+    anna_vm_setup(
+	ctx, fun->definition, 
+	L"anna_type_t *%ls_type[] = {%ls};",
+	fun->name, sb_content(&t_buf));
+    
+    anna_vm_setup(
+	ctx, fun->definition, 
+	L"wchar_t *%ls_name[] = {%ls};",
+	fun->name, sb_content(&n_buf));
+
 
     anna_vm_setup(
 	ctx, fun->definition, 
-	L"anna_module_function(stack, L\"\", 0, &anna_native_%ls_%d, ", 
-	fun->name, fun_count);
+	L"anna_module_function(stack, L\"%ls\", 0, &anna_native_%ls_%d, %ls, %d, %ls_type, %ls_name, 0, 0);", 
+	fun->name, fun->name, fun_count, fun->return_type->c_name,
+	fun->input_count, fun->name, fun->name);
     
-    anna_type_c_name(ctx, type);
+    sb_destroy(&t_buf);
+    sb_destroy(&n_buf);
 
-#if 0
-    if(wcscmp(fun->name, L"main")==0)
-	anna_bc_print(fun->code);
-#endif
 }
 
 static void anna_compile_decl(anna_node_t *this, void *aux)
@@ -894,11 +905,51 @@ void anna_compile_module_native(anna_stack_template_t *module_stack)
     
     anna_node_call_t *module_node = module_stack->definition;
     anna_node_each((anna_node_t *)module_node, &anna_compile_decl, &ctx);	
-    anna_message(
-	L"%ls\n%ls\nvoid anna_%ls_load(anna_stack_template_t *stack)\n{\n%ls}\n\n", 
-	sb_content(&ctx.declaration), sb_content(&ctx.code), 
-	module_stack->name,
+    FILE *out = wfopen(L"lib/nativeTest.c", "w");
+    
+    fwprintf(
+	out,
+	L"#include \"anna/native_header.h\"\n");
+
+    fwprintf(
+	out,
+	L"%ls\n%ls\n",
+	sb_content(&ctx.declaration), sb_content(&ctx.code));
+    
+
+    fwprintf(
+	out,
+	L"void anna_%ls_create(anna_stack_template_t *stack)\n{}\n\n", 
+	anna_stack_wrap(module_stack)->type->name);
+    
+    fwprintf(
+	out,
+	L"void anna_%ls_load(anna_stack_template_t *stack)\n{\n%ls}\n\n", 
+	anna_stack_wrap(module_stack)->type->name,
 	sb_content(&ctx.setup));
+    fclose(out);
+    
+    char *param1[] = 
+	{
+	    "gcc", "-fPIC", "-c", "lib/nativeTest.c", "-o", "lib/nativeTest.o", "-O2", "-g", "-I", "include", 0
+	}
+    ;
+
+    if(!fork())
+	execvp(ANNA_C_COMPILER, param1);
+    else
+	wait(0);
+    
+    char *param2[] = 
+	{
+	    "gcc", "-shared", "lib/nativeTest.o", "-o", "lib/nativeTest.so", "-O2", "-g", 0
+	}
+    ;
+
+    if(!fork())
+	execvp(ANNA_C_COMPILER, param2);
+    else
+	wait(0);
     
 }
 
