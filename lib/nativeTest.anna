@@ -1,5 +1,5 @@
 def bengt(Int ggg)
 {
-    1.1
+    ggg+1
 }
 

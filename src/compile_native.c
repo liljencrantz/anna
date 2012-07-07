@@ -156,6 +156,16 @@ static void anna_vm_serialize(
     }
     else
     {
+	anna_object_t *obj = anna_as_obj(entry);
+	anna_type_t *obj_as_type = anna_type_unwrap(obj_as_type);
+	if(obj_as_type)
+	{
+	    anna_vm_code(
+		ctx, node,
+		L"anna_context_push_entry(context, anna_from_obj(anna_type_wrap(%ls)));",
+		obj_as_type->c_name);	    
+	}
+	
 	anna_message(L"Compiler error: Don't know how to serialize object\n");
 	CRASH;
     }
@@ -200,25 +210,6 @@ static void anna_vm_compile_i(
 	    break;
 	}
 
-#if 0
-	case ANNA_NODE_RETURN:
-	case ANNA_NODE_CONTINUE:
-	case ANNA_NODE_BREAK:
-	{
-	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)node;
-	    anna_vm_compile_i(ctx, fun, node2->payload, 0);
-	    assert(node2->steps>=0);
-	    if(node->node_type == ANNA_NODE_BREAK)
-	    {
-		anna_vm_call(ctx, ANNA_INSTR_RETURN_COUNT_BREAK, node2->steps);
-	    }
-	    else
-	    {
-		anna_vm_call(ctx, ANNA_INSTR_RETURN_COUNT, node2->steps);
-	    }
-	    break;
-	}
-	
 	case ANNA_NODE_MEMBER_CALL:
 	case ANNA_NODE_STATIC_MEMBER_CALL:
 	{
@@ -261,7 +252,7 @@ static void anna_vm_compile_i(
 	    anna_entry_t *const_obj2 = anna_node_static_invoke_try(
 		node2->object, fun->stack_template);
 
-	    if(obj_is_type)
+/*	    if(obj_is_type)
 	    {
 		anna_vm_serialize(ctx, node, obj_type->static_member[mem->offset]);
 	    }
@@ -272,8 +263,8 @@ static void anna_vm_compile_i(
 		{
 		    anna_vm_const(ctx, const_obj2);		    
 		}
-	    }
-	    else
+		}
+		else*/
 	    {
 		int instr;
 		
@@ -333,6 +324,26 @@ static void anna_vm_compile_i(
 	    break;
 	}	
 
+
+#if 0
+	case ANNA_NODE_RETURN:
+	case ANNA_NODE_CONTINUE:
+	case ANNA_NODE_BREAK:
+	{
+	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)node;
+	    anna_vm_compile_i(ctx, fun, node2->payload, 0);
+	    assert(node2->steps>=0);
+	    if(node->node_type == ANNA_NODE_BREAK)
+	    {
+		anna_vm_call(ctx, ANNA_INSTR_RETURN_COUNT_BREAK, node2->steps);
+	    }
+	    else
+	    {
+		anna_vm_call(ctx, ANNA_INSTR_RETURN_COUNT, node2->steps);
+	    }
+	    break;
+	}
+	
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
 	{
