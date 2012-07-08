@@ -16,7 +16,7 @@ someVariableName := 0;
 ")
 )
 {
-    if(node.count != 1)
+    if(lang.__neqInternal__(node.count.__cmp__(1)))
     {
 	node.error("ast macro expects exactly one argument, found " ~ node.count);
 	return ?;
@@ -31,3 +31,4 @@ someVariableName := 0;
 		  Identifier(node, "copy"))),
 	Dummy(node, node[0].__type__));
 }
+

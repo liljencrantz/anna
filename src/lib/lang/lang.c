@@ -169,6 +169,66 @@ ANNA_VM_NATIVE(anna_i_not, 1)
     return anna_entry_null(param[0])?anna_from_int(1):null_entry;
 }
 
+ANNA_VM_NATIVE(anna_i_gt, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    int vvv = anna_as_int(param[0]);
+    return vvv > 0 ? anna_from_int(1) : null_entry;
+}
+
+ANNA_VM_NATIVE(anna_i_gte, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    int vvv = anna_as_int(param[0]);
+    return vvv >= 0 ? anna_from_int(1) : null_entry;
+}
+
+ANNA_VM_NATIVE(anna_i_lt, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    int vvv = anna_as_int(param[0]);
+    return vvv < 0 ? anna_from_int(1) : null_entry;
+}
+
+ANNA_VM_NATIVE(anna_i_lte, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    int vvv = anna_as_int(param[0]);
+    return vvv <= 0 ? anna_from_int(1) : null_entry;
+}
+
+ANNA_VM_NATIVE(anna_i_eq, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    int vvv = anna_as_int(param[0]);
+    return vvv == 0 ? anna_from_int(1) : null_entry;
+}
+
+ANNA_VM_NATIVE(anna_i_neq, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    int vvv = anna_as_int(param[0]);
+    return vvv != 0 ? anna_from_int(1) : null_entry;
+}
+
 static void anna_i_callcc_callback(anna_context_t *context)
 {
     anna_object_t *res = anna_context_pop_object(context);
@@ -258,6 +318,54 @@ void anna_lang_load(anna_stack_template_t *stack)
 	int_type, 
 	1, &object_type, p_argn, 0,
 	L"Negates the value. Returns 1 of the input is null, null otherwise.");
+
+    anna_module_function(
+	stack,
+	L"__lteInternal__", 0, 
+	&anna_i_lte, 
+	int_type, 
+	1, &int_type, p_argn, 0,
+	L"Returns non-null if the supplied integer is positive, null otherwise. This function is used internally by the __gt__ macro, there should be no reason to ever use it directly.");
+
+    anna_module_function(
+	stack,
+	L"__eqInternal__", 0, 
+	&anna_i_eq, 
+	int_type, 
+	1, &int_type, p_argn, 0,
+	L"Returns non-null if the supplied integer is positive, null otherwise. This function is used internally by the __gt__ macro, there should be no reason to ever use it directly.");
+
+    anna_module_function(
+	stack,
+	L"__neqInternal__", 0, 
+	&anna_i_neq, 
+	int_type, 
+	1, &int_type, p_argn, 0,
+	L"Returns non-null if the supplied integer is positive, null otherwise. This function is used internally by the __gt__ macro, there should be no reason to ever use it directly.");
+
+    anna_module_function(
+	stack,
+	L"__gtInternal__", 0, 
+	&anna_i_gt, 
+	int_type, 
+	1, &int_type, p_argn, 0,
+	L"Returns non-null if the supplied integer is positive, null otherwise. This function is used internally by the __gt__ macro, there should be no reason to ever use it directly.");
+
+    anna_module_function(
+	stack,
+	L"__gteInternal__", 0, 
+	&anna_i_gte, 
+	int_type, 
+	1, &int_type, p_argn, 0,
+	L"Returns non-null if the supplied integer is positive, null otherwise. This function is used internally by the __gt__ macro, there should be no reason to ever use it directly.");
+
+    anna_module_function(
+	stack,
+	L"__ltInternal__", 0, 
+	&anna_i_lt, 
+	int_type, 
+	1, &int_type, p_argn, 0,
+	L"Returns non-null if the supplied integer is positive, null otherwise. This function is used internally by the __gt__ macro, there should be no reason to ever use it directly.");
 
     anna_module_function(
 	stack,

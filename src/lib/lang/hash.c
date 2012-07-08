@@ -325,7 +325,7 @@ static inline void ahi_search_callback2_next(
 		if((o2->type == mutable_string_type) ||
 		   (o2->type == imutable_string_type))
 		{
-		    int eq = anna_string_cmp(o, o2)==0;
+		    int eq = anna_string_cmp(o, o2);
 		    return ahi_search_callback2_internal(
 			context,
 			key,
@@ -335,7 +335,7 @@ static inline void ahi_search_callback2_next(
 			hash,
 			idx,
 			dummy_idx,
-			eq ? anna_from_int(1):null_entry);
+			anna_from_int(eq));
 		}
 	    }
 	    
@@ -346,7 +346,7 @@ static inline void ahi_search_callback2_next(
     {
 	if(anna_is_int_small(key) && anna_is_int_small(this->table[pos].key))
 	{
-	    int eq = anna_as_int(key) == anna_as_int(this->table[pos].key);
+	    int eq = (int)sign(anna_as_int(key) - anna_as_int(this->table[pos].key));
 	    return ahi_search_callback2_internal(
 		context,
 		key,
@@ -356,7 +356,7 @@ static inline void ahi_search_callback2_next(
 		hash,
 		idx,
 		dummy_idx,
-		eq ? anna_from_int(1):null_entry);	
+		anna_from_int(eq));
 	}
     }
     
@@ -381,7 +381,7 @@ static inline void ahi_search_callback2_next(
     
     anna_object_t *fun_object = anna_as_obj_fast(
 	anna_entry_get_static(
-	    anna_as_obj(key)->type, ANNA_MID_EQ));
+	    anna_as_obj(key)->type, ANNA_MID_CMP));
 
     anna_vm_callback_native(
 	context,
@@ -404,9 +404,8 @@ static void ahi_search_callback2_internal(
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
 
-    if(anna_entry_null(eq))
+    if(anna_entry_null(eq) || anna_as_int(eq) != 0)
     {
-	
 	idx++;
 	if(dummy_idx == -1)
 	{

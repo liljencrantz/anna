@@ -641,12 +641,8 @@ expression3 :
 		$$ = (anna_node_t *)
 		    anna_node_create_call2(
 			&@$, 
-			anna_node_create_call2(
-			    &@$, 
-			    anna_node_create_identifier(&@$, L"__memberGet__"),
-			    $1, $2),
-			$3);
-	    }	    
+			$2, $1, $3);
+	    }
 	} |
 	expression4;
 

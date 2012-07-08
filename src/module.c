@@ -819,6 +819,7 @@ void anna_module_init(wchar_t *name)
     */
 
     anna_module_bootstrap_macro(L"ast");
+    anna_module_bootstrap_macro(L"cmp");
     anna_module_bootstrap_macro(L"macroUtil");
     anna_module_bootstrap_macro(L"update");
     anna_module_bootstrap_macro(L"attributes");

@@ -1,6 +1,4 @@
 
-#include "autogen/object_i.c"
-
 ANNA_VM_NATIVE(anna_object_init, 1)
 {
     return param[0];
@@ -97,7 +95,6 @@ void anna_object_type_create()
 	type_type, &anna_object_type, 0,
 	L"The type of this object");
     
-    anna_object_type_i_create();
     anna_type_object_is_created();
 
 }
