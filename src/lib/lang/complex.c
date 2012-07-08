@@ -36,61 +36,74 @@ ANNA_VM_NATIVE(anna_complex_init, 3)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_complex_cmp, 2)
+static anna_entry_t *anna_complex_sign(double v)
+{
+    if(v > 0.0)
+    {
+	return anna_from_int(1);
+    }
+    else if(v < 0.0)
+    {
+	return anna_from_int(-1);
+    }
+    else{
+	return anna_from_int(0);
+    }    
+}
+
+ANNA_VM_NATIVE(anna_complex_cmp_complex, 2)
 {
     if(unlikely( anna_entry_null(param[1])))
     {
         return null_entry;
     }
-    else if(anna_is_complex(param[1]))
+    complex double c1 = anna_as_complex(param[0]);
+    complex double c2 = anna_as_complex(param[1]);
+
+    if(cimag(c1) != cimag(c2))
     {
-	complex double v1 = anna_as_complex(param[0]);
-	complex double v2 = anna_as_complex(param[1]);
-	if(v1 == v2)
-	{
-	    return anna_from_int(0);
-	}
-	else{
-	    return null_entry;
-	}
+	return anna_complex_sign(cimag(c1) - cimag(c2));    
     }
-    else if(anna_is_float(param[1]) || anna_is_int(param[1]))
+    return anna_complex_sign(creal(c1) - creal(c2));    
+}
+
+ANNA_VM_NATIVE(anna_complex_cmp_float, 2)
+{
+    if(unlikely( anna_entry_null(param[1])))
     {
-	complex double c1 = anna_as_complex(param[0]);
-	double v2;
-	if(anna_is_float(param[1]))
-	{
-	    v2 = anna_as_float(param[1]);
-	}
-	else
-	{
-	    v2 = (double)anna_as_int(param[1]);
-	}
+        return null_entry;
+    }
+
+    complex double c1 = anna_as_complex(param[0]);
+    double v2 = anna_as_float(param[1]);
 	    
-	if(cimag(c1) != 0.0)
-	{
-	    return null_entry;
-	}
-	else
-	{
-	    double v1 = creal(c1);
-	    
-	    if(v1 > v2)
-	    {
-		return anna_from_int(1);
-	    }
-	    else if(v1 < v2)
-	    {
-		return anna_from_int(-1);
-	    }
-	    else{
-		return anna_from_int(0);
-	    }   
-	}
+    if(cimag(c1) != 0.0)
+    {
+	return anna_complex_sign(cimag(c1));
     }
     else
     {
-	return null_entry;
+	return anna_complex_sign(creal(c1) - v2);
+    }
+}
+
+ANNA_VM_NATIVE(anna_complex_cmp_int, 2)
+{
+    if(unlikely( anna_entry_null(param[1])))
+    {
+        return null_entry;
+    }
+
+    complex double c1 = anna_as_complex(param[0]);
+    double v2 = (double)anna_as_int(param[1]);
+	    
+    if(cimag(c1) != 0.0)
+    {
+	return anna_complex_sign(cimag(c1));
+    }
+    else
+    {
+	return anna_complex_sign(creal(c1) - v2);
     }
 }
 
@@ -278,13 +291,33 @@ void anna_complex_type_create()
 	complex_type,
 	3, argv, argn, 0, 0);
     
-    anna_member_create_native_method(
+    mid_t mmid;
+    mmid = anna_member_create_native_method(
 	complex_type,
-	anna_mid_get(L"__cmp__"),
+	anna_mid_get(L"cmpComplex"),
 	0,
-	&anna_complex_cmp, 
+	&anna_complex_cmp_complex, 
 	int_type,
 	2, c_argv, c_argn, 0, 0);    
+    anna_member_alias(complex_type, mmid, L"__cmp__");
+    
+    mmid = anna_member_create_native_method(
+	complex_type,
+	anna_mid_get(L"cmpFloat"),
+	0,
+	&anna_complex_cmp_float, 
+	int_type,
+	2, c_argv, c_argn, 0, 0);    
+    anna_member_alias(complex_type, mmid, L"__cmp__");
+    
+    mmid = anna_member_create_native_method(
+	complex_type,
+	anna_mid_get(L"cmpInt"),
+	0,
+	&anna_complex_cmp_int, 
+	int_type,
+	2, c_argv, c_argn, 0, 0);    
+    anna_member_alias(complex_type, mmid, L"__cmp__");
     
     anna_member_create_native_method(
 	complex_type,
@@ -305,7 +338,6 @@ void anna_complex_type_create()
 	    L"value"
 	}
     ;
-    mid_t mmid;
 
     mmid = anna_member_create_native_type_method(
 	complex_type, anna_mid_get(L"convertInt"),

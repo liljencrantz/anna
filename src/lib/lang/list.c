@@ -348,7 +348,7 @@ static void anna_list_in_callback(anna_context_t *context)
     int idx = anna_as_int(param[2]);
     size_t sz = anna_list_get_count(list);
     
-    if(!anna_entry_null(ret))
+    if(!anna_entry_null(ret) && (anna_as_int(ret) == 0))
     {
 	anna_context_drop(context, 4);
 	anna_context_push_entry(context, anna_from_int(idx-1));
@@ -362,7 +362,7 @@ static void anna_list_in_callback(anna_context_t *context)
 	    }
 	;
 	
-	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(value->type, ANNA_MID_EQ));
+	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(value->type, ANNA_MID_CMP));
 	param[2] = anna_from_int(idx+1);
 	anna_vm_callback_reset(context, fun_object, 2, o_param);
     }
@@ -398,7 +398,7 @@ static void anna_list_in(anna_context_t *context)
 	    }
 	;
 	
-	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(value->type, ANNA_MID_EQ));
+	anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(value->type, ANNA_MID_CMP));
 	anna_vm_callback_native(
 	    context,
 	    anna_list_in_callback, 3, callback_param,
