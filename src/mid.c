@@ -149,6 +149,7 @@ void anna_mid_init()
 	    L"__get__",
 
 	    L"__set__",
+	    L"!comparator",
 	};
     
     int i;

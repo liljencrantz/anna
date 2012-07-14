@@ -216,6 +216,7 @@ enum anna_mid_enum
     ANNA_MID_GET_OP,
 
     ANNA_MID_SET_OP,
+    ANNA_MID_COMPARATOR,
 
     ANNA_MID_FIRST_UNRESERVED,
 };

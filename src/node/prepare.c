@@ -164,8 +164,7 @@ static void anna_method_search(
 static anna_member_t *anna_node_calc_type_call_helper(
     anna_type_t *type,
     anna_node_call_t **node_ptr,
-    array_list_t *memb_list,
-    int reverse)
+    array_list_t *memb_list)
 {
     anna_member_t *member = 0;
     anna_node_call_t *n2=0;
@@ -330,7 +329,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     
     anna_method_search(type, anna_mid_get_reverse(n->mid), &memb_list, 0);
     
-    member = anna_node_calc_type_call_helper(type, &n, &memb_list, 0);
+    member = anna_node_calc_type_call_helper(type, &n, &memb_list);
     
     if(member)
     {

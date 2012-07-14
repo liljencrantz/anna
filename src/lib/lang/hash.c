@@ -1063,6 +1063,21 @@ static anna_type_t *anna_hash_iterator_create(
     return iter;
 }
 
+static mid_t anna_hash_find_comparator(anna_type_t *type)
+{
+/*    anna_node_call_t *call = 
+	anna_node_create_call2(
+	    0,
+	    
+    anna_node_method_search(
+	type,
+	call,
+	result);
+*/  
+	
+    return -1;
+}
+
 static void anna_hash_type_create_internal(
     anna_type_t *type, 
     anna_type_t *spec1,
@@ -1076,10 +1091,19 @@ static void anna_hash_type_create_internal(
 	type, ANNA_MID_HASH_SPECIALIZATION1, 1, null_type);
     anna_member_create(
 	type, ANNA_MID_HASH_SPECIALIZATION2, 1, null_type);
+    anna_member_create(
+	type, ANNA_MID_COMPARATOR, 1, null_type);
 
     anna_entry_set_static(type,ANNA_MID_HASH_SPECIALIZATION1, (anna_entry_t *)spec1);
     anna_entry_set_static(type,ANNA_MID_HASH_SPECIALIZATION2, (anna_entry_t *)spec2);
+/*    mid_t cmp_mid = anna_hash_find_comparator(spec1);
+    if(cmp_mid == (mid_t)-1)
+    {
+	anna_error(0, L"The type %ls can't be used as a HashMap key, it does not provide a valid comparison function.", spec1->name);
+    }
     
+    anna_entry_set_static(type,ANNA_MID_COMPARATOR, (anna_entry_t *)cmp_mid);
+*/  
     anna_member_create(
 	type,
 	ANNA_MID_ITERATOR_TYPE,
