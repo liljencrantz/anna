@@ -271,6 +271,27 @@ void anna_complex_type_create()
 	}
     ;
     
+    anna_type_t *cc_argv[] = 
+	{
+	    complex_type,
+	    complex_type,
+	}
+    ;
+    
+    anna_type_t *cf_argv[] = 
+	{
+	    complex_type,
+	    float_type,
+	}
+    ;
+    
+    anna_type_t *ci_argv[] = 
+	{
+	    complex_type,
+	    int_type,
+	}
+    ;
+    
     wchar_t *c_argn[]=
 	{
 	    L"this", L"other"
@@ -298,7 +319,7 @@ void anna_complex_type_create()
 	0,
 	&anna_complex_cmp_complex, 
 	int_type,
-	2, c_argv, c_argn, 0, 0);    
+	2, cc_argv, c_argn, 0, 0);    
     anna_member_alias(complex_type, mmid, L"__cmp__");
     
     mmid = anna_member_create_native_method(
@@ -307,7 +328,7 @@ void anna_complex_type_create()
 	0,
 	&anna_complex_cmp_float, 
 	int_type,
-	2, c_argv, c_argn, 0, 0);    
+	2, cf_argv, c_argn, 0, 0);    
     anna_member_alias(complex_type, mmid, L"__cmp__");
     
     mmid = anna_member_create_native_method(
@@ -316,7 +337,7 @@ void anna_complex_type_create()
 	0,
 	&anna_complex_cmp_int, 
 	int_type,
-	2, c_argv, c_argn, 0, 0);    
+	2, ci_argv, c_argn, 0, 0);    
     anna_member_alias(complex_type, mmid, L"__cmp__");
     
     anna_member_create_native_method(

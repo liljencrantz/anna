@@ -25,42 +25,65 @@ ANNA_VM_NATIVE(anna_float_cmp, 2)
     {
         return null_entry;
     }
-    else if(anna_is_float(param[1]))
+    double v1 = anna_as_float(param[0]);
+    double v2 = anna_as_float(param[1]);
+    if(v1 > v2)
     {
-        double v1 = anna_as_float(param[0]);
-	double v2 = anna_as_float(param[1]);
-	if(v1 > v2)
-	{
-	    return anna_from_int(1);
-	}
-	else if(v1 < v2)
-	{
-	    return anna_from_int(-1);
-	}
-	else{
-	    return anna_from_int(0);
-	}   
+	return anna_from_int(1);
     }
-    else if(anna_is_int(param[1]))
+    else if(v1 < v2)
     {
-        double v1 = anna_as_float(param[0]);
-	double v2 = (double)anna_as_int(param[1]);
-	if(v1 > v2)
-	{
-	    return anna_from_int(1);
-	}
-	else if(v1 < v2)
-	{
-	    return anna_from_int(-1);
-	}
-	else{
-	    return anna_from_int(0);
-	}   
+	return anna_from_int(-1);
     }
-    else
-    {	
+    else{
+	return anna_from_int(0);
+    }   
+}
+
+ANNA_VM_NATIVE(anna_float_cmp_int, 2)
+{
+    if(unlikely( anna_entry_null(param[1])))
+    {
         return null_entry;
     }
+
+    double v1 = anna_as_float(param[0]);
+    double v2 = (double)anna_as_int(param[1]);
+    if(v1 > v2)
+    {
+	return anna_from_int(1);
+    }
+    else if(v1 < v2)
+    {
+	return anna_from_int(-1);
+    }
+    else{
+	return anna_from_int(0);
+    }   
+    
+}
+
+ANNA_VM_NATIVE(anna_float_cmp_int_reverse, 2)
+{
+    if(unlikely( anna_entry_null(param[1])))
+    {
+        return null_entry;
+    }
+
+    double v2 = anna_as_float(param[0]);
+    double v1 = (double)anna_as_int(param[1]);
+    if(v1 > v2)
+    {
+	return anna_from_int(1);
+    }
+    else if(v1 < v2)
+    {
+	return anna_from_int(-1);
+    }
+    else{
+	return anna_from_int(0);
+    }   
+    
 }
 
 ANNA_VM_NATIVE(anna_float_to_string, 1)
@@ -197,11 +220,23 @@ void anna_float_type_create()
 	    float_type, object_type
 	}
     ;
+    anna_type_t *float_cmp_argv[] = 
+	{
+	    float_type, float_type
+	}
+    ;
+    anna_type_t *int_cmp_argv[] = 
+	{
+	    float_type, int_type
+	}
+    ;
     wchar_t *argn[]=
 	{
 	    L"this", L"other"
 	}
     ;
+
+    mid_t mmid;
 
     anna_type_make_sendable(float_type);
 
@@ -218,9 +253,20 @@ void anna_float_type_create()
 	float_type, ANNA_MID_FLOAT_PAYLOAD, 0,
 	sizeof(double));
     
-    anna_member_create_native_method(
-	float_type, anna_mid_get(L"__cmp__"), 0,
-	&anna_float_cmp, int_type, 2, argv, argn, 0, 0);
+    mmid = anna_member_create_native_method(
+	float_type, anna_mid_get(L"cmpFloat"), 0,
+	&anna_float_cmp, int_type, 2, float_cmp_argv, argn, 0, 0);
+    anna_member_alias(float_type, mmid, L"__cmp__");
+    
+    mmid = anna_member_create_native_method(
+	float_type, anna_mid_get(L"cmpInt"), 0,
+	&anna_float_cmp_int, int_type, 2, int_cmp_argv, argn, 0, 0);
+    anna_member_alias(float_type, mmid, L"__cmp__");
+    
+    mmid = anna_member_create_native_method(
+	float_type, anna_mid_get(L"cmpIntReverse"), 0,
+	&anna_float_cmp_int_reverse, int_type, 2, int_cmp_argv, argn, 0, 0);
+    anna_member_alias_reverse(float_type, mmid, L"__cmp__");
     
     anna_member_create_native_method(
 	float_type, ANNA_MID_TO_STRING, 0,
@@ -262,8 +308,6 @@ void anna_float_type_create()
 	    L"value"
 	}
     ;
-
-    mid_t mmid;
 
     mmid = anna_member_create_native_type_method(
 	float_type, anna_mid_get(L"convertString"),

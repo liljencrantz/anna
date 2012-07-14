@@ -100,7 +100,7 @@ def String to(Object o)
 
 	default
 	{
-	    raise(error.ParseError("Can't json encode object of type " ~ o.__type__.name));
+	    raise(error.ParseError("Can't json encode object of type " ~ type(o).name));
 	    return ?;
 	}
     }

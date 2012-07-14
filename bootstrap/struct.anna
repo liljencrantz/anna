@@ -108,7 +108,7 @@ dependencies between member types."
 	checkNodeCallTo(item, "__mapping__");
         mapping := item as Call;
         varType := 
-	    if(mapping[1].__type__ != NullLiteral)
+	    if(type(mapping[1]) != NullLiteral)
 	    {
 		ast(__staticTypeOf__(%value)) % ["value": mapping[1]];
 	    }

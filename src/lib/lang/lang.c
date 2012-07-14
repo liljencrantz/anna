@@ -281,6 +281,12 @@ void anna_lang_create_types(anna_stack_template_t *stack_lang)
     anna_type_data_create(anna_lang_type_data, stack_lang);    
 }
 
+ANNA_VM_NATIVE(anna_reflection_type_of, 1)
+{
+    anna_object_t *this = anna_as_obj(param[0]);
+    return anna_from_obj(anna_type_wrap(this->type));
+}
+
 void anna_lang_load(anna_stack_template_t *stack)
 {
     anna_object_type_create();
@@ -385,6 +391,16 @@ void anna_lang_load(anna_stack_template_t *stack)
 	2,
 	wrap_argv, wrap_argn, 0, stack);
     anna_wrap_method = wrap->wrapper;
+
+    static wchar_t *type_argn[]={L"type"};
+
+    anna_module_function(
+	stack,
+	L"type", 0, 
+	&anna_reflection_type_of, 
+	type_type, 
+	1, &object_type, type_argn, 0,
+	L"Returns the type of the specified object.");
 
     anna_type_data_register(anna_lang_type_data, stack);
 

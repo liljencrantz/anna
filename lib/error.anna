@@ -20,7 +20,7 @@ class Error (doc("The base class of any error"))
 	doc("A string representation of this Error."),
     )
     {
-	this.__type__.name;
+	type(this).name;
     }
 }
 
@@ -76,7 +76,7 @@ def raiseError(Error error)
 	    {
 		tp.each(collType)
 		{
-		    if(error.__type__.abides(collType))
+		    if(type(error).abides(collType))
 		    {
 			coll ~= [error];
 			return;

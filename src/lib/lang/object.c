@@ -61,7 +61,7 @@ void anna_object_type_create()
 	0, &anna_object_init, object_type, 1,
 	argv, argn, 0,
 	L"Constructor for the specified type. This method is run during object creation and should be overloaded to perform object setup.");
-    
+
     anna_member_create_native_method(
 	object_type, ANNA_MID_HASH_CODE, 0,
 	&anna_object_hash, int_type, 1, argv,
@@ -78,7 +78,8 @@ void anna_object_type_create()
 	argv,
 	argn, 0,
 	L"Comparison method. Should return a negative number, zero or a positive number if the compared object is smaller than, equal to or greater than the object being called, respectively. If the objects can't be compared, null should be returned.");
-    
+
+  
     anna_member_create_native_method(
 	object_type,
 	ANNA_MID_TO_STRING,
@@ -89,12 +90,7 @@ void anna_object_type_create()
 	argv,
 	argn, 0,
 	L"String conversion. Called by the String::convert method.");
-    
-    anna_member_create_native_property(
-	object_type, anna_mid_get(L"__type__"),
-	type_type, &anna_object_type, 0,
-	L"The type of this object");
-    
+
     anna_type_object_is_created();
 
 }

@@ -8,6 +8,6 @@ def main()
 	ll.thaw.thaw[0] + ll.freeze.freeze[1]);
 
     mm := «Int, String»[];
-    print(mm.__type__, mm.count);
+    print(type(mm), mm.count);
 }
 

@@ -276,6 +276,11 @@ void anna_int_type_create()
 	    int_type, object_type
 	}
     ;
+    anna_type_t *i_cmp_argv[] = 
+	{
+	    int_type, int_type
+	}
+    ;
     wchar_t *i_argn[]=
 	{
 	    L"this", L"other"
@@ -350,7 +355,7 @@ void anna_int_type_create()
 	&anna_int_cmp,
 	int_type,
 	2,
-	i_argv,
+	i_cmp_argv,
 	i_argn, 0, 
 	L"Compare this Int to another object. Returns null if the other object is not an Int. Return a negative number, zero or a positive number if the other Int is smaller than, equal to or greater than this Int, respectively.");
     

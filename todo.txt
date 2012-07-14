@@ -1,4 +1,11 @@
 1.0 RELEASE CRITERIA:
+* Drop all members from Object type.
+  - Renamoe Object to RootType.
+  - HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
+  - Replace obj.__type__ with reflection.typeOf(obj)
+  - Drop Object::__cmp__ - not all objects can be used as hash table key types any more
+  - Drop Object::hashCode - not all objects can be used as hash table key types any more
+  - Drop Object::toString. Use String::convert instead. Will require implementation of reverseAlias for static methods.
 * Iterator.iterator
 * List.reverse
 * List::convert(Iterator iter)

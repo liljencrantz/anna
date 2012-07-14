@@ -316,11 +316,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 		      in the next lap.
 		    */
 //		    print(moduleAst);
-		    funMemb :== code.__type__.member.find(memb){memb.name=="!fun"};
+		    funMemb :== type(code).member.find(memb){memb.name=="!fun"};
   		    fun :== funMemb.value(code);
 		    prev = (fun as reflection.Block)();
 		    prev and print(prev);
-		    previousContinuation = code.__type__.member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
+		    previousContinuation = type(code).member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
 		}
 	    }
 	    else

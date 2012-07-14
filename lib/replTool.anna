@@ -375,7 +375,7 @@ the doc attribute of declarations."))
 	const Call attribute;
     }
 
-    objType := (object as Type) or object.__type__;
+    objType := (object as Type) or type(object);
     description := objType.toString() ~ " type";
 
     def signature(Function fun)
@@ -415,7 +415,7 @@ the doc attribute of declarations."))
 	return res;
     }
 
-    attribute := (object as WithAttribute).attribute or object.__type__.attribute;
+    attribute := (object as WithAttribute).attribute or type(object).attribute;
     doc := annaUtil.findAttribute(attribute, "doc");
     if(fun := object as Function)
     {
@@ -425,7 +425,7 @@ the doc attribute of declarations."))
   }
     if(doc.empty?)
     {
-	res ~= "No documentation available for object of type " ~ (object.__type__.name or "Null");
+	res ~= "No documentation available for object of type " ~ (type(object).name or "Null");
     }
     else
     {
@@ -448,14 +448,14 @@ the doc attribute of declarations."))
 		    ).map(memb){memb as Member};
     }
 
-    if(object.__type__.module?)
+    if(type(object).module?)
     {
-	smemb := members(object.__type__);
+	smemb := members(type(object));
 
         submodule := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    mem.static? and val.__type__.module?;
+	    mem.static? and type(val).module?;
 	}
         subtype := smemb.filter(mem)
 	{
@@ -465,18 +465,18 @@ the doc attribute of declarations."))
         subother := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    !(val.__type__.module?) and !(val as Type) and (mem.type != Null) and (!mem.internal?);
+	    !(type(val).module?) and !(val as Type) and (mem.type != Null) and (!mem.internal?);
 	}
 	
 	if(!submodule.empty?)
 	{
-	    res ~= "\n\nThe % module has the following submodules:\n" % [object.__type__.name];
+	    res ~= "\n\nThe % module has the following submodules:\n" % [type(object).name];
 	    res ~= linebreak(submodule);
 	}
 
 	if(!subtype.empty?)
 	{
-	    res ~= "\n\nThe % module contains the following types:\n" % [object.__type__.name];
+	    res ~= "\n\nThe % module contains the following types:\n" % [type(object).name];
 	    res ~= linebreak(subtype);
 	}
     }
@@ -500,7 +500,7 @@ property of the Type type."))
 {
     use(reflection);
     return linebreak(
-        ((object as reflection.Type) or object.__type__).member.sort(
+        ((object as reflection.Type) or type(object)).member.sort(
 	    def Int(Object first, Object second)
 	    {
 		(first as Member).name.__cmp__((second as Member).name);

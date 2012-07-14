@@ -23,7 +23,7 @@ macro propertyAttribute(node)
 	if(decl[2].callTo?("__def__"))
 	{
 	    getter := decl[2] as Call;
-	    propType := if(getter[1].__type__ != NullLiteral){getter[1]} else {ast(__staticReturnTypeOf__(%fun)) % ["fun": decl[2]];}
+	    propType := if(type(getter[1]) != NullLiteral){getter[1]} else {ast(__staticReturnTypeOf__(%fun)) % ["fun": decl[2]];}
 	    propName := (decl[0] as Identifier).name;
             getterName := "!" ~ propName ~ "Getter";
 	    getter[0] = Identifier(getter[0], getterName);

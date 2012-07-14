@@ -294,7 +294,7 @@ often used code paths, which makes it useful for regression testing.")
 
     def headerForModule(Object module)
     {
-	return (" - " ~ (extractDocumentation(module.__type__.attribute, 1))) or "";
+	return (" - " ~ (extractDocumentation(type(module).attribute, 1))) or "";
     }
 
     def headerForType(Type type)
@@ -373,8 +373,8 @@ often used code paths, which makes it useful for regression testing.")
     
     def document(Object module)
     {
-	lookup(module.__type__, ?);
-	this.writeFile(module.__type__);
+	lookup(type(module), ?);
+	this.writeFile(type(module));
     }
 
     def Object lookup(Type module, Type parent)
@@ -398,15 +398,15 @@ often used code paths, which makes it useful for regression testing.")
 		{
 		    keywordLookup[name] = «String»[];
 		}
-		keywordLookup[name].push(path[module].link(path[global.__type__]) ~ "#" ~ mem.name);
+		keywordLookup[name].push(path[module].link(path[type(global)]) ~ "#" ~ mem.name);
 	    }
 	    
 	    if(mem.static?)
 	    {
   	        val := mem.value(?);
-		if(val.__type__.module?)
+		if(type(val).module?)
 		{
-		    lookup(module: val.__type__, parent: module);
+		    lookup(module: type(val), parent: module);
 		}
 		if(val as Type)
 		{
@@ -461,7 +461,7 @@ often used code paths, which makes it useful for regression testing.")
         submodule := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    mem.static? and val.__type__.module?;
+	    mem.static? and type(val).module?;
 	}
         subtype := smemb.filter(mem)
 	{
@@ -514,7 +514,7 @@ often used code paths, which makes it useful for regression testing.")
         subother := smemb.filter(mem)
 	{
 	    val := mem.value(?);
-	    !(val.__type__.module?) and !(val as Type) and (mem.type != Null) and !(mem as Method) and !(val as Function);
+	    !(type(val).module?) and !(val as Type) and (mem.type != Null) and !(mem as Method) and !(val as Function);
 	}
 
 	
@@ -525,7 +525,7 @@ often used code paths, which makes it useful for regression testing.")
 	submodule.each(mem)
 	{
 	    val := mem.value(?);
-	    writeFile(val.__type__);
+	    writeFile(type(val));
 	}
 	subtype.each(mem)
 	{

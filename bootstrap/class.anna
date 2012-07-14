@@ -74,7 +74,7 @@ the magical this parameter to methods and so on.")
 	    decl := chld as Call;
 	    if(!decl[2].callTo?("__def__"))
 	    {
-		if(decl[1].__type__ == NullLiteral and decl[2].__type__ != NullLiteral)
+		if(type(decl[1]) == NullLiteral and type(decl[2]) != NullLiteral)
 		{
 		    //	    print("ABC ", decl, "\n");
 		    initExtra.push(decl[0]|decl[2]);

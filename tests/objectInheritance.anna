@@ -10,7 +10,7 @@ class T
 {
     def toString()
     {
-	this.__type__.name;
+	type(this).name;
     }
 }
 
