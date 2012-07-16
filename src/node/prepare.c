@@ -98,7 +98,7 @@ static int anna_node_calculate_type_direct_children(
     
 }
 
-static void anna_method_search(
+void anna_method_search(
     anna_type_t *type, 
     wchar_t *alias,
     array_list_t *use_memb,
@@ -222,16 +222,14 @@ static anna_member_t *anna_node_calc_type_call_helper(
 	    {
 		anna_function_type_t **ft = 
 		    malloc(sizeof(anna_function_type_t *)*(al_get_count(memb_list)));
-		size_t count = 0;
 		for(i=0; i<al_get_count(memb_list); i++)
 		{
 		    anna_member_t *memb = (anna_member_t *)al_get(memb_list, i);
-		    ft[count++] = anna_member_bound_function_type(memb);
+		    ft[i] = anna_member_bound_function_type(memb);
 		}
-		//anna_node_print(99, n);
 		
 		int idx = anna_abides_search(
-		    *node_ptr, ft, count);
+		    *node_ptr, ft, al_get_count(memb_list));
 		free(ft);
 		if(idx >= 0)
 		{

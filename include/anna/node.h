@@ -519,5 +519,16 @@ anna_node_t *anna_node_type_lookup_get_payload(anna_node_t *node);
  */
 anna_node_t *anna_node_definition_specialize(anna_node_t *code, array_list_t *spec);
 
+/*
+  Search for any methods with the specified name/alias in the
+  specified type, and insert them into the supplied array list. If
+  reverse is true, search only for reverse aliases.
+ */
+void anna_method_search(
+    anna_type_t *type, 
+    wchar_t *alias,
+    array_list_t *use_memb,
+    int reverse);
+
 #endif
 

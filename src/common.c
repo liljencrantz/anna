@@ -132,16 +132,16 @@ wchar_t *str2wcs_internal( const char *in, wchar_t *out )
 
 char *wcs2str( const wchar_t *in )
 {
-	char *out;	
+    char *out;	
 	
-	out = malloc( MAX_UTF8_BYTES*wcslen(in)+1 );
+    out = malloc( MAX_UTF8_BYTES*wcslen(in)+1 );
 
-	if( !out )
-	{
-		DIE_MEM();
-	}
+    if( !out )
+    {
+	DIE_MEM();
+    }
 
-	return wcs2str_internal( in, out );
+    return wcs2str_internal( in, out );
 }
 
 char *wcs2str_internal( const wchar_t *in, char *out )
@@ -222,13 +222,27 @@ wchar_t **strv2wcsv( const char **in )
 
 const wchar_t *wsetlocale(int category, const wchar_t *locale)
 {
-    char *lang = locale?wcs2str( locale ):0;
-    char * res = setlocale(category,lang);
+    int do_free = 0;
+    char *lang = 0;
+    if(locale)
+    {	
+	if(wcslen(locale) == 0)
+	{
+	    lang = "";
+	}
+	else
+	{
+	    char *lang = wcs2str(locale);
+	    do_free = 1;
+	}
+    }
     
-    if(lang)
+    char *res = setlocale(category,lang);
+    
+    if(do_free)
 	free( lang );
 
-    if( !res )
+    if(!res)
 	return 0;
     
     if(!setlocale_buff)

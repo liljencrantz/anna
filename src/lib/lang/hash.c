@@ -381,14 +381,16 @@ static inline void ahi_search_callback2_next(
     
     anna_object_t *fun_object = anna_as_obj_fast(
 	anna_entry_get_static(
-	    anna_as_obj(key)->type, ANNA_MID_CMP));
+	    anna_as_obj(key)->type, 
+	    (mid_t)(long)anna_entry_get_static(
+		anna_as_obj_fast(hash_obj)->type,
+		ANNA_MID_COMPARATOR)));
 
     anna_vm_callback_native(
 	context,
 	ahi_search_callback2, 7, callback_param,
 	fun_object, 2, o_param
-	);    
-
+	);
 }
 
 static void ahi_search_callback2_internal(
@@ -1063,19 +1065,60 @@ static anna_type_t *anna_hash_iterator_create(
     return iter;
 }
 
+static anna_node_t *anna_node_create_fake(anna_type_t *type)
+{
+    anna_node_t *n = anna_node_create_null(0);
+    n->return_type = type;
+    return n;
+}
+
+
 static mid_t anna_hash_find_comparator(anna_type_t *type)
 {
-/*    anna_node_call_t *call = 
+    array_list_t result = AL_STATIC;
+    anna_method_search(type, L"__cmp__", &result, 0);
+    /*
+      TODO: In theory, we should handle reverse aliases here. 
+
+      In practice, since e're comparing against ourselve, it shouldn't
+      matter, but for feature completeness sake, we still should.
+     */
+
+    if(al_get_count(&result) == 0)
+    {
+//	anna_message(L"HashMap with spec %ls has no comparator\n", type->name);
+	return (mid_t)-1;
+    }
+        
+    int i;
+
+    anna_function_type_t **ft = 
+	malloc(sizeof(anna_function_type_t *)*(al_get_count(&result)));
+    for(i=0; i<al_get_count(&result); i++)
+    {
+	anna_member_t *memb = (anna_member_t *)al_get(&result, i);
+	ft[i] = anna_member_bound_function_type(memb);
+    }
+    
+    anna_node_call_t *fake_call = 
 	anna_node_create_call2(
 	    0,
-	    
-    anna_node_method_search(
-	type,
-	call,
-	result);
-*/  
-	
-    return -1;
+	    anna_node_create_fake(type),
+	    anna_node_create_fake(type)	    
+	    );
+
+    int idx = anna_abides_search(
+	fake_call, ft, al_get_count(&result));
+    free(ft);
+    if(idx >= 0)
+    {
+	anna_member_t *member = (anna_member_t *)al_get(&result, idx);
+//	anna_message(L"HashMap with spec %ls has comparator at mid %d with name %ls\n", type->name, anna_mid_get(member->name), member->name);
+	return anna_mid_get(member->name);
+    }
+    //  anna_message(L"HashMap with spec %ls has no valid comparator\n", type->name);
+
+    return (mid_t)-1;    
 }
 
 static void anna_hash_type_create_internal(
@@ -1096,14 +1139,17 @@ static void anna_hash_type_create_internal(
 
     anna_entry_set_static(type,ANNA_MID_HASH_SPECIALIZATION1, (anna_entry_t *)spec1);
     anna_entry_set_static(type,ANNA_MID_HASH_SPECIALIZATION2, (anna_entry_t *)spec2);
-/*    mid_t cmp_mid = anna_hash_find_comparator(spec1);
+    mid_t cmp_mid = anna_hash_find_comparator(spec1);
+
     if(cmp_mid == (mid_t)-1)
     {
 	anna_error(0, L"The type %ls can't be used as a HashMap key, it does not provide a valid comparison function.", spec1->name);
     }
+    else
+    {
+	anna_entry_set_static(type,ANNA_MID_COMPARATOR, (anna_entry_t *)cmp_mid);
+    }
     
-    anna_entry_set_static(type,ANNA_MID_COMPARATOR, (anna_entry_t *)cmp_mid);
-*/  
     anna_member_create(
 	type,
 	ANNA_MID_ITERATOR_TYPE,
