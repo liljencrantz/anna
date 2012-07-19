@@ -67,6 +67,12 @@ ANNA_VM_NATIVE(anna_char_sub_char, 2)
     return anna_from_int(v1 - v2);
 }
 
+ANNA_VM_NATIVE(anna_char_hash, 1)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    return anna_from_int(anna_as_char(param[0]) & ANNA_INT_FAST_MAX);
+}
+
 void anna_char_type_create()
 {
     anna_type_t *argv[] = 
@@ -106,6 +112,11 @@ void anna_char_type_create()
 	&anna_char_i_get_upper,
 	0,
 	L"The upper case equivalent of this Char.");
+
+    anna_member_create_native_method(
+	char_type, ANNA_MID_HASH_CODE, 0,
+	&anna_char_hash, int_type, 1, argv,
+	argn, 0, 0);
 
     anna_member_create_native_property(
 	char_type,
