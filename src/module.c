@@ -925,29 +925,6 @@ static void anna_module_find_expand(anna_node_t *module, array_list_t *import)
     anna_module_find_import_internal(module, L"expand", import);
 }
 
-static void anna_module_compile(anna_node_t *this, void *aux)
-{
-    if(this->node_type == ANNA_NODE_CLOSURE)
-    {
-	anna_node_closure_t *this2 = (anna_node_closure_t *)this;	
-		
-	if(this2->payload->body)
-	{
-	    anna_node_each((anna_node_t *)this2->payload->body, &anna_module_compile, 0);
-	}
-	anna_vm_compile(this2->payload);
-    }
-    if(this->node_type == ANNA_NODE_TYPE)
-    {
-	anna_node_type_t *this2 = (anna_node_type_t *)this;	
-	if(this2->payload->body && !(this2->payload->flags & ANNA_TYPE_COMPILED))
-	{
-	    this2->payload->flags |= ANNA_TYPE_COMPILED;
-	    anna_node_each((anna_node_t *)this2->payload->body, &anna_module_compile, 0);
-	}
-    }
-}
-
 /**
    Internal helper function for anna_module_load_i.
 
@@ -1015,7 +992,7 @@ static void anna_module_load_i_phase_2(array_list_t *module_list)
 	}
 	
 	debug(D_SPAM,L"AST validated for module %ls\n", module_stack->filename);
-	anna_node_each((anna_node_t *)module_node, &anna_module_compile, 0);
+	anna_node_each((anna_node_t *)module_node, &anna_node_compile, 0);
 	
 	debug(D_SPAM,L"Module %ls is compiled\n", module_stack->filename);	
 	anna_type_setup_interface(anna_stack_wrap(module_stack)->type);

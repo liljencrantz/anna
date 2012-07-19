@@ -530,5 +530,11 @@ void anna_method_search(
     array_list_t *use_memb,
     int reverse);
 
+/**
+   Function for use with anna_node_each, usefule for compiling all
+   functions and types in an AST.
+ */
+void anna_node_compile(anna_node_t *this, void *aux);
+
 #endif
 

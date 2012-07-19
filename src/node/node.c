@@ -815,3 +815,26 @@ anna_node_t *anna_node_definition_specialize(anna_node_t *code, array_list_t *sp
     return code;    
 }
 
+void anna_node_compile(anna_node_t *this, void *aux)
+{
+    if(this->node_type == ANNA_NODE_CLOSURE)
+    {
+	anna_node_closure_t *this2 = (anna_node_closure_t *)this;	
+		
+	if(this2->payload->body)
+	{
+	    anna_node_each((anna_node_t *)this2->payload->body, &anna_node_compile, 0);
+	}
+	anna_vm_compile(this2->payload);
+    }
+    if(this->node_type == ANNA_NODE_TYPE)
+    {
+	anna_node_type_t *this2 = (anna_node_type_t *)this;	
+	if(this2->payload->body && !(this2->payload->flags & ANNA_TYPE_COMPILED))
+	{
+	    this2->payload->flags |= ANNA_TYPE_COMPILED;
+	    anna_node_each((anna_node_t *)this2->payload->body, &anna_node_compile, 0);
+	}
+    }
+}
+

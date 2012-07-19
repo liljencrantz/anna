@@ -167,4 +167,9 @@ static inline void anna_type_make_sendable(anna_type_t *type)
     type->flags |= ANNA_TYPE_SENDABLE;
 }
 
+/**
+   Returns the mid of the method with the name or alias "__cmp__" that
+   is most suited to compare this type to itself.  */
+mid_t anna_type_find_comparator(anna_type_t *type);
+
 #endif

@@ -100,7 +100,7 @@ objects.")
     this.empty? and (return list);
     sortSub(
         list, 0, list.count, 
-	fun or (def Int(Object first, Object second){(first as monkeypatchMisc.Comparable).__cmp__(first as monkeypatchMisc.Comparable, second)}));
+	fun or (def Int(Object first, Object second){(first as monkeypatchMisc.Comparable).__cmp__(second)}));
     return list;
 }
 
@@ -112,7 +112,7 @@ def indexOf(List this, Object value)
 {
     this.each(idx, el)
     {
-	if((el as monkeypatchMisc.Comparable).__cmp__(el as monkeypatchMisc.Comparable, value) == 0)
+	if((el as monkeypatchMisc.Comparable).__cmp__(value) == 0)
 	{
 	    return idx;
 	}

@@ -966,7 +966,7 @@ int anna_function_line(
     return line;
 }
 
-anna_function_t *anna_function_create_specialization(
+static anna_function_t *anna_function_create_specialization(
     anna_function_t *base, anna_node_call_t *spec)
 {
     if(!base->definition)
@@ -1033,6 +1033,42 @@ anna_function_t *anna_function_create_specialization(
     sb_destroy(&sb);
         
     return res;
+}
+
+anna_function_t *anna_function_get_specialization(
+    anna_function_t *fun, anna_node_call_t *call)
+{
+    if(!fun->definition)
+    {
+	return fun;
+    }
+    array_list_t al = AL_STATIC;
+    anna_node_call_t *attr = node_cast_call(fun->definition->child[3]);
+    anna_attribute_call_all(attr, L"template", &al);
+    if(al_get_count(&al) == 0)
+    {
+	al_destroy(&al);
+	return fun;
+    }
+    al_destroy(&al);
+    
+    if(al_get_count(&al) != call->child_count)
+    {
+	anna_error((anna_node_t *)call, L"Invalid number of template arguments");
+	return fun;
+    }
+
+    anna_function_t *spec_fun = hash_get(&fun->specialization, call);
+	    
+    if(!spec_fun)
+    {
+	spec_fun = anna_function_create_specialization(fun, call);
+	if(spec_fun)
+	{
+	    hash_put(&fun->specialization, call, spec_fun);
+	}
+    }
+    return spec_fun;
 }
 
 void anna_function_specialize_body(
@@ -1115,8 +1151,7 @@ void anna_function_macro_expand(
 		f->attribute->child[i] = anna_node_macro_expand(
 		    f->attribute->child[i], stack);
 	    }
-	}
-    
+	}    
     }
 }
 

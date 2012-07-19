@@ -74,28 +74,29 @@ def Int pairHashCode(Pair this)
 
 type Comparable
 {
-    def Int __cmp__(Comparable this, Object other)
+    def Int __cmp__(Comparable this, Object other) (bound)
     {
     }
 }
 
-def Int pairCmp(Pair this, Object other)
+def Int pairCmp(Pair«%First,%Second» this, Pair«%First,%Second» other)
 (
     name(__cmp__), 
     target(Pair), 
     doc("Compares two pairs."),
+    template(%First:Comparable),
+    template(%Second:Comparable),
 )
 {
-    (that := other as Pair) or (return ?);
-    cmp1 := (this.first as Comparable).__cmp__(this.first as Comparable, that.first);
+    cmp1 := this.first.__cmp__(other.first);
     if(cmp1 == 0)
     {
-	return (this.second as Comparable).__cmp__(this.second as Comparable, that.second);
-    } 
+	return this.second.__cmp__(other.second);
+    }
     else
     {
 	return cmp1;
-    }    
+    }
 }
 
 def HashMap hashMapSetAll(HashMap this, Pair value...)

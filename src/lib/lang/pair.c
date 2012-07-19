@@ -2,17 +2,51 @@
 static hash_table_t anna_pair_specialization;
 static array_list_t anna_pair_additional_methods = AL_STATIC;
 
-static void add_pair_method(void *key, void *value, void *aux)
+static anna_type_t *anna_pair_first_type(anna_type_t *type)
 {
-    anna_type_t *pair = (anna_type_t *)value;
-    anna_function_t *fun = (anna_function_t *)aux;
-    anna_member_create_method(pair, anna_mid_get(fun->name), fun);
+    return (anna_type_t *)anna_entry_get_static(type, ANNA_MID_PAIR_SPECIALIZATION1);
 }
 
-void anna_pair_add_method(anna_function_t *fun)
+static anna_type_t *anna_pair_second_type(anna_type_t *type)
 {
-    al_push(&anna_pair_additional_methods, fun);
-    hash_foreach2(&anna_pair_specialization, &add_pair_method, fun);
+    return (anna_type_t *)anna_entry_get_static(type, ANNA_MID_PAIR_SPECIALIZATION2);
+}
+
+static anna_function_t *anna_pair_specialize(
+    anna_type_t *pair, anna_function_t *fun)
+{
+    anna_node_call_t *spec = anna_node_create_call2(
+	0, anna_node_create_null(0), 
+	anna_node_create_dummy(
+	    0, 
+	    anna_type_wrap(
+		anna_pair_first_type(pair))),
+	anna_node_create_dummy(
+	    0, 
+	    anna_type_wrap(
+		anna_pair_second_type(pair))));
+    anna_function_t *res = anna_function_get_specialization(
+	fun, spec);
+    if(!res->code)
+    {
+	anna_node_each(res->body, &anna_node_compile, 0);
+	anna_vm_compile(res);
+    }
+    
+    return res;
+}
+
+static void anna_pair_add_method_internal(
+    anna_type_t *pair, anna_function_t *fun)
+{
+    if(wcscmp(fun->name, L"__cmp__")==0)
+    {
+	if((mid_t)-1 == anna_type_find_comparator(anna_pair_first_type(pair)))
+	    return;
+	if((mid_t)-1 == anna_type_find_comparator(anna_pair_second_type(pair)))
+	    return;
+    }
+    anna_member_create_method(pair, anna_mid_get(fun->name), anna_pair_specialize(pair, fun));
 }
 
 static void anna_pair_add_all_extra_methods(anna_type_t *pair)
@@ -22,10 +56,23 @@ static void anna_pair_add_all_extra_methods(anna_type_t *pair)
     {
 	anna_function_t *fun = (anna_function_t *)al_get(&anna_pair_additional_methods, i);
 //	anna_message(L"Add function %ls to type %ls\n", fun->name, pair->name);
-	anna_member_create_method(pair, anna_mid_get(fun->name), fun);
+	anna_pair_add_method_internal(
+	    pair, fun);
     }
 }
 
+static void add_pair_method(void *key, void *value, void *aux)
+{
+    anna_type_t *pair = (anna_type_t *)value;
+    anna_function_t *fun = (anna_function_t *)aux;
+    anna_pair_add_method_internal(pair, fun);
+}
+
+void anna_pair_add_method(anna_function_t *fun)
+{
+    al_push(&anna_pair_additional_methods, fun);
+    hash_foreach2(&anna_pair_specialization, &add_pair_method, fun);
+}
 
 anna_object_t *anna_pair_create(anna_entry_t *first, anna_entry_t *second)
 {
@@ -158,7 +205,7 @@ static inline void anna_pair_internal_init()
 void anna_pair_type_create()
 {
     anna_pair_internal_init();
-    hash_put(&anna_pair_specialization, anna_tt_make(object_type, object_type), pair_type);
+    hash_put(&anna_pair_specialization, anna_tt_make(hash_key_type, hash_key_type), pair_type);
     anna_pair_type_create_internal(pair_type, object_type, object_type);
 }
 
