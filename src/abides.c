@@ -63,12 +63,17 @@ static int anna_abides_fault_count_internal(
     anna_type_t *role_model, 
     int verbose)
 {
-    
     if(contender == role_model || contender == null_type)
     {
 	return 0;
     }
-    
+/*    
+    if((role_model == hash_key_type) && (contender != object_type))
+    {
+	anna_message(L"WEEE %ls\n", contender->name);
+	verbose += 10;
+    }
+*/  
     anna_tt_t tt = 
 	{
 	    contender, role_model
@@ -81,6 +86,7 @@ static int anna_abides_fault_count_internal(
     }
     else if(count != 0)
     {
+	debug(verbose, L"Cached result is %d\n", count-1);
 	return count - 1;
     }
     

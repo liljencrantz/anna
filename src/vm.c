@@ -476,7 +476,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    
 //	    anna_message(L"Call function %ls with %d params\n", fun->name, param);
 	    
-#ifdef ANNA_CHECK_VM
+//#ifdef ANNA_CHECK_VM
 	    if(!fun)
 	    {
 		debug(D_CRITICAL, L"In function %ls\n", context->frame->function->name );
@@ -487,7 +487,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		anna_frame_print(context->frame);
 		CRASH;
 	    }
-#endif
+//#endif
 	    context->frame->code += sizeof(*op);
 	    context->function_object = wrapped;
 	    fun->native(context);

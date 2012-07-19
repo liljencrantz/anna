@@ -644,7 +644,7 @@ static void anna_hash_init(anna_context_t *context)
     ahi_init(ahi_unwrap(this), 1);
     this->flags |= ANNA_OBJECT_HASH;
     
-    if(likely(list != null_object))
+    if((list != null_object) && anna_list_get_count(list) != 0)
     {
 	anna_entry_t *argv[] =
 	    {
@@ -1144,6 +1144,7 @@ static void anna_hash_type_create_internal(
     if(cmp_mid == (mid_t)-1)
     {
 	anna_error(0, L"The type %ls can't be used as a HashMap key, it does not provide a valid comparison function.", spec1->name);
+	assert(0);
     }
     else
     {
@@ -1280,12 +1281,48 @@ static inline void anna_hash_internal_init()
     hash_init(&anna_hash_specialization, hash_tt_func, hash_tt_cmp);
 }
 
+ANNA_VM_NATIVE(anna_hash_key_cmp, 2)
+{
+    return null_entry;
+}
+
+ANNA_VM_NATIVE(anna_hash_key_hash, 1)
+{
+    return null_entry;
+}
+
 void anna_hash_type_create()
 {
+    anna_type_t *hk_argv[] = 
+	{
+	    hash_key_type,
+	    hash_key_type
+	};
+    wchar_t *hk_argn[] = 
+	{
+	    L"this", L"other"
+	};
+    
+    anna_member_create_native_method(
+	hash_key_type,
+	ANNA_MID_CMP,
+	0,
+	&anna_hash_key_cmp,
+	int_type,
+	2,
+	hk_argv,
+	hk_argn, 0, 
+	L"Comparison method. Should return a negative number, zero or a positive number if the compared object is smaller than, equal to or greater than the object being called, respectively. If the objects can't be compared, null should be returned.");
+    anna_member_create_native_method(
+	hash_key_type, ANNA_MID_HASH_CODE, 0,
+	&anna_hash_key_hash, int_type, 1, hk_argv,
+	hk_argn, 0,
+	L"Hash function. Should always return the same number for the same object and should also return the same number for two equal objects.");
+
     anna_hash_internal_init();
-    hash_put(&anna_hash_specialization, anna_tt_make(object_type, object_type), hash_type);
-    anna_alloc_mark_permanent(hash_type);    
-    anna_hash_type_create_internal(hash_type, object_type, object_type);
+    hash_put(&anna_hash_specialization, anna_tt_make(hash_key_type, object_type), hash_type);
+    anna_alloc_mark_permanent(hash_type);
+    anna_hash_type_create_internal(hash_type, hash_key_type, object_type);
 }
 
 anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)

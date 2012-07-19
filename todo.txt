@@ -1,4 +1,5 @@
 1.0 RELEASE CRITERIA:
+* Alternative Lua-like string syntax, maybe /===/This is a string literal/===/
 * Drop all members from Object type.
   - Renamoe Object to RootType.
   - HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
@@ -35,7 +36,8 @@
   - next
   - bt (Alias for frame.trace)
   - clear function for clearing a breakpoint
-  - Function.source property to show the source code of non-native function definitions. Function.toString() could show the source code with line numbers, in order to make break easier to work with?
+  - Function.source property to show the source code of non-native function definitions.
+  - Function.toString() should show the source code with line numbers, in order to make break easier to work with.
   - Breakpoint insertion at start of any native method
   - variable write access in debugger? 
 
@@ -126,13 +128,13 @@
 * Fix if/else snafu. Current solution is hardly elegant and it fails in some edge cases. Hopefully, we can come up with something significantly better...
 * The GC uses recursion, we should switch to a stack instead in order to not smash the call stack on e.g. a huge linked list.
 * Update the 'struct' macro so that it can be used to easily define types geared towards data storage. 
+* Move most of gc to separate thread
 
 1.1 RELEASE CRITERIA:
 * ImutableCall
 * ImutableHashMap
 * repl
   - tab completion
-* Move most of gc to separate thread
 * During startup, cache contents of all directories in ANNA_PATH so that we don't have to do crazy numbers of stat calls
 * getopt replacement
   - basic design
@@ -140,14 +142,13 @@
   - use it in annabind, annaxgettext and annadoc  
 * anna should use getopt to provide switches for setting the path, making dry runs, controlling the GC, etc.
 * Working error handling
-  - catch function
 * Documentation coverage of standard API functions and types should be over 99 %.
 * Constructors and inheritance _fully_ working
   - multiple constructors through aliases
 * Add internal memory usage of Hashes, Buffers and Lists to GC estimates
 * Function for obtaining the amount of memory used by an object
 * Protected members
-* Multiple inheritance clashes aren't handled sanely
+* Multiple inheritance clashes handled sanely
 * List.__get__(List«Int» index)
 * List.__set__(List«Int» index, List value)
 * Range.rest
@@ -183,7 +184,6 @@ Go over list of built in functions and methods and mark the right ones as pure
 Can the list of anna_node_*_t structs be reduced? Can the node type specific code in anna_node*.c be simplified? It currently looks a lot like spagetti with huge numbers of switch statements. One possibility would be to add function pointers to the node types.
 Should finalizers be completely dropped? If we drop them, we get a lot more freedom with regards to GC algorithms, but we on the other hand can't e.g. close files on exit, and we'd have to use the GC for a bunch of extra stuff, like list payloads
 It might be useful to have a function to construct an instance of a specific list type. Should this be generalized to runtime template specialization support? Might be useful. Means a whole bunch of future potential optimizations become way harder, though.
-Should Range really be mutable?
 How should the argument list for inherited constructors be handled?
 We may want reverse aliases for static methods, something like (aliasReverseStatic(String::convert))
 Type member setup needs some dependency resolution in order for type calculations to work properly.

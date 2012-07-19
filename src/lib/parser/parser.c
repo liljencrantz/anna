@@ -293,6 +293,33 @@ ANNA_VM_NATIVE(anna_node_wrapper_cmp, 2)
 	anna_node_unwrap(anna_as_obj(param[1])))); 
 }
 
+static void anna_node_wrapper_set_location_each(
+    anna_node_t *this, void *aux)
+{
+    anna_node_t *src = (anna_node_t *)aux;
+    anna_node_set_location(this, &src->location);
+}
+
+ANNA_VM_NATIVE(anna_node_wrapper_set_location, 2)
+{
+    ANNA_ENTRY_NULL_CHECK(param[0]);
+    ANNA_ENTRY_NULL_CHECK(param[1]);
+
+    anna_node_t *this = anna_node_unwrap(anna_as_obj(param[0])); 
+    anna_node_t *src = anna_node_unwrap(anna_as_obj(param[1])); 
+
+    if(!this || !src)
+    {
+	return null_entry;
+    }
+    
+    anna_node_each(
+	this, 
+	&anna_node_wrapper_set_location_each,
+	(void *)src);
+    return param[0];
+}
+
 ANNA_VM_NATIVE(anna_node_wrapper_hash, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
@@ -357,19 +384,40 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 	}
     ;
     
+    anna_type_t *loc_argv[] = 
+	{
+	    node_type,
+	    node_type
+	}
+    ;
+    wchar_t *loc_argn[] =
+	{
+	    L"this", L"location"
+	}
+    ;
+    
     anna_member_create(node_type, ANNA_MID_NODE_PAYLOAD, 0, null_type);
     
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"replace"), 0,
 	&anna_node_wrapper_i_replace,
 	node_type, 3, replace_argv, replace_argn, 0,
-	L"Replace all instances of the specified identifier AST node within a copy of the original AST tree with the specified replacement AST node and return the nesulting new tree. The original tree is not modified.");
+	L"Replace all instances of the specified identifier AST node within a "
+	"copy of the original AST tree with the specified replacement AST node "
+	"and return the nesulting new tree. The original tree is not modified.");
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"error"), 0,
 	&anna_node_wrapper_i_error,
 	node_type, 2, error_argv, error_argn, 0,
 	L"Report a compiler error at the source code location of the specified node");
+
+    anna_member_create_native_method(
+	node_type, anna_mid_get(L"setLocation"), 0,
+	&anna_node_wrapper_set_location,
+	node_type, 2, loc_argv, loc_argn, 0,
+	L"Overwrite the location fields (filename and line number) of this node "
+	"and all it\'s child nodes to the same location as the specified AST node has.");
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"toString"),
@@ -398,7 +446,7 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 
     anna_type_t *cmp_argv[] = 
 	{
-	    node_type, object_type
+	    node_type, node_type
 	}
     ;
     wchar_t *cmp_argn[]=
@@ -408,12 +456,12 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
     ;
 
     anna_member_create_native_method(
-	node_type, anna_mid_get(L"__cmp__"), 0,
+	node_type, ANNA_MID_CMP, 0,
 	&anna_node_wrapper_cmp, 
 	int_type, 2, cmp_argv, cmp_argn, 0, 0);
 
     anna_member_create_native_method(
-	node_type, anna_mid_get(L"hashCode"), 0,
+	node_type, ANNA_MID_HASH_CODE, 0,
 	&anna_node_wrapper_hash,
 	int_type, 1, cmp_argv, cmp_argn, 0, 0);
 

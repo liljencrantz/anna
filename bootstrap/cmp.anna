@@ -22,7 +22,7 @@ macro __lte__(node)
 
 macro __eq__(node)
 {
-    ast(lang.__eqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]);
+    ast(lang.__eqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __neq__(node)

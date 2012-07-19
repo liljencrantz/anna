@@ -722,7 +722,7 @@ typedef struct
 extern anna_type_t *type_type, *object_type, *int_type, *string_type, 
     *mutable_string_type, *imutable_string_type, *char_type, *null_type,
     *string_type, *char_type, *float_type, *member_type, *range_type, 
-    *complex_type, *hash_type, *pair_type, *buffer_type, 
+    *complex_type, *hash_type, *hash_key_type, *pair_type, *buffer_type, 
     *function_type_base, *continuation_type, *continuation_variable_type,
     *sendable_type;
 

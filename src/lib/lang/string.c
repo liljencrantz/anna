@@ -878,7 +878,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_type_t *c_argv[] = 
 	{
 	    type,
-	    object_type
+	    string_type
 	}
     ;
     
@@ -1082,7 +1082,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
 	anna_member_alias(type, mmid, L"__set__");
     }
-    else
+//    else
     {
 	anna_member_create_native_method(
 	    type,

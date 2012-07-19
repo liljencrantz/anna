@@ -441,7 +441,7 @@ static void anna_module_bootstrap_monkeypatch(
 	anna_function_t *fun = anna_function_unwrap(fun_obj);
 	if(!fun)
 	{
-	    anna_message(L"Invalid monkeypatch in file %ls\n", name);
+	    //anna_message(L"Invalid monkeypatch in file %ls\n", name);
 	    continue;
 	}
 	

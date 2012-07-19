@@ -69,7 +69,14 @@ def Int pairHashCode(Pair this)
     doc("Returns a hash code for this Pair."),
 )
 {
-    this.first.hashCode() ^bitand this.second.hashCode()
+    (this.first as HashKey).hashCode() ^bitand (this.second as HashKey).hashCode()
+}
+
+type Comparable
+{
+    def Int __cmp__(Comparable this, Object other)
+    {
+    }
 }
 
 def Int pairCmp(Pair this, Object other)
@@ -80,10 +87,10 @@ def Int pairCmp(Pair this, Object other)
 )
 {
     (that := other as Pair) or (return ?);
-    cmp1 := this.first.__cmp__(that.first);
+    cmp1 := (this.first as Comparable).__cmp__(this.first as Comparable, that.first);
     if(cmp1 == 0)
     {
-	return this.second.__cmp__(that.second);
+	return (this.second as Comparable).__cmp__(this.second as Comparable, that.second);
     } 
     else
     {
@@ -94,12 +101,13 @@ def Int pairCmp(Pair this, Object other)
 def HashMap hashMapSetAll(HashMap this, Pair value...)
 (
     name(__setAll__), 
-    target(HashMap), 
+    target(HashMap),
 )
 {
     value.each(pair)
     {
-	this[pair.first] = pair.second;
+//	print(pair.first, " => ", pair.first as HashKey);
+	this[pair.first as HashKey] = pair.second;
     }
     return this;
 }

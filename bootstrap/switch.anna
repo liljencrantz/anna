@@ -192,6 +192,5 @@ expressions, not just Int values.
     res := Call(node, switchBlock) % [
 	"val": Identifier(node, identifier("switchValue")), 
 	"input": node[0]];
-//    print(res);
     return res;
 }

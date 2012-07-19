@@ -194,7 +194,7 @@ static anna_member_t *anna_node_calc_type_call_helper(
     {
 	case 0:
 	{
-	    anna_error((anna_node_t *)*node_ptr, L"No candidates for method call %ls\n", anna_mid_get_reverse((*node_ptr)->mid));
+	    anna_error((anna_node_t *)*node_ptr, L"No candidates for method call %ls::%ls\n", type->name, anna_mid_get_reverse((*node_ptr)->mid));
 	    break;
 	}
 
