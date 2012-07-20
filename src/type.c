@@ -1803,7 +1803,6 @@ mid_t anna_type_find_comparator(anna_type_t *type)
 
     if(al_get_count(&result) == 0)
     {
-//	anna_message(L"HashMap with spec %ls has no comparator\n", type->name);
 	return (mid_t)-1;
     }
         
@@ -1830,11 +1829,51 @@ mid_t anna_type_find_comparator(anna_type_t *type)
     if(idx >= 0)
     {
 	anna_member_t *member = (anna_member_t *)al_get(&result, idx);
-//	anna_message(L"HashMap with spec %ls has comparator at mid %d with name %ls\n", type->name, anna_mid_get(member->name), member->name);
 	return anna_mid_get(member->name);
     }
-    //  anna_message(L"HashMap with spec %ls has no valid comparator\n", type->name);
+    return (mid_t)-1;    
+}
 
+mid_t anna_type_find_hash_code(anna_type_t *type)
+{
+    array_list_t result = AL_STATIC;
+    anna_method_search(type, L"hashCode", &result, 0);
+    /*
+      TODO: In theory, we should handle reverse aliases here. 
+
+      In practice, since e're comparing against ourselve, it shouldn't
+      matter, but for feature completeness sake, we still should.
+     */
+
+    if(al_get_count(&result) == 0)
+    {
+	return (mid_t)-1;
+    }
+        
+    int i;
+
+    anna_function_type_t **ft = 
+	malloc(sizeof(anna_function_type_t *)*(al_get_count(&result)));
+    for(i=0; i<al_get_count(&result); i++)
+    {
+	anna_member_t *memb = (anna_member_t *)al_get(&result, i);
+	ft[i] = anna_member_bound_function_type(memb);
+    }
+    
+    anna_node_call_t *fake_call = 
+	anna_node_create_call2(
+	    0,
+	    anna_node_create_fake(type)
+	    );
+
+    int idx = anna_abides_search(
+	fake_call, ft, al_get_count(&result));
+    free(ft);
+    if(idx >= 0)
+    {
+	anna_member_t *member = (anna_member_t *)al_get(&result, idx);
+	return anna_mid_get(member->name);
+    }
     return (mid_t)-1;    
 }
 

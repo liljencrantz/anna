@@ -22,7 +22,7 @@ static anna_function_t *anna_pair_specialize(
 	    anna_type_wrap(
 		anna_pair_first_type(pair))),
 	anna_node_create_dummy(
-	    0, 
+	    0,
 	    anna_type_wrap(
 		anna_pair_second_type(pair))));
     anna_function_t *res = anna_function_get_specialization(
@@ -46,6 +46,14 @@ static void anna_pair_add_method_internal(
 	if((mid_t)-1 == anna_type_find_comparator(anna_pair_second_type(pair)))
 	    return;
     }
+    if(wcscmp(fun->name, L"hashCode")==0)
+    {
+	if((mid_t)-1 == anna_type_find_hash_code(anna_pair_first_type(pair)))
+	    return;
+	if((mid_t)-1 == anna_type_find_hash_code(anna_pair_second_type(pair)))
+	    return;
+    }
+
     anna_member_create_method(pair, anna_mid_get(fun->name), anna_pair_specialize(pair, fun));
 }
 

@@ -62,14 +62,23 @@ def String pairToString(Pair this)
     return "" ~ (this.first or "null") ~ "|" ~ (this.second or "null");
 }
 
-def Int pairHashCode(Pair this)
+type Hashable
+{
+    def Int hashCode(Hashable this) (bound)
+    {
+    }
+}
+
+def Int pairHashCode(Pair«%First,%Second» this)
 (
     name(hashCode), 
     target(Pair), 
     doc("Returns a hash code for this Pair."),
+    template(%First:Hashable),
+    template(%Second:Hashable),
 )
 {
-    (this.first as HashKey).hashCode() ^bitand (this.second as HashKey).hashCode()
+    this.first.hashCode() + this.second.hashCode()
 }
 
 type Comparable

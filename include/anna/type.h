@@ -169,7 +169,14 @@ static inline void anna_type_make_sendable(anna_type_t *type)
 
 /**
    Returns the mid of the method with the name or alias "__cmp__" that
-   is most suited to compare this type to itself.  */
+   is most suited to compare this type to itself, or -1 if no such
+   method exists.  */
 mid_t anna_type_find_comparator(anna_type_t *type);
+
+/**
+   Returns the mid of the method with the name or alias "hashCode"
+   that takes no additional arguments, or -1 if no such method
+   exists. */
+mid_t anna_type_find_hash_code(anna_type_t *type);
 
 #endif

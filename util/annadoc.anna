@@ -507,9 +507,9 @@ often used code paths, which makes it useful for regression testing.")
 		}
 	    }
 	}
-	subop := opMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair).first.__cmp__((second as Pair).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
+      subop := opMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
 
-	subfun2 := funMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair).first.__cmp__((second as Pair).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
+	subfun2 := funMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
 
         subother := smemb.filter(mem)
 	{
