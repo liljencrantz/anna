@@ -737,6 +737,8 @@ extern anna_type_t *type_type, *object_type, *int_type, *string_type,
     *sendable_type;
 
 extern anna_object_t *null_object, *anna_wrap_method;
+
+extern anna_member_t *null_member;
 /**
    Error counter. Every time the parser or compiler detects a
    non-critical error, this counter is increased.

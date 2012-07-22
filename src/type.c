@@ -1799,6 +1799,11 @@ static anna_node_t *anna_node_create_fake(anna_type_t *type)
 
 mid_t anna_type_find_comparator(anna_type_t *type)
 {
+    if(type == null_type)
+    {
+	return anna_mid_get(L"__cmp__");
+    }
+
     array_list_t result = AL_STATIC;
     anna_method_search(type, L"__cmp__", &result, 0);
     /*
@@ -1843,6 +1848,11 @@ mid_t anna_type_find_comparator(anna_type_t *type)
 
 mid_t anna_type_find_hash_code(anna_type_t *type)
 {
+    if(type == null_type)
+    {
+	return anna_mid_get(L"hashCode");
+    }
+    
     array_list_t result = AL_STATIC;
     anna_method_search(type, L"hashCode", &result, 0);
     /*

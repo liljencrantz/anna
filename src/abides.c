@@ -63,6 +63,7 @@ static int anna_abides_fault_count_internal(
     anna_type_t *role_model, 
     int verbose)
 {
+    
     if(contender == role_model || contender == null_type)
     {
 	return 0;

@@ -444,7 +444,7 @@ int anna_node_validate_call_parameters(
 	    {
 		if(print_error)
 		{
-		    anna_error(call->child[i], L"Invalid named parameter %d", p->arg1->node_type);
+		    anna_error(call->child[i], L"Invalid name for named parameter.");
 		}
 		goto END;
 	    }
@@ -456,7 +456,7 @@ int anna_node_validate_call_parameters(
 		{
 		    if(print_error)
 		    {
-			anna_error(call->child[i], L"Invalid named parameter");
+			anna_error(call->child[i], L"Invalid name for named parameter.");
 		    }
 		    goto END;
 		}

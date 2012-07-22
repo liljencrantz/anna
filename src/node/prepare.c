@@ -166,6 +166,11 @@ static anna_member_t *anna_node_calc_type_call_helper(
     anna_node_call_t **node_ptr,
     array_list_t *memb_list)
 {
+    if(type == null_type)
+    {
+	return null_member;
+    }
+    
     anna_member_t *member = 0;
     anna_node_call_t *n2=0;
     array_list_t memb_list_reverse = AL_STATIC;
@@ -296,13 +301,6 @@ static anna_node_t *anna_node_calculate_type_internal_call(
     {
 	return (anna_node_t *)n;
     }
-	    
-    if(type == null_type)
-    {
-	anna_error(n->object, L"Invalid type for object in call");
-	return (anna_node_t *)n;
-    }	    
-    
     if(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL)
     {
 	type = anna_node_resolve_to_type(n->object, stack);
@@ -317,11 +315,6 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 
     anna_type_setup_interface(type);    
     anna_type_prepare_member(type, n->mid);
-
-    /*
-    anna_function_search_internal(
-	type->GGG, name, candidates, 0, 0);
-    */
 
     array_list_t memb_list = AL_STATIC;
     anna_member_t *member = 0;
@@ -648,11 +641,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		}
 	    }
 
-	    if(t == null_type)
-	    {
-		anna_error(this, L"Invalid type for variable %ls", id->name);
-	    }
-	    else if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT)
+	    if(!t || t == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
 		anna_error(this, L"Unknown identifier: %ls", id->name);
 	    }

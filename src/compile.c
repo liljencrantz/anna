@@ -853,14 +853,14 @@ static void anna_vm_compile_i(
 		}
 		anna_vm_member(ctx, instr, node2->mid);
 	    }
-		
+	    
 	    anna_function_type_t *template = anna_function_type_unwrap(
 		mem->type);
 	    
 	    int i;
 	    
 	    int ra = template->input_count;
-
+	    
 	    if(anna_member_is_bound(mem) && !(node2->access_type & ANNA_NODE_ACCESS_STATIC_MEMBER))
 	    {
 		ra--;

@@ -77,6 +77,7 @@ anna_type_t *object_type=0,
     ;
 
 anna_object_t *null_object=0;
+anna_member_t *null_member;
 
 const static anna_type_data_t anna_lang_type_data[] = 
 {
@@ -103,7 +104,6 @@ const static anna_type_data_t anna_lang_type_data[] =
 static void anna_null_type_create()
 {
     int i;
-    anna_member_t *null_member;
     null_member = calloc(1,sizeof(anna_member_t));
     null_member->type = null_type;
     null_member->offset=0;
@@ -138,6 +138,7 @@ static void anna_null_type_create()
     anna_type_document(
 	null_type,
 	L"The null object is a special object. It can be cast to any other type. All members hold the value null. Calling a null value as a function will return null. The null object can be cast as any Object.");  
+
 }
 
 

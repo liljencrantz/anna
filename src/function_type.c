@@ -17,7 +17,26 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
     }
     if(type == null_type)
     {
-	return 0;
+	anna_type_t *argv[] = 
+	    {
+		anna_hash_type_get(string_type, object_type),
+		object_type
+	    }
+	;
+	wchar_t *argn[] = 
+	    {
+		L"named", L"unnamed"
+	    }
+	;
+	
+	type = anna_type_get_function(
+	    null_type,
+	    2,
+	    argv,
+	    argn,
+	    0,
+	    ANNA_FUNCTION_VARIADIC | ANNA_FUNCTION_VARIADIC_NAMED);
+	return anna_function_type_unwrap(type);
     }
     
     anna_function_type_t **function_ptr = 

@@ -13,7 +13,7 @@ def String hashMapToString(HashMap«%Key, %Value» this)
     template(%Value:Object),
 )
 {
-    return "[" ~ ", ".join(this.map(key, value){"" ~ key ~ " : " ~ (value or "null")}) ~ "]";
+    return "[" ~ ", ".join(this.map(key, value){"".thaw ~ key ~ ": " ~ (value or "?")}) ~ "]";
 }
 
 def String intFormat(Int this, Int base=10)
