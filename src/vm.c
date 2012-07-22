@@ -1277,19 +1277,21 @@ void anna_bc_print(char *code)
 	    
 		case ANNA_INSTR_LIST:
 		{
-		    anna_message(L"List creation\n\n");
+		    anna_op_type_t *op = (anna_op_type_t *)code;
+		    anna_message(L"Create List«%ls»\n\n", op->value->name);
 		    break;
 		}
 	    
 		case ANNA_INSTR_CAST:
 		{
-		    anna_message(L"Type cast\n\n");
+		    anna_op_type_t *op = (anna_op_type_t *)code;
+		    anna_message(L"Cast top stack value to type %ls\n\n", op->value->name);
 		    break;
 		}
 	    
 		case ANNA_INSTR_FOLD:
 		{
-		    anna_message(L"List fold\n\n");
+		    anna_message(L"Pop topmost stack element into list located in the new top element\n\n");
 		    break;
 		}
 	    

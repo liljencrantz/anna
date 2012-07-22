@@ -526,7 +526,6 @@ static void anna_node_call_map_process_new_node(anna_node_t *node, anna_stack_te
     anna_node_calculate_type_children(node);
 }
 
-
 void anna_node_call_map(
     anna_node_call_t *call, 
     anna_function_type_t *target, 
@@ -643,6 +642,9 @@ void anna_node_call_map(
 	    else
 	    {
 		order[i] = anna_node_clone_deep(param_default[i]);
+		anna_node_set_stack(
+		    order[i],
+		    stack_global);
 	    }
 	    
 	    /*

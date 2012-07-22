@@ -1154,7 +1154,6 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	}
     }    
     
-    anna_node_print(D_SPAM, node);
     anna_node_register_declarations(node, module_stack);
     
     module_stack->flags |= ANNA_STACK_NAMESPACE;

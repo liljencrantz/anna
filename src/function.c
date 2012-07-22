@@ -229,6 +229,10 @@ static anna_node_t *anna_function_setup_arguments(
 	    }
 	    f->input_default[i] = anna_attribute_call(
 		(anna_node_call_t *)decl->child[3], L"default");
+	    if(f->input_default[i])
+		anna_node_set_stack(
+		    f->input_default[i],
+		    stack_global);
 	    
 	    anna_type_t *t = f->input_type[i];
 
@@ -726,7 +730,9 @@ anna_function_t *anna_macro_create(
     result->attribute = (anna_node_call_t *)anna_node_clone_deep(definition->child[2]);
     
     result->definition = definition;
-    result->body = (anna_node_call_t *)definition->child[3];
+    result->body = (anna_node_call_t *)
+	anna_node_clone_deep(
+	    definition->child[3]);
     result->name = anna_intern(name);
     
     result->return_type = node_type;
@@ -1070,6 +1076,29 @@ anna_function_t *anna_function_get_specialization(
     }
     return spec_fun;
 }
+
+anna_function_t *anna_function_compile_specialization(
+    anna_function_t *fun, anna_node_call_t *call)
+{
+    anna_function_t *res = anna_function_get_specialization(fun, call);
+    if(!res)
+    {
+	return 0;
+    }
+    
+    if(!res->code)
+    {
+	anna_node_resolve_identifiers((anna_node_t *)res->body);
+	anna_node_calculate_type_children((anna_node_t *)res->body);
+	anna_node_each(
+	    (anna_node_t *)res->body, 
+	    (anna_node_function_t)&anna_node_validate, 
+	    res->body->stack);
+	anna_node_each(res->body, &anna_node_compile, 0);
+	anna_vm_compile(res);
+    }
+}
+
 
 void anna_function_specialize_body(
     anna_function_t *f)

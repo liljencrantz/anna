@@ -212,9 +212,21 @@ int anna_function_line(
 
 /**
    Specialize the specified function with the specified template
-   specialization arguments
+   specialization arguments. If the base function is in fact not a
+   template function, the original function is returned. If the
+   template argument list is invalid, null is returned, but no error
+   is printed.
  */
 anna_function_t *anna_function_get_specialization(
+    anna_function_t *base, anna_node_call_t *spec);
+
+/**
+   Same as anna_function_get_specialization, but it also fully
+   compiles the resulting function into bytecode. This special case
+   function is for internal use during monkey patching and should not
+   be used in general.
+ */
+anna_function_t *anna_function_compile_specialization(
     anna_function_t *base, anna_node_call_t *spec);
 
 void anna_function_specialize_body(

@@ -25,13 +25,8 @@ static anna_function_t *anna_pair_specialize(
 	    0,
 	    anna_type_wrap(
 		anna_pair_second_type(pair))));
-    anna_function_t *res = anna_function_get_specialization(
+    anna_function_t *res = anna_function_compile_specialization(
 	fun, spec);
-    if(!res->code)
-    {
-	anna_node_each(res->body, &anna_node_compile, 0);
-	anna_vm_compile(res);
-    }
     
     return res;
 }

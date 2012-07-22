@@ -83,6 +83,10 @@ static inline anna_activation_frame_t *anna_frame_get_static(anna_context_t *con
     return res;
 }
 
+/**
+   This is the function used to invoke a bytecode function during
+   runtime. It will set up an anna_activation_frame pf the right size.
+ */
 static void anna_frame_push(anna_context_t *context) 
 {
     anna_object_t *wfun = context->function_object;

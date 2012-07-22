@@ -519,7 +519,10 @@ anna_node_t *anna_node_clone_shallow(anna_node_t *n)
     anna_alloc_gc_block();
     anna_node_t *r = anna_alloc_node(sz);
     memcpy(r,n,sz);
+    r->return_type=0;
+    r->stack=0;
     r->wrapper=0;
+    r->transformed=0;
     
     if( (n->node_type == ANNA_NODE_CALL) || 
 	(n->node_type == ANNA_NODE_NOTHING) || 

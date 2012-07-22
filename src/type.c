@@ -90,6 +90,9 @@ anna_type_t *anna_type_create(
 	
 	result->attribute = node_cast_call(definition->child[1]);
 	anna_attribute_call_all(result->attribute, L"template", &al);
+
+	FIXME("This specialization should not be performed on the type definition, this interfereswith inheritance!");
+	
 	result->body = node_cast_call(
 	    anna_node_replace(
 		anna_node_definition_specialize(
@@ -900,6 +903,10 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     }
     
     anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
+    anna_node_set_stack(
+	def,
+	type->definition->stack);
+    
     anna_node_call_t *attr = node_cast_call(def->child[1]);
     int i;
 

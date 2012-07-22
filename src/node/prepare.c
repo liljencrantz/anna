@@ -180,6 +180,7 @@ static anna_member_t *anna_node_calc_type_call_helper(
     {
 	n2 = (anna_node_call_t *)anna_node_clone_shallow(
 	    (anna_node_t *)*node_ptr);
+	n2->stack = (*node_ptr)->stack;
 	anna_node_t *tmp = n2->object;
 	n2->object = n2->child[0];
 	n2->child[0] = tmp;
@@ -1302,14 +1303,14 @@ static anna_node_t *resolve_identifiers_each(
     if(use)
     {
 	anna_node_t *src_node = anna_node_clone_deep(use->node);
-	src_node->stack = this->stack;
+	anna_node_set_stack(src_node, this->stack);
 	src_node = anna_node_calculate_type(src_node);
 	anna_node_t *res = (anna_node_t *)anna_node_create_member_get(
 	    &id->location,
 	    ANNA_NODE_MEMBER_GET,
 	    src_node,
 	    anna_mid_get(id->name));
-	anna_node_set_stack(res, id->stack);
+	anna_node_set_stack(res, this->stack);
 	return res;
     }
     return this;    

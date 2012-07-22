@@ -302,7 +302,6 @@ static void anna_node_print_internal(
 	    sb_printf(sb,L"%ls;\n", anna_mid_get_reverse(this2->mid));
 	    anna_node_print_internal(sb,this2->value, indentation+1);
 	    sb_printf(sb,L")");
-
 	    break;
 	}
 
@@ -340,11 +339,20 @@ static void anna_node_print_internal(
 	
 	case ANNA_NODE_CONSTRUCT:
 	case ANNA_NODE_CALL:
+	case ANNA_NODE_NOTHING:	
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
 	    int i;
 //	    sb_printf(sb,L"/*%d*/", this2);
-	    anna_node_print_internal(sb,this2->function, indentation);
+	    if(this->node_type == ANNA_NODE_NOTHING)
+	    {
+		anna_indent(sb,indentation);
+		sb_printf(sb,L"nothing");
+	    }
+	    else
+	    {
+		anna_node_print_internal(sb,this2->function, indentation);
+	    }
 	    /*	    sb_printf(sb,L"\n");
 		    anna_indent(sb,indentation);*/
 	    if(this2->child_count == 0)
@@ -495,7 +503,7 @@ static void anna_node_print_internal(
 	    sb_printf(sb,L")");
 	    break;
 	}
-	
+
 	default:
 	{
 	    sb_printf(sb,L"<Don't know how to print node of type %d>", this->node_type);

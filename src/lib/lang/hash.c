@@ -56,12 +56,52 @@ typedef void (*ahi_callback_t)(anna_context_t *context, anna_entry_t *key, int h
 static hash_table_t anna_hash_specialization;
 static array_list_t anna_hash_additional_methods = AL_STATIC;
 
+static anna_function_t *anna_hash_specialize(
+    anna_type_t *type, anna_function_t *fun)
+{
+    anna_node_call_t *spec = anna_node_create_call2(
+	0, anna_node_create_null(0), 
+	anna_node_create_dummy(
+	    0, 
+	    anna_type_wrap(
+		anna_hash_get_key_type(type))),
+	anna_node_create_dummy(
+	    0,
+	    anna_type_wrap(
+		anna_hash_get_value_type(type))));
+    anna_function_t *res = anna_function_compile_specialization(
+	fun, spec);
+    
+    return res;
+}
+
+static void anna_hash_add_method_internal(
+    anna_type_t *type, anna_function_t *fun)
+{
+    if(wcscmp(fun->name, L"__cmp__")==0)
+    {
+	if((mid_t)-1 == anna_type_find_comparator(anna_hash_get_key_type(type)))
+	    return;
+	if((mid_t)-1 == anna_type_find_comparator(anna_hash_get_value_type(type)))
+	    return;
+    }
+    if(wcscmp(fun->name, L"hashCode")==0)
+    {
+	if((mid_t)-1 == anna_type_find_hash_code(anna_hash_get_key_type(type)))
+	    return;
+	if((mid_t)-1 == anna_type_find_hash_code(anna_hash_get_value_type(type)))
+	    return;
+    }
+
+    anna_member_create_method(type, anna_mid_get(fun->name), anna_hash_specialize(type, fun));
+}
+
 static void add_hash_method(void *key, void *value, void *aux)
 {
     anna_type_t *hash = (anna_type_t *)value;
     anna_function_t *fun = (anna_function_t *)aux;
 //    anna_message(L"Add function %ls to type %ls\n", fun->name, hash->name);
-    anna_member_create_method(hash, anna_mid_get(fun->name), fun);
+    anna_hash_add_method_internal(hash, fun);
 }
 
 void anna_hash_add_method(anna_function_t *fun)
@@ -78,7 +118,8 @@ static void anna_hash_add_all_extra_methods(anna_type_t *hash)
     {
 	anna_function_t *fun = (anna_function_t *)al_get(&anna_hash_additional_methods, i);
 //	anna_message(L"Add function %ls to type %ls\n", fun->name, hash->name);
-	anna_member_create_method(hash, anna_mid_get(fun->name), fun);
+	//anna_member_create_method(hash, anna_mid_get(fun->name), fun);
+	anna_hash_add_method_internal(hash, fun);
     }
 }
 
@@ -385,7 +426,6 @@ static inline void ahi_search_callback2_next(
 	    (mid_t)(long)anna_entry_get_static(
 		anna_as_obj_fast(hash_obj)->type,
 		ANNA_MID_COMPARATOR)));
-
     anna_vm_callback_native(
 	context,
 	ahi_search_callback2, 7, callback_param,
@@ -591,7 +631,6 @@ static inline void ahi_search(
 //    anna_message(L"Search for object of type %ls in hash table\n", o->type->name);
     anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_HASH_CODE);
     anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
-    
     anna_vm_callback_native(
 	context,
 	ahi_search_callback, 4, callback_param,
@@ -677,7 +716,7 @@ static inline void anna_hash_set(anna_context_t *context)
     anna_entry_t *key = anna_context_pop_entry(context);
     anna_entry_t *this = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
-
+    
     if(anna_entry_null(key))
     {
 	anna_context_push_object(context, null_object);

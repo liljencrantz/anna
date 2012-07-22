@@ -510,7 +510,11 @@ struct anna_function
     */
     wchar_t *name;
     /**
-       The body of this function. Only used during compilation.
+       The AST representing the body of this function. Only used
+       during compilation. This AST only contains the body part of the
+       code, and it is translated by the various compilation steps
+       like macros substitution and type calculation to make it
+       suitable for compilation into bytecode or native C code.
     */
     struct anna_node_call *body;  
     /**
@@ -527,19 +531,25 @@ struct anna_function
     */
     mid_t mid;
     /**
-       The full AST that originally defined this function. Not macro
-       expanded. Needed for template specialization. Only used during
-       compilation.
+       The unmodified AST that originally defined this function. Not
+       macro expanded, type caclulated or in ay way modified. This
+       information is needed for template specialization, and may be
+       cleared for non-template functions once the module it belongs
+       to has been compiles.
     */
     struct anna_node_call *definition;
     /**
-       The attribute list for this function
+       The attribute list for this function.
     */
     struct anna_node_call *attribute;
     /**
-       If this is a native function, this union will contain the
-       function pointer used for invocation. Otherwise, this will be a
-       null function pointer.
+       The native C function to call during runtime in order to invoke
+       this function. If this function is implemented as a pure native
+       function, this member will contain the C function pointer used
+       for invocation. For bytecode functions, it will point to
+       anna_frame_push, a function which will suitable allocate a new
+       anna_activation_frame of suitable size and set up the
+       anna_context to invoke the right bytecode function.
     */
     anna_native_t native;
     /**

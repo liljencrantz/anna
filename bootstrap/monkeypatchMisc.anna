@@ -4,11 +4,13 @@ attribute(internal, doc("Internally used module. Don't use directly."));
   A bunch of additional functions to be inserted into the basic builtin types
  */
 
-def String hashMapToString(HashMap this)
+def String hashMapToString(HashMap«%Key, %Value» this)
 (
     name(toString), 
     target(HashMap), 
     doc("Returns a String representation of this HashMap."),
+    template(%Key:HashKey),
+    template(%Value:Object),
 )
 {
     return "[" ~ ", ".join(this.map(key, value){"" ~ key ~ " : " ~ (value or "null")}) ~ "]";
@@ -52,11 +54,13 @@ def String intFormat(Int this, Int base=10)
     return neg ~ res;
 }
 
-def String pairToString(Pair this)
+def String pairToString(Pair«%First,%Second» this)
 (
     name(toString), 
     target(Pair), 
     doc("Returns a String representation of this Pair."),
+    template(%First:Hashable),
+    template(%Second:Hashable),
 )
 {
     return "" ~ (this.first or "null") ~ "|" ~ (this.second or "null");
@@ -108,16 +112,19 @@ def Int pairCmp(Pair«%First,%Second» this, Pair«%First,%Second» other)
     }
 }
 
-def HashMap hashMapSetAll(HashMap this, Pair value...)
+def HashMap«%Key, %Value» hashMapSetAll(HashMap«%Key, %Value» this, Pair«%Key, %Value» value...)
 (
     name(__setAll__), 
     target(HashMap),
+    template(%Key:HashKey),
+    template(%Value:Object),
+    internal,
+    doc("This method is used internally by the HashMap initializer code. It sets multiple keys to their corresponding values.")
 )
 {
     value.each(pair)
     {
-//	print(pair.first, " => ", pair.first as HashKey);
-	this[pair.first as HashKey] = pair.second;
+	this[pair.first] = pair.second;
     }
     return this;
 }

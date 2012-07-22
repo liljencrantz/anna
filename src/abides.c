@@ -447,6 +447,7 @@ int anna_abides_search(
 	    int ok = 1;
 	    int my_fault_count = 0;
 	    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
+	    call_copy->stack = call->stack;
 	    anna_node_call_map(call_copy, ft, 0);
 	    
 	    if(ok)
