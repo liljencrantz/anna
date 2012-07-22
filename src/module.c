@@ -1075,7 +1075,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	return;
     }
 
-    module_stack->definition = program;
+    module_stack->definition = node_cast_call(program);
     
     debug(D_SPAM,L"Parsed AST for module %ls:\n", module_stack->filename);    
     anna_node_print(D_SPAM, program);    

@@ -1094,9 +1094,10 @@ anna_function_t *anna_function_compile_specialization(
 	    (anna_node_t *)res->body, 
 	    (anna_node_function_t)&anna_node_validate, 
 	    res->body->stack);
-	anna_node_each(res->body, &anna_node_compile, 0);
+	anna_node_each((anna_node_t *)res->body, &anna_node_compile, 0);
 	anna_vm_compile(res);
     }
+    return res;
 }
 
 
