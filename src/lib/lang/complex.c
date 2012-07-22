@@ -264,13 +264,6 @@ void anna_complex_type_create()
 	}
     ;
 
-    anna_type_t *c_argv[] = 
-	{
-	    complex_type,
-	    object_type,
-	}
-    ;
-    
     anna_type_t *cc_argv[] = 
 	{
 	    complex_type,

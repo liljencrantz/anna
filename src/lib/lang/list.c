@@ -787,7 +787,6 @@ static void anna_list_type_create_internal(
     anna_type_t *intersection_type,
     int mutable)
 {
-    mid_t mmid;
 
     anna_type_t *a_argv[] = 
 	{
@@ -1011,7 +1010,7 @@ static void anna_list_type_create_internal(
 	    a_argn, 0, 
 	    L"Adds the specified element to the end of the list. Returns the mutated list.");
 	
-	mmid = anna_member_create_native_method(
+	anna_member_create_native_method(
 	    type,
 	    ANNA_MID_CLEAR, 0,
 	    &anna_list_clear, type, 1,

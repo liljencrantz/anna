@@ -4,18 +4,6 @@ ANNA_VM_NATIVE(anna_object_init, 1)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_object_cmp, 2)
-{
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    return anna_from_int(this->type - anna_as_obj(param[1])->type);
-}
-
-ANNA_VM_NATIVE(anna_object_hash, 1)
-{
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    return anna_from_obj(anna_int_create(hash_ptr_func(this->type)));
-}
-
 ANNA_VM_NATIVE(anna_object_to_string, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -25,12 +13,6 @@ ANNA_VM_NATIVE(anna_object_to_string, 1)
     anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
-}
-
-ANNA_VM_NATIVE(anna_object_type, 1)
-{
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    return anna_from_obj(anna_type_wrap(this->type));
 }
 
 void anna_object_type_create()

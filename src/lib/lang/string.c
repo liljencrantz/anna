@@ -727,7 +727,6 @@ ANNA_VM_NATIVE(anna_string_hash_i, 1)
 
 static void anna_string_iterator_update(anna_object_t *iter, int off)
 {
-    anna_object_t *string = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(off));
 }
 
