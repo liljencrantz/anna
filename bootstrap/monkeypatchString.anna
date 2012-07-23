@@ -245,133 +245,78 @@ def String formatMap(
     return res;
 }
 
-def MutableString lpadMutable(
-    MutableString this,
-    Int count,
-    Char char = ' ')
-(
-    target(MutableString),
-    name(lpad),
-    doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
-)
-{
-    return lpad(this, count, char).thaw;
-}
-
-def ImutableString lpadImutable(
-    ImutableString this,
-    Int count,
-    Char char = ' ')
-(
-    target(ImutableString),
-    name(lpad),
-    doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
-)
-{
-    return lpad(this, count, char).freeze;
-}
-
-def String lpad(
-    String this,
-    Int count,
-    Char char = ' ')
-(
-    target(String),
-    doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
-)
-{
-    if(this.count > count)
+expandCode(
+    def String %name(
+	%Type this,
+	Int count,
+	Char char = ' ')
+    (
+	target(%Type),
+	doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
+	name(lpad),
+	)
     {
-	return this;
-    }
-    res := "";
-    (0..(count - this.count)).each(i)
-    {
-	res ~= char;
-    }
-    res ~= this;
-    return res;
-}
-
-def MutableString rpadMutable(
-    MutableString this,
-    Int count,
-    Char char = ' ')
-(
-    target(MutableString),
-    name(rpad),
-    doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
-)
-{
-    return rpad(this, count, char).thaw;
-}
-
-def ImutableString rpadImutable(
-    ImutableString this,
-    Int count,
-    Char char = ' ')
-(
-    target(ImutableString),
-    name(rpad),
-    doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
-)
-{
-    return rpad(this, count, char).freeze;
-}
-
-def String rpad(
-    String this,
-    Int count,
-    Char char = ' ')
-(
-    target(String),
-    doc("Pad the right side of this string with the specified character up to a minimum of the specified number of characters"),
-)
-{
-    if(this.count > count)
-    {
-	return this;
-    }
-    res := "" ~ this;
-    (0..(count - this.count)).each(i)
-    {
-	res ~= char;
-    }
-    return res;
-}
-
-def Int __in__Mutable(MutableString this, Char char)
-(
-    name(__in__),
-    target(MutableString),
-)
-{
-    return __in__(this, char);
-}
-
-def Int __in__Imutable(ImutableString this, Char char)
-(
-    name(__in__),
-    target(ImutableString)
-)
-{
-    return __in__(this, char);
-}
-
-def Int __in__(String this, Char char)
-(
-    target(String)
-)
-{
-    this.each(idx, ch)
-    {
-	if(char == ch)
+	if(this.count > count)
 	{
-	    return idx;
+	    return this;
 	}
+	res := "";
+	(0..(count - this.count)).each(i)
+	{
+	    res ~= char;
+	}
+	res ~= this;
+	return res;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [lpadImutable, lpadMutable, lpad]
+    );
+
+expandCode(
+    def %Type %name(
+	%Type this,
+	Int count,
+	Char char = ' ')
+    (
+	target(%Type),
+	doc("Pad the right side of this string with the specified character up to a minimum of the specified number of characters"),
+	name(rpad),
+	)
+    {
+	if(this.count >= count)
+	{
+	    return this;
+	}
+	res := this;
+	(0..(count - this.count)).each(i)
+	{
+	    res ~= char;
+	}
+	return res;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [rpadImutable, rpadMutable, rpad]
+    );
+
+expandCode(
+    def Int %name(%Type this, Char char)
+    (
+	target(%Type),
+	name(__in__)
+    )
+    {
+	this.each(idx, ch)
+	{
+	    if(char == ch)
+	    {
+		return idx;
+	    }
+	}
+	return ?;
     }
-    return ?;
-}
+    Type: [ImutableString, MutableString, String],
+    name: [__in__Imutable, __in__Mutable, __in__]
+    );
 
 expandCode(
     def MutableList«String» %name(
@@ -381,7 +326,7 @@ expandCode(
     (
 	target(%Type),
 	doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-	alias(split),
+	name(split),
 	)
     {
 	res := «String»[];
@@ -453,6 +398,7 @@ expandCode(
 	    "Replace all occurances in this string of the specified original with the specified replacement.", 
 	    "This method is currently rather inefficient.",
 	),
+	name(replace)
     )
     {
 	start := 0;
