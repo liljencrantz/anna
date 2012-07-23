@@ -474,11 +474,7 @@ static void anna_string_convert_callback(anna_context_t *context)
     anna_object_t *res = null_object;
     if((str_obj->type == mutable_string_type) || (str_obj->type == imutable_string_type))
     {
-	anna_string_t *str = as_unwrap(str_obj);
-	res = anna_object_create(imutable_string_type);
-
-	asi_init(as_unwrap(res));
-	asi_append(as_unwrap(res), str, 0, asi_get_count(str));
+	res = str_obj;
     }
     anna_context_pop_entry(context);
     anna_context_push_object(context, res);

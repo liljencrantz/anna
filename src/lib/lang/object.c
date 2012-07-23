@@ -21,10 +21,6 @@ void anna_object_type_create()
 
     anna_type_document(
 	object_type,
-	L"The Object type is the base type of all other types in Anna.");
-    
-    anna_type_document(
-	object_type,
 	L"The Object type does not have any members at all. There is rarely any point in instantiating an object of the Object type.");
 
     anna_member_create_native_method(

@@ -248,6 +248,22 @@ anna_entry_t *anna_node_static_invoke_try(
 	    return anna_from_obj(anna_type_wrap(f));
 	}
 
+	case ANNA_NODE_NOTHING:
+	{
+	    int i;
+	    anna_node_call_t *this2 = (anna_node_call_t *)this;
+	    anna_entry_t *res = 0;
+	    for(i=0; i<this2->child_count; i++)
+	    {
+		res = anna_node_static_invoke_try(this2->child[i], stack);
+		if(!res)
+		{
+		    break;
+		}
+	    }
+	    return res;
+	}
+
 	case ANNA_NODE_INT_LITERAL:
 	{
 	    mpz_t *mp = &((anna_node_int_literal_t *)this)->payload;

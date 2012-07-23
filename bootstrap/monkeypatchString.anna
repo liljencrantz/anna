@@ -510,112 +510,61 @@ def MutableList«String» splitListImutable(
     return split(this, "".join(charList), allowEmpty);
 }
 
-def MutableString replaceMutable(
-    MutableString this,
-    String original,
-    String replacement)
-(
-    target(MutableString),
-    name(replace),
-    doc(
-	"Replace all occurances in this string of the specified original with the specified replacement.", 
-	"This method is currently rather inefficient.",
+expandCode(
+    def %Type %name(
+	%Type this,
+	String original,
+	String replacement)
+    (
+	target(%Type),
+	doc(
+	    "Replace all occurances in this string of the specified original with the specified replacement.", 
+	    "This method is currently rather inefficient.",
 	),
-)
-{
-    return replace(this, original, replacement).thaw;
-}
-
-def ImutableString replaceImutable(
-    ImutableString this,
-    String original,
-    String replacement)
-(
-    target(ImutableString),
-    name(replace),
-    doc(
-	"Replace all occurances in this string of the specified original with the specified replacement.", 
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    return replace(this, original, replacement).freeze;
-}
-
-def String replace(
-    String this,
-    String original,
-    String replacement)
-(
-    target(String),
-    doc(
-	"Replace all occurances in this string of the specified original with the specified replacement.", 
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    start := 0;
-    res := "".thaw;
-    while(1)
+    )
     {
-	end := searchString(this, original, start);
-	if(end)
+	start := 0;
+	res := "".thaw;
+	while(1)
 	{
-	    res ~= this[start..end];
-	    res ~= replacement;
-	    start = end + original.count;
+	    end := searchString(this, original, start);
+	    if(end)
+	    {
+		res ~= this[start..end];
+		res ~= replacement;
+		start = end + original.count;
+	    }
+	    else
+	    {
+		res ~= this[start...];
+		return res;
+	    }
 	}
-	else
-	{
-	    res ~= this[start...];
-	    return res;
-	}
-    }
-    return ?;
-}
-
-def MutableString __mul__Mutable(
-    MutableString this,
-    Int count)
-(
-    target(MutableString),
-    aliasReverse(__mul__),
-    name(__mul__),
-    doc("Returns a copy of this string, repeated the specified number of times")
-)
-{
-    return __mul__(this, count).thaw;
-}
-
-def ImutableString __mul__Imutable(
-    ImutableString this,
-    Int count)
-(
-    target(ImutableString),
-    aliasReverse(__mul__),
-    name(__mul__),
-    doc("Returns a copy of this string, repeated the specified number of times")
-)
-{
-    return __mul__(this, count).freeze;
-}
-
-def String __mul__(
-    String this,
-    Int count)
-(
-    target(String),
-    name(__mul__),
-    aliasReverse(__mul__),
-    doc("Returns a copy of this string, repeated the specified number of times")
-)
-{
-    if(count < 0)
-    {
 	return ?;
-    }
-    res := "".thaw;
-    (0..count).each(i){res ~= this}
-    return res;
-}
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [replaceImutable, replaceMutable, replace]
+    );
 
+expandCode(
+    def %Type %name(
+	%Type this,
+	Int count)
+    (
+	target(%Type),
+	aliasReverse(__mul__),
+	name(__mul__),
+	doc("Returns a copy of this string, repeated the specified number of times")
+    )
+    {
+	if(count < 0)
+	{
+	    return ?;
+	}
+        res := "".thaw;
+	(0..count).each(i){res ~= this}
+	return res;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [__mul__Imutable, __mul__Mutable, __mul__]
+    );

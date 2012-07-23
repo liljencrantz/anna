@@ -828,6 +828,7 @@ void anna_module_init(wchar_t *name)
     anna_module_bootstrap_monkeypatch(stack_global, L"monkeypatchLang");
     anna_module_bootstrap_macro(L"macroMisc");
     anna_module_bootstrap_macro(L"range");
+    anna_module_bootstrap_macro(L"expandCode");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchMisc");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchList");
     anna_module_bootstrap_monkeypatch(stack_lang, L"monkeypatchRange");
@@ -836,7 +837,6 @@ void anna_module_init(wchar_t *name)
     anna_module_bootstrap_macro(L"struct");
     anna_module_bootstrap_macro(L"enum");
     anna_module_bootstrap_macro(L"errorMacros");
-    anna_module_bootstrap_macro(L"expandCode");
     anna_module_bootstrap_macro(L"propertyAttribute");
     anna_module_bootstrap_macro(L"class");
     anna_module_bootstrap_macro(L"listAssign");
@@ -1201,7 +1201,7 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     al_push(&module_stack->import, anna_use_create_stack(module_stack));    
     
     al_push(&anna_module_in_transit, module_stack);    
-    
+
     for(i=0; i<module_node->child_count; i++)
     {
 	anna_node_static_invoke(module_node->child[i], module_stack);
