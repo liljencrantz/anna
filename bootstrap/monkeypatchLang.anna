@@ -29,7 +29,7 @@ be Strings:
 	{
 	    printInternal(sep);
 	}
-	printInternal(val.toString());
+	printInternal(String::convert(val));
     }
     printInternal(end);
     param;

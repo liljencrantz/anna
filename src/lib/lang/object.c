@@ -4,17 +4,6 @@ ANNA_VM_NATIVE(anna_object_init, 1)
     return param[0];
 }
 
-ANNA_VM_NATIVE(anna_object_to_string, 1)
-{
-    anna_object_t *this = anna_as_obj_fast(param[0]);
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_printf(&sb, L"Object of type %ls", this->type->name);
-    anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), sb_content(&sb)));
-    sb_destroy(&sb);
-    return res;
-}
-
 void anna_object_type_create()
 {
 
@@ -36,26 +25,14 @@ void anna_object_type_create()
     
     anna_type_document(
 	object_type,
-	L"There is rarely any point in instantiating an object of the Object type.");
+	L"The Object type does not have any members at all. There is rarely any point in instantiating an object of the Object type.");
 
     anna_member_create_native_method(
 	object_type, anna_mid_get(L"__init__"),
 	0, &anna_object_init, object_type, 1,
 	argv, argn, 0,
 	L"Constructor for the specified type. This method is run during object creation and should be overloaded to perform object setup.");
-  
-    anna_member_create_native_method(
-	object_type,
-	ANNA_MID_TO_STRING,
-	0,
-	&anna_object_to_string,
-	string_type,
-	1,
-	argv,
-	argn, 0,
-	L"String conversion. Called by the String::convert method.");
 
     anna_type_object_is_created();
 
 }
-

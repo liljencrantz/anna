@@ -77,7 +77,7 @@ void anna_char_type_create()
 {
     anna_type_t *argv[] = 
 	{
-	    int_type, object_type
+	    char_type, object_type
 	}
     ;
     wchar_t *argn[]=

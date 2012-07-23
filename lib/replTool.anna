@@ -316,7 +316,7 @@ def linebreak(List«Object» wordList, String prefix = "", String firstPrefix = 
     col := res.count;        
     wordList.each(idx, wordObj)
     {
-	word := wordObj.toString();
+	word := String::convert(wordObj);
 	if(idx == 0)
 	{
 	    res ~= word;
@@ -376,7 +376,7 @@ the doc attribute of declarations."))
     }
 
     objType := (object as Type) or type(object);
-    description := objType.toString() ~ " type";
+    description := String::convert(objType) ~ " type";
 
     def signature(Function fun)
     {

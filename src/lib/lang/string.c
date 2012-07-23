@@ -491,10 +491,13 @@ static void anna_string_convert(anna_context_t *context)
     
     if(anna_entry_null(e))
     {
-	anna_context_push_entry(context, e);
+	anna_object_t *res = anna_object_create(imutable_string_type);
+	asi_init(as_unwrap(res));
+	asi_append_cstring(as_unwrap(res), L"null", 4);	
+	anna_context_push_object(context, res);
     }
     else if(anna_is_int_small(e))
-    {	
+    {
 	anna_object_t *res = anna_object_create(imutable_string_type);
 	wchar_t is[32];
 	swprintf(is, 32, L"%d", anna_as_int(e));
@@ -505,26 +508,45 @@ static void anna_string_convert(anna_context_t *context)
     else
     {
 	anna_object_t *o = anna_as_obj(e);
+	anna_entry_t **fun_ptr = anna_entry_get_addr_static(o->type, ANNA_MID_TO_STRING);
+	int ok = 0;
+
 	if((o->type == mutable_string_type) ||
 	   (o->type == imutable_string_type))
 	{
 	    anna_context_push_object(context, o);
 	}
 	else
-	{
-	    anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
-	    anna_entry_t *o_param[] =
+	{    
+	    if(fun_ptr)
+	    {
+		anna_object_t *fun_object = anna_as_obj(*fun_ptr);
+		
+		if(fun_object)
 		{
-		    anna_from_obj(o)
+		    anna_function_t *fun = anna_function_unwrap(fun_object);
+		    if(fun && fun->input_count == 1 && anna_abides(o->type, fun->input_type[0]))
+		    {
+			ok = 1;
+			anna_entry_t *o_param[] = { anna_from_obj(o) };
+			anna_vm_callback_native(
+			    context,
+			    anna_string_convert_callback, 0, 0,
+			    fun_object, 1, o_param
+			    );
+		    }
 		}
-	    ;
+	    }
 	    
-	    anna_vm_callback_native(
-		context,
-		anna_string_convert_callback, 0, 0,
-		fun_object, 1, o_param
-		);
+	    if(!ok)
+	    {
+		anna_object_t *res = anna_object_create(imutable_string_type);
+		asi_init(as_unwrap(res));
+		asi_append_cstring(as_unwrap(res), o->type->name, wcslen(o->type->name));	
+		anna_context_push_object(context, res);	
+	    }
 	}
+	
     }
 }
 
