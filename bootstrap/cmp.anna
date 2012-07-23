@@ -2,22 +2,22 @@ attribute(internal, doc("Internal module for comparison macros. Comparison opera
 
 macro __gt__(node)
 {
-    ast(lang.__gtInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]);
+    ast(lang.__gtInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __gte__(node)
 {
-    ast(lang.__gteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]);
+    ast(lang.__gteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __lt__(node)
 {
-    ast(lang.__ltInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]);
+    ast(lang.__ltInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __lte__(node)
 {
-    ast(lang.__lteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]);
+    ast(lang.__lteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __eq__(node)
@@ -27,5 +27,5 @@ macro __eq__(node)
 
 macro __neq__(node)
 {
-    ast(lang.__neqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]);
+    ast(lang.__neqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
