@@ -373,142 +373,74 @@ def Int __in__(String this, Char char)
     return ?;
 }
 
-def MutableList«String» splitMutable(
-    ImutableString this,
-    String charList,
-    Object allowEmpty = 1)
-(
-    target(ImutableString),
-    name(split),
-    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    return split(
-	this, charList, allowEmpty);
-}
-
-def MutableList«String» splitImutable(
-    MutableString this,
-    String charList,
-    Object allowEmpty = 1)
-(
-    target(MutableString),
-    name(split),
-    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    return split(
-	this, charList, allowEmpty);
-}
-
-def MutableList«String» split(
-    String this,
-    String charList,
-    Object allowEmpty = 1)
-(
-    target(String),
-    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    res := «String»[];
-    start := 0;
-    stop := 0;
-    while(stop <= this.count)
+expandCode(
+    def MutableList«String» %name(
+	%Type this,
+	String charList,
+	Object allowEmpty = 1)
+    (
+	target(%Type),
+	doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+	alias(split),
+	)
     {
-	while(stop < this.count and !(__in__(charList, this[stop])))
+	res := «String»[];
+	start := 0;
+	stop := 0;
+	while(stop <= this.count)
 	{
-	    stop++;
+	    while(stop < this.count and !(__in__(charList, this[stop])))
+	    {
+		stop++;
+	    }
+	    if(allowEmpty or stop > start)
+	    {
+		res.push(this[start..stop]);
+	    }
+	    stop = start = stop + 1;
 	}
-	if(allowEmpty or stop > start)
-	{
-	    res.push(this[start..stop]);
-	}
-	stop = start = stop + 1;
-    }
-    return res;
-}
+	return res;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [splitImutable, splitMutable, split]
+    );
 
-def MutableList«String» splitChar(
-    String this,
-    Char char,
-    Object allowEmpty = 1)
-(
-    target(String),
-    alias(split),
-    doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-}
 
-def MutableList«String» splitCharMutable(
-    MutableString this,
-    Char char,
-    Object allowEmpty = 1)
-(
-    target(MutableString),
-    alias(split),
-    name(splitChar),
-    doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    return split(this, char.toString(), allowEmpty);
-}
+expandCode(
+    def MutableList«String» %name(
+	%Type this,
+	Char char,
+	Object allowEmpty = 1)
+    (
+	target(%Type),
+	alias(split),
+	name(splitChar),
+	doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+	)
+    {
+	return split(this, char.toString(), allowEmpty);
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [splitCharImutable, splitCharMutable, splitChar]
+    );
 
-def MutableList«String» splitCharImutable(
-    ImutableString this,
-    Char char,
-    Object allowEmpty = 1)
-(
-    target(ImutableString),
-    alias(split),
-    name(splitChar),
-    doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    return split(this, char.toString(), allowEmpty);
-}
-
-def MutableList«String» splitList(
-    String this,
-    List«Char» charList,
-    Object allowEmpty = 1)
-(
-    target(String),
-    alias(split),
-    name(splitList),
-    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    return split(this, "".join(charList), allowEmpty);
-}
-
-def MutableList«String» splitListMutable(
-    MutableString this,
-    List«Char» charList,
-    Object allowEmpty = 1)
-(
-    target(MutableString),
-    alias(split),
-    name(splitList),
-    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    return split(this, "".join(charList), allowEmpty);
-}
-
-def MutableList«String» splitListImutable(
-    ImutableString this,
-    List«Char» charList,
-    Object allowEmpty = 1)
-(
-    target(ImutableString),
-    alias(split),
-    name(splitList),
-    doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
-)
-{
-    return split(this, "".join(charList), allowEmpty);
-}
+expandCode(
+    def MutableList«String» %name(
+	%Type this,
+	List«Char» charList,
+	Object allowEmpty = 1)
+    (
+	target(%Type),
+	alias(split),
+	name(splitList),
+	doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+	)
+    {
+	return split(this, "".join(charList), allowEmpty);
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [splitListImutable, splitListMutable, splitList]
+    );
 
 expandCode(
     def %Type %name(
