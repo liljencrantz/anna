@@ -1,135 +1,66 @@
 attribute(internal, doc("Internally used module. Don't use directly."));
 
-def Int searchCharImutable(
-    ImutableString this, Char ch, Int from=0)
-(
-    alias(search),
-    name(searchChar),
-    target(ImutableString),
-    doc(
-	"Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    return searchChar(this, ch, from);
-}
+expandCode(
+    def Int %name(
+	%Type this, Char ch, Int from=0)
+    (
+	alias(search),
+	target(%Type),
+	doc(
+	    "Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
+	    "This method is currently rather inefficient.",
+	    ),
+	)
+    {
+	this[from...].each(idx, i){if(i == ch){return idx}}
+	return ?;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [searchCharImutable, searchCharMutable, searchChar],
+    );
 
-def Int searchCharMutable(
-    MutableString this, Char ch, Int from=0)
-(
-    alias(search),
-    name(searchChar),
-    target(MutableString),
-    doc(
-	"Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    return searchChar(this, ch, from);
-}
+expandCode(
+    def Int %name(
+	%Type this, String string, Int from = 0)
+    (
+	alias(search),
+	target(%Type),
+	doc("Search for the specified Substring in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
+	    "This method is currently rather inefficient.",
+	    ),
+	)
+    {
+	(from..this.count).each(idx){if(this[idx..(idx+string.count)] == string){return idx}}
+	return ?;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [searchStringImutable, searchStringMutable, searchString],
+    );
 
-def Int searchChar(
-    String this, Char ch, Int from=0)
-(
-    alias(search),
-    target(String),
-    doc(
-	"Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    this[from...].each(idx, i){if(i == ch){return idx}}
-    return ?;
-}
-
-def Int searchStringMutable(
-    MutableString this, String string, Int from = 0)
-(
-    alias(search),
-    name(searchString),
-    target(MutableString),
-    doc("Search for the specified Substring in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    return searchString(this, string, from);
-}
-
-def Int searchStringImutable(
-    ImutableString this, String string, Int from = 0)
-(
-    alias(search),
-    name(searchString),
-    target(ImutableString),
-    doc("Search for the specified Substring in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    return searchString(this, string, from);
-}
-
-def Int searchString(
-    String this, String string, Int from = 0)
-(
-    alias(search),
-    target(String),
-    doc("Search for the specified Substring in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
-	"This method is currently rather inefficient.",
-	),
-)
-{
-    (from..this.count).each(idx){if(this[idx..(idx+string.count)] == string){return idx}}
-    return ?;
-}
-
-def ImutableString formatListImutable(
-    ImutableString this, 
-    List«Object» data) 
-(
-    alias(__format__), 
-    name(formatList),
-    target(ImutableString), 
+expandCode(
+    def %Type %name(
+	%Type this, 
+	List«Object» data)
+    (
+	alias(__format__), 
+	name(formatList),
+	target(%Type), 
     doc(
 	"String formating. Replaces each % character found in the format string with the corresponding object from the list of parameters.", 
 	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various String::format functions for e.g. numeric formating."
 	),
-)
-{
-    return formatList(this, data).freeze;
-}
+	)
+    {
+	return formatListInternal(this, data).%prop;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [formatListImutable, formatListMutable, formatList],
+    prop: [freeze, thaw, freeze],
+    );
 
-def MutableString formatListMutable(
-    MutableString this, 
-    List«Object» data) 
-(
-    alias(__format__), 
-    name(formatList),
-    target(MutableString), 
-    doc(
-	"String formating. Replaces each % character found in the format string with the corresponding object from the list of parameters.", 
-	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various String::format functions for e.g. numeric formating."
-	),
-)
-{
-    return formatList(this, data).thaw;
-}
-
-def String formatList(
+def String formatListInternal(
     String this, 
-    List«Object» data) 
-(
-    alias(__format__), 
-    target(String), 
-    doc(
-	"String formating. Replaces each % character found in the format string with the corresponding object from the list of parameters.", 
-	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various String::format functions for e.g. numeric formating."
-	),
-)
+    List«Object» data) (internal, doc("Internal helper function for String::formatList."))
 {
     res := "";
     listIdx := 0;
@@ -159,46 +90,29 @@ def String formatList(
     return res;
 }
 
-def ImutableString formatMapImutable(
-    ImutableString this, 
-    HashMap«String, Object» data) 
-(
-    alias(__format__), 
-    name(formatMap),
-    target(ImutableString), 
-    doc(
-	"String formating. Replaces each %(NAME) token found in the format string with the corresponding object from the map of named parameters.", 
-	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various format functions for e.g. numeric formating, such as Int::format."),
-    )
-{
-    return formatMap(this, data).freeze;
-}
+expandCode(
+    def %Type %name(
+	%Type this, 
+	HashMap«String, Object» data) 
+    (
+	alias(__format__), 
+	name(formatMap),
+	target(%Type), 
+	doc(
+	    "String formating. Replaces each %(NAME) token found in the format string with the corresponding object from the map of named parameters.", 
+	    "Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various format functions for e.g. numeric formating, such as Int::format."),
+	)
+    {
+	return formatMapInternal(this, data).%prop;
+    },
+    Type: [ImutableString, MutableString, String],
+    name: [formatMapImutable, formatMapMutable, formatMap],
+    prop: [freeze, thaw, freeze],
+    );
 
-def MutableString formatMapMutable(
-    MutableString this, 
-    HashMap«String, Object» data) 
-(
-    alias(__format__), 
-    name(formatMap),
-    target(MutableString), 
-    doc(
-	"String formating. Replaces each %(NAME) token found in the format string with the corresponding object from the map of named parameters.", 
-	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various format functions for e.g. numeric formating, such as Int::format."),
-    )
-{
-    return formatMap(this, data).thaw;
-}
-
-def String formatMap(
+def String formatMapInternal(
     String this, 
-    HashMap«String, Object» data) 
-(
-    alias(__format__), 
-    target(String), 
-    doc(
-	"String formating. Replaces each %(NAME) token found in the format string with the corresponding object from the map of named parameters.", 
-	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various format functions for e.g. numeric formating, such as Int::format."),
-    )
+    HashMap«String, Object» data)  (internal, doc("Internal helper function for String::formatMap."))
 {
     res := "".thaw;
     i := 0;
