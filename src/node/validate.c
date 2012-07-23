@@ -132,10 +132,9 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	
 	if(!anna_abides(param, templ))
 	{
-	    anna_node_print(99, this);
 	    anna_error(
 		this,
-		L"Invalid type of parameter %d in function call. Type %ls can not mask as type %ls.",
+		L"Invalid type of parameter %d in function call. A value of the type %ls can not mask as one of the type %ls.",
 		i+1, param->name, templ->name);
 	}
     }

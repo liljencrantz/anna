@@ -87,20 +87,20 @@ def Call mangleIterator(Call node)
     {
 	n[0] = iterDeclare(
 	    Identifier(body, "!unused"), 
-	    ast(__staticTypeOf__(%iter.key)));
+	    ast(__staticTypeOf__(%iter.key)).setLocation(node));
 	n[1] = iterDeclare(
 	    node[0],
-	    ast(__staticTypeOf__(%iter.value)));
+	    ast(__staticTypeOf__(%iter.value)).setLocation(node));
     } 
     else
     {
 	checkNodeType(node[1], Identifier);
 	n[0] = iterDeclare(
 	    node[0],
-	    ast(__staticTypeOf__(%iter.key)));
+	    ast(__staticTypeOf__(%iter.key)).setLocation(node));
 	n[1] = iterDeclare(
 	    node[1],
-	    ast(__staticTypeOf__(%iter.value)));
+	    ast(__staticTypeOf__(%iter.value)).setLocation(node));
     }
     
     res := Call(

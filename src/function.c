@@ -214,7 +214,7 @@ static anna_node_t *anna_function_setup_arguments(
 	    {
 		anna_type_t *d_type = anna_node_resolve_to_type(type_node, f->stack_template);
 		
-		if(!d_type || d_type == null_type)
+		if(!d_type)
 		{
 		    anna_error(
 			decl->child[1],

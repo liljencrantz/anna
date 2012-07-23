@@ -26,10 +26,12 @@ type Foo
 	this.someInstanceFunction = def (Foo this, Int ggg)
 	    {
 		print("function", this, ggg);
+		?;
 	    }
 	this.someBoundInstanceMethod = def (Foo this, Int ggg)
 	    {
 		print("function", this, ggg);
+		?;
 	    }
 	return this;
     }

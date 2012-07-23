@@ -63,8 +63,8 @@ keys in dictionaries.
 	constructorBody.push(ast(this.%val = %val) % ["val": name.copy()]);
 	toStringBody.push(ast(res ~= %name) % ["name": StringLiteral(decl, "" ~ (if(idx != 0){ ", " } else { "" }) ~ name.name ~ ": ")]);
 	toStringBody.push(ast(res ~= this.%value) % ["value": name.copy()]);
-	cmpBody.push(ast((tmp = this.%value.__cmp__(otherStruct.%value) == 0) or (return tmp)) % ["value": name.copy()]);
-	hashCodeBody.push(ast(res = res ^bitxor this.%value.hashCode()) % ["value": name.copy()]);
+	cmpBody.push(ast((tmp = (this.%value as monkeypatchMisc.Comparable).__cmp__(otherStruct.%value) == 0) or (return tmp)) % ["value": name.copy()]);
+	hashCodeBody.push(ast(res = res ^bitxor (this.%value as monkeypatchMisc.Hashable).hashCode()) % ["value": name.copy()]);
     }
     toStringBody.push(ast(res ~= ")"));
     toStringBody.push(ast(res));
