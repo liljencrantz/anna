@@ -48,8 +48,11 @@ static void anna_pair_add_method_internal(
 	if((mid_t)-1 == anna_type_find_hash_code(anna_pair_second_type(pair)))
 	    return;
     }
-
-    anna_member_create_method(pair, anna_mid_get(fun->name), anna_pair_specialize(pair, fun));
+    anna_function_t *fun_spec = anna_pair_specialize(pair, fun);
+    if(fun_spec)
+    {
+	anna_member_create_method(pair, anna_mid_get(fun->name), fun_spec);
+    }
 }
 
 static void anna_pair_add_all_extra_methods(anna_type_t *pair)

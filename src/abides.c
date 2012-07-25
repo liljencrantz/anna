@@ -68,13 +68,7 @@ static int anna_abides_fault_count_internal(
     {
 	return 0;
     }
-/*    
-    if((role_model == hash_key_type) && (contender != object_type))
-    {
-	anna_message(L"WEEE %ls\n", contender->name);
-	verbose += 10;
-    }
-*/  
+
     anna_tt_t tt = 
 	{
 	    contender, role_model

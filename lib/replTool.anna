@@ -439,13 +439,13 @@ the doc attribute of declarations."))
 
     def members(Type tp)
     {
-	tp.member.filter(memb){
+	algo.qsort(tp.member.filter(memb){
 	    !memb.internal?
-		}.sort(
-		    def Int(Object first, Object second){
-			(first as Member).name.__cmp__((second as Member).name);
-		    }
-		    ).map(memb){memb as Member};
+		},
+	    def Int(Object first, Object second){
+		(first as Member).name.__cmp__((second as Member).name);
+	    }
+	    ).map(memb){memb as Member};
     }
 
     if(type(object).module?)
@@ -500,7 +500,7 @@ property of the Type type."))
 {
     use(reflection);
     return linebreak(
-        ((object as reflection.Type) or type(object)).member.sort(
+        algo.qsort(((object as reflection.Type) or type(object)).member.thaw,
 	    def Int(Object first, Object second)
 	    {
 		(first as Member).name.__cmp__((second as Member).name);

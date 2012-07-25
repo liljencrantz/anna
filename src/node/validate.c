@@ -571,8 +571,6 @@ void anna_node_call_map(
 		&call->location, 
 		target->input_type[var_named_idx]));
 	var_named_pair_type = anna_pair_type_get(imutable_string_type, anna_hash_get_value_type(target->input_type[var_named_idx]));
-	//	anna_error(call, L"LALALA2.\n");
-	//CRASH;
 	order[var_named_idx] = (anna_node_t *)var_named_call;
 	count = var_named_idx+1;
     }

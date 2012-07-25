@@ -480,7 +480,15 @@ static void anna_module_bootstrap_monkeypatch(
 	
 	if(type == any_list_type)
 	{
-	    anna_list_add_method(fun);
+	    anna_list_any_add_method(fun);
+	}
+	else if(type == mutable_list_type)
+	{
+	    anna_list_mutable_add_method(fun);
+	}
+	else if(type == imutable_list_type)
+	{
+	    anna_list_imutable_add_method(fun);
 	}
 	else if(type == hash_type)
 	{
@@ -842,10 +850,6 @@ void anna_module_init(wchar_t *name)
     anna_module_bootstrap_macro(L"listAssign");
     anna_module_bootstrap_monkeypatch(stack_debug, L"monkeypatchDebug");
     anna_module_bootstrap_monkeypatch(stack_reflection, L"monkeypatchContinuation");
-
-    /* Load additional binary modules */
-    //anna_module_load_dynamic(L"unix", stack_global);
-
     /*
       Load all non-native libraries
     */

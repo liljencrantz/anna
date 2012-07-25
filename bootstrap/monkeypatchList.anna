@@ -1,26 +1,38 @@
 attribute(internal, doc("Internally used module. Don't use directly."));
 
-def listToString(List this)
-(
-    target(List),
-    name(toString),
-    doc("Returns a string representation of this List."),
-)
-{
-    return "[" ~ ", ".join(this.map(value){String::convert(value) or "null";}) ~ "]";
-}
+expandCode(
+    def %name(%Type this)
+    (
+	target(%Type),
+	name(toString),
+	doc("Returns a string representation of this List."),
+	)
+    {
+	return "[" ~ ", ".join(this.map(value){String::convert(value) or "null";}) ~ "]";
+    },
+    Type: [ImutableList, MutableList, List],
+    name: [toStringImutable, toStringMutable, toStringAny],
+    );
 
-def all?(List this)
-(
-    target(List),
-    doc("Returns true if all members of this list are non-Null."),
-)
-{
-    res := 1 as Object;
-    this.each(i){ res = res and i }
-    return res;
-}
 
+
+expandCode(
+    def Object %name(%Type this)
+    (
+	target(%Type),
+	doc("Returns true if all members of this list are non-Null."),
+	name(all?)
+	)
+    {
+	res := 1 as Object;
+	this.each(i){ res = res and i }
+	return res;
+    },
+    Type: [ImutableList, MutableList, List],
+    name: [allImutable, allMutable, allAny],
+    );
+
+/*
 def none?(List this)
 (
     target(List),
@@ -40,82 +52,26 @@ def any?(List this)
 {
     return !none?(this);
 }
+*/
 
-def Int partition(
-    MutableList list, Int from, Int to, 
-    def Int fun(Object first, Object second))
-{
-    piv := list[to-1];
-    store := from;
-    (from .. to-1).each(idx)
+expandCode(
+    def Int %name(%Type«%Value» this, %Value value)
+    (
+	target(%Type),
+	doc("Returns the index of the first location of the specified item in the list."),
+	template(%Value:monkeypatchMisc.Comparable),
+	name(indexOf),
+	)
     {
-	if(fun(list[idx], piv) < 0)
+	this.each(idx, el)
 	{
-	    tmp := list[idx];
-	    list[idx] = list[store];
-	    list[store] = tmp;
-	    store++;
+	    if((el as monkeypatchMisc.Comparable).__cmp__(value) == 0)
+	    {
+		return idx;
+	    }
 	}
-    }
-
-    tmp2 := list[store];
-    list[store] = list[to-1];
-    list[to-1] = tmp2;
-    
-    return store;
-}
-
-def Object sortSub(
-    MutableList list, Int from, Int to, 
-    def Int fun(Object first, Object second))
-{
-    pivotIdx := partition(list, from, to, fun);
-    if(from != pivotIdx)
-    {
-	sortSub(list, from, pivotIdx, fun);
-    }
-    if((pivotIdx+1) != to)
-    {
-        sortSub(list, pivotIdx+1, to, fun);    
-    }
-}
-
-def MutableList sort(List this, def Int fun(Object first, Object second) = ?)
-(
-    target(List),
-    doc("
-Sort the list. If the original list is mutable, it is sorted inplace, otherwise
-a new list is returned.",
-
-	"
-The current implementation is just a placeholder. It is a standard
-Quicksort with a non-random pivot, meaning it does not provide a
-stable sort, and it is easy to trigger O(N^2) worst case behavior by
-choosing the right input. Also, the current implementation does not 
-support templating, so the returned, sorted list is simply a list of 
-objects.")
-)
-{
-    list := this.thaw;
-    this.empty? and (return list);
-    sortSub(
-        list, 0, list.count, 
-	fun or (def Int(Object first, Object second){(first as monkeypatchMisc.Comparable).__cmp__(second)}));
-    return list;
-}
-
-def indexOf(List this, Object value)
-(
-    target(List),
-    doc("Returns the index of the first location of the specified item in the list.")
-)
-{
-    this.each(idx, el)
-    {
-	if((el as monkeypatchMisc.Comparable).__cmp__(value) == 0)
-	{
-	    return idx;
-	}
-    }
-    return ?;
-}
+	return ?;
+    },
+    Type: [ImutableList, MutableList, List],
+    name: [indexOfImutable, indexOfMutable, indexOf],
+    );

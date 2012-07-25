@@ -426,9 +426,6 @@ void anna_function_set_stack(
 {
     if(f->body && !f->stack_template)
     {
-	if(f->stack_template)
-	    return;
-	
 	f->stack_template = anna_stack_create(parent_stack);
 	f->stack_template->function = f;
 	anna_node_set_stack(
@@ -541,7 +538,6 @@ void anna_function_setup_interface(
     }
     
     anna_function_setup_wrapper(f);
-
 }
 
 void anna_function_setup_body(
@@ -553,9 +549,9 @@ void anna_function_setup_body(
     }
     f->flags |= ANNA_FUNCTION_PREPARED_BODY;
 
-//    anna_message(L"Setup body of %ls\n",f->name);
     if(f->body)
     {
+//	anna_message(L"Setup body of %ls\n",f->name);
 	array_list_t ret = AL_STATIC;
 	int i;
 
@@ -596,23 +592,21 @@ void anna_function_setup_body(
 	{
 	    anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
 	    wr->steps = step_count;	    
+//	    anna_message(L"return should jump %d steps in function %ls\n", step_count, f->name);
+
 	}
 
 	al_truncate(&ret, 0);
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_CONTINUE, &ret);	
 	anna_node_find((anna_node_t *)f->body, ANNA_NODE_BREAK, &ret);	
-
-	if(al_get_count(&ret))
-	{
-	    
-	    for(i=0; i<al_get_count(&ret); i++)
-	    {
-		anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
-		wr->steps = loop_step_count;
-		//anna_message(L"continue/break should jump %d steps\n", loop_step_count);
-	    }
-	}
 	
+	for(i=0; i<al_get_count(&ret); i++)
+	{
+	    anna_node_wrapper_t *wr = (anna_node_wrapper_t *)al_get(&ret, i);
+	    wr->steps = loop_step_count;
+	    //anna_message(L"continue/break should jump %d steps in function %ls\n", loop_step_count, f->name);
+	}
+		
 	al_destroy(&ret);
     }
 
@@ -664,7 +658,6 @@ void anna_function_document(anna_function_t *fun, wchar_t *doc)
     anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
 }
 
-
 anna_function_t *anna_function_create_from_definition(
     anna_node_call_t *definition)
 {
@@ -694,7 +687,6 @@ anna_function_t *anna_function_create_from_definition(
     {
 	result->body = node_cast_call(
 	    anna_node_clone_deep(result->definition->child[4]));
-	
     }
     
     if(anna_attribute_flag(result->attribute, L"block"))
@@ -704,8 +696,6 @@ anna_function_t *anna_function_create_from_definition(
 
     if(anna_attribute_flag(result->attribute, L"loop"))
     {
-//	anna_message(L"WEEEE %ls\n", result->name);
-	
 	result->flags |= ANNA_FUNCTION_LOOP;
     }
 
@@ -716,7 +706,6 @@ static void anna_function_attribute_empty(anna_function_t *fun)
 {
     fun->attribute = anna_node_create_block2(0);
 }
-
 
 anna_function_t *anna_macro_create(
     wchar_t *name,
@@ -996,6 +985,11 @@ static anna_function_t *anna_function_create_specialization(
     sb_printf(&sb, L"%ls«", base->name);
     for(i=0; i<al_get_count(&al);i++)
     {
+	if(i!=0)
+	{
+	    sb_printf(&sb, L",");
+	}
+	
 	anna_node_call_t *tm = node_cast_call((anna_node_t *)al_get(&al, i));
 	tm->child[1] = spec->child[i];
 
@@ -1008,7 +1002,6 @@ static anna_function_t *anna_function_create_specialization(
 	    {
 		item_txt = spec_type->name;
 	    }
-	    
 	}
 	sb_printf(&sb, L"%ls", item_txt);
 	
@@ -1019,14 +1012,21 @@ static anna_function_t *anna_function_create_specialization(
     
     anna_function_t *res = anna_function_create_from_definition(def);
     res->flags = res->flags | ANNA_FUNCTION_SPECIALIZED;
-
-    anna_function_specialize_body(
-	res);
+    if(hash_get(&base->specialization, spec))
+    {
+	anna_message(L"Specialization duplication error\n");
+	CRASH;
+    }
+    
+    hash_put(&base->specialization, spec, res);
+//    anna_message(L"Put %ls\n", res->name);
+    
+    anna_function_specialize_body(res);
     anna_function_macro_expand(
-	res, base->stack_template);
+	res, base->stack_template->parent);
     anna_function_set_stack(
 	res, 
-	base->stack_template);
+	base->stack_template->parent);
     
     if(base->flags & ANNA_FUNCTION_PREPARED_INTERFACE)
     {
@@ -1037,7 +1037,7 @@ static anna_function_t *anna_function_create_specialization(
 	}
     }
     sb_destroy(&sb);
-        
+
     return res;
 }
 
@@ -1065,14 +1065,10 @@ anna_function_t *anna_function_get_specialization(
     }
 
     anna_function_t *spec_fun = hash_get(&fun->specialization, call);
-	    
+    
     if(!spec_fun)
     {
 	spec_fun = anna_function_create_specialization(fun, call);
-	if(spec_fun)
-	{
-	    hash_put(&fun->specialization, call, spec_fun);
-	}
     }
     return spec_fun;
 }
@@ -1080,6 +1076,18 @@ anna_function_t *anna_function_get_specialization(
 anna_function_t *anna_function_compile_specialization(
     anna_function_t *fun, anna_node_call_t *call)
 {
+    anna_function_t *old = hash_get(&fun->specialization, call);
+    if(old)
+    {
+	/*
+	  This is a very weird hack, that avoids crash bugs when
+	  anna_function_compile_specialization is called
+	  recursively. A more suitable solution should be devised.
+	 */
+	FIXME("Fragile handling of recursive specialization compilation requests.");
+	return 0;
+    }
+    
     anna_function_t *res = anna_function_get_specialization(fun, call);
     if(!res)
     {
@@ -1088,8 +1096,8 @@ anna_function_t *anna_function_compile_specialization(
     
     if(!res->code)
     {
-	anna_node_resolve_identifiers((anna_node_t *)res->body);
-	anna_node_calculate_type_children((anna_node_t *)res->body);
+//	anna_function_setup_interface(res);
+//	anna_function_setup_body(res);
 	anna_node_each(
 	    (anna_node_t *)res->body, 
 	    (anna_node_function_t)&anna_node_validate, 
@@ -1269,7 +1277,7 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
 		    0,
 		    anna_type_wrap(type_spec[i])));
 	}
-	base = anna_function_create_specialization(base, spec_call);
+	base = anna_function_get_specialization(base, spec_call);
     }
     al_destroy(&al);
     free(type_spec);

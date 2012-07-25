@@ -66,6 +66,8 @@
 */
 #define ANNA_FUNCTION_SPECIALIZED (8192*64)
 
+#define ANNA_FUNCTION_COMPILATION_STARTED (8192*256)
+
 /**
    Write a nicely formated prototype for the specified function or
    function type. This is implemented as a macro because it can

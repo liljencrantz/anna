@@ -476,7 +476,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    
 //	    anna_message(L"Call function %ls with %d params\n", fun->name, param);
 	    
-//#ifdef ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	    if(!fun)
 	    {
 		debug(D_CRITICAL, L"In function %ls\n", context->frame->function->name );
@@ -487,7 +487,16 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 		anna_frame_print(context->frame);
 		CRASH;
 	    }
-//#endif
+	    if(!fun->native)
+	    {
+		debug(D_CRITICAL, L"In function %ls\n", context->frame->function->name );
+		anna_bc_print(context->frame->function->code);
+		debug(D_CRITICAL, L"Offset %d\n", context->frame->code - context->frame->function->code);
+
+		debug(D_CRITICAL, L"Tried to call uncompiled function %ls\n", fun->name);
+		CRASH;		
+	    }
+#endif
 	    context->frame->code += sizeof(*op);
 	    context->function_object = wrapped;
 	    fun->native(context);

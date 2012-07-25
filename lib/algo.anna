@@ -1,0 +1,54 @@
+
+def Int partition(
+    %Type list, Int from, Int to, 
+    def Int fun(Object first, Object second))
+    (
+	template(%Type:MutableList«Int»),
+    )
+{
+    piv := list[to-1];
+    store := from;
+    (from .. to-1).each(idx)
+    {
+	if(fun(list[idx], piv) < 0)
+	{
+	    list.flip(idx, store);
+	    store++;
+	}
+    }
+
+    list.flip(store, to-1);
+    return store;
+}
+
+def Object sortSub(
+    %Type list, Int from, Int to, 
+    def Int fun(Object first, Object second))
+    (
+	template(%Type:MutableList«Int»),
+    )
+{
+    pivotIdx := partition(list, from, to, fun);
+    if(from != pivotIdx)
+    {
+	sortSub(list, from, pivotIdx, fun);
+    }
+    if((pivotIdx+1) != to)
+    {
+        sortSub(list, pivotIdx+1, to, fun);    
+    }
+}
+
+def %Type qsort(%Type collection, def Int fun(Object first, Object second) = ?)
+(
+    template(%Type:MutableList«Int»),
+    doc("
+Sort the specified collection using the quicksort algorithm.")
+    )
+{
+    collection.empty? and (return collection);
+    sortSub(
+	collection, 0, collection.count, 
+	fun or (def Int(Object first, Object second){(first as monkeypatchMisc.Comparable).__cmp__(second)}));
+	return collection;
+}

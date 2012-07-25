@@ -92,8 +92,11 @@ static void anna_hash_add_method_internal(
 	if((mid_t)-1 == anna_type_find_hash_code(anna_hash_get_value_type(type)))
 	    return;
     }
-
-    anna_member_create_method(type, anna_mid_get(fun->name), anna_hash_specialize(type, fun));
+    anna_function_t *fun_spec = anna_hash_specialize(type, fun);
+    if(fun_spec)
+    {
+	anna_member_create_method(type, anna_mid_get(fun->name), fun_spec);
+    }
 }
 
 static void add_hash_method(void *key, void *value, void *aux)

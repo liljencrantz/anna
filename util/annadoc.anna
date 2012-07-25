@@ -436,7 +436,7 @@ often used code paths, which makes it useful for regression testing.")
 	{
 	    def formatCompatList(List«DocumentationData» compat)
 	    {
-		sorted := compat.sort() as List«DocumentationData»;
+		sorted := algo.qsort(compat.thaw);
 		return "<span class='anna-compat'>%</span>" % [", ".join(sorted.map(dd){dd.linkPath(data)})];
 	    }
 	    
@@ -456,7 +456,12 @@ often used code paths, which makes it useful for regression testing.")
 	    }
 	}
 
-        smemb := memb.sort(def Int(Object first, Object second){(first as Member).name.__cmp__((second as Member).name)}).map(memb){memb as Member};
+        smemb := algo.qsort(
+	    memb.thaw, 
+	    def Int(Object first, Object second){
+		(first as Member).name.__cmp__((second as Member).name)
+	    }
+	    );
 	
         submodule := smemb.filter(mem)
 	{
@@ -507,9 +512,16 @@ often used code paths, which makes it useful for regression testing.")
 		}
 	    }
 	}
-      subop := opMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
+	subop := algo.qsort(
+	    opMap.map(key, el){key | el}, 
+	    def Int(Object first, Object second){
+		(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first);
+	    });
+	
 
-	subfun2 := funMap.map(key, el){key | el}.sort(def Int(Object first, Object second){(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first)}).map(memb){memb as Pair«String, MutableList«Member»»};
+	subfun2 := algo.qsort(
+	    funMap.map(key, el){key | el},
+	    def Int(Object first, Object second){(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first)});
 
         subother := smemb.filter(mem)
 	{
