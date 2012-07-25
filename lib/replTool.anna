@@ -439,13 +439,13 @@ the doc attribute of declarations."))
 
     def members(Type tp)
     {
-	algo.qsort(tp.member.filter(memb){
-	    !memb.internal?
-		},
+	algo.qsort(
+	    tp.member.filter(memb){
+		!memb.internal?;
+	    },
 	    def Int(Object first, Object second){
 		(first as Member).name.__cmp__((second as Member).name);
-	    }
-	    ).map(memb){memb as Member};
+	    });
     }
 
     if(type(object).module?)

@@ -32,27 +32,38 @@ expandCode(
     name: [allImutable, allMutable, allAny],
     );
 
-/*
-def none?(List this)
-(
-    target(List),
-    doc("Returns true if none of the members of this list are non-Null."),
-)
-{
-    res := 1 as Object;
-    this.each(i){ res = res and !i }
-    return res;
-}
 
-def any?(List this)
-(
-    target(List),
-    doc("Returns true if any of the members of this list are non-Null."),
-)
-{
-    return !none?(this);
-}
-*/
+expandCode(
+    def %name(%Type this)
+    (
+	target(%Type),
+	doc("Returns true if none of the members of this list are non-Null."),
+	name(none?),
+	)
+    {
+	res := 1 as Object;
+	this.each(i){ res = res and !i }
+	return res;
+    },
+    Type: [ImutableList, MutableList, List],
+    name: [noneImutable, noneMutable, noneAny],
+    );
+
+
+expandCode(
+    def %name(%Type this)
+    (
+	target(%Type),
+	doc("Returns true if any of the members of this list are non-Null."),
+	name(any?),
+	)
+    {
+	return !%noneName(this);
+    },
+    Type: [ImutableList, MutableList, List],
+    name: [anyImutable, anyMutable, anyAny],
+    noneName: [noneImutable, noneMutable, noneAny],
+    );
 
 expandCode(
     def Int %name(%Type«%Value» this, %Value value)
