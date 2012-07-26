@@ -84,7 +84,14 @@ static int anna_abides_fault_count_internal(
 	debug(verbose, L"Cached result is %d\n", count-1);
 	return count - 1;
     }
-    
+/*    
+    if(role_model == range_type)
+    {
+	verbose += 10;
+	anna_message(L"WEE %ls\n", contender->name);
+    }
+*/  
+
     anna_tt_t *key = anna_tt_make(contender, role_model);
     
     hash_put(&anna_abides_cache, key, (void *)(long)ABIDES_IN_TRANSIT);
@@ -110,8 +117,13 @@ static int anna_abides_fault_count_internal(
 
     if(anna_type_sendable(role_model) && !anna_type_sendable(contender))
     {
+	debug(
+	    verbose,
+	    L"Contender is not sendable\n",
+	    res);
 	res++;
     }
+
     
     for(i=0; i<anna_type_get_member_count(role_model); i++)
     {
@@ -174,6 +186,12 @@ static int anna_abides_fault_count_internal(
 	res += !ok;
     }
     
+    debug(
+	verbose,
+	L"Found %d errors\n",
+	res);
+    
+
     hash_put(&anna_abides_cache, key, (void *)(long)(res+1));
     
     return res;
