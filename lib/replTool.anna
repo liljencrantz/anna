@@ -380,7 +380,7 @@ the doc attribute of declarations."))
 
     def signature(Function fun)
     {
-	res := "".thaw ~ fun.outputType ~ " ";
+	res := "".thaw ~ fun.outputType.name ~ " ";
 	res ~= fun.name ~ " ";
 	res ~= '(';
         variadicIdxNamed := fun.variadicNamed? and fun.inputType.count - 1;
@@ -401,7 +401,7 @@ the doc attribute of declarations."))
 	    {
 		type = (type.member.find(memb){memb.name=="__get__"}.value(?) as reflection.Function).outputType;
 	    }
-	    res := "" ~ type ~ " " ~ name;
+	    res := "" ~ type.name ~ " " ~ name;
 	    res ~= (idx == variadicIdx) and "..." or "";
 	    res ~= (idx == variadicIdxNamed) and ":" or "";
 	    if(fun.defaultValue[idx])

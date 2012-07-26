@@ -9,6 +9,13 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
     anna_string_append_cstring(res, 1, L">");
     return anna_from_obj(res);
 }
+ANNA_VM_NATIVE(anna_type_name, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_type_t *type = anna_type_unwrap(this);
+    anna_object_t *res = anna_string_create(wcslen(type->name), type->name);
+    return anna_from_obj(res);
+}
 
 ANNA_VM_NATIVE(anna_type_filename, 1)
 {
@@ -112,7 +119,7 @@ static void anna_type_load()
     
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"name"),
-	string_type, &anna_type_to_string, 0, L"The name of this type.");
+	string_type, &anna_type_name, 0, L"The name of this type.");
     anna_member_create_native_property(
 	type_type, anna_mid_get(L"filename"),
 	string_type, &anna_type_filename, 0, L"The name of the file in which this type was defined, if any.");
