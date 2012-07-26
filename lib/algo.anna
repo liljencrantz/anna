@@ -1,3 +1,10 @@
+attribute(
+    doc(
+	"
+The algo module contains various general purpose algorithms.", 
+	"
+Currently, the only provided algoritm is the Quicksort algorithm,
+useful for sorting ordered collection."));
 
 def Int partition(
     %Type list, Int from, Int to, 
@@ -54,9 +61,8 @@ __get__ and flip, where the first returns the element at the specified
 index, and the second method switches places beteen the elements at
 the to specified indices.", 
 	"
-The optional second argument to qsort is a comparison function. If no
-comparison function is provided, a default comparator that uses the
-__cmp__ method of the elements is provided."),
+The elements of the collection must provide a __cmp__ method to
+provide internal ordering."),
     )
 {
     collection.empty? and (return collection);
@@ -87,9 +93,10 @@ __get__ and flip, where the first returns the element at the specified
 index, and the second method switches places beteen the elements at
 the to specified indices.", 
 	"
-The optional second argument to qsort is a comparison function. If no
-comparison function is provided, a default comparator that uses the
-__cmp__ method of the elements is provided."),
+The second argument to qsort is a comparison function, used to
+determin the order of two elements.",
+	"A common use case  for sorting is to sort objects based  on a field of
+the relevent object. This can be done using the fieldComparator macro."),
     )
 {
     collection.empty? and (return collection);

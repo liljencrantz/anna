@@ -1,7 +1,7 @@
 1.0 RELEASE CRITERIA:
 * Rename __staticTypeOf__ to staticType
 * Constructor for *String cause crash
-* Rename the confusing Object type. Maybe EmptyType or RootType are better options?
+* Rename the confusing Object type. Maybe AnyType, EmptyType or RootType are better options?
 * Alternative Lua-like string syntax, maybe /===/This is a string literal/===/ or /==="This is another string literal"===/
   - HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
 * List.reverse

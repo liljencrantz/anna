@@ -477,6 +477,13 @@ the doc attribute of declarations."))
 	    res ~= "\n\nThe % module contains the following types:\n" % [type(object).name];
 	    res ~= linebreak(subtype);
 	}
+
+	if(!subother.empty?)
+	{
+	    res ~= "\n\nThe % module contains the following members:\n" % [type(object).name];
+	    res ~= linebreak(subother);
+	}
+
     }
     else
     {
