@@ -1,7 +1,7 @@
 3
 Foo(some: 3, other: abc)
 Foo(some: , other: aaa)
-1 null null
+1 ? ?
 ggg2
 ggg2
 ggg3

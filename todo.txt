@@ -1,9 +1,9 @@
 1.0 RELEASE CRITERIA:
+* Rename __staticTypeOf__ to staticType
 * Constructor for *String cause crash
 * Rename the confusing Object type. Maybe EmptyType or RootType are better options?
 * Alternative Lua-like string syntax, maybe /===/This is a string literal/===/ or /==="This is another string literal"===/
   - HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
-* Iterator.iterator
 * List.reverse
 * List::convert(Iterator iter)
 * List.iterator--
@@ -16,11 +16,6 @@
   - ctime should be generated through the binding generator
 * anna-game as a proof that the language works for solving reasonably complex problems
 * Documentation:
-  - Drop Object::__cmp__ - not all objects can be used as hash table key types any more
-  - Drop Object::hashCode - not all objects can be used as hash table key types any more
-  - Drop Object::toString. Use String::convert instead.
-  - Replace obj.__type__ with lang.type(obj)
-* Drop all members from Object type.
   - Split base documentation into multiple files
   - Check for dead links
 * Check that node compare supports all ast node types
@@ -43,7 +38,13 @@
   - variable write access in debugger? 
 
 1.0 RELEASE CRITERIA (Done):
+* Drop all members from Object type.
+  - Drop Object::__cmp__ - not all objects can be used as hash table key types any more
+  - Drop Object::hashCode - not all objects can be used as hash table key types any more
+  - Drop Object::toString. Use String::convert instead.
+  - Replace obj.__type__ with lang.type(obj)
 * Iterators for all collection types
+* Iterator.iterator
 * Switch each, map and friends over to using iterators
 * Write macros to transform f"Hello, %(userName)" => "Hello, %" % [userName]
 * Interactive debugger

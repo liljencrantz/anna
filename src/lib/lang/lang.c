@@ -149,7 +149,7 @@ ANNA_VM_NATIVE(anna_i_print_internal, 1)
     anna_object_t *value = anna_as_obj(param[0]);
     if(value == null_object)
     {
-	write(1, "null", 4);	
+	write(1, "?", 1);	
     }
     else 
     {
@@ -159,8 +159,7 @@ ANNA_VM_NATIVE(anna_i_print_internal, 1)
 	}	
 	else
 	{
-	    char *msg = "<invalid toString method>";
-	    
+	    char *msg = "<invalid string type>";	    
 	    write(1, msg, strlen(msg));
 	}
     }
