@@ -101,6 +101,13 @@ static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
     return idx;
 }
 
+ANNA_VM_NATIVE(anna_string_init, 1)
+{
+    anna_object_t *obj= anna_as_obj(param[0]);
+    asi_init(as_unwrap(obj));
+    return param[0];
+}
+
 ANNA_VM_NATIVE(anna_string_i_set_int, 3)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
@@ -923,7 +930,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     
     anna_member_create_native_method(
 	type, ANNA_MID_INIT,
-	0, &anna_util_noop, type, 1,
+	0, &anna_string_init, type, 1,
 	o_argv, o_argn, 0, 0);
     
     anna_type_finalizer_add(
