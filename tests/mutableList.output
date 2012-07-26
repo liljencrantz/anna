@@ -1,2 +1,2 @@
-[1, 2, 3] ImutableList«Int»
-[1, 2, 3] [1, 9, 3] MutableList«Int»
+[1, 2, 3] <type ImutableList«Int»>
+[1, 2, 3] [1, 9, 3] <type MutableList«Int»>

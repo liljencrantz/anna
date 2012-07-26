@@ -538,7 +538,10 @@ static void anna_string_convert(anna_context_t *context)
 	    {
 		anna_object_t *res = anna_object_create(imutable_string_type);
 		asi_init(as_unwrap(res));
+		const wchar_t *msg = L"<Object of type ";
+		asi_append_cstring(as_unwrap(res), msg, wcslen(msg));	
 		asi_append_cstring(as_unwrap(res), o->type->name, wcslen(o->type->name));	
+		asi_append_cstring(as_unwrap(res), L">", 1);	
 		anna_context_push_object(context, res);	
 	    }
 	}

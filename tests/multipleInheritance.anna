@@ -26,23 +26,23 @@ def main()
 {
     vv := Derived1();
 
-    // Int.__add__
+    // Int::__add__
     print(vv + 5);
 
-    // Range.each
+    // Range::iterator
     vv.each(i){print(i)}
 
-    // Range.toString
+    // Range::toString
     print(vv);
 
     vv2 := Derived2();
 
-    // Int.__add__
+    // Int::__add__
     print(vv2 + 5);
 
-    // Range.each
+    // Range::iterator
     vv2.each(i){print(i)}
 
-    // Range.toString
+    // Int::toString
     print(vv2);
 }

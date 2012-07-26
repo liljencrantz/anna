@@ -3,7 +3,11 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type = anna_type_unwrap(this);
-    return anna_from_obj(anna_string_create(wcslen(type->name), type->name));
+    const wchar_t *msg = L"<type ";
+    anna_object_t *res = anna_string_create(wcslen(msg), msg);
+    anna_string_append_cstring(res, wcslen(type->name), type->name);
+    anna_string_append_cstring(res, 1, L">");
+    return anna_from_obj(res);
 }
 
 ANNA_VM_NATIVE(anna_type_filename, 1)

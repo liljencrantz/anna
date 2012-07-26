@@ -1,6 +1,6 @@
-method Object of type Foo 1
-function Object of type Foo 2
-function Object of type Foo 3
-function Object of type Foo 5
+method <Object of type Foo> 1
+function <Object of type Foo> 2
+function <Object of type Foo> 3
+function <Object of type Foo> 5
 null
 null
