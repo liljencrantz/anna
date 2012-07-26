@@ -1,9 +1,11 @@
 
 def Int partition(
     %Type list, Int from, Int to, 
-    def Int fun(Object first, Object second))
+    %Comp fun)
     (
 	template(%Type:MutableList«Int»),
+	template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
+	internal,
     )
 {
     piv := list[to-1];
@@ -23,32 +25,77 @@ def Int partition(
 
 def Object sortSub(
     %Type list, Int from, Int to, 
-    def Int fun(Object first, Object second))
+    %Comp fun)
     (
 	template(%Type:MutableList«Int»),
+	template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
+	internal,
     )
 {
-    pivotIdx := partition(list, from, to, fun);
+    pivotIdx := partition«%Type, %Comp»(list, from, to, fun);
     if(from != pivotIdx)
     {
-	sortSub(list, from, pivotIdx, fun);
+	sortSub«%Type, %Comp»(list, from, pivotIdx, fun);
     }
     if((pivotIdx+1) != to)
     {
-        sortSub(list, pivotIdx+1, to, fun);    
+        sortSub«%Type, %Comp»(list, pivotIdx+1, to, fun);    
     }
 }
 
-def %Type qsort(%Type collection, def Int fun(Object first, Object second) = ?)
+def %Type qsortComp(%Type collection)
 (
     template(%Type:MutableList«Int»),
     doc("
-Sort the specified collection using the quicksort algorithm.")
+Sort the specified collection using the quicksort algorithm.", 
+	"
+The collection that is to be sorted must provide two methods, namely
+__get__ and flip, where the first returns the element at the specified
+index, and the second method switches places beteen the elements at
+the to specified indices.", 
+	"
+The optional second argument to qsort is a comparison function. If no
+comparison function is provided, a default comparator that uses the
+__cmp__ method of the elements is provided."),
     )
 {
     collection.empty? and (return collection);
     sortSub(
 	collection, 0, collection.count, 
-	fun or (def Int(Object first, Object second){(first as monkeypatchMisc.Comparable).__cmp__(second)}));
+	__def__(
+		      anon, 
+		      Int, 
+		      {
+			  __var__(first, __staticTypeOf__(collection[0]), ?, {}),
+			  __var__(second, __staticTypeOf__(collection[0]), ?, {}),
+		      },
+		      {},
+		      {first.__cmp__(second)},
+		      ));
 	return collection;
 }
+
+def %Type qsort(%Type collection, %Comp fun)
+(
+    template(%Type:MutableList«Int»),
+    template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
+    doc("
+Sort the specified collection using the quicksort algorithm.", 
+	"
+The collection that is to be sorted must provide two methods, namely
+__get__ and flip, where the first returns the element at the specified
+index, and the second method switches places beteen the elements at
+the to specified indices.", 
+	"
+The optional second argument to qsort is a comparison function. If no
+comparison function is provided, a default comparator that uses the
+__cmp__ method of the elements is provided."),
+    )
+{
+    collection.empty? and (return collection);
+    sortSub«%Type,%Comp»(
+	collection, 0, collection.count, 
+	fun);
+	return collection;
+}
+

@@ -188,7 +188,19 @@ static anna_node_t *anna_function_setup_arguments(
 		    decl->child[0]);
 
 	    f->input_name[i] = anna_intern(name->name);		
-
+	    if(!decl->stack)
+	    {
+		anna_node_set_stack(
+		    (anna_node_t *)f->input_type_node,
+		    f->stack_template);
+/*
+		anna_error(declarations, L"Ooops");
+		anna_node_print(99, decl->child[1]);		
+		assert(f->stack_template);
+		assert(declarations->stack);
+		CRASH;*/
+	    }
+	    
 	    decl->child[1] = anna_node_calculate_type(decl->child[1]);
 	    anna_node_t *type_node = decl->child[1];
 	    anna_node_t *val_node = decl->child[2];
@@ -442,6 +454,12 @@ void anna_function_set_stack(
 	{
 	    anna_node_set_stack(
 		(anna_node_t *)f->return_type_node,
+		f->stack_template);
+	}
+	if(f->attribute)
+	{
+	    anna_node_set_stack(
+		(anna_node_t *)f->attribute,
 		f->stack_template);
 	}
     }
@@ -1126,6 +1144,9 @@ void anna_function_specialize_body(
 	    f->return_type_node = anna_node_definition_specialize(
 		anna_node_clone_deep(f->definition->child[1]),
 		&al);
+	    anna_node_set_stack(
+		(anna_node_t *)f->return_type_node,
+		f->stack_template);
 	}
 	
 	if(!f->input_type)
@@ -1168,7 +1189,7 @@ void anna_function_macro_expand(
 		
 		decl->child[1] = anna_node_macro_expand(decl->child[1], stack);
 		decl->child[2] = anna_node_macro_expand(decl->child[2], stack);
-		if(decl->child[3]->node_type != ANNA_NODE_CALL)
+		if(decl->child[3]->node_type != ANNA_NODE_CALL && decl->child[3]->node_type != ANNA_NODE_NOTHING)
 		{
 		    anna_error(decl->child[3], L"Invalid attribute list");
 		}

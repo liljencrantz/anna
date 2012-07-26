@@ -443,9 +443,7 @@ the doc attribute of declarations."))
 	    tp.member.filter(memb){
 		!memb.internal?;
 	    },
-	    def Int(Object first, Object second){
-		(first as Member).name.__cmp__((second as Member).name);
-	    });
+	    fieldComparator(Member::name));
     }
 
     if(type(object).module?)
@@ -501,11 +499,6 @@ property of the Type type."))
     use(reflection);
     return linebreak(
         algo.qsort(((object as reflection.Type) or type(object)).member.thaw,
-	    def Int(Object first, Object second)
-	    {
-		(first as Member).name.__cmp__((second as Member).name);
-	    }
-	)
-    );
+		   fieldComparator(Member::name)));
 }
 

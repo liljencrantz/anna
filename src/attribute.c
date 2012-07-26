@@ -105,7 +105,7 @@ int anna_attribute_template_idx(anna_node_call_t *attr, wchar_t *name)
 	    anna_node_call_t *tmpl = (anna_node_call_t *)attr->child[i];
 	    if(tmpl->child_count == 1)
 	    {
-		if (anna_node_is_call_to(tmpl->child[i], L"__mapping__"))
+		if (anna_node_is_call_to(tmpl->child[0], L"__mapping__"))
 		{
 		    anna_node_call_t *pair = (anna_node_call_t *)tmpl->child[0];
 		    if(pair->child_count == 2)
@@ -116,7 +116,7 @@ int anna_attribute_template_idx(anna_node_call_t *attr, wchar_t *name)
 			}
 		    }
 		}
-		else if(tmpl->child[i]->node_type == ANNA_NODE_MAPPING)
+		else if(tmpl->child[0]->node_type == ANNA_NODE_MAPPING)
 		{
 		    anna_node_cond_t *pair = (anna_node_cond_t *)tmpl->child[0];
 		    if( anna_node_is_named(pair->arg1, name))

@@ -436,7 +436,7 @@ often used code paths, which makes it useful for regression testing.")
 	{
 	    def formatCompatList(List«DocumentationData» compat)
 	    {
-		sorted := algo.qsort(compat.thaw);
+		sorted := algo.qsortComp(compat.thaw);
 		return "<span class='anna-compat'>%</span>" % [", ".join(sorted.map(dd){dd.linkPath(data)})];
 	    }
 	    
@@ -458,10 +458,7 @@ often used code paths, which makes it useful for regression testing.")
 
         smemb := algo.qsort(
 	    memb.thaw, 
-	    def Int(Object first, Object second){
-		(first as Member).name.__cmp__((second as Member).name)
-	    }
-	    );
+	    fieldComparator(Member::name));
 	
         submodule := smemb.filter(mem)
 	{
@@ -514,14 +511,11 @@ often used code paths, which makes it useful for regression testing.")
 	}
 	subop := algo.qsort(
 	    opMap.map(key, el){key | el}, 
-	    def Int(Object first, Object second){
-		(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first);
-	    });
-	
+	    fieldComparator(Pair«String, MutableList«Member»»::first));
 
 	subfun2 := algo.qsort(
 	    funMap.map(key, el){key | el},
-	    def Int(Object first, Object second){(first as Pair«String, MutableList«Member»»).first.__cmp__((second as Pair«String, MutableList«Member»»).first)});
+	    fieldComparator(Pair«String, MutableList«Member»»::first));
 
         subother := smemb.filter(mem)
 	{

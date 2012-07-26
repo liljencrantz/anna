@@ -54,3 +54,16 @@ literals consisting of an imaginary part, e.g.
 {
     iFloatLiteral(node);
 }
+
+macro fieldComparator(node)
+{
+    mapping := node[0] as Call;
+    res := ast(
+	def Int(%Type first, %Type second){
+	    first.%field.__cmp__(second.%field)
+	}
+	) % [
+	    "Type": mapping[0],
+	    "field": mapping[1]];
+    return res;
+}
