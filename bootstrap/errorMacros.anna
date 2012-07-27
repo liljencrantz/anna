@@ -1,6 +1,6 @@
 attribute(internal, doc("Internal module for macros related to rasing errors."));
 
-macro raise(node)
+macro raise(node) (doc("Shorthand for the <a path='error' member='raiseError'>error.raiseError</a> function."))
 {
     return ast(error.raiseError(%err)) % ["err": node[0]]
 }

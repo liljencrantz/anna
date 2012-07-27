@@ -2,15 +2,37 @@ attribute(internal, doc("Internal module for the enumType macro."));
 
 macro enumType(definition)
 (
-    doc("
-The enum macro is used to define enumerations types. The basic syntax is:
+    doc(
+	"The enum macro is used to define enumerations types.",
+	"
+enums are types whose state is exactly one out of a set of named,
+predefined states. They are useful in various situations that involve
+a predefined list of possible values, for example state tracking in
+state machines.",
+	"The basic syntax is:",
+	"
+<pre class='anna-code'>
+enum ParseState { ready, busy, onFire = 666 }
 
-enum TypeName
+...
+
+myState := ParseState::ready;
+print(myState); // Prints 'ready'
+print(myState.value); // Prints '0'
+myState = ParseState::onFire;
+print(myState); // Prints 'onFire'
+print(myState.value); // Prints '666'
+
+switch(myState)
 {
-    enumName, someOtherEnumName, enumWithValue64= 64, ...
+    case(ParseState::ready)
+    {
+        ...
+    }
 }
 
-")
+</pre>",
+	"enum types can be used as HashMap keys.")
 )
 {
     body := definition[2] as Call;

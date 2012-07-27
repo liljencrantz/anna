@@ -3,6 +3,7 @@ attribute(internal, doc("Internal module for the propertyAttribute macro."));
 use(parser);
 
 def Call getAttributePayload(Call c)
+    (doc("Internal helper function for <a member='propertyAttribute'>propertyAttribute</a>. Don't use directly."), internal)
 {
     expandCode(
 	if(c.callTo?(%name)) { return c },
@@ -15,6 +16,43 @@ def Call getAttributePayload(Call c)
 }
 
 macro propertyAttribute(node)
+    (doc(
+	"The property member attribute is used for creating dynamically caclulated members that behave like regular member variables.",
+	"Properties are internally implemented using a pair of methods called a getter and a setter. The setter is used in place of variable assignment, and the getter is used in place of variable value lookup.",
+	"A simple example of defining a property with both a getter and a setter",
+	"
+<pre class='anna-code'>
+class MyClass
+{
+    var Int storage;
+
+    def myGetter()
+    {
+        this.storage;
+    }
+
+    def mySetter(Int val)
+    {
+        this.storage = -val;
+    }
+
+    var Int myProperty (property(myGetter, mySetter));
+}
+</pre>",
+	"If one wants to define a read only-property, one can instead write",
+	"
+<pre class='anna-code'>
+class MyClass
+{
+    var Int storage;
+
+    def myProperty() (property)
+    {
+        this.storage;
+    }
+}
+</pre>",
+	))
 {
     payload := getAttributePayload(node);
     if(payload.callTo?("__constInternal__"))

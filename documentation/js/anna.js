@@ -19,18 +19,23 @@ var anna = {
      */
     pathLink: function()
     {
-	$("[path]").each(
+	$("[path], [member]").each(
 	    function(idx, el)
 	    {
 		var location = "";
 		if($(el).attr("member"))
 		    location = "#" + $(el).attr("member");
-
-		$(el).attr("href", anna.basePath + "api/global/" + $(el).attr("path").replace(/\./g, "/") + ".html" + location);
+		if($(el).attr("path"))
+		{
+		    $(el).attr("href", anna.basePath + "api/global/" + $(el).attr("path").replace(/\./g, "/") + ".html" + location);
+		}
+		else
+		{
+		    $(el).attr("href", location);
+		}
 	    });
-	
     },
-
+    
     /**
       Search the api documentation index for the specified keyword,
       and returns a dict with three items:

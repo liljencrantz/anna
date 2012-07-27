@@ -533,11 +533,11 @@ ANNA_VM_MACRO(anna_macro_nothing)
     return (anna_node_t *)node;
 }
 
-static void anna_macro_add(
+static void anna_macro_add_internal(
     anna_stack_template_t *stack, 
     wchar_t *name,
     anna_native_t call,
-    wchar_t *doc)
+    ...)
 {    
     anna_function_t *f = anna_native_create(
 	name,
@@ -549,8 +549,16 @@ static void anna_macro_add(
 	0,
 	0,
 	stack);
-    anna_function_document(f,anna_intern_static(doc));
     
+    va_list va;
+    va_start( va, call );
+    wchar_t *arg;
+    while( (arg=va_arg(va, wchar_t *) )!= 0 ) 
+    {
+	anna_function_document(f, anna_intern_static(arg));
+    }
+    va_end( va );
+
     anna_function_set_stack(f, stack);
     anna_function_setup_interface(f);
     anna_function_setup_body(f);
@@ -560,7 +568,11 @@ static void anna_macro_add(
 	f->wrapper->type,
 	anna_from_obj(f->wrapper),
 	0);
+
+
 }
+
+#define anna_macro_add( ... ) anna_macro_add_internal( __VA_ARGS__, (void *)0 )
 
 void anna_macro_init(anna_stack_template_t *stack)
 {
@@ -579,35 +591,169 @@ void anna_macro_init(anna_stack_template_t *stack)
 	"macros for functional programming, list assignment, simplified "
 	"type definition and error handling.");
 
-    anna_macro_add(stack, L"__def__", &anna_macro_def, L"Create a function with the specified definition.");
+    anna_stack_document(
+	stack,
+	L"Many of these macros are almost exclusively used indirectly through "
+	"various syntactic sugar, like := or the def syntax for defining "
+	"functions.");
+    
+    anna_macro_add(
+	stack,
+	L"__def__", 
+	&anna_macro_def,
+	L"Create a function with the specified definition.",
+	L"This macro is usually called indirectly through the def-syntactic sugar. It expects exactly five parameters,",
+	L"<ol><li>the name of the function, which must be an identifier</li><li>the return type of the function,</li><li>the input parameter list of the function,</li><li>the attribute list of the function and</li><li>the function body.</li></ol>",
+	L"It is possible to call the __def__ function directly, but the def sugar is significantly easier to use. Compare"
+	anna_example(L"next :== __def__(next, ?, {var Int in}, {}, {in+1});"),
+	L"with",
+	anna_example(L"def next(int in) {in+1}"));
     anna_macro_add(stack, L"__defInternal__", &anna_macro_def_internal, L"Internal utility function used by __def__. Don't call directly.");
-    anna_macro_add(stack, L"__block__", &anna_macro_block, L"Create a block function.");
+    anna_macro_add(
+	stack,
+	L"__block__",
+	&anna_macro_block,
+	L"Create a block function.",
+	L"This macro is a shortcut for creating functions that take no arguments and where you don't care about the return type. It is usually used through the {} syntactic sugar like this:",
+	anna_example(L"someBlock := {print(\"Hello\")}")
+	);
     anna_macro_add(stack, L"__loopBlock__", &anna_macro_block, L"Create a block for a while loop.");
-    anna_macro_add(stack, L"__staticMemberGet__", &anna_macro_static_member_get, L"Return a static member of the specified type.");
-    anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get, L"Returns a member of the specified object.");
-    anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set, L"Assigns a new value to the specified member of the specified object.");
-    anna_macro_add(stack, L"__staticMemberSet__", &anna_macro_static_member_set, L"Assigns a new value to the specified static member of the specified type.");
-    anna_macro_add(stack, L"__var__", &anna_macro_var, L"Declare a new variable.");
-    anna_macro_add(stack, L"__const__", &anna_macro_var, L"Declare a new constant.");
+    anna_macro_add(
+	stack,
+	L"__memberGet__",
+	&anna_macro_member_get,
+	L"Returns a member of the specified object.",
+	L"Usually used through the '.' operator.",
+	anna_example(L"// These two lines are equivalent\n__memberGet__(foo, bar);\nfoo.bar"));
+    anna_macro_add(
+	stack,
+	L"__memberSet__",
+	&anna_macro_member_set,
+	L"Assigns a new value to the specified member of the specified object.",
+	L"Usually used through the '.' operator.",
+	anna_example(L"// These two lines are equivalent\n__memberSet__(foo, bar, 5);\nfoo.bar = 5")
+	);
+    anna_macro_add(
+	stack,
+	L"__staticMemberGet__",
+	&anna_macro_static_member_get,
+	L"Return a static member of the specified type.",
+	L"Usually used through the '::' operator.",
+	anna_example(L"// These two lines are equivalent\n__staticMemberGet__(Foo, bar);\nfoo::bar")
+	);
+    anna_macro_add(
+	stack,
+	L"__staticMemberSet__",
+	&anna_macro_static_member_set,
+	L"Assigns a new value to the specified static member of the specified type.",
+	L"Usually used through the '::' operator.",
+	anna_example(L"// These two lines are equivalent\n__staticMemberSet__(Foo, bar, 5);\nfoo::bar = 5")
+	);
+    anna_macro_add(
+	stack,
+	L"__var__",
+	&anna_macro_var,
+	L"Declare a new variable value.",
+	L"A variable is a name that can be associated with a particular value.",
+	L"The __var__ macro is usually used through the := syntactic sugar, like this:",
+	anna_example(L"myVariable :== 5;\nprint(myVariable); // Prints '5'\nmyVariable = 7; // This reassigns myVariable to hold the value 7."),
+	L"__var__ expects exactly four parameters,",
+	L"<ol><li>the name of the variable,</li><li>the return type of the variable,</li><li>the value of the variable and</li><li>the attribute list of the variable.</li></ol>");
+    anna_macro_add(
+	stack,
+	L"__const__",
+	&anna_macro_var,
+	L"Declare a new constant value.",
+	L"A constant is like a variable, except that it always references the same object. Note that a contant can point to a mutable object.",
+	L"The __const__ macro is usually used through the :== syntactic sugar, like this:",
+	anna_example(L"myConstant :== 5;\nprint(myConstant); // Prints '5'\nmyConstant = 7; // This is a syntax error, myConstant can't be reassigned."),
+	L"__const__ expects exactly four parameters,",
+	L"<ol><li>the name of the constant,</li><li>the return type of the constant,</li><li>the value of the constant and</li><li>the attribute list of the constant.</li></ol>");
+
     anna_macro_add(stack, L"__varInternal__", &anna_macro_var_internal, L"Internal utility macro used by __var__. Don't call directly.");
     anna_macro_add(stack, L"__constInternal__", &anna_macro_var_internal, L"Internal utility macro used by __const__. Don't call directly.");
-    anna_macro_add(stack, L"__or__", &anna_macro_or, L"");
-    anna_macro_add(stack, L"__and__", &anna_macro_and, L"");
-    anna_macro_add(stack, L"if", &anna_macro_if, L"Conditionally execute a block.");
-    anna_macro_add(stack, L"else", &anna_macro_else, L"");
-    anna_macro_add(stack, L"while", &anna_macro_while, L"Repeatedly execute a block until a condition fails.");
+    anna_macro_add(stack, L"__or__", &anna_macro_or, L"Execute one expression, and if it returns null, also execute a second expression. Return value is the first expression if it is non-null, otherwise the second expression.");
+    anna_macro_add(stack, L"__and__", &anna_macro_and, L"Execute one expression, and if it returns non-null, also execute a second expression. Return value is null if the first expression fails, otherwise the second expression.");
+    anna_macro_add(
+	stack,
+	L"if",
+	&anna_macro_if,
+	L"Conditionally execute a block.",
+	L"The if macro is often used together with the <a member='else'>else-macro</a> to provide a second block to execute it the condition is not met.",
+	L"Usage example:",
+	anna_example(L"myMoodDescription := (if(happieness >=5){\"happy\"} else {\"sad\"});"));
+
+    anna_macro_add(
+	stack,
+	L"else",
+	&anna_macro_else,
+	L"This macro is used together with the <a member='if'>if</a> macro in order to execute a block of code is a condtion is not met.");
+
+    anna_macro_add(
+	stack,
+	L"while",
+	&anna_macro_while,
+	L"Repeatedly execute a block until a condition fails.",
+	L"while expects exactly two parameters,",
+	L"<ol><li>the conditional expression and</li><li>the code block to execute.</li></ol>",
+	L"An example usage of the while macro:",
+	anna_example(L"print(\"How old are you?\");\nwhile(!(age := Int::convert(readLine.readLine)))\n{\n    print(\"Invalid number, please try again!\");\n}")
+	);
+
     anna_macro_add(stack, L"__assign__", &anna_macro_assign, L"Set a new value to a variable.");
     anna_macro_add(stack, L"__macro__", &anna_macro_macro, L"Create a new function which is a valid macro with the specified definition.");
     anna_macro_add(stack, L"__specialize__", &anna_macro_specialize, L"Specialize the specified type or function template.");
-    anna_macro_add(stack, L"typeType", &anna_macro_type, L"Define a new type.");
+    anna_macro_add(
+	stack,
+	L"typeType",
+	&anna_macro_type,
+	L"Define a raw new type.",
+	L"This macro is rarely used directly, but rather through an intermediary macro like classType, structType or enumType, that make it significantly more convenient to create and manipulate types. And even then, the type definition syntactic sugar is almost always used to make it easier to define the type.", 
+	L"typeType expects exactly 3 parameters,",
+	L"<ol><li>the name of the type,</li><li>the attribute list of the type and</li><li>a block containing all member declarations of the type.</li></ol>",
+	L"A new type can be created using code like",
+	anna_example(L"myManualType :== typeType(myManualType, {}, {def myMethod() (bound) {print(\"Hi\")}});")
+	L"which is equivalent to",
+	anna_example(L"type myManualType {def myMethod() (bound) {print(\"Hi\")}};")
+	);
     anna_macro_add(stack, L"__typeInternal__", &anna_macro_type_internal, L"Internal utility macro used by typeType. Don't call directly.");
-    anna_macro_add(stack, L"return", &anna_macro_return, L"Stop execution of the current funtion and return the specified value.");
-    anna_macro_add(stack, L"__staticTypeOf__", &anna_macro_type_of, L"Calculate the static return type of the specified expression.");
-    anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of, L"");
-    anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of, L"");
-    anna_macro_add(stack, L"cast", &anna_macro_cast, L"Cast thespecified value to the specified type.");
+    anna_macro_add(
+	stack,
+	L"return",
+	&anna_macro_return,
+	L"Stop execution of the current funtion and return the specified value.",
+	anna_example("def double(Int in){ return in+in }")
+	);
+    anna_macro_add(
+	stack,
+	L"__staticTypeOf__",
+	&anna_macro_type_of,
+	L"Calculate the static type of the specified expression.",
+	L"This function is similar to the <a path='lang' member='type'>type</a>-function, but where type returns the true type of an expression, __staticTypeOf__ returns the type calculated by the compiler, which may be different. An important property of the __staticTypeOf__ macro is that it can be used in places where a type is required during compilation, e.g. as the type in a function declaration. For example,",
+	anna_example(L"myNumber := 7;\nmyFunction :== __def__(myFunction, ?, {__var__(in, __staticTypeOf__(myNumber), ?, {})}, {}, {in+1});\nmyFunction(4);"));
+    anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of, L"Calculate the static type of the return value of the specified function.");
+    anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of, L"Calculate the static type of the input parameter of the specified function with the specified index.");
+    anna_macro_add(
+	stack,
+	L"cast",
+	&anna_macro_cast,
+	L"Cast thespecified value to a different type.",
+	L"Usually used through the as-operator",
+	anna_example(L"print((myAstNode as parser.Call)[0]);"),
+	L"If the cast is illegal, a null value is returned instead.");
     anna_macro_add(stack, L"break", &anna_macro_break, L"Stop execution of the current loop and return the specified value.");
     anna_macro_add(stack, L"continue", &anna_macro_continue, L"Stop the execution of the current lap of the current loop and return the specified value.");
-    anna_macro_add(stack, L"use", &anna_macro_use, L"");
-    anna_macro_add(stack, L"nothing", &anna_macro_nothing, L"Execute all the specified expressions and return the last one.");
+    anna_macro_add(stack, L"use", &anna_macro_use, L"This macro imports the specified expression, so that any members in it will automatically be considered as variables during variable name lookup.");
+    anna_macro_add(
+	stack,
+	L"nothing",
+	&anna_macro_nothing, 
+	L"Execute all the specified expressions and return the last one.",
+	L"This macro is often very convinient inside of other macros, as it allows you to replace a single expression with multiple new expressions.",
+	L"This example macro will print the file location of an expression every time it is executed:",
+	anna_example(
+	    L"macro printAndDo(node)\n{\n"
+	    "    ast(nothing(print(\"File: %, line: %\" % [%file, %line]), %node)) %\n"
+	    "        [\"node\": node, \"file\": StringLiteral(node, node.file), \"line\": node.line];\n"
+	    "}"));
 }

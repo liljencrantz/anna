@@ -29,7 +29,7 @@ vv2 := MyStruct(5, \"\");
 print(vv2);
 </pre>",
 "Because structs implement the __cmp__ and hashCode methods, they can be used as 
-keys in dictionaries.
+keys in HashMap dictionaries.
 ")
 )
 {
@@ -96,7 +96,6 @@ the return value of getMeSomeOtherObject as its value.",
 "Struct values can be any Anna expression, including another
 struct. The only restriction is that there may not be any circular
 dependencies between member types."
-
 )
 )
 {

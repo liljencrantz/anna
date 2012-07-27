@@ -1,5 +1,9 @@
 1.0 RELEASE CRITERIA:
+* Member::const?
+* enum types should have two separate __cmp__ implementations without casting
 * Modify function definition syntax to put return type after argument list?
+* Decide on argument order for all string functions
+* Go over naming of C functions, e.g. conunt vs. size vsd. length
 * Do something clever with inherited methods to make sure the this member is correctly handled.
 * Make annadoc show documentation for all the build in macros.
 * Move all bootstrapped macros into the same namespace as the builtin macros, so they are easier to find.

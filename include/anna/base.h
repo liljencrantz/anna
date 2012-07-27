@@ -89,6 +89,9 @@ typedef int mid_t;
 */
 #define ANNA_CONTEXT_STATIC_SZ (8192*32)
 
+
+#define anna_example(txt) L"<pre class='anna-code'>" txt L"</pre>"
+
 /*
   The preallocated MIDs
 */
