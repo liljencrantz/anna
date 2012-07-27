@@ -137,6 +137,7 @@ a:visited
 td.anna-line-number pre
 {
     text-align: right;
+    margin-right: 4pt;
 }
 
 td.anna-code-main,
