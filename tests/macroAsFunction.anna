@@ -1,6 +1,6 @@
 def main()
 {
-    f := ast.ast;
+    f := builtinMacros.ast;
     print(f(parser.Call(
 		?,
 		parser.Identifier(?, "ast"),
