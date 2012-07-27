@@ -20,6 +20,7 @@
 #include "anna/node_create.h"
 #include "anna/vm.h"
 #include "anna/mid.h"
+#include "anna/intern.h"
 
 static anna_node_t *anna_macro_attribute_expand(anna_node_call_t *node, anna_node_call_t *attr)
 {
@@ -535,7 +536,8 @@ ANNA_VM_MACRO(anna_macro_nothing)
 static void anna_macro_add(
     anna_stack_template_t *stack, 
     wchar_t *name,
-    anna_native_t call)
+    anna_native_t call,
+    wchar_t *doc)
 {    
     anna_function_t *f = anna_native_create(
 	name,
@@ -547,6 +549,7 @@ static void anna_macro_add(
 	0,
 	0,
 	stack);
+    anna_function_document(f,anna_intern_static(doc));
     
     anna_function_set_stack(f, stack);
     anna_function_setup_interface(f);
@@ -561,35 +564,35 @@ static void anna_macro_add(
 
 void anna_macro_init(anna_stack_template_t *stack)
 {
-    anna_macro_add(stack, L"__def__", &anna_macro_def);
-    anna_macro_add(stack, L"__defInternal__", &anna_macro_def_internal);
-    anna_macro_add(stack, L"__block__", &anna_macro_block);
-    anna_macro_add(stack, L"__loopBlock__", &anna_macro_block);
-    anna_macro_add(stack, L"__staticMemberGet__", &anna_macro_static_member_get);
-    anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get);
-    anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set);
-    anna_macro_add(stack, L"__staticMemberSet__", &anna_macro_static_member_set);
-    anna_macro_add(stack, L"__var__", &anna_macro_var);
-    anna_macro_add(stack, L"__const__", &anna_macro_var);
-    anna_macro_add(stack, L"__varInternal__", &anna_macro_var_internal);
-    anna_macro_add(stack, L"__constInternal__", &anna_macro_var_internal);
-    anna_macro_add(stack, L"__or__", &anna_macro_or);
-    anna_macro_add(stack, L"__and__", &anna_macro_and);
-    anna_macro_add(stack, L"if", &anna_macro_if);
-    anna_macro_add(stack, L"else", &anna_macro_else);
-    anna_macro_add(stack, L"while", &anna_macro_while);
-    anna_macro_add(stack, L"__assign__", &anna_macro_assign);
-    anna_macro_add(stack, L"__macro__", &anna_macro_macro);
-    anna_macro_add(stack, L"__specialize__", &anna_macro_specialize);
-    anna_macro_add(stack, L"typeType", &anna_macro_type);
-    anna_macro_add(stack, L"__typeInternal__", &anna_macro_type_internal);
-    anna_macro_add(stack, L"return", &anna_macro_return);
-    anna_macro_add(stack, L"__staticTypeOf__", &anna_macro_type_of);
-    anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of);
-    anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of);
-    anna_macro_add(stack, L"cast", &anna_macro_cast);
-    anna_macro_add(stack, L"break", &anna_macro_break);
-    anna_macro_add(stack, L"continue", &anna_macro_continue);
-    anna_macro_add(stack, L"use", &anna_macro_use);
-    anna_macro_add(stack, L"nothing", &anna_macro_nothing);
+    anna_macro_add(stack, L"__def__", &anna_macro_def, L"Create a function with the specified definition.");
+    anna_macro_add(stack, L"__defInternal__", &anna_macro_def_internal, L"Internal utility function used by __def__. Don't call directly.");
+    anna_macro_add(stack, L"__block__", &anna_macro_block, L"Create a block function.");
+    anna_macro_add(stack, L"__loopBlock__", &anna_macro_block, L"Create a block for a while loop.");
+    anna_macro_add(stack, L"__staticMemberGet__", &anna_macro_static_member_get, L"Return a static member of the specified type.");
+    anna_macro_add(stack, L"__memberGet__", &anna_macro_member_get, L"Returns a member of the specified object.");
+    anna_macro_add(stack, L"__memberSet__", &anna_macro_member_set, L"Assigns a new value to the specified member of the specified object.");
+    anna_macro_add(stack, L"__staticMemberSet__", &anna_macro_static_member_set, L"Assigns a new value to the specified static member of the specified type.");
+    anna_macro_add(stack, L"__var__", &anna_macro_var, L"Declare a new variable.");
+    anna_macro_add(stack, L"__const__", &anna_macro_var, L"Declare a new constant.");
+    anna_macro_add(stack, L"__varInternal__", &anna_macro_var_internal, L"Internal utility macro used by __var__. Don't call directly.");
+    anna_macro_add(stack, L"__constInternal__", &anna_macro_var_internal, L"Internal utility macro used by __const__. Don't call directly.");
+    anna_macro_add(stack, L"__or__", &anna_macro_or, L"");
+    anna_macro_add(stack, L"__and__", &anna_macro_and, L"");
+    anna_macro_add(stack, L"if", &anna_macro_if, L"Conditionally execute a block.");
+    anna_macro_add(stack, L"else", &anna_macro_else, L"");
+    anna_macro_add(stack, L"while", &anna_macro_while, L"Repeatedly execute a block until a condition fails.");
+    anna_macro_add(stack, L"__assign__", &anna_macro_assign, L"Set a new value to a variable.");
+    anna_macro_add(stack, L"__macro__", &anna_macro_macro, L"Create a new function which is a valid macro with the specified definition.");
+    anna_macro_add(stack, L"__specialize__", &anna_macro_specialize, L"Specialize the specified type or function template.");
+    anna_macro_add(stack, L"typeType", &anna_macro_type, L"Define a new type.");
+    anna_macro_add(stack, L"__typeInternal__", &anna_macro_type_internal, L"Internal utility macro used by typeType. Don't call directly.");
+    anna_macro_add(stack, L"return", &anna_macro_return, L"Stop execution of the current funtion and return the specified value.");
+    anna_macro_add(stack, L"__staticTypeOf__", &anna_macro_type_of, L"Calculate the static return type of the specified expression.");
+    anna_macro_add(stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of, L"");
+    anna_macro_add(stack, L"__staticInputTypeOf__", &anna_macro_input_type_of, L"");
+    anna_macro_add(stack, L"cast", &anna_macro_cast, L"Cast thespecified value to the specified type.");
+    anna_macro_add(stack, L"break", &anna_macro_break, L"Stop execution of the current loop and return the specified value.");
+    anna_macro_add(stack, L"continue", &anna_macro_continue, L"Stop the execution of the current lap of the current loop and return the specified value.");
+    anna_macro_add(stack, L"use", &anna_macro_use, L"");
+    anna_macro_add(stack, L"nothing", &anna_macro_nothing, L"Execute all the specified expressions and return the last one.");
 }

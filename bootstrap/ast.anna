@@ -3,16 +3,21 @@ attribute(internal, doc("Internal module for the ast macro."));
 macro ast(node)
 (
     doc("
-A macro that takes an AST tree and returns it verbatim. This is useful for creating code templates, and often used togerther with the AST Node formating function. 
-
+A macro that takes an AST tree and returns it verbatim. This is useful for creating code templates, and often used together with the AST Node formating function.",
+"
 Example:
-
+",
+"
+<pre class='anna-code'>
 ast(%value := 0) % [\"value\": Identifier(?, \"someVariableName\") ];
-
+</pre>",
+"
 The above example will return an AST that is equivalent to the following code:
-
+",
+"
+<pre class='anna-code'>
 someVariableName := 0;
-
+</pre>
 ")
 )
 {
