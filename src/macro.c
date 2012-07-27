@@ -570,8 +570,6 @@ static void anna_macro_add_internal(
 	f->wrapper->type,
 	anna_from_obj(f->wrapper),
 	0);
-
-
 }
 
 #define anna_macro_add( ... ) anna_macro_add_internal( __VA_ARGS__, (void *)0 )
@@ -607,9 +605,9 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"This macro is usually called indirectly through the def-syntactic sugar. It expects exactly five parameters,",
 	L"<ol><li>the name of the function, which must be an identifier</li><li>the return type of the function,</li><li>the input parameter list of the function,</li><li>the attribute list of the function and</li><li>the function body.</li></ol>",
 	L"It is possible to call the __def__ function directly, but the def sugar is significantly easier to use. Compare"
-	anna_example(L"next :== __def__(next, ?, {var Int in}, {}, {in+1});"),
+	anna_example(L"next :== __def__(next, ?, {var Int in}, {}, {in+1});\n"),
 	L"with",
-	anna_example(L"def next(int in) {in+1}"));
+	anna_example(L"def next(int in) {in+1}\n"));
 
     anna_macro_add(stack, L"__defInternal__", &anna_macro_def_internal, L"Internal utility function used by __def__. Don't call directly.");
     anna_macro_add(
@@ -618,7 +616,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	&anna_macro_block,
 	L"Create a block function.",
 	L"This macro is a shortcut for creating functions that take no arguments and where you don't care about the return type. It is usually used through the {} syntactic sugar like this:",
-	anna_example(L"someBlock := {print(\"Hello\")}")
+	anna_example(L"someBlock := {print(\"Hello\")}\n")
 	);
 
     anna_macro_add(
@@ -633,7 +631,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	&anna_macro_member_get,
 	L"Returns a member of the specified object.",
 	L"Usually used through the '.' operator.",
-	anna_example(L"// These two lines are equivalent\n__memberGet__(foo, bar);\nfoo.bar"));
+	anna_example(L"// These two lines are equivalent\n__memberGet__(foo, bar);\nfoo.bar;\n"));
 
     anna_macro_add(
 	stack,
@@ -641,7 +639,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	&anna_macro_member_set,
 	L"Assigns a new value to the specified member of the specified object.",
 	L"Usually used through the '.' operator.",
-	anna_example(L"// These two lines are equivalent\n__memberSet__(foo, bar, 5);\nfoo.bar = 5")
+	anna_example(L"// These two lines are equivalent\n__memberSet__(foo, bar, 5);\nfoo.bar = 5;\n")
 	);
 
     anna_macro_add(
@@ -650,7 +648,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	&anna_macro_static_member_get,
 	L"Return a static member of the specified type.",
 	L"Usually used through the '::' operator.",
-	anna_example(L"// These two lines are equivalent\n__staticMemberGet__(Foo, bar);\nfoo::bar")
+	anna_example(L"// These two lines are equivalent\n__staticMemberGet__(Foo, bar);\nfoo::bar;\n")
 	);
 
     anna_macro_add(
@@ -659,7 +657,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	&anna_macro_static_member_set,
 	L"Assigns a new value to the specified static member of the specified type.",
 	L"Usually used through the '::' operator.",
-	anna_example(L"// These two lines are equivalent\n__staticMemberSet__(Foo, bar, 5);\nfoo::bar = 5")
+	anna_example(L"// These two lines are equivalent\n__staticMemberSet__(Foo, bar, 5);\nfoo::bar = 5;\n")
 	);
 
     anna_macro_add(
@@ -670,7 +668,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"A variable is a name that can be associated with a particular value.",
 	L"The __var__ macro is usually used through the := syntactic sugar, like this:",
 	anna_example(
-	    L"myVariable :== 5;\nprint(myVariable); // Prints '5'\nmyVariable = 7; // This reassigns myVariable to hold the value 7."),
+	    L"myVariable :== 5;\nprint(myVariable); // Prints '5'\nmyVariable = 7; // This reassigns myVariable to hold the value 7.\n"),
 	L"__var__ expects exactly four parameters,",
 	L"<ol><li>the name of the variable,</li><li>the return type of the variable,</li><li>the value of the variable and</li><li>the attribute list of the variable.</li></ol>");
     anna_macro_add(
@@ -681,7 +679,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"A constant is like a variable, except that it always references the same object. Note that a contant can point to a mutable object.",
 	L"The __const__ macro is usually used through the :== syntactic sugar, like this:",
 	anna_example(
-	    L"myConstant :== 5;\nprint(myConstant); // Prints '5'\nmyConstant = 7; // This is a syntax error, myConstant can't be reassigned."),
+	    L"myConstant :== 5;\nprint(myConstant); // Prints '5'\nmyConstant = 7; // This is a syntax error, myConstant can't be reassigned.\n"),
 	L"__const__ expects exactly four parameters,",
 	L"<ol><li>the name of the constant,</li><li>the return type of the constant,</li><li>the value of the constant and</li><li>the attribute list of the constant.</li></ol>"
 	);
@@ -717,7 +715,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"Conditionally execute a block.",
 	L"The if macro is often used together with the <a member='else'>else-macro</a> to provide a second block to execute it the condition is not met.",
 	L"Usage example:",
-	anna_example(L"myMoodDescription := (if(happieness >=5){\"happy\"} else {\"sad\"});"));
+	anna_example(L"myMoodDescription := (if(happieness >=5){\"happy\"} else {\"sad\"});\n"));
 
     anna_macro_add(
 	stack,
@@ -759,9 +757,9 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"typeType expects exactly 3 parameters,",
 	L"<ol><li>the name of the type,</li><li>the attribute list of the type and</li><li>a block containing all member declarations of the type.</li></ol>",
 	L"A new type can be created using code like",
-	anna_example(L"myManualType :== typeType(myManualType, {}, {def myMethod() (bound) {print(\"Hi\")}});")
+	anna_example(L"myManualType :== typeType(myManualType, {}, {def myMethod() (bound) {print(\"Hi\")}});\n")
 	L"which is equivalent to",
-	anna_example(L"type myManualType {def myMethod() (bound) {print(\"Hi\")}};")
+	anna_example(L"type myManualType {def myMethod() (bound) {print(\"Hi\")}};\n")
 	);
 
     anna_macro_add(
@@ -773,7 +771,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"return",
 	&anna_macro_return,
 	L"Stop execution of the current funtion and return the specified value.",
-	anna_example("def double(Int in){ return in+in }")
+	anna_example("def double(Int in){ return in+in }\n")
 	);
 
     anna_macro_add(
@@ -782,7 +780,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	&anna_macro_type_of,
 	L"Calculate the static type of the specified expression.",
 	L"This function is similar to the <a path='lang' member='type'>type</a>-function, but where type returns the true type of an expression, __staticTypeOf__ returns the type calculated by the compiler, which may be different. An important property of the __staticTypeOf__ macro is that it can be used in places where a type is required during compilation, e.g. as the type in a function declaration. For example,",
-	anna_example(L"myNumber := 7;\nmyFunction :== __def__(myFunction, ?, {__var__(in, __staticTypeOf__(myNumber), ?, {})}, {}, {in+1});\nmyFunction(4);"));
+	anna_example(L"myNumber := 7;\nmyFunction :== __def__(myFunction, ?, {__var__(in, __staticTypeOf__(myNumber), ?, {})}, {}, {in+1});\nmyFunction(4);\n"));
 
     anna_macro_add(
 	stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of,
@@ -798,7 +796,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 	&anna_macro_cast,
 	L"Cast thespecified value to a different type.",
 	L"Usually used through the as-operator",
-	anna_example(L"print((myAstNode as parser.Call)[0]);"),
+	anna_example(L"print((myAstNode as parser.Call)[0]);\n"),
 	L"If the cast is illegal, a null value is returned instead.");
 
     anna_macro_add(
