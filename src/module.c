@@ -844,7 +844,7 @@ void anna_module_init(wchar_t *name)
       of the native types with additional non-native methods.
       
       This must be done in a specific order, since many of these
-      patches rely on each other.
+      monkey patches rely on each other.
       
       Right now, we separate these things into many different files
       for clarity. Long term, we probably want to use as few files as

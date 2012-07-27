@@ -564,6 +564,21 @@ static void anna_macro_add(
 
 void anna_macro_init(anna_stack_template_t *stack)
 {
+    anna_stack_document(
+	stack,
+	L"The builtinMacros module contains all the macros that are "
+	"enabled by default in Anna.");
+
+    anna_stack_document(
+	stack,
+	L"These macros are a fundamental part of the Anna language, and "
+	"implement things like function definition, type definition, "
+	"variable declaration and assignment, conditional execution and "
+	"template specialization. There are also a large number of utility "
+	"macros that make using Anna significantly easier. These include "
+	"macros for functional programming, list assignment, simplified "
+	"type definition and error handling.");
+
     anna_macro_add(stack, L"__def__", &anna_macro_def, L"Create a function with the specified definition.");
     anna_macro_add(stack, L"__defInternal__", &anna_macro_def_internal, L"Internal utility function used by __def__. Don't call directly.");
     anna_macro_add(stack, L"__block__", &anna_macro_block, L"Create a block function.");
