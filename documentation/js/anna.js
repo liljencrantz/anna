@@ -401,7 +401,29 @@ var anna = {
 		    html = html.replace(repl.regExp, repl.replacement);
 		});
 		
-		$(el).html(html);
+		if(el.nodeName == "PRE")
+		{
+		    /*
+		      For multiline code segments, add line numbers.
+		     */
+		    var lineCount = html.match(/\n/g);
+		    if(lineCount && lineCount.length > 1){
+			var lines = "1";
+			for(var i=1; i<lineCount.length; i++) {
+			    lines += "\n" + (i+1);
+			}
+			lines += "\n\n";
+			$(el).replaceWith("<table><tr><td><pre>"+lines+"</pre></td><td><pre class='anna-code'>" + html + "</pre></td></tr></table>");
+		    }
+		    else
+		    {
+			$(el).html(html);
+		    }
+		}
+		else
+		{
+		    $(el).html(html);
+		}
 	    }
 	);
     }
