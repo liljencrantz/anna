@@ -48,35 +48,35 @@ def Node __update__(Call node)
 macro __increase__(node)
 (
     doc("
-Increase the specified value by the specified amount.")
+Increase the specified value by the specified amount, called as +=.")
 )
 {__update__(node)}
 
 macro __decrease__(node)
 (
     doc("
-Decrease the specified value by the specified amount.")
+Decrease the specified value by the specified amount, called as -=.")
 )
 {__update__(node)}
 
 macro __append__(node)
 (
     doc("
-Append the specified value to the specified base")
+Append the specified value to the specified base, called as ~=.")
 )
 {__update__(node)}
 
 macro __next__(node)
 (
     doc("
-Nove the specified value forward one step")
+Move the specified value forward one step, called as ++.")
 )
 {__update__(node)}
 
 macro __prev__(node)
 (
     doc("
-*Move the specified value backwards one step")
+Move the specified value backward one step, called as --.")
 )
 {__update__(node)}
 

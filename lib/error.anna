@@ -20,7 +20,7 @@ class Error (doc("The base class of any error"))
 	doc("A string representation of this Error."),
     )
     {
-	type(this).name;
+	"<error %>" % [type(this).name];
     }
 }
 

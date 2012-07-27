@@ -571,20 +571,6 @@ static void anna_stack_to_string_item(
     sb_printf(sb, L"%ls.", stack->name ? stack->name : L"?");
 }
 
-ANNA_VM_NATIVE(anna_stack_to_string, 1)
-{
-    ANNA_ENTRY_NULL_CHECK(param[0]);    
-    anna_stack_template_t *this = anna_stack_unwrap(anna_as_obj(param[0]));    
-    string_buffer_t sb;
-    sb_init(&sb);
-    sb_printf(&sb, L"Module: ");
-    anna_stack_to_string_item(this->parent, &sb);
-    sb_printf(&sb, L"%ls", this->name);    
-    anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), sb_content(&sb)));
-    sb_destroy(&sb);
-    return res;
-}
-
 static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 {
     anna_type_t *res = anna_type_create(
@@ -599,17 +585,6 @@ static anna_type_t *anna_stack_type_create(anna_stack_template_t *stack)
 	null_type);
     *(anna_entry_get_addr_static(res, ANNA_MID_STACK_TYPE_PAYLOAD)) = (anna_entry_t *)stack;
 
-    wchar_t *argn[] =
-	{
-	    L"this"
-	}
-    ;    
-    
-    anna_member_create_native_method(
-	res, ANNA_MID_TO_STRING, 0,
-	&anna_stack_to_string, string_type, 1,
-	&res, argn, 0, 0);
-    
     anna_type_close(res);
     return res;
 }

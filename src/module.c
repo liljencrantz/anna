@@ -42,6 +42,7 @@
 #include "anna/lib/lang/pair.h"
 
 static void anna_module_load_i(anna_stack_template_t *module);
+static anna_stack_template_t *stack_macro;
 
 array_list_t anna_module_default_macros = AL_STATIC;
 array_list_t anna_module_in_transit = AL_STATIC;
@@ -310,12 +311,30 @@ static void anna_module_bootstrap_macro(wchar_t *name)
     sb_printf(&sb, L"%ls/%ls.anna", anna_module_bootstrap_directory(), name);
     wchar_t *path = sb_content(&sb);
 
-    anna_stack_template_t *mm = anna_module(stack_global, name, path);
+    anna_stack_template_t *mm = anna_module(stack_global, 0, path);
     sb_destroy(&sb);
     if(mm)
     {
 	anna_module_load_i(mm);
-	al_push(&anna_module_default_macros, mm);
+	int i;
+
+	anna_type_t *int_mod_type = anna_stack_wrap(mm)->type;
+	for(i=1; i<int_mod_type->static_member_count; i++)
+	{
+	    anna_object_t *fun_obj = anna_as_obj(int_mod_type->static_member[i]);
+	    anna_function_t *fun = anna_function_unwrap(fun_obj);
+	    if(!fun || wcscmp(fun->name, L"__init__")==0)
+	    {
+		continue;
+	    }
+	    anna_stack_declare(
+		stack_macro,
+		fun->name,
+		fun->wrapper->type,
+		anna_from_obj(fun->wrapper),
+		0);
+	}
+
     }
 }
 
@@ -772,8 +791,15 @@ void anna_module_init(wchar_t *name)
     anna_module_data_create(modules, stack_global);
     anna_module_doc();
     
-    anna_stack_template_t *stack_macro = anna_stack_create(stack_global);
+    stack_macro = anna_stack_create(stack_global);
+    anna_stack_name(stack_macro, anna_intern_static(L"builtinMacros"));
     anna_macro_init(stack_macro);
+    anna_stack_declare(
+	stack_global,
+	L"builtinMacros",
+	anna_stack_wrap(stack_macro)->type,
+	anna_from_obj(anna_stack_wrap(stack_macro)),
+	ANNA_STACK_READONLY);
     al_push(&stack_global->expand, anna_use_create_stack(stack_macro));
     
     anna_stack_template_t *stack_lang = anna_stack_unwrap(
@@ -804,12 +830,12 @@ void anna_module_init(wchar_t *name)
 	anna_from_obj(g_obj),
 	ANNA_STACK_READONLY);
 
-    anna_stack_declare(
+    anna_module_const(
 	stack_global,
 	anna_intern_static(L"__name__"),
 	imutable_string_type,
 	anna_from_obj(anna_string_create(wcslen(name), name)),
-	ANNA_STACK_READONLY);
+	L"The name of the module of which the main-function is to be executed.");
 
     anna_type_setup_interface(g_obj->type);
     

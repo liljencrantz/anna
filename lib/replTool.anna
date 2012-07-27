@@ -376,7 +376,7 @@ the doc attribute of declarations."))
     }
 
     objType := (object as Type) or type(object);
-    description := String::convert(objType) ~ " type";
+    description := String::convert(objType.name) ~ " type";
 
     def signature(Function fun)
     {

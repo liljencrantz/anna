@@ -1,7 +1,12 @@
 1.0 RELEASE CRITERIA:
+* Do something clever with inherited methods to make sure the this member is correctly handled.
+* Make annadoc show documentation for all the build in macros.
+* Move all bootstrapped macros into the same namespace as the builtin macros, so they are easier to find.
+* Use setLocation on ast stuff in various macros to make error messages more readable.
 * Rename __staticTypeOf__ to staticType
+* Drop __staticReturnTypeOf__ and __staticInputTypeOf__
 * Constructors for intersected types should return null.
-* Rename the confusing Object type. Maybe AnyType, EmptyType or RootType are better options?
+* Rename the confusing Object type. Maybe AnyType, BaseType, EmptyType or RootType are better options?
 * Alternative Lua-like string syntax, maybe /===/This is a string literal/===/ or /==="This is another string literal"===/
   - HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
 * List.reverse
