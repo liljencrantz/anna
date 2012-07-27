@@ -412,8 +412,7 @@ var anna = {
 			for(var i=1; i<lineCount.length; i++) {
 			    lines += "\n" + (i+1);
 			}
-			lines += "\n\n";
-			$(el).replaceWith("<table><tr><td><pre>"+lines+"</pre></td><td><pre class='anna-code'>" + html + "</pre></td></tr></table>");
+			$(el).replaceWith("<table><tr><td class='anna-line-number'><pre>"+lines+"</pre></td><td class='anna-code-main'><pre class='anna-code'>" + html + "</pre></td></tr></table>");
 		    }
 		    else
 		    {

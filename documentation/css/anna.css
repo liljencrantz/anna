@@ -134,6 +134,17 @@ a:visited
     color: #171
 }
 
+td.anna-line-number pre
+{
+    text-align: right;
+}
+
+td.anna-code-main,
+td.anna-line-number
+{
+    vertical-align: top;
+}
+
 .anna-code-popup
 {
     position: relative;
