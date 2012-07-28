@@ -288,7 +288,7 @@ often used code paths, which makes it useful for regression testing.")
 		"def % <em>%</em> (%)" % [getLink(mem.memberOf, fun.outputType), fun.name, argv];
 	    }
 	} else {
-	    "var % <em>%</em>" % [getLink(mem.memberOf, mem.type), mem.name];
+		  "% % <em>%</em>" % [(if(mem.mutable?){"var"} else {"const"}), getLink(mem.memberOf, mem.type), mem.name];
 	}) ~ getAttribute(mem) ~ ";"
     }
 

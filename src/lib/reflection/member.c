@@ -46,6 +46,17 @@ ANNA_VM_NATIVE(anna_member_i_get_bound, 1)
     return anna_member_is_bound(m)?anna_from_int(1):null_entry;
 }
 
+ANNA_VM_NATIVE(anna_member_i_get_mutable, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_member_t *m = anna_member_unwrap(this);
+    if(m->storage & ANNA_MEMBER_PROPERTY)
+    {
+	return m->setter_offset != -1?anna_from_int(1):null_entry;
+    }
+    return !anna_member_is_imutable(m)?anna_from_int(1):null_entry;
+}
+
 ANNA_VM_NATIVE(anna_member_i_get_type, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
@@ -168,6 +179,14 @@ static void anna_member_type_create()
 	&anna_member_i_get_bound,
 	0,
 	L"Is this member bound to its object?");
+
+    anna_member_create_native_property(
+	member_type,
+	anna_mid_get(L"mutable?"),
+	int_type,
+	&anna_member_i_get_mutable,
+	0,
+	L"Can this member be assigned tp?");
 
     anna_member_create_native_property(
 	member_type,
