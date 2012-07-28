@@ -179,8 +179,8 @@ def main()
 {
     doggie := "woof";   // Declare dogie as a variable holding the value woof
     print(doggie);	// Print woof
-    foo = "mooo";       // Assign mooo to doggie
-    print(foo);         // Print mooo
+    doggie = "mooo";       // Assign mooo to doggie
+    print(doggie);         // Print mooo
 }
 	  </pre>
 	  <p>
@@ -208,7 +208,7 @@ def main()
 	    called <code class="anna-code">as</code>. It is used like this:
 	  </p>
 	  <pre class="anna-code">
-cat := "meow" as Object;  // Declare foo as a variable of type Object
+cat := "meow" as Object;  // Declare cat as a variable of type Object
 	  </pre>
 	  <p>
 	    The above code will declare the variable cat, which will be of
@@ -525,19 +525,29 @@ while(1)
 	    spanning from 5 (inclusive) to 11
 	    (exclusive). The <code class="anna-code">each(ii){...}</code>
 	    part is a bit of syntactic suger. A macro will translate
-	    it into the equivalent of the following code:
+	    it into a piece of code utilizing the
+	    type <code class="anna-code">Range::Iterator</code>. All
+	    Anna collection types,
+	    like <code class="anna-code">List</code>, <code class="anna-code">String</code>
+	    and <code class="anna-code">HashMap</code> have an
+	    Iterator type, which is accessible through
+	    the <code class="anna-code">iterator</code> property of an
+	    instance. An iterator, like it's name implies, can be used
+	    for stepping through the members of a
+	    collection. Iterators are used internally not only for the
+	    each macro, but for a series of macros
+	    including <code class="anna-code">map</code>, <code class="anna-code">filter</code>
+	    and <code class="anna-code">reduce</code>, which allow you
+	    to write very powerful data transformation code with very
+	    little effort. These macros can all be used on any type
+	    that provide an iterator.
 	  </p>
-	  <pre class="anna-code">
-(5..11).__each__(def (Int !unused, Int idx){print(ii)});
-	  </pre>
 	  <p>
-	    <code class="anna-code">__each__</code> is a method that
-	    will execute the supplied block once for each member in
-	    the collection. Anna will automatically determine the
-	    correct type for the <code class="anna-code">ii</code>
-	    variable. All collection type objects, such as maps, lists
-	    and ranges provide an each method. It can be used with a
-	    single argument, such as above, or it can be used with two
+	    Anna will automatically determine the correct type for
+	    the <code class="anna-code">ii</code> variable. All
+	    collection type objects, such as maps, lists and ranges
+	    provide an each method. It can be used with a single
+	    argument, such as above, or it can be used with two
 	    arguments, in which case the first argument is the
 	    index/key and the second is the value:
 	  </p>
@@ -3364,7 +3374,7 @@ date += isoDateDelta(x-0-0, 1:00);
 		</td>
 		<td>
 		  <code class='anna-code'>
-		    __collection__(Object, 1, 2, 3)
+		    __collection__(__block__(Object), 1, 2, 3)
 		  </code>
 		</td>
 	      </tr>
@@ -3526,7 +3536,7 @@ def someFunction()
 	      not clear what a piece of code should actually do.
 	    </li>
 	    <li>
-	      Focus more on expressivness, but don't forget
+	      Focus more on expressiveness, but don't forget
 	      efficency. Continuations, automatic garbage collection
 	      and «everyting is an object» are all language choices
 	      that make the langauge extremely expressive, but they
@@ -3535,8 +3545,8 @@ def someFunction()
 	      use of clever compiler tricks. So far, Anna includes no
 	      such tricks, and is decidedly slow. That said, Anna is,
 	      when possible with only a minimal cost to
-	      expressiveness, designed to make it <em>possible</em> to
-	      write a speedy compiler.
+	      expressiveness, designed to make it <em>realistically
+	      possible</em> to write a speedy compiler.
 	    </li>
 	  </ul>
 

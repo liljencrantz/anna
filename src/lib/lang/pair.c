@@ -195,6 +195,21 @@ static void anna_pair_type_create_internal(
 	type,
 	L"A Pair represents a mapping from a key to a value.");
 
+    anna_type_document(
+	type,
+	L"A Pair is usually created using the | operator, like this:");
+
+    anna_type_document(
+	type,
+	anna_example(
+	    L"myPair := 10|math.pi;\n"
+	    L"// This prints «10 3.141593»\n"
+	    L"print(myPair.first, myPair.second);\n"
+	    L"// The pair type is imutable, if both subtypes support the __cmp__ and hashCode\n"
+	    L"// methods, then so will the Pair.\n"
+	    L"myMap := [myPair: \"mystring\"];\n"
+	    L"// This prints «[10|3.141593: mystring]»\n"
+	    L"print(myMap);\n"));
 
     anna_type_close(type);    
 }

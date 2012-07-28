@@ -186,7 +186,7 @@ static void anna_member_type_create()
 	int_type,
 	&anna_member_i_get_mutable,
 	0,
-	L"Can this member be assigned tp?");
+	L"Can this member be assigned to?");
 
     anna_member_create_native_property(
 	member_type,
