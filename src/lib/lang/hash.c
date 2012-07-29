@@ -1288,7 +1288,24 @@ void anna_hash_type_create()
 	{
 	    L"this", L"other"
 	};
+
+    anna_type_document(
+	hash_key_type,
+	L"An abstract type representing containing all the members needed in order to be used as a key in a HashMap.");
+
+
+    anna_member_create_native_method(
+	hash_key_type,
+	ANNA_MID_INIT,
+	0,
+	&anna_vm_null_function,
+	hash_key_type,
+	1,
+	hk_argv,
+	hk_argn, 0, 
+	0);
     
+
     anna_member_create_native_method(
 	hash_key_type,
 	ANNA_MID_CMP,

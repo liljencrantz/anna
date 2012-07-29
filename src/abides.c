@@ -232,6 +232,26 @@ void anna_type_intersect_into(
     {
 	FIXME("Intersections of callable types don't intersect the call");	
     }
+    anna_type_t *init_argv[] = 
+	{
+	    res
+	};
+    wchar_t *init_argn[] = 
+	{
+	    L"this"
+	};
+
+    anna_member_create_native_method(
+	res,
+	ANNA_MID_INIT,
+	0,
+	&anna_vm_null_function,
+	res,
+	1,
+	init_argv,
+	init_argn, 0, 
+	0);
+    
     
     for(i=0; i<anna_type_get_member_count(t2); i++)
     {

@@ -93,10 +93,14 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	0, 0, 0,
 	0,
 	0);
+
     block_type->name = anna_intern(L"Block");
     anna_type_document(
 	block_type,
 	L"A Block is a Anna function that accepts no parameters.");
+    anna_type_document(
+	block_type,
+	L"There is nothing inherently different or special about blocks compared to other function types.");
 
     anna_member_load(stack);
     anna_function_load(stack);
