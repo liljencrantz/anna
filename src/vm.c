@@ -471,7 +471,6 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	}
 	else
 	{
-//	    anna_message(L"FDASFDSAFSAD %d\n", wrapped);
 	    anna_function_t *fun = anna_function_unwrap_fast(wrapped);
 	    
 //	    anna_message(L"Call function %ls with %d params\n", fun->name, param);
@@ -838,7 +837,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	}
 #endif
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
-//#ifdef ANNA_CHECK_VM
+#ifdef ANNA_CHECK_VM
 	if(!m){
 	    debug(
 		D_CRITICAL,L"Object of type %ls does not have a member named %ls\n",
@@ -854,7 +853,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    anna_frame_print(context->frame);	    
 	    CRASH;
 	}
-//#endif 
+#endif 
 	
 	anna_entry_t *res = obj->type->static_member[m->offset];
 	

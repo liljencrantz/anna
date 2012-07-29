@@ -676,10 +676,24 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"__const__",
 	&anna_macro_var,
 	L"Declare a new constant value.",
-	L"A constant is like a variable, except that it always references the same object. Note that a contant can point to a mutable object.",
+	L"A constant is like a variable, except that it always references the same object.",
+	(
+	    L"Note that a contant can point to a mutable object (Such as a "
+	    L"MutableList or a MutableString) in which case the state of the "
+	    L"object can be freely mutated, but the constant will always point "
+	    L"to the <em>same</em> object instance, even as the actual state of "
+	    L"the object is changing. The concepts of constness (variables that "
+	    L"can't be reassigned) and imutability (objects that can not change "
+	    L"their state), while related, must not be confused. It <em>is</em> very "
+	    L"easy to confuse them though, especially if one comes from a C++ "
+	    L"background, where the const keyword is used to denote both, and "
+	    L"the exact placement of the keyword in a declaration decides which "
+	    L"of the two is meant."),
 	L"The __const__ macro is usually used through the :== syntactic sugar, like this:",
 	anna_example(
-	    L"myConstant :== 5;\nprint(myConstant); // Prints '5'\nmyConstant = 7; // This is a syntax error, myConstant can't be reassigned.\n"),
+	    L"myConstant :== 5;\n"
+	    L"print(myConstant); // Prints '5'\n"
+	    L"myConstant = 7; // This is a syntax error, myConstant can't be reassigned.\n"),
 	L"__const__ expects exactly four parameters,",
 	L"<ol><li>the name of the constant,</li><li>the return type of the constant,</li><li>the value of the constant and</li><li>the attribute list of the constant.</li></ol>"
 	);
@@ -738,7 +752,13 @@ void anna_macro_init(anna_stack_template_t *stack)
 	stack,
 	L"__assign__",
 	&anna_macro_assign,
-	L"Set a new value to a variable.");
+	L"Assign a new value to a variable.",
+	L"__assign__ takes two parameters, the first must be an identifier, the second can be any expression. If the identifier does not denote a declared variable, or if the expression can't mask as the type of that variable, a compilation error will result.",
+	L"Usually used through the '=' syntactic sugar,",
+	anna_example(
+	    L"// These two lines are equivalent.\nmyVariable = 7;\n__assign__(myVariable, 7);\n"
+	    )
+	);
 
     anna_macro_add(
 	stack, L"__macro__", &anna_macro_macro,

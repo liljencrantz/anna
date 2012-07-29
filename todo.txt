@@ -1,4 +1,5 @@
 1.0 RELEASE CRITERIA:
+* Null() should return the null object
 * String::convert should do something clever for modules.
 * Modify while loop to be able to handle cool iterator things like breaks in map
 * Modify function definition syntax to put return type after argument list?

@@ -173,7 +173,7 @@ var anna = {
 
     initTables: function()
     {
-	$(".anna-table tr:odd").addClass("anna-table-odd");
+	$(".anna-table > tbody > tr:odd").addClass("anna-table-odd");
     },
     
     /*

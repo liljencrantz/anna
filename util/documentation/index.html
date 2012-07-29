@@ -232,7 +232,8 @@ print(1337 as String);  // Invalid cast, returns null
 	    consider conversion and casting to be the same thing.  In
 	    In Anna, converting an object to a different type is done
 	    using code
-	    like <code class='anna-code'>Float::convert(someInt)</code>.
+	    like <code class='anna-code'>Float::convert(someInt)</code>
+	    or <code class='anna-code'>Complex::convert(math.pi)</code>.
 	    To learn more about converting, see the manual
 	    section <a href='#misc-casting-vs-converting'>Casting and
 	    converting</a>.
@@ -1518,7 +1519,7 @@ TODO
 	      is, Anna provides you with the tools to solve it efficiently.
 	    </li>
 	  </ul>
-	  <h3>Moving on</h3>
+	  <h3><a name='intro_gentle_next'>Moving on</a></h3>
 	  <p>
 	    That should give you an idea about Anna. If you want more in
 	    depth information about some aspect of Anna, follow one of the
@@ -1752,7 +1753,7 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    implement exception handling, green threads and a multitude of
 	    other features.
 	  </p>
-	  <h3>Moving on</h3>
+	  <h3><a name='intro_c_next'>Moving on</a></h3>
 	  <p>
 	    Very few Anna programmers will directly use continuations
 	    on a regular basis. Most will stay away from writing their
@@ -1840,7 +1841,7 @@ FIXME! Functional programming example here
 	    Blocks of code, by the way, are anonymous functions that take 0
 	    parameters.
 	  </p>
-	  <h3>Static typing, but not as bad as it seems</h3>
+	  <h3><a name='intor_script_static_typing'>Static typing, but not as bad as it seems</a></h3>
 	  <p>
 	    So. Enough dodging, lets address what is likely to be the major
 	    cause of concern for Ruby- and Python lovers. Static typing. In
@@ -1881,7 +1882,7 @@ FIXME! Functional programming example here
 	    tolerable amount of typing than in other statically typed
 	    languages.
 	  </p>
-	  <h3>Duck typing</h3>
+	  <h3><a name='intro_script_duck'>Duck typing</a></h3>
 	  <p>
 	    The practice of duck typing, e.g. not checking for specific
 	    function types when validating the type of an input parameter,
@@ -1904,7 +1905,7 @@ FIXME! Functional programming example here
 	  </p>
     
 	  
-	  <h3>Moving on</h3>
+	  <h3><a name='intro_script_next'>Moving on</a></h3>
 	  <p>
 	    This concludes the Anna overview for people familiar with
 	    scripting languages. You now need to decide where to
@@ -2609,8 +2610,8 @@ thisIsCode();
 	    Some objects in Anna are mutable, i.e. they can be changed
 	    after they where created.  Mutable objects are sometimes
 	    significantly easier to work with, but the fact that an
-	    imutable object can't change unexpectedly has some
-	    important code safety implications. Imutable objects also
+	    imutable object can't change unexpectedly can often be a
+	    significant boon to debugability. Imutable objects also
 	    offer important opportunities for optimizations.
 	  </p>
 	  <p>
@@ -2716,7 +2717,7 @@ thisIsCode();
 	      A constant pointing to a mutable object will always
 	      evaluate to the same object. But by e.g. pushing and
 	      popping values from a mutable list the actual content of
-	      the list may change - regardless of if we're accessin
+	      the list may change - regardless of if we're accessing
 	      the object through a constant.
 	    </li>
 	    <li>
@@ -2727,7 +2728,13 @@ thisIsCode();
 	      change during the execution of a program.
 	    </li>
 	  </ul>
-
+	  <p>
+	    Whenever suitable, make sure to use contants instead of
+	    variables, and to use imutable versions of types instead
+	    of mutable. Doing so will make intent of the code clearer,
+	    debugging easier and might even make the application run
+	    faster.
+	  </p>
 	  <h3><a name="mutability-next">Moving on</a></h3>
 	  <ul>
 	    <li>
@@ -2780,17 +2787,17 @@ thisIsCode();
 	    type of name for a function. All type members and stack
 	    values, including functions and methods, have exactly one
 	    canonical name, which is unique within a specific
-	    namespace (that is, the name is unique with that stack
-	    frame or type). This is the «true» name of the function
-	    and must be used in any situation where an unambigous name
-	    is needed. But functions and methods can also have an
-	    arbitrary number of aliases, specified using the alias
-	    attribute in the function declaration. Such aliases are
-	    also searched when performing lookup for function and
-	    method calls. If multiple function matches are found, the
-	    function with the most compatible type signature is
-	    chosen. Aliases are only used when calling a function or
-	    method.
+	    namespace (that is, the name is unique within the stack
+	    frame or type it is a member of). This is the «true» name
+	    of the function and must be used in any situation where an
+	    unambigous name is needed. But functions and methods can
+	    also have an arbitrary number of aliases, specified using
+	    the alias attribute in the function declaration. Such
+	    aliases are also searched when performing lookup for
+	    function and method calls. If multiple function matches
+	    are found, the function with the most compatible type
+	    signature is chosen. Aliases are only used when calling a
+	    function or method.
 	  </p>
 	  <p>
 	    Note:
@@ -2885,10 +2892,25 @@ def outerFunction(Int value)
 	  <p>
 	    Note that there is nothing magical about
 	    a <code>convert</code> method. It is simply a naming
-	    convention, and it is the responsibility of every type
-	    author to create suitable convert methods for their types.
+	    convention that type conversion should be handled by a
+	    static method named <code>convert</code> located in the
+	    type being converted to. It is the responsibility of every
+	    type author to create suitable convert methods for their
+	    types. Sometimes, it is desirable to make it possible to
+	    add new such conversion methods. For example, it is very
+	    often nice to be able to write custom behavior for
+	    the <code class='anna-code'>String::convert</code> method,
+	    in order to provide a nice and descriptive string
+	    representation of an object. The convetion to use in such
+	    cases is to add a
+	    non-static <code class='anna-code'>toXXX</code>-method to
+	    the target object, where XXX is the name of the type to
+	    convert to. For example,
+	    the <code class='anna-code'>String::convert</code>-method
+	    will check if an object being converted to a String has
+	    a <code class='anna-code'>toString</code>-method, and if
+	    so, use that to convert the object to a String.
 	  </p>
-	  
 
 	  <h2><a name="misc-internal-identifiers">Internal identifiers</a></h2>
 	  <p>
@@ -3343,13 +3365,23 @@ date += isoDateDelta(x-0-0, 1:00);
 	      <tr>
 		<td>
 		  <code class='anna-code'>
-		    def foo(){1}
+def next(Int in) {in+1};
 		  </code>
 		</td>
 		<td>
-		  <code class='anna-code'>
-		    __const__(foo, ?, __def__(foo, ?, __block__(), __block__(), __block__(1)))
-		  </code>
+		  <pre class='anna-code'>
+__const__(
+    next,
+    ?,
+    __def__(
+        next,
+        ?,
+        __block__(
+            __var__(in, Int, ?, __block__())),
+        __block__(),
+        __block__(__memberGet__(in,__add__)(1))),
+    __block__());
+		  </pre>
 		</td>
 	      </tr>
 
@@ -3402,6 +3434,48 @@ date += isoDateDelta(x-0-0, 1:00);
 		  <code class='anna-code'>
 		    __collection__(?, __mapping__("a", 1), __mapping__("b", 2))
 		  </code>
+		</td>
+	      </tr>
+
+
+	      <tr>
+		<td>
+		  <pre class='anna-code'>
+class MyClass 
+(
+    extends(BaseClass)
+)
+{
+    def myMethod(){
+        print(
+            "Here we are!");
+    }
+}
+		  </pre>
+		</td>
+		<td>
+		  <pre class='anna-code'>
+__const__(
+    MyClass,
+    ?,
+    classType(
+        MyClass,
+        __block__(extends(BaseClass)),
+        __block__(
+            __const__(
+                myMethod,
+                ?,
+                __def__(
+                    myMethod,
+                    ?,
+                    __block__(),
+                    __block__(),
+                    __block__(
+                        print("Here we are!")
+                    )),
+                __block__()))),
+    __block__(extends(BaseClass)));
+		  </pre>
 		</td>
 	      </tr>
 

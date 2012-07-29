@@ -138,6 +138,13 @@ td.anna-line-number pre
 {
     text-align: right;
     margin-right: 4pt;
+    color: #aaa;
+}
+
+pre
+{
+    margin: 0;
+    padding: 0;
 }
 
 td.anna-code-main,
@@ -202,9 +209,12 @@ table caption
     border-collapse: collapse;
 }
 
-.anna-table th,
-.anna-table td
+.anna-table > tbody > tr > th,
+.anna-table > tbody > tr > td,
+.anna-table > thead > tr > th,
+.anna-table > thead > tr > td
 {
+    vertical-align: top;
     padding-left: 10pt;
     padding-right: 10pt;
 }

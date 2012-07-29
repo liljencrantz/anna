@@ -1345,17 +1345,23 @@ myMap := «Char, List«Int»»[]
 	    documentation</a> for a full reference.
 	  </p>
 	  <p>
-	    Given all the above, why does the List type even exist?
-	    Obviously, HashMaps must have some limitations that the
-	    List does not. The most important limitation of the
-	    HashMap is that it is unordered, that is, when iterating
-	    over a HashMap, there is no guarantee that iteration will
-	    be done in any particular order. Inserting or removing
-	    elements can completely change the order of the elements.
-	    This makes the HashMap unsuitable for any type of
-	    sequential data.  Another drawback is that HashMaps are
-	    slightly slower and use a bit more memory than plain
-	    lists. Neither of these should be a major factor.
+	    Given all the above, why does the List type even exist?  A
+	    HashMap that uses the Int type as a key would obviously
+	    behave very similarly to a list. Obviously, HashMaps must
+	    have some limitations that the List does not. The most
+	    important limitation of the HashMap is that it is
+	    unordered. That is, when iterating over a HashMap, there
+	    is no guarantee that iteration will be done in any
+	    particular order. In fact, inserting or removing elements
+	    to the map can completely change the order of the
+	    elements.  This makes the HashMap unsuitable for
+	    sequential data. It is also not possible to truncate a
+	    HashMap, nor do stack operations like push or pop make any
+	    sense. Another drawback is that HashMaps are slightly
+	    slower and use a bit more memory than plain lists. Neither
+	    of these should be a major factor, it is a rare program
+	    where the speed or memory overhead of a HashMap is a major
+	    concern.
 	  </p>
 	  
 
@@ -1440,7 +1446,7 @@ def wordCount(String input)
 	    Todo. expandCode, kStringLiteral, switch...
 	  </p>
 
-	  <h1><a name="macros-custom">Lesson 13: Writing your own macors</a></h1>
+	  <h1><a name="macros-custom">Lesson 13: Writing your own macros</a></h1>
 	  <p>
 	    Todo.
 	  </p>
