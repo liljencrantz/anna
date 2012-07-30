@@ -64,7 +64,7 @@ def block?(Node n) (internal, doc("Returns non-null if the specified node is a b
 def Node iterDeclare(Node id, Node nodeType) (internal, doc("Creates a variable declaration AST node with the specified name and type"))
 {
     ast(
-	__var__(%id, %nodeType, ?, {})).replace(ast(id), id).replace(ast(nodeType) , nodeType);
+	__var__(%id, %nodeType, ?, {})).setLocation(id).replace(ast(id), id).replace(ast(nodeType) , nodeType);
 }
 
 def Call mangleIterator(Call node)
@@ -181,6 +181,7 @@ def doPrint(String key, String value)
 		%collVar
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(body), body)
 	    .replace(ast(keyVar), (decl[0] as Call)[0])
@@ -205,6 +206,7 @@ def doPrint(String key, String value)
 		%collVar
 		)
 	    )
+            .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(fun), node[0])
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
@@ -262,6 +264,7 @@ macro filter(node)
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(body), body)
 	    .replace(ast(keyVar), (decl[0] as Call)[0])
@@ -286,6 +289,7 @@ macro filter(node)
 		%res;
 		)
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(fun), node[0])
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
@@ -344,6 +348,7 @@ macro map(node)
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(body), body)
 	    .replace(ast(keyVar), (decl[0] as Call)[0])
@@ -369,6 +374,7 @@ macro map(node)
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(iterFun), node[0])
 	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
@@ -422,6 +428,7 @@ macro milter(node)
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(body), body)
 	    .replace(ast(keyVar), (decl[0] as Call)[0])
@@ -448,6 +455,7 @@ macro milter(node)
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(iterFun), node[0])
 	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
@@ -503,6 +511,7 @@ macro find(node)
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(body), body)
 	    .replace(ast(keyVar), (decl[0] as Call)[0])
@@ -527,6 +536,7 @@ macro find(node)
 		%res;
 		)
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(fun), node[0])
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
@@ -584,6 +594,7 @@ href='#each'>each</a> does"
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(body), body)
 	    .replace(ast(keyVar), (decl[0] as Call)[0])
@@ -609,6 +620,7 @@ href='#each'>each</a> does"
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(iterFun), node[0])
 	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
@@ -709,6 +721,7 @@ macro reduce(node)
 		%res;
 		);
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(ReturnType), ast(__staticTypeOf__(%initial)))
 	    .replace(ast(body), body)
@@ -734,6 +747,7 @@ macro reduce(node)
 		%res;
 		)
 	    )
+	    .setLocation(node)
 	    .replace(ast(coll), coll)
 	    .replace(ast(ReturnType), ast(__staticTypeOf__(%initial)))
 	    .replace(ast(fun), node[1])

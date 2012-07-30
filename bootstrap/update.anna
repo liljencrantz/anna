@@ -35,11 +35,11 @@ def Node __update__(Call node)
 
     if(node.count == 1)
     {
-	return ast(%x = %x.%y()).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name));
+	return ast(%x = %x.%y()).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name));
     }
     if(node.count == 2)
     {
-	return ast(%x = %x.%y(%z)).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1]);
+	return ast(%x = %x.%y(%z)).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1]);
     }
     node.error("Invalid number of arguments");
     return NullLiteral(node);

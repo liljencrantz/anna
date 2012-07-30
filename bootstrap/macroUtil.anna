@@ -14,7 +14,7 @@ macro checkNodeType(node)
 	{
 	    %x.error("Unexpected node type. Expected node of type "~ %y); 
 	    return NullLiteral(%x);
-	}).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
+	}).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
 }
 
 macro checkNodeCallTo(node) (doc("Inserts a run time check that the specified AST node is a Call node. If it is not, an error message is printed and the calling function returns an AST null literal."))
@@ -32,7 +32,7 @@ macro checkNodeCallTo(node) (doc("Inserts a run time check that the specified AS
 		return NullLiteral(%x);
 	    }
 	}()
-	).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
+	).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
 }
 
 macro checkNodeBlock(node) (doc("Inserts a run time check that the specified AST node is a call to the __block__ function. If it is not, an error message is printed and the calling function returns an AST null literal."))
@@ -42,7 +42,7 @@ macro checkNodeBlock(node) (doc("Inserts a run time check that the specified AST
 	{
 	    %x.error("Expected a block definition"); 
 	    return NullLiteral(%x);
-	}).replace(ast(%x), node[0]);
+	})setLocation(node).replace(ast(%x), node[0]);
 }
 
 macro checkCallCount(node) (doc("Inserts a run time check that the AST Call node specified in the first argument has the number of arguments specified in the second argument. If it does not, an error message is printed and the calling function returns an AST null literal."))
@@ -53,5 +53,5 @@ macro checkCallCount(node) (doc("Inserts a run time check that the AST Call node
 	    %node.error("Call has " ~ %node.count ~ " paramtersr, expected " ~ %count);
 	    return NullLiteral(%node);
 	}
-	).replace(ast(%node), node[0]).replace(ast(%count), node[1]);
+	).setLocation(node).replace(ast(%node), node[0]).replace(ast(%count), node[1]);
 }
