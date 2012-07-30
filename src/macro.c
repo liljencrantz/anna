@@ -714,13 +714,24 @@ void anna_macro_init(anna_stack_template_t *stack)
 	stack,
 	L"__or__",
 	&anna_macro_or,
-	L"Execute one expression, and if it returns null, also execute a second expression. Return value is the first expression if it is non-null, otherwise the second expression.");
+	L"Execute one expression, and if it returns null, also execute a second expression. Return value is the first expression if it is non-null, otherwise the second expression.",
+	L"This macro is often used for grouping of logical operations, but is also very useful for providing a fallback value in case of failure.",
+	anna_example(
+	    L"// Logical or check.\n"
+	    L"if(cond1() or cond2()) {...}\n"
+	    L"// Provide a default value of 10\n"
+	    L"numberOfLaps :== Int::convert(system.argument[1]) or 10;"));
 
     anna_macro_add(
 	stack, 
 	L"__and__",
 	&anna_macro_and,
-	L"Execute one expression, and if it returns non-null, also execute a second expression. Return value is null if the first expression fails, otherwise the second expression.");
+	L"Execute one expression, and if it returns non-null, also execute a second expression. Return value is null if the first expression fails, otherwise the second expression.",
+	L"This macro is mainly used for grouping of logical operations.",
+	anna_example(
+	    L"// Logical and check.\n"
+	    L"if(cond1() and cond2()) {...}\n")
+	);
 
     anna_macro_add(
 	stack,
@@ -762,7 +773,19 @@ void anna_macro_init(anna_stack_template_t *stack)
 
     anna_macro_add(
 	stack, L"__macro__", &anna_macro_macro,
-	L"Create a new function which is a valid macro with the specified definition.");
+	L"Create a new function which is a valid macro with the specified definition.",
+	L"A macro is any function that takes an ast call node as its only input and returns any AST node. Any and all module functions that has the correct function signature is a macro. Whether or not a given function with the correct signature is considered for use as a macro during the macro expansion phase of compilation depends on whether the module that it belongs to has been specified to be used for macro expansion using the expand() expression. The <code>__macro__</code>-macro is simply a shorthand for the corresponding def-based function definition. Since all macros deal with AST nodes, the parser-module is also implicitly use:d by any function defined using the <code>__macro__</code>-macro. Specifically, the two following definitions are equivalent:",
+	anna_example(
+	    L"def parser.Node next(parser.Call node)\n"
+	    L"{\n"
+	    L"    use(parser);\n"
+	    L"    return ast(1+%node) % [\"node\": node];\n"
+	    L"}\n"
+	    L"\n"
+	    L"macro next(node)}n"
+	    L"{\n"
+	    L"    return ast(1+%node) % [\"node\": node];\n"
+	    L"}\n"));
 
     anna_macro_add(
 	stack, L"__specialize__", &anna_macro_specialize,

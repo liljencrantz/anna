@@ -26,17 +26,44 @@ def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNod
     return res % ["tmp": Identifier(valNode, identifier("temp"))];
 }
 
-macro __varList__(node) (doc("Syntactic sugar for declaring multiple variables in a single expression."))
+macro __varList__(node) 
+(
+    doc(
+	"Syntactic sugar for declaring multiple variables in a single expression.",
+	"<pre class='anna-code'>
+// Declare two new variables, myE and myPi, whose initial values will be those
+// of the e and pi mathematical constants, respectively.
+[myE, myPi] := [math.e, meth.pi];
+</pre>"
+	))
 {
     return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp[%idx]));
 }
 
-macro __constList__(node) (doc("Syntactic sugar for declaring multiple constants in a single expression."))
+macro __constList__(node) 
+(
+    doc(
+	"Syntactic sugar for declaring multiple constants in a single expression.",
+	"<pre class='anna-code'>
+// Declare two new constants, myE and myPi, whose values will be those of the
+// e and pi mathematical constants, respectively.
+[myE, myPi] :== [math.e, meth.pi];
+</pre>"
+	))
 {
     return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp[%idx]));
 }
 
-macro __assignList__(node) (doc("Syntactic sugar for assigning multiple variables in a single expression."))
+macro __assignList__(node) 
+(
+    doc(
+	"Syntactic sugar for assigning multiple variables in a single expression.",
+	"<pre class='anna-code'>
+// This code will switch the places of the two variables foo and bar
+[foo, bar] = [bar, foo];
+</pre>"
+	))
+
 {
     return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]));
 }
