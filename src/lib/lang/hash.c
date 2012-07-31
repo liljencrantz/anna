@@ -649,19 +649,21 @@ static inline hash_table_t *h_unwrap(anna_object_t *obj)
 
 anna_object_t *anna_hash_create(anna_type_t *spec1, anna_type_t *spec2)
 {
-    anna_object_t *obj= anna_object_create(anna_hash_type_get(spec1, spec2));
-    ahi_init(ahi_unwrap(obj), 1);
-    obj->flags |= ANNA_OBJECT_HASH;
-    return obj;
+    return anna_object_create(anna_hash_type_get(spec1, spec2));
 }
 
 anna_object_t *anna_hash_create2(anna_type_t *hash_type)
 {
-    anna_object_t *obj= anna_object_create(hash_type);
+    return  anna_object_create(hash_type);
+}
+
+static void anna_hash_type_init(anna_object_t *obj)
+{
     ahi_init(ahi_unwrap(obj), 1);
     obj->flags |= ANNA_OBJECT_HASH;
     return obj;
-}
+ }
+
 
 static inline void anna_hash_set_entry(anna_hash_t *this, anna_hash_entry_t *hash_entry, int hash_code, anna_entry_t *key, anna_entry_t *value)
 {
@@ -683,8 +685,6 @@ static void anna_hash_init(anna_context_t *context)
     anna_object_t *list = anna_context_pop_object(context);
     anna_object_t *this = anna_context_pop_object(context);
     anna_context_pop_entry(context);
-    ahi_init(ahi_unwrap(this), 1);
-    this->flags |= ANNA_OBJECT_HASH;
     
     if((list != null_object) && anna_list_get_count(list) != 0)
     {
@@ -1150,6 +1150,8 @@ static void anna_hash_type_create_internal(
 	type, ANNA_MID_ITERATOR, iter,
 	&anna_hash_get_iterator, 0,
 	L"Returns an Iterator for this collection.");
+    
+    anna_type_set_initializer(type, &anna_hash_type_init);
 
     anna_type_t *kv_argv[] = 
 	{

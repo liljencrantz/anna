@@ -1,4 +1,5 @@
 1.0 RELEASE CRITERIA:
+* Use either new internal init code or null constructor for range, pair, buffer, node-wrappers, type-wrapper, stack-wrapper, module-wrapper, function-wrapper, member-wrapper and every other native anna type
 * Null() should return the null object
 * String::convert should do something clever for modules.
 * Modify while loop to be able to handle cool iterator things like breaks in map
