@@ -37,10 +37,8 @@ anna_object_t *anna_object_create(anna_type_t *type) {
     result->type = type;
     int i;
 
-    for(i=0; i<type->member_count; i++)
-    {
-	result->member[i]=null_entry;
-    }
+    type->internal_init(result);
+    
 //    anna_message(L"%ls\n", type->name);
     
     return result;

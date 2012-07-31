@@ -1,0 +1,12 @@
+class MyList (extends(MutableList«Int»))
+{
+    var Int someVar;
+
+    def __init__(){}
+}
+
+def main()
+{
+    list := MyList();
+    print(list, list.count, list.someVar);
+}

@@ -42,7 +42,7 @@ macro checkNodeBlock(node) (doc("Inserts a run time check that the specified AST
 	{
 	    %x.error("Expected a block definition"); 
 	    return NullLiteral(%x);
-	})setLocation(node).replace(ast(%x), node[0]);
+	}).setLocation(node).replace(ast(%x), node[0]);
 }
 
 macro checkCallCount(node) (doc("Inserts a run time check that the AST Call node specified in the first argument has the number of arguments specified in the second argument. If it does not, an error message is printed and the calling function returns an AST null literal."))

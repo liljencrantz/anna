@@ -179,4 +179,5 @@ mid_t anna_type_find_comparator(anna_type_t *type);
    exists. */
 mid_t anna_type_find_hash_code(anna_type_t *type);
 
+void anna_type_set_initializer(anna_type_t *type, anna_init_t init);
 #endif

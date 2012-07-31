@@ -97,32 +97,25 @@ static void anna_list_add_all_extra_methods(anna_type_t *list, int list_type)
 
 anna_object_t *anna_list_create_imutable(anna_type_t *spec)
 {
-    anna_object_t *obj= anna_object_create(anna_list_type_get_imutable(spec));
-    (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
-    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
-    obj->flags |= ANNA_OBJECT_LIST;
-    return obj;
+    return anna_object_create(anna_list_type_get_imutable(spec));
 }
 
 anna_object_t *anna_list_create_mutable(anna_type_t *spec)
 {
-    anna_object_t *obj= anna_object_create(anna_list_type_get_mutable(spec));
-    (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
-    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
-    obj->flags |= ANNA_OBJECT_LIST;
-    return obj;
+    return anna_object_create(anna_list_type_get_mutable(spec));
 }
 
 anna_object_t *anna_list_create2(anna_type_t *list_type)
 {
-    anna_object_t *obj= anna_object_create(list_type);
+    return anna_object_create(list_type);
+}
+
+static void anna_list_type_init(anna_object_t *obj)
+{
     (*anna_entry_get_addr(obj,ANNA_MID_LIST_PAYLOAD))=0;
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_CAPACITY)) = 0;    
     (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_LIST_SIZE)) = 0;
     obj->flags |= ANNA_OBJECT_LIST;
-    return obj;
 }
 
 static anna_type_t *anna_list_get_specialization(anna_object_t *obj)
@@ -377,12 +370,7 @@ ANNA_VM_NATIVE(anna_list_init, 2)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_object_t *that = anna_as_obj_fast(param[1]);
-    (*anna_entry_get_addr(this,ANNA_MID_LIST_PAYLOAD))=0;
-    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_CAPACITY)) = 0;    
-    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_LIST_SIZE)) = 0;
-    
-    this->flags |= ANNA_OBJECT_LIST;
-    
+
     size_t sz = anna_list_get_count(that);
     anna_entry_t **src = anna_list_get_payload(that);
     
@@ -893,6 +881,8 @@ static void anna_list_type_create_internal(
 	}
     ;
 
+    anna_type_set_initializer(type, &anna_list_type_init);
+
     anna_member_create(
 	type,
 	ANNA_MID_ITERATOR_TYPE,
@@ -928,7 +918,7 @@ static void anna_list_type_create_internal(
 	ANNA_MID_LIST_SPECIALIZATION,
 	ANNA_MEMBER_STATIC,
 	null_type);
-    anna_entry_set_static(type, ANNA_MID_LIST_SPECIALIZATION, spec);
+    anna_entry_set_static(type, ANNA_MID_LIST_SPECIALIZATION, (anna_entry_t *)spec);
     
     anna_member_create_native_method(
 	type, ANNA_MID_INIT,

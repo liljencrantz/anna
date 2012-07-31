@@ -19,6 +19,7 @@ typedef void (*anna_native_t)( struct anna_context *stack);
 typedef void (*anna_finalizer_t)( struct anna_object *victim);
 typedef void (*anna_mark_entry_t)( struct anna_object *this);
 typedef void (*anna_mark_type_t)( struct anna_type *this);
+typedef void (*anna_init_t)(struct anna_object *this);
 typedef int mid_t;
 
 /*
@@ -393,6 +394,9 @@ struct anna_type
        Internal variable that may be used by the mark_type function
     */
     int static_mark_blob_count;
+    anna_init_t internal_init;
+    int init_param_count;
+    anna_init_t *init_param;
 };
 
 struct anna_member

@@ -73,6 +73,86 @@ void anna_type_object_is_created()
     al_destroy(&anna_type_uninherited);
 }
 
+static void anna_object_init_default(anna_object_t *result)
+{
+    int i;
+    anna_type_t *type = result->type;
+    for(i=0; i<type->member_count; i++)
+    {
+	result->member[i]=null_entry;
+    }
+}
+
+static void anna_type_append_initializer(anna_type_t *type, anna_init_t init)
+{
+    int i;
+    for(i=0; i<type->init_param_count; i++)
+    {
+	if(type->init_param[i] == init)
+	{
+	    return;
+	}
+    }
+    type->init_param_count++;
+    type->init_param = realloc(type->init_param, sizeof(anna_init_t)*type->init_param_count);
+    if(init == anna_object_init_default)
+    {
+	type->init_param[type->init_param_count-1] = type->init_param[0];
+	type->init_param[0] = init;
+    }
+    else
+    {
+	type->init_param[type->init_param_count-1] = init;
+    }
+}
+
+
+static void anna_object_init_multi(anna_object_t *result)
+{
+    int i;
+    anna_type_t *type = result->type;
+    for(i=0; i<type->init_param_count; i++)
+    {
+	type->init_param[i](result);
+    }
+}
+
+static void anna_type_add_initializer(anna_type_t *type, anna_init_t init)
+{
+    if(init == type->internal_init)
+    {
+	return;
+    }
+    if(type->internal_init != anna_object_init_multi)
+    {
+	anna_init_t *tmp = type->internal_init;
+	type->internal_init = anna_object_init_multi;
+	anna_type_append_initializer(type, tmp);
+    }
+    anna_type_append_initializer(type, init);
+}
+
+void anna_type_set_initializer(anna_type_t *type, anna_init_t init)
+{
+    type->internal_init = init;
+}
+
+static void anna_type_add_all_initializer(anna_type_t *type, anna_type_t *other)
+{
+    int i;
+    if(anna_object_init_multi == type->internal_init)
+    {
+	for(i=0; i<other->init_param_count; i++)
+	{
+	    anna_type_add_initializer(type, other->init_param[i]);
+	}
+    }
+    else
+    {
+	anna_type_add_initializer(type, other->internal_init);
+    }
+}
+
 anna_type_t *anna_type_create(
     wchar_t *name, anna_node_call_t *definition)
 {
@@ -101,7 +181,7 @@ anna_type_t *anna_type_create(
 	al_destroy(&al);
     }
     hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
-    
+    result->internal_init = &anna_object_init_default;
     anna_type_calculate_size(result);
     return result;
 }
@@ -660,6 +740,7 @@ static void anna_type_extend(
 	}
 	anna_type_setup_interface(par);
 	anna_type_copy(type, par);
+	anna_type_add_all_initializer(type, par);
     }
     anna_type_copy(type, object_type);
 }
