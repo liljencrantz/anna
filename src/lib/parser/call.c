@@ -365,8 +365,6 @@ static void anna_node_create_call_type(
 {
     mid_t mmid;
 
-    anna_type_copy(type, node_type);
-
     anna_member_create(
 	type,
 	ANNA_MID_ITERATOR_TYPE,
@@ -542,5 +540,6 @@ static void anna_node_create_call_type(
 	2,
 	jl_argv,
 	j_argn, 0, 0);
-    
+
+    anna_type_copy(type, node_type);
 }

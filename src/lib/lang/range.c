@@ -7,7 +7,7 @@ static anna_object_t *anna_range_create(
     int open)
 {
     anna_object_t *range = anna_object_create(range_type);
-
+    
     anna_range_set_from(range, from);
     anna_range_set_to(range, to);
     anna_range_set_step(range, step);

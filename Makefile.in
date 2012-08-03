@@ -105,10 +105,10 @@ install: all documentation
 	for i in `find include -type d`; do\
 		$(INSTALL) -m 755 -d $(prefix)/$$i; \
 	done;
-	for i in `find include -name '*.h'`; do\
+	for i in `find include -name '[^.#]*.h'`; do\
 		$(INSTALL) -m 644 $$i $(prefix)/$$i; \
 	done;
-	for i in `cd documentation; find . -name '*.html' -o -name '*.js' -o -name '*.css'`; do\
+	for i in `cd documentation; find . -name '[^.#]*.html' -o -name '[^.#]*.js' -o -name '[^.#]*.css'`; do\
 		if test -f "documentation/$$i"; then $(INSTALL) -D -m 644 "documentation/$$i" $(docdir)/$$i; fi; \
 	done;
 

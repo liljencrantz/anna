@@ -172,6 +172,17 @@ static void anna_continuation_variable_load(anna_stack_template_t *stack)
     
     anna_member_create_native_method(
 	continuation_variable_type,
+	ANNA_MID_INIT,
+	0,
+	&anna_vm_null_function,
+	continuation_variable_type,
+	1,
+	&continuation_variable_type,
+	v_argn, 0, 
+	0);
+    
+    anna_member_create_native_method(
+	continuation_variable_type,
 	ANNA_MID_TO_STRING, 
 	0,
 	&anna_continuation_variable_i_get_name, 

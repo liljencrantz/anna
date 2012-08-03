@@ -227,8 +227,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		anna_error(this, L"Null doesn't have explicit members");
 		break;		
 	    }
-	    
-	    
+
 	    anna_member_t *memb = anna_member_get(type, c->mid);
 	    if(anna_member_is_property(memb) && memb->getter_offset == -1)
 	    {
@@ -313,7 +312,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	case ANNA_NODE_TYPE:
 	{
 	    /*
-	      It's a type. Validate all it's functions
+	      It's a type. Validate all its functions
 	    */
 	    anna_node_type_t *c = (anna_node_type_t *)this;
 	    anna_type_t *t = c->payload;

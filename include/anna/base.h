@@ -394,8 +394,19 @@ struct anna_type
        Internal variable that may be used by the mark_type function
     */
     int static_mark_blob_count;
+    /**
+       The C function to call afdter allocating the memory for an
+       instance of this type in order to give it a valid initial state
+       so that any constructrs can then be called.
+    */
     anna_init_t internal_init;
+    /**
+       Internal parameter that may be used by internal_init
+    */
     int init_param_count;
+    /**
+       Internal parameter that may be used by internal_init
+    */
     anna_init_t *init_param;
 };
 

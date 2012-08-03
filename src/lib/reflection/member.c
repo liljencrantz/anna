@@ -134,6 +134,23 @@ static void anna_member_type_create()
 	ANNA_MID_MEMBER_TYPE_PAYLOAD,
 	0,
 	null_type);
+
+    wchar_t *argn[]=
+	{
+	    L"this"
+	}
+    ;
+    
+    anna_member_create_native_method(
+	member_type,
+	ANNA_MID_INIT,
+	0,
+	&anna_vm_null_function,
+	member_type,
+	1,
+	&member_type,
+	argn, 0, 
+	0);
     
     anna_member_create_native_property(
 	member_type, anna_mid_get(L"name"),

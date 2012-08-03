@@ -396,6 +396,17 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 	}
     ;
     
+    anna_member_create_native_method(
+	node_type,
+	ANNA_MID_INIT,
+	0,
+	&anna_vm_null_function,
+	node_type,
+	1,
+	&node_type,
+	loc_argn, 0, 
+	0);
+    
     anna_member_create(node_type, ANNA_MID_NODE_PAYLOAD, 0, null_type);
     
     anna_member_create_native_method(

@@ -1,4 +1,8 @@
 1.0 RELEASE CRITERIA:
+* Make a special syntac for assigning to constructors before running __init__
+* Make it so __init__ can never be called manually. 
+* Make constant members assignable in __init__
+* Make __init__ callable inside __init__.
 * Use either new internal init code or null constructor for range, pair, buffer, node-wrappers, type-wrapper, stack-wrapper, module-wrapper, function-wrapper, member-wrapper and every other native anna type
 * Null() should return the null object
 * String::convert should do something clever for modules.

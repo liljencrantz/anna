@@ -309,6 +309,17 @@ static void anna_function_load(anna_stack_template_t *stack)
     ;
     
     anna_member_create_native_method(
+	function_type_base,
+	ANNA_MID_INIT,
+	0,
+	&anna_vm_null_function,
+	function_type_base,
+	1,
+	&function_type_base,
+	argn, 0, 
+	0);
+    
+    anna_member_create_native_method(
 	res, ANNA_MID_TO_STRING, 0,
 	&anna_function_type_to_string,
 	string_type, 1, argv, argn, 0, 0);

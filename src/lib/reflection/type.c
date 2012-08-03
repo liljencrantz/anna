@@ -118,6 +118,17 @@ static void anna_type_load()
     
     anna_type_make_sendable(type_type);
     
+    anna_member_create_native_method(
+	type_type,
+	ANNA_MID_INIT,
+	0,
+	&anna_vm_null_function,
+	type_type,
+	1,
+	&type_type,
+	argn, 0, 
+	0);
+    
     anna_type_document(
 	type_type,
 	L"The Type type represents an Anna Type. It is mostly used for object introspection.");
