@@ -1,11 +1,7 @@
 
 anna_object_t *anna_buffer_create()
 {
-    anna_object_t *obj= anna_object_create(buffer_type);
-    (*anna_entry_get_addr(obj,ANNA_MID_BUFFER_PAYLOAD))=0;
-    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_BUFFER_CAPACITY)) = 0;    
-    (*(size_t *)anna_entry_get_addr(obj,ANNA_MID_BUFFER_SIZE)) = 0;
-    return obj;
+    return anna_object_create(buffer_type);
 }
 
 void anna_buffer_set(struct anna_object *this, ssize_t offset, unsigned char value)
@@ -150,11 +146,14 @@ ANNA_VM_NATIVE(anna_buffer_set_count_method, 2)
 
 ANNA_VM_NATIVE(anna_buffer_init, 1)
 {
-    anna_object_t *this = anna_as_obj_fast(param[0]);
+    return param[0];
+}
+
+static void anna_buffer_type_init(anna_object_t *this)
+{
     (*anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD))=0;
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_CAPACITY)) = 0;    
     (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE)) = 0;
-    return param[0];
 }
 
 static void anna_buffer_del(anna_object_t *victim)
@@ -404,6 +403,8 @@ void anna_buffer_type_create()
 
     anna_member_create(
 	type, ANNA_MID_BUFFER_PAYLOAD, 0, null_type);
+
+    anna_type_set_initializer(type, &anna_buffer_type_init);
 
     anna_member_create(
 	type,

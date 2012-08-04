@@ -123,6 +123,8 @@ static void anna_type_add_initializer(anna_type_t *type, anna_init_t init)
     {
 	return;
     }
+    if(type->internal_init == init)
+	return;
     if(type->internal_init != anna_object_init_multi)
     {
 	anna_init_t *tmp = type->internal_init;
@@ -140,7 +142,7 @@ void anna_type_set_initializer(anna_type_t *type, anna_init_t init)
 static void anna_type_add_all_initializer(anna_type_t *type, anna_type_t *other)
 {
     int i;
-    if(anna_object_init_multi == type->internal_init)
+    if(anna_object_init_multi == other->internal_init)
     {
 	for(i=0; i<other->init_param_count; i++)
 	{

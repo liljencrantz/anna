@@ -1,9 +1,10 @@
 1.0 RELEASE CRITERIA:
-* Make a special syntac for assigning to constructors before running __init__
+* Named arguments in template specialization
+* Make a special syntax for assigning to constants before running __init__
 * Make it so __init__ can never be called manually. 
 * Make constant members assignable in __init__
 * Make __init__ callable inside __init__.
-* Use either new internal init code or null constructor for range, pair, buffer, node-wrappers, type-wrapper, stack-wrapper, module-wrapper, function-wrapper, member-wrapper and every other native anna type
+* Use either new internal init code or null constructor for range, node-wrappers, type-wrapper, stack-wrapper, module-wrapper, function-wrapper, member-wrapper and every other native anna type
 * Null() should return the null object
 * String::convert should do something clever for modules.
 * Modify while loop to be able to handle cool iterator things like breaks in map
@@ -25,7 +26,7 @@
 * List.iterator -= x;
 * Type::Iterator
 * Continuation/Function::Iterator
-* struct Iterator
+* struct::Iterator
 * Bindings
   - ctime should be generated through the binding generator
 * anna-game as a proof that the language works for solving reasonably complex problems
