@@ -10,7 +10,7 @@
   «slab memory allocator». For larger sizes, simply fall back to
   malloc/free.
 */
-#define SLAB_MAX 0
+#define SLAB_MAX 64
 
 struct slab
 {
