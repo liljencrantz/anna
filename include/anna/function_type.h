@@ -3,6 +3,8 @@
 
 __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type);
 
+__pure anna_function_type_t *anna_function_type_of_function(anna_function_t *fun);
+
 __pure static inline int anna_function_type_is_variadic(anna_function_type_t *f)
 {
     return !!(f->flags & ANNA_FUNCTION_VARIADIC);

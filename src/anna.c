@@ -77,7 +77,7 @@ static void anna_init()
     stack_global->flags |= ANNA_STACK_NAMESPACE;
     
     anna_abides_init();
-    null_object = anna_object_create_raw(anna_align(sizeof(anna_object_t)));
+    null_object = anna_alloc_object(anna_align(sizeof(anna_object_t)));
     wchar_t *name_with_dots = wcsdup(anna_module_name);
     wchar_t *ptr = wcschr(name_with_dots, L'/');
     while(ptr)

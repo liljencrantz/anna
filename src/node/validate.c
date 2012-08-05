@@ -172,19 +172,23 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    {
 		anna_error(
 		    c->value,
-		    L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.", 
+		    L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.",
 		    templ->name, param->name);
 	    }
 
 	    if(anna_member_is_imutable(memb))
 	    {
-		anna_error(this, L"Member %ls is imutable", anna_mid_get_reverse(c->mid));
+		anna_error(
+		    this, L"The member %ls::%ls is imutable", 
+		    type->name, anna_mid_get_reverse(c->mid));
 		break;		
 	    }
 	    
 	    if(anna_member_is_property(memb) && memb->setter_offset == -1)
 	    {
-		anna_error(this, L"No setter for property %ls", anna_mid_get_reverse(c->mid));
+		anna_error(
+		    this, L"The property %ls::%ls is not writable.",
+		    type->name, anna_mid_get_reverse(c->mid));
 		break;		
 	    }	    
 	    break;

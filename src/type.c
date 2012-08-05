@@ -1145,23 +1145,21 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     }    
 
     int i;
-    
-    anna_object_t *constructor_obj = anna_as_obj_fast(
-	anna_entry_get_static(
-	    type,
-	    ANNA_MID_INIT));
-    anna_function_t *constr = anna_function_unwrap(constructor_obj);
-
-    if(call->child_count > constr->input_count)
+    anna_member_t *constructor_member = anna_member_get(type, ANNA_MID_INIT);
+    if(constructor_member)
     {
-	return type;
+	anna_function_type_t *constr =
+	    anna_member_bound_function_type(constructor_member);
+	anna_node_call_t *input_node =
+	    get_constructor_input_list(type->definition);
+	if(input_node)
+	{
+	    return (anna_type_t *)anna_specialize_implicit(
+		attr, constr, input_node, call, type, 
+		(anna_specializer_t)anna_type_specialize);
+	}
     }
     
-    anna_node_call_t *input_node = get_constructor_input_list(type->definition);
-    if(input_node)
-    {
-	return (anna_type_t *)anna_specialize_implicit(attr, constr, input_node, call, type, (anna_specializer_t)anna_type_specialize);
-    }
     return type;
 }
 

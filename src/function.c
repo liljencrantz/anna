@@ -1235,5 +1235,8 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
     anna_node_call_t *attr = node_cast_call(base->definition->child[3]);
     anna_node_call_t *input_node = node_cast_call(base->definition->child[2]);
     
-    return (anna_function_t *)anna_specialize_implicit(attr, base, input_node, call, base, (anna_specializer_t)anna_function_get_specialization);
+    return (anna_function_t *)anna_specialize_implicit(
+	attr, anna_function_type_of_function(base), 
+	input_node, call, base, 
+	(anna_specializer_t)anna_function_get_specialization);
 }

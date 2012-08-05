@@ -131,9 +131,12 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     return (anna_node_t *)call;	    
 }
 
-void *anna_specialize_implicit(anna_node_call_t *attr, anna_function_t *unspecialized_fun, anna_node_call_t *input_node, anna_node_call_t *call, void *base, anna_specializer_t specializer)
+void *anna_specialize_implicit(
+    anna_node_call_t *attr, anna_function_type_t *unspecialized_fun,
+    anna_node_call_t *input_node, anna_node_call_t *call, void *base,
+    anna_specializer_t specializer)
 {
-    int i;    
+    int i;
     array_list_t al = AL_STATIC;
     anna_attribute_call_all(attr, L"template", &al);
 
@@ -144,19 +147,16 @@ void *anna_specialize_implicit(anna_node_call_t *attr, anna_function_t *unspecia
 
     int input_count = unspecialized_fun->input_count;
     int input_off = 0;
-    if(unspecialized_fun != base)
-    {
-	input_count--;
-	input_off=1;
-    }
 
     anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
-    int spec_count=0;
+    int spec_count = 0;
     for(i=0; i<call->child_count; i++)
     {
 	if(call->child[i]->node_type == ANNA_NODE_MAPPING)
 	{
-	    anna_error(call->child[i], L"Implicit template specialization can not be performed on calls with named arguments.\n");
+	    anna_error(
+		call->child[i],
+		L"Implicit template specialization can not be performed on calls with named arguments.\n");
 	    break;
 	}
 	

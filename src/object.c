@@ -31,22 +31,11 @@ void anna_object_print(anna_object_t *obj)
     }
 }
 
-anna_object_t *anna_object_create(anna_type_t *type) {
-     anna_object_t *result = 
-	anna_object_create_raw(type->object_size);
-    result->type = type;
-    int i;
-
-    type->internal_init(result);
-    
-//    anna_message(L"%ls\n", type->name);
-    
-    return result;
-}
-
-anna_object_t *anna_object_create_raw(size_t sz)
+anna_object_t *anna_object_create(anna_type_t *type)
 {
     anna_object_t *result = 
-	anna_alloc_object(sz);
+	anna_alloc_object(type->object_size);
+    result->type = type;
+    type->internal_init(result);
     return result;
 }

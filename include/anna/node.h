@@ -536,7 +536,17 @@ void anna_method_search(
  */
 void anna_node_compile(anna_node_t *this, void *aux);
 
-void *anna_specialize_implicit(anna_node_call_t *attr, anna_function_t *unspecialized_fun, anna_node_call_t *input_node, anna_node_call_t *call, void *base, anna_specializer_t specializer);
+/**
+   Helper function used during implicit function specialization.  If
+   the function call \c call implicitly specifies all the template
+   attributes listed in the template attributes definined in the
+   attribute list attr as applied to a function with a unspecialized
+   interface \c unspecialized_fun and an unspecialized input parameter
+   list AST \c input_node, create an explicit specialization and then
+   use the function \c specializer to specialize \c base.
+ */
+void *anna_specialize_implicit(
+    anna_node_call_t *attr, anna_function_type_t *unspecialized_fun, anna_node_call_t *input_node, anna_node_call_t *call, void *base, anna_specializer_t specializer);
 
 #endif
 

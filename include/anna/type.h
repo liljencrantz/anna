@@ -19,11 +19,15 @@
 extern int anna_type_object_created;
 
 /**
-  Return the anna_type_t contained in the specified anna_type_t.wrapper
+  Return the anna_type_t contained in the specified anna_type_t
+  wrapper object.
  */
 anna_type_t *anna_type_unwrap(
     anna_object_t *wrapper);
 
+/**
+   Create a new anna type ith the specified name and AST definition.
+ */
 anna_type_t *anna_type_create(wchar_t *name, anna_node_call_t *definition);
 
 anna_node_call_t *anna_type_attribute_list_get(anna_type_t *type);

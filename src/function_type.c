@@ -51,3 +51,7 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
     return 0;	
 }
 
+__pure anna_function_type_t *anna_function_type_of_function(anna_function_t *fun)
+{
+    return anna_function_type_unwrap(anna_function_wrap(fun)->type);
+}

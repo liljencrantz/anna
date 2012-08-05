@@ -553,7 +553,7 @@ transformation function once to every element in the old
 collection. <code class='anna-code'>update</code> can only be used on
 collections that provide read-write iterators.",
 "<pre class='anna-code'>
-\"abc123\".update(ch){ch+1}
+\"abc123\".thaw.update(ch){ch+1}
 // Returns \"bcd234\"
 </pre>",
 "<code>update</code> accepts iterator functions in the same way that <a

@@ -960,11 +960,6 @@ __cold void anna_error(
  */
 __hot __malloc anna_object_t *anna_object_create(
     anna_type_t *type);
-/**
-   Same as anna_object_create, but the members of the object are not assigned null values,
- */
-__hot __malloc anna_object_t *anna_object_create_raw(
-    size_t sz);
 
 /**
    Print a description of the specified object

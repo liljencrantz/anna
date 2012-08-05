@@ -720,17 +720,26 @@ void anna_macro_init(anna_stack_template_t *stack)
 	    L"// Logical or check.\n"
 	    L"if(cond1() or cond2()) {...}\n"
 	    L"// Provide a default value of 10\n"
-	    L"numberOfLaps :== Int::convert(system.argument[1]) or 10;"));
+	    L"numberOfLaps :== Int::convert(system.argument[1]) or 10;"),
+	L"Used together, the <code>and</code> and <code>or</code> operators can be used to replace the C ternary operator."
+	anna_example(
+	    L"// Equivalent to cond ? val1 : val2 in C\n"
+	    L"cond and val1 or val2;\n")
+	);
 
     anna_macro_add(
 	stack, 
 	L"__and__",
 	&anna_macro_and,
 	L"Execute one expression, and if it returns non-null, also execute a second expression. Return value is null if the first expression fails, otherwise the second expression.",
-	L"This macro is mainly used for grouping of logical operations.",
+	L"This macro is usually used through the <code>and</code> syntactic suger, and is mainly used for grouping of logical operations.",
 	anna_example(
 	    L"// Logical and check.\n"
-	    L"if(cond1() and cond2()) {...}\n")
+	    L"if(cond1() and cond2()) {...}\n"),
+	L"Used together, the <code>and</code> and <code>or</code> operators can be used to replace the C ternary operator."
+	anna_example(
+	    L"// Equivalent to cond ? val1 : val2 in C\n"
+	    L"cond and val1 or val2;\n")
 	);
 
     anna_macro_add(
@@ -852,7 +861,25 @@ void anna_macro_init(anna_stack_template_t *stack)
 
     anna_macro_add(
 	stack, L"use", &anna_macro_use,
-	L"This macro imports the specified expression, so that any members in it will automatically be considered as variables during variable name lookup.");
+	L"This macro imports the specified expression, so that any members in it will automatically be considered as variables during variable name lookup.",
+	anna_example(
+	    L"// Prints the constant math.pi\n"
+	    L"print(math.pi);\n"
+	    L"// Imports the module math into the list of implicit namespaces\n"
+	    L"use(math);\n"
+	    L"// Because of the above use-clause, this will locate the pi constant\n"
+	    L"// in the math module, so it is equivalent to the first line above.\n"
+	    L"print(pi);\n"
+	    ),
+	L"Note that the use macro can be used on any object, not just modules.",
+	anna_example(
+	    L"myList := [];\n"
+	    L"use(myList);\n"
+	    L"// This will call myList.push and myList.pop\n"
+	    L"push(3);\n"
+	    L"print(pop());\n"
+	    )
+	);
 
     anna_macro_add(
 	stack,

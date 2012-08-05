@@ -796,7 +796,7 @@ static anna_type_t *anna_list_iterator_create(
     int mutable)
 {
     anna_type_t *iter = anna_type_create(L"Iterator", 0);
-
+    
     anna_member_create(
 	iter, ANNA_MID_COLLECTION, ANNA_MEMBER_IMUTABLE, type);
     anna_member_create(
