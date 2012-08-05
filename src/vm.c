@@ -25,6 +25,7 @@
 #include "anna/type.h"
 #include "anna/alloc.h"
 #include "anna/mid.h"
+#include "anna/object.h"
 
 #define OP_LEAVE(context) goto *jump_label[(int)*(context)->frame->code] 
 

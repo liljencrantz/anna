@@ -21,6 +21,7 @@
 #include "anna/intern.h"
 #include "anna/type.h"
 #include "anna/member.h"
+#include "anna/object.h"
 
 anna_type_t *channel_type, *task_type;
 

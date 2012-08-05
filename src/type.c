@@ -33,6 +33,7 @@
 #include "anna/mid.h"
 #include "anna/tt.h"
 #include "anna/misc.h"
+#include "anna/object.h"
 
 #include "src/member.c"
 #include "src/abides.c"

@@ -25,6 +25,7 @@
 #include "anna/use.h"
 #include "anna/node_hash.h"
 #include "anna/lib/reflection.h"
+#include "anna/object.h"
 
 #include "function_type.c"
 

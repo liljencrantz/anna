@@ -65,7 +65,7 @@ static inline void anna_slab_free(void *ptr, size_t sz)
     free(foo);
     return;
 #endif
-
+    
     if(sz >= SLAB_MAX)
     {
 	free(ptr);

@@ -22,6 +22,7 @@
 #include "anna/vm.h"
 #include "anna/mid.h"
 #include "anna/lib/lang/string.h"
+#include "anna/object.h"
 
 typedef struct
 {

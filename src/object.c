@@ -14,6 +14,7 @@
 #include "anna/vm.h"
 #include "anna/mid.h"
 #include "anna/type.h"
+#include "anna/object.h"
 
 void anna_object_print(anna_object_t *obj)
 {
@@ -29,13 +30,4 @@ void anna_object_print(anna_object_t *obj)
 	    member->type?member->type->name:L"?",
 	    anna_member_is_static(member)?L"Static":L"Not static");	
     }
-}
-
-anna_object_t *anna_object_create(anna_type_t *type)
-{
-    anna_object_t *result = 
-	anna_alloc_object(type->object_size);
-    result->type = type;
-    type->internal_init(result);
-    return result;
 }

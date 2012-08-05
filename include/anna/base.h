@@ -955,16 +955,4 @@ __cold void anna_abides_init(void);
 __cold void anna_error(
     struct anna_node *node, wchar_t *msg, ...);
 
-/**
-   Create and return a new object of the specified type.
- */
-__hot __malloc anna_object_t *anna_object_create(
-    anna_type_t *type);
-
-/**
-   Print a description of the specified object
- */
-__cold void anna_object_print(
-    anna_object_t *obj);
-
 #endif

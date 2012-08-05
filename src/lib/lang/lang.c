@@ -30,6 +30,7 @@
 #include "anna/vm_internal.h"
 #include "anna/module.h"
 #include "anna/node_create.h"
+#include "anna/object.h"
 
 #include "anna/lib/lang/int.h"
 #include "anna/lib/lang/float.h"

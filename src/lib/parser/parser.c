@@ -29,6 +29,7 @@
 #include "anna/type_data.h"
 #include "anna/module.h"
 #include "anna/lib/clib.h"
+#include "anna/object.h"
 
 anna_type_t *node_type, *node_identifier_type, *node_call_type;
 static anna_type_t *anna_node_type_mapping[ANNA_NODE_TYPE_COUNT];

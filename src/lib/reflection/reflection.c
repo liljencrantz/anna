@@ -27,6 +27,7 @@
 #include "anna/type_data.h"
 #include "anna/module.h"
 #include "anna/vm_internal.h"
+#include "anna/object.h"
 
 #include "anna/lib/clib.h"
 #include "anna/lib/parser.h"
