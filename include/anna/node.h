@@ -492,8 +492,7 @@ void anna_node_calculate_type_children(
 
 int anna_node_validate_call_parameters(
     anna_node_call_t *call, 
-    anna_function_type_t *target, 
-    int is_method, 
+    anna_function_type_t *target,
     int print_error);
 
 /**
@@ -506,8 +505,7 @@ int anna_node_validate_call_parameters(
 */
 void anna_node_call_map(
     anna_node_call_t *call, 
-    anna_function_type_t *target, 
-    int is_method);
+    anna_function_type_t *target);
 
 anna_type_t *anna_node_resolve_to_type(
     anna_node_t *node, anna_stack_template_t *stack);

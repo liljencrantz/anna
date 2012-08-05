@@ -373,7 +373,11 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    return (anna_node_t *)n;	
 	}
 	
-	anna_function_type_t *fun_type = anna_function_type_unwrap(member->type);
+	anna_function_type_t *fun_type =
+ 	    (n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER) ? 
+	    anna_function_type_unwrap(member->type) :
+	    anna_member_bound_function_type(member);
+
 	if(!fun_type)
 	{
 	    anna_error(
@@ -425,14 +429,13 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	
 	if(!anna_node_validate_call_parameters(
 	       n, fun_type,
-	       anna_member_is_bound(member) && !(n->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER),
 	       1))
 	{
 	    member = 0;
 	}
 	else
 	{
-	    anna_node_call_map(n, fun_type, anna_member_is_bound(member));
+	    anna_node_call_map(n, fun_type);
 	}
     }
     else
@@ -711,7 +714,8 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_type_t *fun_type = call->function->return_type;
 	    
 	    int is_method = 0;
-	    
+	    anna_member_t *member;
+
 	    if(fun_type == type_type)
 	    {
 //		debug(D_SPAM,L"Hmmm, node is of type type...");
@@ -737,7 +741,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    call->function->stack = call->stack;
 		    call->return_type = type;
 		    call->flags |= ANNA_NODE_TYPE_FULL;
-		    anna_member_t *member = anna_member_get(type, anna_mid_get(L"__init__"));
+		    member = anna_member_get(type, anna_mid_get(L"__init__"));
 		    if(!member)
 		    {
 			anna_error(this, L"Tried to create object without constructor.");
@@ -754,7 +758,9 @@ static anna_node_t *anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    anna_function_type_t *funt = anna_function_type_unwrap(fun_type);
+	    anna_function_type_t *funt = is_method ? 
+		anna_member_bound_function_type(member) :
+		anna_function_type_unwrap(fun_type);
 	    if(!funt)
 	    {
 //		anna_node_print(4, call->function);
@@ -762,9 +768,9 @@ static anna_node_t *anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    if(anna_node_validate_call_parameters(call, funt, is_method, 1))
+	    if(anna_node_validate_call_parameters(call, funt, 1))
 	    {
-		anna_node_call_map(call, funt, is_method);
+		anna_node_call_map(call, funt);
 	    }
 	    
 	    if(!is_method)

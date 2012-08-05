@@ -147,12 +147,12 @@ void *anna_specialize_implicit(
 
     int input_count = unspecialized_fun->input_count;
 
-    if(!anna_node_validate_call_parameters(call, unspecialized_fun, 0, 0))
+    if(!anna_node_validate_call_parameters(call, unspecialized_fun, 0))
     {
 	return base;
     }
     
-    anna_node_call_map(call, unspecialized_fun, 0);
+    anna_node_call_map(call, unspecialized_fun);
     
     anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
     int spec_count = 0;

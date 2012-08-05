@@ -1,12 +1,12 @@
 
-static int anna_node_f_get_index(anna_function_type_t *f, int is_method, wchar_t *name)
+static int anna_node_f_get_index(anna_function_type_t *f, wchar_t *name)
 {
     int i;
-    for(i=(!!is_method); i<f->input_count; i++)
+    for(i=0; i<f->input_count; i++)
     {
 	if(wcscmp(name, f->input_name[i]) == 0)
 	{
-	    return i - !!is_method;
+	    return i;
 	}
     }
     return -1;
@@ -376,12 +376,8 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 int anna_node_validate_call_parameters(
     anna_node_call_t *call, 
     anna_function_type_t *target, 
-    int is_method, 
     int print_error)
 {
-    anna_type_t **param = target->input_type;
-    wchar_t **param_name = target->input_name;
-    anna_node_t **param_default = target->input_default;
     int param_count = target->input_count;    
     int res=0;
     int *set = 0;
@@ -392,14 +388,6 @@ int anna_node_validate_call_parameters(
 	goto END;
     }
   
-    if(is_method)
-    {
-	param++;
-	param_name++;
-	param_default++;
-	param_count--;
-    }
-
     if(anna_function_type_is_variadic(target))
     {
 	param_count--;
@@ -451,7 +439,7 @@ int anna_node_validate_call_parameters(
 		goto END;
 	    }
 	    anna_node_identifier_t *name = (anna_node_identifier_t *)p->arg1;	    
-	    int idx = anna_node_f_get_index(target, is_method, name->name);
+	    int idx = anna_node_f_get_index(target, name->name);
 	    if(idx < 0)
 	    {
 		if(!var_named)
@@ -482,7 +470,7 @@ int anna_node_validate_call_parameters(
     }
     for(i=0; i<param_count; i++)
     {
-	if(set[i] == 0 && param_default[i])
+	if(set[i] == 0 && target->input_default[i])
 	{
 	    set[i]++;
 	}
@@ -494,7 +482,7 @@ int anna_node_validate_call_parameters(
 	{
 	    if(print_error)
 	    {
-		anna_error((anna_node_t *)call, L"More than one value was provided for argument %d, %ls, in function call ", i+1, param_name[i]);
+		anna_error((anna_node_t *)call, L"More than one value was provided for argument %d, %ls, in function call ", i+1, target->input_name[i]);
 	    }
 	    goto END;
 	}
@@ -505,7 +493,7 @@ int anna_node_validate_call_parameters(
 		anna_error(
 		    (anna_node_t *)call, 
 		    L"No value was provided for argument %d, %ls, in function call.",
-		    i+1, param_name[i]);
+		    i+1, target->input_name[i]);
 	    }
 	    goto END;	    
 	}
@@ -530,20 +518,10 @@ static void anna_node_call_map_process_new_node(anna_node_t *node, anna_stack_te
 
 void anna_node_call_map(
     anna_node_call_t *call, 
-    anna_function_type_t *target, 
-    int is_method)
+    anna_function_type_t *target)
 {
-    anna_type_t **param = target->input_type;
     int param_count = target->input_count;    
-    anna_node_t **param_default = target->input_default;
     anna_node_call_t *var_named_call = 0;
-    
-    if(is_method)
-    {
-	param++;
-	param_default++;
-	param_count--;
-    }
     
     if(anna_function_type_is_variadic(target))
     {
@@ -593,7 +571,7 @@ void anna_node_call_map(
 	{
 	    anna_node_cond_t *p = (anna_node_cond_t *)call->child[i];
 	    anna_node_identifier_t *name = (anna_node_identifier_t *)p->arg1;	    
-	    int idx = anna_node_f_get_index(target, is_method, name->name);
+	    int idx = anna_node_f_get_index(target, name->name);
 	    if(idx >= 0)
 	    {
 		order[idx] = p->arg2;
@@ -641,7 +619,7 @@ void anna_node_call_map(
 	    }
 	    else
 	    {
-		order[i] = anna_node_clone_deep(param_default[i]);
+		order[i] = anna_node_clone_deep(target->input_default[i]);
 		anna_node_set_stack(
 		    order[i],
 		    stack_global);

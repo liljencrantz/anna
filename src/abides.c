@@ -470,10 +470,9 @@ int anna_abides_search(
 	debug(
 	    D_SPAM, L"Check %ls against\n",
 	    call->child[0]->return_type->name);
-	
 
  	if(anna_node_validate_call_parameters(
-	       call, ft, 0, 0))
+	       call, ft, 0))
 	{
 	    debug(
 		D_SPAM, L"Params match");
@@ -481,7 +480,7 @@ int anna_abides_search(
 	    int my_fault_count = 0;
 	    anna_node_call_t *call_copy = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)call);
 	    call_copy->stack = call->stack;
-	    anna_node_call_map(call_copy, ft, 0);
+	    anna_node_call_map(call_copy, ft);
 	    
 	    if(ok)
 	    {
