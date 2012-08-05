@@ -710,15 +710,8 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	}
 	else
 	{
-	    if(unlikely(obj == null_object))
-	    {
-		anna_context_push_object(context, null_object);
-	    }
-	    else
-	    {
-		anna_entry_t *res = obj->member[m->offset];		    
-		anna_context_push_entry(context, res);
-	    }
+	    anna_entry_t *res = obj->member[m->offset];		    
+	    anna_context_push_entry(context, res);
 	    context->frame->code += sizeof(*op);
 	}
 	

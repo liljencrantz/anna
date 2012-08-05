@@ -57,7 +57,10 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	anna_member_t *memb = anna_member_get(type, this2->mid);
 	if(!memb)
 	{
-	    anna_error(this, L"Invalid member access: %ls::%ls", type->name, anna_mid_get_reverse(this2->mid));
+	    anna_error(
+		this,
+		L"Invalid member access: %ls::%ls",
+		type->name, anna_mid_get_reverse(this2->mid));
 	    return;
 	}
 	
@@ -68,7 +71,8 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	{
 	    tmpl = ftk->input_type;
 	    tmpl_count = ftk->input_count;
-	    if(anna_member_is_bound(memb) && !(this2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER))
+	    if(anna_member_is_bound(memb) && 
+	       !(this2->access_type == ANNA_NODE_ACCESS_STATIC_MEMBER))
 	    {
 		tmpl++;
 		tmpl_count--;
@@ -98,9 +102,11 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	anna_error(this, L"Tried to call a non-function");
 	return;
     }
-    if((ftk->flags & ANNA_FUNCTION_VARIADIC) || (ftk->flags & ANNA_FUNCTION_VARIADIC_NAMED))
+    if((ftk->flags & ANNA_FUNCTION_VARIADIC) || 
+       (ftk->flags & ANNA_FUNCTION_VARIADIC_NAMED))
     {
-	int var_count = !!(ftk->flags & ANNA_FUNCTION_VARIADIC) + !!(ftk->flags & ANNA_FUNCTION_VARIADIC_NAMED);
+	int var_count = !!(ftk->flags & ANNA_FUNCTION_VARIADIC) + 
+	    !!(ftk->flags & ANNA_FUNCTION_VARIADIC_NAMED);
 	if( this2->child_count < tmpl_count-var_count)
 	{
 	    anna_error(
@@ -187,7 +193,7 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    if(anna_member_is_property(memb) && memb->setter_offset == -1)
 	    {
 		anna_error(
-		    this, L"The property %ls::%ls is not writable.",
+		    this, L"The property %ls::%ls does not have a setter.",
 		    type->name, anna_mid_get_reverse(c->mid));
 		break;		
 	    }	    
@@ -211,7 +217,6 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    L"Invalid type in assignment. Expected argument of type %ls, but supplied value of type %ls does not qualify.", 
 		    templ->name, param->name);
 	    }
-
 	    if(!(memb->storage & ANNA_MEMBER_STATIC))
 	    {
 		anna_error(this, L"Tried to assign to non-static member statically");
@@ -223,36 +228,21 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	case ANNA_NODE_MEMBER_GET:
 	{
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
-	    anna_type_t * type = 
-		c->object->return_type;
-
-	    if(type == null_type)
-	    {
-		anna_error(this, L"Null doesn't have explicit members");
-		break;		
-	    }
-
+	    anna_type_t * type = c->object->return_type;
 	    anna_member_t *memb = anna_member_get(type, c->mid);
+
 	    if(anna_member_is_property(memb) && memb->getter_offset == -1)
 	    {
 		anna_error(this, L"No getter for property %ls", anna_mid_get_reverse(c->mid));
 		break;
 	    }
-	    
 	    break;
 	}
 	
 	case ANNA_NODE_STATIC_MEMBER_GET:
 	{
 	    anna_node_member_access_t *c = (anna_node_member_access_t *)this;
-	    anna_type_t * type = 
-		anna_node_resolve_to_type(c->object, stack);
-	    if(type == null_type)
-	    {
-		anna_error(this, L"Null doesn't have explicit members");
-		break;		
-	    }
-	    
+	    anna_type_t * type = anna_node_resolve_to_type(c->object, stack);
 	    anna_member_t *memb = anna_member_get(type, c->mid);
 
 	    if(!(memb->storage & ANNA_MEMBER_STATIC))
@@ -274,8 +264,8 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	{
 	    anna_node_assign_t *d = (anna_node_assign_t *)this;
 	    anna_type_t *param = d->value->return_type;
-	    
 	    anna_type_t *templ = anna_stack_get_type(stack, d->name);
+
 	    if(!templ)
 	    {
 		anna_error(
@@ -283,7 +273,8 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 		    L"Unknown identifier: %ls",
 		    d->name);
 	    }
-	    else{
+	    else
+	    {
 		int is_const = anna_stack_get_flag(stack, d->name) & ANNA_STACK_READONLY;
 		if(is_const)
 		{
@@ -358,7 +349,10 @@ void anna_node_validate(anna_node_t *this, anna_stack_template_t *stack)
 	    anna_node_wrapper_t *node2 = (anna_node_wrapper_t *)this;
 	    if(node2->steps < 0)
 	    {
-		anna_error(this, L"Invalid return expression - return %d steps", node2->steps);
+		anna_error(
+		    this,
+		    L"Invalid return expression - return %d steps",
+		    node2->steps);
 	    }
 
 	    anna_function_t *f = this->stack->function;
@@ -482,7 +476,10 @@ int anna_node_validate_call_parameters(
 	{
 	    if(print_error)
 	    {
-		anna_error((anna_node_t *)call, L"More than one value was provided for argument %d, %ls, in function call ", i+1, target->input_name[i]);
+		anna_error(
+		    (anna_node_t *)call, 
+		    L"More than one value was provided for argument %d, %ls, in function call ",
+		    i+1, target->input_name[i]);
 	    }
 	    goto END;
 	}
@@ -509,7 +506,8 @@ int anna_node_validate_call_parameters(
     return res;
 }
 
-static void anna_node_call_map_process_new_node(anna_node_t *node, anna_stack_template_t *stack)
+static void anna_node_call_map_process_new_node(
+    anna_node_t *node, anna_stack_template_t *stack)
 {
     anna_node_set_stack(node, stack);
     anna_node_resolve_identifiers(node);
@@ -551,7 +549,9 @@ void anna_node_call_map(
 	    anna_node_create_type(
 		&call->location, 
 		target->input_type[var_named_idx]));
-	var_named_pair_type = anna_pair_type_get(imutable_string_type, anna_hash_get_value_type(target->input_type[var_named_idx]));
+	var_named_pair_type = anna_pair_type_get(
+	    imutable_string_type,
+	    anna_hash_get_value_type(target->input_type[var_named_idx]));
 	order[var_named_idx] = (anna_node_t *)var_named_call;
 	count = var_named_idx+1;
     }
@@ -592,7 +592,6 @@ void anna_node_call_map(
 			    anna_intern(name->name),
 			    0),
 			p->arg2));
-		
 	    }
 	}	
     }
