@@ -146,32 +146,30 @@ void *anna_specialize_implicit(
     }
 
     int input_count = unspecialized_fun->input_count;
-    int input_off = 0;
 
+    if(!anna_node_validate_call_parameters(call, unspecialized_fun, 0, 0))
+    {
+	return base;
+    }
+    
+    anna_node_call_map(call, unspecialized_fun, 0);
+    
     anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
     int spec_count = 0;
     for(i=0; i<call->child_count; i++)
-    {
-	if(call->child[i]->node_type == ANNA_NODE_MAPPING)
-	{
-	    anna_error(
-		call->child[i],
-		L"Implicit template specialization can not be performed on calls with named arguments.\n");
-	    break;
-	}
-	
+    {	
 	int input_idx = mini(i, input_count-1);	
-	anna_node_call_t *decl = node_cast_call(input_node->child[input_idx+input_off]);
-//	anna_message(L"Hej hopp %d %d\n", i, input_idx+input_off);
+	anna_node_call_t *decl = node_cast_call(input_node->child[input_idx]);
+	//anna_message(L"Hej hopp %d %d\n", i, input_idx);
 	if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
 	{
 	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
-//	    anna_message(L"Tjoho %ls\n", id->name);
+	    //anna_message(L"Tjoho %ls\n", id->name);
 	    
 	    int templ_idx = anna_attribute_template_idx(attr, id->name);
 	    if(templ_idx >= 0)
 	    {
-//		anna_message(L"Template idx is %d\n", templ_idx);
+		//anna_message(L"Template idx is %d\n", templ_idx);
 		call->child[i] = anna_node_calculate_type(call->child[i]);
 		if( call->child[i]->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		{

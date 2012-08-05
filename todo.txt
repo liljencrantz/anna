@@ -1,5 +1,5 @@
 1.0 RELEASE CRITERIA:
-* Named arguments in template specialization
+* Buffer::convert(String)
 * Make a special syntax for assigning to constants before running __init__
 * Make it so __init__ can never be called manually. 
 * Make constant members assignable in __init__
@@ -11,7 +11,7 @@
 * Modify function definition syntax to put return type after argument list?
 * Decide on argument order for all string functions
 * Go over naming of C functions, e.g. count vs. size vs. length
-* Do something clever with inherited methods to make sure the this member is correctly handled.
+* Do something clever with inherited methods to make sure the type of the 'this' member is correctly handled.
 * Use setLocation on ast stuff in various macros to make error messages more readable.
 * Rename __staticTypeOf__ to staticType
 * Drop __staticReturnTypeOf__ and __staticInputTypeOf__
@@ -53,6 +53,7 @@
   - variable write access in debugger? 
 
 1.0 RELEASE CRITERIA (Done):
+* Named arguments in template specialization
 * Make annadoc show documentation for all the build in macros.
 * Move all bootstrapped macros into the same namespace as the builtin macros, so they are easier to find.
 * Drop all members from Object type.

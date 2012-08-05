@@ -1155,6 +1155,10 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    get_constructor_input_list(type->definition);
 	if(input_node)
 	{
+	    input_node = (anna_node_call_t *)anna_node_clone_shallow(input_node);
+	    input_node->child_count--;
+	    memmove(input_node->child, &input_node->child[1], sizeof(void *)*(input_node->child_count));
+	    
 	    return (anna_type_t *)anna_specialize_implicit(
 		attr, constr, input_node, call, type, 
 		(anna_specializer_t)anna_type_specialize);
