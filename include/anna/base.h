@@ -20,6 +20,7 @@ typedef void (*anna_finalizer_t)( struct anna_object *victim);
 typedef void (*anna_mark_entry_t)( struct anna_object *this);
 typedef void (*anna_mark_type_t)( struct anna_type *this);
 typedef void (*anna_init_t)(struct anna_object *this);
+typedef void *(*anna_specializer_t)(void *fun, struct anna_node_call *call);
 typedef int mid_t;
 
 /*

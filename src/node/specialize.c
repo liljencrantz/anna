@@ -130,3 +130,81 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     
     return (anna_node_t *)call;	    
 }
+
+void *anna_specialize_implicit(anna_node_call_t *attr, anna_function_t *unspecialized_fun, anna_node_call_t *input_node, anna_node_call_t *call, void *base, anna_specializer_t specializer)
+{
+    int i;    
+    array_list_t al = AL_STATIC;
+    anna_attribute_call_all(attr, L"template", &al);
+
+    if(al_get_count(&al) == 0)    
+    {
+	return base;
+    }
+
+    int input_count = unspecialized_fun->input_count;
+    int input_off = 0;
+    if(unspecialized_fun != base)
+    {
+	input_count--;
+	input_off=1;
+    }
+
+    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
+    int spec_count=0;
+    for(i=0; i<call->child_count; i++)
+    {
+	if(call->child[i]->node_type == ANNA_NODE_MAPPING)
+	{
+	    anna_error(call->child[i], L"Implicit template specialization can not be performed on calls with named arguments.\n");
+	    break;
+	}
+	
+	int input_idx = mini(i, input_count-1);	
+	anna_node_call_t *decl = node_cast_call(input_node->child[input_idx+input_off]);
+//	anna_message(L"Hej hopp %d %d\n", i, input_idx+input_off);
+	if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
+	{
+	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
+//	    anna_message(L"Tjoho %ls\n", id->name);
+	    
+	    int templ_idx = anna_attribute_template_idx(attr, id->name);
+	    if(templ_idx >= 0)
+	    {
+//		anna_message(L"Template idx is %d\n", templ_idx);
+		call->child[i] = anna_node_calculate_type(call->child[i]);
+		if( call->child[i]->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
+		{
+		    if(!type_spec[templ_idx])
+		    {
+			type_spec[templ_idx] = call->child[i]->return_type;
+			spec_count++;
+		    }
+		    else
+		    {
+			type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
+		    }
+		}
+	    }
+	}
+    }
+    
+    if(spec_count == al_get_count(&al))
+    {
+	anna_node_call_t *spec_call = anna_node_create_block2(0);
+	for(i=0; i<al_get_count(&al); i++)
+	{
+	    anna_node_call_add_child(
+		spec_call, 
+		(anna_node_t *)anna_node_create_dummy(
+		    0,
+		    anna_type_wrap(type_spec[i])));
+	}
+	base = specializer(base, spec_call);
+    }
+
+    al_destroy(&al);
+    free(type_spec);
+    return base;
+}
+

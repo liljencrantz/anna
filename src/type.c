@@ -1157,71 +1157,11 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	return type;
     }
     
-//    anna_message(L"Looking ok for implicit spec\n");
-    
     anna_node_call_t *input_node = get_constructor_input_list(type->definition);
-    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
-    int spec_count=0;
     if(input_node)
     {
-	for(i=0; i<call->child_count; i++)
-	{
-	    if(call->child[i]->node_type == ANNA_NODE_MAPPING)
-	    {
-		anna_error(call->child[i], L"Implicit template specialization can not be performed on calls with named arguments.\n");
-		break;
-	    }
-	    /*
-	      If we have multiple variadic arguments, we only inspect
-	      the first one. We're also completely ignoring named
-	      arguments.
-	    */
-	    if((i+1) >= input_node->child_count)
-	    {
-		break;
-	    }
-	    
-
-	    
-	    anna_node_call_t *decl = node_cast_call(input_node->child[i+1]);
-	    
-	    if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
-	    {
-		anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
-		
-		//anna_message(L"Check if %ls is a template param\n", id->name);
-		int templ_idx = anna_attribute_template_idx(attr, id->name);
-		if(templ_idx >= 0)
-		{
-		    if(!type_spec[templ_idx])
-		    {
-			type_spec[templ_idx] = call->child[i]->return_type;
-			spec_count++;
-		    }
-		    else
-		    {
-			type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
-		    }
-		}
-	    }
-	}
+	return (anna_type_t *)anna_specialize_implicit(attr, constr, input_node, call, type, (anna_specializer_t)anna_type_specialize);
     }
-    
-    if(spec_count == al_get_count(&al))
-    {
-	anna_node_call_t *spec_call = anna_node_create_block2(0);
-	for(i=0; i< al_get_count(&al); i++)
-	{
-	    anna_node_call_add_child(
-		spec_call, 
-		(anna_node_t *)anna_node_create_dummy(
-		    0,
-		    anna_type_wrap(type_spec[i])));
-	}
-	type = anna_type_specialize(type, spec_call);
-    }
-    free(type_spec);
-    
     return type;
 }
 

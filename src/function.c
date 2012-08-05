@@ -1214,9 +1214,9 @@ void anna_function_macro_expand(
     }
 }
 
+
 anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_node_call_t *call)
-{
-    
+{    
     if((call->child_count < 1) || (base->flags & ANNA_FUNCTION_SPECIALIZED))
     {
 	return base;
@@ -1233,75 +1233,7 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
     }
     
     anna_node_call_t *attr = node_cast_call(base->definition->child[3]);
-    
-    array_list_t al = AL_STATIC;
-    anna_attribute_call_all(attr, L"template", &al);
-
-    
-    if(al_get_count(&al) == 0)    
-    {
-	return base;
-    }    
-
-    int i;
-    
     anna_node_call_t *input_node = node_cast_call(base->definition->child[2]);
-    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
-    int spec_count=0;
-    if(input_node)
-    {
-//	anna_message(L"FDSAFASD3a %d %d\n", input_node->child_count, attr->);
-	for(i=0; i<call->child_count; i++)
-	{
-	    if(call->child[i]->node_type == ANNA_NODE_MAPPING)
-	    {
-		anna_error(call->child[i], L"Implicit template specialization can not be performed on calls with named arguments.\n");
-		break;
-	    }
-
-	    int input_idx = mini(i, base->input_count-1);	    
-	    
-	    anna_node_call_t *decl = node_cast_call(input_node->child[input_idx]);
-	    if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
-	    {
-		anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
-		
-		int templ_idx = anna_attribute_template_idx(attr, id->name);
-		if(templ_idx >= 0)
-		{
-		    call->child[i] = anna_node_calculate_type(call->child[i]);
-		    if( call->child[i]->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
-		    {
-			if(!type_spec[templ_idx])
-			{
-			    type_spec[templ_idx] = call->child[i]->return_type;
-			    spec_count++;
-			}
-			else
-			{
-			    type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
-			}
-		    }
-		}
-	    }
-	}
-    }
     
-    if(spec_count == al_get_count(&al))
-    {
-	anna_node_call_t *spec_call = anna_node_create_block2(0);
-	for(i=0; i<al_get_count(&al); i++)
-	{
-	    anna_node_call_add_child(
-		spec_call, 
-		(anna_node_t *)anna_node_create_dummy(
-		    0,
-		    anna_type_wrap(type_spec[i])));
-	}
-	base = anna_function_get_specialization(base, spec_call);
-    }
-    al_destroy(&al);
-    free(type_spec);
-    
-    return base;
+    return (anna_function_t *)anna_specialize_implicit(attr, base, input_node, call, base, (anna_specializer_t)anna_function_get_specialization);
 }

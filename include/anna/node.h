@@ -536,5 +536,7 @@ void anna_method_search(
  */
 void anna_node_compile(anna_node_t *this, void *aux);
 
+void *anna_specialize_implicit(anna_node_call_t *attr, anna_function_t *unspecialized_fun, anna_node_call_t *input_node, anna_node_call_t *call, void *base, anna_specializer_t specializer);
+
 #endif
 
