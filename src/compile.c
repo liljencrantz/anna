@@ -321,6 +321,7 @@ static void anna_vm_compile_mid_lookup(
     anna_vm_line(ctx);
     anna_member_t *m = type->mid_identifier[mid];
     int instr;
+
     
     instr = anna_member_is_static(m)?ANNA_INSTR_STATIC_MEMBER_GET:ANNA_INSTR_MEMBER_GET;
     if(anna_member_is_static(m))
@@ -675,30 +676,14 @@ static void anna_vm_compile_i(
 		break;
 	    }
 	    
-	    const_obj = anna_node_static_invoke_try(
-		node2->object, fun->stack_template);
-	    int add_mid_access = 1;
-	    
-	    if(const_obj)
+	    anna_type_t *type = node2->object->return_type;
+	    if(type == null_type)
 	    {
-		if(const_obj == null_entry)
-		{
-		    add_mid_access = 0;
-		    anna_vm_const(ctx, const_obj);		    
-		}
-		else
-		{
-		    anna_vm_const(ctx, const_obj);		
-		}
+		anna_vm_const(ctx, null_object);
 	    }
 	    else
 	    {
 		anna_vm_compile_i(ctx, fun, node2->object, 0);
-	    }
-	    
-	    if(add_mid_access)
-	    {
-		anna_type_t *type = node2->object->return_type;
 		anna_vm_compile_mid_lookup(ctx, type, node2->mid); 
 	    }
 	    break;

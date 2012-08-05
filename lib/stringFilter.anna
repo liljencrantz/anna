@@ -32,7 +32,7 @@ def main()
     paranCount := 0;
     commentCount := 0;
 
-    enum State{
+    enum State {
 	text, percent, code, charLiteral, stringLiteral, charLiteralBackslash,
         stringLiteralBackslash, codeSlash, singleLineComment, multiLineComment,
         multiLineCommentStar, multiLineCommentSlash
