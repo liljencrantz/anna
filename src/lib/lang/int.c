@@ -327,19 +327,19 @@ void anna_int_type_create()
 
     anna_type_document(
 	int_type,
-	L"The Int type is the basic integer type of the Anna language.");
+	L"The Int type is integer type of the Anna language.");
     
     anna_type_document(
 	int_type,
-	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, numbers that use 29 bits or less to represent (excluding the sign bit, so 30 bits total of data) can be stored directly on the stack and use no heap memory at all. Larger integers are implemented using a multiple precision library such as GNU MP.");
+	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, numbers that use 30 bits or less to represent (including the sign bit) are usually stored directly on the stack and use no heap memory at all. Larger integers are implemented using an arbitrary precision library. Aside from resulting in lower memory useage, this optimization is completely transparent - Int objects behave like all other Anna objects in every way, including the fact that they can be inherited from.");
     
     anna_type_document(
 	int_type,
-	L"Anna Int objects are imutable, meaning their value never changes. Integers can be used as hash keys and implement basic operations like addition, multiplication, etc.");
+	L"Anna Int objects are imutable, meaning their value never changes. Integers can be used as hash keys and implement normal mathematical operations like addition (using the + operator), multiplication (usinbg the * operator) and so on.");
     
     anna_type_document(
 	int_type,
-	L"Any arithmetic operation involving only Int objects will result in a new Int. Specifically, dividing one Int with another will result in a new Int object, which is the truncated value of the division. Convert one of the numbers to a Float if a floating point result is desired.");
+	L"Any arithmetic operation involving only Int objects will result in a new Int. Specifically, dividing one Int with another will result in a new Int object, which is the truncated value of the division. Convert one of the numbers to a Float using code like <code class='anna-code'>Float::convert(someIntValue)</code> is floating point division is desired.");
 
     anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     
