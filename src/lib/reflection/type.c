@@ -3,7 +3,7 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     anna_type_t *type = anna_type_unwrap(this);
-    const wchar_t *msg = L"<type ";
+    wchar_t *msg = L"<type ";
     if(type != null_type && anna_entry_get_addr_static(type, ANNA_MID_STACK_TYPE_PAYLOAD))
     {
 	msg = L"<module ";

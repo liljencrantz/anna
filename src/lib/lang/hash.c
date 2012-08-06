@@ -661,7 +661,6 @@ static void anna_hash_type_init(anna_object_t *obj)
 {
     ahi_init(ahi_unwrap(obj), 1);
     obj->flags |= ANNA_OBJECT_HASH;
-    return obj;
  }
 
 
@@ -1134,7 +1133,7 @@ static void anna_hash_type_create_internal(
     }
     else
     {
-	anna_entry_set_static(type,ANNA_MID_COMPARATOR, (anna_entry_t *)cmp_mid);
+	anna_entry_set_static(type,ANNA_MID_COMPARATOR, (anna_entry_t *)(long)cmp_mid);
     }
     
     anna_member_create(

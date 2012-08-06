@@ -44,7 +44,6 @@ static array_list_t anna_type_uninherited = AL_STATIC;
 static hash_table_t anna_type_get_function_identifier;
 
 static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off);
-static mid_t anna_type_mid_at_offset(anna_type_t *orig, size_t off);
 
 static void anna_type_prepare_property(
     anna_type_t *type,
@@ -128,7 +127,7 @@ static void anna_type_add_initializer(anna_type_t *type, anna_init_t init)
 	return;
     if(type->internal_init != anna_object_init_multi)
     {
-	anna_init_t *tmp = type->internal_init;
+	anna_init_t tmp = type->internal_init;
 	type->internal_init = anna_object_init_multi;
 	anna_type_append_initializer(type, tmp);
     }
@@ -316,22 +315,6 @@ static mid_t anna_type_mid_at_static_offset(anna_type_t *orig, size_t off)
 	if(memb->offset == off)
   	    return anna_mid_get(memb->name);
        
-    }
-    CRASH;
-}
-
-static mid_t anna_type_mid_at_offset(anna_type_t *orig, size_t off)
-{
-    int i;
-    int steps = al_get_count(&orig->member_list);
-    for(i=0; i<=steps; i++)
-    {
-        anna_member_t *memb = al_get_fast(&orig->member_list, i);
-	if(anna_member_is_static(memb))
-	    continue;
-	
-	if(memb->offset == off)
-  	    return anna_mid_get(memb->name);
     }
     CRASH;
 }
@@ -986,7 +969,7 @@ anna_type_t *anna_type_specialize(anna_type_t *type, anna_node_call_t *spec)
     
     anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)type->definition);
     anna_node_set_stack(
-	def,
+	(anna_node_t *)def,
 	type->definition->stack);
     
     anna_node_call_t *attr = node_cast_call(def->child[1]);
@@ -1145,7 +1128,6 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	return type;
     }    
 
-    int i;
     anna_member_t *constructor_member = anna_member_get(type, ANNA_MID_INIT);
     if(constructor_member)
     {
@@ -1155,7 +1137,7 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    get_constructor_input_list(type->definition);
 	if(input_node)
 	{
-	    input_node = (anna_node_call_t *)anna_node_clone_shallow(input_node);
+	    input_node = (anna_node_call_t *)anna_node_clone_shallow((anna_node_t *)input_node);
 	    input_node->child_count--;
 	    memmove(input_node->child, &input_node->child[1], sizeof(void *)*(input_node->child_count));
 	    
@@ -1644,70 +1626,6 @@ void anna_type_close(anna_type_t *this)
 
     anna_type_reseal(this);
 }
-
-void anna_type_mark_info(anna_type_t *type)
-{
-    assert(type->mark_type == anna_type_mark);
-    anna_message(L"Describe GC mark phase of type %ls\n", type->name);
-    int i;
-    
-    for(i=0; i<type->static_mark_entry_count; i++)
-    {
-	size_t off = type->static_mark_entry[i];
-	mid_t mid = anna_type_mid_at_static_offset(type, off);
-	anna_member_t *memb = anna_member_get(type, mid);
-	anna_message(L"Mark static member %ls with value %d\n", memb->name, type->static_member[off]);	
-    }
-    for(i=0; i<type->static_mark_blob_count; i++)
-    {
-	size_t off = type->static_mark_blob[i];
-	mid_t mid = anna_type_mid_at_static_offset(type, off);
-	anna_member_t *memb = anna_member_get(type, mid);
-	anna_message(L"Mark static blob %ls\n", memb->name);
-//	anna_message(L"Mark blob %ls\n", type->static_member[type->static_mark_blob[i]]->name);
-    }
-
-    if(type->mark_object == anna_type_object_mark_basic)
-    {
-	anna_message(L"Basic object mark stuff:\n");
-	for(i=0; i<type->mark_entry_count; i++)
-	{
-	    size_t off = type->mark_entry[i];
-	    mid_t mid = anna_type_mid_at_offset(type, off);
-	    anna_member_t *memb = anna_member_get(type, mid);
-	    anna_message(L"Mark member %ls with\n", memb->name);
-	}
-	
-	for(i=0; i<type->mark_blob_count; i++)
-	{
-	    size_t off = type->mark_blob[i];
-	    mid_t mid = anna_type_mid_at_offset(type, off);
-	    anna_member_t *memb = anna_member_get(type, mid);
-	    anna_message(L"Mark blob %ls with\n", memb->name);
-	}
-        
-	
-    }
-    else if(type->mark_object == anna_type_object_mark_all)
-    {
-	anna_message(L"Full nonstatic object mark stuff\n");
-    }
-    else if(type->mark_object == anna_type_object_mark_empty)
-    {
-	anna_message(L"Empty nonstatic object mark stuff\n");
-    }
-    else if(type->mark_object == anna_type_object_mark_noop)
-    {
-	anna_message(L"Noop nonstatic object mark stuff\n");
-    }
-    else
-    {
-	anna_message(L"Unknown nonstatic object mark stuff\n");
-    }
-    
-
-}
-
 
 void anna_type_reseal(anna_type_t *this)
 {

@@ -679,7 +679,7 @@ static void anna_vm_compile_i(
 	    anna_type_t *type = node2->object->return_type;
 	    if(type == null_type)
 	    {
-		anna_vm_const(ctx, null_object);
+		anna_vm_const(ctx, null_entry);
 	    }
 	    else
 	    {

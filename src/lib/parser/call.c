@@ -241,8 +241,6 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
 
 static void anna_call_iterator_update(anna_object_t *iter, int off)
 {
-    anna_object_t *this = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
-    anna_node_call_t *call = (anna_node_call_t *)anna_node_unwrap(this);
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(off));
 }
 

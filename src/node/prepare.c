@@ -714,7 +714,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_type_t *fun_type = call->function->return_type;
 	    
 	    int is_method = 0;
-	    anna_member_t *member;
+	    anna_member_t *member=0;
 
 	    if(fun_type == type_type)
 	    {
@@ -758,9 +758,10 @@ static anna_node_t *anna_node_calculate_type_internal(
 		break;
 	    }
 	    
-	    anna_function_type_t *funt = is_method ? 
+	    anna_function_type_t *funt = member ? 
 		anna_member_bound_function_type(member) :
 		anna_function_type_unwrap(fun_type);
+	    
 	    if(!funt)
 	    {
 //		anna_node_print(4, call->function);
