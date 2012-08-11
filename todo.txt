@@ -1,4 +1,5 @@
 1.0 RELEASE CRITERIA:
+* Support for Scala-style late-evaluated macros
 * Buffer::convert(String)
 * Make a special syntax for assigning to constants before running __init__
 * Make it so __init__ can never be called manually. 
@@ -28,7 +29,7 @@
 * Continuation/Function::Iterator
 * struct::Iterator
 * Bindings
-  - ctime should be generated through the binding generator
+  - Drop ctime and make unix.time complete feature complete
 * anna-game as a proof that the language works for solving reasonably complex problems
 * Documentation:
   - Split base documentation into multiple files

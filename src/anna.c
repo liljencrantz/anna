@@ -95,7 +95,7 @@ static void anna_init()
 	L"The global module is the root of the entire anna namespace.");
     anna_stack_document(
 	stack_global,
-	L"All top level modules are descendants of the global module.");
+	L"All top level modules are descendants of the global module. In a cruel twist of fate, global is itself a top level module, making it the only module in the universe who is it's own parent.");
 }
 
 /**
@@ -133,7 +133,7 @@ static void anna_print_help()
 	L"  -h, --help     Print this help message and exit\n"
 	L"  -v, --verbose  Increase verbosity level\n"
 	L"  -V, --version  Print version number and exit\n"
-        L"  file           File name of the program (optionally omitting the .anna suffix)\n"
+        L"  file           File name of the program (optionally omitting a .anna suffix)\n"
 	L"  arg ...        Arguments passed to program\n");
 }
 

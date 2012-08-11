@@ -1,11 +1,13 @@
-attribute(internal, doc("
-The anna repl implementation."));
+attribute(doc("
+The anna command line prompt, also known as a repl."));
 
 def repl(reflection.Continuation debugFrame = ?)
     (doc(
 	"This is the so called repl of anna. Repl is short for Read, Evaluate
 and Print-Loop, and is what implements the interactive prompt of a
-programming language.",
+programming language. Just as one would expect from the name, the repl
+function will repeatedly read lines of input from the user, evaulate
+them as program code and print the output value to the screen.",
 	"The Anna repl is used internally in two situations. Firstly, if Anna
 is called without specifying an application to run, the repl is
 invoked. Secondly, the interactive Anna debugger is simply a repl
@@ -22,6 +24,16 @@ a larger AST representing an entire module, and is finally compiled
 using the <a path='parser' member='compile'>parser.compile</a>
 function. The resulting function is then executed and the output is
 then printed to the screen.",
+	"The repl has some special features, including",
+	"
+<ul>
+  <li>the <code>help</code> and <code>dir</code>
+commands, used for showing help on a type or method, and for printing
+the members of a type, respectively,
+  <li>The <code>ans</code> variable, which always points to
+the value of the last command to execute and</li>
+  <li>the <code>exit</code> and <code>quit</code> commands, both of which break the repl loop.</li>
+</ul>",
 	), internal)
 {
     use(parser);
@@ -87,11 +99,24 @@ interpreter, you can type «help(OBJECT)». For example, to show help on
 the lang module, type «help(lang)». 
 
 If you want to list the contents of an object, type «dir(OBJECT)». For
-example, to show the contents of the Int type, type «dir(Int)».";
+example, to show the contents of the Int type, type «dir(Int)».
+
+Type «warranty», «copyright» or «license» for legal information.";
 
     copyrightText :== "Copyright(C) 2005-2012 Axel Liljencrantz
 All rights reserved.";
     helloText:= "Hi!";
+    warrantyText :== "This software is provided by the copyright holders and contributors \"as is\" and
+any express or implied warranties, including, but not limited to, the implied
+warranties of merchantability and fitness for a particular purpose are
+disclaimed. In no event shall the copyright owner or contributors be liable for
+any direct, indirect, incidental, special, exemplary, or consequential damages
+(including, but not limited to, procurement of substitute goods or services;
+loss of use, data, or profits; or business interruption) however caused and
+on any theory of liability, whether in contract, strict liability, or tort
+(including negligence or otherwise) arising in any way out of the use of this
+software, even if advised of the possibility of such damage.";
+
     licenseText :== copyrightText ~ "
 
 Redistribution and use in source and binary forms, with or without
@@ -101,24 +126,16 @@ modification, are permitted provided that the following conditions are met:
    list of conditions and the following disclaimer. 
 2. Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution. 
+   and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
-
+" ~ warrantyText;
+ 
     action :== «Node, reflection.Block»[
 	ast(hello): {print(helloText)},
 	ast(help): {print(helpText)},
 	ast(copyright): {print(copyrightText)},
 	ast(license): {print(licenseText)},
+	ast(warranty): {print(warrantyText)},
 	ast(quit): die,
 	ast(exit): die,
 	];
