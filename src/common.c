@@ -232,7 +232,7 @@ const wchar_t *wsetlocale(int category, const wchar_t *locale)
 	}
 	else
 	{
-	    char *lang = wcs2str(locale);
+	    lang = wcs2str(locale);
 	    do_free = 1;
 	}
     }
