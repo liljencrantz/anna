@@ -22,10 +22,7 @@ def main()
 	  <p>
 	    This is a brief introduction to the Anna programming language,
 	    written in the form of a «Choose your own adventure»-style
-	    gamebook. 
-	  </p>
-	  <p>
-	    Let's get started:
+	    gamebook. To get started, choose one of these links:
 	  </p>
 	  <ul>
 	    
@@ -382,13 +379,13 @@ print("hello" in objList);
 	  </pre>
 	  <ul>
 	    <li>
-	      To learn more about the various collection types in Anna, see the section<a href="#collections">More about collections</a>.
+	      To learn more about the various collection types in Anna, see the section <a href="#collections">More about collections</a>.
 	    </li>
 	    <li>Notice how there is a property
 	    called <code>empty?</code> in Anna? Question marks are
 	    valid as part of variable names in Anna, so long as
 	    they're not the first character. To learn more about legal
-	    Anna variable names an it's naming convensions, read the
+	    Anna variable names, read the
 	    section <a href="#design-naming">Naming of variables and
 	    types</a>.</li>
 	  </ul>
@@ -1064,7 +1061,7 @@ def Int main()
 
 // On some keyboard layouts, «» may not be easily accessible. And If you're
 // not using a unicode character set, «» may not even be available to you. 
-// As a fallback, Anna also supports using &lt;&lt;&gt;&gt; instead.
+// As a fallback, Anna also supports using &lt;&lt;&gt;&gt;.
 &lt;&lt;Int&gt;&gt;[];
 	  </pre>
 	  <ul>
@@ -1373,8 +1370,9 @@ def parser.Node reverseStringLiteral(parser.Call node)
 	      convenience macros that are used for performing error
 	      checks in macros. If you want to learn more about these
 	      macros, see the documentation for
-	      the <a href="api/global/macroUtil.html">macroUtil
-	      library</a>.
+	      the <a href="api/global/builtinMacros.html">builtinMacros
+	      module, which contains all macros that are enabled by
+	      default</a>.
 	    </li>
 
 	    <li>
@@ -1720,7 +1718,7 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    It is possible to create a list search interface like LINQ
 	    in Anna, but unlike LINQ, it is not a special case grafted
 	    onto the compiler. Anna provides a general purpose
-	    framework that allows anyone proficiant in Anna to create
+	    framework that allows anyone proficient in Anna to create
 	    libraries that do the same thing LINQ does, but better.
 	  </p>
 	  <p>
@@ -1831,11 +1829,19 @@ functionExpectingAFunctionAsAParameter {print("I am happy")};
 	  </pre>
 	  <p>
 	    Another way in which Anna is like Python and Ruby is the
-	    convenient support for functional programming. Say we haxe
-	    EXAMPLE FIXME LALALA.
+	    convenient support for functional programming.
 	  </p>
 	  <pre class="anna-code">
-FIXME! Functional programming example here
+someList = [1, 2, 75, 6, 7]
+
+// Print square off all numbers in someList
+print(someList.map(val) { val*val });
+
+// Print the even numbers from someList
+print(someList.filter(val) { (val ^mod 2) == 0});
+
+// Print the first even number of someList
+print(someList.find(val) { (val ^mod 2) == 0});
 	  </pre>
 	  <p>
 	    Blocks of code, by the way, are anonymous functions that take 0
@@ -1865,12 +1871,13 @@ FIXME! Functional programming example here
 	    </li>
 	  </ul>
 	  <p>
-	    The upshoot of this is that you have to do significantly less
-	    type checking when validating your input arguments (and you do
-	    validate your input arguments, don't you?), regaining you some
-	    of those lost key strokes. You also get much better ahead of
-	    time code checking - some silly mistakes can be caught earlier
-	    in the development process in Anna.
+	    The upshoot of this is that you have to do significantly
+	    less type checking when validating your input arguments
+	    (and you do validate your input arguments, don't you?),
+	    regaining you some of those lost key strokes. You also get
+	    better documantation and ahead of time code checking -
+	    some silly mistakes can be caught earlier in the
+	    development process in Anna.
 	  </p>
 	  <p>
 	    Static typing does catch some bugs at compile time that aren't
@@ -2206,6 +2213,16 @@ f.close();
 	    expressions, while loops and any other statement that expects a
 	    yes/no answer. Null is the new no.
 	  </p>
+	  <p>
+	    On a semi-related note, there is a naming convetion in
+	    Anna that all variables, constants and members that hold
+	    boolean values should have a name ending with a question
+	    mark, such as <code>empty?</code>, <code>property?</code>
+	    or <code>teapot?</code>.  For more variable naming
+	    conventions, read the
+	    section <a href="#design-naming">Naming of variables and
+	    types</a>.</li>
+	  </p>
 
 	  <h2><a name="blocks">Blocks, lambdas, procedures and functions</a></h2>
 	  <p>
@@ -2301,12 +2318,12 @@ def () (block){print("hi")}
 	  </p>
 	  <pre class="anna-code">
 // These two lines are completely equivalent
-someFunction(1,2,3, {1+1});
-someFunction(1,2,3) {1+1};
+someFunction(1, 2, 3, {1+1});
+someFunction(1, 2, 3) {1+1};
 
 // These two lines are also completely equivalent
 someOtherFunction({1+1});
-someOtherFunction{1+1};
+someOtherFunction {1+1};
 	  </pre>
 	  <p>
 	    What is the point of this alternative syntax? Here are some examples of it in use:
@@ -2336,7 +2353,9 @@ switch(x)
 	  <p>
 	    As you can see, this syntax (which has been adapted from
 	    Ruby), allows you to pass on a piece of code to another
-	    function using a rather terse syntax.
+	    function using a rather terse syntax that does not
+	    force you to enclose huge swaths of code in multiple sets
+	    of parenthesis.
 	  </p>
 	  <p>
 	    The main benefit of this type of code is how easily it
@@ -2608,7 +2627,7 @@ thisIsCode();
 	  <h2><a name="misc-mutability">Mutability</a></h2>
 	  <p>
 	    Some objects in Anna are mutable, i.e. they can be changed
-	    after they where created.  Mutable objects are sometimes
+	    after creation.  Mutable objects are sometimes
 	    significantly easier to work with, but the fact that an
 	    imutable object can't change unexpectedly can often be a
 	    significant boon to debugability. Imutable objects also
@@ -2620,8 +2639,7 @@ thisIsCode();
 	    has an intersection of these types, which is suitable to
 	    use when you're taking a value as input into a function
 	    and don't care if you're getting the mutable or the
-	    imutable version of the object. All types that exist in
-	    Mutable and Imutable form are listed in the table below.
+	    imutable version of the object.
 	  </p>
 	  <table class='anna-table'>
 	    <caption>
@@ -2687,18 +2705,18 @@ thisIsCode();
 	  </p>
 	  <ul>
 	    <li>
-	      Imutable objects are objects that can't change over
-	      time. Imutability is a property of a specific object
-	      type. There is no way in Anna to enforce imutability -
-	      any object whose value never changes after construction
-	      is said to be imutable.
-	    </li>
-	    <li>
 	      Constants are fields (like variables) whose value can
 	      not change after their initial assignment. Const:ness is
 	      a property of a specific field in the stack (or a
-	      specific member field). Const:ness is enforced by the
-	      language and can not be overridden. 
+	      specific member field in a type). Const:ness is enforced
+	      by the language and can not be overridden.
+	    </li>
+	    <li>
+	      Imutable objects are objects where all members are
+	      constant. Imutability is a property of a specific object
+	      type. There is currently no way in Anna to enforce
+	      imutability - any object where all member values are
+	      constant is said to be imutable.
 	    </li>
 	  </ul>
 	  <p>
