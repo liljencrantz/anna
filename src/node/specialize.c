@@ -192,7 +192,7 @@ void *anna_specialize_implicit(
 	anna_node_call_t *spec_call = anna_node_create_block2(0);
 	for(i=0; i<al_get_count(&al); i++)
 	{
-	    anna_node_call_add_child(
+	    anna_node_call_push(
 		spec_call, 
 		(anna_node_t *)anna_node_create_dummy(
 		    0,

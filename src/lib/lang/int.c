@@ -142,7 +142,7 @@ ANNA_VM_NATIVE(anna_int_to_string, 1)
     sb_init(&sb);
     sb_printf(&sb, L"%s", nstr);
     free(nstr);
-    anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_entry_t *res = anna_from_obj(anna_string_create(sb_count(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
 }

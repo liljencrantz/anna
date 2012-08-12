@@ -97,7 +97,7 @@ ANNA_VM_NATIVE(anna_float_to_string, 1)
     {
 	*comma = '.';
     }
-    anna_entry_t *res = anna_from_obj(anna_string_create(sb_length(&sb), buff));
+    anna_entry_t *res = anna_from_obj(anna_string_create(sb_count(&sb), buff));
     sb_destroy(&sb);
     return res;
 }

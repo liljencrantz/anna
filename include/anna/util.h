@@ -602,7 +602,7 @@ void sb_truncate( string_buffer_t *, int chars_left );
 /**
    Return the number of characters in the string
 */
-ssize_t sb_length( string_buffer_t * );
+ssize_t sb_count( string_buffer_t * );
 
 wchar_t *sb_content(string_buffer_t *);
 

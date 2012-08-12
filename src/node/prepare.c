@@ -415,7 +415,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		    int i;
 		    for(i=0; i<n->child_count; i++)
 		    {
-			anna_node_call_add_child(
+			anna_node_call_push(
 			    call,
 			    n->child[i]);
 		    }

@@ -579,7 +579,7 @@ void anna_node_call_map(
 	    }
 	    else
 	    {
-		anna_node_call_add_child(
+		anna_node_call_push(
 		    var_named_call,
 		    (anna_node_t *)anna_node_create_call2(
 			&call->child[i]->location,

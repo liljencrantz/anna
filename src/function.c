@@ -674,7 +674,7 @@ void anna_function_document(anna_function_t *fun, wchar_t *doc)
 	0,
 	anna_node_create_identifier(0, L"doc"),
 	anna_node_create_string_literal(0, wcslen(doc), doc, 0));
-    anna_node_call_add_child(fun->attribute, (anna_node_t *)attr);
+    anna_node_call_push(fun->attribute, (anna_node_t *)attr);
 }
 
 anna_function_t *anna_function_create_from_definition(
@@ -776,7 +776,7 @@ anna_function_t *anna_function_create_from_block(
 	
 	body->function = (anna_node_t *)anna_node_create_identifier(
 	    &body->function->location, L"__block__");
-	anna_node_call_add_child(
+	anna_node_call_push(
 	    attr, 
 	    (anna_node_t *)anna_node_create_identifier(
 		&body->function->location, L"loop"));

@@ -465,7 +465,7 @@ void anna_member_document(
 	    {
 		memb->attribute = anna_node_create_block2(0);
 	    }
-	    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+	    anna_node_call_push(memb->attribute, (anna_node_t *)attr);
 	    memb->doc = 0;
 	}
     }
@@ -507,7 +507,7 @@ void anna_member_alias(anna_type_t *type, int mid, wchar_t *name)
 	    anna_node_create_identifier(0, L"__block__"));
     }
     
-    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+    anna_node_call_push(memb->attribute, (anna_node_t *)attr);
 }
 
 void anna_member_alias_reverse(anna_type_t *type, int mid, wchar_t *name)
@@ -524,6 +524,6 @@ void anna_member_alias_reverse(anna_type_t *type, int mid, wchar_t *name)
 	    anna_node_create_identifier(0, L"__block__"));
     }
     
-    anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+    anna_node_call_push(memb->attribute, (anna_node_t *)attr);
 }
 

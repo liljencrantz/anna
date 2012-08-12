@@ -21,7 +21,7 @@ static int merge_node(anna_node_t *target, anna_node_t *el)
     if(is_call(target))
     {
 	anna_node_call_t *prev = (anna_node_call_t *)target;
-	anna_node_call_add_child(prev, el);
+	anna_node_call_push(prev, el);
 	return 1;
     }
 

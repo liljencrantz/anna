@@ -1017,7 +1017,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t **argv)
 	    CRASH;
 	}
 #endif	
-	anna_list_add(anna_context_peek_object(context, 0), val);
+	anna_list_push(anna_context_peek_object(context, 0), val);
 	context->frame->code += sizeof(anna_op_null_t);
 	OP_LEAVE(context);	
     }

@@ -9,7 +9,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_count, 1)
 static void anna_node_call_wrapper_all_children_each(anna_node_t *node, void *aux)
 {
     anna_object_t *list = (anna_object_t *)aux;
-    anna_list_add(
+    anna_list_push(
 	list, 
 	anna_from_obj(anna_node_wrap(node)));
 }
@@ -62,7 +62,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_range, 2)
 
     for(i=from;(step>0)? i<to : i>to; i+=step)
     {
-	anna_list_add(
+	anna_list_push(
 	    res, 
 	    anna_from_obj(anna_node_wrap(node->child[i])));
     }
@@ -130,7 +130,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_list, 2)
     {
 	anna_entry_t *n = 
 	    anna_list_get(anna_as_obj(param[1]), i);
-	anna_node_call_add_child(
+	anna_node_call_push(
 	    dst,
 	    anna_node_unwrap(anna_as_obj(n)));
     }
@@ -144,7 +144,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_push, 2)
     anna_node_call_t *this = 
 	(anna_node_call_t *)anna_node_unwrap(anna_as_obj_fast(param[0]));
     anna_node_t *value = anna_node_unwrap(anna_as_obj_fast(param[1]));
-    anna_node_call_add_child(
+    anna_node_call_push(
 	this,
 	value);
     return param[0];
@@ -172,7 +172,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_call, 2)
     int i;
     for(i=0;i<lst2->child_count; i++)
     {
-	anna_node_call_add_child(
+	anna_node_call_push(
 	    dst,
 	    lst2->child[i]);
     }
@@ -200,7 +200,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
 	if(!anna_entry_null(src[i]))
 	{
 //	    anna_object_print(anna_as_obj(src[i]));
-	    anna_node_call_add_child(dest, anna_node_unwrap(anna_as_obj(src[i])));
+	    anna_node_call_push(dest, anna_node_unwrap(anna_as_obj(src[i])));
 	}
 	else
 	{
@@ -232,7 +232,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_append, 2)
     for(i=0; i<size2; i++)
     {
 	anna_object_t *ch_obj = anna_as_obj(anna_list_get(list, i));
-	anna_node_call_add_child(call, anna_node_unwrap(ch_obj));
+	anna_node_call_push(call, anna_node_unwrap(ch_obj));
     }
     
     return param[0];

@@ -1,6 +1,4 @@
 1.0 RELEASE CRITERIA:
-* sb_length -> sb_count
-* anna:node_call_add_child -> anna_node_call_push
 * Support for Scala-style late-evaluated macros
 * Buffer::convert(String)
 * Make a special syntax for assigning to constants before running __init__

@@ -126,7 +126,7 @@ ANNA_VM_NATIVE(anna_complex_to_string, 1)
 	}
     }
 
-    return anna_from_obj(anna_string_create(sb_length(&sb), buff));
+    return anna_from_obj(anna_string_create(sb_count(&sb), buff));
 }
 
 ANNA_VM_NATIVE(anna_complex_hash, 1)

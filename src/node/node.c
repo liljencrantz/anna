@@ -154,7 +154,7 @@ anna_node_string_literal_t *node_cast_string_literal(anna_node_t *node)
     return (anna_node_string_literal_t *)node;
 }
 
-void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child)
+void anna_node_call_push(anna_node_call_t *call, anna_node_t *child)
 {
     if(call->child_capacity == call->child_count) 
     {
@@ -178,7 +178,7 @@ void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child)
     
     if(call->child_count==0) 
     {
-	anna_node_call_add_child(call, child);
+	anna_node_call_push(call, child);
 	return;
     }
     

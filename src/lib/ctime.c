@@ -36,8 +36,8 @@ ANNA_VM_NATIVE(anna_ctime_gettimeofday, 0)
     }
     
     anna_object_t *res = anna_list_create_imutable(int_type);
-    anna_list_add(res, anna_from_int(tv.tv_sec));
-    anna_list_add(res, anna_from_int(tv.tv_usec));
+    anna_list_push(res, anna_from_int(tv.tv_sec));
+    anna_list_push(res, anna_from_int(tv.tv_usec));
     return anna_from_obj(res);
 }
 
@@ -154,15 +154,15 @@ ANNA_VM_NATIVE(anna_ctime_mktime, 8)
 static anna_entry_t *handle_tm(struct tm *tm)
 {
     anna_object_t *res = anna_list_create_imutable(int_type);
-    anna_list_add(res, anna_from_int(tm->tm_sec));
-    anna_list_add(res, anna_from_int(tm->tm_min));
-    anna_list_add(res, anna_from_int(tm->tm_hour));
-    anna_list_add(res, anna_from_int(tm->tm_mday));
-    anna_list_add(res, anna_from_int(tm->tm_mon));
-    anna_list_add(res, anna_from_int(tm->tm_year));
-    anna_list_add(res, anna_from_int(tm->tm_wday));
-    anna_list_add(res, anna_from_int(tm->tm_yday));
-    anna_list_add(res, tm->tm_isdst?anna_from_int(1):null_entry);
+    anna_list_push(res, anna_from_int(tm->tm_sec));
+    anna_list_push(res, anna_from_int(tm->tm_min));
+    anna_list_push(res, anna_from_int(tm->tm_hour));
+    anna_list_push(res, anna_from_int(tm->tm_mday));
+    anna_list_push(res, anna_from_int(tm->tm_mon));
+    anna_list_push(res, anna_from_int(tm->tm_year));
+    anna_list_push(res, anna_from_int(tm->tm_wday));
+    anna_list_push(res, anna_from_int(tm->tm_yday));
+    anna_list_push(res, tm->tm_isdst?anna_from_int(1):null_entry);
     return anna_from_obj(res);
 }
 

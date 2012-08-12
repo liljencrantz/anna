@@ -32,7 +32,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_input_type, 1)
 
     for(i=0;i<f->input_count; i++)
     {
-	anna_list_add(
+	anna_list_push(
 	    lst,
 	    anna_from_obj(
 		anna_type_wrap(
@@ -51,7 +51,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_input_name, 1)
 
     for(i=0;i<f->input_count; i++)
     {
-	anna_list_add(
+	anna_list_push(
 	    lst,
 	    anna_from_obj(
 		anna_string_create(
@@ -71,7 +71,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_default_value, 1)
 
     for(i=0;i<f->input_count; i++)
     {
-	anna_list_add(
+	anna_list_push(
 	    lst,
 	    f->input_default[i] ? 
 	    anna_from_obj(
@@ -135,7 +135,7 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
     sb_init(&sb);
     anna_function_t *fun = anna_function_unwrap(this);
     ANNA_FUNCTION_PROTOTYPE(fun, &sb);
-    anna_entry_t *res = anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_entry_t *res = anna_from_obj( anna_string_create(sb_count(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
 }
@@ -164,7 +164,7 @@ ANNA_VM_NATIVE(anna_function_type_trace, 1)
     sb_init(&sb);
     anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_function_type_trace_recursive(&sb, frame);
-    anna_entry_t *res = anna_from_obj( anna_string_create(sb_length(&sb), sb_content(&sb)));
+    anna_entry_t *res = anna_from_obj( anna_string_create(sb_count(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
 }
@@ -260,7 +260,7 @@ static void anna_function_type_i_member_each(
     anna_entry_set(
 	el, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION, anna_from_obj(this));
     
-    anna_list_add(
+    anna_list_push(
 	res,
 	anna_from_obj(el));
 }

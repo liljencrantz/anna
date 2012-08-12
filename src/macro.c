@@ -335,7 +335,7 @@ __memberSet__( OBJ, KEY, VAL)
 			anna_node_create_identifier(
 			&name_identifier->location, 
 			is_static ? L"__staticMemberSet__":L"__memberSet__");
-		    anna_node_call_add_child(
+		    anna_node_call_push(
 			call, 
 			node->child[1]);
 		    return (anna_node_t *)call;
@@ -373,7 +373,7 @@ __memberSet__( OBJ, KEY, VAL)
 				anna_node_create_identifier(
 				    &name_identifier->location,
 				    L"__set__");
-			    anna_node_call_add_child(
+			    anna_node_call_push(
 				call, 
 				node->child[1]);
 			    return (anna_node_t *)call;

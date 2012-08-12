@@ -248,7 +248,7 @@ static void anna_module_init_recursive(
     string_buffer_t fn;
     sb_init(&fn);
     sb_printf(&fn, L"%ls/", dname);
-    size_t len = sb_length(&fn);
+    size_t len = sb_count(&fn);
     while((ent=wreaddir(dir)))
     {
 	sb_truncate(&fn, len);
@@ -551,7 +551,7 @@ ANNA_VM_NATIVE(anna_system_get_argument, 1)
 	{
 	    wchar_t *data = str2wcs(anna_argv[i]);
 	    anna_object_t *arg = anna_string_create(wcslen(data), data);
-	    anna_list_add(res, anna_from_obj(arg));	    
+	    anna_list_push(res, anna_from_obj(arg));	    
 	}
     }
     return anna_from_obj(res);

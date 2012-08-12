@@ -116,7 +116,7 @@ ANNA_VM_NATIVE(anna_member_i_get_attributes, 1)
 	    0,
 	    anna_node_create_identifier(0, L"doc"),
 	    anna_node_create_string_literal(0, wcslen(memb->doc), memb->doc, 0));
-	anna_node_call_add_child(memb->attribute, (anna_node_t *)attr);
+	anna_node_call_push(memb->attribute, (anna_node_t *)attr);
     	memb->doc = 0;
     }
     

@@ -63,7 +63,7 @@ ANNA_VM_NATIVE(anna_type_i_get_member, 1)
 		type,
 		anna_type_get_member_idx(type, i));
 	
-	anna_list_add(
+	anna_list_push(
 	    lst,
 	    anna_from_obj(memb_obj));
     }

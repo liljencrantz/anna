@@ -828,7 +828,7 @@ void sb_truncate( string_buffer_t *b, int chars_left )
     arr[chars_left] = 0;
 }
 
-ssize_t sb_length( string_buffer_t *b )
+ssize_t sb_count( string_buffer_t *b )
 {
     VERIFY( b, -1 );
     return (b->used)/sizeof( wchar_t);	

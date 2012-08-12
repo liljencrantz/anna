@@ -3629,7 +3629,7 @@ ANNA_VM_NATIVE(anna_environ, 0)
     int i;
     for(i=0; environ[i]; i++)
     {
-        anna_list_add(res, anna_string_create_narrow(strlen(environ[i]), environ[i]));
+        anna_list_push(res, anna_string_create_narrow(strlen(environ[i]), environ[i]));
     }
 
     return anna_from_obj(res);

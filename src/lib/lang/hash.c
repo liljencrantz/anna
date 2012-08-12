@@ -912,7 +912,7 @@ ANNA_VM_NATIVE(anna_hash_get_keys, 1)
 	anna_hash_entry_t *e = &this->table[i];
 	if(hash_entry_is_used(e))
 	{
-	    anna_list_add(
+	    anna_list_push(
 		res,
 		e->key);
 	}
@@ -934,7 +934,7 @@ ANNA_VM_NATIVE(anna_hash_get_values, 1)
 	anna_hash_entry_t *e = &this->table[i];
 	if(hash_entry_is_used(e))
 	{
-	    anna_list_add(
+	    anna_list_push(
 		res,
 		e->value);
 	}

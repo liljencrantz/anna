@@ -7,7 +7,7 @@ anna_type_t *mutable_list_type = 0;
 anna_type_t *imutable_list_type = 0;
 anna_type_t *any_list_type = 0;
 static hash_table_t anna_list_specialization;
-static array_list_t anna_list_additional_methods[] = {AL_STATIC, AL_STATIC, AL_STATIC};
+static array_list_t anna_list_pushitional_methods[] = {AL_STATIC, AL_STATIC, AL_STATIC};
 
 static anna_function_t *anna_list_specialize(
     anna_type_t *type, anna_function_t *fun)
@@ -27,7 +27,7 @@ static anna_function_t *anna_list_specialize(
     return res;
 }
 
-static void anna_list_add_method_internal(
+static void anna_list_push_method_internal(
     anna_type_t *type, anna_function_t *fun)
 {
     anna_function_t *fun_spec = anna_list_specialize(type, fun);
@@ -42,7 +42,7 @@ static void add_any_list_method(void *key, void *value, void *aux)
     anna_type_t **list = (anna_type_t **)value;
     anna_function_t *fun = (anna_function_t *)aux;
 //    anna_message(L"Add function %ls to type %ls\n", fun->name, list[ANY_OFF]->name);
-    anna_list_add_method_internal(list[ANY_OFF], fun);
+    anna_list_push_method_internal(list[ANY_OFF], fun);
 }
 
 static void add_mutable_list_method(void *key, void *value, void *aux)
@@ -50,7 +50,7 @@ static void add_mutable_list_method(void *key, void *value, void *aux)
     anna_type_t **list = (anna_type_t **)value;
     anna_function_t *fun = (anna_function_t *)aux;
 //    anna_message(L"Add function %ls to type %ls\n", fun->name, list->name);
-    anna_list_add_method_internal(list[MUTABLE_OFF], fun);
+    anna_list_push_method_internal(list[MUTABLE_OFF], fun);
 }
 
 static void add_imutable_list_method(void *key, void *value, void *aux)
@@ -58,13 +58,13 @@ static void add_imutable_list_method(void *key, void *value, void *aux)
     anna_type_t **list = (anna_type_t **)value;
     anna_function_t *fun = (anna_function_t *)aux;
 //    anna_message(L"Add function %ls to type %ls\n", fun->name, list->name);
-    anna_list_add_method_internal(list[IMUTABLE_OFF], fun);
+    anna_list_push_method_internal(list[IMUTABLE_OFF], fun);
 }
 
 void anna_list_any_add_method(anna_function_t *fun)
 {
 //    anna_message(L"Function %ls to all list types\n", fun->name);
-    al_push(&anna_list_additional_methods[ANY_OFF], fun);
+    al_push(&anna_list_pushitional_methods[ANY_OFF], fun);
     hash_foreach2(&anna_list_specialization, &add_any_list_method, fun);
 }
 
@@ -72,26 +72,26 @@ void anna_list_mutable_add_method(anna_function_t *fun)
 {
 
 //    anna_message(L"Function %ls to all list types\n", fun->name);
-    al_push(&anna_list_additional_methods[MUTABLE_OFF], fun);
+    al_push(&anna_list_pushitional_methods[MUTABLE_OFF], fun);
     hash_foreach2(&anna_list_specialization, &add_mutable_list_method, fun);
 }
 
 void anna_list_imutable_add_method(anna_function_t *fun)
 {
 //    anna_message(L"Function %ls to all list types\n", fun->name);
-    al_push(&anna_list_additional_methods[IMUTABLE_OFF], fun);
+    al_push(&anna_list_pushitional_methods[IMUTABLE_OFF], fun);
     hash_foreach2(&anna_list_specialization, &add_imutable_list_method, fun);
 }
 
-static void anna_list_add_all_extra_methods(anna_type_t *list, int list_type)
+static void anna_list_push_all_extra_methods(anna_type_t *list, int list_type)
 {
     int i;
-    for(i=0; i<al_get_count(&anna_list_additional_methods[list_type]); i++)
+    for(i=0; i<al_get_count(&anna_list_pushitional_methods[list_type]); i++)
     {
-	anna_function_t *fun = (anna_function_t *)al_get(&anna_list_additional_methods[list_type], i);
+	anna_function_t *fun = (anna_function_t *)al_get(&anna_list_pushitional_methods[list_type], i);
 //	anna_message(L"Add function %ls to type %ls\n", fun->name, list->name);
 //	anna_member_create_method(list, anna_mid_get(fun->name), fun);
-	anna_list_add_method_internal(list, fun);
+	anna_list_push_method_internal(list, fun);
     }
 }
 
@@ -173,7 +173,7 @@ anna_entry_t *anna_list_get(anna_object_t *this, ssize_t offset)
     return ptr[pos];
 }
 
-void anna_list_add(struct anna_object *this, anna_entry_t *value)
+void anna_list_push(struct anna_object *this, anna_entry_t *value)
 {
     size_t size = anna_list_get_count(this);
     anna_list_set(this, size, value);
@@ -519,7 +519,7 @@ ANNA_VM_NATIVE(anna_list_i_get_range, 2)
 
     for(i=from;(step>0)? i<to : i>to; i+=step)
     {
-	anna_list_add(
+	anna_list_push(
 	    res, 
 	    anna_list_get(
 		list,
@@ -1213,7 +1213,7 @@ void anna_list_type_create()
 	any_list_type, mutable_list_type, imutable_list_type);    
     
     anna_entry_set_static(any_list_type, ANNA_MID_LIST_SPECIALIZATION, (anna_entry_t *)object_type);
-    anna_list_add_all_extra_methods(any_list_type, ANY_OFF);
+    anna_list_push_all_extra_methods(any_list_type, ANY_OFF);
 
     anna_type_document(
 	any_list_type,
@@ -1268,9 +1268,9 @@ static anna_type_t **anna_list_type_get_internal(anna_type_t *subtype)
 
 	anna_entry_set_static(any, ANNA_MID_LIST_SPECIALIZATION, (anna_entry_t *)subtype);
 
-	anna_list_add_all_extra_methods(mutable, MUTABLE_OFF);
-	anna_list_add_all_extra_methods(any, ANY_OFF);
-	anna_list_add_all_extra_methods(imutable, IMUTABLE_OFF);
+	anna_list_push_all_extra_methods(mutable, MUTABLE_OFF);
+	anna_list_push_all_extra_methods(any, ANY_OFF);
+	anna_list_push_all_extra_methods(imutable, IMUTABLE_OFF);
 
 	anna_type_close(any);
 	anna_type_close(mutable);

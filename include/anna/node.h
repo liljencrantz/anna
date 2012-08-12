@@ -338,7 +338,7 @@ void anna_node_set_location(
     anna_node_t *node, 
     anna_location_t *l);
 
-void anna_node_call_add_child(anna_node_call_t *call, anna_node_t *child);
+void anna_node_call_push(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_prepend_child(anna_node_call_t *call, anna_node_t *child);
 void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function);
 

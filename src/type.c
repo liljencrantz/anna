@@ -335,7 +335,7 @@ static void anna_type_copy_check_interface(anna_member_t *res, anna_member_t *or
 		res->attribute = anna_node_create_block2(0);
 	    }
 	    
-	    anna_node_call_add_child(
+	    anna_node_call_push(
 		res->attribute, 
 		(anna_node_t *)anna_node_create_call2(
 		    0,
@@ -770,12 +770,12 @@ static void anna_type_def_flatten(anna_type_t *type)
 	    skip = 1;		
 	    for(j=0; j<c->child_count; j++)
 	    {
-		anna_node_call_add_child(ndef, c->child[j]);    
+		anna_node_call_push(ndef, c->child[j]);    
 	    }
 	}
 	if(!skip)
 	{
-	    anna_node_call_add_child(ndef, next);
+	    anna_node_call_push(ndef, next);
 	}	
     }
     //anna_node_print(5, ndef);
@@ -1367,7 +1367,7 @@ void anna_type_document(anna_type_t *type, wchar_t *doc)
 	    0,
 	    anna_node_create_identifier(0, L"__call__"));
     }
-    anna_node_call_add_child(type->attribute, (anna_node_t *)attr);    
+    anna_node_call_push(type->attribute, (anna_node_t *)attr);    
 }
 
 int anna_type_mid_internal(mid_t mid)

@@ -357,8 +357,8 @@ anna_node_t *anna_node_create_pair(
 	    0,
 	    0);
    
-    anna_node_call_add_child(r, first);
-    anna_node_call_add_child(r, second);
+    anna_node_call_push(r, first);
+    anna_node_call_push(r, second);
     return (anna_node_t *)r;
 }
 */
