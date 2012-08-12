@@ -622,6 +622,18 @@ void b_init( buffer_t *b);
 void b_destroy( buffer_t *b );
 
 /**
+   Destroy the specified buffer_t
+*/
+
+void b_clear( buffer_t *b );
+
+/**
+   Destroy the specified buffer_t
+*/
+
+void b_truncate(buffer_t *b, size_t sz);
+
+/**
    Add data of the specified length to the specified buffer_t
 
    \return 0 on error, non-zero otherwise

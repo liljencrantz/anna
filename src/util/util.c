@@ -848,14 +848,23 @@ void b_init( buffer_t *b)
     memset( b,0,sizeof(buffer_t));
 }
 
-
-
 void b_destroy( buffer_t *b )
 {
     VERIFY( b, );
     free( b->buff );
 }
 
+void b_clear( buffer_t *b )
+{
+    VERIFY( b, );
+    b_truncate(b, 0);
+}
+
+void b_truncate(buffer_t *b, size_t sz)
+{
+    VERIFY( b, );
+    b->used = sz;
+}
 
 int b_append( buffer_t *b, const void *d, ssize_t len )
 {

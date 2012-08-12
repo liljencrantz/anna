@@ -438,6 +438,7 @@ static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identi
     anna_node_t *node_val;
     anna_node_identifier_t *identifier_val;
     anna_node_call_t *call_val;
+    string_buffer_t *string_val;
 }
 
 %locations
@@ -449,6 +450,9 @@ static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identi
 %token LITERAL_FLOAT
 %token LITERAL_CHAR
 %token LITERAL_STRING
+%token LITERAL_STRING_LONG_ELEMENT
+%token LITERAL_STRING_LONG_BEGIN
+%token LITERAL_STRING_LONG_END
 %token IDENTIFIER
 %token TYPE_IDENTIFIER
 %token APPEND
@@ -503,7 +507,8 @@ static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identi
 %type <call_val> opt_block
 %type <call_val> specialization opt_specialization
 %type <call_val> opt_type_and_opt_name type_and_name
-%type <node_val> jump
+%type <node_val> jump literal_string_long literal_string_long_begin
+%type <string_val> literal_string_long_internal
 
 %pure-parser
 
@@ -1064,7 +1069,61 @@ literal:
 	{
 	    $$ = (anna_node_t *)anna_yacc_string_literal_create(
 		&@$, anna_lex_get_text(scanner));
+	} |
+	literal_string_long
+	;
+
+literal_string_long:
+        literal_string_long_begin literal_string_long_internal LITERAL_STRING_LONG_END
+	{
+	    anna_node_t *res = anna_node_create_string_literal(
+		&@$,
+		sb_length($2),
+		sb_content($2),
+		1);
+	    free($2);
+	    if($1)
+	    {
+		anna_node_call_add_child($1, res);
+		$$ = $1;
+	    }
+	    else
+	    {
+		$$ = res;
+	    }
+	    
 	};
+
+literal_string_long_begin : LITERAL_STRING_LONG_BEGIN
+	{
+	    $$ = 0;
+	    char *str = anna_lex_get_text(scanner);
+	    char *name_end = strrchr(str, '/');
+	    if(str != name_end)
+	    {
+		*name_end = 0;
+		$$ = anna_node_create_call2(
+		    &@$,
+		    (anna_node_t *)anna_node_create_identifier(
+			&@$,
+			anna_yacc_string(str, "StringLiteral"))		    
+		    );
+	    }
+	    
+	}
+;
+
+
+literal_string_long_internal:
+    LITERAL_STRING_LONG_ELEMENT 
+    {
+	$$ = malloc(sizeof(string_buffer_t));
+	sb_init($$);
+	sb_printf($$, L"%s", anna_lex_get_text(scanner));
+    }| literal_string_long_internal LITERAL_STRING_LONG_ELEMENT{
+	$$ = $1;
+	sb_printf($$, L"%s", anna_lex_get_text(scanner));
+    };
 
 opt_block: /* Empty */{$$ = 0;} | block;
 
