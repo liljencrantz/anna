@@ -10,8 +10,8 @@ ANNA_VM_NATIVE(anna_type_to_string, 1)
     }
     
     anna_object_t *res = anna_string_create(wcslen(msg), msg);
-    anna_string_append_cstring(res, wcslen(type->name), type->name);
-    anna_string_append_cstring(res, 1, L">");
+    anna_string_append_cstring(res, type->name, wcslen(type->name));
+    anna_string_append_cstring(res, L">", 1);
     return anna_from_obj(res);
 }
 ANNA_VM_NATIVE(anna_type_name, 1)

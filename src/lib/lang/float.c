@@ -203,9 +203,9 @@ ANNA_VM_NATIVE(anna_float_format, 2)
     anna_object_t *str = anna_string_create_narrow(decpt, res);
     if(strlen(res+decpt))
     {
-	anna_string_append_cstring(str, 1, L".");
+	anna_string_append_cstring(str, L".", 1);
 	wchar_t *wide = str2wcs(res+decpt);
-	anna_string_append_cstring(str, wcslen(wide), wide);
+	anna_string_append_cstring(str, wide, wcslen(wide));
 	free(wide);
     }
     freedtoa(res);

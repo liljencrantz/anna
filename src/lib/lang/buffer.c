@@ -178,7 +178,7 @@ ANNA_VM_NATIVE(anna_buffer_encode, 2)
 		break;
 	    }
 	    
-	    anna_string_append_cstring(str, 1, L"\0");
+	    anna_string_append_cstring(str, L"\0", 1);
 	    i++;
 	}
 	else
@@ -194,7 +194,7 @@ ANNA_VM_NATIVE(anna_buffer_encode, 2)
 		default:
 		{
 		    i += res;
-		    anna_string_append_cstring(str, 1, &dst);
+		    anna_string_append_cstring(str, &dst, 1);
 		}		
 	    }
 	}
@@ -263,8 +263,8 @@ ANNA_VM_NATIVE(anna_buffer_to_string, 1)
     for(i=0; i<sz; i++)
     {
 	char ch = ptr[i];
-	anna_string_append_cstring(res, 1, &hex[ch /16]);
-	anna_string_append_cstring(res, 1, &hex[ch % 16]);
+	anna_string_append_cstring(res, &hex[ch /16], 1);
+	anna_string_append_cstring(res, &hex[ch % 16], 1);
     }
     return anna_from_obj(res);
 }
