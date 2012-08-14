@@ -10,7 +10,6 @@ def task(mp.Channel serverChannel)
 	    print("Bad value", curr);
 	}
     }
-    print("Done");
 }
 
 def main()
@@ -20,4 +19,5 @@ def main()
     {
 	mp.run(task).write(("foo" ~ (idx ^mod 6)));
     }
+    print("Done");
 }
