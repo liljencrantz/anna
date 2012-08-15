@@ -107,13 +107,13 @@ static int anna_lex_long_count_end(char *str)
 <COMMENT>.  return IGNORE;
 <COMMENT>[ \t\n]  return IGNORE;
 
-<LONG_STRING>\"=+\/ if(anna_lex_long_count_end(anna_lex_get_text(yyscanner)) == anna_lex_peek_long_string_length(yyscanner)){ anna_lex_pop_state(yyscanner); return LITERAL_STRING_LONG_END; } return LITERAL_STRING_LONG_ELEMENT;
+<LONG_STRING>\"=*\/ if(anna_lex_long_count_end(anna_lex_get_text(yyscanner)) == anna_lex_peek_long_string_length(yyscanner)){ anna_lex_pop_state(yyscanner); return LITERAL_STRING_LONG_END; } return LITERAL_STRING_LONG_ELEMENT;
 <LONG_STRING>\n return LITERAL_STRING_LONG_ELEMENT;
 <LONG_STRING>. return LITERAL_STRING_LONG_ELEMENT;
 
 \/\* anna_lex_push_state(yyscanner, COMMENT); return IGNORE;
 _*[a-z][a-zA-Z0-9_!?]*\/=+\" anna_lex_push_state_param(yyscanner, LONG_STRING, anna_lex_long_count_begin(anna_lex_get_text(yyscanner))); b_clear(&long_buffer); return LITERAL_STRING_LONG_BEGIN;
-\/=+\" anna_lex_push_state_param(yyscanner, LONG_STRING, anna_lex_long_count_begin(anna_lex_get_text(yyscanner))); return LITERAL_STRING_LONG_BEGIN;
+\/=*\" anna_lex_push_state_param(yyscanner, LONG_STRING, anna_lex_long_count_begin(anna_lex_get_text(yyscanner))); return LITERAL_STRING_LONG_BEGIN;
 \/\/[^\n]*\n  return IGNORE;
 ^#[^\n]*\n  return IGNORE;
 [1-9][0-9_]*_*[a-z][a-zA-Z0-9_!?]* return LITERAL_INTEGER_BASE_10;
