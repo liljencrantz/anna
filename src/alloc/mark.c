@@ -272,11 +272,13 @@ void anna_alloc_mark_entry(anna_entry_t e)
     
     if(!anna_is_obj(e))
     {
+#ifndef NAN_BOXING
 	if(anna_is_float(e))
 	{
 	    anna_alloc_mark_blob(anna_as_float_payload(e));
 	    return;
 	}
+#endif
 	return;
     }
     anna_object_t *obj = anna_as_obj_fast(e);

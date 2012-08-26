@@ -3933,7 +3933,7 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
 ANNA_VM_NATIVE(unix_i_locale_conv_decimal_point_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->decimal_point), data->decimal_point)) : null_entry;
 
     return result;
@@ -3942,7 +3942,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_decimal_point_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_thousands_separator_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->thousands_sep), data->thousands_sep)) : null_entry;
 
     return result;
@@ -3951,7 +3951,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_thousands_separator_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_grouping_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->grouping), data->grouping)) : null_entry;
 
     return result;
@@ -3960,7 +3960,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_grouping_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_international_currency_symbol_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->int_curr_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->int_curr_symbol), data->int_curr_symbol)) : null_entry;
 
     return result;
@@ -3969,7 +3969,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_international_currency_symbol_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_currency_symbol_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->currency_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->currency_symbol), data->currency_symbol)) : null_entry;
 
     return result;
@@ -3978,7 +3978,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_currency_symbol_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_monetary_decimal_point_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->mon_decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_decimal_point), data->mon_decimal_point)) : null_entry;
 
     return result;
@@ -3987,7 +3987,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_monetary_decimal_point_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_monetary_thousands_separator_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->mon_thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_thousands_sep), data->mon_thousands_sep)) : null_entry;
 
     return result;
@@ -3996,7 +3996,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_monetary_thousands_separator_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_monetary_grouping_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->mon_grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_grouping), data->mon_grouping)) : null_entry;
 
     return result;
@@ -4005,7 +4005,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_monetary_grouping_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->positive_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->positive_sign), data->positive_sign)) : null_entry;
 
     return result;
@@ -4014,7 +4014,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->negative_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->negative_sign), data->negative_sign)) : null_entry;
 
     return result;
@@ -4023,7 +4023,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_international_frac_digits_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = anna_from_int(data->int_frac_digits);
 
     return result;
@@ -4032,7 +4032,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_international_frac_digits_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_frac_digits_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = anna_from_int(data->frac_digits);
 
     return result;
@@ -4041,7 +4041,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_frac_digits_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_positive_currency_symbol_precedes_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->p_cs_precedes)?anna_from_int(1):null_entry;
 
     return result;
@@ -4050,7 +4050,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_currency_symbol_precedes_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_negative_currency_symbol_precedes_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->n_cs_precedes)?anna_from_int(1):null_entry;
 
     return result;
@@ -4059,7 +4059,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_currency_symbol_precedes_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_positive_separate_by_space_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->p_sep_by_space)?anna_from_int(1):null_entry;
 
     return result;
@@ -4068,7 +4068,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_separate_by_space_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_negative_separate_by_space_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = (data->n_sep_by_space)?anna_from_int(1):null_entry;
 
     return result;
@@ -4077,7 +4077,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_separate_by_space_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_position_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = anna_from_int(data->p_sign_posn);
 
     return result;
@@ -4086,7 +4086,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_position_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_position_getter, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
         anna_entry_t result = anna_from_int(data->n_sign_posn);
 
     return result;
@@ -4095,7 +4095,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_position_getter, 1)
 ANNA_VM_NATIVE(unix_i_locale_conv_init, 1)
 {
     struct lconv *data;
-    data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
+    data = (struct lconv *)anna_entry_get_ptr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     memset(data, 0, sizeof(struct lconv));
     return param[0];
 }
@@ -4110,8 +4110,8 @@ ANNA_VM_NATIVE(unix_i_locale_locale_conv, 0)
 
     // Call the function
     struct lconv * tmp_var_78 = localeconv();
-anna_entry_t result = anna_from_obj(anna_object_create(unix_locale_conv_type));
-    *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_78;
+    anna_entry_t result = anna_from_obj(anna_object_create(unix_locale_conv_type));
+    anna_entry_set_ptr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD, tmp_var_78);
     // Perform cleanup
 
     // Return result

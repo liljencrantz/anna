@@ -39,14 +39,14 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
 	return anna_function_type_unwrap(type);
     }
     
-    anna_function_type_t **function_ptr = 
-	(anna_function_type_t **)anna_entry_get_addr_static(
+    anna_entry_t *function_ptr = 
+	anna_entry_get_addr_static(
 	    type,
 	    ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD);
 
-    if(function_ptr && *function_ptr != anna_as_ptr(null_entry))
+    if(function_ptr && !anna_entry_null(*function_ptr))
     {
-	return *function_ptr;
+	return (anna_function_t *)anna_as_ptr(*function_ptr);
     }
     return 0;	
 }

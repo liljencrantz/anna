@@ -6,6 +6,8 @@
 #include "anna/crash.h"
 #include "anna/preproc.h"
 
+#define NAN_BOXING
+
 struct anna_node;
 struct anna_type;
 struct anna_object;
@@ -247,6 +249,29 @@ enum anna_mid_enum
 typedef union {
     void *p;
     long l;
+#ifdef NAN_BOXING
+    struct {
+        unsigned int b7 : 8;
+        unsigned int b6 : 8;
+        unsigned int b5 : 8;
+        unsigned int b4 : 8;
+        unsigned int b3 : 8;
+        unsigned int b2 : 8;
+        unsigned int b1 : 8;
+        unsigned int b0 : 8;
+    };
+    struct {
+        unsigned int s3 : 16;
+        unsigned int s2 : 16;
+        unsigned int s1 : 16;
+        unsigned int s0 : 16;
+    };
+    struct {
+        unsigned int w1 : 32;
+        unsigned int w0 : 32;
+    };
+    double d;
+#endif
 } anna_entry_t;
 
 /**

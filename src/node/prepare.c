@@ -330,7 +330,7 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    anna_type_t *ctype = anna_type_unwrap(
 		anna_as_obj(
 		    type->static_member[member->offset]));
-		    
+	    
 	    if(ctype)
 	    {
 		if(!anna_node_calculate_type_direct_children(n, stack))
@@ -353,11 +353,9 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 
 		if(!member)
 		{
-		    anna_node_print(99, (anna_node_t *)ctype->definition);
-		    
 		    anna_error(
 			(anna_node_t *)n, L"No constructor for type %ls could be found\n", ctype->name);
-		    CRASH;
+		    return (anna_node_t *)n;
 		}
 		
 		is_constructor = 1;

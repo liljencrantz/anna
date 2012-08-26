@@ -191,6 +191,10 @@ __hot static inline void anna_alloc_mark_object(anna_object_t *obj)
 	return;
     
     obj->flags |= ANNA_USED;
+    if(obj->type < (anna_type_t *)0xff)
+    {
+	CRASH;
+    }
 #ifdef ANNA_CHECK_GC
     if(!obj->type->mark_object)
     {
@@ -198,10 +202,6 @@ __hot static inline void anna_alloc_mark_object(anna_object_t *obj)
 	CRASH;
     }
 #endif
-    if(obj->type < (anna_type_t *)0xff)
-    {
-	CRASH;
-    }
     
     al_push(&anna_alloc_todo, obj);
 }

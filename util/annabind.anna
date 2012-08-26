@@ -577,11 +577,11 @@ class CStructBindingType
 	{
 	    if((attr as Call).childNamed?("nullable"))
 	    {
-		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
 	    }
 	    else
 	    {
-		code ~= "    %(dest) = *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
 	    }
 	}
 	else
@@ -609,8 +609,8 @@ class CStructBindingType
 		"source": source,
 		"annaCType": annaCType(decl, attr),
 	    	];
-	    return "anna_entry_t %(dest) = anna_from_obj(anna_object_create(%(annaCType)));
-    *((%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(dest)), ANNA_MID_CSTRUCT_PAYLOAD)) = %(source);" % param;
+	    return "    anna_entry_t %(dest) = anna_from_obj(anna_object_create(%(annaCType)));
+    anna_entry_set_ptr(anna_as_obj_fast(%(dest)), ANNA_MID_CSTRUCT_PAYLOAD, %(source));" % param;
 	}
 	return ?;
     }
