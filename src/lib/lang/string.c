@@ -419,7 +419,7 @@ static void anna_string_join_callback(anna_context_t *context)
 
 static void anna_string_i_join(anna_context_t *context)
 {
-    anna_entry_t *e = anna_context_pop_entry(context);
+    anna_entry_t e = anna_context_pop_entry(context);
     anna_object_t *this = anna_context_pop_object(context);
     anna_context_pop_entry(context);
     
@@ -454,13 +454,13 @@ static void anna_string_i_join(anna_context_t *context)
 	else
 	{
 	    anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
-	    anna_entry_t *callback_param[] = 
+	    anna_entry_t callback_param[] = 
 		{
 		    anna_from_obj(this),
 		}
 	    ;
 	    
-	    anna_entry_t *o_param[] =
+	    anna_entry_t o_param[] =
 		{
 		    anna_from_obj(o)
 		}
@@ -489,7 +489,7 @@ static void anna_string_convert_callback(anna_context_t *context)
 
 static void anna_string_convert(anna_context_t *context)
 {
-    anna_entry_t *e = anna_context_pop_entry(context);
+    anna_entry_t e = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
     
     if(anna_entry_null(e))
@@ -511,7 +511,7 @@ static void anna_string_convert(anna_context_t *context)
     else
     {
 	anna_object_t *o = anna_as_obj(e);
-	anna_entry_t **fun_ptr = anna_entry_get_addr_static(o->type, ANNA_MID_TO_STRING);
+	anna_entry_t *fun_ptr = anna_entry_get_addr_static(o->type, ANNA_MID_TO_STRING);
 	int ok = 0;
 
 	if((o->type == mutable_string_type) ||
@@ -531,7 +531,7 @@ static void anna_string_convert(anna_context_t *context)
 		    if(fun && fun->input_count == 1 && anna_abides(o->type, fun->input_type[0]))
 		    {
 			ok = 1;
-			anna_entry_t *o_param[] = { anna_from_obj(o) };
+			anna_entry_t o_param[] = { anna_from_obj(o) };
 			anna_vm_callback_native(
 			    context,
 			    anna_string_convert_callback, 0, 0,
@@ -559,7 +559,7 @@ static void anna_string_convert(anna_context_t *context)
 static void anna_string_ljoin_callback(anna_context_t *context)
 {    
     anna_object_t *value = anna_context_pop_object(context);
-    anna_entry_t **param = context->top - 4;
+    anna_entry_t *param = context->top - 4;
     anna_object_t *joint = anna_as_obj_fast(param[0]);
     anna_object_t *list = anna_as_obj_fast(param[1]);
     int idx = anna_as_int(param[2]);
@@ -584,7 +584,7 @@ static void anna_string_ljoin_callback(anna_context_t *context)
 	anna_object_t *o = anna_as_obj(anna_list_get(list, idx));
 	anna_member_t *tos_mem = anna_member_get(o->type, ANNA_MID_TO_STRING);
 	anna_object_t *meth = anna_as_obj_fast(o->type->static_member[tos_mem->offset]);
-	anna_vm_callback_reset(context, meth, 1, (anna_entry_t **)&o);
+	anna_vm_callback_reset(context, meth, 1, (anna_entry_t *)&o);
     }
     else
     {
@@ -609,7 +609,7 @@ static void anna_string_i_ljoin(anna_context_t *context)
 	
 	if(sz > 0)
 	{
-	    anna_entry_t *callback_param[] = 
+	    anna_entry_t callback_param[] = 
 		{
 		    anna_from_obj(joint),
 		    anna_from_obj(list),
@@ -625,7 +625,7 @@ static void anna_string_i_ljoin(anna_context_t *context)
 	    anna_vm_callback_native(
 		context,
 		anna_string_ljoin_callback, 4, callback_param,
-		meth, 1, (anna_entry_t **)&o
+		meth, 1, (anna_entry_t *)&o
 		);
 	}
 	else
@@ -638,7 +638,7 @@ static void anna_string_i_ljoin(anna_context_t *context)
 static void anna_string_append_callback(anna_context_t *context)
 {
     anna_object_t *value = anna_context_pop_object(context);
-    anna_entry_t **param = context->top - 1;
+    anna_entry_t *param = context->top - 1;
     anna_object_t *this = anna_as_obj(param[0]);
     anna_context_drop(context, 2);
 
@@ -669,7 +669,7 @@ static void anna_string_i_append(anna_context_t *context)
 	}
 	else
 	{
-	    anna_entry_t *callback_param[] = 
+	    anna_entry_t callback_param[] = 
 		{
 		    anna_from_obj(this)
 		}
@@ -680,7 +680,7 @@ static void anna_string_i_append(anna_context_t *context)
 	    anna_vm_callback_native(
 		context,
 		anna_string_append_callback, 1, callback_param,
-		meth, 1, (anna_entry_t **)&obj
+		meth, 1, (anna_entry_t *)&obj
 		);
 	}
     }
@@ -706,7 +706,7 @@ int anna_string_cmp(anna_object_t *this, anna_object_t *that)
     return asi_compare(str1,str2);
 }
 
-static int anna_is_string(anna_entry_t *e)
+static int anna_is_string(anna_entry_t e)
 {
     if(anna_entry_null(e))
     {
@@ -723,7 +723,7 @@ static int anna_is_string(anna_entry_t *e)
 
 ANNA_VM_NATIVE(anna_string_cmp_i, 2)
 {
-    anna_entry_t *res = null_entry;
+    anna_entry_t res = null_entry;
     if(likely(anna_is_string(param[1])))
     {
 	anna_object_t *this = anna_as_obj(param[0]);
@@ -763,7 +763,7 @@ ANNA_VM_NATIVE(anna_string_get_iterator, 1)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *string = anna_as_obj(param[0]);
     anna_object_t *iter = anna_object_create(
-	anna_type_unwrap((anna_object_t *)anna_entry_get_static(string->type, ANNA_MID_ITERATOR_TYPE)));
+	anna_type_unwrap(anna_entry_get_static_obj(string->type, ANNA_MID_ITERATOR_TYPE)));
     anna_entry_set(iter, ANNA_MID_COLLECTION, param[0]);
     anna_string_iterator_update(iter, 0);
     return anna_from_obj(iter);

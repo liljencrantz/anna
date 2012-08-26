@@ -270,7 +270,7 @@ static void anna_module_init_recursive(
 	
 	if(S_ISDIR(statbuf.st_mode))
 	{
-	    if(anna_stack_get(parent, d_name))
+	    if(!anna_entry_null_ptr(anna_stack_get(parent, d_name)))
 	    {
 		goto CLEANUP;
 	    }
@@ -289,7 +289,7 @@ static void anna_module_init_recursive(
 	{
 	    *suffix=0;
 	    
-	    if(anna_stack_get(parent, d_name))
+	    if(!anna_entry_null_ptr(anna_stack_get(parent, d_name)))
 	    {
 		goto CLEANUP;
 	    }
@@ -366,7 +366,7 @@ void anna_module_const(
     anna_stack_template_t *stack,
     wchar_t *name,
     anna_type_t *type,
-    anna_entry_t *value,
+    anna_entry_t value,
     wchar_t *documentation
     )
 {
@@ -708,16 +708,16 @@ static void anna_module_doc()
 	    iter_type[i],
 	    collection_desc
 	    );
-	anna_entry_t *iter_entry = 
+	anna_entry_t iter_entry = 
 	    anna_entry_get_static(
 		iter_type[i],
 		ANNA_MID_ITERATOR_TYPE);
 
-	if(iter_entry != null_entry)
+	if(!anna_entry_null(iter_entry))
 	{
 	    anna_type_t *iter = 
 		anna_type_unwrap(
-		    (anna_object_t *)iter_entry);
+		    anna_as_obj(iter_entry));
 	    //anna_message(L"BABERIBA %ls::%ls\n", iter_type[i]->name, iter->name);
 	    anna_type_document(
 		iter,

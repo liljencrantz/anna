@@ -97,7 +97,7 @@ ANNA_VM_NATIVE(anna_float_to_string, 1)
     {
 	*comma = '.';
     }
-    anna_entry_t *res = anna_from_obj(anna_string_create(sb_count(&sb), buff));
+    anna_entry_t res = anna_from_obj(anna_string_create(sb_count(&sb), buff));
     sb_destroy(&sb);
     return res;
 }
@@ -190,7 +190,7 @@ ANNA_VM_NATIVE(anna_float_format, 2)
     int mode = 0;
     int ndigits = 0;
 
-    if(param[1] != null_entry)
+    if(!anna_entry_null(param[1]))
     {
 	ndigits = anna_as_int(param[1]);
 	mode = 3;

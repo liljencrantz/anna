@@ -36,11 +36,11 @@ const static anna_type_data_t anna_mp_type_data[] =
 
 static void *anna_mp_run_main(void *aux)
 {
-    anna_entry_t **arg = (anna_entry_t **)aux;
+    anna_entry_t *arg = (anna_entry_t *)aux;
 
-    anna_object_t *fun = (anna_object_t *)arg[0];
+    anna_object_t *fun = anna_as_obj_fast(arg[0]);
     
-    anna_entry_t *argv[] = 
+    anna_entry_t argv[] = 
 	{
 	    arg[1]
 	}
@@ -66,7 +66,7 @@ ANNA_VM_NATIVE(anna_mp_run, 1)
     ggg++;
     
 
-    if(param[0] == null_entry)
+    if(anna_entry_null(param[0]))
     {
 	return null_entry;
     }
@@ -75,29 +75,29 @@ ANNA_VM_NATIVE(anna_mp_run, 1)
     anna_object_t *cchan = anna_object_create(channel_type);
     anna_object_t *schan = anna_object_create(channel_type);
 
-    anna_entry_t **csink = (anna_entry_t **)anna_blob_payload(anna_alloc_blob(sizeof(anna_entry_t *)));
-    anna_entry_t **ssink = (anna_entry_t **)anna_blob_payload(anna_alloc_blob(sizeof(anna_entry_t *)));
+    anna_entry_t *csink = (anna_entry_t *)anna_blob_payload(anna_alloc_blob(sizeof(anna_entry_t )));
+    anna_entry_t *ssink = (anna_entry_t *)anna_blob_payload(anna_alloc_blob(sizeof(anna_entry_t )));
 
     anna_channel_sync_t *cond = (anna_channel_sync_t *)anna_blob_payload(anna_alloc_blob(sizeof(anna_channel_sync_t)));
     pthread_mutex_init(&cond->mutex, 0);
     pthread_cond_init(&cond->cond, 0);
     
-    *csink = 0;
-    *ssink = 0;
+    *csink = anna_from_obj(0);
+    *ssink = anna_from_obj(0);
 
-    anna_entry_set(cchan, ANNA_MID_CHANNEL_READ, (anna_entry_t *)anna_blob_from_payload(csink));
-    anna_entry_set(cchan, ANNA_MID_CHANNEL_WRITE, (anna_entry_t *)anna_blob_from_payload(ssink));
-    anna_entry_set(cchan, ANNA_MID_CHANNEL_SYNC, (anna_entry_t *)anna_blob_from_payload(cond));
+    anna_entry_set_obj(cchan, ANNA_MID_CHANNEL_READ, (anna_object_t *)anna_blob_from_payload(csink));
+    anna_entry_set_obj(cchan, ANNA_MID_CHANNEL_WRITE, (anna_object_t *)anna_blob_from_payload(ssink));
+    anna_entry_set_obj(cchan, ANNA_MID_CHANNEL_SYNC, (anna_object_t *)anna_blob_from_payload(cond));
 
-    anna_entry_set(schan, ANNA_MID_CHANNEL_READ, (anna_entry_t *)anna_blob_from_payload(ssink));
-    anna_entry_set(schan, ANNA_MID_CHANNEL_WRITE, (anna_entry_t *)anna_blob_from_payload(csink));
-    anna_entry_set(schan, ANNA_MID_CHANNEL_SYNC, (anna_entry_t *)anna_blob_from_payload(cond));
+    anna_entry_set_obj(schan, ANNA_MID_CHANNEL_READ, (anna_object_t *)anna_blob_from_payload(ssink));
+    anna_entry_set_obj(schan, ANNA_MID_CHANNEL_WRITE, (anna_object_t *)anna_blob_from_payload(csink));
+    anna_entry_set_obj(schan, ANNA_MID_CHANNEL_SYNC, (anna_object_t *)anna_blob_from_payload(cond));
     
     pthread_t *thread = malloc(sizeof(pthread_t));
     
-    anna_entry_t **arg = malloc(sizeof(anna_entry_t *)*2);
+    anna_entry_t *arg = malloc(sizeof(anna_entry_t )*2);
     arg[0] = param[0];
-    arg[1] = (anna_entry_t *)cchan;
+    arg[1] = anna_from_obj(cchan);
 
     pthread_mutex_lock(&anna_mp_thread_mutex);
     al_push(&anna_mp_thread, thread);
@@ -138,28 +138,28 @@ ANNA_VM_NATIVE(anna_mp_channel_init, 1)
 
 static void anna_mp_channel_read(anna_context_t *context)
 {
-    anna_entry_t **param = context->top-1;
-    anna_entry_t *res = null_entry;
+    anna_entry_t *param = context->top-1;
+    anna_entry_t res = null_entry;
 
-    if(param[0] != null_entry)
+    if(!anna_entry_null(param[0]))
     {
 	anna_object_t *chan = anna_as_obj(param[0]);
 	
-	anna_channel_sync_t *cond = (anna_channel_sync_t *)anna_blob_payload(anna_entry_get(chan, ANNA_MID_CHANNEL_SYNC));
-	anna_entry_t **data = (anna_entry_t **)anna_blob_payload(anna_entry_get(chan, ANNA_MID_CHANNEL_READ));
+	anna_channel_sync_t *cond = (anna_channel_sync_t *)anna_blob_payload(anna_as_obj_fast(anna_entry_get(chan, ANNA_MID_CHANNEL_SYNC)));
+	anna_entry_t *data = (anna_entry_t *)anna_blob_payload(anna_as_obj_fast(anna_entry_get(chan, ANNA_MID_CHANNEL_READ)));
 	
 	
 //    anna_message(L"Client before lock\n");
 	pthread_mutex_lock(&cond->mutex);
 	
 //	anna_message(L"Channel::read start\n");
-	while(!*data)
+	while(!anna_as_obj(*data))
 	{
 	    pthread_mutex_unlock(&cond->mutex);
 	    anna_alloc_pause_worker(context, &cond->cond, &cond->mutex);
 	    pthread_mutex_lock(&cond->mutex);
 
-	    if(*data)
+	    if(anna_as_obj(*data))
 	    {
 		break;
 	    }
@@ -171,7 +171,7 @@ static void anna_mp_channel_read(anna_context_t *context)
 	}
 //	anna_message(L"Channel::read done\n");
 	res = *data;
-	*data = 0;
+	*data = anna_from_obj(0);
 	pthread_cond_signal(&cond->cond);
 	pthread_mutex_unlock(&cond->mutex);    
 	// anna_message(L"Client after unlock\n");
@@ -184,24 +184,24 @@ static void anna_mp_channel_read(anna_context_t *context)
 
 static void anna_mp_channel_write(anna_context_t *context)
 {
-    anna_entry_t **param = context->top-2;
+    anna_entry_t *param = context->top-2;
 
-    if(param[0] != null_entry)
+    if(!anna_entry_null(param[0]))
     {
 	anna_object_t *chan = anna_as_obj(param[0]);
 	
-	anna_channel_sync_t *cond = (anna_channel_sync_t *)anna_blob_payload(anna_entry_get(chan, ANNA_MID_CHANNEL_SYNC));
-	anna_entry_t **data = (anna_entry_t **)anna_blob_payload(anna_entry_get(chan, ANNA_MID_CHANNEL_WRITE));
+	anna_channel_sync_t *cond = (anna_channel_sync_t *)anna_blob_payload(anna_entry_get_obj(chan, ANNA_MID_CHANNEL_SYNC));
+	anna_entry_t *data = (anna_entry_t *)anna_blob_payload(anna_entry_get_obj(chan, ANNA_MID_CHANNEL_WRITE));
 //	anna_message(L"Server before lock\n");
 	
 	pthread_mutex_lock(&cond->mutex);
 //	anna_message(L"Channel::write start\n");
-	while(*data)
+	while(anna_as_obj(*data))
 	{
 	    pthread_mutex_unlock(&cond->mutex);
 	    anna_alloc_pause_worker(context, &cond->cond, &cond->mutex);
 	    pthread_mutex_lock(&cond->mutex);
-	    if(!*data)
+	    if(!anna_as_obj(*data))
 	    {
 		break;
 	    }

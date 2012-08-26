@@ -115,7 +115,7 @@ for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__dec
 ANNA_VM_NATIVE(anna_complex_i_$name, 2)
 {
     anna_object_t *res = null_object;
-    if(likely(!anna_entry_null(param[1])))
+    if(!anna_entry_null(param[1]))
     {  
         complex double v1 = anna_as_complex(param[0]);
         complex double v2 = anna_as_complex(param[1]);
@@ -127,7 +127,7 @@ ANNA_VM_NATIVE(anna_complex_i_$name, 2)
 ANNA_VM_NATIVE(anna_complex_i_int_$name, 2)
 {
     anna_object_t *res = null_object;
-    if(likely(!anna_entry_null(param[1])))
+    if(!anna_entry_null(param[1]))
     {  
         complex double v1 = anna_as_complex(param[0]);
         complex double v2 = (complex double)anna_as_int(param[1]);
@@ -139,7 +139,7 @@ ANNA_VM_NATIVE(anna_complex_i_int_$name, 2)
 ANNA_VM_NATIVE(anna_complex_i_float_$name, 2)
 {
     anna_object_t *res = null_object;
-    if(likely(!anna_entry_null(param[1])))
+    if(!anna_entry_null(param[1]))
     {  
         complex double v1 = anna_as_complex(param[0]);
         complex double v2 = (complex double)anna_as_float(param[1]);
@@ -151,7 +151,7 @@ ANNA_VM_NATIVE(anna_complex_i_float_$name, 2)
 ANNA_VM_NATIVE(anna_complex_i_int_reverse_$name, 2)
 {
     anna_object_t *res = null_object;
-    if(likely(!anna_entry_null(param[1])))
+    if(!anna_entry_null(param[1]))
     {  
         complex double v2 = anna_as_complex(param[0]);
         complex double v1 = (complex double)anna_as_int(param[1]);
@@ -163,7 +163,7 @@ ANNA_VM_NATIVE(anna_complex_i_int_reverse_$name, 2)
 ANNA_VM_NATIVE(anna_complex_i_float_reverse_$name, 2)
 {
     anna_object_t *res = null_object;
-    if(likely(!anna_entry_null(param[1])))
+    if(!anna_entry_null(param[1]))
     {  
         complex double v2 = anna_as_complex(param[0]);
         complex double v1 = (complex double)anna_as_float(param[1]);
@@ -220,6 +220,7 @@ for i in "abs cabs(v)" ; do
     echo "
 ANNA_VM_NATIVE(anna_complex_i_$name, 1)
 {
+    if(anna_entry_null(param[1])) return null_entry;
     complex double v = anna_as_complex(param[0]);
     return anna_from_float($op);
 }

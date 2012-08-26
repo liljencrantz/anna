@@ -4,12 +4,12 @@ static array_list_t anna_pair_additional_methods = AL_STATIC;
 
 static anna_type_t *anna_pair_first_type(anna_type_t *type)
 {
-    return (anna_type_t *)anna_entry_get_static(type, ANNA_MID_PAIR_SPECIALIZATION1);
+    return (anna_type_t *)anna_entry_get_static_ptr(type, ANNA_MID_PAIR_SPECIALIZATION1);
 }
 
 static anna_type_t *anna_pair_second_type(anna_type_t *type)
 {
-    return (anna_type_t *)anna_entry_get_static(type, ANNA_MID_PAIR_SPECIALIZATION2);
+    return (anna_type_t *)anna_entry_get_static_ptr(type, ANNA_MID_PAIR_SPECIALIZATION2);
 }
 
 static anna_function_t *anna_pair_specialize(
@@ -80,7 +80,7 @@ void anna_pair_add_method(anna_function_t *fun)
     hash_foreach2(&anna_pair_specialization, &add_pair_method, fun);
 }
 
-anna_object_t *anna_pair_create(anna_entry_t *first, anna_entry_t *second)
+anna_object_t *anna_pair_create(anna_entry_t first, anna_entry_t second)
 {
     anna_object_t *obj= anna_object_create(anna_pair_type_get(anna_as_obj(first)->type, anna_as_obj(second)->type));
     anna_pair_set_first(obj, first);

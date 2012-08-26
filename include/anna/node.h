@@ -479,11 +479,11 @@ int anna_node_is_named(
 
 void anna_yacc_init(void);
 
-anna_entry_t *anna_node_static_invoke_try(
+anna_entry_t anna_node_static_invoke_try(
     anna_node_t *this, 
     anna_stack_template_t *stack);
 
-anna_entry_t *anna_node_static_invoke(
+anna_entry_t anna_node_static_invoke(
     anna_node_t *this, 
     anna_stack_template_t *stack);
 

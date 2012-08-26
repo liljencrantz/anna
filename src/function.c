@@ -60,7 +60,7 @@ __pure anna_function_t *anna_function_unwrap(anna_object_t *obj)
 	return 0;
     }
         
-    anna_function_t *fun = (anna_function_t *)obj->member[m->offset];
+    anna_function_t *fun = (anna_function_t *)anna_as_ptr(obj->member[m->offset]);
 
     return fun;
 }
@@ -860,23 +860,23 @@ static void anna_function_continuation(anna_context_t *context)
     anna_object_t *res = anna_context_pop_object(context);
     anna_context_pop_object(context);
 
-    anna_entry_t *cce = anna_entry_get(cont, ANNA_MID_CONTINUATION_CALL_COUNT);
-    int cc = 1 + ((cce == null_entry)?0:anna_as_int(cce));
+    anna_entry_t cce = anna_entry_get(cont, ANNA_MID_CONTINUATION_CALL_COUNT);
+    int cc = 1 + (anna_entry_null(cce)?0:anna_as_int(cce));
     anna_entry_set(cont, ANNA_MID_CONTINUATION_CALL_COUNT, anna_from_int(cc));
     
-    void *mem_blob = (void *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK);
-    size_t sz = *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT);
-    memcpy(&context->stack[0], anna_blob_payload(mem_blob), sz*sizeof(anna_entry_t *));
+    void *mem_blob = anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_STACK);
+    size_t sz = (size_t)anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_STACK_COUNT);
+    memcpy(&context->stack[0], anna_blob_payload(mem_blob), sz*sizeof(anna_entry_t ));
     context->top = &context->stack[sz];
 
-    context->frame = (anna_activation_frame_t *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
-    context->frame->code = (char *)*anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS);
+    context->frame = (anna_activation_frame_t *)anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    context->frame->code = (char *)anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_CODE_POS);
 
     anna_context_push_object(context, res);
 }
 
 anna_function_t *anna_continuation_create(
-    anna_entry_t **stack_ptr,
+    anna_entry_t *stack_ptr,
     size_t stack_sz,
     anna_activation_frame_t *frame,
     int copy)
@@ -901,8 +901,8 @@ anna_function_t *anna_continuation_create(
     void *mem_blob;
     if(copy)
     {
-	mem_blob = anna_alloc_blob(stack_sz*sizeof(anna_entry_t *));
-	memcpy(anna_blob_payload(mem_blob), stack_ptr, stack_sz*sizeof(anna_entry_t *));
+	mem_blob = anna_alloc_blob(stack_sz*sizeof(anna_entry_t ));
+	memcpy(anna_blob_payload(mem_blob), stack_ptr, stack_sz*sizeof(anna_entry_t ));
     }
     else
     {
@@ -910,10 +910,10 @@ anna_function_t *anna_continuation_create(
     }
     
     anna_object_t *cont = result->wrapper;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK) = (anna_entry_t *)mem_blob;
-    *(size_t *)anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_STACK_COUNT) = stack_sz;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME) = (anna_entry_t *)frame;
-    *anna_entry_get_addr(cont, ANNA_MID_CONTINUATION_CODE_POS) = (anna_entry_t *)frame->code;
+    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_STACK, mem_blob);
+    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_STACK_COUNT, (void *)stack_sz);
+    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME, frame);
+    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_CODE_POS, frame->code);
     
     return result;
 }

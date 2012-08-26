@@ -102,7 +102,7 @@ static void anna_node_merge_each(anna_node_t *node, void *aux)
 		{
 		    memmove(
 			&call->child[i], &call->child[i+1],
-			sizeof(anna_entry_t *)*(call->child_count -i-1));
+			sizeof(anna_entry_t )*(call->child_count -i-1));
 		    i--;
 		    call->child_count--;
 		}

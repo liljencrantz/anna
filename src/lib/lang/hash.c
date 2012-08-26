@@ -37,8 +37,8 @@
 typedef struct
 {
     int hash;
-    anna_entry_t *key;
-    anna_entry_t *value;
+    anna_entry_t key;
+    anna_entry_t value;
 }
     anna_hash_entry_t;
 
@@ -46,12 +46,12 @@ typedef struct {
     size_t fill;
     size_t used;
     size_t mask;
-    anna_entry_t *default_value;
+    anna_entry_t default_value;
     anna_hash_entry_t *table;
     anna_hash_entry_t small_table[ANNA_HASH_MINSIZE];
 } anna_hash_t;
 
-typedef void (*ahi_callback_t)(anna_context_t *context, anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, anna_hash_entry_t *hash_entry);
+typedef void (*ahi_callback_t)(anna_context_t *context, anna_entry_t key, int hash_code, anna_entry_t hash, anna_entry_t aux, anna_hash_entry_t *hash_entry);
 
 static hash_table_t anna_hash_specialization;
 static array_list_t anna_hash_additional_methods = AL_STATIC;
@@ -128,28 +128,28 @@ static void anna_hash_add_all_extra_methods(anna_type_t *hash)
 
 static inline int hash_entry_is_used(anna_hash_entry_t *e)
 {
-    return !!e->key;
+    return !!anna_as_obj(e->key);
 }
 
 static inline int hash_entry_is_unused_and_not_dummy(anna_hash_entry_t *e)
 {
-    return !e->value;
+    return !anna_as_obj(e->value);
 }
 
 static inline int hash_entry_is_dummy(anna_hash_entry_t *e)
 {
-    return !e->key && !!e->value ;
+    return anna_entry_null_ptr(e->key) && !anna_entry_null_ptr(e->value);
 }
 
 static inline void hash_entry_clear(anna_hash_entry_t *e)
 {
-    e->key = 0;
+    e->key = anna_from_obj(0);
 }
 
 static inline void hash_entry_clear_full(anna_hash_entry_t *e)
 {
-    e->value = 0;
-    e->key = 0;
+    e->value = anna_from_obj(0);
+    e->key = anna_from_obj(0);
 }
 
 static inline anna_hash_t *ahi_unwrap(anna_object_t *obj)
@@ -167,12 +167,12 @@ static inline size_t anna_hash_get_version(anna_object_t *this)
     return ahi_unwrap(this)->used;
 }
 
-static inline anna_entry_t *anna_hash_get_key_from_idx(anna_object_t *this, int idx)
+static inline anna_entry_t anna_hash_get_key_from_idx(anna_object_t *this, int idx)
 {
     return ahi_unwrap(this)->table[idx].key;
 }
 
-static inline anna_entry_t *anna_hash_get_value_from_idx(anna_object_t *this, int idx)
+static inline anna_entry_t anna_hash_get_value_from_idx(anna_object_t *this, int idx)
 {
     return ahi_unwrap(this)->table[idx].value;
 }
@@ -186,7 +186,7 @@ __attr_unused static void anna_hash_print(anna_hash_t *this)
 	if(hash_entry_is_used(&this->table[i]))
 	{
 	    anna_message(L"%d", this->table[i].hash);	    
-	    anna_entry_t *e = this->table[i].key;
+	    anna_entry_t e = this->table[i].key;
 	    if(anna_is_int_small(e))
 		anna_message(L": %d", anna_as_int(e));	    
 	    else if(anna_is_obj(e))
@@ -334,22 +334,22 @@ static void anna_hash_check_resize(anna_hash_t *this)
 static void ahi_search_callback2(anna_context_t *context);
 static void ahi_search_callback2_internal(
     anna_context_t *context, 
-    anna_entry_t *key,
-    anna_entry_t *hash_obj,
+    anna_entry_t key,
+    anna_entry_t hash_obj,
     ahi_callback_t callback,
-    anna_entry_t *aux,
+    anna_entry_t aux,
     int hash,
     int idx,
     int dummy_idx,
-    anna_entry_t *eq);
+    anna_entry_t eq);
 
 
 static inline void ahi_search_callback2_next(
     anna_context_t *context, 
-    anna_entry_t *hash_obj, 
-    anna_entry_t *key,
+    anna_entry_t hash_obj, 
+    anna_entry_t key,
     ahi_callback_t callback,
-    anna_entry_t *aux,
+    anna_entry_t aux,
     int hash,
     int idx,
     int dummy_idx,
@@ -404,7 +404,7 @@ static inline void ahi_search_callback2_next(
 	}
     }
     
-    anna_entry_t *callback_param[] = 
+    anna_entry_t callback_param[] = 
 	{
 	    key,
 	    hash_obj,
@@ -416,7 +416,7 @@ static inline void ahi_search_callback2_next(
 	}
     ;
     
-    anna_entry_t *o_param[] = 
+    anna_entry_t o_param[] = 
 	{
 	    key,
 	    this->table[pos].key
@@ -426,7 +426,7 @@ static inline void ahi_search_callback2_next(
     anna_object_t *fun_object = anna_as_obj_fast(
 	anna_entry_get_static(
 	    anna_as_obj(key)->type, 
-	    (mid_t)(long)anna_entry_get_static(
+	    (mid_t)(long)anna_entry_get_static_ptr(
 		anna_as_obj_fast(hash_obj)->type,
 		ANNA_MID_COMPARATOR)));
     anna_vm_callback_native(
@@ -438,14 +438,14 @@ static inline void ahi_search_callback2_next(
 
 static void ahi_search_callback2_internal(
     anna_context_t *context, 
-    anna_entry_t *key,
-    anna_entry_t *hash_obj,
+    anna_entry_t key,
+    anna_entry_t hash_obj,
     ahi_callback_t callback,
-    anna_entry_t *aux,
+    anna_entry_t aux,
     int hash,
     int idx,
     int dummy_idx,
-    anna_entry_t *eq)
+    anna_entry_t eq)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
 
@@ -495,14 +495,14 @@ static void ahi_search_callback2_internal(
 
 static void ahi_search_callback2(anna_context_t *context)
 {
-    anna_entry_t *eq = anna_context_pop_entry(context);
+    anna_entry_t eq = anna_context_pop_entry(context);
     int dummy_idx = anna_context_pop_int(context);
     int idx = anna_context_pop_int(context);
     int hash = anna_context_pop_int(context);
-    anna_entry_t *aux = anna_context_pop_entry(context);
+    anna_entry_t aux = anna_context_pop_entry(context);
     ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_context_pop_entry(context));
-    anna_entry_t *hash_obj = anna_context_pop_entry(context);
-    anna_entry_t *key = anna_context_pop_entry(context);
+    anna_entry_t hash_obj = anna_context_pop_entry(context);
+    anna_entry_t key = anna_context_pop_entry(context);
     ahi_search_callback2_internal(
 	context, key, hash_obj, callback, aux, hash, idx, dummy_idx, eq);
 }
@@ -524,10 +524,10 @@ static inline int anna_hash_mangle(int a)
 
 static inline void ahi_search_callback_internal(
     anna_context_t *context, 
-    anna_entry_t *hash_obj, 
-    anna_entry_t *key,
+    anna_entry_t hash_obj, 
+    anna_entry_t key,
     ahi_callback_t callback,
-    anna_entry_t *aux,
+    anna_entry_t aux,
     int hash)
 {
     hash = anna_hash_mangle(hash);
@@ -571,10 +571,10 @@ static inline void ahi_search_callback_internal(
 static void ahi_search_callback(anna_context_t *context)
 {
     int hash = anna_context_pop_int(context);
-    anna_entry_t *aux = anna_context_pop_entry(context);
+    anna_entry_t aux = anna_context_pop_entry(context);
     ahi_callback_t callback = (ahi_callback_t)anna_as_blob(anna_context_pop_entry(context));
-    anna_entry_t *hash_obj = anna_context_pop_entry(context);
-    anna_entry_t *key = anna_context_pop_entry(context);
+    anna_entry_t hash_obj = anna_context_pop_entry(context);
+    anna_entry_t key = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
     
     ahi_search_callback_internal(
@@ -587,10 +587,10 @@ static void ahi_search_callback(anna_context_t *context)
 
 static inline void ahi_search(
     anna_context_t *context,
-    anna_entry_t *key,
-    anna_entry_t *hash,
+    anna_entry_t key,
+    anna_entry_t hash,
     ahi_callback_t callback,
-    anna_entry_t *aux)
+    anna_entry_t aux)
 {
     if(anna_is_obj(key))
     {
@@ -621,7 +621,7 @@ static inline void ahi_search(
 	return;
     }
     
-    anna_entry_t *callback_param[] = 
+    anna_entry_t callback_param[] = 
 	{
 	    key,
 	    hash,
@@ -637,7 +637,7 @@ static inline void ahi_search(
     anna_vm_callback_native(
 	context,
 	ahi_search_callback, 4, callback_param,
-	meth, 1, (anna_entry_t **)&o
+	meth, 1, (anna_entry_t *)&o
 	);
 }
 
@@ -664,7 +664,7 @@ static void anna_hash_type_init(anna_object_t *obj)
  }
 
 
-static inline void anna_hash_set_entry(anna_hash_t *this, anna_hash_entry_t *hash_entry, int hash_code, anna_entry_t *key, anna_entry_t *value)
+static inline void anna_hash_set_entry(anna_hash_t *this, anna_hash_entry_t *hash_entry, int hash_code, anna_entry_t key, anna_entry_t value)
 {
     if(!hash_entry_is_used(hash_entry))
     {
@@ -687,13 +687,13 @@ static void anna_hash_init(anna_context_t *context)
     
     if((list != null_object) && anna_list_get_count(list) != 0)
     {
-	anna_entry_t *argv[] =
+	anna_entry_t argv[] =
 	    {
 		anna_from_obj(this),
 		anna_from_obj(list)
 	    }
 	;
-	anna_entry_t *fun = *anna_entry_get_addr(this, anna_mid_get(L"__setAll__"));
+	anna_entry_t fun = *anna_entry_get_addr(this, anna_mid_get(L"__setAll__"));
 	anna_vm_callback(
 	    context,
 	    anna_as_obj(fun), 2, argv);
@@ -704,7 +704,7 @@ static void anna_hash_init(anna_context_t *context)
 
 static __attribute__((aligned(8))) void anna_hash_set_callback(
     anna_context_t *context, 
-    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
+    anna_entry_t key, int hash_code, anna_entry_t hash, anna_entry_t aux, 
     anna_hash_entry_t *hash_entry)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
@@ -714,9 +714,9 @@ static __attribute__((aligned(8))) void anna_hash_set_callback(
 
 static inline void anna_hash_set(anna_context_t *context)
 {
-    anna_entry_t *val = anna_context_pop_entry(context);
-    anna_entry_t *key = anna_context_pop_entry(context);
-    anna_entry_t *this = anna_context_pop_entry(context);
+    anna_entry_t val = anna_context_pop_entry(context);
+    anna_entry_t key = anna_context_pop_entry(context);
+    anna_entry_t this = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
     
     if(anna_entry_null(key))
@@ -737,7 +737,7 @@ static inline void anna_hash_set(anna_context_t *context)
 
 static __attribute__((aligned(8))) void anna_hash_get_callback(
     anna_context_t *context, 
-    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
+    anna_entry_t key, int hash_code, anna_entry_t hash, anna_entry_t aux, 
     anna_hash_entry_t *hash_entry)
 {
     if(!hash_entry_is_used(hash_entry))
@@ -754,8 +754,8 @@ static __attribute__((aligned(8))) void anna_hash_get_callback(
 
 static inline void anna_hash_get(anna_context_t *context)
 {
-    anna_entry_t *key = anna_context_pop_entry(context);
-    anna_entry_t *this = anna_context_pop_entry(context);
+    anna_entry_t key = anna_context_pop_entry(context);
+    anna_entry_t this = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
     
     if(anna_entry_null(key))
@@ -769,7 +769,7 @@ static inline void anna_hash_get(anna_context_t *context)
 	    key,
 	    this,
 	    anna_hash_get_callback,
-	    0);
+	    anna_from_obj(0));
     }
 }
 
@@ -777,7 +777,7 @@ static inline void anna_hash_get(anna_context_t *context)
 
 static __attribute__((aligned(8))) void anna_hash_in_callback(
     anna_context_t *context, 
-    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
+    anna_entry_t key, int hash_code, anna_entry_t hash, anna_entry_t aux, 
     anna_hash_entry_t *hash_entry)
 {
     if(!hash_entry_is_used(hash_entry))
@@ -792,8 +792,8 @@ static __attribute__((aligned(8))) void anna_hash_in_callback(
 
 static inline void anna_hash_in(anna_context_t *context)
 {
-    anna_entry_t *key = anna_context_pop_entry(context);
-    anna_entry_t *this = anna_context_pop_entry(context);
+    anna_entry_t key = anna_context_pop_entry(context);
+    anna_entry_t this = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
     
     if(anna_entry_null(key))
@@ -807,13 +807,13 @@ static inline void anna_hash_in(anna_context_t *context)
 	    key,
 	    this,
 	    anna_hash_in_callback,
-	    0);
+	    anna_from_obj(0));
     }
 }
 
 static __attribute__((aligned(8))) void anna_hash_remove_callback(
     anna_context_t *context, 
-    anna_entry_t *key, int hash_code, anna_entry_t *hash, anna_entry_t *aux, 
+    anna_entry_t key, int hash_code, anna_entry_t hash, anna_entry_t aux, 
     anna_hash_entry_t *hash_entry)
 {
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash));
@@ -846,8 +846,8 @@ static __attribute__((aligned(8))) void anna_hash_remove_callback(
 
 static inline void anna_hash_remove(anna_context_t *context)
 {
-    anna_entry_t *key = anna_context_pop_entry(context);
-    anna_entry_t *this = anna_context_pop_entry(context);
+    anna_entry_t key = anna_context_pop_entry(context);
+    anna_entry_t this = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
 //    anna_hash_print(ahi_unwrap(this));
     if(anna_entry_null(key))
@@ -861,7 +861,7 @@ static inline void anna_hash_remove(anna_context_t *context)
 	key,
 	this,
 	anna_hash_remove_callback,
-	0);
+	anna_from_obj(0));
 }
 
 ANNA_VM_NATIVE(anna_hash_get_count_method, 1)
@@ -993,7 +993,7 @@ ANNA_VM_NATIVE(anna_hash_get_iterator, 1)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *hash = anna_as_obj(param[0]);
     anna_object_t *iter = anna_object_create(
-	anna_type_unwrap((anna_object_t *)anna_entry_get_static(hash->type, ANNA_MID_ITERATOR_TYPE)));
+	anna_type_unwrap(anna_entry_get_static_obj(hash->type, ANNA_MID_ITERATOR_TYPE)));
     anna_entry_set(iter, ANNA_MID_COLLECTION, param[0]);
     anna_entry_set(iter, ANNA_MID_VERSION_ID, anna_from_int(anna_hash_get_version(hash)));
     
@@ -1122,8 +1122,8 @@ static void anna_hash_type_create_internal(
     anna_member_create(
 	type, ANNA_MID_COMPARATOR, 1, null_type);
 
-    anna_entry_set_static(type,ANNA_MID_HASH_SPECIALIZATION1, (anna_entry_t *)spec1);
-    anna_entry_set_static(type,ANNA_MID_HASH_SPECIALIZATION2, (anna_entry_t *)spec2);
+    anna_entry_set_static_ptr(type,ANNA_MID_HASH_SPECIALIZATION1, spec1);
+    anna_entry_set_static_ptr(type,ANNA_MID_HASH_SPECIALIZATION2, spec2);
     mid_t cmp_mid = anna_type_find_comparator(spec1);
 
     if(cmp_mid == (mid_t)-1)
@@ -1133,7 +1133,7 @@ static void anna_hash_type_create_internal(
     }
     else
     {
-	anna_entry_set_static(type,ANNA_MID_COMPARATOR, (anna_entry_t *)(long)cmp_mid);
+	anna_entry_set_static(type,ANNA_MID_COMPARATOR, (anna_entry_t )(long)cmp_mid);
     }
     
     anna_member_create(

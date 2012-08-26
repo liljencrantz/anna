@@ -50,7 +50,7 @@ int anna_hash(int *data, size_t count)
 
 void anna_util_noop(anna_context_t *context)
 {
-    anna_entry_t **param = context->top - 1;
+    anna_entry_t *param = context->top - 1;
     anna_object_t *this = anna_as_obj(param[0]);
     anna_context_drop(context, 2);
     anna_context_push_object(context, this);

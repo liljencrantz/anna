@@ -242,9 +242,12 @@ enum anna_mid_enum
 */
 #define ANNA_GC_ALLOC 2
 
-#define null_entry ((anna_entry_t *)null_object)
+#define null_entry anna_from_obj(null_object)
 
-typedef struct {} anna_entry_t;
+typedef union {
+    void *p;
+    long l;
+} anna_entry_t;
 
 /**
    The struct representing an object type. 
@@ -330,7 +333,7 @@ struct anna_type
     /**
        An array containing all static members.
     */
-    anna_entry_t **static_member;
+    anna_entry_t *static_member;
     /**
        A hash of all template specializations of this type.
     */
@@ -494,7 +497,7 @@ struct anna_object
        member lives at what offset, use the information stored in the
        type object.
     */
-    anna_entry_t *member[];
+    anna_entry_t member[];
 };
 
 /**
@@ -669,12 +672,12 @@ struct anna_activation_frame
        The top element of the temp stack at the time this frame was
        created. It should be restored upon return.
     */
-    anna_entry_t **return_stack_top;
+    anna_entry_t *return_stack_top;
     
     /**
        Slots for all input parameters and member variables.
     */
-    anna_entry_t *slot[];
+    anna_entry_t slot[];
 };
 
 /**
@@ -712,11 +715,11 @@ struct anna_context
       storing output of function calls that will in turn be used as
       input to future function calls.
     */
-    anna_entry_t **top;
+    anna_entry_t *top;
     /**
       The base of the scratch stack.
     */
-    anna_entry_t *stack[];
+    anna_entry_t stack[];
 };
 
 typedef struct anna_activation_frame anna_activation_frame_t;
@@ -778,6 +781,12 @@ extern int anna_argc;
  */
 extern char **anna_argv;
 
+#ifdef NAN_BOXING
+#include "anna/nan_boxing.h"
+#else
+#include "anna/simple_boxing.h"
+#endif
+
 static inline int anna_member_is_static(anna_member_t *member)
 {
     return !!(member->storage & ANNA_MEMBER_STATIC);
@@ -816,7 +825,7 @@ __cold void anna_function_type_print(
    specified mid in the specified object, or a null pointer if it does
    not exist.
 */
-static __pure inline anna_entry_t **anna_entry_get_addr(
+static __pure inline anna_entry_t *anna_entry_get_addr(
     anna_object_t *obj, mid_t mid)
 {
     if(mid >= obj->type->mid_count)
@@ -844,9 +853,21 @@ static __pure inline anna_entry_t **anna_entry_get_addr(
    member exist.
  */
 static inline void anna_entry_set(
-    anna_object_t *obj, mid_t mid, anna_entry_t *value)
+    anna_object_t *obj, mid_t mid, anna_entry_t value)
 {
     *anna_entry_get_addr(obj, mid) = value;
+}
+
+static inline void anna_entry_set_obj(
+    anna_object_t *obj, mid_t mid, anna_object_t *value)
+{
+    anna_entry_set(obj, mid, anna_from_obj(value));
+}
+
+static inline void anna_entry_set_ptr(
+    anna_object_t *obj, mid_t mid, void *value)
+{
+    anna_entry_set(obj, mid, anna_from_ptr(value));
 }
 
 /**
@@ -855,7 +876,7 @@ static inline void anna_entry_set(
    member. If you need to check if the entry exists, use
    anna_entry_get_addr instead.
  */
-static __pure inline anna_entry_t *anna_entry_get(
+static __pure inline anna_entry_t anna_entry_get(
     anna_object_t *obj, mid_t mid)
 {
     anna_member_t *m = obj->type->mid_identifier[mid];
@@ -866,12 +887,25 @@ static __pure inline anna_entry_t *anna_entry_get(
     }
 }
 
+static __pure inline anna_object_t *anna_entry_get_obj(
+    anna_object_t *obj, mid_t mid)
+{
+    return anna_as_obj_fast(anna_entry_get(obj, mid));
+}
+
+
+static __pure inline void *anna_entry_get_ptr(
+    anna_object_t *obj, mid_t mid)
+{
+    return anna_as_ptr(anna_entry_get(obj, mid));
+}
+
 /**
    Return the memory address location for the object entry with the
    specified mid in the specified type, or a null pointer if it does
    not exist. If the entry does not exist, or is not static, null is returned.
  */
-static __pure inline anna_entry_t **anna_entry_get_addr_static(
+static __pure inline anna_entry_t *anna_entry_get_addr_static(
     anna_type_t *type, mid_t mid)
 {
     if(mid >= type->mid_count)
@@ -897,11 +931,27 @@ static __pure inline anna_entry_t **anna_entry_get_addr_static(
    if the member is not static. If you need to check if the entry
    exists, use anna_entry_get_addr_static instead.
  */
-static __pure inline anna_entry_t *anna_entry_get_static(
+static __pure inline anna_entry_t anna_entry_get_static(
     anna_type_t *type, mid_t mid)
 {
     anna_member_t *m = type->mid_identifier[mid];
     return type->static_member[m->offset];
+}
+
+static __pure inline anna_object_t *anna_entry_get_static_obj(
+    anna_type_t *type, mid_t mid)
+{
+    return anna_as_obj_fast(
+	anna_entry_get_static(
+	    type, mid));
+}
+
+static __pure inline void *anna_entry_get_static_ptr(
+    anna_type_t *type, mid_t mid)
+{
+    return anna_as_ptr(
+	anna_entry_get_static(
+	    type, mid));
 }
 
 /**
@@ -912,9 +962,21 @@ static __pure inline anna_entry_t *anna_entry_get_static(
    member exist.
  */
 static inline void anna_entry_set_static(
-    anna_type_t *obj, mid_t mid, anna_entry_t *value)
+    anna_type_t *obj, mid_t mid, anna_entry_t value)
 {
     *anna_entry_get_addr_static(obj, mid) = value;
+}
+
+static inline void anna_entry_set_static_obj(
+    anna_type_t *obj, mid_t mid, anna_object_t *value)
+{
+    anna_entry_set_static(obj, mid, anna_from_obj(value));
+}
+
+static inline void anna_entry_set_static_ptr(
+    anna_type_t *obj, mid_t mid, void *value)
+{
+    anna_entry_set_static(obj, mid, anna_from_ptr(value));
 }
 
 /**

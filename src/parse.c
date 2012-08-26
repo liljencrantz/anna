@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "anna/fallback.h"
+#include "anna/base.h"
 #include "anna/common.h"
 #include "anna/wutil.h"
 #include "anna/node.h"

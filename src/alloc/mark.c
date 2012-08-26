@@ -265,9 +265,9 @@ static void anna_alloc_mark_blob(void *mem)
     *mem2 |= ANNA_USED;
 }
 
-void anna_alloc_mark_entry(anna_entry_t *e)
+void anna_alloc_mark_entry(anna_entry_t e)
 {
-    if(!e)
+    if(anna_entry_null_ptr(e))
 	return;
     
     if(!anna_is_obj(e))
@@ -302,7 +302,7 @@ static void anna_alloc_mark_activation_frame(anna_activation_frame_t *frame)
 
 static void anna_alloc_mark_context(anna_context_t *context)
 {
-    anna_entry_t **obj;
+    anna_entry_t *obj;
     for(obj = &context->stack[0]; obj < context->top; obj++)
     {	
 	anna_alloc_mark_entry(*obj);

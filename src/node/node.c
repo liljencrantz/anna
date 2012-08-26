@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "anna/fallback.h"
+#include "anna/base.h"
 #include "anna/util.h"
 #include "anna/common.h"
 #include "anna/wutil.h"
@@ -63,10 +64,10 @@ anna_type_t *anna_node_resolve_to_type(anna_node_t *node, anna_stack_template_t 
 	return node->return_type;
     }
     
-    anna_entry_t *eres = anna_node_static_invoke_try(
+    anna_entry_t eres = anna_node_static_invoke_try(
 	node, stack);
     
-    if(eres)
+    if(!anna_entry_null_ptr(eres))
     {
 	anna_object_t *res = anna_as_obj(eres);
 	if(res->type == type_type)
@@ -204,17 +205,17 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
     call->function = function;
 }
 
-static anna_entry_t *anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
+static anna_entry_t anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
 {
-    anna_entry_t *result = anna_node_static_invoke_try(this->value, stack);
-    if(result)
+    anna_entry_t result = anna_node_static_invoke_try(this->value, stack);
+    if(!anna_entry_null_ptr(result))
     {
 	anna_stack_set(stack, this->name, result);
     }
     return result;
 }
 
-anna_entry_t *anna_node_static_invoke_try(
+anna_entry_t anna_node_static_invoke_try(
     anna_node_t *this, 
     anna_stack_template_t *stack)
 {
@@ -238,7 +239,7 @@ anna_entry_t *anna_node_static_invoke_try(
 	    anna_node_calculate_type(this);
 	    if(node->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		return anna_from_obj(node->payload->wrapper);
-	    return 0;
+	    return anna_from_obj(0);
 	}
 	
 	case ANNA_NODE_TYPE:
@@ -252,11 +253,11 @@ anna_entry_t *anna_node_static_invoke_try(
 	{
 	    int i;
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;
-	    anna_entry_t *res = 0;
+	    anna_entry_t res = anna_from_obj(0);
 	    for(i=0; i<this2->child_count; i++)
 	    {
 		res = anna_node_static_invoke_try(this2->child[i], stack);
-		if(!res)
+		if(anna_entry_null_ptr(res))
 		{
 		    break;
 		}
@@ -304,17 +305,17 @@ anna_entry_t *anna_node_static_invoke_try(
 		anna_member_t *memb = anna_member_get(obj->type, this2->mid);
 		if(!memb)
 		{
-		    return 0;
+		    return anna_from_obj(0);
 		}
 		
 		if(anna_member_is_property(memb))
 		{
-		    return 0;
+		    return anna_from_obj(0);
 		}
 		
 		return *anna_entry_get_addr(obj, this2->mid);
 	    }
-	    return 0;
+	    return anna_from_obj(0);
 
 	}
 
@@ -323,24 +324,24 @@ anna_entry_t *anna_node_static_invoke_try(
 	    anna_node_t *this2 = anna_node_calculate_type(this);
 	    if(this2->return_type == 0 || this2->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
 	    {
-		return 0;
+		return anna_from_obj(0);
 	    }
 	    if(this2->node_type != ANNA_NODE_SPECIALIZE)
 	    {
 		return anna_node_static_invoke_try(this2, stack);
 	    }
-	    return 0;
+	    return anna_from_obj(0);
 	}
 
 	case ANNA_NODE_CALL:
 	{
-	    return 0;
+	    return anna_from_obj(0);
 	}
     }
     this = anna_node_calculate_type(this);
     if(this->return_type == 0 || this->return_type == ANNA_NODE_TYPE_IN_TRANSIT)
     {
-	return 0;
+	return anna_from_obj(0);
     }
     
     switch(this->node_type)
@@ -352,11 +353,11 @@ anna_entry_t *anna_node_static_invoke_try(
 	case ANNA_NODE_CAST:
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;
-	    anna_entry_t *res = anna_node_static_invoke_try(
+	    anna_entry_t res = anna_node_static_invoke_try(
 		this2->child[0], stack);
-	    anna_entry_t *type_entry = anna_node_static_invoke_try(
+	    anna_entry_t type_entry = anna_node_static_invoke_try(
 		this2->child[1], stack);
-	    if(res && type_entry)
+	    if(!anna_entry_null_ptr(res) && !anna_entry_null(type_entry))
 	    {
 		anna_type_t *type = anna_type_unwrap(anna_as_obj(type_entry));
 		if(type)
@@ -365,7 +366,7 @@ anna_entry_t *anna_node_static_invoke_try(
 		    return (anna_abides(res_obj->type, type)) ? res : null_entry;
 		}
 	    }
-	    return 0;
+	    return anna_from_obj(0);
 	}	
 
 	case ANNA_NODE_IDENTIFIER:
@@ -396,23 +397,23 @@ anna_entry_t *anna_node_static_invoke_try(
 		    break;
 		}
 
-		anna_entry_t **argv = malloc(sizeof(anna_entry_t *)* meth->input_count);
+		anna_entry_t *argv = malloc(sizeof(anna_entry_t )* meth->input_count);
 		int i;
 		int ok=1;
 		argv[0] = anna_from_obj(obj);
 		for(i=0; i<this2->child_count; i++)
 		{
-		    anna_entry_t *next = anna_node_static_invoke_try(
+		    anna_entry_t next = anna_node_static_invoke_try(
 			this2->child[i],
 			stack);
-		    if(!next)
+		    if(!anna_as_obj(next))
 		    {
 			ok = 0;
 			break;
 		    }
 		    argv[i+1] = next;
 		}
-		anna_entry_t *res = 0;
+		anna_entry_t res = anna_from_obj(0);
 		if(ok)
 		{
 		    res = anna_from_obj(
@@ -429,15 +430,15 @@ anna_entry_t *anna_node_static_invoke_try(
 	}
 	
     }
-    return 0;
+    return anna_from_obj(0);
 }
 
-anna_entry_t *anna_node_static_invoke(
+anna_entry_t anna_node_static_invoke(
     anna_node_t *this, 
     anna_stack_template_t *stack)
 {
-    anna_entry_t *res = anna_node_static_invoke_try(this, stack);
-    if(!res)
+    anna_entry_t res = anna_node_static_invoke_try(this, stack);
+    if(anna_entry_null_ptr(res))
     {
 	if(anna_error_count == 0)
 	{

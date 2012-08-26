@@ -34,7 +34,7 @@ static void anna_int_set(anna_object_t *this, long value)
     mpz_set_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), value);
 }
 
-int anna_is_int(anna_entry_t *this)
+int anna_is_int(anna_entry_t this)
 {
     if(anna_is_int_small(this))
     {
@@ -84,7 +84,7 @@ long int anna_int_get(anna_object_t *this)
     return mpz_get_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
 }
 
-anna_entry_t *anna_int_entry(anna_object_t *this)
+anna_entry_t anna_int_entry(anna_object_t *this)
 {
     mpz_t *me = anna_int_unwrap(this);
     if(mpz_sizeinbase(*me, 2)<=ANNA_SMALL_MAX_BIT)
@@ -142,7 +142,7 @@ ANNA_VM_NATIVE(anna_int_to_string, 1)
     sb_init(&sb);
     sb_printf(&sb, L"%s", nstr);
     free(nstr);
-    anna_entry_t *res = anna_from_obj(anna_string_create(sb_count(&sb), sb_content(&sb)));
+    anna_entry_t res = anna_from_obj(anna_string_create(sb_count(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
 }

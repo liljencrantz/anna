@@ -49,16 +49,16 @@ static char *anna_readline_wrapper(char *prompt)
 ANNA_VM_NATIVE(readLine_i__read_line, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_prompt = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_prompt = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     char * tmp_var_1 = anna_readline_wrapper(native_param_prompt);
-    anna_entry_t *result = (tmp_var_1) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_1), tmp_var_1)) : null_entry;
+    anna_entry_t result = (tmp_var_1) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_1), tmp_var_1)) : null_entry;
 
     // Perform cleanup
     free(native_param_prompt);
@@ -73,16 +73,16 @@ const static anna_type_data_t anna_history_type_data[] =
 ANNA_VM_NATIVE(readLine_i_history_add, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_line = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_line = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     add_history(native_param_line);
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
     free(native_param_line);
@@ -96,13 +96,13 @@ ANNA_VM_NATIVE(readLine_i_history_read, 1)
     // Validate parameters
 
     // Mangle input parameters
-    char *native_param_filename = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_filename = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_2 = read_history(native_param_filename);
-    anna_entry_t *result = (tmp_var_2)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_2)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_filename);
@@ -114,11 +114,11 @@ ANNA_VM_NATIVE(readLine_i_history_read, 1)
 ANNA_VM_NATIVE(readLine_i_history_read_range, 3)
 {
     // Validate parameters
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_filename = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_filename = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_from = anna_as_int(param[1]);
     int native_param_to = anna_as_int(param[2]);
 
@@ -126,7 +126,7 @@ ANNA_VM_NATIVE(readLine_i_history_read_range, 3)
 
     // Call the function
     int tmp_var_3 = read_history_range(native_param_filename, native_param_from, native_param_to);
-    anna_entry_t *result = (tmp_var_3)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_3)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_filename);
@@ -140,13 +140,13 @@ ANNA_VM_NATIVE(readLine_i_history_write, 1)
     // Validate parameters
 
     // Mangle input parameters
-    char *native_param_filename = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_filename = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_4 = write_history(native_param_filename);
-    anna_entry_t *result = (tmp_var_4)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_4)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_filename);
@@ -158,17 +158,17 @@ ANNA_VM_NATIVE(readLine_i_history_write, 1)
 ANNA_VM_NATIVE(readLine_i_history_append, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_count = anna_as_int(param[0]);
-    char *native_param_filename = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_filename = anna_entry_null(param[1]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_5 = append_history(native_param_count, native_param_filename);
-    anna_entry_t *result = (tmp_var_5)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_5)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_filename);
@@ -180,18 +180,18 @@ ANNA_VM_NATIVE(readLine_i_history_append, 2)
 ANNA_VM_NATIVE(readLine_i_history_truncate_file, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_filename = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_filename = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_count = anna_as_int(param[1]);
 
     // Validate parameters
 
     // Call the function
     int tmp_var_6 = history_truncate_file(native_param_filename, native_param_count);
-    anna_entry_t *result = (tmp_var_6)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_6)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_filename);

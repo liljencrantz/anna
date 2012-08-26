@@ -128,7 +128,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_join_list, 2)
     int i;
     for(i=0;i<count; i++)
     {
-	anna_entry_t *n = 
+	anna_entry_t n = 
 	    anna_list_get(anna_as_obj(param[1]), i);
 	anna_node_call_push(
 	    dst,
@@ -183,7 +183,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_init, 4)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
     size_t sz = anna_list_get_count(anna_as_obj(param[3]));
-    anna_entry_t **src = anna_list_get_payload(anna_as_obj(param[3]));
+    anna_entry_t *src = anna_list_get_payload(anna_as_obj(param[3]));
     
     anna_node_t *source = anna_node_unwrap(anna_as_obj(param[1]));
     anna_node_t *function = anna_node_unwrap(anna_as_obj(param[2]));
@@ -249,7 +249,7 @@ ANNA_VM_NATIVE(anna_call_get_iterator, 1)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *this = anna_as_obj(param[0]);
     anna_object_t *iter = anna_object_create(
-	anna_type_unwrap((anna_object_t *)anna_entry_get_static(this->type, ANNA_MID_ITERATOR_TYPE)));
+	anna_type_unwrap(anna_entry_get_static_obj(this->type, ANNA_MID_ITERATOR_TYPE)));
     anna_entry_set(iter, ANNA_MID_COLLECTION, param[0]);
     anna_call_iterator_update(iter, 0);
     return anna_from_obj(iter);

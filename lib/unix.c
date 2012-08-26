@@ -9,7 +9,7 @@
     bind utility or update the binding source, which is located in the
     file:
 
-    internalBindings/unix.bind
+    anna/internalBindings/unix.bind
 
  */
 #include "anna/config.h"
@@ -68,7 +68,7 @@ ANNA_VM_NATIVE(unix_i_time_val_sec_getter, 1)
 {
     struct timeval *data;
     data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->tv_sec);
+        anna_entry_t result = anna_from_int(data->tv_sec);
 
     return result;
 }
@@ -87,7 +87,7 @@ ANNA_VM_NATIVE(unix_i_time_val_usec_getter, 1)
 {
     struct timeval *data;
     data = (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->tv_usec);
+        anna_entry_t result = anna_from_int(data->tv_usec);
 
     return result;
 }
@@ -121,8 +121,8 @@ ANNA_VM_NATIVE(unix_i_time_zone_init, 1)
 ANNA_VM_NATIVE(unix_i_time_gettimeofday, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
 struct timeval *native_param_tv;
@@ -132,7 +132,7 @@ struct timeval *native_param_tv;
 
     // Call the function
     int tmp_var_1 = gettimeofday(native_param_tv, native_param_tz);
-    anna_entry_t *result = (tmp_var_1)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_1)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -484,12 +484,12 @@ void anna_stat_mode_load(anna_stack_template_t *stack)
 ANNA_VM_NATIVE(unix_i_io_open, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_flags = anna_as_int(param[1]);
     int native_param_mode = anna_as_int(param[2]);
 
@@ -497,7 +497,7 @@ ANNA_VM_NATIVE(unix_i_io_open, 3)
 
     // Call the function
     int tmp_var_2 = open(native_param_name, native_param_flags, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_2);
+    anna_entry_t result = anna_from_int(tmp_var_2);
 
     // Perform cleanup
     free(native_param_name);
@@ -509,18 +509,18 @@ ANNA_VM_NATIVE(unix_i_io_open, 3)
 ANNA_VM_NATIVE(unix_i_io_creat, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_mode = anna_as_int(param[1]);
 
     // Validate parameters
 
     // Call the function
     int tmp_var_3 = creat(native_param_name, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_3);
+    anna_entry_t result = anna_from_int(tmp_var_3);
 
     // Perform cleanup
     free(native_param_name);
@@ -532,9 +532,9 @@ ANNA_VM_NATIVE(unix_i_io_creat, 2)
 ANNA_VM_NATIVE(unix_i_io_read, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -553,7 +553,7 @@ ANNA_VM_NATIVE(unix_i_io_read, 3)
 
     // Call the function
     int tmp_var_4 = read(native_param_fd, native_param_buffer, native_param_count);
-    anna_entry_t *result = anna_from_int(tmp_var_4);
+    anna_entry_t result = anna_from_int(tmp_var_4);
 
     // Perform cleanup
 
@@ -564,9 +564,9 @@ ANNA_VM_NATIVE(unix_i_io_read, 3)
 ANNA_VM_NATIVE(unix_i_io_write, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -585,7 +585,7 @@ ANNA_VM_NATIVE(unix_i_io_write, 3)
 
     // Call the function
     int tmp_var_5 = write(native_param_fd, native_param_buffer, native_param_count);
-    anna_entry_t *result = anna_from_int(tmp_var_5);
+    anna_entry_t result = anna_from_int(tmp_var_5);
 
     // Perform cleanup
 
@@ -596,7 +596,7 @@ ANNA_VM_NATIVE(unix_i_io_write, 3)
 ANNA_VM_NATIVE(unix_i_io_close, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -605,7 +605,7 @@ ANNA_VM_NATIVE(unix_i_io_close, 1)
 
     // Call the function
     int tmp_var_6 = close(native_param_fd);
-    anna_entry_t *result = (tmp_var_6)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_6)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -617,7 +617,7 @@ ANNA_VM_NATIVE(unix_i_stat_dev_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_dev);
+        anna_entry_t result = anna_from_int(data->st_dev);
 
     return result;
 }
@@ -626,7 +626,7 @@ ANNA_VM_NATIVE(unix_i_stat_ino_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_ino);
+        anna_entry_t result = anna_from_int(data->st_ino);
 
     return result;
 }
@@ -635,7 +635,7 @@ ANNA_VM_NATIVE(unix_i_stat_mode_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_mode);
+        anna_entry_t result = anna_from_int(data->st_mode);
 
     return result;
 }
@@ -644,7 +644,7 @@ ANNA_VM_NATIVE(unix_i_stat_nlink_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_nlink);
+        anna_entry_t result = anna_from_int(data->st_nlink);
 
     return result;
 }
@@ -653,7 +653,7 @@ ANNA_VM_NATIVE(unix_i_stat_uid_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_uid);
+        anna_entry_t result = anna_from_int(data->st_uid);
 
     return result;
 }
@@ -662,7 +662,7 @@ ANNA_VM_NATIVE(unix_i_stat_gid_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_gid);
+        anna_entry_t result = anna_from_int(data->st_gid);
 
     return result;
 }
@@ -671,7 +671,7 @@ ANNA_VM_NATIVE(unix_i_stat_rdev_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_rdev);
+        anna_entry_t result = anna_from_int(data->st_rdev);
 
     return result;
 }
@@ -680,7 +680,7 @@ ANNA_VM_NATIVE(unix_i_stat_size_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_size);
+        anna_entry_t result = anna_from_int(data->st_size);
 
     return result;
 }
@@ -689,7 +689,7 @@ ANNA_VM_NATIVE(unix_i_stat_blksize_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_blksize);
+        anna_entry_t result = anna_from_int(data->st_blksize);
 
     return result;
 }
@@ -698,7 +698,7 @@ ANNA_VM_NATIVE(unix_i_stat_blocks_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_blocks);
+        anna_entry_t result = anna_from_int(data->st_blocks);
 
     return result;
 }
@@ -707,7 +707,7 @@ ANNA_VM_NATIVE(unix_i_stat_atime_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_atime);
+        anna_entry_t result = anna_from_int(data->st_atime);
 
     return result;
 }
@@ -716,7 +716,7 @@ ANNA_VM_NATIVE(unix_i_stat_mtime_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_mtime);
+        anna_entry_t result = anna_from_int(data->st_mtime);
 
     return result;
 }
@@ -725,7 +725,7 @@ ANNA_VM_NATIVE(unix_i_stat_ctime_getter, 1)
 {
     struct stat *data;
     data = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->st_ctime);
+        anna_entry_t result = anna_from_int(data->st_ctime);
 
     return result;
 }
@@ -741,18 +741,18 @@ ANNA_VM_NATIVE(unix_i_stat_init, 1)
 ANNA_VM_NATIVE(unix_i_io_stat, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 struct stat *native_param_buf;
     native_param_buf = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
     // Validate parameters
 
     // Call the function
     int tmp_var_7 = stat(native_param_path, native_param_buf);
-    anna_entry_t *result = (tmp_var_7)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_7)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_path);
@@ -764,18 +764,18 @@ struct stat *native_param_buf;
 ANNA_VM_NATIVE(unix_i_io_lstat, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 struct stat *native_param_buf;
     native_param_buf = (struct stat *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);
     // Validate parameters
 
     // Call the function
     int tmp_var_8 = lstat(native_param_path, native_param_buf);
-    anna_entry_t *result = (tmp_var_8)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_8)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_path);
@@ -787,8 +787,8 @@ struct stat *native_param_buf;
 ANNA_VM_NATIVE(unix_i_io_fstat, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -798,7 +798,7 @@ struct stat *native_param_buf;
 
     // Call the function
     int tmp_var_9 = fstat(native_param_fd, native_param_buf);
-    anna_entry_t *result = (tmp_var_9)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_9)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -809,18 +809,18 @@ struct stat *native_param_buf;
 ANNA_VM_NATIVE(unix_i_io_mkdir, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_mode = anna_as_int(param[1]);
 
     // Validate parameters
 
     // Call the function
     int tmp_var_10 = mkdir(native_param_path, native_param_mode);
-    anna_entry_t *result = (tmp_var_10)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_10)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_path);
@@ -832,8 +832,8 @@ ANNA_VM_NATIVE(unix_i_io_mkdir, 2)
 ANNA_VM_NATIVE(unix_i_io_getcwd, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     unsigned char *native_param_buf = anna_buffer_get_payload(anna_as_obj(param[0]));
@@ -851,7 +851,7 @@ ANNA_VM_NATIVE(unix_i_io_getcwd, 2)
 
     // Call the function
     int tmp_var_11 = getcwd(native_param_buf, native_param_size);
-    anna_entry_t *result = (tmp_var_11)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_11)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -862,16 +862,16 @@ ANNA_VM_NATIVE(unix_i_io_getcwd, 2)
 ANNA_VM_NATIVE(unix_i_io_chdir, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_12 = chdir(native_param_path);
-    anna_entry_t *result = (tmp_var_12)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_12)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_path);
@@ -883,16 +883,16 @@ ANNA_VM_NATIVE(unix_i_io_chdir, 1)
 ANNA_VM_NATIVE(unix_i_io_chroot, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_13 = chroot(native_param_path);
-    anna_entry_t *result = (tmp_var_13)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_13)?anna_from_int(1):null_entry;
 
     // Perform cleanup
     free(native_param_path);
@@ -904,7 +904,7 @@ ANNA_VM_NATIVE(unix_i_io_chroot, 1)
 ANNA_VM_NATIVE(unix_i_io_fchdir, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -913,7 +913,7 @@ ANNA_VM_NATIVE(unix_i_io_fchdir, 1)
 
     // Call the function
     int tmp_var_14 = fchdir(native_param_fd);
-    anna_entry_t *result = (tmp_var_14)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_14)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -925,7 +925,7 @@ ANNA_VM_NATIVE(unix_i_f_lock_type_getter, 1)
 {
     struct flock *data;
     data = (struct flock *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->l_type);
+        anna_entry_t result = anna_from_int(data->l_type);
 
     return result;
 }
@@ -934,7 +934,7 @@ ANNA_VM_NATIVE(unix_i_f_lock_whence_getter, 1)
 {
     struct flock *data;
     data = (struct flock *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->l_whence);
+        anna_entry_t result = anna_from_int(data->l_whence);
 
     return result;
 }
@@ -943,7 +943,7 @@ ANNA_VM_NATIVE(unix_i_f_lock_start_getter, 1)
 {
     struct flock *data;
     data = (struct flock *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->l_start);
+        anna_entry_t result = anna_from_int(data->l_start);
 
     return result;
 }
@@ -952,7 +952,7 @@ ANNA_VM_NATIVE(unix_i_f_lock_len_getter, 1)
 {
     struct flock *data;
     data = (struct flock *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->l_len);
+        anna_entry_t result = anna_from_int(data->l_len);
 
     return result;
 }
@@ -961,7 +961,7 @@ ANNA_VM_NATIVE(unix_i_f_lock_pid_getter, 1)
 {
     struct flock *data;
     data = (struct flock *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->l_pid);
+        anna_entry_t result = anna_from_int(data->l_pid);
 
     return result;
 }
@@ -1048,8 +1048,8 @@ void anna_seek_mode_load(anna_stack_template_t *stack)
 ANNA_VM_NATIVE(unix_i_io_fcntl_void, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1059,7 +1059,7 @@ ANNA_VM_NATIVE(unix_i_io_fcntl_void, 2)
 
     // Call the function
     int tmp_var_15 = fcntl(native_param_fd, native_param_cmd);
-    anna_entry_t *result = anna_from_int(tmp_var_15);
+    anna_entry_t result = anna_from_int(tmp_var_15);
 
     // Perform cleanup
 
@@ -1070,9 +1070,9 @@ ANNA_VM_NATIVE(unix_i_io_fcntl_void, 2)
 ANNA_VM_NATIVE(unix_i_io_fcntl_int, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1083,7 +1083,7 @@ ANNA_VM_NATIVE(unix_i_io_fcntl_int, 3)
 
     // Call the function
     int tmp_var_16 = fcntl(native_param_fd, native_param_cmd, native_param_arg);
-    anna_entry_t *result = anna_from_int(tmp_var_16);
+    anna_entry_t result = anna_from_int(tmp_var_16);
 
     // Perform cleanup
 
@@ -1094,9 +1094,9 @@ ANNA_VM_NATIVE(unix_i_io_fcntl_int, 3)
 ANNA_VM_NATIVE(unix_i_io_fcntl_f_lock, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1107,7 +1107,7 @@ struct flock *native_param_arg;
 
     // Call the function
     int tmp_var_17 = fcntl(native_param_fd, native_param_cmd, native_param_arg);
-    anna_entry_t *result = anna_from_int(tmp_var_17);
+    anna_entry_t result = anna_from_int(tmp_var_17);
 
     // Perform cleanup
 
@@ -1118,7 +1118,7 @@ struct flock *native_param_arg;
 ANNA_VM_NATIVE(unix_i_io_dup, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1127,7 +1127,7 @@ ANNA_VM_NATIVE(unix_i_io_dup, 1)
 
     // Call the function
     int tmp_var_18 = dup(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_18);
+    anna_entry_t result = anna_from_int(tmp_var_18);
 
     // Perform cleanup
 
@@ -1138,8 +1138,8 @@ ANNA_VM_NATIVE(unix_i_io_dup, 1)
 ANNA_VM_NATIVE(unix_i_io_dup2, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_oldfd = anna_as_int(param[0]);
@@ -1149,7 +1149,7 @@ ANNA_VM_NATIVE(unix_i_io_dup2, 2)
 
     // Call the function
     int tmp_var_19 = dup2(native_param_oldfd, native_param_newfd);
-    anna_entry_t *result = anna_from_int(tmp_var_19);
+    anna_entry_t result = anna_from_int(tmp_var_19);
 
     // Perform cleanup
 
@@ -1160,12 +1160,12 @@ ANNA_VM_NATIVE(unix_i_io_dup2, 2)
 ANNA_VM_NATIVE(unix_i_io_chown, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_owner = anna_as_int(param[1]);
     int native_param_group = anna_as_int(param[2]);
 
@@ -1173,7 +1173,7 @@ ANNA_VM_NATIVE(unix_i_io_chown, 3)
 
     // Call the function
     int tmp_var_20 = chown(native_param_path, native_param_owner, native_param_group);
-    anna_entry_t *result = anna_from_int(tmp_var_20);
+    anna_entry_t result = anna_from_int(tmp_var_20);
 
     // Perform cleanup
     free(native_param_path);
@@ -1185,9 +1185,9 @@ ANNA_VM_NATIVE(unix_i_io_chown, 3)
 ANNA_VM_NATIVE(unix_i_io_fchown, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1198,7 +1198,7 @@ ANNA_VM_NATIVE(unix_i_io_fchown, 3)
 
     // Call the function
     int tmp_var_21 = fchown(native_param_fd, native_param_owner, native_param_group);
-    anna_entry_t *result = anna_from_int(tmp_var_21);
+    anna_entry_t result = anna_from_int(tmp_var_21);
 
     // Perform cleanup
 
@@ -1209,12 +1209,12 @@ ANNA_VM_NATIVE(unix_i_io_fchown, 3)
 ANNA_VM_NATIVE(unix_i_io_lchown, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_owner = anna_as_int(param[1]);
     int native_param_group = anna_as_int(param[2]);
 
@@ -1222,7 +1222,7 @@ ANNA_VM_NATIVE(unix_i_io_lchown, 3)
 
     // Call the function
     int tmp_var_22 = lchown(native_param_path, native_param_owner, native_param_group);
-    anna_entry_t *result = anna_from_int(tmp_var_22);
+    anna_entry_t result = anna_from_int(tmp_var_22);
 
     // Perform cleanup
     free(native_param_path);
@@ -1234,18 +1234,18 @@ ANNA_VM_NATIVE(unix_i_io_lchown, 3)
 ANNA_VM_NATIVE(unix_i_io_chmod, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     int native_param_mode = anna_as_int(param[1]);
 
     // Validate parameters
 
     // Call the function
     int tmp_var_23 = chmod(native_param_path, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_23);
+    anna_entry_t result = anna_from_int(tmp_var_23);
 
     // Perform cleanup
     free(native_param_path);
@@ -1257,8 +1257,8 @@ ANNA_VM_NATIVE(unix_i_io_chmod, 2)
 ANNA_VM_NATIVE(unix_i_io_fchmod, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1268,7 +1268,7 @@ ANNA_VM_NATIVE(unix_i_io_fchmod, 2)
 
     // Call the function
     int tmp_var_24 = fchmod(native_param_fd, native_param_mode);
-    anna_entry_t *result = anna_from_int(tmp_var_24);
+    anna_entry_t result = anna_from_int(tmp_var_24);
 
     // Perform cleanup
 
@@ -1279,18 +1279,18 @@ ANNA_VM_NATIVE(unix_i_io_fchmod, 2)
 ANNA_VM_NATIVE(unix_i_io_symlink, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_oldpath = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_newpath = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_oldpath = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_newpath = anna_entry_null(param[1]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_25 = symlink(native_param_oldpath, native_param_newpath);
-    anna_entry_t *result = anna_from_int(tmp_var_25);
+    anna_entry_t result = anna_from_int(tmp_var_25);
 
     // Perform cleanup
     free(native_param_oldpath);
@@ -1303,18 +1303,18 @@ ANNA_VM_NATIVE(unix_i_io_symlink, 2)
 ANNA_VM_NATIVE(unix_i_io_link, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_oldpath = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_newpath = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_oldpath = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_newpath = anna_entry_null(param[1]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_26 = link(native_param_oldpath, native_param_newpath);
-    anna_entry_t *result = anna_from_int(tmp_var_26);
+    anna_entry_t result = anna_from_int(tmp_var_26);
 
     // Perform cleanup
     free(native_param_oldpath);
@@ -1327,16 +1327,16 @@ ANNA_VM_NATIVE(unix_i_io_link, 2)
 ANNA_VM_NATIVE(unix_i_io_unlink, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_27 = unlink(native_param_path);
-    anna_entry_t *result = anna_from_int(tmp_var_27);
+    anna_entry_t result = anna_from_int(tmp_var_27);
 
     // Perform cleanup
     free(native_param_path);
@@ -1348,16 +1348,16 @@ ANNA_VM_NATIVE(unix_i_io_unlink, 1)
 ANNA_VM_NATIVE(unix_i_io_rmdir, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_path = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_path = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_28 = rmdir(native_param_path);
-    anna_entry_t *result = anna_from_int(tmp_var_28);
+    anna_entry_t result = anna_from_int(tmp_var_28);
 
     // Perform cleanup
     free(native_param_path);
@@ -1369,18 +1369,18 @@ ANNA_VM_NATIVE(unix_i_io_rmdir, 1)
 ANNA_VM_NATIVE(unix_i_io_rename, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_oldpath = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_newpath = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_oldpath = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_newpath = anna_entry_null(param[1]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
 
     // Call the function
     int tmp_var_29 = rename(native_param_oldpath, native_param_newpath);
-    anna_entry_t *result = anna_from_int(tmp_var_29);
+    anna_entry_t result = anna_from_int(tmp_var_29);
 
     // Perform cleanup
     free(native_param_oldpath);
@@ -1393,7 +1393,7 @@ ANNA_VM_NATIVE(unix_i_io_rename, 2)
 ANNA_VM_NATIVE(unix_i_io_pipe, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     if(anna_list_ensure_capacity(anna_as_obj(param[0]), 2))
@@ -1406,8 +1406,8 @@ ANNA_VM_NATIVE(unix_i_io_pipe, 1)
     int native_param_fd_idx;
     for(native_param_fd_idx=0; native_param_fd_idx < native_param_fd_count; native_param_fd_idx++)
     {
-        anna_entry_t *tmp = anna_list_get(anna_as_obj(param[0]), native_param_fd_idx);
-        if(tmp == null_entry)
+        anna_entry_t tmp = anna_list_get(anna_as_obj(param[0]), native_param_fd_idx);
+        if(anna_entry_null(tmp))
         {
             native_param_fd[native_param_fd_idx] = 0;
         }
@@ -1423,12 +1423,12 @@ ANNA_VM_NATIVE(unix_i_io_pipe, 1)
 
     // Call the function
     int tmp_var_30 = pipe(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_30);
+    anna_entry_t result = anna_from_int(tmp_var_30);
 
     // Perform cleanup
     for(native_param_fd_idx=0; native_param_fd_idx < native_param_fd_count; native_param_fd_idx++)
     {
-            anna_entry_t *tmp = anna_from_int(native_param_fd[native_param_fd_idx]);
+            anna_entry_t tmp = anna_from_int(native_param_fd[native_param_fd_idx]);
 
         anna_list_set(anna_as_obj(param[0]), native_param_fd_idx, tmp);
         
@@ -1442,9 +1442,9 @@ ANNA_VM_NATIVE(unix_i_io_pipe, 1)
 ANNA_VM_NATIVE(unix_i_io_lseek, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1455,7 +1455,7 @@ ANNA_VM_NATIVE(unix_i_io_lseek, 3)
 
     // Call the function
     uint64_t tmp_var_31 = lseek(native_param_fd, native_param_offset, native_param_whence);
-    anna_entry_t *result = anna_from_uint64(tmp_var_31);
+    anna_entry_t result = anna_from_uint64(tmp_var_31);
 
     // Perform cleanup
 
@@ -1473,7 +1473,7 @@ ANNA_VM_NATIVE(unix_i_io_sync, 0)
 
     // Call the function
     sync();
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
 
@@ -1484,7 +1484,7 @@ ANNA_VM_NATIVE(unix_i_io_sync, 0)
 ANNA_VM_NATIVE(unix_i_io_fsync, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1493,7 +1493,7 @@ ANNA_VM_NATIVE(unix_i_io_fsync, 1)
 
     // Call the function
     int tmp_var_32 = fsync(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_32);
+    anna_entry_t result = anna_from_int(tmp_var_32);
 
     // Perform cleanup
 
@@ -1504,7 +1504,7 @@ ANNA_VM_NATIVE(unix_i_io_fsync, 1)
 ANNA_VM_NATIVE(unix_i_io_fdatasync, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -1513,7 +1513,7 @@ ANNA_VM_NATIVE(unix_i_io_fdatasync, 1)
 
     // Call the function
     int tmp_var_33 = fdatasync(native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_33);
+    anna_entry_t result = anna_from_int(tmp_var_33);
 
     // Perform cleanup
 
@@ -1524,7 +1524,7 @@ ANNA_VM_NATIVE(unix_i_io_fdatasync, 1)
 ANNA_VM_NATIVE(unix_i_io_umask, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_mask = anna_as_int(param[0]);
@@ -1533,7 +1533,7 @@ ANNA_VM_NATIVE(unix_i_io_umask, 1)
 
     // Call the function
     int tmp_var_34 = umask(native_param_mask);
-    anna_entry_t *result = anna_from_int(tmp_var_34);
+    anna_entry_t result = anna_from_int(tmp_var_34);
 
     // Perform cleanup
 
@@ -1561,7 +1561,7 @@ static int anna_fd_set_value(fd_set *set, int fd, int val)
 ANNA_VM_NATIVE(unix_i_fd_set_init, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     fd_set *native_param_this;
@@ -1571,7 +1571,7 @@ ANNA_VM_NATIVE(unix_i_fd_set_init, 1)
 
     // Call the function
     FD_ZERO(native_param_this);
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
 
@@ -1582,8 +1582,8 @@ ANNA_VM_NATIVE(unix_i_fd_set_init, 1)
 ANNA_VM_NATIVE(unix_i_fd_set_remove, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     fd_set *native_param_this;
@@ -1594,7 +1594,7 @@ ANNA_VM_NATIVE(unix_i_fd_set_remove, 2)
 
     // Call the function
     ANNA_FD_CLR(native_param_this, native_param_fd);
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
 
@@ -1605,8 +1605,8 @@ ANNA_VM_NATIVE(unix_i_fd_set_remove, 2)
 ANNA_VM_NATIVE(unix_i_fd_set_in, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     fd_set *native_param_this;
@@ -1617,7 +1617,7 @@ ANNA_VM_NATIVE(unix_i_fd_set_in, 2)
 
     // Call the function
     int tmp_var_35 = ANNA_FD_ISSET(native_param_this, native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_35);
+    anna_entry_t result = anna_from_int(tmp_var_35);
 
     // Perform cleanup
 
@@ -1628,8 +1628,8 @@ ANNA_VM_NATIVE(unix_i_fd_set_in, 2)
 ANNA_VM_NATIVE(unix_i_fd_set_get, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     fd_set *native_param_this;
@@ -1640,7 +1640,7 @@ ANNA_VM_NATIVE(unix_i_fd_set_get, 2)
 
     // Call the function
     int tmp_var_36 = ANNA_FD_ISSET(native_param_this, native_param_fd);
-    anna_entry_t *result = anna_from_int(tmp_var_36);
+    anna_entry_t result = anna_from_int(tmp_var_36);
 
     // Perform cleanup
 
@@ -1651,20 +1651,20 @@ ANNA_VM_NATIVE(unix_i_fd_set_get, 2)
 ANNA_VM_NATIVE(unix_i_fd_set_set, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     fd_set *native_param_this;
     native_param_this = (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     int native_param_fd = anna_as_int(param[1]);
-    int native_param_value = (param[2] != null_entry);
+    int native_param_value = !anna_entry_null(param[2]);
 
     // Validate parameters
 
     // Call the function
     int tmp_var_37 = anna_fd_set_value(native_param_this, native_param_fd, native_param_value);
-    anna_entry_t *result = (tmp_var_37)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_37)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -1675,8 +1675,8 @@ ANNA_VM_NATIVE(unix_i_fd_set_set, 3)
 ANNA_VM_NATIVE(unix_i_fd_set_add, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     fd_set *native_param_this;
@@ -1687,7 +1687,7 @@ ANNA_VM_NATIVE(unix_i_fd_set_add, 2)
 
     // Call the function
     ANNA_FD_SET(native_param_this, native_param_fd);
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
 
@@ -1698,7 +1698,7 @@ ANNA_VM_NATIVE(unix_i_fd_set_add, 2)
 ANNA_VM_NATIVE(unix_i_fd_set_clear, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     fd_set *native_param_this;
@@ -1708,7 +1708,7 @@ ANNA_VM_NATIVE(unix_i_fd_set_clear, 1)
 
     // Call the function
     FD_ZERO(native_param_this);
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
 
@@ -1719,20 +1719,20 @@ ANNA_VM_NATIVE(unix_i_fd_set_clear, 1)
 ANNA_VM_NATIVE(unix_i_io_select, 5)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_nfds = anna_as_int(param[0]);
 fd_set *native_param_readfds;
-    native_param_readfds = ((param[1]) == null_entry) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);fd_set *native_param_writefds;
-    native_param_writefds = ((param[2]) == null_entry) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);fd_set *native_param_exceptfds;
-    native_param_exceptfds = ((param[3]) == null_entry) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[3]), ANNA_MID_CSTRUCT_PAYLOAD);struct timeval *native_param_timeout;
-    native_param_timeout = ((param[4]) == null_entry) ? 0 : (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[4]), ANNA_MID_CSTRUCT_PAYLOAD);
+    native_param_readfds = anna_entry_null(param[1]) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);fd_set *native_param_writefds;
+    native_param_writefds = anna_entry_null(param[2]) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);fd_set *native_param_exceptfds;
+    native_param_exceptfds = anna_entry_null(param[3]) ? 0 : (fd_set *)anna_entry_get_addr(anna_as_obj_fast(param[3]), ANNA_MID_CSTRUCT_PAYLOAD);struct timeval *native_param_timeout;
+    native_param_timeout = anna_entry_null(param[4]) ? 0 : (struct timeval *)anna_entry_get_addr(anna_as_obj_fast(param[4]), ANNA_MID_CSTRUCT_PAYLOAD);
     // Validate parameters
 
     // Call the function
     int tmp_var_38 = select(native_param_nfds, native_param_readfds, native_param_writefds, native_param_exceptfds, native_param_timeout);
-    anna_entry_t *result = anna_from_int(tmp_var_38);
+    anna_entry_t result = anna_from_int(tmp_var_38);
 
     // Perform cleanup
 
@@ -2319,19 +2319,19 @@ void anna_signal_load(anna_stack_template_t *stack)
 ANNA_VM_NATIVE(unix_i_proc_exec, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_filename = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_filename = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
     size_t native_param_argv_count = anna_list_get_count(anna_as_obj(param[1]));
     char ** native_param_argv = malloc(sizeof(char *) * native_param_argv_count);
     if(!native_param_argv){ return null_entry; }
     int native_param_argv_idx;
     for(native_param_argv_idx=0; native_param_argv_idx < native_param_argv_count; native_param_argv_idx++)
     {
-            char *native_param_argv_val = (anna_list_get(anna_as_obj(param[1]), native_param_argv_idx) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[1]), native_param_argv_idx)));
+            char *native_param_argv_val = anna_entry_null(anna_list_get(anna_as_obj(param[1]), native_param_argv_idx)) ? 0 : anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[1]), native_param_argv_idx)));
 
         native_param_argv[native_param_argv_idx] = native_param_argv_val;
     }
@@ -2341,7 +2341,7 @@ ANNA_VM_NATIVE(unix_i_proc_exec, 3)
     int native_param_envp_idx;
     for(native_param_envp_idx=0; native_param_envp_idx < native_param_envp_count; native_param_envp_idx++)
     {
-            char *native_param_envp_val = (anna_list_get(anna_as_obj(param[2]), native_param_envp_idx) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[2]), native_param_envp_idx)));
+            char *native_param_envp_val = anna_entry_null(anna_list_get(anna_as_obj(param[2]), native_param_envp_idx)) ? 0 : anna_string_payload_narrow(anna_as_obj(anna_list_get(anna_as_obj(param[2]), native_param_envp_idx)));
 
         native_param_envp[native_param_envp_idx] = native_param_envp_val;
     }
@@ -2350,7 +2350,7 @@ ANNA_VM_NATIVE(unix_i_proc_exec, 3)
 
     // Call the function
     int tmp_var_39 = execve(native_param_filename, native_param_argv, native_param_envp);
-    anna_entry_t *result = anna_from_int(tmp_var_39);
+    anna_entry_t result = anna_from_int(tmp_var_39);
 
     // Perform cleanup
     free(native_param_filename);
@@ -2374,7 +2374,7 @@ ANNA_VM_NATIVE(unix_i_proc_exec, 3)
 ANNA_VM_NATIVE(unix_i_proc_exit, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_status = anna_as_int(param[0]);
@@ -2383,7 +2383,7 @@ ANNA_VM_NATIVE(unix_i_proc_exit, 1)
 
     // Call the function
     exit(native_param_status);
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
 
@@ -2401,7 +2401,7 @@ ANNA_VM_NATIVE(unix_i_proc_fork, 0)
 
     // Call the function
     int tmp_var_40 = fork();
-    anna_entry_t *result = anna_from_int(tmp_var_40);
+    anna_entry_t result = anna_from_int(tmp_var_40);
 
     // Perform cleanup
 
@@ -2412,8 +2412,8 @@ ANNA_VM_NATIVE(unix_i_proc_fork, 0)
 ANNA_VM_NATIVE(unix_i_proc_kill, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_pid = anna_as_int(param[0]);
@@ -2423,7 +2423,7 @@ ANNA_VM_NATIVE(unix_i_proc_kill, 2)
 
     // Call the function
     int tmp_var_41 = kill(native_param_pid, native_param_sig);
-    anna_entry_t *result = anna_from_int(tmp_var_41);
+    anna_entry_t result = anna_from_int(tmp_var_41);
 
     // Perform cleanup
 
@@ -2434,7 +2434,7 @@ ANNA_VM_NATIVE(unix_i_proc_kill, 2)
 ANNA_VM_NATIVE(unix_i_proc_getsid, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_pid = anna_as_int(param[0]);
@@ -2443,7 +2443,7 @@ ANNA_VM_NATIVE(unix_i_proc_getsid, 1)
 
     // Call the function
     int tmp_var_42 = getsid(native_param_pid);
-    anna_entry_t *result = anna_from_int(tmp_var_42);
+    anna_entry_t result = anna_from_int(tmp_var_42);
 
     // Perform cleanup
 
@@ -2461,7 +2461,7 @@ ANNA_VM_NATIVE(unix_i_proc_setsid, 0)
 
     // Call the function
     int tmp_var_43 = setsid();
-    anna_entry_t *result = anna_from_int(tmp_var_43);
+    anna_entry_t result = anna_from_int(tmp_var_43);
 
     // Perform cleanup
 
@@ -2479,7 +2479,7 @@ ANNA_VM_NATIVE(unix_i_proc_getpid, 0)
 
     // Call the function
     int tmp_var_44 = getpid();
-    anna_entry_t *result = anna_from_int(tmp_var_44);
+    anna_entry_t result = anna_from_int(tmp_var_44);
 
     // Perform cleanup
 
@@ -2497,7 +2497,7 @@ ANNA_VM_NATIVE(unix_i_proc_getppid, 0)
 
     // Call the function
     int tmp_var_45 = getppid();
-    anna_entry_t *result = anna_from_int(tmp_var_45);
+    anna_entry_t result = anna_from_int(tmp_var_45);
 
     // Perform cleanup
 
@@ -2508,7 +2508,7 @@ ANNA_VM_NATIVE(unix_i_proc_getppid, 0)
 ANNA_VM_NATIVE(unix_i_proc_wait, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     if(anna_list_ensure_capacity(anna_as_obj(param[0]), 1))
@@ -2521,8 +2521,8 @@ ANNA_VM_NATIVE(unix_i_proc_wait, 1)
     int native_param_status_idx;
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
     {
-        anna_entry_t *tmp = anna_list_get(anna_as_obj(param[0]), native_param_status_idx);
-        if(tmp == null_entry)
+        anna_entry_t tmp = anna_list_get(anna_as_obj(param[0]), native_param_status_idx);
+        if(anna_entry_null(tmp))
         {
             native_param_status[native_param_status_idx] = 0;
         }
@@ -2538,12 +2538,12 @@ ANNA_VM_NATIVE(unix_i_proc_wait, 1)
 
     // Call the function
     int tmp_var_46 = wait(native_param_status);
-    anna_entry_t *result = anna_from_int(tmp_var_46);
+    anna_entry_t result = anna_from_int(tmp_var_46);
 
     // Perform cleanup
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
     {
-            anna_entry_t *tmp = anna_from_int(native_param_status[native_param_status_idx]);
+            anna_entry_t tmp = anna_from_int(native_param_status[native_param_status_idx]);
 
         anna_list_set(anna_as_obj(param[0]), native_param_status_idx, tmp);
         
@@ -2557,9 +2557,9 @@ ANNA_VM_NATIVE(unix_i_proc_wait, 1)
 ANNA_VM_NATIVE(unix_i_proc_waitpid, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_pid = anna_as_int(param[0]);
@@ -2573,8 +2573,8 @@ ANNA_VM_NATIVE(unix_i_proc_waitpid, 3)
     int native_param_status_idx;
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
     {
-        anna_entry_t *tmp = anna_list_get(anna_as_obj(param[1]), native_param_status_idx);
-        if(tmp == null_entry)
+        anna_entry_t tmp = anna_list_get(anna_as_obj(param[1]), native_param_status_idx);
+        if(anna_entry_null(tmp))
         {
             native_param_status[native_param_status_idx] = 0;
         }
@@ -2591,12 +2591,12 @@ ANNA_VM_NATIVE(unix_i_proc_waitpid, 3)
 
     // Call the function
     int tmp_var_47 = waitpid(native_param_pid, native_param_status, native_param_options);
-    anna_entry_t *result = anna_from_int(tmp_var_47);
+    anna_entry_t result = anna_from_int(tmp_var_47);
 
     // Perform cleanup
     for(native_param_status_idx=0; native_param_status_idx < native_param_status_count; native_param_status_idx++)
     {
-            anna_entry_t *tmp = anna_from_int(native_param_status[native_param_status_idx]);
+            anna_entry_t tmp = anna_from_int(native_param_status[native_param_status_idx]);
 
         anna_list_set(anna_as_obj(param[1]), native_param_status_idx, tmp);
         
@@ -2623,7 +2623,7 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 ANNA_VM_NATIVE(unix_i_signal_set_init, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
@@ -2633,7 +2633,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_init, 1)
 
     // Call the function
     sigemptyset(native_param_this);
-    anna_entry_t *result = null_entry;
+    anna_entry_t result = null_entry;
 
     // Perform cleanup
 
@@ -2644,7 +2644,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_init, 1)
 ANNA_VM_NATIVE(unix_i_signal_set_clear, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
@@ -2654,7 +2654,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_clear, 1)
 
     // Call the function
     int tmp_var_48 = sigemptyset(native_param_this);
-    anna_entry_t *result = anna_from_int(tmp_var_48);
+    anna_entry_t result = anna_from_int(tmp_var_48);
 
     // Perform cleanup
 
@@ -2665,7 +2665,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_clear, 1)
 ANNA_VM_NATIVE(unix_i_signal_set_all, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
@@ -2675,7 +2675,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_all, 1)
 
     // Call the function
     int tmp_var_49 = sigfillset(native_param_this);
-    anna_entry_t *result = anna_from_int(tmp_var_49);
+    anna_entry_t result = anna_from_int(tmp_var_49);
 
     // Perform cleanup
 
@@ -2686,8 +2686,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_all, 1)
 ANNA_VM_NATIVE(unix_i_signal_set_add, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
@@ -2698,7 +2698,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_add, 2)
 
     // Call the function
     int tmp_var_50 = sigaddset(native_param_this, native_param_signal);
-    anna_entry_t *result = anna_from_int(tmp_var_50);
+    anna_entry_t result = anna_from_int(tmp_var_50);
 
     // Perform cleanup
 
@@ -2709,8 +2709,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_add, 2)
 ANNA_VM_NATIVE(unix_i_signal_set_remove, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
@@ -2721,7 +2721,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_remove, 2)
 
     // Call the function
     int tmp_var_51 = sigdelset(native_param_this, native_param_signal);
-    anna_entry_t *result = anna_from_int(tmp_var_51);
+    anna_entry_t result = anna_from_int(tmp_var_51);
 
     // Perform cleanup
 
@@ -2732,8 +2732,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_remove, 2)
 ANNA_VM_NATIVE(unix_i_signal_set_in, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
@@ -2744,7 +2744,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_in, 2)
 
     // Call the function
     int tmp_var_52 = sigismember(native_param_this, native_param_signal);
-    anna_entry_t *result = (tmp_var_52)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_52)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -2755,8 +2755,8 @@ ANNA_VM_NATIVE(unix_i_signal_set_in, 2)
 ANNA_VM_NATIVE(unix_i_signal_set_get, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
@@ -2767,7 +2767,7 @@ ANNA_VM_NATIVE(unix_i_signal_set_get, 2)
 
     // Call the function
     int tmp_var_53 = sigismember(native_param_this, native_param_signal);
-    anna_entry_t *result = (tmp_var_53)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_53)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -2778,20 +2778,20 @@ ANNA_VM_NATIVE(unix_i_signal_set_get, 2)
 ANNA_VM_NATIVE(unix_i_signal_set_set, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     sigset_t *native_param_this;
     native_param_this = (sigset_t *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
     int native_param_signal = anna_as_int(param[1]);
-    int native_param_value = (param[2] != null_entry);
+    int native_param_value = !anna_entry_null(param[2]);
 
     // Validate parameters
 
     // Call the function
     int tmp_var_54 = anna_signalset_set(native_param_this, native_param_signal, native_param_value);
-    anna_entry_t *result = (tmp_var_54)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_54)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -2846,18 +2846,18 @@ void anna_sigprocmask_flag_load(anna_stack_template_t *stack)
 ANNA_VM_NATIVE(unix_i_proc_sigprocmask, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_how = anna_as_int(param[0]);
 sigset_t *native_param_set;
-    native_param_set = ((param[1]) == null_entry) ? 0 : (sigset_t *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);sigset_t *native_param_old;
-    native_param_old = ((param[2]) == null_entry) ? 0 : (sigset_t *)anna_entry_get_addr(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);
+    native_param_set = anna_entry_null(param[1]) ? 0 : (sigset_t *)anna_entry_get_addr(anna_as_obj_fast(param[1]), ANNA_MID_CSTRUCT_PAYLOAD);sigset_t *native_param_old;
+    native_param_old = anna_entry_null(param[2]) ? 0 : (sigset_t *)anna_entry_get_addr(anna_as_obj_fast(param[2]), ANNA_MID_CSTRUCT_PAYLOAD);
     // Validate parameters
 
     // Call the function
     int tmp_var_55 = sigprocmask(native_param_how, native_param_set, native_param_old);
-    anna_entry_t *result = anna_from_int(tmp_var_55);
+    anna_entry_t result = anna_from_int(tmp_var_55);
 
     // Perform cleanup
 
@@ -3004,7 +3004,7 @@ ANNA_VM_NATIVE(unix_i_user_getuid, 0)
 
     // Call the function
     int tmp_var_56 = getuid();
-    anna_entry_t *result = anna_from_int(tmp_var_56);
+    anna_entry_t result = anna_from_int(tmp_var_56);
 
     // Perform cleanup
 
@@ -3022,7 +3022,7 @@ ANNA_VM_NATIVE(unix_i_user_geteuid, 0)
 
     // Call the function
     int tmp_var_57 = geteuid();
-    anna_entry_t *result = anna_from_int(tmp_var_57);
+    anna_entry_t result = anna_from_int(tmp_var_57);
 
     // Perform cleanup
 
@@ -3040,7 +3040,7 @@ ANNA_VM_NATIVE(unix_i_user_getgid, 0)
 
     // Call the function
     int tmp_var_58 = getgid();
-    anna_entry_t *result = anna_from_int(tmp_var_58);
+    anna_entry_t result = anna_from_int(tmp_var_58);
 
     // Perform cleanup
 
@@ -3058,7 +3058,7 @@ ANNA_VM_NATIVE(unix_i_user_getegid, 0)
 
     // Call the function
     int tmp_var_59 = getegid();
-    anna_entry_t *result = anna_from_int(tmp_var_59);
+    anna_entry_t result = anna_from_int(tmp_var_59);
 
     // Perform cleanup
 
@@ -3069,7 +3069,7 @@ ANNA_VM_NATIVE(unix_i_user_getegid, 0)
 ANNA_VM_NATIVE(unix_i_user_setuid, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_uid = anna_as_int(param[0]);
@@ -3078,7 +3078,7 @@ ANNA_VM_NATIVE(unix_i_user_setuid, 1)
 
     // Call the function
     int tmp_var_60 = setuid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_60);
+    anna_entry_t result = anna_from_int(tmp_var_60);
 
     // Perform cleanup
 
@@ -3089,7 +3089,7 @@ ANNA_VM_NATIVE(unix_i_user_setuid, 1)
 ANNA_VM_NATIVE(unix_i_user_seteuid, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_uid = anna_as_int(param[0]);
@@ -3098,7 +3098,7 @@ ANNA_VM_NATIVE(unix_i_user_seteuid, 1)
 
     // Call the function
     int tmp_var_61 = seteuid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_61);
+    anna_entry_t result = anna_from_int(tmp_var_61);
 
     // Perform cleanup
 
@@ -3109,7 +3109,7 @@ ANNA_VM_NATIVE(unix_i_user_seteuid, 1)
 ANNA_VM_NATIVE(unix_i_user_setegid, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_uid = anna_as_int(param[0]);
@@ -3118,7 +3118,7 @@ ANNA_VM_NATIVE(unix_i_user_setegid, 1)
 
     // Call the function
     int tmp_var_62 = setegid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_62);
+    anna_entry_t result = anna_from_int(tmp_var_62);
 
     // Perform cleanup
 
@@ -3129,7 +3129,7 @@ ANNA_VM_NATIVE(unix_i_user_setegid, 1)
 ANNA_VM_NATIVE(unix_i_user_setgid, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_uid = anna_as_int(param[0]);
@@ -3138,7 +3138,7 @@ ANNA_VM_NATIVE(unix_i_user_setgid, 1)
 
     // Call the function
     int tmp_var_63 = setgid(native_param_uid);
-    anna_entry_t *result = anna_from_int(tmp_var_63);
+    anna_entry_t result = anna_from_int(tmp_var_63);
 
     // Perform cleanup
 
@@ -3149,8 +3149,8 @@ ANNA_VM_NATIVE(unix_i_user_setgid, 1)
 ANNA_VM_NATIVE(unix_i_user_setpgid, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_pid = anna_as_int(param[0]);
@@ -3160,7 +3160,7 @@ ANNA_VM_NATIVE(unix_i_user_setpgid, 2)
 
     // Call the function
     int tmp_var_64 = setpgid(native_param_pid, native_param_pgid);
-    anna_entry_t *result = anna_from_int(tmp_var_64);
+    anna_entry_t result = anna_from_int(tmp_var_64);
 
     // Perform cleanup
 
@@ -3171,7 +3171,7 @@ ANNA_VM_NATIVE(unix_i_user_setpgid, 2)
 ANNA_VM_NATIVE(unix_i_user_getpgid, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_pid = anna_as_int(param[0]);
@@ -3180,7 +3180,7 @@ ANNA_VM_NATIVE(unix_i_user_getpgid, 1)
 
     // Call the function
     int tmp_var_65 = getpgid(native_param_pid);
-    anna_entry_t *result = anna_from_int(tmp_var_65);
+    anna_entry_t result = anna_from_int(tmp_var_65);
 
     // Perform cleanup
 
@@ -3191,8 +3191,8 @@ ANNA_VM_NATIVE(unix_i_user_getpgid, 1)
 ANNA_VM_NATIVE(unix_i_user_getgroups, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_size = anna_as_int(param[0]);
@@ -3206,8 +3206,8 @@ ANNA_VM_NATIVE(unix_i_user_getgroups, 2)
     int native_param_list_idx;
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
     {
-        anna_entry_t *tmp = anna_list_get(anna_as_obj(param[1]), native_param_list_idx);
-        if(tmp == null_entry)
+        anna_entry_t tmp = anna_list_get(anna_as_obj(param[1]), native_param_list_idx);
+        if(anna_entry_null(tmp))
         {
             native_param_list[native_param_list_idx] = 0;
         }
@@ -3223,12 +3223,12 @@ ANNA_VM_NATIVE(unix_i_user_getgroups, 2)
 
     // Call the function
     int tmp_var_66 = getgroups(native_param_size, native_param_list);
-    anna_entry_t *result = anna_from_int(tmp_var_66);
+    anna_entry_t result = anna_from_int(tmp_var_66);
 
     // Perform cleanup
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
     {
-            anna_entry_t *tmp = anna_from_int(native_param_list[native_param_list_idx]);
+            anna_entry_t tmp = anna_from_int(native_param_list[native_param_list_idx]);
 
         anna_list_set(anna_as_obj(param[1]), native_param_list_idx, tmp);
         
@@ -3242,8 +3242,8 @@ ANNA_VM_NATIVE(unix_i_user_getgroups, 2)
 ANNA_VM_NATIVE(unix_i_user_setgroups, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_size = anna_as_int(param[0]);
@@ -3257,8 +3257,8 @@ ANNA_VM_NATIVE(unix_i_user_setgroups, 2)
     int native_param_list_idx;
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
     {
-        anna_entry_t *tmp = anna_list_get(anna_as_obj(param[1]), native_param_list_idx);
-        if(tmp == null_entry)
+        anna_entry_t tmp = anna_list_get(anna_as_obj(param[1]), native_param_list_idx);
+        if(anna_entry_null(tmp))
         {
             native_param_list[native_param_list_idx] = 0;
         }
@@ -3274,12 +3274,12 @@ ANNA_VM_NATIVE(unix_i_user_setgroups, 2)
 
     // Call the function
     int tmp_var_67 = setgroups(native_param_size, native_param_list);
-    anna_entry_t *result = anna_from_int(tmp_var_67);
+    anna_entry_t result = anna_from_int(tmp_var_67);
 
     // Perform cleanup
     for(native_param_list_idx=0; native_param_list_idx < native_param_list_count; native_param_list_idx++)
     {
-            anna_entry_t *tmp = anna_from_int(native_param_list[native_param_list_idx]);
+            anna_entry_t tmp = anna_from_int(native_param_list[native_param_list_idx]);
 
         anna_list_set(anna_as_obj(param[1]), native_param_list_idx, tmp);
         
@@ -3485,7 +3485,7 @@ ANNA_VM_NATIVE(unix_i_r_limit_cur_getter, 1)
 {
     struct rlimit *data;
     data = (struct rlimit *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->rlim_cur);
+        anna_entry_t result = anna_from_int(data->rlim_cur);
 
     return result;
 }
@@ -3494,7 +3494,7 @@ ANNA_VM_NATIVE(unix_i_r_limit_max_getter, 1)
 {
     struct rlimit *data;
     data = (struct rlimit *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->rlim_max);
+        anna_entry_t result = anna_from_int(data->rlim_max);
 
     return result;
 }
@@ -3510,8 +3510,8 @@ ANNA_VM_NATIVE(unix_i_r_limit_init, 1)
 ANNA_VM_NATIVE(unix_i_r_limit_get_r_limit, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_resource = anna_as_int(param[0]);
@@ -3521,7 +3521,7 @@ struct rlimit *native_param_rlim;
 
     // Call the function
     int tmp_var_68 = getrlimit(native_param_resource, native_param_rlim);
-    anna_entry_t *result = anna_from_int(tmp_var_68);
+    anna_entry_t result = anna_from_int(tmp_var_68);
 
     // Perform cleanup
 
@@ -3532,8 +3532,8 @@ struct rlimit *native_param_rlim;
 ANNA_VM_NATIVE(unix_i_r_limit_set_r_limit, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_resource = anna_as_int(param[0]);
@@ -3543,7 +3543,7 @@ struct rlimit *native_param_rlim;
 
     // Call the function
     int tmp_var_69 = setrlimit(native_param_resource, native_param_rlim);
-    anna_entry_t *result = anna_from_int(tmp_var_69);
+    anna_entry_t result = anna_from_int(tmp_var_69);
 
     // Perform cleanup
 
@@ -3603,8 +3603,8 @@ const static anna_type_data_t anna_env_type_data[] =
 
 ANNA_VM_NATIVE(anna_setenv, 2)
 {
-    if(param[0] == null_entry) { return param[1]; }
-    if(param[1] == null_entry) { return param[1]; }
+    if(anna_entry_null(param[0])) { return param[1]; }
+    if(anna_entry_null(param[1])) { return param[1]; }
 
     char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
     char *native_param_value = anna_string_payload_narrow(anna_as_obj(param[1]));
@@ -3629,7 +3629,7 @@ ANNA_VM_NATIVE(anna_environ, 0)
     int i;
     for(i=0; environ[i]; i++)
     {
-        anna_list_push(res, anna_string_create_narrow(strlen(environ[i]), environ[i]));
+        anna_list_push(res, anna_from_obj(anna_string_create_narrow(strlen(environ[i]), environ[i])));
     }
 
     return anna_from_obj(res);
@@ -3638,10 +3638,10 @@ ANNA_VM_NATIVE(anna_environ, 0)
 ANNA_VM_NATIVE(unix_i_env_get, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
@@ -3649,7 +3649,7 @@ ANNA_VM_NATIVE(unix_i_env_get, 1)
     pthread_mutex_lock(&lock);
     // Call the function
     char * tmp_var_70 = getenv(native_param_name);
-    anna_entry_t *result = (tmp_var_70) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_70), tmp_var_70)) : null_entry;
+    anna_entry_t result = (tmp_var_70) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_70), tmp_var_70)) : null_entry;
 
     // Perform cleanup
     free(native_param_name);
@@ -3662,13 +3662,13 @@ ANNA_VM_NATIVE(unix_i_env_get, 1)
 ANNA_VM_NATIVE(unix_i_env_setenv, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
-    char *native_param_value = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
-    int native_param_overwrite = (param[2] != null_entry);
+    char *native_param_name = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_value = anna_entry_null(param[1]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
+    int native_param_overwrite = !anna_entry_null(param[2]);
 
     // Validate parameters
 
@@ -3676,7 +3676,7 @@ ANNA_VM_NATIVE(unix_i_env_setenv, 3)
     pthread_mutex_lock(&lock);
     // Call the function
     int tmp_var_71 = setenv(native_param_name, native_param_value, native_param_overwrite);
-    anna_entry_t *result = anna_from_int(tmp_var_71);
+    anna_entry_t result = anna_from_int(tmp_var_71);
 
     // Perform cleanup
     free(native_param_name);
@@ -3690,10 +3690,10 @@ ANNA_VM_NATIVE(unix_i_env_setenv, 3)
 ANNA_VM_NATIVE(unix_i_env_remove, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
-    char *native_param_name = (param[0] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_name = anna_entry_null(param[0]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[0]));
 
     // Validate parameters
 
@@ -3701,7 +3701,7 @@ ANNA_VM_NATIVE(unix_i_env_remove, 1)
     pthread_mutex_lock(&lock);
     // Call the function
     int tmp_var_73 = unsetenv(native_param_name);
-    anna_entry_t *result = anna_from_int(tmp_var_73);
+    anna_entry_t result = anna_from_int(tmp_var_73);
 
     // Perform cleanup
     free(native_param_name);
@@ -3723,7 +3723,7 @@ ANNA_VM_NATIVE(unix_i_env_clear, 0)
     pthread_mutex_lock(&lock);
     // Call the function
     int tmp_var_74 = clearenv();
-    anna_entry_t *result = anna_from_int(tmp_var_74);
+    anna_entry_t result = anna_from_int(tmp_var_74);
 
     // Perform cleanup
 
@@ -3789,7 +3789,7 @@ const static anna_type_data_t anna_sleep_type_data[] =
 ANNA_VM_NATIVE(unix_i_sleep_sleep, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_seconds = anna_as_int(param[0]);
@@ -3798,7 +3798,7 @@ ANNA_VM_NATIVE(unix_i_sleep_sleep, 1)
 
     // Call the function
     int tmp_var_76 = sleep(native_param_seconds);
-    anna_entry_t *result = anna_from_int(tmp_var_76);
+    anna_entry_t result = anna_from_int(tmp_var_76);
 
     // Perform cleanup
 
@@ -3908,11 +3908,11 @@ void anna_locale_mode_load(anna_stack_template_t *stack)
 ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_cateory = anna_as_int(param[0]);
-    char *native_param_locale = (param[1] == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
+    char *native_param_locale = anna_entry_null(param[1]) ? 0 : anna_string_payload_narrow(anna_as_obj(param[1]));
 
     // Validate parameters
 
@@ -3920,7 +3920,7 @@ ANNA_VM_NATIVE(unix_i_locale_set_locale, 2)
     pthread_mutex_lock(&lock);
     // Call the function
     char * tmp_var_77 = setlocale(native_param_cateory, native_param_locale);
-    anna_entry_t *result = (tmp_var_77) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_77), tmp_var_77)) : null_entry;
+    anna_entry_t result = (tmp_var_77) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_77), tmp_var_77)) : null_entry;
 
     // Perform cleanup
     free(native_param_locale);
@@ -3934,7 +3934,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_decimal_point_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->decimal_point), data->decimal_point)) : null_entry;
+        anna_entry_t result = (data->decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->decimal_point), data->decimal_point)) : null_entry;
 
     return result;
 }
@@ -3943,7 +3943,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_thousands_separator_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->thousands_sep), data->thousands_sep)) : null_entry;
+        anna_entry_t result = (data->thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->thousands_sep), data->thousands_sep)) : null_entry;
 
     return result;
 }
@@ -3952,7 +3952,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_grouping_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->grouping), data->grouping)) : null_entry;
+        anna_entry_t result = (data->grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->grouping), data->grouping)) : null_entry;
 
     return result;
 }
@@ -3961,7 +3961,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_international_currency_symbol_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->int_curr_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->int_curr_symbol), data->int_curr_symbol)) : null_entry;
+        anna_entry_t result = (data->int_curr_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->int_curr_symbol), data->int_curr_symbol)) : null_entry;
 
     return result;
 }
@@ -3970,7 +3970,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_currency_symbol_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->currency_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->currency_symbol), data->currency_symbol)) : null_entry;
+        anna_entry_t result = (data->currency_symbol) ? anna_from_obj(anna_string_create_narrow(strlen(data->currency_symbol), data->currency_symbol)) : null_entry;
 
     return result;
 }
@@ -3979,7 +3979,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_monetary_decimal_point_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->mon_decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_decimal_point), data->mon_decimal_point)) : null_entry;
+        anna_entry_t result = (data->mon_decimal_point) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_decimal_point), data->mon_decimal_point)) : null_entry;
 
     return result;
 }
@@ -3988,7 +3988,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_monetary_thousands_separator_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->mon_thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_thousands_sep), data->mon_thousands_sep)) : null_entry;
+        anna_entry_t result = (data->mon_thousands_sep) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_thousands_sep), data->mon_thousands_sep)) : null_entry;
 
     return result;
 }
@@ -3997,7 +3997,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_monetary_grouping_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->mon_grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_grouping), data->mon_grouping)) : null_entry;
+        anna_entry_t result = (data->mon_grouping) ? anna_from_obj(anna_string_create_narrow(strlen(data->mon_grouping), data->mon_grouping)) : null_entry;
 
     return result;
 }
@@ -4006,7 +4006,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->positive_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->positive_sign), data->positive_sign)) : null_entry;
+        anna_entry_t result = (data->positive_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->positive_sign), data->positive_sign)) : null_entry;
 
     return result;
 }
@@ -4015,7 +4015,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->negative_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->negative_sign), data->negative_sign)) : null_entry;
+        anna_entry_t result = (data->negative_sign) ? anna_from_obj(anna_string_create_narrow(strlen(data->negative_sign), data->negative_sign)) : null_entry;
 
     return result;
 }
@@ -4024,7 +4024,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_international_frac_digits_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->int_frac_digits);
+        anna_entry_t result = anna_from_int(data->int_frac_digits);
 
     return result;
 }
@@ -4033,7 +4033,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_frac_digits_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->frac_digits);
+        anna_entry_t result = anna_from_int(data->frac_digits);
 
     return result;
 }
@@ -4042,7 +4042,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_currency_symbol_precedes_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->p_cs_precedes)?anna_from_int(1):null_entry;
+        anna_entry_t result = (data->p_cs_precedes)?anna_from_int(1):null_entry;
 
     return result;
 }
@@ -4051,7 +4051,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_currency_symbol_precedes_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->n_cs_precedes)?anna_from_int(1):null_entry;
+        anna_entry_t result = (data->n_cs_precedes)?anna_from_int(1):null_entry;
 
     return result;
 }
@@ -4060,7 +4060,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_separate_by_space_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->p_sep_by_space)?anna_from_int(1):null_entry;
+        anna_entry_t result = (data->p_sep_by_space)?anna_from_int(1):null_entry;
 
     return result;
 }
@@ -4069,7 +4069,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_separate_by_space_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = (data->n_sep_by_space)?anna_from_int(1):null_entry;
+        anna_entry_t result = (data->n_sep_by_space)?anna_from_int(1):null_entry;
 
     return result;
 }
@@ -4078,7 +4078,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_positive_sign_position_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->p_sign_posn);
+        anna_entry_t result = anna_from_int(data->p_sign_posn);
 
     return result;
 }
@@ -4087,7 +4087,7 @@ ANNA_VM_NATIVE(unix_i_locale_conv_negative_sign_position_getter, 1)
 {
     struct lconv *data;
     data = *(struct lconv **)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->n_sign_posn);
+        anna_entry_t result = anna_from_int(data->n_sign_posn);
 
     return result;
 }
@@ -4110,7 +4110,7 @@ ANNA_VM_NATIVE(unix_i_locale_locale_conv, 0)
 
     // Call the function
     struct lconv * tmp_var_78 = localeconv();
-anna_entry_t *result = anna_from_obj(anna_object_create(unix_locale_conv_type));
+anna_entry_t result = anna_from_obj(anna_object_create(unix_locale_conv_type));
     *((struct lconv **)anna_entry_get_addr(anna_as_obj_fast(result), ANNA_MID_CSTRUCT_PAYLOAD)) = tmp_var_78;
     // Perform cleanup
 
@@ -4319,7 +4319,7 @@ ANNA_VM_NATIVE(unix_i_termios_iflag_getter, 1)
 {
     struct termios *data;
     data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->c_iflag);
+        anna_entry_t result = anna_from_int(data->c_iflag);
 
     return result;
 }
@@ -4338,7 +4338,7 @@ ANNA_VM_NATIVE(unix_i_termios_oflag_getter, 1)
 {
     struct termios *data;
     data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->c_oflag);
+        anna_entry_t result = anna_from_int(data->c_oflag);
 
     return result;
 }
@@ -4357,7 +4357,7 @@ ANNA_VM_NATIVE(unix_i_termios_cflag_getter, 1)
 {
     struct termios *data;
     data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->c_cflag);
+        anna_entry_t result = anna_from_int(data->c_cflag);
 
     return result;
 }
@@ -4376,7 +4376,7 @@ ANNA_VM_NATIVE(unix_i_termios_lflag_getter, 1)
 {
     struct termios *data;
     data = (struct termios *)anna_entry_get_addr(anna_as_obj_fast(param[0]), ANNA_MID_CSTRUCT_PAYLOAD);
-        anna_entry_t *result = anna_from_int(data->c_lflag);
+        anna_entry_t result = anna_from_int(data->c_lflag);
 
     return result;
 }
@@ -4402,8 +4402,8 @@ ANNA_VM_NATIVE(unix_i_termios_init, 1)
 ANNA_VM_NATIVE(unix_i_term_get_attr, 2)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -4413,7 +4413,7 @@ struct termios *native_param_ios;
 
     // Call the function
     int tmp_var_79 = tcgetattr(native_param_fd, native_param_ios);
-    anna_entry_t *result = (tmp_var_79)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_79)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -4424,9 +4424,9 @@ struct termios *native_param_ios;
 ANNA_VM_NATIVE(unix_i_term_set_attr, 3)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
-    if(param[1] == null_entry){return null_entry;}
-    if(param[2] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
+    if(anna_entry_null(param[1])){return null_entry;}
+    if(anna_entry_null(param[2])){return null_entry;}
 
     // Mangle input parameters
     int native_param_fd = anna_as_int(param[0]);
@@ -4437,7 +4437,7 @@ struct termios *native_param_ios;
 
     // Call the function
     int tmp_var_80 = tcsetattr(native_param_fd, native_param_actions, native_param_ios);
-    anna_entry_t *result = (tmp_var_80)?anna_from_int(1):null_entry;
+    anna_entry_t result = (tmp_var_80)?anna_from_int(1):null_entry;
 
     // Perform cleanup
 
@@ -4507,7 +4507,7 @@ const static anna_type_data_t anna_error_type_data[] =
 ANNA_VM_NATIVE(unix_i_error_error_string, 1)
 {
     // Validate parameters
-    if(param[0] == null_entry){return null_entry;}
+    if(anna_entry_null(param[0])){return null_entry;}
 
     // Mangle input parameters
     int native_param_error = anna_as_int(param[0]);
@@ -4516,7 +4516,7 @@ ANNA_VM_NATIVE(unix_i_error_error_string, 1)
 
     // Call the function
     char * tmp_var_81 = strerror(native_param_error);
-    anna_entry_t *result = (tmp_var_81) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_81), tmp_var_81)) : null_entry;
+    anna_entry_t result = (tmp_var_81) ? anna_from_obj(anna_string_create_narrow(strlen(tmp_var_81), tmp_var_81)) : null_entry;
 
     // Perform cleanup
 
@@ -4526,14 +4526,14 @@ ANNA_VM_NATIVE(unix_i_error_error_string, 1)
 
 ANNA_VM_NATIVE(anna_unix_errno_getter, 1)
 {
-        anna_entry_t *result = anna_from_int(errno);
+        anna_entry_t result = anna_from_int(errno);
 
     return result;
 }
 
 ANNA_VM_NATIVE(anna_unix_errno_setter, 2)
 {
-    if(param[1] != null_entry)
+    if(!anna_entry_null(param[1]))
     {
             int value = anna_as_int(param[1]);
 

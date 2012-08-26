@@ -428,8 +428,8 @@ env
     verbatim("
 ANNA_VM_NATIVE(anna_setenv, 2)
 {
-    if(param[0] == null_entry) { return param[1]; }
-    if(param[1] == null_entry) { return param[1]; }
+    if(anna_entry_null(param[0])) { return param[1]; }
+    if(anna_entry_null(param[1])) { return param[1]; }
 
     char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
     char *native_param_value = anna_string_payload_narrow(anna_as_obj(param[1]));
@@ -454,7 +454,7 @@ ANNA_VM_NATIVE(anna_environ, 0)
     int i;
     for(i=0; environ[i]; i++)
     {
-        anna_list_add(res, anna_string_create_narrow(strlen(environ[i]), environ[i]));
+        anna_list_push(res, anna_from_obj(anna_string_create_narrow(strlen(environ[i]), environ[i])));
     }
 
     return anna_from_obj(res);

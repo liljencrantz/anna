@@ -443,7 +443,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 		}
 		else
 		{
-		    res->member_count+= ((sz-1)/sizeof(anna_entry_t *));
+		    res->member_count+= ((sz-1)/sizeof(anna_entry_t ));
 		    anna_type_calculate_size(res);
 		}
 	    }
@@ -594,7 +594,7 @@ static void anna_type_prepare_member_internal(
     }
     if(is_static)
     {
-	anna_entry_t *value = anna_node_static_invoke(
+	anna_entry_t value = anna_node_static_invoke(
 	    decl->value, decl->stack);
 	type->static_member[member->offset] = value;
     }
@@ -839,7 +839,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	anna_member_t *memb = type->mid_identifier[i];
 	if(memb && anna_member_is_static(memb) && memb->type != null_type && !anna_member_is_property(memb))
 	{
-	    anna_entry_t *val = *anna_entry_get_addr_static(type, i);
+	    anna_entry_t val = *anna_entry_get_addr_static(type, i);
 	    if(!anna_entry_null(val))
 	    {
 		anna_function_t *fun = anna_function_unwrap(anna_as_obj(val));
@@ -1086,10 +1086,10 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
     {
 	anna_type_t *arg_type = call->child[0]->return_type;
 	anna_type_t *spec1 = 
-	    (anna_type_t *)*anna_entry_get_addr_static(
+	    (anna_type_t *)anna_entry_get_static_ptr(
 		arg_type, ANNA_MID_PAIR_SPECIALIZATION1);
 	anna_type_t *spec2 =
-	    (anna_type_t *)*anna_entry_get_addr_static(
+	    (anna_type_t *)anna_entry_get_static_ptr(
 		arg_type, ANNA_MID_PAIR_SPECIALIZATION2);
 	int i;
 	for(i=1; i<call->child_count; i++)
@@ -1097,11 +1097,11 @@ anna_type_t *anna_type_implicit_specialize(anna_type_t *type, anna_node_call_t *
 	    arg_type = call->child[i]->return_type;
 	    spec1 = anna_type_intersect(
 		spec1, 
-		(anna_type_t *)*anna_entry_get_addr_static(
+		(anna_type_t *)anna_entry_get_static_ptr(
 		    arg_type, ANNA_MID_PAIR_SPECIALIZATION1));
 	    spec2 = anna_type_intersect(
 		spec2, 
-		(anna_type_t *)*anna_entry_get_addr_static(
+		(anna_type_t *)anna_entry_get_static_ptr(
 		    arg_type, ANNA_MID_PAIR_SPECIALIZATION2));
 	}
 	
@@ -1178,7 +1178,7 @@ void anna_type_calculate_size(anna_type_t *this)
 {
     this->object_size = 
 	anna_align(
-	    sizeof(anna_object_t)+sizeof(anna_entry_t *)*this->member_count);
+	    sizeof(anna_object_t)+sizeof(anna_entry_t )*this->member_count);
 }
 
 static int hash_function_type_func(void *a)
@@ -1406,7 +1406,7 @@ static void anna_type_object_mark_empty(anna_object_t *this)
     {
 	/* This object is a list. Mark all list items */
 	size_t sz = anna_list_get_count(this);
-	anna_entry_t **data = anna_list_get_payload(this);
+	anna_entry_t *data = anna_list_get_payload(this);
 	
 	for(i=0; i<sz; i++)
 	{
@@ -1462,9 +1462,9 @@ static void anna_type_object_mark_basic(anna_object_t *this)
 
     for(i=0; i<t->mark_blob_count; i++)
     {
-	if(this->member[t->mark_blob[i]])
+	if(!anna_entry_null_ptr(this->member[t->mark_blob[i]]))
 	{
-	    anna_alloc_mark(this->member[t->mark_blob[i]]);
+	    anna_alloc_mark(anna_as_ptr(this->member[t->mark_blob[i]]));
 	}
     }
         
@@ -1504,7 +1504,7 @@ static void anna_type_mark(anna_type_t *type)
     }
     for(i=0; i<type->static_mark_blob_count; i++)
     {
-	anna_alloc_mark(type->static_member[type->static_mark_blob[i]]);
+	anna_alloc_mark(anna_as_ptr(type->static_member[type->static_mark_blob[i]]));
     }
 
     int steps = al_get_count(&type->member_list);

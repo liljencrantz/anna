@@ -394,8 +394,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL) ? ANNA_NODE_STATIC_MEMBER_GET: ANNA_NODE_MEMBER_GET,
 		n->object, n->mid);
 	memb_get->stack = n->stack;
-	anna_entry_t *fun_entry = anna_node_static_invoke_try(memb_get, n->stack);
-	if(fun_entry)
+	anna_entry_t fun_entry = anna_node_static_invoke_try(memb_get, n->stack);
+	if(!anna_entry_null_ptr(fun_entry))
 	{
 	    
 	    anna_function_t *fun = anna_function_unwrap(anna_as_obj(fun_entry));
@@ -690,8 +690,8 @@ static anna_node_t *anna_node_calculate_type_internal(
 		    call->function, 0);
 	    }
 
-	    anna_entry_t *fun_obj = anna_node_static_invoke_try(call->function, call->stack);
-	    if(fun_obj)
+	    anna_entry_t fun_obj = anna_node_static_invoke_try(call->function, call->stack);
+	    if(!anna_entry_null_ptr(fun_obj))
 	    {
 		anna_function_t *fun = anna_function_unwrap(anna_as_obj(fun_obj));
 		if(fun)
@@ -1001,9 +1001,9 @@ static anna_node_t *anna_node_calculate_type_internal(
 		if(do_decl)
 		{
 		    //debug(D_ERROR, L"Declaration %ls is a constant\n", d->name);
-		    anna_entry_t *value = anna_node_static_invoke_try(
+		    anna_entry_t value = anna_node_static_invoke_try(
 			d->value, stack);
-		    if(value)
+		    if(!anna_entry_null_ptr(value))
 		    {
 			anna_stack_set(
 			    stack,

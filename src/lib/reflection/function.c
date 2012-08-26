@@ -114,7 +114,7 @@ ANNA_VM_NATIVE(anna_function_type_i_get_variadic_named, 1)
 ANNA_VM_NATIVE(anna_continuation_type_i_get_filename, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_as_obj_fast(*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME));
     anna_function_t *f = frame->function;
     return f->filename?anna_from_obj(anna_string_create(wcslen(f->filename), f->filename)):null_entry;
 }
@@ -122,7 +122,7 @@ ANNA_VM_NATIVE(anna_continuation_type_i_get_filename, 1)
 ANNA_VM_NATIVE(anna_continuation_type_i_get_line, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_as_obj_fast(*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME));
     int line = anna_function_line(frame->function, frame->code - frame->function->code);
     return line >= 0 ? anna_from_int(line): null_entry;
 }
@@ -135,7 +135,7 @@ ANNA_VM_NATIVE(anna_function_type_to_string, 1)
     sb_init(&sb);
     anna_function_t *fun = anna_function_unwrap(this);
     ANNA_FUNCTION_PROTOTYPE(fun, &sb);
-    anna_entry_t *res = anna_from_obj( anna_string_create(sb_count(&sb), sb_content(&sb)));
+    anna_entry_t res = anna_from_obj( anna_string_create(sb_count(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
 }
@@ -162,9 +162,9 @@ ANNA_VM_NATIVE(anna_function_type_trace, 1)
     anna_object_t *this = anna_as_obj_fast(param[0]);
     string_buffer_t sb;
     sb_init(&sb);
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_function_type_trace_recursive(&sb, frame);
-    anna_entry_t *res = anna_from_obj( anna_string_create(sb_count(&sb), sb_content(&sb)));
+    anna_entry_t res = anna_from_obj( anna_string_create(sb_count(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
 }
@@ -172,7 +172,7 @@ ANNA_VM_NATIVE(anna_function_type_trace, 1)
 ANNA_VM_NATIVE(anna_function_type_i_call_count, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    if(null_entry == anna_entry_get(this, ANNA_MID_CONTINUATION_CALL_COUNT))
+    if(anna_entry_null(anna_entry_get(this, ANNA_MID_CONTINUATION_CALL_COUNT)))
     {
 	return anna_from_int(0);
     }
@@ -183,14 +183,14 @@ ANNA_VM_NATIVE(anna_function_type_i_call_count, 1)
 ANNA_VM_NATIVE(anna_function_type_i_get, 2)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    if(param[1] == null_entry)
+    if(anna_entry_null(param[1]))
     {
 	return null_entry;
     }
     
     wchar_t *name = anna_string_payload(anna_as_obj(param[1]));
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
-    anna_entry_t *res = null_entry;
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_entry_t res = null_entry;
     anna_function_t *fun = frame->function;
     if(fun->stack_template)
     {
@@ -207,12 +207,12 @@ ANNA_VM_NATIVE(anna_function_type_i_get, 2)
 ANNA_VM_NATIVE(anna_function_type_i_dynamic, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     if(frame->dynamic_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    (anna_entry_t **)anna_blob_payload(*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK)),
-	    (size_t)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK_COUNT),
+	    (anna_entry_t *)anna_blob_payload(anna_entry_get_obj(this, ANNA_MID_CONTINUATION_STACK)),
+	    (size_t)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_STACK_COUNT),
 	    frame->dynamic_frame, 0)->wrapper;
 	return anna_from_obj(cont);
     }
@@ -222,7 +222,7 @@ ANNA_VM_NATIVE(anna_function_type_i_dynamic, 1)
 ANNA_VM_NATIVE(anna_function_type_i_static, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
 // Old version of the above line. Surely it must be a bug?
 /*
     anna_context_t *c_stack = (anna_context_t *)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK);
@@ -231,8 +231,8 @@ ANNA_VM_NATIVE(anna_function_type_i_static, 1)
     if(frame->static_frame)
     {
 	anna_object_t *cont = anna_continuation_create(
-	    (anna_entry_t **)anna_blob_payload(*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK)),
-	    (size_t)*anna_entry_get_addr(this, ANNA_MID_CONTINUATION_STACK_COUNT),
+	    (anna_entry_t *)anna_blob_payload(anna_entry_get_obj(this, ANNA_MID_CONTINUATION_STACK)),
+	    (size_t)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_STACK_COUNT),
 	    frame->static_frame, 0)->wrapper;
 	return anna_from_obj(cont);
     }
@@ -246,9 +246,9 @@ static void anna_function_type_i_member_each(
     void *aux)
 {
     anna_object_t *this = (anna_object_t *)aux;
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_function_t *fun = frame->function;
-    anna_object_t *res = (anna_object_t *)*anna_entry_get_addr(this, anna_mid_get(L"!variablePayload"));
+    anna_object_t *res = (anna_object_t *)anna_entry_get_obj(this, anna_mid_get(L"!variablePayload"));
     wchar_t *name = (wchar_t *)key;
     
     anna_object_t *el = anna_object_create(continuation_variable_type);
@@ -268,11 +268,11 @@ static void anna_function_type_i_member_each(
 ANNA_VM_NATIVE(anna_function_type_i_member, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    anna_object_t *res = (anna_object_t *)*anna_entry_get_addr(this, anna_mid_get(L"!variablePayload"));
+    anna_object_t *res = (anna_object_t *)anna_entry_get_obj(this, anna_mid_get(L"!variablePayload"));
     if(res == null_object)
     {
 	res = anna_list_create_imutable(continuation_variable_type);
-	anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+	anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
 	anna_function_t *fun = frame->function;
 	anna_stack_template_t *var = fun->stack_template;
 	assert(fun);
@@ -447,11 +447,11 @@ void anna_reflection_type_for_function_create(
 	res->static_member =
 	    realloc(
 		res->static_member, 
-		sizeof(anna_entry_t *)*res->static_member_capacity);
+		sizeof(anna_entry_t )*res->static_member_capacity);
 	memcpy(
 	    res->static_member,
 	    bbb->static_member,
-	    sizeof(anna_entry_t *)*res->static_member_capacity);
+	    sizeof(anna_entry_t )*res->static_member_capacity);
 	res->stack = bbb->stack;
 	res->stack_macro = bbb->stack_macro;
 	res->mid_count = bbb->mid_count;
@@ -608,7 +608,7 @@ void anna_reflection_type_for_function_create(
     }
 
         
-    *anna_entry_get_addr_static(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD) = (anna_entry_t *)key;
+    anna_entry_set_static_obj(res, ANNA_MID_FUNCTION_WRAPPER_TYPE_PAYLOAD, (anna_object_t *)key);
     anna_type_close(res);
 
     return;

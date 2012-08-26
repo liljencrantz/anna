@@ -114,7 +114,7 @@ ANNA_VM_NATIVE(anna_debug_breakpoint, 2)
     int line;
 
     ANNA_ENTRY_NULL_CHECK(param[0]);
-    if(param[1] == null_entry)
+    if(anna_entry_null(param[1]))
     {
 	fun_obj = anna_as_obj(param[0]);
 	line = 0;
@@ -149,7 +149,7 @@ ANNA_VM_NATIVE(anna_debug_breakpoint, 2)
 
 ANNA_VM_NATIVE(anna_debug_clear, 1)
 {
-    if(param[0] == null_entry)
+    if(anna_entry_null(param[0]))
     {
 	int cleared=0;
 	int i;

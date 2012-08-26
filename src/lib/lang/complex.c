@@ -7,7 +7,7 @@ static inline void anna_complex_set(anna_object_t *this, complex double value)
     memcpy(&this->member[off], &value, sizeof(complex double));
 }
 
-int anna_is_complex(anna_entry_t *this)
+int anna_is_complex(anna_entry_t this)
 {
     anna_object_t *obj = anna_as_obj(this);
     return !!obj->type->mid_identifier[ANNA_MID_COMPLEX_PAYLOAD];
@@ -36,7 +36,7 @@ ANNA_VM_NATIVE(anna_complex_init, 3)
     return param[0];
 }
 
-static anna_entry_t *anna_complex_sign(double v)
+static anna_entry_t anna_complex_sign(double v)
 {
     if(v > 0.0)
     {

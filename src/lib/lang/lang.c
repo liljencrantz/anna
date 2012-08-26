@@ -124,12 +124,12 @@ static void anna_null_type_create()
 		L"!nullFunction", 0, 
 		&anna_vm_null_function, 
 		null_type, 1, argv, argn, 0, 0));
-    null_type->static_member[0]= (anna_entry_t *)null_function;
-    
+    null_type->static_member[0]= anna_from_ptr(null_function);
+
     for(i=0; i<null_type->mid_count;i++) {
 	null_type->mid_identifier[i] = null_member;
     }
-    assert(anna_entry_get_static(null_type, 5) == (anna_entry_t *)null_function);    
+
     null_object->type = null_type;
 
     anna_type_document(
@@ -253,13 +253,13 @@ static void anna_i_callcc(anna_context_t *context)
     
     anna_vm_callback_native(
 	context, &anna_i_callcc_callback, 0, 0, 
-	fun, 1, (anna_entry_t **)&cont);    
+	fun, 1, (anna_entry_t *)&cont);    
 }
 
 static void anna_i_wrap_method(anna_context_t *context)
 {
-    anna_entry_t *meth = anna_context_pop_entry(context);
-    anna_entry_t *obj = anna_context_pop_entry(context);
+    anna_entry_t meth = anna_context_pop_entry(context);
+    anna_entry_t obj = anna_context_pop_entry(context);
     anna_context_pop_object(context);
     
     anna_function_t *fun = anna_function_unwrap(anna_as_obj(meth));

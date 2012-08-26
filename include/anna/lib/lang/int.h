@@ -16,8 +16,8 @@ long anna_int_get(anna_object_t *this);
 void anna_int_type_create(void);
 anna_object_t *anna_int_create_mp(mpz_t value);
 mpz_t *anna_int_unwrap(anna_object_t *this);
-anna_entry_t *anna_int_entry(anna_object_t *this);
-int anna_is_int(anna_entry_t *this);
+anna_entry_t anna_int_entry(anna_object_t *this);
+int anna_is_int(anna_entry_t this);
 void anna_int_init(void);
 
 #endif

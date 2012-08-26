@@ -305,7 +305,7 @@ ANNA_VM_NATIVE(anna_range_get_count_i, 1)
     return anna_range_get_open(range)? null_entry:(anna_range_is_valid(range)?anna_from_int(anna_range_get_count(range)):null_entry);
 }
 
-static inline anna_entry_t *anna_range_get(anna_object_t *this, ssize_t idx)
+static inline anna_entry_t anna_range_get(anna_object_t *this, ssize_t idx)
 {
     return anna_from_int(anna_range_get_from(this) + idx * anna_range_get_step(this));
 }

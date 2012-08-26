@@ -64,7 +64,7 @@ ANNA_VM_NATIVE(anna_continuation_variable_i_get_name, 1)
 	    this, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION));
 
     anna_activation_frame_t *frame = 
-	(anna_activation_frame_t *)anna_entry_get(
+	(anna_activation_frame_t *)anna_entry_get_obj(
 	    cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_function_t *fun = frame->function;
     wchar_t *name = anna_continuation_name_from_offset(fun, offset);
@@ -90,7 +90,7 @@ ANNA_VM_NATIVE(anna_continuation_variable_i_get_type, 1)
 	    this, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION));
 
     anna_activation_frame_t *frame = 
-	(anna_activation_frame_t *)anna_entry_get(
+	(anna_activation_frame_t *)anna_entry_get_obj(
 	    cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     anna_function_t *fun = frame->function;
     wchar_t *name = anna_continuation_name_from_offset(fun, offset);
@@ -118,7 +118,7 @@ ANNA_VM_NATIVE(anna_continuation_variable_i_get_value, 1)
 	anna_entry_get(
 	    this, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION));
     
-    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
     return  frame->slot[offset];
 }
 

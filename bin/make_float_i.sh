@@ -80,7 +80,7 @@ for i in "__add__ v1 + v2" "__increaseAssign__ v1 + v2" "__sub__ v1 - v2" "__dec
     echo "
 ANNA_VM_NATIVE(anna_float_i_$name, 2)
 {
-    if(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object)
+    if(anna_entry_null(param[1]))
     {
         return null_entry;
     }  
@@ -91,7 +91,7 @@ ANNA_VM_NATIVE(anna_float_i_$name, 2)
 
 ANNA_VM_NATIVE(anna_float_i_int_$name, 2)
 {
-    if(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object)
+    if(anna_entry_null(param[1]))
     {
         return null_entry;
     }  
@@ -103,7 +103,7 @@ ANNA_VM_NATIVE(anna_float_i_int_$name, 2)
 
 ANNA_VM_NATIVE(anna_float_i_int_reverse_$name, 2)
 {
-    if(anna_is_obj(param[1]) && (anna_object_t *)param[1]==null_object)
+    if(anna_entry_null(param[1]))
     {
         return null_entry;
     }  
@@ -137,6 +137,7 @@ for i in "abs fabs(v)" "__neg__ -v" "sign (v==0.0?0.0:(v>0?1.0:-1.0))"; do
     echo "
 ANNA_VM_NATIVE(anna_float_i_$name, 1)
 {
+    if(anna_entry_null(param[1])) return null_entry;
     double v = anna_as_float(param[0]);
     return anna_from_float($op);
 }

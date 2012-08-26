@@ -1,5 +1,8 @@
 %{
 
+#include "anna/config.h"
+
+#include "anna/fallback.h"
 #include "anna/anna.h"
 #include "anna/node.h"
 #include "autogen/yacc.h"

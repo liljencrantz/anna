@@ -139,50 +139,50 @@ def init()
 	    ?,
 	    "object_type", 
 	    ?,
-	    "    %(source);\n    anna_entry_t *%(dest) = null_entry;\n",
+	    "    %(source);\n    anna_entry_t %(dest) = null_entry;\n",
 	    ),
 	ast(String): BasicBindingType(
 	    "char *",
 	    "string_type", 
-	    "    char *%(dest) = (%(source) == null_entry) ? 0 : anna_string_payload_narrow(anna_as_obj(%(source)));\n",
-	    "    anna_entry_t *%(dest) = (%(source)) ? anna_from_obj(anna_string_create_narrow(strlen(%(source)), %(source))) : null_entry;\n",
+	    "    char *%(dest) = anna_entry_null(%(source)) ? 0 : anna_string_payload_narrow(anna_as_obj(%(source)));\n",
+	    "    anna_entry_t %(dest) = (%(source)) ? anna_from_obj(anna_string_create_narrow(strlen(%(source)), %(source))) : null_entry;\n",
 	    cleanupToC: "    free(%(dest));\n"),
 	ast(Int): BasicBindingType(
 	    "int",
 	    "int_type",
 	    "    int %(dest) = anna_as_int(%(source));\n",
-	    "    anna_entry_t *%(dest) = anna_from_int(%(source));\n"),
+	    "    anna_entry_t %(dest) = anna_from_int(%(source));\n"),
 	ast(Char): BasicBindingType(
 	    "char",
 	    "char_type",
 	    "    char %(dest) = wctob(anna_as_char(%(source)));\n",
-	    "    anna_entry_t *%(dest) = anna_from_char(btowc(%(source)));\n"),
+	    "    anna_entry_t %(dest) = anna_from_char(btowc(%(source)));\n"),
 	ast(Bool): BasicBindingType(
 	    "int",
 	    "object_type", 
-	    "    int %(dest) = (%(source) != null_entry);\n",
-	    "    anna_entry_t *%(dest) = (%(source))?anna_from_int(1):null_entry;\n",
+	    "    int %(dest) = !anna_entry_null(%(source));\n",
+	    "    anna_entry_t %(dest) = (%(source))?anna_from_int(1):null_entry;\n",
 	    preValidateToC: ""),
 	ast(UInt64): BasicBindingType(
 	    "uint64_t",
 	    "int_type", 
 	    "    uint64_t %(dest) = anna_as_int(%(source));\n",
-	    "    anna_entry_t *%(dest) = anna_from_uint64(%(source));\n"),
+	    "    anna_entry_t %(dest) = anna_from_uint64(%(source));\n"),
 	ast(Float): BasicBindingType(
 	    "float",
 	    "float_type", 
 	    "    float %(dest) = (float)anna_as_float(%(source));\n",
-	    "    anna_entry_t *%(dest) = anna_from_float((double)%(source));\n"),
+	    "    anna_entry_t %(dest) = anna_from_float((double)%(source));\n"),
 	ast(Double): BasicBindingType(
 	    "double",
 	    "float_type", 
 	    "    double %(dest) = anna_as_float(%(source));\n",
-	    "    anna_entry_t *%(dest) = anna_from_float(%(source));\n"),
+	    "    anna_entry_t %(dest) = anna_from_float(%(source));\n"),
 	/*  ast(Pointer): BasicBindingType(
 	    "void *",
 	    "pointer_type", 
 	    "void *%(dest) = anna_entry_get_addr(anna_as_obj(%(source)), ANNA_MID_POINTER_PAYLOAD);",
-	    "anna_entry_t *%(dest) = anna_from_obj(anna_pointer_create(%(source)));"),*/
+	    "anna_entry_t %(dest) = anna_from_obj(anna_pointer_create(%(source)));"),*/
 	ast(Buffer): BasicBindingType(
 	    "unsigned char *",
 	    "buffer_type", 
@@ -236,11 +236,11 @@ class BindingType
     {}
 
     def String convertToC(Node decl, Node attr, String dest, String source)
-    (doc("Convert the anna_entry_t * pointed to by source into C data in the (newly declared) variable named by dest"))
+    (doc("Convert the anna_entry_t  pointed to by source into C data in the (newly declared) variable named by dest"))
     {}
 
     def String convertToAnna(Node decl, Node attr, String dest, String source)
-    (doc("Convert the C data pointed to by source into an anna_entry_t * in the (newly declared) variable named by dest"))
+    (doc("Convert the C data pointed to by source into an anna_entry_t  in the (newly declared) variable named by dest"))
     {}
     
     def String cleanupToC(Node decl, Node attr, String dest, String source)
@@ -256,7 +256,7 @@ class BindingType
     {
 	if(!(attr as Call).childNamed?("nullable"))
 	{
-	    "    if(% == null_entry){return null_entry;}\n" % [source];
+	    "    if(anna_entry_null(%)){return null_entry;}\n" % [source];
 	}
     }
     
@@ -393,8 +393,8 @@ class MutableListBindingType
     int %(dest)_idx;
     for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
     {
-        anna_entry_t *tmp = %(value);
-        if(tmp == null_entry)
+        anna_entry_t tmp = %(value);
+        if(anna_entry_null(tmp))
         {
             %(dest)[%(dest)_idx] = 0;
         }
@@ -577,7 +577,7 @@ class CStructBindingType
 	{
 	    if((attr as Call).childNamed?("nullable"))
 	    {
-		code ~= "    %(dest) = ((%(source)) == null_entry) ? 0 : *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : *(%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
 	    }
 	    else
 	    {
@@ -588,7 +588,7 @@ class CStructBindingType
 	{
 	    if((attr as Call).childNamed?("nullable"))
 	    {
-		code ~= "    %(dest) = ((%(source)) == null_entry) ? 0 : (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
+		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param;
 	    }
 	    else
 	    {
@@ -609,7 +609,7 @@ class CStructBindingType
 		"source": source,
 		"annaCType": annaCType(decl, attr),
 	    	];
-	    return "anna_entry_t *%(dest) = anna_from_obj(anna_object_create(%(annaCType)));
+	    return "anna_entry_t %(dest) = anna_from_obj(anna_object_create(%(annaCType)));
     *((%(structText)%(structName) **)anna_entry_get_addr(anna_as_obj_fast(%(dest)), ANNA_MID_CSTRUCT_PAYLOAD)) = %(source);" % param;
 	}
 	return ?;
@@ -699,7 +699,7 @@ class BindingGenerator
 	else
 	{
 	    code ~= "    %(functionName)(%(args));
-    anna_entry_t *result = null_entry;\n" % ["functionName": nname, "args": args];
+    anna_entry_t result = null_entry;\n" % ["functionName": nname, "args": args];
 	}
         param := [
 	    "init": init, "preValidate": preValidate, "postValidate": postValidate, 
@@ -954,7 +954,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	BindingType bindingType, Node decl, Node attr)
     {
 	return "
-    if(param[1] != null_entry)
+    if(!anna_entry_null(param[1]))
     {
         %(wrapData)
         %(varName) = value;

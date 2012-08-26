@@ -1,3 +1,4 @@
+
 #ifndef HAVE_WCSDUP
 
 /**
@@ -59,6 +60,8 @@ long wcstol(const wchar_t *nptr,
 #endif
 
 #ifndef HAVE_WCSTOL
+#include <errno.h>
+
 long convert_digit( wchar_t d, int base )
 {
 	long res=-1;

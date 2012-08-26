@@ -31,7 +31,7 @@ static void anna_node_validate_call(anna_node_t *this, anna_stack_template_t *st
 	    
 	anna_node_type_t *tn = (anna_node_type_t *)this2->function;
 		
-	anna_entry_t **constructor_ptr = anna_entry_get_addr_static(
+	anna_entry_t *constructor_ptr = anna_entry_get_addr_static(
 	    tn->payload,
 	    ANNA_MID_INIT);
 	assert(constructor_ptr);

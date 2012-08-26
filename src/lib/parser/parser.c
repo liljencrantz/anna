@@ -110,7 +110,7 @@ ANNA_VM_NATIVE(anna_generate_identifier, 1)
 	free(ss);
     }
     
-    anna_entry_t *res = anna_from_obj(anna_string_create(wcslen(nam), nam));
+    anna_entry_t res = anna_from_obj(anna_string_create(wcslen(nam), nam));
     free(nam);
     return res;
 }
@@ -142,8 +142,8 @@ static anna_type_t *anna_parse_get_type_in_module(wchar_t *module_name, wchar_t 
 
 static void anna_parse_i(anna_context_t *context)
 {
-    anna_entry_t *filename_entry = anna_context_pop_entry(context);
-    anna_entry_t *str_entry = anna_context_pop_entry(context);
+    anna_entry_t filename_entry = anna_context_pop_entry(context);
+    anna_entry_t str_entry = anna_context_pop_entry(context);
     anna_context_pop_entry(context);
 
     if(anna_entry_null(str_entry))
@@ -266,7 +266,7 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_set_expand, 2)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *thiso = anna_as_obj_fast(param[0]);
     anna_node_t *this = anna_node_unwrap(thiso);
-    this->flags  = (this->flags & ~ANNA_NODE_DONT_EXPAND) | (param[1] != null_entry ? 0:ANNA_NODE_DONT_EXPAND);
+    this->flags  = (this->flags & ~ANNA_NODE_DONT_EXPAND) | (anna_entry_null(param[1]) ? ANNA_NODE_DONT_EXPAND:0);
     return param[1];
 }
 
@@ -353,7 +353,7 @@ ANNA_VM_NATIVE(anna_parser_i_compile, 1)
     anna_object_t *module = anna_module_create(node);    
     anna_alloc_gc_unblock();
     
-    anna_entry_t *res =(module && !anna_error_count) ? anna_from_obj(module) : null_entry;
+    anna_entry_t res =(module && !anna_error_count) ? anna_from_obj(module) : null_entry;
     anna_error_count = anna_error_count_old;
     return res;
 }
@@ -576,7 +576,7 @@ void anna_parser_load(anna_stack_template_t *stack)
 	anna_type_close(types[i]);
 	/* Declare all types in our namespace.  Don't redeclare types
 	   that are used for more than one mapping */
-	if(!anna_stack_template_get(stack, types[i]->name))
+	if(anna_entry_null_ptr(anna_stack_template_get(stack, types[i]->name)))
 	{
 	    anna_stack_declare(
 		stack, types[i]->name, 

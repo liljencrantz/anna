@@ -88,7 +88,7 @@ ANNA_VM_NATIVE(anna_ctime_get_timezone_name, 1)
 
 ANNA_VM_NATIVE(anna_ctime_set_timezone_name, 2)
 {
-    if(param[1] == null_entry)
+    if(anna_entry_null(param[1]))
     {
 	unsetenv("TZ");
     }
@@ -117,7 +117,7 @@ ANNA_VM_NATIVE(anna_ctime_mktime, 8)
 	    anna_as_int(param[5]),
 	    0,
 	    0,
-	    param[6] == null_entry ? -1: anna_as_int(param[6])
+	    anna_entry_null(param[6]) ? -1: anna_as_int(param[6])
 	}
     ;
     
@@ -125,7 +125,7 @@ ANNA_VM_NATIVE(anna_ctime_mktime, 8)
     char *tz=0;
     char *ntz=0;
     
-    if(param[7] != null_entry)
+    if(anna_entry_null(param[7]))
     {
 	reset_tz=1;
 	wchar_t *wtz = anna_string_payload(anna_as_obj(param[7]));
@@ -137,7 +137,7 @@ ANNA_VM_NATIVE(anna_ctime_mktime, 8)
 	tzset();
     }
     
-    anna_entry_t *res = anna_from_int(mktime(&tm));
+    anna_entry_t res = anna_from_int(mktime(&tm));
 
     if(reset_tz)
     {
@@ -151,7 +151,7 @@ ANNA_VM_NATIVE(anna_ctime_mktime, 8)
     return res;
 }
 
-static anna_entry_t *handle_tm(struct tm *tm)
+static anna_entry_t handle_tm(struct tm *tm)
 {
     anna_object_t *res = anna_list_create_imutable(int_type);
     anna_list_push(res, anna_from_int(tm->tm_sec));
@@ -171,13 +171,13 @@ ANNA_VM_NATIVE(anna_ctime_break_time, 2)
     time_t timestamp;
     struct tm tm;
 
-    if(param[0] == null_entry)
+    if(anna_entry_null(param[0]))
     {
 	return null_entry;
     }
     
     timestamp = anna_as_int(param[0]);
-    if(param[1] == null_entry)
+    if(anna_entry_null(param[1]))
     {
 	if(!localtime_r(&timestamp, &tm))
 	{

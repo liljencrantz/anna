@@ -16,7 +16,7 @@ void anna_module_const(
     anna_stack_template_t *stack,
     wchar_t *name,
     anna_type_t *type,
-    anna_entry_t *value,
+    anna_entry_t value,
     wchar_t *documentation
     );
 

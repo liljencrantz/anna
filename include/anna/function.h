@@ -4,6 +4,7 @@
 #include "anna/base.h"
 #include "anna/node.h"
 #include "anna/stack.h"
+#include "anna/vm.h"
 
 /*
   Various flags used by functions. 
@@ -136,7 +137,7 @@ extern array_list_t anna_function_list;
 static inline __pure anna_function_t *anna_function_unwrap_fast(anna_object_t *wrapper)
 {
     anna_member_t *m = wrapper->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];
-    return (anna_function_t *)wrapper->member[m->offset];
+    return (anna_function_t *)anna_as_obj(wrapper->member[m->offset]);
 }
 
 
@@ -199,7 +200,7 @@ int anna_function_has_alias_reverse_static(anna_function_t *fun, wchar_t *name, 
 void anna_function_document(anna_function_t *fun, wchar_t *documentation);
 
 anna_function_t *anna_continuation_create(
-    anna_entry_t **stack_ptr,
+    anna_entry_t *stack_ptr,
     size_t stack_sz,
     anna_activation_frame_t *frame,
     int copy);

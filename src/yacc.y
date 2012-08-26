@@ -6,6 +6,8 @@
 
 %{
 
+#include "anna/config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -14,6 +16,8 @@
 #include <math.h>
 #include <iconv.h>
 
+#include "anna/fallback.h"
+#include "anna/base.h"
 #include "anna/common.h"
 #include "anna/parse.h"
 #include "anna/node.h"
@@ -550,7 +554,7 @@ expression_list :
 	    if($1)
 	    {
 		$$ = $1;
-		anna_node_call_add_child($1,$3);
+		anna_node_call_push($1,$3);
 		anna_node_set_location((anna_node_t *)$$, &@$);
 	    }
 	} |
@@ -757,7 +761,7 @@ expression9 :
 	    anna_node_call_set_function($3, fun);
 	    anna_node_set_location($$, &@$);
 	    if ($5) 
-		anna_node_call_add_child($3, (anna_node_t *)$5);
+		anna_node_call_push($3, (anna_node_t *)$5);
 	} |
 	'-' expression10
 	{
@@ -804,7 +808,7 @@ expression9 :
 	    {
 		for(i=0; i<$3->child_count; i++)
 		{
-		    anna_node_call_add_child((anna_node_call_t *)$$,$3->child[i]);
+		    anna_node_call_push((anna_node_call_t *)$$,$3->child[i]);
 		}
 	    }
 	    
@@ -1076,15 +1080,15 @@ literal:
 literal_string_long:
         literal_string_long_begin literal_string_long_internal LITERAL_STRING_LONG_END
 	{
-	    anna_node_t *res = anna_node_create_string_literal(
+	    anna_node_t *res = (anna_node_t *)anna_node_create_string_literal(
 		&@$,
-		sb_length($2),
+		sb_count($2),
 		sb_content($2),
 		1);
 	    free($2);
 	    if($1)
 	    {
-		anna_node_call_add_child($1, res);
+		anna_node_call_push((anna_node_call_t *)$1, (anna_node_t *)res);
 		$$ = $1;
 	    }
 	    else
@@ -1102,7 +1106,7 @@ literal_string_long_begin : LITERAL_STRING_LONG_BEGIN
 	    if(str != name_end)
 	    {
 		*name_end = 0;
-		$$ = anna_node_create_call2(
+		$$ = (anna_node_t *)anna_node_create_call2(
 		    &@$,
 		    (anna_node_t *)anna_node_create_identifier(
 			&@$,
@@ -1142,7 +1146,7 @@ function_declaration:
 	    anna_node_call_t *attr = anna_node_create_block2(&@$);
 	    if($4)
 	    {
-		anna_node_call_add_child(
+		anna_node_call_push(
 		    attr,
 		    (anna_node_t *)anna_node_create_call2(
 			&$4->location,
@@ -1311,12 +1315,12 @@ declaration_list2 :
 	declaration_list_item
 	{
 	    $$ = anna_node_create_block2(&@$);
-	    anna_node_call_add_child($$,$1);
+	    anna_node_call_push($$,$1);
 	} | 
 	declaration_list2 separators declaration_list_item
 	{
 	    $$ = $1;
-	    anna_node_call_add_child($1,$3);
+	    anna_node_call_push($1,$3);
 	};
 
 var_or_const:
@@ -1396,12 +1400,12 @@ variable_declaration:
 	{
 	    if($2)
 	    {
-		anna_node_call_add_child($3, $2);
+		anna_node_call_push($3, $2);
 	    }
 	    
 	    if($4)
 	    {
-		anna_node_call_add_child(
+		anna_node_call_push(
 		    $3,
 		    (anna_node_t *)anna_node_create_call2(
 			&$4->location,

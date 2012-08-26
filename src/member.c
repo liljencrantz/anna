@@ -158,7 +158,7 @@ mid_t anna_member_create_blob(
     }
     else
     {
-	type->member_count+= ((sz-1)/sizeof(anna_entry_t *));
+	type->member_count+= ((sz-1)/sizeof(anna_entry_t ));
 	anna_type_calculate_size(type);
     }
 
@@ -437,7 +437,7 @@ void anna_member_document(
     mid_t mid,
     wchar_t *doc)
 {
-    anna_entry_t ** e = anna_entry_get_addr_static(type, mid);
+    anna_entry_t * e = anna_entry_get_addr_static(type, mid);
     if(e)
     {
 	anna_function_t *fun = anna_function_unwrap(anna_as_obj(*e));

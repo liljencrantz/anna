@@ -151,20 +151,20 @@ ANNA_VM_NATIVE(anna_buffer_init, 1)
 
 static void anna_buffer_type_init(anna_object_t *this)
 {
-    (*anna_entry_get_addr(this,ANNA_MID_BUFFER_PAYLOAD))=0;
-    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_CAPACITY)) = 0;    
-    (*(size_t *)anna_entry_get_addr(this,ANNA_MID_BUFFER_SIZE)) = 0;
+    anna_entry_set_obj(this,ANNA_MID_BUFFER_PAYLOAD, 0);
+    anna_entry_set_obj(this,ANNA_MID_BUFFER_CAPACITY, 0);
+    anna_entry_set_obj(this,ANNA_MID_BUFFER_SIZE, 0);
 }
 
 static void anna_buffer_del(anna_object_t *victim)
 {
-    free(anna_entry_get(victim, ANNA_MID_BUFFER_PAYLOAD));
+    free(anna_entry_get_obj(victim, ANNA_MID_BUFFER_PAYLOAD));
 }
 
 ANNA_VM_NATIVE(anna_buffer_encode, 2)
 {    
     anna_object_t *this = anna_as_obj(param[0]);
-    int null_terminated = param[1] != null_entry;
+    int null_terminated = !anna_entry_null(param[1]);
     anna_object_t *str = anna_string_create(0, 0);
     int i=0;
     unsigned char *src = anna_buffer_get_payload(this);
@@ -291,7 +291,7 @@ ANNA_VM_NATIVE(anna_buffer_get_iterator, 1)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *buffer = anna_as_obj(param[0]);
     anna_object_t *iter = anna_object_create(
-	anna_type_unwrap((anna_object_t *)anna_entry_get_static(buffer->type, ANNA_MID_ITERATOR_TYPE)));
+	anna_type_unwrap(anna_entry_get_static_obj(buffer->type, ANNA_MID_ITERATOR_TYPE)));
     anna_entry_set(iter, ANNA_MID_COLLECTION, param[0]);
     anna_buffer_iterator_update(iter, 0);
     return anna_from_obj(iter);

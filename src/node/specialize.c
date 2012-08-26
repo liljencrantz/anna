@@ -86,9 +86,9 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     }
     else
     {	
-	anna_entry_t *val = anna_node_static_invoke_try(call->function, call->function->stack);
-	anna_function_t *fun;	
-	if(val && (fun=anna_function_unwrap(anna_as_obj(val))))
+	anna_entry_t val = anna_node_static_invoke_try(call->function, call->function->stack);
+	anna_function_t *fun;
+	if(!anna_entry_null_ptr(val) && (fun=anna_function_unwrap(anna_as_obj(val))))
 	{
 	    spec_fun = anna_function_get_specialization(fun, call);
 	}
