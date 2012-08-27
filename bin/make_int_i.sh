@@ -44,7 +44,7 @@ for i in "__add__ mpz_add(res, *v1, *v2)" "__increaseAssign__ mpz_add(res, *v1, 
     echo "
 ANNA_VM_NATIVE(anna_int_i_$name, 2)
 {
-    if(anna_is_obj(param[1]) && anna_as_obj(param[1])==null_object)
+    if(anna_entry_null(param[1]))
     {
         return null_entry;
     }
@@ -74,7 +74,7 @@ ANNA_VM_NATIVE(anna_int_i_$name, 2)
     mpz_t res;
     mpz_init(res);
     $op;
-    anna_entry_t *res2;
+    anna_entry_t res2;
     if(mpz_sizeinbase(res, 2)<= ANNA_SMALL_MAX_BIT)
     {
         res2 = anna_from_int(mpz_get_si(res));
@@ -122,7 +122,7 @@ ANNA_VM_NATIVE(anna_int_i_$name, 1)
     mpz_t res;
     mpz_init(res);
     $op;
-    anna_entry_t *res2 = anna_from_obj(anna_int_create_mp(res));
+    anna_entry_t res2 = anna_from_obj(anna_int_create_mp(res));
     mpz_clear(res);
     return res2;
 }

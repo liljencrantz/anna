@@ -267,6 +267,10 @@ typedef union {
         unsigned int s0 : 16;
     };
     struct {
+        int i1 : 32;
+        int i0 : 32;
+    };
+    struct {
         unsigned int w1 : 32;
         unsigned int w0 : 32;
     };

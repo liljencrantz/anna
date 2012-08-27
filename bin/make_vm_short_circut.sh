@@ -16,8 +16,8 @@ echo "
     {
         OP_ENTER(context);
 //            debug(D_SPAM, (L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(context);
-	anna_entry_t *i1 = anna_context_pop_entry(context);
+	anna_entry_t i2 = anna_context_pop_entry(context);
+	anna_entry_t i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
@@ -60,8 +60,8 @@ echo "
     {
         OP_ENTER(context);
 //            debug(D_SPAM, (L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(context);
-	anna_entry_t *i1 = anna_context_pop_entry(context);
+	anna_entry_t i2 = anna_context_pop_entry(context);
+	anna_entry_t i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
@@ -115,8 +115,8 @@ echo "
     {
         OP_ENTER(context);
 //            debug(D_SPAM, (L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(context);
-	anna_entry_t *i1 = anna_context_pop_entry(context);
+	anna_entry_t i2 = anna_context_pop_entry(context);
+	anna_entry_t i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
@@ -155,8 +155,8 @@ echo "
     {
         OP_ENTER(context);
 //            debug(D_SPAM, (L\"$name\n\");
-	anna_entry_t *i2 = anna_context_pop_entry(context);
-	anna_entry_t *i1 = anna_context_pop_entry(context);
+	anna_entry_t i2 = anna_context_pop_entry(context);
+	anna_entry_t i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{
@@ -200,8 +200,8 @@ echo "
   ANNA_LAB_DIV_INT:
     {
         OP_ENTER(context);
-	anna_entry_t *i2 = anna_context_pop_entry(context);
-	anna_entry_t *i1 = anna_context_pop_entry(context);
+	anna_entry_t i2 = anna_context_pop_entry(context);
+	anna_entry_t i1 = anna_context_pop_entry(context);
 //debug(D_SPAM, (L\"DIV\n\");
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
 	{
@@ -237,8 +237,8 @@ echo "
   ANNA_LAB_MUL_INT:
     {
         OP_ENTER(context);
-	anna_entry_t *i2 = anna_context_pop_entry(context);
-	anna_entry_t *i1 = anna_context_pop_entry(context);
+	anna_entry_t i2 = anna_context_pop_entry(context);
+	anna_entry_t i1 = anna_context_pop_entry(context);
 //debug(D_SPAM, (L\"MUL\n\");
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_int_small(i1) && anna_is_int_small(i2)))
@@ -306,8 +306,8 @@ echo "
   ANNA_LAB_${name}_FLOAT:
     {
         OP_ENTER(context);
-	anna_entry_t *i2 = anna_context_pop_entry(context);
-	anna_entry_t *i1 = anna_context_pop_entry(context);
+	anna_entry_t i2 = anna_context_pop_entry(context);
+	anna_entry_t i1 = anna_context_pop_entry(context);
 	context->frame->code += sizeof(anna_op_null_t);
 	if(likely(anna_is_float(i1) && anna_is_float(i2)))
 	{

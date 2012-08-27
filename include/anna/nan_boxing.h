@@ -53,19 +53,18 @@ static inline anna_entry_t anna_from_int(long val)
 {
     if(abs(val) < ANNA_INT_FAST_MAX)
     {
-	
 	anna_entry_t res;
 	res.s0 = ANNA_ENTRY_INT;
-	res.w1 = val;
-//	wprintf(L"TRALALA %lld => %llx (%d %d)\n", val, res.l, res.s0, res.w1);	
-	assert(anna_is_int_small(res));
+	res.i1 = val;
+//	wprintf(L"TRALALA %lld => %llx (%d %d)\n", val, res.l, res.s0, res.i1);	
+/*	assert(anna_is_int_small(res));
 	assert(!anna_is_ptr(res));
 	assert(!anna_is_float(res));
 	if(val != anna_as_int(res))
 	{
-	    wprintf(L"%d => %llx => %d (%d %d)\n", val, res.l, res.s0, res.w1, anna_as_int(res));	    
+	    wprintf(L"%d => %llx => %d (%d %d)\n", val, res.l, res.s0, res.i1, anna_as_int(res));	    
 	}
-	
+*/	
 	return res;
     }
     else
@@ -90,12 +89,12 @@ static inline anna_entry_t anna_from_float(double val)
     anna_entry_t res;
     res.d = val;
     res.s0 = ~res.s0;
-
+/*
     assert(anna_is_float(res));
     assert(!anna_is_obj(res));
     assert(!anna_is_int(res));
     assert(anna_as_float(res) == val);
-    
+*/  
     return res;
 }
 
@@ -115,14 +114,14 @@ static inline anna_entry_t anna_from_alloc(void *val)
 static inline anna_entry_t anna_from_char(wchar_t val)
 {
     anna_entry_t res;
-    res.w1 = val;
+    res.i1 = val;
     res.s0 = ANNA_ENTRY_CHAR;
-    assert(anna_is_char(res));
+/*    assert(anna_is_char(res));
     assert(!anna_is_int_small(res));
     assert(!anna_is_ptr(res));
     assert(!anna_is_float(res));
     assert(val == anna_as_char(res));
-    
+*/  
     return res;
 }
 
@@ -137,11 +136,12 @@ static inline anna_entry_t anna_from_obj(anna_object_t *val)
 */  
     anna_entry_t res;
     res.p = val;
-    assert(anna_is_obj(res));
+/*    assert(anna_is_obj(res));
     assert(!anna_is_char(res));
     assert(!anna_is_int_small(res));
     assert(!anna_is_float(res));
     assert(anna_as_obj(res) == val);
+*/
     return res;
 
 }
@@ -150,7 +150,6 @@ static inline anna_entry_t anna_from_ptr(void *val)
 {
     return (anna_entry_t)val;
 }
-
 
 static inline anna_object_t *anna_as_obj_fast(anna_entry_t entry)
 {
@@ -176,21 +175,21 @@ static inline int anna_as_int(anna_entry_t entry)
 {
     if(anna_is_int_small(entry))
     {
-	return entry.w1;
+	return entry.i1;
     }
     return anna_int_get(anna_as_obj_fast(entry));
 }
 
 static inline int anna_as_int_unsafe(anna_entry_t entry)
 {
-    return entry.w1;
+    return entry.i1;
 }
 
 static inline uint64_t anna_as_uint64(anna_entry_t entry)
 {
     if(anna_is_int_small(entry))
     {
-	return entry.w1;
+	return entry.i1;
     }
     mpz_t *mp = anna_int_unwrap(anna_as_obj_fast(entry));
     return anna_mpz_get_ui64(*mp);
@@ -200,7 +199,7 @@ static inline wchar_t anna_as_char(anna_entry_t entry)
 {
     if(anna_is_char(entry))
     {
-	return entry.w1;
+	return entry.i1;
     }
     return anna_char_get(anna_as_obj_fast(entry));
 }
@@ -209,18 +208,16 @@ static inline double anna_as_float(anna_entry_t entry)
 {
     if(anna_is_float(entry))
     {
-	anna_entry_t res = entry;
-	res.s0 = ~res.s0;
-	return res.d;
+	entry.s0 = ~entry.s0;
+	return entry.d;
     }
     return anna_float_get(anna_as_obj_fast(entry));
 }
 
 static inline double anna_as_float_unsafe(anna_entry_t entry)
 {
-    anna_entry_t res = entry;
-    res.s0 = ~res.s0;
-    return res.d;
+    entry.s0 = ~entry.s0;
+    return entry.d;
 }
 
 /*
@@ -239,11 +236,11 @@ static inline anna_object_t *anna_as_obj(anna_entry_t entry)
     }
     if(anna_is_int_small(entry))
     {
-	return anna_int_create(entry.w1);
+	return anna_int_create(entry.i1);
     }
     if(anna_is_char(entry))
     {
-	return anna_char_create(entry.w1);
+	return anna_char_create(entry.i1);
     }
     if(anna_is_float(entry))
     {
