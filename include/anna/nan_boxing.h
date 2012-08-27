@@ -7,7 +7,7 @@
 static inline double anna_as_float(anna_entry_t entry);
 static inline anna_entry_t anna_from_obj(anna_object_t *val);
 static inline int anna_as_int(anna_entry_t entry);
-__hot static inline anna_object_t *anna_as_obj(anna_entry_t entry);
+static inline anna_object_t *anna_as_obj(anna_entry_t entry);
 static inline wchar_t anna_as_char(anna_entry_t entry);
 
 #define ANNA_INT_FAST_MAX 0x1fffffff
@@ -56,15 +56,6 @@ static inline anna_entry_t anna_from_int(long val)
 	anna_entry_t res;
 	res.s0 = ANNA_ENTRY_INT;
 	res.i1 = val;
-//	wprintf(L"TRALALA %lld => %llx (%d %d)\n", val, res.l, res.s0, res.i1);	
-/*	assert(anna_is_int_small(res));
-	assert(!anna_is_ptr(res));
-	assert(!anna_is_float(res));
-	if(val != anna_as_int(res))
-	{
-	    wprintf(L"%d => %llx => %d (%d %d)\n", val, res.l, res.s0, res.i1, anna_as_int(res));	    
-	}
-*/	
 	return res;
     }
     else
@@ -75,6 +66,14 @@ static inline anna_entry_t anna_from_int(long val)
 
 static inline anna_entry_t anna_from_uint64(uint64_t val)
 {
+    if(val < ANNA_INT_FAST_MAX)
+    {
+	anna_entry_t res;
+	res.s0 = ANNA_ENTRY_INT;
+	res.i1 = val;
+	return res;
+    }
+
     mpz_t mp;
     mpz_init(mp);
     anna_mpz_set_ui64(mp, val);
@@ -89,12 +88,6 @@ static inline anna_entry_t anna_from_float(double val)
     anna_entry_t res;
     res.d = val;
     res.s0 = ~res.s0;
-/*
-    assert(anna_is_float(res));
-    assert(!anna_is_obj(res));
-    assert(!anna_is_int(res));
-    assert(anna_as_float(res) == val);
-*/  
     return res;
 }
 
@@ -105,45 +98,18 @@ static inline anna_entry_t anna_from_blob(void *val)
     res.s0 = ANNA_ENTRY_BLOB;
     return res;
 }
-/*
-static inline anna_entry_t anna_from_alloc(void *val)
-{
-    return (anna_entry_t )((long)val | ANNA_STACK_ENTRY_ALLOC);
-}
-*/
+
 static inline anna_entry_t anna_from_char(wchar_t val)
 {
     anna_entry_t res;
     res.i1 = val;
     res.s0 = ANNA_ENTRY_CHAR;
-/*    assert(anna_is_char(res));
-    assert(!anna_is_int_small(res));
-    assert(!anna_is_ptr(res));
-    assert(!anna_is_float(res));
-    assert(val == anna_as_char(res));
-*/  
     return res;
 }
 
 static inline anna_entry_t anna_from_obj(anna_object_t *val)
 {
-/*
-    if(((long)val) & ANNA_STACK_ENTRY_FILTER == 0)
-    {
-	wprintf(L"OOOPS %ls %d\n", val->type->name, val);
-	CRASH;
-    }
-*/  
-    anna_entry_t res;
-    res.p = val;
-/*    assert(anna_is_obj(res));
-    assert(!anna_is_char(res));
-    assert(!anna_is_int_small(res));
-    assert(!anna_is_float(res));
-    assert(anna_as_obj(res) == val);
-*/
-    return res;
-
+    return (anna_entry_t)(void *)val;
 }
 
 static inline anna_entry_t anna_from_ptr(void *val)
@@ -230,37 +196,23 @@ static inline void *anna_as_blob(anna_entry_t entry)
 
 static inline anna_object_t *anna_as_obj(anna_entry_t entry)
 {
-    if(anna_is_ptr(entry))
+    switch(entry.s0)
     {
-	return anna_as_obj_fast(entry);
+	case ANNA_ENTRY_PTR:
+	    return anna_as_obj_fast(entry);
+	case ANNA_ENTRY_INT:
+	    return anna_int_create(entry.i1);
+	case ANNA_ENTRY_CHAR:
+	    return anna_char_create(entry.i1);
+	case ANNA_ENTRY_BLOB:
+	    CRASH;
+	default:
+	{
+	    anna_entry_t res = entry;
+	    res.s0 = ~res.s0;
+	    return anna_float_create(res.d);
+	}
     }
-    if(anna_is_int_small(entry))
-    {
-	return anna_int_create(entry.i1);
-    }
-    if(anna_is_char(entry))
-    {
-	return anna_char_create(entry.i1);
-    }
-    if(anna_is_float(entry))
-    {
-	anna_entry_t res = entry;
-	res.s0 = ~res.s0;
-	return anna_float_create(res.d);
-    }
-    CRASH;
-}
-
-/*
-  Return the blob allocation pointer of a float entry. The float entry
-  points directly to the actual float, so this function subtracts the
-  size of two int:s from the pointer in order to point at the
-  allocation header.
- */
-static inline void *anna_as_float_payload(anna_entry_t entry)
-{
-    CRASH;
-    return 0;
 }
 
 static inline complex double anna_as_complex(anna_entry_t entry)
@@ -270,6 +222,8 @@ static inline complex double anna_as_complex(anna_entry_t entry)
 
 static inline anna_entry_t anna_as_native(anna_entry_t e)
 {
+    if(!anna_is_obj(e))
+	return e;
     anna_object_t *obj = anna_as_obj(e);
     if(obj->type == int_type)
     {

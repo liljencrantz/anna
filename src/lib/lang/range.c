@@ -316,7 +316,7 @@ static void anna_range_iter_update(anna_object_t *iter, int idx)
 {
     anna_entry_set(iter, ANNA_MID_KEY, anna_from_int(idx));
     	
-    anna_object_t *range = anna_as_obj(anna_entry_get(iter, ANNA_MID_COLLECTION));
+    anna_object_t *range = anna_as_obj_fast(anna_entry_get(iter, ANNA_MID_COLLECTION));
     ssize_t from = anna_range_get_from(range);
     ssize_t step = anna_range_get_step(range);
     int open = anna_range_get_open(range);

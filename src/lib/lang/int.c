@@ -92,6 +92,7 @@ anna_entry_t anna_int_entry(anna_object_t *this)
 //	anna_message(L"Weee, small int %d (%d bits)\n", anna_int_get(this), mpz_sizeinbase(*me, 2));
 	return anna_from_int(anna_int_get(this));
     }
+//    anna_message(L"Boo, large int (%d bits)\n", mpz_sizeinbase(*me, 2));
     return anna_from_obj(this);
 }
 

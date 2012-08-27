@@ -114,7 +114,7 @@ static inline void anna_context_push_char(anna_context_t *stack, wchar_t val)
 
 static inline void anna_context_push_float(anna_context_t *stack, double val)
 {
-    *(stack->top++)= (anna_entry_t )anna_from_float(val);
+    *(stack->top++)= anna_from_float(val);
 }
 
 static inline anna_object_t *anna_context_pop_object(anna_context_t *stack)

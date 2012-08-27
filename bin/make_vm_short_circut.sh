@@ -162,7 +162,7 @@ echo "
 	{
 //            debug(D_SPAM, (L\"Fasttrack for int $name %d $op %d => %d\n\",
 //anna_as_int(i1), anna_as_int(i2),(anna_as_int(i1) $op anna_as_int(i2)));
-            anna_context_push_entry(context, (anna_as_float(i1) $op anna_as_float(i2))?anna_from_int(1):null_entry);
+            anna_context_push_entry(context, (anna_as_float_unsafe(i1) $op anna_as_float_unsafe(i2))?anna_from_int(1):null_entry);
 	}
 	else
 	{
