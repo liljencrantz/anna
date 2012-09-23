@@ -81,6 +81,20 @@ static void anna_i_cc(anna_context_t *context)
     anna_context_push_object(context, cont);
 }
 
+ANNA_VM_NATIVE(anna_reflection_heap_size, 1)
+{
+    if(anna_entry_null(param[0]))
+    {
+	return null_entry;
+    }
+    if(anna_is_obj(param[0]))
+    {
+	anna_object_t *obj = anna_as_obj(param[0]);
+	return anna_from_int(obj->type->object_size);
+    }
+    return anna_from_int(0);
+}
+
 void anna_reflection_load(anna_stack_template_t *stack)
 {
     anna_type_load();    
@@ -96,6 +110,7 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	0);
 
     block_type->name = anna_intern(L"Block");
+
     anna_type_document(
 	block_type,
 	L"A Block is a Anna function that accepts no parameters.");
@@ -124,5 +139,15 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	L"A continuation of the current execution point.");
 
     anna_stack_document(stack, L"The reflection module contains tools used for run time introspection of functions and types.");
+
+    static wchar_t *hs_argn[]={L"object"};
+
+    anna_module_function(
+	stack,
+	L"heapSize", 0, 
+	&anna_reflection_heap_size, 
+	int_type, 
+	1, &object_type, hs_argn, 0,
+	L"Returns the amount of heap memory used by the specified object. Note that objects that can be stored directly on the stack (such as integers) may return a size of zero.");
 
 }

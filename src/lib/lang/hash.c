@@ -11,7 +11,7 @@
 /**
    The size of the builtin table used for very small hashes to avoid a memory allocation.
  */
-#define ANNA_HASH_MINSIZE 16
+#define ANNA_HASH_MINSIZE 4
 
 /**
   The factor to increase hash size by when running full. Must be a power of two.
@@ -128,12 +128,12 @@ static void anna_hash_add_all_extra_methods(anna_type_t *hash)
 
 static inline int hash_entry_is_used(anna_hash_entry_t *e)
 {
-    return !!anna_as_obj(e->key);
+    return !!anna_as_obj_fast(e->key);
 }
 
 static inline int hash_entry_is_unused_and_not_dummy(anna_hash_entry_t *e)
 {
-    return !anna_as_obj(e->value);
+    return !anna_as_obj_fast(e->value);
 }
 
 static inline int hash_entry_is_dummy(anna_hash_entry_t *e)

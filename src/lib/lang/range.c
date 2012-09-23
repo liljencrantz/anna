@@ -357,7 +357,7 @@ ANNA_VM_NATIVE(anna_range_get_iterator, 1)
     ANNA_ENTRY_NULL_CHECK(param[0]);
     anna_object_t *iter = anna_object_create(
 	anna_range_iterator_type);
-    *anna_entry_get_addr(iter, ANNA_MID_COLLECTION) = param[0];
+    anna_entry_set(iter, ANNA_MID_COLLECTION, param[0]);
     anna_range_iter_update(iter, 0);
     return anna_from_obj(iter);
 }

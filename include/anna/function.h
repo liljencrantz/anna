@@ -137,7 +137,7 @@ extern array_list_t anna_function_list;
 static inline __pure anna_function_t *anna_function_unwrap_fast(anna_object_t *wrapper)
 {
     anna_member_t *m = wrapper->type->mid_identifier[ANNA_MID_FUNCTION_WRAPPER_PAYLOAD];
-    return (anna_function_t *)anna_as_obj(wrapper->member[m->offset]);
+    return (anna_function_t *)anna_as_obj_fast(wrapper->member[m->offset]);
 }
 
 

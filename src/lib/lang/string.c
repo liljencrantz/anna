@@ -4,7 +4,7 @@ static int anna_string_seed;
 
 static inline anna_string_t *as_unwrap(anna_object_t *obj)
 {
-    return (anna_string_t *)anna_entry_get_addr(obj,ANNA_MID_STRING_PAYLOAD);
+    return (anna_string_t *)anna_entry_get_addr_fast(obj,ANNA_MID_STRING_PAYLOAD);
 }
 
 void anna_string_print(anna_object_t *obj)

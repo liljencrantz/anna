@@ -240,3 +240,21 @@ static inline anna_entry_t anna_as_native(anna_entry_t e)
     return e;
 }
 
+static inline anna_type_t *anna_entry_type(anna_entry_t entry)
+{
+    switch(entry.s0)
+    {
+	case ANNA_ENTRY_PTR:
+	    return anna_as_obj_fast(entry)->type;
+	case ANNA_ENTRY_INT:
+	    return int_type;
+	case ANNA_ENTRY_CHAR:
+	    return char_type;
+	case ANNA_ENTRY_BLOB:
+	    CRASH;
+	default:
+	{
+	    return float_type;
+	}
+    }
+}

@@ -130,10 +130,10 @@ static int anna_short_circut_instr_int_int(mid_t mid)
     if((mid >= ANNA_MID_ADD_INT) && (mid <= ANNA_MID_BITXOR_INT))
  	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD_INT;
 
-    if((mid >= ANNA_MID_EQ) && (mid <= ANNA_MID_GT))
+    if(mid == ANNA_MID_CMP)
     {
 //	anna_message(L"LALALALA %d => %d\n", mid, ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ);
-	return ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ;
+	return ANNA_INSTR_CMP_INT;
     }
     
     return 0;
@@ -146,9 +146,9 @@ static int anna_short_circut_instr_float_float(mid_t mid)
     	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
     }
     
-    if((mid >= ANNA_MID_EQ) && (mid <= ANNA_MID_GT))
+    if(mid == ANNA_MID_CMP)
     {
-	return ANNA_INSTR_EQ_FLOAT + mid - ANNA_MID_EQ;
+	return ANNA_INSTR_CMP_FLOAT;
     }
     
     return 0;

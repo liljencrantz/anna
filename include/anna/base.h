@@ -874,6 +874,13 @@ static __pure inline anna_entry_t *anna_entry_get_addr(
     }
 }
 
+static __pure inline anna_entry_t *anna_entry_get_addr_fast(
+    anna_object_t *obj, mid_t mid)
+{
+    anna_member_t *m = obj->type->mid_identifier[mid];
+    return &(obj->member[m->offset]);
+}
+
 /**
    Assign the specified value to the member with the specified mid in
    the specified object.
@@ -884,7 +891,12 @@ static __pure inline anna_entry_t *anna_entry_get_addr(
 static inline void anna_entry_set(
     anna_object_t *obj, mid_t mid, anna_entry_t value)
 {
-    *anna_entry_get_addr(obj, mid) = value;
+    anna_member_t *m = obj->type->mid_identifier[mid];
+    if(anna_member_is_static(m)) {
+	obj->type->static_member[m->offset] = value;
+    } else {
+	obj->member[m->offset] = value;
+    }
 }
 
 static inline void anna_entry_set_obj(
@@ -991,9 +1003,10 @@ static __pure inline void *anna_entry_get_static_ptr(
    member exist.
  */
 static inline void anna_entry_set_static(
-    anna_type_t *obj, mid_t mid, anna_entry_t value)
+    anna_type_t *type, mid_t mid, anna_entry_t value)
 {
-    *anna_entry_get_addr_static(obj, mid) = value;
+    anna_member_t *m = type->mid_identifier[mid];
+    type->static_member[m->offset] = value;
 }
 
 static inline void anna_entry_set_static_obj(

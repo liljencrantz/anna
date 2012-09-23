@@ -151,18 +151,6 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t value)
 
 anna_entry_t anna_list_get(anna_object_t *this, ssize_t offset)
 {
-    if(this->type->mid_identifier[ANNA_MID_LIST_PAYLOAD]->offset == 0)
-    {
-	size_t size = (ssize_t)anna_as_ptr(this->member[1]);
-	ssize_t pos = anna_list_calc_offset(offset, size);
-	anna_entry_t *ptr = (anna_entry_t *)anna_as_ptr(this->member[0]);
-	if(pos >=size || pos < 0)
-	{
-	    return null_entry;
-	}
-	return ptr[pos];
-    }
-    
     size_t size = anna_list_get_count(this);
     ssize_t pos = anna_list_calc_offset(offset, size);
     anna_entry_t *ptr = anna_list_get_payload(this);
