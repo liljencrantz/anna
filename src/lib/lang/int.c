@@ -340,16 +340,16 @@ void anna_int_type_create()
     
     anna_type_document(
 	int_type,
+	L"Anna Int objects are imutable, meaning their value never changes. Integers can be used as hash keys and implement normal mathematical operations like addition (using the + operator), multiplication (using the * operator) and so on.");
+    
+    anna_type_document(
+	int_type,
+	L"Any arithmetic operation involving only Int objects will result in a new Int. Specifically, dividing one Int with another will result in a new Int object, which is the truncated value of the division. Convert one of the numbers to a Float using code like <code class='anna-code'>Float::convert(someIntValue)</code> if floating point division is desired.");
+
+    anna_type_document(
+	int_type,
 	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, numbers that use 30 bits or less to represent (including the sign bit) are usually stored directly on the stack and use no heap memory at all. Larger integers are implemented using an arbitrary precision library. Aside from resulting in lower memory useage, this optimization is completely transparent - Int objects behave like all other Anna objects in every way, including the fact that they can be inherited from.");
     
-    anna_type_document(
-	int_type,
-	L"Anna Int objects are imutable, meaning their value never changes. Integers can be used as hash keys and implement normal mathematical operations like addition (using the + operator), multiplication (usinbg the * operator) and so on.");
-    
-    anna_type_document(
-	int_type,
-	L"Any arithmetic operation involving only Int objects will result in a new Int. Specifically, dividing one Int with another will result in a new Int object, which is the truncated value of the division. Convert one of the numbers to a Float using code like <code class='anna-code'>Float::convert(someIntValue)</code> is floating point division is desired.");
-
     anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     
     anna_member_create_native_method(
@@ -387,7 +387,7 @@ void anna_int_type_create()
 	int_type, anna_mid_get(L"convertString"),
 	0, &anna_int_convert_string, int_type,
 	2, conv_argv, conv_argn, conv_argd, 
-	L"Convert a String to an Int. The String must be in the specified base (10 by default) and the entire string (not just a prefix of it) must be a legal number.");
+	L"Convert a String to an Int. The String must be in the specified base (10 by default) and the entire string (not just a prefix of it) must be a legal number. The base must be between2 and 36.");
     anna_member_alias(int_type, mmid, L"convert");
     
     mmid = anna_member_create_native_type_method(
@@ -434,15 +434,6 @@ void anna_int_type_create()
 
     anna_member_document(
 	int_type,
-	anna_mid_get(L"sign"),
-	L"Return -1, 0 or 1 if this integer is negative, zero or positive, respectively.");
-    anna_member_document(
-	int_type,
-	anna_mid_get(L"exp"),
-	L"Raise the integer to the specified power.");
-
-    anna_member_document(
-	int_type,
 	anna_mid_get(L"bitand"),
 	L"Returns the bitwise and of the two numbers.");
 
@@ -455,10 +446,5 @@ void anna_int_type_create()
 	int_type,
 	anna_mid_get(L"bitxor"),
 	L"Returns the bitwise xor of the two numbers.");
-
-    anna_member_document(
-	int_type,
-	anna_mid_get(L"abs"),
-	L"Returns the absolute value value of this Integer.");
 
 }
