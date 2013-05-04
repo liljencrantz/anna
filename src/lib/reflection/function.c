@@ -251,14 +251,14 @@ static void anna_function_type_i_member_each(
     anna_object_t *res = (anna_object_t *)anna_entry_get_obj(this, anna_mid_get(L"!variablePayload"));
     wchar_t *name = (wchar_t *)key;
     
-    anna_object_t *el = anna_object_create(continuation_variable_type);
+    anna_object_t *el = anna_object_create(continuation_member_type);
     anna_sid_t sid = anna_stack_sid_create(fun->stack_template, name);
     
     anna_entry_set(
 	el, ANNA_MID_OFFSET, anna_from_int(sid.offset));
     
     anna_entry_set(
-	el, ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION, anna_from_obj(this));
+	el, ANNA_MID_CONTINUATION_MEMBER_CONTINUATION, anna_from_obj(this));
     
     anna_list_push(
 	res,
@@ -271,7 +271,7 @@ ANNA_VM_NATIVE(anna_function_type_i_member, 1)
     anna_object_t *res = (anna_object_t *)anna_entry_get_obj(this, anna_mid_get(L"!variablePayload"));
     if(res == null_object)
     {
-	res = anna_list_create_imutable(continuation_variable_type);
+	res = anna_list_create_imutable(continuation_member_type);
 	anna_activation_frame_t *frame = (anna_activation_frame_t *)anna_entry_get_obj(this, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
 	anna_function_t *fun = frame->function;
 	anna_stack_template_t *var = fun->stack_template;
@@ -572,11 +572,11 @@ void anna_reflection_type_for_function_create(
 	    anna_member_create(
 		res, anna_mid_get(L"!variablePayload"),
 		ANNA_MEMBER_INTERNAL, 
-		anna_list_type_get_imutable(continuation_variable_type));
+		anna_list_type_get_imutable(continuation_member_type));
 	
 	    anna_member_create_native_property(
 		res, anna_mid_get(L"variable"),
-		anna_list_type_get_imutable(continuation_variable_type),
+		anna_list_type_get_imutable(continuation_member_type),
 		&anna_function_type_i_member,
 		0,
 		L"A list of all variables in this function.");

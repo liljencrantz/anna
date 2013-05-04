@@ -37,7 +37,7 @@
 #include "src/lib/reflection/function.c"
 #include "src/lib/reflection/type.c"
 #include "src/lib/reflection/member.c"
-#include "src/lib/reflection/continuation_variable.c"
+#include "src/lib/reflection/continuation_member.c"
 
 anna_type_t *type_type=0, 
     *member_type=0,
@@ -46,7 +46,7 @@ anna_type_t *type_type=0,
     *member_property_type = 0, 
     *member_variable_type = 0,
     *continuation_type = 0,
-    *continuation_variable_type = 0,
+    *continuation_member_type = 0,
     *block_type = 0;
 
 static anna_type_data_t anna_member_type_data[] = 
@@ -57,7 +57,7 @@ static anna_type_data_t anna_member_type_data[] =
     { &member_method_type, L"Method" },
     { &member_property_type, L"Property" },
     { &member_variable_type, L"Variable" },
-    { &continuation_variable_type, L"ContinuationVariable" },
+    { &continuation_member_type, L"ContinuationMember" },
 //    { &continuation_type, L"Continuation" },
 }
     ;
@@ -120,7 +120,7 @@ void anna_reflection_load(anna_stack_template_t *stack)
 
     anna_member_load(stack);
     anna_function_load(stack);
-    anna_continuation_variable_load(stack);
+    anna_continuation_member_load(stack);
     anna_type_data_register(
 	anna_member_type_data, stack);
     anna_stack_declare(

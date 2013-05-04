@@ -1,6 +1,7 @@
 attribute(doc("
 The anna command line prompt, also known as a repl."));
 
+
 def repl(reflection.Continuation debugFrame = ?)
     (doc(
 	"This is the so called repl of anna. Repl is short for Read, Evaluate
@@ -50,7 +51,7 @@ Type «help» for more information.");
       this list. On every subsequent call, we prepend these
       expressions to the one the user wrote.
      */
-    globalClause :== «Node»[ast(use(replTool))];
+    globalClause :== «Node»[ast(use(replTool)), ast(expand(replMacros))];
     localClause :== «Node»[];
     
     saveHistory :== {
@@ -274,7 +275,13 @@ modification, are permitted provided that the following conditions are met:
 		if(memb.name != "ans")
 		{
 		    variableDeclaration.push(
-			ast(%name := %value as %Type) % [
+			ast(%decl(
+				%name,
+				?,
+				%value as %Type,
+				{})) % [
+				    "decl": (if(memb.mutable?) {ast(__var__)} else {ast(__const__)}),
+				    
 			    "name": Identifier(?, memb.name), 
 			    "value": (if(memb.value){Dummy(?, memb.value)}else{ast(? as Object)}) as Node,
 			    "Type": Dummy(?, memb.type),

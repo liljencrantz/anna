@@ -189,7 +189,7 @@ enum anna_mid_enum
     ANNA_MID_ATTRIBUTE, 
     ANNA_MID_FILENAME, 
 
-    ANNA_MID_CONTINUATION_VARIABLE_CONTINUATION,
+    ANNA_MID_CONTINUATION_MEMBER_CONTINUATION,
     ANNA_MID_CHANNEL_READ,
     ANNA_MID_CHANNEL_WRITE,
     ANNA_MID_CHANNEL_SYNC,
@@ -784,7 +784,7 @@ extern anna_type_t *type_type, *object_type, *int_type, *string_type,
     *mutable_string_type, *imutable_string_type, *char_type, *null_type,
     *string_type, *char_type, *float_type, *member_type, *range_type, 
     *complex_type, *hash_type, *hash_key_type, *pair_type, *buffer_type, 
-    *function_type_base, *continuation_type, *continuation_variable_type,
+    *function_type_base, *continuation_type, *continuation_member_type,
     *sendable_type;
 
 extern anna_object_t *null_object, *anna_wrap_method;

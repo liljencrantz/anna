@@ -342,7 +342,16 @@ def linebreak(List«Object» wordList, String prefix = "", String firstPrefix = 
     return res;
 }
 
-def help(Object object = global)
+def printHelpMember(Object object, String memberName)
+{
+    use(reflection);
+    
+    objType := (object as Type) or type(object);
+    memb := objType.member.filter(m){m.name==memberName}[0];
+    printHelp(memb);
+}
+
+def printHelp(Object object = global)
 (
     doc("
 This is the main help function of the interactive Anna command
@@ -417,12 +426,12 @@ the doc attribute of declarations."))
 
     attribute := (object as WithAttribute).attribute or type(object).attribute;
     doc := annaUtil.findAttribute(attribute, "doc");
-    if(fun := object as Function)
+    if(fun := (object as Function) or (object as Method).function)
     {
 	res ~= signature(fun);
 	res ~= "\n\n";
 	description = fun.name ~ " function";
-  }
+    }
     if(doc.empty?)
     {
 	res ~= "No documentation available for object of type " ~ (type(object).name or "Null");

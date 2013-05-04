@@ -628,8 +628,6 @@ static void anna_module_doc()
 	{L"__decreaseAssign__", L"Decrease a number by the specified amount."},
 	{L"__nextAssign__", L"Increase a number by one step."},
 	{L"__prevAssign__", L"Decrease a number by one step."},
-	{L"shl", L"Shift the bit pattern representing this number the specified number of bits left."},
-	{L"shr", L"Shift the bit pattern representing this number the specified number of bits right."},
 	{0, 0}
     };
 
