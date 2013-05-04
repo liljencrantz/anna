@@ -118,7 +118,7 @@ done
 init="$init
 "
 
-for i in "abs fabs(v)" "__neg__ -v" "sign (v==0.0?0.0:(v>0?1.0:-1.0))"; do
+for i in "abs fabs(v)" "__neg__ -v" "sign ((v>0.0?1.0:(v < 0.0 ? -1.0: v)))"; do
     external_name=$(echo "$i"|cut -f 1 -d ' ')
     name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')

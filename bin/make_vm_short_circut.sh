@@ -207,6 +207,56 @@ echo "
 "
 
 
+
+
+for i in "HASH_CODE anna_from_int(v)"; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+
+echo "    
+  ANNA_LAB_${name}_INT:
+    {
+        OP_ENTER(context);
+	anna_entry_t i = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
+	if(likely(anna_is_int(i)))
+	{
+            int v = anna_as_int_unsafe(i);
+	    anna_context_push_entry(context, $op);
+	}
+	else
+	{
+	    anna_object_t *o = anna_as_obj(i);
+	    
+	    if(o == null_object)
+	    {
+		anna_context_push_object(context, null_object);		
+	    }
+	    else
+	    {
+//                debug(D_SPAM, (L\"Fallback for int $name %d\n\", anna_as_int(i));
+		anna_member_t *m = o->type->mid_identifier[ANNA_MID_${name}];
+		anna_object_t *wrapped = anna_as_obj_fast(o->type->static_member[m->offset]);
+		anna_function_t *fun = anna_function_unwrap(wrapped);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o);
+                context->function_object = wrapped;
+		fun->native(context);
+	    }
+	}
+	
+	OP_LEAVE(context);
+    }
+"
+done
+
+
+
+
+
+
+
+
 for i in "ADD v1 + v2" "SUB v1 - v2" "INCREASE_ASSIGN v1 + v2" "DECREASE_ASSIGN v1 - v2" "MUL v1 * v2" "DIV v1 / v2" "EXP pow(v1, v2)"; do
     name=$(echo "$i"|cut -f 1 -d ' ')
     op=$(echo "$i"|cut -f 2- -d ' ')
@@ -241,6 +291,48 @@ echo "
 		anna_context_push_object(context,wrapped);
 		anna_context_push_object(context,o1);
 		anna_context_push_entry(context,i2);
+                context->function_object = wrapped;
+		fun->native(context);
+	    }
+	}
+	
+	OP_LEAVE(context);
+    }
+"
+done
+
+for i in "NEG anna_from_float(-v)" "ABS anna_from_float(fabs(v))" "SIGN anna_from_float((v>0.0?1.0:(v < 0.0 ? -1.0: v)))" "HASH_CODE anna_from_int(anna_hash((int *)&v, sizeof(double) / sizeof(int)))"; do
+    name=$(echo "$i"|cut -f 1 -d ' ')
+    op=$(echo "$i"|cut -f 2- -d ' ')
+
+echo "    
+  ANNA_LAB_${name}_FLOAT:
+    {
+        OP_ENTER(context);
+//debug(99, L\"$name\\n\");
+	anna_entry_t i = anna_context_pop_entry(context);
+	context->frame->code += sizeof(anna_op_null_t);
+	if(likely(anna_is_float(i)))
+	{
+            double v = anna_as_float_unsafe(i);
+	    anna_context_push_entry(context, $op);
+	}
+	else
+	{
+	    anna_object_t *o = anna_as_obj(i);
+	    
+	    if(o == null_object)
+	    {
+		anna_context_push_object(context, null_object);		
+	    }
+	    else
+	    {
+//            debug(D_SPAM, (L\"Fallback for float $name %d %d %f %f\n\", anna_is_alloc(i1), anna_is_alloc(i2), anna_as_float(i1), anna_as_float(i2));
+		anna_member_t *m = o->type->mid_identifier[ANNA_MID_${name}];
+		anna_object_t *wrapped = anna_as_obj_fast(o->type->static_member[m->offset]);
+		anna_function_t *fun = anna_function_unwrap(wrapped);
+		anna_context_push_object(context,wrapped);
+		anna_context_push_object(context,o);
                 context->function_object = wrapped;
 		fun->native(context);
 	    }

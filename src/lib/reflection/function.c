@@ -575,11 +575,11 @@ void anna_reflection_type_for_function_create(
 		anna_list_type_get_imutable(continuation_member_type));
 	
 	    anna_member_create_native_property(
-		res, anna_mid_get(L"variable"),
+		res, anna_mid_get(L"member"),
 		anna_list_type_get_imutable(continuation_member_type),
 		&anna_function_type_i_member,
 		0,
-		L"A list of all variables in this function.");
+		L"A list of all members (variables and constants) in this function.");
 
 	    anna_type_document(
 		res,

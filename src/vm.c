@@ -26,6 +26,7 @@
 #include "anna/alloc.h"
 #include "anna/mid.h"
 #include "anna/object.h"
+#include "anna/misc.h"
 
 #define OP_LEAVE(context) goto *jump_label[(int)*(context)->frame->code] 
 
@@ -336,7 +337,11 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t *argv)
 	    &&ANNA_LAB_BITOR_INT,
 	    &&ANNA_LAB_BITXOR_INT,
 	    &&ANNA_LAB_CMP_INT,
+	    &&ANNA_LAB_HASH_CODE_INT,
 
+	    0, 0, 0, 0, //80
+	    0, 0, 0, 0, 0, 0, 0, 0, //88
+	    0, 0, 0, 0, 0, 0, 0, //96
 	    &&ANNA_LAB_ADD_FLOAT,
 	    &&ANNA_LAB_SUB_FLOAT,
 	    &&ANNA_LAB_MUL_FLOAT,
@@ -345,7 +350,10 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t *argv)
 	    &&ANNA_LAB_INCREASE_ASSIGN_FLOAT,
 	    &&ANNA_LAB_DECREASE_ASSIGN_FLOAT,
 	    &&ANNA_LAB_CMP_FLOAT,
-
+	    &&ANNA_LAB_HASH_CODE_FLOAT,
+	    &&ANNA_LAB_NEG_FLOAT,
+	    &&ANNA_LAB_ABS_FLOAT,
+	    &&ANNA_LAB_SIGN_FLOAT,
 	}
     ;
     

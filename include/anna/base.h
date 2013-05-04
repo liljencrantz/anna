@@ -224,6 +224,9 @@ enum anna_mid_enum
 
     ANNA_MID_SET_OP,
     ANNA_MID_COMPARATOR,
+    ANNA_MID_NEG,
+    ANNA_MID_ABS,
+    ANNA_MID_SIGN,
 
     ANNA_MID_FIRST_UNRESERVED,
 };

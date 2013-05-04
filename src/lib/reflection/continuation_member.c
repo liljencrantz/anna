@@ -158,8 +158,8 @@ static void anna_continuation_member_load(anna_stack_template_t *stack)
     anna_member_document(
 	continuation_member_type, 
 	ANNA_MID_OFFSET, 
-	L"The offset in the activation frame of this variable.");
-    
+	L"The offset in the activation frame of this continuation member.");
+
     anna_member_create(
 	continuation_member_type,
 	ANNA_MID_CONTINUATION_MEMBER_CONTINUATION,
@@ -168,22 +168,22 @@ static void anna_continuation_member_load(anna_stack_template_t *stack)
     anna_member_document(
 	continuation_member_type, 
 	ANNA_MID_CONTINUATION_MEMBER_CONTINUATION, 
-	L"The continuation that this ContinuationMember is a variable in.");
+	L"The continuation that this ContinuationMember is a member in.");
 
     anna_member_create_native_property(
 	continuation_member_type, anna_mid_get(L"value"),
 	object_type, &anna_continuation_member_i_get_value, 0,
-	L"The value of this variable.");
+	L"The current value of this member.");
 
     anna_member_create_native_property(
 	continuation_member_type, anna_mid_get(L"name"),
 	string_type, &anna_continuation_member_i_get_name, 0,
-	L"The name of this variable.");
+	L"The name of this member.");
 
     anna_member_create_native_property(
 	continuation_member_type, anna_mid_get(L"type"),
 	type_type, &anna_continuation_member_i_get_type, 0,
-	L"The name of this variable.");
+	L"The type of this member.");
 
     anna_member_create_native_property(
 	continuation_member_type, anna_mid_get(L"mutable?"),
@@ -225,5 +225,5 @@ static void anna_continuation_member_load(anna_stack_template_t *stack)
 
     anna_type_document(
 	continuation_member_type,
-	L"The ContinuationMember type represents a live variable inside a Continuation. It is useful for introspecting the current value of a variable while the function it is defined in is being executed.");
+	L"The ContinuationMember type represents a live variable or constant inside a Continuation. It is useful for introspecting the current value of a variable or constant while the function it is defined in is being executed.");
 }

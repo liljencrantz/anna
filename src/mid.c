@@ -96,7 +96,7 @@ void anna_mid_init()
 	    L"__sub__Float__",
 	    L"__mul__Float__",	    
 	    L"__div__Float__",
-	    L"__exp__Float__",
+	    L"expFloat__",
 	    L"__increaseAssign__Float__",
 	    L"__decreaseAssign__Float__",
 	    L"!bufferPayload",
@@ -150,6 +150,9 @@ void anna_mid_init()
 
 	    L"__set__",
 	    L"!comparator",
+	    L"__neg__",
+	    L"abs",
+	    L"sign",
 	};
     
     int i;

@@ -175,7 +175,7 @@ modification, are permitted provided that the following conditions are met:
 	// Create a struct of all the variables in the current continuation frame, 
 	// and add that into a use clause in the function
 	varStruct :== ast(struct());
-	debugFrame.variable.each(val)
+	debugFrame.member.each(val)
 	{
 	  el := ast(%name: %value) % [
 		"name": Identifier(?, val.name),
@@ -270,7 +270,7 @@ modification, are permitted provided that the following conditions are met:
 	      variable names and values.
 	    */
 	    variableDeclaration := ast(nothing());
-	    previousContinuation.variable.each(memb)
+	    previousContinuation.member.each(memb)
 	    {
 		if(memb.name != "ans")
 		{

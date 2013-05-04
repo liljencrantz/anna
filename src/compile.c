@@ -136,6 +136,11 @@ static int anna_short_circut_instr_int_int(mid_t mid)
 	return ANNA_INSTR_CMP_INT;
     }
     
+    if(mid == ANNA_MID_HASH_CODE)
+    {
+	return ANNA_INSTR_HASH_CODE_INT;
+    }
+    
 //    debug(99, L"OOOPS %ls :-(\n", anna_mid_get_reverse(mid));
     
     return 0;
@@ -147,11 +152,33 @@ static int anna_short_circut_instr_float_float(mid_t mid)
     {
     	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
     }
-    
+
     if(mid == ANNA_MID_CMP)
     {
 	return ANNA_INSTR_CMP_FLOAT;
     }
+
+    if(mid == ANNA_MID_HASH_CODE)
+    {
+	return ANNA_INSTR_HASH_CODE_FLOAT;
+    }
+    
+    if(mid == ANNA_MID_NEG)
+    {
+	return ANNA_INSTR_NEG_FLOAT;
+    }
+    
+    if(mid == ANNA_MID_ABS)
+    {
+	return ANNA_INSTR_ABS_FLOAT;
+    }
+    
+    if(mid == ANNA_MID_SIGN)
+    {
+	return ANNA_INSTR_SIGN_FLOAT;
+    }
+    
+//    debug(99, L"OOOPS %ls :-(\n", anna_mid_get_reverse(mid));
     
     return 0;
 }
@@ -168,7 +195,7 @@ static int anna_short_circut_instr(anna_node_call_t *node, anna_stack_template_t
     }
 
     if((obj_type == float_type) && 
-       (((node->child_count == 1) && (node->child[0]->return_type == float_type)) || 
+       (((node->child_count == 1) && (node->child[0]->return_type == float_type)) ||
 	(node->child_count == 0)))
     {
       return anna_short_circut_instr_float_float(node->mid);
