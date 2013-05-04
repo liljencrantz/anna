@@ -315,3 +315,19 @@ static inline anna_entry_t anna_as_native(anna_entry_t e)
     return e;
 }
 
+static inline anna_type_t *anna_entry_type(anna_entry_t entry)
+{
+    ANNA_ENTRY_JMP_TABLE;
+    long type = ((long)anna_as_obj_fast(entry)) & ANNA_STACK_ENTRY_FILTER;
+    goto *jmp_table[type];
+  LAB_ENTRY_OBJ:
+    return anna_as_obj_fast(entry)->type;
+  LAB_ENTRY_CHAR:
+    return char_type;
+  LAB_ENTRY_FLOAT:
+    return float_type;
+  LAB_ENTRY_INT:
+    return int_type;
+  LAB_ENTRY_BLOB:
+    CRASH;
+}
