@@ -130,15 +130,20 @@ static int anna_short_circut_instr_int_int(mid_t mid)
     if((mid >= ANNA_MID_ADD) && (mid <= ANNA_MID_BITXOR))
  	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD;
 
-    if(mid == ANNA_MID_CMP)
-    {
-//	anna_message(L"LALALALA %d => %d\n", mid, ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ);
-	return ANNA_INSTR_CMP_INT;
-    }
+
+    int mapping[][2] = 
+	{
+	    {ANNA_MID_CMP, ANNA_INSTR_CMP_INT},
+	    {ANNA_MID_HASH_CODE, ANNA_INSTR_HASH_CODE_INT},
+	    {0, 0}
+	}
+    ;
     
-    if(mid == ANNA_MID_HASH_CODE)
+    int i;
+    for(i=0; mapping[i][0]; i++)
     {
-	return ANNA_INSTR_HASH_CODE_INT;
+	if(mid == mapping[i][0])
+	    return mapping[i][1];
     }
     
 //    debug(99, L"OOOPS %ls :-(\n", anna_mid_get_reverse(mid));
@@ -153,29 +158,22 @@ static int anna_short_circut_instr_float_float(mid_t mid)
     	return ANNA_INSTR_ADD_FLOAT + mid - ANNA_MID_ADD_FLOAT;
     }
 
-    if(mid == ANNA_MID_CMP)
-    {
-	return ANNA_INSTR_CMP_FLOAT;
-    }
-
-    if(mid == ANNA_MID_HASH_CODE)
-    {
-	return ANNA_INSTR_HASH_CODE_FLOAT;
-    }
+    int mapping[][2] = 
+	{
+	    {ANNA_MID_CMP, ANNA_INSTR_CMP_FLOAT},
+	    {ANNA_MID_HASH_CODE, ANNA_INSTR_HASH_CODE_FLOAT},
+	    {ANNA_MID_NEG, ANNA_INSTR_NEG_FLOAT},
+	    {ANNA_MID_ABS, ANNA_INSTR_ABS_FLOAT},
+	    {ANNA_MID_SIGN, ANNA_INSTR_SIGN_FLOAT},
+	    {0, 0}
+	}
+    ;
     
-    if(mid == ANNA_MID_NEG)
+    int i;
+    for(i=0; mapping[i][0]; i++)
     {
-	return ANNA_INSTR_NEG_FLOAT;
-    }
-    
-    if(mid == ANNA_MID_ABS)
-    {
-	return ANNA_INSTR_ABS_FLOAT;
-    }
-    
-    if(mid == ANNA_MID_SIGN)
-    {
-	return ANNA_INSTR_SIGN_FLOAT;
+	if(mid == mapping[i][0])
+	    return mapping[i][1];
     }
     
 //    debug(99, L"OOOPS %ls :-(\n", anna_mid_get_reverse(mid));
