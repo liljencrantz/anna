@@ -127,14 +127,16 @@ static anna_entry_t anna_static_invoke_as_access(
 static int anna_short_circut_instr_int_int(mid_t mid)
 {
     
-    if((mid >= ANNA_MID_ADD_INT) && (mid <= ANNA_MID_BITXOR_INT))
- 	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD_INT;
+    if((mid >= ANNA_MID_ADD) && (mid <= ANNA_MID_BITXOR))
+ 	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD;
 
     if(mid == ANNA_MID_CMP)
     {
 //	anna_message(L"LALALALA %d => %d\n", mid, ANNA_INSTR_EQ_INT + mid - ANNA_MID_EQ);
 	return ANNA_INSTR_CMP_INT;
     }
+    
+//    debug(99, L"OOOPS %ls :-(\n", anna_mid_get_reverse(mid));
     
     return 0;
 }

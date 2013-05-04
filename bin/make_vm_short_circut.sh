@@ -35,7 +35,7 @@ echo "
 	    else
 	    {
   //          debug(D_SPAM, (L\"Fallback for int $name \n\");
-		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_context_push_object(context,wrapped);
@@ -88,7 +88,7 @@ echo "
 	    else
 	    {
   //          debug(D_SPAM, (L\"Fallback for int $name \n\");
-		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}_INT];
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_${name}];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_context_push_object(context,wrapped);
@@ -128,7 +128,7 @@ echo "
 	    else
 	    {
           //  debug(D_SPAM, (L\"Fallback for int DIV \n\");
-		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_DIV_INT];
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_DIV];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_context_push_object(context,wrapped);
@@ -191,7 +191,7 @@ echo "
 	    else
 	    {
           //  debug(D_SPAM, (L\"Fallback for int MUL \n\");
-		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_MUL_INT];
+		anna_member_t *m = o1->type->mid_identifier[ANNA_MID_MUL];
 		anna_object_t *wrapped = anna_as_obj_fast(o1->type->static_member[m->offset]);
 		anna_function_t *fun = anna_function_unwrap(wrapped);
 		anna_context_push_object(context,wrapped);

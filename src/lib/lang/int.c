@@ -30,14 +30,6 @@ void anna_int_init(void)
 
 static void anna_int_set(anna_object_t *this, long value)
 {
-    static c=0;
-    c++;
-    
-    if(c==500000)
-    {
-	CRASH;
-    }
-    
     mpz_init(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
     mpz_set_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), value);
 }

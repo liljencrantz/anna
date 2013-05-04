@@ -819,6 +819,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t *argv)
 	}
 #endif
 	anna_member_t *m = obj->type->mid_identifier[op->mid];
+	
 #ifdef ANNA_CHECK_VM
 	if(!m){
 	    debug(
