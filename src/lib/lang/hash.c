@@ -31,7 +31,7 @@
    keys from a hash, one at a time, it won't resize until all keys are
    removed and we start inserting again.
 */
-#define ANNA_HASH_USED_MIN 0.2
+#define ANNA_HASH_USED_MIN 0.1
 
 
 typedef struct
@@ -293,19 +293,17 @@ static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
     }
     else
     {
-	new_table = calloc(1, new_sz * sizeof(anna_hash_entry_t));
+	new_table = calloc(new_sz, sizeof(anna_hash_entry_t));
     }
     int i, j;
     for(i=0; i<old_sz; i++){
 	anna_hash_entry_t *e = &this->table[i];
 	if(hash_entry_is_used(e))
 	{
-	    int pos;
 	    anna_hash_entry_t *new_e;
 	    for(j=0; 1; j++)
 	    {
-		pos = (e->hash+j) & new_mask;
-		new_e= &new_table[pos];
+		new_e= &new_table[(e->hash+j) & new_mask];
 		if(!hash_entry_is_used(new_e))
 		{
 		    break;
@@ -557,12 +555,6 @@ static inline void ahi_search_callback_internal(
     {
 	int d_pos = hash & this->mask;
 	
-	int dummy_idx = -1;
-	if(hash_entry_is_dummy(&this->table[d_pos]))
-	{
-	    dummy_idx = d_pos;
-	}
-	
 //	anna_message(L"Position %d (idx %d) is non-empty, check if keys are equal\n", pos, idx);
 	ahi_search_callback2_next(
 	    context, 
@@ -572,7 +564,7 @@ static inline void ahi_search_callback_internal(
 	    aux,
 	    hash,
 	    idx,
-	    dummy_idx,
+	    hash_entry_is_dummy(&this->table[d_pos]) ? d_pos : -1,
 	    pos);
     }
     else
@@ -580,7 +572,6 @@ static inline void ahi_search_callback_internal(
 //	anna_message(L"Position %d (idx %d) is empty\n", pos, idx);
 	callback(context, key, hash, hash_obj, aux, &this->table[pos]);
     }
-    
 }
 
 static void ahi_search_callback(anna_context_t *context)

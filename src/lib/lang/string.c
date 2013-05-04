@@ -430,11 +430,13 @@ static void anna_string_i_join(anna_context_t *context)
     else if(anna_is_int_small(e))
     {	
 	anna_object_t *res = anna_object_create(this->type);
+	anna_string_t *unwrapped = as_unwrap(res);
 	wchar_t is[32];
-	swprintf(is, 32, L"%d", anna_as_int(e));
+	int is_len = swprintf(is, 32, L"%d", anna_as_int(e));
 	asi_init(as_unwrap(res));
-	asi_append(as_unwrap(res), as_unwrap(this), 0, asi_get_count(as_unwrap(this)));
-	asi_append_cstring(as_unwrap(res), is, wcslen(is));
+	asi_ensure_capacity(unwrapped, asi_get_count(as_unwrap(this)) + is_len);
+	asi_append(unwrapped, as_unwrap(this), 0, asi_get_count(as_unwrap(this)));
+	asi_append_cstring(unwrapped, is, is_len);
 	
 	anna_context_push_object(context, res);
     }
