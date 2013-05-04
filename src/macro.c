@@ -479,6 +479,18 @@ ANNA_VM_MACRO(anna_macro_if)
 	anna_error((anna_node_t *)node, L"Invalid parameter count");
 	return anna_node_create_null(&node->location);
     }
+    int i;
+    for(i=1; i<node->child_count; i++)
+    {
+	if(!anna_node_is_call_to(node->child[i], L"__block__"))
+	{
+	    node->child[i] = 
+		anna_node_create_block(
+		    &node->location,
+		    1,
+		    &node->child[i]);
+	}
+    }
     CHECK_NODE_BLOCK(node->child[1]);
     if(node->child_count == 2)
     {
@@ -746,10 +758,14 @@ void anna_macro_init(anna_stack_template_t *stack)
 	stack,
 	L"if",
 	&anna_macro_if,
-	L"Conditionally execute a block.",
-	L"The if macro is often used together with the <a member='else'>else-macro</a> to provide a second block to execute it the condition is not met.",
+	L"Conditionally execute a block of code.",
+	anna_example(L"if(weather == cloudy)\n{\n   print(\"Don\'t forget your umbrella!\";\n}\n"),
+	L"The if macro is often used together with the <a member='else'>else-macro</a> to provide a second block to execute if the condition is not met.",
 	L"Usage example:",
-	anna_example(L"myMoodDescription := (if(happieness >=5){\"happy\"} else {\"sad\"});\n"));
+	anna_example(L"if(weather == cloudy)\n{\n   print(\"Don\'t forget your umbrella!\";\n}\nelse\n{\n   print(\"Better put on some sun lotion!\";\n}\n"),
+	L"The if macro can also be used as a replacement for the C-style ternary operator:",
+	anna_example(L"myMoodDescription := if(happieness >=5, \"happy\", \"sad\");\n")
+	);
 
     anna_macro_add(
 	stack,
