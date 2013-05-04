@@ -16,7 +16,15 @@ def main()
     print(f\"foo %(\\\"a\\\" ~ 4 ~ 'f') bar %(myVar) baz\");
 }
 </pre>",
-"The above code will output <code>foo a4f bar 123 baz</code>."
+	"The above code is equivalent to:",
+"<pre class='anna-code'>
+def main()
+{
+    myVar := 123;
+    print(\"foo % bar % baz\" % [\"a\" ~ 4 ~ 'f', myVar]);
+}
+</pre>",
+	"and will output <code>foo a4f bar 123 baz</code>."
     )
 )
 {

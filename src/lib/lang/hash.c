@@ -43,8 +43,15 @@ typedef struct
     anna_hash_entry_t;
 
 typedef struct {
+    /** Number of storage slots occupied either by an actual value or
+	a placeholder. */
     size_t fill;
+    /** Number of key/value pairs actually stored */
     size_t used;
+    /** 
+	One less than the number of storage slots in the array pointed
+	to by the table member.
+     */
     size_t mask;
     anna_entry_t default_value;
     anna_hash_entry_t *table;
@@ -157,6 +164,14 @@ static inline anna_hash_t *ahi_unwrap(anna_object_t *obj)
     return (anna_hash_t *)anna_entry_get_addr(obj,ANNA_MID_HASH_PAYLOAD);
 }
 
+#if 0
+static void ahi_validate(anna_hash_t *hash)
+{
+    assert(hash->used < hash->mask+1);
+    assert(hash->fill < hash->mask+1);
+    assert(hash->fill >= hash->used);
+}
+#endif
 static inline size_t anna_hash_get_count(anna_object_t *this)
 {
     return ahi_unwrap(this)->used;
@@ -314,19 +329,19 @@ static void anna_hash_check_resize(anna_hash_t *this)
     size_t old_sz = this->mask+1;
 //    if(old_sz <= 64)
 //	anna_message(L"%d: %f > %d?\n", old_sz, ANNA_HASH_USED_MIN*old_sz, this->used);
-    if(ANNA_HASH_USED_MAX*old_sz < this->used)
+    if(ANNA_HASH_USED_MAX*old_sz < this->used+1)
     {
 	size_t new_sz = ANNA_HASH_SIZE_STEP * old_sz;
 	anna_hash_resize(this, new_sz);
     }
-    else if( ANNA_HASH_USED_MIN*old_sz > this->used)
+    else if( ANNA_HASH_USED_MIN*old_sz > this->used+1)
     {
 	size_t new_sz = old_sz;
 	do
 	{
 	    new_sz /= ANNA_HASH_SIZE_STEP;
 	}
-	while(ANNA_HASH_USED_MIN*new_sz > this->used && new_sz >= ANNA_HASH_MINSIZE);
+	while(ANNA_HASH_USED_MIN*new_sz > (this->used+1) && new_sz >= ANNA_HASH_MINSIZE);
 	anna_hash_resize(this, new_sz);
     }
 }
@@ -355,6 +370,7 @@ static inline void ahi_search_callback2_next(
     int dummy_idx,
     int pos)
 {
+    
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
 
     if(anna_is_obj(key))
@@ -532,10 +548,9 @@ static inline void ahi_search_callback_internal(
 {
     hash = anna_hash_mangle(hash);
     anna_hash_t *this = ahi_unwrap(anna_as_obj_fast(hash_obj));
-    int idx = 0;
     int pos = anna_hash_get_next_non_dummy(anna_as_obj(hash_obj), hash);
     anna_hash_entry_t *e = &this->table[pos];
-    idx = pos-hash;
+    int idx = pos-hash;
     
     //anna_message(L"Calculated hash value %d, maps to position %d, first non-dummy is %d\n", hash, hash & this->mask, pos);
     if(hash_entry_is_used(e))
@@ -592,6 +607,7 @@ static inline void ahi_search(
     ahi_callback_t callback,
     anna_entry_t aux)
 {
+//    ahi_validate(ahi_unwrap(anna_as_obj(hash)));
     if(anna_is_obj(key))
     {
 	anna_object_t *o = anna_as_obj_fast(key);

@@ -23,12 +23,14 @@ typedef struct slab slab_t;
 extern slab_t **slab_list;
 extern slab_t **slab_list_free;
 extern slab_t **slab_list_tail;
+extern ssize_t slab_alloc_sz;
 
 void anna_slab_alloc_batch(size_t sz);
 void anna_slab_init(void);
 
 static inline __malloc void *anna_slab_alloc(size_t sz)
 {
+    slab_alloc_sz += sz;
 #if 0
     size_t *foo = malloc(sz + 2*sizeof(size_t));
     *foo = sz;
@@ -53,6 +55,7 @@ static inline __malloc void *anna_slab_alloc(size_t sz)
 
 static inline void anna_slab_free(void *ptr, size_t sz)
 {
+    slab_alloc_sz -= sz;
 #if 0
     size_t *foo = ptr;
     foo-=2;

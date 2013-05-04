@@ -4,6 +4,7 @@ slab_t **slab_list;
 slab_t **slab_list_free;
 slab_t **slab_list_tail;
 static array_list_t *slab_alloc;
+ssize_t slab_alloc_sz;
 
 void anna_slab_init()
 {

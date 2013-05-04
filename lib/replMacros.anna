@@ -1,4 +1,8 @@
-macro help(node){
+attribute(doc("Macros used by the anna repl."));
+
+macro help(node)
+(doc("Show a help message on the specified function or member"))
+{
   call := node[0] as Call;
     if((call.function as Identifier).name == "__memberGet__" and call.count == 2 and type(call[1]) == Identifier)
     {
