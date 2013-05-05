@@ -46,7 +46,7 @@ int foo(int x, char *y);",
   The following additional types are planned:",
 	"
   * Short, UShort, Long, ULong, Char, UChar, Int32, UInt32, Int64, UInt64.
-  * Void: Only available as a return type. A function which returns nothing. Will be translated into a function of return type Object and return value null.
+  * Void: Only available as a return type. A function which returns nothing. Will be translated into a function of return type Any and return value null.
   * Pointer«X»: Opaque pointer value. Opaque pointers can not be used inside of any except for sending them as parameters to other functions. Pointers can be recast as any other pointer type. 
   * FloatVector, IntVector, etc. Maps to a list of numbers. When a List is given as an output type, it will need annotations to inform the binder of the vector size.",
 	"
@@ -137,7 +137,7 @@ def init()
     bindingType = [
 	ast(Void): BasicBindingType(
 	    ?,
-	    "object_type", 
+	    "any_type", 
 	    ?,
 	    "    %(source);\n    anna_entry_t %(dest) = null_entry;\n",
 	    ),
@@ -159,7 +159,7 @@ def init()
 	    "    anna_entry_t %(dest) = anna_from_char(btowc(%(source)));\n"),
 	ast(Bool): BasicBindingType(
 	    "int",
-	    "object_type", 
+	    "any_type", 
 	    "    int %(dest) = !anna_entry_null(%(source));\n",
 	    "    anna_entry_t %(dest) = (%(source))?anna_from_int(1):null_entry;\n",
 	    preValidateToC: ""),
@@ -1100,7 +1100,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 	{
 	    load ~= "    anna_member_create_native_method(
 	%(typeName), anna_mid_get(L\"__init__\"), 0,
-	&%(initName), object_type, 1, &%(typeName), this_argn, 0, 0);    
+	&%(initName), any_type, 1, &%(typeName), this_argn, 0, 0);    
 " % commonData;
 
 	    code ~= "

@@ -306,7 +306,7 @@ is a short rundown of the currently supported HTML subset:
     return res;
 }
 
-def linebreak(List«Object» wordList, String prefix = "", String firstPrefix = "") 
+def linebreak(List«Any» wordList, String prefix = "", String firstPrefix = "") 
 (
     internal, 
     doc("Internal helper method for dir and help, used to line break a list of strings."),
@@ -342,7 +342,7 @@ def linebreak(List«Object» wordList, String prefix = "", String firstPrefix = 
     return res;
 }
 
-def printHelpMember(Object object, String memberName)
+def printHelpMember(Any object, String memberName)
 {
     use(reflection);
     
@@ -351,7 +351,7 @@ def printHelpMember(Object object, String memberName)
     printHelp(memb);
 }
 
-def printHelp(Object object = global)
+def printHelp(Any object = global)
 (
     doc("
 This is the main help function of the interactive Anna command
@@ -504,7 +504,7 @@ the doc attribute of declarations."))
     return res;
 }
 
-def dir(Object object)
+def dir(Any object)
 (
     doc("
 This is an additional help function for the interactive Anna command line. If 

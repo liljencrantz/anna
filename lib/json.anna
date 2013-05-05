@@ -2,15 +2,16 @@ expand(stringFilter);
 
 attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been implemented."));
 
-class JsonSerializable (doc("Types that can mask as a JsonSerializable can be converted to Json by the json.to function."))
+class JsonSerializable (doc("Types that can mask as a JsonSerializable can be converted to Json by the json.toJson function."))
 {
-    def String toJson() {?}
+    def String toJson() (doc("Create a JSON representation of this object.")) {?}
 }
 
-def String to(Object o) 
+def String to(Any o) 
 (
     doc(
-	"Serialize the specified object into JSON. Since Anna has no boolean type, true/false values currently aren't handled.",
+	"Serialize the specified object into JSON.",
+	"Since Anna has no boolean type, there is no way to output the values true and false.",
 	"Usage:",
 	example"json.to([\"key\": [1,2,?]}])
 // Result: \"{\"key\": [1, 2, null]}\"",

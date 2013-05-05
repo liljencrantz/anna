@@ -223,7 +223,7 @@ void anna_debug_load(anna_stack_template_t *stack)
 	stack,
 	L"breakpoint", 0, 
 	&anna_debug_breakpoint, 
-	object_type, 
+	any_type, 
 	2, bp_argv, bp_argn, 0,
 	L"Create a debugger breakpoint at the specified line number of the specified function.");
 
@@ -234,7 +234,7 @@ void anna_debug_load(anna_stack_template_t *stack)
 	stack,
 	L"clear", 0, 
 	&anna_debug_clear, 
-	object_type, 
+	any_type, 
 	1, cl_argv, cl_argn, 0,
 	L"Clear the breakpoint with the specified breakpoint id.");
 

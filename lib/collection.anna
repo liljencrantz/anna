@@ -16,7 +16,7 @@ Return a MutableList containing all the elements of the List of Lists given as i
 
 def zip(%T input...) 
 (
-    template(%T:List«Object»),
+    template(%T:List«Any»),
     doc("Return a MutableList of ImutableList objects, where each ImutableList
 contains the i-th element from each of the argument lists. The
 returned list is truncated in length to the length of the shortest

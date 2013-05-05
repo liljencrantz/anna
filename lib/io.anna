@@ -149,7 +149,7 @@ class File
         unix.io.close(fd)
     }
 
-    def write(Object value...)
+    def write(Any value...)
     (
 	doc(
 	    "Write the string representation of the specified objects to the file.")
@@ -163,13 +163,13 @@ class File
 	}
     }
   
-    def Object exists?() (property, doc("This value is non-null if the file pointed to by this object currently exists."),)
+    def Any exists?() (property, doc("This value is non-null if the file pointed to by this object currently exists."),)
     {
         buf := unix.io.Stat();
 	return !unix.io.stat(this.filename, buf);
     }
     
-    def Object file?() (property, doc("This value is non-null if the file pointed to by this object is a regular file"))
+    def Any file?() (property, doc("This value is non-null if the file pointed to by this object is a regular file"))
     {
         buf := unix.io.Stat();
 	return if(!unix.io.stat(this.filename, buf))
@@ -180,7 +180,7 @@ class File
 	}
     }
 
-    def Object directory?() 
+    def Any directory?() 
     (
 	property, 
 	doc("This value is non-null if the file pointed to by this object is a directory."),
@@ -213,7 +213,7 @@ class File
 	return 1;
     }
     
-    def Object changeDirectory()
+    def Any changeDirectory()
     (
 	doc(
 	    "Change the current working directory to the directory represented by this File object.")

@@ -221,28 +221,28 @@ void anna_history_load(anna_stack_template_t *stack)
 
     anna_type_t *readLine_i_history_add_argv[] = {string_type};
     wchar_t *readLine_i_history_add_argn[] = {L"line"};
-    latest_function = anna_module_function(stack, L"add", 0, &readLine_i_history_add, object_type, 1, readLine_i_history_add_argv, readLine_i_history_add_argn, 0, 0);
+    latest_function = anna_module_function(stack, L"add", 0, &readLine_i_history_add, any_type, 1, readLine_i_history_add_argv, readLine_i_history_add_argn, 0, 0);
 
     anna_type_t *readLine_i_history_read_argv[] = {string_type};
     wchar_t *readLine_i_history_read_argn[] = {L"filename"};
-    latest_function = anna_module_function(stack, L"read", 0, &readLine_i_history_read, object_type, 1, readLine_i_history_read_argv, readLine_i_history_read_argn, 0, 0);
+    latest_function = anna_module_function(stack, L"read", 0, &readLine_i_history_read, any_type, 1, readLine_i_history_read_argv, readLine_i_history_read_argn, 0, 0);
 
     anna_type_t *readLine_i_history_read_range_argv[] = {string_type, int_type, int_type};
     wchar_t *readLine_i_history_read_range_argn[] = {L"filename", L"from", L"to"};
-    latest_function = anna_module_function(stack, L"readRange", 0, &readLine_i_history_read_range, object_type, 3, readLine_i_history_read_range_argv, readLine_i_history_read_range_argn, 0, 0);
+    latest_function = anna_module_function(stack, L"readRange", 0, &readLine_i_history_read_range, any_type, 3, readLine_i_history_read_range_argv, readLine_i_history_read_range_argn, 0, 0);
     anna_member_alias(stack_type, anna_mid_get(L"readRange"), L"read");
 
     anna_type_t *readLine_i_history_write_argv[] = {string_type};
     wchar_t *readLine_i_history_write_argn[] = {L"filename"};
-    latest_function = anna_module_function(stack, L"write", 0, &readLine_i_history_write, object_type, 1, readLine_i_history_write_argv, readLine_i_history_write_argn, 0, 0);
+    latest_function = anna_module_function(stack, L"write", 0, &readLine_i_history_write, any_type, 1, readLine_i_history_write_argv, readLine_i_history_write_argn, 0, 0);
 
     anna_type_t *readLine_i_history_append_argv[] = {int_type, string_type};
     wchar_t *readLine_i_history_append_argn[] = {L"count", L"filename"};
-    latest_function = anna_module_function(stack, L"append", 0, &readLine_i_history_append, object_type, 2, readLine_i_history_append_argv, readLine_i_history_append_argn, 0, 0);
+    latest_function = anna_module_function(stack, L"append", 0, &readLine_i_history_append, any_type, 2, readLine_i_history_append_argv, readLine_i_history_append_argn, 0, 0);
 
     anna_type_t *readLine_i_history_truncate_file_argv[] = {string_type, int_type};
     wchar_t *readLine_i_history_truncate_file_argn[] = {L"filename", L"count"};
-    latest_function = anna_module_function(stack, L"truncateFile", 0, &readLine_i_history_truncate_file, object_type, 2, readLine_i_history_truncate_file_argv, readLine_i_history_truncate_file_argn, 0, 0);
+    latest_function = anna_module_function(stack, L"truncateFile", 0, &readLine_i_history_truncate_file, any_type, 2, readLine_i_history_truncate_file_argv, readLine_i_history_truncate_file_argn, 0, 0);
 
     anna_type_data_register(anna_history_type_data, stack);
 }

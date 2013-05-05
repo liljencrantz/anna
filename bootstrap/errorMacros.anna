@@ -12,7 +12,7 @@ macro errorType (node)
 {
     node.function = ast(classType);
     (node[1] as Call).push(ast(extends(error.Error)));
-    (node[2] as Call).push(ast(var Object %name (static)) % ["name": Identifier(node, identifier("errorType"))]);
+    (node[2] as Call).push(ast(var Any %name (static)) % ["name": Identifier(node, identifier("errorType"))]);
     return node;
 }
 

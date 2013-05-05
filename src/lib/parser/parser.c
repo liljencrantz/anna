@@ -446,7 +446,7 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
   
     anna_member_create_native_property(
 	node_type,
-	anna_mid_get(L"expand?"), object_type,
+	anna_mid_get(L"expand?"), any_type,
 	&anna_node_wrapper_i_get_expand, &anna_node_wrapper_i_set_expand, 
 	L"If this property is non-null, it will not be considered for macro expansion.");
   
@@ -594,7 +594,7 @@ void anna_parser_load(anna_stack_template_t *stack)
     static wchar_t *compile_argn[]={L"ast"};
     anna_module_function(
 	stack, L"compile", 0, anna_parser_i_compile,
-	object_type, 1, &node_type, compile_argn, 0,
+	any_type, 1, &node_type, compile_argn, 0,
 	L"Compiles an AST representing an Anna module into a new module object. <em>Warning:</em> Error recovery in the compiler is currently incomplete. Compilation errors might put the interpreter into an invalid state, resulting in a forced exit.");
     
     anna_type_t *p_argv[]={string_type, string_type};

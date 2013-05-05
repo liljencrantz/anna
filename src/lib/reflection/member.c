@@ -231,7 +231,7 @@ static void anna_member_type_create()
     anna_type_t *v_argv[] = 
 	{
 	    member_type,
-	    object_type
+	    any_type
 	}
     ;
 
@@ -254,7 +254,7 @@ static void anna_member_type_create()
     anna_member_create_native_method(
 	member_type, anna_mid_get(L"value"),
 	0, &anna_member_i_value,
-	object_type,
+	any_type,
 	2,
 	v_argv,
 	v_argn, 0,

@@ -10,7 +10,7 @@ def String hashMapToString(HashMap«%Key, %Value» this)
     target(HashMap), 
     doc("Returns a String representation of this HashMap."),
     template(%Key:HashKey),
-    template(%Value:Object),
+    template(%Value:Any),
 )
 {
     return "[" ~ ", ".join(this.map(key, value){"".thaw ~ key ~ ": " ~ String::convert(value)}) ~ "]";
@@ -87,7 +87,7 @@ def Int pairHashCode(Pair«%First,%Second» this)
 
 type Comparable
 {
-    def Int __cmp__(Comparable this, Object other) (bound)
+    def Int __cmp__(Comparable this, Any other) (bound)
     {
     }
 }
@@ -117,7 +117,7 @@ def HashMap«%Key, %Value» hashMapSetAll(HashMap«%Key, %Value» this, Pair«%K
     name(__setAll__), 
     target(HashMap),
     template(%Key:HashKey),
-    template(%Value:Object),
+    template(%Value:Any),
     internal,
     doc("This method is used internally by the HashMap initializer code. It sets multiple keys to their corresponding values.")
 )

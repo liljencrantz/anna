@@ -520,7 +520,7 @@ void anna_reflection_type_for_function_create(
 		{
 		    res,
 		    string_type,
-		    object_type
+		    any_type
 		}
 	    ;
 	    
@@ -538,7 +538,7 @@ void anna_reflection_type_for_function_create(
 	    
 	    anna_member_create_native_method(
 		res, anna_mid_get(L"__get__"), 0,
-		&anna_function_type_i_get, object_type, 2, v_argv, v_argn, 0, 
+		&anna_function_type_i_get, any_type, 2, v_argv, v_argn, 0, 
 		L"Returns the value of the local variable with the specified name.");
 	    
 	    anna_member_create_native_property(

@@ -170,20 +170,20 @@ void anna_time_load(anna_stack_template_t *stack)
         int_type, unix_i_time_val_usec_getter, unix_i_time_val_usec_setter, L"Microseconds.");
     anna_member_create_native_method(
 	unix_time_val_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_time_val_init, object_type, 1, &unix_time_val_type, this_argn, 0, 0);    
+	&unix_i_time_val_init, any_type, 1, &unix_time_val_type, this_argn, 0, 0);    
     anna_type_document(
             unix_time_val_type, L"A data structure representing a point in time as the amount of time that has elapsed since the epoch.");
 
     anna_member_create_blob(unix_time_zone_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct timezone));
     anna_member_create_native_method(
 	unix_time_zone_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_time_zone_init, object_type, 1, &unix_time_zone_type, this_argn, 0, 0);    
+	&unix_i_time_zone_init, any_type, 1, &unix_time_zone_type, this_argn, 0, 0);    
     anna_type_document(
             unix_time_zone_type, L"A deprecated data structure that used to be used for representing a time zone.");
 
     anna_type_t *unix_i_time_gettimeofday_argv[] = {unix_time_val_type, unix_time_zone_type};
     wchar_t *unix_i_time_gettimeofday_argn[] = {L"tv", L"tz"};
-    latest_function = anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, object_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, 0, L"Gets the current system time. Equivalanet to the C gettimeofday function.");
+    latest_function = anna_module_function(stack, L"gettimeofday", 0, &unix_i_time_gettimeofday, any_type, 2, unix_i_time_gettimeofday_argv, unix_i_time_gettimeofday_argn, 0, L"Gets the current system time. Equivalanet to the C gettimeofday function.");
     anna_stack_document(stack, L"The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping.");
 
     anna_type_data_register(anna_time_type_data, stack);
@@ -1787,7 +1787,7 @@ void anna_io_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_io_close_argv[] = {int_type};
     wchar_t *unix_i_io_close_argn[] = {L"fd"};
-    latest_function = anna_module_function(stack, L"close", 0, &unix_i_io_close, object_type, 1, unix_i_io_close_argv, unix_i_io_close_argn, 0, L"Close a file descriptor.");
+    latest_function = anna_module_function(stack, L"close", 0, &unix_i_io_close, any_type, 1, unix_i_io_close_argv, unix_i_io_close_argn, 0, L"Close a file descriptor.");
    anna_function_document(latest_function,anna_intern_static(L"Equivalent to the C close function."));
 
     anna_member_create_blob(unix_stat_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct stat));
@@ -1845,7 +1845,7 @@ void anna_io_load(anna_stack_template_t *stack)
         int_type, unix_i_stat_ctime_getter, 0, L"Time of latest change.");
     anna_member_create_native_method(
 	unix_stat_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_stat_init, object_type, 1, &unix_stat_type, this_argn, 0, 0);    
+	&unix_i_stat_init, any_type, 1, &unix_stat_type, this_argn, 0, 0);    
     anna_type_document(
             unix_stat_type, L"A structure representing the status of a file.");
     anna_type_document(
@@ -1853,38 +1853,38 @@ void anna_io_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_io_stat_argv[] = {string_type, unix_stat_type};
     wchar_t *unix_i_io_stat_argn[] = {L"path", L"buf"};
-    latest_function = anna_module_function(stack, L"stat", 0, &unix_i_io_stat, object_type, 2, unix_i_io_stat_argv, unix_i_io_stat_argn, 0, L"Check the status of file with the specified path. Equivalanet to the C stat function.");
+    latest_function = anna_module_function(stack, L"stat", 0, &unix_i_io_stat, any_type, 2, unix_i_io_stat_argv, unix_i_io_stat_argn, 0, L"Check the status of file with the specified path. Equivalanet to the C stat function.");
 
     anna_type_t *unix_i_io_lstat_argv[] = {string_type, unix_stat_type};
     wchar_t *unix_i_io_lstat_argn[] = {L"path", L"buf"};
-    latest_function = anna_module_function(stack, L"lstat", 0, &unix_i_io_lstat, object_type, 2, unix_i_io_lstat_argv, unix_i_io_lstat_argn, 0, L"Check the status of file with the specified path, without following symlinks. Equivalanet to the C lstat function.");
+    latest_function = anna_module_function(stack, L"lstat", 0, &unix_i_io_lstat, any_type, 2, unix_i_io_lstat_argv, unix_i_io_lstat_argn, 0, L"Check the status of file with the specified path, without following symlinks. Equivalanet to the C lstat function.");
 
     anna_type_t *unix_i_io_fstat_argv[] = {int_type, unix_stat_type};
     wchar_t *unix_i_io_fstat_argn[] = {L"fd", L"buf"};
-    latest_function = anna_module_function(stack, L"fstat", 0, &unix_i_io_fstat, object_type, 2, unix_i_io_fstat_argv, unix_i_io_fstat_argn, 0, L"Check the status of file with the specified file descriptor. Equivalanet to the C fstat function.");
+    latest_function = anna_module_function(stack, L"fstat", 0, &unix_i_io_fstat, any_type, 2, unix_i_io_fstat_argv, unix_i_io_fstat_argn, 0, L"Check the status of file with the specified file descriptor. Equivalanet to the C fstat function.");
 
     anna_type_t *unix_i_io_mkdir_argv[] = {string_type, int_type};
     wchar_t *unix_i_io_mkdir_argn[] = {L"path", L"mode"};
-    latest_function = anna_module_function(stack, L"mkdir", 0, &unix_i_io_mkdir, object_type, 2, unix_i_io_mkdir_argv, unix_i_io_mkdir_argn, 0, L"Create a new driectory with the specified path. Equivalanet to the C mkdir function.");
+    latest_function = anna_module_function(stack, L"mkdir", 0, &unix_i_io_mkdir, any_type, 2, unix_i_io_mkdir_argv, unix_i_io_mkdir_argn, 0, L"Create a new driectory with the specified path. Equivalanet to the C mkdir function.");
     anna_module_const_int(stack, L"standardInput", 0, L"File descriptor for standard input.");
     anna_module_const_int(stack, L"standardOutput", 1, L"File descriptor for standard output.");
     anna_module_const_int(stack, L"standardError", 2, L"File descriptor for error output");
 
     anna_type_t *unix_i_io_getcwd_argv[] = {buffer_type, int_type};
     wchar_t *unix_i_io_getcwd_argn[] = {L"buf", L"size"};
-    latest_function = anna_module_function(stack, L"getcwd", 0, &unix_i_io_getcwd, object_type, 2, unix_i_io_getcwd_argv, unix_i_io_getcwd_argn, 0, L"Get current working directory.");
+    latest_function = anna_module_function(stack, L"getcwd", 0, &unix_i_io_getcwd, any_type, 2, unix_i_io_getcwd_argv, unix_i_io_getcwd_argn, 0, L"Get current working directory.");
 
     anna_type_t *unix_i_io_chdir_argv[] = {string_type};
     wchar_t *unix_i_io_chdir_argn[] = {L"path"};
-    latest_function = anna_module_function(stack, L"chdir", 0, &unix_i_io_chdir, object_type, 1, unix_i_io_chdir_argv, unix_i_io_chdir_argn, 0, L"Change working directory.");
+    latest_function = anna_module_function(stack, L"chdir", 0, &unix_i_io_chdir, any_type, 1, unix_i_io_chdir_argv, unix_i_io_chdir_argn, 0, L"Change working directory.");
 
     anna_type_t *unix_i_io_chroot_argv[] = {string_type};
     wchar_t *unix_i_io_chroot_argn[] = {L"path"};
-    latest_function = anna_module_function(stack, L"chroot", 0, &unix_i_io_chroot, object_type, 1, unix_i_io_chroot_argv, unix_i_io_chroot_argn, 0, L"Change root directory.");
+    latest_function = anna_module_function(stack, L"chroot", 0, &unix_i_io_chroot, any_type, 1, unix_i_io_chroot_argv, unix_i_io_chroot_argn, 0, L"Change root directory.");
 
     anna_type_t *unix_i_io_fchdir_argv[] = {int_type};
     wchar_t *unix_i_io_fchdir_argn[] = {L"fd"};
-    latest_function = anna_module_function(stack, L"fchdir", 0, &unix_i_io_fchdir, object_type, 1, unix_i_io_fchdir_argv, unix_i_io_fchdir_argn, 0, L"Change working directory.");
+    latest_function = anna_module_function(stack, L"fchdir", 0, &unix_i_io_fchdir, any_type, 1, unix_i_io_fchdir_argv, unix_i_io_fchdir_argn, 0, L"Change working directory.");
 
     anna_member_create_blob(unix_f_lock_type, ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(struct flock));
 
@@ -1909,7 +1909,7 @@ void anna_io_load(anna_stack_template_t *stack)
         int_type, unix_i_f_lock_pid_getter, 0, L"PID of process blocking our lock (F_GETLK only)");
     anna_member_create_native_method(
 	unix_f_lock_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_f_lock_init, object_type, 1, &unix_f_lock_type, this_argn, 0, 0);    
+	&unix_i_f_lock_init, any_type, 1, &unix_f_lock_type, this_argn, 0, 0);    
     anna_type_document(
             unix_f_lock_type, L"File lock information. Used by the <a path='unix.io' member='fcntlFLock'>unix.io.fcntl()</a> call.");
 
@@ -1988,7 +1988,7 @@ void anna_io_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_io_sync_argv[] = {};
     wchar_t *unix_i_io_sync_argn[] = {};
-    latest_function = anna_module_function(stack, L"sync", 0, &unix_i_io_sync, object_type, 0, unix_i_io_sync_argv, unix_i_io_sync_argn, 0, L"Flush file system buffers.");
+    latest_function = anna_module_function(stack, L"sync", 0, &unix_i_io_sync, any_type, 0, unix_i_io_sync_argv, unix_i_io_sync_argn, 0, L"Flush file system buffers.");
 
     anna_type_t *unix_i_io_fsync_argv[] = {int_type};
     wchar_t *unix_i_io_fsync_argn[] = {L"fd"};
@@ -2008,13 +2008,13 @@ void anna_io_load(anna_stack_template_t *stack)
     wchar_t *unix_i_fd_set_init_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"__init__"), 0, 
-        &unix_i_fd_set_init, object_type, 1, unix_i_fd_set_init_argv, unix_i_fd_set_init_argn, 0, L"Create an empty new file descriptor set.");
+        &unix_i_fd_set_init, any_type, 1, unix_i_fd_set_init_argv, unix_i_fd_set_init_argn, 0, L"Create an empty new file descriptor set.");
 
     anna_type_t *unix_i_fd_set_remove_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_fd_set_remove_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"remove"), 0, 
-        &unix_i_fd_set_remove, object_type, 2, unix_i_fd_set_remove_argv, unix_i_fd_set_remove_argn, 0, L"Remove the specified file descriptor from the set.");
+        &unix_i_fd_set_remove, any_type, 2, unix_i_fd_set_remove_argv, unix_i_fd_set_remove_argn, 0, L"Remove the specified file descriptor from the set.");
 
     anna_type_t *unix_i_fd_set_in_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_fd_set_in_argn[] = {L"this", L"fd"};
@@ -2028,23 +2028,23 @@ void anna_io_load(anna_stack_template_t *stack)
         unix_fd_set_type, anna_mid_get(L"__get__"), 0, 
         &unix_i_fd_set_get, int_type, 2, unix_i_fd_set_get_argv, unix_i_fd_set_get_argn, 0, L"Check if the specified file descriptor is in the set.");
 
-    anna_type_t *unix_i_fd_set_set_argv[] = {unix_fd_set_type, int_type, object_type};
+    anna_type_t *unix_i_fd_set_set_argv[] = {unix_fd_set_type, int_type, any_type};
     wchar_t *unix_i_fd_set_set_argn[] = {L"this", L"fd", L"value"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"__set__"), 0, 
-        &unix_i_fd_set_set, object_type, 3, unix_i_fd_set_set_argv, unix_i_fd_set_set_argn, 0, L"If value is non-null, add the specified file descriptor to the set. Otherwise, remove it.");
+        &unix_i_fd_set_set, any_type, 3, unix_i_fd_set_set_argv, unix_i_fd_set_set_argn, 0, L"If value is non-null, add the specified file descriptor to the set. Otherwise, remove it.");
 
     anna_type_t *unix_i_fd_set_add_argv[] = {unix_fd_set_type, int_type};
     wchar_t *unix_i_fd_set_add_argn[] = {L"this", L"fd"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"add"), 0, 
-        &unix_i_fd_set_add, object_type, 2, unix_i_fd_set_add_argv, unix_i_fd_set_add_argn, 0, L"Add the specified file descriptor to the set.");
+        &unix_i_fd_set_add, any_type, 2, unix_i_fd_set_add_argv, unix_i_fd_set_add_argn, 0, L"Add the specified file descriptor to the set.");
 
     anna_type_t *unix_i_fd_set_clear_argv[] = {unix_fd_set_type};
     wchar_t *unix_i_fd_set_clear_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_fd_set_type, anna_mid_get(L"clear"), 0, 
-        &unix_i_fd_set_clear, object_type, 1, unix_i_fd_set_clear_argv, unix_i_fd_set_clear_argn, 0, L"Remove all file descriptors from this set.");
+        &unix_i_fd_set_clear, any_type, 1, unix_i_fd_set_clear_argv, unix_i_fd_set_clear_argn, 0, L"Remove all file descriptors from this set.");
     anna_type_document(
             unix_fd_set_type, L"A set of file descriptors. Used by unix.io.select.");
 
@@ -2897,7 +2897,7 @@ void anna_proc_load(anna_stack_template_t *stack)
 
     anna_type_t *unix_i_proc_exit_argv[] = {int_type};
     wchar_t *unix_i_proc_exit_argn[] = {L"status"};
-    latest_function = anna_module_function(stack, L"exit", 0, &unix_i_proc_exit, object_type, 1, unix_i_proc_exit_argv, unix_i_proc_exit_argn, 0, L"Terminate the calling process.");
+    latest_function = anna_module_function(stack, L"exit", 0, &unix_i_proc_exit, any_type, 1, unix_i_proc_exit_argv, unix_i_proc_exit_argn, 0, L"Terminate the calling process.");
 
     anna_type_t *unix_i_proc_fork_argv[] = {};
     wchar_t *unix_i_proc_fork_argn[] = {};
@@ -2937,7 +2937,7 @@ void anna_proc_load(anna_stack_template_t *stack)
     wchar_t *unix_i_signal_set_init_argn[] = {L"this"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"__init__"), 0, 
-        &unix_i_signal_set_init, object_type, 1, unix_i_signal_set_init_argv, unix_i_signal_set_init_argn, 0, L"Create an empty new set");
+        &unix_i_signal_set_init, any_type, 1, unix_i_signal_set_init_argv, unix_i_signal_set_init_argn, 0, L"Create an empty new set");
 
     anna_type_t *unix_i_signal_set_clear_argv[] = {unix_signal_set_type};
     wchar_t *unix_i_signal_set_clear_argn[] = {L"this"};
@@ -2967,19 +2967,19 @@ void anna_proc_load(anna_stack_template_t *stack)
     wchar_t *unix_i_signal_set_in_argn[] = {L"this", L"signal"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"__in__"), 0, 
-        &unix_i_signal_set_in, object_type, 2, unix_i_signal_set_in_argv, unix_i_signal_set_in_argn, 0, L"Check if the specified signal is in the set");
+        &unix_i_signal_set_in, any_type, 2, unix_i_signal_set_in_argv, unix_i_signal_set_in_argn, 0, L"Check if the specified signal is in the set");
 
     anna_type_t *unix_i_signal_set_get_argv[] = {unix_signal_set_type, int_type};
     wchar_t *unix_i_signal_set_get_argn[] = {L"this", L"signal"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"__get__"), 0, 
-        &unix_i_signal_set_get, object_type, 2, unix_i_signal_set_get_argv, unix_i_signal_set_get_argn, 0, L"Check if the specified signal is in the set");
+        &unix_i_signal_set_get, any_type, 2, unix_i_signal_set_get_argv, unix_i_signal_set_get_argn, 0, L"Check if the specified signal is in the set");
 
-    anna_type_t *unix_i_signal_set_set_argv[] = {unix_signal_set_type, int_type, object_type};
+    anna_type_t *unix_i_signal_set_set_argv[] = {unix_signal_set_type, int_type, any_type};
     wchar_t *unix_i_signal_set_set_argn[] = {L"this", L"signal", L"value"};
     anna_member_create_native_method(
         unix_signal_set_type, anna_mid_get(L"__set__"), 0, 
-        &unix_i_signal_set_set, object_type, 3, unix_i_signal_set_set_argv, unix_i_signal_set_set_argn, 0, L"If value is non-null, add the specified signal to the set. Otherwise, remove it.");
+        &unix_i_signal_set_set, any_type, 3, unix_i_signal_set_set_argv, unix_i_signal_set_set_argn, 0, L"If value is non-null, add the specified signal to the set. Otherwise, remove it.");
     anna_type_document(
             unix_signal_set_type, L"A set of signals. Used by the unix.proc.signalfd and unix.proc.sigprocmask functions.");
 
@@ -3582,7 +3582,7 @@ void anna_r_limit_load(anna_stack_template_t *stack)
         int_type, unix_i_r_limit_max_getter, 0, L"Maximum value of limit (hard limit)");
     anna_member_create_native_method(
 	unix_r_limit_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_r_limit_init, object_type, 1, &unix_r_limit_type, this_argn, 0, 0);    
+	&unix_i_r_limit_init, any_type, 1, &unix_r_limit_type, this_argn, 0, 0);    
     anna_type_document(
             unix_r_limit_type, L"A structure representing the current and maximum value of a system resource usage limit.");
 
@@ -3757,7 +3757,7 @@ void anna_env_load(anna_stack_template_t *stack)
    anna_function_document(latest_function,anna_intern_static(L"Usage example:"));
    anna_function_document(latest_function,anna_intern_static(L"<pre class='anna-code'>if(unix.env[\"USER\"] == \"root\"){ ... }</pre>"));
 
-    anna_type_t *unix_i_env_setenv_argv[] = {string_type, string_type, object_type};
+    anna_type_t *unix_i_env_setenv_argv[] = {string_type, string_type, any_type};
     wchar_t *unix_i_env_setenv_argn[] = {L"name", L"value", L"overwrite"};
     latest_function = anna_module_function(stack, L"setenv", 0, &unix_i_env_setenv, int_type, 3, unix_i_env_setenv_argv, unix_i_env_setenv_argn, 0, L"Assign a new value to the environment variable with the given name. Equivalent to the C setenv function.");
 
@@ -4194,19 +4194,19 @@ void anna_locale_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"positiveCurrencySymbolPrecedes"),
-        object_type, unix_i_locale_conv_positive_currency_symbol_precedes_getter, 0, L"Non-null if currencySymbol precedes a positive value, null if succeeds.");
+        any_type, unix_i_locale_conv_positive_currency_symbol_precedes_getter, 0, L"Non-null if currencySymbol precedes a positive value, null if succeeds.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"negativeCurrencySymbolPrecedes"),
-        object_type, unix_i_locale_conv_negative_currency_symbol_precedes_getter, 0, L"Non-null if currencySymbol precedes a negative value, null if succeeds.");
+        any_type, unix_i_locale_conv_negative_currency_symbol_precedes_getter, 0, L"Non-null if currencySymbol precedes a negative value, null if succeeds.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"positiveSeparateBySpace"),
-        object_type, unix_i_locale_conv_positive_separate_by_space_getter, 0, L"Non-null if a space separates currency_symbol from a positive value, null otherwise.");
+        any_type, unix_i_locale_conv_positive_separate_by_space_getter, 0, L"Non-null if a space separates currency_symbol from a positive value, null otherwise.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"negativeSeparateBySpace"),
-        object_type, unix_i_locale_conv_negative_separate_by_space_getter, 0, L"Non-null if a space separates currency_symbol from a negative value, null otherwise.");
+        any_type, unix_i_locale_conv_negative_separate_by_space_getter, 0, L"Non-null if a space separates currency_symbol from a negative value, null otherwise.");
 
     anna_member_create_native_property(
         unix_locale_conv_type, anna_mid_get(L"positiveSignPosition"),
@@ -4217,7 +4217,7 @@ void anna_locale_load(anna_stack_template_t *stack)
         int_type, unix_i_locale_conv_negative_sign_position_getter, 0, L"\nPositive and negative sign positions:\n<ul>\n<li>0: Parentheses surround the quantity and currency_symbol.</li>\n<li>1: The sign string precedes the quantity and currency_symbol.</li>\n<li>2: The sign string succeeds the quantity and currency_symbol.</li>\n<li>3: The sign string immediately precedes the currency_symbol.</li>\n<li>4: The sign string immediately succeeds the currency_symbol.</li>\n</ul>\n");
     anna_member_create_native_method(
 	unix_locale_conv_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_locale_conv_init, object_type, 1, &unix_locale_conv_type, this_argn, 0, 0);    
+	&unix_i_locale_conv_init, any_type, 1, &unix_locale_conv_type, this_argn, 0, 0);    
     anna_type_document(
             unix_locale_conv_type, L"Detailed local information regarding numeric formating.");
 
@@ -4485,17 +4485,17 @@ void anna_term_load(anna_stack_template_t *stack)
         int_type, unix_i_termios_lflag_getter, unix_i_termios_lflag_setter, L"Local modes");
     anna_member_create_native_method(
 	unix_termios_type, anna_mid_get(L"__init__"), 0,
-	&unix_i_termios_init, object_type, 1, &unix_termios_type, this_argn, 0, 0);    
+	&unix_i_termios_init, any_type, 1, &unix_termios_type, this_argn, 0, 0);    
     anna_type_document(
             unix_termios_type, L"A structure representing the state of a terminal.");
 
     anna_type_t *unix_i_term_get_attr_argv[] = {int_type, unix_termios_type};
     wchar_t *unix_i_term_get_attr_argn[] = {L"fd", L"ios"};
-    latest_function = anna_module_function(stack, L"getAttr", 0, &unix_i_term_get_attr, object_type, 2, unix_i_term_get_attr_argv, unix_i_term_get_attr_argn, 0, L"Get the current state of a terminal.");
+    latest_function = anna_module_function(stack, L"getAttr", 0, &unix_i_term_get_attr, any_type, 2, unix_i_term_get_attr_argv, unix_i_term_get_attr_argn, 0, L"Get the current state of a terminal.");
 
     anna_type_t *unix_i_term_set_attr_argv[] = {int_type, int_type, unix_termios_type};
     wchar_t *unix_i_term_set_attr_argn[] = {L"fd", L"actions", L"ios"};
-    latest_function = anna_module_function(stack, L"setAttr", 0, &unix_i_term_set_attr, object_type, 3, unix_i_term_set_attr_argv, unix_i_term_set_attr_argn, 0, L"Set the current state of the terminal.");
+    latest_function = anna_module_function(stack, L"setAttr", 0, &unix_i_term_set_attr, any_type, 3, unix_i_term_set_attr_argv, unix_i_term_set_attr_argn, 0, L"Set the current state of the terminal.");
     anna_stack_document(stack, L"The unix.term module contains low level wrappers for basic unix functionality revolving around terminal handling.");
 
     anna_type_data_register(anna_term_type_data, stack);

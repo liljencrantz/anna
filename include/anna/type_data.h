@@ -37,7 +37,7 @@ anna_type_data_t;
 	int i;								\
 	for(i=0; i<(sizeof(type_data)/sizeof(*type_data)); i++)		\
 	{								\
-	    if(((*type_data[i].addr) != object_type) && ((*type_data[i].addr) != null_type)) \
+	    if(((*type_data[i].addr) != any_type) && ((*type_data[i].addr) != null_type)) \
 	    {								\
 		anna_type_copy_object(*type_data[i].addr);		\
 	    }								\

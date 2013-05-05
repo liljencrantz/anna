@@ -3,7 +3,7 @@ __var__(
     hej, ?, 
     __def__(
 	hej,
-	Object, 
+	Any, 
 	__block__(__avar__(input, Int, ?, __block__())), 
 	__block__(), 
 	__block__(print(input))),

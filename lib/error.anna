@@ -67,7 +67,7 @@ def raiseError(Error error)
 	)
 )
 {
-    def Object funEach(reflection.Continuation item)
+    def Any funEach(reflection.Continuation item)
     {
 	if(coll := (item["!collect"] as MutableList))
 	{

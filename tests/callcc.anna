@@ -1,4 +1,4 @@
-def sub( def Null ret(Object val))
+def sub( def Null ret(Any val))
 {
     print("subPre");
     ret("continuationResult");
@@ -7,7 +7,7 @@ def sub( def Null ret(Object val))
 
 var Int i = 0;
 
-def sub2(def Null ret(Object val))
+def sub2(def Null ret(Any val))
 {
     i += 1;
     ret(i);

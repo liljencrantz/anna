@@ -1,5 +1,5 @@
 
-def lang.Int foo(lang.Object in)
+def lang.Int foo(lang.Any in)
 {
     print(in);
     3;

@@ -20,7 +20,7 @@ class Fiber
 	enable();
     }
 
-    def Object enable() (doc("Call Fiber.enable in order to make this Fiber runnable. This is done autmoatically at Fiber creation."))
+    def Any enable() (doc("Call Fiber.enable in order to make this Fiber runnable. This is done autmoatically at Fiber creation."))
     {
 	if(!fibers)
 	{

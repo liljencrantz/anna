@@ -890,7 +890,7 @@ anna_function_t *anna_continuation_create(
     
     result->native = anna_function_continuation;
     result->name = anna_intern_static(L"continuation");
-    result->return_type=object_type;
+    result->return_type=any_type;
     result->input_count=0;
     
     anna_function_set_stack(result, stack_global);

@@ -325,7 +325,7 @@ static anna_type_t *anna_call_iterator_create(
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(
-	iter, ANNA_MID_VALID, object_type,
+	iter, ANNA_MID_VALID, any_type,
 	&anna_call_iterator_valid,
 	0, 0);
     
@@ -396,7 +396,7 @@ static void anna_node_create_call_type(
 	anna_mid_get(L"__init__"),
 	ANNA_FUNCTION_VARIADIC,
 	&anna_node_call_wrapper_i_init,
-	object_type,
+	any_type,
 	4, argv, argn, 0, 0);
     
     anna_member_create_native_property(

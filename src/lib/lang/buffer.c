@@ -356,7 +356,7 @@ static anna_type_t *anna_buffer_iterator_create(
 	0);
     
     anna_member_create(
-	iter, ANNA_MID_VALID, ANNA_MEMBER_IMUTABLE, object_type);
+	iter, ANNA_MID_VALID, ANNA_MEMBER_IMUTABLE, any_type);
     anna_type_copy_object(iter);
     
     anna_type_t *iter_argv[] = 

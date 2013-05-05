@@ -30,7 +30,7 @@ def Int partition(
     return store;
 }
 
-def Object sortSub(
+def Any sortSub(
     %Type list, Int from, Int to, 
     %Comp fun)
     (

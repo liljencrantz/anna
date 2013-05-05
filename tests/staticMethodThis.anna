@@ -1,7 +1,7 @@
 class MyBase
 {
 
-    def Object staticMeth() (static)
+    def Any staticMeth() (static)
     {
 	print(%This, %This::staticMeth.name);
     }

@@ -76,7 +76,7 @@ keys in HashMap dictionaries.
     {
         body.push(ast(__const__(toString, ?, __def__(toString, ?, {}, {}, %body), {})) % ["body": toStringBody]);
     }
-    body.push(ast(__const__(__cmp__, ?, __def__(__cmp__, ?, {var Object other}, {}, %body), {})) % ["body": cmpBody]);
+    body.push(ast(__const__(__cmp__, ?, __def__(__cmp__, ?, {var Any other}, {}, %body), {})) % ["body": cmpBody]);
     body.push(ast(__const__(hashCode, ?, __def__(hashCode, ?, {}, {}, %body), {})) % ["body": hashCodeBody]);
     return node;
 }
@@ -113,7 +113,7 @@ dependencies between member types."
 	    }
 	    else
 	    {
-		ast(Object);
+		ast(Any);
 	    }
 	typeBlock ~= [ast(__var__(%name, %type, ?, {}))
 		      % ["name": mapping[0], "type": varType]];

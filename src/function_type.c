@@ -19,8 +19,8 @@ __pure anna_function_type_t *anna_function_type_unwrap(anna_type_t *type)
     {
 	anna_type_t *argv[] = 
 	    {
-		anna_hash_type_get(string_type, object_type),
-		object_type
+		anna_hash_type_get(string_type, any_type),
+		any_type
 	    }
 	;
 	wchar_t *argn[] = 

@@ -172,7 +172,7 @@ static void anna_continuation_member_load(anna_stack_template_t *stack)
 
     anna_member_create_native_property(
 	continuation_member_type, anna_mid_get(L"value"),
-	object_type, &anna_continuation_member_i_get_value, 0,
+	any_type, &anna_continuation_member_i_get_value, 0,
 	L"The current value of this member.");
 
     anna_member_create_native_property(

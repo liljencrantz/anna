@@ -18,7 +18,7 @@ def main()
     }
 
 
-    def noShadow(Object param)
+    def noShadow(Any param)
     (
 	alias(myFunction)
     )

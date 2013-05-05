@@ -17,14 +17,14 @@ expandCode(
 
 
 expandCode(
-    def Object %name(%Type this)
+    def Any %name(%Type this)
     (
 	target(%Type),
 	doc("Returns true if all members of this list are non-Null."),
 	name(all?)
 	)
     {
-	res := 1 as Object;
+	res := 1 as Any;
 	this.each(i){ res = res and i }
 	return res;
     },
@@ -41,7 +41,7 @@ expandCode(
 	name(none?),
 	)
     {
-	res := 1 as Object;
+	res := 1 as Any;
 	this.each(i){ res = res and !i }
 	return res;
     },

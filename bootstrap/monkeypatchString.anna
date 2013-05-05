@@ -40,7 +40,7 @@ expandCode(
 expandCode(
     def %Type %name(
 	%Type this, 
-	List«Object» data)
+	List«Any» data)
     (
 	alias(__format__), 
 	name(formatList),
@@ -60,7 +60,7 @@ expandCode(
 
 def String formatListInternal(
     String this, 
-    List«Object» data) (internal, doc("Internal helper function for String::formatList."))
+    List«Any» data) (internal, doc("Internal helper function for String::formatList."))
 {
     res := "";
     listIdx := 0;
@@ -93,7 +93,7 @@ def String formatListInternal(
 expandCode(
     def %Type %name(
 	%Type this, 
-	HashMap«String, Object» data) 
+	HashMap«String, Any» data) 
     (
 	alias(__format__), 
 	name(formatMap),
@@ -112,7 +112,7 @@ expandCode(
 
 def String formatMapInternal(
     String this, 
-    HashMap«String, Object» data)  (internal, doc("Internal helper function for String::formatMap."))
+    HashMap«String, Any» data)  (internal, doc("Internal helper function for String::formatMap."))
 {
     res := "".thaw;
     i := 0;
@@ -236,7 +236,7 @@ expandCode(
     def MutableList«String» %name(
 	%Type this,
 	String charList,
-	Object allowEmpty = 1)
+	Any allowEmpty = 1)
     (
 	target(%Type),
 	doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
@@ -269,7 +269,7 @@ expandCode(
     def MutableList«String» %name(
 	%Type this,
 	Char char,
-	Object allowEmpty = 1)
+	Any allowEmpty = 1)
     (
 	target(%Type),
 	alias(split),
@@ -287,7 +287,7 @@ expandCode(
     def MutableList«String» %name(
 	%Type this,
 	List«Char» charList,
-	Object allowEmpty = 1)
+	Any allowEmpty = 1)
     (
 	target(%Type),
 	alias(split),

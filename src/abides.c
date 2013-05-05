@@ -428,12 +428,12 @@ anna_type_t *anna_type_intersect(anna_type_t *t1, anna_type_t *t2)
     
     anna_type_intersect_into(res, t1, t2);
     
-    if(!anna_abides(res, object_type))
+    if(!anna_abides(res, any_type))
     {
 	debug(
 	    D_CRITICAL, 
 	    L"Type %ls does not abide to the object type. Reasons:\n", res->name);
-	anna_abides_fault_count_internal(res, object_type, D_CRITICAL);
+	anna_abides_fault_count_internal(res, any_type, D_CRITICAL);
 	CRASH;
     }
     

@@ -35,7 +35,7 @@
 #include "anna/use.h"
 #include "anna/lib/clib.h"
 
-#include "anna/lib/lang/object.h"
+#include "anna/lib/lang/any.h"
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/hash.h"
 #include "anna/lib/lang/string.h"

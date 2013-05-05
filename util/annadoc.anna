@@ -135,7 +135,7 @@ class DocumentationData
 	return (parent.steps + 1) or 0;
     }
 
-    def __cmp__(Object other)
+    def __cmp__(Any other)
     {
 	return object.name.__cmp__((other as DocumentationData).object.name);
     }
@@ -179,7 +179,7 @@ often used code paths, which makes it useful for regression testing.")
 	memberMissing = memberTot = moduleMissing = moduleTot = 0;
     }
     
-    def extractDocumentation(parser.Call attrList, Object brief = ?)
+    def extractDocumentation(parser.Call attrList, Any brief = ?)
     (
 	internal
     )
@@ -292,7 +292,7 @@ often used code paths, which makes it useful for regression testing.")
 	}) ~ getAttribute(mem) ~ ";"
     }
 
-    def headerForModule(Object module)
+    def headerForModule(Any module)
     {
 	return (" - " ~ (extractDocumentation(type(module).attribute, 1))) or "";
     }
@@ -371,13 +371,13 @@ often used code paths, which makes it useful for regression testing.")
 " % «String»[htmlClass, mem.name, getSignature(mem), aliasDoc, opDoc, doc];
     }
     
-    def document(Object module)
+    def document(Any module)
     {
 	lookup(type(module), ?);
 	this.writeFile(type(module));
     }
 
-    def Object lookup(Type module, Type parent)
+    def Any lookup(Type module, Type parent)
     {
 	if(module in path)
 	{
@@ -416,7 +416,7 @@ often used code paths, which makes it useful for regression testing.")
 	}
     }
 
-    def Object writeFile(Type module)
+    def Any writeFile(Type module)
     {
 	moduleTot++;
 	if(!(module in path)){ return }
@@ -429,7 +429,7 @@ often used code paths, which makes it useful for regression testing.")
 	if(module.module?)
 	{
   	    objMemb := «String, Member»[];
-	    Object.member.each(mem){objMemb[mem.name] = mem}
+	    Any.member.each(mem){objMemb[mem.name] = mem}
 	    memb = memb.filter(mem){!(mem.name in objMemb)}
 	}
 	else

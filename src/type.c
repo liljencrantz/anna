@@ -53,7 +53,7 @@ void anna_type_copy_object(anna_type_t *type)
 {
     if(anna_type_object_created)
     {
-	anna_type_copy(type, object_type);
+	anna_type_copy(type, any_type);
     }
     else 
     {
@@ -68,7 +68,7 @@ void anna_type_object_is_created()
     for(i=0; i<al_get_count(&anna_type_uninherited); i++)
     {
 	anna_type_t *t = al_get(&anna_type_uninherited, i);
-	anna_type_copy(t, object_type);
+	anna_type_copy(t, any_type);
     }
     al_destroy(&anna_type_uninherited);
 }
@@ -373,7 +373,7 @@ void anna_type_copy(anna_type_t *res, anna_type_t *orig)
 	anna_type_finalizer_add(res, orig->finalizer[i]);
     }
 
-    if(orig == object_type && !anna_type_object_created)
+    if(orig == any_type && !anna_type_object_created)
     {
 	anna_type_copy_object(res);
     }
@@ -728,7 +728,7 @@ static void anna_type_extend(
 	anna_type_copy(type, par);
 	anna_type_add_all_initializer(type, par);
     }
-    anna_type_copy(type, object_type);
+    anna_type_copy(type, any_type);
 }
 
 void anna_type_set_stack(
@@ -1349,7 +1349,7 @@ anna_type_t *anna_type_get_iterator(
 	    L"key", L"value"
 	};
     return anna_type_get_function(
-	object_type,
+	any_type,
 	2, argv, argn, 0, 0);
   
 }

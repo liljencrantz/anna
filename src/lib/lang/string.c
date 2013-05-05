@@ -831,7 +831,7 @@ static anna_type_t *anna_string_iterator_create(
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(
-	iter, ANNA_MID_VALID, object_type,
+	iter, ANNA_MID_VALID, any_type,
 	&anna_string_iterator_valid,
 	0, 0);
     
@@ -920,7 +920,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_type_t *o_argv[] = 
 	{
 	    type,
-	    object_type
+	    any_type
 	}
     ;
     
@@ -961,7 +961,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_type_t *join_argv[] = 
 	{
 	    type,
-	    object_type
+	    any_type
 	}
     ;
 
@@ -1156,7 +1156,7 @@ void anna_string_type_create()
     anna_member_create_native_type_method(
 	string_type, anna_mid_get(L"convert"),
 	0, &anna_string_convert, string_type,
-	1, &object_type, conv_argn, 0, L"Convert any object into a String. This is done by calling the toString method of the Object.");
+	1, &any_type, conv_argn, 0, L"Convert any object into a String. This is done by calling the toString method of the Object.");
 
     anna_type_document(
 	string_type,

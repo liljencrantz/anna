@@ -15,7 +15,7 @@
 * Rename __staticTypeOf__ to staticType
 * Drop __staticReturnTypeOf__ and __staticInputTypeOf__
 * Constructors for intersected types should return null.
-* Rename the confusing Object type. Maybe AnyType, BaseType, EmptyType or RootType are better options?
+* Rename the confusing Object type. Maybe Any, Base, Empty or Root are better options?
   - HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
 * List.reverse
 * List::convert(Iterator iter)

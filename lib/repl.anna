@@ -191,7 +191,7 @@ modification, are permitted provided that the following conditions are met:
     
     secondPrompt := " " * firstPrompt.count;
 
-    prev := ? as Object;
+    prev := ? as Any;
     /*
       Start the main repl loop
     */
@@ -283,7 +283,7 @@ modification, are permitted provided that the following conditions are met:
 				    "decl": (if(memb.mutable?) {ast(__var__)} else {ast(__const__)}),
 				    
 			    "name": Identifier(?, memb.name), 
-			    "value": (if(memb.value){Dummy(?, memb.value)}else{ast(? as Object)}) as Node,
+			    "value": (if(memb.value){Dummy(?, memb.value)}else{ast(? as Any)}) as Node,
 			    "Type": Dummy(?, memb.type),
 			    ]
 			);
@@ -308,7 +308,7 @@ modification, are permitted provided that the following conditions are met:
 			"ast": ast, 
 			"cont": Identifier(?, "!cont"), 
 			"variable": variableDeclaration,
-			"ans": (if(prev){Dummy(?, prev)}else{ast(? as Object)}) as Node,
+			"ans": (if(prev){Dummy(?, prev)}else{ast(? as Any)}) as Node,
 			];
 	    if(isGlobal)
 	    {

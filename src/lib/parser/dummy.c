@@ -31,7 +31,7 @@ static anna_type_t *anna_node_create_dummy_type(anna_stack_template_t *stack)
 	{
 	    node_dummy_type,
 	    node_type,
-	    object_type
+	    any_type
 	}
     ;
     
@@ -46,7 +46,7 @@ static anna_type_t *anna_node_create_dummy_type(anna_stack_template_t *stack)
     
     anna_member_create_native_property(
 	node_dummy_type,
-	anna_mid_get(L"payload"), object_type,
+	anna_mid_get(L"payload"), any_type,
 	&anna_node_dummy_wrapper_i_get_payload, 0, 
 	L"The payload of this node.");
 

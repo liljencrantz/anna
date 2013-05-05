@@ -41,7 +41,7 @@
 #include "anna/lib/lang/range.h"
 #include "anna/lib/lang/hash.h"
 #include "anna/lib/lang/pair.h"
-#include "anna/lib/lang/object.h"
+#include "anna/lib/lang/any.h"
 #include "anna/lib/lang/buffer.h"
 #include "anna/lib/parser.h"
 #include "anna/lib/clib.h"
@@ -58,9 +58,9 @@
 #include "src/lib/lang/range.c"
 #include "src/lib/lang/hash.c"
 #include "src/lib/lang/pair.c"
-#include "src/lib/lang/object.c"
+#include "src/lib/lang/any.c"
 
-anna_type_t *object_type=0,
+anna_type_t *any_type=0,
     *int_type=0, 
     *null_type=0,
     *string_type=0, 
@@ -82,7 +82,7 @@ anna_member_t *null_member;
 
 const static anna_type_data_t anna_lang_type_data[] = 
 {
-    { &object_type,L"Object" },
+    { &any_type,L"Any" },
     { &null_type,L"Null" },
     { &int_type,L"Int" },
     { &any_list_type,L"List" },
@@ -138,7 +138,7 @@ static void anna_null_type_create()
 
     anna_type_document(
 	null_type,
-	L"The null object is a special object. It can be cast to any other type. All members hold the value null. Calling a null value as a function will return null. The null object can be cast as any Object.");  
+	L"The null object is a special object. It can be cast to any other type. All members hold the value null. Calling a null value as a function will return null. The null object can be cast to any type.");  
 
 }
 
@@ -292,7 +292,7 @@ ANNA_VM_NATIVE(anna_reflection_type_of, 1)
 
 void anna_lang_load(anna_stack_template_t *stack)
 {
-    anna_object_type_create();
+    anna_any_type_create();
     anna_list_type_create();
     anna_null_type_create();    
     anna_int_type_create();
@@ -316,7 +316,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	L"printInternal", 
 	0, 
 	&anna_i_print_internal, 
-	object_type, 1, &string_type, 
+	any_type, 1, &string_type, 
 	p_argn, 0,
 	L"Print the specified String to standard output. This is a non-standard internal helper function, do not use it directly. Use the print function instead.");
 
@@ -325,7 +325,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	L"__not__", 0, 
 	&anna_i_not, 
 	int_type, 
-	1, &object_type, p_argn, 0,
+	1, &any_type, p_argn, 0,
 	L"Negates the value. Returns 1 of the input is null, null otherwise.");
 
     anna_module_function(
@@ -380,17 +380,17 @@ void anna_lang_load(anna_stack_template_t *stack)
 	stack,
 	L"callCC", 0, 
 	&anna_i_callcc, 
-	object_type, 
-	1, &object_type, p_argn, 0,
+	any_type, 
+	1, &any_type, p_argn, 0,
 	L"Call with current continuation.");
     
     static wchar_t *wrap_argn[]={L"object",L"method"};
-    anna_type_t *wrap_argv[]={object_type, object_type};
+    anna_type_t *wrap_argv[]={any_type, any_type};
     
     anna_function_t *wrap = anna_native_create(
 	L"wrapMethod", 0,
 	&anna_i_wrap_method,
-	object_type,
+	any_type,
 	2,
 	wrap_argv, wrap_argn, 0, stack);
     anna_wrap_method = wrap->wrapper;
@@ -402,7 +402,7 @@ void anna_lang_load(anna_stack_template_t *stack)
 	L"type", 0, 
 	&anna_reflection_type_of, 
 	type_type, 
-	1, &object_type, type_argn, 0,
+	1, &any_type, type_argn, 0,
 	L"Returns the type of the specified object.");
 
     anna_type_data_register(anna_lang_type_data, stack);

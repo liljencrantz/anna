@@ -1119,7 +1119,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    anna_node_call_t *n = (anna_node_call_t *)this;
 	    if(n->child_count == 0)
 	    {
-		n->return_type = object_type;
+		n->return_type = any_type;
 	    }
 	    else
 	    {

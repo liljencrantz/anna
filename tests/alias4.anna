@@ -6,7 +6,7 @@ class MyType
 	print(msg, val);
     }
 
-    def f2 (Object obj) (alias(talk))
+    def f2 (Any obj) (alias(talk))
     {
 	print(obj);
     }

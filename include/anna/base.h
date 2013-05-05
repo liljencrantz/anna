@@ -783,7 +783,7 @@ typedef struct
 /**
    A bunch of internal types. Might be better to move these to e.g. lib/lang/lang.h.
 */
-extern anna_type_t *type_type, *object_type, *int_type, *string_type, 
+extern anna_type_t *type_type, *any_type, *int_type, *string_type, 
     *mutable_string_type, *imutable_string_type, *char_type, *null_type,
     *string_type, *char_type, *float_type, *member_type, *range_type, 
     *complex_type, *hash_type, *hash_key_type, *pair_type, *buffer_type, 

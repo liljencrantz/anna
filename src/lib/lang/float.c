@@ -217,7 +217,7 @@ void anna_float_type_create()
 {
     anna_type_t *argv[] = 
 	{
-	    float_type, object_type
+	    float_type, any_type
 	}
     ;
     anna_type_t *float_cmp_argv[] = 

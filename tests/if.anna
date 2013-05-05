@@ -1,4 +1,4 @@
-def fun(Object val)
+def fun(Any val)
 {
     return if(val){"true"} else {"false"}
 }
@@ -44,7 +44,7 @@ def main()
 	    break if(1){"true"} else {"false"};
 	});
 
-    done := ? as Object;
+    done := ? as Any;
     print(
 	while(!done)
 	{

@@ -1084,7 +1084,7 @@ static anna_type_t *anna_hash_iterator_create(
     anna_type_copy_object(iter);
     
     anna_member_create_native_property(
-	iter, ANNA_MID_VALID, object_type,
+	iter, ANNA_MID_VALID, any_type,
 	&anna_hash_iterator_valid,
 	0, 0);
 
@@ -1331,9 +1331,9 @@ void anna_hash_type_create()
 	L"Hash function. Should always return the same number for the same object and should also return the same number for two equal objects.");
 
     anna_hash_internal_init();
-    hash_put(&anna_hash_specialization, anna_tt_make(hash_key_type, object_type), hash_type);
+    hash_put(&anna_hash_specialization, anna_tt_make(hash_key_type, any_type), hash_type);
     anna_alloc_mark_permanent(hash_type);
-    anna_hash_type_create_internal(hash_type, hash_key_type, object_type);
+    anna_hash_type_create_internal(hash_type, hash_key_type, any_type);
 }
 
 anna_type_t *anna_hash_type_get(anna_type_t *subtype1, anna_type_t *subtype2)

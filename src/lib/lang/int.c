@@ -274,7 +274,7 @@ void anna_int_type_create()
 {
     anna_type_t *i_argv[] = 
 	{
-	    int_type, object_type
+	    int_type, any_type
 	}
     ;
     anna_type_t *i_cmp_argv[] = 
@@ -346,7 +346,7 @@ void anna_int_type_create()
     
     anna_member_create_native_method(
 	int_type, anna_mid_get(L"__init__"), 0,
-	&anna_int_init_i, object_type, 2, ii_argv,
+	&anna_int_init_i, any_type, 2, ii_argv,
 	ii_argn, 0, L"Create a new Int object with the same value as the specified Int object.");
     
     anna_member_create_native_method(

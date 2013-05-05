@@ -227,7 +227,7 @@ void anna_pair_type_create()
 {
     anna_pair_internal_init();
     hash_put(&anna_pair_specialization, anna_tt_make(hash_key_type, hash_key_type), pair_type);
-    anna_pair_type_create_internal(pair_type, object_type, object_type);
+    anna_pair_type_create_internal(pair_type, any_type, any_type);
 }
 
 anna_type_t *anna_pair_type_get(anna_type_t *subtype1, anna_type_t *subtype2)

@@ -174,7 +174,7 @@ static void anna_type_load()
     
     anna_member_create_native_method(
 	type_type, anna_mid_get(L"abides"), 0,
-	&anna_type_abides, object_type, 2, argv,
+	&anna_type_abides, any_type, 2, argv,
 	argn, 0, 0);
 
     anna_member_create_native_property(

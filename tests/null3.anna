@@ -1,4 +1,4 @@
 def main()
 {
-    print(type((? as Object)));
+    print(type((? as Any)));
 }

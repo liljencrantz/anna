@@ -273,7 +273,7 @@ class='anna-code'&gt; tag. This is detected during page rendering by a
 javascript that will perform syntax highlighting. For example, this is
 the signature of the <a path='json' member='to'>json.to</a> function:",
 	"<pre class='anna-code'>
-def String to(Object o) 
+def String to(Any o) 
 (
     doc(
 	\"

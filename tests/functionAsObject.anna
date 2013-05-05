@@ -3,6 +3,6 @@ def bar(Int aaa){3}
 
 def Int main()
 {
-	/* Verify that functions abide to the Object interface. This can easily fail if you go mucking around annas internals, because function types are created rather easly in the bootstrapping phase, so a regression test is in order */
+	/* Verify that functions abide to the Any interface. This can easily fail if you go mucking around annas internals, because function types are created rather easly in the bootstrapping phase, so a regression test is in order */
     print(bar);
 }

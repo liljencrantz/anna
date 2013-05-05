@@ -1,5 +1,5 @@
 
-class Foo (template(%T:Object))
+class Foo (template(%T:Any))
 {
     var %T val;
 

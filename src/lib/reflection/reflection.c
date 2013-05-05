@@ -99,12 +99,12 @@ void anna_reflection_load(anna_stack_template_t *stack)
 {
     anna_type_load();    
     continuation_type = anna_type_get_function(
-	object_type,
+	any_type,
 	0, 0, 0,
 	0,
 	ANNA_FUNCTION_CONTINUATION);
     block_type = anna_type_get_function(
-	object_type,
+	any_type,
 	0, 0, 0,
 	0,
 	0);
@@ -147,7 +147,7 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	L"heapSize", 0, 
 	&anna_reflection_heap_size, 
 	int_type, 
-	1, &object_type, hs_argn, 0,
+	1, &any_type, hs_argn, 0,
 	L"Returns the amount of heap memory used by the specified object. Note that objects that can be stored directly on the stack (such as integers) may return a size of zero.");
 
 }

@@ -293,7 +293,7 @@ void anna_mp_load(anna_stack_template_t *stack)
 
 
     task_type = anna_type_get_function(
-	object_type,
+	any_type,
 	1, ta_argv, ta_argn, 0,
 	0);
 

@@ -383,7 +383,7 @@ void anna_range_type_create()
 	    int_type,
 	    int_type,
 	    int_type,
-	    object_type
+	    any_type
 	}
     ;
     
@@ -426,7 +426,7 @@ void anna_range_type_create()
     anna_member_create(
 	iter, ANNA_MID_VALUE, ANNA_MEMBER_IMUTABLE, int_type);
     anna_member_create(
-	iter, ANNA_MID_VALID, 0, object_type);
+	iter, ANNA_MID_VALID, 0, any_type);
     anna_type_copy_object(iter);
     anna_util_iterator_iterator(iter);        
     

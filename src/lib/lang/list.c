@@ -528,7 +528,7 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
     anna_object_t *list = anna_as_obj(param[0]);
     
     if(anna_entry_null(param[2]))
-	replacement = anna_list_create_mutable(object_type);
+	replacement = anna_list_create_mutable(any_type);
     else
 	replacement = anna_as_obj(param[2]);
     
@@ -799,7 +799,7 @@ static anna_type_t *anna_list_iterator_create(
 	mutable ? &anna_list_iterator_set_value:0, 0);
 
     anna_member_create_native_property(
-	iter, ANNA_MID_VALID, object_type,
+	iter, ANNA_MID_VALID, any_type,
 	&anna_list_iterator_valid,
 	0, 0);
     
@@ -852,7 +852,7 @@ static void anna_list_type_create_internal(
     anna_type_t *o_argv[] = 
 	{
 	    type,
-	    object_type
+	    any_type
 	}
     ;
 
@@ -1189,18 +1189,18 @@ void anna_list_type_create()
     anna_list_internal_init();
 
     anna_list_type_insert(
-	object_type, mutable_list_type, imutable_list_type, any_list_type);
+	any_type, mutable_list_type, imutable_list_type, any_list_type);
     
     anna_list_type_create_internal(
-	mutable_list_type, object_type, 
+	mutable_list_type, any_type, 
 	imutable_list_type, mutable_list_type, any_list_type, 1);
     anna_list_type_create_internal(
-	imutable_list_type, object_type, 
+	imutable_list_type, any_type, 
 	imutable_list_type, mutable_list_type, any_list_type, 0);
     anna_type_intersect_into(
 	any_list_type, mutable_list_type, imutable_list_type);    
     
-    anna_entry_set_static_ptr(any_list_type, ANNA_MID_LIST_SPECIALIZATION, object_type);
+    anna_entry_set_static_ptr(any_list_type, ANNA_MID_LIST_SPECIALIZATION, any_type);
     anna_list_push_all_extra_methods(any_list_type, ANY_OFF);
 
     anna_type_document(
