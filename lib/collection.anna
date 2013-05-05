@@ -9,7 +9,7 @@ def flatten(%T input)
 Return a MutableList containing all the elements of the List of Lists given as input.")
 )
 {
-    res := «__staticTypeOf__(input[0][0])»[];
+    res := «staticType(input[0][0])»[];
     input.each(el){res ~= el}
     return res;
 }
@@ -24,10 +24,10 @@ argument sequence. The specialization of the ImutableList is the
 intersection of the static types of all the argument lists.")
 )
 {
-    res := «ImutableList«__staticTypeOf__(input[0][0])»»[];
+    res := «ImutableList«staticType(input[0][0])»»[];
     
     (0..input[0].count).each(idx){
-	list := «__staticTypeOf__(input[0][0])»[];
+	list := «staticType(input[0][0])»[];
 	input.each(coll){
 	    if(coll.count <= idx)
 	    {

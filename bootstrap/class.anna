@@ -78,7 +78,7 @@ the magical this parameter to methods and so on.")
 		{
 		    //	    print("ABC ", decl, "\n");
 		    initExtra.push(decl[0]|decl[2]);
-		    decl[1] = ast(__staticTypeOf__(%init)) % ["init": decl[2]];
+		    decl[1] = ast(staticType(%init)) % ["init": decl[2]];
 		    decl[2] = NullLiteral(decl[2]);
 		}
 	    }	    

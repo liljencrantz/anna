@@ -1,6 +1,6 @@
 def combinations(%Collection item) (template(%Collection: List))
 {
-    result :== «Pair«__staticTypeOf__(item.first),__staticTypeOf__(item.first)»»[];
+    result :== «Pair«staticType(item.first),staticType(item.first)»»[];
     item.each(idx, it)
     {
 	item[idx+1...].each(idx2, it2) { result.push( it|it2) }

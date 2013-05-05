@@ -109,7 +109,7 @@ dependencies between member types."
         varType := 
 	    if(type(mapping[1]) != NullLiteral)
 	    {
-		ast(__staticTypeOf__(%value)) % ["value": mapping[1]];
+		ast(staticType(%value)) % ["value": mapping[1]];
 	    }
 	    else
 	    {

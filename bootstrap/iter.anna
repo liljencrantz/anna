@@ -87,20 +87,20 @@ def Call mangleIterator(Call node)
     {
 	n[0] = iterDeclare(
 	    Identifier(body, "!unused"), 
-	    ast(__staticTypeOf__(%iter.key)).setLocation(node));
+	    ast(staticType(%iter.key)).setLocation(node));
 	n[1] = iterDeclare(
 	    node[0],
-	    ast(__staticTypeOf__(%iter.value)).setLocation(node));
+	    ast(staticType(%iter.value)).setLocation(node));
     } 
     else
     {
 	checkNodeType(node[1], Identifier);
 	n[0] = iterDeclare(
 	    node[0],
-	    ast(__staticTypeOf__(%iter.key)).setLocation(node));
+	    ast(staticType(%iter.key)).setLocation(node));
 	n[1] = iterDeclare(
 	    node[1],
-	    ast(__staticTypeOf__(%iter.value)).setLocation(node));
+	    ast(staticType(%iter.value)).setLocation(node));
     }
     
     res := Call(
@@ -253,7 +253,7 @@ macro filter(node)
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
-		%res := «__staticTypeOf__(%iter.value)»[];
+		%res := «staticType(%iter.value)»[];
 		while(%iter.valid?)
 		{
 		    %keyVar := %iter.key as %keyType;
@@ -279,7 +279,7 @@ macro filter(node)
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
-		%res := «__staticTypeOf__(%iter.value)»[];
+		%res := «staticType(%iter.value)»[];
 		%funVar := %fun;
 		while(%iter.valid?)
 		{
@@ -500,7 +500,7 @@ macro find(node)
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
-		%res := ? as __staticTypeOf__(%iter.value);
+		%res := ? as staticType(%iter.value);
 		while(%iter.valid?)
 		{
 		    %keyVar := %iter.key as %keyType;
@@ -526,7 +526,7 @@ macro find(node)
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
-		%res := ? as __staticTypeOf__(%iter.value);
+		%res := ? as staticType(%iter.value);
 		%funVar := %fun;
 		while(%iter.valid?)
 		{
@@ -656,7 +656,7 @@ def Call mangleReduceIterator(Call node)
 	ast(%ReturnType));
     n[1] = iterDeclare(
 	node[2],
-	ast(__staticTypeOf__(%iter.value)));
+	ast(staticType(%iter.value)));
     
     res := Call(
 	node, 
@@ -723,7 +723,7 @@ macro reduce(node)
 	    )
 	    .setLocation(node)
 	    .replace(ast(coll), coll)
-	    .replace(ast(ReturnType), ast(__staticTypeOf__(%initial)))
+	    .replace(ast(ReturnType), ast(staticType(%initial)))
 	    .replace(ast(body), body)
 	    .replace(ast(prevVar), (decl[0] as Call)[0])
 	    .replace(ast(valueVar), (decl[1] as Call)[0])
@@ -749,7 +749,7 @@ macro reduce(node)
 	    )
 	    .setLocation(node)
 	    .replace(ast(coll), coll)
-	    .replace(ast(ReturnType), ast(__staticTypeOf__(%initial)))
+	    .replace(ast(ReturnType), ast(staticType(%initial)))
 	    .replace(ast(fun), node[1])
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")))

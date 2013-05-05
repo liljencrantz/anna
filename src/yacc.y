@@ -1164,7 +1164,7 @@ function_declaration:
 		    &@$,
 		    anna_node_create_identifier(
 			&@$,
-			L"__staticTypeOf__"),
+			L"staticType"),
 		    anna_node_create_call2(
 			&@$,
 			anna_node_create_identifier(&@1,L"__def__"),
@@ -1287,7 +1287,7 @@ function_definition:
 			    &@$,
 			    anna_node_create_identifier(
 				&@$,
-				L"__staticTypeOf__"),
+				L"staticType"),
 			    def),
 			anna_node_create_null(&@$),
 			anna_node_clone_deep((anna_node_t *)$4));

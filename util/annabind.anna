@@ -1042,7 +1042,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
  	        fieldType := decl[1];
 		hadInit = hadInit or (fieldName == "__init__");
 
-		if(fieldType.callTo?("__staticTypeOf__") and (fieldType as Call)[0].callTo?("__def__"))
+		if(fieldType.callTo?("staticType") and (fieldType as Call)[0].callTo?("__def__"))
 		{
 		  methOut := generateMethod(myBinding, fieldName, (fieldType as Call)[0] as Call, [structName]);
 		    load~= methOut.load;
@@ -1147,7 +1147,7 @@ ANNA_VM_NATIVE(%(initName), 1)
   		    attr := decl[3] as Call;
 		    declType := decl[1];
 		    declVal := decl[2];
-		    if(declType.callTo?("__staticTypeOf__"))
+		    if(declType.callTo?("staticType"))
 		    {
 		        typeExpr := (declType as Call)[0] as Call;
 			if(typeExpr.callTo?("__def__"))

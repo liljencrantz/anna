@@ -844,11 +844,11 @@ void anna_macro_init(anna_stack_template_t *stack)
 
     anna_macro_add(
 	stack,
-	L"__staticTypeOf__",
+	L"staticType",
 	&anna_macro_type_of,
 	L"Calculate the static type of the specified expression.",
-	L"This function is similar to the <a path='lang' member='type'>type</a>-function, but where type returns the true type of an expression, __staticTypeOf__ returns the type calculated by the compiler, which may be different. An important property of the __staticTypeOf__ macro is that it can be used in places where a type is required during compilation, e.g. as the type in a function declaration. For example,",
-	anna_example(L"myNumber := 7;\nmyFunction :== __def__(myFunction, ?, {__var__(in, __staticTypeOf__(myNumber), ?, {})}, {}, {in+1});\nmyFunction(4);\n"));
+	L"This function is similar to the <a path='lang' member='type'>type</a>-function, but where type returns the true type of an expression, staticType returns the type calculated by the compiler, which may be different. An important property of the staticType macro is that it can be used in places where a type is required during compilation, e.g. as the type in a function declaration. For example,",
+	anna_example(L"myNumber := 7;\nmyFunction :== __def__(myFunction, ?, {__var__(in, staticType(myNumber), ?, {})}, {}, {in+1});\nmyFunction(4);\n"));
 
     anna_macro_add(
 	stack, L"__staticReturnTypeOf__", &anna_macro_return_type_of,

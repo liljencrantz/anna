@@ -1,6 +1,6 @@
 class Foo
 {
-    __var__(blaj, __staticTypeOf__(3), null, {});
+    __var__(blaj, staticType(3), null, {});
 }
 
 def main()
