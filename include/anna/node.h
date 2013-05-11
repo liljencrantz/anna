@@ -81,57 +81,38 @@ typedef struct YYLTYPE anna_location_t;
 typedef struct YYLTYPE YYLTYPE;
 #define yyltype YYLTYPE
 #define YYLTYPE YYLTYPE
+#define ANNA_NODE_BASE				\
+    int flags;					\
+    int node_type;				\
+    struct anna_object *wrapper;		\
+    anna_location_t location;			\
+    anna_type_t *return_type;			\
+    anna_stack_template_t *stack;		\
+    struct anna_node *transformed
 
 struct anna_node
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
+    ANNA_NODE_BASE;
 };
 
 
 struct anna_node_identifier
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     wchar_t *name;
     anna_sid_t sid;
 };
 
 struct anna_node_cond
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     struct anna_node *arg1;
     struct anna_node *arg2;
 };
 
 struct anna_node_if
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     struct anna_node *cond;
     struct anna_node_call *block1;
     struct anna_node_call *block2;
@@ -140,14 +121,7 @@ struct anna_node_if
 
 struct anna_node_assign
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     wchar_t *name;
     anna_sid_t sid;
     struct anna_node *value;
@@ -155,14 +129,7 @@ struct anna_node_assign
 
 struct anna_node_declare
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     wchar_t *name;
     anna_sid_t sid;
     struct anna_node *value;    
@@ -172,14 +139,7 @@ struct anna_node_declare
 
 struct anna_node_member_access
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-    
+    ANNA_NODE_BASE;
     mid_t mid;
     struct anna_node *object;
     struct anna_node *value;
@@ -188,14 +148,7 @@ struct anna_node_member_access
 
 struct anna_node_call
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     mid_t mid;
     union
     {
@@ -210,14 +163,7 @@ struct anna_node_call
 
 struct anna_node_string_literal
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     size_t payload_size;
     wchar_t *payload;
     int free;
@@ -225,92 +171,43 @@ struct anna_node_string_literal
 
 struct anna_node_char_literal
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     wchar_t payload;
 };
 
 struct anna_node_int_literal
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     mpz_t payload;
 };
 
 struct anna_node_dummy
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     struct anna_object *payload;
 };
 
 struct anna_node_closure
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     struct anna_function *payload;
 };
 
 struct anna_node_type
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     struct anna_type *payload;
 };
 
 struct anna_node_float_literal
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-
+    ANNA_NODE_BASE;
     double payload;
 };
 
 struct anna_node_wrapper
 {
-    int flags;
-    int node_type;
-    struct anna_object *wrapper;
-    anna_location_t location;
-    anna_type_t *return_type;
-    anna_stack_template_t *stack;    
-    struct anna_node *transformed;
-    
+    ANNA_NODE_BASE;
     struct anna_node *payload;
     int steps;
 };
