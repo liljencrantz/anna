@@ -108,6 +108,7 @@ static void anna_alloc_timer_start()
 #define anna_alloc_timer_stop(name)
 #endif
 
+static void anna_alloc_count_freeable( wchar_t *phase);
 
 #include "src/alloc/mark.c"
 #include "src/alloc/free.c"
@@ -270,6 +271,21 @@ void anna_alloc_unpause_worker()
     pthread_mutex_unlock(&anna_alloc_mutex_gc);
 }
 
+void anna_alloc_print_info()
+{
+    debug(99, L"%d kB bytes allocated\n", slab_alloc_sz/1024);
+    debug(99, L"%d kB bytes allocated as slabs\n", slab_alloc_batch_sz/1024);
+/*
+    anna_alloc_t *data = anna_alloc_data();
+    int i;
+    for(i=0; i<ANNA_ALLOC_TYPE_COUNT; i++)
+    {
+	debug(99, L"%d allocations of type %d\n", al_get_count(&data->alloc[i]), i);
+    }
+*/
+}
+
+
 void anna_gc(anna_context_t *context)
 {
     if(anna_alloc_gc_block_counter)
@@ -346,6 +362,7 @@ void anna_gc(anna_context_t *context)
 	anna_alloc_data()->count,
 	anna_alloc_data()->count_next_gc
 	);*/
+//    anna_alloc_print_info();
 }
 
 static void anna_alloc_gc_wait_for_work_thread()
@@ -404,6 +421,8 @@ static void anna_alloc_gc_collect()
     al_truncate(&anna_alloc_todo, 0);
 	
     anna_alloc_gc_block();
+
+//    anna_alloc_count_freeable(L"collection start");
     
 #ifdef ANNA_CHECK_GC_LEAKS
     int old_anna_alloc_count = anna_alloc_count;
@@ -431,10 +450,13 @@ static void anna_alloc_gc_collect()
 //    anna_message(L"Unmarked frames.\n");	
 	anna_alloc_mark_context(context);
     }
+//    anna_alloc_count_freeable(L"Contexts marked");
 
     anna_reflection_mark_static();    
+//    anna_alloc_count_freeable(L"Reflection marked");
     anna_alloc_mark_object(null_object);
     anna_alloc_mark(anna_stack_wrap(stack_global));
+//    anna_alloc_count_freeable(L"Global namespace marked");
 //	anna_message(L"Marked stuff.\n");
     while(al_get_count(&anna_alloc_todo))
     {
@@ -442,11 +464,13 @@ static void anna_alloc_gc_collect()
 	obj->type->mark_object(obj);
     }
 //	anna_message(L"Marked objects.\n");
+//    anna_alloc_count_freeable(L"Actual objects marked");
     
     for(i=0; i<al_get_count(&anna_alloc_permanent); i++)
     {
 	anna_alloc_mark(al_get_fast(&anna_alloc_permanent, i));
     }
+//    anna_alloc_count_freeable(L"permanent objects marked");
 //    anna_message(L"Marked permanent stuff.\n");
 
     memcpy(&anna_alloc_tmp, &anna_alloc, sizeof(anna_alloc_tmp));
@@ -459,10 +483,51 @@ static void anna_alloc_gc_collect()
     anna_alloc_timer_stop(anna_alloc_time_collect);
 }
 
+static void anna_alloc_count_freeable( wchar_t *phase)
+{
+    int i, j, k;
+    int freed = 0, freed2 = 0, av = 0, av2 = 0;
+
+    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+    {
+	for(i=0; i<al_get_count(&anna_alloc_internal[j]); i++)
+	{
+	    av++;
+	    void *el = al_get_fast(&anna_alloc_internal[j], i);
+	    int flags = *((int *)el);
+	    if(!(flags & ANNA_USED))
+	    {
+		freed++;
+	    }
+	}
+    }
+
+    for(k=0; k<al_get_count(&anna_alloc_alloc); k++)
+    {
+	anna_alloc_t *alloc = al_get_fast(&anna_alloc_alloc, k);
+	for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+	{
+	    for(i=0; i<al_get_count(&alloc->alloc[j]); i++)
+	    {
+		av2++;
+		void *el = al_get_fast(&alloc->alloc[j], i);
+		int flags = *((int *)el);
+		if(!(flags & ANNA_USED))
+		{
+		    freed2++;
+		}
+
+	    }
+	}
+    }
+
+    anna_message(L"Counted GC-objects, during %ls, %d/%d permanent and %d/%d temp objects are marked as in used.\n", phase, freed, av, freed2, av2);
+}
+
 static void anna_alloc_gc_free()
 {
     anna_alloc_timer_start();
-    int i, j;
+    int i, j, k;
     int freed = 0;
 
     for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
@@ -486,32 +551,39 @@ static void anna_alloc_gc_free()
 	}
 	al_resize(&anna_alloc_internal[j]);
     }
-
-    for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
+    for(k=0; k<al_get_count(&anna_alloc_alloc); k++)
     {
-	for(i=0; i<al_get_count(&anna_alloc_tmp[j]); i++)
+	anna_alloc_t *alloc = al_get_fast(&anna_alloc_alloc, k);
+	for(j=0; j<ANNA_ALLOC_TYPE_COUNT; j++)
 	{
-	    void *el = al_get_fast(&anna_alloc_tmp[j], i);
-	    int flags = *((int *)el);
-	    if(!(flags & ANNA_USED))
+	    for(i=0; i<al_get_count(&alloc->alloc[j]);)
 	    {
-		freed++;
-		anna_alloc_free(el);
+		array_list_t *al = &alloc->alloc[j];
+		void *el = al_get_fast(al, i);
+//		debug(99, L"tralala %d=>%d\n", i, el);
+		int flags = *((int *)el);
+		if(!(flags & ANNA_USED))
+		{
+//		    debug(99, L"FREEEEE\n");
+		    freed++;
+		    anna_alloc_free(el);
+		    al_set_fast(al, i, al_get_fast(al, al_get_count(al)-1));
+		    al_truncate(al, al_get_count(al)-1);
+		}
+		else
+		{
+		    i++;
+//		    al_push(&anna_alloc_internal[j], el);
+		    anna_alloc_unmark(el);	    
+		}
 	    }
-	    else
-	    {
-		al_push(&anna_alloc_internal[j], el);
-		anna_alloc_unmark(el);	    
-	    }
+//	    al_truncate(&alloc->alloc[j], 0);
+	    
 	}
-	al_destroy(&anna_alloc_tmp[j]);
     }
-
-    anna_alloc_timer_stop(anna_alloc_time_free);
-
-//    anna_message(L"Freed memory.\n");
     
-//	anna_message(L"Reclaimed pools.\n");
+    anna_alloc_timer_stop(anna_alloc_time_free);
+//    debug(99, L"Permanent: %d\n", al_get_count(&anna_alloc_permanent));
 
 #ifdef ANNA_CHECK_GC_LEAKS
     size_t end_count = 0;
@@ -567,9 +639,10 @@ static void *anna_gc_main(void *aux)
 	}
 	
 	anna_alloc_gc_collect();
-	anna_alloc_gc_start_work_thread();
 	anna_alloc_gc_free();
-    }    
+	anna_alloc_gc_start_work_thread();
+//	anna_alloc_print_info();
+    }
     return 0;
 }
 

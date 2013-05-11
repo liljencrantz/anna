@@ -546,6 +546,7 @@ ANNA_VM_NATIVE(anna_system_get_argument, 1)
     if(!res)
     {
 	res = anna_list_create_imutable(string_type);
+	anna_alloc_mark_permanent(res);
 	int i;
 	for(i=0; i<anna_argc; i++)
 	{

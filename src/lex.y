@@ -61,6 +61,7 @@ static int anna_lex_pop_state_internal(yyscan_t yyscanner, int default_state)
    }
    else
    {
+       al_destroy(list);
        free(list);
        hash_remove(anna_lex_nest, yyscanner, 0, 0);       
    }

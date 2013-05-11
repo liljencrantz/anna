@@ -24,6 +24,7 @@ extern slab_t **slab_list;
 extern slab_t **slab_list_free;
 extern slab_t **slab_list_tail;
 extern ssize_t slab_alloc_sz;
+extern ssize_t slab_alloc_batch_sz;
 
 void anna_slab_alloc_batch(size_t sz);
 void anna_slab_init(void);

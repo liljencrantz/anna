@@ -23,7 +23,7 @@ static inline wchar_t *anna_intern_wcsdup(wchar_t *in)
 	anna_intern_mem_avail = ANNA_INTERN_BLOCK_SZ + sz;
 	anna_intern_mem = calloc(1,anna_intern_mem_avail);
     }
-    wcscpy(anna_intern_mem, in);
+    memcpy(anna_intern_mem, in, sz);
     anna_intern_mem_avail -= sz;
     wchar_t *res = anna_intern_mem;
     anna_intern_mem = (wchar_t *)( ((char *)anna_intern_mem) + sz);

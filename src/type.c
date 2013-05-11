@@ -728,6 +728,7 @@ static void anna_type_extend(
 	anna_type_copy(type, par);
 	anna_type_add_all_initializer(type, par);
     }
+    al_destroy(&parents);
     anna_type_copy(type, any_type);
 }
 
@@ -1741,12 +1742,15 @@ static anna_node_t *anna_node_create_fake(anna_type_t *type)
 
 mid_t anna_type_find_comparator(anna_type_t *type)
 {
+    array_list_t result = AL_STATIC;
+    mid_t res = (mid_t)-1;
+
     if(type == null_type)
     {
-	return anna_mid_get(L"__cmp__");
+	res = anna_mid_get(L"__cmp__");
+	goto CLEANUP;
     }
 
-    array_list_t result = AL_STATIC;
     anna_method_search(type, L"__cmp__", &result, 0);
     /*
       TODO: In theory, we should handle reverse aliases here. 
@@ -1757,7 +1761,7 @@ mid_t anna_type_find_comparator(anna_type_t *type)
 
     if(al_get_count(&result) == 0)
     {
-	return (mid_t)-1;
+	goto CLEANUP;
     }
         
     int i;
@@ -1783,19 +1787,27 @@ mid_t anna_type_find_comparator(anna_type_t *type)
     if(idx >= 0)
     {
 	anna_member_t *member = (anna_member_t *)al_get(&result, idx);
-	return anna_mid_get(member->name);
+	res = anna_mid_get(member->name);
+	goto CLEANUP;
+	
     }
-    return (mid_t)-1;    
+
+  CLEANUP:
+    al_destroy(&result);
+    return res;
 }
 
 mid_t anna_type_find_hash_code(anna_type_t *type)
 {
+    array_list_t result = AL_STATIC;
+    mid_t res = (mid_t)-1;
+
     if(type == null_type)
     {
-	return anna_mid_get(L"hashCode");
+	res = anna_mid_get(L"hashCode");
+	goto CLEANUP;
     }
     
-    array_list_t result = AL_STATIC;
     anna_method_search(type, L"hashCode", &result, 0);
     /*
       TODO: In theory, we should handle reverse aliases here. 
@@ -1806,7 +1818,7 @@ mid_t anna_type_find_hash_code(anna_type_t *type)
 
     if(al_get_count(&result) == 0)
     {
-	return (mid_t)-1;
+	goto CLEANUP;
     }
         
     int i;
@@ -1831,8 +1843,12 @@ mid_t anna_type_find_hash_code(anna_type_t *type)
     if(idx >= 0)
     {
 	anna_member_t *member = (anna_member_t *)al_get(&result, idx);
-	return anna_mid_get(member->name);
+	res = anna_mid_get(member->name);
+	goto CLEANUP;
     }
-    return (mid_t)-1;    
+
+  CLEANUP:
+    al_destroy(&result);
+    return res;
 }
 

@@ -13,7 +13,7 @@ def main()
         if(sieve[i] != 1)
         {
 	    ((2*i)..end|i).each(j){ sieve[j] = 1 }
-            count+=1;
+            count++;
         }
     }
     print("There are", count, "prime numbers under", end);

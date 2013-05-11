@@ -693,6 +693,7 @@ static void anna_string_i_append(anna_context_t *context)
 
 static void anna_string_del(anna_object_t *victim)
 {
+//    debug(99, L"HEJ BABERIBA\n");
     asi_destroy(as_unwrap(victim));
 }
 

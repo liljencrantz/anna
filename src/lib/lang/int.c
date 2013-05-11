@@ -3,7 +3,6 @@
 
 static void *anna_int_alloc(size_t sz)
 {
-    anna_alloc_data()->count += sz;
     return malloc(sz);
 }
 
@@ -16,7 +15,6 @@ static void *anna_int_realloc(void *ptr, size_t osz, size_t nsz)
 
 static void anna_int_free(void *ptr, size_t sz)
 {
-    anna_alloc_data()->count -= sz;
     free(ptr);
 }
 
@@ -30,6 +28,15 @@ void anna_int_init(void)
 
 static void anna_int_set(anna_object_t *this, long value)
 {
+/*
+    static c=0;
+    c++;
+    
+    if(c==50000)
+    {
+       CRASH;
+    }
+*/  
     mpz_init(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
     mpz_set_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), value);
 }

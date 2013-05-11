@@ -5,6 +5,7 @@ slab_t **slab_list_free;
 slab_t **slab_list_tail;
 static array_list_t *slab_alloc;
 ssize_t slab_alloc_sz;
+ssize_t slab_alloc_batch_sz;
 
 void anna_slab_init()
 {
@@ -102,6 +103,7 @@ static void anna_slab_reclaim_sz(size_t sz)
 	
 	if(*chunk == SLAB_SZ)
 	{
+	    slab_alloc_batch_sz += sz*SLAB_SZ + sizeof(double);
 	    anna_slab_remove_chunk_from_pool(sz, (char *)chunk);
 	    free(chunk);
 	    al_set_fast(&slab_alloc[sz], i, al_get_fast(&slab_alloc[sz], al_get_count(&slab_alloc[sz])-1));
@@ -145,7 +147,7 @@ void anna_slab_reclaim()
 void anna_slab_alloc_batch(size_t sz)
 {
 //    anna_message(L"Allocate object batch of size %d. We have %d allocated items.\n", sz, anna_slab_alloc_count);
-
+    slab_alloc_batch_sz += sz*SLAB_SZ + sizeof(double);
     char * mem = malloc(sz*SLAB_SZ + sizeof(double));
     al_push(&slab_alloc[sz], mem);
     *((size_t *)mem) = 0;

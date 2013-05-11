@@ -126,7 +126,6 @@ static anna_entry_t anna_static_invoke_as_access(
 
 static int anna_short_circut_instr_int_int(mid_t mid)
 {
-    
     if((mid >= ANNA_MID_ADD) && (mid <= ANNA_MID_BITXOR))
  	return ANNA_INSTR_ADD_INT + mid - ANNA_MID_ADD;
 

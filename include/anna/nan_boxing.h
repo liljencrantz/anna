@@ -54,7 +54,7 @@ static inline anna_entry_t anna_from_int(long val)
     if(abs(val) < ANNA_INT_FAST_MAX)
     {
 	anna_entry_t res;
-	res.s0 = ANNA_ENTRY_INT;
+	res.i0 = ANNA_ENTRY_INT<<16;
 	res.i1 = val;
 	return res;
     }
@@ -69,7 +69,7 @@ static inline anna_entry_t anna_from_uint64(uint64_t val)
     if(val < ANNA_INT_FAST_MAX)
     {
 	anna_entry_t res;
-	res.s0 = ANNA_ENTRY_INT;
+	res.i0 = ANNA_ENTRY_INT<<16;
 	res.i1 = val;
 	return res;
     }
@@ -103,7 +103,7 @@ static inline anna_entry_t anna_from_char(wchar_t val)
 {
     anna_entry_t res;
     res.i1 = val;
-    res.s0 = ANNA_ENTRY_CHAR;
+    res.i0 = ANNA_ENTRY_CHAR<<16;
     return res;
 }
 

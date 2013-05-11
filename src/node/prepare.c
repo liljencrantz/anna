@@ -291,15 +291,20 @@ static anna_member_t *anna_node_calc_type_call_helper(
 static anna_node_t *anna_node_calculate_type_internal_call(
     anna_node_call_t *n)
 {
+    anna_node_t *res = 0;
     int is_constructor = 0;
     anna_stack_template_t *stack = n->stack;
 	    
     n->object = anna_node_calculate_type(n->object);
     anna_type_t *type = n->object->return_type;
-	    
+
+    array_list_t memb_list = AL_STATIC;
+    anna_member_t *member = 0;
+ 
     if(type == ANNA_NODE_TYPE_IN_TRANSIT)
     {
-	return (anna_node_t *)n;
+	res = (anna_node_t *)n;
+	goto CLEANUP;
     }
     if(n->node_type == ANNA_NODE_STATIC_MEMBER_CALL)
     {
@@ -309,16 +314,14 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	if(!type)
 	{
 	    anna_error(n->object, L"Unknown type");
-	    return (anna_node_t *)n;
+	    res = (anna_node_t *)n;
+	    goto CLEANUP;
 	}
     }
 
     anna_type_setup_interface(type);    
     anna_type_prepare_member(type, n->mid);
 
-    array_list_t memb_list = AL_STATIC;
-    anna_member_t *member = 0;
-    
     anna_method_search(type, anna_mid_get_reverse(n->mid), &memb_list, 0);
     
     member = anna_node_calc_type_call_helper(type, &n, &memb_list);
@@ -335,7 +338,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    {
 		if(!anna_node_calculate_type_direct_children(n, stack))
 		{
-		    return (anna_node_t *)n;
+		    res = (anna_node_t *)n;
+		    goto CLEANUP;
 		}
 
 		ctype = anna_type_implicit_specialize(ctype, n);
@@ -355,7 +359,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		{
 		    anna_error(
 			(anna_node_t *)n, L"No constructor for type %ls could be found\n", ctype->name);
-		    return (anna_node_t *)n;
+		    res = (anna_node_t *)n;
+		    goto CLEANUP;
 		}
 		
 		is_constructor = 1;
@@ -368,7 +373,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		L"Member %ls is not a function\n",
 		anna_mid_get_reverse(n->mid),
 		type->name);
-	    return (anna_node_t *)n;	
+	    res = (anna_node_t *)n;	
+	    goto CLEANUP;
 	}
 	
 	anna_function_type_t *fun_type =
@@ -383,7 +389,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		L"Member %ls is not a function\n",
 		anna_mid_get_reverse(n->mid),
 		type->name);
-	    return (anna_node_t *)n;
+	    res = (anna_node_t *)n;
+	    goto CLEANUP;
 	}
 
 	anna_node_t *memb_get = (anna_node_t *)
@@ -419,8 +426,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 		    }
 		    call->function->stack = call->stack = n->stack;
 		    call->function->return_type = anna_function_wrap(fun_spec)->type;
-		    return anna_node_calculate_type((anna_node_t *)call);
-			
+		    res = anna_node_calculate_type((anna_node_t *)call);
+		    goto CLEANUP;
 		}
 	    }
 	}
@@ -443,7 +450,8 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	    L"No member named %ls in type %ls\n", 
 	    anna_mid_get_reverse(n->mid),
 	    type->name);
-	return (anna_node_t *)n;
+	res = (anna_node_t *)n;
+	goto CLEANUP;
     }
 
     if(!is_constructor && member)
@@ -451,7 +459,10 @@ static anna_node_t *anna_node_calculate_type_internal_call(
 	anna_function_type_t *funt = anna_function_type_unwrap(member->type);
 	n->return_type = funt->return_type;
     }
-    return (anna_node_t *)n;
+    res = (anna_node_t *)n;
+  CLEANUP:
+    al_destroy(&memb_list);
+    return res;
 }
 
 

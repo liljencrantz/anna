@@ -51,7 +51,7 @@ __cold void anna_gc_init(void);
 __hot void anna_gc(anna_context_t *stack);
 __cold void anna_gc_destroy(void);
 
-#define GC_FREQ (1024*1024*2)
+#define GC_FREQ (1024*1024*8)
 
 /*
   Perform thread specific initialization for setting up the meory allocator.

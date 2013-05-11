@@ -1025,6 +1025,7 @@ static anna_function_t *anna_function_create_specialization(
 	sb_printf(&sb, L"%ls", item_txt);
 	
     }
+    al_destroy(&al);
 
     sb_printf(&sb, L"»");
     def->child[0] = (anna_node_t *)anna_node_create_identifier(0, sb_content(&sb));

@@ -1302,7 +1302,6 @@ size_t anna_bc_op_size(char instruction)
 	{
 	    return sizeof(anna_op_member_t);
 	}
-	
 	    
 	case ANNA_INSTR_JMP:
 	case ANNA_INSTR_COND_JMP:

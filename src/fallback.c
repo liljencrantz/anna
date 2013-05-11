@@ -6,7 +6,6 @@
 
 #include "anna/config.h"
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -51,8 +50,57 @@ size_t wcslen(const wchar_t *in)
 }
 #endif
 
-#ifndef HAVE_FPUTWC
+#ifndef HAVE_WCSCMP
+int wcscmp(const wchar_t *s1, const wchar_t *s2)
+{
+    while(1)
+    {
+	if(!*s1)
+	{
+	    return *s2 ? 1 : 0;
+	}
+	if(!*s2)
+	{
+	    return -1;
+	}
+	int cmp = *s1 - *s2;
+	if(cmp != 0)
+	    return cmp;
+	s1++;
+	s2++;
+    }
+    return 0;
+}
+#endif
 
+#ifndef HAVE_WCSCHR
+wchar_t *wcschr(const wchar_t *wcs, wchar_t wc)
+{
+    while(*wcs)
+    {
+	if (*wcs == wc)
+	    return wcs;
+	wcs++;
+    }
+    return 0;
+}
+#endif
+
+#ifndef HAVE_WCSRCHR
+wchar_t *wcsrchr(const wchar_t *wcs, wchar_t wc)
+{
+    wchar_t *res = 0;
+    while(*wcs)
+    {
+	if (*wcs == wc)
+	    res = wcs;
+	wcs++;
+    }
+    return res;
+}
+#endif
+
+#ifndef HAVE_FPUTWC
 wint_t fputwc(wchar_t wc, FILE *stream)
 {
 	int res;
@@ -67,11 +115,9 @@ wint_t putwc(wchar_t wc, FILE *stream)
 {
 	return fputwc( wc, stream );
 }
-
 #endif
 
 #ifndef HAVE_FGETWC
-
 wint_t fgetwc(FILE *stream)
 {
 	wchar_t res=0;
@@ -109,12 +155,9 @@ wint_t fgetwc(FILE *stream)
 
 }
 
-
 wint_t getwc(FILE *stream)
 {
 	return fgetwc( stream );
 }
-
-
 #endif
 

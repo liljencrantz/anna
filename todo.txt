@@ -14,7 +14,7 @@
 * Use setLocation on ast stuff in various macros to make error messages more readable.
 * Drop __staticReturnTypeOf__ and __staticInputTypeOf__
 * Constructors for intersected types should return null.
-  - HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
+* HashMap types should look up the appropriate comparison and hash method during type creation. Same with lists.
 * List.reverse
 * List::convert(Iterator iter)
 * List.iterator--
@@ -31,7 +31,6 @@
   - Check for dead links
 * Check that node compare supports all ast node types
 * Remove code duplication between types and functions when performing templatization
-* MutableList::removeValue might be useful?
 * The Member.value() method can't currently handle properties.
 * Types should have constant members. They should only be assignable during construction using some kind of funky attribute syntax, which will not allow any kind of member write access.
 * Maybe List["getRange"] should return the getRange member object? If so, it would probably make a lot more sense for Continuation["foo"] to return the ContinuationMember object, and not the actual value.
@@ -151,6 +150,7 @@
 * Move most of gc to separate thread
 
 1.1 RELEASE CRITERIA:
+* MutableList::removeValue might be useful?
 * ImutableCall
 * ImutableHashMap
 * repl
