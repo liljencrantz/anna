@@ -382,7 +382,7 @@ fi
 # Check for presense of various functions used by anna
 #
 
-AC_CHECK_FUNCS( wcsdup wcslen swprintf vswprintf )
+AC_CHECK_FUNCS( wcsdup wcslen wcscmp wcschr wcsrchr swprintf vswprintf )
 AC_CHECK_FUNCS( fputwc fgetwc wcstol prctl )
 
 

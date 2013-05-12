@@ -578,6 +578,7 @@ static void anna_alloc_gc_free()
 		}
 	    }
 //	    al_truncate(&alloc->alloc[j], 0);
+	    al_resize(&alloc->alloc[j]);
 	    
 	}
     }

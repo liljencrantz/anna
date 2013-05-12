@@ -27,26 +27,25 @@
 #ifndef HAVE_WCSDUP
 wchar_t *wcsdup( const wchar_t *in )
 {
-	size_t len=wcslen(in);
-	wchar_t *out = malloc( sizeof( wchar_t)*(len+1));
-	if( out == 0 )
-	{
-		return 0;
-	}
+    size_t len=wcslen(in);
+    wchar_t *out = malloc( sizeof( wchar_t)*(len+1));
+    if( out == 0 )
+    {
+	return 0;
+    }
 
-	memcpy( out, in, sizeof( wchar_t)*(len+1));
-	return out;
-	
+    memcpy( out, in, sizeof( wchar_t)*(len+1));
+    return out;	
 }
 #endif
 
 #ifndef HAVE_WCSLEN
 size_t wcslen(const wchar_t *in)
 {
-	const wchar_t *end=in;
-	while( *end )
-		end++;
-	return end-in;
+    const wchar_t *end=in;
+    while( *end )
+	end++;
+    return end-in;
 }
 #endif
 
@@ -103,61 +102,136 @@ wchar_t *wcsrchr(const wchar_t *wcs, wchar_t wc)
 #ifndef HAVE_FPUTWC
 wint_t fputwc(wchar_t wc, FILE *stream)
 {
-	int res;
-	char s[MB_CUR_MAX+1];
-	memset( s, 0, MB_CUR_MAX+1 );
-	wctomb( s, wc );
-	res = fputs( s, stream );
-	return res==EOF?WEOF:wc;
+    int res;
+    char s[MB_CUR_MAX+1];
+    memset( s, 0, MB_CUR_MAX+1 );
+    wctomb( s, wc );
+    res = fputs( s, stream );
+    return res==EOF?WEOF:wc;
 }
 
 wint_t putwc(wchar_t wc, FILE *stream)
 {
-	return fputwc( wc, stream );
+    return fputwc( wc, stream );
 }
 #endif
 
 #ifndef HAVE_FGETWC
 wint_t fgetwc(FILE *stream)
 {
-	wchar_t res=0;
-	mbstate_t state;
-	memset (&state, '\0', sizeof (state));
+    wchar_t res=0;
+    mbstate_t state;
+    memset (&state, '\0', sizeof (state));
 
-	while(1)
+    while(1)
+    {
+	int b = fgetc( stream );
+	char bb;
+			
+	int sz;
+			
+	if( b == EOF )
+	    return WEOF;
+
+	bb=b;
+			
+	sz = mbrtowc( &res, &bb, 1, &state );
+			
+	switch( sz )
 	{
-		int b = fgetc( stream );
-		char bb;
-			
-		int sz;
-			
-		if( b == EOF )
-			return WEOF;
+	    case -1:
+		memset (&state, '\0', sizeof (state));
+		return WEOF;
 
-		bb=b;
-			
-		sz = mbrtowc( &res, &bb, 1, &state );
-			
-		switch( sz )
-		{
-			case -1:
-				memset (&state, '\0', sizeof (state));
-				return WEOF;
-
-			case -2:
-				break;
-			case 0:
-				return 0;
-			default:
-				return res;
-		}
+	    case -2:
+		break;
+	    case 0:
+		return 0;
+	    default:
+		return res;
 	}
+    }
 
 }
 
 wint_t getwc(FILE *stream)
 {
-	return fgetwc( stream );
+    return fgetwc( stream );
 }
 #endif
 
+#ifndef HAVE_WCSTOL
+#include <errno.h>
+
+static long convert_digit( wchar_t d, int base )
+{
+    long res=-1;
+    if( (d <= L'9') && (d >= L'0') )
+    {
+	res = d - L'0';
+    }
+    else if( (d <= L'z') && (d >= L'a') )
+    {
+	res = d + 10 - L'a';		
+    }
+    else if( (d <= L'Z') && (d >= L'A') )
+    {
+	res = d + 10 - L'A';		
+    }
+    if( res >= base )
+    {
+	res = -1;
+    }	
+    return res;
+}
+
+long wcstol(
+    const wchar_t *nptr, 
+    wchar_t **endptr,
+    int base)
+{
+    long long res=0;
+    int is_set=0;
+    if( base > 36 )
+    {
+	errno = EINVAL;
+	return 0;
+    }
+    
+    while( 1 )
+    {
+	long nxt = convert_digit( *nptr, base );
+	if( endptr != 0 )
+	    *endptr = (wchar_t *)nptr;
+	if( nxt < 0 )
+	{
+	    if( !is_set )
+	    {
+		errno = EINVAL;
+	    }
+	    return res;			
+	}
+	res = (res*base)+nxt;
+	is_set = 1;
+	if( res > LONG_MAX )
+	{
+	    errno = ERANGE;
+	    return LONG_MAX;
+	}
+	if( res < LONG_MIN )
+	{
+	    errno = ERANGE;
+	    return LONG_MIN;
+	}
+	nptr++;
+    }
+}
+#endif
+
+#ifndef HAVE_PRCTL
+static inline int prctl(
+    int option, unsigned long arg2, unsigned long arg3,
+    unsigned long arg4, unsigned long arg5)
+{
+}
+#endif

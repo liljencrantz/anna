@@ -1,4 +1,4 @@
-#define SLAB_SZ 4096
+#define SLAB_SZ 128
 
 slab_t **slab_list;
 slab_t **slab_list_free;
@@ -40,18 +40,41 @@ static size_t *anna_slab_counter(size_t sz, void *slab)
     return ptr;
 }
 
+static int anna_ptr_in_chunks(size_t sz, array_list_t *chunks, slab_t *slab)
+{
+    int imin = 0;
+    int imax = al_get_count(chunks)-1;
+    while(imax >= imin)
+    {
+	/* calculate the midpoint for roughly equal partition */
+	int imid = (imin+imax)>>1;
+ 
+	char *chunk = al_get(chunks, imid);
+	
+	if(anna_ptr_in_chunk(sz, chunk, slab))
+	    return 1;
+	
+	if(chunk < (char *)slab)
+	    imin = imid + 1;
+	else
+	    imax = imid - 1;
+    }
+    return 0;
+}
+
 /*
-  Remove all slabs in slab_list[sz] that are part of the specified chunk
- */
-static void anna_slab_remove_chunk_from_pool(
-    size_t sz, char *chunk)
+  Remove all slabs in slab_list[sz] that are part of the specified
+  chunks, which is a sorted list.
+*/
+static void anna_slab_remove_chunks_from_pool(
+    size_t sz, array_list_t *chunks)
 {
     slab_t *slab = slab_list[sz];
     /*
       First, make the slab variable point to the first slab that
       should not be removed.
      */
-    while(slab && anna_ptr_in_chunk(sz, chunk, slab))
+    while(slab && anna_ptr_in_chunks(sz, chunks, slab))
     {
 	slab = slab->next;
     }
@@ -72,7 +95,7 @@ static void anna_slab_remove_chunk_from_pool(
     while(slab)
     {
 	slab = slab->next;
-	while(slab && anna_ptr_in_chunk(sz, chunk, slab))
+	while(slab && anna_ptr_in_chunks(sz, chunks, slab))
 	{
 	    slab = slab->next;
 	}
@@ -96,16 +119,17 @@ static void anna_slab_reclaim_sz(size_t sz)
     }
 
     slab = slab_list[sz];
-    
+
+    array_list_t kill_chunks = AL_STATIC;
+
     for(i=0; i<al_get_count(&slab_alloc[sz]);)
     {
 	size_t *chunk = al_get(&slab_alloc[sz], i);
-	
 	if(*chunk == SLAB_SZ)
 	{
 	    slab_alloc_batch_sz += sz*SLAB_SZ + sizeof(double);
-	    anna_slab_remove_chunk_from_pool(sz, (char *)chunk);
-	    free(chunk);
+	    al_push(&kill_chunks, chunk);
+	    
 	    al_set_fast(&slab_alloc[sz], i, al_get_fast(&slab_alloc[sz], al_get_count(&slab_alloc[sz])-1));
 	    al_truncate(&slab_alloc[sz], al_get_count(&slab_alloc[sz])-1);
 	}
@@ -115,6 +139,15 @@ static void anna_slab_reclaim_sz(size_t sz)
 	    i++;
 	}
     }
+    al_sort( &kill_chunks, &cmpptr);
+    anna_slab_remove_chunks_from_pool(sz, &kill_chunks);
+
+    for(i=0; i<al_get_count(&kill_chunks); i++)
+    {
+	void *chunk = al_get(&kill_chunks, i);
+	free(chunk);
+    }
+    al_destroy(&kill_chunks);
 }
 
 void anna_slab_free_return()
