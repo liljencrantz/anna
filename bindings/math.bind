@@ -14,3 +14,5 @@ def Double log(Double value) (alias(logn), doc("Computes the natural logarithm o
 def Double log2(Double value) (doc("Computes the base 2 logarithm of value."));
 def Double log10(Double value) (doc("Computes the base 10 logarithm of value."));
 def Double sqrt(Double value) (doc("Computes the square root of value."));
+def Double ceil(Double value) (doc("The smallest integral number not less than argument."));
+def Double floor(Double value) (doc("The largest integral number not larger than argument."));
