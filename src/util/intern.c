@@ -1,3 +1,4 @@
+//ROOT: src/util/util.c
 /** \file intern.c
     
     Library for pooling common strings

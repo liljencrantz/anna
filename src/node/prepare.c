@@ -1,3 +1,5 @@
+//ROOT: src/node/node.c
+
 static anna_node_t *resolve_identifiers_each(
     anna_node_t *this, void *aux);
 

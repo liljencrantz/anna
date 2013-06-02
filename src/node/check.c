@@ -1,3 +1,4 @@
+//ROOT: src/node/node.c
 
 int check_node_identifier_name(anna_node_t *n,
 			       wchar_t *name)

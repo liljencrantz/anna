@@ -1,3 +1,4 @@
+//ROOT: src/lib/lang/lang.c
 #include "src/lib/lang/string_internal.c"
 
 static int anna_string_seed;

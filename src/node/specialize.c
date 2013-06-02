@@ -1,3 +1,4 @@
+//ROOT: src/node/node.c
 
 static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_template_t *stack)
 {

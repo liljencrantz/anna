@@ -1,3 +1,4 @@
+//ROOT: src/node/node.c
 
 static int byte_count(wchar_t ch)
 {

@@ -1,3 +1,5 @@
+//ROOT: src/alloc/alloc.c
+
 void anna_alloc_mark_permanent(void *alloc)
 {
     al_push(&anna_alloc_permanent, alloc);
@@ -63,6 +65,8 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *stack)
 
     if(stack->parent)
 	anna_alloc_mark_stack_template(stack->parent);
+    if(stack->definition)
+	anna_alloc_mark_node(stack->definition);
     if(stack->function)
 	anna_alloc_mark_function(stack->function);
     if(stack->wrapper)

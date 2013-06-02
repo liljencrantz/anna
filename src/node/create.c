@@ -1,3 +1,5 @@
+//ROOT: src/node/node.c
+
 anna_node_dummy_t *anna_node_create_dummy(anna_location_t *loc, struct anna_object *val)
 {
     anna_node_dummy_t *result = anna_alloc_node(sizeof(anna_node_dummy_t));

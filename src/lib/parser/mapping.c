@@ -1,3 +1,5 @@
+//ROOT: src/lib/parser/parser.c
+
 ANNA_VM_NATIVE(anna_node_mapping_wrapper_i_get_from, 1)
 {
     anna_object_t *this = anna_as_obj_fast(param[0]);

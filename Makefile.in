@@ -181,8 +181,16 @@ clean:
 
 # Syntax check support for flymake
 check-syntax:
-	$(CC) -o nul -S ${CHK_SOURCES} $(CFLAGS)
+	for src in ${CHK_SOURCES}; do						\
+		root=$$(head $$src|sed -n -e "s|.*// *ROOT: *\([^ ]*\).*|\1|p");	\
+		if test "$$root"; then	\
+			$(CC) -o nul -S $$root $(CFLAGS);\
+		else\
+			$(CC) -o nul -S $$src $(CFLAGS);			\
+		fi;\
+	done; true;
 .PHONY: check-syntax
+# 2>&1| grep "$$src:" 1>&2;			\
 
 distclean: clean
 	rm -f config.status config.log include/anna/config.h Makefile
