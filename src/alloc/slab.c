@@ -38,7 +38,7 @@ static int cmpptr(const void *p1, const void *p2)
 static size_t *anna_slab_counter(size_t sz, void *slab)
 {
     int idx = al_bsearch(&slab_alloc[sz], slab, cmpptr)-1;
-    void *ptr = al_get(&slab_alloc[sz], idx);
+    void *ptr = al_get_fast(&slab_alloc[sz], idx);
     return ptr;
 }
 
@@ -51,7 +51,7 @@ static int anna_ptr_in_chunks(size_t sz, array_list_t *chunks, slab_t *slab)
 	/* calculate the midpoint for roughly equal partition */
 	int imid = (imin+imax)>>1;
  
-	char *chunk = al_get(chunks, imid);
+	char *chunk = al_get_fast(chunks, imid);
 	
 	if(anna_ptr_in_chunk(sz, chunk, slab))
 	    return 1;
@@ -126,7 +126,7 @@ static void anna_slab_reclaim_sz(size_t sz)
 
     for(i=0; i<al_get_count(&slab_alloc[sz]);)
     {
-	size_t *chunk = al_get(&slab_alloc[sz], i);
+	size_t *chunk = al_get_fast(&slab_alloc[sz], i);
 	if(*chunk == SLAB_SZ)
 	{
 	    slab_alloc_batch_sz += sz*SLAB_SZ + sizeof(double);
@@ -146,7 +146,7 @@ static void anna_slab_reclaim_sz(size_t sz)
 
     for(i=0; i<al_get_count(&kill_chunks); i++)
     {
-	void *chunk = al_get(&kill_chunks, i);
+	void *chunk = al_get_fast(&kill_chunks, i);
 	free(chunk);
     }
     al_destroy(&kill_chunks);
