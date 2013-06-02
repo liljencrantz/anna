@@ -179,6 +179,11 @@ clean:
 	-rm -r documentation/api
 .PHONY: clean
 
+# Syntax check support for flymake
+check-syntax:
+	$(CC) -o nul -S ${CHK_SOURCES} $(CFLAGS)
+.PHONY: check-syntax
+
 distclean: clean
 	rm -f config.status config.log include/anna/config.h Makefile
 .PHONY: distclean
