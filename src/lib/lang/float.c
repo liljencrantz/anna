@@ -187,6 +187,7 @@ void freedtoa(char *s);
 
 ANNA_VM_NATIVE(anna_float_format, 2)
 {
+    int i;
     double val = anna_as_float(param[0]);
     int mode = 0;
     int ndigits = 0;
@@ -201,13 +202,29 @@ ANNA_VM_NATIVE(anna_float_format, 2)
     int sign;
     char *rve = 0;
     char *res = dtoa(val, mode, ndigits, &decpt, &sign, &rve);
-    anna_object_t *str = anna_string_create_narrow(decpt, res);
-    if(strlen(res+decpt))
+
+    anna_object_t *str;
+    if(decpt <= 0)
     {
-	anna_string_append_cstring(str, L".", 1);
-	wchar_t *wide = str2wcs(res+decpt);
+	str = anna_string_create_narrow(2, "0.");
+	for(i=0; i<-decpt; i++)
+	{
+	    anna_string_append_cstring(str, L"0", 1);
+	}
+	wchar_t *wide = str2wcs(res);
 	anna_string_append_cstring(str, wide, wcslen(wide));
 	free(wide);
+    }
+    else 
+    {
+	str = anna_string_create_narrow(decpt, res);
+	if(strlen(res+decpt))
+	{
+	    anna_string_append_cstring(str, L".", 1);
+	    wchar_t *wide = str2wcs(res+decpt);
+	    anna_string_append_cstring(str, wide, wcslen(wide));
+	    free(wide);
+	}
     }
     freedtoa(res);
     
