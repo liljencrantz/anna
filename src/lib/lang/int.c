@@ -59,17 +59,16 @@ int anna_is_int(anna_entry_t this)
 
 anna_object_t *anna_int_create_mp(mpz_t value)
 {
-    anna_object_t *obj= anna_object_create(int_type);
+    anna_object_t *obj= anna_object_create_raw(int_type);
     mpz_init(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD));
     mpz_set(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD), value);
-
 //    anna_message(L"Create bignum %s from bignum %s\n", mpz_get_str(0, 10, *(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD)), mpz_get_str(0, 10, value));
     return obj;
 }
 
 anna_object_t *anna_int_create(long value)
 {
-    anna_object_t *obj= anna_object_create(int_type);
+    anna_object_t *obj= anna_object_create_raw(int_type);
     anna_int_set(obj, value);
     return obj;
 }

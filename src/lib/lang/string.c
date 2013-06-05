@@ -27,7 +27,7 @@ void anna_string_append_cstring(anna_object_t *this, wchar_t *str, size_t len)
 
 anna_object_t *anna_string_create(size_t sz, wchar_t *data)
 {
-    anna_object_t *obj= anna_object_create(imutable_string_type);
+    anna_object_t *obj= anna_object_create_raw(imutable_string_type);
     // anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init_from_ptr(as_unwrap(obj),  data, sz);
@@ -45,7 +45,7 @@ anna_object_t *anna_string_create_narrow(size_t sz, char *data)
 	return null_object;
     }
     
-    anna_object_t *obj= anna_object_create(imutable_string_type);
+    anna_object_t *obj= anna_object_create_raw(imutable_string_type);
     // anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init_from_ptr(as_unwrap(obj),  wdata, wsz);
@@ -54,7 +54,7 @@ anna_object_t *anna_string_create_narrow(size_t sz, char *data)
 
 anna_object_t *anna_string_copy(anna_object_t *orig)
 {
-    anna_object_t *obj= anna_object_create(imutable_string_type);
+    anna_object_t *obj= anna_object_create_raw(imutable_string_type);
     //  anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init(as_unwrap(obj));
@@ -65,7 +65,7 @@ anna_object_t *anna_string_copy(anna_object_t *orig)
 
 static anna_object_t *anna_mutable_string_copy(anna_object_t *orig)
 {
-    anna_object_t *obj= anna_object_create(mutable_string_type);
+    anna_object_t *obj= anna_object_create_raw(mutable_string_type);
     //  anna_message(L"Create new string \"%.*ls\" at %d\n", sz, data, obj);
     
     asi_init(as_unwrap(obj));

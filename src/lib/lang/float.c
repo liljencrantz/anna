@@ -8,7 +8,7 @@ static void anna_float_set(anna_object_t *this, double value)
 
 anna_object_t *anna_float_create(double value)
 {
-    anna_object_t *obj= anna_object_create(float_type);
+    anna_object_t *obj= anna_object_create_raw(float_type);
     anna_float_set(obj, value);
     return obj;
 }

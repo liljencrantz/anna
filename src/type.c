@@ -1575,7 +1575,7 @@ void anna_type_close(anna_type_t *this)
 	}
     }
 
-    if((this == null_type))
+    if((this == null_type) || (this == complex_type) || (this == float_type) || (this == int_type))
     {
 	this->mark_object = anna_type_object_mark_noop;	
     }

@@ -1076,7 +1076,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t *argv)
 	anna_context_push_object(context, tramp);
 	
 	context->frame->code += sizeof(anna_op_null_t);
-	OP_LEAVE(context);	
+	OP_LEAVE(context);
     }
 
   ANNA_LAB_NEXT_ASSIGN_INT:

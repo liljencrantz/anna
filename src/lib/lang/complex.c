@@ -16,7 +16,7 @@ int anna_is_complex(anna_entry_t this)
 
 anna_object_t *anna_complex_create(complex double value)
 {
-    anna_object_t *obj= anna_object_create(complex_type);
+    anna_object_t *obj= anna_object_create_raw(complex_type);
     anna_complex_set(obj, value);
     return obj;
 }
@@ -381,8 +381,5 @@ void anna_complex_type_create()
 	complex_type, 1, &complex_type, conv_argn, 0,
 	L"Convert the specified complex number to a complex number. (This is a no-op.)");
     anna_member_alias(complex_type, mmid, L"convert");
-
-
-
     anna_complex_type_i_create();
 }
