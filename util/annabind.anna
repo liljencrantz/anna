@@ -1145,21 +1145,10 @@ ANNA_VM_NATIVE(%(initName), 1)
 		{
 		    name := (decl[0] as Identifier).name;
   		    attr := decl[3] as Call;
+
 		    declType := decl[1];
 		    declVal := decl[2];
-		    if(declType.callTo?("staticType"))
-		    {
-		        typeExpr := (declType as Call)[0] as Call;
-			if(typeExpr.callTo?("__def__"))
-			{
-			    out := generateFunction(name, typeExpr, path);
-			    load ~= out.load;
-			    code ~= out.code;
-			}
-		    }
-		    else
-		    {
-                    
+
 		    switch(declVal)
 		    {
 			case (intVal as IntLiteral)
@@ -1258,7 +1247,7 @@ ANNA_VM_NATIVE(%(initName), 1)
                             }
 			}	
 		    }
-		    }	
+		    
 		}
 		
 
@@ -1266,11 +1255,24 @@ ANNA_VM_NATIVE(%(initName), 1)
 		{
 		    name := (decl[0] as Identifier).name;
 		    attr := decl[3] as Call;
-		    nativeName := nameToStr(decl[0], decl[3]);
 
-  	            bindingType := getBindingType(decl[1]);
-
-                    returnType := bindingType.annaCType(decl[1], decl[3]),;
+		    declType := decl[1];
+		    declVal := decl[2];
+		    if(declType.callTo?("staticType"))
+		    {
+		        typeExpr := (declType as Call)[0] as Call;
+			if(typeExpr.callTo?("__def__"))
+			{
+			    out := generateFunction(name, typeExpr, path);
+			    load ~= out.load;
+			    code ~= out.code;
+			}
+		    }
+		    else
+		    {
+		    nativeName := nameToStr(decl[0], attr);
+  	            bindingType := getBindingType(declType);
+                    returnType := bindingType.annaCType(declType, attr),;
                     getterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_getter";
                     setterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_setter";
 		    
@@ -1280,8 +1282,8 @@ ANNA_VM_NATIVE(%(initName), 1)
 			    "returnType": returnType,
 			    "getterName": getterName,
                             "setterName": setterName,
-			    "getterCode": generateVarGetterCode(nativeName, bindingType, decl[1], decl[3]),
-			    "setterCode": generateVarSetterCode(nativeName, bindingType, decl[1], decl[3]),
+			    "getterCode": generateVarGetterCode(nativeName, bindingType, declType, attr),
+			    "setterCode": generateVarSetterCode(nativeName, bindingType, declType, attr),
 			    "doc": extractDoc(attr)
 			    ];
 
@@ -1297,6 +1299,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
         stack_type, anna_mid_get(L\"%(name)\"),
         %(returnType), %(getterName), %(setterName), %(doc));
 " % data;
+                    }
 		}
 		
 		case("include")
@@ -1309,10 +1312,17 @@ ANNA_VM_NATIVE(%(setterName), 2)
 
                 case("verbatim")
 		{
-		//		    print("VERB"decl);
 		    decl.each(inc)
 		    {
 			code ~= (inc as StringLiteral).payload;
+		    }
+		}
+				
+                case("verbatimDeclare")
+		{
+		    decl.each(inc)
+		    {
+			load ~= (inc as StringLiteral).payload;
 		    }
 		}
 				

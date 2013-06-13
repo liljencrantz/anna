@@ -1281,8 +1281,8 @@ function_definition:
 		else
 		{
 		    $$ = (anna_node_t *)anna_node_create_call2(
-			&@$, anna_node_create_identifier(&@1,L"__const__"),
-			$2->child[1], 
+			&@$, anna_node_create_identifier(&@1,L"__var__"),
+			$2->child[1],
 			anna_node_create_call2(
 			    &@$,
 			    anna_node_create_identifier(
