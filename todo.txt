@@ -1,4 +1,5 @@
 1.0 RELEASE CRITERIA:
+* max, min (look at functional.sum for inspiration)
 * Support for Scala-style late-evaluated macros
 * Buffer::convert(String)
 * Make a special syntax for assigning to constants before running __init__

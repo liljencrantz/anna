@@ -9,7 +9,7 @@
     bind utility or update the binding source, which is located in the
     file:
 
-    anna/internalBindings/unix.bind
+    internalBindings/unix.bind
 
  */
 #include "anna/config.h"

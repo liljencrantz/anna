@@ -26,3 +26,62 @@ history
     def Bool append(Int count, String filename (nullable)) (name(append_history));
     def Bool truncateFile(String filename, Int count) (name(history_truncate_file));
 }
+
+complete
+{
+
+    verbatim(/="
+
+static anna_function_t *fun = 0;
+
+static char * run_anna_completion_func (const char *text, int state)
+{
+    anna_entry_t argv[] = {
+        anna_string_create_narrow(strlen(text), (char *)text),
+        anna_from_int(state)
+    };
+    anna_object_t *res_obj = anna_vm_run(fun->wrapper, 2, argv);
+    if(res_obj == null_object)
+    {   
+        return 0;
+    }
+    return anna_string_payload_narrow(res_obj);
+}
+
+ANNA_VM_NATIVE(anna_readline_complete_set_function, 1)
+{
+    if(anna_entry_null_ptr(param[0])){
+        fun = 0;
+        rl_completion_entry_function = 0;        
+    }
+    else
+    {
+        fun = anna_function_unwrap(anna_as_obj(param[0]));
+        rl_completion_entry_function = run_anna_completion_func;
+        anna_alloc_mark_permanent(fun);    
+    }
+    return param[0];
+}
+
+"=/);
+    var Bool suppressAppend (name(rl_completion_suppress_append));
+    var Int appendCharacter (name(rl_completion_append_character));
+    var Int queryItems (name(rl_completion_query_items));
+    
+    verbatimDeclare(/="
+    anna_type_t *fun_argv[] = {string_type, int_type};
+    wchar_t *fun_argn[] = {L"text", L"state"};
+    anna_type_t *fun_type = anna_type_get_function(
+        string_type, 2, fun_argv, fun_argn, 0, 0);
+
+    wchar_t *set_fun_argn[] = {L"function"};
+    anna_module_function(
+	stack,
+	L"setFunction", 0, 
+	&anna_readline_complete_set_function, 
+	fun_type,
+	1, &fun_type, set_fun_argn, 0,
+	L"Set a new completion function.");
+"=/);
+
+}

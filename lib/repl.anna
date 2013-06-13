@@ -241,27 +241,27 @@ modification, are permitted provided that the following conditions are met:
 	  If the user entered multiple expressions on a single line,
 	  execute them one at a time. Stop the loop on error.
 	*/
-	parsedAst.each(ast)
+	parsedAst.each(astItem)
 	{
 	    /*
 	      Check if this is one of the short cut actions like
 	      «help», and if so, execute the corresponding action.
 	    */
-	    if(ast in action)
+	    if(astItem in action)
 	    {
-		action[ast]();
+		action[astItem]();
 		continue;
 	    }
 
 	    actionMapping.each(name, call){
-		if(ast.callTo?(name))
+		if(astItem.callTo?(name))
 		{
-		    ast = call(ast as parser.Call);
+		    astItem = call(astItem as parser.Call);
 		}
 	    }
 	    
 	    run := 1;
-  	    isGlobal :== (ast.callTo?("use") or ast.callTo?("expand"));
+  	    isGlobal :== (astItem.callTo?("use") or astItem.callTo?("expand"));
 	    
 	    /*
 	      Add all variables that have been previously declared by
@@ -305,7 +305,7 @@ modification, are permitted provided that the following conditions are met:
 			%ast;
 		    })) % [
 			"fun": Identifier(?, "!fun"), 
-			"ast": ast, 
+			"ast": astItem, 
 			"cont": Identifier(?, "!cont"), 
 			"variable": variableDeclaration,
 			"ans": (if(prev){Dummy(?, prev)}else{ast(? as Any)}) as Node,
@@ -313,7 +313,7 @@ modification, are permitted provided that the following conditions are met:
 	    if(isGlobal)
 	    {
 		run = ?;
-	        moduleAst = ast(nothing(%ast)) % ["ast": ast];
+	        moduleAst = ast(nothing(%ast)) % ["ast": astItem];
 	    }
 	    
 	    /*
@@ -328,7 +328,7 @@ modification, are permitted provided that the following conditions are met:
 	    {
 		if(isGlobal)
 		{
-		    globalClause.push(ast);
+		    globalClause.push(astItem);
 		}
 		
 		if(run)

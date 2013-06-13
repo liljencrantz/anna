@@ -246,6 +246,141 @@ void anna_history_load(anna_stack_template_t *stack)
 
     anna_type_data_register(anna_history_type_data, stack);
 }
+const static anna_type_data_t anna_complete_type_data[] = 
+{
+};
+
+
+static anna_function_t *fun = 0;
+
+static char * run_anna_completion_func (const char *text, int state)
+{
+    anna_entry_t argv[] = {
+        anna_string_create_narrow(strlen(text), (char *)text),
+        anna_from_int(state)
+    };
+    anna_object_t *res_obj = anna_vm_run(fun->wrapper, 2, argv);
+    if(res_obj == null_object)
+    {   
+        return 0;
+    }
+    return anna_string_payload_narrow(res_obj);
+}
+
+ANNA_VM_NATIVE(anna_readline_complete_set_function, 1)
+{
+    if(anna_entry_null_ptr(param[0])){
+        fun = 0;
+        rl_completion_entry_function = 0;        
+    }
+    else
+    {
+        fun = anna_function_unwrap(anna_as_obj(param[0]));
+        rl_completion_entry_function = run_anna_completion_func;
+        anna_alloc_mark_permanent(fun);    
+    }
+    return param[0];
+}
+
+
+ANNA_VM_NATIVE(anna_readLine_rl_completion_suppress_append_getter, 1)
+{
+        anna_entry_t result = (rl_completion_suppress_append)?anna_from_int(1):null_entry;
+
+    return result;
+}
+
+ANNA_VM_NATIVE(anna_readLine_rl_completion_suppress_append_setter, 2)
+{
+    if(!anna_entry_null(param[1]))
+    {
+            int value = !anna_entry_null(param[1]);
+
+        rl_completion_suppress_append = value;
+    }
+    return param[1];
+}
+
+ANNA_VM_NATIVE(anna_readLine_rl_completion_append_character_getter, 1)
+{
+        anna_entry_t result = anna_from_int(rl_completion_append_character);
+
+    return result;
+}
+
+ANNA_VM_NATIVE(anna_readLine_rl_completion_append_character_setter, 2)
+{
+    if(!anna_entry_null(param[1]))
+    {
+            int value = anna_as_int(param[1]);
+
+        rl_completion_append_character = value;
+    }
+    return param[1];
+}
+
+ANNA_VM_NATIVE(anna_readLine_rl_completion_query_items_getter, 1)
+{
+        anna_entry_t result = anna_from_int(rl_completion_query_items);
+
+    return result;
+}
+
+ANNA_VM_NATIVE(anna_readLine_rl_completion_query_items_setter, 2)
+{
+    if(!anna_entry_null(param[1]))
+    {
+            int value = anna_as_int(param[1]);
+
+        rl_completion_query_items = value;
+    }
+    return param[1];
+}
+
+void anna_complete_create(anna_stack_template_t *stack);
+void anna_complete_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_complete_type_data, stack);        
+}
+void anna_complete_load(anna_stack_template_t *stack);
+void anna_complete_load(anna_stack_template_t *stack)
+{
+    mid_t latest_mid;    
+    anna_function_t *latest_function;
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
+    anna_module_data_t modules[] =
+        {
+        };
+    anna_module_data_create(modules, stack);
+
+    wchar_t *this_argn[] = {L"this"};
+
+    anna_member_create_native_property(
+        stack_type, anna_mid_get(L"suppressAppend"),
+        any_type, anna_readLine_rl_completion_suppress_append_getter, anna_readLine_rl_completion_suppress_append_setter, 0);
+    anna_member_create_native_property(
+        stack_type, anna_mid_get(L"appendCharacter"),
+        int_type, anna_readLine_rl_completion_append_character_getter, anna_readLine_rl_completion_append_character_setter, 0);
+    anna_member_create_native_property(
+        stack_type, anna_mid_get(L"queryItems"),
+        int_type, anna_readLine_rl_completion_query_items_getter, anna_readLine_rl_completion_query_items_setter, 0);
+
+    anna_type_t *fun_argv[] = {string_type, int_type};
+    wchar_t *fun_argn[] = {L"text", L"state"};
+    anna_type_t *fun_type = anna_type_get_function(
+        string_type, 2, fun_argv, fun_argn, 0, 0);
+
+    wchar_t *set_fun_argn[] = {L"function"};
+    anna_module_function(
+	stack,
+	L"setFunction", 0, 
+	&anna_readline_complete_set_function, 
+	fun_type,
+	1, &fun_type, set_fun_argn, 0,
+	L"Set a new completion function.");
+
+    anna_type_data_register(anna_complete_type_data, stack);
+}
 
 
 // This function is called to create all types defined in this module
@@ -267,6 +402,7 @@ void anna_readLine_load(anna_stack_template_t *stack)
     anna_module_data_t modules[] =
         {
             { L"history", anna_history_create, anna_history_load},
+            { L"complete", anna_complete_create, anna_complete_load},
         };
     anna_module_data_create(modules, stack);
 
