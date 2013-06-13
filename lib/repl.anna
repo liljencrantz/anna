@@ -83,6 +83,7 @@ Type «help» for more information.");
     */
     historyFile :== unix.env["HOME"] ~ "/.anna_history";
     readLine.history.read(historyFile);
+    readLine.complete.setFunction(replComplete.codeComplete);
 
     /*
       Set up the various short cut actions available, such as showing
