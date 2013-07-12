@@ -542,12 +542,6 @@ int anna_stack_check(anna_stack_template_t *stack, int i)
     return anna_stack_check(stack->parent, i-1);
 }
 
-
-int anna_stack_depth(anna_stack_template_t *stack)
-{
-    return stack?anna_stack_depth(stack->parent)+1:0;
-}
-
 void anna_stack_print_trace(anna_stack_template_t *stack)
 {
     anna_message(L"Stack trace:\n");

@@ -31,7 +31,6 @@ static anna_node_t *anna_node_specialize(anna_node_call_t *call, anna_stack_temp
     {
 	call->child[0] = anna_node_calculate_type(call->child[0]);	
 	anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
-	
 	if(spec)
 	{
 	    res = anna_list_type_get_any(spec);

@@ -205,16 +205,6 @@ void anna_node_call_set_function(anna_node_call_t *call, anna_node_t *function)
     call->function = function;
 }
 
-static anna_entry_t anna_node_assign_invoke(anna_node_assign_t *this, anna_stack_template_t *stack)
-{
-    anna_entry_t result = anna_node_static_invoke_try(this->value, stack);
-    if(!anna_entry_null_ptr(result))
-    {
-	anna_stack_set(stack, this->name, result);
-    }
-    return result;
-}
-
 anna_entry_t anna_node_static_invoke_try(
     anna_node_t *this, 
     anna_stack_template_t *stack)
@@ -348,8 +338,36 @@ anna_entry_t anna_node_static_invoke_try(
     {
 	case ANNA_NODE_CONST:
 	case ANNA_NODE_DECLARE:
-	    return anna_node_assign_invoke((anna_node_assign_t *)this, stack);
+	{    
+	    anna_node_declare_t *this2 = (anna_node_declare_t *)this;	    
+	    anna_entry_t type_val = anna_node_static_invoke_try(
+		this2->type, 
+		stack);
+	    anna_type_t *decl_type = 0;
+	    anna_entry_t result = anna_node_static_invoke_try(this2->value, stack);
+	    if(anna_entry_null_ptr(type_val) || anna_entry_null_ptr(result))
+	    {
+		return anna_from_obj(0);
+	    }
+	    
+	    if(!anna_entry_null(type_val))
+	    {
+		decl_type = anna_type_unwrap(anna_as_obj(type_val));
+	    }
+	    else if(!anna_entry_null_ptr(result))
+	    {
+		decl_type = anna_as_obj(result)->type;
+	    }
 
+	    if(decl_type)
+	    {
+		anna_stack_set_type(stack, this2->name, decl_type);
+		anna_stack_set(stack, this2->name, result);
+	    }
+
+	    return result;
+	}
+	
 	case ANNA_NODE_CAST:
 	{
 	    anna_node_call_t *this2 = (anna_node_call_t *)this;

@@ -122,8 +122,6 @@ anna_sid_t anna_stack_sid_create(anna_stack_template_t *stack, wchar_t *name);
 
 void anna_stack_print(anna_stack_template_t *stack);
 
-int anna_stack_depth(anna_stack_template_t *stack);
-
 void anna_stack_print_trace(anna_stack_template_t *stack);
 
 void anna_stack_prepare(anna_type_t *type);

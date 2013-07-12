@@ -958,7 +958,7 @@ static void anna_module_find_expand(anna_node_t *module, array_list_t *import)
    Internal helper function for anna_module_load_i.
 
    This function runs after anna_module_load_i has been run on a
-   module and (resursively) on all it's dependencies.
+   module and (recursively) on all it's dependencies.
 
    anna_module_load_i will by itself load the module file and parse it
    enough so that it's public interface can be determined. After that,

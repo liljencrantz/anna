@@ -1,4 +1,5 @@
 //ROOT: src/node/node.c
+#include "anna/object.h"
 
 static anna_node_t *resolve_identifiers_each(
     anna_node_t *this, void *aux);
@@ -962,10 +963,8 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    
 	    anna_node_declare_t *d = (anna_node_declare_t *)this;
 	    int do_decl = anna_stack_template_search(this->stack, d->name) == this->stack;
-//	    debug(D_ERROR, L"Calculating type of declaration %ls\n", d->name);
 	    if(d->type->node_type == ANNA_NODE_NULL)
 	    {
-//		debug(D_ERROR, L"Declaration %ls has implicit type\n", d->name);
 		if(d->value->node_type == ANNA_NODE_NULL)
 		{
 		    anna_error(this, L"No type specified for variable declaration\n");
@@ -994,12 +993,10 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    }
 	    else
 	    {
-//		debug(D_ERROR, L"Declaration %ls has explicit type\n", d->name);
   	        d->type = anna_node_calculate_type(d->type);
 		d->return_type = anna_node_resolve_to_type(
 		    d->type,
 		    stack);
-//		debug(D_ERROR, L"Resolved\n");
 		if(!d->return_type)
 		{
 		    anna_error(d->type, L"Invalid type for declaration");
@@ -1032,7 +1029,6 @@ static anna_node_t *anna_node_calculate_type_internal(
 		this->flags |= ANNA_NODE_TYPE_FULL;
 	    }
 	    
-//	    debug(D_ERROR, L"Type calculation of declaration %ls finished\n", d->name);
 	    break;
 	}
 	

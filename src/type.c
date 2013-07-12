@@ -242,7 +242,7 @@ void anna_type_print(anna_type_t *type)
 	{
 	    anna_message(
 		L"    var %ls %ls (%ls); // offset: %d\n",
-		member->type->name, member->name, 
+		member->type?member->type->name:L"???", member->name, 
 		anna_member_is_static(member)?L"static":L"",
 		member->offset);
 	}
@@ -508,8 +508,9 @@ static void anna_type_prepare_member_internal(
     int is_static = 0;
     int is_function = 0;
     int is_bound = 0;
-//    anna_message(L"Register %ls\n", decl->name);
     
+//    anna_message(L"Register %ls.%ls\n", type->name, decl->name);
+
     if(anna_function_type_unwrap(decl->return_type))
     {
 	is_static = anna_attribute_flag(decl->attribute, L"static");
