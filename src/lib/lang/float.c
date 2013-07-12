@@ -203,10 +203,11 @@ ANNA_VM_NATIVE(anna_float_format, 2)
     char *rve = 0;
     char *res = dtoa(val, mode, ndigits, &decpt, &sign, &rve);
 
-    anna_object_t *str;
+    anna_object_t *str = anna_string_create(val < 0, L"-");
+    
     if(decpt <= 0)
     {
-	str = anna_string_create_narrow(2, "0.");
+	anna_string_append_cstring(str, L"0.", 2);
 	for(i=0; i<-decpt; i++)
 	{
 	    anna_string_append_cstring(str, L"0", 1);
@@ -217,14 +218,14 @@ ANNA_VM_NATIVE(anna_float_format, 2)
     }
     else 
     {
-	str = anna_string_create_narrow(decpt, res);
-	if(strlen(res+decpt))
+	wchar_t *wide = str2wcs(res);
+	anna_string_append_cstring(str, wide, decpt);
+	if(wcslen(wide+decpt))
 	{
 	    anna_string_append_cstring(str, L".", 1);
-	    wchar_t *wide = str2wcs(res+decpt);
-	    anna_string_append_cstring(str, wide, wcslen(wide));
-	    free(wide);
+	    anna_string_append_cstring(str, wide+decpt, wcslen(wide+decpt));
 	}
+	free(wide);
     }
     freedtoa(res);
     
