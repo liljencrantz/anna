@@ -202,6 +202,37 @@ modification, are permitted provided that the following conditions are met:
         parsedAst := ? as Call;
 	
         prompt := firstPrompt;
+
+	def reflection.Type getModule(reflection.Type parent, Node path)
+	{
+	    if(id := (path as Identifier))
+	    {
+		memb := parent.member.find(el){ el.name == id.name }
+		return type(memb.value(?));
+	    }
+	    if(path.callTo?("__memberGet__"))
+	    {
+	        call := path as Call;
+	        id := call[0] as Identifier;
+		memb := parent.member.find(el){ el.name == id.name }
+		newParent := type(memb.value(?));
+		return getModule(newParent, call[1]);
+	    }
+	}
+	
+
+      useList := globalClause.filter(el)
+	{
+	    el.callTo?("use");
+	}.map(el)
+	{
+	    getModule(type(global), (el as Call)[0]);
+	}.filter(el)
+	{
+	    el;
+	}
+	replComplete.setUseList(useList);
+
 	
         parseError :== collect(error.CompilationError)
 	{

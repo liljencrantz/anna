@@ -1,9 +1,19 @@
+attribute(doc("
+Command line completion support for the repl tool."));
+
+
 use(reflection);
 
 var Int completeListIdx;
 var MutableList«String» completeList;
+var List«reflection.Type» useList;
 
-def getPath(String text) 
+def getPath(String text)
+(
+    doc("
+Try to extract the dot-separated list of names that we're currently
+trying to complete from the text.")
+)
 {
     if(text == "")
     {
@@ -116,11 +126,25 @@ def realComplete(String text)
     ns := «String, Type»[];
     addNamespace(ns, type(global));
     addNamespace(ns, type(lang));
+    useList.each(type)
+    {
+	addNamespace(ns, type);
+    }
     res := realCompletePath(path, ns).map(el){text ~ el};
     return res;
 }
 
-def codeComplete(String text, Int state) 
+def Any setUseList(List«Type» use)
+{
+    useList = use;
+}
+
+def codeComplete(String text, Int state)
+(
+    doc("Call the readLine.complete.setFunction function
+with this function as a parameter to enable code
+completion.")
+)
 {
     if(state == 0)
     {
