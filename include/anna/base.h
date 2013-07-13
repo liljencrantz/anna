@@ -23,6 +23,9 @@ typedef void (*anna_mark_entry_t)( struct anna_object *this);
 typedef void (*anna_mark_type_t)( struct anna_type *this);
 typedef void (*anna_init_t)(struct anna_object *this);
 typedef void *(*anna_specializer_t)(void *fun, struct anna_node_call *call);
+typedef struct anna_type *(*anna_type_specializer_t)(struct anna_type *base, struct anna_node_call *call, struct anna_stack_template *this);
+
+
 typedef int mid_t;
 
 /*
@@ -366,6 +369,11 @@ struct anna_type
        An array containing all static members.
     */
     anna_entry_t *static_member;
+    /**
+       The function to call in order to get a specialized version of
+       this type.
+    */
+    anna_type_specializer_t specialization_function;
     /**
        A hash of all template specializations of this type.
     */

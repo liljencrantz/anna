@@ -1185,6 +1185,32 @@ static anna_type_t **anna_list_type_insert(
     return res;
 }
 
+static anna_type_t *anna_list_specialize_node(anna_type_t *base, anna_node_call_t *call, anna_stack_template_t *stack)
+{
+    if(call->child_count != 1)
+    {
+	anna_error((anna_node_t *)call, L"Invalid number of template arguments to list specialization");
+	return 0;
+    }
+    
+    call->child[0] = anna_node_calculate_type(call->child[0]);	
+    anna_type_t *spec = anna_node_resolve_to_type(call->child[0], stack);
+
+    if(spec)
+    {
+	return base == mutable_list_type ? 
+	    anna_list_type_get_mutable(spec) :
+	    (
+		base == imutable_list_type ?
+		anna_list_type_get_imutable(spec):
+		anna_list_type_get_any(spec)
+		);
+    }
+    
+    anna_error((anna_node_t *)call, L"List specialization can not be resolved into type");
+    return 0;
+}
+
 void anna_list_type_create()
 {
     anna_list_internal_init();
@@ -1200,6 +1226,10 @@ void anna_list_type_create()
 	imutable_list_type, mutable_list_type, any_list_type, 0);
     anna_type_intersect_into(
 	any_list_type, mutable_list_type, imutable_list_type);    
+
+    mutable_list_type->specialization_function = anna_list_specialize_node;
+    imutable_list_type->specialization_function = anna_list_specialize_node;
+    any_list_type->specialization_function = anna_list_specialize_node;
     
     anna_entry_set_static_ptr(any_list_type, ANNA_MID_LIST_SPECIALIZATION, any_type);
     anna_list_push_all_extra_methods(any_list_type, ANY_OFF);
