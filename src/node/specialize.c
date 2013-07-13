@@ -17,21 +17,6 @@ static anna_node_t *anna_node_specialize(
     {
 	res = type->specialization_function(type, call, stack);
     }
-    else if(type == hash_type && call->child_count==2)
-    {
-	call->child[0] = anna_node_calculate_type(call->child[0]);	
-	call->child[1] = anna_node_calculate_type(call->child[1]);	
-	anna_type_t *spec1 = anna_node_resolve_to_type(call->child[0], stack);
-	anna_type_t *spec2 = anna_node_resolve_to_type(call->child[1], stack);
-	if(spec1 && spec2)
-	{
-	    res = anna_hash_type_get(spec1, spec2);
-	}
-	else
-	{
-	    anna_error((anna_node_t *)call, L"HashMap specializations can not be resolved into types");
-	}
-    }
     else if(type == pair_type && call->child_count==2)
     {
 	call->child[0] = anna_node_calculate_type(call->child[0]);	
