@@ -55,6 +55,8 @@ void anna_alloc_mark_function(anna_function_t *o)
 
     if(o->code)
 	anna_vm_mark_code(o);
+    if(o->definition)
+	anna_alloc_mark(o->definition);
 }
 
 void anna_alloc_mark_stack_template(anna_stack_template_t *stack)

@@ -1039,6 +1039,7 @@ static anna_function_t *anna_function_create_specialization(
     }
     
     hash_put(&base->specialization, spec, res);
+    anna_alloc_mark_permanent(spec);
 //    anna_message(L"Put %ls\n", res->name);
     
     anna_function_specialize_body(res);

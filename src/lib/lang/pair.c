@@ -224,11 +224,36 @@ static inline void anna_pair_internal_init()
     hash_init(&anna_pair_specialization, hash_tt_func, hash_tt_cmp);
 }
 
+static anna_type_t *anna_pair_specialize_node(
+    anna_type_t *base, anna_node_call_t *call,
+    anna_stack_template_t *stack)
+{
+    if(call->child_count != 2)
+    {
+	anna_error((anna_node_t *)call, L"Invalid number of template arguments to pair specialization");
+	return 0;
+    }
+    
+    call->child[0] = anna_node_calculate_type(call->child[0]);	
+    call->child[1] = anna_node_calculate_type(call->child[1]);	
+    anna_type_t *spec1 = anna_node_resolve_to_type(call->child[0], stack);
+    anna_type_t *spec2 = anna_node_resolve_to_type(call->child[1], stack);
+
+    if(spec1 && spec2)
+    {
+	return anna_pair_type_get(spec1, spec2);
+    }
+    
+    anna_error((anna_node_t *)call, L"Pair specializations can not be resolved into types");
+    return 0;
+}
+
 void anna_pair_type_create()
 {
     anna_pair_internal_init();
     hash_put(&anna_pair_specialization, anna_tt_make(hash_key_type, hash_key_type), pair_type);
     anna_pair_type_create_internal(pair_type, any_type, any_type);
+    pair_type->specialization_function = anna_pair_specialize_node;
 }
 
 anna_type_t *anna_pair_type_get(anna_type_t *subtype1, anna_type_t *subtype2)
