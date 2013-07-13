@@ -1103,7 +1103,13 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
 	debug(D_ERROR,L"Module %ls failed to parse correctly.\n", module_stack->filename);
 	return;
     }
-
+    
+    if(program->node_type != ANNA_NODE_CALL)
+    {
+	debug(D_ERROR,L"Module %ls is not a valid AST.\n", module_stack->filename);
+	return;
+    }
+    
     module_stack->definition = node_cast_call(program);
     
     debug(D_SPAM,L"Parsed AST for module %ls:\n", module_stack->filename);    
@@ -1168,6 +1174,14 @@ static void anna_module_load_ast(anna_stack_template_t *module_stack, anna_node_
     if(anna_error_count)
     {
 	debug(D_ERROR,L"Found %d error(s) during macro expansion phase\n", anna_error_count);
+	return;
+    }
+    
+    if((node->node_type != ANNA_NODE_CALL) &&
+       (node->node_type != ANNA_NODE_NOTHING))
+    {
+	debug(D_ERROR,L"Macro expanded module %ls is not a valid AST.\n", module_stack->filename);
+	anna_node_print(D_ERROR, node);
 	return;
     }
     
