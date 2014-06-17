@@ -105,7 +105,7 @@ example, to show the contents of the Int type, type «dir(Int)».
 
 Type «warranty», «copyright» or «license» for legal information.";
 
-    copyrightText :== "Copyright(C) 2005-2012 Axel Liljencrantz
+    copyrightText :== "Copyright(C) 2005-2014 Axel Liljencrantz
 All rights reserved.";
     helloText:= "Hi!";
     warrantyText :== "This software is provided by the copyright holders and contributors \"as is\" and

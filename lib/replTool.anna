@@ -46,7 +46,6 @@ is a short rundown of the currently supported HTML subset:
 	{
 	    case("p")
 	    {
-		print("LALALA PARA");
 		res ~= linebreak(currentParagraph.split(" ", ?));
 		res ~= "\n\n";
 		currentParagraph.count=0;
@@ -348,7 +347,7 @@ def printHelpMember(Any object, String memberName)
     
     objType := (object as Type) or type(object);
     memb := objType.member.filter(m){m.name==memberName}[0];
-    printHelp(memb);
+    printHelp(memb.value(object));
 }
 
 def printHelp(Any object = global)
@@ -369,7 +368,6 @@ the doc attribute of declarations."))
 {
     use(parser);
     use(reflection);
-
     res := "".thaw;
 
     /*
@@ -425,6 +423,7 @@ the doc attribute of declarations."))
     }
 
     attribute := (object as WithAttribute).attribute or type(object).attribute;
+
     doc := annaUtil.findAttribute(attribute, "doc");
     if(fun := (object as Function) or (object as Method).function)
     {
