@@ -147,7 +147,8 @@ void anna_mid_init()
 	};
     
     int i;
-    assert((sizeof(mid_name)/sizeof(wchar_t *)) == (ANNA_MID_FIRST_UNRESERVED));    
+    assert(
+	(sizeof(mid_name)/sizeof(wchar_t *)) == ANNA_MID_FIRST_UNRESERVED);    
     
     for(i=0; i<(sizeof(mid_name)/sizeof(wchar_t *)); i++)
     {

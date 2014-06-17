@@ -860,17 +860,25 @@ static void anna_function_continuation(anna_context_t *context)
     anna_object_t *res = anna_context_pop_object(context);
     anna_context_pop_object(context);
 
-    anna_entry_t cce = anna_entry_get(cont, ANNA_MID_CONTINUATION_CALL_COUNT);
+    anna_entry_t cce = anna_entry_get(
+	cont, ANNA_MID_CONTINUATION_CALL_COUNT);
     int cc = 1 + (anna_entry_null(cce)?0:anna_as_int(cce));
-    anna_entry_set(cont, ANNA_MID_CONTINUATION_CALL_COUNT, anna_from_int(cc));
+    anna_entry_set(
+	cont, ANNA_MID_CONTINUATION_CALL_COUNT, anna_from_int(cc));
     
-    void *mem_blob = anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_STACK);
-    size_t sz = (size_t)anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_STACK_COUNT);
-    memcpy(&context->stack[0], anna_blob_payload(mem_blob), sz*sizeof(anna_entry_t ));
+    void *mem_blob = anna_entry_get_ptr(
+	cont, ANNA_MID_CONTINUATION_STACK);
+    size_t sz = (size_t)anna_entry_get_ptr(
+	cont, ANNA_MID_CONTINUATION_STACK_COUNT);
+    memcpy(
+	&context->stack[0], anna_blob_payload(mem_blob),
+	sz*sizeof(anna_entry_t ));
     context->top = &context->stack[sz];
 
-    context->frame = (anna_activation_frame_t *)anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
-    context->frame->code = (char *)anna_entry_get_ptr(cont, ANNA_MID_CONTINUATION_CODE_POS);
+    context->frame = (anna_activation_frame_t *)anna_entry_get_ptr(
+	cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME);
+    context->frame->code = (char *)anna_entry_get_ptr(
+	cont, ANNA_MID_CONTINUATION_CODE_POS);
 
     anna_context_push_object(context, res);
 }
@@ -882,7 +890,9 @@ anna_function_t *anna_continuation_create(
     int copy)
 {
     anna_function_t *result = anna_alloc_function();
-    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
+    hash_init(
+	&result->specialization, anna_node_hash_func,
+	anna_node_hash_cmp);
     result->flags |= ANNA_FUNCTION_CONTINUATION;
     anna_function_attribute_empty(result);    
     result->input_type = 0;
@@ -897,12 +907,13 @@ anna_function_t *anna_continuation_create(
     anna_function_setup_interface(result);
     anna_vm_compile(result);
     
-//    size_t sz = stack->top - &stack->stack[0];
     void *mem_blob;
     if(copy)
     {
 	mem_blob = anna_alloc_blob(stack_sz*sizeof(anna_entry_t ));
-	memcpy(anna_blob_payload(mem_blob), stack_ptr, stack_sz*sizeof(anna_entry_t ));
+	memcpy(
+	    anna_blob_payload(mem_blob), stack_ptr,
+	    stack_sz*sizeof(anna_entry_t));
     }
     else
     {
@@ -910,10 +921,14 @@ anna_function_t *anna_continuation_create(
     }
     
     anna_object_t *cont = result->wrapper;
-    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_STACK, mem_blob);
-    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_STACK_COUNT, (void *)stack_sz);
-    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME, frame);
-    anna_entry_set_ptr(cont, ANNA_MID_CONTINUATION_CODE_POS, frame->code);
+    anna_entry_set_ptr(
+	cont, ANNA_MID_CONTINUATION_STACK, mem_blob);
+    anna_entry_set_ptr(
+	cont, ANNA_MID_CONTINUATION_STACK_COUNT, (void *)stack_sz);
+    anna_entry_set_ptr(
+	cont, ANNA_MID_CONTINUATION_ACTIVATION_FRAME, frame);
+    anna_entry_set_ptr(
+	cont, ANNA_MID_CONTINUATION_CODE_POS, frame->code);
     
     return result;
 }
@@ -923,7 +938,9 @@ anna_function_t *anna_method_bind(
     anna_function_t *method)
 {
     anna_function_t *result = anna_alloc_function();
-    hash_init(&result->specialization, anna_node_hash_func, anna_node_hash_cmp);
+    hash_init(
+	&result->specialization,
+	anna_node_hash_func, anna_node_hash_cmp);
     result->flags |= ANNA_FUNCTION_BOUND_METHOD;
     anna_function_attribute_empty(result);
     result->input_type = 0;
@@ -992,7 +1009,9 @@ static anna_function_t *anna_function_create_specialization(
 	return base;
     }
 
-    anna_node_call_t *def = (anna_node_call_t *)anna_node_clone_deep((anna_node_t *)base->definition);
+    anna_node_call_t *def =
+	(anna_node_call_t *)anna_node_clone_deep(
+	    (anna_node_t *)base->definition);
     anna_node_call_t *attr = node_cast_call(def->child[3]);
     int i;
 
@@ -1009,13 +1028,15 @@ static anna_function_t *anna_function_create_specialization(
 	    sb_printf(&sb, L",");
 	}
 	
-	anna_node_call_t *tm = node_cast_call((anna_node_t *)al_get(&al, i));
+	anna_node_call_t *tm = node_cast_call(
+	    (anna_node_t *)al_get(&al, i));
 	tm->child[1] = spec->child[i];
 
 	wchar_t *item_txt = L"?";
 	if(spec->child[i]->node_type == ANNA_NODE_DUMMY)
 	{
-	    anna_object_t *obj = ((anna_node_dummy_t *)spec->child[i])->payload;
+	    anna_object_t *obj =
+		((anna_node_dummy_t *)spec->child[i])->payload;
 	    anna_type_t *spec_type = anna_type_unwrap(obj);
 	    if(spec_type)
 	    {
@@ -1028,7 +1049,8 @@ static anna_function_t *anna_function_create_specialization(
     al_destroy(&al);
 
     sb_printf(&sb, L"»");
-    def->child[0] = (anna_node_t *)anna_node_create_identifier(0, sb_content(&sb));
+    def->child[0] =
+	(anna_node_t *)anna_node_create_identifier(0, sb_content(&sb));
     
     anna_function_t *res = anna_function_create_from_definition(def);
     res->flags = res->flags | ANNA_FUNCTION_SPECIALIZED;
@@ -1040,7 +1062,6 @@ static anna_function_t *anna_function_create_specialization(
     
     hash_put(&base->specialization, spec, res);
     anna_alloc_mark_permanent(spec);
-//    anna_message(L"Put %ls\n", res->name);
     
     anna_function_specialize_body(res);
     anna_function_macro_expand(
@@ -1081,7 +1102,9 @@ anna_function_t *anna_function_get_specialization(
     
     if(al_get_count(&al) != call->child_count)
     {
-	anna_error((anna_node_t *)call, L"Invalid number of template arguments");
+	anna_error(
+	    (anna_node_t *)call,
+	    L"Invalid number of template arguments");
 	return fun;
     }
 
@@ -1170,7 +1193,8 @@ void anna_function_macro_expand(
     {
 	int i;
 	
-	f->body->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
+	f->body->function = (anna_node_t *)anna_node_create_identifier(
+	    0, L"nothing");
 	f->body = (anna_node_call_t *)anna_node_macro_expand(
 	    (anna_node_t *)f->body, stack);
 	
@@ -1184,22 +1208,30 @@ void anna_function_macro_expand(
 	{
 	    for(i=0;i<f->input_type_node->child_count; i++)
 	    {
-		anna_node_call_t *decl = node_cast_call(f->input_type_node->child[i]);
+		anna_node_call_t *decl = node_cast_call(
+		    f->input_type_node->child[i]);
 		if(decl->child_count != 4)
 		{
 		    continue;
 		}
 		
-		decl->child[1] = anna_node_macro_expand(decl->child[1], stack);
-		decl->child[2] = anna_node_macro_expand(decl->child[2], stack);
-		if(decl->child[3]->node_type != ANNA_NODE_CALL && decl->child[3]->node_type != ANNA_NODE_NOTHING)
+		decl->child[1] = anna_node_macro_expand(
+		    decl->child[1], stack);
+		decl->child[2] = anna_node_macro_expand(
+		    decl->child[2], stack);
+		if(
+		    decl->child[3]->node_type != ANNA_NODE_CALL &&
+		    decl->child[3]->node_type != ANNA_NODE_NOTHING)
 		{
 		    anna_error(decl->child[3], L"Invalid attribute list");
 		}
 		else
 		{
-		    ((anna_node_call_t *)decl->child[3])->function = (anna_node_t *)anna_node_create_identifier(0, L"nothing");
-		    decl->child[3] = anna_node_macro_expand(decl->child[3], stack);
+		    ((anna_node_call_t *)decl->child[3])->function =
+			(anna_node_t *)anna_node_create_identifier(
+			    0, L"nothing");
+		    decl->child[3] = anna_node_macro_expand(
+			decl->child[3], stack);
 		}
 	    }
 	}
@@ -1208,8 +1240,6 @@ void anna_function_macro_expand(
 	{
 	    for(i=0;i<f->attribute->child_count; i++)
 	    {
-//		anna_node_print(999, f->attribute->child[i]);
-		
 		f->attribute->child[i] = anna_node_macro_expand(
 		    f->attribute->child[i], stack);
 	    }
@@ -1218,9 +1248,12 @@ void anna_function_macro_expand(
 }
 
 
-anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_node_call_t *call)
+anna_function_t *anna_function_implicit_specialize(
+    anna_function_t *base, anna_node_call_t *call)
 {    
-    if((call->child_count < 1) || (base->flags & ANNA_FUNCTION_SPECIALIZED))
+    if(
+	(call->child_count < 1) ||
+	(base->flags & ANNA_FUNCTION_SPECIALIZED))
     {
 	return base;
     }
@@ -1235,8 +1268,10 @@ anna_function_t *anna_function_implicit_specialize(anna_function_t *base, anna_n
 	return base;
     }
     
-    anna_node_call_t *attr = node_cast_call(base->definition->child[3]);
-    anna_node_call_t *input_node = node_cast_call(base->definition->child[2]);
+    anna_node_call_t *attr = node_cast_call(
+	base->definition->child[3]);
+    anna_node_call_t *input_node = node_cast_call(
+	base->definition->child[2]);
     
     return (anna_function_t *)anna_specialize_implicit(
 	attr, anna_function_type_of_function(base), 

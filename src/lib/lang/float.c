@@ -223,7 +223,8 @@ ANNA_VM_NATIVE(anna_float_format, 2)
 	if(wcslen(wide+decpt))
 	{
 	    anna_string_append_cstring(str, L".", 1);
-	    anna_string_append_cstring(str, wide+decpt, wcslen(wide+decpt));
+	    anna_string_append_cstring(
+		str, wide+decpt, wcslen(wide+decpt));
 	}
 	free(wide);
     }
@@ -320,7 +321,8 @@ void anna_float_type_create()
     
     anna_member_create_native_method(
 	float_type, anna_mid_get(L"format"), 0,
-	&anna_float_format, string_type, 2, format_argv, format_argn, format_argd, L"Convert this floating point number to a string");
+	&anna_float_format, string_type,
+	2, format_argv, format_argn, format_argd, L"Convert this floating point number to a string");
     
     wchar_t *conv_argn[]=
 	{

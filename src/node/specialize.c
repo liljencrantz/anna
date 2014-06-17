@@ -5,7 +5,8 @@ static anna_node_t *anna_node_specialize(
 {
     anna_node_calculate_type(call->function);
     
-    anna_type_t *type = anna_node_resolve_to_type(call->function, stack);
+    anna_type_t *type = anna_node_resolve_to_type(
+	call->function, stack);
     anna_type_t *res = 0;
     anna_function_t *spec_fun = 0;	    
     	    
@@ -19,9 +20,12 @@ static anna_node_t *anna_node_specialize(
     }
     else
     {	
-	anna_entry_t val = anna_node_static_invoke_try(call->function, call->function->stack);
+	anna_entry_t val = anna_node_static_invoke_try(
+	    call->function, call->function->stack);
 	anna_function_t *fun;
-	if(!anna_entry_null_ptr(val) && (fun=anna_function_unwrap(anna_as_obj(val))))
+	if(
+	    !anna_entry_null_ptr(val) &&
+	    (fun=anna_function_unwrap(anna_as_obj(val))))
 	{
 	    spec_fun = anna_function_get_specialization(fun, call);
 	}
@@ -38,7 +42,9 @@ static anna_node_t *anna_node_specialize(
 	    }
 	    if(!res)
 	    {
-		anna_error((anna_node_t *)call, L"Failed to specialize type %ls.", type->name);
+		anna_error(
+		    (anna_node_t *)call,
+		    L"Failed to specialize type %ls.", type->name);
 	    }
 	}
     }
@@ -46,7 +52,8 @@ static anna_node_t *anna_node_specialize(
     if(spec_fun)
     {
 	res = anna_function_wrap(spec_fun)->type;
-	anna_node_t *out = (anna_node_t *)anna_node_create_closure(&call->location, spec_fun);
+	anna_node_t *out = (anna_node_t *)anna_node_create_closure(
+	    &call->location, spec_fun);
 	out->return_type = res;
 	out->stack = call->stack;
 	return out;
@@ -87,22 +94,22 @@ void *anna_specialize_implicit(
     
     anna_node_call_map(call, unspecialized_fun);
     
-    anna_type_t **type_spec = calloc(sizeof(anna_type_t *), al_get_count(&al));
+    anna_type_t **type_spec = calloc(
+	sizeof(anna_type_t *), al_get_count(&al));
     int spec_count = 0;
     for(i=0; i<call->child_count; i++)
     {	
 	int input_idx = mini(i, input_count-1);	
-	anna_node_call_t *decl = node_cast_call(input_node->child[input_idx]);
-	//anna_message(L"Hej hopp %d %d\n", i, input_idx);
+	anna_node_call_t *decl = node_cast_call(
+	    input_node->child[input_idx]);
 	if(decl->child[1]->node_type == ANNA_NODE_INTERNAL_IDENTIFIER)
 	{
-	    anna_node_identifier_t *id =(anna_node_identifier_t *)decl->child[1];
-	    //anna_message(L"Tjoho %ls\n", id->name);
+	    anna_node_identifier_t *id =
+		(anna_node_identifier_t *)decl->child[1];
 	    
 	    int templ_idx = anna_attribute_template_idx(attr, id->name);
 	    if(templ_idx >= 0)
 	    {
-		//anna_message(L"Template idx is %d\n", templ_idx);
 		call->child[i] = anna_node_calculate_type(call->child[i]);
 		if( call->child[i]->return_type != ANNA_NODE_TYPE_IN_TRANSIT)
 		{
@@ -113,7 +120,9 @@ void *anna_specialize_implicit(
 		    }
 		    else
 		    {
-			type_spec[templ_idx] = anna_type_intersect(type_spec[templ_idx], call->child[i]->return_type);
+			type_spec[templ_idx] = anna_type_intersect(
+			    type_spec[templ_idx],
+			    call->child[i]->return_type);
 		    }
 		}
 	    }

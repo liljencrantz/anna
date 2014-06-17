@@ -10,18 +10,20 @@
 */
 
 /**
-   The size of the builtin table used for very small hashes to avoid a memory allocation.
+   The size of the builtin table used for very small hashes to avoid a
+   memory allocation.
  */
 #define ANNA_HASH_MINSIZE 4
 
 /**
-  The factor to increase hash size by when running full. Must be a power of two.
+  The factor to increase hash size by when running full. Must be a
+  power of two.
  */
 #define ANNA_HASH_SIZE_STEP 2
 
 /**
    The maximum allowed fill rate of the hash when inserting. Once this
-   is reached, the hash is resized.
+   is reached, the hash is resized.  
 */
 #define ANNA_HASH_USED_MAX 0.7
 
@@ -30,7 +32,7 @@
    is reached during insertion, the hash is resized. Note that resizes
    only happen on insertions. This makes sure that if we remove most
    keys from a hash, one at a time, it won't resize until all keys are
-   removed and we start inserting again.
+   removed and we start inserting again.  
 */
 #define ANNA_HASH_USED_MIN 0.1
 
@@ -59,7 +61,10 @@ typedef struct {
     anna_hash_entry_t small_table[ANNA_HASH_MINSIZE];
 } anna_hash_t;
 
-typedef void (*ahi_callback_t)(anna_context_t *context, anna_entry_t key, int hash_code, anna_entry_t hash, anna_entry_t aux, anna_hash_entry_t *hash_entry);
+typedef void (*ahi_callback_t)(
+    anna_context_t *context, anna_entry_t key,
+    int hash_code, anna_entry_t hash,
+    anna_entry_t aux, anna_hash_entry_t *hash_entry);
 
 static hash_table_t anna_hash_specialization;
 static array_list_t anna_hash_additional_methods = AL_STATIC;
@@ -88,22 +93,27 @@ static void anna_hash_add_method_internal(
 {
     if(wcscmp(fun->name, L"__cmp__")==0)
     {
-	if((mid_t)-1 == anna_type_find_comparator(anna_hash_get_key_type(type)))
+	if((mid_t)-1 == anna_type_find_comparator(
+	       anna_hash_get_key_type(type)))
 	    return;
-	if((mid_t)-1 == anna_type_find_comparator(anna_hash_get_value_type(type)))
+	if((mid_t)-1 == anna_type_find_comparator(
+	       anna_hash_get_value_type(type)))
 	    return;
     }
     if(wcscmp(fun->name, L"hashCode")==0)
     {
-	if((mid_t)-1 == anna_type_find_hash_code(anna_hash_get_key_type(type)))
+	if((mid_t)-1 == anna_type_find_hash_code(
+	       anna_hash_get_key_type(type)))
 	    return;
-	if((mid_t)-1 == anna_type_find_hash_code(anna_hash_get_value_type(type)))
+	if((mid_t)-1 == anna_type_find_hash_code(
+	       anna_hash_get_value_type(type)))
 	    return;
     }
     anna_function_t *fun_spec = anna_hash_specialize(type, fun);
     if(fun_spec)
     {
-	anna_member_create_method(type, anna_mid_get(fun->name), fun_spec);
+	anna_member_create_method(
+	    type, anna_mid_get(fun->name), fun_spec);
     }
 }
 
@@ -111,13 +121,11 @@ static void add_hash_method(void *key, void *value, void *aux)
 {
     anna_type_t *hash = (anna_type_t *)value;
     anna_function_t *fun = (anna_function_t *)aux;
-//    anna_message(L"Add function %ls to type %ls\n", fun->name, hash->name);
     anna_hash_add_method_internal(hash, fun);
 }
 
 void anna_hash_add_method(anna_function_t *fun)
 {
-//    anna_message(L"Function %ls to all hash types\n", fun->name);
     al_push(&anna_hash_additional_methods, fun);
     hash_foreach2(&anna_hash_specialization, &add_hash_method, fun);
 }
@@ -127,9 +135,8 @@ static void anna_hash_add_all_extra_methods(anna_type_t *hash)
     int i;
     for(i=0; i<al_get_count(&anna_hash_additional_methods); i++)
     {
-	anna_function_t *fun = (anna_function_t *)al_get(&anna_hash_additional_methods, i);
-//	anna_message(L"Add function %ls to type %ls\n", fun->name, hash->name);
-	//anna_member_create_method(hash, anna_mid_get(fun->name), fun);
+	anna_function_t *fun =
+	    (anna_function_t *)al_get(&anna_hash_additional_methods, i);
 	anna_hash_add_method_internal(hash, fun);
     }
 }
@@ -183,12 +190,14 @@ static inline size_t anna_hash_get_version(anna_object_t *this)
     return ahi_unwrap(this)->used;
 }
 
-static inline anna_entry_t anna_hash_get_key_from_idx(anna_object_t *this, int idx)
+static inline anna_entry_t anna_hash_get_key_from_idx(
+    anna_object_t *this, int idx)
 {
     return ahi_unwrap(this)->table[idx].key;
 }
 
-static inline anna_entry_t anna_hash_get_value_from_idx(anna_object_t *this, int idx)
+static inline anna_entry_t anna_hash_get_value_from_idx(
+    anna_object_t *this, int idx)
 {
     return ahi_unwrap(this)->table[idx].value;
 }
@@ -214,7 +223,7 @@ __attr_unused static void anna_hash_print(anna_hash_t *this)
 		}
 		else
 		{
-		    anna_message(L": %ls", o->type->name);		    
+		    anna_message(L": %ls", o->type->name);
 		}
 	    }
 
@@ -233,7 +242,8 @@ __attr_unused static void anna_hash_print(anna_hash_t *this)
     
 }
 
-static inline ssize_t anna_hash_get_next_idx(anna_object_t *this, ssize_t idx)
+static inline ssize_t anna_hash_get_next_idx(
+    anna_object_t *this, ssize_t idx)
 {
     if(idx == -1)
     {
@@ -250,7 +260,8 @@ static inline ssize_t anna_hash_get_next_idx(anna_object_t *this, ssize_t idx)
     return -1;
 }
 
-static inline ssize_t anna_hash_get_next_non_dummy(anna_object_t *this, ssize_t idx)
+static inline ssize_t anna_hash_get_next_non_dummy(
+    anna_object_t *this, ssize_t idx)
 {
     anna_hash_t *hash = ahi_unwrap(this);
     int pos;
@@ -270,7 +281,9 @@ static inline void ahi_init(anna_hash_t *this, int set_default)
     this->fill = this->used = 0;
     this->mask = ANNA_HASH_MINSIZE-1;
     this->table = &this->small_table[0];
-    memset(&this->small_table[0], 0, sizeof(anna_hash_entry_t) * ANNA_HASH_MINSIZE);
+    memset(
+	&this->small_table[0], 0, 
+	sizeof(anna_hash_entry_t) * ANNA_HASH_MINSIZE);
     if(set_default)
     {
 	this->default_value = null_entry;
@@ -280,9 +293,6 @@ static inline void ahi_init(anna_hash_t *this, int set_default)
 
 static void anna_hash_resize(anna_hash_t *this, size_t new_sz)
 {
-//    anna_message(L"Weee, resize to %d\nBefore:\n", new_sz);
-//    anna_hash_print(this);
-    
     size_t old_sz = this->mask+1;
     size_t new_mask = new_sz-1;
     

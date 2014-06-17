@@ -39,7 +39,9 @@ static void anna_int_set(anna_object_t *this, long value)
     }
 */  
     mpz_init(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
-    mpz_set_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD), value);
+    mpz_set_si(
+	*(mpz_t *)anna_entry_get_addr(
+	    this,ANNA_MID_INT_PAYLOAD), value);
 }
 
 int anna_is_int(anna_entry_t this)
@@ -77,7 +79,9 @@ anna_object_t *anna_int_create_ll(long long value)
 {
     anna_object_t *obj= anna_object_create(int_type);
     mpz_init(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD));
-    mpz_set_si(*(mpz_t *)anna_entry_get_addr(obj,ANNA_MID_INT_PAYLOAD), value>>32);
+    mpz_set_si(
+	*(mpz_t *)anna_entry_get_addr(
+	    obj,ANNA_MID_INT_PAYLOAD), value>>32);
     return obj;
 }
 
@@ -88,7 +92,8 @@ mpz_t *anna_int_unwrap(anna_object_t *this)
 
 long int anna_int_get(anna_object_t *this)
 {
-    return mpz_get_si(*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
+    return mpz_get_si(
+	*(mpz_t *)anna_entry_get_addr(this,ANNA_MID_INT_PAYLOAD));
 }
 
 anna_entry_t anna_int_entry(anna_object_t *this)
@@ -96,10 +101,8 @@ anna_entry_t anna_int_entry(anna_object_t *this)
     mpz_t *me = anna_int_unwrap(this);
     if(mpz_sizeinbase(*me, 2)<=ANNA_SMALL_MAX_BIT)
     {
-//	anna_message(L"Weee, small int %d (%d bits)\n", anna_int_get(this), mpz_sizeinbase(*me, 2));
 	return anna_from_int(anna_int_get(this));
     }
-//    anna_message(L"Boo, large int (%d bits)\n", mpz_sizeinbase(*me, 2));
     return anna_from_obj(this);
 }
 
@@ -144,13 +147,15 @@ ANNA_VM_NATIVE(anna_int_cmp, 2)
 
 ANNA_VM_NATIVE(anna_int_to_string, 1)
 {
-    char *nstr = mpz_get_str(0, 10, *anna_int_unwrap(anna_as_obj(param[0])));
+    char *nstr = mpz_get_str(
+	0, 10, *anna_int_unwrap(anna_as_obj(param[0])));
     
     string_buffer_t sb;
     sb_init(&sb);
     sb_printf(&sb, L"%s", nstr);
     free(nstr);
-    anna_entry_t res = anna_from_obj(anna_string_create(sb_count(&sb), sb_content(&sb)));
+    anna_entry_t res = anna_from_obj(
+	anna_string_create(sb_count(&sb), sb_content(&sb)));
     sb_destroy(&sb);
     return res;
 }
@@ -349,7 +354,8 @@ void anna_int_type_create()
 	int_type,
 	L"Anna Int objects are arbitrary precision, i.e. they never overflow. Small integer values, numbers that use 30 bits or less to represent (including the sign bit) are usually stored directly on the stack and use no heap memory at all. Larger integers are implemented using an arbitrary precision library. Aside from resulting in lower memory useage, this optimization is completely transparent - Int objects behave like all other Anna objects in every way, including the fact that they can be inherited from.");
     
-    anna_member_create_blob(int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
+    anna_member_create_blob(
+	int_type, ANNA_MID_INT_PAYLOAD, 0, sizeof(mpz_t));
     
     anna_member_create_native_method(
 	int_type, anna_mid_get(L"__init__"), 0,
