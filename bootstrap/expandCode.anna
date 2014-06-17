@@ -39,7 +39,8 @@ macro expandCode(node)
 {
     if(node.count < 2)
     {
-	node.error("Too few arguments to expandCode macro - expected at least two arguments");
+	node.error(
+	    "Too few arguments to expandCode macro - expected at least two arguments");
 	return ?;
     }
     count := ? as Int;
