@@ -281,7 +281,8 @@ print( 0. );
 print( .5 );
 	  </pre>
 	  <p>
-	    To learn more about how Anna stores numbers efficiently,
+	    Anna employs some clever tricks to store numbers efficiently.
+	    If you think that sounds super interesting, 
 	    click <a href="#implementation-numbers">here</a>. Otherwise,
 	    keep reading.
 	  </p>
@@ -621,7 +622,7 @@ print("abrainbadnoah"[1|2...]);
 	  <pre class="anna-code">
 if(?)
 {
-  // Null is the only false value in Anna.
+  // ? (aka null) is the only false value in Anna.
   // This will _not_ get executed
 }
 
@@ -902,7 +903,7 @@ def main()
 	  </p>
 	  <pre class="anna-code">
 /* 
-  All conversions in Anna are by convention doneusing the static
+  All conversions in Anna are by convention done using the static
   convert method.
 */
 sevenString := String::convert(7);
@@ -910,6 +911,11 @@ sevenFloat := Float::convert(sevenString);
 sevenComplex := Complex::convert(sevenFloat);
 
 	  </pre>
+
+	  <p>
+	    Note that <a href='#misc-casting-vs-converting'conversion must not be confused with casting</a>.
+	  </p>
+
 
 	  <h3><a name="examples-mutable">Mutable and imutable objects</a></h3>
 	  <p>
@@ -2900,12 +2906,14 @@ def outerFunction(Int value)
 	    to Float.
 	  </p>
 	  <p>
-	    Converting values is done using the
-	    static <code>convert</code> methods. For example, to
-	    convert a Float object to an Int, one would
+	    Converting values is not hardcoded into the language, but
+	    the convention is to use a static <code>convert</code>
+	    method in the desired target Type. For example, to convert
+	    a Float object to an Int, one would
 	    write <code class="anna-code">Int::convert(7.1)</code>. This
 	    will create a new Int object holding the closest integer
-	    representation of the floating point number 7.1, which is 7.
+	    representation of the floating point number 7.1, which is
+	    7.
 	  </p>
 	  <p>
 	    Note that there is nothing magical about
@@ -2986,7 +2994,7 @@ macro setFooToValue(call)
 	    </li>
 	    <li>
 	      If any internal identifiers remain at the end of the
-	      macro expansion phase, a compiler error wll result.
+	      macro expansion phase, a compiler error will result.
 	    </li>
 	  </ul>
 	  <p>
@@ -3130,15 +3138,17 @@ date += isoDateDelta(x-0-0, 1:00);
 	      store any type, e.g. <code class='anna-code'>MutableList«Int»</code>.
 	    </li>
 	    <li>
-	      <code class="anna-code">HashMap</code>, an unordered
-	      collection using arbitrary objects as keys, and is a
-	      template that can be specialized to store any key/value
-	      type pair, e.g. <code class='anna-code'>HashMap«String, List«Pair«Int, Float»»»</code>.
+	      <code class="anna-code">HashMap</code>, a mutable,
+	      unordered collection using arbitrary objects as keys,
+	      and is a template that can be specialized to store any
+	      key/value type pair,
+	      e.g. <code class='anna-code'>HashMap«String,
+	      List«Pair«Int, Float»»»</code>.
 	    </li>
 	    <li>
 	      <code class="anna-code">Range</code>, which defines a
-	      (possible infinite) sequence of equally spaced integer
-	      values.
+	      (possible infinite) imutable sequence of equally spaced
+	      integer values.
 	    </li>
 	  </ul>
 	  <h2><a name="collections-list">Lists</a></h1>
@@ -3247,13 +3257,16 @@ date += isoDateDelta(x-0-0, 1:00);
 
 	      <tr>
 		<td>
-		  <code class='anna-code'>
-		    {foo}
-		  </code>
+		  <pre class='anna-code'>
+{
+    foo;
+    bar;
+}
+		  </pre>
 		</td>
 		<td>
 		  <code class='anna-code'>
-		    __block__(foo)
+		    __block__(foo, bar)
 		  </code>
 		</td>
 	      </tr>
@@ -3581,17 +3594,17 @@ def someFunction()
 	  </p>
 
 	  <pre class="anna-code">
-    /*
-      The use expression can be used for other things than just importing a 
-      library.
-    */
-    lst := [];
-    use(lst);
-    /* These calls resolve to lst.push, because lst us use:d */
-    push(1);
-    push(2);
-    push(3);
-    print(pop(), pop(), pop());
+/*
+  The use expression can be used for other things than just importing a 
+  library.
+*/
+lst := [];
+use(lst);
+/* These calls resolve to lst.push, because lst is use:d */
+push(1);
+push(2);
+push(3);
+print(pop(), pop(), pop());
 	  </pre>
 	  <h1><a name="design">Design choices</a></h1>
 	  <p>
@@ -3654,7 +3667,7 @@ def someFunction()
 	      Anna uses two different
 	      separators, <code class="anna-code">,</code> (comma)
 	      and <code class="anna-code">;</code> (semicolon). These
-	      can be used interchangeably.
+	      can be used completely interchangeably.
 	    </li>
 	    <li>
 	      Multiple commas or semicolons separated by only
@@ -3758,7 +3771,12 @@ literal := ["first", "second"];
 	    </li>
 	    <li>
 	      Neither constants nor private members have different
-	      naming conventions from regular members or variables.
+	      naming conventions from regular members or
+	      variables. The motivation for this is to make the
+	      operation of changing a varible into a constant a
+	      trivial operation. Also, the use of constants instead of
+	      variables is encouraged, and upper case constants
+	      would be encouraging shouting, which is uncivil.
 	    </li>
 	    <li>
 	      Names beginning and ending with a double underscore,
@@ -3895,14 +3913,13 @@ def Int main()
 	      member of).
 	    </li>
 	    <li>
-	      Characters are also normally stored straight in the call stack (or
-	      straight inside any object it is a member of).
+	      Characters are also normally stored straight in the call
+	      stack (or straight inside any object it is a member of).
 	    </li>
 	    <li>
-	      Floating point numbers use a separate memory allocation, but
-	      still uses some optimizations to increase evaluation speed. A
-	      future version of Anna will hopefully be able to store floats
-	      without allocating any heap memory by creating holes in the stack.
+	      Floating point numbers are also normally stored straight
+	      in the call stack (or straight inside any object it is a
+	      member of).
 	    </li>
 	  </ul>
 	  <p>
@@ -3913,20 +3930,22 @@ def Int main()
 	    article</a>.
 	  </p>
 	  <p>
-	    The above holds true for as long as only common operations,
-	    such as adding, subtracting, etc. are performed on the
-	    values. If e.g. reflection is employed or any other operation
-	    that requires access to the object type, then any object stored
-	    directly in the stack is silently converted into a full fledged
-	    object.
+	    The above holds true for as long as only common
+	    operations, such as adding, subtracting, etc. are
+	    performed on the values. If e.g. reflection is employed or
+	    any other operation that requires access to the object
+	    type, then any object stored directly in the stack is
+	    silently converted into a full fledged object.
 	  </p>
 	  <p>
 	    Aside from the performance increase and memory usage
 	    reduction, there is no way to tell that this is happening
-	    behind the scenes. This is possible because the above data
-	    types are all imutable and no memory location pointer can
-	    be obtained for an object. It is simply impossible to tell
-	    e.g. two integers with the same value apart.
+	    behind the scenes. Unlike e.g. Python, this optimization
+	    does not leak. This is possible because the above data
+	    types are all imutable and there is no memory location
+	    pointer or other object identity for objects. It is simply
+	    impossible to tell e.g. two integers with the same value
+	    apart.
 	  </p>
 
 	  <h2><a name="implementation-object-model">The Anna object struct</a></h2>
@@ -3953,7 +3972,7 @@ struct anna_object
        member lives at what offset, use the information stored in the
        type object.
     */
-    anna_entry_t *member[];
+    anna_entry_t member[];
 };
 	  </pre>
 	  <p>
@@ -3969,24 +3988,29 @@ struct anna_object
 	    </li>
 	    <li>
 	      The member count of an object is stored in the object
-	      type.
+	      type, in <code>type->member_count</code>.
 	    </li>
 	    <li>
-	      The lower bits of an anna_entry_t pointer can be used to
-	      determine what type of entry is currently stored as the
-	      current member value. The possible values are described
-	      in the table below.
+	      The anna_entry_t type is an opaque data type that can
+	      store a pointer to another anna_object or alternatively
+	      it can store various types of small data inline.
+	    </li>
+	    <li>
+	      The higher 16 bits of an anna_entry_t type can be
+	      used to determine what type of entry is currently stored
+	      as the current member value. The possible values are
+	      described in the table below.
 	    </li>
 	  </ul>
 	  
 	  <table class='anna-table'>
 	    <caption>
-	      The possible values of the lower bits of an anna_entry_t pointer.
+	      The possible values of the highest 16 bits of an anna_entry_t pointer.
 	    </caption>
 	    <thead>
 	      <tr>
 		<th>
-		  Bit pattern
+		  Value
 		</th>
 		<th>
 		  Meaning
@@ -3996,7 +4020,7 @@ struct anna_object
 	    <tbody>
 	      <tr>
 		<td>
-		  *000
+		  0
 		</td>
 		<td>
 		  This entry is used to store a pointer to a
@@ -4006,7 +4030,17 @@ struct anna_object
 	      </tr>
 	      <tr>
 		<td>
-		  *01
+		  1
+		</td>
+		<td>
+		  This entry is used to store an Int object. To get
+		  the value of the object, right shift the entry two
+		  bits.
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  2
 		</td>
 		<td>
 		  This entry is used to store a Char object. To get
@@ -4016,7 +4050,7 @@ struct anna_object
 	      </tr>
 	      <tr>
 		<td>
-		  *10
+		  3
 		</td>
 		<td>
 		  This entry is used to store a piece of memory that
@@ -4027,27 +4061,20 @@ struct anna_object
 	      </tr>
 	      <tr>
 		<td>
-		  *11
+		  Any other
 		</td>
 		<td>
-		  This entry is used to store an Int object. To get
-		  the value of the object, right shift the entry two
-		  bits.
-		</td>
-	      </tr>
-	      <tr>
-		<td>
-		  *100
-		</td>
-		<td>
-		  This entry is used to store a pointer to a floating
-		  point number. It should be garbage collected. The
-		  address of the floating point number can be found by
-		  stripping the last three bits from the pointer.
+		  This entry is used to store a floating point
+		  number. The first 16 bits of the number need to be
+		  flipped before use.
 		</td>
 	      </tr>
 	    </tbody>
 	  </table>
+	  <p>
+	    <a href="http://wingolog.org/archives/2011/05/18/value-representation-in-javascript-implementations">A description of how this bizarre scheme works</a>.
+	  </p>
+
 
 	  <h2><a name="implementation-type-model">The Anna type struct</a></h2>
 	  <p>
