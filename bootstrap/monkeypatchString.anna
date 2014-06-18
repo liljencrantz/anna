@@ -28,7 +28,8 @@ expandCode(
 	alias(search),
 	target(%Type),
 	doc("Search for the specified Substring in the specified string.
-	    Returns the offset of the first occurance of the character if found, null otherwise.",
+	    Returns the offset of the first occurance of the character if
+            found, null otherwise.",
 	    "This method is currently rather inefficient.",
 	    ),
 	)
@@ -202,7 +203,8 @@ expandCode(
 	Char char = ' ')
     (
 	target(%Type),
-	doc("Pad the left side of this string with the specified character up to a minimum of the specified number of characters"),
+	doc("Pad the left side of this string with the specified character up
+            to a minimum of the specified number of characters"),
 	name(lpad),
 	)
     {
@@ -229,7 +231,8 @@ expandCode(
 	Char char = ' ')
     (
 	target(%Type),
-	doc("Pad the right side of this string with the specified character up to a minimum of the specified number of characters"),
+	doc("Pad the right side of this string with the specified character
+            up to a minimum of the specified number of characters"),
 	name(rpad),
 	)
     {
@@ -275,7 +278,9 @@ expandCode(
 	Any allowEmpty = 1)
     (
 	target(%Type),
-	doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+	doc("Split this string on every occurence of the specified characters
+            and return the resulting array of Strings. If allowEmpty is null,
+            empty strings will be ignored."),
 	name(split),
 	)
     {
@@ -310,7 +315,9 @@ expandCode(
 	target(%Type),
 	alias(split),
 	name(splitChar),
-	doc("Split this string on every occurence of the specified character and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+	doc("Split this string on every occurence of the specified character
+            and return the resulting array of Strings. If allowEmpty is null,
+            empty strings will be ignored."),
 	)
     {
 	return split(this, char.toString(), allowEmpty);
@@ -328,7 +335,9 @@ expandCode(
 	target(%Type),
 	alias(split),
 	name(splitList),
-	doc("Split this string on every occurence of the specified characters and return the resulting array of Strings. If allowEmpty is null, empty strings will be ignored."),
+	doc("Split this string on every occurence of the specified characters
+            and return the resulting array of Strings. If allowEmpty is null,
+            empty strings will be ignored."),
 	)
     {
 	return split(this, "".join(charList), allowEmpty);
@@ -345,7 +354,8 @@ expandCode(
     (
 	target(%Type),
 	doc(
-	    "Replace all occurances in this string of the specified original with the specified replacement.", 
+	    "Replace all occurances in this string of the specified original
+            with the specified replacement.", 
 	    "This method is currently rather inefficient.",
 	),
 	name(replace)
@@ -382,7 +392,8 @@ expandCode(
 	target(%Type),
 	aliasReverse(__mul__),
 	name(__mul__),
-	doc("Returns a copy of this string, repeated the specified number of times")
+	doc("Returns a copy of this string, repeated the specified number
+            of times")
     )
     {
 	if(count < 0)
