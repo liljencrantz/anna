@@ -7,7 +7,9 @@ expandCode(
 	alias(search),
 	target(%Type),
 	doc(
-	    "Search for the specified Character in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
+	    "Search for the specified Character in the specified string.
+	    Returns the offset of the first occurance of the character if
+	    found, null otherwise.",
 	    "This method is currently rather inefficient.",
 	    ),
 	)
@@ -25,7 +27,8 @@ expandCode(
     (
 	alias(search),
 	target(%Type),
-	doc("Search for the specified Substring in the specified string. Returns the offset of the first occurance of the character if found, null otherwise.",
+	doc("Search for the specified Substring in the specified string.
+	    Returns the offset of the first occurance of the character if found, null otherwise.",
 	    "This method is currently rather inefficient.",
 	    ),
 	)
@@ -46,8 +49,12 @@ expandCode(
 	name(formatList),
 	target(%Type), 
     doc(
-	"String formating. Replaces each % character found in the format string with the corresponding object from the list of parameters.", 
-	"Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various String::format functions for e.g. numeric formating."
+	"String formating. Replaces each % character found in the format
+         string with the corresponding object from the list of parameters.", 
+	"Note that this formating function is significantly simpler than e.g.
+         the C printf function, as it only deals with replacing placeholders
+         with strings, and not with e.g. numeric conversion. Use the various
+         String::format functions for e.g. numeric formating."
 	),
 	)
     {
@@ -70,17 +77,39 @@ def String formatListInternal(
         ch := this[i];
         if(ch == '%')
         {
-	    if(this[i+1] == '%')
-            {
-  	        i++;
-                res ~= '%'
-            } 
-	    else 
+	    if(this[i+1] == '(')
 	    {
-                res ~= (data[listIdx] or "");
-                listIdx++;
-            }
-        } 
+		if(this[i+2] == ')')
+		{
+		    res ~= (data[listIdx] or "");
+		    listIdx++;
+		    i+=2;
+		}
+		else 
+		{
+		    idx := 0;
+		    i2 := i+2;
+		    while(this[i2] >= '0' and this[i2] <= '9') 
+		    {
+			idx = 10*idx + (this[i2]-'0');
+			i2++;
+		    }
+		    if(this[i2] == ')')
+		    {
+			res ~= (data[idx] or "");
+			i = i2;
+		    }
+		    else
+		    {
+			res ~= '%';
+		    }
+		}
+	    }
+	    else
+	    {
+		res ~= '%';
+	    }
+        }
 	else
         {
 	    res ~= ch;
@@ -99,8 +128,14 @@ expandCode(
 	name(formatMap),
 	target(%Type), 
 	doc(
-	    "String formating. Replaces each %(NAME) token found in the format string with the corresponding object from the map of named parameters.", 
-	    "Note that this formating function is significantly simpler than e.g. the C printf function, as it only deals with replacing placeholders with strings, and not with e.g. numeric conversion. Use the various format functions for e.g. numeric formating, such as Int::format."),
+	    "String formating. Replaces each %(NAME) token found in the
+            format string with the corresponding object from the map of
+            named parameters.", 
+	    "Note that this formating function is significantly simpler
+            than e.g. the C printf function, as it only deals with
+            replacing placeholders with strings, and not with e.g. numeric
+            conversion. Use the various format functions for e.g. numeric
+            formating, such as Int::format."),
 	)
     {
 	return formatMapInternal(this, data).%prop;
@@ -112,7 +147,8 @@ expandCode(
 
 def String formatMapInternal(
     String this, 
-    HashMap«String, Any» data)  (internal, doc("Internal helper function for String::formatMap."))
+    HashMap«String, Any» data)
+(internal, doc("Internal helper function for String::formatMap."))
 {
     res := "".thaw;
     i := 0;

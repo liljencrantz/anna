@@ -2,7 +2,7 @@ def getFun()
 {
     print("getFun();");
     return def (String param1, String param2) {
-	print("fun(%, %);" % [param1, param2]);
+	print("fun(%(), %());" % [param1, param2]);
         "result";
     }
 }

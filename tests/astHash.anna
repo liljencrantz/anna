@@ -36,5 +36,5 @@ def main()
 
     sum := 0;
     dict.each(val){sum += val}
-    print("Sum: %" % [sum]);
+    print("Sum: %()" % [sum]);
 }

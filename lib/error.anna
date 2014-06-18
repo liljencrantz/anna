@@ -20,7 +20,7 @@ class Error (doc("The base class of any error"))
 	doc("A string representation of this Error."),
     )
     {
-	"<error %>" % [type(this).name];
+	"<error %()>" % [type(this).name];
     }
 }
 
@@ -96,7 +96,7 @@ def raiseError(Error error)
 	    return;
 	}
 
-	print("Uncaught %: %" %[error, error.message]);
+	print("Uncaught %(): %()" %[error, error.message]);
     }
     
     funEach(reflection.currentContinuation);

@@ -9,6 +9,6 @@ def main()
     fs3 := FdSet();
 
     [3,5,8].each(idx){fs.add(idx)}
-    (0..10).each(idx){print("Fd %: %" % [ idx, fs[idx]])}
+    (0..10).each(idx){print("Fd %(): %()" % [ idx, fs[idx]])}
 }
 
