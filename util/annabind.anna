@@ -74,7 +74,7 @@ def main()
     {
 	if(!File(binding).exists?)
 	{
-	    print("Error: File «%» does not exist" % [binding]);
+	    print("Error: File «%()» does not exist" % [binding]);
 	    unix.proc.exit(1);
 	}
 	BindingGenerator(binding).generate();
@@ -256,7 +256,7 @@ class BindingType
     {
 	if(!(attr as Call).childNamed?("nullable"))
 	{
-	    "    if(anna_entry_null(%)){return null_entry;}\n" % [source];
+	    "    if(anna_entry_null(%())){return null_entry;}\n" % [source];
 	}
     }
     
@@ -289,7 +289,7 @@ class ListBindingType
     def String annaCType(Node decl, Node attr){
       subType := ((decl as Call)[1] as Call)[0];
       subBinding := getBindingType(subType);
-	return "anna_list_type_get_any(%)" % [subBinding.annaCType(subType, ?)];
+	return "anna_list_type_get_any(%())" % [subBinding.annaCType(subType, ?)];
     }
 
     def String convertToC(Node decl, Node attr, String dest, String source){
@@ -310,7 +310,7 @@ class ListBindingType
 	    "dest": dest,
 	    "source": source,
 	    "szName": dest ~ "_count",
-            "conversion": subBinding.convertToC(subType, ?, dest ~ "_val", "anna_list_get(anna_as_obj(%), %)" % [source, dest ~ "_idx"])
+            "conversion": subBinding.convertToC(subType, ?, dest ~ "_val", "anna_list_get(anna_as_obj(%()), %())" % [source, dest ~ "_idx"])
             ];
     }
 
@@ -332,7 +332,7 @@ class ListBindingType
 	    "dest": dest,
 	    "source": source,
 	    "szName": dest ~ "_count",
-            "subCleanup": subBinding.cleanupToC(subType, ?, dest ~ "["~dest~"_idx]", "anna_list_get(anna_as_obj(%), %" % [source, dest ~ "_idx"])
+            "subCleanup": subBinding.cleanupToC(subType, ?, dest ~ "["~dest~"_idx]", "anna_list_get(anna_as_obj(%()), %()" % [source, dest ~ "_idx"])
             ];
     }
 
@@ -358,7 +358,7 @@ class MutableListBindingType
     def String annaCType(Node decl, Node attr){
       subType := ((decl as Call)[1] as Call)[0];
       subBinding := getBindingType(subType);
-	return "anna_list_type_get_mutable(%)" % [subBinding.annaCType(subType, ?)];
+	return "anna_list_type_get_mutable(%())" % [subBinding.annaCType(subType, ?)];
     }
 
     def String convertToC(Node decl, Node attr, String dest, String source){
@@ -409,7 +409,7 @@ class MutableListBindingType
 	    "source": source,
 	    "szName": dest ~ "_count",
             "conversion": subBinding.convertToC(subType, ?, dest ~ "_val", "tmp"),
-	    "value": "anna_list_get(anna_as_obj(%), %)" % [source, dest ~ "_idx"],
+	    "value": "anna_list_get(anna_as_obj(%()), %())" % [source, dest ~ "_idx"],
 	    
             ];
 
@@ -436,7 +436,7 @@ class MutableListBindingType
 	    "source": source,
 	    "szName": dest ~ "_count",
 	    "value": subBinding.convertToAnna(subType, ?, "tmp", "%(dest)[%(dest)_idx]" % ["dest": dest]),
-            "subCleanup": subBinding.cleanupToC(subType, ?, dest ~ "["~dest~"_idx]", "anna_list_get(anna_as_obj(%), %" % [source, dest ~ "_idx"])
+            "subCleanup": subBinding.cleanupToC(subType, ?, dest ~ "["~dest~"_idx]", "anna_list_get(anna_as_obj(%()), %()" % [source, dest ~ "_idx"])
             ];
     }
 
@@ -676,7 +676,7 @@ class BindingGenerator
 	    inpBindingType := getBindingType(inpDecl[1]);
             npn := getNativeParamName((inpDecl[0] as Identifier).name);
 	    paramNames.push(npn);
-	    varName := "param[%]" % [idx];
+	    varName := "param[%()]" % [idx];
 	    init ~= inpBindingType.convertToC(inpDecl[1], inpDecl[3], npn, varName);
 	    preValidate ~= inpBindingType.preValidateToC(inpDecl[1], inpDecl[3], npn, varName) or "";
 	    postValidate ~= inpBindingType.postValidateToC(inpDecl[1], inpDecl[3], npn, varName) or "";
@@ -753,7 +753,7 @@ class BindingGenerator
 	aliasList := annaUtil.findAttribute(attr, "alias");
 	aliasList.each(alias)
 	{
-	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%), %);\n" % [escapedName, cEscape(alias.toString())];
+	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%()), %());\n" % [escapedName, cEscape(alias.toString())];
 	}
 
 	allDoc := extractDocAll(attr);
@@ -799,7 +799,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
   
 	    allDoc[1...].each(doc)
 	    {
-		load ~= "   anna_function_document(latest_function,anna_intern_static(%));\n" % [doc];
+		load ~= "   anna_function_document(latest_function,anna_intern_static(%()));\n" % [doc];
 	    }
 	    
 
@@ -969,17 +969,17 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     def mangleGetterName(String typeName, String fieldName)
     {
-	return "%_i_%_%_getter" % [this.name, mangleName(typeName), mangleName(fieldName)];
+	return "%()_i_%()_%()_getter" % [this.name, mangleName(typeName), mangleName(fieldName)];
     }
 
     def mangleSetterName(String typeName, String fieldName)
     {
-	return "%_i_%_%_setter" % [this.name, mangleName(typeName), mangleName(fieldName)];
+	return "%()_i_%()_%()_setter" % [this.name, mangleName(typeName), mangleName(fieldName)];
     }
 
     def mangleMethodName(String typeName, String methodName)
     {
-	return "%_i_%_%" % [this.name, mangleName(typeName), mangleName(methodName)];
+	return "%()_i_%()_%()" % [this.name, mangleName(typeName), mangleName(methodName)];
     }
 
     def String nameToStr(Node name, Node attr)
@@ -1004,8 +1004,8 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         typeName := mangleTypeName(structName);
         code := "".thaw;
         cstructAttr := cstructDecl[1] as Call;
-	typeDecl := "anna_type_t *%;\n".thaw %[typeName];
-        typeData := "    { &%, L\"%\" },\n".thaw % [typeName, structName];
+	typeDecl := "anna_type_t *%();\n".thaw %[typeName];
+        typeData := "    { &%, L\"%()\" },\n".thaw % [typeName, structName];
         load := "".thaw;
         nativeStructName := nameToStr(parser.Identifier(?, structName), cstructDecl[1]);
         initName := mangleMethodName(structName, "init");
@@ -1306,7 +1306,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
 		{
 		    decl.each(inc)
 		    {
-			customInclude ~= "#include %\n" %[(inc as StringLiteral).payload];
+			customInclude ~= "#include %()\n" %[(inc as StringLiteral).payload];
 		    }
 		}
 
@@ -1366,7 +1366,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
         {
             extractDocAll(attr).each(doc)
             {
-                load ~= "    anna_stack_document(stack, %);\n" % [doc];
+                load ~= "    anna_stack_document(stack, %());\n" % [doc];
             }
         }
 	
