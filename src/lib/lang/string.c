@@ -388,6 +388,38 @@ ANNA_VM_NATIVE(anna_string_i_get_count, 1)
     return anna_from_int(asi_get_count(as_unwrap(anna_as_obj_fast(param[0]))));
 }
 
+ANNA_VM_NATIVE(anna_string_i_get_lower, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_object_t *res =  this->type == mutable_string_type ? 
+	anna_mutable_string_copy(this) : 
+	anna_string_copy(this);
+    anna_string_t *str = as_unwrap(res);
+    
+    for(size_t i=0; i < asi_get_count(str); i++) 
+    {
+	wchar_t ch = asi_get_char(str, i);
+	asi_set_char(str, i, towlower(ch));
+    }
+    return anna_from_obj(res);
+}
+
+ANNA_VM_NATIVE(anna_string_i_get_upper, 1)
+{
+    anna_object_t *this = anna_as_obj_fast(param[0]);
+    anna_object_t *res =  this->type == mutable_string_type ? 
+	anna_mutable_string_copy(this) : 
+	anna_string_copy(this);
+    anna_string_t *str = as_unwrap(res);
+    
+    for(size_t i=0; i < asi_get_count(str); i++) 
+    {
+	wchar_t ch = asi_get_char(str, i);
+	asi_set_char(str, i, towupper(ch));
+    }
+    return anna_from_obj(res);
+}
+
 ANNA_VM_NATIVE(anna_string_i_set_count, 2)
 {
     anna_object_t *this = anna_as_obj(param[0]);
@@ -1030,6 +1062,16 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	int_type, &anna_string_i_get_count,
 	mutable?&anna_string_i_set_count:0,
 	L"The number of characters in this String.");
+
+    anna_member_create_native_property(
+	type, anna_mid_get(L"lower"),
+	type_type, &anna_string_i_get_lower, 0,
+	L"Returns a lower case version of this string.");
+
+    anna_member_create_native_property(
+	type, anna_mid_get(L"upper"),
+	type_type, &anna_string_i_get_upper, 0,
+	L"Returns a upper case version of this string.");
 
     anna_type_t *range_argv[] = 
 	{
