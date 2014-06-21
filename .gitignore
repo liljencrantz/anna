@@ -22,6 +22,7 @@ junk
 lib/curses.c
 lib/math.c
 documentation/js/keywordList.js
+documentation/js/wordList.js
 autom4te.cache
 Makefile
 config.*
