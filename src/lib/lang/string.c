@@ -1065,12 +1065,12 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"lower"),
-	type_type, &anna_string_i_get_lower, 0,
+	type, &anna_string_i_get_lower, 0,
 	L"Returns a lower case version of this string.");
 
     anna_member_create_native_property(
 	type, anna_mid_get(L"upper"),
-	type_type, &anna_string_i_get_upper, 0,
+	type, &anna_string_i_get_upper, 0,
 	L"Returns a upper case version of this string.");
 
     anna_type_t *range_argv[] = 
