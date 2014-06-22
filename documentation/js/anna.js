@@ -46,14 +46,14 @@ var anna = {
 
       partial: A list of all modules with a member that the given search term is a substring of
      */
-    search: function(keyword)
+    search: function(keyword, dictionary)
     {
+//	console.log(dictionary);
 	var match = [];
 	var prefix = [];
 	var partial = [];
-	$.each(
-	    anna.keywordList, 
-	    function(key, value) {
+	for (var key in dictionary) {
+	    var value = dictionary[key];
 		var list = null;
 		if(key == keyword)
 		{
@@ -78,7 +78,7 @@ var anna = {
 		{
 		    list.push.apply(list, value);
 		}
-	    });
+	    };
 	return {match: match, prefix: prefix, partial: partial};
     },
 
@@ -104,21 +104,28 @@ var anna = {
 	$(".anna-search form").submit(
 	    function(event)
 	    {
-		var keyword =event.target[0].value;
-		var result = anna.search(keyword);
+		var keyword = event.target[0].value;
+		var keyResult = anna.search(keyword, anna.keywordList);
+		var textResult = anna.search(keyword, anna.wordList);
 		var out = $(".anna-search-result");
 		var count = 0;
 		out.children().remove();
+		var done = {}
 		$.each(
-		    [result.match, result.prefix, result.partial],
+		    [keyResult.match, keyResult.prefix, keyResult.partial,
+		     textResult.match, textResult.prefix, textResult.partial],
+		    
 		    function(idx, list)
 		    {
-			count += list.length;
 			$.each(
 			    list,
 			    function (idx, value)
 			    {
-				out.append($("<li>").append($("<a>").text(formatName(value)).attr("href", anna.basePath + "api/" + value)));
+				if (!(value in done)) {
+				    done[value] = true;
+				    out.append($("<li>").append($("<a>").text(formatName(value)).attr("href", anna.basePath + "api/" + value)));
+				    count++;
+				}
 			    });
 		    });
 		$(".anna-search-message").text(count==0?"No matches found for search term «" + keyword + "».": "Found " + count + " matches for keyword «" + keyword + "»:");

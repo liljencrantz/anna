@@ -254,8 +254,8 @@ often used code paths, which makes it useful for regression testing.")
     
     def split(String input) 
     {
-      res := «String»[];
-      item := "".thaw;
+        res := «String»[];
+        item := "".thaw;
 	input.each(ch) 
 	{
 	    if(ch.alnum?) 
@@ -266,7 +266,7 @@ often used code paths, which makes it useful for regression testing.")
 	    {
 		if (item.count) 
 		{
-		    res ~= [item];
+		    res ~= [item.lower];
 		}
 		item = "".thaw;
 	    }

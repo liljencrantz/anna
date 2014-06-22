@@ -64,7 +64,7 @@ PROGRAMS := bin/anna
 ANNA_INTERNAL_BINDINGS := lib/unix.so lib/getText.so lib/readLine.so
 ANNA_EXTERNAL_BINDINGS := lib/curses.so lib/math.so
 
-all: $(PROGRAMS) bindings documentation $(ANNA_EXTERNAL_BINDINGS)
+all: $(PROGRAMS) bindings documentation
 .PHONY: all
 
 bindings: $(ANNA_EXTERNAL_BINDINGS) 
@@ -92,7 +92,7 @@ endif
 #             END DEPENDENCY TRACKING                   #
 #########################################################
 
-install: all documentation
+install: all
 	$(INSTALL) -m 755 -d $(bindir)
 	for i in $(PROGRAMS); do\
 		$(INSTALL) -m 755 $$i $(bindir) ; \
