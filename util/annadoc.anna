@@ -278,7 +278,7 @@ often used code paths, which makes it useful for regression testing.")
 	return res;
     }
     
-    def String getLink(Type from, Type to)
+def String getLink(Type from, Type to)
     {
 	href := path[to].link(path[from]);
 	return if(href) {
@@ -462,8 +462,9 @@ often used code paths, which makes it useful for regression testing.")
 	{
 	  attr :== mem.attribute or (mem.value(?) as Function).attribute;
 	    alias := annaUtil.findAttribute(attr, "alias");
-	    (alias.map(a){a.toString()}.thaw ~ [mem.name]).each(name)
+	    (alias.map(a){a.toString()}.thaw ~ [mem.name]).each(casedName)
 	    {
+	        name :== casedName.lower;
 		if(!(name in keywordLookup))
 		{
 		    keywordLookup[name] = «String»[];

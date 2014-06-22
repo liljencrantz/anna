@@ -104,7 +104,7 @@ var anna = {
 	$(".anna-search form").submit(
 	    function(event)
 	    {
-		var keyword = event.target[0].value;
+		var keyword = event.target[0].value.toLowerCase();
 		var keyResult = anna.search(keyword, anna.keywordList);
 		var textResult = anna.search(keyword, anna.wordList);
 		var out = $(".anna-search-result");
