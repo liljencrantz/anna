@@ -181,13 +181,13 @@ clean:
 
 # Syntax check support for flymake
 check-syntax:
-	for src in ${CHK_SOURCES}; do						\
+	for src in ${CHK_SOURCES}; do							\
 		root=$$(head $$src|sed -n -e "s|.*// *ROOT: *\([^ ]*\).*|\1|p");	\
-		if test "$$root"; then	\
-			$(CC) -o nul -S $$root $(CFLAGS);\
-		else\
-			$(CC) -o nul -S $$src $(CFLAGS);			\
-		fi;\
+		if test "$$root"; then							\
+			$(CC) -o null -S $$root $(CFLAGS);				\
+		else									\
+			$(CC) -o null -S $$src $(CFLAGS);				\
+		fi;									\
 	done; true;
 .PHONY: check-syntax
 
