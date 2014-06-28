@@ -481,6 +481,10 @@ static void anna_function_search_internal(
     for(i=0; i<stack->count; i++)
     {
 	anna_node_declare_t *decl = stack->member_declare_node[i];
+	if(decl && decl->attribute) 
+	{
+	    anna_node_print(99, decl);	    
+	}
 	if(
 	    decl && 
 	    (

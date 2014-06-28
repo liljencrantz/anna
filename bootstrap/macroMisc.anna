@@ -56,6 +56,16 @@ literals consisting of an imaginary part, e.g.
 }
 
 macro fieldComparator(node)
+(
+    doc("
+This macro returns a comparison function that compares one specific field
+of two instances of a type. It is called like this:",
+	"
+<pre class='anna-code'>// Create a comparison function that can be used to sort lists based on
+// the number of elements they contain
+fieldComparator(List::count)
+</pre>",
+	))
 {
     mapping := node[0] as Call;
     res := ast(

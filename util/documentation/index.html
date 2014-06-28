@@ -906,14 +906,13 @@ def main()
   All conversions in Anna are by convention done using the static
   convert method.
 */
-sevenString := String::convert(7);
-sevenFloat := Float::convert(sevenString);
-sevenComplex := Complex::convert(sevenFloat);
-
+sevenString :== String::convert(7);
+sevenFloat :== Float::convert(sevenString);
+sevenComplex :== Complex::convert(sevenFloat);
 	  </pre>
 
 	  <p>
-	    Note that <a href='#misc-casting-vs-converting'conversion must not be confused with casting</a>.
+	    Note that <a href='#misc-casting-vs-converting'>conversion must not be confused with casting</a>.
 	  </p>
 
 
@@ -939,14 +938,14 @@ sevenComplex := Complex::convert(sevenFloat);
   imutable. This is a compile time error, because ImutableString 
   does not have a __set__ function.
 */
-imutableString :="foo";
+imutableString :== "foo";
 imutableString[0] = 'F';
 
 /*
   Use the thaw property to get a mutable version of the String.
   This will work as expected.
 */
-mutableString :="foo".thaw;
+mutableString :== "foo".thaw;
 mutableString[0] = 'F';
 
 /*
@@ -957,26 +956,26 @@ mutableString[0] = 'F';
   situations, you can speed up the program by making sure the String 
   you're appending to is mutable:
 */
-result := "".thaw;
+result :== "".thaw;
 someCollection.each(item){ result ~= doSomeProccessing(item) }
 
 /*
   The List collection literal is mutable, so this is ok.
 */
-mutableList := [1,2,3];
+mutableList :== [1,2,3];
 mutableList[0] = 0;
 
 /*
   MutableList.freeze returns an ImutableList, so this is a compile time error.
 */
-imutableList := [1,2,3].freeze;
+imutableList :== [1,2,3].freeze;
 imutableList[0] = 0;
 
 /*
   The thaw property of a mutable object returns itself, as does the
   freeze property of an imutable object.
 */
-useless := "useless".freeze;
+useless :== "useless".freeze;
 alsoUseless := ["useless"].thaw;
 /* 
   Note that when thawing an already mutable object, the convention is
@@ -985,10 +984,10 @@ alsoUseless := ["useless"].thaw;
   This will print «I'm a little tea»
 */
 
-  thing := "tea";
+  thing :== "tea";
   thing2 := thing.thaw;
   thing2 ~= "pot";
-  print("I'm a little %" % [thing]);
+  print("I'm a little %()" % [thing]);
 	  </pre>
 	  <p>
 	    For more information on mutability in Anna, see
@@ -1003,24 +1002,24 @@ alsoUseless := ["useless"].thaw;
 /*
   Templates are specialized using «». This creates an empty list of Int items.
 */
-lst := MutableList«Int»()
+lst :== MutableList«Int»()
 
 /* 
   Explicitly specializing a template is superflous when all template
   parameter types can be calculated from the constructor call. This
   will also create a list of Int items.
 */
-lst2 := MutableList(5,6,7);
+lst2 :== MutableList(5,6,7);
 
 /*
   The specialization of collection literals can be specified
 */
 
 // Empty list of integers
-lst3 := «Int»[];
+lst3 :== «Int»[];
 
 // Empty HashMap mapping from String to Char
-hash := «String, Char»[];
+hash :== «String, Char»[];
 
 /*
   A simple example of how to create your own template type.
@@ -1038,7 +1037,7 @@ class Foo (template(%A:Int)) {
 
 def Int main()
 {
-    foo := Foo«Float»();
+    foo :== Foo«Float»();
     print(foo.bar(3.0,4.0));
 }
 
@@ -1059,9 +1058,9 @@ class Foo (template(%op:__add__))
 
 def Int main()
 {
-    foo := Foo();
+    foo :== Foo();
     print(foo.bar(3,4));
-    boo := Foo«__sub__»();
+    boo :== Foo«__sub__»();
     print(boo.bar(3,4));
 }
 
@@ -1097,15 +1096,15 @@ TODO
 	  </p>
 	  <pre class="anna-code">
 // This is a boring piece of code
-first := getNextValue(someValue, someOtherValue);
-second := getNextValue(someValue, someOtherValue);
-third := getNextValue(someValue, someOtherValue);
-fourth := getNextValue(someValue, someOtherValue);
-fifth := getNextValue(someValue, someOtherValue);
+first :== getNextValue(someValue, someOtherValue);
+second :== getNextValue(someValue, someOtherValue);
+third :== getNextValue(someValue, someOtherValue);
+fourth :== getNextValue(someValue, someOtherValue);
+fifth :== getNextValue(someValue, someOtherValue);
 
 // This is exactly equivalant to the above, but less redundant
 expandCode(
-    %var := getNextValue(someValue, someOtherValue),
+    %var :== getNextValue(someValue, someOtherValue),
     var: [first, second, third, fourth, fifth]);    
 	  </pre>
 	  <ul>
@@ -1270,7 +1269,7 @@ expandCode(
   specific list of fields in. All fields are typed based on the 
   input provided to the struct macro.
 */
-myVar := struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
+myVar :== struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
 // Prints «10 helloworld 2»
 print(myVar.someNumber + 3, myVar.someString ~ "world", myVar.someList[1]);
 	  </pre>
@@ -1510,24 +1509,26 @@ TODO
 	      and readable.
 	    </li>
 	    <li>
-	      There are many styles of programming. These include Object
-	      oriented programming, imperative programming, generic
-	      programming and functional programming. Some program problems
-	      are solved better with one approach, others with another, but
-	      no single approach is optimal for all types of
-	      problems. Pretty much all languages support all these styles
-	      to some degree; they rely more on a way of thinking than on
-	      any specific language feature. However, Anna contains many
-	      features to make all these styles pleasant to use. Thus you
-	      can be reasonably confident that no matter what the problem
-	      is, Anna provides you with the tools to solve it efficiently.
+	      There are many styles of programming. These include
+	      Object oriented programming, imperative programming,
+	      generic programming and functional programming. Some
+	      program problems are solved better with one approach,
+	      others with another, but no single approach is optimal
+	      for all types of problems. Pretty much all languages
+	      support all these styles to some degree; they rely more
+	      on a way of thinking than on any specific language
+	      feature. However, Anna contains many features to make
+	      all these styles pleasant to use. Thus you can be
+	      reasonably confident that no matter what the problem is,
+	      Anna provides you with the tools to solve it
+	      efficiently.
 	    </li>
 	  </ul>
 	  <h3><a name='intro_gentle_next'>Moving on</a></h3>
 	  <p>
-	    That should give you an idea about Anna. If you want more in
-	    depth information about some aspect of Anna, follow one of the
-	    links below.
+	    That should give you an idea about Anna. If you want more
+	    in depth information about some aspect of Anna, follow one
+	    of the links below.
 	  </p>
 	  <ul>
 	    <li>
@@ -1548,11 +1549,12 @@ TODO
 	  <div class='anna-subheading'>Old is the new new.</div>
     
 	  <p>
-	    Anna is a statically typed language with a front end that allows
-	    you to write your code with a C-like structure, e.g. using infix
-	    operators, braces and brackets. What sets Anna apart from other
-	    such languages is it's support for LISP-features such as
-	    LISP-style macros, continuations, closures and anonymous functions.  
+	    Anna is a statically typed language with a front end that
+	    allows you to write your code with a C-like structure,
+	    e.g. using infix operators, braces and brackets. What sets
+	    Anna apart from other such languages is it's support for
+	    LISP-features such as LISP-style macros, continuations,
+	    closures and anonymous functions.
 	  </p>
 	  <ul>
 	    <li>
@@ -1585,12 +1587,12 @@ TODO
 	  <h2><a name="intro_c">Anna for Java, C, C++, Go and D programmers</a></h2>
 	  <div class='anna-subheading'>Confusingly familiar.</div>
 	  <p>
-	    Anna is a C-like language with garbage collection and a powerful
-	    object system. At first glance, Anna feels very familiar to Java
-	    and C# programmers, and coders of C, C++ and other C-like
-	    languages should pick up the changes relatively quickly as
-	    well. Anna does have a few nifty short cuts to save a few
-	    keypresses, including:
+	    Anna is a C-like language with garbage collection and a
+	    powerful object system. At first glance, Anna feels very
+	    familiar to Java and C# programmers, and coders of C, C++
+	    and other C-like languages should pick up the changes
+	    relatively quickly as well. Anna does have a few nifty
+	    short cuts to save a few keypresses, including:
 	  </p>
 	  <ul>
 	    <li>
@@ -1684,7 +1686,7 @@ macro replaceObjectWithInt(node)
 {
     node.replaceChildren(child)
     {
-        id := child as Identifier;
+        id :== child as Identifier;
 	if(id and id.name=="Object")
 	{
 	    return Identifier(id, "Int");
@@ -1728,8 +1730,12 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    libraries that do the same thing LINQ does, but better.
 	  </p>
 	  <p>
-	    But enough talk about what could theoretically be done with macros - it turns out that pretty large parts of Anna already are implemented that way. <a href="#examples-switch">Switch expression</a> and
-	    the <a href="#examples-enum">enum type</a> are macros. As is <a href="#examples-expandCode">expandCode</a>.
+	    But enough talk about what could theoretically be done
+	    with macros - it turns out that pretty large parts of Anna
+	    already are implemented that
+	    way. <a href="#examples-switch">Switch expression</a> and
+	    the <a href="#examples-enum">enum type</a> are macros. As
+	    is <a href="#examples-expandCode">expandCode</a>.
 	  </p>
 	  <h3><a name="intro-c-continuations">Continuations, continued</a></h3>
 	  <p>
@@ -1751,11 +1757,11 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    smaller words.
 	  </p>
 	  <p>
-	    Continuations are a way to explicitly control the location that
-	    a function will return to when it finishes. Continuations are an
-	    extremely powerful language feature that can be used to
-	    implement exception handling, green threads and a multitude of
-	    other features.
+	    Continuations are a way to explicitly control the location
+	    that a function will return to when it
+	    finishes. Continuations are an extremely powerful language
+	    feature that can be used to implement exception handling,
+	    green threads and a multitude of other features.
 	  </p>
 	  <h3><a name='intro_c_next'>Moving on</a></h3>
 	  <p>
@@ -1766,7 +1772,8 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    languages. Changes that traditionally require a deep
 	    understanding of the compiler and that can only be
 	    implemented by a small handful of people are suddenly
-	    within the grasp of any language guru. (Not that there are many Anna gurus around at the moment...)
+	    within the grasp of any language guru. (Not that there are
+	    many Anna gurus around at the moment...)
 	  </p>
 	  <p>
 	    This concludes the Anna overview for people familiar with
@@ -1791,7 +1798,8 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    
 	  </ul>
 	  
-	  <h2><a name="intro_script">Anna for Python and Ruby programmers</a></h2>
+	  <h2><a name="intro_script">Anna for Python and Ruby
+	      programmers</a></h2>
 	  <div class='anna-subheading'>Wherein...</div>
 	  
 	  <p>
@@ -1853,7 +1861,8 @@ print(someList.find(val) { (val ^mod 2) == 0});
 	    Blocks of code, by the way, are anonymous functions that take 0
 	    parameters.
 	  </p>
-	  <h3><a name='intor_script_static_typing'>Static typing, but not as bad as it seems</a></h3>
+	  <h3><a name='intor_script_static_typing'>Static typing, but
+	      not as bad as it seems</a></h3>
 	  <p>
 	    So. Enough dodging, lets address what is likely to be the major
 	    cause of concern for Ruby- and Python lovers. Static typing. In
@@ -1994,8 +2003,8 @@ if(someObject is String.intersect(Int))
 	    following snippet of Anna code:
 	  </p>
 	  <pre class="anna-code">
-foo := 1;
-bar := "1";
+foo :== 1;
+bar :== "1";
 var baz = foo or bar;
 	  </pre>
 	  <p>
@@ -2042,7 +2051,7 @@ var Int i = 7;
 	    simpler syntax:
 	  </p>
 	  <pre>
-i := 7;
+i :== 7;
 	  </pre>
 	  
 	  <p>
@@ -2188,8 +2197,9 @@ f.close();
 
 	  <h1><a name="misc">An odd number of legs for a horse to have</a></h1>
 	  <p>
-	    This section gives an overview of the various Anna features that,
-	    while important, did not warrant an entire section of their own.
+	    This section gives an overview of the various Anna
+	    features that, while important, did not warrant an entire
+	    section of their own.
 	  </p>
 	  <h2><a name="null">The talented mister null</a></h2>
 	  <p>
@@ -2211,20 +2221,21 @@ f.close();
 
 	  <h2><a name="booleans">Null is the new no</a></h2>
 	  <p>
-	    There is no separate Boolean type in Anna. There is exactly one
-	    object that takes on the responsibility of representing the
-	    false state, and that is the null object. Any other object,
-	    including the empty list, the number zero and the text strings
-	    "null", "?" and "0" all count as true in the eyes of if
-	    expressions, while loops and any other statement that expects a
-	    yes/no answer. Null is the new no.
+	    There is no separate Boolean type in Anna. There is
+	    exactly one object that takes on the responsibility of
+	    representing the false state, and that is the null
+	    object. Any other object, including the empty list, the
+	    number zero and the text strings "null", "?" and "0" all
+	    count as true in the eyes of if expressions, while loops
+	    and any other statement that expects a yes/no answer. Null
+	    is the new no.
 	  </p>
 	  <p>
 	    On a semi-related note, there is a naming convetion in
 	    Anna that all variables, constants and members that hold
 	    boolean values should have a name ending with a question
 	    mark, such as <code>empty?</code>, <code>property?</code>
-	    or <code>teapot?</code>.  For more variable naming
+	    or <code>teapot?</code>. For more variable naming
 	    conventions, read the
 	    section <a href="#design-naming">Naming of variables and
 	    types</a>.</li>
@@ -2405,25 +2416,28 @@ db.transaction
 	  <h2><a name="operator-overloading">I'll be your
 	  operator</a></h2>
 	  <p>
-	    Anna has a small number of special operators that allow you to
-	    implement some of the most common language operations with a
-	    slightly terser syntax that most people find easier to parse. These
-	    operators include comparison, assigment, basic aritmetic, string
-	    formating, list slicing and a few more. The complete table of
-	    operators and their precedence is listed in the table below. Most of
-	    these operators are overloadable. The exceptions are the '!' not
-	    operator, the '.' member access operator and a few more. The rest
-	    can be overloaded by defining methods with special names. For
-	    example, when the '+' operator is used...
+	    Anna has a small number of special operators that allow
+	    you to implement some of the most common language
+	    operations with a slightly terser syntax that most people
+	    find easier to parse. These operators include comparison,
+	    assigment, basic aritmetic, string formating, list slicing
+	    and a few more. The complete table of operators and their
+	    precedence is listed in the table below. Most of these
+	    operators are overloadable. The exceptions are the '!' not
+	    operator, the '.' member access operator and a few
+	    more. The rest can be overloaded by defining methods with
+	    special names. For example, when the '+' operator is
+	    used...
 	  </p>
 	  <p>
-	    In addition to overloading +, - and various other operators,
-	    Anna also allows you define you own generic operators. These
-	    operators all start with the «^» symbol, followed by an identifier:
+	    In addition to overloading +, - and various other
+	    operators, Anna also allows you define you own generic
+	    operators. These operators all start with the «^» symbol,
+	    followed by an identifier:
 	  </p>
 	  <pre class="anna-code">
-a := 4;
-b := 7;
+a :== 4;
+b :== 7;
 print(a ^bitand b);
 	  </pre>
 	  <p>
@@ -2599,17 +2613,19 @@ col ^blend 0.1;
 	  </table>
 	  <h2><a name="misc-reserved-words">No reservations? No problem!</a></h2>
 	  <p>
-	    The Sugar layer has a small number of reserved words, including
-	    'def', 'var' and 'return'. Because macros can never be
-	    redefined, the builtin collection of macros more or less count
-	    as additional reserved words. It may seem scary that modules you
-	    import can add reserved words to the language - what if a module
-	    you rely on suddenly adds a macro named 'pie'?  Suddenly, you'll
-	    have to edit all your source code to remove any variables and
-	    functions named pie. And given how delicious pie is, that is
-	    bound to take an insurmountable amount of time.
-	    For this reason, great care must be taken when using
-	    the <code class="anna-code">expand</code> expression to import macros.
+	    The Sugar layer has a small number of reserved words,
+	    including 'def', 'var' and 'return'. Because macros can
+	    never be redefined, the builtin collection of macros more
+	    or less count as additional reserved words. It may seem
+	    scary that modules you import can add reserved words to
+	    the language - what if a module you rely on suddenly adds
+	    a macro named 'pie'?  Suddenly, you'll have to edit all
+	    your source code to remove any variables and functions
+	    named pie. And given how delicious pie is, that is bound
+	    to take an insurmountable amount of time.  For this
+	    reason, great care must be taken when using
+	    the <code class="anna-code">expand</code> expression to
+	    import macros.
 	  </p>
 
 	  <h2><a name="misc-comments">Comments nest</a></h2>
@@ -2649,7 +2665,8 @@ thisIsCode();
 	  </p>
 	  <table class='anna-table'>
 	    <caption>
-	      The anna types that exist in both a mutable and an imutable version.
+	      The anna types that exist in both a mutable and an
+	      imutable version.
 	    </caption>
 	    <thead>
 	      <tr>
@@ -2767,8 +2784,10 @@ thisIsCode();
 	      the <a href='#examples-mutable'>Mutable examples</a>.
 	    </li>
 	    <li>
-	      For a few examples on how to define variables and constants, see the
-	      the <a href='#examples-variables'>Variables examples</a>.
+	      For a few examples on how to define variables and
+	      constants, see the
+	      the <a href='#examples-variables'>Variables
+	      examples</a>.
 	    </li>
 	  </ul>
 	  <h2><a name="misc-aliases">Method resolution</a></h2>
@@ -2938,7 +2957,8 @@ def outerFunction(Int value)
 	    so, use that to convert the object to a String.
 	  </p>
 
-	  <h2><a name="misc-internal-identifiers">Internal identifiers</a></h2>
+	  <h2><a name="misc-internal-identifiers">Internal
+	      identifiers</a></h2>
 	  <p>
 	    There are various situations when writing Anna code where
 	    one wishes to insert placeholders into the code that will
@@ -3093,39 +3113,40 @@ function mandelbrot(Complex p0, Int maxStep)
 -->
           <h1><a name="microformats">Microformats</a></h1>
 	  <p>
-	    The Anna parser is written to be as accepting as possible of
-	    weird elements, and instead offloads as much of the code
-	    validation as possible to macros. This allows you to write
-	    microformat macros. These are macros that take an AST subtree
-	    and transform then into another subtree in order to allow you to
-	    define your own compact data formats.  For example, JSON is a
-	    valid subset of Anna, so one could write a JSON microformat
-	    macro to transform an AST containing JSON into the Anna
-	    equivalent, meaning one could insert JSON data verbatim into the
-	    code, and make sure the JSON macro parses it to correct Anna
-	    code:
+	    The Anna parser is written to be as accepting as possible
+	    of weird elements, and instead offloads as much of the
+	    code validation as possible to macros. This allows you to
+	    write microformat macros. These are macros that take an
+	    AST subtree and transform then into another subtree in
+	    order to allow you to define your own compact data
+	    formats.  For example, JSON is a valid subset of Anna, so
+	    one could write a JSON microformat macro to transform an
+	    AST containing JSON into the Anna equivalent, meaning one
+	    could insert JSON data verbatim into the code, and make
+	    sure the JSON macro parses it to correct Anna code:
 	  </p> 
 	  <pre class="anna-code">
-m := json({data:[1,2,3,7], unit:"seconds", caption:null});
+m :== json({data:[1,2,3,7], unit:"seconds", caption:null});
 	  </pre>
 	  <p>
-	    Note: This macro has yet to be written. 
-	    Another very practical use of this feature is date handling. There are
-	    macros that make sure anything you send to the Date constructor, or
-	    anything you add or remove from a date, is parsed using the standard
-	    ISO date format: 
+	    Note: This macro has yet to be written. Another very
+	    practical use of this feature is date handling. There are
+	    macros that make sure anything you send to the Date
+	    constructor, or anything you add or remove from a date, is
+	    parsed using the standard ISO date format:
 	  </p>
 	  <pre class="anna-code">
 // Create a new date from a specified date 
 then := isoDate(2009-1-1, 12:30);
 
 // Move ahead x years and one hour 
-date += isoDateDelta(x-0-0, 1:00);
+then += isoDateDelta(x-0-0, 1:00);
 	  </pre>
 	  
 	  <h1><a name="collections">More about collections</a></h1>
 	  <p>
-	    The Anna standard library comes with three different collections built in,
+	    The Anna standard library comes with three different
+	    collections built in,
 	  </p>
 	  <ul>
 	    <li>
@@ -3135,7 +3156,8 @@ date += isoDateDelta(x-0-0, 1:00);
 	      a <code class="anna-code">MutableList</code> and
 	      an <code class="anna-code">ImutableList</code> flavor,
 	      both of which are templates that can be specialized to
-	      store any type, e.g. <code class='anna-code'>MutableList«Int»</code>.
+	      store any type,
+	      e.g. <code class='anna-code'>MutableList«Int»</code>.
 	    </li>
 	    <li>
 	      <code class="anna-code">HashMap</code>, a mutable,
@@ -3220,23 +3242,25 @@ date += isoDateDelta(x-0-0, 1:00);
 	  </ol>
 	  <p>
 	    That's it. Those are the only things needed to write Anna
-	    programs. For somebody coming from a C background, that might seem
-	    anemic for a programming language. Where are the code blocks?  Where
-	    are the if/while/whenever statements? Function definitions?
-	    Meanwhile, anybody with a LISP background will twiddle their
-	    beards in boredom. They <em>know</em>.
+	    programs. For somebody coming from a C background, that
+	    might seem anemic for a programming language. Where are
+	    the code blocks?  Where are the if/while/whenever
+	    statements? Function definitions?  Meanwhile, anybody with
+	    a LISP background will twiddle their beards in
+	    boredom. They <em>know</em>.
 	  </p>
 	  <p>
-	    The sugar front end of Anna is a simple language front end that
-	    has a few keywords and special constructs such as operator
-	    overloading that allow you to use a terser, C-like syntax. The
-	    dot operator is used for setting and getting member values, we
-	    have arithmetic operators with the usual precedence, we have
-	    special language constructs to allow us to define types,
-	    functions and variables with a little less verbosity, etc.  All
-	    of this syntactic sugar is stripped away by the front end of the
-	    compiler, and is converted into the basic AST node types
-	    mentioned above. Below are some examples of these transformations.
+	    The sugar front end of Anna is a simple language front end
+	    that has a few keywords and special constructs such as
+	    operator overloading that allow you to use a terser,
+	    C-like syntax. The dot operator is used for setting and
+	    getting member values, we have arithmetic operators with
+	    the usual precedence, we have special language constructs
+	    to allow us to define types, functions and variables with
+	    a little less verbosity, etc.  All of this syntactic sugar
+	    is stripped away by the front end of the compiler, and is
+	    converted into the basic AST node types mentioned
+	    above. Below are some examples of these transformations.
 	  </p>
 
 	  <table class='anna-table'>
@@ -3562,7 +3586,11 @@ def someFunction()
 }
 	  </pre>
 	  <ul>
-	    <li>The <code class="anna-code">use</code> expression is more general than simply a short cut for libraries. If you want to find out more about it, read the <a href="#use">documentation on the use expression</a>.</li>
+	    <li>The <code class="anna-code">use</code> expression is
+	    more general than simply a short cut for libraries. If you
+	    want to find out more about it, read
+	    the <a href="#use">documentation on the use
+	    expression</a>.</li>
 	    <li>If you want to find out more about how Anna locates the right library to load, continue reading.
 	  </ul>
 
@@ -3598,7 +3626,7 @@ def someFunction()
   The use expression can be used for other things than just importing a 
   library.
 */
-lst := [];
+lst :== [];
 use(lst);
 /* These calls resolve to lst.push, because lst is use:d */
 push(1);
@@ -3717,7 +3745,7 @@ someFunctionCall(
     arg3,
     );
 
-literal := [
+literal :== [
     "first",
     "second",
     "third",
@@ -3725,10 +3753,10 @@ literal := [
 
 /*
    The only exceptions to this rule is that it is ok to group together
-   multiple variable declarations on a single line with commas.  
+   multiple constant or variable declarations on a single line with commas.  
 */
 
-foo := 1, bar := 2, baz := 3;
+foo :== 1, bar :== 2, baz :== 3;
 
 /*
    Single-line expression groups should never have a trailing
@@ -3738,7 +3766,7 @@ default { foo; bar }
 
 someFunctionCall(arg1, arg2);
 
-literal := ["first", "second"];
+literal :== ["first", "second"];
 	  </pre>
 	  
 	  <h2><a name="design-naming">Naming of variables and types</a></h2>
@@ -3861,7 +3889,7 @@ class Foo (template(%op:?)) {
 
 def Int main()
 {
-    boo := Foo«a &gt; b»();
+    boo :== Foo«a &gt; b»();
     print(boo.bar(3,4));
 }
 	  </pre>

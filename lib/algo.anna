@@ -96,7 +96,10 @@ the to specified indices.",
 The second argument to qsort is a comparison function, used to
 determin the order of two elements.",
 	"A common use case  for sorting is to sort objects based  on a field of
-the relevent object. This can be done using the fieldComparator macro."),
+the relevent object. This can be done using the <a href='builtinMacros.html#fieldComparator'>fieldComparator</a> macro:",
+	example"algo.qsort(
+    system.argv,
+    fieldComparator(String::count));"),
     )
 {
     collection.empty? and (return collection);
