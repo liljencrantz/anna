@@ -138,7 +138,7 @@ lib/%.o: lib/%.c
 %.so: %.o
 	$(CC) -shared $*.o -o $@ $(LDFLAGS) 
 
-bin/anna: $(ANNA_OBJS) $(ANNA_INTERNAL_BINDINGS)
+bin/anna: $(ANNA_OBJS) internal_bindings
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 autogen/lex.c: src/lex.y 
@@ -167,7 +167,7 @@ check: test
 
 documentation: documentation/api
 
-documentation/api: bin/anna lib/*.anna $(ANNA_EXTERNAL_BINDINGS) util/documentation/*.html bootstrap/*.anna util/annadoc.anna
+documentation/api: bin/anna lib/*.anna bindings util/documentation/*.html bootstrap/*.anna util/annadoc.anna
 	$(ANNADOC) && touch documentation/api
 
 test: bin/anna
