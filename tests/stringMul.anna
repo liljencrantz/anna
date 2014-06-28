@@ -1,4 +1,3 @@
-def main()
-{
+def main(){
     print(3*"b", "abc"*4);
 }

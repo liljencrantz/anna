@@ -1,9 +1,7 @@
-def foo(def Int bar(Int i))
-{
+def foo(def Int bar(Int i)){
     print(bar(7));
 }
 
-def main()
-{
+def main(){
     foo {"hello"};
 }

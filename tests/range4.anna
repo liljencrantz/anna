@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     r := 1..10;
     print(r.first, r.last);
     print(r.filter(i){ i ^mod 2 == 0});

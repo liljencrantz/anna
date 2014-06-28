@@ -1,6 +1,5 @@
 
-def main()  
-{
+def main()  {
     f := lang.MutableList<<lang.Int>>(1,2,3);
     lang.print(f[1]);
 }

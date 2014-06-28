@@ -1,20 +1,16 @@
 
-class A
-{
+class A{
 }
 
-struct B
-{
+struct B{
     var String value;
 
-    def foo(B arg) (static, aliasReverse(getValue))
-    {
+    def foo(B arg) (static, aliasReverse(getValue)){
 	return arg.value;
     }
 }
 
-def main()
-{
+def main(){
 //    print(B("hello"));
     print(A::getValue(B("hello")));
 }

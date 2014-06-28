@@ -6,20 +6,16 @@
  */
 
 
-class MyClass
-{
-    def outer()
-    {
+class MyClass{
+    def outer(){
 	inner();
     }
     
-    def inner()
-    {
+    def inner(){
 	"ok";
     }
 }
 
-def main()
-{
+def main(){
     print(MyClass().outer());
 }

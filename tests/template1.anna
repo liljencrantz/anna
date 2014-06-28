@@ -1,15 +1,12 @@
-class Foo (template(%A:Int)) 
-{
+class Foo (template(%A:Int)) {
 
-    def %A bar(%A a, %A b)
-    {
+    def %A bar(%A a, %A b){
         a+b;
     }
 
 }
 
-def Int main()
-{
+def Int main(){
     foo := Foo«Float»();
     print(foo.bar(3.0,4.0));
 }

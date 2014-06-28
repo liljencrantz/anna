@@ -1,10 +1,8 @@
 class Derived1
 (
     extends(Int, Range)
-)
-{
-    def __init__()
-    {
+){
+    def __init__(){
 	Int::__init__(this, 0);
 	Range::__init__(this, 0,10,1);
     }
@@ -13,17 +11,14 @@ class Derived1
 class Derived2
 (
     extends(Range, Int)
-)
-{
-    def __init__()
-    {
+){
+    def __init__(){
 	Int::__init__(this, 0);
 	Range::__init__(this, 0,10,1);
     }
 }
 
-def main()
-{
+def main(){
     vv := Derived1();
 
     // Int::__add__

@@ -1,6 +1,5 @@
 
-def Int main()
-{
+def Int main(){
     /*
       Test a bunch of native callbacks, with focus on making sure they don't mess up the stack
     */

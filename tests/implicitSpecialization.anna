@@ -1,16 +1,13 @@
 
-class Foo (template(%T:Any))
-{
+class Foo (template(%T:Any)){
     var %T val;
 
-    def __init__(%T val)
-    {
+    def __init__(%T val){
         this.val = val;
     }
 }
 
-def main()  
-{
+def main()  {
     /*
       The type of the variable f should be implicitly specialized to
       Foo«Int» because the constructor argument is of type Int.

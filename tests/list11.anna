@@ -1,8 +1,7 @@
 /*
   Test the List::all? and List::none? methods
 */
-def main()
-{
+def main(){
   list1 := [1, 1, 1, 1];
   list2 := [1, 1, ?, ?];
   list3 := [?, ?, ?, ?];

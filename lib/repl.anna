@@ -35,8 +35,7 @@ the members of a type, respectively,
 the value of the last command to execute and</li>
   <li>the <code>exit</code> and <code>quit</code> commands, both of which break the repl loop.</li>
 </ul>",
-	), internal)
-{
+	), internal){
     use(parser);
 
     doLoop := 1;
@@ -55,8 +54,7 @@ Type «help» for more information.");
     localClause :== «Node»[];
     
     saveHistory :== {
-	if(readLine.history.write(historyFile))
-	{
+	if(readLine.history.write(historyFile)){
 	    print("Failed to save history");
 	    print(unix.error.errorString(unix.error.errno));
 	}
@@ -146,8 +144,7 @@ modification, are permitted provided that the following conditions are met:
 
     firstPrompt := "anna> ";
 
-    if(debugFrame)
-    {
+    if(debugFrame){
 	/*
 	  Add some additional functionality for debugger prompts
 	 */
@@ -158,8 +155,7 @@ modification, are permitted provided that the following conditions are met:
 	// break someFunction:someLineNumber inserts a breakpoint
 	actionMapping["break"] = def (parser.Call input){
 	    use(parser);
-	    if( input.count != 1 or !(input[0].callTo?("__mapping__")))
-	    {
+	    if( input.count != 1 or !(input[0].callTo?("__mapping__"))){
 		print("Invalid breakpoint");
 		return ?;
 	    }
@@ -176,8 +172,7 @@ modification, are permitted provided that the following conditions are met:
 	// Create a struct of all the variables in the current continuation frame, 
 	// and add that into a use clause in the function
 	varStruct :== ast(struct());
-	debugFrame.member.each(val)
-	{
+	debugFrame.member.each(val){
 	  el := ast(%name: %value) % [
 		"name": Identifier(?, val.name),
 		"value": (if(val.value){Dummy(?, val.value)} else {NullLiteral(?)}) as Node];
@@ -196,22 +191,18 @@ modification, are permitted provided that the following conditions are met:
     /*
       Start the main repl loop
     */
-    while(doLoop)
-    {
+    while(doLoop){
         line := "".thaw;
         parsedAst := ? as Call;
 	
         prompt := firstPrompt;
 
-	def reflection.Type getModule(reflection.Type parent, Node path)
-	{
-	    if(id := (path as Identifier))
-	    {
+	def reflection.Type getModule(reflection.Type parent, Node path){
+	    if(id := (path as Identifier)){
 		memb := parent.member.find(el){ el.name == id.name }
 		return type(memb.value(?));
 	    }
-	    if(path.callTo?("__memberGet__"))
-	    {
+	    if(path.callTo?("__memberGet__")){
 	        call := path as Call;
 	        id := call[0] as Identifier;
 		memb := parent.member.find(el){ el.name == id.name }
@@ -221,27 +212,21 @@ modification, are permitted provided that the following conditions are met:
 	}
 	
 
-      useList := globalClause.filter(el)
-	{
+      useList := globalClause.filter(el){
 	    el.callTo?("use");
-	}.map(el)
-	{
+	}.map(el){
 	    getModule(type(global), (el as Call)[0]);
-	}.filter(el)
-	{
+	}.filter(el){
 	    el;
 	}
 	replComplete.setUseList(useList);
 
 	
-        parseError :== collect(error.CompilationError)
-	{
-	    while(1)
-	    {
+        parseError :== collect(error.CompilationError){
+	    while(1){
 	        lineElement :== readLine.readLine(prompt);
 		prompt = secondPrompt;
-		if(!lineElement)
-		{
+		if(!lineElement){
 		    print();
 		    die();
 		}
@@ -251,20 +236,17 @@ modification, are permitted provided that the following conditions are met:
 	        incompleteError :== collect(error.IncompleteError){
 		    parsedAst = parse(line) as Call;
 		}
-		if(parsedAst or incompleteError.empty?)
-		{
+		if(parsedAst or incompleteError.empty?){
 		    break
 		}
 		line ~= "\n";
 	    }
 	}
-	parseError.each(error)
-	{
+	parseError.each(error){
 	    print(error.message);
 	}
 
-	if(line.count > 0)
-	{
+	if(line.count > 0){
 	    readLine.history.add(line);
 	    saveHistory();
 	}
@@ -273,21 +255,18 @@ modification, are permitted provided that the following conditions are met:
 	  If the user entered multiple expressions on a single line,
 	  execute them one at a time. Stop the loop on error.
 	*/
-	parsedAst.each(astItem)
-	{
+	parsedAst.each(astItem){
 	    /*
 	      Check if this is one of the short cut actions like
 	      «help», and if so, execute the corresponding action.
 	    */
-	    if(astItem in action)
-	    {
+	    if(astItem in action){
 		action[astItem]();
 		continue;
 	    }
 
 	    actionMapping.each(name, call){
-		if(astItem.callTo?(name))
-		{
+		if(astItem.callTo?(name)){
 		    astItem = call(astItem as parser.Call);
 		}
 	    }
@@ -302,16 +281,13 @@ modification, are permitted provided that the following conditions are met:
 	      variable names and values.
 	    */
 	    variableDeclaration := ast(nothing());
-	    previousContinuation.member.each(memb)
-	    {
-		if(memb.name != "ans")
-		{
+	    previousContinuation.member.each(memb){
+		if(memb.name != "ans"){
 		    variableDeclaration.push(
 			ast(%decl(
 				%name,
 				?,
-				%value as %Type,
-				{})) % [
+				%value as %Type,{})) % [
 				    "decl": (if(memb.mutable?) {ast(__var__)} else {ast(__const__)}),
 				    
 			    "name": Identifier(?, memb.name), 
@@ -329,8 +305,7 @@ modification, are permitted provided that the following conditions are met:
   	    moduleAst := ast(
 		nothing(
 		    var reflection.Continuation %cont;
-		    def %fun()
-		    {
+		    def %fun(){
 			%cont = reflection.currentContinuation; 
 			%variable; 
 			ans := %ans;
@@ -342,8 +317,7 @@ modification, are permitted provided that the following conditions are met:
 			"variable": variableDeclaration,
 			"ans": (if(prev){Dummy(?, prev)}else{ast(? as Any)}) as Node,
 			];
-	    if(isGlobal)
-	    {
+	    if(isGlobal){
 		run = ?;
 	        moduleAst = ast(nothing(%ast)) % ["ast": astItem];
 	    }
@@ -356,15 +330,12 @@ modification, are permitted provided that the following conditions are met:
 	    }
 
 	    code :== compile(moduleAst);
-	    if(code)
-	    {
-		if(isGlobal)
-		{
+	    if(code){
+		if(isGlobal){
 		    globalClause.push(astItem);
 		}
 		
-		if(run)
-		{
+		if(run){
 		    /*
 		      Use reflection to find our function and run it,
 		      then use reflecation to find the continuation of
@@ -379,8 +350,7 @@ modification, are permitted provided that the following conditions are met:
 		    previousContinuation = type(code).member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
 		}
 	    }
-	    else
-	    {
+	    else{
 		/*
 		  If we encounter an error, stop executing the rest of
 		  the expressions on this line.
@@ -396,8 +366,7 @@ def debugRepl()
     doc("
 Don't use this function or rely on its existence. It is used internally by the breakpoint
 bytecode in the VM."),
-    internal)
-{
+    internal){
     debugFrame := reflection.currentContinuation.dynamicFrame.dynamicFrame;    
     repl(debugFrame);
 }
@@ -407,7 +376,6 @@ def main()
     doc("
 Calls the repl.repl function and then exits. This is the
 main()-function that is called when no other main function is given on
-the command line."), internal)
-{
+the command line."), internal){
     repl();
 }

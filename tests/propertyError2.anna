@@ -3,8 +3,7 @@ class MyType {
 
     var Int storage;
 
-    def mySetter(Int value)
-    {
+    def mySetter(Int value){
         this.storage = value;
     }
 

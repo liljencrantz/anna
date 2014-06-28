@@ -12,8 +12,7 @@ expandCode(
 	    found, null otherwise.",
 	    "This method is currently rather inefficient.",
 	    ),
-	)
-    {
+	){
 	this[from...].each(idx, i){if(i == ch){return idx}}
 	return ?;
     },
@@ -32,8 +31,7 @@ expandCode(
             found, null otherwise.",
 	    "This method is currently rather inefficient.",
 	    ),
-	)
-    {
+	){
 	(from..this.count).each(idx){if(this[idx..(idx+string.count)] == string){return idx}}
 	return ?;
     },
@@ -57,8 +55,7 @@ expandCode(
          with strings, and not with e.g. numeric conversion. Use the various
          String::format functions for e.g. numeric formating."
 	),
-	)
-    {
+	){
 	return formatListInternal(this, data).%prop;
     },
     Type: [ImutableString, MutableString, String],
@@ -68,51 +65,40 @@ expandCode(
 
 def String formatListInternal(
     String this, 
-    List«Any» data) (internal, doc("Internal helper function for String::formatList."))
-{
+    List«Any» data) (internal, doc("Internal helper function for String::formatList.")){
     res := "";
     listIdx := 0;
     i := 0;
-    while(i < this.count)
-    {
+    while(i < this.count){
         ch := this[i];
-        if(ch == '%')
-        {
-	    if(this[i+1] == '(')
-	    {
-		if(this[i+2] == ')')
-		{
+        if(ch == '%'){
+	    if(this[i+1] == '('){
+		if(this[i+2] == ')'){
 		    res ~= (data[listIdx] or "");
 		    listIdx++;
 		    i+=2;
 		}
-		else 
-		{
+		else {
 		    idx := 0;
 		    i2 := i+2;
-		    while(this[i2] >= '0' and this[i2] <= '9') 
-		    {
+		    while(this[i2] >= '0' and this[i2] <= '9') {
 			idx = 10*idx + (this[i2]-'0');
 			i2++;
 		    }
-		    if(this[i2] == ')')
-		    {
+		    if(this[i2] == ')'){
 			res ~= (data[idx] or "");
 			i = i2;
 		    }
-		    else
-		    {
+		    else{
 			res ~= '%';
 		    }
 		}
 	    }
-	    else
-	    {
+	    else{
 		res ~= '%';
 	    }
         }
-	else
-        {
+	else{
 	    res ~= ch;
         }
         i++;
@@ -137,8 +123,7 @@ expandCode(
             replacing placeholders with strings, and not with e.g. numeric
             conversion. Use the various format functions for e.g. numeric
             formating, such as Int::format."),
-	)
-    {
+	){
 	return formatMapInternal(this, data).%prop;
     },
     Type: [ImutableString, MutableString, String],
@@ -149,46 +134,36 @@ expandCode(
 def String formatMapInternal(
     String this, 
     HashMap«String, Any» data)
-(internal, doc("Internal helper function for String::formatMap."))
-{
+(internal, doc("Internal helper function for String::formatMap.")){
     res := "".thaw;
     i := 0;
-    while(i < this.count)
-    {
+    while(i < this.count){
         ch := this[i];
-        if(ch == '%')
-        {
-	    if(this[i+1] == '%')
-            {
+        if(ch == '%'){
+	    if(this[i+1] == '%'){
   	        i++;
                 res ~= '%'
             } 
-	    else
-	    {
+	    else{
 	        i++;
-		if(this[i] == '(')
-		{
+		if(this[i] == '('){
 		    i++;
 		    end := searchChar(this[i...], ')');
-		    if(end)
-		    {
+		    if(end){
 		        name := this[i..(i+end)];
 			res ~= data[name];
 			i=i+end;
 		    } 
-		    else 
-		    {
+		    else {
 			// ERROR
 		    }
 		} 
-		else
-		{
+		else{
 		    // ERROR
 		}
             }
         } 
-	else
-        {
+	else{
 	    res ~= ch;
         }
         i++;
@@ -206,15 +181,12 @@ expandCode(
 	doc("Pad the left side of this string with the specified character up
             to a minimum of the specified number of characters"),
 	name(lpad),
-	)
-    {
-	if(this.count > count)
-	{
+	){
+	if(this.count > count){
 	    return this;
 	}
 	res := "";
-	(0..(count - this.count)).each(i)
-	{
+	(0..(count - this.count)).each(i){
 	    res ~= char;
 	}
 	res ~= this;
@@ -234,15 +206,12 @@ expandCode(
 	doc("Pad the right side of this string with the specified character
             up to a minimum of the specified number of characters"),
 	name(rpad),
-	)
-    {
-	if(this.count >= count)
-	{
+	){
+	if(this.count >= count){
 	    return this;
 	}
 	res := this;
-	(0..(count - this.count)).each(i)
-	{
+	(0..(count - this.count)).each(i){
 	    res ~= char;
 	}
 	return res;
@@ -256,12 +225,9 @@ expandCode(
     (
 	target(%Type),
 	name(__in__)
-    )
-    {
-	this.each(idx, ch)
-	{
-	    if(char == ch)
-	    {
+    ){
+	this.each(idx, ch){
+	    if(char == ch){
 		return idx;
 	    }
 	}
@@ -282,19 +248,15 @@ expandCode(
             and return the resulting array of Strings. If allowEmpty is null,
             empty strings will be ignored."),
 	name(split),
-	)
-    {
+	){
 	res := «String»[];
 	start := 0;
 	stop := 0;
-	while(stop <= this.count)
-	{
-	    while(stop < this.count and !(__in__(charList, this[stop])))
-	    {
+	while(stop <= this.count){
+	    while(stop < this.count and !(__in__(charList, this[stop]))){
 		stop++;
 	    }
-	    if(allowEmpty or stop > start)
-	    {
+	    if(allowEmpty or stop > start){
 		res.push(this[start..stop]);
 	    }
 	    stop = start = stop + 1;
@@ -318,8 +280,7 @@ expandCode(
 	doc("Split this string on every occurence of the specified character
             and return the resulting array of Strings. If allowEmpty is null,
             empty strings will be ignored."),
-	)
-    {
+	){
 	return split(this, char.toString(), allowEmpty);
     },
     Type: [ImutableString, MutableString, String],
@@ -338,8 +299,7 @@ expandCode(
 	doc("Split this string on every occurence of the specified characters
             and return the resulting array of Strings. If allowEmpty is null,
             empty strings will be ignored."),
-	)
-    {
+	){
 	return split(this, "".join(charList), allowEmpty);
     },
     Type: [ImutableString, MutableString, String],
@@ -359,21 +319,17 @@ expandCode(
 	    "This method is currently rather inefficient.",
 	),
 	name(replace)
-    )
-    {
+    ){
 	start := 0;
 	res := "".thaw;
-	while(1)
-	{
+	while(1){
 	    end := searchString(this, original, start);
-	    if(end)
-	    {
+	    if(end){
 		res ~= this[start..end];
 		res ~= replacement;
 		start = end + original.count;
 	    }
-	    else
-	    {
+	    else{
 		res ~= this[start...];
 		return res;
 	    }
@@ -394,10 +350,8 @@ expandCode(
 	name(__mul__),
 	doc("Returns a copy of this string, repeated the specified number
             of times")
-    )
-    {
-	if(count < 0)
-	{
+    ){
+	if(count < 0){
 	    return ?;
 	}
         res := "".thaw;

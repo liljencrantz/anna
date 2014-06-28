@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     use(ctime);
 
     tz := timezoneName;

@@ -1,15 +1,13 @@
 attribute(internal, doc("Internal module for macros related to rasing errors."));
 
-macro raise(node) (doc("Shorthand for the <a path='error' member='raiseError'>error.raiseError</a> function."))
-{
+macro raise(node) (doc("Shorthand for the <a path='error' member='raiseError'>error.raiseError</a> function.")){
     return ast(error.raiseError(%err)) % ["err": node[0]]
 }
 
 macro errorType (node)
 (
     doc("A type suitable for defining error types")
-)
-{
+){
     node.function = ast(classType);
     (node[1] as Call).push(ast(extends(error.Error)));
     (node[2] as Call).push(ast(var Any %name (static)) % ["name": Identifier(node, identifier("errorType"))]);
@@ -19,20 +17,15 @@ macro errorType (node)
 macro collect(definition)
 (
     doc("Collect errors in the specified code blocks."),
-)
-{
-    switch(definition.count)
-    {
-	case(0)
-	{
+){
+    switch(definition.count){
+	case(0){
 	    definition.error("Expected at least one argument.\n");
 	}
 
-	case(1)
-	{
+	case(1){
 	    return ast(
-		(
-		    {
+		({
 			%collect := «error.Error»[];
 			%code(); 
 			%collect;
@@ -40,13 +33,11 @@ macro collect(definition)
 		    )) % ["collect": Identifier(definition, "!collect"), "code": definition[0]];
 	}
 
-	default
-	{
+	default{
   	    collectType := ast([]);
 	    definition[0..-1].each(tp){ collectType.push(tp) }
 	    res := ast(
-		(
-		    {
+		({
 			%collectType :== %collectValue.freeze;
 			%collect :== «error.Error»[];
 			%code();

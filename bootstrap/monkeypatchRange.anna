@@ -5,25 +5,20 @@ def Int range__cmp__(Range this, Any other)
     target(Range), 
     name(__cmp__),
     doc("Compare two ranges against each other"),
-)
-{
+){
     r := other as Range;
-    if(!r)
-    {
+    if(!r){
 	return -1;
     }
-    if(this.from != r.from)
-    {
+    if(this.from != r.from){
 	return this.from-r.from;
     }
 
-    if(this.to != r.to)
-    {
+    if(this.to != r.to){
 	return this.to-r.to;
     }
 
-    if(this.step != r.step)
-    {
+    if(this.step != r.step){
 	return this.step-r.step;
     }
     return 0;
@@ -34,8 +29,7 @@ def rangeHashCode(Range this)
     target(Range), 
     name(hashCode),
     doc("Hash function. Always returns the same number for the same object and also returns the same number for two equal objects."),
-)
-{
+){
     return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
 }
 
@@ -44,11 +38,9 @@ def rangeToString(Range this)
     target(Range),
     name(toString),
     doc("String conversion. Called by the String::convert method."),
-)
-{
+){
     use(this);
-    if(open?)
-    {
+    if(open?){
 	return "[" ~ from ~", "~ (from+step)~", "~ (from+step+step)~"...]";
     }
     return "[" ~ ", ".join(this.map(value){""~(value)}) ~ "]";

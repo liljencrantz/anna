@@ -4,15 +4,12 @@
   because the list data fields will contain invalid data.  
 */
 
-class MyType (extends(MutableList«Int»))
-{
-    def __init__()
-    {
+class MyType (extends(MutableList«Int»)){
+    def __init__(){
     }
 }
 
-def main()
-{
+def main(){
     t := MyType();
     print(t.count);
     print(t[0]);

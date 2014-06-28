@@ -1,6 +1,5 @@
 
-def main()
-{
+def main(){
     print("Int conversions");
     print(Int::convert("123456789_10_11_12_13_14_15_16_17_18_19_20"));
     print(Int::convert("-123"));
@@ -24,8 +23,7 @@ def main()
     print(Float::convert(?));
     
     count := 0;
-    (0..100_000).each(idx)
-    {   
+    (0..100_000).each(idx){   
 	count += Char::convert(idx).ordinal == idx;
 	count += Int::convert(Char::convert(idx)) == idx;
     }

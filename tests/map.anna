@@ -1,6 +1,5 @@
 
-def main()  
-{
+def main()  {
     // The first map call is Int:Int, the secod one is Int:String.
     // Anna keeps track of return types and type checks arguments at compile time.
     [1, 2, 3].map(i){i+1}.map(i){""~i}.each(i){print(i.count)}

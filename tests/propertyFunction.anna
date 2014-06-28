@@ -1,8 +1,6 @@
 
-class Foo
-{
-    def numGetter()
-    {
+class Foo{
+    def numGetter(){
         i:=0;
         return def (){i++}
     }
@@ -11,8 +9,7 @@ class Foo
 
 }
 
-def main()
-{
+def main(){
     foo := Foo();
     /*
       Every time we access foo.num, numGetter is called, and a new

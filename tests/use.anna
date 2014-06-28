@@ -1,7 +1,6 @@
 use(parser);
 
-def main()
-{
+def main(){
     n :=IntLiteral(?, 5);
     print(n.payload);
 }

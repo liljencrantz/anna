@@ -1,10 +1,8 @@
-def plain()
-{
+def plain(){
     print(reflection.currentContinuation.filename.split("/")[-1]);
     print(reflection.currentContinuation.line);
 }
 
-def main()
-{
+def main(){
     plain();
 }

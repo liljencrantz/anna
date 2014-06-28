@@ -2,15 +2,13 @@ expand(stringFilter);
 
 attribute(doc("Simple high level error handling."));
 
-class Error (doc("The base class of any error"))
-{
+class Error (doc("The base class of any error")){
     var reflection.Continuation source(internal, doc("The continuation that triggered this error."));
     var String message (doc("The error message"));
     def __init__(String message=?)
     (
 	doc("Create a new error with the specified error message."),
-    )
-    {
+    ){
 	this.message = message;
 	source = reflection.currentContinuation;
     }
@@ -18,21 +16,18 @@ class Error (doc("The base class of any error"))
     def String toString()
     (
 	doc("A string representation of this Error."),
-    )
-    {
+    ){
 	"<error %()>" % [type(this).name];
     }
 }
 
-error CError (doc("An error with an associated C error number"))
-{
+error CError (doc("An error with an associated C error number")){
     var Int errno (doc("The C error number"));
 
     def __init__(Int errno)
     (
 	doc("Create a new error with the specified c error number."),
-    )
-    {
+    ){
 	this.errno = errno;
 	Error::__init__(this, unix.error.errorString(errno));
     }
@@ -42,20 +37,16 @@ error CError (doc("An error with an associated C error number"))
   These four errors should live in the parser module, but some monkey
   patching is needed in order for that to happen.
 */
-error CompilationError (doc("The base class of any errors related to dynamically compiling a piece of code."))
-{
+error CompilationError (doc("The base class of any errors related to dynamically compiling a piece of code.")){
 }
 
-error ParseError (extends(CompilationError), doc("A class representing an error occuring in the parser phase"))
-{
+error ParseError (extends(CompilationError), doc("A class representing an error occuring in the parser phase")){
 }
 
-error IncompleteError (extends(CompilationError), doc("A class representing an error occuring because of of premature termination of the input, i.e. an incomplete program."))
-{
+error IncompleteError (extends(CompilationError), doc("A class representing an error occuring because of of premature termination of the input, i.e. an incomplete program.")){
 }
 
-error LexError (extends(CompilationError), doc("A class reresenting an error in the lexer, i.e.  in the compiler phase that deals with turning the input stream into a series of tokens."))
-{
+error LexError (extends(CompilationError), doc("A class reresenting an error in the lexer, i.e.  in the compiler phase that deals with turning the input stream into a series of tokens.")){
 }
 
 def raiseError(Error error) 
@@ -65,33 +56,25 @@ def raiseError(Error error)
 	"The raiseError function is usually called through the raise macro like this:",
 	example"raise(SomeError(\"Something went wrong...\"));",
 	)
-)
-{
-    def Any funEach(reflection.Continuation item)
-    {
-	if(coll := (item["!collect"] as MutableList))
-	{
+){
+    def Any funEach(reflection.Continuation item){
+	if(coll := (item["!collect"] as MutableList)){
 	    
-	    if(tp := (item["!collectType"] as List«reflection.Type»))
-	    {
-		tp.each(collType)
-		{
-		    if(type(error).abides(collType))
-		    {
+	    if(tp := (item["!collectType"] as List«reflection.Type»)){
+		tp.each(collType){
+		    if(type(error).abides(collType)){
 			coll ~= [error];
 			return;
 		    }
 		}
 	    }
-	    else
-	    {
+	    else{
 		coll ~= [error];
 		return;
 	    }
 	} 
 
-	if(item.dynamicFrame)
-	{
+	if(item.dynamicFrame){
 	    funEach(item.dynamicFrame);
 	    return;
 	}

@@ -23,35 +23,26 @@ such a context. Use separate CSS files and separate JavaScript files,
 both for static CSS/JavaScript and for dynamically generated
 CSS/JavaScript. As of today, the html module does not support the
 various additional escaping modes that are required to do so.")
-)
-{
+){
     res := "".thaw;
-    "".join(str).each(ch)
-    {
-	res ~= switch(ch)
-	{
-	    case('<')
-	    {
+    "".join(str).each(ch){
+	res ~= switch(ch){
+	    case('<'){
 		"&lt;";
 	    }
-	    case('&')
-	    {
+	    case('&'){
 		"&amp;";
 	    }
-	    case('>')
-	    {
+	    case('>'){
 		"&gt;";
 	    }
-	    case('"')
-	    {
+	    case('"'){
 		"&quot;";
 	    }
-	    case('\'')
-	    {
+	    case('\''){
 		"&#39;";
 	    }
-	    default
-	    {
+	    default{
 		ch;
 	    }
 	}

@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     print(1==1);
     print((? as Int) == 2);
     

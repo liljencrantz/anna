@@ -2,18 +2,15 @@
   Test combination of default arguments, named arguments and variadic
   arguments.
  */
-def fun(Int a, Int b = 2, Int rest...)
-{
+def fun(Int a, Int b = 2, Int rest...){
     res := a*b;
-    rest.each(i)
-    {
+    rest.each(i){
 	res = res * i;
     }
     res;
 }
 
-def main()
-{
+def main(){
     print(fun(a:5, b:5, 5));
     print(fun(1));
     print(

@@ -8,38 +8,30 @@ layer into function calls like __eq__, __neq__ and __gt__. These are
 then implemented as macros which internally call the __cmp__ method of
 the objects being compared."));
 
-macro __gt__(node)
-    (doc("Comparison macro for the > operator."))
-{
+macro __gt__(node) (doc("Comparison macro for the > operator.")) {
     ast(lang.__gtInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
-macro __gte__(node)
-    (doc("Comparison macro for the >= operator."))
-{
+macro __gte__(node) (doc("Comparison macro for the >= operator.")) {
     ast(lang.__gteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __lt__(node)
-    (doc("Comparison macro for the < operator."))
-{
+    (doc("Comparison macro for the < operator.")){
     ast(lang.__ltInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __lte__(node)
-    (doc("Comparison macro for the <= operator."))
-{
+    (doc("Comparison macro for the <= operator.")){
     ast(lang.__lteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __eq__(node)
-    (doc("Comparison macro for the == operator."))
-{
+    (doc("Comparison macro for the == operator.")){
     ast(lang.__eqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
 macro __neq__(node)
-    (doc("Comparison macro for the != operator."))
-{
+    (doc("Comparison macro for the != operator.")){
     ast(lang.__neqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }

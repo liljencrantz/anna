@@ -1,5 +1,4 @@
-def sub( def Null ret(Any val))
-{
+def sub( def Null ret(Any val)){
     print("subPre");
     ret("continuationResult");
     print("subPost");
@@ -7,14 +6,12 @@ def sub( def Null ret(Any val))
 
 var Int i = 0;
 
-def sub2(def Null ret(Any val))
-{
+def sub2(def Null ret(Any val)){
     i += 1;
     ret(i);
 }
 
-def Int main()
-{
+def Int main(){
     print("mainPre");
     print(callCC(sub));
     print("mainPost");

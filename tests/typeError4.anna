@@ -8,7 +8,6 @@ __const__(
 	1),
     __block__());
 
-def main()
-{
+def main(){
     print(Hej());
 }

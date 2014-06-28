@@ -1,10 +1,8 @@
-class SomeType
-{
+class SomeType{
     var Int foo (static);
 }
 
-def main()
-{
+def main(){
     SomeType::foo = 7;
     print(SomeType::foo);
 }

@@ -1,6 +1,5 @@
 
-def main()
-{
+def main(){
     ll := «Int»[];
     ll.push(1);
     ll.push(2);

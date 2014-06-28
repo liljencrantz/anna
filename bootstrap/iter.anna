@@ -19,23 +19,19 @@ MutableList or HashMap. If the collection arguments are mappings, the
 collection becomes a HashMap. If there is a template specialization
 with two arguments, the collection becomes a HashMap. Otherwise, it
 becomes a MutableList.")
-)
-{
+){
     res := Call(node, ?);
     spec := node[0] as Call;
     if(
 	(!spec and node.count > 1 and 
 	    ((node[1] as Call).function as Identifier).name == "__mapping__") or 
-	spec.count == 2)
-    {
+	spec.count == 2){
 	res.function = Dummy(node, HashMap);
         i := node.iterator;
 	i++;
-	while(i.valid?)
-	{
+	while(i.valid?){
   	    childCall := i.value as Call;
-	    if(!((childCall.function as Identifier).name == "__mapping__"))
-	    {
+	    if(!((childCall.function as Identifier).name == "__mapping__")){
 		childCall.error("Not a key/value pair");
 		return NullLiteral(node);
 	    }
@@ -43,26 +39,22 @@ becomes a MutableList.")
 	    i++;
 	}
     }
-    else
-    {
+    else{
 	res.function = Dummy(node, MutableList);
     }
     res ~= node[Range(1, ?, 1)];
     
-    if(spec)
-    {
+    if(spec){
 	res.function = Call(node, Identifier(node[0], "__specialize__"), res.function, spec);
     }
     return res;
 }
 
-def block?(Node n) (internal, doc("Returns non-null if the specified node is a block"))
-{
+def block?(Node n) (internal, doc("Returns non-null if the specified node is a block")){
     return (((n as Call).function as Identifier).name == "__block__") 
 }
 
-def Node iterDeclare(Node id, Node nodeType) (internal, doc("Creates a variable declaration AST node with the specified name and type"))
-{
+def Node iterDeclare(Node id, Node nodeType) (internal, doc("Creates a variable declaration AST node with the specified name and type")){
     ast(
 	__var__(%id, %nodeType, ?, {})).setLocation(id).replace(ast(id), id).replace(ast(nodeType) , nodeType);
 }
@@ -71,11 +63,9 @@ def Call mangleIterator(Call node)
 (
     internal,
     doc("Internal helper function for the various iteration macros. It is used to mangle the argument list into a valid function.")
-)
-{
+){
     
-    if( !(node.count in Range(2, 4, 1)) or !(node.function as Call) or !(node[0] as Identifier) or !(block?(node[-1])))
-    {
+    if( !(node.count in Range(2, 4, 1)) or !(node.function as Call) or !(node[0] as Identifier) or !(block?(node[-1]))){
 	return node;
     }
 
@@ -83,8 +73,7 @@ def Call mangleIterator(Call node)
     
     body := node[-1];
 
-    if(node.count == 2)
-    {
+    if(node.count == 2){
 	n[0] = iterDeclare(
 	    Identifier(body, "!unused"), 
 	    ast(staticType(%iter.key)).setLocation(node));
@@ -92,8 +81,7 @@ def Call mangleIterator(Call node)
 	    node[0],
 	    ast(staticType(%iter.value)).setLocation(node));
     } 
-    else
-    {
+    else{
 	checkNodeType(node[1], Identifier);
 	n[0] = iterDeclare(
 	    node[0],
@@ -138,20 +126,17 @@ collection is that it must implement the iterator interface.",
 // It is also possible to simply supply the <code>each</code>-macro with the name of a function to call
 // for each element. The function must accept exactly two arguments, and of the 
 // correct type.
-def doPrint(String key, String value)
-{
+def doPrint(String key, String value){
     print(value);
 }
 [\"se\": \"Sweden\", \"nl\": \"Netherlands\"].each(doPrint);
 // Iterate over all items in the HashMap and print their value
 </pre>"
 	)
-)
-{
+){
     node = mangleIterator(node);
     
-    if( (node.count != 1) or !(node.function as Call))
-    {
+    if( (node.count != 1) or !(node.function as Call)){
 	node.expand? = ?;
 	return node;
     }
@@ -161,8 +146,7 @@ def doPrint(String key, String value)
     iterFun := node[0] as Call;
     res := ? as Node;
 
-    if((iterFun.function as Identifier).name == "__def__")
-    {
+    if((iterFun.function as Identifier).name == "__def__"){
         body := iterFun[4] as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
@@ -171,8 +155,7 @@ def doPrint(String key, String value)
 	    nothing(
 		%collVar := %coll;
 		%iter := %collVar.iterator,
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %keyVar := %iter.key as %keyType;
 		    %valueVar := %iter.value as %valueType;
 		    %iter++;
@@ -191,15 +174,13 @@ def doPrint(String key, String value)
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(collVar), Identifier(?, parser.identifier("collection")));
     }
-    else
-    {
+    else{
 	res = ast(
 	    nothing(
 		%collVar := %coll;
 		%iter := %collVar.iterator,
 		%funVar := %fun;
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %funVar(%iter.key, %iter.value);
 		    %iter++;
 		},
@@ -229,12 +210,10 @@ macro filter(node)
 </pre>",
 "<code>filter</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
 )
-)
-{
+){
     node = mangleIterator(node);
     
-    if( (node.count != 1) or !(node.function as Call))
-    {
+    if( (node.count != 1) or !(node.function as Call)){
 	node.expand? = ?;
 	return node;
     }
@@ -244,8 +223,7 @@ macro filter(node)
     iterFun := node[0] as Call;
     res := ? as Node;
 
-    if((iterFun.function as Identifier).name == "__def__")
-    {
+    if((iterFun.function as Identifier).name == "__def__"){
         body := iterFun[4] as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
@@ -254,8 +232,7 @@ macro filter(node)
 	    nothing(
 		%iter := %coll.iterator,
 		%res := «staticType(%iter.value)»[];
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %keyVar := %iter.key as %keyType;
 		    %valueVar := %iter.value as %valueType;
 		    %iter++;
@@ -274,15 +251,13 @@ macro filter(node)
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(res), Identifier(?, parser.identifier("res")));
     }
-    else
-    {
+    else{
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
 		%res := «staticType(%iter.value)»[];
 		%funVar := %fun;
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %funVar(%iter.key, %iter.value) and (%res.push(%valueVar));
 		    %iter++;
 		},
@@ -313,12 +288,10 @@ macro map(node)
 </pre>",
 "<code>map</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
 )
-)
-{
+){
     node = mangleIterator(node);
     
-    if( (node.count != 1) or !(node.function as Call))
-    {
+    if( (node.count != 1) or !(node.function as Call)){
 	node.expand? = ?;
 	return node;
     }
@@ -328,8 +301,7 @@ macro map(node)
     iterFun := node[0] as Call;
     res := ? as Node;
 
-    if((iterFun.function as Identifier).name == "__def__")
-    {
+    if((iterFun.function as Identifier).name == "__def__"){
         body := iterFun[4].copy() as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
@@ -338,8 +310,7 @@ macro map(node)
 	    nothing(
 		%iter := %coll.iterator,
 		%res := «__staticReturnTypeOf__(%iterFun)»[];
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %keyVar := %iter.key as %keyType;
 		    %valueVar := %iter.value as %valueType;
 		    %iter++;
@@ -359,15 +330,13 @@ macro map(node)
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(res), Identifier(?, parser.identifier("res")));
     }
-    else
-    {
+    else{
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
 		%iterFunVar := %iterFun;
 		%res := «__staticReturnTypeOf__(%iterFunVar)»[];
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %res.push(%iterFunVar(%iter.key, %iter.value));
 		    %iter++;
 		},
@@ -393,12 +362,10 @@ macro milter(node)
 </pre>",
 "<code>milter</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
 )
-)
-{
+){
     node = mangleIterator(node);
     
-    if( (node.count != 1) or !(node.function as Call))
-    {
+    if( (node.count != 1) or !(node.function as Call)){
 	node.expand? = ?;
 	return node;
     }
@@ -408,8 +375,7 @@ macro milter(node)
     iterFun := node[0] as Call;
     res := ? as Node;
 
-    if((iterFun.function as Identifier).name == "__def__")
-    {
+    if((iterFun.function as Identifier).name == "__def__"){
         body := iterFun[4].copy() as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
@@ -418,8 +384,7 @@ macro milter(node)
 	    nothing(
 		%iter := %coll.iterator,
 		%res := «__staticReturnTypeOf__(%iterFun)»[];
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %keyVar := %iter.key as %keyType;
 		    %valueVar := %iter.value as %valueType;
 		    %iter++;
@@ -440,15 +405,13 @@ macro milter(node)
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(res), Identifier(?, parser.identifier("res")));
     }
-    else
-    {
+    else{
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
 		%iterFunVar := %iterFun;
 		%res := «__staticReturnTypeOf__(%iterFunVar)»[];
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    (%it := %iterFunVar(%iter.key, %iter.value)) and %res.push(%it);
 		    %iter++;
 		},
@@ -476,12 +439,10 @@ macro find(node)
 </pre>",
 "<code>find</code> accepts iterator functions in the same way that <a href='#each'>each</a> does"
 )
-)
-{
+){
     node = mangleIterator(node);
     
-    if( (node.count != 1) or !(node.function as Call))
-    {
+    if( (node.count != 1) or !(node.function as Call)){
 	node.expand? = ?;
 	return node;
     }
@@ -491,8 +452,7 @@ macro find(node)
     iterFun := node[0] as Call;
     res := ? as Node;
 
-    if((iterFun.function as Identifier).name == "__def__")
-    {
+    if((iterFun.function as Identifier).name == "__def__"){
         body := iterFun[4] as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
@@ -501,8 +461,7 @@ macro find(node)
 	    nothing(
 		%iter := %coll.iterator,
 		%res := ? as staticType(%iter.value);
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %keyVar := %iter.key as %keyType;
 		    %valueVar := %iter.value as %valueType;
 		    %iter++;
@@ -521,15 +480,13 @@ macro find(node)
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(res), Identifier(?, parser.identifier("res")));
     }
-    else
-    {
+    else{
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
 		%res := ? as staticType(%iter.value);
 		%funVar := %fun;
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %funVar(%iter.key, %iter.value) and (%res = %valueVar; break);
 		    %iter++;
 		},
@@ -559,12 +516,10 @@ collections that provide read-write iterators.",
 "<code>update</code> accepts iterator functions in the same way that <a
 href='#each'>each</a> does"
 )
-)
-{
+){
     node = mangleIterator(node);
     
-    if( (node.count != 1) or !(node.function as Call))
-    {
+    if( (node.count != 1) or !(node.function as Call)){
 	node.expand? = ?;
 	return node;
     }
@@ -574,8 +529,7 @@ href='#each'>each</a> does"
     iterFun := node[0] as Call;
     res := ? as Node;
 
-    if((iterFun.function as Identifier).name == "__def__")
-    {
+    if((iterFun.function as Identifier).name == "__def__"){
         body := iterFun[4].copy() as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
@@ -584,8 +538,7 @@ href='#each'>each</a> does"
 	    nothing(
 		%res := %coll;
 		%iter := %res.iterator,
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %keyVar := %iter.key as %keyType;
 		    %valueVar := %iter.value as %valueType;
 		    %iter.value = %body;
@@ -605,15 +558,13 @@ href='#each'>each</a> does"
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
 	    .replace(ast(res), Identifier(?, parser.identifier("res")));
     }
-    else
-    {
+    else{
 	res = ast(
 	    nothing(
 		%res := %coll;
 		%iter := %res;
 		%iterFunVar := %iterFun;
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %iter.value = %iterFunVar(%iter.key, %iter.value);
 		    %iter++;
 		},
@@ -634,14 +585,12 @@ def Call mangleReduceIterator(Call node)
 (
     internal,
     doc("Internal helper function for the reduce macro. It is used to mangle the argument list into a valid function.")
-)
-{
+){
     if( (node.count != 4) or 
 	!(node.function as Call) or 
 	!(node[1] as Identifier) or 
 	!(node[2] as Identifier) or
-	!(block?(node[-1])))
-    {
+	!(block?(node[-1]))){
 	return node;
     }
 
@@ -685,12 +634,10 @@ macro reduce(node)
 // Multiplies the supplied collection. Returns 24.
 </pre>",
 )
-)
-{
+){
     node = mangleReduceIterator(node);
     
-    if( (node.count != 2) or !(node.function as Call))
-    {
+    if( (node.count != 2) or !(node.function as Call)){
 	node.expand? = ?;
 	return node;
     }
@@ -701,8 +648,7 @@ macro reduce(node)
     res := ? as Node;
  
     initial := node[0];
-    if((iterFun.function as Identifier).name == "__def__")
-    {
+    if((iterFun.function as Identifier).name == "__def__"){
         body := iterFun[4] as Call;
         decl := iterFun[2] as Call;
 	body.function = ast(nothing);
@@ -711,8 +657,7 @@ macro reduce(node)
 	    nothing(
 		%iter := %coll.iterator,
 		%res := %initial as %ReturnType;
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %valueVar := %iter.value as %ValueType;
 		    %prevVar := %res as %ReturnType;
 		    %iter++;
@@ -732,15 +677,13 @@ macro reduce(node)
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter"))) 
 	    .replace(ast(initial), initial);
     }
-    else
-    {
+    else{
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
 		%res := %initial as %ReturnType;
 		%funVar := %fun;
-		while(%iter.valid?)
-		{
+		while(%iter.valid?){
 		    %res = %funVar(%res, %iter.value);
 		    %iter++;
 		},

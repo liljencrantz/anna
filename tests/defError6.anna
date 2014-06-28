@@ -9,7 +9,6 @@ __var__(
 	print(input)),
     __block__());
 
-def main()
-{
+def main(){
     hej(7);
 }

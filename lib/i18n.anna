@@ -8,8 +8,7 @@ The anna i18n module (i18n is short for internationalization) is a simple high l
 First, annotate any strings in your program that you want to be translatable, by prefixing them with the letter 't'. You will also need to macro-expand using the i18n module. A simple file might look like this:",
 	example"expand(i18n);
 
-def greet()
-{
+def greet(){
     print(t\"Hello, world!\");
 }",
 
@@ -42,8 +41,7 @@ The tStringLiteral function does two things. Firstly, it is used by
 the annaxgettext program to locate translatable strings in the source
 code. Secondly, at run time, Strings passed through tStringLiteral are
 translated using the gettext framework.
-"))
-{
+")){
     return ast(getText.getText(%literal)) % ["literal": node[0]];	
 }
 

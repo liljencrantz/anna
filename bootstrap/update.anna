@@ -6,14 +6,11 @@ macro __mapping__(node)
 (
     doc("
 Internal utility macro. Makes sure that identifiers in mapping are internal identifiers, not regular identifiers.")
-)
-{ 
-    a1 := if(node[0] as Identifier)
-    {
+){ 
+    a1 := if(node[0] as Identifier){
 	InternalIdentifier(node[0], (node[0] as Identifier).name);
     }
-    else
-    {
+    else{
 	node[0];
     }
 
@@ -24,8 +21,7 @@ Internal utility macro. Makes sure that identifiers in mapping are internal iden
 def Node __update__(Call node)
 (
     doc("The common function used by __append__ and friends to implement in-place updating.")
-)
-{
+){
     checkNodeType(node.function, Identifier);
     nameId := node.function as Identifier;
 
@@ -33,12 +29,10 @@ def Node __update__(Call node)
      * that would cause a circular dependency. */
     name := nameId.name[Range(0,-2,1)] ~ "Assign__";
 
-    if(node.count == 1)
-    {
+    if(node.count == 1){
 	return ast(%x = %x.%y()).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name));
     }
-    if(node.count == 2)
-    {
+    if(node.count == 2){
 	return ast(%x = %x.%y(%z)).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1]);
     }
     node.error("Invalid number of arguments");
@@ -49,34 +43,29 @@ macro __increase__(node)
 (
     doc("
 Increase the specified value by the specified amount, called as +=.")
-)
-{__update__(node)}
+){__update__(node)}
 
 macro __decrease__(node)
 (
     doc("
 Decrease the specified value by the specified amount, called as -=.")
-)
-{__update__(node)}
+){__update__(node)}
 
 macro __append__(node)
 (
     doc("
 Append the specified value to the specified base, called as ~=.")
-)
-{__update__(node)}
+){__update__(node)}
 
 macro __next__(node)
 (
     doc("
 Move the specified value forward one step, called as ++.")
-)
-{__update__(node)}
+){__update__(node)}
 
 macro __prev__(node)
 (
     doc("
 Move the specified value backward one step, called as --.")
-)
-{__update__(node)}
+){__update__(node)}
 

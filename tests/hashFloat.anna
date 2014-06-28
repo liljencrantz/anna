@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     foo := [1.0: "one", 2.0: "two"];
     print(
 	foo[1.0],

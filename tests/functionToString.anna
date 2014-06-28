@@ -1,8 +1,7 @@
 
 def bar(){3}
 
-def Int main()
-{
+def Int main(){
     if(String::convert(bar)){
         print("ok")
     }

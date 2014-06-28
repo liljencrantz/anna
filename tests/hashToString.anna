@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     mm := [1 : "ggg"];
     print(mm);
     print([16 : "sweet"]);

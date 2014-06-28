@@ -4,50 +4,41 @@ error IoError (Error) {}
 
 attribute(doc("The io module is a high level library for handling files. It is currently rather incomplete but contains the basics needed for reading, writing and checking the status of files."));
 
-error IOError
-{    
+error IOError{    
 }
 
-def relative?(String filename) (internal)
-{
+def relative?(String filename) (internal){
     return filename[0] != separator;
 }
 
 const separator (doc("The directory separator")) = '/';
 
-def getCwd() (internal, doc("Returns a string representing the current workin directory."))
-{
+def getCwd() (internal, doc("Returns a string representing the current workin directory.")){
     b := Buffer();
     unix.io.getcwd(b, 4096);
     b.encode(nullTerminated:1);
 }
 
-def String readWholeFile(Int fd) (doc("Internal helper function: Read in the entire content of the specified file descriptor and return it as a string."), internal)
-{
+def String readWholeFile(Int fd) (doc("Internal helper function: Read in the entire content of the specified file descriptor and return it as a string."), internal){
     buf := Buffer();
     res := "".thaw;
 //    print("Read fd %" % [fd]);
-    while(1)
-    {
+    while(1){
       count := unix.io.read(fd, buf, 4096);
 //	print("Read % chars" % [count]);
-	switch(count)
-	{
-	    case(0)
-	    {
+	switch(count){
+	    case(0){
 //		print("OK '%'" % [res]);
 		return res;
 	    }
 
-	    case(-1)
-	    {
+	    case(-1){
 //		print("ERROR");
 //		error.raise(IoError());
 		return ?;
 	    }
 	    
-	    default
-	    {
+	    default{
 		buf.count = count;
 //		print("FADFA '%'" % [buf.encode()]);
 		res ~= buf.encode();
@@ -61,8 +52,7 @@ class File
 (
     doc(
 	"A high level object respresenting a filesystem entry such as a file, a directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations. A File object represents a file system path; it does not always point to an actually existing file.")
-)
-{
+){
     
     var List «String» path (internal, doc("The path to this file"));
     var Int fd (internal, doc("If this file is open, this is its file descriptor."));
@@ -70,10 +60,8 @@ class File
     def __init__(String filename)
     (
 	doc("Create a new file object.")
-    )
-    {
-	if(relative?(filename))
-	{
+    ){
+	if(relative?(filename)){
 	    path = getCwd().split(separator, ?);
 	    path ~= filename.split(separator, ?);
 	} else {
@@ -85,13 +73,11 @@ class File
     (
 	doc(
 	    "Joins the specified subdirectory to the directory represented by the File object and returns the result.")
-    )
-    {
+    ){
 	File(filename ~ separator ~ name);
     }
     
-    def String filename() (property, doc("The name of the file."),)
-    {
+    def String filename() (property, doc("The name of the file."),){
 	"" ~ separator ~ String::convert(separator).join(path)
     }
     
@@ -99,11 +85,9 @@ class File
     (
 	doc(
 	    "Read the contents of the file and return it as a String.")
-    )
-    {
+    ){
       fd := unix.io.open(this.filename, unix.io.openMode.readOnly, 0);
-	if(!fd)
-	{
+	if(!fd){
 	    raise(IOError("Failed to open file"));
 	    return ?;
 	}
@@ -116,8 +100,7 @@ class File
     (
 	doc(
 	    "Write the contents of the String into the specified file.")
-    )
-    {
+    ){
         (fd := unix.io.open(
 	    this.filename, 
 	    unix.io.openMode.writeOnly ^bitor 
@@ -132,8 +115,7 @@ class File
     def open()
     (
 	doc("Open the specified file for reading and writing.")
-    )
-    {
+    ){
         fd = unix.io.open(
 	    this.filename, 
 	    unix.io.openMode.readWrite ^bitor unix.io.openMode.create, 
@@ -144,8 +126,7 @@ class File
     def close()
     (
 	doc("Close the specified file for reading and writing.")
-    )
-    {
+    ){
         unix.io.close(fd)
     }
 
@@ -153,27 +134,22 @@ class File
     (
 	doc(
 	    "Write the string representation of the specified objects to the file.")
-    )
-    {
+    ){
         b := Buffer();
-	value.each(v)
-	{
+	value.each(v){
 	    b.decode(String::convert(v));
 	    unix.io.write(this.fd, b, b.count);
 	}
     }
   
-    def Any exists?() (property, doc("This value is non-null if the file pointed to by this object currently exists."),)
-    {
+    def Any exists?() (property, doc("This value is non-null if the file pointed to by this object currently exists."),){
         buf := unix.io.Stat();
 	return !unix.io.stat(this.filename, buf);
     }
     
-    def Any file?() (property, doc("This value is non-null if the file pointed to by this object is a regular file"))
-    {
+    def Any file?() (property, doc("This value is non-null if the file pointed to by this object is a regular file")){
         buf := unix.io.Stat();
-	return if(!unix.io.stat(this.filename, buf))
-	{
+	return if(!unix.io.stat(this.filename, buf)){
 	    buf.mode ^bitand unix.io.statMode.regular != 0;
 	} else {
 	    ?
@@ -184,11 +160,9 @@ class File
     (
 	property, 
 	doc("This value is non-null if the file pointed to by this object is a directory."),
-)
-    {
+){
         buf := unix.io.Stat();
-	return if(!unix.io.stat(this.filename, buf))
-	{
+	return if(!unix.io.stat(this.filename, buf)){
 	    buf.mode ^bitand unix.io.statMode.directory != 0;
 	} else {
 	    ?
@@ -198,14 +172,11 @@ class File
     def makeDirectory()
     (
 	doc("Creates a directory in the path specified by the File object.")
-    )
-    {
-	(0..this.path.count).each(last)
-	{
+    ){
+	(0..this.path.count).each(last){
 	    name := "" ~ separator ~ String::convert(separator).join(this.path[0..last+1]);
 	    
-	    if((!unix.io.mkdir(name, 0o777)) and !(unix.error.errno in [unix.error.status.exist]))
-	    {
+	    if((!unix.io.mkdir(name, 0o777)) and !(unix.error.errno in [unix.error.status.exist])){
 		print(unix.error.errorString(unix.error.errno));
 		return ?;
 	    }
@@ -217,31 +188,26 @@ class File
     (
 	doc(
 	    "Change the current working directory to the directory represented by this File object.")
-    )
-    {
+    ){
 	unix.io.chdir(this.filename);
     }
     
-    def File currentDirectory() (static, doc("Returns a File object representing the current working directory"))
-    {
+    def File currentDirectory() (static, doc("Returns a File object representing the current working directory")){
 	File(getCwd());
     }
 
     def delete()
     (
 	doc("Deletes the file system path represented by the File object.")
-    )
-    {
+    ){
 	unix.io.unlink(this.filename);
     }
 
-    def String toString()
-    {
+    def String toString(){
 	return filename;
     }
 
-    def copyTo(File destination)
-    {
+    def copyTo(File destination){
 
     }
 

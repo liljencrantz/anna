@@ -1,6 +1,5 @@
 
-def main()
-{
+def main(){
     print(
 	String::convert(1), 
 	String::convert(2345678910111213141516171819), 

@@ -1,22 +1,17 @@
-class Foo
-{
-    def fun(String param)
-    {
+class Foo{
+    def fun(String param){
         print(param);
     }
 }
 
-class Bar
-{
+class Bar{
 
-    def fun(Int param)
-    {
+    def fun(Int param){
         print(param);
     }
 }
 
-def main()
-{
+def main(){
     v := Foo();
     v = Bar();
 }

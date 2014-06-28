@@ -2,8 +2,7 @@
   Exteremely simple string formating, only uses the toString method of each argument
 */
 
-def main()
-{
+def main(){
     print("Lets try some basic string formating. 
 An Int: %()
 Here comes a Char: %()

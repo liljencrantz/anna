@@ -19,8 +19,7 @@ the properly typed parameters.",
 Greetings, &lt;%= userName %&gt;
 
 &lt;%
-hobbyList.each(hobby)
-{
+hobbyList.each(hobby){
 %&gt;
 You enjoy &lt;%= hobby %&gt;, don't you?
 &lt;%
@@ -29,8 +28,7 @@ You enjoy &lt;%= hobby %&gt;, don't you?
 </pre>",
     "The second file, called myTemplateExample.anna:",
     example"expand(template);
-def main()
-{
+def main(){
     userName := \"Benjamin\";
     hobbyList := [\"Cooking\", \"Meeting friends\", \"Long walks on the beach\"];
     print(template(\"myTemplate.html\"));
@@ -57,72 +55,54 @@ You enjoy Long walks on the beach, don't you?
 </ul>
 ",
     "This template library is merely a proof of concept. The most important limitation is that it doesn't track the original source line of any generated code, which means that any code positions given in error messages are meaningless.")
-)
-{
+){
     tmplText := File((node[0] as StringLiteral).payload).readFile();
     transformed := "%res ~= \"".thaw;
     code := ? as Int;
     wasBrack := ? as Int;
     first := ? as Int;
     addParen := ? as Int;
-    tmplText.each(ch)
-    {
-	if(code)
-	{
-	    if(first)
-	    {
-		switch(ch)
-		{
-		    case('=')
-		    {
+    tmplText.each(ch){
+	if(code){
+	    if(first){
+		switch(ch){
+		    case('='){
 			transformed ~= "%res ~= html.escape(";
 			addParen = 1;
 		    } 
-		    case('!')
-		    {
+		    case('!'){
 			transformed ~= "%res ~= (";
 			addParen = 1;
 		    } 
-		    default
-		    {
+		    default{
 			transformed ~= ch;		    
 			addParen = ?;
 		    }
 		}
 	    } 
-	    else
-	    {
-	    switch(ch)
-	    {
-		case('%')
-		{
+	    else{
+	    switch(ch){
+		case('%'){
 		    wasBrack = 1;
 		}
-		case('>')
-		{
-		    if(wasBrack)
-		    {
-			if(addParen)
-			{			    
+		case('>'){
+		    if(wasBrack){
+			if(addParen){			    
 
 			    transformed ~= ");\n    %res ~= \"";
 			} 
-			else
-			{
+			else{
 			    transformed ~= ";\n    %res ~= \"";
 			}
 			code = ?;
 			wasBrack = ?;
 		    } 
-		    else
-		    {
+		    else{
 			transformed ~= ch;
 		    }
 		}
-		default
-		{
-		    if(wasBrack)
-		    {
+		default{
+		    if(wasBrack){
 			transformed ~= '%';
 			wasBrack = ?;
 		    }
@@ -132,41 +112,31 @@ You enjoy Long walks on the beach, don't you?
 	    }
 	    first = ?;
 	} 
-	else
-	{
-	    switch(ch)
-	    {
-		case('<')
-		{
+	else{
+	    switch(ch){
+		case('<'){
 		    wasBrack = 1;
 		}
-		case('%')
-		{
-		    if(wasBrack)
-		    {
+		case('%'){
+		    if(wasBrack){
 			transformed ~= "\";\n    ";
 			code = 1;
 			wasBrack = ?;
 			first = 1;
 		    } 
-		    else
-		    {
+		    else{
 			transformed ~= ch;
 		    }
 		}
-		default
-		{
-		    if(wasBrack)
-		    {
+		default{
+		    if(wasBrack){
 			transformed ~= '<';
 			wasBrack = ?;
 		    }
-		    if(ch == '"')
-		    {
+		    if(ch == '"'){
 			transformed ~= "\\";
 		    }
-		    if(ch == '\\')
-		    {
+		    if(ch == '\\'){
 			transformed ~= "\\";
 		    }
 		    transformed ~= ch;
@@ -180,8 +150,7 @@ You enjoy Long walks on the beach, don't you?
     nodes := parse(transformed) as Call;
 //    print(nodes);
     res := ast(
-	(def String()
-	{
+	(def String(){
 	    %res := "".thaw
 	})()
 	) % ["text": Dummy(node, tmplText)];

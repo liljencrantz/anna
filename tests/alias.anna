@@ -2,23 +2,19 @@
   Check that user defined method aliases work
 */
 
-class Foo
-{
+class Foo{
 
-    def bar__String__(String first, String second, String third) (alias(bar))
-    {
+    def bar__String__(String first, String second, String third) (alias(bar)){
 	print(first, second, third);
     }
 
-    def bar__Int__(Int first, Int second, Int third) (alias(bar))
-    {
+    def bar__Int__(Int first, Int second, Int third) (alias(bar)){
 	print(first + second + third);
     }
 
 }
 
-def main()
-{
+def main(){
     foo := Foo();
     foo.bar(-1,0,1);    
     foo.bar("a", "b", "c");

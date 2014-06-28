@@ -1,11 +1,9 @@
-struct Foo
-{
+struct Foo{
     var Int some;
     var String other;
 }
 
-def main()
-{
+def main(){
     ggg := Foo(3, "abc");
     ggg2 := Foo(3, "abc");
     ggg3 := Foo(3, "zzz");

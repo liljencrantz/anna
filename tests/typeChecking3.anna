@@ -3,20 +3,16 @@
   types of infinity and beyond depend on each other.
  */
 
-class MyClass
-{
-    def infinity()
-    {
+class MyClass{
+    def infinity(){
 	beyond();
     }
     
-    def beyond()
-    {
+    def beyond(){
 	infinity();
     }
 }
 
-def main()
-{
+def main(){
     print(MyClass().infinity());
 }

@@ -7,7 +7,6 @@ __const__(
 	hello()),
     __block__());
 
-def main()
-{
+def main(){
     print(Hej());
 }

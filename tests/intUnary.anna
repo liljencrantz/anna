@@ -1,6 +1,5 @@
 
-def main()
-{
+def main(){
     bbb := 123456789101112134151617181920;
     print(bbb);
     print(-bbb);

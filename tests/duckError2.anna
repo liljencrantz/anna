@@ -1,23 +1,18 @@
-class Foo
-{
+class Foo{
 
-    def fun()
-    {
+    def fun(){
         3;
     }
 }
 
-class Bar
-{
+class Bar{
 
-    def fun()
-    {
+    def fun(){
         "3";
     }
 }
 
-def main()
-{
+def main(){
     v := Foo();
     v = Bar();
 }

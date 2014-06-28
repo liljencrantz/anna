@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     f := builtinMacros.ast;
     print(f(parser.Call(
 		?,

@@ -3,34 +3,27 @@
   multiple inheritance
  */
 
-class Base1
-{
-    def foo()
-    {
+class Base1{
+    def foo(){
 	print("Base1::foo");
     }
 }
 
-class Base2
-{
-    def foo()
-    {
+class Base2{
+    def foo(){
 	print("Base2::foo");
     }
 }
 
 class Derived1
-(extends(Base1, Base2))
-{
+(extends(Base1, Base2)){
 }
 
 class Derived2
-(extends(Base1, Base2))
-{
+(extends(Base1, Base2)){
 }
 
-def main()
-{
+def main(){
     expandCode(
 	%Type().foo(),
 	Type: [Base1, Base2, Derived1, Derived2]);

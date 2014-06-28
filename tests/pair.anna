@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     g := 4|"DDD";
     g.first += 1;
     print(g.first+62, g.second[0].ordinal);

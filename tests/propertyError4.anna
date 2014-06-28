@@ -3,8 +3,7 @@ class MyType {
 
     var Int prop (property(myGetter, whoLikesPie));
 
-    def myGetter()
-    {
+    def myGetter(){
         return 7;
     }
 

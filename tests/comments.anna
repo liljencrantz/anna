@@ -4,8 +4,7 @@
 /*
 Yet another comment
 */
-def main()
-{
+def main(){
     print("ok");
 }
 

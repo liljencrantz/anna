@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     fun := def Int () {-1}
     print(fun(), fun(), fun());
 

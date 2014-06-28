@@ -2,8 +2,7 @@ use(parser);
 /*
   Test the clone, hash and equality functions of all ast node types
 */
-def main()
-{
+def main(){
     f := FloatLiteral(?, 1.0);
     i := IntLiteral(?, 1);
     i2 := IntLiteral(?, 2);

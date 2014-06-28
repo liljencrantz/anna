@@ -19,14 +19,11 @@ be Strings:
   <li><code>end</code>, which is the character to print after the last 
   argument (the default is the newline character).</li>
 </ul>")
-)
-{
+){
     end := keys["end"] or "\n";
     sep := keys["sep"] or " ";
-    param.each(idx, val)
-    {   		    
-	if(idx != 0)
-	{
+    param.each(idx, val){   		    
+	if(idx != 0){
 	    printInternal(sep);
 	}
 	printInternal(String::convert(val));

@@ -1,6 +1,5 @@
 use(unix);
-def main()
-{
+def main(){
     env["test"] = "testval";
     print(env["test"]);
 }

@@ -1,8 +1,6 @@
-def Int foo() (someNoneExistingAttribute)
-{
+def Int foo() (someNoneExistingAttribute){
 
 }
 
-def main()
-{
+def main(){
 }

@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     /*
       This file contains a few tests for the in operator of arrays
     */

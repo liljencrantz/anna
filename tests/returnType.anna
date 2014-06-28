@@ -1,4 +1,3 @@
-def Mint main()
-{
+def Mint main(){
     print("Test\n");
 }

@@ -1,17 +1,14 @@
 
-class A
-{
+class A{
 
-    def myProp() (property)
-    {
+    def myProp() (property){
 	return 7;
     }
 
 }
 
 def main()
-(doc("Test that the property attribute works right on methods"))
-{
+(doc("Test that the property attribute works right on methods")){
     a := A();
     print(a.myProp);
 }

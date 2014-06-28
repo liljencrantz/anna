@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     /* Perform a bunch of bitwise tests twise, once for large and once for small numbers */
     print(
 	0b1010_1010_1010_1010_1010_1010_1010_1010_1010_1010_1010_1010 ^bitor 

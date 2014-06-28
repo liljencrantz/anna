@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     /*
       ast macro expects one argument
      */

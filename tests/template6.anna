@@ -9,12 +9,10 @@
   benefit of making run time creation of new function types easier.
 */
 
-myFunTemplate := def (%T a, %T b) (template(%T: Int))
-{
+myFunTemplate := def (%T a, %T b) (template(%T: Int)){
     a+b;
 }
 
-def main()
-{
+def main(){
     print(myFunTemplate«Float»(3.0, 4.0), "\n");
 }

@@ -3,13 +3,11 @@ attribute(internal, doc("Internal module for the propertyAttribute macro."));
 use(parser);
 
 def Call getAttributePayload(Call c)
-    (doc("Internal helper function for <a member='propertyAttribute'>propertyAttribute</a>. Don't use directly."), internal)
-{
+    (doc("Internal helper function for <a member='propertyAttribute'>propertyAttribute</a>. Don't use directly."), internal){
     expandCode(
 	if(c.callTo?(%name)) { return c },
 	name: ["__constInternal__", "__varInternal__", "__typeInternal__", "__defInternal"]);
-    if(c.count == 1 and c[0] as Call)
-    {
+    if(c.count == 1 and c[0] as Call){
 	return getAttributePayload(c[0] as Call);
     }
     return ?
@@ -22,17 +20,14 @@ macro propertyAttribute(node)
 	"A simple example of defining a property with both a getter and a setter",
 	"
 <pre class='anna-code'>
-class MyClass
-{
+class MyClass{
     var Int storage;
 
-    def myGetter()
-    {
+    def myGetter(){
         this.storage;
     }
 
-    def mySetter(Int val)
-    {
+    def mySetter(Int val){
         this.storage = -val;
     }
 
@@ -42,24 +37,19 @@ class MyClass
 	"If one wants to define a read only-property, one can instead write",
 	"
 <pre class='anna-code'>
-class MyClass
-{
+class MyClass{
     var Int storage;
 
-    def myProperty() (property)
-    {
+    def myProperty() (property){
         this.storage;
     }
 }
 </pre>",
-	))
-{
+	)){
     payload := getAttributePayload(node);
-    if(payload.callTo?("__constInternal__"))
-    {
+    if(payload.callTo?("__constInternal__")){
         decl := payload as Call;
-	if(decl[2].callTo?("__def__"))
-	{
+	if(decl[2].callTo?("__def__")){
 	    getter := decl[2] as Call;
 	    propType := if(type(getter[1]) != NullLiteral){getter[1]} else {ast(__staticReturnTypeOf__(%fun)) % ["fun": decl[2]];}
 	    propName := (decl[0] as Identifier).name;

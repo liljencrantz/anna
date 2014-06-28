@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     print("12345".thaw[2..1] = "abc");
     print("12345".thaw[2..2] = "abc");
     print("12345".thaw[2..5] = "abc");

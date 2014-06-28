@@ -1,6 +1,5 @@
 
-def fannkuch(Int n)
-{
+def fannkuch(Int n){
     maxFlipsCount := 0;
     permSign := 1;
     checksum := 0;
@@ -9,8 +8,7 @@ def fannkuch(Int n)
     count := perm1[0...];
     rxrange := 2 .. n-1;
     nm := n - 1;
-    while(1)
-    {
+    while(1){
         k = perm1[0]
         if k:
             perm = perm1[:]
@@ -48,7 +46,6 @@ def fannkuch(Int n)
 			}
 }
 
-def main()
-{
+def main(){
     print("Pfannkuchen(", n, ") = ", fannkuch(n), "\n");
 }

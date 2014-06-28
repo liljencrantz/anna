@@ -1,6 +1,5 @@
 
-def main()
-{
+def main(){
     use(functional);
     print(sum([1,2,3,4]));
     print([1,2,3,4].reduce(0, Int::__add__));

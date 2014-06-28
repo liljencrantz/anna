@@ -1,9 +1,7 @@
-def variadicFunction(String keys..., String abc)
-{
+def variadicFunction(String keys..., String abc){
     print(keys, abc);
 }
 
-def main()
-{
+def main(){
     variadicFunction("a", "b");
 }

@@ -1,13 +1,10 @@
-def sub()
-{
-    if(1)
-    {
+def sub(){
+    if(1){
         return 1;
     }
     return "1";
 }
 
-def main()
-{
+def main(){
     print(sub() ~ "\n");
 }

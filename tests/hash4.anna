@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     steps :== 100_000;
     m :== HashMap«String,Int»();
     (0..steps|10_000).each(offset){

@@ -1,4 +1,3 @@
-def main()
-{
+def main(){
     print(ast(1+1));
 }

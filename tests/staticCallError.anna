@@ -1,20 +1,16 @@
 
-class MyType
-{
+class MyType{
 
-    def wrongMethod() (static)
-    {
+    def wrongMethod() (static){
     }
     
-    def yay()
-    {
+    def yay(){
 	print(["a","b", "c", "d", "e"].map(wrongMethod));
     }
     
 }
 
-def main()
-{
+def main(){
     mm := MyType();
     mm.yay();
 }

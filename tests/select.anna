@@ -1,8 +1,7 @@
 /*
   Simple test to make sure that the unix.io.select function is porperly working.
  */
-def main()
-{
+def main(){
     use(unix.io);
     use(unix.time);
     tv := TimeVal();
@@ -12,31 +11,26 @@ def main()
     fd := «Int»[];
     pipe(fd);
 
-    if(unix.proc.fork() == 0)
-    {
+    if(unix.proc.fork() == 0){
 	wBuff := Buffer();
 	wBuff.decode("I'm a little teapot");
 
 	fdSet := FdSet();
 	fdSet[fd[1]] = 1;
 	res:= select(fd[1]+1, ?, fdSet, ?, tv);
-	if(res == 1)
-	{
-	    if(write(fd[1], wBuff, wBuff.count) == -1)
-	    {
+	if(res == 1){
+	    if(write(fd[1], wBuff, wBuff.count) == -1){
 		print("Failed to write to fd", fd[1]);
 		print(unix.error.errorString(unix.error.errno));
 	    }
 	}
     }
-    else
-    {
+    else{
 	rBuff := Buffer();
 	fdSet := FdSet();
 	fdSet[fd[0]] = 1;
 	res:= select(fd[0]+1, fdSet, ?, ?, tv);
-	if(res == 1)
-	{
+	if(res == 1){
 	    rc := read(fd[0], rBuff, 1024);
 	    rBuff.count = rc;
 	    print(rBuff.encode());

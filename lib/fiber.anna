@@ -9,62 +9,51 @@ var reflection.Continuation entry;
 class Fiber
 (
     doc("A simple cooperative thread implementation")
-)
-{
+){
     var reflection.Continuation continuation (internal, doc("The continuation to call to continue executing this fiber."));
     var Int idx (internal, doc("The integer index of this Fiber in the global fibers list"));
 
     def __init__()
-    (doc("Create a new Fiber"))
-    {
+    (doc("Create a new Fiber")){
 	enable();
     }
 
-    def Any enable() (doc("Call Fiber.enable in order to make this Fiber runnable. This is done autmoatically at Fiber creation."))
-    {
-	if(!fibers)
-	{
+    def Any enable() (doc("Call Fiber.enable in order to make this Fiber runnable. This is done autmoatically at Fiber creation.")){
+	if(!fibers){
 	    fibers = «Fiber»[];
 	}
 	idx = fibers.count;
 	fibers.push(this);
 	this.continuation = reflection.currentContinuation;
-	if(this.continuation.callCount > 0)
-	{
+	if(this.continuation.callCount > 0){
 	    run();
 	    disable();
 	    yield();
 	}
     }
 
-    def disable() (doc("Make it no longer possible to run the specified fiber."))
-    {
+    def disable() (doc("Make it no longer possible to run the specified fiber.")){
 	fibers[idx] = fibers[-1];
 	fibers.count--;
 	idx = ?;
     }
 
     def run()
-    (doc("Subclasses of Fiber should reimplement this method"))
-    {
+    (doc("Subclasses of Fiber should reimplement this method")){
     }
 
-    def yield()(static, doc("Yield the currently running Fiber and pick a new fiber to run."))
-    {
-	if(current)
-	{
+    def yield()(static, doc("Yield the currently running Fiber and pick a new fiber to run.")){
+	if(current){
 	    current.continuation = reflection.currentContinuation;
 	    (current.continuation.callCount == 0) or (return);
 	} else{
 	    entry = reflection.currentContinuation;
-	    if(entry.callCount > 0)
-	    {
+	    if(entry.callCount > 0){
 		return;
 	    }
 	}
         current= fibers[fiberIndex];
-	if(!current)
-	{
+	if(!current){
 	    entry();
 	}
 	fiberIndex = (fiberIndex+1) ^mod fibers.count;

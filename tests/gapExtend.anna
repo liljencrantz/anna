@@ -4,21 +4,18 @@
 */
 
 class MidHash
-(extends(HashMap«Int, Int»))
-{
+(extends(HashMap«Int, Int»)){
 }
 
 class MyHash
-(extends(MidHash))
-{
+(extends(MidHash)){
     var Int foo;
     var Int bar;
     var Int baz;
     var Int qux;
 }
 
-def main()
-{
+def main(){
     hh := MyHash(3|7, 2|5, 0|99);
     print(hh);
     print(hh.foo, hh.bar, hh.baz, hh.qux);

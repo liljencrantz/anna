@@ -1,10 +1,8 @@
-def someFunction()
-{
+def someFunction(){
     return 7;
 }
 
-def main()
-{
+def main(){
     myConst :== someFunction();
     print(myConst);
 }

@@ -7,8 +7,7 @@ def flatten(%T input)
     template(%T:List«List»),
     doc("
 Return a MutableList containing all the elements of the List of Lists given as input.")
-)
-{
+){
     res := «staticType(input[0][0])»[];
     input.each(el){res ~= el}
     return res;
@@ -22,15 +21,13 @@ contains the i-th element from each of the argument lists. The
 returned list is truncated in length to the length of the shortest
 argument sequence. The specialization of the ImutableList is the
 intersection of the static types of all the argument lists.")
-)
-{
+){
     res := «ImutableList«staticType(input[0][0])»»[];
     
     (0..input[0].count).each(idx){
 	list := «staticType(input[0][0])»[];
 	input.each(coll){
-	    if(coll.count <= idx)
-	    {
+	    if(coll.count <= idx){
 		return res;
 	    }
 	    list.push(coll[idx]);

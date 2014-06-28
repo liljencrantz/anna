@@ -1,16 +1,13 @@
 
-def myFun( Int a, Int b, def Int fun(Int a, Int b) = Int::__add__)
-{
+def myFun( Int a, Int b, def Int fun(Int a, Int b) = Int::__add__){
     fun(a, b);
 }
 
-def myFun2( Int a, Int b, def Int fun(Int a, Int b) = def (Int a, Int b){a+b})
-{
+def myFun2( Int a, Int b, def Int fun(Int a, Int b) = def (Int a, Int b){a+b}){
     fun(a, b);
 }
 
-def main()
-{
+def main(){
     print(myFun(1,2));
     print(myFun(1,2, Int::__sub__));
 

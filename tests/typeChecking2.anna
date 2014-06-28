@@ -5,20 +5,16 @@
   someFunction method must already be prepared.
  */
 
-class MyClass
-{
-    def outer()
-    {
+class MyClass{
+    def outer(){
 	inner();
     }
     
-    def someFunction() (alias(inner))
-    {
+    def someFunction() (alias(inner)){
 	"ok";
     }
 }
 
-def main()
-{
+def main(){
     print(MyClass().outer());
 }

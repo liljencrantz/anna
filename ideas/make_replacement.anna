@@ -2,28 +2,24 @@
 expand(make);
 
 // There is a target called clean
-clean
-{
+clean{
   // Remove anything matching the glob *~
   rm(g"*~")
 }
 
 // There is a target called clobber that depends on clean
-clobber(clean)
-{
+clobber(clean){
   // Recursive removal of the directory tempdir
   rm(recursive:1, "tempdir");
 }
 
 // How to make any file called SOMETHING.c in any directory. It depends on a file named SOMETHING.d in the same directory
-g"**.c"(v"%source"[-1]='d')
-{
+g"**.c"(v"%source"[-1]='d'){
   // Command sent directly to OS
   cmd(v"%cc %source -o %target %cflags");
 }
 
-g"**.d"
-{
+g"**.d"{
   cmd(v"%cc -MM ...");
 }
 

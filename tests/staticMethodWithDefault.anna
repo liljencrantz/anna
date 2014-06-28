@@ -3,18 +3,15 @@
   default values
 */
 
-class MyType
-{
+class MyType{
 
-    def staticMethod(Int param = 0) (static)
-    {
+    def staticMethod(Int param = 0) (static){
 	print(param);
     }
 
 }
 
-def main()
-{
+def main(){
     MyType::staticMethod(1);
     MyType::staticMethod();
     m := MyType();

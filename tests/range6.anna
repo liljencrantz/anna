@@ -4,8 +4,7 @@
     For closed ranges, should work like on Lists, e.g. -1 is the last element.
     For open ranges, indexing from the end is obviously not supported.
 */
-def main()
-{
+def main(){
     r := 0..5;
     o := 0...;
     print(r[-2], ' ', r[-10], ' ', o[-1], ' ', o[-10], '\n');

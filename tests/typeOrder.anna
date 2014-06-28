@@ -3,16 +3,13 @@
   defined later in the same file.
 */
 
-class A
-{
+class A{
     var B memb;
 }
 
-class B
-{
+class B{
 }
 
-def main()
-{
+def main(){
 }
 

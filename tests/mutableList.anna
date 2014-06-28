@@ -1,6 +1,5 @@
 
-def main()
-{
+def main(){
     im := [1,2,3].freeze;
     print(im, type(im));
     m := im.thaw;

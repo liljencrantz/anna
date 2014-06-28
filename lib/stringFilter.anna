@@ -10,27 +10,23 @@ example:",
 "<pre class='anna-code'>
 expand(stringFilter);
 
-def main()
-{
+def main(){
     myVar := 123;
     print(f\"foo %(\\\"a\\\" ~ 4 ~ 'f') bar %(myVar) baz\");
 }
 </pre>",
 	"The above code is equivalent to:",
 "<pre class='anna-code'>
-def main()
-{
+def main(){
     myVar := 123;
     print(\"foo % bar % baz\" % [\"a\" ~ 4 ~ 'f', myVar]);
 }
 </pre>",
 	"and will output <code>foo a4f bar 123 baz</code>."
     )
-)
-{
+){
     use(parser);
-    if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload))
-    {
+    if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload)){
 	node.error("Invalid formated string");
     }
 
@@ -49,76 +45,59 @@ def main()
     state := State::text;
     keyIdx := 0;
 
-    lit.each(ch)
-    {
-	switch(state)
-	{
+    lit.each(ch){
+	switch(state){
 
-	    case(State::text)
-	    {
-		if(ch == '%')
-		{
+	    case(State::text){
+		if(ch == '%'){
 		    state = State::percent;
 		}
-		else
-		{
+		else{
 		    res ~= ch;
 		}
 	    }
 
-	    case(State::percent)
-	    {
-		if(ch == '(')
-		{
+	    case(State::percent){
+		if(ch == '('){
 		    state = State::code;
 		}
-		else
-		{
+		else{
 		    state = State::text;
 		    res ~= '%';
 		    res ~= ch;
 		}
 	    }
 
-	    case(State::code)
-	    {
-		switch(ch)
-		{
-		    case('(')
-		    {
+	    case(State::code){
+		switch(ch){
+		    case('('){
 			paranCount++;
 			codeItem ~= ch;
 		    }
 
-		    case('"')
-		    {
+		    case('"'){
 			state = State::stringLiteral;
 			codeItem ~= ch;
 		    }
 
-		    case('\'')
-		    {
+		    case('\''){
 			state = State::charLiteral;
 			codeItem ~= ch;
 		    }
 
-		    case('/')
-		    {
+		    case('/'){
 			state = State::codeSlash;
 			codeItem ~= ch;
 		    }
 
-		    case(')')
-		    {
-			if(paranCount == 0)
-			{
+		    case(')'){
+			if(paranCount == 0){
 			    keyName := "key" ~ keyIdx;
 			    keyIdx++;
 			    res ~= "%(" ~ keyName ~")";
 
 			    parsed := parse(codeItem);
-			    if(!parsed)
-			    {
+			    if(!parsed){
 				node.error("Invalid code");
 				return ?;
 			    }
@@ -126,110 +105,89 @@ def main()
 			    codeItem.count=0;
 			    state = State::text;
 			}
-			else
-			{
+			else{
 			    codeItem ~= ch;
 			    paranCount--;
 			}
 
 		    }
 
-		    default
-		    {
+		    default{
 			codeItem ~= ch;
 		    }	
 		}
 	    }
 
-	    case(State::codeSlash)
-	    {
+	    case(State::codeSlash){
 		codeItem ~= ch;
 	        slashMapping := ['*': State::multiLineComment, '/': State::singleLineComment];
 		slashMapping.default = State::code;
 		state = slashMapping[ch];
-		if(state == State::multiLineComment)
-		{
+		if(state == State::multiLineComment){
 		    commentCount++;
 		}
 	    }
 
-	    case(State::multiLineComment)
-	    {
+	    case(State::multiLineComment){
 		codeItem ~= ch;
-		switch(ch)
-		{
-		    case('/')
-		    {
+		switch(ch){
+		    case('/'){
 			state = State::multiLineCommentSlash;
 		    }
 
-		    case('*')
-		    {
+		    case('*'){
 			state = State::multiLineCommentStar;
 		    }
 
 		}
 	    }
 
-	    case(State::multiLineCommentStar)
-	    {
+	    case(State::multiLineCommentStar){
 		codeItem ~= ch;
-		switch(ch)
-		{
-		    case('/')
-		    {
+		switch(ch){
+		    case('/'){
 			commentCount--;
-			if(commentCount == 0)
-			{
+			if(commentCount == 0){
 			    state = State::code;
 			}
 		    }
 
-		    default
-		    {
+		    default{
 			state = State::multiLineComment;
 		    }
 
 		}
 	    }
 
-	    case(State::multiLineCommentSlash)
-	    {
+	    case(State::multiLineCommentSlash){
 		codeItem ~= ch;
-		switch(ch)
-		{
-		    case('*')
-		    {
+		switch(ch){
+		    case('*'){
 			commentCount++;
 		    }
 
-		    default
-		    {
+		    default{
 			state = State::multiLineComment;
 		    }
 
 		}
 	    }
 
-	    case(State::singleLineComment)
-	    {
+	    case(State::singleLineComment){
 		codeItem ~= ch;
-		if(ch == '\n')
-		{
+		if(ch == '\n'){
 		    state = State::code;
 		}
 	    }
 
-	    case(State::charLiteral)
-	    {
+	    case(State::charLiteral){
 		codeItem ~= ch;
 	        charLiteralMapping := ['\'': State::code, '\\': State::charLiteralBackslash];
 		charLiteralMapping.default = State::charLiteral;
 		state = charLiteralMapping[ch];
 	    }
 
-	    case(State::stringLiteral)
-	    {
+	    case(State::stringLiteral){
 		codeItem ~= ch;
 	        charLiteralMapping := ['"': State::code, '\\': State::stringLiteralBackslash];
 		charLiteralMapping.default = State::stringLiteral;
@@ -237,14 +195,12 @@ def main()
 	    }
 
 
-	    case(State::charLiteralBackslash)
-	    {
+	    case(State::charLiteralBackslash){
 		codeItem ~= ch;
 		state = State::charLiteral;
 	    }
 
-	    case(State::stringLiteralBackslash)
-	    {
+	    case(State::stringLiteralBackslash){
 		codeItem ~= ch;
 		state = State::stringLiteral;
 	    }
@@ -253,8 +209,7 @@ def main()
 	}
     }
 
-    if (state != State::text)
-    {
+    if (state != State::text){
 	node.error("Invalid format string" ~ paranCount);
 	return ?;
     }
@@ -286,16 +241,13 @@ no boolean type, true/false values currently aren't handled.\",
 List and HashMap types. If you want your own custom class to be 
 supported, simply add a toJson method that returns a String.\"
     )
-)
-{
+){
     ...
 }
 </pre>",
 )
-)
-{
-    if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload))
-    {
+){
+    if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload)){
 	node.error("Invalid example");
     }
 

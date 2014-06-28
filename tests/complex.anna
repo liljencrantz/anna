@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     print(Complex::convert(1.0));
     print(Complex::convert(1));
     a := Complex(1.0, 0.0);

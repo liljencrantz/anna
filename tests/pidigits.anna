@@ -1,11 +1,9 @@
 
-def main()
-{
+def main(){
     digits := Int::convert(system.argument[1]) or 1000;
     [i, k, ns, k1, n, a, d, t, u] := [0, 0, 0, 1, 1, 0, 1, 0, 0];
 
-    while(1)
-    {
+    while(1){
 	k += 1;
 	t = n ^shl 1;
 	n = n*k;
@@ -18,12 +16,10 @@ def main()
 	    t = tmp/d;
 	    u = tmp ^mod d;
 	    u += n;
-	    if (d > u)
-	    {
+	    if (d > u){
 		ns = ns*10 + t;
 		i += 1;
-		if (i ^mod 10 == 0)
-		{
+		if (i ^mod 10 == 0){
 		    print("%()\t:%()" % [String::convert(ns).lpad(char:'0', count:10), i]);
 		    ns = 0;
 		}

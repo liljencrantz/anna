@@ -1,6 +1,5 @@
 
-def main()  
-{
+def main()  {
     print(Int);
 
     hh := [Int:3, String:7, Pair : 9];

@@ -6,16 +6,13 @@
   The workaround is to define the return type of such members
   explicitly.
 */
-class T
-{
-    def toString()
-    {
+class T{
+    def toString(){
 	type(this).name;
     }
 }
 
-def main()
-{
+def main(){
     print(T());
 }
 

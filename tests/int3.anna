@@ -2,8 +2,7 @@
   Test that over and underflows of addition and subtraction work
   correctly 
 */
-def main()
-{
+def main(){
     a:=0;
     b:=0;
     c:=0;

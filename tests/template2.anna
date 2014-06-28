@@ -1,18 +1,15 @@
 /*
   Test template specialization of function names in types
 */
-class Foo (template(%op:__add__)) 
-{
+class Foo (template(%op:__add__)) {
 
-    def Int bar(Int a, Int b)
-    {
+    def Int bar(Int a, Int b){
         a.%op(b);
     }
 
 }
 
-def Int main()
-{
+def Int main(){
     foo := Foo();
     print(foo.bar(3,4));
     boo := Foo«__sub__»();

@@ -2,7 +2,6 @@
   Regression check for an earlier crash bug
 */
 
-def main()
-{
+def main(){
     each(i){}
 }

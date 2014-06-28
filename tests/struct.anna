@@ -1,8 +1,7 @@
 def main()
 (
     doc("Test the struct macro")
-)
-{
+){
     /*
       Simple struct, nothing weird
      */

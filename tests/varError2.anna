@@ -3,7 +3,6 @@ __var__(
     hej, ?, 5,
     hello());
 
-def main()
-{
+def main(){
     print(hej);
 }

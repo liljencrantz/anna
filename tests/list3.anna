@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     foo := [1,2,3];
     print(foo.count);
     foo.count = 5;

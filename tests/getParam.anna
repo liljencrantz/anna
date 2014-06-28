@@ -1,34 +1,28 @@
-class MyMatrix
-{
+class MyMatrix{
     var MutableList«MutableList«Float»» arr;
 
-    def __init__()
-    {
+    def __init__(){
 	arr = [[1.0, 0.0, 0.0],
 	       [0.0, 1.0, 0.0],
 	       [0.0, 0.0, 1.0]];
     }
 
-    def __get__(Int idx1, Int idx2)
-    {
+    def __get__(Int idx1, Int idx2){
 	arr[idx1][idx2];
     }
 
 
-    def __set__(Int idx1, Int idx2, Float value)
-    {
+    def __set__(Int idx1, Int idx2, Float value){
 	arr[idx1][idx2] = value;
     }
 
-    def toString()
-    {
+    def toString(){
 	arr.toString();
     }
 
 }
 
-def main()
-{
+def main(){
     m := MyMatrix();
 
     print(m);

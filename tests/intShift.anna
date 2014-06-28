@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     print(1 ^shl 5);
     print(1 ^shl 64);
     print(1 ^shl 256);

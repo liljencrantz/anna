@@ -2,8 +2,7 @@
   Regression test for a problem with HashMap constructors smashing the stack
 */
 
-def main()
-{
+def main(){
     print(
 	"AAA", 
 	[Int:3].count, 

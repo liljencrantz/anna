@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     print(1234.format(base:10).lpad(char:'0', count:10));
     print(0xdead_beef.format(base:16).lpad(char:'X', count:10));
     print(0xdead_beef_dead_beef.format(base:2));

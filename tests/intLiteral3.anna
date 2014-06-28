@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     print(1k);
     print(1m);
     print(1g);

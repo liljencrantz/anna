@@ -3,34 +3,27 @@
   different base classes.
  */
 
-class Base1
-{
-    def intFoo(Int p) (alias(foo))
-    {
+class Base1{
+    def intFoo(Int p) (alias(foo)){
 	print("intFoo");
     }
 }
 
-class Base2
-{
-    def stringFoo(String p) (alias(foo))
-    {
+class Base2{
+    def stringFoo(String p) (alias(foo)){
 	print("stringFoo");
     }
 }
 
 class Derived1
-(extends(Base1, Base2))
-{
+(extends(Base1, Base2)){
 }
 
 class Derived2
-(extends(Base1, Base2))
-{
+(extends(Base1, Base2)){
 }
 
-def main()
-{
+def main(){
     expandCode(
 	%Type().foo(%val),
 	Type: [Derived1, Derived1, Derived2, Derived2],

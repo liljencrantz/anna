@@ -1,7 +1,6 @@
 attribute(internal, doc("Internal module for the ast macro."));
 
-macro ast(node)
-(
+macro ast(node) (
     doc("
 A macro that takes an AST tree and returns it verbatim. This is useful for creating code templates, and often used together with the AST Node formating function.",
 "
@@ -19,10 +18,8 @@ The above example will return an AST that is equivalent to the following code:
 someVariableName := 0;
 </pre>
 ")
-)
-{
-    if(lang.__neqInternal__(node.count.__cmp__(1)))
-    {
+){
+    if(lang.__neqInternal__(node.count.__cmp__(1))){
 	node.error("ast macro expects exactly one argument, found " ~ node.count);
 	return ?;
     }

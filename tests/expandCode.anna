@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     expandCode(
 	print(3.%op(4)),
 	op: [__add__, __sub__, __mul__, __div__]);

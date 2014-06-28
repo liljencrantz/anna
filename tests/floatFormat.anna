@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     print((-12345.678901234).format(0));
     print((-12345.678901234).format(2));
     print((-12345.678901234).format(15));

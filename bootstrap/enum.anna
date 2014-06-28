@@ -23,53 +23,44 @@ myState = ParseState::onFire;
 print(myState); // Prints 'onFire'
 print(myState.value); // Prints '666'
 
-switch(myState)
-{
-    case(ParseState::ready)
-    {
+switch(myState){
+    case(ParseState::ready){
         ...
     }
 }
 
 </pre>",
 	"enum types can be used as HashMap keys.")
-)
-{
+){
     body := definition[2] as Call;
     definition.function = ast(classType);
     
-    newBody := ast(
-	{
+    newBody := ast({
 	    var Int %value;
 	}
     );
 
-    nameBody := ast(
-	{
-	    if( !this.%value)
-	    {
+    nameBody := ast({
+	    if( !this.%value){
 		return "?";
 	    }
 	}
     );
 
     initFun := ast(
-	def __init__(Int value)
-	{
+	def __init__(Int value){
 	    this.%value = value
 	}
     );
 
     hashFun := ast(
-	def hashCode()
-	{
+	def hashCode(){
 	    %value.hashCode();
 	}
     );
 
     valueGetter := ast(
-	def %valueGetter()
-	{
+	def %valueGetter(){
 	    %value;
 	}
     );
@@ -80,13 +71,11 @@ switch(myState)
 
     cmpFun1 := ast(
 	def cmpInt(Int other)
-        (alias(__cmp__))
-	{
+        (alias(__cmp__)){
 	    return this.%value - other;
 	});
     cmpFun2 := ast(
-	def __cmp__(%This other)
-	{
+	def __cmp__(%This other){
 	    return this.%value - other.%value;
 	}
 
@@ -94,24 +83,20 @@ switch(myState)
 
     idx := 0;
     isFirst := 1;
-    body.each(el)
-    {
+    body.each(el){
         id := ? as Identifier;
 
-	if(el as Identifier)
-	{
+	if(el as Identifier){
 	    id = el as Identifier;
 	}
-	if(el.callTo?("__assign__"))
-	{
+	if(el.callTo?("__assign__")){
   	    ass := el as Call;
 	    checkCallCount(ass, 2);
 	    checkNodeType(ass[0], Identifier); 
 	    checkNodeType(ass[1], IntLiteral); 
   	    id = ass[0] as Identifier;
   	    nextIdx := (ass[1] as IntLiteral).payload;
-	    if(nextIdx <= idx and !isFirst)
-	    {
+	    if(nextIdx <= idx and !isFirst){
 		ass[1].error(
                     "Invalid enum value %. Previous value was % and values must be increasing." % [
                         nextIdx, idx-1]);
@@ -123,16 +108,14 @@ switch(myState)
 	
 	isFirst = ?;
 
-	if(!id)
-	{
+	if(!id){
 	    
 	    definition.error("Unexpected thingie");
 	    return ?;
 	}
 	getter := "!" ~ id.name ~ "Getter";
 	fun := ast(
-	    def %Type %name() (static) 
-	    {
+	    def %Type %name() (static) {
 		return %Type(%myValue)
 	    }
 	    );
@@ -140,8 +123,7 @@ switch(myState)
 	    var %Type %name (static, property(%functionName))
 	    );
 	cmp := ast(
-	    if(this.%value == %intValue)
-	    {
+	    if(this.%value == %intValue){
 		return %strValue
 	    }
 	    );
@@ -174,8 +156,7 @@ switch(myState)
 	valueGetter, valueProperty];
     
     nameFun := ast(
-	def String toString()
-	{}
+	def String toString(){}
 	);
     (nameFun[2] as Call)[4] = nameBody;
     newBody ~= [nameFun];

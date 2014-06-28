@@ -1,8 +1,6 @@
-class Foo (someNoneExistingAttribute)
-{
+class Foo (someNoneExistingAttribute){
 
 }
 
-def main()
-{
+def main(){
 }

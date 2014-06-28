@@ -14,12 +14,10 @@ attribute(internal, doc("Internal module for macros related to declaring or assi
 def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNode)
 (
     doc("Internal helper method for __varList__ and friends.")
-)
-{
+){
     use(parser);
     res := (ast(nothing(%tmp :== %val)) % ["val": valNode]) as Call;
-    list[1...].each(idx, item)
-    {
+    list[1...].each(idx, item){
 	res ~= [assignNode % ["dec": item, "idx": IntLiteral(item, idx)]];
     }
 //    print(res);
@@ -39,8 +37,7 @@ print(myPi);
 // This is ok, myE is a variable, not a constant
 myE = 1.5;
 </pre>"
-	))
-{
+	)){
     return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp[%idx]));
 }
 
@@ -57,8 +54,7 @@ print(myPi);
 // This is an error, trying to reassign to a variable
 myE = 1.5;
 </pre>"
-	))
-{
+	)){
     return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp[%idx]));
 }
 
@@ -71,7 +67,6 @@ macro __assignList__(node)
 [foo, bar] = [bar, foo];
 </pre>"
 	))
-
 {
     return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]));
 }

@@ -13,14 +13,11 @@ def Int partition(
 	template(%Type:MutableList«Int»),
 	template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
 	internal,
-    )
-{
+    ){
     piv := list[to-1];
     store := from;
-    (from .. to-1).each(idx)
-    {
-	if(fun(list[idx], piv) < 0)
-	{
+    (from .. to-1).each(idx){
+	if(fun(list[idx], piv) < 0){
 	    list.flip(idx, store);
 	    store++;
 	}
@@ -37,15 +34,12 @@ def Any sortSub(
 	template(%Type:MutableList«Int»),
 	template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
 	internal,
-    )
-{
+    ){
     pivotIdx := partition«%Type, %Comp»(list, from, to, fun);
-    if(from != pivotIdx)
-    {
+    if(from != pivotIdx){
 	sortSub«%Type, %Comp»(list, from, pivotIdx, fun);
     }
-    if((pivotIdx+1) != to)
-    {
+    if((pivotIdx+1) != to){
         sortSub«%Type, %Comp»(list, pivotIdx+1, to, fun);    
     }
 }
@@ -63,20 +57,16 @@ the to specified indices.",
 	"
 The elements of the collection must provide a __cmp__ method to
 provide internal ordering."),
-    )
-{
+    ){
     collection.empty? and (return collection);
     sortSub(
 	collection, 0, collection.count, 
 	__def__(
 		      anon, 
-		      Int, 
-		      {
+		      Int, {
 			  __var__(first, staticType(collection[0]), ?, {}),
 			  __var__(second, staticType(collection[0]), ?, {}),
-		      },
-		      {},
-		      {first.__cmp__(second)},
+		      },{},{first.__cmp__(second)},
 		      ));
 	return collection;
 }
@@ -100,8 +90,7 @@ the relevent object. This can be done using the <a href='builtinMacros.html#fiel
 	example"algo.qsort(
     system.argv,
     fieldComparator(String::count));"),
-    )
-{
+    ){
     collection.empty? and (return collection);
     sortSub«%Type,%Comp»(
 	collection, 0, collection.count, 

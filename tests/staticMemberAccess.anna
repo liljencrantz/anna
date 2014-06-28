@@ -1,10 +1,8 @@
 
-class MyType
-{
+class MyType{
     var String myStaticMember (static);
     
-    def myStaticMethod() (static)
-    {
+    def myStaticMethod() (static){
 	/*
 	  An implicit use on the type might be nice in static methods.
 	*/
@@ -12,8 +10,7 @@ class MyType
     }
 }
 
-def main()
-{
+def main(){
     print(MyType::myStaticMember);
     MyType::myStaticMethod();
     print(MyType::myStaticMember);

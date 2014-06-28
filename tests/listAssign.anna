@@ -1,10 +1,8 @@
-def fun()
-{
+def fun(){
     return [6, 9];
 }
 
-def main()
-{
+def main(){
     foo := 0;
     bar := 0;
     baz := 0;

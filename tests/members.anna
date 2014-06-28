@@ -1,7 +1,6 @@
 
 class MyType {
-    def meth()
-    {
+    def meth(){
 	print("Foo.poo()");	
     }
     var Int mem;

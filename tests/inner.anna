@@ -1,8 +1,6 @@
-def main()
-{
+def main(){
     vv := 3;
-    def inner()
-    {
+    def inner(){
 	print(vv);
     }
     inner();

@@ -2,13 +2,11 @@
   Check that we can inherit from built in types
 */
 
-class Sub (extends(Int))
-{
+class Sub (extends(Int)){
     def bar(){print("Sub.bar()")}
 }
 
-def main()
-{
+def main(){
     sub:=Sub(7);
     sub.bar();
     print(sub, sub+1); 

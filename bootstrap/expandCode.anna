@@ -35,10 +35,8 @@ macro expandCode(node)
     created using the reflection api, but such code offers no compile time type
     safety and is significantly more verbose.
 ")
-)
-{
-    if(node.count < 2)
-    {
+){
+    if(node.count < 2){
 	node.error(
 	    "Too few arguments to expandCode macro - expected at least two arguments");
 	return ?;
@@ -49,51 +47,41 @@ macro expandCode(node)
     codeNode := «Node»[];
     valNode := «Node»[];
 
-    node.each(chld)	
-    {
-	if(chld.callTo?("__mapping__"))
-	{
+    node.each(chld)	{
+	if(chld.callTo?("__mapping__")){
 	    valNode.push(chld);
 	}
-	else
-	{
+	else{
 	    codeNode.push(chld);
 	}
     }
 
-    valNode.each(chld)
-    {
+    valNode.each(chld){
         call := chld as Call;
 	checkCallCount(call, 2);
 	checkNodeType(call[0], InternalIdentifier);
         name := (call[0] as InternalIdentifier).name;
 	checkNodeCallTo(call[1], "__collection__");
         lst := call[1] as Call;
-	if(count)
-	{
-	    if(count != lst.count)
-	    {
+	if(count){
+	    if(count != lst.count){
 		lst.error("Wrong number of parameters in list");
 		return ?;
 	    }
-	    lst[1...].each(idx, val)
-	    {
+	    lst[1...].each(idx, val){
 		param[idx][name] = val;
 	    }
 	}
-	else
-	{
+	else{
 	    count = lst.count;
-	    lst[1...].each(val)
-	    {
+	    lst[1...].each(val){
 		param ~= [[name: val]];
 	    }
 	}
     }
 
     res := Call(node, Identifier(node, "nothing"));
-    codeNode.each(code)
-    {
+    codeNode.each(code){
 	res ~= param.map(p){ code % p };
     }
     return res;

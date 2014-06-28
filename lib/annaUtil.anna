@@ -2,11 +2,9 @@ attribute(doc("This is an internal helper library. Do not use it."), internal);
 
 use(parser);
 
-def List«Node» findAttribute(Call attr, String name)
-{			
+def List«Node» findAttribute(Call attr, String name){			
     res := «Node»[];
-    attr.each(at)
-    {
+    attr.each(at){
 	(at.callTo?(name)) and (at as Call).each(item){res.push(item)}
     }
     res;

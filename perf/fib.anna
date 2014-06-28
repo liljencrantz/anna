@@ -2,7 +2,6 @@ def Int fibonacci(Int n) {
     return if (n < 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
 }
 
-def main()
-{
+def main(){
     print(fibonacci(40), "\n");
 }

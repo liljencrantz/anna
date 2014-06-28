@@ -1,9 +1,7 @@
-def String foo()
-{
+def String foo(){
     return 7;
 }
 
-def main()
-{
+def main(){
     print(foo() ~ "bar", "\n");
 }

@@ -1,4 +1,3 @@
-def main()
-{
+def main(){
     cast(3, 3);
 }

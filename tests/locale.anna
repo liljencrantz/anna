@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     use(unix.locale);
     ["C", "sv_SE.utf8"].each(localeName){
 	setLocale(localeMode.all, localeName);

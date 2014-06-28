@@ -6,8 +6,7 @@ expandCode(
 	target(%Type),
 	name(toString),
 	doc("Returns a string representation of this List."),
-	)
-    {
+	){
 	return "[" ~ ", ".join(this.map(value){String::convert(value) or "null";}) ~ "]";
     },
     Type: [ImutableList, MutableList, List],
@@ -22,8 +21,7 @@ expandCode(
 	target(%Type),
 	doc("Returns true if all members of this list are non-Null."),
 	name(all?)
-	)
-    {
+	){
 	res := 1 as Any;
 	this.each(i){ res = res and i }
 	return res;
@@ -39,8 +37,7 @@ expandCode(
 	target(%Type),
 	doc("Returns true if none of the members of this list are non-Null."),
 	name(none?),
-	)
-    {
+	){
 	res := 1 as Any;
 	this.each(i){ res = res and !i }
 	return res;
@@ -56,8 +53,7 @@ expandCode(
 	target(%Type),
 	doc("Returns true if any of the members of this list are non-Null."),
 	name(any?),
-	)
-    {
+	){
 	return !%noneName(this);
     },
     Type: [ImutableList, MutableList, List],
@@ -72,12 +68,9 @@ expandCode(
 	doc("Returns the index of the first location of the specified item in the list."),
 	template(%Value:monkeypatchMisc.Comparable),
 	name(indexOf),
-	)
-    {
-	this.each(idx, el)
-	{
-	    if((el as monkeypatchMisc.Comparable).__cmp__(value) == 0)
-	    {
+	){
+	this.each(idx, el){
+	    if((el as monkeypatchMisc.Comparable).__cmp__(value) == 0){
 		return idx;
 	    }
 	}

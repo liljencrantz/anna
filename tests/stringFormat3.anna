@@ -2,8 +2,7 @@
   Map based String formating
 */
 
-def main()
-{
+def main(){
     print("Testing string formating using maps!
 An int: %(myInt)
 Same int again: %(myInt)

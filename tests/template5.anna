@@ -1,21 +1,17 @@
 /*
   Test templates with invalid attribute (there is no spoon)
 */
-class Base
-{}
+class Base{}
 
-class Foo (template(%op:__add__), extends(Base), spoon) 
-{
+class Foo (template(%op:__add__), extends(Base), spoon) {
 
-    def Int bar(Int a, Int b)
-    {
+    def Int bar(Int a, Int b){
         a.%op(b);
     }
 
 }
 
-def Int main()
-{
+def Int main(){
     foo := Foo();
     print(foo.bar(3,4),"\n");
     boo := Foo«__sub__»();

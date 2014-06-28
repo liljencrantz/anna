@@ -1,5 +1,4 @@
 
-def Int main()
-{
+def Int main(){
     print(main.name);
 }

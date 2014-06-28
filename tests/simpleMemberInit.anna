@@ -5,38 +5,32 @@
   These are implemented in the classType macro.
  */
 
-class MyClass
-{
+class MyClass{
     foo := 3;
     bar := 4;
     baz := "hello";
 
-    def blorp()
-    {
+    def blorp(){
 	print(foo, bar, baz);
     }
 
-    def __init__()
-    {
+    def __init__(){
 	print("MyClass::__init__");
     }
 
 }
 
-class MyClass2
-{
+class MyClass2{
     foo := 1.5;
     bar := 'g';
     baz := [9];
 
-    def blorp()
-    {
+    def blorp(){
 	print(foo, bar, baz);
     }
 }
 
-def main()
-{
+def main(){
     MyClass().blorp();
     MyClass2().blorp();
 }

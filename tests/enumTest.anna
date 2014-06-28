@@ -1,20 +1,17 @@
 
-enum MyEnum
-{
+enum MyEnum{
     foo,
     bar = 32,
     baz
 }
 
-enum MyEnum2
-{
+enum MyEnum2{
     aaa=-7,
     bbb,
     ccc
 }
 
-def main()  
-{
+def main()  {
     print(MyEnum::foo, MyEnum::bar, MyEnum::baz);
     myBaz := MyEnum::baz;
     print(

@@ -5,17 +5,14 @@
 class Derived
 (
     extends(MutableList)
-)
-{
-    def __init__()
-    {
+){
+    def __init__(){
 	MutableList::__init__(this);
     }
 
 }
 
-def main()
-{
+def main(){
     vv := Derived();
     vv[3] = 7;
     print(vv, '\n');

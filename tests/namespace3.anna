@@ -1,11 +1,9 @@
 
-def lang.Int foo(lang.Any in)
-{
+def lang.Int foo(lang.Any in){
     print(in);
     3;
 }
 
-def main()
-{
+def main(){
     print(foo(7));
 }

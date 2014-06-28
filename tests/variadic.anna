@@ -1,10 +1,8 @@
-def wee(Int in...)
-{
+def wee(Int in...){
     print("count:", in.count);
     in.each(i){print(i)}
 }
 
-def main()  
-{
+def main()  {
     wee(1,2,45,6,7)
 }

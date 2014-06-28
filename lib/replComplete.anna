@@ -13,48 +13,39 @@ def getPath(String text)
     doc("
 Try to extract the dot-separated list of names that we're currently
 trying to complete from the text.")
-)
-{
-    if(text == "")
-    {
+){
+    if(text == ""){
 	return [""];
     }
 
     fullSearch :== text[-1] == '.';
     
-    if(fullSearch)
-    {
+    if(fullSearch){
 	text = text[0..-1];
     }
     
     item := "";
     start := 0;
     
-    ((text.count-1)..-1).each(idx)
-    {
+    ((text.count-1)..-1).each(idx){
         ch := text[idx];
-	if(!(ch.alnum? or ch.space? or ch == '.'))
-	{
+	if(!(ch.alnum? or ch.space? or ch == '.')){
 	    start = idx + 1;
 	    break;
 	}
     }
 
-    def strip(String in)
-    {
+    def strip(String in){
         from := in.count;
         to := 0;
-	in.each(idx, ch)
-	{
-	    if(!ch.space?)
-	    {
+	in.each(idx, ch){
+	    if(!ch.space?){
 		from = if(from<idx, from, idx);
 		to = if(to>(idx+1), to, idx+1);
 	    }
 	}
 	
-	if(to == from)
-	{
+	if(to == from){
 	    return "";
 	}
 	
@@ -65,46 +56,36 @@ trying to complete from the text.")
     pathStr := text[start...];
     path := pathStr.split('.').map(item){strip(item)}
     pathIdx := 0;
-    path.each(idx, el)
-    {
-	if(el == "")
-	{
+    path.each(idx, el){
+	if(el == ""){
 	    pathIdx = idx+1;
 	}
     }
     res := path[pathIdx...];
 
-    if(fullSearch)
-    {
+    if(fullSearch){
 	res.push("");
     }
 //    print("PATH", res);
     return res;
 }
 
-def addNamespace(HashMap«String, Type» ns, Type t)
-{
-    t.member.each(memb)
-    {
+def addNamespace(HashMap«String, Type» ns, Type t){
+    t.member.each(memb){
 	ns[memb.name] = memb.type;
     }
 }
 
-def List«String» realCompletePath(List«String» path, HashMap«String, Type»ns)
-{
-    if(path.count == 1)
-    {
+def List«String» realCompletePath(List«String» path, HashMap«String, Type»ns){
+    if(path.count == 1){
         res := «String»[];
         needle := path[0];
-	ns.each(key, val)
-	{
-	    if(key[0] == '!')
-	    {
+	ns.each(key, val){
+	    if(key[0] == '!'){
 		continue;
 	    }
 	    
-	    if(needle == key[0..needle.count])
-	    {
+	    if(needle == key[0..needle.count]){
 		res.push(key[needle.count...]);
 	    }
 	}
@@ -119,23 +100,20 @@ def List«String» realCompletePath(List«String» path, HashMap«String, Type»
     return realCompletePath(path[1...], subns);
 }
 
-def realComplete(String text)
-{
+def realComplete(String text){
     readLine.complete.suppressAppend = 1;
     path := getPath(text);
     ns := «String, Type»[];
     addNamespace(ns, type(global));
     addNamespace(ns, type(lang));
-    useList.each(type)
-    {
+    useList.each(type){
 	addNamespace(ns, type);
     }
     res := realCompletePath(path, ns).map(el){text ~ el};
     return res;
 }
 
-def Any setUseList(List«Type» use)
-{
+def Any setUseList(List«Type» use){
     useList = use;
 }
 
@@ -144,10 +122,8 @@ def codeComplete(String text, Int state)
     doc("Call the readLine.complete.setFunction function
 with this function as a parameter to enable code
 completion.")
-)
-{
-    if(state == 0)
-    {
+){
+    if(state == 0){
  	completeList = realComplete(text);
 	completeListIdx = 0;	
     }

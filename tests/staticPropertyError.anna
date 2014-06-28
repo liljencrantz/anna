@@ -1,6 +1,5 @@
 
-class MyType
-{
+class MyType{
     var String myPropertyInternal;
 
     /*
@@ -10,15 +9,13 @@ class MyType
     var String myProperty 
 	(static, property(myPropertyGetter));
 
-    def myPropertyGetter()
-    {
+    def myPropertyGetter(){
 	return myPropertyInternal;
     }
 
 }
 
-def main()
-{
+def main(){
     print(MyType::myProperty, "\n");
 }
 

@@ -1,6 +1,5 @@
 
-class MyType
-{
+class MyType{
     /*
       This is an error - we have a static property, but its getter 
       method is not static. This should result in a compile time error.
@@ -8,19 +7,16 @@ class MyType
     var String myProperty 
 	(static, property(myPropertyGetter, myPropertySetter));
 
-    def myPropertyGetter() (static)
-    {
+    def myPropertyGetter() (static){
 	return "Hello";
     }
 
-    def myPropertySetter(String value)
-    {
+    def myPropertySetter(String value){
     }
 
 }
 
-def main()
-{
+def main(){
     MyType::myProperty = "abc";
     print(MyType::myProperty, "\n");
 }

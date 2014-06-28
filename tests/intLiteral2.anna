@@ -1,8 +1,7 @@
 /*
   Tests on non-decimal int literals as well as some really long literals.
 */
-def main()
-{
+def main(){
     print(
 	123, 0xff, 0o777, 
         0b1111);

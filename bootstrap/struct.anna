@@ -14,8 +14,7 @@ Basically, a struct type behaves exactly like a regular class, but with a few ad
 </ul>",
 	"Usage example:",
 "<pre class='anna-code'>
-struct MyStruct
-{
+struct MyStruct{
     var Int some;
     var String other;
 }
@@ -31,8 +30,7 @@ print(vv2);
 "Because structs implement the __cmp__ and hashCode methods, they can be used as 
 keys in HashMap dictionaries.
 ")
-)
-{
+){
     node.function = ast(classType);
     structName := node[0] as Identifier;
     body := node[2] as Call;
@@ -42,21 +40,17 @@ keys in HashMap dictionaries.
     cmpBody := ast({otherStruct := other as %This; otherStruct or (return ?); tmp := 0;});
     hashCodeBody := ast({res := 0;});
     customToString := ? as Int;
-    body.each(idx, el)
-    {
+    body.each(idx, el){
         decl := el as Call;
         name := (decl[0] as Identifier);
-        if(name.name in ["__init__", "__cmp__"])
-        {
+        if(name.name in ["__init__", "__cmp__"]){
             name.error("Invalid field name in struct.");
             return NullLiteral(node);
         }
-        if(name.name == "toString")
-        {
+        if(name.name == "toString"){
             customToString := 1;
         }
-        if(decl.function.named?("__const__") and decl[2].callTo?("__def__"))
-        {
+        if(decl.function.named?("__const__") and decl[2].callTo?("__def__")){
             continue;
         }
 	constructorParam.push(decl.copy());
@@ -72,8 +66,7 @@ keys in HashMap dictionaries.
     cmpBody.push(ast(return 0));
     hashCodeBody.push(ast(return res));
 
-    if(!customToString)
-    {
+    if(!customToString){
         body.push(ast(__const__(toString, ?, __def__(toString, ?, {}, {}, %body), {})) % ["body": toStringBody]);
     }
     body.push(ast(__const__(__cmp__, ?, __def__(__cmp__, ?, {var Any other}, {}, %body), {})) % ["body": cmpBody]);
@@ -97,22 +90,18 @@ the return value of getMeSomeOtherObject as its value.",
 struct. The only restriction is that there may not be any circular
 dependencies between member types."
 )
-)
-{
+){
     initBlock := Call(node, Identifier(node, "__block__"));
     typeBlock := Call(node, Identifier(node, "__block__"));
     callParam := MutableList«Node»();
-    node.each(item)
-    {
+    node.each(item){
 	checkNodeCallTo(item, "__mapping__");
         mapping := item as Call;
         varType := 
-	    if(type(mapping[1]) != NullLiteral)
-	    {
+	    if(type(mapping[1]) != NullLiteral){
 		ast(staticType(%value)) % ["value": mapping[1]];
 	    }
-	    else
-	    {
+	    else{
 		ast(Any);
 	    }
 	typeBlock ~= [ast(__var__(%name, %type, ?, {}))

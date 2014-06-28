@@ -1,29 +1,24 @@
 def fun1(Int in)
-(alias(myFunction))
-{
+(alias(myFunction)){
     "Int";
 }
 
 def fun2(String in)
-(alias(myFunction))
-{
+(alias(myFunction)){
     "String";
 }
 
 def fun3(Float in)
-(alias(myFunction))
-{
+(alias(myFunction)){
     "Float";
 }
 
 def fun4(List in)
-(alias(myFunction))
-{
+(alias(myFunction)){
     "List";
 }
 
-def main()
-{
+def main(){
     print(myFunction(0));
     print(myFunction(""));
     print(myFunction(0.0));

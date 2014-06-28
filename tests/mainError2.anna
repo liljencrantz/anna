@@ -1,5 +1,4 @@
-def main(Int g)
-{
+def main(Int g){
     print(g);
 }
 

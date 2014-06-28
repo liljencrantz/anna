@@ -1,5 +1,4 @@
-def main()
-{
+def main(){
     arr := "abcdefghijklmno".thaw;
     print(arr[3...]);
     arr[4...] = "boooooring";
