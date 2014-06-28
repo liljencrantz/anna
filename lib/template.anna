@@ -15,12 +15,12 @@ the properly typed parameters.",
     "The template macro must be given exactly one input argument, namely the file name (as a String literal) of the template file.",
     "A simple usage example, consists of two files, the first one called myTemplate.html:",
     "<pre>
-Greetings, &lt%= userName %&gt;
+Greetings, &lt;%= userName %&gt;
 
 &lt%
 hobbyList.each(hobby){
 %&gt
-You enjoy &lt%= hobby %&gt;, don't you?
+You enjoy &lt;%= hobby %&gt;, don't you?
 &lt%
 }
 %&gt
@@ -48,9 +48,9 @@ You enjoy Long walks on the beach, don't you?
     "There are three types of tags in the template library:
 
 <ul>
-    <li>&lt% code... %&gt;: The specified code will be executed.</li>
-    <li>&lt%= code... %&gt;: The specified code will be executed and it's output will be html escaped and printed.</li>
-    <li>&lt%! code... %&gt;: The specified code will be executed and it's output will be printed.</li>
+    <li>&lt;% code... %&gt;: The specified code will be executed.</li>
+    <li>&lt;%= code... %&gt;: The specified code will be executed and it's output will be html escaped and printed.</li>
+    <li>&lt;%! code... %&gt;: The specified code will be executed and it's output will be printed.</li>
 </ul>
 ",
     "This template library is merely a proof of concept. The most important limitation is that it doesn't track the original source line of any generated code, which means that any code positions given in error messages are meaningless.")
@@ -88,10 +88,10 @@ You enjoy Long walks on the beach, don't you?
 		    if(wasBrack){
 			if(addParen){			    
 
-			    transformed ~= ")\n    %res ~= \"";
+			    transformed ~= ")\n    %res ~= \""
 			} 
 			else{
-			    transformed ~= "\n    %res ~= \"";
+			    transformed ~= "\n    %res ~= \""
 			}
 			code = ?
 			wasBrack = ?
@@ -118,7 +118,7 @@ You enjoy Long walks on the beach, don't you?
 		}
 		case('%'){
 		    if(wasBrack){
-			transformed ~= "\"\n    ";
+			transformed ~= "\"\n    "
 			code = 1
 			wasBrack = ?
 			first = 1
@@ -143,7 +143,7 @@ You enjoy Long walks on the beach, don't you?
 	    }
 	}
     }
-    transformed ~= "\"\n";
+    transformed ~= "\"\n"
 //    print(transformed)
     
     nodes := parse(transformed) as Call

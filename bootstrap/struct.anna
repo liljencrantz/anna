@@ -35,7 +35,7 @@ keys in HashMap dictionaries.
     body := node[2] as Call
     constructorParam := ast({})
     constructorBody := ast({})
-    toStringBody := (ast({res := %resStart.thaw}) % ["resStart": StringLiteral(node, structName.name ~ "(")]) as Call;
+    toStringBody := (ast({res := %resStart.thaw}) % ["resStart": StringLiteral(node, structName.name ~ "(")]) as Call
     cmpBody := ast({otherStruct := other as %This, otherStruct or (return ?), tmp := 0})
     hashCodeBody := ast({res := 0})
     customToString := ? as Int

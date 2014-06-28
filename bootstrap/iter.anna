@@ -96,7 +96,7 @@ def Call mangleIterator(Call node) (
 	    NullLiteral(body),
 	    Call(body, Identifier(body, "__block__"), n[0], n[1]),
 	    ast(nothing(block)), 
-	    body));
+	    body))
     
     return res as Call
 }
@@ -522,7 +522,7 @@ def Call mangleReduceIterator(Call node) (
 	    NullLiteral(body),
 	    Call(body, Identifier(body, "__block__"), n[0], n[1]),
 	    ast(nothing(block)), 
-	    body));
+	    body))
     
     return res as Call
 }

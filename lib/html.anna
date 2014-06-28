@@ -5,7 +5,7 @@ attribute(
 def escape(String str...) (
     doc("Perform HTML escaping of the specified string. This function will
 replace the following characters with their respective html escape
-sequence: &gt, &lt;, &amp;, &quot; and &#39;. No other characters
+sequence: &gt;, &lt;, &amp;, &quot; and &#39;. No other characters
 will be modified.",
 	"The escape function is useful when inserting plain text as HTML text
 elements and when inserting plain text into an html attribute. The
@@ -13,7 +13,7 @@ escape function is <em>not</em> useful for inserting plain text into
 inline CSS elements (Inline CSS has different escaping rules than
 plain html), nor is it useful for inserting text into various
 JavaScript contexts, such as inside a JavaScript string literal, which
-is itself inside a &ltscript&gt; block or inside an HTML attribute.",
+is itself inside a &lt;script&gt; block or inside an HTML attribute.",
 	"Dynamically generating inline CSS or inline JavaScript is
 <em>stronly</em> discouraged, as doing so will cause you to decend
 into an endless quagmire of double escaping and other headaches. There
@@ -27,19 +27,19 @@ various additional escaping modes that are required to do so.")
     "".join(str).each(ch){
 	res ~= switch(ch){
 	    case('<'){
-		"&lt";
+		"&lt;"
 	    }
 	    case('&'){
-		"&amp";
+		"&amp;"
 	    }
 	    case('>'){
-		"&gt";
+		"&gt;"
 	    }
 	    case('"'){
-		"&quot";
+		"&quot;"
 	    }
 	    case('\''){
-		"&#39";
+		"&#39;"
 	    }
 	    default{
 		ch

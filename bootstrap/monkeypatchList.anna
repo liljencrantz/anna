@@ -6,7 +6,7 @@ expandCode(
 	name(toString),
 	doc("Returns a string representation of this List."),
 	){
-	return "[" ~ ", ".join(this.map(value){String::convert(value) or "null"}) ~ "]";
+	return "[" ~ ", ".join(this.map(value){String::convert(value) or "null"}) ~ "]"
     },
     Type: [ImutableList, MutableList, List],
     name: [toStringImutable, toStringMutable, toStringAny],

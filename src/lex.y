@@ -178,7 +178,7 @@ _*[A-Z][a-zA-Z0-9_!?]* return TYPE_IDENTIFIER;
 \| return PAIR;
 \\\r?\n return IGNORE;
 \r?\n return SEPARATOR;
-[,;] return SEPARATOR;
+, return SEPARATOR;
 ! return '!';
 % return '%';
 \^ return '^';
