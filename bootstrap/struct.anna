@@ -95,14 +95,13 @@ dependencies between member types."
     node.each(item){
 	checkNodeCallTo(item, "__mapping__");
         mapping := item as Call;
-        varType := 
-	    if(type(mapping[1]) != NullLiteral){
+        varType := if(type(mapping[1]) != NullLiteral){
 		ast(staticType(%value)) % ["value": mapping[1]];
 	    }
 	    else{
 		ast(Any);
 	    }
-	typeBlock ~= [ast(__var__(%name, %type, ?, {}))
+	typeBlock ~= [ast(__var__(%name, %type, ?, {}))\
 		      % ["name": mapping[0], "type": varType]];
         callParam ~= [mapping[1]];
 	initBlock ~= [ast(this.%name = %name) % ["name": mapping[0]]];

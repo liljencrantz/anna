@@ -6,8 +6,7 @@ var Int fiberIndex (internal, doc("The integer offset in the fibers list of the 
 
 var reflection.Continuation entry;
 
-class Fiber
-(
+class Fiber (
     doc("A simple cooperative thread implementation")
 ){
     var reflection.Continuation continuation (internal, doc("The continuation to call to continue executing this fiber."));

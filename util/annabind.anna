@@ -665,8 +665,7 @@ class BindingGenerator
 	allDoc := extractDocAll(attr);
 
 
-        data := 
-	    [
+        data := [
 		"functionName": escapedName, 
 		"mangledName": mangled,
 		"returnType": returnType,
@@ -728,8 +727,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
 	}
         inputCount := inputTypeData.count;
 	
-        data := 
-	    [
+        data := [
 		"type": type.annaCType(decl[1], decl[3]),
 		"functionName": name, 
 		"mangledName": mangled,
@@ -1056,8 +1054,7 @@ ANNA_VM_NATIVE(%(initName), 1){
 				    
 				    define? := annaUtil.findAttribute(attr as Call, "define")[0];
 
-				    params :=
-					[
+				    params := [
 					    "name": name,
 					    "value": nativeName,
 					    "doc": extractDoc(attr),
@@ -1123,8 +1120,7 @@ ANNA_VM_NATIVE(%(initName), 1){
                     getterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_getter";
                     setterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_setter";
 		    
-		    data :=
-			[
+		    data := [
 			    "name": name,
 			    "returnType": returnType,
 			    "getterName": getterName,

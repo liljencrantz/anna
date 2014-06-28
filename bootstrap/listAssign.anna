@@ -62,7 +62,6 @@ macro __assignList__(node)  (
 // This code will switch the places of the two variables foo and bar
 [foo, bar] = [bar, foo];
 </pre>"
-	))
-{
+	)) {
     return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]));
 }

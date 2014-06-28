@@ -118,8 +118,7 @@ expressions, not just Int values.
 			"cond2": makeCond(caseCall[idx])
 			]; 
 		}
-		next =
-		    (
+		next= (
 			ast(
 			    if(%cond, %caseBody, {})
 			    ) % [
@@ -143,8 +142,7 @@ expressions, not just Int values.
 		    checkCallCount(caseCall, 2);
 		    checkNodeBlock(caseCall[-1]);
 
-		    next =
-			(
+		    next= (
 			    ast(
 				if(%val in %items, %caseBody, {})
 				) % [

@@ -3,8 +3,7 @@ attribute(
 	"The date module is a high level library for handling dates and time.",
 	"This module currently suffers from the limitation that it can only correctly handle dates within the range of a Unix timestamp. On most 32-bit platforms, this means dates from 1902 to 2038 are correctly handled."));
 
-class Timezone
-(
+class Timezone (
     doc(
 	"A Timezone object. This object is currently mostly a placeholder, it's functionality is yet to be implemented.")){
     var String name (internal, doc("The name of this time zone"));
@@ -14,8 +13,7 @@ class Timezone
     }
 }
 
-class Delta
-(
+class Delta (
     doc("
 An object representing a time delta, e.g. the difference between two
 points in time.
@@ -80,8 +78,7 @@ in the month the object was applied to.
     }
 }
 
-class Date
-(
+class Date (
     doc(
 	"The Date object represents a point in time with microsecond precision. Dates object are always relative to a specific timezone.")
 ){
@@ -183,8 +180,7 @@ class Date
     }
 
     def toString() (doc("Return a string representation of this date object")){
-	return "%-%-% %:%:% (%)" % 
-	    [
+	return "%-%-% %:%:% (%)" % [
 		String::convert(year),
 		String::convert(month).lpad(char:'0',count:2),
 		String::convert(day).lpad(char:'0',count:2),

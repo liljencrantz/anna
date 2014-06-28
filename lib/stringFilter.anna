@@ -218,8 +218,7 @@ def main(){
     return out;
 }
 
-macro exampleStringLiteral(node)
-(
+macro exampleStringLiteral(node) (
     doc(
         "Mark a documentation string as a code example.",
 	"All this macro really does is enclose the string literal in a &lt;pre
@@ -239,12 +238,10 @@ no boolean type, true/false values currently aren't handled.\",
 List and HashMap types. If you want your own custom class to be 
 supported, simply add a toJson method that returns a String.\"
     )
-){
+) {
     ...
 }
-</pre>",
-)
-){
+</pre>")) {
     if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload)){
 	node.error("Invalid example");
     }

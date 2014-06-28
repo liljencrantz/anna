@@ -48,8 +48,7 @@ def String readWholeFile(Int fd) (doc("Internal helper function: Read in the ent
     }
 }
 
-class File
-(
+class File (
     doc(
 	"A high level object respresenting a filesystem entry such as a file, a directory or a socket. Can be used for checking the status of a file, creating a directory, reading, writing and various other operations. A File object represents a file system path; it does not always point to an actually existing file.")
 ){
@@ -99,9 +98,7 @@ class File
     ){
         (fd := unix.io.open(
 	    this.filename, 
-	    unix.io.openMode.writeOnly ^bitor 
-	    unix.io.openMode.truncate ^bitor 
-	    unix.io.openMode.create, 
+	    unix.io.openMode.writeOnly ^bitor unix.io.openMode.truncate ^bitor unix.io.openMode.create, 
 	    0o666)) or (return ?); 
         buff := Buffer();
         ok := buff.decode(data) and unix.io.write(fd, buff, buff.count);
