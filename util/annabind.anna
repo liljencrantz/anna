@@ -29,7 +29,7 @@ def Int foo(Int x, Buffer y)",
 	"
 this is equivalent to the following C header:",
 	"
-int foo(int x, char *y)",
+int foo(int x, char *y);",
 	"
   The following basic types are built in:",
 	"
@@ -124,57 +124,57 @@ def init(){
 	    ?,
 	    "any_type", 
 	    ?,
-	    "    %(source)\n    anna_entry_t %(dest) = null_entry;\n",
+	    "    %(source);\n    anna_entry_t %(dest) = null_entry;\n",
 	    ),
 	ast(String): BasicBindingType(
 	    "char *",
 	    "string_type", 
-	    "    char *%(dest) = anna_entry_null(%(source)) ? 0 : anna_string_payload_narrow(anna_as_obj(%(source)))\n",
-	    "    anna_entry_t %(dest) = (%(source)) ? anna_from_obj(anna_string_create_narrow(strlen(%(source)), %(source))) : null_entry\n",
-	    cleanupToC: "    free(%(dest))\n"),
+	    "    char *%(dest) = anna_entry_null(%(source)) ? 0 : anna_string_payload_narrow(anna_as_obj(%(source)));\n",
+	    "    anna_entry_t %(dest) = (%(source)) ? anna_from_obj(anna_string_create_narrow(strlen(%(source)), %(source))) : null_entry;\n",
+	    cleanupToC: "    free(%(dest));\n"),
 	ast(Int): BasicBindingType(
 	    "int",
 	    "int_type",
-	    "    int %(dest) = anna_as_int(%(source))\n",
-	    "    anna_entry_t %(dest) = anna_from_int(%(source))\n"),
+	    "    int %(dest) = anna_as_int(%(source));\n",
+	    "    anna_entry_t %(dest) = anna_from_int(%(source));\n"),
 	ast(Char): BasicBindingType(
 	    "char",
 	    "char_type",
-	    "    char %(dest) = wctob(anna_as_char(%(source)))\n",
-	    "    anna_entry_t %(dest) = anna_from_char(btowc(%(source)))\n"),
+	    "    char %(dest) = wctob(anna_as_char(%(source)));\n",
+	    "    anna_entry_t %(dest) = anna_from_char(btowc(%(source)));\n"),
 	ast(Bool): BasicBindingType(
 	    "int",
 	    "any_type", 
-	    "    int %(dest) = !anna_entry_null(%(source))\n",
-	    "    anna_entry_t %(dest) = (%(source))?anna_from_int(1):null_entry\n",
+	    "    int %(dest) = !anna_entry_null(%(source));\n",
+	    "    anna_entry_t %(dest) = (%(source))?anna_from_int(1):null_entry;\n",
 	    preValidateToC: ""),
 	ast(UInt64): BasicBindingType(
 	    "uint64_t",
 	    "int_type", 
-	    "    uint64_t %(dest) = anna_as_int(%(source))\n",
-	    "    anna_entry_t %(dest) = anna_from_uint64(%(source))\n"),
+	    "    uint64_t %(dest) = anna_as_int(%(source));\n",
+	    "    anna_entry_t %(dest) = anna_from_uint64(%(source));\n"),
 	ast(Float): BasicBindingType(
 	    "float",
 	    "float_type", 
-	    "    float %(dest) = (float)anna_as_float(%(source))\n",
-	    "    anna_entry_t %(dest) = anna_from_float((double)%(source))\n"),
+	    "    float %(dest) = (float)anna_as_float(%(source));\n",
+	    "    anna_entry_t %(dest) = anna_from_float((double)%(source));\n"),
 	ast(Double): BasicBindingType(
 	    "double",
 	    "float_type", 
-	    "    double %(dest) = anna_as_float(%(source))\n",
-	    "    anna_entry_t %(dest) = anna_from_float(%(source))\n"),
+	    "    double %(dest) = anna_as_float(%(source));\n",
+	    "    anna_entry_t %(dest) = anna_from_float(%(source));\n"),
 	/*  ast(Pointer): BasicBindingType(
 	    "void *",
 	    "pointer_type", 
-	    "void *%(dest) = anna_entry_get_addr(anna_as_obj(%(source)), ANNA_MID_POINTER_PAYLOAD)",
-	    "anna_entry_t %(dest) = anna_from_obj(anna_pointer_create(%(source)))"),*/
+	    "void *%(dest) = anna_entry_get_addr(anna_as_obj(%(source)), ANNA_MID_POINTER_PAYLOAD);",
+	    "anna_entry_t %(dest) = anna_from_obj(anna_pointer_create(%(source)));"),*/
 	ast(Buffer): BasicBindingType(
 	    "unsigned char *",
 	    "buffer_type", 
-	    "    unsigned char *%(dest) = anna_buffer_get_payload(anna_as_obj(%(source)))\n",
+	    "    unsigned char *%(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));\n",
 	    ?,
 	    capacityCheck: "    if(anna_buffer_ensure_capacity(anna_as_obj(%(source)), %(capacity))) {
-        return null_entry
+        return null_entry;
     }
     else{
         %(dest) = anna_buffer_get_payload(anna_as_obj(%(source)))
@@ -201,8 +201,7 @@ error ParseError{
 
 }
 
-class BindingType 
-(
+class BindingType (
     doc("Base class for the types used in the bindings.",
 	"A BindingType is used to convert from data from Anna objects into C data and back. They also need to be able to validate the data and to cleanup any memory used in the conversion process.")
 ){
@@ -220,7 +219,7 @@ class BindingType
     
     def String preValidateToC(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to C.")){
 	if(!(attr as Call).childNamed?("nullable")){
-	    "    if(anna_entry_null(%())){return null_entry}\n" % [source];
+	    "    if(anna_entry_null(%())){return null_entry;}\n" % [source]
 	}
     }
     
@@ -232,8 +231,7 @@ class BindingType
     def String postValidateToAnna(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to anna.")){""}
 }
 
-class ListBindingType 
-(
+class ListBindingType (
     extends(BindingType), 
     doc("A BindingType implementation used for read-only lists"),){
 
@@ -254,13 +252,13 @@ class ListBindingType
         subBinding := getBindingType(subType)
         subTypeNative := subBinding.annaNativeType(subType, ?)
 	
-	return "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)))
-    %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName))
-    if(!%(dest)){ return null_entry }
-    int %(dest)_idx
-    for(%(dest)_idx=0 %(dest)_idx < %(szName); %(dest)_idx++){
-        %(conversion)
-        %(dest)[%(dest)_idx] = %(dest)_val
+	return "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
+    %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
+    if(!%(dest)){ return null_entry; }
+    int %(dest)_idx;
+    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
+        %(conversion);
+        %(dest)[%(dest)_idx] = %(dest)_val;
     }\n" % [
 	    "subTypeNative": subTypeNative,
 	    "dest": dest,
@@ -278,10 +276,10 @@ class ListBindingType
         subType := ((decl as Call)[1] as Call)[0]
         subBinding := getBindingType(subType)
         subTypeNative := subBinding.annaNativeType(subType, ?)
-	return "    for(%(dest)_idx=0 %(dest)_idx < %(szName); %(dest)_idx++){
+	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
         %(subCleanup)
     }
-    free(%(dest))\n" % [
+    free(%(dest));\n" % [
 	    "subTypeNative": subTypeNative,
 	    "dest": dest,
 	    "source": source,
@@ -296,8 +294,7 @@ class ListBindingType
 
 }
 
-class MutableListBindingType 
-(
+class MutableListBindingType (
     extends(BindingType), 
     doc("A BindingType used for mutable lists.")
 ){
@@ -331,22 +328,22 @@ class MutableListBindingType
 		}
 	    }
 	    res ~= "    if(anna_list_ensure_capacity(anna_as_obj(%(source)), %(capacity))){
-        return null_entry
+        return null_entry;
     }\n" % ["source": source, "capacity": capStr]
 	}
 
-	res ~= "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)))
-    %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName))
-    if(!%(dest)){ return null_entry }
-    int %(dest)_idx
-    for(%(dest)_idx=0 %(dest)_idx < %(szName); %(dest)_idx++){
-        anna_entry_t tmp = %(value)
+	res ~= "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
+    %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
+    if(!%(dest)){ return null_entry; }
+    int %(dest)_idx;
+    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
+        anna_entry_t tmp = %(value);
         if(anna_entry_null(tmp)){
-            %(dest)[%(dest)_idx] = 0
+            %(dest)[%(dest)_idx] = 0;
         }
         else{
-            %(conversion)
-            %(dest)[%(dest)_idx] = %(dest)_val
+            %(conversion);
+            %(dest)[%(dest)_idx] = %(dest)_val;
         }
     }\n" % [
 	    "subTypeNative": subTypeNative,
@@ -368,12 +365,12 @@ class MutableListBindingType
         subType := ((decl as Call)[1] as Call)[0]
         subBinding := getBindingType(subType)
         subTypeNative := subBinding.annaNativeType(subType, ?)
-	return "    for(%(dest)_idx=0 %(dest)_idx < %(szName); %(dest)_idx++){
+	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
         %(value)
-        anna_list_set(anna_as_obj(%(source)), %(dest)_idx, tmp)
+        anna_list_set(anna_as_obj(%(source)), %(dest)_idx, tmp);
         %(subCleanup)
     }
-    free(%(dest))\n" % [
+    free(%(dest));\n" % [
 	    "subTypeNative": subTypeNative,
 	    "dest": dest,
 	    "source": source,
@@ -389,8 +386,7 @@ class MutableListBindingType
 
 }
 
-class BasicBindingType 
-(
+class BasicBindingType (
     extends(BindingType), 
     doc("A very simple BindingType implementation that simply relies on string templates to perform its tasks. Works well for basic types like Int, String, etc."),
 ){
@@ -467,8 +463,7 @@ class BasicBindingType
 
 }
 
-class CStructBindingType 
-(
+class CStructBindingType (
     extends(BindingType), 
     doc("A BindingType used when passing cStruct objects as parameters.")
 ){
@@ -498,21 +493,21 @@ class CStructBindingType
 	    "source": source, 
 	    "structText": structText,
 	    ]
-	code := "%(structText)%(structName) *%(dest)\n" % param;
+	code := "%(structText)%(structName) *%(dest);\n" % param
 	if(isPointer){
 	    if((attr as Call).childNamed?("nullable")){
-		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD)" % param;
+		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
 	    else{
-		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD)" % param;
+		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
 	}
 	else{
 	    if((attr as Call).childNamed?("nullable")){
-		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD)" % param;
+		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
 	    else{
-		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD)" % param;
+		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
 	}
 	return code
@@ -528,15 +523,14 @@ class CStructBindingType
 		"annaCType": annaCType(decl, attr),
 	    	]
 	    return "    anna_entry_t %(dest) = anna_from_obj(anna_object_create(%(annaCType)))
-    anna_entry_set_ptr(anna_as_obj_fast(%(dest)), ANNA_MID_CSTRUCT_PAYLOAD, %(source))" % param;
+    anna_entry_set_ptr(anna_as_obj_fast(%(dest)), ANNA_MID_CSTRUCT_PAYLOAD, %(source));" % param
 	}
 	return ?
     }
 
 }
 
-class BindingGenerator
-(
+class BindingGenerator (
     doc("The main object of the binding generator. Iterates over the parse tree in the binding file and generates C code based on the prototypes found there."),
 ){
 
@@ -601,14 +595,14 @@ class BindingGenerator
 	if(varType){
 	    tempName := generateTempName()
 	
-	    code ~= "    %(varType) %(tempName) = %(call)\n" % [
+	    code ~= "    %(varType) %(tempName) = %(call);\n" % [
 		"varType": varType,
 		"tempName": tempName, "call": nname ~"(" ~args~")"]
 	    code ~= responseType.convertToAnna(decl[1], decl[3], "result", tempName)
 	}
 	else{
 	    code ~= "    %(functionName)(%(args))
-    anna_entry_t result = null_entry\n" % ["functionName": nname, "args": args];
+    anna_entry_t result = null_entry;\n" % ["functionName": nname, "args": args]
 	}
         param := [
 	    "init": init, "preValidate": preValidate, "postValidate": postValidate, 
@@ -618,9 +612,9 @@ class BindingGenerator
 	if(lock?){
 	    param["lock"] = "
     static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER
-    pthread_mutex_lock(&lock)";
+    pthread_mutex_lock(&lock);"
 	    param["unlock"] = "
-    pthread_mutex_unlock(&lock)";
+    pthread_mutex_unlock(&lock);"
 	}
 	
 	return "    // Validate parameters
@@ -634,7 +628,7 @@ class BindingGenerator
     // Perform cleanup
 %(cleanup)%(unlock)
     // Return result
-    return %(retValue)" % param
+    return %(retValue);" % param
 	    
     }
 
@@ -659,7 +653,7 @@ class BindingGenerator
 	aliasCode := "".thaw
 	aliasList := annaUtil.findAttribute(attr, "alias")
 	aliasList.each(alias){
-	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%()), %())\n" % [escapedName, cEscape(alias.toString())];
+	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%()), %());\n" % [escapedName, cEscape(alias.toString())]
 	}
 
 	allDoc := extractDocAll(attr)
@@ -687,20 +681,21 @@ class BindingGenerator
 	}
 	else{
             code = "
-ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
+ANNA_VM_NATIVE(%(mangledName), %(inputCount))
+{
 %(codeInternal)
 }
 " % data
 	}
 
         load := "
-    anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)}
-    wchar_t *%(inputNameVar)[] = {%(inputNameData)}
-    latest_function = anna_module_function(stack, %(functionName), 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc))
+    anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
+    wchar_t *%(inputNameVar)[] = {%(inputNameData)};
+    latest_function = anna_module_function(stack, %(functionName), 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
 %(aliasCode)" % data
   
 	    allDoc[1...].each(doc){
-		load ~= "   anna_function_document(latest_function,anna_intern_static(%()))\n" % [doc];
+		load ~= "   anna_function_document(latest_function,anna_intern_static(%()));\n" % [doc]
 	    }
 	    
 
@@ -742,15 +737,16 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
 	    ]
 
         load := "
-    anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)}
-    wchar_t *%(inputNameVar)[] = {%(inputNameData)}
+    anna_type_t *%(inputTypeVar)[] = {%(inputTypeData)};
+    wchar_t *%(inputNameVar)[] = {%(inputNameData)};
     anna_member_create_native_method(
         %(type), anna_mid_get(L\"%(functionName)\"), 0, 
-        &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc))
+        &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
 " % data
   
         code := "
-ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
+ANNA_VM_NATIVE(%(mangledName), %(inputCount))
+{
 %(codeInternal)
 }
 " % data
@@ -796,8 +792,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
     %(cCode)
     %(wrapData)
     return result
-" %
-	    [
+" % [
 		"cCode": cCode,
 		"structName": structName,
 		"wrapData": membType.convertToAnna(decl, attr, "result", "data->"~fieldName),
@@ -814,8 +809,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
     %(wrapData)
     data->%(fieldName) = tmp
     return param[1]
-" %
-	    [
+" % [
 		"cCode": cCode,
 		"structName": structName,
 		"wrapData": membType.convertToC(decl, attr, "tmp", "param[1]"),
@@ -830,8 +824,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
 	return "
     %(wrapData)
     return result
-" %
-	    [
+" % [
 		"wrapData": bindingType.convertToAnna(decl, attr, "result", varName)
 		]
     }
@@ -842,11 +835,10 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
 	return "
     if(!anna_entry_null(param[1])){
         %(wrapData)
-        %(varName) = value
+        %(varName) = value;
     }
-    return param[1]
-" %
-	    [
+    return param[1];
+" % [
 		"wrapData": bindingType.convertToC(decl, attr, "value", "param[1]"),
 		"varName": varName,
 		]
@@ -881,7 +873,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
         typeName := mangleTypeName(structName)
         code := "".thaw
         cstructAttr := cstructDecl[1] as Call
-	typeDecl := "anna_type_t *%()\n".thaw %[typeName];
+	typeDecl := "anna_type_t *%();\n".thaw %[typeName]
         typeData := "    { &%, L\"%()\" },\n".thaw % [typeName, structName]
         load := "".thaw
         nativeStructName := nameToStr(parser.Identifier(?, structName), cstructDecl[1])
@@ -904,7 +896,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
 	    ]
 
 	load ~= "
-    anna_member_create_blob(%(typeName), ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(%(structText)%(nativeStructName)%(structPointer)))
+    anna_member_create_blob(%(typeName), ANNA_MID_CSTRUCT_PAYLOAD, 0, sizeof(%(structText)%(nativeStructName)%(structPointer)));
 " % commonData
         hadInit := ? as Int
 
@@ -946,18 +938,20 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount)){
                     "doc": extractDoc(attr),
 		    ]
 		code ~= "
-ANNA_VM_NATIVE(%(getterName), 1){%(getterCode)}
+ANNA_VM_NATIVE(%(getterName), 1)
+{%(getterCode)}
 " % data
                 if(isVar){
 	  	    code ~= "
-ANNA_VM_NATIVE(%(setterName), 2){%(setterCode)}
+ANNA_VM_NATIVE(%(setterName), 2)
+{%(setterCode)}
 " % data
 		}
 
 		load ~= "
     anna_member_create_native_property(
         %(typeName), anna_mid_get(L\"%(name)\"),
-        %(returnType), %(getterName), %(setterName), %(doc))
+        %(returnType), %(getterName), %(setterName), %(doc));
 " % data
 
 	    } else{
@@ -969,14 +963,15 @@ ANNA_VM_NATIVE(%(setterName), 2){%(setterCode)}
 	if(!hadInit){
 	    load ~= "    anna_member_create_native_method(
 	%(typeName), anna_mid_get(L\"__init__\"), 0,
-	&%(initName), any_type, 1, &%(typeName), this_argn, 0, 0)    
+	&%(initName), any_type, 1, &%(typeName), this_argn, 0, 0);
 " % commonData
 
 	    code ~= "
-ANNA_VM_NATIVE(%(initName), 1){
-    %(initParam)
-    memset(data, 0, sizeof(%(structText)%(structName)))
-    return param[0]
+ANNA_VM_NATIVE(%(initName), 1)
+{
+    %(initParam);
+    memset(data, 0, sizeof(%(structText)%(structName)));
+    return param[0];
 }
 " % commonData
 
@@ -1014,8 +1009,7 @@ ANNA_VM_NATIVE(%(initName), 1){
 
 		    switch(declVal){
 			case (intVal as IntLiteral){
-			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc))\n" % 
-				[
+			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));\n" % [
 				    "name": name,
 				    "value": intVal.payload,
 				    "doc": extractDoc(attr),
@@ -1060,13 +1054,13 @@ ANNA_VM_NATIVE(%(initName), 1){
 					    "doc": extractDoc(attr),
 					    ]
 				    
-				    definition := "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc))
+				    definition := "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));
 " % params
 				    if(define?){
 					params["definition"] = definition
 					load ~= "#ifdef %(value)
 %(definition)#else
-    anna_module_const(stack, L\"%(name)\", int_type, null_entry, %(doc))
+    anna_module_const(stack, L\"%(name)\", int_type, null_entry, %(doc));
 #endif
 
 " % params
@@ -1079,9 +1073,8 @@ ANNA_VM_NATIVE(%(initName), 1){
                                 case("Double"){
 			            nativeName := nameToStr(decl[0], decl[3])
 
-			            load ~= "    anna_module_const_float(stack, L\"%(name)\", %(value), %(doc))
-" % 
-				        [
+			            load ~= "    anna_module_const_float(stack, L\"%(name)\", %(value), %(doc));
+" % [
 				        "name": name,
 				        "value": nativeName,
 				        "doc": extractDoc(attr),
@@ -1131,9 +1124,11 @@ ANNA_VM_NATIVE(%(initName), 1){
 			    ]
 
 		    code ~= "
-ANNA_VM_NATIVE(%(getterName), 1){%(getterCode)}
+ANNA_VM_NATIVE(%(getterName), 1)
+{%(getterCode)}
 
-ANNA_VM_NATIVE(%(setterName), 2){%(setterCode)}
+ANNA_VM_NATIVE(%(setterName), 2)
+{%(setterCode)}
 " % data
 
 		    load ~= "    anna_member_create_native_property(
@@ -1174,16 +1169,16 @@ ANNA_VM_NATIVE(%(setterName), 2){%(setterCode)}
   		        createName := "anna_" ~ mangledName~"_create"
 
 		        out := generateModule(decl[0], [subName])
-			code ~= "const static anna_type_data_t anna_%(moduleName)_type_data[] = {
-%(typeData)}
+			code ~= "const static anna_type_data_t anna_%(moduleName)_type_data[] = 
+{
+%(typeData)};
 " % ["typeData": out.typeData, "moduleName": mangledName]
 			typeDecl ~= out.typeDecl
 			customInclude ~= out.customInclude
                         code ~= out.code
                         code ~= generateCreateFunction(mangledName)
                         code ~= generateLoadFunction(mangledName, out.moduleData, out.load, ?)
-                        moduleData ~= "            { L\"%(name)\", %(createName), %(loadName)},\n" %
-                            [
+                        moduleData ~= "            { L\"%(name)\", %(createName), %(loadName)},\n" % [
 				"name": decl.function,
 				"loadName": loadName,
 				"createName": createName,
@@ -1195,7 +1190,7 @@ ANNA_VM_NATIVE(%(setterName), 2){%(setterCode)}
 
         if(attr){
             extractDocAll(attr).each(doc){
-                load ~= "    anna_stack_document(stack, %())\n" % [doc];
+                load ~= "    anna_stack_document(stack, %());\n" % [doc]
             }
         }
 	
@@ -1255,8 +1250,9 @@ ANNA_VM_NATIVE(%(setterName), 2){%(setterCode)}
 %(typeDecl)
 
 // Data used to initialize all types defined in this module
-const static anna_type_data_t anna_%(moduleName)_type_data[] = {
-%(typeData)}
+const static anna_type_data_t anna_%(moduleName)_type_data[] = 
+{
+%(typeData)};
 
 // This is the source code of the various wrapper functions
 %(code)
@@ -1266,8 +1262,7 @@ const static anna_type_data_t anna_%(moduleName)_type_data[] = {
 
 // This function is called to load all functions and other declarations into the module
 %(loadFunction)
-" %
-	    [
+" % [
 		"customInclude": customInclude,
 		"typeDecl": typeDecl,
 		"typeData": typeData,
@@ -1282,33 +1277,34 @@ const static anna_type_data_t anna_%(moduleName)_type_data[] = {
 
     def generateCreateFunction(String moduleName){
 "
-void anna_%(moduleName)_create(anna_stack_template_t *stack)
+void anna_%(moduleName)_create(anna_stack_template_t *stack);
 void anna_%(moduleName)_create(anna_stack_template_t *stack){
-    anna_type_data_create(anna_%(moduleName)_type_data, stack)        
+    anna_type_data_create(anna_%(moduleName)_type_data, stack)
 }" % ["moduleName": moduleName]
     }
 
     def generateLoadFunction(String moduleName, String moduleData, String load, Int isRootFunction){
         return "
-void anna_%(moduleName)_load(anna_stack_template_t *stack)
+void anna_%(moduleName)_load(anna_stack_template_t *stack);
 void anna_%(moduleName)_load(anna_stack_template_t *stack){
-    mid_t latest_mid    
-    anna_function_t *latest_function
-    anna_type_t *stack_type = anna_stack_wrap(stack)->type
+    mid_t latest_mid;
+    anna_function_t *latest_function;
+    anna_type_t *stack_type = anna_stack_wrap(stack)->type;
     anna_module_data_t modules[] ={
-%(moduleData)        }
-    anna_module_data_create(modules, stack)
+	%(moduleData)
+        };    
+    anna_module_data_create(modules, stack);
 
-    wchar_t *this_argn[] = {L\"this\"}
+    wchar_t *this_argn[] = {L\"this\"};
 
-%(load)
-    anna_type_data_register(anna_%(moduleName)_type_data, stack)
+%(load);    
+     anna_type_data_register(anna_%(moduleName)_type_data, stack);
 }
 " % [
             "moduleName": moduleName, 
             "moduleData": moduleData,
             "load": load,
-            "register": (if(isRootFunction){"    anna_type_data_register(anna_type_data, stack)"}else{""})
+            "register": (if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"}else{""})
         ]
     }
 

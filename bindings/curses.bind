@@ -1,29 +1,29 @@
-include("<curses.h>", "<term.h>");
-attribute(doc("Low level library for dealing with terminal input and output.", "The library is currently very incomplete and serves more like a proof of concept than an actually usable library."));
+include("<curses.h>", "<term.h>")
+attribute(doc("Low level library for dealing with terminal input and output.", "The library is currently very incomplete and serves more like a proof of concept than an actually usable library."))
 
 command
 {
-    attribute(doc("Terminal configuration command database."));
-    var String enterBoldMode (name(enter_bold_mode));
-    var String enterUnderlineMode (name(enter_underline_mode));
-    var String exitAttributeMode (name(exit_attribute_mode));
-    var String setForeground (name(set_foreground));
-    var String setBackground (name(set_background));
-    var String setAForeground (name(set_a_foreground));
-    var String setABackground (name(set_a_background));
+    attribute(doc("Terminal configuration command database."))
+    var String enterBoldMode (name(enter_bold_mode))
+    var String enterUnderlineMode (name(enter_underline_mode))
+    var String exitAttributeMode (name(exit_attribute_mode))
+    var String setForeground (name(set_foreground))
+    var String setBackground (name(set_background))
+    var String setAForeground (name(set_a_foreground))
+    var String setABackground (name(set_a_background))
 }
 
 key
 {
-    attribute(doc("Key press database"));
-    var String up (name(key_up));
-    var String down (name(key_down));
-    var String left (name(key_left));
-    var String right (name(key_right));
+    attribute(doc("Key press database"))
+    var String up (name(key_up))
+    var String down (name(key_down))
+    var String left (name(key_left))
+    var String right (name(key_right))
 }
 
-def Int setupterm(String term (nullable), Int fd, MutableList«Int» error (ensureCapacity(1), nullable)) (doc("Set up the terminfo database for output on the specified file descriptor, configure the database for the terminal type named by the term variable (if term is null, the TERM environment variable is inspected)."));
-def Int setterm(String term);
-def String tparmInt(String string, Int param) (alias(tparm), name(tparm), doc("Parametrize the specified string with the specified argument"));
-def String tparmString(String string, String param) (alias(tparm), name(tparm), doc("Parametrize the specified string with the specified argument"));
+def Int setupterm(String term (nullable), Int fd, MutableList«Int» error (ensureCapacity(1), nullable)) (doc("Set up the terminfo database for output on the specified file descriptor, configure the database for the terminal type named by the term variable (if term is null, the TERM environment variable is inspected)."))
+def Int setterm(String term)
+def String tparmInt(String string, Int param) (alias(tparm), name(tparm), doc("Parametrize the specified string with the specified argument"))
+def String tparmString(String string, String param) (alias(tparm), name(tparm), doc("Parametrize the specified string with the specified argument"))
 

@@ -1,19 +1,19 @@
 include(
-    "<libintl.h>");
+    "<libintl.h>")
 
 attribute(
     doc(
 	"The Anna getText module is a low level wrapper around the C gettext localization library.",
-	"For a higher level solution, see the <a href='i18n.html'>i18n module</a>. For full documentation on this library, please see e.g. <a href='www.gnu.org/software/gettext/manual/gettext.html'>the GNU gettext documentation</a>."));
+	"For a higher level solution, see the <a href='i18n.html'>i18n module</a>. For full documentation on this library, please see e.g. <a href='www.gnu.org/software/gettext/manual/gettext.html'>the GNU gettext documentation</a>."))
 
-def String getText(String msgid) (name(gettext), doc("Translate message"));
-def String dGetText(String domain, String msgid) (name(dgettext), doc("Translate message"));
-def String dCGetText(String domain, String msgid, Int category) (name(dcgettext), doc("Translate message"));
+def String getText(String msgid) (name(gettext), doc("Translate message"))
+def String dGetText(String domain, String msgid) (name(dgettext), doc("Translate message"))
+def String dCGetText(String domain, String msgid, Int category) (name(dcgettext), doc("Translate message"))
 
-def String nGetText(String msgid, String msgidPlural, Int count) (name(ngettext), doc("Translate message"));
-def String dNGetText(String domain, String msgid, String msgidPlural, Int count) (name(dngettext), doc("Translate message"));
-def String dCNGetText(String domain, String msgid, String msgidPlural, Int count, Int category) (name(dcngettext), doc("Translate message"));
+def String nGetText(String msgid, String msgidPlural, Int count) (name(ngettext), doc("Translate message"))
+def String dNGetText(String domain, String msgid, String msgidPlural, Int count) (name(dngettext), doc("Translate message"))
+def String dCNGetText(String domain, String msgid, String msgidPlural, Int count, Int category) (name(dcngettext), doc("Translate message"))
 
-def String textDomain(String domain) (name(textdomain), doc("Set domain for future getText calls"));
-def String bindTextDomain(String domain, String dir) (name(bindtextdomain), doc("Set directory containing message catalogs"));
+def String textDomain(String domain) (name(textdomain), doc("Set domain for future getText calls"))
+def String bindTextDomain(String domain, String dir) (name(bindtextdomain), doc("Set directory containing message catalogs"))
 

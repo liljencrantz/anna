@@ -1,30 +1,30 @@
-include("<stdio.h>", "<readline/readline.h>", "<readline/history.h>");
+include("<stdio.h>", "<readline/readline.h>", "<readline/history.h>")
 
 attribute(
     doc(
 	"A wrapper for the GNU readline library.",
-	"Currently rather incomplete, only the more basic functions are supported"));
+	"Currently rather incomplete, only the more basic functions are supported"))
 
 verbatim("
 static char *anna_readline_wrapper(char *prompt)
 {
-    static char *prev = 0;
+    static char *prev = 0
     if(prev) 
-        free(prev);
-    return prev=readline(prompt);
+        free(prev)
+    return prev=readline(prompt)
 }
-");
+")
 
-def String readLine(String prompt) (name(anna_readline_wrapper));
+def String readLine(String prompt) (name(anna_readline_wrapper))
 
 history
 {
-    def Void add(String line) (name(add_history));
-    def Bool read(String filename (nullable)) (name(read_history));
-    def Bool readRange(String filename (nullable), Int from, Int to) (name(read_history_range), alias(read));
-    def Bool write(String filename (nullable)) (name(write_history));
-    def Bool append(Int count, String filename (nullable)) (name(append_history));
-    def Bool truncateFile(String filename, Int count) (name(history_truncate_file));
+    def Void add(String line) (name(add_history))
+    def Bool read(String filename (nullable)) (name(read_history))
+    def Bool readRange(String filename (nullable), Int from, Int to) (name(read_history_range), alias(read))
+    def Bool write(String filename (nullable)) (name(write_history))
+    def Bool append(Int count, String filename (nullable)) (name(append_history))
+    def Bool truncateFile(String filename, Int count) (name(history_truncate_file))
 }
 
 complete
@@ -32,56 +32,56 @@ complete
 
     verbatim(/="
 
-static anna_function_t *fun = 0;
+static anna_function_t *fun = 0
 
 static char * run_anna_completion_func (const char *text, int state)
 {
     anna_entry_t argv[] = {
         anna_string_create_narrow(strlen(text), (char *)text),
         anna_from_int(state)
-    };
-    anna_object_t *res_obj = anna_vm_run(fun->wrapper, 2, argv);
+    }
+    anna_object_t *res_obj = anna_vm_run(fun->wrapper, 2, argv)
     if(res_obj == null_object)
     {   
-        return 0;
+        return 0
     }
-    return anna_string_payload_narrow(res_obj);
+    return anna_string_payload_narrow(res_obj)
 }
 
 ANNA_VM_NATIVE(anna_readline_complete_set_function, 1)
 {
     if(anna_entry_null_ptr(param[0])){
-        fun = 0;
-        rl_completion_entry_function = 0;        
+        fun = 0
+        rl_completion_entry_function = 0
     }
     else
     {
-        fun = anna_function_unwrap(anna_as_obj(param[0]));
-        rl_completion_entry_function = run_anna_completion_func;
-        anna_alloc_mark_permanent(fun);    
+        fun = anna_function_unwrap(anna_as_obj(param[0]))
+        rl_completion_entry_function = run_anna_completion_func
+        anna_alloc_mark_permanent(fun)
     }
-    return param[0];
+    return param[0]
 }
 
-"=/);
-    var Bool suppressAppend (name(rl_completion_suppress_append));
-    var Int appendCharacter (name(rl_completion_append_character));
-    var Int queryItems (name(rl_completion_query_items));
+"=/)
+    var Bool suppressAppend (name(rl_completion_suppress_append))
+    var Int appendCharacter (name(rl_completion_append_character))
+    var Int queryItems (name(rl_completion_query_items))
     
     verbatimDeclare(/="
-    anna_type_t *fun_argv[] = {string_type, int_type};
-    wchar_t *fun_argn[] = {L"text", L"state"};
+    anna_type_t *fun_argv[] = {string_type, int_type}
+    wchar_t *fun_argn[] = {L"text", L"state"}
     anna_type_t *fun_type = anna_type_get_function(
-        string_type, 2, fun_argv, fun_argn, 0, 0);
+        string_type, 2, fun_argv, fun_argn, 0, 0)
 
-    wchar_t *set_fun_argn[] = {L"function"};
+    wchar_t *set_fun_argn[] = {L"function"}
     anna_module_function(
 	stack,
 	L"setFunction", 0, 
 	&anna_readline_complete_set_function, 
 	fun_type,
 	1, &fun_type, set_fun_argn, 0,
-	L"Set a new completion function.");
-"=/);
+	L"Set a new completion function.")
+"=/)
 
 }
