@@ -1,7 +1,6 @@
 attribute(doc("
 Helper commands for the anna repl (interactive prompt) implementation.
-This module is automatically used by the anna interactive prompt, and
-there is very rarely any reason to use it manually."));
+This module is automatically used by the anna interactive prompt, and there is very rarely any reason to use it manually."));
 
 enum HtmlState
 (

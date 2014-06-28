@@ -854,7 +854,7 @@ expression9 :
 expression10:
 	literal |
 	any_identifier |
-	'(' expression_list ')'
+	'(' opt_expression_list ')'
 	{
 	    if($2->child_count == 1)
 	    {
@@ -1305,9 +1305,9 @@ declaration_list :
 	{
 	    $$ = anna_node_create_block2(&@$);
 	} |
-	'(' declaration_list2 opt_separator ')'
+	'(' opt_separator declaration_list2 opt_separator ')'
 	{
-	    $$ = $2;
+	    $$ = $3;
 	};
 
 declaration_list2 :

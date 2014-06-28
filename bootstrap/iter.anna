@@ -494,11 +494,7 @@ def Call mangleReduceIterator(Call node) (
     internal,
     doc("Internal helper function for the reduce macro. It is used to mangle the argument list into a valid function.")
 ){
-    if( (node.count != 4) or 
-	!(node.function as Call) or 
-	!(node[1] as Identifier) or 
-	!(node[2] as Identifier) or
-	!(block?(node[-1]))){
+    if( (node.count != 4) or !(node.function as Call) or !(node[1] as Identifier) or !(node[2] as Identifier) or !(block?(node[-1]))){
 	return node;
     }
 
@@ -572,8 +568,7 @@ macro reduce(node) (
 		},
 		%res;
 		);
-	    ).setLocation(node).replace(ast(coll), coll).replace(ast(ReturnType), ast(staticType(%initial))).replace(ast(body), body).replace(ast(prevVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(ValueType), (decl[1] as Call)[1]).replace(ast(res), Identifier(?, parser.identifier("res"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))) 
-	    .replace(ast(initial), initial);
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(ReturnType), ast(staticType(%initial))).replace(ast(body), body).replace(ast(prevVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(ValueType), (decl[1] as Call)[1]).replace(ast(res), Identifier(?, parser.identifier("res"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(initial), initial);
     }
     else{
 	res = ast(

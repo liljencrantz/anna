@@ -90,7 +90,7 @@ expressions, not just Int values.
   	if(caseCall.callTo?("case")){
 	    if(caseCall.count < 2){
 		caseCall.error(
-                    "Call has " ~ caseCall.count ~ 
+                    "Call has " ~ caseCall.count ~\
                     " paramters, expected at least 2");
 		return NullLiteral(caseCall);
 		
@@ -101,8 +101,7 @@ expressions, not just Int values.
 		checkCallCount(caseCast, 2);
 	        caseBody := ast({%varName := %val as %type});
 		(caseCall[-1] as Call).each(node){caseBody ~= [node]}
-		next = 
-		    (ast(
+		next = (ast(
 			if(%val as %type, %caseBody, {})
 			) % [
 			    "caseBody": caseBody,

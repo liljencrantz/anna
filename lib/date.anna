@@ -20,8 +20,7 @@ class Delta
 An object representing a time delta, e.g. the difference between two
 points in time.
 ", "
-A time delta stores year, month, day, hour, minute, second and
-microsecond components independently. This is because the different
+A time delta stores year, month, day, hour, minute, second and microsecond components independently. This is because the different
 components do not always have the same size. For example, depending on
 what Date it is applied to a delta of one month might translate to a
 difference of 28, 29, 30 or 31 actual days. Keep these kinds of issues
