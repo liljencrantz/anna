@@ -1,11 +1,11 @@
 def main(){
-    g := 4|"DDD";
-    g.first += 1;
-    print(g.first+62, g.second[0].ordinal);
+    g := 4|"DDD"
+    g.first += 1
+    print(g.first+62, g.second[0].ordinal)
 
-    g2 := lang.Pair(4,7|"9");
-    g2.first += 1;
-    print(g2.first+1, g2.second.second);
+    g2 := lang.Pair(4,7|"9")
+    g2.first += 1
+    print(g2.first+1, g2.second.second)
 
     
 }

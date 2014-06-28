@@ -1,10 +1,10 @@
 
 def main(){
-    bbb := 123456789101112134151617181920;
-    print(bbb);
-    print(-bbb);
-    print(^abs bbb);
-    print(^abs -bbb);
-    print(^sign bbb);
-    print(^sign -bbb);
+    bbb := 123456789101112134151617181920
+    print(bbb)
+    print(-bbb)
+    print(^abs bbb)
+    print(^abs -bbb)
+    print(^sign bbb)
+    print(^sign -bbb)
 }

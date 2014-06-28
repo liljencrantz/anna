@@ -1,12 +1,12 @@
 
 class MyType {
 
-    var Int prop (property(whoLikesPie));
+    var Int prop (property(whoLikesPie))
 
 }
 
 def main(){
-    g := MyType();
-    print(g.prop, "\n");
+    g := MyType()
+    print(g.prop, "\n")
 }
 

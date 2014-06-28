@@ -1,7 +1,7 @@
 
 def main(){
-    print("You should see this");
-    unix.proc.exit(7);
-    print("But not this");
+    print("You should see this")
+    unix.proc.exit(7)
+    print("But not this")
 }
 

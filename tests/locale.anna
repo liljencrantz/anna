@@ -1,11 +1,11 @@
 def main(){
-    use(unix.locale);
+    use(unix.locale)
     ["C", "sv_SE.utf8"].each(localeName){
-	setLocale(localeMode.all, localeName);
-        lc := localeConv();
-	print(lc.decimalPoint);
-	print(lc.fracDigits);
-	print(lc.negativeSign);
+	setLocale(localeMode.all, localeName)
+        lc := localeConv()
+	print(lc.decimalPoint)
+	print(lc.fracDigits)
+	print(lc.negativeSign)
     }
 }
 

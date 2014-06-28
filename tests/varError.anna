@@ -1,8 +1,8 @@
 
 __var__(
     hej, ?, ?,
-    __block__());
+    __block__())
 
 def main(){
-    print(hej);
+    print(hej)
 }

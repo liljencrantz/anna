@@ -1,5 +1,5 @@
-posix :== unix;
+posix :== unix
 
 def main(){
-    print(posix.io.chmod.name);
+    print(posix.io.chmod.name)
 }

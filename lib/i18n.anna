@@ -1,4 +1,4 @@
-expand(stringFilter);
+expand(stringFilter)
 
 attribute(
     doc(
@@ -6,10 +6,10 @@ attribute(
 The anna i18n module (i18n is short for internationalization) is a simple high level module for making an Anna program available in different languages.","To use the i18n module, the follow the steps outlined below:",
 	"
 First, annotate any strings in your program that you want to be translatable, by prefixing them with the letter 't'. You will also need to macro-expand using the i18n module. A simple file might look like this:",
-	example"expand(i18n);
+	example"expand(i18n)
 
 def greet(){
-    print(t\"Hello, world!\");
+    print(t\"Hello, world!\")
 }",
 
 	"The next step is to run the annaxgettext application on your source files. Use a command like this:",
@@ -22,7 +22,7 @@ annaxgettext myApplication.anna >messages.pot
 # 
 msgid \"\"
 msgstr \"\"
-\"Content-Type: text/plain; charset=UTF-8\\n\"
+\"Content-Type: text/plain charset=UTF-8\\n\"
 
 #: myApplication.anna:4
 msgid \"Hello, world!\"
@@ -33,7 +33,7 @@ path='getText' member='bindText'>getText.bindText</a> to configure
 translations, see the <a
 href='http://www.gnu.org/software/gettext/'>GNU gettex
 documentation</a>.
-"));
+"))
 
 macro tStringLiteral(node)  (doc("
 The tStringLiteral function does two things. Firstly, it is used by
@@ -41,6 +41,6 @@ the annaxgettext program to locate translatable strings in the source
 code. Secondly, at run time, Strings passed through tStringLiteral are
 translated using the gettext framework.
 ")){
-    return ast(getText.getText(%literal)) % ["literal": node[0]];	
+    return ast(getText.getText(%literal)) % ["literal": node[0]]	
 }
 

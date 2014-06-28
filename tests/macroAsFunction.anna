@@ -1,7 +1,7 @@
 def main(){
-    f := builtinMacros.ast;
+    f := builtinMacros.ast
     print(f(parser.Call(
 		?,
 		parser.Identifier(?, "ast"),
-		parser.Identifier(?, "hopp"))), "\n");
+		parser.Identifier(?, "hopp"))), "\n")
 }

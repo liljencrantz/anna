@@ -5,6 +5,6 @@ def main(){
 		  ch, ch.ordinal, ch.alpha?, ch.alnum?,
 		  ch.blank?, ch.digit?, ch.cntrl?, ch.lower?,
 		  ch.upper?, ch.graph?, ch.print?, 
-		  ch.punct?, ch.space?, ch.xdigit?]);
+		  ch.punct?, ch.space?, ch.xdigit?])
     }
 }

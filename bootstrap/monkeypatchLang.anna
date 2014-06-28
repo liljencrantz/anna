@@ -1,4 +1,4 @@
-attribute(internal, doc("Internally used module. Don't use directly."));
+attribute(internal, doc("Internally used module. Don't use directly."))
 
 def print(String keys:, Any param...)  (
     target(lang),
@@ -19,14 +19,14 @@ be Strings:
   argument (the default is the newline character).</li>
 </ul>")
 ){
-    end := keys["end"] or "\n";
-    sep := keys["sep"] or " ";
+    end := keys["end"] or "\n"
+    sep := keys["sep"] or " "
     param.each(idx, val){   		    
 	if(idx != 0){
-	    printInternal(sep);
+	    printInternal(sep)
 	}
-	printInternal(String::convert(val));
+	printInternal(String::convert(val))
     }
-    printInternal(end);
-    param;
+    printInternal(end)
+    param
 }

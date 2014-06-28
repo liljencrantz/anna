@@ -1,9 +1,9 @@
 class Foo{
-    __var__(blaj, staticType(3), null, {});
+    __var__(blaj, staticType(3), null, {})
 }
 
 def main(){
-    foo := Foo();
-    foo.blaj = 5;
-    print(foo.blaj+2);
+    foo := Foo()
+    foo.blaj = 5
+    print(foo.blaj+2)
 }

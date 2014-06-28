@@ -1,39 +1,39 @@
-attribute(doc("A simple cooperative threading library"));
+attribute(doc("A simple cooperative threading library"))
 
-var MutableList«Fiber» fibers (internal, doc("A list of all created fibers."));
-var Fiber current (internal, doc("The currently running Fiber, if any."));
-var Int fiberIndex (internal, doc("The integer offset in the fibers list of the currently running Fiber")) = 0;
+var MutableList«Fiber» fibers (internal, doc("A list of all created fibers."))
+var Fiber current (internal, doc("The currently running Fiber, if any."))
+var Int fiberIndex (internal, doc("The integer offset in the fibers list of the currently running Fiber")) = 0
 
-var reflection.Continuation entry;
+var reflection.Continuation entry
 
 class Fiber (
     doc("A simple cooperative thread implementation")
 ){
-    var reflection.Continuation continuation (internal, doc("The continuation to call to continue executing this fiber."));
-    var Int idx (internal, doc("The integer index of this Fiber in the global fibers list"));
+    var reflection.Continuation continuation (internal, doc("The continuation to call to continue executing this fiber."))
+    var Int idx (internal, doc("The integer index of this Fiber in the global fibers list"))
 
     def __init__() (doc("Create a new Fiber")){
-	enable();
+	enable()
     }
 
     def Any enable() (doc("Call Fiber.enable in order to make this Fiber runnable. This is done autmoatically at Fiber creation.")){
 	if(!fibers){
-	    fibers = «Fiber»[];
+	    fibers = «Fiber»[]
 	}
-	idx = fibers.count;
-	fibers.push(this);
-	this.continuation = reflection.currentContinuation;
+	idx = fibers.count
+	fibers.push(this)
+	this.continuation = reflection.currentContinuation
 	if(this.continuation.callCount > 0){
-	    run();
-	    disable();
-	    yield();
+	    run()
+	    disable()
+	    yield()
 	}
     }
 
     def disable() (doc("Make it no longer possible to run the specified fiber.")){
-	fibers[idx] = fibers[-1];
-	fibers.count--;
-	idx = ?;
+	fibers[idx] = fibers[-1]
+	fibers.count--
+	idx = ?
     }
 
     def run() (doc("Subclasses of Fiber should reimplement this method")){
@@ -41,21 +41,21 @@ class Fiber (
 
     def yield()(static, doc("Yield the currently running Fiber and pick a new fiber to run.")){
 	if(current){
-	    current.continuation = reflection.currentContinuation;
-	    (current.continuation.callCount == 0) or (return);
+	    current.continuation = reflection.currentContinuation
+	    (current.continuation.callCount == 0) or (return)
 	} else{
-	    entry = reflection.currentContinuation;
+	    entry = reflection.currentContinuation
 	    if(entry.callCount > 0){
-		return;
+		return
 	    }
 	}
-        current= fibers[fiberIndex];
+        current= fibers[fiberIndex]
 	if(!current){
-	    entry();
+	    entry()
 	}
-	fiberIndex = (fiberIndex+1) ^mod fibers.count;
-	//print("Fiber %/%\n" % [fiberIndex, fibers.count]);
-	current.continuation();
+	fiberIndex = (fiberIndex+1) ^mod fibers.count
+	//print("Fiber %/%\n" % [fiberIndex, fibers.count])
+	current.continuation()
     }
     
 }

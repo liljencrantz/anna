@@ -7,23 +7,23 @@ class Derived
     extends(MutableList)
 ){
     def __init__(){
-	MutableList::__init__(this);
+	MutableList::__init__(this)
     }
 
 }
 
 def main(){
-    vv := Derived();
-    vv[3] = 7;
-    print(vv, '\n');
+    vv := Derived()
+    vv[3] = 7
+    print(vv, '\n')
 
-    vv2 := Derived«Int»();
-    vv2[3] = 7;
-    print(vv2, '\n');
+    vv2 := Derived«Int»()
+    vv2[3] = 7
+    print(vv2, '\n')
 
-    vv3 := Derived«String»();
-    vv3[3] = "s";
-    vv3[0] = vv3[3] ~ "1";
-    print(vv3, '\n');
+    vv3 := Derived«String»()
+    vv3[3] = "s"
+    vv3[0] = vv3[3] ~ "1"
+    print(vv3, '\n')
 
 }

@@ -3,17 +3,17 @@
   arguments.
  */
 def fun(Int a, Int b = 2, Int rest...){
-    res := a*b;
+    res := a*b
     rest.each(i){
-	res = res * i;
+	res = res * i
     }
-    res;
+    res
 }
 
 def main(){
-    print(fun(a:5, b:5, 5));
-    print(fun(1));
+    print(fun(a:5, b:5, 5))
+    print(fun(1))
     print(
-	fun(1,1,1,1,1,1,1,1,1,1,10));
-    print(fun(3,2,a:1, 1, b:1));
+	fun(1,1,1,1,1,1,1,1,1,1,10))
+    print(fun(3,2,a:1, 1, b:1))
 }

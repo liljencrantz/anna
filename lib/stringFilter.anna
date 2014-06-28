@@ -1,4 +1,4 @@
-attribute(doc("This macro module contains various prefixes for string literals to allow for string formatting."));
+attribute(doc("This macro module contains various prefixes for string literals to allow for string formatting."))
 
 macro fStringLiteral(node) (
     doc("Seamlessly mix program code with text. This macro allows the placement
@@ -7,33 +7,33 @@ will be evaluated at runtime and inserted into the string. Any such
 code snippets must be enclosed within %(), like in the following
 example:",
 "<pre class='anna-code'>
-expand(stringFilter);
+expand(stringFilter)
 
 def main(){
-    myVar := 123;
-    print(f\"foo %(\\\"a\\\" ~ 4 ~ 'f') bar %(myVar) baz\");
+    myVar := 123
+    print(f\"foo %(\\\"a\\\" ~ 4 ~ 'f') bar %(myVar) baz\")
 }
 </pre>",
 	"The above code is equivalent to:",
 "<pre class='anna-code'>
 def main(){
-    myVar := 123;
-    print(\"foo % bar % baz\" % [\"a\" ~ 4 ~ 'f', myVar]);
+    myVar := 123
+    print(\"foo % bar % baz\" % [\"a\" ~ 4 ~ 'f', myVar])
 }
 </pre>",
 	"and will output <code>foo a4f bar 123 baz</code>."
     )
 ){
-    use(parser);
+    use(parser)
     if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload)){
-	node.error("Invalid formated string");
+	node.error("Invalid formated string")
     }
 
-    res := "".thaw;
-    codeItem := "".thaw;
-    code := ast([]);
-    paranCount := 0;
-    commentCount := 0;
+    res := "".thaw
+    codeItem := "".thaw
+    code := ast([])
+    paranCount := 0
+    commentCount := 0
 
     enum State {
 	text, percent, code, charLiteral, stringLiteral, charLiteralBackslash,
@@ -41,167 +41,167 @@ def main(){
         multiLineCommentStar, multiLineCommentSlash
     }
 
-    state := State::text;
-    keyIdx := 0;
+    state := State::text
+    keyIdx := 0
 
     lit.each(ch){
 	switch(state){
 
 	    case(State::text){
 		if(ch == '%'){
-		    state = State::percent;
+		    state = State::percent
 		}
 		else{
-		    res ~= ch;
+		    res ~= ch
 		}
 	    }
 
 	    case(State::percent){
 		if(ch == '('){
-		    state = State::code;
+		    state = State::code
 		}
 		else{
-		    state = State::text;
-		    res ~= '%';
-		    res ~= ch;
+		    state = State::text
+		    res ~= '%'
+		    res ~= ch
 		}
 	    }
 
 	    case(State::code){
 		switch(ch){
 		    case('('){
-			paranCount++;
-			codeItem ~= ch;
+			paranCount++
+			codeItem ~= ch
 		    }
 
 		    case('"'){
-			state = State::stringLiteral;
-			codeItem ~= ch;
+			state = State::stringLiteral
+			codeItem ~= ch
 		    }
 
 		    case('\''){
-			state = State::charLiteral;
-			codeItem ~= ch;
+			state = State::charLiteral
+			codeItem ~= ch
 		    }
 
 		    case('/'){
-			state = State::codeSlash;
-			codeItem ~= ch;
+			state = State::codeSlash
+			codeItem ~= ch
 		    }
 
 		    case(')'){
 			if(paranCount == 0){
-			    keyName := "key" ~ keyIdx;
-			    keyIdx++;
-			    res ~= "%(" ~ keyName ~")";
+			    keyName := "key" ~ keyIdx
+			    keyIdx++
+			    res ~= "%(" ~ keyName ~")"
 
-			    parsed := parse(codeItem);
+			    parsed := parse(codeItem)
 			    if(!parsed){
-				node.error("Invalid code");
-				return ?;
+				node.error("Invalid code")
+				return ?
 			    }
-			    code.push(ast(%key : %value) % ["key": StringLiteral(node, keyName), "value": parsed]);
-			    codeItem.count=0;
-			    state = State::text;
+			    code.push(ast(%key : %value) % ["key": StringLiteral(node, keyName), "value": parsed])
+			    codeItem.count=0
+			    state = State::text
 			}
 			else{
-			    codeItem ~= ch;
-			    paranCount--;
+			    codeItem ~= ch
+			    paranCount--
 			}
 
 		    }
 
 		    default{
-			codeItem ~= ch;
+			codeItem ~= ch
 		    }	
 		}
 	    }
 
 	    case(State::codeSlash){
-		codeItem ~= ch;
-	        slashMapping := ['*': State::multiLineComment, '/': State::singleLineComment];
-		slashMapping.default = State::code;
-		state = slashMapping[ch];
+		codeItem ~= ch
+	        slashMapping := ['*': State::multiLineComment, '/': State::singleLineComment]
+		slashMapping.default = State::code
+		state = slashMapping[ch]
 		if(state == State::multiLineComment){
-		    commentCount++;
+		    commentCount++
 		}
 	    }
 
 	    case(State::multiLineComment){
-		codeItem ~= ch;
+		codeItem ~= ch
 		switch(ch){
 		    case('/'){
-			state = State::multiLineCommentSlash;
+			state = State::multiLineCommentSlash
 		    }
 
 		    case('*'){
-			state = State::multiLineCommentStar;
+			state = State::multiLineCommentStar
 		    }
 
 		}
 	    }
 
 	    case(State::multiLineCommentStar){
-		codeItem ~= ch;
+		codeItem ~= ch
 		switch(ch){
 		    case('/'){
-			commentCount--;
+			commentCount--
 			if(commentCount == 0){
-			    state = State::code;
+			    state = State::code
 			}
 		    }
 
 		    default{
-			state = State::multiLineComment;
+			state = State::multiLineComment
 		    }
 
 		}
 	    }
 
 	    case(State::multiLineCommentSlash){
-		codeItem ~= ch;
+		codeItem ~= ch
 		switch(ch){
 		    case('*'){
-			commentCount++;
+			commentCount++
 		    }
 
 		    default{
-			state = State::multiLineComment;
+			state = State::multiLineComment
 		    }
 
 		}
 	    }
 
 	    case(State::singleLineComment){
-		codeItem ~= ch;
+		codeItem ~= ch
 		if(ch == '\n'){
-		    state = State::code;
+		    state = State::code
 		}
 	    }
 
 	    case(State::charLiteral){
-		codeItem ~= ch;
-	        charLiteralMapping := ['\'': State::code, '\\': State::charLiteralBackslash];
-		charLiteralMapping.default = State::charLiteral;
-		state = charLiteralMapping[ch];
+		codeItem ~= ch
+	        charLiteralMapping := ['\'': State::code, '\\': State::charLiteralBackslash]
+		charLiteralMapping.default = State::charLiteral
+		state = charLiteralMapping[ch]
 	    }
 
 	    case(State::stringLiteral){
-		codeItem ~= ch;
-	        charLiteralMapping := ['"': State::code, '\\': State::stringLiteralBackslash];
-		charLiteralMapping.default = State::stringLiteral;
-		state = charLiteralMapping[ch];
+		codeItem ~= ch
+	        charLiteralMapping := ['"': State::code, '\\': State::stringLiteralBackslash]
+		charLiteralMapping.default = State::stringLiteral
+		state = charLiteralMapping[ch]
 	    }
 
 
 	    case(State::charLiteralBackslash){
-		codeItem ~= ch;
-		state = State::charLiteral;
+		codeItem ~= ch
+		state = State::charLiteral
 	    }
 
 	    case(State::stringLiteralBackslash){
-		codeItem ~= ch;
-		state = State::stringLiteral;
+		codeItem ~= ch
+		state = State::stringLiteral
 	    }
 
 
@@ -209,20 +209,20 @@ def main(){
     }
 
     if (state != State::text){
-	node.error("Invalid format string" ~ paranCount);
-	return ?;
+	node.error("Invalid format string" ~ paranCount)
+	return ?
     }
 
-    out := ast(%string % %code) % ["string": StringLiteral(node, res), "code": code];
-//    print (out);
-    return out;
+    out := ast(%string % %code) % ["string": StringLiteral(node, res), "code": code]
+//    print (out)
+    return out
 }
 
 macro exampleStringLiteral(node) (
     doc(
         "Mark a documentation string as a code example.",
-	"All this macro really does is enclose the string literal in a &lt;pre
-class='anna-code'&gt; tag. This is detected during page rendering by a
+	"All this macro really does is enclose the string literal in a &ltpre
+class='anna-code'&gt tag. This is detected during page rendering by a
 javascript that will perform syntax highlighting. For example, this is
 the signature of the <a path='json' member='to'>json.to</a> function:",
 	"<pre class='anna-code'>
@@ -243,8 +243,8 @@ supported, simply add a toJson method that returns a String.\"
 }
 </pre>")) {
     if(node.count != 1 or !(lit := (node[0] as StringLiteral).payload)){
-	node.error("Invalid example");
+	node.error("Invalid example")
     }
 
-    return StringLiteral(node, "<pre class='anna-code'>" ~ lit ~ "</pre>");
+    return StringLiteral(node, "<pre class='anna-code'>" ~ lit ~ "</pre>")
 }

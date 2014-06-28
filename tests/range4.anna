@@ -1,9 +1,9 @@
 def main(){
-    r := 1..10;
-    print(r.first, r.last);
-    print(r.filter(i){ i ^mod 2 == 0});
-    print(r.filter(i){ i > 100});
-    print(r.find(i){ i ^mod 2 == 0});
-    print(r.find(i){ i > 100});
-    print(r.map(i){ "Pos: " ~ i});
+    r := 1..10
+    print(r.first, r.last)
+    print(r.filter(i){ i ^mod 2 == 0})
+    print(r.filter(i){ i > 100})
+    print(r.find(i){ i ^mod 2 == 0})
+    print(r.find(i){ i > 100})
+    print(r.map(i){ "Pos: " ~ i})
 }

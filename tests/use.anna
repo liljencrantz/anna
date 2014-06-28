@@ -1,6 +1,6 @@
-use(parser);
+use(parser)
 
 def main(){
-    n :=IntLiteral(?, 5);
-    print(n.payload);
+    n :=IntLiteral(?, 5)
+    print(n.payload)
 }

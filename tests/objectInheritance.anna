@@ -8,11 +8,11 @@
 */
 class T{
     def toString(){
-	type(this).name;
+	type(this).name
     }
 }
 
 def main(){
-    print(T());
+    print(T())
 }
 

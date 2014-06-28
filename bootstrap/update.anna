@@ -1,40 +1,40 @@
-attribute(internal, doc("Internal module for the macros related to updating a variable in-place and paramater mappings."));
+attribute(internal, doc("Internal module for the macros related to updating a variable in-place and paramater mappings."))
 
-use(parser);
+use(parser)
 
 macro __mapping__(node) (
     doc("
 Internal utility macro. Makes sure that identifiers in mapping are internal identifiers, not regular identifiers.")
 ){ 
     a1 := if(node[0] as Identifier){
-	InternalIdentifier(node[0], (node[0] as Identifier).name);
+	InternalIdentifier(node[0], (node[0] as Identifier).name)
     }
     else{
-	node[0];
+	node[0]
     }
 
-    return Mapping(node, a1, node[1]);
+    return Mapping(node, a1, node[1])
 }
 
 
 def Node __update__(Call node) (
     doc("The common function used by __append__ and friends to implement in-place updating.")
 ){
-    checkNodeType(node.function, Identifier);
-    nameId := node.function as Identifier;
+    checkNodeType(node.function, Identifier)
+    nameId := node.function as Identifier
 
     /* We'd like to use the Range short hand here, but can't because
      * that would cause a circular dependency. */
-    name := nameId.name[Range(0,-2,1)] ~ "Assign__";
+    name := nameId.name[Range(0,-2,1)] ~ "Assign__"
 
     if(node.count == 1){
-	return ast(%x = %x.%y()).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name));
+	return ast(%x = %x.%y()).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name))
     }
     if(node.count == 2){
-	return ast(%x = %x.%y(%z)).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1]);
+	return ast(%x = %x.%y(%z)).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), Identifier(node.function, name)).replace(ast(%z), node[1])
     }
-    node.error("Invalid number of arguments");
-    return NullLiteral(node);
+    node.error("Invalid number of arguments")
+    return NullLiteral(node)
 }
 
 macro __increase__(node) (

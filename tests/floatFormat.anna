@@ -1,7 +1,7 @@
 def main(){
-    print((-12345.678901234).format(0));
-    print((-12345.678901234).format(2));
-    print((-12345.678901234).format(15));
-    print((-12345.678901234).format());
-    print((0.003).format(5));
+    print((-12345.678901234).format(0))
+    print((-12345.678901234).format(2))
+    print((-12345.678901234).format(15))
+    print((-12345.678901234).format())
+    print((0.003).format(5))
 }

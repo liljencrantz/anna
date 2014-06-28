@@ -2,9 +2,9 @@
 def main(){
 
     err := collect{
-	1+1;
-	error.raise(error.Error());
+	1+1
+	error.raise(error.Error())
     }
     
-    print("Errors:", err);
+    print("Errors:", err)
 }

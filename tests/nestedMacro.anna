@@ -1,22 +1,22 @@
 
 class Foo{
-    var List«Int» items;
+    var List«Int» items
 
     def __init__(){
-        this.items=[1,2,3];
+        this.items=[1,2,3]
     }
 }
 
 class Bar{
-    var Foo foo;
+    var Foo foo
 
     def __init__(){
-        this.foo = Foo();
+        this.foo = Foo()
     }
 }
 
 def main(){
-    bar := Bar();
+    bar := Bar()
 
     bar.foo.items.each(i){print(i)}
 

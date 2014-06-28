@@ -1,4 +1,4 @@
-attribute(internal, doc("Internal module for the enumType macro."));
+attribute(internal, doc("Internal module for the enumType macro."))
 
 macro enumType(definition) (
     doc(
@@ -15,12 +15,12 @@ enum ParseState { ready, busy, onFire = 666 }
 
 ...
 
-myState := ParseState::ready;
-print(myState); // Prints 'ready'
-print(myState.value); // Prints '0'
-myState = ParseState::onFire;
-print(myState); // Prints 'onFire'
-print(myState.value); // Prints '666'
+myState := ParseState::ready
+print(myState) // Prints 'ready'
+print(myState.value) // Prints '0'
+myState = ParseState::onFire
+print(myState) // Prints 'onFire'
+print(myState.value) // Prints '666'
 
 switch(myState){
     case(ParseState::ready){
@@ -31,143 +31,143 @@ switch(myState){
 </pre>",
 	"enum types can be used as HashMap keys.")
 ){
-    body := definition[2] as Call;
-    definition.function = ast(classType);
+    body := definition[2] as Call
+    definition.function = ast(classType)
     
     newBody := ast({
-	    var Int %value;
+	    var Int %value
 	}
-    );
+    )
 
     nameBody := ast({
 	    if( !this.%value){
-		return "?";
+		return "?"
 	    }
 	}
-    );
+    )
 
     initFun := ast(
 	def __init__(Int value){
 	    this.%value = value
 	}
-    );
+    )
 
     hashFun := ast(
 	def hashCode(){
-	    %value.hashCode();
+	    %value.hashCode()
 	}
-    );
+    )
 
     valueGetter := ast(
 	def %valueGetter(){
-	    %value;
+	    %value
 	}
-    );
+    )
 
     valueProperty := ast(
-	var Int __value (property(%valueGetter));
-    );
+	var Int __value (property(%valueGetter))
+    )
 
     cmpFun1 := ast(
 	def cmpInt(Int other) (alias(__cmp__)){
-	    return this.%value - other;
-	});
+	    return this.%value - other
+	})
     cmpFun2 := ast(
 	def __cmp__(%This other){
-	    return this.%value - other.%value;
+	    return this.%value - other.%value
 	}
 
-    );
+    )
 
-    idx := 0;
-    isFirst := 1;
+    idx := 0
+    isFirst := 1
     body.each(el){
-        id := ? as Identifier;
+        id := ? as Identifier
 
 	if(el as Identifier){
-	    id = el as Identifier;
+	    id = el as Identifier
 	}
 	if(el.callTo?("__assign__")){
-  	    ass := el as Call;
-	    checkCallCount(ass, 2);
-	    checkNodeType(ass[0], Identifier); 
-	    checkNodeType(ass[1], IntLiteral); 
-  	    id = ass[0] as Identifier;
-  	    nextIdx := (ass[1] as IntLiteral).payload;
+  	    ass := el as Call
+	    checkCallCount(ass, 2)
+	    checkNodeType(ass[0], Identifier) 
+	    checkNodeType(ass[1], IntLiteral) 
+  	    id = ass[0] as Identifier
+  	    nextIdx := (ass[1] as IntLiteral).payload
 	    if(nextIdx <= idx and !isFirst){
 		ass[1].error(
                     "Invalid enum value %. Previous value was % and values must be increasing." % [
-                        nextIdx, idx-1]);
-		return ?;
+                        nextIdx, idx-1])
+		return ?
 	    }
-	    idx = nextIdx;
+	    idx = nextIdx
 	    
 	}
 	
-	isFirst = ?;
+	isFirst = ?
 
 	if(!id){
 	    
-	    definition.error("Unexpected thingie");
-	    return ?;
+	    definition.error("Unexpected thingie")
+	    return ?
 	}
-	getter := "!" ~ id.name ~ "Getter";
+	getter := "!" ~ id.name ~ "Getter"
 	fun := ast(
 	    def %Type %name() (static) {
 		return %Type(%myValue)
 	    }
-	    );
+	    )
 	prop := ast(
 	    var %Type %name (static, property(%functionName))
-	    );
+	    )
 	cmp := ast(
 	    if(this.%value == %intValue){
 		return %strValue
 	    }
-	    );
+	    )
 	
 	fun = (
 	    fun % [
 		"name": Identifier(definition, getter),
 		"myValue": IntLiteral(definition, idx)
-		]) as Call;
+		]) as Call
 	
 	prop = (
 	    prop % [
 		"name": Identifier(definition, id.name),
 		"functionName": Identifier(definition, getter)
-		]) as Call;
+		]) as Call
 	cmp = (
 	    cmp % [
 		"intValue": IntLiteral(definition, idx),
 		"strValue": StringLiteral(definition, id.name)
-		]) as Call;
+		]) as Call
 	
-	newBody ~= [fun];
-	newBody ~= [prop];
-	nameBody ~= [cmp];
-	idx++;
+	newBody ~= [fun]
+	newBody ~= [prop]
+	nameBody ~= [cmp]
+	idx++
     }
 
     newBody ~= [
 	initFun, cmpFun1, cmpFun2, hashFun, 
-	valueGetter, valueProperty];
+	valueGetter, valueProperty]
     
     nameFun := ast(
 	def String toString(){}
-	);
-    (nameFun[2] as Call)[4] = nameBody;
-    newBody ~= [nameFun];
+	)
+    (nameFun[2] as Call)[4] = nameBody
+    newBody ~= [nameFun]
     
-    definition[2] = newBody;
+    definition[2] = newBody
     definition = (definition % [
 		      "value": Identifier(?, identifier("value")),
 		      "Type": definition[0].copy(),
 		      "valueGetter": Identifier(?, identifier("valueGetter")),
-		      ]) as Call;
+		      ]) as Call
 
-//    print(definition,"\n");	    
+//    print(definition,"\n")	    
 
-    return definition;
+    return definition
 }
 

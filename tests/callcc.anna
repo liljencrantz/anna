@@ -1,21 +1,21 @@
 def sub( def Null ret(Any val)){
-    print("subPre");
-    ret("continuationResult");
-    print("subPost");
+    print("subPre")
+    ret("continuationResult")
+    print("subPost")
 }
 
-var Int i = 0;
+var Int i = 0
 
 def sub2(def Null ret(Any val)){
-    i += 1;
-    ret(i);
+    i += 1
+    ret(i)
 }
 
 def Int main(){
-    print("mainPre");
-    print(callCC(sub));
-    print("mainPost");
-    print(callCC(sub2));
-    print(callCC(sub2));
-    print(callCC(sub2));
+    print("mainPre")
+    print(callCC(sub))
+    print("mainPost")
+    print(callCC(sub2))
+    print(callCC(sub2))
+    print(callCC(sub2))
 }

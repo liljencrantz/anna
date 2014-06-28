@@ -1,7 +1,7 @@
 def variadicFunction(String keys..., String abc){
-    print(keys, abc);
+    print(keys, abc)
 }
 
 def main(){
-    variadicFunction("a", "b");
+    variadicFunction("a", "b")
 }

@@ -10,10 +10,10 @@ class MyType (extends(MutableList«Int»)){
 }
 
 def main(){
-    t := MyType();
-    print(t.count);
-    print(t[0]);
-    t[0] = 7;
-    print(t.count);
-    print(t[0]);
+    t := MyType()
+    print(t.count)
+    print(t[0])
+    t[0] = 7
+    print(t.count)
+    print(t[0])
 }

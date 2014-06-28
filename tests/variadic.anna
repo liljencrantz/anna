@@ -1,5 +1,5 @@
 def wee(Int in...){
-    print("count:", in.count);
+    print("count:", in.count)
     in.each(i){print(i)}
 }
 

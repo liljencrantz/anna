@@ -1,13 +1,13 @@
-attribute(doc("Macros used by the anna repl."));
+attribute(doc("Macros used by the anna repl."))
 
 macro help(node) (doc("Show a help message on the specified function or member")){
-    call := node[0] as Call;
+    call := node[0] as Call
     if((call.function as Identifier).name == "__memberGet__" and call.count == 2 and type(call[1]) == Identifier){
 	
 	return ast(printHelpMember(%base, %member)) % [
 	    "base":call[0], 
-	    "member": StringLiteral(call[0], (call[1] as Identifier).name)];
+	    "member": StringLiteral(call[0], (call[1] as Identifier).name)]
     }
-    return ast(printHelp(%node)) % ["node":node[0]];
+    return ast(printHelp(%node)) % ["node":node[0]]
 }
 

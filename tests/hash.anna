@@ -1,6 +1,6 @@
 
 def main(){
-    hh := ['A' : "ape", 'B' : "baboon", 'C' : "cat", 'D' : "dinosaur"];
-    print(hh.count);
+    hh := ['A' : "ape", 'B' : "baboon", 'C' : "cat", 'D' : "dinosaur"]
+    print(hh.count)
     hh.each(k,v){print(k == v[0].upper)}
 }

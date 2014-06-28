@@ -1,32 +1,32 @@
-expand(stringFilter);
+expand(stringFilter)
 
-attribute(doc("Simple high level error handling."));
+attribute(doc("Simple high level error handling."))
 
 class Error (doc("The base class of any error")){
-    var reflection.Continuation source(internal, doc("The continuation that triggered this error."));
-    var String message (doc("The error message"));
+    var reflection.Continuation source(internal, doc("The continuation that triggered this error."))
+    var String message (doc("The error message"))
     def __init__(String message=?) (
 	doc("Create a new error with the specified error message."),
     ){
-	this.message = message;
-	source = reflection.currentContinuation;
+	this.message = message
+	source = reflection.currentContinuation
     }
     
     def String toString() (
 	doc("A string representation of this Error."),
     ){
-	"<error %()>" % [type(this).name];
+	"<error %()>" % [type(this).name]
     }
 }
 
 error CError (doc("An error with an associated C error number")){
-    var Int errno (doc("The C error number"));
+    var Int errno (doc("The C error number"))
 
     def __init__(Int errno) (
 	doc("Create a new error with the specified c error number."),
     ){
-	this.errno = errno;
-	Error::__init__(this, unix.error.errorString(errno));
+	this.errno = errno
+	Error::__init__(this, unix.error.errorString(errno))
     }
 }
 
@@ -50,7 +50,7 @@ def raiseError(Error error)  (
     doc(
 	"Search the stack for a suitable handler for the specified error. If there is no such error handler, print the error and return.",
 	"The raiseError function is usually called through the raise macro like this:",
-	example"raise(SomeError(\"Something went wrong...\"));",
+	example"raise(SomeError(\"Something went wrong...\"))",
 	)
 ){
     def Any funEach(reflection.Continuation item){
@@ -59,25 +59,25 @@ def raiseError(Error error)  (
 	    if(tp := (item["!collectType"] as List«reflection.Type»)){
 		tp.each(collType){
 		    if(type(error).abides(collType)){
-			coll ~= [error];
-			return;
+			coll ~= [error]
+			return
 		    }
 		}
 	    }
 	    else{
-		coll ~= [error];
-		return;
+		coll ~= [error]
+		return
 	    }
 	} 
 
 	if(item.dynamicFrame){
-	    funEach(item.dynamicFrame);
-	    return;
+	    funEach(item.dynamicFrame)
+	    return
 	}
 
-	print("Uncaught %(): %()" %[error, error.message]);
+	print("Uncaught %(): %()" %[error, error.message])
     }
     
-    funEach(reflection.currentContinuation);
+    funEach(reflection.currentContinuation)
 }
 

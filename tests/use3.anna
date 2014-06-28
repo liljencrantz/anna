@@ -1,5 +1,5 @@
 
 def main(){
-    use(io);
-    print(type(File::currentDirectory.filename).name);
+    use(io)
+    print(type(File::currentDirectory.filename).name)
 }

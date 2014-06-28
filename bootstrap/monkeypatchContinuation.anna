@@ -1,6 +1,6 @@
-attribute(internal, doc("Internally used module. Don't use directly."));
+attribute(internal, doc("Internally used module. Don't use directly."))
 
-use(reflection);
+use(reflection)
 
 def continuationToString(Continuation this) (
     target(Continuation),

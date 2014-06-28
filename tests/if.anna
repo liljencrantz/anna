@@ -6,43 +6,43 @@ def main() (
     doc("Test a bunch of ways the if expression can be used and abused"),
 ){
     if(1){
-	print("true");
+	print("true")
     }
     else{
-	print("false");
+	print("false")
     }
 
     if(?){
-	print("true");
+	print("true")
     } else {
-	print("false");
+	print("false")
     }
 
-    if(1){print("true");}else{print("false");}
+    if(1){print("true")}else{print("false");}
 
-    print(if(?){"true"}else{"false"});
+    print(if(?){"true"}else{"false"})
 
     val := if(1){"true"}else{"false"}
-    print(val);
+    print(val)
 
     val = if(?){"true"}else{"false"}
-    print(val);
+    print(val)
     
-    print(fun(1));
-    print(fun(?));
+    print(fun(1))
+    print(fun(?))
     
     print(
 	while(1){
-	    break if(1){"true"} else {"false"};
-	});
+	    break if(1){"true"} else {"false"}
+	})
 
-    done := ? as Any;
+    done := ? as Any
     print(
 	while(!done){
-	    done = 1;
-	    continue if(?){"true"} else {"false"};
-	});
+	    done = 1
+	    continue if(?){"true"} else {"false"}
+	})
 
-    print(3+if(?) { 1 } else { 2 });
+    print(3+if(?) { 1 } else { 2 })
 
 }

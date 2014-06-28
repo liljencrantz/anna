@@ -1,7 +1,7 @@
 def main(){
-    print(1234.format(base:10).lpad(char:'0', count:10));
-    print(0xdead_beef.format(base:16).lpad(char:'X', count:10));
-    print(0xdead_beef_dead_beef.format(base:2));
-    print(1.format(base:44));
-    print(-1.format(base:8));
+    print(1234.format(base:10).lpad(char:'0', count:10))
+    print(0xdead_beef.format(base:16).lpad(char:'X', count:10))
+    print(0xdead_beef_dead_beef.format(base:2))
+    print(1.format(base:44))
+    print(-1.format(base:8))
 }

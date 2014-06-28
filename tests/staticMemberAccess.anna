@@ -1,18 +1,18 @@
 
 class MyType{
-    var String myStaticMember (static);
+    var String myStaticMember (static)
     
     def myStaticMethod() (static){
 	/*
 	  An implicit use on the type might be nice in static methods.
 	*/
-	myStaticMember = "some value";
+	myStaticMember = "some value"
     }
 }
 
 def main(){
-    print(MyType::myStaticMember);
-    MyType::myStaticMethod();
-    print(MyType::myStaticMember);
+    print(MyType::myStaticMember)
+    MyType::myStaticMethod()
+    print(MyType::myStaticMember)
 }
 

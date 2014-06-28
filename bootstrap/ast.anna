@@ -1,4 +1,4 @@
-attribute(internal, doc("Internal module for the ast macro."));
+attribute(internal, doc("Internal module for the ast macro."))
 
 macro ast(node) (
     doc("
@@ -8,20 +8,20 @@ Example:
 ",
 "
 <pre class='anna-code'>
-ast(%value := 0) % [\"value\": Identifier(?, \"someVariableName\") ];
+ast(%value := 0) % [\"value\": Identifier(?, \"someVariableName\") ]
 </pre>",
 "
 The above example will return an AST that is equivalent to the following code:
 ",
 "
 <pre class='anna-code'>
-someVariableName := 0;
+someVariableName := 0
 </pre>
 ")
 ){
     if(lang.__neqInternal__(node.count.__cmp__(1))){
-	node.error("ast macro expects exactly one argument, found " ~ node.count);
-	return ?;
+	node.error("ast macro expects exactly one argument, found " ~ node.count)
+	return ?
     }
     return Call(
 	node,	   
@@ -31,6 +31,6 @@ someVariableName := 0;
 		  Identifier(node, "__memberGet__"), 
 		  Dummy(node, node[0]),
 		  Identifier(node, "copy"))),
-	Dummy(node, type(node[0])));
+	Dummy(node, type(node[0])))
 }
 

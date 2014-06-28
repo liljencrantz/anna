@@ -1,26 +1,26 @@
-attribute(internal, doc("Internal module for macros related to declaring or assigning to multiple variables in a single expression."));
+attribute(internal, doc("Internal module for macros related to declaring or assigning to multiple variables in a single expression."))
 
 /*
   Macros used for transforming stuff like 
 
-  [foo, bar, baz] = ggg();
+  [foo, bar, baz] = ggg()
 
   into
 
-  nothing(tmp = ggg(), foo = tmp[0], bar = tmp[1], baz = tmp[2]);
+  nothing(tmp = ggg(), foo = tmp[0], bar = tmp[1], baz = tmp[2])
 
 */
 
 def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNode) (
     doc("Internal helper method for __varList__ and friends.")
 ){
-    use(parser);
-    res := (ast(nothing(%tmp :== %val)) % ["val": valNode]) as Call;
+    use(parser)
+    res := (ast(nothing(%tmp :== %val)) % ["val": valNode]) as Call
     list[1...].each(idx, item){
-	res ~= [assignNode % ["dec": item, "idx": IntLiteral(item, idx)]];
+	res ~= [assignNode % ["dec": item, "idx": IntLiteral(item, idx)]]
     }
-//    print(res);
-    return res % ["tmp": Identifier(valNode, identifier("temp"))];
+//    print(res)
+    return res % ["tmp": Identifier(valNode, identifier("temp"))]
 }
 
 macro __varList__(node)  (
@@ -29,14 +29,14 @@ macro __varList__(node)  (
 	"<pre class='anna-code'>
 // Declare two new variables, myE and myPi, whose initial values will be those
 // of the e and pi mathematical constants, respectively.
-[myE, myPi] := [math.e, meth.pi];
+[myE, myPi] := [math.e, meth.pi]
 // This prints '3.141593'
-print(myPi);
+print(myPi)
 // This is ok, myE is a variable, not a constant
-myE = 1.5;
+myE = 1.5
 </pre>"
 	)){
-    return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp[%idx]));
+    return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp[%idx]))
 }
 
 macro __constList__(node)  (
@@ -45,14 +45,14 @@ macro __constList__(node)  (
 	"<pre class='anna-code'>
 // Declare two new constants, myE and myPi, whose values will be those of the
 // e and pi mathematical constants, respectively.
-[myE, myPi] :== [math.e, meth.pi];
+[myE, myPi] :== [math.e, meth.pi]
 // This prints '3.141593'
-print(myPi);
+print(myPi)
 // This is an error, trying to reassign to a variable
-myE = 1.5;
+myE = 1.5
 </pre>"
 	)){
-    return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp[%idx]));
+    return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp[%idx]))
 }
 
 macro __assignList__(node)  (
@@ -60,8 +60,8 @@ macro __assignList__(node)  (
 	"Syntactic sugar for assigning multiple variables in a single expression.",
 	"<pre class='anna-code'>
 // This code will switch the places of the two variables foo and bar
-[foo, bar] = [bar, foo];
+[foo, bar] = [bar, foo]
 </pre>"
 	)) {
-    return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]));
+    return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]))
 }

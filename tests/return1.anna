@@ -1,21 +1,21 @@
 
 def sign(Int i){
     if(i < 0){
-        return -1;
+        return -1
     }
     if(i > 0){
-        return 1;
+        return 1
     }
-    return 0;
+    return 0
 }
 
 def ifTest(){
     if(1){
-        return 1;
+        return 1
     }
-    return 0;
+    return 0
 }
 
 def Int main(){
-    print("A", sign(-4), sign(5), sign(0), ifTest());
+    print("A", sign(-4), sign(5), sign(0), ifTest())
 }

@@ -1,4 +1,4 @@
 
 def main()  {
-    foo := List«Hej»();
+    foo := List«Hej»()
 }

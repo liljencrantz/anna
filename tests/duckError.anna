@@ -1,17 +1,17 @@
 class Foo{
     def fun(String param){
-        print(param);
+        print(param)
     }
 }
 
 class Bar{
 
     def fun(Int param){
-        print(param);
+        print(param)
     }
 }
 
 def main(){
-    v := Foo();
-    v = Bar();
+    v := Foo()
+    v = Bar()
 }

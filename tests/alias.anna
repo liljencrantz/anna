@@ -5,17 +5,17 @@
 class Foo{
 
     def bar__String__(String first, String second, String third) (alias(bar)){
-	print(first, second, third);
+	print(first, second, third)
     }
 
     def bar__Int__(Int first, Int second, Int third) (alias(bar)){
-	print(first + second + third);
+	print(first + second + third)
     }
 
 }
 
 def main(){
-    foo := Foo();
-    foo.bar(-1,0,1);    
-    foo.bar("a", "b", "c");
+    foo := Foo()
+    foo.bar(-1,0,1)    
+    foo.bar("a", "b", "c")
 }

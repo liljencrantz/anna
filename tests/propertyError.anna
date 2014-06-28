@@ -1,19 +1,19 @@
 
 class MyType {
 
-    var Int storage;
+    var Int storage
 
     def myGetter(){
-        this.storage;
+        this.storage
     }
 
-    var Int prop (property(myGetter));
+    var Int prop (property(myGetter))
 
 }
 
 def main(){
-    g := MyType();
-    g.prop = 7;
-    print(g.prop, "\n");
+    g := MyType()
+    g.prop = 7
+    print(g.prop, "\n")
 }
 

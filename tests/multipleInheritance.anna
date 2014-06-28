@@ -3,8 +3,8 @@ class Derived1
     extends(Int, Range)
 ){
     def __init__(){
-	Int::__init__(this, 0);
-	Range::__init__(this, 0,10,1);
+	Int::__init__(this, 0)
+	Range::__init__(this, 0,10,1)
     }
 }
 
@@ -13,31 +13,31 @@ class Derived2
     extends(Range, Int)
 ){
     def __init__(){
-	Int::__init__(this, 0);
-	Range::__init__(this, 0,10,1);
+	Int::__init__(this, 0)
+	Range::__init__(this, 0,10,1)
     }
 }
 
 def main(){
-    vv := Derived1();
+    vv := Derived1()
 
     // Int::__add__
-    print(vv + 5);
+    print(vv + 5)
 
     // Range::iterator
     vv.each(i){print(i)}
 
     // Range::toString
-    print(vv);
+    print(vv)
 
-    vv2 := Derived2();
+    vv2 := Derived2()
 
     // Int::__add__
-    print(vv2 + 5);
+    print(vv2 + 5)
 
     // Range::iterator
     vv2.each(i){print(i)}
 
     // Int::toString
-    print(vv2);
+    print(vv2)
 }

@@ -1,4 +1,4 @@
 
 def main(){
-    print(1, 1.0, Complex(3.0, 4.0), 'a', "AAA");
+    print(1, 1.0, Complex(3.0, 4.0), 'a', "AAA")
 }

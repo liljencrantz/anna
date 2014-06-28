@@ -1,18 +1,18 @@
 class Tp{
-    var Int memb;
+    var Int memb
     def meth(){
-	return memb;
+	return memb
     }
 
     def setter(){
-	memb = 12;
+	memb = 12
     }
 }
 
 def main(){
-    v := Tp();
-    v.memb = 7;
-    print(v.meth());
-    v.setter();
-    print(v.meth());
+    v := Tp()
+    v.memb = 7
+    print(v.meth())
+    v.setter()
+    print(v.meth())
 }

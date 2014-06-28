@@ -1,7 +1,7 @@
 def myFunTemplate(%T a, %T b) (template(%T: Int)){
-    a+b;
+    a+b
 }
 
 def main(){
-    print(myFunTemplate(a:3.0, 4.0));
+    print(myFunTemplate(a:3.0, 4.0))
 }

@@ -4,7 +4,7 @@ def main() (
 	"Check that bound method can be called unbound by accessing them statically"
     )
 ){
-    list := [1,2,3,4];
-    MutableList::push(list, 5);
-    print(list);
+    list := [1,2,3,4]
+    MutableList::push(list, 5)
+    print(list)
 }

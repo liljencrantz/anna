@@ -1,7 +1,7 @@
 class MyType{
-    var Int myMember;
+    var Int myMember
 }
 
 def main(){
-    MyType::myMember = 7;
+    MyType::myMember = 7
 }

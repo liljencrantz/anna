@@ -1,5 +1,5 @@
 def main(){
-    foo := "abc" as String;
-    foo.count = 2;
-    print(foo);
+    foo := "abc" as String
+    foo.count = 2
+    print(foo)
 }

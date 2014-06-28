@@ -2,10 +2,10 @@
   Test the List::all? and List::none? methods
 */
 def main(){
-  list1 := [1, 1, 1, 1];
-  list2 := [1, 1, ?, ?];
-  list3 := [?, ?, ?, ?];
+  list1 := [1, 1, 1, 1]
+  list2 := [1, 1, ?, ?]
+  list3 := [?, ?, ?, ?]
     expandCode(print(%list.all?(), %list.none?()),
-	       list: [list1, list2, list3]);
+	       list: [list1, list2, list3])
 }
 

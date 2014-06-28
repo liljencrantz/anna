@@ -1,11 +1,11 @@
 
 def main(){
-    i:=0;
+    i:=0
     print(
 	3,
 	if(?){"a"}else{"b"},
 	if(?){"X"},
 	if(1){"a"},
-	while(i<5){i++;-i},
-	while(i<5){'A'});
+	while(i<5){i++-i},
+	while(i<5){'A'})
 }

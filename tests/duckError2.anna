@@ -1,18 +1,18 @@
 class Foo{
 
     def fun(){
-        3;
+        3
     }
 }
 
 class Bar{
 
     def fun(){
-        "3";
+        "3"
     }
 }
 
 def main(){
-    v := Foo();
-    v = Bar();
+    v := Foo()
+    v = Bar()
 }

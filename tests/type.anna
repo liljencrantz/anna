@@ -1,10 +1,10 @@
 
 def main()  {
-    print(Int);
+    print(Int)
 
-    hh := [Int:3, String:7, Pair : 9];
-    print(hh[Int]);
+    hh := [Int:3, String:7, Pair : 9]
+    print(hh[Int])
 
-    print(Int.abides(Int));
-    print(Int.abides(String));
+    print(Int.abides(Int))
+    print(Int.abides(String))
 }

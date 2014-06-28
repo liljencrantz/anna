@@ -1,7 +1,7 @@
 def main(){
-    vv := 3;
+    vv := 3
     def inner(){
-	print(vv);
+	print(vv)
     }
-    inner();
+    inner()
 }

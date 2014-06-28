@@ -1,23 +1,23 @@
 
 class MyType{
-    var String myPropertyInternal (static);
+    var String myPropertyInternal (static)
 
     var String myProperty 
-	(static, property(myPropertyGetter, myPropertySetter));
+	(static, property(myPropertyGetter, myPropertySetter))
 
     def myPropertyGetter() (static){
-	return MyType::myPropertyInternal;
+	return MyType::myPropertyInternal
     }
 	
     def myPropertySetter(String newValue) (static){
-	MyType::myPropertyInternal = newValue;
+	MyType::myPropertyInternal = newValue
     }
 	
 }
 
 def main(){
-    print(MyType::myProperty);
-    MyType::myProperty = "hello";
-    print(MyType::myProperty);
+    print(MyType::myProperty)
+    MyType::myProperty = "hello"
+    print(MyType::myProperty)
 }
 

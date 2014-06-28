@@ -1,4 +1,4 @@
-attribute(internal, doc("Internal module for the struct macro."));
+attribute(internal, doc("Internal module for the struct macro."))
 
 macro structType(node) (
     doc("
@@ -14,63 +14,63 @@ Basically, a struct type behaves exactly like a regular class, but with a few ad
 	"Usage example:",
 "<pre class='anna-code'>
 struct MyStruct{
-    var Int some;
-    var String other;
+    var Int some
+    var String other
 }
 
 ...
 // A constructor is implicitly created for struct:s.
-vv := MyStruct(some: 3, other: \"abc\");
-vv2 := MyStruct(5, \"\");
+vv := MyStruct(some: 3, other: \"abc\")
+vv2 := MyStruct(5, \"\")
 
-// This prints MyStruct(some: 5, other:);
-print(vv2);
+// This prints MyStruct(some: 5, other:)
+print(vv2)
 </pre>",
 "Because structs implement the __cmp__ and hashCode methods, they can be used as 
 keys in HashMap dictionaries.
 ")
 ){
-    node.function = ast(classType);
-    structName := node[0] as Identifier;
-    body := node[2] as Call;
-    constructorParam := ast({});
-    constructorBody := ast({});
-    toStringBody := (ast({res := %resStart.thaw;}) % ["resStart": StringLiteral(node, structName.name ~ "(")]) as Call;
-    cmpBody := ast({otherStruct := other as %This; otherStruct or (return ?); tmp := 0;});
-    hashCodeBody := ast({res := 0;});
-    customToString := ? as Int;
+    node.function = ast(classType)
+    structName := node[0] as Identifier
+    body := node[2] as Call
+    constructorParam := ast({})
+    constructorBody := ast({})
+    toStringBody := (ast({res := %resStart.thaw}) % ["resStart": StringLiteral(node, structName.name ~ "(")]) as Call;
+    cmpBody := ast({otherStruct := other as %This, otherStruct or (return ?), tmp := 0})
+    hashCodeBody := ast({res := 0})
+    customToString := ? as Int
     body.each(idx, el){
-        decl := el as Call;
-        name := (decl[0] as Identifier);
+        decl := el as Call
+        name := (decl[0] as Identifier)
         if(name.name in ["__init__", "__cmp__"]){
-            name.error("Invalid field name in struct.");
-            return NullLiteral(node);
+            name.error("Invalid field name in struct.")
+            return NullLiteral(node)
         }
         if(name.name == "toString"){
-            customToString := 1;
+            customToString := 1
         }
         if(decl.function.named?("__const__") and decl[2].callTo?("__def__")){
-            continue;
+            continue
         }
-	constructorParam.push(decl.copy());
-	constructorBody.push(ast(this.%val = %val) % ["val": name.copy()]);
-	toStringBody.push(ast(res ~= %name) % ["name": StringLiteral(decl, "" ~ (if(idx != 0){ ", " } else { "" }) ~ name.name ~ ": ")]);
-	toStringBody.push(ast(res ~= this.%value) % ["value": name.copy()]);
-	cmpBody.push(ast((tmp = (this.%value as monkeypatchMisc.Comparable).__cmp__(otherStruct.%value) == 0) or (return tmp)) % ["value": name.copy()]);
-	hashCodeBody.push(ast(res = res ^bitxor (this.%value as monkeypatchMisc.Hashable).hashCode()) % ["value": name.copy()]);
+	constructorParam.push(decl.copy())
+	constructorBody.push(ast(this.%val = %val) % ["val": name.copy()])
+	toStringBody.push(ast(res ~= %name) % ["name": StringLiteral(decl, "" ~ (if(idx != 0){ ", " } else { "" }) ~ name.name ~ ": ")])
+	toStringBody.push(ast(res ~= this.%value) % ["value": name.copy()])
+	cmpBody.push(ast((tmp = (this.%value as monkeypatchMisc.Comparable).__cmp__(otherStruct.%value) == 0) or (return tmp)) % ["value": name.copy()])
+	hashCodeBody.push(ast(res = res ^bitxor (this.%value as monkeypatchMisc.Hashable).hashCode()) % ["value": name.copy()])
     }
-    toStringBody.push(ast(res ~= ")"));
-    toStringBody.push(ast(res));
-    body.push(ast(__const__(__init__, ?, __def__(__init__, ?, %param, {}, %body), {})) % ["param": constructorParam, "body": constructorBody]);
-    cmpBody.push(ast(return 0));
-    hashCodeBody.push(ast(return res));
+    toStringBody.push(ast(res ~= ")"))
+    toStringBody.push(ast(res))
+    body.push(ast(__const__(__init__, ?, __def__(__init__, ?, %param, {}, %body), {})) % ["param": constructorParam, "body": constructorBody])
+    cmpBody.push(ast(return 0))
+    hashCodeBody.push(ast(return res))
 
     if(!customToString){
-        body.push(ast(__const__(toString, ?, __def__(toString, ?, {}, {}, %body), {})) % ["body": toStringBody]);
+        body.push(ast(__const__(toString, ?, __def__(toString, ?, {}, {}, %body), {})) % ["body": toStringBody])
     }
-    body.push(ast(__const__(__cmp__, ?, __def__(__cmp__, ?, {var Any other}, {}, %body), {})) % ["body": cmpBody]);
-    body.push(ast(__const__(hashCode, ?, __def__(hashCode, ?, {}, {}, %body), {})) % ["body": hashCodeBody]);
-    return node;
+    body.push(ast(__const__(__cmp__, ?, __def__(__cmp__, ?, {var Any other}, {}, %body), {})) % ["body": cmpBody])
+    body.push(ast(__const__(hashCode, ?, __def__(hashCode, ?, {}, {}, %body), {})) % ["body": hashCodeBody])
+    return node
 }
 
 macro struct(node) (
@@ -78,7 +78,7 @@ macro struct(node) (
 "The struct macro is used as a short hand for defining struct-type objects used
 exclusively for quick access to it's members. It is used by passing a
 set of name/value mappings like so:",
-"<pre class='anna-code'>foo := struct(something: 3, other: getMeSomeOtherObject());</pre>",
+"<pre class='anna-code'>foo := struct(something: 3, other: getMeSomeOtherObject())</pre>",
 "The above code will make foo into an object of a type with two
 members. The first member will be of type Int and the second will be
 of the return type of the getMeSomeOtherObject function. The something
@@ -89,27 +89,27 @@ struct. The only restriction is that there may not be any circular
 dependencies between member types."
 )
 ){
-    initBlock := Call(node, Identifier(node, "__block__"));
-    typeBlock := Call(node, Identifier(node, "__block__"));
-    callParam := MutableList«Node»();
+    initBlock := Call(node, Identifier(node, "__block__"))
+    typeBlock := Call(node, Identifier(node, "__block__"))
+    callParam := MutableList«Node»()
     node.each(item){
-	checkNodeCallTo(item, "__mapping__");
-        mapping := item as Call;
+	checkNodeCallTo(item, "__mapping__")
+        mapping := item as Call
         varType := if(type(mapping[1]) != NullLiteral){
-		ast(staticType(%value)) % ["value": mapping[1]];
+		ast(staticType(%value)) % ["value": mapping[1]]
 	    }
 	    else{
-		ast(Any);
+		ast(Any)
 	    }
 	typeBlock ~= [ast(__var__(%name, %type, ?, {}))\
-		      % ["name": mapping[0], "type": varType]];
-        callParam ~= [mapping[1]];
-	initBlock ~= [ast(this.%name = %name) % ["name": mapping[0]]];
+		      % ["name": mapping[0], "type": varType]]
+        callParam ~= [mapping[1]]
+	initBlock ~= [ast(this.%name = %name) % ["name": mapping[0]]]
     }
-    initParam := typeBlock.copy() as Call;
-    fullType := ast(structType(AnonymousStruct, {}, %body)) % ["body": typeBlock];
-    call := Call(node, fullType);
-    call ~= callParam;
-//    print(fullType);
-    return call;
+    initParam := typeBlock.copy() as Call
+    fullType := ast(structType(AnonymousStruct, {}, %body)) % ["body": typeBlock]
+    call := Call(node, fullType)
+    call ~= callParam
+//    print(fullType)
+    return call
 }

@@ -1,4 +1,4 @@
-attribute(internal, doc("Internally used module. Don't use directly."));
+attribute(internal, doc("Internally used module. Don't use directly."))
 
 expandCode(
     def Int %name(
@@ -13,11 +13,11 @@ expandCode(
 	    ),
 	){
 	this[from...].each(idx, i){if(i == ch){return idx}}
-	return ?;
+	return ?
     },
     Type: [ImutableString, MutableString, String],
     name: [searchCharImutable, searchCharMutable, searchChar],
-    );
+    )
 
 expandCode(
     def Int %name(
@@ -31,11 +31,11 @@ expandCode(
 	    ),
 	){
 	(from..this.count).each(idx){if(this[idx..(idx+string.count)] == string){return idx}}
-	return ?;
+	return ?
     },
     Type: [ImutableString, MutableString, String],
     name: [searchStringImutable, searchStringMutable, searchString],
-    );
+    )
 
 expandCode(
     def %Type %name(
@@ -53,54 +53,54 @@ expandCode(
          String::format functions for e.g. numeric formating."
 	),
 	){
-	return formatListInternal(this, data).%prop;
+	return formatListInternal(this, data).%prop
     },
     Type: [ImutableString, MutableString, String],
     name: [formatListImutable, formatListMutable, formatList],
     prop: [freeze, thaw, freeze],
-    );
+    )
 
 def String formatListInternal(
     String this, 
     List«Any» data) (internal, doc("Internal helper function for String::formatList.")){
-    res := "";
-    listIdx := 0;
-    i := 0;
+    res := ""
+    listIdx := 0
+    i := 0
     while(i < this.count){
-        ch := this[i];
+        ch := this[i]
         if(ch == '%'){
 	    if(this[i+1] == '('){
 		if(this[i+2] == ')'){
-		    res ~= (data[listIdx] or "");
-		    listIdx++;
-		    i+=2;
+		    res ~= (data[listIdx] or "")
+		    listIdx++
+		    i+=2
 		}
 		else {
-		    idx := 0;
-		    i2 := i+2;
+		    idx := 0
+		    i2 := i+2
 		    while(this[i2] >= '0' and this[i2] <= '9') {
-			idx = 10*idx + (this[i2]-'0');
-			i2++;
+			idx = 10*idx + (this[i2]-'0')
+			i2++
 		    }
 		    if(this[i2] == ')'){
-			res ~= (data[idx] or "");
-			i = i2;
+			res ~= (data[idx] or "")
+			i = i2
 		    }
 		    else{
-			res ~= '%';
+			res ~= '%'
 		    }
 		}
 	    }
 	    else{
-		res ~= '%';
+		res ~= '%'
 	    }
         }
 	else{
-	    res ~= ch;
+	    res ~= ch
         }
-        i++;
+        i++
     }
-    return res;
+    return res
 }
 
 expandCode(
@@ -120,34 +120,34 @@ expandCode(
             conversion. Use the various format functions for e.g. numeric
             formating, such as Int::format."),
 	){
-	return formatMapInternal(this, data).%prop;
+	return formatMapInternal(this, data).%prop
     },
     Type: [ImutableString, MutableString, String],
     name: [formatMapImutable, formatMapMutable, formatMap],
     prop: [freeze, thaw, freeze],
-    );
+    )
 
 def String formatMapInternal(
     String this, 
     HashMap«String, Any» data) (internal, doc("Internal helper function for String::formatMap.")){
-    res := "".thaw;
-    i := 0;
+    res := "".thaw
+    i := 0
     while(i < this.count){
-        ch := this[i];
+        ch := this[i]
         if(ch == '%'){
 	    if(this[i+1] == '%'){
-  	        i++;
+  	        i++
                 res ~= '%'
             } 
 	    else{
-	        i++;
+	        i++
 		if(this[i] == '('){
-		    i++;
-		    end := searchChar(this[i...], ')');
+		    i++
+		    end := searchChar(this[i...], ')')
 		    if(end){
-		        name := this[i..(i+end)];
-			res ~= data[name];
-			i=i+end;
+		        name := this[i..(i+end)]
+			res ~= data[name]
+			i=i+end
 		    } 
 		    else {
 			// ERROR
@@ -159,11 +159,11 @@ def String formatMapInternal(
             }
         } 
 	else{
-	    res ~= ch;
+	    res ~= ch
         }
-        i++;
+        i++
     }
-    return res;
+    return res
 }
 
 expandCode(
@@ -177,18 +177,18 @@ expandCode(
 	name(lpad),
 	){
 	if(this.count > count){
-	    return this;
+	    return this
 	}
-	res := "";
+	res := ""
 	(0..(count - this.count)).each(i){
-	    res ~= char;
+	    res ~= char
 	}
-	res ~= this;
-	return res;
+	res ~= this
+	return res
     },
     Type: [ImutableString, MutableString, String],
     name: [lpadImutable, lpadMutable, lpad]
-    );
+    )
 
 expandCode(
     def %Type %name(
@@ -201,17 +201,17 @@ expandCode(
 	name(rpad),
 	){
 	if(this.count >= count){
-	    return this;
+	    return this
 	}
-	res := this;
+	res := this
 	(0..(count - this.count)).each(i){
-	    res ~= char;
+	    res ~= char
 	}
-	return res;
+	return res
     },
     Type: [ImutableString, MutableString, String],
     name: [rpadImutable, rpadMutable, rpad]
-    );
+    )
 
 expandCode(
     def Int %name(%Type this, Char char) (
@@ -220,14 +220,14 @@ expandCode(
     ){
 	this.each(idx, ch){
 	    if(char == ch){
-		return idx;
+		return idx
 	    }
 	}
-	return ?;
+	return ?
     }
     Type: [ImutableString, MutableString, String],
     name: [__in__Imutable, __in__Mutable, __in__]
-    );
+    )
 
 expandCode(
     def MutableList«String» %name(
@@ -240,23 +240,23 @@ expandCode(
             empty strings will be ignored."),
 	name(split),
 	){
-	res := «String»[];
-	start := 0;
-	stop := 0;
+	res := «String»[]
+	start := 0
+	stop := 0
 	while(stop <= this.count){
 	    while(stop < this.count and !(__in__(charList, this[stop]))){
-		stop++;
+		stop++
 	    }
 	    if(allowEmpty or stop > start){
-		res.push(this[start..stop]);
+		res.push(this[start..stop])
 	    }
-	    stop = start = stop + 1;
+	    stop = start = stop + 1
 	}
-	return res;
+	return res
     },
     Type: [ImutableString, MutableString, String],
     name: [splitImutable, splitMutable, split]
-    );
+    )
 
 
 expandCode(
@@ -271,11 +271,11 @@ expandCode(
             and return the resulting array of Strings. If allowEmpty is null,
             empty strings will be ignored."),
 	){
-	return split(this, char.toString(), allowEmpty);
+	return split(this, char.toString(), allowEmpty)
     },
     Type: [ImutableString, MutableString, String],
     name: [splitCharImutable, splitCharMutable, splitChar]
-    );
+    )
 
 expandCode(
     def MutableList«String» %name(
@@ -289,11 +289,11 @@ expandCode(
             and return the resulting array of Strings. If allowEmpty is null,
             empty strings will be ignored."),
 	){
-	return split(this, "".join(charList), allowEmpty);
+	return split(this, "".join(charList), allowEmpty)
     },
     Type: [ImutableString, MutableString, String],
     name: [splitListImutable, splitListMutable, splitList]
-    );
+    )
 
 expandCode(
     def %Type %name(
@@ -308,25 +308,25 @@ expandCode(
 	),
 	name(replace)
     ){
-	start := 0;
-	res := "".thaw;
+	start := 0
+	res := "".thaw
 	while(1){
-	    end := searchString(this, original, start);
+	    end := searchString(this, original, start)
 	    if(end){
-		res ~= this[start..end];
-		res ~= replacement;
-		start = end + original.count;
+		res ~= this[start..end]
+		res ~= replacement
+		start = end + original.count
 	    }
 	    else{
-		res ~= this[start...];
-		return res;
+		res ~= this[start...]
+		return res
 	    }
 	}
-	return ?;
+	return ?
     },
     Type: [ImutableString, MutableString, String],
     name: [replaceImutable, replaceMutable, replace]
-    );
+    )
 
 expandCode(
     def %Type %name(
@@ -339,12 +339,12 @@ expandCode(
             of times")
     ){
 	if(count < 0){
-	    return ?;
+	    return ?
 	}
-        res := "".thaw;
+        res := "".thaw
 	(0..count).each(i){res ~= this}
-	return res;
+	return res
     },
     Type: [ImutableString, MutableString, String],
     name: [__mul__Imutable, __mul__Mutable, __mul__]
-    );
+    )

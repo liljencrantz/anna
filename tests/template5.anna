@@ -6,14 +6,14 @@ class Base{}
 class Foo (template(%op:__add__), extends(Base), spoon) {
 
     def Int bar(Int a, Int b){
-        a.%op(b);
+        a.%op(b)
     }
 
 }
 
 def Int main(){
-    foo := Foo();
-    print(foo.bar(3,4),"\n");
-    boo := Foo«__sub__»();
-    print(boo.bar(3,4),"\n");
+    foo := Foo()
+    print(foo.bar(3,4),"\n")
+    boo := Foo«__sub__»()
+    print(boo.bar(3,4),"\n")
 }

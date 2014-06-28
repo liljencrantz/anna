@@ -1,8 +1,8 @@
 def main(){
-    foo := [1,2,3];
-    print(foo.count);
-    foo.count = 5;
-    print(foo.count);
-    print(foo[4],foo[5]);
+    foo := [1,2,3]
+    print(foo.count)
+    foo.count = 5
+    print(foo.count)
+    print(foo[4],foo[5])
 
 }

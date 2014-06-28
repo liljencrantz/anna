@@ -11,8 +11,8 @@ class Parent{
 }
 
 def main(){
-    sub:=Sub();
-    sub.foo();
-    sub.bar();
-    print(sub);
+    sub:=Sub()
+    sub.foo()
+    sub.bar()
+    print(sub)
 }

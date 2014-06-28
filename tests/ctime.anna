@@ -1,14 +1,14 @@
 def main(){
-    use(ctime);
+    use(ctime)
 
-    tz := timezoneName;
-    timezoneName = "America/Toronto";
-    print(timezoneName);
-    timezoneName = ?;
-    print(tz == timezoneName);
+    tz := timezoneName
+    timezoneName = "America/Toronto"
+    print(timezoneName)
+    timezoneName = ?
+    print(tz == timezoneName)
 
-    print(breakTime(mkTime(0,1,2,3,4,100, ?, "America/Toronto"), "America/Toronto"));
-    print(breakTime(mkTime(0,1,2,3,4,100, ?, ?), ?)[0..8]);
+    print(breakTime(mkTime(0,1,2,3,4,100, ?, "America/Toronto"), "America/Toronto"))
+    print(breakTime(mkTime(0,1,2,3,4,100, ?, ?), ?)[0..8])
 
 }
 

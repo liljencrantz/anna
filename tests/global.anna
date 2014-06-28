@@ -1,6 +1,6 @@
 def main() (
     doc("Test the global variable, which is a pointer to the global namespace."),
 ){
-    print(type(global.global) == type(global));
-    print(global.global.global.system.argument.count);
+    print(type(global.global) == type(global))
+    print(global.global.global.system.argument.count)
 }

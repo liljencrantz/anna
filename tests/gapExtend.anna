@@ -9,20 +9,20 @@ class MidHash
 
 class MyHash
 (extends(MidHash)){
-    var Int foo;
-    var Int bar;
-    var Int baz;
-    var Int qux;
+    var Int foo
+    var Int bar
+    var Int baz
+    var Int qux
 }
 
 def main(){
-    hh := MyHash(3|7, 2|5, 0|99);
-    print(hh);
-    print(hh.foo, hh.bar, hh.baz, hh.qux);
-    hh.foo = 1;
-    hh.bar = 1;
-    hh.baz = 1;
-    hh.qux = 1;
-    print(hh.foo, hh.bar, hh.baz, hh.qux);
+    hh := MyHash(3|7, 2|5, 0|99)
+    print(hh)
+    print(hh.foo, hh.bar, hh.baz, hh.qux)
+    hh.foo = 1
+    hh.bar = 1
+    hh.baz = 1
+    hh.qux = 1
+    print(hh.foo, hh.bar, hh.baz, hh.qux)
 }
 

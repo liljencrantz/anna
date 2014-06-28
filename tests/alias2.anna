@@ -1,24 +1,24 @@
 def fun1(Int in) (alias(myFunction)){
-    "Int";
+    "Int"
 }
 
 def fun2(String in) (alias(myFunction)){
-    "String";
+    "String"
 }
 
 def fun3(Float in) (alias(myFunction)){
-    "Float";
+    "Float"
 }
 
 def fun4(List in) (alias(myFunction)){
-    "List";
+    "List"
 }
 
 def main(){
-    print(myFunction(0));
-    print(myFunction(""));
-    print(myFunction(0.0));
-    print(myFunction([]));
-    print(myFunction(? as Int));
-    print(myFunction(? as List));
+    print(myFunction(0))
+    print(myFunction(""))
+    print(myFunction(0.0))
+    print(myFunction([]))
+    print(myFunction(? as Int))
+    print(myFunction(? as List))
 }

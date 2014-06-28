@@ -1,12 +1,12 @@
 attribute(doc("
-Command line completion support for the repl tool."));
+Command line completion support for the repl tool."))
 
 
-use(reflection);
+use(reflection)
 
-var Int completeListIdx;
-var MutableList«String» completeList;
-var List«reflection.Type» useList;
+var Int completeListIdx
+var MutableList«String» completeList
+var List«reflection.Type» useList
 
 def getPath(String text) (
     doc("
@@ -14,106 +14,106 @@ Try to extract the dot-separated list of names that we're currently
 trying to complete from the text.")
 ){
     if(text == ""){
-	return [""];
+	return [""]
     }
 
-    fullSearch :== text[-1] == '.';
+    fullSearch :== text[-1] == '.'
     
     if(fullSearch){
-	text = text[0..-1];
+	text = text[0..-1]
     }
     
-    item := "";
-    start := 0;
+    item := ""
+    start := 0
     
     ((text.count-1)..-1).each(idx){
-        ch := text[idx];
+        ch := text[idx]
 	if(!(ch.alnum? or ch.space? or ch == '.')){
-	    start = idx + 1;
-	    break;
+	    start = idx + 1
+	    break
 	}
     }
 
     def strip(String in){
-        from := in.count;
-        to := 0;
+        from := in.count
+        to := 0
 	in.each(idx, ch){
 	    if(!ch.space?){
-		from = if(from<idx, from, idx);
-		to = if(to>(idx+1), to, idx+1);
+		from = if(from<idx, from, idx)
+		to = if(to>(idx+1), to, idx+1)
 	    }
 	}
 	
 	if(to == from){
-	    return "";
+	    return ""
 	}
 	
-	return in[from..to];
+	return in[from..to]
     }
     
     
-    pathStr := text[start...];
+    pathStr := text[start...]
     path := pathStr.split('.').map(item){strip(item)}
-    pathIdx := 0;
+    pathIdx := 0
     path.each(idx, el){
 	if(el == ""){
-	    pathIdx = idx+1;
+	    pathIdx = idx+1
 	}
     }
-    res := path[pathIdx...];
+    res := path[pathIdx...]
 
     if(fullSearch){
-	res.push("");
+	res.push("")
     }
-//    print("PATH", res);
-    return res;
+//    print("PATH", res)
+    return res
 }
 
 def addNamespace(HashMap«String, Type» ns, Type t){
     t.member.each(memb){
-	ns[memb.name] = memb.type;
+	ns[memb.name] = memb.type
     }
 }
 
 def List«String» realCompletePath(List«String» path, HashMap«String, Type»ns){
     if(path.count == 1){
-        res := «String»[];
-        needle := path[0];
+        res := «String»[]
+        needle := path[0]
 	ns.each(key, val){
 	    if(key[0] == '!'){
-		continue;
+		continue
 	    }
 	    
 	    if(needle == key[0..needle.count]){
-		res.push(key[needle.count...]);
+		res.push(key[needle.count...])
 	    }
 	}
-	return res;
+	return res
     }
     
-    subns := «String, Type»[];
-    subtype := ns[path[0]];
-    subtype or (return ?);
+    subns := «String, Type»[]
+    subtype := ns[path[0]]
+    subtype or (return ?)
     
-    addNamespace(subns, subtype);
-    return realCompletePath(path[1...], subns);
+    addNamespace(subns, subtype)
+    return realCompletePath(path[1...], subns)
 }
 
 def realComplete(String text){
-    readLine.complete.suppressAppend = 1;
-    path := getPath(text);
-    ns := «String, Type»[];
-    addNamespace(ns, type(global));
-    addNamespace(ns, type(lang));
+    readLine.complete.suppressAppend = 1
+    path := getPath(text)
+    ns := «String, Type»[]
+    addNamespace(ns, type(global))
+    addNamespace(ns, type(lang))
     useList.each(type){
-	addNamespace(ns, type);
+	addNamespace(ns, type)
     }
-    res := realCompletePath(path, ns).map(el){text ~ el};
-    return res;
+    res := realCompletePath(path, ns).map(el){text ~ el}
+    return res
 }
 
 def Any setUseList(List«Type» use){
-    useList = use;
+    useList = use
 }
 
 def codeComplete(String text, Int state) (
@@ -122,11 +122,11 @@ with this function as a parameter to enable code
 completion.")
 ){
     if(state == 0){
- 	completeList = realComplete(text);
-	completeListIdx = 0;	
+ 	completeList = realComplete(text)
+	completeListIdx = 0	
     }
-    ret := completeList[completeListIdx];
-    completeListIdx++;
-    return ret;
+    ret := completeList[completeListIdx]
+    completeListIdx++
+    return ret
 }
 

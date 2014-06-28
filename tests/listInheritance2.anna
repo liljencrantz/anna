@@ -7,12 +7,12 @@ class Derived
     extends(MutableList«Int»)
 ){
     def __init__(){
-	MutableList«Int»::__init__(this, 0,10,1);
+	MutableList«Int»::__init__(this, 0,10,1)
     }
 }
 
 def main(){
-    vv := Derived();
-    vv[3] = 7;
-    print(vv);
+    vv := Derived()
+    vv[3] = 7
+    print(vv)
 }

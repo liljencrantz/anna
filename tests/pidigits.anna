@@ -1,34 +1,34 @@
 
 def main(){
-    digits := Int::convert(system.argument[1]) or 1000;
-    [i, k, ns, k1, n, a, d, t, u] := [0, 0, 0, 1, 1, 0, 1, 0, 0];
+    digits := Int::convert(system.argument[1]) or 1000
+    [i, k, ns, k1, n, a, d, t, u] := [0, 0, 0, 1, 1, 0, 1, 0, 0]
 
     while(1){
-	k += 1;
-	t = n ^shl 1;
-	n = n*k;
-	a += t;
-	k1 += 2;
-	a = a*k1;
-	d = d*k1;
+	k += 1
+	t = n ^shl 1
+	n = n*k
+	a += t
+	k1 += 2
+	a = a*k1
+	d = d*k1
 	if(a >= n){
-  	    tmp := n*3+a;
-	    t = tmp/d;
-	    u = tmp ^mod d;
-	    u += n;
+  	    tmp := n*3+a
+	    t = tmp/d
+	    u = tmp ^mod d
+	    u += n
 	    if (d > u){
-		ns = ns*10 + t;
-		i += 1;
+		ns = ns*10 + t
+		i += 1
 		if (i ^mod 10 == 0){
-		    print("%()\t:%()" % [String::convert(ns).lpad(char:'0', count:10), i]);
-		    ns = 0;
+		    print("%()\t:%()" % [String::convert(ns).lpad(char:'0', count:10), i])
+		    ns = 0
 		}
 		if (i >= digits){
-		    break;
+		    break
 		}
-		a -= d*t;
-		a = a*10;
-		n = n*10;
+		a -= d*t
+		a = a*10
+		n = n*10
 	    }
 	}
     }

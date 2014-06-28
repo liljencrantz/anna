@@ -1,5 +1,5 @@
 
 def main()  {
-    f := io.File("tests/io.output");
-    lang.print(f.readFile(), end:"");
+    f := io.File("tests/io.output")
+    lang.print(f.readFile(), end:"")
 }

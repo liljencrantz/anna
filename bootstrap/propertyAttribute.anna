@@ -1,13 +1,13 @@
-attribute(internal, doc("Internal module for the propertyAttribute macro."));
+attribute(internal, doc("Internal module for the propertyAttribute macro."))
 
-use(parser);
+use(parser)
 
 def Call getAttributePayload(Call c) (doc("Internal helper function for <a member='propertyAttribute'>propertyAttribute</a>. Don't use directly."), internal){
     expandCode(
 	if(c.callTo?(%name)) { return c },
-	name: ["__constInternal__", "__varInternal__", "__typeInternal__", "__defInternal"]);
+	name: ["__constInternal__", "__varInternal__", "__typeInternal__", "__defInternal"])
     if(c.count == 1 and c[0] as Call){
-	return getAttributePayload(c[0] as Call);
+	return getAttributePayload(c[0] as Call)
     }
     return ?
 }
@@ -19,56 +19,56 @@ macro propertyAttribute(node) (doc(
 	"
 <pre class='anna-code'>
 class MyClass{
-    var Int storage;
+    var Int storage
 
     def myGetter(){
-        this.storage;
+        this.storage
     }
 
     def mySetter(Int val){
-        this.storage = -val;
+        this.storage = -val
     }
 
-    var Int myProperty (property(myGetter, mySetter));
+    var Int myProperty (property(myGetter, mySetter))
 }
 </pre>",
 	"If one wants to define a read only-property, one can instead write",
 	"
 <pre class='anna-code'>
 class MyClass{
-    var Int storage;
+    var Int storage
 
     def myProperty() (property){
-        this.storage;
+        this.storage
     }
 }
 </pre>",
 	)){
-    payload := getAttributePayload(node);
+    payload := getAttributePayload(node)
     if(payload.callTo?("__constInternal__")){
-        decl := payload as Call;
+        decl := payload as Call
 	if(decl[2].callTo?("__def__")){
-	    getter := decl[2] as Call;
-	    propType := if(type(getter[1]) != NullLiteral){getter[1]} else {ast(__staticReturnTypeOf__(%fun)) % ["fun": decl[2]];}
-	    propName := (decl[0] as Identifier).name;
-            getterName := "!" ~ propName ~ "Getter";
-	    getter[0] = Identifier(getter[0], getterName);
-	    decl[0] = Identifier(decl[0], getterName);
-	    attr := decl[3] as Call;
-  	    doc := (attr.filterByCall("doc")[0] as StringLiteral).payload or "";
-	    decl[3] = ast({bound, doc(%doc)}) % ["doc": StringLiteral(attr, "Automatically generated getter method for the % property. For internal use only." % [propName])];
+	    getter := decl[2] as Call
+	    propType := if(type(getter[1]) != NullLiteral){getter[1]} else {ast(__staticReturnTypeOf__(%fun)) % ["fun": decl[2]]}
+	    propName := (decl[0] as Identifier).name
+            getterName := "!" ~ propName ~ "Getter"
+	    getter[0] = Identifier(getter[0], getterName)
+	    decl[0] = Identifier(decl[0], getterName)
+	    attr := decl[3] as Call
+  	    doc := (attr.filterByCall("doc")[0] as StringLiteral).payload or ""
+	    decl[3] = ast({bound, doc(%doc)}) % ["doc": StringLiteral(attr, "Automatically generated getter method for the % property. For internal use only." % [propName])]
 	    propDecl := ast(var %Type %name (property(%getterName), doc(%doc))) % [
 		"Type": propType,
 		"name": Identifier(node, propName),
 		"getterName": Identifier(node, getterName),
 		"doc": StringLiteral(attr, doc),
-		];
+		]
 
 	    res := ast(nothing(%property, %getter)) % [
 		"property": propDecl,
-		"getter": node[0] ];
-	    return res;
+		"getter": node[0] ]
+	    return res
 	}
     }
-    return node[0];
+    return node[0]
 }

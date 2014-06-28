@@ -1,11 +1,11 @@
 
 def main(){
-    use(functional);
-    print(sum([1,2,3,4]));
-    print([1,2,3,4].reduce(0, Int::__add__));
-    print([1,2,3,4].reduce(0, def (Int a, Int b){a+b}));
-    print(sum([1.0,2.0,3.0,4.5]));
-    print(prod(1..11));
-    print(prod([1.0, 2.0, 3.0]));
-    print(prod([Complex(0.0, 1.0), Complex(0.0, 1.0)]));
+    use(functional)
+    print(sum([1,2,3,4]))
+    print([1,2,3,4].reduce(0, Int::__add__))
+    print([1,2,3,4].reduce(0, def (Int a, Int b){a+b}))
+    print(sum([1.0,2.0,3.0,4.5]))
+    print(prod(1..11))
+    print(prod([1.0, 2.0, 3.0]))
+    print(prod([Complex(0.0, 1.0), Complex(0.0, 1.0)]))
 }

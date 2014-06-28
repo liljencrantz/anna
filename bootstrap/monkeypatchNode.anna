@@ -1,6 +1,6 @@
-attribute(internal, doc("Internally used module. Don't use directly."));
+attribute(internal, doc("Internally used module. Don't use directly."))
 
-use(parser);
+use(parser)
 
 def Node __format__(
     Node this, 
@@ -8,11 +8,11 @@ def Node __format__(
     target(Node), 
     doc("Replace every internal identifier (an identifier prefixed with a '%' character) in the specified AST tree with the corresponding AST tree."),
 ){
-    res := this;
+    res := this
     data.each(key, value){
-	res = res.replace(Identifier(?, key), value);
+	res = res.replace(Identifier(?, key), value)
     }
-    return res;
+    return res
 }
 
 def Int callTo?(
@@ -45,11 +45,11 @@ def List«Node» filterByCall(Call this, String name) (
     target(Call),
     doc("Filters the call list for direct children that are calls to the specified function. For each found child, every parameter in it's parameter list is inserted into the resulting list of Node objects. This function is often useful when checking attribute lists."),
 ){
-    res := «Node»[];
+    res := «Node»[]
     this.each(chld){
 	if(callTo?(chld, name)){ (chld as Call).each(param){res.push(param)} }
     }
-    return res;
+    return res
 }
 
 def Int childNamed?(Call this, String name) (
@@ -59,6 +59,6 @@ def Int childNamed?(Call this, String name) (
     this.each(chld){
 	if(named?(chld, name)){ return 1 }
     }
-    return ?;
+    return ?
 }
 

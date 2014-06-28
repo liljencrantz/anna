@@ -1,30 +1,30 @@
 def main(){
-    f := parser.FloatLiteral(?, 1.0);
-    print(f, f.payload);
+    f := parser.FloatLiteral(?, 1.0)
+    print(f, f.payload)
 
-    i := parser.IntLiteral(?, 1);
-    print(i, i.payload);
+    i := parser.IntLiteral(?, 1)
+    print(i, i.payload)
     
-    i2 := parser.IntLiteral(?, 2);
-    print(i, i.payload);
+    i2 := parser.IntLiteral(?, 2)
+    print(i, i.payload)
     
-    i22 := parser.IntLiteral(?, 2);
-    print(i, i.payload);
+    i22 := parser.IntLiteral(?, 2)
+    print(i, i.payload)
     
-    s := parser.StringLiteral(?, "bla");
-    print(s, s.payload);
+    s := parser.StringLiteral(?, "bla")
+    print(s, s.payload)
     
-    c := parser.CharLiteral(?, 'b');
-    print(c, c.payload);
+    c := parser.CharLiteral(?, 'b')
+    print(c, c.payload)
     
-    cc := parser.Call(?, c, i, s);
-    print(cc, cc.function, cc.count, cc[0], cc[1]);
+    cc := parser.Call(?, c, i, s)
+    print(cc, cc.function, cc.count, cc[0], cc[1])
 
-    cl := parser.Closure(?, def (Int in){in+3});
-    print(cl.payload.inputName);
+    cl := parser.Closure(?, def (Int in){in+3})
+    print(cl.payload.inputName)
 
-    mm := parser.Mapping(?, ast(1), ast('d'));
-    print(mm.from, mm.to);
+    mm := parser.Mapping(?, ast(1), ast('d'))
+    print(mm.from, mm.to)
 
     
 }

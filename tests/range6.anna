@@ -5,7 +5,7 @@
     For open ranges, indexing from the end is obviously not supported.
 */
 def main(){
-    r := 0..5;
-    o := 0...;
-    print(r[-2], ' ', r[-10], ' ', o[-1], ' ', o[-10], '\n');
+    r := 0..5
+    o := 0...
+    print(r[-2], ' ', r[-10], ' ', o[-1], ' ', o[-10], '\n')
 }

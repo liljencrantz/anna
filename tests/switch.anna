@@ -8,19 +8,19 @@ def main(){
     (0..10).each(foo){
 	switch(foo){
 	    case(2,4,6,8){
-		print("Even");
+		print("Even")
 	    }
 
 	    case(7){
-		print("Seven");
+		print("Seven")
 	    }
 
 	    cases(1..5|2){
-		print("Odd");
+		print("Odd")
 	    }
 	    
 	    default{
-		print("Whatever");
+		print("Whatever")
 	    }
 	}
     }
@@ -31,19 +31,19 @@ def main(){
     ["abc", "a", "aa", ?, "bbb"].each(bar){
 	switch(bar){
 	    case("abc"){
-		print("abc");
+		print("abc")
 	    }
 
 	    case("b", "bb", "bbb"){
-		print("Bunch of b:s");
+		print("Bunch of b:s")
 	    }
 	    
 	    cases(["a":?, "o":?, "u":?, "e":?, "i":?, "y":?]){
-		print("Vowel");
+		print("Vowel")
 	    }
 	    
 	    default{
-		print("Don't righly know");
+		print("Don't righly know")
 	    }
 	}
     }
@@ -51,19 +51,19 @@ def main(){
     [3, 4.0, "foo", 'g'].each(item){
 	switch(item){
 	    case(i as Int){
-		print("It is an Int, its square is", i*i);
+		print("It is an Int, its square is", i*i)
 	    }
 
 	    case(f as Float){
-		print("It is a Float, its square root is", math.sqrt(f));
+		print("It is a Float, its square root is", math.sqrt(f))
 	    }
 
 	    case(s as String){
-		print("It is a String, its length is", s.count);
+		print("It is a String, its length is", s.count)
 	    }
 	    
 	    default{
-		print("Don't know, don't care");
+		print("Don't know, don't care")
 	    }
 	}
     }

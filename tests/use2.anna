@@ -1,17 +1,17 @@
 
 def main(){
-    a := [];
-    use(a);
+    a := []
+    use(a)
     
-    push(1);
-    push(2);
-    push(3);
+    push(1)
+    push(2)
+    push(3)
     
-    print(count, pop(), pop(), pop(), count);
+    print(count, pop(), pop(), pop(), count)
     
-    push(1);
-    push(2);
-    push(3);
+    push(1)
+    push(2)
+    push(3)
     
-    print(__get__(1), __get__(0..2));
+    print(__get__(1), __get__(0..2))
 }

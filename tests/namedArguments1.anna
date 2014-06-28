@@ -2,14 +2,14 @@
 class Foo{
 
     def bar(String first, String second, String third){
-	print(first, second, third, sep:"", end:"");
+	print(first, second, third, sep:"", end:"")
     }
 }
 
 def main(){
-    lst := ["unused"];
-    lst.push(value : "ok");
-    print(lst.pop());
-    foo := Foo();
-    foo.bar(third:"\n", second:"k", first:"o");
+    lst := ["unused"]
+    lst.push(value : "ok")
+    print(lst.pop())
+    foo := Foo()
+    foo.bar(third:"\n", second:"k", first:"o")
 }

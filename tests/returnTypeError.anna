@@ -1,7 +1,7 @@
 def String foo(){
-    return 7;
+    return 7
 }
 
 def main(){
-    print(foo() ~ "bar", "\n");
+    print(foo() ~ "bar", "\n")
 }

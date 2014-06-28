@@ -7,5 +7,5 @@ def main(){
 An int: %(myInt)
 Same int again: %(myInt)
 Here comes a float: %(myFloat)
-Let's try a percent symbol: %%" % ["myFloat": 123.45, "myInt": 0xdead_beef]);
+Let's try a percent symbol: %%" % ["myFloat": 123.45, "myInt": 0xdead_beef])
 }

@@ -1,4 +1,4 @@
-attribute(internal, doc("Internal module for the switch macro."));
+attribute(internal, doc("Internal module for the switch macro."))
 
 macro switch(node)  (
     doc(
@@ -22,7 +22,7 @@ switch(someVariable){
     case(foo as Int){
         // someVariable can be cast to Int.
         // The foo constant is someVariable cast to an Int.
-        print(foo+foo);
+        print(foo+foo)
         ...
     }
 
@@ -70,36 +70,36 @@ block to match. Also note that any type of values can be used in switch
 expressions, not just Int values.
 ")
 ){
-    checkCallCount(node, 2);
-    checkNodeBlock(node[1]);
-    switchBody := node[1] as Call;
-//    print(node, '\n');
+    checkCallCount(node, 2)
+    checkNodeBlock(node[1])
+    switchBody := node[1] as Call
+//    print(node, '\n')
     switchBlock := Call(
 	node, 
 	Identifier(node, "__block__"),
-	ast(%val := %input));
-    lastIf := ? as Call;
+	ast(%val := %input))
+    lastIf := ? as Call
     switchBody.each(idx, caseNode){
 	def makeCond(Node cond){
 	    return ast(%val == %cond) % ["cond":cond]
 	}
 
-        checkNodeType(caseNode, Call);
-        caseCall := caseNode as Call;
-        next := ? as Call;
+        checkNodeType(caseNode, Call)
+        caseCall := caseNode as Call
+        next := ? as Call
   	if(caseCall.callTo?("case")){
 	    if(caseCall.count < 2){
 		caseCall.error(
                     "Call has " ~ caseCall.count ~\
-                    " paramters, expected at least 2");
-		return NullLiteral(caseCall);
+                    " paramters, expected at least 2")
+		return NullLiteral(caseCall)
 		
 	    }
-	    checkNodeBlock(caseCall[-1]);
+	    checkNodeBlock(caseCall[-1])
             if(caseCall.count == 2 and caseCall[0].callTo?( "cast")){
-                caseCast := caseCall[0] as Call;
-		checkCallCount(caseCast, 2);
-	        caseBody := ast({%varName := %val as %type});
+                caseCast := caseCall[0] as Call
+		checkCallCount(caseCast, 2)
+	        caseBody := ast({%varName := %val as %type})
 		(caseCall[-1] as Call).each(node){caseBody ~= [node]}
 		next = (ast(
 			if(%val as %type, %caseBody, {})
@@ -108,15 +108,15 @@ expressions, not just Int values.
                             ] % [
                                 "type": caseCast[1],
                                 "varName": caseCast[0],
-                                ]) as Call;
+                                ]) as Call
 	    } 
             else{
-	        cond := makeCond(caseCall[0]);
+	        cond := makeCond(caseCall[0])
 		(1..(caseCall.count-1)).each(idx){
 		    cond = ast(%cond1 or %cond2) % [
 			"cond1": cond,
 			"cond2": makeCond(caseCall[idx])
-			]; 
+			] 
 		}
 		next= (
 			ast(
@@ -124,23 +124,23 @@ expressions, not just Int values.
 			    ) % [
 				"cond": cond,
 				"caseBody": caseCall[-1]
-				]) as Call;
+				]) as Call
 	    }
 	} 
         else{
 	    if(caseCall.callTo?("default")){
 		if(idx != switchBody.count-1){
-		    caseCall.error("Invalid position for default");
-		    return NullLiteral(node);
+		    caseCall.error("Invalid position for default")
+		    return NullLiteral(node)
 		}
-		checkCallCount(caseCall, 1);
-		checkNodeBlock(caseCall[0]);
-		next = caseCall[0] as Call;
+		checkCallCount(caseCall, 1)
+		checkNodeBlock(caseCall[0])
+		next = caseCall[0] as Call
 	    } 
             else{
 		if(caseCall.callTo?("cases")){
-		    checkCallCount(caseCall, 2);
-		    checkNodeBlock(caseCall[-1]);
+		    checkCallCount(caseCall, 2)
+		    checkNodeBlock(caseCall[-1])
 
 		    next= (
 			    ast(
@@ -148,34 +148,34 @@ expressions, not just Int values.
 				) % [
 				    "items": caseCall[0],
 				    "caseBody": caseCall[-1]
-				    ]) as Call;
+				    ]) as Call
                  
 		} 
                 else{
-                    caseNode.error("Expected a case or default statement");
-		    return NullLiteral(node);
+                    caseNode.error("Expected a case or default statement")
+		    return NullLiteral(node)
 		}
 	    }
 	}
 	if(lastIf){
 	    lastIf[2] = if(!next.block?()){
-		Call(node, Identifier(node, "__block__"), next);
+		Call(node, Identifier(node, "__block__"), next)
 	    } 
             else {
-		next;
+		next
 	    }
 	} 
         else{
 	    if(next.block?()){
-		next = Call(node, next);
+		next = Call(node, next)
 	    }
-	    switchBlock ~= [next];
+	    switchBlock ~= [next]
 	}
-	lastIf = next;
+	lastIf = next
     }
     
     res := Call(node, switchBlock) % [
 	"val": Identifier(node, identifier("switchValue")), 
-	"input": node[0]];
-    return res;
+	"input": node[0]]
+    return res
 }

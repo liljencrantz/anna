@@ -1,8 +1,8 @@
 
 def fun(Int p){
-    p;
+    p
 }
 
 def main() {
-    fun("");
+    fun("")
 }

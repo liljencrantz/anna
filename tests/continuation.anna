@@ -1,8 +1,8 @@
 def plain(){
-    print(reflection.currentContinuation.filename.split("/")[-1]);
-    print(reflection.currentContinuation.line);
+    print(reflection.currentContinuation.filename.split("/")[-1])
+    print(reflection.currentContinuation.line)
 }
 
 def main(){
-    plain();
+    plain()
 }

@@ -3,8 +3,8 @@ def Int main(){
     /*
       Test a bunch of native callbacks, with focus on making sure they don't mess up the stack
     */
-    print("a"~"b"~"c", "d" ~ "e");
-    print(1, [1,2,3].each(i){}[1]);
-    print(1, (1..4).each(i){}[1]);
-    print(1, ("123").each(i){}[1]);
+    print("a"~"b"~"c", "d" ~ "e")
+    print(1, [1,2,3].each(i){}[1])
+    print(1, (1..4).each(i){}[1])
+    print(1, ("123").each(i){}[1])
 }

@@ -1,6 +1,6 @@
 def Int main(){
     def callback(String msg){print(msg)}
-    res := «def List ()»[];
+    res := «def List ()»[]
     ["do","re","mi"].each(s){res.push(def(){callback(s)})}
     res.each(f){f()}
 }

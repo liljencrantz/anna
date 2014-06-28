@@ -1,24 +1,24 @@
 
 def main()  {
-    d := [1 : "baberiba", 2 : "tjoho"];
-    d[4] = "flöjt1";
-    d[20] = "flöjt2";
-    print(d[1], d[2], d[4], d[20], d[36], d[52], d[69]);
-    print(d.count);
+    d := [1 : "baberiba", 2 : "tjoho"]
+    d[4] = "flöjt1"
+    d[20] = "flöjt2"
+    print(d[1], d[2], d[4], d[20], d[36], d[52], d[69])
+    print(d.count)
 
-    ordinalSum := 0;
+    ordinalSum := 0
     d.map(i){i[0].ordinal}.each(i){ordinalSum += i}
-    print("Sum of ordinal number of first char of each value:", ordinalSum);
+    print("Sum of ordinal number of first char of each value:", ordinalSum)
 
     (0..100000).each(i){d[10*i] = "AAA"}
-    print(d.count);
+    print(d.count)
 
     (0..100000).each(i){d.remove(10*i)}
-    print(d.count);
+    print(d.count)
     (0..100000).each(i){d[10*i] = "AAA"}
-    print(d.count);
+    print(d.count)
 
     (0..100000).each(i){d.remove(10*i)}
-    print(d.count);
+    print(d.count)
 
 }

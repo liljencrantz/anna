@@ -1,16 +1,16 @@
 class MyType{
 
     def f1 (Int val, String msg = "bla bla bla") (alias(talk)){
-	print(msg, val);
+	print(msg, val)
     }
 
     def f2 (Float val, String msg = "bla bla bla") (alias(talk)){
-	print(msg, val);
+	print(msg, val)
     }
 
 }
 
 def main(){
-    tt := MyType();
-    tt.talk(7);
+    tt := MyType()
+    tt.talk(7)
 }

@@ -1,16 +1,16 @@
 
 class Node{
-    var Node next;
+    var Node next
     
     def __init__(Node next){
-	this.next = next; 
+	this.next = next 
     }
 }
 
 def main(){
-    n := Node(?);
+    n := Node(?)
     (0..1_000_000).each(idx){
-	n = Node(n);
+	n = Node(n)
     }
 }
 

@@ -1,29 +1,29 @@
 def main(){
-    print(1==1);
-    print((? as Int) == 2);
+    print(1==1)
+    print((? as Int) == 2)
     
-    print(1 == 1);
-    print(1 == 2.0);
+    print(1 == 1)
+    print(1 == 2.0)
     
-    print(1 == 1.0);
-    print((? as Float) == 2.0);
+    print(1 == 1.0)
+    print((? as Float) == 2.0)
     
-    print(1 == 1.0);
-    print(1.0 != 1);
+    print(1 == 1.0)
+    print(1.0 != 1)
     
-    print(1 > 0.5);
-    print(1.0 > 2);
+    print(1 > 0.5)
+    print(1.0 > 2)
     
-    print(Complex(1.0, 1.0) == Complex(1.0, 1.0));
-    print(Complex(2.0, 1.0) == Complex(1.0, 1.0));
+    print(Complex(1.0, 1.0) == Complex(1.0, 1.0))
+    print(Complex(2.0, 1.0) == Complex(1.0, 1.0))
     
-    print(Complex(1.0, 0.0) == 1);
-    print(Complex(1.0, 1.0) == 2);
+    print(Complex(1.0, 0.0) == 1)
+    print(Complex(1.0, 1.0) == 2)
     
-    print(Complex(2.0, 0.0) == 2);
-    print(Complex(1.0, 0.0) == 1.01);
+    print(Complex(2.0, 0.0) == 2)
+    print(Complex(1.0, 0.0) == 1.01)
     
-    print(Complex(1.0, 0.0) == 1.0);
-    print(Complex(2.01, 0.0) == 2);
+    print(Complex(1.0, 0.0) == 1.0)
+    print(Complex(2.01, 0.0) == 2)
     
 }

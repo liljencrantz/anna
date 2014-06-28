@@ -4,8 +4,8 @@ __const__(
     typeType(
 	Hej,
 	__block__()),
-    __block__());
+    __block__())
 
 def main(){
-    print(Hej());
+    print(Hej())
 }

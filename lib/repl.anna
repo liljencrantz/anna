@@ -1,5 +1,5 @@
 attribute(doc("
-The anna command line prompt, also known as a repl."));
+The anna command line prompt, also known as a repl."))
 
 
 def repl(reflection.Continuation debugFrame = ?) (doc(
@@ -35,13 +35,13 @@ the value of the last command to execute and</li>
   <li>the <code>exit</code> and <code>quit</code> commands, both of which break the repl loop.</li>
 </ul>",
 	), internal){
-    use(parser);
+    use(parser)
 
-    doLoop := 1;
+    doLoop := 1
     
     print("Welcome to anna!
 
-Type «help» for more information.");
+Type «help» for more information.")
 
     /*
       If the user writes e.g. a use clause or an extend clause, we
@@ -49,13 +49,13 @@ Type «help» for more information.");
       this list. On every subsequent call, we prepend these
       expressions to the one the user wrote.
      */
-    globalClause :== «Node»[ast(use(replTool)), ast(expand(replMacros))];
-    localClause :== «Node»[];
+    globalClause :== «Node»[ast(use(replTool)), ast(expand(replMacros))]
+    localClause :== «Node»[]
     
     saveHistory :== {
 	if(readLine.history.write(historyFile)){
-	    print("Failed to save history");
-	    print(unix.error.errorString(unix.error.errno));
+	    print("Failed to save history")
+	    print(unix.error.errorString(unix.error.errno))
 	}
     }
 
@@ -63,9 +63,9 @@ Type «help» for more information.");
       Function for controlled exit
      */
     die :== {
-	print("Bye!");
-	saveHistory();
-	doLoop = ?;
+	print("Bye!")
+	saveHistory()
+	doLoop = ?
     }
 
     /*
@@ -73,14 +73,14 @@ Type «help» for more information.");
       sneak a peek of all the variables already declared and then add
       them to the new function used to evaluate the next statement.
     */
-    previousContinuation := ? as reflection.Continuation;    
+    previousContinuation := ? as reflection.Continuation    
 
     /*
       Set up the history list
     */
-    historyFile :== unix.env["HOME"] ~ "/.anna_history";
-    readLine.history.read(historyFile);
-    readLine.complete.setFunction(replComplete.codeComplete);
+    historyFile :== unix.env["HOME"] ~ "/.anna_history"
+    readLine.history.read(historyFile)
+    readLine.complete.setFunction(replComplete.codeComplete)
 
     /*
       Set up the various short cut actions available, such as showing
@@ -100,19 +100,19 @@ the lang module, type «help(lang)».
 If you want to list the contents of an object, type «dir(OBJECT)». For
 example, to show the contents of the Int type, type «dir(Int)».
 
-Type «warranty», «copyright» or «license» for legal information.";
+Type «warranty», «copyright» or «license» for legal information."
 
     copyrightText :== "Copyright(C) 2005-2014 Axel Liljencrantz
-All rights reserved.";
-    helloText:= "Hi!";
+All rights reserved."
+    helloText:= "Hi!"
     warrantyText :== "This software is provided by the copyright holders and contributors \"as is\" and any express or implied warranties, including, but not limited to, the implied
 warranties of merchantability and fitness for a particular purpose are
 disclaimed. In no event shall the copyright owner or contributors be liable for
 any direct, indirect, incidental, special, exemplary, or consequential damages
-(including, but not limited to, procurement of substitute goods or services;
-loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort
+(including, but not limited to, procurement of substitute goods or services
+loss of use, data, or profits or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort
 (including negligence or otherwise) arising in any way out of the use of this
-software, even if advised of the possibility of such damage.";
+software, even if advised of the possibility of such damage."
 
     licenseText :== copyrightText ~ "
 
@@ -125,7 +125,7 @@ modification, are permitted provided that the following conditions are met:
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
 
-" ~ warrantyText;
+" ~ warrantyText
  
     action :== «Node, reflection.Block»[
 	ast(hello): {print(helloText)},
@@ -135,11 +135,11 @@ modification, are permitted provided that the following conditions are met:
 	ast(warranty): {print(warrantyText)},
 	ast(quit): die,
 	ast(exit): die,
-	];
+	]
 
-    actionMapping :== «String, def Node (parser.Call input)»[];
+    actionMapping :== «String, def Node (parser.Call input)»[]
 
-    firstPrompt := "anna> ";
+    firstPrompt := "anna> "
 
     if(debugFrame){
 	/*
@@ -147,105 +147,105 @@ modification, are permitted provided that the following conditions are met:
 	 */
 
 	// continue exits the debugger
-	action[ast(continue)] = die;
+	action[ast(continue)] = die
 
 	// break someFunction:someLineNumber inserts a breakpoint
 	actionMapping["break"] = def (parser.Call input){
-	    use(parser);
+	    use(parser)
 	    if( input.count != 1 or !(input[0].callTo?("__mapping__"))){
-		print("Invalid breakpoint");
-		return ?;
+		print("Invalid breakpoint")
+		return ?
 	    }
-	    mapping := input[0] as Call;
+	    mapping := input[0] as Call
 	    ast(debug.breakpoint(%fun, %line)) % [
 		"fun": mapping[0],
 		"line": mapping[1],
-		];
+		]
 	}
 
 	// Add a frame variable to the global scope, pointing to the current continuation frame
-	globalClause.push(ast(frame :== %frame) % ["frame": parser.Dummy(?, debugFrame)]);
+	globalClause.push(ast(frame :== %frame) % ["frame": parser.Dummy(?, debugFrame)])
 
 	// Create a struct of all the variables in the current continuation frame, 
 	// and add that into a use clause in the function
-	varStruct :== ast(struct());
+	varStruct :== ast(struct())
 	debugFrame.member.each(val){
 	  el := ast(%name: %value) % [
 		"name": Identifier(?, val.name),
-		"value": (if(val.value){Dummy(?, val.value)} else {NullLiteral(?)}) as Node];
-	    varStruct.push(el);
+		"value": (if(val.value){Dummy(?, val.value)} else {NullLiteral(?)}) as Node]
+	    varStruct.push(el)
 	}
-	localClause.push(ast(use(%varStruct)) % ["varStruct": varStruct]);
+	localClause.push(ast(use(%varStruct)) % ["varStruct": varStruct])
 
-	globalClause.push(ast(use(debug)));
+	globalClause.push(ast(use(debug)))
 
-	firstPrompt = "debug> ";
+	firstPrompt = "debug> "
     }
     
-    secondPrompt := " " * firstPrompt.count;
+    secondPrompt := " " * firstPrompt.count
 
-    prev := ? as Any;
+    prev := ? as Any
     /*
       Start the main repl loop
     */
     while(doLoop){
-        line := "".thaw;
-        parsedAst := ? as Call;
+        line := "".thaw
+        parsedAst := ? as Call
 	
-        prompt := firstPrompt;
+        prompt := firstPrompt
 
 	def reflection.Type getModule(reflection.Type parent, Node path){
 	    if(id := (path as Identifier)){
 		memb := parent.member.find(el){ el.name == id.name }
-		return type(memb.value(?));
+		return type(memb.value(?))
 	    }
 	    if(path.callTo?("__memberGet__")){
-	        call := path as Call;
-	        id := call[0] as Identifier;
+	        call := path as Call
+	        id := call[0] as Identifier
 		memb := parent.member.find(el){ el.name == id.name }
-		newParent := type(memb.value(?));
-		return getModule(newParent, call[1]);
+		newParent := type(memb.value(?))
+		return getModule(newParent, call[1])
 	    }
 	}
 	
 
       useList := globalClause.filter(el){
-	    el.callTo?("use");
+	    el.callTo?("use")
 	}.map(el){
-	    getModule(type(global), (el as Call)[0]);
+	    getModule(type(global), (el as Call)[0])
 	}.filter(el){
-	    el;
+	    el
 	}
-	replComplete.setUseList(useList);
+	replComplete.setUseList(useList)
 
 	
         parseError :== collect(error.CompilationError){
 	    while(1){
-	        lineElement :== readLine.readLine(prompt);
-		prompt = secondPrompt;
+	        lineElement :== readLine.readLine(prompt)
+		prompt = secondPrompt
 		if(!lineElement){
-		    print();
-		    die();
+		    print()
+		    die()
 		}
 		
-		line ~= lineElement;
+		line ~= lineElement
 		
 	        incompleteError :== collect(error.IncompleteError){
-		    parsedAst = parse(line) as Call;
+		    parsedAst = parse(line) as Call
 		}
 		if(parsedAst or incompleteError.empty?){
 		    break
 		}
-		line ~= "\n";
+		line ~= "\n"
 	    }
 	}
 	parseError.each(error){
-	    print(error.message);
+	    print(error.message)
 	}
 
 	if(line.count > 0){
-	    readLine.history.add(line);
-	    saveHistory();
+	    readLine.history.add(line)
+	    saveHistory()
 	}
 	      
 	/*
@@ -258,18 +258,18 @@ modification, are permitted provided that the following conditions are met:
 	      «help», and if so, execute the corresponding action.
 	    */
 	    if(astItem in action){
-		action[astItem]();
-		continue;
+		action[astItem]()
+		continue
 	    }
 
 	    actionMapping.each(name, call){
 		if(astItem.callTo?(name)){
-		    astItem = call(astItem as parser.Call);
+		    astItem = call(astItem as parser.Call)
 		}
 	    }
 	    
-	    run := 1;
-  	    isGlobal :== (astItem.callTo?("use") or astItem.callTo?("expand"));
+	    run := 1
+  	    isGlobal :== (astItem.callTo?("use") or astItem.callTo?("expand"))
 	    
 	    /*
 	      Add all variables that have been previously declared by
@@ -277,7 +277,7 @@ modification, are permitted provided that the following conditions are met:
 	      the previous function invocation and extracting all it's
 	      variable names and values.
 	    */
-	    variableDeclaration := ast(nothing());
+	    variableDeclaration := ast(nothing())
 	    previousContinuation.member.each(memb){
 		if(memb.name != "ans"){
 		    variableDeclaration.push(
@@ -291,45 +291,45 @@ modification, are permitted provided that the following conditions are met:
 			    "value": (if(memb.value){Dummy(?, memb.value)}else{ast(? as Any)}) as Node,
 			    "Type": Dummy(?, memb.type),
 			    ]
-			);
+			)
 		}
 	    }
-	    variableDeclaration ~= localClause;
+	    variableDeclaration ~= localClause
 	    /*
 	      Make an ast representing an entire module with our fancy
 	      function in it.
 	    */
   	    moduleAst := ast(
 		nothing(
-		    var reflection.Continuation %cont;
+		    var reflection.Continuation %cont
 		    def %fun(){
-			%cont = reflection.currentContinuation; 
-			%variable; 
-			ans := %ans;
-			%ast;
+			%cont = reflection.currentContinuation 
+			%variable 
+			ans := %ans
+			%ast
 		    })) % [
 			"fun": Identifier(?, "!fun"), 
 			"ast": astItem, 
 			"cont": Identifier(?, "!cont"), 
 			"variable": variableDeclaration,
 			"ans": (if(prev){Dummy(?, prev)}else{ast(? as Any)}) as Node,
-			];
+			]
 	    if(isGlobal){
-		run = ?;
-	        moduleAst = ast(nothing(%ast)) % ["ast": astItem];
+		run = ?
+	        moduleAst = ast(nothing(%ast)) % ["ast": astItem]
 	    }
 	    
 	    /*
 	      Add all use and extend clauses from previous function invocations
 	    */
 	    globalClause.each(node){
-		(moduleAst as Call).push(node);
+		(moduleAst as Call).push(node)
 	    }
 
-	    code :== compile(moduleAst);
+	    code :== compile(moduleAst)
 	    if(code){
 		if(isGlobal){
-		    globalClause.push(astItem);
+		    globalClause.push(astItem)
 		}
 		
 		if(run){
@@ -339,12 +339,12 @@ modification, are permitted provided that the following conditions are met:
 		      the function invocation so we can introspect it
 		      in the next lap.
 		    */
-//		    print(moduleAst);
-		    funMemb :== type(code).member.find(memb){memb.name=="!fun"};
-  		    fun :== funMemb.value(code);
-		    prev = (fun as reflection.Block)();
-		    prev and print(prev);
-		    previousContinuation = type(code).member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation;
+//		    print(moduleAst)
+		    funMemb :== type(code).member.find(memb){memb.name=="!fun"}
+  		    fun :== funMemb.value(code)
+		    prev = (fun as reflection.Block)()
+		    prev and print(prev)
+		    previousContinuation = type(code).member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation
 		}
 	    }
 	    else{
@@ -352,7 +352,7 @@ modification, are permitted provided that the following conditions are met:
 		  If we encounter an error, stop executing the rest of
 		  the expressions on this line.
 		*/
-		break;
+		break
 	    }
 	}
     }
@@ -363,8 +363,8 @@ def debugRepl()  (
 Don't use this function or rely on its existence. It is used internally by the breakpoint
 bytecode in the VM."),
     internal){
-    debugFrame := reflection.currentContinuation.dynamicFrame.dynamicFrame;    
-    repl(debugFrame);
+    debugFrame := reflection.currentContinuation.dynamicFrame.dynamicFrame    
+    repl(debugFrame)
 }
 
 def main()  (
@@ -372,5 +372,5 @@ def main()  (
 Calls the repl.repl function and then exits. This is the
 main()-function that is called when no other main function is given on
 the command line."), internal){
-    repl();
+    repl()
 }

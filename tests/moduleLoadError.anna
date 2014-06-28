@@ -1,4 +1,4 @@
-use(noneExisting.module);
+use(noneExisting.module)
 
 def main(){
 }

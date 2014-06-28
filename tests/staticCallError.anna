@@ -5,13 +5,13 @@ class MyType{
     }
     
     def yay(){
-	print(["a","b", "c", "d", "e"].map(wrongMethod));
+	print(["a","b", "c", "d", "e"].map(wrongMethod))
     }
     
 }
 
 def main(){
-    mm := MyType();
-    mm.yay();
+    mm := MyType()
+    mm.yay()
 }
 

@@ -1,6 +1,6 @@
-expand(stringFilter);
+expand(stringFilter)
 
-attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been implemented."));
+attribute(doc("A simple JSON library. Only Anna => Json serialization has currently been implemented."))
 
 class JsonSerializable (doc("Types that can mask as a JsonSerializable can be converted to Json by the json.toJson function.")){
     def String toJson() (doc("Create a JSON representation of this object.")) {?}
@@ -19,71 +19,71 @@ def String to(Any o)  (
     def escapeChar(Char ch){
 	switch(ch.ordinal){
 	    case('\n'.ordinal){
-		return "\\n";
+		return "\\n"
 	    }
 
 	    case('"'.ordinal){
-		return "\\\"";
+		return "\\\""
 	    }
 
 	    cases(0..32){
-		return "\\x" ~ ch.ordinal.format(16).lpad(count: 2, char: '0');
+		return "\\x" ~ ch.ordinal.format(16).lpad(count: 2, char: '0')
 	    }
 
 	    cases(128...){
-		return "\\u" ~ ch.ordinal.format(16).lpad(count: 4, char: '0');
+		return "\\u" ~ ch.ordinal.format(16).lpad(count: 4, char: '0')
 	    }
 
 	    default{
-		return ch.toString();
+		return ch.toString()
 	    }
 	}
-	return ?;
+	return ?
     }
 
     if(!o){
-	return "null";
+	return "null"
     }
     
     switch(o){
 	case(str as String){
-	    res := "\"".thaw;
+	    res := "\"".thaw
 	    str.each(ch){
-		res ~= escapeChar(ch);
+		res ~= escapeChar(ch)
 	    }
-	    res ~= "\"";
-	    return res;
+	    res ~= "\""
+	    return res
 	}
 
 	case(ch as Char){
-	    return "'" ~ escapeChar(ch) ~ "'";
+	    return "'" ~ escapeChar(ch) ~ "'"
 	}
 	
 	case(val as Int){
-	    return String::convert(val);
+	    return String::convert(val)
 	}
 
 	case(val as Float){
-	    return String::convert(val);
+	    return String::convert(val)
 	}
 
 	case(lst as List){
-	    return "[" ~ ", ".join(lst.map(el){to(el)}) ~ "]";
+	    return "[" ~ ", ".join(lst.map(el){to(el)}) ~ "]"
 	}
 
 	case(hmap as HashMap){
-	    return "{" ~ ", ".join(hmap.map(key, el){to(String::convert(key)) ~ ": " ~ to(el)}) ~ "}";
+	    return "{" ~ ", ".join(hmap.map(key, el){to(String::convert(key)) ~ ": " ~ to(el)}) ~ "}"
 	}
 
 	case(ss as JsonSerializable){
-	    return ss.toJson();
+	    return ss.toJson()
 	}
 
 	default{
-	    raise(error.ParseError("Can't json encode object of type " ~ type(o).name));
-	    return ?;
+	    raise(error.ParseError("Can't json encode object of type " ~ type(o).name))
+	    return ?
 	}
     }
-    return ?;
+    return ?
 }
 

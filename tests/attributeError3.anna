@@ -1,4 +1,4 @@
 def main(){
-    var Int foo (someNoneExistingAttribute);
+    var Int foo (someNoneExistingAttribute)
 
 }

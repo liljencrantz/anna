@@ -2,19 +2,19 @@
 class MyType{
 
     def Any staticMethod(Int idx, String in) (static){
-	print("Run method with arg ", in, "\n" );
-	return "" ~in[0];
+	print("Run method with arg ", in, "\n" )
+	return "" ~in[0]
     }
     
     def yay(){
-	print(["a","b", "c", "d", "e"].map(staticMethod));
+	print(["a","b", "c", "d", "e"].map(staticMethod))
     }
     
 }
 
 def main(){
-    mm := MyType();
-    mm.yay();
-    print("\n");
+    mm := MyType()
+    mm.yay()
+    print("\n")
 }
 

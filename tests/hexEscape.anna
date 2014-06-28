@@ -1,4 +1,4 @@
 def main(){
-    print("Foo \x6a \x6b \x6c \u006a \U0000006a");
-    print('\x6a', '\x6b', '\x6c', '\u006a', '\U0000006a');
+    print("Foo \x6a \x6b \x6c \u006a \U0000006a")
+    print('\x6a', '\x6b', '\x6c', '\u006a', '\U0000006a')
 }

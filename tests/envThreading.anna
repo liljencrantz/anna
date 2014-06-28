@@ -1,18 +1,18 @@
 def task(mp.Channel serverChannel){
-    val := serverChannel.read() as ImutableString;
+    val := serverChannel.read() as ImutableString
     (0..10000).each(i){
-	unix.env["foo"] = val;
-        curr := unix.env["foo"];
+	unix.env["foo"] = val
+        curr := unix.env["foo"]
 	if(!(curr in ["foo0", "foo1", "foo2", "foo3", "foo4", "foo5"])){
-	    print("Bad value", curr);
+	    print("Bad value", curr)
 	}
     }
 }
 
 def main(){
-    threads :== 100;//1 + (tm.usec ^mod 512);
+    threads :== 100//1 + (tm.usec ^mod 512);
     (0..threads).each(idx){
-	mp.run(task).write(("foo" ~ (idx ^mod 6)));
+	mp.run(task).write(("foo" ~ (idx ^mod 6)))
     }
-    print("Done");
+    print("Done")
 }

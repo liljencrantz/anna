@@ -1,4 +1,4 @@
 def main(Int g){
-    print(g);
+    print(g)
 }
 

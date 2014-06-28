@@ -1,9 +1,9 @@
 
 def main(){
-    im := [1,2,3].freeze;
-    print(im, type(im));
-    m := im.thaw;
-    m[1] = 9;
-    print(im, m, type(m));
+    im := [1,2,3].freeze
+    print(im, type(im))
+    m := im.thaw
+    m[1] = 9
+    print(im, m, type(m))
 }
 

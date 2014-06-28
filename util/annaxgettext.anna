@@ -1,41 +1,41 @@
 
 def main(){
-    use(io);
-    use(parser);
+    use(io)
+    use(parser)
 
-    done := «String, MutableList«parser.StringLiteral»»[];
+    done := «String, MutableList«parser.StringLiteral»»[]
 
     def escape(String in){
-        res := "".thaw;
+        res := "".thaw
 	in.each(ch){
 	    if(ch.ordinal < 32){
-		res ~= "\\x%" % [ch.ordinal.format(base: 16).lpad(2, '0')];
+		res ~= "\\x%" % [ch.ordinal.format(base: 16).lpad(2, '0')]
 	    }
 	    else{
-		res ~= ch;
+		res ~= ch
 	    }
 	}
-	return res;
+	return res
     }
 
     def translate(parser.StringLiteral lit){
 	if(lit.payload in done){
-	    done[lit.payload].push(lit);
+	    done[lit.payload].push(lit)
 	}
 	else{
-	    done[lit.payload] = [lit];
+	    done[lit.payload] = [lit]
 	}
     }
     
     system.argument[1...].each(filename){
 	if(!(file := File(filename)).exists?){
-	    print("Error: File «%» does not exist" % [filename]);
-	    unix.proc.exit(1);
+	    print("Error: File «%» does not exist" % [filename])
+	    unix.proc.exit(1)
 	}
 	
-        myAst := parser.parse(file.readFile(), filename) as Call;
+        myAst := parser.parse(file.readFile(), filename) as Call
 	myAst.allChildren.filter(chld){chld.callTo?("tStringLiteral")}.each(trans){
-	    translate((trans as Call)[0] as StringLiteral);
+	    translate((trans as Call)[0] as StringLiteral)
 	}
     }
 
@@ -43,14 +43,14 @@ def main(){
 # 
 msgid \"\"
 msgstr \"\"
-\"Content-Type: text/plain; charset=UTF-8\\n\"
-" % [date.Date().year]);
+\"Content-Type: text/plain charset=UTF-8\\n\"
+" % [date.Date().year])
 
     done.each(msgid, literals){
 	literals.each(lit){
-	    print("#: %:%" % [lit.file, lit.line]);
+	    print("#: %:%" % [lit.file, lit.line])
 	}
-	print("msgid \"%\"\nmsgstr \"\"\n" % [escape(msgid)]);
+	print("msgid \"%\"\nmsgstr \"\"\n" % [escape(msgid)])
     }
 
 }

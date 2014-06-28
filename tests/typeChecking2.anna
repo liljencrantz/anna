@@ -7,14 +7,14 @@
 
 class MyClass{
     def outer(){
-	inner();
+	inner()
     }
     
     def someFunction() (alias(inner)){
-	"ok";
+	"ok"
     }
 }
 
 def main(){
-    print(MyClass().outer());
+    print(MyClass().outer())
 }

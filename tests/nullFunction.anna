@@ -1,4 +1,4 @@
 def main(){
-    foo := ? as (def Int ());
-    print(foo());
+    foo := ? as (def Int ())
+    print(foo())
 }

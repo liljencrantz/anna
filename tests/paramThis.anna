@@ -1,9 +1,9 @@
 class MyType{
     def sillyMethod(String this, String that){
-	return this ~ that;
+	return this ~ that
     }
 }
 
 def main(){
-    print(MyType().sillyMethod("", ""), "\n");
+    print(MyType().sillyMethod("", ""), "\n")
 }

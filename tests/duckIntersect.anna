@@ -1,7 +1,7 @@
 class Foo{
 
     def fun(){
-        3;
+        3
     }
 
 }
@@ -9,11 +9,11 @@ class Foo{
 class Bar{
 
     def fun(){
-        4;
+        4
     }
 }
 
 def main(){
-    v := Foo() or Bar();
-    print(v.fun());
+    v := Foo() or Bar()
+    print(v.fun())
 }

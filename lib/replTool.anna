@@ -1,6 +1,6 @@
 attribute(doc("
 Helper commands for the anna repl (interactive prompt) implementation.
-This module is automatically used by the anna interactive prompt, and there is very rarely any reason to use it manually."));
+This module is automatically used by the anna interactive prompt, and there is very rarely any reason to use it manually."))
 
 enum HtmlState (
     doc("Different states for the Html parsing state machine."),
@@ -17,59 +17,59 @@ terminal. This function does not correctly handle arbitrary HTML. The following
 is a short rundown of the currently supported HTML subset:
 
 <ul>
-<li>&lt;li&gt; elements are converted into bullet points. Ordered lists are not handled differently and are also converted into bullets.</li>
-<li>&lt;p&gt; tags are rendered as double line breaks.</li>
-<li>&lt;pre&gt; content is rendered verbatim, except html tags are still stripped.</li> 
+<li>&ltli&gt; elements are converted into bullet points. Ordered lists are not handled differently and are also converted into bullets.</li>
+<li>&ltp&gt; tags are rendered as double line breaks.</li>
+<li>&ltpre&gt; content is rendered verbatim, except html tags are still stripped.</li> 
 <li>All other HTML tags are stripped.</li>
-<li>Numbered html escapes as well as the &amp;gt;, &amp;lt;, &amp;amp; and &amp;quot; html escapes are unescaped.</li>
+<li>Numbered html escapes as well as the &ampgt;, &amp;lt;, &amp;amp; and &amp;quot; html escapes are unescaped.</li>
 <li>Text is line breaked to 80 columns.</li>
 </ul>
 
 "),
     internal,
 ){    
-    mode := [HtmlState::text];
+    mode := [HtmlState::text]
     
-    res := "".thaw;
-    currentParagraph := "".thaw;
-    currentTag := "".thaw;
-    currentEscape := "".thaw;
+    res := "".thaw
+    currentParagraph := "".thaw
+    currentTag := "".thaw
+    currentEscape := "".thaw
 
     def handleTag(String currentTag){
 	switch(currentTag){
 	    case("p"){
-		res ~= linebreak(currentParagraph.split(" ", ?));
-		res ~= "\n\n";
-		currentParagraph.count=0;
+		res ~= linebreak(currentParagraph.split(" ", ?))
+		res ~= "\n\n"
+		currentParagraph.count=0
 	    }
 
 	    case("li"){
-		mode.push(HtmlState::li);
+		mode.push(HtmlState::li)
 		
-		res ~= linebreak(currentParagraph.split(" ", ?));
-		res ~= "\n";
-		currentParagraph.count=0;
+		res ~= linebreak(currentParagraph.split(" ", ?))
+		res ~= "\n"
+		currentParagraph.count=0
 	    }
 
 	    case("/li"){
-		mode.pop();
-		res ~= linebreak(currentParagraph.split(" ", ?), firstPrefix: " * ", prefix: "   ");
-		currentParagraph.count=0;
+		mode.pop()
+		res ~= linebreak(currentParagraph.split(" ", ?), firstPrefix: " * ", prefix: "   ")
+		currentParagraph.count=0
 	    }
 
 	    case("pre"){
-		mode.push(HtmlState::pre);		
+		mode.push(HtmlState::pre)		
 		if(currentParagraph.count != 0){
-		    res ~= linebreak(currentParagraph.split(" ", ?));
-		    res ~= "\n\n";
-		    currentParagraph.count=0;
+		    res ~= linebreak(currentParagraph.split(" ", ?))
+		    res ~= "\n\n"
+		    currentParagraph.count=0
 		}
 	    }
 
 	    case("/pre"){
-		mode.pop();
-		res ~= currentParagraph;
-		currentParagraph.count=0;
+		mode.pop()
+		res ~= currentParagraph
+		currentParagraph.count=0
 	    }
 
 	    default{
@@ -77,17 +77,17 @@ is a short rundown of the currently supported HTML subset:
 	    }
 
 	}
-	currentTag.count=0;
+	currentTag.count=0
     }
 
     def handleEscape(String escape){
 	ch := switch(escape[0]){
 	    case('#'){
 		if(escape[1].lower == 'x'){
-		    String::convert(Char::convert(Int::convert(escape[2...], base:16)));
+		    String::convert(Char::convert(Int::convert(escape[2...], base:16)))
 		}
 		else{
-		    String::convert(Char::convert(Int::convert(escape[1...])));
+		    String::convert(Char::convert(Int::convert(escape[1...])))
 		}
 	    }
 
@@ -103,18 +103,18 @@ is a short rundown of the currently supported HTML subset:
 	    }
 	}
 	if(!ch){
-	    raise(error.ParseError("Unknown or invalid escape sequence: " ~ escape));
-	    ch = "";
+	    raise(error.ParseError("Unknown or invalid escape sequence: " ~ escape))
+	    ch = ""
 	}
-	mode.pop();
+	mode.pop()
 
 	switch(mode[-1]){
 	    case(HtmlState::text, HtmlState::li, HtmlState::pre){
-		currentParagraph ~= ch;
+		currentParagraph ~= ch
 	    }
 
 	    case(HtmlState::tagName){
-		currentTag ~= ch;
+		currentTag ~= ch
 	    }
 	}
 
@@ -125,22 +125,22 @@ is a short rundown of the currently supported HTML subset:
 	    case(HtmlState::text, HtmlState::li){
 		switch(ch){
 		    case('<'){
-			mode.push(HtmlState::tagName);
+			mode.push(HtmlState::tagName)
 		    }
 
 		    case('&'){
-			mode.push(HtmlState::escape);
+			mode.push(HtmlState::escape)
 		    }
 
 		    case('\n', '\t', '\r'){
-			mode.push(HtmlState::textSpace);
+			mode.push(HtmlState::textSpace)
 			if(currentParagraph.count != 0){
-			    currentParagraph ~= ' ';
+			    currentParagraph ~= ' '
 			}
 		    }
 
 		    default{
-			currentParagraph ~= ch;
+			currentParagraph ~= ch
 		    }
 		}
 	    }
@@ -148,15 +148,15 @@ is a short rundown of the currently supported HTML subset:
 	    case(HtmlState::pre){
 		switch(ch){
 		    case('<'){
-			mode.push(HtmlState::tagName);
+			mode.push(HtmlState::tagName)
 		    }
 
 		    case('&'){
-			mode.push(HtmlState::escape);
+			mode.push(HtmlState::escape)
 		    }
 
 		    default{
-			currentParagraph ~= ch;
+			currentParagraph ~= ch
 		    }
 		}
 		
@@ -165,20 +165,20 @@ is a short rundown of the currently supported HTML subset:
 	    case(HtmlState::textSpace){
 		switch(ch){
 		    case('<'){
-			mode[-1] = HtmlState::tagName;
+			mode[-1] = HtmlState::tagName
 		    }
 
 		    case('&'){
-			mode.pop();
-			mode.push(HtmlState::escape);
+			mode.pop()
+			mode.push(HtmlState::escape)
 		    }
 
 		    case('\n', '\t', '\r'){
 		    }
 
 		    default{
-			mode.pop();
-			currentParagraph ~= ch;
+			mode.pop()
+			currentParagraph ~= ch
 		    }
 		}		
 	    }
@@ -186,20 +186,20 @@ is a short rundown of the currently supported HTML subset:
 	    case(HtmlState::tagName){
 		switch(ch){
 		    case(' '){
-			mode[-1] = HtmlState::tagContent;
+			mode[-1] = HtmlState::tagContent
 		    }
 
 		    case('&'){
-			mode.push(HtmlState::escape);
+			mode.push(HtmlState::escape)
 		    }
 
 		    case('>'){
-			mode.pop();
-			handleTag(currentTag);
+			mode.pop()
+			handleTag(currentTag)
 		    }
 
 		    default{
-			currentTag ~= ch;
+			currentTag ~= ch
 		    }
 		}
 	    }
@@ -208,12 +208,12 @@ is a short rundown of the currently supported HTML subset:
 		switch(ch){
 
 		    case('&'){
-			mode.push(HtmlState::escape);
+			mode.push(HtmlState::escape)
 		    }
 
 		    case('>'){
-			mode.pop();
-			handleTag(currentTag);
+			mode.pop()
+			handleTag(currentTag)
 		    }
 
 		    default{
@@ -227,12 +227,12 @@ is a short rundown of the currently supported HTML subset:
 		switch(ch){
 
 		    case(';'){
-			handleEscape(currentEscape);
-			currentEscape.count = 0;
+			handleEscape(currentEscape)
+			currentEscape.count = 0
 		    }
 
 		    default{
-			currentEscape ~= ch;
+			currentEscape ~= ch
 		    }
 		}
 	    }
@@ -241,45 +241,45 @@ is a short rundown of the currently supported HTML subset:
 
     }
 
-    res ~= linebreak(currentParagraph.split(" ", ?));
-    return res;
+    res ~= linebreak(currentParagraph.split(" ", ?))
+    return res
 }
 
 def linebreak(List«Any» wordList, String prefix = "", String firstPrefix = "")  (
     internal, 
     doc("Internal helper method for dir and help, used to line break a list of strings."),
 ){    
-    res := firstPrefix.thaw;
-    col := res.count;        
+    res := firstPrefix.thaw
+    col := res.count        
     wordList.each(idx, wordObj){
-	word := String::convert(wordObj);
+	word := String::convert(wordObj)
 	if(idx == 0){
-	    res ~= word;
-	    col += word.count;
+	    res ~= word
+	    col += word.count
 	}
 	else{
 	    if(col + word.count + 1 > 80){
-		res ~= "\n";
-		res ~= prefix;
-		res ~= word;
-		col = word.count + prefix.count;
+		res ~= "\n"
+		res ~= prefix
+		res ~= word
+		col = word.count + prefix.count
 	    }
 	    else{
-		res ~= " ";
-		res ~= word;
-		col += word.count+1;
+		res ~= " "
+		res ~= word
+		col += word.count+1
 	    }
 	}
     }
-    return res;
+    return res
 }
 
 def printHelpMember(Any object, String memberName){
-    use(reflection);
+    use(reflection)
     
-    objType := (object as Type) or type(object);
-    memb := objType.member.filter(m){m.name==memberName}[0];
-    printHelp(memb.value(object));
+    objType := (object as Type) or type(object)
+    memb := objType.member.filter(m){m.name==memberName}[0]
+    printHelp(memb.value(object))
 }
 
 def printHelp(Any object = global) (
@@ -296,9 +296,9 @@ display help for the Int type.",
 The basic information shown by the help function is the same
 information available in the api documentation, and is gathered from
 the doc attribute of declarations.")){
-    use(parser);
-    use(reflection);
-    res := "".thaw;
+    use(parser)
+    use(reflection)
+    res := "".thaw
 
     /*
       The attribute list to extract documentation from. First we check
@@ -308,111 +308,111 @@ the doc attribute of declarations.")){
       which is usually what we want.
     */
     class WithAttribute{
-	const Call attribute;
+	const Call attribute
     }
 
-    objType := (object as Type) or type(object);
-    description := String::convert(objType.name) ~ " type";
+    objType := (object as Type) or type(object)
+    description := String::convert(objType.name) ~ " type"
 
     def signature(Function fun){
-	res := "".thaw ~ fun.outputType.name ~ " ";
-	res ~= fun.name ~ " ";
-	res ~= '(';
-        variadicIdxNamed := fun.variadicNamed? and fun.inputType.count - 1;
-        variadicIdx := ? as Int;
+	res := "".thaw ~ fun.outputType.name ~ " "
+	res ~= fun.name ~ " "
+	res ~= '('
+        variadicIdxNamed := fun.variadicNamed? and fun.inputType.count - 1
+        variadicIdx := ? as Int
 	if(fun.variadic?) {
-	    variadicIdxNamed--;
-	    variadicIdx = fun.inputType.count - 1;
+	    variadicIdxNamed--
+	    variadicIdx = fun.inputType.count - 1
 	}
 	res ~= ", ".join(fun.inputName.map(idx, name){
-  	    type := fun.inputType[idx];
+  	    type := fun.inputType[idx]
 	    /*
 	     This rather ugly piece of code extracts the value
 	     specialization of a HashMap type.  Need to figure out a
 	     nicer way to do so...
 	     */
 	    if(idx == variadicIdxNamed) {
-		type = (type.member.find(memb){memb.name=="__get__"}.value(?) as reflection.Function).outputType;
+		type = (type.member.find(memb){memb.name=="__get__"}.value(?) as reflection.Function).outputType
 	    }
-	    res := "" ~ type.name ~ " " ~ name;
-	    res ~= (idx == variadicIdx) and "..." or "";
-	    res ~= (idx == variadicIdxNamed) and ":" or "";
+	    res := "" ~ type.name ~ " " ~ name
+	    res ~= (idx == variadicIdx) and "..." or ""
+	    res ~= (idx == variadicIdxNamed) and ":" or ""
 	    if(fun.defaultValue[idx]){
-		res ~= " = " ~ fun.defaultValue[idx];
+		res ~= " = " ~ fun.defaultValue[idx]
 	    }
-	    res;
-	});
+	    res
+	})
 	
-	res ~= ')';
-	return res;
+	res ~= ')'
+	return res
     }
 
-    attribute := (object as WithAttribute).attribute or type(object).attribute;
+    attribute := (object as WithAttribute).attribute or type(object).attribute
 
-    doc := annaUtil.findAttribute(attribute, "doc");
+    doc := annaUtil.findAttribute(attribute, "doc")
     if(fun := (object as Function) or (object as Method).function){
-	res ~= signature(fun);
-	res ~= "\n\n";
-	description = fun.name ~ " function";
+	res ~= signature(fun)
+	res ~= "\n\n"
+	description = fun.name ~ " function"
     }
     if(doc.empty?){
-	res ~= "No documentation available for object of type " ~ (type(object).name or "Null");
+	res ~= "No documentation available for object of type " ~ (type(object).name or "Null")
     }
     else{
 	res ~= "\n\n".join(
 	    doc.map(docFragment){
-	      fragment := docFragment as StringLiteral;
-	      formatHtml(fragment.payload);
-	    });
+	      fragment := docFragment as StringLiteral
+	      formatHtml(fragment.payload)
+	    })
     }
 
     def members(Type tp){
 	algo.qsort(
 	    tp.member.filter(memb){
-		!memb.internal?;
+		!memb.internal?
 	    },
-	    fieldComparator(Member::name));
+	    fieldComparator(Member::name))
     }
 
     if(type(object).module?){
-	smemb := members(type(object));
+	smemb := members(type(object))
 
         submodule := smemb.filter(mem){
-	    val := mem.value(?);
-	    mem.static? and type(val).module?;
+	    val := mem.value(?)
+	    mem.static? and type(val).module?
 	}
         subtype := smemb.filter(mem){
-	    val := mem.value(?);
-	    mem.static? and (val as Type);
+	    val := mem.value(?)
+	    mem.static? and (val as Type)
 	}
         subother := smemb.filter(mem){
-	    val := mem.value(?);
-	    !(type(val).module?) and !(val as Type) and (mem.type != Null) and (!mem.internal?);
+	    val := mem.value(?)
+	    !(type(val).module?) and !(val as Type) and (mem.type != Null) and (!mem.internal?)
 	}
 	
 	if(!submodule.empty?){
-	    res ~= "\n\nThe % module has the following submodules:\n" % [type(object).name];
-	    res ~= linebreak(submodule);
+	    res ~= "\n\nThe % module has the following submodules:\n" % [type(object).name]
+	    res ~= linebreak(submodule)
 	}
 
 	if(!subtype.empty?){
-	    res ~= "\n\nThe % module contains the following types:\n" % [type(object).name];
-	    res ~= linebreak(subtype);
+	    res ~= "\n\nThe % module contains the following types:\n" % [type(object).name]
+	    res ~= linebreak(subtype)
 	}
 
 	if(!subother.empty?){
-	    res ~= "\n\nThe % module contains the following members:\n" % [type(object).name];
-	    res ~= linebreak(subother);
+	    res ~= "\n\nThe % module contains the following members:\n" % [type(object).name]
+	    res ~= linebreak(subother)
 	}
 
     }
     else{
-	smemb := members(objType);
-	res ~= "\n\nThe % has the following members:\n" % [description];
-	res ~= linebreak(smemb);	    
+	smemb := members(objType)
+	res ~= "\n\nThe % has the following members:\n" % [description]
+	res ~= linebreak(smemb)	    
     }
 
-    return res;
+    return res
 }
 
 def dir(Any object) (
@@ -421,9 +421,9 @@ This is an additional help function for the interactive Anna command line. If
 takes any object as a parameter and lists all members of that type ina a format 
 suitable for the screen. This is just a very thin wrapper around the member 
 property of the Type type.")){
-    use(reflection);
+    use(reflection)
     return linebreak(
         algo.qsort(((object as reflection.Type) or type(object)).member.thaw,
-		   fieldComparator(Member::name)));
+		   fieldComparator(Member::name)))
 }
 

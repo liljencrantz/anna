@@ -5,14 +5,14 @@
 
 class MyClass{
     def infinity(){
-	beyond();
+	beyond()
     }
     
     def beyond(){
-	infinity();
+	infinity()
     }
 }
 
 def main(){
-    print(MyClass().infinity());
+    print(MyClass().infinity())
 }

@@ -1,32 +1,32 @@
 
 def main(){
-    print("Int conversions");
-    print(Int::convert("123456789_10_11_12_13_14_15_16_17_18_19_20"));
-    print(Int::convert("-123"));
-    print(Int::convert(31415.9265));
-    print(Int::convert(-2.0));
-    print(Int::convert("hello"));
-    print(Int::convert(9));
-    print(Int::convert(-7));
-    print(Int::convert(?));
-    val := 2 ^shl 100;
-    print(val == Int::convert(Float::convert(val)));
+    print("Int conversions")
+    print(Int::convert("123456789_10_11_12_13_14_15_16_17_18_19_20"))
+    print(Int::convert("-123"))
+    print(Int::convert(31415.9265))
+    print(Int::convert(-2.0))
+    print(Int::convert("hello"))
+    print(Int::convert(9))
+    print(Int::convert(-7))
+    print(Int::convert(?))
+    val := 2 ^shl 100
+    print(val == Int::convert(Float::convert(val)))
 
-    print("Float conversions");
-    print(Float::convert(66.5) == 66.5);
-    print(Float::convert(9)==9.0);
-    print(Float::convert("_3_._5_") == 3.5);
-    print(Float::convert("3") == 3.0);
-    print(Float::convert("3_3.0e5") == 3300000);
-    print(Float::convert("3.5g"));
-    print(Float::convert("hello"));
-    print(Float::convert(?));
+    print("Float conversions")
+    print(Float::convert(66.5) == 66.5)
+    print(Float::convert(9)==9.0)
+    print(Float::convert("_3_._5_") == 3.5)
+    print(Float::convert("3") == 3.0)
+    print(Float::convert("3_3.0e5") == 3300000)
+    print(Float::convert("3.5g"))
+    print(Float::convert("hello"))
+    print(Float::convert(?))
     
-    count := 0;
+    count := 0
     (0..100_000).each(idx){   
-	count += Char::convert(idx).ordinal == idx;
-	count += Int::convert(Char::convert(idx)) == idx;
+	count += Char::convert(idx).ordinal == idx
+	count += Int::convert(Char::convert(idx)) == idx
     }
-    print(count);
+    print(count)
 
 }

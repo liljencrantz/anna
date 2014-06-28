@@ -1,4 +1,4 @@
 
 def main()  {
-    lang.print("ok");
+    lang.print("ok")
 }

@@ -1,27 +1,27 @@
 
-var MutableList hailstoneCache;
+var MutableList hailstoneCache
 
 def Int hailstone(Int i){
     if(hailstoneCache[i]) { return hailstoneCache[i] }
-    hailstoneCache[i]= hailstone(if(i ^bitand 1 == 0) {i/2} else {i*3+1})+1;
+    hailstoneCache[i]= hailstone(if(i ^bitand 1 == 0) {i/2} else {i*3+1})+1
 }
 
 def main(){
-    max := Int::convert(system.argument[1]) or 20_000;
-    maxCount := 0;
-    maxValue := 0;
+    max := Int::convert(system.argument[1]) or 20_000
+    maxCount := 0
+    maxValue := 0
 
-    hailstoneCache = [1, 1];
+    hailstoneCache = [1, 1]
 
     (2..max).each(i){
-	count := hailstone(i);
+	count := hailstone(i)
 	if(count > maxCount){
-	    maxCount = count;
-	    maxValue = i;
+	    maxCount = count
+	    maxValue = i
 	}
     }
 
     print(
 	"Maximum hailstone sequence under", 
-	max, "is", maxValue);
+	max, "is", maxValue)
 }

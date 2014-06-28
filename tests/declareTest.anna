@@ -1,12 +1,12 @@
 def main(){
-    a := b:= c:= d:= 1*1;
-    print(a+b+c+d);
-    aa :== bb:= cc:= dd:= 1;
-    print(aa+bb+cc+dd);
+    a := b:= c:= d:= 1*1
+    print(a+b+c+d)
+    aa :== bb:= cc:= dd:= 1
+    print(aa+bb+cc+dd)
 
-    aaa := a = 1+1;
-    print(aaa+a);
+    aaa := a = 1+1
+    print(aaa+a)
 
-    b = bbb := 1+1;
-    print(b+bbb);
+    b = bbb := 1+1
+    print(b+bbb)
 }

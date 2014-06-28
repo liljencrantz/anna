@@ -1,9 +1,9 @@
-attribute(internal, doc("Internally used module. Don't use directly."));
+attribute(internal, doc("Internally used module. Don't use directly."))
 
 def here()  (
     target(debug),
     doc("Launch the interactive debugger here and now"),
 ){
-    debugFrame := reflection.currentContinuation.dynamicFrame;
-    repl.repl(debugFrame);
+    debugFrame := reflection.currentContinuation.dynamicFrame
+    repl.repl(debugFrame)
 }

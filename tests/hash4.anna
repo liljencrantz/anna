@@ -1,10 +1,10 @@
 def main(){
-    steps :== 100_000;
-    m :== HashMap«String,Int»();
+    steps :== 100_000
+    m :== HashMap«String,Int»()
     (0..steps|10_000).each(offset){
         (offset..(steps+offset)).each(i){m["string" ~ i] = i}
-	print(m.count);
+	print(m.count)
         (offset..(steps+offset)).each(i){m.remove("string" ~ (i-5000))}
-	print(m.count);
+	print(m.count)
     }
 }

@@ -1,11 +1,11 @@
 def fun(){
-    return [6, 9];
+    return [6, 9]
 }
 
 def main(){
-    foo := 0;
-    bar := 0;
-    baz := 0;
-    [foo, bar, baz] = fun();
-    print( foo, bar, baz);
+    foo := 0
+    bar := 0
+    baz := 0
+    [foo, bar, baz] = fun()
+    print( foo, bar, baz)
 }

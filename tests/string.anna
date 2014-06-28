@@ -2,56 +2,56 @@
 def main(){
 
     /* Test replacing substring with other string of same length */
-    print("Test 1");
-    a := "aaabbbccc".thaw;
-    a[3..6] = "ddd";
-    print(a);
+    print("Test 1")
+    a := "aaabbbccc".thaw
+    a[3..6] = "ddd"
+    print(a)
 
     /* Test replacing substring with other string of different length */
-    print("Test 2");
-    a = "aaabbbccc".thaw;
-    a[3..6] = "dddEEE";
-    print(a);
+    print("Test 2")
+    a = "aaabbbccc".thaw
+    a[3..6] = "dddEEE"
+    print(a)
 
     /* Test replacing substring past end of original string */
-    print("Test 3");
-    a = "aaabbbccc".thaw;
-    a[7..15] = "eeeee";
-    print(a);
+    print("Test 3")
+    a = "aaabbbccc".thaw
+    a[7..15] = "eeeee"
+    print(a)
 
     /* Test replacing substring completely past original string */
-    print("Test 4");
-    a = "a".thaw;
-    a[7..15] = "eeeee";
+    print("Test 4")
+    a = "a".thaw
+    a[7..15] = "eeeee"
     a.each(idx, val){print(idx, ": ", val.ordinal, sep:"")}
 
     /* Test replacing non-consecutive characters */
-    print("Test 5");
-    a = "aaabbbccc".thaw;
-    a[1..7|2] = "qqq";
-    print(a);
+    print("Test 5")
+    a = "aaabbbccc".thaw
+    a[1..7|2] = "qqq"
+    print(a)
 
     /* Try replacing non-consecutive characters with wrong length of replacement. This should be a no-op. */
-    print("Test 6");
-    a = "aaabbbccc".thaw;
-    a[1..7|2] = "qqqaaa";
-    print(a);
+    print("Test 6")
+    a = "aaabbbccc".thaw
+    a[1..7|2] = "qqqaaa"
+    print(a)
 
     /* Test replacing non-consecutive characters past end of original string. */
-    print("Test 7");
-    a = "aaabbbccc".thaw;
-    a[1..15|10] = "qq";
+    print("Test 7")
+    a = "aaabbbccc".thaw
+    a[1..15|10] = "qq"
     a.each(idx, val){print(idx, ": ", val.ordinal, sep: "")}
 
     /* Test replacing by index from end */
-    print("Test 8");
-    a="abc".thaw;
-    a[-1] = 'C';
-    print(a);
+    print("Test 8")
+    a="abc".thaw
+    a[-1] = 'C'
+    print(a)
 
     /* Test replacing ranges by index from end */
-    print("Test 9");
-    a="abc".thaw;
-    a[-2..-1] = "BC";
-    print(a);
+    print("Test 9")
+    a="abc".thaw
+    a[-2..-1] = "BC"
+    print(a)
 }

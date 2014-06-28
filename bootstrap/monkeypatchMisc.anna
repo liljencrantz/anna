@@ -1,4 +1,4 @@
-attribute(internal, doc("Internally used module. Don't use directly."));
+attribute(internal, doc("Internally used module. Don't use directly."))
 
 /*
   A bunch of additional functions to be inserted into the basic builtin types
@@ -11,7 +11,7 @@ def String hashMapToString(HashMap«%Key, %Value» this) (
     template(%Key:HashKey),
     template(%Value:Any),
 ){
-    return "[" ~ ", ".join(this.map(key, value){"".thaw ~ key ~ ": " ~ String::convert(value)}) ~ "]";
+    return "[" ~ ", ".join(this.map(key, value){"".thaw ~ key ~ ": " ~ String::convert(value)}) ~ "]"
 }
 
 def String intFormat(Int this, Int base=10) (
@@ -19,30 +19,30 @@ def String intFormat(Int this, Int base=10) (
     target(Int), 
     doc("Returns a formated version of this string in the specified base."),
 ){
-    digits := "0123456789abcdefghijklmnopqrstuvwxyz";
+    digits := "0123456789abcdefghijklmnopqrstuvwxyz"
 
     if((base > 36) or (base < 2)){
-	return ?;
+	return ?
     }
 
-    res := "";
-    neg := "";
+    res := ""
+    neg := ""
     if(this < 0){
-	neg = "-";
-	this = -this;
+	neg = "-"
+	this = -this
     }
     
     if(this == 0){
-	res = "0";
+	res = "0"
     } 
     else {
 	while(this != 0){
-	    res = "" ~ digits[this ^mod base] ~ res;
-	    this = this / base;
+	    res = "" ~ digits[this ^mod base] ~ res
+	    this = this / base
 	}
     }
     
-    return neg ~ res;
+    return neg ~ res
 }
 
 def String pairToString(Pair«%First,%Second» this) (
@@ -52,7 +52,7 @@ def String pairToString(Pair«%First,%Second» this) (
     template(%First:Hashable),
     template(%Second:Hashable),
 ){
-    return "" ~ (this.first or "null") ~ "|" ~ (this.second or "null");
+    return "" ~ (this.first or "null") ~ "|" ~ (this.second or "null")
 }
 
 type Hashable{
@@ -82,12 +82,12 @@ def Int pairCmp(Pair«%First,%Second» this, Pair«%First,%Second» other) (
     template(%First:Comparable),
     template(%Second:Comparable),
 ){
-    cmp1 := this.first.__cmp__(other.first);
+    cmp1 := this.first.__cmp__(other.first)
     if(cmp1 == 0){
-	return this.second.__cmp__(other.second);
+	return this.second.__cmp__(other.second)
     }
     else{
-	return cmp1;
+	return cmp1
     }
 }
 
@@ -100,8 +100,8 @@ def HashMap«%Key, %Value» hashMapSetAll(HashMap«%Key, %Value» this, Pair«%K
     doc("This method is used internally by the HashMap initializer code. It sets multiple keys to their corresponding values.")
 ){
     value.each(pair){
-	this[pair.first] = pair.second;
+	this[pair.first] = pair.second
     }
-    return this;
+    return this
 }
 

@@ -1,4 +1,4 @@
-attribute(internal, doc("Internally used module. Don't use directly."));
+attribute(internal, doc("Internally used module. Don't use directly."))
 
 expandCode(
     def %name(%Type this) (
@@ -6,11 +6,11 @@ expandCode(
 	name(toString),
 	doc("Returns a string representation of this List."),
 	){
-	return "[" ~ ", ".join(this.map(value){String::convert(value) or "null";}) ~ "]";
+	return "[" ~ ", ".join(this.map(value){String::convert(value) or "null"}) ~ "]";
     },
     Type: [ImutableList, MutableList, List],
     name: [toStringImutable, toStringMutable, toStringAny],
-    );
+    )
 
 
 
@@ -20,13 +20,13 @@ expandCode(
 	doc("Returns true if all members of this list are non-Null."),
 	name(all?)
 	){
-	res := 1 as Any;
+	res := 1 as Any
 	this.each(i){ res = res and i }
-	return res;
+	return res
     },
     Type: [ImutableList, MutableList, List],
     name: [allImutable, allMutable, allAny],
-    );
+    )
 
 
 expandCode(
@@ -35,13 +35,13 @@ expandCode(
 	doc("Returns true if none of the members of this list are non-Null."),
 	name(none?),
 	){
-	res := 1 as Any;
+	res := 1 as Any
 	this.each(i){ res = res and !i }
-	return res;
+	return res
     },
     Type: [ImutableList, MutableList, List],
     name: [noneImutable, noneMutable, noneAny],
-    );
+    )
 
 
 expandCode(
@@ -50,12 +50,12 @@ expandCode(
 	doc("Returns true if any of the members of this list are non-Null."),
 	name(any?),
 	){
-	return !%noneName(this);
+	return !%noneName(this)
     },
     Type: [ImutableList, MutableList, List],
     name: [anyImutable, anyMutable, anyAny],
     noneName: [noneImutable, noneMutable, noneAny],
-    );
+    )
 
 expandCode(
     def Int %name(%Type«%Value» this, %Value value) (
@@ -66,11 +66,11 @@ expandCode(
 	){
 	this.each(idx, el){
 	    if((el as monkeypatchMisc.Comparable).__cmp__(value) == 0){
-		return idx;
+		return idx
 	    }
 	}
-	return ?;
+	return ?
     },
     Type: [ImutableList, MutableList, List],
     name: [indexOfImutable, indexOfMutable, indexOf],
-    );
+    )

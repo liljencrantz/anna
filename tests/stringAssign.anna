@@ -1,8 +1,8 @@
 def main(){
-    foo := "";
-    foo ~= 3;
-    foo ~= 'b';
-    foo ~= "a";
-    print(foo ~ '1' ~ 7);
+    foo := ""
+    foo ~= 3
+    foo ~= 'b'
+    foo ~= "a"
+    print(foo ~ '1' ~ 7)
 }
 

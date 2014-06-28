@@ -1,11 +1,11 @@
 def main(){
-    arr := "abcdefghijklmno".thaw;
-    print(arr[3...]);
-    arr[4...] = "boooooring";
-    print(arr);
+    arr := "abcdefghijklmno".thaw
+    print(arr[3...])
+    arr[4...] = "boooooring"
+    print(arr)
 
-    print(arr[3..?|-2]);
-    arr[3..?|-2] = "aa";
-    print(arr);
+    print(arr[3..?|-2])
+    arr[3..?|-2] = "aa"
+    print(arr)
 
 }

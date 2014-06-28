@@ -1,32 +1,32 @@
 
 class Foo{
     def numGetter(){
-        i:=0;
+        i:=0
         return def (){i++}
     }
     
-    var def Int () num (property(numGetter));
+    var def Int () num (property(numGetter))
 
 }
 
 def main(){
-    foo := Foo();
+    foo := Foo()
     /*
       Every time we access foo.num, numGetter is called, and a new
       closure is created, with a new counter. All these calls should
       therefore return 1 
     */
-    print(foo.num());
-    print(foo.num());
-    print(foo.num());
+    print(foo.num())
+    print(foo.num())
+    print(foo.num())
 
-    bar := foo.num;
+    bar := foo.num
     /* 
       We only call numGetter once when setting up bar. Every time we
       access bar, the same closure is used, with the same
       counter. These calls will therefore count up.
     */
-    print(bar());
-    print(bar());
-    print(bar());
+    print(bar())
+    print(bar())
+    print(bar())
 }

@@ -3,5 +3,5 @@ def main() (
 Test that return type of if expression is correct - in this case, it
 should be a String object, which we test by joining it with another
 String.")){
-    print((if(?){"fail"} else {"ok"}) ~ "");
+    print((if(?){"fail"} else {"ok"}) ~ "")
 }

@@ -5,10 +5,10 @@ class MyType{
       method is not static. This should result in a compile time error.
      */
     var String myProperty 
-	(static, property(myPropertyGetter, myPropertySetter));
+	(static, property(myPropertyGetter, myPropertySetter))
 
     def myPropertyGetter() (static){
-	return "Hello";
+	return "Hello"
     }
 
     def myPropertySetter(String value){
@@ -17,7 +17,7 @@ class MyType{
 }
 
 def main(){
-    MyType::myProperty = "abc";
-    print(MyType::myProperty, "\n");
+    MyType::myProperty = "abc"
+    print(MyType::myProperty, "\n")
 }
 

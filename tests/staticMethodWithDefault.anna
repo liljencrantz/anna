@@ -6,15 +6,15 @@
 class MyType{
 
     def staticMethod(Int param = 0) (static){
-	print(param);
+	print(param)
     }
 
 }
 
 def main(){
-    MyType::staticMethod(1);
-    MyType::staticMethod();
-    m := MyType();
-    m.staticMethod(1);
-    m.staticMethod();
+    MyType::staticMethod(1)
+    MyType::staticMethod()
+    m := MyType()
+    m.staticMethod(1)
+    m.staticMethod()
 }

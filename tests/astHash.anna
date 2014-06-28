@@ -1,39 +1,39 @@
-use(parser);
+use(parser)
 /*
   Test the clone, hash and equality functions of all ast node types
 */
 def main(){
-    f := FloatLiteral(?, 1.0);
-    i := IntLiteral(?, 1);
-    i2 := IntLiteral(?, 2);
-    i22 := IntLiteral(?, 2);
-    s := StringLiteral(?, "bla");
-    c := CharLiteral(?, 'b');
-    cc := Call(?, c, i, s);
-    cl := Closure(?, def (Int in){in+3});
-    mm := Mapping(?, ast(1), ast('d'));
+    f := FloatLiteral(?, 1.0)
+    i := IntLiteral(?, 1)
+    i2 := IntLiteral(?, 2)
+    i22 := IntLiteral(?, 2)
+    s := StringLiteral(?, "bla")
+    c := CharLiteral(?, 'b')
+    cc := Call(?, c, i, s)
+    cl := Closure(?, def (Int in){in+3})
+    mm := Mapping(?, ast(1), ast('d'))
 
-    print(f == i, i==i2, i2==i22);
+    print(f == i, i==i2, i2==i22)
 
-    dict := [i as Node:1, i2:2];
-    dict[i22] = -3;
-    dict[i22] = 3;
-    print(dict[i2]);
+    dict := [i as Node:1, i2:2]
+    dict[i22] = -3
+    dict[i22] = 3
+    print(dict[i2])
     
-    dict[mm] = -9;
-    dict[mm] = 4;
-    dict[cl] = -10;
-    dict[cl] = 5;
-    dict[f] = -11;
-    dict[f] = 6;
-    dict[s] = -12;
-    dict[s] = 7;
-    dict[c] = -13;
-    dict[c] = 8;
-    dict[cc] = -14;
-    dict[cc] = 9;
+    dict[mm] = -9
+    dict[mm] = 4
+    dict[cl] = -10
+    dict[cl] = 5
+    dict[f] = -11
+    dict[f] = 6
+    dict[s] = -12
+    dict[s] = 7
+    dict[c] = -13
+    dict[c] = 8
+    dict[cc] = -14
+    dict[cc] = 9
 
-    sum := 0;
+    sum := 0
     dict.each(val){sum += val}
-    print("Sum: %()" % [sum]);
+    print("Sum: %()" % [sum])
 }

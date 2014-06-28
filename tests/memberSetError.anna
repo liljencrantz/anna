@@ -1,12 +1,12 @@
 class MyClass{
-    var Int counter;
+    var Int counter
 
     def __init__(){
-	counter = "hello";
+	counter = "hello"
     }
 
 }
 
 def main(){
-    print(MyClass().counter, "\n");
+    print(MyClass().counter, "\n")
 }

@@ -5,6 +5,6 @@
 Yet another comment
 */
 def main(){
-    print("ok");
+    print("ok")
 }
 

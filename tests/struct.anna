@@ -4,15 +4,15 @@ def main() (
     /*
       Simple struct, nothing weird
      */
-    foo := struct(first:3, second:"aaa");
-    foo.first += 7;
-    foo.second ~= "a";
-    print(foo.first, foo.second);
+    foo := struct(first:3, second:"aaa")
+    foo.first += 7
+    foo.second ~= "a"
+    print(foo.first, foo.second)
 
     /*
       Test nested structs 
     */
-    bar := struct(first:3, second:struct(first:1, second:'2', third:"3"));
-    print(bar.second.second.ordinal);
+    bar := struct(first:3, second:struct(first:1, second:'2', third:"3"))
+    print(bar.second.second.ordinal)
     
 }

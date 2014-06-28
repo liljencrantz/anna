@@ -1,8 +1,8 @@
 /*
 Regression test for type checker. This used to cause an error.
 */
-var Int ggg;
+var Int ggg
 def main(){
-    ggg = 4;
-    print(3);
+    ggg = 4
+    print(3)
 }

@@ -2,45 +2,45 @@ attribute(
     doc(
 	"This module contains various macros that are useful when writing macros.",
 	"Specifically, these macros, when called, inject bits of code that test if an AST node meets a specific condition, and if not, an error message is printed and a null identifier is returned.",
-	));
+	))
 
 macro checkNodeType(node) (
     doc("Inserts a code test that checks that the specified node is of the specified type. If the test fails, a Null Literal is returned.")
 ){
     return ast(
 	if(! (%x as %y) ){
-	    %x.error("Unexpected node type. Expected node of type "~ %y); 
-	    return NullLiteral(%x);
-	}).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
+	    %x.error("Unexpected node type. Expected node of type "~ %y) 
+	    return NullLiteral(%x)
+	}).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), node[1])
 }
 
 macro checkNodeCallTo(node) (doc("Inserts a run time check that the specified AST node is a Call node. If it is not, an error message is printed and the calling function returns an AST null literal.")){
     return ast({
 	    if(!(%x as Call)){
-		%x.error("Unexpected node type. Expected node of type Call"); 
-		return NullLiteral(%x);
+		%x.error("Unexpected node type. Expected node of type Call") 
+		return NullLiteral(%x)
 	    }
 	    if(%y != ((%x as Call).function as Identifier).name){
-		(%x as Call).function.error("Unexpected node. Expected an identifier named " ~ %y); 
-		return NullLiteral(%x);
+		(%x as Call).function.error("Unexpected node. Expected an identifier named " ~ %y) 
+		return NullLiteral(%x)
 	    }
 	}()
-	).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), node[1]);
+	).setLocation(node).replace(ast(%x), node[0]).replace(ast(%y), node[1])
 }
 
 macro checkNodeBlock(node) (doc("Inserts a run time check that the specified AST node is a call to the __block__ function. If it is not, an error message is printed and the calling function returns an AST null literal.")){
     return ast(
 	if(! (((%x as Call).function as Identifier).name == "__block__")){
-	    %x.error("Expected a block definition"); 
-	    return NullLiteral(%x);
-	}).setLocation(node).replace(ast(%x), node[0]);
+	    %x.error("Expected a block definition") 
+	    return NullLiteral(%x)
+	}).setLocation(node).replace(ast(%x), node[0])
 }
 
 macro checkCallCount(node) (doc("Inserts a run time check that the AST Call node specified in the first argument has the number of arguments specified in the second argument. If it does not, an error message is printed and the calling function returns an AST null literal.")){
     return ast(
 	if(%node.count != %count){
-	    %node.error("Call has " ~ %node.count ~ " paramtersr, expected " ~ %count);
-	    return NullLiteral(%node);
+	    %node.error("Call has " ~ %node.count ~ " paramtersr, expected " ~ %count)
+	    return NullLiteral(%node)
 	}
-	).setLocation(node).replace(ast(%node), node[0]).replace(ast(%count), node[1]);
+	).setLocation(node).replace(ast(%node), node[0]).replace(ast(%count), node[1])
 }

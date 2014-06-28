@@ -1,9 +1,9 @@
 
 def lang.Int foo(lang.Any in){
-    print(in);
-    3;
+    print(in)
+    3
 }
 
 def main(){
-    print(foo(7));
+    print(foo(7))
 }

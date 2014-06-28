@@ -5,13 +5,13 @@
 
 class Base1{
     def foo(){
-	print("Base1::foo");
+	print("Base1::foo")
     }
 }
 
 class Base2{
     def foo(){
-	print("Base2::foo");
+	print("Base2::foo")
     }
 }
 
@@ -26,6 +26,6 @@ class Derived2
 def main(){
     expandCode(
 	%Type().foo(),
-	Type: [Base1, Base2, Derived1, Derived2]);
+	Type: [Base1, Base2, Derived1, Derived2])
 }
 

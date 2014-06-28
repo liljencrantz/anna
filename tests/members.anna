@@ -1,16 +1,16 @@
 
 class MyType {
     def meth(){
-	print("Foo.poo()");	
+	print("Foo.poo()")	
     }
-    var Int mem;
+    var Int mem
 }
 
 def main(){
-    g := MyType();
-    g.meth();
-    print(g.mem);
-    g.mem=5;
-    print(g.mem);
+    g := MyType()
+    g.meth()
+    print(g.mem)
+    g.mem=5
+    print(g.mem)
 }
 

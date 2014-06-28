@@ -1,13 +1,13 @@
 
 
 def main(){
-    l := [1,2,3];
-    f1 := l.push;
-    f2 := l.pop;
-    print(f2());
-    print(f2());
-    print(f2());
-    print(f2());
-    f1(4);
-    print(f2()-4);
+    l := [1,2,3]
+    f1 := l.push
+    f2 := l.pop
+    print(f2())
+    print(f2())
+    print(f2())
+    print(f2())
+    f1(4)
+    print(f2()-4)
 }

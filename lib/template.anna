@@ -1,10 +1,10 @@
-expand(stringFilter);
-use(io);
+expand(stringFilter)
+use(io)
 
 attribute(
     doc(
 	"A simple templating library", 
-	));
+	))
 
 macro template(node) (
     doc(
@@ -15,22 +15,22 @@ the properly typed parameters.",
     "The template macro must be given exactly one input argument, namely the file name (as a String literal) of the template file.",
     "A simple usage example, consists of two files, the first one called myTemplate.html:",
     "<pre>
-Greetings, &lt;%= userName %&gt;
+Greetings, &lt%= userName %&gt;
 
-&lt;%
+&lt%
 hobbyList.each(hobby){
-%&gt;
-You enjoy &lt;%= hobby %&gt;, don't you?
-&lt;%
+%&gt
+You enjoy &lt%= hobby %&gt;, don't you?
+&lt%
 }
-%&gt;
+%&gt
 </pre>",
     "The second file, called myTemplateExample.anna:",
-    example"expand(template);
+    example"expand(template)
 def main(){
-    userName := \"Benjamin\";
-    hobbyList := [\"Cooking\", \"Meeting friends\", \"Long walks on the beach\"];
-    print(template(\"myTemplate.html\"));
+    userName := \"Benjamin\"
+    hobbyList := [\"Cooking\", \"Meeting friends\", \"Long walks on the beach\"]
+    print(template(\"myTemplate.html\"))
 }",
     "The output of running myTemplateExample.anna will be:",
     "<pre>
@@ -48,121 +48,121 @@ You enjoy Long walks on the beach, don't you?
     "There are three types of tags in the template library:
 
 <ul>
-    <li>&lt;% code... %&gt;: The specified code will be executed.</li>
-    <li>&lt;%= code... %&gt;: The specified code will be executed and it's output will be html escaped and printed.</li>
-    <li>&lt;%! code... %&gt;: The specified code will be executed and it's output will be printed.</li>
+    <li>&lt% code... %&gt;: The specified code will be executed.</li>
+    <li>&lt%= code... %&gt;: The specified code will be executed and it's output will be html escaped and printed.</li>
+    <li>&lt%! code... %&gt;: The specified code will be executed and it's output will be printed.</li>
 </ul>
 ",
     "This template library is merely a proof of concept. The most important limitation is that it doesn't track the original source line of any generated code, which means that any code positions given in error messages are meaningless.")
 ){
-    tmplText := File((node[0] as StringLiteral).payload).readFile();
-    transformed := "%res ~= \"".thaw;
-    code := ? as Int;
-    wasBrack := ? as Int;
-    first := ? as Int;
-    addParen := ? as Int;
+    tmplText := File((node[0] as StringLiteral).payload).readFile()
+    transformed := "%res ~= \"".thaw
+    code := ? as Int
+    wasBrack := ? as Int
+    first := ? as Int
+    addParen := ? as Int
     tmplText.each(ch){
 	if(code){
 	    if(first){
 		switch(ch){
 		    case('='){
-			transformed ~= "%res ~= html.escape(";
-			addParen = 1;
+			transformed ~= "%res ~= html.escape("
+			addParen = 1
 		    } 
 		    case('!'){
-			transformed ~= "%res ~= (";
-			addParen = 1;
+			transformed ~= "%res ~= ("
+			addParen = 1
 		    } 
 		    default{
-			transformed ~= ch;		    
-			addParen = ?;
+			transformed ~= ch		    
+			addParen = ?
 		    }
 		}
 	    } 
 	    else{
 	    switch(ch){
 		case('%'){
-		    wasBrack = 1;
+		    wasBrack = 1
 		}
 		case('>'){
 		    if(wasBrack){
 			if(addParen){			    
 
-			    transformed ~= ");\n    %res ~= \"";
+			    transformed ~= ")\n    %res ~= \"";
 			} 
 			else{
-			    transformed ~= ";\n    %res ~= \"";
+			    transformed ~= "\n    %res ~= \"";
 			}
-			code = ?;
-			wasBrack = ?;
+			code = ?
+			wasBrack = ?
 		    } 
 		    else{
-			transformed ~= ch;
+			transformed ~= ch
 		    }
 		}
 		default{
 		    if(wasBrack){
-			transformed ~= '%';
-			wasBrack = ?;
+			transformed ~= '%'
+			wasBrack = ?
 		    }
-		    transformed ~= ch;
+		    transformed ~= ch
 		}
 	    }
 	    }
-	    first = ?;
+	    first = ?
 	} 
 	else{
 	    switch(ch){
 		case('<'){
-		    wasBrack = 1;
+		    wasBrack = 1
 		}
 		case('%'){
 		    if(wasBrack){
-			transformed ~= "\";\n    ";
-			code = 1;
-			wasBrack = ?;
-			first = 1;
+			transformed ~= "\"\n    ";
+			code = 1
+			wasBrack = ?
+			first = 1
 		    } 
 		    else{
-			transformed ~= ch;
+			transformed ~= ch
 		    }
 		}
 		default{
 		    if(wasBrack){
-			transformed ~= '<';
-			wasBrack = ?;
+			transformed ~= '<'
+			wasBrack = ?
 		    }
 		    if(ch == '"'){
-			transformed ~= "\\";
+			transformed ~= "\\"
 		    }
 		    if(ch == '\\'){
-			transformed ~= "\\";
+			transformed ~= "\\"
 		    }
-		    transformed ~= ch;
+		    transformed ~= ch
 		}
 	    }
 	}
     }
-    transformed ~= "\";\n";
-//    print(transformed);
+    transformed ~= "\"\n";
+//    print(transformed)
     
-    nodes := parse(transformed) as Call;
-//    print(nodes);
+    nodes := parse(transformed) as Call
+//    print(nodes)
     res := ast(
 	(def String(){
 	    %res := "".thaw
 	})()
-	) % ["text": Dummy(node, tmplText)];
-    body := (((res as Call).function) as Call)[4] as Call;
+	) % ["text": Dummy(node, tmplText)]
+    body := (((res as Call).function) as Call)[4] as Call
 
     (1..node.count).each(idx){
-        mapping := node[idx] as Call;
+        mapping := node[idx] as Call
 	body ~= [ast(%name := %val) % ["name": mapping[0], "val":mapping[1]]]
     }
     nodes.each(node){body ~= [node]}
-    body ~= [ast(return %res)];
-    res = res % ["res": Identifier(?,"!res")];
-//    print(res, "\n");
-    return res;
+    body ~= [ast(return %res)]
+    res = res % ["res": Identifier(?,"!res")]
+//    print(res, "\n")
+    return res
 }
 

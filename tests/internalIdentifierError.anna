@@ -1,4 +1,4 @@
 def main(){
-    %foo = "hello, world";
-    print(%foo);
+    %foo = "hello, world"
+    print(%foo)
 }

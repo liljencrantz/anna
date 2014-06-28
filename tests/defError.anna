@@ -7,8 +7,8 @@ __var__(
 	__block__(__avar__(input, Int, ?, __block__())), 
 	__block__(), 
 	__block__(print(input))),
-	    __block__());
+	    __block__())
 
 def main(){
-    hej(7);
+    hej(7)
 }

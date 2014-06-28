@@ -1,12 +1,12 @@
 
 def main(){
-    ll := «Int»[];
-    ll.push(1);
-    ll.push(2);
+    ll := «Int»[]
+    ll.push(1)
+    ll.push(2)
     print(
-	ll.thaw.thaw[0] + ll.freeze.freeze[1]);
+	ll.thaw.thaw[0] + ll.freeze.freeze[1])
 
-    mm := «Int, String»[];
-    print(type(mm), mm.count);
+    mm := «Int, String»[]
+    print(type(mm), mm.count)
 }
 

@@ -10,9 +10,9 @@
 */
 
 myFunTemplate := def (%T a, %T b) (template(%T: Int)){
-    a+b;
+    a+b
 }
 
 def main(){
-    print(myFunTemplate«Float»(3.0, 4.0), "\n");
+    print(myFunTemplate«Float»(3.0, 4.0), "\n")
 }

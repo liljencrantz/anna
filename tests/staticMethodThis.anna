@@ -1,7 +1,7 @@
 class MyBase{
 
     def Any staticMeth() (static){
-	print(%This, %This::staticMeth.name);
+	print(%This, %This::staticMeth.name)
     }
 
 }
@@ -12,6 +12,6 @@ class MyDerived
 ){}
 
 def main(){
-    MyDerived::staticMeth();
-//    print(MyDerived.member);
+    MyDerived::staticMeth()
+//    print(MyDerived.member)
 }

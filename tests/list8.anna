@@ -1,28 +1,28 @@
 
 def main(){
-    l := [1,2,3,4,5];
-    l[-1] = 6;
-    l[-20] = 69;
-    l[8] = 96;
-    print(l);
-    print(l[? as Int]);
-    print(l[? as Range]);
-    l[? as Int]=69;
-    l[? as Range]=[1,2,3];
-    l[1..2]=?;
-    print(l);
-    l.count = ?;
-    print(l);
+    l := [1,2,3,4,5]
+    l[-1] = 6
+    l[-20] = 69
+    l[8] = 96
+    print(l)
+    print(l[? as Int])
+    print(l[? as Range])
+    l[? as Int]=69
+    l[? as Range]=[1,2,3]
+    l[1..2]=?
+    print(l)
+    l.count = ?
+    print(l)
     [].each(i){print("Fail")}
 
-    print(l.find(i){i>3});
+    print(l.find(i){i>3})
 
-    print([].map(i){print("Fail")});
-    print([].filter(idx, val){print("Fail");idx>0});
-    print([].find(idx, val){print("Fail");idx>0});
+    print([].map(i){print("Fail")})
+    print([].filter(idx, val){print("Fail")idx>0});
+    print([].find(idx, val){print("Fail")idx>0});
 /*
-    print(l.map(?),"\n");
-    print(l.filter(?),"\n");
-    print(l.find(?),"\n");    
+    print(l.map(?),"\n")
+    print(l.filter(?),"\n")
+    print(l.find(?),"\n")    
 */
 }

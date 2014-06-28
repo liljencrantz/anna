@@ -1,16 +1,16 @@
 def fun(){
-    return [6, 9];
+    return [6, 9]
 }
 
 def main(){
     /*
       This gets transformed into something like
-      nothing(tmp := fun(); foo := tmp[0], bar := tmp[1], baz := tmp[2]); 
+      nothing(tmp := fun() foo := tmp[0], bar := tmp[1], baz := tmp[2]); 
     */
-    [foo, bar, baz] :== fun();
+    [foo, bar, baz] :== fun()
     /*
       Error: foo is a constant, can't be assigned to.
     */
-    foo = 5;
+    foo = 5
 }
 

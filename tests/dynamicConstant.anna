@@ -1,9 +1,9 @@
 def someFunction(){
-    return 7;
+    return 7
 }
 
 def main(){
-    myConst :== someFunction();
-    print(myConst);
+    myConst :== someFunction()
+    print(myConst)
 }
 

@@ -1,7 +1,7 @@
 def main(){
-    print(""[? as Range]);
-    print((? as String)[0..0]);
-    print(String::getRange(?,0..5));
-    print(String::getRange("",?));
+    print(""[? as Range])
+    print((? as String)[0..0])
+    print(String::getRange(?,0..5))
+    print(String::getRange("",?))
 }
 

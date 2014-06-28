@@ -5,8 +5,8 @@ __const__(
 	Hej,
 	hello(),
 	__block__()),
-    __block__());
+    __block__())
 
 def main(){
-    print(Hej());
+    print(Hej())
 }

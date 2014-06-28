@@ -3,5 +3,5 @@ def Int fibonacci(Int n) {
 }
 
 def main(){
-    print(fibonacci(40), "\n");
+    print(fibonacci(40), "\n")
 }

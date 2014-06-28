@@ -3,15 +3,15 @@ class A{
 }
 
 struct B{
-    var String value;
+    var String value
 
     def foo(B arg) (static, aliasReverse(getValue)){
-	return arg.value;
+	return arg.value
     }
 }
 
 def main(){
-//    print(B("hello"));
-    print(A::getValue(B("hello")));
+//    print(B("hello"))
+    print(A::getValue(B("hello")))
 }
 

@@ -1,21 +1,21 @@
-attribute(internal, doc("Internal module for various attribute macros."));
+attribute(internal, doc("Internal module for various attribute macros."))
 
 macro loopAttribute(node) (doc("The loop attribute. Used to tell the compiler that break and continue expressions should target this function. This macro is a no-op, the compiler will automatically check for the presence of this attribute and adjust accordingly.")){
-    node[0];
+    node[0]
 }
 
 macro staticAttribute(node) (doc("The static attribute. Used to tell the compiler that a type member should be statis. This macro is a no-op, the compiler will automatically check for the presence of this attribute and adjust accordingly.")){
-    node[0];
+    node[0]
 }
 
 macro internalAttribute(node) (doc("The internal attribute. Currently does nothing. In the future, this attribute will tell the compiler to hide internal members when doing interface checking. This macro is a no-op, the compiler will automatically check for the presence of this attribute and adjust accordingly.")){
-    node[0];
+    node[0]
 }
 
 macro blockAttribute(node) (doc("The block attribute. Tells the compiler that return expresisons should not target this function. This macro is a no-op, the compiler will automatically check for the presence of this attribute and adjust accordingly.")){
-    node[0];
+    node[0]
 }
 
 macro boundAttribute(node) (doc("The bound attribute. Tells the compiler that this method, when called, should implicitly be supplied with an additional first member, the object of which it is a member. This macro is a no-op, the compiler will automatically check for the presence of this attribute and adjust accordingly.")){
-    node[0];
+    node[0]
 }

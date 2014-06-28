@@ -1,8 +1,8 @@
 class SomeType{
-    var Int foo (static);
+    var Int foo (static)
 }
 
 def main(){
-    SomeType::foo = 7;
-    print(SomeType::foo);
+    SomeType::foo = 7
+    print(SomeType::foo)
 }
