@@ -482,7 +482,6 @@ static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identi
 %token CONTINUE
 %token SEPARATOR
 %token IGNORE
-%token LINE_BREAK
 %token AS
 %token IN
 %token ELLIPSIS
@@ -1566,7 +1565,7 @@ int anna_yacc_lex (
 
       After any other token than an end brace, line breaks are a noop.
      */
-    if(val == LINE_BREAK || val == 0){
+    if(val == 0){
 	if(was_end_brace)
 	{
 	    was_end_brace = 0;
@@ -1574,7 +1573,7 @@ int anna_yacc_lex (
 	}
 	else
 	{
-	    return val==LINE_BREAK?anna_yacc_lex(lvalp, llocp, scanner, filename):0;
+	    return 0;
 	}
     }
     if(was_end_brace && ((val == IDENTIFIER) || (val == TYPE_IDENTIFIER) || (val == '%')))
