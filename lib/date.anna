@@ -43,8 +43,7 @@ in the month the object was applied to.
     def __init__(
 	Int year=0, Int month=0, Int day=0, 
 	Int hour=0, Int minute=0, Int second=0, 
-	Int microsecond=0)
-(
+	Int microsecond=0) (
     doc("Construct a new Delta object with the specified time delta components.")
 ){
 	expandCode(
@@ -52,8 +51,7 @@ in the month the object was applied to.
 	    name: [year, month, day, hour, minute, second, microsecond]);
     }
 
-    def __add__(Delta other)
-(
+    def __add__(Delta other) (
     doc("Create a new Delta object, which is the sum of the two time deltas.")
 ){
         Delta(
@@ -62,8 +60,7 @@ in the month the object was applied to.
 	    microsecond+other.microsecond);
     }
 
-    def __sub__(Delta other)
-(
+    def __sub__(Delta other) (
     doc("Create a new Delta object, which is the difference between the two time deltas.")
 ){
         Delta(
@@ -98,8 +95,7 @@ class Date
     def __init__(
 	Int year=?, Int month=?, Int day=?, 
 	Int hour=?, Int minute=?, Int second=?, 
-	Int microsecond=?, Timezone timezone=?)
-	(doc("Construct a new Date object representing the specified point in time")){
+	Int microsecond=?, Timezone timezone=?) (doc("Construct a new Date object representing the specified point in time")){
 /*	if(!timezone){
 	    timezone = Timezone(ctime.timezoneName);
 	}
@@ -127,8 +123,7 @@ class Date
 	broken = ctime.breakTime(timestamp, timezone.name);
     }
 
-    def Date __add__(Delta other)
-    (
+    def Date __add__(Delta other) (
 	doc("Returns a new date that is the specified time delta past the date represented by this object.")
     ){
         Date(
@@ -138,8 +133,7 @@ class Date
 	    timezone);
     }    
     
-    def Delta __sub__(Date other)
-    (
+    def Delta __sub__(Date other) (
 	doc("Returns a new date that is the specified time delta before the date represented by this object.")
     ){
 //	other = other.toTimezone(timezone);

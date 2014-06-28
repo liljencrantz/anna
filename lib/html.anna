@@ -2,8 +2,7 @@ attribute(
     doc(
 	"HTML tools and utilities"));
 
-def escape(String str...)
-(
+def escape(String str...) (
     doc("Perform HTML escaping of the specified string. This function will
 replace the following characters with their respective html escape
 sequence: &gt;, &lt;, &amp;, &quot; and &#39;. No other characters

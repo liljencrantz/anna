@@ -1,7 +1,6 @@
 attribute(doc("Various tools for functional programming."));
 
-def sum(%T collection) 
-(
+def sum(%T collection)  (
     template(%T: List«Int»),
     doc("Calculate the sum of all the elements in the specified collection"),
 ){
@@ -10,8 +9,7 @@ def sum(%T collection)
     return res;
 }
 
-def prod(%T collection) 
-(
+def prod(%T collection)  (
     template(%T: List«Int»),
     doc("Calculate the product of all the elements in the specified collection"),
 ){

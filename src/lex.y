@@ -176,6 +176,7 @@ _*[A-Z][a-zA-Z0-9_!?]* return TYPE_IDENTIFIER;
 := return DECLARE_VAR;
 :== return DECLARE_CONST;
 \| return PAIR;
+\\\r?\n return IGNORE;
 \r?\n return SEPARATOR;
 [,;] return SEPARATOR;
 ! return '!';

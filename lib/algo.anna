@@ -8,8 +8,7 @@ useful for sorting ordered collection."));
 
 def Int partition(
     %Type list, Int from, Int to, 
-    %Comp fun)
-    (
+    %Comp fun) (
 	template(%Type:MutableList«Int»),
 	template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
 	internal,
@@ -29,8 +28,7 @@ def Int partition(
 
 def Any sortSub(
     %Type list, Int from, Int to, 
-    %Comp fun)
-    (
+    %Comp fun) (
 	template(%Type:MutableList«Int»),
 	template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
 	internal,
@@ -44,8 +42,7 @@ def Any sortSub(
     }
 }
 
-def %Type qsortComp(%Type collection)
-(
+def %Type qsortComp(%Type collection) (
     template(%Type:MutableList«Int»),
     doc("
 Sort the specified collection using the quicksort algorithm.", 
@@ -71,8 +68,7 @@ provide internal ordering."),
 	return collection;
 }
 
-def %Type qsort(%Type collection, %Comp fun)
-(
+def %Type qsort(%Type collection, %Comp fun) (
     template(%Type:MutableList«Int»),
     template(%Comp:def Int(monkeypatchMisc.Comparable first, monkeypatchMisc.Comparable second)),
     doc("

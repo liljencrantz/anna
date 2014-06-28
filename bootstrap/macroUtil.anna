@@ -4,8 +4,7 @@ attribute(
 	"Specifically, these macros, when called, inject bits of code that test if an AST node meets a specific condition, and if not, an error message is printed and a null identifier is returned.",
 	));
 
-macro checkNodeType(node)
-(
+macro checkNodeType(node) (
     doc("Inserts a code test that checks that the specified node is of the specified type. If the test fails, a Null Literal is returned.")
 ){
     return ast(

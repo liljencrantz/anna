@@ -1,5 +1,4 @@
-def shadow(Int param)
-(
+def shadow(Int param) (
     alias(myFunction)
 ){
     print("This will not get printed");
@@ -7,16 +6,14 @@ def shadow(Int param)
 
 def main(){
 
-    def shadow(Float param)
-    (
+    def shadow(Float param) (
 	alias(myFunction)
     ){
 	print("This function shadows the above one, even when using aliases");
     }
 
 
-    def noShadow(Any param)
-    (
+    def noShadow(Any param) (
 	alias(myFunction)
     ){
 	print("This will get printed");

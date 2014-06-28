@@ -2,8 +2,7 @@ attribute(internal, doc("Internally used module. Don't use directly."));
 
 expandCode(
     def Int %name(
-	%Type this, Char ch, Int from=0)
-    (
+	%Type this, Char ch, Int from=0) (
 	alias(search),
 	target(%Type),
 	doc(
@@ -22,8 +21,7 @@ expandCode(
 
 expandCode(
     def Int %name(
-	%Type this, String string, Int from = 0)
-    (
+	%Type this, String string, Int from = 0) (
 	alias(search),
 	target(%Type),
 	doc("Search for the specified Substring in the specified string.
@@ -42,8 +40,7 @@ expandCode(
 expandCode(
     def %Type %name(
 	%Type this, 
-	List«Any» data)
-    (
+	List«Any» data) (
 	alias(__format__), 
 	name(formatList),
 	target(%Type), 
@@ -109,8 +106,7 @@ def String formatListInternal(
 expandCode(
     def %Type %name(
 	%Type this, 
-	HashMap«String, Any» data) 
-    (
+	HashMap«String, Any» data)  (
 	alias(__format__), 
 	name(formatMap),
 	target(%Type), 
@@ -133,8 +129,7 @@ expandCode(
 
 def String formatMapInternal(
     String this, 
-    HashMap«String, Any» data)
-(internal, doc("Internal helper function for String::formatMap.")){
+    HashMap«String, Any» data) (internal, doc("Internal helper function for String::formatMap.")){
     res := "".thaw;
     i := 0;
     while(i < this.count){
@@ -175,8 +170,7 @@ expandCode(
     def String %name(
 	%Type this,
 	Int count,
-	Char char = ' ')
-    (
+	Char char = ' ') (
 	target(%Type),
 	doc("Pad the left side of this string with the specified character up
             to a minimum of the specified number of characters"),
@@ -200,8 +194,7 @@ expandCode(
     def %Type %name(
 	%Type this,
 	Int count,
-	Char char = ' ')
-    (
+	Char char = ' ') (
 	target(%Type),
 	doc("Pad the right side of this string with the specified character
             up to a minimum of the specified number of characters"),
@@ -221,8 +214,7 @@ expandCode(
     );
 
 expandCode(
-    def Int %name(%Type this, Char char)
-    (
+    def Int %name(%Type this, Char char) (
 	target(%Type),
 	name(__in__)
     ){
@@ -241,8 +233,7 @@ expandCode(
     def MutableList«String» %name(
 	%Type this,
 	String charList,
-	Any allowEmpty = 1)
-    (
+	Any allowEmpty = 1) (
 	target(%Type),
 	doc("Split this string on every occurence of the specified characters
             and return the resulting array of Strings. If allowEmpty is null,
@@ -272,8 +263,7 @@ expandCode(
     def MutableList«String» %name(
 	%Type this,
 	Char char,
-	Any allowEmpty = 1)
-    (
+	Any allowEmpty = 1) (
 	target(%Type),
 	alias(split),
 	name(splitChar),
@@ -291,8 +281,7 @@ expandCode(
     def MutableList«String» %name(
 	%Type this,
 	List«Char» charList,
-	Any allowEmpty = 1)
-    (
+	Any allowEmpty = 1) (
 	target(%Type),
 	alias(split),
 	name(splitList),
@@ -310,8 +299,7 @@ expandCode(
     def %Type %name(
 	%Type this,
 	String original,
-	String replacement)
-    (
+	String replacement) (
 	target(%Type),
 	doc(
 	    "Replace all occurances in this string of the specified original
@@ -343,8 +331,7 @@ expandCode(
 expandCode(
     def %Type %name(
 	%Type this,
-	Int count)
-    (
+	Int count) (
 	target(%Type),
 	aliasReverse(__mul__),
 	name(__mul__),

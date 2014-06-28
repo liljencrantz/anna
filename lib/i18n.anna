@@ -35,8 +35,7 @@ href='http://www.gnu.org/software/gettext/'>GNU gettex
 documentation</a>.
 "));
 
-macro tStringLiteral(node) 
-(doc("
+macro tStringLiteral(node)  (doc("
 The tStringLiteral function does two things. Firstly, it is used by
 the annaxgettext program to locate translatable strings in the source
 code. Secondly, at run time, Strings passed through tStringLiteral are

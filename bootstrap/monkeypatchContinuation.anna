@@ -2,8 +2,7 @@ attribute(internal, doc("Internally used module. Don't use directly."));
 
 use(reflection);
 
-def continuationToString(Continuation this)
-(
+def continuationToString(Continuation this) (
     target(Continuation),
     name(toString),
 ){

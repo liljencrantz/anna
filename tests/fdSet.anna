@@ -1,6 +1,5 @@
 
-def main()
-    (doc("A few tests for the FdSet")){
+def main() (doc("A few tests for the FdSet")){
     use(unix.io);
 
     fs := FdSet();

@@ -2,8 +2,7 @@ attribute(internal, doc("Internal module for the propertyAttribute macro."));
 
 use(parser);
 
-def Call getAttributePayload(Call c)
-    (doc("Internal helper function for <a member='propertyAttribute'>propertyAttribute</a>. Don't use directly."), internal){
+def Call getAttributePayload(Call c) (doc("Internal helper function for <a member='propertyAttribute'>propertyAttribute</a>. Don't use directly."), internal){
     expandCode(
 	if(c.callTo?(%name)) { return c },
 	name: ["__constInternal__", "__varInternal__", "__typeInternal__", "__defInternal"]);
@@ -13,8 +12,7 @@ def Call getAttributePayload(Call c)
     return ?
 }
 
-macro propertyAttribute(node)
-    (doc(
+macro propertyAttribute(node) (doc(
 	"The property member attribute is used for creating dynamically caclulated members that behave like regular member variables.",
 	"Properties are internally implemented using a pair of methods called a getter and a setter. The setter is used in place of variable assignment, and the getter is used in place of variable value lookup.",
 	"A simple example of defining a property with both a getter and a setter",

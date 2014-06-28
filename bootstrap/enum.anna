@@ -1,7 +1,6 @@
 attribute(internal, doc("Internal module for the enumType macro."));
 
-macro enumType(definition)
-(
+macro enumType(definition) (
     doc(
 	"The enum macro is used to define enumerations types.",
 	"
@@ -70,8 +69,7 @@ switch(myState){
     );
 
     cmpFun1 := ast(
-	def cmpInt(Int other)
-        (alias(__cmp__)){
+	def cmpInt(Int other) (alias(__cmp__)){
 	    return this.%value - other;
 	});
     cmpFun2 := ast(

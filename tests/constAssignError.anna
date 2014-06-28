@@ -1,6 +1,5 @@
 
-def main()
-(
+def main() (
     doc("Check that constants can't be assigned to")
 ){
     someConst :== 7;

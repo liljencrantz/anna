@@ -1,7 +1,6 @@
 attribute(internal, doc("Internal module for the struct macro."));
 
-macro structType(node)
-(
+macro structType(node) (
     doc("
 The struct type macro is used for creating simple classes aimed for data storage.
 Basically, a struct type behaves exactly like a regular class, but with a few additional features.", 
@@ -74,8 +73,7 @@ keys in HashMap dictionaries.
     return node;
 }
 
-macro struct(node)
-(
+macro struct(node) (
     doc(
 "The struct macro is used as a short hand for defining struct-type objects used
 exclusively for quick access to it's members. It is used by passing a

@@ -2,8 +2,7 @@ def foo(Int first, Int second, Int rest...){
     print(first, second, rest);
 }
 
-def main()
-    (
+def main() (
 	doc("Test that variadic arguments and named arguments mix properly")
     ){
     foo(first:1, second:2);

@@ -1,7 +1,6 @@
 attribute(internal, doc("Internally used module. Don't use directly."));
 
-def here() 
-(
+def here()  (
     target(debug),
     doc("Launch the interactive debugger here and now"),
 ){

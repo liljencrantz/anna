@@ -1,7 +1,6 @@
 attribute(internal, doc("Internal module for the classType macro."));
 
-macro classType(node)
-(
+macro classType(node) (
     doc("
 A macro that performs a bunch of macro magic that makes types behave
 more like traditional classes in languages like Java and C#, e.g. adds

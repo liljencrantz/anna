@@ -1,7 +1,6 @@
 attribute(internal, doc("Internal module for the expandCode macro."));
 
-macro expandCode(node)
-(
+macro expandCode(node) (
     doc(
 	"
     The expandCode macro is used to create multiple instances of the

@@ -1,7 +1,6 @@
 attribute(doc("This macro module contains various prefixes for string literals to allow for string formatting."));
 
-macro fStringLiteral(node)
-(
+macro fStringLiteral(node) (
     doc("Seamlessly mix program code with text. This macro allows the placement
 of arbitrary pieces of Anna code inside a String literal. The code
 will be evaluated at runtime and inserted into the string. Any such
@@ -228,8 +227,7 @@ class='anna-code'&gt; tag. This is detected during page rendering by a
 javascript that will perform syntax highlighting. For example, this is
 the signature of the <a path='json' member='to'>json.to</a> function:",
 	"<pre class='anna-code'>
-def String to(Any o) 
-(
+def String to(Any o)  (
     doc(
 	\"
 Serialize the specified object into JSON. Since Anna has 

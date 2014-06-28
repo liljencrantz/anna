@@ -11,8 +11,7 @@ enum HtmlState
     text, textSpace, tagName, tagContent, pre, li, escape
 }
 
-def formatHtml(String input)
-(
+def formatHtml(String input) (
     doc(
 	"
 Format the specified HTML snippet into something suitable for printing in a 
@@ -248,8 +247,7 @@ is a short rundown of the currently supported HTML subset:
     return res;
 }
 
-def linebreak(List«Any» wordList, String prefix = "", String firstPrefix = "") 
-(
+def linebreak(List«Any» wordList, String prefix = "", String firstPrefix = "")  (
     internal, 
     doc("Internal helper method for dir and help, used to line break a list of strings."),
 ){    
@@ -286,8 +284,7 @@ def printHelpMember(Any object, String memberName){
     printHelp(memb.value(object));
 }
 
-def printHelp(Any object = global)
-(
+def printHelp(Any object = global) (
     doc("
 This is the main help function of the interactive Anna command
 line. It takes any object as a parameter and uses introspection to
@@ -420,8 +417,7 @@ the doc attribute of declarations.")){
     return res;
 }
 
-def dir(Any object)
-(
+def dir(Any object) (
     doc("
 This is an additional help function for the interactive Anna command line. If 
 takes any object as a parameter and lists all members of that type ina a format 

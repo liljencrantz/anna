@@ -6,8 +6,7 @@ class JsonSerializable (doc("Types that can mask as a JsonSerializable can be co
     def String toJson() (doc("Create a JSON representation of this object.")) {?}
 }
 
-def String to(Any o) 
-(
+def String to(Any o)  (
     doc(
 	"Serialize the specified object into JSON.",
 	"Since Anna has no boolean type, there is no way to output the values true and false.",

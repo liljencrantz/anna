@@ -16,22 +16,18 @@ macro __gte__(node) (doc("Comparison macro for the >= operator.")) {
     ast(lang.__gteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
-macro __lt__(node)
-    (doc("Comparison macro for the < operator.")){
+macro __lt__(node) (doc("Comparison macro for the < operator.")){
     ast(lang.__ltInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
-macro __lte__(node)
-    (doc("Comparison macro for the <= operator.")){
+macro __lte__(node) (doc("Comparison macro for the <= operator.")){
     ast(lang.__lteInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
-macro __eq__(node)
-    (doc("Comparison macro for the == operator.")){
+macro __eq__(node) (doc("Comparison macro for the == operator.")){
     ast(lang.__eqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }
 
-macro __neq__(node)
-    (doc("Comparison macro for the != operator.")){
+macro __neq__(node) (doc("Comparison macro for the != operator.")){
     ast(lang.__neqInternal__(%first.__cmp__(%second))).replace(Identifier(node, "first"), node[0]).replace(Identifier(node, "second"), node[1]).setLocation(node);
 }

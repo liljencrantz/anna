@@ -2,8 +2,7 @@ attribute(doc("
 The anna command line prompt, also known as a repl."));
 
 
-def repl(reflection.Continuation debugFrame = ?)
-    (doc(
+def repl(reflection.Continuation debugFrame = ?) (doc(
 	"This is the so called repl of anna. Repl is short for Read, Evaluate
 and Print-Loop, and is what implements the interactive prompt of a
 programming language. Just as one would expect from the name, the repl
@@ -361,8 +360,7 @@ modification, are permitted provided that the following conditions are met:
     }
 }
 
-def debugRepl() 
-(
+def debugRepl()  (
     doc("
 Don't use this function or rely on its existence. It is used internally by the breakpoint
 bytecode in the VM."),
@@ -371,8 +369,7 @@ bytecode in the VM."),
     repl(debugFrame);
 }
 
-def main() 
-(
+def main()  (
     doc("
 Calls the repl.repl function and then exits. This is the
 main()-function that is called when no other main function is given on

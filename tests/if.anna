@@ -2,8 +2,7 @@ def fun(Any val){
     return if(val){"true"} else {"false"}
 }
 
-def main()
-(
+def main() (
     doc("Test a bunch of ways the if expression can be used and abused"),
 ){
     if(1){

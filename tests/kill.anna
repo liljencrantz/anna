@@ -1,7 +1,6 @@
 use(unix);
 
-def main()
-    (doc("Test the kill command")){
+def main() (doc("Test the kill command")){
     fd := [0,0];
     io.pipe(fd);
     parent := proc.getpid();

@@ -206,40 +206,30 @@ class BindingType
     doc("Base class for the types used in the bindings.",
 	"A BindingType is used to convert from data from Anna objects into C data and back. They also need to be able to validate the data and to cleanup any memory used in the conversion process.")
 ){
-    def String annaNativeType(Node decl, Node attr)
-    (doc("The C type that this BindingType handles")){}
+    def String annaNativeType(Node decl, Node attr) (doc("The C type that this BindingType handles")){}
 
-    def String annaCType(Node decl, Node attr)
-    (doc("The anna_type_t * of the type that this BindingType handles")){}
+    def String annaCType(Node decl, Node attr) (doc("The anna_type_t * of the type that this BindingType handles")){}
 
-    def String convertToC(Node decl, Node attr, String dest, String source)
-    (doc("Convert the anna_entry_t  pointed to by source into C data in the (newly declared) variable named by dest")){}
+    def String convertToC(Node decl, Node attr, String dest, String source) (doc("Convert the anna_entry_t  pointed to by source into C data in the (newly declared) variable named by dest")){}
 
-    def String convertToAnna(Node decl, Node attr, String dest, String source)
-    (doc("Convert the C data pointed to by source into an anna_entry_t  in the (newly declared) variable named by dest")){}
+    def String convertToAnna(Node decl, Node attr, String dest, String source) (doc("Convert the C data pointed to by source into an anna_entry_t  in the (newly declared) variable named by dest")){}
     
-    def String cleanupToC(Node decl, Node attr, String dest, String source)
-    (doc("Perform any cleanup needed after a anna => C conversion. This is run after the C function has been run")){}
+    def String cleanupToC(Node decl, Node attr, String dest, String source) (doc("Perform any cleanup needed after a anna => C conversion. This is run after the C function has been run")){}
     
-    def String cleanupToAnna(Node decl, Node attr, String dest, String source)
-    (doc("")){}
+    def String cleanupToAnna(Node decl, Node attr, String dest, String source) (doc("")){}
     
-    def String preValidateToC(Node decl, Node attr, String dest, String source)
-    (doc("Perform validation of the specified conversion to C.")){
+    def String preValidateToC(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to C.")){
 	if(!(attr as Call).childNamed?("nullable")){
 	    "    if(anna_entry_null(%())){return null_entry;}\n" % [source];
 	}
     }
     
     
-    def String postValidateToC(Node decl, Node attr, String dest, String source)
-    (doc("Perform validation of the specified conversion to C.")){""}
+    def String postValidateToC(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to C.")){""}
     
-    def String preValidateToAnna(Node decl, Node attr, String dest, String source)
-    (doc("Perform validation of the specified conversion to anna.")){""}
+    def String preValidateToAnna(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to anna.")){""}
 
-    def String postValidateToAnna(Node decl, Node attr, String dest, String source)
-    (doc("Perform validation of the specified conversion to anna.")){""}
+    def String postValidateToAnna(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to anna.")){""}
 }
 
 class ListBindingType 

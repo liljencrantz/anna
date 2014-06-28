@@ -1,7 +1,6 @@
 use(unix);
 
-def main()
-    (doc("Test for pipe, fork, and a few other asic unix calls")){
+def main() (doc("Test for pipe, fork, and a few other asic unix calls")){
     fd := [0,0];
     io.pipe(fd);
     if(pid := proc.fork() == 0){

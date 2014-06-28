@@ -1,7 +1,6 @@
 attribute(internal, doc("Internally used module. Don't use directly."));
 
-def Int range__cmp__(Range this, Any other)
-(
+def Int range__cmp__(Range this, Any other) (
     target(Range), 
     name(__cmp__),
     doc("Compare two ranges against each other"),
@@ -24,8 +23,7 @@ def Int range__cmp__(Range this, Any other)
     return 0;
 }
 
-def rangeHashCode(Range this)
-(
+def rangeHashCode(Range this) (
     target(Range), 
     name(hashCode),
     doc("Hash function. Always returns the same number for the same object and also returns the same number for two equal objects."),
@@ -33,8 +31,7 @@ def rangeHashCode(Range this)
     return this.from ^bitxor (this.to ^shl 3) ^bitxor (this.step ^shl 7);
 }
 
-def rangeToString(Range this)
-(
+def rangeToString(Range this) (
     target(Range),
     name(toString),
     doc("String conversion. Called by the String::convert method."),

@@ -1,7 +1,6 @@
 attribute(internal, doc("Internally used module. Don't use directly."));
 
-def print(String keys:, Any param...) 
-(
+def print(String keys:, Any param...)  (
     target(lang),
     doc("
 Print all the unnamed arguments to the function, separated by a space

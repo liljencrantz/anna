@@ -11,8 +11,7 @@ all be used with any of the functions in this module.
 
 use(parser);
 
-macro __collection__(node)
-(
+macro __collection__(node) (
     doc("
 Handle a collection literal and turn it into a call to either
 MutableList or HashMap. If the collection arguments are mappings, the
@@ -22,10 +21,7 @@ becomes a MutableList.")
 ){
     res := Call(node, ?);
     spec := node[0] as Call;
-    if(
-	(!spec and node.count > 1 and 
-	    ((node[1] as Call).function as Identifier).name == "__mapping__") or 
-	spec.count == 2){
+    if( (!spec and node.count > 1 and ((node[1] as Call).function as Identifier).name == "__mapping__") or spec.count == 2){
 	res.function = Dummy(node, HashMap);
         i := node.iterator;
 	i++;
@@ -59,8 +55,7 @@ def Node iterDeclare(Node id, Node nodeType) (internal, doc("Creates a variable 
 	__var__(%id, %nodeType, ?, {})).setLocation(id).replace(ast(id), id).replace(ast(nodeType) , nodeType);
 }
 
-def Call mangleIterator(Call node)
-(
+def Call mangleIterator(Call node) (
     internal,
     doc("Internal helper function for the various iteration macros. It is used to mangle the argument list into a valid function.")
 ){
@@ -106,8 +101,7 @@ def Call mangleIterator(Call node)
     return res as Call;
 }
 
-macro each(node)
-(
+macro each(node) (
     doc(
 	"Iterate over an arbitrary collection.",
 	"The supplied function or code block will we called exactly once for
@@ -163,15 +157,15 @@ def doPrint(String key, String value){
 		},
 		%collVar
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(body), body)
-	    .replace(ast(keyVar), (decl[0] as Call)[0])
-	    .replace(ast(valueVar), (decl[1] as Call)[0])
-	    .replace(ast(keyType), (decl[0] as Call)[1])
-	    .replace(ast(valueType), (decl[1] as Call)[1])
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
+	    )\
+	    .setLocation(node)\
+	    .replace(ast(coll), coll)\
+	    .replace(ast(body), body)\
+	    .replace(ast(keyVar), (decl[0] as Call)[0])\
+	    .replace(ast(valueVar), (decl[1] as Call)[0])\
+	    .replace(ast(keyType), (decl[0] as Call)[1])\
+	    .replace(ast(valueType), (decl[1] as Call)[1])\
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))\
 	    .replace(ast(collVar), Identifier(?, parser.identifier("collection")));
     }
     else{
@@ -186,19 +180,18 @@ def doPrint(String key, String value){
 		},
 		%collVar
 		)
-	    )
-            .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(fun), node[0])
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(collVar), Identifier(?, parser.identifier("collection")))
+	    )\
+            .setLocation(node)\
+	    .replace(ast(coll), coll)\
+	    .replace(ast(fun), node[0])\
+	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))\
+	    .replace(ast(collVar), Identifier(?, parser.identifier("collection")))\
 	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")));
     }
     return res;
 }
 
-macro filter(node)
-(
+macro filter(node) (
     doc("Filter a collection, returning a List containing a subset of the elements of the supplied collection.",
         "The supplied function is called once for every element in the collection, and if it returns non-null, that element is added to the resulting list. The list will be specialized to the same type as the elements in the supplied collection.",
 "<pre class='anna-code'>
@@ -240,16 +233,7 @@ macro filter(node)
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(body), body)
-	    .replace(ast(keyVar), (decl[0] as Call)[0])
-	    .replace(ast(valueVar), (decl[1] as Call)[0])
-	    .replace(ast(keyType), (decl[0] as Call)[1])
-	    .replace(ast(valueType), (decl[1] as Call)[1])
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     else{
 	res = ast(
@@ -263,19 +247,12 @@ macro filter(node)
 		},
 		%res;
 		)
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(fun), node[0])
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(fun), node[0]).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(funVar), Identifier(?, parser.identifier("funVar"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     return res;
 }
 
-macro map(node)
-(
+macro map(node) (
     doc("Create a new collection from an old collection by applying a transformation function once to every element in the old collection.",
 "<pre class='anna-code'>
 \"abc123\".map(ch){ch+1}
@@ -318,17 +295,7 @@ macro map(node)
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(body), body)
-	    .replace(ast(keyVar), (decl[0] as Call)[0])
-	    .replace(ast(valueVar), (decl[1] as Call)[0])
-	    .replace(ast(keyType), (decl[0] as Call)[1])
-	    .replace(ast(valueType), (decl[1] as Call)[1])
-	    .replace(ast(iterFun), iterFun)
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iterFun), iterFun).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     else{
 	res = ast(
@@ -342,19 +309,12 @@ macro map(node)
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(iterFun), node[0])
-	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(iterFun), node[0]).replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     return res;
 }
 
-macro milter(node)
-(
+macro milter(node) (
     doc("Create a new collection from an old collection by applying a transformation function once to every element in the old collection and removing null return values. This is identical to calling the map macro and then removing any null-elements.",
 "<pre class='anna-code'>
 \"ABCabc123\".milter(ch){!ch.upper? and ch+1}
@@ -392,18 +352,7 @@ macro milter(node)
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(body), body)
-	    .replace(ast(keyVar), (decl[0] as Call)[0])
-	    .replace(ast(valueVar), (decl[1] as Call)[0])
-	    .replace(ast(keyType), (decl[0] as Call)[1])
-	    .replace(ast(valueType), (decl[1] as Call)[1])
-	    .replace(ast(iterFun), iterFun)
-	    .replace(ast(it), Identifier(?, parser.identifier("item")))
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iterFun), iterFun).replace(ast(it), Identifier(?, parser.identifier("item"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     else{
 	res = ast(
@@ -417,20 +366,12 @@ macro milter(node)
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(iterFun), node[0])
-	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
-	    .replace(ast(it), Identifier(?, parser.identifier("item")))
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(iterFun), node[0]).replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar"))).replace(ast(it), Identifier(?, parser.identifier("item"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     return res;
 }
 
-macro find(node)
-(
+macro find(node) (
     doc("Find an element in a collection that matches a speciefic criteria.",
         "The supplied function is called once for every element in the collection until it returns non-null. The element for which the function returned non-null is then returned. If the function never returns non-null, null is returned.",
 "<pre class='anna-code'>
@@ -469,16 +410,7 @@ macro find(node)
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(body), body)
-	    .replace(ast(keyVar), (decl[0] as Call)[0])
-	    .replace(ast(valueVar), (decl[1] as Call)[0])
-	    .replace(ast(keyType), (decl[0] as Call)[1])
-	    .replace(ast(valueType), (decl[1] as Call)[1])
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     else{
 	res = ast(
@@ -492,19 +424,12 @@ macro find(node)
 		},
 		%res;
 		)
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(fun), node[0])
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(fun), node[0]).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(funVar), Identifier(?, parser.identifier("funVar"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     return res;
 }
 
-macro update(node)
-(
+macro update(node) (
     doc("Update the values of a collection in place by applying a
 transformation function once to every element in the old
 collection. <code class='anna-code'>update</code> can only be used on
@@ -546,17 +471,7 @@ href='#each'>each</a> does"
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(body), body)
-	    .replace(ast(keyVar), (decl[0] as Call)[0])
-	    .replace(ast(valueVar), (decl[1] as Call)[0])
-	    .replace(ast(keyType), (decl[0] as Call)[1])
-	    .replace(ast(valueType), (decl[1] as Call)[1])
-	    .replace(ast(iterFun), iterFun)
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iterFun), iterFun).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     else{
 	res = ast(
@@ -570,19 +485,12 @@ href='#each'>each</a> does"
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(iterFun), node[0])
-	    .replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar")))
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")));
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(iterFun), node[0]).replace(ast(iterFunVar), Identifier(?, parser.identifier("iterFunVar"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")));
     }
     return res;
 }
 
-def Call mangleReduceIterator(Call node)
-(
+def Call mangleReduceIterator(Call node) (
     internal,
     doc("Internal helper function for the reduce macro. It is used to mangle the argument list into a valid function.")
 ){
@@ -623,8 +531,7 @@ def Call mangleReduceIterator(Call node)
     return res as Call;
 }
 
-macro reduce(node)
-(
+macro reduce(node) (
     doc("Reduce the specified collection into a single value by repeatedly using the supplied reduction function to combine the values of two items into a single new value.",
         "The supplied function is called once for every element in the collection, with the first argument being the result of the previous computation (or the initial value if no previous computation has taken place), and the second argument being the current value. The output of the final reduction call is then returned.",
 "<pre class='anna-code'>
@@ -665,16 +572,7 @@ macro reduce(node)
 		},
 		%res;
 		);
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(ReturnType), ast(staticType(%initial)))
-	    .replace(ast(body), body)
-	    .replace(ast(prevVar), (decl[0] as Call)[0])
-	    .replace(ast(valueVar), (decl[1] as Call)[0])
-	    .replace(ast(ValueType), (decl[1] as Call)[1])
-	    .replace(ast(res), Identifier(?, parser.identifier("res")))
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter"))) 
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(ReturnType), ast(staticType(%initial))).replace(ast(body), body).replace(ast(prevVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(ValueType), (decl[1] as Call)[1]).replace(ast(res), Identifier(?, parser.identifier("res"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))) 
 	    .replace(ast(initial), initial);
     }
     else{
@@ -689,15 +587,7 @@ macro reduce(node)
 		},
 		%res;
 		)
-	    )
-	    .setLocation(node)
-	    .replace(ast(coll), coll)
-	    .replace(ast(ReturnType), ast(staticType(%initial)))
-	    .replace(ast(fun), node[1])
-	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))
-	    .replace(ast(funVar), Identifier(?, parser.identifier("funVar")))
-	    .replace(ast(res), Identifier(?, parser.identifier("res")))
-	    .replace(ast(initial), initial);
+	    ).setLocation(node).replace(ast(coll), coll).replace(ast(ReturnType), ast(staticType(%initial))).replace(ast(fun), node[1]).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(funVar), Identifier(?, parser.identifier("funVar"))).replace(ast(res), Identifier(?, parser.identifier("res"))).replace(ast(initial), initial);
     }
     return res;
 }

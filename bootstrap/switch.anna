@@ -1,7 +1,6 @@
 attribute(internal, doc("Internal module for the switch macro."));
 
-macro switch(node) 
-(
+macro switch(node)  (
     doc(
 	"
 The switch statement. This macro a conditional structure that allows

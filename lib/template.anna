@@ -6,8 +6,7 @@ attribute(
 	"A simple templating library", 
 	));
 
-macro template(node)
-(
+macro template(node) (
     doc(
     "A simple proof of concept HTML templating engine. Uses a templating
 system very similar to e.g, Ruby on Rails, but the template is

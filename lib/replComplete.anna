@@ -8,8 +8,7 @@ var Int completeListIdx;
 var MutableList«String» completeList;
 var List«reflection.Type» useList;
 
-def getPath(String text)
-(
+def getPath(String text) (
     doc("
 Try to extract the dot-separated list of names that we're currently
 trying to complete from the text.")
@@ -117,8 +116,7 @@ def Any setUseList(List«Type» use){
     useList = use;
 }
 
-def codeComplete(String text, Int state)
-(
+def codeComplete(String text, Int state) (
     doc("Call the readLine.complete.setFunction function
 with this function as a parameter to enable code
 completion.")

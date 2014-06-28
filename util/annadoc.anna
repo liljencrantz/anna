@@ -10,8 +10,7 @@ var HashMap«String, Operator» operatorLookup;
 var HashMap«String, MutableList«String»» keywordLookup;
 var HashMap«String, MutableList«String»» wordLookup;
 
-def main()
-(  
+def main() (  
     doc("This it the documentation extractor for the anna language.",
 	"It works by iterating over all loaded modules and extracting the doc attribute from all functions, types and members, and formatting them into html documents.",
 	)){
@@ -92,8 +91,7 @@ class DocumentationData
 	done = ?;
     }
 
-    def String link(DocumentationData from) 
-    (doc("Create a link suitable for a html anchor tag from some other document to the document for this type")){
+    def String link(DocumentationData from)  (doc("Create a link suitable for a html anchor tag from some other document to the document for this type")){
 	if(!from){
 	    return ?;
 	}
@@ -106,8 +104,7 @@ class DocumentationData
 	if(object.module?) {"."} else { "::" }
     }
 
-    def String linkPath(DocumentationData from = ?, Int last = 1)
-    (doc("Create a html anchor from some other document to this document")){
+    def String linkPath(DocumentationData from = ?, Int last = 1) (doc("Create a html anchor from some other document to this document")){
 
         prev := (parent.linkPath(from or this, ?) ~ parent.linkConnector()) or "";
 	classString := if(last){" class='anna-link-main'"} else {""}
@@ -118,8 +115,7 @@ class DocumentationData
 	}
     }
 
-    def String path()
-	(doc("The search path for this document")){
+    def String path() (doc("The search path for this document")){
 	return ((parent.path() ~ "/") or "") ~ object.name;
     }
 
@@ -174,8 +170,7 @@ often used code paths, which makes it useful for regression testing.")
 	memberMissing = memberTot = moduleMissing = moduleTot = 0;
     }
     
-    def extractDocumentation(parser.Call attrList, Any brief = ?)
-    (
+    def extractDocumentation(parser.Call attrList, Any brief = ?) (
 	internal
     ){
         res := "".thaw;

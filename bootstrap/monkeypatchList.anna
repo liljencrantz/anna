@@ -1,8 +1,7 @@
 attribute(internal, doc("Internally used module. Don't use directly."));
 
 expandCode(
-    def %name(%Type this)
-    (
+    def %name(%Type this) (
 	target(%Type),
 	name(toString),
 	doc("Returns a string representation of this List."),
@@ -16,8 +15,7 @@ expandCode(
 
 
 expandCode(
-    def Any %name(%Type this)
-    (
+    def Any %name(%Type this) (
 	target(%Type),
 	doc("Returns true if all members of this list are non-Null."),
 	name(all?)
@@ -32,8 +30,7 @@ expandCode(
 
 
 expandCode(
-    def %name(%Type this)
-    (
+    def %name(%Type this) (
 	target(%Type),
 	doc("Returns true if none of the members of this list are non-Null."),
 	name(none?),
@@ -48,8 +45,7 @@ expandCode(
 
 
 expandCode(
-    def %name(%Type this)
-    (
+    def %name(%Type this) (
 	target(%Type),
 	doc("Returns true if any of the members of this list are non-Null."),
 	name(any?),
@@ -62,8 +58,7 @@ expandCode(
     );
 
 expandCode(
-    def Int %name(%Type«%Value» this, %Value value)
-    (
+    def Int %name(%Type«%Value» this, %Value value) (
 	target(%Type),
 	doc("Returns the index of the first location of the specified item in the list."),
 	template(%Value:monkeypatchMisc.Comparable),

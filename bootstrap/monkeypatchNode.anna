@@ -4,8 +4,7 @@ use(parser);
 
 def Node __format__(
     Node this, 
-    HashMap«String, Node» data) 
-(
+    HashMap«String, Node» data)  (
     target(Node), 
     doc("Replace every internal identifier (an identifier prefixed with a '%' character) in the specified AST tree with the corresponding AST tree."),
 ){
@@ -18,8 +17,7 @@ def Node __format__(
 
 def Int callTo?(
     Node this,
-    String name)
-(
+    String name) (
     target(Node),
     doc("Returns true if the specified AST node is a call node and the function node is an identifier with the specified name."),
 ){
@@ -28,8 +26,7 @@ def Int callTo?(
 
 def Int named?(
     Node this,
-    String name)
-(
+    String name) (
     target(Node),
     doc("Returns true if the specified AST node is an identifier with the specified name."),
 ){
@@ -37,16 +34,14 @@ def Int named?(
 }
 
 def Int block?(
-    Node this)
-(
+    Node this) (
     target(Node),
     doc("Returns true if the specified AST node is a block."),
 ){
     if(((this as Call).function as Identifier).name == "__block__") { 1 } else { ? }
 }
 
-def List«Node» filterByCall(Call this, String name)
-(
+def List«Node» filterByCall(Call this, String name) (
     target(Call),
     doc("Filters the call list for direct children that are calls to the specified function. For each found child, every parameter in it's parameter list is inserted into the resulting list of Node objects. This function is often useful when checking attribute lists."),
 ){
@@ -57,8 +52,7 @@ def List«Node» filterByCall(Call this, String name)
     return res;
 }
 
-def Int childNamed?(Call this, String name)
-(
+def Int childNamed?(Call this, String name) (
     target(Call),
     doc("Returns true if this call has a parameter which is an identifier with the specified name.")
 ){

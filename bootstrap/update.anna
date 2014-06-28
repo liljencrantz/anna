@@ -2,8 +2,7 @@ attribute(internal, doc("Internal module for the macros related to updating a va
 
 use(parser);
 
-macro __mapping__(node)
-(
+macro __mapping__(node) (
     doc("
 Internal utility macro. Makes sure that identifiers in mapping are internal identifiers, not regular identifiers.")
 ){ 
@@ -18,8 +17,7 @@ Internal utility macro. Makes sure that identifiers in mapping are internal iden
 }
 
 
-def Node __update__(Call node)
-(
+def Node __update__(Call node) (
     doc("The common function used by __append__ and friends to implement in-place updating.")
 ){
     checkNodeType(node.function, Identifier);
@@ -39,32 +37,27 @@ def Node __update__(Call node)
     return NullLiteral(node);
 }
 
-macro __increase__(node)
-(
+macro __increase__(node) (
     doc("
 Increase the specified value by the specified amount, called as +=.")
 ){__update__(node)}
 
-macro __decrease__(node)
-(
+macro __decrease__(node) (
     doc("
 Decrease the specified value by the specified amount, called as -=.")
 ){__update__(node)}
 
-macro __append__(node)
-(
+macro __append__(node) (
     doc("
 Append the specified value to the specified base, called as ~=.")
 ){__update__(node)}
 
-macro __next__(node)
-(
+macro __next__(node) (
     doc("
 Move the specified value forward one step, called as ++.")
 ){__update__(node)}
 
-macro __prev__(node)
-(
+macro __prev__(node) (
     doc("
 Move the specified value backward one step, called as --.")
 ){__update__(node)}

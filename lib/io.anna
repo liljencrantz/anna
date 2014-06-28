@@ -57,8 +57,7 @@ class File
     var List «String» path (internal, doc("The path to this file"));
     var Int fd (internal, doc("If this file is open, this is its file descriptor."));
 
-    def __init__(String filename)
-    (
+    def __init__(String filename) (
 	doc("Create a new file object.")
     ){
 	if(relative?(filename)){
@@ -69,8 +68,7 @@ class File
 	}
     }
 
-    def File __join__(String name)
-    (
+    def File __join__(String name) (
 	doc(
 	    "Joins the specified subdirectory to the directory represented by the File object and returns the result.")
     ){
@@ -81,8 +79,7 @@ class File
 	"" ~ separator ~ String::convert(separator).join(path)
     }
     
-    def String readFile()
-    (
+    def String readFile() (
 	doc(
 	    "Read the contents of the file and return it as a String.")
     ){
@@ -96,8 +93,7 @@ class File
 	res;
     }
     
-    def writeFile(String data)
-    (
+    def writeFile(String data) (
 	doc(
 	    "Write the contents of the String into the specified file.")
     ){
@@ -112,8 +108,7 @@ class File
 	return !unix.io.close(fd) and ok;
     }
     
-    def open()
-    (
+    def open() (
 	doc("Open the specified file for reading and writing.")
     ){
         fd = unix.io.open(
@@ -123,15 +118,13 @@ class File
 	if(fd) {this} else {?};
     }
 
-    def close()
-    (
+    def close() (
 	doc("Close the specified file for reading and writing.")
     ){
         unix.io.close(fd)
     }
 
-    def write(Any value...)
-    (
+    def write(Any value...) (
 	doc(
 	    "Write the string representation of the specified objects to the file.")
     ){
@@ -156,8 +149,7 @@ class File
 	}
     }
 
-    def Any directory?() 
-    (
+    def Any directory?()  (
 	property, 
 	doc("This value is non-null if the file pointed to by this object is a directory."),
 ){
@@ -169,8 +161,7 @@ class File
 	};
     }
 
-    def makeDirectory()
-    (
+    def makeDirectory() (
 	doc("Creates a directory in the path specified by the File object.")
     ){
 	(0..this.path.count).each(last){
@@ -184,8 +175,7 @@ class File
 	return 1;
     }
     
-    def Any changeDirectory()
-    (
+    def Any changeDirectory() (
 	doc(
 	    "Change the current working directory to the directory represented by this File object.")
     ){
@@ -196,8 +186,7 @@ class File
 	File(getCwd());
     }
 
-    def delete()
-    (
+    def delete() (
 	doc("Deletes the file system path represented by the File object.")
     ){
 	unix.io.unlink(this.filename);

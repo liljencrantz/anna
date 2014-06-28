@@ -13,8 +13,7 @@ class Fiber
     var reflection.Continuation continuation (internal, doc("The continuation to call to continue executing this fiber."));
     var Int idx (internal, doc("The integer index of this Fiber in the global fibers list"));
 
-    def __init__()
-    (doc("Create a new Fiber")){
+    def __init__() (doc("Create a new Fiber")){
 	enable();
     }
 
@@ -38,8 +37,7 @@ class Fiber
 	idx = ?;
     }
 
-    def run()
-    (doc("Subclasses of Fiber should reimplement this method")){
+    def run() (doc("Subclasses of Fiber should reimplement this method")){
     }
 
     def yield()(static, doc("Yield the currently running Fiber and pick a new fiber to run.")){

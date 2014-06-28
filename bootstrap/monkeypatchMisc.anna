@@ -4,8 +4,7 @@ attribute(internal, doc("Internally used module. Don't use directly."));
   A bunch of additional functions to be inserted into the basic builtin types
  */
 
-def String hashMapToString(HashMap«%Key, %Value» this)
-(
+def String hashMapToString(HashMap«%Key, %Value» this) (
     name(toString), 
     target(HashMap), 
     doc("Returns a String representation of this HashMap."),
@@ -15,8 +14,7 @@ def String hashMapToString(HashMap«%Key, %Value» this)
     return "[" ~ ", ".join(this.map(key, value){"".thaw ~ key ~ ": " ~ String::convert(value)}) ~ "]";
 }
 
-def String intFormat(Int this, Int base=10)
-(
+def String intFormat(Int this, Int base=10) (
     name(format), 
     target(Int), 
     doc("Returns a formated version of this string in the specified base."),
@@ -47,8 +45,7 @@ def String intFormat(Int this, Int base=10)
     return neg ~ res;
 }
 
-def String pairToString(Pair«%First,%Second» this)
-(
+def String pairToString(Pair«%First,%Second» this) (
     name(toString), 
     target(Pair), 
     doc("Returns a String representation of this Pair."),
@@ -63,8 +60,7 @@ type Hashable{
     }
 }
 
-def Int pairHashCode(Pair«%First,%Second» this)
-(
+def Int pairHashCode(Pair«%First,%Second» this) (
     name(hashCode), 
     target(Pair), 
     doc("Returns a hash code for this Pair."),
@@ -79,8 +75,7 @@ type Comparable{
     }
 }
 
-def Int pairCmp(Pair«%First,%Second» this, Pair«%First,%Second» other)
-(
+def Int pairCmp(Pair«%First,%Second» this, Pair«%First,%Second» other) (
     name(__cmp__), 
     target(Pair), 
     doc("Compares two pairs."),
@@ -96,8 +91,7 @@ def Int pairCmp(Pair«%First,%Second» this, Pair«%First,%Second» other)
     }
 }
 
-def HashMap«%Key, %Value» hashMapSetAll(HashMap«%Key, %Value» this, Pair«%Key, %Value» value...)
-(
+def HashMap«%Key, %Value» hashMapSetAll(HashMap«%Key, %Value» this, Pair«%Key, %Value» value...) (
     name(__setAll__), 
     target(HashMap),
     template(%Key:HashKey),
