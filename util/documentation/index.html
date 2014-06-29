@@ -1240,14 +1240,14 @@ print(myVar.someNumber + 3, myVar.someString ~ "world", myVar.someList[1])
 	  </p>
 	  <pre class="anna-code">
 enum MyEnum {
-    foo,
-    bar = 32,
+    foo
+    bar = 32
     baz
 }
 
 enum MyEnum2 {
-    aaa=-7,
-    bbb,
+    aaa=-7
+    bbb
     ccc
 }
 
@@ -1258,8 +1258,10 @@ def main() {
     print(MyEnum::foo.__value)
     // MyEnum2 starts at offset -7, so this will print «-7 -6 -5»
     print(
-        MyEnum2::aaa.__value, MyEnum2::bbb.__value, 
-        MyEnum2::ccc.__value)
+        MyEnum2::aaa.__value
+        MyEnum2::bbb.__value
+        MyEnum2::ccc.__value
+    )
 }
 	  </pre>
 
@@ -3606,19 +3608,19 @@ print(pop(), pop(), pop())
 	  <ul>
 	    <li>
 	      Anna uses two different
-	      separators, <code class="anna-code">,</code> (comma)
-	      and <code class="anna-code"></code> (semicolon). These
+	      separators, comma and newline. These
 	      can be used completely interchangeably.
 	    </li>
 	    <li>
-	      Multiple commas or semicolons separated by only
+	      Multiple commas or newlines separated by only
 	      whitespace are treated as a single separator.
 	    </li>
 	    <li>
 	      Expressions are actually <em>separated</em> by
-	      separators, not terminated by them - so a trailing
-	      semicolon after the last expression in a block is not
-	      actually needed. But it is allowed.
+	      separators, not terminated by them - a trailing comma
+	      after the last expression in a block is not actually
+	      needed. But separators are allowed both at the beginning
+	      and end of a list.
 	    </li>
 	    <li>
 	      All the above rules apply to code blocks, the parameter
@@ -3635,15 +3637,10 @@ print(pop(), pop(), pop())
 	  </p>
 	  <pre class="anna-code">
 /*
-   Multiple-line expression groups should always have a trailing
-   separator. The reason for that is to make it easier to comment or
-   cut and paste lines without having to worry about trailing
-   separators.
-
-   For code blocks, only use the semicolon as a separator, for
-   collection literals and function calls, only comma. The reason for
-   this is historical - that's how code has traditionally been written
-   in C-like languages.
+   Multiple-line expression groups should never have a trailing
+   separator. Put the ending parenthesis/brace/bracket on a 
+   separate line in order to make cutting and pasting of code
+   easier.
 */
 default {
     foo
@@ -3652,23 +3649,16 @@ default {
 }
 
 someFunctionCall(
-    arg1,
-    arg2,
-    arg3,
-    )
+    arg1
+    arg2
+    arg3
+)
 
 literal :== [
-    "first",
-    "second",
-    "third",
-    ]
-
-/*
-   The only exceptions to this rule is that it is ok to group together
-   multiple constant or variable declarations on a single line with commas.  
-*/
-
-foo :== 1, bar :== 2, baz :== 3
+    "first"
+    "second"
+    "third"
+]
 
 /*
    Single-line expression groups should never have a trailing
