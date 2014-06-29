@@ -398,11 +398,11 @@ static void anna_node_print_internal(
 
 	case ANNA_NODE_CAST:
 	{
-	    anna_node_call_t *this2 = (anna_node_call_t *)this;	    
+	    anna_node_call_t *this2 = (anna_node_call_t *)this;
 	    anna_indent(sb,indentation);
-	    sb_printf(sb,L"__cast__(\n");		
+	    sb_printf(sb,L"*__cast__(\n");
 	    anna_node_print_internal(sb,this2->child[0], indentation+1);
-	    sb_printf(sb,L";\n");		
+	    sb_printf(sb,L";\n");
 	    anna_node_print_internal(sb,this2->child[1], indentation+1);
 	    sb_printf(sb,L")");
 	    break;
