@@ -319,14 +319,6 @@ void anna_type_intersect_into(
 		free(types);
 		free(defaults);
 		
-/*		anna_message(
-		    L"FDASFDSA %ls.%ls %d\n",
-		    t1->name, memb2->name,
-		    anna_entry_get_static(
-			t1, 
-			anna_mid_get(
-			    memb2->name)));
-*/		
 		array_list_t alias = AL_STATIC;
 		anna_attribute_call_all(memb1->attribute, L"alias", &alias);
 		

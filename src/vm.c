@@ -620,7 +620,7 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t *argv)
 #endif
 	}
 #ifdef ANNA_CHECK_VM
-	if(!s->slot[op->offset])
+	if(anna_entry_null_ptr(s->slot[op->offset]))
 	{
 	    anna_message(
 		L"Var get op on unassigned var: %d %d\n",
@@ -879,6 +879,21 @@ anna_object_t *anna_vm_run(anna_object_t *entry, int argc, anna_entry_t *argv)
 
 	if(anna_member_is_property(m))
 	{
+
+#ifdef ANNA_CHECK_VM
+	    if(m->setter_offset >= obj->type->static_member_count)
+	    {
+		debug(
+		    D_CRITICAL,
+		    L"Tried to set static member %ls with offset %d in object of type %ls, which only has %d static members\n",
+		    m->name,
+		    m->setter_offset,
+		    obj->type->name,
+		    obj->type->static_member_count);
+		CRASH;	    
+	    }
+	    assert(m->setter_offset >= 0);	
+#endif
 	    anna_object_t *method = anna_as_obj_fast(obj->type->static_member[m->setter_offset]);
 	    anna_function_t *fun = anna_function_unwrap_fast(method);
 	    
