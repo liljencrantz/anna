@@ -118,7 +118,7 @@ static int anna_lex_long_count_end(char *str)
 \/\* anna_lex_push_state(yyscanner, COMMENT); return IGNORE;
 _*[a-z][a-zA-Z0-9_!?]*\/=+\" anna_lex_push_state_param(yyscanner, LONG_STRING, anna_lex_long_count_begin(anna_lex_get_text(yyscanner))); b_clear(&long_buffer); return LITERAL_STRING_LONG_BEGIN;
 \/=*\" anna_lex_push_state_param(yyscanner, LONG_STRING, anna_lex_long_count_begin(anna_lex_get_text(yyscanner))); return LITERAL_STRING_LONG_BEGIN;
-\/\/[^\n]*\n  return IGNORE;
+\/\/[^\n]*\n  return SEPARATOR;
 ^#[^\n]*\n  return IGNORE;
 0[oO][0-7][0-7_]*_*[a-z][a-zA-Z0-9_!?]* return LITERAL_INTEGER_BASE_8;
 0[oO][0-7][0-7_]* return LITERAL_INTEGER_BASE_8;
