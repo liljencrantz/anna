@@ -17,8 +17,7 @@ static char *anna_readline_wrapper(char *prompt)
 
 def String readLine(String prompt) (name(anna_readline_wrapper))
 
-history
-{
+history {
     def Void add(String line) (name(add_history))
     def Bool read(String filename (nullable)) (name(read_history))
     def Bool readRange(String filename (nullable), Int from, Int to) (name(read_history_range), alias(read))
@@ -27,8 +26,7 @@ history
     def Bool truncateFile(String filename, Int count) (name(history_truncate_file))
 }
 
-complete
-{
+complete {
 
     verbatim(/="
 

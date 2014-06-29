@@ -5,13 +5,11 @@ include(
     "<termios.h>", "<sys/signalfd.h>",
     )
 
-signal
-{
+signal {
 
     def Int signalfd(Int fd, SignalSet mask, Int flags) (doc("Create a file descriptor for accepting signals."))
 
-    cStruct SignalInfoFd (name(signalfd_siginfo), doc("A structure describing a recieved signal."))
-    {
+    cStruct SignalInfoFd (name(signalfd_siginfo), doc("A structure describing a recieved signal.")) {
 	var Int signal (name(ssi_signo), doc("Signal number."))
 	var Int code (name(ssi_code), doc("Signal code."))
 	var Int pid (name(ssi_pid), doc("PID of sender"))
@@ -21,8 +19,7 @@ signal
 	var Int band (name(ssi_band), doc("Band event for io signal"))
     }
  
-    signalfdFlag
-    {
+    signalfdFlag {
 	attribute(doc("Flags determining the mode for unix.proc.signalfd"))
 
 	const Int nonBlock (define(SFD_NONBLOCK), doc("The resulting file descriptor is non-blocking"))

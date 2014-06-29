@@ -34,26 +34,22 @@ abbreviations, etc. The convention for naming, etc. in this module
 will evolve over time, which can result in future incompatibilities.",
 	))
 
-time
-{
+time {
 
     attribute(doc("The unix.time module contains low level wrappers for basic unix functionality revolving around timekeeping."))
 
-    cStruct TimeVal (name(timeval), doc("A data structure representing a point in time as the amount of time that has elapsed since the epoch."))
-    {
+    cStruct TimeVal (name(timeval), doc("A data structure representing a point in time as the amount of time that has elapsed since the epoch.")) {
 	var Int sec (name(tv_sec), doc("Seconds"))
 	var Int usec (name(tv_usec), doc("Microseconds."))
     }
     
-    cStruct TimeZone (name(timezone), doc("A deprecated data structure that used to be used for representing a time zone."))
-    {
+    cStruct TimeZone (name(timezone), doc("A deprecated data structure that used to be used for representing a time zone.")) {
     }
     
     def Bool gettimeofday(TimeVal tv, TimeZone tz)  (doc("Gets the current system time. Equivalanet to the C gettimeofday function."))
 }
 
-io
-{
+io {
 
     attribute(
 	doc(
@@ -61,8 +57,7 @@ io
 	    "Unix input/output centers around file descriptors. File descriptors are small, positive integers that can represent open files, directories, pipes or even network sockets.",
 	    ))
 
-    openMode
-    {
+    openMode {
 	attribute(doc("Flags determining the open mode for <a path='unix.io' member='open'>unix.io.open()</a>"))
 
 	const Int readOnly (define(O_RDONLY), doc("Open file in read-only mode."))
@@ -85,8 +80,7 @@ io
 	const Int truncate (define(O_TRUNC), doc("f the file already exists and is a regular file and the open mode allows writing (i.e., is writeOnly or readWrite) it will be truncated to length 0."))
     }
 
-    statMode
-    {
+    statMode {
 	attribute(doc("Flags used for identifying file status together with a <a path='unix.io.Stat' member='mode'>unix.io.Stat</a> object."))
 
 	const Int regular (define(S_IFREG), doc("Regular file"))
@@ -123,8 +117,7 @@ io
     def Int write(Int fd, Buffer buffer(ensureCapacity(count)), Int count) (doc("Write to a file descriptor.", "Equivalent to the C write function."))
     def Bool close(Int fd) (doc("Close a file descriptor.", "Equivalent to the C close function."))
 
-    cStruct Stat (name(stat), doc("A structure representing the status of a file.", "This is a straight conversion of the C struct stat."))
-    {
+    cStruct Stat (name(stat), doc("A structure representing the status of a file.", "This is a straight conversion of the C struct stat.")) {
 	const Int dev (name(st_dev), doc("ID of device containing file"))
 	const Int ino (name(st_ino), doc("Inode number"))
 	const Int mode (name(st_mode), doc("File protection mask. Use the flags defined in <a path='unix.io.statMode'>unix.io.statMode</a>."))
@@ -155,8 +148,7 @@ io
     def Bool chroot(String path) (doc("Change root directory."))
     def Bool fchdir(Int fd) (doc("Change working directory."))
 
-    cStruct FLock (name(flock), doc("File lock information. Used by the <a path='unix.io' member='fcntlFLock'>unix.io.fcntl()</a> call."))
-    {
+    cStruct FLock (name(flock), doc("File lock information. Used by the <a path='unix.io' member='fcntlFLock'>unix.io.fcntl()</a> call.")) {
 	const Int type (name(l_type), doc("Type of lock: F_RDLCK, F_WRLCK, F_UNLCK."))
 	const Int whence (name(l_whence), doc("How to interpret l_start: SEEK_SET, SEEK_CUR, SEEK_END."))
 	const Int start (name(l_start), doc("Starting offset for lock"))
@@ -164,15 +156,13 @@ io
 	const Int pid (name(l_pid), doc("PID of process blocking our lock (F_GETLK only)"))
     }
 
-    fcntlMode
-    {
+    fcntlMode {
 	attribute(doc("Flags specifying file descriptor manipulations for unix.io.fcntl"))
 	const Int dupFd (name(F_DUPFD), doc("Duplicate file descriptor."))
 	// ...
     }
 
-    seekMode
-    {
+    seekMode {
 	attribute(doc("Different seek modes for use with the unix.io.seek function"))
 
 	const Int set (define(SEEK_SET), doc("Seek to absolute file offset."))
@@ -230,8 +220,7 @@ static int anna_fd_set_value(fd_set *set, int fd, int val)
 }
 ")
 
-    cType FdSet (name(fd_set), doc("A set of file descriptors. Used by unix.io.select."))
-    {
+    cType FdSet (name(fd_set), doc("A set of file descriptors. Used by unix.io.select.")) {
 	def Void __init__() (name(FD_ZERO), doc("Create an empty new file descriptor set."))
 	def Void remove(Int fd) (name(ANNA_FD_CLR), doc("Remove the specified file descriptor from the set."))
 	def Int __in__(Int fd) (name(ANNA_FD_ISSET), doc("Check if the specified file descriptor is in the set."))
@@ -256,13 +245,11 @@ or optionally, until the specified amount of time has passed."))
     
 }
 
-proc
-{
+proc {
 
     attribute(doc("The unix.proc module contains low level wrappers for basic unix functionality revolving around processes and signals."))
 
-    signal
-    {
+    signal {
 	attribute(doc("All known signals"))
 
 	const Int hup (define(SIGHUP), doc("The HUP signal"))
@@ -334,8 +321,7 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 }
 ")
 
-    cType SignalSet (name(sigset_t), doc("A set of signals. Used by the unix.proc.signalfd and unix.proc.sigprocmask functions."))
-    {
+    cType SignalSet (name(sigset_t), doc("A set of signals. Used by the unix.proc.signalfd and unix.proc.sigprocmask functions.")) {
 	def Void __init__() (name(sigemptyset), doc("Create an empty new set"))
 	def Int clear() (name(sigemptyset), doc("Remove all signals from the set"))
 	def Int all() (name(sigfillset), doc("Add all signals to the set"))
@@ -346,8 +332,7 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 	def Bool __set__(Int signal, Bool value (nullable)) (name(anna_signalset_set), doc("If value is non-null, add the specified signal to the set. Otherwise, remove it."))
     }
 
-    sigprocmaskFlag
-    {
+    sigprocmaskFlag {
 	attribute(doc("Flags determining the mode for unix.iosigprocmask"))
 
 	const Int block (define(SIG_BLOCK), doc("Block all the specified signals in addition to signals currently blocked."))
@@ -366,8 +351,7 @@ int anna_read_signal(int fd, struct signalfd_siginfo *info)
 
 }
 
-user
-{
+user {
     attribute(doc("The unix.user module contains low level wrappers for basic unix functionality revolving around users and groups."))
 
     def Int getuid() (doc("Get the real user ID of the calling process."))
@@ -387,13 +371,11 @@ user
     def Int setgroups(Int size, MutableList«Int» list (ensureCapacity(size))) (doc("Set list of supplamentary group IDs."))
 }
 
-rLimit
-{
+rLimit {
     
     attribute(doc("The unix.rLimit module contains low level wrappers for basic unix functionality revolving around system resource limits."))
 
-    rLimitMode
-    {
+    rLimitMode {
         attribute(doc("The different limits that can be queried with getRLimit and stRLimit."))
 	const Int as (define(RLIMIT_AS), doc("The AS limit"))
 	const Int core (define(RLIMIT_CORE), doc("The CORE limit"))
@@ -412,8 +394,7 @@ rLimit
 	const Int stack (define(RLIMIT_STACK), doc("The STACK limit"))
     }
 
-    cStruct RLimit (name(rlimit), doc("A structure representing the current and maximum value of a system resource usage limit."))
-    {
+    cStruct RLimit (name(rlimit), doc("A structure representing the current and maximum value of a system resource usage limit.")) {
 	const Int cur (name(rlim_cur), doc("Currently enforced limit (soft limit)"))
 	const Int max (name(rlim_max), doc("Maximum value of limit (hard limit)"))
     }
@@ -423,8 +404,7 @@ rLimit
 
 }
 
-env
-{
+env {
     verbatim("
 ANNA_VM_NATIVE(anna_setenv, 2)
 {
@@ -489,19 +469,16 @@ ANNA_VM_NATIVE(anna_environ, 0)
     def List«String» environ() (native(anna_environ), doc("Returns a list containing all all environement variables. Every item in the list is a key-value pair separated by a '=' character."))
 }
 
-sleep
-{
+sleep {
     attribute(doc("The unix.sleep module contains low level wrappers for basic unix functionality revolving around pausing the execution of processes."))
 
     def Int sleep(Int seconds) (doc("Sleep for the specified number of seconds"))
 }
 
-locale
-{
+locale {
     attribute(doc("The unix.locale module contains low level wrappers for basic unix functionality revolving around localization."))
 
-    localeMode
-    {
+    localeMode {
 	attribute(doc("Different locale parts, used by <a path='unix.locale' member='setLocale'>unix.locale.setLocale()</a>."))
 
 	const Int all (define(LC_ALL), doc("All of the locale."))
@@ -514,8 +491,7 @@ locale
     }
     def String setLocale(Int cateory, String locale (nullable)) (lock, name(setlocale), doc("Set the specified local category to the specified value. category must be one of the members of <a path='unix.locale.localeMode'>unix.locale.localeMode</a>."))
     
-    cStructPointer LocaleConv (name(lconv), doc("Detailed local information regarding numeric formating."))
-    {
+    cStructPointer LocaleConv (name(lconv), doc("Detailed local information regarding numeric formating.")) {
 	const String decimalPoint (name(decimal_point), doc("Decimal-point separator used for non-monetary quantities."))
 	const String thousandsSeparator (name(thousands_sep), doc("Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities."));	
 	const String grouping (doc("The amount of digits that form each of the groups to be separated by thousandsSeparator separator for non-monetary quantities."))
@@ -559,27 +535,23 @@ Positive and negative sign positions:
     def LocaleConv localeConv() (name(localeconv), doc("Get current numeric formatting information."))
 }
 
-term
-{
+term {
     attribute(doc("The unix.term module contains low level wrappers for basic unix functionality revolving around terminal handling."))
 
-    flag
-    {
+    flag {
         attribute(doc("The different modes of a Termios structure."))
 	const Int canonical (define(ICANON), doc("Read one character at a time."))
 	const Int echo (define(ECHO), doc("Echo characters to the screen."))
     }
     
-    action
-    {
+    action {
         attribute(doc("The different action modes used by unix.term.setAttr."))
 	const Int now (define(TCSANOW), doc("Take the specified action now,"))
 	const Int drain (define(TCSADRAIN), doc("Empty output buffer and apply specified action."))
 	const Int flush (define(TCSAFLUSH), doc("Apply specified action once outout in buffer has been written."))
     }
 
-    cStruct Termios (name(termios), doc("A structure representing the state of a terminal."))
-    {
+    cStruct Termios (name(termios), doc("A structure representing the state of a terminal.")) {
 	var Int iflag (name(c_iflag), doc("Input modes"))
 	var Int oflag (name(c_oflag), doc("Output modes"))
 	var Int cflag (name(c_cflag), doc("Control modes"))
@@ -591,15 +563,13 @@ term
 
 }
 
-error
-{
+error {
     attribute(doc("The unix.error module contains low level wrappers around C functions that revolve around error handling."))
 
     def String errorString(Int error) (name(strerror), doc("Returns a string that describes the error code passed in the argument. Equivalent to the C strerror function."))
     var Int errno (doc("The latest C library error to occur"))
 
-    status
-    {
+    status {
 	attribute(doc("All known error statuses"))
 
 	const Int tooBig (define(E2BIG), doc("Argument list too long."))

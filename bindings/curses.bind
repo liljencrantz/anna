@@ -1,8 +1,7 @@
 include("<curses.h>", "<term.h>")
 attribute(doc("Low level library for dealing with terminal input and output.", "The library is currently very incomplete and serves more like a proof of concept than an actually usable library."))
 
-command
-{
+command {
     attribute(doc("Terminal configuration command database."))
     var String enterBoldMode (name(enter_bold_mode))
     var String enterUnderlineMode (name(enter_underline_mode))
@@ -13,8 +12,7 @@ command
     var String setABackground (name(set_a_background))
 }
 
-key
-{
+key {
     attribute(doc("Key press database"))
     var String up (name(key_up))
     var String down (name(key_down))

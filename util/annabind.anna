@@ -66,11 +66,11 @@ int foo(int x, char *y);",
 
 ))
 
-def main(){ 
+def main() { 
     init()
     
-    system.argument[1...].each(binding){
-	if(!File(binding).exists?){
+    system.argument[1...].each(binding) {
+	if(!File(binding).exists?) {
 	    print("Error: File «%()» does not exist" % [binding])
 	    unix.proc.exit(1)
 	}
@@ -78,24 +78,24 @@ def main(){
     }    
 }
 
-def cEscape(String in){
+def cEscape(String in) {
     in or (return "0")
   res := "L\"".thaw
-    in.each(ch){
-	switch(ch.ordinal){
-	    case('\n'.ordinal){
+    in.each(ch) {
+	switch(ch.ordinal) {
+	    case('\n'.ordinal) {
 		res ~= "\\n"
 	    }
-	    case('"'.ordinal){
+	    case('"'.ordinal) {
 		res ~= "\\\""
 	    }
-	    cases(0..32){
+	    cases(0..32) {
 		res ~= "\\x" ~ ch.ordinal.format(16).lpad(count: 2, char: '0')
 	    }
-	    cases(128...){
+	    cases(128...) {
 		res ~= "\\u" ~ ch.ordinal.format(16).lpad(count: 4, char: '0')
 	    }
-	    default{
+	    default {
 		res ~= ch
 	    }
 	}
@@ -105,20 +105,20 @@ def cEscape(String in){
 }
 
 tempCounter := 0
-def generateTempName(){
+def generateTempName() {
     tempCounter++
     "tmp_var_" ~ tempCounter
 }
 
-def extractDoc(Call attr){
+def extractDoc(Call attr) {
     cEscape((attr.filterByCall("doc")[0] as StringLiteral).payload)
 }
 
-def extractDocAll(Call attr){
+def extractDocAll(Call attr) {
     attr.filterByCall("doc").map(el){cEscape((el as StringLiteral).payload)}
 }
 
-def init(){
+def init() {
     bindingType = [
 	ast(Void): BasicBindingType(
 	    ?,
@@ -173,11 +173,13 @@ def init(){
 	    "buffer_type", 
 	    "    unsigned char *%(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));\n",
 	    ?,
-	    capacityCheck: "    if(anna_buffer_ensure_capacity(anna_as_obj(%(source)), %(capacity))) {
+	    capacityCheck: "    if(anna_buffer_ensure_capacity(anna_as_obj(%(source)), %(capacity))) 
+    {
         return null_entry;
     }
-    else{
-        %(dest) = anna_buffer_get_payload(anna_as_obj(%(source)))
+    else
+    {
+        %(dest) = anna_buffer_get_payload(anna_as_obj(%(source)));
     }\n"),
 	ast(List): ListBindingType(),
 	ast(MutableList): MutableListBindingType(),
@@ -186,15 +188,15 @@ def init(){
 
 var HashMap«Node, BindingType» bindingType
 
-def getBindingType(Node node){
+def getBindingType(Node node) {
     return bindingType[node] or bindingType[(node as Call)[0]]
 }
 
-error ParseError{
+error ParseError {
     var Node node
     var String message
 
-    def __init__(Node node, String message){
+    def __init__(Node node, String message) {
 	this.node=node
 	this.message=message
     }
@@ -204,36 +206,36 @@ error ParseError{
 class BindingType (
     doc("Base class for the types used in the bindings.",
 	"A BindingType is used to convert from data from Anna objects into C data and back. They also need to be able to validate the data and to cleanup any memory used in the conversion process.")
-){
-    def String annaNativeType(Node decl, Node attr) (doc("The C type that this BindingType handles")){}
+) {
+    def String annaNativeType(Node decl, Node attr) (doc("The C type that this BindingType handles")) {}
 
-    def String annaCType(Node decl, Node attr) (doc("The anna_type_t * of the type that this BindingType handles")){}
+    def String annaCType(Node decl, Node attr) (doc("The anna_type_t * of the type that this BindingType handles")) {}
 
-    def String convertToC(Node decl, Node attr, String dest, String source) (doc("Convert the anna_entry_t  pointed to by source into C data in the (newly declared) variable named by dest")){}
+    def String convertToC(Node decl, Node attr, String dest, String source) (doc("Convert the anna_entry_t  pointed to by source into C data in the (newly declared) variable named by dest")) {}
 
-    def String convertToAnna(Node decl, Node attr, String dest, String source) (doc("Convert the C data pointed to by source into an anna_entry_t  in the (newly declared) variable named by dest")){}
+    def String convertToAnna(Node decl, Node attr, String dest, String source) (doc("Convert the C data pointed to by source into an anna_entry_t  in the (newly declared) variable named by dest")) {}
     
-    def String cleanupToC(Node decl, Node attr, String dest, String source) (doc("Perform any cleanup needed after a anna => C conversion. This is run after the C function has been run")){}
+    def String cleanupToC(Node decl, Node attr, String dest, String source) (doc("Perform any cleanup needed after a anna => C conversion. This is run after the C function has been run")) {}
     
-    def String cleanupToAnna(Node decl, Node attr, String dest, String source) (doc("")){}
+    def String cleanupToAnna(Node decl, Node attr, String dest, String source) (doc("")) {}
     
     def String preValidateToC(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to C.")){
-	if(!(attr as Call).childNamed?("nullable")){
+	if(!(attr as Call).childNamed?("nullable")) {
 	    "    if(anna_entry_null(%())){return null_entry;}\n" % [source]
 	}
     }
     
     
-    def String postValidateToC(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to C.")){""}
+    def String postValidateToC(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to C.")) {""}
     
-    def String preValidateToAnna(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to anna.")){""}
+    def String preValidateToAnna(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to anna.")) {""}
 
-    def String postValidateToAnna(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to anna.")){""}
+    def String postValidateToAnna(Node decl, Node attr, String dest, String source) (doc("Perform validation of the specified conversion to anna.")) {""}
 }
 
 class ListBindingType (
     extends(BindingType), 
-    doc("A BindingType implementation used for read-only lists"),){
+    doc("A BindingType implementation used for read-only lists"),) {
 
     def String annaNativeType(Node decl, Node attr){
         subType := ((decl as Call)[1] as Call)[0]
@@ -252,12 +254,13 @@ class ListBindingType (
         subBinding := getBindingType(subType)
         subTypeNative := subBinding.annaNativeType(subType, ?)
 	
-	return "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
+	return "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)))
     %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
     if(!%(dest)){ return null_entry; }
     int %(dest)_idx;
-    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
-        %(conversion);
+    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+    {
+        %(conversion)
         %(dest)[%(dest)_idx] = %(dest)_val;
     }\n" % [
 	    "subTypeNative": subTypeNative,
@@ -272,11 +275,12 @@ class ListBindingType (
 	?
     }
 
-    def String cleanupToC(Node decl, Node attr, String dest, String source){	
+    def String cleanupToC(Node decl, Node attr, String dest, String source) {	
         subType := ((decl as Call)[1] as Call)[0]
         subBinding := getBindingType(subType)
         subTypeNative := subBinding.annaNativeType(subType, ?)
-	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
+	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+    {
         %(subCleanup)
     }
     free(%(dest));\n" % [
@@ -297,7 +301,7 @@ class ListBindingType (
 class MutableListBindingType (
     extends(BindingType), 
     doc("A BindingType used for mutable lists.")
-){
+) {
 
     def String annaNativeType(Node decl, Node attr){
         subType := ((decl as Call)[1] as Call)[0]
@@ -318,16 +322,17 @@ class MutableListBindingType (
 	
         res := "".thaw
 
-        annaUtil.findAttribute(attr as Call, "ensureCapacity").each(cap){
-	    capStr := switch(cap){
-		case(capId as Identifier){
+        annaUtil.findAttribute(attr as Call, "ensureCapacity").each(cap) {
+	    capStr := switch(cap) {
+		case(capId as Identifier) {
 		    BindingGenerator::getNativeParamName(capId.name)
 		}
-		case(capNum as IntLiteral){
+		case(capNum as IntLiteral) {
 		    String::convert(capNum.payload)
 		}
 	    }
-	    res ~= "    if(anna_list_ensure_capacity(anna_as_obj(%(source)), %(capacity))){
+	    res ~= "    if(anna_list_ensure_capacity(anna_as_obj(%(source)), %(capacity)))
+    {
         return null_entry;
     }\n" % ["source": source, "capacity": capStr]
 	}
@@ -336,13 +341,16 @@ class MutableListBindingType (
     %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
     if(!%(dest)){ return null_entry; }
     int %(dest)_idx;
-    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
+    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+    {
         anna_entry_t tmp = %(value);
-        if(anna_entry_null(tmp)){
+        if(anna_entry_null(tmp))
+        {
             %(dest)[%(dest)_idx] = 0;
         }
-        else{
-            %(conversion);
+        else
+        {
+            %(conversion)
             %(dest)[%(dest)_idx] = %(dest)_val;
         }
     }\n" % [
@@ -361,11 +369,12 @@ class MutableListBindingType (
     def String convertToAnna(Node decl, Node attr, String dest, String source){
 	?
     }
-    def String cleanupToC(Node decl, Node attr, String dest, String source){	
+    def String cleanupToC(Node decl, Node attr, String dest, String source) {	
         subType := ((decl as Call)[1] as Call)[0]
         subBinding := getBindingType(subType)
         subTypeNative := subBinding.annaNativeType(subType, ?)
-	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++){
+	return "    for(%(dest)_idx=0; %(dest)_idx < %(szName); %(dest)_idx++)
+    {
         %(value)
         anna_list_set(anna_as_obj(%(source)), %(dest)_idx, tmp);
         %(subCleanup)
@@ -389,7 +398,7 @@ class MutableListBindingType (
 class BasicBindingType (
     extends(BindingType), 
     doc("A very simple BindingType implementation that simply relies on string templates to perform its tasks. Works well for basic types like Int, String, etc."),
-){
+) {
     var String annaNativeTypeStr
     var String annaCTypeStr
     var String convertToCStr
@@ -401,7 +410,7 @@ class BasicBindingType (
     
     def __init__(
 	String annaNativeType, String annaCType, String convertToC, String convertToAnna,
-	String capacityCheck = ?, String cleanupToC = ?, String cleanupToAnna= ?, String preValidateToC = ?){
+	String capacityCheck = ?, String cleanupToC = ?, String cleanupToAnna= ?, String preValidateToC = ?) {
 	annaNativeTypeStr = annaNativeType
 	annaCTypeStr = annaCType
 	convertToCStr = convertToC
@@ -420,27 +429,27 @@ class BasicBindingType (
 	return annaCTypeStr
     }
 
-    def String convertToC(Node decl, Node attr, String dest, String source){
+    def String convertToC(Node decl, Node attr, String dest, String source) {
         return convertToCStr % ["dest": dest, "source": source]
     }
 
-    def String preValidateToC(Node decl, Node attr, String dest, String source){
-	if(preValidateToCStr){
+    def String preValidateToC(Node decl, Node attr, String dest, String source) {
+	if(preValidateToCStr) {
 	    return preValidateToCStr % ["dest": dest, "source": source]
 	}
-	else{
+	else {
 	    return BindingType::preValidateToC(this, decl, attr, dest, source)
 	}
     }
 
-    def String postValidateToC(Node decl, Node attr, String dest, String source){
+    def String postValidateToC(Node decl, Node attr, String dest, String source) {
         res := "".thaw
-        annaUtil.findAttribute(attr as Call, "ensureCapacity").each(cap){
-	  capStr := switch(cap){
-		case(capId as Identifier){
+        annaUtil.findAttribute(attr as Call, "ensureCapacity").each(cap) {
+	  capStr := switch(cap) {
+		case(capId as Identifier) {
 		    BindingGenerator::getNativeParamName(capId.name)
 		}
-		case(capNum as IntLiteral){
+		case(capNum as IntLiteral) {
 		    String::convert(capNum.payload)
 		}
 	    }
@@ -449,15 +458,15 @@ class BasicBindingType (
 	res
     }
     
-    def String convertToAnna(Node decl, Node attr, String dest, String source){
+    def String convertToAnna(Node decl, Node attr, String dest, String source) {
 	return convertToAnnaStr % ["dest": dest, "source": source]
     }
 
-    def String cleanupToAnna(Node decl, Node attr, String dest, String source){
+    def String cleanupToAnna(Node decl, Node attr, String dest, String source) {
 	return cleanupToAnnaStr % ["dest": dest, "source": source]
     }
 
-    def String cleanupToC(Node decl, Node attr, String dest, String source){
+    def String cleanupToC(Node decl, Node attr, String dest, String source) {
 	return cleanupToCStr % ["dest": dest, "source": source]
     }
 
@@ -466,14 +475,14 @@ class BasicBindingType (
 class CStructBindingType (
     extends(BindingType), 
     doc("A BindingType used when passing cStruct objects as parameters.")
-){
+) {
     var String structName
     var String typeName
     var String structText
     var Int isPointer
 
     def __init__(
-	String structName, String typeName, Int isStruct=1, Int isPointer=?){
+	String structName, String typeName, Int isStruct=1, Int isPointer=?) {
 	expandCode(this.%name = %name, name: [structName, typeName, isPointer])
 	structText = if(isStruct){"struct "}else{""}
     }
@@ -486,7 +495,7 @@ class CStructBindingType (
 	return typeName
     }
 
-    def String convertToC(Node decl, Node attr, String dest, String source){
+    def String convertToC(Node decl, Node attr, String dest, String source) {
         param := [
 	    "structName": structName,
 	    "dest": dest, 
@@ -494,27 +503,27 @@ class CStructBindingType (
 	    "structText": structText,
 	    ]
 	code := "%(structText)%(structName) *%(dest);\n" % param
-	if(isPointer){
-	    if((attr as Call).childNamed?("nullable")){
+	if(isPointer) {
+	    if((attr as Call).childNamed?("nullable")) {
 		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
-	    else{
+	    else {
 		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
 	}
-	else{
-	    if((attr as Call).childNamed?("nullable")){
+	else {
+	    if((attr as Call).childNamed?("nullable")) {
 		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
-	    else{
+	    else {
 		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
 	}
 	return code
     }
 
-    def String convertToAnna(Node decl, Node attr, String dest, String source){
-	if(isPointer){
+    def String convertToAnna(Node decl, Node attr, String dest, String source) {
+	if(isPointer) {
 	    param := [
 		"structName": structName,
 		"structText": structText,
@@ -522,7 +531,7 @@ class CStructBindingType (
 		"source": source,
 		"annaCType": annaCType(decl, attr),
 	    	]
-	    return "    anna_entry_t %(dest) = anna_from_obj(anna_object_create(%(annaCType)))
+	    return "    anna_entry_t %(dest) = anna_from_obj(anna_object_create(%(annaCType)));
     anna_entry_set_ptr(anna_as_obj_fast(%(dest)), ANNA_MID_CSTRUCT_PAYLOAD, %(source));" % param
 	}
 	return ?
@@ -532,29 +541,29 @@ class CStructBindingType (
 
 class BindingGenerator (
     doc("The main object of the binding generator. Iterates over the parse tree in the binding file and generates C code based on the prototypes found there."),
-){
+) {
 
     var String path
     var String name
 
-    def __init__(String name){
+    def __init__(String name) {
 	path = name.freeze
 	this.name = name.split('/')[-1].split('.')[0]
     }
     
-    def mangleFunctionName(String name, List«String» path = ?){
+    def mangleFunctionName(String name, List«String» path = ?) {
 	this.name ~ "_i_" ~ (("_".join(path.map(el){mangleName(el)}) ~ "_") or "") ~ mangleName(name)
     }
 
-    def String getFunctionNativeName(Call decl){
+    def String getFunctionNativeName(Call decl) {
 	nameToStr(decl[0], decl[3])
     }
 
-    def getNativeParamName(String originalName) (static){
+    def getNativeParamName(String originalName) (static) {
 	return "native_param_" ~originalName
     }
     
-    def generateFunctionCode(Call decl, BindingType methodFor = ?, Int init? = ? ){
+    def generateFunctionCode(Call decl, BindingType methodFor = ?, Int init? = ? ) {
         attr := decl[3] as Call
 
 	lock? := attr.childNamed?("lock")
@@ -566,7 +575,7 @@ class BindingGenerator (
         code := "".thaw
         inp := decl[2] as Call
 
-	if(methodFor){
+	if(methodFor) {
             npn := getNativeParamName("this")
 	    init ~= "    " ~ methodFor.convertToC(decl[1], decl[3], npn, "param[0]") ~ "\n"
 	    preValidate ~= methodFor.preValidateToC(decl[1], decl[3], npn, "param[0]")
@@ -592,7 +601,7 @@ class BindingGenerator (
         responseType := getBindingType(decl[1])
         args := ", ".join(paramNames)
         varType := responseType.annaNativeType(decl[1], decl[3])
-	if(varType){
+	if(varType) {
 	    tempName := generateTempName()
 	
 	    code ~= "    %(varType) %(tempName) = %(call);\n" % [
@@ -600,8 +609,8 @@ class BindingGenerator (
 		"tempName": tempName, "call": nname ~"(" ~args~")"]
 	    code ~= responseType.convertToAnna(decl[1], decl[3], "result", tempName)
 	}
-	else{
-	    code ~= "    %(functionName)(%(args))
+	else {
+	    code ~= "    %(functionName)(%(args));
     anna_entry_t result = null_entry;\n" % ["functionName": nname, "args": args]
 	}
         param := [
@@ -609,9 +618,9 @@ class BindingGenerator (
 	    "code": code, "cleanup": cleanup, 
 	    "retValue": (if(init?){"param[0]"} else {"result"}),
 	    ]
-	if(lock?){
+	if(lock?) {
 	    param["lock"] = "
-    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&lock);"
 	    param["unlock"] = "
     pthread_mutex_unlock(&lock);"
@@ -632,7 +641,7 @@ class BindingGenerator (
 	    
     }
 
-    def generateFunction(String name, Call decl, List«String» path=?){
+    def generateFunction(String name, Call decl, List«String» path=?) {
         attr := decl[3] as Call
         mangled := mangleFunctionName(name, path: path)
         returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3])
@@ -652,7 +661,7 @@ class BindingGenerator (
 	escapedName := cEscape(name)
 	aliasCode := "".thaw
 	aliasList := annaUtil.findAttribute(attr, "alias")
-	aliasList.each(alias){
+	aliasList.each(alias) {
 	    aliasCode ~= "    anna_member_alias(stack_type, anna_mid_get(%()), %());\n" % [escapedName, cEscape(alias.toString())]
 	}
 
@@ -676,10 +685,10 @@ class BindingGenerator (
 
         native := annaUtil.findAttribute(attr, "native")
         code := ""
-	if(!native.empty?){
+	if(!native.empty?) {
 	    data["mangledName"] = native[0].toString()
 	}
-	else{
+	else {
             code = "
 ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 {
@@ -694,7 +703,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
     latest_function = anna_module_function(stack, %(functionName), 0, &%(mangledName), %(returnType), %(inputCount), %(inputTypeVar), %(inputNameVar), 0, %(doc));
 %(aliasCode)" % data
   
-	    allDoc[1...].each(doc){
+	    allDoc[1...].each(doc) {
 		load ~= "   anna_function_document(latest_function,anna_intern_static(%()));\n" % [doc]
 	    }
 	    
@@ -703,7 +712,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
     }
 
 
-    def generateMethod(BindingType type, String name, Call decl, List«String» path = ?){
+    def generateMethod(BindingType type, String name, Call decl, List«String» path = ?) {
         attr := decl[3] as Call
         mangled := mangleFunctionName(name, path)
         returnType := getBindingType(decl[1]).annaCType(decl[1], decl[3])
@@ -755,24 +764,24 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
     }
 
 
-    def mangleName(String name){
+    def mangleName(String name) {
 	name = "".join(name.filter(ch){ch != '_'})
         res := "".thaw ~ name[0].lower
-	name[1...].each(ch){
-	    switch(ch.lower){
-   	        case('?'){
+	name[1...].each(ch) {
+	    switch(ch.lower) {
+   	        case('?') {
 		    res ~= "_check"
 		}
 
-		case('!'){
+		case('!') {
 		    res ~= "_destructive"
 		}
 		    
-		case(ch){
+		case(ch) {
 		    res ~= ch
 		}
 
-		default{
+		default {
 		    res ~= "_" ~ ch.lower
 		}
 	    }
@@ -780,18 +789,18 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	res
     }
 
-    def mangleTypeName(String name){
+    def mangleTypeName(String name) {
 	this.name ~ '_' ~ mangleName(name) ~ "_type"
     }
 
     def generateCStructGetterCode(
 	String structName, String fieldName, 
-	BindingType structType, BindingType membType, Node decl, Node attr, Int isStruct){
+	BindingType structType, BindingType membType, Node decl, Node attr, Int isStruct) {
         cCode := structType.convertToC(decl, attr, "data", "param[0]")
 	return "
     %(cCode)
     %(wrapData)
-    return result
+    return result;
 " % [
 		"cCode": cCode,
 		"structName": structName,
@@ -802,13 +811,13 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     def generateCStructSetterCode(
 	String structName, String fieldName, 
-	BindingType structType, BindingType membType, Node decl, Node attr, Int isStruct){
+	BindingType structType, BindingType membType, Node decl, Node attr, Int isStruct) {
         cCode := structType.convertToC(decl, attr, "data", "param[0]")
 	return "
     %(cCode)
     %(wrapData)
-    data->%(fieldName) = tmp
-    return param[1]
+    data->%(fieldName) = tmp;
+    return param[1];
 " % [
 		"cCode": cCode,
 		"structName": structName,
@@ -820,10 +829,10 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     def generateVarGetterCode(
 	String varName, 
-	BindingType bindingType, Node decl, Node attr){
+	BindingType bindingType, Node decl, Node attr) {
 	return "
     %(wrapData)
-    return result
+    return result;
 " % [
 		"wrapData": bindingType.convertToAnna(decl, attr, "result", varName)
 		]
@@ -831,9 +840,10 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 
     def generateVarSetterCode(
 	String varName, 
-	BindingType bindingType, Node decl, Node attr){
+	BindingType bindingType, Node decl, Node attr) {
 	return "
-    if(!anna_entry_null(param[1])){
+    if(!anna_entry_null(param[1]))
+    {
         %(wrapData)
         %(varName) = value;
     }
@@ -844,32 +854,32 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 		]
     }
 
-    def mangleGetterName(String typeName, String fieldName){
+    def mangleGetterName(String typeName, String fieldName) {
 	return "%()_i_%()_%()_getter" % [this.name, mangleName(typeName), mangleName(fieldName)]
     }
 
-    def mangleSetterName(String typeName, String fieldName){
+    def mangleSetterName(String typeName, String fieldName) {
 	return "%()_i_%()_%()_setter" % [this.name, mangleName(typeName), mangleName(fieldName)]
     }
 
-    def mangleMethodName(String typeName, String methodName){
+    def mangleMethodName(String typeName, String methodName) {
 	return "%()_i_%()_%()" % [this.name, mangleName(typeName), mangleName(methodName)]
     }
 
-    def String nameToStr(Node name, Node attr){
+    def String nameToStr(Node name, Node attr) {
         use(parser)
         val := annaUtil.findAttribute(attr as Call, "define")[0] or annaUtil.findAttribute(attr as Call, "name")[0] or name
-        switch(val){
-            case(lit as StringLiteral){
+        switch(val) {
+            case(lit as StringLiteral) {
                 return lit.payload
             }
-            default{
+            default {
                 return String::convert(val)
             }
         }
     }
 
-    def generateCStruct(String structName, Call cstructDecl){
+    def generateCStruct(String structName, Call cstructDecl) {
         typeName := mangleTypeName(structName)
         code := "".thaw
         cstructAttr := cstructDecl[1] as Call
@@ -900,8 +910,8 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 " % commonData
         hadInit := ? as Int
 
-	(cstructDecl[2] as Call).each(node){
-	    if(node.callTo?("__const__") or node.callTo?("__var__")){
+	(cstructDecl[2] as Call).each(node) {
+	    if(node.callTo?("__const__") or node.callTo?("__var__")) {
                 decl := node as Call
                 attr := decl[3] as Call
 		isVar := node.callTo?("__var__")
@@ -909,7 +919,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
  	        fieldType := decl[1]
 		hadInit = hadInit or (fieldName == "__init__")
 
-		if(fieldType.callTo?("staticType") and (fieldType as Call)[0].callTo?("__def__")){
+		if(fieldType.callTo?("staticType") and (fieldType as Call)[0].callTo?("__def__")) {
 		  methOut := generateMethod(myBinding, fieldName, (fieldType as Call)[0] as Call, [structName])
 		    load~= methOut.load
 		    code ~= methOut.code
@@ -941,7 +951,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 ANNA_VM_NATIVE(%(getterName), 1)
 {%(getterCode)}
 " % data
-                if(isVar){
+                if(isVar) {
 	  	    code ~= "
 ANNA_VM_NATIVE(%(setterName), 2)
 {%(setterCode)}
@@ -954,22 +964,22 @@ ANNA_VM_NATIVE(%(setterName), 2)
         %(returnType), %(getterName), %(setterName), %(doc));
 " % data
 
-	    } else{
+	    } else {
 		raise(ParseError(node, "Invalid struct member"))
 	    }
 
 	}
 
-	if(!hadInit){
+	if(!hadInit) {
 	    load ~= "    anna_member_create_native_method(
 	%(typeName), anna_mid_get(L\"__init__\"), 0,
-	&%(initName), any_type, 1, &%(typeName), this_argn, 0, 0);
+	&%(initName), any_type, 1, &%(typeName), this_argn, 0, 0);    
 " % commonData
 
 	    code ~= "
 ANNA_VM_NATIVE(%(initName), 1)
 {
-    %(initParam);
+    %(initParam)
     memset(data, 0, sizeof(%(structText)%(structName)));
     return param[0];
 }
@@ -977,17 +987,17 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 	}
 
-	cstructDoc.each(doc){
+	cstructDoc.each(doc) {
             commonData["doc"] = doc
 	    load ~= "    anna_type_document(
-            %(typeName), %(doc))
+            %(typeName), %(doc));
 " % commonData
 	}
 
 	return struct(code: code, typeData: typeData, typeDecl: typeDecl, load: load)
     }
 
-    def generateModule(Node nodes, List«String» path){
+    def generateModule(Node nodes, List«String» path) {
         code := "".thaw
         load := "".thaw
         typeDecl := "".thaw
@@ -996,19 +1006,19 @@ ANNA_VM_NATIVE(%(initName), 1)
         customInclude := "".thaw
         attr := ? as Call
 
-	(nodes as Call).each(node){
+	(nodes as Call).each(node) {
 	    decl := node as Call
-	    switch((decl.function as Identifier).name){
+	    switch((decl.function as Identifier).name) {
 
-		case("__const__"){
+		case("__const__") {
 		    name := (decl[0] as Identifier).name
   		    attr := decl[3] as Call
 
 		    declType := decl[1]
 		    declVal := decl[2]
 
-		    switch(declVal){
-			case (intVal as IntLiteral){
+		    switch(declVal) {
+			case (intVal as IntLiteral) {
 			    load ~= "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));\n" % [
 				    "name": name,
 				    "value": intVal.payload,
@@ -1016,15 +1026,15 @@ ANNA_VM_NATIVE(%(initName), 1)
 				    ]
 			}
 
-			case (callVal as Call){
-			    switch((callVal.function as Identifier).name){
-				case("__def__"){
+			case (callVal as Call) {
+			    switch((callVal.function as Identifier).name) {
+				case("__def__") {
 				  out := generateFunction(name, decl[2] as Call, path)
 				    load ~= out.load
 				    code ~= out.code
 				}
 				
-				case("cTypeType", "cStructType", "cStructPointerType"){
+				case("cTypeType", "cStructType", "cStructPointerType") {
   				    out := generateCStruct(name, decl[2] as Call)
 				    load ~= out.load
 				    code ~= out.code
@@ -1032,7 +1042,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 				    typeData ~= out.typeData
 				}
 
-				default{
+				default {
 				    print("Unknown declaration:")
 				    print(decl)
                                     unix.proc.exit(1)
@@ -1040,10 +1050,10 @@ ANNA_VM_NATIVE(%(initName), 1)
 			    }
 			}
 
-			default{
+			default {
                             declTypeName := (declType as Identifier).name
-                            switch(declTypeName){
-                                case("Int"){
+                            switch(declTypeName) {
+                                case("Int") {
 				    nativeName := nameToStr(decl[0], decl[3])
 				    
 				    define? := annaUtil.findAttribute(attr as Call, "define")[0]
@@ -1056,7 +1066,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 				    
 				    definition := "    anna_module_const_int(stack, L\"%(name)\", %(value), %(doc));
 " % params
-				    if(define?){
+				    if(define?) {
 					params["definition"] = definition
 					load ~= "#ifdef %(value)
 %(definition)#else
@@ -1065,12 +1075,12 @@ ANNA_VM_NATIVE(%(initName), 1)
 
 " % params
 				    }
-				    else{
+				    else {
 					load ~= definition
 				    }
                                 }
 				
-                                case("Double"){
+                                case("Double") {
 			            nativeName := nameToStr(decl[0], decl[3])
 
 			            load ~= "    anna_module_const_float(stack, L\"%(name)\", %(value), %(doc));
@@ -1081,7 +1091,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 				    ]
                                 }
 
-                                default{
+                                default {
                                     print("Unknon declaration type:", declTypeName)
                                     unix.proc.exit(1)
                                 }
@@ -1092,24 +1102,24 @@ ANNA_VM_NATIVE(%(initName), 1)
 		}
 		
 
-		case("__var__"){
+		case("__var__") {
 		    name := (decl[0] as Identifier).name
 		    attr := decl[3] as Call
 
 		    declType := decl[1]
 		    declVal := decl[2]
-		    if(declType.callTo?("staticType")){
+		    if(declType.callTo?("staticType")) {
 		        typeExpr := (declType as Call)[0] as Call
-			if(typeExpr.callTo?("__def__")){
+			if(typeExpr.callTo?("__def__")) {
 			    out := generateFunction(name, typeExpr, path)
 			    load ~= out.load
 			    code ~= out.code
 			}
 		    }
-		    else{
+		    else {
 		    nativeName := nameToStr(decl[0], attr)
   	            bindingType := getBindingType(declType)
-                    returnType := bindingType.annaCType(declType, attr),
+                    returnType := bindingType.annaCType(declType, attr)
                     getterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_getter"
                     setterName := "anna_" ~ this.name ~ "_" ~ nativeName ~"_setter"
 		    
@@ -1122,7 +1132,6 @@ ANNA_VM_NATIVE(%(initName), 1)
 			    "setterCode": generateVarSetterCode(nativeName, bindingType, declType, attr),
 			    "doc": extractDoc(attr)
 			    ]
-
 		    code ~= "
 ANNA_VM_NATIVE(%(getterName), 1)
 {%(getterCode)}
@@ -1133,36 +1142,36 @@ ANNA_VM_NATIVE(%(setterName), 2)
 
 		    load ~= "    anna_member_create_native_property(
         stack_type, anna_mid_get(L\"%(name)\"),
-        %(returnType), %(getterName), %(setterName), %(doc))
+        %(returnType), %(getterName), %(setterName), %(doc));
 " % data
                     }
 		}
 		
-		case("include"){
-		    decl.each(inc){
+		case("include") {
+		    decl.each(inc) {
 			customInclude ~= "#include %()\n" %[(inc as StringLiteral).payload]
 		    }
 		}
 
-                case("verbatim"){
-		    decl.each(inc){
+                case("verbatim") {
+		    decl.each(inc) {
 			code ~= (inc as StringLiteral).payload
 		    }
 		}
 				
-                case("verbatimDeclare"){
-		    decl.each(inc){
+                case("verbatimDeclare") {
+		    decl.each(inc) {
 			load ~= (inc as StringLiteral).payload
 		    }
 		}
 				
 
-                case("attribute"){
+                case("attribute") {
                     attr = decl
                 }
 
-		default{
-                    if(decl.count == 1 and decl[0].callTo?("__block__")){
+		default {
+                    if(decl.count == 1 and decl[0].callTo?("__block__")) {
 			subName := String::convert(decl.function)
   		        mangledName := mangleName(subName)
   		        loadName := "anna_" ~ mangledName~"_load"
@@ -1188,8 +1197,8 @@ ANNA_VM_NATIVE(%(setterName), 2)
 	    }
 	}
 
-        if(attr){
-            extractDocAll(attr).each(doc){
+        if(attr) {
+            extractDocAll(attr).each(doc) {
                 load ~= "    anna_stack_document(stack, %());\n" % [doc]
             }
         }
@@ -1200,7 +1209,7 @@ ANNA_VM_NATIVE(%(setterName), 2)
             moduleData: moduleData)
     }
     
-    def generate(){
+    def generate() {
         code := "".thaw
         load := "".thaw
         typeDecl := "".thaw
@@ -1275,30 +1284,32 @@ const static anna_type_data_t anna_%(moduleName)_type_data[] =
 	    )
     }
 
-    def generateCreateFunction(String moduleName){
+    def generateCreateFunction(String moduleName) {
 "
 void anna_%(moduleName)_create(anna_stack_template_t *stack);
-void anna_%(moduleName)_create(anna_stack_template_t *stack){
-    anna_type_data_create(anna_%(moduleName)_type_data, stack)
+void anna_%(moduleName)_create(anna_stack_template_t *stack)
+{
+    anna_type_data_create(anna_%(moduleName)_type_data, stack);        
 }" % ["moduleName": moduleName]
     }
 
-    def generateLoadFunction(String moduleName, String moduleData, String load, Int isRootFunction){
+    def generateLoadFunction(String moduleName, String moduleData, String load, Int isRootFunction) {
         return "
 void anna_%(moduleName)_load(anna_stack_template_t *stack);
-void anna_%(moduleName)_load(anna_stack_template_t *stack){
-    mid_t latest_mid;
+void anna_%(moduleName)_load(anna_stack_template_t *stack)
+{
+    mid_t latest_mid;    
     anna_function_t *latest_function;
     anna_type_t *stack_type = anna_stack_wrap(stack)->type;
-    anna_module_data_t modules[] ={
-	%(moduleData)
-        };    
+    anna_module_data_t modules[] =
+        {
+%(moduleData)        };
     anna_module_data_create(modules, stack);
 
     wchar_t *this_argn[] = {L\"this\"};
 
-%(load);    
-     anna_type_data_register(anna_%(moduleName)_type_data, stack);
+%(load)
+    anna_type_data_register(anna_%(moduleName)_type_data, stack);
 }
 " % [
             "moduleName": moduleName, 

@@ -14,9 +14,8 @@
 	<div class="anna-main-inner">
 	  <h1><a name='root'>A brief introduction to Anna</a></h1>
 	  <pre class="anna-code">
-def main()
-{
-    print("Hello, World!");
+def main() {
+    print("Hello, World!")
 }
 	  </pre>
 	  <p>
@@ -91,14 +90,12 @@ def main()
 
 	  <h3><a name="examples-functions">Defining and calling functions</a></h3>
 	  <pre class="anna-code">
-def Int fibonacci(Int n) 
-{
+def Int fibonacci(Int n) {
     return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
 }
 
-def main()
-{
-    print(fibonacci(20));
+def main() {
+    print(fibonacci(20))
 }
 	  </pre>
 	  <p>
@@ -172,12 +169,11 @@ return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
 	    while longer.
 	  </p>
 	  <pre class="anna-code">
-def main()  
-{
-    doggie := "woof";   // Declare dogie as a variable holding the value woof
-    print(doggie);	// Print woof
-    doggie = "mooo";       // Assign mooo to doggie
-    print(doggie);         // Print mooo
+def main() {
+    doggie := "woof"   // Declare dogie as a variable holding the value woof
+    print(doggie)	// Print woof
+    doggie = "mooo"       // Assign mooo to doggie
+    print(doggie)         // Print mooo
 }
 	  </pre>
 	  <p>
@@ -205,7 +201,7 @@ def main()
 	    called <code class="anna-code">as</code>. It is used like this:
 	  </p>
 	  <pre class="anna-code">
-cat := "meow" as Object;  // Declare cat as a variable of type Object
+cat := "meow" as Any  // Declare cat as a variable of type Any
 	  </pre>
 	  <p>
 	    The above code will declare the variable cat, which will be of
@@ -217,7 +213,7 @@ cat := "meow" as Object;  // Declare cat as a variable of type Object
 	    So what happens if we try to perform an invalid cast? Let's find out!
 	  </p>
 	  <pre class="anna-code">
-print(1337 as String);  // Invalid cast, returns null
+print(1337 as String)  // Invalid cast, returns null
 	  </pre>
 	  <p>
 	    When we try to perform an invalid cast, the null value
@@ -241,7 +237,7 @@ print(1337 as String);  // Invalid cast, returns null
 	    is how you declare a constant:
 	  </p>
 	  <pre class="anna-code">
-pi :== 4.0;    // Declare pi as a constant with value 4.0
+pi :== 4.0    // Declare pi as a constant with value 4.0
 	  </pre>
 	  <p>
 	    To learn more about type inference,
@@ -255,30 +251,30 @@ pi :== 4.0;    // Declare pi as a constant with value 4.0
   Prints 1307674368000. Integers in Anna are arbitrary precision, so there are 
   no overflows
 */
-print(1*2*3*4*5*6*7*8*9*10*11*12*13*14*15);
+print(1*2*3*4*5*6*7*8*9*10*11*12*13*14*15)
 
 // Underscores in numeric literals are ignored
-print(100_000_000);
+print(100_000_000)
 
 // Hexadecimal, binary and octal integer literals
-print(0xdeadbeef, 0b010101, 0o777);
+print(0xdeadbeef, 0b010101, 0o777)
 
 // This is a decimal integer literal, not an octal one. Use the 0o prefix to 
 // specify octal integer literals 
-print(0777);
+print(0777)
 
 // Prints 3.5. The output type of Int/Float algebra is always a Float. 
-print(1 + 2.5);
+print(1 + 2.5)
 
 // Another way of saying 1.0
-print(1_000.0e-3);
+print(1_000.0e-3)
 
 /* 
   These two lines are syntax errors - floating point numbers must have at least
   one digit before and after the decimal point 
 */
-print( 0. );
-print( .5 );
+print( 0. )
+print( .5 )
 	  </pre>
 	  <p>
 	    Anna employs some clever tricks to store numbers efficiently.
@@ -306,27 +302,27 @@ lst := ["first", "second", "third", "fourth"]
 */
 
 // Prints «first fourth»
-print(lst[0], lst[-1]);
+print(lst[0], lst[-1])
 
 // Print the number of members. In this case, that is '4'
-print(lst.count);
+print(lst.count)
 
 // Truncate the list to three elements
-lst.count = 3;
+lst.count = 3
 
 // Increase the list length to 15. The new elements will have null as their 
 // initial value.
-lst.count = 15;
+lst.count = 15
 
 // Create a new list, which contains the members of the original list 
 // in the range of 1 (inclusive) to 3 (exclusive)
 lst2 := lst[1..3]
 
 // Print the number of members. In this case, that is '2'
-print(lst2.count);
+print(lst2.count)
 
 // Prints the first member of lst2, which is "second"
-print(lst2[0]);
+print(lst2[0])
 
 /* 
   Lists are suitable for use as stacks. Use the push and pop methods
@@ -336,26 +332,26 @@ print(lst2[0]);
 */
 
 // Push an element to the end of a list
-lst2.push("last");
+lst2.push("last")
 
 // Remove and return the last element of a list
-print(lst2.pop());
+print(lst2.pop())
 
 // The «empty?» property is 1 if the list is empty, and null otherwise
 print(lst.empty?)
 
 // Join two lists together
-lst3 := ["Spoon", "Banana"] ~ lst2;
+lst3 := ["Spoon", "Banana"] ~ lst2
 
 // Append one list to another
-lst ~= ["Cheese", "Eggs"];
+lst ~= ["Cheese", "Eggs"]
 
 /*
   Lists know the type of object they store, e.g. String or Int.
 
   This is a compile time error - lst3 is a list of strings, not a list of integers
 */
-lst3.push(5);
+lst3.push(5)
 
 /*
   When creating a list using a collection literal, Anna automatically
@@ -376,7 +372,7 @@ objList := «Object»[1, 3, 5, "hello", 6.666]
   It returns null if not, and the integer offset of the item if true.
   In this case, «3» will be printed.
 */
-print("hello" in objList);
+print("hello" in objList)
 	  </pre>
 	  <ul>
 	    <li>
@@ -405,14 +401,14 @@ print("hello" in objList);
   assignment. ':==' would also have worked, and would have declared foo, bar 
   and baz as constants.
 */
-[foo, bar, baz] := [1, 2, 3];
+[foo, bar, baz] := [1, 2, 3]
 
 /*
   This will also work as expected, though someFancyFunction must of course 
   return a collection of Ints, or there will be a compile time type checking
   error.
 */
-[foo, bar, baz] = someFancyFunction();
+[foo, bar, baz] = someFancyFunction()
 	  </pre>
 	  <h3><a name="examples-maps">Maps</a></h3>
 	  <p>
@@ -427,28 +423,28 @@ print("hello" in objList);
 hash := ["first":"A", "second":"B", "third":"C", "fourth":"D"]
 
 // Print the number of members. In this case, that is '4'
-print(hash.count);
+print(hash.count)
 
 // Hashes are not ordered, so there is no well defined way to truncate them.
 // For that reason, the count property for hashes is read only, making this a 
 // syntax error.
-hash.count = 3;
+hash.count = 3
 
 // Prints the value associated with the key "third", which is "C".
-print(hash["third"]);
+print(hash["third"])
 
 // Add another mapping
-hash["other"] = "unknown";
+hash["other"] = "unknown"
 
 // "unknown" is not in the hash, so this returns null
-print(hash["unknown"]);
+print(hash["unknown"])
 
 // Set the default value to "I don't know"
-hash.default = "I don't know";
+hash.default = "I don't know"
 
 // "unknown" is not in the hash, but this time we have set
 // a default value for the hash, namely "I don't know".
-print(hash["unknown"]);
+print(hash["unknown"])
 
 /* 
   The in operator checks if the specified key exists in the map. Note that this 
@@ -456,7 +452,7 @@ print(hash["unknown"]);
   not the keys. It returns null if not, and non-null otherwise. In this case, 
   «?» will be printed.
 */
-print("unknown" in hash);
+print("unknown" in hash)
 	  </pre>
 	  <ul>
 	    <li>
@@ -472,33 +468,31 @@ print("unknown" in hash);
   In addtion to using only ordering to determine input parameters in a
   function call, Anna supports mapping parameters by name as well.
 */
-math.sin(value: 1.0);
+math.sin(value: 1.0)
 
 /*
   Named parameters in function calls can significantly increase code
   readability for calls to function that accept many parameters.
 */
 
-def myFun(Int intVal, Float floatVal, String stringVal, Char charVal)
-{
-    return intVal + floatVal + stringVal.count + charVal.ordinal;
+def myFun(Int intVal, Float floatVal, String stringVal, Char charVal) {
+    return intVal + floatVal + stringVal.count + charVal.ordinal
 }
 
 // The following two calls are equivalent
-myFun(1, 2.0, "abc", 'g');
-myFun(floatVal:2.0, stringVal:"abc", charVal:'g', intVal:1);
+myFun(1, 2.0, "abc", 'g')
+myFun(floatVal:2.0, stringVal:"abc", charVal:'g', intVal:1)
 
 // Function parameters can also have a default value. 
 
-def myFun(Int intVal, Float floatVal, String stringVal = "", Char charVal = 'a')
-{
-    return intVal + floatVal + stringVal.count + charVal.ordinal;
+def myFun(Int intVal, Float floatVal, String stringVal = "", Char charVal = 'a') {
+    return intVal + floatVal + stringVal.count + charVal.ordinal
 }
 
 // The following three calls are equivalent
-myFun(1, 2.0);
-myFun(floatVal:2.0, intVal: 1);
-myFun(1, 2.0, "", 'a');
+myFun(1, 2.0)
+myFun(floatVal:2.0, intVal: 1)
+myFun(1, 2.0, "", 'a')
 	  </pre>
 
 	  <h3><a name="examples-looping">Looping</a></h3>
@@ -506,9 +500,8 @@ myFun(1, 2.0, "", 'a');
 	    The while loop looks like in any other C-like language
 	  </p>
 	  <pre class="anna-code">
-while(1)
-{
-    print("Are we having fun yet?");
+while(1) {
+    print("Are we having fun yet?")
 }
 	  </pre>
 	  <p>
@@ -551,7 +544,7 @@ while(1)
 	    index/key and the second is the value:
 	  </p>
 	  <pre class="anna-code">
-temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5];
+temperatures := ["Monday":31.1, "Tuesday":31.7, "Wednesday": 32.5]
 temperatures.each(day,value){print("Day: ", day, ", temperature: ", value)}
 	  </pre>
 
@@ -568,7 +561,7 @@ r := 6..10
   We can specify a step on a range. The step on this range is 6,
   making the numbers it contains 5, 11 and 17
 */
-print(5..20|6);
+print(5..20|6)
 
 /*
   Use ... instead of .. to specify an semi-infinite range. This is the 
@@ -583,7 +576,7 @@ print(5..20|6);
   constructor directly. It takes three arguments, first, last and
   step. This is often useful when writing macros.
 */
- r := Range(6, 10, 1);
+ r := Range(6, 10, 1)
 
 /*
   The most common use for ranges is to slice lists and strings
@@ -593,7 +586,7 @@ print(5..20|6);
 print([9,2,3,8,1,6,8,1,5,1,9,4][1|2...]) 
 
 // This outputs «banana»
-print("abrainbadnoah"[1|2...]);
+print("abrainbadnoah"[1|2...])
 	  </pre>
 	  <ul>
 	    <li>
@@ -620,25 +613,21 @@ print("abrainbadnoah"[1|2...]);
 	    to be false, and that is the null object.
 	  </p>
 	  <pre class="anna-code">
-if(?)
-{
+if(?) {
   // ? (aka null) is the only false value in Anna.
   // This will _not_ get executed
 }
 
-if(0)
-{
+if(0) {
   // The number 0 is an Int objects, and all Int objects are considered
   // to be true, so this will get executed
 }
 
-if([])
-{
+if([]) {
   // En empty list is also true, so this will also get executed
 }
 
-if(false)
-{
+if(false) {
   // This is likely a syntax error -there is no 'true' or 'false' constant 
   // defined in Anna. 
 }
@@ -659,7 +648,7 @@ if(false)
   that are checked, in this case Int and Int. In other words, the laps variable
   will have the type Int.
 */
-laps := Int::convert(system.argument[1]) or 5;
+laps := Int::convert(system.argument[1]) or 5
 
 /*
   The code below checks if the first command line argument is
@@ -672,7 +661,7 @@ laps := Int::convert(system.argument[1]) or 5;
   If no level is set or if the conversion fails, an additional or
   expression sets the default to 2.
 */
-level := (system.argument[1] == "--level") and Int::convert(system.argument[2]) or 2;
+level := (system.argument[1] == "--level") and Int::convert(system.argument[2]) or 2
 	  </pre>
 	  
 	  <h3><a name="examples-null">Null</a></h3>
@@ -686,7 +675,7 @@ level := (system.argument[1] == "--level") and Int::convert(system.argument[2]) 
 	  </p>
 	  <pre class="anna-code">
 // This will print «nullnullnullnullnull»
-print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
+print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 )
 	  </pre>
 
 
@@ -696,9 +685,8 @@ print(?, 1+?, (? as String)~ "hello", "hello" ~ ?, (? as Int) + 1 );
   Previous examples have shown us that this is the standard way to define 
   a function
 */
-def myFunctionDecl(Int arg)
-{
-    return arg+1;
+def myFunctionDecl(Int arg) {
+    return arg+1
 }
 
 /*
@@ -706,7 +694,7 @@ def myFunctionDecl(Int arg)
   that is, a function not bound to a constant name. We can do this when we 
   simply want to send a function as a parameter to another function call:
 */
-print(functional.reduce([1,2,3,4], 0, def (Int a, Int b){a+b}));
+print(functional.reduce([1,2,3,4], 0, def (Int a, Int b){a+b}))
 
 /*
   Creating a named function is really just a short hand for doing two
@@ -715,9 +703,8 @@ print(functional.reduce([1,2,3,4], 0, def (Int a, Int b){a+b}));
   like this:
 */
 
-myFunctionConst :== def (Int arg)
-{
-    return arg+1;
+myFunctionConst :== def (Int arg) {
+    return arg+1
 }
 
 /*
@@ -730,14 +717,14 @@ myFunctionVar := def (Int arg){ arg+1 }
   It (obviously) doesn't matter if you're calling a function variable or a 
   function constant. This will print 8.
 */
-print(myFunctionVar(7));
+print(myFunctionVar(7))
 
 /*
   But a variable can be reassigned. This will print 7, because the function 
   variable has been reassigned.
 */
 myFunctionVar = def (Int arg){ arg }
-print(myFunctionVar(7));
+print(myFunctionVar(7))
 	  </pre>
 	  
 
@@ -746,22 +733,20 @@ print(myFunctionVar(7));
 /*
   Use the class keyword to define your own types
 */
-class MyClass
-{
+class MyClass {
     // This declares that the type has a member of type Int with the 
     // name myMember and the initial value 7.
-    myMember := 7;
+    myMember := 7
 
     // This declares that the type has a method named myMethod
-    def myMethod()
-    {
+    def myMethod() {
         // If an identifier can't be found in the scope of the local 
         // function, the object scope is automatically checked.
-        print(myMember);
+        print(myMember)
 
         // The identifier «this» automatically exists and points to
         // the current object
-        print(type(this).name);
+        print(type(this).name)
     }
 
 }
@@ -770,17 +755,17 @@ class MyClass
   Call a type in order to create a new object instance of that type.
   This calls the constructor, which sets the value of myMember to 7.
 */
-myInstance := MyClass();
+myInstance := MyClass()
 
 // This will print «7» and «MyClass».
-myInstance.myMethod();
+myInstance.myMethod()
 
 // Member variables are public by default.
 // For now, there is no support for non-public members.
-myInstance.myMember = 9;
+myInstance.myMember = 9
 
 // This will print «9» and «MyClass».
-myInstance.myMethod();
+myInstance.myMethod()
 	  </pre>
 	  
 	  <h3><a name="examples-properties">Properties</a></h3>
@@ -789,19 +774,19 @@ myInstance.myMethod();
   Properties are method calls that look like member variables. For example, the
   count property of the List type returns the number of elements in the list.
 */
-myList := [1, 2, 3];
-print(myList.count); // This prints 3
-myList.push(0);
-print(myList.count); // This prints 4
+myList := [1, 2, 3]
+print(myList.count) // This prints 3
+myList.push(0)
+print(myList.count) // This prints 4
 
 /*
   Some properties are read only, like List::empty?, but others can be written to
   as well as read. MutableList::count can be written to.
 */
-myList.count = 2; // This truncates the list
-print(myList, myList.count); // This prints [1, 2] 2
-myList.count = 5; // This will null-pad the list to five elements.
-print(myList.count); // This prints 5
+myList.count = 2 // This truncates the list
+print(myList, myList.count) // This prints [1, 2] 2
+myList.count = 5 // This will null-pad the list to five elements.
+print(myList.count) // This prints 5
 
 /*
   Defining you own properties is straight forward. Define a getter and
@@ -809,22 +794,19 @@ print(myList.count); // This prints 5
   declare a member variable and add a property attribute to it, giving
   the name of the getter/setter as parameters.
 */
-class PropertyExample 
-{
-    propValue := 0;
+class PropertyExample {
+    propValue := 0
 
-    def myGetter()
-    {
-        propValue;
+    def myGetter() {
+        propValue
     }
 
-    def mySetter(Int val)
-    {
-        print("Setting myProperty to %" % [val]);
-        propValue = val;
+    def mySetter(Int val) {
+        print("Setting myProperty to %" % [val])
+        propValue = val
     }
 
-    var Int myProperty (property(myGetter, mySetter));
+    var Int myProperty (property(myGetter, mySetter))
 }
 
 /*
@@ -832,11 +814,9 @@ class PropertyExample
   hand. Simply define a suitable getter method and add the property
   attribute directly to the getter method like this:
 */
-class PropertyExample2
-{
-    def myProperty() (property)
-    {
-        3;
+class PropertyExample2 {
+    def myProperty() (property) {
+        3
     }
 }
 	  </pre>
@@ -846,49 +826,45 @@ class PropertyExample2
 // When defining a type, members can be set as static using the 
 // static attribute
 
-class MyClass
-{
-    var Int staticVar (static);
+class MyClass {
+    var Int staticVar (static)
 }
 
 // Static variables are shared between all instances of an object,
 // so this will print '7'
-mt1 := MyClass(), mt2 := MyClass();
-mt1.staticVar = 7;
-print(mt2.staticVar);
+mt1 := MyClass(), mt2 := MyClass()
+mt1.staticVar = 7
+print(mt2.staticVar)
 
 // Static members can be accessed by using the :: operator
-MyClass::staticVar = 9;
+MyClass::staticVar = 9
 
 // If a method is accessed using the static member access operator, the unbound
 // version of the method is returned. The unbound method does not have an 
 // implicit «this», so it needs an additional input parameter, which is the
 // first parameter in the list.
-myList := [];
+myList := []
 
 // This is identical to myList.push(7)
-MutableList::push(myList, 7);
+MutableList::push(myList, 7)
 
 // Methods can be defined as static, just like variables
-class MyClass
-{
+class MyClass {
 
-    def Object staticMeth() (static)
-    {
+    def Object staticMeth() (static) {
         // In static methods, this does not point to the current 
         // object instance (there is none), instead this points
         // to the type. 
 
         // This might seem meaningless, but can actually be quite useful 
         // in static methods of subclassed types.
-	print(this, this::staticMeth);
+	print(this, this::staticMeth)
     }
 
 }
 
-def main()
-{
-    MyClass::staticMeth();
+def main() {
+    MyClass::staticMeth()
 }
 	  </pre>
 
@@ -906,9 +882,9 @@ def main()
   All conversions in Anna are by convention done using the static
   convert method.
 */
-sevenString :== String::convert(7);
-sevenFloat :== Float::convert(sevenString);
-sevenComplex :== Complex::convert(sevenFloat);
+sevenString :== String::convert(7)
+sevenFloat :== Float::convert(sevenString)
+sevenComplex :== Complex::convert(sevenFloat)
 	  </pre>
 
 	  <p>
@@ -938,15 +914,15 @@ sevenComplex :== Complex::convert(sevenFloat);
   imutable. This is a compile time error, because ImutableString 
   does not have a __set__ function.
 */
-imutableString :== "foo";
-imutableString[0] = 'F';
+imutableString :== "foo"
+imutableString[0] = 'F'
 
 /*
   Use the thaw property to get a mutable version of the String.
   This will work as expected.
 */
-mutableString :== "foo".thaw;
-mutableString[0] = 'F';
+mutableString :== "foo".thaw
+mutableString[0] = 'F'
 
 /*
   You can use the ~= append operator both on mutable and imutable
@@ -956,27 +932,27 @@ mutableString[0] = 'F';
   situations, you can speed up the program by making sure the String 
   you're appending to is mutable:
 */
-result :== "".thaw;
+result :== "".thaw
 someCollection.each(item){ result ~= doSomeProccessing(item) }
 
 /*
   The List collection literal is mutable, so this is ok.
 */
-mutableList :== [1,2,3];
-mutableList[0] = 0;
+mutableList :== [1,2,3]
+mutableList[0] = 0
 
 /*
   MutableList.freeze returns an ImutableList, so this is a compile time error.
 */
-imutableList :== [1,2,3].freeze;
-imutableList[0] = 0;
+imutableList :== [1,2,3].freeze
+imutableList[0] = 0
 
 /*
   The thaw property of a mutable object returns itself, as does the
   freeze property of an imutable object.
 */
-useless :== "useless".freeze;
-alsoUseless := ["useless"].thaw;
+useless :== "useless".freeze
+alsoUseless := ["useless"].thaw
 /* 
   Note that when thawing an already mutable object, the convention is
   to return the object itself, not a copy.
@@ -984,10 +960,10 @@ alsoUseless := ["useless"].thaw;
   This will print «I'm a little tea»
 */
 
-  thing :== "tea";
-  thing2 := thing.thaw;
-  thing2 ~= "pot";
-  print("I'm a little %()" % [thing]);
+  thing :== "tea"
+  thing2 := thing.thaw
+  thing2 ~= "pot"
+  print("I'm a little %()" % [thing])
 	  </pre>
 	  <p>
 	    For more information on mutability in Anna, see
@@ -1009,17 +985,17 @@ lst :== MutableList«Int»()
   parameter types can be calculated from the constructor call. This
   will also create a list of Int items.
 */
-lst2 :== MutableList(5,6,7);
+lst2 :== MutableList(5,6,7)
 
 /*
   The specialization of collection literals can be specified
 */
 
 // Empty list of integers
-lst3 :== «Int»[];
+lst3 :== «Int»[]
 
 // Empty HashMap mapping from String to Char
-hash :== «String, Char»[];
+hash :== «String, Char»[]
 
 /*
   A simple example of how to create your own template type.
@@ -1030,15 +1006,14 @@ hash :== «String, Char»[];
   arguments that are type names must begin with an upper case letter.
 */
 class Foo (template(%A:Int)) {
-    def %A bar(%A a, %A b){
-        a+b;
+    def %A bar(%A a, %A b) {
+        a+b
     }
 }
 
-def Int main()
-{
-    foo :== Foo«Float»();
-    print(foo.bar(3.0,4.0));
+def Int main() {
+    foo :== Foo«Float»()
+    print(foo.bar(3.0,4.0))
 }
 
 /*
@@ -1046,28 +1021,25 @@ def Int main()
   types. In this example, we specify which member method should be
   called by using a template.  
 */
-class Foo (template(%op:__add__)) 
-{
+class Foo (template(%op:__add__)) {
 
-    def Int bar(Int a, Int b)
-    {
-        a.%op(b);
+    def Int bar(Int a, Int b) {
+        a.%op(b)
     }
 
 }
 
-def Int main()
-{
-    foo :== Foo();
-    print(foo.bar(3,4));
-    boo :== Foo«__sub__»();
-    print(boo.bar(3,4));
+def Int main() {
+    foo :== Foo()
+    print(foo.bar(3,4))
+    boo :== Foo«__sub__»()
+    print(boo.bar(3,4))
 }
 
 // On some keyboard layouts, «» may not be easily accessible. And If you're
 // not using a unicode character set, «» may not even be available to you. 
 // As a fallback, Anna also supports using &lt;&lt;&gt;&gt;.
-&lt;&lt;Int&gt;&gt;[];
+&lt;&lt;Int&gt;&gt;[]
 	  </pre>
 	  <ul>
 	    <li>
@@ -1096,16 +1068,16 @@ TODO
 	  </p>
 	  <pre class="anna-code">
 // This is a boring piece of code
-first :== getNextValue(someValue, someOtherValue);
-second :== getNextValue(someValue, someOtherValue);
-third :== getNextValue(someValue, someOtherValue);
-fourth :== getNextValue(someValue, someOtherValue);
-fifth :== getNextValue(someValue, someOtherValue);
+first :== getNextValue(someValue, someOtherValue)
+second :== getNextValue(someValue, someOtherValue)
+third :== getNextValue(someValue, someOtherValue)
+fourth :== getNextValue(someValue, someOtherValue)
+fifth :== getNextValue(someValue, someOtherValue)
 
 // This is exactly equivalant to the above, but less redundant
 expandCode(
     %var :== getNextValue(someValue, someOtherValue),
-    var: [first, second, third, fourth, fifth]);    
+    var: [first, second, third, fourth, fifth])    
 	  </pre>
 	  <ul>
 	    <li>
@@ -1170,28 +1142,22 @@ expandCode(
 /*
   Switch containing Int:s
  */
-(0..10).each(foo)
-{
-    switch(foo)
-    {
-	case(2,4,6,8)
-	{
-	    print("Even");
+(0..10).each(foo) {
+    switch(foo) {
+	case(2,4,6,8) {
+	    print("Even")
 	}
 
-	case(7)
-	{
-	    print("Seven");
+	case(7) {
+	    print("Seven")
 	}
 
-	cases(1..5|2)
-	{
-	    print("Odd");
+	cases(1..5|2) {
+	    print("Odd")
 	}
 
-	default
-	{
-	    print("Whatever");
+	default {
+	    print("Whatever")
 	}
     }
 }
@@ -1199,55 +1165,43 @@ expandCode(
 /*
   Switch containing strings
 */
-["abc", "a", "aa", ?, "bbb"].each(bar)
-{
-    switch(bar)
-    {
-	case("abc")
-	{
-	    print("abc");
+["abc", "a", "aa", ?, "bbb"].each(bar) {
+    switch(bar) {
+	case("abc") {
+	    print("abc")
 	}
 
-	case("b", "bb", "bbb")
-	{
-	    print("Bunch of b:s");
+	case("b", "bb", "bbb") {
+	    print("Bunch of b:s")
 	}
 
-	cases(["a":?, "o":?, "u":?, "e":?, "i":?, "y":?])
-	{
-	    print("Vowel");
+	cases(["a":?, "o":?, "u":?, "e":?, "i":?, "y":?]) {
+	    print("Vowel")
 	}
 
-	default
-	{
-	    print("Don't righly know!");
+	default {
+	    print("Don't righly know!")
 	}
     }
 }
 
 // Loop over a series of items and classify them using their type
-[3, 4.0, "foo", 'g'].each(item)
-{
-    switch(item)
-    {
-	case(i as Int)
-	{
-	    print("It is an Int, its square is ", i*i);
+[3, 4.0, "foo", 'g'].each(item) {
+    switch(item) {
+	case(i as Int) {
+	    print("It is an Int, its square is ", i*i)
 	}
 
-	case(f as Float)
-	{
-	    print("It is a Float, its square root is ", math.sqrt(f));
+	case(f as Float) {
+	    print("It is a Float, its square root is ", math.sqrt(f))
 	}
 
-	case(s as String)
-	{
-	    print("It is a String, its length is ", s.count);
+	case(s as String) {
+	    print("It is a String, its length is ", s.count)
 	}
 
-	default
-	{
-	    print("Don't know, don't care");
+	default {
+	    print("Don't know, don't care")
 	}
     }
 }
@@ -1269,9 +1223,9 @@ expandCode(
   specific list of fields in. All fields are typed based on the 
   input provided to the struct macro.
 */
-myVar :== struct(someNumber: 7, someString: "hello", someList: [1,2,3]);
+myVar :== struct(someNumber: 7, someString: "hello", someList: [1,2,3])
 // Prints «10 helloworld 2»
-print(myVar.someNumber + 3, myVar.someString ~ "world", myVar.someList[1]);
+print(myVar.someNumber + 3, myVar.someString ~ "world", myVar.someList[1])
 	  </pre>
 	  <p>
 	    <code class="anna-code">struct</code> is just a regular
@@ -1285,30 +1239,27 @@ print(myVar.someNumber + 3, myVar.someString ~ "world", myVar.someList[1]);
 	    
 	  </p>
 	  <pre class="anna-code">
-enum MyEnum
-{
+enum MyEnum {
     foo,
     bar = 32,
     baz
 }
 
-enum MyEnum2
-{
+enum MyEnum2 {
     aaa=-7,
     bbb,
     ccc
 }
 
-def main()  
-{
+def main() {
     // This will print the names of these three enum values, namely «foo bar baz»
-    print(MyEnum::foo, MyEnum::bar, MyEnum::baz);
+    print(MyEnum::foo, MyEnum::bar, MyEnum::baz)
     // This will print the actual integer value, which is 0
-    print(MyEnum::foo.__value);
+    print(MyEnum::foo.__value)
     // MyEnum2 starts at offset -7, so this will print «-7 -6 -5»
     print(
         MyEnum2::aaa.__value, MyEnum2::bbb.__value, 
-        MyEnum2::ccc.__value);
+        MyEnum2::ccc.__value)
 }
 	  </pre>
 
@@ -1324,22 +1275,21 @@ def main()
   A simple macro that takes a string literal and reverses the order of the 
   characters in it
 */
-macro reverseStringLiteral(node)
-{
+macro reverseStringLiteral(node) {
     /*
       Check that we have exactly one argument to the macro, otherwise set the 
       error flag, print an error message and return a null literal. 
     */
-    checkCallCount(node, 1);
+    checkCallCount(node, 1)
     /*
       Check that node[0] is a StringLiteral ast symbol, otherwise set the 
       error flag, print an error messagge and return a null literal. 
     */
-    checkNodeType(node[0], StringLiteral);
+    checkNodeType(node[0], StringLiteral)
     /*
       Return a new StringLiteral, that is the reverse of the original literal
     */
-    return StringLiteral(node, (node[0] as StringLiteral).payload[-1|-1...]);
+    return StringLiteral(node, (node[0] as StringLiteral).payload[-1|-1...])
 }
 
 /*
@@ -1349,12 +1299,11 @@ macro reverseStringLiteral(node)
   If the above macro was defined in the file myStringMacro.anna, then it could
   be used like this in another file:
 */
-expand(myStringMacro);
+expand(myStringMacro)
 
-def main()
-{
+def main() {
     // Prints olleH
-    print(reverseStringLiteral("Hello"));
+    print(reverseStringLiteral("Hello"))
 }
 	  </pre>
 	  <p>
@@ -1363,9 +1312,8 @@ def main()
 	    macro using the following def syntax:
 	  </p>
 	  <pre class="anna-code">
-def parser.Node reverseStringLiteral(parser.Call node)
-{
-    use(parser);
+def parser.Node reverseStringLiteral(parser.Call node) {
+    use(parser)
     ...
 }
 	  </pre>
@@ -1603,7 +1551,7 @@ TODO
 	      should have, and not force you to write it out multiple
 	      times. Variables in Anna are usually declared by writing
 	      something like <code class="anna-code">foo :=
-	      bar();</code>. Note the use of := instead of plain old
+	      bar()</code>. Note the use of := instead of plain old
 	      =. This makes the above expression into a variable
 	      declaration, not an assignment. The correct type for the
 	      foo variable in the code above is determined at compile
@@ -1682,18 +1630,15 @@ TODO
 	    below:
 	  </p>
 	  <pre class="anna-code">
-macro replaceObjectWithInt(node)
-{
-    node.replaceChildren(child)
-    {
-        id :== child as Identifier;
-	if(id and id.name=="Object")
-	{
-	    return Identifier(id, "Int");
+macro replaceObjectWithInt(node) {
+    node.replaceChildren(child) {
+        id :== child as Identifier
+	if(id and id.name=="Object") {
+	    return Identifier(id, "Int")
 	}
-	child;
+	child
     }
-    return node;
+    return node
 }
 	  </pre>
 	  <p>
@@ -1720,7 +1665,7 @@ macro replaceObjectWithInt(node)
 	    the standard ISO data format:
 	  </p>
 	  <pre>
-birthday := isoDate(1978-05-20, 12:34:00);
+birthday := isoDate(1978-05-20, 12:34:00)
 	  </pre>
 	  <p>
 	    It is possible to create a list search interface like LINQ
@@ -1810,14 +1755,12 @@ birthday := isoDate(1978-05-20, 12:34:00);
 	    feels and works should be very familiar.
 	  </p>
 	  <pre class="anna-code">
-def Int fibonacci(Int n) 
-{
+def Int fibonacci(Int n) {
     return if (n &lt; 2) { 1 } else { fibonacci(n-2) + fibonacci(n-1) }
 }
 
-def main()
-{
-    print(fibonacci(20));
+def main() {
+    print(fibonacci(20))
 }
 	  </pre>
 	  <p>
@@ -1828,7 +1771,7 @@ def main()
 	    functions:
 	  </p>
 	  <pre class="anna-code">
-functionExpectingAFunctionAsAParameter(def (){print("I am happy")});
+functionExpectingAFunctionAsAParameter(def (){print("I am happy")})
 	  </pre>
 	  <p>
 	    Much like in Ruby, there is a very simple shortcut for
@@ -1839,7 +1782,7 @@ functionExpectingAFunctionAsAParameter(def (){print("I am happy")});
 	    like this:
 	  </p>
 	  <pre class="anna-code">
-functionExpectingAFunctionAsAParameter {print("I am happy")};
+functionExpectingAFunctionAsAParameter {print("I am happy")}
 	  </pre>
 	  <p>
 	    Another way in which Anna is like Python and Ruby is the
@@ -1849,13 +1792,13 @@ functionExpectingAFunctionAsAParameter {print("I am happy")};
 someList = [1, 2, 75, 6, 7]
 
 // Print square off all numbers in someList
-print(someList.map(val) { val*val });
+print(someList.map(val) { val*val })
 
 // Print the even numbers from someList
-print(someList.filter(val) { (val ^mod 2) == 0});
+print(someList.filter(val) { (val ^mod 2) == 0})
 
 // Print the first even number of someList
-print(someList.find(val) { (val ^mod 2) == 0});
+print(someList.find(val) { (val ^mod 2) == 0})
 	  </pre>
 	  <p>
 	    Blocks of code, by the way, are anonymous functions that take 0
@@ -1985,8 +1928,7 @@ print(someList.find(val) { (val ^mod 2) == 0});
 	  </p>
 	  
 	  <pre>
-if(someObject is String.intersect(Int)) 
-{
+if(someObject is String.intersect(Int)) {
     ...
 }
 	  </pre>
@@ -2003,9 +1945,9 @@ if(someObject is String.intersect(Int))
 	    following snippet of Anna code:
 	  </p>
 	  <pre class="anna-code">
-foo :== 1;
-bar :== "1";
-var baz = foo or bar;
+foo :== 1
+bar :== "1"
+var baz = foo or bar
 	  </pre>
 	  <p>
 	    The or operator in Anna will return the first value (foo)
@@ -2035,7 +1977,7 @@ var baz = foo or bar;
 	    trivial example:
 	  </p>
 	  <pre>
-var Int i = 7;
+var Int i = 7
 	  </pre>
 	  <p>
 	    The above is an Anna style variable declaration, the
@@ -2051,7 +1993,7 @@ var Int i = 7;
 	    simpler syntax:
 	  </p>
 	  <pre>
-i :== 7;
+i :== 7
 	  </pre>
 	  
 	  <p>
@@ -2061,8 +2003,8 @@ i :== 7;
 	  </p>
 
 	  <pre class="anna-code">
-var Map«String,Float» map = ["Mon":0.0, "Tue":1.1];
-map := ["Mon":0.0, "Tue":1.1];
+var Map«String,Float» map = ["Mon":0.0, "Tue":1.1]
+map := ["Mon":0.0, "Tue":1.1]
 	  </pre>
 
 	  <p>
@@ -2079,9 +2021,8 @@ map := ["Mon":0.0, "Tue":1.1];
 /*
  * Function with return type implied by the type of value it is returning
  */
-def next(Int in)
-{
-    return in+1;
+def next(Int in) {
+    return in+1
 }
 	  </pre>
 
@@ -2114,31 +2055,26 @@ TODO
 	    how a collect block will usually look like:
 	  </p>
 	  <pre class="anna-code">
-collect
-{
+collect {
     /* Some code that may cause various error conditions */
     ...
 }.each(err){
-    switch(err)
-    {
-	case(ioErr as IOError)
-        {
+    switch(err) {
+	case(ioErr as IOError) {
 	    /* If we encounter an IO error, ignore the rest of the error 
 	     * list, but continue running the program */
-	    print("There was an IO problem. Details:\n", err.message);
-	    break; 
+	    print("There was an IO problem. Details:\n", err.message)
+	    break 
 	}
-	case (pErr as PermissionError)
-        {
+	case (pErr as PermissionError) {
 	    /* If we encounter a permission error, exit the program */
-	    print("Access denied! Shutting down");
-	    exit(1);
+	    print("Access denied! Shutting down")
+	    exit(1)
 	}
-	default 
-        {
+	default {
 	    /* If we encounter any other error,  continue processing the 
 	     * error list */
-	    print("Unknown error. Details:\n", err.message);
+	    print("Unknown error. Details:\n", err.message)
 	}
     }
 }
@@ -2177,12 +2113,11 @@ collect
 	    example:
 	  </p>
 	  <pre class="anna-code">
-var f = File("foo.txt").open();
-while(f.readLine())
-{
+var f = File("foo.txt").open()
+while(f.readLine()) {
     ...
 }
-f.close();
+f.close()
 	  </pre>
 	  <p>
 	    If the file can not be read, either because it doesn't exist or
@@ -2249,7 +2184,7 @@ f.close();
 	  <pre class="anna-code">
 // Define a block
 {
-    print("This is a block, and it will not get run");
+    print("This is a block, and it will not get run")
 }
 	  </pre>
 	  <p>
@@ -2262,15 +2197,14 @@ f.close();
 	  <pre class="anna-code">
 // Define a block and explicitly call it
 {
-    print("This block will be run because it is explicitly called");
-}();
+    print("This block will be run because it is explicitly called")
+}()
 
 // Define a block and assign it to the variable myBlock
-myBlock := 
-{
-    print("This is yet another block");
-};
-myBlock();
+myBlock := {
+    print("This is yet another block")
+}
+myBlock()
 
 	  </pre>
 	  <p>
@@ -2281,17 +2215,15 @@ myBlock();
 	  </p>
 	  <pre class="anna-code">
 // Define an anonymous function and explicitly call it
-def ()
-{
-    print("This function will be run because it is explicitly called");
+def () {
+    print("This function will be run because it is explicitly called")
 }()
 
 // Define a named function
-def myFun()
-{
-    print("This is yet another function");
+def myFun() {
+    print("This is yet another function")
 }
-myFun();
+myFun()
 	  </pre>
 	  <p>
 	    The answer is that blocks are just syntactic sugar for
@@ -2335,31 +2267,27 @@ def () (block){print("hi")}
 	  </p>
 	  <pre class="anna-code">
 // These two lines are completely equivalent
-someFunction(1, 2, 3, {1+1});
-someFunction(1, 2, 3) {1+1};
+someFunction(1, 2, 3, {1+1})
+someFunction(1, 2, 3) {1+1}
 
 // These two lines are also completely equivalent
-someOtherFunction({1+1});
-someOtherFunction {1+1};
+someOtherFunction({1+1})
+someOtherFunction {1+1}
 	  </pre>
 	  <p>
 	    What is the point of this alternative syntax? Here are some examples of it in use:
 	  </p>
 	  <pre class="anna-code">
-if(someCheck())
-{
-    doSomething();
+if(someCheck()) {
+    doSomething()
 }
 
-while(someCondition())
-{
-    doSomething();
+while(someCondition()) {
+    doSomething()
 }
 
-switch(x)
-{
-    case(0)
-    {
+switch(x) {
+    case(0) {
         ...
     }
     ...
@@ -2382,16 +2310,14 @@ switch(x)
 	    transactions. Consider the following piece of code:
 	  </p>
 	  <pre class="anna-code">
-class Database
-{	    
+class Database {	    
 
     ...
 
-    def transaction( def Object code())
-    {
-        connection.beginTransaction();
-        code();
-        connection.commit();
+    def transaction( def Object code()) {
+        connection.beginTransaction()
+        code()
+        connection.commit()
     }
 }
 	  </pre>
@@ -2402,15 +2328,14 @@ class Database
 	  </p>
 	  <pre class="anna-code">
 // Connect to the database
-db := Database(...);
+db := Database(...)
 
 // Start a transaction
-db.transaction
-{
+db.transaction {
     // Perform a bunch of queries. These are all part of the same transaction
-    db.query(...);
-    db.query(...);
-    db.query(...);
+    db.query(...)
+    db.query(...)
+    db.query(...)
 }
 	  </pre>
 	  <h2><a name="operator-overloading">I'll be your
@@ -2436,9 +2361,9 @@ db.transaction
 	    followed by an identifier:
 	  </p>
 	  <pre class="anna-code">
-a :== 4;
-b :== 7;
-print(a ^bitand b);
+a :== 4
+b :== 7
+print(a ^bitand b)
 	  </pre>
 	  <p>
 	    The above example shows usage of
@@ -2450,16 +2375,14 @@ print(a ^bitand b);
 	    define a method named like the operator. An example:
 	  </p>
 	  <pre class="anna-code">
-class Color
-{
-    function blend(Float alpha)
-    {
+class Color {
+    function blend(Float alpha) {
 	...
     }
 }
 
-var col = Color();
-col ^blend 0.1;
+var col = Color()
+col ^blend 0.1
 	  </pre>
 
 	  <table class='anna-table'>
@@ -2641,9 +2564,9 @@ col ^blend 0.1;
   /*
     This is a comment
   */
-  thisIsAComment();
+  thisIsAComment()
 */
-thisIsCode();
+thisIsCode()
 	  </pre>
 
 	  <h2><a name="misc-mutability">Mutability</a></h2>
@@ -2865,34 +2788,30 @@ thisIsCode();
 	    </li>
 	  </ul>
 	  <pre class="anna-code">
-def outerFunction(Int value)
-(
+def outerFunction(Int value) (
     alias(myAlias)
-)
-{
-    print("outer %" % [value]);
+) {
+    print("outer %" % [value])
 }	    
 
 {
-    def innerFunction(Object value)
-    (
+    def innerFunction(Object value) (
         alias(myAlias)
-    )
-    {
-        print("inner %" % [value]);
+    ){
+        print("inner %" % [value])
     }	    
 
     /*
       This will call outerFunction, which will
       print 'outer 7'
     */
-    myAlias(7);
+    myAlias(7)
 
     /*
       This is an error - aliases can only be used when calling a function. 
       They are ignored when performing regular variable lookup.
     */
-    print(myAlias);
+    print(myAlias)
 }()
 	  </pre>
 
@@ -2975,7 +2894,7 @@ def outerFunction(Int value)
 */
 class Foo (template(%A:Int)) {
     def %A bar(%A a, %A b){
-        a+b;
+        a+b
     }
 }
 
@@ -2986,7 +2905,7 @@ class Foo (template(%A:Int)) {
 */
 expandCode(
     %var := getNextValue(someValue, someOtherValue),
-    var: [first, second, third, fourth, fifth]);    
+    var: [first, second, third, fourth, fifth])    
 
 /**
   This (rather meaningless) macro turns a call like 
@@ -2995,14 +2914,13 @@ expandCode(
 
   into
 
-  foo = 7;
+  foo = 7
 
   It uses an internal identifier inside the ast macro to specify what piece of 
   code to replace.
 */
-macro setFooToValue(call)
-{
-    return ast(foo = %value) % ["value": call[0]];
+macro setFooToValue(call) {
+    return ast(foo = %value) % ["value": call[0]]
 }
 	  </pre>
 	  <ul>
@@ -3042,11 +2960,11 @@ macro setFooToValue(call)
 	  </p>
 	  <pre class="anna-code">
 // Prints «This string is used as a template»
-print("This string is used as a %" % ["template"]);
+print("This string is used as a %" % ["template"])
 // Prints «A fancy string uses fancy named placeholders»
 print(
     "A %(quality) string uses %(quality) named placeholders"
-     % ["quality": "fancy"]);
+     % ["quality": "fancy"])
 
 /*
   AST nodes also have a format operator, it works much the same way 
@@ -3054,7 +2972,7 @@ print(
 
   This will print «print(7)»
 */
-print(ast(%someFunction(7)) % ["someVar": parser.identifier(?, "print")]);
+print(ast(%someFunction(7)) % ["someVar": parser.identifier(?, "print")])
 	  </pre>
 <!--
     <h1>A simple, annotated example</h1>
@@ -3069,32 +2987,30 @@ print(ast(%someFunction(7)) % ["someVar": parser.identifier(?, "print")]);
 	Declare a function called mandelbrot, it accepts a complex number 
 	(the coordinate) amd a maximum iteration count.
 */
-function mandelbrot(Complex p0, Int maxStep)
-{
+function mandelbrot(Complex p0, Int maxStep) {
     /*
 	Declare two local variables. The first one is p, which is the same 
 	type as p0 (a Complex) and has the initial value p0.
 	The second one is step, which is the same type as 1 (an Int) and 
 	has the initial value 1.
     */
-    var p = p0;
-    var step = 1;
+    var p = p0
+    var step = 1
     /*
 	While the absolute value of p is less than two and we haven't run 
 	into the maximum iteration count, run the loop block.
     */
-    while(p.abs() &lt; 2.0, and step &lt;= maxStep) 
-    {
+    while(p.abs() &lt; 2.0, and step &lt;= maxStep) {
 	/*
 	    Square p and add p0.
 	*/
-        p = p^2 + p0;
-	step += 1;
+        p = p^2 + p0
+	step += 1
     }
     /*
 	Return the number of iterations used.
     */
-    return step;
+    return step
 }
 /*
     x:y..z defines a range of values from x to z using the step y. We set
@@ -3126,7 +3042,7 @@ function mandelbrot(Complex p0, Int maxStep)
 	    sure the JSON macro parses it to correct Anna code:
 	  </p> 
 	  <pre class="anna-code">
-m :== json({data:[1,2,3,7], unit:"seconds", caption:null});
+m :== json({data:[1,2,3,7], unit:"seconds", caption:null})
 	  </pre>
 	  <p>
 	    Note: This macro has yet to be written. Another very
@@ -3137,10 +3053,10 @@ m :== json({data:[1,2,3,7], unit:"seconds", caption:null});
 	  </p>
 	  <pre class="anna-code">
 // Create a new date from a specified date 
-then := isoDate(2009-1-1, 12:30);
+then := isoDate(2009-1-1, 12:30)
 
 // Move ahead x years and one hour 
-then += isoDateDelta(x-0-0, 1:00);
+then += isoDateDelta(x-0-0, 1:00)
 	  </pre>
 	  
 	  <h1><a name="collections">More about collections</a></h1>
@@ -3195,7 +3111,7 @@ then += isoDateDelta(x-0-0, 1:00);
 	    When assigning beyond the last index of a list, it is
 	    dynamically resized. All previously unassigned slots are
 	    given the null value. Code
-	    like <code class="anna-code">silly=[];silly[99999999999999999]=?;</code>
+	    like <code class="anna-code">silly=[],silly[99999999999999999]=?</code>
 	    is an excellent way to run out of memory.
 	  </p>
 	  <p>
@@ -3283,8 +3199,8 @@ then += isoDateDelta(x-0-0, 1:00);
 		<td>
 		  <pre class='anna-code'>
 {
-    foo;
-    bar;
+    foo
+    bar
 }
 		  </pre>
 		</td>
@@ -3420,7 +3336,7 @@ then += isoDateDelta(x-0-0, 1:00);
 	      <tr>
 		<td>
 		  <code class='anna-code'>
-def next(Int in) {in+1};
+def next(Int in) {in+1}
 		  </code>
 		</td>
 		<td>
@@ -3435,7 +3351,7 @@ __const__(
             __var__(in, Int, ?, __block__())),
         __block__(),
         __block__(__memberGet__(in,__add__)(1))),
-    __block__());
+    __block__())
 		  </pre>
 		</td>
 	      </tr>
@@ -3496,14 +3412,12 @@ __const__(
 	      <tr>
 		<td>
 		  <pre class='anna-code'>
-class MyClass 
-(
+class MyClass (
     extends(BaseClass)
-)
-{
+) {
     def myMethod(){
         print(
-            "Here we are!");
+            "Here we are!")
     }
 }
 		  </pre>
@@ -3529,7 +3443,7 @@ __const__(
                         print("Here we are!")
                     )),
                 __block__()))),
-    __block__(extends(BaseClass)));
+    __block__(extends(BaseClass)))
 		  </pre>
 		</td>
 	      </tr>
@@ -3565,7 +3479,7 @@ __const__(
 	    the <code class="anna-code">baz</code> member often, and
 	    don't want to use the full path of the member, use
 	    the <code class="anna-code">use</code> expression,
-	    e.g. <code class="anna-code">use(fooBar);</code>. In any
+	    e.g. <code class="anna-code">use(fooBar)</code>. In any
 	    scope where a use expressioin is visible, the members of
 	    the library can be used directly, e.g.  by
 	    writing <code class="anna-code">baz</code>. The
@@ -3577,12 +3491,11 @@ __const__(
 	    possible.
 	  </p>
 	  <pre class="anna-code">
-def someFunction()
-{
-    use(math);
+def someFunction() {
+    use(math)
     // Because of the use expression, pi in the expression below will be
     // resolved to math.pi, e.g. the constant pi in the math library.
-    print(pi);
+    print(pi)
 }
 	  </pre>
 	  <ul>
@@ -3626,13 +3539,13 @@ def someFunction()
   The use expression can be used for other things than just importing a 
   library.
 */
-lst :== [];
-use(lst);
+lst :== []
+use(lst)
 /* These calls resolve to lst.push, because lst is use:d */
-push(1);
-push(2);
-push(3);
-print(pop(), pop(), pop());
+push(1)
+push(2)
+push(3)
+print(pop(), pop(), pop())
 	  </pre>
 	  <h1><a name="design">Design choices</a></h1>
 	  <p>
@@ -3694,7 +3607,7 @@ print(pop(), pop(), pop());
 	    <li>
 	      Anna uses two different
 	      separators, <code class="anna-code">,</code> (comma)
-	      and <code class="anna-code">;</code> (semicolon). These
+	      and <code class="anna-code"></code> (semicolon). These
 	      can be used completely interchangeably.
 	    </li>
 	    <li>
@@ -3732,41 +3645,40 @@ print(pop(), pop(), pop());
    this is historical - that's how code has traditionally been written
    in C-like languages.
 */
-default
-{
-    foo;
-    bar;
-    baz;
+default {
+    foo
+    bar
+    baz
 }
 
 someFunctionCall(
     arg1,
     arg2,
     arg3,
-    );
+    )
 
 literal :== [
     "first",
     "second",
     "third",
-    ];
+    ]
 
 /*
    The only exceptions to this rule is that it is ok to group together
    multiple constant or variable declarations on a single line with commas.  
 */
 
-foo :== 1, bar :== 2, baz :== 3;
+foo :== 1, bar :== 2, baz :== 3
 
 /*
    Single-line expression groups should never have a trailing
    separator. The reason is to keep down the amount of clutter.
 */
-default { foo; bar }
+default { foo, bar }
 
-someFunctionCall(arg1, arg2);
+someFunctionCall(arg1, arg2)
 
-literal :== ["first", "second"];
+literal :== ["first", "second"]
 	  </pre>
 	  
 	  <h2><a name="design-naming">Naming of variables and types</a></h2>
@@ -3880,17 +3792,15 @@ literal :== ["first", "second"];
 */
 class Foo (template(%op:?)) {
 
-    def bar(Int a, Int b)
-    {
-        %op;
+    def bar(Int a, Int b) {
+        %op
     }
 
 }
 
-def Int main()
-{
-    boo :== Foo«a &gt; b»();
-    print(boo.bar(3,4));
+def Int main() {
+    boo :== Foo«a &gt; b»()
+    print(boo.bar(3,4))
 }
 	  </pre>
 	  <p>
@@ -3983,8 +3893,7 @@ def Int main()
 	    like this:
 	  </p>
 	  <pre>
-struct anna_object
-{
+struct anna_object {
     /**
        Various bit flags for this object. The first 8 bits of this
        flag are reserved by the memory allocator and should not be
