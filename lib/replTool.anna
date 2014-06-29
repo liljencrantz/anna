@@ -35,7 +35,7 @@ is a short rundown of the currently supported HTML subset:
     currentTag := "".thaw
     currentEscape := "".thaw
 
-    def handleTag(String currentTag){
+    def handleTag(MutableString currentTag){
 	switch(currentTag){
 	    case("p"){
 		res ~= linebreak(currentParagraph.split(" ", ?))
