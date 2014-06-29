@@ -96,7 +96,7 @@ expressions, not just Int values.
 		
 	    }
 	    checkNodeBlock(caseCall[-1])
-            if(caseCall.count == 2 and caseCall[0].callTo?( "cast")){
+            if(caseCall.count == 2 and caseCall[0].callTo?( "__cast__")){
                 caseCast := caseCall[0] as Call
 		checkCallCount(caseCast, 2)
 	        caseBody := ast({%varName := %val as %type})

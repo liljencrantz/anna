@@ -25,7 +25,7 @@ someVariableName := 0
     }
     return Call(
 	node,	   
-	Identifier(node, "cast"), 
+	Identifier(node, "__cast__"), 
 	Call(node,
 	     Call(node, 
 		  Identifier(node, "__memberGet__"), 
