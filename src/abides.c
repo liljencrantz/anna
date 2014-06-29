@@ -262,7 +262,7 @@ void anna_type_intersect_into(
 	    continue;
 
 	anna_member_t *memb1 = anna_member_get(
-	    t1, 
+	    t1,
 	    mid);
 	if(!memb1)
 	{
@@ -349,17 +349,50 @@ void anna_type_intersect_into(
 	}
 	else
 	{
+	    anna_type_t *member_type = 0;
+	    
 	    if(anna_abides(memb1->type, memb2->type) && anna_abides(memb2->type, memb1->type))
 	    {
-		anna_member_create(
-		    res, anna_mid_get(memb2->name),
-		    anna_member_is_static(memb2), memb2->type);
+		member_type = memb2->type;
 	    }
 	    else
 	    {
+		member_type = anna_type_intersect(memb1->type, memb2->type);
+	    }
+	    
+	    int getter = 1;
+	    int setter = 1;
+		
+	    if (memb1->storage & ANNA_MEMBER_PROPERTY)
+	    {
+		if(memb1->getter_offset == -1)
+		    getter = 0;
+		if(memb1->setter_offset == -1)
+		    setter = 0;
+	    }
+	    
+	    if (memb2->storage & ANNA_MEMBER_PROPERTY)
+	    {
+		if(memb2->getter_offset == -1)
+		    getter = 0;
+		if(memb2->setter_offset == -1)
+		    setter = 0;
+	    }
+	    
+	    if (getter && setter)
+	    {
 		anna_member_create(
 		    res, anna_mid_get(memb2->name),
-		    anna_member_is_static(memb2), anna_type_intersect(memb1->type, memb2->type));		
+		    anna_member_is_static(memb2), member_type);		
+	    }
+	    else 
+	    {
+		anna_member_create_property(
+		    res, anna_mid_get(memb2->name),
+		    anna_member_is_static(memb2), 
+		    member_type,
+		    getter ? 0 : -1,
+		    setter ? 0 : -1);
 	    }
 	}
     }
