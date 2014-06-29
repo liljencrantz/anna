@@ -436,8 +436,7 @@ class BasicBindingType (
     def String preValidateToC(Node decl, Node attr, String dest, String source) {
 	if(preValidateToCStr) {
 	    return preValidateToCStr % ["dest": dest, "source": source]
-	}
-	else {
+	} else {
 	    return BindingType::preValidateToC(this, decl, attr, dest, source)
 	}
     }
@@ -484,7 +483,7 @@ class CStructBindingType (
     def __init__(
 	String structName, String typeName, Int isStruct=1, Int isPointer=?) {
 	expandCode(this.%name = %name, name: [structName, typeName, isPointer])
-	structText = if(isStruct){"struct "}else{""}
+	structText = if(isStruct){"struct "} else {""}
     }
     
     def String annaNativeType(Node decl, Node attr){
@@ -506,16 +505,13 @@ class CStructBindingType (
 	if(isPointer) {
 	    if((attr as Call).childNamed?("nullable")) {
 		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
-	    }
-	    else {
+	    } else {
 		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_ptr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
-	}
-	else {
+	} else {
 	    if((attr as Call).childNamed?("nullable")) {
 		code ~= "    %(dest) = anna_entry_null(%(source)) ? 0 : (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
-	    }
-	    else {
+	    } else {
 		code ~= "    %(dest) = (%(structText)%(structName) *)anna_entry_get_addr(anna_as_obj_fast(%(source)), ANNA_MID_CSTRUCT_PAYLOAD);" % param
 	    }
 	}
@@ -608,8 +604,7 @@ class BindingGenerator (
 		"varType": varType,
 		"tempName": tempName, "call": nname ~"(" ~args~")"]
 	    code ~= responseType.convertToAnna(decl[1], decl[3], "result", tempName)
-	}
-	else {
+	} else {
 	    code ~= "    %(functionName)(%(args));
     anna_entry_t result = null_entry;\n" % ["functionName": nname, "args": args]
 	}
@@ -687,8 +682,7 @@ class BindingGenerator (
         code := ""
 	if(!native.empty?) {
 	    data["mangledName"] = native[0].toString()
-	}
-	else {
+	} else {
             code = "
 ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 {
@@ -805,7 +799,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 		"cCode": cCode,
 		"structName": structName,
 		"wrapData": membType.convertToAnna(decl, attr, "result", "data->"~fieldName),
-		"structText": (if(isStruct){"struct "}else{""}),
+		"structText": (if(isStruct){"struct "} else {""}),
 		]
     }
 
@@ -822,7 +816,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 		"cCode": cCode,
 		"structName": structName,
 		"wrapData": membType.convertToC(decl, attr, "tmp", "param[1]"),
-		"structText": (if(isStruct){"struct "}else{""}),
+		"structText": (if(isStruct){"struct "} else {""}),
 		"fieldName": fieldName,
 		]
     }
@@ -900,7 +894,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
 	    "nativeStructName": nativeStructName, 
 	    "initName": initName,
 	    "structName": nativeStructName, 
-	    "structText": (if(isStruct){"struct "}else{""}), 
+	    "structText": (if(isStruct){"struct "} else {""}), 
 	    "structPointer": (if(isPointer){" *"} else {""}),
 	    "initParam": myBinding.convertToC(?,?, "data", "param[0]"),
 	    ]
@@ -931,7 +925,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
   	        memberBinding := getBindingType(decl[1])
   	        getterName := mangleGetterName(structName, fieldName)
 
-  	        setterName := if(isVar){mangleSetterName(structName, fieldName)}else{"0"}
+  	        setterName := if(isVar){mangleSetterName(structName, fieldName)} else {"0"}
 	        getterCode := generateCStructGetterCode(nativeStructName, nativeFieldName, myBinding, memberBinding, decl[1], attr, isStruct)
 	        setterCode := generateCStructSetterCode(nativeStructName, nativeFieldName, myBinding, memberBinding, decl[1], attr, isStruct)
 
@@ -1074,8 +1068,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 #endif
 
 " % params
-				    }
-				    else {
+				    } else {
 					load ~= definition
 				    }
                                 }
@@ -1115,8 +1108,7 @@ ANNA_VM_NATIVE(%(initName), 1)
 			    load ~= out.load
 			    code ~= out.code
 			}
-		    }
-		    else {
+		    } else {
 		    nativeName := nameToStr(decl[0], attr)
   	            bindingType := getBindingType(declType)
                     returnType := bindingType.annaCType(declType, attr)
@@ -1315,7 +1307,7 @@ void anna_%(moduleName)_load(anna_stack_template_t *stack)
             "moduleName": moduleName, 
             "moduleData": moduleData,
             "load": load,
-            "register": (if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"}else{""})
+            "register": (if(isRootFunction){"    anna_type_data_register(anna_type_data, stack);"} else {""})
         ]
     }
 

@@ -49,8 +49,7 @@ macro expandCode(node) (
     node.each(chld)	{
 	if(chld.callTo?("__mapping__")){
 	    valNode.push(chld)
-	}
-	else{
+	} else {
 	    codeNode.push(chld)
 	}
     }
@@ -70,8 +69,7 @@ macro expandCode(node) (
 	    lst[1...].each(idx, val){
 		param[idx][name] = val
 	    }
-	}
-	else{
+	} else {
 	    count = lst.count
 	    lst[1...].each(val){
 		param ~= [[name: val]]

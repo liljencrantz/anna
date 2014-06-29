@@ -78,8 +78,7 @@ You enjoy Long walks on the beach, don't you?
 			addParen = ?
 		    }
 		}
-	    } 
-	    else{
+	    } else {
 	    switch(ch){
 		case('%'){
 		    wasBrack = 1
@@ -89,14 +88,12 @@ You enjoy Long walks on the beach, don't you?
 			if(addParen){			    
 
 			    transformed ~= ")\n    %res ~= \""
-			} 
-			else{
+			} else {
 			    transformed ~= "\n    %res ~= \""
 			}
 			code = ?
 			wasBrack = ?
-		    } 
-		    else{
+		    } else {
 			transformed ~= ch
 		    }
 		}
@@ -110,8 +107,7 @@ You enjoy Long walks on the beach, don't you?
 	    }
 	    }
 	    first = ?
-	} 
-	else{
+	} else {
 	    switch(ch){
 		case('<'){
 		    wasBrack = 1
@@ -122,8 +118,7 @@ You enjoy Long walks on the beach, don't you?
 			code = 1
 			wasBrack = ?
 			first = 1
-		    } 
-		    else{
+		    } else {
 			transformed ~= ch
 		    }
 		}

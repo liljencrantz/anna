@@ -7,8 +7,7 @@ def main() (doc("Test the kill command")){
     if((child := proc.fork()) != 0){
 	proc.kill(child, proc.signal.kill)
 	print("You should see this")
-    }
-    else{
+    } else {
 	sleep.sleep(5)
 	print("You should not see this")
     }

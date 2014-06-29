@@ -187,7 +187,7 @@ often used code paths, which makes it useful for regression testing.")
 		}
 	    }
 	}
-	if(res.count > 0){res}else{?}
+	if(res.count > 0){res} else {?}
     }
 
     def filterHtml(String input) {
@@ -198,12 +198,10 @@ often used code paths, which makes it useful for regression testing.")
 	      if(ch == '>') {
 		  isTag = ?
 	      }
-	  }
-	  else {
+	  } else {
 	      if(ch == '<') {
 		  isTag = 1
-	      }
-	      else {
+	      } else {
 		  res ~= ch
 	      }
 	  }	  
@@ -217,8 +215,7 @@ often used code paths, which makes it useful for regression testing.")
 	input.each(ch) {
 	    if(ch.alnum?) {
 		item ~= ch
-	    }
-	    else {
+	    } else {
 		if (item.count) {
 		    res ~= [item.lower]
 		}
@@ -235,8 +232,7 @@ def String getLink(Type from, Type to){
 	href := path[to].link(path[from])
 	return if(href) {
 	    "<a href='%()'>%()</a>" % [path[to].link(path[from]), html.escape(to.name)]
-	}
-	else{
+	} else {
 	    html.escape(to.name)
 	}
     }
@@ -250,8 +246,7 @@ def String getLink(Type from, Type to){
 
 	if(mem.bound?){
 	    res.push("bound")
-	}
-	else{
+	} else {
 	    if(mem.static?){
 		res.push("static")
 	    }
@@ -284,14 +279,13 @@ def String getLink(Type from, Type to){
 		    "%(type) %(name)%(variadic)%(default)" % [
 			"type": getLink(mem.memberOf, t), 
 			"name": fun.inputName[idx],
-			"default": (if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]}else{""}),
+			"default": (if(fun.defaultValue[idx]){" = " ~ fun.defaultValue[idx]} else {""}),
 			"variadic": variadicStr,
 			]
 		})
 	    if(fun.macro?){
 		"macro %() <em>%()</em> (%())" % [getLink(mem.memberOf, fun.outputType), fun.name, argv]
-	    }
-	    else{
+	    } else {
 		"def %() <em>%()</em> (%())" % [getLink(mem.memberOf, fun.outputType), fun.name, argv]
 	    }
 	} else {
@@ -432,8 +426,7 @@ def String getLink(Type from, Type to){
   	    objMemb := «String, Member»[]
 	    Any.member.each(mem){objMemb[mem.name] = mem}
 	    memb = memb.filter(mem){!(mem.name in objMemb)}
-	}
-	else{
+	} else {
 	    def formatCompatList(List«DocumentationData» compat){
 		sorted := algo.qsortComp(compat.thaw)
 		return "<span class='anna-compat'>%()</span>" % [", ".join(sorted.map(dd){dd.linkPath(data)})]
@@ -484,16 +477,14 @@ def String getLink(Type from, Type to){
 		if(name in operatorLookup){
 		    if(!(name in opMap)){
 			opMap[name] = [mem]
-		    }
-		    else{
+		    } else {
 			opMap[name].push(mem)
 		    }
 		}
 		
 		if(!(name in funMap)){
 		    funMap[name] = [mem]
-		}
-		else{
+		} else {
 		    funMap[name].push(mem)
 		}
 	    }

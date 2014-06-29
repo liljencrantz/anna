@@ -109,8 +109,7 @@ expressions, not just Int values.
                                 "type": caseCast[1],
                                 "varName": caseCast[0],
                                 ]) as Call
-	    } 
-            else{
+	    } else {
 	        cond := makeCond(caseCall[0])
 		(1..(caseCall.count-1)).each(idx){
 		    cond = ast(%cond1 or %cond2) % [
@@ -126,8 +125,7 @@ expressions, not just Int values.
 				"caseBody": caseCall[-1]
 				]) as Call
 	    }
-	} 
-        else{
+	} else {
 	    if(caseCall.callTo?("default")){
 		if(idx != switchBody.count-1){
 		    caseCall.error("Invalid position for default")
@@ -136,8 +134,7 @@ expressions, not just Int values.
 		checkCallCount(caseCall, 1)
 		checkNodeBlock(caseCall[0])
 		next = caseCall[0] as Call
-	    } 
-            else{
+	    } else {
 		if(caseCall.callTo?("cases")){
 		    checkCallCount(caseCall, 2)
 		    checkNodeBlock(caseCall[-1])
@@ -150,8 +147,7 @@ expressions, not just Int values.
 				    "caseBody": caseCall[-1]
 				    ]) as Call
                  
-		} 
-                else{
+		} else {
                     caseNode.error("Expected a case or default statement")
 		    return NullLiteral(node)
 		}
@@ -160,12 +156,10 @@ expressions, not just Int values.
 	if(lastIf){
 	    lastIf[2] = if(!next.block?()){
 		Call(node, Identifier(node, "__block__"), next)
-	    } 
-            else {
+	    } else {
 		next
 	    }
-	} 
-        else{
+	} else {
 	    if(next.block?()){
 		next = Call(node, next)
 	    }

@@ -34,8 +34,7 @@ def String intFormat(Int this, Int base=10) (
     
     if(this == 0){
 	res = "0"
-    } 
-    else {
+    } else {
 	while(this != 0){
 	    res = "" ~ digits[this ^mod base] ~ res
 	    this = this / base
@@ -85,8 +84,7 @@ def Int pairCmp(Pair«%First,%Second» this, Pair«%First,%Second» other) (
     cmp1 := this.first.__cmp__(other.first)
     if(cmp1 == 0){
 	return this.second.__cmp__(other.second)
-    }
-    else{
+    } else {
 	return cmp1
     }
 }

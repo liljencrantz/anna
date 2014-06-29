@@ -97,8 +97,7 @@ dependencies between member types."
         mapping := item as Call
         varType := if(type(mapping[1]) != NullLiteral){
 		ast(staticType(%value)) % ["value": mapping[1]]
-	    }
-	    else{
+	    } else {
 		ast(Any)
 	    }
 	typeBlock ~= [ast(__var__(%name, %type, ?, {}))\

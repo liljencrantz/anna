@@ -18,8 +18,7 @@ macro __range__(node) (doc("Syntactic sugar for creating Range objects.")){
 	node[0] = pair[0]
 	node[1] = node[1] or NullLiteral(node)
 	node ~= [pair[1]]
-    }
-    else{
+    } else {
 	if(((node[1] as Call).function as Identifier).name == "Pair"){
   	    pair := node[1] as Call
 	    if(pair.count != 2){
@@ -28,8 +27,7 @@ macro __range__(node) (doc("Syntactic sugar for creating Range objects.")){
 	    }
 	    node[1] = pair[0]
 	    node ~= [pair[1]]
-	} 
-	else{
+	} else {
 	    node ~= [NullLiteral(node)]
 	}
     }

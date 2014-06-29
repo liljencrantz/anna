@@ -288,7 +288,7 @@ modification, are permitted provided that the following conditions are met:
 				    "decl": (if(memb.mutable?) {ast(__var__)} else {ast(__const__)}),
 				    
 			    "name": Identifier(?, memb.name), 
-			    "value": (if(memb.value){Dummy(?, memb.value)}else{ast(? as Any)}) as Node,
+			    "value": (if(memb.value){Dummy(?, memb.value)} else {ast(? as Any)}) as Node,
 			    "Type": Dummy(?, memb.type),
 			    ]
 			)
@@ -312,7 +312,7 @@ modification, are permitted provided that the following conditions are met:
 			"ast": astItem, 
 			"cont": Identifier(?, "!cont"), 
 			"variable": variableDeclaration,
-			"ans": (if(prev){Dummy(?, prev)}else{ast(? as Any)}) as Node,
+			"ans": (if(prev){Dummy(?, prev)} else {ast(? as Any)}) as Node,
 			]
 	    if(isGlobal){
 		run = ?
@@ -346,8 +346,7 @@ modification, are permitted provided that the following conditions are met:
 		    prev and print(prev)
 		    previousContinuation = type(code).member.find(memb){memb.name=="!cont"}.value(code) as reflection.Continuation
 		}
-	    }
-	    else{
+	    } else {
 		/*
 		  If we encounter an error, stop executing the rest of
 		  the expressions on this line.

@@ -10,8 +10,7 @@ def main(){
 	in.each(ch){
 	    if(ch.ordinal < 32){
 		res ~= "\\x%" % [ch.ordinal.format(base: 16).lpad(2, '0')]
-	    }
-	    else{
+	    } else {
 		res ~= ch
 	    }
 	}
@@ -21,8 +20,7 @@ def main(){
     def translate(parser.StringLiteral lit){
 	if(lit.payload in done){
 	    done[lit.payload].push(lit)
-	}
-	else{
+	} else {
 	    done[lit.payload] = [lit]
 	}
     }

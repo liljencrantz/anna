@@ -34,8 +34,7 @@ becomes a MutableList.")
 	    childCall.function = Dummy(childCall, Pair)
 	    i++
 	}
-    }
-    else{
+    } else {
 	res.function = Dummy(node, MutableList)
     }
     res ~= node[Range(1, ?, 1)]
@@ -75,8 +74,7 @@ def Call mangleIterator(Call node) (
 	n[1] = iterDeclare(
 	    node[0],
 	    ast(staticType(%iter.value)).setLocation(node))
-    } 
-    else{
+    } else {
 	checkNodeType(node[1], Identifier)
 	n[0] = iterDeclare(
 	    node[0],
@@ -167,8 +165,7 @@ def doPrint(String key, String value){
 	    .replace(ast(valueType), (decl[1] as Call)[1])\
 	    .replace(ast(iter), Identifier(?, parser.identifier("iter")))\
 	    .replace(ast(collVar), Identifier(?, parser.identifier("collection")))
-    }
-    else{
+    } else {
 	res = ast(
 	    nothing(
 		%collVar := %coll
@@ -234,8 +231,7 @@ macro filter(node) (
 		%res
 		)
 	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")))
-    }
-    else{
+    } else {
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
@@ -296,8 +292,7 @@ macro map(node) (
 		%res
 		)
 	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iterFun), iterFun).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")))
-    }
-    else{
+    } else {
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
@@ -353,8 +348,7 @@ macro milter(node) (
 		%res
 		)
 	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iterFun), iterFun).replace(ast(it), Identifier(?, parser.identifier("item"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")))
-    }
-    else{
+    } else {
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
@@ -411,8 +405,7 @@ macro find(node) (
 		%res
 		)
 	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")))
-    }
-    else{
+    } else {
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,
@@ -472,8 +465,7 @@ href='#each'>each</a> does"
 		%res
 		)
 	    ).setLocation(node).replace(ast(coll), coll).replace(ast(body), body).replace(ast(keyVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(keyType), (decl[0] as Call)[1]).replace(ast(valueType), (decl[1] as Call)[1]).replace(ast(iterFun), iterFun).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(res), Identifier(?, parser.identifier("res")))
-    }
-    else{
+    } else {
 	res = ast(
 	    nothing(
 		%res := %coll
@@ -569,8 +561,7 @@ macro reduce(node) (
 		%res
 		)
 	    ).setLocation(node).replace(ast(coll), coll).replace(ast(ReturnType), ast(staticType(%initial))).replace(ast(body), body).replace(ast(prevVar), (decl[0] as Call)[0]).replace(ast(valueVar), (decl[1] as Call)[0]).replace(ast(ValueType), (decl[1] as Call)[1]).replace(ast(res), Identifier(?, parser.identifier("res"))).replace(ast(iter), Identifier(?, parser.identifier("iter"))).replace(ast(initial), initial)
-    }
-    else{
+    } else {
 	res = ast(
 	    nothing(
 		%iter := %coll.iterator,

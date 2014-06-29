@@ -74,8 +74,7 @@ def String formatListInternal(
 		    res ~= (data[listIdx] or "")
 		    listIdx++
 		    i+=2
-		}
-		else {
+		} else {
 		    idx := 0
 		    i2 := i+2
 		    while(this[i2] >= '0' and this[i2] <= '9') {
@@ -85,17 +84,14 @@ def String formatListInternal(
 		    if(this[i2] == ')'){
 			res ~= (data[idx] or "")
 			i = i2
-		    }
-		    else{
+		    } else {
 			res ~= '%'
 		    }
 		}
-	    }
-	    else{
+	    } else {
 		res ~= '%'
 	    }
-        }
-	else{
+        } else {
 	    res ~= ch
         }
         i++
@@ -138,8 +134,7 @@ def String formatMapInternal(
 	    if(this[i+1] == '%'){
   	        i++
                 res ~= '%'
-            } 
-	    else{
+            } else {
 	        i++
 		if(this[i] == '('){
 		    i++
@@ -148,17 +143,14 @@ def String formatMapInternal(
 		        name := this[i..(i+end)]
 			res ~= data[name]
 			i=i+end
-		    } 
-		    else {
+		    } else {
 			// ERROR
 		    }
-		} 
-		else{
+		} else {
 		    // ERROR
 		}
             }
-        } 
-	else{
+        } else {
 	    res ~= ch
         }
         i++
@@ -316,8 +308,7 @@ expandCode(
 		res ~= this[start..end]
 		res ~= replacement
 		start = end + original.count
-	    }
-	    else{
+	    } else {
 		res ~= this[start...]
 		return res
 	    }

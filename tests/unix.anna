@@ -8,8 +8,7 @@ def main() (doc("Test for pipe, fork, and a few other asic unix calls")){
         msg := "Hello\n"
 	buf.decode(msg)
 	io.write(fd[1], buf, buf.count)
-    }
-    else{
+    } else {
         buf := Buffer()
 	readCount := io.read(fd[0], buf, 1024)
 	buf.count = readCount

@@ -24,8 +24,7 @@ def main(){
 		print(unix.error.errorString(unix.error.errno))
 	    }
 	}
-    }
-    else{
+    } else {
 	rBuff := Buffer()
 	fdSet := FdSet()
 	fdSet[fd[0]] = 1

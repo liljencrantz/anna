@@ -7,8 +7,7 @@ def main() (
 ){
     if(1){
 	print("true")
-    }
-    else{
+    } else {
 	print("false")
     }
 
@@ -18,14 +17,14 @@ def main() (
 	print("false")
     }
 
-    if(1){print("true")}else{print("false");}
+    if(1){print("true")} else {print("false");}
 
-    print(if(?){"true"}else{"false"})
+    print(if(?){"true"} else {"false"})
 
-    val := if(1){"true"}else{"false"}
+    val := if(1){"true"} else {"false"}
     print(val)
 
-    val = if(?){"true"}else{"false"}
+    val = if(?){"true"} else {"false"}
     print(val)
     
     print(fun(1))

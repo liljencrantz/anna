@@ -43,7 +43,7 @@ class Fiber (
 	if(current){
 	    current.continuation = reflection.currentContinuation
 	    (current.continuation.callCount == 0) or (return)
-	} else{
+	} else {
 	    entry = reflection.currentContinuation
 	    if(entry.callCount > 0){
 		return

@@ -63,8 +63,7 @@ def raiseError(Error error)  (
 			return
 		    }
 		}
-	    }
-	    else{
+	    } else {
 		coll ~= [error]
 		return
 	    }

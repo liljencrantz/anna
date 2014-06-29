@@ -85,8 +85,7 @@ is a short rundown of the currently supported HTML subset:
 	    case('#'){
 		if(escape[1].lower == 'x'){
 		    String::convert(Char::convert(Int::convert(escape[2...], base:16)))
-		}
-		else{
+		} else {
 		    String::convert(Char::convert(Int::convert(escape[1...])))
 		}
 	    }
@@ -256,15 +255,13 @@ def linebreak(List«Any» wordList, String prefix = "", String firstPrefix = "")
 	if(idx == 0){
 	    res ~= word
 	    col += word.count
-	}
-	else{
+	} else {
 	    if(col + word.count + 1 > 80){
 		res ~= "\n"
 		res ~= prefix
 		res ~= word
 		col = word.count + prefix.count
-	    }
-	    else{
+	    } else {
 		res ~= " "
 		res ~= word
 		col += word.count+1
@@ -357,8 +354,7 @@ the doc attribute of declarations.")){
     }
     if(doc.empty?){
 	res ~= "No documentation available for object of type " ~ (type(object).name or "Null")
-    }
-    else{
+    } else {
 	res ~= "\n\n".join(
 	    doc.map(docFragment){
 	      fragment := docFragment as StringLiteral
@@ -405,8 +401,7 @@ the doc attribute of declarations.")){
 	    res ~= linebreak(subother)
 	}
 
-    }
-    else{
+    } else {
 	smemb := members(objType)
 	res ~= "\n\nThe % has the following members:\n" % [description]
 	res ~= linebreak(smemb)	    

@@ -50,8 +50,7 @@ def main(){
 	    case(State::text){
 		if(ch == '%'){
 		    state = State::percent
-		}
-		else{
+		} else {
 		    res ~= ch
 		}
 	    }
@@ -59,8 +58,7 @@ def main(){
 	    case(State::percent){
 		if(ch == '('){
 		    state = State::code
-		}
-		else{
+		} else {
 		    state = State::text
 		    res ~= '%'
 		    res ~= ch
@@ -103,8 +101,7 @@ def main(){
 			    code.push(ast(%key : %value) % ["key": StringLiteral(node, keyName), "value": parsed])
 			    codeItem.count=0
 			    state = State::text
-			}
-			else{
+			} else {
 			    codeItem ~= ch
 			    paranCount--
 			}
