@@ -793,37 +793,28 @@ static anna_node_t *anna_node_calculate_type_internal(
 
 	case ANNA_NODE_CAST:
 	{
-	    anna_node_call_t *call = (anna_node_call_t *)this;
 	    /*
-	      First calculate the type of the thing we are casting. We
-	      do this because e.g. the map macro uses the type of the
-	      castee when determining the type to cast to. This is a
-	      bit of a fragile hack, we should probably figure out
-	      something more robust.
-	      
-	      Perhaps it would be possible for the type lookup nodes
-	      to be given a manual node which, if specified, needs to
-	      be type calculated before they are calculated?
-	    */
-	    call->child[0] = anna_node_calculate_type(call->child[0]);
+	      The thing being cast *to* can either be a type, in which
+	      case that type will be cast to, or an arbitrary
+	      expression that does not have the type type, in which
+	      case the type of the expression will be used. So,
+	      casting to Int and 1 will give the same result.
+	     */
+	    anna_node_call_t *call = (anna_node_call_t *)this;
 	    call->child[1] = anna_node_calculate_type(call->child[1]);
-	    anna_type_t *fun_type = call->child[1]->return_type;
+	    anna_type_t *cast_to_type = call->child[1]->return_type;
 
-	    if(fun_type == type_type)
+	    if(cast_to_type == type_type)
 	    {
-		anna_type_t *type = anna_node_resolve_to_type(call->child[1], stack);
-		if(type)
-		{
-		    call->return_type = type;
-		    break;
-		}
+		cast_to_type = anna_node_resolve_to_type(call->child[1], stack);
 	    }
-
-	    if(fun_type == ANNA_NODE_TYPE_IN_TRANSIT)
+	    
+	    if(cast_to_type == ANNA_NODE_TYPE_IN_TRANSIT || !cast_to_type)
 	    {
 		break;
 	    }
-
+	    call->return_type = cast_to_type;
+	    
 	    break;
 	}
 	
