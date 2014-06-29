@@ -10,7 +10,7 @@ def task(mp.Channel serverChannel){
 }
 
 def main(){
-    threads :== 100//1 + (tm.usec ^mod 512);
+    threads :== 100
     (0..threads).each(idx){
 	mp.run(task).write(("foo" ~ (idx ^mod 6)))
     }
