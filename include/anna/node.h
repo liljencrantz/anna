@@ -56,7 +56,6 @@ enum anna_node_enum
 };
 
 #define ANNA_NODE_DONT_EXPAND 512
-#define ANNA_NODE_MERGE 1024
 /*
   A full node is a node that can be used to access the internal members of a type.
  */

@@ -167,10 +167,9 @@ anna_node_t *anna_node_macro_expand(
     anna_node_t *this,
     anna_stack_template_t *stack)
 {
-    return anna_node_merge(
+    return anna_node_each_replace(
 	anna_node_each_replace(
-	    anna_node_each_replace(
-		this, 
-		(anna_node_replace_function_t)anna_node_macro_expand_each, stack),
-	    anna_node_macro_member_call, 0));
+	    this, 
+	    (anna_node_replace_function_t)anna_node_macro_expand_each, stack),
+	anna_node_macro_member_call, 0);
 }

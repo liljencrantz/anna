@@ -507,7 +507,7 @@ static anna_node_identifier_t *identifier_enclose(wchar_t *pre, anna_node_identi
 %type <call_val> declaration_list declaration_list2
 %type <node_val> declaration_list_item declaration_expression variable_declaration
 %type <call_val> attribute_list 
-%type <call_val> opt_block
+%type <call_val> opt_block blocks opt_blocks
 %type <call_val> specialization opt_specialization
 %type <call_val> opt_type_and_opt_name type_and_name
 %type <node_val> jump literal_string_long literal_string_long_begin
@@ -752,15 +752,22 @@ expression8:
 	};
 
 expression9 :
-	expression9 '(' opt_expression_list ')' opt_block
+	expression9 '(' opt_expression_list ')' opt_blocks
 	{
+	    int i;
 	    $$ = (anna_node_t *)$3;
 	    anna_node_t *fun = $1;
 
 	    anna_node_call_set_function($3, fun);
 	    anna_node_set_location($$, &@$);
 	    if ($5) 
-		anna_node_call_push($3, (anna_node_t *)$5);
+	    {
+		anna_node_call_t *blocks = $5;
+		for(i=0; i<blocks->child_count; i++) 
+		{		    
+		    anna_node_call_push($3, blocks->child[i]);
+		}
+	    }
 	} |
 	'-' expression10
 	{
@@ -1129,6 +1136,16 @@ literal_string_long_internal:
     };
 
 opt_block: /* Empty */{$$ = 0;} | block;
+
+opt_blocks: /* Empty */{    $$ = 0;} | blocks;
+blocks: block {    $$ = anna_node_create_block2(&@$, $1);} |
+	blocks identifier block
+	{
+	    anna_node_call_push(
+		$1,
+		(anna_node_t *)anna_node_create_call2(&@$, $2, $3));
+	    $$ = $1;
+	};
 
 function_declaration: 
 	DEF opt_type_and_opt_name declaration_list opt_declaration_init
@@ -1541,15 +1558,6 @@ static int anna_yacc_lex_inner (
 int anna_yacc_lex (
     YYSTYPE *lvalp, YYLTYPE *llocp, yyscan_t scanner, wchar_t *filename)
 {
-    static int was_injected_separator = 0;
-    static int real_val = 0;
-    
-    if(was_injected_separator)
-    {
-	was_injected_separator = 0;
-	return real_val;
-    }
-    
     int val = anna_yacc_lex_inner(lvalp, llocp, scanner, filename);
 
     /*
@@ -1576,14 +1584,6 @@ int anna_yacc_lex (
 	    return 0;
 	}
     }
-    if(was_end_brace && ((val == IDENTIFIER) || (val == TYPE_IDENTIFIER) || (val == '%')))
-    {
-	was_end_brace = 0;
-	was_injected_separator = 1;
-	real_val = val;
-	return SEPARATOR;
-    }    
-    
     was_end_brace = (val == '}');
     return val;
 }

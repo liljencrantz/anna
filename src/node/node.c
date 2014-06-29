@@ -40,7 +40,6 @@
 
 #include "specialize.c"
 #include "macro_expand.c"
-#include "merge.c"
 #include "prepare.c"
 #include "validate.c"
 #include "each.c"

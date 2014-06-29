@@ -479,12 +479,17 @@ ANNA_VM_MACRO(anna_macro_if)
 	anna_error((anna_node_t *)node, L"Invalid parameter count");
 	return anna_node_create_null(&node->location);
     }
+    if((node->child_count == 3) && (anna_node_is_call_to(node->child[2], L"else")))
+    {
+	node->child[2] = ((anna_node_call_t *)node->child[2])->child[0];
+    }
+    
     int i;
     for(i=1; i<node->child_count; i++)
     {
 	if(!anna_node_is_call_to(node->child[i], L"__block__"))
 	{
-	    node->child[i] = 
+	    node->child[i] = (anna_node_t *)
 		anna_node_create_block(
 		    &node->location,
 		    1,
@@ -516,11 +521,8 @@ ANNA_VM_MACRO(anna_macro_if)
 
 ANNA_VM_MACRO(anna_macro_else)
 {
-    CHECK_CHILD_COUNT(node,L"else clause", 1);
-    CHECK_NODE_BLOCK(node->child[0]);
-    node->flags |= ANNA_NODE_MERGE;
-    node->flags |= ANNA_NODE_DONT_EXPAND;
-    return (anna_node_t *)node;
+    anna_error((anna_node_t *)node, L"Stray else clause");
+    return anna_node_create_null(&node->location);
 }
 
 ANNA_VM_MACRO(anna_macro_while)
