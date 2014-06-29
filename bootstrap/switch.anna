@@ -167,7 +167,6 @@ expressions, not just Int values.
 	}
 	lastIf = next
     }
-    
     res := Call(node, switchBlock) % [
 	"val": Identifier(node, identifier("switchValue")), 
 	"input": node[0]]

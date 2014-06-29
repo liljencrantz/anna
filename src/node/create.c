@@ -185,7 +185,15 @@ anna_node_if_t *anna_node_create_if(
     anna_node_set_location((anna_node_t *)result,loc);
     result->cond=cond;
     result->block1=block1;
-    result->block2=block2;
+    if(block2)
+    {
+	result->block2=block2;
+	result->has_else = 1;
+    }
+    else 
+    {
+	result->block2 = anna_node_create_block2(loc);
+    }
     return result;
 }
 

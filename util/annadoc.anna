@@ -271,7 +271,7 @@ def String getLink(Type from, Type to){
 			variadicStr ~= "..."
 		    }		    
 		    if(idx == variadicNamedIndex){
-			getMemb := t.member.find(memb){memb.name=="__get__"} as Method
+		        getMemb := (t.member.find(memb){memb.name=="__get__"}) as Method
 			t = getMemb.function.outputType
 			variadicStr ~= ":"
 		    }

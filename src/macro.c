@@ -479,9 +479,18 @@ ANNA_VM_MACRO(anna_macro_if)
 	anna_error((anna_node_t *)node, L"Invalid parameter count");
 	return anna_node_create_null(&node->location);
     }
-    if((node->child_count == 3) && (anna_node_is_call_to(node->child[2], L"else")))
+    if((node->child_count == 3))
     {
-	node->child[2] = ((anna_node_call_t *)node->child[2])->child[0];
+	if (anna_node_is_call_to(node->child[2], L"else")) 
+	{
+	    anna_node_call_t *else_clause = (anna_node_call_t *)node->child[2];
+	    if (else_clause->child_count != 1)
+	    {
+		anna_error(node->child[2], L"Invalid else clause");
+		return anna_node_create_null(&node->location);
+	    }
+	    node->child[2] = else_clause->child[0];
+	}
     }
     
     int i;
@@ -495,34 +504,13 @@ ANNA_VM_MACRO(anna_macro_if)
 		    1,
 		    &node->child[i]);
 	}
+	CHECK_NODE_BLOCK(node->child[i]);
     }
-    CHECK_NODE_BLOCK(node->child[1]);
-    if(node->child_count == 2)
-    {
-	return (anna_node_t *)
-	    anna_node_create_if(
-		&node->location, 
-		node->child[0],
-		(anna_node_call_t *)node->child[1],
-		anna_node_create_block2(&node->location));
-    }
-    else
-    {
-	CHECK_NODE_BLOCK(node->child[2]);
-	anna_node_if_t *res = anna_node_create_if(
-		&node->location, 
-		node->child[0],
-		(anna_node_call_t *)node->child[1],
-		(anna_node_call_t *)node->child[2]);
-	res->has_else = 1;
-	return (anna_node_t *)res;
-    }
-}
-
-ANNA_VM_MACRO(anna_macro_else)
-{
-    anna_error((anna_node_t *)node, L"Stray else clause");
-    return anna_node_create_null(&node->location);
+    return (anna_node_t *)anna_node_create_if(
+	&node->location, 
+	node->child[0],
+	(anna_node_call_t *)node->child[1],
+	node->child_count == 2 ? 0 : (anna_node_call_t *)node->child[2]);
 }
 
 ANNA_VM_MACRO(anna_macro_while)
@@ -768,12 +756,6 @@ void anna_macro_init(anna_stack_template_t *stack)
 	L"The if macro can also be used as a replacement for the C-style ternary operator:",
 	anna_example(L"myMoodDescription := if(happieness >=5, \"happy\", \"sad\");\n")
 	);
-
-    anna_macro_add(
-	stack,
-	L"else",
-	&anna_macro_else,
-	L"This macro is used together with the <a member='if'>if</a> macro in order to execute a block of code is a condtion is not met.");
 
     anna_macro_add(
 	stack,
