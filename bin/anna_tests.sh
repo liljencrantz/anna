@@ -1,16 +1,18 @@
 #! /bin/bash 
 
-# Runs all regression tests in the tests/ directory, and checks their
-# output and exit status. For every .anna file in tests/, if there is
-# a corresponding .output file, it is assumed to contain the desired
-# output of the script. If there is a corresponding .status file, it
-# is assumed to contain the desired exit status. If no .status file
-# exists, it is assumed that the test should have exit status 0.
+# Runs all unit/regression tests in the tests/ directory, and checks
+# their output and exit status. For every .anna file in tests/, if
+# there is a corresponding .output file, it is assumed to contain the
+# desired output of the script. If there is a corresponding .error
+# file, it is assumed that the program is *expected* to fail. If no
+# .error file exists, it is assumed that the test should have exit
+# status 0.
 
 exec 2> /dev/null
 
 error_count=0
 test_count=0
+ulimit -St 10
 
 for i in tests/*.anna; do
     ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna tests/$(basename $i .anna) >anna_tests.out 2>/dev/null
