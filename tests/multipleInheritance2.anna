@@ -15,12 +15,10 @@ class Base2{
     }
 }
 
-class Derived1
-(extends(Base1, Base2)){
+class Derived1 (extends(Base1, Base2)){
 }
 
-class Derived2
-(extends(Base1, Base2)){
+class Derived2 (extends(Base1, Base2)){
 }
 
 def main(){

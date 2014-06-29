@@ -1,5 +1,5 @@
 def main(){
-    foo := "abc" as String
+    foo :== "abc".thaw
     foo.count = 2
     print(foo)
 }

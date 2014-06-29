@@ -71,10 +71,7 @@ class NBodySystem {
 	e := 0.0
 	
 	bodies.each(body){
-	    e += 0.5 * body.mass *
-		( body.vx * body.vx
-		  + body.vy * body.vy
-		  + body.vz * body.vz )
+	    e += 0.5 * body.mass * ( body.vx * body.vx + body.vy * body.vy + body.vz * body.vz )
 	}
 	pairs.each(p){
 	    iBody :== p.first
