@@ -844,7 +844,7 @@ void anna_macro_init(anna_stack_template_t *stack)
 
     anna_macro_add(
 	stack,
-	L"cast",
+	L"__cast__",
 	&anna_macro_cast,
 	L"Cast thespecified value to a different type.",
 	L"Usually used through the as-operator",

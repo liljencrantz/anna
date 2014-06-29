@@ -747,7 +747,7 @@ expression8:
 	{
 	    $$ = (anna_node_t *)anna_node_create_call2(
 		&@$, 
-		anna_node_create_identifier(&@2,L"cast"), 
+		anna_node_create_identifier(&@2,L"__cast__"), 
 		$1, $3);
 	};
 
