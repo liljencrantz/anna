@@ -1,0 +1,5 @@
+def main(){
+    // String type intersects ImutableString, meaning its count property does not have a setter
+    foo := "abc".thaw as String
+    foo.count = 2
+}
