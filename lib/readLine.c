@@ -41,7 +41,7 @@ const static anna_type_data_t anna_readLine_type_data[] =
 static char *anna_readline_wrapper(char *prompt)
 {
     static char *prev = 0;
-    if(prev) 
+    if(prev)
         free(prev);
     return prev=readline(prompt);
 }
@@ -271,13 +271,13 @@ ANNA_VM_NATIVE(anna_readline_complete_set_function, 1)
 {
     if(anna_entry_null_ptr(param[0])){
         fun = 0;
-        rl_completion_entry_function = 0;        
+        rl_completion_entry_function = 0;
     }
     else
     {
         fun = anna_function_unwrap(anna_as_obj(param[0]));
         rl_completion_entry_function = run_anna_completion_func;
-        anna_alloc_mark_permanent(fun);    
+        anna_alloc_mark_permanent(fun);
     }
     return param[0];
 }

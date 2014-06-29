@@ -254,7 +254,7 @@ class ListBindingType (
         subBinding := getBindingType(subType)
         subTypeNative := subBinding.annaNativeType(subType, ?)
 	
-	return "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)))
+	return "    size_t %(szName) = anna_list_get_count(anna_as_obj(%(source)));
     %(subTypeNative)* %(dest) = malloc(sizeof(%(subTypeNative)) * %(szName));
     if(!%(dest)){ return null_entry; }
     int %(dest)_idx;
@@ -878,7 +878,7 @@ ANNA_VM_NATIVE(%(mangledName), %(inputCount))
         code := "".thaw
         cstructAttr := cstructDecl[1] as Call
 	typeDecl := "anna_type_t *%();\n".thaw %[typeName]
-        typeData := "    { &%, L\"%()\" },\n".thaw % [typeName, structName]
+	typeData := "    { &%(), L\"%()\" },\n".thaw % [typeName, structName]
         load := "".thaw
         nativeStructName := nameToStr(parser.Identifier(?, structName), cstructDecl[1])
         initName := mangleMethodName(structName, "init")

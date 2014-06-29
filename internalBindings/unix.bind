@@ -210,13 +210,13 @@ static int anna_fd_set_value(fd_set *set, int fd, int val)
 {
     if(val)
     {
-        FD_SET(fd, set)
+        FD_SET(fd, set);
     }
     else
     {
-        FD_CLR(fd, set)
+        FD_CLR(fd, set);
     }
-    return val
+    return val;
 }
 ")
 
@@ -225,8 +225,7 @@ static int anna_fd_set_value(fd_set *set, int fd, int val)
 	def Void remove(Int fd) (name(ANNA_FD_CLR), doc("Remove the specified file descriptor from the set."))
 	def Int __in__(Int fd) (name(ANNA_FD_ISSET), doc("Check if the specified file descriptor is in the set."))
 	def Int __get__(Int fd) (name(ANNA_FD_ISSET), doc("Check if the specified file descriptor is in the set."))
-	def Bool __set__(Int fd, Bool value (nullable)) 
-	(
+	def Bool __set__(Int fd, Bool value (nullable)) (
 	    name(anna_fd_set_value), 
 	    doc("If value is non-null, add the specified file descriptor to the set. Otherwise, remove it."))
 	def Void add(Int fd) (name(ANNA_FD_SET), doc("Add the specified file descriptor to the set."))
@@ -235,8 +234,7 @@ static int anna_fd_set_value(fd_set *set, int fd, int val)
     
     def Int select(
 	Int nfds, FdSet readfds (nullable), FdSet writefds (nullable), 
-	FdSet exceptfds (nullable), TimeVal timeout (nullable)) 
-    (
+	FdSet exceptfds (nullable), TimeVal timeout (nullable)) (
 	doc(
 	    "Select allows a program to monitor multiple file descriptors", 
 	    "Calling select will cause the process to wait until one 
@@ -311,13 +309,13 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
 {
     if(value)
     {
-        sigaddset(set, signal)
+        sigaddset(set, signal);
     }
     else
     {
-        sigdelset(set, signal)
+        sigdelset(set, signal);
     }
-    return value
+    return value;
 }
 ")
 
@@ -345,7 +343,7 @@ static int anna_signalset_set(sigset_t *set, int signal, int value)
     verbatim("
 int anna_read_signal(int fd, struct signalfd_siginfo *info)
 {
-    return read(fd, info, sizeof(struct signalfd_siginfo)) <= 0
+    return read(fd, info, sizeof(struct signalfd_siginfo)) <= 0;
 }
 ")
 
@@ -411,53 +409,50 @@ ANNA_VM_NATIVE(anna_setenv, 2)
     if(anna_entry_null(param[0])) { return param[1]; }
     if(anna_entry_null(param[1])) { return param[1]; }
 
-    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]))
-    char *native_param_value = anna_string_payload_narrow(anna_as_obj(param[1]))
+    char *native_param_name = anna_string_payload_narrow(anna_as_obj(param[0]));
+    char *native_param_value = anna_string_payload_narrow(anna_as_obj(param[1]));
 
-    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER
-    pthread_mutex_lock(&lock)
+    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&lock);
     // Call the function
-    setenv(native_param_name, native_param_value, 1)
+    setenv(native_param_name, native_param_value, 1);
 
     // Perform cleanup
-    free(native_param_name)
-    free(native_param_value)
+    free(native_param_name);
+    free(native_param_value);
 
-    pthread_mutex_unlock(&lock)
+    pthread_mutex_unlock(&lock);
     // Return result
-    return param[1]
+    return param[1];
 }
 
 ANNA_VM_NATIVE(anna_environ, 0)
 {
-    anna_object_t *res = anna_list_create_imutable(imutable_string_type)
-    int i
+    anna_object_t *res = anna_list_create_imutable(imutable_string_type);
+    int i;
     for(i=0; environ[i]; i++)
     {
-        anna_list_push(res, anna_from_obj(anna_string_create_narrow(strlen(environ[i]), environ[i])))
+        anna_list_push(res, anna_from_obj(anna_string_create_narrow(strlen(environ[i]), environ[i])));
     }
 
-    return anna_from_obj(res)
+    return anna_from_obj(res);
 }
 ")
     attribute(doc("The unix.env module contains low level wrappers for basic unix functionality revolving around environment variables."))
 
-    def String __get__(String name) 
-    (
+    def String __get__(String name) (
 	name(getenv), lock, 
 	doc(
 	    "Return the current value of the given environment variable. Equivalanet to the C getenv function.",
 	    "Usage example:",
 	    "<pre class='anna-code'>if(unix.env[\"USER\"] == \"root\"){ ... }</pre>",
 	))
-    def Int setenv(String name, String value, Bool overwrite) 
-    (
+    def Int setenv(String name, String value, Bool overwrite) (
 	name(setenv), lock, 
 	doc(
 	    "Assign a new value to the environment variable with the given name. Equivalent to the C setenv function.", 
 	))
-    def String __set__(String name, String value) 
-    (
+    def String __set__(String name, String value) (
 	native(anna_setenv),
 	doc(
 	    "Assign a new value to the environment variable with the given name. Equivalent to calling the C setenv function with overwrite set to true.",
@@ -493,7 +488,7 @@ locale {
     
     cStructPointer LocaleConv (name(lconv), doc("Detailed local information regarding numeric formating.")) {
 	const String decimalPoint (name(decimal_point), doc("Decimal-point separator used for non-monetary quantities."))
-	const String thousandsSeparator (name(thousands_sep), doc("Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities."));	
+	const String thousandsSeparator (name(thousands_sep), doc("Separators used to delimit groups of digits to the left of the decimal point for non-monetary quantities."))	
 	const String grouping (doc("The amount of digits that form each of the groups to be separated by thousandsSeparator separator for non-monetary quantities."))
 	const String internationalCurrencySymbol (name(int_curr_symbol), doc("International currency symbol."))
 	const String currencySymbol (name(currency_symbol), doc("Local currency symbol."))
