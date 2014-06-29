@@ -1,18 +1,18 @@
 def getFun(){
-    print("getFun()");
+    print("getFun();")
     return def (String param1, String param2) {
-	print("fun(%(), %())" % [param1, param2]);
+	print("fun(%(), %());" % [param1, param2])
         "result"
     }
 }
 
 def getParam1(){
-    print("getParam1()");
+    print("getParam1();")
     "param1"
 }
 
 def getParam2(){
-    print("getParam2()");
+    print("getParam2();")
     "param2"
 }
 

@@ -2,10 +2,7 @@
   Check that extending a specialized template class works
 */
 
-class Derived
-(
-    extends(MutableList«Int»)
-){
+class Derived (extends(MutableList«Int»)) {
     def __init__(){
 	MutableList«Int»::__init__(this, 0,10,1)
     }
