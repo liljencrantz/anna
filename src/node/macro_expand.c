@@ -64,14 +64,10 @@ static anna_node_t *anna_node_macro_expand_each(
 	case ANNA_NODE_CAST:
 	{
 	    anna_node_call_t *this2 =(anna_node_call_t *)this;
-	    
-	    if(!(this2->flags & ANNA_NODE_DONT_EXPAND))
+	    anna_function_t *macro = anna_node_macro_get(this2->function, stack);
+	    if(macro)
 	    {
-		anna_function_t *macro = anna_node_macro_get(this2->function, stack);
-		if(macro)
-		{
-		    return anna_node_macro_expand(anna_macro_invoke(macro, this2), stack);
-		}
+		return anna_node_macro_expand(anna_macro_invoke(macro, this2), stack);
 	    }
 	    
 	    break;

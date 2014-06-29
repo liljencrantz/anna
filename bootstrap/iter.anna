@@ -129,8 +129,8 @@ def doPrint(String key, String value){
     node = mangleIterator(node)
     
     if( (node.count != 1) or !(node.function as Call)){
-	node.expand? = ?
-	return node
+	node.error("Invalid iteration block")
+	return NullLiteral(node)
     }
     
     coll := (node.function as Call)[0]
@@ -204,8 +204,8 @@ macro filter(node) (
     node = mangleIterator(node)
     
     if( (node.count != 1) or !(node.function as Call)){
-	node.expand? = ?
-	return node
+	node.error("Invalid iteration block")
+	return NullLiteral(node)
     }
     
     coll := (node.function as Call)[0]
@@ -265,8 +265,8 @@ macro map(node) (
     node = mangleIterator(node)
     
     if( (node.count != 1) or !(node.function as Call)){
-	node.expand? = ?
-	return node
+	node.error("Invalid iteration block")
+	return NullLiteral(node)
     }
     
     coll := (node.function as Call)[0]
@@ -321,8 +321,8 @@ macro milter(node) (
     node = mangleIterator(node)
     
     if( (node.count != 1) or !(node.function as Call)){
-	node.expand? = ?
-	return node
+	node.error("Invalid iteration block")
+	return NullLiteral(node)
     }
     
     coll := (node.function as Call)[0]
@@ -378,8 +378,8 @@ macro find(node) (
     node = mangleIterator(node)
     
     if( (node.count != 1) or !(node.function as Call)){
-	node.expand? = ?
-	return node
+	node.error("Invalid iteration block")
+	return NullLiteral(node)
     }
     
     coll := (node.function as Call)[0]
@@ -438,8 +438,8 @@ href='#each'>each</a> does"
     node = mangleIterator(node)
     
     if( (node.count != 1) or !(node.function as Call)){
-	node.expand? = ?
-	return node
+	node.error("Invalid iteration block")
+	return NullLiteral(node)
     }
     
     coll := (node.function as Call)[0]
@@ -533,8 +533,8 @@ macro reduce(node) (
     node = mangleReduceIterator(node)
     
     if( (node.count != 2) or !(node.function as Call)){
-	node.expand? = ?
-	return node
+	node.error("Invalid iteration block")
+	return NullLiteral(node)
     }
     
     coll := (node.function as Call)[0]

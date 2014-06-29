@@ -253,23 +253,6 @@ ANNA_VM_NATIVE(anna_node_wrapper_i_get_file, 1)
     return anna_from_obj(res);
 }
 
-ANNA_VM_NATIVE(anna_node_wrapper_i_get_expand, 1)
-{
-    ANNA_ENTRY_NULL_CHECK(param[0]);
-    anna_object_t *thiso = anna_as_obj_fast(param[0]);
-    anna_node_t *this = anna_node_unwrap(thiso);
-    return this->flags & ANNA_NODE_DONT_EXPAND ? null_entry : anna_from_int(1);
-}
-
-ANNA_VM_NATIVE(anna_node_wrapper_i_set_expand, 2)
-{
-    ANNA_ENTRY_NULL_CHECK(param[0]);
-    anna_object_t *thiso = anna_as_obj_fast(param[0]);
-    anna_node_t *this = anna_node_unwrap(thiso);
-    this->flags  = (this->flags & ~ANNA_NODE_DONT_EXPAND) | (anna_entry_null(param[1]) ? ANNA_NODE_DONT_EXPAND:0);
-    return param[1];
-}
-
 ANNA_VM_NATIVE(anna_node_wrapper_i_get_line, 1)
 {
     ANNA_ENTRY_NULL_CHECK(param[0]);
@@ -443,12 +426,6 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
 	anna_mid_get(L"file"), string_type,
 	&anna_node_wrapper_i_get_file, 0,
 	L"The name of the file where this AST node was defined.");
-  
-    anna_member_create_native_property(
-	node_type,
-	anna_mid_get(L"expand?"), any_type,
-	&anna_node_wrapper_i_get_expand, &anna_node_wrapper_i_set_expand, 
-	L"If this property is non-null, it will not be considered for macro expansion.");
   
     anna_member_create_native_property(
 	node_type,
