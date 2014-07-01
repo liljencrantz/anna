@@ -18,8 +18,8 @@ def main(){
     print(l.find(i){i>3})
 
     print([].map(i){print("Fail")})
-    print([].filter(idx, val){print("Fail")idx>0});
-    print([].find(idx, val){print("Fail")idx>0});
+    print([].filter(idx, val){print("Fail"), idx>0})
+    print([].find(idx, val){print("Fail"), idx>0})
 /*
     print(l.map(?),"\n")
     print(l.filter(?),"\n")

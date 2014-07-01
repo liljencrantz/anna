@@ -17,7 +17,7 @@ def main() (
 	print("false")
     }
 
-    if(1){print("true")} else {print("false");}
+    if(1){print("true")} else {print("false")}
 
     print(if(?){"true"} else {"false"})
 

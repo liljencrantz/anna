@@ -568,9 +568,10 @@ void anna_function_setup_body(
     }
     f->flags |= ANNA_FUNCTION_PREPARED_BODY;
 
-    if(f->body)
+    if(f->body && f->body->child_count)
     {
 //	anna_message(L"Setup body of %ls\n",f->name);
+//	anna_node_print(99, f->body);
 	array_list_t ret = AL_STATIC;
 	int i;
 
