@@ -12,7 +12,7 @@ exec 2> /dev/null
 
 error_count=0
 test_count=0
-ulimit -St 10
+ulimit -St 15
 
 for i in tests/*.anna; do
     ANNA_BOOTSTRAP_DIRECTORY=./bootstrap bin/anna tests/$(basename $i .anna) >anna_tests.out 2>/dev/null

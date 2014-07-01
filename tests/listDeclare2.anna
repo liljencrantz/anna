@@ -5,7 +5,7 @@ def fun(){
 def main(){
     /*
       This gets transformed into something like
-      nothing(tmp := fun() foo := tmp[0], bar := tmp[1], baz := tmp[2]); 
+      nothing(tmp := fun() foo := tmp[0], bar := tmp[1], baz := tmp[2])
     */
     [foo, bar, baz] :== fun()
     /*

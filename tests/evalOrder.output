@@ -1,5 +1,5 @@
 getFun();
-getParam1();
-getParam2();
-fun(param1, param2);
+getParam1()
+getParam2()
+fun(param1, param2)
 result

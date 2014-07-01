@@ -3,12 +3,10 @@
   members, can be extended correctly.
 */
 
-class MidHash
-(extends(HashMap«Int, Int»)){
+class MidHash (extends(HashMap«Int, Int»)){
 }
 
-class MyHash
-(extends(MidHash)){
+class MyHash (extends(MidHash)){
     var Int foo
     var Int bar
     var Int baz

@@ -92,7 +92,6 @@ def main(){
 			    keyName := "key" ~ keyIdx
 			    keyIdx++
 			    res ~= "%(" ~ keyName ~")"
-
 			    parsed := parse(codeItem)
 			    if(!parsed){
 				node.error("Invalid code")
