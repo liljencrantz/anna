@@ -1009,7 +1009,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	L"The join operator can be used like this:");
     anna_member_document_example(
 	type, mmid, 
-	L"myString := \"Hello, \" ~ userName;");
+	L"myString := \"Hello, \" ~ userName");
 
     if(!mutable)
     {
@@ -1030,10 +1030,17 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	}
     ;
 
-    anna_member_create_native_method(
+    mmid = anna_member_create_native_method(
 	type, anna_mid_get(L"join"), 0,
 	&anna_string_i_ljoin, type, 2,
-	ljoin_argv, ljoin_argn, 0, 0);
+	ljoin_argv, ljoin_argn, 0, 
+	L"Concatenate each element of the specified list by using this string as the separator.");
+    anna_member_document(
+	type, mmid,
+	L"For example:");
+    anna_member_document_example(
+	type, mmid, 
+	L"\":\".join([1,2,3]) // Results in the string 1:2:3");
     
     mmid = anna_member_create_native_method(
 	type,
@@ -1128,7 +1135,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_member_create_native_method(
 	type, ANNA_MID_TO_STRING, 0,
 	&anna_string_to_string, string_type, 1,
-	i_argv, i_argn, 0, 0);
+	i_argv, i_argn, 0, L"Returns this string.");
     
     if(mutable)
     {
@@ -1155,18 +1162,15 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
 	fun = anna_function_unwrap(anna_as_obj_fast(anna_entry_get_static(type, mmid)));
 	anna_member_alias(type, mmid, L"__set__");
     }
-//    else
-    {
-	anna_member_create_native_method(
-	    type,
-	    ANNA_MID_HASH_CODE,
-	    0,
-	    &anna_string_hash_i,
-	    int_type,
-	    1,
-	    i_argv,
-	    i_argn, 0, 0);
-    }
+    anna_member_create_native_method(
+	type,
+	ANNA_MID_HASH_CODE,
+	0,
+	&anna_string_hash_i,
+	int_type,
+	1,
+	i_argv,
+	i_argn, 0, L"Calculate the hashcode for this string.");
     
     anna_member_create_native_property(
 	type, ANNA_MID_FREEZE,

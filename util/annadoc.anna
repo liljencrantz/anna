@@ -308,8 +308,8 @@ def String getLink(Type from, Type to){
     def documentMember(reflection.Member mem){
 	memberTot++
         doc := extractDocumentation(mem.attribute) or extractDocumentation((mem.value(?) as Function).attribute) or ""
-	if(doc == ""){
-	    verbose and print("Missing documentation for member %.%" % [mem.memberOf.name, mem.name])
+	if(doc == "" and mem.name[0] != '!'){
+	    verbose and print("Missing documentation for member %().%()" % [mem.memberOf.name, mem.name])
 	    memberMissing++
 	}
         htmlClass := if(mem.internal?){"class='anna-internal'"} else {""}
@@ -339,8 +339,8 @@ def String getLink(Type from, Type to){
 		opDoc ~= "</p>"
 	    }	    
 	}
-	if(doc == ""){
-	    verbose and print("Missing documentation for member %().%()" % [mem.memberOf.name, mem.name])
+	if(doc == "" and mem.name[0] != '!'){
+	    verbose and print("Missing documentation for function %().%()" % [mem.memberOf.name, mem.name])
 	    memberMissing++
 	}
 

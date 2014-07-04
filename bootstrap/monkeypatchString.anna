@@ -207,8 +207,9 @@ expandCode(
 
 expandCode(
     def Int %name(%Type this, Char char) (
-	target(%Type),
+	target(%Type)
 	name(__in__)
+	doc("Checks if the given character occurs in this string")
     ){
 	this.each(idx, ch){
 	    if(char == ch){

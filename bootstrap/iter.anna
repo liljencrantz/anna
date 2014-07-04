@@ -102,7 +102,7 @@ def Call mangleIterator(Call node) (
 macro each(node) (
     doc(
 	"Iterate over an arbitrary collection.",
-	"The supplied function or code block will we called exactly once for
+	"The supplied function or code block will be called exactly once for
 each element in the collection, and after that, the original
 collection is returned. The only restriction on the supplied
 collection is that it must implement the iterator interface.",

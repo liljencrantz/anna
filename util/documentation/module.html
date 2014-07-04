@@ -104,10 +104,12 @@
 <%= if(operatorLookup[opName].description){"(" ~ operatorLookup[opName].description ~ ")" } %>
 	<%
 	   memList.each(mem) {
-	   %><a href="#<%= mem.name  %>"><%= mem.name %></a> <%
-
+	%>
+	<a href="#<%= mem.name  %>"><%= mem.name %></a>
+        <%! headerForMember(mem) %>
+	<%
 	   }
-	   %>
+	%>
       </li>
       <%
 	}

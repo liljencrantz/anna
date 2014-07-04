@@ -644,7 +644,7 @@ static void anna_module_doc()
     };
     
     wchar_t *collection_desc = 
-	L"This type implements the Collection interface, meaning it can be used by the functional programming tools in the <a path='iter'>iter</a>-module, such as the <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> or <a path='iter' member='filter'>filter</a> macros.";
+	L"This type implements the Collection interface, meaning it can be used by the functional programming tools in the <a path='iter'>iter</a>-module, such as the <a path='builtinMacros' member='each'>each</a>, <a path='builtinMacros' member='map'>map</a> or <a path='builtinMacros' member='filter'>filter</a> macros.";
     wchar_t *iterator_desc = 
 	L"Iterators are used step over the elements in a collection. They are the low level building block used to implement the functional programming tools in the <a path='iter'>iter</a>-module, such as the <a path='iter' member='each'>each</a>, <a path='iter' member='map'>map</a> and <a path='iter' member='filter'>filter</a>.";
 

@@ -12,6 +12,7 @@
 #include "anna/util.h"
 #include "anna/type.h"
 #include "anna/lib/parser.h"
+#include "anna/node.h"
 #include "anna/node_create.h"
 #include "anna/macro.h"
 #include "anna/function.h"

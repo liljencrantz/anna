@@ -3,10 +3,10 @@ attribute(internal, doc("Internally used module. Don't use directly."))
 use(parser)
 
 def Node __format__(
-    Node this, 
+    Node this
     HashMap«String, Node» data)  (
-    target(Node), 
-    doc("Replace every internal identifier (an identifier prefixed with a '%' character) in the specified AST tree with the corresponding AST tree."),
+    target(Node)
+    doc("Replace every internal identifier (an identifier prefixed with a '%' character) in the specified AST tree with the corresponding AST tree.")
 ){
     res := this
     data.each(key, value){
@@ -16,18 +16,18 @@ def Node __format__(
 }
 
 def Int callTo?(
-    Node this,
+    Node this
     String name) (
-    target(Node),
-    doc("Returns true if the specified AST node is a call node and the function node is an identifier with the specified name."),
+    target(Node)
+    doc("Returns true if the specified AST node is a call node and the function node is an identifier with the specified name.")
 ){
     if(((this as Call).function as Identifier).name == name) { 1 } else { ? }
 }
 
 def Int named?(
-    Node this,
+    Node this
     String name) (
-    target(Node),
+    target(Node)
     doc("Returns true if the specified AST node is an identifier with the specified name."),
 ){
     if((this as Identifier).name == name) { 1 } else { ? }
@@ -35,8 +35,9 @@ def Int named?(
 
 def Int block?(
     Node this) (
-    target(Node),
-    doc("Returns true if the specified AST node is a block."),
+    target(Node)
+    doc("Returns true if the specified AST node is a block."
+	"A block is any Call node where the function subnode is the __block__ identifier.")
 ){
     if(((this as Call).function as Identifier).name == "__block__") { 1 } else { ? }
 }
@@ -53,7 +54,7 @@ def List«Node» filterByCall(Call this, String name) (
 }
 
 def Int childNamed?(Call this, String name) (
-    target(Call),
+    target(Call)
     doc("Returns true if this call has a parameter which is an identifier with the specified name.")
 ){
     this.each(chld){

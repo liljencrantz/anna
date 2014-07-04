@@ -385,6 +385,16 @@ void anna_type_intersect_into(
 		    member_type,
 		    getter ? 0 : -1,
 		    setter ? 0 : -1);
+		if(memb2->doc)
+		{
+		    anna_member_document(
+			res, mid, memb2->doc);
+		}
+		else
+		{
+		    anna_member_document_copy(
+			res, mid, memb2->attribute);
+		}
 	    }
 	}
     }

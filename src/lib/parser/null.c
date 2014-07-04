@@ -44,7 +44,11 @@ static anna_type_t *anna_node_create_null_type(anna_stack_template_t *stack)
 	2,
 	argv,
 	argn, 0, 0);
-    return node_null_type;
-    
+
+    anna_type_document(
+	node_null_type,
+	L"An AST node representing the null keyword (?).");
+
+    return node_null_type;    
 }
 

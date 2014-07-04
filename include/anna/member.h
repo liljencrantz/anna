@@ -94,6 +94,14 @@ void anna_member_document(
     anna_type_t *type,
     mid_t mid,
     wchar_t *doc);
+/**
+   Document the member of type type with all documentation strings from
+   the attribute list src_attribute.
+ */
+void anna_member_document_copy(
+    anna_type_t *type,
+    mid_t mid,
+    anna_node_call_t *src_attribute);
 
 /**
    Document the member of type type with the mid mid with the

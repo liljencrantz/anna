@@ -450,7 +450,7 @@ void anna_member_document(
     anna_member_t *memb = anna_member_get(type, mid); 
     if(memb)
     {
-	if(!memb->doc)
+	if(!memb->doc && !memb->attribute)
 	{
 	    memb->doc = doc;
 	}
@@ -469,6 +469,27 @@ void anna_member_document(
 	    memb->doc = 0;
 	}
     }
+}
+
+void anna_member_document_copy(
+    anna_type_t *type,
+    mid_t mid,
+    anna_node_call_t *src_attribute)
+{
+    int i;
+    array_list_t doc = AL_STATIC;
+    anna_attribute_call_all(src_attribute, L"doc", &doc);
+    for(i=0; i<al_get_count(&doc); i++)
+    {
+	anna_node_t *node = al_get(&doc, i);
+	if(node->node_type == ANNA_NODE_STRING_LITERAL)
+	{
+	    anna_node_string_literal_t *str_node =
+		(anna_node_string_literal_t *)node;
+	    anna_member_document(type, mid, str_node->payload);
+	}
+    }
+    al_destroy(&doc);
 }
 
 anna_function_type_t *anna_member_bound_function_type(anna_member_t *member)

@@ -51,5 +51,13 @@ static anna_type_t *anna_node_create_dummy_type(anna_stack_template_t *stack)
 	&anna_node_dummy_wrapper_i_get_payload, 0, 
 	L"The payload of this node.");
 
+    anna_type_document(
+	node_type,
+	L"An AST node that wraps an arbitrary Object.");
+
+    anna_type_document(
+	node_type,
+	L"When a Dummy node is evaluated, it will return it's payload. It can be used as a short circut when you know the exact value a node should evaluate to.");
+
     return node_dummy_type;
 }

@@ -447,18 +447,30 @@ static void anna_node_basic_create_type(anna_stack_template_t *stack)
     anna_member_create_native_method(
 	node_type, ANNA_MID_CMP, 0,
 	&anna_node_wrapper_cmp, 
-	int_type, 2, cmp_argv, cmp_argn, 0, 0);
+	int_type, 2, cmp_argv, cmp_argn, 0, 
+	L"Compare two ASTs for equality.");
 
     anna_member_create_native_method(
 	node_type, ANNA_MID_HASH_CODE, 0,
 	&anna_node_wrapper_hash,
-	int_type, 1, cmp_argv, cmp_argn, 0, 0);
+	int_type, 1, cmp_argv, cmp_argn, 0, L"Calculate the hashcode for this AST.");
 
     anna_member_create_native_method(
 	node_type, anna_mid_get(L"copy"), 0,
 	&anna_node_wrapper_copy,
 	node_type, 1, cmp_argv, cmp_argn, 0,
 	L"Return an identical copy of the specified AST tree");
+
+    anna_type_document(
+	node_type,
+	L"An arbitrary AST node");
+
+    anna_type_document(
+	node_type,
+	L"The Node type is the base type for all other AST types, "
+	L"such as <a href='call.html'>Call</a> and <a href='IntLiteral.html'>IntLiteral</a>.");
+
+
 }
 
 #include "src/lib/parser/call.c"
