@@ -151,7 +151,7 @@ static void anna_node_print_internal(
 	    sb_printf(sb,L"__assign__(");
 
 	    sb_printf(sb,L"%d:%d", this2->sid.frame, this2->sid.offset);
-	    sb_printf(sb,L";\n");
+	    sb_printf(sb,L",\n");
 	    anna_node_print_internal(sb,this2->value, indentation+1);
 	    sb_printf(sb,L")");
 	    
@@ -260,7 +260,7 @@ static void anna_node_print_internal(
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    sb_printf(sb,L"*__staticMemberGet__(\n");
 	    anna_node_print_internal(sb,this2->object, indentation+1);
-	    sb_printf(sb,L"; %ls)", anna_mid_get_reverse(this2->mid));
+	    sb_printf(sb,L", %ls)", anna_mid_get_reverse(this2->mid));
 	    break;
 	}
 
@@ -270,9 +270,9 @@ static void anna_node_print_internal(
 	    anna_node_declare_t *this2 = (anna_node_declare_t *)this;
 	    sb_printf(sb,L"*__var__(\n");
 	    anna_indent(sb,indentation+1);
-	    sb_printf(sb,L"%ls;\n", this2->name);
+	    sb_printf(sb,L"%ls,\n", this2->name);
 	    anna_node_print_internal(sb,this2->type, indentation+1);
-	    sb_printf(sb,L";\n");
+	    sb_printf(sb,L",\n");
 	    anna_node_print_internal(sb,this2->value, indentation+1);
 	    sb_printf(sb,L")");
 	    break;
@@ -284,9 +284,9 @@ static void anna_node_print_internal(
 	    anna_node_declare_t *this2 = (anna_node_declare_t *)this;
 	    sb_printf(sb,L"*__const__(\n");
 	    anna_indent(sb,indentation+1);
-	    sb_printf(sb,L"%ls;\n", this2->name);
+	    sb_printf(sb,L"%ls,\n", this2->name);
 	    anna_node_print_internal(sb,this2->type, indentation+1);
-	    sb_printf(sb,L";\n");
+	    sb_printf(sb,L",\n");
 	    anna_node_print_internal(sb,this2->value, indentation+1);
 	    sb_printf(sb,L")");
 	    break;
@@ -298,9 +298,9 @@ static void anna_node_print_internal(
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    sb_printf(sb,L"__memberSet__(\n");
 	    anna_node_print_internal(sb,this2->object, indentation+1);
-	    sb_printf(sb,L";\n");
+	    sb_printf(sb,L",\n");
 	    anna_indent(sb,indentation+1);
-	    sb_printf(sb,L"%ls;\n", anna_mid_get_reverse(this2->mid));
+	    sb_printf(sb,L"%ls,\n", anna_mid_get_reverse(this2->mid));
 	    anna_node_print_internal(sb,this2->value, indentation+1);
 	    sb_printf(sb,L")");
 	    break;
@@ -312,9 +312,9 @@ static void anna_node_print_internal(
 	    anna_node_member_access_t *this2 = (anna_node_member_access_t *)this;
 	    sb_printf(sb,L"__staticMemberSet__(\n");
 	    anna_node_print_internal(sb,this2->object, indentation+1);
-	    sb_printf(sb,L";\n");
+	    sb_printf(sb,L",\n");
 	    anna_indent(sb,indentation+1);
-	    sb_printf(sb,L"%ls;\n", anna_mid_get_reverse(this2->mid));
+	    sb_printf(sb,L"%ls,\n", anna_mid_get_reverse(this2->mid));
 	    anna_node_print_internal(sb,this2->value, indentation+1);
 	    sb_printf(sb,L")");
 
@@ -368,7 +368,7 @@ static void anna_node_print_internal(
 		{
 		    if(i!=0) 
 		    {
-			sb_printf(sb,L";");
+			sb_printf(sb,L",");
 		    }
 		    anna_node_print_internal(sb,this2->child[i], 0);
 		}
@@ -385,7 +385,7 @@ static void anna_node_print_internal(
 		{
 		    if(i!=0) 
 		    {
-			sb_printf(sb,L";\n");
+			sb_printf(sb,L",\n");
 		    }
 		    anna_node_print_internal(sb,this2->child[i], indentation+1);
 		}
@@ -426,7 +426,7 @@ static void anna_node_print_internal(
 		
 	    for(i=0; i<this2->child_count; i++)
 	    {
-		sb_printf(sb,L";\n");
+		sb_printf(sb,L",\n");
 		anna_node_print_internal(sb,this2->child[i], indentation+1);
 	    }
 	    sb_printf(sb,L")" );
@@ -492,7 +492,7 @@ static void anna_node_print_internal(
 		{
 		    if(i!=0) 
 		    {
-			sb_printf(sb,L";");
+			sb_printf(sb,L",");
 		    }
 		    anna_node_print_internal(sb,this2->child[i], 0);
 		}
