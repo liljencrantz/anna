@@ -1,3 +1,4 @@
+//ROOT: src/lib/parser/parser.c
 
 ANNA_VM_NATIVE(anna_node_string_literal_wrapper_i_get_name, 1)
 {
@@ -51,7 +52,12 @@ static anna_type_t *anna_node_create_string_literal_type(anna_stack_template_t *
 	anna_mid_get(L"payload"), string_type,
 	&anna_node_string_literal_wrapper_i_get_name,
 	0,
-	L"The payload of this node");
+	L"The string payload of this node");
+
+    anna_type_document(
+	node_string_literal_type,
+	L"An AST node representing a string literal, such as \"banana\", \"\" or \"yolo\".");
+
     return node_string_literal_type;
     
 }

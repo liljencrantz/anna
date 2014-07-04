@@ -513,7 +513,7 @@ static void anna_node_create_call_type(
 	type,
 	2,
 	jc_argv,
-	j_argn, 0, 0);
+	j_argn, 0, L"Create a new Call node, with the function node of this Call node and all the child nodes of both this Call node and the specified other Call node");
     anna_member_alias(type, mmid, L"__join__");
 
     wchar_t *push_argn[] = 
@@ -539,6 +539,14 @@ static void anna_node_create_call_type(
 	2,
 	jl_argv,
 	j_argn, 0, 0);
+
+    anna_type_document(
+	type,
+	L"An AST node representing function/method call.");
+
+    anna_type_document(
+	type,
+	L"A call consists of one subnode that identifies what function to call, an an arbitrary number of other nodes that identify the call arguments.");
 
     anna_type_copy(type, node_type);
 }

@@ -42,13 +42,17 @@ static anna_type_t *anna_node_create_char_literal_type(anna_stack_template_t *st
 	null_type,
 	3,
 	argv,
-	argn, 0, 0);
+	argn, 0, L"Create a new character literal.");
     
     anna_member_create_native_property(
 	type, anna_mid_get(L"payload"), char_type,
 	&anna_node_char_literal_wrapper_i_get_payload,
 	0,
-	L"The payload of this node.");
+	L"The character payload of this node.");
+
+    anna_type_document(
+	type,
+	L"An AST node representing a character literal, such as 'a', '9' or '\\n'.");
 
     return type;
 }

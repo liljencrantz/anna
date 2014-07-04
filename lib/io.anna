@@ -13,7 +13,7 @@ def relative?(String filename) (internal){
 
 const separator (doc("The directory separator")) = '/'
 
-def getCwd() (internal, doc("Returns a string representing the current workin directory.")){
+def getCwd() (internal, doc("Returns a string representing the current working directory.")){
     b := Buffer()
     unix.io.getcwd(b, 4096)
     b.encode(nullTerminated:1)

@@ -48,6 +48,11 @@ static anna_type_t *anna_node_create_float_literal_type(anna_stack_template_t *s
 	type, anna_mid_get(L"payload"), float_type,
 	&anna_node_float_literal_wrapper_i_get_payload,
 	0,
-	L"The payload of this node");
+	L"The floating point number payload of this node");
+
+    anna_type_document(
+	type,
+	L"An AST node representing a floating point number literal, such as 9.5.");
+
     return type;
 }

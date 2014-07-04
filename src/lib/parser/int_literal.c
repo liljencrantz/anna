@@ -51,6 +51,11 @@ static anna_type_t *anna_node_create_int_literal_type(
 	type, anna_mid_get(L"payload"), int_type,
 	&anna_node_int_literal_wrapper_i_get_payload,
 	0,
-	L"The payload of this node.");
+	L"The integer payload of this node.");
+
+    anna_type_document(
+	type,
+	L"An AST node representing an integer number literal, such as 9.");
+
     return type;
 }
