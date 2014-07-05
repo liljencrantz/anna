@@ -21,7 +21,7 @@ ANNA_VM_NATIVE(anna_node_null_wrapper_i_init, 2)
 
 static anna_type_t *anna_node_create_null_type(anna_stack_template_t *stack)
 {
-    anna_type_t *node_null_type = anna_type_create(L"NullLiteral", 0);
+    anna_type_t *node_null_type = node_null_literal_type;
 
     wchar_t *argn[] =
 	{

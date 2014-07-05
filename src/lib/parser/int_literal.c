@@ -23,8 +23,7 @@ ANNA_VM_NATIVE(anna_node_int_literal_wrapper_i_init, 3)
 static anna_type_t *anna_node_create_int_literal_type(
     anna_stack_template_t *stack)
 {
-    anna_type_t *type = anna_type_create(L"IntLiteral", 0);
-
+    anna_type_t *type = node_int_literal_type;
     anna_type_t *argv[] = 
 	{
 	    type,

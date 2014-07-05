@@ -618,8 +618,8 @@ static void anna_module_doc()
 	    buffer_type, node_call_type, hash_type, range_type,
 	    continuation_type, block_type, float_type, complex_type,
 	    int_type, char_type, node_type, node_call_type,
-//	    node_string_literal_type, node_int_literal_type,
-//	    node_float_literal_type, node_dummy_type,
+	    node_string_literal_type, node_int_literal_type,
+	    node_float_literal_type, node_dummy_type,
 	    0
 	};
     
@@ -631,8 +631,16 @@ static void anna_module_doc()
 	    mid_t mid = doc_misc[j].mid;
 	    
 	    anna_member_t *memb = anna_member_get(type, mid);
-	    if(!memb || memb->doc || memb->attribute)
+	    if(!memb || memb->doc || anna_attribute_has_call_to(memb->attribute, L"doc"))
 		continue;
+	    
+	    anna_entry_t * e = anna_entry_get_addr_static(type, mid);
+	    if(e)
+	    {
+		anna_function_t *fun = anna_function_unwrap(anna_as_obj(*e));
+		if(fun && anna_attribute_has_call_to(fun->attribute, L"doc"))
+		    continue;
+	    }
 	    anna_member_document(type, mid, doc_misc[j].doc);
 	}
     }

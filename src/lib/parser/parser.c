@@ -31,7 +31,11 @@
 #include "anna/lib/clib.h"
 #include "anna/object.h"
 
-anna_type_t *node_type, *node_identifier_type, *node_call_type;
+anna_type_t *node_type, *node_identifier_type, *node_call_type,
+    *node_int_literal_type, *node_string_literal_type,
+    *node_char_literal_type, *node_float_literal_type,
+    *node_null_literal_type, *node_dummy_type;
+
 static anna_type_t *anna_node_type_mapping[ANNA_NODE_TYPE_COUNT];
 
 anna_object_t *anna_node_wrap(anna_node_t *node)
@@ -491,6 +495,12 @@ void anna_parser_create_types(anna_stack_template_t *stack)
 	    { &node_call_type, L"Call" },
 	    { &node_type, L"Node" },
 	    { &node_identifier_type, L"Identifier" },
+	    { &node_int_literal_type, L"IntLiteral"},
+	    { &node_string_literal_type, L"StringLiteral"},
+	    { &node_char_literal_type, L"CharLiteral"},
+	    { &node_float_literal_type, L"FloatLiteral"},
+	    { &node_null_literal_type, L"NullLiteral"},
+	    { &node_dummy_type, L"Dummy"},
 	}
     ;
     

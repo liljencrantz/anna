@@ -20,8 +20,6 @@ ANNA_VM_NATIVE(anna_node_dummy_wrapper_i_init, 3)
 
 static anna_type_t *anna_node_create_dummy_type(anna_stack_template_t *stack)
 {
-    anna_type_t *node_dummy_type = anna_type_create(L"Dummy", 0);
-    
     wchar_t *argn[] =
 	{
 	    L"this", L"source", L"payload"

@@ -387,23 +387,23 @@ the doc attribute of declarations.")){
 	}
 	
 	if(!submodule.empty?){
-	    res ~= "\n\nThe % module has the following submodules:\n" % [type(object).name]
+	    res ~= "\n\nThe %() module has the following submodules:\n" % [type(object).name]
 	    res ~= linebreak(submodule)
 	}
 
 	if(!subtype.empty?){
-	    res ~= "\n\nThe % module contains the following types:\n" % [type(object).name]
+	    res ~= "\n\nThe %() module contains the following types:\n" % [type(object).name]
 	    res ~= linebreak(subtype)
 	}
 
 	if(!subother.empty?){
-	    res ~= "\n\nThe % module contains the following members:\n" % [type(object).name]
+	    res ~= "\n\nThe %() module contains the following members:\n" % [type(object).name]
 	    res ~= linebreak(subother)
 	}
 
     } else {
 	smemb := members(objType)
-	res ~= "\n\nThe % has the following members:\n" % [description]
+	res ~= "\n\nThe %() has the following members:\n" % [description]
 	res ~= linebreak(smemb)	    
     }
 

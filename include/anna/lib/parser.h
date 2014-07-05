@@ -4,10 +4,11 @@
 
 struct anna_stack_template;
 
-extern anna_type_t *node_call_type;
-extern anna_type_t *node_type;
-extern anna_type_t *node_identifier_type;
-extern anna_type_t *node_imutable_call_type;
+extern anna_type_t *node_call_type, *node_type,
+    *node_identifier_type, *node_imutable_call_type,
+    *node_int_literal_type, *node_string_literal_type,
+    *node_char_literal_type, *node_float_literal_type,
+    *node_null_literal_type, *node_dummy_type;
 
 anna_object_t *anna_node_wrap(anna_node_t *node);
 anna_node_t *anna_node_unwrap(anna_object_t *this);

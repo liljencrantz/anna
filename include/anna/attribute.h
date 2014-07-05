@@ -13,5 +13,10 @@ __cold void anna_attribute_call_all(anna_node_call_t *attribute, wchar_t *name, 
    Search the specified attribute list for an attribute with the specified
  */
 __cold int anna_attribute_template_idx(anna_node_call_t *attr, wchar_t *name);
+/**
+   Search through the specified attribute list and return true iff there it contains a call node with the specific function
+ */
+__cold int anna_attribute_has_call_to(anna_node_call_t *attribute, wchar_t *name);
+
 
 #endif

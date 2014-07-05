@@ -32,6 +32,23 @@ static int anna_attribute_has_alias_internal(
     return 0;    
 }
 
+int anna_attribute_has_call_to(
+    anna_node_call_t *attribute, wchar_t *name)
+{
+    if(!attribute)
+	return 0;
+    int i;
+    
+    for(i=0; i<attribute->child_count; i++)
+    {
+	if(anna_node_is_call_to(attribute->child[i], name))
+	{
+	    return 1;
+	}
+    }
+    return 0;    
+}
+
 int anna_attribute_has_alias_reverse(anna_node_call_t *attribute, wchar_t *name)
 {
     return anna_attribute_has_alias_internal(attribute, L"aliasReverse", name);

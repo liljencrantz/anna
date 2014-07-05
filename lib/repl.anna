@@ -1,5 +1,6 @@
-attribute(doc("
-The anna command line prompt, also known as a repl."))
+attribute(doc(
+    "The anna command line prompt, also known as a repl."
+))
 
 
 def repl(reflection.Continuation debugFrame = ?) (doc(
