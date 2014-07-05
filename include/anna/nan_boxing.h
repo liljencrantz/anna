@@ -220,6 +220,11 @@ static inline complex double anna_as_complex(anna_entry_t entry)
     return anna_complex_get(anna_as_obj_fast(entry));
 }
 
+static inline anna_entry_t anna_from_complex(complex double val)
+{
+    return anna_from_obj(anna_complex_create(val));
+}
+
 static inline anna_entry_t anna_as_native(anna_entry_t e)
 {
     if(!anna_is_obj(e))

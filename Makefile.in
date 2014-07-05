@@ -62,7 +62,7 @@ LDFLAGS := @LIBS@ @LDFLAGS@ -rdynamic $(PROF_FLAGS) $(COV_FLAGS)
 PROGRAMS := bin/anna 
 
 ANNA_INTERNAL_BINDINGS := lib/unix.so lib/getText.so lib/readLine.so
-ANNA_EXTERNAL_BINDINGS := lib/curses.so lib/math.so
+ANNA_EXTERNAL_BINDINGS := lib/curses.so lib/math.so lib/cmath.so
 
 all: $(PROGRAMS) bindings documentation
 .PHONY: all
@@ -138,7 +138,7 @@ lib/%.o: lib/%.c
 %.so: %.o
 	$(CC) -shared $*.o -o $@ $(LDFLAGS) 
 
-bin/anna: $(ANNA_OBJS) internal_bindings
+bin/anna: $(ANNA_OBJS)
 	$(CC) $(ANNA_OBJS) -o $@ $(LDFLAGS) 
 
 autogen/lex.c: src/lex.y 
