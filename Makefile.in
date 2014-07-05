@@ -1,6 +1,6 @@
 # Makefile for the Anna interpreter
 #
-# Copyright 2011 Axel Liljencrantz
+# Copyright 2011-2014 Axel Liljencrantz
 #
 
 # Choose the compiler. Probably has to be a modern GCC version, since

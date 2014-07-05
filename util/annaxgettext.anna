@@ -37,7 +37,7 @@ def main(){
 	}
     }
 
-    print("# Copyright (C) % 
+    print("# Copyright (C) %() 
 # 
 msgid \"\"
 msgstr \"\"

@@ -18,7 +18,7 @@ annaxgettext myApplication.anna >messages.pot
 </pre>",
 	"The above command will create a file named messages.pot, looking something like this:",
 	"<pre>
-# Copyright (C) 2012 
+# Copyright (C) 2014
 # 
 msgid \"\"
 msgstr \"\"
