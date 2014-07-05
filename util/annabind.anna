@@ -163,6 +163,11 @@ def init() {
 	    "float_type", 
 	    "    double %(dest) = anna_as_float(%(source));\n",
 	    "    anna_entry_t %(dest) = anna_from_float(%(source));\n"),
+	ast(Complex): BasicBindingType(
+	    "double complex",
+	    "complex_type", 
+	    "    complex double %(dest) = anna_as_complex(%(source));\n",
+	    "    anna_entry_t %(dest) = anna_from_complex(%(source));\n"),
 	/*  ast(Pointer): BasicBindingType(
 	    "void *",
 	    "pointer_type", 
