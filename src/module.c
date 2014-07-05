@@ -617,7 +617,10 @@ static void anna_module_doc()
 	    any_list_type, mutable_list_type, imutable_list_type, 
 	    buffer_type, node_call_type, hash_type, range_type,
 	    continuation_type, block_type, float_type, complex_type,
-	    int_type, char_type, 0
+	    int_type, char_type, node_type, node_call_type,
+//	    node_string_literal_type, node_int_literal_type,
+//	    node_float_literal_type, node_dummy_type,
+	    0
 	};
     
     for(i=0;misc_type[i]; i++)
