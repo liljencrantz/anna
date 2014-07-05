@@ -208,6 +208,20 @@ int anna_abides(anna_type_t *contender, anna_type_t *role_model)
     return !anna_abides_fault_count(contender, role_model);
 }
 
+static void anna_abides_doc_copy(anna_type_t *dest, mid_t mid, anna_member_t *src)
+{
+    if(src->doc)
+    {
+	anna_member_document(
+	    dest, mid, src->doc);
+    }
+    else
+    {
+	anna_member_document_copy(
+	    dest, mid, src->attribute);
+    }
+}
+
 void anna_type_intersect_into(
     anna_type_t *res, anna_type_t *t1, anna_type_t *t2)
 {
@@ -251,8 +265,7 @@ void anna_type_intersect_into(
 	1,
 	init_argv,
 	init_argn, 0, 
-	0);
-    
+	L"Returns null. This type can not be instantiated.");    
     
     for(i=0; i<anna_type_get_member_count(t2); i++)
     {
@@ -269,30 +282,32 @@ void anna_type_intersect_into(
 //	    anna_message(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(anna_member_is_bound(memb1) != anna_member_is_bound(memb2))
+
+	if(anna_member_is_bound(memb1) != anna_member_is_bound(memb2))
 	{
 //	    anna_message(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(anna_member_is_static(memb1) != anna_member_is_static(memb2))
+
+	if(anna_member_is_static(memb1) != anna_member_is_static(memb2))
 	{
 //	    anna_message(L"Skip %ls\n", members[i]);
 	    continue;
 	}
-	else if(anna_member_is_bound(memb2))
+	
+	if(anna_member_is_bound(memb2))
 	{
 	    anna_function_type_t *ft1 = anna_function_type_unwrap(memb1->type);
 	    anna_function_type_t *ft2 = anna_function_type_unwrap(memb2->type);
 	    
-	    if(
-		anna_abides_function(
-		    ft1, ft2, 1, 0, 0)) 
+	    if(anna_abides_function(ft1, ft2, 1, 0, 0)) 
 	    {
 		anna_type_t **types = 
 		    malloc(sizeof(anna_type_t *)*ft2->input_count);
 		anna_node_t **defaults = 
 		    calloc(1,sizeof(anna_node_t *)*ft2->input_count);
 		int i;
+
 		for(i=0; i<ft2->input_count; i++)
 		{
 		    types[i] = anna_type_intersect(ft1->input_type[i], ft2->input_type[i]);		    
@@ -336,7 +351,14 @@ void anna_type_intersect_into(
 		    }		    
 		}
 		al_destroy(&alias);
-		
+
+		anna_entry_t * e = anna_entry_get_addr_static(t1, mid);
+		if(e)
+		{
+		    anna_function_t *fun = anna_function_unwrap(anna_as_obj(*e));
+		    anna_member_document_copy(
+			res, mid, fun->attribute);
+		}
 	    }
 	}
 	else
@@ -385,16 +407,7 @@ void anna_type_intersect_into(
 		    member_type,
 		    getter ? 0 : -1,
 		    setter ? 0 : -1);
-		if(memb2->doc)
-		{
-		    anna_member_document(
-			res, mid, memb2->doc);
-		}
-		else
-		{
-		    anna_member_document_copy(
-			res, mid, memb2->attribute);
-		}
+		anna_abides_doc_copy(res, mid, memb2);
 	    }
 	}
     }

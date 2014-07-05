@@ -476,6 +476,8 @@ void anna_member_document_copy(
     mid_t mid,
     anna_node_call_t *src_attribute)
 {
+    if(!src_attribute)
+	return;
     int i;
     array_list_t doc = AL_STATIC;
     anna_attribute_call_all(src_attribute, L"doc", &doc);

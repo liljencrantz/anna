@@ -1041,7 +1041,7 @@ static void anna_string_type_create_internal(anna_type_t *type, int mutable)
     anna_member_document_example(
 	type, mmid, 
 	L"\":\".join([1,2,3]) // Results in the string 1:2:3");
-    
+
     mmid = anna_member_create_native_method(
 	type,
 	anna_mid_get(L"__appendAssign__"),

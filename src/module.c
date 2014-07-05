@@ -601,6 +601,40 @@ static void anna_module_doc()
 	wchar_t *doc;
     };
     
+    int i, j;
+    
+    struct member_doc doc_misc[] = {
+	{ANNA_MID_INIT, L"Create new instance."},
+	{ANNA_MID_CMP, L"Compare the two objects for equality."},
+	{ANNA_MID_HASH_CODE, L"Calculate the hashcode for the object."},
+	{ANNA_MID_TO_STRING, L"Return a string representation of this object."},
+	{0,0}
+    };
+
+    anna_type_t *misc_type[] = 
+	{
+	    string_type, mutable_string_type, imutable_string_type, 
+	    any_list_type, mutable_list_type, imutable_list_type, 
+	    buffer_type, node_call_type, hash_type, range_type,
+	    continuation_type, block_type, float_type, complex_type,
+	    int_type, char_type, 0
+	};
+    
+    for(i=0;misc_type[i]; i++)
+    {
+	for(j=0; doc_misc[j].doc; j++)
+	{
+	    anna_type_t *type = misc_type[i];
+	    mid_t mid = doc_misc[j].mid;
+	    
+	    anna_member_t *memb = anna_member_get(type, mid);
+	    if(!memb || memb->doc || memb->attribute)
+		continue;
+	    anna_member_document(type, mid, doc_misc[j].doc);
+	}
+    }
+    
+	
     struct member_doc doc_iter[] = 
 	{
 	    {ANNA_MID_VALUE, L"The current value of the iterator."},
@@ -641,7 +675,7 @@ static void anna_module_doc()
 	{ANNA_MID_SET, L"Set the item at the specified offset to the specified value."},
 	{ANNA_MID_SET_RANGE, L"Set all of the items in the specified Range to the items in the specified list."},
 	{0, 0}
-    };
+    };    
     
     wchar_t *collection_desc = 
 	L"This type implements the Collection interface, meaning it can be used by the functional programming tools in the <a path='iter'>iter</a>-module, such as the <a path='builtinMacros' member='each'>each</a>, <a path='builtinMacros' member='map'>map</a> or <a path='builtinMacros' member='filter'>filter</a> macros.";
@@ -654,8 +688,6 @@ static void anna_module_doc()
 	    any_list_type, mutable_list_type, imutable_list_type, 
 	    buffer_type, node_call_type, hash_type, range_type, 0
 	};
-    
-    int i, j;
     
     for(i=0; data_numerical[i][0]; i++)
     {
