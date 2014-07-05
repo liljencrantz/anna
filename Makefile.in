@@ -184,9 +184,9 @@ check-syntax:
 	for src in ${CHK_SOURCES}; do							\
 		root=$$(head $$src|sed -n -e "s|.*// *ROOT: *\([^ ]*\).*|\1|p");	\
 		if test "$$root"; then							\
-			$(CC) -o null -S $$root $(CFLAGS);				\
+			$(CC) -o /dev/null -S $$root $(CFLAGS);				\
 		else									\
-			$(CC) -o null -S $$src $(CFLAGS);				\
+			$(CC) -o /dev/null -S $$src $(CFLAGS);				\
 		fi;									\
 	done; true;
 .PHONY: check-syntax
