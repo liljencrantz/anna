@@ -251,7 +251,10 @@ def String getLink(Type from, Type to){
 		res.push("static")
 	    }
 	}
-	
+
+	alias := annaUtil.findAttribute(
+	    mem.attribute or (mem.value(?) as Function).attribute, "alias")
+	res ~= alias.map(name) { "alias(%())" % [name]}
 	res.empty? and (return "")
 	return " (" ~ ", ".join(res) ~ ")"
     }
