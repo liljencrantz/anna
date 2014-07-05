@@ -178,7 +178,7 @@ done
 init="$init
 "
 
-for i in "__neg__ -v" "sqrt csqrt(v)" "tan ctan(v)" "atan catan(v)" "sin csin(v)" "cos ccos(v)" "ln clog(v)" ; do
+for i in "__neg__ -v"; do
     external_name=$(echo "$i"|cut -f 1 -d ' ')
     name=$(echo $external_name| tr -d _)
     op=$(echo "$i"|cut -f 2- -d ' ')
