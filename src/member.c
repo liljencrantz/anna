@@ -55,14 +55,14 @@ mid_t anna_member_create(
     int storage,
     anna_type_t *member_type)
 {
+    wchar_t *name = anna_mid_get_reverse(mid);
+    
     if((type->flags & ANNA_TYPE_CLOSED) && !(storage & ANNA_MEMBER_STATIC) && !(storage & ANNA_MEMBER_PROPERTY))
     {
 	debug(D_CRITICAL, L"Added additional non-static member %ls after closing type %ls\n", anna_mid_get_reverse(mid), type->name);
 	CRASH;
     }    
 
-    wchar_t *name = anna_mid_get_reverse(mid);
-    
     if(anna_member_get(type, mid))
     {
 	if(type == type_type && wcscmp(name, L"!typeWrapperPayload")==0)
@@ -76,7 +76,7 @@ mid_t anna_member_create(
 	
 	if(type->flags & ANNA_TYPE_MEMBER_DECLARATION_IN_PROGRESS)
 	{
-	    return anna_mid_get(name);
+	    return mid;
 	}
 	anna_message(L"Critical: Redeclaring member %ls of type %ls\n",
 		name, type->name);

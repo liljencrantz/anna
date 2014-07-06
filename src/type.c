@@ -821,7 +821,7 @@ static anna_node_t *anna_type_setup_interface_internal(
     int i;
     if( type->flags & ANNA_TYPE_PREPARED_INTERFACE)
 	return 0;
-    
+
     type->flags |= ANNA_TYPE_PREPARED_INTERFACE;
 
     //anna_message(L"Set up interface for type %ls\n", type->name);
@@ -939,6 +939,7 @@ static anna_node_t *anna_type_setup_interface_internal(
 	    &anna_util_noop, type, 1, argv, argn, 0, 0);
     }
 
+    anna_type_close(type);
     return 0;
 }
 
@@ -997,7 +998,6 @@ void anna_type_prepare_member(anna_type_t *type, mid_t mid)
 void anna_type_setup_interface(anna_type_t *type)
 {
     anna_type_setup_interface_internal(type);
-    anna_type_close(type);
 }
 
 anna_type_t *anna_type_specialize(
@@ -1592,6 +1592,7 @@ void anna_type_close(anna_type_t *this)
     {
 	return;
     }
+    
     this->flags |= ANNA_TYPE_CLOSED;
 
     int entry_count = 0;

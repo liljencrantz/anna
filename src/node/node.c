@@ -38,9 +38,13 @@
 #include "anna/lib/lang/list.h"
 #include "anna/lib/lang/hash.h"
 
+static int anna_node_calculate_type_direct_children(
+    anna_node_call_t *n, anna_stack_template_t *stack);
+
 #include "specialize.c"
 #include "macro_expand.c"
 #include "prepare.c"
+#include "calculate_type.c"
 #include "validate.c"
 #include "each.c"
 #include "hash.c"

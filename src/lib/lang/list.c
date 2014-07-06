@@ -1068,7 +1068,7 @@ static void anna_list_type_create_internal(
 	    type,
 	    anna_mid_get(L"flip"), 0,
 	    &anna_list_flip, spec, 3,
-	    switch_argv, switch_argn, 0, 0);
+	    switch_argv, switch_argn, 0, L"Flip the values at the two specified indices.");
 
 	anna_member_create_native_method(
 	    type, ANNA_MID_PUSH,
