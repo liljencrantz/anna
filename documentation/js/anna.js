@@ -95,9 +95,15 @@ var anna = {
 	    {
 		// Remove the 'global' element, unless that's the entire path. It just takes up space.
 		arr.splice(0,1);
-		path = arr.join(".") + "::";
+		path = arr.join(".");
 	    }
-	    return path + module.split("#")[1];
+	    var field = module.split("#")[1];
+	    if(field){
+		if(path)
+		    path = path + "::";
+		path = path + field;
+	    }
+	    return path;
 	}
 
 	$(".anna-search").html("<em>Search the API documentation:</em> <form><input class='anna-search'></input name='search'></form>");
