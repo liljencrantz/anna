@@ -11,10 +11,10 @@ var HashMap«String, MutableList«String»» keywordLookup
 var HashMap«String, MutableList«String»» wordLookup
 
 def compress(String name, HashMap«String, MutableList«String»» map) {
-    itemLookup := «String, Int»[]
-    itemCode := «String»[]
+    itemLookup :== «String, Int»[]
+    itemCode :== «String»[]
     idx := 0
-    lines := «String»[]
+    lines :== «String»[]
     map.each(key, value) {
 	line := json.to(key).thaw
 	line ~= ": ["
@@ -80,7 +80,7 @@ def main() (
 }
 
 def filterWordLookup(HashMap«String, MutableList«String»» input){
-  res := «String, MutableList«String»»[]
+    res := «String, MutableList«String»»[]
     input.each(key, value) {
 	if(value.count < 40) {
 	    res[key] = value
@@ -136,7 +136,7 @@ class DocumentationData (
 
     def String linkPath(DocumentationData from = ?, Int last = 1) (doc("Create a html anchor from some other document to this document")){
 
-        prev := (parent.linkPath(from or this, ?) ~ parent.linkConnector()) or ""
+        prev :== (parent.linkPath(from or this, ?) ~ parent.linkConnector()) or ""
 	classString := if(last){" class='anna-link-main'"} else {""}
 	return prev ~ if(from) {
 	    "<a href='%()'%()>%()</a>" % [link(from), classString, object.name]
@@ -399,8 +399,8 @@ often used code paths, which makes it useful for regression testing.")
     }
 
     def lookupPath(Type module, Member member) {
-	valueAsType :== (member.static? and (member.value(?))) as Type
-	if(valueAsType) {
+	value :== (member.static? and (member.value(?)))
+	if((value as Type) or member.type.module?) {
 	    path[module].link(path[type(global)])[0..-5] ~ "/" ~ member.name ~ ".html"
 	} else {
 	    path[module].link(path[type(global)]) ~ "#" ~ member.name
@@ -411,14 +411,14 @@ often used code paths, which makes it useful for regression testing.")
 	if(module in path){
 	    return
 	}
-        parentData := path[parent]
+        parentData :== path[parent]
 
 	path[module] = DocumentationData(module, parentData)
 	path[module].directory.makeDirectory()
 
 	module.member.each(mem){
 	    attr :== mem.attribute or (mem.value(?) as Function).attribute
-	    alias := annaUtil.findAttribute(attr, "alias")
+	    alias :== annaUtil.findAttribute(attr, "alias")
 	    memLookupPath :== lookupPath(module, mem)
 	    (alias.map(a){a.toString()}.thaw ~ [mem.name]).each(casedName){
 	        name :== casedName.lower
@@ -442,7 +442,7 @@ often used code paths, which makes it useful for regression testing.")
 	    
 	    
 	    if(mem.static?){
-  	        val := mem.value(?)
+  	        val :== mem.value(?)
 		if(type(val).module?){
 		    lookup(module: type(val), parent: module)
 		}
@@ -456,14 +456,14 @@ often used code paths, which makes it useful for regression testing.")
     def Any writeFile(Type module){
 	moduleTot++
 	if(!(module in path)){ return }
-        data := path[module]
+        data :== path[module]
 	if(data.done){return}
 	data.done=1
         memb := module.member
 
 	compat := ""
 	if(module.module?){
-  	    objMemb := «String, Member»[]
+  	    objMemb :== «String, Member»[]
 	    Any.member.each(mem){objMemb[mem.name] = mem}
 	    memb = memb.filter(mem){!(mem.name in objMemb)}
 	} else {
@@ -472,8 +472,8 @@ often used code paths, which makes it useful for regression testing.")
 		return "<span class='anna-compat'>%()</span>" % [", ".join(sorted.map(dd){dd.linkPath(data)})]
 	    }
 	    
-	    sub := path.map(dd){dd}.filter(dd){dd.object.abides(module) and !(dd.object in [Null, module])}
-	    paren := path.map(dd){dd}.filter(dd){module.abides(dd.object) and !(dd.object in [Null, module])}
+	    sub :== path.map(dd){dd}.filter(dd){dd.object.abides(module) and !(dd.object in [Null, module])}
+	    paren :== path.map(dd){dd}.filter(dd){module.abides(dd.object) and !(dd.object in [Null, module])}
 	    if(!sub.empty?){
 		
 		compat ~= "<h3><a name='module-child'>Types that can mask as this type</a></h3>\n"
@@ -486,30 +486,30 @@ often used code paths, which makes it useful for regression testing.")
 	    }
 	}
 
-        smemb := algo.qsort(
+        smemb :== algo.qsort(
 	    memb.thaw, 
 	    fieldComparator(Member::name))
 	
-        submodule := smemb.filter(mem){
-	    val := mem.value(?)
+        submodule :== smemb.filter(mem){
+	    val :== mem.value(?)
 	    mem.static? and type(val).module?
 	}
-        subtype := smemb.filter(mem){
-	    val := mem.value(?)
+        subtype :== smemb.filter(mem){
+	    val :== mem.value(?)
 	    mem.static? and (val as Type)
 	}
 
-	subfun := smemb.filter(mem){
-	    val := mem.value(?)
+	subfun :== smemb.filter(mem){
+	    val :== mem.value(?)
 	    (mem as Method) or (val as Function)
 	}
 
-	opMap := «String, MutableList«Member»»[]
-	funMap := «String, MutableList«Member»»[]
+	opMap :== «String, MutableList«Member»»[]
+	funMap :== «String, MutableList«Member»»[]
 	subfun.each(mem){
-	    val := mem.value(?)
+	    val :== mem.value(?)
 
-	    alias := annaUtil.findAttribute(
+	    alias :== annaUtil.findAttribute(
 		mem.attribute or (mem.value(?) as Function).attribute, "alias")
 
 
@@ -529,30 +529,30 @@ often used code paths, which makes it useful for regression testing.")
 		}
 	    }
 	}
-	subop := algo.qsort(
+	subop :== algo.qsort(
 	    opMap.map(key, el){key | el}, 
 	    fieldComparator(Pair«String, MutableList«Member»»::first))
 
-	subfun2 := algo.qsort(
+	subfun2 :== algo.qsort(
 	    funMap.map(key, el){key | el},
 	    fieldComparator(Pair«String, MutableList«Member»»::first))
 
-        subother := smemb.filter(mem){
-	    val := mem.value(?)
+        subother :== smemb.filter(mem){
+	    val :== mem.value(?)
 	    !(type(val).module?) and !(val as Type) and (mem.type != Null) and !(mem as Method) and !(val as Function)
 	}
 
 	
 
-        basePath := "/".join((0..data.steps+1).map(i){".."}) ~ "/"
+        basePath :== "/".join((0..data.steps+1).map(i){".."}) ~ "/"
 	data.file.writeFile(template("util/documentation/module.html"))
 	
 	submodule.each(mem){
-	    val := mem.value(?)
+	    val :== mem.value(?)
 	    writeFile(type(val))
 	}
 	subtype.each(mem){
-	    val := mem.value(?)
+	    val :== mem.value(?)
 	    writeFile(val as Type)
 	}
     }
