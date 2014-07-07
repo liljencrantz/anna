@@ -261,6 +261,8 @@ ANNA_VM_NATIVE(anna_int_convert_float, 1)
 	return null_entry;
     }
     double value = anna_as_float(param[0]);
+    if(isnan(value))
+	return null_entry;
     
     mpz_t res;
     mpz_init(res);
