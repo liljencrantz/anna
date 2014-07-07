@@ -4,6 +4,6 @@
 1 1
 "bla" bla
 'b' b
-'b'(1;"bla") 'b' 2 1 "bla"
+'b'(1,"bla") 'b' 2 1 "bla"
 [in]
 1 'd'
