@@ -1,0 +1,10 @@
+/*
+	Regression test. There was a bug that caused 
+	b :== "b"*1
+	to be assumed to be null at compile time.
+*/
+def main(){
+    a :== "a"
+    b :== "b"*1
+    print(a~b)
+}
