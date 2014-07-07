@@ -562,7 +562,7 @@ void anna_parser_load(anna_stack_template_t *stack)
     anna_stack_declare(
 	stack, node_type->name, 
 	type_type, anna_from_obj(anna_type_wrap(node_type)),
-	ANNA_STACK_READONLY); 
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED); 
     /*
       Insert all the cool stuff from node_wrapper and 
      */
@@ -580,7 +580,7 @@ void anna_parser_load(anna_stack_template_t *stack)
 	    anna_stack_declare(
 		stack, types[i]->name, 
 		type_type, anna_from_obj(anna_type_wrap(types[i])),
-		ANNA_STACK_READONLY); 
+		ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED); 
 	}
     }
 

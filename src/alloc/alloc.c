@@ -638,7 +638,6 @@ static void *anna_gc_main(void *aux)
 	    anna_alloc_gc_start_work_thread();    
 	    continue;
 	}
-	
 	anna_alloc_gc_collect();
 	anna_alloc_gc_free();
 	anna_alloc_gc_start_work_thread();

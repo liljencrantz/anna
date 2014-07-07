@@ -454,13 +454,16 @@ static void anna_string_i_join(anna_context_t *context)
 {
     anna_entry_t e = anna_context_pop_entry(context);
     anna_object_t *this = anna_context_pop_object(context);
+    
     anna_context_pop_entry(context);
     
     if(anna_entry_null(e))
     {
 	anna_context_push_object(context, null_object);
+	return;
     }
-    else if(anna_is_int_small(e))
+    
+    if(anna_is_int_small(e))
     {	
 	anna_object_t *res = anna_object_create(this->type);
 	anna_string_t *unwrapped = as_unwrap(res);
@@ -472,42 +475,33 @@ static void anna_string_i_join(anna_context_t *context)
 	asi_append_cstring(unwrapped, is, is_len);
 	
 	anna_context_push_object(context, res);
+	return;
     }
-    else
+
+    anna_object_t *o = anna_as_obj(e);
+    if((o->type == mutable_string_type) ||
+       (o->type == imutable_string_type))
     {
-	anna_object_t *o = anna_as_obj(e);
-	if((o->type == mutable_string_type) ||
-	   (o->type == imutable_string_type))
-	{
-	    anna_object_t *res = anna_object_create(this->type);
-	    asi_init(as_unwrap(res));
-	    asi_append(as_unwrap(res), as_unwrap(this), 0, asi_get_count(as_unwrap(this)));
-	    asi_append(as_unwrap(res), as_unwrap(o), 0, asi_get_count(as_unwrap(o)));
-	    
-	    anna_context_push_object(context, res);
-	}
-	else
-	{
-	    anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
-	    anna_entry_t callback_param[] = 
-		{
-		    anna_from_obj(this),
-		}
-	    ;
-	    
-	    anna_entry_t o_param[] =
-		{
-		    anna_from_obj(o)
-		}
-	    ;
-	    
-	    anna_vm_callback_native(
-		context,
-		anna_string_join_callback, 1, callback_param,
-		fun_object, 1, o_param
-		);
-	}
+	anna_object_t *res = anna_object_create(this->type);
+	
+	asi_init(as_unwrap(res));
+	asi_append(as_unwrap(res), as_unwrap(this), 0, asi_get_count(as_unwrap(this)));
+	asi_append(as_unwrap(res), as_unwrap(o), 0, asi_get_count(as_unwrap(o)));
+	
+	anna_context_push_object(context, res);
+	return;
     }
+
+    anna_object_t *fun_object = anna_as_obj_fast(anna_entry_get_static(o->type, ANNA_MID_TO_STRING));
+    anna_entry_t callback_param[] = {anna_from_obj(this)};
+    
+    anna_entry_t o_param[] = {anna_from_obj(o)};
+    
+    anna_vm_callback_native(
+	context,
+	anna_string_join_callback, 1, callback_param,
+	fun_object, 1, o_param
+	);
 }
 
 static void anna_string_convert_callback(anna_context_t *context)

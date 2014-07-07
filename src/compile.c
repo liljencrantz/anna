@@ -385,7 +385,7 @@ static void anna_vm_compile_i(
 	    
 	    anna_vm_compile_i(ctx, fun, node2->value, 0);	    
 
-	    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, node2->name);	    
+	    anna_sid_t sid = anna_stack_sid_create(fun->stack_template, node2->name);
 	    anna_vm_var(ctx, ANNA_INSTR_VAR_SET, 0, sid.offset);
 	    break;
 	}

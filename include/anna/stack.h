@@ -25,6 +25,7 @@ typedef struct anna_sid anna_sid_t;
 
 /* Stack member flags */
 #define ANNA_STACK_READONLY 1
+#define ANNA_STACK_ASSIGNED 2
 
 /**
    A stack frame template. Used during compilation to represent the
@@ -59,8 +60,11 @@ struct anna_stack_template
     struct anna_node_declare **member_declare_node;  
     /**
        One integer representing the flags for each declaration in this
-       stack frame . Currently, the only available flag is
-       ANNA_STACK_READONLY, which is used for constants.
+       stack frame . Currently, the only available flags are
+       ANNA_STACK_READONLY, which is used to mark constants, and
+       ANNA_STACK_ASSIGNED, which is used to mark that a constant
+       received has received it's final value during compile time. The
+       latter is useful for various optimizing strategies.
      */
     int *member_flags;
     /**

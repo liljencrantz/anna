@@ -53,7 +53,7 @@ typedef struct
 		module_data[i].name,					\
 		anna_stack_wrap(module_data[i].module)->type,		\
 		anna_from_obj(anna_stack_wrap(module_data[i].module)),	\
-		ANNA_STACK_READONLY);					\
+		ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);		\
 	    anna_type_setup_interface(anna_stack_wrap(module_data[i].module)->type); \
 	}								\
     }

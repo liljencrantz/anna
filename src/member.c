@@ -488,7 +488,12 @@ void anna_member_document_copy(
 	{
 	    anna_node_string_literal_t *str_node =
 		(anna_node_string_literal_t *)node;
-	    anna_member_document(type, mid, str_node->payload);
+	    wchar_t *copy = calloc(sizeof(wchar_t), str_node->payload_size+1);
+	    memcpy(
+		copy, str_node->payload,
+		sizeof(wchar_t)* str_node->payload_size);
+	    
+	    anna_member_document(type, mid, copy);
 	}
     }
     al_destroy(&doc);

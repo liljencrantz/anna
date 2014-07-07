@@ -125,10 +125,10 @@ void anna_reflection_load(anna_stack_template_t *stack)
 	anna_member_type_data, stack);
     anna_stack_declare(
 	stack, continuation_type->name,
-	type_type, anna_from_obj(anna_type_wrap(continuation_type)), ANNA_STACK_READONLY);
+	type_type, anna_from_obj(anna_type_wrap(continuation_type)), ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     anna_stack_declare(
 	stack, L"Block",
-	type_type, anna_from_obj(anna_type_wrap(block_type)), ANNA_STACK_READONLY);
+	type_type, anna_from_obj(anna_type_wrap(block_type)), ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     
     anna_type_t *type = anna_stack_wrap(stack)->type;
     anna_member_create_native_property(

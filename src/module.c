@@ -168,7 +168,8 @@ static anna_stack_template_t *anna_module(
     if(name)
     {
 	anna_stack_declare(
-	    parent, name, obj->type, anna_from_obj(obj), ANNA_STACK_READONLY);
+	    parent, name, obj->type,
+	    anna_from_obj(obj), ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     }
     if(filename)
     {
@@ -350,7 +351,7 @@ void anna_module_const_int(
 	name,
 	int_type,
 	anna_from_int(value),
-	ANNA_STACK_READONLY);
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     if(documentation)
     {
 	anna_type_t *type = 
@@ -375,7 +376,7 @@ void anna_module_const(
 	name,
 	type,
 	value,
-	ANNA_STACK_READONLY);
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     if(documentation)
     {
 	anna_type_t *type = 
@@ -399,7 +400,7 @@ void anna_module_const_char(
 	name,
 	char_type,
 	anna_from_char(value),
-	ANNA_STACK_READONLY);
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     if(documentation)
     {
 	anna_type_t *type = 
@@ -423,7 +424,7 @@ void anna_module_const_float(
 	name,
 	float_type,
 	anna_from_float(value),
-	ANNA_STACK_READONLY);
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     if(documentation)
     {
 	anna_type_t *type = 
@@ -534,7 +535,7 @@ static void anna_module_bootstrap_monkeypatch(
 		    fun->name,
 		    anna_function_wrap(fun)->type,
 		    anna_from_obj(anna_function_wrap(fun)),
-		    ANNA_STACK_READONLY);
+		    ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
 	    }
 	}
     }
@@ -841,7 +842,7 @@ void anna_module_init(wchar_t *name)
 	L"builtinMacros",
 	anna_stack_wrap(stack_macro)->type,
 	anna_from_obj(anna_stack_wrap(stack_macro)),
-	ANNA_STACK_READONLY);
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     al_push(&stack_global->expand, anna_use_create_stack(stack_macro));
     
     anna_stack_template_t *stack_lang = anna_stack_unwrap(
@@ -870,7 +871,7 @@ void anna_module_init(wchar_t *name)
 	anna_intern_static(L"global"),
 	g_obj->type,
 	anna_from_obj(g_obj),
-	ANNA_STACK_READONLY);
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
 
     anna_module_const(
 	stack_global,
@@ -1377,7 +1378,7 @@ anna_function_t *anna_module_function(
 	name,
 	f->wrapper->type,
 	anna_from_obj(f->wrapper),
-	ANNA_STACK_READONLY);
+	ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
     if(doc)
     {
 	anna_function_document(f,anna_intern_static(doc));

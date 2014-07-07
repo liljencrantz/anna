@@ -645,7 +645,7 @@ static anna_node_t *anna_node_calculate_type_internal(
 	    }
 
 	    anna_type_set_stack(type, stack);
-	    anna_type_setup_interface(type);	    
+	    anna_type_setup_interface(type);
 
 	    if(is_static)
 	    {
@@ -755,11 +755,18 @@ static anna_node_t *anna_node_calculate_type_internal(
 			    stack,
 			    d->name,
 			    value);
+			anna_stack_set_flag(
+			    stack,
+			    d->name,
+			    ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
 		    }
-		    anna_stack_set_flag(
-			stack,
-			d->name,
-			ANNA_STACK_READONLY);
+		    else 
+		    {
+			anna_stack_set_flag(
+			    stack,
+			    d->name,
+			    ANNA_STACK_READONLY);
+		    }
 		}
 	    }
 	    if(anna_attribute_flag(d->attribute, L"full"))

@@ -378,7 +378,9 @@ anna_entry_t anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name)
 		anna_node_calculate_type((anna_node_t *)decl);
 	    }
 	    
-	    if(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
+	    if(
+		(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY) &&
+		(anna_stack_get_flag(stack, name) & ANNA_STACK_ASSIGNED))
 	    {
 		return anna_entry_get(
 		    stack->wrapper, anna_mid_get(name));
