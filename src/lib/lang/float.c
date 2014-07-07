@@ -179,6 +179,12 @@ ANNA_VM_NATIVE(anna_float_max_exponent, 1)
     return anna_from_int(DBL_MAX_EXP);
 }
 
+ANNA_VM_NATIVE(anna_float_i_nan, 1)
+{
+    double v = anna_as_float(param[0]);
+    return isnan(v) ? anna_from_int(1) : null_entry;
+}
+
 char *dtoa(
     double d, int mode, int ndigits,
     int *decpt, int *sign, char **rve);
@@ -356,5 +362,13 @@ void anna_float_type_create()
 	int_type, &anna_float_max_exponent, 0,
 	L"The largest value for the exponent that can be stored in a float.");
     
+    anna_member_create_native_property(
+	float_type,
+	anna_mid_get(L"nan?"),
+	int_type,
+	&anna_float_i_nan,
+	0,
+	L"Is this floating point number NaN (Not a number)?");
+
     anna_float_type_i_create();
 }
