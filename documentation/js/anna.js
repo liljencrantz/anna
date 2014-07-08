@@ -287,7 +287,7 @@ var anna = {
 	    function(idx, el)
 	    {
 		var html = "";
-		var txt = el.textContent.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+		var txt = el.textContent.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		var mode = "base";
 		var comment_nest= 0;
 		for(var i=0; i<txt.length; i++)
@@ -413,7 +413,8 @@ var anna = {
 		$.each(pattern, function (key, repl) {
 		    html = html.replace(repl.regExp, repl.replacement);
 		});
-		
+
+
 		if(el.nodeName == "PRE")
 		{
 		    /*
