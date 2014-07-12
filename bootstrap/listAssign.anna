@@ -1,4 +1,6 @@
-attribute(internal, doc("Internal module for macros related to declaring or assigning to multiple variables in a single expression."))
+attribute(internal, doc("
+Internal module for macros related to declaring or assigning to
+multiple variables in a single expression."))
 
 /*
   Macros used for transforming stuff like 
@@ -11,37 +13,38 @@ attribute(internal, doc("Internal module for macros related to declaring or assi
 
 */
 
-def varListInternal(parser.Node valNode, parser.Call list, parser.Node assignNode) (
+def varListInternal(
+    parser.Node valNode, parser.Call list, parser.Node assignNode) (
     doc("Internal helper method for __varList__ and friends.")
 ){
     use(parser)
-    res := (ast(nothing(%tmp :== %val)) % ["val": valNode]) as Call
-    list[1...].each(idx, item){
+    res := (ast(nothing(%tmp := %val.iterator)) % ["val": valNode]) as Call
+    list[1...].each(idx, item) {
 	res ~= [assignNode % ["dec": item, "idx": IntLiteral(item, idx)]]
+	res ~= [ast(%tmp++)]
     }
-//    print(res)
-    return res % ["tmp": Identifier(valNode, identifier("temp"))]
+    return res % ["tmp": Identifier(valNode, identifier("iterator"))]
 }
 
-macro __varList__(node)  (
-    doc(
-	"Syntactic sugar for declaring multiple variables in a single expression.",
-	"<pre class='anna-code'>
+macro __varList__(node)  (doc(
+    "
+Syntactic sugar for declaring multiple variables in a single expression.",
+    "<pre class='anna-code'>
 // Declare two new variables, myE and myPi, whose initial values will be those
 // of the e and pi mathematical constants, respectively.
-[myE, myPi] := [math.e, meth.pi]
+[myE, myPi] := [math.e, math.pi]
 // This prints '3.141593'
 print(myPi)
 // This is ok, myE is a variable, not a constant
 myE = 1.5
 </pre>"
 	)){
-    return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp[%idx]))
+    return varListInternal(node[2], node[0] as Call, ast(%dec := %tmp.value))
 }
 
-macro __constList__(node)  (
-    doc(
-	"Syntactic sugar for declaring multiple constants in a single expression.",
+macro __constList__(node)  (doc(
+    "
+Syntactic sugar for declaring multiple constants in a single expression.",
 	"<pre class='anna-code'>
 // Declare two new constants, myE and myPi, whose values will be those of the
 // e and pi mathematical constants, respectively.
@@ -52,16 +55,16 @@ print(myPi)
 myE = 1.5
 </pre>"
 	)){
-    return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp[%idx]))
+    return varListInternal(node[2], node[0] as Call, ast(%dec :== %tmp.value))
 }
 
-macro __assignList__(node)  (
-    doc(
-	"Syntactic sugar for assigning multiple variables in a single expression.",
+macro __assignList__(node)  (doc(
+    "
+Syntactic sugar for assigning multiple variables in a single expression.",
 	"<pre class='anna-code'>
 // This code will switch the places of the two variables foo and bar
 [foo, bar] = [bar, foo]
 </pre>"
 	)) {
-    return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp[%idx]))
+    return varListInternal(node[1], node[0] as Call, ast(%dec = %tmp.value))
 }

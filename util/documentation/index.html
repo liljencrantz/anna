@@ -210,7 +210,10 @@ cat := "meow" as Any  // Declare cat as a variable of type Any
 	    initial value of the foo variable is the string meow. 
 	  </p>
 	  <p>
-	    So what happens if we try to perform an invalid cast? Let's find out!
+	    So what happens if we try to perform an invalid cast?
+	    Let's find out what happens when we try to cast an Int to
+	    a String, even though an Int does not have all the members
+	    of a String.
 	  </p>
 	  <pre class="anna-code">
 print(1337 as String)  // Invalid cast, returns null
@@ -222,8 +225,8 @@ print(1337 as String)  // Invalid cast, returns null
 	  <p>
 	    One important difference between Anna and other C-like
 	    languages should be noted here, namely that Anna does not
-	    consider conversion and casting to be the same thing.  In
-	    In Anna, converting an object to a different type is done
+	    consider conversion and casting to be related.  In In
+	    Anna, converting an object to a different type is done
 	    using code
 	    like <code class='anna-code'>Float::convert(someInt)</code>
 	    or <code class='anna-code'>Complex::convert(math.pi)</code>.
@@ -240,9 +243,21 @@ print(1337 as String)  // Invalid cast, returns null
 pi :== 4.0    // Declare pi as a constant with value 4.0
 	  </pre>
 	  <p>
-	    To learn more about type inference,
-	    click <a href="#type-inference">here</a>. Otherwise, continue
-	    reading.
+	    <ul>
+	      <li>
+		To learn more about type inference,
+		click <a href="#type-inference">here</a>.
+	      </li>
+	      <li>
+		Constants are identifiers that always point to the
+		same object. The state of that object may change
+		though. Objects that don't change state are called
+		immutable. For information, see
+		the <a href='#misc-mutability'>section on
+		mutability</a>.
+	      </li>
+	    </ul>
+	    Otherwise, continue reading.
 	  </p>
 	  
 	  <h3><a name="examples-numbers">Numbers</a></h3>
@@ -389,8 +404,8 @@ print("hello" in objList)
 	  <h3><a name="examples-list-assign">Assigning to lists of variables</a></h3>
 	  <p>
 	    Anna also has a convenient short hand syntax for when you
-	    want to assign the values of the individual items in a list
-	    to different variables.
+	    want to assign the values of the individual items in a
+            collection to different variables.
 	  </p>
 	  <pre class="anna-code">
 /*
@@ -398,10 +413,11 @@ print("hello" in objList)
   of 1, 2 and 3, respectively.
 
   Note the use of ':=', making this a variable declaration, not a simple 
-  assignment. ':==' would also have worked, and would have declared foo, bar 
-  and baz as constants.
+  assignment.
 */
 [foo, bar, baz] := [1, 2, 3]
+
+[host, port] :== server.split(':')
 
 /*
   This will also work as expected, though someFancyFunction must of course 
@@ -410,6 +426,20 @@ print("hello" in objList)
 */
 [foo, bar, baz] = someFancyFunction()
 	  </pre>
+	  <p>
+	    List assignment can be used with any iteratable data type,
+	    e.g.<code class="anna-code">[a, b, c] :== "XYZ"</code>.
+	  <p>
+	    List assignment and list declaration is implemented via
+	    macros. The assignment and declaration macros detect
+	    assignment and declaration to lists and transform the code
+	    into calls to the macros __varList__, __constList__ and
+	    __assignList__. The source code for these macros <%!
+	    toggleCodePopup("listAssign", "can be found here") %>.
+	  </p>
+
+	  <%! codePopup("listAssign", "bootstrap/listAssign.anna") %>
+
 	  <h3><a name="examples-maps">Maps</a></h3>
 	  <p>
 	    Maps are collections that map from one object to
