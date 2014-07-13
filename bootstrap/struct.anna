@@ -2,14 +2,22 @@ attribute(internal, doc("Internal module for the struct macro."))
 
 macro structType(node) (
     doc("
-The struct type macro is used for creating simple classes aimed for data storage.
-Basically, a struct type behaves exactly like a regular class, but with a few additional features.", 
+The struct type macro is used for creating simple classes aimed for
+data storage.  Basically, a struct type behaves exactly like a regular
+class, but with a few additional features.", 
 
 "These features are:
 
 <ul>
-  <li>A suitable constructor is automatically created, that accepts one argument for each member of the struct. The arguments are ordered and named the same way as the members of the struct.</li>
-  <li>The __cmp__, hashCode and toString methods are all created, doing what you would expect them to.</li>
+  <li>
+    A suitable constructor is automatically created, that accepts one
+    argument for each member of the struct. The arguments are ordered
+    and named the same way as the members of the struct.
+  </li>
+  <li>
+    The __cmp__, hashCode and toString methods are all created, doing
+   what you would expect them to.
+  </li>
 </ul>",
 	"Usage example:",
 "<pre class='anna-code'>
@@ -26,8 +34,8 @@ vv2 := MyStruct(5, \"\")
 // This prints MyStruct(some: 5, other:)
 print(vv2)
 </pre>",
-"Because structs implement the __cmp__ and hashCode methods, they can be used as 
-keys in HashMap dictionaries.
+"Because structs implement the __cmp__ and hashCode methods, they can 
+be used as keys in HashMap dictionaries.
 ")
 ){
     node.function = ast(classType)
@@ -35,8 +43,12 @@ keys in HashMap dictionaries.
     body := node[2] as Call
     constructorParam := ast({})
     constructorBody := ast({})
-    toStringBody := (ast({res := %resStart.thaw}) % ["resStart": StringLiteral(node, structName.name ~ "(")]) as Call
-    cmpBody := ast({otherStruct := other as %This, otherStruct or (return ?), tmp := 0})
+    toStringBody := (ast({res := %resStart.thaw}) % [
+	"resStart": StringLiteral(node, structName.name ~ "(")]) as Call
+    cmpBody := ast(
+	{
+	    otherStruct := other as %This, otherStruct or (return ?), tmp := 0
+	})
     hashCodeBody := ast({res := 0})
     customToString := ? as Int
     body.each(idx, el){
@@ -54,22 +66,42 @@ keys in HashMap dictionaries.
         }
 	constructorParam.push(decl.copy())
 	constructorBody.push(ast(this.%val = %val) % ["val": name.copy()])
-	toStringBody.push(ast(res ~= %name) % ["name": StringLiteral(decl, "" ~ (if(idx != 0){ ", " } else { "" }) ~ name.name ~ ": ")])
+	toStringBody.push(ast(res ~= %name) % [
+	    "name": StringLiteral(decl, "" ~ (if(idx != 0){ ", " } else { "" }) ~ name.name ~ ": ")])
 	toStringBody.push(ast(res ~= this.%value) % ["value": name.copy()])
-	cmpBody.push(ast((tmp = (this.%value as monkeypatchMisc.Comparable).__cmp__(otherStruct.%value) == 0) or (return tmp)) % ["value": name.copy()])
-	hashCodeBody.push(ast(res = res ^bitxor (this.%value as monkeypatchMisc.Hashable).hashCode()) % ["value": name.copy()])
+	cmpBody.push(
+	    ast((tmp = (this.%value as monkeypatchMisc.Comparable).__cmp__(otherStruct.%value) == 0) or (return tmp)) % [
+		"value": name.copy()])
+	hashCodeBody.push(
+	    ast(res = res ^bitxor (this.%value as monkeypatchMisc.Hashable).hashCode()) % [
+	    "value": name.copy()])
     }
     toStringBody.push(ast(res ~= ")"))
     toStringBody.push(ast(res))
-    body.push(ast(__const__(__init__, ?, __def__(__init__, ?, %param, {}, %body), {})) % ["param": constructorParam, "body": constructorBody])
+    body.push(
+	ast(
+	    __const__(__init__, ?, __def__(__init__, ?, %param, {}, %body), {})) % [
+		"param": constructorParam, "body": constructorBody])
     cmpBody.push(ast(return 0))
     hashCodeBody.push(ast(return res))
 
     if(!customToString){
-        body.push(ast(__const__(toString, ?, __def__(toString, ?, {}, {}, %body), {})) % ["body": toStringBody])
+        body.push(
+	    ast(
+		__const__(toString,
+			  ?,
+			  __def__(toString, ?, {}, {}, %body), {})
+	    ) % ["body": toStringBody])
     }
-    body.push(ast(__const__(__cmp__, ?, __def__(__cmp__, ?, {var Any other}, {}, %body), {})) % ["body": cmpBody])
-    body.push(ast(__const__(hashCode, ?, __def__(hashCode, ?, {}, {}, %body), {})) % ["body": hashCodeBody])
+    body.push(
+	ast(
+	    __const__(
+		__cmp__,
+		    ?,
+		__def__(__cmp__, ?, {var Any other}, {}, %body), {})
+	) % ["body": cmpBody])
+    body.push(
+	ast(__const__(hashCode, ?, __def__(hashCode, ?, {}, {}, %body), {})) % ["body": hashCodeBody])
     return node
 }
 
@@ -109,6 +141,5 @@ dependencies between member types."
     fullType := ast(structType(AnonymousStruct, {}, %body)) % ["body": typeBlock]
     call := Call(node, fullType)
     call ~= callParam
-//    print(fullType)
     return call
 }
