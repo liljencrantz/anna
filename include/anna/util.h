@@ -646,4 +646,13 @@ uint64_t anna_mpz_get_ui64(mpz_t mp);
 /** 64-bit gmp value assignment */
 void anna_mpz_set_ui64(mpz_t mp, uint64_t val);
 
+static inline ssize_t anna_idx_wrap(ssize_t idx, size_t count)
+{
+    if(idx < 0)
+    {
+	idx = count + idx;
+    }
+    return idx;
+}
+
 #endif

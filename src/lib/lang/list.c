@@ -135,7 +135,7 @@ static int anna_list_is_mutable(anna_object_t *obj)
 void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t value)
 {
     size_t size = anna_list_get_count(this);
-    ssize_t pos = anna_list_calc_offset(offset, size);
+    ssize_t pos = anna_idx_wrap(offset, size);
     //anna_message(L"Set el %d in list of %d elements\n", pos, size);
     if(pos < 0)
     {
@@ -153,7 +153,7 @@ void anna_list_set(struct anna_object *this, ssize_t offset, anna_entry_t value)
 anna_entry_t anna_list_get(anna_object_t *this, ssize_t offset)
 {
     size_t size = anna_list_get_count(this);
-    ssize_t pos = anna_list_calc_offset(offset, size);
+    ssize_t pos = anna_idx_wrap(offset, size);
     anna_entry_t *ptr = anna_list_get_payload(this);
     if(pos < 0||pos >=size)
     {
@@ -463,41 +463,32 @@ static void anna_list_in(anna_context_t *context)
 ANNA_VM_NATIVE(anna_list_i_get_range, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
-    anna_object_t *list = anna_as_obj(param[0]);
+    anna_object_t *list = anna_as_obj_fast(param[0]);
+    size_t count = anna_list_get_count(list);
     anna_object_t *range = anna_as_obj(param[1]);
-    size_t size = anna_list_get_count(list);
-    int from_orig = anna_range_get_from(range);
-    int to_orig = anna_range_get_to(range);
-    int from = anna_list_calc_offset(from_orig, size);
-    int step = anna_range_get_step(range);
-    int to = anna_list_calc_offset(to_orig, size);
-    int i;
 
-    if(from < 0)
-    {
-	return null_entry;
-    }    
+    int from = anna_idx_wrap(anna_range_get_from(range), count);
+    int to = anna_idx_wrap(anna_range_get_to(range), count);
+    int step = anna_range_get_step(range);
+    int i;
 
     if(anna_range_get_open(range))
     {
-	to = step>0?anna_list_get_count(list):-1;
+	to = (step>0) ? count : -1;
     }
-    else
+    else if((to >= from) != (step > 0))
     {
-	if(from_orig < 0 || to_orig < 0)
-	{
-	    if((to > from) != (step > 0))
-	    {
-		step = -step;
-	    }
-	}
+	step = -step;
     }
 
-    if(to < -1)
+    if((from < 0) || (from >= count))
     {
 	return null_entry;
     }
-    if((to > from) != (step > 0))
+
+    ssize_t count_slice = (1+(to-from-sign(step))/step);
+    ssize_t last_idx = from + step*(count_slice-1);
+    if((last_idx < 0) || (last_idx >= count))
     {
 	return null_entry;
     }
@@ -515,8 +506,7 @@ ANNA_VM_NATIVE(anna_list_i_get_range, 2)
 		i));
     }
     
-    return anna_from_obj(res);
-    
+    return anna_from_obj(res);    
 }
 
 ANNA_VM_NATIVE(anna_list_i_set_range, 3)
@@ -537,10 +527,10 @@ ANNA_VM_NATIVE(anna_list_i_set_range, 3)
     int from_orig = anna_range_get_from(range);
     int to_orig = anna_range_get_to(range);
 
-    int from = anna_list_calc_offset(from_orig, size);
+    int from = anna_idx_wrap(from_orig, size);
     int step = anna_range_get_step(range);
     
-    int to = anna_list_calc_offset(to_orig, size);
+    int to = anna_idx_wrap(to_orig, size);
     int count;
     int i;
 

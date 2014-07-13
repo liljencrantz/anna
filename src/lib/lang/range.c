@@ -162,7 +162,7 @@ ANNA_VM_NATIVE(anna_range_get_int, 2)
     }
     else
     {
-	idx = anna_list_calc_offset(idx, anna_range_get_count(range));
+	idx = anna_idx_wrap(idx, anna_range_get_count(range));
 	if(likely(idx >= 0)){
 	    return anna_from_int(from + step*idx);
 	}
@@ -219,7 +219,7 @@ ANNA_VM_NATIVE(anna_range_get_range, 2)
     }
     else
     {
-	idx_from = anna_list_calc_offset(idx_from, anna_range_get_count(range));
+	idx_from = anna_idx_wrap(idx_from, anna_range_get_count(range));
 	if(idx_from < 0)
 	{
 	    return null_entry;
@@ -240,7 +240,7 @@ ANNA_VM_NATIVE(anna_range_get_range, 2)
 	}
 	else
 	{
-	    idx_to = anna_list_calc_offset(idx_to, anna_range_get_count(range));
+	    idx_to = anna_idx_wrap(idx_to, anna_range_get_count(range));
 	    if(idx_to < 0)
 	    {
 		return null_entry;

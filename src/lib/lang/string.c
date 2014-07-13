@@ -93,15 +93,6 @@ char *anna_string_payload_narrow(anna_object_t *obj)
     return asi_cstring_narrow(str);
 }
 
-static ssize_t anna_string_idx_wrap(anna_object_t *str, ssize_t idx)
-{
-    if(idx < 0)
-    {
-	return (ssize_t)anna_string_get_count(str) + idx;
-    }
-    return idx;
-}
-
 ANNA_VM_NATIVE(anna_string_init, 1)
 {
     anna_object_t *obj= anna_as_obj(param[0]);
@@ -114,7 +105,8 @@ ANNA_VM_NATIVE(anna_string_i_set_int, 3)
     ANNA_ENTRY_NULL_CHECK(param[1]);
     ANNA_ENTRY_NULL_CHECK(param[2]);
     wchar_t ch = anna_as_char(param[2]);
-    ssize_t idx = anna_string_idx_wrap(anna_as_obj(param[0]), anna_as_int(param[1]));
+    size_t count = anna_string_get_count(anna_as_obj(param[0]));
+    ssize_t idx = anna_idx_wrap(anna_as_int(param[1]), count);
     if(likely(idx >= 0))
     {
 	asi_set_char(as_unwrap(anna_as_obj(param[0])), idx, ch);
@@ -125,7 +117,8 @@ ANNA_VM_NATIVE(anna_string_i_set_int, 3)
 ANNA_VM_NATIVE(anna_string_i_get_int, 2)
 {
     ANNA_ENTRY_NULL_CHECK(param[1]);
-    ssize_t idx = anna_string_idx_wrap(anna_as_obj(param[0]), anna_as_int(param[1]));
+    size_t count = anna_string_get_count(anna_as_obj(param[0]));
+    ssize_t idx = anna_idx_wrap(anna_as_int(param[1]), count);
     if(!(idx < 0 || idx >= anna_string_get_count(anna_as_obj(param[0]))))
     {
 	return anna_from_char(asi_get_char(as_unwrap(anna_as_obj(param[0])), idx));
@@ -138,21 +131,35 @@ ANNA_VM_NATIVE(anna_string_i_get_range, 2)
     ANNA_ENTRY_NULL_CHECK(param[1]);
     
     anna_object_t *this = anna_as_obj_fast(param[0]);
-    ssize_t from = anna_string_idx_wrap(anna_as_obj_fast(param[0]), anna_range_get_from(anna_as_obj_fast(param[1])));
-    ssize_t to = anna_string_idx_wrap(anna_as_obj_fast(param[0]), anna_range_get_to(anna_as_obj_fast(param[1])));
-    ssize_t step = anna_range_get_step(anna_as_obj_fast(param[1]));
+    size_t count = anna_string_get_count(this);
+    anna_object_t *range = anna_as_obj(param[1]);
+
+    ssize_t from = anna_idx_wrap(anna_range_get_from(range), count);
+    ssize_t to = anna_idx_wrap(anna_range_get_to(range), count);
+    ssize_t step = anna_range_get_step(range);
     
     if(anna_range_get_open(anna_as_obj_fast(param[1])))
     {
-	to = step>0?anna_string_get_count(this):-1;
+	to = (step>0) ? count : -1;
     }
-
-    if((to > from) != (step > 0))
+    else if((to >= from) != (step > 0))
     {
 	step = -step;
     }
 
-    anna_object_t *res = anna_object_create(imutable_string_type);
+    if((from < 0) || (from >= count))
+    {
+	return null_entry;
+    }
+
+    ssize_t count_slice = (1+(to-from-sign(step))/step);
+    ssize_t last_idx = from + step*(count_slice-1);
+    if((last_idx < 0) || (last_idx >= count))
+    {
+	return null_entry;
+    }
+
+    anna_object_t *res = anna_object_create(this->type);
     asi_init(as_unwrap(res));
     if(step == 1)
     {
@@ -160,14 +167,12 @@ ANNA_VM_NATIVE(anna_string_i_get_range, 2)
     }
     else
     {
-	int i;
-	
+	int i;	
 	for(i=from;(step>0)? i<to : i>to; i+=step)
 	{
 	    wchar_t ch = asi_get_char(as_unwrap(this), i);
 	    asi_append_cstring(as_unwrap(res), &ch, 1);
 	}
-	
     }
     
     return anna_from_obj(res);
@@ -216,8 +221,9 @@ ANNA_VM_NATIVE(anna_string_i_set_range, 3)
     
     ssize_t from_orig = anna_range_get_from(range);
     ssize_t to_orig = anna_range_get_to(range);
-    ssize_t from = anna_string_idx_wrap(this_obj, from_orig);
-    ssize_t to = anna_string_idx_wrap(this_obj, to_orig);
+    ssize_t count_orig = anna_string_get_count(this_obj);
+    ssize_t from = anna_idx_wrap(from_orig, count_orig);
+    ssize_t to = anna_idx_wrap(to_orig, count_orig);
     ssize_t step = anna_range_get_step(range);
     ssize_t count;
     

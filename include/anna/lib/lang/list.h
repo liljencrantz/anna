@@ -29,16 +29,6 @@ anna_type_t *anna_list_type_get_mutable(anna_type_t *subtype);
 anna_type_t *anna_list_type_get_imutable(anna_type_t *subtype);
 anna_type_t *anna_list_type_get_any(anna_type_t *subtype);
 
-static inline ssize_t anna_list_calc_offset(ssize_t offset, size_t size)
-{
-    if(unlikely(offset < 0)) {
-	if((-offset) > size)
-	    return -1;
-	
-	return size+offset;
-    }
-    return offset;
-}
 void anna_list_any_add_method(anna_function_t *fun);
 void anna_list_mutable_add_method(anna_function_t *fun);
 void anna_list_imutable_add_method(anna_function_t *fun);

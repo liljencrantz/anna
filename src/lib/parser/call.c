@@ -34,7 +34,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_get_int, 2)
     ANNA_ENTRY_NULL_CHECK(param[1]);
     
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
-    int idx = anna_list_calc_offset(anna_as_int(param[1]), node->child_count);
+    int idx = anna_idx_wrap(anna_as_int(param[1]), node->child_count);
     if(idx < 0 || idx >= node->child_count)
 	return null_entry;
     return anna_from_obj(anna_node_wrap(node->child[idx]));
@@ -80,7 +80,7 @@ ANNA_VM_NATIVE(anna_node_call_wrapper_i_set_int, 3)
 	param[2] = anna_from_obj(anna_node_wrap(anna_node_create_null(0)));
     
     anna_node_call_t *node = (anna_node_call_t *)anna_node_unwrap(this);
-    int idx = anna_list_calc_offset(anna_as_int(param[1]), node->child_count);
+    int idx = anna_idx_wrap(anna_as_int(param[1]), node->child_count);
     if(idx < 0 || idx >= node->child_count)
 	return param[1];
     anna_node_t *val = anna_node_unwrap(anna_as_obj(param[2]));

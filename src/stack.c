@@ -378,12 +378,31 @@ anna_entry_t anna_stack_get_try(anna_stack_template_t *stack, wchar_t *name)
 		anna_node_calculate_type((anna_node_t *)decl);
 	    }
 	    
-	    if(
-		(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY) &&
-		(anna_stack_get_flag(stack, name) & ANNA_STACK_ASSIGNED))
+	    if(anna_stack_get_flag(stack, name) & ANNA_STACK_READONLY)
 	    {
-		return anna_entry_get(
-		    stack->wrapper, anna_mid_get(name));
+		if(anna_stack_get_flag(stack, name) & ANNA_STACK_ASSIGNED)
+		{
+		    return anna_entry_get(
+			stack->wrapper, anna_mid_get(name));
+		}
+		else
+		{
+		    anna_entry_t value = anna_node_static_invoke_try(
+			decl->value, stack);
+		    
+		    if(!anna_entry_null_ptr(value))
+		    {
+			anna_stack_set(
+			    stack,
+			    name,
+			    value);
+			anna_stack_set_flag(
+			    stack,
+			    name,
+			    ANNA_STACK_READONLY | ANNA_STACK_ASSIGNED);
+			return value;
+		    }
+		}
 	    }
 	    break;
 	}

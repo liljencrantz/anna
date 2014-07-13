@@ -8,7 +8,7 @@ anna_object_t *anna_buffer_create()
 void anna_buffer_set(struct anna_object *this, ssize_t offset, unsigned char value)
 {
     size_t size = anna_buffer_get_count(this);
-    ssize_t pos = anna_list_calc_offset(offset, size);
+    ssize_t pos = anna_idx_wrap(offset, size);
 //    anna_message(L"Set el %d in buffer of %d elements\n", pos, size);
     if(pos < 0)
     {
@@ -26,7 +26,7 @@ void anna_buffer_set(struct anna_object *this, ssize_t offset, unsigned char val
 unsigned char anna_buffer_get(anna_object_t *this, ssize_t offset)
 {
     size_t size = anna_buffer_get_count(this);
-    ssize_t pos = anna_list_calc_offset(offset, size);
+    ssize_t pos = anna_idx_wrap(offset, size);
     unsigned char *ptr = anna_buffer_get_payload(this);
     if(pos < 0||pos >=size)
     {
